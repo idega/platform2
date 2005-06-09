@@ -1,5 +1,5 @@
 /*
- * $Id: StudentEditor.java,v 1.4 2005/06/06 16:08:17 laddi Exp $
+ * $Id: StudentEditor.java,v 1.5 2005/06/09 07:14:26 laddi Exp $
  * Created on Jun 2, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -47,10 +47,10 @@ import com.idega.util.URLUtil;
 
 
 /**
- * Last modified: $Date: 2005/06/06 16:08:17 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/09 07:14:26 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class StudentEditor extends AdultEducationBlock implements IWPageEventListener {
 	
@@ -262,12 +262,12 @@ public class StudentEditor extends AdultEducationBlock implements IWPageEventLis
 		changeCourse.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_STORE_COURSE));
 		
 		DropdownMenu courses = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_COURSE));
-		Collection availableCourses = getBusiness().getCourses(getSession().getSchoolSeason().getPrimaryKey(), getSession().getSchool().getPrimaryKey(), getSession().getStudyPathGroup().getPrimaryKey());
+		Collection availableCourses = getBusiness().getAvailableCourses(getSession().getSchoolSeason().getPrimaryKey(), getSession().getSchool().getPrimaryKey(), course.getStudyPath());
 		Iterator iter = availableCourses.iterator();
 		while (iter.hasNext()) {
 			AdultEducationCourse element = (AdultEducationCourse) iter.next();
 			if (!element.equals(course)) {
-				courses.addMenuElement(course.getPrimaryKey().toString(), element.getCode());
+				courses.addMenuElement(element.getPrimaryKey().toString(), element.getCode());
 			}
 		}
 
@@ -308,11 +308,11 @@ public class StudentEditor extends AdultEducationBlock implements IWPageEventLis
 		changeGroup.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_STORE_GROUP));
 		
 		DropdownMenu courses = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_COURSE));
-		Collection availableCourses = getBusiness().getCourses(getSession().getSchoolSeason().getPrimaryKey(), null, getSession().getSchool().getPrimaryKey(), getSession().getStudyPathGroup().getPrimaryKey());
+		Collection availableCourses = getBusiness().getAvailableCourses(getSession().getSchoolSeason().getPrimaryKey(), getSession().getSchool().getPrimaryKey(), course.getStudyPath());
 		Iterator iter = availableCourses.iterator();
 		while (iter.hasNext()) {
 			AdultEducationCourse element = (AdultEducationCourse) iter.next();
-			courses.addMenuElement(course.getPrimaryKey().toString(), element.getCode());
+			courses.addMenuElement(element.getPrimaryKey().toString(), element.getCode());
 		}
 		courses.setSelectedElement(course.getPrimaryKey().toString());
 
@@ -359,6 +359,7 @@ public class StudentEditor extends AdultEducationBlock implements IWPageEventLis
 	private void rejectStudent(IWContext iwc) throws RemoteException {
 		Object[] choices = { getSession().getChoice().getPrimaryKey().toString() };
 		getBusiness().rejectChoices(choices, iwc.getCurrentUser());
+		close(iwc, StudentPlacer.ACTION_VIEW_CHOICES);
 	}
 	
 	private void changeCourse(IWContext iwc) throws RemoteException {

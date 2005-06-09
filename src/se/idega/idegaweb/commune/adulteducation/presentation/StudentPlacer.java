@@ -1,5 +1,5 @@
 /*
- * $Id: StudentPlacer.java,v 1.6 2005/06/06 16:08:17 laddi Exp $
+ * $Id: StudentPlacer.java,v 1.7 2005/06/09 07:14:26 laddi Exp $
  * Created on Jun 1, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -41,10 +41,10 @@ import com.idega.util.PersonalIDFormatter;
 
 
 /**
- * Last modified: $Date: 2005/06/06 16:08:17 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/09 07:14:26 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class StudentPlacer extends AdultEducationBlock implements IWPageEventListener {
 
@@ -167,6 +167,8 @@ public class StudentPlacer extends AdultEducationBlock implements IWPageEventLis
 		DateInput date = (DateInput) getStyledInterface(new DateInput(PARAMETER_DATE));
 		date.setDate(getSession().getCourse().getStartDate());
 		
+		form.add(getText(localize("placement_date_setter_message", "You are placing a student in a course that has already started. Please choose a start date for this placement.")));
+		form.add(new Break(2));
 		form.add(getHeader(localize("placement_date", "Placement date") + ":"));
 		form.add(Text.getNonBrakingSpace());
 		form.add(date);
@@ -380,6 +382,9 @@ public class StudentPlacer extends AdultEducationBlock implements IWPageEventLis
 				}
 	
 				table.add(getSmallText(String.valueOf(number)), column++, row);
+				if (choice.getComment() != null) {
+					table.add(getSmallErrorText("* "), column, row);
+				}
 				table.add(link, column++, row);
 				table.add(getSmallText(PersonalIDFormatter.format(user.getPersonalID(), iwc.getCurrentLocale())), column++, row);
 				table.add(getSmallText(String.valueOf(choice.getPriority())), column++, row);

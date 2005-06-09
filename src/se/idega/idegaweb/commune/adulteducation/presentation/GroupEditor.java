@@ -1,5 +1,5 @@
 /*
- * $Id: GroupEditor.java,v 1.7 2005/06/07 12:35:58 laddi Exp $
+ * $Id: GroupEditor.java,v 1.8 2005/06/09 07:14:26 laddi Exp $
  * Created on Jun 2, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -38,10 +38,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/06/07 12:35:58 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/09 07:14:26 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class GroupEditor extends AdultEducationBlock implements IWPageEventListener {
 
@@ -220,8 +220,8 @@ public class GroupEditor extends AdultEducationBlock implements IWPageEventListe
 		
 		SubmitButton save = (SubmitButton) getButton(new SubmitButton(localize("save_group", "Save group")));
 		save.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_STORE));
-		SubmitButton cancel = (SubmitButton) getButton(new SubmitButton(localize("cancel", "Cancek")));
-		save.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_VIEW));
+		SubmitButton cancel = (SubmitButton) getButton(new SubmitButton(localize("cancel", "Cancel")));
+		cancel.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_VIEW));
 		
 		form.add(cancel);
 		form.add(Text.getNonBrakingSpace());
