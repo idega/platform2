@@ -457,30 +457,29 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 				}
 			}
 			else if (status == getBusiness().getStatusParentsAccept() || instantContract) {
-				GenericButton createContract = null;
+				SubmitButton createContract = null;
 				GenericButton disabledCreateContract = null;
 								
 				if (getBusiness().getUserBusiness().hasBankLogin(application.getOwner())) {
-					createContract = getButton(new GenericButton("create_contract", localize("child_care.create_contract_for_digital_signing","Create contract for BankID")));
-					/*createContract.setValueOnClick(PARAMETER_CREATE_CONTRACT, ACTION_CREATE_BANKID_CONTRACT);
-					if (_useSubmitConfirm) {
+					createContract = (SubmitButton) getButton(new SubmitButton("create_contract", localize("child_care.create_contract_for_digital_signing","Create contract for BankID")));
+					createContract.setValueOnClick(PARAMETER_CREATE_CONTRACT, ACTION_CREATE_BANKID_CONTRACT);
+					/*if (_useSubmitConfirm) {
 						createContract.setSingleSubmitConfirm(localize("child_care.confirm_create_contract", "OK to proceed with creating contract?"));
-					}
-					form.setToDisableOnSubmit(createContract, true);*/
+					}*/
 					createContract.setWindowToOpen(ChildCareWindow.class);
 					createContract.addParameterToWindow(ChildCareAdminWindow.PARAMETER_APPLICATION_ID, String.valueOf(getSession().getApplicationID()));
 					createContract.addParameterToWindow(ChildCareAdminWindow.PARAMETER_USER_ID, String.valueOf(getSession().getChildID()));
 					createContract.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
 					createContract.addParameterToWindow(ChildCareAdminWindow.PARAMETER_ACTION, ChildCareAdminWindow.ACTION_CREATE_CONTRACT_FOR_BANKID);
 							
-					disabledCreateContract = (GenericButton) getStyledInterface(new GenericButton("create_contract", localize("child_care.create_contract_for_digital_signing","Create contract for BankID")));
+					disabledCreateContract = getButton(new GenericButton("create_contract", localize("child_care.create_contract_for_digital_signing","Create contract for BankID")));
 					disabledCreateContract.setDisabled(true);
 					
 				}
 				else {
-					createContract = getButton(new GenericButton("create_contract", localize("child_care.create_contract","Create contract")));
-					/*createContract.setValueOnClick(PARAMETER_CREATE_CONTRACT, ACTION_CREATE_REGULAR_CONTRACT);
-					if (_useSubmitConfirm) {
+					createContract = (SubmitButton) getButton(new SubmitButton("create_contract", localize("child_care.create_contract","Create contract")));
+					createContract.setValueOnClick(PARAMETER_CREATE_CONTRACT, ACTION_CREATE_REGULAR_CONTRACT);
+					/*if (_useSubmitConfirm) {
 						createContract.setSingleSubmitConfirm(localize("child_care.confirm_create_contract", "OK to proceed with creating contract?"));
 					}
 					form.setToDisableOnSubmit(createContract, true);*/
@@ -529,16 +528,19 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 							else {
 								table.add(changeDate, 3, 1);
 								table.add(createContract, 5, 1);
+								form.setToDisableOnSubmit(createContract, true);
 							}
 						}
 						else {
 							table.add(changeDate, 3, 1);
 							table.add(createContract, 5, 1);
+							form.setToDisableOnSubmit(createContract, true);
 						}
 					}
 					else {
 						table.add(changeDate, 3, 1);
 						table.add(createContract, 5, 1);
+						form.setToDisableOnSubmit(createContract, true);
 					}
 				}
 			}
