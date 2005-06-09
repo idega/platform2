@@ -477,9 +477,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 							
 							Group division = getMemberUserBusiness().getDivisionForClub(club);
 							String metadata = division.getMetaData(IWMemberConstants.META_DATA_DIVISION_LEAGUE_CONNECTION);
-							if (metadata == null
-									|| club.getMetaData(IWMemberConstants.META_DATA_CLUB_LEAGUE_CONNECTION).equals(
-											metadata)) {
+							if (metadata == null || club.getMetaData(IWMemberConstants.META_DATA_CLUB_LEAGUE_CONNECTION).equals(metadata)) {
 								addLeagueRoleAccessToDivision(role, division);
 							}
 							else {
@@ -501,10 +499,12 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 							Group division = (Group) divs.next();
 							try{
 								Group theClub = getMemberUserBusiness().getClubForGroup(division);
-								
-								addLeagueRoleAccessToDivision(role, division);
+								addLeagueRoleAccessToClub(role, theClub);
 								// ADD SHORTCUT TO CLUB
 								createAliasToClubUnderClubCollectionGroup(clubCollectionGroup,theClub);
+								
+								addLeagueRoleAccessToDivision(role, division);
+								
 							}
 							catch(NoClubFoundException clubEx){
 								//clubEx.printStackTrace();
@@ -560,13 +560,17 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 		Group clubColl = null;
 		try {
 			clubColl = getMemberUserBusiness().getClubCollectionGroupForLeague(league);
+			if(!clubColl.getName().equalsIgnoreCase("Aðildarfélög")){
+				clubColl.setName("Aðildarfélög");
+				clubColl.store();	
+			}
 			return clubColl;
 		}
 		catch (NoLeagueClubCollectionGroup e) {
 			log("No club collection group for league: "+league.getName()+", creating one...");
 	
 			//TODO change sloppy none localized group name
-			clubColl = getGroupBusiness().createGroupUnder("AÃ°ildarfÃ©lÃ¶g",null,IWMemberConstants.GROUP_TYPE_LEAGUE_CLUB_COLLECTION,league);
+			clubColl = getGroupBusiness().createGroupUnder("Aðildarfélög",null,IWMemberConstants.GROUP_TYPE_LEAGUE_CLUB_COLLECTION,league);
 			Collection leagueOwners = getGroupBusiness().getOwnerUsersForGroup(league);
 			for (Iterator owners = leagueOwners.iterator(); owners.hasNext();) {
 				User owner = (User) owners.next();
