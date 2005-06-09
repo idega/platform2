@@ -81,7 +81,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 		// clubs are changing to multi division clubs
 		if (type.equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION)) {
 			Group division = group;
-			String leagueId = group.getMetaData(IWMemberConstants.META_DATA_DIVISION_LEAGUE_CONNECTION);
+			String leagueId = division.getMetaData(IWMemberConstants.META_DATA_DIVISION_LEAGUE_CONNECTION);
 			if (leagueId != null && !"".equals(leagueId)) {
 				try {
 					Group league = getGroupBusiness().getGroupByGroupID(Integer.parseInt(leagueId));
