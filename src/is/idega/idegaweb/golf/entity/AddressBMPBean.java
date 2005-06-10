@@ -26,7 +26,9 @@ public class AddressBMPBean extends GenericEntity implements Address{
                       addManyToManyRelationShip(is.idega.idegaweb.golf.entity.Member.class,"member_address");
                       addManyToManyRelationShip(is.idega.idegaweb.golf.entity.Union.class,"union_address");
 
-
+                      addIndex("IDX_ADDRESS_1", new String[]{"address_id", "street"});
+                      addIndex("IDX_ADDRESS_2", "zipcode_id");
+                      addIndex("IDX_ADDRESS_3", new String[]{"address_id","zipcode_id"});
         }
 
         public void setDefaultValues(){
