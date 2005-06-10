@@ -343,7 +343,7 @@ public class HandicapStatistics extends GolfWindow {
 
 				int tee_nr = tee_id[hole_nr - 1].getID();
 
-				Statistic[] statID = (Statistic[]) ((Statistic) IDOLookup.instanciateEntity(Statistic.class)).findAllByColumn("scorecard_id", scorecard_id, "tee_id", String.valueOf(tee_nr));
+				Statistic[] statID = (Statistic[]) ((Statistic) IDOLookup.instanciateEntity(Statistic.class)).findAllByColumnEquals("scorecard_id", scorecard_id, "tee_id", String.valueOf(tee_nr));
 
 				if (statID.length > 0) {
 

@@ -364,7 +364,7 @@ public class MemberDelete extends GolfWindow {
               M.getID());
           for (int i = 0; i < scores.length; i++) {
             Stroke stroke = (Stroke) IDOLookup.instanciateEntity(Stroke.class);
-            Stroke[] strokes = (Stroke[]) stroke.findAllByColumn(
+            Stroke[] strokes = (Stroke[]) stroke.findAllByColumnEquals(
                 "scorecard_id", scores[i].getID());
             for (int n = 0; n < strokes.length; n++) {
               strokes[n].delete();

@@ -460,7 +460,7 @@ public class MemberBMPBean extends GenericEntity implements Member {
         Scorecard[] scores = (Scorecard[])((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAllByColumnEquals("member_id",this.getID());
         for (int i = 0; i < scores.length;i++){
           Stroke	stroke = (Stroke) IDOLookup.instanciateEntity(Stroke.class);
-          Stroke[] strokes = (Stroke[]) stroke.findAllByColumn("scorecard_id",scores[i].getID());
+          Stroke[] strokes = (Stroke[]) stroke.findAllByColumnEquals("scorecard_id",scores[i].getID());
           for (int n = 0; n < strokes.length;n++){
             strokes[n].delete();
           }
