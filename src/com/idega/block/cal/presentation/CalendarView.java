@@ -459,7 +459,7 @@ public class CalendarView extends Block{
 
 		int weekdays = 8;
 		int daycount = cal.getLengthOfMonth(stamp.getMonth(),stamp.getYear());
-		int firstWeekDayOfMonth = cal.getDayOfWeek(stamp.getYear(),stamp.getMonth(),1);
+		int firstWeekDayOfMonth = cal.getDayOfWeek(stamp.getYear(),stamp.getMonth(),2);
 //		int dayOfMonth = cal.getDay();
 		int row = 1;
 		int column = firstWeekDayOfMonth;
