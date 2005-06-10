@@ -56,8 +56,8 @@ import com.idega.util.IWTimestamp;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2005/06/09 09:28:10 $ by $Author: sigtryggur $
- * @version $Revision: 1.143 $
+ *         Last modified: $Date: 2005/06/10 16:38:43 $ by $Author: palli $
+ * @version $Revision: 1.144 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -1088,7 +1088,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
             Table tMember = new Table(this,"A");
             Table tClass = new Table(SchoolClass.class,"B");
             Table tType = new Table(SchoolType.class,"C");
-            Table tUser = new Table(com.idega.core.user.data.User.class,"D");
+            Table tUser = new Table(User.class,"D");
             SelectQuery query = new SelectQuery(tMember);
          try {
              
