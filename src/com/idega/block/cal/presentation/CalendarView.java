@@ -453,6 +453,7 @@ public class CalendarView extends Block{
 	private Table monthView(IWContext iwc, IWTimestamp stamp) {	
 		now = IWTimestamp.RightNow();
 		cal = new IWCalendar();
+		cal.setLocale(iwc.getCurrentLocale());
 		Text nameOfDay = new Text();
 		Text t = new Text();
 
@@ -484,11 +485,11 @@ public class CalendarView extends Block{
 		backTable.add(headTable,1,1);
 */		
 		
-		int weekday = 0;
+		int weekday = 1;
 		for(int i=1; i<weekdays; i++) {
 			weekday = i % 7;
-			if (weekday == -1)
-				weekday = 6;
+			if (weekday == 0)
+				weekday = 7;
 			nameOfDay = new Text(cal.getDayName(weekday, iwc.getCurrentLocale(), IWCalendar.SHORT).toString().toLowerCase());
 			nameOfDay.setBold();
 			Table nameOfDayTable = new Table();
