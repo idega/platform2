@@ -26,6 +26,7 @@ public class MemberBMPBean extends GenericEntity implements Member {
 
   public boolean debug = true;
   private final static String COLUMNNAME_IC_USER_ID = "IC_USER_ID";
+  private final static String COLUMNNAME_UNIQUE_ID = "UNIQUE_ID";
 
   public void initializeAttributes(){
     //super.initializeAttributes();
@@ -52,6 +53,10 @@ public class MemberBMPBean extends GenericEntity implements Member {
     addManyToManyRelationShip(is.idega.idegaweb.golf.entity.Union.class,"union_member");
 
     addIndex("IDX_MEMBER_1", getSocialSecurityNumberColumnName());
+    addIndex("IDX_MEMBER_2", new String[]{getPrimaryKey().toString(), getFirstName()});
+    addIndex("IDX_MEMBER_3", new String[]{getFirstName(), getMiddleName(), getLastName()});
+    addIndex("IDX_MEMBER_4", COLUMNNAME_IC_USER_ID);
+    addIndex("IDX_MEMBER_5", COLUMNNAME_UNIQUE_ID);
   }
 
   public String getEntityName(){
