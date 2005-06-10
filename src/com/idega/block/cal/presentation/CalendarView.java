@@ -484,11 +484,11 @@ public class CalendarView extends Block{
 		backTable.add(headTable,1,1);
 */		
 		
-		int weekday = 1;
+		int weekday = 0;
 		for(int i=1; i<weekdays; i++) {
 			weekday = i % 7;
-			if (weekday == 0)
-				weekday = 7;
+			if (weekday == -1)
+				weekday = 6;
 			nameOfDay = new Text(cal.getDayName(weekday, iwc.getCurrentLocale(), IWCalendar.SHORT).toString().toLowerCase());
 			nameOfDay.setBold();
 			Table nameOfDayTable = new Table();
