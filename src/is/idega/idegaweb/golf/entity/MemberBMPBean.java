@@ -274,7 +274,7 @@ public class MemberBMPBean extends GenericEntity implements Member {
 
   public void setMainUnion(int iUnionId) throws SQLException {
 
-    UnionMemberInfo[] unies = (UnionMemberInfo[]) ((UnionMemberInfo) IDOLookup.instanciateEntity(UnionMemberInfo.class)).findAllByColumn("member_id",this.getID());
+    UnionMemberInfo[] unies = (UnionMemberInfo[]) ((UnionMemberInfo) IDOLookup.instanciateEntity(UnionMemberInfo.class)).findAllByColumnEquals("member_id",this.getID());
 
     for (int i = 0; i < unies.length; i++) {
       if( unies[i].getID()!= iUnionId )
@@ -457,7 +457,7 @@ public class MemberBMPBean extends GenericEntity implements Member {
       catch(SQLException ex){   if(debug) ex.printStackTrace(); }
 */
       try{
-        Scorecard[] scores = (Scorecard[])((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAllByColumn("member_id",this.getID());
+        Scorecard[] scores = (Scorecard[])((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAllByColumnEquals("member_id",this.getID());
         for (int i = 0; i < scores.length;i++){
           Stroke	stroke = (Stroke) IDOLookup.instanciateEntity(Stroke.class);
           Stroke[] strokes = (Stroke[]) stroke.findAllByColumn("scorecard_id",scores[i].getID());

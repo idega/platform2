@@ -434,7 +434,7 @@ public class TournamentBMPBean extends GenericEntity implements Tournament{
             catch (Exception e) {e.printStackTrace(System.err);}
 
              try {
-                StartingtimeFieldConfig[] sFieldConfig = (StartingtimeFieldConfig[]) ((StartingtimeFieldConfig) IDOLookup.instanciateEntity(StartingtimeFieldConfig.class)).findAllByColumn("tournament_id",this.getID()+"") ;
+                StartingtimeFieldConfig[] sFieldConfig = (StartingtimeFieldConfig[]) ((StartingtimeFieldConfig) IDOLookup.instanciateEntity(StartingtimeFieldConfig.class)).findAllByColumnEquals("tournament_id",this.getID()+"") ;
                 for (int i = 0; i < sFieldConfig.length; i++) {
                     sFieldConfig[i].delete();
                 }
