@@ -7,6 +7,7 @@ import javax.ejb.FinderException;
 
 import com.idega.block.process.data.AbstractCaseBMPBean;
 import com.idega.block.process.data.Case;
+import com.idega.block.school.data.School;
 import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOException;
 //import com.idega.data.IDOQuery;
@@ -607,6 +608,48 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 		Collection tmp = this.idoFindPKsByQuery(sql);
 		return tmp;
 		
+	}
+	
+	//TODO Handle this in more general way...
+	public Collection ejbFindLettersByAdultEducation(School school, String ssn, String msgId, IWTimestamp from, IWTimestamp to) throws FinderException {
+		com.idega.data.IDOQuery sql = idoQuery();
+		String sqlFrom = this.getEntityName() + " m, proc_case p, comm_vux_choice c, vux_course co";
+		if (ssn != null && ! ssn.equals("")){
+			sqlFrom += ", ic_user u";
+		}
+		
+		sql.appendSelectAllFrom(sqlFrom);
+		sql.appendWhereEquals("m.msg_letter_message_id","p.proc_case_id");
+		sql.appendAndEquals("p.parent_case_id", "c.comm_vux_choice_id");
+		sql.appendAndEquals("c.vux_course_id", "co.vux_course_id");
+		sql.appendAndEquals("co.sch_school_id", school);
+		if (ssn != null && ! ssn.equals("")){
+			sql.appendAndEquals("p.user_id", "u.ic_user_id");
+			sql.appendAnd().append("u.personal_id").appendLike().appendWithinSingleQuotes( ssn);
+		}
+		if (msgId != null && ! msgId.equals("")){
+			sql.appendAndEqualsQuoted("m.msg_letter_message_id", msgId);
+		}
+		
+		to.setHour(23);
+		to.setMinute(59);
+		to.setSecond(59);
+		from.setHour(0);
+		from.setMinute(0);
+		from.setSecond(0);
+		sql.appendAnd();
+		sql.append("p.created");
+		sql.append(" >= ");
+		sql.append(from.getTimestamp());
+		sql.append("");
+		sql.appendAnd();
+		sql.append("p.created");
+		sql.append(" <= ");
+		sql.append(to.getTimestamp());
+		sql.append(" ");
+		sql.appendOrderBy("p.created");
+		
+		return idoFindPKsByQuery(sql);
 	}
 	
 	public Collection ejbFindAllLettersBySchool(int providerID, String ssn, String msgId, IWTimestamp from, IWTimestamp to) throws FinderException {
