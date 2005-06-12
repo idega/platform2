@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceGranter.java,v 1.16 2005/06/07 13:55:38 laddi Exp $
+ * $Id: ChoiceGranter.java,v 1.17 2005/06/12 13:46:45 laddi Exp $
  * Created on May 24, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -55,10 +55,10 @@ import com.idega.util.PersonalIDFormatter;
 import com.idega.util.text.Name;
 
 /**
- * Last modified: $Date: 2005/06/07 13:55:38 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/12 13:46:45 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class ChoiceGranter extends AdultEducationBlock implements IWPageEventListener {
 
@@ -773,7 +773,7 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 	}
 
 	private void remove(IWContext iwc) throws RemoteException {
-		getBusiness().removeChoices(iwc.getParameter(PARAMETER_STUDY_PATH), iwc.getParameter(PARAMETER_SCHOOL_SEASON), iwc.getCurrentUser());
+		getBusiness().removeChoices(iwc.getParameter(PARAMETER_STUDY_PATH), iwc.getParameter(PARAMETER_SCHOOL_SEASON), iwc.getParameter(PARAMETER_USER), iwc.getCurrentUser());
 	}
 	
 	private void grant(IWContext iwc) throws RemoteException {

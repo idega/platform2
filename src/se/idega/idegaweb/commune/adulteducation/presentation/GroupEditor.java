@@ -1,5 +1,5 @@
 /*
- * $Id: GroupEditor.java,v 1.9 2005/06/09 07:18:39 laddi Exp $
+ * $Id: GroupEditor.java,v 1.10 2005/06/12 13:46:45 laddi Exp $
  * Created on Jun 2, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -13,10 +13,12 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 import javax.ejb.CreateException;
+import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.adulteducation.business.DuplicateValueException;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourse;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolSeason;
+import com.idega.block.school.data.SchoolStudyPathGroup;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.presentation.SchoolUserChooser;
 import com.idega.block.school.presentation.SchoolUserWindow;
@@ -38,10 +40,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/06/09 07:18:39 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/12 13:46:45 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class GroupEditor extends AdultEducationBlock implements IWPageEventListener {
 
@@ -52,8 +54,6 @@ public class GroupEditor extends AdultEducationBlock implements IWPageEventListe
 	private static final String PARAMETER_TYPE = "ge_type";
 	private static final String PARAMETER_CODE = "ge_code";
 	private static final String PARAMETER_TEACHER = "ge_teacher";
-	private static final String PARAMETER_OLD_CODE = "ge_old_code";
-	private static final String PARAMETER_OLD_SEASON = "ge_old_season";
 	private static final String PARAMETER_UPDATE = "ge_update";
 
 	private static final int ACTION_VIEW = 1;
@@ -120,11 +120,25 @@ public class GroupEditor extends AdultEducationBlock implements IWPageEventListe
 		Form form = new Form();
 		form.setEventListener(GroupEditor.class);
 		boolean update = (action == ACTION_EDIT);
+		
+		SchoolSeason season = null;
+		SchoolStudyPathGroup group = null;
+		String code = null;
 		if (update) {
 			form.addParameter(PARAMETER_ACTION, String.valueOf(ACTION_EDIT));
-			form.addParameter(PARAMETER_OLD_CODE, getSession().getSchoolClass().getCode());
-			form.addParameter(PARAMETER_OLD_SEASON, String.valueOf(getSession().getSchoolClass().getSchoolSeasonId()));
 			form.addParameter(PARAMETER_UPDATE, Boolean.TRUE.toString());
+			form.addParameter(PARAMETER_SCHOOL_CLASS, getSession().getSchoolClass().getPrimaryKey().toString());
+			
+			season = getSession().getSchoolClass().getSchoolSeason();
+			code = getSession().getSchoolClass().getCode();
+			
+			try {
+				AdultEducationCourse course = getBusiness().getCourse(season.getPrimaryKey(), code);
+				group = course.getStudyPath().getStudyPathGroup();
+			}
+			catch (FinderException fe) {
+				fe.printStackTrace();
+			}
 		}
 		else {
 			form.addParameter(PARAMETER_ACTION, String.valueOf(ACTION_CREATE));
@@ -166,6 +180,9 @@ public class GroupEditor extends AdultEducationBlock implements IWPageEventListe
 		if (getSession().getSchoolSeason() != null) {
 			seasons.setSelectedElement(getSession().getSchoolSeason().getPrimaryKey().toString());
 		}
+		else if (update && season != null) {
+			seasons.setSelectedElement(season.getPrimaryKey().toString());
+		}
 		seasons.setToSubmit();
 		table.add(seasons, 2, row++);
 		
@@ -174,6 +191,9 @@ public class GroupEditor extends AdultEducationBlock implements IWPageEventListe
 		studyGroups.addMenuElementFirst("", localize("select_study_path_group", "Select group"));
 		if (getSession().getStudyPathGroup() != null) {
 			studyGroups.setSelectedElement(getSession().getStudyPathGroup().getPrimaryKey().toString());
+		}
+		else if (update && group != null) {
+			studyGroups.setSelectedElement(group.getPrimaryKey().toString());
 		}
 		studyGroups.setToSubmit();
 		table.add(studyGroups, 2, row++);
@@ -186,6 +206,17 @@ public class GroupEditor extends AdultEducationBlock implements IWPageEventListe
 			while (iter.hasNext()) {
 				AdultEducationCourse course = (AdultEducationCourse) iter.next();
 				courses.addMenuElement(course.getCode(), course.getCode());
+			}
+		}
+		else if (update && season != null && group != null){
+			Collection availableCourses = getBusiness().getCourses(season.getPrimaryKey(), getSession().getSchool().getPrimaryKey(), group.getPrimaryKey());
+			Iterator iter = availableCourses.iterator();
+			while (iter.hasNext()) {
+				AdultEducationCourse course = (AdultEducationCourse) iter.next();
+				courses.addMenuElement(course.getCode(), course.getCode());
+			}
+			if (code != null) {
+				courses.setSelectedElement(code);
 			}
 		}
 		courses.keepStatusOnAction(true);
@@ -341,14 +372,7 @@ public class GroupEditor extends AdultEducationBlock implements IWPageEventListe
 				teacher = getBusiness().getUserBusiness().getUser(new Integer(iwc.getParameter(PARAMETER_TEACHER)));
 			}
 
-			SchoolSeason oldSeason = null;
-			String oldCode = null;
-			if (update) {
-				oldSeason = getBusiness().getSchoolBusiness().getSchoolSeason(new Integer(iwc.getParameter(PARAMETER_OLD_SEASON)));
-				oldCode = iwc.getParameter(PARAMETER_OLD_CODE);
-			}
-			
-			getBusiness().storeGroup(name, getSession().getSchool(), getSession().getSchoolSeason(), oldSeason, type, code, oldCode, teacher, update);
+			getBusiness().storeGroup(update ? getSession().getSchoolClass() : null, name, getSession().getSchool(), getSession().getSchoolSeason(), type, code, teacher, update);
 		}
 		catch (CreateException ce) {
 			ce.printStackTrace();

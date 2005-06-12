@@ -1,5 +1,5 @@
 /*
- * $Id: StudentEditor.java,v 1.5 2005/06/09 07:14:26 laddi Exp $
+ * $Id: StudentEditor.java,v 1.6 2005/06/12 13:46:45 laddi Exp $
  * Created on Jun 2, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -38,19 +38,21 @@ import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextArea;
 import com.idega.user.business.NoEmailFoundException;
 import com.idega.user.business.NoPhoneFoundException;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
 import com.idega.util.URLUtil;
+import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/06/09 07:14:26 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/12 13:46:45 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class StudentEditor extends AdultEducationBlock implements IWPageEventListener {
 	
@@ -59,6 +61,7 @@ public class StudentEditor extends AdultEducationBlock implements IWPageEventLis
 	private static final String PARAMETER_COURSE = "se_course";
 	public static final String PARAMETER_STUDENT = "sp_student";
 	private static final String PARAMETER_SCHOOL_CLASS = "se_school_class";
+	private static final String PARAMETER_MESSAGE = "se_message";
 	
 	public static final int ACTION_SHOW_CHOICE = 1;
 	public static final int ACTION_SHOW_STUDENT = 2;
@@ -67,6 +70,8 @@ public class StudentEditor extends AdultEducationBlock implements IWPageEventLis
 	private static final int ACTION_STORE_COURSE = 5;
 	public static final int ACTION_CHANGE_GROUP = 6;
 	private static final int ACTION_STORE_GROUP = 7;
+	public static final int ACTION_SHOW_MESSAGE_SENDING = 8;
+	private static final int ACTION_SEND_MESSAGE = 9;
 	
 	private int iPageID;
 	
@@ -74,14 +79,47 @@ public class StudentEditor extends AdultEducationBlock implements IWPageEventLis
 	 * @see se.idega.idegaweb.commune.adulteducation.presentation.AdultEducationBlock#present(com.idega.presentation.IWContext)
 	 */
 	public void present(IWContext iwc) {
+		Form form = new Form();
+		form.maintainParameter(PARAMETER_PAGE);
+		form.setStyleAttribute("height:100%");
+
+		Table table = new Table(3, 5);
+		table.setRowColor(1, "#000000");
+		table.setRowColor(3, "#000000");
+		table.setRowColor(5, "#000000");
+		table.setColumnColor(1, "#000000");
+		table.setColumnColor(3, "#000000");
+		table.setColor(2, 2, "#CCCCCC");
+		table.setWidth(Table.HUNDRED_PERCENT);
+		table.setWidth(2, Table.HUNDRED_PERCENT);
+		table.setHeight(Table.HUNDRED_PERCENT);
+		table.setHeight(4, Table.HUNDRED_PERCENT);
+		table.setCellpadding(0);
+		table.setCellspacing(0);
+		form.add(table);
+
+		Table headerTable = new Table(1, 1);
+		headerTable.setCellpadding(6);
+		table.add(headerTable, 2, 2);
+
+		Table contentTable = new Table(1, 1);
+		contentTable.setCellpadding(10);
+		contentTable.setWidth(Table.HUNDRED_PERCENT);
+		contentTable.setHeight(Table.HUNDRED_PERCENT);
+		table.add(contentTable, 2, 4);
+
 		try {
 			switch (parseAction(iwc)) {
 				case ACTION_SHOW_CHOICE:
-					showOverview(iwc, true);
+					headerTable.add(getHeader(localize("show_choice", "Choice overview")), 1, 1);
+					contentTable.add(showOverview(iwc, true), 1, 1);
+					add(form);
 					break;
 
 				case ACTION_SHOW_STUDENT:
-					showOverview(iwc, false);
+					headerTable.add(getHeader(localize("show_student", "Student overview")), 1, 1);
+					contentTable.add(showOverview(iwc, false), 1, 1);
+					add(form);
 					break;
 
 				case ACTION_REJECT_STUDENT:
@@ -89,7 +127,11 @@ public class StudentEditor extends AdultEducationBlock implements IWPageEventLis
 					break;
 
 				case ACTION_CHANGE_COURSE:
+					form.addParameter(PARAMETER_ACTION, "");
+					headerTable.add(getHeader(localize("show_change_course", "Change course")), 1, 1);
+					contentTable.add(showChangeCourse(), 1, 1);
 					showChangeCourse();
+					add(form);
 					break;
 
 				case ACTION_STORE_COURSE:
@@ -97,11 +139,25 @@ public class StudentEditor extends AdultEducationBlock implements IWPageEventLis
 					break;
 
 				case ACTION_CHANGE_GROUP:
-					showChangeGroup();
+					form.addParameter(PARAMETER_ACTION, ACTION_CHANGE_GROUP);
+					headerTable.add(getHeader(localize("show_change_group", "Change group")), 1, 1);
+					contentTable.add(showChangeGroup(), 1, 1);
+					add(form);
 					break;
 
 				case ACTION_STORE_GROUP:
 					changeGroup(iwc);
+					break;
+
+				case ACTION_SHOW_MESSAGE_SENDING:
+					form.addParameter(PARAMETER_ACTION, ACTION_SEND_MESSAGE);
+					headerTable.add(getHeader(localize("show_message_sending", "Send placement message")), 1, 1);
+					contentTable.add(showMessageSending(), 1, 1);
+					add(form);
+					break;
+
+				case ACTION_SEND_MESSAGE:
+					sendMessage(iwc);
 					break;
 			}
 		}
@@ -110,16 +166,12 @@ public class StudentEditor extends AdultEducationBlock implements IWPageEventLis
 		}
 	}
 	
-	private void showOverview(IWContext iwc, boolean showButtons) throws RemoteException {
-		Form form = new Form();
-		form.addParameter(PARAMETER_ACTION, "");
-		form.maintainParameter(PARAMETER_PAGE);
-		
+	private Table showOverview(IWContext iwc, boolean showButtons) throws RemoteException {
 		Table table = new Table();
 		table.setCellpadding(5);
 		table.setColumns(2);
 		table.setWidth(Table.HUNDRED_PERCENT);
-		form.add(table);
+		table.setHeight(Table.HUNDRED_PERCENT);
 		int row = 1;
 		
 		AdultEducationChoice choice = getSession().getChoice();
@@ -228,6 +280,8 @@ public class StudentEditor extends AdultEducationBlock implements IWPageEventLis
 		SubmitButton changeCourse = (SubmitButton) getButton(new SubmitButton(localize("change_course", "Change course")));
 		changeCourse.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_CHANGE_COURSE));
 		
+		table.setHeight(row, Table.HUNDRED_PERCENT);
+		table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
 		table.mergeCells(1, row, 2, row);
 		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		table.add(close, 1, row);
@@ -238,19 +292,15 @@ public class StudentEditor extends AdultEducationBlock implements IWPageEventLis
 			table.add(changeCourse, 1, row);
 		}
 		
-		add(form);
+		return table;
 	}
 	
-	private void showChangeCourse() throws RemoteException {
-		Form form = new Form();
-		form.addParameter(PARAMETER_ACTION, "");
-		form.maintainParameter(PARAMETER_PAGE);
-		
+	private Table showChangeCourse() throws RemoteException {
 		Table table = new Table();
 		table.setCellpadding(5);
 		table.setColumns(2);
 		table.setWidth(Table.HUNDRED_PERCENT);
-		form.add(table);
+		table.setHeight(Table.HUNDRED_PERCENT);
 		int row = 1;
 		
 		AdultEducationChoice choice = getSession().getChoice();
@@ -277,25 +327,23 @@ public class StudentEditor extends AdultEducationBlock implements IWPageEventLis
 		table.add(getSmallHeader(localize("new_course", "New course")), 1, row);
 		table.add(courses, 2, row++);
 		
+		table.setHeight(row, Table.HUNDRED_PERCENT);
+		table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
 		table.mergeCells(1, row, 2, row);
 		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		table.add(back, 1, row);
 		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(changeCourse, 1, row);
 		
-		add(form);
+		return table;
 	}
 	
-	private void showChangeGroup() throws RemoteException {
-		Form form = new Form();
-		form.addParameter(PARAMETER_ACTION, ACTION_CHANGE_GROUP);
-		form.maintainParameter(PARAMETER_PAGE);
-		
+	private Table showChangeGroup() throws RemoteException {
 		Table table = new Table();
 		table.setCellpadding(5);
 		table.setColumns(2);
 		table.setWidth(Table.HUNDRED_PERCENT);
-		form.add(table);
+		table.setHeight(Table.HUNDRED_PERCENT);
 		int row = 1;
 		
 		AdultEducationChoice choice = getSession().getChoice();
@@ -347,15 +395,53 @@ public class StudentEditor extends AdultEducationBlock implements IWPageEventLis
 		table.add(getSmallHeader(localize("group", "Group")), 1, row);
 		table.add(groups, 2, row++);
 		
+		table.setHeight(row, Table.HUNDRED_PERCENT);
+		table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
 		table.mergeCells(1, row, 2, row);
 		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		table.add(close, 1, row);
 		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(changeGroup, 1, row);
 		
-		add(form);
+		return table;
 	}
 	
+	private Table showMessageSending() {
+		Table table = new Table();
+		table.setCellpadding(5);
+		table.setColumns(1);
+		table.setWidth(Table.HUNDRED_PERCENT);
+		table.setHeight(Table.HUNDRED_PERCENT);
+		int row = 1;
+		
+		String body = localize("choice_placed_body", "You have been placed in course {0} with course code {1} at {2}. The course start date is {3}.");
+
+		CloseButton close = (CloseButton) getButton(new CloseButton(localize("close", "Close")));
+		SubmitButton sendMessage = (SubmitButton) getButton(new SubmitButton(localize("send_message", "Send message")));
+		sendMessage.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_SEND_MESSAGE));
+		
+		table.add(getHeader(TextSoap.formatText(localize("message_sending_info", "Enter a message that you want to send to the students.  The {x}Êhave different values attached to them that will be filled automatically.\r\n\r\nThey are:\r\n{0} = Course\r\n{1} = Course code\r\n{2} = School\r\n{3} = Start date."))));
+		
+		TextArea message = (TextArea) getStyledInterface(new TextArea(PARAMETER_MESSAGE));
+		message.setWidth(Table.HUNDRED_PERCENT);
+		message.setRows(6);
+		message.setContent(body);
+		
+		table.add(getSmallHeader(localize("message", "Message")), 1, row);
+		table.add(new Break(), 1, row);
+		table.add(message, 1, row++);
+		
+		table.setHeight(row, Table.HUNDRED_PERCENT);
+		table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
+		table.mergeCells(1, row, 2, row);
+		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
+		table.add(close, 1, row);
+		table.add(Text.getNonBrakingSpace(), 1, row);
+		table.add(sendMessage, 1, row);
+		
+		return table;
+	}
+
 	private void rejectStudent(IWContext iwc) throws RemoteException {
 		Object[] choices = { getSession().getChoice().getPrimaryKey().toString() };
 		getBusiness().rejectChoices(choices, iwc.getCurrentUser());
@@ -372,6 +458,11 @@ public class StudentEditor extends AdultEducationBlock implements IWPageEventLis
 			getBusiness().changeCourse(getSession().getChoice(), iwc.getParameter(PARAMETER_COURSE));
 			getBusiness().changeGroup(getSession().getSchoolClassMember(), iwc.getParameter(PARAMETER_SCHOOL_CLASS));
 		}
+		close(iwc, StudentPlacer.ACTION_VIEW_GROUP);
+	}
+	
+	private void sendMessage(IWContext iwc) throws RemoteException {
+		getBusiness().sendPlacementMessage(getSession().getSchoolClass(), getSession().getCourse(), iwc.getParameter(PARAMETER_MESSAGE));
 		close(iwc, StudentPlacer.ACTION_VIEW_GROUP);
 	}
 	

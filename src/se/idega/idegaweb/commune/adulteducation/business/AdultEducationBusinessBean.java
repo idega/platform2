@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.26 2005/06/07 12:49:03 laddi Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.27 2005/06/12 13:46:45 laddi Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -75,10 +75,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/06/07 12:49:03 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/12 13:46:45 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.26 $
+ * @version $Revision: 1.27 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements AdultEducationBusiness {
 
@@ -313,33 +313,16 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		}
 	}
 	
-	public void storeGroup(String name, School school, SchoolSeason season, SchoolSeason oldSeason, SchoolType type, String code, String oldCode, User teacher, boolean update) throws CreateException, DuplicateValueException {
+	public void storeGroup(SchoolClass group, String name, School school, SchoolSeason season, SchoolType type, String code, User teacher, boolean update) throws CreateException, DuplicateValueException {
 		try {
-			SchoolClass group = null;
-			try {
-				group = getGroup(school, update ? oldSeason: season, update ? oldCode : code);
-				if (!update) {
-					throw new DuplicateValueException("Season=" + season.toString() + "/Code=" + code);
-				}
-				else {
-					if (!season.equals(oldSeason) || !code.equals(oldCode)) {
-						try {
-							getGroup(school, season, code);
-							throw new DuplicateValueException("Season=" + season.toString() + "/Code=" + code);
-						}
-						catch (FinderException fe) {
-							//Nothing found so we continue...
-						}
-					}
-				}
-			}
-			catch (FinderException fe) {
+			if (group == null) {
 				group = getSchoolBusiness().getSchoolClassHome().create();
 			}
 			group.setSchool(school);
 			group.setSchoolSeason(season);
 			group.setSchoolClassName(name);
 			group.setSchoolType(type);
+			group.setCode(code);
 			group.setValid(true);
 			group.store();
 			
@@ -1009,10 +992,9 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		}
 	}
 	
-	public void sendPlacementMessage(SchoolClass group, AdultEducationCourse course) {
+	public void sendPlacementMessage(SchoolClass group, AdultEducationCourse course, String message) {
 		try {
 			String subject = getLocalizedString("choice_placed_subject", "VUX - Placement in course");
-			String body = getLocalizedString("choice_placed_body", "You have been placed in course {0} with course code {1} at {2}. The course start date is {3}.");
 			
 			Collection students = getSchoolBusiness().findStudentsInClass(((Integer) group.getPrimaryKey()).intValue());
 			Iterator iter = students.iterator();
@@ -1024,7 +1006,7 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 						choice.setPlacementMessageSent(true);
 						choice.store();
 						
-						sendMessage(choice, subject, body);
+						sendMessage(choice, subject, message);
 					}
 				}
 				catch (FinderException fe) {

@@ -1,6 +1,6 @@
 /*
- * $Id: AdultEducationBusiness.java,v 1.20 2005/06/07 12:49:03 laddi Exp $
- * Created on Jun 7, 2005
+ * $Id: AdultEducationBusiness.java,v 1.21 2005/06/12 13:46:45 laddi Exp $
+ * Created on Jun 12, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -38,10 +38,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/06/07 12:49:03 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/12 13:46:45 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  */
 public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 
@@ -109,8 +109,8 @@ public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#storeGroup
 	 */
-	public void storeGroup(String name, School school, SchoolSeason season, SchoolSeason oldSeason, SchoolType type,
-			String code, String oldCode, User teacher, boolean update) throws CreateException, DuplicateValueException,
+	public void storeGroup(SchoolClass group, String name, School school, SchoolSeason season, SchoolType type,
+			String code, User teacher, boolean update) throws CreateException, DuplicateValueException,
 			java.rmi.RemoteException;
 
 	/**
@@ -307,7 +307,8 @@ public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#sendPlacementMessage
 	 */
-	public void sendPlacementMessage(SchoolClass group, AdultEducationCourse course) throws java.rmi.RemoteException;
+	public void sendPlacementMessage(SchoolClass group, AdultEducationCourse course, String message)
+			throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#changeCourse

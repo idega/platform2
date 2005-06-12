@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationChoiceBMPBean.java,v 1.11 2005/06/07 12:49:03 laddi Exp $
+ * $Id: AdultEducationChoiceBMPBean.java,v 1.12 2005/06/12 13:46:45 laddi Exp $
  * Created on May 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -502,7 +502,9 @@ public class AdultEducationChoiceBMPBean extends AbstractCaseBMPBean  implements
 		catch (IDORelationshipException ire) {
 			throw new FinderException(ire.getMessage());
 		}
-		query.addCriteria(new MatchCriteria(table, COURSE, MatchCriteria.EQUALS, aeCourse));
+		if (aeCourse != null) {
+			query.addCriteria(new MatchCriteria(table, COURSE, MatchCriteria.EQUALS, aeCourse));
+		}
 		query.addCriteria(new MatchCriteria(course, "sch_school_season_id", MatchCriteria.EQUALS, season));
 		query.addCriteria(new InCriteria(cases, "case_status", statuses));
 		query.addOrder(table, PRIORITY, true);
