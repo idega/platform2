@@ -1,6 +1,6 @@
 /*
- * $Id: SchoolStudyPathHomeImpl.java,v 1.18 2005/05/11 07:14:19 laddi Exp $
- * Created on 28.4.2005
+ * $Id: SchoolStudyPathHomeImpl.java,v 1.19 2005/06/12 13:46:09 laddi Exp $
+ * Created on Jun 12, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -16,10 +16,10 @@ import com.idega.data.IDORelationshipException;
 
 
 /**
- * Last modified: $Date: 2005/05/11 07:14:19 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/12 13:46:09 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
 public class SchoolStudyPathHomeImpl extends IDOFactory implements SchoolStudyPathHome {
 

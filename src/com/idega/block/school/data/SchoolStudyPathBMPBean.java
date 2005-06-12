@@ -120,6 +120,10 @@ public void setPoints(int points) {
 	setColumn(COLUMN_POINTS, points);
 }
 
+public SchoolStudyPathGroup getStudyPathGroup() {
+	return (SchoolStudyPathGroup) getColumnValue(COLUMN_STUDY_PATH_GROUP_ID);
+}
+
 public int getStudyPathGroupID() {
 	return getIntColumnValue(COLUMN_STUDY_PATH_GROUP_ID);
 }

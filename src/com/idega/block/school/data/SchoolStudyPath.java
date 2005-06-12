@@ -1,6 +1,6 @@
 /*
- * $Id: SchoolStudyPath.java,v 1.13 2005/05/11 07:14:19 laddi Exp $
- * Created on 28.4.2005
+ * $Id: SchoolStudyPath.java,v 1.14 2005/06/12 13:46:09 laddi Exp $
+ * Created on Jun 12, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -17,10 +17,10 @@ import com.idega.data.IDORemoveRelationshipException;
 
 
 /**
- * Last modified: $Date: 2005/05/11 07:14:19 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/12 13:46:09 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public interface SchoolStudyPath extends IDOEntity {
 
@@ -103,6 +103,11 @@ public interface SchoolStudyPath extends IDOEntity {
 	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#setPoints
 	 */
 	public void setPoints(int points);
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#getStudyPathGroup
+	 */
+	public SchoolStudyPathGroup getStudyPathGroup();
 
 	/**
 	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#getStudyPathGroupID
