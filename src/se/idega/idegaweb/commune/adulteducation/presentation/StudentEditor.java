@@ -1,5 +1,5 @@
 /*
- * $Id: StudentEditor.java,v 1.6 2005/06/12 13:46:45 laddi Exp $
+ * $Id: StudentEditor.java,v 1.7 2005/06/12 14:20:37 laddi Exp $
  * Created on Jun 2, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -49,10 +49,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/06/12 13:46:45 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/12 14:20:37 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class StudentEditor extends AdultEducationBlock implements IWPageEventListener {
 	
@@ -111,6 +111,7 @@ public class StudentEditor extends AdultEducationBlock implements IWPageEventLis
 		try {
 			switch (parseAction(iwc)) {
 				case ACTION_SHOW_CHOICE:
+					form.addParameter(PARAMETER_ACTION, "");
 					headerTable.add(getHeader(localize("show_choice", "Choice overview")), 1, 1);
 					contentTable.add(showOverview(iwc, true), 1, 1);
 					add(form);
@@ -226,7 +227,7 @@ public class StudentEditor extends AdultEducationBlock implements IWPageEventLis
 		row++;
 		
 		table.add(getSmallHeader(localize("email", "E-mail")), 1, row);
-		if (mail != null) {
+		if (mail != null && mail.getEmailAddress() != null) {
 			Link mailLink = getSmallLink(mail.getEmailAddress());
 			mailLink.setURL("mailto:" + mail.getEmailAddress());
 			table.add(mailLink, 2, row);
@@ -264,6 +265,7 @@ public class StudentEditor extends AdultEducationBlock implements IWPageEventLis
 		}
 		row++;
 
+		table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
 		table.add(getSmallHeader(localize("message", "Message")), 1, row);
 		if (choice.getComment() != null) {
 			table.add(getSmallText(choice.getComment()), 2, row);
@@ -420,7 +422,7 @@ public class StudentEditor extends AdultEducationBlock implements IWPageEventLis
 		SubmitButton sendMessage = (SubmitButton) getButton(new SubmitButton(localize("send_message", "Send message")));
 		sendMessage.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_SEND_MESSAGE));
 		
-		table.add(getHeader(TextSoap.formatText(localize("message_sending_info", "Enter a message that you want to send to the students.  The {x}Êhave different values attached to them that will be filled automatically.\r\n\r\nThey are:\r\n{0} = Course\r\n{1} = Course code\r\n{2} = School\r\n{3} = Start date."))));
+		table.add(getHeader(TextSoap.formatText(localize("message_sending_info", "Enter a message that you want to send to the students.  The {x}Êhave different values attached to them that will be filled automatically.\r\n\r\nThey are:\r\n{0} = Course\r\n{1} = Course code\r\n{2} = School\r\n{3} = Start date."))), 1, row++);
 		
 		TextArea message = (TextArea) getStyledInterface(new TextArea(PARAMETER_MESSAGE));
 		message.setWidth(Table.HUNDRED_PERCENT);

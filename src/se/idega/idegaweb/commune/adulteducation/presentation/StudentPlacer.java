@@ -1,5 +1,5 @@
 /*
- * $Id: StudentPlacer.java,v 1.8 2005/06/12 13:46:45 laddi Exp $
+ * $Id: StudentPlacer.java,v 1.9 2005/06/12 14:20:37 laddi Exp $
  * Created on Jun 1, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -42,10 +42,10 @@ import com.idega.util.PersonalIDFormatter;
 
 
 /**
- * Last modified: $Date: 2005/06/12 13:46:45 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/12 14:20:37 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class StudentPlacer extends AdultEducationBlock implements IWPageEventListener {
 
@@ -114,7 +114,6 @@ public class StudentPlacer extends AdultEducationBlock implements IWPageEventLis
 		form.setEventListener(StudentPlacer.class);
 		form.addParameter(PARAMETER_ACTION, String.valueOf(ACTION_VIEW_CHOICES));
 		form.addParameter(PARAMETER_STUDY_PATH, "");
-		form.addParameter(PARAMETER_SCHOOL_SEASON, "");
 		form.addParameter(PARAMETER_STUDENT, "");
 		
 		form.add(getNavigationTable());
@@ -240,6 +239,7 @@ public class StudentPlacer extends AdultEducationBlock implements IWPageEventLis
 		GenericButton sendPlacementMessage = getButton(new GenericButton(localize("send_placement_message", "Send placement message")));
 		sendPlacementMessage.setWindowToOpen(StudentWindow.class);
 		sendPlacementMessage.addParameter(StudentEditor.PARAMETER_ACTION, StudentEditor.ACTION_SHOW_MESSAGE_SENDING);
+		sendPlacementMessage.addParameter(StudentEditor.PARAMETER_PAGE, getParentPageID());
 		
 		form.add(new Break(2));
 		form.add(back);
@@ -404,7 +404,6 @@ public class StudentPlacer extends AdultEducationBlock implements IWPageEventLis
 				delete.setDescription(localize("delete_choices", "Delete choices"));
 				delete.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_REMOVE_CHOICE));
 				delete.setValueOnClick(PARAMETER_STUDY_PATH, course.getStudyPathPK().toString());
-				delete.setValueOnClick(PARAMETER_SCHOOL_SEASON, course.getSchoolSeasonPK().toString());
 				delete.setValueOnClick(PARAMETER_STUDENT, user.getPrimaryKey().toString());
 				delete.setSubmitConfirm(localize("confirm_choice_delete", "Are you sure you want to remove the choice?"));
 				table.add(delete, column++, row++);
@@ -483,8 +482,9 @@ public class StudentPlacer extends AdultEducationBlock implements IWPageEventLis
 				delete.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_REMOVE_STUDENT));
 				delete.setSubmitConfirm(localize("confirm_student_remove", "Are you sure you want to remove the student from the group?"));
 				if (!choice.isPlacementMessageSent()) {
-					table.add(delete, column++, row);
+					table.add(delete, column, row);
 				}
+				column++;
 				
 				table.add(choice.isPlacementMessageSent() ? localize("yes", "Yes") : localize("no", "No"), column++, row++);
 			}
@@ -509,7 +509,7 @@ public class StudentPlacer extends AdultEducationBlock implements IWPageEventLis
 	}
 	
 	private void removeChoice(IWContext iwc) throws RemoteException {
-		getBusiness().removeChoices(iwc.getParameter(PARAMETER_STUDY_PATH), iwc.getParameter(PARAMETER_SCHOOL_SEASON), iwc.getParameter(PARAMETER_STUDENT), iwc.getCurrentUser());
+		getBusiness().removeChoices(iwc.getParameter(PARAMETER_STUDY_PATH), getSession().getSchoolSeason().getPrimaryKey(), iwc.getParameter(PARAMETER_STUDENT), iwc.getCurrentUser());
 	}
 	
 	private int parseAction(IWContext iwc) {
