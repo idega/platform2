@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.29 2005/06/13 10:00:35 laddi Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.30 2005/06/13 10:24:37 laddi Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -75,10 +75,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/06/13 10:00:35 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/13 10:24:37 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.29 $
+ * @version $Revision: 1.30 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements AdultEducationBusiness {
 
@@ -948,8 +948,9 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 					while (iter.hasNext()) {
 						Case element = (Case) iter.next();
 						if (element.getCaseCode().equals(code)) {
-							((AdultEducationChoice) element).setPriority(choice.getPriority());
-							changeCaseStatus(element, getCaseStatusGranted().getStatus(), performer);
+							AdultEducationChoice nextChoice = getAdultEducationChoiceInstance(element);
+							nextChoice.setPriority(choice.getPriority());
+							changeCaseStatus(nextChoice, getCaseStatusGranted().getStatus(), performer);
 							break;
 						}
 					}
