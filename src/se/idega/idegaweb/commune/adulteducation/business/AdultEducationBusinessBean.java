@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.27 2005/06/12 13:46:45 laddi Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.28 2005/06/13 07:06:51 laddi Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -75,10 +75,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/06/12 13:46:45 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/13 07:06:51 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.27 $
+ * @version $Revision: 1.28 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements AdultEducationBusiness {
 
@@ -280,13 +280,14 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 	
 	public Collection getGroups(School school, SchoolSeason season, String code) {
 		try {
-			Collection coll = new ArrayList();
-			coll.add(getGroup(school, season, code));
-			return coll;
+			return getSchoolBusiness().getSchoolClassHome().findBySchoolAndSeasonAndCode(school, season, code);
 		}
 		catch (FinderException fe) {
 			fe.printStackTrace();
 			return new ArrayList();
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
 		}
 	}
 	
@@ -301,15 +302,6 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		}
 		catch (IDOLookupException ile) {
 			throw new IBORuntimeException(ile);
-		}
-	}
-	
-	private SchoolClass getGroup(School school, SchoolSeason season, String code) throws FinderException {
-		try {
-			return getSchoolBusiness().getSchoolClassHome().findBySchoolAndSeasonAndCode(school, season, code);
-		}
-		catch (RemoteException re) {
-			throw new IBORuntimeException(re);
 		}
 	}
 	
@@ -427,7 +419,7 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 	
 	public Collection getChoices(User user, SchoolSeason season, SchoolStudyPath path) {
 		try {
-			String[] statuses = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus(), getCaseStatusReview().getStatus(), getCaseStatusPlaced().getStatus() };
+			String[] statuses = { getCaseStatusOpen().getStatus(), getCaseStatusInactive().getStatus(), getCaseStatusGranted().getStatus(), getCaseStatusReview().getStatus(), getCaseStatusPlaced().getStatus() };
 			return getChoiceHome().findAllByUserAndSeasonAndStudyPath(user.getPrimaryKey(), season.getPrimaryKey(), path.getPrimaryKey(), statuses);
 		}
 		catch (FinderException fe) {
@@ -898,7 +890,7 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 	
 	public void removeChoices(Object studyPathPK, Object seasonPK, Object userPK, User performer) {
 		try {
-			String[] statuses = { getCaseStatusOpen().getStatus(), getCaseStatusInactive().getStatus() };
+			String[] statuses = { getCaseStatusOpen().getStatus(), getCaseStatusInactive().getStatus(), getCaseStatusGranted().getStatus() };
 			Collection choices = getChoiceHome().findAllByUserAndSeasonAndStudyPath(userPK, seasonPK, studyPathPK, statuses);
 			Iterator iter = choices.iterator();
 			while (iter.hasNext()) {
