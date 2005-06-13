@@ -341,22 +341,30 @@ public class Calendar extends CategoryBlock implements Builderaware {
 					entriesTable.add(headlineText, xpos, ypos);
 
 					startDate = new IWTimestamp(entry.getDate());
-					endDate = new IWTimestamp(entry.getEndDate());
+					
 					DateFormat format = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, iwc.getCurrentLocale());
 					Date fromDate = new Date(startDate.getTimestamp().getTime());
-					Date toDate = new Date(endDate.getTimestamp().getTime());
+					
 					
 					Text fromDateText = new Text(format.format(fromDate));
-					Text toDateText = new Text(format.format(toDate));
+					
 					fromDateText.setFontStyle("font-family: Arial,Helvetica,sans-serif; font-size: 10px; color: " + _dateColor + ";");
-					toDateText.setFontStyle("font-family: Arial,Helvetica,sans-serif; font-size: 10px; color: " + _dateColor + ";");
+					
 					
 					xpos++;
 					entriesTable.setAlignment(xpos, ypos, "right");
 					entriesTable.add(fromDateText, xpos, ypos);
-					xpos++;
-					entriesTable.setAlignment(xpos, ypos, "right");
-					entriesTable.add(toDateText, xpos, ypos);
+					
+					if(entry.getEndDate() != null) {
+						endDate = new IWTimestamp(entry.getEndDate());
+						Date toDate = new Date(endDate.getTimestamp().getTime());
+						Text toDateText = new Text(format.format(toDate));
+						toDateText.setFontStyle("font-family: Arial,Helvetica,sans-serif; font-size: 10px; color: " + _dateColor + ";");
+						
+						xpos++;
+						entriesTable.setAlignment(xpos, ypos, "right");
+						entriesTable.add(toDateText, xpos, ypos);
+					}
 
 					// Checking permissions
 					if (hasEdit || hasPref || this.iUserId == entry.getUserID()) {
