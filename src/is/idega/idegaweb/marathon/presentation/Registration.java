@@ -1,5 +1,5 @@
 /*
- * $Id: Registration.java,v 1.19 2005/06/02 14:49:05 laddi Exp $
+ * $Id: Registration.java,v 1.20 2005/06/13 17:12:05 laddi Exp $
  * Created on May 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -56,10 +56,10 @@ import com.idega.util.LocaleUtil;
 
 
 /**
- * Last modified: $Date: 2005/06/02 14:49:05 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/13 17:12:05 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  */
 public class Registration extends RunBlock {
 	
@@ -975,6 +975,7 @@ public class Registration extends RunBlock {
 		table.add(previous, 1, row);
 		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(next, 1, row);
+		form.setToDisableOnSubmit(next, true);
 		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
 
 		add(form);
