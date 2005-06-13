@@ -1,6 +1,6 @@
 /*
- * $Id: ChildCareContractHomeImpl.java,v 1.11 2005/05/20 09:57:26 laddi Exp $
- * Created on May 20, 2005
+ * $Id: ChildCareContractHomeImpl.java,v 1.12 2005/06/13 18:24:49 laddi Exp $
+ * Created on Jun 13, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -21,10 +21,10 @@ import com.idega.util.TimePeriod;
 
 
 /**
- * Last modified: $Date: 2005/05/20 09:57:26 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/13 18:24:49 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class ChildCareContractHomeImpl extends IDOFactory implements ChildCareContractHome {
 
@@ -349,5 +349,14 @@ public class ChildCareContractHomeImpl extends IDOFactory implements ChildCareCo
 		int theReturn = ((ChildCareContractBMPBean) entity).ejbHomeGetCountBySchoolClassMember(member);
 		this.idoCheckInPooledEntity(entity);
 		return theReturn;
+	}
+
+	public Collection findAllByCareTimeAndDates(String careTime, Date startingBefore, Date fromBirthDate, Date toBirthDate)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ChildCareContractBMPBean) entity).ejbFindAllByCareTimeAndDates(careTime,
+				startingBefore, fromBirthDate, toBirthDate);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 }

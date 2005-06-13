@@ -5,9 +5,7 @@ package se.idega.idegaweb.commune.care.data;
 
 import java.sql.Date;
 import java.util.Collection;
-
 import javax.ejb.FinderException;
-
 import com.idega.block.contract.data.Contract;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClassBMPBean;
@@ -17,6 +15,10 @@ import com.idega.core.file.data.ICFile;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
+import com.idega.data.IDORelationshipException;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.Table;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.TimePeriod;
@@ -662,5 +664,26 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
     IDOQuery sql = idoQuery();
 		sql.appendSelectCountFrom(this).appendWhereEquals(COLUMN_SCH_CLASS_MEMBER, member);
 		return idoGetNumberOfRecords(sql);
+	}
+	
+	public Collection ejbFindAllByCareTimeAndDates(String careTime, Date startingBefore, Date fromBirthDate, Date toBirthDate) throws FinderException {
+		Table table = new Table(this);
+		Table user = new Table(User.class);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(table, getIDColumnName());
+		try {
+			query.addJoin(table, user);
+		}
+		catch (IDORelationshipException ire) {
+			throw new FinderException(ire.getMessage());
+		}
+		query.addCriteria(new MatchCriteria(table, COLUMN_CARE_TIME, MatchCriteria.EQUALS, careTime));
+		query.addCriteria(new MatchCriteria(table.getColumn(COLUMN_TERMINATED_DATE), false));
+		query.addCriteria(new MatchCriteria(table, COLUMN_VALID_FROM_DATE, MatchCriteria.LESSEQUAL, startingBefore));
+		query.addCriteria(new MatchCriteria(user, "date_of_birth", MatchCriteria.GREATEREQUAL, fromBirthDate));
+		query.addCriteria(new MatchCriteria(user, "date_of_birth", MatchCriteria.LESSEQUAL, toBirthDate));
+		
+		return idoFindPKsByQuery(query);
 	}
 }
