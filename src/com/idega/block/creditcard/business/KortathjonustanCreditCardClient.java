@@ -115,7 +115,7 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 	// Test indicator
 	private boolean bTestServer = false;
 	private CreditCardTransaction cct = null;
-	private static Logger logger;
+	private Logger logger;
 	private CreditCardMerchant ccMerchant = null;
 
 	public KortathjonustanCreditCardClient(IWApplicationContext iwc, String host, int port, String keystoreLocation, String keystorePass, CreditCardMerchant merchant) {
@@ -175,6 +175,21 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 
 	}
 
+	private String getCurrencyAbbreviation(String currencyCode) {
+		if (currencyCode.equals("352")) {
+			return "ISK";
+		} else if (currencyCode.equals("840")) {
+			return "USD";
+		} else if (currencyCode.equals("826")) {
+			return "GBP";
+		} else if (currencyCode.equals("208")) {
+			return "DDK";
+		} else if (currencyCode.equals("978")) {
+			return "EUR";
+		}
+		return currencyCode;
+	}
+	
 	private void setCurrencyAndAmount(String currency, double amount) throws CreditCardAuthorizationException {
 		if (currency != null) {
 			int amountMultiplier = 100;
@@ -369,7 +384,7 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 		if (properties.containsKey(PROPERTY_CC_EXPIRE))
 			auth.setCardExpires(properties.get(PROPERTY_CC_EXPIRE).toString());//monthExpires+yearExpires);
 		if (properties.containsKey(PROPERTY_CURRENCY_CODE))
-			auth.setCurrency(properties.get(PROPERTY_CURRENCY_CODE).toString());//currency);
+			auth.setCurrency(getCurrencyAbbreviation(properties.get(PROPERTY_CURRENCY_CODE).toString()));//currency);
 		if (properties.containsKey(PROPERTY_ERROR_CODE))
 			auth.setErrorNumber(properties.get(PROPERTY_ERROR_CODE).toString());
 		if (properties.containsKey(PROPERTY_ERROR_TEXT))
