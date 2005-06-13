@@ -247,7 +247,8 @@ public class Calendar extends CategoryBlock implements Builderaware {
 		String[] localeStrings = null;
 		Text headlineText = null;
 		Text bodyText = null;
-		IWTimestamp stamp = null;
+		IWTimestamp startDate = null;
+		IWTimestamp endDate = null;
 		boolean hasImage = true;
 		int imageID;
 		int ypos = 1;
@@ -339,15 +340,23 @@ public class Calendar extends CategoryBlock implements Builderaware {
 					headlineText.setFontStyle("font-family: Arial,Helvetica,sans-serif; font-size: 11px; font-weight: bold; color: " + _headlineColor + ";");
 					entriesTable.add(headlineText, xpos, ypos);
 
-					stamp = new IWTimestamp(entry.getDate());
+					startDate = new IWTimestamp(entry.getDate());
+					endDate = new IWTimestamp(entry.getEndDate());
 					DateFormat format = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, iwc.getCurrentLocale());
-					Date date = new Date(stamp.getTimestamp().getTime());
-					Text dateText = new Text(format.format(date));
-					dateText.setFontStyle("font-family: Arial,Helvetica,sans-serif; font-size: 10px; color: " + _dateColor + ";");
-
+					Date fromDate = new Date(startDate.getTimestamp().getTime());
+					Date toDate = new Date(endDate.getTimestamp().getTime());
+					
+					Text fromDateText = new Text(format.format(fromDate));
+					Text toDateText = new Text(format.format(toDate));
+					fromDateText.setFontStyle("font-family: Arial,Helvetica,sans-serif; font-size: 10px; color: " + _dateColor + ";");
+					toDateText.setFontStyle("font-family: Arial,Helvetica,sans-serif; font-size: 10px; color: " + _dateColor + ";");
+					
 					xpos++;
 					entriesTable.setAlignment(xpos, ypos, "right");
-					entriesTable.add(dateText, xpos, ypos);
+					entriesTable.add(fromDateText, xpos, ypos);
+					xpos++;
+					entriesTable.setAlignment(xpos, ypos, "right");
+					entriesTable.add(toDateText, xpos, ypos);
 
 					// Checking permissions
 					if (hasEdit || hasPref || this.iUserId == entry.getUserID()) {
