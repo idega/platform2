@@ -115,8 +115,8 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 	// Test indicator
 	private boolean bTestServer = false;
 	private CreditCardTransaction cct = null;
-	private Logger logger;
 	private CreditCardMerchant ccMerchant = null;
+	private IWBundle bundle = null;
 
 	public KortathjonustanCreditCardClient(IWApplicationContext iwc, String host, int port, String keystoreLocation, String keystorePass, CreditCardMerchant merchant) {
 		//this(iwc, host, port, keystoreLocation, keystorePass,
@@ -143,25 +143,30 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 
 	private void init(IWApplicationContext iwc) {
 
-		logger = null;
-		if (logger == null) {
-			IWBundle bundle = iwc.getIWMainApplication().getBundle(getBundleIdentifier());
-			logger = Logger.getLogger(this.getClass().getName());
+		bundle = iwc.getIWMainApplication().getBundle(getBundleIdentifier());
 
-			FileUtil.getFileSeparator();
+	}
+	
+	private void log(String msg) {
 
-			try {
-				//Handler fh = new FileHandler("/Users/kortathjonustan.log");
-				Handler fh = new FileHandler(bundle.getPropertiesRealPath() + "/kortathjonustan.log");
-				logger.addHandler(fh);
-				logger.setLevel(Level.ALL);
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-				logger = null;
+		Handler fh = null;
+
+		try {
+			Logger logger = Logger.getLogger(this.getClass().getName());
+			fh = new FileHandler(bundle.getPropertiesRealPath() + FileUtil.getFileSeparator() + "kortathjonustan.log");
+			logger.addHandler(fh);
+			logger.setLevel(Level.ALL);
+			logger.info(msg);
+			fh.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (fh != null) {
+				fh.close();
+				
 			}
 		}
-
 	}
 
 	public String getBundleIdentifier() {
@@ -292,7 +297,7 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 						String tmpCardNum = CreditCardBusinessBean.encodeCreditCardNumber(cardnumber);
 						this.storeAuthorizationEntry(tmpCardNum, null, returnedCaptureProperties, KortathjonustanAuthorisationEntries.AUTHORIZATION_TYPE_SALE);
 
-						logger.info(logText.toString());
+						log(logText.toString());
 
 					}
 					catch (Exception e) {
@@ -310,7 +315,7 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 			logText.append("\nError           = " + e.getErrorMessage());
 			logText.append("\nNumber        = " + e.getErrorNumber());
 			logText.append("\nDisplay error = " + e.getDisplayError());
-			logger.info(logText.toString());
+			log(logText.toString());
 			throw e;
 		}
 	}
@@ -334,7 +339,7 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 			try {
 				String tmpCardNum = CreditCardBusinessBean.encodeCreditCardNumber(cardnumber);
 				storeAuthorizationEntry(tmpCardNum, parentDataPK, properties, KortathjonustanAuthorisationEntries.AUTHORIZATION_TYPE_REFUND);
-				logger.info(logText.toString());
+				log(logText.toString());
 
 			}
 			catch (Exception e) {
@@ -355,7 +360,7 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 			logText.append("\nError           = " + e.getErrorMessage());
 			logText.append("\nNumber        = " + e.getErrorNumber());
 			logText.append("\nDisplay error = " + e.getDisplayError());
-			logger.info(logText.toString());
+			log(logText.toString());
 			throw e;
 		}
 		catch (NullPointerException n) {
