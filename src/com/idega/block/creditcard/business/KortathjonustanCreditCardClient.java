@@ -680,6 +680,7 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 				cce.setErrorMessage("SendRequest failed");
 				cce.setErrorNumber("-");
 				cce.setParentException(e);
+				e.printStackTrace();
 				throw cce;
 			}
 			//System.out.println("Response [" + strResponse + "]");
