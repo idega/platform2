@@ -32,6 +32,8 @@ public class LocalizedTextBMPBean extends com.idega.data.GenericEntity implement
     addAttribute(getColumnNameCreated(), "Created", true, true, java.sql.Timestamp.class);
     addAttribute(getColumnNameUpdated(), "Updated", true, true, java.sql.Timestamp.class);
     addAttribute(getColumnNameMarkupLanguage(), "The markup language of the text", true, true, java.lang.String.class);
+
+    addIndex("IDX_TX_LOCALIZED_TEXT_1", getColumnNameLocaleId());
   }
 
   public static String getEntityTableName(){ return "TX_LOCALIZED_TEXT";}

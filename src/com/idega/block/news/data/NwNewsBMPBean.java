@@ -72,8 +72,8 @@ public class NwNewsBMPBean extends com.idega.data.GenericEntity implements  NwNe
 
     addAttribute(getColumnNameSource(), "Source", true, true, String.class);
 
-
-
+    addIndex("IDX_NW_NEWS_1", getColumnNameContentId());
+    addIndex("IDX_NW_NEWS_2", getColumnNameNewsCategoryId());
   }
 
   public String getEntityName(){
