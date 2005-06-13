@@ -5574,4 +5574,31 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public Class getEventListener() {
 		return ChildCareEventListener.class;
 	}
+	
+	public Collection changeAllContractsInRange(String fromCareTime, String toCareTime, Date dayOfChange, Date fromDateOfBirth, Date toDateOfBirth, User performer, Locale locale) {
+		UserTransaction t = getSessionContext().getUserTransaction();
+		try {
+			t.begin();
+			Collection contracts = getChildCareContractArchiveHome().findAllByCareTimeAndDates(fromCareTime, dayOfChange, fromDateOfBirth, toDateOfBirth);
+			Iterator iter = contracts.iterator();
+			while (iter.hasNext()) {
+				ChildCareContract contract = (ChildCareContract) iter.next();
+				
+				assignContractToApplication(contract.getApplicationID(), ((Integer) contract.getPrimaryKey()).intValue(), toCareTime, new IWTimestamp(dayOfChange), contract.getEmploymentTypeId(), performer, locale, false);
+			}
+			
+			t.commit();
+			return contracts;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			try {
+				t.rollback();
+			}
+			catch (SystemException ex) {
+				ex.printStackTrace();
+			}
+			return new ArrayList();
+		}
+	}
 }

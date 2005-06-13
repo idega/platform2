@@ -1,6 +1,6 @@
 /*
- * $Id: ChildCareBusiness.java 1.1 May 20, 2005 laddi Exp $
- * Created on May 20, 2005
+ * $Id: ChildCareBusiness.java 1.1 Jun 13, 2005 laddi Exp $
+ * Created on Jun 13, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -1434,4 +1434,10 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getEventListener
 	 */
 	public Class getEventListener() throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#changeAllContractsInRange
+	 */
+	public Collection changeAllContractsInRange(String fromCareTime, String toCareTime, Date dayOfChange,
+			Date fromDateOfBirth, Date toDateOfBirth, User performer, Locale locale) throws java.rmi.RemoteException;
 }
