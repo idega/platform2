@@ -453,13 +453,13 @@ public class CalendarView extends Block{
 	private Table monthView(IWContext iwc, IWTimestamp stamp) {	
 		now = IWTimestamp.RightNow();
 		cal = new IWCalendar();
-		cal.setLocale(iwc.getCurrentLocale());
+		
 		Text nameOfDay = new Text();
 		Text t = new Text();
 
 		int weekdays = 8;
 		int daycount = cal.getLengthOfMonth(stamp.getMonth(),stamp.getYear());
-		int firstWeekDayOfMonth = cal.getDayOfWeek(stamp.getYear(),stamp.getMonth(),7);
+		int firstWeekDayOfMonth = cal.getDayOfWeek(stamp.getYear(),stamp.getMonth(),1);
 //		int dayOfMonth = cal.getDay();
 		int row = 1;
 		int column = firstWeekDayOfMonth;
