@@ -207,7 +207,14 @@ public class RegisterNewMember extends GolfBlock {
 		String retypePassword = iwc.getParameter("password2");
 
 		if (!(login.equals(""))) {
-			isLoginValid = checkForUpdate(member, login);
+			try {
+				isLoginValid = checkForUpdate(member, login);
+
+			}
+			catch (FinderException e) {
+				isLoginValid = false;
+//				e.printStackTrace();
+			}
 			updateLogin = isLoginValid;
 		}
 
