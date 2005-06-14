@@ -72,7 +72,7 @@ public class GolfMemberProfile {
   private void fillProfile(){
     // UnionMemberInfos
     try {
-      eUMIs = (UnionMemberInfo[]) ((UnionMemberInfo) IDOLookup.instanciateEntity(UnionMemberInfo.class)).findAllByColumn(eMember.getIDColumnName(),eMember.getID());
+      eUMIs = (UnionMemberInfo[]) ((UnionMemberInfo) IDOLookup.instanciateEntity(UnionMemberInfo.class)).findAllByColumnEquals(eMember.getIDColumnName(),eMember.getID());
       if(eUMIs != null && eUMIs.length == 0)
         eUMIs = null;
       else

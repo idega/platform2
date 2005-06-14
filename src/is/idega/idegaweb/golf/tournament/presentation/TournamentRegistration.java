@@ -1425,7 +1425,7 @@ public void correctHandicap(IWContext modinfo,Member member ,String handicapStri
             handicap = Float.parseFloat(handicapString);
           }
 
-          MemberInfo[] infos = (MemberInfo[]) ((MemberInfo) IDOLookup.instanciateEntity(MemberInfo.class)).findAllByColumn("member_id",member.getID()+"");
+          MemberInfo[] infos = (MemberInfo[]) ((MemberInfo) IDOLookup.instanciateEntity(MemberInfo.class)).findAllByColumnEquals("member_id",member.getID()+"");
           MemberInfo memberInfo;
           if (infos.length > 0) {
               try {

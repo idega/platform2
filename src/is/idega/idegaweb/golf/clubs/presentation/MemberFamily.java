@@ -171,7 +171,7 @@ public class MemberFamily extends GolfBlock {
 		Member[] memberArr = null;
 		Family[] familyArr = null;
 		try {
-			memberArr = (Member[]) member.findAllByColumn("social_security_number", num);
+			memberArr = (Member[]) member.findAllByColumnEquals("social_security_number", num);
 			familyArr = getFamilies(memberArr);
 		}
 		catch (Exception e) {

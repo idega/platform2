@@ -665,8 +665,6 @@ public class AdminRegisterTime extends GolfWindow {
 						 * e){ ssn = false; } }
 						 */
 						if (ssn) {
-							//List lMember =
-							// EntityFinder.findAllByColumn((is.idega.idegaweb.golf.entity.Member)Member.getStaticInstance(),Member.getSocialSecurityNumberColumnName(),sentNames[i]);
 							Member tempMemb = (is.idega.idegaweb.golf.entity.Member) MemberBMPBean.getMember(sentNames[i]);
 							if (tempMemb != null) {
 								//              Member tempMemb = (Member)lMember.get(0);

@@ -176,7 +176,6 @@ public class EuroFile  {
 
     String prID = String.valueOf(PR.getID());
     String paymRoundIDstring = String.valueOf(PR.getID());
-    //Payment[] payments = (Payment[]) (new Payment()).findAllByColumn("status","N","payment_type_id",giroID );
     Payment[] payments = (Payment[]) ((Payment) IDOLookup.instanciateEntity(Payment.class)).findAll("select * from payment where round_id = '"+prID+"' and status = 'N' and payment_type_id = '"+euroID+"' order by member_id ");
 
     PaymentType PayType = ((PaymentTypeHome) IDOLookup.getHomeLegacy(PaymentType.class)).findByPrimaryKey(2);

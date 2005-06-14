@@ -285,7 +285,6 @@ public class RegisterNewMember extends GolfBlock {
 					}
 					catch (FinderException ignore) {
 					}
-					//MemberInfo[] memberInfoLength = (MemberInfo[])(new MemberInfo()).findAllByColumn("member_id",member_id);
 					if (mInfo != null) {
 						mInfo.setFirstHandicap(Float.parseFloat(handicap));
 						mInfo.store();

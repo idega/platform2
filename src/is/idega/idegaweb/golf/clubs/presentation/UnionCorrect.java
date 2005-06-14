@@ -64,7 +64,7 @@ public class UnionCorrect extends Editor {
 						|| modinfo.getParameter("ssn") != null) {
 					String ssn = modinfo.getParameter("ssn").trim();
 					if (ssn != null && ssn.length() > 5) {
-						List members = EntityFinder.findAllByColumn((Member) IDOLookup.instanciateEntity(Member.class),
+						List members = EntityFinder.findAllByColumnEquals((Member) IDOLookup.instanciateEntity(Member.class),
 								"social_security_number", ssn);
 						if (members != null) {
 							eMember = (Member) members.get(0);
@@ -206,7 +206,7 @@ public class UnionCorrect extends Editor {
 	}
 
 	public void setMemberActiveInSubUnion(Member member, int iUnionId) throws SQLException {
-		UnionMemberInfo[] unies = (UnionMemberInfo[]) ((UnionMemberInfo) IDOLookup.instanciateEntity(UnionMemberInfo.class)).findAllByColumn(
+		UnionMemberInfo[] unies = (UnionMemberInfo[]) ((UnionMemberInfo) IDOLookup.instanciateEntity(UnionMemberInfo.class)).findAllByColumnEquals(
 				"member_id", member.getID());
 		boolean needToCreateUnionMemberInfo = true;
 		// too lazy to do this better...
@@ -224,7 +224,7 @@ public class UnionCorrect extends Editor {
 	}
 
 	public void setMainUnion(Member member, int iUnionId) throws SQLException {
-		UnionMemberInfo[] unies = (UnionMemberInfo[]) ((UnionMemberInfo) IDOLookup.instanciateEntity(UnionMemberInfo.class)).findAllByColumn(
+		UnionMemberInfo[] unies = (UnionMemberInfo[]) ((UnionMemberInfo) IDOLookup.instanciateEntity(UnionMemberInfo.class)).findAllByColumnEquals(
 				"member_id", member.getID());
 		boolean needToCreateUnionMemberInfo = true;
 		for (int i = 0; i < unies.length; i++) {
@@ -248,7 +248,7 @@ public class UnionCorrect extends Editor {
 	}
 
 	public void setMemberInactiveInAllSubUnions(Member member) throws SQLException {
-		UnionMemberInfo[] unies = (UnionMemberInfo[]) ((UnionMemberInfo) IDOLookup.instanciateEntity(UnionMemberInfo.class)).findAllByColumn(
+		UnionMemberInfo[] unies = (UnionMemberInfo[]) ((UnionMemberInfo) IDOLookup.instanciateEntity(UnionMemberInfo.class)).findAllByColumnEquals(
 				"member_id", member.getID());
 		for (int i = 0; i < unies.length; i++) {
 			if ("sub".equals(unies[i].getMembershipType())) {
@@ -259,7 +259,7 @@ public class UnionCorrect extends Editor {
 	}
 
 	public void setMemberInactiveInMainUnion(Member member) throws SQLException {
-		UnionMemberInfo[] unies = (UnionMemberInfo[]) ((UnionMemberInfo) IDOLookup.instanciateEntity(UnionMemberInfo.class)).findAllByColumn(
+		UnionMemberInfo[] unies = (UnionMemberInfo[]) ((UnionMemberInfo) IDOLookup.instanciateEntity(UnionMemberInfo.class)).findAllByColumnEquals(
 				"member_id", member.getID());
 		for (int i = 0; i < unies.length; i++) {
 			if ("main".equals(unies[i].getMembershipType())) {

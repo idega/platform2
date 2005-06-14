@@ -216,7 +216,8 @@ public class GolfLoginBusiness extends LoginBusinessBean implements IWPageEventL
 
 	public static LoginTable getLoginForMember(Member member) throws SQLException {
 		LoginTable login = null;
-		LoginTable[] logins = (LoginTable[]) GenericEntity.getStaticInstance(LoginTable.class).findAllByColumn(
+		LoginTable[] logins = (LoginTable[]) GenericEntity.getStaticInstance(LoginTable.class).findAllByColumnEquals
+		(
 				"member_id", member.getID());
 		if (logins != null && logins.length > 0) {
 			login = logins[logins.length - 1];
@@ -226,7 +227,7 @@ public class GolfLoginBusiness extends LoginBusinessBean implements IWPageEventL
 
 	private boolean verifyPassword(IWContext modinfo, String login, String password) throws Exception, FinderException {
 		boolean returner = false;
-		LoginTable[] login_table = (LoginTable[]) ((LoginTable) IDOLookup.instanciateEntity(LoginTable.class)).findAllByColumn(
+		LoginTable[] login_table = (LoginTable[]) ((LoginTable) IDOLookup.instanciateEntity(LoginTable.class)).findAllByColumnEquals(
 				"user_login", login);
 		MemberHome mh = ((MemberHome) IDOLookup.getHomeLegacy(Member.class));
 		for (int i = 0; i < login_table.length; i++) {
@@ -310,7 +311,7 @@ public class GolfLoginBusiness extends LoginBusinessBean implements IWPageEventL
 			String user_pass_two) throws SQLException {
 		boolean returner = false;
 		if (user_pass_one.equals(user_pass_two)) {
-			LoginTable[] logTable = (LoginTable[]) ((LoginTable) IDOLookup.instanciateEntity(LoginTable.class)).findAllByColumn(
+			LoginTable[] logTable = (LoginTable[]) ((LoginTable) IDOLookup.instanciateEntity(LoginTable.class)).findAllByColumnEquals(
 					"USER_LOGIN", user_login);
 			if (logTable.length == 0) {
 				LoginTable logT = (LoginTable) IDOLookup.createLegacy(LoginTable.class);

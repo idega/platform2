@@ -47,7 +47,7 @@ public class ClubOverview extends GolfBlock {
 		myTable.mergeCells(1, 2, 2, 2);
 		myTable.setAlignment(1, 2, "left");
 
-		UnionImage[] union2 = (UnionImage[]) ((UnionImage) IDOLookup.instanciateEntity(UnionImage.class)).findAllByColumn("union_id", union_id);
+		UnionImage[] union2 = (UnionImage[]) ((UnionImage) IDOLookup.instanciateEntity(UnionImage.class)).findAllByColumnEquals("union_id", union_id);
 
 		if (union2.length > 0) {
 			Image unionImage = new GolfImage(union2[0].getImageId());

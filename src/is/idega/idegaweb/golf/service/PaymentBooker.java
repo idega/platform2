@@ -1159,7 +1159,7 @@ public class PaymentBooker extends com.idega.presentation.PresentationObjectCont
 		myForm.maintainAllParameters();
 		Table T = new Table();
 
-		AccountYear years[] = (AccountYear[]) ((AccountYear) IDOLookup.instanciateEntity(AccountYear.class)).findAllByColumn("union_id", iUnionID);
+		AccountYear years[] = (AccountYear[]) ((AccountYear) IDOLookup.instanciateEntity(AccountYear.class)).findAllByColumnEquals("union_id", iUnionID);
 		DropdownMenu drpYears = new DropdownMenu("account_year_id");
 		for (int i = 0; i < years.length; i++) {
 			drpYears.addMenuElement(years[i].getID(), years[i].getName());

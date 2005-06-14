@@ -269,7 +269,7 @@ public class UserIdEditor extends Editor {
    private void doTrulyMakeIds(IWContext modinfo) throws Exception{
     int id = Integer.parseInt(modinfo.getParameter(prefix+"drp"));
     UnionMemberInfo[] umi = getUMIs(id);
-    UserIds U = ((UserIds[])((UserIds) IDOLookup.instanciateEntity(UserIds.class)).findAllByColumn("union_id",id))[0];
+    UserIds U = ((UserIds[])((UserIds) IDOLookup.instanciateEntity(UserIds.class)).findAllByColumnEquals("union_id",id))[0];
     UserId userid = null;
     long last = new Long(U.getLast()).longValue();
     for (int i = 0; i < umi.length; i++) {
@@ -323,7 +323,7 @@ public class UserIdEditor extends Editor {
   }
 
   private UnionMemberInfo[] getUMIs(int iUnionId)throws SQLException{
-    UnionMemberInfo[] umis = (UnionMemberInfo[])((UnionMemberInfo) IDOLookup.instanciateEntity(UnionMemberInfo.class)).findAllByColumn("union_id",String.valueOf(iUnionId),"member_status","A");
+    UnionMemberInfo[] umis = (UnionMemberInfo[])((UnionMemberInfo) IDOLookup.instanciateEntity(UnionMemberInfo.class)).findAllByColumnEquals("union_id",String.valueOf(iUnionId),"member_status","A");
     return umis;
   }
 

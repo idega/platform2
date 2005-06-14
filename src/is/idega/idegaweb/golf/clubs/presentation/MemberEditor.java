@@ -197,7 +197,7 @@ public class MemberEditor extends GolfWindow {
         } else if (action.equalsIgnoreCase("checksocial")) {
           String socialnumber = modinfo.getParameter("socialnumber");
           if ((socialnumber != null) && !(socialnumber.equalsIgnoreCase(""))) {
-            List members = EntityFinder.findAllByColumn((Member) IDOLookup
+            List members = EntityFinder.findAllByColumnEquals((Member) IDOLookup
                 .instanciateEntity(Member.class), "social_security_number",
                 socialnumber);
             if (members != null) {

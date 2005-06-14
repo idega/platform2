@@ -59,10 +59,10 @@ public class MemberCorrect extends Editor {
 					if (modinfo.getParameter("rb") != null && hSSN != null) {
 						/** @todo */
 						int iMemberId = Integer.parseInt(modinfo.getParameter("rb"));
-						eMembers = EntityFinder.findAllByColumn((Member) IDOLookup.instanciateEntity(Member.class), "social_security_number", hSSN);
+						eMembers = EntityFinder.findAllByColumnEquals((Member) IDOLookup.instanciateEntity(Member.class), "social_security_number", hSSN);
 						if (eMembers != null) {
 							deleteMembers(eMembers, iMemberId);
-							eMembers = EntityFinder.findAllByColumn((Member) IDOLookup.instanciateEntity(Member.class), "social_security_number", hSSN);
+							eMembers = EntityFinder.findAllByColumnEquals((Member) IDOLookup.instanciateEntity(Member.class), "social_security_number", hSSN);
 						}
 					}
 				}
@@ -71,14 +71,14 @@ public class MemberCorrect extends Editor {
 					if (ssn != null && ssn.length() > 5) {
 						sSocSecNum = ssn;
 						add(sSocSecNum);
-						eMembers = EntityFinder.findAllByColumn((Member) IDOLookup.instanciateEntity(Member.class), "social_security_number", ssn);
+						eMembers = EntityFinder.findAllByColumnEquals((Member) IDOLookup.instanciateEntity(Member.class), "social_security_number", ssn);
 					}
 				}
 				else if (member_id != null) {
 					eMember = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(Integer.parseInt(member_id));
 				}
 				else if (SSN != null) {
-					eMembers = EntityFinder.findAllByColumn((Member) IDOLookup.instanciateEntity(Member.class), "social_security_number", SSN);
+					eMembers = EntityFinder.findAllByColumnEquals((Member) IDOLookup.instanciateEntity(Member.class), "social_security_number", SSN);
 				}
 				else
 					add("enginn valinn");

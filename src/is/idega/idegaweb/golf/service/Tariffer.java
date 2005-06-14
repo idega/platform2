@@ -227,7 +227,7 @@ public class Tariffer extends PresentationObjectContainer {
 
 	public int getActiveMainYear(int iUnionId) {
 		try {
-			AccountYear[] AY = (AccountYear[]) ((AccountYear) IDOLookup.instanciateEntity(AccountYear.class)).findAllByColumn("union_id", String.valueOf(iUnionId), "active_year", "Y");
+			AccountYear[] AY = (AccountYear[]) ((AccountYear) IDOLookup.instanciateEntity(AccountYear.class)).findAllByColumnEquals("union_id", String.valueOf(iUnionId), "active_year", "Y");
 			if (AY.length > 0)
 				return AY[0].getMainYear();
 		}
@@ -418,7 +418,7 @@ public class Tariffer extends PresentationObjectContainer {
 				String sNoClub = iwrb.getLocalizedString("noclub", "Need to choose a club");
 				add(sNoClub);
 			}
-			unions = (Union[]) ((Union) IDOLookup.instanciateEntity(Union.class)).findAllByColumn("union_id", un_id);
+			unions = (Union[]) ((Union) IDOLookup.instanciateEntity(Union.class)).findAllByColumnEquals("union_id", un_id);
 			unionName = unions[0].getName();
 			unionAbbrev = unions[0].getAbbrevation();
 
@@ -1720,17 +1720,17 @@ public class Tariffer extends PresentationObjectContainer {
 	}
 
 	private List getCatalogList(String union_id) throws SQLException {
-		List L = EntityFinder.findAllByColumn((PriceCatalogue) IDOLookup.instanciateEntity(PriceCatalogue.class), "union_id", union_id, "in_use", "Y", "is_independent", "N");
+		List L = EntityFinder.findAllByColumnEquals((PriceCatalogue) IDOLookup.instanciateEntity(PriceCatalogue.class), "union_id", union_id, "in_use", "Y", "is_independent", "N");
 		return L;
 	}
 
 	private List listOfYears(String union_id) throws SQLException {
-		List L = EntityFinder.findAllByColumn((AccountYear) IDOLookup.instanciateEntity(AccountYear.class), "union_id", union_id);
+		List L = EntityFinder.findAllByColumnEquals((AccountYear) IDOLookup.instanciateEntity(AccountYear.class), "union_id", union_id);
 		return L;
 	}
 
 	public static List getExtraCatalogList(String union_id) throws SQLException {
-		return EntityFinder.findAllByColumn((PriceCatalogue) IDOLookup.instanciateEntity(PriceCatalogue.class), "union_id", union_id, "in_use", "Y", "is_independent", "Y");
+		return EntityFinder.findAllByColumnEquals((PriceCatalogue) IDOLookup.instanciateEntity(PriceCatalogue.class), "union_id", union_id, "in_use", "Y", "is_independent", "Y");
 	}
 
 	public PriceCatalogue[] getExtraCatalogues(String unionID) throws SQLException {
@@ -1876,8 +1876,6 @@ public class Tariffer extends PresentationObjectContainer {
 			sql.append(mainYear);
 			sql.append(" and a.union_id = ");
 			sql.append(this.union_id);
-			//Account[] A = (Account[])new
-			// Account().findAllByColumn("union_id",this.union_id);
 			Account[] A = (Account[]) ((Account) IDOLookup.instanciateEntity(Account.class)).findAll(sql.toString());
 			if (A != null && A.length > 0) {
 				int len = A.length;

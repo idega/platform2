@@ -240,7 +240,7 @@ public Table writeTable(Vector items,IWContext modinfo) throws SQLException {
 
         vector.addElement(intArray);
 
-       options = (IDOLegacyEntity[]) (entity).findAllByColumn("parent_id",""+id);
+       options = (IDOLegacyEntity[]) (entity).findAllByColumnEquals("parent_id",""+id);
         int i = 0;
 
         if (options != null ) {

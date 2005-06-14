@@ -86,12 +86,12 @@ public class MemberDelete extends GolfWindow {
             if (modinfo.getParameter("rb") != null && hSSN != null) {
               /** @todo */
               int iMemberId = Integer.parseInt(modinfo.getParameter("rb"));
-              eMembers = EntityFinder.findAllByColumn((Member) IDOLookup
+              eMembers = EntityFinder.findAllByColumnEquals((Member) IDOLookup
                   .instanciateEntity(Member.class), "social_security_number",
                   hSSN);
               if (eMembers != null) {
                 deleteMembers(eMembers, iMemberId);
-                eMembers = EntityFinder.findAllByColumn((Member) IDOLookup
+                eMembers = EntityFinder.findAllByColumnEquals((Member) IDOLookup
                     .instanciateEntity(Member.class), "social_security_number",
                     hSSN);
               }
@@ -103,7 +103,7 @@ public class MemberDelete extends GolfWindow {
             if (ssn != null && ssn.length() > 5) {
               sSocSecNum = ssn;
               add(sSocSecNum);
-              eMembers = EntityFinder.findAllByColumn((Member) IDOLookup
+              eMembers = EntityFinder.findAllByColumnEquals((Member) IDOLookup
                   .instanciateEntity(Member.class), "social_security_number",
                   ssn);
             }
@@ -112,7 +112,7 @@ public class MemberDelete extends GolfWindow {
                 .findByPrimaryKey(Integer.parseInt(member_id));
           } else if (SSN != null) {
             eMembers = EntityFinder
-                .findAllByColumn((Member) IDOLookup
+                .findAllByColumnEquals((Member) IDOLookup
                     .instanciateEntity(Member.class), "social_security_number",
                     SSN);
           } else
@@ -360,7 +360,7 @@ public class MemberDelete extends GolfWindow {
          */
         try {
           Scorecard[] scores = (Scorecard[]) ((Scorecard) IDOLookup
-              .instanciateEntity(Scorecard.class)).findAllByColumn("member_id",
+              .instanciateEntity(Scorecard.class)).findAllByColumnEquals("member_id",
               M.getID());
           for (int i = 0; i < scores.length; i++) {
             Stroke stroke = (Stroke) IDOLookup.instanciateEntity(Stroke.class);
@@ -378,7 +378,7 @@ public class MemberDelete extends GolfWindow {
         try {
           Startingtime time = (Startingtime) IDOLookup
               .instanciateEntity(Startingtime.class);
-          Startingtime[] times = (Startingtime[]) time.findAllByColumn(
+          Startingtime[] times = (Startingtime[]) time.findAllByColumnEquals(
               "member_id", M.getID());
           for (int i = 0; i < times.length; i++) {
             int id = times[i].getID();
@@ -395,7 +395,7 @@ public class MemberDelete extends GolfWindow {
 
         try {
           LoginTable[] login = (LoginTable[]) ((LoginTable) IDOLookup
-              .instanciateEntity(LoginTable.class)).findAllByColumn(
+              .instanciateEntity(LoginTable.class)).findAllByColumnEquals(
               "member_id", this.getID());
           for (int i = 0; i < login.length; i++) {
             login[i].delete();

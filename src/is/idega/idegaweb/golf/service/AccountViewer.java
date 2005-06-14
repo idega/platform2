@@ -225,7 +225,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
 
     public AccountYear getActiveAccountYear(int iUnionId){
       try {
-        AccountYear[] AY = (AccountYear[]) ((AccountYear) IDOLookup.instanciateEntity(AccountYear.class)).findAllByColumn("union_id",String.valueOf(iUnionId),"active_year","Y");
+        AccountYear[] AY = (AccountYear[]) ((AccountYear) IDOLookup.instanciateEntity(AccountYear.class)).findAllByColumnEquals("union_id",String.valueOf(iUnionId),"active_year","Y");
         if(AY.length > 0)
           return AY[0];
       }
@@ -1774,7 +1774,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     DropdownMenu drp = new DropdownMenu(name);
     try {
       int activeid = -1;
-      AccountYear[] AY = (AccountYear[]) ((AccountYear) IDOLookup.instanciateEntity(AccountYear.class)).findAllByColumn("union_id",this.un_id);
+      AccountYear[] AY = (AccountYear[]) ((AccountYear) IDOLookup.instanciateEntity(AccountYear.class)).findAllByColumnEquals("union_id",this.un_id);
       for (int i = 0; i < AY.length; i++) {
         drp.addMenuElement(AY[i].getID(),String.valueOf(AY[i].getMainYear()));
         if(AY[i].getActive())

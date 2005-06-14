@@ -100,7 +100,7 @@ public static void handleEvent(IWContext modinfo,ImageHandler handler) throws Ex
         else if( action.equalsIgnoreCase("delete") ){
           try{
             ImageEntity image = (ImageEntity)((ImageEntityHome)IDOLookup.getHomeLegacy(ImageEntity.class)).findByPrimaryKeyLegacy( imageId );
-            ImageEntity[] childs = (ImageEntity[]) image.findAllByColumn("parent_id",imageId);
+            ImageEntity[] childs = (ImageEntity[]) image.findAllByColumnEquals("parent_id",imageId);
             ImageCatagory[] catagories = (ImageCatagory[]) image.findReverseRelated((IDOLegacyEntity)IDOLookup.instanciateEntity(ImageCatagory.class));
 
             //brake childs from parent

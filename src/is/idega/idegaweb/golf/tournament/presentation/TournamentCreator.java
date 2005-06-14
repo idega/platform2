@@ -168,7 +168,7 @@ public class TournamentCreator extends TournamentBlock {
 
 
 	        if (bIsUpdate) {
-	            Tournament[] tournaments = (Tournament[]) ((Tournament) IDOLookup.instanciateEntity(Tournament.class)).findAllByColumn("tournament_id",sTournamentIdToUpdate);
+	            Tournament[] tournaments = (Tournament[]) ((Tournament) IDOLookup.instanciateEntity(Tournament.class)).findAllByColumnEquals("tournament_id",sTournamentIdToUpdate);
 	            if (tournaments.length < 1) {
 	                useForm = false;
 	            }
@@ -345,7 +345,7 @@ public class TournamentCreator extends TournamentBlock {
 	                    }
 
 	                    try {
-	                        StartingtimeFieldConfig[] fieldConf = (StartingtimeFieldConfig[])((StartingtimeFieldConfig) IDOLookup.instanciateEntity(StartingtimeFieldConfig.class)).findAllByColumn("tournament_id",""+tournament.getID() );
+	                        StartingtimeFieldConfig[] fieldConf = (StartingtimeFieldConfig[])((StartingtimeFieldConfig) IDOLookup.instanciateEntity(StartingtimeFieldConfig.class)).findAllByColumnEquals("tournament_id",""+tournament.getID() );
 	                        if (fieldConf.length > 0) {
 	                            IWTimestamp endHour = new IWTimestamp(fieldConf[0].getCloseTime());
 	                                endTime.setYear(endHour.getYear());
@@ -873,7 +873,7 @@ public class TournamentCreator extends TournamentBlock {
 	                tempTeeColor[i].removeFrom(tournament);
 	            }
 
-	            StartingtimeFieldConfig[] sFieldConfig = (StartingtimeFieldConfig[]) ((StartingtimeFieldConfig) IDOLookup.instanciateEntity(StartingtimeFieldConfig.class)).findAllByColumn("tournament_id",tournament.getID()+"") ;
+	            StartingtimeFieldConfig[] sFieldConfig = (StartingtimeFieldConfig[]) ((StartingtimeFieldConfig) IDOLookup.instanciateEntity(StartingtimeFieldConfig.class)).findAllByColumnEquals("tournament_id",tournament.getID()+"") ;
 	            for (int i = 0; i < sFieldConfig.length; i++) {
 	                sFieldConfig[i].delete();
 	            }
@@ -923,7 +923,7 @@ public class TournamentCreator extends TournamentBlock {
 	                // HENDA ÚT TOURNAMENT_ROUNDs
 
 	                for (int i = (tournament.getNumberOfRounds()+1) ; i<= (manyRounds) ;i++) {
-	                    List tournamentRounds = EntityFinder.findAllByColumn((TournamentRound) IDOLookup.instanciateEntity(TournamentRound.class),"tournament_id",""+tournament.getID(),"ROUND_NUMBER",""+i);
+	                    List tournamentRounds = EntityFinder.findAllByColumnEquals((TournamentRound) IDOLookup.instanciateEntity(TournamentRound.class),"tournament_id",""+tournament.getID(),"ROUND_NUMBER",""+i);
 	                    if (tournamentRounds != null) {
 	                        if (tournamentRounds.size() == 1) {
 	                          try {
@@ -1027,7 +1027,7 @@ public class TournamentCreator extends TournamentBlock {
 	                  tRound.update();
 
 	                  if (updateScorecards) {
-	                      scorecards = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAllByColumn("tournament_round_id",tRound.getID());
+	                      scorecards = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAllByColumnEquals("tournament_round_id",tRound.getID());
 	                      for (int g = 0; g < scorecards.length; g++) {
 	                          scorecards[g].setScorecardDate(tRound.getRoundDate());
 	                          scorecards[g].update();
@@ -1082,7 +1082,7 @@ public class TournamentCreator extends TournamentBlock {
 	                  tRound.update();
 
 	                  if (updateScorecards) {
-	                      scorecards = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAllByColumn("tournament_round_id",tRound.getID());
+	                      scorecards = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAllByColumnEquals("tournament_round_id",tRound.getID());
 	                      for (int g = 0; g < scorecards.length; g++) {
 	                          scorecards[g].setScorecardDate(tRound.getRoundDate());
 	                          scorecards[g].update();

@@ -148,7 +148,7 @@ public class TariffService  {
   }
 
   static public List getCatalogList(String union_id) throws SQLException{
-    List L = EntityFinder.findAllByColumn((PriceCatalogue) IDOLookup.instanciateEntity(PriceCatalogue.class),"union_id",union_id,"in_use","Y","is_independent","N");
+    List L = EntityFinder.findAllByColumnEquals((PriceCatalogue) IDOLookup.instanciateEntity(PriceCatalogue.class),"union_id",union_id,"in_use","Y","is_independent","N");
     return L;
   }
 
@@ -171,7 +171,7 @@ public class TariffService  {
   }
 
   static public List getExtraCatalogList(String union_id) throws SQLException{
-    return EntityFinder.findAllByColumn((PriceCatalogue) IDOLookup.instanciateEntity(PriceCatalogue.class),"union_id",union_id,"in_use","Y","is_independent","Y");
+    return EntityFinder.findAllByColumnEquals((PriceCatalogue) IDOLookup.instanciateEntity(PriceCatalogue.class),"union_id",union_id,"in_use","Y","is_independent","Y");
   }
 
   static public PriceCatalogue[] getExtraCatalogues(String unionID) throws SQLException{
@@ -222,7 +222,7 @@ public class TariffService  {
 
   static public Account[] getAccounts(int iMemberId, int iUnionId){
     try{
-      Account[] A = (Account[]) ((Account) IDOLookup.instanciateEntity(Account.class)).findAllByColumn("member_id",String.valueOf(iMemberId),"union_id",String.valueOf(iUnionId));
+      Account[] A = (Account[]) ((Account) IDOLookup.instanciateEntity(Account.class)).findAllByColumnEquals("member_id",String.valueOf(iMemberId),"union_id",String.valueOf(iUnionId));
       return A;
     }
     catch(SQLException sql){
@@ -233,7 +233,7 @@ public class TariffService  {
   static public int findAccountID(int member_id, int union_id){
     int id = -1;
     try{
-      Account[] A = (Account[]) ((Account) IDOLookup.instanciateEntity(Account.class)).findAllByColumn("member_id",String.valueOf(member_id),"union_id",String.valueOf(union_id));
+      Account[] A = (Account[]) ((Account) IDOLookup.instanciateEntity(Account.class)).findAllByColumnEquals("member_id",String.valueOf(member_id),"union_id",String.valueOf(union_id));
       if(A.length > 0)
         id = A[0].getID();
     }
@@ -244,7 +244,7 @@ public class TariffService  {
   static public Account findAccount(int member_id, int union_id,int accountYearId){
     try{
 
-      Account[] A = (Account[]) ((Account) IDOLookup.instanciateEntity(Account.class)).findAllByColumn(
+      Account[] A = (Account[]) ((Account) IDOLookup.instanciateEntity(Account.class)).findAllByColumnEquals(
               "member_id",String.valueOf(member_id),
               "union_id",String.valueOf(union_id),
               "account_year_id",String.valueOf(accountYearId));
@@ -257,7 +257,7 @@ public class TariffService  {
 
   static public Account[] findAccounts(int member_id, int union_id){
     try{
-      Account[] A = (Account[]) ((Account) IDOLookup.instanciateEntity(Account.class)).findAllByColumn("member_id",String.valueOf(member_id),"union_id",String.valueOf(union_id));
+      Account[] A = (Account[]) ((Account) IDOLookup.instanciateEntity(Account.class)).findAllByColumnEquals("member_id",String.valueOf(member_id),"union_id",String.valueOf(union_id));
       return A;
     }
     catch(SQLException e){}

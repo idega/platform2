@@ -867,7 +867,7 @@ public class TournamentBusinessBean extends IBOServiceBean implements Tournament
 			int tournament_group_id = tournament.getTournamentGroupId(member.getID());
 			TournamentGroup tGroup = ((TournamentGroupHome) IDOLookup.getHomeLegacy(TournamentGroup.class)).findByPrimaryKey(tournament_group_id);
 
-			TournamentTournamentGroup[] tTGroup = (TournamentTournamentGroup[]) ((TournamentTournamentGroup) IDOLookup.instanciateEntity(TournamentTournamentGroup.class)).findAllByColumn("tournament_id", tournament.getID() + "", "tournament_group_id", tournament_group_id + "");
+			TournamentTournamentGroup[] tTGroup = (TournamentTournamentGroup[]) ((TournamentTournamentGroup) IDOLookup.instanciateEntity(TournamentTournamentGroup.class)).findAllByColumnEquals("tournament_id", tournament.getID() + "", "tournament_group_id", tournament_group_id + "");
 
 			if (tTGroup.length > 0) {
 				createScorecardForMember(member, tournament, tTGroup[0]);
@@ -888,7 +888,7 @@ public class TournamentBusinessBean extends IBOServiceBean implements Tournament
 			throw new SQLException(fe.getMessage());
 		}
 
-		TournamentTournamentGroup[] tTGroup = (TournamentTournamentGroup[]) ((TournamentTournamentGroup) IDOLookup.instanciateEntity(TournamentTournamentGroup.class)).findAllByColumn("tournament_id", tournament.getID() + "", "tournament_group_id", tournament_group_id);
+		TournamentTournamentGroup[] tTGroup = (TournamentTournamentGroup[]) ((TournamentTournamentGroup) IDOLookup.instanciateEntity(TournamentTournamentGroup.class)).findAllByColumnEquals("tournament_id", tournament.getID() + "", "tournament_group_id", tournament_group_id);
 
 		if (tTGroup.length > 0) {
 			createScorecardForMember(member, tournament, tTGroup[0]);

@@ -248,7 +248,7 @@ public class GiroFile  {
 
     PaymentRound PR = ((PaymentRoundHome) IDOLookup.getHomeLegacy(PaymentRound.class)).findByPrimaryKey(roundid);
     String paymRoundIDstring = String.valueOf(PR.getID());
-    Payment[] payments = (Payment[]) ((Payment) IDOLookup.instanciateEntity(Payment.class)).findAllByColumn("status","N","payment_type_id",giroID );
+    Payment[] payments = (Payment[]) ((Payment) IDOLookup.instanciateEntity(Payment.class)).findAllByColumnEquals("status","N","payment_type_id",giroID );
 
     int TotalPrice = 0;
     int price = 0;

@@ -106,12 +106,12 @@ public class HandicapUpdate extends GolfWindow {
 
 			if (mode.equals("submit")) {
 
-				MemberInfo[] memberInfo = (MemberInfo[]) ((MemberInfo) IDOLookup.instanciateEntity(MemberInfo.class)).findAllByColumn("member_id", member_id);
+				MemberInfo[] memberInfo = (MemberInfo[]) ((MemberInfo) IDOLookup.instanciateEntity(MemberInfo.class)).findAllByColumnEquals("member_id", member_id);
 
 				if (action.equalsIgnoreCase("update")) {
 
 					if (memberInfo.length > 0) {
-						Scorecard[] scorecard = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAllByColumn("member_id", member_id);
+						Scorecard[] scorecard = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAllByColumnEquals("member_id", member_id);
 
 						if ((scorecard == null) || (scorecard.length == 0)) {
 							memberInfo[0].setHandicap(handicap);

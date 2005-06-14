@@ -624,7 +624,7 @@ public class PaymentViewer extends com.idega.presentation.PresentationObjectCont
 	private int findAccountID(int member_id, int union_id) {
 		int id = -1;
 		try {
-			Account[] A = (Account[]) ((Account) IDOLookup.instanciateEntity(Account.class)).findAllByColumn("member_id", String.valueOf(member_id), "union_id", String.valueOf(union_id));
+			Account[] A = (Account[]) ((Account) IDOLookup.instanciateEntity(Account.class)).findAllByColumnEquals("member_id", String.valueOf(member_id), "union_id", String.valueOf(union_id));
 			if (A.length > 0)
 				id = A[0].getID();
 		}
@@ -714,8 +714,6 @@ public class PaymentViewer extends com.idega.presentation.PresentationObjectCont
 			//P = (Payment[]) (new Payment()).findAll("select * from payment where
 			// member_id = '"+member_id+"' and (payment_date <=
 			// '"+today.getYear()+"-01-01' or status ='Y' ") ;
-			//P = (Payment[]) (new
-			// Payment()).findAllByColumn("member_id",String.valueOf(member_id));
 			P = (Payment[]) ((Payment) IDOLookup.instanciateEntity(Payment.class)).findAll("select * from payment where member_id = '" + member_id + "' and round_id in ( select payment_round_id from payment_round where union_id like '" + union_id + "' ) ");
 		}
 		catch (SQLException e) {

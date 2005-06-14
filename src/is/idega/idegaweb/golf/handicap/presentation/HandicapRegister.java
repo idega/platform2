@@ -944,10 +944,6 @@ public class HandicapRegister extends GolfBlock {
 				try {
 					trans.begin();
 					if (update) {
-						/*
-						 * Stroke[] strokesID = (Stroke[]) (new
-						 * Stroke()).findAllByColumn("scorecard_id",scorecard_id,"tee_id",String.valueOf(tee_nr));
-						 */
 						Stroke strokesID = (Stroke) str.get(Integer.toString(tee_nr));
 
 						if (strokesID != null) {

@@ -244,7 +244,7 @@ public class FieldOverview extends GolfBlock {
 		contentTable.setCellpaddingBottom(1,row,25);
 		contentTable.setCellpaddingTop(1,row,10);
 
-		FieldImage[] fieldImage = (FieldImage[]) ((FieldImage) IDOLookup.instanciateEntity(FieldImage.class)).findAllByColumn("field_id", String.valueOf(field.getID()));
+		FieldImage[] fieldImage = (FieldImage[]) ((FieldImage) IDOLookup.instanciateEntity(FieldImage.class)).findAllByColumnEquals("field_id", String.valueOf(field.getID()));
 		if (fieldImage.length != 0) {
 			Image fieldMynd = new Image(fieldImage[0].getImageID());
 			fieldMynd.setHorizontalSpacing(12);
@@ -256,7 +256,7 @@ public class FieldOverview extends GolfBlock {
 		}
 
 		TextReader fieldText = null;
-		HoleText[] hole_text = (HoleText[]) ((HoleText) IDOLookup.instanciateEntity(HoleText.class)).findAllByColumn("field_id", "" + field.getID(), "hole_number", "0");
+		HoleText[] hole_text = (HoleText[]) ((HoleText) IDOLookup.instanciateEntity(HoleText.class)).findAllByColumnEquals("field_id", "" + field.getID(), "hole_number", "0");
 		
 		if (hole_text.length > 0) {
 			if(isAdmin() && hole_text[0].getTextID() < 0) {
@@ -361,7 +361,7 @@ public class FieldOverview extends GolfBlock {
 			}
 		}
 
-		TeeImage[] teeImage = (TeeImage[]) ((TeeImage) IDOLookup.instanciateEntity(TeeImage.class)).findAllByColumn("field_id", String.valueOf(field.getID()), "hole_number", hole_number);
+		TeeImage[] teeImage = (TeeImage[]) ((TeeImage) IDOLookup.instanciateEntity(TeeImage.class)).findAllByColumnEquals("field_id", String.valueOf(field.getID()), "hole_number", hole_number);
 		if (teeImage.length != 0) {
 			Image teeMynd = new Image(teeImage[0].getImageID());
 			outerTable.setAlignment(1, row, Table.HORIZONTAL_ALIGN_CENTER);
@@ -374,7 +374,7 @@ public class FieldOverview extends GolfBlock {
 		outerTable.setHeight(row++, 18);
 
 		TextReader fieldText = null;
-		HoleText[] hole_text = (HoleText[]) ((HoleText) IDOLookup.instanciateEntity(HoleText.class)).findAllByColumn("field_id", "" + field.getID(), "hole_number", hole_number);
+		HoleText[] hole_text = (HoleText[]) ((HoleText) IDOLookup.instanciateEntity(HoleText.class)).findAllByColumnEquals("field_id", "" + field.getID(), "hole_number", hole_number);
 		if (hole_text.length > 0) {
 			if(isAdmin() && hole_text[0].getTextID() < 0) {
 				TxText text = TextBusiness.saveText(-1,-1,iwc.getCurrentLocaleId(),iwc.getCurrentUserId(),this.getICObjectInstanceID(),null,null,"","","",null,null);

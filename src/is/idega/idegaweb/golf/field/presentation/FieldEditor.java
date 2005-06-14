@@ -308,7 +308,7 @@ public class FieldEditor extends GolfWindow {
 			int returner = -1;
 
 			FieldImage[] images = null;
-			images = (FieldImage[]) ((FieldImage) IDOLookup.instanciateEntity(FieldImage.class)).findAllByColumn("field_id", "" + this.field_id);
+			images = (FieldImage[]) ((FieldImage) IDOLookup.instanciateEntity(FieldImage.class)).findAllByColumnEquals("field_id", "" + this.field_id);
 			if (images.length > 0) {
 				returner = images[0].getImageID();
 
@@ -321,7 +321,7 @@ public class FieldEditor extends GolfWindow {
 			int returner = -1;
 
 			TeeImage[] images = null;
-			images = (TeeImage[]) ((TeeImage) IDOLookup.instanciateEntity(TeeImage.class)).findAllByColumn("hole_number", hole_number, "field_id", "" + this.field_id);
+			images = (TeeImage[]) ((TeeImage) IDOLookup.instanciateEntity(TeeImage.class)).findAllByColumnEquals("hole_number", hole_number, "field_id", "" + this.field_id);
 			if (images.length > 0) {
 				returner = images[0].getImageID();
 			}
@@ -492,7 +492,7 @@ public class FieldEditor extends GolfWindow {
 				
 
 				try {
-					HoleText[] hole_texts = (HoleText[]) ((HoleText) IDOLookup.instanciateEntity(HoleText.class)).findAllByColumn("FIELD_ID", "" + this.field_id, "hole_number", "" + hole_number);
+					HoleText[] hole_texts = (HoleText[]) ((HoleText) IDOLookup.instanciateEntity(HoleText.class)).findAllByColumnEquals("FIELD_ID", "" + this.field_id, "hole_number", "" + hole_number);
 					if (hole_texts.length > 0) {
 						hole_texts[0].setTextID(returner);
 						hole_texts[0].store();
@@ -526,7 +526,7 @@ public class FieldEditor extends GolfWindow {
 			int returner = -1;
 
 			try {
-				HoleText[] hole_texts = (HoleText[]) ((HoleText) IDOLookup.instanciateEntity(HoleText.class)).findAllByColumn("FIELD_ID", "" + this.field_id, "hole_number", "" + hole_number);
+				HoleText[] hole_texts = (HoleText[]) ((HoleText) IDOLookup.instanciateEntity(HoleText.class)).findAllByColumnEquals("FIELD_ID", "" + this.field_id, "hole_number", "" + hole_number);
 				if (hole_texts.length > 0) {
 					returner = hole_texts[0].getTextID();
 				}
@@ -549,7 +549,7 @@ public class FieldEditor extends GolfWindow {
 			// saving image...
 			if ((hole_image_id != null) && (hole_number != null)) {
 				TeeImage[] images = null;
-				images = (TeeImage[]) ((TeeImage) IDOLookup.instanciateEntity(TeeImage.class)).findAllByColumn("hole_number", hole_number, "field_id", "" + this.field_id);
+				images = (TeeImage[]) ((TeeImage) IDOLookup.instanciateEntity(TeeImage.class)).findAllByColumnEquals("hole_number", hole_number, "field_id", "" + this.field_id);
 				if (images != null) {
 					if (images.length > 0) {
 						for (int i = 0; i < images.length; i++) {
@@ -591,7 +591,7 @@ public class FieldEditor extends GolfWindow {
 
 			if (hole_number != null) {
 				TeeImage[] images = null;
-				images = (TeeImage[]) ((TeeImage) IDOLookup.instanciateEntity(TeeImage.class)).findAllByColumn("hole_number", hole_number, "field_id", "" + this.field_id);
+				images = (TeeImage[]) ((TeeImage) IDOLookup.instanciateEntity(TeeImage.class)).findAllByColumnEquals("hole_number", hole_number, "field_id", "" + this.field_id);
 
 				if (images != null) {
 					if (images.length > 0) {
@@ -607,7 +607,7 @@ public class FieldEditor extends GolfWindow {
 
 		protected void deleteFieldImage(IWContext modinfo) throws SQLException {
 			FieldImage[] images = null;
-			images = (FieldImage[]) ((FieldImage) IDOLookup.instanciateEntity(FieldImage.class)).findAllByColumn("field_id", "" + this.field_id);
+			images = (FieldImage[]) ((FieldImage) IDOLookup.instanciateEntity(FieldImage.class)).findAllByColumnEquals("field_id", "" + this.field_id);
 
 			if (images != null) {
 				if (images.length > 0) {
@@ -647,7 +647,7 @@ public class FieldEditor extends GolfWindow {
 
 			Field field = ((FieldHome) IDOLookup.getHomeLegacy(Field.class)).findByPrimaryKey(this.field_id);
 			if (field_image_id != null) {
-				FieldImage[] field_image = (FieldImage[]) ((FieldImage) IDOLookup.instanciateEntity(FieldImage.class)).findAllByColumn("field_id", this.field_id);
+				FieldImage[] field_image = (FieldImage[]) ((FieldImage) IDOLookup.instanciateEntity(FieldImage.class)).findAllByColumnEquals("field_id", this.field_id);
 				if (field_image.length > 0) {
 					field_image[0].setImageID(Integer.parseInt(field_image_id));
 					field_image[0].update();
@@ -872,7 +872,7 @@ public class FieldEditor extends GolfWindow {
 		protected void createField(IWContext modinfo) throws SQLException {
 			String union_id = modinfo.getParameter("i_field_union_id");
 
-			Field[] fields = (Field[]) ((Field) IDOLookup.instanciateEntity(Field.class)).findAllByColumn("union_id", union_id);
+			Field[] fields = (Field[]) ((Field) IDOLookup.instanciateEntity(Field.class)).findAllByColumnEquals("union_id", union_id);
 
 			if (fields.length == 0) {
 				Form form = new Form();

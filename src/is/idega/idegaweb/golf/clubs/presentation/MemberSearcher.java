@@ -78,7 +78,7 @@ public class MemberSearcher extends GolfBlock {
 			String nafn = modinfo.getParameter("name");
 			String unionId = (String) modinfo.getSession().getAttribute("golf_union_id");
 
-			Member[] member = (Member[]) ((Member) IDOLookup.instanciateEntity(Member.class)).findAllByColumn("social_security_number", kennitala);
+			Member[] member = (Member[]) ((Member) IDOLookup.instanciateEntity(Member.class)).findAllByColumnEquals("social_security_number", kennitala);
 			if (nafn != null && (member == null || member.length == 0)) {
 				//try {
 				member = findMembersByName(modinfo, nafn, unionId);

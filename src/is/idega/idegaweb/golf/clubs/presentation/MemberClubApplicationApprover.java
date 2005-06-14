@@ -39,7 +39,7 @@ public class MemberClubApplicationApprover extends GolfBlock {
 		content.setBorder(0);
 		content.setWidth("100%");
 
-		Subscription[] subscribe = (Subscription[]) ((Subscription) IDOLookup.instanciateEntity(Subscription.class)).findAllByColumn("union_id", union_id);
+		Subscription[] subscribe = (Subscription[]) ((Subscription) IDOLookup.instanciateEntity(Subscription.class)).findAllByColumnEquals("union_id", union_id);
 
 		for (int a = 0; a < subscribe.length; a++) {
 

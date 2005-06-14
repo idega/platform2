@@ -142,7 +142,7 @@ public class LoginBusiness extends LoginBusinessBean implements IWPageEventListe
 
 	private boolean verifyPassword(IWContext modinfo, String login, String password) throws IOException, SQLException {
 		boolean returner = false;
-		LoginTable[] login_table = (LoginTable[]) ((LoginTable) IDOLookup.instanciateEntity(LoginTable.class)).findAllByColumn("user_login", login);
+		LoginTable[] login_table = (LoginTable[]) ((LoginTable) IDOLookup.instanciateEntity(LoginTable.class)).findAllByColumnEquals("user_login", login);
 		MemberHome mh = ((MemberHome) IDOLookup.getHomeLegacy(Member.class));
 		
 		for (int i = 0; i < login_table.length; i++) {
@@ -217,7 +217,7 @@ public class LoginBusiness extends LoginBusinessBean implements IWPageEventListe
 		boolean returner = false;
 
 		if (user_pass_one.equals(user_pass_two)) {
-			LoginTable[] logTable = (LoginTable[]) ((LoginTable) IDOLookup.instanciateEntity(LoginTable.class)).findAllByColumn("USER_LOGIN", user_login);
+			LoginTable[] logTable = (LoginTable[]) ((LoginTable) IDOLookup.instanciateEntity(LoginTable.class)).findAllByColumnEquals("USER_LOGIN", user_login);
 			if (logTable.length == 0) {
 				try {
 					LoginTable logT = ((LoginTableHome) IDOLookup.getHomeLegacy(LoginTable.class)).create();

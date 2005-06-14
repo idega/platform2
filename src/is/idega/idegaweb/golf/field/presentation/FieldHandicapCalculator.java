@@ -124,7 +124,7 @@ public class FieldHandicapCalculator extends GolfWindow {
 				double grunn = forgjof.doubleValue();
 				Handicap leikForgjof = new Handicap(grunn);
 
-				Tee[] tee = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAllByColumn("tee_color_id", tee_color_id, "field_id", field_id);
+				Tee[] tee = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAllByColumnEquals("tee_color_id", tee_color_id, "field_id", field_id);
 				int slope = tee[0].getIntColumnValue("slope");
 				float course_rating = tee[0].getFloatColumnValue("course_rating");
 				int field_par = field.getIntColumnValue("field_par");

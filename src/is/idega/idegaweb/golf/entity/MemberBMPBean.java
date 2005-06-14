@@ -471,7 +471,7 @@ public class MemberBMPBean extends GenericEntity implements Member {
 
       try{
         Startingtime time = (Startingtime) IDOLookup.instanciateEntity(Startingtime.class);
-        Startingtime[] times = (Startingtime[])time.findAllByColumn("member_id",this.getID());
+        Startingtime[] times = (Startingtime[])time.findAllByColumnEquals("member_id",this.getID());
         for (int i = 0; i < times.length; i++){
           int id = times[i].getID();
           Stmt = conn.createStatement();
@@ -487,7 +487,7 @@ public class MemberBMPBean extends GenericEntity implements Member {
       catch(SQLException ex){   if(debug) ex.printStackTrace();   }
 
       try{
-        Account[] account = (Account[]) ((Account) IDOLookup.instanciateEntity(Account.class)).findAllByColumn("member_id",this.getID());
+        Account[] account = (Account[]) ((Account) IDOLookup.instanciateEntity(Account.class)).findAllByColumnEquals("member_id",this.getID());
         for ( int a = 0; a < account.length; a++ ) {
           ((AccountEntry) IDOLookup.instanciateEntity(AccountEntry.class)).deleteMultiple("account_id",Integer.toString(account[a].getID()));
           account[a].delete();
@@ -526,7 +526,7 @@ public class MemberBMPBean extends GenericEntity implements Member {
   public static Member getMember(String socialSecurityNumber) {
       Member returner = null;
       try {
-          java.util.List members = com.idega.data.EntityFinder.findAllByColumn((Member) IDOLookup.instanciateEntity(Member.class),"SOCIAL_SECURITY_NUMBER",socialSecurityNumber);
+          java.util.List members = com.idega.data.EntityFinder.findAllByColumnEquals((Member) IDOLookup.instanciateEntity(Member.class),"SOCIAL_SECURITY_NUMBER",socialSecurityNumber);
           if (members != null) {
               if (members.size()  > 0) {
                   returner = (Member) members.get( (members.size() -1));

@@ -150,7 +150,7 @@ public class TournamentParticipantsBMPBean extends GenericEntity implements Tour
         public static is.idega.idegaweb.golf.entity.TournamentParticipants getTournamentParticipants(int member_id,int tournament_id) {
             is.idega.idegaweb.golf.entity.TournamentParticipants returner = null;
             try {
-                java.util.List members = com.idega.data.EntityFinder.findAllByColumn((TournamentParticipants) IDOLookup.instanciateEntity(TournamentParticipants.class),"member_id",member_id+"","tournament_id",tournament_id+"");
+                java.util.List members = com.idega.data.EntityFinder.findAllByColumnEquals((TournamentParticipants) IDOLookup.instanciateEntity(TournamentParticipants.class),"member_id",member_id+"","tournament_id",tournament_id+"");
                 if (members != null) {
                     if (members.size()  > 0) returner = (is.idega.idegaweb.golf.entity.TournamentParticipants) members.get(0);
                 }

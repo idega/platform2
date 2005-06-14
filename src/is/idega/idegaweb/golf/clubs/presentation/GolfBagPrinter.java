@@ -53,7 +53,7 @@ public class GolfBagPrinter extends GolfBlock {
 		for (int a = 0; a < members.length; a++) {
 
 			Member member = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(Integer.parseInt(members[a]));
-			UnionMemberInfo[] unionMember = (UnionMemberInfo[]) ((UnionMemberInfo) IDOLookup.instanciateEntity(UnionMemberInfo.class)).findAllByColumn("member_id", members[a], "member_status", "A");
+			UnionMemberInfo[] unionMember = (UnionMemberInfo[]) ((UnionMemberInfo) IDOLookup.instanciateEntity(UnionMemberInfo.class)).findAllByColumnEquals("member_id", members[a], "member_status", "A");
 
 			Image memberImage = new GolfImage(member.getImageId());
 			memberImage.setHeight(160);

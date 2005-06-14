@@ -162,7 +162,7 @@ public class MemberLogin extends Editor{
     boolean returner = false;
 
     if (user_pass_one.equals(user_pass_two)) {
-      LoginTable[] logTable = (LoginTable[]) ((LoginTable) IDOLookup.instanciateEntity(LoginTable.class)).findAllByColumn("USER_LOGIN",user_login);
+      LoginTable[] logTable = (LoginTable[]) ((LoginTable) IDOLookup.instanciateEntity(LoginTable.class)).findAllByColumnEquals("USER_LOGIN",user_login);
       if (logTable.length == 0) {
           LoginTable logT = (LoginTable) IDOLookup.createLegacy(LoginTable.class);
           logT.setMemberId(member_id);
@@ -197,7 +197,7 @@ public class MemberLogin extends Editor{
 }
 
   public  String getUserLogin(int iMemberId)throws SQLException{
-    LoginTable[] logins = (LoginTable[])((LoginTable)IDOLookup.instanciateEntity(LoginTable.class)).findAllByColumn("MEMBER_ID",iMemberId);
+    LoginTable[] logins = (LoginTable[])((LoginTable)IDOLookup.instanciateEntity(LoginTable.class)).findAllByColumnEquals("MEMBER_ID",iMemberId);
     if(logins != null && logins.length > 0)
       return logins[0].getUserLogin();
     else

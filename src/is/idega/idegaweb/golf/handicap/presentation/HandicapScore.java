@@ -143,7 +143,7 @@ public class HandicapScore extends GolfBlock {
 
 		String field_id = (String) modinfo.getSession().getAttribute("field_id");
 		if (field_id == null) {
-			Field[] field = (Field[]) ((Field) IDOLookup.instanciateEntity(Field.class)).findAllByColumn("union_id", String.valueOf(union_id));
+			Field[] field = (Field[]) ((Field) IDOLookup.instanciateEntity(Field.class)).findAllByColumnEquals("union_id", String.valueOf(union_id));
 			if (union_id > 3 && field.length > 0) {
 				field_id = String.valueOf(field[0].getID());
 			}

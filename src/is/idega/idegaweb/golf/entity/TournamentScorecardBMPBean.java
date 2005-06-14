@@ -82,7 +82,7 @@ public class TournamentScorecardBMPBean extends GenericEntity implements Tournam
         public static TournamentScorecard getScorecard(int tournament_round_id,int member_id) {
             TournamentScorecard scorecard = null;
             try {
-                java.util.List scoreCards = EntityFinder.findAllByColumn((TournamentScorecard) IDOLookup.instanciateEntity(TournamentScorecard.class),"tournament_round_id",tournament_round_id+"","member_id",member_id+"");
+                java.util.List scoreCards = EntityFinder.findAllByColumnEquals((TournamentScorecard) IDOLookup.instanciateEntity(TournamentScorecard.class),"tournament_round_id",tournament_round_id+"","member_id",member_id+"");
                 if (scoreCards != null) {
                     if (scoreCards.size()  > 0) scorecard = (TournamentScorecard) scoreCards.get(0);
                 }

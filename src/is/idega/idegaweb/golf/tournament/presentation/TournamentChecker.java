@@ -337,7 +337,7 @@ public void doFix(IWContext modinfo, IWResourceBundle iwrb, IWBundle iwb) throws
             		System.out.print("Creating missing scorecards for member = "+member.getName()+" ");
             		int tournamentGroupId = getTournamentBusiness(modinfo).getTournamentGroup(member, tournament);
             		TournamentGroup tGroup = ((TournamentGroupHome) IDOLookup.getHome(TournamentGroup.class)).findByPrimaryKey(tournamentGroupId);
-            		TournamentTournamentGroup[] tTGroup = (TournamentTournamentGroup[]) ((TournamentTournamentGroup) IDOLookup.instanciateEntity(TournamentTournamentGroup.class)).findAllByColumn("tournament_id", tournament.getID() + "", "tournament_group_id", tournamentGroupId + "");
+            		TournamentTournamentGroup[] tTGroup = (TournamentTournamentGroup[]) ((TournamentTournamentGroup) IDOLookup.instanciateEntity(TournamentTournamentGroup.class)).findAllByColumnEquals("tournament_id", tournament.getID() + "", "tournament_group_id", tournamentGroupId + "");
 //            		TournamentTournamentGroup ttGroup = ((TournamentTournamentGroupHome) IDOLookup.getHome(TournamentTournamentGroup.class)).findByPrimaryKey();
           			for (int j = 0; j < tRounds.length; j++) {
             			boolean alreadyExists = false;
