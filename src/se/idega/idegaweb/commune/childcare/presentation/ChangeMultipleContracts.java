@@ -1,5 +1,5 @@
 /*
- * $Id: ChangeMultipleContracts.java,v 1.1 2005/06/13 18:24:02 laddi Exp $
+ * $Id: ChangeMultipleContracts.java,v 1.2 2005/06/14 13:13:57 laddi Exp $
  * Created on Jun 13, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -31,10 +31,10 @@ import com.idega.util.text.Name;
 
 
 /**
- * Last modified: $Date: 2005/06/13 18:24:02 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/14 13:13:57 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ChangeMultipleContracts extends ChildCareBlock {
 	
@@ -117,7 +117,7 @@ public class ChangeMultipleContracts extends ChildCareBlock {
 		form.add(toDateOfBirth);
 		form.add(new Break());
 
-		SubmitButton submit = (SubmitButton) getButton(new SubmitButton(localize("submit", "Submit")));
+		SubmitButton submit = (SubmitButton) getButton(new SubmitButton(localize("change_contracts", "Change contracts")));
 		form.add(new Break());
 		form.add(submit);
 
@@ -159,6 +159,12 @@ public class ChangeMultipleContracts extends ChildCareBlock {
 				table.add(getSmallText(school.getSchoolName()), column, row++);
 			}
 			
+			add(getHeader(localize("child_care.care_time_from", "Care time from") + ": "));
+			add(getCareTime(fromCareTime));
+			add(new Break());
+			add(getHeader(localize("child_care.care_time_to", "Care time to") + ": "));
+			add(getCareTime(toCareTime));
+			add(new Break(2));
 			add(getHeader(localize("child_care.changed_contracts_for_children", "Contracts changed for the following children:")));
 			add(new Break(2));
 			add(table);
