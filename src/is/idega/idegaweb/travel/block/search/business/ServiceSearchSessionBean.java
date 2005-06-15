@@ -11,7 +11,9 @@ public class ServiceSearchSessionBean extends IBOSessionBean implements ServiceS
 
 	private int SEARCH_STATE;
 	private Collection products = null;
-		
+	private Collection bookings = null;
+	private Exception e = null;
+	
 	public Collection getProducts() {
 		return products;
 	}
@@ -26,6 +28,36 @@ public class ServiceSearchSessionBean extends IBOSessionBean implements ServiceS
 
 	public int getState() {
 		return this.SEARCH_STATE;
+	}
+	
+	public void setBookingsSavedFromBasket(Collection bookings) {
+		this.bookings = bookings;
+	}
+	
+	public Collection getBookingsSavedFromBasket() {
+		Collection coll = bookings;
+		bookings = null;
+		return coll;
+	}
+	
+	/**
+	 * Store an exception to catch later, use throwException to throw it
+	 * @param e The Exception to throw
+	 */
+	public void setException(Exception e) {
+		this.e = e;
+	}
+	
+	/**
+	 * Throws the stored exception, if it is availble
+	 * @throws Exception
+	 */
+	public void throwException() throws Exception {
+		if (e != null) {
+			Exception ex = e;
+			e = null;
+			throw ex;
+		}
 	}
 	
 }
