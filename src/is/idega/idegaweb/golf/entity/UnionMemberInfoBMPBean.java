@@ -37,6 +37,11 @@ public class UnionMemberInfoBMPBean extends GenericEntity implements UnionMember
 
         addAttribute("membership_type", "Staða Klúbbs", true, true, "java.lang.String", 5);
         addAttribute("price_catalogue_id","Gjaldskrá",true,true,"java.lang.Integer");
+
+        addIndex("IDX_UNION_MEMBER_INFO_1", "member_id");
+        addIndex("IDX_UNION_MEMBER_INFO_2", "union_id");
+        addIndex("IDX_UNION_MEMBER_INFO_3", new String[]{ "member_id", "member_status"});
+        addIndex("IDX_UNION_MEMBER_INFO_4", new String[]{ "union_id", "member_id", "member_status", "membership_type"});
     }
 
     public void setDefaultValues(){
