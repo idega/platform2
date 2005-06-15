@@ -1,6 +1,7 @@
 package is.idega.idegaweb.travel.block.search.presentation;
 
 import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
+import is.idega.idegaweb.travel.data.GeneralBooking;
 import is.idega.idegaweb.travel.presentation.LinkGenerator;
 import is.idega.idegaweb.travel.presentation.TravelBlock;
 import is.idega.idegaweb.travel.service.presentation.BookingForm;
@@ -13,6 +14,8 @@ import java.util.List;
 import java.util.Vector;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
+import com.idega.block.basket.business.BasketBusiness;
+import com.idega.block.basket.data.BasketEntry;
 import com.idega.block.text.business.ContentFinder;
 import com.idega.block.text.business.ContentHelper;
 import com.idega.block.text.data.LocalizedText;
@@ -27,6 +30,9 @@ import com.idega.block.trade.stockroom.data.SupplierHome;
 import com.idega.block.trade.stockroom.data.Timeframe;
 import com.idega.block.trade.stockroom.data.TravelAddress;
 import com.idega.block.trade.stockroom.data.TravelAddressHome;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
+import com.idega.business.IBORuntimeException;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.contact.data.PhoneType;
@@ -67,16 +73,19 @@ public class ProductDetailFrame extends TravelBlock {
 	Table productInfoDetailed = null;
 	List leftAdd = new Vector();
 	boolean showContactInfo = true;
+	boolean useBasket = false;
+	protected DecimalFormat df = new DecimalFormat("0.00");
 
 //	public ProductDetailFrame(IWContext iwc, Product product) throws RemoteException {
 //		this(iwc, 3, product);
 //	}
 	
-	public ProductDetailFrame(IWContext iwc, int columns, Product product, boolean showContactInfo) throws RemoteException {
+	public ProductDetailFrame(IWContext iwc, int columns, Product product, boolean showContactInfo, boolean useBasket) throws RemoteException {
 		String sProductId = iwc.getParameter(AbstractSearchForm.PARAMETER_PRODUCT_ID);
 		if (sProductId == null) {
 			sProductId = iwc.getParameter(LinkGenerator.parameterProductId);
 		}
+		this.useBasket = useBasket;
 		this.showContactInfo = showContactInfo;
 		iwrb = super.getResourceBundle(iwc);
 		localeID = iwc.getCurrentLocaleId();
@@ -118,6 +127,8 @@ public class ProductDetailFrame extends TravelBlock {
 			} catch (Exception e ) {
 				e.printStackTrace();
 			}
+		} else if (useBasket) {
+			System.out.println("ProductDefailtFrame product is NULL, use Basket !!!");
 		} else {
 			System.out.println("ProductDefailtFrame product is NULL");
 		}
@@ -169,7 +180,61 @@ public class ProductDetailFrame extends TravelBlock {
 		List files;
 		Image image = null;
 		Timeframe timeframe;
-		if (product != null) {
+		
+		if (useBasket) {
+//			table.setBorder(1);
+//			contTable.setBorder(1);
+
+			Collection coll = getBasketBusiness(iwc).getBasket().values();
+			Iterator iter = coll.iterator();
+			Table bookingTable = new Table();
+			bookingTable.setCellpaddingAndCellspacing(0);
+//			bookingTable.setBorder(1);
+			int bRow = 1;
+			GeneralBooking booking;
+			BasketEntry item;
+			Currency currency = null;
+			Product prod;
+			bookingTable.setWidth("200");
+//			contTable.setWidth(1, 1, "200");
+			float totalPrice = 0;
+			while (iter.hasNext()) {
+				item = (BasketEntry) iter.next();
+				booking = (GeneralBooking) item.getItem();
+				float price = getBooker(iwc).getBookingPrice(booking);
+				currency = getBooker(iwc).getBookingCurrency(booking);
+				totalPrice += price;
+				prod = booking.getService().getProduct();
+				String name = prod.getProductName(localeID);
+				String suppName = prod.getSupplier().getName();
+				bookingTable.setStyleClass(1, bRow, getStyleName(BookingForm.STYLENAME_BACKGROUND_COLOR));
+				bookingTable.setCellpaddingLeft(1, bRow, 10);
+				bookingTable.setCellpaddingTop(1, bRow, 10);
+				bookingTable.add(getText(suppName +" - "+name), 1, bRow++);
+				bookingTable.setStyleClass(1, bRow, getStyleName(BookingForm.STYLENAME_BACKGROUND_COLOR));
+				bookingTable.setCellpaddingTop(1, bRow, 5);
+				bookingTable.setCellpaddingLeft(1, bRow, 10);
+				bookingTable.setCellpaddingBottom(1, bRow, 10);
+				bookingTable.add(getSmallText(iwrb.getLocalizedString("travel.price", "Price")+": "), 1, bRow);
+				bookingTable.add(getOrangeText(df.format(price)+" "+currency.getCurrencyAbbreviation()), 1, bRow++);
+				bookingTable.setHeight(bRow++, 2);
+			}
+			bookingTable.setStyleClass(1, bRow, getStyleName(BookingForm.STYLENAME_BACKGROUND_COLOR));
+			bookingTable.setCellpadding(1, bRow, 10);
+			if (getBasketBusiness(iwc).getBasket().isEmpty()) {
+				bookingTable.add(getSmallText(iwrb.getLocalizedString("travel.basket_is_empty", "Basket is empty")), 1, bRow++);
+			} else {
+				bookingTable.add(getSmallText(iwrb.getLocalizedString("travel.total", "Total")+": "), 1, bRow);
+				bookingTable.add(getOrangeText(df.format(totalPrice)+" "+currency.getCurrencyAbbreviation()), 1, bRow++);
+			}
+			
+			contTable.add(bookingTable, 1, 1);
+			contTable.setVerticalAlignment(1, 1, Table.VERTICAL_ALIGN_TOP);
+			contTable.setVerticalAlignment(2, 1, Table.VERTICAL_ALIGN_TOP);
+
+			
+			table.add(contTable, 1, row++);
+		} else if (product != null) {
 			TravelStockroomBusiness bus = null;
 			try {
 				bus = getServiceHandler(iwc).getServiceBusiness(product);
@@ -519,6 +584,15 @@ public class ProductDetailFrame extends TravelBlock {
 		
 	public void setProductInfoDetailed(Table table) {
 		this.productInfoDetailed = table;
+	}
+
+	protected BasketBusiness getBasketBusiness(IWContext iwc) {
+		try {
+			return (BasketBusiness) IBOLookup.getSessionInstance(iwc, BasketBusiness.class);
+		}
+		catch (IBOLookupException e) {
+			throw new IBORuntimeException(e);
+		}
 	}
 	
 }

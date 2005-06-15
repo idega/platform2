@@ -7,7 +7,6 @@ import is.idega.idegaweb.travel.block.search.business.ServiceSearchSession;
 import is.idega.idegaweb.travel.block.search.data.ServiceSearchEngine;
 import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
 import is.idega.idegaweb.travel.data.GeneralBooking;
-import is.idega.idegaweb.travel.data.GeneralBookingHome;
 import is.idega.idegaweb.travel.presentation.LinkGenerator;
 import is.idega.idegaweb.travel.presentation.PublicBooking;
 import is.idega.idegaweb.travel.presentation.TravelBlock;
@@ -28,6 +27,7 @@ import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.mail.MessagingException;
 import com.idega.block.basket.business.BasketBusiness;
+import com.idega.block.creditcard.business.CreditCardAuthorizationException;
 import com.idega.block.creditcard.business.CreditCardBusiness;
 import com.idega.block.creditcard.business.TPosException;
 import com.idega.block.text.data.LocalizedText;
@@ -79,17 +79,17 @@ import com.idega.util.SendMail;
 /**
  * @author gimmi
  */
-public abstract class AbstractSearchForm extends TravelBlock{
+public abstract class AbstractSearchForm extends TravelBlock {
 
 	private boolean debug = false;
 	
-	protected String ACTION = "bsf_a";
-	protected String PREV_ACTION = "bsf_pa";
-	protected String ACTION_SEARCH = "bsf_as";
-	protected String ACTION_BOOKING_FORM = "bsf_bf";
-	protected String ACTION_PRODUCT_DETAILS = "bsf_pd";
-	protected String ACTION_CONFIRM = "bsf_cm";
-	protected String ACTION_ADD_TO_BASKET = "bsf_atb";
+	public static String ACTION = "bsf_a";
+	protected static String PREV_ACTION = "bsf_pa";
+	protected static String ACTION_SEARCH = "bsf_as";
+	static String ACTION_BOOKING_FORM = "bsf_bf";
+	protected static String ACTION_PRODUCT_DETAILS = "bsf_pd";
+	public static String ACTION_CONFIRM = "bsf_cm";
+	public static String ACTION_ADD_TO_BASKET = "bsf_atb";
 
 	protected static final int STATE_SHOW_SEARCH_FORM = 0;
 	protected static final int STATE_SHOW_SEARCH_RESULTS = 1;
@@ -129,6 +129,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	public static String PARAMETER_REFERER_URL = PublicBooking.PARAMETER_REFERRAL_URL;
 	public static String PARAMETER_PHONE_NUMBER = BookingForm.PARAMETER_PHONE;
 	public static String PARAMETER_NAME_ON_CARD = BookingForm.PARAMETER_NAME_ON_CARD; //"hs_noc";
+	public static String PARAMETER_REFERENCE_NUMBER = "cc_ref_num";
 	public static String PARAMETER_SORT_BY = "asf_p_sb"; 
 	
 	public static final String PARAMETER_COUNTRY_PC_D = "bf_coun";
@@ -225,11 +226,11 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		}
 	}
 	
-	public void _main(IWContext iwc) throws Exception {
-		this.iwc = iwc;
-		handleSubmit(iwc);
-		super._main(iwc);
-	}
+//	public void _main(IWContext iwc) throws Exception {
+//		this.iwc = iwc;
+//		handleSubmit(iwc);
+//		super._main(iwc);
+//	}
 	
 	public void main(IWContext iwc) throws Exception {
 		super.main(iwc);
@@ -474,8 +475,14 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		} else if ( action.equals(this.ACTION_BOOKING_FORM)) {
 			STATE = STATE_SHOW_BOOKING_FORM;
 		} else if (action.equals(ACTION_CONFIRM)) {
+			boolean cvc = false;
 			bf = getBookingForm();
-			errorFields = getSearchBusiness(iwc).getErrorFormFields(iwc, getPriceCategoryKey(), bf.useCVC);
+			if (useBasket) {
+				cvc = getCreditCardBusiness(iwc).getUseCVC(getCreditCardBusiness(iwc).getCreditCardMerchant(engine.getSupplierManager(), IWTimestamp.RightNow()));
+			} else {
+				cvc = bf.useCVC;
+			}
+			errorFields = getSearchBusiness(iwc).getErrorFormFields(iwc, getPriceCategoryKey(), cvc, useBasket);
 			bf.setErrorFields(errorFields);
 			List tmp = getErrorFormFields();
 			if (tmp != null) {
@@ -490,27 +497,16 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		} else if (action.equals(ACTION_PRODUCT_DETAILS)) {
 			STATE = STATE_SHOW_DETAILED_PRODUCT;
 		} else if (action.equals(ACTION_ADD_TO_BASKET)) {
-			if (!addedToBasket && !isAlwaysSearchForm) {
-				BasketBusiness travelbasket = getBasketBusiness(iwc);
-				
-				try {
-					GeneralBooking booking = doBooking(iwc, false);
-					booking.setIsValid(false);
-					booking.store();
-					
-					travelbasket.addItem(booking);
-					addedToBasket = true;
-	
-				}
-				catch (Exception e1) {
-					e1.printStackTrace();
-				}
-				
-				
-			}
-			
+//			try {
+//				getSearchBusiness(iwc).addToBasket(iwc);
+//			}
+//			catch (RemoteException e) {
+//				e.printStackTrace();
+//			}
+//			
 			String prevAction = iwc.getParameter(PREV_ACTION);
 			if (prevAction != null ) {
+				currentAction = prevAction;
 				if (prevAction.equals(ACTION_PRODUCT_DETAILS)) {
 					STATE = STATE_SHOW_DETAILED_PRODUCT;
 				} else if (prevAction.equals(ACTION_SEARCH)) {
@@ -741,30 +737,59 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		table.setBorder(0);
 		table.setCellpaddingAndCellspacing(0);
 		table.setWidth("100%");
-//		form.add(table);
-		form.add(frame);
+		
+		Table g = new Table();
+		g.setWidth("100%");
+		g.setCellspacing(0);
+		g.setCellpadding(0);
+		if (useBasket) {
+			g.setWidth(1, "33%");
+			g.setWidth(2, "34%");
+			g.setWidth(3, "33%");
+			g.setCellpaddingLeft(1, 1, 10);
+			g.setCellpaddingRight(3, 1, 10);
+			g.setHeight(1, 28);
+			g.setRowStyleClass(1, getStyleName(BookingForm.STYLENAME_HEADER_BACKGROUND_COLOR));
+			g.setHeight(2, 1);
+			g.setHeight(3, 1);
+			g.setHeight(4, 3);
+			g.setRowStyleClass(3, getStyleName(BookingForm.STYLENAME_BLUE_BACKGROUND_COLOR));
+
+			g.add(getHeaderText(iwrb.getLocalizedString("travel.book_items", "Book items")), 1, 1);
+			g.add(getHeaderText(getBasketBusiness(iwc).getQuantity()+" "+iwrb.getLocalizedString("travel.items", "items")), 3, 1);
+			g.setAlignment(3, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+			g.mergeCells(1, 5, 3, 5);
+			g.add(frame, 1, 5);
+		} else {
+			g.add(frame, 1, 1);
+		}
+		
+		form.add(g);
 		int row = 1;
 		
-		IWTimestamp from = new IWTimestamp(iwc.getParameter(PARAMETER_FROM_DATE));
-		int betw = getBookingForm().getNumberOfDays(from);
-		IWTimestamp to = new IWTimestamp(from);
-		to.addDays(betw);
-
+		boolean isProductValid = useBasket;
 		Product product = getProduct();
 		Supplier supplier = null;
-		try {
-			SupplierHome sHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
-			supplier = sHome.findByPrimaryKey(product.getSupplierId());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		boolean isProductValid = false;
-		try {
-			isProductValid = getBookingBusiness(iwc).getIsProductValid(iwc, product, from, to);
-		}
-		catch (Exception e2) {
-			e2.printStackTrace();
+		IWTimestamp from = null;
+		if (product != null) {
+			from = new IWTimestamp(iwc.getParameter(PARAMETER_FROM_DATE));
+			int betw = getBookingForm().getNumberOfDays(from);
+			IWTimestamp to = new IWTimestamp(from);
+			to.addDays(betw);
+	
+			try {
+				SupplierHome sHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
+				supplier = sHome.findByPrimaryKey(product.getSupplierId());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			try {
+				isProductValid = getBookingBusiness(iwc).getIsProductValid(iwc, product, from, to);
+			}
+			catch (Exception e2) {
+				e2.printStackTrace();
+			}
 		}
 
 		getBookingForm().setSearchPart(table, row, false, false, isVertical());
@@ -775,7 +800,9 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			getBookingForm().setCurrentBookingPartRow(getBookingForm().getCurrentBookingPartRow()+1);
 		}
 
-		if (isProductValid) {
+		if (useBasket && getBasketBusiness(iwc).getBasket().isEmpty()) {
+			getBookingForm().addInputLine(new String[]{iwrb.getLocalizedString("travel.basket_is_empty", "Basket is empty.")}, new PresentationObject[]{new HiddenInput("prump")}, false, false, false, false, table, row);
+		} else if (isProductValid) {
 			getBookingForm().addInputLine(new String[]{iwrb.getLocalizedString("travel.search.first_name","First name"), iwrb.getLocalizedString("travel.search.last_name","Last name")}, new PresentationObject[]{new TextInput(PARAMETER_FIRST_NAME), new TextInput(PARAMETER_LAST_NAME)}, false, false, isVertical(), table, row);
 			//table.mergeCells(2, (row-1), 3, (row-1));
 	
@@ -875,7 +902,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			}
 			String sTimeframeId = "-1";
 			
-			if (productPriceId == null) {
+			if (productPriceId == null && product != null) {
 				Timeframe timeframe = getSearchBusiness(iwc).getServiceHandler().getProductBusiness().getTimeframe(product, from, Integer.parseInt(sAddressId));
 				if (timeframe != null) {
 					sTimeframeId = timeframe.getPrimaryKey().toString();
@@ -892,23 +919,24 @@ public abstract class AbstractSearchForm extends TravelBlock{
 				}
 			}
 			
-			table.add(new HiddenInput(PARAMETER_ADDRESS_ID, sAddressId));
-			table.add(new HiddenInput(PARAMETER_PRODUCT_ID, iwc.getParameter(PARAMETER_PRODUCT_ID)));
-			table.add(new HiddenInput(PARAMETER_ONLINE, "true"));
-			table.add(new HiddenInput(PARAMETER_FROM_DATE, iwc.getParameter(PARAMETER_FROM_DATE)));
-			table.add(new HiddenInput(PARAMETER_TO_DATE, iwc.getParameter(PARAMETER_TO_DATE)));
-			table.add(new HiddenInput(PARAMETER_MANY_DAYS, iwc.getParameter(PARAMETER_MANY_DAYS)));
-			table.add(new HiddenInput(PARAMETER_PRODUCT_PRICE_ID, productPriceId));
-			table.add(new HiddenInput(PARAMETER_PRODUCT_ID, product.getPrimaryKey().toString()));
-			table.add(new HiddenInput(getBookingForm().getParameterTypeCountName(), iwc.getParameter(getBookingForm().getParameterTypeCountName())));
-			table.add(new HiddenInput(BookingForm.BookingAction, BookingForm.BookingParameter));
-			if (product.getAuthorizationCheck()) {
-				table.add(new HiddenInput(BookingForm.parameterInquiry, "TRUE"));
+			if (product != null) {
+				table.add(new HiddenInput(PARAMETER_ADDRESS_ID, sAddressId));
+				table.add(new HiddenInput(PARAMETER_PRODUCT_ID, iwc.getParameter(PARAMETER_PRODUCT_ID)));
+				table.add(new HiddenInput(PARAMETER_ONLINE, "true"));
+				table.add(new HiddenInput(PARAMETER_FROM_DATE, iwc.getParameter(PARAMETER_FROM_DATE)));
+				table.add(new HiddenInput(PARAMETER_TO_DATE, iwc.getParameter(PARAMETER_TO_DATE)));
+				table.add(new HiddenInput(PARAMETER_MANY_DAYS, iwc.getParameter(PARAMETER_MANY_DAYS)));
+				table.add(new HiddenInput(PARAMETER_PRODUCT_PRICE_ID, productPriceId));
+				table.add(new HiddenInput(PARAMETER_PRODUCT_ID, product.getPrimaryKey().toString()));
+				table.add(new HiddenInput(getBookingForm().getParameterTypeCountName(), iwc.getParameter(getBookingForm().getParameterTypeCountName())));
+				table.add(new HiddenInput(BookingForm.BookingAction, BookingForm.BookingParameter));
+				if (product.getAuthorizationCheck()) {
+					table.add(new HiddenInput(BookingForm.parameterInquiry, "TRUE"));
+				}
+				
+		//		String productPriceId = iwc.getParameter(PARAMETER_PRODUCT_PRICE_ID);
+				table.add(new HiddenInput("priceCategory"+productPriceId, iwc.getParameter(getBookingForm().getParameterTypeCountName())));
 			}
-			
-	//		String productPriceId = iwc.getParameter(PARAMETER_PRODUCT_PRICE_ID);
-			table.add(new HiddenInput("priceCategory"+productPriceId, iwc.getParameter(getBookingForm().getParameterTypeCountName())));
-			
 			/*
 			try {
 				ProductPrice pPrice = ((ProductPriceHome) IDOLookup.getHome(ProductPrice.class)).findByPrimaryKey(new Integer(productPriceId));
@@ -936,6 +964,10 @@ public abstract class AbstractSearchForm extends TravelBlock{
 						
 			submitLink.setToFormSubmit(form);
 			form.addParameter(ACTION, ACTION_CONFIRM);
+			
+			if (useBasket) {
+				form.setEventListener(ServiceSearchBusinessBean.class);
+			}
 
 			Table linkTable = new Table();
 			linkTable.setCellpaddingAndCellspacing(0);
@@ -970,7 +1002,11 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			logoTable.setCellpaddingAndCellspacing(0);
 			Collection imgs = null;
 			try {
-				imgs = getCreditCardBusiness(iwc).getCreditCardTypeImages(getCreditCardBusiness(iwc).getCreditCardClient(supplier, IWTimestamp.RightNow()));
+				if (product == null) {
+					imgs = getCreditCardBusiness(iwc).getCreditCardTypeImages(getCreditCardBusiness(iwc).getCreditCardClient(engine.getSupplierManager(), IWTimestamp.RightNow()));
+				} else {
+					imgs = getCreditCardBusiness(iwc).getCreditCardTypeImages(getCreditCardBusiness(iwc).getCreditCardClient(supplier, IWTimestamp.RightNow()));
+				}
 				if (imgs != null && !imgs.isEmpty()) {
 					Iterator iter = imgs.iterator();
 					int col = 0;
@@ -995,32 +1031,13 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			BackButton back = new BackButton(iwrb.getLocalizedImageButton("travelSearch.try_again", "Try again"));
 			table.add(back, 1, row);
 		}
-		getBookingForm().formTable.setBorder(1);
+//		getBookingForm().formTable.setBorder(1);
 
 		frame.add(table);
 		return frame;
 	}
 	
-	protected GeneralBooking doBooking(IWContext iwc, boolean doCreditCardCheck) throws Exception {
-		Product product = getProduct();
-		int bookingId = -1;
-		if (!doCreditCardCheck) {
-			bookingId = getBookingForm().checkBooking(iwc, true, false, false, doCreditCardCheck);
-		} else {
-			bookingId = getBookingForm().handleInsert(iwc, doCreditCardCheck);
-		}
-//		int bookingId = getBookingForm().checkBooking(iwc, true);
-		GeneralBookingHome gBookingHome = (GeneralBookingHome) IDOLookup.getHome(GeneralBooking.class);
-		GeneralBooking gBooking = null;
-		
-		if (bookingId > 0) {
-			gBooking = gBookingHome.findByPrimaryKey(new Integer(bookingId));	
-			gBooking.setCode(this.engine.getCode());
-		}
-		
-		return gBooking;
 
-	}
 	
 	protected void checkBooking() throws RemoteException {
 		ProductDetailFrame frame = getProductDetailFrame(getProduct(), 2);
@@ -1031,72 +1048,139 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	  frame.add(table);
 		add(frame);
 		
-		ProductHome productHome = (ProductHome) IDOLookup.getHome(Product.class);
-		try {
-			Product product = getProduct();
-			GeneralBooking gBooking = doBooking(iwc, true);
-			int bookingId = gBooking.getID();
-			boolean inquirySent = (bookingId == BookingForm.inquirySent); 
-
-			if (gBooking != null) {
-			  boolean sendEmail = bf.sendEmails(iwc, gBooking, iwrb);
-			  
-			  table.add(getText(gBooking.getName()));
-			  table.add(getText(", "));
-			  table.add(getText(iwrb.getLocalizedString("travel.you_booking_has_been_confirmed","your booking has been confirmed.")));
-			  table.add(Text.BREAK);
-			  table.add(Text.BREAK);
-			  if (sendEmail) {
-					table.add(getText(iwrb.getLocalizedString("travel.you_will_reveice_an_email_shortly","You will receive an email shortly confirming your booking.")));
-					table.add(Text.BREAK);
-					table.add(Text.BREAK);
-			  }
-			  table.add(getText(iwrb.getLocalizedString("travel.your_credidcard_authorization_number_is","Your creditcard authorization number is")));
-			  table.add(getText(" : "));
-			  table.add(getText(gBooking.getCreditcardAuthorizationNumber()));
-			  table.add(Text.BREAK);
-			  table.add(getText(iwrb.getLocalizedString("travel.your_reference_number_is","Your reference number is")));
-			  table.add(getText(" : "));
-			  table.add(getText(gBooking.getReferenceNumber()));
-			  table.add(Text.BREAK);
-			  //table.add(getText(gBooking.getReferenceNumber()));
-			  //table.add(Text.BREAK);
-			  table.add(Text.BREAK);
-			  table.add(getText(iwrb.getLocalizedString("travel.if_unable_to_print","If you are unable to print the voucher, write the reference number down else proceed to printing the voucher.")));
-
-			  Link printVoucher = new Link(getText(iwrb.getLocalizedString("travel.print_voucher","Print voucher")));
-				printVoucher.addParameter(VoucherWindow.parameterBookingId, gBooking.getID());
-				printVoucher.setWindowToOpen(VoucherWindow.class);
-
-			  table.add(printVoucher,1,3);
-			  table.setAlignment(1,1,"left");
-			  table.setAlignment(1,2,"right");
-			  table.setAlignment(1,3,"right");
-			}else if (inquirySent) {
-				table.add(getText(iwrb.getLocalizedString("travel.inquiry_has_been_sent","Inquiry has been sent")));
-				table.add(Text.BREAK);
-				table.add(getText(iwrb.getLocalizedString("travel.you_will_reveice_an_confirmation_email_shortly","You will receive an confirmation email shortly.")));
-			}else {
-				table.add(getText(iwrb.getLocalizedString("travel.booking_failed","Booking failed")));
-				table.add(getText(Text.BREAK));
-				if (bookingId == BookingForm.errorTooMany) {
-					table.add(getText(iwrb.getLocalizedString("travel.there_is_no_availability","There is no availability")));
-				} else	if (bookingId == BookingForm.errorTooFew) {
-					table.add(getText(iwrb.getLocalizedString("travel.there_is_no_availability","There is no availability")));
-				}
-			  if (gBooking == null) {
-					debug("gBooking == null");
-			  }
+		if (useBasket) {
+			try {
+				// Checks if there was an exception caught in the Save process...
+				getSession(iwc).throwException();
+				Collection bookings = getSession(iwc).getBookingsSavedFromBasket();
+//				Collection bookings = getSearchBusiness(iwc).doBasketBooking(iwc, engine);
+				
+				  table.add(getText(iwc.getParameter(PARAMETER_FIRST_NAME)+" "+iwc.getParameter(PARAMETER_LAST_NAME)));
+				  table.add(getText(", "));
+				  table.add(getText(iwrb.getLocalizedString("travel.you_bookings_have_been_confirmed","your bookings have been confirmed.")));
+				  table.add(Text.BREAK);
+				  table.add(Text.BREAK);
+//				  if (sendEmail) {
+//						table.add(getText(iwrb.getLocalizedString("travel.you_will_reveice_an_email_shortly","You will receive an email shortly confirming your booking.")));
+//						table.add(Text.BREAK);
+//						table.add(Text.BREAK);
+//				  }
+				  table.add(getText(iwrb.getLocalizedString("travel.your_credidcard_authorization_number_is","Your creditcard authorization number is")));
+				  table.add(getText(" : "));
+				  boolean ccAuthAdded = false;
+				  GeneralBooking gBooking;
+				  Product product;
+				  Iterator iter = bookings.iterator();
+				  while (iter.hasNext()) {
+					  gBooking = (GeneralBooking) iter.next();
+					  if (!ccAuthAdded) {
+						  table.add(getText(gBooking.getCreditcardAuthorizationNumber()));
+						  table.add(Text.BREAK);
+						  table.add(Text.BREAK);
+						  ccAuthAdded = true;
+					  }
+					  product = gBooking.getService().getProduct();
+					  table.add(getText(iwrb.getLocalizedString("travel.service","Service")));
+					  table.add(getText(" : "));
+					  table.add(getText(product.getProductName(localeID)+" - "+product.getSupplier().getName()));
+					  table.add(Text.BREAK);
+					  
+					  table.add(getText(iwrb.getLocalizedString("travel.reference_number_is","Reference number")));
+					  table.add(getText(" : "));
+					  table.add(getText(gBooking.getReferenceNumber()));
+					  table.add(Text.BREAK);
+					  table.add(Text.BREAK);
+					  table.add(getText(iwrb.getLocalizedString("travel.if_unable_to_print","If you are unable to print the voucher, write the reference number down else proceed to printing the voucher.")));
+		
+					  Link printVoucher = new Link(getText(iwrb.getLocalizedString("travel.print_voucher","Print voucher")));
+						printVoucher.addParameter(VoucherWindow.parameterBookingId, gBooking.getID());
+						printVoucher.setWindowToOpen(VoucherWindow.class);
+		
+						  table.add(Text.BREAK);
+						  table.add(Text.BREAK);
+					  table.add(printVoucher);
+					  table.add(Text.BREAK);
+					  table.add(Text.BREAK);
+				  }
 			}
-		} catch (Exception e) {
-			table.add(getText(iwrb.getLocalizedString("travek.booking_failed","Booking failed")+" ( "+e.getMessage()+" )"));
-			Link backLink = new Link(getLinkText(iwrb.getLocalizedString("travel.back", "Back"), false));
-			backLink.setAsBackLink(1);
-			frame.addBottom(backLink);
-			//table.add(Text.BREAK);
-			//table.add(Text.BREAK);
-			//table.add(new BackButton(iwrb.getLocalizedImageButton("travel.back", "Back")));
-			//e.printStackTrace(System.err);
+			catch (CreditCardAuthorizationException e) {
+				table.add(getText(iwrb.getLocalizedString("travek.booking_failed","Booking failed")+" ( "+e.getDisplayError()+" )"));
+				Link backLink = new Link(getLinkText(iwrb.getLocalizedString("travel.back", "Back"), false));
+				backLink.setAsBackLink(1);
+				frame.addBottom(backLink);
+			} catch (Exception e) {
+				e.printStackTrace();
+				table.add(getText(iwrb.getLocalizedString("travek.booking_failed","Booking failed")+" ( "+e.getMessage()+" )"));
+				Link backLink = new Link(getLinkText(iwrb.getLocalizedString("travel.back", "Back"), false));
+				backLink.setAsBackLink(1);
+				frame.addBottom(backLink);
+			}
+		} else {
+			ProductHome productHome = (ProductHome) IDOLookup.getHome(Product.class);
+			try {
+				Product product = getProduct();
+				GeneralBooking gBooking = getSearchBusiness(iwc).doBooking(iwc, true);
+				int bookingId = gBooking.getID();
+				boolean inquirySent = (bookingId == BookingForm.inquirySent); 
+	
+				if (gBooking != null) {
+				  boolean sendEmail = bf.sendEmails(iwc, gBooking, iwrb);
+				  
+				  table.add(getText(gBooking.getName()));
+				  table.add(getText(", "));
+				  table.add(getText(iwrb.getLocalizedString("travel.you_booking_has_been_confirmed","your booking has been confirmed.")));
+				  table.add(Text.BREAK);
+				  table.add(Text.BREAK);
+				  if (sendEmail) {
+						table.add(getText(iwrb.getLocalizedString("travel.you_will_reveice_an_email_shortly","You will receive an email shortly confirming your booking.")));
+						table.add(Text.BREAK);
+						table.add(Text.BREAK);
+				  }
+				  table.add(getText(iwrb.getLocalizedString("travel.your_credidcard_authorization_number_is","Your creditcard authorization number is")));
+				  table.add(getText(" : "));
+				  table.add(getText(gBooking.getCreditcardAuthorizationNumber()));
+				  table.add(Text.BREAK);
+				  table.add(getText(iwrb.getLocalizedString("travel.your_reference_number_is","Your reference number is")));
+				  table.add(getText(" : "));
+				  table.add(getText(gBooking.getReferenceNumber()));
+				  table.add(Text.BREAK);
+				  table.add(Text.BREAK);
+				  table.add(getText(iwrb.getLocalizedString("travel.if_unable_to_print","If you are unable to print the voucher, write the reference number down else proceed to printing the voucher.")));
+	
+				  Link printVoucher = new Link(getText(iwrb.getLocalizedString("travel.print_voucher","Print voucher")));
+					printVoucher.addParameter(VoucherWindow.parameterBookingId, gBooking.getID());
+					printVoucher.setWindowToOpen(VoucherWindow.class);
+	
+				  table.add(printVoucher,1,3);
+				  table.setAlignment(1,1,"left");
+				  table.setAlignment(1,2,"right");
+				  table.setAlignment(1,3,"right");
+				}else if (inquirySent) {
+					table.add(getText(iwrb.getLocalizedString("travel.inquiry_has_been_sent","Inquiry has been sent")));
+					table.add(Text.BREAK);
+					table.add(getText(iwrb.getLocalizedString("travel.you_will_reveice_an_confirmation_email_shortly","You will receive an confirmation email shortly.")));
+				}else {
+					table.add(getText(iwrb.getLocalizedString("travel.booking_failed","Booking failed")));
+					table.add(getText(Text.BREAK));
+					if (bookingId == BookingForm.errorTooMany) {
+						table.add(getText(iwrb.getLocalizedString("travel.there_is_no_availability","There is no availability")));
+					} else	if (bookingId == BookingForm.errorTooFew) {
+						table.add(getText(iwrb.getLocalizedString("travel.there_is_no_availability","There is no availability")));
+					}
+				  if (gBooking == null) {
+						debug("gBooking == null");
+				  }
+				}
+			} catch (Exception e) {
+				table.add(getText(iwrb.getLocalizedString("travek.booking_failed","Booking failed")+" ( "+e.getMessage()+" )"));
+				Link backLink = new Link(getLinkText(iwrb.getLocalizedString("travel.back", "Back"), false));
+				backLink.setAsBackLink(1);
+				frame.addBottom(backLink);
+				//table.add(Text.BREAK);
+				//table.add(Text.BREAK);
+				//table.add(new BackButton(iwrb.getLocalizedImageButton("travel.back", "Back")));
+				//e.printStackTrace(System.err);
+			}
 		}
 		
 	}
@@ -1421,6 +1505,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			//((Link)po).addParameter(PARAMETER_PRODUCT_PRICE_ID, tmpPriceID);
 			((Link)po).addParameter(BookingForm.PARAMETER_CODE, engine.getCode());
 			((Link)po).addParameter(BookingForm.parameterPriceCategoryKey, getPriceCategoryKey());
+			po.maintainParameter(PARAMETER_REFERENCE_NUMBER, iwc);
 			maintainEngineSpecificParameters(((Link)po));
 		}
 		
@@ -1440,6 +1525,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			if (!isSearchForm) {
 				po.maintainParameter(ACTION);
 				po.maintainParameter(AbstractSearchForm.PARAMETER_POSTAL_CODE_NAME);
+				po.maintainParameter(PARAMETER_REFERENCE_NUMBER);
 				((Form)po).maintainParameter(PARAMETER_FROM_DATE);
 				((Form)po).maintainParameter(PARAMETER_MANY_DAYS);
 				((Form)po).maintainParameter(PARAMETER_TO_DATE);
@@ -2102,12 +2188,12 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		link.addParameter(BookingForm.BookingAction, BookingForm.BookingParameter);
 		link.addParameter(PREV_ACTION, currentAction);
 		try {
-//			ProductPrice pPrice = 0getProductPriceHome().findByPrimaryKey(new Integer(priceID));
+//			ProductPrice pPrice = getProductPriceHome().findByPrimaryKey(new Integer(priceID));
 			link.addParameter("priceCategory"+priceID, 1);
+			link.setEventListener(ServiceSearchBusinessBean.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 //		link.maintainParameter(ServiceSearch.PARAMETER_SERVICE_SEARCH_FORM, iwc);
 //		link.maintainParameter(PARAMETER_FROM_DATE, iwc);
 //		link.maintainParameter(PARAMETER_MANY_DAYS, iwc);
@@ -2134,7 +2220,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		ProductDetailFrame frame = (ProductDetailFrame) frames.get(columns+""+product+""+showContactInformation);
 		if (frame == null) { 
 			System.out.println("[AbstractSearchForm] Created a new productdefailframe... possibly caching is bogus (showContantInformation = "+showContactInformation+")");
-			frame = new ProductDetailFrame(iwc, columns, product, showContactInformation);
+			frame = new ProductDetailFrame(iwc, columns, product, showContactInformation, engine.getUseBasket());
 			frame.setPriceCategoryKey(getPriceCategoryKey());
 			frame.setCount(this.getCount());
 			frame.setProductInfoDetailed(getProductInfoDetailed(product));
