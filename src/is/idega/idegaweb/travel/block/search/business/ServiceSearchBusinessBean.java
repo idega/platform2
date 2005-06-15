@@ -6,6 +6,7 @@ import is.idega.idegaweb.travel.block.search.data.ServiceSearchEngineStaffGroup;
 import is.idega.idegaweb.travel.block.search.data.ServiceSearchEngineStaffGroupBMPBean;
 import is.idega.idegaweb.travel.block.search.data.ServiceSearchEngineStaffGroupHome;
 import is.idega.idegaweb.travel.block.search.presentation.AbstractSearchForm;
+import is.idega.idegaweb.travel.business.Booker;
 import is.idega.idegaweb.travel.business.TravelSessionManager;
 import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
 import is.idega.idegaweb.travel.data.GeneralBooking;
@@ -14,7 +15,6 @@ import is.idega.idegaweb.travel.service.business.BookingBusiness;
 import is.idega.idegaweb.travel.service.business.ServiceHandler;
 import is.idega.idegaweb.travel.service.presentation.BookingForm;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Collections;
@@ -24,6 +24,11 @@ import java.util.List;
 import java.util.Vector;
 import javax.ejb.FinderException;
 import javax.transaction.UserTransaction;
+import com.idega.block.basket.business.BasketBusiness;
+import com.idega.block.basket.data.BasketEntry;
+import com.idega.block.creditcard.business.CreditCardAuthorizationException;
+import com.idega.block.creditcard.business.CreditCardBusiness;
+import com.idega.block.creditcard.business.CreditCardClient;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
 import com.idega.block.trade.stockroom.business.ProductBusinessBean;
 import com.idega.block.trade.stockroom.business.ProductComparator;
@@ -41,6 +46,8 @@ import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.data.IDOEntity;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.event.IWPageEventListener;
+import com.idega.idegaweb.IWException;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.IWContext;
 import com.idega.user.business.GroupBusiness;
@@ -56,7 +63,7 @@ import com.idega.util.IWTimestamp;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class ServiceSearchBusinessBean extends IBOServiceBean implements ActionListener , ServiceSearchBusiness{
+public class ServiceSearchBusinessBean extends IBOServiceBean implements ServiceSearchBusiness, IWPageEventListener {
 
 	private HashMap resultMap = new HashMap();
 
@@ -75,7 +82,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements ActionL
 	}
 
 
-	public List getErrorFormFields(IWContext iwc, String categoryKey, boolean useCVC) throws IDOLookupException, FinderException {
+	public List getErrorFormFields(IWContext iwc, String categoryKey, boolean useCVC, boolean useBasket) throws IDOLookupException, FinderException {
 		List list = new Vector();
 		String firstName = iwc.getParameter(AbstractSearchForm.PARAMETER_FIRST_NAME);
 		String lastName = iwc.getParameter(AbstractSearchForm.PARAMETER_LAST_NAME);
@@ -126,24 +133,27 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements ActionL
 		if (ccName == null || ccName.equals("")) {
 			list.add(AbstractSearchForm.PARAMETER_NAME_ON_CARD);
 		}
-		String productId = iwc.getParameter(AbstractSearchForm.PARAMETER_PRODUCT_ID);
-		
-		ProductPriceHome ppHome = (ProductPriceHome) IDOLookup.getHome(ProductPrice.class);
-		Collection pPrices = ppHome.findProductPrices(Integer.parseInt(productId), -1, -1, true, categoryKey);
-		Iterator iter = pPrices.iterator();
-		ProductPrice price;
-		int iMany = 0;
-		while (iter.hasNext()) {
-			price = (ProductPrice) iter.next();
-		  try {
-			iMany += Integer.parseInt(iwc.getParameter("priceCategory"+price.getPrimaryKey()));
-		  }catch (NumberFormatException n) {
-		  	//n.printStackTrace();
-		  }
-		}		
-		
-		if (iMany < 1) {
-			list.add(AbstractSearchForm.ERROR_NO_BOOKING_COUNT);
+
+		if (!useBasket) {
+			String productId = iwc.getParameter(AbstractSearchForm.PARAMETER_PRODUCT_ID);
+			
+			ProductPriceHome ppHome = (ProductPriceHome) IDOLookup.getHome(ProductPrice.class);
+			Collection pPrices = ppHome.findProductPrices(Integer.parseInt(productId), -1, -1, true, categoryKey);
+			Iterator iter = pPrices.iterator();
+			ProductPrice price;
+			int iMany = 0;
+			while (iter.hasNext()) {
+				price = (ProductPrice) iter.next();
+			  try {
+				iMany += Integer.parseInt(iwc.getParameter("priceCategory"+price.getPrimaryKey()));
+			  }catch (NumberFormatException n) {
+			  	//n.printStackTrace();
+			  }
+			}		
+			
+			if (iMany < 1) {
+				list.add(AbstractSearchForm.ERROR_NO_BOOKING_COUNT);
+			}
 		}
 		
 		return list;
@@ -616,4 +626,235 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements ActionL
 	getIWApplicationContext().getIWMainApplication().getIWCacheManager().invalidateCache(SEARCH_FORM_CACHE_KEY);
 	System.out.println("[ServiceSearchBusinessBean] Invalidating stored search results");
   }
+
+  public boolean actionPerformed(IWContext iwc) throws IWException {
+		String action = iwc.getParameter(AbstractSearchForm.ACTION);
+		if (action != null && action.equals(AbstractSearchForm.ACTION_ADD_TO_BASKET)) {
+			return addToBasket(iwc);
+		} else if (action.equals(AbstractSearchForm.ACTION_CONFIRM)){
+			try {
+				Collection bookings = doBasketBooking(iwc);
+				getSearchSession(iwc).setBookingsSavedFromBasket(bookings);
+				return true;
+			}
+			catch (Exception e) {
+				try {
+					getSearchSession(iwc).setException(e);
+				}
+				catch (RemoteException e1) {
+					e1.printStackTrace();
+				}
+				return false;
+			}
+		}
+		return false;
+
+	  }
+
+  /**
+   * Creates a booking and adds it to the basket
+   * @param iwc
+   * @return
+   */
+	public boolean addToBasket(IWContext iwc) {
+		BasketBusiness travelbasket = getBasketBusiness(iwc);
+		
+		try {
+			GeneralBooking booking = doBooking(iwc, false);
+			booking.setIsValid(false);
+			booking.store();
+			
+			travelbasket.addItem(booking);
+			return true;
+		}
+		catch (Exception e1) {
+			e1.printStackTrace();
+		}
+		return false;
+	}
+  
+	protected ServiceSearchSession getSearchSession(IWContext iwc) {
+		try {
+			return (ServiceSearchSession) IBOLookup.getSessionInstance(iwc, ServiceSearchSession.class);
+		}
+		catch (IBOLookupException e) {
+			throw new IBORuntimeException(e);
+		}
+	}
+	protected BasketBusiness getBasketBusiness(IWContext iwc) {
+		try {
+			return (BasketBusiness) IBOLookup.getSessionInstance(iwc, BasketBusiness.class);
+		}
+		catch (IBOLookupException e) {
+			throw new IBORuntimeException(e);
+		}
+	}
+	protected CreditCardBusiness getCreditCardBusiness() {
+		try {
+			return (CreditCardBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), CreditCardBusiness.class);
+		}
+		catch (IBOLookupException e) {
+			throw new IBORuntimeException(e);
+		}
+	}
+	protected Booker getBooker() {
+		try {
+			return (Booker) IBOLookup.getServiceInstance(getIWApplicationContext(), Booker.class);
+		}
+		catch (IBOLookupException e) {
+			throw new IBORuntimeException(e);
+		}
+	}
+	public Collection doBasketBooking(IWContext iwc) throws Exception {
+		String sEngine = iwc.getParameter(BookingForm.PARAMETER_CODE);
+		if (sEngine != null) {
+			ServiceSearchEngine engine = getSearchEngineHome().findByCode(sEngine);
+			return doBasketBooking(iwc, engine);
+		} else {
+			throw new NullPointerException("Engine Code is null");
+		}
+		
+	}
+	
+	
+	public Collection doBasketBooking(IWContext iwc, ServiceSearchEngine engine) throws Exception {
+		CreditCardClient client = getCreditCardBusiness().getCreditCardClient(engine.getSupplierManager(), IWTimestamp.RightNow());
+
+		// Going through bookings, getting prices and currencies
+		HashMap currMaps = new HashMap(); // A map with Currency as key and float[] as value
+		Collection values = getBasketBusiness(iwc).getBasket().values();
+		Collection bookings = new Vector();
+		BasketEntry entry;
+		GeneralBooking booking;
+		Iterator iter = values.iterator();
+		String ccCurr = null;
+		while (iter.hasNext()) {
+			entry = (BasketEntry) iter.next();
+			booking = (GeneralBooking) entry.getItem();
+			ccCurr = getBooker().getCurrency(booking).getCurrencyAbbreviation();
+			if (currMaps.get(ccCurr) == null) {
+				currMaps.put(ccCurr, new float[]{0});
+			}
+			float price = getBooker().getBookingPrice(booking);
+			((float[])currMaps.get(ccCurr))[0] += price;
+			bookings.add(booking);
+		}
+
+		if (currMaps.keySet().size() != 1) {
+			CreditCardAuthorizationException e = new CreditCardAuthorizationException();
+			e.setDisplayError("Invalid number of currencies ("+currMaps.keySet().size()+")");
+			e.setErrorMessage("Invalid number of currencies ("+currMaps.keySet().size()+")");
+			throw e;
+		}
+		
+		// Getting parameters needed for the cc authorization
+		String ccName = iwc.getParameter(BookingForm.PARAMETER_NAME_ON_CARD);
+		String ccNumber = iwc.getParameter(BookingForm.parameterCCNumber);
+		String ccYear = iwc.getParameter(BookingForm.parameterCCYear);
+		String ccMonth = iwc.getParameter(BookingForm.parameterCCMonth);
+		String ccCVC = iwc.getParameter(BookingForm.parameterCCCVC);
+		String refNum = iwc.getParameter(AbstractSearchForm.PARAMETER_REFERENCE_NUMBER);
+
+		// Checking for Authorization for every currency
+		Collection responseStrings = new Vector();
+		Iterator currIterator = currMaps.keySet().iterator();
+		String authNr = null;
+		while (currIterator.hasNext()) {
+			String curr = (String) currIterator.next();
+			float cPrice = ((float[])currMaps.get(curr))[0];
+			System.out.println("[SearchBus] checking for price = "+cPrice+" "+curr+" in merchant = "+client.getCreditCardMerchant().getMerchantID());
+			try {
+				authNr = client.doSale(ccName, ccNumber, ccMonth, ccYear, ccCVC, cPrice, curr, refNum);
+				responseStrings.add(authNr);
+			} catch (CreditCardAuthorizationException e) {
+				throw e;
+			}
+		}
+		
+		// If no authorization error have been thrown, the bookings must now be validated
+		String surname = iwc.getParameter(BookingForm.PARAMETER_FIRST_NAME);
+		String lastname = iwc.getParameter(BookingForm.PARAMETER_LAST_NAME);
+		String address = iwc.getParameter(BookingForm.PARAMETER_ADDRESS);
+		String areaCode = iwc.getParameter(BookingForm.PARAMETER_AREA_CODE);
+		String email = iwc.getParameter(BookingForm.PARAMETER_EMAIL);
+		String phone = iwc.getParameter(BookingForm.PARAMETER_PHONE);
+		
+		String city = iwc.getParameter(BookingForm.PARAMETER_CITY);
+		String country = iwc.getParameter(BookingForm.PARAMETER_COUNTRY);
+//		String pickupId = iwc.getParameter(BookingForm.parameterPickupId);
+//		String pickupInfo = iwc.getParameter(BookingForm.parameterPickupInf);
+//		String sPaymentType = iwc.getParameter("payment_type");
+		String comment = iwc.getParameter(BookingForm.PARAMETER_COMMENT);
+		String code = iwc.getParameter(BookingForm.PARAMETER_CODE);
+//		String key = iwc.getParameter(BookingForm.parameterPriceCategoryKey);
+		
+		Iterator biter = bookings.iterator();
+		while (biter.hasNext()) {
+			booking = (GeneralBooking) biter.next();
+			booking.setIsValid(true);
+			booking.setName(surname+" "+lastname);
+			booking.setAddress(address);
+			booking.setPostalCode(areaCode);
+			booking.setEmail(email);
+			booking.setTelephoneNumber(phone);
+			booking.setCity(city);
+			booking.setCountry(country);
+			if (comment == null) {
+				comment = "";
+			}
+			booking.setComment(comment);
+			if (code != null) {
+				booking.setCode(code);
+			}
+			booking.setCreditcardAuthorizationNumber(authNr);
+			booking.store();
+		}
+		
+//		Iterator citer = responseStrings.iterator();
+//		while (citer.hasNext()) {
+//			String reps = (String) citer.next();
+//			client.finishTransaction(reps);
+//		}
+		getBasketBusiness(iwc).emptyBasket();
+		return bookings;
+//		getBasketBusiness(iwc).repps();
+	}
+
+	public GeneralBooking doBooking(IWContext iwc, boolean doCreditCardCheck) throws Exception {
+		if (!iwc.isParameterSet(BookingForm.PARAMETER_CODE)) {
+			throw new RuntimeException("EngineCode not found");
+		}
+		Product product = getProduct(iwc);
+		int bookingId = -1;
+		if (!doCreditCardCheck) {
+			bookingId = getBookingForm(iwc).checkBooking(iwc, true, false, false, doCreditCardCheck);
+		} else {
+			bookingId = getBookingForm(iwc).handleInsert(iwc, doCreditCardCheck);
+		}
+//		int bookingId = getBookingForm().checkBooking(iwc, true);
+		GeneralBookingHome gBookingHome = (GeneralBookingHome) IDOLookup.getHome(GeneralBooking.class);
+		GeneralBooking gBooking = null;
+		
+		if (bookingId > 0) {
+			gBooking = gBookingHome.findByPrimaryKey(new Integer(bookingId));
+			gBooking.setCode(iwc.getParameter(BookingForm.PARAMETER_CODE));
+//			gBooking.setCode(this.engine.getCode());
+		}
+		
+		return gBooking;
+	}
+	
+	protected BookingForm getBookingForm(IWContext iwc) throws Exception {
+		return getServiceHandler().getBookingForm(iwc, getProduct(iwc));
+	}
+
+	protected Product getProduct(IWContext iwc) {
+		try {
+			ProductHome home = (ProductHome) IDOLookup.getHome(Product.class);
+			return home.findByPrimaryKey(new Integer(iwc.getParameter(AbstractSearchForm.PARAMETER_PRODUCT_ID)));
+		}catch (Exception e) {
+			return null;
+		}
+	}
+	
 }

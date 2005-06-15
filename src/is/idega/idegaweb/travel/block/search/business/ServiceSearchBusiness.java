@@ -5,6 +5,7 @@ import is.idega.idegaweb.travel.block.search.data.ServiceSearchEngineHome;
 import is.idega.idegaweb.travel.block.search.data.ServiceSearchEngineStaffGroup;
 import is.idega.idegaweb.travel.business.TravelSessionManager;
 import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
+import is.idega.idegaweb.travel.data.GeneralBooking;
 import is.idega.idegaweb.travel.service.business.ServiceHandler;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -38,7 +39,7 @@ public interface ServiceSearchBusiness extends IBOService, ActionListener {
 	 * @throws FinderException 
 	 * @see is.idega.idegaweb.travel.block.search.business.ServiceSearchBusinessBean#getErrorFormFields
 	 */
-	public List getErrorFormFields(IWContext iwc, String categoryKey, boolean useCVC) throws java.rmi.RemoteException, FinderException;
+	public List getErrorFormFields(IWContext iwc, String categoryKey, boolean useCVC, boolean useBasket) throws java.rmi.RemoteException, FinderException;
 
 	/**
 	 * @see is.idega.idegaweb.travel.block.search.business.ServiceSearchBusinessBean#sortProducts
@@ -50,6 +51,8 @@ public interface ServiceSearchBusiness extends IBOService, ActionListener {
 	 * @see is.idega.idegaweb.travel.block.search.business.ServiceSearchBusinessBean#checkResults
 	 */
 	public Collection checkResults(IWContext iwc, Collection results) throws RemoteException;
+	public Collection doBasketBooking(IWContext iwc) throws Exception;
+	public Collection doBasketBooking(IWContext iwc, ServiceSearchEngine engine) throws Exception;
 
 	/**
 	 * @see is.idega.idegaweb.travel.block.search.business.ServiceSearchBusinessBean#getServiceSearchEngines
@@ -153,5 +156,8 @@ public interface ServiceSearchBusiness extends IBOService, ActionListener {
 	public void actionPerformed(ActionEvent event);
 	
 	public void clearAllEngineCache();
+	
+	public GeneralBooking doBooking(IWContext iwc, boolean doCreditCardCheck) throws Exception;
+	public boolean addToBasket(IWContext iwc);
 
 }
