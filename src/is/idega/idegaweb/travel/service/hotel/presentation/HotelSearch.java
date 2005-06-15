@@ -334,19 +334,21 @@ public class HotelSearch extends AbstractSearchForm {
 
 	protected Table getProductInfoDetailed(Product product) {
 		try {
-			Table table = new Table(2, 1);
-			table.setCellpaddingAndCellspacing(0);
-			Hotel hotel = getHotelHome().findByPrimaryKey(product.getPrimaryKey());
-			int rating = (int) hotel.getRating();
-			if (rating > 0) {
-				table.add(getText(iwrb.getLocalizedString("travel.search.hotel.rating", "Rating")), 1, 1);
-				table.setWidth(1, 1, 50);
-				table.setCellpaddingBottom(1, 1, 5);
-				//addProductInfo(product, table, 2, 1);
-				for (int i = 1; i <= rating; i++) {
-					table.add(getStar(), 2, 1);
+			if (product != null){
+				Table table = new Table(2, 1);
+				table.setCellpaddingAndCellspacing(0);
+				Hotel hotel = getHotelHome().findByPrimaryKey(product.getPrimaryKey());
+				int rating = (int) hotel.getRating();
+				if (rating > 0) {
+					table.add(getText(iwrb.getLocalizedString("travel.search.hotel.rating", "Rating")), 1, 1);
+					table.setWidth(1, 1, 50);
+					table.setCellpaddingBottom(1, 1, 5);
+					//addProductInfo(product, table, 2, 1);
+					for (int i = 1; i <= rating; i++) {
+						table.add(getStar(), 2, 1);
+					}
+					return table;
 				}
-				return table;
 			}
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
