@@ -1,5 +1,5 @@
 /*
- *  $Id: TPosClient.java,v 1.10 2004/11/10 22:36:03 gimmi Exp $
+ *  $Id: TPosClient.java,v 1.11 2005/06/15 16:34:15 gimmi Exp $
  *
  *  Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -14,9 +14,11 @@ import java.util.HashMap;
 import java.util.Vector;
 import com.idega.block.creditcard.data.CreditCardMerchant;
 import com.idega.block.creditcard.data.TPosAuthorisationEntriesBean;
+import com.idega.block.creditcard.data.TPosAuthorisationEntriesBeanHome;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
+import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.util.IWTimestamp;
@@ -392,7 +394,9 @@ public class TPosClient implements CreditCardClient{
       
       TPosAuthorisationEntriesBean entry;
       try {
-  	    	entry = TPosAuthorisationEntriesHome.getInstance().getNewElement();
+    	  TPosAuthorisationEntriesBeanHome home = (TPosAuthorisationEntriesBeanHome) IDOLookup.getHome(TPosAuthorisationEntriesBeanHome.class);
+    	  entry = home.create();
+//  	    	entry = TPosAuthorisationEntriesHome.getInstance().getNewElement();
   	//    entry.setAttachmentCount(_client.getProperty(TPOS3Client.pn));
   	    entry.setAuthorisationAmount(_client.getProperty(TPOS3Client.PN_AUTHORAMOUNT));
   	    entry.setAuthorisationCode(_client.getProperty(TPOS3Client.PN_AUTHORISATIONCODE));
@@ -434,8 +438,8 @@ public class TPosClient implements CreditCardClient{
   	    			System.out.println("TPosClient : could not set parentID : "+parentDataPK);
   	    		}
   	    }
-  	
-  	    inserted = TPosAuthorisationEntriesHome.getInstance().insert(entry);
+  	    entry.store();
+//  	    inserted = TPosAuthorisationEntriesHome.getInstance().insert(entry);
 
 //      	String tmpTest;
 //  	    tmpTest = _client.getProperty(TPOS3Client.PN_AUTHORAMOUNT);
@@ -494,8 +498,9 @@ public class TPosClient implements CreditCardClient{
 //  	    System.out.println("PN_VOIDEDAUTHIDRSP : "+tmpTest.length());
 //  	    tmpTest = _client.getProperty(TPOS3Client.PN_VOIDEDTRANSNUMBER);
 //  	    System.out.println("PN_VOIDEDTRANSNUMBER : "+tmpTest.length());
-  	    
+  	    inserted = true;
       } catch (Exception e) {
+    	  inserted = false;
       		e.printStackTrace();
       }
 
