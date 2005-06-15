@@ -124,7 +124,9 @@ public class UserRunTab extends UserTab{
 				l.setStyleClass("styledLink");
 				l.addParameter(IWMarathonConstants.GROUP_TYPE_RUN,run.getPrimaryKey().toString());
 				l.addParameter("ic_user_id",Integer.parseInt(userID));
-				l.addParameter("selected_ic_group_id",Integer.parseInt(selectedGroupID));
+				if (selectedGroupID != null) {
+					l.addParameter("selected_ic_group_id",Integer.parseInt(selectedGroupID));
+				}
 				l.setWindowToOpen(UpdateRunInfoWindow.class);
 				if(l != null) {
 					t.add(l,1,row++);
