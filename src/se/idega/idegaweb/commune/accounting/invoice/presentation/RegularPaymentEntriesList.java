@@ -1182,6 +1182,8 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 			public String getDatasource() {
 				return null;
 			}
+			public void setDatasource(String datasource) {}
+
 		};
 	}
 

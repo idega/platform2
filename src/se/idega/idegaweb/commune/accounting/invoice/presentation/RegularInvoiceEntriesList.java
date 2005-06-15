@@ -1088,6 +1088,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 			public Object decode(String string){return null;}
 			public Collection decode(String[] pks){return null;}
 			public String getDatasource() {return null;}
+			public void setDatasource(String datasource) {}
 		};
 	}
 	
