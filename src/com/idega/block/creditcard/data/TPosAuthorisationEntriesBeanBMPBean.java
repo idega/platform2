@@ -1,5 +1,5 @@
 /*
- *  $Id: TPosAuthorisationEntriesBeanBMPBean.java,v 1.5 2004/11/01 12:37:49 gimmi Exp $
+ *  $Id: TPosAuthorisationEntriesBeanBMPBean.java,v 1.6 2005/06/15 16:36:24 gimmi Exp $
  *
  *  Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -29,7 +29,7 @@ import com.idega.util.IWTimestamp;
  * @version   1.0
  */
 
-public class TPosAuthorisationEntriesBeanBMPBean extends GenericEntity implements TPosAuthorisationEntriesBean,com.idega.block.creditcard.data.TPosAuthorisationEntries {
+public class TPosAuthorisationEntriesBeanBMPBean extends GenericEntity implements TPosAuthorisationEntriesBean, CreditCardAuthorizationEntry {
 
   private final static String ENTITY_NAME = "tpos_auth_entries";
   private final static String AUTHORISATION_AMOUNT = "auth_amount";
@@ -1211,6 +1211,24 @@ public class TPosAuthorisationEntriesBeanBMPBean extends GenericEntity implement
 		query.addCriteria(new MatchCriteria(date, MatchCriteria.GREATEREQUAL, fromDate));
 		query.addCriteria(new MatchCriteria(date, MatchCriteria.LESSEQUAL, toDate));
 		
-		return this.idoFindIDsBySQL(query.toString());
+		return this.idoFindPKsByQuery (query);
 	}
+	
+	public Collection ejbFindByDates(IWTimestamp from, IWTimestamp to) throws FinderException {
+		to.addDays(1);
+
+		String fromDate = from.getDateString("yyyyMMdd");
+		String toDate = to.getDateString("yyyyMMdd");
+
+		Table table = new Table(this);
+		Column date = new Column(ENTRY_DATE);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn(table));
+		query.addCriteria(new MatchCriteria(date, MatchCriteria.GREATEREQUAL, fromDate));
+		query.addCriteria(new MatchCriteria(date, MatchCriteria.LESSEQUAL, toDate));
+		
+		return this.idoFindPKsByQuery (query);
+	}
+	
 }
