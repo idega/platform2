@@ -24,8 +24,8 @@ public class CurrencyFinder {
 
   public static Currency getCurrency(int currencyID, String datasource) {
     try {
-		CurrencyHome cHome = (CurrencyHome) IDOLookup.getHome(Currency.class);
-		cHome.setDatasource(datasource);
+		CurrencyHome cHome = (CurrencyHome) IDOLookup.getHome(Currency.class, datasource);
+//		cHome.setDatasource(datasource);
 		return cHome.findByPrimaryKey(currencyID);
     }
 	catch (FinderException e) {
@@ -39,8 +39,8 @@ public class CurrencyFinder {
 
   public static CurrencyValues getCurrencyValue(int currencyID, String datasource) {
     try {
-		CurrencyValuesHome cHome = (CurrencyValuesHome) IDOLookup.getHome(CurrencyValues.class);
-		cHome.setDatasource(datasource);
+		CurrencyValuesHome cHome = (CurrencyValuesHome) IDOLookup.getHome(CurrencyValues.class, datasource);
+//		cHome.setDatasource(datasource);
 		return cHome.findByPrimaryKey(new Integer(currencyID));
     }
 	catch (IDOLookupException e) {
@@ -54,8 +54,8 @@ public class CurrencyFinder {
 
   public static Collection getCurrencies(String datasource) {
     try {
-		CurrencyHome cHome = (CurrencyHome) IDOLookup.getHome(Currency.class);
-		cHome.setDatasource(datasource);
+		CurrencyHome cHome = (CurrencyHome) IDOLookup.getHome(Currency.class, datasource);
+//		cHome.setDatasource(datasource);
 		return cHome.findAll();
     }
 	catch (FinderException e) {
@@ -70,8 +70,8 @@ public class CurrencyFinder {
 
   public static Collection getCurrencyValues(String datasource) {
     try {
-		CurrencyValuesHome cHome = (CurrencyValuesHome) IDOLookup.getHome(CurrencyValues.class);
-		cHome.setDatasource(datasource);
+		CurrencyValuesHome cHome = (CurrencyValuesHome) IDOLookup.getHome(CurrencyValues.class, datasource);
+//		cHome.setDatasource(datasource);
 		return cHome.findAll();
     }
 	catch (FinderException e) {

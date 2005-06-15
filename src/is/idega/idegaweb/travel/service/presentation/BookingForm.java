@@ -259,6 +259,17 @@ public abstract class BookingForm extends TravelManager{
 				_contract = getContractBusiness(iwc).getContract(_reseller, product);
 				_contractId = ((Integer) _contract.getPrimaryKey()).intValue();
 			}
+			
+			formTable.setWidth("100%");
+			formTable.setCellpadding(0);
+			formTable.setCellspacing(0);
+			
+			if (product != null) {
+				Supplier supp = product.getSupplier();
+				ccMerchant = getCreditCardBusiness(iwc).getCreditCardMerchant(supp, IWTimestamp.RightNow());
+				useCVC = getCreditCardBusiness(iwc).getUseCVC(ccMerchant);
+			}
+			
 			String sBookingId = iwc.getParameter(this.parameterBookingId);
 			if (sBookingId != null) {
 				try {
@@ -272,17 +283,7 @@ public abstract class BookingForm extends TravelManager{
 					/** not handled */	
 				}
 			}  
-			
-			formTable.setWidth("100%");
-			formTable.setCellpadding(0);
-			formTable.setCellspacing(0);
-			
-			if (product != null) {
-				Supplier supp = product.getSupplier();
-				ccMerchant = getCreditCardBusiness(iwc).getCreditCardMerchant(supp, IWTimestamp.RightNow());
-				useCVC = getCreditCardBusiness(iwc).getUseCVC(ccMerchant);
-			}
-			
+
 			setTimestamp(iwc);
 		}
 	}
@@ -2199,7 +2200,7 @@ public abstract class BookingForm extends TravelManager{
 		PostalCodeHome pch = (PostalCodeHome) IDOLookup.getHome(PostalCode.class);
 		String oldDatasource = pch.getDatasource();
 		if (datasource != null) {
-			pch.setDatasource(datasource, false);
+			pch = (PostalCodeHome) IDOLookup.getHome(PostalCode.class, datasource);
 		}
 		Collection coll = pch.findAllByCountryIdOrderedByPostalCode( getIcelandicCountryID() );
 		
@@ -2231,7 +2232,6 @@ public abstract class BookingForm extends TravelManager{
 			}
 			menu.setSelectedElement(PARAMETER_POSTAL_CODE_ICELAND);
 		}
-		pch.setDatasource(oldDatasource, false);
 		staticPostalCode = menu;
 		return menu;
 	}
@@ -2249,9 +2249,7 @@ public abstract class BookingForm extends TravelManager{
 		String sCityID = iwc.getParameter(AbstractSearchForm.PARAMETER_CITY_PC_D);
 		String sPostalCode = iwc.getParameter(AbstractSearchForm.PARAMETER_POSTAL_CODE_NAME);
 		
-		PostalCodeHome pcHome = (PostalCodeHome) IDOLookup.getHome(PostalCode.class);
-		String oldDS = pcHome.getDatasource();
-		pcHome.setDatasource(getProductPriceHome().getDatasource(), false);
+		PostalCodeHome pcHome = (PostalCodeHome) IDOLookup.getHome(PostalCode.class, getProductPriceHome().getDatasource());
 
 		Collection postalCodes = null; 
 		if (sCountryID != null) {
@@ -2331,7 +2329,6 @@ public abstract class BookingForm extends TravelManager{
 			} 
 		}
 
-		pcHome.setDatasource(oldDS, false);
 		return postalCodes;
 //		postalCodeIds = ids.toArray();
 //		return postalCodeIds;

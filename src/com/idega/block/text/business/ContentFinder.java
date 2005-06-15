@@ -75,7 +75,7 @@ public class ContentFinder {
 				lHome.setDatasource(datasource, false);
 				ICLocale newLocale = lHome.findByLocaleName(localeName);
 				int newID = ((Integer)newLocale.getPrimaryKey()).intValue();
-				lHome.setDatasource(oldDatasource);
+				lHome.setDatasource(oldDatasource, false);
 				return newID;
 			}
 		}
@@ -233,7 +233,7 @@ public class ContentFinder {
       if(iContentId > 0) {
 		  ContentHome cHome = (ContentHome) IDOLookup.getHome(Content.class);
 		  if (datasource != null) {
-			  cHome.setDatasource(datasource, false);
+			  cHome = (ContentHome) IDOLookup.getHome(Content.class, datasource);
 		  }
 		  return cHome.findByPrimaryKey(iContentId);
 //        return ((com.idega.block.text.data.ContentHome)com.idega.data.IDOLookup.getHomeLegacy(Content.class)).findByPrimaryKeyLegacy(iContentId);

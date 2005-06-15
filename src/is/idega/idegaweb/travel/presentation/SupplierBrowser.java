@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowser.java,v 1.5 2005/06/03 00:38:47 gimmi Exp $
+ * $Id: SupplierBrowser.java,v 1.6 2005/06/15 11:51:35 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -114,11 +114,8 @@ public class SupplierBrowser extends TravelBlock {
 		}
 		if (suppMan != null) {
 			try {
-				GroupHome gHome = (GroupHome) IDOLookup.getHome(Group.class);
-				String oldDS = gHome.getDatasource();
-				gHome.setDatasource(getSupplierHome().getDatasource(), false);
+				GroupHome gHome = (GroupHome) IDOLookup.getHome(Group.class, getSupplierHome().getDatasource());
 				supplierManager = gHome.findByPrimaryKey(new Integer(suppMan));
-				gHome.setDatasource(oldDS);
 			}
 			catch (IDOLookupException e) {
 				e.printStackTrace();

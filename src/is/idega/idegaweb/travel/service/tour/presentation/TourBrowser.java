@@ -1,5 +1,5 @@
 /*
- * $Id: TourBrowser.java,v 1.3 2005/06/03 00:38:47 gimmi Exp $
+ * $Id: TourBrowser.java,v 1.4 2005/06/15 11:49:47 gimmi Exp $
  * Created on 28.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -201,11 +201,8 @@ public class TourBrowser extends TravelBlock implements SupplierBrowserPlugin {
 			tourTypeIds = new Object[]{tourTypeId};
 		}
 		
-		PostalCodeHome pcHome = (PostalCodeHome) IDOLookup.getHome(PostalCode.class);
-		String o = pcHome.getDatasource();
-		pcHome.setDatasource(getTourTypeHome().getDatasource(), false);
+		PostalCodeHome pcHome = (PostalCodeHome) IDOLookup.getHome(PostalCode.class, getTourTypeHome().getDatasource());
 		Collection pcoll = pcHome.findByPostalCodeFromTo(postalCodes[0], postalCodes[1]);
-		pcHome.setDatasource(o, false);
 		
 		Object[] sIds = null;
 		if (supplier != null) {
