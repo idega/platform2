@@ -528,6 +528,14 @@ public class BookerBean extends IBOServiceBean implements Booker{
     getIWApplicationContext().removeApplicationAttribute(applName);
     getIWApplicationContext().removeApplicationAttribute(applNameEnt);
   }
+  
+  public Currency getBookingCurrency(Booking booking) throws RemoteException, FinderException {
+	  BookingEntry[] entries = getBookingEntries(booking);
+	  if (entries != null && entries.length > 0) {
+		  return entries[0].getProductPrice().getCurrency();
+	  }
+	  return null;
+  }
 
   public  BookingEntry[] getBookingEntries(Booking booking) throws RemoteException, FinderException{
     return booking.getBookingEntries();

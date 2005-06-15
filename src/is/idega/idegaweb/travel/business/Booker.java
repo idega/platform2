@@ -215,6 +215,7 @@ public interface Booker extends IBOService {
 	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookingPrice
 	 */
 	public float getBookingPrice(Booking[] bookings) throws RemoteException, FinderException;
+	  public Currency getBookingCurrency(Booking booking) throws RemoteException, FinderException;
 
 	/**
 	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookingPrice
