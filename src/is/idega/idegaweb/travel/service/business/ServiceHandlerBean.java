@@ -43,6 +43,9 @@ import is.idega.idegaweb.travel.service.tour.presentation.*;
 
 public class ServiceHandlerBean extends IBOServiceBean implements ServiceHandler {
 
+	private HashMap inits = new HashMap();
+	private HashMap unInits = new HashMap();
+	
   public ServiceHandlerBean() {
   }
 
@@ -50,30 +53,57 @@ public class ServiceHandlerBean extends IBOServiceBean implements ServiceHandler
 	  return getBookingForm(iwc, product, true);
   }
   public BookingForm getBookingForm(IWContext iwc, Product product, boolean initializeBookingForm) throws Exception{
-	  	if (product == null) {
-	  		return new DefaultBookingForm(iwc, product);
-	  	}
-    Collection coll = getProductCategoryFactory().getProductCategory(product);
-    Iterator iter = coll.iterator();
-    /**
-     * Only supports Products with ONE ProductCategory
-     */
-    if (iter.hasNext()) {
-      ProductCategory pCat = (ProductCategory) iter.next();
-      String categoryType = getProductCategoryFactory().getProductCategoryType(pCat);
-      if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_TOUR)) {
-        return new TourBookingForm(iwc, product, initializeBookingForm);
-      }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_HOTEL)) {
-        return new HotelBookingForm(iwc, product, initializeBookingForm);
-      }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_FISHING)) {
-        return new FishingBookingForm(iwc, product, initializeBookingForm);
-      }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_PRODUCT)) {
-        return new TourBookingForm(iwc, product, initializeBookingForm);
-      }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_CAR_RENTAL)) {
-        return new CarRentalBookingForm(iwc, product,initializeBookingForm);
-      }
-    }
-    return new DefaultBookingForm(iwc, product, initializeBookingForm);
+  	if (product == null) {
+  		return new DefaultBookingForm(iwc, product);
+  	}
+  	
+  	BookingForm bf = getBookingForm(product, initializeBookingForm);
+  	if (bf == null) {
+	    Collection coll = getProductCategoryFactory().getProductCategory(product);
+	    Iterator iter = coll.iterator();
+	    /**
+	     * Only supports Products with ONE ProductCategory
+	     */
+	    if (iter.hasNext()) {
+	      ProductCategory pCat = (ProductCategory) iter.next();
+	      String categoryType = getProductCategoryFactory().getProductCategoryType(pCat);
+	      if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_TOUR)) {
+	        bf = setBookingForm(product, new TourBookingForm(iwc, product, initializeBookingForm), initializeBookingForm);
+	      }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_HOTEL)) {
+	    	  bf = setBookingForm(product, new HotelBookingForm(iwc, product, initializeBookingForm), initializeBookingForm);
+	      }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_FISHING)) {
+	    	  bf = setBookingForm(product, new FishingBookingForm(iwc, product, initializeBookingForm), initializeBookingForm);
+	      }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_PRODUCT)) {
+	    	  bf = setBookingForm(product, new TourBookingForm(iwc, product, initializeBookingForm), initializeBookingForm);
+	      }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_CAR_RENTAL)) {
+	    	  bf = setBookingForm(product, new CarRentalBookingForm(iwc, product,initializeBookingForm), initializeBookingForm);
+	      }
+	    } else {
+	    	return new DefaultBookingForm(iwc, product, initializeBookingForm);
+	    }
+  	}
+	return bf;
+  }
+  
+  private BookingForm setBookingForm(Product product, BookingForm bf, boolean init ) {
+	  System.out.println("[ServiceHandler] Setting BookingForm for product = "+product.getPrimaryKey().toString()+",  ... "+init);
+	  
+	  if (init) {
+		  // Cant be done this way... figure something else out
+//		  inits.put(product.getPrimaryKey(), bf);
+	  } else {
+		  unInits.put(product.getPrimaryKey(), bf);
+	  }
+	  return bf;
+  }
+  
+  private BookingForm getBookingForm(Product product, boolean init) {
+	  System.out.println("[ServiceHandler] Getting BookingForm for product = "+product.getPrimaryKey().toString()+",  ... "+init);
+	  if (init){
+		  return (BookingForm) inits.get(product.getPrimaryKey());
+	  } else {
+		  return (BookingForm) unInits.get(product.getPrimaryKey());
+	  }
   }
 
   public DesignerForm getDesignerForm(IWContext iwc, ProductCategory productCategory) throws Exception{
