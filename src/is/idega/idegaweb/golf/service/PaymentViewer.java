@@ -724,7 +724,7 @@ public class PaymentViewer extends com.idega.presentation.PresentationObjectCont
 	}
 
 	public static Table getMemberPayments(String member_id, String union_id) throws SQLException {
-		Payment[] payments = (Payment[]) ((Payment) IDOLookup.instanciateEntity(Payment.class)).findAllByColumnOrdered("member_id", member_id, "payment_date");
+		Payment[] payments = (Payment[]) ((Payment) IDOLookup.instanciateEntity(Payment.class)).findAllByColumnEqualsOrdered("member_id", member_id, "payment_date");
 		java.text.NumberFormat nf = java.text.NumberFormat.getInstance();
 		Table T = new Table(6, payments.length + 2);
 		T.setWidth("539");

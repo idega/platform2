@@ -301,7 +301,7 @@ public class TournamentBMPBean extends GenericEntity implements Tournament{
 	}
 
 	public TournamentRound[] getTournamentRounds()throws SQLException{
-		return (TournamentRound[]) ((TournamentRound) IDOLookup.instanciateEntity(TournamentRound.class)).findAllByColumnOrdered("tournament_id",Integer.toString(this.getID()),"ROUND_NUMBER");
+		return (TournamentRound[]) ((TournamentRound) IDOLookup.instanciateEntity(TournamentRound.class)).findAllByColumnEqualsOrdered("tournament_id",Integer.toString(this.getID()),"ROUND_NUMBER");
 	}
 
 	public TournamentGroup[] getTournamentGroups()throws SQLException{

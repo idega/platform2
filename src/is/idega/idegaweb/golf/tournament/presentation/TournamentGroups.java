@@ -499,7 +499,7 @@ public class TournamentGroups extends GolfBlock {
 
 			Member member = (Member) AccessControl.getMember(modinfo);
 			int union_id = member.getMainUnionID();
-			groups = (TournamentGroup[]) ((TournamentGroup) IDOLookup.instanciateEntity(TournamentGroup.class)).findAllByColumnOrdered("union_id", Integer.toString(union_id), "name");
+			groups = (TournamentGroup[]) ((TournamentGroup) IDOLookup.instanciateEntity(TournamentGroup.class)).findAllByColumnEqualsOrdered("union_id", Integer.toString(union_id), "name");
 		}
 		else {
 			groups = getTournamentGroups(modinfo);

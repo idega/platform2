@@ -990,11 +990,6 @@ public class HandicapRegister extends GolfBlock {
 						}
 					}
 					else {
-						//Scorecard[] scoreCards = (Scorecard[]) (new
-						// Scorecard()).findAllByColumnOrdered("member_id",member_id,"scorecard_id
-						// desc");
-						//score_nr = scoreCards[0].getID();
-
 						Stroke strokeID = (Stroke) IDOLookup.createLegacy(Stroke.class);
 						strokeID.setScorecardID(scorecardID);
 						strokeID.setStrokeCount(Integer.parseInt(hoggin));

@@ -267,7 +267,7 @@ public class TariffService  {
   static public Payment[] getMemberPayments(int iMemberId,int iUnionId){
      Payment[] P;
     try{
-      P = (Payment[]) ((Payment) IDOLookup.instanciateEntity(Payment.class)).findAllByColumnOrdered("member_id",String.valueOf(iMemberId),"union_id",String.valueOf(iUnionId),"last_updated");
+      P = (Payment[]) ((Payment) IDOLookup.instanciateEntity(Payment.class)).findAllByColumnEqualsOrdered("member_id",String.valueOf(iMemberId),"union_id",String.valueOf(iUnionId),"last_updated");
     }
     catch(SQLException e){
       P = new Payment[0];
@@ -308,7 +308,7 @@ public class TariffService  {
   static public AccountEntry[] getAccountEntrys(int iAccountId){
     AccountEntry[] E;
     try{
-      E = (AccountEntry[]) ((AccountEntry) IDOLookup.instanciateEntity(AccountEntry.class)).findAllByColumnOrdered("account_id",String.valueOf(iAccountId),"last_updated");
+      E = (AccountEntry[]) ((AccountEntry) IDOLookup.instanciateEntity(AccountEntry.class)).findAllByColumnEqualsOrdered("account_id",String.valueOf(iAccountId),"last_updated");
     }
     catch(SQLException e){
       E = new AccountEntry[0];
@@ -347,7 +347,7 @@ public class TariffService  {
   static public AccountEntry[] getTariffEntrys(int iAccountId){
      AccountEntry[] E;
     try{
-      E = (AccountEntry[]) ((AccountEntry) IDOLookup.instanciateEntity(AccountEntry.class)).findAllByColumnOrdered("account_id",String.valueOf(iAccountId),"info","Álagning","last_updated");
+      E = (AccountEntry[]) ((AccountEntry) IDOLookup.instanciateEntity(AccountEntry.class)).findAllByColumnEqualsOrdered("account_id",String.valueOf(iAccountId),"info","Álagning","last_updated");
     }
     catch(SQLException e){
       E = new AccountEntry[0];

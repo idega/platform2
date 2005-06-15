@@ -167,7 +167,7 @@ public class FieldEditor extends GolfWindow {
 				for (int i = 0; i < tee_color.length; i++) {
 					table.add(tee_color[i].getName(), 1, i + row);
 
-					Tee[] tee = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAllByColumnOrdered("field_id", this.field_id + "", "tee_color_id", tee_color[i].getID() + "", "hole_number");
+					Tee[] tee = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAllByColumnEqualsOrdered("field_id", this.field_id + "", "tee_color_id", tee_color[i].getID() + "", "hole_number");
 
 					if ((tee != null) && (tee.length > 0)) {
 
@@ -759,7 +759,7 @@ public class FieldEditor extends GolfWindow {
 							if (cr.equals("")) {
 								cr = "70";
 							}
-							Tee[] tee = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAllByColumnOrdered("field_id", this.field_id + "", "tee_color_id", tee_color[i].getID() + "", "hole_number");
+							Tee[] tee = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAllByColumnEqualsOrdered("field_id", this.field_id + "", "tee_color_id", tee_color[i].getID() + "", "hole_number");
 							if (tee.length > 0) {
 								for (int j = 0; j < tee.length; j++) {
 									//                          add("<br> litur: "+i+" hola : "+j+" lengd:
@@ -855,7 +855,7 @@ public class FieldEditor extends GolfWindow {
 			String tee_color_id = modinfo.getRequest().getParameter("tee_color_id");
 
 			if (tee_color_id != null) {
-				Tee[] tee = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAllByColumnOrdered("field_id", this.field_id + "", "tee_color_id", tee_color_id + "", "hole_number");
+				Tee[] tee = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAllByColumnEqualsOrdered("field_id", this.field_id + "", "tee_color_id", tee_color_id + "", "hole_number");
 
 				if (tee != null) {
 					for (int i = 0; i < tee.length; i++) {

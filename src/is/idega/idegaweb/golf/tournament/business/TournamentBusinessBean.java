@@ -242,7 +242,7 @@ public class TournamentBusinessBean extends IBOServiceBean implements Tournament
 					if (union_id != 1) {
 						Tournament[] tours = {};
 						if (year == -1) {
-							tours = (Tournament[]) ((Tournament) IDOLookup.instanciateEntity(Tournament.class)).findAllByColumnOrdered("union_id", union_id + "", "START_TIME");
+							tours = (Tournament[]) ((Tournament) IDOLookup.instanciateEntity(Tournament.class)).findAllByColumnEqualsOrdered("union_id", union_id + "", "START_TIME");
 						}
 						else {
 							tours = (Tournament[]) ((Tournament) IDOLookup.instanciateEntity(Tournament.class)).findAll("select * from tournament where union_id = " + union_id + " and START_TIME < '" + year + "-12-31' and START_TIME > '" + year + "-01-01' order by START_TIME");
@@ -262,7 +262,7 @@ public class TournamentBusinessBean extends IBOServiceBean implements Tournament
 						unions_id = unions[i].getID();
 						union_abb = unions[i].getAbbrevation();
 						if (year == -1) {
-							tours = (Tournament[]) ((Tournament) IDOLookup.instanciateEntity(Tournament.class)).findAllByColumnOrdered("union_id", unions_id + "", "START_TIME");
+							tours = (Tournament[]) ((Tournament) IDOLookup.instanciateEntity(Tournament.class)).findAllByColumnEqualsOrdered("union_id", unions_id + "", "START_TIME");
 						}
 						else {
 							tours = (Tournament[]) ((Tournament) IDOLookup.instanciateEntity(Tournament.class)).findAll("select * from tournament where union_id = " + unions_id + " and START_TIME < '" + year + "-12-31' and START_TIME > '" + year + "-01-01' order by START_TIME");
