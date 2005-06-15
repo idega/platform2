@@ -1,5 +1,5 @@
 /*
- * $Id: CreditCardBusiness.java,v 1.5 2005/05/31 19:28:07 gimmi Exp $
+ * $Id: CreditCardBusiness.java,v 1.6 2005/06/15 16:35:31 gimmi Exp $
  * Created on 4.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -25,10 +25,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2005/05/31 19:28:07 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/06/15 16:35:31 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public interface CreditCardBusiness extends IBOService {
 
@@ -150,4 +150,6 @@ public interface CreditCardBusiness extends IBOService {
 	 */
 	public Collection getAllRefunds(IWTimestamp from, IWTimestamp to, int clientType) throws IDOLookupException,
 			FinderException, java.rmi.RemoteException;
+	
+	public CreditCardClient getCreditCardClient(Group supplierManager, IWTimestamp stamp) throws Exception;
 }

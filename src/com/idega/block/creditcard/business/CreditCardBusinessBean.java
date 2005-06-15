@@ -51,6 +51,23 @@ public class CreditCardBusinessBean extends IBOServiceBean implements CreditCard
   		return IW_BUNDLE_IDENTIFIER;
   }
   
+  public Collection getAuthorizationEntries(int clientType, String merchantID, IWTimestamp from, IWTimestamp to) throws IDOLookupException, FinderException {
+	  if (clientType > 0) {
+		  if (clientType == CLIENT_TYPE_KORTATHJONUSTAN) {
+			  KortathjonustanAuthorisationEntriesHome home = (KortathjonustanAuthorisationEntriesHome) IDOLookup.getHome(KortathjonustanAuthorisationEntries.class);
+			  Collection coll =  home.findByDates(from, to);
+			  
+			  return coll;
+		  } else if (clientType == CLIENT_TYPE_TPOS) {
+			  TPosAuthorisationEntriesBeanHome home = (TPosAuthorisationEntriesBeanHome) IDOLookup.getHome(TPosAuthorisationEntriesBean.class);
+			  Collection coll =  home.findByDates(from, to);
+			  
+			  return coll;
+		  } 
+	  }
+	  return null;
+  }
+  
   public Collection getCreditCardTypeImages(CreditCardClient client) {
   		Collection types = client.getValidCardTypes();
   		Vector images = new Vector();
@@ -87,6 +104,11 @@ public class CreditCardBusinessBean extends IBOServiceBean implements CreditCard
 		CreditCardClient client = getCreditCardClient(merchant);
 
 		return client;
+	}
+	
+	public CreditCardClient getCreditCardClient(Group supplierManager, IWTimestamp stamp) throws Exception {
+		CreditCardMerchant m = getCreditCardMerchant(supplierManager, stamp);
+		return getCreditCardClient(m);
 	}
 	
 	public CreditCardClient getCreditCardClient(CreditCardMerchant merchant) throws Exception {
