@@ -1,5 +1,5 @@
 /*
- * $Id: ProductPrice.java,v 1.21 2005/06/02 16:15:14 gimmi Exp $
+ * $Id: ProductPrice.java,v 1.22 2005/06/15 11:48:22 gimmi Exp $
  * Created on 2.6.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -12,6 +12,8 @@ package com.idega.block.trade.stockroom.data;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Collection;
+import javax.ejb.FinderException;
+import com.idega.block.trade.data.Currency;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOEntity;
 import com.idega.data.IDORelationshipException;
@@ -19,10 +21,10 @@ import com.idega.data.IDORelationshipException;
 
 /**
  * 
- *  Last modified: $Date: 2005/06/02 16:15:14 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/06/15 11:48:22 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.21 $
+ * @version $Revision: 1.22 $
  */
 public interface ProductPrice extends IDOEntity {
 
@@ -70,6 +72,7 @@ public interface ProductPrice extends IDOEntity {
 	 * @see com.idega.block.trade.stockroom.data.ProductPriceBMPBean#getCurrencyId
 	 */
 	public int getCurrencyId();
+  public Currency getCurrency() throws FinderException;
 
 	/**
 	 * @see com.idega.block.trade.stockroom.data.ProductPriceBMPBean#setCurrencyId

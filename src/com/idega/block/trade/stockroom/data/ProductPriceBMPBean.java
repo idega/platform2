@@ -113,13 +113,21 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
     setColumn(getColumnNamePriceCategoryId(), id);
   }
 
+  public Currency getCurrency() throws FinderException {
+	  try {
+		return getCurrency(getCurrencyId());
+	}
+	catch (IDOLookupException e) {
+		e.printStackTrace();
+		return null;
+	}
+  }
+  
   public int getCurrencyId(){
     int currId = getIntColumnValue(getColumnNameCurrencyId());
 //    if (currId == 1) {
       try {
-        CurrencyHome cHome = (CurrencyHome) IDOLookup.getHome(Currency.class);
-		cHome.setDatasource(this.getDatasource(), false);
-        Currency currency = cHome.findByPrimaryKey(currId);
+        Currency currency = getCurrency(currId);
         CurrencyHolder holder = CurrencyBusiness.getCurrencyHolder(currency.getCurrencyName());
         if (holder != null) {
         	if (currId != holder.getCurrencyID()) {
@@ -137,6 +145,12 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
 //    }
     return currId;
   }
+
+private Currency getCurrency(int currId) throws IDOLookupException, FinderException {
+	CurrencyHome cHome = (CurrencyHome) IDOLookup.getHome(Currency.class, getDatasource());
+	Currency currency = cHome.findByPrimaryKey(currId);
+	return currency;
+}
 
   public void setCurrencyId(int id){
     setColumn(getColumnNameCurrencyId(), id);
