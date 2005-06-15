@@ -18,7 +18,7 @@ import com.idega.util.IWTimestamp;
 /**
  * @author gimmi
  */
-public class KortathjonustanAuthorisationEntriesBMPBean extends GenericEntity implements KortathjonustanAuthorisationEntries {
+public class KortathjonustanAuthorisationEntriesBMPBean extends GenericEntity implements KortathjonustanAuthorisationEntries, CreditCardAuthorizationEntry {
 
 	private static final String TABLE_NAME = "CC_KORTTHJ_AUTH_ENTRIES";
 	
@@ -145,6 +145,19 @@ public class KortathjonustanAuthorisationEntriesBMPBean extends GenericEntity im
 		return this.idoFindOnePKBySQL(query.toString());
 		
 		//return this.idoFindOnePKByColumnBySQL(COLUMN_AUTHORIZATION_CODE, code);
+	}
+	
+	public Collection ejbFindByDates(IWTimestamp from, IWTimestamp to) throws FinderException {
+		to.addDays(1);
+		
+		Table table = new Table(this);
+		Column date = new Column(table, COLUMN_DATE);
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn(table));
+
+		query.addCriteria(new MatchCriteria(date, MatchCriteria.GREATEREQUAL, from.getDate().toString()));
+		query.addCriteria(new MatchCriteria(date, MatchCriteria.LESSEQUAL, to.getDate().toString()));
+		return this.idoFindPKsByQuery(query);
 	}
 
 	
