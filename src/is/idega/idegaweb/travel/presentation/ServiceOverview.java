@@ -27,7 +27,6 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.util.IWTimestamp;
-import com.idega.util.Timer;
 
 /**
  * Title:        idegaWeb TravelBooking
@@ -101,8 +100,6 @@ public class ServiceOverview extends TravelManager {
       
       
       if ( supplier != null) {
-    	  Timer t = new Timer();
-    	  t.start();
           productsSize = getProductBusiness(iwc).getProductHome().getProductCount(supplier.getID());
           String sStartNumber = iwc.getParameter(parameterStartNumber);
           if (sStartNumber != null) {
@@ -130,12 +127,7 @@ public class ServiceOverview extends TravelManager {
               }
             }
           }
-          t.stop();
-          System.out.println("[ServiceOverview] getting number = "+t.getTimeString());
-          t.start();
           products = getProductBusiness(iwc).getProduct(supplier.getID(), startNumber, stopNumber);
-          t.stop();
-          System.out.println("[ServiceOverview] getting produect = "+t.getTimeString());
 //      	products = getProductBusiness(iwc).getProducts(supplier.getID());
       } else if ( super.getReseller() != null ) {
       	try {
@@ -260,8 +252,6 @@ public class ServiceOverview extends TravelManager {
         is.idega.idegaweb.travel.service.presentation.ServiceOverview so;
 
         Iterator iter = products.iterator();
-        Timer t = new Timer();
-        t.start();
         while (iter.hasNext()) {
 //        for (int i = startNumber; i < stopNumber; i++) {
           try {
@@ -329,8 +319,6 @@ public class ServiceOverview extends TravelManager {
 
       }
 
-        t.stop();
-        System.out.println("[ServiceOverview] iterating products = "+t.getTimeString());
         
         if (productsSize < 1) ++row;
         table.add(pagesTable,1, row);
