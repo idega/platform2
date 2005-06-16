@@ -56,7 +56,7 @@ public class BookingBusinessBean extends IBOServiceBean  implements BookingBusin
 		t.start();
 		//System.out.println("Checking product = "+product.getProductName(iwc.getCurrentLocaleId()));
 		bf = getServiceHandler().getBookingForm(iwc, product, false);
-		addresses = getServiceHandler().getProductBusiness().getDepartureAddresses(product, from, true);
+//		addresses = getServiceHandler().getProductBusiness().getDepartureAddresses(product, from, true);
 		t.stop();
 		System.out.println("[BookingBusiness] check 1b : "+t.getTimeString());
 		t.start();
