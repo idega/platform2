@@ -507,7 +507,7 @@ public class TournamentBusinessBean extends IBOServiceBean implements Tournament
 
 	}
 
-	public boolean blockStartingtime(IWContext modinfo, String name, int tournament_round_id, int startingGroup, int finishingGroup) throws SQLException {
+	public boolean blockStartingtime(IWContext modinfo, String name, int tournament_round_id, int startingGroup, int finishingGroup, int teeNumber) throws SQLException {
 		//System.out.println("Starting blocking");
 		TournamentRound tourRound = null;
 		try {
@@ -533,6 +533,7 @@ public class TournamentBusinessBean extends IBOServiceBean implements Tournament
 				// idegaTimestamp(tourRound.getRoundDate()).getSQLDate()).toString());
 				startingtime.setPlayerName(name);
 				//System.out.println(" ... name = "+name);
+				startingtime.setTeeNumber(teeNumber);
 				startingtime.setHandicap(100);
 				startingtime.setClubName("");
 				startingtime.setGroupNum(a);
@@ -545,7 +546,7 @@ public class TournamentBusinessBean extends IBOServiceBean implements Tournament
 		return true;
 	}
 
-	public boolean unblockStartingtime(IWContext modinfo, int tournament_round_id, int startingGroup, int finishingGroup) throws SQLException {
+	public boolean unblockStartingtime(IWContext modinfo, int tournament_round_id, int startingGroup, int finishingGroup, int teeNumber) throws SQLException {
 		TournamentRound tourRound = null;
 		try {
 			tourRound = ((TournamentRoundHome) IDOLookup.getHomeLegacy(TournamentRound.class)).findByPrimaryKey(tournament_round_id);
@@ -556,6 +557,9 @@ public class TournamentBusinessBean extends IBOServiceBean implements Tournament
 		Tournament tournament = tourRound.getTournament();
 		IWTimestamp stamp = new IWTimestamp(tourRound.getRoundDate());
 		String SQLString = "SELECT * FROM TOURNAMENT_ROUND_STARTINGTIME, STARTINGTIME WHERE TOURNAMENT_ROUND_STARTINGTIME.TOURNAMENT_ROUND_ID = " + tournament_round_id + " AND STARTINGTIME.STARTINGTIME_ID = TOURNAMENT_ROUND_STARTINGTIME.STARTINGTIME_ID AND FIELD_ID =" + tournament.getFieldId() + " AND STARTINGTIME_DATE = '" + stamp.toSQLDateString() + "' and member_id = 1 and grup_num >= " + startingGroup + " and grup_num <=" + finishingGroup;
+		if (teeNumber == 10) {
+			SQLString = "SELECT * FROM TOURNAMENT_ROUND_STARTINGTIME, STARTINGTIME WHERE TOURNAMENT_ROUND_STARTINGTIME.TOURNAMENT_ROUND_ID = " + tournament_round_id + " AND STARTINGTIME.STARTINGTIME_ID = TOURNAMENT_ROUND_STARTINGTIME.STARTINGTIME_ID AND FIELD_ID =" + tournament.getFieldId() + " AND STARTINGTIME_DATE = '" + stamp.toSQLDateString() + "' and member_id = 1 and grup_num >= " + startingGroup + " and grup_num <=" + finishingGroup + " and tee_number = "+teeNumber;
+		}
 		//System.out.println("Tournament Controller: "+SQLString);
 		List startingTimes = EntityFinder.findAll((Startingtime) IDOLookup.instanciateEntity(Startingtime.class), SQLString);
 

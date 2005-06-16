@@ -3,7 +3,7 @@ package is.idega.idegaweb.golf.tournament.business;
 
 public interface TournamentBusiness extends com.idega.business.IBOService
 {
- public boolean blockStartingtime(com.idega.presentation.IWContext p0,java.lang.String p1,int p2,int p3,int p4)throws java.sql.SQLException, java.rmi.RemoteException;
+ public boolean blockStartingtime(com.idega.presentation.IWContext p0,java.lang.String p1,int p2,int p3,int p4, int teeNumber)throws java.sql.SQLException, java.rmi.RemoteException;
  public void createScorecardForMember(is.idega.idegaweb.golf.entity.Member p0,is.idega.idegaweb.golf.entity.Tournament p1,java.lang.String p2)throws java.sql.SQLException, java.rmi.RemoteException;
  public void createScorecardForMember(is.idega.idegaweb.golf.entity.Member p0,is.idega.idegaweb.golf.entity.Tournament p1)throws java.sql.SQLException, java.rmi.RemoteException;
  public void createScorecardForMember(is.idega.idegaweb.golf.entity.Member p0,is.idega.idegaweb.golf.entity.Tournament p1,is.idega.idegaweb.golf.entity.TournamentTournamentGroup p2)throws java.sql.SQLException, java.rmi.RemoteException;
@@ -76,5 +76,5 @@ public interface TournamentBusiness extends com.idega.business.IBOService
  public boolean setHasMemberPaid(is.idega.idegaweb.golf.entity.Tournament p0,is.idega.idegaweb.golf.entity.Member p1,boolean p2)throws java.lang.Exception, java.rmi.RemoteException;
  public boolean setupStartingtime(com.idega.presentation.IWContext p0,is.idega.idegaweb.golf.entity.Member p1,is.idega.idegaweb.golf.entity.Tournament p2,int p3,int p4)throws java.sql.SQLException, java.rmi.RemoteException;
  public boolean setupStartingtime(com.idega.presentation.IWContext p0,is.idega.idegaweb.golf.entity.Member p1,is.idega.idegaweb.golf.entity.Tournament p2,int p3,int p4,int p5)throws java.sql.SQLException, java.rmi.RemoteException;
- public boolean unblockStartingtime(com.idega.presentation.IWContext p0,int p1,int p2,int p3)throws java.sql.SQLException, java.rmi.RemoteException;
+ public boolean unblockStartingtime(com.idega.presentation.IWContext p0,int p1,int p2,int p3, int teeNumber)throws java.sql.SQLException, java.rmi.RemoteException;
 }

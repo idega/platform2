@@ -95,16 +95,33 @@ public class BlockStartingtime extends GolfBlock {
     form.add(new HiddenInput("tournament_round_id",tournamentRoundID));
 
     String name = modinfo.getParameter("name");
+    int teeNumber = 1;
     if ( name.length() == 0 ) name = "Frátekið";
     String start = modinfo.getParameter("start");
     String stop = modinfo.getParameter("stop");
 
-    if ( block )
-      getTournamentBusiness(modinfo).blockStartingtime(modinfo, name,Integer.parseInt(tournamentRoundID),Integer.parseInt(start),Integer.parseInt(stop));
-    else
-      getTournamentBusiness(modinfo).unblockStartingtime(modinfo, Integer.parseInt(tournamentRoundID),Integer.parseInt(start),Integer.parseInt(stop));
+    
+    boolean doIt = true;
+    int startInd = start.indexOf("_");
+    int stopInd = stop.indexOf("_");
+    if ((startInd > -1 && stopInd == -1) || (startInd == -1 && stopInd > -1)) {
+    	doIt = false;
+    	table.add("<br><center>Invalid tees</center><br>");
+    } else if (startInd > -1 && stopInd > -1) {
+    	teeNumber = 10;
+    	start = start.substring(0, startInd);
+    	stop = stop.substring(0, stopInd);
+    }
+    
+    if (doIt) {
+	    if ( block )
+	      getTournamentBusiness(modinfo).blockStartingtime(modinfo, name,Integer.parseInt(tournamentRoundID),Integer.parseInt(start),Integer.parseInt(stop), teeNumber);
+	    else
+	      getTournamentBusiness(modinfo).unblockStartingtime(modinfo, Integer.parseInt(tournamentRoundID),Integer.parseInt(start),Integer.parseInt(stop), teeNumber);
+    }
 
     SubmitButton back = new SubmitButton("Til baka","action","getForm");
+    table.add("<br>");
     table.add(back);
 
     form.add(table);
