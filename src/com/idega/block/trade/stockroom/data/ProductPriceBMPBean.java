@@ -281,7 +281,7 @@ private Currency getCurrency(int currId) throws IDOLookupException, FinderExcept
 	  	if (netBookingOnly) {
 	  		return new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC};	
 	  	}else {
-	  		return new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_PRIVATE};	
+	  		return new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_PRIVATE, PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC};	
 	  	}
   }
   
