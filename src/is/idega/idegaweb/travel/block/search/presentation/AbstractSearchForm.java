@@ -86,7 +86,7 @@ public abstract class AbstractSearchForm extends TravelBlock {
 	public static String ACTION = "bsf_a";
 	protected static String PREV_ACTION = "bsf_pa";
 	protected static String ACTION_SEARCH = "bsf_as";
-	static String ACTION_BOOKING_FORM = "bsf_bf";
+	public static String ACTION_BOOKING_FORM = "bsf_bf";
 	protected static String ACTION_PRODUCT_DETAILS = "bsf_pd";
 	public static String ACTION_CONFIRM = "bsf_cm";
 	public static String ACTION_ADD_TO_BASKET = "bsf_atb";
