@@ -3,21 +3,18 @@ package is.idega.idegaweb.travel.presentation;
 import is.idega.idegaweb.travel.business.ServiceNotFoundException;
 import is.idega.idegaweb.travel.business.TimeframeNotFoundException;
 import is.idega.idegaweb.travel.data.Service;
-
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Vector;
-
 import javax.ejb.FinderException;
-
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductCategory;
 import com.idega.block.trade.stockroom.data.ProductCategoryHome;
 import com.idega.block.trade.stockroom.data.Reseller;
 import com.idega.block.trade.stockroom.data.Supplier;
+import com.idega.data.IDOException;
 import com.idega.data.IDOFinderException;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
@@ -30,6 +27,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.util.IWTimestamp;
+import com.idega.util.Timer;
 
 /**
  * Title:        idegaWeb TravelBooking
@@ -50,8 +48,15 @@ public class ServiceOverview extends TravelManager {
   private String parameterStartNumber = "parameterStartNumber";
   private Supplier supplier;
   private Reseller reseller;
+  
+  private int totalPages = 1;
+  private int currentPage = 1;
+  private int startNumber = 0;
+  private int manyPerPage = 5;
+  private int stopNumber = manyPerPage;
+  private int productsSize = 0;
 
-  private List products = new Vector();
+  private Collection products = new Vector();
 
   public ServiceOverview() {
   }
@@ -85,19 +90,86 @@ public class ServiceOverview extends TravelManager {
 
   }
 
-  private void init(IWContext iwc) throws RemoteException {
+  private void init(IWContext iwc) throws RemoteException, IDOException, FinderException {
       bundle = super.getBundle();
       iwrb = super.getResourceBundle();
       supplier = super.getSupplier();
       reseller = super.getReseller();
       
+      
+
+      
+      
       if ( supplier != null) {
-      	products = getProductBusiness(iwc).getProducts(supplier.getID());
+    	  Timer t = new Timer();
+    	  t.start();
+          productsSize = getProductBusiness(iwc).getProductHome().getProductCount(supplier.getID());
+          String sStartNumber = iwc.getParameter(parameterStartNumber);
+          if (sStartNumber != null) {
+            startNumber = Integer.parseInt(sStartNumber);
+          }
+
+          if (productsSize > startNumber + manyPerPage) {
+            stopNumber = startNumber + manyPerPage;
+          }else {
+            stopNumber = productsSize;
+          }
+
+          totalPages = (int) productsSize / manyPerPage;
+          if ( (productsSize % manyPerPage) > 0) ++totalPages;
+
+          if (totalPages == 0) totalPages = 1;
+
+          if ((productsSize - startNumber) < manyPerPage) {
+            currentPage = totalPages;
+          }else {
+            for (int i = manyPerPage, j=1; i <= productsSize; i += manyPerPage,j++) {
+              if (startNumber < i) {
+                currentPage = j;
+                break;
+              }
+            }
+          }
+          t.stop();
+          System.out.println("[ServiceOverview] getting number = "+t.getTimeString());
+          t.start();
+          products = getProductBusiness(iwc).getProduct(supplier.getID(), startNumber, stopNumber);
+          t.stop();
+          System.out.println("[ServiceOverview] getting produect = "+t.getTimeString());
+//      	products = getProductBusiness(iwc).getProducts(supplier.getID());
       } else if ( super.getReseller() != null ) {
       	try {
 					Product[] list = super.getContractBusiness(iwc).getProductsForReseller(iwc, ((Integer) reseller.getPrimaryKey()).intValue());
-					if (list != null) {
-						for (int i = 0; i < list.length; i++) {
+		      		productsSize = list.length;
+		            String sStartNumber = iwc.getParameter(parameterStartNumber);
+		            if (sStartNumber != null) {
+		              startNumber = Integer.parseInt(sStartNumber);
+		            }
+
+		            if (productsSize > startNumber + manyPerPage) {
+		              stopNumber = startNumber + manyPerPage;
+		            }else {
+		              stopNumber = productsSize;
+		            }
+
+		            totalPages = (int) productsSize / manyPerPage;
+		            if ( (productsSize % manyPerPage) > 0) ++totalPages;
+
+		            if (totalPages == 0) totalPages = 1;
+
+		            if ((productsSize - startNumber) < manyPerPage) {
+		              currentPage = totalPages;
+		            }else {
+		              for (int i = manyPerPage, j=1; i <= productsSize; i += manyPerPage,j++) {
+		                if (startNumber < i) {
+		                  currentPage = j;
+		                  break;
+		                }
+		              }
+		            }
+		            if (list != null) {
+						for (int i = startNumber; i < stopNumber; i++) {
+//						for (int i = 0; i < list.length; i++) {
 							products.add((Product) list[i]);
 						}
 					}
@@ -105,6 +177,9 @@ public class ServiceOverview extends TravelManager {
 					logWarning("ServiceOverview : no products found for reseller");
 				}
       }
+
+
+      
       
   }
 
@@ -134,16 +209,11 @@ public class ServiceOverview extends TravelManager {
           sYear = Text.emptyString().toString();
       }
 
-      int iStartNumber = 0;
-      int manyPerPage = 5;
-      int iStopNumber = manyPerPage;
-      int pages = 1;
-      int currentPage = 1;
-
-      String startNumber = iwc.getParameter(parameterStartNumber);
-      if (startNumber != null) {
-        iStartNumber = Integer.parseInt(startNumber);
-      }
+//      int iStartNumber = 0;
+//      int manyPerPage = 5;
+//      int iStopNumber = manyPerPage;
+//      int pages = 1;
+//      int currentPage = 1;
 
       int row = 0;
       IWTimestamp stamp = IWTimestamp.RightNow();
@@ -160,33 +230,8 @@ public class ServiceOverview extends TravelManager {
       Link book;
       Link edit;
 
-
-        int productsSize = products.size();
-
-        if (productsSize > iStartNumber + manyPerPage) {
-          iStopNumber = iStartNumber + manyPerPage;
-        }else {
-          iStopNumber = productsSize;
-        }
-
-        pages = (int) productsSize / manyPerPage;
-        if ( (productsSize % manyPerPage) > 0) ++pages;
-
-        if (pages == 0) pages = 1;
-
-        if ((productsSize - iStartNumber) < manyPerPage) {
-          currentPage = pages;
-        }else {
-          for (int i = manyPerPage, j=1; i <= productsSize; i += manyPerPage,j++) {
-            if (iStartNumber < i) {
-              currentPage = j;
-              break;
-            }
-          }
-        }
-
         Table contentTable;
-        Table pagesTable = getPagesTable(pages, currentPage, iStartNumber, manyPerPage);
+        Table pagesTable = getPagesTable(totalPages, currentPage, startNumber, manyPerPage);
         Product product;
 
         if (productsSize > 0) {
@@ -214,9 +259,14 @@ public class ServiceOverview extends TravelManager {
 
         is.idega.idegaweb.travel.service.presentation.ServiceOverview so;
 
-        for (int i = iStartNumber; i < iStopNumber; i++) {
+        Iterator iter = products.iterator();
+        Timer t = new Timer();
+        t.start();
+        while (iter.hasNext()) {
+//        for (int i = startNumber; i < stopNumber; i++) {
           try {
-            product = (Product) products.get(i);
+//            product = (Product) products.get(i);
+        	  product = (Product) iter.next();
             so = super.getServiceHandler(iwc).getServiceOverview(iwc, product);
             contentTable = so.getServiceInfoTable(iwc, product);
 //            contentTable = getServiceInfoTable(iwc,iwrb,product);
@@ -278,6 +328,10 @@ public class ServiceOverview extends TravelManager {
           }
 
       }
+
+        t.stop();
+        System.out.println("[ServiceOverview] iterating products = "+t.getTimeString());
+        
         if (productsSize < 1) ++row;
         table.add(pagesTable,1, row);
         table.setAlignment(1,row,"center");
