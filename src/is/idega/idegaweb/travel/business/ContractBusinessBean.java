@@ -250,7 +250,7 @@ public class ContractBusinessBean extends IBOServiceBean implements ContractBusi
 			try {
 				return getContractHome().findByProductAndReseller((new Integer(product.getPrimaryKey().toString())).intValue(), (new Integer(reseller.getPrimaryKey().toString())).intValue());
 			} catch (FinderException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		}
 		return null;
