@@ -629,6 +629,9 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 
   public boolean actionPerformed(IWContext iwc) throws IWException {
 		String action = iwc.getParameter(AbstractSearchForm.ACTION);
+		if (action == null) {
+			action = "";
+		}
 		if (action != null && action.equals(AbstractSearchForm.ACTION_ADD_TO_BASKET)) {
 			return addToBasket(iwc);
 		} else if (action.equals(AbstractSearchForm.ACTION_CONFIRM)){
@@ -822,7 +825,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 
 	public GeneralBooking doBooking(IWContext iwc, boolean doCreditCardCheck) throws Exception {
 		if (!iwc.isParameterSet(BookingForm.PARAMETER_CODE)) {
-			throw new RuntimeException("EngineCode not found");
+//			throw new RuntimeException("EngineCode not found");
 		}
 		Product product = getProduct(iwc);
 		int bookingId = -1;
