@@ -1,5 +1,5 @@
 /*
- * $Id: TourBrowser.java,v 1.4 2005/06/15 11:49:47 gimmi Exp $
+ * $Id: TourBrowser.java,v 1.5 2005/06/16 20:08:57 gimmi Exp $
  * Created on 28.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -9,6 +9,7 @@
  */
 package is.idega.idegaweb.travel.service.tour.presentation;
 
+import is.idega.idegaweb.travel.block.search.presentation.AbstractSearchForm;
 import is.idega.idegaweb.travel.presentation.SupplierBrowser;
 import is.idega.idegaweb.travel.presentation.SupplierBrowserPlugin;
 import is.idega.idegaweb.travel.presentation.TravelBlock;
@@ -51,8 +52,8 @@ public class TourBrowser extends TravelBlock implements SupplierBrowserPlugin {
 	private static final String PARAMETER_TOUR_CATEGORY_ID = "tb_tc";
 	private static final String PARAMETER_TOUR_TYPE_ID = "tb_tt";
 	
-	private static final String PARAMETER_FROM_DATE = "tb_fd";
-	private static final String PARAMETER_TO_DATE = "tb_td";
+	private static final String PARAMETER_FROM_DATE = SupplierBrowser.PARAMETER_FROM;
+	private static final String PARAMETER_TO_DATE = AbstractSearchForm.PARAMETER_TO_DATE;
 	
 	private static final String PARAMETER_FORCED_TOUR_TYPE_ID = "tb_ftt";
 	private static final String PARAMETER_FORCED_TOUR_CATEGORY_ID = "tb_ftc";

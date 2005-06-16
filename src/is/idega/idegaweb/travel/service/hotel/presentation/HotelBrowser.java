@@ -1,5 +1,5 @@
 /*
- * $Id: HotelBrowser.java,v 1.4 2005/06/03 00:38:47 gimmi Exp $
+ * $Id: HotelBrowser.java,v 1.5 2005/06/16 20:08:57 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -9,6 +9,8 @@
  */
 package is.idega.idegaweb.travel.service.hotel.presentation;
 
+import is.idega.idegaweb.travel.block.search.presentation.AbstractSearchForm;
+import is.idega.idegaweb.travel.presentation.SupplierBrowser;
 import is.idega.idegaweb.travel.presentation.SupplierBrowserPlugin;
 import is.idega.idegaweb.travel.presentation.TravelBlock;
 import is.idega.idegaweb.travel.service.hotel.data.Hotel;
@@ -45,8 +47,8 @@ public class HotelBrowser extends TravelBlock implements SupplierBrowserPlugin {
 
 	private static final String PARAMETER_ACCOMMODATION_TYPE = "hb_pat";
 	private static final String PARAMETER_ROOM_TYPE = "hb_rt";
-	private static final String PARAMETER_FROM_DATE = "hb_fd";
-	private static final String PARAMETER_TO_DATE = "hb_td";
+	private static final String PARAMETER_FROM_DATE = SupplierBrowser.PARAMETER_FROM;
+	private static final String PARAMETER_TO_DATE = AbstractSearchForm.PARAMETER_TO_DATE;
 	private static final String PARAMETER_MAX_RATING = "hb_mar";
 	private static final String PARAMETER_MIN_RATING = "hb_mir";
 	
