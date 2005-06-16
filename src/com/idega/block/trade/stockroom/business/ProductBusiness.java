@@ -1,5 +1,5 @@
 /*
- * $Id: ProductBusiness.java,v 1.43 2005/05/13 04:37:46 gimmi Exp $
+ * $Id: ProductBusiness.java,v 1.44 2005/06/16 21:04:35 gimmi Exp $
  * Created on 12.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -11,6 +11,7 @@ package com.idega.block.trade.stockroom.business;
 
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
@@ -33,10 +34,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2005/05/13 04:37:46 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/06/16 21:04:35 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.43 $
+ * @version $Revision: 1.44 $
  */
 public interface ProductBusiness extends IBOService {
 
@@ -105,6 +106,7 @@ public interface ProductBusiness extends IBOService {
 	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getProduct
 	 */
 	public Product getProduct(int productId) throws RemoteException, FinderException;
+    public Collection getProduct(int supplierId, int firstEntity, int lastEntity) throws FinderException, RemoteException;
 
 	/**
 	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#deleteProduct

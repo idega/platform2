@@ -286,6 +286,10 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
     }
     return list;
   }
+  
+  public Collection getProduct(int supplierId, int firstEntity, int lastEntity) throws FinderException, RemoteException {
+	  return getProductHome().findProducts(supplierId, firstEntity, lastEntity);
+  }
 
 
   public List getProducts() throws RemoteException, FinderException{

@@ -1,15 +1,29 @@
+/*
+ * $Id: ProductHomeImpl.java,v 1.7 2005/06/16 21:04:36 gimmi Exp $
+ * Created on 16.6.2005
+ *
+ * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ */
 package com.idega.block.trade.stockroom.data;
 
 import java.util.Collection;
 import javax.ejb.FinderException;
 import com.idega.data.IDOCompositePrimaryKeyException;
+import com.idega.data.IDOException;
 import com.idega.data.IDOFactory;
 import com.idega.data.IDORelationshipException;
 import com.idega.util.IWTimestamp;
 
 
 /**
- * @author gimmi
+ * 
+ *  Last modified: $Date: 2005/06/16 21:04:36 $ by $Author: gimmi $
+ * 
+ * @author <a href="mailto:gimmi@idega.com">gimmi</a>
+ * @version $Revision: 1.7 $
  */
 public class ProductHomeImpl extends IDOFactory implements ProductHome {
 
@@ -77,6 +91,20 @@ public class ProductHomeImpl extends IDOFactory implements ProductHome {
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
+	public Collection findProducts(int supplierId, int firstEntity, int lastEntity) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ProductBMPBean) entity).ejbFindProducts(supplierId, firstEntity, lastEntity);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public int getProductCount(int supplierId) throws IDOException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		int theReturn = ((ProductBMPBean) entity).ejbHomeGetProductCount(supplierId);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
+
 	public Collection findProducts(int supplierId, int productCategoryId, IWTimestamp from, IWTimestamp to)
 			throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
@@ -119,7 +147,8 @@ public class ProductHomeImpl extends IDOFactory implements ProductHome {
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findBySupplyPool(SupplyPool pool) throws IDORelationshipException, FinderException, IDOCompositePrimaryKeyException {
+	public Collection findBySupplyPool(SupplyPool pool) throws IDORelationshipException, FinderException,
+			IDOCompositePrimaryKeyException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		java.util.Collection ids = ((ProductBMPBean) entity).ejbFindBySupplyPool(pool);
 		this.idoCheckInPooledEntity(entity);
