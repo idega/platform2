@@ -400,11 +400,7 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
   }
   
   public List getDepartureAddresses(Product product, IWTimestamp stamp, boolean ordered, String key) throws RemoteException, FinderException  {
-  	try{
-	  	return getDepartureAddresses(product, stamp, ordered, key, product.getTimeframes());
-		}catch (SQLException sql) {
-			throw new IDOFinderException(sql);
-		}
+  	return getDepartureAddresses(product, stamp, ordered, key, null);
   } 
   
   public List getDepartureAddresses(Product product, IWTimestamp stamp, boolean ordered, String key, Timeframe[] timeframes) throws RemoteException, FinderException  {
@@ -414,7 +410,15 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
 //		Collection pPrices;
 		TravelAddress ta;
 		boolean add = false;
-		if (list != null) {
+		if (list != null && !list.isEmpty()) {
+			if (timeframes == null) {
+				try {
+					timeframes = product.getTimeframes();
+				}
+				catch (SQLException e) {
+					throw new FinderException(e.getMessage());
+				}
+			}
 			Iterator iter = list.iterator();
 			while (iter.hasNext()) {
 				ta = (TravelAddress) iter.next();
