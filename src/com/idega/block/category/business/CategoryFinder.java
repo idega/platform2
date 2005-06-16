@@ -209,8 +209,10 @@ public class CategoryFinder {
 		try {
 			ids = getObjectInstanceCategoryIds(iObjectInstanceId);
 			if (ids.length == 0 && CreateNew) {
+				System.out.println("[CategoryBlock]: Had to create new category for instance id = "+iObjectInstanceId+" of type "+type);
 				ids = new int[1];
 				ids[0] = CategoryBusiness.getInstance().createCategory(iObjectInstanceId, type);
+				System.out.println("[CategoryBlock]: the new category ID is "+ids[0]);
 			}
 		}
 		catch (Exception ex) {
