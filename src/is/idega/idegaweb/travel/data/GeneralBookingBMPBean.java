@@ -37,6 +37,7 @@ import com.idega.data.query.Criteria;
 import com.idega.data.query.InCriteria;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.OR;
+import com.idega.data.query.Order;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.SumColumn;
 import com.idega.data.query.Table;
@@ -889,55 +890,81 @@ public class GeneralBookingBMPBean extends GenericEntity implements Booking , Ge
   public Collection ejbHomeGetMultibleBookings(GeneralBooking booking) throws RemoteException, FinderException{
     //List list = new Vector();
 
-    try {
-      StringBuffer buff = new StringBuffer();
-        buff.append("SELECT * FROM "+getBookingTableName());
-        buff.append(" WHERE ");
-        buff.append(getNameColumnName()+" = '"+booking.getName()+"'");
-        buff.append(" AND ");
-        buff.append(getAddressColumnName()+" = '"+booking.getAddress()+"'");
-        buff.append(" AND ");
-        buff.append(getAttendanceColumnName()+" = '"+booking.getAttendance()+"'");
-        buff.append(" AND ");
-        buff.append(getBookingTypeIDColumnName()+" = '"+booking.getBookingTypeID()+"'");
-        buff.append(" AND ");
-        buff.append(getCityColumnName()+" = '"+booking.getCity()+"'");
-        buff.append(" AND ");
-        buff.append(getCountryColumnName()+" = '"+booking.getCountry()+"'");
-        buff.append(" AND ");
-        buff.append(getEmailColumnName()+" = '"+booking.getEmail()+"'");
-        buff.append(" AND ");
-        if (booking.getIsValid()) {
-          buff.append(getIsValidColumnName()+" = 'Y'");
-        }else {
-          buff.append(getIsValidColumnName()+" = 'N'");
-        }
-        buff.append(" AND ");
-        buff.append(getPaymentTypeIdColumnName()+" = '"+booking.getPaymentTypeId()+"'");
-        buff.append(" AND ");
-        buff.append(getPostalCodeColumnName()+" = '"+booking.getPostalCode()+"'");
-        buff.append(" AND ");
-        buff.append(getServiceIDColumnName()+" = '"+booking.getServiceID()+"'");
-        buff.append(" AND ");
-        buff.append(getTelephoneNumberColumnName()+" = '"+booking.getTelephoneNumber()+"'");
-        buff.append(" AND ");
-        buff.append(getTotalCountColumnName()+" = '"+booking.getTotalCount()+"'");
-				buff.append(" AND ");
-				if (booking.getCode() == null) {
-					buff.append(getBookingCodeColumnName()+" is null");
-				} else {
-					buff.append(getBookingCodeColumnName()+" = '"+booking.getCode()+"'");
-				}
-				buff.append(" AND ");
-				if (booking.getCreditcardAuthorizationNumber() == null) {
-					buff.append(getCreditcardAuthorizationNumberColumnName()+" is null");
-				} else {
-					buff.append(getCreditcardAuthorizationNumberColumnName()+" = '"+booking.getCreditcardAuthorizationNumber()+"'");
-					
-				}
-				buff.append(" ORDER BY "+getBookingDateColumnName());
-      //coll = this.idoFindPKsBySQL(buff.toString());
-      return this.idoFindPKsBySQL(buff.toString());
+	  Table table = new Table(this);
+	  SelectQuery query = new SelectQuery(table);
+	  
+	  query.addColumn(new Column(table, getIDColumnName()));
+  	  query.addCriteria(new MatchCriteria(new Column(table, getNameColumnName()), MatchCriteria.EQUALS,  booking.getName()));
+	  query.addCriteria(new MatchCriteria(new Column(table, getAddressColumnName()), MatchCriteria.EQUALS,  booking.getAddress()));
+	  query.addCriteria(new MatchCriteria(new Column(table, getAttendanceColumnName()), MatchCriteria.EQUALS,  booking.getAttendance()));
+	  query.addCriteria(new MatchCriteria(new Column(table, getBookingTypeIDColumnName()), MatchCriteria.EQUALS,  booking.getBookingTypeID()));
+	  query.addCriteria(new MatchCriteria(new Column(table, getCityColumnName()), MatchCriteria.EQUALS,  booking.getCity()));
+	  query.addCriteria(new MatchCriteria(new Column(table, getCountryColumnName()), MatchCriteria.EQUALS,  booking.getCountry()));
+	  query.addCriteria(new MatchCriteria(new Column(table, getIsValidColumnName()), MatchCriteria.EQUALS,  booking.getIsValid()));
+	  query.addCriteria(new MatchCriteria(new Column(table, getPaymentTypeIdColumnName()), MatchCriteria.EQUALS,  booking.getPaymentTypeId()));
+	  query.addCriteria(new MatchCriteria(new Column(table, getPostalCodeColumnName()), MatchCriteria.EQUALS,  booking.getPostalCode()));
+	  query.addCriteria(new MatchCriteria(new Column(table, getServiceIDColumnName()), MatchCriteria.EQUALS,  booking.getServiceID()));
+	  query.addCriteria(new MatchCriteria(new Column(table, getTelephoneNumberColumnName()), MatchCriteria.EQUALS,  booking.getTelephoneNumber()));
+	  query.addCriteria(new MatchCriteria(new Column(table, getTotalCountColumnName()), MatchCriteria.EQUALS,  booking.getTotalCount()));
+	  query.addCriteria(new MatchCriteria(new Column(table, getBookingCodeColumnName()), MatchCriteria.EQUALS,  booking.getCode()));
+	  query.addCriteria(new MatchCriteria(new Column(table, getCreditcardAuthorizationNumberColumnName()), MatchCriteria.EQUALS,  booking.getCreditcardAuthorizationNumber()));
+	  query.addOrder(new Order(new Column(table, getBookingDateColumnName()), true));
+ 
+	try {
+	  return idoFindPKsByQuery(query);
+	  
+//    try {
+//      StringBuffer buff = new StringBuffer();
+//        buff.append("SELECT * FROM "+getBookingTableName());
+//        buff.append(" WHERE ");
+//        buff.append(getNameColumnName()+" = '"+booking.getName()+"'");
+//        buff.append(" AND ");
+//        buff.append(getAddressColumnName()+" = '"+booking.getAddress()+"'");
+//        buff.append(" AND ");
+//        buff.append(getAttendanceColumnName()+" = '"+booking.getAttendance()+"'");
+//        buff.append(" AND ");
+//        buff.append(getBookingTypeIDColumnName()+" = '"+booking.getBookingTypeID()+"'");
+//        buff.append(" AND ");
+//        buff.append(getCityColumnName()+" = '"+booking.getCity()+"'");
+//        buff.append(" AND ");
+//        buff.append(getCountryColumnName()+" = '"+booking.getCountry()+"'");
+//        buff.append(" AND ");
+//        buff.append(getEmailColumnName()+" = '"+booking.getEmail()+"'");
+//        buff.append(" AND ");
+//        if (booking.getIsValid()) {
+//          buff.append(getIsValidColumnName()+" = 'Y'");
+//        }else {
+//          buff.append(getIsValidColumnName()+" = 'N'");
+//        }
+//
+//	  buff.append(" AND ");
+//        buff.append(getPaymentTypeIdColumnName()+" = '"+booking.getPaymentTypeId()+"'");
+//        buff.append(" AND ");
+//        buff.append(getPostalCodeColumnName()+" = '"+booking.getPostalCode()+"'");
+//        buff.append(" AND ");
+//        buff.append(getServiceIDColumnName()+" = '"+booking.getServiceID()+"'");
+//        buff.append(" AND ");
+//        buff.append(getTelephoneNumberColumnName()+" = '"+booking.getTelephoneNumber()+"'");
+//        buff.append(" AND ");
+//        buff.append(getTotalCountColumnName()+" = '"+booking.getTotalCount()+"'");
+//				buff.append(" AND ");
+//				if (booking.getCode() == null) {
+//					buff.append(getBookingCodeColumnName()+" is null");
+//				} else {
+//					buff.append(getBookingCodeColumnName()+" = '"+booking.getCode()+"'");
+//				}
+//				buff.append(" AND ");
+//				if (booking.getCreditcardAuthorizationNumber() == null) {
+//					buff.append(getCreditcardAuthorizationNumberColumnName()+" is null");
+//				} else {
+//					buff.append(getCreditcardAuthorizationNumberColumnName()+" = '"+booking.getCreditcardAuthorizationNumber()+"'");
+//					
+//				}
+//				buff.append(" ORDER BY "+getBookingDateColumnName());
+//      //coll = this.idoFindPKsBySQL(buff.toString());
+//				System.out.println(buff.toString());
+//      return this.idoFindPKsBySQL(buff.toString());
+	  
     }catch (FinderException fe) {
       System.err.println("[GeneralBookingBMPBean] Error in sql : getting multiple bookings for bookingId : "+booking.getID());
       fe.printStackTrace(System.err);
