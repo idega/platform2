@@ -1703,7 +1703,7 @@ public class CarRentalBookingForm extends BookingForm {
   	
 		try {
 		  iPickupId = Integer.parseInt(pickupPlaceId);
-		  System.out.println(stamp.toSQLDateString()+" "+pickupTime);
+//		  System.out.println("[CarRentalBookingForm] "+stamp.toSQLDateString()+" "+pickupTime);
 		  pickupStamp = new IWTimestamp(stamp.toSQLDateString()+" "+pickupTime);	
 		}catch (Exception e) {
 			e.printStackTrace(System.err);	
