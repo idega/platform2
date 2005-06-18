@@ -1416,9 +1416,33 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 			if (event.getActionCommand().equals(BookerBean.COMMAND_BOOKING)) {
 				try {
 					GeneralBooking booking = getBooker().getGeneralBookingHome().findByPrimaryKey(new Integer(event.getID()));
-					Product product = booking.getService().getProduct();
-					Collection products = this.getProductsSharingPool(product);
-					invalidateMaxDayCache(products);
+					Collection bookings = getBooker().getMultibleBookings(booking);
+					
+					if (bookings != null && !bookings.isEmpty()) {
+						Iterator iter = bookings.iterator();
+						Vector productToInvalidate = new Vector();
+						while (iter.hasNext()) {
+							GeneralBooking b = (GeneralBooking) iter.next();
+							Product p = booking.getService().getProduct();
+							Collection ps = getProductsSharingPool(p);
+							if (!productToInvalidate.contains(p)) {
+								productToInvalidate.add(p);
+								if (ps != null) {
+									productToInvalidate.addAll(ps);
+								}
+							}
+							
+						}
+						invalidateMaxDayCache(productToInvalidate);
+					} else {
+						Product product = booking.getService().getProduct();
+						Collection products = this.getProductsSharingPool(product);
+						if (products != null) {
+							products.add(product);
+						}
+						invalidateMaxDayCache(products);
+
+					}
 				}
 				catch (RemoteException e) {
 					e.printStackTrace();
@@ -1447,7 +1471,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 			while (iter.hasNext()) {
 				Product product = (Product) iter.next();
 				maxDaysMap.remove( (Integer) product.getPrimaryKey());
-				System.out.println("[ServiceSearchBusinessBean] Invalidating max days cache for product = "+product.getPrimaryKey());
+				//System.out.println("[ServiceSearchBusinessBean] Invalidating max days cache for product = "+product.getPrimaryKey());
 			}
 		}
 	}
