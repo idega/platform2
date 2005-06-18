@@ -259,7 +259,8 @@ public class SupplierManagerEditor extends TravelManager {
 				del = new Link(getText(iwrb.getLocalizedString("delete", "Delete")));
 				del.addParameter(ACTION, ACTION_DELETE);
 				del.addParameter(PARAMETER_MANAGER_ID, manager.getPrimaryKey().toString());
-				use = new Link(iwrb.getLocalizedImageButton("use", "Use"));
+				use = new Link(getText(iwrb.getLocalizedString("use", "Use")));
+//				use = new Link(iwrb.getLocalizedImageButton("use", "Use"));
 				use.addParameter(ACTION, PARAMETER_CHOOSE);
 				use.addParameter(PARAMETER_MANAGER_ID, manager.getPrimaryKey().toString());
 				
