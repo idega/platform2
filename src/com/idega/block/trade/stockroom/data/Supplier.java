@@ -1,6 +1,6 @@
 /*
- * $Id: Supplier.java,v 1.25 2005/06/01 09:28:33 gimmi Exp $
- * Created on 1.6.2005
+ * $Id: Supplier.java,v 1.26 2005/06/18 15:59:00 gimmi Exp $
+ * Created on 18.6.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -29,10 +29,10 @@ import com.idega.user.data.Group;
 
 /**
  * 
- *  Last modified: $Date: 2005/06/01 09:28:33 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/06/18 15:59:00 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.25 $
+ * @version $Revision: 1.26 $
  */
 public interface Supplier extends IDOLegacyEntity {
 

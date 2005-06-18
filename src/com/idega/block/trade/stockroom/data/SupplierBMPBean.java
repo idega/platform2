@@ -21,6 +21,7 @@ import com.idega.core.location.data.PostalCode;
 import com.idega.data.EntityFinder;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDOEntityDefinition;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOQuery;
@@ -29,6 +30,7 @@ import com.idega.data.IDORemoveRelationshipException;
 import com.idega.data.query.AND;
 import com.idega.data.query.Column;
 import com.idega.data.query.Criteria;
+import com.idega.data.query.InCriteria;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.OR;
 import com.idega.data.query.Order;
@@ -458,6 +460,44 @@ public class SupplierBMPBean extends GenericEntity implements Supplier{
 	
 	public void setICFile(ICFile file) {
 		setColumn(COLUMN_IC_FILE_ID, file);
+	}
+	
+	public Collection ejbFindAllWithoutCreditCardMerchant() throws IDORelationshipException, FinderException {
+		Table table = new Table(this);
+		Table ccTable = new Table(CreditCardInformation.class);
+		Table middleTable = null;
+		
+		IDOEntityDefinition source = table.getEntityDefinition();
+		IDOEntityDefinition destination = ccTable.getEntityDefinition();
+
+		IDOEntityDefinition[] definitions = source.getManyToManyRelatedEntities();
+		if (definitions != null && definitions.length > 0) {
+			for (int i = 0; i < definitions.length; i++) {
+				IDOEntityDefinition definition = definitions[i];
+				if (destination.equals(definition)) {
+					try {
+						String middleTableName = source.getMiddleTableNameForRelation(destination.getSQLTableName());
+						middleTable = new Table(middleTableName);
+					} catch (Exception e) {}
+				}
+			}
+		}
+		
+		if (middleTable == null) {
+			throw new IDORelationshipException("Middletable not found for "+table.getName()+" and "+ccTable.getName());
+		}
+		
+		SelectQuery sub = new SelectQuery(middleTable);
+		sub.addColumn(new Column(middleTable, getIDColumnName()));
+		
+		Column idCol = new Column(table, getIDColumnName());
+		
+		SelectQuery q = new SelectQuery(table);
+		q.addColumn(idCol);
+		q.addCriteria(new InCriteria(idCol, sub, true));
+		//q.addJoin(table, ccTable);
+		
+		return idoFindPKsByQuery(q);
 	}
 }
 
