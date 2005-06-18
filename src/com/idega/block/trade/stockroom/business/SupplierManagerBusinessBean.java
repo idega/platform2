@@ -45,6 +45,7 @@ public class SupplierManagerBusinessBean extends IBOServiceBean  implements Supp
 	private static String SUPPLIER_MANAGER_ADMIN_GROUP_TYPE = "supplier_manager_admin";
 	private static String SUPPLIER_MANAGER_RESELLER_GROUP_TYPE = "supplier_manager_reseller";
 	private static String SUPPLIER_MANAGER_SUPPLIER_GROUP_TYPE = "supplier_manager_supplier";
+	private static String SUPPLIER_MANAGER_BOOKING_STAFF_TYPE = "supplier_manager_b_staff";
 	
 	public Group updateSupplierManager(Object pk, String name, String description) throws IDOLookupException, FinderException {
 		GroupHome gHome = (GroupHome) IDOLookup.getHome(Group.class);
@@ -54,6 +55,49 @@ public class SupplierManagerBusinessBean extends IBOServiceBean  implements Supp
 		manager.setDescription(description);
 		manager.store();
 		return manager;
+	}
+	
+	public User createSupplierManagerBookingStaff(Group supplierManager, String name, String loginName, String password) throws RemoteException, CreateException {
+		try {
+			// Making sure the group type exist
+			getGroupBusiness().getGroupTypeFromString(SUPPLIER_MANAGER_BOOKING_STAFF_TYPE);
+		} catch (FinderException e1) {
+			System.out.println("TravelBlock : groupType not found, creating");
+			getGroupBusiness().createVisibleGroupType(SUPPLIER_MANAGER_BOOKING_STAFF_TYPE);
+		}
+
+		Group bookingStaffGroup = getSupplierManagerBookingStaffGroup(supplierManager);
+/*		
+		Collection staffGroups = getGroupBusiness().getChildGroups(supplierManager, new String[]{SUPPLIER_MANAGER_BOOKING_STAFF_TYPE}, true);
+		if (staffGroups == null || staffGroups.isEmpty()) {
+			bookingStaffGroup = getGroupBusiness().createGroup("Booking staff", "Booking staff group for "+supplierManager.getName(), SUPPLIER_MANAGER_BOOKING_STAFF_TYPE, false);
+			supplierManager.addGroup(bookingStaffGroup);
+			getIWMainApplication().getAccessController().addRoleToGroup(TradeConstants.SUPPLIER_MANAGER_BOOKING_STAFF_KEY, bookingStaffGroup, getIWApplicationContext());
+		} else {
+			Iterator iter = staffGroups.iterator();
+			if (iter.hasNext()) {
+				bookingStaffGroup = (Group) iter.next();
+			}
+		}
+*/
+		if (bookingStaffGroup != null) {
+			
+			User user;
+			UserBusiness ub = (UserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), UserBusiness.class);
+					
+			user = ub.insertUser(name, "", "", name, "staff", null, null, null);
+			LoginDBHandler.createLogin(user.getID(), loginName, password);
+	
+			if (user != null) {
+				bookingStaffGroup.addGroup(user);
+				user.setPrimaryGroup(bookingStaffGroup);
+				user.store();
+			}
+			return user;
+		} else {
+			throw new CreateException("Could not find the staffgroup");
+		}
+		
 	}
 	
 	public Group createSupplierManager(String name, String description, String adminName, String loginName, String password, IWUserContext iwuc) throws RemoteException, CreateException {
@@ -259,6 +303,31 @@ public class SupplierManagerBusinessBean extends IBOServiceBean  implements Supp
 		Group adminGroup = getSupplierManagerAdminGroup(supplierManager);
 		if (adminGroup != null) {
 			return getGroupBusiness().getUsers(adminGroup);
+		}
+		return null;
+	}
+	
+	private Group getSupplierManagerBookingStaffGroup(Group supplierManager) throws RemoteException, CreateException {
+		Collection coll = getGroupBusiness().getChildGroups(supplierManager, new String[]{SUPPLIER_MANAGER_USER_GROUP_TYPE}, true);
+		if (coll != null) {
+			Iterator iter = coll.iterator();
+			if (iter.hasNext()) {
+				Group userGroup = (Group) iter.next();
+				Collection coll2 = getGroupBusiness().getChildGroups(userGroup, new String[]{SUPPLIER_MANAGER_BOOKING_STAFF_TYPE}, true);
+				if (coll2 != null && !coll2.isEmpty()) {
+					Iterator iter2 = coll2.iterator();
+					if (iter2.hasNext()) {
+						Group adminGroup = (Group) iter2.next();
+						return adminGroup;
+					}
+				} else {
+					Group bookingStaffGroup = getGroupBusiness().createGroup("Booking staff", "Booking staff group for "+supplierManager.getName(), SUPPLIER_MANAGER_BOOKING_STAFF_TYPE, false);
+					userGroup.addGroup(bookingStaffGroup);
+					getIWMainApplication().getAccessController().addRoleToGroup(TradeConstants.SUPPLIER_MANAGER_BOOKING_STAFF_KEY, bookingStaffGroup, getIWApplicationContext());
+					return bookingStaffGroup;
+				}
+			}
+			return null;
 		}
 		return null;
 	}

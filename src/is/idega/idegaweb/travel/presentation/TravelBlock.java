@@ -266,7 +266,7 @@ public class TravelBlock extends Block {
   
   private boolean isSupplierManager(IWContext iwc) {
   	try {
-  		return iwc.getAccessController().hasRole(TradeConstants.SUPPLIER_MANAGER_ROLE_KEY, iwc);
+  		return iwc.getAccessController().hasRole(TradeConstants.SUPPLIER_MANAGER_ROLE_KEY, iwc) || iwc.getAccessController().hasRole(TradeConstants.SUPPLIER_MANAGER_BOOKING_STAFF_KEY, iwc);
   	} catch (NotLoggedOnException n) {
   		return false;
   	}
