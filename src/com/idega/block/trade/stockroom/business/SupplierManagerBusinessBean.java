@@ -67,19 +67,6 @@ public class SupplierManagerBusinessBean extends IBOServiceBean  implements Supp
 		}
 
 		Group bookingStaffGroup = getSupplierManagerBookingStaffGroup(supplierManager);
-/*		
-		Collection staffGroups = getGroupBusiness().getChildGroups(supplierManager, new String[]{SUPPLIER_MANAGER_BOOKING_STAFF_TYPE}, true);
-		if (staffGroups == null || staffGroups.isEmpty()) {
-			bookingStaffGroup = getGroupBusiness().createGroup("Booking staff", "Booking staff group for "+supplierManager.getName(), SUPPLIER_MANAGER_BOOKING_STAFF_TYPE, false);
-			supplierManager.addGroup(bookingStaffGroup);
-			getIWMainApplication().getAccessController().addRoleToGroup(TradeConstants.SUPPLIER_MANAGER_BOOKING_STAFF_KEY, bookingStaffGroup, getIWApplicationContext());
-		} else {
-			Iterator iter = staffGroups.iterator();
-			if (iter.hasNext()) {
-				bookingStaffGroup = (Group) iter.next();
-			}
-		}
-*/
 		if (bookingStaffGroup != null) {
 			
 			User user;
@@ -317,13 +304,13 @@ public class SupplierManagerBusinessBean extends IBOServiceBean  implements Supp
 				if (coll2 != null && !coll2.isEmpty()) {
 					Iterator iter2 = coll2.iterator();
 					if (iter2.hasNext()) {
-						Group adminGroup = (Group) iter2.next();
-						return adminGroup;
+						Group bookingStaffGroup = (Group) iter2.next();
+						return bookingStaffGroup;
 					}
 				} else {
 					Group bookingStaffGroup = getGroupBusiness().createGroup("Booking staff", "Booking staff group for "+supplierManager.getName(), SUPPLIER_MANAGER_BOOKING_STAFF_TYPE, false);
 					userGroup.addGroup(bookingStaffGroup);
-					getIWMainApplication().getAccessController().addRoleToGroup(TradeConstants.SUPPLIER_MANAGER_BOOKING_STAFF_KEY, bookingStaffGroup, getIWApplicationContext());
+					getIWMainApplication().getAccessController().addRoleToGroup(TradeConstants.ROLE_BOOKING_BASKET, bookingStaffGroup, getIWApplicationContext());
 					return bookingStaffGroup;
 				}
 			}
