@@ -569,6 +569,9 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 	public TravelSessionManager getTravelSessionManager(IWUserContext iwuc) throws RemoteException {
 		return (TravelSessionManager) IBOLookup.getSessionInstance(iwuc, TravelSessionManager.class);
 	}
+	public TravelStockroomBusiness getTravelStockroomBusiness() throws RemoteException {
+		return (TravelStockroomBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), TravelStockroomBusiness.class);
+	}
 	
 	public TravelStockroomBusiness getBusiness(Product product) throws RemoteException, FinderException {
 		return getServiceHandler().getServiceBusiness(product);
@@ -633,7 +636,14 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 			action = "";
 		}
 		if (action != null && action.equals(AbstractSearchForm.ACTION_ADD_TO_BASKET)) {
-			return addToBasket(iwc);
+			boolean success = addToBasket(iwc);
+			try {
+				getSearchSession(iwc).setAddToBasketSuccess(success);
+			}
+			catch (RemoteException e) {
+				e.printStackTrace();
+			}
+			return success;
 		} else if (action.equals(AbstractSearchForm.ACTION_CONFIRM)){
 			try {
 				Collection bookings = doBasketBooking(iwc);
@@ -664,14 +674,45 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		
 		try {
 			GeneralBooking booking = doBooking(iwc, false);
-			booking.setIsValid(false);
+//			booking.setIsValid(false);
 			booking.store();
+			
+			Collection coll = getBooker().getMultibleBookings(booking);
+			if (coll != null) {
+				Iterator iter = coll.iterator();
+				while (iter.hasNext()) {
+					GeneralBooking b = (GeneralBooking) iter.next();
+					b.setIsValid(false);
+					b.store();
+				}
+			}
+			
+			getBooker().invalidateCache(booking.getID());
 			
 			travelbasket.addItem(booking);
 			return true;
 		}
 		catch (Exception e1) {
-			e1.printStackTrace();
+			String message = e1.getMessage();
+			try {
+				int error = Integer.parseInt(message);
+				switch (error) {
+					case BookingForm.errorTooMany :
+						getSearchSession(iwc).setAddToBasketErrorLocalizedKey("travel.error_too_many", "Too many");
+						break;
+					case BookingForm.errorTooFew :
+						getSearchSession(iwc).setAddToBasketErrorLocalizedKey("travel.error_too_few", "Too few");
+						break;
+					case BookingForm.errorFieldsEmpty :
+						getSearchSession(iwc).setAddToBasketErrorLocalizedKey("travel.error_field_empty", "Some fields are empty");
+						break;
+				}
+			} catch (NumberFormatException ignore) {
+				
+				e1.printStackTrace();
+			} catch (RemoteException r) {
+				
+			}
 		}
 		return false;
 	}
@@ -794,24 +835,36 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		Iterator biter = bookings.iterator();
 		while (biter.hasNext()) {
 			booking = (GeneralBooking) biter.next();
-			booking.setIsValid(true);
-			booking.setName(surname+" "+lastname);
-			booking.setAddress(address);
-			booking.setPostalCode(areaCode);
-			booking.setEmail(email);
-			booking.setTelephoneNumber(phone);
-			booking.setCity(city);
-			booking.setCountry(country);
-			if (comment == null) {
-				comment = "";
+			
+			Collection coll = getBooker().getMultibleBookings(booking);
+			if (coll != null) {
+				Iterator miter = coll.iterator();
+				while (miter.hasNext()) {
+					GeneralBooking b = (GeneralBooking) miter.next();
+					b.setIsValid(true);
+					b.setName(surname+" "+lastname);
+					b.setAddress(address);
+					b.setPostalCode(areaCode);
+					b.setEmail(email);
+					b.setTelephoneNumber(phone);
+					b.setCity(city);
+					b.setCountry(country);
+					if (comment == null) {
+						comment = "";
+					}
+					b.setComment(comment);
+					if (code != null) {
+						b.setCode(code);
+					}
+					b.setCreditcardAuthorizationNumber(authNr);
+					b.setIsValid(true);
+					b.store();
+				}
 			}
-			booking.setComment(comment);
-			if (code != null) {
-				booking.setCode(code);
-			}
-			booking.setCreditcardAuthorizationNumber(authNr);
-			booking.store();
+			getBooker().invalidateCache(booking.getID());
+			
 		}
+		
 		
 //		Iterator citer = responseStrings.iterator();
 //		while (citer.hasNext()) {
@@ -834,6 +887,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		} else {
 			bookingId = getBookingForm(iwc).handleInsert(iwc, doCreditCardCheck);
 		}
+		
 //		int bookingId = getBookingForm().checkBooking(iwc, true);
 		GeneralBookingHome gBookingHome = (GeneralBookingHome) IDOLookup.getHome(GeneralBooking.class);
 		GeneralBooking gBooking = null;
@@ -842,6 +896,12 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 			gBooking = gBookingHome.findByPrimaryKey(new Integer(bookingId));
 			gBooking.setCode(iwc.getParameter(BookingForm.PARAMETER_CODE));
 //			gBooking.setCode(this.engine.getCode());
+		} else if (bookingId == BookingForm.errorTooFew) {
+			throw new Exception(Integer.toString(bookingId));
+		} else if (bookingId == BookingForm.errorTooMany) {
+			throw new Exception(Integer.toString(bookingId));
+		} else if (bookingId == BookingForm.errorFieldsEmpty) {
+			throw new Exception(Integer.toString(bookingId));
 		}
 		
 		return gBooking;
