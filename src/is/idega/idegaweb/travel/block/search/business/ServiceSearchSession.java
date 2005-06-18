@@ -1,6 +1,6 @@
 /*
- * $Id: ServiceSearchSession.java,v 1.2 2005/06/15 16:38:33 gimmi Exp $
- * Created on 15.6.2005
+ * $Id: ServiceSearchSession.java,v 1.3 2005/06/18 17:56:22 gimmi Exp $
+ * Created on 18.6.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -11,14 +11,15 @@ package is.idega.idegaweb.travel.block.search.business;
 
 import java.util.Collection;
 import com.idega.business.IBOSession;
+import com.idega.idegaweb.IWResourceBundle;
 
 
 /**
  * 
- *  Last modified: $Date: 2005/06/15 16:38:33 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/06/18 17:56:22 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public interface ServiceSearchSession extends IBOSession {
 
@@ -61,4 +62,24 @@ public interface ServiceSearchSession extends IBOSession {
 	 * @see is.idega.idegaweb.travel.block.search.business.ServiceSearchSessionBean#throwException
 	 */
 	public void throwException() throws Exception, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.block.search.business.ServiceSearchSessionBean#setAddToBasketSuccess
+	 */
+	public void setAddToBasketSuccess(boolean success) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.block.search.business.ServiceSearchSessionBean#getAddToBasketSuccess
+	 */
+	public boolean getAddToBasketSuccess() throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.block.search.business.ServiceSearchSessionBean#setAddToBasketErrorLocalizedKey
+	 */
+	public void setAddToBasketErrorLocalizedKey(String key, String ifNull) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.block.search.business.ServiceSearchSessionBean#getAddToBasketError
+	 */
+	public String getAddToBasketError(IWResourceBundle iwrb) throws java.rmi.RemoteException;
 }
