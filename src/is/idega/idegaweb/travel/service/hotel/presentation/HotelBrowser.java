@@ -1,5 +1,5 @@
 /*
- * $Id: HotelBrowser.java,v 1.5 2005/06/16 20:08:57 gimmi Exp $
+ * $Id: HotelBrowser.java,v 1.6 2005/06/18 18:02:57 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -273,6 +273,10 @@ public class HotelBrowser extends TravelBlock implements SupplierBrowserPlugin {
 
 	public boolean displaySupplierResults() {
 		return true;
+	}
+
+	public Collection[] getExtraBookingFormElements(Product product, IWResourceBundle iwrb) {
+		return null;
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: TourBrowser.java,v 1.5 2005/06/16 20:08:57 gimmi Exp $
+ * $Id: TourBrowser.java,v 1.6 2005/06/18 18:02:57 gimmi Exp $
  * Created on 28.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -282,5 +282,9 @@ public class TourBrowser extends TravelBlock implements SupplierBrowserPlugin {
 
 	public boolean displaySupplierResults() {
 		return false;
+	}
+
+	public Collection[] getExtraBookingFormElements(Product product, IWResourceBundle iwrb) {
+		return null;
 	}
 }
