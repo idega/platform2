@@ -3,8 +3,10 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+import com.idega.block.creditcard.business.CreditCardBusiness;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.block.trade.stockroom.data.SupplierHome;
+import com.idega.business.IBOLookup;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -90,7 +92,12 @@ public class AdministratorReports extends Reports {
     }
 
     String suppId = iwc.getParameter(PARAMETER_SUPPLIER_ID);
-    if (suppId != null && !suppId.equals("-1")) {
+    if (suppId != null && suppId.equals("-9") && isSupplierManager()) {
+        SupplierHome suppHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
+        CreditCardBusiness cBus = (CreditCardBusiness) IBOLookup.getServiceInstance(iwc, CreditCardBusiness.class);
+        Collection coll = suppHome.findAllWithoutCreditCardMerchant();
+        _usedSuppliers = new Vector(coll);
+    } else if (suppId != null && !suppId.equals("-1")) {
       SupplierHome suppHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
       _supplier = suppHome.findByPrimaryKey(new Integer(suppId));
       _usedSuppliers = new Vector();
@@ -134,7 +141,11 @@ public class AdministratorReports extends Reports {
             trip.setSelectedElement(Integer.toString(_supplier.getID()));
         } else if (iwc.isParameterSet(PARAMETER_SUPPLIER_ID_STATIC)){
           trip.setSelectedElement(iwc.getParameter(PARAMETER_SUPPLIER_ID_STATIC));
+        } else if (iwc.isParameterSet(PARAMETER_SUPPLIER_ID)){
+        	trip.setSelectedElement(iwc.getParameter(PARAMETER_SUPPLIER_ID));
         }
+        
+        trip.addMenuElementFirst("-9", _iwrb.getLocalizedString("travel.suppliers_without_a_creditcard_merchant","Suppliers without a creditcard merchant"));
         trip.addMenuElementFirst("-1", _iwrb.getLocalizedString("travel.all_suppliers","All suppliers"));
 
 			IWTimestamp now = IWTimestamp.RightNow();
