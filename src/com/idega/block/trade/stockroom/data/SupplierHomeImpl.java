@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierHomeImpl.java,v 1.9 2005/06/18 15:58:59 gimmi Exp $
+ * $Id: SupplierHomeImpl.java,v 1.10 2005/06/18 17:54:36 gimmi Exp $
  * Created on 18.6.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -18,10 +18,10 @@ import com.idega.user.data.Group;
 
 /**
  * 
- *  Last modified: $Date: 2005/06/18 15:58:59 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/06/18 17:54:36 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class SupplierHomeImpl extends IDOFactory implements SupplierHome {
 
@@ -88,9 +88,9 @@ public class SupplierHomeImpl extends IDOFactory implements SupplierHome {
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findAllWithoutCreditCardMerchant() throws IDORelationshipException, FinderException {
+	public Collection findAllWithoutCreditCardMerchant(Group supplierManager) throws IDORelationshipException, FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SupplierBMPBean) entity).ejbFindAllWithoutCreditCardMerchant();
+		java.util.Collection ids = ((SupplierBMPBean) entity).ejbFindAllWithoutCreditCardMerchant(supplierManager);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}

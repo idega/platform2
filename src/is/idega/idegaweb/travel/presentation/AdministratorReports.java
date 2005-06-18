@@ -95,7 +95,7 @@ public class AdministratorReports extends Reports {
     if (suppId != null && suppId.equals("-9") && isSupplierManager()) {
         SupplierHome suppHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
         CreditCardBusiness cBus = (CreditCardBusiness) IBOLookup.getServiceInstance(iwc, CreditCardBusiness.class);
-        Collection coll = suppHome.findAllWithoutCreditCardMerchant();
+        Collection coll = suppHome.findAllWithoutCreditCardMerchant(getSupplierManager());
         _usedSuppliers = new Vector(coll);
     } else if (suppId != null && !suppId.equals("-1")) {
       SupplierHome suppHome = (SupplierHome) IDOLookup.getHome(Supplier.class);

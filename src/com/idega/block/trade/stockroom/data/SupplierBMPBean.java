@@ -462,7 +462,7 @@ public class SupplierBMPBean extends GenericEntity implements Supplier{
 		setColumn(COLUMN_IC_FILE_ID, file);
 	}
 	
-	public Collection ejbFindAllWithoutCreditCardMerchant() throws IDORelationshipException, FinderException {
+	public Collection ejbFindAllWithoutCreditCardMerchant(Group supplierManager) throws IDORelationshipException, FinderException {
 		Table table = new Table(this);
 		Table ccTable = new Table(CreditCardInformation.class);
 		Table middleTable = null;
@@ -491,10 +491,14 @@ public class SupplierBMPBean extends GenericEntity implements Supplier{
 		sub.addColumn(new Column(middleTable, getIDColumnName()));
 		
 		Column idCol = new Column(table, getIDColumnName());
+		Column suppMan = new Column(table, COLUMN_SUPPLIER_MANAGER_ID);
+		Column isValid = new Column(table, getColumnNameIsValid());
 		
 		SelectQuery q = new SelectQuery(table);
 		q.addColumn(idCol);
 		q.addCriteria(new InCriteria(idCol, sub, true));
+		q.addCriteria(new MatchCriteria(isValid, MatchCriteria.EQUALS, true));
+		q.addCriteria(new MatchCriteria(suppMan, MatchCriteria.EQUALS, supplierManager.getPrimaryKey()));
 		//q.addJoin(table, ccTable);
 		
 		return idoFindPKsByQuery(q);

@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierHome.java,v 1.9 2005/06/18 15:59:00 gimmi Exp $
+ * $Id: SupplierHome.java,v 1.10 2005/06/18 17:54:36 gimmi Exp $
  * Created on 18.6.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -18,10 +18,10 @@ import com.idega.user.data.Group;
 
 /**
  * 
- *  Last modified: $Date: 2005/06/18 15:59:00 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/06/18 17:54:36 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public interface SupplierHome extends IDOHome {
 
@@ -57,5 +57,5 @@ public interface SupplierHome extends IDOHome {
 	/**
 	 * @see com.idega.block.trade.stockroom.data.SupplierBMPBean#ejbFindAllWithoutCreditCardMerchant
 	 */
-	public Collection findAllWithoutCreditCardMerchant() throws IDORelationshipException, FinderException;
+	public Collection findAllWithoutCreditCardMerchant(Group supplierManager) throws IDORelationshipException, FinderException;
 }
