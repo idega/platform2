@@ -1,6 +1,7 @@
 package is.idega.idegaweb.travel.business;
 
 import is.idega.idegaweb.travel.block.search.data.ServiceSearchEngine;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -67,17 +68,17 @@ public class TravelSessionManagerBean extends IBOSessionBean implements TravelSe
     clearRoleCache();
   }
   
-  public boolean isSupplierManager() {
-		return _isSupplierManager;
-  }
+//  public boolean isSupplierManager() {
+//		return _isSupplierManager;
+//  }
   
   public boolean isSet() {
   	return _isSet;
   }
   
-  public void setIsSupplierManager(boolean isSupplierManager) {
-  	this._isSupplierManager = isSupplierManager;
-  }
+//  public void setIsSupplierManager(boolean isSupplierManager) {
+//  	this._isSupplierManager = isSupplierManager;
+//  }
   
   public void setSupplierManager(Group supplierManager) {
   	this._supplierManager = supplierManager;
@@ -171,11 +172,11 @@ public class TravelSessionManagerBean extends IBOSessionBean implements TravelSe
   	Boolean bool = (Boolean) getPermissionMap().get(role);
   	if (bool == null) { 
   		try {
-	  		if (isSupplierManager()) {
-	  			bool = new Boolean(getTradePermissionBusiness().hasRole(_supplierManager, role));
-	  		} else if (_supplier != null) {
-	  			bool = new Boolean(getTradePermissionBusiness().hasRole(_supplier, role));
-	  		}
+  			Collection coll = getIWMainApplication().getAccessController().getAllRolesForCurrentUser(getUserContext());
+  			if (coll != null && !coll.isEmpty()) {
+  				bool = new Boolean(coll.contains(role));
+  			}
+  		} catch (NotLoggedOnException e) {
   		} catch (Exception e) {
   			e.printStackTrace();
   		}

@@ -122,9 +122,9 @@ public class TravelBlock extends Block {
 	      	debug(e.getMessage());
 	      }
 	      
-	      if (this.isSupplierManager(iwc)) {
-	      	tsm.setIsSupplierManager(true);
-	      	tsm.setSupplierManager(getSupplierManager(iwc));
+	      Group suppMan = getSupplierManager(iwc);
+	      if (suppMan != null) {
+	      	tsm.setSupplierManager(suppMan);
 	      }
 	    }
     }
@@ -261,12 +261,12 @@ public class TravelBlock extends Block {
   }
   
   protected boolean isSupplierManager() throws RemoteException {
-  	return tsm.isSupplierManager();
+	  return tsm.hasRole(TradeConstants.SUPPLIER_MANAGER_ROLE_KEY);
   }
   
   private boolean isSupplierManager(IWContext iwc) {
   	try {
-  		return iwc.getAccessController().hasRole(TradeConstants.SUPPLIER_MANAGER_ROLE_KEY, iwc) || iwc.getAccessController().hasRole(TradeConstants.SUPPLIER_MANAGER_BOOKING_STAFF_KEY, iwc);
+  		return iwc.getAccessController().hasRole(TradeConstants.SUPPLIER_MANAGER_ROLE_KEY, iwc) || iwc.getAccessController().hasRole(TradeConstants.ROLE_BOOKING_BASKET, iwc);
   	} catch (NotLoggedOnException n) {
   		return false;
   	}

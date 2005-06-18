@@ -1,5 +1,5 @@
 /*
- * $Id: TravelSessionManager.java,v 1.6 2005/05/31 19:15:20 gimmi Exp $
+ * $Id: TravelSessionManager.java,v 1.7 2005/06/18 12:25:55 gimmi Exp $
  * Created on 10.2.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -22,10 +22,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2005/05/31 19:15:20 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/06/18 12:25:55 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public interface TravelSessionManager extends IBOSession {
 
@@ -42,7 +42,7 @@ public interface TravelSessionManager extends IBOSession {
 	/**
 	 * @see is.idega.idegaweb.travel.business.TravelSessionManagerBean#isSupplierManager
 	 */
-	public boolean isSupplierManager() throws java.rmi.RemoteException;
+//	public boolean isSupplierManager() throws java.rmi.RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.travel.business.TravelSessionManagerBean#isSet
@@ -52,7 +52,7 @@ public interface TravelSessionManager extends IBOSession {
 	/**
 	 * @see is.idega.idegaweb.travel.business.TravelSessionManagerBean#setIsSupplierManager
 	 */
-	public void setIsSupplierManager(boolean isSupplierManager) throws java.rmi.RemoteException;
+//	public void setIsSupplierManager(boolean isSupplierManager) throws java.rmi.RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.travel.business.TravelSessionManagerBean#setSupplierManager
