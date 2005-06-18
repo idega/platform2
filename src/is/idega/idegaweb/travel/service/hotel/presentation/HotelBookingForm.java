@@ -1757,7 +1757,8 @@ public class HotelBookingForm extends BookingForm {
 	    }
 	    
 	    int addressId = super.getAddressIDToUse(iwc, addresses);
-			int currentBookings = getHotelBooker(iwc).getBookingsTotalCount(product.getID(), stamp, addressId);
+			//int currentBookings = getHotelBooker(iwc).getBookingsTotalCount(product.getID(), stamp, addressId);
+			int currentBookings = getHotelBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) product.getPrimaryKey()).intValue(), stamp, null, -1, new int[]{}, null );
 			return (currentBookings >= max);
 		}
 		
