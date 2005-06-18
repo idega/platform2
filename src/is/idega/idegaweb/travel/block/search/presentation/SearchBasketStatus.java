@@ -1,5 +1,5 @@
 /*
- * $Id: SearchBasketStatus.java,v 1.1 2005/06/15 16:39:55 gimmi Exp $
+ * $Id: SearchBasketStatus.java,v 1.2 2005/06/18 17:59:08 gimmi Exp $
  * Created on 24.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -29,6 +29,8 @@ public class SearchBasketStatus extends TravelBlock {
 	private String textStyleClass = null;
 	private String linkStyleClass = null;
 	
+	private String urlToCheckout = null;
+	
 	public void main(IWContext iwc) throws Exception {
 		super.main(iwc);
 		
@@ -44,11 +46,15 @@ public class SearchBasketStatus extends TravelBlock {
 			table.add(getText(getResourceBundle().getLocalizedString("travel.basket_is_empty", "Basket is empty.")), 1, 1);
 		} else {
 			Link book = getLink(super.getResourceBundle().getLocalizedString("travel.book", "Book"));
-			book.addParameter(AbstractSearchForm.ACTION, AbstractSearchForm.ACTION_BOOKING_FORM);
-			book.addParameter(AbstractSearchForm.PARAMETER_REFERENCE_NUMBER, IWTimestamp.RightNow().toString());
+			if (urlToCheckout != null) {
+				book.setURL(urlToCheckout);
+			}
 			if (viewerPage != null) {
 				book.setPage(viewerPage);
 			}
+
+			book.addParameter(AbstractSearchForm.ACTION, AbstractSearchForm.ACTION_BOOKING_FORM);
+			book.addParameter(AbstractSearchForm.PARAMETER_REFERENCE_NUMBER, IWTimestamp.RightNow().toString());
 
 			table.add(getText(quantity + " "+getResourceBundle().getLocalizedString("travel.item.s_in_basket", "item(s) in basket.")), 1, 1);
 			table.add(book, 2, 1);
@@ -92,6 +98,10 @@ public class SearchBasketStatus extends TravelBlock {
 	
 	public void setLinkStyleClass(String styleClass) {
 		this.linkStyleClass = styleClass;
+	}
+	
+	public void setURLToCheckout(String url) {
+		this.urlToCheckout = url;
 	}
 	
 }
