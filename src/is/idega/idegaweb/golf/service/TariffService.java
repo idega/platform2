@@ -52,7 +52,7 @@ public class TariffService  {
   }
 
   static public String getExtraCatalogueSQL(String union_id){
-    return "select * from price_catalogue where union_id = '"+union_id+"' and in_use = 'Y' and is_independent = 'Y'";
+    return "select * from price_catalogue where union_id = "+union_id+" and in_use = 'Y' and is_independent = 'Y'";
   }
 
   static public void saveStringMatrixValues(IWContext modinfo , String[][] matrix, String ParameterName){
@@ -196,18 +196,18 @@ public class TariffService  {
   }
 
   static public String getActiveMembersSQL(int iUnionID){
-    StringBuffer SQLstringbuff = new StringBuffer("select * from union_member_info where union_id = '");
+    StringBuffer SQLstringbuff = new StringBuffer("select * from union_member_info where union_id = ");
     SQLstringbuff.append(iUnionID);
-    SQLstringbuff.append("' and member_status = 'A' ");
+    SQLstringbuff.append(" and member_status = 'A' ");
     return SQLstringbuff.toString();
   }
 
   static public String getDependentMembersSQL(int iUnionID){
-    return getActiveMembersSQL(iUnionID)+" and (price_catalogue_id is null or price_catalogue_id = '0')  ";
+    return getActiveMembersSQL(iUnionID)+" and (price_catalogue_id is null or price_catalogue_id = 0)  ";
   }
 
   static public String getIndependentMembersSQL(int iUnionID){
-    return getActiveMembersSQL(iUnionID)+" and (price_catalogue_id is not null and price_catalogue_id != '0') ";
+    return getActiveMembersSQL(iUnionID)+" and (price_catalogue_id is not null and price_catalogue_id != 0) ";
   }
 
   static public int calculateBalance(AccountEntry[] eAccountEntries){

@@ -202,7 +202,7 @@ public class PriceCatalogueMaker extends com.idega.presentation.PresentationObje
 
     private void doMain(IWContext modinfo) throws SQLException {
 
-      PriceCatalogue[] Catalogs = (PriceCatalogue[]) ((PriceCatalogue) IDOLookup.instanciateEntity(PriceCatalogue.class)).findAll("select * from price_catalogue where union_id = '"+union_id+"' and in_use = 'Y' and is_independent = 'Y'");
+      PriceCatalogue[] Catalogs = (PriceCatalogue[]) ((PriceCatalogue) IDOLookup.instanciateEntity(PriceCatalogue.class)).findAll("select * from price_catalogue where union_id = "+union_id+" and in_use = 'Y' and is_independent = 'Y'");
       java.text.NumberFormat nf = java.text.NumberFormat.getInstance();
       Table MainTable = makeMainTable(1);
       int count = Catalogs.length;
@@ -236,7 +236,7 @@ public class PriceCatalogueMaker extends com.idega.presentation.PresentationObje
     }
 
     private String[][] fetchValues(String unionID) throws SQLException{
-      PriceCatalogue[] Catalogs = (PriceCatalogue[]) ((PriceCatalogue) IDOLookup.instanciateEntity(PriceCatalogue.class)).findAll("select * from price_catalogue where union_id = '"+union_id+"' and in_use = 'Y' and is_independent = 'Y'");
+      PriceCatalogue[] Catalogs = (PriceCatalogue[]) ((PriceCatalogue) IDOLookup.instanciateEntity(PriceCatalogue.class)).findAll("select * from price_catalogue where union_id = "+union_id+" and in_use = 'Y' and is_independent = 'Y'");
       int count = Catalogs.length;
       String activeCats[][] = new String[count][8];
       if(count > 0){
@@ -408,7 +408,7 @@ public class PriceCatalogueMaker extends com.idega.presentation.PresentationObje
   }
 
   private void makeAllUnUsable() throws SQLException{
-    PriceCatalogue[] pcls= (PriceCatalogue[]) ((PriceCatalogue) IDOLookup.instanciateEntity(PriceCatalogue.class)).findAll("select * from price_catalogue where union_id = '"+union_id+"' and in_use = 'Y' and is_independent = 'Y'");
+    PriceCatalogue[] pcls= (PriceCatalogue[]) ((PriceCatalogue) IDOLookup.instanciateEntity(PriceCatalogue.class)).findAll("select * from price_catalogue where union_id = "+union_id+" and in_use = 'Y' and is_independent = 'Y'");
     if(pcls != null){
     	for(int i = 0; i < pcls.length; i++){
           pcls[i].setInUse(false);

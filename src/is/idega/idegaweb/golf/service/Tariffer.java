@@ -222,7 +222,7 @@ public class Tariffer extends PresentationObjectContainer {
 	}
 
 	public String getExtraCatalogueSQL(String union_id) {
-		return "select * from price_catalogue where union_id = '" + union_id + "' and in_use = 'Y' and is_independent = 'Y'";
+		return "select * from price_catalogue where union_id = " + union_id + " and in_use = 'Y' and is_independent = 'Y'";
 	}
 
 	public int getActiveMainYear(int iUnionId) {
@@ -1829,18 +1829,18 @@ public class Tariffer extends PresentationObjectContainer {
 	}
 
 	private String getActiveMembersSQL(int iUnionID) {
-		StringBuffer SQLstringbuff = new StringBuffer("select * from union_member_info where union_id = '");
+		StringBuffer SQLstringbuff = new StringBuffer("select * from union_member_info where union_id = ");
 		SQLstringbuff.append(iUnionID);
-		SQLstringbuff.append("' and member_status = 'A' ");
+		SQLstringbuff.append(" and member_status = 'A' ");
 		return SQLstringbuff.toString();
 	}
 
 	private String getDependentMembersSQL(int iUnionID) {
-		return this.getActiveMembersSQL(iUnionID) + " and (price_catalogue_id is null or price_catalogue_id = '0')  ";
+		return this.getActiveMembersSQL(iUnionID) + " and (price_catalogue_id is null or price_catalogue_id = 0)  ";
 	}
 
 	private String getIndependentMembersSQL(int iUnionID) {
-		return this.getActiveMembersSQL(iUnionID) + " and (price_catalogue_id is not null and price_catalogue_id != '0') ";
+		return this.getActiveMembersSQL(iUnionID) + " and (price_catalogue_id is not null and price_catalogue_id != 0) ";
 	}
 
 	private Hashtable getFamilyHash(List InfoList) {
