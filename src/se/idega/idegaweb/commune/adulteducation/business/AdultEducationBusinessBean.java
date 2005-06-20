@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.30 2005/06/13 10:24:37 laddi Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.31 2005/06/20 12:56:22 laddi Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,11 +47,15 @@ import com.idega.block.process.data.CaseCode;
 import com.idega.block.process.data.CaseStatus;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.business.SchoolUserBusiness;
+import com.idega.block.school.data.Grade;
+import com.idega.block.school.data.GradeHome;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryHome;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassMember;
+import com.idega.block.school.data.SchoolClassMemberGrade;
+import com.idega.block.school.data.SchoolClassMemberGradeHome;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolStudyPath;
 import com.idega.block.school.data.SchoolStudyPathGroup;
@@ -75,10 +80,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/06/13 10:24:37 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/20 12:56:22 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.30 $
+ * @version $Revision: 1.31 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements AdultEducationBusiness {
 
@@ -195,6 +200,34 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 	}
 
 	/**
+	 * Fetches the home interface for Grade.
+	 * 
+	 * @return GradeHome
+	 */
+	private GradeHome getGradeHome() {
+		try {
+			return (GradeHome) IDOLookup.getHome(Grade.class);
+		}
+		catch (IDOLookupException ile) {
+			throw new IBORuntimeException(ile);
+		}
+	}
+
+	/**
+	 * Fetches the home interface for SchoolClassMemberGrade.
+	 * 
+	 * @return SchoolClassMemberGradeHome
+	 */
+	private SchoolClassMemberGradeHome getStudentGradeHome() {
+		try {
+			return (SchoolClassMemberGradeHome) IDOLookup.getHome(SchoolClassMemberGrade.class);
+		}
+		catch (IDOLookupException ile) {
+			throw new IBORuntimeException(ile);
+		}
+	}
+
+	/**
 	 * @return
 	 */
 	public SchoolBusiness getSchoolBusiness() {
@@ -261,6 +294,16 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		try {
 			String[] statuses = { getCaseStatusGranted().getStatus(), getCaseStatusPlaced().getStatus() };
 			return getCourseHome().findAllBySchoolAndSeasonAndStudyPathGroupConnectedToChoices(school, season, group, statuses);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return new ArrayList();
+		}
+	}
+	
+	public Collection getCoursesWithStudents(Object season, Object school, Object group) {
+		try {
+			return getCourseHome().findAllBySchoolAndSeasonAndStudyPathGroupConnectedToStudents(school, season, group);
 		}
 		catch (FinderException fe) {
 			fe.printStackTrace();
@@ -1124,4 +1167,70 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		}
 	}
 
+	public Collection getGrades(SchoolType type) {
+		try {
+			return getGradeHome().findAllBySchoolType(type);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return new ArrayList();
+		}
+	}
+	
+	public SchoolClassMemberGrade getStudentGrade(SchoolClassMember student) {
+		try {
+			return getStudentGradeHome().findByStudent(student);
+		}
+		catch (FinderException fe) {
+			return null;
+		}
+	}
+	
+	public void updateGrades(Object[] studentPKs, Object[] gradePKs) {
+		try {
+			for (int i = 0; i < studentPKs.length; i++) {
+				try {
+					SchoolClassMember student = getSchoolBusiness().getSchoolClassMemberHome().findByPrimaryKey(studentPKs[i]);
+					Grade grade = getGradeHome().findByPrimaryKey(gradePKs[i]);
+					
+					updateGrade(student, grade);
+				}
+				catch (FinderException fe) {
+					fe.printStackTrace();
+				}
+				catch (CreateException ce) {
+					ce.printStackTrace();
+				}
+			}
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
+	}
+	
+	private void updateGrade(SchoolClassMember student, Grade grade) throws CreateException {
+		SchoolClassMemberGrade studentGrade = null;
+		try {
+			studentGrade = getStudentGradeHome().findByStudent(student);
+			if (studentGrade.getGrade().equals(grade)) {
+				return;
+			}
+			else {
+				studentGrade = getStudentGradeHome().create();
+			}
+		}
+		catch (FinderException fe) {
+			studentGrade = getStudentGradeHome().create();
+		}
+		studentGrade.setStudent(student);
+		studentGrade.setGrade(grade);
+		studentGrade.setLocked(false);
+		studentGrade.setCreated(new IWTimestamp().getTimestamp());
+		studentGrade.store();
+	}
+	
+	public void terminatePlacement(SchoolClassMember student, Timestamp terminated) {
+		student.setRemovedDate(terminated);
+		student.store();
+	}
 }

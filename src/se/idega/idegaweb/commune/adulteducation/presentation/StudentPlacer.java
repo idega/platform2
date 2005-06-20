@@ -1,5 +1,5 @@
 /*
- * $Id: StudentPlacer.java,v 1.9 2005/06/12 14:20:37 laddi Exp $
+ * $Id: StudentPlacer.java,v 1.10 2005/06/20 12:56:22 laddi Exp $
  * Created on Jun 1, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -42,10 +42,10 @@ import com.idega.util.PersonalIDFormatter;
 
 
 /**
- * Last modified: $Date: 2005/06/12 14:20:37 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/20 12:56:22 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class StudentPlacer extends AdultEducationBlock implements IWPageEventListener {
 
@@ -54,11 +54,10 @@ public class StudentPlacer extends AdultEducationBlock implements IWPageEventLis
 	private static final String PARAMETER_STUDY_PATH_GROUP = "sp_study_path_group";
 	private static final String PARAMETER_COURSE = "sp_course";
 	private static final String PARAMETER_SCHOOL_CLASS = "sp_school_class";
-	private static final String PARAMETER_STUDENT = "sp_student";
 	private static final String PARAMETER_DATE = "sp_date";
 	
-	public static final int ACTION_VIEW_CHOICES = 1;
-	public static final int ACTION_VIEW_GROUP = 2;
+	public static final int ACTION_VIEW_GROUP = 1;
+	public static final int ACTION_VIEW_CHOICES = 2;
 	private static final int ACTION_PLACE_STUDENTS = 4;
 	private static final int ACTION_REJECT_STUDENTS = 5;
 	private static final int ACTION_REMOVE_STUDENT = 6;

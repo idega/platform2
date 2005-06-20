@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationCourseBMPBean.java,v 1.6 2005/06/03 13:39:16 laddi Exp $
+ * $Id: AdultEducationCourseBMPBean.java,v 1.7 2005/06/20 12:56:22 laddi Exp $
  * Created on 27.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -14,6 +14,8 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 import com.idega.block.process.data.Case;
 import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolClass;
+import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolStudyPath;
 import com.idega.block.school.data.SchoolStudyPathGroup;
@@ -255,6 +257,29 @@ public class AdultEducationCourseBMPBean extends GenericEntity  implements Adult
 		query.addCriteria(new MatchCriteria(table, SCHOOL, MatchCriteria.EQUALS, school));
 		query.addCriteria(new MatchCriteria(studyPath, "study_path_group_id", MatchCriteria.EQUALS, group));
 		query.addCriteria(new InCriteria(cases, "case_status", statuses));
+		
+		return idoFindPKsByQuery(query);
+	}
+
+	public Collection ejbFindAllBySchoolAndSeasonAndStudyPathGroupConnectedToStudents(Object school, Object season, Object group) throws FinderException {
+		Table table = new Table(this, "c");
+		Table studyPath = new Table(SchoolStudyPath.class, "s");
+		Table groups = new Table(SchoolClass.class, "sc");
+		Table students = new Table(SchoolClassMember.class, "m");
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(table, getIDColumnName(), true);
+		try {
+			query.addJoin(table, studyPath);
+			query.addJoin(groups, students);
+		}
+		catch (IDORelationshipException ire) {
+			throw new FinderException(ire.getMessage());
+		}
+		query.addJoin(table, CODE, groups, "code");
+		query.addCriteria(new MatchCriteria(table, SCHOOL_SEASON, MatchCriteria.EQUALS, season));
+		query.addCriteria(new MatchCriteria(table, SCHOOL, MatchCriteria.EQUALS, school));
+		query.addCriteria(new MatchCriteria(studyPath, "study_path_group_id", MatchCriteria.EQUALS, group));
 		
 		return idoFindPKsByQuery(query);
 	}

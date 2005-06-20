@@ -1,6 +1,6 @@
 /*
- * $Id: AdultEducationBusiness.java,v 1.21 2005/06/12 13:46:45 laddi Exp $
- * Created on Jun 12, 2005
+ * $Id: AdultEducationBusiness.java,v 1.22 2005/06/20 12:56:22 laddi Exp $
+ * Created on Jun 20, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -10,6 +10,7 @@
 package se.idega.idegaweb.commune.adulteducation.business;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Locale;
 import javax.ejb.CreateException;
@@ -28,6 +29,7 @@ import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassMember;
+import com.idega.block.school.data.SchoolClassMemberGrade;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolStudyPath;
 import com.idega.block.school.data.SchoolStudyPathGroup;
@@ -38,10 +40,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/06/12 13:46:45 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/20 12:56:22 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.21 $
+ * @version $Revision: 1.22 $
  */
 public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 
@@ -89,6 +91,11 @@ public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getCourses
 	 */
 	public Collection getCourses(Object season, Object school, Object group) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getCoursesWithStudents
+	 */
+	public Collection getCoursesWithStudents(Object season, Object school, Object group) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getCourses
@@ -345,4 +352,24 @@ public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getAdultEducationPersonalHome
 	 */
 	public AdultEducationPersonalInfoHome getAdultEducationPersonalHome() throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getGrades
+	 */
+	public Collection getGrades(SchoolType type) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getStudentGrade
+	 */
+	public SchoolClassMemberGrade getStudentGrade(SchoolClassMember student) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#updateGrades
+	 */
+	public void updateGrades(Object[] studentPKs, Object[] gradePKs) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#terminatePlacement
+	 */
+	public void terminatePlacement(SchoolClassMember student, Timestamp terminated) throws java.rmi.RemoteException;
 }

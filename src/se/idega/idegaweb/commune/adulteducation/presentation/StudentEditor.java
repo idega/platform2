@@ -1,5 +1,5 @@
 /*
- * $Id: StudentEditor.java,v 1.7 2005/06/12 14:20:37 laddi Exp $
+ * $Id: StudentEditor.java,v 1.8 2005/06/20 12:56:22 laddi Exp $
  * Created on Jun 2, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -35,6 +35,7 @@ import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CloseButton;
+import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
@@ -49,19 +50,19 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/06/12 14:20:37 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/20 12:56:22 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class StudentEditor extends AdultEducationBlock implements IWPageEventListener {
 	
 	public static final String PARAMETER_ACTION = "se_action";
 	public static final String PARAMETER_PAGE = "se_page";
 	private static final String PARAMETER_COURSE = "se_course";
-	public static final String PARAMETER_STUDENT = "sp_student";
 	private static final String PARAMETER_SCHOOL_CLASS = "se_school_class";
 	private static final String PARAMETER_MESSAGE = "se_message";
+	private static final String PARAMETER_TERMINATED_DATE = "se_terminated_date";
 	
 	public static final int ACTION_SHOW_CHOICE = 1;
 	public static final int ACTION_SHOW_STUDENT = 2;
@@ -72,6 +73,8 @@ public class StudentEditor extends AdultEducationBlock implements IWPageEventLis
 	private static final int ACTION_STORE_GROUP = 7;
 	public static final int ACTION_SHOW_MESSAGE_SENDING = 8;
 	private static final int ACTION_SEND_MESSAGE = 9;
+	public static final int ACTION_SHOW_TERMINATE_PLACEMENT = 10;
+	private static final int ACTION_TERMINATE_PLACEMENT = 11;
 	
 	private int iPageID;
 	
@@ -159,6 +162,17 @@ public class StudentEditor extends AdultEducationBlock implements IWPageEventLis
 
 				case ACTION_SEND_MESSAGE:
 					sendMessage(iwc);
+					break;
+
+				case ACTION_SHOW_TERMINATE_PLACEMENT:
+					form.addParameter(PARAMETER_ACTION, ACTION_TERMINATE_PLACEMENT);
+					headerTable.add(getHeader(localize("show_terminate_placement", "Terminate placement")), 1, 1);
+					contentTable.add(showTerminatePlacement(), 1, 1);
+					add(form);
+					break;
+
+				case ACTION_TERMINATE_PLACEMENT:
+					terminatePlacement(iwc);
 					break;
 			}
 		}
@@ -444,6 +458,40 @@ public class StudentEditor extends AdultEducationBlock implements IWPageEventLis
 		return table;
 	}
 
+	private Table showTerminatePlacement() throws RemoteException {
+		Table table = new Table();
+		table.setCellpadding(5);
+		table.setColumns(1);
+		table.setWidth(Table.HUNDRED_PERCENT);
+		table.setHeight(Table.HUNDRED_PERCENT);
+		int row = 1;
+		
+		SchoolClassMember member = getSession().getSchoolClassMember();
+		IWTimestamp startDate = new IWTimestamp(member.getRegisterDate());
+		startDate.addDays(1);
+		IWTimestamp stamp = new IWTimestamp();
+		
+		CloseButton back = (CloseButton) getButton(new CloseButton(localize("close", "Close")));
+		SubmitButton terminate = (SubmitButton) getButton(new SubmitButton(localize("terminate", "Terminate")));
+		
+		DateInput input = (DateInput) getStyledInterface(new DateInput(PARAMETER_TERMINATED_DATE));
+		input.setEarliestPossibleDate(startDate.getDate(), localize("end_date_earlier_than_start_date", "You must select a date later than the start date."));
+		input.setDate(stamp.getDate());
+		
+		table.add(getSmallHeader(localize("terminated_date", "Terminated date")), 1, row);
+		table.add(Text.getNonBrakingSpace(), 1, row);
+		table.add(input, 1, row++);
+		
+		table.setHeight(row, Table.HUNDRED_PERCENT);
+		table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
+		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
+		table.add(back, 1, row);
+		table.add(Text.getNonBrakingSpace(), 1, row);
+		table.add(terminate, 1, row);
+		
+		return table;
+	}
+	
 	private void rejectStudent(IWContext iwc) throws RemoteException {
 		Object[] choices = { getSession().getChoice().getPrimaryKey().toString() };
 		getBusiness().rejectChoices(choices, iwc.getCurrentUser());
@@ -466,6 +514,12 @@ public class StudentEditor extends AdultEducationBlock implements IWPageEventLis
 	private void sendMessage(IWContext iwc) throws RemoteException {
 		getBusiness().sendPlacementMessage(getSession().getSchoolClass(), getSession().getCourse(), iwc.getParameter(PARAMETER_MESSAGE));
 		close(iwc, StudentPlacer.ACTION_VIEW_GROUP);
+	}
+	
+	private void terminatePlacement(IWContext iwc) throws RemoteException {
+		IWTimestamp stamp = new IWTimestamp(iwc.getParameter(PARAMETER_TERMINATED_DATE));
+		getBusiness().terminatePlacement(getSession().getSchoolClassMember(), stamp.getTimestamp());
+		close(iwc, StudentAdministrator.ACTION_VIEW);
 	}
 	
 	private void close(IWContext iwc, int action) {

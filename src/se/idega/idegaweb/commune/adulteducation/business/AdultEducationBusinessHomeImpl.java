@@ -1,6 +1,6 @@
 /*
- * $Id: AdultEducationBusinessHomeImpl.java,v 1.20 2005/06/12 13:46:45 laddi Exp $
- * Created on Jun 12, 2005
+ * $Id: AdultEducationBusinessHomeImpl.java,v 1.21 2005/06/20 12:56:22 laddi Exp $
+ * Created on Jun 20, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -13,10 +13,10 @@ import com.idega.business.IBOHomeImpl;
 
 
 /**
- * Last modified: $Date: 2005/06/12 13:46:45 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/20 12:56:22 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  */
 public class AdultEducationBusinessHomeImpl extends IBOHomeImpl implements AdultEducationBusinessHome {
 
