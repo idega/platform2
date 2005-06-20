@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.31 2005/06/20 12:56:22 laddi Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.32 2005/06/20 17:59:27 laddi Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -80,10 +80,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/06/20 12:56:22 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/20 17:59:27 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.31 $
+ * @version $Revision: 1.32 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements AdultEducationBusiness {
 
@@ -1188,18 +1188,20 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 	
 	public void updateGrades(Object[] studentPKs, Object[] gradePKs) {
 		try {
-			for (int i = 0; i < studentPKs.length; i++) {
-				try {
-					SchoolClassMember student = getSchoolBusiness().getSchoolClassMemberHome().findByPrimaryKey(studentPKs[i]);
-					Grade grade = getGradeHome().findByPrimaryKey(gradePKs[i]);
-					
-					updateGrade(student, grade);
-				}
-				catch (FinderException fe) {
-					fe.printStackTrace();
-				}
-				catch (CreateException ce) {
-					ce.printStackTrace();
+			if (studentPKs != null) {
+				for (int i = 0; i < studentPKs.length; i++) {
+					try {
+						SchoolClassMember student = getSchoolBusiness().getSchoolClassMemberHome().findByPrimaryKey(studentPKs[i]);
+						Grade grade = getGradeHome().findByPrimaryKey(gradePKs[i]);
+						
+						updateGrade(student, grade);
+					}
+					catch (FinderException fe) {
+						fe.printStackTrace();
+					}
+					catch (CreateException ce) {
+						ce.printStackTrace();
+					}
 				}
 			}
 		}

@@ -1,5 +1,5 @@
 /*
- * $Id: StudentPlacer.java,v 1.10 2005/06/20 12:56:22 laddi Exp $
+ * $Id: StudentPlacer.java,v 1.11 2005/06/20 17:59:27 laddi Exp $
  * Created on Jun 1, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -42,10 +42,10 @@ import com.idega.util.PersonalIDFormatter;
 
 
 /**
- * Last modified: $Date: 2005/06/20 12:56:22 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/20 17:59:27 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class StudentPlacer extends AdultEducationBlock implements IWPageEventListener {
 
@@ -360,7 +360,7 @@ public class StudentPlacer extends AdultEducationBlock implements IWPageEventLis
 		markAll.setToCheckWhenCheckedAndUncheckWhenUnchecked(PARAMETER_CHOICE);
 		table.add(markAll, column++, row++);
 
-		if (getSession().getSchoolClass() != null) {
+		if (getSession().getSchoolClass() != null && getSession().getCourse() != null) {
 			int number = 0;
 			Collection choices = getBusiness().getChoices(getSession().getSchoolSeason(), getSession().getCourse());
 			Iterator iter = choices.iterator();

@@ -1,5 +1,5 @@
 /*
- * $Id: StudentAdministrator.java,v 1.2 2005/06/20 13:49:13 laddi Exp $
+ * $Id: StudentAdministrator.java,v 1.3 2005/06/20 17:59:27 laddi Exp $
  * Created on Jun 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -39,10 +39,10 @@ import com.idega.util.PersonalIDFormatter;
 
 
 /**
- * Last modified: $Date: 2005/06/20 13:49:13 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/20 17:59:27 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class StudentAdministrator extends AdultEducationBlock implements IWPageEventListener {
 
@@ -237,7 +237,7 @@ public class StudentAdministrator extends AdultEducationBlock implements IWPageE
 		table.add(getLocalizedSmallHeader("end_date","End date"), column++, row);
 		table.add(getLocalizedSmallHeader("grade","Grade"), column++, row++);
 		
-		if (getSession().getSchoolClass() != null) {
+		if (getSession().getSchoolClass() != null && getSession().getCourse() != null) {
 			int number = 0;
 			IWTimestamp stamp = new IWTimestamp();
 			SelectorUtility util = new SelectorUtility();
@@ -292,7 +292,7 @@ public class StudentAdministrator extends AdultEducationBlock implements IWPageE
 						locked = grade.isLocked();
 					}
 					
-					DropdownMenu gradeDrop = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_GRADE), grades));
+					DropdownMenu gradeDrop = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_GRADE), grades, "getGrade"));
 					if ((grade == null && endDate != null) || locked) {
 						gradeDrop.setDisabled(true);
 					}
@@ -309,6 +309,7 @@ public class StudentAdministrator extends AdultEducationBlock implements IWPageE
 				column++;
 				
 				Link edit = new Link(getEditIcon(localize("edit_student", "Edit student")));
+				edit.addParameter(PARAMETER_CHOICE, choice.getPrimaryKey().toString());
 				edit.addParameter(PARAMETER_STUDENT, member.getPrimaryKey().toString());
 				edit.addParameter(StudentEditor.PARAMETER_ACTION, StudentEditor.ACTION_CHANGE_GROUP);
 				edit.addParameter(StudentEditor.PARAMETER_PAGE, getParentPageID());
@@ -317,10 +318,12 @@ public class StudentAdministrator extends AdultEducationBlock implements IWPageE
 				table.add(edit, column++, row);
 				
 				Link delete = new Link(getDeleteIcon(localize("terminate_placement", "Terminate student placement")));
+				delete.addParameter(PARAMETER_CHOICE, choice.getPrimaryKey().toString());
 				delete.addParameter(PARAMETER_STUDENT, member.getPrimaryKey().toString());
 				delete.addParameter(StudentEditor.PARAMETER_ACTION, StudentEditor.ACTION_SHOW_TERMINATE_PLACEMENT);
 				delete.addParameter(StudentEditor.PARAMETER_PAGE, getParentPageID());
 				delete.setEventListener(StudentEditor.class);
+				delete.setWindowToOpen(StudentWindow.class);
 				
 				if (endDate == null && stamp.isLaterThanOrEquals(startDate)) {
 					table.add(delete, column++, row);
