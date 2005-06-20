@@ -1,5 +1,5 @@
 /*
- * $Id: GradeBMPBean.java,v 1.1 2005/06/20 12:55:48 laddi Exp $
+ * $Id: GradeBMPBean.java,v 1.2 2005/06/20 14:22:06 laddi Exp $
  * Created on Jun 20, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -18,14 +18,14 @@ import com.idega.data.query.Table;
 
 
 /**
- * Last modified: $Date: 2005/06/20 12:55:48 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/20 14:22:06 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class GradeBMPBean extends GenericEntity  implements Grade{
 
-	private static final String ENTITY_NAME = "sch_class_member_grade";
+	private static final String ENTITY_NAME = "sch_grade";
 	
 	private static final String COLUMN_SCHOOL_TYPE = "sch_school_type_id";
 	private static final String COLUMN_GRADE = "grade";
