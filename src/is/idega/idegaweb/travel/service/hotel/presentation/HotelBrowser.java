@@ -1,5 +1,5 @@
 /*
- * $Id: HotelBrowser.java,v 1.6 2005/06/18 18:02:57 gimmi Exp $
+ * $Id: HotelBrowser.java,v 1.7 2005/06/20 17:09:39 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -199,7 +199,7 @@ public class HotelBrowser extends TravelBlock implements SupplierBrowserPlugin {
 				PARAMETER_MAX_RATING, PARAMETER_MIN_RATING};
 	}
 
-	public Collection getProducts(Supplier supplier, Group supplierManager, IWContext iwc, String[][] postalCodes) throws IDOLookupException, FinderException {
+	public Collection getProducts(Supplier supplier, Group supplierManager, IWContext iwc, String[][] postalCodes, boolean onlineOnly, boolean useSearchPriceCategoryKey) throws IDOLookupException, FinderException {
 		String from = (String) iwc.getParameter(PARAMETER_FROM_DATE);
 		String to = (String) iwc.getParameter(PARAMETER_TO_DATE);
 		String roomType = (String) iwc.getParameter(PARAMETER_ROOM_TYPE);
@@ -248,7 +248,7 @@ public class HotelBrowser extends TravelBlock implements SupplierBrowserPlugin {
 				product =pHome.findByPrimaryKey(hotel.getPrimaryKey());
 				try {
 					if (checkValidity) {
-						if (getBookingBusiness(iwc).getIsProductValid(iwc, product, fromStamp, toStamp)) {
+						if (getBookingBusiness(iwc).getIsProductValid(iwc, product, fromStamp, toStamp, onlineOnly, useSearchPriceCategoryKey)) {
 							pColl.add(product);
 						}
 					} else {

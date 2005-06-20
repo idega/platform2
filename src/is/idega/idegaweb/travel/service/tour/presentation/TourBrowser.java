@@ -1,5 +1,5 @@
 /*
- * $Id: TourBrowser.java,v 1.6 2005/06/18 18:02:57 gimmi Exp $
+ * $Id: TourBrowser.java,v 1.7 2005/06/20 17:09:39 gimmi Exp $
  * Created on 28.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -181,7 +181,7 @@ public class TourBrowser extends TravelBlock implements SupplierBrowserPlugin {
 		return coll;	
 	}
 
-	public Collection getProducts(Supplier supplier, Group supplierManager, IWContext iwc, String[][] postalCodes) throws IDOLookupException, FinderException {
+	public Collection getProducts(Supplier supplier, Group supplierManager, IWContext iwc, String[][] postalCodes, boolean onlineOnly, boolean useSearchPriceCategoryKey) throws IDOLookupException, FinderException {
 		String tourTypeId = iwc.getParameter(PARAMETER_TOUR_TYPE_ID);
 		String from = iwc.getParameter(PARAMETER_FROM_DATE);
 		String ftt = iwc.getParameter(PARAMETER_FORCED_TOUR_TYPE_ID);
@@ -239,7 +239,7 @@ public class TourBrowser extends TravelBlock implements SupplierBrowserPlugin {
 				product = pHome.findByPrimaryKey(tour.getPrimaryKey());
 				try {
 					if (checkValidity) {
-						if (getBookingBusiness(iwc).getIsProductValid(iwc, product, fromStamp, toStamp)) {
+						if (getBookingBusiness(iwc).getIsProductValid(iwc, product, fromStamp, toStamp, onlineOnly, useSearchPriceCategoryKey)) {
 							pColl.add(product);
 						}
 					} else {

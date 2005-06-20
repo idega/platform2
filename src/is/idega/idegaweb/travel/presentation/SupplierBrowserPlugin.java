@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowserPlugin.java,v 1.5 2005/06/18 18:02:36 gimmi Exp $
+ * $Id: SupplierBrowserPlugin.java,v 1.6 2005/06/20 17:09:39 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -77,7 +77,7 @@ public interface SupplierBrowserPlugin {
 	 * @param postalCodes postalCodes[0] contains FROM codes, and postalCodes[1] contains TO codes.
 	 * @return
 	 */
-	public Collection getProducts(Supplier supplier, Group supplierManager, IWContext iwc, String[][] postalCodes) throws IDOLookupException, FinderException;
+	public Collection getProducts(Supplier supplier, Group supplierManager, IWContext iwc, String[][] postalCodes, boolean onlineOnly, boolean useSearchPriceCategoryKey) throws IDOLookupException, FinderException;
 
 	/**
 	 * Get the extra (if any) fields needed for the booking form.

@@ -1,5 +1,5 @@
 /*
- * $Id: CarRentalBrowser.java,v 1.1 2005/06/18 18:03:43 gimmi Exp $
+ * $Id: CarRentalBrowser.java,v 1.2 2005/06/20 17:09:39 gimmi Exp $
  * Created on 18.6.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -134,7 +134,7 @@ public class CarRentalBrowser extends TravelBlock implements SupplierBrowserPlug
 		return coll;
 	}
 
-	public Collection getProducts(Supplier supplier, Group supplierManager, IWContext iwc, String[][] postalCodes) throws IDOLookupException, FinderException {
+	public Collection getProducts(Supplier supplier, Group supplierManager, IWContext iwc, String[][] postalCodes, boolean onlineOnly, boolean useSearchPriceCategoryKey) throws IDOLookupException, FinderException {
 		String from = (String) iwc.getParameter(SupplierBrowser.PARAMETER_FROM);
 		String to = (String) iwc.getParameter(PARAMETER_TO_DATE);
 	
@@ -160,7 +160,7 @@ public class CarRentalBrowser extends TravelBlock implements SupplierBrowserPlug
 				product =pHome.findByPrimaryKey(car.getPrimaryKey());
 				try {
 					if (checkValidity) {
-						if (getBookingBusiness(iwc).getIsProductValid(iwc, product, fromStamp, toStamp)) {
+						if (getBookingBusiness(iwc).getIsProductValid(iwc, product, fromStamp, toStamp, onlineOnly, useSearchPriceCategoryKey)) {
 							pColl.add(product);
 						}
 					} else {
