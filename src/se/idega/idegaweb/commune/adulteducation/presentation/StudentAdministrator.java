@@ -1,5 +1,5 @@
 /*
- * $Id: StudentAdministrator.java,v 1.4 2005/06/20 18:27:28 laddi Exp $
+ * $Id: StudentAdministrator.java,v 1.5 2005/06/20 18:55:00 laddi Exp $
  * Created on Jun 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -39,10 +39,10 @@ import com.idega.util.PersonalIDFormatter;
 
 
 /**
- * Last modified: $Date: 2005/06/20 18:27:28 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/20 18:55:00 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class StudentAdministrator extends AdultEducationBlock implements IWPageEventListener {
 
@@ -297,7 +297,9 @@ public class StudentAdministrator extends AdultEducationBlock implements IWPageE
 						gradeDrop.setDisabled(true);
 					}
 					else {
-						gradeDrop.setSelectedElement(grade.getPrimaryKey().toString());
+						if (grade != null) {
+							gradeDrop.setSelectedElement(grade.getPrimaryKey().toString());
+						}
 						table.add(new HiddenInput(PARAMETER_STUDENT, member.getPrimaryKey().toString()), column, row);
 					}
 					table.add(gradeDrop, column, row);
