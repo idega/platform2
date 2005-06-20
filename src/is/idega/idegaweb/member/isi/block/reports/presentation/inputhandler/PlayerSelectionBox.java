@@ -2,7 +2,6 @@ package is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler;
 
 import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
 import is.idega.idegaweb.member.util.IWMemberConstants;
-
 import java.rmi.RemoteException;
 import java.text.Collator;
 import java.util.ArrayList;
@@ -14,10 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
 import javax.ejb.FinderException;
-
-import com.idega.core.data.ICTreeNode;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.CachedGroup;
 import com.idega.user.data.Group;
