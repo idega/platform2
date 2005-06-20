@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowser.java,v 1.8 2005/06/18 18:04:06 gimmi Exp $
+ * $Id: SupplierBrowser.java,v 1.9 2005/06/20 17:08:08 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -13,6 +13,7 @@ import is.idega.idegaweb.travel.block.search.business.ServiceSearchBusinessBean;
 import is.idega.idegaweb.travel.block.search.business.ServiceSearchSession;
 import is.idega.idegaweb.travel.block.search.presentation.AbstractSearchForm;
 import is.idega.idegaweb.travel.block.search.presentation.SearchBasketStatus;
+import is.idega.idegaweb.travel.service.presentation.BookingForm;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
@@ -22,7 +23,6 @@ import java.util.StringTokenizer;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import com.idega.block.trade.stockroom.business.ProductPriceException;
-import com.idega.block.trade.stockroom.data.PriceCategoryBMPBean;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductHome;
 import com.idega.block.trade.stockroom.data.ProductPrice;
@@ -88,6 +88,8 @@ public class SupplierBrowser extends TravelBlock {
 	private String imageStyleClass = null;
 	private String interfaceObjectStyleClass = null;
 	private String width = null;
+	private boolean useOnlinePrices = false;
+	private boolean useSearchPriceCategoryKey = false;
 	private String imageWidth = "70";
 	private boolean useBasket = false;
 	
@@ -104,7 +106,8 @@ public class SupplierBrowser extends TravelBlock {
 		
 		Form form = new Form();
 		SearchBasketStatus stat = new SearchBasketStatus();
-		stat.setURLToCheckout("http://localhost:8080/gimmi.jsp");
+		//stat.setURLToCheckout("http://localhost:8080/gimmi.jsp");
+		//stat.setURLToCheckout("http://localhost:8080/servlet/IBMainServlet/?ib_page=3");
 		stat.setTextStyleClass(textStyleClass);
 		stat.setLinkStyleClass(linkStyleClass);
 		form.add(stat);
@@ -254,10 +257,24 @@ public class SupplierBrowser extends TravelBlock {
 		priceTable.setBorder(0);
 		
 		int pRow = 1;
+		if (iwc.isLoggedOn()) {
+			priceTable.add(new HiddenInput("ic_user", iwc.getCurrentUser().getPrimaryKey().toString()), 1, pRow);
+		}
+		if (useSearchPriceCategoryKey) {
+			try {
+				priceTable.add(new HiddenInput(BookingForm.parameterPriceCategoryKey, getServiceHandler(iwc).getBookingForm(iwc, product, false).getPriceCategorySearchKey()), 1, pRow);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		priceTable.add(new HiddenInput(BookingForm.parameterOnlineBooking, Boolean.toString(useOnlinePrices)), 1, pRow);
+
 		priceTable.add(getText(getResourceBundle().getLocalizedString("travel.prices", "Prices"), headerStyleClass), 1, pRow);
 		priceTable.add(getText(getResourceBundle().getLocalizedString("travel.per_unit", "Per Unit"), headerStyleClass), 2, pRow);
 		priceTable.add(getText(getResourceBundle().getLocalizedString("travel.count", "Count"), headerStyleClass), 3, pRow);
 		priceTable.add(getText(getResourceBundle().getLocalizedString("travel.sum", "Sum"), headerStyleClass), 4, pRow++);
+		
 		
 		++row;
 		try {
@@ -337,7 +354,8 @@ public class SupplierBrowser extends TravelBlock {
 			
 		} else if (iwc.isParameterSet(AbstractSearchForm.ACTION)) {
 
-			table.add(getText(getResourceBundle().getLocalizedString("travel.failed_adding_to_basket", "Failed adding to basket")+", "+getSearchSession(iwc).getAddToBasketError(getResourceBundle()), headerStyleClass), 3, row);
+			table.add(getText(getResourceBundle().getLocalizedString("travel.failed_adding_to_basket", "Failed adding to basket")+", "+getSearchSession(iwc).getAddToBasketError(getResourceBundle()), headerStyleClass), 2, row);
+			table.add(link, 3, row);
 
 		} else { 
 		
@@ -383,7 +401,18 @@ public class SupplierBrowser extends TravelBlock {
 	}
 
 	private int listPrices(IWContext iwc, Table priceTable, int pRow, int addressId, int timeframeId, ProductPriceHome ppHome, ResultOutput totalResults) throws FinderException, SQLException, RemoteException {
-		Collection prices = ppHome.findProductPrices(product.getID(), timeframeId, addressId, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC});
+		String key = null;
+		if (useSearchPriceCategoryKey) {
+			try {
+				key = getServiceHandler(iwc).getBookingForm(iwc, product, false).getPriceCategorySearchKey();
+			}
+			catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		Collection prices = ppHome.findProductPrices(product.getID(), timeframeId, addressId, useOnlinePrices, key);
 //				Collection prices = ppHome.findProductPrices(product.getID(), timeframeId, addressId, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, bf.getPriceCategorySearchKey());
 		if (prices != null) {
 			Iterator pIter = prices.iterator();
@@ -657,7 +686,7 @@ public class SupplierBrowser extends TravelBlock {
 			if (iwc.isParameterSet(PARAMETER_SUPPLIER_ID)) {
 				supplier = getSupplierHome().findByPrimaryKey(Integer.parseInt(iwc.getParameter(PARAMETER_SUPPLIER_ID)));
 			}
-			return plugin.getProducts(supplier, supplierManager, iwc, postalCodes);
+			return plugin.getProducts(supplier, supplierManager, iwc, postalCodes, useOnlinePrices, useSearchPriceCategoryKey);
 		}
 		catch (FinderException e) {
 			e.printStackTrace();
@@ -699,6 +728,14 @@ public class SupplierBrowser extends TravelBlock {
 	
 	public void setUseBasket(boolean useBasket) {
 		this.useBasket = useBasket;
+	}
+	
+	public void setUseOnlinePrices(boolean useOnlinePrices) {
+		this.useOnlinePrices = useOnlinePrices;
+	}
+	
+	public void setUseSearchPriceCategoryKey(boolean useKey) {
+		this.useSearchPriceCategoryKey = useKey;
 	}
 	
 	private ServiceSearchSession getSearchSession(IWUserContext iwc) {
