@@ -11,6 +11,7 @@ import is.idega.idegaweb.travel.business.TravelSessionManager;
 import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
 import is.idega.idegaweb.travel.data.GeneralBooking;
 import is.idega.idegaweb.travel.data.GeneralBookingHome;
+import is.idega.idegaweb.travel.interfaces.Booking;
 import is.idega.idegaweb.travel.service.business.BookingBusiness;
 import is.idega.idegaweb.travel.service.business.ServiceHandler;
 import is.idega.idegaweb.travel.service.presentation.BookingForm;
@@ -227,7 +228,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 				try {
 					product = (Product) iter.next();
 //					System.out.println("ServiceSearchBusiness : checking product : " +product.getProductName(iwc.getCurrentLocaleId()));
-					productIsValid = getBookingBusiness().getIsProductValid(iwc, product, from, to);
+					productIsValid = getBookingBusiness().getIsProductValid(iwc, product, from, to, true, true);
 					if (productIsValid) {
 //						System.out.println("ServiceSearchBusiness : valid");
 						map.put(product, new Boolean(productIsValid));
@@ -675,7 +676,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		try {
 			GeneralBooking booking = doBooking(iwc, false);
 //			booking.setIsValid(false);
-			booking.store();
+//			booking.store();
 			
 			Collection coll = getBooker().getMultibleBookings(booking);
 			if (coll != null) {
@@ -689,6 +690,8 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 			
 			getBooker().invalidateCache(booking.getID());
 			
+			booking.setIsValid(false);
+			booking.store();
 			travelbasket.addItem(booking);
 			return true;
 		}
@@ -825,12 +828,8 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		
 		String city = iwc.getParameter(BookingForm.PARAMETER_CITY);
 		String country = iwc.getParameter(BookingForm.PARAMETER_COUNTRY);
-//		String pickupId = iwc.getParameter(BookingForm.parameterPickupId);
-//		String pickupInfo = iwc.getParameter(BookingForm.parameterPickupInf);
-//		String sPaymentType = iwc.getParameter("payment_type");
 		String comment = iwc.getParameter(BookingForm.PARAMETER_COMMENT);
 		String code = iwc.getParameter(BookingForm.PARAMETER_CODE);
-//		String key = iwc.getParameter(BookingForm.parameterPriceCategoryKey);
 		
 		Iterator biter = bookings.iterator();
 		while (biter.hasNext()) {
@@ -856,6 +855,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 					if (code != null) {
 						b.setCode(code);
 					}
+					b.setBookingTypeID(Booking.PAYMENT_TYPE_ID_CREDIT_CARD);
 					b.setCreditcardAuthorizationNumber(authNr);
 					b.setIsValid(true);
 					b.store();
