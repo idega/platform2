@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolClassMemberGradeBMPBean.java,v 1.1 2005/06/20 12:55:48 laddi Exp $
+ * $Id: SchoolClassMemberGradeBMPBean.java,v 1.2 2005/06/20 18:28:16 laddi Exp $
  * Created on Jun 20, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -19,10 +19,10 @@ import com.idega.data.query.Table;
 
 
 /**
- * Last modified: $Date: 2005/06/20 12:55:48 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/20 18:28:16 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class SchoolClassMemberGradeBMPBean extends GenericEntity  implements SchoolClassMemberGrade{
 
@@ -111,7 +111,7 @@ public class SchoolClassMemberGradeBMPBean extends GenericEntity  implements Sch
 		Table table = new Table(this);
 		
 		SelectQuery query = new SelectQuery(table);
-		query.addColumn(table, getIDColumnName(), true);
+		query.addColumn(table, getIDColumnName());
 		query.addCriteria(new MatchCriteria(table, COLUMN_SCHOOL_CLASS_MEMBER, MatchCriteria.EQUALS, student));
 		query.addOrder(table, COLUMN_CREATED, false);
 		
