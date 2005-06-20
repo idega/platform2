@@ -218,7 +218,7 @@ public class MemberBMPBean extends GenericEntity implements Member {
   public UnionMemberInfo getUnionMemberInfo(String union_id)throws SQLException{
     UnionMemberInfo info = (UnionMemberInfo) IDOLookup.instanciateEntity(UnionMemberInfo.class);
     UnionMemberInfo[] infos = null;
-    infos = (UnionMemberInfo[]) (info.findAll("select * from union_member_info where member_id='"+this.getID()+"' and union_id='"+union_id+"' "));
+    infos = (UnionMemberInfo[]) (info.findAll("select * from union_member_info where member_id="+this.getID()+" and union_id="+union_id+""));
     if( (infos!=null) && (infos.length>0)  ) info = (UnionMemberInfo) infos[0];
     else info = null;
 
@@ -228,7 +228,7 @@ public class MemberBMPBean extends GenericEntity implements Member {
   public UnionMemberInfo getUnionMemberInfo(String union_id, String member_id)throws SQLException{
     UnionMemberInfo info = (UnionMemberInfo) IDOLookup.instanciateEntity(UnionMemberInfo.class);
     UnionMemberInfo[] infos = null;
-    infos = (UnionMemberInfo[]) (info.findAll("select * from union_member_info where member_id='"+member_id+"' and union_id='"+union_id+"' "));
+    infos = (UnionMemberInfo[]) (info.findAll("select * from union_member_info where member_id="+member_id+" and union_id="+union_id+""));
     if( (infos!=null) && (infos.length>0)  ) info = (UnionMemberInfo) infos[0];
     else info = null;
 
