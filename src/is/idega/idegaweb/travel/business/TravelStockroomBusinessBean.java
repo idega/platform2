@@ -841,10 +841,11 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
         IWTimestamp temp;
 
         if (!showPast) {
+        	tTo.setYear(to.getYear());
           IWTimestamp now = IWTimestamp.RightNow();
-          if (now.isLaterThan(from) && to.isLaterThan(now)) {
+          if (now.isLaterThan(from) && tTo.isLaterThan(now)) {
             stamp = new IWTimestamp(now);
-          }else if (now.isLaterThan(from) && now.isLaterThan(to)) {
+          }else if (now.isLaterThan(from) && now.isLaterThan(tTo)) {
             stamp = new IWTimestamp(to);
           }
         }
