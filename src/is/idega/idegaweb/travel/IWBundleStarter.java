@@ -1,5 +1,5 @@
 /*
- * $Id: IWBundleStarter.java,v 1.1 2005/05/10 21:34:41 gimmi Exp $
+ * $Id: IWBundleStarter.java,v 1.2 2005/06/20 17:03:12 gimmi Exp $
  * Created on 10.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -46,7 +46,7 @@ public class IWBundleStarter implements com.idega.idegaweb.IWBundleStartable {
 						{
 							Class c = ico.getObjectClass();
 							IDOFactory home = (IDOFactory) IDOLookup.getHome(c);
-							home.setDatasource(dataSource);
+							home.setDatasource(dataSource, false);
 						}
 						catch (ClassNotFoundException e)
 						{

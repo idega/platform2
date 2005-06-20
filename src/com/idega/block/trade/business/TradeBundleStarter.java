@@ -62,7 +62,7 @@ public class TradeBundleStarter implements IWBundleStartable,ActionListener{
 						{
 							Class c = ico.getObjectClass();
 							IDOFactory home = (IDOFactory) IDOLookup.getHome(c);
-							home.setDatasource(dataSource);
+							home.setDatasource(dataSource, false);
 						}
 						catch (ClassNotFoundException e)
 						{
