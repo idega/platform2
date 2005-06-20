@@ -1,5 +1,5 @@
 /*
- * $Id: StudentPlacer.java,v 1.11 2005/06/20 17:59:27 laddi Exp $
+ * $Id: StudentPlacer.java,v 1.12 2005/06/20 19:40:39 laddi Exp $
  * Created on Jun 1, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -42,10 +42,10 @@ import com.idega.util.PersonalIDFormatter;
 
 
 /**
- * Last modified: $Date: 2005/06/20 17:59:27 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/20 19:40:39 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class StudentPlacer extends AdultEducationBlock implements IWPageEventListener {
 
@@ -430,7 +430,7 @@ public class StudentPlacer extends AdultEducationBlock implements IWPageEventLis
 
 		if (getSession().getSchoolClass() != null) {
 			int number = 0;
-			Collection students = getBusiness().getSchoolBusiness().findStudentsInClass(((Integer) getSession().getSchoolClass().getPrimaryKey()).intValue());
+			Collection students = getBusiness().getStudents(getSession().getSchoolClass());
 			Iterator iter = students.iterator();
 			while (iter.hasNext()) {
 				SchoolClassMember member = (SchoolClassMember) iter.next();

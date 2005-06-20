@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.32 2005/06/20 17:59:27 laddi Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.33 2005/06/20 19:40:39 laddi Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -80,10 +80,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/06/20 17:59:27 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/20 19:40:39 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.32 $
+ * @version $Revision: 1.33 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements AdultEducationBusiness {
 
@@ -345,6 +345,19 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		}
 		catch (IDOLookupException ile) {
 			throw new IBORuntimeException(ile);
+		}
+	}
+	
+	public Collection getStudents(SchoolClass group) {
+		try {
+			return getSchoolBusiness().getSchoolClassMemberHome().findAllBySchoolClass(group);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return new ArrayList();
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
 		}
 	}
 	
@@ -1214,7 +1227,7 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		SchoolClassMemberGrade studentGrade = null;
 		try {
 			studentGrade = getStudentGradeHome().findByStudent(student);
-			if (studentGrade.getGrade().equals(grade)) {
+			if (studentGrade.getGrade().getPrimaryKey().equals(grade.getPrimaryKey())) {
 				return;
 			}
 			else {

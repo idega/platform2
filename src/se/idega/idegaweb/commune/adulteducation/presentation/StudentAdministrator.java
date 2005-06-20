@@ -1,5 +1,5 @@
 /*
- * $Id: StudentAdministrator.java,v 1.5 2005/06/20 18:55:00 laddi Exp $
+ * $Id: StudentAdministrator.java,v 1.6 2005/06/20 19:40:39 laddi Exp $
  * Created on Jun 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -39,10 +39,10 @@ import com.idega.util.PersonalIDFormatter;
 
 
 /**
- * Last modified: $Date: 2005/06/20 18:55:00 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/20 19:40:39 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class StudentAdministrator extends AdultEducationBlock implements IWPageEventListener {
 
@@ -241,7 +241,7 @@ public class StudentAdministrator extends AdultEducationBlock implements IWPageE
 			int number = 0;
 			IWTimestamp stamp = new IWTimestamp();
 			SelectorUtility util = new SelectorUtility();
-			Collection students = getBusiness().getSchoolBusiness().findStudentsInClass(((Integer) getSession().getSchoolClass().getPrimaryKey()).intValue());
+			Collection students = getBusiness().getStudents(getSession().getSchoolClass());
 			Collection grades = getBusiness().getGrades(getSession().getSchoolClass().getSchoolType());
 			Iterator iter = students.iterator();
 			while (iter.hasNext()) {
@@ -298,7 +298,7 @@ public class StudentAdministrator extends AdultEducationBlock implements IWPageE
 					}
 					else {
 						if (grade != null) {
-							gradeDrop.setSelectedElement(grade.getPrimaryKey().toString());
+							gradeDrop.setSelectedElement(grade.getGrade().getPrimaryKey().toString());
 						}
 						table.add(new HiddenInput(PARAMETER_STUDENT, member.getPrimaryKey().toString()), column, row);
 					}
