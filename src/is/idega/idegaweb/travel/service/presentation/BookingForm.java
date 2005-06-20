@@ -52,6 +52,7 @@ import com.idega.block.trade.stockroom.data.SupplierHome;
 import com.idega.block.trade.stockroom.data.Timeframe;
 import com.idega.block.trade.stockroom.data.TravelAddress;
 import com.idega.business.IBOLookup;
+import com.idega.core.accesscontrol.business.NotLoggedOnException;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.location.data.Address;
@@ -1677,7 +1678,7 @@ public abstract class BookingForm extends TravelManager{
 //		}
 //	}
 	
-	protected Form getBookingForm(IWContext iwc, Product product, boolean vertical) throws RemoteException {
+	protected Form getBookingFormISPERHAPSHOLD(IWContext iwc, Product product, boolean vertical) throws RemoteException {
 		Table table = new Table();
 		Form form = new Form();
 		form.add(table);
@@ -1701,7 +1702,7 @@ public abstract class BookingForm extends TravelManager{
 		boolean isProductValid = false;
 		try {
 			//isProductValid = getServiceHandler(iwc).getServiceBusiness(product).getifD
-			isProductValid = getBookingBusiness(iwc).getIsProductValid(iwc, product, from, to);
+			isProductValid = getBookingBusiness(iwc).getIsProductValid(iwc, product, from, to, true, true);
 		}
 		catch (Exception e2) {
 			e2.printStackTrace();
@@ -3332,7 +3333,17 @@ public abstract class BookingForm extends TravelManager{
 		}catch(NumberFormatException n) {}
 		
 		String sUserId = iwc.getParameter("ic_user");
-		if (sUserId == null) sUserId = "-1";
+		if (sUserId == null) {
+			try {
+				sUserId = iwc.getCurrentUser().getPrimaryKey().toString();
+			} catch (NotLoggedOnException e) { 
+				sUserId = "-1";
+			}
+		}
+		
+		if (surname == null && lastname == null) {
+			surname = "booked "+IWTimestamp.RightNow().toString();
+		}
 		
 		
 		String ccNumber = iwc.getParameter(this.parameterCCNumber);
