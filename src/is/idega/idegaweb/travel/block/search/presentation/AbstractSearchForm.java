@@ -785,7 +785,7 @@ public abstract class AbstractSearchForm extends TravelBlock {
 			}
 			
 			try {
-				isProductValid = getBookingBusiness(iwc).getIsProductValid(iwc, product, from, to);
+				isProductValid = getBookingBusiness(iwc).getIsProductValid(iwc, product, from, to, true, true);
 			}
 			catch (Exception e2) {
 				e2.printStackTrace();
