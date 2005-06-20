@@ -200,7 +200,6 @@ public class NwNewsBMPBean extends com.idega.data.GenericEntity implements  NwNe
       
       query.addJoin(news, NwNewsBMPBean.getColumnNameContentId(), content, ContentBMPBean.getEntityTableName()+"_ID");
       query.addJoin(content, ContentBMPBean.getEntityTableName()+"_ID", middle, ContentBMPBean.getEntityTableName()+"_ID");
-      query.addJoin(content, ContentBMPBean.getEntityTableName()+"_ID", middle, ContentBMPBean.getEntityTableName()+"_ID");
       query.addJoin(middle, LocalizedTextBMPBean.getEntityTableName()+"_ID", text, LocalizedTextBMPBean.getEntityTableName()+"_ID");
 
       query.addCriteria(new InCriteria(news, NwNewsBMPBean.getColumnNameNewsCategoryId(), newsCategoryIds));
