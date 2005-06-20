@@ -1,5 +1,5 @@
 /*
- * $Id: StudentAdministrator.java,v 1.1 2005/06/20 12:56:22 laddi Exp $
+ * $Id: StudentAdministrator.java,v 1.2 2005/06/20 13:49:13 laddi Exp $
  * Created on Jun 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -39,10 +39,10 @@ import com.idega.util.PersonalIDFormatter;
 
 
 /**
- * Last modified: $Date: 2005/06/20 12:56:22 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/20 13:49:13 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class StudentAdministrator extends AdultEducationBlock implements IWPageEventListener {
 
@@ -235,7 +235,7 @@ public class StudentAdministrator extends AdultEducationBlock implements IWPageE
 		table.add(getLocalizedSmallHeader("personal_id","Personal ID"), column++, row);
 		table.add(getLocalizedSmallHeader("start_date","Start date"), column++, row);
 		table.add(getLocalizedSmallHeader("end_date","End date"), column++, row);
-		table.add(getLocalizedSmallHeader("grade","Grade"), column++, row);
+		table.add(getLocalizedSmallHeader("grade","Grade"), column++, row++);
 		
 		if (getSession().getSchoolClass() != null) {
 			int number = 0;

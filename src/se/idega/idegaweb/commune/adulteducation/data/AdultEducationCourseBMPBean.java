@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationCourseBMPBean.java,v 1.7 2005/06/20 12:56:22 laddi Exp $
+ * $Id: AdultEducationCourseBMPBean.java,v 1.8 2005/06/20 13:49:13 laddi Exp $
  * Created on 27.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -271,11 +271,11 @@ public class AdultEducationCourseBMPBean extends GenericEntity  implements Adult
 		query.addColumn(table, getIDColumnName(), true);
 		try {
 			query.addJoin(table, studyPath);
-			query.addJoin(groups, students);
 		}
 		catch (IDORelationshipException ire) {
 			throw new FinderException(ire.getMessage());
 		}
+		query.addJoin(groups, "sch_school_class_id",  students, "sch_school_class_id");
 		query.addJoin(table, CODE, groups, "code");
 		query.addCriteria(new MatchCriteria(table, SCHOOL_SEASON, MatchCriteria.EQUALS, season));
 		query.addCriteria(new MatchCriteria(table, SCHOOL, MatchCriteria.EQUALS, school));
