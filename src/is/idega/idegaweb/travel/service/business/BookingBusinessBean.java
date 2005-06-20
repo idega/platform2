@@ -3,7 +3,6 @@ package is.idega.idegaweb.travel.service.business;
 import is.idega.idegaweb.travel.service.presentation.BookingForm;
 import java.rmi.RemoteException;
 import java.util.Collection;
-import com.idega.block.trade.stockroom.data.PriceCategoryBMPBean;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductPrice;
 import com.idega.block.trade.stockroom.data.ProductPriceHome;
@@ -43,7 +42,7 @@ public class BookingBusinessBean extends IBOServiceBean  implements BookingBusin
 		//return getServiceHandler().getServiceBusiness(product).getIfDay(iwc, product, product.getTimeframes(), tmp, false, true);
 	}
 
-	public boolean getIsProductValid(IWContext iwc, Product product, IWTimestamp from, IWTimestamp to) throws Exception {
+	public boolean getIsProductValid(IWContext iwc, Product product, IWTimestamp from, IWTimestamp to, boolean onlineOnly, boolean useSearchPriceCategoryKey) throws Exception {
 		IWTimestamp tmp;
 		Collection addresses;
 		int addressId;
@@ -69,12 +68,20 @@ public class BookingBusinessBean extends IBOServiceBean  implements BookingBusin
 		if (timeframe != null) {
 			timeframeId = timeframe.getID();
 		}
+		t.stop();
+		System.out.println("[BookingBusiness] check 1c : "+t.getTimeString());
+		t.start();
 //		t.stop();
 //		System.out.println("[BookingBusiness] check 1 : "+t.getTimeString());
 //		t.start();
 //		System.out.println("BookingBusinessBean checking product");
+		
+		String key = null;
+		if (useSearchPriceCategoryKey) {
+			key = bf.getPriceCategorySearchKey();
+		}
 		ProductPriceHome ppHome = (ProductPriceHome) IDOLookup.getHome(ProductPrice.class);
-		prices = ppHome.findProductPrices(product.getID(), timeframeId, addressId, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, bf.getPriceCategorySearchKey());
+		prices = ppHome.findProductPrices(product.getID(), timeframeId, addressId, onlineOnly, key);
 		t.stop();
 		System.out.println("[BookingBusiness] check 2 : "+t.getTimeString());
 //		t.start();

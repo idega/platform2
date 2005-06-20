@@ -21,7 +21,7 @@ public interface BookingBusiness extends IBOService {
 	/**
 	 * @see is.idega.idegaweb.travel.service.business.BookingBusinessBean#getIsProductValid
 	 */
-	public boolean getIsProductValid(IWContext iwc, Product product, IWTimestamp from, IWTimestamp to)
+	public boolean getIsProductValid(IWContext iwc, Product product, IWTimestamp from, IWTimestamp to, boolean onlineOnly, boolean useSearchPriceCategoryKey)
 			throws Exception, java.rmi.RemoteException;
 
 	/**
