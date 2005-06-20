@@ -202,7 +202,7 @@ public class MemberBMPBean extends GenericEntity implements Member {
     try{
       MemberInfo[] arr= null;
       MemberInfo mem = (MemberInfo) IDOLookup.instanciateEntity(MemberInfo.class);
-      arr = ( MemberInfo[] ) mem.findAll("select * from member_info where member_id='"+id+"'");
+      arr = ( MemberInfo[] ) mem.findAll("select * from member_info where member_id="+id+"");
 
       if( (arr!= null ) && (arr.length > 0) ) info = arr[0];
       //MemberInfo tempMem = new MemberInfo(this.getID());

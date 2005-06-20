@@ -313,13 +313,13 @@ public class MemberSearch extends GolfBlock {
 					case 0 :
 						break;
 					case 1 :
-						tempSQLString = "Select * from member, union_member_info where member.member_id = union_member_info.member_id AND first_name like '%" + firstName + "%'";
+						tempSQLString = "Select * from member, union_member_info where member.member_id = union_member_info.member_id AND first_name like '" + firstName + "%'";
 						break;
 					case 2 :
-						tempSQLString = "Select * from member, union_member_info where member.member_id = union_member_info.member_id AND first_name like '%" + firstName + "%' and (last_name like '%" + lastName + "%' OR middle_name like '%" + lastName + "%')";
+						tempSQLString = "Select * from member, union_member_info where member.member_id = union_member_info.member_id AND first_name like '" + firstName + "%' and (last_name like '" + lastName + "%' OR middle_name like '" + lastName + "%')";
 						break;
 					default :
-						tempSQLString = "Select * from member, union_member_info where member.member_id = union_member_info.member_id AND first_name like '%" + firstName + "%' and middle_name like '%" + middleName + "%' and last_name like '%" + lastName + "%'";
+						tempSQLString = "Select * from member, union_member_info where member.member_id = union_member_info.member_id AND first_name like '" + firstName + "%' and middle_name like '" + middleName + "%' and last_name like '" + lastName + "%'";
 						break;
 				}
 
