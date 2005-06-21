@@ -383,7 +383,7 @@ public class ServiceSearchAdmin extends TravelManager {
 						LoginDBHandler.updateLogin(user.getID(), login, passOne);
 					  }
 					}
-					Users.removeUserFromAllGroups(user);
+					Users.removeUserFromAllGroups(iwc, user);
 			  }
 	
 		  	getBusiness(iwc).addUser(engine, user, isAdmin);
@@ -441,7 +441,7 @@ public class ServiceSearchAdmin extends TravelManager {
 			try {
 				User user = ((com.idega.user.data.UserHome)com.idega.data.IDOLookup.getHome(User.class)).findByPrimaryKey( new Integer(userID));
 				com.idega.core.accesscontrol.business.LoginDBHandler.deleteUserLogin(user.getID());
-				Users.removeUserFromAllGroups(user);
+				Users.removeUserFromAllGroups(iwc, user);
 				add(getText(iwrb.getLocalizedString("travel.operation_successful","Operation successful")));
 		  }catch (Exception e) {
 			e.printStackTrace(System.err);
