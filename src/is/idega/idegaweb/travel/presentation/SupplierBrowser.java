@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowser.java,v 1.11 2005/06/21 13:59:57 gimmi Exp $
+ * $Id: SupplierBrowser.java,v 1.12 2005/06/21 16:57:42 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -57,6 +57,7 @@ import com.idega.presentation.ui.InterfaceObject;
 import com.idega.presentation.ui.ResultOutput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.Window;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
 import com.idega.util.IWTimestamp;
@@ -483,7 +484,6 @@ public class SupplierBrowser extends TravelBlock {
 			while (iter.hasNext()) {
 				product = (Product) iter.next();
 				row = addProductInfo(iwc, table, row, localeID, product, true);
-				row++;
 				table.setHeight(row, 1);
 				table.setRowStyleClass(row, "sbrowser_background_line");
 				row++;
@@ -523,6 +523,8 @@ public class SupplierBrowser extends TravelBlock {
 		table.setVerticalAlignment(2, row, Table.VERTICAL_ALIGN_TOP);
 		table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_LEFT);
 		table.add(getText(product.getProductName(localeID), headerStyleClass), 2, row++);
+		
+		Link images = null;
 		try {
 			TxText descriptionText;
 			descriptionText = product.getText();
@@ -530,7 +532,12 @@ public class SupplierBrowser extends TravelBlock {
 				ContentHelper ch = null;
 				ch = ContentFinder.getContentHelper(descriptionText.getContentId(), localeID, product.getDatasource());
 				table.setCellpadding(2, row, 2);
+				table.setVerticalAlignment(2, row, Table.VERTICAL_ALIGN_TOP);
 				table.add(getText(ch.getLocalizedText().getBody()), 2, row);
+				if (ch.hasFiles()) {
+					Window w = new Window(ch.getFiles());
+					images = new Link(getText(getResourceBundle().getLocalizedString("travel.images", "Images"), linkStyleClass), w);
+				}
 			}
 		}
 		catch (SQLException e) {
@@ -538,6 +545,8 @@ public class SupplierBrowser extends TravelBlock {
 		}
 		table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_LEFT);
 		table.setVerticalAlignment(2, row, Table.VERTICAL_ALIGN_TOP);
+		
+		
 		if (addDetailLink && plugin.isProductSearchCompleted(iwc)) {
 			Link details = getLink(getResourceBundle().getLocalizedString("travel.book", "Book"));
 			details.addParameter(ACTION, ACTION_VIEW_DETAILS);
@@ -545,10 +554,20 @@ public class SupplierBrowser extends TravelBlock {
 			addParametersToLink(iwc, details);
 			table.add(details, 3, startRow);
 			table.setAlignment(3, startRow, Table.HORIZONTAL_ALIGN_RIGHT);
-		} else {
-			table.mergeCells(2, (row-1), 3, (row-1));
-			table.mergeCells(2, row, 3, row);
+			table.setVerticalAlignment(3, row, Table.VERTICAL_ALIGN_TOP);
+			table.add(images, 3, row);
+			table.setCellpadding(3, row, 2);
+			
 		}
+		else {
+			if (images != null) {
+				table.add(images, 3, (row-1));
+			}
+		}
+//		else {
+//			table.mergeCells(2, (row-1), 3, (row-1));
+//			table.mergeCells(2, row, 3, row);
+//		}
 		table.mergeCells(1, startRow, 1, row);
 		++row;
 		return row;
