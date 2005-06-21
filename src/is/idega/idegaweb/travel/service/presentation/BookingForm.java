@@ -5035,7 +5035,7 @@ public abstract class BookingForm extends TravelManager{
 					mailText.append("\n").append(iwrb.getLocalizedString("travel.name",   "Name    ")).append(" : ").append(gBooking.getName());
 					mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service ")).append(" : ").append(pBus.getProductNameWithNumber(prod, true, iwc.getCurrentLocaleId()));
 					mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append((new IWTimestamp(gBooking.getBookingDate())).getLocaleDate(iwc.getCurrentLocale()));
-					mailText.append("\n").append(iwrb.getLocalizedString("travel.seats",  "Seats   ")).append(" : ").append(gBooking.getTotalCount());
+					mailText.append("\n").append(this.getUnitNamePlural()).append(" : ").append(gBooking.getTotalCount());
 					if (doubleSendSuccessful) {
 						mailText.append("\n\n").append(iwrb.getLocalizedString("travel.double_confirmation_has_been_sent","Double confirmation has been sent."));
 					}else {
