@@ -67,7 +67,7 @@ public class CitizenChildren extends CommuneBlock {
 			if (iwc.isParameterSet(prmSubmitName) && iwc.getParameter(prmSubmitName).equals("true")) {
 				try {
 					User child = processSSNRequest(iwc);
-					T.add(getChildLink(child), col, row);
+					T.add(getChildLink(child, child.getUniqueId() != null), col, row);
 				}
 				catch (javax.ejb.FinderException fix) {
 					T.add(new Text(fix.getMessage()), col, row);
@@ -140,7 +140,17 @@ public class CitizenChildren extends CommuneBlock {
 			childs.add(user);
 		}
 		if (childs != null && !childs.isEmpty()) {
+			boolean useUniqueID = true;
 			Iterator iter = childs.iterator();
+			Iterator iterator = childs.iterator();
+			while (iterator.hasNext()) {
+				User child = (User) iterator.next();
+				if (child.getUniqueId() == null) {
+					useUniqueID = false;
+					break;
+				}
+			}
+			
 			User child;
 			ArrayList outOfRangeChilds = new ArrayList();
 			while (iter.hasNext()) {
@@ -152,7 +162,7 @@ public class CitizenChildren extends CommuneBlock {
 					age = new Age(PIDChecker.getInstance().getDateFromPersonalID(child.getPersonalID()));
 				
 				if(age != null && getShowChild(iwc, child) && age.getYears() <= toAge && age.getYears() >=fromAge){
-					T.add(getChildLink(child), 1, row++);
+					T.add(getChildLink(child, useUniqueID), 1, row++);
 					if (iter.hasNext())
 						T.setHeight(row++,2);
 				}
@@ -205,11 +215,11 @@ public class CitizenChildren extends CommuneBlock {
 		}
 	}
 
-	private Link getChildLink(User child) {
+	private Link getChildLink(User child, boolean useUniqueID) {
 		Link L = new Link(child.getName());
 		if (getResponsePage() != null)
 			L.setPage(getResponsePage());
-		if (child.getUniqueId() != null)
+		if (useUniqueID)
 			L.addParameter(prmChildUniqueId, child.getUniqueId());
 		else
 			L.addParameter(prmChildId, ((Integer) child.getPrimaryKey()).toString());
