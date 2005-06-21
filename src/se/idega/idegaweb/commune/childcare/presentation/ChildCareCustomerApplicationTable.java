@@ -41,7 +41,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.101 2005/05/26 08:51:15 laddi Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.102 2005/06/21 10:45:57 laddi Exp $
  * @since 12.2.2003 
  */
 
@@ -201,7 +201,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				//				application.setApplicationStatus(childCarebusiness.getStatusRejected());
 				//				application.setStatus(STATUS_TYST);
 
-				addDeletedAppToSession(iwc, application);
+				deleteApplication(iwc, application);
 				getChildCareBusiness(iwc).removeFromQueue(application, iwc.getCurrentUser());
 				applications = findApplications(iwc);
 				form.setOnSubmit(createPagePhase1(iwc, layoutTbl, applications));
@@ -218,12 +218,12 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			case ACTION_DELETE_OFFER :
 				deleteOffer(iwc);
 				applications = findApplications(iwc);
-				iwc.removeSessionAttribute(DELETED_APPLICATIONS);
+				//iwc.removeSessionAttribute(DELETED_APPLICATIONS);
 				form.setOnSubmit(createPagePhase1(iwc, layoutTbl, applications));
 				break;
 				
 			default :
-				iwc.removeSessionAttribute(DELETED_APPLICATIONS);
+				//iwc.removeSessionAttribute(DELETED_APPLICATIONS);
 				form.setOnSubmit(createPagePhase1(iwc, layoutTbl, applications));
 
 		}
@@ -287,7 +287,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		}
 
 		//delete all removed application from session
-		iwc.removeSessionAttribute(DELETED_APPLICATIONS);
+		//iwc.removeSessionAttribute(DELETED_APPLICATIONS);
 	}
 
 	/**
@@ -367,7 +367,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				}
 				else if (status.isRejected()) {
 					getChildCareBusiness(iwc).rejectOffer(Integer.valueOf(status._appid).intValue(), application.getOwner());
-					addDeletedAppToSession(iwc, application);
+					deleteApplication(iwc, application);
 					getChildCareBusiness(iwc).sendMessageToProvider(
 						application,
 						subject,
@@ -402,9 +402,9 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				if (app.getChoiceNumber() > deleteFromChoice //TODO: This is probably not nessesary anymore (Roar)
 				|| (acceptedChoiceNumber == 2 && app.getChoiceNumber() == 1 && isAccepted(app))) {
 					childCarebusiness.removeFromQueue(app.getNodeID(), app.getOwner());
-					app.setApplicationStatus(childCarebusiness.getStatusCancelled());
-	
-					addDeletedAppToSession(iwc, app);
+					//app.setApplicationStatus(childCarebusiness.getStatusCancelled());
+					
+					deleteApplication(iwc, app);
 				}
 			}
 		}
@@ -440,23 +440,18 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		return application.getStatus().equals(STATUS_PREL) && application.getApplicationStatus() == childCarebusiness.getStatusParentsAccept();
 	}
 
-	/**
-	 * Add a deleted application to the session so that it will not be deleted from the screen until the session has ended.
-	 * @param iwc
-	 * @param application
-	 * @throws RemoteException
-	 */
-	private void addDeletedAppToSession(IWContext iwc, ChildCareApplication application) throws RemoteException {
-		Collection deletedApps = (Collection) iwc.getSessionAttribute(DELETED_APPLICATIONS);
+	private void deleteApplication(IWContext iwc, ChildCareApplication application) throws RemoteException {
+		/*Collection deletedApps = (Collection) iwc.getSessionAttribute(DELETED_APPLICATIONS);
 		if (deletedApps == null) {
 			deletedApps = new ArrayList();
 			iwc.setSessionAttribute(DELETED_APPLICATIONS, deletedApps);
-		}
+		}*/
 		//The application is given status TYST/Z, so that it will be rendered correctly (red font)
 		//		application.setMessage("Deleted!"); //Todo Roar for debugging only
 		application.setApplicationStatus(childCarebusiness.getStatusRejected());
 		application.setStatus(STATUS_TYST);
-		deletedApps.add(application);
+		application.store();
+		//deletedApps.add(application);
 	}
 
 	/**
