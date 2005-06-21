@@ -44,8 +44,6 @@ import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
-import com.idega.user.data.UserHome;
-import com.idega.util.Timer;
 
 /**
  * Title:        idegaWeb TravelBooking
@@ -87,7 +85,8 @@ public class InitialData extends TravelManager {
 	private static String parameterTPosProperties = "parTPosProp";
 	private static String parameterUsers = "parameterUsers";
 	public static String PARAMETER_SUPPLY_POOL= "pSupPool";
-	private static String PARAMETER_USER_ID = "uid";
+//	private static String PARAMETER_USER_ID = "uid";
+	private static String PARAMETER_SUPPLIER_ID_TO_LOG_IN = "p_sid_2lin";
 	private static String  parameterVoucher = "paraneterVoucher";
 	private String parameterResellerId = "contractResellerId";
 	private String parameterSettings = "parameterSettings";
@@ -108,8 +107,11 @@ public class InitialData extends TravelManager {
 	public void _main(IWContext iwc) throws Exception {
 		if (parameterChoose.equals(iwc.getParameter(this.sAction))) {
 			try {
-				UserHome uhome = (UserHome) IDOLookup.getHome(User.class);
-				User user = uhome.findByPrimaryKey(new Integer(iwc.getParameter(PARAMETER_USER_ID)));
+				SupplierHome sHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
+				Supplier supp = sHome.findByPrimaryKey(new Integer(iwc.getParameter(PARAMETER_SUPPLIER_ID_TO_LOG_IN)));
+				User user = getSupplierManagerBusiness(iwc).getMainUser(supp);
+//				UserHome uhome = (UserHome) IDOLookup.getHome(User.class);
+//				User user = uhome.findByPrimaryKey(new Integer(iwc.getParameter(PARAMETER_USER_ID)));
 		    TravelSessionManager tsm = (TravelSessionManager) IBOLookup.getSessionInstance(iwc, TravelSessionManager.class);
 		    tsm.clearAll();
 				LoginBusiness lBiz = new LoginBusiness();
@@ -405,10 +407,10 @@ public class InitialData extends TravelManager {
 		
 		Text suppText = (Text) theBoldText.clone();
 		suppText.setText(iwrb.getLocalizedString("travel.suppliers","Suppliers"));
-		Text suppLogin = (Text) theBoldText.clone();
-		suppLogin.setText(iwrb.getLocalizedString("travel.user_name","User name"));
-		Text suppPass = (Text) theBoldText.clone();
-		suppPass.setText(iwrb.getLocalizedString("travel.password","Password"));
+//		Text suppLogin = (Text) theBoldText.clone();
+//		suppLogin.setText(iwrb.getLocalizedString("travel.user_name","User name"));
+//		Text suppPass = (Text) theBoldText.clone();
+//		suppPass.setText(iwrb.getLocalizedString("travel.password","Password"));
 				
 		Text suppNameText;
 		Text suppLoginText;
@@ -420,14 +422,12 @@ public class InitialData extends TravelManager {
 		LoginTable logTable;
 		
 		table.add(suppText,1,row);
-		table.add(suppLogin,2,row);
-		//      table.add(Text.NON_BREAKING_SPACE, 3, row);
-		table.mergeCells(2,row,3,row);
-		table.add(Text.NON_BREAKING_SPACE, 4, row);
+//		table.add(suppLogin,2,row);
+//		//      table.add(Text.NON_BREAKING_SPACE, 3, row);
+//		table.mergeCells(2,row,3,row);
+		table.add(Text.NON_BREAKING_SPACE, 2, row);
 		table.setRowColor(row, super.backgroundColor);
 		
-		Timer t = new Timer();
-		t.start();
 		SupplierHome suppHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
 		Collection coll = null;
 		try {
@@ -436,8 +436,6 @@ public class InitialData extends TravelManager {
 		catch (FinderException e1) {
 			e1.printStackTrace();
 		} 
-		t.stop();
-		System.out.println("Time to getSupplier = "+t.getTimeString());
 		
 //		Supplier[] supps = com.idega.block.trade.stockroom.data.SupplierBMPBean.getValidSuppliers();
 		
@@ -455,16 +453,16 @@ public class InitialData extends TravelManager {
 				
 				link = (Link) editLink.clone();
 				link.addParameter(com.idega.block.trade.stockroom.data.SupplierBMPBean.getSupplierTableName(),supp.getID());
-				table.add(link,4,row);
-				table.add(Text.NON_BREAKING_SPACE,4,row);
+				table.add(link,2,row);
+				table.add(Text.NON_BREAKING_SPACE,2,row);
 				useLink = (Link) chooseLink.clone();
 				useLink.addParameter(com.idega.block.trade.stockroom.data.SupplierBMPBean.getSupplierTableName(),supp.getID());
-				table.add(useLink,4,row);
-				table.add(Text.NON_BREAKING_SPACE,4,row);
+				table.add(useLink,2,row);
+				table.add(Text.NON_BREAKING_SPACE,2,row);
 				link = (Link) deleteLink.clone();
 				link.addParameter(com.idega.block.trade.stockroom.data.SupplierBMPBean.getSupplierTableName(),supp.getID());
-				table.add(link,4,row);
-				table.setAlignment(4,row,"right");
+				table.add(link,2,row);
+				table.setAlignment(2,row,"right");
 				
 				table.setRowColor(row, theColor);
 				
@@ -474,36 +472,36 @@ public class InitialData extends TravelManager {
 				
 				table.add(suppNameText,1,row);
 				
-				
+				useLink.addParameter(PARAMETER_SUPPLIER_ID_TO_LOG_IN, supp.getPrimaryKey().toString());
 				//pGroup = SupplierManager.getPermissionGroup(supps[i]);
-				try { /** @todo Sko�a betur.......*/
-					//users = UserGroupBusiness.getUsersContained(pGroup);
-					user = getSupplierManagerBusiness(iwc).getMainUser(supp);
-					if (user != null) {
-						useLink.addParameter(PARAMETER_USER_ID, user.getPrimaryKey().toString());
-						//for (int j = 0; j < users.size(); j++) {
-						//if (j > 0) ++row;
-						
-						//table.setRowColor(row,super.backgroundColor);
-						
-						//user = (User) users.get(j);
-						logTable = LoginDBHandler.getUserLogin(user.getID());
-						suppLoginText = (Text) theText.clone();
-						suppLoginText.setText(logTable.getUserLogin());
-						suppLoginText.setFontColor(super.BLACK);
-						suppPassText = (Text) theText.clone();
-						suppPassText.setText(logTable.getUserPassword());
-						suppPassText.setFontColor(super.BLACK);
-						
-						table.add(suppLoginText,2,row);
-						table.mergeCells(2,row,3,row);
-						//}
-						
-					}
-				}catch (Exception e) {
-					e.printStackTrace(System.err);
-				}
-				
+//				try { /** @todo Sko�a betur.......*/
+//					//users = UserGroupBusiness.getUsersContained(pGroup);
+//					user = getSupplierManagerBusiness(iwc).getMainUser(supp);
+//					if (user != null) {
+//						useLink.addParameter(PARAMETER_USER_ID, user.getPrimaryKey().toString());
+//						//for (int j = 0; j < users.size(); j++) {
+//						//if (j > 0) ++row;
+//						
+//						//table.setRowColor(row,super.backgroundColor);
+//						
+//						//user = (User) users.get(j);
+//						logTable = LoginDBHandler.getUserLogin(user.getID());
+//						suppLoginText = (Text) theText.clone();
+//						suppLoginText.setText(logTable.getUserLogin());
+//						suppLoginText.setFontColor(super.BLACK);
+//						suppPassText = (Text) theText.clone();
+//						suppPassText.setText(logTable.getUserPassword());
+//						suppPassText.setFontColor(super.BLACK);
+//						
+//						table.add(suppLoginText,2,row);
+//						table.mergeCells(2,row,3,row);
+//						//}
+//						
+//					}
+//				}catch (Exception e) {
+//					e.printStackTrace(System.err);
+//				}
+//				
 				
 			}
 		}
