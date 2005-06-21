@@ -74,7 +74,7 @@ public abstract class TourSearch extends AbstractSearchForm {
 		SelectPanel tourTypes = new SelectPanel(PARAMETER_TOUR_TYPE_ID );
 		try {
 			tourTypes.setHeight("60");
-			Collection categories = getTourTypeHome().findByCategory(getTourCategory());
+			Collection categories = getTourTypeHome().findByCategoryUsedBySuppliers(getTourCategory(), engine.getSuppliers());
 			SelectorUtility su = new SelectorUtility();
 			tourTypes = (SelectPanel) su.getSelectorFromIDOEntities(tourTypes, categories, "getLocalizationKey", iwrb);
 

@@ -1,10 +1,18 @@
 package is.idega.idegaweb.travel.service.tour.data;
 
 import java.util.Collection;
-
 import javax.ejb.FinderException;
-
+import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOCompositePrimaryKeyException;
+import com.idega.data.IDORelationshipException;
+import com.idega.data.query.Column;
+import com.idega.data.query.InCriteria;
+import com.idega.data.query.JoinCriteria;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.Table;
 
 /**
  * @author gimmi
@@ -58,6 +66,32 @@ public class TourTypeBMPBean extends GenericEntity implements TourType {
 	
 	public Collection ejbFindAll() throws FinderException {
 		return idoFindAllIDsBySQL();
+	}
+	
+	public Collection ejbFindByCategoryUsedBySuppliers(String category, Collection suppliers) throws IDOCompositePrimaryKeyException, IDORelationshipException, FinderException {
+		Table tourType = new Table(this);
+		Table tour = new Table(Tour.class);
+		Table product = new Table(Product.class);
+		Table supplier = new Table(Supplier.class);
+	
+		Column prodCol = new Column(product, product.getEntityDefinition().getPrimaryKeyDefinition().getField().getSQLFieldName());
+		Column tourCol = new Column(tour, tour.getEntityDefinition().getPrimaryKeyDefinition().getField().getSQLFieldName());
+		Column suppCol = new Column(supplier, supplier.getEntityDefinition().getPrimaryKeyDefinition().getField().getSQLFieldName());
+		Column categoryCol = new Column(tourType, COLUMN_TOUR_CATEGORY);
+		JoinCriteria jc = new JoinCriteria(prodCol, tourCol);
+		Column pkCol = new Column(tourType, getIDColumnName());
+		pkCol.setAsDistinct();
+		
+		SelectQuery query = new SelectQuery(tourType);
+		query.addColumn(pkCol);
+		
+		query.addJoin(tourType, tour);
+		query.addCriteria(jc);
+		query.addJoin(product, supplier);
+		query.addCriteria(new MatchCriteria(categoryCol, MatchCriteria.EQUALS, category));
+		query.addCriteria(new InCriteria(suppCol, suppliers));
+
+		return idoFindPKsByQuery(query);	
 	}
 	
 }
