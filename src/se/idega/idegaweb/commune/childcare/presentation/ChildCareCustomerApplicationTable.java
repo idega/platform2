@@ -41,7 +41,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.102 2005/06/21 10:45:57 laddi Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.103 2005/06/21 10:46:49 laddi Exp $
  * @since 12.2.2003 
  */
 
@@ -201,7 +201,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				//				application.setApplicationStatus(childCarebusiness.getStatusRejected());
 				//				application.setStatus(STATUS_TYST);
 
-				deleteApplication(iwc, application);
+				deleteApplication(application);
 				getChildCareBusiness(iwc).removeFromQueue(application, iwc.getCurrentUser());
 				applications = findApplications(iwc);
 				form.setOnSubmit(createPagePhase1(iwc, layoutTbl, applications));
@@ -367,7 +367,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				}
 				else if (status.isRejected()) {
 					getChildCareBusiness(iwc).rejectOffer(Integer.valueOf(status._appid).intValue(), application.getOwner());
-					deleteApplication(iwc, application);
+					deleteApplication(application);
 					getChildCareBusiness(iwc).sendMessageToProvider(
 						application,
 						subject,
@@ -404,7 +404,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 					childCarebusiness.removeFromQueue(app.getNodeID(), app.getOwner());
 					//app.setApplicationStatus(childCarebusiness.getStatusCancelled());
 					
-					deleteApplication(iwc, app);
+					deleteApplication(app);
 				}
 			}
 		}
@@ -440,7 +440,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		return application.getStatus().equals(STATUS_PREL) && application.getApplicationStatus() == childCarebusiness.getStatusParentsAccept();
 	}
 
-	private void deleteApplication(IWContext iwc, ChildCareApplication application) throws RemoteException {
+	private void deleteApplication(ChildCareApplication application) throws RemoteException {
 		/*Collection deletedApps = (Collection) iwc.getSessionAttribute(DELETED_APPLICATIONS);
 		if (deletedApps == null) {
 			deletedApps = new ArrayList();
