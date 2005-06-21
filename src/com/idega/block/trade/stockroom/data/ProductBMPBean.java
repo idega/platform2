@@ -739,7 +739,11 @@ public class ProductBMPBean extends GenericEntity implements Product, IDOLegacyE
 
 
     StringBuffer timeframeSQL = new StringBuffer();
-      timeframeSQL.append("SELECT distinct "+Ptable+".* FROM "+Ptable);
+      timeframeSQL.append("SELECT distinct "+Ptable+".*");
+      if (orderString != null) {
+    	  timeframeSQL.append(", ").append(orderString);
+      }
+      timeframeSQL.append(" FROM "+Ptable);
       if (from != null && to != null && useTimeframes) {
         timeframeSQL.append(", "+Ttable+", "+middleTable);
       }
