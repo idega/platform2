@@ -81,7 +81,7 @@ import com.idega.util.SendMail;
  */
 public abstract class AbstractSearchForm extends TravelBlock {
 
-	private boolean debug = false;
+	private boolean debug = true;
 	
 	public static String ACTION = "bsf_a";
 	protected static String PREV_ACTION = "bsf_pa";
@@ -177,6 +177,7 @@ public abstract class AbstractSearchForm extends TravelBlock {
 	
 	protected Product definedProduct;
 	private boolean isAlwaysSearchForm = false;
+	private boolean allowDefinedProduct = true;
 	protected ICPage targetPage = null;
 	
 	private List errorFields = null;
@@ -1842,7 +1843,7 @@ public abstract class AbstractSearchForm extends TravelBlock {
 	}
 	
 	protected boolean hasDefinedProduct() throws RemoteException {
-		return (getSession(iwc).getState() == this.STATE_DEFINED_PRODUCT && definedProduct != null);
+		return (allowDefinedProduct && getSession(iwc).getState() == this.STATE_DEFINED_PRODUCT && definedProduct != null);
 	}
 
 	protected DropdownMenu getDropdownWithNumbers(String name, int startNumber, int endNumber) {
@@ -1857,6 +1858,10 @@ public abstract class AbstractSearchForm extends TravelBlock {
 
 	public void setServiceSearchEngine(ServiceSearchEngine engine) {
 		this.engine = engine;
+	}
+
+	public void setAllowDefinedProducts(boolean allow) {
+		this.allowDefinedProduct = allow;
 	}
 	
 	public void setResultsPerPage(int resultsPerPage) {

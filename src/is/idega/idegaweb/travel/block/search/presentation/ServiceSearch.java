@@ -71,6 +71,7 @@ public class ServiceSearch extends TravelBlock {
 	private boolean horizontal = false;
 	private boolean showContactInformation = true;
 	private String defaultValues = null;
+	private boolean allowDefinedProduct = true;
 
 	public ServiceSearch() {
 		super();
@@ -170,6 +171,7 @@ public class ServiceSearch extends TravelBlock {
 				ss.setResultsPerPage(resultsPerPage);
 			}
 			ss.setHorizontal(horizontal);
+			ss.setAllowDefinedProducts(allowDefinedProduct);
 			ss.setShowContactInformation(showContactInformation);
 			ss.setDefaultValues(defaultValues);
 			ss.setServiceSearchEngine(((ServiceSearchEngineHome) IDOLookup.getHome(ServiceSearchEngine.class)).findByPrimaryKey(new Integer(engineID)));
@@ -287,6 +289,10 @@ public class ServiceSearch extends TravelBlock {
 	 */
 	public void setDefaultValues(String defaultValues) {
 		this.defaultValues = defaultValues;
+	}
+	
+	public void setAllowDefinedProducts(boolean allow) {
+		this.allowDefinedProduct = allow;
 	}
 
 	/**
