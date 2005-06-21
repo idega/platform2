@@ -201,13 +201,13 @@ public class HandicapFindMember extends GolfWindow {
 					case 0:
 						break;
 					case 1:
-						SQLString = "Select distinct * from member, union_member_info where member.member_id = union_member_info.member_id AND first_name like '%" + firstName + "%'";
+						SQLString = "Select distinct * from member, union_member_info where member.member_id = union_member_info.member_id AND first_name like '" + firstName + "%'";
 						break;
 					case 2:
-						SQLString = "Select distinct * from member, union_member_info where member.member_id = union_member_info.member_id AND first_name like '%" + firstName + "%' and (last_name like '%" + lastName + "%' OR middle_name like '%" + lastName + "%')";
+						SQLString = "Select distinct * from member, union_member_info where member.member_id = union_member_info.member_id AND first_name like '" + firstName + "%' and (last_name like '" + lastName + "%' OR middle_name like '" + lastName + "%')";
 						break;
 					default:
-						SQLString = "Select distinct * from member, union_member_info where member.member_id = union_member_info.member_id AND first_name like '%" + firstName + "%' and middle_name like '%" + middleName + "%' and last_name like '%" + lastName + "%'";
+						SQLString = "Select distinct * from member, union_member_info where member.member_id = union_member_info.member_id AND first_name like '" + firstName + "%' and middle_name like '" + middleName + "%' and last_name like '" + lastName + "%'";
 						break;
 				}
 
