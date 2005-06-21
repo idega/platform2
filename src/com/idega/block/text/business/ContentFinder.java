@@ -34,7 +34,7 @@ public class ContentFinder {
     if(content!=null){
       CH.setContent( content);
       CH.setLocalizedText( listOfLocalizedText(iContentId));
-      CH.setFiles(listOfContentFiles(iContentId));
+      CH.setFiles(listOfContentFiles(iContentId, null));
       return CH;
     }
     else
@@ -51,7 +51,7 @@ public class ContentFinder {
     if(content!=null){
       CH.setContent(content);
       CH.setLocalizedText(getLocalizedText(iContentId,newLocaleID, datasource));
-      CH.setFiles(listOfContentFiles(iContentId));
+      CH.setFiles(listOfContentFiles(iContentId, datasource));
       return CH;
     }
     else{
@@ -96,7 +96,7 @@ public class ContentFinder {
     if(content!=null){
       CH.setContent(content);
       CH.setLocalizedText(getLocalizedText(iContentId,locale, null));
-      CH.setFiles(listOfContentFiles(iContentId));
+      CH.setFiles(listOfContentFiles(iContentId, null));
       return CH;
     }
     else
@@ -205,13 +205,22 @@ public class ContentFinder {
     return getLocalizedText(iContentId,Lid, datasource);
   }
 
-  public static List listOfContentFiles(int id){
+  public static List listOfContentFiles(int id, String datasource){
     try {
-      return listOfContentFiles(((com.idega.block.text.data.ContentHome)com.idega.data.IDOLookup.getHomeLegacy(Content.class)).findByPrimaryKeyLegacy(id));
+    	ContentHome cHome = null;
+    	if (datasource == null) {
+    		cHome = (ContentHome) IDOLookup.getHome(Content.class);
+    	} else {
+    		cHome = (ContentHome) IDOLookup.getHome(Content.class, datasource);
+    	}
+      return listOfContentFiles(cHome.findByPrimaryKeyLegacy(id));
     }
     catch (SQLException ex) {
 
     }
+	catch (IDOLookupException e) {
+		e.printStackTrace();
+	}
     return null;
   }
 
