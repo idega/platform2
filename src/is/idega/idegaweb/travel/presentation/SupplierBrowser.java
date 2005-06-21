@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowser.java,v 1.9 2005/06/20 17:08:08 gimmi Exp $
+ * $Id: SupplierBrowser.java,v 1.10 2005/06/21 12:26:41 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -22,6 +22,9 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
+import com.idega.block.text.business.ContentFinder;
+import com.idega.block.text.business.ContentHelper;
+import com.idega.block.text.data.TxText;
 import com.idega.block.trade.stockroom.business.ProductPriceException;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductHome;
@@ -498,6 +501,7 @@ public class SupplierBrowser extends TravelBlock {
 					image.setStyleClass(imageStyleClass);
 					image.setDatasource(product.getDatasource());
 				}
+				image.setMaxImageWidth(Integer.parseInt(imageWidth));
 			}
 		} catch (SQLException sql) {
 			sql.printStackTrace();
@@ -507,14 +511,26 @@ public class SupplierBrowser extends TravelBlock {
 			table.add(image, 1, row);
 		}
 		table.setHeight(2, row, "10");
+		table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
 		table.setVerticalAlignment(2, row, Table.VERTICAL_ALIGN_TOP);
 		table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_LEFT);
 		table.add(getText(product.getProductName(localeID), headerStyleClass), 2, row++);
-		table.add(getText(product.getProductDescription(localeID)), 2, row);
+		try {
+			TxText descriptionText;
+			descriptionText = product.getText();
+			if (descriptionText != null) {
+				ContentHelper ch = null;
+				ch = ContentFinder.getContentHelper(descriptionText.getContentId(), localeID, product.getDatasource());
+				table.add(getText(ch.getLocalizedText().getBody()), 2, row);
+			}
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
 		table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_LEFT);
 		table.setVerticalAlignment(2, row, Table.VERTICAL_ALIGN_TOP);
 		if (addDetailLink && plugin.isProductSearchCompleted(iwc)) {
-			Link details = getLink(getResourceBundle().getLocalizedString("travel.details", "Details"));
+			Link details = getLink(getResourceBundle().getLocalizedString("travel.book", "Book"));
 			details.addParameter(ACTION, ACTION_VIEW_DETAILS);
 			details.addParameter(PARAMETER_PRODUCT_ID, product.getPrimaryKey().toString());
 			addParametersToLink(iwc, details);
