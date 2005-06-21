@@ -1,5 +1,5 @@
 /*
- * $Id: SpecialConnectionUpdateThread.java,v 1.4 2005/06/02 12:45:56 palli Exp $
+ * $Id: SpecialConnectionUpdateThread.java,v 1.5 2005/06/21 22:49:57 palli Exp $
  * Created on Jan 4, 2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -32,10 +32,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- * Last modified: $Date: 2005/06/02 12:45:56 $ by $Author: palli $
+ * Last modified: $Date: 2005/06/21 22:49:57 $ by $Author: palli $
  * 
  * @author <a href="mailto:palli@idega.com">palli </a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class SpecialConnectionUpdateThread extends Thread {
 
@@ -348,6 +348,8 @@ public class SpecialConnectionUpdateThread extends Thread {
 						while (currMetaIt.hasNext()) {
 							divGroup.removeMetaData((String) currMetaIt.next());
 						}
+						
+						divGroup.store();
 					}
 					divGroup.setMetaDataAttributes(metadata);
 					divGroup.store();
