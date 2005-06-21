@@ -168,6 +168,9 @@ public class ContentHelper{
 
   }
 
+  public boolean hasFiles() {
+	  return icFiles != null && !icFiles.isEmpty();
+  }
 
 
 }
