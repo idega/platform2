@@ -3,15 +3,19 @@ package is.idega.idegaweb.travel.presentation;
 import is.idega.idegaweb.travel.service.presentation.InitialDataObject;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 import com.idega.block.trade.stockroom.data.Reseller;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginTable;
-import com.idega.core.data.GenericGroup;
+import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -25,6 +29,7 @@ import com.idega.presentation.ui.PasswordInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.UserBusiness;
+import com.idega.user.data.Group;
 import com.idega.user.data.User;
 /**
  * Title:        idegaWeb TravelBooking
@@ -116,6 +121,7 @@ public class Users extends TravelManager implements InitialDataObject {
       table.setWidth("50%");
 
     List users = null;
+    List lStaff = null;
     if (_reseller != null) {
     	try {
     		users = getResellerManager(iwc).getUsersInPermissionGroup(_reseller);
@@ -126,6 +132,7 @@ public class Users extends TravelManager implements InitialDataObject {
     if (_supplier != null) {
     	try {
     		users = getSupplierManagerBusiness(iwc).getUsersInPermissionGroup(_supplier);
+    		lStaff = getSupplierManagerBusiness(iwc).getUsersNotInPermissionGroup(_supplier);
     	} catch (FinderException f) {
     		
     	}
@@ -189,10 +196,10 @@ public class Users extends TravelManager implements InitialDataObject {
     table.add(staff, 1, row);
     table.setRowColor(row, super.GRAY);
 
-    for (int i = 0; i < users.size(); i++) {
+    for (int i = 0; i < lStaff.size(); i++) {
       ++row;
       table.setRowColor(row, super.GRAY);
-      user = (User) users.get(i);
+      user = (User) lStaff.get(i);
 
       table.add(getText(user.getName()), 1, row);
       if (isInPermissionGroup) {
@@ -380,7 +387,7 @@ public class Users extends TravelManager implements InitialDataObject {
               LoginDBHandler.updateLogin(user.getID(), login, passOne);
             }
           }
-          removeUserFromAllGroups(user);
+          removeUserFromAllGroups(iwc, user);
         }
 
 
@@ -454,9 +461,9 @@ public class Users extends TravelManager implements InitialDataObject {
     try {
       User user = ((com.idega.user.data.UserHome)com.idega.data.IDOLookup.getHome(User.class)).findByPrimaryKey( new Integer(userId));
       com.idega.core.accesscontrol.business.LoginDBHandler.deleteUserLogin(user.getID());
-      removeUserFromAllGroups(user);
+      removeUserFromAllGroups(iwc, user);
       add(getText(_iwrb.getLocalizedString("travel.operation_successful","Operation successful")));
-    }catch (SQLException sql) {
+    }catch (RemoveException sql) {
       sql.printStackTrace(System.err);
       add(getText(_iwrb.getLocalizedString("travel.operation_failed","Operation failed")));
     }
@@ -472,16 +479,29 @@ public class Users extends TravelManager implements InitialDataObject {
 			e.printStackTrace();
       add(getText(_iwrb.getLocalizedString("travel.operation_failed","Operation failed")));
 		}
+	catch (SQLException e) {
+		e.printStackTrace();
+	      add(getText(_iwrb.getLocalizedString("travel.operation_failed","Operation failed")));
+		}
     return getUserList(iwc);
   }
 
-  public static void removeUserFromAllGroups(User user) throws SQLException{
-    List groups = com.idega.core.user.business.UserBusiness.getUserGroups(user);
+  public static void removeUserFromAllGroups(IWContext iwc, User user) throws FinderException, RemoteException, RemoveException{
+	UserBusiness ubis = null;
+	try {
+		ubis = (UserBusiness) IDOLookup.getServiceInstance(iwc, UserBusiness.class);
+	}
+	catch (IBOLookupException e) {
+		e.printStackTrace();
+	}
+	Collection groups = ubis.getUserGroups(user);
+	User currUser = iwc.getCurrentUser();
     if (groups != null) {
-      GenericGroup group;
-      for (int i = 0; i < groups.size(); i++) {
-        group = (GenericGroup) groups.get(i);
-        group.removeUser(user);
+      Group group;
+      Iterator iter = groups.iterator();
+      while (iter.hasNext()) {
+        group = (Group) iter.next();
+        group.removeGroup(user, currUser);
       }
     }
   }
