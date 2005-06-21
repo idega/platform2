@@ -41,7 +41,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.103 2005/06/21 10:46:49 laddi Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.104 2005/06/21 11:06:06 anna Exp $
  * @since 12.2.2003 
  */
 
@@ -814,8 +814,11 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				if (child != null)
 					objChildId = child.getPrimaryKey();
 				
-				if(objChildId != null)
-				    return ((Integer) (objChildId)).intValue();
+				if(objChildId != null) {
+					int childId = ((Integer) (objChildId)).intValue();
+					iwc.setSessionAttribute(CHILD_ID, String.valueOf(childId));
+					return childId;
+				}
 				else
 				    return -1;
 				
