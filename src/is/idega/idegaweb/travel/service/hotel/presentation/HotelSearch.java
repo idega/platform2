@@ -170,7 +170,8 @@ public class HotelSearch extends AbstractSearchForm {
 		Collection hotelTypes = new Vector();
 		try {
 			HotelTypeHome trh = (HotelTypeHome) IDOLookup.getHome(HotelType.class);
-			hotelTypes = trh.findAll();
+			hotelTypes = trh.findAllUsedBySuppliers(engine.getSuppliers());
+//			hotelTypes = trh.findAll();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -184,7 +185,8 @@ public class HotelSearch extends AbstractSearchForm {
 		Collection roomTypes = new Vector();
 		try {
 			RoomTypeHome trh = (RoomTypeHome) IDOLookup.getHome(RoomType.class);
-			roomTypes = trh.findAll();
+			roomTypes = trh.findAllUsedBySuppliers(engine.getSuppliers());
+//			roomTypes = trh.findAll();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
