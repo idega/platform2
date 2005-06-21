@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowser.java,v 1.10 2005/06/21 12:26:41 gimmi Exp $
+ * $Id: SupplierBrowser.java,v 1.11 2005/06/21 13:59:57 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -464,6 +464,7 @@ public class SupplierBrowser extends TravelBlock {
 			table.setWidth(width);
 		}
 		table.setColumnWidth(1, imageWidth);
+		table.setCellpaddingAndCellspacing(0);
 //		table.setBorder(1);
 		int row = 1;
 
@@ -482,6 +483,10 @@ public class SupplierBrowser extends TravelBlock {
 			while (iter.hasNext()) {
 				product = (Product) iter.next();
 				row = addProductInfo(iwc, table, row, localeID, product, true);
+				row++;
+				table.setHeight(row, 1);
+				table.setRowStyleClass(row, "sbrowser_background_line");
+				row++;
 			}
 		} else {
 			table.add(getText(getResourceBundle().getLocalizedString("travel.no_available_products_found", "No available products found"), headerStyleClass), 1, row++);
@@ -510,6 +515,9 @@ public class SupplierBrowser extends TravelBlock {
 		if (image != null) {
 			table.add(image, 1, row);
 		}
+		table.setCellpadding(1, row, 2);
+		table.setCellpadding(2, row, 2);
+		table.setCellpadding(3, row, 2);
 		table.setHeight(2, row, "10");
 		table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
 		table.setVerticalAlignment(2, row, Table.VERTICAL_ALIGN_TOP);
@@ -521,6 +529,7 @@ public class SupplierBrowser extends TravelBlock {
 			if (descriptionText != null) {
 				ContentHelper ch = null;
 				ch = ContentFinder.getContentHelper(descriptionText.getContentId(), localeID, product.getDatasource());
+				table.setCellpadding(2, row, 2);
 				table.add(getText(ch.getLocalizedText().getBody()), 2, row);
 			}
 		}
@@ -550,6 +559,7 @@ public class SupplierBrowser extends TravelBlock {
 		if (width != null) {
 			table.setWidth(width);
 		}
+		table.setCellpaddingAndCellspacing(0);
 		table.setColumnWidth(1, imageWidth);
 		
 		int row = 1;
@@ -599,6 +609,11 @@ public class SupplierBrowser extends TravelBlock {
 				table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_LEFT);
 				table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
 //				table.setVerticalAlignment(4, row, Table.VERTICAL_ALIGN_TOP);
+				
+				table.setRowPadding(row, 2);
+				row++;
+				table.setHeight(row, 1);
+				table.setRowStyleClass(row, "sbrowser_background_line");
 				row++;
 			}
 			
