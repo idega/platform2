@@ -1,5 +1,5 @@
 /*
- *  $Id: TPosClient.java,v 1.11 2005/06/15 16:34:15 gimmi Exp $
+ *  $Id: TPosClient.java,v 1.12 2005/06/21 13:10:40 gimmi Exp $
  *
  *  Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -394,7 +394,7 @@ public class TPosClient implements CreditCardClient{
       
       TPosAuthorisationEntriesBean entry;
       try {
-    	  TPosAuthorisationEntriesBeanHome home = (TPosAuthorisationEntriesBeanHome) IDOLookup.getHome(TPosAuthorisationEntriesBeanHome.class);
+    	  TPosAuthorisationEntriesBeanHome home = (TPosAuthorisationEntriesBeanHome) IDOLookup.getHome(TPosAuthorisationEntriesBean.class);
     	  entry = home.create();
 //  	    	entry = TPosAuthorisationEntriesHome.getInstance().getNewElement();
   	//    entry.setAttachmentCount(_client.getProperty(TPOS3Client.pn));
