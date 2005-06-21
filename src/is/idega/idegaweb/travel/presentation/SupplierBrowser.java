@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowser.java,v 1.12 2005/06/21 16:57:42 gimmi Exp $
+ * $Id: SupplierBrowser.java,v 1.13 2005/06/21 17:48:47 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -57,7 +57,6 @@ import com.idega.presentation.ui.InterfaceObject;
 import com.idega.presentation.ui.ResultOutput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.Window;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
 import com.idega.util.IWTimestamp;
@@ -535,8 +534,9 @@ public class SupplierBrowser extends TravelBlock {
 				table.setVerticalAlignment(2, row, Table.VERTICAL_ALIGN_TOP);
 				table.add(getText(ch.getLocalizedText().getBody()), 2, row);
 				if (ch.hasFiles()) {
-					Window w = new Window(ch.getFiles());
-					images = new Link(getText(getResourceBundle().getLocalizedString("travel.images", "Images"), linkStyleClass), w);
+					images = new Link(getText(getResourceBundle().getLocalizedString("travel.images", "Images"), linkStyleClass));
+					images.setWindowToOpen(ProductImageSlideShowWindow.class);
+					images.addParameter(ProductImageSlideShowWindow.PARAMETER_PRODUCT_ID, product.getPrimaryKey().toString());
 				}
 			}
 		}
