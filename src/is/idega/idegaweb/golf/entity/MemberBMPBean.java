@@ -53,7 +53,7 @@ public class MemberBMPBean extends GenericEntity implements Member {
     addManyToManyRelationShip(is.idega.idegaweb.golf.entity.Union.class,"union_member");
 
     addIndex("IDX_MEMBER_1", getSocialSecurityNumberColumnName());
-    addIndex("IDX_MEMBER_2", new String[]{getPrimaryKey().toString(), getFirstName()});
+    addIndex("IDX_MEMBER_2", new String[]{getIDColumnName(), getFirstName()});
     addIndex("IDX_MEMBER_3", new String[]{getFirstName(), getMiddleName(), getLastName()});
     addIndex("IDX_MEMBER_4", COLUMNNAME_IC_USER_ID);
     addIndex("IDX_MEMBER_5", COLUMNNAME_UNIQUE_ID);
