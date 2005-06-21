@@ -451,7 +451,7 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
 
       ++row;
       Text maxPerUnitText = ( Text ) theBoldText.clone();
-      maxPerUnitText.setText( _iwrb.getLocalizedString( "travel.maximum_passegers_per_room", "Maximum passengers per room" ) );
+      maxPerUnitText.setText( _iwrb.getLocalizedString( "travel.maximum_guests_per_room", "Maximum guests per room" ) );
       table.add( maxPerUnitText, 1, row );
       table.add( maxPerUnit, 2, row );
 
