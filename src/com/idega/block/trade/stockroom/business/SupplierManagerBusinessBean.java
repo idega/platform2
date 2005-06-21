@@ -707,7 +707,8 @@ public class SupplierManagerBusinessBean extends IBOServiceBean  implements Supp
 		if (supplier.getGroupId() == -1) {
 			return null;
 		}
-		Group group = getGroupBusiness().getGroupHome().findByPrimaryKey(new Integer(supplier.getGroupId()));
+		//Group group = getGroupBusiness().getGroupHome().findByPrimaryKey(new Integer(supplier.getGroupId()));
+		Group group = getPermissionGroup(supplier);
 		Collection coll = getUserBusiness().getUsersInGroup(group);
 		List users = new Vector(coll);
 		//List users = UserGroupBusiness.getUsersContained(((com.idega.core.data.GenericGroupHome)com.idega.data.IDOLookup.getHomeLegacy(GenericGroup.class)).findByPrimaryKeyLegacy(supplier.getGroupId()));
