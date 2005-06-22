@@ -285,6 +285,13 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		try {
 			user = getUserBiz().getUser(userID);
 			int age = getUserAge(user);
+			Group runGroup = null;
+			try {
+				runGroup = getGroupBiz().getGroupByGroupID(Integer.parseInt(run));
+			}
+			catch (FinderException fe) {
+				fe.printStackTrace();
+			}
 			if (distance != null && !distance.equals("")) {
 				int disGroupID = Integer.parseInt(distance);
 				
@@ -332,9 +339,9 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 			}
 			if (distanceType != null) {
 				try {
-					int participantNumber = runHome.getNextAvailableParticipantNumber(distance, getMinParticipantNumber(distanceType), getMaxParticipantNumber(distanceType));
+					int participantNumber = runHome.getNextAvailableParticipantNumber(distance, getMinParticipantNumber(distanceType, runGroup.getName()), getMaxParticipantNumber(distanceType, runGroup.getName()));
 					if (participantNumber == 0) {
-						participantNumber = getMinParticipantNumber(distanceType);
+						participantNumber = getMinParticipantNumber(distanceType, runGroup.getName());
 					}
 					else {
 						participantNumber++;
@@ -408,9 +415,9 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 					participant.setUserNationality(runner.getNationality().getName());
 					if (runner.getDistance() != null) {
 						try {
-							int participantNumber = runHome.getNextAvailableParticipantNumber(runner.getDistance().getPrimaryKey(), getMinParticipantNumber(runner.getDistance().getName()), getMaxParticipantNumber(runner.getDistance().getName()));
+							int participantNumber = runHome.getNextAvailableParticipantNumber(runner.getDistance().getPrimaryKey(), getMinParticipantNumber(runner.getDistance().getName(), runner.getRun().getName()), getMaxParticipantNumber(runner.getDistance().getName(), runner.getRun().getName()));
 							if (participantNumber == 0) {
-								participantNumber = getMinParticipantNumber(runner.getDistance().getName());
+								participantNumber = getMinParticipantNumber(runner.getDistance().getName(), runner.getRun().getName());
 							}
 							else {
 								participantNumber++;
@@ -863,11 +870,10 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		return new ArrayList();
 	}
 	
-	public void setParticipantNumber(Participant participant) {
+	public void setParticipantNumber(Participant participant, String run) {
 		try {
 			ParticipantHome runHome = (ParticipantHome) getIDOHome(Participant.class);
 
-			
 			int groupID = participant.getRunDistanceGroupID();
 			Group group = null;
 			try {
@@ -877,9 +883,9 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 				e.printStackTrace();
 			}
 			if(group!=null) {
-				int participantNumber = runHome.getNextAvailableParticipantNumber(group.getPrimaryKey(), getMinParticipantNumber(group.getName()), getMaxParticipantNumber(group.getName()));
+				int participantNumber = runHome.getNextAvailableParticipantNumber(group.getPrimaryKey(), getMinParticipantNumber(group.getName(), run), getMaxParticipantNumber(group.getName(), run));
 				if (participantNumber == 0) {
-					participantNumber = getMinParticipantNumber(group.getName());
+					participantNumber = getMinParticipantNumber(group.getName(), run);
 				}
 				else {
 					participantNumber++;
@@ -1402,7 +1408,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		return business;
 	}
 
-	private int getMaxParticipantNumber(String distanceType) {
+	private int getMaxParticipantNumber(String distanceType, String run) {
 		if (distanceType.equals(IWMarathonConstants.DISTANCE_55) || distanceType.equals(IWMarathonConstants.DISTANCE_55_WITH_BUS)) {
 			return IWMarathonConstants.MAX_NUMBER_DISTANCE_55;
 		}
@@ -1419,10 +1425,20 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 			return IWMarathonConstants.MAX_NUMBER_DISTANCE_CHARITY_21;
 		}
 		else if (distanceType.equals(IWMarathonConstants.DISTANCE_10)) {
-			return IWMarathonConstants.MAX_NUMBER_DISTANCE_10;
+			if (run.equals("Midnight Run")) {
+				return IWMarathonConstants.MAX_NUMBER_DISTANCE_MIDNIGHT_10;
+			}
+			else {
+				return IWMarathonConstants.MAX_NUMBER_DISTANCE_10;
+			}
 		}
 		else if (distanceType.equals(IWMarathonConstants.DISTANCE_5)) {
-			return IWMarathonConstants.MAX_NUMBER_DISTANCE_5;
+			if (run.equals("Midnight Run")) {
+				return IWMarathonConstants.MAX_NUMBER_DISTANCE_MIDNIGHT_5;
+			}
+			else {
+				return IWMarathonConstants.MAX_NUMBER_DISTANCE_5;
+			}
 		}
 		else if (distanceType.equals(IWMarathonConstants.DISTANCE_3)) {
 			return IWMarathonConstants.MAX_NUMBER_DISTANCE_3;
@@ -1430,7 +1446,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		return 0;
 	}
 
-	private int getMinParticipantNumber(String distanceType) {
+	private int getMinParticipantNumber(String distanceType, String run) {
 		if (distanceType.equals(IWMarathonConstants.DISTANCE_55) || distanceType.equals(IWMarathonConstants.DISTANCE_55_WITH_BUS)) {
 			return IWMarathonConstants.MIN_NUMBER_DISTANCE_55;
 		}
@@ -1447,10 +1463,20 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 			return IWMarathonConstants.MIN_NUMBER_DISTANCE_CHARITY_21;
 		}
 		else if (distanceType.equals(IWMarathonConstants.DISTANCE_10)) {
-			return IWMarathonConstants.MIN_NUMBER_DISTANCE_10;
+			if (run.equals("Midnight Run")) {
+				return IWMarathonConstants.MIN_NUMBER_DISTANCE_MIDNIGHT_10;
+			}
+			else {
+				return IWMarathonConstants.MIN_NUMBER_DISTANCE_10;
+			}
 		}
 		else if (distanceType.equals(IWMarathonConstants.DISTANCE_5)) {
-			return IWMarathonConstants.MIN_NUMBER_DISTANCE_5;
+			if (run.equals("Midnight Run")) {
+				return IWMarathonConstants.MIN_NUMBER_DISTANCE_MIDNIGHT_5;
+			}
+			else {
+				return IWMarathonConstants.MIN_NUMBER_DISTANCE_5;
+			}
 		}
 		else if (distanceType.equals(IWMarathonConstants.DISTANCE_3)) {
 			return IWMarathonConstants.MIN_NUMBER_DISTANCE_3;

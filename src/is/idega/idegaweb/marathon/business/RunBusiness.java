@@ -1,6 +1,6 @@
 /*
- * $Id: RunBusiness.java,v 1.22 2005/05/31 19:04:35 laddi Exp $
- * Created on May 31, 2005
+ * $Id: RunBusiness.java,v 1.23 2005/06/22 07:33:24 laddi Exp $
+ * Created on Jun 22, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -26,10 +26,10 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2005/05/31 19:04:35 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/22 07:33:24 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.22 $
+ * @version $Revision: 1.23 $
  */
 public interface RunBusiness extends IBOService {
 
@@ -159,7 +159,7 @@ public interface RunBusiness extends IBOService {
 	/**
 	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#setParticipantNumber
 	 */
-	public void setParticipantNumber(Participant participant) throws java.rmi.RemoteException;
+	public void setParticipantNumber(Participant participant, String run) throws java.rmi.RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#sendMessage
@@ -194,9 +194,19 @@ public interface RunBusiness extends IBOService {
 	public Collection getYears(Group run) throws java.rmi.RemoteException;
 
 	/**
+	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#getYears
+	 */
+	public Collection getYears(Group run, String yearFilter) throws java.rmi.RemoteException;
+
+	/**
 	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#getYearsMap
 	 */
 	public Map getYearsMap(Group run) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#getYearsMap
+	 */
+	public Map getYearsMap(Group run, String groupNameFilter) throws java.rmi.RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#getDistancesMap

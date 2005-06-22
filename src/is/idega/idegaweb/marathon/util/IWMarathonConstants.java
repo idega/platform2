@@ -155,6 +155,10 @@ public class IWMarathonConstants {
   public static final int MIN_NUMBER_DISTANCE_5 = 1;
   public static final int MAX_NUMBER_DISTANCE_3 = 7000;
   public static final int MIN_NUMBER_DISTANCE_3 = 3000;
+  public static final int MAX_NUMBER_DISTANCE_MIDNIGHT_10 = 1000;
+  public static final int MIN_NUMBER_DISTANCE_MIDNIGHT_10 = 500;
+  public static final int MAX_NUMBER_DISTANCE_MIDNIGHT_5 = 499;
+  public static final int MIN_NUMBER_DISTANCE_MIDNIGHT_5 = 1;
   
   public static final String PROPERTY_SEND_EMAILS = "send_emails";
 }
