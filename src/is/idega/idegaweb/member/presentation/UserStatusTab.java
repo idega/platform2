@@ -277,7 +277,7 @@ public class UserStatusTab extends UserTab {
 		try {
 			String status = (String)fieldValues.get(_statusFieldName);
 			System.out.println("Store: status = " + status);
-			if (status != null) {
+			if (status != null && !"".equals(status)) {
 				int user_id = this.getUserId();
 				int group_id = this.getGroupID();
 				int status_id = Integer.parseInt(status);
