@@ -74,9 +74,9 @@ and app.status = 'C'
 	public static String getColumnNumber() {
 		return "NUMBER";
 	}
-	public static String getColumnEmail() {
-		return "EMAIL";
-	}
+//	public static String getColumnEmail() {
+//		return "EMAIL";
+//	}
 	public HabitantBMPBean() {
 	}
 	public HabitantBMPBean(int id) throws SQLException {
@@ -91,7 +91,7 @@ and app.status = 'C'
 		addAttribute(getColumnApartment(), "Apartment", true, true, String.class);
 		addAttribute(getColumnFloor(), "Floor", true, true, String.class);
 		addAttribute(getColumnNumber(), "Phone number", true, true, String.class);		
-		addAttribute(getColumnEmail(), "Email", true, true, String.class);
+//		addAttribute(getColumnEmail(), "Email", true, true, String.class);
 		setAsPrimaryKey(getColumnApplicantId(),true);
 	}
 	public String getEntityName() {
@@ -121,9 +121,9 @@ and app.status = 'C'
 	public String getPhoneNumber() {
 		return getStringColumnValue(getColumnNumber());
 	}
-	public String getEmail() {
-		return getStringColumnValue(getColumnEmail());
-	}
+//	public String getEmail() {
+//		return getStringColumnValue(getColumnEmail());
+//	}
 	public void insert() throws SQLException {
 	}
 	public void delete() throws SQLException {

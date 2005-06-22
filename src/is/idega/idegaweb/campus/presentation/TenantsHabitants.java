@@ -188,7 +188,7 @@ public class TenantsHabitants extends CampusBlock implements Campus {
 				collector = new HabitantsCollector();
 				collector.setUserID(hab.getUserId());
 				collector.setApartment(hab.getApartment());
-				collector.setEmail(hab.getEmail());
+//				collector.setEmail(hab.getEmail());
 				collector.setName(hab.getFullName());
 				collector.setFloor(hab.getFloor());
 				collector.setAddress(hab.getAddress());
@@ -305,7 +305,7 @@ public class TenantsHabitants extends CampusBlock implements Campus {
 			table.add(formatText(collected.getApartment()), column++, row);
 			table.add(formatText(collected.getFloor()), column++, row);
 			table.add(formatText(collected.getPhone()), column++, row);
-			if (isAdmin) {
+/*			if (isAdmin) {
 				String emailString = collected.getEmail();
 				if (emailString != null && !"".equals(emailString.trim())) {
 					email = new StringBuffer(emailPrepend);
@@ -321,7 +321,7 @@ public class TenantsHabitants extends CampusBlock implements Campus {
 			}
 			else { 
 				table.add(formatText(collected.getEmail()), column++, row);
-			}
+			}*/
 			row++;
 		}
 

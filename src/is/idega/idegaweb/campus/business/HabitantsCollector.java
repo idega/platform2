@@ -23,7 +23,7 @@ public class HabitantsCollector {
 
   private String phone_ = null;
 
-  private String email_ = null;
+//  private String email_ = null;
 
   private String address_ = null;
 
@@ -99,11 +99,11 @@ public class HabitantsCollector {
 
 
 
-  public void setEmail(String email) {
-
-    email_ = email;
-
-  }
+//  public void setEmail(String email) {
+//
+//    email_ = email;
+//
+//  }
 
 
 
@@ -201,11 +201,11 @@ public class HabitantsCollector {
 
 
 
-  public String getEmail() {
-
-    return email_;
-
-  }
+//  public String getEmail() {
+//
+//    return email_;
+//
+//  }
 
   public String getAddress() {
 
