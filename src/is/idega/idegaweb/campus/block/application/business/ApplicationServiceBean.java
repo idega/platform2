@@ -78,7 +78,7 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 		}
 	}
 
-	public void storeApplicationStatus(Integer ID, String status) {
+	public boolean storeApplicationStatus(Integer ID, String status) {
 		UserTransaction t = getSessionContext().getUserTransaction();
 		try {
 			t.begin();
@@ -99,6 +99,10 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 				getMailingListService().processMailEvent(new EntityHolder(Appli), LetterParser.REJECTION);
 			}
 			t.commit();
+			
+			if (!oldStatus.equals(status)) {
+				return true;
+			}
 		}
 		catch (Exception e) {
 			try {
@@ -109,6 +113,8 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 			}
 			e.printStackTrace();
 		}
+		
+		return false;
 	}
 
 	public void createWaitinglistTransfers(Applicant Appli, CampusApplication CA) throws CreateException,
@@ -199,6 +205,10 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 		campusApplication.setEmail(applicantInfo.getEmail());
 		campusApplication.setFaculty(applicantInfo.getFaculty());
 		campusApplication.setStudyTrack(applicantInfo.getTrack());
+		campusApplication.setStudyBeginMonth(applicantInfo.getStudyBeginMonth());
+		campusApplication.setStudyBeginYear(applicantInfo.getStudyBeginYear());
+		campusApplication.setStudyEndMonth(applicantInfo.getStudyEndMonth());
+		campusApplication.setStudyEndYear(applicantInfo.getStudyEndYear());
 		applicant.setLegalResidence(applicantInfo.getLegalResidence());
 		applicant.setSSN(applicantInfo.getSsn());
 		applicant.setStatus("S");

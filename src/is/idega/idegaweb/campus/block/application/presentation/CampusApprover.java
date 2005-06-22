@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.64 2005/05/23 10:26:20 palli Exp $
+ * $Id: CampusApprover.java,v 1.65 2005/06/22 23:51:08 palli Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -86,6 +86,8 @@ public class CampusApprover extends CampusBlock {
 
 	private static final String PRM_CAM_APPLICATION_ID = "application_id";
 
+	private static final String PRM_FORM_INDEX = "app_form_id";
+
 	private static final String ACT_TRASH_APPLICATION = "cam_app_trash";
 
 	private int iSubjectId = -1, iGlobalSize = 50, applicationIndex = 0;
@@ -107,6 +109,10 @@ public class CampusApprover extends CampusBlock {
 	boolean bEdit = false;
 
 	private Integer applicationID = new Integer(-1);
+	
+	private Integer previous_application_id = new Integer(-1);
+	
+	private Integer next_application_id = new Integer(-1);
 
 	private static final String PRM_INDEX = "app_idx";
 
@@ -151,8 +157,9 @@ public class CampusApprover extends CampusBlock {
 					if (iwc.isParameterSet(PRM_PRIORITY)) {
 						updatePriorityLevel(iwc);
 					}
-					if (iwc.isParameterSet(PRM_STATUS))
+					if (iwc.isParameterSet(PRM_STATUS)) {
 						updateApplicationStatus(iwc);
+					}
 				}
 				if (bEdit) {
 					add(makeApplicationForm(iwc));
@@ -232,8 +239,11 @@ public class CampusApprover extends CampusBlock {
 		}
 		if (iwc.isParameterSet("subj_info") && iwc.getParameter("subj_info").equals("true"))
 			infoCheck = true;
-		if (iwc.isParameterSet(PRM_INDEX))
+		if (iwc.isParameterSet(PRM_INDEX)) {
 			this.applicationIndex = Integer.parseInt(iwc.getParameter(PRM_INDEX));
+		} else if (iwc.isParameterSet(PRM_FORM_INDEX)) {
+			this.applicationIndex = Integer.parseInt(iwc.getParameter(PRM_FORM_INDEX));			
+		}
 	}
 
 	public PresentationObject makeLinkTable(int menuNr) {
@@ -243,7 +253,16 @@ public class CampusApprover extends CampusBlock {
 
 	private void updateApplicationStatus(IWContext iwc) throws RemoteException {
 		String status = iwc.getParameter(PRM_STATUS);
-		applicationService.storeApplicationStatus(applicationID, status);
+		setValuesForPreviousAndNextApplication(iwc);
+		boolean statusChanged = applicationService.storeApplicationStatus(applicationID, status);
+		if (statusChanged) {
+			if (next_application_id.intValue() != -1) {
+				applicationID = next_application_id;
+			} else if (previous_application_id.intValue() != -1) {
+				applicationID = previous_application_id;
+				applicationIndex--;
+			}
+		}
 	}
 
 	private void updatePriorityLevel(IWContext iwc) throws RemoteException {
@@ -261,7 +280,7 @@ public class CampusApprover extends CampusBlock {
 		ApartmentInfo aprtInfo = getApartmentInfo(iwc);
 		SpouseInfo spouseInfo = getSpouseInfo(iwc);
 		List childInfo = getChildrenInfo(iwc);
-		String newStatus = iwc.getParameter(PRM_STATUS);
+		// String newStatus = iwc.getParameter(PRM_STATUS);
 		try {
 			CampusApplication app = applicationService.storeWholeApplication(applicationID, new Integer(iSubjectId),
 					aInfo, aprtInfo, spouseInfo, childInfo);
@@ -426,6 +445,7 @@ public class CampusApprover extends CampusBlock {
 	public PresentationObject makeApplicationTable(IWContext iwc) {
 		Form theForm = new Form();
 		theForm.add(new HiddenInput(PRM_CAM_APPLICATION_ID, String.valueOf(applicationID)));
+		theForm.add(new HiddenInput(PRM_FORM_INDEX, String.valueOf(applicationIndex)));
 		try {
 			CampusApplication eCampusApplication = null;
 			Application eApplication = null;
@@ -508,6 +528,9 @@ public class CampusApprover extends CampusBlock {
 			boolean currentEntered = false;
 			for (Iterator iter = L.iterator(); iter.hasNext();) {
 				CampusApplication app = (CampusApplication) iter.next();
+				
+//				this.log("name = " + app.getApplication().getApplicant().getName());
+				
 				Integer ID = (Integer) app.getPrimaryKey();
 				if (!(this.applicationID.intValue() == ID.intValue())) {
 					switch (idx) {
@@ -561,9 +584,74 @@ public class CampusApprover extends CampusBlock {
 		return T;
 	}
 
+	private void setValuesForPreviousAndNextApplication(IWContext iwc) {
+		Table T = new Table(4, 1);
+		T.setWidth(Table.HUNDRED_PERCENT);
+		T.setWidth(1, Table.HUNDRED_PERCENT);
+		try {
+			Collection L = applicationService.getCampusApplicationHome().findBySubjectAndStatus(
+					new Integer(iSubjectId), sGlobalStatus, sGlobalOrder, 3, this.applicationIndex - 1);
+			int idx = 1;
+			boolean next = false, prevAdded = false;
+			boolean prev = false, nextAdded = false;
+			previous_application_id = new Integer(-1);
+			next_application_id = new Integer(-1);
+			boolean currentEntered = false;
+			for (Iterator iter = L.iterator(); iter.hasNext();) {
+				CampusApplication app = (CampusApplication) iter.next();
+				
+//				this.log("name = " + app.getApplication().getApplicant().getName());
+				
+				Integer ID = (Integer) app.getPrimaryKey();
+				if (!(this.applicationID.intValue() == ID.intValue())) {
+					switch (idx) {
+						case 1:
+							prev = true;
+							next = false;
+							break;
+						case 2:
+							if (currentEntered) {
+								prev = false;
+								next = true;
+							}
+							else {
+								prev = true;
+								next = false;
+							}
+							break;
+						case 3:
+							prev = false;
+							next = true;
+							break;
+					}
+					if (prev && !prevAdded) {
+						prevAdded = true;
+						previous_application_id = ID;
+					}
+					else if (next && !nextAdded) {
+						nextAdded = true;
+						next_application_id = ID;
+					}
+				}
+				else {
+					currentEntered = true;
+				}
+				idx++;
+			}
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+	}
+
+	
 	public PresentationObject makeApplicationForm(IWContext iwc) {
 		Form theForm = new Form();
 		theForm.add(new HiddenInput(PRM_CAM_APPLICATION_ID, String.valueOf(applicationID)));
+		theForm.add(new HiddenInput(PRM_FORM_INDEX, String.valueOf(applicationIndex)));
 		if (!iwc.isParameterSet(ACT_VIEWER))
 			theForm.add(new HiddenInput(ACT_EDITOR, "true"));
 		try {
@@ -818,7 +906,7 @@ public class CampusApprover extends CampusBlock {
 		String sEY = iwc.getParameter("dr_ey");
 		return new ApplicantInfo(sFullName, sSsn, sLegRes, sRes, sPo, sResPho, sMobPho, sEmail, sFac, sTrack,
 				sIncome != null ? new Double(sIncome) : null, sBM != null ? new Integer(sBM) : null,
-				sEM != null ? new Integer(sEM) : null, sBY != null ? new Integer(sBY) : null,
+				sBY != null ? new Integer(sBY) : null, sEM != null ? new Integer(sEM) : null,
 				sEY != null ? new Integer(sEY) : null);
 	}
 

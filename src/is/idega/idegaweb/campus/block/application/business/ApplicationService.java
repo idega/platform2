@@ -54,7 +54,7 @@ public interface ApplicationService extends com.idega.block.application.business
     /**
      * @see is.idega.idegaweb.campus.block.application.business.ApplicationServiceBean#storeApplicationStatus
      */
-    public void storeApplicationStatus(Integer ID, String status)
+    public boolean storeApplicationStatus(Integer ID, String status)
             throws java.rmi.RemoteException;
 
     /**
