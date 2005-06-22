@@ -2,14 +2,12 @@ package is.idega.idegaweb.travel.business;
 
 import is.idega.idegaweb.travel.data.Contract;
 import is.idega.idegaweb.travel.data.ContractHome;
-
+import is.idega.idegaweb.travel.service.presentation.BookingForm;
 import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.util.Collection;
 import java.util.Iterator;
-
 import javax.ejb.FinderException;
-
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOLookup;
@@ -57,7 +55,7 @@ public class AssignerBean extends IBOServiceBean implements Assigner{
       conn = ConnectionBroker.getConnection();
       for (int i = 0; i < contracts.length; i++) {
         temp = getNumberOfAssignedSeatsByContract(product.getID(), contracts[i].getResellerId(), stamp, contracts[i], conn);
-        returner += temp;
+    	returner += temp;
       }
     }
     finally {
@@ -96,7 +94,7 @@ public class AssignerBean extends IBOServiceBean implements Assigner{
         }
 
         if (many != null && many.length > 0) {
-          if (many[0] != null)
+          if (many[0] != null && Integer.parseInt(many[0]) != BookingForm.UNLIMITED_AVAILABILITY)
           returner += Integer.parseInt(many[0]);
         }
     }catch (Exception e) {
