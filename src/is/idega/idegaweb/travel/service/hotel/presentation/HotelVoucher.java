@@ -31,9 +31,9 @@ public class HotelVoucher extends Voucher {
 		  IWTimestamp fromStamp = new IWTimestamp(((Booking)bookings.get(0)).getBookingDate());
 		  IWTimestamp toStamp = new IWTimestamp(((Booking)bookings.get(bookings.size()-1)).getBookingDate());
 		  toStamp.addDays(1);
-		  table.add(getText(iwrb.getLocalizedString("travel.arrival_date","Arrival date")+" : "+fromStamp.getLocaleDate(iwc)), 1, 2);
-		  table.add(getText(Text.BREAK), 1, 2);
-		  table.add(getText(iwrb.getLocalizedString("travel.departure_date","Departure date")+" : "+toStamp.getLocaleDate(iwc)), 1, 2);
+		  table.add(getText(iwrb.getLocalizedString("travel.arrival_date","Arrival date")+" : "+fromStamp.getLocaleDate(iwc)), 1, 3);
+		  table.add(getText(Text.BREAK), 1, 3);
+		  table.add(getText(iwrb.getLocalizedString("travel.departure_date","Departure date")+" : "+toStamp.getLocaleDate(iwc)), 1, 3);
 		}
 	}
 
