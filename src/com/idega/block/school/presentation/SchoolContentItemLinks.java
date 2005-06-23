@@ -251,21 +251,31 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 				while (iter.hasNext()) {
 					userType = (String[]) iter.next();
 					++row;
-
+					
 					Collection users = getSchoolUserBusiness(_iwc).getUsers(_school, Integer.parseInt(userType[2]));
-										
+						
 					if (users != null && users.size() > 0) {
 						if (useBreak) {
 							++row;
 							table.setHeight(row, _spaceBetween);
 							++row;
 						}
-						table.add(getHeader(_iwrb.getLocalizedString(userType[0], userType[1])), 1, row);
+						
 						Iterator userIter = users.iterator();
-					
+						int i = 1;
 						while (userIter.hasNext()) {
 							User hm = (User) userIter.next();
-								row = insertUser(table, row, hm);						
+							boolean show = false;
+							show = getSchoolUserBusiness(_iwc).getUserShowInContact(hm);
+							if (show){
+								if (i <=1){
+									table.add(getHeader(_iwrb.getLocalizedString(userType[0], userType[1])), 1, row);
+									i++;
+								}
+								row = insertUser(table, row, hm);
+								
+							}
+														
 						}						
 						useBreak = true;
 					}		 
