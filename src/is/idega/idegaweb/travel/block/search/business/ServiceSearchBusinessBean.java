@@ -782,7 +782,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 			if (currMaps.get(ccCurr) == null) {
 				currMaps.put(ccCurr, new float[]{0});
 			}
-			float price = getBooker().getBookingPrice(booking);
+			float price = getBooker().getBookingPrice(getBooker().getMultibleBookings(booking));
 			((float[])currMaps.get(ccCurr))[0] += price;
 			bookings.add(booking);
 		}
