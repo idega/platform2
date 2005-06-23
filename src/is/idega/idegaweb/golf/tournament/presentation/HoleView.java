@@ -46,9 +46,9 @@ public class HoleView extends GolfWindow {
 
 
 
-	  if (tournament_group_ids.length == 1) {
+	  if (tournament_group_ids != null && tournament_group_ids.length == 1) {
 	      tournamentGroupID = tournament_group_ids[0];
-	  }else if (tournament_group_ids.length > 1) {
+	  }else if (tournament_group_ids != null && tournament_group_ids.length > 1) {
 	      String currentID = (String)modinfo.getSessionAttribute("viewing_tournament_group_id");
 	      if (currentID == null) {
 	          tournamentGroupID = tournament_group_ids[0];
