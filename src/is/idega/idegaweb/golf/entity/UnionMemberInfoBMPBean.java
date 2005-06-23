@@ -42,6 +42,7 @@ public class UnionMemberInfoBMPBean extends GenericEntity implements UnionMember
         addIndex("IDX_UNION_MEMBER_INFO_2", "union_id");
         addIndex("IDX_UNION_MEMBER_INFO_3", new String[]{ "member_id", "member_status"});
         addIndex("IDX_UNION_MEMBER_INFO_4", new String[]{ "union_id", "member_id", "member_status", "membership_type"});
+        addIndex("IDX_UNION_MEMBER_INFO_5", new String[]{ "member_id", "union_id", "member_status", "membership_type"});
     }
 
     public void setDefaultValues(){
