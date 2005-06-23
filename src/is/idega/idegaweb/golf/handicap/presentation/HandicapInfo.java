@@ -154,7 +154,7 @@ public class HandicapInfo extends GolfBlock {
 		}
 		Union mainUnion = ((UnionHome) IDOLookup.getHomeLegacy(Union.class)).findByPrimaryKey(member.getMainUnionID());
 		//Optimization by Sigtryggur 23.06.05
-		int clubOrder = memberInfo.getNumberOfRecords("select count(member_info.member_id) from union_,union_member,member_info where union_.union_id=" + mainUnion.getID() + " and union_.union_id=union_member.union_id and union_member.member_id=member_info.member_id and handicap<'" + memberInfo.getHandicap() + "'") + 1;
+		int clubOrder = memberInfo.getNumberOfRecords("select count(member_info.member_id) from union_,union_member,member_info where union_.union_id=" + mainUnion.getID() + " and union_.union_id=union_member.union_id and union_member.member_id=member_info.member_id and member_info.handicap<'" + memberInfo.getHandicap() + "'") + 1;
 		int numberOfRounds = getScorecardBusiness(iwc).getNumberOfRoundsAfterDate(Integer.parseInt(iMemberID), date.getDate());
 		double pointsAverage = getScorecardBusiness(iwc).getPointsAverage(Integer.parseInt(iMemberID));
 		Scorecard lastRound = getScorecardBusiness(iwc).getLastPlayedRound(Integer.parseInt(iMemberID));
