@@ -12,6 +12,7 @@ import is.idega.idegaweb.travel.service.business.BookingBusiness;
 import is.idega.idegaweb.travel.service.business.ProductCategoryFactory;
 import is.idega.idegaweb.travel.service.business.ServiceHandler;
 import java.rmi.RemoteException;
+import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -53,7 +54,8 @@ public class TravelBlock extends Block {
   protected boolean isInPermissionGroup = false;
   protected boolean isSuperAdmin = false;
   protected boolean expiredLogin = false;
-  
+  protected static DecimalFormat decimalFormat = new DecimalFormat("0.00");
+
   public static final String IW_BUNDLE_IDENTIFIER = "is.idega.travel";
   
   static final String TEST_MODE_PARAMETER_NAME = "test_mode";
