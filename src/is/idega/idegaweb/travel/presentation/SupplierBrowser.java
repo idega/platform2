@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowser.java,v 1.14 2005/06/23 12:23:06 gimmi Exp $
+ * $Id: SupplierBrowser.java,v 1.15 2005/06/23 12:59:01 edmunds Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -174,7 +174,7 @@ public class SupplierBrowser extends TravelBlock {
 		if (supplierManagerId > 0) {
 			suppMan = Integer.toString(supplierManagerId);
 		}
-		if (suppMan != null) {
+		if (suppMan != null && supplierManager != null) {
 			try {
 				GroupHome gHome = (GroupHome) IDOLookup.getHome(Group.class, getSupplierHome().getDatasource());
 				supplierManager = gHome.findByPrimaryKey(new Integer(suppMan));
@@ -556,7 +556,9 @@ public class SupplierBrowser extends TravelBlock {
 				table.setCellpadding(2, row, 2);
 				table.setVerticalAlignment(2, row, Table.VERTICAL_ALIGN_TOP);
 				table.add(getText(ch.getLocalizedText().getBody()), 2, row);
-				if (ch.hasFiles()) {
+				// TODO wait for build, then change back
+//				if (ch.hasFiles()) {
+				if (ch.getFiles() != null && !ch.getFiles().isEmpty()) {
 					images = new Link(getText(getResourceBundle().getLocalizedString("travel.images", "Images"), linkStyleClass));
 					images.setWindowToOpen(ProductImageSlideShowWindow.class);
 					images.addParameter(ProductImageSlideShowWindow.PARAMETER_PRODUCT_ID, product.getPrimaryKey().toString());
@@ -809,6 +811,10 @@ public class SupplierBrowser extends TravelBlock {
 	
 	public void setUseSearchPriceCategoryKey(boolean useKey) {
 		this.useSearchPriceCategoryKey = useKey;
+	}
+	// TODO see if this is needed
+	public void setSupplierManager(Group suppMan) {
+		this.supplierManager = suppMan;
 	}
 	
 	private ServiceSearchSession getSearchSession(IWUserContext iwc) {
