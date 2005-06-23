@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowser.java,v 1.13 2005/06/21 17:48:47 gimmi Exp $
+ * $Id: SupplierBrowser.java,v 1.14 2005/06/23 12:23:06 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -75,6 +75,8 @@ public class SupplierBrowser extends TravelBlock {
 	private static final String PARAMETER_SUPPLIER_ID = "sb_sid";
 	private static final String PARAMETER_PRODUCT_ID = AbstractSearchForm.PARAMETER_PRODUCT_ID;
 	public static final String PARAMETER_FROM = AbstractSearchForm.PARAMETER_FROM_DATE;
+	public static final String PARAMETER_TO = AbstractSearchForm.PARAMETER_TO_DATE;
+
 	protected DecimalFormat df = new DecimalFormat("0.00");
 
 	private String[][] postalCodes = null;
@@ -84,6 +86,7 @@ public class SupplierBrowser extends TravelBlock {
 	
 	private SupplierBrowserPlugin plugin = null;
 	private String pluginClassName = null;
+	private BookingForm bookingForm = null;
 	
 	private String textStyleClass = null;
 	private String headerStyleClass = null;
@@ -110,7 +113,7 @@ public class SupplierBrowser extends TravelBlock {
 		Form form = new Form();
 		SearchBasketStatus stat = new SearchBasketStatus();
 		//stat.setURLToCheckout("http://localhost:8080/gimmi.jsp");
-		//stat.setURLToCheckout("http://localhost:8080/servlet/IBMainServlet/?ib_page=3");
+		stat.setURLToCheckout("http://localhost:8080/servlet/IBMainServlet/?ib_page=3");
 		stat.setTextStyleClass(textStyleClass);
 		stat.setLinkStyleClass(linkStyleClass);
 		form.add(stat);
@@ -222,11 +225,15 @@ public class SupplierBrowser extends TravelBlock {
 			try {
 				ProductHome pHome = (ProductHome) IDOLookup.getHome(Product.class);
 				product = pHome.findByPrimaryKey(new Integer(pId));
+				bookingForm = getServiceHandler(iwc).getBookingForm(iwc, product, false);
 			}
 			catch (IDOLookupException e) {
 				e.printStackTrace();
 			}
 			catch (FinderException e) {
+				e.printStackTrace();
+			}
+			catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -245,6 +252,20 @@ public class SupplierBrowser extends TravelBlock {
 			form.add(searchTable);
 		}
 
+		int numberOfDays = 1;
+		try {
+			IWTimestamp from = null;
+			IWTimestamp to = null;
+			if (iwc.isParameterSet(PARAMETER_FROM)) {
+				from = new IWTimestamp(iwc.getParameter(PARAMETER_FROM));
+			}
+			if (iwc.isParameterSet(PARAMETER_TO)) {
+				to = new  IWTimestamp(iwc.getParameter(PARAMETER_TO));
+			}
+			numberOfDays = bookingForm.getNumberOfDays(from, to);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 		int row = 1;
 		row = addProductInfo(iwc, table, row, iwc.getCurrentLocaleId(), product, false);
@@ -264,17 +285,16 @@ public class SupplierBrowser extends TravelBlock {
 			priceTable.add(new HiddenInput("ic_user", iwc.getCurrentUser().getPrimaryKey().toString()), 1, pRow);
 		}
 		if (useSearchPriceCategoryKey) {
-			try {
-				priceTable.add(new HiddenInput(BookingForm.parameterPriceCategoryKey, getServiceHandler(iwc).getBookingForm(iwc, product, false).getPriceCategorySearchKey()), 1, pRow);
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
+			priceTable.add(new HiddenInput(BookingForm.parameterPriceCategoryKey, bookingForm.getPriceCategorySearchKey()), 1, pRow);
 		}
 		priceTable.add(new HiddenInput(BookingForm.parameterOnlineBooking, Boolean.toString(useOnlinePrices)), 1, pRow);
 
 		priceTable.add(getText(getResourceBundle().getLocalizedString("travel.prices", "Prices"), headerStyleClass), 1, pRow);
-		priceTable.add(getText(getResourceBundle().getLocalizedString("travel.per_unit", "Per Unit"), headerStyleClass), 2, pRow);
+//		if (numberOfDays == 1) {
+			priceTable.add(getText(getResourceBundle().getLocalizedString("travel.per_unit", "Per Unit"), headerStyleClass), 2, pRow);
+//		} else {
+//			priceTable.add(getText(getResourceBundle().getLocalizedString("travel.unit", "Unit")+ " "+bookingForm.getPerDayString(getResourceBundle()), headerStyleClass), 2, pRow);
+//		}
 		priceTable.add(getText(getResourceBundle().getLocalizedString("travel.count", "Count"), headerStyleClass), 3, pRow);
 		priceTable.add(getText(getResourceBundle().getLocalizedString("travel.sum", "Sum"), headerStyleClass), 4, pRow++);
 		
@@ -297,7 +317,7 @@ public class SupplierBrowser extends TravelBlock {
 					timeframeId = timeframe.getID();
 				}
 				ProductPriceHome ppHome = (ProductPriceHome) IDOLookup.getHome(ProductPrice.class);
-				pRow = listPrices(iwc, priceTable, pRow, addressId, timeframeId, ppHome, totalResults);
+				pRow = listPrices(iwc, priceTable, pRow, addressId, timeframeId, ppHome, totalResults, numberOfDays);
 			} else {
 				Iterator aIter = addresses.iterator();
 				TravelAddress tAddress;
@@ -311,7 +331,7 @@ public class SupplierBrowser extends TravelBlock {
 						timeframeId = timeframe.getID();
 					}
 					ProductPriceHome ppHome = (ProductPriceHome) IDOLookup.getHome(ProductPrice.class);
-					pRow = listPrices(iwc, priceTable, pRow, addressId, timeframeId, ppHome, totalResults);
+					pRow = listPrices(iwc, priceTable, pRow, addressId, timeframeId, ppHome, totalResults, numberOfDays);
 				}
 			}
 			if (interfaceObjectStyleClass != null) {
@@ -403,18 +423,12 @@ public class SupplierBrowser extends TravelBlock {
 		return row;
 	}
 
-	private int listPrices(IWContext iwc, Table priceTable, int pRow, int addressId, int timeframeId, ProductPriceHome ppHome, ResultOutput totalResults) throws FinderException, SQLException, RemoteException {
+	private int listPrices(IWContext iwc, Table priceTable, int pRow, int addressId, int timeframeId, ProductPriceHome ppHome, ResultOutput totalResults, int numberOfDays) throws FinderException, SQLException, RemoteException {
 		String key = null;
 		if (useSearchPriceCategoryKey) {
-			try {
-				key = getServiceHandler(iwc).getBookingForm(iwc, product, false).getPriceCategorySearchKey();
-			}
-			catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			key = bookingForm.getPriceCategorySearchKey();
 		}
-
+		
 		Collection prices = ppHome.findProductPrices(product.getID(), timeframeId, addressId, useOnlinePrices, key);
 //				Collection prices = ppHome.findProductPrices(product.getID(), timeframeId, addressId, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, bf.getPriceCategorySearchKey());
 		if (prices != null) {
@@ -432,8 +446,12 @@ public class SupplierBrowser extends TravelBlock {
 				}
 				t.stop();
 				System.out.println("[SupplierBrowser] time to get 1 price = "+t.getTimeString());
+
 				priceTable.add(getText(price.getPriceCategory().getName()), 1, pRow);
-				priceTable.add(getText(df.format(fPrice)+" "+price.getCurrency().getCurrencyAbbreviation()), 2, pRow);
+				priceTable.add(getText(df.format(fPrice*numberOfDays)+" "+price.getCurrency().getCurrencyAbbreviation()), 2, pRow);
+				if (numberOfDays > 1) {
+					priceTable.add(getText(Text.BREAK+"("+df.format(fPrice)+" "+bookingForm.getPerDayString(getResourceBundle())+")"), 2, pRow);
+				}
 				
 				TextInput inp = new TextInput("priceCategory"+price.getPrimaryKey().toString());
 				inp.setContent("0");
@@ -441,7 +459,7 @@ public class SupplierBrowser extends TravelBlock {
 				
 				ResultOutput rout = new ResultOutput("tmp"+price.getPrimaryKey().toString(), "0");
 				rout.setSize(7);
-				rout.add(inp, ResultOutput.OPERATOR_MULTIPLY+fPrice);
+				rout.add(inp, ResultOutput.OPERATOR_MULTIPLY+fPrice+ResultOutput.OPERATOR_MULTIPLY+numberOfDays);
 				if (interfaceObjectStyleClass != null) {
 					inp.setStyleClass(interfaceObjectStyleClass);
 					rout.setStyleClass(interfaceObjectStyleClass);
@@ -450,6 +468,11 @@ public class SupplierBrowser extends TravelBlock {
 				totalResults.add(rout);
 				priceTable.add(inp, 3, pRow);
 				priceTable.add(rout, 4, pRow);
+				
+				priceTable.setVerticalAlignment(1, pRow, Table.VERTICAL_ALIGN_TOP);
+				priceTable.setVerticalAlignment(2, pRow, Table.VERTICAL_ALIGN_TOP);
+				priceTable.setVerticalAlignment(3, pRow, Table.VERTICAL_ALIGN_TOP);
+				priceTable.setVerticalAlignment(4, pRow, Table.VERTICAL_ALIGN_TOP);
 //				priceTable.add(getText(price.getCurrency().getCurrencyAbbreviation()), 3, pRow);
 				++pRow;
 				
