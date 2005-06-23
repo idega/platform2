@@ -1,3 +1,12 @@
+/*
+ * $Id: GeneralBooking.java,v 1.25 2005/06/23 12:18:27 gimmi Exp $
+ * Created on 22.6.2005
+ *
+ * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ */
 package is.idega.idegaweb.travel.data;
 
 import is.idega.idegaweb.travel.interfaces.Booking;
@@ -10,14 +19,39 @@ import com.idega.block.trade.stockroom.data.Reseller;
 import com.idega.block.trade.stockroom.data.TravelAddress;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOEntity;
+import com.idega.data.IDOPrimaryKey;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
 
 
 /**
- * @author gimmi
+ * 
+ *  Last modified: $Date: 2005/06/23 12:18:27 $ by $Author: gimmi $
+ * 
+ * @author <a href="mailto:gimmi@idega.com">gimmi</a>
+ * @version $Revision: 1.25 $
  */
 public interface GeneralBooking extends IDOEntity, Booking, BasketItem {
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getItemID
+	 */
+	public IDOPrimaryKey getItemID();
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getItemName
+	 */
+	public String getItemName();
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getItemDescription
+	 */
+	public String getItemDescription();
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getItemPrice
+	 */
+	public Double getItemPrice();
 
 	/**
 	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getName

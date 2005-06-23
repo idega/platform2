@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import javax.ejb.FinderException;
+import com.idega.block.basket.data.BasketItem;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductBMPBean;
@@ -57,7 +58,7 @@ import com.idega.util.IWTimestamp;
  */
 
 
-public class GeneralBookingBMPBean extends GenericEntity implements Booking , GeneralBooking{
+public class GeneralBookingBMPBean extends GenericEntity implements Booking , GeneralBooking, BasketItem{
 
   public GeneralBookingBMPBean(){
           super();
@@ -68,6 +69,13 @@ public class GeneralBookingBMPBean extends GenericEntity implements Booking , Ge
   }
  
   //- basketitem implementation ------------
+  
+  public IDOPrimaryKey ejbHomeGetPrimaryKey(Integer primaryKeyValue) {
+      PrimaryKey key = new PrimaryKey();
+      key.setPrimaryKeyValue(getIDColumnName(), primaryKeyValue);
+
+      return key;
+  }
   
   public IDOPrimaryKey getItemID() { 
       PrimaryKey key = new PrimaryKey();
