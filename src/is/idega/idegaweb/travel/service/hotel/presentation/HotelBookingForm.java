@@ -6,6 +6,7 @@ import is.idega.idegaweb.travel.data.BookingEntry;
 import is.idega.idegaweb.travel.data.Contract;
 import is.idega.idegaweb.travel.data.PickupPlace;
 import is.idega.idegaweb.travel.data.PickupPlaceHome;
+import is.idega.idegaweb.travel.interfaces.Booking;
 import is.idega.idegaweb.travel.presentation.PublicBooking;
 import is.idega.idegaweb.travel.service.hotel.business.HotelBooker;
 import is.idega.idegaweb.travel.service.hotel.business.HotelBusiness;
@@ -17,6 +18,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Vector;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
@@ -33,6 +35,7 @@ import com.idega.data.IDOFinderException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDORelationshipException;
 import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.CalendarParameters;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -1801,11 +1804,11 @@ public class HotelBookingForm extends BookingForm {
 		return fRow;
 	}
 	
-	public String getUnitName() {
+	public String getUnitName(IWResourceBundle iwrb) {
 		return iwrb.getLocalizedString("travel.room", "Room");
 	}
 	
-	public String getUnitNamePlural() {
+	public String getUnitNamePlural(IWResourceBundle iwrb) {
 		return iwrb.getLocalizedString("travel.rooms", "Rooms");
 	}
 	
@@ -1817,11 +1820,25 @@ public class HotelBookingForm extends BookingForm {
 		return fRow;
 	}
 
-	public String getNumberOfDaysString() {
+	public String getNumberOfDaysString(IWResourceBundle iwrb) {
 		return iwrb.getLocalizedString("travel.number_of_nights", "Number of nights");
 	}
-	public String getPerDayString() {
+	public String getPerDayString(IWResourceBundle iwrb) {
 		return iwrb.getLocalizedString("travel.search.per_night","per night");
+	}
+	
+	public String getBookingDateString(List bookings, Locale locale) throws RemoteException {
+		if (bookings.size() > 0) {
+			IWTimestamp fromStamp = new IWTimestamp(((Booking)bookings.get(0)).getBookingDate());
+			if (bookings.size() < 2) {
+				return fromStamp.getLocaleDate(locale);
+			}else {
+				IWTimestamp toStamp = new IWTimestamp(((Booking)bookings.get(bookings.size()-1)).getBookingDate());
+				toStamp.addDays(1);
+				return fromStamp.getLocaleDate(locale)+" - "+toStamp.getLocaleDate(locale);
+			}
+		}
+		return null;
 	}
 
 }

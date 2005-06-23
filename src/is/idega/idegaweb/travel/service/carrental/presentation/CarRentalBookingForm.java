@@ -35,6 +35,7 @@ import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDORelationshipException;
 import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.CalendarParameters;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -1859,11 +1860,11 @@ public class CarRentalBookingForm extends BookingForm {
 		return fRow;
 	}	
 	
-	public String getUnitName() {
+	public String getUnitName(IWResourceBundle iwrb) {
 		return iwrb.getLocalizedString("travel.car", "Car");
 	}
 	
-	public String getUnitNamePlural() {
+	public String getUnitNamePlural(IWResourceBundle iwrb) {
 		return iwrb.getLocalizedString("travel.cars", "Cars");
 	}
 	public boolean useNumberOfDays() {
@@ -1929,11 +1930,11 @@ public class CarRentalBookingForm extends BookingForm {
 		return fRow;
 	}
 
-	public String getNumberOfDaysString() {
+	public String getNumberOfDaysString(IWResourceBundle iwrb) {
 		return iwrb.getLocalizedString("travel.number_of_days", "Number of days");
 	}
 	
-	public String getPerDayString() {
+	public String getPerDayString(IWResourceBundle iwrb) {
 		return iwrb.getLocalizedString("travel.search.per_day","per day");
 	}
 

@@ -116,7 +116,7 @@ public abstract class Voucher extends TravelManager {
       if (addresses != null && addresses.length > 0 ) {
         _address = addresses[addresses.length - 1];
       }
-      _bf = super.getServiceHandler(iwc).getBookingForm(iwc,_product, true);
+      _bf = super.getServiceHandler(iwc).getBookingForm(iwc,_product, false);
       add(getVoucher());
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
@@ -368,9 +368,9 @@ public abstract class Voucher extends TravelManager {
           _table.add(getText(Integer.toString(count)),1,3);
           if (pCat.getCountAsPerson()) {
         	  if (count == 1) {
-        		  _table.add(getText(" "+_bf.getUnitName().toLowerCase()), 1, 3);
+        		  _table.add(getText(" "+_bf.getUnitName(_iwrb).toLowerCase()), 1, 3);
         	  } else if (count > 1) {
-        		  _table.add(getText(" "+_bf.getUnitNamePlural().toLowerCase()), 1, 3);
+        		  _table.add(getText(" "+_bf.getUnitNamePlural(_iwrb).toLowerCase()), 1, 3);
         	  }
           }
           _table.add(Text.BREAK,1,3);

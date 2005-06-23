@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Vector;
 import javax.ejb.CreateException;
@@ -232,11 +233,11 @@ public abstract class BookingForm extends TravelManager{
 	protected abstract int addPublicFromDateInput(IWContext iwc, Table table, int fRow);
 	protected abstract int addPublicToDateInput(IWContext iwc, Table table, int fRow);
 	protected abstract int addPublicExtraBookingInput(IWContext iwc, Table table, int fRow);
-	public abstract String getUnitName();
-	public abstract String getUnitNamePlural();
+	public abstract String getUnitName(IWResourceBundle iwrb);
+	public abstract String getUnitNamePlural(IWResourceBundle iwrb);
 	public abstract boolean useNumberOfDays();
-	public abstract String getNumberOfDaysString();
-	public abstract String getPerDayString();
+	public abstract String getNumberOfDaysString(IWResourceBundle iwrb);
+	public abstract String getPerDayString(IWResourceBundle iwrb);
 //	{
 //		return iwrb.getLocalizedString("travel.number_of_days", "Number of days");
 //	}
@@ -1352,7 +1353,7 @@ public abstract class BookingForm extends TravelManager{
 				table.setCellpaddingTop(1, fRow, 3);
 				table.setCellpaddingBottom(1, fRow, 3);
 				table.setCellpaddingLeft(1, fRow, 10);
-				table.add(getSmallText(getNumberOfDaysString()), 1, fRow);
+				table.add(getSmallText(getNumberOfDaysString(iwrb)), 1, fRow);
 				table.add(manyDays, 2, fRow++);
 			}
 			
@@ -1386,8 +1387,8 @@ public abstract class BookingForm extends TravelManager{
 			table.setVerticalAlignment(3, fRow, Table.VERTICAL_ALIGN_BOTTOM);
 			table.setVerticalAlignment(4, fRow, Table.VERTICAL_ALIGN_BOTTOM);
 
-			table.add(getSmallText(getUnitName()+" "+iwrb.getLocalizedString("travel.prices", "prices")), 1, fRow);
-			table.add(getSmallText(iwrb.getLocalizedString("travel.number_of", "Number of")+" "+getUnitNamePlural().toLowerCase()), 2, fRow);
+			table.add(getSmallText(getUnitName(iwrb)+" "+iwrb.getLocalizedString("travel.prices", "prices")), 1, fRow);
+			table.add(getSmallText(iwrb.getLocalizedString("travel.number_of", "Number of")+" "+getUnitNamePlural(iwrb).toLowerCase()), 2, fRow);
 			table.setCellpaddingLeft(3, fRow, 10);
 			table.add(getSmallText(iwrb.getLocalizedString("travel.price", "Price")), 3, fRow);
 			table.add(getSmallText(iwrb.getLocalizedString("travel.total_price", "Total Price")), 4, fRow);
@@ -4400,7 +4401,7 @@ public abstract class BookingForm extends TravelManager{
 			tmpTable.add(getOrangeText(Integer.toString(current)),2,tmpRow++);
 		}
 		
-		tmpTable.add(getSmallText(iwrb.getLocalizedString("travel.total","Total")+" "+getUnitNamePlural().toLowerCase()),1,tmpRow);
+		tmpTable.add(getSmallText(iwrb.getLocalizedString("travel.total","Total")+" "+getUnitNamePlural(iwrb).toLowerCase()),1,tmpRow);
 		tmpTable.add(getOrangeText(Integer.toString(total)),2,tmpRow++);
 		
 		tmpTable.add(getSmallText(iwrb.getLocalizedString("travel.price","Price")),1,tmpRow);
@@ -4979,7 +4980,7 @@ public abstract class BookingForm extends TravelManager{
 					mailText.append("\n\n").append(iwrb.getLocalizedString("travel.name",   "Name    ")).append(" : ").append(gBooking.getName());
 					mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service ")).append(" : ").append(pBus.getProductNameWithNumber(prod, true, iwc.getCurrentLocaleId()));
 					mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append((new IWTimestamp(gBooking.getBookingDate())).getLocaleDate(iwc.getCurrentLocale()));
-					mailText.append("\n").append(this.getUnitNamePlural()).append(" : ").append(gBooking.getTotalCount());
+					mailText.append("\n").append(this.getUnitNamePlural(iwrb)).append(" : ").append(gBooking.getTotalCount());
 					mailText.append("\n\n").append(iwrb.getLocalizedString("travel.order_number",  "Order number   ")).append(" : ").append(Voucher.getVoucherNumber(gBooking.getID()));
 					String ccAuthNumber =  gBooking.getCreditcardAuthorizationNumber();
 					String cardType = null;
@@ -5035,7 +5036,7 @@ public abstract class BookingForm extends TravelManager{
 					mailText.append("\n").append(iwrb.getLocalizedString("travel.name",   "Name    ")).append(" : ").append(gBooking.getName());
 					mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service ")).append(" : ").append(pBus.getProductNameWithNumber(prod, true, iwc.getCurrentLocaleId()));
 					mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append((new IWTimestamp(gBooking.getBookingDate())).getLocaleDate(iwc.getCurrentLocale()));
-					mailText.append("\n").append(this.getUnitNamePlural()).append(" : ").append(gBooking.getTotalCount());
+					mailText.append("\n").append(this.getUnitNamePlural(iwrb)).append(" : ").append(gBooking.getTotalCount());
 					if (doubleSendSuccessful) {
 						mailText.append("\n\n").append(iwrb.getLocalizedString("travel.double_confirmation_has_been_sent","Double confirmation has been sent."));
 					}else {
@@ -5075,6 +5076,31 @@ public abstract class BookingForm extends TravelManager{
 	
 	public void setErrorFields(List fields) {
 		this.errorFields = fields;
+	}
+	
+	public String getBookingDateString(List bookings, Locale locale) throws RemoteException {
+		if (bookings.size() > 0) {
+			IWTimestamp fromStamp = new IWTimestamp(((Booking)bookings.get(0)).getBookingDate());
+			if (bookings.size() < 2) {
+				return fromStamp.getLocaleDate(locale);
+			}else {
+				IWTimestamp toStamp = new IWTimestamp(((Booking)bookings.get(bookings.size()-1)).getBookingDate());
+				return fromStamp.getLocaleDate(locale)+" - "+toStamp.getLocaleDate(locale);
+			}
+		}
+		return null;
+	}
+	/**
+	 * Return the number of days to count as booked
+	 * @return
+	 */
+	public int getNumberOfDays(IWTimestamp from, IWTimestamp to) {
+		if (to == null && from != null) {
+			return 1;
+		} if (from != null && to != null) {
+			return IWTimestamp.getDaysBetween(from, to);
+		}
+		return 0;
 	}
 
 }

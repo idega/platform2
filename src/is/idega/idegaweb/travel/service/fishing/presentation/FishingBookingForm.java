@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 import java.util.List;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.data.IDOException;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.DateInput;
@@ -57,11 +58,11 @@ public class FishingBookingForm extends BookingForm {
 		return fRow;
 	}
 
-	public String getUnitName() {
+	public String getUnitName(IWResourceBundle iwrb) {
 		return iwrb.getLocalizedString("travel.fishing_rod", "Fishing rod");
 	}
 	
-	public String getUnitNamePlural() {
+	public String getUnitNamePlural(IWResourceBundle iwrb) {
 		return iwrb.getLocalizedString("travel.fishing_rods", "Fishing rods");
 	}
 	
@@ -73,11 +74,11 @@ public class FishingBookingForm extends BookingForm {
 		return fRow;
 	}
 
-	public String getNumberOfDaysString() {
+	public String getNumberOfDaysString(IWResourceBundle iwrb) {
 		return iwrb.getLocalizedString("travel.number_of_days", "Number of days");
 	}
 
-	public String getPerDayString() {
+	public String getPerDayString(IWResourceBundle iwrb) {
 		return iwrb.getLocalizedString("travel.search.per_day","per day");
 	}
 }

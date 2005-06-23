@@ -34,6 +34,7 @@ import com.idega.data.IDOException;
 import com.idega.data.IDOFinderException;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.CalendarParameters;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -2360,11 +2361,11 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
 		return fRow;
 	}
 	
-	public String getUnitName() {
+	public String getUnitName(IWResourceBundle iwrb) {
 		return iwrb.getLocalizedString("travel.person", "Person");
 	}
 	
-	public String getUnitNamePlural() {
+	public String getUnitNamePlural(IWResourceBundle iwrb) {
 		return iwrb.getLocalizedString("travel.persons", "Persons");
 	}
 	
@@ -2376,11 +2377,11 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
 		return fRow;
 	}
 
-	public String getNumberOfDaysString() {
+	public String getNumberOfDaysString(IWResourceBundle iwrb) {
 		return iwrb.getLocalizedString("travel.number_of_days", "Number of days");
 	}
 
-	public String getPerDayString() {
+	public String getPerDayString(IWResourceBundle iwrb) {
 		return iwrb.getLocalizedString("travel.search.per_day","per day");
 	}
 
