@@ -11,12 +11,15 @@ import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
 import is.idega.idegaweb.travel.service.business.BookingBusiness;
 import is.idega.idegaweb.travel.service.business.ProductCategoryFactory;
 import is.idega.idegaweb.travel.service.business.ServiceHandler;
+
 import java.rmi.RemoteException;
 import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+
 import javax.ejb.FinderException;
+
 import com.idega.block.creditcard.business.CreditCardBusiness;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
 import com.idega.block.trade.stockroom.business.ResellerManager;
@@ -264,6 +267,10 @@ public class TravelBlock extends Block {
   
   protected boolean isSupplierManager() throws RemoteException {
 	  return tsm.hasRole(TradeConstants.SUPPLIER_MANAGER_ROLE_KEY);
+  }
+  
+  protected boolean isSupplierManagerBookerStaff() throws RemoteException {
+      return tsm.hasRole(TradeConstants.ROLE_BOOKING_BASKET);
   }
   
   private boolean isSupplierManager(IWContext iwc) {
