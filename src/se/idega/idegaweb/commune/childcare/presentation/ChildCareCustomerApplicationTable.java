@@ -13,6 +13,7 @@ import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.idegaweb.commune.care.business.CareConstants;
+import se.idega.idegaweb.commune.care.data.CareTime;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.care.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
@@ -41,15 +42,17 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.104 2005/06/21 11:06:06 anna Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.105 2005/06/23 16:28:25 malin Exp $
  * @since 12.2.2003 
  */
 
-public class ChildCareCustomerApplicationTable extends CommuneBlock {
+public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed from extends CommuneBlock 050622
 
 	//private final static String[] SUBMIT = { "ccot_submit", "Next" }, CANCEL = { "ccot_cancel", "Cancel" }, SUBMIT_ALERT_2 = { "ccot_alert_2", "Do you want to commit your choice? This can not be undone afterwards." }, NO_PLACEMENT = { "ccot_no_placement", "Detta barn har ingen placering" }, PLACED_AT = { "ccot_placed_at", "Placerad hos" }, PERSONAL_ID = { "ccot_personal_id", "Personal id" }, NAME = { "ccot_name", "Name" }, REQUEST_CONFIRM = { "ccot_request_sent_confirm", "Your request has been sent." }, NO_APPLICATION = { "ccot_no_application", "No application found" }, NEW_CARETIME = { "ccot_new_caretime", "New caretime" }, END_CARETIME = { "ccot_end_caretime", "Avsluta kontrakt" }, REQUEST_SUBJECT = { "ccot_request_subject", "Request for queue information" }, REQUEST_MESSAGE1 = { "ccot_request_message1", "Parents of" }, REQUEST_MESSAGE2 = 	{ "ccot_request_message2", "are requesting queue information for preschool" }, SIGN_TOOLTIP = new String[] {"ccot_sign_tooltip", "Sign contract"};
 	private final static String[] SUBMIT = { "ccot_submit", "Next" }, CANCEL = { "ccot_cancel", "Cancel" }, SUBMIT_ALERT_2 = { "ccot_alert_2", "Do you want to commit your choice? This can not be undone afterwards." }, PLACED_AT = { "ccot_placed_at", "Placerad hos" }, PERSONAL_ID = { "ccot_personal_id", "Personal id" }, NAME = { "ccot_name", "Name" }, REQUEST_CONFIRM = { "ccot_request_sent_confirm", "Your request has been sent." }, NO_APPLICATION = { "ccot_no_application", "No application found" }, NEW_CARETIME = { "ccot_new_caretime", "New caretime" }, END_CARETIME = { "ccot_end_caretime", "Avsluta kontrakt" }, REQUEST_SUBJECT = { "ccot_request_subject", "Request for queue information" }, REQUEST_MESSAGE1 = { "ccot_request_message1", "Parents of" }, REQUEST_MESSAGE2 = 	{ "ccot_request_message2", "are requesting queue information for preschool" }, SIGN_TOOLTIP = new String[] {"ccot_sign_tooltip", "Sign contract"};
 	private final static String[] SUBMIT_ANSWER = { "ccot_submit_answer", "Submit" };
+	private final static String[] FUTURE_CONTRACT= {"ccot_future_contract","Future contract"};
+	private final static String[] START_CARETIME= {"ccot_start_caretime","Start/caretime"};
 	
 	public final static int PAGE_1 = 1;
 	public final static int PAGE_2 = 2;
@@ -637,6 +640,12 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			School school = activeApplication.getProvider();
 			boolean hasBankID = new NBSLoginBusinessBean().hasBankLogin(activeApplication.getOwner());
 
+			//Collection allContracts = getChildCareBusiness(iwc).getContractsByApplication(((Integer)activeApplication.getPrimaryKey()).intValue());
+			
+			IWTimestamp today = new IWTimestamp();
+			IWTimestamp startdate = null;
+			String careTime = null;
+			int i = 1;
 			layoutTbl.setHeight(row++, 12);
 			layoutTbl.add(getSmallHeader(localize(PLACED_AT) + ":"), 1, row);
 			layoutTbl.add(getSmallText(school.getName()), 3, row++);
@@ -650,6 +659,30 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			cancelledContractStillActive |= activeApplication.getApplicationStatus() == getChildCareBusiness(iwc).getStatusWaiting();
 			cancelledContractStillActive |= activeApplication.getApplicationStatus() == getChildCareBusiness(iwc).getStatusParentTerminated();
 			if (activeApplication.getApplicationStatus() == getChildCareBusiness(iwc).getStatusReady() || cancelledContractStillActive) {
+				layoutTbl.setHeight(row++, 12);
+				Collection contracts = childCarebusiness.getContractsByApplication(((Integer)activeApplication.getPrimaryKey()).intValue());
+				Iterator iter = contracts.iterator();
+				
+				while (iter.hasNext()){
+					//Contract c = ((ChildCareContract) iter.next()).getContract();
+					ChildCareContract cc = ((ChildCareContract) iter.next());
+					startdate = new IWTimestamp (cc.getValidFromDate());
+					
+					careTime = getCareTime(cc.getCareTime(), iwc);
+					if (startdate != null && startdate.isLaterThan(today) && contracts.size() > 1){
+						if (i <= 1){
+							layoutTbl.add(getSmallHeader(localize(FUTURE_CONTRACT)), 1, row++);
+							i++;
+						}
+						layoutTbl.add(getSmallText(localize(START_CARETIME) + ":"), 1, row);
+						layoutTbl.add(getSmallText(startdate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT) + ", " + careTime), 3, row++);
+					}
+				}
+				
+				
+				
+								
+				layoutTbl.setHeight(row++, 12);
 				GenericButton careTimePopup = getButton(new GenericButton("new_care_time", localize(NEW_CARETIME)));
 				careTimePopup.setWindowToOpen(ChildCareWindow.class);
 				careTimePopup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, String.valueOf(ChildCareAdminWindow.METHOD_NEW_CARE_TIME));
@@ -702,6 +735,30 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		return layoutTbl;
 	}
 
+	
+	protected String getCareTime(String careTime, IWContext iwc) {
+		if (careTime == null) {
+			return "-";
+		}
+		
+		try {
+			Integer.parseInt(careTime);
+		}
+		catch (NumberFormatException nfe) {
+			try {
+				CareTime time = getChildCareBusiness(iwc).getCareTime(careTime);
+				return getResourceBundle().getLocalizedString(time.getLocalizedKey(), careTime);
+			}
+			catch (FinderException fe) {
+				log(fe);
+			}
+			catch (RemoteException re) {
+				log(re);
+			}
+		}
+		return careTime;
+	}
+	
 	/**
 	 * Construct the html for the second screen
 	 * @param layoutTbl
