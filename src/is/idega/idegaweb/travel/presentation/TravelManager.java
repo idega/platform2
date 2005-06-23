@@ -2,8 +2,10 @@ package is.idega.idegaweb.travel.presentation;
 
 import is.idega.idegaweb.travel.block.search.presentation.ServiceSearchAdmin;
 import is.idega.idegaweb.travel.block.search.presentation.ServiceSearchEditor;
+
 import java.rmi.RemoteException;
 import java.util.List;
+
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -187,9 +189,24 @@ public class TravelManager extends TravelBlock {
 			engines.addParameter(this.sAction, this.parameterEngines);
 			table.add(engines, 1, 1);
 			
+			Link browser = new Link(tsm.getIWResourceBundle().getLocalizedImageButton("travel.hotel_browser", "Hotel Browser"), TravelSupplierBrowser.class);
+			browser.addParameter("tmp_plugin", "is.idega.idegaweb.travel.service.hotel.presentation.HotelBrowser");
+			//table.add(browser, 1, 1);
+			
+			Link staffedit = new Link(tsm.getIWResourceBundle().getLocalizedImageButton("travel.staff", "Staff"), SupplierManagerStaffEditor.class);
+			//table.add(staffedit, 1, 1);
+			
 			Link lUpdatePassword = new Link(iUpdatePassword);
 			lUpdatePassword.setWindowToOpen(LoginChanger.class);
 			table.add(lUpdatePassword,1,1);
+		} else if(isSupplierManagerBookerStaff()) {  //TODO change the name and implementation because it isnt realy just booker staff that sees this page
+			Link hotelbrowser = new Link(tsm.getIWResourceBundle().getLocalizedImageButton("travel.hotel_browser", "Hotel Browser"), TravelSupplierBrowser.class);
+			hotelbrowser.addParameter("tmp_plugin", "is.idega.idegaweb.travel.service.hotel.presentation.HotelBrowser");
+			table.add(hotelbrowser, 1, 1);
+			
+			Link tourbrowser = new Link(tsm.getIWResourceBundle().getLocalizedImageButton("travel.tour_browser", "Tour Browser"), TravelSupplierBrowser.class);
+			tourbrowser.addParameter("tmp_plugin", "is.idega.idegaweb.travel.service.tour.presentation.TourBrowser");
+			table.add(tourbrowser, 1, 1);
 			
 		}else if (tsm.getSupplier() != null) {
 			Link lDesign = new Link(iDesign,ServiceDesigner.class);
