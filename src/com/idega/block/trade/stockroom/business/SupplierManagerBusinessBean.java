@@ -57,6 +57,42 @@ public class SupplierManagerBusinessBean extends IBOServiceBean  implements Supp
 		return manager;
 	}
 	
+	public User createSupplierManagerStaff(Group supplierManager, String userType, String name, String loginName, String password) throws RemoteException, CreateException {
+		try {
+			// Making sure the group type exist
+			getGroupBusiness().getGroupTypeFromString(userType);
+		} catch (FinderException e1) {
+			System.out.println("TravelBlock : groupType not found, creating");
+			getGroupBusiness().createVisibleGroupType(userType);
+		}
+
+		Group staffGroup = null;
+		if (userType.equals(SUPPLIER_MANAGER_BOOKING_STAFF_TYPE)) {
+			staffGroup = getSupplierManagerBookingStaffGroup(supplierManager);
+		} else if (userType.equals(SUPPLIER_MANAGER_ADMIN_GROUP_TYPE)) {
+			staffGroup = getSupplierManagerAdminGroup(supplierManager);
+		} 
+		
+		if (staffGroup != null) {
+			
+			User user;
+			UserBusiness ub = (UserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), UserBusiness.class);
+					
+			user = ub.insertUser(name, "", "", name, "staff", null, null, null);
+			LoginDBHandler.createLogin(user.getID(), loginName, password);
+			
+			if (user != null) {
+				staffGroup.addGroup(user);
+				user.setPrimaryGroup(staffGroup);
+				user.store();
+			}
+			return user;
+		} else {
+			throw new CreateException("Could not find the staffgroup");
+		}
+		
+	}
+	
 	public User createSupplierManagerBookingStaff(Group supplierManager, String name, String loginName, String password) throws RemoteException, CreateException {
 		try {
 			// Making sure the group type exist
@@ -74,7 +110,7 @@ public class SupplierManagerBusinessBean extends IBOServiceBean  implements Supp
 					
 			user = ub.insertUser(name, "", "", name, "staff", null, null, null);
 			LoginDBHandler.createLogin(user.getID(), loginName, password);
-	
+			
 			if (user != null) {
 				bookingStaffGroup.addGroup(user);
 				user.setPrimaryGroup(bookingStaffGroup);
@@ -86,6 +122,8 @@ public class SupplierManagerBusinessBean extends IBOServiceBean  implements Supp
 		}
 		
 	}
+	
+	
 	
 	public Group createSupplierManager(String name, String description, String adminName, String loginName, String password, IWUserContext iwuc) throws RemoteException, CreateException {
 		try {
@@ -123,7 +161,14 @@ public class SupplierManagerBusinessBean extends IBOServiceBean  implements Supp
 			System.out.println("TravelBlock : groupType not found, creating");
 			getGroupBusiness().createVisibleGroupType(SUPPLIER_MANAGER_RESELLER_GROUP_TYPE);
 		}
-		
+		try {
+			// Making sure the group type exist
+			getGroupBusiness().getGroupTypeFromString(SUPPLIER_MANAGER_BOOKING_STAFF_TYPE);
+		} catch (FinderException e1) {
+			System.out.println("TravelBlock : groupType not found, creating");
+			getGroupBusiness().createVisibleGroupType(SUPPLIER_MANAGER_BOOKING_STAFF_TYPE);
+		}
+
 		User user;
 		UserBusiness ub = (UserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), UserBusiness.class);
 		
@@ -294,13 +339,70 @@ public class SupplierManagerBusinessBean extends IBOServiceBean  implements Supp
 		return null;
 	}
 	
-	private Group getSupplierManagerBookingStaffGroup(Group supplierManager) throws RemoteException, CreateException {
+	private Group getSupplierManagerUserGroup(Group supplierManager) throws RemoteException {
+		Collection coll = getGroupBusiness().getChildGroups(supplierManager, new String[]{SUPPLIER_MANAGER_USER_GROUP_TYPE}, true);
+		if (coll != null && !coll.isEmpty()) {
+			Iterator iter = coll.iterator();
+			return (Group) iter.next();
+		}
+		return null;
+	}
+	
+	public Collection getStaffGroupTypes(Group supplierManager) throws RemoteException {
+		Collection coll = getGroupBusiness().getChildGroups(getSupplierManagerUserGroup(supplierManager));
+		Collection v = new Vector();
+		Iterator iter = coll.iterator();
+		while (iter.hasNext()) {
+			Group g = (Group) iter.next();
+			v.add(g.getGroupType());
+			
+		}
+		return v;
+	}
+	
+	public Integer getGroupIDFromGroupType(Group supplierManager, String grouptype) throws RemoteException{
+		Group staffGroup = null;
+		if(grouptype.equals(SUPPLIER_MANAGER_BOOKING_STAFF_TYPE)) {
+			staffGroup = getSupplierManagerBookingStaffGroup(supplierManager);
+		} else if (grouptype.equals(SUPPLIER_MANAGER_ADMIN_GROUP_TYPE)) {
+			staffGroup = getSupplierManagerAdminGroup(supplierManager);
+		}
+		Integer groupid = new Integer(staffGroup.getPrimaryKey().toString());
+		return groupid;
+	}
+	
+	public Group getGroupFromGroupType(Group supplierManager, String grouptype) throws RemoteException{
+		Group staffGroup = null;
+		if(grouptype.equals(SUPPLIER_MANAGER_BOOKING_STAFF_TYPE)) {
+			staffGroup = getSupplierManagerBookingStaffGroup(supplierManager);
+		} else if (grouptype.equals(SUPPLIER_MANAGER_ADMIN_GROUP_TYPE)) {
+			staffGroup = getSupplierManagerAdminGroup(supplierManager);
+		}
+		return staffGroup;
+	}
+	
+	public Collection getStaffGroupNames(Group supplierManager) throws RemoteException {
+		Collection coll = getGroupBusiness().getChildGroups(getSupplierManagerUserGroup(supplierManager));
+		Collection v = new Vector();
+		Iterator iter = coll.iterator();
+		while (iter.hasNext()) {
+			Group g = (Group) iter.next();
+			v.add(g.getName());	
+		}
+		return v;
+	}
+	
+	private Group getSupplierManagerBookingStaffGroup(Group supplierManager) throws RemoteException {
+		return getSupplierManagerStaffGroup(supplierManager, SUPPLIER_MANAGER_BOOKING_STAFF_TYPE, TradeConstants.ROLE_BOOKING_BASKET);
+	}
+	
+	private Group getSupplierManagerStaffGroup(Group supplierManager, String groupType, String role) throws RemoteException {
 		Collection coll = getGroupBusiness().getChildGroups(supplierManager, new String[]{SUPPLIER_MANAGER_USER_GROUP_TYPE}, true);
 		if (coll != null) {
 			Iterator iter = coll.iterator();
 			if (iter.hasNext()) {
 				Group userGroup = (Group) iter.next();
-				Collection coll2 = getGroupBusiness().getChildGroups(userGroup, new String[]{SUPPLIER_MANAGER_BOOKING_STAFF_TYPE}, true);
+				Collection coll2 = getGroupBusiness().getChildGroups(userGroup, new String[]{groupType}, true);
 				if (coll2 != null && !coll2.isEmpty()) {
 					Iterator iter2 = coll2.iterator();
 					if (iter2.hasNext()) {
@@ -308,10 +410,15 @@ public class SupplierManagerBusinessBean extends IBOServiceBean  implements Supp
 						return bookingStaffGroup;
 					}
 				} else {
-					Group bookingStaffGroup = getGroupBusiness().createGroup("Booking staff", "Booking staff group for "+supplierManager.getName(), SUPPLIER_MANAGER_BOOKING_STAFF_TYPE, false);
+					try {
+					Group bookingStaffGroup = getGroupBusiness().createGroup("Booking staff", "Booking staff group for "+supplierManager.getName(), groupType, false);
 					userGroup.addGroup(bookingStaffGroup);
-					getIWMainApplication().getAccessController().addRoleToGroup(TradeConstants.ROLE_BOOKING_BASKET, bookingStaffGroup, getIWApplicationContext());
+					getIWMainApplication().getAccessController().addRoleToGroup(role, bookingStaffGroup, getIWApplicationContext());
 					return bookingStaffGroup;
+					} catch (CreateException e) {
+						e.printStackTrace();
+						return null;
+					}
 				}
 			}
 			return null;
@@ -669,6 +776,28 @@ public class SupplierManagerBusinessBean extends IBOServiceBean  implements Supp
 	
 	public List getUsersIncludingResellers(Supplier supplier) throws RemoteException, FinderException {
 		return getUsersIncludingResellers(supplier, false);
+	}
+	
+	public List getSupplierManagerStaffUsers(Group supplierManager) throws RemoteException, FinderException{
+		Group sGroup = null;
+		List users = new Vector();
+		
+		sGroup = getSupplierManagerBookingStaffGroup(supplierManager);
+		Collection coll = getUserBusiness().getUsersInGroup(sGroup);
+		
+		sGroup = getSupplierManagerAdminGroup(supplierManager);
+		Collection coll2 = getUserBusiness().getUsersInGroup(sGroup);
+		
+		List adminusers =new Vector(coll2);
+		List bookingusers = new Vector(coll);
+		
+		users.addAll(adminusers);
+		users.addAll(bookingusers);
+	
+		if (users != null) {
+			java.util.Collections.sort(users, new com.idega.util.GenericUserComparator(com.idega.util.GenericUserComparator.NAME));
+		}
+		return users;
 	}
 	
 	public List getUsersIncludingResellers(Supplier supplier, Object objBetweenResellers) throws RemoteException, FinderException {
