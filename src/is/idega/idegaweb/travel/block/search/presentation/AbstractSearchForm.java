@@ -1664,7 +1664,7 @@ public abstract class AbstractSearchForm extends TravelBlock {
 	}
 
 	private String getUnitName() {
-		return bf.getUnitName();
+		return bf.getUnitName(iwrb);
 	}
 	
 	protected int getCount() {

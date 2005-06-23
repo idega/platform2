@@ -201,7 +201,8 @@ public class ProductDetailFrame extends TravelBlock {
 			while (iter.hasNext()) {
 				item = (BasketEntry) iter.next();
 				booking = (GeneralBooking) item.getItem();
-				float price = getBooker(iwc).getBookingPrice(booking);
+				float price = getBooker(iwc).getBookingPrice(getBooker(iwc).getMultibleBookings(booking));
+//				float price = getBooker(iwc).getBookingPrice(booking);
 				currency = getBooker(iwc).getBookingCurrency(booking);
 				totalPrice += price;
 				prod = booking.getService().getProduct();
@@ -561,12 +562,12 @@ public class ProductDetailFrame extends TravelBlock {
 		table.add(getText(iwrb.getLocalizedString("travel.price","Price")+":"+seperator),column, row);
 		table.add(getOrangeText(currencyFormat.format(price*count)+Text.NON_BREAKING_SPACE+currAbbr), column, row);
 		if (days > 1) {
-			table.add(getOrangeText(Text.NON_BREAKING_SPACE+bookingForm.getPerDayString()), column, row);
+			table.add(getOrangeText(Text.NON_BREAKING_SPACE+bookingForm.getPerDayString(iwrb)), column, row);
 //			table.add(getOrangeText(Text.NON_BREAKING_SPACE+iwrb.getLocalizedString("travel.search.per_night","per night")), column, row);
 		}
 		
 		if (count > 1) {
-			table.add(getOrangeText(" ("+currencyFormat.format(price)+Text.NON_BREAKING_SPACE+currAbbr+" per "+bookingForm.getUnitName()+")"), column, row);
+			table.add(getOrangeText(" ("+currencyFormat.format(price)+Text.NON_BREAKING_SPACE+currAbbr+" per "+bookingForm.getUnitName(iwrb)+")"), column, row);
 		}
 		table.addBreak(column, row);
 		table.add(getText(iwrb.getLocalizedString("travel.search.total","Total")+":"+seperator), column, row);
