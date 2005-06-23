@@ -121,7 +121,8 @@ public class HandicapMemberInfo extends GolfBlock {
 
 		Member member = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(Integer.parseInt(iMemberID));
 		MemberInfo memberInfo = ((MemberInfoHome) IDOLookup.getHomeLegacy(MemberInfo.class)).findByPrimaryKey(Integer.parseInt(iMemberID));
-		int order = memberInfo.getNumberOfRecords("handicap", "<", "" + member.getHandicap()) + 1;
+		//Optimization by Sigtryggur 23.06.05
+		int order = memberInfo.getNumberOfRecords("handicap", "<", "" + memberInfo.getHandicap()) + 1;
 
 		Text handicap = getBigHeader(iwrb.getLocalizedString("handicap.handicap", "Handicap"));
 		table.add(handicap, 1, 3);

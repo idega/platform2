@@ -241,16 +241,14 @@ public class MemberBMPBean extends GenericEntity implements Member {
 
   public int getMainUnionID() throws SQLException {
     int skilari=1;
+	//Optimization by Sigtryggur 23.06.05
+	//Criteria applyed in the query. Not afterwards. Less data for the app server to fetch.
+	//Also used union_id instead of wildcard in the select part of the query. Again less data to transfer
+    UnionMemberInfo[] union = (UnionMemberInfo[]) ((UnionMemberInfo) IDOLookup.instanciateEntity(UnionMemberInfo.class)).findAll("select union_id from union_member_info where member_id = "+this.getID()+" and member_status='A' and membership_type = 'main'");
 
-    UnionMemberInfo[] union = (UnionMemberInfo[]) ((UnionMemberInfo) IDOLookup.instanciateEntity(UnionMemberInfo.class)).findAll("select * from union_member_info where member_id = "+this.getID());
-
-    for( int i=0; i < union.length ; i++ ){
-      if( "main".equalsIgnoreCase(union[i].getMembershipType()) && "A".equalsIgnoreCase(union[i].getMemberStatus())) {
-        skilari = union[i].getUnionID();
-		break;
-      }
+    if (union != null && union.length > 0) {
+        skilari = skilari = union[0].getUnionID(); 
     }
-
 	//TABLE NOT USED ANY MORE!
 //    try{
 //      if ( union.length == 0 ) {
