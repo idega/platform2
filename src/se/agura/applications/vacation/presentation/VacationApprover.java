@@ -1,5 +1,5 @@
 /*
- * $Id: VacationApprover.java,v 1.13 2005/01/20 09:00:17 anna Exp $ Created on
+ * $Id: VacationApprover.java,v 1.14 2005/06/23 06:02:17 anna Exp $ Created on
  * 18.11.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -34,7 +34,7 @@ import com.idega.user.data.User;
  * Last modified: 18.11.2004 10:21:40 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna </a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class VacationApprover extends VacationBlock {
 
@@ -246,7 +246,7 @@ public class VacationApprover extends VacationBlock {
 			form.add(logs);
 			form.add(new Break());
 		}
-		//birtir uppl‡singar um sendanda umsóknar -ac
+		//shows info about the applier of the vacation request... 
 		VacationRequest application = null;
 		try {
 			application = getBusiness(iwc).getVacationRequest(iwc.getParameter(PARAMETER_PRIMARY_KEY_VAC));
@@ -259,7 +259,7 @@ public class VacationApprover extends VacationBlock {
 		
 		form.add(getPersonInfo(iwc, user)); 
 		form.add(new Break());
-		//hinga›
+		//...stops here
 		form.add(showVacationRequest(iwc, vacation));
 		form.add(new Break());
 		form.add(handleRequest(iwc));
