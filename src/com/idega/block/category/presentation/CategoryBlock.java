@@ -37,13 +37,16 @@ public abstract class CategoryBlock extends Block implements ICDynamicPageTrigge
 	
 	
 	public CategoryBlock(){
-		IWProperty property = IWContext.getInstance().getApplicationSettings().getIWProperty("autocreate_categories");
-		if(property != null){
-			try {
-				autocreate = Boolean.getBoolean(property.getValue());
-			}
-			catch (RuntimeException e) {
-				//Do nothing, keep old value;
+		IWContext iwc = IWContext.getInstance();
+		if(iwc!=null){
+			IWProperty property = iwc.getApplicationSettings().getIWProperty("autocreate_categories");
+			if(property != null){
+				try {
+					autocreate = Boolean.getBoolean(property.getValue());
+				}
+				catch (RuntimeException e) {
+					//Do nothing, keep old value;
+				}
 			}
 		}
 	}
