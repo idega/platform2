@@ -27,6 +27,8 @@ import is.idega.idegaweb.golf.tournament.presentation.TournamentList;
 import is.idega.idegaweb.golf.tournament.presentation.TournamentStartingtimeList;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import javax.ejb.FinderException;
@@ -167,24 +169,26 @@ public class TournamentBusinessBean extends IBOServiceBean implements Tournament
 	}
 
 	public void removeTournamentTableApplicationAttribute(IWContext iwc) {
-//		Enumeration enumer = modinfo.getServletContext().getAttributeNames();
-//		String myString = "";
-//		List v = new Vector();
-//		while (enumer.hasMoreElements()) {
-//			v.add(enumer.nextElement());
-//		}
-//		Iterator iter = v.iterator();
-//		while (iter.hasNext()) {
-//			myString = (String) iter.next();
-//			if (myString.indexOf("tournament_table_union_id_") != -1) {
-//				modinfo.removeApplicationAttribute(myString);
-//			}
-//			else if (myString.indexOf("tournament_dropdownmenu_ordered_by_union_clubadmin") != -1) {
-//				modinfo.removeApplicationAttribute(myString);
-//			}
-//		}
-//
-//		removeTournamentBoxApplication(modinfo);
+		
+		//Gimmi added again since TournamentSelector still uses this...
+		Enumeration enumer = iwc.getServletContext().getAttributeNames();
+		String myString = "";
+		List v = new Vector();
+		while (enumer.hasMoreElements()) {
+			v.add(enumer.nextElement());
+		}
+		Iterator iter = v.iterator();
+		while (iter.hasNext()) {
+			myString = (String) iter.next();
+			if (myString.indexOf("tournament_table_union_id_") != -1) {
+				iwc.removeApplicationAttribute(myString);
+			}
+			else if (myString.indexOf("tournament_dropdownmenu_ordered_by_union_clubadmin") != -1) {
+				iwc.removeApplicationAttribute(myString);
+			}
+		}
+
+		removeTournamentBoxApplication(iwc);
 		
 		
 		//Gimmi and eiki: changed to block caching!
