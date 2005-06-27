@@ -31,6 +31,7 @@ import java.util.Vector;
 import javax.ejb.FinderException;
 
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOQuery;
 import com.idega.data.SimpleQuerier;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -1821,18 +1822,20 @@ public List findGuestsBySocialSecurityNumber(IWContext modinfo, String socialSec
 
 
 public List findGuestsBySocialSecurityNumber(IWContext modinfo, Vector ssn) {
-    Vector returner = new Vector();
-    if (ssn != null) {
-        String[] flipp = null;
-        for (int i = 0; i < ssn.size(); i++) {
+    //Optimized by Sigtryggur 27.6.05
+    Vector returner = new Vector(ssn);
+    Vector reducer = new Vector();
+    if (returner != null) {
+        String[] ssnString = null;
             try {
-                flipp = SimpleQuerier.executeStringQuery("Select member_id from member where social_security_number = '"+ssn.get(i)+"'");
-                if (flipp.length == 0 ) {
-                    returner.add(ssn.get(i));
+                IDOQuery idoQuery = IDOQuery.getStaticInstance();
+                ssnString = SimpleQuerier.executeStringQuery("Select social_security_number from member where social_security_number in ("+idoQuery.appendCommaDelimitedWithinSingleQuotes(returner)+")");                
+                for (int i=0; i<ssnString.length; i++ ) {
+                    reducer.add(ssnString[i]);
                 }
+                returner.removeAll(reducer);
             }catch (Exception e){
             }
-        }
     }
     return returner;
 }
@@ -1896,13 +1899,13 @@ public Member[] findMembersByName(IWContext modinfo, Vector name) throws SQLExce
             switch (manyNames) {
                 case 0: break;
                 case 1:
-                        tempSQLString = "Select * from member, union_member_info where member.member_id = union_member_info.member_id AND first_name like '%"+firstName+"%'";
+                        tempSQLString = "Select * from member, union_member_info where member.member_id = union_member_info.member_id AND first_name like '"+firstName+"%'";
                         break;
                 case 2:
-                        tempSQLString = "Select * from member, union_member_info where member.member_id = union_member_info.member_id AND first_name like '%"+firstName+"%' and (last_name like '%"+lastName+"%' OR middle_name like '%"+lastName+"%')";
+                        tempSQLString = "Select * from member, union_member_info where member.member_id = union_member_info.member_id AND first_name like '"+firstName+"%' and (last_name like '"+lastName+"%' OR middle_name like '"+lastName+"%')";
                         break;
                 default:
-                        tempSQLString = "Select * from member, union_member_info where member.member_id = union_member_info.member_id AND first_name like '%"+firstName+"%' and middle_name like '%"+middleName+"%' and last_name like '%"+lastName+"%'";
+                        tempSQLString = "Select * from member, union_member_info where member.member_id = union_member_info.member_id AND first_name like '"+firstName+"%' and middle_name like '"+middleName+"%' and last_name like '"+lastName+"%'";
                         break;
             }
 
@@ -1943,7 +1946,6 @@ public Member[] findMembersByName(IWContext modinfo, Vector name) throws SQLExce
 public Member[] findMembersBySocialSecurityNumber(IWContext modinfo,Vector socialSecurityNumbers) throws SQLException {
 
     Member[] members = null;
-    String securityNumber;
 
 
 /*
@@ -1984,32 +1986,9 @@ public Member[] findMembersBySocialSecurityNumber(IWContext modinfo,Vector socia
     SQLString += "order by social_security_number";
 */
 
-    String SQLString = "SELEct * from member where ";
-    int numberInserted = 0;
-    for (int i = 0; i < socialSecurityNumbers.size() ; i++) {
-            securityNumber = (String) socialSecurityNumbers.elementAt(i);
-            if (securityNumber.equals("")) {
-                securityNumber = "idega_engin_kennitala";
-            }
-            members = (Member[]) ((Member) IDOLookup.instanciateEntity(Member.class)).findAll("Select * from member where social_security_number like '%"+securityNumber+"%' ");
-            if (members.length > 0) {
-              for (int j = 0; j < members.length; j++) {
-                  if (numberInserted != 0) {
-                      SQLString += " OR ";
-                  }
-                  else {++numberInserted;}
-
-                  SQLString += "member_id = "+members[j].getID();
-              }
-            }
-    }
-    SQLString += " order by social_security_number";
-
-    try {
-      members = (Member[]) ((Member) IDOLookup.instanciateEntity(Member.class)).findAll(SQLString);
-    }
-    catch (SQLException s){
-    }
+    //Optimized by Sigtryggur 27.6.05
+    IDOQuery idoQuery = IDOQuery.getStaticInstance();
+    members = (Member[]) ((Member) IDOLookup.instanciateEntity(Member.class)).findAll("Select * from member where social_security_number in ("+idoQuery.appendCommaDelimitedWithinSingleQuotes(socialSecurityNumbers)+") order by social_security_number");
     return members;
 
 }
