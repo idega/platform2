@@ -308,8 +308,9 @@ public class MemberBMPBean extends GenericEntity implements Member {
   }
 
   public float getHandicap()throws SQLException{
-    if (getMemberInfo() != null ){
-            return getMemberInfo().getHandicap();
+    MemberInfo memberInfo = getMemberInfo();
+    if (memberInfo != null ){
+            return memberInfo.getHandicap();
     }
     else
     {
