@@ -1588,16 +1588,23 @@ public class SchoolUserEditor extends Block {
 			if (!iwc.getParameter(sname).equals(""))
 				headmaster = new Name(iwc.getParameter(sname));
 			
+			
 			String hmEmail = iwc.getParameter(semail);
 			String hmPhone = iwc.getParameter(sphone);
 			String hmMobile = iwc.getParameter(smobilephone);
+			
+			if (hmEmail != null && !hmEmail.equals("") || hmPhone != null && !hmPhone.equals("")){
+				headmaster = new Name(iwc.getParameter(sname)); // this is to make it possible to store only a number or email as contact
+			}
+			
+			
 			int schdep_id = -1;
 
 			if (sDep_ID != null && !sDep_ID.equals("")) {
 				schdep_id = Integer.parseInt(sDep_ID);
 			}
 
-			if (headmaster != null && !headmaster.equals("") && priGroup != null) {
+			if (headmaster != null && !headmaster.equals("") && priGroup != null || (hmEmail != null && !hmEmail.equals("")) || (hmPhone != null && !hmPhone.equals("")) ) {
 				final String parameterKey = getIsEconomicalResponsibleKey("");
 				final boolean isEconomicalResponsible = Boolean.valueOf(iwc.getParameter(parameterKey)).booleanValue();
 				User user = getUserBusiness(iwc).createUser(headmaster.getFirstName(), headmaster.getMiddleName(), headmaster.getLastName(), ((Integer) priGroup.getPrimaryKey()).intValue());
