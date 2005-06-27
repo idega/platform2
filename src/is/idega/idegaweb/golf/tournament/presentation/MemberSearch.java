@@ -361,7 +361,7 @@ public class MemberSearch extends GolfBlock {
 		Member[] members = null;
 		String securityNumber;
 		String union_id = modinfo.getParameter("search_for_member_in_union_id");
-		String SQLString = "Select * from member, union_member_info where member.member_id = union_member_info.member_id AND union_member_info.MEMBERSHIP_TYPE = 'main' AND (";
+		String SQLString = "Select m.* from member m, union_member_info umi where m.member_id = umi.member_id AND umi.MEMBERSHIP_TYPE = 'main' AND (";
 
 		int numberInserted = 0;
 
@@ -372,7 +372,7 @@ public class MemberSearch extends GolfBlock {
 					securityNumber = "idega_engin_kennitala";
 				}
 
-				members = (Member[]) ((Member) IDOLookup.instanciateEntity(Member.class)).findAll("Select * from member where social_security_number like '%" + securityNumber + "%' ");
+				members = (Member[]) ((Member) IDOLookup.instanciateEntity(Member.class)).findAll("Select * from member where social_security_number like '" + securityNumber + "%' ");
 				if (members.length > 0) {
 					for (int j = 0; j < members.length; j++) {
 						if (numberInserted != 0) {
@@ -382,7 +382,7 @@ public class MemberSearch extends GolfBlock {
 							++numberInserted;
 						}
 
-						SQLString += "member_id = " + members[j].getID();
+						SQLString += "m.member_id = " + members[j].getID();
 					}
 				}
 			}
@@ -396,7 +396,7 @@ public class MemberSearch extends GolfBlock {
 		}
 
 		//SQLString += "order by first_name,last_name,middle_name";
-		SQLString += " order by social_security_number";
+		SQLString += " order by m.social_security_number";
 		try {
 			members = (Member[]) ((Member) IDOLookup.instanciateEntity(Member.class)).findAll(SQLString);
 		}
