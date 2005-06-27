@@ -396,7 +396,7 @@ public class MemberSearch extends GolfBlock {
 		}
 
 		//SQLString += "order by first_name,last_name,middle_name";
-		SQLString += "order by social_security_number";
+		SQLString += " order by social_security_number";
 		try {
 			members = (Member[]) ((Member) IDOLookup.instanciateEntity(Member.class)).findAll(SQLString);
 		}
