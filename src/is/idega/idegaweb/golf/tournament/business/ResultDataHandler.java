@@ -183,11 +183,11 @@ public class ResultDataHandler {
       // gimmi done
 
       if ( gender_ != null )
-	sql.append(" and gender = '"+gender_+"'");
+	sql.append(" and m.gender = '"+gender_+"'");
       if ( tournamentGroupId_ != -1 )
-	sql.append(" and tournament_group_id = "+Integer.toString(tournamentGroupId_));
+	sql.append(" and tm.tournament_group_id = "+Integer.toString(tournamentGroupId_));
 
-      sql.append(" order by first_name,middle_name,last_name");
+      sql.append(" order by m.first_name,m.middle_name,m.last_name");
 
     return sql.toString();
   }
