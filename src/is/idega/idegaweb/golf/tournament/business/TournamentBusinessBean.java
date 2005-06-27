@@ -119,7 +119,7 @@ public class TournamentBusinessBean extends IBOServiceBean implements Tournament
 		then.setHour(0);
 		then.setMinute(0);
 		then.setSecond(0);
-		String query = "select * from tournament where REGISTRATION_ONLINE like 'Y' and LAST_REGISTRATION_DATE <= '" + then.toSQLString() +
+		String query = "select * from tournament where REGISTRATION_ONLINE = 'Y' and LAST_REGISTRATION_DATE <= '" + then.toSQLString() +
 		"' AND LAST_REGISTRATION_DATE > '" + now.toSQLString() + "' and FIRST_REGISTRATION_DATE < '" + now.toSQLString() + "' order by start_time, name";
 		//System.out.println(query);
 		Tournament[] tourns = (Tournament[]) tournament.findAll(query);
