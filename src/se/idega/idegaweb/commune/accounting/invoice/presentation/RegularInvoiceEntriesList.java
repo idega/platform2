@@ -1077,7 +1077,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 			public void setCreatedSign(String name) {}
 			public void setEditDate(Date date) {}
 			public void setEditSign(String name) {}
-			public void delete() {}
+			//public void delete() {}
 			public void store() throws IDOStoreException {}
 			public IDOEntityDefinition getEntityDefinition() {return null;}
 			public EJBLocalHome getEJBLocalHome() throws EJBException {return null;}

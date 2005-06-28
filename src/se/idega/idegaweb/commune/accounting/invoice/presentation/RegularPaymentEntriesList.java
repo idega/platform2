@@ -1121,8 +1121,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 			public void setSchoolTypeId(int id) {
 			}
 
-			public void delete() {
-			}
+			//public void delete() {}
 
 			public void store() throws IDOStoreException {
 			}
