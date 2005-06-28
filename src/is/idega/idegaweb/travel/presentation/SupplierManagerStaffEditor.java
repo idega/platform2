@@ -71,7 +71,7 @@ public class SupplierManagerStaffEditor extends TravelManager {
 			showForm(iwc);
 		} else if (action != null && action.equals(ACTION_UPDATE_USER)) {
 			updateUser(iwc);
-			add(super.getResourceBundle().getLocalizedString("travel.user_updated","User "+getUser(iwc).getName()+" updated."));
+			add(getUser(iwc).getName()+super.getResourceBundle().getLocalizedString("travel.user_updated"," updated."));
 			showUserlist(iwc);
 		} else {
 			showUserlist(iwc);
