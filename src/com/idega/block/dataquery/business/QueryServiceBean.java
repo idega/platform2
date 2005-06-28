@@ -52,6 +52,7 @@ import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.IWContext;
+import com.idega.repository.data.RefactorClassRegistry;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
@@ -154,16 +155,16 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 	}
 	
 	public Collection getRelatedQueryEntityParts(QueryEntityPart sourceEntityPart, int relationDepth)throws ClassNotFoundException{
-			return getRelatedQueryEntityParts(Class.forName(sourceEntityPart.getBeanClassName()),relationDepth);	
+			return getRelatedQueryEntityParts(RefactorClassRegistry.forName(sourceEntityPart.getBeanClassName()),relationDepth);	
 		}
 	
 	public Collection getRelatedQueryEntityParts(String sourceEntity, int relationDepth)throws ClassNotFoundException{
-		return getRelatedQueryEntityParts(Class.forName(sourceEntity),relationDepth);	
+		return getRelatedQueryEntityParts(RefactorClassRegistry.forName(sourceEntity),relationDepth);	
 	}
 	
 	public Collection getManyToManyEntityDefinitions(QueryEntityPart entityPart){
 		try {
-			IDOEntity entity = IDOLookup.create(Class.forName(entityPart.getBeanClassName()));
+			IDOEntity entity = IDOLookup.create(RefactorClassRegistry.forName(entityPart.getBeanClassName()));
 			return Arrays.asList(entity.getEntityDefinition().getManyToManyRelatedEntities());
 		}
 		catch (ClassNotFoundException e) {

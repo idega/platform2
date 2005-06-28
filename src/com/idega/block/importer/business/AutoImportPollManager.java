@@ -17,6 +17,7 @@ import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBOService;
 import com.idega.idegaweb.IWMainApplication;
+import com.idega.repository.data.RefactorClassRegistry;
 
 /**
  * AutoImportPollManager handles the action when file(s) are found in folders for automatic imports
@@ -63,7 +64,7 @@ public class AutoImportPollManager extends BasePollManager {
 	 */
 	private void processFile(File filePath) {
 		try {
-			ImportFile file = (ImportFile) Class.forName(fileClass).newInstance();
+			ImportFile file = (ImportFile) RefactorClassRegistry.forName(fileClass).newInstance();
 			file.setFile(filePath);
 			handler.setImportFile(file);
 
@@ -137,7 +138,7 @@ public class AutoImportPollManager extends BasePollManager {
 	}
 	
   	public ImportFileHandler getImportFileHandler(String handlerClass) throws ClassNotFoundException, IBOLookupException {
-  		Class importHandlerInterfaceClass = Class.forName(handlerClass);
+  		Class importHandlerInterfaceClass = RefactorClassRegistry.forName(handlerClass);
 		ImportFileHandler handler = (ImportFileHandler) getServiceInstance(importHandlerInterfaceClass);
 	    return handler;
   	}

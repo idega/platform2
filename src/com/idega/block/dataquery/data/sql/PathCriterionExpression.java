@@ -15,6 +15,7 @@ import com.idega.data.IDOEntity;
 import com.idega.data.IDOEntityDefinition;
 import com.idega.data.IDOEntityField;
 import com.idega.data.IDORelationshipException;
+import com.idega.repository.data.RefactorClassRegistry;
 
 /**
  * <p>Title: idegaWeb</p>
@@ -198,7 +199,7 @@ public class PathCriterionExpression implements DynamicExpression {
   private IDOEntity getInstance(String className) throws ExpressionException {
     Class entityClass = null;
     try {
-      entityClass = Class.forName(className);
+      entityClass = RefactorClassRegistry.forName(className);
     }
     catch (ClassNotFoundException ex) {
     //TODO: thi add exception handling

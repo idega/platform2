@@ -15,6 +15,7 @@ import com.idega.data.IDOEntityDefinition;
 import com.idega.data.IDOEntityField;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.repository.data.RefactorClassRegistry;
 import com.idega.util.StringHandler;
 import com.idega.xml.XMLElement;
 
@@ -189,7 +190,7 @@ public class QueryConditionPart implements QueryPart {
 
 	private IDOEntityDefinition getIDOEntityDefinition() throws IDOLookupException, ClassNotFoundException{
 		if(entityDef==null){
-			entityDef = IDOLookup.getEntityDefinitionForClass(Class.forName(getEntityClassName()));
+			entityDef = IDOLookup.getEntityDefinitionForClass(RefactorClassRegistry.forName(getEntityClassName()));
 		}
 		return entityDef;
 	}

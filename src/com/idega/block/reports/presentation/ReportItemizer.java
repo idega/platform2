@@ -23,6 +23,7 @@ import com.idega.presentation.ui.SelectionDoubleBox;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.util.Edit;
+import com.idega.repository.data.RefactorClassRegistry;
 
 
 public class ReportItemizer extends Block implements Reports{
@@ -342,7 +343,7 @@ T.add(Edit.formatText("Display order"),1,a++);
 
   private PresentationObject getEntityTable(ReportEntity RE){
     try{
-    IDOLegacyEntity ent = (IDOLegacyEntity)Class.forName(RE.getEntity()).newInstance();
+    IDOLegacyEntity ent = (IDOLegacyEntity) RefactorClassRegistry.forName(RE.getEntity()).newInstance();
     Table T = new Table();
 
     T.add(Edit.formatText("Display"),1,1);
@@ -363,7 +364,7 @@ T.add(Edit.formatText("Display order"),1,a++);
 
   private PresentationObject getEntityForm(ReportEntity RE){
     try{
-    IDOLegacyEntity ent = (IDOLegacyEntity)Class.forName(RE.getEntity()).newInstance();
+    IDOLegacyEntity ent = (IDOLegacyEntity) RefactorClassRegistry.forName(RE.getEntity()).newInstance();
     Table T = new Table();
 
     T.add(Edit.formatText("Display"),1,1);
@@ -397,7 +398,7 @@ T.add(Edit.formatText("Display order"),1,a++);
     try{
       int re_id = Integer.parseInt(iwc.getParameter("re_id"));
       ReportEntity RE = ((com.idega.block.reports.data.ReportEntityHome)com.idega.data.IDOLookup.getHomeLegacy(ReportEntity.class)).findByPrimaryKeyLegacy(re_id);
-      IDOLegacyEntity ent = (IDOLegacyEntity)Class.forName(RE.getEntity()).newInstance();
+      IDOLegacyEntity ent = (IDOLegacyEntity)RefactorClassRegistry.forName(RE.getEntity()).newInstance();
       String[] s = iwc.getParameterValues("box");
       int len = s.length;
       String[] columns  = ent.getVisibleColumnNames();

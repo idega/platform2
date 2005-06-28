@@ -1,6 +1,6 @@
 /*
 
- * $Id: ContractTagBMPBean.java,v 1.6 2003/07/01 15:01:00 roar Exp $
+ * $Id: ContractTagBMPBean.java,v 1.7 2005/06/28 13:14:48 thomas Exp $
 
  *
 
@@ -26,6 +26,7 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 import com.idega.data.IDOQuery;
+import com.idega.repository.data.RefactorClassRegistry;
 
 
 
@@ -173,7 +174,7 @@ public class ContractTagBMPBean extends com.idega.data.GenericEntity implements 
 		try{
 			String value = getStringColumnValue(getColumnNameType());
 			if (value != null){
-				return Class.forName(value);
+				return RefactorClassRegistry.forName(value);
 			}
 		}catch(ClassNotFoundException ex){		}
 		return null;

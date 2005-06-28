@@ -27,6 +27,7 @@ import com.idega.presentation.ui.SelectionDoubleBox;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.util.Edit;
+import com.idega.repository.data.RefactorClassRegistry;
 
 
 public class ReportItemWindow extends IWAdminWindow{
@@ -352,7 +353,7 @@ public class ReportItemWindow extends IWAdminWindow{
 
   private PresentationObject getEntityTable(ReportEntity RE){
     try{
-    IDOLegacyEntity ent = (IDOLegacyEntity)Class.forName(RE.getEntity()).newInstance();
+    IDOLegacyEntity ent = (IDOLegacyEntity)RefactorClassRegistry.forName(RE.getEntity()).newInstance();
     Table T = new Table();
 
     T.add(formatText("Display"),1,1);
@@ -373,7 +374,7 @@ public class ReportItemWindow extends IWAdminWindow{
 
   private PresentationObject getEntityForm(String dataClassName,int iCategoryId){
     try{
-    IDOLegacyEntity ent = (IDOLegacyEntity)Class.forName(dataClassName).newInstance();
+    IDOLegacyEntity ent = (IDOLegacyEntity) RefactorClassRegistry.forName(dataClassName).newInstance();
     Table T = new Table();
 
     T.add(formatText("Display"),1,1);
@@ -409,7 +410,7 @@ public class ReportItemWindow extends IWAdminWindow{
       String dataClassName = iwc.getParameter("re_dataclass");
 			System.err.println(dataClassName);
 			if(dataClassName!=null){
-				IDOLegacyEntity ent = (IDOLegacyEntity)Class.forName(dataClassName).newInstance();
+				IDOLegacyEntity ent = (IDOLegacyEntity) RefactorClassRegistry.forName(dataClassName).newInstance();
 				String[] s = iwc.getParameterValues("box");
 				int len = s.length;
 				String[] columns  = ent.getVisibleColumnNames();

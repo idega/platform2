@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.idega.block.dataquery.data.xml.QueryFieldPart;
 import com.idega.block.dataquery.data.xml.QueryXMLConstants;
+import com.idega.repository.data.RefactorClassRegistry;
 
 /**
  * <p>Title: idegaWeb</p>
@@ -42,7 +43,7 @@ public abstract class FunctionExpression implements Expression {
     String className = (String) CLASS_FUNCTION.get(function);
     if (className != null)  {
       try {
-        Class functionClass = Class.forName(className);
+        Class functionClass = RefactorClassRegistry.forName(className);
         functionExpression = (FunctionExpression) functionClass.newInstance();
       }
       catch (ClassNotFoundException ex) {

@@ -12,6 +12,7 @@ import com.idega.data.IDOEntityDefinition;
 import com.idega.data.IDOEntityField;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.repository.data.RefactorClassRegistry;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLElement;
 
@@ -339,7 +340,7 @@ public class QueryFieldPart implements QueryPart {
 	
 	private IDOEntityDefinition getIDOEntityDefinition() throws IDOLookupException, ClassNotFoundException{
 		if(entityDef==null){
-			entityDef = IDOLookup.getEntityDefinitionForClass(Class.forName(entity));
+			entityDef = IDOLookup.getEntityDefinitionForClass(RefactorClassRegistry.forName(entity));
 		}
 		return entityDef;
 	}

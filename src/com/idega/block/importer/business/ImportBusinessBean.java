@@ -32,6 +32,7 @@ import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DropdownMenu;
+import com.idega.repository.data.RefactorClassRegistry;
 import com.idega.user.business.GroupBusiness;
 import com.idega.util.IWTimestamp;
 import com.idega.util.text.TextSoap;
@@ -144,7 +145,7 @@ public class ImportBusinessBean extends IBOServiceBean implements ImportBusiness
 	}
 	
 	public ImportFileHandler getImportFileHandler(String handlerClass, IWUserContext iwuc) throws Exception{
-		Class importHandlerInterfaceClass = Class.forName(handlerClass);
+		Class importHandlerInterfaceClass = RefactorClassRegistry.forName(handlerClass);
 		Class[] interfaces = importHandlerInterfaceClass.getInterfaces();
 		boolean isSessionBean = false;
 		for (int i = 0; i < interfaces.length; i++) {
@@ -168,7 +169,7 @@ public class ImportBusinessBean extends IBOServiceBean implements ImportBusiness
 	}
 	
 	public ImportFile getImportFile(String fileClass) throws Exception{
-		return (ImportFile)Class.forName(fileClass).newInstance();
+		return (ImportFile) RefactorClassRegistry.forName(fileClass).newInstance();
 	}
 	
 	public DropdownMenu getImportHandlers(IWContext iwc, String name) throws RemoteException {

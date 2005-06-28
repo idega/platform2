@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Locale;
 
 
+import com.idega.repository.data.RefactorClassRegistry;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLElement;
 import com.idega.xml.XMLException;
@@ -144,7 +145,7 @@ public class ClassDescription extends XMLElement {
 	}
 	
 	public Class getClassObject() throws ClassNotFoundException{
-		return Class.forName(this.getAttribute(ATTRIBUTE_CLASS).getValue());
+		return RefactorClassRegistry.forName(this.getAttribute(ATTRIBUTE_CLASS).getValue());
 	}
 	
 	public String getLocalizedName(Locale locale){

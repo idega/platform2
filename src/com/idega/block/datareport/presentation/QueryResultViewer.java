@@ -43,6 +43,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.repository.data.RefactorClassRegistry;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
@@ -365,7 +366,7 @@ public class QueryResultViewer extends Block {
   	}
   	InputHandler inputHandler = null;
 		try {
-			inputHandler = (InputHandler) Class.forName(className).newInstance();
+			inputHandler = (InputHandler) RefactorClassRegistry.forName(className).newInstance();
 		}
 		catch (ClassNotFoundException ex) {
 			log(ex);

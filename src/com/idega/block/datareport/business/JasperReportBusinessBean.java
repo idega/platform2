@@ -57,6 +57,7 @@ import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
+import com.idega.repository.data.RefactorClassRegistry;
 import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
@@ -439,7 +440,7 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
 	  		String inputValueDisplay = null;
 	  		if (inputHandlerClassName != null) { 
 	  			try {
-	  				Class inputHandlerClass = Class.forName(inputHandlerClassName);
+	  				Class inputHandlerClass = RefactorClassRegistry.forName(inputHandlerClassName);
 	  				InputHandler inputHandler = (InputHandler) inputHandlerClass.newInstance();
 	  				String[] inputValuesAsArray =  (String[]) inputValues.toArray(new String[0]);
 	  				// method below throws Exception 

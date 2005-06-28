@@ -7,6 +7,7 @@
 package com.idega.block.datareport.xml.methodinvocation;
 
 import com.idega.business.InputHandler;
+import com.idega.repository.data.RefactorClassRegistry;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLElement;
 import com.idega.xml.XMLException;
@@ -49,7 +50,7 @@ public class ClassHandler extends XMLElement {
 	private void initialize(XMLElement element) throws XMLException {
 		try {
 			XMLAttribute className = element.getAttribute(ATTRIBUTE_CLASS);
-			this.setClass(Class.forName(className.getValue()));
+			this.setClass(RefactorClassRegistry.forName(className.getValue()));
 		} catch (ClassNotFoundException e) {
 			XMLException xmlE = new XMLException("Required attribute '"+ATTRIBUTE_CLASS+"' does not define valid Class",e);
 			throw xmlE;

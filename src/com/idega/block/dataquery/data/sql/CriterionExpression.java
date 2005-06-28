@@ -12,6 +12,7 @@ import com.idega.block.dataquery.data.xml.QueryConditionPart;
 import com.idega.business.InputHandler;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.repository.data.RefactorClassRegistry;
 import com.idega.util.StringHandler;
 
 /**
@@ -235,7 +236,7 @@ public class CriterionExpression implements DynamicExpression {
   	}
   	InputHandler inputHandler = null;
   	try {
-  		inputHandler = (InputHandler) Class.forName(inputHandlerClass).newInstance();
+  		inputHandler = (InputHandler) RefactorClassRegistry.forName(inputHandlerClass).newInstance();
   	}
 		catch (ClassNotFoundException ex) {
 			//TODO: thi implement log 

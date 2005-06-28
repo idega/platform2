@@ -61,6 +61,7 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.TreeViewer;
+import com.idega.repository.data.RefactorClassRegistry;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.util.datastructures.HashMatrix;
@@ -2024,7 +2025,7 @@ public class ReportQueryBuilder extends Block {
   		return null;
   	}
 		try {
-			inputHandler = (InputHandler) Class.forName(className).newInstance();
+			inputHandler = (InputHandler) RefactorClassRegistry.forName(className).newInstance();
 		}
 		catch (ClassNotFoundException ex) {
 			log(ex);
