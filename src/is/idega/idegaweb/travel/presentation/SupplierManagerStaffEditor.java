@@ -28,7 +28,6 @@ import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
 
 
-//TODO localize remaining strings
 public class SupplierManagerStaffEditor extends TravelManager {
 
 	private static String ACTION_SAVE_USER = "saveuser";
@@ -72,7 +71,7 @@ public class SupplierManagerStaffEditor extends TravelManager {
 			showForm(iwc);
 		} else if (action != null && action.equals(ACTION_UPDATE_USER)) {
 			updateUser(iwc);
-			add("User "+getUser(iwc).getName()+" updated.");
+			add(super.getResourceBundle().getLocalizedString("travel.user_updated","User "+getUser(iwc).getName()+" updated."));
 			showUserlist(iwc);
 		} else {
 			showUserlist(iwc);
@@ -92,7 +91,7 @@ public class SupplierManagerStaffEditor extends TravelManager {
 		table.setWidth(300);
 		
 		table.setCellpadding(1);
-		table.add(super.getResourceBundle().getLocalizedString("list_users", "List of users"), 2, 1);
+		table.add(super.getResourceBundle().getLocalizedString("travel.list_users", "List of users"), 2, 1);
 		int startrow = 3;
 		User user;
 		Link delete;
@@ -138,16 +137,16 @@ public class SupplierManagerStaffEditor extends TravelManager {
 		String passw2 = iwc.getParameter("passrfield");
 		String usertype = iwc.getParameter("user_type");
 		if (LoginDBHandler.isLoginInUse(login)) {
-			add("Login in use");
-		} else if (!passw.equals(passw2)) {
-			add("Passw not same");
+			add(super.getResourceBundle().getLocalizedString("travel.login_in_use", "Login in use"));
+		} else if (!passw.equals(passw2)||passw==null||passw.equals("")) {
+			add(super.getResourceBundle().getLocalizedString("travel.passw_empty", "Passwords do not match or are empty"));
 		}	else {
 			User user;
 			try {
 				user = getSupplierManagerBusiness(iwc).createSupplierManagerStaff(getSupplierManager(), usertype, name , login, passw);
-				add("Created user "+user.getName());
+				add(super.getResourceBundle().getLocalizedString("travel.user_created","Created user "+user.getName()));
 			} catch (CreateException e) {
-				add("failed to created user");
+				add(super.getResourceBundle().getLocalizedString("travel.user_creation_failed","Failed to created user"));
 				e.printStackTrace();
 			}
 		}
@@ -162,7 +161,7 @@ public class SupplierManagerStaffEditor extends TravelManager {
 		if (iwc.getParameter(PARAM_USER_ID)!=null) {
 			int userid = Integer.parseInt(iwc.getParameter(PARAM_USER_ID));
 			if (!passw.equals(passw2)||passw==null||passw.equals("")) {
-				add("Passw not same or is empty ");
+				add(super.getResourceBundle().getLocalizedString("travel.passw_empty", "Passwords do not match or are empty"));
 			}	else {			
 				try {
 					LoginDBHandler.changePassword(userid, passw);
@@ -177,7 +176,7 @@ public class SupplierManagerStaffEditor extends TravelManager {
 				updateSupplierManagerStaffUserPrimaryGroup(iwc, usertype);
 			}		
 		} else {
-			add("Can't update. usr_id is null");
+			add(super.getResourceBundle().getLocalizedString("travel.user_id_is_null","Can't update. usr_id is null"));
 		}		
 	}
 	
@@ -236,25 +235,25 @@ public class SupplierManagerStaffEditor extends TravelManager {
 		table.setCellpadding(1);
 		table.setBorder(1);
 		
-		table.add(super.getResourceBundle().getLocalizedString("create_user", "Create User"), 1, 1);
-		table.add(super.getResourceBundle().getLocalizedString("name", "Name"), 1, 2);
+		table.add(super.getResourceBundle().getLocalizedString("travel.create_user", "Create User"), 1, 1);
+		table.add(super.getResourceBundle().getLocalizedString("travel.name", "Name"), 1, 2);
 		TextInput namefield = new TextInput("namefield");
         namefield.setSize(15);
         namefield.keepStatusOnAction();
 		table.add(namefield, 2, 2);
 		
 		
-		table.add(super.getResourceBundle().getLocalizedString("login", "Login"), 1, 3);
+		table.add(super.getResourceBundle().getLocalizedString("travel.login", "Login"), 1, 3);
 		TextInput loginfield = new TextInput("loginfield");
         loginfield.setSize(15);
         loginfield.keepStatusOnAction();
 		table.add(loginfield, 2, 3);
 		
-		table.add(super.getResourceBundle().getLocalizedString("password", "Password"), 1, 4);
+		table.add(super.getResourceBundle().getLocalizedString("travel.password", "Password"), 1, 4);
 		PasswordInput passfield = new PasswordInput("passfield");
         passfield.setSize(15);
         passfield.keepStatusOnAction();      
-        table.add(super.getResourceBundle().getLocalizedString("retype_password", "Retype password"), 1, 5);
+        table.add(super.getResourceBundle().getLocalizedString("travel.retype_password", "Retype password"), 1, 5);
 		table.add(passfield, 2, 4);
 		
 		PasswordInput passrfield = new PasswordInput("passrfield");
@@ -262,7 +261,7 @@ public class SupplierManagerStaffEditor extends TravelManager {
         passrfield.keepStatusOnAction();
 		table.add(passrfield, 2, 5);	
 		
-		table.add(super.getResourceBundle().getLocalizedString("user_type", "User type"), 1, 6);
+		table.add(super.getResourceBundle().getLocalizedString("travel.user_type", "User type"), 1, 6);
 		DropdownMenu userType = new DropdownMenu("user_type");
 		
 		table.add(userType, 2,6);
