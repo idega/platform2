@@ -114,6 +114,7 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.io.MemoryFileBuffer;
 import com.idega.io.MemoryInputStream;
 import com.idega.io.MemoryOutputStream;
+import com.idega.repository.data.RefactorClassRegistry;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.FileUtil;
@@ -5197,7 +5198,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		PlacementHelper helper = null;
 		if (className != null) {
 			try {
-				helper = (PlacementHelper) Class.forName(className).newInstance();
+				helper = (PlacementHelper) RefactorClassRegistry.forName(className).newInstance();
 			}
 			catch (Exception e) {
 				helper = new DefaultPlacementHelper();
