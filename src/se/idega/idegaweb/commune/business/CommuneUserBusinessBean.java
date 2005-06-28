@@ -1148,10 +1148,6 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 			fe.printStackTrace();
 			return new ArrayList();
 		}
-		catch (RemoteException re) {
-			re.printStackTrace();
-			return new ArrayList();
-		}
 	}
 	
 	private String trimSearchString(String string) {
