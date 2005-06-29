@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.33 2005/06/20 19:40:39 laddi Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.34 2005/06/29 15:19:08 laddi Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -80,10 +80,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/06/20 19:40:39 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/29 15:19:08 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.33 $
+ * @version $Revision: 1.34 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements AdultEducationBusiness {
 
@@ -547,7 +547,7 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 				Iterator iter = choices.iterator();
 				while (iter.hasNext()) {
 					AdultEducationChoice choice = (AdultEducationChoice) iter.next();
-					if (!choice.getStatus().equals(getCaseStatusDeletedString())) {
+					if (!choice.getStatus().equals(getCaseStatusDeletedString()) && !hasAllChoicesForCodeDenied(choice)) {
 						studyPaths.add(choice.getCourse().getStudyPath());
 					}
 				}
@@ -558,6 +558,28 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		}
 		
 		return studyPaths;
+	}
+	
+	private boolean hasAllChoicesForCodeDenied(AdultEducationChoice choice) {
+		if (choice.getStatus().equals(getCaseStatusDenied())) {
+			if (choice.getChildCount() > 0) {
+				Iterator iter = choice.getChildrenIterator();
+				while (iter.hasNext()) {
+					Case element = (Case) iter.next();
+					if (element.getCaseCode().equals(choice.getCaseCode())) {
+						AdultEducationChoice nextChoice = getAdultEducationChoiceInstance(element);
+						return hasAllChoicesForCodeDenied(nextChoice);
+					}
+				}
+				return true;
+			}
+			else {
+				return true;
+			}
+		}
+		else {
+			return false;
+		}
 	}
 	
 	public Collection getAvailableSchools(Object studyPathPK, Object seasonPK) {
