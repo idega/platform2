@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.34 2005/06/29 15:19:08 laddi Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.35 2005/06/29 15:46:10 laddi Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -80,10 +80,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/06/29 15:19:08 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/29 15:46:10 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.34 $
+ * @version $Revision: 1.35 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements AdultEducationBusiness {
 
@@ -1266,8 +1266,58 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		studentGrade.store();
 	}
 	
-	public void terminatePlacement(SchoolClassMember student, Timestamp terminated) {
+	public void terminatePlacement(SchoolClassMember student, Timestamp terminated) throws RemoveException {
 		student.setRemovedDate(terminated);
 		student.store();
+		
+		SchoolClass group = student.getSchoolClass();
+		School school = group.getSchool();
+		AdultEducationCourse course = null;
+		SchoolStudyPath path = null;
+		try {
+			course = getCourse(new Integer(group.getSchoolSeasonId()), group.getCode());
+		}
+		catch (FinderException fe) {
+			throw new RemoveException(fe.getMessage());
+		}
+		path = course.getStudyPath();
+		IWTimestamp stamp = new IWTimestamp(terminated);
+		
+		String subject = getLocalizedString("placement_removed_subject", "Placement removed");
+		String body = "Your placement at {0} on course {1}, {2} has been been terminated from {3}.";
+		Object[] arguments = { school.getSchoolName(), path.getDescription(), course.getCode(), stamp.getLocaleDate(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), IWTimestamp.SHORT) };
+		
+		try {
+			getMessageBusiness().createUserMessage(student.getStudent(), subject, MessageFormat.format(body, arguments));
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
+	}
+	
+	public void removePlacement(SchoolClassMember student) throws RemoveException {
+		SchoolClass group = student.getSchoolClass();
+		School school = group.getSchool();
+		AdultEducationCourse course = null;
+		SchoolStudyPath path = null;
+		try {
+			course = getCourse(new Integer(group.getSchoolSeasonId()), group.getCode());
+		}
+		catch (FinderException fe) {
+			throw new RemoveException(fe.getMessage());
+		}
+		path = course.getStudyPath();
+		student.remove();
+		
+		String subject = getLocalizedString("placement_removed_subject", "Placement removed");
+		String body = "Your placement at {0} on course {1}, {2} has been been removed according to your wishes.";
+		Object[] arguments = { school.getSchoolName(), path.getDescription(), course.getCode() };
+		
+		try {
+			getMessageBusiness().createUserMessage(student.getStudent(), subject, MessageFormat.format(body, arguments));
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
 	}
 }

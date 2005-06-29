@@ -1,5 +1,5 @@
 /*
- * $Id: StudentAdministrator.java,v 1.6 2005/06/20 19:40:39 laddi Exp $
+ * $Id: StudentAdministrator.java,v 1.7 2005/06/29 15:46:10 laddi Exp $
  * Created on Jun 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -13,6 +13,7 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 import se.idega.idegaweb.commune.adulteducation.business.GroupCollectionHandler;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoice;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourse;
@@ -39,10 +40,10 @@ import com.idega.util.PersonalIDFormatter;
 
 
 /**
- * Last modified: $Date: 2005/06/20 19:40:39 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/29 15:46:10 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class StudentAdministrator extends AdultEducationBlock implements IWPageEventListener {
 
@@ -57,6 +58,7 @@ public class StudentAdministrator extends AdultEducationBlock implements IWPageE
 	private static final int ACTION_UPDATE_GRADES = 2;
 	private static final int ACTION_STORE_GRADES = 3;
 	private static final int ACTION_CREATE_CATALOG = 4;
+	private static final int ACTION_REMOVE_PLACEMENT = 5;
 	
 	private boolean iShowGradeSetter = true;
 	private boolean iShowCatalogCreator = true;
@@ -79,6 +81,11 @@ public class StudentAdministrator extends AdultEducationBlock implements IWPageE
 					updateGrades(iwc);
 					showStudents(iwc);
 					break;
+
+				case ACTION_REMOVE_PLACEMENT:
+					removePlacement();
+					showStudents(iwc);
+					break;
 			}
 		}
 		catch (RemoteException re) {
@@ -90,6 +97,7 @@ public class StudentAdministrator extends AdultEducationBlock implements IWPageE
 		Form form = new Form();
 		form.setEventListener(StudentAdministrator.class);
 		form.addParameter(PARAMETER_ACTION, String.valueOf(ACTION_VIEW));
+		form.addParameter(PARAMETER_STUDENT, "");
 		
 		form.add(getNavigationTable());
 		form.add(new Break());
@@ -320,16 +328,25 @@ public class StudentAdministrator extends AdultEducationBlock implements IWPageE
 				edit.setEventListener(StudentEditor.class);
 				table.add(edit, column++, row);
 				
-				Link delete = new Link(getDeleteIcon(localize("terminate_placement", "Terminate student placement")));
-				delete.addParameter(PARAMETER_CHOICE, choice.getPrimaryKey().toString());
-				delete.addParameter(PARAMETER_STUDENT, member.getPrimaryKey().toString());
-				delete.addParameter(StudentEditor.PARAMETER_ACTION, StudentEditor.ACTION_SHOW_TERMINATE_PLACEMENT);
-				delete.addParameter(StudentEditor.PARAMETER_PAGE, getParentPageID());
-				delete.setEventListener(StudentEditor.class);
-				delete.setWindowToOpen(StudentWindow.class);
-				
-				if (endDate == null && stamp.isLaterThanOrEquals(startDate)) {
-					table.add(delete, column++, row);
+				if (endDate == null) {
+					if (stamp.isLaterThanOrEquals(startDate)) {
+						Link delete = new Link(getDeleteIcon(localize("terminate_placement", "Terminate student placement")));
+						delete.addParameter(PARAMETER_CHOICE, choice.getPrimaryKey().toString());
+						delete.addParameter(PARAMETER_STUDENT, member.getPrimaryKey().toString());
+						delete.addParameter(StudentEditor.PARAMETER_ACTION, StudentEditor.ACTION_SHOW_TERMINATE_PLACEMENT);
+						delete.addParameter(StudentEditor.PARAMETER_PAGE, getParentPageID());
+						delete.setEventListener(StudentEditor.class);
+						delete.setWindowToOpen(StudentWindow.class);
+						table.add(delete, column++, row);
+					}
+					else {
+						SubmitButton delete = new SubmitButton(getDeleteIcon(localize("remove_placement", "Remove placement")));
+						delete.setDescription(localize("remove_placement", "Remove placement"));
+						delete.setValueOnClick(PARAMETER_STUDENT, member.getPrimaryKey().toString());
+						delete.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_REMOVE_PLACEMENT));
+						delete.setSubmitConfirm(localize("confirm_placement_remove", "Are you sure you want to remove the placement?"));
+						table.add(delete, column++, row);
+					}
 				}
 				row++;
 			}
@@ -345,6 +362,16 @@ public class StudentAdministrator extends AdultEducationBlock implements IWPageE
 		getBusiness().updateGrades(iwc.getParameterValues(PARAMETER_STUDENT), iwc.getParameterValues(PARAMETER_GRADE));
 	}
 	
+	private void removePlacement() throws RemoteException {
+		try {
+			getBusiness().removePlacement(getSession().getSchoolClassMember());
+		}
+		catch (RemoveException re) {
+			re.printStackTrace();
+			getParentPage().setAlertOnLoad(localize("remove_placement_failed", "An error occured while trying to remove placement."));
+		}
+	}
+	
 	private int parseAction(IWContext iwc) {
 		int action = ACTION_VIEW;
 		if (iwc.isParameterSet(PARAMETER_ACTION)) {
@@ -356,6 +383,16 @@ public class StudentAdministrator extends AdultEducationBlock implements IWPageE
 	
 	public boolean actionPerformed(IWContext iwc) throws IWException {
 		boolean actionPerformed = false;
+		
+		if (iwc.isParameterSet(PARAMETER_STUDENT)) {
+			try {
+				getSession(iwc).setSchoolClassMember(iwc.getParameter(PARAMETER_STUDENT));
+				actionPerformed = true;
+			}
+			catch (RemoteException re) {
+				throw new IBORuntimeException(re);
+			}
+		}
 		
 		if (iwc.isParameterSet(PARAMETER_COURSE)) {
 			try {

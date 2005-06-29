@@ -1,5 +1,5 @@
 /*
- * $Id: StudentEditor.java,v 1.8 2005/06/20 12:56:22 laddi Exp $
+ * $Id: StudentEditor.java,v 1.9 2005/06/29 15:46:10 laddi Exp $
  * Created on Jun 2, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -12,6 +12,7 @@ package se.idega.idegaweb.commune.adulteducation.presentation;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
+import javax.ejb.RemoveException;
 import se.idega.idegaweb.commune.adulteducation.business.GroupCollectionHandler;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoice;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourse;
@@ -50,10 +51,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/06/20 12:56:22 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/29 15:46:10 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class StudentEditor extends AdultEducationBlock implements IWPageEventListener {
 	
@@ -518,7 +519,12 @@ public class StudentEditor extends AdultEducationBlock implements IWPageEventLis
 	
 	private void terminatePlacement(IWContext iwc) throws RemoteException {
 		IWTimestamp stamp = new IWTimestamp(iwc.getParameter(PARAMETER_TERMINATED_DATE));
-		getBusiness().terminatePlacement(getSession().getSchoolClassMember(), stamp.getTimestamp());
+		try {
+			getBusiness().terminatePlacement(getSession().getSchoolClassMember(), stamp.getTimestamp());
+		}
+		catch (RemoveException re) {
+			re.printStackTrace();
+		}
 		close(iwc, StudentAdministrator.ACTION_VIEW);
 	}
 	
