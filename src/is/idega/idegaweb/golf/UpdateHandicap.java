@@ -122,7 +122,7 @@ public class UpdateHandicap {
 			updateHandicap = scorecard[m].getUpdateHandicap();
 
 
-			stroke2 = (Stroke[]) ((Stroke) IDOLookup.instanciateEntity(Stroke.class)).findAll("select s.* from stroke s,tee t where s.tee_id = t.tee_id and scorecard_id = "+scorecardID+" order by hole_number");
+			stroke2 = (Stroke[]) ((Stroke) IDOLookup.instanciateEntity(Stroke.class)).findAll("select s.* from stroke s,tee t where s.tee_id = t.tee_id and s.scorecard_id = "+scorecardID+" order by t.hole_number");
 
 			strokeVector = new Vector(stroke2.length);
 			for (int i = 0; i < stroke2.length; i++)

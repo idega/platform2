@@ -194,7 +194,7 @@ public class ResultDataHandler {
 
   private String getMemberSQLString(int memberId) {
     StringBuffer sql = new StringBuffer();
-      sql.append("select round_number,tournament_group_id,holes,rounds,stroke_count, hole_number, point_count,hole_par,scorecard_date,");
+      sql.append("select tr.round_number,tm.tournament_group_id,tou.holes,tou.rounds,st.stroke_count, t.hole_number, st.point_count,st.hole_par,s.scorecard_date,");
       sql.append(" cast(( s.handicap_before * s.slope / 113 ) + ( s.course_rating - f.field_par ) as numeric(3,0)) as tournament_handicap");
       sql.append(" from scorecard s, stroke st, tee t, tournament_round tr, tournament tou, field f, tournament_member tm");
       sql.append(" where t.tee_id = st.tee_id");

@@ -136,7 +136,7 @@ public class HandicapRegister extends GolfBlock {
 		if (update) {
 			Scorecard scorecardID = ((ScorecardHome) IDOLookup.getHomeLegacy(Scorecard.class)).findByPrimaryKey(Integer.parseInt(scorecard_id));
 			str = new Hashtable(18);
-			Stroke[] strokesIDS = (Stroke[]) (com.idega.data.GenericEntity.getStaticInstance(is.idega.idegaweb.golf.entity.Stroke.class)).findAll("select s.* from stroke s,tee t where scorecard_id = " + scorecard_id + " and s.tee_id = t.tee_id order by s.tee_id");
+			Stroke[] strokesIDS = (Stroke[]) (com.idega.data.GenericEntity.getStaticInstance(is.idega.idegaweb.golf.entity.Stroke.class)).findAll("select s.* from stroke s,tee t where s.tee_id = t.tee_id and scorecard_id = " + scorecard_id + " order by s.tee_id");
 			for (int i = 0; i < strokesIDS.length; i++)
 				str.put(Integer.toString(strokesIDS[i].getTeeID()), strokesIDS[i]);
 

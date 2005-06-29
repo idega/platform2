@@ -80,7 +80,7 @@ public class HandicapScorecardView extends GolfWindow {
 			myTable.add(punktar, 1, 7);
 			myTable.add(mismunur, 1, 8);
 
-			Stroke[] stroke = (Stroke[]) ((Stroke) IDOLookup.instanciateEntity(Stroke.class)).findAll("select stroke.* from stroke,tee where tee.tee_id = stroke.tee_id and scorecard_id = " + scorecard_id + " order by hole_number");
+			Stroke[] stroke = (Stroke[]) ((Stroke) IDOLookup.instanciateEntity(Stroke.class)).findAll("select s.* from stroke s,tee t where t.tee_id = s.tee_id and s.scorecard_id = " + scorecard_id + " order by t.hole_number");
 
 			Scorecard scoreCard = ((ScorecardHome) IDOLookup.getHomeLegacy(Scorecard.class)).findByPrimaryKey(Integer.parseInt(scorecard_id));
 			IWTimestamp scoreTime = new IWTimestamp(scoreCard.getScorecardDate());

@@ -279,7 +279,7 @@ public class Handicap {
 	public int getTotalPoints(int scorecard_id, int leikHandicap) {
 		int totalPoints = 0;
 		try {
-			Stroke[] stroke = (Stroke[]) ((Stroke) IDOLookup.instanciateEntity(Stroke.class)).findAll("select s.* from stroke s,tee t where s.tee_id = t.tee_id and scorecard_id = " + scorecard_id + " order by hole_number");
+			Stroke[] stroke = (Stroke[]) ((Stroke) IDOLookup.instanciateEntity(Stroke.class)).findAll("select s.* from stroke s,tee t where s.tee_id = t.tee_id and s.scorecard_id = " + scorecard_id + " order by t.hole_number");
 
 			totalPoints = calculatePointsWithoutUpdate(stroke, leikHandicap);
 		}

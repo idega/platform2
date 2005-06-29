@@ -258,9 +258,9 @@ public class HandicapScore extends GolfWindow {
 				hole2 = 0;
 				roundPar = 0;
 
-				Statistic[] stats = (Statistic[]) ((Statistic) IDOLookup.instanciateEntity(Statistic.class)).findAll("select statistic.* from statistic,tee where tee.tee_id = statistic.tee_id and scorecard_id = " + scorecard_id + " order by hole_number");
+				Statistic[] stats = (Statistic[]) ((Statistic) IDOLookup.instanciateEntity(Statistic.class)).findAll("select s.* from statistic s,tee t where t.tee_id = s.tee_id and s.scorecard_id = " + scorecard_id + " order by t.hole_number");
 
-				Stroke[] stroke = (Stroke[]) ((Stroke) IDOLookup.instanciateEntity(Stroke.class)).findAll("select stroke.* from stroke,tee where tee.tee_id = stroke.tee_id and scorecard_id = " + scorecard_id + " order by hole_number");
+				Stroke[] stroke = (Stroke[]) ((Stroke) IDOLookup.instanciateEntity(Stroke.class)).findAll("select s.* from stroke s,tee t where t.tee_id = s.tee_id and s.scorecard_id = " + scorecard_id + " order by t.hole_number");
 				for (int c = 0; c < stroke.length; c++) {
 					int tee_id2 = stroke[c].getTeeID();
 					int strokes = stroke[c].getStrokeCount();
