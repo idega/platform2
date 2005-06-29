@@ -2855,6 +2855,10 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 					startDate.addDays(-1);
 					endDate = startDate.getDate();
 				}
+				oldLog.setEndDate(endDate);
+				oldLog.store();
+				oldLog = log;
+
 				if (!iter.hasNext()) {
 					if (member.getRemovedDate() != null) {
 						endDate = new IWTimestamp(member.getRemovedDate()).getDate();
@@ -2864,9 +2868,6 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 					log.store();
 					break;
 				}
-				oldLog.setEndDate(endDate);
-				oldLog.store();
-				oldLog = log;
 			}
 			if (placementEndDate != null) {
 				Collection futureLogs = getSchoolClassMemberLogHome().findAllByPlacementWithStartDateLaterThanOrEqualToDate(
