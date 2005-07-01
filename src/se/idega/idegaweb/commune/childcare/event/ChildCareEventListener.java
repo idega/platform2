@@ -7,8 +7,11 @@ import se.idega.idegaweb.commune.childcare.presentation.ChildCareAdmin;
 import se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock;
 
 import com.idega.business.IBOLookup;
+import com.idega.data.IDOLookup;
 import com.idega.event.IWPageEventListener;
 import com.idega.presentation.IWContext;
+import com.idega.user.data.User;
+import com.idega.user.data.UserHome;
 
 /**
  * @author laddi
@@ -25,11 +28,29 @@ public class ChildCareEventListener implements IWPageEventListener {
 			if (iwc.isParameterSet(session.getParameterChildCareID()))
 				session.setChildCareID(Integer.parseInt(iwc.getParameter(session.getParameterChildCareID())));
 
-			if (iwc.isParameterSet(session.getParameterUserID()))
+			if (iwc.isParameterSet(session.getParameterUserID())) {
 				session.setChildID(Integer.parseInt(iwc.getParameter(session.getParameterUserID())));
+				try {
+					UserHome uHome = (UserHome) IDOLookup.getHome(User.class);
+					User child = uHome.findByPrimaryKey(new Integer(session.getChildID()));
+					session.setUniqueID(child.getUniqueId());
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 			
-			if (iwc.isParameterSet(session.getParameterUniqueID()))
+			if (iwc.isParameterSet(session.getParameterUniqueID())) {
 				session.setUniqueID(iwc.getParameter(session.getParameterUniqueID()));
+				try {
+					UserHome uHome = (UserHome) IDOLookup.getHome(User.class);
+					User child = uHome.findUserByUniqueId(session.getUniqueID());
+					session.setChildID(((Integer) child.getPrimaryKey()).intValue());
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 
 			if (iwc.isParameterSet(session.getParameterApplicationID()))
 				session.setApplicationID(Integer.parseInt(iwc.getParameter(session.getParameterApplicationID())));
