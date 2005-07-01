@@ -6,6 +6,7 @@
  */
 package com.idega.block.forum.presentation;
 
+import javax.faces.component.UIComponent;
 import com.idega.block.forum.business.ForumBusiness;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -58,15 +59,15 @@ public abstract class ForumLink extends Block {
 	 */
 	public boolean hasPermission(String permissionType, IWContext iwc) throws Exception {
 		PresentationObject obj = this;
-		PresentationObject tmp = obj;
+		UIComponent tmp = obj;
 		while (tmp != null)
 		{
 			if (tmp instanceof Forum)
 			{
-				obj = tmp;
+				obj = (Forum) tmp;
 				break;
 			}
-			tmp = (PresentationObject) tmp.getParent();
+			tmp = tmp.getParent();
 		}
 		return hasPermission(permissionType, obj, iwc);
 	}
