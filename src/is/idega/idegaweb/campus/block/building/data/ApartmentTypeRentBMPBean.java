@@ -89,7 +89,7 @@ public class ApartmentTypeRentBMPBean
 		IDOQuery query = this.idoQueryGetSelect();
 		query.appendWhereEquals(getColumnApartmentTypeId(),aprtTypeId);
 		query.appendAnd().append(dateToCheck).appendGreaterThanOrEqualsSign().append(getColumnValidFrom());
-		query.appendOrderBy(getColumnValidFrom());
+		query.appendOrderByDescending(getColumnValidFrom());
 		return idoFindOnePKByQuery(query);
 	}
 }
