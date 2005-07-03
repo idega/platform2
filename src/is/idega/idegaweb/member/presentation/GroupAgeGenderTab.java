@@ -281,12 +281,12 @@ public class GroupAgeGenderTab extends UserGroupTab {
 		
 		
 		//EXTRA ISI STUFF
-		table.add(nationalityDependentText, 3, 3);
-		table.add(nationalityDependentField, 3, 3);
-		
-		table.add(clubMemberExchangeDependentText, 3, 4);
-		table.add(clubMemberExchangeDependentField, 3, 4);
-		
+//		table.add(nationalityDependentText, 3, 3);
+//		table.add(nationalityDependentField, 3, 3);
+//		
+//		table.add(clubMemberExchangeDependentText, 3, 4);
+//		table.add(clubMemberExchangeDependentField, 3, 4);
+//		
 		add(table);
 	}
 
