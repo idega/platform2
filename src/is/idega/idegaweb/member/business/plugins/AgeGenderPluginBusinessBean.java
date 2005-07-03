@@ -53,6 +53,9 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
   private Object femalePrimaryKeyFromDatastore = null;
   
   
+  private static final String META_DATA_NATIONALITY_DEPENDENT = "nationalityDependent";
+  private static final String META_DATA_CLUB_MEMBER_EXCHANGE_DEPENDENT = "clubMemberExchangeDependent";
+  
   private void setGender(Group group, int gender){
     
     // choose NEUTRAL if either both are true or both values are false  
@@ -408,5 +411,18 @@ public String canCreateSubGroup(Group group, String groupTypeOfSubGroup) throws 
 	
 	return null;
 } 
+
+//EXTRA ISI STUFF
+//TODO move to KSI plugin
+
+public void setNationalityDependent(Group group, boolean isDependent){
+	group.setMetaData(META_DATA_NATIONALITY_DEPENDENT,new Boolean(isDependent).toString());
+}
+
+public void setClubMemberExchangeDependent(Group group, boolean isDependent){
+	group.setMetaData(META_DATA_CLUB_MEMBER_EXCHANGE_DEPENDENT,new Boolean(isDependent).toString());
+}
   
+
+
 }

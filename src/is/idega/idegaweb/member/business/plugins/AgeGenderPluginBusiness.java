@@ -1,8 +1,8 @@
 /*
- * $Id: AgeGenderPluginBusiness.java,v 1.10 2004/12/07 18:04:46 eiki Exp $
- * Created on Dec 7, 2004
+ * $Id: AgeGenderPluginBusiness.java,v 1.11 2005/07/03 19:01:45 eiki Exp $
+ * Created on Jul 3, 2005
  *
- * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
+ * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
  * This software is the proprietary information of Idega hf.
  * Use is subject to license terms.
@@ -24,10 +24,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/07 18:04:46 $ by $Author: eiki $
+ *  Last modified: $Date: 2005/07/03 19:01:45 $ by $Author: eiki $
  * 
  * @author <a href="mailto:eiki@idega.com">eiki</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public interface AgeGenderPluginBusiness extends IBOService, UserGroupPlugInBusiness {
 
@@ -182,4 +182,14 @@ public interface AgeGenderPluginBusiness extends IBOService, UserGroupPlugInBusi
 	 * @see is.idega.idegaweb.member.business.plugins.AgeGenderPluginBusinessBean#canCreateSubGroup
 	 */
 	public String canCreateSubGroup(Group group, String groupTypeOfSubGroup) throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.plugins.AgeGenderPluginBusinessBean#setNationalityDependent
+	 */
+	public void setNationalityDependent(Group group, boolean isDependent) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.plugins.AgeGenderPluginBusinessBean#setClubMemberExchangeDependent
+	 */
+	public void setClubMemberExchangeDependent(Group group, boolean isDependent) throws java.rmi.RemoteException;
 }
