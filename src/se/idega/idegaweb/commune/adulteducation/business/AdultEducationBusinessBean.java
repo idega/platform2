@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.35 2005/06/29 15:46:10 laddi Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.36 2005/07/03 14:37:08 laddi Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -80,10 +80,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/06/29 15:46:10 $ by $Author: laddi $
+ * Last modified: $Date: 2005/07/03 14:37:08 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.35 $
+ * @version $Revision: 1.36 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements AdultEducationBusiness {
 
@@ -1221,15 +1221,18 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		}
 	}
 	
-	public void updateGrades(Object[] studentPKs, Object[] gradePKs) {
+	public void updateGrades(Object[] studentPKs, Object[] gradePKs, AdultEducationCourse course) {
 		try {
 			if (studentPKs != null) {
 				for (int i = 0; i < studentPKs.length; i++) {
 					try {
+						if (((String) gradePKs[i]).length() == 0) {
+							continue;
+						}
 						SchoolClassMember student = getSchoolBusiness().getSchoolClassMemberHome().findByPrimaryKey(studentPKs[i]);
 						Grade grade = getGradeHome().findByPrimaryKey(gradePKs[i]);
 						
-						updateGrade(student, grade);
+						updateGrade(student, grade, course);
 					}
 					catch (FinderException fe) {
 						fe.printStackTrace();
@@ -1245,7 +1248,7 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		}
 	}
 	
-	private void updateGrade(SchoolClassMember student, Grade grade) throws CreateException {
+	private void updateGrade(SchoolClassMember student, Grade grade, AdultEducationCourse course) throws CreateException {
 		SchoolClassMemberGrade studentGrade = null;
 		try {
 			studentGrade = getStudentGradeHome().findByStudent(student);
@@ -1264,6 +1267,10 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		studentGrade.setLocked(false);
 		studentGrade.setCreated(new IWTimestamp().getTimestamp());
 		studentGrade.store();
+
+		IWTimestamp stamp = new IWTimestamp(course.getEndDate());
+		student.setRemovedDate(stamp.getTimestamp());
+		student.store();
 	}
 	
 	public void terminatePlacement(SchoolClassMember student, Timestamp terminated) throws RemoveException {

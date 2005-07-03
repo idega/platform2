@@ -1,6 +1,6 @@
 /*
- * $Id: AdultEducationBusiness.java,v 1.24 2005/06/29 15:46:10 laddi Exp $
- * Created on Jun 29, 2005
+ * $Id: AdultEducationBusiness.java,v 1.25 2005/07/03 14:37:08 laddi Exp $
+ * Created on Jul 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -40,10 +40,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/06/29 15:46:10 $ by $Author: laddi $
+ * Last modified: $Date: 2005/07/03 14:37:08 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.24 $
+ * @version $Revision: 1.25 $
  */
 public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 
@@ -371,7 +371,8 @@ public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#updateGrades
 	 */
-	public void updateGrades(Object[] studentPKs, Object[] gradePKs) throws java.rmi.RemoteException;
+	public void updateGrades(Object[] studentPKs, Object[] gradePKs, AdultEducationCourse course)
+			throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#terminatePlacement

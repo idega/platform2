@@ -1,6 +1,6 @@
 /*
- * $Id: AdultEducationBusinessHome.java,v 1.23 2005/06/29 15:46:10 laddi Exp $
- * Created on Jun 29, 2005
+ * $Id: AdultEducationBusinessHome.java,v 1.24 2005/07/03 14:37:08 laddi Exp $
+ * Created on Jul 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -13,10 +13,10 @@ import com.idega.business.IBOHome;
 
 
 /**
- * Last modified: $Date: 2005/06/29 15:46:10 $ by $Author: laddi $
+ * Last modified: $Date: 2005/07/03 14:37:08 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.23 $
+ * @version $Revision: 1.24 $
  */
 public interface AdultEducationBusinessHome extends IBOHome {
 

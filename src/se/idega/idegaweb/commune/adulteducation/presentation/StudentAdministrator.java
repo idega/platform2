@@ -1,5 +1,5 @@
 /*
- * $Id: StudentAdministrator.java,v 1.7 2005/06/29 15:46:10 laddi Exp $
+ * $Id: StudentAdministrator.java,v 1.8 2005/07/03 14:37:08 laddi Exp $
  * Created on Jun 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -37,13 +37,14 @@ import com.idega.presentation.ui.util.SelectorUtility;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
+import com.idega.util.text.Name;
 
 
 /**
- * Last modified: $Date: 2005/06/29 15:46:10 $ by $Author: laddi $
+ * Last modified: $Date: 2005/07/03 14:37:08 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class StudentAdministrator extends AdultEducationBlock implements IWPageEventListener {
 
@@ -255,6 +256,7 @@ public class StudentAdministrator extends AdultEducationBlock implements IWPageE
 			while (iter.hasNext()) {
 				SchoolClassMember member = (SchoolClassMember) iter.next();
 				User user = member.getStudent();
+				Name name = new Name(user.getFirstName(), user.getMiddleName(), user.getLastName());
 				AdultEducationChoice choice = null;
 				try {
 					choice = getBusiness().getChoice(user, getSession().getCourse());
@@ -269,7 +271,7 @@ public class StudentAdministrator extends AdultEducationBlock implements IWPageE
 				column = 1;
 				number++;
 				
-				Link link = getSmallLink(user.getName());
+				Link link = getSmallLink(name.getName(iwc.getCurrentLocale(), true));
 				link.addParameter(PARAMETER_CHOICE, choice.getPrimaryKey().toString());
 				link.addParameter(StudentEditor.PARAMETER_ACTION, StudentEditor.ACTION_SHOW_STUDENT);
 				link.addParameter(StudentEditor.PARAMETER_PAGE, getParentPageID());
@@ -301,6 +303,7 @@ public class StudentAdministrator extends AdultEducationBlock implements IWPageE
 					}
 					
 					DropdownMenu gradeDrop = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_GRADE), grades, "getGrade"));
+					gradeDrop.addMenuElementFirst("", "");
 					if ((grade == null && endDate != null) || locked) {
 						gradeDrop.setDisabled(true);
 					}
@@ -359,7 +362,7 @@ public class StudentAdministrator extends AdultEducationBlock implements IWPageE
 	}
 	
 	private void updateGrades(IWContext iwc) throws RemoteException {
-		getBusiness().updateGrades(iwc.getParameterValues(PARAMETER_STUDENT), iwc.getParameterValues(PARAMETER_GRADE));
+		getBusiness().updateGrades(iwc.getParameterValues(PARAMETER_STUDENT), iwc.getParameterValues(PARAMETER_GRADE), getSession().getCourse());
 	}
 	
 	private void removePlacement() throws RemoteException {
