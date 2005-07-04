@@ -1,6 +1,6 @@
 /*
- * $Id: AdultEducationBusiness.java,v 1.25 2005/07/03 14:37:08 laddi Exp $
- * Created on Jul 3, 2005
+ * $Id: AdultEducationBusiness.java,v 1.26 2005/07/04 10:16:08 laddi Exp $
+ * Created on Jul 4, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -40,10 +40,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/07/03 14:37:08 $ by $Author: laddi $
+ * Last modified: $Date: 2005/07/04 10:16:08 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.25 $
+ * @version $Revision: 1.26 $
  */
 public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 
@@ -383,5 +383,6 @@ public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#removePlacement
 	 */
-	public void removePlacement(SchoolClassMember student) throws RemoveException, java.rmi.RemoteException;
+	public void removePlacement(SchoolClassMember student, AdultEducationChoice choice, User performer)
+			throws RemoveException, java.rmi.RemoteException;
 }

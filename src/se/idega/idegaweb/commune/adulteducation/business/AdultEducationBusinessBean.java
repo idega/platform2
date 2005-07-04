@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.36 2005/07/03 14:37:08 laddi Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.37 2005/07/04 10:16:08 laddi Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -80,10 +80,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/07/03 14:37:08 $ by $Author: laddi $
+ * Last modified: $Date: 2005/07/04 10:16:08 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.36 $
+ * @version $Revision: 1.37 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements AdultEducationBusiness {
 
@@ -1302,7 +1302,7 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		}
 	}
 	
-	public void removePlacement(SchoolClassMember student) throws RemoveException {
+	public void removePlacement(SchoolClassMember student, AdultEducationChoice choice, User performer) throws RemoveException {
 		SchoolClass group = student.getSchoolClass();
 		School school = group.getSchool();
 		AdultEducationCourse course = null;
@@ -1319,6 +1319,10 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		String subject = getLocalizedString("placement_removed_subject", "Placement removed");
 		String body = "Your placement at {0} on course {1}, {2} has been been removed according to your wishes.";
 		Object[] arguments = { school.getSchoolName(), path.getDescription(), course.getCode() };
+		
+		if (choice != null) {
+			changeCaseStatus(choice, getCaseStatusDeleted().getStatus(), performer);
+		}
 		
 		try {
 			getMessageBusiness().createUserMessage(student.getStudent(), subject, MessageFormat.format(body, arguments));

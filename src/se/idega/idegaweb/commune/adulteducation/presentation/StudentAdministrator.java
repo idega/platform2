@@ -1,5 +1,5 @@
 /*
- * $Id: StudentAdministrator.java,v 1.8 2005/07/03 14:37:08 laddi Exp $
+ * $Id: StudentAdministrator.java,v 1.9 2005/07/04 10:16:09 laddi Exp $
  * Created on Jun 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -41,10 +41,10 @@ import com.idega.util.text.Name;
 
 
 /**
- * Last modified: $Date: 2005/07/03 14:37:08 $ by $Author: laddi $
+ * Last modified: $Date: 2005/07/04 10:16:09 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class StudentAdministrator extends AdultEducationBlock implements IWPageEventListener {
 
@@ -84,7 +84,7 @@ public class StudentAdministrator extends AdultEducationBlock implements IWPageE
 					break;
 
 				case ACTION_REMOVE_PLACEMENT:
-					removePlacement();
+					removePlacement(iwc);
 					showStudents(iwc);
 					break;
 			}
@@ -99,6 +99,7 @@ public class StudentAdministrator extends AdultEducationBlock implements IWPageE
 		form.setEventListener(StudentAdministrator.class);
 		form.addParameter(PARAMETER_ACTION, String.valueOf(ACTION_VIEW));
 		form.addParameter(PARAMETER_STUDENT, "");
+		form.addParameter(PARAMETER_CHOICE, "");
 		
 		form.add(getNavigationTable());
 		form.add(new Break());
@@ -136,7 +137,7 @@ public class StudentAdministrator extends AdultEducationBlock implements IWPageE
 		form.add(getSmallErrorText("* "));
 		form.add(getSmallText(localize("has_message", "Has message")));
 		
-		SubmitButton back = (SubmitButton) getButton(new SubmitButton(localize("back", "Back")));
+		SubmitButton back = (SubmitButton) getButton(new SubmitButton(localize("set_grades.back", "Back")));
 		SubmitButton storeGrades = (SubmitButton) getButton(new SubmitButton(localize("store_grades", "Store grades")));
 		storeGrades.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_STORE_GRADES));
 		
@@ -346,6 +347,7 @@ public class StudentAdministrator extends AdultEducationBlock implements IWPageE
 						SubmitButton delete = new SubmitButton(getDeleteIcon(localize("remove_placement", "Remove placement")));
 						delete.setDescription(localize("remove_placement", "Remove placement"));
 						delete.setValueOnClick(PARAMETER_STUDENT, member.getPrimaryKey().toString());
+						delete.setValueOnClick(PARAMETER_CHOICE, choice.getPrimaryKey().toString());
 						delete.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_REMOVE_PLACEMENT));
 						delete.setSubmitConfirm(localize("confirm_placement_remove", "Are you sure you want to remove the placement?"));
 						table.add(delete, column++, row);
@@ -365,9 +367,9 @@ public class StudentAdministrator extends AdultEducationBlock implements IWPageE
 		getBusiness().updateGrades(iwc.getParameterValues(PARAMETER_STUDENT), iwc.getParameterValues(PARAMETER_GRADE), getSession().getCourse());
 	}
 	
-	private void removePlacement() throws RemoteException {
+	private void removePlacement(IWContext iwc) throws RemoteException {
 		try {
-			getBusiness().removePlacement(getSession().getSchoolClassMember());
+			getBusiness().removePlacement(getSession().getSchoolClassMember(), getSession().getChoice(), iwc.getCurrentUser());
 		}
 		catch (RemoveException re) {
 			re.printStackTrace();
@@ -390,6 +392,16 @@ public class StudentAdministrator extends AdultEducationBlock implements IWPageE
 		if (iwc.isParameterSet(PARAMETER_STUDENT)) {
 			try {
 				getSession(iwc).setSchoolClassMember(iwc.getParameter(PARAMETER_STUDENT));
+				actionPerformed = true;
+			}
+			catch (RemoteException re) {
+				throw new IBORuntimeException(re);
+			}
+		}
+		
+		if (iwc.isParameterSet(PARAMETER_CHOICE)) {
+			try {
+				getSession(iwc).setChoice(iwc.getParameter(PARAMETER_CHOICE));
 				actionPerformed = true;
 			}
 			catch (RemoteException re) {
