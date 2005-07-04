@@ -5,10 +5,12 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.ejb.FinderException;
 
@@ -17,6 +19,7 @@ import net.sf.jasperreports.engine.JasperPrint;
 
 import com.idega.block.dataquery.business.QueryGenerationException;
 import com.idega.block.dataquery.business.QueryService;
+import com.idega.block.dataquery.business.QuerySession;
 import com.idega.block.dataquery.business.QueryToSQLBridge;
 import com.idega.block.dataquery.data.QueryConstants;
 import com.idega.block.dataquery.data.QueryRepresentation;
@@ -26,6 +29,7 @@ import com.idega.block.dataquery.data.sql.InputDescription;
 import com.idega.block.dataquery.data.sql.SQLQuery;
 import com.idega.block.dataquery.data.xml.QueryHelper;
 import com.idega.block.datareport.business.JasperReportBusiness;
+import com.idega.block.datareport.business.QueryResultSession;
 import com.idega.block.datareport.data.DesignBox;
 import com.idega.block.entity.data.EntityPathValueContainer;
 import com.idega.block.entity.presentation.converter.ButtonConverter;
@@ -49,6 +53,7 @@ import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.StringHandler;
+import com.idega.util.text.StringNumberComparator;
 
 
 /**
@@ -321,11 +326,12 @@ public class QueryResultViewer extends Block {
   		table = new Table (2, identifierValueMap.size() + 1);
   	}
   	
-  	Iterator iterator = identifierValueMap.entrySet().iterator();
+  	Set keySet = identifierValueMap.keySet();
+  	String[] keys = (String[]) keySet.toArray(new String[keySet.size()]);
+  	Arrays.sort(keys,new StringNumberComparator());
 
-  	while (iterator.hasNext())	{
-  		Map.Entry entry = (Map.Entry) iterator.next();
-  		String key = (String) entry.getKey();
+  	for (int j = 0; j < keys.length; j++) {
+  		String key = keys[j];
   		if (! DirectSQLStatement.USER_ACCESS_VARIABLE.equals(key) && 
   				! DirectSQLStatement.GROUP_ACCESS_VARIABLE.equals(key) &&
 					! DirectSQLStatement.USER_GROUP_ACCESS_VARIABLE.endsWith(key)) {
@@ -392,7 +398,20 @@ public class QueryResultViewer extends Block {
 	}
 		
 	private String executeQueries(SQLQuery sqlQuery, int numberOfRows, QueryToSQLBridge sqlBridge, List executedSQLStatements, IWResourceBundle resourceBundle, IWContext iwc) throws RemoteException {
-		QueryResult queryResult = sqlBridge.executeQueries(sqlQuery, numberOfRows, executedSQLStatements);
+		QueryResultSession sessionBean =  (QueryResultSession) IBOLookup.getSessionInstance(iwc, QueryResultSession.class);
+		QueryResult queryResult = null;
+		if (iwc.isParameterSet(NUMBER_OF_ROWS_KEY)) {
+			// use the already existing result that was stored in the session but only if the
+			// values of the variables have not changed
+			Map identifierValueMap = sqlQuery.getIdentifierValueMap();
+			queryResult = sessionBean.getQueryResult(identifierValueMap);
+			if (queryResult != null) {
+				queryResult.setDesiredNumberOfRows(numberOfRows);
+			}
+		}
+		if (queryResult == null) {
+			queryResult = sqlBridge.executeQueries(sqlQuery, numberOfRows, executedSQLStatements);
+		}
 		// check if everything is fine
 		if (queryResult == null) {
 			// serious error. 
@@ -412,8 +431,16 @@ public class QueryResultViewer extends Block {
 			String rows = resourceBundle.getLocalizedString("ro_rows","rows");
 			StringBuffer buffer = new StringBuffer(error);
 			buffer.append(": ").append(resultNumberOfRows).append(" ").append(rows);
+			// store the already calculated result in the session
+			// the user is now asked how many rows he wants to see and he can also change the values of the variables
+			// therefore store the result and the used values for the inputfields. 
+			// if the current values are different (the user has changed some) the existing result can not be used.
+			Map identifierMap = sqlQuery.getIdentifierValueMap();
+			sessionBean.storeQueryResult(identifierMap, queryResult);
 			return buffer.toString();
 		}
+		// destroy stored query result in session bean (if it was stored)
+		sessionBean.deleteQueryResult();
 		resultNumberOfRows = -1;
 
 			
@@ -491,40 +518,59 @@ public class QueryResultViewer extends Block {
   }
 
 	private void setAccessCondition(Map identifierValueMap, IWContext iwc) throws RemoteException {
-		List groupIds = new ArrayList();
-		User user = iwc.getCurrentUser();
-		UserBusiness userBusiness = getUserBusiness();
-		GroupBusiness groupBusiness = getGroupBusiness();
-		Collection topGroupNodes = userBusiness.getUsersTopGroupNodesByViewAndOwnerPermissions(user,iwc);
-		Iterator iterator = topGroupNodes.iterator();
-		while ( iterator.hasNext())	{
-			Group topGroup = (Group) iterator.next();
-			Collection childGroups = groupBusiness.getChildGroupsRecursive(topGroup);
-			if (childGroups != null) {
-				Iterator childGroupsIterator = childGroups.iterator();
-				while (childGroupsIterator.hasNext())	{
-					Group group = (Group) childGroupsIterator.next();
-					groupIds.add(group.getPrimaryKey());
+		// check session if the conditions have been calculated: 
+		QueryResultSession sessionBean = (QueryResultSession) IBOLookup.getSessionInstance(iwc, QueryResultSession.class);
+		
+		String userAccess = (String) sessionBean.getValue(DirectSQLStatement.USER_ACCESS_VARIABLE);
+		String userGroupAccess = (String) sessionBean.getValue(DirectSQLStatement.USER_GROUP_ACCESS_VARIABLE);
+		String groupAccess = (String) sessionBean.getValue(DirectSQLStatement.GROUP_ACCESS_VARIABLE);
+		
+		if (userAccess == null || userGroupAccess == null || groupAccess == null) {		
+			List groupIds = new ArrayList();
+			User user = iwc.getCurrentUser();
+			UserBusiness userBusiness = getUserBusiness();
+			GroupBusiness groupBusiness = getGroupBusiness();
+			Collection topGroupNodes = userBusiness.getUsersTopGroupNodesByViewAndOwnerPermissions(user,iwc);
+			Iterator iterator = topGroupNodes.iterator();
+			while ( iterator.hasNext())	{
+				Group topGroup = (Group) iterator.next();
+				Collection childGroups = groupBusiness.getChildGroupsRecursive(topGroup);
+				if (childGroups != null) {
+					Iterator childGroupsIterator = childGroups.iterator();
+					while (childGroupsIterator.hasNext())	{
+						Group group = (Group) childGroupsIterator.next();
+						groupIds.add(group.getPrimaryKey());
+					}
 				}
 			}
+			// create the where condition for user view
+			StringBuffer userBuffer = new StringBuffer("(select related_ic_group_id from ic_group_relation where ic_group_id in ");
+			Iterator groupIdsIterator = groupIds.iterator();
+			StringBuffer buffer = new StringBuffer("( ");
+			String separator = "";
+			while (groupIdsIterator.hasNext()) {
+				buffer.append(separator);
+				Object groupId = groupIdsIterator.next();
+				buffer.append(groupId.toString());
+				separator = " , ";
+			}
+			buffer.append(" )");
+			userBuffer.append(buffer).append(" and group_relation_status = 'ST_ACTIVE')");
+			
+			userAccess = userBuffer.toString();
+			userGroupAccess = buffer.toString();
+			groupAccess = buffer.toString();
+			
+			// store in session
+			sessionBean.setValue(DirectSQLStatement.USER_ACCESS_VARIABLE,userAccess);
+			sessionBean.setValue(DirectSQLStatement.USER_GROUP_ACCESS_VARIABLE, userGroupAccess);
+			sessionBean.setValue(DirectSQLStatement.GROUP_ACCESS_VARIABLE, groupAccess);
 		}
-		// create the where condition for user view
-		StringBuffer userBuffer = new StringBuffer("(select related_ic_group_id from ic_group_relation where ic_group_id in ");
-		Iterator groupIdsIterator = groupIds.iterator();
-		StringBuffer buffer = new StringBuffer("( ");
-		String separator = "";
-		while (groupIdsIterator.hasNext()) {
-			buffer.append(separator);
-			Object groupId = groupIdsIterator.next();
-			buffer.append(groupId.toString());
-			separator = " , ";
-		}
-		buffer.append(" )");
-		userBuffer.append(buffer).append(" and group_relation_status = 'ST_ACTIVE')");
-		identifierValueMap.put(DirectSQLStatement.USER_ACCESS_VARIABLE, userBuffer.toString());
-		identifierValueMap.put(DirectSQLStatement.USER_GROUP_ACCESS_VARIABLE, buffer.toString());
+		
+		identifierValueMap.put(DirectSQLStatement.USER_ACCESS_VARIABLE, userAccess);
+		identifierValueMap.put(DirectSQLStatement.USER_GROUP_ACCESS_VARIABLE, userGroupAccess);
 		// create the where condition for group view
-		identifierValueMap.put(DirectSQLStatement.GROUP_ACCESS_VARIABLE, buffer.toString());
+		identifierValueMap.put(DirectSQLStatement.GROUP_ACCESS_VARIABLE, groupAccess);
 	}
 		
 	public UserBusiness getUserBusiness()	{
@@ -584,4 +630,6 @@ public class QueryResultViewer extends Block {
 	  	add(Text.getBreak());
 		}
 	}
+	
+
 }
