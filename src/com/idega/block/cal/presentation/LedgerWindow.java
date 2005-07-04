@@ -50,6 +50,7 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.StyledButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.repository.data.RefactorClassRegistry;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
@@ -986,7 +987,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		if(bClass!=null && bClass.trim().length()>0) {
 			Class classDef;
 			try {
-				classDef = Class.forName(bClass);
+				classDef = RefactorClassRegistry.forName(bClass);
 				ledgerVariationsHandler = (LedgerVariationsHandler) classDef.newInstance();
 			} catch (Exception e) {
 				System.out.println("Couldn't instantiate class for ledgerVariationsHandler, using default: " + bClass);
