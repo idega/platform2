@@ -57,8 +57,7 @@ public class ReportOverviewWindowPlugin implements ToolbarElement {
 	 * @see com.idega.user.app.ToolbarElement#isValid(com.idega.presentation.IWContext)
 	 */
 	public boolean isValid(IWContext iwc) {
-		IWMainApplicationSettings settings = iwc.getApplicationSettings();
-		return (settings.getProperty("temp_show_report_generator") != null);
+		return true;
 	}
 
 	/* (non-Javadoc)
