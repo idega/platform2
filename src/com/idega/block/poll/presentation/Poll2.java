@@ -93,6 +93,8 @@ public class Poll2 extends Block implements Builderaware {
 	public static final int LINK_VIEW = 2;
 
 	private int _layout = RADIO_BUTTON_VIEW;
+	
+	private String blockLayerStyleClass = null;
 
 	public Poll2() {
 		setDefaultValues();
@@ -124,7 +126,7 @@ public class Poll2 extends Block implements Builderaware {
 		_myTable = new Table(1, 2);
 		_myTable.setCellpadding(0);
 		_myTable.setCellspacing(0);
-		_myTable.setBorder(2);
+		_myTable.setBorder(0);
 		_myTable.setWidth(_pollWidth);
 
 		if (_pollID <= 0) {
@@ -161,18 +163,15 @@ public class Poll2 extends Block implements Builderaware {
 			row++;
 		}
 
-		_myTable.add(getPoll(iwc, poll), 1, row);
+		_myTable.add(getPoll(iwc, poll), 1, row);	
 		
-		add(_myTable);
-		Text t = new Text();
-		t.setText("ho hi ha");
-		
-		Layer l = new Layer();
-		l.getChildren().add(t);
-		l.setStyleClass("hey_man");
-		add(l);
-		
-		
+		// this layer contains all block output
+		// and has style class property
+		Layer l = new Layer();		
+		l.getChildren().add(_myTable);
+		l.setStyleClass(this.getBlockLayerStyleClass());
+		add(l);	
+	
 	}
 
 	private Link getAdminPart(int pollID, boolean newObjInst, boolean newWithAttribute) {
@@ -648,4 +647,14 @@ public class Poll2 extends Block implements Builderaware {
 		
 		return map;
 	}
+
+	
+	public String getBlockLayerStyleClass() {
+		return blockLayerStyleClass;
+	}
+
+	public void setBlockLayerStyleClass(String blockLayerStyleClass) {
+		this.blockLayerStyleClass = blockLayerStyleClass;
+	}	
+
 }
