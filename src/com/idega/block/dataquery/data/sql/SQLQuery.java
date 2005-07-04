@@ -416,7 +416,7 @@ public class SQLQuery implements DynamicExpression {
     }
     // set conditions (where clause)
     QueryBooleanExpressionPart booleanExpressionPart = queryHelper.getBooleanExpressionForConditions();
-    boolean booleanExpressionIsUsed = (booleanExpressionPart != null);
+    boolean booleanExpressionIsUsed = ! (booleanExpressionPart == null ||  conditions.isEmpty());
     CriteriaExpression criteriaExpression = (booleanExpressionIsUsed) ? new CriteriaExpression(booleanExpressionPart) : null;
     Iterator conditionsIterator = conditions.iterator();
     while (conditionsIterator.hasNext())  {
