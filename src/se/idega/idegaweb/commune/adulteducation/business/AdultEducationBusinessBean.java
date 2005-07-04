@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.38 2005/07/04 13:11:02 laddi Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.39 2005/07/04 16:13:44 laddi Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -80,10 +80,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/07/04 13:11:02 $ by $Author: laddi $
+ * Last modified: $Date: 2005/07/04 16:13:44 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.38 $
+ * @version $Revision: 1.39 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements AdultEducationBusiness {
 
@@ -561,7 +561,7 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 	}
 	
 	private boolean hasAllChoicesForCodeDenied(AdultEducationChoice choice) {
-		if (choice.getStatus().equals(getCaseStatusDenied())) {
+		if (choice.getStatus().equals(getCaseStatusDenied().getStatus())) {
 			if (choice.getChildCount() > 0) {
 				Iterator iter = choice.getChildrenIterator();
 				while (iter.hasNext()) {
