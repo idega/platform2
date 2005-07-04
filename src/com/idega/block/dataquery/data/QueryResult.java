@@ -41,6 +41,9 @@ public class QueryResult implements JRDataSource {
   private Iterator cellIterator = null;
   private String currentCellId = null;
   
+  private int currentRowNumber = 0;
+  private int desiredNumberOfRows = -1;
+  
   public static QueryResult getInstanceForDocument(XMLDocument document)  {
     QueryResult instance = new QueryResult(); 
     XMLElement root = document.getRootElement();
@@ -61,7 +64,7 @@ public class QueryResult implements JRDataSource {
     while (cellIterator.hasNext()) {
       QueryResultCell cell = (QueryResultCell) cellIterator.next();
       if (cell != null) {
-        instance.addCell(cell);
+        instance.addCell(cell.getId(), cell.getFieldId(), cell.getValue());
       }
     }    
     return instance;
@@ -78,10 +81,10 @@ public class QueryResult implements JRDataSource {
     fieldOrder.add(id);
   }
   
-  public void addCell(QueryResultCell cell) {
-    cells.put(cell.getId(), cell.getFieldId(), cell);
+  public void addCell(Object id, Object fieldId, Object cellValue) {
+  	cells.put(id,fieldId, cellValue);
   }
-  
+ 
   public QueryResultField getField(String id) {
     return (QueryResultField) fields.get(id);
   }
@@ -95,9 +98,9 @@ public class QueryResult implements JRDataSource {
     return getField(id);
   }
   
-  public String getCell(String id, String fieldId)  {
-    return (String) cells.get(id, fieldId);
-  }
+//  public String getCell(String id, String fieldId)  {
+//    return (String) cells.get(id, fieldId);
+//  }
   
   public XMLElement convertToXML()  {
     XMLElement queryResult = new XMLElement(QUERY_RESULT);
@@ -112,13 +115,21 @@ public class QueryResult implements JRDataSource {
       XMLElement fieldElement = field.convertToXML();
       definition.addContent(fieldElement);
     }
-    Iterator cellIterator = cells.getCopiedListOfValues().iterator();
-    while (cellIterator.hasNext())  {
-      QueryResultCell cell = (QueryResultCell) cellIterator.next();
-      XMLElement cellElement = cell.convertToXML();
-      content.addContent(cellElement);
-    }
     
+    Iterator xKeyIterator = cells.firstKeySet().iterator();
+    while (xKeyIterator.hasNext()) {
+    	Object xKey = xKeyIterator.next();
+    	Map yDimension = cells.get(xKey);
+    	Iterator yKeyIterator = yDimension.keySet().iterator();
+    	while (yKeyIterator.hasNext()) {
+    		Object yKey = yKeyIterator.next();
+    		Object cellValue = yDimension.get(yKey);
+    		QueryResultCell cell = new QueryResultCell(xKey.toString(), yKey.toString(), cellValue);
+    		XMLElement cellElement = cell.convertToXML();
+    		content.addContent(cellElement);
+    	}
+    }
+   
     queryResult.addContent(definition);
     queryResult.addContent(content);
     
@@ -144,9 +155,10 @@ public class QueryResult implements JRDataSource {
   }
   
   public int getNumberOfRows() {
-  	return cells.sizeOfFirstKeySet();
+  	int realNumber = cells.sizeOfFirstKeySet();
+  	return  (realNumber < desiredNumberOfRows || desiredNumberOfRows == -1) ? realNumber : desiredNumberOfRows;
   }
-  
+ 
   /** @see net.sf.jasperreports.engine.JRDataSource#next()
    * 
    */
@@ -154,22 +166,26 @@ public class QueryResult implements JRDataSource {
   	
     // the very first time we have to initialize the iterator  
     if (cellIterator == null) {
-      cellIterator = cells.firstKeySet().iterator();
+    	currentRowNumber = 0;
+    	cellIterator = cells.firstKeySet().iterator();
     }
     
     // now ask the iterator
     if (cellIterator.hasNext()) {
-      // compare with the behaviour of a result set...
-      currentCellId = (String) cellIterator.next();
-      return true;
+    	// compare with the behaviour of a result set...
+    	currentCellId = (String) cellIterator.next();
+    	currentRowNumber++;
+      	if (currentRowNumber <= desiredNumberOfRows || desiredNumberOfRows == -1) {
+      		return true;
+      	}
     }
-    
     return false;
   }
       
   public void resetDataSource() {
     cellIterator = null;
     currentCellId = null;
+    currentRowNumber = 0;
    }
 
   /**
@@ -187,20 +203,14 @@ public class QueryResult implements JRDataSource {
         fieldId = id;
       }
     }
-    
-       
-    // fetch the cell
-    QueryResultCell cell = (QueryResultCell) cells.get(currentCellId, fieldId);
+    // fetch the cellValue
+    Object cellValue = cells.get(currentCellId, fieldId);
     // return the value of the cell
-    
-    Object value;
-    if (cell == null || (value = cell.getValue()) == null )  {
-      return "";
+     return (cellValue == null ) ? "" : cellValue.toString();
     }
-    else {
-      return value.toString();
-    }
-  }
   
+  public void setDesiredNumberOfRows(int desiredNumberOfRows) {
+  	this.desiredNumberOfRows = desiredNumberOfRows;
+  }
   
 }
