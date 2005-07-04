@@ -248,10 +248,9 @@ public class QueryToSQLBridgeBean extends IBOServiceBean    implements QueryToSQ
 			     	Object columnValue = resultSet.getObject(i);
 			       	// store into QueryResultCell
 			       	String fieldId = Integer.toString(i);  
-			       	QueryResultCell cell = new QueryResultCell(id, fieldId, columnValue);
 			       	// !!!!!!!!! do NOT use the following statement because the columnName is NOT necessarily unique if you use more than one table : 
-			       	//QueryResultCell cell = new QueryResultCell(id, metadata.getColumnName(i), columnValue);
-			       	queryResult.addCell(cell);
+			       	//queryResult.add((id, metadata.getColumnName(i), columnValue);
+			       	queryResult.addCell(id, fieldId, columnValue);
 			    }
 		    }
 	    }   
