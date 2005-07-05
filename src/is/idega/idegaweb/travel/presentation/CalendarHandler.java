@@ -183,7 +183,7 @@ public class CalendarHandler extends TravelManager {
 		int row = 1;
 		table.mergeCells(1, row, 4, row);
 		table.setCellpaddingTop(1, row, 5);
-		table.add(getText(iwrb.getLocalizedString("travel.select_date_from_calendar_below", "Select a date from the calendar below")), 1, row);
+		table.add(getTxt(iwrb.getLocalizedString("travel.select_date_from_calendar_below", "Select a date from the calendar below")), 1, row);
 		++row;
 		//      if (_timeframe.getIfYearly()) {
 		Form form = new Form();
@@ -202,7 +202,7 @@ public class CalendarHandler extends TravelManager {
 		yearMenu.setSelectedElement(Integer.toString(this._stamp.getYear()));
 		yearMenu.setToSubmit();
 		
-		Text yearTxt = getText(iwrb.getLocalizedString("travel.year","Year"));
+		Text yearTxt = getTxt(iwrb.getLocalizedString("travel.year","Year"));
 
 		yearTable.add(yearTxt,1,1);
 		yearTable.add(yearMenu,2,1);
@@ -553,10 +553,10 @@ public class CalendarHandler extends TravelManager {
 		legend.setCellpadding(0);
 		legend.setCellspacing(2);
 		
-		Text avail = getText(iwrb.getLocalizedString("travel.colorForAvailableDay","Available"));
-		Text inq = getText(iwrb.getLocalizedString("travel.colorForInquiry","Inquiry"));
-		Text today = getText(iwrb.getLocalizedString("travel.today","Today"));
-		Text full = getText(iwrb.getLocalizedString("travel.fully_booked","Fully booked"));
+		Text avail = getTxt(iwrb.getLocalizedString("travel.colorForAvailableDay","Available"));
+		Text inq = getTxt(iwrb.getLocalizedString("travel.colorForInquiry","Inquiry"));
+		Text today = getTxt(iwrb.getLocalizedString("travel.today","Today"));
+		Text full = getTxt(iwrb.getLocalizedString("travel.fully_booked","Fully booked"));
 		
 		int lRow = 1;
 		legend.add(avail,3,1);
@@ -766,16 +766,16 @@ public class CalendarHandler extends TravelManager {
 		
 	}
 	
-	public Text getHeaderText(String content) {
-		Text text = new Text(content);
-		if (styleHeader != null) {
-			text.setStyleClass(styleHeader);
-		} else {
-			text.setFontStyle(TravelManager.theBoldTextStyle);
-			text.setFontColor("WHITE");
-		}
-		return text;
-	}
+//	public Text getHeaderText(String content) {
+//		Text text = new Text(content);
+//		if (styleHeader != null) {
+//			text.setStyleClass(styleHeader);
+//		} else {
+//			text.setFontStyle(TravelManager.theBoldTextStyle);
+//			text.setFontColor("WHITE");
+//		}
+//		return text;
+//	}
 	
 	public Text getLinkText(String content) {
 		Text text = new Text(content);
@@ -788,7 +788,7 @@ public class CalendarHandler extends TravelManager {
 		return text;
 	}
 	
-	public Text getText(String content) {
+	public Text getTxt(String content) {
 		Text text = new Text(content);
 		if (styleText != null) {
 			text.setStyleClass(styleText);

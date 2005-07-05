@@ -118,20 +118,20 @@ public class UserBookingReporter extends TravelManager implements Report{
       BookingComparator bComp = new BookingComparator(iwc, orderBy);
       bookings = bComp.sortedArray(bookings);
 
-      table.add(getHeaderText(user.getName()), 1, row);
-      table.add(getHeaderText(Text.NON_BREAKING_SPACE+"("+iwrb.getLocalizedString("travel.user","User")+")"), 1, row);
+      table.add(getHeader(user.getName()), 1, row);
+      table.add(getHeader(Text.NON_BREAKING_SPACE+"("+iwrb.getLocalizedString("travel.user","User")+")"), 1, row);
       table.mergeCells(1, row, 5, row);
       table.setRowColor(row, super.backgroundColor);
 
-      Link dateLink = Reports.getReportLink(getHeaderText(iwrb.getLocalizedString("travel.date","Date")));
+      Link dateLink = Reports.getReportLink(getHeader(iwrb.getLocalizedString("travel.date","Date")));
         dateLink.addParameter(PARAMETER_ORDER_BY, BookingComparator.DATE);
-      Link countLink = Reports.getReportLink(getHeaderText(iwrb.getLocalizedString("travel.count","Count")));
+      Link countLink = Reports.getReportLink(getHeader(iwrb.getLocalizedString("travel.count","Count")));
         countLink.addParameter(PARAMETER_ORDER_BY, BookingComparator.TOTALCOUNT);
-      Link userHLink = Reports.getReportLink(getHeaderText(iwrb.getLocalizedString("travel.user","User")));
+      Link userHLink = Reports.getReportLink(getHeader(iwrb.getLocalizedString("travel.user","User")));
         userHLink.addParameter(PARAMETER_ORDER_BY, BookingComparator.USER);
-      Link ownerHLink = Reports.getReportLink(getHeaderText(iwrb.getLocalizedString("travel.owner","Owner")));
+      Link ownerHLink = Reports.getReportLink(getHeader(iwrb.getLocalizedString("travel.owner","Owner")));
         ownerHLink.addParameter(PARAMETER_ORDER_BY, BookingComparator.OWNER);
-      Link amountLink = Reports.getReportLink(getHeaderText(iwrb.getLocalizedString("travel.amount","Amount")));
+      Link amountLink = Reports.getReportLink(getHeader(iwrb.getLocalizedString("travel.amount","Amount")));
         amountLink.addParameter(PARAMETER_ORDER_BY, BookingComparator.AMOUNT);
 
         addParameters(dateLink);
@@ -142,7 +142,7 @@ public class UserBookingReporter extends TravelManager implements Report{
 
       ++row;
       table.add(dateLink, 1, row);
-      table.add(getHeaderText(iwrb.getLocalizedString("travel.product","Product")), 2, row);
+      table.add(getHeader(iwrb.getLocalizedString("travel.product","Product")), 2, row);
       table.add(countLink, 3, row);
       table.add(ownerHLink, 4, row);
       table.add(amountLink, 5, row);
@@ -205,20 +205,20 @@ public class UserBookingReporter extends TravelManager implements Report{
       BookingComparator bComp = new BookingComparator(iwc, orderBy);
       bookings = bComp.sortedArray(bookings);
 
-      table.add(getHeaderText(owner.getName()), 1, row);
-      table.add(getHeaderText(Text.NON_BREAKING_SPACE+"("+iwrb.getLocalizedString("travel.owner","Owner")+")"), 1, row);
+      table.add(getHeader(owner.getName()), 1, row);
+      table.add(getHeader(Text.NON_BREAKING_SPACE+"("+iwrb.getLocalizedString("travel.owner","Owner")+")"), 1, row);
       table.mergeCells(1, row, 5, row);
       table.setRowColor(row, super.backgroundColor);
 
-      Link dateLink = Reports.getReportLink(getHeaderText(iwrb.getLocalizedString("travel.date","Date")));
+      Link dateLink = Reports.getReportLink(getHeader(iwrb.getLocalizedString("travel.date","Date")));
         dateLink.addParameter(PARAMETER_ORDER_BY, BookingComparator.DATE);
-      Link countLink = Reports.getReportLink(getHeaderText(iwrb.getLocalizedString("travel.count","Count")));
+      Link countLink = Reports.getReportLink(getHeader(iwrb.getLocalizedString("travel.count","Count")));
         countLink.addParameter(PARAMETER_ORDER_BY, BookingComparator.TOTALCOUNT);
-      Link userHLink = Reports.getReportLink(getHeaderText(iwrb.getLocalizedString("travel.user","User")));
+      Link userHLink = Reports.getReportLink(getHeader(iwrb.getLocalizedString("travel.user","User")));
         userHLink.addParameter(PARAMETER_ORDER_BY, BookingComparator.USER);
-      Link ownerHLink = Reports.getReportLink(getHeaderText(iwrb.getLocalizedString("travel.owner","Owner")));
+      Link ownerHLink = Reports.getReportLink(getHeader(iwrb.getLocalizedString("travel.owner","Owner")));
         ownerHLink.addParameter(PARAMETER_ORDER_BY, BookingComparator.OWNER);
-      Link amountLink = Reports.getReportLink(getHeaderText(iwrb.getLocalizedString("travel.amount","Amount")));
+      Link amountLink = Reports.getReportLink(getHeader(iwrb.getLocalizedString("travel.amount","Amount")));
         amountLink.addParameter(PARAMETER_ORDER_BY, BookingComparator.AMOUNT);
 
         addParameters(dateLink);
@@ -229,7 +229,7 @@ public class UserBookingReporter extends TravelManager implements Report{
 
       ++row;
       table.add(dateLink, 1, row);
-      table.add(getHeaderText(iwrb.getLocalizedString("travel.product","Product")), 2, row);
+      table.add(getHeader(iwrb.getLocalizedString("travel.product","Product")), 2, row);
       table.add(countLink, 3, row);
       table.add(userHLink, 4, row);
       table.add(amountLink, 5, row);
@@ -292,23 +292,23 @@ public class UserBookingReporter extends TravelManager implements Report{
     Link userLink;
     Link ownerLink;
 
-    Link dateLink = Reports.getReportLink(getHeaderText(iwrb.getLocalizedString("travel.date","Date")));
+    Link dateLink = Reports.getReportLink(getHeader(iwrb.getLocalizedString("travel.date","Date")));
       dateLink.addParameter(PARAMETER_ORDER_BY, BookingComparator.DATE);
-//    Link nameLink = Reports.getReportLink(getHeaderText(iwrb.getLocalizedString("travel.product","Product")));
+//    Link nameLink = Reports.getReportLink(getHeader(iwrb.getLocalizedString("travel.product","Product")));
 //      nameLink.addParameter(PARAMETER_ORDER_BY, BookingComparator.NAME);
-    Link countLink = Reports.getReportLink(getHeaderText(iwrb.getLocalizedString("travel.count","Count")));
+    Link countLink = Reports.getReportLink(getHeader(iwrb.getLocalizedString("travel.count","Count")));
       countLink.addParameter(PARAMETER_ORDER_BY, BookingComparator.TOTALCOUNT);
-    Link userHLink = Reports.getReportLink(getHeaderText(iwrb.getLocalizedString("travel.user","User")));
+    Link userHLink = Reports.getReportLink(getHeader(iwrb.getLocalizedString("travel.user","User")));
       userHLink.addParameter(PARAMETER_ORDER_BY, BookingComparator.USER);
-    Link ownerHLink = Reports.getReportLink(getHeaderText(iwrb.getLocalizedString("travel.owner","Owner")));
+    Link ownerHLink = Reports.getReportLink(getHeader(iwrb.getLocalizedString("travel.owner","Owner")));
       ownerHLink.addParameter(PARAMETER_ORDER_BY, BookingComparator.OWNER);
-    Link amountLink = Reports.getReportLink(getHeaderText(iwrb.getLocalizedString("travel.amount","Amount")));
+    Link amountLink = Reports.getReportLink(getHeader(iwrb.getLocalizedString("travel.amount","Amount")));
       amountLink.addParameter(PARAMETER_ORDER_BY, BookingComparator.AMOUNT);
 
 
 
     table.add(dateLink, 1, row);
-    table.add(getHeaderText(iwrb.getLocalizedString("travel.product","Product")), 2, row);
+    table.add(getHeader(iwrb.getLocalizedString("travel.product","Product")), 2, row);
     table.add(countLink, 3, row);
     table.add(userHLink, 4, row);
     table.add(ownerHLink, 5, row);
@@ -385,15 +385,7 @@ public class UserBookingReporter extends TravelManager implements Report{
 
   }
 
-
-  protected Text getText(String content) {
-    Text text = (Text) super.theText.clone();
-      text.setText(content);
-      text.setFontColor(super.BLACK);
-    return text;
-  }
-
-  protected Text getHeaderText(String content) {
+  protected Text getHeader(String content) {
     Text text = (Text) super.theBoldText.clone();
       text.setText(content);
     return text;
