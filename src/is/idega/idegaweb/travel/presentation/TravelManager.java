@@ -2,10 +2,12 @@ package is.idega.idegaweb.travel.presentation;
 
 import is.idega.idegaweb.travel.block.search.presentation.ServiceSearchAdmin;
 import is.idega.idegaweb.travel.block.search.presentation.ServiceSearchEditor;
-
+import is.idega.idegaweb.travel.service.carrental.presentation.TravelCarRentalBrowser;
+import is.idega.idegaweb.travel.service.hotel.presentation.TravelHotelBrowser;
+import is.idega.idegaweb.travel.service.tour.presentation.TravelTourBrowser;
 import java.rmi.RemoteException;
 import java.util.List;
-
+import com.idega.block.trade.stockroom.business.TradeConstants;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -19,11 +21,11 @@ public class TravelManager extends TravelBlock {
 	Table table = new Table(2,2);
 	
 	
-	protected Text theText = new Text();
-	protected Text theBoldText = new Text();
-	protected Text theBigBoldText = new Text();
-	protected Text smallText = new Text();
-	protected Text theSmallBoldText = new Text();
+	protected static Text theText = new Text();
+	protected static Text theBoldText = new Text();
+	protected static Text theBigBoldText = new Text();
+	protected static Text smallText = new Text();
+	protected static Text theSmallBoldText = new Text();
 	
 	public static String backgroundColor = "#235BA8" ;
 	public static String textColor = "#FFFFFF";
@@ -192,22 +194,29 @@ public class TravelManager extends TravelBlock {
 			Link browser = new Link(tsm.getIWResourceBundle().getLocalizedImageButton("travel.hotel_browser", "Hotel Browser"), TravelSupplierBrowser.class);
 			browser.addParameter("tmp_plugin", "is.idega.idegaweb.travel.service.hotel.presentation.HotelBrowser");
 			//table.add(browser, 1, 1);
-			
-			Link staffedit = new Link(tsm.getIWResourceBundle().getLocalizedImageButton("travel.staff", "Staff"), SupplierManagerStaffEditor.class);
-			//table.add(staffedit, 1, 1);
+			if (hasRole(iwc, TradeConstants.ROLE_SUPPLIER_MANAGER_BOOKING_STAFF)) {
+				Link staffedit = new Link(tsm.getIWResourceBundle().getLocalizedImageButton("travel.staff", "Staff"), SupplierManagerStaffEditor.class);
+				table.add(staffedit, 1, 1);
+			}
 			
 			Link lUpdatePassword = new Link(iUpdatePassword);
 			lUpdatePassword.setWindowToOpen(LoginChanger.class);
 			table.add(lUpdatePassword,1,1);
 		} else if(isSupplierManagerBookerStaff()) {  //TODO change the name and implementation because it isnt realy just booker staff that sees this page
-			Link hotelbrowser = new Link(tsm.getIWResourceBundle().getLocalizedImageButton("travel.hotel_browser", "Hotel Browser"), TravelSupplierBrowser.class);
-			hotelbrowser.addParameter("tmp_plugin", "is.idega.idegaweb.travel.service.hotel.presentation.HotelBrowser");
+
+			Link hotelbrowser = new Link(tsm.getIWResourceBundle().getLocalizedImageButton("travel.hotel_browser", "Hotel Browser"), TravelHotelBrowser.class);
 			table.add(hotelbrowser, 1, 1);
 			
-			Link tourbrowser = new Link(tsm.getIWResourceBundle().getLocalizedImageButton("travel.tour_browser", "Tour Browser"), TravelSupplierBrowser.class);
-			tourbrowser.addParameter("tmp_plugin", "is.idega.idegaweb.travel.service.tour.presentation.TourBrowser");
+			Link tourbrowser = new Link(tsm.getIWResourceBundle().getLocalizedImageButton("travel.tour_browser", "Tour Browser"), TravelTourBrowser.class);
 			table.add(tourbrowser, 1, 1);
 			
+			Link carbrowser = new Link(tsm.getIWResourceBundle().getLocalizedImageButton("travel.car_browser", "Car Browser"), TravelCarRentalBrowser.class);
+			table.add(carbrowser, 1, 1);
+
+			
+			Link basket = new Link(tsm.getIWResourceBundle().getLocalizedImageButton("travel.basket", "Basket"), SupplierBrowserBookingForm.class);
+			table.add(basket, 1, 1);
+
 		}else if (tsm.getSupplier() != null) {
 			Link lDesign = new Link(iDesign,ServiceDesigner.class);
 			lDesign.addParameter(this.sAction,this.parameterServiceDesigner);
@@ -364,14 +373,15 @@ public class TravelManager extends TravelBlock {
 		return table;
 	}
 	
-	protected Text getText(String content) {
-		Text text = (Text) this.theText.clone();
-		text.setText(content);
+	protected static Text getText(String content) {
+		Text text = new Text(content);
+		text.setFontStyle(theTextStyle);
+//		text.setFontColor(textColor);
 		text.setFontColor(BLACK);
 		return text;
 	}
 	
-	protected Text getHeaderText(String content) {
+	protected static Text getHeaderText(String content) {
 		Text text = getText(content);
 		text.setFontColor(WHITE);
 		text.setBold(true);
