@@ -12,10 +12,12 @@ import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
 import is.idega.idegaweb.travel.data.GeneralBooking;
 import is.idega.idegaweb.travel.data.GeneralBookingHome;
 import is.idega.idegaweb.travel.interfaces.Booking;
+import is.idega.idegaweb.travel.presentation.TravelBlock;
 import is.idega.idegaweb.travel.service.business.BookingBusiness;
 import is.idega.idegaweb.travel.service.business.ServiceHandler;
 import is.idega.idegaweb.travel.service.presentation.BookingForm;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Collections;
@@ -47,8 +49,7 @@ import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.data.IDOEntity;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
-import com.idega.event.IWPageEventListener;
-import com.idega.idegaweb.IWException;
+import com.idega.data.IDOPrimaryKey;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.IWContext;
 import com.idega.user.business.GroupBusiness;
@@ -64,11 +65,13 @@ import com.idega.util.IWTimestamp;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class ServiceSearchBusinessBean extends IBOServiceBean implements ServiceSearchBusiness, IWPageEventListener {
+public class ServiceSearchBusinessBean extends IBOServiceBean implements ServiceSearchBusiness, ActionListener {
 
 	private HashMap resultMap = new HashMap();
 
 	public static String SEARCH_FORM_CACHE_KEY = "abstract_search_form";
+	public static String PARAMETER_BOOKING_IDS_FOR_BASKET = "ssbb_obifb";
+	public static final String PARAMETER_BOOKING_ID_REMOVAL = "ssbb_bir";
 
 	
 	private String SEARCH_ENGINE_ADMINISTRATOR_GROUP_DESCRIPTION = "Search Engine administator group";
@@ -631,39 +634,31 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 	System.out.println("[ServiceSearchBusinessBean] Invalidating stored search results");
   }
 
-  public boolean actionPerformed(IWContext iwc) throws IWException {
-		String action = iwc.getParameter(AbstractSearchForm.ACTION);
-		if (action == null) {
-			action = "";
-		}
-		if (action != null && action.equals(AbstractSearchForm.ACTION_ADD_TO_BASKET)) {
-			boolean success = addToBasket(iwc);
-			try {
-				getSearchSession(iwc).setAddToBasketSuccess(success);
-			}
-			catch (RemoteException e) {
+  
+  public void setNewBookingsInBasket(IWContext iwc, String[] newBookingIds) throws RemoteException {
+	  if (newBookingIds != null && newBookingIds.length > 0) {
+		  GeneralBookingHome home = getBooker().getGeneralBookingHome();
+		  GeneralBooking book;
+		  BasketBusiness bBus = getBasketBusiness(iwc);
+		  bBus.emptyBasket();
+		  System.out.print("[ServiceSearchBusiness] Populating basket with ids =");
+		  for (int i = 0; i < newBookingIds.length; i++) {
+			  try {
+				System.out.print(" "+newBookingIds[i]);
+				book = home.findByPrimaryKey(new Integer(newBookingIds[i]));
+				bBus.addItem(book);
+			  }
+			catch (NumberFormatException e) {
 				e.printStackTrace();
 			}
-			return success;
-		} else if (action.equals(AbstractSearchForm.ACTION_CONFIRM)){
-			try {
-				Collection bookings = doBasketBooking(iwc);
-				getSearchSession(iwc).setBookingsSavedFromBasket(bookings);
-				return true;
+			catch (FinderException e) {
+				e.printStackTrace();
 			}
-			catch (Exception e) {
-				try {
-					getSearchSession(iwc).setException(e);
-				}
-				catch (RemoteException e1) {
-					e1.printStackTrace();
-				}
-				return false;
-			}
-		}
-		return false;
-
+		  }
+		System.out.println("");
 	  }
+
+  }
 
   /**
    * Creates a booking and adds it to the basket
@@ -692,6 +687,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 			
 			booking.setIsValid(false);
 			booking.store();
+			
 			travelbasket.addItem(booking);
 			return true;
 		}
@@ -719,8 +715,23 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		}
 		return false;
 	}
+	
+	public boolean removeFromBasket(IWContext iwc) throws RemoteException {
+		String bId = iwc.getParameter(PARAMETER_BOOKING_ID_REMOVAL);
+		if (bId != null) {
+			GeneralBookingHome gbHome = (GeneralBookingHome) IDOLookup.getHome(GeneralBooking.class);
+			IDOPrimaryKey key = gbHome.getPrimaryKey(new Integer(bId));
+			if (getBasketBusiness(iwc).getBasket().containsKey(key)) {
+				getBasketBusiness(iwc).getBasket().remove(key);
+				return true;
+			} else {
+				return false;
+			}
+		}
+		return false;
+	}
   
-	protected ServiceSearchSession getSearchSession(IWContext iwc) {
+	public ServiceSearchSession getSearchSession(IWContext iwc) {
 		try {
 			return (ServiceSearchSession) IBOLookup.getSessionInstance(iwc, ServiceSearchSession.class);
 		}
@@ -756,7 +767,9 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		String sEngine = iwc.getParameter(BookingForm.PARAMETER_CODE);
 		if (sEngine != null) {
 			ServiceSearchEngine engine = getSearchEngineHome().findByCode(sEngine);
-			return doBasketBooking(iwc, engine);
+			return doBasketBooking(iwc, engine.getSupplierManager());
+		} else if (TravelBlock.getTravelSessionManagerStatic(iwc).getSupplierManager() != null) {
+			return doBasketBooking(iwc, TravelBlock.getTravelSessionManagerStatic(iwc).getSupplierManager());
 		} else {
 			throw new NullPointerException("Engine Code is null");
 		}
@@ -764,9 +777,16 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 	}
 	
 	
-	public Collection doBasketBooking(IWContext iwc, ServiceSearchEngine engine) throws Exception {
-		CreditCardClient client = getCreditCardBusiness().getCreditCardClient(engine.getSupplierManager(), IWTimestamp.RightNow());
+	public Collection doBasketBooking(IWContext iwc, Group supplierManager) throws Exception {
+		CreditCardClient client = getCreditCardBusiness().getCreditCardClient(supplierManager, IWTimestamp.RightNow());
 
+		String paymentType = iwc.getParameter(BookingForm.PARAMETER_PAYMENT_TYPE);
+		int iPaymentType = Booking.PAYMENT_TYPE_ID_CREDIT_CARD; 
+		if (paymentType != null) {
+			iPaymentType = Integer.parseInt(paymentType);
+		}
+		
+		String authNr = null;
 		// Going through bookings, getting prices and currencies
 		HashMap currMaps = new HashMap(); // A map with Currency as key and float[] as value
 		Collection values = getBasketBusiness(iwc).getBasket().values();
@@ -793,31 +813,33 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 			e.setErrorMessage("Invalid number of currencies ("+currMaps.keySet().size()+")");
 			throw e;
 		}
-		
-		// Getting parameters needed for the cc authorization
-		String ccName = iwc.getParameter(BookingForm.PARAMETER_NAME_ON_CARD);
-		String ccNumber = iwc.getParameter(BookingForm.parameterCCNumber);
-		String ccYear = iwc.getParameter(BookingForm.parameterCCYear);
-		String ccMonth = iwc.getParameter(BookingForm.parameterCCMonth);
-		String ccCVC = iwc.getParameter(BookingForm.parameterCCCVC);
-		String refNum = iwc.getParameter(AbstractSearchForm.PARAMETER_REFERENCE_NUMBER);
 
-		// Checking for Authorization for every currency
-		Collection responseStrings = new Vector();
-		Iterator currIterator = currMaps.keySet().iterator();
-		String authNr = null;
-		while (currIterator.hasNext()) {
-			String curr = (String) currIterator.next();
-			float cPrice = ((float[])currMaps.get(curr))[0];
-			System.out.println("[SearchBus] checking for price = "+cPrice+" "+curr+" in merchant = "+client.getCreditCardMerchant().getMerchantID());
-			try {
-				authNr = client.doSale(ccName, ccNumber, ccMonth, ccYear, ccCVC, cPrice, curr, refNum);
-				responseStrings.add(authNr);
-			} catch (CreditCardAuthorizationException e) {
-				throw e;
+		if (iPaymentType == Booking.PAYMENT_TYPE_ID_CREDIT_CARD) {
+			
+			// Getting parameters needed for the cc authorization
+			String ccName = iwc.getParameter(BookingForm.PARAMETER_NAME_ON_CARD);
+			String ccNumber = iwc.getParameter(BookingForm.parameterCCNumber);
+			String ccYear = iwc.getParameter(BookingForm.parameterCCYear);
+			String ccMonth = iwc.getParameter(BookingForm.parameterCCMonth);
+			String ccCVC = iwc.getParameter(BookingForm.parameterCCCVC);
+			String refNum = iwc.getParameter(AbstractSearchForm.PARAMETER_REFERENCE_NUMBER);
+	
+			// Checking for Authorization for every currency
+			Collection responseStrings = new Vector();
+			Iterator currIterator = currMaps.keySet().iterator();
+			while (currIterator.hasNext()) {
+				String curr = (String) currIterator.next();
+				float cPrice = ((float[])currMaps.get(curr))[0];
+				System.out.println("[SearchBus] checking for price = "+cPrice+" "+curr+" in merchant = "+client.getCreditCardMerchant().getMerchantID());
+				try {
+					authNr = client.doSale(ccName, ccNumber, ccMonth, ccYear, ccCVC, cPrice, curr, refNum);
+					responseStrings.add(authNr);
+				} catch (CreditCardAuthorizationException e) {
+					throw e;
+				}
 			}
 		}
-		
+
 		// If no authorization error have been thrown, the bookings must now be validated
 		String surname = iwc.getParameter(BookingForm.PARAMETER_FIRST_NAME);
 		String lastname = iwc.getParameter(BookingForm.PARAMETER_LAST_NAME);
@@ -831,6 +853,10 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		String comment = iwc.getParameter(BookingForm.PARAMETER_COMMENT);
 		String code = iwc.getParameter(BookingForm.PARAMETER_CODE);
 		
+		String name = surname;
+		if (lastname != null && !lastname.trim().equals("")) {
+			name += " "+lastname;
+		}
 		Iterator biter = bookings.iterator();
 		while (biter.hasNext()) {
 			booking = (GeneralBooking) biter.next();
@@ -841,7 +867,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 				while (miter.hasNext()) {
 					GeneralBooking b = (GeneralBooking) miter.next();
 					b.setIsValid(true);
-					b.setName(surname+" "+lastname);
+					b.setName(name);
 					b.setAddress(address);
 					b.setPostalCode(areaCode);
 					b.setEmail(email);
@@ -855,7 +881,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 					if (code != null) {
 						b.setCode(code);
 					}
-					b.setBookingTypeID(Booking.PAYMENT_TYPE_ID_CREDIT_CARD);
+					b.setBookingTypeID(iPaymentType);
 					b.setCreditcardAuthorizationNumber(authNr);
 					b.setIsValid(true);
 					b.store();

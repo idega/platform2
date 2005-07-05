@@ -90,10 +90,15 @@ public class ServiceSearchSessionBean extends IBOSessionBean implements ServiceS
 	}
 	
 	public String getAddToBasketError(IWResourceBundle iwrb) {
-		String tmp = iwrb.getLocalizedString(addToBasketErrorKey, addToBasketErrorIfNull);
-		this.addToBasketErrorKey = null;
-		this.addToBasketErrorIfNull = null;
-		return tmp;
+		if (addToBasketErrorKey != null) {
+			String tmp = iwrb.getLocalizedString(addToBasketErrorKey, addToBasketErrorIfNull);
+			this.addToBasketErrorKey = null;
+			this.addToBasketErrorIfNull = null;
+			return tmp;
+		} else if (addToBasketErrorIfNull != null) {
+			return addToBasketErrorIfNull;
+		}
+		return null;
 	}
 	
 }

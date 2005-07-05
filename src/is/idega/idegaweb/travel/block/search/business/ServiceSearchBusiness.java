@@ -1,3 +1,12 @@
+/*
+ * $Id: ServiceSearchBusiness.java,v 1.17 2005/07/05 22:43:10 gimmi Exp $
+ * Created on Jul 4, 2005
+ *
+ * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ */
 package is.idega.idegaweb.travel.block.search.business;
 
 import is.idega.idegaweb.travel.block.search.data.ServiceSearchEngine;
@@ -8,7 +17,6 @@ import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
 import is.idega.idegaweb.travel.data.GeneralBooking;
 import is.idega.idegaweb.travel.service.business.ServiceHandler;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.List;
@@ -26,9 +34,13 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * @author gimmi
+ * 
+ *  Last modified: $Date: 2005/07/05 22:43:10 $ by $Author: gimmi $
+ * 
+ * @author <a href="mailto:gimmi@idega.com">gimmi</a>
+ * @version $Revision: 1.17 $
  */
-public interface ServiceSearchBusiness extends IBOService, ActionListener {
+public interface ServiceSearchBusiness extends IBOService {
 
 	/**
 	 * @see is.idega.idegaweb.travel.block.search.business.ServiceSearchBusinessBean#initializeBean
@@ -36,10 +48,10 @@ public interface ServiceSearchBusiness extends IBOService, ActionListener {
 	public void initializeBean();
 
 	/**
-	 * @throws FinderException 
 	 * @see is.idega.idegaweb.travel.block.search.business.ServiceSearchBusinessBean#getErrorFormFields
 	 */
-	public List getErrorFormFields(IWContext iwc, String categoryKey, boolean useCVC, boolean useBasket) throws java.rmi.RemoteException, FinderException;
+	public List getErrorFormFields(IWContext iwc, String categoryKey, boolean useCVC, boolean useBasket)
+			throws IDOLookupException, FinderException, java.rmi.RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.travel.block.search.business.ServiceSearchBusinessBean#sortProducts
@@ -51,8 +63,6 @@ public interface ServiceSearchBusiness extends IBOService, ActionListener {
 	 * @see is.idega.idegaweb.travel.block.search.business.ServiceSearchBusinessBean#checkResults
 	 */
 	public Collection checkResults(IWContext iwc, Collection results) throws RemoteException;
-	public Collection doBasketBooking(IWContext iwc) throws Exception;
-	public Collection doBasketBooking(IWContext iwc, ServiceSearchEngine engine) throws Exception;
 
 	/**
 	 * @see is.idega.idegaweb.travel.block.search.business.ServiceSearchBusinessBean#getServiceSearchEngines
@@ -72,8 +82,14 @@ public interface ServiceSearchBusiness extends IBOService, ActionListener {
 	/**
 	 * @see is.idega.idegaweb.travel.block.search.business.ServiceSearchBusinessBean#storeEngine
 	 */
-	public ServiceSearchEngine storeEngine(Object pk, String name, String code, String url, Group supplierManager) throws java.rmi.RemoteException;
-	public ServiceSearchEngine storeEngine(Object pk, String name, String code, String url, Group supplierManager, boolean useBasket) throws java.rmi.RemoteException;
+	public ServiceSearchEngine storeEngine(Object pk, String name, String code, String url, Group supplierManager)
+			throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.block.search.business.ServiceSearchBusinessBean#storeEngine
+	 */
+	public ServiceSearchEngine storeEngine(Object pk, String name, String code, String url, Group supplierManager,
+			boolean useBasket) throws java.rmi.RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.travel.block.search.business.ServiceSearchBusinessBean#addSearchEngineUser
@@ -136,6 +152,11 @@ public interface ServiceSearchBusiness extends IBOService, ActionListener {
 	public TravelSessionManager getTravelSessionManager(IWUserContext iwuc) throws RemoteException;
 
 	/**
+	 * @see is.idega.idegaweb.travel.block.search.business.ServiceSearchBusinessBean#getTravelStockroomBusiness
+	 */
+	public TravelStockroomBusiness getTravelStockroomBusiness() throws RemoteException;
+
+	/**
 	 * @see is.idega.idegaweb.travel.block.search.business.ServiceSearchBusinessBean#getBusiness
 	 */
 	public TravelStockroomBusiness getBusiness(Product product) throws RemoteException, FinderException;
@@ -153,11 +174,47 @@ public interface ServiceSearchBusiness extends IBOService, ActionListener {
 	/**
 	 * @see is.idega.idegaweb.travel.block.search.business.ServiceSearchBusinessBean#actionPerformed
 	 */
-	public void actionPerformed(ActionEvent event);
-	
-	public void clearAllEngineCache();
-	
-	public GeneralBooking doBooking(IWContext iwc, boolean doCreditCardCheck) throws Exception;
-	public boolean addToBasket(IWContext iwc);
+	public void actionPerformed(ActionEvent event) throws java.rmi.RemoteException;
 
+	/**
+	 * @see is.idega.idegaweb.travel.block.search.business.ServiceSearchBusinessBean#clearAllEngineCache
+	 */
+	public void clearAllEngineCache() throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.block.search.business.ServiceSearchBusinessBean#setNewBookingsInBasket
+	 */
+	public void setNewBookingsInBasket(IWContext iwc, String[] newBookingIds) throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.block.search.business.ServiceSearchBusinessBean#addToBasket
+	 */
+	public boolean addToBasket(IWContext iwc) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.block.search.business.ServiceSearchBusinessBean#removeFromBasket
+	 */
+	public boolean removeFromBasket(IWContext iwc) throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.block.search.business.ServiceSearchBusinessBean#getSearchSession
+	 */
+	public ServiceSearchSession getSearchSession(IWContext iwc) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.block.search.business.ServiceSearchBusinessBean#doBasketBooking
+	 */
+	public Collection doBasketBooking(IWContext iwc) throws Exception, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.block.search.business.ServiceSearchBusinessBean#doBasketBooking
+	 */
+	public Collection doBasketBooking(IWContext iwc, Group supplierManager) throws Exception,
+			java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.block.search.business.ServiceSearchBusinessBean#doBooking
+	 */
+	public GeneralBooking doBooking(IWContext iwc, boolean doCreditCardCheck) throws Exception,
+			java.rmi.RemoteException;
 }
