@@ -3,9 +3,8 @@ package is.idega.idegaweb.travel.data;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Collection;
-
 import javax.ejb.FinderException;
-
+import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.core.location.data.Address;
 import com.idega.data.IDOAddRelationshipException;
@@ -20,7 +19,7 @@ import com.idega.data.IDORemoveRelationshipException;
  * @version 1.0
  */
 
-public class PickupPlaceBMPBean extends com.idega.data.GenericEntity implements is.idega.idegaweb.travel.data.PickupPlace {
+public class PickupPlaceBMPBean extends com.idega.data.GenericEntity implements PickupPlace{
 
 	public static final int TYPE_PICKUP = 1;
 	public static final int TYPE_DROPOFF = 2;
@@ -93,8 +92,21 @@ public class PickupPlaceBMPBean extends com.idega.data.GenericEntity implements 
   public Collection ejbFindHotelPickupPlaces(Service service)throws RemoteException, FinderException {
 		return ejbFindHotelPickupPlaces(service, TYPE_PICKUP);
   }
+  public Collection ejbFindDropoffPlaces(Product product)throws RemoteException, FinderException {
+		return ejbFindHotelPickupPlaces(product, TYPE_DROPOFF);
+}
+
+public Collection ejbFindHotelPickupPlaces(Product product)throws RemoteException, FinderException {
+		return ejbFindHotelPickupPlaces(product, TYPE_PICKUP);
+}
 
   public Collection ejbFindHotelPickupPlaces(Service service, int PLACE_TYPE)throws RemoteException, FinderException {
+	  return ejbFindHotelPickupPlaces(service.getPrimaryKey().toString(), PLACE_TYPE);
+  }
+  public Collection ejbFindHotelPickupPlaces(Product product, int PLACE_TYPE)throws RemoteException, FinderException {
+	  return ejbFindHotelPickupPlaces(product.getPrimaryKey().toString(), PLACE_TYPE);
+  }
+  public Collection ejbFindHotelPickupPlaces(String serviceID, int PLACE_TYPE)throws RemoteException, FinderException {
     Collection returner = null;
 //        HotelPickupPlace hp = (HotelPickupPlace) is.idega.idegaweb.travel.data.HotelPickupPlaceBMPBean.getStaticInstance(HotelPickupPlace.class);
 
@@ -104,7 +116,7 @@ public class PickupPlaceBMPBean extends com.idega.data.GenericEntity implements 
       buffer.append(com.idega.data.EntityControl.getManyToManyRelationShipTableName(Service.class,PickupPlace.class)+" smh, ");
       buffer.append(getEntityName() +" h ");
       buffer.append(" WHERE ");
-      buffer.append("s."+is.idega.idegaweb.travel.data.ServiceBMPBean.getServiceIDColumnName()+" = "+((Integer) service.getPrimaryKey()).intValue());
+      buffer.append("s."+is.idega.idegaweb.travel.data.ServiceBMPBean.getServiceIDColumnName()+" = "+serviceID);
       buffer.append(" AND ");
       buffer.append("s."+is.idega.idegaweb.travel.data.ServiceBMPBean.getServiceIDColumnName()+" = smh."+is.idega.idegaweb.travel.data.ServiceBMPBean.getServiceIDColumnName());
       buffer.append(" AND ");
