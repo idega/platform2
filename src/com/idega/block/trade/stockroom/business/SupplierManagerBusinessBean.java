@@ -393,7 +393,7 @@ public class SupplierManagerBusinessBean extends IBOServiceBean  implements Supp
 	}
 	
 	private Group getSupplierManagerBookingStaffGroup(Group supplierManager) throws RemoteException {
-		return getSupplierManagerStaffGroup(supplierManager, SUPPLIER_MANAGER_BOOKING_STAFF_TYPE, TradeConstants.ROLE_BOOKING_BASKET);
+		return getSupplierManagerStaffGroup(supplierManager, SUPPLIER_MANAGER_BOOKING_STAFF_TYPE, TradeConstants.ROLE_SUPPLIER_MANAGER_BOOKING_STAFF);
 	}
 	
 	private Group getSupplierManagerStaffGroup(Group supplierManager, String groupType, String role) throws RemoteException {
