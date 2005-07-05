@@ -270,12 +270,12 @@ public class TravelBlock extends Block {
   }
   
   protected boolean isSupplierManagerBookerStaff() throws RemoteException {
-      return tsm.hasRole(TradeConstants.ROLE_BOOKING_BASKET);
+      return tsm.hasRole(TradeConstants.ROLE_SUPPLIER_MANAGER_BOOKING_STAFF);
   }
   
   private boolean isSupplierManager(IWContext iwc) {
   	try {
-  		return iwc.getAccessController().hasRole(TradeConstants.SUPPLIER_MANAGER_ROLE_KEY, iwc) || iwc.getAccessController().hasRole(TradeConstants.ROLE_BOOKING_BASKET, iwc);
+  		return iwc.getAccessController().hasRole(TradeConstants.SUPPLIER_MANAGER_ROLE_KEY, iwc) || iwc.getAccessController().hasRole(TradeConstants.ROLE_SUPPLIER_MANAGER_BOOKING_STAFF, iwc);
   	} catch (NotLoggedOnException n) {
   		return false;
   	}

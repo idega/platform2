@@ -281,6 +281,7 @@ public class SupplierManagerEditor extends TravelManager {
 	private List getRoles() {
 		List l = new Vector();
 		l.add(TradeConstants.ROLE_BOOKING_BASKET);
+		l.add(TradeConstants.ROLE_SUPPLIER_MANAGER_BOOKING_STAFF);
 //		l.add(TradeConstants.ROLE_CREATE_EDIT_PRODUCTS);
 //		l.add(TradeConstants.ROLE_EDIT_SUPPLIES);
 		return l;
