@@ -18,7 +18,6 @@ import org.doomdark.uuid.UUIDGenerator;
 import com.idega.block.dataquery.data.QueryLog;
 import com.idega.block.dataquery.data.QueryLogHome;
 import com.idega.block.dataquery.data.QueryResult;
-import com.idega.block.dataquery.data.QueryResultCell;
 import com.idega.block.dataquery.data.QueryResultField;
 import com.idega.block.dataquery.data.sql.SQLQuery;
 import com.idega.block.dataquery.data.xml.QueryHelper;

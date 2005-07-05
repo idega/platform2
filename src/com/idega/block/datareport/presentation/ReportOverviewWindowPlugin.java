@@ -2,7 +2,6 @@ package com.idega.block.datareport.presentation;
 
 import java.util.Map;
 import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWMainApplicationSettings;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
