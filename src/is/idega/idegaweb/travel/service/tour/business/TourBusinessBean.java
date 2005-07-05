@@ -138,7 +138,9 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
               try{
                 ((is.idega.idegaweb.travel.data.PickupPlaceHome)com.idega.data.IDOLookup.getHome(PickupPlace.class)).findByPrimaryKey(new Integer(hotelPickupPlaceIds[i])).addToService(service);
 //                service.addTo(((is.idega.idegaweb.travel.data.HotelPickupPlaceHome)com.idega.data.IDOLookup.getHome(HotelPickupPlace.class)).findByPrimaryKey(new Integer(hotelPickupPlaceIds[i])));
-              }catch (IDOAddRelationshipException sql) {}
+              }catch (IDOAddRelationshipException sql) {
+            	  sql.printStackTrace(System.err);
+              }
             }
             tour.setHotelPickup(true);
           }else{
