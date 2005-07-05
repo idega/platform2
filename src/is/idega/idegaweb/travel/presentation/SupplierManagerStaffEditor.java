@@ -106,7 +106,9 @@ public class SupplierManagerStaffEditor extends TravelManager {
 			delete.addParameter(sAction, ACTION_DELETE_USER);
 			delete.setOnClick("return confirm('"+super.getResourceBundle().getLocalizedString("travel.are_you_sure","Are you sure")+"?');");
 			delete.addParameter(PARAM_USER_ID, userid);
-			table.add(delete, 2, startrow);
+			if (!iwc.getCurrentUser().equals(user)) {
+				table.add(delete, 2, startrow);
+			}
 			table.setAlignment(2, startrow, "right");
 			
 			edit = new Link(super.getResourceBundle().getLocalizedString("travel.link_edit"," Edit "));
