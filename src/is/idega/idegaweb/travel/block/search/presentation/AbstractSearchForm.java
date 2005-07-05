@@ -1,6 +1,7 @@
 package is.idega.idegaweb.travel.block.search.presentation;
 
 import is.idega.idegaweb.travel.block.search.business.InvalidSearchException;
+import is.idega.idegaweb.travel.block.search.business.SearchEventListener;
 import is.idega.idegaweb.travel.block.search.business.ServiceSearchBusiness;
 import is.idega.idegaweb.travel.block.search.business.ServiceSearchBusinessBean;
 import is.idega.idegaweb.travel.block.search.business.ServiceSearchSession;
@@ -967,7 +968,7 @@ public abstract class AbstractSearchForm extends TravelBlock {
 			form.addParameter(ACTION, ACTION_CONFIRM);
 			
 			if (useBasket) {
-				form.setEventListener(ServiceSearchBusinessBean.class);
+				form.setEventListener(SearchEventListener.class);
 			}
 
 			Table linkTable = new Table();
@@ -2195,7 +2196,7 @@ public abstract class AbstractSearchForm extends TravelBlock {
 		try {
 //			ProductPrice pPrice = getProductPriceHome().findByPrimaryKey(new Integer(priceID));
 			link.addParameter("priceCategory"+priceID, 1);
-			link.setEventListener(ServiceSearchBusinessBean.class);
+			link.setEventListener(SearchEventListener.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
