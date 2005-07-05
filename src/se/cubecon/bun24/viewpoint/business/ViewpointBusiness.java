@@ -1,12 +1,17 @@
 package se.cubecon.bun24.viewpoint.business;
 
+import java.rmi.RemoteException;
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+import se.cubecon.bun24.viewpoint.data.RoadResponsible;
+import se.cubecon.bun24.viewpoint.data.SubCategory;
+import se.cubecon.bun24.viewpoint.data.TopCategory;
+import se.cubecon.bun24.viewpoint.data.Viewpoint;
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.business.IBOService;
-import com.idega.user.data.*;
-import java.rmi.RemoteException;
-import javax.ejb.*;
-import se.cubecon.bun24.viewpoint.data.*;
-import se.idega.idegaweb.commune.block.pointOfView.business.PointOfViewBusiness;
+import com.idega.presentation.text.Link;
+import com.idega.user.data.Group;
+import com.idega.user.data.User;
 
 /**
  * ViewpointBusiness is a session ejb interface for creating, managing and
@@ -15,17 +20,17 @@ import se.idega.idegaweb.commune.block.pointOfView.business.PointOfViewBusiness;
  * in order to help the system to chose what handler group should be responsible
  * for answering the entered viewpoint.
  * <p>
- * Last modified: $Date: 2004/09/29 11:34:06 $ by $Author: thomas $
+ * Last modified: $Date: 2005/07/05 16:41:51 $ by $Author: thomas $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  * @see com.idega.block.process.business
  * @see com.idega.business
  * @see com.idega.user.data
  * @see javax.ejb
  * @see se.cubecon.bun24.viewpoint.data
  */
-public interface ViewpointBusiness extends IBOService, CaseBusiness, PointOfViewBusiness {
+public interface ViewpointBusiness extends IBOService, CaseBusiness {
 	String CONFIRMENTERVIEWPOINT_KEY = "viewpoint.confirmEnterViewpoint";
 	String CONFIRMENTERVIEWPOINT_DEFAULT
         = "Tack för din synpunkt. Den är nu registrerad som ett ärende."
@@ -70,4 +75,7 @@ public interface ViewpointBusiness extends IBOService, CaseBusiness, PointOfView
     RoadResponsible findRoadResponsible (int RoadResponsibleId)
         throws FinderException;
     RoadResponsible [] findAllRoadResponsible () throws FinderException;
+    Link getLinkToPageForPointOfView(int pageID, Viewpoint viewpoint);
+    String getCaseCodeKeyForPointOfView() throws RemoteException;
+
 }

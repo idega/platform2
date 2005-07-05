@@ -1,18 +1,21 @@
 package se.cubecon.bun24.viewpoint.data;
 
-import com.idega.block.process.data.*;
-import com.idega.user.data.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
 import javax.ejb.FinderException;
-import se.idega.idegaweb.commune.block.pointOfView.data.PointOfView;
+import com.idega.block.process.data.AbstractCaseBMPBean;
+import com.idega.block.process.data.Case;
+import com.idega.block.process.data.CaseBMPBean;
+import com.idega.user.data.Group;
+import com.idega.user.data.User;
 
 /**
- * Last modified: $Date: 2004/09/29 11:33:24 $ by $Author: thomas $
+ * Last modified: $Date: 2005/07/05 16:41:50 $ by $Author: thomas $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
-public class ViewpointBMPBean extends AbstractCaseBMPBean implements Viewpoint, PointOfView, Case {
+public class ViewpointBMPBean extends AbstractCaseBMPBean implements Viewpoint, Case {
 	
 	public static final String CASE_CODE_KEY = "SYMESYN";
 	public static final String STATUSKEY_ANSWERED = "ASWD";

@@ -1,28 +1,39 @@
 package se.cubecon.bun24.viewpoint.business;
 
-import com.idega.block.process.business.CaseBusinessBean;
-import com.idega.block.process.data.*;
-import com.idega.business.IBOLookup;
-import com.idega.data.*;
-import com.idega.presentation.text.Link;
-import com.idega.user.data.*;
 import java.rmi.RemoteException;
-import java.util.*;
-import javax.ejb.*;
-import se.cubecon.bun24.viewpoint.data.*;
+import java.util.HashMap;
+import java.util.Map;
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+import se.cubecon.bun24.viewpoint.data.RoadResponsible;
+import se.cubecon.bun24.viewpoint.data.RoadResponsibleHome;
+import se.cubecon.bun24.viewpoint.data.SubCategory;
+import se.cubecon.bun24.viewpoint.data.SubCategoryHome;
+import se.cubecon.bun24.viewpoint.data.TopCategory;
+import se.cubecon.bun24.viewpoint.data.TopCategoryHome;
+import se.cubecon.bun24.viewpoint.data.Viewpoint;
+import se.cubecon.bun24.viewpoint.data.ViewpointBMPBean;
+import se.cubecon.bun24.viewpoint.data.ViewpointHome;
 import se.cubecon.bun24.viewpoint.presentation.ViewpointForm;
-import se.idega.idegaweb.commune.block.pointOfView.business.PointOfViewBusiness;
-import se.idega.idegaweb.commune.block.pointOfView.data.PointOfView;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
+import com.idega.block.process.business.CaseBusinessBean;
+import com.idega.block.process.data.CaseStatus;
+import com.idega.block.process.data.CaseStatusHome;
+import com.idega.business.IBOLookup;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
+import com.idega.presentation.text.Link;
+import com.idega.user.data.Group;
+import com.idega.user.data.User;
 
 /**
- * Last modified: $Date: 2004/09/29 11:34:06 $ by $Author: thomas $
+ * Last modified: $Date: 2005/07/05 16:41:50 $ by $Author: thomas $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
-public class ViewpointBusinessBean extends CaseBusinessBean  implements ViewpointBusiness, PointOfViewBusiness {
+public class ViewpointBusinessBean extends CaseBusinessBean  implements ViewpointBusiness {
 
     public final static String ANSWER_KEY = "viewpoint.answer";
     public final static String ANSWER_DEFAULT = "Svar till medborgare";
@@ -252,19 +263,8 @@ public class ViewpointBusinessBean extends CaseBusinessBean  implements Viewpoin
 		}
     }
     
-    public Collection findUnhandledPointOfViewsInGroups(Collection groups) throws RemoteException, FinderException {
-    	Group[] groupArray = (Group[]) groups.toArray(new Group[0]);
-    	PointOfView[] resultArray = findUnhandledViewpointsInGroups(groupArray);
-    	return Arrays.asList(resultArray);    	
-    }
-    
-    
-    public PointOfView findPointOfView(int primarykey) throws RemoteException, FinderException {
-    	return findViewpoint(primarykey);
-    }
-    
-    public Link getLinkToPageForPointOfView(int pageID, PointOfView pointOfView) {
-    	String primaryKey = pointOfView.getPrimaryKey().toString();
+    public Link getLinkToPageForPointOfView(int pageID, Viewpoint viewpoint) {
+    	String primaryKey = viewpoint.getPrimaryKey().toString();
     	Link viewpointLink = new Link(primaryKey);
 		viewpointLink.setPage(pageID);
 		viewpointLink.addParameter(ViewpointForm.PARAM_ACTION, ViewpointForm.SHOWVIEWPOINT_ACTION + "");
