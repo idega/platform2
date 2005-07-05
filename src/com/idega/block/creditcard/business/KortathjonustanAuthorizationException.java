@@ -44,8 +44,12 @@ public class KortathjonustanAuthorizationException extends CreditCardAuthorizati
 		switch (number) {
 			case 1029 :
 				return (iwrb.getLocalizedString("cc.creditcard_number_incorrect","Creditcard number incorrect"));
+//			case 10909 :
+//				return (iwrb.getLocalizedString("cc.error_maybe_CVC","An error occured, CVC code could be incorrect"));
 			case 10102 :
 				return (iwrb.getLocalizedString("cc.declined","Declined"));
+			case 10101 :
+				return (iwrb.getLocalizedString("cc.card_is_expired","Card is expired"));
 			default:
 				return (iwrb.getLocalizedString("cc.cannot_connect","Cannot communicate with server"));
 		}
