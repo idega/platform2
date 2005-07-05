@@ -5,6 +5,7 @@ import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusiness;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceReason;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceReasonHome;
+import se.idega.idegaweb.commune.school.business.SchoolCaseBusiness;
 import com.idega.block.process.business.CaseCodeManager;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryHome;
@@ -13,16 +14,18 @@ import com.idega.block.school.data.SchoolStudyPathGroupHome;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
+import com.idega.repository.data.ImplementorRepository;
 
 /**
- * Last modified: $Date: 2005/05/16 13:42:54 $ by $Author: laddi $
+ * Last modified: $Date: 2005/07/05 16:46:39 $ by $Author: thomas $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class IWBundleStarter implements IWBundleStartable {
 
 	public void start(IWBundle starterBundle) {
+		ImplementorRepository.getInstance().addImplementor(SchoolCaseBusiness.class, AdultEducationBusiness.class);
 		insertStartData();
 	}
 	
