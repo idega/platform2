@@ -584,7 +584,8 @@ public class TourDesigner extends TravelManager implements DesignerForm{
         PickupPlace hpp;
         Iterator iter = hppService.iterator();
         while (iter.hasNext()) {
-          hotels.setSelectedElement(iter.next().toString());
+        	hpp = (PickupPlace) iter.next();
+          hotels.setSelectedElement(hpp.getPrimaryKey().toString());
         }
 
         if (tour != null) {
