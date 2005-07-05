@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowser.java,v 1.15 2005/06/23 12:59:01 edmunds Exp $
+ * $Id: SupplierBrowser.java,v 1.16 2005/07/05 22:54:51 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -9,10 +9,11 @@
  */
 package is.idega.idegaweb.travel.presentation;
 
-import is.idega.idegaweb.travel.block.search.business.ServiceSearchBusinessBean;
+import is.idega.idegaweb.travel.block.search.business.SearchEventListener;
 import is.idega.idegaweb.travel.block.search.business.ServiceSearchSession;
 import is.idega.idegaweb.travel.block.search.presentation.AbstractSearchForm;
-import is.idega.idegaweb.travel.block.search.presentation.SearchBasketStatus;
+import is.idega.idegaweb.travel.data.PickupPlace;
+import is.idega.idegaweb.travel.data.PickupPlaceHome;
 import is.idega.idegaweb.travel.service.presentation.BookingForm;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
@@ -26,6 +27,7 @@ import com.idega.block.text.business.ContentFinder;
 import com.idega.block.text.business.ContentHelper;
 import com.idega.block.text.data.TxText;
 import com.idega.block.trade.stockroom.business.ProductPriceException;
+import com.idega.block.trade.stockroom.business.TradeConstants;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductHome;
 import com.idega.block.trade.stockroom.data.ProductPrice;
@@ -51,6 +53,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.BackButton;
+import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.InterfaceObject;
@@ -60,15 +63,15 @@ import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
 import com.idega.util.IWTimestamp;
-import com.idega.util.Timer;
 
 
 public class SupplierBrowser extends TravelBlock {
 
-	private static final String ACTION = "sb_a";
+	static final String ACTION = "sb_a";
 	private static final String ACTION_VIEW_SUPPLIERS = "sb_a_vs";
 	private static final String ACTION_VIEW_PRODUCTS = "sb_a_vp";
 	private static final String ACTION_VIEW_DETAILS = "sb_a_vd";
+	static final String ACTION_BOOKING_FORM = "sb_a_bf";
 	private static final String PARAMETER_SUPPLIER_MANAGER = "sb_sm";
 	
 	public static final String PARAMETER_POSTAL_CODES = "sb_pc";
@@ -98,6 +101,7 @@ public class SupplierBrowser extends TravelBlock {
 	private boolean useSearchPriceCategoryKey = false;
 	private String imageWidth = "70";
 	private boolean useBasket = false;
+	private boolean useTravelLook = false;
 	
 	public SupplierBrowser() {
 		
@@ -111,17 +115,19 @@ public class SupplierBrowser extends TravelBlock {
 		init(iwc);
 		
 		Form form = new Form();
-		SearchBasketStatus stat = new SearchBasketStatus();
-		//stat.setURLToCheckout("http://localhost:8080/gimmi.jsp");
-		stat.setURLToCheckout("http://localhost:8080/servlet/IBMainServlet/?ib_page=3");
-		stat.setTextStyleClass(textStyleClass);
-		stat.setLinkStyleClass(linkStyleClass);
-		form.add(stat);
+//		SearchBasketStatus stat = new SearchBasketStatus();
+//		//stat.setURLToCheckout("http://localhost:8080/gimmi.jsp");
+//		stat.setURLToCheckout("http://localhost:8080/servlet/IBMainServlet/?ib_page=3");
+//		stat.setTextStyleClass(textStyleClass);
+//		stat.setLinkStyleClass(linkStyleClass);
+//		form.add(stat);
 
 		if (plugin == null) {
 			form.add(getText(getResourceBundle().getLocalizedString("plugin_not_defined", "Plugin not defined")));
 		} else if (supplierManager == null) {
 			form.add(getText(getResourceBundle().getLocalizedString("supplier_manager_not_defined", "SupplierManager not defined")));
+		} else if (!super.hasRole(iwc, TradeConstants.ROLE_SUPPLIER_MANAGER_BOOKING_STAFF)) {
+			form.add(getText(getResourceBundle().getLocalizedString("travel.you_dont_have_permission", "You don't have permission.")));
 		} else {
 			form.maintainParameter(PARAMETER_POSTAL_CODES);
 			form.maintainParameter(PARAMETER_SUPPLIER_MANAGER);
@@ -149,6 +155,8 @@ public class SupplierBrowser extends TravelBlock {
 				listProducts(iwc, form);
 			} else if (action.equals(ACTION_VIEW_DETAILS)) {
 				viewDetails(iwc, form);
+			} else if (action.equals(ACTION_BOOKING_FORM)) {
+				bookingForm(iwc, form);
 			}
 		}
 		
@@ -174,7 +182,7 @@ public class SupplierBrowser extends TravelBlock {
 		if (supplierManagerId > 0) {
 			suppMan = Integer.toString(supplierManagerId);
 		}
-		if (suppMan != null && supplierManager != null) {
+		if (suppMan != null && supplierManager == null) {
 			try {
 				GroupHome gHome = (GroupHome) IDOLookup.getHome(Group.class, getSupplierHome().getDatasource());
 				supplierManager = gHome.findByPrimaryKey(new Integer(suppMan));
@@ -189,6 +197,7 @@ public class SupplierBrowser extends TravelBlock {
 				e.printStackTrace();
 			}
 		}
+		
 		// Checking the postal codes
 		String pcs = iwc.getParameter(PARAMETER_POSTAL_CODES);
 		postalCodes = new String[2][0];
@@ -239,8 +248,22 @@ public class SupplierBrowser extends TravelBlock {
 		}
 	}
 	
+	private void bookingForm(IWContext iwc, Form form) {
+		Table table = new Table();
+		if (width != null) {
+			table.setWidth(width);
+		}
+		
+		table.add(getText("bookingForm"));
+		
+		form.add(table);
+	}
+	
 	private void viewDetails(IWContext iwc, Form form) throws RemoteException {
 		Table table = new Table();
+		if (useTravelLook) {
+			table = TravelManager.getTable();
+		}
 		if (width != null) {
 			table.setWidth(width);
 		}
@@ -268,35 +291,47 @@ public class SupplierBrowser extends TravelBlock {
 		}
 		
 		int row = 1;
+		if (useTravelLook) {
+			table.mergeCells(1, row, 3, row);
+			table.setRowColor(row, TravelManager.backgroundColor);
+			table.add(TravelManager.getHeaderText(getResourceBundle().getLocalizedString("travel.product_details", "Product details")), 1, row++);
+		}
 		row = addProductInfo(iwc, table, row, iwc.getCurrentLocaleId(), product, false);
-		table.mergeCells(1, row, 3, row);
-		row = addExtraBookingElements(table, row);
 		table.mergeCells(1, row, 3, row);
 		
 		
 		Table priceTable = new Table();
-
-		table.add(priceTable, 1, row);
-		priceTable.setWidth("100%");
+		if (useTravelLook) {
+			priceTable = TravelManager.getTable();
+		}
+//		table.add(priceTable, 1, row);
+		if (width != null) {
+			priceTable.setWidth(width);
+		}
 		priceTable.setBorder(0);
 		
 		int pRow = 1;
 		if (iwc.isLoggedOn()) {
 			priceTable.add(new HiddenInput("ic_user", iwc.getCurrentUser().getPrimaryKey().toString()), 1, pRow);
 		}
+		priceTable.add(new HiddenInput(BookingForm.parameterOnlineBooking, Boolean.toString(useOnlinePrices)), 1, pRow);
 		if (useSearchPriceCategoryKey) {
 			priceTable.add(new HiddenInput(BookingForm.parameterPriceCategoryKey, bookingForm.getPriceCategorySearchKey()), 1, pRow);
 		}
-		priceTable.add(new HiddenInput(BookingForm.parameterOnlineBooking, Boolean.toString(useOnlinePrices)), 1, pRow);
-
-		priceTable.add(getText(getResourceBundle().getLocalizedString("travel.prices", "Prices"), headerStyleClass), 1, pRow);
-//		if (numberOfDays == 1) {
+		if (useTravelLook) {
+			priceTable.add(TravelManager.getHeaderText(getResourceBundle().getLocalizedString("travel.prices", "Prices")), 1, pRow);
+			priceTable.add(TravelManager.getHeaderText(getResourceBundle().getLocalizedString("travel.per_unit", "Per Unit")), 2, pRow);
+			priceTable.add(TravelManager.getHeaderText(getResourceBundle().getLocalizedString("travel.count", "Count")), 3, pRow);
+			priceTable.add(TravelManager.getHeaderText(getResourceBundle().getLocalizedString("travel.sum", "Sum")), 4, pRow);
+			priceTable.setRowColor(pRow, TravelManager.backgroundColor);
+		} else {
+			priceTable.add(getText(getResourceBundle().getLocalizedString("travel.prices", "Prices"), headerStyleClass), 1, pRow);
 			priceTable.add(getText(getResourceBundle().getLocalizedString("travel.per_unit", "Per Unit"), headerStyleClass), 2, pRow);
-//		} else {
-//			priceTable.add(getText(getResourceBundle().getLocalizedString("travel.unit", "Unit")+ " "+bookingForm.getPerDayString(getResourceBundle()), headerStyleClass), 2, pRow);
-//		}
-		priceTable.add(getText(getResourceBundle().getLocalizedString("travel.count", "Count"), headerStyleClass), 3, pRow);
-		priceTable.add(getText(getResourceBundle().getLocalizedString("travel.sum", "Sum"), headerStyleClass), 4, pRow++);
+			priceTable.add(getText(getResourceBundle().getLocalizedString("travel.count", "Count"), headerStyleClass), 3, pRow);
+			priceTable.add(getText(getResourceBundle().getLocalizedString("travel.sum", "Sum"), headerStyleClass), 4, pRow);
+
+		}
+		++pRow;
 		
 		
 		++row;
@@ -325,6 +360,9 @@ public class SupplierBrowser extends TravelBlock {
 					tAddress = (TravelAddress) aIter.next();
 					int timeframeId = -1;
 					int addressId = tAddress.getID();
+					if (useTravelLook) {
+						priceTable.setRowColor(pRow, TravelManager.GRAY);
+					}
 					priceTable.add(getText(tAddress.getName(), headerStyleClass), 1, pRow++);
 					Timeframe timeframe = getServiceHandler(iwc).getProductBusiness().getTimeframe(product, from, addressId);
 					if (timeframe != null) {
@@ -337,7 +375,10 @@ public class SupplierBrowser extends TravelBlock {
 			if (interfaceObjectStyleClass != null) {
 				totalResults.setStyleClass(interfaceObjectStyleClass);
 			}
-
+			
+			if (useTravelLook) {
+				priceTable.setRowColor(pRow, TravelManager.GRAY);
+			}
 			priceTable.add(getText(getResourceBundle().getLocalizedString("travel.total", "Total"), headerStyleClass), 1, pRow);
 			priceTable.add(totalResults, 4, pRow);
 
@@ -360,67 +401,141 @@ public class SupplierBrowser extends TravelBlock {
 		
 		form.add(new HiddenInput(AbstractSearchForm.ACTION, ""));
 		
+		
+		Table linkTable = new Table(2, 1);
+		if  (useTravelLook) {
+			linkTable.setColor(TravelManager.WHITE);
+			linkTable.setCellpaddingAndCellspacing(1);
+		} else {
+			linkTable.setCellpaddingAndCellspacing(0);
+		}
+		if (width != null) {
+			linkTable.setWidth(width);
+		}
+		linkTable.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_LEFT);
+		linkTable.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+//		linkTable.setAlignment(3, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+		linkTable.setWidth(2, 1, 170);
+		linkTable.setBorder(0);
+		if (useTravelLook) {
+			linkTable.setRowColor(1, TravelManager.GRAY);
+		}
+//		table.mergeCells(1, row, 3, row);
+//		table.add(linkTable, 1, row++);
+		
+		
 		Link link = getLink(getResourceBundle().getLocalizedString("travel.add_to_basket", "Add to basket"));
 		
 		String formRef = "document.forms['"+form.getID()+"']";
 		link.setOnClick(formRef+".elements['"+AbstractSearchForm.ACTION+"'].value='"+AbstractSearchForm.ACTION_ADD_TO_BASKET+"';"+formRef+".elements['"+ACTION+"'].value='"+ACTION_VIEW_DETAILS+"';"+formRef+".submit();return false;");
-		form.setEventListener(ServiceSearchBusinessBean.class);
+		form.setEventListener(SearchEventListener.class);
 
-		table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_RIGHT);
-		table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
-		table.add(back, 1, row);
-		
+//		table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_RIGHT);
+//		table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
+//		table.add(back, 1, row);
+
+		linkTable.add(back, 1, 1);
 		if (getSearchSession(iwc).getAddToBasketSuccess() && iwc.isParameterSet(AbstractSearchForm.ACTION)) {
 			
-			table.add(getText(getResourceBundle().getLocalizedString("travel.added_successfully_to_basket", "Added successfully to basket"), headerStyleClass), 3, row);
+//			table.mergeCells(2, row, 3, row);
+//			table.add(getText(getResourceBundle().getLocalizedString("travel.added_successfully_to_basket", "Added successfully to basket"), headerStyleClass), 2, row);
+			linkTable.add(getText(getResourceBundle().getLocalizedString("travel.added_successfully_to_basket", "Added successfully to basket"), headerStyleClass), 2, 1);
 			link.setText(getText(getResourceBundle().getLocalizedString("travel.add_another_to_basket", "Add another to basket"), linkStyleClass));
 			
 		} else if (iwc.isParameterSet(AbstractSearchForm.ACTION)) {
 
-			table.add(getText(getResourceBundle().getLocalizedString("travel.failed_adding_to_basket", "Failed adding to basket")+", "+getSearchSession(iwc).getAddToBasketError(getResourceBundle()), headerStyleClass), 2, row);
-			table.add(link, 3, row);
+//			table.add(getText(getResourceBundle().getLocalizedString("travel.failed_adding_to_basket", "Failed adding to basket")+", "+getSearchSession(iwc).getAddToBasketError(getResourceBundle()), headerStyleClass), 2, row);
+//			table.add(link, 3, row);
+			linkTable.add(getText(getResourceBundle().getLocalizedString("travel.failed_adding_to_basket", "Failed adding to basket")+", "+getSearchSession(iwc).getAddToBasketError(getResourceBundle()), headerStyleClass), 2, 1);
+			linkTable.add(link, 2, 1);
 
 		} else { 
-		
-			table.add(link, 3, row);
+//			table.mergeCells(2, row, 3, row);
+//			table.add(link, 2, row);
+			linkTable.add(link, 2, 1);
 			
 		}
 		
+		form.add(Text.BREAK);
 		form.add(table);
+		addExtraBookingElements(form);
+		form.add(Text.BREAK);
+		form.add(priceTable);
+		form.add(Text.BREAK);
+		form.add(linkTable);
 	}
 
-	private int addExtraBookingElements(Table table, int row) throws RemoteException {
+	private void addExtraBookingElements(Form form) throws RemoteException {
 		Collection[] extras = plugin.getExtraBookingFormElements(product, super.getResourceBundle());
-		if (extras != null && extras[0] != null && extras[1] != null && !extras[0].isEmpty() && !extras[1].isEmpty()) {
-			Table extraTable = new Table();
-			extraTable.setWidth(width);
-			int stRow = 1;
-			int stringCount = extras[0].size();
-			int iosCount = extras[1].size();
-			if (stringCount == iosCount) {
-				table.add(extraTable, 1, row++);
-				
-				extraTable.add(getText(getResourceBundle().getLocalizedString("travel.booking_options", "Bookng options"), headerStyleClass), 1, stRow);
-				extraTable.mergeCells(1, stRow, 2, stRow++);
-				Iterator stringIter = extras[0].iterator();
-				Iterator ioIter = extras[1].iterator();
-				InterfaceObject io;
-				
-				while (stringIter.hasNext()) {
-					extraTable.add(getText((String)stringIter.next()), 1, stRow);
-					io = (InterfaceObject) ioIter.next();
-					if (interfaceObjectStyleClass != null) {
-						io.setStyleClass(interfaceObjectStyleClass);
-					}
-					extraTable.add(io, 2, stRow++);
-				}
-				extraTable.setWidth(1, "100");
-				
-			} else {
-				
-			}
+		boolean useExtras = extras != null && extras[0] != null && extras[1] != null && !extras[0].isEmpty() && !extras[1].isEmpty();
+		boolean usePickups = false;
+		Collection pickups = null;
+		try {
+			PickupPlaceHome ppHome = (PickupPlaceHome) IDOLookup.getHome(PickupPlace.class);
+			pickups = ppHome.findHotelPickupPlaces(product);
+			usePickups = pickups != null && !pickups.isEmpty();
+		} catch (FinderException f) {
+			f.printStackTrace();
 		}
-		return row;
+		
+		
+		if (useExtras || usePickups) {
+			Table extraTable = new Table();
+			if (useTravelLook) {
+				extraTable = TravelManager.getTable();
+			}
+			extraTable.setWidth(width);
+			extraTable.setBorder(0);
+			int stRow = 1;
+			form.add(Text.BREAK);
+			form.add(extraTable);
+			
+			extraTable.mergeCells(1, stRow, 2, stRow);
+			if (useTravelLook) {
+				extraTable.setRowColor(stRow, TravelManager.backgroundColor);
+				extraTable.add(TravelManager.getHeaderText(getResourceBundle().getLocalizedString("travel.booking_options", "Bookng options")), 1, stRow);
+			} else {
+				extraTable.add(getText(getResourceBundle().getLocalizedString("travel.booking_options", "Bookng options"), headerStyleClass), 1, stRow);
+			}
+			++stRow;
+			if (usePickups) {
+				DropdownMenu menu = new DropdownMenu(pickups, BookingForm.parameterPickupId);
+				if (interfaceObjectStyleClass != null) {
+					menu.setStyleClass(interfaceObjectStyleClass);
+				}
+				extraTable.add(getText(getResourceBundle().getLocalizedString("travel.pickup","Pickup")), 1, stRow);
+				extraTable.add(menu, 2, stRow);
+				if (useTravelLook) {
+					extraTable.setRowColor(stRow, TravelManager.GRAY);
+				}
+				++stRow;
+			}
+			
+			if (useExtras) {
+				int stringCount = extras[0].size();
+				int iosCount = extras[1].size();
+				if (stringCount == iosCount) {
+					Iterator stringIter = extras[0].iterator();
+					Iterator ioIter = extras[1].iterator();
+					InterfaceObject io;
+					
+					while (stringIter.hasNext()) {
+						extraTable.add(getText((String)stringIter.next()), 1, stRow);
+						io = (InterfaceObject) ioIter.next();
+						if (interfaceObjectStyleClass != null) {
+							io.setStyleClass(interfaceObjectStyleClass);
+						}
+						extraTable.add(io, 2, stRow);
+						if (useTravelLook) {
+							extraTable.setRowColor(stRow, TravelManager.GRAY);
+						}
+						++stRow;
+					}
+					
+				}
+			}
+			extraTable.setWidth(1, "100");
+		}
 	}
 
 	private int listPrices(IWContext iwc, Table priceTable, int pRow, int addressId, int timeframeId, ProductPriceHome ppHome, ResultOutput totalResults, int numberOfDays) throws FinderException, SQLException, RemoteException {
@@ -432,62 +547,108 @@ public class SupplierBrowser extends TravelBlock {
 		Collection prices = ppHome.findProductPrices(product.getID(), timeframeId, addressId, useOnlinePrices, key);
 //				Collection prices = ppHome.findProductPrices(product.getID(), timeframeId, addressId, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, bf.getPriceCategorySearchKey());
 		if (prices != null) {
+			Collection misc = null;
+
 			Iterator pIter = prices.iterator();
-			Timer t = new Timer();
 			ProductPrice price;
 			while (pIter.hasNext()) {
 				price = (ProductPrice) pIter.next();
-				t.start();
-				float fPrice = -1;
-				try {
-					fPrice = getTravelStockroomBusiness(iwc).getPrice(((Integer) price.getPrimaryKey()).intValue(), product.getID(), price.getPriceCategoryID(), price.getCurrencyId(), IWTimestamp.getTimestampRightNow(), timeframeId, addressId);
-				} catch (ProductPriceException  p) {
-					
+				pRow = addPrice(iwc, priceTable, pRow, addressId, timeframeId, totalResults, numberOfDays, price, "priceCategory");
+			}
+			
+			try {
+				misc = ppHome.findMiscellaneousPrices(product.getID(), timeframeId, addressId, useOnlinePrices);
+				Iterator glitter = misc.iterator();
+				if (glitter.hasNext()) {
+					if (useTravelLook) {
+						priceTable.mergeCells(1, pRow, 4, pRow);
+						priceTable.add(TravelManager.getHeaderText(getResourceBundle().getLocalizedString("travel.miscellanious_prices", "Miscellanious prices")), 1, pRow);
+						priceTable.setRowColor(pRow++, TravelManager.backgroundColor);
+					} else {
+						priceTable.mergeCells(1, pRow, 4, pRow);
+						priceTable.add(getText(getResourceBundle().getLocalizedString("travel.other_prices", "Other prices"), headerStyleClass), 1, pRow);
+						priceTable.setRowColor(pRow++, TravelManager.backgroundColor);
+					}
 				}
-				t.stop();
-				System.out.println("[SupplierBrowser] time to get 1 price = "+t.getTimeString());
-
-				priceTable.add(getText(price.getPriceCategory().getName()), 1, pRow);
-				priceTable.add(getText(df.format(fPrice*numberOfDays)+" "+price.getCurrency().getCurrencyAbbreviation()), 2, pRow);
-				if (numberOfDays > 1) {
-					priceTable.add(getText(Text.BREAK+"("+df.format(fPrice)+" "+bookingForm.getPerDayString(getResourceBundle())+")"), 2, pRow);
-				}
-				
-				TextInput inp = new TextInput("priceCategory"+price.getPrimaryKey().toString());
-				inp.setContent("0");
-				inp.setSize(3);
-				
-				ResultOutput rout = new ResultOutput("tmp"+price.getPrimaryKey().toString(), "0");
-				rout.setSize(7);
-				rout.add(inp, ResultOutput.OPERATOR_MULTIPLY+fPrice+ResultOutput.OPERATOR_MULTIPLY+numberOfDays);
-				if (interfaceObjectStyleClass != null) {
-					inp.setStyleClass(interfaceObjectStyleClass);
-					rout.setStyleClass(interfaceObjectStyleClass);
+				while (glitter.hasNext()) {
+					price = (ProductPrice) glitter.next();
+					pRow = addPrice(iwc, priceTable, pRow, addressId, timeframeId, totalResults, numberOfDays, price, "miscPriceCategory");
 				}
 				
-				totalResults.add(rout);
-				priceTable.add(inp, 3, pRow);
-				priceTable.add(rout, 4, pRow);
-				
-				priceTable.setVerticalAlignment(1, pRow, Table.VERTICAL_ALIGN_TOP);
-				priceTable.setVerticalAlignment(2, pRow, Table.VERTICAL_ALIGN_TOP);
-				priceTable.setVerticalAlignment(3, pRow, Table.VERTICAL_ALIGN_TOP);
-				priceTable.setVerticalAlignment(4, pRow, Table.VERTICAL_ALIGN_TOP);
-//				priceTable.add(getText(price.getCurrency().getCurrencyAbbreviation()), 3, pRow);
-				++pRow;
-				
+			} catch (FinderException f) {
+				f.printStackTrace();
 			}
 		}
+		return pRow;
+	}
+
+	/**
+	 * @param iwc
+	 * @param priceTable
+	 * @param pRow
+	 * @param addressId
+	 * @param timeframeId
+	 * @param totalResults
+	 * @param numberOfDays
+	 * @param price
+	 * @return
+	 * @throws SQLException
+	 * @throws RemoteException
+	 * @throws FinderException
+	 */
+	private int addPrice(IWContext iwc, Table priceTable, int pRow, int addressId, int timeframeId, ResultOutput totalResults, int numberOfDays, ProductPrice price, String textInputPrefix) throws SQLException, RemoteException, FinderException {
+		float fPrice = -1;
+		try {
+			fPrice = getTravelStockroomBusiness(iwc).getPrice(((Integer) price.getPrimaryKey()).intValue(), product.getID(), price.getPriceCategoryID(), price.getCurrencyId(), IWTimestamp.getTimestampRightNow(), timeframeId, addressId);
+		} catch (ProductPriceException  p) {
+			
+		}
+
+		priceTable.add(getText(price.getPriceCategory().getName()), 1, pRow);
+		priceTable.add(getText(df.format(fPrice*numberOfDays)+" "+price.getCurrency().getCurrencyAbbreviation()), 2, pRow);
+		if (numberOfDays > 1) {
+			priceTable.add(getText(Text.BREAK+"("+df.format(fPrice)+" "+bookingForm.getPerDayString(getResourceBundle())+")"), 2, pRow);
+		}
+		
+		TextInput inp = new TextInput(textInputPrefix+price.getPrimaryKey().toString());
+		inp.setContent("0");
+		inp.setSize(3);
+		
+		ResultOutput rout = new ResultOutput("tmp"+price.getPrimaryKey().toString(), "0");
+		rout.setSize(7);
+		rout.add(inp, ResultOutput.OPERATOR_MULTIPLY+fPrice+ResultOutput.OPERATOR_MULTIPLY+numberOfDays);
+		if (interfaceObjectStyleClass != null) {
+			inp.setStyleClass(interfaceObjectStyleClass);
+			rout.setStyleClass(interfaceObjectStyleClass);
+		}
+		
+		totalResults.add(rout);
+		priceTable.add(inp, 3, pRow);
+		priceTable.add(rout, 4, pRow);
+		
+//				priceTable.setVerticalAlignment(1, pRow, Table.VERTICAL_ALIGN_TOP);
+//				priceTable.setVerticalAlignment(2, pRow, Table.VERTICAL_ALIGN_TOP);
+//				priceTable.setVerticalAlignment(3, pRow, Table.VERTICAL_ALIGN_TOP);
+//				priceTable.setVerticalAlignment(4, pRow, Table.VERTICAL_ALIGN_TOP);
+//				priceTable.add(getText(price.getCurrency().getCurrencyAbbreviation()), 3, pRow);
+		if (useTravelLook) {
+			priceTable.setRowColor(pRow, TravelManager.GRAY);
+		}
+		++pRow;
 		return pRow;
 	}
 	
 	private void listProducts(IWContext iwc, Form form) throws RemoteException {
 		Table table = new Table();
+		if (useTravelLook) {
+			table = TravelManager.getTable();
+		} else {
+			table.setCellpaddingAndCellspacing(0);
+		}
 		if (width != null) {
 			table.setWidth(width);
 		}
 		table.setColumnWidth(1, imageWidth);
-		table.setCellpaddingAndCellspacing(0);
 //		table.setBorder(1);
 		int row = 1;
 
@@ -499,6 +660,12 @@ public class SupplierBrowser extends TravelBlock {
 			form.add(searchTable);
 		}
 		
+		if (useTravelLook) {
+			table.mergeCells(1, row, 3, row);
+			table.setRowColor(row, TravelManager.backgroundColor);
+			table.add(TravelManager.getHeaderText(getResourceBundle().getLocalizedString("travel.services", "Services")), 1, row++);
+		}
+
 		int localeID = iwc.getCurrentLocaleId();
 		if (coll != null && !coll.isEmpty()) {
 			Iterator iter = coll.iterator();
@@ -506,11 +673,17 @@ public class SupplierBrowser extends TravelBlock {
 			while (iter.hasNext()) {
 				product = (Product) iter.next();
 				row = addProductInfo(iwc, table, row, localeID, product, true);
-				table.setHeight(row, 1);
-				table.setRowStyleClass(row, "sbrowser_background_line");
-				row++;
+				if (!useTravelLook) {
+					table.setHeight(row, 1);
+					table.setRowStyleClass(row, "sbrowser_background_line");
+					row++;
+				}
 			}
 		} else {
+			if (useTravelLook) {
+				table.mergeCells(1, row, 3, row);
+				table.setRowColor(row, TravelManager.GRAY);
+			}
 			table.add(getText(getResourceBundle().getLocalizedString("travel.no_available_products_found", "No available products found"), headerStyleClass), 1, row++);
 		}
 	
@@ -582,17 +755,27 @@ public class SupplierBrowser extends TravelBlock {
 			table.setVerticalAlignment(3, row, Table.VERTICAL_ALIGN_TOP);
 			table.add(images, 3, row);
 			table.setCellpadding(3, row, 2);
-			
-		}
-		else {
+		} else if (addDetailLink && !plugin.isProductSearchCompleted(iwc)){
+//			table.add(getText(getResourceBundle().getLocalizedString("travel.search_for_availability","Search for availability")), 3, startRow);
+			table.setAlignment(3, startRow, Table.HORIZONTAL_ALIGN_RIGHT);
+			table.setVerticalAlignment(3, row, Table.VERTICAL_ALIGN_TOP);
+			table.setCellpadding(3, row, 2);
+
 			if (images != null) {
-				table.add(images, 3, (row-1));
+				table.add(images, 3, row);
 			}
+		} else {
+			table.mergeCells(2, startRow, 3, startRow);
+			table.mergeCells(2, row, 3, row);
 		}
 //		else {
 //			table.mergeCells(2, (row-1), 3, (row-1));
 //			table.mergeCells(2, row, 3, row);
 //		}
+		if (useTravelLook) {
+			table.setRowColor((row-1), TravelManager.GRAY);
+			table.setRowColor(row, TravelManager.GRAY);
+		}
 		table.mergeCells(1, startRow, 1, row);
 		++row;
 		return row;
@@ -600,10 +783,15 @@ public class SupplierBrowser extends TravelBlock {
 	
 	private void listSuppliers(IWContext iwc, Form form) throws RemoteException {
 		Table table = new Table();
+		if (useTravelLook) {
+			table = TravelManager.getTable();
+		} else {
+			table.setCellpaddingAndCellspacing(0);
+		}
 		if (width != null) {
 			table.setWidth(width);
 		}
-		table.setCellpaddingAndCellspacing(0);
+
 		table.setColumnWidth(1, imageWidth);
 		
 		int row = 1;
@@ -623,7 +811,11 @@ public class SupplierBrowser extends TravelBlock {
 		}
 		
 		if (coll != null && !coll.isEmpty()) {
-			
+			if (useTravelLook) {
+				table.mergeCells(1, row, 3, row);
+				table.setRowColor(row, TravelManager.backgroundColor);
+				table.add(TravelManager.getHeaderText(getResourceBundle().getLocalizedString("travel.suppliers", "Suppliers")), 1, row++);
+			}
 			Iterator iter = coll.iterator();
 			Supplier supplier;
 			ICFile file = null;
@@ -655,10 +847,16 @@ public class SupplierBrowser extends TravelBlock {
 //				table.setVerticalAlignment(4, row, Table.VERTICAL_ALIGN_TOP);
 				
 				table.setRowPadding(row, 2);
-				row++;
-				table.setHeight(row, 1);
-				table.setRowStyleClass(row, "sbrowser_background_line");
-				row++;
+				
+				if (useTravelLook) {
+					table.setRowColor(row++, TravelManager.GRAY);
+				} else {
+					row++;
+					table.setHeight(row, 1);
+					table.setRowStyleClass(row, "sbrowser_background_line");
+					row++;
+				}
+				
 			}
 			
 		} else {
@@ -675,7 +873,6 @@ public class SupplierBrowser extends TravelBlock {
 	private Table getSearchFrom(Collection[] inputs, String action) throws RemoteException {
 		if (inputs != null && inputs[0] != null && inputs[1] != null && !inputs[0].isEmpty() && !inputs[1].isEmpty()) {
 			Table searchTable = new Table();
-			searchTable.setWidth(width);
 			int stRow = 1;
 			Collection strings = inputs[0];
 			Collection ios = inputs[1];
@@ -685,6 +882,14 @@ public class SupplierBrowser extends TravelBlock {
 				Iterator siter = strings.iterator();
 				Iterator iiter = ios.iterator();
 				PresentationObject io;
+				if (useTravelLook) {
+					searchTable = TravelManager.getTable();
+					searchTable.mergeCells(1, stRow, 2, stRow);
+					searchTable.setRowColor(stRow, TravelManager.backgroundColor);
+					searchTable.add(TravelManager.getHeaderText(getResourceBundle().getLocalizedString("travel.search", "Search")), 1, stRow++);
+				}
+				searchTable.setWidth(width);
+				
 				for (int i = 0; i < iosCount; i++) {
 					String s = (String) siter.next();
 					io = (PresentationObject) iiter.next();
@@ -693,13 +898,20 @@ public class SupplierBrowser extends TravelBlock {
 					}
 					searchTable.add(getText(s), 1, stRow);
 					searchTable.setAlignment(2, stRow, Table.HORIZONTAL_ALIGN_RIGHT);
+					if (useTravelLook) {
+						searchTable.setRowColor(stRow, TravelManager.GRAY);
+					}
 					searchTable.add(io, 2, stRow++);
 				}
 				BackButton back = new BackButton();
 				SubmitButton search = new SubmitButton(super.getResourceBundle().getLocalizedString("search", "Search"), ACTION, action);
 				searchTable.setAlignment(2, stRow, Table.HORIZONTAL_ALIGN_RIGHT);
 				searchTable.add(back, 1, stRow);
-				searchTable.add(search, 2, stRow++);
+				searchTable.add(search, 2, stRow);
+				if (useTravelLook) {
+					searchTable.setRowColor(stRow, TravelManager.GRAY);
+				}
+				++stRow;
 			} else {
 				System.out.println("IO stuff error yes (SupplierBrowser)");
 			}
@@ -812,9 +1024,13 @@ public class SupplierBrowser extends TravelBlock {
 	public void setUseSearchPriceCategoryKey(boolean useKey) {
 		this.useSearchPriceCategoryKey = useKey;
 	}
-	// TODO see if this is needed
+
 	public void setSupplierManager(Group suppMan) {
 		this.supplierManager = suppMan;
+	}
+	
+	public void setUseTravelLook(boolean use) {
+		this.useTravelLook = use;
 	}
 	
 	private ServiceSearchSession getSearchSession(IWUserContext iwc) {
