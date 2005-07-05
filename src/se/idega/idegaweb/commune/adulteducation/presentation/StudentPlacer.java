@@ -1,5 +1,5 @@
 /*
- * $Id: StudentPlacer.java,v 1.12 2005/06/20 19:40:39 laddi Exp $
+ * $Id: StudentPlacer.java,v 1.13 2005/07/05 15:33:09 laddi Exp $
  * Created on Jun 1, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -16,7 +16,6 @@ import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.adulteducation.business.GroupCollectionHandler;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoice;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourse;
-import se.idega.idegaweb.commune.school.business.SchoolClassWriter;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolStudyPath;
@@ -42,10 +41,10 @@ import com.idega.util.PersonalIDFormatter;
 
 
 /**
- * Last modified: $Date: 2005/06/20 19:40:39 $ by $Author: laddi $
+ * Last modified: $Date: 2005/07/05 15:33:09 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class StudentPlacer extends AdultEducationBlock implements IWPageEventListener {
 
@@ -210,25 +209,14 @@ public class StudentPlacer extends AdultEducationBlock implements IWPageEventLis
 		form.add(getChoiceInfoTable());
 		form.add(new Break());
 		
-		Link pdfLink = getPDFLink(SchoolClassWriter.class, getBundle().getImage("shared/pdf.gif"));
-		Link excelLink = getXLSLink(SchoolClassWriter.class, getBundle().getImage("shared/xls.gif"));
-
-		Table headingTable = new Table(2, 1);
-		headingTable.setWidth(Table.HUNDRED_PERCENT);
-		headingTable.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
-		
 		StringBuffer heading = new StringBuffer();
 		heading.append(localize("placed_students", "Placed students"));
 		if (getSession().getCourse() != null) {
 			SchoolStudyPath path = getSession().getCourse().getStudyPath();
 			heading.append(" - ").append(path.getDescription());
 		}
-		headingTable.add(getHeader(heading.toString()), 1, 1);
-		headingTable.add(pdfLink, 2, 1);
-		headingTable.add(Text.getNonBrakingSpace(), 2, 1);
-		headingTable.add(excelLink, 2, 1);
-		
-		form.add(headingTable);
+		form.add(getHeader(heading.toString()));
+		form.add(new Break());
 		form.add(getStudents(iwc));
 		form.add(getSmallErrorText("* "));
 		form.add(getSmallText(localize("has_message", "Has message")));

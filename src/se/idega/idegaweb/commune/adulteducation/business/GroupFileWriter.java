@@ -32,6 +32,7 @@ import com.idega.io.MemoryInputStream;
 import com.idega.io.MemoryOutputStream;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
 import com.idega.util.text.Name;
 import com.lowagie.text.BadElementException;
@@ -118,6 +119,8 @@ public class GroupFileWriter implements MediaWritable {
 	    sheet.setColumnWidth((short)2, (short) (30 * 256));
 	    sheet.setColumnWidth((short)3, (short) (14 * 256));
 			sheet.setColumnWidth((short)4, (short) (14 * 256));
+			sheet.setColumnWidth((short)5, (short) (14 * 256));
+			sheet.setColumnWidth((short)6, (short) (14 * 256));
 	    HSSFFont font = wb.createFont();
 	    font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
 	    font.setFontHeightInPoints((short)12);
@@ -127,19 +130,25 @@ public class GroupFileWriter implements MediaWritable {
 			int cellRow = 0;
 			HSSFRow row = sheet.createRow(cellRow++);
 			HSSFCell cell = row.createCell((short)0);
-	    cell.setCellValue(iwrb.getLocalizedString("school.name","Name"));
+	    cell.setCellValue(iwrb.getLocalizedString("name","Name"));
 	    cell.setCellStyle(style);
 	    cell = row.createCell((short)1);
-	    cell.setCellValue(iwrb.getLocalizedString("school.personal_id","Personal ID"));
+	    cell.setCellValue(iwrb.getLocalizedString("personal_id","Personal ID"));
 	    cell.setCellStyle(style);
 	    cell = row.createCell((short)2);
-	    cell.setCellValue(iwrb.getLocalizedString("school.address","Address"));
+	    cell.setCellValue(iwrb.getLocalizedString("address","Address"));
 	    cell.setCellStyle(style);
 			cell = row.createCell((short)3);
-			cell.setCellValue(iwrb.getLocalizedString("school.postal_code","Postal code"));
+			cell.setCellValue(iwrb.getLocalizedString("postal_code","Postal code"));
 			cell.setCellStyle(style);
 	    cell = row.createCell((short)4);
-	    cell.setCellValue(iwrb.getLocalizedString("school.phone","Phone"));
+	    cell.setCellValue(iwrb.getLocalizedString("phone","Phone"));
+	    cell.setCellStyle(style);
+			cell = row.createCell((short)5);
+			cell.setCellValue(iwrb.getLocalizedString("start_date","Start date"));
+			cell.setCellStyle(style);
+	    cell = row.createCell((short)6);
+	    cell.setCellValue(iwrb.getLocalizedString("end_date","End date"));
 	    cell.setCellStyle(style);
 
 			User student;
@@ -157,6 +166,8 @@ public class GroupFileWriter implements MediaWritable {
 				if (address != null)
 					postalCode = address.getPostalCode();
 				phone = userBusiness.getChildHomePhone(student);
+				IWTimestamp start = new IWTimestamp(studentMember.getRegisterDate());
+				IWTimestamp end = studentMember.getRemovedDate() != null ? new IWTimestamp(studentMember.getRemovedDate()) : null;
 
 				Name name = new Name(student.getFirstName(), student.getMiddleName(), student.getLastName());
 		    row.createCell((short)0).setCellValue(name.getName(locale, true));
@@ -168,6 +179,9 @@ public class GroupFileWriter implements MediaWritable {
 		    }
 			  if (phone != null)
 			    row.createCell((short)4).setCellValue(phone.getNumber());
+			  row.createCell((short)5).setCellValue(start.getLocaleDate(locale, IWTimestamp.SHORT));
+			  if (end != null)
+				  row.createCell((short)6).setCellValue(end.getLocaleDate(locale, IWTimestamp.SHORT));
 			}
 			wb.write(mos);
 		}
@@ -195,7 +209,7 @@ public class GroupFileWriter implements MediaWritable {
 			SchoolClassMember studentMember;
 			Cell cell;
 			
-			String[] headers = {iwrb.getLocalizedString("school.name","Name"), iwrb.getLocalizedString("school.personal_id","Personal ID"), iwrb.getLocalizedString("school.address","Address"), iwrb.getLocalizedString("school.postal_code","Postal code"), iwrb.getLocalizedString("school.phone","Phone")};
+			String[] headers = {iwrb.getLocalizedString("name","Name"), iwrb.getLocalizedString("personal_id","Personal ID"), iwrb.getLocalizedString("address","Address"), iwrb.getLocalizedString("postal_code","Postal code"), iwrb.getLocalizedString("phone","Phone")};
 			int[] sizes = { 30, 14, 24, 20, 12 };
 
 			Table datatable = getTable(headers, sizes);

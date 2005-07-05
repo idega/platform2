@@ -1,5 +1,5 @@
 /*
- * $Id: StudentAdministrator.java,v 1.9 2005/07/04 10:16:09 laddi Exp $
+ * $Id: StudentAdministrator.java,v 1.10 2005/07/05 15:33:09 laddi Exp $
  * Created on Jun 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -15,6 +15,7 @@ import java.util.Iterator;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import se.idega.idegaweb.commune.adulteducation.business.GroupCollectionHandler;
+import se.idega.idegaweb.commune.adulteducation.business.GroupFileWriter;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoice;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourse;
 import com.idega.block.school.data.SchoolClass;
@@ -41,10 +42,10 @@ import com.idega.util.text.Name;
 
 
 /**
- * Last modified: $Date: 2005/07/04 10:16:09 $ by $Author: laddi $
+ * Last modified: $Date: 2005/07/05 15:33:09 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class StudentAdministrator extends AdultEducationBlock implements IWPageEventListener {
 
@@ -104,6 +105,14 @@ public class StudentAdministrator extends AdultEducationBlock implements IWPageE
 		form.add(getNavigationTable());
 		form.add(new Break());
 		
+		Link excelLink = getXLSLink(GroupFileWriter.class, getBundle().getImage("shared/xls.gif"));
+
+		Table headingTable = new Table(1, 1);
+		headingTable.setWidth(Table.HUNDRED_PERCENT);
+		headingTable.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+		headingTable.add(excelLink, 1, 1);
+		
+		form.add(headingTable);
 		form.add(getStudents(iwc, false));
 		form.add(getSmallErrorText("* "));
 		form.add(getSmallText(localize("has_message", "Has message")));
@@ -133,6 +142,14 @@ public class StudentAdministrator extends AdultEducationBlock implements IWPageE
 		form.add(getNavigationTable());
 		form.add(new Break());
 		
+		Link excelLink = getXLSLink(GroupFileWriter.class, getBundle().getImage("shared/xls.gif"));
+
+		Table headingTable = new Table(1, 1);
+		headingTable.setWidth(Table.HUNDRED_PERCENT);
+		headingTable.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+		headingTable.add(excelLink, 1, 1);
+		
+		form.add(headingTable);
 		form.add(getStudents(iwc, true));
 		form.add(getSmallErrorText("* "));
 		form.add(getSmallText(localize("has_message", "Has message")));
