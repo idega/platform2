@@ -98,7 +98,7 @@ public class ServiceHandlerBean extends IBOServiceBean implements ServiceHandler
   }
   
   private BookingForm getBookingForm(Product product, boolean init) {
-	  System.out.println("[ServiceHandler] Getting BookingForm for product = "+product.getPrimaryKey().toString()+",  ... "+init);
+//	  System.out.println("[ServiceHandler] Getting BookingForm for product = "+product.getPrimaryKey().toString()+",  ... "+init);
 	  if (init){
 		  return (BookingForm) inits.get(product.getPrimaryKey());
 	  } else {
