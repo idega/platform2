@@ -158,6 +158,8 @@ public abstract class BookingForm extends TravelManager{
 	public static String BookingAction = is.idega.idegaweb.travel.presentation.Booking.BookingAction;
 	public static String BookingParameter = is.idega.idegaweb.travel.presentation.Booking.BookingParameter;
 	public static String parameterBookingId = is.idega.idegaweb.travel.presentation.Booking.parameterBookingId;
+	public static final String PARAMETER_PAYMENT_TYPE = "payment_type";
+	
 	public static String parameterUpdateBooking = "bookingUpdateBooking";
 	protected static String parameterBookAnyway = "bookingBookAnyway";
 	public static String parameterInquiry = "bookingInquiry";
@@ -1040,7 +1042,7 @@ public abstract class BookingForm extends TravelManager{
 		String ccMonth  = iwc.getParameter(BookingForm.parameterCCMonth);
 		String ccYear   = iwc.getParameter(BookingForm.parameterCCYear);
 		
-		Text display = getText("");
+		Text display = getTextNormal("");
 		boolean success = false;
 		boolean inquirySent = false;
 		
@@ -1115,32 +1117,32 @@ public abstract class BookingForm extends TravelManager{
 			table.setCellpaddingTop(1, 5, 3);
 			table.setCellpaddingBottom(1, 5, 3);
 			
-			table.add(getText(gBooking.getName()), 1, 3);
-			table.add(getText(", "), 1, 3);
-			table.add(getText(iwrb.getLocalizedString("travel.you_booking_has_been_confirmed","your booking has been confirmed.")), 1, 3);
+			table.add(getTextNormal(gBooking.getName()), 1, 3);
+			table.add(getTextNormal(", "), 1, 3);
+			table.add(getTextNormal(iwrb.getLocalizedString("travel.you_booking_has_been_confirmed","your booking has been confirmed.")), 1, 3);
 			table.add(Text.BREAK, 1, 3);
 			table.add(Text.BREAK, 1, 3);
 			if (sendEmail) {
-				table.add(getText(iwrb.getLocalizedString("travel.you_will_reveice_an_email_shortly","You will receive an email shortly confirming your booking.")), 1, 3);
+				table.add(getTextNormal(iwrb.getLocalizedString("travel.you_will_reveice_an_email_shortly","You will receive an email shortly confirming your booking.")), 1, 3);
 				table.add(Text.BREAK, 1, 3);
 				table.add(Text.BREAK, 1, 3);
 			}
-			table.add(getText(iwrb.getLocalizedString("travel.your_credidcard_authorization_number_is","Your creditcard authorization number is")), 1, 3);
-			table.add(getText(" : "), 1, 3);
-			table.add(getText(gBooking.getCreditcardAuthorizationNumber()), 1, 3);
+			table.add(getTextNormal(iwrb.getLocalizedString("travel.your_credidcard_authorization_number_is","Your creditcard authorization number is")), 1, 3);
+			table.add(getTextNormal(" : "), 1, 3);
+			table.add(getTextNormal(gBooking.getCreditcardAuthorizationNumber()), 1, 3);
 			table.add(Text.BREAK, 1, 3);
-			table.add(getText(iwrb.getLocalizedString("travel.your_reference_number_is","Your reference number is")), 1, 3);
-			table.add(getText(" : "), 1, 3);
-			table.add(getText(gBooking.getReferenceNumber()), 1, 3);
+			table.add(getTextNormal(iwrb.getLocalizedString("travel.your_reference_number_is","Your reference number is")), 1, 3);
+			table.add(getTextNormal(" : "), 1, 3);
+			table.add(getTextNormal(gBooking.getReferenceNumber()), 1, 3);
 			table.add(Text.BREAK, 1, 3);
 			//table.add(getBoldTextWhite(gBooking.getReferenceNumber()));
 			//table.add(Text.BREAK);
 			table.add(Text.BREAK, 1, 3);
-			table.add(getText(iwrb.getLocalizedString("travel.if_unable_to_print","If you are unable to print the voucher, write the reference number down else proceed to printing the voucher.")), 1, 3);
+			table.add(getTextNormal(iwrb.getLocalizedString("travel.if_unable_to_print","If you are unable to print the voucher, write the reference number down else proceed to printing the voucher.")), 1, 3);
 			
 			
 			
-			Link printVoucher = new Link(getText(iwrb.getLocalizedString("travel.print_voucher","Print voucher")));
+			Link printVoucher = new Link(getTextNormal(iwrb.getLocalizedString("travel.print_voucher","Print voucher")));
 			printVoucher.addParameter(VoucherWindow.parameterBookingId, gBooking.getID());
 			printVoucher.setWindowToOpen(VoucherWindow.class);
 			
@@ -1151,7 +1153,7 @@ public abstract class BookingForm extends TravelManager{
 					Receipt r = new Receipt(entry, supp);
 					iwc.setSessionAttribute(ReceiptWindow.RECEIPT_SESSION_NAME, r);
 					
-					Link printCCReceipt = new Link(getText(iwrb.getLocalizedString("travel.print_cc_receipt","Print creditcard receipt")));
+					Link printCCReceipt = new Link(getTextNormal(iwrb.getLocalizedString("travel.print_cc_receipt","Print creditcard receipt")));
 					printCCReceipt.setWindowToOpen(ReceiptWindow.class);
 					table.add(printCCReceipt, 1, 4);
 				}
@@ -1165,9 +1167,9 @@ public abstract class BookingForm extends TravelManager{
 			table.setCellpaddingLeft(1, 3, 10);
 			table.setCellpaddingTop(1, 3, 3);
 			table.setCellpaddingBottom(1, 3, 3);
-			table.add(getText(iwrb.getLocalizedString("travel.inquiry_has_been_sent","Inquiry has been sent")), 1, 3);
+			table.add(getTextNormal(iwrb.getLocalizedString("travel.inquiry_has_been_sent","Inquiry has been sent")), 1, 3);
 			table.add(Text.BREAK, 1, 3);
-			table.add(getText(iwrb.getLocalizedString("travel.you_will_reveice_an_confirmation_email_shortly","You will receive an confirmation email shortly.")), 1, 3);
+			table.add(getTextNormal(iwrb.getLocalizedString("travel.you_will_reveice_an_confirmation_email_shortly","You will receive an confirmation email shortly.")), 1, 3);
 		}else {
 			addPublicHeading(iwrb.getLocalizedString("travel.authorization_failed", "Authorization failed"), table, 1, 1);
 			table.setCellpaddingLeft(1, 3, 10);
@@ -1419,7 +1421,7 @@ public abstract class BookingForm extends TravelManager{
 				pPriceMany.setSize(5);
 				
 				if (i == pricesLength) {
-//					Text tempTexti = getText(iwrb.getLocalizedString("travel.miscellaneous_services","Miscellaneous services"));
+//					Text tempTexti = getTextNormal(iwrb.getLocalizedString("travel.miscellaneous_services","Miscellaneous services"));
 //					table.setAlignment(1, fRow, "RIGHT");
 //					++fRow;
 					table.setCellpaddingTop(1, fRow, 3);
@@ -1431,7 +1433,7 @@ public abstract class BookingForm extends TravelManager{
 					table.setHeight(1, fRow, "30");
 					table.setVerticalAlignment(1, fRow, Table.VERTICAL_ALIGN_BOTTOM);
 					table.setVerticalAlignment(2, fRow, Table.VERTICAL_ALIGN_BOTTOM);
-					table.add(getText(iwrb.getLocalizedString("travel.miscellaneous_services","Miscellaneous services")), 1, fRow);
+					table.add(getTextNormal(iwrb.getLocalizedString("travel.miscellaneous_services","Miscellaneous services")), 1, fRow);
 					table.add(getSmallText(iwrb.getLocalizedString("travel.how_many", "How many")), 2, fRow++);
 				}else if (i == 0) {
 //					Text tempTexti = getSmallText(iwrb.getLocalizedString("travel.basic_prices","Basic prices"));
@@ -1746,7 +1748,7 @@ public abstract class BookingForm extends TravelManager{
 			//if ( errorFields != null && errorFields.contains(PARAMETER_CC_NUMBER)) {
 			//	table.add(getErrorText("* "), 1, row);
 			//}
-			//table.add(getText(iwrb.getLocalizedString("travel.search.credit_card_number","Credit card number")), 1, row);
+			//table.add(getTextNormal(iwrb.getLocalizedString("travel.search.credit_card_number","Credit card number")), 1, row);
 			//++row;
 			//table.add(new TextInput(PARAMETER_CC_NUMBER), 1, row);
 			
@@ -1765,14 +1767,14 @@ public abstract class BookingForm extends TravelManager{
 			if ( errorFields != null && errorFields.contains(parameterCCMonth)) {
 				ccTable.add(getErrorText("* "), 1, 1);
 			}
-			ccTable.add(getText(iwrb.getLocalizedString("travel.search.month","Month")), 1, 1);
-			ccTable.add(getText("/"), 2, 1);
+			ccTable.add(getTextNormal(iwrb.getLocalizedString("travel.search.month","Month")), 1, 1);
+			ccTable.add(getTextNormal("/"), 2, 1);
 			if ( errorFields != null && errorFields.contains(parameterCCYear)) {
 				ccTable.add(getErrorText("* "), 3, 1);
 			}
-			ccTable.add(getText(iwrb.getLocalizedString("travel.search.year","Year")), 3, 1);
+			ccTable.add(getTextNormal(iwrb.getLocalizedString("travel.search.year","Year")), 3, 1);
 			ccTable.add(expMonth, 1, 2);
-			ccTable.add(getText("/"), 2, 2);
+			ccTable.add(getTextNormal("/"), 2, 2);
 			ccTable.add(expYear, 3, 2);
 			ccTable.setColumnWidth(2, "8");
 			ccTable.setBorder(0);
@@ -1796,9 +1798,9 @@ public abstract class BookingForm extends TravelManager{
 				if ( errorFields != null && errorFields.contains(parameterCCCVC)) {
 					ccTable2.add(getErrorText("* "), 1, 1);
 				}
-				ccTable2.add(getText(iwrb.getLocalizedString("travel.cc.cvc","Cardholder Verification Code (CVC)")), 1, 1);
+				ccTable2.add(getTextNormal(iwrb.getLocalizedString("travel.cc.cvc","Cardholder Verification Code (CVC)")), 1, 1);
 				ccTable2.add(expCVC, 1, 2);
-				Link cvcLink = LinkGenerator.getLinkCVCExplanationPage(iwc, getText(iwrb.getLocalizedString("cc.what_is_cvc","What is CVC?")));
+				Link cvcLink = LinkGenerator.getLinkCVCExplanationPage(iwc, getTextNormal(iwrb.getLocalizedString("cc.what_is_cvc","What is CVC?")));
 				if (cvcLink != null) {
 					ccTable2.add(cvcLink, 1, 2);
 				}
@@ -1975,7 +1977,7 @@ public abstract class BookingForm extends TravelManager{
 		return text;
 	}
 	
-	protected Text getText(String content) {
+	protected Text getTextNormal(String content) {
 		Text text = new Text(content);
 		if (getStyleName(BookingForm.STYLENAME_TEXT) != null) {
 			text = getStyleText(text, BookingForm.STYLENAME_TEXT);
@@ -2043,7 +2045,7 @@ public abstract class BookingForm extends TravelManager{
 			if (useHeaderText) {
 				currentSearchPart.add(getHeaderText(text[i]), i+1, currentSearchPartRow);
 			} else {
-				currentSearchPart.add(getText(text[i]), i+1, currentSearchPartRow);
+				currentSearchPart.add(getTextNormal(text[i]), i+1, currentSearchPartRow);
 			}
 			currentSearchPart.setNoWrap(i+1, currentSearchPartRow);
 			if (currentSearchPartRow == 1) {
@@ -3321,7 +3323,7 @@ public abstract class BookingForm extends TravelManager{
 		String country = iwc.getParameter(PARAMETER_COUNTRY);
 		String pickupId = iwc.getParameter(parameterPickupId);
 		String pickupInfo = iwc.getParameter(parameterPickupInf);
-		String sPaymentType = iwc.getParameter("payment_type");
+		String sPaymentType = iwc.getParameter(PARAMETER_PAYMENT_TYPE);
 		String comment = iwc.getParameter(PARAMETER_COMMENT);
 		String code = iwc.getParameter(PARAMETER_CODE);
 		String key = iwc.getParameter(parameterPriceCategoryKey);
