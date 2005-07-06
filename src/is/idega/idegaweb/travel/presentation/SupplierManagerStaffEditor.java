@@ -22,6 +22,7 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.PasswordInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
 
@@ -91,7 +92,7 @@ public class SupplierManagerStaffEditor extends TravelManager {
 		table.setBorder(0);
 		
 		int startrow = 1;
-		table.mergeCells(1, startrow, 4, startrow);
+		table.mergeCells(1, startrow, 5, startrow);
 		table.setRowColor(startrow, backgroundColor);
 		table.add(getHeaderText(getResourceBundle().getLocalizedString("travel.users", "Users")), 1, startrow++);
 //		int startrow = 3;
@@ -103,27 +104,30 @@ public class SupplierManagerStaffEditor extends TravelManager {
 		for(int i=0; i<users.size();i++) {
 			user = (User) users.get(i);
 			userid = user.getPrimaryKey().toString();
-			table.add(user.getFirstName(), 1, startrow);			
+			table.add(user.getName(), 1, startrow);
+			
+			table.add(user.getPrimaryGroup().getName(), 2, startrow);
+			
 			delete = new Link(super.getResourceBundle().getLocalizedString("travel.link_delete", " Delete "));
 			delete.addParameter(sAction, ACTION_DELETE_USER);
 			delete.setOnClick("return confirm('"+super.getResourceBundle().getLocalizedString("travel.are_you_sure","Are you sure")+"?');");
 			delete.addParameter(PARAM_USER_ID, userid);
 			if (!iwc.getCurrentUser().equals(user)) {
-				table.add(delete, 2, startrow);
+				table.add(delete, 3, startrow);
 			}
-			table.setAlignment(2, startrow, "center");
+			table.setAlignment(3, startrow, "center");
 			
 			edit = new Link(super.getResourceBundle().getLocalizedString("travel.link_edit"," Edit "));
 			edit.addParameter(sAction, ACTION_EDIT_USER);
 			edit.addParameter(PARAM_USER_ID, userid);
-			table.add(edit, 3, startrow);
-			table.setAlignment(3, startrow, "center");
+			table.add(edit, 4, startrow);
+			table.setAlignment(4, startrow, "center");
 			
 			use = new Link(super.getResourceBundle().getLocalizedString("travel.link_use"," Use "));
 			use.addParameter(sAction, ACTION_USE_USER);
 			use.addParameter(PARAM_USER_ID, userid);
-			table.add(use, 4, startrow);
-			table.setAlignment(4, startrow, "center");
+			table.add(use, 5, startrow);
+			table.setAlignment(5, startrow, "center");
 			table.setRowColor(startrow, GRAY);
 
 			++startrow;
@@ -282,29 +286,25 @@ public class SupplierManagerStaffEditor extends TravelManager {
 			table.add(new SubmitButton(super.getResourceBundle().getImage("buttons/save.gif"), this.sAction, ACTION_UPDATE_USER),2,7);
 			form.addParameter(PARAM_USER_ID, iwc.getParameter(PARAM_USER_ID));
 			
-			Collection col1 = getSupplierManagerBusiness(iwc).getStaffGroupTypes(getSupplierManager());
-			Collection col2 = getSupplierManagerBusiness(iwc).getStaffGroupNames(getSupplierManager());
-			Iterator iter = col1.iterator();
-			Iterator iter2 = col2.iterator();
-			String grouptype = "";
-			while (iter.hasNext()&&iter2.hasNext()) {
-				grouptype = (String)iter.next();
-				userType.addMenuElement(grouptype,
-						super.getResourceBundle().getLocalizedString("travel.groupname."+grouptype,(String)iter2.next()));
+			Collection col = getSupplierManagerBusiness(iwc).getStaffGroups(getSupplierManager());
+			Iterator iter = col.iterator();
+			Group g;
+			while (iter.hasNext()) {
+				g = (Group )iter.next();
+				userType.addMenuElement(g.getGroupType(),
+						super.getResourceBundle().getLocalizedString("travel.groupname."+g.getGroupType(),g.getName()));
 			}
 			
 			userType.setSelectedElement(getUser(iwc).getPrimaryGroup().getGroupType().toString());
 			
 		} else {
-			Collection col1 = getSupplierManagerBusiness(iwc).getStaffGroupTypes(getSupplierManager());
-			Collection col2 = getSupplierManagerBusiness(iwc).getStaffGroupNames(getSupplierManager());
-			Iterator iter = col1.iterator();
-			Iterator iter2 = col2.iterator();
-			String grouptype = "";
-			while (iter.hasNext()&&iter2.hasNext()) {
-				grouptype = (String)iter.next();
-				userType.addMenuElement(grouptype,
-						super.getResourceBundle().getLocalizedString("travel.groupname."+grouptype,(String)iter2.next()));
+			Collection col = getSupplierManagerBusiness(iwc).getStaffGroups(getSupplierManager());
+			Iterator iter = col.iterator();
+			Group g;
+			while (iter.hasNext()) {
+				g = (Group )iter.next();
+				userType.addMenuElement(g.getGroupType(),
+						super.getResourceBundle().getLocalizedString("travel.groupname."+g.getGroupType(),g.getName()));
 			}
 			table.add(new SubmitButton(super.getResourceBundle().getImage("buttons/save.gif"), this.sAction, ACTION_SAVE_USER),2,7);
 		}
