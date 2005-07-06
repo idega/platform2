@@ -97,8 +97,8 @@ public interface SupplierManagerBusiness extends IBOService {
 	/**
 	 * @see com.idega.block.trade.stockroom.business.SupplierManagerBusinessBean#getStaffGroupTypes
 	 */
-	public Collection getStaffGroupTypes(Group supplierManager)
-			throws RemoteException;
+//	public Collection getStaffGroupTypes(Group supplierManager)
+//			throws RemoteException;
 
 	/**
 	 * @see com.idega.block.trade.stockroom.business.SupplierManagerBusinessBean#getGroupIDFromGroupType
@@ -111,12 +111,12 @@ public interface SupplierManagerBusiness extends IBOService {
 	 */
 	public Group getGroupFromGroupType(Group supplierManager, String grouptype)
 			throws RemoteException;
-
+	public Collection getStaffGroups(Group supplierManager) throws RemoteException;
 	/**
 	 * @see com.idega.block.trade.stockroom.business.SupplierManagerBusinessBean#getStaffGroupNames
 	 */
-	public Collection getStaffGroupNames(Group supplierManager)
-			throws RemoteException;
+//	public Collection getStaffGroupNames(Group supplierManager)
+//			throws RemoteException;
 
 	/**
 	 * @see com.idega.block.trade.stockroom.business.SupplierManagerBusinessBean#findAllSupplierManagers
