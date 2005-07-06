@@ -1,17 +1,14 @@
 package is.idega.idegaweb.travel.presentation;
 
 import is.idega.idegaweb.travel.business.TravelSessionManager;
-
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
-
 import com.idega.block.login.business.LoginBusiness;
 import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
@@ -19,6 +16,7 @@ import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.PasswordInput;
@@ -58,6 +56,7 @@ public class SupplierManagerStaffEditor extends TravelManager {
 	
 	public void main(IWContext iwc) throws Exception {
 		super.main(iwc);
+		add(Text.BREAK);
 		String action = iwc.getParameter(this.sAction);		
 		if (action != null && action.equals(ACTION_SAVE_USER)) {
 			saveUser(iwc);
@@ -87,12 +86,15 @@ public class SupplierManagerStaffEditor extends TravelManager {
 		} catch (FinderException e) {
 			e.printStackTrace();
 		} 
-		Table table = new Table();
+		Table table = getTable();
 		table.setWidth(300);
+		table.setBorder(0);
 		
-		table.setCellpadding(1);
-		table.add(super.getResourceBundle().getLocalizedString("travel.list_users", "List of users"), 2, 1);
-		int startrow = 3;
+		int startrow = 1;
+		table.mergeCells(1, startrow, 4, startrow);
+		table.setRowColor(startrow, backgroundColor);
+		table.add(getHeaderText(getResourceBundle().getLocalizedString("travel.users", "Users")), 1, startrow++);
+//		int startrow = 3;
 		User user;
 		Link delete;
 		Link edit;
@@ -109,24 +111,26 @@ public class SupplierManagerStaffEditor extends TravelManager {
 			if (!iwc.getCurrentUser().equals(user)) {
 				table.add(delete, 2, startrow);
 			}
-			table.setAlignment(2, startrow, "right");
+			table.setAlignment(2, startrow, "center");
 			
 			edit = new Link(super.getResourceBundle().getLocalizedString("travel.link_edit"," Edit "));
 			edit.addParameter(sAction, ACTION_EDIT_USER);
 			edit.addParameter(PARAM_USER_ID, userid);
 			table.add(edit, 3, startrow);
-			table.setAlignment(3, startrow, "left");
+			table.setAlignment(3, startrow, "center");
 			
 			use = new Link(super.getResourceBundle().getLocalizedString("travel.link_use"," Use "));
 			use.addParameter(sAction, ACTION_USE_USER);
 			use.addParameter(PARAM_USER_ID, userid);
 			table.add(use, 4, startrow);
-			table.setAlignment(4, startrow, "left");
-			
+			table.setAlignment(4, startrow, "center");
+			table.setRowColor(startrow, GRAY);
+
 			++startrow;
 		}
 		Link newuser = new Link(tsm.getIWResourceBundle().getLocalizedImageButton("travel.new_user2", " New User "), SupplierManagerStaffEditor.class);
 		newuser.addParameter(this.sAction, ACTION_NEW_USER);
+		table.setRowColor(startrow, GRAY);
 		table.add(newuser, 1, startrow++);
 
 		add(table);
@@ -232,12 +236,12 @@ public class SupplierManagerStaffEditor extends TravelManager {
 		Form form = new Form();
 		Collection userTypes = new Vector();
 		
-		Table table = new Table();
+		Table table = getTable();
 		table.setWidth(300);
-		table.setCellpadding(1);
-		table.setBorder(1);
+//		table.setCellpadding(1);
+		table.setBorder(0);
 		
-		table.add(super.getResourceBundle().getLocalizedString("travel.create_user", "Create User"), 1, 1);
+		table.add(getHeaderText(getResourceBundle().getLocalizedString("travel.create_user", "Create User")), 1, 1);
 		table.add(super.getResourceBundle().getLocalizedString("travel.name", "Name"), 1, 2);
 		TextInput namefield = new TextInput("namefield");
         namefield.setSize(15);
@@ -304,6 +308,15 @@ public class SupplierManagerStaffEditor extends TravelManager {
 			}
 			table.add(new SubmitButton(super.getResourceBundle().getImage("buttons/save.gif"), this.sAction, ACTION_SAVE_USER),2,7);
 		}
+		
+		table.setRowColor(1, backgroundColor);
+		table.setRowColor(2, GRAY);
+		table.setRowColor(3, GRAY);
+		table.setRowColor(4, GRAY);
+		table.setRowColor(5, GRAY);
+		table.setRowColor(6, GRAY);
+		table.setRowColor(7, GRAY);
+		table.setAlignment(2, 7, Table.HORIZONTAL_ALIGN_RIGHT);
 		form.add(table);
 		add(form);
 	}
