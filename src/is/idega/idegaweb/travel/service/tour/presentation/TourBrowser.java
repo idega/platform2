@@ -1,5 +1,5 @@
 /*
- * $Id: TourBrowser.java,v 1.7 2005/06/20 17:09:39 gimmi Exp $
+ * $Id: TourBrowser.java,v 1.8 2005/07/06 02:18:24 gimmi Exp $
  * Created on 28.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -55,8 +55,8 @@ public class TourBrowser extends TravelBlock implements SupplierBrowserPlugin {
 	private static final String PARAMETER_FROM_DATE = SupplierBrowser.PARAMETER_FROM;
 	private static final String PARAMETER_TO_DATE = AbstractSearchForm.PARAMETER_TO_DATE;
 	
-	private static final String PARAMETER_FORCED_TOUR_TYPE_ID = "tb_ftt";
-	private static final String PARAMETER_FORCED_TOUR_CATEGORY_ID = "tb_ftc";
+	static final String PARAMETER_FORCED_TOUR_TYPE_ID = "tb_ftt";
+	static final String PARAMETER_FORCED_TOUR_CATEGORY_ID = "tb_ftc";
 	
 	public boolean isProductSearchCompleted(IWContext iwc) {
 		return iwc.isParameterSet(PARAMETER_FROM_DATE);
