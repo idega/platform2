@@ -61,7 +61,7 @@ public class TourTypeBMPBean extends GenericEntity implements TourType {
 	}
 	
 	public Collection ejbFindByCategory(String category) throws FinderException {
-		return idoFindAllIDsByColumnBySQL(COLUMN_TOUR_CATEGORY, category);
+		return idoFindAllIDsByColumnOrderedBySQL(COLUMN_TOUR_CATEGORY, category, COLUMN_NAME);
 	}
 	
 	public Collection ejbFindAll() throws FinderException {
@@ -90,7 +90,7 @@ public class TourTypeBMPBean extends GenericEntity implements TourType {
 		query.addJoin(product, supplier);
 		query.addCriteria(new MatchCriteria(categoryCol, MatchCriteria.EQUALS, category));
 		query.addCriteria(new InCriteria(suppCol, suppliers));
-
+		query.addOrder(tourType, COLUMN_NAME, true);
 		return idoFindPKsByQuery(query);	
 	}
 	
