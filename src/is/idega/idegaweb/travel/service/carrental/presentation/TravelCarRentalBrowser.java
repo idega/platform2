@@ -1,5 +1,5 @@
 /*
- * $Id: TravelCarRentalBrowser.java,v 1.1 2005/07/05 22:53:05 gimmi Exp $
+ * $Id: TravelCarRentalBrowser.java,v 1.2 2005/07/06 02:22:33 gimmi Exp $
  * Created on Jul 5, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -9,6 +9,8 @@
  */
 package is.idega.idegaweb.travel.service.carrental.presentation;
 
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
 import is.idega.idegaweb.travel.presentation.TravelSupplierBrowser;
 
 
@@ -16,5 +18,13 @@ public class TravelCarRentalBrowser extends TravelSupplierBrowser {
 
 	protected Class getPlugin() {
 		return CarRentalBrowser.class;
+	}
+
+	protected Table getHeaderTable(IWContext iwc) {
+		return null;
+	}
+
+	protected boolean showBrowser(IWContext iwc) {
+		return true;
 	}
 }
