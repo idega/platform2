@@ -295,6 +295,23 @@ public class SupplierManagerBusinessBean extends IBOServiceBean  implements Supp
 		return null;
 	}
 	
+	public boolean hasRole(Group supplierManager, String role) throws RemoteException {
+		Group adminGroup = getSupplierManagerAdminGroup(supplierManager);
+		if (adminGroup != null) {
+			Collection coll = getIWMainApplication().getAccessController().getAllRolesForGroup(adminGroup);
+			ICPermission p = null;
+			Iterator iter = coll.iterator();
+			while (iter.hasNext()) {
+				p = (ICPermission) iter.next();
+				if (p.getPermissionString().equals(role)) {
+					return true;
+				} 
+			}
+			
+		}
+		return false;
+	}
+	
 	/**
 	 * Returns all roles for the admin group of this supplierManager
 	 * @param supplierManager
