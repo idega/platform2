@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationListEditor.java,v 1.25 2005/06/06 12:18:58 thomas Exp $
+ * $Id: RegulationListEditor.java,v 1.26 2005/07/06 15:31:30 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -9,47 +9,44 @@
  */
 package se.idega.idegaweb.commune.accounting.regulations.presentation;
 
+import java.lang.reflect.Method;
 import java.rmi.RemoteException;
-//import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.lang.reflect.*;
-
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Table;
-import com.idega.builder.business.BuilderLogic;
-import com.idega.core.builder.data.ICPage;
-import com.idega.user.data.User;
-import com.idega.presentation.ui.HiddenInput;
-import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ExceptionWrapper;
-import com.idega.repository.data.RefactorClassRegistry;
-import com.idega.util.IWTimestamp;
-//import com.idega.block.school.business.SchoolBusiness;
 
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
-import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
-import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
-import se.idega.idegaweb.commune.accounting.regulations.data.Condition;
 import se.idega.idegaweb.commune.accounting.regulations.business.ConditionHolder;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationException;
+import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
+import se.idega.idegaweb.commune.accounting.regulations.data.Condition;
+import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
+
+import com.idega.builder.business.BuilderLogic;
+import com.idega.core.builder.data.ICPage;
+import com.idega.presentation.ExceptionWrapper;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 
 
 /**
  * RegulationListEditor is an idegaWeb block that edits a Regulation 
  * <p>
- * $Id: RegulationListEditor.java,v 1.25 2005/06/06 12:18:58 thomas Exp $
+ * $Id: RegulationListEditor.java,v 1.26 2005/07/06 15:31:30 palli Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.25 $
+ * @version $Revision: 1.26 $
  */
 public class RegulationListEditor extends AccountingBlock {
 
@@ -713,7 +710,7 @@ public class RegulationListEditor extends AccountingBlock {
 				args = null;
 			}
 			Method myMethod;
-			Class cls = RefactorClassRegistry.forName(condition.getBusinessClassName());
+			Class cls = condition.getBusinessClass();
 			Object business = com.idega.business.IBOLookup.getServiceInstance(iwc, cls);
 			myMethod = cls.getMethod(condition.getCollectDataMethod(), partypes);
 			Collection data = (Collection) myMethod.invoke(business, args);

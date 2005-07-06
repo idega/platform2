@@ -1,5 +1,5 @@
 /*
- * $Id: ConditionHolder.java,v 1.3 2003/10/13 21:04:09 kjell Exp $
+ * $Id: ConditionHolder.java,v 1.4 2005/07/06 15:31:57 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -13,16 +13,16 @@ package se.idega.idegaweb.commune.accounting.regulations.business;
 /**
  * ConditionHolder holds class info for a condition  
  * <p>
- * $Id: ConditionHolder.java,v 1.3 2003/10/13 21:04:09 kjell Exp $
+ * $Id: ConditionHolder.java,v 1.4 2005/07/06 15:31:57 palli Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class ConditionHolder {
 
 	private String name = null;
 	private String localizationKey = null;
-	private String businessClassName = null;
+	private Class businessClass = null;
 	private String collectDataMethod = null;
 	private String dataMethodName = null;
 	private String dataParameter = null;
@@ -32,7 +32,7 @@ public class ConditionHolder {
 			String pk, 
 			String name, 
 			String localizationKey, 
-			String businessClassName, 
+			Class businessClass, 
 			String collectDataMethod,
 			String dataMethodName,
 			String dataParameter) {
@@ -40,7 +40,7 @@ public class ConditionHolder {
 		this.pk = Integer.parseInt(pk);
 		this.name = name;
 		this.localizationKey = localizationKey;					
-		this.businessClassName = businessClassName;					
+		this.businessClass = businessClass;					
 		this.collectDataMethod = collectDataMethod;
 		this.dataMethodName = dataMethodName;
 		this.dataParameter = dataParameter;
@@ -54,8 +54,8 @@ public class ConditionHolder {
 		this.localizationKey = localizationKey;
 	}
 
-	public void setBusinessClassName(String businessClassName) {
-		this.businessClassName = businessClassName;
+	public void setBusinessClassName(Class businessClass) {
+		this.businessClass = businessClass;
 	}
 
 	public void setCollectDataMethod(String method) {
@@ -82,8 +82,8 @@ public class ConditionHolder {
 		return this.localizationKey;
 	}
 
-	public String getBusinessClassName() {
-		return this.businessClassName;
+	public Class getBusinessClass() {
+		return this.businessClass;
 	}
 
 	public String getCollectDataMethod() {

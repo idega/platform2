@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.134 2004/10/15 10:36:38 thomas Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.135 2005/07/06 15:31:30 palli Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -1529,26 +1529,26 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	public Collection findAllConditionSelections(String operationID) {
 		// LP = Localization path
 		ArrayList arr = new ArrayList();
-		arr.add(new ConditionHolder(RuleTypeConstant.CONDITION_ID_OPERATION, "Verksamhet", LP + "verksamhet", "com.idega.block.school.business.SchoolBusiness", "findAllSchoolTypes", "getLocalizationKey", ""));
+		arr.add(new ConditionHolder(RuleTypeConstant.CONDITION_ID_OPERATION, "Verksamhet", LP + "verksamhet", com.idega.block.school.business.SchoolBusiness.class, "findAllSchoolTypes", "getLocalizationKey", ""));
 
-		arr.add(new ConditionHolder(RuleTypeConstant.CONDITION_ID_RESOURCE, "Resurs", LP + "resurs", "se.idega.idegaweb.commune.accounting.resource.business.ResourceBusiness", "findAllResources", "getResourceName", ""));
-		arr.add(new ConditionHolder(RuleTypeConstant.CONDITION_ID_VAT, "Momssats", LP + "momssats", "se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness", "findAllVATRegulations", "getDescription", operationID));
+		arr.add(new ConditionHolder(RuleTypeConstant.CONDITION_ID_RESOURCE, "Resurs", LP + "resurs", se.idega.idegaweb.commune.care.resource.business.ResourceBusiness.class, "findAllResources", "getResourceName", ""));
+		arr.add(new ConditionHolder(RuleTypeConstant.CONDITION_ID_VAT, "Momssats", LP + "momssats", se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness.class, "findAllVATRegulations", "getDescription", operationID));
 
-		arr.add(new ConditionHolder(RuleTypeConstant.CONDITION_ID_SCHOOL_YEAR, "Årskurs", LP + "aarskurs", "se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness", "findAllSchoolYearIntervals", "", ""));
+		arr.add(new ConditionHolder(RuleTypeConstant.CONDITION_ID_SCHOOL_YEAR, "Årskurs", LP + "aarskurs", se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness.class, "findAllSchoolYearIntervals", "", ""));
 
-		arr.add(new ConditionHolder(RuleTypeConstant.CONDITION_ID_HOURS, "Timmar", LP + "timmar", "se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness", "findAllHourIntervals", "", ""));
+		arr.add(new ConditionHolder(RuleTypeConstant.CONDITION_ID_HOURS, "Timmar", LP + "timmar", se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness.class, "findAllHourIntervals", "", ""));
 
-		arr.add(new ConditionHolder(RuleTypeConstant.CONDITION_ID_SIBLING_NR, "Syskonnr", LP + "syskonnr", "se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness", "findAllSiblingValues", "", ""));
+		arr.add(new ConditionHolder(RuleTypeConstant.CONDITION_ID_SIBLING_NR, "Syskonnr", LP + "syskonnr",  se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness.class, "findAllSiblingValues", "", ""));
 
-		arr.add(new ConditionHolder(RuleTypeConstant.CONDITION_ID_AGE_INTERVAL, "Ålder", LP + "alder", "se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness", "findAllAgeIntervals", "", ""));
+		arr.add(new ConditionHolder(RuleTypeConstant.CONDITION_ID_AGE_INTERVAL, "Ålder", LP + "alder", se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness.class, "findAllAgeIntervals", "", ""));
 
-		arr.add(new ConditionHolder(RuleTypeConstant.CONDITION_ID_STADSBIDRAG, "Statsbidragsberättigad", LP + "statsbidragsberattigad", "se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness", "getYesNo", "getLocalizationKey", ""));
-		arr.add(new ConditionHolder(RuleTypeConstant.CONDITION_ID_COMMUNE, "Kommun", LP + "kommun", "com.idega.core.location.business.CommuneBusiness", "getCommunes", "getCommuneName", ""));
+		arr.add(new ConditionHolder(RuleTypeConstant.CONDITION_ID_STADSBIDRAG, "Statsbidragsberättigad", LP + "statsbidragsberattigad", se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness.class, "getYesNo", "getLocalizationKey", ""));
+		arr.add(new ConditionHolder(RuleTypeConstant.CONDITION_ID_COMMUNE, "Kommun", LP + "kommun", com.idega.core.location.business.CommuneBusiness.class, "getCommunes", "getCommuneName", ""));
 		if (operationID.compareTo(SchoolCategoryBMPBean.CATEGORY_HIGH_SCHOOL) == 0) {
-			arr.add(new ConditionHolder(RuleTypeConstant.CONDITION_ID_STUDY_PATH, "Studieväg", LP + "studievag", "se.idega.idegaweb.commune.accounting.school.business.StudyPathBusiness", "findAllStudyPaths", "getCode", ""));
+			arr.add(new ConditionHolder(RuleTypeConstant.CONDITION_ID_STUDY_PATH, "Studieväg", LP + "studievag", se.idega.idegaweb.commune.accounting.school.business.StudyPathBusiness.class, "findAllStudyPaths", "getCode", ""));
 		}
 
-		arr.add(new ConditionHolder(RuleTypeConstant.CONDITION_ID_EMPLOYMENT, "Arbetssituation", LP + "employment", "se.idega.idegaweb.commune.childcare.business.ChildCareBusiness", "findAllEmploymentTypes", "getLocalizationKey", ""));
+		arr.add(new ConditionHolder(RuleTypeConstant.CONDITION_ID_EMPLOYMENT, "Arbetssituation", LP + "employment", se.idega.idegaweb.commune.childcare.business.ChildCareBusiness.class, "findAllEmploymentTypes", "getLocalizationKey", ""));
 
 		return arr;
 
