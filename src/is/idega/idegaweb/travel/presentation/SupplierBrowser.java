@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowser.java,v 1.16 2005/07/05 22:54:51 gimmi Exp $
+ * $Id: SupplierBrowser.java,v 1.17 2005/07/06 02:30:39 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -27,7 +27,6 @@ import com.idega.block.text.business.ContentFinder;
 import com.idega.block.text.business.ContentHelper;
 import com.idega.block.text.data.TxText;
 import com.idega.block.trade.stockroom.business.ProductPriceException;
-import com.idega.block.trade.stockroom.business.TradeConstants;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductHome;
 import com.idega.block.trade.stockroom.data.ProductPrice;
@@ -126,9 +125,11 @@ public class SupplierBrowser extends TravelBlock {
 			form.add(getText(getResourceBundle().getLocalizedString("plugin_not_defined", "Plugin not defined")));
 		} else if (supplierManager == null) {
 			form.add(getText(getResourceBundle().getLocalizedString("supplier_manager_not_defined", "SupplierManager not defined")));
-		} else if (!super.hasRole(iwc, TradeConstants.ROLE_SUPPLIER_MANAGER_BOOKING_STAFF)) {
-			form.add(getText(getResourceBundle().getLocalizedString("travel.you_dont_have_permission", "You don't have permission.")));
-		} else {
+		} 
+//		else if (!super.hasRole(iwc, TradeConstants.ROLE_SUPPLIER_MANAGER_BOOKING_STAFF) || super.isSupplierManager()) {
+//			form.add(getText(getResourceBundle().getLocalizedString("travel.you_dont_have_permission", "You don't have permission.")));
+//		}
+		else {
 			form.maintainParameter(PARAMETER_POSTAL_CODES);
 			form.maintainParameter(PARAMETER_SUPPLIER_MANAGER);
 			form.maintainParameter(PARAMETER_SUPPLIER_ID);
