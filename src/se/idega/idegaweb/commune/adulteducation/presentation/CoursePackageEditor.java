@@ -1,5 +1,5 @@
 /*
- * $Id: CoursePackageEditor.java,v 1.1 2005/07/07 08:41:42 laddi Exp $
+ * $Id: CoursePackageEditor.java,v 1.2 2005/07/07 09:38:40 laddi Exp $
  * Created on Jul 6, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -26,10 +26,10 @@ import com.idega.presentation.ui.TextInput;
 
 
 /**
- * Last modified: $Date: 2005/07/07 08:41:42 $ by $Author: laddi $
+ * Last modified: $Date: 2005/07/07 09:38:40 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class CoursePackageEditor extends AdultEducationBlock {
 	
@@ -49,14 +49,17 @@ public class CoursePackageEditor extends AdultEducationBlock {
 			switch (parseAction(iwc)) {
 				case ACTION_FORM:
 					showForm();
+					break;
 					
 				case ACTION_STORE:
 					storePackage(iwc);
 					showForm();
+					break;
 					
 				case ACTION_REMOVE:
 					removePackage(iwc);
 					showForm();
+					break;
 			}
 		}
 		catch (RemoteException re) {
