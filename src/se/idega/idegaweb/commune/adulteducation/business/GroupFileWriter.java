@@ -57,8 +57,8 @@ import com.lowagie.text.pdf.PdfWriter;
 public class GroupFileWriter implements MediaWritable {
 
 	private MemoryFileBuffer buffer = null;
-	private CommuneUserBusiness userBusiness;
 	private Locale locale;
+	private CommuneUserBusiness userBusiness;
 	private SchoolClass schoolClass;
 	private IWResourceBundle iwrb;
 	
@@ -74,6 +74,7 @@ public class GroupFileWriter implements MediaWritable {
 			locale = iwc.getApplicationSettings().getApplicationLocale();
 			iwrb = iwc.getIWMainApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER).getResourceBundle(locale);
 			schoolClass = getSession(iwc).getSchoolClass();
+			userBusiness = getUserBusiness(iwc);
 			
 			String type = req.getParameter(prmPrintType);
 			if (type.equals(PDF)) {
@@ -291,6 +292,15 @@ public class GroupFileWriter implements MediaWritable {
 	private AdultEducationBusiness getBusiness(IWApplicationContext iwac) {
 		try {
 			return (AdultEducationBusiness) IBOLookup.getServiceInstance(iwac, AdultEducationBusiness.class);
+		}
+		catch (IBOLookupException ile) {
+			throw new IBORuntimeException(ile);
+		}
+	}
+
+	private CommuneUserBusiness getUserBusiness(IWApplicationContext iwac) {
+		try {
+			return (CommuneUserBusiness) IBOLookup.getServiceInstance(iwac, CommuneUserBusiness.class);
 		}
 		catch (IBOLookupException ile) {
 			throw new IBORuntimeException(ile);
