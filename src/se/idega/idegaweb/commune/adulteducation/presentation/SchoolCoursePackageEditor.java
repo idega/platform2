@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolCoursePackageEditor.java,v 1.2 2005/07/07 08:48:36 laddi Exp $
+ * $Id: SchoolCoursePackageEditor.java,v 1.3 2005/07/07 09:48:59 laddi Exp $
  * Created on Jul 6, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -37,10 +37,10 @@ import com.idega.presentation.ui.util.SelectorUtility;
 
 
 /**
- * Last modified: $Date: 2005/07/07 08:48:36 $ by $Author: laddi $
+ * Last modified: $Date: 2005/07/07 09:48:59 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class SchoolCoursePackageEditor extends AdultEducationBlock implements IWPageEventListener {
 
@@ -127,15 +127,16 @@ public class SchoolCoursePackageEditor extends AdultEducationBlock implements IW
 			
 			if (!schoolPackage.isActive()) {
 				SubmitButton removePackage = (SubmitButton) getButton(new SubmitButton(localize("remove_package", "Remove package")));
-				removePackage.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_REMOVE));
-				removePackage.setSubmitConfirm(localize("remove_package_confirm", "Are you sure you want to remove this package?"));
 				SubmitButton activatePackage = (SubmitButton) getButton(new SubmitButton(localize("activate_package", "Activate package")));
-				activatePackage.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_ACTIVATE));
-				activatePackage.setSubmitConfirm(localize("activate_package_confirm", "Are you sure you want to activate this package?"));
 				form.add(removePackage);
 				form.add(Text.getNonBrakingSpace());
 				form.add(activatePackage);
 				form.add(new Break());
+
+				removePackage.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_REMOVE));
+				removePackage.setSubmitConfirm(localize("remove_package_confirm", "Are you sure you want to remove this package?"));
+				activatePackage.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_ACTIVATE));
+				activatePackage.setSubmitConfirm(localize("activate_package_confirm", "Are you sure you want to activate this package?"));
 			}
 		}
 		
