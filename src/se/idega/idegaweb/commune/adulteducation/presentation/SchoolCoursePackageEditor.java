@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolCoursePackageEditor.java,v 1.4 2005/07/07 10:17:00 laddi Exp $
+ * $Id: SchoolCoursePackageEditor.java,v 1.5 2005/07/07 10:41:43 laddi Exp $
  * Created on Jul 6, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -37,10 +37,10 @@ import com.idega.presentation.ui.util.SelectorUtility;
 
 
 /**
- * Last modified: $Date: 2005/07/07 10:17:00 $ by $Author: laddi $
+ * Last modified: $Date: 2005/07/07 10:41:43 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class SchoolCoursePackageEditor extends AdultEducationBlock implements IWPageEventListener {
 
@@ -265,7 +265,7 @@ public class SchoolCoursePackageEditor extends AdultEducationBlock implements IW
 		table.add(getLocalizedSmallHeader("code", "Code"), column++, row++);
 		
 		if (getSession().getChosenSchool() != null && getSession().getCourseSeason() != null && getSession().getStudyPathGroup() != null) {
-			Collection courses = getBusiness().getCourses(getSession().getChosenSchool().getPrimaryKey(), null, getSession().getCourseSeason().getPrimaryKey(), getSession().getStudyPathGroup().getPrimaryKey());
+			Collection courses = getBusiness().getCourses(getSession().getCourseSeason().getPrimaryKey(), null, getSession().getChosenSchool().getPrimaryKey(), getSession().getStudyPathGroup().getPrimaryKey());
 			if (schoolPackage != null) {
 				try {
 					Collection connectedCourses = schoolPackage.getCourses();
