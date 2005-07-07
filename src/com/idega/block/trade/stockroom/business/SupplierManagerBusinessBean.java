@@ -841,6 +841,15 @@ public class SupplierManagerBusinessBean extends IBOServiceBean  implements Supp
 		return users;
 	}
 	
+	public Collection getSupplierManagerCashiers(Group supplierManager) throws RemoteException {
+		Group sGroup = getSupplierManagerCashierStaffGroup(supplierManager);
+		Collection coll = getUserBusiness().getUsersInGroup(sGroup);
+		List v = new Vector();
+		v.addAll(coll);
+		java.util.Collections.sort(v, new com.idega.util.GenericUserComparator(com.idega.util.GenericUserComparator.NAME));
+		return coll;
+	}
+	
 	public List getUsersIncludingResellers(Supplier supplier, Object objBetweenResellers) throws RemoteException, FinderException {
 		List users = getUsers(supplier);
 		List temp;

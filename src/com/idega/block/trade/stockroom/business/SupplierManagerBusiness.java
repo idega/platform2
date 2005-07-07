@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierManagerBusiness.java,v 1.9 2005/07/06 16:27:20 gimmi Exp $
+ * $Id: SupplierManagerBusiness.java,v 1.10 2005/07/07 02:58:02 gimmi Exp $
  * Created on Jul 6, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -27,10 +27,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2005/07/06 16:27:20 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/07/07 02:58:02 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public interface SupplierManagerBusiness extends IBOService {
 
@@ -211,6 +211,11 @@ public interface SupplierManagerBusiness extends IBOService {
 	 * @see com.idega.block.trade.stockroom.business.SupplierManagerBusinessBean#getSupplierManagerStaffUsers
 	 */
 	public List getSupplierManagerStaffUsers(Group supplierManager) throws RemoteException, FinderException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.SupplierManagerBusinessBean#getSupplierManagerCashiers
+	 */
+	public Collection getSupplierManagerCashiers(Group supplierManager) throws RemoteException;
 
 	/**
 	 * @see com.idega.block.trade.stockroom.business.SupplierManagerBusinessBean#getUsersIncludingResellers
