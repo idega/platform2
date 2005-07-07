@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowser.java,v 1.17 2005/07/06 02:30:39 gimmi Exp $
+ * $Id: SupplierBrowser.java,v 1.18 2005/07/07 13:04:45 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -58,6 +58,7 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.InterfaceObject;
 import com.idega.presentation.ui.ResultOutput;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
@@ -114,22 +115,12 @@ public class SupplierBrowser extends TravelBlock {
 		init(iwc);
 		
 		Form form = new Form();
-//		SearchBasketStatus stat = new SearchBasketStatus();
-//		//stat.setURLToCheckout("http://localhost:8080/gimmi.jsp");
-//		stat.setURLToCheckout("http://localhost:8080/servlet/IBMainServlet/?ib_page=3");
-//		stat.setTextStyleClass(textStyleClass);
-//		stat.setLinkStyleClass(linkStyleClass);
-//		form.add(stat);
 
 		if (plugin == null) {
 			form.add(getText(getResourceBundle().getLocalizedString("plugin_not_defined", "Plugin not defined")));
 		} else if (supplierManager == null) {
 			form.add(getText(getResourceBundle().getLocalizedString("supplier_manager_not_defined", "SupplierManager not defined")));
-		} 
-//		else if (!super.hasRole(iwc, TradeConstants.ROLE_SUPPLIER_MANAGER_BOOKING_STAFF) || super.isSupplierManager()) {
-//			form.add(getText(getResourceBundle().getLocalizedString("travel.you_dont_have_permission", "You don't have permission.")));
-//		}
-		else {
+		} else {
 			form.maintainParameter(PARAMETER_POSTAL_CODES);
 			form.maintainParameter(PARAMETER_SUPPLIER_MANAGER);
 			form.maintainParameter(PARAMETER_SUPPLIER_ID);
@@ -457,12 +448,12 @@ public class SupplierBrowser extends TravelBlock {
 			
 		}
 		
-		form.add(Text.BREAK);
+//		form.add(Text.BREAK);
 		form.add(table);
 		addExtraBookingElements(form);
-		form.add(Text.BREAK);
+//		form.add(Text.BREAK);
 		form.add(priceTable);
-		form.add(Text.BREAK);
+//		form.add(Text.BREAK);
 		form.add(linkTable);
 	}
 
@@ -479,26 +470,26 @@ public class SupplierBrowser extends TravelBlock {
 			f.printStackTrace();
 		}
 		
+		Table extraTable = new Table();
+		if (useTravelLook) {
+			extraTable = TravelManager.getTable();
+		}
+		extraTable.setWidth(width);
+		extraTable.setBorder(0);
+		int stRow = 1;
+//		form.add(Text.BREAK);
+		form.add(extraTable);
+		
+		extraTable.mergeCells(1, stRow, 2, stRow);
+		if (useTravelLook) {
+			extraTable.setRowColor(stRow, TravelManager.backgroundColor);
+			extraTable.add(TravelManager.getHeaderText(getResourceBundle().getLocalizedString("travel.booking_options", "Bookng options")), 1, stRow);
+		} else {
+			extraTable.add(getText(getResourceBundle().getLocalizedString("travel.booking_options", "Bookng options"), headerStyleClass), 1, stRow);
+		}
+		++stRow;
 		
 		if (useExtras || usePickups) {
-			Table extraTable = new Table();
-			if (useTravelLook) {
-				extraTable = TravelManager.getTable();
-			}
-			extraTable.setWidth(width);
-			extraTable.setBorder(0);
-			int stRow = 1;
-			form.add(Text.BREAK);
-			form.add(extraTable);
-			
-			extraTable.mergeCells(1, stRow, 2, stRow);
-			if (useTravelLook) {
-				extraTable.setRowColor(stRow, TravelManager.backgroundColor);
-				extraTable.add(TravelManager.getHeaderText(getResourceBundle().getLocalizedString("travel.booking_options", "Bookng options")), 1, stRow);
-			} else {
-				extraTable.add(getText(getResourceBundle().getLocalizedString("travel.booking_options", "Bookng options"), headerStyleClass), 1, stRow);
-			}
-			++stRow;
 			if (usePickups) {
 				DropdownMenu menu = new DropdownMenu(pickups, BookingForm.parameterPickupId);
 				if (interfaceObjectStyleClass != null) {
@@ -535,8 +526,21 @@ public class SupplierBrowser extends TravelBlock {
 					
 				}
 			}
-			extraTable.setWidth(1, "100");
+			
 		}
+		extraTable.add(getText(getResourceBundle().getLocalizedString("travel.commend", "Comment")), 1, stRow);
+		TextArea comment = new TextArea(BookingForm.PARAMETER_COMMENT);
+		comment.setWidth("400");
+		comment.setHeight("70");
+		extraTable.add(comment, 2, stRow);
+		if (useTravelLook) {
+			extraTable.setRowColor(stRow, TravelManager.GRAY);
+		}
+		extraTable.setVerticalAlignment(1, stRow, Table.VERTICAL_ALIGN_TOP);
+		++stRow;
+		
+		
+		extraTable.setWidth(1, "100");
 	}
 
 	private int listPrices(IWContext iwc, Table priceTable, int pRow, int addressId, int timeframeId, ProductPriceHome ppHome, ResultOutput totalResults, int numberOfDays) throws FinderException, SQLException, RemoteException {
