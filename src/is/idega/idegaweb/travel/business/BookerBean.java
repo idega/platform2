@@ -595,16 +595,18 @@ public class BookerBean extends IBOServiceBean implements Booker{
       menu.addMenuElement(Booking.PAYMENT_TYPE_ID_CREDIT_CARD ,getPaymentType(iwrb, Booking.PAYMENT_TYPE_ID_CREDIT_CARD));
       menu.addMenuElement(Booking.PAYMENT_TYPE_ID_VOUCHER ,getPaymentType(iwrb, Booking.PAYMENT_TYPE_ID_VOUCHER));
       menu.addMenuElement(Booking.PAYMENT_TYPE_ID_ACCOUNT, getPaymentType(iwrb, Booking.PAYMENT_TYPE_ID_ACCOUNT));
+      menu.addMenuElement(Booking.PAYMENT_TYPE_ID_OFFICE, getPaymentType(iwrb, Booking.PAYMENT_TYPE_ID_OFFICE));
     return menu;
   }
   
   public String getPaymentType(IWResourceBundle iwrb, int paymentType) {
   	switch (paymentType) {
   		case Booking.PAYMENT_TYPE_ID_NO_PAYMENT : return iwrb.getLocalizedString("travel.unpaid","Unpaid");
-			case Booking.PAYMENT_TYPE_ID_CASH : return iwrb.getLocalizedString("travel.cash","Cash");
-			case Booking.PAYMENT_TYPE_ID_CREDIT_CARD : return iwrb.getLocalizedString("travel.credit_card","Credit card");
-			case Booking.PAYMENT_TYPE_ID_VOUCHER : return iwrb.getLocalizedString("travel.voucher","Voucher");
-			case Booking.PAYMENT_TYPE_ID_ACCOUNT : return iwrb.getLocalizedString("travel.account","Account");
+		case Booking.PAYMENT_TYPE_ID_CASH : return iwrb.getLocalizedString("travel.cash","Cash");
+		case Booking.PAYMENT_TYPE_ID_CREDIT_CARD : return iwrb.getLocalizedString("travel.credit_card","Credit card");
+		case Booking.PAYMENT_TYPE_ID_VOUCHER : return iwrb.getLocalizedString("travel.voucher","Voucher");
+		case Booking.PAYMENT_TYPE_ID_ACCOUNT : return iwrb.getLocalizedString("travel.account","Account");
+		case Booking.PAYMENT_TYPE_ID_OFFICE : return iwrb.getLocalizedString("travel.office","Office");
   		default : return iwrb.getLocalizedString("travel.unspecified","Unspecified");	
   	}
   }
