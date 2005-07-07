@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowserBookingForm.java,v 1.2 2005/07/07 03:04:44 gimmi Exp $
+ * $Id: SupplierBrowserBookingForm.java,v 1.3 2005/07/07 13:05:45 gimmi Exp $
  * Created on Jul 4, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -41,7 +41,6 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.util.IWTimestamp;
 
@@ -55,6 +54,8 @@ public class SupplierBrowserBookingForm extends TravelManager {
 	private String textStyleClass 	= "sbrowser_text";
 	private String headerStyleClass = "sbrowser_header";
 	private String ioStyleClass 	= "sbrowser_interface";
+	
+	private CashierQueue queue = null;
 	
 	public void main (IWContext iwc) throws Exception {
 		super.main(iwc);
@@ -91,6 +92,11 @@ public class SupplierBrowserBookingForm extends TravelManager {
 		boolean cashiersOnly = getSupplierManagerBusiness(iwc).hasRole(getSupplierManager(), TradeConstants.ROLE_SUPPLIER_MANAGER_CASHIER_STAFF);
 		boolean isCashier = super.hasRole(iwc, TradeConstants.ROLE_SUPPLIER_MANAGER_CASHIER_STAFF);
 		boolean basketIsEmpty = getBasketBusiness(iwc).getBasket().isEmpty();
+		
+		if (isCashier && iwc.isParameterSet(PARAMETER_CASHIER_QUEUE_ID)) {
+			CashierQueueHome qHome = (CashierQueueHome) IDOLookup.getHome(CashierQueue.class);
+			queue = qHome.findByPrimaryKey(new Integer(iwc.getParameter(PARAMETER_CASHIER_QUEUE_ID)));
+		}
 		
 		if (iwc.isParameterSet(AbstractSearchForm.ACTION)) {
 			row = addSubmitResults(iwc, form, table, row);
@@ -215,10 +221,11 @@ public class SupplierBrowserBookingForm extends TravelManager {
 			}
 			
 			// QueueStuff
-			if (iwc.isParameterSet(PARAMETER_CASHIER_QUEUE_ID)) {
-				CashierQueueHome qHome = (CashierQueueHome) IDOLookup.getHome(CashierQueue.class);
-				CashierQueue queue = qHome.findByPrimaryKey(new Integer(iwc.getParameter(PARAMETER_CASHIER_QUEUE_ID)));
+			if (queue != null) {
+//				CashierQueueHome qHome = (CashierQueueHome) IDOLookup.getHome(CashierQueue.class);
+//				CashierQueue queue = qHome.findByPrimaryKey(new Integer(iwc.getParameter(PARAMETER_CASHIER_QUEUE_ID)));
 				queue.remove();
+				queue = null;
 			}
 			
 		} catch (CreditCardAuthorizationException e)  {
@@ -253,12 +260,12 @@ public class SupplierBrowserBookingForm extends TravelManager {
 		TextInput name = getStyleTextInput(new TextInput(BookingForm.PARAMETER_FIRST_NAME));
 		TextInput email = getStyleTextInput(new TextInput(BookingForm.PARAMETER_EMAIL));
 		TextInput phone = getStyleTextInput(new TextInput(BookingForm.PARAMETER_PHONE));
-		TextArea comment = new TextArea(BookingForm.PARAMETER_COMMENT);
-		if (ioStyleClass != null) {
-			comment.setStyleClass(ioStyleClass);
-		}
-		comment.setWidth("150");
-		comment.setHeight("60");
+//		TextArea comment = new TextArea(BookingForm.PARAMETER_COMMENT);
+//		if (ioStyleClass != null) {
+//			comment.setStyleClass(ioStyleClass);
+//		}
+//		comment.setWidth("150");
+//		comment.setHeight("60");
 		
 		DropdownMenu payType = getBooker(iwc).getPaymentTypeDropdown(getResourceBundle(), BookingForm.PARAMETER_PAYMENT_TYPE);
 		payType.setToEnableWhenSelected(ccName, Integer.toString(Booking.PAYMENT_TYPE_ID_CREDIT_CARD));
@@ -270,7 +277,7 @@ public class SupplierBrowserBookingForm extends TravelManager {
 		name.keepStatusOnAction();
 		email.keepStatusOnAction();
 		phone.keepStatusOnAction();
-		comment.keepStatusOnAction();
+//		comment.keepStatusOnAction();
 		payType.keepStatusOnAction();
 		
 		ccName.keepStatusOnAction();
@@ -296,6 +303,9 @@ public class SupplierBrowserBookingForm extends TravelManager {
 		table.add(getHeaderText(getResourceBundle().getLocalizedString("travel.client_information", "Client Information")), 1, row++);
 		table.add(getText(getResourceBundle().getLocalizedString("travel.name", "Name")), 1, row);
 		table.add(name, 2, row);
+		if (queue != null) {
+			name.setContent(queue.getClientName());
+		}
 		table.setRowColor(row++, GRAY);
 		table.setRowColor(row, GRAY);
 		table.add(getText(getResourceBundle().getLocalizedString("travel.email", "Email")), 1, row);
@@ -304,9 +314,9 @@ public class SupplierBrowserBookingForm extends TravelManager {
 		table.add(getText(getResourceBundle().getLocalizedString("travel.phone", "Phone")), 1, row);
 		table.add(phone, 2, row++);
 		table.setRowColor(row, GRAY);
-		table.add(getText(getResourceBundle().getLocalizedString("travel.comment", "Comment")), 1, row);
-		table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
-		table.add(comment, 2, row++);
+//		table.add(getText(getResourceBundle().getLocalizedString("travel.comment", "Comment")), 1, row);
+//		table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
+//		table.add(comment, 2, row++);
 		
 		
 		
