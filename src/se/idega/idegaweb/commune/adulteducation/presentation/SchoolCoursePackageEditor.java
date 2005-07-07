@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolCoursePackageEditor.java,v 1.3 2005/07/07 09:48:59 laddi Exp $
+ * $Id: SchoolCoursePackageEditor.java,v 1.4 2005/07/07 10:17:00 laddi Exp $
  * Created on Jul 6, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -37,10 +37,10 @@ import com.idega.presentation.ui.util.SelectorUtility;
 
 
 /**
- * Last modified: $Date: 2005/07/07 09:48:59 $ by $Author: laddi $
+ * Last modified: $Date: 2005/07/07 10:17:00 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class SchoolCoursePackageEditor extends AdultEducationBlock implements IWPageEventListener {
 
@@ -265,7 +265,7 @@ public class SchoolCoursePackageEditor extends AdultEducationBlock implements IW
 		table.add(getLocalizedSmallHeader("code", "Code"), column++, row++);
 		
 		if (getSession().getChosenSchool() != null && getSession().getCourseSeason() != null && getSession().getStudyPathGroup() != null) {
-			Collection courses = getBusiness().getCourses(getSession().getChosenSchool().getPrimaryKey(), getSession().getCourseSeason().getPrimaryKey(), getSession().getStudyPathGroup().getPrimaryKey());
+			Collection courses = getBusiness().getCourses(getSession().getChosenSchool().getPrimaryKey(), null, getSession().getCourseSeason().getPrimaryKey(), getSession().getStudyPathGroup().getPrimaryKey());
 			if (schoolPackage != null) {
 				try {
 					Collection connectedCourses = schoolPackage.getCourses();
@@ -317,6 +317,9 @@ public class SchoolCoursePackageEditor extends AdultEducationBlock implements IW
 				seasons.addMenuElement(season.getPrimaryKey().toString(), season.getSchoolSeasonName());
 			}
 		}
+		if (getSession().getCourseSeason() != null) {
+			seasons.setSelectedElement(getSession().getCourseSeason().getPrimaryKey().toString());
+		}
 		seasons.setToSubmit();
 		
 		table.add(getHeader(localize("study_path_group", "Study path group") + ":"), 1, 1);
@@ -363,15 +366,6 @@ public class SchoolCoursePackageEditor extends AdultEducationBlock implements IW
 
 	public boolean actionPerformed(IWContext iwc) throws IWException {
 		boolean actionPerformed = false;
-		if (iwc.isParameterSet(PARAMETER_SEASON)) {
-			try {
-				getSession(iwc).setSeason(iwc.getParameter(PARAMETER_SEASON));
-				actionPerformed = true;
-			}
-			catch (RemoteException re) {
-				throw new IBORuntimeException(re);
-			}
-		}
 		if (iwc.isParameterSet(PARAMETER_SCHOOL)) {
 			try {
 				getSession(iwc).setChosenSchool(iwc.getParameter(PARAMETER_SCHOOL));
@@ -402,6 +396,15 @@ public class SchoolCoursePackageEditor extends AdultEducationBlock implements IW
 		if (iwc.isParameterSet(PARAMETER_COURSE_SEASON)) {
 			try {
 				getSession(iwc).setCourseSeason(iwc.getParameter(PARAMETER_COURSE_SEASON));
+				actionPerformed = true;
+			}
+			catch (RemoteException re) {
+				throw new IBORuntimeException(re);
+			}
+		}
+		if (iwc.isParameterSet(PARAMETER_SEASON)) {
+			try {
+				getSession(iwc).setSeason(iwc.getParameter(PARAMETER_SEASON));
 				actionPerformed = true;
 			}
 			catch (RemoteException re) {
