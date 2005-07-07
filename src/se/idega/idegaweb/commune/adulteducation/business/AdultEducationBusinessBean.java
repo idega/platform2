@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.40 2005/07/05 15:36:45 laddi Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.41 2005/07/07 08:41:42 laddi Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -37,6 +37,10 @@ import se.idega.idegaweb.commune.adulteducation.data.AdultEducationGroup;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationGroupHome;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfo;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfoHome;
+import se.idega.idegaweb.commune.adulteducation.data.CoursePackage;
+import se.idega.idegaweb.commune.adulteducation.data.CoursePackageHome;
+import se.idega.idegaweb.commune.adulteducation.data.SchoolCoursePackage;
+import se.idega.idegaweb.commune.adulteducation.data.SchoolCoursePackageHome;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import com.idega.block.pdf.business.PrintingContext;
@@ -80,10 +84,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/07/05 15:36:45 $ by $Author: laddi $
+ * Last modified: $Date: 2005/07/07 08:41:42 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.40 $
+ * @version $Revision: 1.41 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements AdultEducationBusiness {
 
@@ -221,6 +225,24 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 	private SchoolClassMemberGradeHome getStudentGradeHome() {
 		try {
 			return (SchoolClassMemberGradeHome) IDOLookup.getHome(SchoolClassMemberGrade.class);
+		}
+		catch (IDOLookupException ile) {
+			throw new IBORuntimeException(ile);
+		}
+	}
+	
+	private CoursePackageHome getCoursePackageHome() {
+		try {
+			return (CoursePackageHome) IDOLookup.getHome(CoursePackage.class);
+		}
+		catch (IDOLookupException ile) {
+			throw new IBORuntimeException(ile);
+		}
+	}
+
+	private SchoolCoursePackageHome getSchoolCoursePackageHome() {
+		try {
+			return (SchoolCoursePackageHome) IDOLookup.getHome(SchoolCoursePackage.class);
 		}
 		catch (IDOLookupException ile) {
 			throw new IBORuntimeException(ile);
@@ -674,11 +696,39 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		}
 	}
 
+	public Collection getNextSeasons(SchoolSeason season) {
+		try {
+			IWTimestamp stamp = new IWTimestamp(season.getSchoolSeasonStart());
+			stamp.addDays(-1);
+			return getSchoolBusiness().getSchoolSeasonHome().findPendingSeasonsByDate(season.getSchoolCategory(), stamp.getDate());
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return new ArrayList();
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
+	}
+
 	public Collection getSchools(SchoolType type) {
 		try {
 			if (type != null) {
 				return getSchoolBusiness().findAllSchoolsByType(type);
 			}
+			return new ArrayList();
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
+	}
+	
+	public Collection getSchools() {
+		try {
+			return getSchoolBusiness().findAllSchoolsByCategory(getCategory().getCategory());
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
 			return new ArrayList();
 		}
 		catch (RemoteException re) {
@@ -1331,5 +1381,136 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		catch (RemoteException re) {
 			throw new IBORuntimeException(re);
 		}
+	}
+	
+	public void storePackage(Object packagePK, String name, String localizedKey) throws CreateException {
+		CoursePackage coursePackage = null;
+		if (packagePK != null) {
+			try {
+				coursePackage = getCoursePackageHome().findByPrimaryKey(packagePK);
+			}
+			catch (FinderException fe) {
+				fe.printStackTrace();
+			}
+		}
+		if (coursePackage == null) {
+			coursePackage = getCoursePackageHome().create();
+		}
+		
+		coursePackage.setName(name);
+		coursePackage.setLocalizedKey(localizedKey);
+		coursePackage.store();
+	}
+	
+	public SchoolCoursePackage storeSchoolPackage(CoursePackage coursePackage, School school, SchoolSeason season, String freeText, Object[] coursePKs) throws CreateException {
+		SchoolCoursePackage schoolPackage = null;
+		try {
+			schoolPackage = getSchoolCoursePackageHome().findBySchoolAndSeasonAndPackage(school, season, coursePackage);
+		}
+		catch (FinderException fe) {
+			schoolPackage = getSchoolCoursePackageHome().create();
+			schoolPackage.setPackage(coursePackage);
+			schoolPackage.setSchool(school);
+			schoolPackage.setSeason(season);
+		}
+		
+		schoolPackage.setFreeText(freeText);
+		schoolPackage.store();
+		
+		if (coursePKs != null) {
+			for (int i = 0; i < coursePKs.length; i++) {
+				Object coursePK = coursePKs[i];
+				try {
+					AdultEducationCourse course = getCourseHome().findByPrimaryKey(coursePK);
+					schoolPackage.addCourse(course);
+				}
+				catch (FinderException fe) {
+					fe.printStackTrace();
+				}
+				catch (IDOAddRelationshipException iare) {
+					log(iare);
+				}
+			}
+		}
+		return schoolPackage;
+	}
+	
+	public void removeCourseFromPackage(Object schoolPackagePK, Object coursePK) {
+		try {
+			SchoolCoursePackage schoolPackage = getSchoolCoursePackageHome().findByPrimaryKey(schoolPackagePK);
+			AdultEducationCourse course = getCourse(coursePK);
+			schoolPackage.removeCourse(course);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+		}
+		catch (IDORemoveRelationshipException irre) {
+			irre.printStackTrace();
+		}
+	}
+	
+	public void activatePackage(Object schoolPackagePK) {
+		try {
+			SchoolCoursePackage schoolPackage = getSchoolCoursePackageHome().findByPrimaryKey(schoolPackagePK);
+			schoolPackage.setActive(true);
+			schoolPackage.store();
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+		}
+	}
+	
+	public void removePackage(Object coursePackagePK) throws RemoveException {
+		try {
+			CoursePackage coursePackage = getCoursePackageHome().findByPrimaryKey(coursePackagePK);
+			coursePackage.remove();
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+		}
+	}
+	
+	public void removeSchoolPackage(Object schoolPackagePK) throws RemoveException {
+		try {
+			SchoolCoursePackage schoolPackage = getSchoolCoursePackageHome().findByPrimaryKey(schoolPackagePK);
+			try {
+				schoolPackage.removeCourses();
+			}
+			catch (IDORemoveRelationshipException irre) {
+				irre.printStackTrace();
+			}
+			schoolPackage.remove();
+		}
+		catch (FinderException fe) {
+			throw new RemoveException(fe.getMessage());
+		}
+	}
+	
+	public boolean hasSchoolPackages(CoursePackage coursePackage) {
+		try {
+			return getSchoolCoursePackageHome().getNumberOfSchoolPackages(coursePackage) > 0;
+		}
+		catch (IDOException ie) {
+			ie.printStackTrace();
+			return false;
+		}
+	}
+	
+	public Collection getCoursePackages() {
+		try {
+			return getCoursePackageHome().findAll();
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return new ArrayList();
+		}
+	}
+	
+	public CoursePackage getCoursePackage(Object coursePackagePK) throws FinderException {
+		return getCoursePackageHome().findByPrimaryKey(coursePackagePK);
+	}
+	
+	public SchoolCoursePackage getSchoolCoursePackage(School school, SchoolSeason season, CoursePackage coursePackage) throws FinderException {
+		return getSchoolCoursePackageHome().findBySchoolAndSeasonAndPackage(school, season, coursePackage);
 	}
 }

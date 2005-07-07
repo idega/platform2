@@ -73,6 +73,7 @@ public class GroupFileWriter implements MediaWritable {
 		try {
 			locale = iwc.getApplicationSettings().getApplicationLocale();
 			iwrb = iwc.getIWMainApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER).getResourceBundle(locale);
+			schoolClass = getSession(iwc).getSchoolClass();
 			
 			String type = req.getParameter(prmPrintType);
 			if (type.equals(PDF)) {

@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationSessionBean.java,v 1.10 2005/06/07 12:49:03 laddi Exp $
+ * $Id: AdultEducationSessionBean.java,v 1.11 2005/07/07 08:41:42 laddi Exp $
  * Created on May 24, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -15,6 +15,7 @@ import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.accounting.school.business.StudyPathBusiness;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoice;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourse;
+import se.idega.idegaweb.commune.adulteducation.data.CoursePackage;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
@@ -32,18 +33,21 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2005/06/07 12:49:03 $ by $Author: laddi $
+ * Last modified: $Date: 2005/07/07 08:41:42 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class AdultEducationSessionBean extends IBOSessionBean  implements AdultEducationSession{
 	
 	private Object iAdministratorPK = null;
-	private School iSchool = null;
+	private School iCurrentSchool = null;
 	
 	private Object iSeasonPK = null;
 	private SchoolSeason iSeason = null;
+	
+	private Object iCourseSeasonPK = null;
+	private SchoolSeason iCourseSeason = null;
 	
 	private Object iChoicePK = null;
 	private AdultEducationChoice iChoice = null;
@@ -60,6 +64,12 @@ public class AdultEducationSessionBean extends IBOSessionBean  implements AdultE
 	
 	private Object iCoursePK = null;
 	private AdultEducationCourse iCourse = null;
+	
+	private Object iSchoolPK = null;
+	private School iSchool = null;
+	
+	private Object iCoursePackagePK = null;
+	private CoursePackage iCoursePackage = null;
 	
 	private Object iSchoolClassPK = null;
 	private SchoolClass iSchoolClass = null;
@@ -99,9 +109,27 @@ public class AdultEducationSessionBean extends IBOSessionBean  implements AdultE
 		if (iSeasonPK != null && !iSeasonPK.equals(seasonPK)) {
 			setSchoolClass(null);
 			setCourse(null);
+			setCourseSeason(null);
 		}
 		iSeasonPK = seasonPK;
 		iSeason = null;
+	}
+	
+	public SchoolSeason getCourseSeason() {
+		if (iCourseSeason == null && iCourseSeasonPK != null) {
+			try {
+				iCourseSeason = getSchoolBusiness().getSchoolSeason(new Integer(iCourseSeasonPK.toString()));
+			}
+			catch (RemoteException re) {
+				iCourseSeason = null;
+			}
+		}
+		return iCourseSeason;
+	}
+
+	public void setCourseSeason(Object seasonPK) {
+		iCourseSeasonPK = seasonPK;
+		iCourseSeason = null;
 	}
 	
 	public SchoolType getSchoolType() {
@@ -183,6 +211,44 @@ public class AdultEducationSessionBean extends IBOSessionBean  implements AdultE
 		iSchoolClassPK = schoolClassPK;
 		iSchoolClass= null;
 	}
+	
+	public School getChosenSchool() {
+		if (iSchool == null && iSchoolPK != null) {
+			try {
+				iSchool = getSchoolBusiness().getSchool(iSchoolPK);
+			}
+			catch (RemoteException re) {
+				iSchool = null;
+			}
+		}
+		return iSchool;
+	}
+
+	public void setChosenSchool(Object schoolPK) {
+		iSchoolPK = schoolPK;
+		iSchool= null;
+	}
+	
+	public CoursePackage getCoursePackage() {
+		if (iCoursePackage == null && iCoursePackagePK != null) {
+			try {
+				iCoursePackage = getAdultEducationBusiness().getCoursePackage(iCoursePackagePK);
+			}
+			catch (RemoteException re) {
+				iCoursePackage = null;
+			}
+			catch (FinderException fe) {
+				iCoursePackage = null;
+			}
+		}
+		return iCoursePackage;
+	}
+
+	public void setCoursePackage(Object coursePackagePK) {
+		iCoursePackagePK = coursePackagePK;
+		iCoursePackage= null;
+	}
+	
 	
 	public SchoolClassMember getSchoolClassMember() {
 		if (iSchoolClassMember == null && iSchoolClassMemberPK != null) {
@@ -296,8 +362,8 @@ public class AdultEducationSessionBean extends IBOSessionBean  implements AdultE
 			Object userPK = user.getPrimaryKey();
 			
 			if (iAdministratorPK != null && iAdministratorPK.equals(userPK)) {
-				if (iSchool != null) {
-					return iSchool;
+				if (iCurrentSchool != null) {
+					return iCurrentSchool;
 				}
 				else {
 					return getSchoolFromUser(user);
@@ -309,7 +375,7 @@ public class AdultEducationSessionBean extends IBOSessionBean  implements AdultE
 			}
 		}
 		else {
-			return iSchool;	
+			return iCurrentSchool;	
 		}
 	}
 
@@ -318,8 +384,8 @@ public class AdultEducationSessionBean extends IBOSessionBean  implements AdultE
 	 * @return int
 	 */
 	public Object getSchoolPK() {
-		if (iSchool != null) {
-			return iSchool.getPrimaryKey();
+		if (iCurrentSchool != null) {
+			return iCurrentSchool.getPrimaryKey();
 		}
 		return null;
 	}
@@ -329,7 +395,7 @@ public class AdultEducationSessionBean extends IBOSessionBean  implements AdultE
 			try {
 				School school = getAdultEducationBusiness().getSchoolForUser(user);
 				if (school != null) {
-					iSchool = school;
+					iCurrentSchool = school;
 				}
 			}
 			catch (FinderException fe) {
@@ -339,7 +405,7 @@ public class AdultEducationSessionBean extends IBOSessionBean  implements AdultE
 				throw new IBORuntimeException(re);
 			}
 		}
-		return iSchool;
+		return iCurrentSchool;
 	}
 
 	private CommuneUserBusiness getUserBusiness() {

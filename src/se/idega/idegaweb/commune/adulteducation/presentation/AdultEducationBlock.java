@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBlock.java,v 1.7 2005/06/20 12:56:22 laddi Exp $
+ * $Id: AdultEducationBlock.java,v 1.8 2005/07/07 08:41:42 laddi Exp $
  * Created on 27.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -27,10 +27,10 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.Window;
 
 /**
- * Last modified: $Date: 2005/06/20 12:56:22 $ by $Author: laddi $
+ * Last modified: $Date: 2005/07/07 08:41:42 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public abstract class AdultEducationBlock extends CommuneBlock {
 
@@ -38,6 +38,7 @@ public abstract class AdultEducationBlock extends CommuneBlock {
 	public static final String PARAMETER_SCHOOL_SEASON = "ae_school_season";
 	public static final String PARAMETER_STUDY_PATH = "ae_study_path";
 	public static final String PARAMETER_STUDENT = "ae_student";
+	public static final String PARAMETER_COURSE_PACKAGE = "ae_course_package";
 
 	private static final String PROPERTY_RED_COLOR = "red_color";
 	
