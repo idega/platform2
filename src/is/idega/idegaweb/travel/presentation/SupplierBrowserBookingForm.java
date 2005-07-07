@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowserBookingForm.java,v 1.3 2005/07/07 13:05:45 gimmi Exp $
+ * $Id: SupplierBrowserBookingForm.java,v 1.4 2005/07/07 18:57:43 gimmi Exp $
  * Created on Jul 4, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -56,6 +56,7 @@ public class SupplierBrowserBookingForm extends TravelManager {
 	private String ioStyleClass 	= "sbrowser_interface";
 	
 	private CashierQueue queue = null;
+	private boolean advancedVoucher = false;
 	
 	public void main (IWContext iwc) throws Exception {
 		super.main(iwc);
@@ -90,6 +91,7 @@ public class SupplierBrowserBookingForm extends TravelManager {
 		int row = 1;
 		
 		boolean cashiersOnly = getSupplierManagerBusiness(iwc).hasRole(getSupplierManager(), TradeConstants.ROLE_SUPPLIER_MANAGER_CASHIER_STAFF);
+		advancedVoucher = getSupplierManagerBusiness(iwc).hasRole(getSupplierManager(), TradeConstants.ROLE_ADVANCED_VOUCHER);
 		boolean isCashier = super.hasRole(iwc, TradeConstants.ROLE_SUPPLIER_MANAGER_CASHIER_STAFF);
 		boolean basketIsEmpty = getBasketBusiness(iwc).getBasket().isEmpty();
 		
@@ -171,6 +173,19 @@ public class SupplierBrowserBookingForm extends TravelManager {
 			GeneralBooking gBooking;
 			Product product;
 			Iterator iter = bookings.iterator();
+			
+			Link advVoucher = new Link(getText(getResourceBundle().getLocalizedString("travel.print_all_vouchers", "Print all vouchers")));
+			advVoucher.setWindowToOpen(AdvancedVoucher.class);
+			
+			if (advancedVoucher) {
+				table.setRowColor(row, GRAY);
+				table.add(advVoucher, 1, row++);
+				table.mergeCells(1, row, 2, row);
+				table.setRowColor(row, GRAY);
+				table.setRowHeight(row, "14");
+				++row;
+			}
+		
 			while (iter.hasNext()) {
 				gBooking = (GeneralBooking) iter.next();
 				if (!ccAuthAdded && gBooking.getPaymentTypeId() == Booking.PAYMENT_TYPE_ID_CREDIT_CARD) {
@@ -186,6 +201,9 @@ public class SupplierBrowserBookingForm extends TravelManager {
 
 					ccAuthAdded = true;
 				}
+				
+				advVoucher.addParameter(AdvancedVoucher.PARAMETER_BOOKING_ID, gBooking.getPrimaryKey().toString());
+				
 				product = gBooking.getService().getProduct();
 				table.mergeCells(1, row, 2, row);
 				table.setRowColor(row, GRAY);
