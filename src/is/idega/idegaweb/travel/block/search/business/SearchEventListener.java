@@ -1,5 +1,5 @@
 /*
- * $Id: SearchEventListener.java,v 1.1 2005/07/05 22:42:42 gimmi Exp $
+ * $Id: SearchEventListener.java,v 1.2 2005/07/07 03:01:37 gimmi Exp $
  * Created on 29.6.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -33,7 +33,9 @@ public class SearchEventListener implements IWPageEventListener {
 		
 		String[] newBasketIDs = iwc.getParameterValues(ServiceSearchBusinessBean.PARAMETER_BOOKING_IDS_FOR_BASKET);
 		try {
-			ssBus.setNewBookingsInBasket(iwc, newBasketIDs);
+			if (newBasketIDs != null) {
+				ssBus.setNewBookingsInBasket(iwc, newBasketIDs);
+			}
 		}
 		catch (RemoteException e2) {
 			e2.printStackTrace();
