@@ -3466,6 +3466,8 @@ public abstract class BookingForm extends TravelManager{
 			}else if (_reseller != null) {
 				displayFormInternal= true;
 				bookingType = Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING;
+			} else if (getSupplierManager() != null) {
+				bookingType = Booking.BOOKING_TYPE_ID_SUPPLIER_MANAGER;
 			}else {
 				bookingType = Booking.BOOKING_TYPE_ID_ONLINE_BOOKING;
 			}
