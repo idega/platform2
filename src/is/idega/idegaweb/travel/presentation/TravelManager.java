@@ -217,7 +217,11 @@ public class TravelManager extends TravelBlock {
 			Link basket = new Link(tsm.getIWResourceBundle().getLocalizedImageButton("travel.basket", "Basket"), SupplierBrowserBookingForm.class);
 			table.add(basket, 1, 1);
 		} else if (hasRole(iwc, TradeConstants.ROLE_SUPPLIER_MANAGER_CASHIER_STAFF)) {
-			table.add("Cashier", 1, 1);
+			Link cashierViewer = new Link(tsm.getIWResourceBundle().getLocalizedImageButton("travel.cashier", "Cashier"), CashierQueueViewer.class);
+			table.add(cashierViewer, 1, 1);
+
+			Link basket = new Link(tsm.getIWResourceBundle().getLocalizedImageButton("travel.basket", "Basket"), SupplierBrowserBookingForm.class);
+			table.add(basket, 1, 1);
 		}else if (tsm.getSupplier() != null) {
 			Link lDesign = new Link(iDesign,ServiceDesigner.class);
 			lDesign.addParameter(this.sAction,this.parameterServiceDesigner);
