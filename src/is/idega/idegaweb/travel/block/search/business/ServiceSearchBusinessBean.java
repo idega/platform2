@@ -876,14 +876,13 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 					b.setTelephoneNumber(phone);
 					b.setCity(city);
 					b.setCountry(country);
-					if (comment == null) {
-						comment = "";
+					if (comment != null) {
+						b.setComment(comment);
 					}
-					b.setComment(comment);
 					if (code != null) {
 						b.setCode(code);
 					}
-					b.setBookingTypeID(iPaymentType);
+					b.setPaymentTypeId(iPaymentType);
 					b.setCreditcardAuthorizationNumber(authNr);
 					b.setIsValid(true);
 					b.store();
