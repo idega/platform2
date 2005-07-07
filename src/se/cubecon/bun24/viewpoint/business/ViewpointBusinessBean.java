@@ -28,10 +28,10 @@ import com.idega.user.data.Group;
 import com.idega.user.data.User;
 
 /**
- * Last modified: $Date: 2005/07/05 16:41:50 $ by $Author: thomas $
+ * Last modified: $Date: 2005/07/07 15:23:35 $ by $Author: thomas $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class ViewpointBusinessBean extends CaseBusinessBean  implements ViewpointBusiness {
 
@@ -263,7 +263,7 @@ public class ViewpointBusinessBean extends CaseBusinessBean  implements Viewpoin
 		}
     }
     
-    public Link getLinkToPageForPointOfView(int pageID, Viewpoint viewpoint) {
+    public Link getLinkToPageForViewpoint(int pageID, Viewpoint viewpoint) {
     	String primaryKey = viewpoint.getPrimaryKey().toString();
     	Link viewpointLink = new Link(primaryKey);
 		viewpointLink.setPage(pageID);
@@ -272,7 +272,7 @@ public class ViewpointBusinessBean extends CaseBusinessBean  implements Viewpoin
 		return viewpointLink;    	
     }
     
-    public String getCaseCodeKeyForPointOfView() throws RemoteException {
+    public String getCaseCodeKeyForViewpoint() throws RemoteException {
     	return ViewpointBMPBean.CASE_CODE_KEY;
     }
 }

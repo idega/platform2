@@ -20,10 +20,10 @@ import com.idega.user.data.User;
  * in order to help the system to chose what handler group should be responsible
  * for answering the entered viewpoint.
  * <p>
- * Last modified: $Date: 2005/07/05 16:41:51 $ by $Author: thomas $
+ * Last modified: $Date: 2005/07/07 15:23:35 $ by $Author: thomas $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  * @see com.idega.block.process.business
  * @see com.idega.business
  * @see com.idega.user.data
@@ -75,7 +75,7 @@ public interface ViewpointBusiness extends IBOService, CaseBusiness {
     RoadResponsible findRoadResponsible (int RoadResponsibleId)
         throws FinderException;
     RoadResponsible [] findAllRoadResponsible () throws FinderException;
-    Link getLinkToPageForPointOfView(int pageID, Viewpoint viewpoint);
-    String getCaseCodeKeyForPointOfView() throws RemoteException;
+    Link getLinkToPageForViewpoint(int pageID, Viewpoint viewpoint);
+    String getCaseCodeKeyForViewpoint() throws RemoteException;
 
 }
