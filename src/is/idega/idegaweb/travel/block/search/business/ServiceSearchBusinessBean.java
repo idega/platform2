@@ -656,6 +656,8 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 			}
 		  }
 		System.out.println("");
+	  } else {
+		  getBasketBusiness(iwc).emptyBasket();
 	  }
 
   }
