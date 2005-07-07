@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolCoursePackageEditor.java,v 1.1 2005/07/07 08:41:42 laddi Exp $
+ * $Id: SchoolCoursePackageEditor.java,v 1.2 2005/07/07 08:48:36 laddi Exp $
  * Created on Jul 6, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -37,10 +37,10 @@ import com.idega.presentation.ui.util.SelectorUtility;
 
 
 /**
- * Last modified: $Date: 2005/07/07 08:41:42 $ by $Author: laddi $
+ * Last modified: $Date: 2005/07/07 08:48:36 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class SchoolCoursePackageEditor extends AdultEducationBlock implements IWPageEventListener {
 
@@ -125,14 +125,18 @@ public class SchoolCoursePackageEditor extends AdultEducationBlock implements IW
 			form.add(getConnectedCourses(schoolPackage));
 			form.add(new Break());
 			
-			SubmitButton removePackage = (SubmitButton) getButton(new SubmitButton(localize("remove_package", "Remove package")));
-			removePackage.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_REMOVE));
-			SubmitButton activatePackage = (SubmitButton) getButton(new SubmitButton(localize("activate_package", "Activate package")));
-			activatePackage.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_ACTIVATE));
-			form.add(removePackage);
-			form.add(Text.getNonBrakingSpace());
-			form.add(activatePackage);
-			form.add(new Break());
+			if (!schoolPackage.isActive()) {
+				SubmitButton removePackage = (SubmitButton) getButton(new SubmitButton(localize("remove_package", "Remove package")));
+				removePackage.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_REMOVE));
+				removePackage.setSubmitConfirm(localize("remove_package_confirm", "Are you sure you want to remove this package?"));
+				SubmitButton activatePackage = (SubmitButton) getButton(new SubmitButton(localize("activate_package", "Activate package")));
+				activatePackage.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_ACTIVATE));
+				activatePackage.setSubmitConfirm(localize("activate_package_confirm", "Are you sure you want to activate this package?"));
+				form.add(removePackage);
+				form.add(Text.getNonBrakingSpace());
+				form.add(activatePackage);
+				form.add(new Break());
+			}
 		}
 		
 		form.add(getHeader(localize("select_courses_to_connect_to_package", "Select courses to connect to package")));
@@ -226,10 +230,14 @@ public class SchoolCoursePackageEditor extends AdultEducationBlock implements IW
 					table.add(getSmallText(course.getCode()), column++, row);
 					table.add(getSmallText(season.getSchoolSeasonName()), column++, row);
 					
-					Link remove = new Link(getDeleteIcon(localize("remove_course_from_package", "Remove course from package")));
-					remove.addParameter(PARAMETER_ACTION, ACTION_REMOVE_COURSE);
-					remove.addParameter(PARAMETER_COURSE, course.getPrimaryKey().toString());
-					remove.addParameter(PARAMETER_SCHOOL_COURSE_PACKAGE, schoolPackage.getPrimaryKey().toString());
+					if (!schoolPackage.isActive()) {
+						Link remove = new Link(getDeleteIcon(localize("remove_course_from_package", "Remove course from package")));
+						remove.addParameter(PARAMETER_ACTION, ACTION_REMOVE_COURSE);
+						remove.addParameter(PARAMETER_COURSE, course.getPrimaryKey().toString());
+						remove.addParameter(PARAMETER_SCHOOL_COURSE_PACKAGE, schoolPackage.getPrimaryKey().toString());
+						table.add(remove, column++, row);
+					}
+					row++;
 				}
 			}
 			catch (IDORelationshipException ire) {
