@@ -110,7 +110,7 @@ public class GroupFileWriter implements MediaWritable {
 	public MemoryFileBuffer writeXLS(IWContext iwc, SchoolClass schoolClass) throws Exception {
 		MemoryFileBuffer buffer = new MemoryFileBuffer();
 		MemoryOutputStream mos = new MemoryOutputStream(buffer);
-		Collection students = getBusiness(iwc).getSchoolBusiness().findStudentsInClass(((Integer) getSession(iwc).getSchoolClass().getPrimaryKey()).intValue());
+		Collection students = getBusiness(iwc).getSchoolBusiness().getSchoolClassMemberHome().findAllBySchoolClass(schoolClass);
 
 		if (!students.isEmpty()) {
 	    HSSFWorkbook wb = new HSSFWorkbook();
@@ -193,7 +193,7 @@ public class GroupFileWriter implements MediaWritable {
 	public MemoryFileBuffer writePDF(IWContext iwc, SchoolClass schoolClass) throws Exception {
 		MemoryFileBuffer buffer = new MemoryFileBuffer();
 		MemoryOutputStream mos = new MemoryOutputStream(buffer);
-		Collection students = getBusiness(iwc).getSchoolBusiness().findStudentsInClass(((Integer) getSession(iwc).getSchoolClass().getPrimaryKey()).intValue());
+		Collection students = getBusiness(iwc).getSchoolBusiness().getSchoolClassMemberHome().findAllBySchoolClass(schoolClass);
 
 		if (!students.isEmpty()) {
 			Document document = new Document(PageSize.A4, 50, 50, 50, 50);
