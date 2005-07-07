@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolCoursePackageEditor.java,v 1.5 2005/07/07 10:41:43 laddi Exp $
+ * $Id: SchoolCoursePackageEditor.java,v 1.6 2005/07/07 13:20:33 laddi Exp $
  * Created on Jul 6, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -37,10 +37,10 @@ import com.idega.presentation.ui.util.SelectorUtility;
 
 
 /**
- * Last modified: $Date: 2005/07/07 10:41:43 $ by $Author: laddi $
+ * Last modified: $Date: 2005/07/07 13:20:33 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class SchoolCoursePackageEditor extends AdultEducationBlock implements IWPageEventListener {
 
@@ -131,7 +131,7 @@ public class SchoolCoursePackageEditor extends AdultEducationBlock implements IW
 				form.add(removePackage);
 				form.add(Text.getNonBrakingSpace());
 				form.add(activatePackage);
-				form.add(new Break());
+				form.add(new Break(2));
 
 				removePackage.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_REMOVE));
 				removePackage.setSubmitConfirm(localize("remove_package_confirm", "Are you sure you want to remove this package?"));
@@ -205,13 +205,13 @@ public class SchoolCoursePackageEditor extends AdultEducationBlock implements IW
 		Table table = new Table();
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
-		table.setColumns(35);
+		table.setColumns(5);
 		table.setWidth(Table.HUNDRED_PERCENT);
 		table.setRowColor(1, getHeaderColor());
 		int column = 1;
 		int row = 1;
 		
-		table.add(getLocalizedSmallHeader("nr", "Nr"), column++, row++);
+		table.add(getLocalizedSmallHeader("nr", "Nr"), column++, row);
 		table.add(getLocalizedSmallHeader("study_path", "Study path"), column++, row);
 		table.add(getLocalizedSmallHeader("code", "Code"), column++, row);
 		table.add(getLocalizedSmallHeader("period", "Period"), column++, row++);
