@@ -1,5 +1,5 @@
 /*
- * $Id: TravelBasket.java,v 1.1 2005/07/05 22:52:25 gimmi Exp $
+ * $Id: TravelBasket.java,v 1.2 2005/07/07 03:03:15 gimmi Exp $
  * Created on 22.6.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -53,6 +53,7 @@ public class TravelBasket extends TravelBlock {
 	private Class bookingClass = null;
 	
 	private boolean showCheckoutLink = true;
+	private boolean showDeleteLink = true;
 	private boolean useTravelLook = false;
 	
 	private Vector parName = null;
@@ -98,7 +99,9 @@ public class TravelBasket extends TravelBlock {
 		table.add(getHeader(getResourceBundle().getLocalizedString("travel.service", "Service")), 1, row);
 		table.add(getHeader(getResourceBundle().getLocalizedString("travel.date_s", "Date(s)")), 2, row);
 		table.add(getHeader(getResourceBundle().getLocalizedString("travel.prices", "Prices")), 3, row);
-		table.add(getHeader(""), 4, row);
+		if (showDeleteLink) {
+			table.add(getHeader(""), 4, row);
+		}
 		if (useTravelLook) {
 			table.setRowColor(row, TravelManager.backgroundColor);
 		}
@@ -120,17 +123,19 @@ public class TravelBasket extends TravelBlock {
 			}
 			table.add(getText(decimalFormat.format(price)+" "+currency), 3, row);
 			
-			remove = getLink(getResourceBundle().getLocalizedString("travel.basket.remove", "Remove"));
-			remove.addParameter(ServiceSearchBusinessBean.PARAMETER_BOOKING_ID_REMOVAL, booking.getPrimaryKey().toString());
-			remove.addParameter(AbstractSearchForm.ACTION, ServiceSearchBusinessBean.PARAMETER_BOOKING_ID_REMOVAL);
-			remove.setEventListener(SearchEventListener.class);
-			table.add(remove, 4, row);
+			if (showDeleteLink) {
+				remove = getLink(getResourceBundle().getLocalizedString("travel.basket.remove", "Remove"));
+				remove.addParameter(ServiceSearchBusinessBean.PARAMETER_BOOKING_ID_REMOVAL, booking.getPrimaryKey().toString());
+				remove.addParameter(AbstractSearchForm.ACTION, ServiceSearchBusinessBean.PARAMETER_BOOKING_ID_REMOVAL);
+				remove.setEventListener(SearchEventListener.class);
+				table.add(remove, 4, row);
+				table.setVerticalAlignment(4, row, Table.VERTICAL_ALIGN_TOP);
+				table.setAlignment(4, row, Table.HORIZONTAL_ALIGN_RIGHT);
+			}
 			
 			table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
 			table.setVerticalAlignment(2, row, Table.VERTICAL_ALIGN_TOP);
 			table.setVerticalAlignment(3, row, Table.VERTICAL_ALIGN_TOP);
-			table.setVerticalAlignment(4, row, Table.VERTICAL_ALIGN_TOP);
-			table.setAlignment(4, row, Table.HORIZONTAL_ALIGN_RIGHT);
 			
 			if (useTravelLook) {
 				table.setRowColor(row, TravelManager.GRAY);
@@ -158,13 +163,7 @@ public class TravelBasket extends TravelBlock {
 	 
 				book.addParameter(AbstractSearchForm.ACTION, AbstractSearchForm.ACTION_BOOKING_FORM);
 				book.addParameter(AbstractSearchForm.PARAMETER_REFERENCE_NUMBER, IWTimestamp.RightNow().toString());
-	
-				if (parName != null) {
-					for (int i = 0; i < parName.size(); i++) {
-						book.addParameter(parName.get(i).toString(), parValue.get(i).toString());
-					}
-				}
-				
+					
 				if (checkoutIsOnAnotherServer) {
 					if (encryptedListenerName == null) {
 						book.setEventListener(SearchEventListener.class);
@@ -185,7 +184,9 @@ public class TravelBasket extends TravelBlock {
 				}
 
 				table.add(book, 3, row);
-				table.mergeCells(3, row, 4, row);
+				if (showDeleteLink) {
+					table.mergeCells(3, row, 4, row);
+				}
 				table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
 			}
 
@@ -200,7 +201,9 @@ public class TravelBasket extends TravelBlock {
 		
 		table.setWidth(2, "90");
 		table.setWidth(3, "100");
-		table.setWidth(4, "50");
+		if (showDeleteLink) {
+			table.setWidth(4, "50");
+		}
 		
 		add(table);
 	}
@@ -262,7 +265,13 @@ public class TravelBasket extends TravelBlock {
 	}
 	
 	private Link getLink(String content) {
-		return new Link(getText(content, linkStyleClass));
+		Link l = new Link(getText(content, linkStyleClass));
+		if (parName != null) {
+			for (int i = 0; i < parName.size(); i++) {
+				l.addParameter(parName.get(i).toString(), parValue.get(i).toString());
+			}
+		}
+		return l;
 	}
 	
 	private Text getText(String content, String styleClass) {
@@ -318,6 +327,10 @@ public class TravelBasket extends TravelBlock {
 	
 	public void setShowCheckoutLink(boolean show) {
 		this.showCheckoutLink = show;
+	}
+	
+	public void setShowDeleteLink(boolean show) {
+		this.showDeleteLink = show;
 	}
 	
 	public void setUseTravelLook(boolean use) {
