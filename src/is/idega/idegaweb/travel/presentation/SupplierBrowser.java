@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowser.java,v 1.18 2005/07/07 13:04:45 gimmi Exp $
+ * $Id: SupplierBrowser.java,v 1.19 2005/07/08 10:19:10 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -52,6 +52,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.BackButton;
+import com.idega.presentation.ui.DatePicker;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
@@ -653,7 +654,6 @@ public class SupplierBrowser extends TravelBlock {
 		if (width != null) {
 			table.setWidth(width);
 		}
-		table.setColumnWidth(1, imageWidth);
 //		table.setBorder(1);
 		int row = 1;
 
@@ -692,6 +692,7 @@ public class SupplierBrowser extends TravelBlock {
 			table.add(getText(getResourceBundle().getLocalizedString("travel.no_available_products_found", "No available products found"), headerStyleClass), 1, row++);
 		}
 	
+		table.setColumnWidth(1, imageWidth);
 		
 		form.add(table);
 	}
@@ -722,7 +723,7 @@ public class SupplierBrowser extends TravelBlock {
 		table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
 		table.setVerticalAlignment(2, row, Table.VERTICAL_ALIGN_TOP);
 		table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_LEFT);
-		table.add(getText(product.getProductName(localeID), headerStyleClass), 2, row++);
+		table.add(getText(getProductBusiness(iwc).getProductNameWithNumber(product, true, localeID), headerStyleClass), 2, row++);
 		
 		Link images = null;
 		try {
@@ -900,6 +901,9 @@ public class SupplierBrowser extends TravelBlock {
 					io = (PresentationObject) iiter.next();
 					if (interfaceObjectStyleClass != null) {
 						io.setStyleClass(interfaceObjectStyleClass);
+					}
+					if (io instanceof DatePicker) {
+						((DatePicker)io).setLength(11);
 					}
 					searchTable.add(getText(s), 1, stRow);
 					searchTable.setAlignment(2, stRow, Table.HORIZONTAL_ALIGN_RIGHT);
