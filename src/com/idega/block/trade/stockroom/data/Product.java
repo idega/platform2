@@ -1,6 +1,6 @@
 /*
- * $Id: Product.java,v 1.35 2005/06/16 21:04:37 gimmi Exp $
- * Created on 16.6.2005
+ * $Id: Product.java,v 1.36 2005/07/08 14:10:50 gimmi Exp $
+ * Created on Jul 8, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -30,10 +30,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2005/06/16 21:04:37 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/07/08 14:10:50 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.35 $
+ * @version $Revision: 1.36 $
  */
 public interface Product extends IDOLegacyEntity, MetaDataCapable {
 
@@ -298,4 +298,14 @@ public interface Product extends IDOLegacyEntity, MetaDataCapable {
 	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#getRefundable
 	 */
 	public boolean getRefundable();
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#setVoucherComment
+	 */
+	public void setVoucherComment(String comment);
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#getVoucherComment
+	 */
+	public String getVoucherComment();
 }

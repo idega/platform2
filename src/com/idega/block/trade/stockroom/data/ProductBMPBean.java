@@ -53,6 +53,7 @@ public class ProductBMPBean extends GenericEntity implements Product, IDOLegacyE
 
   private final int FILTER_NOT_CONNECTED_TO_CATEGORY = 0;
   private static final String COLUMN_REFUNDABLE = "refundable";
+  private static final String COLUMN_VOUCHER_COMMENT = "VOUCHER_COMMENT";
   
   /**
    *  Constructor for the Product object
@@ -85,6 +86,7 @@ public class ProductBMPBean extends GenericEntity implements Product, IDOLegacyE
     this.addAttribute( getColumnNameModificationDate(), "edit date", true, true, Timestamp.class );
     addAttribute( COLUMN_REFUNDABLE, "refundable", true, true, Boolean.class);
     addAttribute(getColumnNameAuthorizationCheck(),"authorization", true, true, Boolean.class);
+    addAttribute( COLUMN_VOUCHER_COMMENT, "voucher_comment", true, true, String.class, 1000);
 
     this.addManyToManyRelationShip( ProductCategory.class, "SR_PRODUCT_PRODUCT_CATEGORY" );
     this.setNullable( getColumnNameFileId(), true );
@@ -907,6 +909,14 @@ public class ProductBMPBean extends GenericEntity implements Product, IDOLegacyE
 	
 	public boolean getRefundable() {
 		return getBooleanColumnValue(COLUMN_REFUNDABLE, true);
+	}
+	
+	public void setVoucherComment(String comment) {
+		setColumn(COLUMN_VOUCHER_COMMENT, comment);
+	}
+	
+	public String getVoucherComment() {
+		return getStringColumnValue(COLUMN_VOUCHER_COMMENT);
 	}
 	
 	public Collection ejbFindBySupplyPool(SupplyPool pool) throws IDORelationshipException, FinderException, IDOCompositePrimaryKeyException {

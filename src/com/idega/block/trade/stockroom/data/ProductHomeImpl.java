@@ -1,6 +1,6 @@
 /*
- * $Id: ProductHomeImpl.java,v 1.7 2005/06/16 21:04:36 gimmi Exp $
- * Created on 16.6.2005
+ * $Id: ProductHomeImpl.java,v 1.8 2005/07/08 14:10:50 gimmi Exp $
+ * Created on Jul 8, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -20,10 +20,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2005/06/16 21:04:36 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/07/08 14:10:50 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class ProductHomeImpl extends IDOFactory implements ProductHome {
 
