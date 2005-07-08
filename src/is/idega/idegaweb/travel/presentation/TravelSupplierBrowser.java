@@ -30,6 +30,8 @@ public abstract class TravelSupplierBrowser extends TravelManager {
 				sb.setUseTravelLook(true);
 				sb.setSupplierManager(super.getSupplierManager());
 				sb.setPlugin(getPlugin().getName());
+				sb.setHeaderStyleClass("sbrowser_header");
+				sb.setInterfaceObjectStyleClass("sbrowser_interface");
 				
 				add(sb);
 			}
