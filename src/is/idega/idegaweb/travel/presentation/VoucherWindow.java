@@ -45,6 +45,7 @@ public class VoucherWindow extends Window {
   private static String searchMethodNumber = "voucherWindowSearchMethodNumber";
   private static String parameterReferenceNumber = "voucherWindowReferenceNumber";
   private static String parameterNumber = "voucherWindowNumber";
+  public static String parameterPrintInstantly = "vw_pi";
 
   public static String IW_BUNDLE_IDENTIFIER="is.idega.travel";
   public String getBundleIdentifier(){
@@ -69,6 +70,7 @@ public class VoucherWindow extends Window {
 			String searchAction = iwc.getParameter(this.searchAction);
 			boolean error = false;
 			
+			boolean printInstantly = iwc.isParameterSet(parameterPrintInstantly);
 			Table table  = new Table();
 			  table.setCellpaddingAndCellspacing(0);
 			
@@ -119,12 +121,17 @@ public class VoucherWindow extends Window {
 			if (error) {
 			  table.add(iwrb.getLocalizedString("travel.voucher_not_found","Voucher not found"));
 			}else {
-			  table.add(Text.BREAK, 1, 2);
-			  table.add(new PrintButton(iwrb.getImage("buttons/print.gif")), 1,2);
-			  table.setAlignment(1, 2, Table.HORIZONTAL_ALIGN_RIGHT);
+				if (!printInstantly) {
+				  table.add(Text.BREAK, 1, 2);
+				  table.add(new PrintButton(iwrb.getImage("buttons/print.gif")), 1,2);
+				  table.setAlignment(1, 2, Table.HORIZONTAL_ALIGN_RIGHT);
+				}
 			}
 			
 			add(table);
+			if (printInstantly) {
+				setOnLoad("window.print();window.close();");
+			}
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
 			throw new Exception(e.getMessage());
@@ -164,15 +171,25 @@ public class VoucherWindow extends Window {
     return form;
   }
   
-  public static Link getVoucherLink(int bookingID) throws RemoteException {
+  public static Link getVoucherLink(int bookingID, boolean printInstantly) throws RemoteException {
 		Link link = new Link("Voucher");
-			link.setWindowToOpen(VoucherWindow.class);
-			link.addParameter(parameterBookingId, bookingID);
-		return link;
+		link.setWindowToOpen(VoucherWindow.class);
+		link.addParameter(parameterBookingId, bookingID);
+		if (printInstantly) {
+			link.setText("Print Voucher");
+			link.addParameter(parameterPrintInstantly, "true");
+		}
+	return link;
+  }
+  public static Link getVoucherLink(int bookingID) throws RemoteException {
+	  return getVoucherLink(bookingID, false);
   }
 
   public static Link getVoucherLink(Booking booking) throws RemoteException{
 		return getVoucherLink(booking.getID());
+  }
+  public static Link getVoucherLink(Booking booking, boolean printInstantly) throws RemoteException{
+		return getVoucherLink(booking.getID(), printInstantly);
   }
 
 }

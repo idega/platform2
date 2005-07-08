@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowserBookingForm.java,v 1.4 2005/07/07 18:57:43 gimmi Exp $
+ * $Id: SupplierBrowserBookingForm.java,v 1.5 2005/07/08 14:35:11 gimmi Exp $
  * Created on Jul 4, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -224,10 +224,17 @@ public class SupplierBrowserBookingForm extends TravelManager {
 				
 				Link printVoucher = new Link(getText(getResourceBundle().getLocalizedString("travel.print_voucher","Print voucher")));
 				printVoucher.addParameter(VoucherWindow.parameterBookingId, gBooking.getID());
+				printVoucher.addParameter(VoucherWindow.parameterPrintInstantly, "true");
 				printVoucher.setWindowToOpen(VoucherWindow.class);
 				
+				Link viewVoucher = new Link(getText(getResourceBundle().getLocalizedString("travel.view_voucher","View voucher")));
+				viewVoucher.addParameter(VoucherWindow.parameterBookingId, gBooking.getID());
+				viewVoucher.setWindowToOpen(VoucherWindow.class);
+
 				table.mergeCells(1, row, 2, row);
 				table.setRowColor(row, GRAY);
+				table.add(viewVoucher, 1, row);
+				table.add(Text.BREAK, 1, row);
 				table.add(printVoucher, 1, row);
 				++row;
 				
