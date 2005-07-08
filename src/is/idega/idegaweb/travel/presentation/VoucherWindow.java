@@ -98,9 +98,12 @@ public class VoucherWindow extends Window {
 			  }else if (searchAction.equals(this.searchMethodNumber)) {
 			    String numMethod = iwc.getParameter(this.parameterNumber);
 			    if (numMethod != null && !numMethod.equals("")) {
-			      GeneralBooking[] gBooking = (GeneralBooking[]) (is.idega.idegaweb.travel.data.GeneralBookingBMPBean.getStaticInstance(GeneralBooking.class)).findAllByColumn(is.idega.idegaweb.travel.data.GeneralBookingBMPBean.getStaticInstance(GeneralBooking.class).getIDColumnName(), (Integer.parseInt(numMethod) - Voucher.voucherNumberChanger));
-			      if (gBooking.length > 0) {
-			        Voucher voucher = sh.getVoucher(gBooking[0]);
+			    	GeneralBookingHome gbHome = (GeneralBookingHome) IDOLookup.getHome(GeneralBooking.class);
+			    	GeneralBooking bg = gbHome.findByPrimaryKey(new Integer((Integer.parseInt(numMethod) - Voucher.voucherNumberChanger)));
+//			      GeneralBooking[] gBooking = (GeneralBooking[]) (is.idega.idegaweb.travel.data.GeneralBookingBMPBean.getStaticInstance(GeneralBooking.class)).findAllByColumn(is.idega.idegaweb.travel.data.GeneralBookingBMPBean.getStaticInstance(GeneralBooking.class).getIDColumnName(), (Integer.parseInt(numMethod) - Voucher.voucherNumberChanger));
+//			      if (gBooking.length > 0) {
+			    	if (bg != null) {
+			        Voucher voucher = sh.getVoucher(bg);
 			        table.add(voucher);
 			      }else {
 			        error = true;

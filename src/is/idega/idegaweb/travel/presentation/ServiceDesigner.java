@@ -282,6 +282,10 @@ private void finalize(IWContext iwc) throws Exception {
           Link productPriceDesigner = ProductPriceDesigner.getLink(product.getID());
           productPriceDesigner.setImage(iwrb.getLocalizedImageButton("travel.product_price_designer","Price designer"));
           
+          Link voucherComment = new Link(iwrb.getLocalizedImageButton("travel.voucher_comment","Voucher Comment"));
+          voucherComment.addParameter(VoucherCommentWindow.PARAMETER_PRODUCT_ID,  product.getID());
+          voucherComment.setWindowToOpen(VoucherCommentWindow.class);
+          
           Link creditCardHandler = new Link(iwrb.getLocalizedImageButton("travel.authorization_check", "Authorization Check Setter"));
           creditCardHandler.addParameter(CreditCardPropertiesSetter.PARAMETER_PRODUCT_ID, product.getID());
           creditCardHandler.setWindowToOpen(CreditCardPropertiesSetter.class);
@@ -328,6 +332,10 @@ private void finalize(IWContext iwc) throws Exception {
           table.mergeCells(1,row,3,row);
           ++row;
           table.add(productPriceDesigner,1,row);
+          table.setRowColor(row, super.GRAY);
+          table.mergeCells(1,row,3,row);
+          ++row;
+          table.add(voucherComment,1,row);
           table.setRowColor(row, super.GRAY);
           table.mergeCells(1,row,3,row);
           ++row;

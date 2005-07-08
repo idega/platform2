@@ -246,6 +246,22 @@ public abstract class Voucher extends TravelManager {
         fPhone = _supplier.getFaxPhone();
         emails = _supplier.getEmails();
 
+        _table.add(getText(_iwrb.getLocalizedString("travel.client_name_lg","CLIENT NAME")),1,3);
+        _table.add(getText(" : "),1,3);
+        _table.add(getText(_booking.getName()),1,3);
+        _table.add(Text.BREAK,1,3);
+        // SECTION CLIENT_INFO BEGINS
+        if (clientInfo != null) {
+          size = clientInfo.size();
+          for (int i = 0 ; i < size ; i++) {
+            strng = (String) clientInfo.get(i);
+            _table.add(strng, 1, 3);
+            _table.add(Text.BREAK,1,3);
+          }
+        }
+        // SECTION CLIENT_INFO ENDS
+        _table.add(Text.BREAK,1,3);
+
         _table.add(getText(_iwrb.getLocalizedString("travel.to_lg","TO")+" : "),1,3);
         _table.add(getText(name),1,3);
         _table.add(Text.BREAK,1,3);
@@ -332,24 +348,6 @@ public abstract class Voucher extends TravelManager {
         }
         // SECTION FOUR ENDS
 
-        _table.add(Text.BREAK,1,3);
-        _table.add(Text.BREAK,1,3);
-
-        _table.add(getText(_iwrb.getLocalizedString("travel.client_name_lg","CLIENT NAME")),1,3);
-        _table.add(getText(" : "),1,3);
-        _table.add(getText(_booking.getName()),1,3);
-        _table.add(Text.BREAK,1,3);
-        // SECTION CLIENT_INFO BEGINS
-        if (clientInfo != null) {
-          size = clientInfo.size();
-          for (int i = 0 ; i < size ; i++) {
-            strng = (String) clientInfo.get(i);
-            _table.add(strng, 1, 3);
-            _table.add(Text.BREAK,1,3);
-          }
-        }
-        // SECTION CLIENT_INFO ENDS
-
         /*
         _table.add(Text.BREAK,1,2);
         _table.add(getText(_iwrb.getLocalizedString("travel.party_of_lg","PARTY OF")),1,2);
@@ -358,6 +356,7 @@ public abstract class Voucher extends TravelManager {
         */
         _table.add(Text.BREAK,1,3);
         PriceCategory pCat;
+        com.idega.block.trade.data.Currency currency = getBooker(_iwc).getCurrency(_booking);
         int count = -1;
         for (int i = 0; i < _entries.length; i++) {
           //_table.add(getText(Text.NON_BREAKING_SPACE+ Text.NON_BREAKING_SPACE),1,2);
@@ -373,6 +372,7 @@ public abstract class Voucher extends TravelManager {
         		  _table.add(getText(" "+_bf.getUnitNamePlural(_iwrb).toLowerCase()), 1, 3);
         	  }
           }
+          _table.add(" : "+getBooker(_iwc).getBookingEntryPrice(_entries[i], _booking)+ " "+currency.getCurrencyAbbreviation(), 1, 3);
           _table.add(Text.BREAK,1,3);
         }
 
@@ -384,7 +384,6 @@ public abstract class Voucher extends TravelManager {
 //        _table.add(getText(df.format(Booker.getBookingPrice(iwc, _booking))),1,2);
         _table.add(getText(df.format(getBooker(_iwc).getBookingPrice(_bookings))),1,3);
         _table.add(getText(" "),1,3);
-        com.idega.block.trade.data.Currency currency = getBooker(_iwc).getCurrency(_booking);
         if (currency != null) {
 					_table.add(getText(currency.getCurrencyAbbreviation()),1,3);
         }
@@ -413,11 +412,19 @@ public abstract class Voucher extends TravelManager {
 		_table.add(Text.BREAK, 1, 3);
 
 
-				_table.add(getText(_iwrb.getLocalizedString("travel.comment_lg","COMMENT")),1,3);
-				_table.add(getText(" : "+Text.BREAK),1,3);
-				_table.add(getText(_booking.getComment()), 1, 3);
-				_table.add(getText(Text.BREAK), 1, 3);
+		_table.add(getText(_iwrb.getLocalizedString("travel.client_comment_lg","CLIENT COMMENT")),1,3);
+		_table.add(getText(" : "+Text.BREAK),1,3);
+		_table.add(getText(_booking.getComment()), 1, 3);
+		_table.add(getText(Text.BREAK), 1, 3);
 
+		String vComm = _product.getVoucherComment();
+		if (vComm != null && !vComm.trim().equals("")) {
+			_table.add(Text.BREAK, 1, 3);
+			_table.add(getText(_iwrb.getLocalizedString("travel.supplier_comment_lg","PROVIDER COMMENT")),1,3);
+			_table.add(getText(" : "+Text.BREAK),1,3);
+			_table.add(getText(vComm), 1, 3);
+			_table.add(getText(Text.BREAK), 1, 3);
+		}
 
         // SECTION FIVE BEGINS
         if (sectFive != null) {
