@@ -415,6 +415,10 @@ public class HandicapOverview extends GolfBlock {
 					if (tournamentRound != null) {
 						boolean increase = tournamentRound.getIncreaseHandicap();
 						boolean decrease = tournamentRound.getDecreaseHandicap();
+						if (!tournament.getIsClosed()) {
+							increase = false;
+							decrease = false;
+						}
 						Image image = null;
 
 						if (increase && !decrease) {
