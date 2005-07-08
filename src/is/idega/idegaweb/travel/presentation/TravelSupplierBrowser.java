@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.presentation;
 
+import com.idega.block.trade.stockroom.business.TradeConstants;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
@@ -16,7 +17,7 @@ public abstract class TravelSupplierBrowser extends TravelManager {
 		add(Text.BREAK);
 		
 
-		if (super.isSupplierManagerBookerStaff()) {
+		if (super.isSupplierManagerBookerStaff() || hasRole(iwc, TradeConstants.ROLE_SUPPLIER_MANAGER_CASHIER_STAFF)) {
 			Table startTable = getHeaderTable(iwc);
 			if (startTable != null) {
 				startTable.setWidth("90%");

@@ -218,16 +218,26 @@ public class TravelManager extends TravelBlock {
 			Link carbrowser = new Link(tsm.getIWResourceBundle().getLocalizedImageButton("travel.car_browser", "Car Browser"), TravelCarRentalBrowser.class);
 			table.add(carbrowser, 1, 1);
 
+			Link basket = new Link(tsm.getIWResourceBundle().getLocalizedImageButton("travel.basket", "Basket"), SupplierBrowserBookingForm.class);
+			table.add(basket, 1, 1);
+
 			if (getSupplierManagerBusiness(iwc).hasRole(getSupplierManager(), TradeConstants.ROLE_ADVANCED_VOUCHER)) {
 				Link printerSetting = new Link(tsm.getIWResourceBundle().getLocalizedImageButton("travel.printer", "Printer"), TravelPrinterController.class);
 				table.add(printerSetting, 1, 1);
 			}
 
-			Link basket = new Link(tsm.getIWResourceBundle().getLocalizedImageButton("travel.basket", "Basket"), SupplierBrowserBookingForm.class);
-			table.add(basket, 1, 1);
 		} else if (hasRole(iwc, TradeConstants.ROLE_SUPPLIER_MANAGER_CASHIER_STAFF)) {
 			Link cashierViewer = new Link(tsm.getIWResourceBundle().getLocalizedImageButton("travel.cashier", "Cashier"), CashierQueueViewer.class);
 			table.add(cashierViewer, 1, 1);
+
+			Link hotelbrowser = new Link(tsm.getIWResourceBundle().getLocalizedImageButton("travel.hotel_browser", "Hotel Browser"), TravelHotelBrowser.class);
+			table.add(hotelbrowser, 1, 1);
+			
+			Link tourbrowser = new Link(tsm.getIWResourceBundle().getLocalizedImageButton("travel.tour_browser", "Tour Browser"), TravelTourBrowser.class);
+			table.add(tourbrowser, 1, 1);
+			
+			Link carbrowser = new Link(tsm.getIWResourceBundle().getLocalizedImageButton("travel.car_browser", "Car Browser"), TravelCarRentalBrowser.class);
+			table.add(carbrowser, 1, 1);
 
 			Link basket = new Link(tsm.getIWResourceBundle().getLocalizedImageButton("travel.basket", "Basket"), SupplierBrowserBookingForm.class);
 			table.add(basket, 1, 1);
