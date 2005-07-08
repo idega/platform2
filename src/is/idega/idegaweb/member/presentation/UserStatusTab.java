@@ -133,7 +133,6 @@ public class UserStatusTab extends UserTab {
 	 * @see com.idega.user.presentation.UserTab#initializeFields()
 	 */
 	public void initializeFields() {
-		System.out.println("initializeFields");
 	//	_inactiveField = new CheckBox(_inactiveFieldName);
 	//	_inactiveField.setWidth("10");
 	//	_inactiveField.setHeight("10");
