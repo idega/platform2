@@ -246,7 +246,7 @@ public class StatisticsBusinessBean extends IBOServiceBean implements Statistics
 		} catch (IDOLookupException e) {
 			e.printStackTrace();
 		} catch (IDOException e) {
-			e.printStackTrace();
+			log(e);
 		}
 		return 0;
 	}
