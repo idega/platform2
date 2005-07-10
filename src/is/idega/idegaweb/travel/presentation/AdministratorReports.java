@@ -36,6 +36,7 @@ public class AdministratorReports extends Reports {
   protected AdministratorReport _report;
   private static final String PARAMETER_ONLINE_REPORT = OnlineBookingReport.class.toString();//"adRep_or";
   private static final String PARAMETER_REFUND_REPORT = RefundReport.class.toString();
+  private static final String PARAMETER_BOOKING_REPORT = BookingReport.class.toString();
   private String PARAMETER_SUPPLIER_ID = "adRep_spID";
   public static final String PARAMETER_SUPPLIER_ID_STATIC = "adRep_stSpId";
 
@@ -88,7 +89,9 @@ public class AdministratorReports extends Reports {
     if (action.equals(PARAMETER_ONLINE_REPORT) && _report == null) {
       _report = new OnlineBookingReport(iwc);
     } else if (action.equals(PARAMETER_REFUND_REPORT) && _report == null) {
-    		_report = new RefundReport(iwc);
+    	_report = new RefundReport(iwc);
+    } else if (action.equals(PARAMETER_BOOKING_REPORT) && _report == null) {
+    	_report = new BookingReport(iwc);
     }
 
     String suppId = iwc.getParameter(PARAMETER_SUPPLIER_ID);
@@ -221,12 +224,19 @@ protected void reportList(IWContext iwc) throws Exception {
 
     OnlineBookingReport obr = new OnlineBookingReport(iwc);
     RefundReport rr = new RefundReport(iwc);
+    BookingReport br = new BookingReport(iwc);
 
     int row = 1;
     table.add(getHeaderText(_iwrb.getLocalizedString("travel.report","Report")), 1, row);
     table.add(getHeaderText(_iwrb.getLocalizedString("travel.description","Description")), 2, row);
     table.setRowColor(row, super.backgroundColor);
 
+    ++row;
+    Link brLink = new Link(br.getReportName());
+      brLink.addParameter(ACTION, PARAMETER_BOOKING_REPORT);
+    table.add(brLink, 1, row);
+    table.add(getText(br.getReportDescription()), 2, row);
+    table.setRowColor(row, super.GRAY);
 
     ++row;
     Link obrLink = new Link(obr.getReportName());
