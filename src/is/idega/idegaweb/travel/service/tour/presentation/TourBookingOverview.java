@@ -649,7 +649,9 @@ public class TourBookingOverview extends AbstractBookingOverview {
 
       }
 
-      table.add(getHeaderText(Integer.toString(seats)), 3, tempRow);
+      if (seats != BookingForm.UNLIMITED_AVAILABILITY) {
+    	  table.add(getHeaderText(Integer.toString(seats)), 3, tempRow);
+      }
       table.add(getHeaderText(Integer.toString(assigned)), 4, tempRow);
       table.add(getHeaderText(Integer.toString(tempInq)), 5, tempRow);
       table.add(getHeaderText(Integer.toString(tempTotal)), 6, tempRow);
