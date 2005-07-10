@@ -4948,10 +4948,12 @@ public abstract class BookingForm extends TravelManager{
 			}
 			String bookEmail = gBooking.getEmail();
 			boolean doubleSendSuccessful = false;
+			boolean doingDoubleConfirmation = false;
 			IWBundle bundle = iwrb.getIWBundleParent();
 			
-			if (settings.getIfDoubleConfirmation()) {
+			if (settings.getIfDoubleConfirmation() && bookEmail != null && !bookEmail.trim().equals("")) {
 				try {
+					doingDoubleConfirmation = true;
 					sendEmail = true;
 					StringBuffer mailText = new StringBuffer();
 					if (isRefund) {
@@ -5028,7 +5030,7 @@ public abstract class BookingForm extends TravelManager{
 				}
 			}
 			
-			if (settings.getIfEmailAfterOnlineBooking()) {
+			if (settings.getIfEmailAfterOnlineBooking() && suppEmail != null && !suppEmail.trim().equals("")) {
 				try {
 					String subject = "Booking";
 					if (isRefund) {
@@ -5046,9 +5048,9 @@ public abstract class BookingForm extends TravelManager{
 					mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service ")).append(" : ").append(pBus.getProductNameWithNumber(prod, true, iwc.getCurrentLocaleId()));
 					mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append((new IWTimestamp(gBooking.getBookingDate())).getLocaleDate(iwc.getCurrentLocale()));
 					mailText.append("\n").append(this.getUnitNamePlural(iwrb)).append(" : ").append(gBooking.getTotalCount());
-					if (doubleSendSuccessful) {
+					if (doingDoubleConfirmation && doubleSendSuccessful) {
 						mailText.append("\n\n").append(iwrb.getLocalizedString("travel.double_confirmation_has_been_sent","Double confirmation has been sent."));
-					}else {
+					}else if (doingDoubleConfirmation) {
 						mailText.append("\n\n").append(iwrb.getLocalizedString("travel.double_confirmation_has_not_been_sent","Double confirmation has NOT been sent."));
 						mailText.append("\n").append("   - ").append(iwrb.getLocalizedString("travel.email_was_probably_incorrect","E-mail was probably incorrect."));
 						subject = "Booking - double confirmation failed!";

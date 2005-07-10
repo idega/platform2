@@ -50,6 +50,8 @@ import com.idega.data.IDOEntity;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDOPrimaryKey;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.IWContext;
 import com.idega.user.business.GroupBusiness;
@@ -781,7 +783,8 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 	
 	public Collection doBasketBooking(IWContext iwc, Group supplierManager) throws Exception {
 		CreditCardClient client = getCreditCardBusiness().getCreditCardClient(supplierManager, IWTimestamp.RightNow());
-
+		IWBundle bundle = getIWMainApplication().getBundle(TravelBlock.IW_BUNDLE_IDENTIFIER);
+		IWResourceBundle iwrb = bundle.getResourceBundle(iwc);
 		String paymentType = iwc.getParameter(BookingForm.PARAMETER_PAYMENT_TYPE);
 		int iPaymentType = Booking.PAYMENT_TYPE_ID_CREDIT_CARD; 
 		if (paymentType != null) {
@@ -793,6 +796,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		HashMap currMaps = new HashMap(); // A map with Currency as key and float[] as value
 		Collection values = getBasketBusiness(iwc).getBasket().values();
 		Collection bookings = new Vector();
+		Collection suppliers = new Vector();
 		BasketEntry entry;
 		GeneralBooking booking;
 		Iterator iter = values.iterator();
@@ -800,6 +804,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		while (iter.hasNext()) {
 			entry = (BasketEntry) iter.next();
 			booking = (GeneralBooking) entry.getItem();
+			suppliers.add(booking.getService().getProduct().getSupplier());
 			ccCurr = getBooker().getCurrency(booking).getCurrencyAbbreviation();
 			if (currMaps.get(ccCurr) == null) {
 				currMaps.put(ccCurr, new float[]{0});
@@ -862,7 +867,6 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		Iterator biter = bookings.iterator();
 		while (biter.hasNext()) {
 			booking = (GeneralBooking) biter.next();
-			
 			Collection coll = getBooker().getMultibleBookings(booking);
 			if (coll != null) {
 				Iterator miter = coll.iterator();
@@ -888,9 +892,19 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 					b.store();
 				}
 			}
+
+			// Setting name for the email (cause booking object hasnt been update, even though the DB has)
+			booking.setName(name);
+			booking.store();
+
+			// Send emails
+			BookingForm bf = getServiceHandler().getBookingForm(iwc, booking.getService().getProduct(), false);
+			bf.sendEmails(iwc, booking, iwrb);
+
 			getBooker().invalidateCache(booking.getID());
 			
 		}
+		
 		
 		
 //		Iterator citer = responseStrings.iterator();
