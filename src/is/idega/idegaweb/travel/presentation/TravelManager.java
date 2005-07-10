@@ -158,6 +158,9 @@ public class TravelManager extends TravelBlock {
 			iHome = tsm.getIWResourceBundle().getImage("buttons/home_on.gif");
 		}
 		
+		Link lUpdatePassword = new Link(iUpdatePassword);
+		lUpdatePassword.setWindowToOpen(LoginChanger.class);
+
 		if (isTravelAdministrator(iwc)){
 			Link lSupplierManager = new Link(tsm.getIWResourceBundle().getLocalizedImageButton("travel.supplier_manager", "Supplier Manager"), SupplierManagerEditor.class);
 			table.add(lSupplierManager, 1, 1);
@@ -169,8 +172,6 @@ public class TravelManager extends TravelBlock {
 			for (int i = 0; i < links.size(); i++) {
 				table.add( (Link) links.get(i), 1, 1);
 			}
-			Link lUpdatePassword = new Link(iUpdatePassword);
-			lUpdatePassword.setWindowToOpen(LoginChanger.class);
 			table.add(lUpdatePassword,1,1);
 			
 		} else if (isSupplierManager()){
@@ -204,8 +205,6 @@ public class TravelManager extends TravelBlock {
 				table.add(printerSetting, 1, 1);
 			}
 			
-			Link lUpdatePassword = new Link(iUpdatePassword);
-			lUpdatePassword.setWindowToOpen(LoginChanger.class);
 			table.add(lUpdatePassword,1,1);
 		} else if(isSupplierManagerBookerStaff()) {  //TODO change the name and implementation because it isnt realy just booker staff that sees this page
 
@@ -225,6 +224,8 @@ public class TravelManager extends TravelBlock {
 				Link printerSetting = new Link(tsm.getIWResourceBundle().getLocalizedImageButton("travel.printer", "Printer"), TravelPrinterController.class);
 				table.add(printerSetting, 1, 1);
 			}
+
+			table.add(lUpdatePassword,1,1);
 
 		} else if (hasRole(iwc, TradeConstants.ROLE_SUPPLIER_MANAGER_CASHIER_STAFF)) {
 			Link cashierViewer = new Link(tsm.getIWResourceBundle().getLocalizedImageButton("travel.cashier", "Cashier"), CashierQueueViewer.class);
@@ -246,6 +247,8 @@ public class TravelManager extends TravelBlock {
 				Link printerSetting = new Link(tsm.getIWResourceBundle().getLocalizedImageButton("travel.printer", "Printer"), TravelPrinterController.class);
 				table.add(printerSetting, 1, 1);
 			}
+
+			table.add(lUpdatePassword,1,1);
 
 		}else if (tsm.getSupplier() != null) {
 			Link lDesign = new Link(iDesign,ServiceDesigner.class);
@@ -276,8 +279,6 @@ public class TravelManager extends TravelBlock {
 			table.add(lContracts,1,1);
 			table.add(lInitialData,1,1);
 			
-			Link lUpdatePassword = new Link(iUpdatePassword);
-			lUpdatePassword.setWindowToOpen(LoginChanger.class);
 			table.add(lUpdatePassword,1,1);
 		}else if (tsm.getReseller()!= null) {
 			Link lMyTrip = new Link(iMyTrip,ServiceOverview.class);
@@ -296,8 +297,6 @@ public class TravelManager extends TravelBlock {
 			lInitialData.addParameter(this.sAction,this.parameterInitialData);
 			table.add(lInitialData,1,1);
 			
-			Link lUpdatePassword = new Link(iUpdatePassword);
-			lUpdatePassword.setWindowToOpen(LoginChanger.class);
 			table.add(lUpdatePassword,1,1);
 		}else if (tsm.getSearchEngine() != null) {
 			Link engines = new Link(tsm.getIWResourceBundle().getLocalizedImageButton("travel.search_engines", "Search Engines"), ServiceSearchAdmin.class);
