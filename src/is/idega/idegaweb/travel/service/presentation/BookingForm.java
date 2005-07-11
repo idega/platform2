@@ -5081,8 +5081,16 @@ public abstract class BookingForm extends TravelManager{
 					mailText.append("\n\n").append(iwrb.getLocalizedString("travel.client_comment",   "Client Comment")).append(" : ").append(gBooking.getComment());
 
 					
+					Email email = getSupplierManagerBusiness(iwc).getSupplierManagerEmail(suppl.getSupplierManager());
+					String fromEmail = null;
+					if (email != null && !email.getEmailAddress().trim().equals("")) {
+						fromEmail = email.getEmailAddress();
+					} else {
+						fromEmail = suppEmail;
+					}
+					
 					SendMail sm = new SendMail();
-					sm.send(suppEmail, suppEmail, "", "", "mail.idega.is", subject,mailText.toString());
+					sm.send(fromEmail, suppEmail, "", "", "mail.idega.is", subject,mailText.toString());
 				}catch (MessagingException me) {
 					me.printStackTrace(System.err);
 				}
