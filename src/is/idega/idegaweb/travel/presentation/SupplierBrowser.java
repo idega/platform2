@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowser.java,v 1.19 2005/07/08 10:19:10 gimmi Exp $
+ * $Id: SupplierBrowser.java,v 1.20 2005/07/11 10:24:53 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -284,6 +284,27 @@ public class SupplierBrowser extends TravelBlock {
 		}
 		
 		int row = 1;
+		
+		if (getSearchSession(iwc).getAddToBasketSuccess() && iwc.isParameterSet(AbstractSearchForm.ACTION)) {
+			if (useTravelLook) {
+				table.mergeCells(1, row, 3, row);
+				table.setRowColor(row, TravelManager.GRAY);
+			}
+			table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_CENTER);
+			table.add(getText(getResourceBundle().getLocalizedString("travel.added_successfully_to_basket", "Added successfully to basket"), headerStyleClass), 1, row++);
+//			link.setText(getText(getResourceBundle().getLocalizedString("travel.add_another_to_basket", "Add another to basket"), linkStyleClass));
+			
+		} else if (iwc.isParameterSet(AbstractSearchForm.ACTION)) {
+			if (useTravelLook) {
+				table.mergeCells(1, row, 3, row);
+				table.setRowColor(row, TravelManager.GRAY);
+			}
+			table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_CENTER);
+			table.add(getErrorText(getResourceBundle().getLocalizedString("travel.failed_adding_to_basket", "Failed adding to basket")+", "+getSearchSession(iwc).getAddToBasketError(getResourceBundle())), 1, row++);
+//			linkTable.add(link, 2, 1);
+
+		}
+
 		if (useTravelLook) {
 			table.mergeCells(1, row, 3, row);
 			table.setRowColor(row, TravelManager.backgroundColor);
@@ -354,9 +375,11 @@ public class SupplierBrowser extends TravelBlock {
 					int timeframeId = -1;
 					int addressId = tAddress.getID();
 					if (useTravelLook) {
-						priceTable.setRowColor(pRow, TravelManager.GRAY);
+						priceTable.setRowColor(pRow, TravelManager.backgroundColor);
+						priceTable.add(TravelManager.getHeaderText(tAddress.getName()), 1, pRow++);
+					} else {
+						priceTable.add(getText(tAddress.getName(), headerStyleClass), 1, pRow++);
 					}
-					priceTable.add(getText(tAddress.getName(), headerStyleClass), 1, pRow++);
 					Timeframe timeframe = getServiceHandler(iwc).getProductBusiness().getTimeframe(product, from, addressId);
 					if (timeframe != null) {
 						timeframeId = timeframe.getID();
@@ -428,26 +451,7 @@ public class SupplierBrowser extends TravelBlock {
 //		table.add(back, 1, row);
 
 		linkTable.add(back, 1, 1);
-		if (getSearchSession(iwc).getAddToBasketSuccess() && iwc.isParameterSet(AbstractSearchForm.ACTION)) {
-			
-//			table.mergeCells(2, row, 3, row);
-//			table.add(getText(getResourceBundle().getLocalizedString("travel.added_successfully_to_basket", "Added successfully to basket"), headerStyleClass), 2, row);
-			linkTable.add(getText(getResourceBundle().getLocalizedString("travel.added_successfully_to_basket", "Added successfully to basket"), headerStyleClass), 2, 1);
-			link.setText(getText(getResourceBundle().getLocalizedString("travel.add_another_to_basket", "Add another to basket"), linkStyleClass));
-			
-		} else if (iwc.isParameterSet(AbstractSearchForm.ACTION)) {
-
-//			table.add(getText(getResourceBundle().getLocalizedString("travel.failed_adding_to_basket", "Failed adding to basket")+", "+getSearchSession(iwc).getAddToBasketError(getResourceBundle()), headerStyleClass), 2, row);
-//			table.add(link, 3, row);
-			linkTable.add(getText(getResourceBundle().getLocalizedString("travel.failed_adding_to_basket", "Failed adding to basket")+", "+getSearchSession(iwc).getAddToBasketError(getResourceBundle()), headerStyleClass), 2, 1);
-			linkTable.add(link, 2, 1);
-
-		} else { 
-//			table.mergeCells(2, row, 3, row);
-//			table.add(link, 2, row);
-			linkTable.add(link, 2, 1);
-			
-		}
+		linkTable.add(link, 2, 1);
 		
 //		form.add(Text.BREAK);
 		form.add(table);
@@ -568,12 +572,11 @@ public class SupplierBrowser extends TravelBlock {
 				if (glitter.hasNext()) {
 					if (useTravelLook) {
 						priceTable.mergeCells(1, pRow, 4, pRow);
-						priceTable.add(TravelManager.getHeaderText(getResourceBundle().getLocalizedString("travel.miscellanious_prices", "Miscellanious prices")), 1, pRow);
-						priceTable.setRowColor(pRow++, TravelManager.backgroundColor);
+						priceTable.add(getText(getResourceBundle().getLocalizedString("travel.miscellanious_prices", "Miscellanious prices"), headerStyleClass), 1, pRow);
+						priceTable.setRowColor(pRow++, TravelManager.GRAY);
 					} else {
 						priceTable.mergeCells(1, pRow, 4, pRow);
-						priceTable.add(getText(getResourceBundle().getLocalizedString("travel.other_prices", "Other prices"), headerStyleClass), 1, pRow);
-						priceTable.setRowColor(pRow++, TravelManager.backgroundColor);
+						priceTable.add(getText(getResourceBundle().getLocalizedString("travel.other_prices", "Other prices"), headerStyleClass), 1, pRow++);
 					}
 				}
 				while (glitter.hasNext()) {
@@ -960,6 +963,11 @@ public class SupplierBrowser extends TravelBlock {
 		return text;
 	}
 	
+	private Text getErrorText(String content) {
+		Text text = getText(content, headerStyleClass);
+		text.setFontColor("#FF0000");
+		return text;
+	}
 	
 	
 	// Move to a better location later... when possible
