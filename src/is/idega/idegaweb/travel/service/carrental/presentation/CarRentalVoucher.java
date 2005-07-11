@@ -6,10 +6,13 @@ import is.idega.idegaweb.travel.service.carrental.data.CarRentalBooking;
 import is.idega.idegaweb.travel.service.carrental.data.CarRentalBookingHome;
 
 import java.rmi.RemoteException;
+import java.util.List;
 
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
 import com.idega.util.IWTimestamp;
 import com.idega.util.text.TextSoap;
 
@@ -23,20 +26,20 @@ import com.idega.util.text.TextSoap;
  */
 
 public class CarRentalVoucher extends Voucher{
-
-  public CarRentalVoucher(Booking booking) throws Exception{
-    super(booking);
-  }
-
-  protected void setupVoucher(IWContext iwc) throws RemoteException {
-    IWResourceBundle iwrb = super.getResourceBundle();
-    if (_booking.getAddress() != null) {
-    	super.addToClientInfo(iwrb.getLocalizedString("travel.address_lg","Address")+" : "+_booking.getAddress()+", "+_booking.getPostalCode()+" "+_booking.getCity()+", "+_booking.getCountry());
-    }
-    super.addToClientInfo(iwrb.getLocalizedString("travel.telephone_lg","Telephone number")+" : "+_booking.getTelephoneNumber());
-    super.addToClientInfo(iwrb.getLocalizedString("travel.email_lg","E-mail")+" : "+_booking.getEmail());
-    
-    try {
+	
+	public CarRentalVoucher(Booking booking) throws Exception{
+		super(booking);
+	}
+	
+	protected void setupVoucher(IWContext iwc) throws RemoteException {
+		IWResourceBundle iwrb = super.getResourceBundle();
+		if (_booking.getAddress() != null) {
+			super.addToClientInfo(iwrb.getLocalizedString("travel.address_lg","Address")+" : "+_booking.getAddress()+", "+_booking.getPostalCode()+" "+_booking.getCity()+", "+_booking.getCountry());
+		}
+		super.addToClientInfo(iwrb.getLocalizedString("travel.telephone_lg","Telephone number")+" : "+_booking.getTelephoneNumber());
+		super.addToClientInfo(iwrb.getLocalizedString("travel.email_lg","E-mail")+" : "+_booking.getEmail());
+		
+		try {
 			CarRentalBooking crBooking = ((CarRentalBookingHome) IDOLookup.getHome(CarRentalBooking.class)).findByPrimaryKey(_booking.getPrimaryKey());
 			IWTimestamp pickupTime = new IWTimestamp(crBooking.getPickupTime());			
 			IWTimestamp dropoffTime = new IWTimestamp(crBooking.getDropoffTime());			
@@ -45,6 +48,22 @@ public class CarRentalVoucher extends Voucher{
 		} catch (Exception e) {
 			e.printStackTrace();
 		} 
-    
-  }
+		
+	}
+	protected void addPickupPlaces(Table table, List bookings, IWContext iwc) throws RemoteException {
+	}
+
+	protected void addBookingDates(Table table, List bookings, IWContext iwc) throws RemoteException {
+		if (bookings.size() > 0) {
+			IWResourceBundle iwrb = super.getResourceBundle(iwc);
+			IWTimestamp fromStamp = new IWTimestamp(((Booking)bookings.get(0)).getBookingDate());
+			IWTimestamp toStamp = new IWTimestamp(((Booking)bookings.get(bookings.size()-1)).getBookingDate());
+			toStamp.addDays(1);
+			table.add(getText(iwrb.getLocalizedString("travel.pickup_date","Pickup date")+" : "+fromStamp.getLocaleDate(iwc)), 1, 3);
+			table.add(getText(Text.BREAK), 1, 3);
+			table.add(getText(iwrb.getLocalizedString("travel.dropoff_date","Dropoff date")+" : "+toStamp.getLocaleDate(iwc)), 1, 3);
+		}
+	}
+	
+	
 }

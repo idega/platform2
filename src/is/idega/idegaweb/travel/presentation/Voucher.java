@@ -2,6 +2,7 @@ package is.idega.idegaweb.travel.presentation;
 
 import is.idega.idegaweb.travel.data.BookingEntry;
 import is.idega.idegaweb.travel.data.GeneralBooking;
+import is.idega.idegaweb.travel.data.PickupPlace;
 import is.idega.idegaweb.travel.data.Service;
 import is.idega.idegaweb.travel.interfaces.Booking;
 import is.idega.idegaweb.travel.service.presentation.BookingForm;
@@ -332,17 +333,20 @@ public abstract class Voucher extends TravelManager {
 				addBookingDates(_table, _bookings, _iwc);
         _table.add(Text.BREAK,1,3);
         if (_address != null) {
-          _table.add(_iwrb.getLocalizedString("travel.departure_place","Departure place"), 1,3);
+          _table.add(getText(_iwrb.getLocalizedString("travel.departure_place","Departure place")), 1,3);
           _table.add(getText(" : "),1,3);
           _table.add(getText(_address.getName()),1,3);
 				  _table.add(Text.BREAK,1,3);
         }
+
+        addPickupPlaces(_table, _bookings, _iwc);
+        
         // SECTION FOUR BEGINS
         if (sectFour != null) {
           size = sectFour.size();
           for (int i = 0 ; i < size ; i++) {
             strng = (String) sectFour.get(i);
-            _table.add(strng, 1, 3);
+            _table.add(getText(strng), 1, 3);
             _table.add(Text.BREAK,1,3);
           }
         }
@@ -372,7 +376,7 @@ public abstract class Voucher extends TravelManager {
         		  _table.add(getText(" "+_bf.getUnitNamePlural(_iwrb).toLowerCase()), 1, 3);
         	  }
           }
-          _table.add(" : "+getBooker(_iwc).getBookingEntryPrice(_entries[i], _booking)+ " "+currency.getCurrencyAbbreviation(), 1, 3);
+          _table.add(getText(" : "+df.format(getBooker(_iwc).getBookingEntryPrice(_entries[i], _booking))+ " "+currency.getCurrencyAbbreviation()), 1, 3);
           _table.add(Text.BREAK,1,3);
         }
 
@@ -462,6 +466,16 @@ public abstract class Voucher extends TravelManager {
 
     return bigTable;
   }
+
+protected void addPickupPlaces(Table _table, List bookinga, IWContext iwc) throws RemoteException {
+	PickupPlace place = _booking.getPickupPlace();
+	if (place != null) {
+	    _table.add(getText(_iwrb.getLocalizedString("travel.pickup","Pickup")), 1,3);
+	    _table.add(getText(" : "),1,3);
+	    _table.add(getText(place.getAddress().getStreetAddress()),1,3);
+	    _table.add(Text.BREAK,1,3);
+	}
+}
 
   protected void addBookingDates(Table table, List bookings, IWContext iwc) throws RemoteException {
 		if (bookings.size() > 0) {
