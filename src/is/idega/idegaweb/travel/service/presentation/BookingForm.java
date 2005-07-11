@@ -3449,7 +3449,7 @@ public abstract class BookingForm extends TravelManager{
 					iMany += Integer.parseInt(many);
 					if (iAddressId == -1) {
 						Collection coll = pPrices[i].getTravelAddresses();
-						if (coll != null) {
+						if (coll != null && !coll.isEmpty()) {
 							TravelAddress ta = (TravelAddress) coll.iterator().next();
 							iAddressId = Integer.parseInt(ta.getPrimaryKey().toString());
 						}
