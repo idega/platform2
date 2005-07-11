@@ -21,8 +21,14 @@ import com.idega.business.IBOServiceBean;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.ICPermission;
 import com.idega.core.contact.data.Email;
+import com.idega.core.contact.data.EmailHome;
 import com.idega.core.contact.data.Phone;
+import com.idega.core.contact.data.PhoneHome;
+import com.idega.core.contact.data.PhoneType;
 import com.idega.core.location.data.Address;
+import com.idega.core.location.data.AddressHome;
+import com.idega.core.location.data.AddressType;
+import com.idega.core.location.data.AddressTypeHome;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWUserContext;
@@ -48,13 +54,62 @@ public class SupplierManagerBusinessBean extends IBOServiceBean  implements Supp
 	private static String SUPPLIER_MANAGER_BOOKING_STAFF_TYPE = "supplier_manager_b_staff";
 	private static String SUPPLIER_MANAGER_CASHIER_STAFF_TYPE = "supplier_manager_c_staff";
 	
-	public Group updateSupplierManager(Object pk, String name, String description) throws IDOLookupException, FinderException {
+	public Group updateSupplierManager(Object pk, String name, String description, String email, String phone, String address) throws IDOLookupException, FinderException {
 		GroupHome gHome = (GroupHome) IDOLookup.getHome(Group.class);
 		Group manager = gHome.findByPrimaryKey(pk);
 		manager.setGroupType(SUPPLIER_MANAGER_GROUP_TYPE);
 		manager.setName(name);
 		manager.setDescription(description);
 		manager.store();
+		
+		try {
+			Collection coll = manager.getEmails();
+			if (coll != null && !coll.isEmpty()) {
+				Email eemail = (Email)coll.iterator().next();
+				eemail.setEmailAddress(email);
+				eemail.store();
+			} else {
+				EmailHome eHome = (EmailHome) IDOLookup.getHome(Email.class);
+				Email eemail = eHome.create();
+				eemail.setEmailAddress(email);
+				eemail.store();
+				manager.addEmail(eemail);
+			}
+			
+			coll = manager.getPhones();
+			if (coll != null && !coll.isEmpty()) {
+				Phone pphone = (Phone)coll.iterator().next();
+				pphone.setNumber(phone);
+				pphone.store();
+			} else {
+				PhoneHome pHome = (PhoneHome) IDOLookup.getHome(Phone.class);
+				Phone pphone = pHome.create();
+				pphone.setNumber(phone);
+				pphone.setPhoneTypeId(PhoneType.HOME_PHONE_ID);
+				pphone.store();
+				manager.addPhone(pphone);
+			}
+
+			AddressTypeHome atHome = (AddressTypeHome) IDOLookup.getHome(AddressType.class);
+			AddressType at1 = atHome.findAddressType1();
+			coll = manager.getAddresses(at1);
+			if (coll != null && !coll.isEmpty()) {
+				Address aaddress = (Address)coll.iterator().next();
+				aaddress.setStreetName(address);
+				aaddress.store();
+			} else {
+				AddressHome aHome = (AddressHome) IDOLookup.getHome(Address.class);
+				Address aaddress = aHome.create();
+				aaddress.setStreetName(address);
+				aaddress.setAddressType(at1);
+				aaddress.store();
+				manager.addAddress(aaddress);
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 		return manager;
 	}
 	
@@ -126,9 +181,16 @@ public class SupplierManagerBusinessBean extends IBOServiceBean  implements Supp
 		
 	}
 	
+	public Email getSupplierManagerEmail(Group supplierManager) {
+		Collection coll = supplierManager.getEmails();
+		if (coll != null && !coll.isEmpty()) {
+			return (Email)coll.iterator().next();
+		}
+		return null;
+	}
 	
 	
-	public Group createSupplierManager(String name, String description, String adminName, String loginName, String password, IWUserContext iwuc) throws RemoteException, CreateException {
+	public Group createSupplierManager(String name, String description, String email, String phone, String address, String adminName, String loginName, String password, IWUserContext iwuc) throws RemoteException, CreateException, EJBException, FinderException {
 		try {
 			// Making sure the group type exist
 			getGroupBusiness().getGroupTypeFromString(SUPPLIER_MANAGER_GROUP_TYPE);
@@ -220,6 +282,7 @@ public class SupplierManagerBusinessBean extends IBOServiceBean  implements Supp
 			}
 		}
 	  	getIWMainApplication().getAccessController().addRoleToGroup(TradeConstants.SUPPLIER_MANAGER_ROLE_KEY, admin, getIWApplicationContext());
+	  	updateSupplierManager(manager.getPrimaryKey(), name, description, email, phone, address);
 	  	return manager;
 	}
 	

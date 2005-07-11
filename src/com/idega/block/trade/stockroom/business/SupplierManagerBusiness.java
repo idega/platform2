@@ -1,6 +1,6 @@
 /*
- * $Id: SupplierManagerBusiness.java,v 1.10 2005/07/07 02:58:02 gimmi Exp $
- * Created on Jul 6, 2005
+ * $Id: SupplierManagerBusiness.java,v 1.11 2005/07/11 17:54:29 gimmi Exp $
+ * Created on Jul 11, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -14,10 +14,12 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import javax.ejb.CreateException;
+import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.block.trade.stockroom.data.SupplierStaffGroup;
 import com.idega.business.IBOService;
+import com.idega.core.contact.data.Email;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.user.business.GroupBusiness;
@@ -27,18 +29,18 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2005/07/07 02:58:02 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/07/11 17:54:29 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public interface SupplierManagerBusiness extends IBOService {
 
 	/**
 	 * @see com.idega.block.trade.stockroom.business.SupplierManagerBusinessBean#updateSupplierManager
 	 */
-	public Group updateSupplierManager(Object pk, String name, String description) throws IDOLookupException,
-			FinderException, java.rmi.RemoteException;
+	public Group updateSupplierManager(Object pk, String name, String description, String email, String phone,
+			String address) throws IDOLookupException, FinderException, java.rmi.RemoteException;
 
 	/**
 	 * @see com.idega.block.trade.stockroom.business.SupplierManagerBusinessBean#createSupplierManagerStaff
@@ -53,10 +55,16 @@ public interface SupplierManagerBusiness extends IBOService {
 			throws RemoteException, CreateException;
 
 	/**
+	 * @see com.idega.block.trade.stockroom.business.SupplierManagerBusinessBean#getSupplierManagerEmail
+	 */
+	public Email getSupplierManagerEmail(Group supplierManager) throws java.rmi.RemoteException;
+
+	/**
 	 * @see com.idega.block.trade.stockroom.business.SupplierManagerBusinessBean#createSupplierManager
 	 */
-	public Group createSupplierManager(String name, String description, String adminName, String loginName,
-			String password, IWUserContext iwuc) throws RemoteException, CreateException;
+	public Group createSupplierManager(String name, String description, String email, String phone, String address,
+			String adminName, String loginName, String password, IWUserContext iwuc) throws RemoteException,
+			CreateException, EJBException, FinderException;
 
 	/**
 	 * @see com.idega.block.trade.stockroom.business.SupplierManagerBusinessBean#setRole

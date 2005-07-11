@@ -14,6 +14,11 @@ import com.idega.block.login.business.LoginBusiness;
 import com.idega.block.trade.stockroom.business.TradeConstants;
 import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
+import com.idega.core.contact.data.Email;
+import com.idega.core.contact.data.Phone;
+import com.idega.core.location.data.Address;
+import com.idega.core.location.data.AddressType;
+import com.idega.core.location.data.AddressTypeHome;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWResourceBundle;
@@ -50,6 +55,10 @@ public class SupplierManagerEditor extends TravelManager {
 	private static String PARAMETER_PASSWORD_1 = "sme_p1";
 	private static String PARAMETER_PASSWORD_2 = "sme_p2";
 	private static String PARAMETER_ADMIN_NAME = "sme_an";
+	private static String PARAMETER_EMAIL = "sme_em";
+	private static String PARAMETER_PHONE = "sme_ph";
+	private static String PARAMETER_ADDRESS = "sme_ad";
+	
 	
 	
 	private IWResourceBundle iwrb;
@@ -107,11 +116,14 @@ public class SupplierManagerEditor extends TravelManager {
 		group.remove();
 	}
 	
-	private Group saveManager(IWContext iwc) throws IDOLookupException, RemoteException, CreateException {
+	private Group saveManager(IWContext iwc) throws IDOLookupException, RemoteException, CreateException, EJBException, FinderException {
 		String mID = iwc.getParameter(PARAMETER_MANAGER_ID);
 		String name = iwc.getParameter(PARAMETER_MANAGER_NAME);
 		String adminName = iwc.getParameter(PARAMETER_ADMIN_NAME);
 		String description = iwc.getParameter(PARAMETER_MANAGER_DESCRIPTION);
+		String email = iwc.getParameter(PARAMETER_EMAIL);
+		String phone = iwc.getParameter(PARAMETER_PHONE);
+		String address = iwc.getParameter(PARAMETER_ADDRESS);
 		
 		if (mID == null) {
 			mID = "-349857"; // some number, to force FinderException
@@ -121,7 +133,7 @@ public class SupplierManagerEditor extends TravelManager {
 		User user = null;
 		if (name != null && !"".equals(name)) {
 			try {
-				manager = getSupplierManagerBusiness(iwc).updateSupplierManager(new Integer(mID), name, description);
+				manager = getSupplierManagerBusiness(iwc).updateSupplierManager(new Integer(mID), name, description, email, phone, address);
 			}
 			catch (FinderException e) {
 				String username = iwc.getParameter(PARAMETER_USER_NAME);
@@ -134,7 +146,7 @@ public class SupplierManagerEditor extends TravelManager {
 				} else {
 					boolean inUse = LoginDBHandler.isLoginInUse(username);
 					if (!inUse) {
-						manager = getSupplierManagerBusiness(iwc).createSupplierManager(name, description, adminName, username, pass1, iwc);
+						manager = getSupplierManagerBusiness(iwc).createSupplierManager(name, description, email, phone, address, adminName, username, pass1, iwc);
 					} else {
 						errorMessage = iwrb.getLocalizedString("travel.username_in_use", "Username in use");
 					}
@@ -170,11 +182,32 @@ public class SupplierManagerEditor extends TravelManager {
 		
 		TextInput name = new TextInput(PARAMETER_MANAGER_NAME);
 		TextInput description = new TextInput(PARAMETER_MANAGER_DESCRIPTION);
+		TextInput email = new TextInput(PARAMETER_EMAIL);
+		TextInput phone = new TextInput(PARAMETER_PHONE);
+		TextInput addre = new TextInput(PARAMETER_ADDRESS);
 		Collection roles = new Vector();
 		
 		if (groupToEdit != null) {
 			name.setContent(groupToEdit.getName());
 			description.setContent(groupToEdit.getDescription());
+			Collection coll = groupToEdit.getEmails();
+			if (coll != null && !coll.isEmpty()) {
+				email.setContent( ((Email)coll.iterator().next()).getEmailAddress());
+			}
+			coll = groupToEdit.getPhones();
+			if (coll != null && !coll.isEmpty()) {
+				phone.setContent( ((Phone)coll.iterator().next()).getNumber());
+			}
+			AddressTypeHome atHome = (AddressTypeHome) IDOLookup.getHome(AddressType.class);
+			try {
+				coll = groupToEdit.getAddresses(atHome.findAddressType1());
+				if (coll != null && !coll.isEmpty()) {
+					addre.setContent( ((Address)coll.iterator().next()).getStreetAddress());
+				}			
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
 			table.add(new HiddenInput(PARAMETER_MANAGER_ID, groupToEdit.getPrimaryKey().toString()), 1, row);
 			roles = getSupplierManagerBusiness(iwc).getRolesAsString(groupToEdit);
 			if (roles == null) {
@@ -187,6 +220,15 @@ public class SupplierManagerEditor extends TravelManager {
 		table.setRowColor(row++, GRAY);
 		table.add(getText(iwrb.getLocalizedString("travel.description", "Description")), 1, row);
 		table.add(description, 2, row);
+		table.setRowColor(row++, GRAY);
+		table.add(getText(iwrb.getLocalizedString("travel.email", "Email")), 1, row);
+		table.add(email, 2, row);
+		table.setRowColor(row++, GRAY);
+		table.add(getText(iwrb.getLocalizedString("travel.phone", "phone")), 1, row);
+		table.add(phone, 2, row);
+		table.setRowColor(row++, GRAY);
+		table.add(getText(iwrb.getLocalizedString("travel.address", "Address")), 1, row);
+		table.add(addre, 2, row);
 		table.setRowColor(row++, GRAY);
 		
 		if (groupToEdit == null) {
@@ -211,9 +253,11 @@ public class SupplierManagerEditor extends TravelManager {
 		// Roles
 		List allRoles = getRoles();
 		Iterator allRolesIter = allRoles.iterator();
-		table.add(getHeaderText(iwrb.getLocalizedString("travel.roles", "Roles")), 1, row);
-		table.setRowColor(row, backgroundColor);
-		table.mergeCells(1, row, 2, row++);
+		if (allRolesIter.hasNext()) {
+			table.add(getHeaderText(iwrb.getLocalizedString("travel.roles", "Roles")), 1, row);
+			table.setRowColor(row, backgroundColor);
+			table.mergeCells(1, row, 2, row++);
+		}
 		while (allRolesIter.hasNext()) {
 			String role = allRolesIter.next().toString();
 			CheckBox box = new CheckBox(role);
