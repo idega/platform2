@@ -12,7 +12,6 @@ import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.util.IWTimestamp;
-import com.idega.util.Timer;
 
 
 /**
@@ -51,14 +50,14 @@ public class BookingBusinessBean extends IBOServiceBean  implements BookingBusin
 		BookingForm bf;
 		Collection prices;
 		boolean productIsValid	 = true;
-		Timer t = new Timer();
-		t.start();
+//		Timer t = new Timer();
+//		t.start();
 		//System.out.println("Checking product = "+product.getProductName(iwc.getCurrentLocaleId()));
 		bf = getServiceHandler().getBookingForm(iwc, product, false);
 //		addresses = getServiceHandler().getProductBusiness().getDepartureAddresses(product, from, true);
-		t.stop();
-		System.out.println("[BookingBusiness] check 1b : "+t.getTimeString());
-		t.start();
+//		t.stop();
+//		System.out.println("[BookingBusiness] check 1b : "+t.getTimeString());
+//		t.start();
 		addressId = -1;
 		timeframeId = -1;
 		timeframe = getServiceHandler().getProductBusiness().getTimeframe(product, from, addressId);
@@ -68,9 +67,9 @@ public class BookingBusinessBean extends IBOServiceBean  implements BookingBusin
 		if (timeframe != null) {
 			timeframeId = timeframe.getID();
 		}
-		t.stop();
-		System.out.println("[BookingBusiness] check 1c : "+t.getTimeString());
-		t.start();
+//		t.stop();
+//		System.out.println("[BookingBusiness] check 1c : "+t.getTimeString());
+//		t.start();
 //		t.stop();
 //		System.out.println("[BookingBusiness] check 1 : "+t.getTimeString());
 //		t.start();
@@ -82,8 +81,8 @@ public class BookingBusinessBean extends IBOServiceBean  implements BookingBusin
 		}
 		ProductPriceHome ppHome = (ProductPriceHome) IDOLookup.getHome(ProductPrice.class);
 		prices = ppHome.findProductPrices(product.getID(), timeframeId, addressId, onlineOnly, key);
-		t.stop();
-		System.out.println("[BookingBusiness] check 2 : "+t.getTimeString());
+//		t.stop();
+//		System.out.println("[BookingBusiness] check 2 : "+t.getTimeString());
 //		t.start();
 		
 		if (prices != null && !prices.isEmpty()) { 
