@@ -130,7 +130,7 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
         Currency currency = getCurrency(currId);
         CurrencyHolder holder = CurrencyBusiness.getCurrencyHolder(currency.getCurrencyName());
         if (holder != null) {
-        	if (currId != holder.getCurrencyID()) {
+        	if (currId != holder.getCurrencyID() && holder.getCurrencyID() > 0) {
 	          System.out.println("[ProductPriceBMPBean] Backwards compatability : changing currencyId from 1 to "+holder.getCurrencyID());
 	          this.setCurrencyId(holder.getCurrencyID());
 	          this.store();
