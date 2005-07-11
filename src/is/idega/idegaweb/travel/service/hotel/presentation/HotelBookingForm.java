@@ -1578,12 +1578,25 @@ public class HotelBookingForm extends BookingForm {
     if ( iMany == 0) {
 	    int current = 0;
 		Iterator iter = pPrices.iterator();
+		String fAddressID = null;
 		ProductPrice price;
 		while (iter.hasNext()) {
 //	    for (int i = 0; i < pPrices.length; i++) {
 			price = (ProductPrice) iter.next();
 	      try {
 	        current = Integer.parseInt(iwc.getParameter("priceCategory"+((Integer) price.getPrimaryKey()).intValue()));
+			Collection taddresses = price.getTravelAddresses();
+			if (taddresses != null && !taddresses.isEmpty()) {
+				TravelAddress ta = (TravelAddress) taddresses.iterator().next();
+				String tfAddressID = ta.getPrimaryKey().toString();
+				if (fAddressID == null) {
+					// Setting fAddress for the first time
+					fAddressID = tfAddressID;
+				} else if (!fAddressID.equals(tfAddressID)) {
+					// Using more than one traveladdress !!!
+					return errorTravelAddressesTooMany;
+				}
+			}
 	      }catch (NumberFormatException n) {
 	        current = 0;
 	      }

@@ -709,6 +709,9 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 					case BookingForm.errorFieldsEmpty :
 						getSearchSession(iwc).setAddToBasketErrorLocalizedKey("travel.error_field_empty", "Some fields are empty");
 						break;
+					case BookingForm.errorTravelAddressesTooMany :
+						getSearchSession(iwc).setAddToBasketErrorLocalizedKey("travel.error_prices_used_from_more_than_one_departure_address", "Prices used from more than one departure address");
+						break;
 				}
 			} catch (NumberFormatException ignore) {
 				
@@ -918,9 +921,6 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 	}
 
 	public GeneralBooking doBooking(IWContext iwc, boolean doCreditCardCheck) throws Exception {
-		if (!iwc.isParameterSet(BookingForm.PARAMETER_CODE)) {
-//			throw new RuntimeException("EngineCode not found");
-		}
 		Product product = getProduct(iwc);
 		int bookingId = -1;
 		if (!doCreditCardCheck) {
@@ -929,19 +929,19 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 			bookingId = getBookingForm(iwc).handleInsert(iwc, doCreditCardCheck);
 		}
 		
-//		int bookingId = getBookingForm().checkBooking(iwc, true);
 		GeneralBookingHome gBookingHome = (GeneralBookingHome) IDOLookup.getHome(GeneralBooking.class);
 		GeneralBooking gBooking = null;
 		
 		if (bookingId > 0) {
 			gBooking = gBookingHome.findByPrimaryKey(new Integer(bookingId));
 			gBooking.setCode(iwc.getParameter(BookingForm.PARAMETER_CODE));
-//			gBooking.setCode(this.engine.getCode());
 		} else if (bookingId == BookingForm.errorTooFew) {
 			throw new Exception(Integer.toString(bookingId));
 		} else if (bookingId == BookingForm.errorTooMany) {
 			throw new Exception(Integer.toString(bookingId));
 		} else if (bookingId == BookingForm.errorFieldsEmpty) {
+			throw new Exception(Integer.toString(bookingId));
+		} else if (bookingId == BookingForm.errorTravelAddressesTooMany) {
 			throw new Exception(Integer.toString(bookingId));
 		}
 		
