@@ -896,9 +896,10 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 				}
 			}
 
-			// Setting name for the email (cause booking object hasnt been update, even though the DB has)
-			booking.setName(name);
-			booking.store();
+			// Getting booking again (cause booking object hasnt been update, even though the DB has)
+			booking = getBooker().getGeneralBookingHome().findByPrimaryKey(booking.getPrimaryKey());
+//			booking.setName(name);
+//			booking.store();
 
 			// Send emails
 			BookingForm bf = getServiceHandler().getBookingForm(iwc, booking.getService().getProduct(), false);
