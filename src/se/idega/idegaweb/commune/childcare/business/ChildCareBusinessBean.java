@@ -39,6 +39,7 @@ import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
 import se.idega.block.pki.business.NBSLoginBusinessBean;
+import se.idega.idegaweb.commune.accounting.regulations.business.EmploymentTypeFinderBusiness;
 import se.idega.idegaweb.commune.accounting.userinfo.business.UserInfoService;
 import se.idega.idegaweb.commune.accounting.userinfo.data.HouseHoldFamily;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
@@ -131,7 +132,7 @@ import com.lowagie.text.xml.XmlPeer;
  * @author palli
  * @version 1.0
  */
-public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCareBusiness, CaseBusiness {
+public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCareBusiness, CaseBusiness, EmploymentTypeFinderBusiness {
 
 	private static String PROP_OUTSIDE_SCHOOL_AREA = "not_in_commune_school_area";
 

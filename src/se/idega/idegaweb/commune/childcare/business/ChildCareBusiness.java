@@ -17,6 +17,7 @@ import java.util.Locale;
 import java.util.Map;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
+import se.idega.idegaweb.commune.accounting.regulations.business.EmploymentTypeFinderBusiness;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.care.business.AlreadyCreatedException;
 import se.idega.idegaweb.commune.care.business.PlacementHelper;
@@ -52,7 +53,7 @@ import com.idega.util.IWTimestamp;
  * @author <a href="mailto:laddi@idega.com">laddi</a>
  * @version $Revision: 1.1 $
  */
-public interface ChildCareBusiness extends IBOService, CaseBusiness {
+public interface ChildCareBusiness extends IBOService, CaseBusiness, EmploymentTypeFinderBusiness {
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getBundleIdentifier
