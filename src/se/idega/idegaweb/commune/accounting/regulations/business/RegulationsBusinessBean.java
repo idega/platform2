@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.135 2005/07/06 15:31:30 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.136 2005/07/11 16:42:25 thomas Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -68,10 +68,12 @@ import com.idega.block.school.data.SchoolManagementType;
 import com.idega.block.school.data.SchoolManagementTypeHome;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolTypeHome;
+import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
@@ -1547,9 +1549,14 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		if (operationID.compareTo(SchoolCategoryBMPBean.CATEGORY_HIGH_SCHOOL) == 0) {
 			arr.add(new ConditionHolder(RuleTypeConstant.CONDITION_ID_STUDY_PATH, "Studieväg", LP + "studievag", se.idega.idegaweb.commune.accounting.school.business.StudyPathBusiness.class, "findAllStudyPaths", "getCode", ""));
 		}
-
-		arr.add(new ConditionHolder(RuleTypeConstant.CONDITION_ID_EMPLOYMENT, "Arbetssituation", LP + "employment", se.idega.idegaweb.commune.childcare.business.ChildCareBusiness.class, "findAllEmploymentTypes", "getLocalizationKey", ""));
-
+		try {
+			// check if the class has an implementation
+    		IBOLookup.getServiceInstance(getIWApplicationContext() , EmploymentTypeFinderBusiness.class);
+			arr.add(new ConditionHolder(RuleTypeConstant.CONDITION_ID_EMPLOYMENT, "Arbetssituation", LP + "employment", EmploymentTypeFinderBusiness.class, "findAllEmploymentTypes", "getLocalizationKey", ""));
+		}
+		catch (IBOLookupException ex) {
+			// do nothing
+		}
 		return arr;
 
 	}
