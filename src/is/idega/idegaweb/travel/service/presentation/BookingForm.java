@@ -127,6 +127,7 @@ public abstract class BookingForm extends TravelManager{
 	public static final int errorFieldsEmpty = -2;
 	public List errorFields = new Vector();
 	public static final int errorTooFew = -3;
+	public static final int errorTravelAddressesTooMany = -4;
   public static final int inquirySent = -10;
   public static String parameterDepartureAddressId = "depAddrId";
 
@@ -3179,12 +3180,27 @@ public abstract class BookingForm extends TravelManager{
 			Collection pPrices = getProductPriceHome().findProductPrices(_service.getID(), -1, -1, onlineOnly, key);
 			//    ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), timeframeId, iAddressId, onlineOnly);
 			int current = 0;
+			String fAddressID = null;
 			Iterator iter = pPrices.iterator();
 			ProductPrice price;
 			while (iter.hasNext()) {
 				price = (ProductPrice) iter.next();
 				try {
 					current = Integer.parseInt(iwc.getParameter("priceCategory"+price.getPrimaryKey().toString()));
+					if (current > 0) {
+						Collection taddresses = price.getTravelAddresses();
+						if (taddresses != null && !taddresses.isEmpty()) {
+							TravelAddress ta = (TravelAddress) taddresses.iterator().next();
+							String tfAddressID = ta.getPrimaryKey().toString();
+							if (fAddressID == null) {
+								// Setting fAddress for the first time
+								fAddressID = tfAddressID;
+							} else if (!fAddressID.equals(tfAddressID)){
+								// Using more than one traveladdress !!!
+								return errorTravelAddressesTooMany;
+							}
+						}
+					}
 				}catch (NumberFormatException n) {
 					current = 0;
 				}
@@ -3431,6 +3447,13 @@ public abstract class BookingForm extends TravelManager{
 				if ( (many != null) && (!many.equals("")) && (!many.equals("0"))) {
 					manys[i] = Integer.parseInt(many);
 					iMany += Integer.parseInt(many);
+					if (iAddressId == -1) {
+						Collection coll = pPrices[i].getTravelAddresses();
+						if (coll != null) {
+							TravelAddress ta = (TravelAddress) coll.iterator().next();
+							iAddressId = Integer.parseInt(ta.getPrimaryKey().toString());
+						}
+					}
 				}else {
 					manys[i] = 0;
 				}
@@ -5055,7 +5078,8 @@ public abstract class BookingForm extends TravelManager{
 						mailText.append("\n").append("   - ").append(iwrb.getLocalizedString("travel.email_was_probably_incorrect","E-mail was probably incorrect."));
 						subject = "Booking - double confirmation failed!";
 					}
-					
+					mailText.append("\n\n").append(iwrb.getLocalizedString("travel.client_comment",   "Client Comment")).append(" : ").append(gBooking.getComment());
+
 					
 					SendMail sm = new SendMail();
 					sm.send(suppEmail, suppEmail, "", "", "mail.idega.is", subject,mailText.toString());
