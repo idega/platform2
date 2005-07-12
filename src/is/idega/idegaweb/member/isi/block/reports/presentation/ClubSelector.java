@@ -137,7 +137,7 @@ public class ClubSelector extends Block {
 			if( clubId == -1 ) clubId = Integer.parseInt(paramClubId);
 			iwc.setSessionAttribute(WorkReportConstants.WR_SESSION_PARAM_CLUB_ID,paramClubId);
 			
-			if( paramRegionalUnionId !=null ){
+			if( paramRegionalUnionId != null && !paramRegionalUnionId.equals("") ){
 				regionalUnionId = Integer.parseInt(paramRegionalUnionId);
 				iwc.setSessionAttribute(WorkReportConstants.WR_SESSION_PARAM_REGIONAL_UNION_ID,paramRegionalUnionId);
 			}
