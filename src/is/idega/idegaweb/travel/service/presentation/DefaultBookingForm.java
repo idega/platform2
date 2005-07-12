@@ -66,5 +66,8 @@ public class DefaultBookingForm extends BookingForm {
 	public String getPerDayString(IWResourceBundle iwrb) {
 		return iwrb.getLocalizedString("travel.search.per_day","per day");
 	}
+	public String getDayStringPlural(IWResourceBundle iwrb) {
+		return iwrb.getLocalizedString("travel.day", "Days");
+	}
 
 }

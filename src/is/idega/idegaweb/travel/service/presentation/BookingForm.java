@@ -8,6 +8,7 @@ import is.idega.idegaweb.travel.data.BookingEntryHome;
 import is.idega.idegaweb.travel.data.Contract;
 import is.idega.idegaweb.travel.data.GeneralBooking;
 import is.idega.idegaweb.travel.data.GeneralBookingHome;
+import is.idega.idegaweb.travel.data.PickupPlace;
 import is.idega.idegaweb.travel.data.Service;
 import is.idega.idegaweb.travel.interfaces.Booking;
 import is.idega.idegaweb.travel.presentation.LinkGenerator;
@@ -90,6 +91,7 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.transaction.IdegaTransactionManager;
+import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
 import com.idega.util.IWCalendar;
@@ -241,12 +243,8 @@ public abstract class BookingForm extends TravelManager{
 	public abstract boolean useNumberOfDays();
 	public abstract String getNumberOfDaysString(IWResourceBundle iwrb);
 	public abstract String getPerDayString(IWResourceBundle iwrb);
-//	{
-//		return iwrb.getLocalizedString("travel.number_of_days", "Number of days");
-//	}
-//	{
-//		return iwrb.getLocalizedString("travel.unit", "Unit");
-//	}
+	public abstract String getDayStringPlural(IWResourceBundle iwrb);
+
 	public BookingForm(IWContext iwc, Product product) throws Exception{
 		this(iwc, product, true);
 	}
@@ -5060,17 +5058,40 @@ public abstract class BookingForm extends TravelManager{
 						subject = "Cancellation";
 					}
 					
+					Group supplierManager = suppl.getSupplierManager();
+					
 					StringBuffer mailText = new StringBuffer();
 					if ( isRefund ) {
 						mailText.append(iwrb.getLocalizedString("travel.email_after_online_refund","You have just received a cancellation through travel.idega.is."));
 					}
 					else {
-						mailText.append(iwrb.getLocalizedString("travel.email_after_online_booking","You have just received a booking through travel.idega.is."));
+				
+						mailText.append(iwrb.getLocalizedString("travel.email_after_online_booking_with_SM_info","This is to confirm a booking from "));
+						mailText.append(supplierManager.getName()).append(" ").append(supplierManager.getDescription());
+						mailText.append(" ").append(iwrb.getLocalizedString("travel.for", "for"));
+//						mailText.append(iwrb.getLocalizedString("travel.email_after_online_booking","You have just received a booking through travel.idega.is."));
 					}
 					mailText.append("\n").append(iwrb.getLocalizedString("travel.name",   "Name    ")).append(" : ").append(gBooking.getName());
-					mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service ")).append(" : ").append(pBus.getProductNameWithNumber(prod, true, iwc.getCurrentLocaleId()));
+					mailText.append("\n").append(iwrb.getLocalizedString("travel.email",  "Email   ")).append(" : ").append(gBooking.getEmail());
+					mailText.append("\n").append(iwrb.getLocalizedString("travel.phone",  "Phone   ")).append(" : ").append(gBooking.getTelephoneNumber());
+					mailText.append("\n\n").append(iwrb.getLocalizedString("travel.service","Service ")).append(" : ").append(pBus.getProductNameWithNumber(prod, true, iwc.getCurrentLocaleId()));
 					mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append((new IWTimestamp(gBooking.getBookingDate())).getLocaleDate(iwc.getCurrentLocale()));
-					mailText.append("\n").append(this.getUnitNamePlural(iwrb)).append(" : ").append(gBooking.getTotalCount());
+					Collection bookings = getBooker(iwc).getMultibleBookings(gBooking);
+					if (bookings != null) {
+						int many = bookings.size();
+						if (many > 1) {
+							mailText.append(" ").append(iwrb.getLocalizedString("travel.for", "For")).append(" ").append(many).append(" ").append(this.getDayStringPlural(iwrb).toLowerCase());
+						}
+					}
+					addPickupInfo(mailText, gBooking, iwc, iwrb);
+					BookingEntry[] bes = gBooking.getBookingEntries();
+					for (int i = 0; i < bes.length; i++) {
+						mailText.append("\n").append(bes[i].getProductPrice().getPriceCategory().getName())
+						.append(" : ").append(bes[i].getCount());
+					}
+					mailText.append("\nTotal ").append(this.getUnitNamePlural(iwrb).toLowerCase()).append(" : ").append(gBooking.getTotalCount());
+					mailText.append("\n\n").append(iwrb.getLocalizedString("travel.payment_type","Payment Type ")).append(" : ").append(getBooker(iwc).getPaymentType(iwrb, gBooking.getPaymentTypeId()));
+
 					if (doingDoubleConfirmation && doubleSendSuccessful) {
 						mailText.append("\n\n").append(iwrb.getLocalizedString("travel.double_confirmation_has_been_sent","Double confirmation has been sent."));
 					}else if (doingDoubleConfirmation) {
@@ -5144,6 +5165,14 @@ public abstract class BookingForm extends TravelManager{
 			return IWTimestamp.getDaysBetween(from, to);
 		}
 		return 0;
+	}
+	
+	public StringBuffer addPickupInfo(StringBuffer buffer, GeneralBooking booking, IWContext iwc, IWResourceBundle iwrb) {
+		PickupPlace pickup = booking.getPickupPlace();
+		if (pickup != null) {
+			buffer.append("\n").append(iwrb.getLocalizedString("travel.pickup", "Pickup")).append(" : ").append(pickup.getAddress().getStreetAddress());
+		}
+		return buffer;
 	}
 
 }

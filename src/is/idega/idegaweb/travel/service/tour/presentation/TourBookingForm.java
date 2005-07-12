@@ -2385,4 +2385,8 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
 		return iwrb.getLocalizedString("travel.search.per_day","per day");
 	}
 
+	public String getDayStringPlural(IWResourceBundle iwrb) {
+		return iwrb.getLocalizedString("travel.days", "Days");
+	}
+
 }

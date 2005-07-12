@@ -1839,6 +1839,9 @@ public class HotelBookingForm extends BookingForm {
 	public String getPerDayString(IWResourceBundle iwrb) {
 		return iwrb.getLocalizedString("travel.search.per_night","per night");
 	}
+	public String getDayStringPlural(IWResourceBundle iwrb) {
+		return iwrb.getLocalizedString("travel.nights", "Nights");
+	}
 	
 	public String getBookingDateString(List bookings, Locale locale) throws RemoteException {
 		if (bookings.size() > 0) {

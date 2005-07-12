@@ -3,6 +3,7 @@ package is.idega.idegaweb.travel.service.carrental.presentation;
 import is.idega.idegaweb.travel.business.ServiceNotFoundException;
 import is.idega.idegaweb.travel.business.TimeframeNotFoundException;
 import is.idega.idegaweb.travel.data.BookingEntry;
+import is.idega.idegaweb.travel.data.GeneralBooking;
 import is.idega.idegaweb.travel.data.PickupPlace;
 import is.idega.idegaweb.travel.data.PickupPlaceHome;
 import is.idega.idegaweb.travel.presentation.PublicBooking;
@@ -1936,6 +1937,33 @@ public class CarRentalBookingForm extends BookingForm {
 	
 	public String getPerDayString(IWResourceBundle iwrb) {
 		return iwrb.getLocalizedString("travel.search.per_day","per day");
+	}
+	public String getDayStringPlural(IWResourceBundle iwrb) {
+		return iwrb.getLocalizedString("travel.days", "Days");
+	}
+	public StringBuffer addPickupInfo(StringBuffer buffer, GeneralBooking booking, IWContext iwc, IWResourceBundle iwrb) {
+		try {
+			CarRentalBooking carRB = getCarRentalBookingHome().findByPrimaryKey(booking.getPrimaryKey());
+//			CarRental carR = getCarRentalHome().findByPrimaryKey(booking.getService().getPrimaryKey());
+//			Collection coll = carR.getPickupPlaces();
+			 
+			PickupPlace pickup = carRB.getPickupPlace();
+			if (pickup != null) {
+				buffer.append("\n").append(iwrb.getLocalizedString("travel.pickup", "Pickup")).append(" : ").append(pickup.getAddress().getStreetAddress());
+				buffer.append("\n").append(iwrb.getLocalizedString("travel.pickup_time", "Pickup time")).append(" : ").append(new IWTimestamp(carRB.getPickupTime()).getLocaleTime(iwc.getCurrentLocale(), IWTimestamp.SHORT));
+			}
+			
+			pickup = carRB.getDropoffPlace();
+			if (pickup != null) {
+				buffer.append("\n").append(iwrb.getLocalizedString("travel.dropoff", "Dropoff")).append(" : ").append(pickup.getAddress().getStreetAddress());
+				buffer.append("\n").append(iwrb.getLocalizedString("travel.dropoff_time", "Dropoff time")).append(" : ").append(new IWTimestamp(carRB.getDropoffTime()).getLocaleTime(iwc.getCurrentLocale(), IWTimestamp.SHORT));
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return buffer;
 	}
 
 }
