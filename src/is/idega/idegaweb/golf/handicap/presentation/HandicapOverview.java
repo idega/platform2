@@ -168,7 +168,7 @@ public class HandicapOverview extends GolfBlock {
 
 		String[] dates = getDates(modinfo);
 
-		Scorecard[] scoreCards = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAll("select * from scorecard where member_id='" + iMemberID + "' and scorecard_date>='" + dates[0] + "' and scorecard_date<='" + (dates[1] + " 23:59:59.0") + "' and scorecard_date is not null order by scorecard_date");
+		Scorecard[] scoreCards = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAll("select * from scorecard where member_id=" + iMemberID + " and scorecard_date>='" + dates[0] + "' and scorecard_date<='" + (dates[1] + " 23:59:59.0") + "' and scorecard_date is not null order by scorecard_date");
 		Scorecard[] scoreCardsBefore = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAll("select * from scorecard where member_id = " + iMemberID + " and scorecard_date < '" + dates[0] + "' order by scorecard_date desc");
 
 		form = new Form();

@@ -110,7 +110,7 @@ public class FieldOverview extends GolfBlock {
 
 	public Table getFieldInfo(Field field, String field_id) throws IOException, SQLException, FinderException {
 
-		Tee[] teeColor = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAll("select distinct tee_color_id from tee where field_id='" + field.getID() + "'");
+		Tee[] teeColor = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAll("select distinct tee_color_id from tee where field_id=" + field.getID());
 
 		Table myTable = new Table();
 		myTable.setRows(teeColor.length + 3);

@@ -183,7 +183,7 @@ public class HandicapRegister extends GolfBlock {
 		}
 		String grunn2 = scaleDecimals(String.valueOf(grunn), 1);
 
-		Tee[] tee_id = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAll("SELECT * from tee where field_id='" + field_id + "' and tee_color_id='" + tee_number + "' and hole_number<='" + String.valueOf(numbers) + "' and hole_number>='" + start_hole + "' order by hole_number");
+		Tee[] tee_id = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAll("SELECT * from tee where field_id=" + field_id + " and tee_color_id=" + tee_number + " and hole_number<=" + String.valueOf(numbers) + " and hole_number>=" + start_hole + " order by hole_number");
 		Field fieldID = ((FieldHome) IDOLookup.getHomeLegacy(Field.class)).findByPrimaryKey(Integer.parseInt(field_id));
 
 		double course_rating = (double) tee_id[0].getCourseRating();

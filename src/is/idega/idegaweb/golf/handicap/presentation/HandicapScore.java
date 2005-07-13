@@ -220,7 +220,7 @@ public class HandicapScore extends GolfBlock {
 		select_day.setSelectedElement(day);
 		select_day.keepStatusOnAction();
 
-		Tee[] teeID = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAll("select distinct tee_color_id from tee where field_id='" + field_id + "'");
+		Tee[] teeID = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAll("select distinct tee_color_id from tee where field_id=" + field_id);
 
 		for (int a = 0; a < teeID.length; a++) {
 			int teeColorID = teeID[a].getIntColumnValue("tee_color_id");

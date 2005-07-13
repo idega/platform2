@@ -54,7 +54,7 @@ public class HandicapStatistics extends GolfWindow {
 		}
 
 		Scorecard scorecard = ((ScorecardHome) IDOLookup.getHomeLegacy(Scorecard.class)).findByPrimaryKey(Integer.parseInt(scorecard_id));
-		Tee[] tee_id = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAll("SELECT * from tee where field_id='" + scorecard.getFieldID() + "' and tee_color_id='" + scorecard.getTeeColorID() + "' order by hole_number");
+		Tee[] tee_id = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAll("SELECT * from tee where field_id=" + scorecard.getFieldID() + " and tee_color_id=" + scorecard.getTeeColorID() + " order by hole_number");
 		Statistic[] stats = (Statistic[]) ((Statistic) IDOLookup.instanciateEntity(Statistic.class)).findAll("select s.* from statistic s,tee t where s.tee_id = t.tee_id and s.scorecard_id = " + scorecard_id + " order by t.hole_number");
 
 		if (mode.equalsIgnoreCase("")) {

@@ -95,14 +95,14 @@ public class FieldHandicapCalculator extends GolfWindow {
 				handicapInput.setValue(String.valueOf(member.getHandicap()));
 			}
 
-			Tee[] teeColor = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAll("select distinct tee_color_id from tee where field_id='" + String.valueOf(field.getID()) + "'");
+			Tee[] teeColor = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAll("select distinct tee_color_id from tee where field_id=" + String.valueOf(field.getID()));
 
 			if (gender != null) {
 				if (gender.equals("M")) {
-					teeColor = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAll("select distinct tee_color_id from tee where field_id='" + String.valueOf(field.getID()) + "' and tee_color_id != 3 and tee_color_id != 4");
+					teeColor = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAll("select distinct tee_color_id from tee where field_id=" + String.valueOf(field.getID()) + " and tee_color_id != 3 and tee_color_id != 4");
 				}
 				if (gender.equals("F")) {
-					teeColor = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAll("select distinct tee_color_id from tee where field_id='" + String.valueOf(field.getID()) + "' and tee_color_id > 2 and tee_color_id < 5");
+					teeColor = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAll("select distinct tee_color_id from tee where field_id=" + String.valueOf(field.getID()) + " and tee_color_id > 2 and tee_color_id < 5");
 				}
 			}
 

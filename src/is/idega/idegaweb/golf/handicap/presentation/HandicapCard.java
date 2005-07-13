@@ -135,7 +135,7 @@ public class HandicapCard extends GolfBlock {
 	}
 
 	private int lastRounds(Table table, int row) throws SQLException, FinderException {
-		Scorecard[] scoreCards = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAll("select * from scorecard where member_id='" + memberId + "' and scorecard_date is not null order by scorecard_date desc", (numberOfDisplayedCards+1)); // +1 to get one previous
+		Scorecard[] scoreCards = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAll("select * from scorecard where member_id=" + memberId + " and scorecard_date is not null order by scorecard_date desc", (numberOfDisplayedCards+1)); // +1 to get one previous
 
 		table.add(getSmallHeader(iwrb.getLocalizedString("handicap.date", "Date")), 1, row);
 		table.add(getSmallHeader(iwrb.getLocalizedString("handicap.stableford", "Stableford")), 2, row);
