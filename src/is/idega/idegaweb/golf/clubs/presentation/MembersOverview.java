@@ -74,10 +74,9 @@ public class MembersOverview extends GolfBlock {
 			strSQL.append(findLike);
 			strSQL.append("' and ");
 		}
-		strSQL.append(" union_member_info.union_id='");
+		strSQL.append(" union_member_info.union_id=");
 		strSQL.append(unionId);
-		strSQL.append("' ");
-		strSQL.append("and union_member_info.member_status='");
+		strSQL.append(" and union_member_info.member_status='");
 		strSQL.append(status);
 		strSQL.append("' ");
 		strSQL.append("and member_info.member_id = member.member_id ");
@@ -101,10 +100,9 @@ public class MembersOverview extends GolfBlock {
 			strSQL.append(findLike);
 			strSQL.append("' and ");
 		}
-		strSQL.append(" union_member_info.union_id='");
+		strSQL.append(" union_member_info.union_id=");
 		strSQL.append(unionId);
-		strSQL.append("' ");
-		strSQL.append("and union_member_info.member_status='A' ");
+		strSQL.append(" and union_member_info.member_status='A' ");
 		strSQL.append("and member_info.member_id = member.member_id ");
 		strSQL.append("and member_address.member_id = member.member_id ");
 		strSQL.append("and member_address.address_id = address.address_id ");

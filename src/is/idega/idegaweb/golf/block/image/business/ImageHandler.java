@@ -118,7 +118,7 @@ private void getImageFromDatabase() throws Exception{
 
   Conn = ((IDOLegacyEntity)IDOLookup.instanciateEntity(ImageEntity.class)).getConnection();
   Stmt = Conn.createStatement();
-  RS = Stmt.executeQuery("select image_value from image where image_id='"+getImageId()+"'");
+  RS = Stmt.executeQuery("select image_value from image where image_id="+getImageId());
 
   while(RS.next()){
       inputStream = RS.getBinaryStream("image_value");

@@ -175,7 +175,7 @@ public class UnionBMPBean extends GenericEntity implements Union,idegaTreeNode,I
  */
 public Collection getChildren(){
   try{
-  List list = EntityFinder.findAll(this,"select * from union_,union_tree where union_.union_id=union_tree.child_union_id and union_tree.union_id='"+this.getID()+"'");
+  List list = EntityFinder.findAll(this,"select * from union_,union_tree where union_.union_id=union_tree.child_union_id and union_tree.union_id="+this.getID());
   if(list != null){
     return list;
   }
@@ -195,7 +195,7 @@ public Collection getChildren(){
  */
 public Enumeration children(){
   try{
-  List list = EntityFinder.findAll(this,"select * from union_,union_tree where union_.union_id=union_tree.child_union_id and union_tree.union_id='"+this.getID()+"'");
+  List list = EntityFinder.findAll(this,"select * from union_,union_tree where union_.union_id=union_tree.child_union_id and union_tree.union_id="+this.getID());
   if(list != null){
     Vector vector = new Vector(list);
     return vector.elements();
@@ -235,7 +235,7 @@ public idegaTreeNode getChildAt(int childIndex){
  *    Returns the number of children TreeNodes the receiver contains.
  */
 public int getChildCount(){
-    return EntityControl.returnSingleSQLQuery(this,"select count(*) from union_tree where union_id='"+this.getID()+"'");
+    return EntityControl.returnSingleSQLQuery(this,"select count(*) from union_tree where union_id="+this.getID());
 }
 
 /**
@@ -250,7 +250,7 @@ public int getIndex(idegaTreeNode node){
  */
 public idegaTreeNode getParent(){
   try{
-    int parent_id = EntityControl.returnSingleSQLQuery(this,"select union_id from union_tree where child_union_id='"+this.getID()+"'");
+    int parent_id = EntityControl.returnSingleSQLQuery(this,"select union_id from union_tree where child_union_id="+this.getID());
     if(parent_id!=-1){
       return ((UnionHome) IDOLookup.getHomeLegacy(Union.class)).findByPrimaryKey(parent_id);
     }

@@ -218,8 +218,8 @@ public class CloseTournament extends TournamentBlock {
 				increase = false;
 				decrease = true;
 
-				Scorecard[] scorecard = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAll("select * from scorecard where total_points>36 and tournament_round_id='" + rounds[a].getID() + "' and scorecard_date is not null");
-				Scorecard[] scorecard2 = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAll("select * from scorecard where total_points<=36 and tournament_round_id='" + rounds[a].getID() + "' and scorecard_date is not null");
+				Scorecard[] scorecard = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAll("select * from scorecard where total_points>36 and tournament_round_id=" + rounds[a].getID() + " and scorecard_date is not null");
+				Scorecard[] scorecard2 = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAll("select * from scorecard where total_points<=36 and tournament_round_id=" + rounds[a].getID() + " and scorecard_date is not null");
 
 				for (int b = 0; b < scorecard.length; b++) {
 					scorecard[b].setUpdateHandicap(true);
@@ -235,8 +235,8 @@ public class CloseTournament extends TournamentBlock {
 				increase = true;
 				decrease = false;
 
-				Scorecard[] scorecard = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAll("select * from scorecard where total_points<=36 and tournament_round_id='" + rounds[a].getID() + "' and scorecard_date is not null");
-				Scorecard[] scorecard2 = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAll("select * from scorecard where total_points>36 and tournament_round_id='" + rounds[a].getID() + "' and scorecard_date is not null");
+				Scorecard[] scorecard = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAll("select * from scorecard where total_points<=36 and tournament_round_id=" + rounds[a].getID() + " and scorecard_date is not null");
+				Scorecard[] scorecard2 = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAll("select * from scorecard where total_points>36 and tournament_round_id=" + rounds[a].getID() + " and scorecard_date is not null");
 
 				for (int b = 0; b < scorecard.length; b++) {
 					scorecard[b].setUpdateHandicap(true);

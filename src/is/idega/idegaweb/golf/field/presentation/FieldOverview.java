@@ -325,7 +325,7 @@ public class FieldOverview extends GolfBlock {
 		myTable.setCellpadding(6);
 		myTable.setCellspacing(2);
 
-		Tee[] tee = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAll("select * from tee where field_id='" + String.valueOf(field.getID()) + "' and hole_number='" + hole_number + "' and tee_color_id<5");
+		Tee[] tee = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAll("select * from tee where field_id=" + String.valueOf(field.getID()) + " and hole_number=" + hole_number + " and tee_color_id<5");
 
 		for (int a = 0; a < tee.length; a++) {
 

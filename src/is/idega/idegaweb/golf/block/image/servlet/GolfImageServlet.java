@@ -49,7 +49,7 @@ public void doPost( HttpServletRequest _req, HttpServletResponse _res) throws IO
         if( conn!=null ){
           Stmt = conn.createStatement();
 
-          RS = Stmt.executeQuery("select image_value,content_type from image where image_id='"+imageId+"'");
+          RS = Stmt.executeQuery("select image_value,content_type from image where image_id="+imageId);
 
           String filename = null;
           InputStream myInputStream = null;
