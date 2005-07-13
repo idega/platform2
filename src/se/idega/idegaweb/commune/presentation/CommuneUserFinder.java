@@ -180,7 +180,7 @@ public abstract class CommuneUserFinder extends CommuneBlock {
 					if (addUser(iwc, user)) {
 						showSubmit = true;
 						//radio = getRadioButton(getParameterName(iwc), user.getPrimaryKey().toString());
-						if (isAdministrator(iwc)){
+						if (isCommuneAdministrator(iwc)){
 							radio = getRadioButton(getParameterName(iwc), user.getPrimaryKey().toString());	
 						}
 						else{
