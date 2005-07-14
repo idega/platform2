@@ -1,5 +1,5 @@
 /*
- * $Id: GolfUserPluginBusinessBean.java,v 1.11 2005/07/08 00:07:02 sigtryggur Exp $
+ * $Id: GolfUserPluginBusinessBean.java,v 1.12 2005/07/14 11:21:41 eiki Exp $
  * Created on Nov 15, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -36,10 +36,10 @@ import com.idega.util.FileUtil;
 
 /**
  * A user application plugin for various golf specific stuff such as the Golfer Info tab.
- *  Last modified: $Date: 2005/07/08 00:07:02 $ by $Author: sigtryggur $
+ *  Last modified: $Date: 2005/07/14 11:21:41 $ by $Author: eiki $
  * 
  * @author <a href="mailto:eiki@idega.com">Eirikur S. Hrafnsson</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGroupPlugInBusiness, GolfUserPluginBusiness{
 
@@ -57,13 +57,13 @@ public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGr
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterGroupCreateOrUpdate(com.idega.user.data.Group)
 	 */
-	public void afterGroupCreateOrUpdate(Group group) throws CreateException, RemoteException {
+	public void afterGroupCreateOrUpdate(Group group,Group parentGroup) throws CreateException, RemoteException {
 		// TODO Auto-generated method stub
 	}
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterUserCreateOrUpdate(com.idega.user.data.User)
 	 */
-	public void afterUserCreateOrUpdate(User user) throws CreateException, RemoteException {
+	public void afterUserCreateOrUpdate(User user,Group parentGroup) throws CreateException, RemoteException {
 		
 		String subClubs = user.getMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY);
 		String mainClub = user.getMetaData(GolfConstants.MAIN_CLUB_META_DATA_KEY);
@@ -121,13 +121,13 @@ public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGr
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#beforeGroupRemove(com.idega.user.data.Group)
 	 */
-	public void beforeGroupRemove(Group group) throws RemoveException, RemoteException {
+	public void beforeGroupRemove(Group group,Group parentGroup) throws RemoveException, RemoteException {
 		// TODO Auto-generated method stub
 	}
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#beforeUserRemove(com.idega.user.data.User)
 	 */
-	public void beforeUserRemove(User user) throws RemoveException, RemoteException {
+	public void beforeUserRemove(User user,Group parentGroup) throws RemoveException, RemoteException {
 		// TODO Auto-generated method stub
 	}
 
