@@ -1,5 +1,5 @@
 /*
- * $Id: KSIUserGroupPluginBusinessBean.java,v 1.1 2005/07/14 01:00:43 eiki Exp $
+ * $Id: KSIUserGroupPluginBusinessBean.java,v 1.2 2005/07/14 12:00:14 eiki Exp $
  * Created on Jul 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -37,6 +37,7 @@ import com.idega.user.data.User;
 
 public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean implements UserGroupPlugInBusiness,IBOService,KSIUserGroupPluginBusiness{
 
+	public static final String KSI_CLUB_EXCHANGE_ADMIN_UUID = "8f52479b-e980-11d9-ba1c-17f9583fc65f";
 	public static final String KSI_UUID = "f3d0b26f-79f1-11d9-bd42-054a20130abb";
 	public static final String KSI_CLUB_NUMBER = "14";
 	public static final String WS_RETURN_VALUE_SUCCESS = "success";
@@ -407,13 +408,11 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 		//TODO setja ’ kladda?
 		//TODO USE DATE!
 		//TODO is second date missing?
-		
-		String uuidOfKSIClubExchangeUser = "8f52479b-e980-11d9-ba1c-17f9583fc65f";
 		UserBusiness biz = getUserBusiness();
 		User ksiUser = null;
 		User player = null;
 		try {
-			ksiUser = biz.getUserByUniqueId(uuidOfKSIClubExchangeUser);
+			ksiUser = biz.getUserByUniqueId(KSI_CLUB_EXCHANGE_ADMIN_UUID);
 		}
 		catch (FinderException e) {
 			e.printStackTrace();
