@@ -1,5 +1,5 @@
 /*
- * $Id: StaffUserPluginBusiness.java,v 1.1 2005/02/01 13:40:21 laddi Exp $
+ * $Id: StaffUserPluginBusiness.java,v 1.2 2005/07/14 02:33:47 eiki Exp $
  * Created on 16.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -27,29 +27,29 @@ import com.idega.user.data.User;
  * Last modified: 16.11.2004 15:11:18 by laddi
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public interface StaffUserPluginBusiness extends IBOService, UserGroupPlugInBusiness {
 
 	/**
 	 * @see com.idega.block.staff.business.plugin.StaffUserPluginBusinessBean#afterGroupCreateOrUpdate
 	 */
-	public void afterGroupCreateOrUpdate(Group group) throws CreateException, RemoteException;
+	public void afterGroupCreateOrUpdate(Group group,Group parentGroup) throws CreateException, RemoteException;
 
 	/**
 	 * @see com.idega.block.staff.business.plugin.StaffUserPluginBusinessBean#afterUserCreateOrUpdate
 	 */
-	public void afterUserCreateOrUpdate(User user) throws CreateException, RemoteException;
+	public void afterUserCreateOrUpdate(User user,Group parentGroup) throws CreateException, RemoteException;
 
 	/**
 	 * @see com.idega.block.staff.business.plugin.StaffUserPluginBusinessBean#beforeGroupRemove
 	 */
-	public void beforeGroupRemove(Group group) throws RemoveException, RemoteException;
+	public void beforeGroupRemove(Group group,Group parentGroup) throws RemoveException, RemoteException;
 
 	/**
 	 * @see com.idega.block.staff.business.plugin.StaffUserPluginBusinessBean#beforeUserRemove
 	 */
-	public void beforeUserRemove(User user) throws RemoveException, RemoteException;
+	public void beforeUserRemove(User user,Group parentGroup) throws RemoveException, RemoteException;
 
 	/**
 	 * @see com.idega.block.staff.business.plugin.StaffUserPluginBusinessBean#findGroupsByFields

@@ -1,5 +1,5 @@
 /*
- * $Id: StaffUserPluginBusinessBean.java,v 1.1 2005/02/01 13:40:20 laddi Exp $
+ * $Id: StaffUserPluginBusinessBean.java,v 1.2 2005/07/14 02:33:47 eiki Exp $
  * Created on Nov 15, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -27,10 +27,10 @@ import com.idega.user.data.User;
 
 /**
  * A user application plugin for staff information.
- *  Last modified: $Date: 2005/02/01 13:40:20 $ by $Author: laddi $
+ *  Last modified: $Date: 2005/07/14 02:33:47 $ by $Author: eiki $
  * 
  * @author <a href="mailto:laddi@idega.com">Thorhallur Helgason</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class StaffUserPluginBusinessBean extends IBOServiceBean implements UserGroupPlugInBusiness , StaffUserPluginBusiness{
 
@@ -50,25 +50,25 @@ public class StaffUserPluginBusinessBean extends IBOServiceBean implements UserG
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterGroupCreateOrUpdate(com.idega.user.data.Group)
 	 */
-	public void afterGroupCreateOrUpdate(Group group) throws CreateException, RemoteException {
+	public void afterGroupCreateOrUpdate(Group group,Group parentGroup) throws CreateException, RemoteException {
 	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterUserCreateOrUpdate(com.idega.user.data.User)
 	 */
-	public void afterUserCreateOrUpdate(User user) throws CreateException, RemoteException {
+	public void afterUserCreateOrUpdate(User user,Group parentGroup) throws CreateException, RemoteException {
 	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#beforeGroupRemove(com.idega.user.data.Group)
 	 */
-	public void beforeGroupRemove(Group group) throws RemoveException, RemoteException {
+	public void beforeGroupRemove(Group group,Group parentGroup) throws RemoveException, RemoteException {
 	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#beforeUserRemove(com.idega.user.data.User)
 	 */
-	public void beforeUserRemove(User user) throws RemoveException, RemoteException {
+	public void beforeUserRemove(User user,Group parentGroup) throws RemoveException, RemoteException {
 	}
 
 	/* (non-Javadoc)
