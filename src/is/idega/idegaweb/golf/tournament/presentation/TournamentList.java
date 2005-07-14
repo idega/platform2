@@ -14,6 +14,7 @@ import is.idega.idegaweb.golf.presentation.GolfBlock;
 import is.idega.idegaweb.golf.tournament.business.TournamentSession;
 import is.idega.idegaweb.golf.tournament.even.TournamentEventListener;
 import java.rmi.RemoteException;
+import java.sql.Date;
 import java.sql.SQLException;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
@@ -160,7 +161,13 @@ public class TournamentList extends GolfBlock {
 	public IWTimestamp getStartStamp(IWContext modinfo) {
 		IWTimestamp stamp = null;
 		try {
-			stamp = new IWTimestamp(getTournamentSession(modinfo).getStartDate());
+			Date startDate = getTournamentSession(modinfo).getStartDate();
+			if (startDate != null) {
+				stamp = new IWTimestamp(getTournamentSession(modinfo).getStartDate());
+			} else {
+				stamp = IWTimestamp.RightNow();
+				stamp.addDays(-7);
+			}
 		}
 		catch (Exception e) {
 			stamp = IWTimestamp.RightNow();
@@ -174,7 +181,13 @@ public class TournamentList extends GolfBlock {
 		IWTimestamp stamp = null;
 
 		try {
-			stamp = new IWTimestamp(getTournamentSession(modinfo).getEndDate());
+			Date endDate = getTournamentSession(modinfo).getEndDate();
+			if (endDate != null) {
+				stamp = new IWTimestamp(endDate);
+			} else {
+				stamp = getStartStamp(modinfo);
+				stamp.addDays(daysToDisplay);
+			}
 		}
 		catch (Exception e) {
 			stamp = getStartStamp(modinfo);
