@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.139 2005/04/14 14:09:14 gummi Exp $
+ * $Id: NewsReader.java,v 1.140 2005/07/14 15:56:48 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -666,8 +666,9 @@ public class NewsReader extends CategoryBlock implements Builderaware {
 				T.add(headLine, 1, row);
 			}
 			row++;
-			T.setHeight(row, String.valueOf(iSpaceBetweenNewsAndBody));
-			row++;
+			if (iSpaceBetweenNewsAndBody > 0) {
+				T.setHeight(row++, String.valueOf(iSpaceBetweenNewsAndBody));
+			}
 			/////////// BODY PART //////////
 			if (showTeaserText && sTeaser.length() > 0 && !showAll) {
 				if (showImages && showImagesInOverview) {
@@ -675,7 +676,7 @@ public class NewsReader extends CategoryBlock implements Builderaware {
 					//if (news.getImageId()!= -1 && showImages &&
 					// news.getIncludeImage()){
 				}
-				T.add(teaser, 1, row);
+				T.add(teaser, 1, row++);
 				needMoreButton = true;
 			}
 			else if (locText != null && !collection) {
@@ -704,14 +705,15 @@ public class NewsReader extends CategoryBlock implements Builderaware {
 					// news.getIncludeImage()){
 				}
 
-				T.add(newsBody, 1, row);
+				T.add(newsBody, 1, row++);
 			}
-			row++;
 
 			///////// BACK LINK ////////////////
 
 			if (showAll) {
-				T.setHeight(row++, String.valueOf(iSpaceBetweenNewsAndBody));
+				if (iSpaceBetweenNewsAndBody > 0) {
+					T.setHeight(row++, String.valueOf(iSpaceBetweenNewsAndBody));
+				}
 				if (showBackButton) {
 					T.add(getBackLink(backImage), 1, row);
 					T.add(Text.getNonBrakingSpace(), 1, row);
@@ -726,7 +728,9 @@ public class NewsReader extends CategoryBlock implements Builderaware {
 			////////// MORE LINK ///////////////
 
 			if (!showAll && needMoreButton) {
-				T.setHeight(row++, String.valueOf(iSpaceBetweenNewsAndBody));
+				if (iSpaceBetweenNewsAndBody > 0) {
+					T.setHeight(row++, String.valueOf(iSpaceBetweenNewsAndBody));
+				}
 				if (showMoreButton) {
 					T.add(getMoreLink(moreImage, news.getID(), iwc), 1, row);
 					T.add(Text.getNonBrakingSpace(), 1, row);
