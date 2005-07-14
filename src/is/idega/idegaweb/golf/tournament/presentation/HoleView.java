@@ -28,14 +28,12 @@ public class HoleView extends GolfWindow {
 	}
 	
 	public void main(IWContext modinfo) throws Exception {
-	  int refresh = 180;
+	  int refresh = 60;
 	  getParentPage().setToRedirect("",refresh);
 
 	  String tournamentID = modinfo.getParameter("tournamentID");
 	    if ( tournamentID == null ) getParentPage().close();
 	  String tournamentGroupID = null;
-//	= request.getParameter("tournamentGroupID");
-//	    if ( tournamentGroupID == null ) getPage().close();
 	  String tournamentRoundID = modinfo.getParameter("tournamentRoundID");
 	    if ( tournamentRoundID == null ) getParentPage().close();
 	  String[] tournament_group_ids = modinfo.getParameterValues("tournamentGroupID");
