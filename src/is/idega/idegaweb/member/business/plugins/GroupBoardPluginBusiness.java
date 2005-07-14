@@ -32,22 +32,22 @@ public interface GroupBoardPluginBusiness extends IBOService, UserGroupPlugInBus
 	/**
 	 * @see is.idega.idegaweb.member.business.plugins.GroupBoardPluginBusinessBean#beforeUserRemove
 	 */
-	public void beforeUserRemove(User user) throws RemoveException, RemoteException;
+	public void beforeUserRemove(User user, Group parentGroup) throws RemoveException, RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.business.plugins.GroupBoardPluginBusinessBean#afterUserCreateOrUpdate
 	 */
-	public void afterUserCreateOrUpdate(User user) throws CreateException, RemoteException;
+	public void afterUserCreateOrUpdate(User user, Group parentGroup) throws CreateException, RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.business.plugins.GroupBoardPluginBusinessBean#beforeGroupRemove
 	 */
-	public void beforeGroupRemove(Group group) throws RemoveException, RemoteException;
+	public void beforeGroupRemove(Group group, Group parentGroup) throws RemoveException, RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.business.plugins.GroupBoardPluginBusinessBean#afterGroupCreateOrUpdate
 	 */
-	public void afterGroupCreateOrUpdate(Group group) throws CreateException, RemoteException;
+	public void afterGroupCreateOrUpdate(Group group, Group parentGroup) throws CreateException, RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.business.plugins.GroupBoardPluginBusinessBean#instanciateEditor

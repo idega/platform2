@@ -1,5 +1,5 @@
 /*
- * $Id: MemberUserBusiness.java,v 1.11 2005/05/31 11:45:34 eiki Exp $
+ * $Id: MemberUserBusiness.java,v 1.12 2005/07/14 01:02:26 eiki Exp $
  * Created on Jan 4, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -23,10 +23,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2005/05/31 11:45:34 $ by $Author: eiki $
+ *  Last modified: $Date: 2005/07/14 01:02:26 $ by $Author: eiki $
  * 
  * @author <a href="mailto:palli@idega.com">palli</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public interface MemberUserBusiness extends IBOService, UserBusiness {
 
@@ -118,7 +118,12 @@ public interface MemberUserBusiness extends IBOService, UserBusiness {
 	 * @see is.idega.idegaweb.member.business.MemberUserBusinessBean#getClubListForUser
 	 */
 	public List getClubListForUser(User user) throws NoClubFoundException, RemoteException;
-
+	
+/**
+	 * @see is.idega.idegaweb.member.business.MemberUserBusinessBean#getDivisionListForUser
+	 */
+	public List getDivisionListForUser(User user) throws NoDivisionFoundException,RemoteException;
+		
 	/**
 	 * @see is.idega.idegaweb.member.business.MemberUserBusinessBean#getClubForGroup
 	 */
@@ -129,6 +134,11 @@ public interface MemberUserBusiness extends IBOService, UserBusiness {
 	 */
 	public Group getDivisionForClub(Group club) throws NoDivisionFoundException, RemoteException;
 
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberUserBusinessBean#getDivisionForGroup
+	 */
+	public Group getDivisionForGroup(Group group) throws NoDivisionFoundException, RemoteException;
+	
 	/**
 	 * @see is.idega.idegaweb.member.business.MemberUserBusinessBean#getClubMemberNumberForUser
 	 */
@@ -152,4 +162,13 @@ public interface MemberUserBusiness extends IBOService, UserBusiness {
 	 * @throws NoLeagueClubCollectionGroup
 	 */
 	public Group getClubCollectionGroupForLeague(Group league) throws RemoteException, NoLeagueClubCollectionGroup;
+	
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberUserBusinessBean#getClubNumberForGroup 
+	 * @param group
+	 * @return
+	 * @throws NoClubFoundException
+	 * @throws RemoteException
+	 */
+	public String getClubNumberForGroup(Group group) throws NoClubFoundException, RemoteException;
 }

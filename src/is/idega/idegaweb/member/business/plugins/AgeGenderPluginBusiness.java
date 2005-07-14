@@ -1,5 +1,5 @@
 /*
- * $Id: AgeGenderPluginBusiness.java,v 1.11 2005/07/03 19:01:45 eiki Exp $
+ * $Id: AgeGenderPluginBusiness.java,v 1.12 2005/07/14 01:02:25 eiki Exp $
  * Created on Jul 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -24,10 +24,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2005/07/03 19:01:45 $ by $Author: eiki $
+ *  Last modified: $Date: 2005/07/14 01:02:25 $ by $Author: eiki $
  * 
  * @author <a href="mailto:eiki@idega.com">eiki</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public interface AgeGenderPluginBusiness extends IBOService, UserGroupPlugInBusiness {
 
@@ -115,22 +115,22 @@ public interface AgeGenderPluginBusiness extends IBOService, UserGroupPlugInBusi
 	/**
 	 * @see is.idega.idegaweb.member.business.plugins.AgeGenderPluginBusinessBean#afterGroupCreateOrUpdate
 	 */
-	public void afterGroupCreateOrUpdate(Group group) throws CreateException, RemoteException;
+	public void afterGroupCreateOrUpdate(Group group, Group parentGroup) throws CreateException, RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.business.plugins.AgeGenderPluginBusinessBean#afterUserCreateOrUpdate
 	 */
-	public void afterUserCreateOrUpdate(User user) throws CreateException, RemoteException;
+	public void afterUserCreateOrUpdate(User user, Group parentGroup) throws CreateException, RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.business.plugins.AgeGenderPluginBusinessBean#beforeGroupRemove
 	 */
-	public void beforeGroupRemove(Group group) throws RemoveException, RemoteException;
+	public void beforeGroupRemove(Group group, Group parentGroup) throws RemoveException, RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.business.plugins.AgeGenderPluginBusinessBean#beforeUserRemove
 	 */
-	public void beforeUserRemove(User user) throws RemoveException, RemoteException;
+	public void beforeUserRemove(User user, Group parentGroup) throws RemoveException, RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.business.plugins.AgeGenderPluginBusinessBean#getGroupPropertiesTabs
@@ -192,4 +192,14 @@ public interface AgeGenderPluginBusiness extends IBOService, UserGroupPlugInBusi
 	 * @see is.idega.idegaweb.member.business.plugins.AgeGenderPluginBusinessBean#setClubMemberExchangeDependent
 	 */
 	public void setClubMemberExchangeDependent(Group group, boolean isDependent) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.plugins.AgeGenderPluginBusinessBean#isNationalityDependent
+	 */
+	public boolean isNationalityDependent(Group group) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.plugins.AgeGenderPluginBusinessBean#isClubMemberExchangeDependent
+	 */
+	public boolean isClubMemberExchangeDependent(Group group) throws java.rmi.RemoteException;
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: GolfImportHandler.java,v 1.3 2004/12/07 15:58:30 eiki Exp $
+ * $Id: GolfImportHandler.java,v 1.4 2005/07/14 01:00:43 eiki Exp $
  * Created on Oct 11, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -24,10 +24,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/07 15:58:30 $ by $Author: eiki $
+ *  Last modified: $Date: 2005/07/14 01:00:43 $ by $Author: eiki $
  * 
  * @author <a href="mailto:eiki@idega.com">eiki</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public interface GolfImportHandler extends IBOSession, ImportFileHandler, UserGroupPlugInBusiness {
 
@@ -54,22 +54,22 @@ public interface GolfImportHandler extends IBOSession, ImportFileHandler, UserGr
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.importer.business.GolfImportHandlerBean#beforeUserRemove
 	 */
-	public void beforeUserRemove(User user) throws RemoveException, RemoteException;
+	public void beforeUserRemove(User user, Group parentGroup) throws RemoveException, RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.importer.business.GolfImportHandlerBean#afterUserCreate
 	 */
-	public void afterUserCreateOrUpdate(User user) throws CreateException, RemoteException;
+	public void afterUserCreateOrUpdate(User user, Group parentGroup) throws CreateException, RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.importer.business.GolfImportHandlerBean#beforeGroupRemove
 	 */
-	public void beforeGroupRemove(Group group) throws RemoveException, RemoteException;
+	public void beforeGroupRemove(Group group, Group parentGroup) throws RemoveException, RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.importer.business.GolfImportHandlerBean#afterGroupCreate
 	 */
-	public void afterGroupCreateOrUpdate(Group group) throws CreateException, RemoteException;
+	public void afterGroupCreateOrUpdate(Group group, Group parentGroup) throws CreateException, RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.importer.business.GolfImportHandlerBean#instanciateEditor

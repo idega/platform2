@@ -33,22 +33,22 @@ public interface ClubInformationPluginBusiness extends IBOService, UserGroupPlug
 	/**
 	 * @see is.idega.idegaweb.member.business.plugins.ClubInformationPluginBusinessBean#beforeUserRemove
 	 */
-	public void beforeUserRemove(User user) throws RemoveException, RemoteException;
+	public void beforeUserRemove(User user, Group parentGroup) throws RemoveException, RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.business.plugins.ClubInformationPluginBusinessBean#afterUserCreateOrUpdate
 	 */
-	public void afterUserCreateOrUpdate(User user) throws CreateException, RemoteException;
+	public void afterUserCreateOrUpdate(User user, Group parentGroup) throws CreateException, RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.business.plugins.ClubInformationPluginBusinessBean#beforeGroupRemove
 	 */
-	public void beforeGroupRemove(Group group) throws RemoveException, RemoteException;
+	public void beforeGroupRemove(Group group, Group parentGroup) throws RemoveException, RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.business.plugins.ClubInformationPluginBusinessBean#afterGroupCreateOrUpdate
 	 */
-	public void afterGroupCreateOrUpdate(Group group) throws CreateException, RemoteException;
+	public void afterGroupCreateOrUpdate(Group group, Group parentGroup) throws CreateException, RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.business.plugins.ClubInformationPluginBusinessBean#instanciateEditor

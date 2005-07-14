@@ -1,5 +1,5 @@
 /*
- * $Id: AccountingBusiness.java,v 1.38 2005/05/31 10:18:00 palli Exp $
+ * $Id: AccountingBusiness.java,v 1.39 2005/07/14 01:00:43 eiki Exp $
  * Created on May 31, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -37,10 +37,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2005/05/31 10:18:00 $ by $Author: palli $
+ *  Last modified: $Date: 2005/07/14 01:00:43 $ by $Author: eiki $
  * 
  * @author <a href="mailto:bluebottle@idega.com">bluebottle</a>
- * @version $Revision: 1.38 $
+ * @version $Revision: 1.39 $
  */
 public interface AccountingBusiness extends IBOService, UserGroupPlugInBusiness {
 
@@ -253,22 +253,22 @@ public interface AccountingBusiness extends IBOService, UserGroupPlugInBusiness 
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.business.AccountingBusinessBean#beforeUserRemove
 	 */
-	public void beforeUserRemove(User user) throws RemoveException, RemoteException;
+	public void beforeUserRemove(User user, Group parentGroup) throws RemoveException, RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.business.AccountingBusinessBean#afterUserCreateOrUpdate
 	 */
-	public void afterUserCreateOrUpdate(User user) throws CreateException, RemoteException;
+	public void afterUserCreateOrUpdate(User user, Group parentGroup) throws CreateException, RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.business.AccountingBusinessBean#beforeGroupRemove
 	 */
-	public void beforeGroupRemove(Group group) throws RemoveException, RemoteException;
+	public void beforeGroupRemove(Group group, Group parentGroup) throws RemoveException, RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.business.AccountingBusinessBean#afterGroupCreateOrUpdate
 	 */
-	public void afterGroupCreateOrUpdate(Group group) throws CreateException, RemoteException;
+	public void afterGroupCreateOrUpdate(Group group, Group parentGroup) throws CreateException, RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.business.AccountingBusinessBean#instanciateEditor

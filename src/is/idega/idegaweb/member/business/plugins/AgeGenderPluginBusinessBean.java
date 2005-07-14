@@ -211,27 +211,27 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
   }  
   
 	/**
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterGroupCreateOrUpdate(com.idega.user.data.Group)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterGroupCreateOrUpdate(com.idega.user.data.Group, Group)
 	 */
-	public void afterGroupCreateOrUpdate(Group group) throws CreateException, RemoteException {
+	public void afterGroupCreateOrUpdate(Group group, Group parentGroup) throws CreateException, RemoteException {
 	}
 
 	/**
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterUserCreateOrUpdate(com.idega.user.data.User)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterUserCreateOrUpdate(com.idega.user.data.User, Group)
 	 */
-	public void afterUserCreateOrUpdate(User user) throws CreateException, RemoteException {
+	public void afterUserCreateOrUpdate(User user, Group parentGroup) throws CreateException, RemoteException {
 	}
 
 	/**
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#beforeGroupRemove(com.idega.user.data.Group)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#beforeGroupRemove(com.idega.user.data.Group, Group)
 	 */
-	public void beforeGroupRemove(Group group) throws RemoveException, RemoteException {
+	public void beforeGroupRemove(Group group, Group parentGroup) throws RemoveException, RemoteException {
 	}
 
 	/**
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#beforeUserRemove(com.idega.user.data.User)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#beforeUserRemove(com.idega.user.data.User, Group)
 	 */
-	public void beforeUserRemove(User user) throws RemoveException, RemoteException {
+	public void beforeUserRemove(User user, Group parentGroup) throws RemoveException, RemoteException {
 	}
 
 	/**
@@ -272,8 +272,9 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
    * @param sourceGroup source, the user should belong to the source
    * @param targetGroup target, where the user should be moved to.
    * @return a message that says what is wrong else null.
+ * @throws RemoteException 
    */
-  public String isUserAssignableFromGroupToGroup(User user, Group sourceGroup, Group targetGroup) {
+  public String isUserAssignableFromGroupToGroup(User user, Group sourceGroup, Group targetGroup) throws RemoteException {
  
     // check if the source and the target are the same
     // already done by caller
@@ -284,7 +285,7 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
     return isUserSuitedForGroup(user, targetGroup);
   }
     
-  public String isUserSuitedForGroup(User user, Group targetGroup)  {  
+  public String isUserSuitedForGroup(User user, Group targetGroup) throws RemoteException  {  
     // get my resource bundle for all the messages
     IWResourceBundle iwrb = getResourceBundle();
     // get date of birth
@@ -423,6 +424,19 @@ public void setClubMemberExchangeDependent(Group group, boolean isDependent){
 	group.setMetaData(META_DATA_CLUB_MEMBER_EXCHANGE_DEPENDENT,new Boolean(isDependent).toString());
 }
   
+public boolean isNationalityDependent(Group group){
+	String nDep = (String) group.getMetaData(META_DATA_NATIONALITY_DEPENDENT);
+    return !(nDep == null || 
+              NULL.equals(nDep) ||
+              ! (new Boolean(nDep).booleanValue()));
+}
+
+public boolean isClubMemberExchangeDependent(Group group){
+	String cDep = (String) group.getMetaData(META_DATA_CLUB_MEMBER_EXCHANGE_DEPENDENT);
+    return !(cDep == null || 
+              NULL.equals(cDep) ||
+              ! (new Boolean(cDep).booleanValue()));	
+}
 
 
 }

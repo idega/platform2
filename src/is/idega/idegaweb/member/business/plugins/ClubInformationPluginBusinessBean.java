@@ -49,7 +49,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 	 * 
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#beforeUserRemove(com.idega.user.data.User)
 	 */
-	public void beforeUserRemove(User user) throws RemoveException, RemoteException {
+	public void beforeUserRemove(User user, Group parentGroup) throws RemoveException, RemoteException {
 	}
 
 	/*
@@ -57,7 +57,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 	 * 
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterUserCreate(com.idega.user.data.User)
 	 */
-	public void afterUserCreateOrUpdate(User user) throws CreateException, RemoteException {
+	public void afterUserCreateOrUpdate(User user, Group parentGroup) throws CreateException, RemoteException {
 	}
 
 	/*
@@ -65,7 +65,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 	 * 
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#beforeGroupRemove(com.idega.user.data.Group)
 	 */
-	public void beforeGroupRemove(Group group) throws RemoveException, RemoteException {
+	public void beforeGroupRemove(Group group, Group parentGroup) throws RemoveException, RemoteException {
 	}
 
 	/*
@@ -73,7 +73,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 	 * 
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterGroupCreate(com.idega.user.data.Group)
 	 */
-	public void afterGroupCreateOrUpdate(Group group) throws CreateException, RemoteException {
+	public void afterGroupCreateOrUpdate(Group group, Group parentGroup) throws CreateException, RemoteException {
 		// grab changes to division committee and add roles
 		// grab connection to leagues
 		String type = group.getGroupType();

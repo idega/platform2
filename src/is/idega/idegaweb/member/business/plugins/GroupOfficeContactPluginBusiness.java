@@ -1,5 +1,5 @@
 /*
- * $Id: GroupOfficeContactPluginBusiness.java,v 1.5 2004/12/07 18:04:46 eiki Exp $
+ * $Id: GroupOfficeContactPluginBusiness.java,v 1.6 2005/07/14 01:02:25 eiki Exp $
  * Created on Dec 7, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -22,32 +22,32 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/07 18:04:46 $ by $Author: eiki $
+ *  Last modified: $Date: 2005/07/14 01:02:25 $ by $Author: eiki $
  * 
  * @author <a href="mailto:eiki@idega.com">eiki</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public interface GroupOfficeContactPluginBusiness extends IBOService, UserGroupPlugInBusiness {
 
 	/**
 	 * @see is.idega.idegaweb.member.business.plugins.GroupOfficeContactPluginBusinessBean#afterGroupCreateOrUpdate
 	 */
-	public void afterGroupCreateOrUpdate(Group group) throws CreateException, RemoteException;
+	public void afterGroupCreateOrUpdate(Group group, Group parentGroup) throws CreateException, RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.business.plugins.GroupOfficeContactPluginBusinessBean#afterUserCreateOrUpdate
 	 */
-	public void afterUserCreateOrUpdate(User user) throws CreateException, RemoteException;
+	public void afterUserCreateOrUpdate(User user, Group parentGroup) throws CreateException, RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.business.plugins.GroupOfficeContactPluginBusinessBean#beforeGroupRemove
 	 */
-	public void beforeGroupRemove(Group group) throws RemoveException, RemoteException;
+	public void beforeGroupRemove(Group group, Group parentGroup) throws RemoveException, RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.business.plugins.GroupOfficeContactPluginBusinessBean#beforeUserRemove
 	 */
-	public void beforeUserRemove(User user) throws RemoveException, RemoteException;
+	public void beforeUserRemove(User user, Group parentGroup) throws RemoveException, RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.business.plugins.GroupOfficeContactPluginBusinessBean#getGroupPropertiesTabs

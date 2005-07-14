@@ -243,15 +243,16 @@ public class GroupAgeGenderTab extends UserGroupTab {
 		
 		//EXTRA ISI STUFF
 		nationalityDependentText = new Text(bundle.getLocalizedString(nationalityDependentFieldName, "Nationality dependent"));
-		clubMemberExchangeDependentText = new Text(bundle.getLocalizedString(clubMemberExchangeDependentFieldName, "Club exhange dependent"));
-		
+		nationalityDependentText.setBold();
+		clubMemberExchangeDependentText = new Text(bundle.getLocalizedString(clubMemberExchangeDependentFieldName, "Club exchange dependent"));
+		clubMemberExchangeDependentText.setBold();
 	}
 
 	/**
 	 * @see com.idega.user.presentation.UserGroupTab#lineUpFields()
 	 */
 	public void lineUpFields() {
-		Table table = new Table(3, 7);
+		Table table = new Table(2, 7);
 		table.setWidth(300);
 		table.setCellpadding(5);
 		table.setCellspacing(0);
@@ -281,12 +282,12 @@ public class GroupAgeGenderTab extends UserGroupTab {
 		
 		
 		//EXTRA ISI STUFF
-//		table.add(nationalityDependentText, 3, 3);
-//		table.add(nationalityDependentField, 3, 3);
-//		
-//		table.add(clubMemberExchangeDependentText, 3, 4);
-//		table.add(clubMemberExchangeDependentField, 3, 4);
-//		
+		table.add(nationalityDependentText, 2, 3);
+		table.add(nationalityDependentField, 2, 3);
+		
+		table.add(clubMemberExchangeDependentText, 2, 4);
+		table.add(clubMemberExchangeDependentField, 2, 4);
+		
 		add(table);
 	}
 
@@ -495,6 +496,13 @@ public class GroupAgeGenderTab extends UserGroupTab {
 				fieldValues.put(ageLimitIsStringentConditionFieldName, new Boolean(ageLimitIsStringentCondition));
 				String keyDateForAge = ageGenderPluginBusiness.getKeyDateForAge(group);
 				fieldValues.put(keyDateForAgeFieldName, keyDateForAge);
+				
+				//EXTRA ISI STUFF
+				boolean isNationalityDep = ageGenderPluginBusiness.isNationalityDependent(group);
+				boolean clubExchangeDep = ageGenderPluginBusiness.isClubMemberExchangeDependent(group);
+				fieldValues.put(nationalityDependentFieldName, new Boolean(isNationalityDep));
+				fieldValues.put(clubMemberExchangeDependentFieldName, new Boolean(clubExchangeDep));
+			
 			}
 			catch (RemoteException e) {
 				System.err.println("[GeneralGroupInfoTab] remote error initFieldContents, GroupId : " + getGroupId());

@@ -1,0 +1,43 @@
+<!-- Use this file to deploy some handlers/chains and services      -->
+<!-- Two ways to do this:                                           -->
+<!--   java org.apache.axis.client.AdminClient deploy.wsdd          -->
+<!--      after the axis server is running                          -->
+<!-- or                                                             -->
+<!--   java org.apache.axis.utils.Admin client|server deploy.wsdd   -->
+<!--      from the same directory that the Axis engine runs         -->
+
+<deployment
+    xmlns="http://xml.apache.org/axis/wsdd/"
+    xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+
+  <!-- Services from Felagsmadur WSDL service -->
+
+  <service name="FelagsmadurSoap" provider="java:RPC" style="wrapped" use="literal">
+      <parameter name="wsdlTargetNamespace" value="http://tempuri.org/"/>
+      <parameter name="wsdlServiceElement" value="Felagsmadur"/>
+      <parameter name="schemaQualified" value="http://tempuri.org/"/>
+      <parameter name="wsdlServicePort" value="FelagsmadurSoap"/>
+      <parameter name="className" value="is.idega.idegaweb.member.isi.block.leagues.webservice.FelagsmadurSoap_BindingImpl"/>
+      <parameter name="wsdlPortType" value="FelagsmadurSoap"/>
+      <parameter name="typeMappingVersion" value="1.2"/>
+      <operation name="felagsmadur_til" qname="operNS:Felagsmadur_til" xmlns:operNS="http://tempuri.org/" returnQName="retNS:Felagsmadur_tilResult" xmlns:retNS="http://tempuri.org/" returnType="rtns:int" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="http://tempuri.org/Felagsmadur_til" >
+        <parameter qname="pns:pKennitala" xmlns:pns="http://tempuri.org/" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="felagsmadur_Skra" qname="operNS:Felagsmadur_Skra" xmlns:operNS="http://tempuri.org/" returnQName="retNS:Felagsmadur_SkraResult" xmlns:retNS="http://tempuri.org/" returnType="rtns:tVilla" xmlns:rtns="http://tempuri.org/" soapAction="http://tempuri.org/Felagsmadur_Skra" >
+        <parameter qname="pns:pKennitala" xmlns:pns="http://tempuri.org/" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="pns:pFelag_id" xmlns:pns="http://tempuri.org/" type="tns:int" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="pns:pFelagNafn" xmlns:pns="http://tempuri.org/" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <parameter name="allowedMethods" value="felagsmadur_Skra felagsmadur_til"/>
+      <parameter name="scope" value="Session"/>
+
+      <typeMapping
+        xmlns:ns="http://tempuri.org/"
+        qname="ns:tVilla"
+        type="java:is.idega.idegaweb.member.isi.block.leagues.webservice.TVilla"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+  </service>
+</deployment>

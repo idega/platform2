@@ -480,6 +480,30 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 	}
 	
 	
+	/*
+	 * Returns a list of all the divisions the user is a member of.
+	 */
+	public List getDivisionListForUser(User user) throws NoDivisionFoundException,RemoteException{
+		Collection parents = getGroupBusiness().getParentGroupsRecursive(user);
+		List list = new Vector();
+		if(parents!=null && !parents.isEmpty()){
+			Iterator iter = parents.iterator();
+			while (iter.hasNext()) {
+				Group group = (Group) iter.next();
+				if(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION.equals(group.getGroupType())){
+					list.add(group);
+				}
+			}
+		}
+		
+		if(list.isEmpty()){
+			//if no division is found we throw the exception
+			throw new NoDivisionFoundException(user.getName());
+		}
+		else return list;
+	}
+	
+	
 	
 	/*
 		* Returns the club that is a parent for this group.
@@ -499,6 +523,38 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 		
 		//if no club is found we throw the exception
 		throw new NoClubFoundException(group.getName());		
+	}
+	
+
+	/**
+	 * @param targetGroup
+	 * @throws NoClubFoundException
+	 * @throws RemoteException
+	 */
+	public String getClubNumberForGroup(Group group) throws NoClubFoundException, RemoteException {
+		Group club = getClubForGroup(group);
+		return club.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER);
+	}
+	
+	
+	/*
+		* Returns the division that is a parent for this group.
+	 */
+	public Group getDivisionForGroup(Group group) throws NoDivisionFoundException, RemoteException{
+		Collection parents = getGroupBusiness().getParentGroupsRecursive(group);
+
+		if(parents!=null && !parents.isEmpty()){
+			Iterator iter = parents.iterator();
+			while (iter.hasNext()) {
+				Group parentGroup = (Group) iter.next();
+				if(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION.equals(parentGroup.getGroupType())){
+					return parentGroup;//there should only be one
+				}
+			}
+		}
+		
+		//if no division is found we throw the exception
+		throw new NoDivisionFoundException(group.getName());		
 	}
 	
 	/**

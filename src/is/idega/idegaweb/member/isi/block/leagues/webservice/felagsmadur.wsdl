@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s0="http://tempuri.org/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://tempuri.org/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
+      <s:element name="Felagsmadur_til">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="pKennitala" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Felagsmadur_tilResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="Felagsmadur_tilResult" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Felagsmadur_Skra">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="pKennitala" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="pFelag_id" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="pFelagNafn" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Felagsmadur_SkraResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Felagsmadur_SkraResult" type="s0:tVilla" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="tVilla">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="iVilla" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="sVilla_texti" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="int" type="s:int" />
+      <s:element name="tVilla" nillable="true" type="s0:tVilla" />
+    </s:schema>
+  </types>
+  <message name="Felagsmadur_tilSoapIn">
+    <part name="parameters" element="s0:Felagsmadur_til" />
+  </message>
+  <message name="Felagsmadur_tilSoapOut">
+    <part name="parameters" element="s0:Felagsmadur_tilResponse" />
+  </message>
+  <message name="Felagsmadur_SkraSoapIn">
+    <part name="parameters" element="s0:Felagsmadur_Skra" />
+  </message>
+  <message name="Felagsmadur_SkraSoapOut">
+    <part name="parameters" element="s0:Felagsmadur_SkraResponse" />
+  </message>
+  <message name="Felagsmadur_tilHttpGetIn">
+    <part name="pKennitala" type="s:string" />
+  </message>
+  <message name="Felagsmadur_tilHttpGetOut">
+    <part name="Body" element="s0:int" />
+  </message>
+  <message name="Felagsmadur_SkraHttpGetIn">
+    <part name="pKennitala" type="s:string" />
+    <part name="pFelag_id" type="s:string" />
+    <part name="pFelagNafn" type="s:string" />
+  </message>
+  <message name="Felagsmadur_SkraHttpGetOut">
+    <part name="Body" element="s0:tVilla" />
+  </message>
+  <message name="Felagsmadur_tilHttpPostIn">
+    <part name="pKennitala" type="s:string" />
+  </message>
+  <message name="Felagsmadur_tilHttpPostOut">
+    <part name="Body" element="s0:int" />
+  </message>
+  <message name="Felagsmadur_SkraHttpPostIn">
+    <part name="pKennitala" type="s:string" />
+    <part name="pFelag_id" type="s:string" />
+    <part name="pFelagNafn" type="s:string" />
+  </message>
+  <message name="Felagsmadur_SkraHttpPostOut">
+    <part name="Body" element="s0:tVilla" />
+  </message>
+  <portType name="FelagsmadurSoap">
+    <operation name="Felagsmadur_til">
+      <input message="s0:Felagsmadur_tilSoapIn" />
+      <output message="s0:Felagsmadur_tilSoapOut" />
+    </operation>
+    <operation name="Felagsmadur_Skra">
+      <input message="s0:Felagsmadur_SkraSoapIn" />
+      <output message="s0:Felagsmadur_SkraSoapOut" />
+    </operation>
+  </portType>
+  <portType name="FelagsmadurHttpGet">
+    <operation name="Felagsmadur_til">
+      <input message="s0:Felagsmadur_tilHttpGetIn" />
+      <output message="s0:Felagsmadur_tilHttpGetOut" />
+    </operation>
+    <operation name="Felagsmadur_Skra">
+      <input message="s0:Felagsmadur_SkraHttpGetIn" />
+      <output message="s0:Felagsmadur_SkraHttpGetOut" />
+    </operation>
+  </portType>
+  <portType name="FelagsmadurHttpPost">
+    <operation name="Felagsmadur_til">
+      <input message="s0:Felagsmadur_tilHttpPostIn" />
+      <output message="s0:Felagsmadur_tilHttpPostOut" />
+    </operation>
+    <operation name="Felagsmadur_Skra">
+      <input message="s0:Felagsmadur_SkraHttpPostIn" />
+      <output message="s0:Felagsmadur_SkraHttpPostOut" />
+    </operation>
+  </portType>
+  <binding name="FelagsmadurSoap" type="s0:FelagsmadurSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+    <operation name="Felagsmadur_til">
+      <soap:operation soapAction="http://tempuri.org/Felagsmadur_til" style="document" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+    <operation name="Felagsmadur_Skra">
+      <soap:operation soapAction="http://tempuri.org/Felagsmadur_Skra" style="document" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+  </binding>
+  <binding name="FelagsmadurHttpGet" type="s0:FelagsmadurHttpGet">
+    <http:binding verb="GET" />
+    <operation name="Felagsmadur_til">
+      <http:operation location="/Felagsmadur_til" />
+      <input>
+        <http:urlEncoded />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+    <operation name="Felagsmadur_Skra">
+      <http:operation location="/Felagsmadur_Skra" />
+      <input>
+        <http:urlEncoded />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+  </binding>
+  <binding name="FelagsmadurHttpPost" type="s0:FelagsmadurHttpPost">
+    <http:binding verb="POST" />
+    <operation name="Felagsmadur_til">
+      <http:operation location="/Felagsmadur_til" />
+      <input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+    <operation name="Felagsmadur_Skra">
+      <http:operation location="/Felagsmadur_Skra" />
+      <input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+  </binding>
+  <service name="Felagsmadur">
+    <port name="FelagsmadurSoap" binding="s0:FelagsmadurSoap">
+      <soap:address location="http://ksi2.skyrr.is/ssl/vefthjon_felix/felagsmadur.asmx" />
+    </port>
+    <port name="FelagsmadurHttpGet" binding="s0:FelagsmadurHttpGet">
+      <http:address location="http://ksi2.skyrr.is/ssl/vefthjon_felix/felagsmadur.asmx" />
+    </port>
+    <port name="FelagsmadurHttpPost" binding="s0:FelagsmadurHttpPost">
+      <http:address location="http://ksi2.skyrr.is/ssl/vefthjon_felix/felagsmadur.asmx" />
+    </port>
+  </service>
+</definitions>
