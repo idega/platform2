@@ -531,16 +531,16 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 	 * 
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#beforeUserRemove(com.idega.user.data.User)
 	 */
-	public void beforeUserRemove(User user) throws RemoveException, RemoteException {
+	public void beforeUserRemove(User user, Group parentGroup) throws RemoveException, RemoteException {
 		// TODO Auto-generated method stub
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterUserCreateOrUpdate(com.idega.user.data.User)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterUserCreateOrUpdate(com.idega.user.data.User, Group parentGrou)
 	 */
-	public void afterUserCreateOrUpdate(User user) throws CreateException, RemoteException {
+	public void afterUserCreateOrUpdate(User user, Group parentGroup) throws CreateException, RemoteException {
 		init();
 		if (user.getPersonalID() != null) {
 			// System.out.println("Synchronizing user : "+user.getPersonalID()+"
@@ -643,7 +643,7 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 				
 				if (user != null) {
 					correctUser(user, name, gender, dateOfBirth, main, subs);
-					afterUserCreateOrUpdate(user);
+					afterUserCreateOrUpdate(user,null);
 				}
 				else {
 					System.err.println(" UserSync: USER IS NULL " + uuid + " " + pin);
@@ -668,18 +668,18 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#beforeGroupRemove(com.idega.user.data.Group)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#beforeGroupRemove(com.idega.user.data.Group, Group parentGroup)
 	 */
-	public void beforeGroupRemove(Group group) throws RemoveException, RemoteException {
+	public void beforeGroupRemove(Group group, Group parentGroup) throws RemoveException, RemoteException {
 		// TODO Auto-generated method stub
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterGroupCreateOrUpdate(com.idega.user.data.Group)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterGroupCreateOrUpdate(com.idega.user.data.Group, Group parentGroup)
 	 */
-	public void afterGroupCreateOrUpdate(Group group) throws CreateException, RemoteException {
+	public void afterGroupCreateOrUpdate(Group group, Group parentGroup) throws CreateException, RemoteException {
 		// if the group is a club then search for the union and update it,
 		// create if it does not exist
 		// init();
