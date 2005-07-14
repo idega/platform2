@@ -1,5 +1,5 @@
 /*
- * $Id: KSIWSImpl.java,v 1.1 2005/07/14 01:00:43 eiki Exp $
+ * $Id: KSIWSImpl.java,v 1.2 2005/07/14 13:57:54 eiki Exp $
  * Created on Jul 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -39,7 +39,16 @@ public class KSIWSImpl implements KSIWS {
 			String method = "doClubMemberExchange";
 
 //  Make the call
-			String pin = "2502785279";
+			
+			//wrong pin test
+			//String pin = "250278527";
+
+			//Ari thor hj‡ kr
+			String pin = "2804873179";
+
+			//wrong club test
+//			String clubNumb = "999";
+			
 			String clubNumb = "101";
 			String date = "25-02-2005";
       
