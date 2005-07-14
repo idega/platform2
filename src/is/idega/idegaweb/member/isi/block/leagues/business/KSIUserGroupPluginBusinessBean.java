@@ -1,5 +1,5 @@
 /*
- * $Id: KSIUserGroupPluginBusinessBean.java,v 1.2 2005/07/14 12:00:14 eiki Exp $
+ * $Id: KSIUserGroupPluginBusinessBean.java,v 1.3 2005/07/14 12:22:45 eiki Exp $
  * Created on Jul 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -20,6 +20,7 @@ import is.idega.idegaweb.member.isi.block.leagues.webservice.FelagsmadurSoap_Por
 import is.idega.idegaweb.member.isi.block.leagues.webservice.TVilla;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 import java.rmi.RemoteException;
+import java.sql.Date;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -427,7 +428,9 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 		}
 		
 		//TODO USE!
-		//Date date = Date.valueOf(dateOfActivation);
+		Date date = Date.valueOf(dateOfActivation);
+		System.out.println("KSIWS todo use date: "+date);
+		
 		
 		Collection clubs = getGroupBusiness().getGroupsByMetaDataKeyAndValue(IWMemberConstants.META_DATA_CLUB_NUMBER,clubNumberToRegisterTo);
 		Group clubTo = null;
