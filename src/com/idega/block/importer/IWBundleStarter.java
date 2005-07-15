@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import javax.ejb.FinderException;
 import org.sadun.util.polling.DirectoryPoller;
+import com.idega.block.importer.business.AddressCoordinateImportHandler;
 import com.idega.block.importer.business.AutoImportPollManager;
 import com.idega.block.importer.data.ImportHandler;
 import com.idega.block.importer.data.ImportHandlerHome;
@@ -14,6 +15,7 @@ import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
+import com.idega.repository.data.RefactorClassRegistry;
 
 
 /**
@@ -32,6 +34,9 @@ public class IWBundleStarter implements IWBundleStartable {
 	 * @see com.idega.idegaweb.IWBundleStartable#start(com.idega.idegaweb.IWBundle)
 	 */
 	public void start(IWBundle starterBundle) {
+		RefactorClassRegistry rfregistry = RefactorClassRegistry.getInstance();
+		rfregistry.registerRefactoredClass("com.idega.core.location.business.AddressCoordinateImportHandler", AddressCoordinateImportHandler.class);
+		
 		System.out.println("Activating pollers for automatic imports");
 		try {
 			Collection coll = ((ImportHandlerHome)IDOLookup.getHome(ImportHandler.class)).findAllAutomaticUpdates();
