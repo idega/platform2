@@ -1,5 +1,5 @@
 /*
- * $Id: KSIUserGroupPluginBusinessBean.java,v 1.5 2005/07/15 13:18:31 eiki Exp $
+ * $Id: KSIUserGroupPluginBusinessBean.java,v 1.6 2005/07/15 14:06:57 eiki Exp $
  * Created on Jul 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -300,7 +300,7 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 		int error = msg.getIVilla();
 		String text = msg.getSVilla_texti();
 		
-		if(error==0){
+		if(error==0 || error==-2){
 			return WS_RETURN_VALUE_SUCCESS;
 		}
 		else{
