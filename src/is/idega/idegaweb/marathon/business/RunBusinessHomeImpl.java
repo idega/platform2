@@ -1,6 +1,6 @@
 /*
- * $Id: RunBusinessHomeImpl.java,v 1.8 2005/06/22 07:33:24 laddi Exp $
- * Created on Jun 22, 2005
+ * $Id: RunBusinessHomeImpl.java,v 1.9 2005/07/15 12:41:40 laddi Exp $
+ * Created on Jul 15, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -13,10 +13,10 @@ import com.idega.business.IBOHomeImpl;
 
 
 /**
- * Last modified: $Date: 2005/06/22 07:33:24 $ by $Author: laddi $
+ * Last modified: $Date: 2005/07/15 12:41:40 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class RunBusinessHomeImpl extends IBOHomeImpl implements RunBusinessHome {
 

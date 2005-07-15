@@ -1,6 +1,6 @@
 package is.idega.idegaweb.marathon.business;
 
-import is.idega.idegaweb.marathon.util.IWMarathonConstants;
+import is.idega.idegaweb.marathon.data.Participant;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
 import com.idega.block.importer.data.ImportFile;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
@@ -16,10 +18,13 @@ import com.idega.business.IBOServiceBean;
 import com.idega.core.localisation.business.LocaleSwitcher;
 import com.idega.core.location.data.Country;
 import com.idega.idegaweb.IWApplicationContext;
+import com.idega.user.business.GenderBusiness;
+import com.idega.user.data.Gender;
 import com.idega.user.data.Group;
+import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.LocaleUtil;
-import com.idega.util.text.TextSoap;
+import com.idega.util.text.Name;
 
 
 /**
@@ -30,8 +35,10 @@ public class MarathonFileImportHandlerBean extends IBOServiceBean  implements Ma
 	ImportFile file;
 	Collection countries;
 	RunBusiness business;
+	GenderBusiness genderBusiness;
 	Locale englishLocale;
 	Locale icelandicLocale;
+	Collection runs;
 	
 	public static void main(String[] args) throws RemoteException {
 		/*File fFile = new File("/Users/gimmi/Desktop/Marathonhlauparar.csv");
@@ -44,7 +51,9 @@ public class MarathonFileImportHandlerBean extends IBOServiceBean  implements Ma
 	
 	public boolean handleRecords() throws RemoteException {
 		business = getBusiness(getIWApplicationContext());
+		genderBusiness = getGenderBusiness(getIWApplicationContext());
 		countries = business.getCountries();
+		runs = business.getRuns();
 		englishLocale = LocaleUtil.getLocale(LocaleSwitcher.englishParameterString);
 		icelandicLocale = LocaleUtil.getLocale(LocaleSwitcher.icelandicParameterString);
 		
@@ -54,9 +63,7 @@ public class MarathonFileImportHandlerBean extends IBOServiceBean  implements Ma
 			int counter = 1;
 			while (line != null && !"".equals(line)) {
 				++counter;
-				if (counter % 100 == 0) {
-					System.out.println("Counter = "+counter);
-				}
+				System.out.println("Counter = "+counter);
 				if (!handleLine(line)) {
 					errors.add(line);
 				}
@@ -81,200 +88,125 @@ public class MarathonFileImportHandlerBean extends IBOServiceBean  implements Ma
 		int size = values.size();
 		boolean validLine = true;
 		
-		if (size == 32) {
-			String nr = (String) values.get(0);
-			String nafn = (String) values.get(1);
-			String kt = (String) values.get(2);
-			String hfang = (String) values.get(3);
-			String sveitarfelag = (String) values.get(4);
-			String pnr = (String) values.get(5);
-			String simi = (String) values.get(6);
-			String netfang = (String) values.get(7);
-			String thoderni = (String) values.get(8);
-			String kyn = (String) values.get(9);
-			String visa = (String) values.get(10);
-			String gildir = (String) values.get(11);
-			String cardType = (String) values.get(12);
-			String grein = (String) values.get(13);
-			String vegalengd = (String) values.get(14);
-			String bolur = (String) values.get(15);
-			String sveitakeppni = (String) values.get(16);
-			String sveit = (String) values.get(17);
-			String dv = (String) values.get(18);
-			String ar = (String) values.get(19);
-			String eftirnafn = (String) values.get(20);
-			String timi = (String) values.get(21);
-			String gjald = (String) values.get(22);
-			String chip = (String) values.get(23);
-			String best = (String) values.get(24);
-			String goal = (String) values.get(25);
-			String before = (String) values.get(26);
-			String others = (String) values.get(27);
-			String stay = (String) values.get(28);
-			String many = (String) values.get(29);
-			String why = (String) values.get(30);
-			String aware = (String) values.get(31);
+		String participantNumber = (String) values.get(0);
+		String gender = (String) values.get(1);
+		String dateOfBirth = (String) values.get(2);
+		String name = (String) values.get(3);
+		String personalID = (String) values.get(4);
+		String nationality = (String) values.get(5);
+		String chipTime = (String) values.get(6);
+		String runTime = (String) values.get(7);
+		String run = (String) values.get(8);
+		String distance = (String) values.get(9);
+		String year = (String) values.get(10);
+		String group = (String) values.get(11);
+		String chipNumber = (String) values.get(12);
+		
+		int number = -1;
+		try {
+			number = Integer.parseInt(participantNumber);
+		} catch (NumberFormatException n) {
+			System.out.println("not using line... starts with : " +participantNumber);
+			validLine = false;
+		}
+		
+		if (validLine) {
+			String countryPK = null;
 			
-			
-			try {
-				Integer.parseInt(nr);
-			} catch (NumberFormatException n) {
-				System.out.println("not using line... starts with : " +nr);
-				validLine = false;
+			Iterator iter = countries.iterator();
+			Country country = null;
+			boolean found = false;
+			while (iter.hasNext() && !found) {
+				country = (Country) iter.next();
+				found = nationality.equals(country.getIsoAbbreviation());
+				break;
 			}
 			
-			if (validLine) {
-				String countryPK = null;
-				
-				Iterator iter = countries.iterator();
-				Country country = null;
-				boolean found = false;
-				while (iter.hasNext() && !found) {
-					country = (Country) iter.next();
-					found = thoderni.equals(country.getIsoAbbreviation());
-				}
-				if (!found) {
-					System.out.println("Country not found for code = "+thoderni);
-				} else {
-					countryPK = country.getPrimaryKey().toString();
+			IWTimestamp birth = new IWTimestamp(dateOfBirth);
+
+			try {
+				Group runGroup = null;
+				Iterator iterator = runs.iterator();
+				while (iterator.hasNext()) {
+					Group element = (Group) iterator.next();
+					if (element.getName().equals(run)) {
+						runGroup = element;
+						break;
+					}
 				}
 				
-				kt = kt.replaceAll(" ", "");
-				kt = kt.replaceAll("-", "");
-				kt = kt.replaceAll("/", "");
-				kt = TextSoap.findAndCut(kt, ".");
-				kt = TextSoap.findAndCut(kt, ",");
-				kt = kt.replaceAll("jan", "01");
-				kt = kt.replaceAll("feb", "02");
-				kt = kt.replaceAll("mar", "03");
-				kt = kt.replaceAll("apr", "04");
-				kt = kt.replaceAll("mai", "05");
-				kt = kt.replaceAll("jun", "06");
-				kt = kt.replaceAll("jul", "07");
-				kt = kt.replaceAll("agu", "08");
-				kt = kt.replaceAll("sep", "09");
-				kt = kt.replaceAll("okt", "10");
-				kt = kt.replaceAll("nov", "11");
-				kt = kt.replaceAll("des", "12");
+				Group yearGroup = null;
+				iterator = runGroup.getChildrenIterator();
+				while (iterator.hasNext()) {
+					Group element = (Group) iterator.next();
+					if (element.getName().equals(year)) {
+						yearGroup = element;
+						break;
+					}
+				}
 				
-				
-				IWTimestamp birth = null;
-				String gender = null;
-				Locale locale = null;
-				try {
-					Long.parseLong(kt);
-					if (kt.length() == 6) {
-						kt = kt.substring(0, 4) + "19" +kt.substring(4, 6);
+				Group distanceGroup = null;
+				Collection distances = business.getDistancesMap(runGroup, year);
+				iterator = distances.iterator();
+				while (iterator.hasNext()) {
+					Group element = (Group) iterator.next();
+					if (element.getName().equals(distance)) {
+						distanceGroup = element;
+						break;
+					}
+				}
+			
+				if (validLine) {
+					User user = null;
+					try {
+						if (personalID.length() == 0) {
+							user = business.getUserBiz().getUser(personalID);
+						}
+						else {
+							user = business.getUserBiz().getUserHome().findByDateOfBirthAndName(birth.getDate(), name);
+						}
+					}
+					catch (FinderException fe) {
+						System.out.println("User not found, creating...");;
+					}
+					if (user == null) {
+						try {
+							Gender theGender = genderBusiness.getGender(new Integer(gender));
+							Name fullName = new Name(name);
+							user = business.getUserBiz().createUser(fullName.getFirstName(), fullName.getMiddleName(), fullName.getLastName(), personalID, theGender, birth);
+						}
+						catch (FinderException fe) {
+							System.err.println("Gender not found");
+							return false;
+						}
+						catch (CreateException ce) {
+							ce.printStackTrace();
+							return false;
+						}
 					}
 					
-					if (kt.length() == 8) {
-						if (Integer.parseInt(kt.substring(4, 8))< 1900) {
-							System.out.println("Check "+nr);
-						}
-						birth = new IWTimestamp(kt.substring(4,8)+"-"+kt.substring(2, 4)+"-"+kt.substring(0, 2));
-						locale = englishLocale;
-					} else if (kt.length() == 10) {
-						birth = new IWTimestamp("19"+kt.substring(4,6)+"-"+kt.substring(2, 4)+"-"+kt.substring(0, 2));
-						locale = icelandicLocale;
-					} else {
-						System.out.println("Error in kt length ("+kt.length()+") : "+kt+", "+nr);
-						validLine = false;
+					Participant participant = null;
+					try {
+						participant = business.getParticipantByRunAndYear(user, runGroup, yearGroup);
 					}
-					//System.out.println(birth.toSQLString());
-				} catch (Exception e) {
-					validLine = false;
-					System.out.println("Error in kt : "+kt+", "+nr);
-				}
-
-				if ("kven".equalsIgnoreCase(kyn)) {
-					gender = "2";
-				} else {
-					gender = "1";
-				}
-				
-				
-				int runID = 4;
-				int yearID = 73;
-				int distanceID = -1;
-				
-				if (grein.equals("Marathon")) {
-					distanceID = 74;
-				} else if (grein.equals("halfmarathon")) {
-					distanceID = 87;
-				} else if (grein.equals("10km")) {
-					distanceID = 100;
-				} else if (grein.equals("7km")) {
-					distanceID = 113;
-				} else if (grein.equals("3km")) {
-					distanceID = 126;
-				} else {
-					System.out.println("DistanceID not found : "+grein+" : "+nr);
-				}
-				
-				/*
-				 * 
-				 10 k’l—metra hlaup
-				 Maraßon
-				 H‡lfmaraßon
-				 7 k’l—metra skemmtiskokk
-				 3 k’l—metra skemmtiskokk
-				yearID = 73
-				3 km = 126
-				7 km = 113
-				10km = 100
-				21km = 87
-				42km = 74
-				*/
-				
-				/*
-				prm_sm
-				prm_
-				*/
-				
-				if ("S".equals(bolur)) {
-					bolur = IWMarathonConstants.PARAMETER_TSHIRT_S;
-				} else if ("M".equals(bolur)) {
-					bolur = IWMarathonConstants.PARAMETER_TSHIRT_M;
-				} else if ("L".equals(bolur)) {
-					bolur = IWMarathonConstants.PARAMETER_TSHIRT_L;
-				} else if ("XL".equals(bolur)) {
-					bolur = IWMarathonConstants.PARAMETER_TSHIRT_XL;
-				} else if ("XXL".equals(bolur)) {
-					bolur = IWMarathonConstants.PARAMETER_TSHIRT_XXL;
-				} else {
-					System.out.println("Unknown tshirt size : "+bolur+" ("+nr+")");
-				}
-				
-				String chipOwnership = "";
-				if ("2".equals(chip)) {
-					chipOwnership = IWMarathonConstants.PARAMETER_BUY_CHIP;
-				} else if ("1".equals(chip)) {
-					chipOwnership = IWMarathonConstants.PARAMETER_OWN_CHIP;
-				} else if ("3".equals(chip)) {
-					chipOwnership = IWMarathonConstants.PARAMETER_RENT_CHIP;
-				} else if (chip.length() < 5) {
-					chip = "";
-				} else {
-					chipOwnership = IWMarathonConstants.PARAMETER_OWN_CHIP;
-				}
-				
-
-				try {
-					if (validLine) {
-						int userID = -1;//business.saveUser(nafn, kt, birth, gender, hfang, pnr, sveitarfelag, countryPK, simi, "", netfang);
-						if (!business.isRegisteredInRun(runID, userID)) {
-							business.saveRun(userID, Integer.toString(runID), Integer.toString(distanceID), Integer.toString(yearID), thoderni, bolur, chipOwnership, chip, sveit, best, goal, locale);
+					catch (FinderException fe) {
+						try {
+							participant = business.importParticipant(user, runGroup, yearGroup, distanceGroup, country);
 						}
-						return true;
+						catch (CreateException ce) {
+							ce.printStackTrace();
+							return false;
+						}
 					}
-				}
-				catch (RemoteException e1) {
-					e1.printStackTrace();
-					return false;
+					participant.setChipNumber(chipNumber);
+					business.updateRunForParticipant(participant, number, runTime, chipTime);
+					return true;
 				}
 			}
-		} else {
-			System.out.println("Too few fields !!!");
+			catch (RemoteException e1) {
+				e1.printStackTrace();
+				return false;
+			}
 		}
 		return false;
 	}
@@ -294,6 +226,15 @@ public class MarathonFileImportHandlerBean extends IBOServiceBean  implements Ma
 	protected RunBusiness getBusiness(IWApplicationContext iwac) {
 		try {
 			return (RunBusiness) IBOLookup.getServiceInstance(iwac, RunBusiness.class);
+		}
+		catch (IBOLookupException e) {
+			throw new IBORuntimeException(e);
+		}
+	}
+
+	protected GenderBusiness getGenderBusiness(IWApplicationContext iwac) {
+		try {
+			return (GenderBusiness) IBOLookup.getServiceInstance(iwac, GenderBusiness.class);
 		}
 		catch (IBOLookupException e) {
 			throw new IBORuntimeException(e);

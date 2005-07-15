@@ -369,6 +369,30 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		}
 	}
 	
+	public Participant importParticipant(User user, Group run, Group year, Group distance, Country country) throws CreateException {
+		try {
+			Group ageGenderGroup = getAgeGroup(user, run, distance);
+			ageGenderGroup.addGroup(user);
+
+			ParticipantHome runHome = (ParticipantHome) getIDOHome(Participant.class);
+			Participant participant = runHome.create();
+			participant.setUser(user);
+			participant.setRunTypeGroup(run);
+			participant.setRunDistanceGroup(distance);
+			participant.setRunYearGroup(year);
+			participant.setRunGroupGroup(ageGenderGroup);
+			if (country != null) {
+				participant.setUserNationality(country.getName());
+			}
+			participant.store();
+			
+			return participant;
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
+	}
+	
 	public Collection saveParticipants(Collection runners, String email, String hiddenCardNumber, double amount, IWTimestamp date, Locale locale) throws IDOCreateException {
 		Collection participants = new ArrayList();
 
@@ -497,6 +521,10 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 	}
 	
 	private Group getAgeGroup(User user, Run run, Distance distance) {
+		return getAgeGroup(user, run, distance);
+	}
+	
+	private Group getAgeGroup(User user, Group run, Group distance) {
 		Age age = new Age(user.getDateOfBirth());
 		
 		String[] groupType = { IWMarathonConstants.GROUP_TYPE_RUN_GROUP };
@@ -749,15 +777,58 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 			run = getRunObjByUserAndGroup(userID, groupID);
 		}
 		if(run != null) {
-			if(runTime != null && !runTime.equals("")) {
-				run.setRunTime(Integer.parseInt(runTime));
+			if(runTime != null) {
+				runTime.trim();
+				if (!runTime.equals("")) {
+					run.setRunTime(Integer.parseInt(runTime));
+				}
 			}
-			if(chipTime != null && !chipTime.equals("")) {
-				run.setChipTime(Integer.parseInt(chipTime));
+			if(chipTime != null) {
+				chipTime.trim();
+				if (!chipTime.equals("")) {
+					run.setChipTime(Integer.parseInt(chipTime));
+				}
 			}
 			run.store();
 		}
 	}
+	
+	public void updateRunForParticipant(Participant participant, int bibNumber, String runTime, String chipTime) {
+		if(runTime != null) {
+			runTime.trim();
+			if (!runTime.equals("")) {
+				participant.setRunTime(convertTimeToInt(runTime));
+			}
+		}
+		if(chipTime != null) {
+			chipTime.trim();
+			if(!chipTime.equals("") && !(chipTime.equals(" "))) {
+				participant.setChipTime(convertTimeToInt(chipTime));
+			}
+		}
+		participant.setParticipantNumber(bibNumber);
+		participant.store();
+	}
+	
+	private int convertTimeToInt(String time) {
+		int index = time.lastIndexOf(":");
+		int hours = 0;
+		int minutes = 0;
+		int seconds = Integer.parseInt(time.substring(index + 1));
+		time = time.substring(0, index);
+		if (time.indexOf(":") != -1) {
+			hours = Integer.parseInt(time.substring(0, time.indexOf(":")));
+			minutes = Integer.parseInt(time.substring(time.indexOf(":") + 1));
+		}
+		else {
+			minutes = Integer.parseInt(time);
+		}
+		seconds += hours * 60 * 60;
+		seconds += minutes * 60;
+		
+		return seconds;
+	}
+	
 	public Participant getRunObjByUserIDandDistanceID(int userID, int distanceID) {
 		try {
 			ParticipantHome runHome = (ParticipantHome) getIDOHome(Participant.class);
@@ -777,6 +848,16 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		try {
 			ParticipantHome runHome = (ParticipantHome) getIDOHome(Participant.class);
 			return runHome.findByDistanceAndParticpantNumber(distancePK, participantNumber);
+		}
+		catch (RemoteException e) {
+			throw new IBORuntimeException(e);
+		}
+	}
+	
+	public Participant getParticipantByRunAndYear(User user, Group run, Group year) throws FinderException {
+		try {
+			ParticipantHome runHome = (ParticipantHome) getIDOHome(Participant.class);
+			return runHome.findByUserAndRun(user, run, year);
 		}
 		catch (RemoteException e) {
 			throw new IBORuntimeException(e);
@@ -1403,7 +1484,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		}
 	}
 
-	private UserBusiness getUserBiz() throws IBOLookupException {
+	public UserBusiness getUserBiz() throws IBOLookupException {
 		UserBusiness business = (UserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), UserBusiness.class);
 		return business;
 	}
