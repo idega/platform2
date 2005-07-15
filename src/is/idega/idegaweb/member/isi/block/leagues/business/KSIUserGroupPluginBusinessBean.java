@@ -1,5 +1,5 @@
 /*
- * $Id: KSIUserGroupPluginBusinessBean.java,v 1.4 2005/07/15 12:46:33 eiki Exp $
+ * $Id: KSIUserGroupPluginBusinessBean.java,v 1.5 2005/07/15 13:18:31 eiki Exp $
  * Created on Jul 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -384,7 +384,13 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 		String pin = user.getPersonalID();
 		NationalRegister entry = register.getEntryBySSN(pin);
 		String nationality = entry.getNationality();
-		return ("".equals(nationality)) || (nationality==null) || ("IS".equalsIgnoreCase(nationality));
+		if(nationality==null){
+			return true;
+		}
+		else{
+			nationality = nationality.trim();
+			return ("".equals(nationality)) || ("IS".equalsIgnoreCase(nationality));
+		}
 	}
 	
 	public MemberUserBusiness getMemberUserBusiness() throws IBOLookupException{
