@@ -1,5 +1,5 @@
 /*
- * $Id: KSIUserGroupPluginBusinessBean.java,v 1.6 2005/07/15 14:06:57 eiki Exp $
+ * $Id: KSIUserGroupPluginBusinessBean.java,v 1.7 2005/07/15 15:59:35 eiki Exp $
  * Created on Jul 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -171,25 +171,29 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 	protected boolean isRegisteredPlayerInOtherClubThanTargetGroupBelongsTo(User user, Group targetGroup) throws RemoteException, FinderException {
 		
 		MemberUserBusiness biz = getMemberUserBusiness();
-		List usersDivisions;
-		try {
-			usersDivisions = biz.getDivisionListForUser(user);
-		}
-		catch (NoDivisionFoundException e) {
-			return false;
-		}
-	
-		Group division = biz.getDivisionForGroup(targetGroup);
-		
+			
+		Group clubForTargetGroup = biz.getClubForGroup(targetGroup);
 		Group league = getLeagueForGroup(targetGroup);
 		String leagueNR = league.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER);
 		String uuid = league.getUniqueId();
 		
-		for (Iterator iter = usersDivisions.iterator(); iter.hasNext();) {
-			Group div = (Group) iter.next();
-			boolean sameLeague = isCorrectLeague(div,leagueNR,uuid);
-			if(sameLeague && !division.getPrimaryKey().equals(div.getPrimaryKey())){
-				return true;
+		
+		Collection parents = user.getParentGroups();
+		for (Iterator iter = parents.iterator(); iter.hasNext();) {
+			Group group = (Group) iter.next();
+			if(group.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER)){
+				if(isCorrectLeague(group,leagueNR,uuid)){
+					try {
+						Group clubForGroup = biz.getClubForGroup(group);
+						if(!clubForGroup.equals(clubForTargetGroup)){
+							return true;
+						}
+					}
+					catch (NoClubFoundException e) {
+						//do nothing, but the player group is obviously created in the wrong way or has been deleted
+						e.printStackTrace();
+					}
+				}
 			}
 		}
 	
