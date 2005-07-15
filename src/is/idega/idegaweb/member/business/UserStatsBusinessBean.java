@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -27,8 +28,12 @@ import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.contact.data.PhoneType;
 import com.idega.core.location.data.Address;
+import com.idega.core.location.data.AddressType;
+import com.idega.core.location.data.AddressTypeHome;
+import com.idega.data.IDOCompositePrimaryKeyException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.data.IDORelationshipException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.user.business.GroupBusiness;
@@ -74,6 +79,9 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 	private static final String FIELD_NAME_POSTAL_ADDRESS = "postal_address";
 	private static final String FIELD_NAME_PHONE = "phone";
 	private static final String FIELD_NAME_EMAIL = "email";
+	
+	private Map cachedGroups = new HashMap();
+	private Map cachedParents = new HashMap();
 	
 	private void initializeBundlesIfNeeded() {
 		if (_iwb == null) {
@@ -157,6 +165,13 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 			users = getUserBusiness().getUsersBySpecificGroupsUserstatusDateOfBirthAndGender(groups, userStatusesFilter, yearOfBirthFromFilter,  yearOfBirthToFilter,  genderFilter);
 			Collection topNodes = getUserBusiness().getUsersTopGroupNodesByViewAndOwnerPermissions(getUserContext().getCurrentUser(),getUserContext());
 			Map usersByGroups = new TreeMap();
+			AddressTypeHome addressHome = (AddressTypeHome) IDOLookup.getHome(AddressType.class);
+			AddressType at1 = null;
+			try {
+			    at1 = addressHome.findAddressType1();
+			} catch (FinderException e) {
+			    e.printStackTrace();
+			}
 			Iterator iter = users.iterator();
 			 while (iter.hasNext()) {
 			     User user = (User) iter.next();
@@ -180,12 +195,23 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 			   	    email = (Email)emails.iterator().next();
 			   	    emailString = email.getEmailAddress();
 			   	}
-			   	
-			   	Collection addresses = user.getAddresses();
+			   	Collection addresses = null;
+			   	if (at1 != null) {
+			   	    
+					   	try {
+                            addresses = user.getAddresses(at1);
+                        } catch (IDOLookupException e1) {
+                            e1.printStackTrace();
+                        } catch (IDOCompositePrimaryKeyException e1) {
+                            e1.printStackTrace();
+                        } catch (IDORelationshipException e1) {
+                            e1.printStackTrace();
+                        }
+			   	}
 			    Address address = null;
 			    String streetAddressString = null;
 			    String postalAddressString = null;
-			   	if (!addresses.isEmpty()) {
+			   	if (addresses != null && !addresses.isEmpty()) {
 			   	    address = (Address)addresses.iterator().next();
 			   	    streetAddressString = address.getStreetAddress();
 			   	    postalAddressString = address.getPostalAddress();
@@ -286,24 +312,41 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 		return phoneNumber;
     }
     
-    private String getParentGroupPath(Group group, Collection topNodes) { 
-        Group parentGroup = group;
+    private String getParentGroupPath(Group parentGroup, Collection topNodes) { 
         String parentGroupPath = parentGroup.getName();
 	    Collection parentGroupCollection = null;
 	    
 	    while (parentGroup != null && !topNodes.contains(parentGroup)) {
-	        try {
-		         parentGroupCollection = getGroupHome().findParentGroups(Integer.parseInt(parentGroup.getPrimaryKey().toString()));
-		     }
-	        catch (FinderException e) {
-		         System.out.println(e.getMessage());
-		     }
-		     if (!parentGroupCollection.isEmpty()) {
-		         parentGroup = (Group)parentGroupCollection.iterator().next();
-		         parentGroupPath = parentGroup.getName()+"/"+parentGroupPath;
-		     } else {
-		         break;
-		     }
+	        String parentKey = parentGroup.getPrimaryKey().toString();
+	        if (cachedParents.containsKey((parentKey))) {
+		        Collection col = (Collection)cachedParents.get(parentKey);
+		        Iterator it = col.iterator();
+		        Integer parentID = null;
+		        if (it.hasNext()) {
+	                 parentID = (Integer)it.next();
+	                 String groupKey = parentID.toString();
+	                 if (cachedGroups.containsKey(groupKey)) {
+	                     parentGroup = (Group)cachedGroups.get(groupKey); 
+	                 }
+	                 else {
+	                     try {
+		                     parentGroup = (Group) groupBiz.getGroupByGroupID(parentID.intValue());
+			                 cachedGroups.put(groupKey, parentGroup);
+	                     } catch (Exception e) {
+	                         break;
+	                     }
+	                 }
+	            }      
+			} else {
+			         parentGroupCollection = parentGroup.getParentGroups(cachedParents, cachedGroups);
+			         
+			     if (!parentGroupCollection.isEmpty()) {
+			         parentGroup = (Group)parentGroupCollection.iterator().next();
+			     }else {
+			         break;
+			     }
+		    }
+			parentGroupPath = parentGroup.getName()+"/"+parentGroupPath;
 	    }
     return parentGroupPath;
     }
