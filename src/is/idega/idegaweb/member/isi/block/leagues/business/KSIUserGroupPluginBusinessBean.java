@@ -1,5 +1,5 @@
 /*
- * $Id: KSIUserGroupPluginBusinessBean.java,v 1.7 2005/07/15 15:59:35 eiki Exp $
+ * $Id: KSIUserGroupPluginBusinessBean.java,v 1.8 2005/07/15 16:41:35 eiki Exp $
  * Created on Jul 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -23,7 +23,6 @@ import java.rmi.RemoteException;
 import java.sql.Date;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.xml.rpc.ServiceException;
@@ -94,9 +93,8 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 				boolean usingWebService = useWebService(targetGroup);
 				boolean playerRegisteredInWebService = false;
 				boolean playerRegisteredInOtherClubInWebService = false;
-				
+				int clubNumberFromWebService = -1;
 				if(usingWebService){
-					int clubNumberFromWebService = -1;
 					try {
 						clubNumberFromWebService = getClubNumberForPlayerFromWebService(user.getPersonalID());
 					}
@@ -149,7 +147,7 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 				if(isClubExchangeDep){
 					try {
 						//TODO add league for target group and other clubs number (felix or webservice) for better messages
-						errorMessage = checkClubExchangeDependency(user,targetGroup,playerRegisteredInOtherClubInMemberSystem,usingWebService,playerRegisteredInWebService,playerRegisteredInOtherClubInWebService);
+						errorMessage = checkClubExchangeDependency(user,targetGroup,playerRegisteredInOtherClubInMemberSystem,usingWebService,playerRegisteredInWebService,playerRegisteredInOtherClubInWebService,clubNumberFromWebService);
 					}
 					catch (NoDivisionFoundException e) {
 						return "There is no division for the target group!";
@@ -160,7 +158,7 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 				}
 				
 				if(isNationalityDep && errorMessage==null){
-					errorMessage = checkNationality(user,targetGroup,playerRegisteredInOtherClubInMemberSystem,usingWebService,playerRegisteredInWebService,playerRegisteredInOtherClubInWebService);
+					errorMessage = checkNationality(user,targetGroup,playerRegisteredInOtherClubInMemberSystem,usingWebService,playerRegisteredInWebService,playerRegisteredInOtherClubInWebService,clubNumberFromWebService);
 				}
 			}
 		}
@@ -312,7 +310,7 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 		}
 	}
 	
-	protected String checkClubExchangeDependency(User user, Group targetGroup, boolean playerRegisteredInOtherClubInMemberSystem, boolean usingWebService, boolean playerRegisteredInWebService, boolean playerRegisteredInOtherClubInWebService) throws NoDivisionFoundException, RemoteException, NoClubFoundException {
+	protected String checkClubExchangeDependency(User user, Group targetGroup, boolean playerRegisteredInOtherClubInMemberSystem, boolean usingWebService, boolean playerRegisteredInWebService, boolean playerRegisteredInOtherClubInWebService, int clubNumberFromWebService) throws NoDivisionFoundException, RemoteException, NoClubFoundException {
 		
 		if(playerRegisteredInOtherClubInMemberSystem){
 			//here we need the club...
@@ -337,10 +335,11 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 	 * @param playerRegisteredInWebService 
 	 * @param callWebService2 
 	 * @param playerRegisteredInOtherClubInMemberSystem 
+	 * @param clubNumberFromWebService 
 	 * @throws IBOLookupException
 	 * @throws RemoteException
 	 */
-	protected String checkNationality(User user, Group targetGroup, boolean playerRegisteredInOtherClubInMemberSystem, boolean usingWebService, boolean playerRegisteredInWebService, boolean playerRegisteredInOtherClubInWebService) throws IBOLookupException, RemoteException {
+	protected String checkNationality(User user, Group targetGroup, boolean playerRegisteredInOtherClubInMemberSystem, boolean usingWebService, boolean playerRegisteredInWebService, boolean playerRegisteredInOtherClubInWebService, int clubNumberFromWebService) throws IBOLookupException, RemoteException {
 //		o Ef a_ kennitala vi_komandi er ekki til á skrá hjá KSÍ e_a er ekki skrá_ í anna_ knattspyrnufélag
 //		ß Kanna_ er hvort a_ ríkisfang vi_komandi sé erlent.
 //		∑ Sé _a_ erlent _á birtist or_sending: “Jón Jónsson, kt. 123456-7890, er me_ erlent ríkisfang.  Vinsamlega hafi_ samband vi_ KSÍ (finna útfrá sérsambandstengingu), _ar sem kanna _arf hvort a_ vi_komandi hafi leikheimild í ö_ru landi.”
@@ -364,6 +363,7 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 		else if(!icelandicNationality && usingWebService){
 			if(playerRegisteredInWebService){
 				if(playerRegisteredInOtherClubInWebService){
+					
 					return "The player is registered to another club you need to contact the league and apply for a club member exchange";
 				}
 			}
