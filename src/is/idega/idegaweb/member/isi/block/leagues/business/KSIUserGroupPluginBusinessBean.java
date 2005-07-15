@@ -1,5 +1,5 @@
 /*
- * $Id: KSIUserGroupPluginBusinessBean.java,v 1.3 2005/07/14 12:22:45 eiki Exp $
+ * $Id: KSIUserGroupPluginBusinessBean.java,v 1.4 2005/07/15 12:46:33 eiki Exp $
  * Created on Jul 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -47,7 +47,7 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 		//after a player is registered he must be added to the KSI system via a webservice
 		boolean useWebService = useWebService(parentGroup);
 		MemberUserBusiness biz = getMemberUserBusiness();
-		if(useWebService && parentGroup!=null){
+		if(useWebService){
 			Group club;
 			try {
 				club = biz.getClubForGroup(parentGroup);
@@ -200,7 +200,7 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 
 	
 	protected boolean useWebService(Group targetGroup) throws RemoteException {
-		if(!IWMemberConstants.GROUP_TYPE_CLUB_PLAYER.equals(targetGroup.getGroupType())){
+		if(targetGroup==null || !IWMemberConstants.GROUP_TYPE_CLUB_PLAYER.equals(targetGroup.getGroupType())){
 			return false;
 		}
 //		KSI is number 14 and this uuid is from felixsport.is
