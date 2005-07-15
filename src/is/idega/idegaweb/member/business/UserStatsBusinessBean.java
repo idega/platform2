@@ -336,7 +336,10 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 	                         break;
 	                     }
 	                 }
-	            }      
+	            }
+		        else {
+		        	break;
+		        }
 			} else {
 			         parentGroupCollection = parentGroup.getParentGroups(cachedParents, cachedGroups);
 			         
