@@ -159,7 +159,7 @@ public class MarathonFileImportHandlerBean extends IBOServiceBean  implements Ma
 				if (validLine) {
 					User user = null;
 					try {
-						if (personalID.length() == 0) {
+						if (personalID.length() > 0) {
 							user = business.getUserBiz().getUser(personalID);
 						}
 						else {
@@ -199,6 +199,7 @@ public class MarathonFileImportHandlerBean extends IBOServiceBean  implements Ma
 						}
 					}
 					participant.setChipNumber(chipNumber);
+					participant.setUserNationality(nationality);
 					business.updateRunForParticipant(participant, number, runTime, chipTime);
 					return true;
 				}

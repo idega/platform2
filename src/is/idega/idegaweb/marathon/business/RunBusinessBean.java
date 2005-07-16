@@ -795,14 +795,14 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 	
 	public void updateRunForParticipant(Participant participant, int bibNumber, String runTime, String chipTime) {
 		if(runTime != null) {
-			runTime.trim();
+			runTime = runTime.trim();
 			if (!runTime.equals("")) {
 				participant.setRunTime(convertTimeToInt(runTime));
 			}
 		}
 		if(chipTime != null) {
-			chipTime.trim();
-			if(!chipTime.equals("") && !(chipTime.equals(" "))) {
+			chipTime = chipTime.trim();
+			if(!chipTime.equals("")) {
 				participant.setChipTime(convertTimeToInt(chipTime));
 			}
 		}

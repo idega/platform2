@@ -130,7 +130,7 @@ public class RunResultViewer extends Block {
 			}
 		}
 
-		Form form = (Form) iwc.getApplicationAttribute("run_result_cache_" + runPK + "_" + (year != null ? year.getPrimaryKey() + "_" : "") + (distance != null ? distance.getPrimaryKey() + "_" : "") + sortBy);
+		Form form = null;//(Form) iwc.getApplicationAttribute("run_result_cache_" + runPK + "_" + (year != null ? year.getPrimaryKey() + "_" : "") + (distance != null ? distance.getPrimaryKey() + "_" : "") + sortBy);
 		
 		if (form == null) {
 			form = new Form();
@@ -144,7 +144,7 @@ public class RunResultViewer extends Block {
 			table.setCellpaddingLeft(1, row, 16);
 			table.mergeCells(1, row, table.getColumns(), row);
 			
-			table.add(getYearsDropdown(), 1, row);
+			table.add(getYearsDropdown(run), 1, row);
 			table.add(Text.getNonBrakingSpace(), 1, row);
 			table.add(getDistanceDropdown(), 1, row);
 			table.add(Text.getNonBrakingSpace(), 1, row);
@@ -173,7 +173,7 @@ public class RunResultViewer extends Block {
 			}
 			
 			form.add(table);
-			iwc.setApplicationAttribute("run_result_cache_" + runPK + "_" + (year != null ? year.getPrimaryKey() + "_" : "") + (distance != null ? distance.getPrimaryKey() + "_" : "") + sortBy, form);
+			//iwc.setApplicationAttribute("run_result_cache_" + runPK + "_" + (year != null ? year.getPrimaryKey() + "_" : "") + (distance != null ? distance.getPrimaryKey() + "_" : "") + sortBy, form);
 		}
 		add(form);
 	}
@@ -187,8 +187,10 @@ public class RunResultViewer extends Block {
 			int num = 1;
 			while (runIter.hasNext()) {
 				Participant run = (Participant) runIter.next();
-				row = insertRunIntoTable(table, row, run, num, num);
-				num++;
+				if (run.getRunTime() != -1) {
+					row = insertRunIntoTable(table, row, run, num, num);
+					num++;
+				}
 			}
 		}
 		catch (Exception e) {
@@ -289,8 +291,8 @@ public class RunResultViewer extends Block {
 		}
 	}
 
-	private DropdownMenu getYearsDropdown() throws RemoteException {
-		DropdownMenu years = (DropdownMenu) util.getSelectorFromIDOEntities(new DropdownMenu(IWMarathonConstants.GROUP_TYPE_RUN_YEAR), getRunBiz().getYears(run), "getName", iwrb);
+	private DropdownMenu getYearsDropdown(Group run) throws RemoteException {
+		DropdownMenu years = (DropdownMenu) util.getSelectorFromIDOEntities(new DropdownMenu(IWMarathonConstants.GROUP_TYPE_RUN_YEAR), run.getChildren(), "getName", iwrb);
 		years.addMenuElementFirst("", "");
 		years.setToSubmit();
 		years.keepStatusOnAction();
@@ -358,7 +360,7 @@ public class RunResultViewer extends Block {
 		table.setStyleClass(3, row, getStyleName(STYLENAME_LIST_ROW));
 		table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_CENTER);
 
-		String chipTime = getTimeStringFromRunTime(run.getChipTime());
+		String chipTime = run.getChipTime() != -1 ? getTimeStringFromRunTime(run.getChipTime()) : "-";
 		table.add(getRunnerRowText(chipTime), 5, row);
 		table.setStyleClass(5, row, getStyleName(STYLENAME_LIST_ROW));
 		table.setAlignment(5, row, Table.HORIZONTAL_ALIGN_CENTER);
@@ -393,7 +395,7 @@ public class RunResultViewer extends Block {
 		table.setStyleClass(11, row, getStyleName(STYLENAME_LIST_ROW));
 		table.setAlignment(11, row, Table.HORIZONTAL_ALIGN_CENTER);
 
-		table.add(getRunnerRowText(run.getRunGroupName()), 13, row);
+		table.add(getRunnerRowText(run.getRunGroupName() != null ? run.getRunGroupName() : ""), 13, row);
 		table.setStyleClass(13, row, getStyleName(STYLENAME_LIST_ROW));
 		
 		if (participantRow % 2 == 0) {
