@@ -273,7 +273,7 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 			}			 	
 			 
     	
-    	ReportableField[] sortFields = new ReportableField[] {groupField, nameField, personalIDField };
+    	ReportableField[] sortFields = new ReportableField[] {groupPathField, nameField, personalIDField };
 		Comparator comparator = new FieldsComparator(sortFields);
 		Collections.sort(reportCollection, comparator);
 		return reportCollection;
