@@ -117,7 +117,7 @@ public class FieldOverview extends GolfBlock {
 		
 		for (int a = 0; a < teeColor.length; a++) {
 
-			Tee[] tee = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAllByColumnEqualsOrdered("field_id", String.valueOf(field.getID()), "tee_color_id", String.valueOf(teeColor[a].getIntColumnValue("tee_color_id")), "hole_number");
+			Tee[] tee = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAllByColumnEqualsOrdered("field_id", field.getID(), "tee_color_id", teeColor[a].getIntColumnValue("tee_color_id"), "hole_number");
 
 			Text teeColorName = getSmallBoldBlackText(((TeeColorHome) IDOLookup.getHomeLegacy(TeeColor.class)).findByPrimaryKey(teeColor[a].getIntColumnValue("tee_color_id")).getName() + "&nbsp;");
 			myTable.add(teeColorName, 1, a + 2);

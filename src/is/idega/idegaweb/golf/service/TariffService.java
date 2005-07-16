@@ -267,7 +267,7 @@ public class TariffService  {
   static public Payment[] getMemberPayments(int iMemberId,int iUnionId){
      Payment[] P;
     try{
-      P = (Payment[]) ((Payment) IDOLookup.instanciateEntity(Payment.class)).findAllByColumnEqualsOrdered("member_id",String.valueOf(iMemberId),"union_id",String.valueOf(iUnionId),"last_updated");
+      P = (Payment[]) ((Payment) IDOLookup.instanciateEntity(Payment.class)).findAllByColumnEqualsOrdered("member_id",iMemberId,"union_id",iUnionId,"last_updated");
     }
     catch(SQLException e){
       P = new Payment[0];
