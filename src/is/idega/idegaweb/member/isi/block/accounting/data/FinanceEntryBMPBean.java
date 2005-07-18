@@ -157,6 +157,8 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry,
         setNullable(COLUMN_ASSESSMENT_ROUND_ID, true);
         setNullable(COLUMN_CLUB_ID, false);
         setNullable(COLUMN_GROUP_ID, true);
+        
+        addIndex("IDX_ASS_ENTRY_1", COLUMN_USER_ID);
     }
 
     public void setStatusCreated() {
