@@ -46,6 +46,8 @@ public class WorkReportClubAccountRecordBMPBean extends GenericEntity implements
 
         this.addManyToOneRelationship(COLUMN_NAME_WORK_REPORT_GROUP,
                 WorkReportGroup.class);
+
+        addIndex("IDX_ISI_CLUB_ACC_REC_1", COLUMN_NAME_REPORT_ID);
     }
 
     public String getEntityName() {

@@ -106,6 +106,7 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport, IDOR
 		addManyToManyRelationShip(WorkReportGroup.class); //so we can get the
 														  // clubs related to
 														  // leagues/divisions
+		addIndex("IDX_ISI_WORK_REPORT_1", COLUMN_NAME_GROUP_ID);
 	}
 
 	public String getEntityName() {

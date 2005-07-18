@@ -64,6 +64,8 @@ public class WorkReportDivisionBoardBMPBean extends GenericEntity implements Wor
 		addAttribute(COLUMN_NAME_NUMBER_OF_COMPETITORS, "Total sum of competitors", true, true, Integer.class);
 		addAttribute(COLUMN_NAME_WORK_REPORT_GROUP_ID, "Work report group id", true, true, Integer.class, "many-to-one", WorkReportGroup.class);
         addAttribute(COLUMN_NAME_HAS_NATIONAL_LEAGUE, "has national league", true, true, Boolean.class);	
+
+        addIndex("IDX_ISI_WR_DIV_BOARD_1", COLUMN_NAME_REPORT_ID);
   }
 
 	public String getEntityName() {
