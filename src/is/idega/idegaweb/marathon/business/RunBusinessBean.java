@@ -521,7 +521,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 	}
 	
 	private Group getAgeGroup(User user, Run run, Distance distance) {
-		return getAgeGroup(user, run, distance);
+		return getAgeGroup(user, (Group) run, distance);
 	}
 	
 	private Group getAgeGroup(User user, Group run, Group distance) {
