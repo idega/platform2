@@ -9,6 +9,7 @@ public interface WorkReportMember extends com.idega.data.IDOEntity
  public java.lang.String getFax();
  public java.lang.String getHomePhone();
  public java.util.Collection getLeaguesForMember()throws com.idega.data.IDOException;
+ public java.util.Collection getLeagueIDsForMember()throws com.idega.data.IDOException;
  public java.lang.String getName();
  public java.lang.String getPersonalId();
  public com.idega.core.location.data.PostalCode getPostalCode()throws java.sql.SQLException;
