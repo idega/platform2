@@ -92,7 +92,7 @@ public class MarathonFileImportHandlerBean extends IBOServiceBean  implements Ma
 		String gender = (String) values.get(1);
 		String dateOfBirth = (String) values.get(2);
 		String name = (String) values.get(3);
-		String personalID = (String) values.get(4);
+		String personalID = ((String) values.get(4)).trim();
 		String nationality = (String) values.get(5);
 		String chipTime = (String) values.get(6);
 		String runTime = (String) values.get(7);
@@ -100,7 +100,7 @@ public class MarathonFileImportHandlerBean extends IBOServiceBean  implements Ma
 		String distance = (String) values.get(9);
 		String year = (String) values.get(10);
 		String group = (String) values.get(11);
-		String chipNumber = (String) values.get(12);
+		String chipNumber = ((String) values.get(12)).trim();
 		
 		int number = -1;
 		try {
@@ -118,8 +118,9 @@ public class MarathonFileImportHandlerBean extends IBOServiceBean  implements Ma
 			boolean found = false;
 			while (iter.hasNext() && !found) {
 				country = (Country) iter.next();
-				found = nationality.equals(country.getIsoAbbreviation());
-				break;
+				if (nationality.equals(country.getIsoAbbreviation())) {
+					break;
+				}
 			}
 			
 			IWTimestamp birth = new IWTimestamp(dateOfBirth);
@@ -200,7 +201,6 @@ public class MarathonFileImportHandlerBean extends IBOServiceBean  implements Ma
 					}
 					participant.setChipNumber(chipNumber);
 					participant.setUserNationality(nationality);
-					participant.setRunGroupName(group);
 					business.updateRunForParticipant(participant, number, runTime, chipTime);
 					return true;
 				}
