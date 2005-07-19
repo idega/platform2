@@ -326,15 +326,14 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     while (membersIterator.hasNext())  {
       WorkReportMember member = (WorkReportMember) membersIterator.next();
       try {
-        Iterator leagues = member.getLeaguesForMember().iterator();
+        Iterator leagueIDs = member.getLeagueIDsForMember().iterator();
         List leaguesList = new ArrayList();
         // if there is at least one league the member is a player
-        if (leagues.hasNext())  {
+        if (leagueIDs.hasNext())  {
           playersCount++;
         }
-        while (leagues.hasNext()) {
-          WorkReportGroup league = (WorkReportGroup) leagues.next();
-          Integer leagueId = (Integer) league.getPrimaryKey();
+        while (leagueIDs.hasNext()) {
+          Integer leagueId = (Integer) leagueIDs.next();
           if ( mainBoardId != null && (! mainBoardId.equals(leagueId) ) ) {
             leaguesList.add(leagueId);
             Integer count = (Integer) leagueCountMap.get(leagueId);
