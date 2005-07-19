@@ -15,6 +15,11 @@ import com.idega.data.GenericEntity;
 import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
 import com.idega.data.IDORemoveRelationshipException;
+import com.idega.data.query.Column;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.Table;
+import com.idega.data.query.WildCardColumn;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
@@ -156,7 +161,15 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 	}
 	
 	public Collection ejbFindAllWorkReportMembersByWorkReportIdOrderedByMemberName(int reportId) throws FinderException{
-		return idoFindAllIDsByColumnOrderedBySQL(COLUMN_NAME_REPORT_ID,reportId,COLUMN_NAME_NAME);
+	    Table workReportMemberTable = new Table(this, "m");
+	    Column reportIDCol = new Column(workReportMemberTable, COLUMN_NAME_REPORT_ID);
+	    
+	    SelectQuery query = new SelectQuery(workReportMemberTable);
+	    query.addColumn(new WildCardColumn());
+	    query.addCriteria(new MatchCriteria(reportIDCol, MatchCriteria.EQUALS, reportId));
+	    query.addOrder(workReportMemberTable, COLUMN_NAME_NAME, true);
+		return idoFindPKsByQueryIgnoringCacheAndUsingLoadBalance(query,1000);
+//		return idoFindAllIDsByColumnOrderedBySQL(COLUMN_NAME_REPORT_ID,reportId,COLUMN_NAME_NAME);
 	}
   
   public Integer ejbFindWorkReportMemberBySocialSecurityNumberAndWorkReportId(String ssn, int reportId) throws FinderException  {
@@ -220,7 +233,7 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 		String leagueIDColumnName =  "ISI_WR_GROUP_ID";
 		String IDColumnName = getIDColumnName();
 		
-		sql.appendSelectCountFrom(this.getEntityName()).append(" memb, ")
+		sql.appendSelectCountIDFrom(this.getEntityName(), this.getIDColumnName(), "memb").append(" memb, ")
 		.append(getNameOfMiddleTable(this,league)).append(" middle ")
 		.appendWhere()
 		.appendEquals("memb."+COLUMN_NAME_REPORT_ID, ((Integer)report.getPrimaryKey()).intValue());
@@ -277,7 +290,7 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 		String leagueIDColumnName =  "ISI_WR_GROUP_ID";
 		String IDColumnName = getIDColumnName();
 		
-		sql.appendSelectCountFrom(this.getEntityName()).append(" memb, ")
+		sql.appendSelectCountIDFrom(this.getEntityName(), this.getIDColumnName(), "memb").append(" memb, ")
 		.append(getNameOfMiddleTable(this,league)).append(" middle ")
 		.appendWhere()
 		.appendEquals("memb."+COLUMN_NAME_REPORT_ID, ((Integer)report.getPrimaryKey()).intValue());
@@ -323,7 +336,7 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 		String leagueIDColumnName =  "ISI_WR_GROUP_ID";
 		String IDColumnName = getIDColumnName();
 		
-		sql.appendSelectCountFrom(this.getEntityName()).append(" memb, ")
+		sql.appendSelectCountIDFrom(this.getEntityName(), this.getIDColumnName(), "memb").append(" memb, ")
 		.append(getNameOfMiddleTable(this,league)).append(" middle ")
 		.appendWhere()
 		.appendEquals("memb."+COLUMN_NAME_REPORT_ID, ((Integer)report.getPrimaryKey()).intValue());
@@ -377,7 +390,7 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 		String leagueIDColumnName =  "ISI_WR_GROUP_ID";
 		String IDColumnName = getIDColumnName();
 
-		sql.appendSelectCountFrom(this.getEntityName()).append(" memb, ")
+		sql.appendSelectCountIDFrom(this.getEntityName(), this.getIDColumnName(), "memb").append(" memb, ")
 		.append(getNameOfMiddleTable(this,league)).append(" middle ")
 		.appendWhere()
 		.appendEquals("memb."+COLUMN_NAME_REPORT_ID, ((Integer)report.getPrimaryKey()).intValue());
@@ -424,7 +437,7 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 		String leagueIDColumnName =  "ISI_WR_GROUP_ID";
 		String IDColumnName = getIDColumnName();
 
-		sql.appendSelectCountFrom(this.getEntityName()).append(" memb, ")
+		sql.appendSelectCountIDFrom(this.getEntityName(), this.getIDColumnName(), "memb").append(" memb, ")
 		.append(getNameOfMiddleTable(this,league)).append(" middle ")
 		.appendWhere()
 		.appendEquals("memb."+COLUMN_NAME_REPORT_ID, ((Integer)report.getPrimaryKey()).intValue());
@@ -464,7 +477,7 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 		IWTimestamp stamp = getYearlyAgeBorderIWTimestamp(age,report.getYearOfReport().intValue());
 		String IDColumnName = getIDColumnName();
 		
-		sql.appendSelectCountFrom(this.getEntityName()).append(" memb ")
+		sql.appendSelectCountIDFrom(this.getEntityName(), this.getIDColumnName(), "memb").append(" memb ")
 		.appendWhere()
 		.appendEquals("memb."+COLUMN_NAME_REPORT_ID, ((Integer)report.getPrimaryKey()).intValue());
 		if(gender!=null){
@@ -493,7 +506,7 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 		IWTimestamp stamp = getYearlyAgeBorderIWTimestamp(age,report.getYearOfReport().intValue());
 		String IDColumnName = getIDColumnName();
 		
-		sql.appendSelectCountFrom(this.getEntityName()).append(" memb ")
+		sql.appendSelectCountIDFrom(this.getEntityName(), this.getIDColumnName(), "memb").append(" memb ")
 		.appendWhere()
 		.appendEquals("memb."+COLUMN_NAME_REPORT_ID, ((Integer)report.getPrimaryKey()).intValue());
 		if(gender!=null){
@@ -650,6 +663,11 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 		return idoGetRelatedEntities(WorkReportGroup.class);
 	}
 	
+	public Collection getLeagueIDsForMember() throws IDOException {
+		//could be optimized by only getting league workreportgroups
+		return idoGetRelatedEntityPKs(WorkReportGroup.class);
+	}
+
 	public String getStreetName() {
 		return (String) getColumnValue(COLUMN_NAME_STREET_NAME);
 	}
