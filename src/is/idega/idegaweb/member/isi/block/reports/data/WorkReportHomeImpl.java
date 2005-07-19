@@ -74,4 +74,11 @@ public int getTotalCountOfPlayersForWorkReportYearWithMainboardExcluded(int p0, 
     return theReturn;
 }
 
+public int getTotalCountOfCompetitorsForWorkReportYear(int p0) {
+    com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+    int theReturn = ((WorkReportBMPBean) entity).ejbHomeGetTotalCountOfCompetitorsForWorkReportYear(p0);
+    this.idoCheckInPooledEntity(entity);
+    return theReturn;
+}
+
 }

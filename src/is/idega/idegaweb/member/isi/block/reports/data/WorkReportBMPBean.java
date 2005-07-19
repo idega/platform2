@@ -444,6 +444,19 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport, IDOR
 			return 0;
 		}
 	}
+	
+	public int ejbHomeGetTotalCountOfCompetitorsForWorkReportYear(int year) {
+	    IDOQuery sql = idoQuery();
+		sql.appendSelectSumFrom(COLUMN_NAME_NUMBER_OF_COMPETITORS, ENTITY_NAME)
+		.appendWhereEquals(COLUMN_NAME_WORK_REPORT_YEAR, year);
+		try {
+			return (int)idoGetValueFromSingleValueResultSet(sql);
+		}
+		catch (IDOException e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
 
 	public Collection getLeagues() throws IDOException {
 		return idoGetRelatedEntities(WorkReportGroup.class);

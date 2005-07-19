@@ -139,19 +139,20 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 
 	public int getTotalCountOfCompetitorsForWorkReportYear(int year) {
 		//TODO use sql to get number!
-		int count = 0;
-		try {
-			Collection reports = this.getWorkReportHome().findAllWorkReportsByYearOrderedByGroupType(year);
-			Iterator iter = reports.iterator();
-			while (iter.hasNext()) {
-				WorkReport report = (WorkReport) iter.next();
-				int add = report.getNumberOfCompetitors();
-				count += (add > 0) ? add : 0; //add to sum if more than 0
-			}
-		}
-		catch (FinderException e) {
-			e.printStackTrace();
-		}
+	    int count = getWorkReportHome().getTotalCountOfCompetitorsForWorkReportYear(year);
+//		int count = 0;
+//		try {
+//			Collection reports = this.getWorkReportHome().findAllWorkReportsByYearOrderedByGroupType(year);
+//			Iterator iter = reports.iterator();
+//			while (iter.hasNext()) {
+//				WorkReport report = (WorkReport) iter.next();
+//				int add = report.getNumberOfCompetitors();
+//				count += (add > 0) ? add : 0; //add to sum if more than 0
+//			}
+//		}
+//		catch (FinderException e) {
+//			e.printStackTrace();
+//		}
 		return count;
 	}
 

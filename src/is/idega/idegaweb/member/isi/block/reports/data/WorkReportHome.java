@@ -13,5 +13,5 @@ public interface WorkReportHome extends com.idega.data.IDOHome
  public int getCountOfWorkReportsByStatusAndYear(java.lang.String p0,int p1);
  public int getTotalCountOfMembersForWorkReportYear(int p0);
  public int getTotalCountOfPlayersForWorkReportYearWithMainboardExcluded(int p0, java.lang.Integer p1);
-
+ public int getTotalCountOfCompetitorsForWorkReportYear(int p0);
 }
