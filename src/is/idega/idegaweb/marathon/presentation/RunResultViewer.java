@@ -214,14 +214,16 @@ public class RunResultViewer extends Block {
 					int num = 1;
 					while (runIter.hasNext()) {
 						Participant run = (Participant) runIter.next();
-						row = insertRunIntoTable(table, row, run, num, num);
-						num++;
+						if (run.getRunTime() > 0) {
+							row = insertRunIntoTable(table, row, run, num, num);
+							num++;
+						}
 						
 						if (!runIter.hasNext()) {
 							table.setHeight(row++, 2);
 						}
 					}
-					}
+				}
 			}
 		}
 		catch (Exception e) {
@@ -231,13 +233,11 @@ public class RunResultViewer extends Block {
 
 	private void getGroupCompetitionResults(Table table, int row) {
 		try {
-			System.out.println("1. Getting all runners");
 			List runs = new ArrayList(getRunBiz().getRunnersByDistance(distance, null));
 			
 			Map runGroups = new HashMap();
 			RunGroupMap map = new RunGroupMap();
 			
-			System.out.println("2. Sorting out group runners");
 			Participant runner;
 			RunGroup runnerGroup;
 			Iterator iterator = runs.iterator();
@@ -250,14 +250,12 @@ public class RunResultViewer extends Block {
 						runGroups.put(runner.getRunGroupName(), runnerGroup);
 					}
 					
-					System.out.println("- Adding group runners to map");
 					map.put(runnerGroup, runner);
 				}
 			}
 
 			List groupList = new ArrayList(map.keySet());
 			Collections.sort(groupList, new RunGroupComparator(map));
-			System.out.println("4. Sorting run groups");
 
 			iterator = groupList.iterator();
 			Participant run;

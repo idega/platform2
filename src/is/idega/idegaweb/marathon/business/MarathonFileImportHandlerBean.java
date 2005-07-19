@@ -200,6 +200,7 @@ public class MarathonFileImportHandlerBean extends IBOServiceBean  implements Ma
 					}
 					participant.setChipNumber(chipNumber);
 					participant.setUserNationality(nationality);
+					participant.setRunGroupName(group);
 					business.updateRunForParticipant(participant, number, runTime, chipTime);
 					return true;
 				}
