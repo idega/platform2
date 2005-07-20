@@ -1888,6 +1888,11 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			Timestamp registerDate, int registrator) {
 		return storeSchoolClassMember(studentID, schoolClassID, schoolYearID, schoolTypeID, registerDate, registrator, null);
 	}
+	//ny
+	public SchoolClassMember storeSchoolClassMember(int studentID, int schoolClassID, int schoolYearID, int schoolTypeID,
+			Timestamp registerDate, int registrator, int studyPathID) {
+		return storeSchoolClassMember(studentID, schoolClassID, schoolYearID, schoolTypeID, registerDate, null, registrator, null, null, studyPathID);
+	}
 
 	public SchoolClassMember storeSchoolClassMember(int studentID, int schoolClassID, int schoolYearID, int schoolTypeID,
 			Timestamp registerDate, int registrator, String notes) {
@@ -1901,12 +1906,18 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 				registrator, notes, null);
 	}
 
+	public SchoolClassMember storeSchoolClassMember(int studentID, int schoolClassID, int schoolYearID, int schoolTypeID,
+			Timestamp registerDate, Timestamp removedDate, int registrator, String notes, String language) {
+		return storeSchoolClassMember(studentID, schoolClassID, schoolYearID, schoolTypeID, registerDate, removedDate,
+				registrator, notes, language, -1);
+	}
+	
 	/**
 	 * Stores placement. If placement for student and schoolgroup exist placement
 	 * is updated
 	 */
 	public SchoolClassMember storeSchoolClassMember(int studentID, int schoolClassID, int schoolYearID, int schoolTypeID,
-			Timestamp registerDate, Timestamp removedDate, int registrator, String notes, String language) {
+			Timestamp registerDate, Timestamp removedDate, int registrator, String notes, String language, int studyPathID) {
 		try {
 			SchoolClass group = this.findSchoolClass(new Integer(schoolClassID));
 			if (group.getIsSubGroup()) {
@@ -1959,6 +1970,8 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 						member.setNotes(notes);
 					if (language != null)
 						member.setLanguage(language);
+					if (studyPathID != -1)
+						member.setStudyPathId(studyPathID);
 					member.setRegistrationCreatedDate(IWTimestamp.getTimestampRightNow());
 					member.store();
 				}

@@ -1,24 +1,23 @@
 /*
- * $Id: StudyPathBusinessHome.java,v 1.3 2005/05/11 07:15:37 laddi Exp $
- * Created on 28.4.2005
+ * Created on 2005-jun-01
  *
- * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
+ * To change the template for this generated file go to
+ * Window - Preferences - Java - Code Generation - Code and Comments
  */
 package se.idega.idegaweb.commune.accounting.school.business;
 
+
+
 import com.idega.business.IBOHome;
 
-
 /**
- * Last modified: $Date: 2005/05/11 07:15:37 $ by $Author: laddi $
- * 
- * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @author Malin
+ *
+ * To change the template for this generated type comment go to
+ * Window - Preferences - Java - Code Generation - Code and Comments
  */
 public interface StudyPathBusinessHome extends IBOHome {
+	public StudyPathBusiness create() throws javax.ejb.CreateException,
+			java.rmi.RemoteException;
 
-	public StudyPathBusiness create() throws javax.ejb.CreateException, java.rmi.RemoteException;
 }

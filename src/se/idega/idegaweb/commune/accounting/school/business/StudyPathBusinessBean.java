@@ -1,5 +1,5 @@
 /*
- * $Id: StudyPathBusinessBean.java,v 1.8 2005/05/11 07:15:37 laddi Exp $
+ * $Id: StudyPathBusinessBean.java,v 1.9 2005/07/20 17:52:00 malin Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -31,10 +31,10 @@ import com.idega.data.IDORelationshipException;
 /** 
  * Business logic for age values and regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2005/05/11 07:15:37 $ by $Author: laddi $
+ * Last modified: $Date: 2005/07/20 17:52:00 $ by $Author: malin $
  *
  * @author Anders Lindman
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class StudyPathBusinessBean extends com.idega.business.IBOServiceBean implements StudyPathBusiness  {
 
@@ -132,6 +132,20 @@ public class StudyPathBusinessBean extends com.idega.business.IBOServiceBean imp
 		try {
 			SchoolStudyPathHome home = getSchoolStudyPathHome();
 			return home.findBySchoolType(operation);				
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	/**
+	 * Finds all study paths with the specified operations (school types).
+	 * @param operation the operation (school type ids)
+	 * @return collection of study path objects
+	 * @see se.idega.idegaweb.commune.accounting.school.data.StudyPath 
+	 */
+	public Collection findStudyPathsByOperations(Collection operations) {
+		try {
+			SchoolStudyPathHome home = getSchoolStudyPathHome();
+			return home.findBySchoolTypes(operations);				
 		} catch (Exception e) {
 			return null;
 		}
