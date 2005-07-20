@@ -13,6 +13,11 @@ import com.idega.data.IDOLookupException;
 import com.idega.data.IDOQuery;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.IDOReportableEntity;
+import com.idega.data.query.Column;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.Table;
+import com.idega.data.query.WildCardColumn;
 import com.idega.user.data.Group;
 
 /**
@@ -319,14 +324,23 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport, IDOR
 	}
 
 	public Collection ejbFindAllWorkReportsByYearOrderedByRegionalUnionNumberAndGroupNumber(int yearOfReport) throws FinderException {
-		IDOQuery sql = idoQuery();
-		String columns[] = { COLUMN_NAME_REGIONAL_UNION_NR, COLUMN_NAME_GROUP_NUMBER };
-
-		sql.appendSelectAllFrom(this.getEntityName());
-		sql.appendWhereEquals(COLUMN_NAME_WORK_REPORT_YEAR, yearOfReport);
-		sql.appendOrderBy(columns);
-
-		return this.idoFindPKsByQuery(sql);
+//		IDOQuery sql = idoQuery();
+//		String columns[] = { COLUMN_NAME_REGIONAL_UNION_NR, COLUMN_NAME_GROUP_NUMBER };
+//
+//		sql.appendSelectAllFrom(this.getEntityName());
+//		sql.appendWhereEquals(COLUMN_NAME_WORK_REPORT_YEAR, yearOfReport);
+//		sql.appendOrderBy(columns);
+//		
+		Table workReportTable = new Table(this, "m");
+	    Column yearOfReportCol = new Column(workReportTable, COLUMN_NAME_WORK_REPORT_YEAR);
+	    
+	    SelectQuery query = new SelectQuery(workReportTable);
+	    query.addColumn(new WildCardColumn());
+	    query.addCriteria(new MatchCriteria(yearOfReportCol, MatchCriteria.EQUALS, yearOfReport));
+	    query.addOrder(workReportTable, COLUMN_NAME_REGIONAL_UNION_NR, true);
+	    query.addOrder(workReportTable, COLUMN_NAME_GROUP_NUMBER, true);
+		return idoFindPKsByQueryIgnoringCacheAndUsingLoadBalance(query,1000);
+		//return this.idoFindPKsByQuery(sql);
 	}
 
 	public Collection ejbFindAllWorkReportsByYearOrderedByGroupType(int yearOfReport) throws FinderException {
@@ -386,8 +400,8 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport, IDOR
 	}
 
 	public int ejbHomeGetCountOfWorkReportsByStatusAndYear(String status, int year) {
-		IDOQuery sql = idoQueryGetSelectCount();
-
+		IDOQuery sql = idoQuery();
+		sql.appendSelectCountIDFrom(ENTITY_NAME, getIDColumnName());
 		sql.appendWhereEqualsQuoted(COLUMN_NAME_STATUS, status).appendAndEquals(COLUMN_NAME_WORK_REPORT_YEAR, year);
 
 		try {
@@ -406,7 +420,7 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport, IDOR
 
 	    IDOQuery sql = idoQuery();
 			
-		sql.appendSelectCountFrom(WorkReportMemberBMPBean.ENTITY_NAME).append(" memb ")
+		sql.appendSelectCountIDFrom(WorkReportMemberBMPBean.ENTITY_NAME,"ISI_WR_CLUB_MEMB_ID", "memb").append(" memb ")
 		.appendWhere()
 		.append("memb."+WorkReportMemberBMPBean.COLUMN_NAME_REPORT_ID).appendIn(subQuery);
 
@@ -428,7 +442,7 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport, IDOR
 		String IDColumnName = WorkReportMemberBMPBean.ENTITY_NAME+"_ID";
 		String leagueIDColumnName =  "ISI_WR_GROUP_ID";
 		
-		sql.appendSelectCountFrom().append(WorkReportMemberBMPBean.ENTITY_NAME).append(" memb, ")
+		sql.appendSelectCountIDFrom(WorkReportMemberBMPBean.ENTITY_NAME, "ISI_WR_CLUB_MEMB_ID", "memb").append(" memb, ")
 		.append("ISI_WR_CLUB_MEMB_ISI_WR_GROUP").append(" middle ").appendWhere()
 		.append("memb.").append(IDColumnName).appendEqualSign().append("middle.").append(IDColumnName)
 		.appendAnd().append("memb."+WorkReportMemberBMPBean.COLUMN_NAME_REPORT_ID).appendIn(subQuery);
