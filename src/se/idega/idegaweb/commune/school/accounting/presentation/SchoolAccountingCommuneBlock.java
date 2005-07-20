@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolAccountingCommuneBlock.java,v 1.2 2005/07/20 17:52:40 malin Exp $
+ * $Id: SchoolAccountingCommuneBlock.java,v 1.3 2005/07/20 19:45:32 malin Exp $
  * Created on Oct 15, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -11,34 +11,26 @@ package se.idega.idegaweb.commune.school.accounting.presentation;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 
-import javax.ejb.FinderException;
+import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
+import se.idega.idegaweb.commune.accounting.school.business.StudyPathBusiness;
+import se.idega.idegaweb.commune.school.presentation.SchoolCommuneBlock;
 
-import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolStudyPath;
-import com.idega.block.school.data.SchoolType;
-import com.idega.business.IBOLookupException;
-import com.idega.business.IBORuntimeException;
-import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.RadioButton;
-import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
-import se.idega.idegaweb.commune.accounting.school.business.StudyPathBusiness;
-import se.idega.idegaweb.commune.care.business.AccountingSession;
-import se.idega.idegaweb.commune.school.presentation.SchoolCommuneBlock;
 
 
 /**
  * 
- *  Last modified: $Date: 2005/07/20 17:52:40 $ by $Author: malin $
+ *  Last modified: $Date: 2005/07/20 19:45:32 $ by $Author: malin $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public abstract class SchoolAccountingCommuneBlock extends SchoolCommuneBlock {
 	
