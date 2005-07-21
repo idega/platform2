@@ -316,7 +316,7 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport, IDOR
 
 	public Integer ejbFindWorkReportByGroupIdAndYearOfReport(int groupId, int yearOfReport) throws FinderException {
 		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this.getEntityName());
+		sql.appendSelect().append(getIDColumnName()).appendFrom().append(this.getEntityName());
 		sql.appendWhereEquals(COLUMN_NAME_GROUP_ID, groupId);
 		sql.appendAndEquals(COLUMN_NAME_WORK_REPORT_YEAR, yearOfReport);
 
