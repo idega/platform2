@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.136 2005/07/11 16:42:25 thomas Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.137 2005/07/21 19:59:36 laddi Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -12,7 +12,6 @@ package se.idega.idegaweb.commune.accounting.regulations.business;
 
 import is.idega.block.family.business.FamilyLogic;
 import is.idega.block.family.business.NoCustodianFound;
-
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -20,12 +19,10 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
-
 import se.idega.idegaweb.commune.accounting.invoice.business.PlacementTimes;
 import se.idega.idegaweb.commune.accounting.invoice.business.RegularInvoiceBusiness;
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry;
@@ -59,7 +56,6 @@ import se.idega.idegaweb.commune.care.data.ProviderType;
 import se.idega.idegaweb.commune.care.data.ProviderTypeHome;
 import se.idega.idegaweb.commune.care.resource.data.Resource;
 import se.idega.idegaweb.commune.care.resource.data.ResourceHome;
-
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategoryBMPBean;
 import com.idega.block.school.data.SchoolClass;
@@ -73,7 +69,6 @@ import com.idega.business.IBOLookupException;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.IWContext;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
