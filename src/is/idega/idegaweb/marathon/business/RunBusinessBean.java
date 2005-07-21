@@ -525,7 +525,10 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 	}
 	
 	private Group getAgeGroup(User user, Group run, Group distance) {
-		Age age = new Age(user.getDateOfBirth());
+		IWTimestamp dateOfBirth = new IWTimestamp(user.getDateOfBirth());
+		dateOfBirth.setDay(1);
+		dateOfBirth.setMonth(1);
+		Age age = new Age(dateOfBirth.getDate());
 		
 		String[] groupType = { IWMarathonConstants.GROUP_TYPE_RUN_GROUP };
 		try {
@@ -1578,10 +1581,10 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 			}
 		}
 		catch (FinderException fe) {
-			log(fe);
+			//log(fe);
 		}
 		catch (RemoteException re) {
-			log(re);
+			//log(re);
 		}
 		return country;
 	}

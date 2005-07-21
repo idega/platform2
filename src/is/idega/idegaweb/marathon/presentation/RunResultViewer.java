@@ -267,9 +267,8 @@ public class RunResultViewer extends Block {
 			while (iterator.hasNext()) {
 				runGroup = (RunGroup) iterator.next();
 				runnersInRunGroup = map.getCollection(runGroup);
-				if (runnersInRunGroup.size() == 3) {
+				if (runnersInRunGroup.size() >= 3) {
 					row = insertRunGroupIntoTable(table, row, runGroup.getGroupName() + " - " + runGroup.getCounter().toString());
-					System.out.println("- Inserting group to table: " + runGroup.getGroupName());
 	
 					runIter = runnersInRunGroup.iterator();
 					num = 1;
@@ -280,7 +279,6 @@ public class RunResultViewer extends Block {
 						row = insertRunIntoTable(table, row, run, num, count+1);
 						count++;
 					}
-					System.out.println("- Inserting runners from group to table");
 				}
 			}
 		}

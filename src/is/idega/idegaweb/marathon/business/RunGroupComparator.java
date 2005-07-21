@@ -50,7 +50,7 @@ public class RunGroupComparator implements Comparator {
 					counter2.addSeconds(element.getRunTime());
 				}
 				else {
-					iter.remove();
+					//iter.remove();
 				}
 				index++;
 			}
