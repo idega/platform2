@@ -16,6 +16,8 @@ import net.sf.jasperreports.engine.design.JasperDesign;
  */
 public class DesignBox {
 	
+	public static final String REPORT_HEADLINE_KEY = "ReportTitle";
+	
 	private JasperDesign design;
 	
 	private Map parameterMap;

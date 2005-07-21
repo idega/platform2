@@ -79,12 +79,10 @@ public class QueryResultViewer extends Block {
 
 	
 	public static final String PDF_KEY = "pdf_key";
-  public static final String EXCEL_KEY = "excel_key";
-  public static final String HTML_KEY = "html_key";
+	public static final String EXCEL_KEY = "excel_key";
+	public static final String HTML_KEY = "html_key";
   
-  private static final String REPORT_HEADLINE_KEY = "ReportTitle";
- 	
-  private QueryToSQLBridge bridge;
+	private QueryToSQLBridge bridge;
 	private SQLQuery query;
 	private int queryId;
 	// -1 is default value
@@ -148,7 +146,7 @@ public class QueryResultViewer extends Block {
 						designId = Integer.parseInt(layoutContainer.getValue().toString());
 					}
 					catch (NumberFormatException ex) {
-						logError("[ReportOverview]: Can't retrieve id of layout");
+						logError("[QueryResultViewer]: Can't retrieve id of layout");
 						log(ex);
 						return resourceBundle.getLocalizedString("ro_design_id_could_not_be_fetched", "Design id  could not be fetched");
 					}
@@ -181,8 +179,8 @@ public class QueryResultViewer extends Block {
       return (QueryService) IBOLookup.getServiceInstance( getIWApplicationContext() ,QueryService.class);
     }
     catch (RemoteException ex)  {
-      System.err.println("[ReportOverview]: Can't retrieve QueryService. Message is: " + ex.getMessage());
-      throw new RuntimeException("[ReportOverview]: Can't retrieve QueryService");
+      System.err.println("[QueryResultViewer]: Can't retrieve QueryService. Message is: " + ex.getMessage());
+      throw new RuntimeException("[QueryResultViewer]: Can't retrieve QueryService");
     }
   }
 
@@ -191,8 +189,8 @@ public class QueryResultViewer extends Block {
       return (QueryToSQLBridge) IBOLookup.getServiceInstance( getIWApplicationContext() ,QueryToSQLBridge.class);
     }
     catch (RemoteException ex)  {
-      System.err.println("[ReportOverview]: Can't retrieve QueryToSqlBridge. Message is: " + ex.getMessage());
-      throw new RuntimeException("[ReportOverview]: Can't retrieve QueryToSQLBridge");
+      System.err.println("[QueryResultViewer]: Can't retrieve QueryToSqlBridge. Message is: " + ex.getMessage());
+      throw new RuntimeException("[QueryResultViewer]: Can't retrieve QueryToSQLBridge");
     }
   }
 
@@ -371,15 +369,15 @@ public class QueryResultViewer extends Block {
 		}
 		catch (ClassNotFoundException ex) {
 			log(ex);
-			logError("[ReportOverview] Could not retrieve handler class");
+			logError("[QueryResultViewer] Could not retrieve handler class");
 		}
 		catch (InstantiationException ex) {
 			log(ex);
-			logError("[ReportOverview] Could not instanciate handler class");
+			logError("[QueryResultViewer] Could not instanciate handler class");
 		}
 		catch (IllegalAccessException ex) {
 			log(ex);
-			logError("[ReportOverview] Could not instanciate handler class");
+			logError("[QueryResultViewer] Could not instanciate handler class");
 		}
 		return inputHandler;
   }
@@ -446,24 +444,34 @@ public class QueryResultViewer extends Block {
 		if (designBox ==  null) {
 			return resourceBundle.getLocalizedString("ro_design_is_not available", "Problems with the chosen layout occurred.");
 		}
-		
 	    // synchronize design and result
-	    Map designParameters = new HashMap();
-	    designParameters.put(REPORT_HEADLINE_KEY, sqlQuery.getName());
-	    JasperPrint print = reportBusiness.printSynchronizedReport(queryResult, designParameters, designBox);
-	    if (print == null) {
-	    	return resourceBundle.getLocalizedString("ro_could_not_use_layout", "Layout can't be used");
+
+	    String uri = null;
+	    if (EXCEL_KEY.equals(outputFormat)) {
+	    	uri = reportBusiness.getSynchronizedSimpleExcelReport(queryResult, designBox, "report");
 	    }
-	    // create html report
-	    String uri;
-	    if (PDF_KEY.equals(outputFormat)) {
-	    	uri = reportBusiness.getPdfReport(print, "report");
-	    }
-	    else if (EXCEL_KEY.equals(outputFormat))	{
-	    	uri = reportBusiness.getExcelReport(print, "report");
-	    }
+	    // or pdf or html
 	    else {
-	    	uri = reportBusiness.getHtmlReport(print, "report");
+	    	JasperPrint print = reportBusiness.printSynchronizedReport(queryResult, designBox);
+	    	if (print == null) {
+	    		return resourceBundle.getLocalizedString("ro_could_not_use_layout", "Layout can't be used");
+	    	}
+	    	if (PDF_KEY.equals(outputFormat)) {
+	    		uri = reportBusiness.getPdfReport(print, "report");
+	    	}
+//  the method below uses JasperReport for generating an excel file.
+//  Commented out because JasperReport tries to keep the layout of the design for excel files. 
+//  But by using the layout too many rows and columns are created and if a value is too large for a single cell .
+//  the value is split and put into two cells.
+//  Thus the columns can not be sorted and it is hard to edit such an excel file. 
+// 	Therefore the method below is not recommended.
+//
+//	    	else if (EXCEL_KEY.equals(outputFormat))	{
+//	    		uri = reportBusiness.getExcelReport(print, "report");
+//	    	}
+	    	else {
+	    		uri = reportBusiness.getHtmlReport(print, "report");
+	    	}
 	    }
 	    Page parentPage = getParentPage();
 	    if("true".equals(getBundle(iwc).getProperty(ADD_QUERY_SQL_FOR_DEBUG,"false"))){
@@ -492,13 +500,17 @@ public class QueryResultViewer extends Block {
     	}
     }
     catch (IOException ioEx) {
-    	logError("[ReportQueryOverview] Couldn't retrieve design.");
+    	logError("[QueryResultViewer] Couldn't retrieve design.");
     	log(ioEx);
     }
     catch (JRException jrEx) {
-    	logError("[ReportQueryOverview] Couldn't retrieve design.");
+    	logError("[QueryResultViewer] Couldn't retrieve design.");
     	log(jrEx);
     }
+    // add the public parameter headline to the design
+    Map designParameters = design.getParameterMap();
+    String queryName = sqlQuery.getName();
+   	designParameters.put(DesignBox.REPORT_HEADLINE_KEY, queryName);
     return design;
 	}
 
@@ -507,8 +519,8 @@ public class QueryResultViewer extends Block {
       return (JasperReportBusiness) IBOLookup.getServiceInstance( getIWApplicationContext(), JasperReportBusiness.class);
     }
     catch (RemoteException ex) {
-      System.err.println("[ReportOverview]: Can't retrieve JasperReportBusiness. Message is: " + ex.getMessage());
-      throw new RuntimeException("[ReportOverview]: Can't retrieve ReportBusiness");
+      System.err.println("[QueryResultViewer]: Can't retrieve JasperReportBusiness. Message is: " + ex.getMessage());
+      throw new RuntimeException("[QueryResultViewer]: Can't retrieve ReportBusiness");
     }
   }
 
@@ -573,8 +585,8 @@ public class QueryResultViewer extends Block {
 			return (UserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), UserBusiness.class);
 		}
 		catch (RemoteException ex)	{
-      System.err.println("[ReportOverview]: Can't retrieve UserBusiness. Message is: " + ex.getMessage());
-      throw new RuntimeException("[ReportOverview]: Can't retrieve UserBusiness");
+      System.err.println("[QueryResultViewer]: Can't retrieve UserBusiness. Message is: " + ex.getMessage());
+      throw new RuntimeException("[QueryResultViewer]: Can't retrieve UserBusiness");
 		}
 	}
 
@@ -583,8 +595,8 @@ public class QueryResultViewer extends Block {
 			return (GroupBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), GroupBusiness.class);
 		}
 		catch (RemoteException ex)	{
-      System.err.println("[ReportOverview]: Can't retrieve GroupBusiness. Message is: " + ex.getMessage());
-      throw new RuntimeException("[ReportOverview]: Can't retrieve GroupBusiness");
+      System.err.println("[QueryResultViewer]: Can't retrieve GroupBusiness. Message is: " + ex.getMessage());
+      throw new RuntimeException("[QueryResultViewer]: Can't retrieve GroupBusiness");
 		}
 	}
 

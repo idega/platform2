@@ -45,6 +45,12 @@ import com.idega.util.FileUtil;
  */
 public class DynamicReportDesign {
 	
+	public static final int FONT_SIZE_TITLE = 16;
+	public static final int FONT_SIZE_COLUMN_HEADER = 10;
+	public static final int FONT_SIZE_TEXT_FIELD = 10;
+	public static final int FONT_SIZE_PAGE_HEADER = 10;
+	
+	
 	public static final int PAGE_WIDTH_PORTRAIT_A4 = 595;
 	public static final int PAGE_HEIGHT_PORTRAIT_A4 = 842;
 	public static final int PAGE_LEFT_MARGIN = 20;
@@ -187,7 +193,7 @@ public class DynamicReportDesign {
 				tElement.setVerticalAlignmentAsTop();
 				tElement.setLineSpacingAsSingle();
 					Font tElementFont = new Font();
-					tElementFont.setFontSize(16);
+					tElementFont.setFontSize(FONT_SIZE_TITLE);
 					tElementFont.setIsBold(true);
 				tElement.addContent(tElementFont);
 			tField1.addContent(tElement);
@@ -427,7 +433,7 @@ public class DynamicReportDesign {
 			tElement.setLineSpacingAsSingle();
 				Font tElementFont = new Font();
 				tElementFont.setIsBold(true);
-				tElementFont.setFontSize(10);
+				tElementFont.setFontSize(FONT_SIZE_COLUMN_HEADER);
 			tElement.addContent(tElementFont);
 		tField.addContent(tElement);
 			TextFieldExpression tfExpression = new TextFieldExpression();
@@ -473,7 +479,7 @@ public class DynamicReportDesign {
 			tElement.setVerticalAlignmentAsTop();
 			tElement.setLineSpacingAsSingle();
 				Font tElementFont = new Font();
-				tElementFont.setFontSize(10);
+				tElementFont.setFontSize(FONT_SIZE_TEXT_FIELD);
 			tElement.addContent(tElementFont);
 		tField.addContent(tElement);
 		tField.addContent(textFieldExpression);
@@ -519,7 +525,7 @@ public class DynamicReportDesign {
 					Font tElementFont = new Font();
 					tElementFont.setIsUnderline(underline);
 					tElementFont.setIsBold(bold);
-					tElementFont.setFontSize(10);
+					tElementFont.setFontSize(FONT_SIZE_PAGE_HEADER);
 			tElement.addContent(tElementFont);
 		tField.addContent(tElement);
 			TextFieldExpression tfExpression = new TextFieldExpression();

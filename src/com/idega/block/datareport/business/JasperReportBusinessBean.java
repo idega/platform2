@@ -14,10 +14,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import javax.ejb.CreateException;
 import javax.ejb.RemoveException;
-
 import net.sf.jasperreports.engine.JRBand;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
@@ -32,7 +30,6 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.export.JRHtmlExporter;
 import net.sf.jasperreports.engine.export.JRXlsExporter;
 import net.sf.jasperreports.engine.export.JRXlsExporterParameter;
-
 import com.idega.block.dataquery.data.QueryResult;
 import com.idega.block.dataquery.data.QueryResultField;
 import com.idega.block.dataquery.data.sql.DirectSQLStatement;
@@ -89,17 +86,20 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
     return JasperFillManager.fillReport(report, parameterMap, dataSource);
   }
   
-  public JasperPrint printSynchronizedReport(QueryResult dataSource, Map parameterMap, DesignBox designBox) {
-    JasperPrint print;
-    synchronizeResultAndDesign(dataSource, parameterMap, designBox);
+  private void synchronizeAndReset(QueryResult dataSource, DesignBox designBox) {
+    synchronizeResultAndDesign(dataSource, designBox);
     // henceforth we treat the QueryResult as a JRDataSource, 
     // therefore we reset the QueryResult to prepare it 
     dataSource.resetDataSource(); // resets only the DataSource functionality (sets the pointer to the first row)
+  }
+  
+  public JasperPrint printSynchronizedReport(QueryResult dataSource, DesignBox designBox) {
+  	synchronizeAndReset(dataSource, designBox);
+    JasperPrint print = null;
     try {
     	Map map = designBox.getParameterMap();
-    	map.putAll(parameterMap);
     	JasperDesign design = designBox.getDesign();
-      print = getReport(dataSource, map, design);
+    	print = getReport(dataSource, map, design);
     }
     catch (JRException ex)  {
      logError("[ReportBusiness]: Jasper print could not be generated.");
@@ -171,11 +171,36 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
     }
     return getURIToReport(nameOfReport, EXCEL_FILE_EXTENSION,folderIdentifier);
   }  
+  
+  public String getSynchronizedSimpleExcelReport(QueryResult dataSource, DesignBox designBox, String nameOfReport) {
+  	synchronizeAndReset(dataSource, designBox);
+  	Map designerMap = designBox.getParameterMap();
+  	ReportDescription reportDescription = new ReportDescription(); 
+  	Iterator iterator = designBox.getDesign().getFieldsList().iterator();
+  	int columnNumber = 1;
+  	while (iterator.hasNext()) {
+  		JRField jrField = (JRField) iterator.next();
+  	    String designFieldId = jrField.getName();
+  	    ReportableField reportField = new ReportableField(designFieldId, String.class);
+  	    // get the already localized display name from the parameter map 
+  	    String columnKey = getColumnParameter(columnNumber++);
+  	    String displayName = (String) designerMap.get(columnKey);
+  	    reportField.setCustomMadeFieldName(displayName);
+  	    reportDescription.addField(reportField);
+  	}
+  	String reportTitle = (String) designerMap.get(DesignBox.REPORT_HEADLINE_KEY); 
+  	return getSimpleExcelReportWithFileName(dataSource, reportTitle, reportDescription, nameOfReport);
+  }
     
   public String getSimpleExcelReport(JRDataSource reportData, String nameOfReport, ReportDescription description) {
+  	return getSimpleExcelReportWithFileName(reportData, nameOfReport, description, "report");
+  }
+  	
+  	
+  private String getSimpleExcelReportWithFileName(JRDataSource reportData, String nameOfReport, ReportDescription description, String fileName) {
     // prepare path
     long folderIdentifier = System.currentTimeMillis();
-    String path = getRealPathToReportFile("report", EXCEL_FILE_EXTENSION,folderIdentifier);
+    String path = getRealPathToReportFile(fileName, EXCEL_FILE_EXTENSION,folderIdentifier);
 
     try {
 		SimpleReportBusiness srBusiness = (SimpleReportBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(),SimpleReportBusiness.class);
@@ -192,7 +217,7 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
 	      return null;
 	}    
     
-    return getURIToReport("report", EXCEL_FILE_EXTENSION,folderIdentifier);
+    return getURIToReport(fileName, EXCEL_FILE_EXTENSION,folderIdentifier);
   }  
 
   
@@ -252,7 +277,7 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
     return uri.toString();
   }
 
-  public void synchronizeResultAndDesign(QueryResult result, Map parameterMap, DesignBox designBox)  {
+  private void synchronizeResultAndDesign(QueryResult result, DesignBox designBox)  {
   	JasperDesign reportDesign = designBox.getDesign();
   	Map designParameterMap = designBox.getParameterMap();
     List designFieldsToRemove = new ArrayList();
@@ -276,11 +301,11 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
         // be sure that the display key is set. Usually a default value is set by the design box! If not, set it now.
         if (display == null || display.length() == 0)  {
         	if (! designParameterMap.containsKey(displayKey))	{
-        		parameterMap.put(displayKey, "");
+        		designParameterMap.put(displayKey, "");
         	}
         }
         else {
-        	parameterMap.put(displayKey, display);
+        	designParameterMap.put(displayKey, display);
         }
       }
       orderNumber++;
@@ -485,8 +510,8 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
 	  		}
 	  		String description = inputDescription.getDescription();
 
-	  		int descriptionWidth = (description == null) ? labelWidth : calculateTextFieldWidthForString(description);
-	  		int inputValueDisplayWidth = (inputValueDisplay == null) ? valueWidth : calculateTextFieldWidthForString(inputValueDisplay);
+	  		int descriptionWidth = (description == null) ? labelWidth : calculateTextFieldWidthForString(description, DynamicReportDesign.FONT_SIZE_PAGE_HEADER );
+	  		int inputValueDisplayWidth = (inputValueDisplay == null) ? valueWidth : calculateTextFieldWidthForString(inputValueDisplay, DynamicReportDesign.FONT_SIZE_PAGE_HEADER);
 	  		String descriptionWithPrefix = StringHandler.concat(SQLQuery.DYNAMIC_FIELD_DESCRIPTION_PREFIX, identifier);
 	  		String inputValueDisplayWithPrefix = StringHandler.concat(SQLQuery.DYNAMIC_FIELD_VALUE_PREFIX, identifier);
 	  		parameterMap.put(descriptionWithPrefix, description);
@@ -600,9 +625,8 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
 	}
 
     
-	private int calculateTextFieldWidthForString(String str){
-		int fontSize = 9;
-		return (int)( 5+(str.length()*fontSize*0.58));
+	private int calculateTextFieldWidthForString(String str, int fontSize){
+		return (int)( 10 +(str.length()* fontSize *0.58));
 	}
 
 	/* (non-Javadoc)
