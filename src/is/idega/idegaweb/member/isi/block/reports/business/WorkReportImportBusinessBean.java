@@ -1252,7 +1252,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 								WorkReportGroup league = (WorkReportGroup) leaguesMap.get(new Integer(j));
 								if (league != null) {
 									try {
-									    league.addEntity(member);
+									    league.addMember(member);
 									}
 									catch (IDOAddRelationshipException e5) {
 										throw new WorkReportImportException(
@@ -1269,7 +1269,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 										}
 										try {
 											if (firstTimeMemberToBeAddedToMainboard && firstOccurrenceOfMemberInFile) {
-												mainBoard.addEntity(member);
+												mainBoard.addMember(member);
 												firstTimeMemberToBeAddedToMainboard = false;
 											}
 										}
