@@ -185,12 +185,16 @@ public class WorkReportGroupBMPBean extends GenericEntity implements WorkReportG
 		return idoGetRelatedEntities(WorkReportMember.class);
 	}
 	
-	public void addEntity(IDOEntity entity) throws IDOAddRelationshipException{
-		this.idoAddTo(entity);
+	public Collection getMemberIDs() throws IDOException {
+		return idoGetRelatedEntityPKs(WorkReportMember.class);
 	}
 	
-  public void removeEntity(IDOEntity entity) throws IDORemoveRelationshipException {
-    this.idoRemoveFrom(entity);
+	public void addMember(IDOEntity member) throws IDOAddRelationshipException{
+		this.idoAddTo(member);
+	}
+	
+  public void removeMember(IDOEntity member) throws IDORemoveRelationshipException {
+    this.idoRemoveFrom(member);
   }
   
   public Integer ejbFindWorkReportGroupByGroupIdAndYear(int groupId, int year) throws FinderException{

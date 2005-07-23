@@ -3,9 +3,10 @@ package is.idega.idegaweb.member.isi.block.reports.data;
 
 public interface WorkReportGroup extends com.idega.data.IDOEntity
 {
- public void addEntity(com.idega.data.IDOEntity p0)throws com.idega.data.IDOAddRelationshipException;
+ public void addMember(com.idega.data.IDOEntity p0)throws com.idega.data.IDOAddRelationshipException;
  public java.lang.String getEmail();
  public java.util.Collection getMembers()throws com.idega.data.IDOException;
+ public java.util.Collection getMemberIDs()throws com.idega.data.IDOException;
  public java.lang.String getFax();
  public java.lang.Integer getGroupId();
  public java.lang.String getGroupType();
@@ -20,7 +21,7 @@ public interface WorkReportGroup extends com.idega.data.IDOEntity
  public java.lang.String getWorkPhone();
  public java.lang.Integer getYearOfReport();
  public void initializeAttributes();
- public void removeEntity(com.idega.data.IDOEntity p0)throws com.idega.data.IDORemoveRelationshipException;
+ public void removeMember(com.idega.data.IDOEntity p0)throws com.idega.data.IDORemoveRelationshipException;
  public void setEmail(java.lang.String p0);
  public void setFax(java.lang.String p0);
  public void setGroupId(int p0);
