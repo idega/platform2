@@ -204,7 +204,7 @@ public class WorkReportDivisionBoardBMPBean extends GenericEntity implements Wor
 	
 	public Integer ejbFindWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(int reportId, int wrGroupId) throws FinderException{
 		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this.getEntityName());
+		sql.appendSelect().append(getIDColumnName()).appendFrom().append(this.getEntityName());
 		sql.appendWhereEquals(COLUMN_NAME_WORK_REPORT_GROUP_ID,wrGroupId);
 		sql.appendAndEquals(COLUMN_NAME_REPORT_ID,reportId);
 		
