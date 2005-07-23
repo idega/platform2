@@ -943,14 +943,21 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 				// work report
 				WorkReport workReport = getWorkReportById(reportId);
 				try {
-					workReport.addLeague(league);
-					workReport.store();
-				}
-				catch (IDORelationshipException ex) {
-					String message = "[WorkReportBusiness]: Can't define realtion ship.";
-					System.err.println(message + " Message is: " + ex.getMessage());
-					//	ex.printStackTrace(System.err);
-					// do nothing
+				    Collection leagueIDs = workReport.getLeagueIDs();
+				    if (leagueIDs != null && !leagueIDs.contains(league.getPrimaryKey())) {
+						try {
+						    workReport.addLeague(league);
+							workReport.store();
+						}
+						catch (IDORelationshipException ex) {
+							String message = "[WorkReportBusiness]: Can't define realtion ship.";
+							System.err.println(message + " Message is: " + ex.getMessage());
+							//	ex.printStackTrace(System.err);
+							// do nothing
+						}
+				    }
+				} catch (IDOException e) {
+				    e.printStackTrace();
 				}
 			}
 		}
@@ -1542,34 +1549,40 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	 * 
 	 * @param oldGroup
 	 * @param newGroup
-	 * @param entity
+	 * @param member
 	 * @return true if successful else false.
 	 */
 	public boolean changeWorkReportGroupOfEntity(int workReportID, WorkReportGroup oldGroup, WorkReportGroup newGroup,
-			IDOEntity entity) {
+			IDOEntity member) {
 		TransactionManager manager = com.idega.transaction.IdegaTransactionManager.getInstance();
 		try {
 			manager.begin();
 			// add work report group to work report
 			if (newGroup != null) {
 				WorkReport workReport = getWorkReportById(workReportID);
-				try {
-					workReport.addLeague(newGroup);
+				Collection leagueIDs = workReport.getLeagueIDs();
+				if (leagueIDs != null && !leagueIDs.contains(newGroup.getPrimaryKey())) {
+				    try {
+						workReport.addLeague(newGroup);
+					}
+					catch (IDORelationshipException e) {
+						System.err.println("Error adding relation to workreportgroup, maybe relation is already there");
+					}
 				}
-				catch (IDORelationshipException e) {
-					System.err.println("Error adding relation to workreportgroup, maybe relation is already there");
-				}
-				try {
-					newGroup.addEntity(entity);
-				}
-				catch (IDOAddRelationshipException e) {
-					System.err.println("Error adding relation to workreportgroup, maybe relation is already there");
-					//	e.printStackTrace();
+				Collection memberIDs = newGroup.getMemberIDs();
+				if (memberIDs != null && !memberIDs.contains(member.getPrimaryKey())) {
+				    try {
+						newGroup.addMember(member);
+					}
+					catch (IDOAddRelationshipException e) {
+						System.err.println("Error adding relation to workreportgroup, maybe relation is already there");
+						//	e.printStackTrace();
+					}
 				}
 			}
 			if (oldGroup != null) {
 				try {
-					oldGroup.removeEntity(entity);
+					oldGroup.removeMember(member);
 				}
 				catch (IDORemoveRelationshipException e) {
 					e.printStackTrace();

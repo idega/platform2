@@ -253,23 +253,16 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       }
       // update the connections to leagues
       // get the current leagues of the member
-      Collection membersLeague = null;
+      Collection membersLeagueIds = null;
       try {
-        membersLeague = member.getLeaguesForMember();
+          membersLeagueIds = member.getLeagueIDsForMember();
       } 
       catch (IDOException ex) {
-        System.err.println("[WorkReportMemberEditor]: Couldn't get leagues. Message is: " +
+        System.err.println("[WorkReportMemberEditor]: Couldn't get leagueIDs. Message is: " +
           ex.getMessage());
         ex.printStackTrace(System.err);
         return action;
       }  
-      Iterator membersLeagueIterator = membersLeague.iterator();
-      Collection membersLeagueIds = new ArrayList();
-      while (membersLeagueIterator.hasNext())  {
-        WorkReportGroup league= (WorkReportGroup) membersLeagueIterator.next();
-        Integer leagueId = (Integer) league.getPrimaryKey();
-        membersLeagueIds.add(leagueId);
-      }
       Iterator leagueIterator = leagueCountMap.keySet().iterator();
       while (leagueIterator.hasNext())  {
         Integer key = (Integer) leagueIterator.next();
