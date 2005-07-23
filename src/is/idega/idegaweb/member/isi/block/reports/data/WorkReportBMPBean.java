@@ -476,6 +476,10 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport, IDOR
 		return idoGetRelatedEntities(WorkReportGroup.class);
 	}
 
+	public Collection getLeagueIDs() throws IDOException {
+		return idoGetRelatedEntityPKs(WorkReportGroup.class);
+	}
+
 	public void addLeague(WorkReportGroup group) throws IDORelationshipException {
 		idoAddTo(group);
 	}
