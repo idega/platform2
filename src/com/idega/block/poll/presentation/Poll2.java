@@ -24,6 +24,8 @@ import com.idega.presentation.Layer;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.text.ListItem;
+import com.idega.presentation.text.Lists;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
@@ -167,10 +169,10 @@ public class Poll2 extends Block implements Builderaware {
 		
 		// this layer contains all block output
 		// and has style class property
-		Layer l = new Layer();		
-		l.getChildren().add(_myTable);
-		l.setStyleClass(this.getBlockLayerStyleClass());
-		add(l);	
+		Layer layer = new Layer();		
+		layer.getChildren().add(_myTable);
+		layer.setStyleClass(getBlockLayerStyleClass());
+		add(layer);	
 	
 	}
 
@@ -222,7 +224,10 @@ public class Poll2 extends Block implements Builderaware {
 					obj = getRadioButtonView(locText, pollQuestion);
 					break;
 				case LINK_VIEW:
-					obj = getLinkView(iwc, locText, pollQuestion);
+					//obj = getLinkView(iwc, locText, pollQuestion);
+					
+					obj =  getNewLinkView();
+					
 					break;
 			}
 			return obj;
@@ -308,7 +313,9 @@ public class Poll2 extends Block implements Builderaware {
 
 	private Table getLinkView(IWContext iwc, LocalizedText locText, PollQuestion pollQuestion) {
 		//Image olderPollsImage = _iwrb.getImage("older_polls.gif");
-		//Image olderPollsImage = _iwrb.getLocalizedImageButton("older_polls", "Older polls");
+		//Image olderPollsImage = _iwrb.getLocalizedImageButton("older_polls", "Older polls");	
+		
+		
 
 		Table pollTable = new Table();
 		pollTable.setCellpadding(3);
@@ -497,6 +504,47 @@ public class Poll2 extends Block implements Builderaware {
 
 		return pollTable;
 	}
+		
+	private Layer getNewLinkView(){		
+		/*
+		  mockup with no business logic in it
+		  layer containing all the stuff
+		  <div>
+		      <ul>
+		      	  <li><a href="" /></li>
+		      	  <li><a href="" /></li>
+		      	  <li><a href="" /></li>	
+		      </ul>
+		  </div>  
+		 */
+		
+		Layer surroundingLayer = new Layer();
+		surroundingLayer.setStyleClass("awesome layer class");
+		
+		Text text = new Text("This is poll2  question?");
+		
+		surroundingLayer.getChildren().add(text);
+		
+		//now make <ul> of questions		
+		Lists list = new Lists();
+		list.setStyleClass("awesome list class");
+		
+		ListItem li = new ListItem();
+		li.setStyleClass("awesome list-item class");
+		
+		Link link = new Link();
+		link.setStyleClass("awesome link class");
+		link.setText("Answer 1");
+		link.setURL("#");
+		
+		li.getChildren().add(link);
+		list.getChildren().add(li);
+		
+		surroundingLayer.getChildren().add(list);
+		
+		return surroundingLayer;		
+		
+	}	
 
 	private void setDefaultValues() {
 		_pollWidth = "100%";
