@@ -172,7 +172,7 @@ public class MarathonFileImportHandlerBean extends IBOServiceBean  implements Ma
 						}
 					}
 					catch (FinderException fe) {
-						System.out.println("User not found, creating...");;
+						System.out.println("User not found, creating...");
 					}
 					if (user == null) {
 						try {
