@@ -1,5 +1,5 @@
 /*
- * $Id: SimpleReportBusinessBean.java,v 1.5 2004/10/15 17:01:46 sigtryggur Exp $
+ * $Id: SimpleReportBusinessBean.java,v 1.6 2005/07/26 17:31:47 thomas Exp $
  * Created on 21.9.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -29,12 +29,15 @@ import com.idega.util.text.TextSoap;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/15 17:01:46 $ by $Author: sigtryggur $
+ *  Last modified: $Date: 2005/07/26 17:31:47 $ by $Author: thomas $
  * 
  * @author <a href="mailto:gummi@idega.com">Gudmundur Agust Saemundsson</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class SimpleReportBusinessBean extends IBOServiceBean implements SimpleReportBusiness {
+	
+	public final static String NAME_OF_REPORT = "Report";
+	public final static String REPORT_FONT = "Courier New";
 
 	/**
 	 * 
@@ -47,7 +50,7 @@ public class SimpleReportBusinessBean extends IBOServiceBean implements SimpleRe
 	
 	public void writeSimpleExcelFile(JRDataSource reportData, String nameOfReport, String filePathAndName, ReportDescription description) throws IOException{
 		if(nameOfReport==null || "".equals(nameOfReport)){
-			nameOfReport = "Report";
+			nameOfReport = NAME_OF_REPORT;
 		}
 		HSSFWorkbook wb = new HSSFWorkbook();
 		HSSFSheet sheet = wb.createSheet(TextSoap.encodeToValidExcelSheetName(nameOfReport));
@@ -63,7 +66,7 @@ public class SimpleReportBusinessBean extends IBOServiceBean implements SimpleRe
 	    // Create a new font and alter it.
 	    HSSFFont font = wb.createFont();
 	    font.setFontHeightInPoints((short)24);
-	    font.setFontName("Courier New");
+	    font.setFontName(REPORT_FONT);
 	    font.setItalic(true);
 	    font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
 
@@ -125,7 +128,7 @@ public class SimpleReportBusinessBean extends IBOServiceBean implements SimpleRe
 	    for (Iterator iter = fields.iterator(); iter.hasNext();colIndex++) {
 			ReportableField field = (ReportableField) iter.next();
 			HSSFCell headerCell = headerRow.createCell((short)colIndex);
-			headerCell.setCellValue((String)description.getColumnName(field));
+			headerCell.setCellValue(description.getColumnName(field));
 			headerCell.setCellStyle(headerCellStyle);
 			
 			//column width
@@ -170,7 +173,7 @@ public class SimpleReportBusinessBean extends IBOServiceBean implements SimpleRe
 
 		    // Create a new font and alter it.
 		    HSSFFont exceptionFont = wb.createFont();
-		    exceptionFont.setFontName("Courier New");
+		    exceptionFont.setFontName(REPORT_FONT);
 		    exceptionFont.setItalic(true);
 
 		    // Fonts are set into a style so create a new one to use.
