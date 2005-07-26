@@ -182,10 +182,20 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
   		JRField jrField = (JRField) iterator.next();
   	    String designFieldId = jrField.getName();
   	    ReportableField reportField = new ReportableField(designFieldId, String.class);
+  	    // now the customMadeFieldName of the reportField is the designFieldId
+  	    // do not get confused: customMadeFieldName is an identifier, not a display string
+  	    
   	    // get the already localized display name from the parameter map 
   	    String columnKey = getColumnParameter(columnNumber++);
   	    String displayName = (String) designerMap.get(columnKey);
-  	    reportField.setCustomMadeFieldName(displayName);
+  	    // avoid trouble
+  	    if (displayName == null) {
+  	    	// could be also set to ""
+  	    	displayName = Integer.toString(columnNumber);
+  	    }
+  	    // set the header display for the column
+  	    reportDescription.put(designFieldId, displayName);
+
   	    reportDescription.addField(reportField);
   	}
   	String reportTitle = (String) designerMap.get(DesignBox.REPORT_HEADLINE_KEY); 
@@ -299,12 +309,15 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
         String display = field.getValue(QueryResultField.DISPLAY);
         String displayKey = getColumnParameter(orderNumber);
         // be sure that the display key is set. Usually a default value is set by the design box! If not, set it now.
+        // e.g. see method getDynamicDesignBox (there the designParameterMap is set)
         if (display == null || display.length() == 0)  {
+        	// only set if the displayKey was not set by the design that is only set if there is no default value
         	if (! designParameterMap.containsKey(displayKey))	{
         		designParameterMap.put(displayKey, "");
         	}
         }
         else {
+        	// ignore the default display that was set by the design use the display that is suggested by the query 
         	designParameterMap.put(displayKey, display);
         }
       }
@@ -348,9 +361,11 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
       int orderNumber = fieldOrder.indexOf(fieldId) - indexCorrection;
       if (headerChildrenSize > orderNumber) {
       	headerChildren.remove(orderNumber);
+      	headerChildrenSize--;
       }
       if (detailChildrenSize > orderNumber) {
       	detailChildren.remove(orderNumber);
+      	detailChildrenSize--;
       }
       // adjust the index because elements have been removed
       indexCorrection++; 
