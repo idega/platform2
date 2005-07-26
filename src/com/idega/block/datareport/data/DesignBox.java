@@ -40,7 +40,10 @@ public class DesignBox {
 	 * @return Returns the parameterMap.
 	 */
 	public Map getParameterMap() {
-		return (parameterMap == null) ? new HashMap(0) : parameterMap;
+		if (parameterMap == null) {
+			parameterMap = new HashMap(0);
+		}
+		return parameterMap;
 	}
 
 	/**
