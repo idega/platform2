@@ -84,6 +84,8 @@ public class Box extends Block implements Builderaware {
 	private boolean _showOnlyBelongingToUser = false;
 	private boolean _showCollection = false;
 	private boolean iSortAlphabetically = true;
+	private boolean iShowCategoryText = true;
+	private int iSpaceBetween = 0;
 
 	private String _target;
 
@@ -400,19 +402,20 @@ public class Box extends Block implements Builderaware {
 				categoryString = "$language$";
 			}
 
-			Text categoryText = new Text(categoryString);
-			categoryText.setFontStyle(_categoryStyle);
-
 			Table table = new Table();
 			table.setWidth("100%");
 			table.setCellspacing(0);
-			table.setCellpadding(1);
+			table.setCellpadding(0);
 
-			table.add(categoryText, 1, 1);
-
-			int linkRow = 2;
+			int linkRow = 1;
 			int column = 1;
 			
+			if (iShowCategoryText) {
+				Text categoryText = new Text(categoryString);
+				categoryText.setFontStyle(_categoryStyle);
+				table.add(categoryText, 1, linkRow++);
+			}
+
 			if (_showHeaders) {
 				Text nameHeader = new Text(_iwrb.getLocalizedString("link_name", "Name"));
 				if (_headerStyle != null)
@@ -514,6 +517,9 @@ public class Box extends Block implements Builderaware {
 							table.add(getDeleteLink(boxLink.getID()), column, linkRow);
 						}
 						linkRow++;
+						if ((iter.hasNext() || (a + 1) < categories.length) && iSpaceBetween > 0) {
+							table.setHeight(linkRow++, iSpaceBetween);
+						}
 					}
 				}
 
@@ -522,11 +528,10 @@ public class Box extends Block implements Builderaware {
 				}
 			}
 
-			boxTable.add(table, 1, row);
-			row++;
-
-			boxTable.add(image, 1, row);
-			row++;
+			boxTable.add(table, 1, row++);
+			if (iShowCategoryText) {
+				boxTable.add(image, 1, row++);
+			}
 		}
 	}
 
@@ -798,5 +803,15 @@ public class Box extends Block implements Builderaware {
 	
 	public void setSortAlphabetically(boolean sortAlphabetically) {
 		iSortAlphabetically = sortAlphabetically;
+	}
+
+	
+	public void setShowCategoryText(boolean showCategoryText) {
+		iShowCategoryText = showCategoryText;
+	}
+
+	
+	public void setSpaceBetween(int spaceBetween) {
+		iSpaceBetween = spaceBetween;
 	}
 }
