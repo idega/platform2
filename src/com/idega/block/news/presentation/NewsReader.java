@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.140 2005/07/14 15:56:48 laddi Exp $
+ * $Id: NewsReader.java,v 1.141 2005/07/27 14:19:52 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -740,16 +740,18 @@ public class NewsReader extends CategoryBlock implements Builderaware {
 					tMore = setMoreAttributes(tMore);
 					T.add(getMoreLink(tMore, news.getID(), iwc), 1, row);
 				}
+				row++;
 			}
 
 			//////////// ADMIN PART /////////////////////
 			int ownerId = newsHelper.getContentHelper().getContent().getUserId();
 			if (hasEdit || hasEditExisting || (hasAdd && (ownerId == iwc.getUserId()))) {
-				T.add(getNewsAdminPart(news, iwc), 1, row);
+				T.add(getNewsAdminPart(news, iwc), 1, row++);
 			}
 			if (!isLastNews) {
-				row++;
-				T.setHeight(row++, String.valueOf(iSpaceBetweenNews));
+				if (iSpaceBetweenNews > 0) {
+					T.setHeight(row++, String.valueOf(iSpaceBetweenNews));
+				}
 			}
 		}
 		//////////// SINGLE LINE VIEW ///////////////
