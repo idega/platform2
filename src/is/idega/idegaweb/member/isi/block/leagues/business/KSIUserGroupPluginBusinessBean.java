@@ -1,5 +1,5 @@
 /*
- * $Id: KSIUserGroupPluginBusinessBean.java,v 1.8 2005/07/15 16:41:35 eiki Exp $
+ * $Id: KSIUserGroupPluginBusinessBean.java,v 1.9 2005/07/27 14:01:48 eiki Exp $
  * Created on Jul 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -380,13 +380,17 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 	/**
 	 * @param user
 	 * @param register
-	 * @return
+	 * @return false if not an icelandic citizen or if there is no record of the player in the icelandic national registry table
 	 * @throws RemoteException
 	 */
 	protected boolean hasIcelandicCitizenship(User user) throws RemoteException {
 		NationalRegisterBusiness register = (NationalRegisterBusiness) getServiceInstance(NationalRegisterBusiness.class);
 		String pin = user.getPersonalID();
 		NationalRegister entry = register.getEntryBySSN(pin);
+		if(entry==null){
+			return false;
+		}
+		
 		String nationality = entry.getNationality();
 		if(nationality==null){
 			return true;
