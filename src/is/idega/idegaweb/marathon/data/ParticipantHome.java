@@ -1,6 +1,6 @@
 /*
- * $Id: ParticipantHome.java,v 1.4 2005/06/03 07:16:42 laddi Exp $
- * Created on Jun 3, 2005
+ * $Id: ParticipantHome.java,v 1.5 2005/07/27 10:55:52 laddi Exp $
+ * Created on Jul 27, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -18,10 +18,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/06/03 07:16:42 $ by $Author: laddi $
+ * Last modified: $Date: 2005/07/27 10:55:52 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public interface ParticipantHome extends IDOHome {
 
@@ -38,6 +38,16 @@ public interface ParticipantHome extends IDOHome {
 	 * @see is.idega.idegaweb.marathon.data.ParticipantBMPBean#ejbHomeGetNextAvailableParticipantNumber
 	 */
 	public int getNextAvailableParticipantNumber(Object distancePK, int min, int max) throws IDOException;
+
+	/**
+	 * @see is.idega.idegaweb.marathon.data.ParticipantBMPBean#ejbHomeGetNumberOfParticipantsByDistance
+	 */
+	public int getNumberOfParticipantsByDistance(Object distancePK, int min, int max) throws IDOException;
+
+	/**
+	 * @see is.idega.idegaweb.marathon.data.ParticipantBMPBean#ejbHomeGetCountByDistanceAndNumber
+	 */
+	public int getCountByDistanceAndNumber(Object distancePK, int number) throws IDOException;
 
 	/**
 	 * @see is.idega.idegaweb.marathon.data.ParticipantBMPBean#ejbHomeGetCountByDistanceAndGroupName

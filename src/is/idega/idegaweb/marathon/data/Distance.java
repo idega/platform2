@@ -1,6 +1,6 @@
 /*
- * $Id: Distance.java,v 1.2 2005/05/31 19:04:34 laddi Exp $
- * Created on May 30, 2005
+ * $Id: Distance.java,v 1.3 2005/07/27 10:55:52 laddi Exp $
+ * Created on Jul 27, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -14,10 +14,10 @@ import com.idega.user.data.Group;
 
 
 /**
- * Last modified: $Date: 2005/05/31 19:04:34 $ by $Author: laddi $
+ * Last modified: $Date: 2005/07/27 10:55:52 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public interface Distance extends Group {
 
@@ -80,4 +80,14 @@ public interface Distance extends Group {
 	 * @see is.idega.idegaweb.marathon.data.DistanceBMPBean#setAllowsGroups
 	 */
 	public void setAllowsGroups(boolean allowsGroups);
+
+	/**
+	 * @see is.idega.idegaweb.marathon.data.DistanceBMPBean#getNextAvailableParticipantNumber
+	 */
+	public int getNextAvailableParticipantNumber();
+
+	/**
+	 * @see is.idega.idegaweb.marathon.data.DistanceBMPBean#setNextAvailableParticipantNumber
+	 */
+	public void setNextAvailableParticipantNumber(int number);
 }

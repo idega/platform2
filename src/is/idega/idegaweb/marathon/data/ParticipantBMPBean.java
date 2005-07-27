@@ -11,6 +11,7 @@ import javax.ejb.FinderException;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
+import com.idega.data.query.CountColumn;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.MaxColumn;
 import com.idega.data.query.SelectQuery;
@@ -355,6 +356,29 @@ public class ParticipantBMPBean extends GenericEntity implements Participant {
 		query.addCriteria(new MatchCriteria(table, getColumnNameRunDistanceGroupID(), MatchCriteria.EQUALS, distancePK));
 		query.addCriteria(new MatchCriteria(table, getColumnNameParticipantNumber(), MatchCriteria.GREATEREQUAL, min));
 		query.addCriteria(new MatchCriteria(table, getColumnNameParticipantNumber(), MatchCriteria.LESSEQUAL, max));
+		
+		return idoGetNumberOfRecords(query.toString());
+	}
+	
+	public int ejbHomeGetNumberOfParticipantsByDistance(Object distancePK, int min, int max) throws IDOException {
+		Table table = new Table(this);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new CountColumn(getColumnNameParticipantNumber()));
+		query.addCriteria(new MatchCriteria(table, getColumnNameRunDistanceGroupID(), MatchCriteria.EQUALS, distancePK));
+		query.addCriteria(new MatchCriteria(table, getColumnNameParticipantNumber(), MatchCriteria.GREATEREQUAL, min));
+		query.addCriteria(new MatchCriteria(table, getColumnNameParticipantNumber(), MatchCriteria.LESSEQUAL, max));
+		
+		return idoGetNumberOfRecords(query.toString());
+	}
+	
+	public int ejbHomeGetCountByDistanceAndNumber(Object distancePK, int number) throws IDOException {
+		Table table = new Table(this);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new CountColumn(getColumnNameParticipantNumber()));
+		query.addCriteria(new MatchCriteria(table, getColumnNameRunDistanceGroupID(), MatchCriteria.EQUALS, distancePK));
+		query.addCriteria(new MatchCriteria(table, getColumnNameParticipantNumber(), MatchCriteria.EQUALS, number));
 		
 		return idoGetNumberOfRecords(query.toString());
 	}

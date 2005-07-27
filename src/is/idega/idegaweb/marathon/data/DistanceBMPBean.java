@@ -1,5 +1,5 @@
 /*
- * $Id: DistanceBMPBean.java,v 1.3 2005/06/02 14:02:32 laddi Exp $
+ * $Id: DistanceBMPBean.java,v 1.4 2005/07/27 10:55:52 laddi Exp $
  * Created on May 22, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -15,10 +15,10 @@ import com.idega.util.LocaleUtil;
 
 
 /**
- * Last modified: $Date: 2005/06/02 14:02:32 $ by $Author: laddi $
+ * Last modified: $Date: 2005/07/27 10:55:52 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class DistanceBMPBean extends GroupBMPBean  implements Distance{
 
@@ -29,6 +29,7 @@ public class DistanceBMPBean extends GroupBMPBean  implements Distance{
 	private static final String METADATA_CHILDREN_PRICE_ISK = "children_price_isk";
 	private static final String METADATA_CHILDREN_PRICE_EUR = "children_price_eur";
 	private static final String METADATA_ALLOWS_GROUPS = "allows_groups";
+	private static final String METADATA_NEXT_PARTICIPANT_NUMBER = "next_participant_number";
 
 	public boolean isUseChip() {
 		String useChip = this.getMetaData(METADATA_USE_CHIP);
@@ -112,5 +113,17 @@ public class DistanceBMPBean extends GroupBMPBean  implements Distance{
 
 	public void setAllowsGroups(boolean allowsGroups) {
 		setMetaData(METADATA_ALLOWS_GROUPS, String.valueOf(allowsGroups), "java.lang.Boolean");
+	}
+	
+	public int getNextAvailableParticipantNumber() {
+		String number = this.getMetaData(METADATA_NEXT_PARTICIPANT_NUMBER);
+		if (number != null) {
+			return Integer.parseInt(number);
+		}
+		return -1;
+	}
+	
+	public void setNextAvailableParticipantNumber(int number) {
+		setMetaData(METADATA_NEXT_PARTICIPANT_NUMBER, String.valueOf(number), "java.lang.Integer");
 	}
 }

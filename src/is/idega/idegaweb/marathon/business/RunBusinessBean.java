@@ -438,19 +438,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 					participant.setChipNumber(runner.getChipNumber());
 					participant.setUserNationality(runner.getNationality().getName());
 					if (runner.getDistance() != null) {
-						try {
-							int participantNumber = runHome.getNextAvailableParticipantNumber(runner.getDistance().getPrimaryKey(), getMinParticipantNumber(runner.getDistance().getName(), runner.getRun().getName()), getMaxParticipantNumber(runner.getDistance().getName(), runner.getRun().getName()));
-							if (participantNumber == 0) {
-								participantNumber = getMinParticipantNumber(runner.getDistance().getName(), runner.getRun().getName());
-							}
-							else {
-								participantNumber++;
-							}
-							participant.setParticipantNumber(participantNumber);
-						}
-						catch (IDOException ie) {
-							ie.printStackTrace();
-						}
+						participant.setParticipantNumber(getNextAvailableParticipantNumber(runner.getRun(), runner.getDistance()));
 					}
 					participant.store();
 					participants.add(participant);
@@ -496,6 +484,39 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		}
 		
 		return participants;
+	}
+	
+	private int getNextAvailableParticipantNumber(Run run, Distance distance) {
+		int number = distance.getNextAvailableParticipantNumber();
+		int minNumber = getMinParticipantNumber(distance.getName(), run.getName());
+		int maxNumber = getMaxParticipantNumber(distance.getName(), run.getName());
+		if (number == -1) {
+			number = minNumber;
+		}
+		if (number > maxNumber) {
+			return minNumber;
+		}
+		
+		try {
+			ParticipantHome runHome = (ParticipantHome) getIDOHome(Participant.class);
+			while (number <= maxNumber) {
+				if (runHome.getCountByDistanceAndNumber(distance.getPrimaryKey(), number) == 0) {
+					distance.setNextAvailableParticipantNumber(number + 1);
+					distance.store();
+					return number;
+				}
+				else {
+					number++;
+				}
+			}
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
+		catch (IDOException ie) {
+			ie.printStackTrace();
+		}
+		return minNumber;
 	}
 	
 	public void addParticipantsToGroup(String[] participants, String[] bestTimes, String[] estimatedTimes, String groupName) {
