@@ -40,6 +40,7 @@ public class Doc extends FolderBlock implements Builderaware, ICDynamicPageTrigg
 	private String _attribute;
 	private int _iLocaleID;
 	private int _layout = -1;
+	private boolean iShowCategoryText = true;
 
 	/**
 	 *  Description of the Field
@@ -546,18 +547,18 @@ public class Doc extends FolderBlock implements Builderaware, ICDynamicPageTrigg
 				categoryString = "$language$";
 			}
 
-			Text categoryText = new Text(categoryString);
-			categoryText.setFontStyle(_categoryStyle);
-
 			Table table = new Table();
 			table.setWidth("100%");
 			table.setCellspacing(0);
 			table.setCellpadding(1);
+			int linkRow = 1;
 
-			table.add(categoryText, 1, 1);
-
-			int linkRow = 2;
-
+			if (iShowCategoryText) {
+				Text categoryText = new Text(categoryString);
+				categoryText.setFontStyle(_categoryStyle);
+				table.add(categoryText, 1, linkRow++);
+			}
+			
 			DocLink[] links = DocBusiness.getLinksInFolderCategory(folder, categories[a]);
 			if (links != null) {
 				for (int b = 0; b < links.length; b++) {
@@ -579,11 +580,11 @@ public class Doc extends FolderBlock implements Builderaware, ICDynamicPageTrigg
 				}
 			}
 
-			boxTable.add(table, 1, row);
-			row++;
+			boxTable.add(table, 1, row++);
 
-			boxTable.add(image, 1, row);
-			row++;
+			if (iShowCategoryText) {
+				boxTable.add(image, 1, row++);
+			}
 		}
 	}
 
@@ -975,6 +976,11 @@ public class Doc extends FolderBlock implements Builderaware, ICDynamicPageTrigg
 			e.printStackTrace();
 			return false;
 		}
+	}
+
+	
+	public void setShowCategoryText(boolean showCategoryText) {
+		iShowCategoryText = showCategoryText;
 	}
 
 }
