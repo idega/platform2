@@ -420,7 +420,7 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport, IDOR
 
 	    IDOQuery sql = idoQuery();
 			
-		sql.appendSelectCountIDFrom(WorkReportMemberBMPBean.ENTITY_NAME,"ISI_WR_CLUB_MEMB_ID", "memb").append(" memb ")
+		sql.appendSelectCountIDFrom(WorkReportMemberBMPBean.ENTITY_NAME,"ISI_WR_CLUB_MEMB_ID", "memb")
 		.appendWhere()
 		.append("memb."+WorkReportMemberBMPBean.COLUMN_NAME_REPORT_ID).appendIn(subQuery);
 
@@ -442,7 +442,7 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport, IDOR
 		String IDColumnName = WorkReportMemberBMPBean.ENTITY_NAME+"_ID";
 		String leagueIDColumnName =  "ISI_WR_GROUP_ID";
 		
-		sql.appendSelectCountIDFrom(WorkReportMemberBMPBean.ENTITY_NAME, "ISI_WR_CLUB_MEMB_ID", "memb").append(" memb, ")
+		sql.appendSelectCountIDFrom(WorkReportMemberBMPBean.ENTITY_NAME, "ISI_WR_CLUB_MEMB_ID", "memb")
 		.append("ISI_WR_CLUB_MEMB_ISI_WR_GROUP").append(" middle ").appendWhere()
 		.append("memb.").append(IDColumnName).appendEqualSign().append("middle.").append(IDColumnName)
 		.appendAnd().append("memb."+WorkReportMemberBMPBean.COLUMN_NAME_REPORT_ID).appendIn(subQuery);
