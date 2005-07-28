@@ -12,6 +12,7 @@ import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.entity.TournamentRound;
 import is.idega.idegaweb.golf.entity.TournamentRoundHome;
 import is.idega.idegaweb.golf.handicap.business.Handicap;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -95,7 +96,8 @@ public class UpdateHandicap {
 						+ member_id
 						+ " and scorecard_date is null");
 				
-				Collection scorecards = Arrays.asList(scorecard);
+				Collection scorecards = new ArrayList();
+				scorecards.addAll(Arrays.asList(scorecard));
 				scorecards.addAll(Arrays.asList(scorecardsNull));
 				scorecard = (Scorecard[]) scorecards.toArray();
 				if (scorecard.length > 0) {
