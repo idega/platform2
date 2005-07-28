@@ -86,6 +86,7 @@ public class Box extends Block implements Builderaware {
 	private boolean iSortAlphabetically = true;
 	private boolean iShowCategoryText = true;
 	private int iSpaceBetween = 0;
+	private boolean iUseNoStyling = false;
 
 	private String _target;
 
@@ -563,11 +564,13 @@ public class Box extends Block implements Builderaware {
 		String linkString = BoxBusiness.getLocalizedString(boxLink, _iLocaleID);
 		if (linkString != null) {
 			Link link = new Link(linkString);
-			if (_styles) {
-				link.setStyle(_name);
-			}
-			else {
-				link.setFontSize(1);
+			if (!iUseNoStyling) {
+				if (_styles) {
+					link.setStyle(_name);
+				}
+				else {
+					link.setFontSize(1);
+				}
 			}
 			link.setOnMouseOver("window.status='" + linkString + "'; return true;");
 			link.setOnMouseOut("window.status=''; return true;");
@@ -578,7 +581,7 @@ public class Box extends Block implements Builderaware {
 			String target = boxLink.getTarget();
 
 			if (URL != null) {
-				if (URL.indexOf("http://") == -1) {
+				if (URL.indexOf("http://") == -1 && !URL.startsWith("/")) {
 					URL = "http://" + URL;
 				}
 				link.setURL(URL);
@@ -813,5 +816,10 @@ public class Box extends Block implements Builderaware {
 	
 	public void setSpaceBetween(int spaceBetween) {
 		iSpaceBetween = spaceBetween;
+	}
+
+	
+	public void setUseNoStyling(boolean useNoStyling) {
+		iUseNoStyling = useNoStyling;
 	}
 }
