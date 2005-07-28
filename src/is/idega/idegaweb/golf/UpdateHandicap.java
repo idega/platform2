@@ -86,7 +86,7 @@ public class UpdateHandicap {
 				}
 				grunn = Double.parseDouble(TextSoap.singleDecimalFormat(grunn));
 				
-				Scorecard[] scorecard = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAll("select * from scorecard where member_id = "
+				Scorecard[] scorecardsNotNull = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAll("select * from scorecard where member_id = "
 						+ member_id
 						+ " and ( scorecard_date > '"
 						+ stampur.toSQLDateString()
@@ -97,34 +97,36 @@ public class UpdateHandicap {
 						+ " and scorecard_date is null");
 				
 				Collection scorecards = new ArrayList();
-				scorecards.addAll(Arrays.asList(scorecard));
+				scorecards.addAll(Arrays.asList(scorecardsNotNull));
 				scorecards.addAll(Arrays.asList(scorecardsNull));
-				scorecard = (Scorecard[]) scorecards.toArray();
-				if (scorecard.length > 0) {
-					for (int m = 0; m < scorecard.length; m++) {
-						int scorecardID = scorecard[m].getID();
-						round = ((TournamentRoundHome) IDOLookup.getHomeLegacy(TournamentRound.class)).findByPrimaryKey(scorecard[m].getTournamentRoundId());
-						if (scorecard[m].getForeignRound()) {
-							scorecard[m].setHandicapBefore((float) grunn);
-							grunn = reiknaHandicap2(member, (double) grunn, scorecard[m].getTotalPoints());
-							scorecard[m].setHandicapAfter((float) grunn);
+
+				if (scorecards.size() > 0) {
+					Iterator iter = scorecards.iterator();
+					while (iter.hasNext()) {
+						Scorecard scorecard = (Scorecard) iter.next();
+						int scorecardID = scorecard.getID();
+						round = ((TournamentRoundHome) IDOLookup.getHomeLegacy(TournamentRound.class)).findByPrimaryKey(scorecard.getTournamentRoundId());
+						if (scorecard.getForeignRound()) {
+							scorecard.setHandicapBefore((float) grunn);
+							grunn = reiknaHandicap2(member, (double) grunn, scorecard.getTotalPoints());
+							scorecard.setHandicapAfter((float) grunn);
 						}
 						else {
-							if (!scorecard[m].getHandicapCorrection()) {
-								if ((scorecard[m].getScorecardDate() == null && scorecard[m].getUpdateHandicap()) || (scorecard[m].getTotalPoints() == 0 && scorecard[m].getScorecardDate() != null)) {
-									scorecard[m].setScorecardDate(null);
-									scorecard[m].setUpdateHandicap(false);
+							if (!scorecard.getHandicapCorrection()) {
+								if ((scorecard.getScorecardDate() == null && scorecard.getUpdateHandicap()) || (scorecard.getTotalPoints() == 0 && scorecard.getScorecardDate() != null)) {
+									scorecard.setScorecardDate(null);
+									scorecard.setUpdateHandicap(false);
 								}
-								slope = scorecard[m].getSlope();
-								course_rating = scorecard[m].getCourseRating();
-								teeColorID = scorecard[m].getTeeColorID();
-								field_id = scorecard[m].getFieldID();
-								tournamentRoundID = scorecard[m].getTournamentRoundId();
+								slope = scorecard.getSlope();
+								course_rating = scorecard.getCourseRating();
+								teeColorID = scorecard.getTeeColorID();
+								field_id = scorecard.getFieldID();
+								tournamentRoundID = scorecard.getTournamentRoundId();
 								isTournament = false;
 								if (tournamentRoundID > 1) {
 									isTournament = true;
 								}
-								updateHandicap = scorecard[m].getUpdateHandicap();
+								updateHandicap = scorecard.getUpdateHandicap();
 								stroke2 = (Stroke[]) ((Stroke) IDOLookup.instanciateEntity(Stroke.class)).findAll("select s.* from stroke s,tee t where s.tee_id = t.tee_id and s.scorecard_id = "
 										+ scorecardID + " order by t.hole_number");
 								strokeVector = new Vector(stroke2.length);
@@ -171,13 +173,13 @@ public class UpdateHandicap {
 								heildarpunktar = 0;
 								realTotalPoints = 0;
 								Handicap handicap = Handicap.getInstance();
-								heildarpunktar = handicap.calculatePoints(scorecard[m], strokeVector, leik);
+								heildarpunktar = handicap.calculatePoints(scorecard, strokeVector, leik);
 								if (isTournament) {
-									scorecard[m].setHandicapBefore((float) tournamentHandicap);
+									scorecard.setHandicapBefore((float) tournamentHandicap);
 									realTotalPoints = handicap.calculatePointsWithoutUpdate(stroke2, realLeik);
 								}
 								else {
-									scorecard[m].setHandicapBefore((float) grunn);
+									scorecard.setHandicapBefore((float) grunn);
 								}
 								if (!updateHandicap && realTotalPoints > 36 && round.getDecreaseHandicap()) {
 									updateHandicap = true;
@@ -189,18 +191,18 @@ public class UpdateHandicap {
 									else {
 										grunn = reiknaHandicap2(member, (double) grunn, heildarpunktar);
 									}
-									scorecard[m].setHandicapAfter((float) grunn);
+									scorecard.setHandicapAfter((float) grunn);
 								}
 								else {
-									scorecard[m].setHandicapAfter((float) grunn);
+									scorecard.setHandicapAfter((float) grunn);
 								}
 							}
 							else {
-								scorecard[m].setHandicapBefore((float) grunn);
-								grunn = (double) scorecard[m].getHandicapAfter();
+								scorecard.setHandicapBefore((float) grunn);
+								grunn = (double) scorecard.getHandicapAfter();
 							}
 						}
-						scorecard[m].update();
+						scorecard.update();
 					}
 				}
 				memberInfo.setHandicap((float) grunn);
