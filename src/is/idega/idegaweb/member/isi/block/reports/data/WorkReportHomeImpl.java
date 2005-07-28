@@ -67,9 +67,9 @@ public int getTotalCountOfMembersForWorkReportYear(int p0) {
 	return theReturn;
 	}
 
-public int getTotalCountOfPlayersForWorkReportYearWithMainboardExcluded(int p0, java.lang.Integer p1) {
+public int getTotalCountOfPlayersForWorkReportYearWithMainboardExcluded(int p0, java.lang.Integer p1, boolean p2) {
     com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-    int theReturn = ((WorkReportBMPBean) entity).ejbHomeGetTotalCountOfPlayersForWorkReportYearWithMainboardExcluded(p0, p1);
+    int theReturn = ((WorkReportBMPBean) entity).ejbHomeGetTotalCountOfPlayersForWorkReportYearWithMainboardExcluded(p0, p1, p2);
     this.idoCheckInPooledEntity(entity);
     return theReturn;
 }

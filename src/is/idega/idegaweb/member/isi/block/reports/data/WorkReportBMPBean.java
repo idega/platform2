@@ -433,7 +433,7 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport, IDOR
 		}
 	}
 
-	public int ejbHomeGetTotalCountOfPlayersForWorkReportYearWithMainboardExcluded(int year, Integer mainBoardGroupID) {
+	public int ejbHomeGetTotalCountOfPlayersForWorkReportYearWithMainboardExcluded(int year, Integer mainBoardGroupID, boolean distinct) {
 	    IDOQuery subQuery = idoQuery();
 	    subQuery.appendSelect().append(WorkReportMemberBMPBean.COLUMN_NAME_REPORT_ID).appendFrom().append(this.getEntityName()).appendWhereEquals(COLUMN_NAME_WORK_REPORT_YEAR, year)
 	    .appendAnd().appendEqualsQuoted(COLUMN_NAME_GROUP_TYPE, IWMemberConstants.GROUP_TYPE_CLUB);
@@ -442,7 +442,7 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport, IDOR
 		String IDColumnName = WorkReportMemberBMPBean.ENTITY_NAME+"_ID";
 		String leagueIDColumnName =  "ISI_WR_GROUP_ID";
 		
-		sql.appendSelectCountIDFrom(WorkReportMemberBMPBean.ENTITY_NAME, "ISI_WR_CLUB_MEMB_ID", "memb")
+		sql.appendSelectCountIDFrom(WorkReportMemberBMPBean.ENTITY_NAME, "ISI_WR_CLUB_MEMB_ID", "memb", distinct).append(",")
 		.append("ISI_WR_CLUB_MEMB_ISI_WR_GROUP").append(" middle ").appendWhere()
 		.append("memb.").append(IDColumnName).appendEqualSign().append("middle.").append(IDColumnName)
 		.appendAnd().append("memb."+WorkReportMemberBMPBean.COLUMN_NAME_REPORT_ID).appendIn(subQuery);

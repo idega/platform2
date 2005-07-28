@@ -12,6 +12,6 @@ public interface WorkReportHome extends com.idega.data.IDOHome
  public WorkReport findWorkReportByGroupIdAndYearOfReport(int p0,int p1)throws javax.ejb.FinderException;
  public int getCountOfWorkReportsByStatusAndYear(java.lang.String p0,int p1);
  public int getTotalCountOfMembersForWorkReportYear(int p0);
- public int getTotalCountOfPlayersForWorkReportYearWithMainboardExcluded(int p0, java.lang.Integer p1);
+ public int getTotalCountOfPlayersForWorkReportYearWithMainboardExcluded(int p0, java.lang.Integer p1, boolean distinct);
  public int getTotalCountOfCompetitorsForWorkReportYear(int p0);
 }

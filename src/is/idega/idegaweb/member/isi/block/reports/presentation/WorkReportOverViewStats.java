@@ -52,45 +52,48 @@ public class WorkReportOverViewStats extends Block {
 		//nr. of inactive groups
 		//nr. of groups with each status
 		
-		
-		table.add(new Text(iwrb.getLocalizedString("workreportoverviewstats.header","Summary"),true,false,false) ,1,1);
+		int i = 1;
+		table.add(new Text(iwrb.getLocalizedString("workreportoverviewstats.header","Summary"),true,false,false) ,1,i++);
 
-		table.add(new Text(iwrb.getLocalizedString("workreportoverviewstats.total_members","Members"),true,false,false) ,1,2);
-		table.add(""+this.getWorkReportBusiness(iwc).getTotalCountOfMembersForWorkReportYear(getYear()),2,2);
+		table.add(new Text(iwrb.getLocalizedString("workreportoverviewstats.total_members","Members"),true,false,false) ,1,i);
+		table.add(""+this.getWorkReportBusiness(iwc).getTotalCountOfMembersForWorkReportYear(getYear()),2,i++);
 		
-		table.add(new Text(iwrb.getLocalizedString("workreportoverviewstats.total_players","Players"),true,false,false) ,1,3);
-		table.add(""+this.getWorkReportBusiness(iwc).getTotalCountOfPlayersForWorkReportYear(getYear()),2,3);
+		table.add(new Text(iwrb.getLocalizedString("workreportoverviewstats.total_players","Players"),true,false,false) ,1,i);
+		table.add(""+this.getWorkReportBusiness(iwc).getTotalCountOfPlayersForWorkReportYear(getYear(),true),2,i++);
 		
-		table.add(new Text(iwrb.getLocalizedString("workreportoverviewstats.total_competitors","Competitors"),true,false,false) ,1,4);
-		table.add(""+this.getWorkReportBusiness(iwc).getTotalCountOfCompetitorsForWorkReportYear(getYear()),2,4);
+		table.add(new Text(iwrb.getLocalizedString("workreportoverviewstats.total_practices","Practices"),true,false,false) ,1,i);
+		table.add(""+this.getWorkReportBusiness(iwc).getTotalCountOfPlayersForWorkReportYear(getYear(),false),2,i++);
 
-		table.add(new Text(iwrb.getLocalizedString("workreportoverviewstats.status_not_done","Not done"),true,false,false) ,1,5);
-		table.add(""+this.getWorkReportBusiness(iwc).getTotalCountOfWorkReportsByStatusAndYear(WorkReportConstants.WR_STATUS_NOT_DONE,getYear()),2,5);
+		table.add(new Text(iwrb.getLocalizedString("workreportoverviewstats.total_competitors","Competitors"),true,false,false) ,1,i);
+		table.add(""+this.getWorkReportBusiness(iwc).getTotalCountOfCompetitorsForWorkReportYear(getYear()),2,i++);
 
-		table.add(new Text(iwrb.getLocalizedString("workreportoverviewstats.status_some_done","Some done"),true,false,false) ,1,6);
-		table.add(""+this.getWorkReportBusiness(iwc).getTotalCountOfWorkReportsByStatusAndYear(WorkReportConstants.WR_STATUS_SOME_DONE,getYear()),2,6);
+		table.add(new Text(iwrb.getLocalizedString("workreportoverviewstats.status_not_done","Not done"),true,false,false) ,1,i);
+		table.add(""+this.getWorkReportBusiness(iwc).getTotalCountOfWorkReportsByStatusAndYear(WorkReportConstants.WR_STATUS_NOT_DONE,getYear()),2,i++);
 
-		table.add(new Text(iwrb.getLocalizedString("workreportoverviewstats.status_done","Done"),true,false,false) ,1,7);
-		table.add(""+this.getWorkReportBusiness(iwc).getTotalCountOfWorkReportsByStatusAndYear(WorkReportConstants.WR_STATUS_DONE,getYear()),2,7);
+		table.add(new Text(iwrb.getLocalizedString("workreportoverviewstats.status_some_done","Some done"),true,false,false) ,1,i);
+		table.add(""+this.getWorkReportBusiness(iwc).getTotalCountOfWorkReportsByStatusAndYear(WorkReportConstants.WR_STATUS_SOME_DONE,getYear()),2,i++);
 		
-		table.add(new Text(iwrb.getLocalizedString("workreportoverviewstats.status_no_report","No report"),true,false,false) ,1,8);
-		table.add(""+this.getWorkReportBusiness(iwc).getTotalCountOfWorkReportsByStatusAndYear(WorkReportConstants.WR_STATUS_NO_REPORT,getYear()),2,8);
+		table.add(new Text(iwrb.getLocalizedString("workreportoverviewstats.status_done","Done"),true,false,false) ,1,i);
+		table.add(""+this.getWorkReportBusiness(iwc).getTotalCountOfWorkReportsByStatusAndYear(WorkReportConstants.WR_STATUS_DONE,getYear()),2,i++);
+		
+		table.add(new Text(iwrb.getLocalizedString("workreportoverviewstats.status_no_report","No report"),true,false,false) ,1,i);
+		table.add(""+this.getWorkReportBusiness(iwc).getTotalCountOfWorkReportsByStatusAndYear(WorkReportConstants.WR_STATUS_NO_REPORT,getYear()),2,i++);
 		
 		
-		table.add(new Text(iwrb.getLocalizedString("workreportoverviewstats.status_at_regional_union","At regional union"),true,false,false) ,1,9);
-		table.add(""+this.getWorkReportBusiness(iwc).getTotalCountOfWorkReportsByStatusAndYear(WorkReportConstants.WR_STATUS_AT_REGIONAL_UNION,getYear()),2,9);
+		table.add(new Text(iwrb.getLocalizedString("workreportoverviewstats.status_at_regional_union","At regional union"),true,false,false) ,1,i);
+		table.add(""+this.getWorkReportBusiness(iwc).getTotalCountOfWorkReportsByStatusAndYear(WorkReportConstants.WR_STATUS_AT_REGIONAL_UNION,getYear()),2,i++);
 
-		table.add(new Text(iwrb.getLocalizedString("workreportoverviewstats.status_investigate","Investigate"),true,false,false) ,1,10);
-		table.add(""+this.getWorkReportBusiness(iwc).getTotalCountOfWorkReportsByStatusAndYear(WorkReportConstants.WR_STATUS_INVESTIGATE,getYear()),2,10);
+		table.add(new Text(iwrb.getLocalizedString("workreportoverviewstats.status_investigate","Investigate"),true,false,false) ,1,i);
+		table.add(""+this.getWorkReportBusiness(iwc).getTotalCountOfWorkReportsByStatusAndYear(WorkReportConstants.WR_STATUS_INVESTIGATE,getYear()),2,i++);
 
-		table.add(new Text(iwrb.getLocalizedString("workreportoverviewstats.status_competititon_ban","Competititon ban"),true,false,false) ,1,11);
-		table.add(""+this.getWorkReportBusiness(iwc).getTotalCountOfWorkReportsByStatusAndYear(WorkReportConstants.WR_STATUS_COMPETITION_BAN,getYear()),2,11);
+		table.add(new Text(iwrb.getLocalizedString("workreportoverviewstats.status_competititon_ban","Competititon ban"),true,false,false) ,1,i);
+		table.add(""+this.getWorkReportBusiness(iwc).getTotalCountOfWorkReportsByStatusAndYear(WorkReportConstants.WR_STATUS_COMPETITION_BAN,getYear()),2,i++);
 		
-		table.add(new Text(iwrb.getLocalizedString("workreportoverviewstats.status_should_be_banned","Should be banned"),true,false,false) ,1,12);
-		table.add(""+this.getWorkReportBusiness(iwc).getTotalCountOfWorkReportsByStatusAndYear(WorkReportConstants.WR_STATUS_SHOULD_BE_BANNED,getYear()),2,12);
+		table.add(new Text(iwrb.getLocalizedString("workreportoverviewstats.status_should_be_banned","Should be banned"),true,false,false) ,1,i);
+		table.add(""+this.getWorkReportBusiness(iwc).getTotalCountOfWorkReportsByStatusAndYear(WorkReportConstants.WR_STATUS_SHOULD_BE_BANNED,getYear()),2,i++);
 		
-		table.add(new Text(iwrb.getLocalizedString("workreportoverviewstats.status_continuance","Continuance"),true,false,false) ,1,13);
-		table.add(""+this.getWorkReportBusiness(iwc).getTotalCountOfWorkReportsByStatusAndYear(WorkReportConstants.WR_STATUS_CONTINUANCE,getYear()),2,13);
+		table.add(new Text(iwrb.getLocalizedString("workreportoverviewstats.status_continuance","Continuance"),true,false,false) ,1,i);
+		table.add(""+this.getWorkReportBusiness(iwc).getTotalCountOfWorkReportsByStatusAndYear(WorkReportConstants.WR_STATUS_CONTINUANCE,getYear()),2,i++);
 		
 		//TODO number of inactive clubs
 		//table.add(iwrb.getLocalizedString("workreportoverviewstats.status_continuance","Continuance"),1,13);

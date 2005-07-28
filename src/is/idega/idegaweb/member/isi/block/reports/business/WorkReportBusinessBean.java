@@ -108,14 +108,14 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		return count;
 	}
 
-	public int getTotalCountOfPlayersForWorkReportYear(int year) {
+	public int getTotalCountOfPlayersForWorkReportYear(int year, boolean distinct) {
 //		Now the number is fetched with one sql statement instead of iterating through collection and getting the members for each report
 	    WorkReportGroup mainBoard =  getMainBoardWorkReportGroup(year);
 	    Integer mainBoardID = null;
 	    if (mainBoard != null) {
 	        mainBoardID = (Integer)mainBoard.getPrimaryKey();
 	    }
-	    int count = getWorkReportHome().getTotalCountOfPlayersForWorkReportYearWithMainboardExcluded(year, mainBoardID);
+	    int count = getWorkReportHome().getTotalCountOfPlayersForWorkReportYearWithMainboardExcluded(year, mainBoardID, distinct);
 //		Now the number is fetched with one sql statement instead of iterating through collection and getting the members for each report
 //		int count = 0;
 //		try {
@@ -2135,24 +2135,26 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		Iterator userIterator = allUsers.iterator();
 		while (userIterator.hasNext()) {
 			User user = (User) userIterator.next();
-			Integer userPrimaryKey = (Integer) user.getPrimaryKey();
-			WorkReportMember existingMember = (WorkReportMember) idExistingMember.get(userPrimaryKey);
-			//only add if not added before
-			if (existingMember == null) {
-				try {
-					existingMember = createWorkReportMember(workReportId, userPrimaryKey);
-					//sometimes saving the member failes, most likely do to a
-					// too long personal id (can only be 10 digits as in
-					// Iceland)
-					if (existingMember == null)
-						continue;
-					// add ADA league to member
-					addWorkReportGroupToEntity(workReportId, mainBoardGroup, existingMember);
-					idExistingMember.put(userPrimaryKey, existingMember);
-				}
-				catch (CreateException ex) {
-					System.err.println("[WorkReportBusiness]: Can't create member. Message is: " + ex.getMessage());
-					ex.printStackTrace(System.err);
+			if (validateSSN(user.getPersonalID())) {
+				Integer userPrimaryKey = (Integer) user.getPrimaryKey();
+				WorkReportMember existingMember = (WorkReportMember) idExistingMember.get(userPrimaryKey);
+				//only add if not added before
+				if (existingMember == null) {
+					try {
+						existingMember = createWorkReportMember(workReportId, userPrimaryKey);
+						//sometimes saving the member failes, most likely do to a
+						// too long personal id (can only be 10 digits as in
+						// Iceland)
+						if (existingMember == null)
+							continue;
+						// add ADA league to member
+						addWorkReportGroupToEntity(workReportId, mainBoardGroup, existingMember);
+						idExistingMember.put(userPrimaryKey, existingMember);
+					}
+					catch (CreateException ex) {
+						System.err.println("[WorkReportBusiness]: Can't create member. Message is: " + ex.getMessage());
+						ex.printStackTrace(System.err);
+					}
 				}
 			}
 		}
@@ -2576,6 +2578,36 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		}
 		return false;
 	}
+	
+	public boolean validateSSN(String ssn) {
+        int sum = 0; 
+        boolean validSSN = false; 
+        if (ssn.length() == 10) { 
+            try {
+	            sum = sum + Integer.parseInt(ssn.substring(0,1)) * 3; 
+	            sum = sum + Integer.parseInt(ssn.substring(1,2)) * 2; 
+	            sum = sum + Integer.parseInt(ssn.substring(2,3)) * 7; 
+	            sum = sum + Integer.parseInt(ssn.substring(3,4)) * 6; 
+	            sum = sum + Integer.parseInt(ssn.substring(4,5)) * 5; 
+	            sum = sum + Integer.parseInt(ssn.substring(5,6)) * 4; 
+	            sum = sum + Integer.parseInt(ssn.substring(6,7)) * 3; 
+	            sum = sum + Integer.parseInt(ssn.substring(7,8)) * 2; 
+	            sum = sum + Integer.parseInt(ssn.substring(8,9)) * 1; 
+	            sum = sum + Integer.parseInt(ssn.substring(9,10)) * 0; 
+            	if ((sum%11) == 0) {
+            	    validSSN = true; 
+            	} else {
+            	    System.out.println(ssn + " is not a valid SSN. If fails validation test.");
+            	}
+            }
+            catch (NumberFormatException e) {
+                System.out.println(ssn + " is not a valid SSN. It contains characters other than digits.");
+            }
+        } else {
+            System.out.println(ssn + " is not a valid SSN. It is not 10 characters.");
+        }
+        return validSSN;
+    }
 
 	public WorkReportDivisionBoardHome getWorkReportDivisionBoardHome() {
 		if (workReportDivisionBoardHome == null) {
