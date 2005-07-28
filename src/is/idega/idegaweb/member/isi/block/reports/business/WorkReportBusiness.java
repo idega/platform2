@@ -1,5 +1,5 @@
 /*
- * $Id: WorkReportBusiness.java,v 1.62 2005/07/14 01:00:43 eiki Exp $
+ * $Id: WorkReportBusiness.java,v 1.63 2005/07/28 17:40:11 sigtryggur Exp $
  * Created on Dec 3, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -42,10 +42,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2005/07/14 01:00:43 $ by $Author: eiki $
+ *  Last modified: $Date: 2005/07/28 17:40:11 $ by $Author: sigtryggur $
  * 
  * @author <a href="mailto:eiki@idega.com">eiki</a>
- * @version $Revision: 1.62 $
+ * @version $Revision: 1.63 $
  */
 public interface WorkReportBusiness extends IBOService, MemberUserBusiness, UserGroupPlugInBusiness {
 
@@ -57,7 +57,7 @@ public interface WorkReportBusiness extends IBOService, MemberUserBusiness, User
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusinessBean#getTotalCountOfPlayersForWorkReportYear
 	 */
-	public int getTotalCountOfPlayersForWorkReportYear(int year) throws java.rmi.RemoteException;
+	public int getTotalCountOfPlayersForWorkReportYear(int year, boolean distinct) throws java.rmi.RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusinessBean#getTotalCountOfWorkReportsByStatusAndYear
