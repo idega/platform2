@@ -112,10 +112,6 @@ public class UpdateHandicap {
 								if ((scorecard[m].getScorecardDate() == null && scorecard[m].getUpdateHandicap()) || (scorecard[m].getTotalPoints() == 0 && scorecard[m].getScorecardDate() != null)) {
 									scorecard[m].setScorecardDate(null);
 									scorecard[m].setUpdateHandicap(false);
-									scorecard[m].setHandicapBefore((float) grunn);
-									scorecard[m].setHandicapAfter((float) grunn);
-									scorecard[m].update();
-									continue;
 								}
 								slope = scorecard[m].getSlope();
 								course_rating = scorecard[m].getCourseRating();
