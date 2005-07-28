@@ -115,10 +115,6 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 		 personalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PERSONAL_ID, "Personal ID"),currentLocale);
 		 reportCollection.addField(personalIDField);
 		 
-		 ReportableField groupField = new ReportableField(FIELD_NAME_GROUP_NAME, String.class);
-		 groupField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_GROUP_NAME, "Group"), currentLocale);
-		 reportCollection.addField(groupField);
-		 
 		 ReportableField groupPathField = new ReportableField(FIELD_NAME_GROUP_PATH, String.class);
 		 groupPathField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_GROUP_PATH, "Group Path"), currentLocale);
 		 reportCollection.addField(groupPathField);
@@ -249,18 +245,17 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 				     //	add the data to the correct fields/columns
 				     data.addData(nameField, user.getName() );
 				     data.addData(personalIDField, personalID);
-				     data.addData(groupField, parentGroupName);
 				     data.addData(groupPathField, parentGroupPath);
 				     data.addData(userStatusField, userStatusString);
 				     data.addData(emailField, emailString);
 				     data.addData(streetAddressField, streetAddressString);
 				     data.addData(postalAddressField, postalAddressString);
 				     data.addData(phoneField, getPhoneNumber(user));
-				     List statsForGroup = (List) usersByGroups.get(group.getPrimaryKey());
+				     List statsForGroup = (List) usersByGroups.get(parentGroup.getPrimaryKey());
 						if (statsForGroup == null)
 							statsForGroup = new Vector();
 						statsForGroup.add(data);
-						usersByGroups.put(group.getPrimaryKey(), statsForGroup);
+						usersByGroups.put(parentGroup.getPrimaryKey(), statsForGroup);
 				}
 			}
 			// iterate through the ordered map and ordered lists and add to the final collection
