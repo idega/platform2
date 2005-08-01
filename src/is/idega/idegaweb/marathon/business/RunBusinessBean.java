@@ -8,6 +8,7 @@ import is.idega.idegaweb.marathon.data.Distance;
 import is.idega.idegaweb.marathon.data.Participant;
 import is.idega.idegaweb.marathon.data.ParticipantHome;
 import is.idega.idegaweb.marathon.data.Run;
+import is.idega.idegaweb.marathon.data.Year;
 import is.idega.idegaweb.marathon.util.IWMarathonConstants;
 import java.rmi.RemoteException;
 import java.sql.Date;
@@ -546,6 +547,19 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 	}
 	
 	private Group getAgeGroup(User user, Group run, Group distance) {
+		Year year = null;
+		try {
+			year = ConverterUtility.getInstance().convertGroupToYear((Group) distance.getParentNode());
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+		}
+
+		IWTimestamp runDate = new IWTimestamp();
+		runDate.setYear(Integer.parseInt(year.getName()));
+		if (year != null && year.getRunDate() != null) {
+			runDate = new IWTimestamp(year.getRunDate());
+		}
 		IWTimestamp dateOfBirth = new IWTimestamp(user.getDateOfBirth());
 		dateOfBirth.setDay(1);
 		dateOfBirth.setMonth(1);
@@ -558,7 +572,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 			Iterator groupsIter = groups.iterator();
 			while (groupsIter.hasNext()) {
 				Group group = (Group) groupsIter.next();
-				if (group.getName().equals(getGroupName(age.getYears(), run, user.getGenderID()))) {
+				if (group.getName().equals(getGroupName(age.getYears(runDate.getDate()), run, user.getGenderID()))) {
 					return group;
 				}
 			}
@@ -1369,10 +1383,15 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 	    
 	public Map getYearsMap(Group run, String groupNameFilter) {
 		Map yearsMap = new LinkedHashMap();
-		Iterator yearsIter = getYears(run, groupNameFilter).iterator();
+		Iterator yearsIter = run.getChildrenIterator();
 		while (yearsIter.hasNext()) {
 			Group year = (Group) yearsIter.next();
-			yearsMap.put(year.getPrimaryKey().toString(), year.getName());
+			try {
+				yearsMap.put(year.getName(), ConverterUtility.getInstance().convertGroupToYear(year));
+			}
+			catch (FinderException fe) {
+				fe.printStackTrace();
+			}
 		}
 		return yearsMap;
 	}

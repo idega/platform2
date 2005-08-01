@@ -259,6 +259,9 @@ public class UpdateRunInfoWindow extends StyledIWAdminWindow {
 			tShirtField.setSelectedElement(run.getTShirtSize());
 			payMethodField.setSelectedElement(run.getPayMethod());
 			payedAmountField.setContent(run.getPayedAmount());
+			if (run.getPayedAmount() != null && run.getPayMethod() == null) {
+				payMethodField.setSelectedElement("credit");
+			}
 			teamNameField.setContent(run.getRunGroupName());
 			runTimeField.setContent(String.valueOf(run.getRunTime()));
 			chipTimeField.setContent(String.valueOf(run.getChipTime()));

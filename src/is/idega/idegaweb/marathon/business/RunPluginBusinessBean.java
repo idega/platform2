@@ -5,7 +5,10 @@
 package is.idega.idegaweb.marathon.business;
 
 import is.idega.idegaweb.marathon.presentation.CreateYearWindowPlugin;
+import is.idega.idegaweb.marathon.presentation.RunDistanceTab;
+import is.idega.idegaweb.marathon.presentation.RunYearTab;
 import is.idega.idegaweb.marathon.presentation.UserRunTab;
+import is.idega.idegaweb.marathon.util.IWMarathonConstants;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +51,16 @@ public class RunPluginBusinessBean extends IBOServiceBean implements RunPluginBu
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#getGroupPropertiesTabs(com.idega.user.data.Group)
 	 */
 	public List getGroupPropertiesTabs(Group group) throws RemoteException {
+		if (IWMarathonConstants.GROUP_TYPE_RUN_DISTANCE.equals(group.getGroupType())) {
+			List list = new ArrayList();
+			list.add(new RunDistanceTab());
+			return list;
+		}
+		if (IWMarathonConstants.GROUP_TYPE_RUN_YEAR.equals(group.getGroupType())) {
+			List list = new ArrayList();
+			list.add(new RunYearTab());
+			return list;
+		}
 		return null;
 	}
 	/* (non-Javadoc)
@@ -92,7 +105,7 @@ public class RunPluginBusinessBean extends IBOServiceBean implements RunPluginBu
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#getGroupToolbarElements(com.idega.user.data.Group)
 	 */
 	public List getGroupToolbarElements(Group group) throws RemoteException {
-		if ("iwma_run".equals(group.getGroupType())) {
+		if (IWMarathonConstants.GROUP_TYPE_RUN.equals(group.getGroupType())) {
 			List list = new ArrayList(1);
 			list.add(new CreateYearWindowPlugin());
 			return list;
@@ -103,7 +116,6 @@ public class RunPluginBusinessBean extends IBOServiceBean implements RunPluginBu
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#canCreateSubGroup(com.idega.user.data.Group,java.lang.String)
 	 */
 	public String canCreateSubGroup(Group group, String groupTypeOfSubGroup) throws RemoteException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

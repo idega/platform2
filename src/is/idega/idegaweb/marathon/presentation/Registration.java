@@ -1,5 +1,5 @@
 /*
- * $Id: Registration.java,v 1.20 2005/06/13 17:12:05 laddi Exp $
+ * $Id: Registration.java,v 1.21 2005/08/01 17:38:20 laddi Exp $
  * Created on May 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -12,6 +12,7 @@ package is.idega.idegaweb.marathon.presentation;
 import is.idega.idegaweb.marathon.business.ConverterUtility;
 import is.idega.idegaweb.marathon.business.Runner;
 import is.idega.idegaweb.marathon.data.Participant;
+import is.idega.idegaweb.marathon.data.Year;
 import is.idega.idegaweb.marathon.util.IWMarathonConstants;
 import java.rmi.RemoteException;
 import java.text.NumberFormat;
@@ -56,10 +57,10 @@ import com.idega.util.LocaleUtil;
 
 
 /**
- * Last modified: $Date: 2005/06/13 17:12:05 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/01 17:38:20 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  */
 public class Registration extends RunBlock {
 	
@@ -234,6 +235,9 @@ public class Registration extends RunBlock {
 		IWTimestamp ts = IWTimestamp.RightNow();
     Integer y = new Integer(ts.getYear());
     String yearString = y.toString();
+    IWTimestamp stamp = new IWTimestamp();
+    stamp.addYears(1);
+    String nextYearString = String.valueOf(stamp.getYear());
     
 		boolean hasRuns = false;
 		DropdownMenu runDropdown = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_RUN));
@@ -243,15 +247,36 @@ public class Registration extends RunBlock {
 			Iterator iter = runs.iterator();
 			while (iter.hasNext()) {
 				Group run = (Group) iter.next();
-				if (runner.getUser() != null) {
-					if (!getRunBusiness(iwc).isRegisteredInRun(yearString, run, runner.getUser())) {
-						runDropdown.addMenuElement(run.getPrimaryKey().toString(), localize(run.getName(), run.getName()));
-						hasRuns = true;
+				String runnerYearString = yearString;
+				
+				boolean show = true;
+				boolean finished = false;
+				Map yearMap = getRunBusiness(iwc).getYearsMap(run);
+				Year year = (Year) yearMap.get(yearString);
+				if (year != null && year.getRunDate() != null) {
+					IWTimestamp runDate = new IWTimestamp(year.getRunDate());
+					if (ts.isLaterThanOrEquals(runDate)) {
+						finished = true;
+						show = false;
 					}
 				}
-				else {
-					runDropdown.addMenuElement(run.getPrimaryKey().toString(), localize(run.getName(), run.getName()));
-					hasRuns = true;
+				Year nextYear = (Year) yearMap.get(nextYearString);
+				if (finished && nextYear != null) {
+					runnerYearString = nextYearString;
+					show = true;
+				}
+				
+				if (show) {
+					if (runner.getUser() != null) {
+						if (!getRunBusiness(iwc).isRegisteredInRun(runnerYearString, run, runner.getUser())) {
+							runDropdown.addMenuElement(run.getPrimaryKey().toString(), localize(run.getName(), run.getName()) + " - " + runnerYearString);
+							hasRuns = true;
+						}
+					}
+					else {
+						runDropdown.addMenuElement(run.getPrimaryKey().toString(), localize(run.getName(), run.getName()) + " - " + runnerYearString);
+						hasRuns = true;
+					}
 				}
 			}
 		}
@@ -271,7 +296,22 @@ public class Registration extends RunBlock {
 		DropdownMenu distanceDropdown = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_DISTANCE));
 		distanceDropdown.addMenuElement("", localize("run_year_ddd.select_distance","Select distance..."));
 		if(runner.getRun() != null) {
-			Collection distances = getRunBusiness(iwc).getDistancesMap(runner.getRun(), yearString);
+			String runnerYearString = yearString;
+			boolean finished = false;
+			Map yearMap = getRunBusiness(iwc).getYearsMap(runner.getRun());
+			Year year = (Year) yearMap.get(yearString);
+			if (year != null && year.getRunDate() != null) {
+				IWTimestamp runDate = new IWTimestamp(year.getRunDate());
+				if (ts.isLaterThanOrEquals(stamp)) {
+					finished = true;
+				}
+			}
+			Year nextYear = (Year) yearMap.get(nextYearString);
+			if (finished && nextYear != null) {
+				runnerYearString = nextYearString;
+			}
+
+			Collection distances = getRunBusiness(iwc).getDistancesMap(runner.getRun(), runnerYearString);
 			if(distances != null) {
 				distanceDropdown.addMenuElements(distances);
 			}
@@ -360,10 +400,10 @@ public class Registration extends RunBlock {
 			}
 		}
 
-		IWTimestamp stamp = new IWTimestamp();
+		IWTimestamp birthStamp = new IWTimestamp();
 		DateInput ssnField = (DateInput) getStyledInterface(new DateInput(PARAMETER_PERSONAL_ID));
 		ssnField.setAsNotEmpty("Date of birth can not be empty");
-		ssnField.setYearRange(stamp.getYear(), stamp.getYear() - 100);
+		ssnField.setYearRange(birthStamp.getYear(), birthStamp.getYear() - 100);
 		if (runner.getDateOfBirth() != null) {
 			ssnField.setDate(runner.getDateOfBirth());
 		}
