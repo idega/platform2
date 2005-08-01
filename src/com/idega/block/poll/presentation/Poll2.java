@@ -226,7 +226,7 @@ public class Poll2 extends Block implements Builderaware {
 				case LINK_VIEW:
 					//obj = getLinkView(iwc, locText, pollQuestion);
 					
-					obj =  getNewLinkView();
+					obj =  getNewLinkView(iwc, locText, pollQuestion);  // by Dainis  
 					
 					break;
 			}
@@ -505,11 +505,13 @@ public class Poll2 extends Block implements Builderaware {
 		return pollTable;
 	}
 		
-	private Layer getNewLinkView(){		
+	private Layer getNewLinkView(IWContext iwc, LocalizedText locText, PollQuestion pollQuestion) {		
 		/*
 		  mockup with no business logic in it
 		  layer containing all the stuff
+		  
 		  <div>
+		  	  question	
 		      <ul>
 		      	  <li><a href="" /></li>
 		      	  <li><a href="" /></li>
@@ -521,7 +523,10 @@ public class Poll2 extends Block implements Builderaware {
 		Layer surroundingLayer = new Layer();
 		surroundingLayer.setStyleClass("awesome layer class");
 		
-		Text text = new Text("This is poll2  question?");
+		Text text = new Text("This is poll2  question???"); 
+		
+		// this above to be replaced with code that actually retrieves poll question
+				
 		
 		surroundingLayer.getChildren().add(text);
 		
@@ -691,7 +696,7 @@ public class Poll2 extends Block implements Builderaware {
 		map.put(BUTTON_STYLE, "font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt; border: 1px solid #000000;");
 		map.put(RADIO_STYLE, "font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt; width: 12px; height: 12px;");
 		map.put(LINK_STYLE, "font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt; text-decoration: none;");
-		map.put(LINK_STYLE+":hover", "font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt; text-decoration: none;");
+		map.put(LINK_STYLE + ":hover", "font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt; text-decoration: none;");
 		
 		return map;
 	}
