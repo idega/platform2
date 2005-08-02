@@ -37,9 +37,6 @@ import com.idega.presentation.ui.TextInput;
 public class MemberCorrect extends Editor {
 
 	Member eMember = null;
-	String OkImageUrl = "/pics/formtakks/saekja.gif";
-	String SaveImageUrl = "/pics/formtakks/vista.gif";
-	String CloseImageUrl = "/pics/formtakks/loka.gif";
 	List eMembers = null;
 	List eUMIs = null;
 	String sSocSecNum = null;
@@ -55,7 +52,7 @@ public class MemberCorrect extends Editor {
 		this.makeView();
 		if (isAdmin || AccessControl.isClubAdmin(modinfo)) {
 			try {
-				if (modinfo.getParameter("save") != null || modinfo.getParameter("save.x") != null) {
+				if (modinfo.isParameterSet("save")) {
 					if (modinfo.getParameter("rb") != null && hSSN != null) {
 						/** @todo */
 						int iMemberId = Integer.parseInt(modinfo.getParameter("rb"));
@@ -66,7 +63,7 @@ public class MemberCorrect extends Editor {
 						}
 					}
 				}
-				else if (modinfo.getParameter("ok") != null || modinfo.getParameter("ok.x") != null || modinfo.getParameter("ssn") != null) {
+				else if (modinfo.isParameterSet("ok")) {
 					String ssn = modinfo.getParameter("ssn").trim();
 					if (ssn != null && ssn.length() > 5) {
 						sSocSecNum = ssn;
@@ -116,9 +113,9 @@ public class MemberCorrect extends Editor {
 		T.add(formatText(" Veljið réttan meðlim hinum verður eytt :"), 1, 3);
 		setTextFontColor(DarkColor);
 		T.add(getMemberTable(), 1, 5);
-		SubmitButton ok = new SubmitButton(new Image(OkImageUrl), "ok");
-		SubmitButton save = new SubmitButton(new Image(SaveImageUrl), "save");
-		CloseButton close = new CloseButton(new Image(CloseImageUrl));
+		SubmitButton ok = new SubmitButton("ok", "Leita");
+		SubmitButton save = new SubmitButton("save", "Vista");
+		CloseButton close = new CloseButton("Loka");
 		T.add(ok, 1, 1);
 		T.add(save, 1, 7);
 		T.add(close, 1, 7);
