@@ -55,14 +55,14 @@ public class WorkReportBoardMemberBMPBean extends GenericEntity implements WorkR
 		addAttribute(getIDColumnName());
 		addAttribute(COLUMN_NAME_REPORT_ID, "Id of the work report",true,true,Integer.class,"many-to-one",WorkReport.class);
 		addAttribute(COLUMN_NAME_USER_ID, "User id",true,true,Integer.class,"many-to-one",User.class);
-		addAttribute(COLUMN_NAME_PERSONAL_ID,"Personal id",true,true,String.class,10);
+		addAttribute(COLUMN_NAME_PERSONAL_ID,"Personal id",true,true,String.class,20);
 		addAttribute(COLUMN_NAME_NAME,"Name from file",true,true,String.class,180);	
 		addAttribute(COLUMN_NAME_DATE_OF_BIRTH,"Date of birth",true,true,Timestamp.class);
 		addAttribute(COLUMN_NAME_AGE, "The yearly age of the member",true,true,Integer.class);
 		addAttribute(COLUMN_NAME_GENDER,"Gender m/f",true,true,String.class,1);
 		
 		addAttribute(COLUMN_NAME_BOARD_MEMBER, "Is a board member", true, true, Boolean.class);
-		addAttribute(COLUMN_NAME_STATUS,"Precident,vice president etc.",true,true,String.class,30);
+		addAttribute(COLUMN_NAME_STATUS,"Precident,vice president etc.",true,true,String.class,255);
 		
 		addAttribute(COLUMN_NAME_STREET_NAME,"Streetname",true,true,String.class);
 		addAttribute(COLUMN_NAME_POSTAL_CODE_ID, "Postal code id",true,true,Integer.class,"many-to-one",PostalCode.class);
