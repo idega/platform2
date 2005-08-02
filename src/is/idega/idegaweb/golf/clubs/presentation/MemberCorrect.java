@@ -10,17 +10,13 @@ import is.idega.idegaweb.golf.entity.MemberHome;
 import is.idega.idegaweb.golf.entity.MemberInfo;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.entity.UnionMemberInfo;
-
 import java.sql.SQLException;
 import java.util.List;
-
 import javax.ejb.FinderException;
-
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.Editor;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
