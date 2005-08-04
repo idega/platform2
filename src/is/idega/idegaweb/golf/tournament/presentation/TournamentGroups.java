@@ -397,10 +397,8 @@ public class TournamentGroups extends GolfBlock {
 				}
 			}
 			else if (isAdmin()) {
-				if (tGroup.getUnionID() == 3) {
-					table.add(getButton(new SubmitButton(localize("trounaemnt.update","Update"), "view_action", "update")), 2, row);
-					//table.add(new HiddenInput("view_action","update"),2,row);
-				}
+				table.add(getButton(new SubmitButton(localize("trounaemnt.update","Update"), "view_action", "update")), 2, row);
+				//table.add(new HiddenInput("view_action","update"),2,row);
 			}
 
 			add(form);
