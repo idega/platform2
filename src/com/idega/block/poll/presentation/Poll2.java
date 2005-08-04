@@ -22,13 +22,15 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Layer;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Table;
+import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.ListItem;
 import com.idega.presentation.text.Lists;
+import com.idega.presentation.text.Paragraph;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
+import com.idega.presentation.ui.Label;
 import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
@@ -54,9 +56,7 @@ public class Poll2 extends Block implements Builderaware {
 	protected IWBundle _iwb;
 	protected IWBundle _iwbPoll;
 
-	private boolean _styles = true;
-
-	private Table _myTable;
+	private Layer mainLayer;
 
 	public static String _prmPollID = "po.poll_id";
 	public static String _prmPollCollection = "po.poll_collection";
@@ -66,10 +66,6 @@ public class Poll2 extends Block implements Builderaware {
 	private boolean _newObjInst = false;
 	private boolean _newWithAttribute = false;
 
-	private String _parameterString;
-	private String _styleAttribute;
-	private String _hoverStyle;
-	private String _questionStyleAttribute;
 	private String _votedColor;
 	private String _whiteColor;
 
@@ -95,9 +91,7 @@ public class Poll2 extends Block implements Builderaware {
 	public static final int LINK_VIEW = 2;
 
 	private int _layout = RADIO_BUTTON_VIEW;
-	
-	private String blockLayerStyleClass = null;
-
+		
 	public Poll2() {
 		setDefaultValues();
 	}
@@ -113,23 +107,16 @@ public class Poll2 extends Block implements Builderaware {
 		_pollID = pollID;
 	}
 
-	public void main(IWContext iwc) throws Exception {		
+	public void main(IWContext iwc) throws Exception {
 		_iwrb = getResourceBundle(iwc);
 		_iwb = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
 		_iwbPoll = getBundle(iwc);
 
 		_isAdmin = iwc.hasEditPermission(this);
 		_iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
-		_parameterString = iwc.getParameter(PollBusiness._PARAMETER_POLL_VOTER);
 		_date = new IWTimestamp();
 
 		PollEntity poll = null;
-
-		_myTable = new Table(1, 2);
-		_myTable.setCellpadding(0);
-		_myTable.setCellspacing(0);
-		_myTable.setBorder(0);
-		_myTable.setWidth(_pollWidth);
 
 		if (_pollID <= 0) {
 			String sPollID = iwc.getParameter(_prmPollID);
@@ -159,26 +146,18 @@ public class Poll2 extends Block implements Builderaware {
 			_newWithAttribute = true;
 		}
 
-		int row = 1;
 		if (_isAdmin) {
-			_myTable.add(getAdminPart(_pollID, _newObjInst, _newWithAttribute), 1, row);
-			row++;
+			getMainLayer().add(getAdminPart(_pollID, _newObjInst, _newWithAttribute));		
 		}
 
-		_myTable.add(getPoll(iwc, poll), 1, row);	
-		
-		// this layer contains all block output
-		// and has style class property
-		Layer layer = new Layer();		
-		layer.getChildren().add(_myTable);
-		layer.setStyleClass(getBlockLayerStyleClass());
-		add(layer);	
+		getMainLayer().add(getPoll(iwc, poll));
 	
+		add(getMainLayer());
 	}
 
-	private Link getAdminPart(int pollID, boolean newObjInst, boolean newWithAttribute) {
+	private Layer getAdminPart(int pollID, boolean newObjInst, boolean newWithAttribute) {
 		Image editImage = _iwb.getImage("shared/edit.gif");
-		//Link adminLink = new Link(_iwb.getImage("shared/edit.gif"));
+		
 		Link adminLink = new Link(editImage);
 		adminLink.setWindowToOpen(PollAdminWindow.class, this.getICObjectInstanceID());
 		adminLink.addParameter(PollAdminWindow.prmID, pollID);
@@ -186,7 +165,11 @@ public class Poll2 extends Block implements Builderaware {
 			adminLink.addParameter(PollAdminWindow.prmObjInstId, getICObjectInstanceID());
 		else if (newWithAttribute) adminLink.addParameter(PollAdminWindow.prmAttribute, _sAttribute);
 
-		return adminLink;
+		Layer adminPart = new Layer();
+		adminPart.setStyleClass("adminPart");
+		adminPart.addChild(adminLink);
+		
+		return adminPart;
 	}
 
 	private PresentationObject getPoll(IWContext iwc, PollEntity poll) {
@@ -224,10 +207,7 @@ public class Poll2 extends Block implements Builderaware {
 					obj = getRadioButtonView(locText, pollQuestion);
 					break;
 				case LINK_VIEW:
-					//obj = getLinkView(iwc, locText, pollQuestion);
-					
-					obj =  getNewLinkView(iwc, locText, pollQuestion);  // by Dainis  
-					
+					obj = getLinkView(iwc, locText, pollQuestion);
 					break;
 			}
 			return obj;
@@ -238,181 +218,139 @@ public class Poll2 extends Block implements Builderaware {
 	}
 
 	private Form getRadioButtonView(LocalizedText locText, PollQuestion pollQuestion) {
-		//Image submitImage = _iwrb.getLocalizedImageButton("vote", "Vote");
-		//Image submitImage = _iwrb.getImage("vote.gif");
-		//Image olderPollsImage = _iwrb.getLocalizedImageButton("older_polls", "Older polls");
-		//Image olderPollsImage = _iwrb.getImage("older_polls.gif");
-
 		Form form = new Form();
 		form.setWindowToOpen(PollResult.class);
-
-		Table pollTable = new Table(2, 3);
-		pollTable.setCellpadding(5);
-		pollTable.setCellspacing(0);
-		pollTable.mergeCells(1, 1, 2, 1);
-		pollTable.mergeCells(1, 2, 2, 2);
-		pollTable.setWidth(_pollWidth);
-		pollTable.setAlignment(1, 1, _questionAlignment);
-		pollTable.setAlignment(2, 3, "right");
-		form.add(pollTable);
-
-		Text question = getStyleText(new Text(locText.getHeadline()), QUESTION_STYLE);
-
-		pollTable.add(question, 1, 1);
-
-		Table radioTable = new Table();
-		radioTable.setColumns(2);
-
+		
+		Paragraph questionParagraph = new Paragraph();
+		questionParagraph.setStyleClass("question");
+		Text question = new Text(locText.getHeadline());				
+		questionParagraph.add(question);		
+		form.addChild(questionParagraph);
+		
 		PollAnswer[] answers = PollBusiness.getAnswers(pollQuestion.getID());
-		boolean hasAnswers = false;
-
-		int row = 1;
+		boolean hasAnswers = false;	
+		
+		Lists listOfAnswers = new Lists();
+		listOfAnswers.setListOrdered(false);
+		
 		if (answers != null) {
+			
 			for (int a = 0; a < answers.length; a++) {
 				LocalizedText locAnswerText = TextFinder.getLocalizedText(answers[a], _iLocaleID);
 				if (locAnswerText != null) {
+					//add radio button and label to layout
 					hasAnswers = true;
-					radioTable.add(getStyleObject(new RadioButton(PollBusiness._PARAMETER_POLL_ANSWER, String.valueOf(answers[a].getID())), ANSWER_STYLE), 1, row);
-					radioTable.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
-					radioTable.add(getStyleText(locAnswerText.getHeadline(), ANSWER_STYLE), 2, row++);
+					ListItem listItem = new ListItem();	
+					RadioButton radioButton = new RadioButton(PollBusiness._PARAMETER_POLL_ANSWER, String.valueOf(answers[a].getID()));
+					listItem.add(radioButton);					
+					
+					Label label = new Label(locAnswerText.getHeadline(), radioButton);					
+					listItem.add(label);
+					
+					listOfAnswers.addChild(listItem);
 				}
 			}
 		}
-
+		
 		if (hasAnswers) {
-			pollTable.add(radioTable, 1, 2);
+			form.add(listOfAnswers);
 		}
-
-		GenericButton collectionLink = (GenericButton) getStyleObject(new GenericButton("", _iwrb.getLocalizedString("older_polls", "Older polls")), BUTTON_STYLE);
-		collectionLink.setWindowToOpen(PollResult.class);
-		collectionLink.addParameterToWindow(Poll._prmPollID, _pollID);
-		collectionLink.addParameterToWindow(Poll._prmPollCollection, PollBusiness._PARAMETER_TRUE);
-		collectionLink.addParameterToWindow(Poll._prmNumberOfPolls, _numberOfShownPolls);
-		if (_showVotes) {
-			collectionLink.addParameterToWindow(Poll._prmShowVotes, PollBusiness._PARAMETER_TRUE);
-		}
-		else {
-			collectionLink.addParameterToWindow(Poll._prmShowVotes, PollBusiness._PARAMETER_FALSE);
-		}
-
+		
 		if (_showCollection) {
-			pollTable.add(collectionLink, 1, 3);
+			GenericButton collectionLink = getOlderPollsButton();
+			form.addChild(collectionLink);
 		}
-		pollTable.add(getStyleObject(new SubmitButton(_iwrb.getLocalizedString("vote", "Vote")), BUTTON_STYLE), 2, 3);
-		pollTable.add(new Parameter(PollBusiness._PARAMETER_POLL_VOTER, PollBusiness._PARAMETER_TRUE));
-		pollTable.add(new Parameter(PollBusiness._PARAMETER_POLL_QUESTION, Integer.toString(pollQuestion.getID())));
+		
+		SubmitButton voteButton = new SubmitButton(_iwrb.getLocalizedString("vote", "Vote")); 
+		voteButton.setStyleClass("vote");
+		form.getChildren().add(voteButton);
+		
+		form.add(new Parameter(PollBusiness._PARAMETER_POLL_VOTER, PollBusiness._PARAMETER_TRUE));
+		form.add(new Parameter(PollBusiness._PARAMETER_POLL_QUESTION, Integer.toString(pollQuestion.getID())));
 		if (_showVotes) {
-			pollTable.add(new Parameter(Poll._prmShowVotes, PollBusiness._PARAMETER_TRUE));
+			form.add(new Parameter(Poll._prmShowVotes, PollBusiness._PARAMETER_TRUE));
 		}
 		else {
-			pollTable.add(new Parameter(Poll._prmShowVotes, PollBusiness._PARAMETER_FALSE));
-		}
-
+			form.add(new Parameter(Poll._prmShowVotes, PollBusiness._PARAMETER_FALSE));
+		}		
+			
 		return form;
 	}
 
-	private Table getLinkView(IWContext iwc, LocalizedText locText, PollQuestion pollQuestion) {
-		//Image olderPollsImage = _iwrb.getImage("older_polls.gif");
-		//Image olderPollsImage = _iwrb.getLocalizedImageButton("older_polls", "Older polls");	
+	private PresentationObject getLinkView(IWContext iwc, LocalizedText locText, PollQuestion pollQuestion) {
+		PresentationObject pollContainer = new PresentationObjectContainer();
 		
-		
-
-		Table pollTable = new Table();
-		pollTable.setCellpadding(3);
-		pollTable.setCellspacing(0);
-		pollTable.setWidth(_pollWidth);
-		pollTable.setAlignment(1, 1, _questionAlignment);
-		int pollRow = 1;
-
-		Text question = getStyleText(locText.getHeadline(), QUESTION_STYLE);
-
+		//question
+		Paragraph questionParagraph = new Paragraph();
+		questionParagraph.setStyleClass("question");
+		Text question = new Text(locText.getHeadline());		
 		if (_questionImage != null) {
-			Table questionTable = new Table(3, 1);
-			questionTable.setCellpadding(0);
-			questionTable.setCellspacing(0);
-			questionTable.setVerticalAlignment(1, 1, "top");
-			_questionImage.setVerticalSpacing(2);
-			questionTable.add(_questionImage, 1, 1);
-			questionTable.setWidth(2, 1, "4");
-			questionTable.add(question, 3, 1);
-
-			pollTable.setAlignment(1, pollRow, _questionAlignment);
-			pollTable.add(questionTable, 1, pollRow);
-		}
-		else {
-			pollTable.add(question, 1, pollRow);
-		}
-		pollRow++;
-
-		Table answerTable = new Table();
-		answerTable.setCellspacing(0);
-		answerTable.setCellpadding(0);
-		answerTable.setWidth("100%");
+			questionParagraph.add(_questionImage);			
+		}		
+		questionParagraph.add(question);		
+		pollContainer.addChild(questionParagraph);	
+		
 		PollAnswer[] answers = PollBusiness.getAnswers(pollQuestion.getID());
-
+		
 		boolean canVote = true;
 		if (iwc.getParameter(PollBusiness._PARAMETER_POLL_VOTER) != null) canVote = false;
 		if (canVote) canVote = PollBusiness.canVote(iwc, pollQuestion.getID());
-
-		if (canVote) {
+		
+		Lists listOfAnswers = new Lists();
+		listOfAnswers.setListOrdered(false);			
+		
+		if (canVote) { //user can vote (has not voted yet)
 			boolean hasAnswers = false;
 
 			if (answers != null) {
-				int row = 1;
-
 				for (int a = 0; a < answers.length; a++) {
 					LocalizedText locAnswerText = TextFinder.getLocalizedText(answers[a], _iLocaleID);
+					
+					ListItem listItem = new ListItem();	
+					
 					if (locAnswerText != null) {
 						hasAnswers = true;
-
+						
 						Link answerLink = getStyleLink(locAnswerText.getHeadline(), LINK_STYLE);
 						answerLink.addParameter(PollBusiness._PARAMETER_POLL_QUESTION, pollQuestion.getID());
 						answerLink.addParameter(PollBusiness._PARAMETER_POLL_ANSWER, answers[a].getID());
 						answerLink.addParameter(PollBusiness._PARAMETER_POLL_VOTER, PollBusiness._PARAMETER_TRUE);
 						answerLink.addParameter(PollBusiness._PARAMETER_CLOSE, PollBusiness._PARAMETER_TRUE);
 						answerLink.setEventListener(PollListener.class);
+						
 						if (_name != null) answerLink.setStyle(_name);
-
-						if (_linkImage != null) {
-							Table imageTable = new Table(3, 1);
-							imageTable.setCellspacing(0);
-							imageTable.setCellpadding(0);
-
+						
+						if (_linkImage != null) {							
 							Image image = new Image(_linkImage.getMediaURL(iwc));
-
-							image.setVerticalSpacing(3);
+							image.setVerticalSpacing(3); //TODO is it really necessary, shouldn't it be defined in CSS?
+							
 							if (_linkOverImage != null) {
 								image.setOverImage(_linkOverImage);
 								_linkOverImage.setVerticalSpacing(3);
 								answerLink.setMarkupAttribute("onMouseOver", "swapImage('" + image.getName() + "','','" + _linkOverImage.getMediaURL(iwc) + "',1)");
 								answerLink.setMarkupAttribute("onMouseOut", "swapImgRestore()");
-							}
-
-							imageTable.add(image, 1, 1);
-							imageTable.setVerticalAlignment(1, 1, "top");
-							imageTable.setWidth(2, "8");
-							imageTable.add(answerLink, 3, 1);
-							answerTable.add(imageTable, 1, row);
+							}		
+							
+							listItem.add(image);
+							listItem.add(answerLink);							
+						} else {							
+							listItem.add(answerLink);
 						}
-						else {
-							answerTable.add(answerLink, 1, row);
-						}
-						row++;
-						answerTable.setHeight(row, "4");
-						row++;
+						
+						listOfAnswers.addChild(listItem);
+						
 					}
 				}
 			}
-
+			
 			if (hasAnswers) {
-				pollTable.add(answerTable, 1, pollRow);
-				pollRow++;
-			}
-		}
-		else {
+				pollContainer.addChild(listOfAnswers);
+			}				
+			
+		} else { //user has woted, let's show results to user
+			
 			int total = 0;
-			int row = 0;
-
+			
 			if (answers != null) {
 				if (answers.length > 0) {
 					for (int i = 0; i < answers.length; i++) {
@@ -420,73 +358,69 @@ public class Poll2 extends Block implements Builderaware {
 					}
 					for (int i = 0; i < answers.length; i++) {
 						LocalizedText answerLocText = TextFinder.getLocalizedText(answers[i], _iLocaleID);
+						
+						ListItem listItem = new ListItem();
+						
 						if (answerLocText != null) {
-							++row;
-
+							
 							float percent = 0;
 							if (answers[i].getHits() > 0) percent = ((float) answers[i].getHits() / (float) total) * 100;
 
-							Text answerText = getStyleText(answerLocText.getHeadline(), ANSWER_STYLE);
+							Text answerText = new Text(answerLocText.getHeadline());
 							if (_showVotes || _isAdmin) {
 								answerText.addToText(" (" + Integer.toString(answers[i].getHits()) + ")");
 							}
-							Text percentText = getStyleText(Text.NON_BREAKING_SPACE + com.idega.util.text.TextSoap.decimalFormat(percent, 1) + "%", TEXT_STYLE);
+							Text percentText = new Text(com.idega.util.text.TextSoap.decimalFormat(percent, 1) + "%");							
+							
+							Paragraph answerParagraph = new Paragraph();
+							answerParagraph.setStyleClass("answer");
+							answerParagraph.add(answerText);
+							listItem.add(answerParagraph);							
 
-							answerTable.mergeCells(1, row, 2, row);
-							answerTable.add(answerText, 1, row);
-							row++;
-
-							Table table = new Table();
-							table.setCellpadding(0);
-							table.setCellspacing(1);
-							table.setWidth("100%");
-							table.setColor("#000000");
-
-							Image transImage = answerTable.getTransparentCell(iwc);
-							transImage.setHeight(10);
-							transImage.setWidth("100%");
-							Image transImage2 = answerTable.getTransparentCell(iwc);
-							transImage2.setHeight(10);
-							transImage2.setWidth("100%");
-							if (percent > 0) {
-								table.setColor(1, 1, _votedColor);
-								table.add(transImage, 1, 1);
-								table.setWidth(1, 1, Integer.toString((int) percent) + "%");
-								if (percent < 100) {
-									table.setColor(2, 1, _whiteColor);
-									table.add(transImage2, 2, 1);
-									table.setWidth(2, 1, Integer.toString(100 - (int) percent) + "%");
-								}
-							}
-							else if (percent <= 0) {
-								table.setColor(1, 1, _whiteColor);
-								table.setWidth(1, 1, "100%");
-								table.add(transImage2, 1, 1);
-							}
-
-							answerTable.add(table, 1, row);
-							answerTable.add(percentText, 2, row);
-							answerTable.setWidth(1, row, "100%");
-
-							row++;
-							answerTable.setHeight(row, "6");
+							Layer barLayer = new Layer();
+							barLayer.setStyleClass("percentageBar");
+							
+							Layer gaugeLayer = new Layer();	
+							gaugeLayer.setStyleClass("percentageLevel");
+							gaugeLayer.setStyleAttribute("width: " + Integer.toString((int) percent) + "%;");
+							
+							barLayer.add(gaugeLayer);
+							listItem.add(barLayer);							
+							
+							Paragraph percentParagraph = new Paragraph();
+							percentParagraph.setStyleClass("percent");
+							percentParagraph.add(percentText);
+							listItem.add(percentParagraph);	
+							
 						}
-					}
+					
+						listOfAnswers.add(listItem);						
+					}					
+					pollContainer.addChild(listOfAnswers);					
 				}
-				answerTable.setWidth(1, "100%");
-				pollTable.add(answerTable, 1, pollRow);
-				pollRow++;
-
 				String information = PollBusiness.getLocalizedInformation(pollQuestion.getID(), _iLocaleID);
 				if (information != null && _showInformation) {
-					Text informationText = getStyleText(information, TEXT_STYLE);
-					pollTable.add(informationText, 1, pollRow);
-					pollRow++;
-				}
-			}
-		}
+					Text informationText = new Text(information);
+					Paragraph informationParagraph = new Paragraph();
+					informationParagraph.setStyleClass("information");
+					informationParagraph.add(informationText);
+					pollContainer.addChild(informationParagraph);
+				}				
+			}		
+		}		
 
-		GenericButton collectionLink = (GenericButton) getStyleObject(new GenericButton("", _iwrb.getLocalizedString("older_polls", "Older polls")), BUTTON_STYLE);
+		if (_showCollection) {
+			GenericButton collectionLink = getOlderPollsButton();
+			pollContainer.addChild(collectionLink);
+		}
+		
+		return pollContainer;	
+		
+	}
+
+	private GenericButton getOlderPollsButton() {
+		GenericButton collectionLink = new GenericButton("", _iwrb.getLocalizedString("older_polls", "Older polls"));
+		collectionLink.setStyleClass("olderPolls");
 		collectionLink.setWindowToOpen(PollResult.class);
 		collectionLink.addParameterToWindow(Poll._prmPollID, _pollID);
 		collectionLink.addParameterToWindow(Poll._prmPollCollection, PollBusiness._PARAMETER_TRUE);
@@ -497,59 +431,8 @@ public class Poll2 extends Block implements Builderaware {
 		else {
 			collectionLink.addParameterToWindow(Poll._prmShowVotes, PollBusiness._PARAMETER_FALSE);
 		}
-
-		if (_showCollection) {
-			pollTable.add(collectionLink, 1, pollRow);
-		}
-
-		return pollTable;
+		return collectionLink;
 	}
-		
-	private Layer getNewLinkView(IWContext iwc, LocalizedText locText, PollQuestion pollQuestion) {		
-		/*
-		  mockup with no business logic in it
-		  layer containing all the stuff
-		  
-		  <div>
-		  	  question	
-		      <ul>
-		      	  <li><a href="" /></li>
-		      	  <li><a href="" /></li>
-		      	  <li><a href="" /></li>	
-		      </ul>
-		  </div>  
-		 */
-		
-		Layer surroundingLayer = new Layer();
-		surroundingLayer.setStyleClass("awesome layer class");
-		
-		Text text = new Text("This is poll2  question???"); 
-		
-		// this above to be replaced with code that actually retrieves poll question
-				
-		
-		surroundingLayer.getChildren().add(text);
-		
-		//now make <ul> of questions		
-		Lists list = new Lists();
-		list.setStyleClass("awesome list class");
-		
-		ListItem li = new ListItem();
-		li.setStyleClass("awesome list-item class");
-		
-		Link link = new Link();
-		link.setStyleClass("awesome link class");
-		link.setText("Answer 1");
-		link.setURL("#");
-		
-		li.getChildren().add(link);
-		list.getChildren().add(li);
-		
-		surroundingLayer.getChildren().add(list);
-		
-		return surroundingLayer;		
-		
-	}	
 
 	private void setDefaultValues() {
 		_pollWidth = "100%";
@@ -577,18 +460,6 @@ public class Poll2 extends Block implements Builderaware {
 
 	public void setWidth(String pollWidth) {
 		_pollWidth = pollWidth;
-	}
-
-	public void setStyle(String style) {
-		_styleAttribute = style;
-	}
-
-	public void setHoverStyle(String hoverStyle) {
-		_hoverStyle = hoverStyle;
-	}
-
-	public void setQuestionStyle(String style) {
-		_questionStyleAttribute = style;
 	}
 
 	public void setNumberOfShownPolls(int numberOfShownPolls) {
@@ -640,8 +511,8 @@ public class Poll2 extends Block implements Builderaware {
 		try {
 			obj = (Poll2) super.clone();
 
-			if (this._myTable != null) {
-				obj._myTable = (Table) this._myTable.clone();
+			if (this.mainLayer != null) {
+				obj.mainLayer = (Layer) this.mainLayer.clone();
 			}
 			if (this._linkImage != null) {
 				obj._linkImage = (Image) this._linkImage.clone();
@@ -696,18 +567,28 @@ public class Poll2 extends Block implements Builderaware {
 		map.put(BUTTON_STYLE, "font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt; border: 1px solid #000000;");
 		map.put(RADIO_STYLE, "font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt; width: 12px; height: 12px;");
 		map.put(LINK_STYLE, "font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt; text-decoration: none;");
-		map.put(LINK_STYLE + ":hover", "font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt; text-decoration: none;");
+		map.put(LINK_STYLE+":hover", "font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt; text-decoration: none;");
 		
 		return map;
 	}
 
-	
-	public String getBlockLayerStyleClass() {
-		return blockLayerStyleClass;
+	private Layer getMainLayer() {
+		if (mainLayer == null) {
+			mainLayer = new Layer();
+			mainLayer.setStyleClass("poll");
+		}
+		return mainLayer;
 	}
 
-	public void setBlockLayerStyleClass(String blockLayerStyleClass) {
-		this.blockLayerStyleClass = blockLayerStyleClass;
-	}	
+	private void setMainLayer(Layer mainLayer) {
+		this.mainLayer = mainLayer;
+	}
 
+	public String getMainStyleClass() {
+		return getMainLayer().getStyleClass();
+	}
+
+	public void setMainStyleClass(String mainStyleClass) {
+		getMainLayer().setStyleClass(mainStyleClass);
+	}
 }
