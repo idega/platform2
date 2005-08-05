@@ -2,9 +2,11 @@ package com.idega.block.importer.data;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.StringTokenizer;
@@ -28,7 +30,7 @@ public class GenericImportFile implements ImportFile{
 	  private String recordDilimiter = "\n";
 	  private String valueSeparator = ";";
 	  private String emptyValueString = " ";
-	  private FileReader fr;
+	  private InputStreamReader fr;
 	  private BufferedReader br;
 	  private boolean addNewLineAfterRecord = false;
 
@@ -103,7 +105,12 @@ public class GenericImportFile implements ImportFile{
 	  public Collection getRecords() throws NoRecordsException{
 	
 	    try{
-	      fr = new FileReader(getFile());
+	    		if (getEncoding() == null) {
+	    			fr = new FileReader(getFile());
+	    		}
+	    		else {
+	    			fr = new InputStreamReader(new FileInputStream(getFile()), getEncoding());
+	    		}
 	      br = new BufferedReader(fr);
 	      String line;
 	      StringBuffer buf = new StringBuffer();
@@ -301,5 +308,9 @@ public class GenericImportFile implements ImportFile{
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public String getEncoding() {
+		return null;
 	}
 }

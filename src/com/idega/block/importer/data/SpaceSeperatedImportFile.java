@@ -302,4 +302,8 @@ public class SpaceSeperatedImportFile implements ImportFile{
 			}
 		}
 	}
+
+	public String getEncoding() {
+		return null;
+	}
 }

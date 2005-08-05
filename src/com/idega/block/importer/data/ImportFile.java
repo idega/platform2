@@ -19,7 +19,7 @@ public interface ImportFile{
  */
   public void setEmptyValueString(String emptyValueString);
   public File getFile();
-  
+  public String getEncoding();
   //public Object getRecordAtIndex(int index);
  // public boolean parse();
 }
