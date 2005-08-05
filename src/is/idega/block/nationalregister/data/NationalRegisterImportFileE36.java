@@ -88,4 +88,8 @@ public class NationalRegisterImportFileE36		extends	GenericImportFile implements
 			return null;
 		}
 	}
+
+	public String getEncoding() {
+		return "ISO-8859-1";
+	}
 }
