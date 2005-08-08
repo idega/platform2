@@ -182,8 +182,13 @@ public class FamilyLogicBean extends IBOServiceBean implements FamilyLogic{
     try{
       userName = user.getName();
       Collection coll = user.getRelatedBy(RELATION_TYPE_GROUP_SPOUSE);
-      Group group = (Group)coll.iterator().next();
-      return convertGroupToUser(group);
+      Iterator spouseIter = coll.iterator();
+      if (spouseIter.hasNext()) {
+          Group group = (Group)spouseIter.next();
+          return convertGroupToUser(group);
+      } else {
+          throw new NoSpouseFound(userName);
+      }
     }
     catch(Exception e){
       throw new NoSpouseFound(userName);
