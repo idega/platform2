@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolCoursePackageEditor.java,v 1.8 2005/08/08 22:52:58 laddi Exp $
+ * $Id: SchoolCoursePackageEditor.java,v 1.9 2005/08/08 23:27:30 laddi Exp $
  * Created on Jul 6, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -36,10 +36,10 @@ import com.idega.presentation.ui.util.SelectorUtility;
 
 
 /**
- * Last modified: $Date: 2005/08/08 22:52:58 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/08 23:27:30 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class SchoolCoursePackageEditor extends AdultEducationBlock implements IWPageEventListener {
 
@@ -118,7 +118,7 @@ public class SchoolCoursePackageEditor extends AdultEducationBlock implements IW
 		form.setEventListener(SchoolCoursePackageEditor.class);
 		form.addParameter(PARAMETER_ACTION, ACTION_SEARCH);
 
-		form.add(getNavigation(null, false));
+		form.add(getNavigation(null, true));
 		form.add(new Break());
 		
 		if (getSession().getChosenSchool() != null) {
@@ -177,7 +177,7 @@ public class SchoolCoursePackageEditor extends AdultEducationBlock implements IW
 		
 		if (schoolPackage != null) {
 			form.add(getText(localize("courses_connected_to_package", "Courses connected to package") + ": "));
-			form.add(getHeader(getSession().getCoursePackage().getName()));
+			form.add(getHeader(schoolPackage.getPackage().getName()));
 			if (schoolPackage.getFreeText() != null) {
 				form.add(getHeader(" - " + schoolPackage.getFreeText()));
 			}
