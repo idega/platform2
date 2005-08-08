@@ -1,6 +1,6 @@
 /*
- * $Id: GeneralBookingHome.java,v 1.16 2005/06/23 12:18:27 gimmi Exp $
- * Created on 22.6.2005
+ * $Id: GeneralBookingHome.java,v 1.17 2005/08/08 16:06:48 gimmi Exp $
+ * Created on Aug 8, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -20,10 +20,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2005/06/23 12:18:27 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/08/08 16:06:48 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public interface GeneralBookingHome extends IDOHome {
 

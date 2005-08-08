@@ -1,6 +1,6 @@
 /*
- * $Id: GeneralBooking.java,v 1.25 2005/06/23 12:18:27 gimmi Exp $
- * Created on 22.6.2005
+ * $Id: GeneralBooking.java,v 1.26 2005/08/08 16:06:48 gimmi Exp $
+ * Created on Aug 8, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -26,10 +26,10 @@ import com.idega.data.IDORemoveRelationshipException;
 
 /**
  * 
- *  Last modified: $Date: 2005/06/23 12:18:27 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/08/08 16:06:48 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.25 $
+ * @version $Revision: 1.26 $
  */
 public interface GeneralBooking extends IDOEntity, Booking, BasketItem {
 
@@ -152,6 +152,16 @@ public interface GeneralBooking extends IDOEntity, Booking, BasketItem {
 	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#setBookingTypeID
 	 */
 	public void setBookingTypeID(int id);
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#setModifiedDate
+	 */
+	public void setModifiedDate(Timestamp modifiedDate);
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getModifiedDate
+	 */
+	public Timestamp getModifiedDate();
 
 	/**
 	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getDateOfBooking
