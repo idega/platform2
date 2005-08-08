@@ -1,5 +1,5 @@
 /*
- * $Id: StudentPlacer.java,v 1.13 2005/07/05 15:33:09 laddi Exp $
+ * $Id: StudentPlacer.java,v 1.14 2005/08/08 22:21:37 laddi Exp $
  * Created on Jun 1, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -41,10 +41,10 @@ import com.idega.util.PersonalIDFormatter;
 
 
 /**
- * Last modified: $Date: 2005/07/05 15:33:09 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/08 22:21:37 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class StudentPlacer extends AdultEducationBlock implements IWPageEventListener {
 
@@ -134,6 +134,9 @@ public class StudentPlacer extends AdultEducationBlock implements IWPageEventLis
 		form.add(getChoices(iwc));
 		form.add(getSmallErrorText("* "));
 		form.add(getSmallText(localize("has_message", "Has message")));
+		form.add(new Break());
+		form.add(getSmallErrorText("+ "));
+		form.add(getSmallText(localize("has_packages", "Has chosen school package")));
 		
 		if (getSession().getSchoolClass() != null) {
 			IWTimestamp stamp = new IWTimestamp();
@@ -375,8 +378,15 @@ public class StudentPlacer extends AdultEducationBlock implements IWPageEventLis
 				}
 	
 				table.add(getSmallText(String.valueOf(number)), column++, row);
+				boolean hasFlag = false;
 				if (choice.getComment() != null) {
-					table.add(getSmallErrorText("* "), column, row);
+					table.add(getSmallErrorText("*"), column, row);
+				}
+				if (choice.getPackagePK() != null) {
+					table.add(getSmallErrorText("+"), column, row);
+				}
+				if (hasFlag) {
+					table.add(Text.getNonBrakingSpace(), column, row);
 				}
 				table.add(link, column++, row);
 				table.add(getSmallText(PersonalIDFormatter.format(user.getPersonalID(), iwc.getCurrentLocale())), column++, row);

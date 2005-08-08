@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationSessionBean.java,v 1.11 2005/07/07 08:41:42 laddi Exp $
+ * $Id: AdultEducationSessionBean.java,v 1.12 2005/08/08 22:21:37 laddi Exp $
  * Created on May 24, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -16,6 +16,7 @@ import se.idega.idegaweb.commune.accounting.school.business.StudyPathBusiness;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoice;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourse;
 import se.idega.idegaweb.commune.adulteducation.data.CoursePackage;
+import se.idega.idegaweb.commune.adulteducation.data.SchoolCoursePackage;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
@@ -33,10 +34,10 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2005/07/07 08:41:42 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/08 22:21:37 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class AdultEducationSessionBean extends IBOSessionBean  implements AdultEducationSession{
 	
@@ -70,6 +71,9 @@ public class AdultEducationSessionBean extends IBOSessionBean  implements AdultE
 	
 	private Object iCoursePackagePK = null;
 	private CoursePackage iCoursePackage = null;
+	
+	private Object iSchoolCoursePackagePK = null;
+	private SchoolCoursePackage iSchoolCoursePackage = null;
 	
 	private Object iSchoolClassPK = null;
 	private SchoolClass iSchoolClass = null;
@@ -249,6 +253,25 @@ public class AdultEducationSessionBean extends IBOSessionBean  implements AdultE
 		iCoursePackage= null;
 	}
 	
+	public SchoolCoursePackage getSchoolCoursePackage() {
+		if (iSchoolCoursePackage == null && iSchoolCoursePackagePK != null) {
+			try {
+				iSchoolCoursePackage = getAdultEducationBusiness().getSchoolCoursePackage(iSchoolCoursePackagePK);
+			}
+			catch (RemoteException re) {
+				iSchoolCoursePackage = null;
+			}
+			catch (FinderException fe) {
+				iSchoolCoursePackage = null;
+			}
+		}
+		return iSchoolCoursePackage;
+	}
+
+	public void setSchoolCoursePackage(Object schoolCoursePackagePK) {
+		iSchoolCoursePackagePK = schoolCoursePackagePK;
+		iSchoolCoursePackage= null;
+	}
 	
 	public SchoolClassMember getSchoolClassMember() {
 		if (iSchoolClassMember == null && iSchoolClassMemberPK != null) {

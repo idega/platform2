@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolCoursePackageBMPBean.java,v 1.1 2005/07/07 08:41:42 laddi Exp $
+ * $Id: SchoolCoursePackageBMPBean.java,v 1.2 2005/08/08 22:21:37 laddi Exp $
  * Created on Jul 4, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -26,10 +26,10 @@ import com.idega.data.query.Table;
 
 
 /**
- * Last modified: $Date: 2005/07/07 08:41:42 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/08 22:21:37 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class SchoolCoursePackageBMPBean extends GenericEntity  implements SchoolCoursePackage{
 
@@ -156,16 +156,31 @@ public class SchoolCoursePackageBMPBean extends GenericEntity  implements School
 		return idoFindPKsByQuery(query);
 	}
 
-	public Object ejbFindBySchoolAndSeasonAndPackage(School school, SchoolSeason season, CoursePackage coursePackage) throws FinderException {
+	public Collection ejbFindBySchoolAndSeason(School school, SchoolSeason season) throws FinderException {
 		Table table = new Table(this);
 		
 		SelectQuery query = new SelectQuery(table);
 		query.addColumn(table, getIDColumnName());
 		query.addCriteria(new MatchCriteria(table, COLUMN_SCHOOL, MatchCriteria.EQUALS, school));
 		query.addCriteria(new MatchCriteria(table, COLUMN_SEASON, MatchCriteria.EQUALS, season));
-		query.addCriteria(new MatchCriteria(table, COLUMN_PACKAGE, MatchCriteria.EQUALS, coursePackage));
 		
-		return idoFindOnePKByQuery(query);
+		return idoFindPKsByQuery(query);
+	}
+	
+	public Collection ejbFindBySchoolAndSeasonAndPackage(School school, SchoolSeason season, CoursePackage coursePackage) throws FinderException {
+		Table table = new Table(this);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(table, getIDColumnName());
+		query.addCriteria(new MatchCriteria(table, COLUMN_SCHOOL, MatchCriteria.EQUALS, school));
+		if (season != null) {
+			query.addCriteria(new MatchCriteria(table, COLUMN_SEASON, MatchCriteria.EQUALS, season));
+		}
+		if (coursePackage != null) {
+			query.addCriteria(new MatchCriteria(table, COLUMN_PACKAGE, MatchCriteria.EQUALS, coursePackage));
+		}
+		
+		return idoFindPKsByQuery(query);
 	}
 	
 	public int ejbHomeGetNumberOfSchoolPackages(CoursePackage coursePackage) throws IDOException {

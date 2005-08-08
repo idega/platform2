@@ -1,6 +1,6 @@
 /*
- * $Id: SchoolCoursePackageHome.java,v 1.1 2005/07/07 08:41:42 laddi Exp $
- * Created on Jul 6, 2005
+ * $Id: SchoolCoursePackageHome.java,v 1.2 2005/08/08 22:21:37 laddi Exp $
+ * Created on Aug 8, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -18,10 +18,10 @@ import com.idega.data.IDOHome;
 
 
 /**
- * Last modified: $Date: 2005/07/07 08:41:42 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/08 22:21:37 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public interface SchoolCoursePackageHome extends IDOHome {
 
@@ -35,10 +35,15 @@ public interface SchoolCoursePackageHome extends IDOHome {
 	public Collection findAllBySchool(School school) throws FinderException;
 
 	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.data.SchoolCoursePackageBMPBean#ejbFindBySchoolAndSeason
+	 */
+	public Collection findBySchoolAndSeason(School school, SchoolSeason season) throws FinderException;
+
+	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.data.SchoolCoursePackageBMPBean#ejbFindBySchoolAndSeasonAndPackage
 	 */
-	public SchoolCoursePackage findBySchoolAndSeasonAndPackage(School school, SchoolSeason season,
-			CoursePackage coursePackage) throws FinderException;
+	public Collection findBySchoolAndSeasonAndPackage(School school, SchoolSeason season, CoursePackage coursePackage)
+			throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.data.SchoolCoursePackageBMPBean#ejbHomeGetNumberOfSchoolPackages

@@ -1,6 +1,6 @@
 /*
- * $Id: AdultEducationBusiness.java,v 1.27 2005/07/07 08:41:42 laddi Exp $
- * Created on Jul 7, 2005
+ * $Id: AdultEducationBusiness.java,v 1.28 2005/08/08 22:21:37 laddi Exp $
+ * Created on Aug 8, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -42,10 +42,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/07/07 08:41:42 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/08 22:21:37 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.27 $
+ * @version $Revision: 1.28 $
  */
 public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 
@@ -274,6 +274,12 @@ public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#storeChoices
 	 */
+	public void storeChoices(User user, SchoolSeason season, Collection packagePKs, String comment, Object[] reasons,
+			String otherReason) throws IDOCreateException, java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#storeChoices
+	 */
 	public void storeChoices(User user, Collection courses, Object[] oldCourses, String comment, Object[] reasons,
 			String otherReason) throws IDOCreateException, java.rmi.RemoteException;
 
@@ -407,18 +413,20 @@ public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#storeSchoolPackage
 	 */
-	public SchoolCoursePackage storeSchoolPackage(CoursePackage coursePackage, School school, SchoolSeason season,
-			String freeText, Object[] coursePKs) throws CreateException, java.rmi.RemoteException;
+	public SchoolCoursePackage storeSchoolPackage(SchoolCoursePackage schoolPackage, CoursePackage coursePackage,
+			School school, SchoolSeason season, String freeText, Object[] coursePKs) throws CreateException,
+			java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#removeCourseFromPackage
 	 */
-	public void removeCourseFromPackage(Object schoolPackagePK, Object coursePK) throws java.rmi.RemoteException;
+	public void removeCourseFromPackage(SchoolCoursePackage schoolPackage, Object coursePK)
+			throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#activatePackage
 	 */
-	public void activatePackage(Object schoolPackagePK) throws java.rmi.RemoteException;
+	public void activatePackage(SchoolCoursePackage schoolPackage) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#removePackage
@@ -428,7 +436,7 @@ public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#removeSchoolPackage
 	 */
-	public void removeSchoolPackage(Object schoolPackagePK) throws RemoveException, java.rmi.RemoteException;
+	public void removeSchoolPackage(SchoolCoursePackage schoolPackage) throws RemoveException, java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#hasSchoolPackages
@@ -441,13 +449,24 @@ public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 	public Collection getCoursePackages() throws java.rmi.RemoteException;
 
 	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getCoursePackages
+	 */
+	public Collection getCoursePackages(School school, SchoolSeason season) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getSchoolCoursePackage
+	 */
+	public SchoolCoursePackage getSchoolCoursePackage(Object schoolCoursePackagePK) throws FinderException,
+			java.rmi.RemoteException;
+
+	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getCoursePackage
 	 */
 	public CoursePackage getCoursePackage(Object coursePackagePK) throws FinderException, java.rmi.RemoteException;
 
 	/**
-	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getSchoolCoursePackage
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getSchoolCoursePackages
 	 */
-	public SchoolCoursePackage getSchoolCoursePackage(School school, SchoolSeason season, CoursePackage coursePackage)
-			throws FinderException, java.rmi.RemoteException;
+	public Collection getSchoolCoursePackages(School school, SchoolSeason season, CoursePackage coursePackage)
+			throws java.rmi.RemoteException;
 }

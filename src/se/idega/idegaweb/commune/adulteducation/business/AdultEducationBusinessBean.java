@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.41 2005/07/07 08:41:42 laddi Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.42 2005/08/08 22:21:37 laddi Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -45,6 +45,7 @@ import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import com.idega.block.pdf.business.PrintingContext;
 import com.idega.block.pdf.business.PrintingService;
+import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseCode;
@@ -84,12 +85,12 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/07/07 08:41:42 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/08 22:21:37 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.41 $
+ * @version $Revision: 1.42 $
  */
-public class AdultEducationBusinessBean extends CaseBusinessBean implements AdultEducationBusiness {
+public class AdultEducationBusinessBean extends CaseBusinessBean implements CaseBusiness, AdultEducationBusiness {
 
 	public String getBundleIdentifier() {
 		return AdultEducationConstants.IW_BUNDLE_IDENTIFIER;
@@ -824,6 +825,54 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		course.store();
 		return course;
 	}
+
+	public void storeChoices(User user, SchoolSeason season, Collection packagePKs, String comment, Object[] reasons, String otherReason) throws IDOCreateException {
+		javax.transaction.UserTransaction trans = this.getSessionContext().getUserTransaction();
+		try {
+			trans.begin();
+
+			CaseStatus first = getCaseStatusOpen();
+			CaseStatus other = getCaseStatusInactive();
+			CaseStatus status = null;
+
+			IWTimestamp timeNow = new IWTimestamp();
+			
+			Iterator iter = packagePKs.iterator();
+			int i = 0;
+			while (iter.hasNext()) {
+				SchoolCoursePackage schoolCoursePackage = getSchoolCoursePackage(iter.next());
+				Collection courses = schoolCoursePackage.getCourses();
+				
+				Iterator iterator = courses.iterator();
+				while (iterator.hasNext()) {
+					Object course = iter.next();
+					
+					timeNow.addSeconds(-i);
+					if (i == 0) {
+						status = first;
+					}
+					else {
+						status = other;
+					}
+					
+					storeChoice(user, course, course, comment, reasons, otherReason, i + 1, status, null, timeNow.getDate());
+				}
+				i++;
+			}
+
+			trans.commit();
+		}
+		catch (Exception ex) {
+			try {
+				trans.rollback();
+			}
+			catch (javax.transaction.SystemException e) {
+				throw new IDOCreateException(e.getMessage());
+			}
+			ex.printStackTrace();
+			throw new IDOCreateException(ex);
+		}
+	}
 	
 	public void storeChoices(User user, Collection courses, Object[] oldCourses, String comment, Object[] reasons, String otherReason) throws IDOCreateException {
 		javax.transaction.UserTransaction trans = this.getSessionContext().getUserTransaction();
@@ -946,7 +995,9 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		choice.setChoiceOrder(choiceOrder);
 		choice.setComment(comment);
 		choice.setOwner(user);
-		choice.setParentCase(parentCase);
+		if (parentCase != null) {
+			choice.setParentCase(parentCase);
+		}
 		choice.setChoiceDate(choiceDate);
 		choice.setOtherReason(otherReason);
 		choice.store();
@@ -1061,32 +1112,72 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 	}
 	
 	public void rejectChoices(Object[] choicePKs, User performer) {
-		String subject = getLocalizedString("choice_rejected_subject", "VUX - Rejected by provider");
-		String body = getLocalizedString("choice_rejected_body", "Your choice to course {0} with course code {1} has been rejected by {2}. If you have chosen more alternatives that provider will now handle your application.");
-		
 		for (int i = 0; i < choicePKs.length; i++) {
 			try {
 				AdultEducationChoice choice = getChoice(choicePKs[i]);
-				CaseCode code = choice.getCaseCode();
-				changeCaseStatus(choice, getCaseStatusDenied().getStatus(), performer);
-				sendMessage(choice, subject, body);
-				
-				if (choice.getChildCount() > 0) {
-					Iterator iter = choice.getChildrenIterator();
-					while (iter.hasNext()) {
-						Case element = (Case) iter.next();
-						if (element.getCaseCode().equals(code)) {
-							AdultEducationChoice nextChoice = getAdultEducationChoiceInstance(element);
-							nextChoice.setPriority(choice.getPriority());
-							changeCaseStatus(nextChoice, getCaseStatusGranted().getStatus(), performer);
-							break;
-						}
-					}
+				if (choice.getPackagePK() != null) {
+					rejectChoicesInPackage(choice, performer);
+				}
+				else {
+					rejectChoice(choice, performer);
+					activateNextChoice(choice, performer);
 				}
 			}
 			catch (FinderException fe) {
 				fe.printStackTrace();
 				continue;
+			}
+		}
+	}
+	
+	private void rejectChoicesInPackage(AdultEducationChoice choice, User performer) {
+		try {
+			int choiceOrder = choice.getChoiceOrder();
+			int priority = choice.getPriority();
+			AdultEducationCourse course = choice.getCourse();
+			SchoolSeason season = course.getSchoolSeason();
+			SchoolCoursePackage coursePackage = choice.getPackage();
+			
+			Collection choices = getChoiceHome().findAllByUserAndSeasonAndPackage(choice.getUser(), season, coursePackage, choiceOrder);
+			Iterator iter = choices.iterator();
+			while (iter.hasNext()) {
+				AdultEducationChoice element = (AdultEducationChoice) iter.next();
+				rejectChoice(element, performer);
+			}
+			
+			choices = getChoiceHome().findAllByUserAndSeasonAndPackage(choice.getUser(), season, coursePackage, choiceOrder + 1);
+			iter = choices.iterator();
+			while (iter.hasNext()) {
+				AdultEducationChoice element = (AdultEducationChoice) iter.next();
+				element.setPriority(priority);
+				changeCaseStatus(element, getCaseStatusGranted().getStatus(), performer);
+			}
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+		}
+	}
+	
+	private void rejectChoice(AdultEducationChoice choice, User performer) {
+		String subject = getLocalizedString("choice_rejected_subject", "VUX - Rejected by provider");
+		String body = getLocalizedString("choice_rejected_body", "Your choice to course {0} with course code {1} has been rejected by {2}. If you have chosen more alternatives that provider will now handle your application.");
+		
+		changeCaseStatus(choice, getCaseStatusDenied().getStatus(), performer);
+		sendMessage(choice, subject, body);
+	}
+	
+	private void activateNextChoice(AdultEducationChoice choice, User performer) {
+		CaseCode code = choice.getCaseCode();
+		if (choice.getChildCount() > 0) {
+			Iterator iter = choice.getChildrenIterator();
+			while (iter.hasNext()) {
+				Case element = (Case) iter.next();
+				if (element.getCaseCode().equals(code)) {
+					AdultEducationChoice nextChoice = getAdultEducationChoiceInstance(element);
+					nextChoice.setPriority(choice.getPriority());
+					changeCaseStatus(nextChoice, getCaseStatusGranted().getStatus(), performer);
+					break;
+				}
 			}
 		}
 	}
@@ -1402,12 +1493,8 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		coursePackage.store();
 	}
 	
-	public SchoolCoursePackage storeSchoolPackage(CoursePackage coursePackage, School school, SchoolSeason season, String freeText, Object[] coursePKs) throws CreateException {
-		SchoolCoursePackage schoolPackage = null;
-		try {
-			schoolPackage = getSchoolCoursePackageHome().findBySchoolAndSeasonAndPackage(school, season, coursePackage);
-		}
-		catch (FinderException fe) {
+	public SchoolCoursePackage storeSchoolPackage(SchoolCoursePackage schoolPackage, CoursePackage coursePackage, School school, SchoolSeason season, String freeText, Object[] coursePKs) throws CreateException {
+		if (schoolPackage == null) {
 			schoolPackage = getSchoolCoursePackageHome().create();
 			schoolPackage.setPackage(coursePackage);
 			schoolPackage.setSchool(school);
@@ -1435,9 +1522,8 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		return schoolPackage;
 	}
 	
-	public void removeCourseFromPackage(Object schoolPackagePK, Object coursePK) {
+	public void removeCourseFromPackage(SchoolCoursePackage schoolPackage, Object coursePK) {
 		try {
-			SchoolCoursePackage schoolPackage = getSchoolCoursePackageHome().findByPrimaryKey(schoolPackagePK);
 			AdultEducationCourse course = getCourse(coursePK);
 			schoolPackage.removeCourse(course);
 		}
@@ -1449,15 +1535,9 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		}
 	}
 	
-	public void activatePackage(Object schoolPackagePK) {
-		try {
-			SchoolCoursePackage schoolPackage = getSchoolCoursePackageHome().findByPrimaryKey(schoolPackagePK);
-			schoolPackage.setActive(true);
-			schoolPackage.store();
-		}
-		catch (FinderException fe) {
-			fe.printStackTrace();
-		}
+	public void activatePackage(SchoolCoursePackage schoolPackage) {
+		schoolPackage.setActive(true);
+		schoolPackage.store();
 	}
 	
 	public void removePackage(Object coursePackagePK) throws RemoveException {
@@ -1470,20 +1550,14 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		}
 	}
 	
-	public void removeSchoolPackage(Object schoolPackagePK) throws RemoveException {
+	public void removeSchoolPackage(SchoolCoursePackage schoolPackage) throws RemoveException {
 		try {
-			SchoolCoursePackage schoolPackage = getSchoolCoursePackageHome().findByPrimaryKey(schoolPackagePK);
-			try {
-				schoolPackage.removeCourses();
-			}
-			catch (IDORemoveRelationshipException irre) {
-				irre.printStackTrace();
-			}
-			schoolPackage.remove();
+			schoolPackage.removeCourses();
 		}
-		catch (FinderException fe) {
-			throw new RemoveException(fe.getMessage());
+		catch (IDORemoveRelationshipException irre) {
+			irre.printStackTrace();
 		}
+		schoolPackage.remove();
 	}
 	
 	public boolean hasSchoolPackages(CoursePackage coursePackage) {
@@ -1506,11 +1580,31 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		}
 	}
 	
+	public Collection getCoursePackages(School school, SchoolSeason season) {
+		try {
+			return getSchoolCoursePackageHome().findBySchoolAndSeason(school, season);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return new ArrayList();
+		}
+	}
+	
+	public SchoolCoursePackage getSchoolCoursePackage(Object schoolCoursePackagePK) throws FinderException {
+		return getSchoolCoursePackageHome().findByPrimaryKey(schoolCoursePackagePK);
+	}
+	
 	public CoursePackage getCoursePackage(Object coursePackagePK) throws FinderException {
 		return getCoursePackageHome().findByPrimaryKey(coursePackagePK);
 	}
 	
-	public SchoolCoursePackage getSchoolCoursePackage(School school, SchoolSeason season, CoursePackage coursePackage) throws FinderException {
-		return getSchoolCoursePackageHome().findBySchoolAndSeasonAndPackage(school, season, coursePackage);
+	public Collection getSchoolCoursePackages(School school, SchoolSeason season, CoursePackage coursePackage) {
+		try {
+			return getSchoolCoursePackageHome().findBySchoolAndSeasonAndPackage(school, season, coursePackage);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return new ArrayList();
+		}
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationChoiceBMPBean.java,v 1.12 2005/06/12 13:46:45 laddi Exp $
+ * $Id: AdultEducationChoiceBMPBean.java,v 1.13 2005/08/08 22:21:37 laddi Exp $
  * Created on May 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -33,7 +33,7 @@ import com.idega.data.query.WildCardColumn;
 import com.idega.user.data.User;
 
 
-public class AdultEducationChoiceBMPBean extends AbstractCaseBMPBean  implements AdultEducationChoice{
+public class AdultEducationChoiceBMPBean extends AbstractCaseBMPBean  implements Case, AdultEducationChoice{
 
 	private static final String ENTITY_NAME = "comm_vux_choice";
 	
@@ -55,6 +55,7 @@ public class AdultEducationChoiceBMPBean extends AbstractCaseBMPBean  implements
 	private static final String PLACEMENT_MESSAGE = "placement_message";
 	private static final String REJECTION_COMMENT = "rejection_comment";
 	private static final String OTHER_REASON = "other_reason";
+	private static final String PACKAGE = "vux_school_package_id";
 
 	public String getCaseCodeKey() {
 		return AdultEducationConstants.ADULT_EDUCATION_CASE_CODE;
@@ -73,6 +74,7 @@ public class AdultEducationChoiceBMPBean extends AbstractCaseBMPBean  implements
 		
 		addManyToOneRelationship(USER, "User", User.class);
 		addManyToOneRelationship(COURSE, "Course", AdultEducationCourse.class);
+		addManyToOneRelationship(PACKAGE, "Package", SchoolCoursePackage.class);
 		
 		addAttribute(CHOICE_DATE, "Choice date", Date.class);
 		addAttribute(COMMENT, "Comment", String.class, 1000);
@@ -120,6 +122,14 @@ public class AdultEducationChoiceBMPBean extends AbstractCaseBMPBean  implements
 	
 	public Object getCoursePK() {
 		return getIntegerColumnValue(COURSE);
+	}
+	
+	public SchoolCoursePackage getPackage() {
+		return (SchoolCoursePackage) getColumnValue(PACKAGE);
+	}
+	
+	public Object getPackagePK() {
+		return getIntegerColumnValue(PACKAGE);
 	}
 	
 	public Date getChoiceDate() {
@@ -205,6 +215,14 @@ public class AdultEducationChoiceBMPBean extends AbstractCaseBMPBean  implements
 
 	public void setCourse(Object coursePK) {
 		setColumn(COURSE, coursePK);
+	}
+	
+	public void setPackage(SchoolCoursePackage schoolCoursePackage) {
+		setColumn(PACKAGE, schoolCoursePackage);
+	}
+	
+	public void setPackage(Object schoolCoursePackagePK) {
+		setColumn(PACKAGE, schoolCoursePackagePK);
 	}
 	
 	public void setChoiceDate(Date date) {
@@ -386,6 +404,33 @@ public class AdultEducationChoiceBMPBean extends AbstractCaseBMPBean  implements
 		return idoFindPKsByQuery(query);
 	}
 	
+	public Collection ejbFindAllByUserAndSeasonAndPackage(User user, SchoolSeason season, SchoolCoursePackage coursePackage) throws FinderException {
+		return ejbFindAllByUserAndSeasonAndPackage(user, season, coursePackage, -1);
+	}
+	
+	public Collection ejbFindAllByUserAndSeasonAndPackage(User user, SchoolSeason season, SchoolCoursePackage coursePackage, int choiceOrder) throws FinderException {
+		Table table = new Table(this);
+		Table course = new Table(AdultEducationCourse.class);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn(table));
+		try {
+			query.addJoin(table, course);
+		}
+		catch (IDORelationshipException ire) {
+			throw new FinderException(ire.getMessage());
+		}
+		query.addCriteria(new MatchCriteria(table, USER, MatchCriteria.EQUALS, user));
+		query.addCriteria(new MatchCriteria(course, "sch_school_season_id", MatchCriteria.EQUALS, season));
+		query.addCriteria(new MatchCriteria(table, PACKAGE, MatchCriteria.EQUALS, coursePackage));
+		if (choiceOrder != -1) {
+			query.addCriteria(new MatchCriteria(table, CHOICE_ORDER, MatchCriteria.EQUALS, choiceOrder));
+		}
+		query.addOrder(table, CHOICE_ORDER, true);
+		
+		return idoFindPKsByQuery(query);
+	}
+	
 	public Collection ejbFindAllByUser(User user, String[] statuses) throws FinderException {
 		Table table = new Table(this);
 		Table course = new Table(AdultEducationCourse.class);
@@ -425,6 +470,30 @@ public class AdultEducationChoiceBMPBean extends AbstractCaseBMPBean  implements
 		}
 		query.addCriteria(new MatchCriteria(table, USER, MatchCriteria.EQUALS, user));
 		query.addCriteria(new MatchCriteria(course, "sch_school_season_id", MatchCriteria.EQUALS, season));
+		query.addCriteria(new InCriteria(cases, "case_status", statuses));
+		query.addOrder(table, CHOICE_ORDER, true);
+		
+		return idoFindPKsByQuery(query);
+	}
+	
+	public Collection ejbFindAllByUserAndSeasonAndStatuses(User user, SchoolSeason season, SchoolCoursePackage coursePackage, int choiceOrder, String[] statuses) throws FinderException {
+		Table table = new Table(this);
+		Table course = new Table(AdultEducationCourse.class);
+		Table cases = new Table(Case.class);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn(table));
+		try {
+			query.addJoin(table, course);
+			query.addJoin(table, cases);
+		}
+		catch (IDORelationshipException ire) {
+			throw new FinderException(ire.getMessage());
+		}
+		query.addCriteria(new MatchCriteria(table, USER, MatchCriteria.EQUALS, user));
+		query.addCriteria(new MatchCriteria(course, "sch_school_season_id", MatchCriteria.EQUALS, season));
+		query.addCriteria(new MatchCriteria(table, PACKAGE, MatchCriteria.EQUALS, coursePackage));
+		query.addCriteria(new MatchCriteria(table, CHOICE_ORDER, MatchCriteria.EQUALS, choiceOrder));
 		query.addCriteria(new InCriteria(cases, "case_status", statuses));
 		query.addOrder(table, CHOICE_ORDER, true);
 		

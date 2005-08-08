@@ -1,6 +1,6 @@
 /*
- * $Id: SchoolCoursePackageHomeImpl.java,v 1.1 2005/07/07 08:41:42 laddi Exp $
- * Created on Jul 6, 2005
+ * $Id: SchoolCoursePackageHomeImpl.java,v 1.2 2005/08/08 22:21:37 laddi Exp $
+ * Created on Aug 8, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -18,10 +18,10 @@ import com.idega.data.IDOFactory;
 
 
 /**
- * Last modified: $Date: 2005/07/07 08:41:42 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/08 22:21:37 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class SchoolCoursePackageHomeImpl extends IDOFactory implements SchoolCoursePackageHome {
 
@@ -44,12 +44,20 @@ public class SchoolCoursePackageHomeImpl extends IDOFactory implements SchoolCou
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public SchoolCoursePackage findBySchoolAndSeasonAndPackage(School school, SchoolSeason season,
-			CoursePackage coursePackage) throws FinderException {
+	public Collection findBySchoolAndSeason(School school, SchoolSeason season) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		Object pk = ((SchoolCoursePackageBMPBean) entity).ejbFindBySchoolAndSeasonAndPackage(school, season, coursePackage);
+		java.util.Collection ids = ((SchoolCoursePackageBMPBean) entity).ejbFindBySchoolAndSeason(school, season);
 		this.idoCheckInPooledEntity(entity);
-		return this.findByPrimaryKey(pk);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findBySchoolAndSeasonAndPackage(School school, SchoolSeason season, CoursePackage coursePackage)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolCoursePackageBMPBean) entity).ejbFindBySchoolAndSeasonAndPackage(school, season,
+				coursePackage);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
 	public int getNumberOfSchoolPackages(CoursePackage coursePackage) throws IDOException {

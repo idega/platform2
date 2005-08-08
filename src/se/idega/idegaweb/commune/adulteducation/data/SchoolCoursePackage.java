@@ -1,6 +1,6 @@
 /*
- * $Id: SchoolCoursePackage.java,v 1.1 2005/07/07 08:41:42 laddi Exp $
- * Created on Jul 6, 2005
+ * $Id: SchoolCoursePackage.java,v 1.2 2005/08/08 22:21:37 laddi Exp $
+ * Created on Aug 8, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -19,10 +19,10 @@ import com.idega.data.IDORemoveRelationshipException;
 
 
 /**
- * Last modified: $Date: 2005/07/07 08:41:42 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/08 22:21:37 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public interface SchoolCoursePackage extends IDOEntity {
 

@@ -1,6 +1,6 @@
 /*
- * $Id: AdultEducationChoiceHome.java,v 1.10 2005/06/07 12:49:03 laddi Exp $
- * Created on Jun 7, 2005
+ * $Id: AdultEducationChoiceHome.java,v 1.11 2005/08/08 22:21:37 laddi Exp $
+ * Created on Aug 8, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -20,10 +20,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/06/07 12:49:03 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/08 22:21:37 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public interface AdultEducationChoiceHome extends IDOHome {
 
@@ -65,6 +65,18 @@ public interface AdultEducationChoiceHome extends IDOHome {
 	public Collection findAllByUserAndSeason(User user, SchoolSeason season, int choiceOrder) throws FinderException;
 
 	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceBMPBean#ejbFindAllByUserAndSeasonAndPackage
+	 */
+	public Collection findAllByUserAndSeasonAndPackage(User user, SchoolSeason season, SchoolCoursePackage coursePackage)
+			throws FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceBMPBean#ejbFindAllByUserAndSeasonAndPackage
+	 */
+	public Collection findAllByUserAndSeasonAndPackage(User user, SchoolSeason season, SchoolCoursePackage coursePackage,
+			int choiceOrder) throws FinderException;
+
+	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceBMPBean#ejbFindAllByUser
 	 */
 	public Collection findAllByUser(User user, String[] statuses) throws FinderException;
@@ -74,6 +86,12 @@ public interface AdultEducationChoiceHome extends IDOHome {
 	 */
 	public Collection findAllByUserAndSeasonAndStatuses(User user, SchoolSeason season, String[] statuses)
 			throws FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceBMPBean#ejbFindAllByUserAndSeasonAndStatuses
+	 */
+	public Collection findAllByUserAndSeasonAndStatuses(User user, SchoolSeason season,
+			SchoolCoursePackage coursePackage, int choiceOrder, String[] statuses) throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceBMPBean#ejbFindByUserAndCourse

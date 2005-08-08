@@ -1,6 +1,6 @@
 /*
- * $Id: AdultEducationChoiceHomeImpl.java,v 1.10 2005/06/07 12:49:03 laddi Exp $
- * Created on Jun 7, 2005
+ * $Id: AdultEducationChoiceHomeImpl.java,v 1.11 2005/08/08 22:21:37 laddi Exp $
+ * Created on Aug 8, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -20,10 +20,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/06/07 12:49:03 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/08 22:21:37 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class AdultEducationChoiceHomeImpl extends IDOFactory implements AdultEducationChoiceHome {
 
@@ -88,6 +88,24 @@ public class AdultEducationChoiceHomeImpl extends IDOFactory implements AdultEdu
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
+	public Collection findAllByUserAndSeasonAndPackage(User user, SchoolSeason season, SchoolCoursePackage coursePackage)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((AdultEducationChoiceBMPBean) entity).ejbFindAllByUserAndSeasonAndPackage(user, season,
+				coursePackage);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findAllByUserAndSeasonAndPackage(User user, SchoolSeason season, SchoolCoursePackage coursePackage,
+			int choiceOrder) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((AdultEducationChoiceBMPBean) entity).ejbFindAllByUserAndSeasonAndPackage(user, season,
+				coursePackage, choiceOrder);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
 	public Collection findAllByUser(User user, String[] statuses) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		java.util.Collection ids = ((AdultEducationChoiceBMPBean) entity).ejbFindAllByUser(user, statuses);
@@ -100,6 +118,15 @@ public class AdultEducationChoiceHomeImpl extends IDOFactory implements AdultEdu
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		java.util.Collection ids = ((AdultEducationChoiceBMPBean) entity).ejbFindAllByUserAndSeasonAndStatuses(user,
 				season, statuses);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findAllByUserAndSeasonAndStatuses(User user, SchoolSeason season,
+			SchoolCoursePackage coursePackage, int choiceOrder, String[] statuses) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((AdultEducationChoiceBMPBean) entity).ejbFindAllByUserAndSeasonAndStatuses(user,
+				season, coursePackage, choiceOrder, statuses);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
