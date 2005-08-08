@@ -61,6 +61,7 @@ import com.idega.util.IWTimestamp;
 public class GeneralBookingBMPBean extends GenericEntity implements Booking , GeneralBooking, BasketItem{
 	
 	private static final String COLUMN_MODIFIED_DATE = "MODIFIED_DATE";
+	public static final String NOT_NULL = "NOT_NULL";
 	
 	public GeneralBookingBMPBean(){
 		super();
@@ -886,8 +887,14 @@ public class GeneralBookingBMPBean extends GenericEntity implements Booking , Ge
 				sql.append(") ");
 			}
 		}
-		if (columnName != null && columnValue != null) {
-			sql.append(" and ").append("b."+columnName).append(" = '").append(columnValue).append("'");
+		if (columnName != null) {
+			if (columnValue == null) {
+				sql.append(" and ").append("b."+columnName).append(" IS NULL");
+			} else if (columnValue.equals(NOT_NULL)) {
+				sql.append(" and ").append("b."+columnName).append(" IS NOT NULL");
+			} else {
+				sql.append(" and ").append("b."+columnName).append(" = '").append(columnValue).append("'");
+			}
 		}
 		
 		if (code != null) {

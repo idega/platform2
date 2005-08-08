@@ -1,5 +1,5 @@
 /*
- * $Id: BookingReport.java,v 1.1 2005/07/10 16:17:43 gimmi Exp $
+ * $Id: BookingReport.java,v 1.2 2005/08/08 17:59:44 gimmi Exp $
  * Created on Jul 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -254,11 +254,22 @@ public class BookingReport extends TravelManager implements AdministratorReport 
 	  }
 
 	  protected Booking[] getBookings(IWContext iwc, IWTimestamp fromStamp, IWTimestamp toStamp, List products) throws RemoteException, FinderException {
-	    return getBooker(iwc).getBookings(products, getBookingTypeIds(), fromStamp, toStamp, null, null, searchByDateOfBooking, true); // Setja i false, thegar a ad skoda deleted
+		  String[] crit = getExtraCriteria();
+		  String col = null;
+		  String val = null;
+		  if (crit != null) {
+			  col = crit[0];
+			  val = crit[1];
+		  }
+		  return getBooker(iwc).getBookings(products, getBookingTypeIds(), fromStamp, toStamp, col, val, searchByDateOfBooking, true); // Setja i false, thegar a ad skoda deleted
 		}
 	  
 	  protected int[] getBookingTypeIds() {
 		  return new int[] {};
+	  }
+	  
+	  protected String[] getExtraCriteria() {
+		  return new String[]{null, null};
 	  }
 		
 		private int insertSearchByDropdown(Table table, int row, int noColumns) {

@@ -1,5 +1,5 @@
 package is.idega.idegaweb.travel.presentation;
-import is.idega.idegaweb.travel.interfaces.Booking;
+import is.idega.idegaweb.travel.data.GeneralBookingBMPBean;
 import com.idega.presentation.IWContext;
 
 /**
@@ -18,14 +18,21 @@ public class OnlineBookingReport extends BookingReport implements Report, Admini
   }
 
   public String getReportName() {
-    return _iwrb.getLocalizedString("travel.report_name_online_booking_report","Online-booking report");
+    return _iwrb.getLocalizedString("travel.report_name_creditcard_booking_report","Creditcard-booking report");
+//    return _iwrb.getLocalizedString("travel.report_name_online_booking_report","Online-booking report");
   }
   public String getReportDescription() {
-    return _iwrb.getLocalizedString("travel_report_description_online_booking_report","Displays booking made online");
+    return _iwrb.getLocalizedString("travel_report_description_creditcard_online_booking_report","Displays bookings paid with a creditcard");
+//    return _iwrb.getLocalizedString("travel_report_description_online_booking_report","Displays booking made online");
   }
   
-  public int[] getBookingTypeIds() {
-	  return new int[]{Booking.BOOKING_TYPE_ID_ONLINE_BOOKING};
+  protected int[] getBookingTypeIds() {
+//	  return new int[]{Booking.BOOKING_TYPE_ID_ONLINE_BOOKING};
+	  return new int[]{};
+  }
+
+  protected String[] getExtraCriteria() {
+	  return new String[]{GeneralBookingBMPBean.getCreditcardAuthorizationNumberColumnName(), GeneralBookingBMPBean.NOT_NULL};
   }
 
 }
