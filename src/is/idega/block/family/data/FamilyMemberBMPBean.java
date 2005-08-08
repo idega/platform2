@@ -1,5 +1,5 @@
 /*
- * $Id: FamilyMemberBMPBean.java,v 1.6 2005/05/22 16:30:52 laddi Exp $ Created on 27.8.2004
+ * $Id: FamilyMemberBMPBean.java,v 1.7 2005/08/08 17:27:19 sigtryggur Exp $ Created on 27.8.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
  * 
@@ -23,10 +23,10 @@ import com.idega.user.data.UserBMPBean;
 
 /**
  * 
- * Last modified: $Date: 2005/05/22 16:30:52 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/08 17:27:19 $ by $Author: sigtryggur $
  * 
  * @author <a href="mailto:Joakim@idega.com">Joakim </a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class FamilyMemberBMPBean extends GenericEntity implements FamilyMember{
 
@@ -98,7 +98,7 @@ public class FamilyMemberBMPBean extends GenericEntity implements FamilyMember{
 		Column userCol = new Column(table, COLUMN_USER);
 		
 		SelectQuery query = new SelectQuery(table);
-		query.addColumn(new WildCardColumn(table));
+		query.addColumn(new Column(table, getIDColumnName()));
 		query.addCriteria(new MatchCriteria(userCol, MatchCriteria.EQUALS, user.getPrimaryKey()));
 		
 		return idoFindOnePKBySQL(query.toString());
@@ -110,7 +110,7 @@ public class FamilyMemberBMPBean extends GenericEntity implements FamilyMember{
 		Column userSSN = new Column(userTable, UserBMPBean.getColumnNamePersonalID());
 		
 		SelectQuery query = new SelectQuery(table);
-		query.addColumn(new WildCardColumn(table));
+		query.addColumn(new Column(table, getIDColumnName()));
 		query.addJoin(table, userTable);
 		query.addCriteria(new MatchCriteria(userSSN, MatchCriteria.EQUALS, ssn));
 		
