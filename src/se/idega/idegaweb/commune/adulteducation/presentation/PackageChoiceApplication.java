@@ -1,5 +1,5 @@
 /*
- * $Id: PackageChoiceApplication.java,v 1.1 2005/08/08 22:21:37 laddi Exp $
+ * $Id: PackageChoiceApplication.java,v 1.2 2005/08/08 23:32:45 laddi Exp $
  * Created on May 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -13,7 +13,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import se.idega.idegaweb.commune.adulteducation.business.GroupCollectionHandler;
+import se.idega.idegaweb.commune.adulteducation.business.PackageCollectionHandler;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceReason;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolSeason;
@@ -32,10 +32,10 @@ import com.idega.presentation.ui.util.SelectorUtility;
 
 
 /**
- * Last modified: $Date: 2005/08/08 22:21:37 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/08 23:32:45 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class PackageChoiceApplication extends AdultEducationBlock {
 
@@ -131,7 +131,7 @@ public class PackageChoiceApplication extends AdultEducationBlock {
 			
 			RemoteScriptHandler rsh = new RemoteScriptHandler(school, coursePackages);
 			try {
-				rsh.setRemoteScriptCollectionClass(GroupCollectionHandler.class);
+				rsh.setRemoteScriptCollectionClass(PackageCollectionHandler.class);
 			}
 			catch (InstantiationException e) {
 				e.printStackTrace();
