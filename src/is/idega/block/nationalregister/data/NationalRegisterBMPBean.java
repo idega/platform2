@@ -94,7 +94,7 @@ public class NationalRegisterBMPBean extends GenericEntity implements NationalRe
 		addAttribute(NEW_SSN_OR_NAME, "Kennitala/Nafn ef breyting", true, true, String.class, 18);
 		addAttribute(DATE_OF_BIRTH, "Faedingardagur", true, true, String.class, 6);
 		
-		addIndex("IDX_REG_NATIONAL_1", SSN);
+		addIndex(SSN);
 		setUnique(SSN, true);
 	}
 
@@ -343,7 +343,7 @@ public class NationalRegisterBMPBean extends GenericEntity implements NationalRe
 	}
 
 	public Collection ejbFindAllBySSN(String ssn) throws FinderException, RemoteException {
-		StringBuffer query = new StringBuffer("select * from ");
+		StringBuffer query = new StringBuffer("select "+ getIDColumnName() +" from ");
 		query.append(this.getEntityName());
 		query.append(" where ");
 		query.append(SSN);
