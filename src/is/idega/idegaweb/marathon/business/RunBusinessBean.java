@@ -611,7 +611,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		}
 	}
 	
-	public float getPriceForRunner(Runner runner, Locale locale, float chipDiscount) {
+	public float getPriceForRunner(Runner runner, Locale locale, float chipDiscount, float chipPrice) {
 		Age age = null;
 		if (runner.getUser() != null) {
 			age = new Age(runner.getUser().getDateOfBirth());
@@ -624,6 +624,9 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		float runnerPrice = isChild ? runner.getDistance().getChildrenPrice(locale) : runner.getDistance().getPrice(locale);
 		if (runner.isOwnChip() || runner.isBuyChip()) {
 			runnerPrice = runnerPrice - chipDiscount;
+			if (runner.isBuyChip()) {
+				runnerPrice += chipPrice;
+			}
 		}
 		return runnerPrice;
 	}

@@ -1,6 +1,6 @@
 /*
- * $Id: RunBusiness.java,v 1.24 2005/07/15 12:41:40 laddi Exp $
- * Created on Jul 15, 2005
+ * $Id: RunBusiness.java,v 1.25 2005/08/09 11:06:04 laddi Exp $
+ * Created on Aug 9, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -29,10 +29,10 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2005/07/15 12:41:40 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/09 11:06:04 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.24 $
+ * @version $Revision: 1.25 $
  */
 public interface RunBusiness extends IBOService {
 
@@ -101,7 +101,8 @@ public interface RunBusiness extends IBOService {
 	/**
 	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#getPriceForRunner
 	 */
-	public float getPriceForRunner(Runner runner, Locale locale, float chipDiscount) throws java.rmi.RemoteException;
+	public float getPriceForRunner(Runner runner, Locale locale, float chipDiscount, float chipPrice)
+			throws java.rmi.RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#getNumberOfChildren

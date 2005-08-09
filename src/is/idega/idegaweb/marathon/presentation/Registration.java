@@ -1,5 +1,5 @@
 /*
- * $Id: Registration.java,v 1.21 2005/08/01 17:38:20 laddi Exp $
+ * $Id: Registration.java,v 1.22 2005/08/09 11:06:04 laddi Exp $
  * Created on May 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -57,10 +57,10 @@ import com.idega.util.LocaleUtil;
 
 
 /**
- * Last modified: $Date: 2005/08/01 17:38:20 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/09 11:06:04 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.21 $
+ * @version $Revision: 1.22 $
  */
 public class Registration extends RunBlock {
 	
@@ -846,7 +846,7 @@ public class Registration extends RunBlock {
 			}
 			runnerTable.add(getText(localize(runner.getRun().getName(), runner.getRun().getName())), 2, runRow);
 			runnerTable.add(getText(localize(runner.getDistance().getName(), runner.getDistance().getName())), 3, runRow);
-			float runPrice = getRunBusiness(iwc).getPriceForRunner(runner, iwc.getCurrentLocale(), chipDiscount);
+			float runPrice = getRunBusiness(iwc).getPriceForRunner(runner, iwc.getCurrentLocale(), chipDiscount, price);
 			totalAmount += runPrice;
 			runnerTable.add(getText(formatAmount(iwc.getCurrentLocale(), runPrice)), 4, runRow++);
 			if (numberOfChildren > 1 && childNumber > 1) {
@@ -1257,6 +1257,12 @@ public class Registration extends RunBlock {
 				else if (fromAction == ACTION_STEP_TWO) {
 					action= ACTION_STEP_FOUR;
 				}
+			}
+		}
+		if (action == ACTION_STEP_FOUR) {
+			if (runner != null && runner.isOwnChip() && runner.getChipNumber().length() != 7) {
+				getParentPage().setAlertOnLoad(localize("run_reg.must_fill_in_chip_number", "You have to fill in a valid chip number (seven characters)."));
+				action = ACTION_STEP_THREE;
 			}
 		}
 
