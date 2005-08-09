@@ -1,5 +1,5 @@
 /*
- * $Id: FamilyMemberBMPBean.java,v 1.8 2005/08/09 11:38:08 laddi Exp $ Created on 27.8.2004
+ * $Id: FamilyMemberBMPBean.java,v 1.9 2005/08/09 11:52:35 sigtryggur Exp $ Created on 27.8.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
  * 
@@ -22,10 +22,10 @@ import com.idega.user.data.UserBMPBean;
 
 /**
  * 
- * Last modified: $Date: 2005/08/09 11:38:08 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/09 11:52:35 $ by $Author: sigtryggur $
  * 
  * @author <a href="mailto:Joakim@idega.com">Joakim </a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class FamilyMemberBMPBean extends GenericEntity implements FamilyMember{
 
@@ -87,8 +87,8 @@ public class FamilyMemberBMPBean extends GenericEntity implements FamilyMember{
 	}
 
 	public Collection ejbFindAllByFamilyNR(String familyNr) throws FinderException {
-		IDOQuery sql = idoQueryGetSelect();
-		sql.appendWhereEqualsQuoted(COLUMN_FAMILY_NR, familyNr);
+		IDOQuery sql = idoQuery();
+		sql.appendSelect().append(getIDColumnName()).appendFrom(this.getEntityName()).appendWhereEqualsQuoted(COLUMN_FAMILY_NR, familyNr);
 		return this.idoFindPKsBySQL(sql.toString());
 	}
 
