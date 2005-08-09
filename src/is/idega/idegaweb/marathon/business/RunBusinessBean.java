@@ -676,7 +676,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 			throw new IBORuntimeException(re);
 		}
 		
-		return 0;
+		return numberOfChildren;
 	}
 	
 	private FamilyLogic getFamilyLogic() {
