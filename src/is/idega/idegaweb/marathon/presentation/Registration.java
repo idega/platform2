@@ -1,5 +1,5 @@
 /*
- * $Id: Registration.java,v 1.22 2005/08/09 11:06:04 laddi Exp $
+ * $Id: Registration.java,v 1.23 2005/08/09 11:19:55 laddi Exp $
  * Created on May 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -57,10 +57,10 @@ import com.idega.util.LocaleUtil;
 
 
 /**
- * Last modified: $Date: 2005/08/09 11:06:04 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/09 11:19:55 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.22 $
+ * @version $Revision: 1.23 $
  */
 public class Registration extends RunBlock {
 	
@@ -1260,7 +1260,7 @@ public class Registration extends RunBlock {
 			}
 		}
 		if (action == ACTION_STEP_FOUR) {
-			if (runner != null && runner.isOwnChip() && runner.getChipNumber().length() != 7) {
+			if (runner != null && runner.isOwnChip() && (runner.getChipNumber() == null || runner.getChipNumber().length() != 7)) {
 				getParentPage().setAlertOnLoad(localize("run_reg.must_fill_in_chip_number", "You have to fill in a valid chip number (seven characters)."));
 				action = ACTION_STEP_THREE;
 			}
