@@ -630,16 +630,17 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 	
 	public int getNumberOfChildren(Collection runners) {
 		int numberOfChildren = 0;
+		Collection tempRunners = new ArrayList(runners);
 
 		try {
 			Runner parent1 = null;
 			Runner parent2 = null;
 
 			boolean hasParents = false;
-			Iterator iter = runners.iterator();
+			Iterator iter = tempRunners.iterator();
 			while (iter.hasNext()) {
 				Runner runner = (Runner) iter.next();
-				Iterator iterator = runners.iterator();
+				Iterator iterator = tempRunners.iterator();
 				while (iterator.hasNext()) {
 					Runner otherRunner = (Runner) iterator.next();
 					if (runner.getUser() != null && otherRunner.getUser() != null && !runner.getUser().equals(otherRunner.getUser()) && runner.getDistance().isFamilyDiscount()) {
@@ -657,10 +658,10 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 			}
 			
 			if (hasParents) {
-				runners.remove(parent1);
-				runners.remove(parent2);
+				tempRunners.remove(parent1);
+				tempRunners.remove(parent2);
 				
-				Iterator iterator = runners.iterator();
+				Iterator iterator = tempRunners.iterator();
 				while (iterator.hasNext()) {
 					Runner runner = (Runner) iterator.next();
 					if (getFamilyLogic().isParentOf(parent1.getUser(), runner.getUser()) || getFamilyLogic().isParentOf(parent2.getUser(), runner.getUser())) {
