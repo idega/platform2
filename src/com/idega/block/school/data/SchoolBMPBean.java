@@ -86,6 +86,7 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 	public final static String INVISIBLE_FOR_CITIZEN = "invisible_for_citizen";
 	/** Anders 10 Jan 2005 */
 	public final static String PROVIDER_STRING_ID = "provider_string_id";
+	public final static String AFTER_SCHOOL_CARE_PROVIDER = "after_school_care_id";
 	
 	public void initializeAttributes() {
 		this.addAttribute(getIDColumnName());
@@ -134,6 +135,7 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 		this.addMetaDataRelationship();
 		this.addManyToManyRelationShip(SchoolStudyPath.class, "sch_school_study_path");
 		this.addAttribute(PROVIDER_STRING_ID, "Extra provider id", true, true, String.class, 40);
+		addManyToOneRelationship(AFTER_SCHOOL_CARE_PROVIDER, School.class);
 	}
 	public String getEntityName() {
 		return SCHOOL;
@@ -141,6 +143,22 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 
 	public String getName() {
 		return getSchoolName();
+	}
+	
+	public School getAfterSchoolCareProvider() {
+		return (School) getColumnValue(AFTER_SCHOOL_CARE_PROVIDER);
+	}
+	
+	public Object getAfterSchoolCareProviderPK() {
+		return getIntegerColumnValue(AFTER_SCHOOL_CARE_PROVIDER);
+	}
+	
+	public void setAfterSchoolCareProvider(School provider) {
+		setColumn(AFTER_SCHOOL_CARE_PROVIDER, provider);
+	}
+	
+	public void setAfterSchoolCareProvider(Object providerPK) {
+		setColumn(AFTER_SCHOOL_CARE_PROVIDER, providerPK);
 	}
 
 	public int getSchoolAreaId() {
@@ -642,8 +660,15 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 	}
 
 	public Collection ejbFindAllByAreaAndTypes(int area, Collection types) throws javax.ejb.FinderException {
+		return ejbFindAllByAreaAndTypesAndYear(area, types, -1);
+	}
+	
+	public Collection ejbFindAllByAreaAndTypesAndYear(int area, Collection types, int yearID) throws javax.ejb.FinderException {
 		StringBuffer sql = new StringBuffer("select distinct s.* ");
-		sql.append(" from sch_school_area a, sch_school s, sch_school_type t, sch_school_sch_school_type m ");
+		sql.append(" from sch_school_area a, sch_school s, sch_school_type t, sch_school_sch_school_type m");
+		if (yearID != -1) {
+			sql.append(", sch_school_sch_school_year ssy");
+		}
 		sql.append(" where a.sch_school_area_id = s.sch_school_area_id ");
 		sql.append(" and t.sch_school_type_id = m.sch_school_type_id ");
 		sql.append(" and s.sch_school_id = m.sch_school_id ");
@@ -655,6 +680,11 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 		sql.append(" and a.sch_school_area_id = ");
 		sql.append(area);
 		sql.append(" and (termination_date is null or termination_date > '" + getCurrentDate() + "')");
+		if (yearID != -1) {
+			sql.append(" and s.sch_school_id = ssy.sch_school_id ");
+			sql.append(" and ssy.sch_school_year_id = ");
+			sql.append(yearID);
+		}
 		sql.append(" order by s.").append(NAME);
 
 		return super.idoFindPKsBySQL(sql.toString());

@@ -56,8 +56,8 @@ import com.idega.util.IWTimestamp;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2005/06/20 19:40:00 $ by $Author: laddi $
- * @version $Revision: 1.145 $
+ *         Last modified: $Date: 2005/08/09 16:32:21 $ by $Author: laddi $
+ * @version $Revision: 1.146 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -173,6 +173,10 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 
 	public void setSchoolYear(SchoolYear year) {
 		setColumn(SCHOOL_YEAR, year);
+	}
+	
+	public void setSchoolYear(Object yearPK) {
+		setColumn(SCHOOL_YEAR, yearPK);
 	}
 
 	public int getSchoolYearId() {
@@ -563,6 +567,32 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		}
 		query.addCriteria(new MatchCriteria(table, MEMBER, MatchCriteria.EQUALS, child));
 		query.addCriteria(new MatchCriteria(schoolType, "school_category", MatchCriteria.EQUALS, schoolCategory));
+
+		return this.idoGetNumberOfRecords(query);
+	}
+
+	public int ejbHomeGetNumberOfPlacingsBySeasonAndSchoolCategory(User child, SchoolSeason season, SchoolCategory schoolCategory) throws IDOException {
+		Table table = new Table(this);
+		Table schoolType = new Table(SchoolType.class);
+		Table schoolClass = new Table(SchoolClass.class);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn(table));
+		try {
+			query.addJoin(table, schoolType);
+		}
+		catch (IDORelationshipException ire) {
+			throw new IDOException("Couldn't join tables sch_class_member and sch_school_type...");
+		}
+		try {
+			query.addJoin(table, schoolClass);
+		}
+		catch (IDORelationshipException ire) {
+			throw new IDOException("Couldn't join tables sch_class_member and sch_school_class...");
+		}
+		query.addCriteria(new MatchCriteria(table, MEMBER, MatchCriteria.EQUALS, child));
+		query.addCriteria(new MatchCriteria(schoolType, "school_category", MatchCriteria.EQUALS, schoolCategory));
+		query.addCriteria(new MatchCriteria(schoolClass, "sch_school_season_id", MatchCriteria.EQUALS, season));
 
 		return this.idoGetNumberOfRecords(query);
 	}

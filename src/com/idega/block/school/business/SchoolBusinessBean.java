@@ -1,10 +1,10 @@
 package com.idega.block.school.business;
 
 import java.rmi.RemoteException;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.sql.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -16,10 +16,6 @@ import javax.transaction.UserTransaction;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
 import com.idega.block.school.data.SchoolAreaHome;
-import com.idega.block.school.data.SchoolClassMemberLog;
-import com.idega.block.school.data.SchoolClassMemberLogHome;
-import com.idega.block.school.data.SchoolSubArea;
-import com.idega.block.school.data.SchoolSubAreaHome;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryBMPBean;
 import com.idega.block.school.data.SchoolCategoryHome;
@@ -27,8 +23,12 @@ import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassHome;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolClassMemberHome;
+import com.idega.block.school.data.SchoolClassMemberLog;
+import com.idega.block.school.data.SchoolClassMemberLogHome;
 import com.idega.block.school.data.SchoolDepartment;
 import com.idega.block.school.data.SchoolDepartmentHome;
+import com.idega.block.school.data.SchoolDistrict;
+import com.idega.block.school.data.SchoolDistrictHome;
 import com.idega.block.school.data.SchoolHome;
 import com.idega.block.school.data.SchoolManagementType;
 import com.idega.block.school.data.SchoolManagementTypeHome;
@@ -36,6 +36,8 @@ import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolSeasonHome;
 import com.idega.block.school.data.SchoolStudyPath;
 import com.idega.block.school.data.SchoolStudyPathHome;
+import com.idega.block.school.data.SchoolSubArea;
+import com.idega.block.school.data.SchoolSubAreaHome;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolTypeHome;
 import com.idega.block.school.data.SchoolUser;
@@ -179,6 +181,15 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	public SchoolStudyPathHome getSchoolStudyPathHome() {
 		try {
 			return (SchoolStudyPathHome) IDOLookup.getHome(SchoolStudyPath.class);
+		}
+		catch (IDOLookupException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
+	}
+
+	public SchoolDistrictHome getSchoolDistrictHome() {
+		try {
+			return (SchoolDistrictHome) IDOLookup.getHome(SchoolDistrict.class);
 		}
 		catch (IDOLookupException e) {
 			throw new IBORuntimeException(e.getMessage());

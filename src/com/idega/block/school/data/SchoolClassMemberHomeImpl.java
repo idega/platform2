@@ -1,6 +1,6 @@
 /*
- * $Id: SchoolClassMemberHomeImpl.java,v 1.72 2005/06/20 19:40:00 laddi Exp $
- * Created on Jun 20, 2005
+ * $Id: SchoolClassMemberHomeImpl.java,v 1.73 2005/08/09 16:32:21 laddi Exp $
+ * Created on Aug 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -21,10 +21,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/06/20 19:40:00 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/09 16:32:21 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.72 $
+ * @version $Revision: 1.73 $
  */
 public class SchoolClassMemberHomeImpl extends IDOFactory implements SchoolClassMemberHome {
 
@@ -207,6 +207,15 @@ public class SchoolClassMemberHomeImpl extends IDOFactory implements SchoolClass
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		int theReturn = ((SchoolClassMemberBMPBean) entity).ejbHomeGetNumberOfPlacingsBySchoolCategory(child,
 				schoolCategory);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
+
+	public int getNumberOfPlacingsBySeasonAndSchoolCategory(User child, SchoolSeason season, SchoolCategory schoolCategory)
+			throws IDOException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		int theReturn = ((SchoolClassMemberBMPBean) entity).ejbHomeGetNumberOfPlacingsBySeasonAndSchoolCategory(child,
+				season, schoolCategory);
 		this.idoCheckInPooledEntity(entity);
 		return theReturn;
 	}

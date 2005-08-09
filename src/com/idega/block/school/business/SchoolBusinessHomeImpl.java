@@ -1,23 +1,25 @@
 /*
- * Created on 2005-jul-12
+ * $Id: SchoolBusinessHomeImpl.java,v 1.11 2005/08/09 16:32:21 laddi Exp $
+ * Created on Aug 3, 2005
  *
- * To change the template for this generated file go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
  */
 package com.idega.block.school.business;
 
-
-
 import com.idega.business.IBOHomeImpl;
 
+
 /**
- * @author Malin
- *
- * To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * Last modified: $Date: 2005/08/09 16:32:21 $ by $Author: laddi $
+ * 
+ * @author <a href="mailto:laddi@idega.com">laddi</a>
+ * @version $Revision: 1.11 $
  */
-public class SchoolBusinessHomeImpl extends IBOHomeImpl implements
-		SchoolBusinessHome {
+public class SchoolBusinessHomeImpl extends IBOHomeImpl implements SchoolBusinessHome {
+
 	protected Class getBeanInterfaceClass() {
 		return SchoolBusiness.class;
 	}
@@ -25,5 +27,4 @@ public class SchoolBusinessHomeImpl extends IBOHomeImpl implements
 	public SchoolBusiness create() throws javax.ejb.CreateException {
 		return (SchoolBusiness) super.createIBO();
 	}
-
 }

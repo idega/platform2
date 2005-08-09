@@ -1,6 +1,6 @@
 /*
- * $Id: School.java,v 1.40 2005/05/11 07:14:19 laddi Exp $
- * Created on May 10, 2005
+ * $Id: School.java,v 1.41 2005/08/09 16:32:21 laddi Exp $
+ * Created on Aug 6, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -28,13 +28,21 @@ import com.idega.user.data.Group;
 
 
 /**
- * Last modified: $Date: 2005/05/11 07:14:19 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/09 16:32:21 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.40 $
+ * @version $Revision: 1.41 $
  */
 public interface School extends IDOEntity, IDOLegacyEntity, MetaDataCapable {
 
+	public School getAfterSchoolCareProvider();
+	
+	public Object getAfterSchoolCareProviderPK();
+	
+	public void setAfterSchoolCareProvider(School provider);
+	
+	public void setAfterSchoolCareProvider(Object providerPK);
+	
 	/**
 	 * @see com.idega.block.school.data.SchoolBMPBean#getName
 	 */

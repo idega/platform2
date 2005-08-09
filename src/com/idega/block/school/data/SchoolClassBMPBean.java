@@ -283,8 +283,8 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass {
 
 	public Collection ejbFindBySchoolAndSeasonAndYear(School school, SchoolSeason schoolSeason, SchoolYear schoolYear)
 			throws FinderException {
-		return ejbFindBySchoolAndSeasonAndYear(((Integer) school.getPrimaryKey()).intValue(),
-				((Integer) schoolSeason.getPrimaryKey()).intValue(), ((Integer) schoolYear.getPrimaryKey()).intValue());
+		return ejbFindBySchoolAndSeasonAndYear(new Integer(school.getPrimaryKey().toString()).intValue(),
+				new Integer(schoolSeason.getPrimaryKey().toString()).intValue(), new Integer(schoolYear.getPrimaryKey().toString()).intValue());
 	}
 
 	public Collection ejbFindBySchoolAndSeasonAndYear(int schoolID, int schoolSeasonID, int schoolYearID,

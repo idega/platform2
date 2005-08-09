@@ -1,6 +1,6 @@
 /*
- * $Id: SchoolClassMember.java,v 1.41 2005/03/19 16:38:22 laddi Exp $
- * Created on 19.3.2005
+ * $Id: SchoolClassMember.java,v 1.42 2005/08/09 16:32:21 laddi Exp $
+ * Created on Aug 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -19,13 +19,10 @@ import com.idega.user.data.User;
 
 
 /**
- * <p>
- * TODO laddi Describe Type SchoolClassMember
- * </p>
- *  Last modified: $Date: 2005/03/19 16:38:22 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/09 16:32:21 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.41 $
+ * @version $Revision: 1.42 $
  */
 public interface SchoolClassMember extends IDOEntity {
 
@@ -114,6 +111,11 @@ public interface SchoolClassMember extends IDOEntity {
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#setSchoolYear
 	 */
 	public void setSchoolYear(SchoolYear year);
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#setSchoolYear
+	 */
+	public void setSchoolYear(Object yearPK);
 
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#getSchoolYearId

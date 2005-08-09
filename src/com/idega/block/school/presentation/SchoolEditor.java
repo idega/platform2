@@ -122,8 +122,15 @@ public class SchoolEditor extends SchoolBlock {
 			if (commune != null) {
 				communePK = new Integer(commune);
 			}
+			
+			Object providerID = iwc.isParameterSet("provider_id") ? iwc.getParameter("provider_id") : null;
+			
 			//		System.err.println("school id is "+id);
-			getBusiness().storeSchool(sid, name, info, address, zipcode, ziparea, phone, keycode, lat, lon, areaId, types, years, communePK, providerStringId);
+			School school = getBusiness().storeSchool(sid, name, info, address, zipcode, ziparea, phone, keycode, lat, lon, areaId, types, years, communePK, providerStringId);
+			if (providerID != null) {
+				school.setAfterSchoolCareProvider(providerID);
+				school.store();
+			}
 		}
 	}
 
@@ -218,7 +225,7 @@ public class SchoolEditor extends SchoolBlock {
 	}
 
 	public PresentationObject getInputTable(IWContext iwc, School ent) throws java.rmi.RemoteException {
-		int last = 16;
+		int last = 17;
 		Table T = new Table(3, last);
 		T.mergeCells(1, 1, 3, 1);
 
@@ -240,6 +247,10 @@ public class SchoolEditor extends SchoolBlock {
 		SelectorUtility su = new SelectorUtility();
 		su.getSelectorFromIDOEntities(communes, getCommuneBusiness(iwc).getCommunes(), "getCommuneName");
 
+		DropdownMenu providers = (DropdownMenu) getStyledInterface(new DropdownMenu("provider_id"));
+		Collection schools = getBusiness().findAllSchoolsByCategory(getBusiness().getCategoryElementarySchool().getCategory());
+		su.getSelectorFromIDOEntities(providers, schools, "getSchoolName");
+		
 		Map schooltypes = null, schoolyears = null;
 		Commune commune = null;
 		int Id = -1;
@@ -266,6 +277,9 @@ public class SchoolEditor extends SchoolBlock {
 				drpArea.setSelectedElement(String.valueOf(ent.getSchoolAreaId()));
 				if (commune != null) {
 					communes.setSelectedElement(commune.getPrimaryKey().toString());
+				}
+				if (ent.getAfterSchoolCareProviderPK() != null) {
+					providers.setSelectedElement(ent.getAfterSchoolCareProviderPK().toString());
 				}
 			}
 			catch (Exception ex) {
@@ -295,6 +309,7 @@ public class SchoolEditor extends SchoolBlock {
 		T.add(getHeader(localize("longitude", "Longitude")), 1, row++);
 		T.add(getHeader(localize("commune", "Commune")), 1, row++);
 		T.add(getHeader(localize("school_area", "SchoolArea")), 1, row++);
+		T.add(getHeader(localize("after_school_care_provider", "After school care provider")), 1, row++);
 
 		row = 2;
 		//T.add(drpType,3,row++);
@@ -313,6 +328,7 @@ public class SchoolEditor extends SchoolBlock {
 		T.add(inputLON, 3, row++);
 		T.add(communes, 3, row++);
 		T.add(drpArea, 3, row++);
+		T.add(providers, 3, row++);
 
 		Table typeTable = new Table();
 		int row2 = 1;
@@ -371,7 +387,7 @@ public class SchoolEditor extends SchoolBlock {
 
 		}
 
-		T.add(typeTable, 1, 13);
+		T.add(typeTable, 1, 14);
 
 		T.add(getButton(new SubmitButton(localize("save", "Save"), "sch_save_school", "true")), 3, last);
 		GenericButton cancel = getButton(new GenericButton("cancel", localize("cancel", "Cancel")));
