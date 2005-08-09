@@ -223,6 +223,9 @@ public class CitizenChildren extends CommuneBlock {
 			L.addParameter(prmChildUniqueId, child.getUniqueId());
 		else
 			L.addParameter(prmChildId, ((Integer) child.getPrimaryKey()).toString());
+		if (getEventListener() != null) {
+			L.setEventListener(getEventListener());
+		}
 		return L;
 	}
 
@@ -261,6 +264,10 @@ public class CitizenChildren extends CommuneBlock {
 		catch (RemoteException e) {
 			throw new IBORuntimeException(e);
 		}
+	}
+	
+	protected Class getEventListener() {
+		return null;
 	}
 
 	/**

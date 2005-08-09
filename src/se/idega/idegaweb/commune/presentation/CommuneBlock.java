@@ -21,12 +21,15 @@ import com.idega.presentation.text.DownloadLink;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.InputContainer;
 import com.idega.presentation.ui.InterfaceObject;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.ResetButton;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextArea;
+import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
 
 /**
@@ -718,5 +721,38 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	    return layer;
 	}
 	
+	protected DropdownMenu getDropdown(String parameterName, Object selectedElement) {
+		DropdownMenu drop = (DropdownMenu) getStyledInterface(new DropdownMenu(parameterName));
+		drop.setWidth("100%");
+		if (selectedElement != null) {
+			drop.setSelectedElement(selectedElement.toString());
+		}
+		
+		return drop;
+	}
 	
+	protected TextInput getTextInput(String parameterName, Object content) {
+		return getTextInput(parameterName, content, false);
+	}
+	
+	protected TextInput getTextInput(String parameterName, Object content, boolean disabled) {
+		TextInput input = (TextInput) getStyledInterface(new TextInput(parameterName));
+		input.setWidth("100%");
+		if (content != null) {
+			input.setContent(content.toString());
+		}
+		input.setDisabled(disabled);
+		
+		return input;
+	}
+	
+	protected TextArea getTextArea(String parameterName, Object content) {
+		TextArea area = (TextArea) getStyledInterface(new TextArea(parameterName));
+		area.setWidth("100%");
+		if (content != null) {
+			area.setContent(content.toString());
+		}
+		
+		return area;
+	}	
 }
