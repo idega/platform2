@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolChoiceBMPBean.java,v 1.2 2004/10/19 17:20:02 thomas Exp $
+ * $Id: AfterSchoolChoiceBMPBean.java,v 1.3 2005/08/09 16:34:50 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -10,10 +10,8 @@
 package se.idega.idegaweb.commune.care.data;
 
 import java.util.Collection;
-
 import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.care.business.CareConstants;
-
 import com.idega.block.process.data.CaseStatus;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolSeason;
@@ -25,11 +23,17 @@ import com.idega.data.IDOQuery;
  * @author palli
  * @version 1.0
  */
-public class AfterSchoolChoiceBMPBean extends ChildCareApplicationBMPBean implements AfterSchoolChoice {
+public class AfterSchoolChoiceBMPBean extends ChildCareApplicationBMPBean implements ChildCareApplication, AfterSchoolChoice {
 
 	private final static String CASE_CODE_KEY_DESC = "Application for after school centre";
 
 	private final static String SCHOOL_SEASON = "school_season_id";
+	private final static String COLUMN_PAYER_NAME = "payer_name";
+	private final static String COLUMN_PAYER_PERSONAL_ID = "payer_personal_id";
+	private final static String COLUMN_CARD_TYPE = "card_type";
+	private final static String COLUMN_CARD_NUMBER = "card_number";
+	private final static String COLUMN_CARD_VALID_MONTH = "card_valid_month";
+	private final static String COLUMN_CARD_VALID_YEAR = "card_valid_year";
 
 	/**
 	 * @see com.idega.block.process.data.AbstractCaseBMPBean#getCaseCodeKey()
@@ -51,14 +55,69 @@ public class AfterSchoolChoiceBMPBean extends ChildCareApplicationBMPBean implem
 	public void initializeAttributes() {
 		super.initializeAttributes();
 		this.addManyToOneRelationship(SCHOOL_SEASON, SchoolSeason.class);
+		
+		addAttribute(COLUMN_PAYER_NAME, "Payer name", String.class);
+		addAttribute(COLUMN_PAYER_PERSONAL_ID, "Payer personal ID", String.class);
+		addAttribute(COLUMN_CARD_TYPE, "Card type", String.class);
+		addAttribute(COLUMN_CARD_NUMBER, "Card number", String.class);
+		addAttribute(COLUMN_CARD_VALID_MONTH, "Valid month", Integer.class);
+		addAttribute(COLUMN_CARD_VALID_YEAR, "Valid year", Integer.class);
 	}
 
 	public int getSchoolSeasonId() {
 		return getIntColumnValue(SCHOOL_SEASON);
 	}
+	
+	public String getPayerName() {
+		return getStringColumnValue(COLUMN_PAYER_NAME);
+	}
+	
+	public String getPayerPersonalID() {
+		return getStringColumnValue(COLUMN_PAYER_PERSONAL_ID);
+	}
+	
+	public String getCardType() {
+		return getStringColumnValue(COLUMN_CARD_TYPE);
+	}
+	
+	public String getCardNumber() {
+		return getStringColumnValue(COLUMN_CARD_NUMBER);
+	}
+	
+	public int getCardValidMonth() {
+		return getIntColumnValue(COLUMN_CARD_VALID_MONTH);
+	}
+	
+	public int getCardValidYear() {
+		return getIntColumnValue(COLUMN_CARD_VALID_YEAR);
+	}
 
 	public void setSchoolSeasonId(int schoolSeasonID) {
 		setColumn(SCHOOL_SEASON, schoolSeasonID);
+	}
+	
+	public void setPayerName(String name) {
+		setColumn(COLUMN_PAYER_NAME, name);
+	}
+	
+	public void setPayerPersonalID(String personalID) {
+		setColumn(COLUMN_PAYER_PERSONAL_ID, personalID);
+	}
+	
+	public void setCardType(String type) {
+		setColumn(COLUMN_CARD_TYPE, type);
+	}
+	
+	public void setCardNumber(String number) {
+		setColumn(COLUMN_CARD_NUMBER, number);
+	}
+	
+	public void setCardValidMonth(int month) {
+		setColumn(COLUMN_CARD_VALID_MONTH, month);
+	}
+	
+	public void setCardValidYear(int year) {
+		setColumn(COLUMN_CARD_VALID_YEAR, year);
 	}
 
 	public Collection ejbFindByChildAndSeason(Integer childID, Integer seasonID) throws javax.ejb.FinderException {
