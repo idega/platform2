@@ -90,7 +90,7 @@ public class Poll2 extends Block implements Builderaware {
 	public static final int RADIO_BUTTON_VIEW = 1;
 	public static final int LINK_VIEW = 2;
 
-	private int _layout = RADIO_BUTTON_VIEW;
+	private int _layout = LINK_VIEW;
 		
 	public Poll2() {
 		setDefaultValues();
