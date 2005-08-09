@@ -1,5 +1,5 @@
 /*
- * $Id: FamilyMemberBMPBean.java,v 1.7 2005/08/08 17:27:19 sigtryggur Exp $ Created on 27.8.2004
+ * $Id: FamilyMemberBMPBean.java,v 1.8 2005/08/09 11:38:08 laddi Exp $ Created on 27.8.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
  * 
@@ -17,16 +17,15 @@ import com.idega.data.query.Column;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;
-import com.idega.data.query.WildCardColumn;
 import com.idega.user.data.User;
 import com.idega.user.data.UserBMPBean;
 
 /**
  * 
- * Last modified: $Date: 2005/08/08 17:27:19 $ by $Author: sigtryggur $
+ * Last modified: $Date: 2005/08/09 11:38:08 $ by $Author: laddi $
  * 
  * @author <a href="mailto:Joakim@idega.com">Joakim </a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class FamilyMemberBMPBean extends GenericEntity implements FamilyMember{
 
