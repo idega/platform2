@@ -1,8 +1,24 @@
+/*
+ * $Id: AfterSchoolBusinessHome.java,v 1.2 2005/08/09 16:35:19 laddi Exp $
+ * Created on Aug 9, 2005
+ *
+ * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ */
 package se.idega.idegaweb.commune.childcare.business;
 
+import com.idega.business.IBOHome;
 
-public interface AfterSchoolBusinessHome extends com.idega.business.IBOHome
-{
- public AfterSchoolBusiness create() throws javax.ejb.CreateException, java.rmi.RemoteException;
 
+/**
+ * Last modified: $Date: 2005/08/09 16:35:19 $ by $Author: laddi $
+ * 
+ * @author <a href="mailto:laddi@idega.com">laddi</a>
+ * @version $Revision: 1.2 $
+ */
+public interface AfterSchoolBusinessHome extends IBOHome {
+
+	public AfterSchoolBusiness create() throws javax.ejb.CreateException, java.rmi.RemoteException;
 }

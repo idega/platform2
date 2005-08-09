@@ -19,11 +19,14 @@ import se.idega.idegaweb.commune.care.business.PlacementHelper;
 import se.idega.idegaweb.commune.care.data.AfterSchoolChoice;
 import se.idega.idegaweb.commune.care.data.AfterSchoolChoiceHome;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
+import se.idega.idegaweb.commune.childcare.data.AfterSchoolCareDays;
+import se.idega.idegaweb.commune.childcare.data.AfterSchoolCareDaysHome;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessageHome;
 import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseStatus;
 import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBORuntimeException;
@@ -42,11 +45,20 @@ import com.idega.util.IWTimestamp;
  * @author aron
  * @version 1.0
  */
-public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements AfterSchoolBusiness {
+public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements ChildCareBusiness, AfterSchoolBusiness {
 
 	private AfterSchoolChoiceHome getAfterSchoolChoiceHome() {
 		try {
 			return (AfterSchoolChoiceHome) IDOLookup.getHome(AfterSchoolChoice.class);
+		}
+		catch (IDOLookupException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
+	}
+
+	private AfterSchoolCareDaysHome getAfterSchoolCareDaysHome() {
+		try {
+			return (AfterSchoolCareDaysHome) IDOLookup.getHome(AfterSchoolCareDays.class);
 		}
 		catch (IDOLookupException e) {
 			throw new IBORuntimeException(e.getMessage());
@@ -125,7 +137,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 		return true;
 	}
 
-	private AfterSchoolChoice createAfterSchoolChoice(IWTimestamp stamp, User user, Integer childID, Integer providerID,
+	public AfterSchoolChoice createAfterSchoolChoice(IWTimestamp stamp, User user, Integer childID, Integer providerID,
 			Integer choiceNumber, String message, CaseStatus caseStatus, Case parentCase, Date placementDate,
 			SchoolSeason season, String subject, String body) throws CreateException, RemoteException {
 		if (season == null) {
@@ -321,5 +333,99 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 			}
 		}
 		return users;
+	}
+	
+	public void storeDays(ChildCareApplication application, int[] dayOfWeek, String[] timeOfDeparture, boolean[] pickedUp) {
+		try {
+			for (int a = 0; a < dayOfWeek.length; a++) {
+				AfterSchoolCareDays days = getAfterSchoolCareDaysHome().create();
+				days.setApplication(application);
+				days.setDayOfWeek(dayOfWeek[a]);
+				days.setPickedUp(pickedUp[a]);
+				
+				IWTimestamp stamp = new IWTimestamp(timeOfDeparture[a]);
+				stamp.setAsTime();
+				days.setTimeOfDeparture(stamp.getTime());
+				days.store();
+			}
+		}
+		catch (CreateException ce) {
+			ce.printStackTrace();
+		}
+	}
+
+	public SchoolClass getDefaultGroup(Object schoolPK, Object seasonPK) {
+		try {
+			School school = getSchoolBusiness().getSchool(schoolPK);
+			SchoolSeason season = getSchoolBusiness().getSchoolSeason(seasonPK);
+			return getDefaultGroup(school, season);
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
+	}
+	
+	public SchoolClass getDefaultGroup(School school, SchoolSeason season) {
+		try {
+			try {
+				Collection groups = getSchoolBusiness().getSchoolClassHome().findBySchoolAndSeason(school, season);
+				if (!groups.isEmpty()) {
+					Iterator iter = groups.iterator();
+					while (iter.hasNext()) {
+						return (SchoolClass) iter.next();
+					}
+				}
+				throw new FinderException();
+			}
+			catch (FinderException fe) {
+				try {
+					SchoolClass group = getSchoolBusiness().getSchoolClassHome().create();
+					group.setSchool(school);
+					group.setSchoolSeason(season);
+					group.setValid(true);
+					group.setSchoolClassName(season.getName());
+					group.store();
+					
+					return group;
+				}
+				catch (CreateException ce) {
+					throw new IBORuntimeException(ce);
+				}
+			}
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
+	}
+	
+	public void storeAfterSchoolCare(IWTimestamp stamp, User user, User child, School provider, String message, SchoolSeason season, int[] days, String[] timeOfDeparture, boolean[] pickedUp, String payerName, String payerPersonalID, String cardType, String cardNumber, int validMonth, int validYear) {
+		try {
+			String subject = "";
+			String body = "";
+			
+			AfterSchoolChoice choice = createAfterSchoolChoice(stamp, user, (Integer) child.getPrimaryKey(), (Integer) provider.getPrimaryKey(), new Integer(1), message, getCaseStatusReady(), null, season.getSchoolSeasonStart(), season, subject, body);
+			if (payerName != null) {
+				choice.setPayerName(payerName);
+				choice.setPayerPersonalID(payerPersonalID);
+				choice.setCardType(cardType);
+				choice.setCardNumber(cardNumber);
+				choice.setCardValidMonth(validMonth);
+				choice.setCardValidYear(validYear);
+				choice.store();
+			}
+			
+			storeDays(choice, days, timeOfDeparture, pickedUp);
+			
+			IWTimestamp registerDate = new IWTimestamp(season.getSchoolSeasonStart());
+			
+			SchoolClass group = getDefaultGroup(provider, season);
+			getSchoolBusiness().storeSchoolClassMemberCC(((Integer) child.getPrimaryKey()).intValue(), ((Integer) group.getPrimaryKey()).intValue(), group.getSchoolTypeId(), registerDate.getTimestamp(), ((Integer) user.getPrimaryKey()).intValue(), message);
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
+		catch (CreateException ce) {
+			ce.printStackTrace();
+		}
 	}
 }
