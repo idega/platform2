@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolApplication.java,v 1.1 2005/08/09 16:36:28 laddi Exp $
+ * $Id: SchoolApplication.java,v 1.2 2005/08/10 15:05:40 thomas Exp $
  * Created on Aug 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -48,10 +48,10 @@ import com.idega.user.data.User;
 import com.idega.util.PersonalIDFormatter;
 
 /**
- * Last modified: $Date: 2005/08/09 16:36:28 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/10 15:05:40 $ by $Author: thomas $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class SchoolApplication extends SchoolBlock {
 
@@ -164,7 +164,7 @@ public class SchoolApplication extends SchoolBlock {
 			applicationTable.add(getSmallText(school.getSchoolName()), 2, 1);
 			
 			SelectorUtility util = new SelectorUtility();
-			DropdownMenu yearDropdown = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_SCHOOL_YEAR), years, "getSchoolYearName"));
+			DropdownMenu yearDropdown = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(SchoolAreaCollectionHandler.PARAMETER_SCHOOL_YEAR), years, "getSchoolYearName"));
 			yearDropdown.keepStatusOnAction(true);
 			applicationTable.add(getSmallHeader(localize("application.year", "Year") + ":"), 1, 2);
 			applicationTable.add(yearDropdown, 2, 2);
@@ -237,7 +237,7 @@ public class SchoolApplication extends SchoolBlock {
 		Collection areas = getSchoolBusiness().findAllSchoolAreas();
 		
 		SelectorUtility util = new SelectorUtility();
-		DropdownMenu yearDropdown = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_SCHOOL_YEAR), getBusiness().getSchoolYears(), "getSchoolYearName"));
+		DropdownMenu yearDropdown = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(SchoolAreaCollectionHandler.PARAMETER_SCHOOL_YEAR), getBusiness().getSchoolYears(), "getSchoolYearName"));
 		yearDropdown.addMenuElementFirst("-1", localize("application.select_year", "Select year"));
 		
 		applicationTable.add(getSmallHeader(localize("application.school_year", "School year")), 1, 1);
@@ -704,7 +704,7 @@ public class SchoolApplication extends SchoolBlock {
 		boolean saved = false;
 		
 		Object seasonPK = iwc.getParameter(PARAMETER_SEASON);
-		Object yearPK = iwc.getParameter(PARAMETER_SCHOOL_YEAR);
+		Object yearPK = iwc.getParameter(SchoolAreaCollectionHandler.PARAMETER_SCHOOL_YEAR);
 		String language = iwc.getParameter(PARAMETER_LANGUAGE);
 		String message = iwc.getParameter(PARAMETER_MESSAGE);
 		if (iHomeSchoolChosen) {
@@ -885,7 +885,7 @@ public class SchoolApplication extends SchoolBlock {
 		form.maintainParameter(PARAMETER_SCHOOLS + "_1");
 		form.maintainParameter(PARAMETER_SCHOOLS + "_2");
 		form.maintainParameter(PARAMETER_SCHOOLS + "_3");
-		form.maintainParameter(PARAMETER_SCHOOL_YEAR);
+		form.maintainParameter(SchoolAreaCollectionHandler.PARAMETER_SCHOOL_YEAR);
 		form.maintainParameter(PARAMETER_MESSAGE);
 		form.maintainParameter(PARAMETER_HOME_SCHOOL);
 		form.maintainParameter(PARAMETER_LANGUAGE);

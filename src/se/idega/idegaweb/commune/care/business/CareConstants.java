@@ -1,5 +1,5 @@
 /*
- * $Id: CareConstants.java,v 1.4 2005/08/09 16:34:50 laddi Exp $
+ * $Id: CareConstants.java,v 1.5 2005/08/10 15:08:46 thomas Exp $
  * Created on Oct 19, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -12,12 +12,14 @@ package se.idega.idegaweb.commune.care.business;
 
 /**
  * 
- *  Last modified: $Date: 2005/08/09 16:34:50 $ by $Author: laddi $
+ *  Last modified: $Date: 2005/08/10 15:08:46 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class CareConstants {
+	
+	public final static String HELP_BUNDLE_IDENTFIER = "se.idega.idegaweb.commune.school.music";
 	
 	public final static String CASE_CODE_KEY = "MBANBOP";
 	
