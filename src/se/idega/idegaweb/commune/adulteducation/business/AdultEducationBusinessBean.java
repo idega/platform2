@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.43 2005/08/10 00:19:28 laddi Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.44 2005/08/10 21:20:07 laddi Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -85,10 +85,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/08/10 00:19:28 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/10 21:20:07 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.43 $
+ * @version $Revision: 1.44 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements CaseBusiness, AdultEducationBusiness {
 
@@ -845,7 +845,7 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Case
 				
 				Iterator iterator = courses.iterator();
 				while (iterator.hasNext()) {
-					AdultEducationCourse course = (AdultEducationCourse) iter.next();
+					AdultEducationCourse course = (AdultEducationCourse) iterator.next();
 					
 					timeNow.addSeconds(-i);
 					if (i == 0) {
