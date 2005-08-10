@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolBusiness.java,v 1.12 2005/08/09 16:35:19 laddi Exp $
+ * $Id: AfterSchoolBusiness.java,v 1.13 2005/08/10 15:46:38 thomas Exp $
  * Created on Aug 9, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -30,10 +30,10 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2005/08/09 16:35:19 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/10 15:46:38 $ by $Author: thomas $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public interface AfterSchoolBusiness extends IBOService, ChildCareBusiness {
 
@@ -108,7 +108,7 @@ public interface AfterSchoolBusiness extends IBOService, ChildCareBusiness {
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.AfterSchoolBusinessBean#storeAfterSchoolCare
 	 */
-	public void storeAfterSchoolCare(IWTimestamp stamp, User user, User child, School provider, String message,
+	public boolean storeAfterSchoolCare(IWTimestamp stamp, User user, User child, School provider, String message,
 			SchoolSeason season, int[] days, String[] timeOfDeparture, boolean[] pickedUp, String payerName,
 			String payerPersonalID, String cardType, String cardNumber, int validMonth, int validYear)
 			throws java.rmi.RemoteException;

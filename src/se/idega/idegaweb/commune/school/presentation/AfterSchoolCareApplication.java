@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolCareApplication.java,v 1.1 2005/08/09 16:36:28 laddi Exp $
+ * $Id: AfterSchoolCareApplication.java,v 1.2 2005/08/10 15:48:50 thomas Exp $
  * Created on Aug 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -33,10 +33,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/08/09 16:36:28 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/10 15:48:50 $ by $Author: thomas $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class AfterSchoolCareApplication extends SchoolApplication {
 	
@@ -524,8 +524,7 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 	}
 	
 	private void save(IWContext iwc) throws RemoteException {
-		boolean saved = false;
-		
+	
 		Object seasonPK = iwc.getParameter(PARAMETER_SEASON);
 		Object providerPK = iwc.getParameter(PARAMETER_PROVIDER);
 		SchoolSeason season = getSchoolBusiness().getSchoolSeason(seasonPK);
@@ -546,8 +545,7 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		int validMonth = Integer.parseInt(iwc.getParameter(PARAMETER_VALID_MONTH));
 		int validYear = Integer.parseInt(iwc.getParameter(PARAMETER_VALID_YEAR));
 
-		getAfterSchoolBusiness().storeAfterSchoolCare(new IWTimestamp(), iwc.getCurrentUser(), getSession().getUser(), provider, null, season, days, time, pickedUp, payerName, payerPersonalID, cardType, cardNumber, validMonth, validYear);
-		saved = true;
+		boolean saved = getAfterSchoolBusiness().storeAfterSchoolCare(new IWTimestamp(), iwc.getCurrentUser(), getSession().getUser(), provider, null, season, days, time, pickedUp, payerName, payerPersonalID, cardType, cardNumber, validMonth, validYear);
 		
 		if (saved) {
 			Table table = new Table();

@@ -27,6 +27,7 @@ import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseStatus;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClass;
+import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBORuntimeException;
@@ -398,7 +399,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 		}
 	}
 	
-	public void storeAfterSchoolCare(IWTimestamp stamp, User user, User child, School provider, String message, SchoolSeason season, int[] days, String[] timeOfDeparture, boolean[] pickedUp, String payerName, String payerPersonalID, String cardType, String cardNumber, int validMonth, int validYear) {
+	public boolean storeAfterSchoolCare(IWTimestamp stamp, User user, User child, School provider, String message, SchoolSeason season, int[] days, String[] timeOfDeparture, boolean[] pickedUp, String payerName, String payerPersonalID, String cardType, String cardNumber, int validMonth, int validYear) {
 		try {
 			String subject = "";
 			String body = "";
@@ -419,13 +420,16 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 			IWTimestamp registerDate = new IWTimestamp(season.getSchoolSeasonStart());
 			
 			SchoolClass group = getDefaultGroup(provider, season);
-			getSchoolBusiness().storeSchoolClassMemberCC(((Integer) child.getPrimaryKey()).intValue(), ((Integer) group.getPrimaryKey()).intValue(), group.getSchoolTypeId(), registerDate.getTimestamp(), ((Integer) user.getPrimaryKey()).intValue(), message);
+			SchoolClassMember member = getSchoolBusiness().storeSchoolClassMemberCC(((Integer) child.getPrimaryKey()).intValue(), ((Integer) group.getPrimaryKey()).intValue(), group.getSchoolTypeId(), registerDate.getTimestamp(), ((Integer) user.getPrimaryKey()).intValue(), message);
+			// returns false if storing failed else true
+			return (member != null);
 		}
 		catch (RemoteException re) {
 			throw new IBORuntimeException(re);
 		}
 		catch (CreateException ce) {
 			ce.printStackTrace();
+			return false;
 		}
 	}
 }
