@@ -1,5 +1,5 @@
 /*
- * $Id: PackageChoiceApplication.java,v 1.2 2005/08/08 23:32:45 laddi Exp $
+ * $Id: PackageChoiceApplication.java,v 1.3 2005/08/10 00:19:27 laddi Exp $
  * Created on May 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -32,10 +32,10 @@ import com.idega.presentation.ui.util.SelectorUtility;
 
 
 /**
- * Last modified: $Date: 2005/08/08 23:32:45 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/10 00:19:27 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class PackageChoiceApplication extends AdultEducationBlock {
 
@@ -106,13 +106,17 @@ public class PackageChoiceApplication extends AdultEducationBlock {
 	}
 	
 	private Table getApplicationTable() throws RemoteException {
-		Table table = new Table(3, 5);
-		table.setCellpadding(3);
+		Table table = new Table(1, 5);
+		table.setCellpadding(0);
 		table.setCellspacing(0);
 		table.setWidth(Table.HUNDRED_PERCENT);
-		table.mergeCells(1, 4, 3, 4);
-		table.mergeCells(1, 5, 3, 5);
-		table.setWidth(1, 12);
+		table.setHeight(2, 20);
+		table.setHeight(4, 20);
+		
+		Table schoolTable = new Table(3, 3);
+		schoolTable.setCellpadding(3);
+		schoolTable.setCellspacing(0);
+		table.add(schoolTable, 1, 1);
 		
 		Collection schools = getBusiness().getSchools();
 
@@ -128,6 +132,7 @@ public class PackageChoiceApplication extends AdultEducationBlock {
 			}
 			
 			DropdownMenu coursePackages = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_COURSE_PACKAGE + "_" + a));
+			coursePackages.addMenuElementFirst("", localize("select_package", "Select package"));
 			
 			RemoteScriptHandler rsh = new RemoteScriptHandler(school, coursePackages);
 			try {
@@ -142,27 +147,24 @@ public class PackageChoiceApplication extends AdultEducationBlock {
 			add(rsh);
 
 			if (a == 1) {
-				table.add(getSmallHeader(localize("school", "School")), 2, 1);
-				table.add(new Break(), 2, 1);
-				table.add(getSmallHeader(localize("course_code", "Course code")), 3, 1);
-				table.add(new Break(), 3, 1);
+				schoolTable.add(getSmallHeader(localize("school", "School")), 2, 1);
+				schoolTable.add(new Break(), 2, 1);
+				schoolTable.add(getSmallHeader(localize("course_code", "Course code")), 3, 1);
+				schoolTable.add(new Break(), 3, 1);
 			}
 			
-			table.add(getSmallHeader(String.valueOf(a)), 1, a);
-			table.setVerticalAlignment(1, a, Table.VERTICAL_ALIGN_BOTTOM);
-			table.add(school, 2, a);
-			table.add(coursePackages, 3, a);
-			
+			schoolTable.add(getSmallHeader(String.valueOf(a)), 1, a);
+			schoolTable.setVerticalAlignment(1, a, Table.VERTICAL_ALIGN_BOTTOM);
+			schoolTable.add(school, 2, a);
+			schoolTable.add(coursePackages, 3, a);
 		}
 		
 		TextArea area = (TextArea) getStyledInterface(new TextArea(PARAMETER_COMMENT));
 		area.setWidth(Table.HUNDRED_PERCENT);
 		area.setRows(5);
-		table.add(new Break(), 1, 4);
-		table.add(getSmallHeader(localize("comment", "Comment") + ":"), 1, 4);
-		table.add(new Break(), 1, 4);
-		table.add(area, 1, 4);
-		table.add(new Break(2), 1, 4);
+		table.add(getSmallHeader(localize("comment", "Comment") + ":"), 1, 3);
+		table.add(new Break(), 1, 3);
+		table.add(area, 1, 3);
 		
 		Table reasonTable = new Table();
 		reasonTable.setColumns(2);

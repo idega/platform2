@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolCoursePackageEditor.java,v 1.9 2005/08/08 23:27:30 laddi Exp $
+ * $Id: SchoolCoursePackageEditor.java,v 1.10 2005/08/10 00:19:27 laddi Exp $
  * Created on Jul 6, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -36,10 +36,10 @@ import com.idega.presentation.ui.util.SelectorUtility;
 
 
 /**
- * Last modified: $Date: 2005/08/08 23:27:30 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/10 00:19:27 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class SchoolCoursePackageEditor extends AdultEducationBlock implements IWPageEventListener {
 
@@ -59,6 +59,7 @@ public class SchoolCoursePackageEditor extends AdultEducationBlock implements IW
 	private static final int ACTION_REMOVE = 4;
 	private static final int ACTION_ACTIVATE = 5;
 	private static final int ACTION_NEW = 6;
+	private static final int ACTION_DEACTIVATE = 7;
 	
 	/* (non-Javadoc)
 	 * @see se.idega.idegaweb.commune.adulteducation.presentation.AdultEducationBlock#present(com.idega.presentation.IWContext)
@@ -102,6 +103,11 @@ public class SchoolCoursePackageEditor extends AdultEducationBlock implements IW
 					showForm();
 					break;
 					
+				case ACTION_DEACTIVATE:
+					deactivatePackage();
+					showForm();
+					break;
+					
 				case ACTION_NEW:
 					getSession().setSchoolCoursePackage(null);
 					showForm();
@@ -122,7 +128,7 @@ public class SchoolCoursePackageEditor extends AdultEducationBlock implements IW
 		form.add(new Break());
 		
 		if (getSession().getChosenSchool() != null) {
-			Collection packages = getBusiness().getSchoolCoursePackages(getSession().getChosenSchool(), getSession().getSchoolSeason(), getSession().getCoursePackage());
+			Collection packages = getBusiness().getSchoolCoursePackages(getSession().getChosenSchool(), getSession().getSchoolSeason(false), getSession().getCoursePackage());
 	
 			Table table = new Table();
 			table.setCellpadding(getCellpadding());
@@ -144,7 +150,8 @@ public class SchoolCoursePackageEditor extends AdultEducationBlock implements IW
 				CoursePackage coursePackage = schoolPackage.getPackage();
 				SchoolSeason season = schoolPackage.getSeason();
 				
-				Link link = getSmallLink(coursePackage.getName() + schoolPackage.getFreeText() != null ? " - " + schoolPackage.getFreeText() : "");
+				Link link = getSmallLink(coursePackage.getName() + (schoolPackage.getFreeText() != null ? " - " + schoolPackage.getFreeText() : ""));
+				link.setEventListener(this.getClass());
 				link.addParameter(PARAMETER_SCHOOL_COURSE_PACKAGE, schoolPackage.getPrimaryKey().toString());
 				link.addParameter(PARAMETER_ACTION, ACTION_VIEW);
 				
@@ -198,6 +205,18 @@ public class SchoolCoursePackageEditor extends AdultEducationBlock implements IW
 				activatePackage.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_ACTIVATE));
 				activatePackage.setSubmitConfirm(localize("activate_package_confirm", "Are you sure you want to activate this package?"));
 			}
+			else {
+				SubmitButton removePackage = (SubmitButton) getButton(new SubmitButton(localize("remove_package", "Remove package")));
+				removePackage.setDisabled(true);
+				SubmitButton activatePackage = (SubmitButton) getButton(new SubmitButton(localize("deactivate_package", "Deactivate package")));
+				form.add(removePackage);
+				form.add(Text.getNonBrakingSpace());
+				form.add(activatePackage);
+				form.add(new Break(2));
+
+				activatePackage.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_DEACTIVATE));
+				activatePackage.setSubmitConfirm(localize("deactivate_package_confirm", "Are you sure you want to deactivate this package?"));
+			}
 		}
 		
 		form.add(getHeader(localize("select_courses_to_connect_to_package", "Select courses to connect to package")));
@@ -211,7 +230,7 @@ public class SchoolCoursePackageEditor extends AdultEducationBlock implements IW
 		cancel.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_SEARCH));
 		form.add(cancel);
 		
-		if ((getSession().getChosenSchool() != null && getSession().getSchoolSeason() != null && getSession().getCoursePackage() != null) || schoolPackage != null) {
+		if ((getSession().getChosenSchool() != null && getSession().getSchoolSeason(false) != null && getSession().getCoursePackage() != null) || schoolPackage != null) {
 			SubmitButton save = (SubmitButton) getButton(new SubmitButton(localize("store_package", "Store package")));
 			save.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_STORE));
 			form.add(save);
@@ -229,7 +248,8 @@ public class SchoolCoursePackageEditor extends AdultEducationBlock implements IW
 		SelectorUtility util = new SelectorUtility();
 		
 		DropdownMenu seasons = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_SEASON), getBusiness().getSeasons(), "getSeasonName"));
-		if (getSession().getSchoolSeason() != null) {
+		seasons.addMenuElementFirst("", localize("select_season", "Select season"));
+		if (getSession().getSchoolSeason(false) != null) {
 			seasons.setSelectedElement(getSession().getSchoolSeason().getPrimaryKey().toString());
 		}
 		else if (schoolPackage != null) {
@@ -428,6 +448,10 @@ public class SchoolCoursePackageEditor extends AdultEducationBlock implements IW
 		getBusiness().activatePackage(getSession().getSchoolCoursePackage());
 	}
 	
+	private void deactivatePackage() throws RemoteException {
+		getBusiness().deactivatePackage(getSession().getSchoolCoursePackage());
+	}
+	
 	private void removePackage() throws RemoteException {
 		try {
 			getBusiness().removeSchoolPackage(getSession().getSchoolCoursePackage());
@@ -461,6 +485,15 @@ public class SchoolCoursePackageEditor extends AdultEducationBlock implements IW
 				throw new IBORuntimeException(re);
 			}
 		}
+		else {
+			try {
+				getSession(iwc).setChosenSchool(null);
+				actionPerformed = true;
+			}
+			catch (RemoteException re) {
+				throw new IBORuntimeException(re);
+			}
+		}
 		if (iwc.isParameterSet(PARAMETER_STUDY_PATH_GROUP)) {
 			try {
 				getSession(iwc).setStudyPathGroup(iwc.getParameter(PARAMETER_STUDY_PATH_GROUP));
@@ -473,6 +506,15 @@ public class SchoolCoursePackageEditor extends AdultEducationBlock implements IW
 		if (iwc.isParameterSet(PARAMETER_COURSE_PACKAGE)) {
 			try {
 				getSession(iwc).setCoursePackage(iwc.getParameter(PARAMETER_COURSE_PACKAGE));
+				actionPerformed = true;
+			}
+			catch (RemoteException re) {
+				throw new IBORuntimeException(re);
+			}
+		}
+		else {
+			try {
+				getSession(iwc).setCoursePackage(null);
 				actionPerformed = true;
 			}
 			catch (RemoteException re) {
@@ -500,6 +542,15 @@ public class SchoolCoursePackageEditor extends AdultEducationBlock implements IW
 		if (iwc.isParameterSet(PARAMETER_SEASON)) {
 			try {
 				getSession(iwc).setSeason(iwc.getParameter(PARAMETER_SEASON));
+				actionPerformed = true;
+			}
+			catch (RemoteException re) {
+				throw new IBORuntimeException(re);
+			}
+		}
+		else {
+			try {
+				getSession(iwc).setSeason(null);
 				actionPerformed = true;
 			}
 			catch (RemoteException re) {

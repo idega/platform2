@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationSessionBean.java,v 1.12 2005/08/08 22:21:37 laddi Exp $
+ * $Id: AdultEducationSessionBean.java,v 1.13 2005/08/10 00:19:28 laddi Exp $
  * Created on May 24, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -34,10 +34,10 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2005/08/08 22:21:37 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/10 00:19:28 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class AdultEducationSessionBean extends IBOSessionBean  implements AdultEducationSession{
 	
@@ -87,6 +87,10 @@ public class AdultEducationSessionBean extends IBOSessionBean  implements AdultE
 	private int iSort = -1;
 
 	public SchoolSeason getSchoolSeason() {
+		return getSchoolSeason(true);
+	}
+	
+	public SchoolSeason getSchoolSeason(boolean useDefaultIfNotSet) {
 		if (iSeason == null && iSeasonPK != null) {
 			try {
 				iSeason = getSchoolBusiness().getSchoolSeason(new Integer(iSeasonPK.toString()));
@@ -95,7 +99,7 @@ public class AdultEducationSessionBean extends IBOSessionBean  implements AdultE
 				iSeason = null;
 			}
 		}
-		else if (iSeason == null) {
+		else if (iSeason == null && useDefaultIfNotSet) {
 			try {
 				iSeason = getSchoolBusiness().getSchoolSeasonHome().findNextSeason(getSchoolBusiness().getCategoryAdultEducation(), new IWTimestamp().getDate());
 			}

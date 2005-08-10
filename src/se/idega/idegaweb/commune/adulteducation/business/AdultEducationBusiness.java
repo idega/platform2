@@ -1,6 +1,6 @@
 /*
- * $Id: AdultEducationBusiness.java,v 1.28 2005/08/08 22:21:37 laddi Exp $
- * Created on Aug 8, 2005
+ * $Id: AdultEducationBusiness.java,v 1.29 2005/08/10 00:19:28 laddi Exp $
+ * Created on Aug 9, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -42,10 +42,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/08/08 22:21:37 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/10 00:19:28 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.28 $
+ * @version $Revision: 1.29 $
  */
 public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 
@@ -427,6 +427,11 @@ public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#activatePackage
 	 */
 	public void activatePackage(SchoolCoursePackage schoolPackage) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#deactivatePackage
+	 */
+	public void deactivatePackage(SchoolCoursePackage schoolPackage) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#removePackage

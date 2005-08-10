@@ -1,5 +1,5 @@
 /*
- * $Id: PackageCollectionHandler.java,v 1.1 2005/08/08 22:21:37 laddi Exp $
+ * $Id: PackageCollectionHandler.java,v 1.2 2005/08/10 00:19:28 laddi Exp $
  * Created on Jul 31, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -35,10 +35,10 @@ import com.idega.presentation.remotescripting.RemoteScriptingResults;
 
 
 /**
- * Last modified: $Date: 2005/08/08 22:21:37 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/10 00:19:28 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class PackageCollectionHandler implements RemoteScriptCollection {
 
@@ -69,7 +69,7 @@ public class PackageCollectionHandler implements RemoteScriptCollection {
 		Object seasonPK = iwc.getParameter(AdultEducationBlock.PARAMETER_SCHOOL_SEASON);
 		Object packagePK = iwc.getParameter(AdultEducationBlock.PARAMETER_COURSE_PACKAGE + "_1");
 		CoursePackage firstPackage = null;
-		if (packagePK != null) {
+		if (packagePK != null && ((String) packagePK).length() > 0) {
 			try {
 				SchoolCoursePackage schoolPackage = getBusiness(iwc).getSchoolCoursePackage(packagePK);
 				firstPackage = schoolPackage.getPackage();
@@ -115,8 +115,8 @@ public class PackageCollectionHandler implements RemoteScriptCollection {
 	    		}
 	    		
 				if (add) {
-		    		ids.add(coursePackage.getPrimaryKey().toString());
-		    		names.add(coursePackage.getName() + element.getFreeText() != null ? " - " + element.getFreeText() : "");
+		    		ids.add(element.getPrimaryKey().toString());
+		    		names.add(coursePackage.getName() + (element.getFreeText() != null ? " - " + element.getFreeText() : ""));
 				}
 	    }
 		}
