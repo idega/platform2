@@ -25,6 +25,8 @@ import com.idega.block.trade.stockroom.data.SupplierStaffGroupBMPBean;
 import com.idega.block.trade.stockroom.data.Timeframe;
 import com.idega.block.trade.stockroom.data.TravelAddress;
 import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
+import com.idega.business.IBORuntimeException;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.NotLoggedOnException;
@@ -75,11 +77,11 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
     throw new java.lang.UnsupportedOperationException("Method getSupplyStatus() not yet implemented.");
   }
 
-  public ProductPrice setPrice(int productPriceIdToReplace, int productId, int priceCategoryId, int currencyId, Timestamp time, float price, int priceType, int timeframeId, int addressId) throws IDOLookupException, FinderException, IDOAddRelationshipException, CreateException {
+  public ProductPrice setPrice(int productPriceIdToReplace, int productId, int priceCategoryId, int currencyId, Timestamp time, float price, int priceType, int timeframeId, int addressId) throws FinderException, IDOAddRelationshipException, CreateException, RemoteException {
     return setPrice(productPriceIdToReplace, productId, priceCategoryId, currencyId, time, price, priceType, timeframeId, addressId, -1);
   }
 
-  public ProductPrice setPrice(int productPriceIdToReplace, int productId, int priceCategoryId, int currencyId, Timestamp time, float price, int priceType, int timeframeId, int addressId, int maxUsage) throws IDOLookupException, FinderException, IDOAddRelationshipException, CreateException {
+  public ProductPrice setPrice(int productPriceIdToReplace, int productId, int priceCategoryId, int currencyId, Timestamp time, float price, int priceType, int timeframeId, int addressId, int maxUsage) throws FinderException, IDOAddRelationshipException, CreateException, RemoteException {
     if (productPriceIdToReplace != -1) {
         ProductPrice pPrice = ((com.idega.block.trade.stockroom.data.ProductPriceHome)com.idega.data.IDOLookup.getHome(ProductPrice.class)).findByPrimaryKey(new Integer(productPriceIdToReplace));
           pPrice.invalidate();
@@ -89,32 +91,31 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
     return setPrice(productId, priceCategoryId, currencyId, time, price, priceType, timeframeId, addressId, maxUsage, null);
   }
 
-  public ProductPrice setPrice(int productId, int priceCategoryId, int currencyId, Timestamp time, float price, int priceType, int timeframeId, int addressId) throws IDOAddRelationshipException, IDOLookupException, CreateException {
+  public ProductPrice setPrice(int productId, int priceCategoryId, int currencyId, Timestamp time, float price, int priceType, int timeframeId, int addressId) throws IDOAddRelationshipException, CreateException, RemoteException {
     return setPrice(productId, priceCategoryId, currencyId, time, price, priceType, timeframeId, addressId, -1, null);
   }
 
-  public ProductPrice setPrice(int productId, int priceCategoryId, int currencyId, Timestamp time, float price, int priceType, int timeframeId, int addressId, int maxUsage, Date exactDate) throws IDOAddRelationshipException, IDOLookupException, CreateException {
-       ProductPrice prPrice = ((com.idega.block.trade.stockroom.data.ProductPriceHome)com.idega.data.IDOLookup.getHome(ProductPrice.class)).create();
-         prPrice.setProductId(productId);
-         prPrice.setCurrencyId(currencyId);
-         prPrice.setPriceCategoryID(priceCategoryId);
-         prPrice.setPriceDate(time);
-         prPrice.setPrice(price);
-         prPrice.setPriceType(priceType);
-         prPrice.setMaxUsage(maxUsage);
-         if(exactDate != null) {
-         	prPrice.setExactDate(exactDate);
-         }
-       prPrice.store();
-       if (timeframeId != -1) {
-		   prPrice.addTimeframe(new Integer(timeframeId));
-//         prPrice.addTo(Timeframe.class, timeframeId);
-       }
-       if (addressId != -1) {
-		   prPrice.addTravelAddress(new Integer(addressId));
-//         prPrice.addTo(TravelAddress.class, addressId);
-       }
-       return prPrice;
+  public ProductPrice setPrice(int productId, int priceCategoryId, int currencyId, Timestamp time, float price, int priceType, int timeframeId, int addressId, int maxUsage, Date exactDate) throws IDOAddRelationshipException, CreateException, RemoteException {
+	  ProductPrice prPrice = ((com.idega.block.trade.stockroom.data.ProductPriceHome)com.idega.data.IDOLookup.getHome(ProductPrice.class)).create();
+	  prPrice.setProductId(productId);
+	  prPrice.setCurrencyId(currencyId);
+	  prPrice.setPriceCategoryID(priceCategoryId);
+	  prPrice.setPriceDate(time);
+	  prPrice.setPrice(price);
+	  prPrice.setPriceType(priceType);
+	  prPrice.setMaxUsage(maxUsage);
+	  if(exactDate != null) {
+		  prPrice.setExactDate(exactDate);
+	  }
+	  prPrice.store();
+	  if (timeframeId != -1) {
+		  prPrice.addTimeframe(new Integer(timeframeId));
+	  }
+	  if (addressId != -1) {
+		  prPrice.addTravelAddress(new Integer(addressId));
+	  }
+	  getProductPriceBusiness().invalidateCache(productId);
+	  return prPrice;
   }
 
   public  float getPrice(int productPriceId, int productId, int priceCategoryId, int currencyId, Timestamp time) throws SQLException, RemoteException {
@@ -220,7 +221,7 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
           		return price.getPrice();
           	}
           }else{
-            //System.err.println(buffer.toString());
+            System.err.println(buffer.toString());
             throw new ProductPriceException("No Price Was Found");
           }
         }else if(cat.getType().equals(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_DISCOUNT)){
@@ -561,6 +562,15 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
 			else {
 				return (stampToCheck.isLaterThan(from) && to.isLaterThan(stampToCheck));
 			}
+		}
+	}
+	
+	protected ProductPriceBusiness getProductPriceBusiness() {
+		try {
+			return (ProductPriceBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ProductPriceBusiness.class);
+		}
+		catch (IBOLookupException e) {
+			throw new IBORuntimeException(e);
 		}
 	}
 
