@@ -1,5 +1,5 @@
 /*
- * $Id: ProductPriceHomeImpl.java,v 1.5 2005/06/02 16:15:14 gimmi Exp $
+ * $Id: ProductPriceHomeImpl.java,v 1.6 2005/08/11 14:02:06 gimmi Exp $
  * Created on 2.6.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -19,10 +19,10 @@ import com.idega.data.IDOLookupException;
 
 /**
  * 
- *  Last modified: $Date: 2005/06/02 16:15:14 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/08/11 14:02:06 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class ProductPriceHomeImpl extends IDOFactory implements ProductPriceHome {
 
@@ -57,14 +57,6 @@ public class ProductPriceHomeImpl extends IDOFactory implements ProductPriceHome
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findProductPrices(int productId, int timeframeId, boolean netBookingOnly) throws FinderException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((ProductPriceBMPBean) entity).ejbFindProductPrices(productId, timeframeId,
-				netBookingOnly);
-		this.idoCheckInPooledEntity(entity);
-		return this.getEntityCollectionForPrimaryKeys(ids);
-	}
-
 	public Collection findProductPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly,
 			String key) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
@@ -79,15 +71,6 @@ public class ProductPriceHomeImpl extends IDOFactory implements ProductPriceHome
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		java.util.Collection ids = ((ProductPriceBMPBean) entity).ejbFindProductPrices(productId, timeframeId,
 				addressId, netBookingOnly);
-		this.idoCheckInPooledEntity(entity);
-		return this.getEntityCollectionForPrimaryKeys(ids);
-	}
-
-	public Collection findProductPrices(int productId, int timeframeId, int addressId, int[] visibility)
-			throws FinderException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((ProductPriceBMPBean) entity).ejbFindProductPrices(productId, timeframeId,
-				addressId, visibility);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
@@ -120,15 +103,6 @@ public class ProductPriceHomeImpl extends IDOFactory implements ProductPriceHome
 	}
 
 	public Collection findProductPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly,
-			int countAsPersonStatus, int currencyId) throws FinderException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((ProductPriceBMPBean) entity).ejbFindProductPrices(productId, timeframeId,
-				addressId, netBookingOnly, countAsPersonStatus, currencyId);
-		this.idoCheckInPooledEntity(entity);
-		return this.getEntityCollectionForPrimaryKeys(ids);
-	}
-
-	public Collection findProductPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly,
 			int countAsPersonStatus, int currencyId, String key) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		java.util.Collection ids = ((ProductPriceBMPBean) entity).ejbFindProductPrices(productId, timeframeId,
@@ -142,15 +116,6 @@ public class ProductPriceHomeImpl extends IDOFactory implements ProductPriceHome
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		java.util.Collection ids = ((ProductPriceBMPBean) entity).ejbFindProductPrices(productId, timeframeId,
 				addressId, countAsPersonStatus, currencyId, visibility, key);
-		this.idoCheckInPooledEntity(entity);
-		return this.getEntityCollectionForPrimaryKeys(ids);
-	}
-
-	public Collection findProductPrices(int productId, int timeframeId, int addressId, int countAsPersonStatus,
-			int currencyId, int visibility) throws FinderException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((ProductPriceBMPBean) entity).ejbFindProductPrices(productId, timeframeId,
-				addressId, countAsPersonStatus, currencyId, visibility);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}

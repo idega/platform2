@@ -205,7 +205,7 @@ private Currency getCurrency(int currId) throws IDOLookupException, FinderExcept
   }
   
   public void ejbHomeClearPrices(int productId, int currencyId, String key) throws FinderException, IDOLookupException {
-	Collection prices = ejbFindProductPrices(productId, -1, -1, -1, currencyId, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC, key);
+	Collection prices = ejbFindProductPrices(productId, -1, -1, -1, currencyId, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, key);
 	Iterator iter = prices.iterator();
 	ProductPrice price;
 	ProductPriceHome pHome = (ProductPriceHome) IDOLookup.getHome(ProductPrice.class);
@@ -217,50 +217,50 @@ private Currency getCurrency(int currId) throws IDOLookupException, FinderExcept
   }
 
   public Collection ejbFindProductPrices(int productId, boolean netBookingOnly) throws FinderException {
-    return ejbFindProductPrices(productId, -1, netBookingOnly);
+    return ejbFindProductPrices(productId, -1, -1, netBookingOnly);
   }
 
-  public Collection ejbFindProductPrices(int productId, int timeframeId, boolean netBookingOnly) throws FinderException {
-    return ejbFindProductPrices(productId, timeframeId, -1, netBookingOnly);
-  }
+//  public Collection ejbFindProductPrices(int productId, int timeframeId, boolean netBookingOnly) throws FinderException {
+//    return ejbFindProductPrices(productId, timeframeId, -1, netBookingOnly);
+//  }
 
   public Collection ejbFindProductPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly, String key) throws FinderException {
 		return ejbFindProductPrices(productId, timeframeId, addressId, netBookingOnly, 0, -1, key);
   }
 
   public Collection ejbFindProductPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly) throws FinderException {
-    return ejbFindProductPrices(productId, timeframeId, addressId, netBookingOnly, 0, -1);
-  }
-
-  public Collection ejbFindProductPrices(int productId, int timeframeId, int addressId, int[] visibility) throws FinderException {
-	return ejbFindProductPrices(productId, timeframeId, addressId, 0, -1, visibility, null);
+    return ejbFindProductPrices(productId, timeframeId, addressId, netBookingOnly, 0, -1, null);
   }
 
   public Collection ejbFindProductPrices(int productId, int timeframeId, int addressId, int[] visibility, String key) throws FinderException {
-    return ejbFindProductPrices(productId, timeframeId, addressId, 0, -1, visibility, key);
+	return ejbFindProductPrices(productId, timeframeId, addressId, 0, -1, visibility, key);
   }
+
+//  public Collection ejbFindProductPrices(int productId, int timeframeId, int addressId, int[] visibility, String key) throws FinderException {
+//    return ejbFindProductPrices(productId, timeframeId, addressId, 0, -1, visibility, key);
+//  }
   
   public Collection ejbFindMiscellaneousPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly) throws FinderException {
     return ejbFindMiscellaneousPrices(productId, timeframeId, addressId, netBookingOnly, -1);
   }
 
   public Collection ejbFindMiscellaneousPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly, int currencyId) throws FinderException {
-    return ejbFindProductPrices(productId, timeframeId, addressId, netBookingOnly, 1, currencyId);
+    return ejbFindProductPrices(productId, timeframeId, addressId, netBookingOnly, 1, currencyId, null);
   }
 
-  /**
-   * @param productId Product id
-   * @param timeframeId Timeframe id
-   * @param addressId TravelAddress id
-   * @param netBookingOnly View netBookings only
-   * @param countAsPersonStatus 0 = selects when COUNT_AS_PERSON = 'Y' or NULL, 1 = selects where COUNT_AS_PERSON = 'N', -1 both 0 and 1
-   * @param currencyId Currency id
-   * @return ProductPrice array
- * @throws FinderException 
-   */
-  public Collection ejbFindProductPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly, int countAsPersonStatus, int currencyId) throws FinderException {
-		return ejbFindProductPrices(productId, timeframeId, addressId,  netBookingOnly, countAsPersonStatus, currencyId, null);
-  }
+//  /**
+//   * @param productId Product id
+//   * @param timeframeId Timeframe id
+//   * @param addressId TravelAddress id
+//   * @param netBookingOnly View netBookings only
+//   * @param countAsPersonStatus 0 = selects when COUNT_AS_PERSON = 'Y' or NULL, 1 = selects where COUNT_AS_PERSON = 'N', -1 both 0 and 1
+//   * @param currencyId Currency id
+//   * @return ProductPrice array
+// * @throws FinderException 
+//   */
+//  public Collection ejbFindProductPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly, int countAsPersonStatus, int currencyId) throws FinderException {
+//		return ejbFindProductPrices(productId, timeframeId, addressId,  netBookingOnly, countAsPersonStatus, currencyId, null);
+//  }
 
   /**
    * @param productId Product id
@@ -285,21 +285,21 @@ private Currency getCurrency(int currId) throws IDOLookupException, FinderExcept
 	  	}
   }
   
-  /**
-   * @param productId Product id
-   * @param timeframeId Timeframe id
-   * @param addressId TravelAddress id
-   * @param netBookingOnly View netBookings only
-   * @param countAsPersonStatus 0 = selects when COUNT_AS_PERSON = 'Y' or NULL, 1 = selects where COUNT_AS_PERSON = 'N', -1 both 0 and 1
-   * @param currencyId Currency id
-   * @param visibility 1 = Private Prices, 2 = Public Prices, 3 Both Types
-   * @param key used for special prices, default is null
-   * @return ProductPrice array
- * @throws FinderException 
-   */
-  public Collection ejbFindProductPrices(int productId, int timeframeId, int addressId, int countAsPersonStatus, int currencyId, int visibility, String key) throws FinderException {
-		return ejbFindProductPrices(productId, timeframeId, addressId, countAsPersonStatus, currencyId, new int[]{visibility}, key);
-  }
+//  /**
+//   * @param productId Product id
+//   * @param timeframeId Timeframe id
+//   * @param addressId TravelAddress id
+//   * @param netBookingOnly View netBookings only
+//   * @param countAsPersonStatus 0 = selects when COUNT_AS_PERSON = 'Y' or NULL, 1 = selects where COUNT_AS_PERSON = 'N', -1 both 0 and 1
+//   * @param currencyId Currency id
+//   * @param visibility 1 = Private Prices, 2 = Public Prices, 3 Both Types
+//   * @param key used for special prices, default is null
+//   * @return ProductPrice array
+// * @throws FinderException 
+//   */
+//  public Collection ejbFindProductPrices(int productId, int timeframeId, int addressId, int countAsPersonStatus, int currencyId, int visibility, String key) throws FinderException {
+//		return ejbFindProductPrices(productId, timeframeId, addressId, countAsPersonStatus, currencyId, new int[]{visibility}, key);
+//  }
 
   /**
    * @param productId Product id
@@ -312,8 +312,8 @@ private Currency getCurrency(int currId) throws IDOLookupException, FinderExcept
    * @return ProductPrice array
  * @throws FinderException 
    */
-  public Collection ejbFindProductPrices(int productId, int timeframeId, int addressId, int countAsPersonStatus, int currencyId, int visibility) throws FinderException {
-		return ejbFindProductPrices(productId, timeframeId, addressId, countAsPersonStatus, currencyId, new int[]{visibility}, null);
+  public Collection ejbFindProductPrices(int productId, int timeframeId, int addressId, int countAsPersonStatus, int currencyId, int visibility, String key) throws FinderException {
+		return ejbFindProductPrices(productId, timeframeId, addressId, countAsPersonStatus, currencyId, new int[]{visibility}, key);
   }
 
   /**
@@ -427,7 +427,7 @@ private Currency getCurrency(int currId) throws IDOLookupException, FinderExcept
     SQLQuery.append(pTable+"."+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNameIsValid() +"='Y'");
     SQLQuery.append(" AND ");
     SQLQuery.append(cTable+"."+com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getColumnNameIsValid() +"='Y'");
-    if (visibility != null && visibility.length > 0 && !(visibility.length == 1 && visibility[0] == 3) ) {
+    if (visibility != null && visibility.length > 0 && !(visibility.length == 1 && visibility[0] == PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC) ) {
       SQLQuery.append(" AND (");
       SQLQuery.append(cTable+"."+com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getColumnNameNetbookingCategory()+" = 'Y'");
       for (int i = 0 ;  i < visibility.length ; i++ ) {
@@ -524,6 +524,7 @@ private Currency getCurrency(int currId) throws IDOLookupException, FinderExcept
 			query.append(", " + pamTable + " ta");
 		}
 		query.appendWhereEquals("pp." + getColumnNameProductId(), productId);
+		query.appendAndEquals("pp."+getColumnNameIsValid(), true);
 		if(timeframeId != -1) {
 			query.append("AND tf." + getIDColumnName()+"= pp."+getIDColumnName() );
 			query.appendAndEquals("tf." + timeframe.getIDColumnName(), timeframeId);
