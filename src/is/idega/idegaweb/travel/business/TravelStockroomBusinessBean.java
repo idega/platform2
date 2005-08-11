@@ -38,6 +38,8 @@ import com.idega.block.trade.stockroom.data.PriceCategory;
 import com.idega.block.trade.stockroom.data.PriceCategoryBMPBean;
 import com.idega.block.trade.stockroom.data.PriceCategoryHome;
 import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.ProductDayInfoCount;
+import com.idega.block.trade.stockroom.data.ProductDayInfoCountHome;
 import com.idega.block.trade.stockroom.data.ProductPrice;
 import com.idega.block.trade.stockroom.data.ProductPriceHome;
 import com.idega.block.trade.stockroom.data.Reseller;
@@ -1301,6 +1303,11 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
   
 	public int getMaxBookings(Product product, IWTimestamp stamp) throws RemoteException, FinderException{
 		try {
+			// Order of things to come
+			// Checks for supply pool settings
+			// Checks setting 'day by day' settings
+			// Checks for 'active days' settings
+			
 			Hashtable subMap = (Hashtable) maxDaysMap.get((Integer) product.getPrimaryKey());
 //			Cacheing disabled for a while // erm re-enabled			
 //			Hashtable subMap = null;
@@ -1314,6 +1321,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 			Integer returner = (Integer) subMap.get(stmpString); 
 			if ( returner == null ) {
 				if (stamp != null) {
+					// Checking for supply pool settings
 					if (supportsSupplyPool()) {
 						try {
 							SupplyPool pool = ((SupplyPoolHome) IDOLookup.getHome(SupplyPool.class)).findByProduct(product);
@@ -1348,7 +1356,20 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 							e.printStackTrace();
 						}
 					}
+
+					// Checking setting day by day settings
+					if (returner == null) {
+						try {
+							ProductDayInfoCountHome pdich = (ProductDayInfoCountHome) IDOLookup.getHome(ProductDayInfoCount.class);
+							ProductDayInfoCount productCount = pdich.findByProductIdAndDate(product.getID(), stamp.getDate());
+							returner = new Integer(productCount.getCount());
+						} catch (FinderException e) {
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
 					
+					// Checking for 'active days' settings
 					if (returner == null) {
 					  ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
 					  ServiceDay sDay;
