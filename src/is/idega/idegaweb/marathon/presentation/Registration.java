@@ -1,5 +1,5 @@
 /*
- * $Id: Registration.java,v 1.23 2005/08/09 11:19:55 laddi Exp $
+ * $Id: Registration.java,v 1.24 2005/08/11 10:21:08 palli Exp $
  * Created on May 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -57,10 +57,10 @@ import com.idega.util.LocaleUtil;
 
 
 /**
- * Last modified: $Date: 2005/08/09 11:19:55 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/11 10:21:08 $ by $Author: palli $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.23 $
+ * @version $Revision: 1.24 $
  */
 public class Registration extends RunBlock {
 	
@@ -846,7 +846,7 @@ public class Registration extends RunBlock {
 			}
 			runnerTable.add(getText(localize(runner.getRun().getName(), runner.getRun().getName())), 2, runRow);
 			runnerTable.add(getText(localize(runner.getDistance().getName(), runner.getDistance().getName())), 3, runRow);
-			float runPrice = getRunBusiness(iwc).getPriceForRunner(runner, iwc.getCurrentLocale(), chipDiscount, price);
+			float runPrice = getRunBusiness(iwc).getPriceForRunner(runner, iwc.getCurrentLocale(), chipDiscount, 0);
 			totalAmount += runPrice;
 			runnerTable.add(getText(formatAmount(iwc.getCurrentLocale(), runPrice)), 4, runRow++);
 			if (numberOfChildren > 1 && childNumber > 1) {
