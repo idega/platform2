@@ -272,11 +272,16 @@ public class ServiceHandlerBean extends IBOServiceBean implements ServiceHandler
     /** @todo FIXA STRAX !!! */
     try {
       Service service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHome(Service.class)).findByPrimaryKey(new Integer(productId));
-      IWTimestamp tempStamp = new IWTimestamp(service.getDepartureTime());
-      return tempStamp;
+      if (service.getDepartureTime() != null) {
+	      IWTimestamp tempStamp = new IWTimestamp(service.getDepartureTime());
+	      return tempStamp;
+      }
+      
     }catch (Exception e) {
+    	e.printStackTrace();
       throw new SQLException(e.getMessage());
     }
+    return null;
   }
 
   public void removeProductApplication(IWContext iwc, int supplierId) throws RemoteException{
