@@ -162,7 +162,7 @@ private int listPrices(IWContext iwc, Table contentTable,	int contRow,	Service s
 	Text nameOfCategory;
 	Text priceText;
 	Currency currency;
-	Collection prices = getProductPriceHome().findProductPrices(_product.getID(), timeframeId, -1, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC});
+	Collection prices = getProductPriceBusiness().getProductPrices(_product.getID(), timeframeId, -1, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, null);
 	if (!prices.isEmpty()) {
 	  contentTable.setVerticalAlignment(2,contRow,"top");
 	  contentTable.setVerticalAlignment(3,contRow,"top");
@@ -375,7 +375,7 @@ private int listPublicPrices(IWContext iwc,	Product product,	Text priceText,	int
 	Currency currency;
 	Text nameOfCategory;
 	Text currencyText;
-	Collection prices = getProductPriceHome().findProductPrices(product.getID(), timeframeId, -1, true);
+	Collection prices = getProductPriceBusiness().getProductPrices(product.getID(), timeframeId, -1, true, null);
 	  if (!prices.isEmpty()) {
 		  Iterator iter = prices.iterator();
 		  ProductPrice price;

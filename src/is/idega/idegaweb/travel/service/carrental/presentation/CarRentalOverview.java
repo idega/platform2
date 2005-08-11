@@ -163,7 +163,7 @@ public class CarRentalOverview extends AbstractServiceOverview {
 		Text nameOfCategory;
 		Text priceText;
 		Currency currency;
-		Collection prices = getProductPriceHome().findProductPrices(_product.getID(), timeframeId, -1, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC});
+		Collection prices = getProductPriceBusiness().getProductPrices(_product.getID(), timeframeId, -1, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, null);
 		Iterator iter = prices.iterator();
 		if (!prices.isEmpty()) {
 		  contentTable.setVerticalAlignment(2,contRow,"top");
@@ -377,7 +377,7 @@ public class CarRentalOverview extends AbstractServiceOverview {
 		Currency currency;
 		Text nameOfCategory;
 		Text currencyText;
-		Collection prices = getProductPriceHome().findProductPrices(product.getID(), timeframeId, -1, true);
+		Collection prices = getProductPriceBusiness().getProductPrices(product.getID(), timeframeId, -1, true, null);
 		  if (!prices.isEmpty()) {
 			  Iterator iter = prices.iterator();
 			  ProductPrice price;

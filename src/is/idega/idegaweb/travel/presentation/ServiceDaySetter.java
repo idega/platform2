@@ -14,15 +14,21 @@ import java.util.List;
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 import com.idega.block.trade.data.Currency;
 import com.idega.block.trade.data.CurrencyHome;
 import com.idega.block.trade.stockroom.business.StockroomBusiness;
+import com.idega.block.trade.stockroom.data.DayInfo;
+import com.idega.block.trade.stockroom.data.DayInfoHome;
 import com.idega.block.trade.stockroom.data.PriceCategory;
+import com.idega.block.trade.stockroom.data.PriceCategoryBMPBean;
+import com.idega.block.trade.stockroom.data.PriceCategoryHome;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductDayInfoCount;
 import com.idega.block.trade.stockroom.data.ProductDayInfoCountHome;
 import com.idega.block.trade.stockroom.data.ProductHome;
 import com.idega.block.trade.stockroom.data.ProductPrice;
+import com.idega.block.trade.stockroom.data.ProductPriceBMPBean;
 import com.idega.block.trade.stockroom.data.ProductPriceHome;
 import com.idega.block.trade.stockroom.data.Settings;
 import com.idega.block.trade.stockroom.data.SupplyPool;
@@ -68,6 +74,7 @@ public class ServiceDaySetter extends TravelWindow {
 	public static final String PARAMETER_SERVICE_ID = "sds_serv_id";
 	private String ACTION = "sbs_action";
 	private String ACTION_SAVE = "sbs_action_save";
+	private String ACTION_BEGIN = "sbs_a_b";
 	private String PARAMETER_UPDATE = "sbs_update";
 	private String PARAMETER_AVAILABLE = "sbs_avail_";
 	private String PARAMETER_MAX = "sbs_max_";
@@ -135,7 +142,8 @@ public class ServiceDaySetter extends TravelWindow {
 				}
 			}
 			String action = iwc.getParameter(ACTION);
-			if(action == null || action.equals("")) {
+			String beginAction = iwc.getParameter(ACTION_BEGIN);
+			if(action == null || action.equals("") || (beginAction != null && !beginAction.equals(""))) {
 				drawForm(iwc);
 			}
 			else if (action.equals(PARAMETER_UPDATE)) {
@@ -293,6 +301,27 @@ public class ServiceDaySetter extends TravelWindow {
 	}
 	
 	private void saveDayInfo(IWContext iwc, IWTimestamp stamp) {
+		String timeframeIdString = iwc.getParameter(PARAMETER_TIMEFRAME);
+		String travelAddressIdString = iwc.getParameter(PARAMETER_ADDRESS);
+		String priceCategoryIdString = iwc.getParameter(PARAMETER_PRICE_CATEGORY);
+		String currencyIdString = iwc.getParameter(PARAMETER_CURRENCY_ID);
+		int timeframeId = -1;
+		int addressId = -1; 
+		int priceCategoryId = -1;
+		int currencyId = -1;
+		if(timeframeIdString != null && !timeframeIdString.equals("")) {
+			timeframeId = Integer.parseInt(timeframeIdString);
+		}
+		if(travelAddressIdString != null && !travelAddressIdString.equals("")) {
+			addressId = Integer.parseInt(travelAddressIdString);
+		}
+		if(priceCategoryIdString != null && !priceCategoryIdString.equals("")) {
+			priceCategoryId = Integer.parseInt(priceCategoryIdString);
+		}
+		if(currencyIdString != null && !currencyIdString.equals("")) {
+			currencyId = Integer.parseInt(currencyIdString);
+		}
+
 		IWCalendar calendar = new IWCalendar();
 		int daycount = calendar.getLengthOfMonth(stamp.getMonth(),stamp.getYear());
 		int n = 1; 
@@ -317,30 +346,18 @@ public class ServiceDaySetter extends TravelWindow {
 				productCount.setCount(count);
 				productCount.setDate(date.getDate());
 				productCount.store();
+			} else {
+				// Removing
+				try {
+					ProductDayInfoCount productCount = getProductDayInfoCountHome().findByProductIdAndDate(_product.getID(), date.getDate());
+					productCount.remove();
+				} catch (FinderException e1) {
+				} catch (RemoveException e2) {
+				}
 			}
 			if(priceString != null && !priceString.trim().equals("")) {
 				float price = Float.parseFloat(priceString);
 				ProductPrice productPrice = null;
-				String timeframeIdString = iwc.getParameter(PARAMETER_TIMEFRAME);
-				String travelAddressIdString = iwc.getParameter(PARAMETER_ADDRESS);
-				String priceCategoryIdString = iwc.getParameter(PARAMETER_PRICE_CATEGORY);
-				String currencyIdString = iwc.getParameter(PARAMETER_CURRENCY_ID);
-				int timeframeId = -1;
-				int addressId = -1; 
-				int priceCategoryId = -1;
-				int currencyId = -1;
-				if(timeframeIdString != null && !timeframeIdString.equals("")) {
-					timeframeId = Integer.parseInt(timeframeIdString);
-				}
-				if(travelAddressIdString != null && !travelAddressIdString.equals("")) {
-					addressId = Integer.parseInt(travelAddressIdString);
-				}
-				if(priceCategoryIdString != null && !priceCategoryIdString.equals("")) {
-					priceCategoryId = Integer.parseInt(priceCategoryIdString);
-				}
-				if(currencyIdString != null && !currencyIdString.equals("")) {
-					currencyId = Integer.parseInt(currencyIdString);
-				}
 				try {
 					productPrice = getProductPriceHome().findByData(_product.getID(), timeframeId, addressId, currencyId, priceCategoryId, date.getDate());
 
@@ -359,7 +376,19 @@ public class ServiceDaySetter extends TravelWindow {
 					productPrice.setCurrencyId(currencyId);
 					productPrice.setExactDate(date.getDate());
 					productPrice.setPrice(price);
+					productPrice.setPriceDate(IWTimestamp.getTimestampRightNow());
 					if(priceCategoryId != -1) {
+			            try {
+							PriceCategory pCategory = ((PriceCategoryHome)com.idega.data.IDOLookup.getHome(PriceCategory.class)).findByPrimaryKey(priceCategoryId);
+							if (pCategory.getType().equals(PriceCategoryBMPBean.PRICETYPE_PRICE)) {
+								productPrice.setPriceType(ProductPriceBMPBean.PRICETYPE_PRICE);
+							} else if (pCategory.getType().equals(PriceCategoryBMPBean.PRICETYPE_DISCOUNT)) {
+								productPrice.setPriceType(ProductPriceBMPBean.PRICETYPE_DISCOUNT);
+							}
+						}
+						catch (Exception e) {
+							e.printStackTrace();
+						}
 						productPrice.setPriceCategoryID(priceCategoryId);
 					}
 					productPrice.store();
@@ -380,6 +409,16 @@ public class ServiceDaySetter extends TravelWindow {
 //						e1.printStackTrace();
 					}
 				}
+			} else {
+				// Removing price
+				try {
+					ProductPrice productPrice = getProductPriceHome().findByData(_product.getID(), timeframeId, addressId, currencyId, priceCategoryId, date.getDate());
+					productPrice.invalidate();
+					productPrice.store();
+				}
+				catch (FinderException e) {
+				}
+
 			}
 			n++;
 		}
@@ -520,7 +559,7 @@ public class ServiceDaySetter extends TravelWindow {
 		Link moreLink = new Link(iwrb.getLocalizedImageButton("travel.day_by_day", "Day by day"));
 		moreLink.addParameter(ACTION, PARAMETER_DAY_EDITOR);
 		moreLink.addParameter(PARAMETER_SERVICE_ID, _product.getPrimaryKey().toString());
-		moreLink.addParameter(PARAMETER_DISPLAY_STATUS, "-1");
+//		moreLink.addParameter(PARAMETER_DISPLAY_STATUS, "-1");
 		if(pool != null) {
 			moreLink.addParameter(PARAMETER_SUPPLY_POOL_ID, pool.getPrimaryKey().toString());
 		}
@@ -564,12 +603,25 @@ public class ServiceDaySetter extends TravelWindow {
 		form.add(table);
 		add(form);
 		
+		boolean usingPool = iwc.getParameter(PARAMETER_SUPPLY_POOL_ID) != null && !iwc.getParameter(PARAMETER_SUPPLY_POOL_ID).equals("-1");
+		
 		DropdownMenu displayStatus = new DropdownMenu(PARAMETER_DISPLAY_STATUS);
 		displayStatus.setToSubmit();
 		displayStatus.addMenuElement("-1",iwrb.getLocalizedString("travel.count_and_price","Count and price"));
 		displayStatus.addMenuElement(PARAMETER_SHOW_COUNT, iwrb.getLocalizedString("travel.show_count", "Count"));
-		displayStatus.addMenuElement(PARAMETER_SHOW_PRICE, iwrb.getLocalizedString("travel.show_price", "Price"));	
-//		int dropdownTableRow = 1;
+		displayStatus.addMenuElement(PARAMETER_SHOW_PRICE, iwrb.getLocalizedString("travel.show_price", "Price"));
+
+		boolean showCount = true;
+		boolean showPrice = false;
+		if (iwc.isParameterSet(PARAMETER_DISPLAY_STATUS)) {
+			displayStatus.setSelectedElement(iwc.getParameter(PARAMETER_DISPLAY_STATUS));
+			showCount = iwc.getParameter(PARAMETER_DISPLAY_STATUS).equals(PARAMETER_SHOW_COUNT) || iwc.getParameter(PARAMETER_DISPLAY_STATUS).equals("-1");
+			showPrice = iwc.getParameter(PARAMETER_DISPLAY_STATUS).equals(PARAMETER_SHOW_PRICE) || iwc.getParameter(PARAMETER_DISPLAY_STATUS).equals("-1");
+		} else {
+			displayStatus.setSelectedElement(PARAMETER_SHOW_COUNT);
+		}
+		
+		//		int dropdownTableRow = 1;
 		int dropdownTableColumn = 1;
 		Table dropdownTable = new Table();
 		dropdownTable.setCellpadding(0);
@@ -596,15 +648,15 @@ public class ServiceDaySetter extends TravelWindow {
 		}
 		int supplierId = _product.getSupplierId();
 	
-		if(iwc.getParameter(PARAMETER_DISPLAY_STATUS) != null && iwc.getParameter(PARAMETER_DISPLAY_STATUS).equals(PARAMETER_SHOW_COUNT)) {
-			displayStatus.setSelectedElement(PARAMETER_SHOW_COUNT);
-		}
-		else if(iwc.getParameter(PARAMETER_DISPLAY_STATUS) != null) {
-			if(iwc.getParameter(PARAMETER_DISPLAY_STATUS).equals(PARAMETER_SHOW_PRICE)) {
-				displayStatus.setSelectedElement(PARAMETER_SHOW_PRICE);
-			}
-			 if(iwc.getParameter(PARAMETER_DISPLAY_STATUS).equals(PARAMETER_SHOW_PRICE) || iwc.getParameter(PARAMETER_DISPLAY_STATUS).equals("-1")) {
-				if(timeframes != null) {
+//		if(iwc.getParameter(PARAMETER_DISPLAY_STATUS) != null && iwc.getParameter(PARAMETER_DISPLAY_STATUS).equals(PARAMETER_SHOW_COUNT)) {
+//			displayStatus.setSelectedElement(PARAMETER_SHOW_COUNT);
+//		}
+//		else if(iwc.getParameter(PARAMETER_DISPLAY_STATUS) != null) {
+//			if(iwc.getParameter(PARAMETER_DISPLAY_STATUS).equals(PARAMETER_SHOW_PRICE)) {
+//				displayStatus.setSelectedElement(PARAMETER_SHOW_PRICE);
+//			}
+			 if(showPrice) {
+				if(timeframes != null && timeframes.length > 0) {
 					DropdownMenu timeframeDD = new DropdownMenu(PARAMETER_TIMEFRAME);
 					for(int i = 0; i<timeframes.length; i++) {
 						timeframeDD.addMenuElement(timeframes[i].getPrimaryKey().toString(),timeframes[i].getName(iwc.getCurrentLocale()));		
@@ -663,7 +715,7 @@ public class ServiceDaySetter extends TravelWindow {
 				dropdownTable.setAlignment(2,3,Table.HORIZONTAL_ALIGN_RIGHT);
 				dropdownTable.add(new SubmitButton(iwrb.getLocalizedImageButton("go", "Go")), 2, 3);
 			}
-		}
+//		}
 		
 		int daycount = calendar.getLengthOfMonth(stamp.getMonth(),stamp.getYear());
 		int column = calendar.getDayOfWeek(stamp.getYear(),stamp.getMonth(),1);	
@@ -754,7 +806,7 @@ public class ServiceDaySetter extends TravelWindow {
 		}
 		Timeframe tFrame = getProductBusiness(iwc).getTimeframe(_product, stamp, addressId);
     row++;
-    if(getStockroomBusiness(iwc).isInTimeframe( new IWTimestamp(tFrame.getFrom()) , new IWTimestamp(tFrame.getTo()), stamp, tFrame.getIfYearly() )) {
+    if(tFrame == null || ( getStockroomBusiness(iwc).isInTimeframe( new IWTimestamp(tFrame.getFrom()) , new IWTimestamp(tFrame.getTo()), stamp, tFrame.getIfYearly() ))) {
 	  		while(n <= daycount) {
 	  			Table dayTable = new Table();
 	  			dayTable.setWidth(Table.HUNDRED_PERCENT);
@@ -787,27 +839,31 @@ public class ServiceDaySetter extends TravelWindow {
 	  			dayTable.setAlignment(2, dayTableRow, Table.HORIZONTAL_ALIGN_RIGHT);
 	  			dayTable.add(String.valueOf(n),2,dayTableRow++);
 	  			
-	  			if(iwc.getParameter(PARAMETER_SUPPLY_POOL_ID) != null && !iwc.getParameter(PARAMETER_SUPPLY_POOL_ID).equals("-1")) {
+	  			if(usingPool) {
+	  				try {
+	  					DayInfo dayInfo = getDayInfoHome().findBySupplyPoolIdAndDate(((Integer)pool.getPrimaryKey()).intValue(), date.getDate());
+	  					countInput.setContent(Integer.toString(dayInfo.getCount()));
+	  				}
+	  				catch (FinderException e) {
+	  				}
 	  				countInput.setDisabled(true);
 	  			}
-	  			if(iwc.getParameter(PARAMETER_DISPLAY_STATUS) != null && iwc.getParameter(PARAMETER_DISPLAY_STATUS).equals(PARAMETER_SHOW_COUNT)) {
-	  				displayStatus.setSelectedElement(PARAMETER_SHOW_COUNT);
+	  			if(showCount) {
 	  				dayTable.add(countInput,1,dayTableRow++);
 	  			}
-	  			else if(iwc.getParameter(PARAMETER_DISPLAY_STATUS) != null && iwc.getParameter(PARAMETER_DISPLAY_STATUS).equals(PARAMETER_SHOW_PRICE)) {
-	  				displayStatus.setSelectedElement(PARAMETER_SHOW_PRICE);
+	  			if(showPrice) {
 	  				dayTable.add(priceInput,1,dayTableRow++);
 	  				if(currency != null) {
 	  					dayTable.add(currency.getCurrencyAbbreviation(), 1, dayTableRow++);
 	  				}
 	  			}
-	  			else {
-	  				dayTable.add(countInput,1,dayTableRow++);
-	  				dayTable.add(priceInput,1,dayTableRow);
-	  				if(currency != null) {
-	  					dayTable.add(currency.getCurrencyAbbreviation(), 1, dayTableRow);
-	  				}
-	  			}
+//	  			else {
+//	  				dayTable.add(countInput,1,dayTableRow++);
+//	  				dayTable.add(priceInput,1,dayTableRow);
+//	  				if(currency != null) {
+//	  					dayTable.add(currency.getCurrencyAbbreviation(), 1, dayTableRow);
+//	  				}
+//	  			}
 	  			table.setRowColor(row, TravelManager.GRAY);
 	  			table.add(dayTable, column, row);
 	  			column = column % 7 + 1;
@@ -826,15 +882,17 @@ public class ServiceDaySetter extends TravelWindow {
     		table.add(t, 1, row);
 		}
 
-		
 		SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("save", "Save"), ACTION_SAVE, PARAMETER_SAVE_DAYS_INFO);
-		SubmitButton back = new SubmitButton(iwrb.getLocalizedImageButton("back", "Back"));
+		save.addParameter(ACTION, PARAMETER_DAY_EDITOR);
+		SubmitButton back = new SubmitButton(iwrb.getLocalizedImageButton("back", "Back"), ACTION_BEGIN, "true");
 		
 		table.setRowColor(++row, TravelManager.GRAY);
 		table.add(back, 1, row);
 		table.mergeCells(2, row, 7, row);
 		table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_RIGHT);
-		table.add(save, 2, row);
+		if (!usingPool || showPrice) {
+			table.add(save, 2, row);
+		}
 
 	}
 	private Link getNextMonthsLink(IWContext iwc, IWResourceBundle iwrb, IWTimestamp idts) {
@@ -934,7 +992,14 @@ public class ServiceDaySetter extends TravelWindow {
   }
 
 
-
+	public DayInfoHome getDayInfoHome() {
+		try {
+			return (DayInfoHome) IDOLookup.getHome(DayInfo.class);
+		}
+		catch (IDOLookupException e) {
+			throw new IDORuntimeException(e);
+		}
+	}
 
 
 	

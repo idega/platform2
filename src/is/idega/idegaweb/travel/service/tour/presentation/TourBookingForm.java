@@ -134,8 +134,8 @@ public class TourBookingForm extends BookingForm{
       Timeframe tFrame = getProductBusiness(iwc).getTimeframe(_product, _stamp, addressId);
 //      Timeframe tFrame = ProductBusiness.getTimeframe(_product, _stamp);
       if (tFrame != null) {
-        prices = getProductPriceHome().findProductPrices(_service.getID(), tFrame.getID(), addressId, false);
-        misc = getProductPriceHome().findMiscellaneousPrices(_service.getID(), tFrame.getID(), addressId, false);
+        prices = getProductPriceBusiness().getProductPrices(_service.getID(), tFrame.getID(), addressId, false, _stamp);
+        misc = getProductPriceBusiness().getMiscellaneousPrices(_service.getID(), tFrame.getID(), addressId, false);
       }else{
         debug("tFrame == null");
       }
@@ -704,8 +704,8 @@ public class TourBookingForm extends BookingForm{
       Collection misc = null;
       Timeframe tFrame = getProductBusiness(iwc).getTimeframe(_product, _stamp, addressId);
       if (tFrame != null) {
-        prices = getProductPriceHome().findProductPrices(_service.getID(), tFrame.getID(), addressId, true);
-        misc = getProductPriceHome().findMiscellaneousPrices(_service.getID(), tFrame.getID(), addressId, true);
+        prices = getProductPriceBusiness().getProductPrices(_service.getID(), tFrame.getID(), addressId, true, _stamp);
+        misc = getProductPriceBusiness().getMiscellaneousPrices(_service.getID(), tFrame.getID(), addressId, true);
       }
 
       Text availSeats = (Text) theText.clone();
@@ -1235,10 +1235,10 @@ public class TourBookingForm extends BookingForm{
   }
 
 
-public Form getFormMaintainingAllParameters(IWContext iwc) throws FinderException {
+public Form getFormMaintainingAllParameters(IWContext iwc) throws FinderException, RemoteException {
     return getFormMaintainingAllParameters(iwc, true);
  }
- public Form getFormMaintainingAllParameters(IWContext iwc, boolean withBookingAction) throws FinderException {
+ public Form getFormMaintainingAllParameters(IWContext iwc, boolean withBookingAction) throws FinderException, RemoteException {
     Form form = new Form();
       form.maintainParameter("surname");
       form.maintainParameter("lastname");
@@ -1279,14 +1279,14 @@ public Form getFormMaintainingAllParameters(IWContext iwc) throws FinderExceptio
 			}
 
 
-      Collection pPrices = getProductPriceHome().findProductPrices(this._productId, onlineOnly);
+      Collection pPrices = getProductPriceBusiness().getProductPrices(this._productId, -1, -1, onlineOnly, null);
 	  Iterator iter = pPrices.iterator();
 	  ProductPrice price;
 	  while (iter.hasNext()) {
 		  price = (ProductPrice) iter.next();
         form.maintainParameter("priceCategory"+price.getPrimaryKey().toString());
       }
-      Collection misc = getProductPriceHome().findMiscellaneousPrices(this._productId, -1, -1, onlineOnly);
+      Collection misc = getProductPriceBusiness().getMiscellaneousPrices(this._productId, -1, -1, onlineOnly);
 	  iter = misc.iterator();
 	  while (iter.hasNext()) {
 		  price = (ProductPrice) iter.next();
@@ -1348,7 +1348,7 @@ public Form getFormMaintainingAllParameters(IWContext iwc) throws FinderExceptio
     }
 
 
-    Collection pPrices = getProductPriceHome().findProductPrices(_service.getID(), tFrame.getID(), iAddressId, onlineOnly);
+    Collection pPrices = getProductPriceBusiness().getProductPrices(_service.getID(), tFrame.getID(), iAddressId, onlineOnly, _stamp);
 	Iterator iter = pPrices.iterator();
 	ProductPrice price;
     int current = 0;
@@ -2080,8 +2080,8 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
     Collection misc = null;
     Timeframe tFrame = getProductBusiness(iwc).getTimeframe(product, _stamp, Integer.parseInt(depAddressId));
     if (tFrame != null && depAddressId != null) {
-      prices = getProductPriceHome().findProductPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddressId), true);
-      misc = getProductPriceHome().findMiscellaneousPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddressId), true);
+      prices = getProductPriceBusiness().getProductPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddressId), true, _stamp);
+      misc = getProductPriceBusiness().getMiscellaneousPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddressId), true);
     }
 
     Table table = new Table();

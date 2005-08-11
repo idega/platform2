@@ -197,8 +197,8 @@ public class DailyReport extends TravelManager implements Report{
         address = (TravelAddress) addresses.get(ta);
         tframe = getProductBusiness(iwc).getTimeframe(product, stamp, address.getID());
         if (tframe != null) {
-          prices = getProductPriceHome().findProductPrices(product.getID(), tframe.getID(), address.getID(), false);
-          misc = getProductPriceHome().findMiscellaneousPrices(product.getID(), tframe.getID(),address.getID(), false);
+          prices = getProductPriceBusiness().getProductPrices(product.getID(), tframe.getID(), address.getID(), false, stamp);
+          misc = getProductPriceBusiness().getMiscellaneousPrices(product.getID(), tframe.getID(),address.getID(), false);
         }
 
 		Iterator iter = prices.iterator();
@@ -635,8 +635,8 @@ public class DailyReport extends TravelManager implements Report{
 	  for (int k = 0; k < addressesSize; k++) {
             address = (TravelAddress) addresses.get(k);
             tframe = getProductBusiness(iwc).getTimeframe(product, stamp, address.getID());
-	      prices = getProductPriceHome().findProductPrices(product.getID(), tframe.getID(), address.getID(), false);
-	      misc = getProductPriceHome().findMiscellaneousPrices(product.getID(), tframe.getID(), address.getID(), false);
+	      prices = getProductPriceBusiness().getProductPrices(product.getID(), tframe.getID(), address.getID(), false, stamp);
+	      misc = getProductPriceBusiness().getMiscellaneousPrices(product.getID(), tframe.getID(), address.getID(), false);
 	      addressText = (Text) smallText.clone();
 		addressText.setText(address.getName()+Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE);
 		addressText.setFontColor(super.BLACK);
@@ -904,7 +904,11 @@ public class DailyReport extends TravelManager implements Report{
 
 	pNumberTxt.setText(prod.getNumber());
 	pNameTxt.setText(prod.getProductName(getLocaleId()));
+	if (depTime != null) {
 	pTimeTxt.setText(TextSoap.addZero(depTime.getHour())+":"+TextSoap.addZero(depTime.getMinute()));
+	} else {
+		pTimeTxt.setText("");
+	}
 	pCountTxt.setText(Integer.toString(count));
 	pPriceTxt.setText(TextSoap.decimalFormat(price, 2));
 

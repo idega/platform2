@@ -22,7 +22,6 @@ import com.idega.block.text.data.LocalizedText;
 import com.idega.block.text.data.TxText;
 import com.idega.block.text.presentation.TextEditorWindow;
 import com.idega.block.trade.data.Currency;
-import com.idega.block.trade.stockroom.data.PriceCategoryBMPBean;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductPrice;
 import com.idega.block.trade.stockroom.data.Supplier;
@@ -330,10 +329,10 @@ public class ProductDetailFrame extends TravelBlock {
 				if (depAddresses != null && !depAddresses.isEmpty() && addressId < 1) {
 					Iterator iter = depAddresses.iterator();
 					while (iter.hasNext()) {
-						addPrices(contTable, 1, 6, bus, product, timeframeId, ((TravelAddress) iter.next()).getID(), getNumberOfDays(iwc, fromDate), Text.BREAK);
+						addPrices(contTable, 1, 6, bus, product, timeframeId, ((TravelAddress) iter.next()).getID(), getNumberOfDays(iwc, fromDate), Text.BREAK, fromDate);
 					}
 				} else {
-					addPrices(contTable, 1, 6, bus, product, timeframeId, addressId, getNumberOfDays(iwc, fromDate), Text.BREAK);
+					addPrices(contTable, 1, 6, bus, product, timeframeId, addressId, getNumberOfDays(iwc, fromDate), Text.BREAK, fromDate);
 				}
 				
 				Iterator leftIter = leftAdd.iterator();
@@ -507,12 +506,12 @@ public class ProductDetailFrame extends TravelBlock {
 		return ++resultsRow;
 	}
 
-	private Collection getProductPrices(Product usedProduct, int addressId, int timeframeId) throws RemoteException, FinderException {
-		return getProductPriceHome().findProductPrices(usedProduct.getID(), timeframeId, addressId, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, priceCategoryKey);
+	private Collection getProductPrices(Product usedProduct, int addressId, int timeframeId, IWTimestamp stamp) throws RemoteException, FinderException {
+		return getProductPriceBusiness().getProductPrices(usedProduct.getID(), timeframeId, addressId, true, priceCategoryKey, stamp);
 	}
 
-	int addPrices(Table table, int column, int row, TravelStockroomBusiness bus, Product product, int timeframeId, int addressId, int days, String seperator) throws SQLException, RemoteException, FinderException {
-		Collection prices = getProductPrices(product, addressId, timeframeId);
+	int addPrices(Table table, int column, int row, TravelStockroomBusiness bus, Product product, int timeframeId, int addressId, int days, String seperator, IWTimestamp stamp) throws SQLException, RemoteException, FinderException {
+		Collection prices = getProductPrices(product, addressId, timeframeId, stamp);
 		ProductPrice price;
 		Iterator iter = prices.iterator();
 		int tmpPriceID = -1;

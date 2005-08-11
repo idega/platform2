@@ -123,7 +123,7 @@ public class AdditionalBooking extends TravelWindow {
       if (tfrId != null) iTimeframeId = Integer.parseInt(tfrId);
 
 
-      Collection pPrices = getProductPriceHome().findProductPrices(service.getID(), iTimeframeId, iAddressId, false);
+      Collection pPrices = getProductPriceBusiness().getProductPrices(service.getID(), iTimeframeId, iAddressId, false, stamp);
       PriceCategory category;
 
       Text header = (Text) text.clone();
@@ -261,7 +261,7 @@ public class AdditionalBooking extends TravelWindow {
       	iTimeframeId = timeframe.getID();	
       }
 
-      Collection pPrices = getProductPriceHome().findProductPrices(service.getID(), iTimeframeId, Integer.parseInt(addressId), false);
+      Collection pPrices = getProductPriceBusiness().getProductPrices(service.getID(), iTimeframeId, Integer.parseInt(addressId), false, stamp);
       int bookingId;
 
       try {

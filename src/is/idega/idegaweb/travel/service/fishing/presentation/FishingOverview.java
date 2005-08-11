@@ -221,7 +221,7 @@ public class FishingOverview extends AbstractServiceOverview {
           contentTable.setRowColor(contRow, super.GRAY);
           ++contRow;
           for (int k = 0; k < timeframes.length; k++) {
-            prices = getProductPriceHome().findProductPrices(product.getID(), timeframes[k].getID(), depAddress.getID(), new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC});
+            prices = getProductPriceBusiness().getProductPrices(product.getID(), timeframes[k].getID(), depAddress.getID(), new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, null);
             if (!prices.isEmpty()) {
               timeframeTxt = (Text) theBoldText.clone();
                 timeframeTxt.setFontColor(super.BLACK);
@@ -465,7 +465,7 @@ public class FishingOverview extends AbstractServiceOverview {
           departureFromTextBold.addToText(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
         pTable.add(departureFromTextBold, 1, pRow);
         for (int i = 0; i < timeframes.length; i++) {
-          prices = getProductPriceHome().findProductPrices(product.getID(), timeframes[i].getID(), depAddress.getID(), true);
+          prices = getProductPriceBusiness().getProductPrices(product.getID(), timeframes[i].getID(), depAddress.getID(), true, null);
           if (!prices.isEmpty()) {
             stampTxt1 = new IWTimestamp(timeframes[i].getFrom()).getLocaleDate(iwc);
             stampTxt2 = new IWTimestamp(timeframes[i].getTo()).getLocaleDate(iwc);

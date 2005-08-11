@@ -384,11 +384,11 @@ public abstract class BookingForm extends TravelManager{
 		int timeframeId = -1;
 		if (tFrame != null) {
 			timeframeId = tFrame.getID();
-			prices = getProductPriceHome().findProductPrices(_service.getID(), tFrame.getID(), addressId, false);
-			misc = getProductPriceHome().findMiscellaneousPrices(_service.getID(), tFrame.getID(), addressId, false);
+			prices = getProductPriceBusiness().getProductPrices(_service.getID(), tFrame.getID(), addressId, false, _stamp);
+			misc = getProductPriceBusiness().getMiscellaneousPrices(_service.getID(), tFrame.getID(), addressId, false);
 		}else {
-			prices = getProductPriceHome().findProductPrices(_service.getID(), -1, -1, false);
-			misc = getProductPriceHome().findMiscellaneousPrices(_service.getID(), -1, -1, false);
+			prices = getProductPriceBusiness().getProductPrices(_service.getID(), -1, -1, false, _stamp);
+			misc = getProductPriceBusiness().getMiscellaneousPrices(_service.getID(), -1, -1, false);
 		}
 		
 		if (!prices.isEmpty()) {
@@ -1306,11 +1306,11 @@ public abstract class BookingForm extends TravelManager{
 		int timeframeId = -1;
 		if (tFrame != null) {
 			timeframeId = tFrame.getID();
-			prodPrices = getProductPriceHome().findProductPrices(product.getID(), tFrame.getID(), addressId, true);
-			misc = getProductPriceHome().findMiscellaneousPrices(product.getID(), tFrame.getID(), addressId, true);
+			prodPrices = getProductPriceBusiness().getProductPrices(product.getID(), tFrame.getID(), addressId, true, _stamp);
+			misc = getProductPriceBusiness().getMiscellaneousPrices(product.getID(), tFrame.getID(), addressId, true);
 		}else {
-			prodPrices = getProductPriceHome().findProductPrices(_service.getID(), -1, -1, true);
-			misc = getProductPriceHome().findMiscellaneousPrices(product.getID(), -1, -1, true);
+			prodPrices = getProductPriceBusiness().getProductPrices(_service.getID(), -1, -1, true, _stamp);
+			misc = getProductPriceBusiness().getMiscellaneousPrices(product.getID(), -1, -1, true);
 		}
 		
 		int pricesLength = prodPrices.size();
@@ -1568,7 +1568,7 @@ public abstract class BookingForm extends TravelManager{
 					headerTable.setCellpaddingBottom(headerColumn, hRow, 1);
 					headerTable.setCellpaddingLeft(headerColumn, hRow, 10);
 					headerTable.add(getSmallText(address.getName()), headerColumn, hRow++);
-					Collection prices = getProductPriceHome().findProductPrices(product.getID(), tFrames[i].getID(), address.getID(), true);
+					Collection prices = getProductPriceBusiness().getProductPrices(product.getID(), tFrames[i].getID(), address.getID(), true, _stamp);
 					Iterator iter = prices.iterator();
 					ProductPrice pprice;
 					while (iter.hasNext()) {
@@ -1598,7 +1598,7 @@ public abstract class BookingForm extends TravelManager{
 				headerTable.setCellpaddingBottom(headerColumn, hRow, 1);
 				headerTable.setCellpaddingLeft(headerColumn, hRow, 10);
 				headerTable.add(getSmallText(tFrames[i].getName()), headerColumn, hRow++);
-				Collection prices = getProductPriceHome().findProductPrices(product.getID(), tFrames[i].getID(), -1, true);
+				Collection prices = getProductPriceBusiness().getProductPrices(product.getID(), tFrames[i].getID(), -1, true, _stamp);
 				Iterator iter = prices.iterator();
 				ProductPrice pprice;
 				while (iter.hasNext()) {
@@ -2247,12 +2247,12 @@ public abstract class BookingForm extends TravelManager{
 		return icelandCountryID;
 	}
 	
-	public Collection getPostalCodeIds(IWContext iwc) throws IDOLookupException, FinderException {
+	public Collection getPostalCodeIds(IWContext iwc) throws FinderException, RemoteException {
 		String sCountryID = iwc.getParameter(AbstractSearchForm.PARAMETER_COUNTRY_PC_D);
 		String sCityID = iwc.getParameter(AbstractSearchForm.PARAMETER_CITY_PC_D);
 		String sPostalCode = iwc.getParameter(AbstractSearchForm.PARAMETER_POSTAL_CODE_NAME);
 		
-		PostalCodeHome pcHome = (PostalCodeHome) IDOLookup.getHome(PostalCode.class, getProductPriceHome().getDatasource());
+		PostalCodeHome pcHome = (PostalCodeHome) IDOLookup.getHome(PostalCode.class, getProductPriceBusiness().getProductPriceHome().getDatasource());
 
 		Collection postalCodes = null; 
 		if (sCountryID != null) {
@@ -3014,14 +3014,14 @@ public abstract class BookingForm extends TravelManager{
 			timeframeId = tFrame.getID();
 		}
 
-		Collection pPrices = getProductPriceHome().findProductPrices(this._productId, timeframeId, addressId, onlineOnly);
+		Collection pPrices = getProductPriceBusiness().getProductPrices(this._productId, timeframeId, addressId, onlineOnly, _stamp);
 		Iterator iter = pPrices.iterator();
 		ProductPrice price;
 		while (iter.hasNext()) {
 			price = (ProductPrice) iter.next();
 			form.maintainParameter("priceCategory"+price.getPrimaryKey().toString());
 		}
-		Collection misc = getProductPriceHome().findMiscellaneousPrices(this._productId, -1, -1, onlineOnly);
+		Collection misc = getProductPriceBusiness().getMiscellaneousPrices(this._productId, -1, -1, onlineOnly);
 		iter = misc.iterator();
 		while (iter.hasNext()) {
 			price = (ProductPrice) iter.next();
@@ -3175,7 +3175,7 @@ public abstract class BookingForm extends TravelManager{
 		}
 		
 		if (iMany == 0) {
-			Collection pPrices = getProductPriceHome().findProductPrices(_service.getID(), -1, -1, onlineOnly, key);
+			Collection pPrices = getProductPriceBusiness().getProductPrices(_service.getID(), -1, -1, onlineOnly, key, _stamp);
 			//    ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), timeframeId, iAddressId, onlineOnly);
 			int current = 0;
 			String fAddressID = null;
@@ -3416,8 +3416,8 @@ public abstract class BookingForm extends TravelManager{
 		Collection prices = null;
 		Collection misc = null;
 		Timeframe[] timeframes = _product.getTimeframes();
-		prices = getProductPriceHome().findProductPrices(_service.getID(), -1,iAddressId, onlineOnly, key);
-		misc = getProductPriceHome().findMiscellaneousPrices(_service.getID(), -1, iAddressId, onlineOnly);
+		prices = getProductPriceBusiness().getProductPrices(_service.getID(), -1,iAddressId, onlineOnly, key, _stamp);
+		misc = getProductPriceBusiness().getMiscellaneousPrices(_service.getID(), -1, iAddressId, onlineOnly);
 		
 		int pricesLength = prices.size();
 		int miscLength = misc.size();
@@ -3871,7 +3871,7 @@ public abstract class BookingForm extends TravelManager{
 			Timeframe frame = getProductBusiness(iwc).getTimeframe(_product, timeframes, stamp, -1);
 			if (frame != null) {
 				int categoryID = pPrice.getPriceCategoryID();
-				Collection prices = getProductPriceHome().findProductPrices(_service.getID(), frame.getID(),iAddressId, onlineOnly, key);
+				Collection prices = getProductPriceBusiness().getProductPrices(_service.getID(), frame.getID(),iAddressId, onlineOnly, key, stamp);
 				Iterator iter = prices.iterator();
 				ProductPrice price;
 				while (iter.hasNext()) {
@@ -3883,7 +3883,7 @@ public abstract class BookingForm extends TravelManager{
 						}
 //					}
 				} 
-				Collection misc = getProductPriceHome().findMiscellaneousPrices(_service.getID(), frame.getID(), iAddressId, onlineOnly);
+				Collection misc = getProductPriceBusiness().getMiscellaneousPrices(_service.getID(), frame.getID(), iAddressId, onlineOnly);
 				iter = misc.iterator();
 				while (iter.hasNext()) {
 //				if (misc != null || misc.length > 0) {
@@ -4215,8 +4215,8 @@ public abstract class BookingForm extends TravelManager{
 			tFrameID = tFrame.getID();
 		}
 
-		prices = getProductPriceHome().findProductPrices(product.getID(), tFrameID, depAddrID, true);
-		misc = getProductPriceHome().findMiscellaneousPrices(product.getID(), tFrameID, depAddrID, true);
+		prices = getProductPriceBusiness().getProductPrices(product.getID(), tFrameID, depAddrID, true, _stamp);
+		misc = getProductPriceBusiness().getMiscellaneousPrices(product.getID(), tFrameID, depAddrID, true);
 			//			prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddressId), true);
 			//			misc = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddressId), true);
 		

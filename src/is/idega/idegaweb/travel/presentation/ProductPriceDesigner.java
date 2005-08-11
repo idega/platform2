@@ -14,6 +14,7 @@ import com.idega.block.trade.stockroom.data.PriceCategory;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductHome;
 import com.idega.block.trade.stockroom.data.ProductPrice;
+import com.idega.block.trade.stockroom.data.ProductPriceHome;
 import com.idega.block.trade.stockroom.data.Settings;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.block.trade.stockroom.data.Timeframe;
@@ -22,6 +23,8 @@ import com.idega.block.trade.stockroom.data.TravelAddressHome;
 import com.idega.business.IBOLookup;
 import com.idega.data.IDOFinderException;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
+import com.idega.data.IDORuntimeException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
@@ -62,7 +65,7 @@ public class ProductPriceDesigner extends TravelWindow {
   private Settings _settings;
   private Supplier _supplier;
   private int _currencyId = -1;
-  private int _visibility = 3;
+  private int[] _visibility = {3};
   
   private BookingForm bf;
 
@@ -284,7 +287,7 @@ public class ProductPriceDesigner extends TravelWindow {
     DecimalFormat df = new DecimalFormat("0.00");
     if (!iter.hasNext()) {
     	if (tFrames.length == 0) {
-	      Collection prices = getProductPriceHome().findProductPrices(((Integer)_product.getPrimaryKey()).intValue(), -1, -1,  0, _currencyId, _visibility);
+	      Collection prices = getProductPriceBusiness().getProductPrices(((Integer)_product.getPrimaryKey()).intValue(), -1, -1,  _currencyId, _visibility, null, null);
 	      for (int i = 0; i < cats.length; i++) {
 	        try {
 	          table.add(new HiddenInput(PARAMETER_TIMEFRAME_ID, "-1"),1,row);
@@ -309,7 +312,7 @@ public class ProductPriceDesigner extends TravelWindow {
 	        table.add(timeframeText,3,row);
 	        table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
 
-		      Collection prices = getProductPriceHome().findProductPrices(((Integer)_product.getPrimaryKey()).intValue(), tFrames[i].getID(), -1,  0, _currencyId, _visibility);
+		      Collection prices = getProductPriceBusiness().getProductPrices(((Integer)_product.getPrimaryKey()).intValue(), tFrames[i].getID(), -1, _currencyId, _visibility, null, null);
 		      for (int p = 0; p < cats.length; p++) {
 		        try {
 		          table.add(new HiddenInput(PARAMETER_TIMEFRAME_ID, Integer.toString(tFrames[i].getID() ) ),1,row);
@@ -347,7 +350,7 @@ public class ProductPriceDesigner extends TravelWindow {
         table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
         table.setRowColor(row, TravelManager.backgroundColor);
 
-        Collection prices = getProductPriceHome().findProductPrices(((Integer)_product.getPrimaryKey()).intValue(), tFrames[k].getID(), address.getID(),  0, _currencyId, _visibility);
+        Collection prices = getProductPriceBusiness().getProductPrices(((Integer)_product.getPrimaryKey()).intValue(), tFrames[k].getID(), address.getID(), _currencyId, _visibility, null, null);
         for (int i = 0; i < cats.length; i++) {
           try {
             table.add(new HiddenInput(PARAMETER_TIMEFRAME_ID, Integer.toString(tFrames[k].getID())),1,row);
@@ -386,7 +389,7 @@ public class ProductPriceDesigner extends TravelWindow {
 		  table.setRowColor(row, TravelManager.backgroundColor);
 		}
 		
-		Collection prices = getProductPriceHome().findMiscellaneousPrices(((Integer)_product.getPrimaryKey()).intValue(), tFrameId, addressId, false, _currencyId);
+		Collection prices = getProductPriceBusiness().getMiscellaneousPrices(((Integer)_product.getPrimaryKey()).intValue(), tFrameId, addressId, false, _currencyId);
 		for (int i = 0; i < misc.length; i++) {
 		  table.add(new HiddenInput(PARAMETER_TIMEFRAME_ID, Integer.toString(tFrameId)),1,row);
 		  table.add(new HiddenInput(PARAMETER_ADDRESS_ID, Integer.toString(addressId)),1,row);
@@ -415,7 +418,7 @@ public class ProductPriceDesigner extends TravelWindow {
 		//System.out.println("[ProductPriceDesigner] timeframId = "+tFrameId);
 		//System.out.println("[ProductPriceDesigner] addressId  = "+addressId);
 		
-		Collection prices = getProductPriceHome().findProductPrices(((Integer)_product.getPrimaryKey()).intValue(), tFrameId, addressId, false, 0, _currencyId, bf.getPriceCategorySearchKey());
+		Collection prices = getProductPriceBusiness().getProductPrices(((Integer)_product.getPrimaryKey()).intValue(), tFrameId, addressId, _currencyId, false, bf.getPriceCategorySearchKey(), null);
 		for (int i = 0; i < specials.length; i++) {
 		  table.add(new HiddenInput(PARAMETER_TIMEFRAME_ID, Integer.toString(tFrameId)),1,row);
 		  table.add(new HiddenInput(PARAMETER_ADDRESS_ID, Integer.toString(addressId)),1,row);
@@ -587,4 +590,13 @@ public class ProductPriceDesigner extends TravelWindow {
     return link;
   }
 
+  protected ProductPriceHome getProductPriceHome() {
+	  try {
+		return (ProductPriceHome) IDOLookup.getHome(ProductPrice.class);
+		}
+		catch (IDOLookupException e) {
+			throw new IDORuntimeException(e);
+		}
+	}
+  
 }

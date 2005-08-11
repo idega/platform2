@@ -11,23 +11,19 @@ import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
 import is.idega.idegaweb.travel.service.business.BookingBusiness;
 import is.idega.idegaweb.travel.service.business.ProductCategoryFactory;
 import is.idega.idegaweb.travel.service.business.ServiceHandler;
-
 import java.rmi.RemoteException;
 import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-
 import javax.ejb.FinderException;
-
 import com.idega.block.creditcard.business.CreditCardBusiness;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
+import com.idega.block.trade.stockroom.business.ProductPriceBusiness;
 import com.idega.block.trade.stockroom.business.ResellerManager;
 import com.idega.block.trade.stockroom.business.SupplierManagerBusiness;
 import com.idega.block.trade.stockroom.business.TradeConstants;
 import com.idega.block.trade.stockroom.data.Product;
-import com.idega.block.trade.stockroom.data.ProductPrice;
-import com.idega.block.trade.stockroom.data.ProductPriceHome;
 import com.idega.block.trade.stockroom.data.Reseller;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.block.trade.stockroom.data.SupplierHome;
@@ -36,8 +32,6 @@ import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.accesscontrol.business.NotLoggedOnException;
 import com.idega.data.IDOLookup;
-import com.idega.data.IDOLookupException;
-import com.idega.data.IDORuntimeException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -364,12 +358,21 @@ public class TravelBlock extends Block {
 		}
   }
   
-  protected ProductPriceHome getProductPriceHome() {
+//  protected ProductPriceHome getProductPriceHome() {
+//	  try {
+//		return (ProductPriceHome) IDOLookup.getHome(ProductPrice.class);
+//	}
+//	catch (IDOLookupException e) {
+//		throw new IDORuntimeException(e);
+//	}
+//  }
+  
+  protected ProductPriceBusiness getProductPriceBusiness() {
 	  try {
-		return (ProductPriceHome) IDOLookup.getHome(ProductPrice.class);
+		return (ProductPriceBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ProductPriceBusiness.class);
 	}
-	catch (IDOLookupException e) {
-		throw new IDORuntimeException(e);
+	catch (IBOLookupException e) {
+		throw new IBORuntimeException(e);
 	}
   }
 }

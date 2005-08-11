@@ -148,11 +148,11 @@ public class HotelBookingForm extends BookingForm {
     int timeframeId = -1;
     if (tFrame != null) {
       timeframeId = tFrame.getID();
-      prices = getProductPriceHome().findProductPrices(_service.getID(), tFrame.getID(), addressId, false);
-      misc = getProductPriceHome().findMiscellaneousPrices(_service.getID(), tFrame.getID(), addressId, false);
+      prices = getProductPriceBusiness().getProductPrices(_service.getID(), tFrame.getID(), addressId, false, _stamp);
+      misc = getProductPriceBusiness().getMiscellaneousPrices(_service.getID(), tFrame.getID(), addressId, false);
     }else {
-      prices = getProductPriceHome().findProductPrices(_service.getID(), -1, -1, false);
-      misc = getProductPriceHome().findMiscellaneousPrices(_service.getID(), -1, -1, false);
+      prices = getProductPriceBusiness().getProductPrices(_service.getID(), -1, -1, false, _stamp);
+      misc = getProductPriceBusiness().getMiscellaneousPrices(_service.getID(), -1, -1, false);
     }
 
     if (!prices.isEmpty()) {
@@ -689,11 +689,11 @@ public class HotelBookingForm extends BookingForm {
       int timeframeId = -1;
       if (tFrame != null) {
       	timeframeId = tFrame.getID();
-        prices = getProductPriceHome().findProductPrices(_service.getID(), timeframeId, -1, true);
-        misc = getProductPriceHome().findMiscellaneousPrices(_service.getID(), timeframeId, -1, true);
+        prices = getProductPriceBusiness().getProductPrices(_service.getID(), timeframeId, -1, true, _stamp);
+        misc = getProductPriceBusiness().getMiscellaneousPrices(_service.getID(), timeframeId, -1, true);
       }else {
-        prices = getProductPriceHome().findProductPrices(_service.getID(), -1, -1, true);
-        misc = getProductPriceHome().findMiscellaneousPrices(_service.getID(), -1, -1, true);
+        prices = getProductPriceBusiness().getProductPrices(_service.getID(), -1, -1, true, _stamp);
+        misc = getProductPriceBusiness().getMiscellaneousPrices(_service.getID(), -1, -1, true);
       }
 
 
@@ -1258,11 +1258,11 @@ public class HotelBookingForm extends BookingForm {
 	  int timeframeId = -1;
 	  if (tFrame != null) {
 	  	timeframeId = tFrame.getID();
-	    prices = getProductPriceHome().findProductPrices(_service.getID(), timeframeId, -1, true);
-	    misc = getProductPriceHome().findMiscellaneousPrices(_service.getID(), timeframeId, -1, true);
+	    prices = getProductPriceBusiness().getProductPrices(_service.getID(), timeframeId, -1, true, fromStamp);
+	    misc = getProductPriceBusiness().getMiscellaneousPrices(_service.getID(), timeframeId, -1, true);
 	  }else {
-	    prices = getProductPriceHome().findProductPrices(_service.getID(), -1, -1, true);
-	    misc = getProductPriceHome().findMiscellaneousPrices(_service.getID(), -1, -1, true);
+	    prices = getProductPriceBusiness().getProductPrices(_service.getID(), -1, -1, true, fromStamp);
+	    misc = getProductPriceBusiness().getMiscellaneousPrices(_service.getID(), -1, -1, true);
 	  }
   
 /*    ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(this.product.getID(), true);
@@ -1570,9 +1570,9 @@ public class HotelBookingForm extends BookingForm {
 
     Collection pPrices = null;
     if (tFrame == null) {
-      pPrices = getProductPriceHome().findProductPrices(_service.getID(), -1, -1, onlineOnly, key);
+      pPrices = getProductPriceBusiness().getProductPrices(_service.getID(), -1, -1, onlineOnly, key, _stamp);
     }else {
-      pPrices = getProductPriceHome().findProductPrices(_service.getID(), tFrame.getID(), -1, onlineOnly, key);
+      pPrices = getProductPriceBusiness().getProductPrices(_service.getID(), tFrame.getID(), -1, onlineOnly, key, _stamp);
     }
     
     if ( iMany == 0) {
