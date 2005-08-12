@@ -1,5 +1,5 @@
 /*
- * $Id: MealApplication.java,v 1.1 2005/08/10 23:03:11 laddi Exp $
+ * $Id: MealApplication.java,v 1.2 2005/08/12 08:56:07 gimmi Exp $
  * Created on Aug 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -34,10 +34,10 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2005/08/10 23:03:11 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/12 08:56:07 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class MealApplication extends MealBlock {
 	
@@ -281,6 +281,75 @@ public class MealApplication extends MealBlock {
 		
 		return table;
 	}
+	/**
+	 * 
+	 * @param month
+	 * @param locale
+	 * @param value MonthValues ... this will be populated in the method
+	 * @return
+	 */
+	private Table getMonthInfo(IWTimestamp month, Locale locale, MonthValues values) {
+		Table table = new Table();
+		table.setCellpadding(0);
+		table.setCellspacing(0);
+		int row = 1;
+		
+		// TODO populate MonthValues and list um the months
+		values.getAmount(); // to remove 'unused variable' warning
+		
+		IWCalendar calendar = new IWCalendar();
+		
+		table.add(getSmallHeader(calendar.getMonthName(month.getMonth(), locale, IWCalendar.FULL)), 1, row++);
+		table.setHeight(row++, 6);
+		
+		CheckBox monday = getCheckBox(PARAMETER_DAYS + "_" + month.toString(), MealConstants.DAY_MONDAY);
+		monday.keepStatusOnAction(true);
+		CheckBox tuesday = getCheckBox(PARAMETER_DAYS + "_" + month.toString(), MealConstants.DAY_TUESDAY);
+		tuesday.keepStatusOnAction(true);
+		CheckBox wednesday = getCheckBox(PARAMETER_DAYS + "_" + month.toString(), MealConstants.DAY_WEDNESDAY);
+		wednesday.keepStatusOnAction(true);
+		CheckBox thursday = getCheckBox(PARAMETER_DAYS + "_" + month.toString(), MealConstants.DAY_THURSDAY);
+		thursday.keepStatusOnAction(true);
+		CheckBox friday = getCheckBox(PARAMETER_DAYS + "_" + month.toString(), MealConstants.DAY_FRIDAY);
+		friday.keepStatusOnAction(true);
+		
+		CheckBox milk = getCheckBox(PARAMETER_MILK + "_" + month.toString(), Boolean.TRUE.toString());
+		milk.keepStatusOnAction(true);
+		CheckBox fruits = getCheckBox(PARAMETER_FRUITS + "_" + month.toString(), Boolean.TRUE.toString());
+		fruits.keepStatusOnAction(true);
+		
+		table.add(monday, 1, row);
+		table.add(Text.getNonBrakingSpace(), 1, row);
+		table.add(getSmallText(localize("monday", "Monday")), 1, row++);
+		
+		table.add(tuesday, 1, row);
+		table.add(Text.getNonBrakingSpace(), 1, row);
+		table.add(getSmallText(localize("tuesday", "Tuesday")), 1, row++);
+		
+		table.add(wednesday, 1, row);
+		table.add(Text.getNonBrakingSpace(), 1, row);
+		table.add(getSmallText(localize("wednesday", "Wednesday")), 1, row++);
+		
+		table.add(thursday, 1, row);
+		table.add(Text.getNonBrakingSpace(), 1, row);
+		table.add(getSmallText(localize("thursday", "Thursday")), 1, row++);
+		
+		table.add(friday, 1, row);
+		table.add(Text.getNonBrakingSpace(), 1, row);
+		table.add(getSmallText(localize("friday", "Friday")), 1, row++);
+		
+		table.setHeight(row++, 6);
+		
+		table.add(milk, 1, row);
+		table.add(Text.getNonBrakingSpace(), 1, row);
+		table.add(getSmallText(localize("milk", "Milk")), 1, row++);
+		
+		table.add(fruits, 1, row);
+		table.add(Text.getNonBrakingSpace(), 1, row);
+		table.add(getSmallText(localize("fruits", "Fruits")), 1, row++);
+		
+		return table;
+	}
 	
 	private void showPhaseThree(IWContext iwc) throws RemoteException {
 		Form form = createForm(iwc, ACTION_PHASE_THREE);
@@ -337,6 +406,30 @@ public class MealApplication extends MealBlock {
 			table.setHeight(row++, 6);
 		}
 		
+		Table dayTable = new Table();
+		dayTable.setColumns(3);
+		dayTable.setCellspacing(5);
+		dayTable.setCellpadding(0);
+		dayTable.setWidth(Table.HUNDRED_PERCENT);
+		table.add(dayTable, 1, row++);
+		int dColumn = 1;
+		int dRow = 1;
+		
+		String[] months = iwc.getParameterValues(PARAMETER_MONTH);
+		MonthValues[] values = new MonthValues[months.length];
+		for (int i = 0; i < months.length; i++) {
+			IWTimestamp month = new IWTimestamp(months[i]);
+			dayTable.add(getMonthInfo(month, iwc.getCurrentLocale(), values[i]), dColumn++, dRow);
+			
+			if ((i + 1) % 3 == 0) {
+				dColumn = 1;
+				dRow++;
+			}
+		}
+		dayTable.setWidth(1, "33%");
+		dayTable.setWidth(2, "33%");
+		dayTable.setWidth(3, "33%");
+				
 		SubmitButton save = (SubmitButton) getButton(new SubmitButton(localize("save", "Save"), PARAMETER_ACTION, String.valueOf(ACTION_SAVE)));
 		SubmitButton next = (SubmitButton) getButton(new SubmitButton(localize("next", "Next"), PARAMETER_ACTION, String.valueOf(ACTION_PHASE_THREE)));
 		
