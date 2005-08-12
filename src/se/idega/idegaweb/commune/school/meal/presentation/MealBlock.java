@@ -1,5 +1,5 @@
 /*
- * $Id: MealBlock.java,v 1.1 2005/08/10 23:03:11 laddi Exp $
+ * $Id: MealBlock.java,v 1.2 2005/08/12 19:30:43 gimmi Exp $
  * Created on Aug 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -36,10 +36,10 @@ import com.idega.user.data.User;
 import com.idega.util.PersonalIDFormatter;
 
 /**
- * Last modified: $Date: 2005/08/10 23:03:11 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/12 19:30:43 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public abstract class MealBlock extends CommuneBlock {
 	
@@ -167,6 +167,9 @@ public abstract class MealBlock extends CommuneBlock {
 		table.add(getSmallHeader(localize("school", "School")), 1, row);
 		table.add(getSmallHeader(localize("group", "Group")), 2, row);
 		table.add(getSmallHeader(localize("email", "E-mail")), 3, row);
+		table.add(new Break(), 1, row);
+		table.add(new Break(), 2, row);
+		table.add(new Break(), 3, row);
 		if (school != null) {
 			table.add(getText(school.getSchoolName()), 1, row);
 		}
