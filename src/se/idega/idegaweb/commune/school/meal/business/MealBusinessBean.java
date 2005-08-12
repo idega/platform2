@@ -1,5 +1,5 @@
 /*
- * $Id: MealBusinessBean.java,v 1.2 2005/08/12 08:54:05 gimmi Exp $
+ * $Id: MealBusinessBean.java,v 1.3 2005/08/12 19:29:50 gimmi Exp $
  * Created on Aug 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -48,10 +48,10 @@ import com.idega.util.text.Name;
 
 
 /**
- * Last modified: $Date: 2005/08/12 08:54:05 $ by $Author: gimmi $
+ * Last modified: $Date: 2005/08/12 19:29:50 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class MealBusinessBean extends CaseBusinessBean implements CaseBusiness , MealBusiness{
 
@@ -157,6 +157,10 @@ public class MealBusinessBean extends CaseBusinessBean implements CaseBusiness ,
 			ie.printStackTrace();
 			return false;
 		}
+	}
+	
+	public MealPrice getMealPrice(School school, Date date) throws FinderException {
+		return getPriceHome().findBySchoolAndDate(school, date);
 	}
 	
 	public void storePrices(School school, Date validFrom, Date validTo, float dayPrice, float monthPrice, float milkPrice, float fruitPrice) throws IDOCreateException {
@@ -282,6 +286,7 @@ public class MealBusinessBean extends CaseBusinessBean implements CaseBusiness ,
 			choice.setSchool(school);
 			choice.setSeason(season);
 			choice.setComments(comments);
+			choice.setOwner(performer);
 			choice.setEmployee(user.equals(performer));
 			changeCaseStatus(choice, getCaseStatusOpenString(), performer);
 			
