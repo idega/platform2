@@ -1,5 +1,5 @@
 /*
- * $Id: MealApplication.java,v 1.2 2005/08/12 08:56:07 gimmi Exp $
+ * $Id: MealApplication.java,v 1.3 2005/08/12 19:31:42 gimmi Exp $
  * Created on Aug 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -16,7 +16,9 @@ import java.util.Locale;
 import java.util.Map;
 import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.school.meal.business.MonthValues;
+import se.idega.idegaweb.commune.school.meal.data.MealPrice;
 import se.idega.idegaweb.commune.school.meal.util.MealConstants;
+import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.business.IBORuntimeException;
@@ -34,10 +36,10 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2005/08/12 08:56:07 $ by $Author: gimmi $
+ * Last modified: $Date: 2005/08/12 19:31:42 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class MealApplication extends MealBlock {
 	
@@ -58,6 +60,7 @@ public class MealApplication extends MealBlock {
 	
 	private SchoolSeason season;
 	private SchoolClassMember placement;
+	private School school;
 	
 	private boolean iUseEmployeeView = false;
 
@@ -149,8 +152,8 @@ public class MealApplication extends MealBlock {
 		
 		table.setHeight(row++, 18);
 		
-		SubmitButton next = (SubmitButton) getButton(new SubmitButton(localize("next", "Next"), PARAMETER_ACTION, String.valueOf(ACTION_PHASE_TWO)));
-		
+		SubmitButton next = (SubmitButton) getButton(new SubmitButton(localize("next", "Next")));
+		next.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_PHASE_TWO));
 		table.add(next, 1, row);
 		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		table.setCellpaddingRight(1, row, 12);
@@ -210,8 +213,10 @@ public class MealApplication extends MealBlock {
 		
 		table.setHeight(row++, 18);
 		
-		SubmitButton previous = (SubmitButton) getButton(new SubmitButton(localize("previous", "Previous"), PARAMETER_ACTION, String.valueOf(ACTION_PHASE_ONE)));
-		SubmitButton next = (SubmitButton) getButton(new SubmitButton(localize("next", "Next"), PARAMETER_ACTION, String.valueOf(ACTION_PHASE_THREE)));
+		SubmitButton previous = (SubmitButton) getButton(new SubmitButton(localize("previous", "Previous")));
+		previous.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_PHASE_ONE));
+		SubmitButton next = (SubmitButton) getButton(new SubmitButton(localize("next", "Next")));
+		next.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_PHASE_THREE));
 		
 		table.add(previous, 1, row);
 		table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
@@ -288,66 +293,91 @@ public class MealApplication extends MealBlock {
 	 * @param value MonthValues ... this will be populated in the method
 	 * @return
 	 */
-	private Table getMonthInfo(IWTimestamp month, Locale locale, MonthValues values) {
+	private Table getMonthInfo(IWContext iwc, IWTimestamp month, Locale locale, MonthValues values) {
 		Table table = new Table();
 		table.setCellpadding(0);
 		table.setCellspacing(0);
 		int row = 1;
-		
-		// TODO populate MonthValues and list um the months
-		values.getAmount(); // to remove 'unused variable' warning
 		
 		IWCalendar calendar = new IWCalendar();
 		
 		table.add(getSmallHeader(calendar.getMonthName(month.getMonth(), locale, IWCalendar.FULL)), 1, row++);
 		table.setHeight(row++, 6);
 		
-		CheckBox monday = getCheckBox(PARAMETER_DAYS + "_" + month.toString(), MealConstants.DAY_MONDAY);
-		monday.keepStatusOnAction(true);
-		CheckBox tuesday = getCheckBox(PARAMETER_DAYS + "_" + month.toString(), MealConstants.DAY_TUESDAY);
-		tuesday.keepStatusOnAction(true);
-		CheckBox wednesday = getCheckBox(PARAMETER_DAYS + "_" + month.toString(), MealConstants.DAY_WEDNESDAY);
-		wednesday.keepStatusOnAction(true);
-		CheckBox thursday = getCheckBox(PARAMETER_DAYS + "_" + month.toString(), MealConstants.DAY_THURSDAY);
-		thursday.keepStatusOnAction(true);
-		CheckBox friday = getCheckBox(PARAMETER_DAYS + "_" + month.toString(), MealConstants.DAY_FRIDAY);
-		friday.keepStatusOnAction(true);
+		String[] days = iwc.getParameterValues(PARAMETER_DAYS + "_" + month.toString());
+		String fruits = iwc.getParameter(PARAMETER_FRUITS + "_" + month.toString());
+		String milk = iwc.getParameter(PARAMETER_MILK + "_" + month.toString());
+		if (days != null) {
+			for (int j = 0; j < days.length; j++) {
+				if (days[j].equals(MealConstants.DAY_MONDAY)) {
+					values.setMonday(true);
+				}
+				if (days[j].equals(MealConstants.DAY_TUESDAY)) {
+					values.setTuesday(true);
+				}
+				if (days[j].equals(MealConstants.DAY_WEDNESDAY)) {
+					values.setWednesday(true);
+				}
+				if (days[j].equals(MealConstants.DAY_THURSDAY)) {
+					values.setThursday(true);
+				}
+				if (days[j].equals(MealConstants.DAY_FRIDAY)) {
+					values.setFriday(true);
+				}
+			}
+		}
+		values.setFruits(fruits != null);
+		values.setMilk(milk != null);
+
+		MealPrice price = null;
+		try {
+			if (school == null) {
+				if (placement != null) {
+					school = placement.getSchoolClass().getSchool();
+				} else {
+					school = getUserBusiness().getFirstManagingSchoolForUser(getUser(iwc));
+				}
+			}
+			price = getBusiness().getMealPrice(school, month.getDate());
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
 		
-		CheckBox milk = getCheckBox(PARAMETER_MILK + "_" + month.toString(), Boolean.TRUE.toString());
-		milk.keepStatusOnAction(true);
-		CheckBox fruits = getCheckBox(PARAMETER_FRUITS + "_" + month.toString(), Boolean.TRUE.toString());
-		fruits.keepStatusOnAction(true);
-		
-		table.add(monday, 1, row);
-		table.add(Text.getNonBrakingSpace(), 1, row);
-		table.add(getSmallText(localize("monday", "Monday")), 1, row++);
-		
-		table.add(tuesday, 1, row);
-		table.add(Text.getNonBrakingSpace(), 1, row);
-		table.add(getSmallText(localize("tuesday", "Tuesday")), 1, row++);
-		
-		table.add(wednesday, 1, row);
-		table.add(Text.getNonBrakingSpace(), 1, row);
-		table.add(getSmallText(localize("wednesday", "Wednesday")), 1, row++);
-		
-		table.add(thursday, 1, row);
-		table.add(Text.getNonBrakingSpace(), 1, row);
-		table.add(getSmallText(localize("thursday", "Thursday")), 1, row++);
-		
-		table.add(friday, 1, row);
-		table.add(Text.getNonBrakingSpace(), 1, row);
-		table.add(getSmallText(localize("friday", "Friday")), 1, row++);
+		if (values.isMonday()) {
+			table.add(getSmallText(localize("monday", "Monday")), 1, row++);
+		}
+		if (values.isTuesday()) {
+			table.add(getSmallText(localize("tuesday", "Tuesday")), 1, row++);
+		}
+		if (values.isWednesday()) {
+			table.add(getSmallText(localize("wednesday", "Wednesday")), 1, row++);
+		}
+		if (values.isThursday()) {
+			table.add(getSmallText(localize("thursday", "Thursday")), 1, row++);
+		}
+		if (values.isFriday()) {
+			table.add(getSmallText(localize("friday", "Friday")), 1, row++);
+		}
 		
 		table.setHeight(row++, 6);
 		
-		table.add(milk, 1, row);
-		table.add(Text.getNonBrakingSpace(), 1, row);
-		table.add(getSmallText(localize("milk", "Milk")), 1, row++);
 		
-		table.add(fruits, 1, row);
-		table.add(Text.getNonBrakingSpace(), 1, row);
-		table.add(getSmallText(localize("fruits", "Fruits")), 1, row++);
-		
+		Table pTable = new Table();
+		pTable.setWidth("100%");
+		pTable.add(getSmallText(localize("meal", "Meal")), 1, 1);
+		pTable.add(getSmallText(localize("milk", "Milk")), 1, 2);
+		pTable.add(getSmallText(localize("fruits", "Fruits")), 1, 3);
+		if (price != null) {
+			pTable.add(getSmallText(new Integer((int) price.getMealPricePerDay()).toString()), 2, 1);
+			pTable.add(getSmallText(new Integer((int) price.getMilkPrice()).toString()), 2, 2);
+			pTable.add(getSmallText(new Integer((int) price.getFruitsPrice()).toString()), 2, 3);
+		}
+		pTable.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_RIGHT);
+		table.add(pTable, 1, row++);
 		return table;
 	}
 	
@@ -375,12 +405,15 @@ public class MealApplication extends MealBlock {
 		TextArea comments = (TextArea) getStyledInterface(new TextArea(PARAMETER_COMMENTS));
 		comments.setWidth(Table.HUNDRED_PERCENT);
 		comments.setRows(8);
+		comments.keepStatusOnAction();
 		table.add(comments, 1, row++);
 		
 		table.setHeight(row++, 18);
 		
-		SubmitButton previous = (SubmitButton) getButton(new SubmitButton(localize("previous", "Previous"), PARAMETER_ACTION, String.valueOf(ACTION_OVERVIEW)));
-		SubmitButton next = (SubmitButton) getButton(new SubmitButton(localize("next", "Next"), PARAMETER_ACTION, String.valueOf(ACTION_PHASE_TWO)));
+		SubmitButton previous = (SubmitButton) getButton(new SubmitButton(localize("previous", "Previous")));
+		previous.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_PHASE_TWO));
+		SubmitButton next = (SubmitButton) getButton(new SubmitButton(localize("next", "Next")));
+		next.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_OVERVIEW));
 		
 		table.add(previous, 1, row);
 		table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
@@ -416,26 +449,36 @@ public class MealApplication extends MealBlock {
 		int dRow = 1;
 		
 		String[] months = iwc.getParameterValues(PARAMETER_MONTH);
-		MonthValues[] values = new MonthValues[months.length];
+//		MonthValues[] values = new MonthValues[months.length];
+		float totalPrice = 0;
 		for (int i = 0; i < months.length; i++) {
 			IWTimestamp month = new IWTimestamp(months[i]);
-			dayTable.add(getMonthInfo(month, iwc.getCurrentLocale(), values[i]), dColumn++, dRow);
+			dayTable.setVerticalAlignment(dColumn, dRow, Table.VERTICAL_ALIGN_TOP);
+			MonthValues values = new MonthValues();
+			dayTable.add(getMonthInfo(iwc, month, iwc.getCurrentLocale(), values), dColumn++, dRow);
 			
+			totalPrice += getBusiness().getPriceForMonth(month.getDate(), school, values);
 			if ((i + 1) % 3 == 0) {
 				dColumn = 1;
 				dRow++;
 			}
 		}
+		if (dColumn != 1) {
+			++dRow;
+		}
+		dayTable.add(getSmallHeader(localize("total_payment", "Total payment")+ " : "+(int) totalPrice), 3, dRow);
 		dayTable.setWidth(1, "33%");
 		dayTable.setWidth(2, "33%");
 		dayTable.setWidth(3, "33%");
 				
-		SubmitButton save = (SubmitButton) getButton(new SubmitButton(localize("save", "Save"), PARAMETER_ACTION, String.valueOf(ACTION_SAVE)));
-		SubmitButton next = (SubmitButton) getButton(new SubmitButton(localize("next", "Next"), PARAMETER_ACTION, String.valueOf(ACTION_PHASE_THREE)));
+		SubmitButton save = (SubmitButton) getButton(new SubmitButton(localize("save", "Save")));
+		save.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_SAVE));
+		SubmitButton previous = (SubmitButton) getButton(new SubmitButton(localize("previous", "Previous")));
+		previous.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_PHASE_THREE));
 		
-		table.add(save, 1, row);
+		table.add(previous, 1, row);
 		table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
-		table.add(next, 1, row);
+		table.add(save, 1, row);
 		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		table.setCellpaddingRight(1, row, 12);
 
@@ -481,16 +524,19 @@ public class MealApplication extends MealBlock {
 	
 	private Form createForm(IWContext iwc, int actionPhase) {
 		Form form = new Form();
+		form.setMethod("POST");
 		form.maintainParameter(PARAMETER_MONTH);
 		form.maintainParameter(PARAMETER_COMMENTS);
 		form.addParameter(PARAMETER_ACTION, actionPhase);
 		
 		String[] months = iwc.getParameterValues(PARAMETER_MONTH);
-		for (int i = 0; i < months.length; i++) {
-			String month = months[i];
-			form.maintainParameter(PARAMETER_DAYS + "_" + month);
-			form.maintainParameter(PARAMETER_MILK + "_" + month);
-			form.maintainParameter(PARAMETER_FRUITS + "_" + month);
+		if (months != null) {
+			for (int i = 0; i < months.length; i++) {
+				String month = months[i];
+				form.maintainParameter(PARAMETER_DAYS + "_" + month);
+				form.maintainParameter(PARAMETER_MILK + "_" + month);
+				form.maintainParameter(PARAMETER_FRUITS + "_" + month);
+			}
 		}
 		
 		return form;
