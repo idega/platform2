@@ -1,5 +1,5 @@
 /*
- * $Id: MealBusinessBean.java,v 1.1 2005/08/10 23:03:11 laddi Exp $
+ * $Id: MealBusinessBean.java,v 1.2 2005/08/12 08:54:05 gimmi Exp $
  * Created on Aug 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -13,6 +13,7 @@ import is.idega.block.family.business.NoCustodianFound;
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.text.MessageFormat;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
@@ -40,16 +41,17 @@ import com.idega.business.IBORuntimeException;
 import com.idega.data.IDOCreateException;
 import com.idega.data.IDOException;
 import com.idega.user.data.User;
+import com.idega.util.IWCalendar;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
 import com.idega.util.text.Name;
 
 
 /**
- * Last modified: $Date: 2005/08/10 23:03:11 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/12 08:54:05 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class MealBusinessBean extends CaseBusinessBean implements CaseBusiness , MealBusiness{
 
@@ -209,6 +211,64 @@ public class MealBusinessBean extends CaseBusinessBean implements CaseBusiness ,
 	}
 	
 	public float getPriceForMonth(Date month, School school, MonthValues values) {
+		try {
+			MealPrice price = getPriceHome().findBySchoolAndDate(school, month);
+			
+			float monthPrice = price.getMealPricePerMonth();
+			if (monthPrice < 1) {
+				float mealPricePerDay = price.getMealPricePerDay();
+				IWCalendar cal = new IWCalendar(month);
+				IWTimestamp stamp = new IWTimestamp(1, cal.getMonth(), cal.getYear());
+				int monthLength = cal.getLengthOfMonth(cal.getMonth(), cal.getYear());
+				for (int i = 1; i <= monthLength; i++) {
+					int dow = stamp.getDayOfWeek();
+					switch (dow) {
+						case Calendar.MONDAY :
+							if (values.isMonday()) {
+								monthPrice += mealPricePerDay;
+							}
+							break;
+						case Calendar.TUESDAY :
+							if (values.isTuesday()) {
+								monthPrice += mealPricePerDay;
+							}
+							break;
+						case Calendar.WEDNESDAY :
+							if (values.isWednesday()) {
+								monthPrice += mealPricePerDay;
+							}
+							break;
+						case Calendar.THURSDAY :
+							if (values.isThursday()) {
+								monthPrice += mealPricePerDay;
+							}
+							break;
+						case Calendar.FRIDAY :
+							if (values.isFriday()) {
+								monthPrice += mealPricePerDay;
+							}
+							break;
+					}
+					stamp.addDays(1);
+				}
+			}
+			
+			if (values.isFruits()) {
+				monthPrice += price.getFruitsPrice();
+			}
+			
+			if (values.isMilk()) {
+				monthPrice += price.getFruitsPrice();
+			}
+			return monthPrice;
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		
+		// Saekja MealPrice....
+		// ath mealprice per day, mealprice per month
+		// fr‡ 1 til 31... er virkur dagur... hefur barn m‡lt’? ?ennan dag...
 		return 0;
 	}
 	
