@@ -33,6 +33,7 @@ import com.idega.data.EntityRepresentation;
 import com.idega.data.GenericEntity;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.CalendarParameters;
 import com.idega.idegaweb.presentation.StyledIWAdminWindow;
@@ -456,11 +457,16 @@ public class LedgerWindow extends StyledIWAdminWindow{
 				}
 				
 				
-				Link aLink = new Link(text);
+				Link aLink = null;
 				if(isInGroup == false) {
+					String theText = user.getName();
+					String notInGroup = IWMainApplication.getDefaultIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc).getLocalizedString("ledgerwindow.user_not_in_ledger_group","(Not in ledger group)");
+					
+					aLink = new Link(theText+" "+notInGroup);
 					aLink.setStyleClass("errorMessage");
 				}
 				else {
+					aLink = new Link(text);
 //					if(user.getMetaData(NEW_USER_IN_LEDGER) != null) {
 //						user.removeMetaData(NEW_USER_IN_LEDGER);
 //						user.setMetaData(NEW_USER_IN_LEDGER,"");
