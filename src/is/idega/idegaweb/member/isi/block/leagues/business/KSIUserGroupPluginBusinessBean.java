@@ -1,5 +1,5 @@
 /*
- * $Id: KSIUserGroupPluginBusinessBean.java,v 1.9 2005/07/27 14:01:48 eiki Exp $
+ * $Id: KSIUserGroupPluginBusinessBean.java,v 1.10 2005/08/15 16:47:40 eiki Exp $
  * Created on Jul 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -32,16 +32,18 @@ import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.user.data.Group;
+import com.idega.user.data.GroupRelation;
 import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 
 
 public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean implements UserGroupPlugInBusiness,IBOService,KSIUserGroupPluginBusiness{
-
+	
 	public static final String KSI_CLUB_EXCHANGE_ADMIN_UUID = "8f52479b-e980-11d9-ba1c-17f9583fc65f";
 	public static final String KSI_UUID = "f3d0b26f-79f1-11d9-bd42-054a20130abb";
 	public static final String KSI_CLUB_NUMBER = "14";
 	public static final String WS_RETURN_VALUE_SUCCESS = "success";
-
+	
 	public void afterUserCreateOrUpdate(User user, Group parentGroup) throws CreateException, RemoteException {
 		//after a player is registered he must be added to the KSI system via a webservice
 		boolean useWebService = useWebService(parentGroup);
@@ -56,24 +58,30 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 			}
 			
 			String clubNumber = club.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER);
+			String clubName = club.getName();
 			if( clubNumber!=null && !"".equals(clubNumber) ){
-				try {
-					String msg = registerPlayerToClubViaWebService(user.getPersonalID(),Integer.parseInt(clubNumber.trim()),club.getName());
-					if(!msg.equals(WS_RETURN_VALUE_SUCCESS)){
-						throw new CreateException("[KSIUserGroupPluginBusiness] - Failed to create the user in the KSI system (webservice) for pin:"+user.getPersonalID()+" in group : "+parentGroup.getUniqueId()+":"+parentGroup.getUniqueId()+" in club : "+club.getUniqueId()+":"+club.getUniqueId()+" The message was "+msg);
+				if(clubName!=null && !"".equals(clubName)){
+					try {
+						String msg = registerPlayerToClubViaWebService(user.getPersonalID(),Integer.parseInt(clubNumber.trim()),clubName);
+						if(!msg.equals(WS_RETURN_VALUE_SUCCESS)){
+							throw new CreateException("[KSIUserGroupPluginBusiness] - Failed to create the user in the KSI system (webservice) for pin:"+user.getPersonalID()+" in group : "+parentGroup.getUniqueId()+":"+parentGroup.getUniqueId()+" in club : "+club.getUniqueId()+":"+club.getUniqueId()+" The message was "+msg);
+						}
+					}
+					catch (NumberFormatException e) {
+						e.printStackTrace();
+						throw new CreateException("[KSIUserGroupPluginBusiness] - Failed to create the user in the KSI system for pin:"+user.getPersonalID()+" in group : "+parentGroup.getUniqueId()+":"+parentGroup.getUniqueId()+" in club : "+club.getUniqueId()+":"+club.getUniqueId()+" the club number is not an integer!");
+					}
+					catch (ServiceException e) {
+						e.printStackTrace();
+						throw new CreateException("[KSIUserGroupPluginBusiness] - Failed to create the user in the KSI system (webservice) for pin:"+user.getPersonalID()+" in group : "+parentGroup.getUniqueId()+":"+parentGroup.getUniqueId()+" in club : "+club.getUniqueId()+":"+club.getUniqueId()+". Webservice failed!");
 					}
 				}
-				catch (NumberFormatException e) {
-					e.printStackTrace();
-					throw new CreateException("[KSIUserGroupPluginBusiness] - Failed to create the user in the KSI system for pin:"+user.getPersonalID()+" in group : "+parentGroup.getUniqueId()+":"+parentGroup.getUniqueId()+" in club : "+club.getUniqueId()+":"+club.getUniqueId()+" the club number is not an integer!");
-				}
-				catch (ServiceException e) {
-					e.printStackTrace();
-					throw new CreateException("[KSIUserGroupPluginBusiness] - Failed to create the user in the KSI system (webservice) for pin:"+user.getPersonalID()+" in group : "+parentGroup.getUniqueId()+":"+parentGroup.getUniqueId()+" in club : "+club.getUniqueId()+":"+club.getUniqueId()+". Webservice failed!");
+				else{
+					throw new CreateException("[KSIUserGroupPluginBusiness] - No name was found for target group's club.");
 				}
 			}
 			else{
-				throw new CreateException("[KSIUserGroupPluginBusiness] - No club number found for target group's club.");
+				throw new CreateException("[KSIUserGroupPluginBusiness] - No club number was found for target group's club.");
 			}
 		}
 	}
@@ -165,11 +173,11 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 		
 		return errorMessage;
 	}
-
+	
 	protected boolean isRegisteredPlayerInOtherClubThanTargetGroupBelongsTo(User user, Group targetGroup) throws RemoteException, FinderException {
 		
 		MemberUserBusiness biz = getMemberUserBusiness();
-			
+		
 		Group clubForTargetGroup = biz.getClubForGroup(targetGroup);
 		Group league = getLeagueForGroup(targetGroup);
 		String leagueNR = league.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER);
@@ -194,12 +202,12 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 				}
 			}
 		}
-	
+		
 		
 		
 		return false;	
 	}
-
+	
 	
 	protected boolean useWebService(Group targetGroup) throws RemoteException {
 		if(targetGroup==null || !IWMemberConstants.GROUP_TYPE_CLUB_PLAYER.equals(targetGroup.getGroupType())){
@@ -208,7 +216,7 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 //		KSI is number 14 and this uuid is from felixsport.is
 		return isCorrectLeague(targetGroup,KSI_CLUB_NUMBER,KSI_UUID);
 	}
-
+	
 	/**
 	 * @param clubNumber
 	 * @param uuid
@@ -234,7 +242,7 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 		
 		return false;
 	}
-
+	
 	/**
 	 * @param targetGroup
 	 * @param biz
@@ -266,7 +274,7 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 		
 		return league;
 	}
-
+	
 	/**
 	 * Calls the KSI webservice with the players personalId as a parameter. The service will return -1 if not found but the club number if found.
 	 * @param personalId
@@ -304,6 +312,7 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 		
 		if(error==0 || error==-2){
 			return WS_RETURN_VALUE_SUCCESS;
+			//-2 is really an error and the player shouldn't be registered however we already checked if it was allowed...
 		}
 		else{
 			return error+" "+text;
@@ -326,8 +335,6 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 		return null;
 	}
 	
-	
-
 	/**
 	 * @param user
 	 * @param playerRegisteredInOtherClubInWebService 
@@ -351,7 +358,7 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 //		ß Or_sending birtist á skjánum: “Jón Jónsson, kt. 123456-7890, er nú _egar skrá_ur í Knattspyrnufélagi_ X.”
 //		ß Hva› me› ﬂegar menn eru ﬂegar skrá›ir í felix í ö›ru félagi
 		boolean icelandicNationality = hasIcelandicCitizenship(user);
-
+		
 		
 		if(!icelandicNationality && !usingWebService){
 			return "The player does not have an Icelandic citizenship and might still have a foreign players permit. Please contact the league and ask for a club member exchange.";
@@ -375,8 +382,8 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 		
 		return null;
 	}
-
-
+	
+	
 	/**
 	 * @param user
 	 * @param register
@@ -414,15 +421,11 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 	}
 	
 //	public CalBusiness getCalBusiness() throws IBOLookupException{
-//		return (CalBusiness) getServiceInstance(CalBusiness.class);
+//	return (CalBusiness) getServiceInstance(CalBusiness.class);
 //	}
 	
 	public String doClubMemberExchange(String personalIdOfPlayer, String clubNumberToRegisterTo, String dateOfActivation) throws RemoteException {
-		//TODO emaila á klúbba?
-		//TODO getMemberUserBusiness().moveUserBetweenDivisions(user,fromDiv,toDiv,term,init,iwc);
-		//TODO setja í kladda?
-		//TODO USE DATE!
-		//TODO is second date missing?
+		
 		UserBusiness biz = getUserBusiness();
 		User ksiUser = null;
 		User player = null;
@@ -441,10 +444,7 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 			return "2-Could not find person with the personalId: "+personalIdOfPlayer+" in the database!";
 		}
 		
-		//TODO USE!
 		Date date = Date.valueOf(dateOfActivation);
-		System.out.println("KSIWS todo use date: "+date);
-		
 		
 		Collection clubs = getGroupBusiness().getGroupsByMetaDataKeyAndValue(IWMemberConstants.META_DATA_CLUB_NUMBER,clubNumberToRegisterTo);
 		Group clubTo = null;
@@ -463,7 +463,20 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 					try {
 						Group clubForGroup = getMemberUserBusiness().getClubForGroup(group);
 						if(!clubForGroup.equals(clubTo)){
-							getUserBusiness().removeUserFromGroup(player,group,ksiUser);
+							Collection col = getGroupBusiness().getGroupRelationHome().findGroupsRelationshipsContainingBiDirectional( ((Integer)group.getPrimaryKey()).intValue(), ((Integer)player.getPrimaryKey()).intValue());
+							
+							if(col!=null && !col.isEmpty()){
+								Iterator iterator = col.iterator();
+								while (iterator.hasNext()) {
+									GroupRelation rel = (GroupRelation) iterator.next();
+									if(!rel.isPassive()){
+										rel.setPassivePending();
+										rel.setTerminationDate((new IWTimestamp(date)).getTimestamp());
+										rel.setPassiveBy(((Integer)ksiUser.getPrimaryKey()).intValue());
+										rel.store();
+									}
+								}
+							}
 						}
 					}
 					catch (Exception e){
