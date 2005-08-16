@@ -1,6 +1,6 @@
 /*
- * $Id: Participant.java,v 1.5 2005/07/27 10:55:52 laddi Exp $
- * Created on Jul 27, 2005
+ * $Id: Participant.java,v 1.6 2005/08/16 14:09:36 laddi Exp $
+ * Created on Aug 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -15,10 +15,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/07/27 10:55:52 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/16 14:09:36 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public interface Participant extends IDOEntity {
 
@@ -76,6 +76,16 @@ public interface Participant extends IDOEntity {
 	 * @see is.idega.idegaweb.marathon.data.ParticipantBMPBean#getChipTime
 	 */
 	public int getChipTime();
+
+	/**
+	 * @see is.idega.idegaweb.marathon.data.ParticipantBMPBean#getSplitTime1
+	 */
+	public int getSplitTime1();
+
+	/**
+	 * @see is.idega.idegaweb.marathon.data.ParticipantBMPBean#getSplitTime2
+	 */
+	public int getSplitTime2();
 
 	/**
 	 * @see is.idega.idegaweb.marathon.data.ParticipantBMPBean#getChipOwnershipStatus
@@ -191,6 +201,16 @@ public interface Participant extends IDOEntity {
 	 * @see is.idega.idegaweb.marathon.data.ParticipantBMPBean#setChipTime
 	 */
 	public void setChipTime(int chipTime);
+
+	/**
+	 * @see is.idega.idegaweb.marathon.data.ParticipantBMPBean#setSplitTime1
+	 */
+	public void setSplitTime1(int splitTime);
+
+	/**
+	 * @see is.idega.idegaweb.marathon.data.ParticipantBMPBean#setSplitTime2
+	 */
+	public void setSplitTime2(int splitTime);
 
 	/**
 	 * @see is.idega.idegaweb.marathon.data.ParticipantBMPBean#setChipOwnershipStatus

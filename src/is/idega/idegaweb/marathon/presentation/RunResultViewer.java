@@ -3,13 +3,16 @@
  */
 package is.idega.idegaweb.marathon.presentation;
 
+import is.idega.idegaweb.marathon.business.ConverterUtility;
 import is.idega.idegaweb.marathon.business.RunBusiness;
 import is.idega.idegaweb.marathon.business.RunGroup;
 import is.idega.idegaweb.marathon.business.RunGroupComparator;
 import is.idega.idegaweb.marathon.business.RunGroupMap;
+import is.idega.idegaweb.marathon.data.Distance;
 import is.idega.idegaweb.marathon.data.Participant;
+import is.idega.idegaweb.marathon.data.Run;
+import is.idega.idegaweb.marathon.data.Year;
 import is.idega.idegaweb.marathon.util.IWMarathonConstants;
-
 import java.rmi.RemoteException;
 import java.text.Collator;
 import java.util.ArrayList;
@@ -20,9 +23,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import javax.ejb.FinderException;
-
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.core.location.data.Country;
@@ -64,14 +65,14 @@ public class RunResultViewer extends Block {
 	private static final String DARK_COLOR = "#E9E9E9";
 	private static final String LIGHT_COLOR = "#FFFFFF";
 
-	private static final int COLUMN_COUNT = 13;
+	private int COLUMN_COUNT = 13;
 	private static final int HEADLINE_SIZE = 12;
 
 	private static String _groupYear;
 	private static String _groupDistance;
 
-	private Group distance;
-	private Group year;
+	private Distance distance;
+	private Year year;
 
 	private Collator _collator;
 	private IWContext _iwc;
@@ -82,7 +83,7 @@ public class RunResultViewer extends Block {
 	private UserBusiness _userBiz;
 
 	private String runPK;
-	private Group run;
+	private Run run;
 	private int sortBy = IWMarathonConstants.RYSDD_TOTAL;
 
 	private SelectorUtility util;
@@ -94,7 +95,7 @@ public class RunResultViewer extends Block {
 		util = new SelectorUtility();
 
 		if (runPK != null) {
-			run = getGroupBiz().getGroupByGroupID(Integer.parseInt(runPK));
+			run = ConverterUtility.getInstance().convertGroupToRun(new Integer(runPK));
 		}
 
 		if (run == null) {
@@ -108,10 +109,7 @@ public class RunResultViewer extends Block {
 		
 		if (iwc.isParameterSet(IWMarathonConstants.GROUP_TYPE_RUN_YEAR)) {
 			try {
-				year = getGroupBiz().getGroupByGroupID(Integer.parseInt(iwc.getParameter(IWMarathonConstants.GROUP_TYPE_RUN_YEAR)));
-			}
-			catch (RemoteException e) {
-				e.printStackTrace();
+				year = ConverterUtility.getInstance().convertGroupToYear(new Integer(iwc.getParameter(IWMarathonConstants.GROUP_TYPE_RUN_YEAR)));
 			}
 			catch (FinderException e) {
 				e.printStackTrace();
@@ -120,10 +118,8 @@ public class RunResultViewer extends Block {
 
 		if (iwc.isParameterSet(IWMarathonConstants.GROUP_TYPE_RUN_DISTANCE)) {
 			try {
-				distance = getGroupBiz().getGroupByGroupID(Integer.parseInt(iwc.getParameter(IWMarathonConstants.GROUP_TYPE_RUN_DISTANCE)));
-			}
-			catch (RemoteException e) {
-				e.printStackTrace();
+				distance = ConverterUtility.getInstance().convertGroupToDistance(new Integer(iwc.getParameter(IWMarathonConstants.GROUP_TYPE_RUN_DISTANCE)));
+				COLUMN_COUNT += (distance.getNumberOfSplits() * 2);
 			}
 			catch (FinderException e) {
 				e.printStackTrace();
@@ -347,29 +343,57 @@ public class RunResultViewer extends Block {
 	}
 
 	private int insertRunIntoTable(Table table, int row, Participant run, int num, int participantRow) {
-		table.add(getRunnerRowText(Integer.toString(num)), 1, row);
-		table.setStyleClass(1, row, getStyleName(STYLENAME_LIST_ROW));
-		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_CENTER);
+		int column = 1;
+		
+		table.add(getRunnerRowText(Integer.toString(num)), column, row);
+		table.setStyleClass(column, row, getStyleName(STYLENAME_LIST_ROW));
+		table.setAlignment(column++, row, Table.HORIZONTAL_ALIGN_CENTER);
 
+		column++;
+		
 		String runTime = getTimeStringFromRunTime(run.getRunTime());
-		table.add(getRunnerRowText(runTime), 3, row);
-		table.setStyleClass(3, row, getStyleName(STYLENAME_LIST_ROW));
-		table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_CENTER);
+		table.add(getRunnerRowText(runTime), column, row);
+		table.setStyleClass(column, row, getStyleName(STYLENAME_LIST_ROW));
+		table.setAlignment(column++, row, Table.HORIZONTAL_ALIGN_CENTER);
 
+		column++;
+		
 		String chipTime = run.getChipTime() != -1 ? getTimeStringFromRunTime(run.getChipTime()) : "-";
-		table.add(getRunnerRowText(chipTime), 5, row);
-		table.setStyleClass(5, row, getStyleName(STYLENAME_LIST_ROW));
-		table.setAlignment(5, row, Table.HORIZONTAL_ALIGN_CENTER);
+		table.add(getRunnerRowText(chipTime), column, row);
+		table.setStyleClass(column, row, getStyleName(STYLENAME_LIST_ROW));
+		table.setAlignment(column++, row, Table.HORIZONTAL_ALIGN_CENTER);
 
+		if (distance != null && distance.getNumberOfSplits() >= 1) {
+			String splitTime = run.getSplitTime1() != -1 ? getTimeStringFromRunTime(run.getSplitTime1()) : "-";
+			table.add(getRunnerRowText(splitTime), column, row);
+			table.setStyleClass(column, row, getStyleName(STYLENAME_LIST_ROW));
+			table.setAlignment(column++, row, Table.HORIZONTAL_ALIGN_CENTER);
+
+			column++;
+			
+			if (distance.getNumberOfSplits() == 2) {
+				splitTime = run.getSplitTime2() != -1 ? getTimeStringFromRunTime(run.getSplitTime2()) : "-";
+				table.add(getRunnerRowText(splitTime), column, row);
+				table.setStyleClass(column, row, getStyleName(STYLENAME_LIST_ROW));
+				table.setAlignment(column++, row, Table.HORIZONTAL_ALIGN_CENTER);
+
+				column++;
+			}
+		}
+		
 		try {
 			User user = getUserBiz().getUser(run.getUserID());
-			table.add(getRunnerRowText(user.getName()), 7, row);
-			table.setStyleClass(7, row, getStyleName(STYLENAME_LIST_ROW));
+			table.add(getRunnerRowText(user.getName()), column, row);
+			table.setStyleClass(column++, row, getStyleName(STYLENAME_LIST_ROW));
 	
+			column++;
+			
 			IWTimestamp birthDate = new IWTimestamp(user.getDateOfBirth());
-			table.add(getRunnerRowText(Integer.toString(birthDate.getYear())), 9, row);
-			table.setStyleClass(9, row, getStyleName(STYLENAME_LIST_ROW));
-			table.setAlignment(9, row, Table.HORIZONTAL_ALIGN_CENTER);
+			table.add(getRunnerRowText(Integer.toString(birthDate.getYear())), column, row);
+			table.setStyleClass(column, row, getStyleName(STYLENAME_LIST_ROW));
+			table.setAlignment(column++, row, Table.HORIZONTAL_ALIGN_CENTER);
+			
+			column++;
 		}
 		catch (RemoteException re) {
 			log(re);
@@ -383,16 +407,18 @@ public class RunResultViewer extends Block {
 			log(re);
 		}
 		if (country != null) {
-			table.add(getRunnerRowText(country.getName()), 11, row);
+			table.add(getRunnerRowText(country.getName()), column, row);
 		}
 		else {
-			table.add(getRunnerRowText(run.getUserNationality()), 11, row);
+			table.add(getRunnerRowText(run.getUserNationality()), column, row);
 		}
-		table.setStyleClass(11, row, getStyleName(STYLENAME_LIST_ROW));
-		table.setAlignment(11, row, Table.HORIZONTAL_ALIGN_CENTER);
+		table.setStyleClass(column, row, getStyleName(STYLENAME_LIST_ROW));
+		table.setAlignment(column++, row, Table.HORIZONTAL_ALIGN_CENTER);
 
-		table.add(getRunnerRowText(run.getRunGroupName() != null ? run.getRunGroupName() : ""), 13, row);
-		table.setStyleClass(13, row, getStyleName(STYLENAME_LIST_ROW));
+		column++;
+		
+		table.add(getRunnerRowText(run.getRunGroupName() != null ? run.getRunGroupName() : ""), column, row);
+		table.setStyleClass(column, row, getStyleName(STYLENAME_LIST_ROW));
 		
 		if (participantRow % 2 == 0) {
 			table.setRowColor(row, LIGHT_COLOR);
@@ -405,31 +431,53 @@ public class RunResultViewer extends Block {
 	}
 
 	private int insertHeadersIntoTable(Table table, int row) {
-		table.add(getRunnerRowText(iwrb.getLocalizedString("results.number", "Nr.")), 1, row);
-		table.setStyleClass(1, row, getStyleName(STYLENAME_HEADER_ROW));
-		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_CENTER);
+		int column = 1;
+		
+		table.add(getRunnerRowText(iwrb.getLocalizedString("results.number", "Nr.")), column, row);
+		table.setStyleClass(column, row, getStyleName(STYLENAME_HEADER_ROW));
+		table.setAlignment(column++, row, Table.HORIZONTAL_ALIGN_CENTER);
+		column++;
+		
+		table.add(getRunnerRowText(iwrb.getLocalizedString("results.run_time", "Run time")), column, row);
+		table.setStyleClass(column, row, getStyleName(STYLENAME_HEADER_ROW));
+		table.setAlignment(column++, row, Table.HORIZONTAL_ALIGN_CENTER);
+		column++;
 
-		table.add(getRunnerRowText(iwrb.getLocalizedString("results.run_time", "Run time")), 3, row);
-		table.setStyleClass(3, row, getStyleName(STYLENAME_HEADER_ROW));
-		table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_CENTER);
+		table.add(getRunnerRowText(iwrb.getLocalizedString("results.chip_time", "Chip time")), column, row);
+		table.setStyleClass(column, row, getStyleName(STYLENAME_HEADER_ROW));
+		table.setAlignment(column++, row, Table.HORIZONTAL_ALIGN_CENTER);
+		column++;
 
-		table.add(getRunnerRowText(iwrb.getLocalizedString("results.chip_time", "Chip time")), 5, row);
-		table.setStyleClass(5, row, getStyleName(STYLENAME_HEADER_ROW));
-		table.setAlignment(5, row, Table.HORIZONTAL_ALIGN_CENTER);
+		if (distance != null && distance.getNumberOfSplits() >= 1) {
+			table.add(getRunnerRowText(iwrb.getLocalizedString("results.split_time_1", "Split time 1")), column, row);
+			table.setStyleClass(column, row, getStyleName(STYLENAME_HEADER_ROW));
+			table.setAlignment(column++, row, Table.HORIZONTAL_ALIGN_CENTER);
+			column++;
 
-		table.add(getRunnerRowText(iwrb.getLocalizedString("results.name", "Name")), 7, row);
-		table.setStyleClass(7, row, getStyleName(STYLENAME_HEADER_ROW));
+			if (distance.getNumberOfSplits() == 2) {
+				table.add(getRunnerRowText(iwrb.getLocalizedString("results.split_time_2", "Split time 2")), column, row);
+				table.setStyleClass(column, row, getStyleName(STYLENAME_HEADER_ROW));
+				table.setAlignment(column++, row, Table.HORIZONTAL_ALIGN_CENTER);
+				column++;
+			}
+		}
 
-		table.add(getRunnerRowText(iwrb.getLocalizedString("results.birth_year", "Year")), 9, row);
-		table.setStyleClass(9, row, getStyleName(STYLENAME_HEADER_ROW));
-		table.setAlignment(9, row, Table.HORIZONTAL_ALIGN_CENTER);
+		table.add(getRunnerRowText(iwrb.getLocalizedString("results.name", "Name")), column, row);
+		table.setStyleClass(column++, row, getStyleName(STYLENAME_HEADER_ROW));
+		column++;
 
-		table.add(getRunnerRowText(iwrb.getLocalizedString("results.country", "Country")), 11, row);
-		table.setStyleClass(11, row, getStyleName(STYLENAME_HEADER_ROW));
-		table.setAlignment(11, row, Table.HORIZONTAL_ALIGN_CENTER);
+		table.add(getRunnerRowText(iwrb.getLocalizedString("results.birth_year", "Year")), column, row);
+		table.setStyleClass(column, row, getStyleName(STYLENAME_HEADER_ROW));
+		table.setAlignment(column++, row, Table.HORIZONTAL_ALIGN_CENTER);
+		column++;
 
-		table.add(getRunnerRowText(iwrb.getLocalizedString("results.group", "Group")), 13, row);
-		table.setStyleClass(13, row, getStyleName(STYLENAME_HEADER_ROW));
+		table.add(getRunnerRowText(iwrb.getLocalizedString("results.country", "Country")), column, row);
+		table.setStyleClass(column, row, getStyleName(STYLENAME_HEADER_ROW));
+		table.setAlignment(column++, row, Table.HORIZONTAL_ALIGN_CENTER);
+		column++;
+
+		table.add(getRunnerRowText(iwrb.getLocalizedString("results.group", "Group")), column, row);
+		table.setStyleClass(column, row, getStyleName(STYLENAME_HEADER_ROW));
 		table.setHeight(++row, 2);
 		
 		return ++row;

@@ -1,6 +1,6 @@
 /*
- * $Id: ParticipantHome.java,v 1.5 2005/07/27 10:55:52 laddi Exp $
- * Created on Jul 27, 2005
+ * $Id: ParticipantHome.java,v 1.6 2005/08/16 14:09:36 laddi Exp $
+ * Created on Aug 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -18,10 +18,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/07/27 10:55:52 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/16 14:09:36 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public interface ParticipantHome extends IDOHome {
 

@@ -93,6 +93,14 @@ public class ParticipantBMPBean extends GenericEntity implements Participant {
 		return "chip_time";
 	}
 
+	public static String getColumnNameSplitTime1() {
+		return "split_time_1";
+	}
+
+	public static String getColumnNameSplitTime2() {
+		return "split_time_2";
+	}
+
 	public static String getColumnNameChipNumber() {
 		return "run_chip_number";
 	}
@@ -194,6 +202,14 @@ public class ParticipantBMPBean extends GenericEntity implements Participant {
 		return getIntColumnValue(getColumnNameChipTime());
 	}
 	
+	public int getSplitTime1() {
+		return getIntColumnValue(getColumnNameSplitTime1());
+	}
+	
+	public int getSplitTime2() {
+		return getIntColumnValue(getColumnNameSplitTime2());
+	}
+	
 	public String getChipOwnershipStatus() {
 		return getStringColumnValue(getColumnNameChipOwnershipStatus());
 	}
@@ -285,6 +301,14 @@ public class ParticipantBMPBean extends GenericEntity implements Participant {
 
 	public void setChipTime(int chipTime) {
 		setColumn(getColumnNameChipTime(), chipTime);
+	}
+	
+	public void setSplitTime1(int splitTime) {
+		setColumn(getColumnNameSplitTime1(), splitTime);
+	}
+	
+	public void setSplitTime2(int splitTime) {
+		setColumn(getColumnNameSplitTime2(), splitTime);
 	}
 	
 	public void setChipOwnershipStatus(String ownershipStatus) {

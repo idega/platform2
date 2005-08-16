@@ -835,7 +835,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		}
 	}
 	
-	public void updateRunForParticipant(Participant participant, int bibNumber, String runTime, String chipTime) {
+	public void updateRunForParticipant(Participant participant, int bibNumber, String runTime, String chipTime, String splitTime1, String splitTime2) {
 		if(runTime != null) {
 			runTime = runTime.trim();
 			if (!runTime.equals("")) {
@@ -846,6 +846,18 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 			chipTime = chipTime.trim();
 			if(!chipTime.equals("")) {
 				participant.setChipTime(convertTimeToInt(chipTime));
+			}
+		}
+		if(splitTime1 != null) {
+			splitTime1 = splitTime1.trim();
+			if(!splitTime1.equals("")) {
+				participant.setSplitTime1(convertTimeToInt(splitTime1));
+			}
+		}
+		if(splitTime2 != null) {
+			splitTime2 = splitTime2.trim();
+			if(!splitTime2.equals("")) {
+				participant.setSplitTime2(convertTimeToInt(splitTime2));
 			}
 		}
 		participant.setParticipantNumber(bibNumber);

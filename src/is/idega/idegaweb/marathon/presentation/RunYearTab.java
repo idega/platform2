@@ -7,12 +7,12 @@ package is.idega.idegaweb.marathon.presentation;
 import is.idega.idegaweb.marathon.business.ConverterUtility;
 import is.idega.idegaweb.marathon.data.Year;
 import is.idega.idegaweb.marathon.util.IWMarathonConstants;
-import java.sql.Date;
+import java.sql.Timestamp;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.TimestampInput;
 import com.idega.user.presentation.UserGroupTab;
 import com.idega.util.IWTimestamp;
 
@@ -26,8 +26,8 @@ public class RunYearTab extends UserGroupTab{
 	private static final String PARAMETER_RUN_DATE = "run_date";
 	private static final String PARAMETER_LAST_REGISTRATION_DATE = "last_registration_date";
 	
-	private DateInput runDate;
-	private DateInput lastRegistrationDate;
+	private TimestampInput runDate;
+	private TimestampInput lastRegistrationDate;
 	
 	private Text runDateText;
 	private Text lastRegistrationDateText;
@@ -49,10 +49,10 @@ public class RunYearTab extends UserGroupTab{
 			String lastRegistrationDate = iwc.getParameter(PARAMETER_LAST_REGISTRATION_DATE);
 			
 			if (runDate != null) {
-				fieldValues.put(PARAMETER_RUN_DATE, new IWTimestamp(runDate).getDate());
+				fieldValues.put(PARAMETER_RUN_DATE, new IWTimestamp(runDate).getTimestamp());
 			}
 			if (lastRegistrationDate != null) {
-				fieldValues.put(PARAMETER_LAST_REGISTRATION_DATE, new IWTimestamp(lastRegistrationDate).getDate());
+				fieldValues.put(PARAMETER_LAST_REGISTRATION_DATE, new IWTimestamp(lastRegistrationDate).getTimestamp());
 			}
 			
 			updateFieldsDisplayStatus();
@@ -92,16 +92,16 @@ public class RunYearTab extends UserGroupTab{
 	 * @see com.idega.user.presentation.UserTab#initializeFields()
 	 */
 	public void initializeFields() {
-		runDate = new DateInput(PARAMETER_RUN_DATE);
-		lastRegistrationDate = new DateInput(PARAMETER_LAST_REGISTRATION_DATE);
+		runDate = new TimestampInput(PARAMETER_RUN_DATE);
+		lastRegistrationDate = new TimestampInput(PARAMETER_LAST_REGISTRATION_DATE);
 	}
 	
 	/* (non-Javadoc)
 	 * @see com.idega.user.presentation.UserTab#initializeFieldValues()
 	 */
 	public void initializeFieldValues() {
-		fieldValues.put(PARAMETER_RUN_DATE, new IWTimestamp().getDate());
-		fieldValues.put(PARAMETER_LAST_REGISTRATION_DATE, new IWTimestamp().getDate());
+		fieldValues.put(PARAMETER_RUN_DATE, new IWTimestamp().getTimestamp());
+		fieldValues.put(PARAMETER_LAST_REGISTRATION_DATE, new IWTimestamp().getTimestamp());
 		
 		updateFieldsDisplayStatus();
 	}
@@ -128,18 +128,17 @@ public class RunYearTab extends UserGroupTab{
 		setCellpadding(0);
 		setCellspacing(0);
 		
-		Table table = new Table(1, 2);
+		Table table = new Table(2, 2);
 		table.setCellpadding(5);
 		table.setCellspacing(0);
 		table.setWidth(Table.HUNDRED_PERCENT);
+		table.setColumnAlignment(1, Table.HORIZONTAL_ALIGN_RIGHT);
 
 		table.add(runDateText, 1, 1);
-		table.add(Text.getNonBrakingSpace(), 1, 1);
-		table.add(runDate, 1, 1);
+		table.add(runDate, 2, 1);
 		
 		table.add(lastRegistrationDateText, 1, 2);
-		table.add(Text.getNonBrakingSpace(), 1, 2);
-		table.add(lastRegistrationDate, 1, 2);
+		table.add(lastRegistrationDate, 2, 2);
 		
 		add(table, 1, 1);
 	}
@@ -152,8 +151,8 @@ public class RunYearTab extends UserGroupTab{
 			if (getGroupId() > -1) {
 				Year year = ConverterUtility.getInstance().convertGroupToYear(new Integer(getGroupId()));
 				
-				year.setRunDate((Date) fieldValues.get(PARAMETER_RUN_DATE));
-				year.setLastRegistrationDate((Date) fieldValues.get(PARAMETER_LAST_REGISTRATION_DATE));
+				year.setRunDate((Timestamp) fieldValues.get(PARAMETER_RUN_DATE));
+				year.setLastRegistrationDate((Timestamp) fieldValues.get(PARAMETER_LAST_REGISTRATION_DATE));
 
 				year.store();
 			}
@@ -170,8 +169,8 @@ public class RunYearTab extends UserGroupTab{
 	 * @see com.idega.user.presentation.UserTab#updateFieldsDisplayStatus()
 	 */
 	public void updateFieldsDisplayStatus() {
-		runDate.setDate((Date) fieldValues.get(PARAMETER_RUN_DATE));
-		lastRegistrationDate.setDate((Date) fieldValues.get(PARAMETER_LAST_REGISTRATION_DATE));
+		runDate.setTimestamp((Timestamp) fieldValues.get(PARAMETER_RUN_DATE));
+		lastRegistrationDate.setTimestamp((Timestamp) fieldValues.get(PARAMETER_LAST_REGISTRATION_DATE));
 	}
 	
 	public String getBundleIdentifier() {

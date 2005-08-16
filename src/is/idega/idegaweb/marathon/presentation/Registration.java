@@ -1,5 +1,5 @@
 /*
- * $Id: Registration.java,v 1.24 2005/08/11 10:21:08 palli Exp $
+ * $Id: Registration.java,v 1.25 2005/08/16 14:09:36 laddi Exp $
  * Created on May 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -57,10 +57,10 @@ import com.idega.util.LocaleUtil;
 
 
 /**
- * Last modified: $Date: 2005/08/11 10:21:08 $ by $Author: palli $
+ * Last modified: $Date: 2005/08/16 14:09:36 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.24 $
+ * @version $Revision: 1.25 $
  */
 public class Registration extends RunBlock {
 	
@@ -253,8 +253,8 @@ public class Registration extends RunBlock {
 				boolean finished = false;
 				Map yearMap = getRunBusiness(iwc).getYearsMap(run);
 				Year year = (Year) yearMap.get(yearString);
-				if (year != null && year.getRunDate() != null) {
-					IWTimestamp runDate = new IWTimestamp(year.getRunDate());
+				if (year != null && year.getLastRegistrationDate() != null) {
+					IWTimestamp runDate = new IWTimestamp(year.getLastRegistrationDate());
 					if (ts.isLaterThanOrEquals(runDate)) {
 						finished = true;
 						show = false;
@@ -300,8 +300,8 @@ public class Registration extends RunBlock {
 			boolean finished = false;
 			Map yearMap = getRunBusiness(iwc).getYearsMap(runner.getRun());
 			Year year = (Year) yearMap.get(yearString);
-			if (year != null && year.getRunDate() != null) {
-				IWTimestamp runDate = new IWTimestamp(year.getRunDate());
+			if (year != null && year.getLastRegistrationDate() != null) {
+				IWTimestamp runDate = new IWTimestamp(year.getLastRegistrationDate());
 				if (ts.isLaterThanOrEquals(stamp)) {
 					finished = true;
 				}

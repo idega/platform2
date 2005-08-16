@@ -1,5 +1,5 @@
 /*
- * $Id: Year.java,v 1.1 2005/08/01 17:38:19 laddi Exp $
+ * $Id: Year.java,v 1.2 2005/08/16 14:09:36 laddi Exp $
  * Created on Jul 31, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -9,35 +9,35 @@
  */
 package is.idega.idegaweb.marathon.data;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 import com.idega.user.data.Group;
 
 
 /**
- * Last modified: $Date: 2005/08/01 17:38:19 $ by $Author: laddi $
+ * Last modified: $Date: 2005/08/16 14:09:36 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public interface Year extends Group {
 
 	/**
 	 * @see is.idega.idegaweb.marathon.data.YearBMPBean#getRunDate
 	 */
-	public Date getRunDate();
+	public Timestamp getRunDate();
 
 	/**
 	 * @see is.idega.idegaweb.marathon.data.YearBMPBean#getLastRegistrationDate
 	 */
-	public Date getLastRegistrationDate();
+	public Timestamp getLastRegistrationDate();
 
 	/**
 	 * @see is.idega.idegaweb.marathon.data.YearBMPBean#setRunDate
 	 */
-	public void setRunDate(Date date);
+	public void setRunDate(Timestamp date);
 
 	/**
 	 * @see is.idega.idegaweb.marathon.data.YearBMPBean#setLastRegistrationDate
 	 */
-	public void setLastRegistrationDate(Date date);
+	public void setLastRegistrationDate(Timestamp date);
 }

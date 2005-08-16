@@ -104,7 +104,9 @@ public class MarathonFileImportHandlerBean extends IBOServiceBean  implements Ma
 		String result = (String) values.get(13);
 		String resultInGroup = (String) values.get(14);
 		String runGroupName = (String) values.get(15);
-		String runGroupTime = values.size() == 17 ? (String) values.get(16) : null;
+		String runGroupTime = size >= 17 ? (String) values.get(16) : null;
+		String split1 = size >= 18 ? (String) values.get(17) : null;
+		String split2 = size >= 19 ? (String) values.get(18) : null;
 		
 		int number = -1;
 		try {
@@ -208,7 +210,7 @@ public class MarathonFileImportHandlerBean extends IBOServiceBean  implements Ma
 					if (runGroupName != null && runGroupName.trim().length() > 0) {
 						participant.setRunGroupName(runGroupName);
 					}
-					business.updateRunForParticipant(participant, number, runTime, chipTime);
+					business.updateRunForParticipant(participant, number, runTime, chipTime, split1, split2);
 					return true;
 				}
 			}

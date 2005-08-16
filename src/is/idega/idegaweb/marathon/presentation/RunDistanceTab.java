@@ -13,6 +13,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.presentation.UserGroupTab;
 import com.idega.util.LocaleUtil;
@@ -33,6 +34,8 @@ public class RunDistanceTab extends UserGroupTab{
 	private static final String PARAMETER_CHILDREN_PRICE_ISK = "children_price_isk";
 	private static final String PARAMETER_CHILDREN_PRICE_EUR = "children_price_eur";
 	
+	private static final String PARAMETER_NUMBER_OF_SPLITS = "number_of_splits";
+
 	private TextInput priceISK;
 	private TextInput priceEUR;
 	private TextInput childrenPriceISK;
@@ -42,6 +45,8 @@ public class RunDistanceTab extends UserGroupTab{
 	private CheckBox familyDiscount;
 	private CheckBox allowsGroups;
 	
+	private DropdownMenu numberOfSplits;
+	
 	private Text priceISKText;
 	private Text priceEURText;
 	private Text childrenPriceISKText;
@@ -49,6 +54,7 @@ public class RunDistanceTab extends UserGroupTab{
 	private Text useChipText;
 	private Text familyDiscountText;
 	private Text allowsGroupsText;
+	private Text numberOfSplitsText;
 	
 	public RunDistanceTab() {
 		super();
@@ -72,6 +78,8 @@ public class RunDistanceTab extends UserGroupTab{
 			String childPriceISK = iwc.getParameter(PARAMETER_CHILDREN_PRICE_ISK);
 			String childPriceEUR = iwc.getParameter(PARAMETER_CHILDREN_PRICE_EUR);
 			
+			String numberOfSplits = iwc.getParameter(PARAMETER_NUMBER_OF_SPLITS);
+			
 			fieldValues.put(PARAMETER_USE_CHIP, useChip);
 			fieldValues.put(PARAMETER_FAMILY_DISCOUNT, familyDiscount);
 			fieldValues.put(PARAMETER_ALLOWS_GROUPS, allowsGroups);
@@ -87,6 +95,9 @@ public class RunDistanceTab extends UserGroupTab{
 			}
 			if(childPriceEUR != null){
 				fieldValues.put(PARAMETER_CHILDREN_PRICE_EUR, new Float(childPriceEUR));
+			}
+			if(numberOfSplits != null){
+				fieldValues.put(PARAMETER_NUMBER_OF_SPLITS, new Integer(numberOfSplits));
 			}
 			
 			updateFieldsDisplayStatus();
@@ -109,6 +120,7 @@ public class RunDistanceTab extends UserGroupTab{
 			fieldValues.put(PARAMETER_PRICE_EUR, new Float(distance.getPrice(Locale.ENGLISH)));
 			fieldValues.put(PARAMETER_CHILDREN_PRICE_ISK, new Float(distance.getChildrenPrice(LocaleUtil.getIcelandicLocale())));
 			fieldValues.put(PARAMETER_CHILDREN_PRICE_EUR, new Float(distance.getChildrenPrice(Locale.ENGLISH)));
+			fieldValues.put(PARAMETER_NUMBER_OF_SPLITS, new Integer(distance.getNumberOfSplits()));
 
 			updateFieldsDisplayStatus();
 		}
@@ -142,6 +154,11 @@ public class RunDistanceTab extends UserGroupTab{
 		useChip = new CheckBox(PARAMETER_USE_CHIP);
 		familyDiscount = new CheckBox(PARAMETER_FAMILY_DISCOUNT);
 		allowsGroups = new CheckBox(PARAMETER_ALLOWS_GROUPS);
+		
+		numberOfSplits = new DropdownMenu(PARAMETER_NUMBER_OF_SPLITS);
+		numberOfSplits.addMenuElement(0, "0");
+		numberOfSplits.addMenuElement(1, "1");
+		numberOfSplits.addMenuElement(2, "2");
 	}
 	
 	/* (non-Javadoc)
@@ -155,6 +172,7 @@ public class RunDistanceTab extends UserGroupTab{
 		fieldValues.put(PARAMETER_PRICE_EUR, new Float(0));
 		fieldValues.put(PARAMETER_CHILDREN_PRICE_ISK, new Float(0));
 		fieldValues.put(PARAMETER_CHILDREN_PRICE_EUR, new Float(0));
+		fieldValues.put(PARAMETER_NUMBER_OF_SPLITS, new Integer(0));
 		
 		updateFieldsDisplayStatus();
 	}
@@ -186,6 +204,9 @@ public class RunDistanceTab extends UserGroupTab{
 
 		allowsGroupsText = new Text(iwrb.getLocalizedString("run_tab.allows_groups", "Allows groups"));
 		allowsGroupsText.setBold();
+
+		numberOfSplitsText = new Text(iwrb.getLocalizedString("run_tab.number_of_splits", "Number of splits"));
+		numberOfSplitsText.setBold();
 	}
 	
 	/* (non-Javadoc)
@@ -196,7 +217,7 @@ public class RunDistanceTab extends UserGroupTab{
 		setCellpadding(0);
 		setCellspacing(0);
 		
-		Table table = new Table(2, 3);
+		Table table = new Table(2, 4);
 		table.setCellpadding(5);
 		table.setCellspacing(0);
 		table.setWidth(1, "50%");
@@ -220,21 +241,26 @@ public class RunDistanceTab extends UserGroupTab{
 		table.add(childrenPriceEUR, 2, 2);
 		
 		table.mergeCells(1, 3, 2, 3);
-		table.add(useChip, 1, 3);
+		table.add(numberOfSplitsText, 1, 3);
 		table.add(Text.getNonBrakingSpace(), 1, 3);
-		table.add(useChipText, 1, 3);
-		
-		table.add(Text.getBreak(), 1, 3);
-		
-		table.add(familyDiscount, 1, 3);
-		table.add(Text.getNonBrakingSpace(), 1, 3);
-		table.add(familyDiscountText, 1, 3);
+		table.add(numberOfSplits, 1, 3);
 
-		table.add(Text.getBreak(), 1, 3);
+		table.mergeCells(1, 4, 2, 4);
+		table.add(useChip, 1, 4);
+		table.add(Text.getNonBrakingSpace(), 1, 4);
+		table.add(useChipText, 1, 4);
 		
-		table.add(allowsGroups, 1, 3);
-		table.add(Text.getNonBrakingSpace(), 1, 3);
-		table.add(allowsGroupsText, 1, 3);
+		table.add(Text.getBreak(), 1, 4);
+		
+		table.add(familyDiscount, 1, 4);
+		table.add(Text.getNonBrakingSpace(), 1, 4);
+		table.add(familyDiscountText, 1, 4);
+
+		table.add(Text.getBreak(), 1, 4);
+		
+		table.add(allowsGroups, 1, 4);
+		table.add(Text.getNonBrakingSpace(), 1, 4);
+		table.add(allowsGroupsText, 1, 4);
 		
 		add(table, 1, 1);
 	}
@@ -255,6 +281,8 @@ public class RunDistanceTab extends UserGroupTab{
 				distance.setPriceInEUR(((Float) fieldValues.get(PARAMETER_PRICE_EUR)).floatValue());
 				distance.setChildrenPriceInISK(((Float) fieldValues.get(PARAMETER_CHILDREN_PRICE_ISK)).floatValue());
 				distance.setChildrenPriceInEUR(((Float) fieldValues.get(PARAMETER_CHILDREN_PRICE_EUR)).floatValue());
+
+				distance.setNumberOfSplits(((Integer) fieldValues.get(PARAMETER_CHILDREN_PRICE_EUR)).intValue());
 
 				distance.store();
 			}
@@ -279,6 +307,8 @@ public class RunDistanceTab extends UserGroupTab{
 		priceEUR.setContent(((Float) fieldValues.get(PARAMETER_PRICE_EUR)).toString());
 		childrenPriceISK.setContent(((Float) fieldValues.get(PARAMETER_CHILDREN_PRICE_ISK)).toString());
 		childrenPriceEUR.setContent(((Float) fieldValues.get(PARAMETER_CHILDREN_PRICE_EUR)).toString());
+
+		numberOfSplits.setSelectedElement(((Integer) fieldValues.get(PARAMETER_CHILDREN_PRICE_EUR)).intValue());
 	}
 	
 	public String getBundleIdentifier() {
