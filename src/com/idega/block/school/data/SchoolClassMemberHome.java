@@ -1,6 +1,6 @@
 /*
- * $Id: SchoolClassMemberHome.java,v 1.73 2005/08/09 16:32:21 laddi Exp $
- * Created on Aug 7, 2005
+ * $Id: SchoolClassMemberHome.java,v 1.74 2005/08/17 14:02:24 palli Exp $
+ * Created on Aug 15, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -11,7 +11,9 @@ package com.idega.block.school.data;
 
 import java.sql.Date;
 import java.util.Collection;
+
 import javax.ejb.FinderException;
+
 import com.idega.core.location.data.Commune;
 import com.idega.data.IDOException;
 import com.idega.data.IDOHome;
@@ -21,10 +23,11 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/08/09 16:32:21 $ by $Author: laddi $
  * 
- * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.73 $
+ *  Last modified: $Date: 2005/08/17 14:02:24 $ by $Author: palli $
+ * 
+ * @author <a href="mailto:bluebottle@idega.com">bluebottle</a>
+ * @version $Revision: 1.74 $
  */
 public interface SchoolClassMemberHome extends IDOHome {
 
@@ -154,8 +157,8 @@ public interface SchoolClassMemberHome extends IDOHome {
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbHomeGetNumberOfPlacingsBySeasonAndSchoolCategory
 	 */
-	public int getNumberOfPlacingsBySeasonAndSchoolCategory(User child, SchoolSeason season, SchoolCategory schoolCategory)
-			throws IDOException;
+	public int getNumberOfPlacingsBySeasonAndSchoolCategory(User child, SchoolSeason season,
+			SchoolCategory schoolCategory) throws IDOException;
 
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbHomeGetNumberOfSubGroupPlacings
@@ -261,13 +264,14 @@ public interface SchoolClassMemberHome extends IDOHome {
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbFindAllCurrentInvoiceCompensationBySchoolTypeAndSchools
 	 */
-	public Collection findAllCurrentInvoiceCompensationBySchoolTypeAndSchools(String operationalField, Collection schools)
-			throws FinderException;
+	public Collection findAllCurrentInvoiceCompensationBySchoolTypeAndSchools(String operationalField,
+			Collection schools) throws FinderException;
 
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbFindByUserAndSchoolAndSeason
 	 */
-	public SchoolClassMember findByUserAndSchoolAndSeason(int userID, int schoolID, int seasonID) throws FinderException;
+	public SchoolClassMember findByUserAndSchoolAndSeason(int userID, int schoolID, int seasonID)
+			throws FinderException;
 
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbFindByUserAndSchoolAndSeason
@@ -364,13 +368,14 @@ public interface SchoolClassMemberHome extends IDOHome {
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbFindAllLastYearStudentsBySeasonAndYear
 	 */
-	public Collection findAllLastYearStudentsBySeasonAndYear(SchoolSeason season, SchoolYear year) throws FinderException;
+	public Collection findAllLastYearStudentsBySeasonAndYear(SchoolSeason season, SchoolYear year)
+			throws FinderException;
 
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbFindAllLastYearStudentsBySeasonAndYearAndMaximumAge
 	 */
-	public Collection findAllLastYearStudentsBySeasonAndYearAndMaximumAge(SchoolSeason season, SchoolYear year, int maxAge)
-			throws FinderException;
+	public Collection findAllLastYearStudentsBySeasonAndYearAndMaximumAge(SchoolSeason season, SchoolYear year,
+			int maxAge) throws FinderException;
 
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbFindAllBySeasonAndSchoolYear
@@ -386,8 +391,9 @@ public interface SchoolClassMemberHome extends IDOHome {
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbHomeGetNumberOfUsersNotAssignedToClassOnGivenDateNew
 	 */
-	public int getNumberOfUsersNotAssignedToClassOnGivenDateNew(Group citizenGroup, Date date, SchoolSeason schoolSeason,
-			Date firstDateOfBirth, Date lastDateOfBirth) throws IDOException, IDOLookupException;
+	public int getNumberOfUsersNotAssignedToClassOnGivenDateNew(Group citizenGroup, Date date,
+			SchoolSeason schoolSeason, Date firstDateOfBirth, Date lastDateOfBirth) throws IDOException,
+			IDOLookupException;
 
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbFindAllByUserAndPeriodAndSchoolCategory
@@ -398,8 +404,14 @@ public interface SchoolClassMemberHome extends IDOHome {
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbFindByCategorydManagementCommune
 	 */
-	public Collection findByCategorydManagementCommune(String category, String managementType, int communeId, int seasonId)
-			throws FinderException;
+	public Collection findByCategorydManagementCommune(String category, String managementType, int communeId,
+			int seasonId) throws FinderException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbFindByCategorydManagementCommune
+	 */
+	public Collection findByCategorydManagementCommune(String category, String managementType, int communeId,
+			int seasonId, boolean newestFirst) throws FinderException;
 
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbHomeGetNumberOfPlacingsAtSchool
@@ -416,4 +428,5 @@ public interface SchoolClassMemberHome extends IDOHome {
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbFindSubGroupPlacements
 	 */
 	public Collection findSubGroupPlacements() throws FinderException;
+
 }

@@ -56,8 +56,8 @@ import com.idega.util.IWTimestamp;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2005/08/09 16:32:21 $ by $Author: laddi $
- * @version $Revision: 1.146 $
+ *         Last modified: $Date: 2005/08/17 14:02:23 $ by $Author: palli $
+ * @version $Revision: 1.147 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -1660,6 +1660,10 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	}
 
 	public Collection ejbFindByCategorydManagementCommune(String category, String managementType, int communeId, int seasonId) throws FinderException {
+		return ejbFindByCategorydManagementCommune(category, managementType, communeId, seasonId, false);
+	}
+
+	public Collection ejbFindByCategorydManagementCommune(String category, String managementType, int communeId, int seasonId, boolean newestFirst) throws FinderException {
 		String today = (new Date(System.currentTimeMillis())).toString();
 		IDOQuery query = idoQuery();
 		query.appendSelect();
@@ -1686,10 +1690,14 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		query.appendAndEquals("sc.school_id", "s.sch_school_id");
 		query.appendAndEquals("sc.sch_school_class_id", "cm.sch_school_class_id");
 		query.appendAndEqualsQuoted("s.management_type", managementType);
+		
+		if (newestFirst) {
+			query.appendOrderByDescending("cm.register_date");
+		}
 
 		return idoFindPKsByQuery(query);
 	}
-
+	
 	public int ejbHomeGetNumberOfPlacingsAtSchool(School school, SchoolSeason season, SchoolYear department, SchoolStudyPath instrument, String types, Commune commune) throws IDOException {
 		Table student = new Table(this, "m");
 		Table schoolClass = new Table(SchoolClass.class, "s");
