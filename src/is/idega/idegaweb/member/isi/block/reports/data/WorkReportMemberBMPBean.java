@@ -233,7 +233,7 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 		String leagueIDColumnName =  "ISI_WR_GROUP_ID";
 		String IDColumnName = getIDColumnName();
 		
-		sql.appendSelectCountIDFrom(this.getEntityName(), this.getIDColumnName(), "memb")
+		sql.appendSelectCountIDFrom(this.getEntityName(), this.getIDColumnName(), "memb").append(",")
 		.append(getNameOfMiddleTable(this,league)).append(" middle ")
 		.appendWhere()
 		.appendEquals("memb."+COLUMN_NAME_REPORT_ID, ((Integer)report.getPrimaryKey()).intValue());
@@ -290,7 +290,7 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 		String leagueIDColumnName =  "ISI_WR_GROUP_ID";
 		String IDColumnName = getIDColumnName();
 		
-		sql.appendSelectCountIDFrom(this.getEntityName(), this.getIDColumnName(), "memb")
+		sql.appendSelectCountIDFrom(this.getEntityName(), this.getIDColumnName(), "memb").append(",")
 		.append(getNameOfMiddleTable(this,league)).append(" middle ")
 		.appendWhere()
 		.appendEquals("memb."+COLUMN_NAME_REPORT_ID, ((Integer)report.getPrimaryKey()).intValue());
@@ -336,7 +336,7 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 		String leagueIDColumnName =  "ISI_WR_GROUP_ID";
 		String IDColumnName = getIDColumnName();
 		
-		sql.appendSelectCountIDFrom(this.getEntityName(), this.getIDColumnName(), "memb")
+		sql.appendSelectCountIDFrom(this.getEntityName(), this.getIDColumnName(), "memb").append(",")
 		.append(getNameOfMiddleTable(this,league)).append(" middle ")
 		.appendWhere()
 		.appendEquals("memb."+COLUMN_NAME_REPORT_ID, ((Integer)report.getPrimaryKey()).intValue());
@@ -390,7 +390,7 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 		String leagueIDColumnName =  "ISI_WR_GROUP_ID";
 		String IDColumnName = getIDColumnName();
 
-		sql.appendSelectCountIDFrom(this.getEntityName(), this.getIDColumnName(), "memb")
+		sql.appendSelectCountIDFrom(this.getEntityName(), this.getIDColumnName(), "memb").append(",")
 		.append(getNameOfMiddleTable(this,league)).append(" middle ")
 		.appendWhere()
 		.appendEquals("memb."+COLUMN_NAME_REPORT_ID, ((Integer)report.getPrimaryKey()).intValue());
@@ -437,7 +437,7 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 		String leagueIDColumnName =  "ISI_WR_GROUP_ID";
 		String IDColumnName = getIDColumnName();
 
-		sql.appendSelectCountIDFrom(this.getEntityName(), this.getIDColumnName(), "memb")
+		sql.appendSelectCountIDFrom(this.getEntityName(), this.getIDColumnName(), "memb").append(",")
 		.append(getNameOfMiddleTable(this,league)).append(" middle ")
 		.appendWhere()
 		.appendEquals("memb."+COLUMN_NAME_REPORT_ID, ((Integer)report.getPrimaryKey()).intValue());
