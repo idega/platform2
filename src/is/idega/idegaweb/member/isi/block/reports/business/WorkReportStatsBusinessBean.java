@@ -4249,7 +4249,6 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					          getWorkReportBusiness().getCountOfFemalePlayersEqualOrOlderThanAgeAndByWorkReport(age2 + 1, report);
 				}
 			} else {
-				System.out.println("all ages");
 				if (gender==null) {
 					members = getWorkReportBusiness().getCountOfMembersByWorkReport(report);
 					players = getWorkReportBusiness().getCountOfPlayersByWorkReport(report);
