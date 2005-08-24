@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierManagerHandler.java,v 1.1 2005/05/31 19:22:08 gimmi Exp $
+ * $Id: SupplierManagerHandler.java,v 1.2 2005/08/24 13:01:21 gimmi Exp $
  * Created on 20.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -12,7 +12,6 @@ package com.idega.block.trade.stockroom.presentation;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import com.idega.block.trade.stockroom.business.SupplierManager;
 import com.idega.block.trade.stockroom.business.SupplierManagerBusiness;
 import com.idega.business.IBOLookup;
 import com.idega.core.builder.presentation.ICPropertyHandler;
@@ -33,7 +32,7 @@ public class SupplierManagerHandler implements ICPropertyHandler {
 		
 		try {
 			// Add support for another datasource
-			SupplierManagerBusiness bus = (SupplierManagerBusiness) IBOLookup.getServiceInstance(iwc, SupplierManager.class);
+			SupplierManagerBusiness bus = (SupplierManagerBusiness) IBOLookup.getServiceInstance(iwc, SupplierManagerBusiness.class);
 			Collection coll = bus.findAllSupplierManagers();
 			Iterator iter = coll.iterator();
 			Group object;
