@@ -1,17 +1,31 @@
+/*
+ * $Id: HotelBusinessHomeImpl.java,v 1.4 2005/08/24 13:23:40 gimmi Exp $
+ * Created on Aug 12, 2005
+ *
+ * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ */
 package is.idega.idegaweb.travel.service.hotel.business;
 
-
-public class HotelBusinessHomeImpl extends com.idega.business.IBOHomeImpl implements HotelBusinessHome
-{
- protected Class getBeanInterfaceClass(){
-  return HotelBusiness.class;
- }
+import com.idega.business.IBOHomeImpl;
 
 
- public HotelBusiness create() throws javax.ejb.CreateException{
-  return (HotelBusiness) super.createIBO();
- }
+/**
+ * 
+ *  Last modified: $Date: 2005/08/24 13:23:40 $ by $Author: gimmi $
+ * 
+ * @author <a href="mailto:gimmi@idega.com">gimmi</a>
+ * @version $Revision: 1.4 $
+ */
+public class HotelBusinessHomeImpl extends IBOHomeImpl implements HotelBusinessHome {
 
+	protected Class getBeanInterfaceClass() {
+		return HotelBusiness.class;
+	}
 
-
+	public HotelBusiness create() throws javax.ejb.CreateException {
+		return (HotelBusiness) super.createIBO();
+	}
 }

@@ -8,6 +8,7 @@ import is.idega.idegaweb.travel.service.hotel.data.Hotel;
 import is.idega.idegaweb.travel.service.hotel.data.HotelHome;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 import javax.ejb.FinderException;
@@ -16,8 +17,8 @@ import com.idega.block.trade.stockroom.data.ProductCategory;
 import com.idega.block.trade.stockroom.data.ProductCategoryHome;
 import com.idega.block.trade.stockroom.data.ProductHome;
 import com.idega.block.trade.stockroom.data.Timeframe;
-import com.idega.block.trade.stockroom.data.TravelAddress;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;
 import com.idega.util.IWTimestamp;
 import com.idega.util.datastructures.HashtableDoubleKeyed;
@@ -34,6 +35,8 @@ import com.idega.util.datastructures.HashtableDoubleKeyed;
 
 public class HotelBusinessBean extends TravelStockroomBusinessBean implements HotelBusiness {
 
+	private HashMap hotels = new HashMap();
+	
   public HotelBusinessBean() {
   }
 
@@ -96,10 +99,11 @@ public class HotelBusinessBean extends TravelStockroomBusinessBean implements Ho
     }catch (SQLException sql) {}
 
     Product product = (( ProductHome ) IDOLookup.getHome(Product.class)).findByPrimaryKey(new Integer(productId));
-    product.removeAllFrom(TravelAddress.class);
+    getProductBusiness().removeAllTravelAddresses(product);
+//    product.removeAllFrom(TravelAddress.class);
 //    product.removeAllFrom(Timeframe.class);
 
-
+	hotels.remove(product.getPrimaryKey());
 
     return productId;
   }
@@ -176,9 +180,18 @@ public class HotelBusinessBean extends TravelStockroomBusinessBean implements Ho
 		
     return returner;
 	}
+	
+	public Hotel getHotel(Object pk) throws IDOLookupException, FinderException {
+		Hotel hotel = (Hotel) hotels.get(pk);
+		if (hotel == null) {
+			hotel = ((HotelHome) IDOLookup.getHome(Hotel.class)).findByPrimaryKey(pk);
+			hotels.put(pk, hotel);
+		}
+		return hotel;
+	}
 
 	public int getMaxBookings(Product product, IWTimestamp stamp) throws RemoteException, FinderException {
-		Hotel hotel = ((HotelHome) IDOLookup.getHome(Hotel.class)).findByPrimaryKey(product.getPrimaryKey());
+		Hotel hotel = getHotel(product.getPrimaryKey());
 		int returner = hotel.getNumberOfUnits();
 		if (returner > 0) {
 			return returner;
