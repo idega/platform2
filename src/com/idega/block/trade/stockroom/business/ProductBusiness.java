@@ -1,6 +1,6 @@
 /*
- * $Id: ProductBusiness.java,v 1.44 2005/06/16 21:04:35 gimmi Exp $
- * Created on 12.5.2005
+ * $Id: ProductBusiness.java,v 1.45 2005/08/24 13:04:24 gimmi Exp $
+ * Created on Aug 19, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -27,6 +27,7 @@ import com.idega.core.location.data.Address;
 import com.idega.data.IDOException;
 import com.idega.data.IDOFinderException;
 import com.idega.data.IDORelationshipException;
+import com.idega.data.IDORemoveRelationshipException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.util.IWTimestamp;
@@ -34,10 +35,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2005/06/16 21:04:35 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/08/24 13:04:24 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.44 $
+ * @version $Revision: 1.45 $
  */
 public interface ProductBusiness extends IBOService {
 
@@ -88,6 +89,28 @@ public interface ProductBusiness extends IBOService {
 			throws Exception, java.rmi.RemoteException;
 
 	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#addTravelAddress
+	 */
+	public void addTravelAddress(Product product, TravelAddress travelAddress) throws java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#addArrivalAddress
+	 */
+	public void addArrivalAddress(Product product, Address address) throws java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#removeTravelAddress
+	 */
+	public void removeTravelAddress(Product product, TravelAddress travelAddress)
+			throws IDORemoveRelationshipException, java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#removeAllTravelAddresses
+	 */
+	public void removeAllTravelAddresses(Product product) throws IDORemoveRelationshipException,
+			java.rmi.RemoteException;
+
+	/**
 	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getProductIdParameter
 	 */
 	public String getProductIdParameter() throws java.rmi.RemoteException;
@@ -106,7 +129,6 @@ public interface ProductBusiness extends IBOService {
 	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getProduct
 	 */
 	public Product getProduct(int productId) throws RemoteException, FinderException;
-    public Collection getProduct(int supplierId, int firstEntity, int lastEntity) throws FinderException, RemoteException;
 
 	/**
 	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#deleteProduct
@@ -167,6 +189,12 @@ public interface ProductBusiness extends IBOService {
 	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getProducts
 	 */
 	public List getProducts(int supplierId) throws RemoteException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getProduct
+	 */
+	public Collection getProduct(int supplierId, int firstEntity, int lastEntity) throws FinderException,
+			RemoteException;
 
 	/**
 	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getProducts
