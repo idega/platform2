@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Vector;
 import javax.ejb.FinderException;
 import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.Supplier;
+import com.idega.block.trade.stockroom.data.SupplierHome;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDORelationshipException;
@@ -27,6 +29,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.util.SelectorUtility;
+import com.idega.user.data.Group;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -176,20 +179,15 @@ public class HotelSearch extends AbstractSearchForm {
 			e.printStackTrace();
 		}
 		
-		DropdownMenu spHotelTypes = new DropdownMenu(PARAMETER_HOTEL_TYPE );
-		SelectorUtility su = new SelectorUtility();
-		spHotelTypes = (DropdownMenu) su.getSelectorFromIDOEntities(spHotelTypes, hotelTypes, "getLocalizationKey", iwrb);
-		spHotelTypes.addMenuElementFirst("-1", iwrb.getLocalizedString("travel.any_types", "Any type"));
-		spHotelTypes.setSelectedElement("-1");
-
-		Collection roomTypes = new Vector();
+		DropdownMenu spHotelTypes = getHotelTypeDropdown(hotelTypes, iwrb, PARAMETER_HOTEL_TYPE);
+		DropdownMenu roomTypeDrop = null;
 		try {
-			RoomTypeHome trh = (RoomTypeHome) IDOLookup.getHome(RoomType.class);
-			roomTypes = trh.findAllUsedBySuppliers(engine.getSuppliers());
-//			roomTypes = trh.findAll();
-		} catch (Exception e) {
+			roomTypeDrop = getRoomTypeDropdown(engine.getSuppliers(), PARAMETER_TYPE);
+		}
+		catch (IDORelationshipException e) {
 			e.printStackTrace();
 		}
+
 		DropdownMenu min = getDropdownWithNumbers(PARAMETER_MIN_RATING, 1, 5);
 		DropdownMenu max = getDropdownWithNumbers(PARAMETER_MAX_RATING, 1, 5);
 		min.addMenuElementFirst("-1", iwrb.getLocalizedString("travel.search.any", "Any"));
@@ -214,7 +212,6 @@ public class HotelSearch extends AbstractSearchForm {
 			}
 		}
 
-		DropdownMenu roomTypeDrop = new DropdownMenu(roomTypes, PARAMETER_TYPE);
 
 		
 		roomTypeDrop.setSelectedElement(super.getDefaultValue(PARAMETER_TYPE));
@@ -274,6 +271,57 @@ public class HotelSearch extends AbstractSearchForm {
 				bf.getCurrentBookingPart().mergeCells(1, bf.getCurrentBookingPartRow()-2, 2, bf.getCurrentBookingPartRow()-2);
 			}
 		}
+	}
+
+	/**
+	 * @return
+	 */
+	private DropdownMenu getRoomTypeDropdown(Collection suppliers, String parameterName) {
+		Collection roomTypes = new Vector();
+		try {
+			RoomTypeHome trh = (RoomTypeHome) IDOLookup.getHome(RoomType.class);
+			roomTypes = trh.findAllUsedBySuppliers(suppliers);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		DropdownMenu roomTypeDrop = new DropdownMenu(roomTypes, parameterName);
+		return roomTypeDrop;
+	}
+
+	private DropdownMenu getHotelTypeDropdown(Collection hotelTypes, IWResourceBundle iwrb, String parameterName) {
+		DropdownMenu spHotelTypes = new DropdownMenu( parameterName);
+		SelectorUtility su = new SelectorUtility();
+		spHotelTypes = (DropdownMenu) su.getSelectorFromIDOEntities(spHotelTypes, hotelTypes, "getLocalizationKey", iwrb);
+		spHotelTypes.addMenuElementFirst("-1", iwrb.getLocalizedString("travel.any_types", "Any type"));
+		spHotelTypes.setSelectedElement("-1");
+		return spHotelTypes;
+	}
+	
+	public DropdownMenu getRoomTypeDropdown(Group supplierManager, String parameterName) {
+		try {
+//			RoomTypeHome trh = (RoomTypeHome) IDOLookup.getHome(RoomType.class);
+			SupplierHome sHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
+//			Collection hotelTypes = trh.findAllUsedBySuppliers(sHome.findAll(supplierManager));
+			return getRoomTypeDropdown(sHome.findAll(supplierManager), parameterName);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new DropdownMenu(parameterName);
+		}
+		
+	}
+	
+	public DropdownMenu getHotelTypeDropdown(Group supplierManager, IWResourceBundle iwrb, String parameterName) {
+		
+		try {
+			HotelTypeHome trh = (HotelTypeHome) IDOLookup.getHome(HotelType.class);
+			SupplierHome sHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
+			Collection hotelTypes = trh.findAllUsedBySuppliers(sHome.findAll(supplierManager));
+			return getHotelTypeDropdown(hotelTypes, iwrb, parameterName);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new DropdownMenu(parameterName);
+		}
+		
 	}
 
 	protected Link getBookingLink(int productId) {
