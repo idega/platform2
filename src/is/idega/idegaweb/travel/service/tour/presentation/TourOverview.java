@@ -1,26 +1,40 @@
 package is.idega.idegaweb.travel.service.tour.presentation;
-import javax.ejb.FinderException;
-import is.idega.idegaweb.travel.data.*;
-import java.util.*;
-import is.idega.idegaweb.travel.presentation.TravelManager;
-import com.idega.business.IBOLookup;
+import is.idega.idegaweb.travel.business.ServiceNotFoundException;
+import is.idega.idegaweb.travel.business.TimeframeNotFoundException;
+import is.idega.idegaweb.travel.business.TravelSessionManager;
+import is.idega.idegaweb.travel.data.Service;
+import is.idega.idegaweb.travel.data.ServiceDay;
+import is.idega.idegaweb.travel.data.ServiceDayHome;
+import is.idega.idegaweb.travel.data.ServiceHome;
 import is.idega.idegaweb.travel.presentation.TravelCurrencyCalculatorWindow;
-import com.idega.presentation.text.Link;
-import com.idega.idegaweb.IWBundle;
-import com.idega.block.trade.stockroom.data.*;
-import is.idega.idegaweb.travel.business.*;
+import is.idega.idegaweb.travel.presentation.TravelManager;
 import is.idega.idegaweb.travel.service.presentation.AbstractServiceOverview;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
-
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Vector;
+import javax.ejb.FinderException;
 import com.idega.block.trade.data.Currency;
 import com.idega.block.trade.stockroom.business.ProductPriceException;
+import com.idega.block.trade.stockroom.data.PriceCategoryBMPBean;
+import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.ProductPrice;
+import com.idega.block.trade.stockroom.data.Supplier;
+import com.idega.block.trade.stockroom.data.SupplierHome;
+import com.idega.block.trade.stockroom.data.Timeframe;
+import com.idega.block.trade.stockroom.data.TravelAddress;
+import com.idega.business.IBOLookup;
 import com.idega.core.location.data.Address;
 import com.idega.data.IDOFinderException;
 import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.util.IWCalendar;
 import com.idega.util.IWTimestamp;
@@ -113,13 +127,14 @@ public class TourOverview extends AbstractServiceOverview {
         service = getTravelStockroomBusiness(iwc).getService(product);
         timeframes = product.getTimeframes();
         try {
-          depAddresses = product.getDepartureAddresses(true);
+          depAddresses = getProductBusiness(iwc).getDepartureAddresses(product, true);
         }catch (IDOFinderException ido) {
           ido.printStackTrace(System.err);
           depAddresses = new Vector();
         }
         depAddress = getProductBusiness(iwc).getDepartureAddress(product);
         arrAddress = getProductBusiness(iwc).getArrivalAddress(product);
+
         if (product.getFileId() != -1) {
           image = new Image(product.getFileId());
           image.setMaxImageWidth(138);
@@ -355,7 +370,7 @@ public class TourOverview extends AbstractServiceOverview {
       table.setBorder(0);
 
       IWTimestamp depTimeStamp = new IWTimestamp(service.getDepartureTime());
-      List depAddresses = product.getDepartureAddresses(true);
+      List depAddresses = getProductBusiness(iwc).getDepartureAddresses(product, true);
       TravelAddress depAddress = getProductBusiness(iwc).getDepartureAddress(product);
       Timeframe[] timeframes = product.getTimeframes();
       Currency currency;

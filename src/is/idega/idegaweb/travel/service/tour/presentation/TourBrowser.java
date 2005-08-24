@@ -1,5 +1,5 @@
 /*
- * $Id: TourBrowser.java,v 1.8 2005/07/06 02:18:24 gimmi Exp $
+ * $Id: TourBrowser.java,v 1.9 2005/08/24 13:27:23 gimmi Exp $
  * Created on 28.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -251,7 +251,7 @@ public class TourBrowser extends TravelBlock implements SupplierBrowserPlugin {
 				}
 			}
 			timer.stop();
-			System.out.println("[TourBrowser] time to check products : "+timer.getTimeString());
+			System.out.println("[TourBrowser] time to check "+coll.size()+" products : "+timer.getTimeString());
 			return pColl;
 		}
 		return coll;

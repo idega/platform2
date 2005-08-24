@@ -127,7 +127,7 @@ public class FishingOverview extends AbstractServiceOverview {
         service = getTravelStockroomBusiness(iwc).getService(product);
         timeframes = product.getTimeframes();
         try {
-          depAddresses = product.getDepartureAddresses(true);
+          depAddresses = getProductBusiness(iwc).getDepartureAddresses(product, true);
         }catch (IDOFinderException ido) {
           ido.printStackTrace(System.err);
           depAddresses = new Vector();
@@ -360,7 +360,7 @@ public class FishingOverview extends AbstractServiceOverview {
       table.setBorder(0);
 
       IWTimestamp depTimeStamp = new IWTimestamp(service.getDepartureTime());
-      List depAddresses = product.getDepartureAddresses(true);
+      List depAddresses = getProductBusiness(iwc).getDepartureAddresses(product, true);
       TravelAddress depAddress = getProductBusiness(iwc).getDepartureAddress(product);
       Timeframe[] timeframes = product.getTimeframes();
       Currency currency;

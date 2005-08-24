@@ -1746,40 +1746,37 @@ public class HotelBookingForm extends BookingForm {
   	return (HotelHome) IDOLookup.getHome(Hotel.class);	
   }
 
-	public boolean isFullyBooked(IWContext iwc, Product product, IWTimestamp stamp) throws RemoteException, CreateException, FinderException {
-		Hotel hotel = getHotelHome().findByPrimaryKey( product.getPrimaryKey() );
-		
-		int max = 0;
-		
-		if (_reseller != null) {
-			Contract cont = super.getContractBusiness(iwc).getContract(_reseller, product);
-			if (cont != null) {
-				max = cont.getAlotment();
-			}	
-		}else { //if (supplier != null) {
-//			max = hotel.getNumberOfUnits();
-//			if (max < 1) {
-				max = getHotelBusiness(iwc).getMaxBookings(product, stamp);
-//			}
-		}
-	
-		if (max != UNLIMITED_AVAILABILITY) {
-	    List addresses;
-	    try {
-	      addresses = product.getDepartureAddresses(false);
-	    }catch (IDOFinderException ido) {
-	      ido.printStackTrace(System.err);
-	      addresses = new Vector();
-	    }
-	    
-	    int addressId = super.getAddressIDToUse(iwc, addresses);
-			//int currentBookings = getHotelBooker(iwc).getBookingsTotalCount(product.getID(), stamp, addressId);
-			int currentBookings = getHotelBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) product.getPrimaryKey()).intValue(), stamp, null, -1, new int[]{}, null );
-			return (currentBookings >= max);
-		}
-		
-		return false;
-	}
+  public boolean isFullyBooked(IWContext iwc, Product product, IWTimestamp stamp) throws RemoteException, CreateException, FinderException {
+	  Hotel hotel = getHotelBusiness(iwc).getHotel(product.getPrimaryKey());//getHotelHome().findByPrimaryKey( product.getPrimaryKey() );
+	  
+	  int max = 0;
+	  
+	  if (_reseller != null) {
+		  Contract cont = super.getContractBusiness(iwc).getContract(_reseller, product);
+		  if (cont != null) {
+			  max = cont.getAlotment();
+		  }	
+	  }else {
+		  max = getHotelBusiness(iwc).getMaxBookings(product, stamp);
+	  }
+	  
+	  if (max != UNLIMITED_AVAILABILITY) {
+		  List addresses;
+		  try {
+			  addresses = getProductBusiness(iwc).getDepartureAddresses(product, false);
+		  }catch (IDOFinderException ido) {
+			  ido.printStackTrace(System.err);
+			  addresses = new Vector();
+		  }
+		  
+		  int addressId = super.getAddressIDToUse(iwc, addresses);
+		  //int currentBookings = getHotelBooker(iwc).getBookingsTotalCount(product.getID(), stamp, addressId);
+		  int currentBookings = getHotelBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) product.getPrimaryKey()).intValue(), stamp, null, -1, new int[]{}, null );
+		  return (currentBookings >= max);
+	  }
+	  
+	  return false;
+  }
 
 	public void saveServiceBooking(
 		IWContext iwc,

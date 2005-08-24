@@ -110,7 +110,7 @@ public class HotelOverview extends AbstractServiceOverview {
     contentTable.setRowColor(contRow, super.GRAY);
 
     ++contRow;
-    
+
     if (tFrames.length == 0) {
 //	    prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), -1, -1, false);
 			contRow = listPrices(iwc, contentTable, contRow, service, -1);
@@ -126,10 +126,9 @@ public class HotelOverview extends AbstractServiceOverview {
     		contentTable.mergeCells(2, contRow, 3, contRow);
     		contentTable.setRowColor(contRow, super.GRAY);
     		++contRow;
-				contRow = listPrices(iwc, contentTable, contRow, service, tFrames[i].getID());				
+			contRow = listPrices(iwc, contentTable, contRow, service, tFrames[i].getID());				
     	}
     }
-    
 
 
     contentTable.setVerticalAlignment(2,contRow,"top");

@@ -602,7 +602,7 @@ public class TourBookingForm extends BookingForm{
   public Form getPublicBookingFormOLD(IWContext iwc, Product product) throws RemoteException, FinderException {
     List addresses;
     try {
-      addresses = product.getDepartureAddresses(false);
+      addresses = getProductBusiness(iwc).getDepartureAddresses(product, false);
     }catch (IDOFinderException ido) {
       ido.printStackTrace(System.err);
       addresses = new Vector();
@@ -687,7 +687,7 @@ public class TourBookingForm extends BookingForm{
 */
       List addresses;
       try {
-        addresses = _product.getDepartureAddresses(false);
+        addresses = getProductBusiness(iwc).getDepartureAddresses(_product, false);
       }catch (IDOFinderException ido) {
         ido.printStackTrace(System.err);
         addresses = new Vector();
@@ -1991,7 +1991,7 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
 		if (max != UNLIMITED_AVAILABILITY) {
 		    List addresses;
 		    try {
-		      addresses = product.getDepartureAddresses(false);
+		      addresses = getProductBusiness(iwc).getDepartureAddresses(product, false);
 		    }catch (IDOFinderException ido) {
 		      ido.printStackTrace(System.err);
 		      addresses = new Vector();
@@ -2014,7 +2014,7 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
 		if (min > 0) {
 		    List addresses;
 		    try {
-		      addresses = product.getDepartureAddresses(false);
+		      addresses = getProductBusiness(iwc).getDepartureAddresses(product, false);
 		    }catch (IDOFinderException ido) {
 		      ido.printStackTrace(System.err);
 		      addresses = new Vector();

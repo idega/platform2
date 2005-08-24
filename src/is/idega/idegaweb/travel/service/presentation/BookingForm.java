@@ -861,7 +861,7 @@ public abstract class BookingForm extends TravelManager{
 	public Form getPublicBookingForm(IWContext iwc, Product product) throws RemoteException, FinderException {
 		List addresses;
 		try {
-			addresses = product.getDepartureAddresses(false);
+			addresses = getProductBusiness(iwc).getDepartureAddresses(product, false);
 		}catch (IDOFinderException ido) {
 			ido.printStackTrace(System.err);
 			addresses = new Vector();
@@ -1293,7 +1293,7 @@ public abstract class BookingForm extends TravelManager{
 		
 		List addresses;
 		try {
-			addresses = product.getDepartureAddresses(false);
+			addresses = getProductBusiness(iwc).getDepartureAddresses(product, false);
 		}catch (IDOFinderException ido) {
 			ido.printStackTrace(System.err);
 			addresses = new Vector();
@@ -1541,7 +1541,7 @@ public abstract class BookingForm extends TravelManager{
 		List addresses = null;
 		Timeframe[] tFrames = new Timeframe[]{};
 		try {
-			addresses = product.getDepartureAddresses(false);
+			addresses = getProductBusiness(iwc).getDepartureAddresses(product, false);
 		}catch (IDOFinderException ido) {
 			ido.printStackTrace(System.err);
 			addresses = new Vector();
@@ -3001,7 +3001,7 @@ public abstract class BookingForm extends TravelManager{
 		}
 		List addresses;
 		try {
-			addresses = _product.getDepartureAddresses(false);
+			addresses = getProductBusiness(iwc).getDepartureAddresses(_product, false);
 		}catch (IDOFinderException ido) {
 			ido.printStackTrace(System.err);
 			addresses = new Vector();
@@ -4686,7 +4686,7 @@ public abstract class BookingForm extends TravelManager{
 		if (max != UNLIMITED_AVAILABILITY ) {
 			List addresses;
 			try {
-				addresses = product.getDepartureAddresses(false);
+				addresses = getProductBusiness(iwc).getDepartureAddresses(product, false);
 			}catch (IDOFinderException ido) {
 				ido.printStackTrace(System.err);
 				addresses = new Vector();
@@ -4717,7 +4717,7 @@ public abstract class BookingForm extends TravelManager{
 		if (min > 0 ) {
 			List addresses;
 			try {
-				addresses = product.getDepartureAddresses(false);
+				addresses = getProductBusiness(iwc).getDepartureAddresses(product, false);
 			}catch (IDOFinderException ido) {
 				ido.printStackTrace(System.err);
 				addresses = new Vector();
