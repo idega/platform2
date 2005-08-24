@@ -13,6 +13,7 @@ import is.idega.idegaweb.travel.service.tour.data.Tour;
 import is.idega.idegaweb.travel.service.tour.data.TourHome;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 import javax.ejb.FinderException;
@@ -28,6 +29,7 @@ import com.idega.core.location.data.Address;
 import com.idega.core.location.data.AddressHome;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.util.IWTimestamp;
@@ -43,6 +45,8 @@ import com.idega.util.IWTimestamp;
 
 public class TourBusinessBean extends TravelStockroomBusinessBean implements TourBusiness{
 
+	private HashMap tourMap = new HashMap();
+	
   public TourBusinessBean() {
   }
 
@@ -92,6 +96,7 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
           Service service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHome(Service.class)).findByPrimaryKey(new Integer(serviceId));
           Product product = getProductBusiness().getProduct(serviceId);// Product(serviceId);
           Tour tour;
+          tourMap.remove(product.getPrimaryKey());
 
           if (tourId == -1) {
             tour = ((is.idega.idegaweb.travel.service.tour.data.TourHome)com.idega.data.IDOLookup.getHome(Tour.class)).create();
@@ -118,7 +123,8 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
             try {
               for (int i = 0; i < arrivalAddressIds.length; i++) {
                 addrs = aHome.findByPrimaryKey(arrivalAddressIds[i]);
-                product.addArrivalAddress(addrs);
+                getProductBusiness().addArrivalAddress(product, addrs);
+//                product.addArrivalAddress(addrs);
   //                product.addTo(Address.class,arrivalAddressIds[i]);
               }
             }catch (Exception e) {
@@ -522,7 +528,7 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
   }
 
 	public int getMaxBookings(Product product, IWTimestamp stamp) throws RemoteException, FinderException {
-		Tour tour = ((TourHome) IDOLookup.getHome(Tour.class)).findByPrimaryKey(product.getPrimaryKey());
+		Tour tour = getTour(product.getPrimaryKey());
 		int max = tour.getTotalSeats();
 		if (max == BookingForm.UNLIMITED_AVAILABILITY) {
 			return super.getMaxBookings(product, stamp);
@@ -535,13 +541,22 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
 	public int getMinBookings(Product product, IWTimestamp stamp) throws RemoteException, FinderException {
 		int min = super.getMinBookings(product, stamp);
 		if (min <= 0) {
-			Tour tour = ((TourHome) IDOLookup.getHome(Tour.class)).findByPrimaryKey(product.getPrimaryKey());
+			Tour tour = getTour(product.getPrimaryKey());
 			return tour.getMinimumSeats();
 		}
 		return min;
 	}
 
 
+	protected Tour getTour(Object primaryKey) throws IDOLookupException, FinderException {
+		Tour tour = (Tour) tourMap.get(primaryKey);
+		if (tour == null) {
+			tour = ((TourHome) IDOLookup.getHome(Tour.class)).findByPrimaryKey(primaryKey);
+			tourMap.put(primaryKey, tour);
+		}
+		return tour;
+	}
+	
   protected ProductBusiness getProductBusiness() throws RemoteException {
     return (ProductBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ProductBusiness.class);
   }
