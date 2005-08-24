@@ -28,6 +28,7 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.util.IWCalendar;
 import com.idega.util.IWTimestamp;
+import com.idega.util.Timer;
 
 /**
  * Title:        idegaWeb Travel
@@ -161,7 +162,12 @@ public class CalendarHandler extends TravelManager {
 		/**
 		 * @todo Perform check of some sort
 		 */
-		return getCalendarTablePrivate(iwc);
+		Timer t = new Timer();
+		t.start();
+		Table table = getCalendarTablePrivate(iwc);
+		t.stop();
+		System.out.println("[CalendarHandler] time to get calendar : "+t.getTimeString());
+		return table;
 	}
 	
 	private Table getCalendarTablePrivate(IWContext iwc) throws RemoteException, FinderException{
@@ -364,6 +370,7 @@ public class CalendarHandler extends TravelManager {
 		IWTimestamp temp = new IWTimestamp(1, month , year);
 		int iBookings = 0;
 		
+		
 		List depDays = this.getDepartureDays(iwc, _showPast);
 		
 		TravelStockroomBusiness tsb = super.getServiceHandler(iwc).getServiceBusiness( this._product);
@@ -377,11 +384,12 @@ public class CalendarHandler extends TravelManager {
 		 seats = _tour.getTotalSeats();
 		 }
 		 */
-		
+		Timer t = new Timer();
+		t.start();
 		
 		
 		try {
-			BookingForm bf = super.getServiceHandler(iwc).getBookingForm(iwc,  this._product);
+			BookingForm bf = super.getServiceHandler(iwc).getBookingForm(iwc,  this._product, false);
 			TravelStockroomBusiness sb = super.getServiceHandler(iwc).getServiceBusiness( _product);
 			
 			if (_contract != null) {
@@ -444,6 +452,9 @@ public class CalendarHandler extends TravelManager {
 				for (int i = 0; i < depDays.size(); i++) {
 					//System.err.println("trying");
 					temp = (IWTimestamp) depDays.get(i);
+					t.stop();
+					System.out.println("[CalendarHandler] before checking date "+temp.toSQLDateString()+" : "+t.getTimeString());
+					t.start();
 					if (bf.isFullyBooked( iwc, _product, temp) ) {
 						//            if (seats > 0 && seats <= getBooker(iwc).getBookingsTotalCount(_productId, temp) ) {
 						//System.err.println("bookings...");
@@ -548,6 +559,9 @@ public class CalendarHandler extends TravelManager {
 			ce.printStackTrace(System.err);	
 		}
 		
+		t.stop();
+		System.out.println("[CalendarHandler] sub1 : "+t.getTimeString());
+
 		Table legend = new Table();
 		legend.setBorder(0);
 		legend.setCellpadding(0);
