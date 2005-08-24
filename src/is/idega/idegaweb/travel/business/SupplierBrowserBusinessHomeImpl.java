@@ -1,6 +1,6 @@
 /*
- * $Id: SupplierBrowserBusinessHomeImpl.java,v 1.1 2005/07/07 02:59:05 gimmi Exp $
- * Created on Jul 6, 2005
+ * $Id: SupplierBrowserBusinessHomeImpl.java,v 1.2 2005/08/24 13:19:33 gimmi Exp $
+ * Created on Aug 19, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -14,10 +14,10 @@ import com.idega.business.IBOHomeImpl;
 
 /**
  * 
- *  Last modified: $Date: 2005/07/07 02:59:05 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/08/24 13:19:33 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class SupplierBrowserBusinessHomeImpl extends IBOHomeImpl implements SupplierBrowserBusinessHome {
 
