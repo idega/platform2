@@ -293,7 +293,7 @@ private void finalize(IWContext iwc) throws Exception {
           Timeframe[] tFrames = product.getTimeframes();
           List addresses = com.idega.util.ListUtil.getEmptyList();
           try {
-            addresses = product.getDepartureAddresses(true);
+            addresses = getProductBusiness(iwc).getDepartureAddresses(product, true);
           }catch (IDOFinderException ido) {
             ido.printStackTrace(System.err);
           }

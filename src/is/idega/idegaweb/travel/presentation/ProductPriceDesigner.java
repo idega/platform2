@@ -258,7 +258,7 @@ public class ProductPriceDesigner extends TravelWindow {
     }
     List addresses = com.idega.util.ListUtil.getEmptyList();
     try {
-      addresses = _product.getDepartureAddresses(true);
+      addresses = getProductBusiness(iwc).getDepartureAddresses(_product, true);
     }catch (IDOFinderException ido) {
       ido.printStackTrace(System.err);
     }

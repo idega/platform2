@@ -148,7 +148,8 @@ public class AddressAdder extends TravelWindow {
 	          		tAddress.setRefillStock(false);
 	          }
 	          tAddress.insert();
-	          _product.addTravelAddress(tAddress);
+	          getProductBusiness(iwc).addTravelAddress(_product, tAddress);
+//	          _product.addTravelAddress(tAddress);
 	        }
 	      }else {
 	        if (iwc.getParameter(this._parameterDelete+ids[i]) != null) {
@@ -159,7 +160,8 @@ public class AddressAdder extends TravelWindow {
 	          TravelAddress tAddress = ((com.idega.block.trade.stockroom.data.TravelAddressHome)com.idega.data.IDOLookup.getHomeLegacy(TravelAddress.class)).findByPrimaryKeyLegacy(Integer.parseInt(ids[i]));
 	          Address newAddress = ((com.idega.core.location.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).findByPrimaryKeyLegacy(tAddress.getAddressId());
 	//                tAddress.removeFrom(_product);
-	            _product.removeTravelAddress(tAddress);
+	          getProductBusiness(iwc).removeTravelAddress(_product, tAddress);
+//	            _product.removeTravelAddress(tAddress);
 	            tAddress.delete();
 	            newAddress.delete();
 	        }else if (!name[i].equals("")) {
@@ -232,7 +234,7 @@ public class AddressAdder extends TravelWindow {
     delTxt.setBold(true);
 
     try {
-    		List addresses = _product.getDepartureAddresses(true);
+    		List addresses = getProductBusiness(iwc).getDepartureAddresses(_product, true);
       int addressesSize = addresses.size();
       TravelAddress tAddress;
       Address address;

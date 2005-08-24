@@ -109,7 +109,7 @@ public class AdditionalBooking extends TravelWindow {
       String addId = iwc.getParameter(this.parameterDepartureAddressId);
       String tfrId = iwc.getParameter(this.parameterTimeframeId);
 
-      List addresses = product.getDepartureAddresses(true);
+      List addresses = getProductBusiness(iwc).getDepartureAddresses(product, true);
       Timeframe[] timeframes = product.getTimeframes();
       int iAddressId = -1;
       if (addresses.size() > 0) {

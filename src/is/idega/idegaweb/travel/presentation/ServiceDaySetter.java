@@ -641,7 +641,7 @@ public class ServiceDaySetter extends TravelWindow {
 		}
 		List arrivalAddresses = null;
 		try {
-			arrivalAddresses = _product.getDepartureAddresses(true);
+			arrivalAddresses = getProductBusiness(iwc).getDepartureAddresses(_product, true);
 		}
 		catch (IDOFinderException e3) {
 			e3.printStackTrace();

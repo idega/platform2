@@ -162,7 +162,7 @@ public class DailyReport extends TravelManager implements Report{
 
       int[] bookingTypeIds = {Booking.BOOKING_TYPE_ID_INQUERY_BOOKING, Booking.BOOKING_TYPE_ID_ONLINE_BOOKING , Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING ,Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING };
       Timeframe tframe;
-      List addresses = product.getDepartureAddresses(true);
+      List addresses = getProductBusiness(iwc).getDepartureAddresses(product, true);
       TravelAddress address;
       int addressesSize = addresses.size();
       Collection prices = null;

@@ -553,7 +553,7 @@ public class ServiceViewer extends Window {
     Text nameOfCategory = getText("");
 
     Product product = getProductBusiness(iwc).getProduct((Integer)service.getPrimaryKey());
-    List depAddresses = product.getDepartureAddresses(true);
+    List depAddresses = getProductBusiness(iwc).getDepartureAddresses(product, true);
     TravelAddress tAddress;
     Timeframe[] timeframes = product.getTimeframes();
     Collection prices = null;

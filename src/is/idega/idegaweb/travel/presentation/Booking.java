@@ -173,7 +173,7 @@ public class Booking extends TravelManager {
 
 				String travelAddressId = iwc.getParameter(BookingForm.parameterDepartureAddressId);
 				if (travelAddressId == null || travelAddressId.equals("-1")) {
-					List addresses = product.getDepartureAddresses(true);
+					List addresses = getProductBusiness(iwc).getDepartureAddresses(product, true);
 					if (addresses != null && addresses.size() > 0) {
 						travelAddress = (TravelAddress) addresses.get(0);
 					}
