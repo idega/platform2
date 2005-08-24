@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.presentation;
 
+import is.idega.idegaweb.travel.IWBundleStarter;
 import is.idega.idegaweb.travel.block.search.business.ServiceSearchBusiness;
 import is.idega.idegaweb.travel.block.search.data.ServiceSearchEngine;
 import is.idega.idegaweb.travel.business.Assigner;
@@ -52,6 +53,7 @@ public class TravelBlock extends Block {
   protected boolean isSuperAdmin = false;
   protected boolean expiredLogin = false;
   protected static DecimalFormat decimalFormat = new DecimalFormat("0.00");
+  private static String datasource = null;
 
   public static final String IW_BUNDLE_IDENTIFIER = "is.idega.travel";
   
@@ -296,6 +298,19 @@ public class TravelBlock extends Block {
   		tsm = getTravelSessionManagerStatic(iwc);
   	}
   	return tsm;
+  }
+  
+  protected String getDatasource() throws RemoteException {
+	  if (datasource == null) {
+		  String tmp = getBundle().getProperty(IWBundleStarter.DATASOURCE);
+		  if (tmp != null) {
+			  datasource = tmp;
+		  } else {
+			  datasource = "default";
+		  }
+	  }
+	  
+	  return datasource;
   }
   
   protected boolean isTestMode() throws RemoteException {
