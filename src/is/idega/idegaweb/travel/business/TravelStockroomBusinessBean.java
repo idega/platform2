@@ -19,6 +19,7 @@ import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -87,6 +88,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 
   protected Timeframe timeframe; // Thread unsafe ?
   protected static Hashtable maxDaysMap = new Hashtable();
+  protected HashMap serviceMap = new HashMap();
 
   public TravelStockroomBusinessBean() {
   }
@@ -317,12 +319,15 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 
 
   public Service getService(Product product) throws ServiceNotFoundException, RemoteException {
-    Service service = null;
-    try {
-      service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHome(Service.class)).findByPrimaryKey(product.getPrimaryKey());
-    }
-    catch (FinderException sql) {
-      throw new ServiceNotFoundException(sql);
+    Service service = (Service) serviceMap.get(product.getPrimaryKey());
+    if (service == null) {
+	    try {
+	      service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHome(Service.class)).findByPrimaryKey(product.getPrimaryKey());
+	      serviceMap.put(product.getPrimaryKey(), service);
+	    }
+	    catch (FinderException sql) {
+	      throw new ServiceNotFoundException(sql);
+	    }
     }
     return service;
   }
@@ -1505,7 +1510,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 		return false;
 	}
 	
-  private ProductBusiness getProductBusiness() throws RemoteException {
+  protected ProductBusiness getProductBusiness() throws RemoteException {
     return (ProductBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ProductBusiness.class);
   }
 
