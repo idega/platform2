@@ -87,6 +87,7 @@ public class RunResultViewer extends Block {
 	private int sortBy = IWMarathonConstants.RYSDD_TOTAL;
 
 	private SelectorUtility util;
+	private HashMap countryMap = new HashMap();
 
 	public void main(IWContext iwc) throws Exception {
 		_iwc = iwc;
@@ -401,7 +402,13 @@ public class RunResultViewer extends Block {
 		
 		Country country = null;
 		try {
-			country = getRunBiz().getCountryByNationality(run.getUserNationality());
+		    String userNationality = run.getUserNationality();
+		    if (countryMap.containsKey(userNationality)) {
+		        country = (Country)countryMap.get(userNationality);
+		    } else {
+				country = getRunBiz().getCountryByNationality(userNationality);
+		        countryMap.put(userNationality, country);
+		    }
 		}
 		catch (RemoteException re) {
 			log(re);
