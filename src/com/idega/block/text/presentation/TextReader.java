@@ -22,8 +22,10 @@ import com.idega.block.text.business.TextFinder;
 import com.idega.block.text.business.TextFormatter;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.block.text.data.TxText;
+import com.idega.block.text.data.TxTextHome;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.localisation.business.ICLocaleBusiness;
+import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.block.presentation.Builderaware;
@@ -128,7 +130,8 @@ public class TextReader extends Block implements Builderaware {
 		int iLocaleId = ICLocaleBusiness.getLocaleId(locale);
 
 		if (iTextId > 0) {
-			txText = ((com.idega.block.text.data.TxTextHome) com.idega.data.IDOLookup.getHomeLegacy(TxText.class)).findByPrimaryKeyLegacy((iTextId));
+			TxTextHome txHome = (TxTextHome) IDOLookup.getHome(TxText.class);
+			txText = txHome.findByPrimaryKey(new Integer(iTextId));
 		}
 		else if (sAttribute != null) {
 			txText = TextFinder.getText(sAttribute);
