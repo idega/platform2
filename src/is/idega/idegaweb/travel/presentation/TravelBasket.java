@@ -1,5 +1,5 @@
 /*
- * $Id: TravelBasket.java,v 1.2 2005/07/07 03:03:15 gimmi Exp $
+ * $Id: TravelBasket.java,v 1.3 2005/08/27 15:37:15 gimmi Exp $
  * Created on 22.6.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -14,6 +14,7 @@ import is.idega.idegaweb.travel.block.search.business.ServiceSearchBusinessBean;
 import is.idega.idegaweb.travel.block.search.presentation.AbstractSearchForm;
 import is.idega.idegaweb.travel.business.BookingComparator;
 import is.idega.idegaweb.travel.data.GeneralBooking;
+import is.idega.idegaweb.travel.data.GeneralBookingHome;
 import is.idega.idegaweb.travel.service.presentation.BookingForm;
 import java.rmi.RemoteException;
 import java.util.Collection;
@@ -31,6 +32,7 @@ import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.builder.data.ICPage;
+import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -335,6 +337,20 @@ public class TravelBasket extends TravelBlock {
 	
 	public void setUseTravelLook(boolean use) {
 		this.useTravelLook = use;
+	}
+	
+	public void setBookingPKs(String[] bookingPKs) {
+		try {
+			GeneralBookingHome gbHome = (GeneralBookingHome) IDOLookup.getHome(GeneralBooking.class);
+			bookings = new Vector();
+			if (bookingPKs != null) {
+				for (int i = 0; i < bookingPKs.length; i++) {
+					bookings.add(gbHome.findByPrimaryKey(new Integer(bookingPKs[i])));
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	/**
 	 * Set the encrypted name of ActionListener for the other server  
