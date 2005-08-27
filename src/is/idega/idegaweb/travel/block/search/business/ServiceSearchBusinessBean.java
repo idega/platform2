@@ -903,7 +903,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 
 			// Send emails
 			BookingForm bf = getServiceHandler().getBookingForm(iwc, booking.getService().getProduct(), false);
-			bf.sendEmails(iwc, booking, iwrb);
+			bf.sendEmails(iwc, booking, iwrb, supplierManager);
 
 			getBooker().invalidateCache(booking.getID());
 			
