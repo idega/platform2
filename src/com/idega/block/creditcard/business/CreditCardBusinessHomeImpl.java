@@ -1,6 +1,6 @@
 /*
- * $Id: CreditCardBusinessHomeImpl.java,v 1.2 2005/05/31 19:28:07 gimmi Exp $
- * Created on 4.4.2005
+ * $Id: CreditCardBusinessHomeImpl.java,v 1.3 2005/08/27 15:28:43 gimmi Exp $
+ * Created on Aug 27, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -14,10 +14,10 @@ import com.idega.business.IBOHomeImpl;
 
 /**
  * 
- *  Last modified: $Date: 2005/05/31 19:28:07 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/08/27 15:28:43 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class CreditCardBusinessHomeImpl extends IBOHomeImpl implements CreditCardBusinessHome {
 

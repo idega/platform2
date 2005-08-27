@@ -1,6 +1,6 @@
 /*
- * $Id: CreditCardBusiness.java,v 1.6 2005/06/15 16:35:31 gimmi Exp $
- * Created on 4.4.2005
+ * $Id: CreditCardBusiness.java,v 1.7 2005/08/27 15:28:43 gimmi Exp $
+ * Created on Aug 27, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -25,10 +25,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2005/06/15 16:35:31 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/08/27 15:28:43 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public interface CreditCardBusiness extends IBOService {
 
@@ -40,10 +40,16 @@ public interface CreditCardBusiness extends IBOService {
 	public final static String CARD_TYPE_JCB = "JCB";
 	public final static String CARD_TYPE_AMERICAN_EXPRESS = "AMERICAN_EXRESS";
 
-	  /**
+	/**
 	 * @see com.idega.block.creditcard.business.CreditCardBusinessBean#getBundleIdentifier
 	 */
 	public String getBundleIdentifier() throws java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.creditcard.business.CreditCardBusinessBean#getAuthorizationEntries
+	 */
+	public Collection getAuthorizationEntries(int clientType, String merchantID, IWTimestamp from, IWTimestamp to)
+			throws IDOLookupException, FinderException, java.rmi.RemoteException;
 
 	/**
 	 * @see com.idega.block.creditcard.business.CreditCardBusinessBean#getCreditCardTypeImages
@@ -54,6 +60,12 @@ public interface CreditCardBusiness extends IBOService {
 	 * @see com.idega.block.creditcard.business.CreditCardBusinessBean#getCreditCardClient
 	 */
 	public CreditCardClient getCreditCardClient(Supplier supplier, IWTimestamp stamp) throws Exception,
+			java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.creditcard.business.CreditCardBusinessBean#getCreditCardClient
+	 */
+	public CreditCardClient getCreditCardClient(Group supplierManager, IWTimestamp stamp) throws Exception,
 			java.rmi.RemoteException;
 
 	/**
@@ -127,6 +139,12 @@ public interface CreditCardBusiness extends IBOService {
 	/**
 	 * @see com.idega.block.creditcard.business.CreditCardBusinessBean#getAuthorizationEntry
 	 */
+	public CreditCardAuthorizationEntry getAuthorizationEntry(Group supplierManager, String authorizationCode,
+			IWTimestamp stamp) throws java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.creditcard.business.CreditCardBusinessBean#getAuthorizationEntry
+	 */
 	public CreditCardAuthorizationEntry getAuthorizationEntry(Supplier supplier, String authorizationCode,
 			IWTimestamp stamp) throws java.rmi.RemoteException;
 
@@ -150,6 +168,4 @@ public interface CreditCardBusiness extends IBOService {
 	 */
 	public Collection getAllRefunds(IWTimestamp from, IWTimestamp to, int clientType) throws IDOLookupException,
 			FinderException, java.rmi.RemoteException;
-	
-	public CreditCardClient getCreditCardClient(Group supplierManager, IWTimestamp stamp) throws Exception;
 }

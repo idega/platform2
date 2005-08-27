@@ -443,8 +443,20 @@ public class CreditCardBusinessBean extends IBOServiceBean implements CreditCard
 		throw new IllegalArgumentException("Number must be at least 10 characters long");
 	}
 	
+	public CreditCardAuthorizationEntry getAuthorizationEntry(Group supplierManager, String authorizationCode, IWTimestamp stamp) {
+		CreditCardInformation info = getCreditCardInformations(supplierManager, stamp);
+		return getAuthorizationEntry(info, authorizationCode, stamp);
+	}	
+	
 	public CreditCardAuthorizationEntry getAuthorizationEntry(Supplier supplier, String authorizationCode, IWTimestamp stamp) {
 		CreditCardInformation info = getCreditCardInformation(supplier, stamp);
+		CreditCardAuthorizationEntry entry =  getAuthorizationEntry(info, authorizationCode, stamp);
+		if (entry == null) {
+			entry = getAuthorizationEntry(supplier.getSupplierManager(), authorizationCode, stamp);
+		}
+		return entry;
+	}
+	private CreditCardAuthorizationEntry getAuthorizationEntry(CreditCardInformation info, String authorizationCode, IWTimestamp stamp) {
 		if (info != null) {
 			try {
 				if ( CreditCardMerchant.MERCHANT_TYPE_TPOS.equals(info.getType()) ){
@@ -466,7 +478,7 @@ public class CreditCardBusinessBean extends IBOServiceBean implements CreditCard
 			}
 		} else {
 			try {
-				log("Cannot find creditCardInformation for supplier = "+ supplier.getName()+", looking up authEntry in TPOS...authCode = "+authorizationCode);
+				log("Cannot find creditCardInformation for = "+ info.getType()+", "+info.getMerchantPKString()+" looking up authEntry in TPOS...authCode = "+authorizationCode);
 				TPosAuthorisationEntriesBeanHome authEntHome = (TPosAuthorisationEntriesBeanHome) IDOLookup.getHome(TPosAuthorisationEntriesBean.class);
 				TPosAuthorisationEntriesBean entry = authEntHome.findByAuthorisationIdRsp(authorizationCode, stamp);
 				if (entry != null) {
