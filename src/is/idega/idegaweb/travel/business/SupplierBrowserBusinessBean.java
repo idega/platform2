@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowserBusinessBean.java,v 1.2 2005/08/24 13:19:33 gimmi Exp $
+ * $Id: SupplierBrowserBusinessBean.java,v 1.3 2005/08/27 15:31:52 gimmi Exp $
  * Created on Jul 6, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -153,7 +153,7 @@ public class SupplierBrowserBusinessBean extends IBOServiceBean  implements Supp
 	public synchronized Collection parseXML(Group supplierManager, File xml) throws RemoteException, XMLException {
 		
 		XMLParser parser = new XMLParser();
-		XMLDocument doc = parser.parse(new File("/Users/gimmi/Desktop/test.xml"));
+		XMLDocument doc = parser.parse(xml);
 		XMLElement el = doc.getRootElement();
 
 		String engineName = el.getAttributeValue(ATTRIBUTE_NAME);
