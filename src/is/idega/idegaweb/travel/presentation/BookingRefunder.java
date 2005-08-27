@@ -398,7 +398,7 @@ public class BookingRefunder extends TravelBlock {
 	    table.setAlignment(2, row, "right");
 	    
 	    BookingForm bf = getServiceHandler(iwc).getBookingForm(iwc, product);
-	    bf.sendEmails(iwc, booking, iwrb, true);
+	    bf.sendEmails(iwc, booking, iwrb, true, null);
 	  }
 	  catch(CreditCardAuthorizationException e) {
 	    String errMsge = e.getErrorMessage();
