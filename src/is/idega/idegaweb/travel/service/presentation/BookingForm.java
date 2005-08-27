@@ -4945,10 +4945,14 @@ public abstract class BookingForm extends TravelManager{
 	}
 	
 	public boolean sendEmails(IWContext iwc, GeneralBooking gBooking,IWResourceBundle iwrb) {
-		return sendEmails(iwc, gBooking, iwrb, false);
+		return sendEmails(iwc, gBooking, iwrb, false, null);
+	}
+
+	public boolean sendEmails(IWContext iwc, GeneralBooking gBooking,IWResourceBundle iwrb, Group supplierManagerForCCClient) {
+		return sendEmails(iwc, gBooking, iwrb, false, supplierManagerForCCClient);
 	}
 	
-	public boolean sendEmails(IWContext iwc, GeneralBooking gBooking,IWResourceBundle iwrb, boolean isRefund) {
+	public boolean sendEmails(IWContext iwc, GeneralBooking gBooking,IWResourceBundle iwrb, boolean isRefund, Group supplierManagerForCCClient) {
 		boolean sendEmail = false;
 		try {
 			DecimalFormat df = new DecimalFormat("0.00");
@@ -5017,7 +5021,12 @@ public abstract class BookingForm extends TravelManager{
 					String ccAuthNumber =  gBooking.getCreditcardAuthorizationNumber();
 					String cardType = null;
 					if (ccAuthNumber != null) {
-						CreditCardAuthorizationEntry entry = ccBus.getAuthorizationEntry(suppl, ccAuthNumber, new IWTimestamp(gBooking.getDateOfBooking()));
+						CreditCardAuthorizationEntry entry = null;
+						if (supplierManagerForCCClient == null) {
+							entry = ccBus.getAuthorizationEntry(suppl, ccAuthNumber, new IWTimestamp(gBooking.getDateOfBooking()));
+						} else {
+							entry = ccBus.getAuthorizationEntry(supplierManagerForCCClient, ccAuthNumber, new IWTimestamp(gBooking.getDateOfBooking()));
+						}
 						if ( isRefund ) {
 							try {
 								CreditCardAuthorizationEntry child = entry.getChild();
