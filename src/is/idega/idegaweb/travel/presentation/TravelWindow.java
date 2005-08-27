@@ -68,6 +68,13 @@ public class TravelWindow extends Window {
   	super.setScrollbar(true);
   	super.setResizable(true);
   }
+  
+  public TravelWindow(int width, int height) {
+	  super(width, height);
+	  	super.setTitle("idegaWEB travel");
+	  	super.setScrollbar(true);
+	  	super.setResizable(true);
+  }
 
   public void add(PresentationObject mo) {
     table.add(mo,2,2);
