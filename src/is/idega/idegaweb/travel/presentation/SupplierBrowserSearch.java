@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowserSearch.java,v 1.1 2005/08/24 13:28:19 gimmi Exp $
+ * $Id: SupplierBrowserSearch.java,v 1.2 2005/08/27 15:38:20 gimmi Exp $
  * Created on Aug 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -13,6 +13,7 @@ import is.idega.idegaweb.travel.business.SupplierBrowserBusiness;
 import is.idega.idegaweb.travel.business.SupplierBrowserBusinessBean;
 import is.idega.idegaweb.travel.data.SupplierBrowserSearchForm;
 import java.io.File;
+import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 import javax.ejb.FinderException;
@@ -21,7 +22,6 @@ import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.data.IDOLookup;
-import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
 import com.idega.presentation.text.Heading2;
@@ -41,20 +41,21 @@ public class SupplierBrowserSearch extends TravelBlock {
 
 	private static final String PARAMETER_FORM = "sbs_prm_f";
 	
-	Group supplierManager = null;
+	private Group supplierManager = null;
 	
-	String maindiv = "bookingform";
-	String inputdiv = "sbs_input_div";
-	String separatordiv = "sbs_separator_div";
-	String engineDefinitionFile = null;
-	String currentForm = null;
-	String formDropdownStyleClass = null;
+	private String maindiv = "bookingform";
+	private String inputdiv = "sbs_input_div";
+	private String separatordiv = "sbs_separator_div";
+	private String engineDefinitionFile = null;
+	private String currentForm = null;
+	private String formDropdownStyleClass = null;
 	
 	private String CACHE_KEY = "sbs_ck";
-	File engineXML = null;
-	String engineName = null;
-	XMLElement engineHeading = null;
-	String engineStyleClass =  null;
+	private int supplierManagerId = -1;
+	private File engineXML = null;
+	private String engineName = null;
+	private XMLElement engineHeading = null;
+	private String engineStyleClass =  null;
 	
 	
 	public SupplierBrowserSearch() {
@@ -66,10 +67,13 @@ public class SupplierBrowserSearch extends TravelBlock {
 		super.main(iwc);
 		
 		if (engineDefinitionFile != null) {
+			
+			if (supplierManagerId > 0) {
+				GroupHome gHome = (GroupHome) IDOLookup.getHome(Group.class, super.getDatasource());
+				supplierManager = gHome.findByPrimaryKey(new Integer(supplierManagerId));
+			}
+
 			if (supplierManager != null) {
-				System.out.println("[SupplierBrowserSearch] SupplierManager = "+supplierManager.getName());
-				
-	//			this.getParentPage().addStyleSheetURL("/css/screen.css");
 				addSearchForm(iwc);
 			} else {
 				add(getResourceBundle().getLocalizedString("travel.supplier_manager_not_found","Supplier manager not found."));
@@ -134,8 +138,7 @@ public class SupplierBrowserSearch extends TravelBlock {
 		Form form = new Form();
 		form.maintainParameter(PARAMETER_FORM);
 
-//		getSupplierManagerBusiness(iwc).p
-		Collection forms = getSupplierBrowserBusiness(iwc).parseXML(supplierManager, new File("/Users/gimmi/Desktop/test.xml"));
+		Collection forms = getSupplierBrowserBusiness(iwc).parseXML(supplierManager, engineXML);
 		
 		SupplierBrowserSearchForm sf = null;
 		DropdownMenu formSelector = new DropdownMenu(PARAMETER_FORM);
@@ -216,9 +219,8 @@ public class SupplierBrowserSearch extends TravelBlock {
 		engineDefinitionFile = definition;
 	}
 	
-	public void setSupplierManagerID(int supplierManagerId) throws IDOLookupException, FinderException {
-		GroupHome gHome = (GroupHome) IDOLookup.getHome(Group.class);
-		supplierManager = gHome.findByPrimaryKey(new Integer(supplierManagerId));
+	public void setSupplierManagerID(int supplierManagerId) throws FinderException, RemoteException {
+		this.supplierManagerId = supplierManagerId;
 		
 	}
 	
