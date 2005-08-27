@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowserBusinessBean.java,v 1.3 2005/08/27 15:31:52 gimmi Exp $
+ * $Id: SupplierBrowserBusinessBean.java,v 1.4 2005/08/27 16:56:39 gimmi Exp $
  * Created on Jul 6, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -281,7 +281,7 @@ public class SupplierBrowserBusinessBean extends IBOServiceBean  implements Supp
 						}
 					} 
 					else if (type.equalsIgnoreCase(TYPE_DATE)) {
-						input = new DateInput(el.getAttributeValue(ATTRIBUTE_NAME));
+						input = new DateInput(el.getAttributeValue(ATTRIBUTE_NAME), true);
 						String modder = el.getAttributeValue(ATTRIBUTE_DATE_MODIFIER);
 						IWTimestamp stamp = IWTimestamp.RightNow();
 						if (modder != null) {
