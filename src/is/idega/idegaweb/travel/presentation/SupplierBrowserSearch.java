@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowserSearch.java,v 1.2 2005/08/27 15:38:20 gimmi Exp $
+ * $Id: SupplierBrowserSearch.java,v 1.3 2005/08/27 16:58:52 gimmi Exp $
  * Created on Aug 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -29,6 +29,7 @@ import com.idega.presentation.text.Paragraph;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.Label;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
@@ -159,43 +160,23 @@ public class SupplierBrowserSearch extends TravelBlock {
 		Form form2 = new Form();
 		Paragraph p2 = new Paragraph();
 		p2.setStyleClass(formDropdownStyleClass);
+		Label lab = new Label();
+		lab.setLabel(getResourceBundle().getLocalizedString("travel.search_for","Search for"));
+		p2.add(lab);
 		p2.add(formSelector);
 		form2.maintainAllParameters();
 		form2.add(p2);
-//		add(form2);
-		if (engineStyleClass != null) {
-			form.setStyleClass(engineStyleClass);
-			form2.setStyleClass(engineStyleClass);
-		}
 
 		Collection ps = sf.getParagraphs();
-//		texts = sf.getTexts();
-//		ios = sf.getInterfaceObjects();
 		form.add(new HiddenInput(BuilderConstants.IB_PAGE_PARAMETER, sf.getPageID()));
 
-//		Iterator itA = texts.iterator();
-//		Iterator itB = ios.iterator();
 		Iterator it = ps.iterator();
 		while (it.hasNext()) {
 			Paragraph p = (Paragraph) it.next();
-//			Label text = (Label) itA.next();
-//			InterfaceObject io = (InterfaceObject) itB.next();
 			form.add(p);
-//			if (io != null) {
-//				Paragraph inputLayer = new Paragraph();
-//				inputLayer.setID(inputdiv);
-//				inputLayer.add(text);
-//				inputLayer.add(io);
-//				form.add(inputLayer);
-//			} else if (text.getValueAsString().equalsIgnoreCase(SupplierBrowserBusinessBean.ELEMENT_SEPARATOR)) {
-//				Paragraph sepLayer = new Paragraph();
-//				sepLayer.setID(separatordiv);
-//				form.add(sepLayer);
-//			}
-			
 		}
+
 		Paragraph inputLayer = new Paragraph();
-//		inputLayer.setID(inputdiv);
 		inputLayer.setStyleClass("fi");
 		inputLayer.add(new SubmitButton("search"));
 		form.add(inputLayer);
@@ -210,8 +191,15 @@ public class SupplierBrowserSearch extends TravelBlock {
 			h2.setText(getResourceBundle().getLocalizedString(engineHeader, engineHeader));
 			mainLayer.add(h2);
 		}
-		mainLayer.add(form2);
-		mainLayer.add(form);
+		
+		Layer l2 = new Layer();
+		if (engineStyleClass != null) {
+			l2.setStyleClass(engineStyleClass);
+		}
+		
+		l2.add(form2);
+		l2.add(form);
+		mainLayer.add(l2);
 		add(mainLayer);
 	}
 	
