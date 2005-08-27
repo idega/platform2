@@ -12,6 +12,7 @@ import is.idega.idegaweb.travel.presentation.LinkGenerator;
 import is.idega.idegaweb.travel.presentation.PublicBooking;
 import is.idega.idegaweb.travel.presentation.TravelBlock;
 import is.idega.idegaweb.travel.presentation.TravelCurrencyCalculatorWindow;
+import is.idega.idegaweb.travel.presentation.TravelItineraryWindow;
 import is.idega.idegaweb.travel.presentation.TravelWindow;
 import is.idega.idegaweb.travel.presentation.VoucherWindow;
 import is.idega.idegaweb.travel.service.presentation.BookingForm;
@@ -1055,6 +1056,8 @@ public abstract class AbstractSearchForm extends TravelBlock {
 				getSession(iwc).throwException();
 				Collection bookings = getSession(iwc).getBookingsSavedFromBasket();
 //				Collection bookings = getSearchBusiness(iwc).doBasketBooking(iwc, engine);
+				Link itinerary = new Link(getText(iwrb.getLocalizedString("travel.print_itinerary", "Print itinerary")));
+				itinerary.setWindowToOpen(TravelItineraryWindow.class);
 				
 				  table.add(getText(iwc.getParameter(PARAMETER_FIRST_NAME)+" "+iwc.getParameter(PARAMETER_LAST_NAME)));
 				  table.add(getText(", "));
@@ -1077,9 +1080,12 @@ public abstract class AbstractSearchForm extends TravelBlock {
 					  if (!ccAuthAdded) {
 						  table.add(getText(gBooking.getCreditcardAuthorizationNumber()));
 						  table.add(Text.BREAK);
+						  table.add(itinerary);
+						  table.add(Text.BREAK);
 						  table.add(Text.BREAK);
 						  ccAuthAdded = true;
 					  }
+					  itinerary.addParameter(TravelItineraryWindow.PARAMETER_BOOKING_ID, gBooking.getPrimaryKey().toString());
 					  product = gBooking.getService().getProduct();
 					  table.add(getText(iwrb.getLocalizedString("travel.service","Service")));
 					  table.add(getText(" : "));
