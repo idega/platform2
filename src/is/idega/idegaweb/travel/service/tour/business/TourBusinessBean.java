@@ -13,7 +13,9 @@ import is.idega.idegaweb.travel.service.tour.data.Tour;
 import is.idega.idegaweb.travel.service.tour.data.TourHome;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import javax.ejb.FinderException;
@@ -342,7 +344,7 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
       IWTimestamp temp = getDepartureDateForDate(iwc, product, stamp);
       if (temp == null) {
 //        Product product = getProductBusiness().getProduct((Integer) tour.getPrimaryKey());
-        return super.getIfDay(iwc, product, product.getTimeframes(), stamp, includePast, true);
+        return super.getIfDay(iwc, product, getProductBusiness().getTimeframes(product), stamp, includePast, true);
       }else {
         return (stamp.equals(temp));
       }
@@ -367,7 +369,7 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
     	Tour tour = ((TourHome) IDOLookup.getHome(Tour.class)).findByPrimaryKey(product.getPrimaryKey());
 //      Product product = getProductBusiness().getProduct((Integer) tour.getPrimaryKey());
       Service service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHome(Service.class)).findByPrimaryKey(tour.getPrimaryKey());
-      Timeframe[] frames = product.getTimeframes();
+      Timeframe[] frames = getProductBusiness().getTimeframes(product);
       Timeframe tempFrame = (Timeframe) IDOLookup.create(Timeframe.class);
 
       String applicationString = "prodDepDays"+tour.getPrimaryKey().toString()+"_"+fromStamp+"_"+toStamp+"_"+showPast;
@@ -492,7 +494,7 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
   }
 
   public IWTimestamp getNextAvailableDay(IWContext iwc, Tour tour, Product product,  IWTimestamp from) throws SQLException, RemoteException {
-    return getNextAvailableDay(iwc, tour, product, product.getTimeframes(), from);
+    return getNextAvailableDay(iwc, tour, product, getProductBusiness().getTimeframes(product), from);
   }
 
   public IWTimestamp getNextAvailableDay(IWContext iwc, Tour tour, Product product, Timeframe[] timeframes, IWTimestamp from) {
@@ -526,15 +528,29 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
       return null;
     }
   }
+	public void invalidateMaxDayCache(Collection products) throws RemoteException {
+		super.invalidateMaxDayCache(products);
+		if (products != null) {
+			Iterator iter = products.iterator();
+			while (iter.hasNext()) {
+				maxBookings.remove(((Product) iter.next()).getPrimaryKey());
+			}
+		}
+	}
 
+	private HashMap maxBookings = new HashMap();
 	public int getMaxBookings(Product product, IWTimestamp stamp) throws RemoteException, FinderException {
-		Tour tour = getTour(product.getPrimaryKey());
-		int max = tour.getTotalSeats();
-		if (max == BookingForm.UNLIMITED_AVAILABILITY) {
+		Integer theReturner = (Integer) maxBookings.get(product.getPrimaryKey());
+		if (theReturner == null) {
+			Tour tour = getTour(product.getPrimaryKey());
+			theReturner  = new Integer(tour.getTotalSeats());
+		}
+		if (theReturner.intValue() == BookingForm.UNLIMITED_AVAILABILITY) {
 			return super.getMaxBookings(product, stamp);
 			//return tour.getTotalSeats();
+		} else {
+			return theReturner.intValue();
 		}
-		return max;
 	}
 
 
