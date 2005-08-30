@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowserPlugin.java,v 1.6 2005/06/20 17:09:39 gimmi Exp $
+ * $Id: SupplierBrowserPlugin.java,v 1.7 2005/08/30 02:23:33 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -67,9 +67,16 @@ public interface SupplierBrowserPlugin {
 	 * @throws IDOCompositePrimaryKeyException 
 	 * @throws IDORelationshipException 
 	 */
-	public Collection getSuppplierSearchCriterias(IWContext iwc) throws IDOCompositePrimaryKeyException, IDORelationshipException;
+	public Collection getSupplierSearchCriterias(IWContext iwc) throws IDOCompositePrimaryKeyException, IDORelationshipException;
 	
-
+	/**
+	 * Filter the suppliers (if needed)
+	 * @param iwc
+	 * @param supplieres
+	 * @return
+	 */
+	public Collection filterSuppliers(Collection suppliers, Group supplierManager, IWContext iwc, String[][] postalCodes, boolean onlineOnly, boolean useSearchPriceCategoryKey);
+	
 	/**
 	 * Returns a collection of the products to display in the SupplierBrower
 	 * @param iwc
