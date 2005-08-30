@@ -1,5 +1,5 @@
 /*
- * $Id: HotelBrowser.java,v 1.8 2005/06/23 12:23:33 gimmi Exp $
+ * $Id: HotelBrowser.java,v 1.9 2005/08/30 02:14:02 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -23,7 +23,6 @@ import java.util.Iterator;
 import java.util.Vector;
 import javax.ejb.FinderException;
 import com.idega.block.trade.stockroom.data.Product;
-import com.idega.block.trade.stockroom.data.ProductHome;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.data.IDOCompositePrimaryKeyException;
 import com.idega.data.IDOLookup;
@@ -59,18 +58,9 @@ public class HotelBrowser extends TravelBlock implements SupplierBrowserPlugin {
 		Collection texts = new Vector();
 		Collection ios = new Vector();
 		
-		texts.add(iwrb.getLocalizedString("arrival_date", "Arrival date"));
-		texts.add(iwrb.getLocalizedString("departure_date", "Departure date"));
 		texts.add(iwrb.getLocalizedString("minimum_rating", "Minimum rating"));
 		texts.add(iwrb.getLocalizedString("maximum_rating", "Maximum rating"));
 		
-		IWTimestamp now = IWTimestamp.RightNow();
-		
-		DatePicker from = new DatePicker(PARAMETER_FROM_DATE);
-		from.setDate(now.getDate());
-		DatePicker to = new DatePicker(PARAMETER_TO_DATE);
-		now.addDays(1);
-		to.setDate(now.getDate());
 		DropdownMenu min = new DropdownMenu(PARAMETER_MIN_RATING);
 		min.addMenuElement("-1", "");
 		min.addMenuElement("1", "1");
@@ -86,16 +76,7 @@ public class HotelBrowser extends TravelBlock implements SupplierBrowserPlugin {
 		max.addMenuElement("4", "4");
 		max.addMenuElement("5", "5");
 		
-		String pFrom = iwc.getParameter(PARAMETER_FROM_DATE);
-		if (pFrom != null) {
-			IWTimestamp tmp = new IWTimestamp(pFrom);
-			from.setDate(tmp.getDate());
-		}
-		String pTo = iwc.getParameter(PARAMETER_TO_DATE);
-		if (pTo != null) {
-			IWTimestamp tmp = new IWTimestamp(pTo);
-			to.setDate(tmp.getDate());
-		}
+
 		String pMin = iwc.getParameter(PARAMETER_MIN_RATING);
 		if (pMin != null) {
 			min.setSelectedElement(pMin);
@@ -104,8 +85,6 @@ public class HotelBrowser extends TravelBlock implements SupplierBrowserPlugin {
 		if (pMax != null) {
 			max.setSelectedElement(pMax);
 		}
-		ios.add(from);
-		ios.add(to);
 		ios.add(min);
 		ios.add(max);
 		
@@ -141,6 +120,8 @@ public class HotelBrowser extends TravelBlock implements SupplierBrowserPlugin {
 		DropdownMenu roomTypeDrop = new DropdownMenu(roomTypes, PARAMETER_ROOM_TYPE);
 		roomTypeDrop.addMenuElementFirst("-1", iwrb.getLocalizedString("travel.any_types", "Any type"));
 		
+		texts.add(iwrb.getLocalizedString("arrival_date", "Arrival date"));
+		texts.add(iwrb.getLocalizedString("departure_date", "Departure date"));
 		texts.add(iwrb.getLocalizedString("accomodation_type", "Accommodation Type"));
 		texts.add(iwrb.getLocalizedString("room_type", "Room Type"));
 		
@@ -153,13 +134,34 @@ public class HotelBrowser extends TravelBlock implements SupplierBrowserPlugin {
 			roomTypeDrop.setSelectedElement(pRoom);
 		}
 		
+		IWTimestamp now = IWTimestamp.RightNow();
+		
+		DatePicker from = new DatePicker(PARAMETER_FROM_DATE);
+		from.setDate(now.getDate());
+		DatePicker to = new DatePicker(PARAMETER_TO_DATE);
+		now.addDays(1);
+		to.setDate(now.getDate());		String pFrom = iwc.getParameter(PARAMETER_FROM_DATE);
+		if (pFrom != null) {
+			IWTimestamp tmp = new IWTimestamp(pFrom);
+			from.setDate(tmp.getDate());
+		}
+		String pTo = iwc.getParameter(PARAMETER_TO_DATE);
+		if (pTo != null) {
+			IWTimestamp tmp = new IWTimestamp(pTo);
+			to.setDate(tmp.getDate());
+		}
+		ios.add(from);
+		ios.add(to);
+
+		
+		
 		ios.add(spHotelTypes);
 		ios.add(roomTypeDrop);
 		
 		return new Collection[]{texts, ios};
 	}
 	
-	public Collection getSuppplierSearchCriterias(IWContext iwc) throws IDOCompositePrimaryKeyException, IDORelationshipException {
+	public Collection getSupplierSearchCriterias(IWContext iwc) throws IDOCompositePrimaryKeyException, IDORelationshipException {
 		Collection coll = new Vector();
 		
 		Table supplier = new Table(Supplier.class);
@@ -233,23 +235,27 @@ public class HotelBrowser extends TravelBlock implements SupplierBrowserPlugin {
 			iMax = Float.parseFloat(max);
 		}
 		
-		
+//		Timer t = new Timer();
 		Collection coll = getProducts(fromStamp, toStamp, roomTypes, hotelTypes, null, new Object[]{supplier.getPrimaryKey()},iMin, iMax, null);
 		if (coll != null && !coll.isEmpty()) {
 			Collection pColl = new Vector();
-			ProductHome pHome = (ProductHome) IDOLookup.getHome(Product.class);
+//			ProductHome pHome = (ProductHome) IDOLookup.getHome(Product.class);
 			Iterator iter = coll.iterator();
 			Hotel hotel;
 			Product product;
 			boolean checkValidity = isProductSearchCompleted(iwc);
 			while (iter.hasNext()) {
 				hotel = (Hotel) iter.next();
-				product =pHome.findByPrimaryKey(hotel.getPrimaryKey());
+//				product = pHome.findByPrimaryKey(hotel.getPrimaryKey());
 				try {
+					product = getProductBusiness(iwc).getProduct(((Integer) hotel.getPrimaryKey()).intValue());
 					if (checkValidity) {
+//						t.start();
 						if (getBookingBusiness(iwc).getIsProductValid(iwc, product, fromStamp, toStamp, onlineOnly, useSearchPriceCategoryKey)) {
 							pColl.add(product);
 						}
+//						t.stop();
+//						System.out.println("  checking validity : "+t.getTimeString());
 					} else {
 						pColl.add(product);
 					}
@@ -276,6 +282,36 @@ public class HotelBrowser extends TravelBlock implements SupplierBrowserPlugin {
 
 	public Collection[] getExtraBookingFormElements(Product product, IWResourceBundle iwrb) {
 		return null;
+	}
+
+	public Collection filterSuppliers(Collection suppliers, Group supplierManager, IWContext iwc, String[][] postalCodes, boolean onlineOnly, boolean useSearchPriceCategoryKey) {
+		if (suppliers != null && isProductSearchCompleted(iwc)) {
+			Iterator sIter = suppliers.iterator();
+			Supplier supp;
+			Collection products;
+			Collection returner = new Vector();
+			while (sIter.hasNext()) {
+				supp = (Supplier) sIter.next();
+//				Timer t = new Timer();
+//				t.start();
+				try {
+					products = getProducts(supp, supplierManager, iwc, postalCodes, onlineOnly, useSearchPriceCategoryKey);
+					if (products != null && !products.isEmpty()) {
+						returner.add(supp);
+					}
+				}
+				catch (IDOLookupException e) {
+					e.printStackTrace();
+				}
+				catch (FinderException e) {
+					e.printStackTrace();
+				}
+//				t.stop();
+//				System.out.println("Time to filter products..."+t.getTimeString());
+			}
+			return returner;
+		}
+		return suppliers;
 	}
 
 }
