@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowser.java,v 1.20 2005/07/11 10:24:53 gimmi Exp $
+ * $Id: SupplierBrowser.java,v 1.21 2005/08/30 02:24:29 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -68,6 +68,7 @@ import com.idega.util.IWTimestamp;
 
 public class SupplierBrowser extends TravelBlock {
 
+	static final String SHOW_SEARCH_INPUTS = "sb_p_ssi";
 	static final String ACTION = "sb_a";
 	private static final String ACTION_VIEW_SUPPLIERS = "sb_a_vs";
 	private static final String ACTION_VIEW_PRODUCTS = "sb_a_vp";
@@ -103,6 +104,7 @@ public class SupplierBrowser extends TravelBlock {
 	private String imageWidth = "70";
 	private boolean useBasket = false;
 	private boolean useTravelLook = false;
+	private boolean showInputs = true;
 	
 	public SupplierBrowser() {
 		
@@ -127,6 +129,7 @@ public class SupplierBrowser extends TravelBlock {
 			form.maintainParameter(PARAMETER_SUPPLIER_ID);
 			form.maintainParameter(PARAMETER_PRODUCT_ID);
 			form.maintainParameter(PARAMETER_FROM);
+			form.maintainParameter(SHOW_SEARCH_INPUTS);
 			String[] params = plugin.getParameters();
 			if (params != null) {
 				for (int i = 0; i < params.length; i++) {
@@ -161,6 +164,7 @@ public class SupplierBrowser extends TravelBlock {
 		link.maintainParameter(PARAMETER_SUPPLIER_MANAGER, iwc);
 		link.maintainParameter(PARAMETER_SUPPLIER_ID, iwc);
 		link.maintainParameter(PARAMETER_FROM, iwc);
+		link.addParameter(SHOW_SEARCH_INPUTS, Boolean.toString(showInputs));
 		String[] params = plugin.getParameters();
 		if (params != null) {
 			for (int i = 0; i < params.length; i++) {
@@ -189,6 +193,10 @@ public class SupplierBrowser extends TravelBlock {
 			catch (FinderException e) {
 				e.printStackTrace();
 			}
+		}
+		String showSI = iwc.getParameter(SHOW_SEARCH_INPUTS);
+		if (showSI != null) {
+			showInputs = showSI.equalsIgnoreCase("true");
 		}
 		
 		// Checking the postal codes
@@ -266,6 +274,8 @@ public class SupplierBrowser extends TravelBlock {
 		Table searchTable = getSearchFrom(inputs, ACTION_VIEW_PRODUCTS);
 		if (searchTable != null) {
 			form.add(searchTable);
+		} else {
+			form.addParameter(ACTION, "");
 		}
 
 		int numberOfDays = 1;
@@ -290,6 +300,7 @@ public class SupplierBrowser extends TravelBlock {
 				table.mergeCells(1, row, 3, row);
 				table.setRowColor(row, TravelManager.GRAY);
 			}
+			table.mergeCells(1, row, 3, row);
 			table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_CENTER);
 			table.add(getText(getResourceBundle().getLocalizedString("travel.added_successfully_to_basket", "Added successfully to basket"), headerStyleClass), 1, row++);
 //			link.setText(getText(getResourceBundle().getLocalizedString("travel.add_another_to_basket", "Add another to basket"), linkStyleClass));
@@ -299,6 +310,7 @@ public class SupplierBrowser extends TravelBlock {
 				table.mergeCells(1, row, 3, row);
 				table.setRowColor(row, TravelManager.GRAY);
 			}
+			table.mergeCells(1, row, 3, row);
 			table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_CENTER);
 			table.add(getErrorText(getResourceBundle().getLocalizedString("travel.failed_adding_to_basket", "Failed adding to basket")+", "+getSearchSession(iwc).getAddToBasketError(getResourceBundle())), 1, row++);
 //			linkTable.add(link, 2, 1);
@@ -880,7 +892,7 @@ public class SupplierBrowser extends TravelBlock {
 	 * @throws RemoteException
 	 */
 	private Table getSearchFrom(Collection[] inputs, String action) throws RemoteException {
-		if (inputs != null && inputs[0] != null && inputs[1] != null && !inputs[0].isEmpty() && !inputs[1].isEmpty()) {
+		if ( showInputs && inputs != null && inputs[0] != null && inputs[1] != null && !inputs[0].isEmpty() && !inputs[1].isEmpty()) {
 			Table searchTable = new Table();
 			int stRow = 1;
 			Collection strings = inputs[0];
@@ -938,6 +950,7 @@ public class SupplierBrowser extends TravelBlock {
 		link.maintainParameter(PARAMETER_POSTAL_CODES, iwc);
 		link.maintainParameter(PARAMETER_SUPPLIER_MANAGER, iwc);
 		link.addParameter(PARAMETER_SUPPLIER_ID, supplier.getPrimaryKey().toString());
+		link.addParameter(SHOW_SEARCH_INPUTS, Boolean.toString(showInputs));
 		String[] params = plugin.getParameters();
 		if (params != null) {
 			for (int i = 0; i < params.length; i++) {
@@ -973,7 +986,8 @@ public class SupplierBrowser extends TravelBlock {
 	// Move to a better location later... when possible
 	private Collection getSuppliers(IWContext iwc) throws IDOCompositePrimaryKeyException {
 		try {
-			return getSupplierHome().findByPostalCodes(supplierManager, postalCodes[0], postalCodes[1], plugin.getSuppplierSearchCriterias(iwc));
+			Collection coll = getSupplierHome().findByPostalCodes(supplierManager, postalCodes[0], postalCodes[1], plugin.getSupplierSearchCriterias(iwc));
+			return plugin.filterSuppliers(coll, supplierManager, iwc, postalCodes, useOnlinePrices, useSearchPriceCategoryKey);
 		}
 		catch (IDORelationshipException e) {
 			e.printStackTrace();
