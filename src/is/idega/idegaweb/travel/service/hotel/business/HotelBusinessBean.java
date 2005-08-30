@@ -6,9 +6,12 @@ import is.idega.idegaweb.travel.business.TravelStockroomBusinessBean;
 import is.idega.idegaweb.travel.service.business.ProductCategoryFactoryBean;
 import is.idega.idegaweb.travel.service.hotel.data.Hotel;
 import is.idega.idegaweb.travel.service.hotel.data.HotelHome;
+import is.idega.idegaweb.travel.service.presentation.BookingForm;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import javax.ejb.FinderException;
@@ -154,7 +157,7 @@ public class HotelBusinessBean extends TravelStockroomBusinessBean implements Ho
       else {
         isDay = ((Boolean) obj).booleanValue();
       }
-      return isDay;
+     return isDay;
 	  }else {
 	  	return super.getIfDay(iwc, product, timeframes, stamp, includePast, fixTimeframe);
 	  }
@@ -167,7 +170,7 @@ public class HotelBusinessBean extends TravelStockroomBusinessBean implements Ho
 
 		
 		try {
-					Timeframe[] timeframes = product.getTimeframes();
+					Timeframe[] timeframes = getProductBusiness().getTimeframes(product);
 					while (toStamp.isLaterThanOrEquals( stamp)) {
 						if (getIfDay(iwc, product, timeframes, stamp, false, true)) {
 							returner.add(new IWTimestamp(stamp));
@@ -189,15 +192,31 @@ public class HotelBusinessBean extends TravelStockroomBusinessBean implements Ho
 		}
 		return hotel;
 	}
-
-	public int getMaxBookings(Product product, IWTimestamp stamp) throws RemoteException, FinderException {
-		Hotel hotel = getHotel(product.getPrimaryKey());
-		int returner = hotel.getNumberOfUnits();
-		if (returner > 0) {
-			return returner;
-		}else {
-			return super.getMaxBookings(product, stamp);
+	public void invalidateMaxDayCache(Collection products) throws RemoteException {
+		super.invalidateMaxDayCache(products);
+		if (products != null) {
+			Iterator iter = products.iterator();
+			while (iter.hasNext()) {
+				maxBookings.remove(((Product) iter.next()).getPrimaryKey());
+			}
 		}
+	}
+
+	private HashMap maxBookings = new HashMap();
+	public int getMaxBookings(Product product, IWTimestamp stamp) throws RemoteException, FinderException {
+		Integer theReturner = (Integer) maxBookings.get(product.getPrimaryKey());
+		if (theReturner == null) {
+			Hotel hotel = getHotel(product.getPrimaryKey());
+			theReturner = new Integer(hotel.getNumberOfUnits());
+			maxBookings.put(product.getPrimaryKey(), theReturner);
+		}
+		
+		if (theReturner.intValue() == BookingForm.UNLIMITED_AVAILABILITY) {
+			return super.getMaxBookings(product, stamp);
+		} else {
+			return theReturner.intValue();
+		}
+		
 	}
 
 	public boolean supportsSupplyPool() {
