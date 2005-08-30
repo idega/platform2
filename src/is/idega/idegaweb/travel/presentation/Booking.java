@@ -494,7 +494,7 @@ public class Booking extends TravelManager {
 		try {
 			CalendarHandler ch = new CalendarHandler(iwc);
 			if (contract != null) ch.setContract(contract);
-			if (product != null) ch.setProduct(product);
+			if (product != null) ch.setProduct(product, iwc);
 			if (reseller != null) ch.setReseller(reseller);
 			//      if (tour != null) ch.setTour(tour);
 			ch.setTimestamp(stamp);
@@ -809,7 +809,7 @@ public class Booking extends TravelManager {
 			}
 			else {
 				try {
-					if (tsb.getIfDay(iwc, this.product, this.product.getTimeframes(), this.stamp, false, true)) {
+					if (tsb.getIfDay(iwc, this.product, getProductBusiness(iwc).getTimeframes(this.product), this.stamp, false, true)) {
 						iCount = 0;
 						iBooked = getBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(((Integer) product.getPrimaryKey()).intValue(), this.stamp, null, -1, new int[] {}, travelAddressIds);
 						iInquery = getInquirer(iwc).getInqueredSeats(((Integer) service.getPrimaryKey()).intValue(), this.stamp, true);

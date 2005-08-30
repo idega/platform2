@@ -298,7 +298,7 @@ public class ServiceViewer extends Window {
           /**
            * @todo Laga fyrir multi timeframes...
            */
-           Timeframe timeframe = prod.getTimeframe();
+           Timeframe timeframe = getProductBusiness(iwc).getTimeframe(prod);
         //number
           Text number = (Text) text.clone();
           number.setText(prod.getNumber());
@@ -433,7 +433,7 @@ public class ServiceViewer extends Window {
           /**
            * @todo Laga fyrir multi timeframes...
            */
-        Timeframe timeframe = product.getTimeframe();
+        Timeframe timeframe = getProductBusiness(iwc).getTimeframe(product);
         Text price = (Text) boldText.clone();
         price.setText(iwrb.getLocalizedString("travel.serviceviewer.info.price","Price: "));
         price.setFontStyle("font-family:Arial,Helvetica,sans-serif;font-size:9pt;font-weight:bold;color:#000099;");
@@ -555,7 +555,7 @@ public class ServiceViewer extends Window {
     Product product = getProductBusiness(iwc).getProduct((Integer)service.getPrimaryKey());
     List depAddresses = getProductBusiness(iwc).getDepartureAddresses(product, true);
     TravelAddress tAddress;
-    Timeframe[] timeframes = product.getTimeframes();
+    Timeframe[] timeframes = getProductBusiness(iwc).getTimeframes(product);
     Collection prices = null;
 
     if (cutOff) {

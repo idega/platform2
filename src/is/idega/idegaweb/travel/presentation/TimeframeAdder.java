@@ -103,7 +103,7 @@ public class TimeframeAdder extends TravelWindow {
 
     Timeframe[] timeframes = {};
     try {
-      timeframes = _product.getTimeframes();
+      timeframes = getProductBusiness(iwc).getTimeframes(_product);
 
       Table table = new Table();
         table.setCellspacing(1);

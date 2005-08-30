@@ -634,7 +634,7 @@ public class ServiceDaySetter extends TravelWindow {
 
 		Timeframe[] timeframes = null;
 		try {
-			timeframes = _product.getTimeframes();
+			timeframes = getProductBusiness(iwc).getTimeframes(_product);
 		}
 		catch (SQLException e2) {
 			e2.printStackTrace();

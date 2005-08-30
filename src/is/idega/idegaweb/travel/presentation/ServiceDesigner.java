@@ -227,8 +227,8 @@ private void finalize(IWContext iwc) throws Exception {
       int tourId = df.handleInsert(iwc);
       setService(iwc,tourId);
       removeSessionServiceId(iwc);
+      super.getBooker(iwc).invalidateBookingCountCache(tourId);
     }
-
     tsb.removeServiceDayHashtable(iwc);
     priceCategoryCreation(iwc);
   }
@@ -290,7 +290,7 @@ private void finalize(IWContext iwc) throws Exception {
           creditCardHandler.addParameter(CreditCardPropertiesSetter.PARAMETER_PRODUCT_ID, product.getID());
           creditCardHandler.setWindowToOpen(CreditCardPropertiesSetter.class);
 
-          Timeframe[] tFrames = product.getTimeframes();
+          Timeframe[] tFrames = getProductBusiness(iwc).getTimeframes(product);
           List addresses = com.idega.util.ListUtil.getEmptyList();
           try {
             addresses = getProductBusiness(iwc).getDepartureAddresses(product, true);

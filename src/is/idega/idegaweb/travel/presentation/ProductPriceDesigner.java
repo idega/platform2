@@ -251,7 +251,7 @@ public class ProductPriceDesigner extends TravelWindow {
 
     Timeframe[] tFrames = {};
     try {
-      tFrames = _product.getTimeframes();
+      tFrames = getProductBusiness(iwc).getTimeframes(_product);
     }
     catch (SQLException sql) {
       sql.printStackTrace(System.err);

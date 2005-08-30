@@ -146,11 +146,11 @@ public class CalendarHandler extends TravelManager {
 		//sm.setDayFontColor(IWTimestamp.RightNow(),this.backgroundColor);
 	}
 	
-	private void timeframeCheck() throws RemoteException {
+	private void timeframeCheck(IWContext iwc) throws RemoteException {
 		if (_service != null) {
 			try {
 				if (_timeframes == null) {
-					_timeframes =_product.getTimeframes();
+					_timeframes = getProductBusiness(iwc).getTimeframes(_product);
 				}
 			}catch (SQLException s) {
 				s.printStackTrace(System.err);
@@ -174,7 +174,7 @@ public class CalendarHandler extends TravelManager {
 		int instanceId = -2;
 		sm.setTimestamp(_fromStamp);
 		sm.setICObjectInstanceID(instanceId);
-		this.timeframeCheck();
+		this.timeframeCheck(iwc);
 		buildCalendar();
 
 		Table table = new Table(4,7);
@@ -626,14 +626,14 @@ public class CalendarHandler extends TravelManager {
 	}
 	
 	
-	public void setProduct(Product product) throws RemoteException{
+	public void setProduct(Product product, IWContext iwc) throws RemoteException{
 		_product = product;
 		_productId = product.getID();
 		try {
 			/** @todo fixa getInstance() */
 			_supplier = ((com.idega.block.trade.stockroom.data.SupplierHome)com.idega.data.IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(product.getSupplierId());
 			_service = getTravelStockroomBusiness(IWContext.getInstance()).getService(product);
-			_timeframes = _product.getTimeframes();
+			_timeframes = getProductBusiness(iwc).getTimeframes(_product);
 			//      _timeframe = product.getTimeframe();
 			//      try {
 			//        _tour = ((is.idega.idegaweb.travel.service.tour.data.TourHome)com.idega.data.IDOLookup.getHome(Tour.class)).findByPrimaryKey(_product.getPrimaryKey());

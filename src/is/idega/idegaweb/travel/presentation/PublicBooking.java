@@ -327,7 +327,7 @@ public class PublicBooking extends TravelBlock  {
 
     try {
       CalendarHandler ch = new CalendarHandler(iwc);
-      ch.setProduct(product);
+      ch.setProduct(product, iwc);
       
       ch.setTextStyle(getStyleName(BookingForm.STYLENAME_TEXT));
       ch.setHeaderStyle(getStyleName(BookingForm.STYLENAME_HEADER_TEXT));
