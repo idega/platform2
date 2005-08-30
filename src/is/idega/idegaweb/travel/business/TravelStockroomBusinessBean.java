@@ -88,6 +88,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 
   protected Timeframe timeframe; // Thread unsafe ?
   protected static Hashtable maxDaysMap = new Hashtable();
+  protected HashMap minDaysMap = new HashMap();
   protected HashMap serviceMap = new HashMap();
 
   public TravelStockroomBusinessBean() {
@@ -336,7 +337,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
     Timeframe timeFrame = null;
     try {
 //      Service service = TravelStockroomBusiness.getService(product);
-      timeFrame = product.getTimeframe();
+      timeFrame = getProductBusiness().getTimeframe(product);
     }
     catch (SQLException sql) {
       throw new TimeframeNotFoundException();
@@ -462,7 +463,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
   }
 
   public boolean getIfDay(IWContext iwc, Product product, IWTimestamp stamp) throws ServiceNotFoundException, TimeframeNotFoundException, SQLException, RemoteException {
-    return getIfDay(iwc, product, product.getTimeframes(), stamp, true, true);
+    return getIfDay(iwc, product, getProductBusiness().getTimeframes(product), stamp, true, true);
   }
 
   public boolean getIfDay(IWContext iwc, Product product, Timeframe[] timeframes, IWTimestamp stamp) throws ServiceNotFoundException, TimeframeNotFoundException, RemoteException {
@@ -701,7 +702,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
         boolean isValidServiceDay = false;
 
 
-        isValidServiceDay = getIfDay(iwc,product,product.getTimeframes(), stamp);
+        isValidServiceDay = getIfDay(iwc,product,getProductBusiness().getTimeframes(product), stamp);
 
         if (isValidServiceDay) {
           HashtableDoubleKeyed resellerDayOfWeekHash = getResellerDayHashtable(iwc);
@@ -788,7 +789,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
     List returner = new Vector();
     try {
 //      Service service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHomeLegacy(Service.class)).findByPrimaryKeyLegacy(product.getID());
-      Timeframe[] frames = product.getTimeframes();
+      Timeframe[] frames = getProductBusiness().getTimeframes(product);
 
       for (int j = 0; j < frames.length; j++) {
         boolean yearly = frames[j].getIfYearly();
@@ -1086,7 +1087,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
       System.out.println("[TSB] removing extra prices ");
       ProductBusiness pBus = this.getProductBusiness();
       List addresses = pBus.getDepartureAddresses(product, false);
-      Timeframe[] timeframes = product.getTimeframes();
+      Timeframe[] timeframes = getProductBusiness().getTimeframes(product);
       TravelAddress tAddress = ((TravelAddressHome) IDOLookup.getHome(TravelAddress.class)).create();
       Timeframe timeframe = ((TimeframeHome) IDOLookup.getHome(Timeframe.class)).create();
 
@@ -1405,28 +1406,41 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 	public int getMinBookings(Product product, IWTimestamp stamp) throws RemoteException, FinderException{
 		try {
 			if (stamp != null) {
-				
-				if (supportsSupplyPool()) {
-					try {
-						SupplyPool pool = ((SupplyPoolHome) IDOLookup.getHome(SupplyPool.class)).findByProduct(product);
-						SupplyPoolDay pDay = 	((SupplyPoolDayHome) IDOLookup.getHome(SupplyPoolDay.class)).findByPrimaryKey(new SupplyPoolDayPK(pool.getPrimaryKey(), new Integer(stamp.getDayOfWeek())));
-						return pDay.getMin();
-					} catch (FinderException fe) {
-						//fe.printStackTrace();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+				HashMap subMap = (HashMap) minDaysMap.get(product.getPrimaryKey());
+				if (subMap == null) {
+					subMap = new HashMap();
+					minDaysMap.put(product.getPrimaryKey(), subMap);
 				}
-			
-				ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-			  ServiceDay sDay;
-			  sDay = sDayHome.findByServiceAndDay(product.getID() , stamp.getDayOfWeek());
-			  if (sDay != null) {
-			    return sDay.getMin();
-			  }
-		  }
+				Integer returner = (Integer) minDaysMap.get(stamp.toSQLDateString());
+				if (returner == null) {
+					if (supportsSupplyPool()) {
+						try {
+							SupplyPool pool = ((SupplyPoolHome) IDOLookup.getHome(SupplyPool.class)).findByProduct(product);
+							SupplyPoolDay pDay = 	((SupplyPoolDayHome) IDOLookup.getHome(SupplyPoolDay.class)).findByPrimaryKey(new SupplyPoolDayPK(pool.getPrimaryKey(), new Integer(stamp.getDayOfWeek())));
+							returner = new Integer(pDay.getMin());
+							subMap.put(product.getPrimaryKey(), returner);
+							return returner.intValue();
+						} catch (FinderException fe) {
+							//fe.printStackTrace();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+					
+					ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+					ServiceDay sDay;
+					sDay = sDayHome.findByServiceAndDay(product.getID() , stamp.getDayOfWeek());
+					if (sDay != null) {
+						returner = new Integer(sDay.getMin());
+						subMap.put(product.getPrimaryKey(), returner);
+						return returner.intValue();
+					}
+				} else {
+					return returner.intValue();
+				}
+			}
 			return 0;
-
+			
 		} catch (Exception e) {
 			return 0;
 		}
@@ -1498,6 +1512,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 			while (iter.hasNext()) {
 				Product product = (Product) iter.next();
 				maxDaysMap.remove( (Integer) product.getPrimaryKey());
+				minDaysMap.remove( product.getPrimaryKey());
 				//System.out.println("[ServiceSearchBusinessBean] Invalidating max days cache for product = "+product.getPrimaryKey());
 			}
 		}
