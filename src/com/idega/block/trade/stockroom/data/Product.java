@@ -1,5 +1,5 @@
 /*
- * $Id: Product.java,v 1.36 2005/07/08 14:10:50 gimmi Exp $
+ * $Id: Product.java,v 1.37 2005/08/30 02:25:08 gimmi Exp $
  * Created on Jul 8, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -30,10 +30,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2005/07/08 14:10:50 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/08/30 02:25:08 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.36 $
+ * @version $Revision: 1.37 $
  */
 public interface Product extends IDOLegacyEntity, MetaDataCapable {
 
@@ -136,11 +136,6 @@ public interface Product extends IDOLegacyEntity, MetaDataCapable {
 	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#getTimeframes
 	 */
 	public Timeframe[] getTimeframes() throws SQLException;
-
-	/**
-	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#getTimeframe
-	 */
-	public Timeframe getTimeframe() throws SQLException;
 
 	/**
 	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#getCreationDate
