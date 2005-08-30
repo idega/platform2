@@ -1548,7 +1548,7 @@ public abstract class BookingForm extends TravelManager{
 		}
 		
 		try {
-			tFrames = product.getTimeframes();
+			tFrames = getProductBusiness(iwc).getTimeframes(product);
 		}
 		catch (SQLException e1) {
 			e1.printStackTrace();
@@ -3415,7 +3415,7 @@ public abstract class BookingForm extends TravelManager{
 		
 		Collection prices = null;
 		Collection misc = null;
-		Timeframe[] timeframes = _product.getTimeframes();
+		Timeframe[] timeframes = getProductBusiness(iwc).getTimeframes(_product);
 		prices = getProductPriceBusiness().getProductPrices(_service.getID(), -1,iAddressId, onlineOnly, key, _stamp);
 		misc = getProductPriceBusiness().getMiscellaneousPrices(_service.getID(), -1, iAddressId, onlineOnly);
 		
@@ -4538,7 +4538,7 @@ public abstract class BookingForm extends TravelManager{
 		if (_reseller != null) {
 			return super.getTravelStockroomBusiness(iwc).getIfExpired(_contract, _stamp);
 		}else {
-			return super.getTravelStockroomBusiness(iwc).getIfDay(iwc,_product, _product.getTimeframes(), _stamp);
+			return super.getTravelStockroomBusiness(iwc).getIfDay(iwc,_product, getProductBusiness(iwc).getTimeframes(_product), _stamp);
 		}
 		
 	}
@@ -4550,7 +4550,7 @@ public abstract class BookingForm extends TravelManager{
 		if (_contract != null) {
 			return super.getTravelStockroomBusiness(iwc).getIfDay(iwc, _contract, _product, stamp);
 		}
-		boolean repps = super.getTravelStockroomBusiness(iwc).getIfDay(iwc,_product, _product.getTimeframes(), stamp);
+		boolean repps = super.getTravelStockroomBusiness(iwc).getIfDay(iwc,_product, getProductBusiness(iwc).getTimeframes(_product), stamp);
 		return repps;
 	}
 	/*

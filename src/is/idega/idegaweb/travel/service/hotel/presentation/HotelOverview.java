@@ -78,7 +78,7 @@ public class HotelOverview extends AbstractServiceOverview {
     Currency currency;
 
     service = getTravelStockroomBusiness(iwc).getService(product);
-    Timeframe[] tFrames = product.getTimeframes();
+    Timeframe[] tFrames = getProductBusiness(iwc).getTimeframes(product);
 
     if (product.getFileId() != -1) {
       image = new Image(product.getFileId());
@@ -317,7 +317,7 @@ private int listPrices(IWContext iwc, Table contentTable,	int contRow,	Service s
       String stampTxt2 = _iwrb.getLocalizedString("travel.not_configured","Not configured");
       ProductPrice[] prices;
       Text timeframeTextBold;
-		  Timeframe[] tFrames = product.getTimeframes();
+		  Timeframe[] tFrames = getProductBusiness(iwc).getTimeframes(product);
 
       Table pTable = new Table();
         pTable.setCellspacing(0);

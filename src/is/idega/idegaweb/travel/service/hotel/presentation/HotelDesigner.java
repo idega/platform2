@@ -101,13 +101,13 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
 		_hotelTypes = hth.findAll();
   }
 
-  private boolean setupData(int serviceId) {
+  private boolean setupData(int serviceId, IWContext iwc) {
     try {
       ServiceHome sHome = (ServiceHome) IDOLookup.getHome(Service.class);
       ProductHome pHome = (ProductHome) IDOLookup.getHome(Product.class);
       _service = sHome.findByPrimaryKey(new Integer(serviceId));
       _product = pHome.findByPrimaryKey(new Integer(serviceId));
-      _timeframe = _product.getTimeframe();
+      _timeframe = getProductBusiness(iwc).getTimeframe(_product);
       
       return true;
     }catch (Exception e) {
@@ -121,7 +121,7 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
     if ( sServiceId != null ) {
       serviceId = Integer.parseInt( sServiceId );
     }
-    setupData(serviceId);
+    setupData(serviceId, iwc);
 
     String name = iwc.getParameter( PARAMETER_NAME );
     String number = iwc.getParameter( PARAMETER_NUMBER );
@@ -252,7 +252,7 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
 
 
     if ( serviceId != -1 ) {
-      isDataValid = setupData( serviceId );
+      isDataValid = setupData( serviceId, iwc );
     } 
 
 

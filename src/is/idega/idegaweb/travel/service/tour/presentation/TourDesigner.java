@@ -124,7 +124,7 @@ public class TourDesigner extends TravelManager implements DesignerForm{
       }catch (FinderException fe) {
         //fe.printStackTrace(System.err);
       }
-      timeframe = product.getTimeframe();
+      timeframe = getProductBusiness(iwc).getTimeframe(product);
 
       arrAddress = getProductBusiness(iwc).getArrivalAddress( product );
       depAddress = getProductBusiness(iwc).getDepartureAddress( product );
