@@ -1,6 +1,6 @@
 /*
- * $Id: ProductBusiness.java,v 1.45 2005/08/24 13:04:24 gimmi Exp $
- * Created on Aug 19, 2005
+ * $Id: ProductBusiness.java,v 1.46 2005/08/30 02:01:14 gimmi Exp $
+ * Created on Aug 29, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -35,10 +35,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2005/08/24 13:04:24 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/08/30 02:01:14 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.45 $
+ * @version $Revision: 1.46 $
  */
 public interface ProductBusiness extends IBOService {
 
@@ -247,6 +247,16 @@ public interface ProductBusiness extends IBOService {
 	 */
 	public Timeframe getTimeframe(Product product, IWTimestamp stamp) throws RemoteException, EJBException,
 			FinderException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getTimeframes
+	 */
+	public Timeframe[] getTimeframes(Product product) throws SQLException, java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getTimeframe
+	 */
+	public Timeframe getTimeframe(Product product) throws SQLException, java.rmi.RemoteException;
 
 	/**
 	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getTimeframe

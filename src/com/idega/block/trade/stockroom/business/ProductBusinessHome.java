@@ -1,6 +1,6 @@
 /*
- * $Id: ProductBusinessHome.java,v 1.4 2005/08/24 13:04:24 gimmi Exp $
- * Created on Aug 19, 2005
+ * $Id: ProductBusinessHome.java,v 1.5 2005/08/30 02:01:14 gimmi Exp $
+ * Created on Aug 29, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -14,10 +14,10 @@ import com.idega.business.IBOHome;
 
 /**
  * 
- *  Last modified: $Date: 2005/08/24 13:04:24 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/08/30 02:01:14 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public interface ProductBusinessHome extends IBOHome {
 

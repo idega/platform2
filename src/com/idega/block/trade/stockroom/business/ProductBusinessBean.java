@@ -22,6 +22,8 @@ import com.idega.block.trade.stockroom.data.Timeframe;
 import com.idega.block.trade.stockroom.data.TravelAddress;
 import com.idega.block.trade.stockroom.presentation.ProductCatalog;
 import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
+import com.idega.business.IBORuntimeException;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
@@ -36,6 +38,7 @@ import com.idega.data.IDORemoveRelationshipException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.util.IWTimestamp;
+import com.idega.util.Timer;
 /**
  * @todo losa vi� service;
  */
@@ -133,7 +136,7 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
 
     product.addTravelAddresses(addressIds);
     clearAddressMaps(product);
-
+    timeframeMap.remove(product.getPrimaryKey());
     clearProductCache(supplierId);
     return ((Integer) product.getPrimaryKey()).intValue();
   }
@@ -192,11 +195,13 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
 
   public void deleteProduct(Product product) throws RemoteException , IDOException {
     products.remove(product.getPrimaryKey().toString());
+    timeframeMap.remove(product.getPrimaryKey());
     product.invalidate();
   }
 
   public Product updateProduct(Product product) throws RemoteException, FinderException, IDOException {
     products.remove(product.getPrimaryKey().toString() );
+    timeframeMap.remove(product.getPrimaryKey());
     product.store();
     return getProduct( (Integer) product.getPrimaryKey() );
   }
@@ -396,10 +401,28 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
   public Timeframe getTimeframe(Product product, IWTimestamp stamp) throws RemoteException, EJBException, FinderException {
     return getTimeframe(product, stamp, -1);
   }
+  
+  private HashMap timeframeMap = new HashMap();
+  public Timeframe[] getTimeframes(Product product) throws SQLException {
+	  Timeframe[] returner = (Timeframe[]) timeframeMap.get(product.getPrimaryKey());
+	  if (returner == null) {
+		  returner = product.getTimeframes();
+		  timeframeMap.put(product.getPrimaryKey(), returner);
+	  }
+	  return returner;
+  }
 
+  public Timeframe getTimeframe(Product product) throws SQLException {
+	  Timeframe[] ts = getTimeframes(product);
+	  if (ts != null && ts.length>0) {
+		  return ts[0];
+	  }
+	  return null;
+  }
+  
   public Timeframe getTimeframe(Product product, IWTimestamp stamp, int travelAddressId) throws RemoteException, EJBException, FinderException {
   	try {
-  		return getTimeframe(product, product.getTimeframes(), stamp, travelAddressId);
+  		return getTimeframe(product, getTimeframes(product), stamp, travelAddressId);
   	} catch (SQLException e) {
   		e.printStackTrace(System.err);
   		return null;
@@ -412,16 +435,21 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
 	  for (int i = 0; i < timeframes.length; i++) {
 	  	returner = timeframes[i];
 	    if (travelAddressId != -1) {
-	      pPrices = getProductPriceHome().findProductPrices(((Integer) product.getPrimaryKey()).intValue() , timeframes[i].getID(), travelAddressId, false);
+	    	Timer t = new Timer();
+	    	t.start();
+	    	pPrices = getProductPriceBusiness().getProductPrices(((Integer) product.getPrimaryKey()).intValue() , timeframes[i].getID(), travelAddressId, false, null);
+	    	t.stop();
+	    	System.out.println("      [ProductBusiness] got prices : "+t.getTimeString());
+//	      pPrices = getProductPriceHome().findProductPrices(((Integer) product.getPrimaryKey()).intValue() , timeframes[i].getID(), travelAddressId, false);
 	//          System.err.println("getting prices : length = "+pPrices.length);
 	      if (pPrices == null || pPrices.isEmpty()) {
 	        continue;
 	      }
 	    }
 
-			if (getStockroomBusiness().isInTimeframe( new IWTimestamp(returner.getFrom()) , new IWTimestamp(returner.getTo()), stamp, returner.getIfYearly() )) {
-			  return returner;
-			}
+		if (getStockroomBusiness().isInTimeframe( new IWTimestamp(returner.getFrom()) , new IWTimestamp(returner.getTo()), stamp, returner.getIfYearly() )) {
+		  return returner;
+		}
 	  }
     return returner;
   }
@@ -458,7 +486,7 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
 			if (list != null && !list.isEmpty()) {
 				if (timeframes == null) {
 					try {
-						timeframes = product.getTimeframes();
+						timeframes = getTimeframes(product);
 					}
 					catch (SQLException e) {
 						throw new FinderException(e.getMessage());
@@ -602,5 +630,14 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
 
   protected StockroomBusiness getStockroomBusiness() throws RemoteException {
     return (StockroomBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), StockroomBusiness.class);
+  }
+  
+  public ProductPriceBusiness getProductPriceBusiness() {
+	  try {
+		return (ProductPriceBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ProductPriceBusiness.class);
+	}
+	catch (IBOLookupException e) {
+		throw new IBORuntimeException(e);
+	}
   }
 }
