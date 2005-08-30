@@ -1,5 +1,5 @@
 /*
- * $Id: TourBrowser.java,v 1.9 2005/08/24 13:27:23 gimmi Exp $
+ * $Id: TourBrowser.java,v 1.10 2005/08/30 02:05:14 gimmi Exp $
  * Created on 28.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -152,7 +152,7 @@ public class TourBrowser extends TravelBlock implements SupplierBrowserPlugin {
 		return new Collection[]{texts, ios};
 	}
 
-	public Collection getSuppplierSearchCriterias(IWContext iwc) throws IDOCompositePrimaryKeyException, IDORelationshipException {
+	public Collection getSupplierSearchCriterias(IWContext iwc) throws IDOCompositePrimaryKeyException, IDORelationshipException {
 		Collection coll = new Vector();
 		
 		Table supplier = new Table(Supplier.class);
@@ -287,4 +287,9 @@ public class TourBrowser extends TravelBlock implements SupplierBrowserPlugin {
 	public Collection[] getExtraBookingFormElements(Product product, IWResourceBundle iwrb) {
 		return null;
 	}
+
+	public Collection filterSuppliers(Collection suppliers, Group supplierManager, IWContext iwc, String[][] postalCodes, boolean onlineOnly, boolean useSearchPriceCategoryKey) {
+		return suppliers;
+	}
+
 }
