@@ -99,7 +99,7 @@ public class HotelBookingForm extends BookingForm {
   	if (this._contract != null) {
   		return super.getIsDayVisible(iwc, stamp);
   	} else {
-  		return getHotelBusiness(iwc).getIfDay(iwc,_product, _product.getTimeframes(), stamp, false, true);
+  		return getHotelBusiness(iwc).getIfDay(iwc,_product, getProductBusiness(iwc).getTimeframes(_product), stamp, false, true);
   	}
   }
 
@@ -1748,7 +1748,6 @@ public class HotelBookingForm extends BookingForm {
 
   public boolean isFullyBooked(IWContext iwc, Product product, IWTimestamp stamp) throws RemoteException, CreateException, FinderException {
 	  Hotel hotel = getHotelBusiness(iwc).getHotel(product.getPrimaryKey());//getHotelHome().findByPrimaryKey( product.getPrimaryKey() );
-	  
 	  int max = 0;
 	  
 	  if (_reseller != null) {
@@ -1771,7 +1770,8 @@ public class HotelBookingForm extends BookingForm {
 		  
 		  int addressId = super.getAddressIDToUse(iwc, addresses);
 		  //int currentBookings = getHotelBooker(iwc).getBookingsTotalCount(product.getID(), stamp, addressId);
-		  int currentBookings = getHotelBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) product.getPrimaryKey()).intValue(), stamp, null, -1, new int[]{}, null );
+		  int currentBookings = getHotelBooker(iwc).getBookingsTotalCount(( (Integer) product.getPrimaryKey()).intValue(), stamp, -1, null );
+//		  int currentBookings = getHotelBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) product.getPrimaryKey()).intValue(), stamp, null, -1, new int[]{}, null );
 		  return (currentBookings >= max);
 	  }
 	  
