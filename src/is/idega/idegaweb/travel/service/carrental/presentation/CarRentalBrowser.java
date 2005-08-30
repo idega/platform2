@@ -1,5 +1,5 @@
 /*
- * $Id: CarRentalBrowser.java,v 1.2 2005/06/20 17:09:39 gimmi Exp $
+ * $Id: CarRentalBrowser.java,v 1.3 2005/08/30 02:16:48 gimmi Exp $
  * Created on 18.6.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -116,7 +116,7 @@ public class CarRentalBrowser extends TravelBlock implements SupplierBrowserPlug
 //		return hHome.find(fromStamp, toStamp, roomTypeId, hotelTypeId, postalCodes, supplierId, minRating, maxRating, supplierName);
 	}
 
-	public Collection getSuppplierSearchCriterias(IWContext iwc) throws IDOCompositePrimaryKeyException,
+	public Collection getSupplierSearchCriterias(IWContext iwc) throws IDOCompositePrimaryKeyException,
 			IDORelationshipException {
 		Collection coll = new Vector();
 		
@@ -215,5 +215,9 @@ public class CarRentalBrowser extends TravelBlock implements SupplierBrowserPlug
 			
 		}
 		return null;
+	}
+
+	public Collection filterSuppliers(Collection suppliers, Group supplierManager, IWContext iwc, String[][] postalCodes, boolean onlineOnly, boolean useSearchPriceCategoryKey) {
+		return suppliers;
 	}
 }
