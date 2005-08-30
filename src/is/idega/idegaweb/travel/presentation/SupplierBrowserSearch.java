@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowserSearch.java,v 1.3 2005/08/27 16:58:52 gimmi Exp $
+ * $Id: SupplierBrowserSearch.java,v 1.4 2005/08/30 02:21:36 gimmi Exp $
  * Created on Aug 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -17,7 +17,6 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 import javax.ejb.FinderException;
-import com.idega.builder.business.BuilderConstants;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
@@ -28,7 +27,6 @@ import com.idega.presentation.text.Heading2;
 import com.idega.presentation.text.Paragraph;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.Label;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.data.Group;
@@ -136,17 +134,12 @@ public class SupplierBrowserSearch extends TravelBlock {
 	
 	private void addSearchForm(IWContext iwc) throws Exception {
 
-		Form form = new Form();
-		form.maintainParameter(PARAMETER_FORM);
-
 		Collection forms = getSupplierBrowserBusiness(iwc).parseXML(supplierManager, engineXML);
 		
 		SupplierBrowserSearchForm sf = null;
 		DropdownMenu formSelector = new DropdownMenu(PARAMETER_FORM);
 		formSelector.setToSubmit();
-		if (formDropdownStyleClass != null) {
-			formSelector.setStyleClass(formDropdownStyleClass);
-		}
+
 		Iterator fIter = forms.iterator();
 		while (fIter.hasNext()) {
 			SupplierBrowserSearchForm tmp = (SupplierBrowserSearchForm) fIter.next();
@@ -168,7 +161,10 @@ public class SupplierBrowserSearch extends TravelBlock {
 		form2.add(p2);
 
 		Collection ps = sf.getParagraphs();
-		form.add(new HiddenInput(BuilderConstants.IB_PAGE_PARAMETER, sf.getPageID()));
+		Form form = new Form();
+		form.maintainParameter(PARAMETER_FORM);
+		form.addParameter(SupplierBrowser.SHOW_SEARCH_INPUTS, Boolean.toString(false));
+		form.setPageToSubmitTo(Integer.parseInt(sf.getPageID()));
 
 		Iterator it = ps.iterator();
 		while (it.hasNext()) {
