@@ -1,3 +1,12 @@
+/*
+ * $Id: Booker.java,v 1.60 2005/08/30 02:08:32 gimmi Exp $
+ * Created on Aug 30, 2005
+ *
+ * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ */
 package is.idega.idegaweb.travel.business;
 
 import is.idega.idegaweb.travel.data.BookingEntry;
@@ -24,7 +33,11 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * @author gimmi
+ * 
+ *  Last modified: $Date: 2005/08/30 02:08:32 $ by $Author: gimmi $
+ * 
+ * @author <a href="mailto:gimmi@idega.com">gimmi</a>
+ * @version $Revision: 1.60 $
  */
 public interface Booker extends IBOService {
 
@@ -107,6 +120,11 @@ public interface Booker extends IBOService {
 	 */
 	public int getBookingsTotalCount(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType,
 			Collection travelAddresses) throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#invalidateBookingCountCache
+	 */
+	public void invalidateBookingCountCache(int productId) throws java.rmi.RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookingsTotalCount
@@ -215,7 +233,6 @@ public interface Booker extends IBOService {
 	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookingPrice
 	 */
 	public float getBookingPrice(Booking[] bookings) throws RemoteException, FinderException;
-	  public Currency getBookingCurrency(Booking booking) throws RemoteException, FinderException;
 
 	/**
 	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookingPrice
@@ -226,6 +243,11 @@ public interface Booker extends IBOService {
 	 * @see is.idega.idegaweb.travel.business.BookerBean#removeBookingPriceApplication
 	 */
 	public void removeBookingPriceApplication(Booking booking) throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookingCurrency
+	 */
+	public Currency getBookingCurrency(Booking booking) throws RemoteException, FinderException;
 
 	/**
 	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookingEntries
@@ -298,6 +320,11 @@ public interface Booker extends IBOService {
 	public int getBookingsTotalCount(ProductPrice pPrice) throws RemoteException;
 
 	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#invalidateCache
+	 */
+	public void invalidateCache(int bookingID) throws java.rmi.RemoteException;
+
+	/**
 	 * @see is.idega.idegaweb.travel.business.BookerBean#addCacheKeyToInvalidateOnSave
 	 */
 	public void addCacheKeyToInvalidateOnSave(String key) throws java.rmi.RemoteException;
@@ -326,6 +353,4 @@ public interface Booker extends IBOService {
 	 * @see is.idega.idegaweb.travel.business.BookerBean#getProductBusiness
 	 */
 	public ProductBusiness getProductBusiness() throws RemoteException;
-	
-  public void invalidateCache(int bookingID);
 }

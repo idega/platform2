@@ -13,6 +13,7 @@ import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -168,7 +169,7 @@ public class BookerBean extends IBOServiceBean implements Booker{
 				TravelAddress tAddress = taHome.findByPrimaryKey(addressId);
 				temp.addTravelAddress(tAddress);
 			}
-			
+			invalidateBookingCountCache(temp.getServiceID());
 			invalidateCache(returner);
 			//    temp.addTo(TravelAddress.class, addressId);
 		}catch (FinderException fe) {
@@ -320,12 +321,37 @@ public class BookerBean extends IBOServiceBean implements Booker{
 		return getBookingsTotalCount(serviceId, fromStamp, toStamp, bookingType, travelAddresses, false);//, new int[] {});
 	}
 	
+	HashMap bookingCountMap = new HashMap();
+	
+	public void invalidateBookingCountCache(int productId) {
+		bookingCountMap.put(new Integer(productId), null);
+	}
+	
 	public  int getBookingsTotalCount(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType, Collection travelAddresses, boolean orderByDateOfBooking) throws RemoteException{
-		if (!orderByDateOfBooking) {
-			return getGeneralBookingHome().getBookingsTotalCount(serviceId, fromStamp, toStamp, bookingType, new int[] {}, travelAddresses);
-		} else {
-			return getGeneralBookingHome().getBookingsTotalCountByDateOfBooking(serviceId, fromStamp, toStamp, bookingType, new int[] {}, travelAddresses);
+		HashMap subMap = (HashMap) bookingCountMap.get(new Integer(serviceId));
+		if (subMap == null) {
+			subMap = new HashMap();
+			bookingCountMap.put(new Integer(serviceId), subMap);
 		}
+		String key = serviceId+"_"+fromStamp+"_"+toStamp+"_"+bookingType+"_"+orderByDateOfBooking;
+		if (travelAddresses != null && !travelAddresses.isEmpty()) {
+			Iterator iter = travelAddresses.iterator();
+			while (iter.hasNext()) {
+				key += iter.next().toString();
+			}
+		}
+		
+		Integer returner = (Integer)subMap.get(key);
+		
+		if (returner == null) {
+			if (!orderByDateOfBooking) {
+				returner = new Integer( getGeneralBookingHome().getBookingsTotalCount(serviceId, fromStamp, toStamp, bookingType, new int[] {}, travelAddresses));
+			} else {
+				returner = new Integer( getGeneralBookingHome().getBookingsTotalCountByDateOfBooking(serviceId, fromStamp, toStamp, bookingType, new int[] {}, travelAddresses));
+			}
+			subMap.put(key, returner);
+		}
+		return returner.intValue();
 	}
 	
 	public  Booking[] getBookings(List products, IWTimestamp stamp) throws RemoteException, FinderException{
