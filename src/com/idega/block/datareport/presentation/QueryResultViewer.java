@@ -477,15 +477,15 @@ public class QueryResultViewer extends Block {
 	    if("true".equals(getBundle(iwc).getProperty(ADD_QUERY_SQL_FOR_DEBUG,"false"))){
 	    	addExecutedSQLQueries(executedSQLStatements);
 	    	add(new Text("ADD_QUERY_SQL_FOR_DEBUG is true, result is shown in pop up window!"));
-	    	parentPage.setOnLoad(" openwindow('" + uri + "','IdegaWeb Generated Report','0','0','0','0','0','1','1','1','800','600') ");
+	    	parentPage.setOnLoad(" iwOpenWindow('" + uri + "','IdegaWeb Generated Report','0','0','0','0','0','1','1','1','800','600') ");
 		  }
 	    else {
 	    	parentPage.setToRedirect(uri);
 	    }
 	    // open an extra window with scrollbars
 	    //getParentPage().setOnLoad("window.open('" + uri + "' , 'newWin', 'width=600,height=400,scrollbars=yes')");
-		//openwindow(Address,Name,ToolBar,Location,Directories,Status,Menubar,Titlebar,Scrollbars,Resizable,Width,Height)
-	    //getParentPage().setOnLoad(" openwindow('" + uri + "','IdegaWeb Generated Report','0','0','0','0','0','1','1','1','800','600') ");
+		//iwOpenWindow(Address,Name,ToolBar,Location,Directories,Status,Menubar,Titlebar,Scrollbars,Resizable,Width,Height)
+	    //getParentPage().setOnLoad(" iwOpenWindow('" + uri + "','IdegaWeb Generated Report','0','0','0','0','0','1','1','1','800','600') ");
 	    return null;
 	}
 	

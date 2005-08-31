@@ -605,7 +605,7 @@ public class ReportQueryOverview extends Block {
 //  	buffer.append("').value='");
 //		buffer.append(windowId); 
   	StringBuffer buffer = new StringBuffer();
-		buffer.append("var hello=window.name; this.form.target='newTarget'; openwindow('','newTarget','0','0','0','0','0','0','1','1','1024','768');this.form.submit(); this.form.target=hello;");
+		buffer.append("var hello=window.name; this.form.target='newTarget'; iwOpenWindow('','newTarget','0','0','0','0','0','0','1','1','1024','768');this.form.submit(); this.form.target=hello;");
 		buffer.append("changeValue(findObj('");
 		buffer.append(ButtonConverter.SUBMIT_KEY);
 		buffer.append("'),' ')");
