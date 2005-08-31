@@ -144,7 +144,10 @@ public class QuestionsAndAnswers2 extends CategoryBlock {
 		
 			Layer mainLayer = createLayerWithStyleClass(this.getMainStyleClass());	
 			
-			mainLayer.getChildren().add(getCategoryAdminPart(iwc));	 //admin part to manage categories            
+            if (isAdmin) {
+                mainLayer.getChildren().add(getCategoryAdminPart(iwc));	 //admin part to manage categories
+            }
+            
             mainLayer.getChildren().add(getQuestionsAdminPart(iwc)); //admin part for questions            
 			mainLayer.getChildren().add(getQuestionsListPart(iwc));  //list of questions and their answers
 			
@@ -417,8 +420,10 @@ public class QuestionsAndAnswers2 extends CategoryBlock {
                 // get and add all category questions
                 poc.getChildren().add(getAPCategoryQuestions(iwc, cat));
                 
-                //te jāpievieno jauna jautājuma ieviešanas / jautājumu atjaunošanas forma
-                poc.getChildren().add(getAPCategoryQestionForm(catId));
+                //add form that allows to create new questin or revalidate invalidated questions
+                if (isAdmin) {
+                    poc.getChildren().add(getAPCategoryQestionForm(catId));
+                }
                 
             } else {
                 // go deeper in the tree in recursive mode
@@ -441,8 +446,7 @@ public class QuestionsAndAnswers2 extends CategoryBlock {
         layer.getChildren().add(anchor);        
         
         poc.getChildren().add(layer);
-    }
-    
+    }    
    
     /**
      * returns questions, that belong to given category
@@ -510,7 +514,9 @@ public class QuestionsAndAnswers2 extends CategoryBlock {
         
         item.getChildren().add(titleP);
         
-        item.getChildren().add(getAPQuestionForm(iwc, question, previous, latter));  
+        if (isAdmin) {
+            item.getChildren().add(getAPQuestionForm(iwc, question, previous, latter));
+        }           
         
         Paragraph clearer = new Paragraph();
         clearer.setStyleClass("clearer");
@@ -532,7 +538,7 @@ public class QuestionsAndAnswers2 extends CategoryBlock {
         Paragraph p = new Paragraph();
         p.setStyleClass("question_form");
         
-        Integer categoryId = question.getCategoryId();
+        Integer categoryId = new Integer(question.getCategoryId());
         Integer questionId = (Integer) question.getPrimaryKey();
         
         //edit link
@@ -558,25 +564,32 @@ public class QuestionsAndAnswers2 extends CategoryBlock {
         delete.addParameter("delete_quest","true"); 
         p.getChildren().add(delete);
         
-        //up
-        if(previous != null){
-            Link up = new Link(iwb.getImage("up.gif",iwrb.getLocalizedString("button_up","Move up")));
-            up.setStyleClass("up");
-            up.addParameter("move_up","true");
-            up.addParameter("ent_id", questionId.toString());
-            up.addParameter("swap_up_quest_id" + questionId, previous.getPrimaryKey().toString());
-            p.getChildren().add(up);
-        }        
-        
-        //down
-        if(latter != null){
-            Link down = new Link(iwb.getImage("down.gif", iwrb.getLocalizedString("button_down","Move down")));
-            down.setStyleClass("down");
-            down.addParameter("move_down","true");
-            down.addParameter("ent_id", questionId.toString());
-            down.addParameter("swap_down_quest_id" + questionId, latter.getPrimaryKey().toString());
-            p.getChildren().add(down);
-        }        
+        if (showMoveButtons) {
+
+            // up
+            if (previous != null) {
+                Link up = new Link(iwb.getImage("up.gif", iwrb
+                        .getLocalizedString("button_up", "Move up")));
+                up.setStyleClass("up");
+                up.addParameter("move_up", "true");
+                up.addParameter("ent_id", questionId.toString());
+                up.addParameter("swap_up_quest_id" + questionId, previous
+                        .getPrimaryKey().toString());
+                p.getChildren().add(up);
+            }
+
+            // down
+            if (latter != null) {
+                Link down = new Link(iwb.getImage("down.gif", iwrb
+                        .getLocalizedString("button_down", "Move down")));
+                down.setStyleClass("down");
+                down.addParameter("move_down", "true");
+                down.addParameter("ent_id", questionId.toString());
+                down.addParameter("swap_down_quest_id" + questionId, latter
+                        .getPrimaryKey().toString());
+                p.getChildren().add(down);
+            }
+        }
         
         return p;
     }
@@ -601,16 +614,20 @@ public class QuestionsAndAnswers2 extends CategoryBlock {
         newQandA.setImage(iwb.getImage("new.gif",iwrb.getLocalizedString("button_create_question","Create question")));
         form.add(newQandA);
         
-        //meny containing invalidated questions
-        DropdownMenu deletedQuestions = getInvalidQuestions("inv_quest" + categoryId.toString(), categoryId.intValue());
-        deletedQuestions.setStyleClass("deleted_questions");
-        form.add(deletedQuestions);
-        
-        //button to revalidate invidated question
-        SubmitButton sb = new SubmitButton(iwb.getImage("validate.gif",iwrb.getLocalizedString("button_validate", "Validate  selected")),
-                 "validate_quest");
-        sb.setStyleClass("validate");
-        form.add(sb);
+        if (showDeletedQuestions) {
+            // meny containing invalidated questions
+            DropdownMenu deletedQuestions = getInvalidQuestions("inv_quest"
+                    + categoryId.toString(), categoryId.intValue());
+            deletedQuestions.setStyleClass("deleted_questions");
+            form.add(deletedQuestions);
+
+            // button to revalidate invalidated question
+            SubmitButton sb = new SubmitButton(iwb.getImage("validate.gif",
+                    iwrb.getLocalizedString("button_validate",
+                            "Validate  selected")), "validate_quest");
+            sb.setStyleClass("validate");
+            form.add(sb);
+        }
         
         l.getChildren().add(form);
         
@@ -777,9 +794,12 @@ public class QuestionsAndAnswers2 extends CategoryBlock {
         }
         
         //'home' link 
-        AnchorLink al = new AnchorLink(iwb.getImage("home.gif"),"ap_q" + question.getPrimaryKey());
-        al.setStyleClass("home");        
-        item.getChildren().add(al);
+        if (showHomeButton) {
+            AnchorLink al = new AnchorLink(iwb.getImage("home.gif"), "ap_q"
+                    + question.getPrimaryKey());
+            al.setStyleClass("home");
+            item.getChildren().add(al);
+        }
 
         return item;
     }
