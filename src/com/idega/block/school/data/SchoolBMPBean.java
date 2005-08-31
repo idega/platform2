@@ -686,7 +686,7 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 			sql.append(yearID);
 		}
 		sql.append(" order by s.").append(NAME);
-
+		this.getLogger().info(sql.toString() +" :::: "+area+", "+yearID);
 		return super.idoFindPKsBySQL(sql.toString());
 
 	}
