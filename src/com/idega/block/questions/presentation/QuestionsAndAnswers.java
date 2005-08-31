@@ -17,11 +17,9 @@ import com.idega.block.questions.business.QuestionsService;
 import com.idega.block.questions.data.Question;
 import com.idega.block.text.business.ContentHelper;
 import com.idega.block.text.business.TextFinder;
-import com.idega.block.text.presentation.TextChooser;
 import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
@@ -68,9 +66,6 @@ public class QuestionsAndAnswers extends CategoryBlock {
 	private boolean showDeleteButton = true;
 	private boolean showMoveButtons = true;
 	private boolean showHomeButton = true;
-	private boolean showCategoryNames = true;
-   
-	private boolean displayOneRandomQuestion = false;
 	
 	private String questionPrefixText = "Q:";
 	private String answerPrefixText = "A:";
@@ -325,72 +320,10 @@ public class QuestionsAndAnswers extends CategoryBlock {
 	}
 	
 
-	private PresentationObject getOldQuestionForm(IWContext iwc,ICCategory cat,Question question,Question previous,Question latter)throws RemoteException{
-		Form F = new Form();
-		Table T = new Table();
-		boolean isForOneQuestion = true;
-		String id = cat.getPrimaryKey().toString();
-		T.add(getStyleText(questionPrefixText,STYLENAME_Q_TITLE),1,1);
-		T.add(getStyleText(answerPrefixText,STYLENAME_A_TITLE),3,1);
-		TextChooser quest = new TextChooser("quest"+id);
-		int questID = -1,ansID=-1,entID = -1;
-		if(question!=null){
-			questID = question.getQuestionID();
-			ansID = question.getAnswerID();
-			entID = ((Integer) question.getPrimaryKey()).intValue();
-		}
-		else{
-			isForOneQuestion = false;
-		}
-		if(questID<0)
-			quest.setChooseImage(iwb.getImage("new.gif",iwrb.getLocalizedString("button_create_question","Create question")));
-		else{
-			quest.setSelectedText(questID);
-			quest.setChooseImage(iwb.getImage("open.gif",iwrb.getLocalizedString("button_edit_question","Edit question")));
-		}
-		
-		T.add(quest,2,1);
-		TextChooser ans = new TextChooser("ans"+id);
-		if(ansID<0)
-			ans.setChooseImage(iwb.getImage("new.gif",iwrb.getLocalizedString("button_create_answer","Create answer")));
-		else{
-			ans.setSelectedText(ansID);
-			ans.setChooseImage(iwb.getImage("open.gif",iwrb.getLocalizedString("button_edit_answer","Edit answer")));
-		}
-		T.add(ans,4,1);
-		T.add(new HiddenInput("save_cat",id));
-		T.add(new HiddenInput("ent_id"+id,String.valueOf(entID)));
-		if(ansID <= 0 || questID <=0)
-			T.add(new SubmitButton(iwb.getImage("save.gif",iwrb.getLocalizedString("button_save_created","Save created content")),"save_quest"),5,1 );
-		if(entID>0 && showDeleteButton){
-			T.add(new SubmitButton(iwb.getImage("trashcan_empty.gif",iwrb.getLocalizedString("button_invalidate","Trashcan")),"delete_quest"),5,1);
-			T.add(new SubmitButton(iwb.getImage("delete.gif",iwrb.getLocalizedString("button_remove","Remove from list")),"remove_quest"),5,1);
-		}
-		if(showMoveButtons){
-			if(previous!=null){
-				T.add(new SubmitButton(iwb.getImage("up.gif",iwrb.getLocalizedString("button_up","Move up")),"move_up"),6,1 );
-				T.add(new HiddenInput("swap_up_quest_id"+entID,previous.getPrimaryKey().toString()));
-			}
-			if(latter!=null){
-				T.add(new SubmitButton(iwb.getImage("down.gif",iwrb.getLocalizedString("button_down","Move down")),"move_down"),6,1 );
-				T.add(new HiddenInput("swap_down_quest_id"+entID,latter.getPrimaryKey().toString()));
-			}
-		}
-		if(!isForOneQuestion && isAdmin && showDeletedQuestions){
-			T.add(getInvalidQuestions("inv_quest"+id,Integer.valueOf(id).intValue()),5,1);
-			
-			T.add(new SubmitButton(iwb.getImage("validate.gif",iwrb.getLocalizedString("button_validate","Validate  selected")),"validate_quest"),6,1);
-		}
-		if(!showAllCategories && valViewCategory!=null)
-			T.add(new HiddenInput(prmViewCategory,valViewCategory));
-		
-		F.add(T);
-		return F;
-	}
 		
 	private DropdownMenu getInvalidQuestions(String  name,int categoryId)throws RemoteException{
 		DropdownMenu drop = new DropdownMenu(name);
-		drop.addMenuElementFirst("-1",iwrb.getLocalizedString("deted_questions","Deleted questions"));
+		drop.addMenuElementFirst("-1",iwrb.getLocalizedString("deleted_questions","Deleted questions"));
 		try{
 		Collection questions = questionsService.getQuestionHome().findAllInvalidByCategory(categoryId);
 		Iterator iter = questions.iterator();
@@ -648,7 +581,7 @@ public class QuestionsAndAnswers extends CategoryBlock {
      * @param showCategoryNames The showCategoryNames to set.
      */
     public void setShowCategoryNames(boolean showCategoryNames) {
-        this.showCategoryNames = showCategoryNames;
+        //this.showCategoryNames = showCategoryNames;
     }
 	
 	public void setQuestionPrefixText(String questionPrefixText){
