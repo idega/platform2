@@ -8,7 +8,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Vector;
 
-import javax.ejb.EJBObject;
 import javax.ejb.FinderException;
 
 import com.idega.block.category.data.ICCategory;
@@ -26,7 +25,6 @@ import com.idega.presentation.Image;
 import com.idega.presentation.Layer;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.PresentationObjectContainer;
-import com.idega.presentation.Table;
 import com.idega.presentation.text.Anchor;
 import com.idega.presentation.text.AnchorLink;
 import com.idega.presentation.text.Link;
@@ -52,16 +50,16 @@ public class QuestionsAndAnswers2 extends CategoryBlock {
 	private QuestionsService questionsService;
 	private Locale currentLocale;
 	private String prmViewCategory = "qa_view_cat_id";
-	private String valViewCategory = null;
+	private String valViewCategory = null; //used with showAllCategories
 	
-	private boolean showAll = true;
-	private boolean showAllCategories =true;
+	private boolean showAll = true; // ????
+	private boolean showAllCategories =true;  //user can see list of categories, ad click on category to see only questions in this category
 	private boolean showQuestionTitle = true;
 	private boolean showQuestionBody = true;
 	private boolean showAnswerTitle = true;
 	private boolean showAnswerBody = true;
-	private boolean showQuestionList = true;
-	private boolean showQuestionListCount = true;
+	private boolean showQuestionList = true; //show questions in questions admin part
+	private boolean showQuestionListCount = true; //XXX seems like it has no setter and hence no property in the builder; gotta add it
 	private boolean showDeletedQuestions = true;
 	private boolean showDeleteButton = true;
 	private boolean showMoveButtons = true;
@@ -146,10 +144,11 @@ public class QuestionsAndAnswers2 extends CategoryBlock {
 			
             if (isAdmin) {
                 mainLayer.getChildren().add(getCategoryAdminPart(iwc));	 //admin part to manage categories
-            }
-            
+            }            
             mainLayer.getChildren().add(getQuestionsAdminPart(iwc)); //admin part for questions            
-			mainLayer.getChildren().add(getQuestionsListPart(iwc));  //list of questions and their answers
+            if (showAll && (showAllCategories || (!showAllCategories && valViewCategory != null))) {
+                mainLayer.getChildren().add(getQuestionsListPart(iwc));  //list of questions and their answers
+            }
 			
 			add(mainLayer);
 		}
@@ -383,8 +382,19 @@ public class QuestionsAndAnswers2 extends CategoryBlock {
     private Layer getQuestionsAdminPart(IWContext iwc) throws RemoteException{
         Layer l = createLayerWithStyleClass("questions_admin");   
         
-        Collection categories = null;
-        categories = getCategories();
+        Collection categories = null;        
+        if (!showAllCategories && valViewCategory != null) {            
+            try {
+                ICCategory viewCat;            
+                viewCat = getCategoryHome().findByPrimaryKey(new Integer(valViewCategory));
+                categories = new Vector(1);
+                categories.add(viewCat);
+            } catch (FinderException e) {                
+                e.printStackTrace();
+            }                
+        } else {
+            categories = getCategories();
+        }
         
         if ( categories != null && !categories.isEmpty() ){
             Iterator iter = categories.iterator();
@@ -417,12 +427,27 @@ public class QuestionsAndAnswers2 extends CategoryBlock {
             getAPCategory(poc, cat);
 
             if (cat.isLeaf()) {
+                
                 // get and add all category questions
-                poc.getChildren().add(getAPCategoryQuestions(iwc, cat));
+                if (showQuestionList) {
+                    if (showAllCategories) {
+                        poc.getChildren().add(getAPCategoryQuestions(iwc, cat));
+                    } else {
+                        if (valViewCategory != null) {
+                            poc.getChildren().add(getAPCategoryQuestions(iwc, cat));
+                        }
+                    }                    
+                }
                 
                 //add form that allows to create new questin or revalidate invalidated questions
                 if (isAdmin) {
-                    poc.getChildren().add(getAPCategoryQestionForm(catId));
+                    if (showAllCategories) {
+                        poc.getChildren().add(getAPCategoryQestionForm(catId));
+                    } else {
+                        if (valViewCategory != null) {
+                            poc.getChildren().add(getAPCategoryQestionForm(catId));
+                        }
+                    }                    
                 }
                 
             } else {
@@ -438,10 +463,27 @@ public class QuestionsAndAnswers2 extends CategoryBlock {
     private void getAPCategory(PresentationObjectContainer poc, ICCategory cat) {
         String catPK = ((Integer) cat.getPrimaryKey()).toString();
         
-        Layer layer = createLayerWithStyleClass("category");        
-        AnchorLink link = new AnchorLink(new Text(cat.getName(currentLocale)),
-                "cat" + catPK);
-        layer.getChildren().add(link);        
+        Layer layer = createLayerWithStyleClass("category");  
+        
+        if (showAll) {
+            if (!showAllCategories) {            
+                Link link = new Link(new Text(cat.getName(currentLocale)));
+                if (valViewCategory == null ) {
+                    link.addParameter(prmViewCategory, catPK.toString());
+                } else {
+                    link.removeParameter(prmViewCategory);
+                }
+                layer.getChildren().add(link);
+                
+            } else {
+                AnchorLink link = new AnchorLink(new Text(cat.getName(currentLocale)),
+                        "cat" + catPK);
+                layer.getChildren().add(link);
+            }
+        } else {
+            layer.getChildren().add(new Text(cat.getName(currentLocale)));
+        }       
+                
         Anchor anchor = new Anchor("ap_cat" + catPK);        
         layer.getChildren().add(anchor);        
         
@@ -501,16 +543,22 @@ public class QuestionsAndAnswers2 extends CategoryBlock {
         item.getChildren().add(anchor);   
 
         //question number
-        Paragraph numberP = new Paragraph();
-        numberP.setStyleClass("number");
-        numberP.getChildren().add(new Text(Integer.toString(number) + "."));
-        item.getChildren().add(numberP);
+        if (showQuestionListCount) {
+            Paragraph numberP = new Paragraph();
+            numberP.setStyleClass("number");
+            numberP.getChildren().add(new Text(Integer.toString(number) + "."));
+            item.getChildren().add(numberP);
+        }
         
         //question title
         Paragraph titleP = new Paragraph();
-        titleP.setStyleClass("title");      
-        AnchorLink l = new AnchorLink(new Text(qHeadline), "q" + question.getPrimaryKey());
-        titleP.getChildren().add(l);             
+        titleP.setStyleClass("title"); 
+        if (showAll) {
+            AnchorLink l = new AnchorLink(new Text(qHeadline), "q" + question.getPrimaryKey());
+            titleP.getChildren().add(l);
+        } else {
+            titleP.getChildren().add(new Text(qHeadline));
+        }
         
         item.getChildren().add(titleP);
         
@@ -539,6 +587,7 @@ public class QuestionsAndAnswers2 extends CategoryBlock {
         p.setStyleClass("question_form");
         
         Integer categoryId = new Integer(question.getCategoryId());
+        String catPK = categoryId.toString();
         Integer questionId = (Integer) question.getPrimaryKey();
         
         //edit link
@@ -547,22 +596,37 @@ public class QuestionsAndAnswers2 extends CategoryBlock {
         editLink.setWindowToOpen(QandAEditorWindow.class);
         editLink.addParameter(QandAEditorWindow.PRM_CATEGORY, categoryId.toString());   
         editLink.setImage(iwb.getImage("open.gif", iwrb.getLocalizedString("button_edit_question", "Edit question")));
-        editLink.addParameter(QandAEditorWindow.PRM_QA_ID, questionId.toString());   
+        editLink.addParameter(QandAEditorWindow.PRM_QA_ID, questionId.toString());
+        if (!showAllCategories && valViewCategory != null ) {            
+            editLink.addParameter(prmViewCategory, catPK.toString());
+        }
         p.getChildren().add(editLink);
         
-        //trash
-        Link trash = new Link(iwb.getImage("trashcan_empty.gif", iwrb.getLocalizedString("button_invalidate","Trashcan")));
-        trash.setStyleClass("trash");
-        trash.addParameter("ent_id", questionId.toString());
-        trash.addParameter("trash_quest", "true");
-        p.getChildren().add(trash);
         
-        //delete
-        Link delete = new Link(iwb.getImage("delete.gif",iwrb.getLocalizedString("button_remove","Remove from list")));
-        delete.setStyleClass("delete");
-        delete.addParameter("ent_id", questionId.toString());
-        delete.addParameter("delete_quest","true"); 
-        p.getChildren().add(delete);
+        if (showDeleteButton) {
+
+            // trash
+            Link trash = new Link(iwb.getImage("trashcan_empty.gif", iwrb
+                    .getLocalizedString("button_invalidate", "Trashcan")));
+            trash.setStyleClass("trash");
+            trash.addParameter("ent_id", questionId.toString());
+            trash.addParameter("trash_quest", "true");
+            if (!showAllCategories && valViewCategory != null ) {            
+                trash.addParameter(prmViewCategory, catPK.toString());
+            }            
+            p.getChildren().add(trash);
+
+            // delete
+            Link delete = new Link(iwb.getImage("delete.gif", iwrb
+                    .getLocalizedString("button_remove", "Remove from list")));
+            delete.setStyleClass("delete");
+            delete.addParameter("ent_id", questionId.toString());
+            delete.addParameter("delete_quest", "true");
+            if (!showAllCategories && valViewCategory != null ) {            
+                delete.addParameter(prmViewCategory, catPK.toString());
+            }
+            p.getChildren().add(delete);
+        }
         
         if (showMoveButtons) {
 
@@ -575,6 +639,9 @@ public class QuestionsAndAnswers2 extends CategoryBlock {
                 up.addParameter("ent_id", questionId.toString());
                 up.addParameter("swap_up_quest_id" + questionId, previous
                         .getPrimaryKey().toString());
+                if (!showAllCategories && valViewCategory != null ) {            
+                    up.addParameter(prmViewCategory, catPK.toString());
+                }
                 p.getChildren().add(up);
             }
 
@@ -587,6 +654,9 @@ public class QuestionsAndAnswers2 extends CategoryBlock {
                 down.addParameter("ent_id", questionId.toString());
                 down.addParameter("swap_down_quest_id" + questionId, latter
                         .getPrimaryKey().toString());
+                if (!showAllCategories && valViewCategory != null ) {            
+                    down.addParameter(prmViewCategory, catPK.toString());
+                }
                 p.getChildren().add(down);
             }
         }
@@ -599,6 +669,8 @@ public class QuestionsAndAnswers2 extends CategoryBlock {
      * generates question creation and revalidation form for given category
      */
     private PresentationObject getAPCategoryQestionForm(Integer categoryId) throws RemoteException { 
+        String catPK = categoryId.toString();       
+        
         Layer l = new Layer(); 
         l.setStyleClass("new_and_deleted_questions");        
         
@@ -612,6 +684,9 @@ public class QuestionsAndAnswers2 extends CategoryBlock {
         newQandA.setWindowToOpen(QandAEditorWindow.class);
         newQandA.addParameter(QandAEditorWindow.PRM_CATEGORY,categoryId.toString());
         newQandA.setImage(iwb.getImage("new.gif",iwrb.getLocalizedString("button_create_question","Create question")));
+        if (!showAllCategories && valViewCategory != null ) {            
+            newQandA.addParameter(prmViewCategory, catPK.toString());
+        }
         form.add(newQandA);
         
         if (showDeletedQuestions) {
@@ -627,6 +702,11 @@ public class QuestionsAndAnswers2 extends CategoryBlock {
                             "Validate  selected")), "validate_quest");
             sb.setStyleClass("validate");
             form.add(sb);
+            
+            if (!showAllCategories && valViewCategory != null ) {            
+                HiddenInput hi = new HiddenInput(prmViewCategory, catPK.toString());
+                form.add(hi);
+            }
         }
         
         l.getChildren().add(form);
@@ -648,8 +728,19 @@ public class QuestionsAndAnswers2 extends CategoryBlock {
     private Layer getQuestionsListPart(IWContext iwc) throws RemoteException{
         Layer l = createLayerWithStyleClass("questions_list"); 
         
-        Collection categories = null;
-        categories = getCategories();
+        Collection categories = null;        
+        if (!showAllCategories && valViewCategory != null) {            
+            try {
+                ICCategory viewCat;            
+                viewCat = getCategoryHome().findByPrimaryKey(new Integer(valViewCategory));
+                categories = new Vector(1);
+                categories.add(viewCat);
+            } catch (FinderException e) {                
+                e.printStackTrace();
+            }                
+        } else {
+            categories = getCategories();
+        }
         
         if ( categories != null && !categories.isEmpty() ){
             Iterator iter = categories.iterator();
@@ -668,7 +759,9 @@ public class QuestionsAndAnswers2 extends CategoryBlock {
             ICCategory cat = (ICCategory) iter.next();           
 
             // create and add a category header...
-            getQLCategoryItem(poc, cat);
+            if (showAllCategories) {
+                getQLCategoryItem(poc, cat);
+            }
 
             if (cat.isLeaf()) {
                 // get and add all category questions
@@ -749,16 +842,21 @@ public class QuestionsAndAnswers2 extends CategoryBlock {
         qPrefix.setStyleClass("prefix"); 
         qPrefix.getChildren().add(new Text(questionPrefixText));
         q.getChildren().add(qPrefix);
+        //fix if image is set
+        
+        if (showQuestionTitle) {
+            Paragraph qHeadlineP = new Paragraph();
+            qHeadlineP.setStyleClass("title");
+            qHeadlineP.getChildren().add(new Text(qHeadline));
+            q.getChildren().add(qHeadlineP);
+        }
 
-        Paragraph qHeadlineP = new Paragraph();
-        qHeadlineP.setStyleClass("title");
-        qHeadlineP.getChildren().add(new Text(qHeadline));
-        q.getChildren().add(qHeadlineP);
-
-        Paragraph qBodyP = new Paragraph();
-        qBodyP.setStyleClass("body");
-        qBodyP.getChildren().add(new Text(qBody));
-        q.getChildren().add(qBodyP);
+        if (showQuestionBody) {
+            Paragraph qBodyP = new Paragraph();
+            qBodyP.setStyleClass("body");
+            qBodyP.getChildren().add(new Text(qBody));
+            q.getChildren().add(qBodyP);
+        }
 
         item.getChildren().add(q);
 
@@ -779,16 +877,21 @@ public class QuestionsAndAnswers2 extends CategoryBlock {
             aPrefixP.setStyleClass("prefix"); 
             aPrefixP.getChildren().add(new Text(answerPrefixText));
             a.getChildren().add(aPrefixP);
-
-            Paragraph aHeadlineP = new Paragraph();
-            aHeadlineP.setStyleClass("title");
-            aHeadlineP.getChildren().add(new Text(answerHeadline));
-            a.getChildren().add(aHeadlineP);
-
-            Paragraph aBodyP = new Paragraph();
-            aBodyP.setStyleClass("body"); 
-            aBodyP.getChildren().add(new Text(answerBody));
-            a.getChildren().add(aBodyP);
+            //XXX fix if prefix image is set
+            
+            if (showAnswerTitle) {
+                Paragraph aHeadlineP = new Paragraph();
+                aHeadlineP.setStyleClass("title");
+                aHeadlineP.getChildren().add(new Text(answerHeadline));
+                a.getChildren().add(aHeadlineP);
+            }
+            
+            if (showAnswerBody) {
+                Paragraph aBodyP = new Paragraph();
+                aBodyP.setStyleClass("body");
+                aBodyP.getChildren().add(new Text(answerBody));
+                a.getChildren().add(aBodyP);
+            }
 
             item.getChildren().add(a);
         }
