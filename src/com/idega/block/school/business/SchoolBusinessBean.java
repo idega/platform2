@@ -1227,6 +1227,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 				ab = abHome.findByPrimaryKey(propertyName);
 			} catch (FinderException f) {
 				ab = abHome.create();
+				ab.setKey(propertyName);
 			}
 
 			if (ab != null) {
