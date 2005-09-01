@@ -147,7 +147,7 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	private ICPage formBackPage;
 	private boolean iUseStyleNames;
 
-	private static String _width = "600";
+	private String _width = "600";
 	//private String _width = iwb.getProperty("table.width"); 
 
 	public String getBundleIdentifier() {
