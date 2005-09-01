@@ -201,9 +201,51 @@ private static final String IC_CATEGORY_IC_OBJECT_INSTANCE_MIDDLE_TABLE_NAME = "
 		sql.append(" and mt.").append(IC_CATEGORY_COLUMN_NAME).append(" = c.").append(IC_CATEGORY_COLUMN_NAME);
 		if (order) {
 			sql.append(" order by mt.").append(TREE_ORDER_COLUMN_NAME); //.append(" desc");
-		}
+		} 
+        
 		return EntityFinder.getInstance().findAll(ICCategory.class, sql.toString());
 	}
+    
+    /**
+     * basically returns the same as ejbHomeGetListOfCategoryForObjectInstance() but 
+     * does include only root categories in the list 
+     * 
+     * @param obj
+     * @param order
+     * @return
+     * @throws FinderException
+     */
+    public List ejbHomeGetListOfRootCategoryForObjectInstance(ICObjectInstance obj, boolean order) throws FinderException {
+        StringBuffer sql = new StringBuffer();
+        /*
+        select cat.* 
+        from IC_CATEGORY cat 
+        
+            LEFT JOIN IC_CATEGORY_tree tree 
+            ON cat.IC_CATEGORY_ID= tree.child_IC_CATEGORY_ID 
+            
+            LEFT JOIN IC_CATEGORY_IC_OBJECT_INSTANCE mt 
+            ON cat.IC_CATEGORY_ID= mt.IC_CATEGORY_ID 
+        where   
+            tree.child_ic_category_id is null    
+            and mt.IC_OBJECT_INSTANCE_ID = 9 
+        */
+        sql.append("select cat.* from ");
+        sql.append(getEntityTableName()).append(" cat ");
+        sql.append("LEFT JOIN ").append(getEntityTableName()).append("_tree tree ");
+        sql.append("ON cat.").append(getIDColumnName()).append(" = tree.child_").append(getIDColumnName()).append(" ");  
+        sql.append("LEFT JOIN ").append(EntityControl.getManyToManyRelationShipTableName(ICCategory.class, ICObjectInstance.class)).append(" mt "); ////
+        sql.append("ON cat.").append(getIDColumnName()).append(" = mt.").append(getIDColumnName()).append(" "); 
+        sql.append("where tree.child_").append(getIDColumnName()).append(" is null ");
+        sql.append("and mt.").append(IC_OBJECT_INSTANCE_COLUMN_NAME).append(" = ").append(obj.getID()).append(" ");
+        if (order) {
+            sql.append(" order by mt.").append(TREE_ORDER_COLUMN_NAME); 
+        } 
+        
+        return EntityFinder.getInstance().findAll(ICCategory.class, sql.toString());
+    }
+    
+    
 	public int ejbHomeGetOrderNumber(Category category, ICObjectInstance instance) throws javax.ejb.FinderException {
 		return ejbHomeGetOrderNumber(category, Integer.toString(instance.getID()));
 	}

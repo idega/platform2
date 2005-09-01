@@ -363,6 +363,28 @@ public class CategoryFinder {
 			return null;
 		}
 	}
+    
+    /**
+     * basically the same as listOfCategoryForObjectInstanceId, but returns only root categories
+     * @param instanceid
+     * @param order
+     * @return
+     */
+    public List listOfRootCategoryForObjectInstanceId(int instanceid, boolean order) {
+        try {
+            ICObjectInstance obj = ICObjectBusiness.getInstance().getICObjectInstance(instanceid);
+            return listOfRootCategoryForObjectInstanceId(obj, order);
+        }
+        catch (Exception ex) {
+            return null;
+        }
+    } 
+    public List listOfRootCategoryForObjectInstanceId(ICObjectInstance obj, boolean order) throws FinderException, RemoteException {
+        ICCategoryHome catHome = (ICCategoryHome) IDOLookup
+                .getHome(ICCategory.class);
+        return catHome.getListOfRootCategoryForObjectInstance(obj, order);
+    }    
+    
 	/**
 	 *  Gets the relatedSQL of the CategoryFinder object
 	 *
@@ -375,7 +397,7 @@ public class CategoryFinder {
 		  ICCategoryICObjectInstanceHome home = (ICCategoryICObjectInstanceHome) IDOLookup.getHome(ICCategoryICObjectInstance.class);
 		  return home.getRelatedSQL(iObjectInstanceId);
 		}catch (RemoteException rm)*/ {
-			// Gamla dótið, fyrir Grím
+			// Gamla dï¿½tiï¿½, fyrir Grï¿½m
 			StringBuffer sql = new StringBuffer("select ");
 			sql.append(
 				((ICCategory) com.idega.block.category.data.ICCategoryBMPBean.getStaticInstance(ICCategory.class))

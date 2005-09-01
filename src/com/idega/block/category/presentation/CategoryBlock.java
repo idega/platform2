@@ -114,6 +114,17 @@ public abstract class CategoryBlock extends Block implements ICDynamicPageTrigge
 		return CategoryFinder.getInstance().listOfCategoryForObjectInstanceId(getICObjectInstanceID(), orderManually);
 		//      return CategoryFinder.getInstance().listOfCategoryForObjectInstanceId(getICObjectInstanceID());
 	}
+
+    /**
+     *  Returns a collection of ICCategory objects bound to this instance, returns only root categories
+     *  @returns Collection
+     */
+    public Collection getRootCategories() {
+        return CategoryFinder.getInstance().listOfRootCategoryForObjectInstanceId(getICObjectInstanceID(), orderManually);
+        //      return CategoryFinder.getInstance().listOfCategoryForObjectInstanceId(getICObjectInstanceID());
+    }
+    
+    
 	protected void initCategory(IWContext iwc) {
 		//if (icCategoryId <= 0) {
 			if (iwc.isParameterSet(prmCategoryId)) {
