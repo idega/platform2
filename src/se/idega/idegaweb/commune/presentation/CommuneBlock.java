@@ -165,7 +165,6 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	public void _main(IWContext iwc)throws Exception{
 		this.setResourceBundle(getResourceBundle(iwc));
 		setBundle(getBundle(iwc));
-		_width = iwb.getProperty("table.width", "600"); 
 		iUseStyleNames = new Boolean(iwb.getProperty("layout.use_style_names", "false")).booleanValue();
 		super._main(iwc);
 	}
