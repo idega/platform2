@@ -339,11 +339,11 @@ public class InitialData extends TravelManager {
 						Text text = getText("Refunds");
 						text.setFontColor(super.WHITE);
 						link.setText(text);
-						//	              		add(link);
-						Form form = TravelCreditcardRefunderWindow.creditcardRefunderForm(iwc, iwrb);
-						form.add(Text.NON_BREAKING_SPACE);
-						form.add(link);
-						add(form);
+	              		add(link);
+//						Form form = TravelCreditcardRefunderWindow.creditcardRefunderForm(iwc, iwrb);
+//						form.add(Text.NON_BREAKING_SPACE);
+//						form.add(link);
+//						add(form);
 						
 					}catch (Exception e) {
 						e.printStackTrace(System.err);
