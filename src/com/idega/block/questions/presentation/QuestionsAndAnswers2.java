@@ -18,6 +18,7 @@ import com.idega.block.questions.data.Question;
 import com.idega.block.text.business.ContentHelper;
 import com.idega.block.text.business.TextFinder;
 import com.idega.business.IBOLookup;
+import com.idega.core.data.ICTreeNode;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -393,7 +394,8 @@ public class QuestionsAndAnswers2 extends CategoryBlock {
                 e.printStackTrace();
             }                
         } else {
-            categories = getCategories();
+            //categories = getCategories();            
+            categories = getRootCategories();
         }
         
         if ( categories != null && !categories.isEmpty() ){
@@ -422,7 +424,10 @@ public class QuestionsAndAnswers2 extends CategoryBlock {
         while (iter.hasNext()) {
             ICCategory cat = (ICCategory) iter.next();
             Integer catId = (Integer) cat.getPrimaryKey();
-
+            Integer catParentId = new Integer(cat.getParentId());
+            ICTreeNode node = cat.getParentNode();
+            int i = cat.getChildCount();
+            
             // create and add a category header...
             getAPCategory(poc, cat);
 
@@ -739,7 +744,8 @@ public class QuestionsAndAnswers2 extends CategoryBlock {
                 e.printStackTrace();
             }                
         } else {
-            categories = getCategories();
+            //categories = getCategories(); //this method returns not only roots, but childern too, so it doesn't suit us 
+            categories = getRootCategories();
         }
         
         if ( categories != null && !categories.isEmpty() ){
