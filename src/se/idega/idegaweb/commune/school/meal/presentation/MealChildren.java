@@ -1,5 +1,5 @@
 /*
- * $Id: MealChildren.java,v 1.1 2005/08/12 08:54:40 gimmi Exp $
+ * $Id: MealChildren.java,v 1.2 2005/09/02 07:14:15 gimmi Exp $
  * Created on Aug 11, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -18,10 +18,21 @@ import com.idega.business.IBORuntimeException;
 import com.idega.event.IWPageEventListener;
 import com.idega.idegaweb.IWException;
 import com.idega.presentation.IWContext;
+import com.idega.user.data.User;
 
 
 public class MealChildren extends SchoolChildren implements IWPageEventListener{
 
+	protected boolean getShowChild(IWContext iwc, User child) {
+		try {
+			boolean hasPlacements = getSchoolBusiness(iwc).hasSchoolPlacements(((Integer)child.getPrimaryKey()).intValue());
+			return hasPlacements;
+		}
+		catch (RemoteException re) {
+			return false;
+		}
+	}
+	
 	public boolean actionPerformed(IWContext iwc) throws IWException {
 		try {
 			MealSession session = getMealSession(iwc);
