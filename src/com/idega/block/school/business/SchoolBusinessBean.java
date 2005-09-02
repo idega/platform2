@@ -1204,6 +1204,10 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	 */
 	public String getPropertyValue(String propertyName) {
 		try {
+			// TODO fix ugly hack
+			if (propertyName != null && propertyName.length()>30) {
+				propertyName = propertyName.substring(propertyName.length()-30);
+			}
 			ICApplicationBindingHome abHome = (ICApplicationBindingHome) IDOLookup.getHome(ICApplicationBinding.class);
 			ICApplicationBinding ab = abHome.findByPrimaryKey(propertyName);
 			if (ab != null) {
@@ -1215,12 +1219,16 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		return null;
 	}
 	/**
-	 * sets a propertyNAme and value...
+	 * sets a propertyName and value...
 	 * @param propertyName
 	 * @param propertyValue
 	 */
 	public void setProperty(String propertyName, String propertyValue) {
 		try {
+			// TODO fix ugly hack
+			if (propertyName != null && propertyName.length()>30) {
+				propertyName = propertyName.substring(propertyName.length()-30);
+			}
 			ICApplicationBindingHome abHome = (ICApplicationBindingHome) IDOLookup.getHome(ICApplicationBinding.class);
 			ICApplicationBinding ab = null;
 			try {
