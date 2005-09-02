@@ -250,7 +250,7 @@ public class CategoryWindow extends IWAdminWindow {
 			T.add(formatText("  "+iwrb.getLocalizedString("order", "Order")), 4, row);
 		}
 		T.add(formatText("  "+iwrb.getLocalizedString("add_child", "Add child")+"  "),5,row);
-		T.add(formatText("  "+iwrb.getLocalizedString("delete", "Delete")+"  "),6,row);
+		T.add(formatText("  _"+iwrb.getLocalizedString("delete", "Delete")+"_  "),6,row);
 		T.add(formatText("  "+iwrb.getLocalizedString("metadata", "Metadata")+"  "),7,row);
 		row++;
 		TextInput name = new TextInput("name");
