@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolBusiness.java,v 1.104 2005/08/30 15:59:07 gimmi Exp $
+ * $Id: SchoolBusiness.java,v 1.105 2005/09/02 02:33:49 gimmi Exp $
  * Created on Aug 30, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -53,10 +53,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2005/08/30 15:59:07 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/09/02 02:33:49 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.104 $
+ * @version $Revision: 1.105 $
  */
 public interface SchoolBusiness extends IBOService {
 
@@ -443,12 +443,12 @@ public interface SchoolBusiness extends IBOService {
 	/**
 	 * @see com.idega.block.school.business.SchoolBusinessBean#getGroupID
 	 */
-	public String getGroupID(String propertyName) throws java.rmi.RemoteException;
+	public String getPropertyValue(String propertyName) throws java.rmi.RemoteException;
 
 	/**
 	 * @see com.idega.block.school.business.SchoolBusinessBean#setGroupID
 	 */
-	public void setGroupID(String propertyName, String propertyValue) throws java.rmi.RemoteException;
+	public void setProperty(String propertyName, String propertyValue) throws java.rmi.RemoteException;
 
 	/**
 	 * @see com.idega.block.school.business.SchoolBusinessBean#getRootAdultEducationAdministratorGroup
