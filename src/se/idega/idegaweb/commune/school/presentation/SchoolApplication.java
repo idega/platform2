@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolApplication.java,v 1.2 2005/08/10 15:05:40 thomas Exp $
+ * $Id: SchoolApplication.java,v 1.3 2005/09/02 01:13:38 gimmi Exp $
  * Created on Aug 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -48,10 +48,10 @@ import com.idega.user.data.User;
 import com.idega.util.PersonalIDFormatter;
 
 /**
- * Last modified: $Date: 2005/08/10 15:05:40 $ by $Author: thomas $
+ * Last modified: $Date: 2005/09/02 01:13:38 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class SchoolApplication extends SchoolBlock {
 
@@ -214,6 +214,18 @@ public class SchoolApplication extends SchoolBlock {
 		saveCustodianInfo(iwc, false);
 
 		Form form = createForm();
+		if (!iwc.isParameterSet(PARAMETER_SEASON)) {
+			SchoolSeason season = null;
+			try {
+				season = getCareBusiness().getCurrentSeason();
+			}
+			catch (FinderException fe) {
+				log(fe);
+				add(getErrorText(localize("no_season_found", "No season found...")));
+				return;
+			}
+			form.addParameter(PARAMETER_SEASON, season.getPrimaryKey().toString());
+		}
 		
 		Table table = new Table();
 		table.setCellpadding(0);
