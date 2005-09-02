@@ -161,8 +161,6 @@ public class CitizenChildren extends CommuneBlock {
 				else if (child.getPersonalID() != null)
 					age = new Age(PIDChecker.getInstance().getDateFromPersonalID(child.getPersonalID()));
 
-				System.out.println("<CitizenChildren> from = "+fromAge+" , to = "+toAge+", age = "+age.getYears());
-				System.out.println("<CitizenChildren> childChild = "+getShowChild(iwc, child));
 				if(age != null && getShowChild(iwc, child) && age.getYears() <= toAge && age.getYears() >=fromAge){
 					T.add(getChildLink(child, useUniqueID), 1, row++);
 					if (iter.hasNext())
