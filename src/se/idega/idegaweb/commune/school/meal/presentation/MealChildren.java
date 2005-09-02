@@ -1,5 +1,5 @@
 /*
- * $Id: MealChildren.java,v 1.4 2005/09/02 08:55:40 gimmi Exp $
+ * $Id: MealChildren.java,v 1.5 2005/09/02 09:11:39 palli Exp $
  * Created on Aug 11, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -23,6 +23,10 @@ import com.idega.user.data.User;
 
 public class MealChildren extends SchoolChildren implements IWPageEventListener{
 
+	public MealChildren() {
+		super();
+	}
+	
 	protected boolean getShowChild(IWContext iwc, User child) {
 		try {
 			System.out.print("[MealChildren] checking child : "+child.getName());
