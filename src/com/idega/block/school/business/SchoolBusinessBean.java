@@ -2728,6 +2728,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			return placings > 0;
 		}
 		catch (IDOException ie) {
+			ie.printStackTrace();
 			return false;
 		}
 	}

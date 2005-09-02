@@ -56,8 +56,8 @@ import com.idega.util.IWTimestamp;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2005/08/17 14:02:23 $ by $Author: palli $
- * @version $Revision: 1.147 $
+ *         Last modified: $Date: 2005/09/02 08:02:51 $ by $Author: gimmi $
+ * @version $Revision: 1.148 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -542,7 +542,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	public int ejbHomeGetNumberOfPlacings(int userID) throws IDOException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectCountFrom(this).appendWhereEquals(MEMBER, userID);
-
+		System.out.println("<schoolClammMemberbmpBean> sql = "+sql.toString());
 		return this.idoGetNumberOfRecords(sql);
 	}
 
