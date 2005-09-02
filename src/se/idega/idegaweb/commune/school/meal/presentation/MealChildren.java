@@ -1,5 +1,5 @@
 /*
- * $Id: MealChildren.java,v 1.2 2005/09/02 07:14:15 gimmi Exp $
+ * $Id: MealChildren.java,v 1.3 2005/09/02 07:41:38 gimmi Exp $
  * Created on Aug 11, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -29,6 +29,7 @@ public class MealChildren extends SchoolChildren implements IWPageEventListener{
 			return hasPlacements;
 		}
 		catch (RemoteException re) {
+			re.printStackTrace();
 			return false;
 		}
 	}
