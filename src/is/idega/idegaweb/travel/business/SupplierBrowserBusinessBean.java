@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowserBusinessBean.java,v 1.4 2005/08/27 16:56:39 gimmi Exp $
+ * $Id: SupplierBrowserBusinessBean.java,v 1.5 2005/09/04 14:02:57 gimmi Exp $
  * Created on Jul 6, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -73,6 +73,7 @@ public class SupplierBrowserBusinessBean extends IBOServiceBean  implements Supp
 	public static final String ATTRIBUTE_STYLE_CLASS = "styleClass";
 	public static final String ATTRIBUTE_LOCALIZATION_KEY = "localizationKey";
 	public static final String ATTRIBUTE_LAYER_IDS = "divIDs";
+	public static final String ATTRIBUTE_SELECTED = "selected";
 	public static final String ATTRIBUTE_PAGE_ID = "pageID";
 	public static final String TYPE_DROPDOWN = "dropdown";
 	public static final String TYPE_DROPDOWN_MENU_ITEM = "menuItem";
@@ -157,7 +158,7 @@ public class SupplierBrowserBusinessBean extends IBOServiceBean  implements Supp
 		XMLElement el = doc.getRootElement();
 
 		String engineName = el.getAttributeValue(ATTRIBUTE_NAME);
-		String key = engineName+"_"+supplierManager.getPrimaryKey().toString();
+		String key = engineName+"_"+supplierManager.getPrimaryKey().toString()+IWTimestamp.RightNow().toSQLDateString();
 		
 //		xmlMap = new HashMap();
 		Collection returner = (Collection) xmlMap.get(key);
@@ -278,6 +279,10 @@ public class SupplierBrowserBusinessBean extends IBOServiceBean  implements Supp
 						while (mIter.hasNext()) {
 							XMLElement menuItem  = (XMLElement) mIter.next();
 							((DropdownMenu) input).addMenuElement(menuItem.getAttributeValue(ATTRIBUTE_VALUE), menuItem.getAttributeValue(ATTRIBUTE_NAME));
+							String selected = menuItem.getAttributeValue(ATTRIBUTE_SELECTED);
+							if (selected != null && selected.equalsIgnoreCase("true")) {
+								((DropdownMenu) input).setSelectedElement(menuItem.getAttributeValue(ATTRIBUTE_VALUE));
+							}
 						}
 					} 
 					else if (type.equalsIgnoreCase(TYPE_DATE)) {
