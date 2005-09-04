@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowserSearch.java,v 1.4 2005/08/30 02:21:36 gimmi Exp $
+ * $Id: SupplierBrowserSearch.java,v 1.5 2005/09/04 14:02:15 gimmi Exp $
  * Created on Aug 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -12,11 +12,14 @@ package is.idega.idegaweb.travel.presentation;
 import is.idega.idegaweb.travel.business.SupplierBrowserBusiness;
 import is.idega.idegaweb.travel.business.SupplierBrowserBusinessBean;
 import is.idega.idegaweb.travel.data.SupplierBrowserSearchForm;
+
 import java.io.File;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
+
 import javax.ejb.FinderException;
+
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
@@ -31,6 +34,7 @@ import com.idega.presentation.ui.Label;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
+import com.idega.util.IWTimestamp;
 import com.idega.xml.XMLDocument;
 import com.idega.xml.XMLElement;
 import com.idega.xml.XMLParser;
@@ -128,8 +132,8 @@ public class SupplierBrowserSearch extends TravelBlock {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-//		System.out.println("[SupplierBrowserSearch] returnString =  "+returnString);
-		return  cacheStatePrefix+returnString;
+
+		return  cacheStatePrefix+returnString+IWTimestamp.RightNow().toSQLDateString();
 	}
 	
 	private void addSearchForm(IWContext iwc) throws Exception {
