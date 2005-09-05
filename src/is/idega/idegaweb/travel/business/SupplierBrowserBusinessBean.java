@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowserBusinessBean.java,v 1.5 2005/09/04 14:02:57 gimmi Exp $
+ * $Id: SupplierBrowserBusinessBean.java,v 1.6 2005/09/05 10:37:08 gimmi Exp $
  * Created on Jul 6, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -309,21 +309,32 @@ public class SupplierBrowserBusinessBean extends IBOServiceBean  implements Supp
 					else if (type.equalsIgnoreCase(TYPE_ACCOMMODATION)) {
 						HotelSearch hs = new HotelSearch();
 						input = hs.getHotelTypeDropdown(supplierManager, getResourceBundle(), el.getAttributeValue(ATTRIBUTE_NAME));
+						String selected = el.getAttributeValue(ATTRIBUTE_SELECTED);
+						if (selected != null && selected.equalsIgnoreCase("true")) {
+							((DropdownMenu) input).setSelectedElement(el.getAttributeValue(ATTRIBUTE_VALUE));
+						}
 					}
 					else if (type.equalsIgnoreCase(TYPE_ROOM)) {
 						HotelSearch hs = new HotelSearch();
 						input = hs.getRoomTypeDropdown(supplierManager, el.getAttributeValue(ATTRIBUTE_NAME));
+						String selected = el.getAttributeValue(ATTRIBUTE_SELECTED);
+						if (selected != null && selected.equalsIgnoreCase("true")) {
+							((DropdownMenu) input).setSelectedElement(el.getAttributeValue(ATTRIBUTE_VALUE));
+						}
 					}
 					// Tour Specific
 					else if (type.equalsIgnoreCase(TYPE_TOUR)) {
-						TourTypeHome tth = (TourTypeHome) IDOLookup.getHome(TourType.class);
-						SupplierHome sHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
+						TourTypeHome tth = (TourTypeHome) IDOLookup.getHome(TourType.class, getDatasource());
+						SupplierHome sHome = (SupplierHome) IDOLookup.getHome(Supplier.class, getDatasource());
 						try {
 							Collection tourTypes = tth.findByCategoryUsedBySuppliers(el.getAttributeValue(ATTRIBUTE_TOUR_TYPE), sHome.findAll(supplierManager));
 							input = new DropdownMenu(tourTypes, el.getAttributeValue(ATTRIBUTE_NAME));
+							String selected = el.getAttributeValue(ATTRIBUTE_SELECTED);
+							if (selected != null && selected.equalsIgnoreCase("true")) {
+								((DropdownMenu) input).setSelectedElement(el.getAttributeValue(ATTRIBUTE_VALUE));
+							}
 						}
 						catch (Exception e1) {
-							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
 
