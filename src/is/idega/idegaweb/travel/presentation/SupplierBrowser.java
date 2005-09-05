@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowser.java,v 1.21 2005/08/30 02:24:29 gimmi Exp $
+ * $Id: SupplierBrowser.java,v 1.22 2005/09/05 23:06:19 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -93,6 +93,8 @@ public class SupplierBrowser extends TravelBlock {
 	private String pluginClassName = null;
 	private BookingForm bookingForm = null;
 	
+	private IWTimestamp from = null;
+	private int numberOfDays = 1;
 	private String textStyleClass = null;
 	private String headerStyleClass = null;
 	private String linkStyleClass = null;
@@ -105,6 +107,7 @@ public class SupplierBrowser extends TravelBlock {
 	private boolean useBasket = false;
 	private boolean useTravelLook = false;
 	private boolean showInputs = true;
+	private boolean showPriceWithProductInformation = false;
 	
 	public SupplierBrowser() {
 		
@@ -246,7 +249,30 @@ public class SupplierBrowser extends TravelBlock {
 			catch (Exception e) {
 				e.printStackTrace();
 			}
+		} else {
+			try {
+				bookingForm = getServiceHandler(iwc).getBookingForm(iwc, null, false);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
+		String sFrom = iwc.getParameter(PARAMETER_FROM);
+		from = null;
+		if (sFrom != null) {
+			from = new IWTimestamp(sFrom);
+		}
+		numberOfDays = 1;
+		try {
+			IWTimestamp to = null;
+			if (iwc.isParameterSet(PARAMETER_TO)) {
+				to = new  IWTimestamp(iwc.getParameter(PARAMETER_TO));
+			}
+			numberOfDays = bookingForm.getNumberOfDays(from, to);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 	
 	private void bookingForm(IWContext iwc, Form form) {
@@ -278,21 +304,6 @@ public class SupplierBrowser extends TravelBlock {
 			form.addParameter(ACTION, "");
 		}
 
-		int numberOfDays = 1;
-		try {
-			IWTimestamp from = null;
-			IWTimestamp to = null;
-			if (iwc.isParameterSet(PARAMETER_FROM)) {
-				from = new IWTimestamp(iwc.getParameter(PARAMETER_FROM));
-			}
-			if (iwc.isParameterSet(PARAMETER_TO)) {
-				to = new  IWTimestamp(iwc.getParameter(PARAMETER_TO));
-			}
-			numberOfDays = bookingForm.getNumberOfDays(from, to);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
 		int row = 1;
 		
 		if (getSearchSession(iwc).getAddToBasketSuccess() && iwc.isParameterSet(AbstractSearchForm.ACTION)) {
@@ -378,7 +389,7 @@ public class SupplierBrowser extends TravelBlock {
 					timeframeId = timeframe.getID();
 				}
 				ProductPriceHome ppHome = (ProductPriceHome) IDOLookup.getHome(ProductPrice.class);
-				pRow = listPrices(iwc, priceTable, pRow, addressId, timeframeId, ppHome, totalResults, numberOfDays);
+				pRow = listPrices(product, iwc, priceTable, pRow, addressId, timeframeId, ppHome, totalResults, numberOfDays);
 			} else {
 				Iterator aIter = addresses.iterator();
 				TravelAddress tAddress;
@@ -397,7 +408,7 @@ public class SupplierBrowser extends TravelBlock {
 						timeframeId = timeframe.getID();
 					}
 					ProductPriceHome ppHome = (ProductPriceHome) IDOLookup.getHome(ProductPrice.class);
-					pRow = listPrices(iwc, priceTable, pRow, addressId, timeframeId, ppHome, totalResults, numberOfDays);
+					pRow = listPrices(product, iwc, priceTable, pRow, addressId, timeframeId, ppHome, totalResults, numberOfDays);
 				}
 			}
 			if (interfaceObjectStyleClass != null) {
@@ -560,14 +571,12 @@ public class SupplierBrowser extends TravelBlock {
 		extraTable.setWidth(1, "100");
 	}
 
-	private int listPrices(IWContext iwc, Table priceTable, int pRow, int addressId, int timeframeId, ProductPriceHome ppHome, ResultOutput totalResults, int numberOfDays) throws FinderException, SQLException, RemoteException {
+	private int listPrices(Product product, IWContext iwc, Table priceTable, int pRow, int addressId, int timeframeId, ProductPriceHome ppHome, ResultOutput totalResults, int numberOfDays) throws FinderException, SQLException, RemoteException {
 		String key = null;
 		if (useSearchPriceCategoryKey) {
 			key = bookingForm.getPriceCategorySearchKey();
 		}
-		
-		Collection prices = ppHome.findProductPrices(product.getID(), timeframeId, addressId, useOnlinePrices, key);
-//				Collection prices = ppHome.findProductPrices(product.getID(), timeframeId, addressId, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, bf.getPriceCategorySearchKey());
+		Collection prices = getProductPriceBusiness().getProductPrices(product.getID(), timeframeId, addressId, useOnlinePrices, key, null);
 		if (prices != null) {
 			Collection misc = null;
 
@@ -575,7 +584,7 @@ public class SupplierBrowser extends TravelBlock {
 			ProductPrice price;
 			while (pIter.hasNext()) {
 				price = (ProductPrice) pIter.next();
-				pRow = addPrice(iwc, priceTable, pRow, addressId, timeframeId, totalResults, numberOfDays, price, "priceCategory");
+				pRow = addPrice(product, iwc, priceTable, pRow, addressId, timeframeId, totalResults, numberOfDays, price, "priceCategory");
 			}
 			
 			try {
@@ -593,7 +602,7 @@ public class SupplierBrowser extends TravelBlock {
 				}
 				while (glitter.hasNext()) {
 					price = (ProductPrice) glitter.next();
-					pRow = addPrice(iwc, priceTable, pRow, addressId, timeframeId, totalResults, numberOfDays, price, "miscPriceCategory");
+					pRow = addPrice(product, iwc, priceTable, pRow, addressId, timeframeId, totalResults, numberOfDays, price, "miscPriceCategory");
 				}
 				
 			} catch (FinderException f) {
@@ -603,21 +612,7 @@ public class SupplierBrowser extends TravelBlock {
 		return pRow;
 	}
 
-	/**
-	 * @param iwc
-	 * @param priceTable
-	 * @param pRow
-	 * @param addressId
-	 * @param timeframeId
-	 * @param totalResults
-	 * @param numberOfDays
-	 * @param price
-	 * @return
-	 * @throws SQLException
-	 * @throws RemoteException
-	 * @throws FinderException
-	 */
-	private int addPrice(IWContext iwc, Table priceTable, int pRow, int addressId, int timeframeId, ResultOutput totalResults, int numberOfDays, ProductPrice price, String textInputPrefix) throws SQLException, RemoteException, FinderException {
+	private int addPrice(Product product, IWContext iwc, Table priceTable, int pRow, int addressId, int timeframeId, ResultOutput totalResults, int numberOfDays, ProductPrice price, String textInputPrefix) throws SQLException, RemoteException, FinderException {
 		float fPrice = -1;
 		try {
 			fPrice = getTravelStockroomBusiness(iwc).getPrice(((Integer) price.getPrimaryKey()).intValue(), product.getID(), price.getPriceCategoryID(), price.getCurrencyId(), IWTimestamp.getTimestampRightNow(), timeframeId, addressId);
@@ -625,33 +620,31 @@ public class SupplierBrowser extends TravelBlock {
 			
 		}
 
+		boolean useInputs = (totalResults != null);
+		
 		priceTable.add(getText(price.getPriceCategory().getName()), 1, pRow);
 		priceTable.add(getText(df.format(fPrice*numberOfDays)+" "+price.getCurrency().getCurrencyAbbreviation()), 2, pRow);
 		if (numberOfDays > 1) {
 			priceTable.add(getText(Text.BREAK+"("+df.format(fPrice)+" "+bookingForm.getPerDayString(getResourceBundle())+")"), 2, pRow);
 		}
 		
-		TextInput inp = new TextInput(textInputPrefix+price.getPrimaryKey().toString());
-		inp.setContent("0");
-		inp.setSize(3);
-		
-		ResultOutput rout = new ResultOutput("tmp"+price.getPrimaryKey().toString(), "0");
-		rout.setSize(7);
-		rout.add(inp, ResultOutput.OPERATOR_MULTIPLY+fPrice+ResultOutput.OPERATOR_MULTIPLY+numberOfDays);
-		if (interfaceObjectStyleClass != null) {
-			inp.setStyleClass(interfaceObjectStyleClass);
-			rout.setStyleClass(interfaceObjectStyleClass);
+		if (useInputs) {
+			TextInput inp = new TextInput(textInputPrefix+price.getPrimaryKey().toString());
+			inp.setContent("0");
+			inp.setSize(3);
+			
+			ResultOutput rout = new ResultOutput("tmp"+price.getPrimaryKey().toString(), "0");
+			rout.setSize(7);
+			rout.add(inp, ResultOutput.OPERATOR_MULTIPLY+fPrice+ResultOutput.OPERATOR_MULTIPLY+numberOfDays);
+			if (interfaceObjectStyleClass != null) {
+				inp.setStyleClass(interfaceObjectStyleClass);
+				rout.setStyleClass(interfaceObjectStyleClass);
+			}
+			
+			totalResults.add(rout);
+			priceTable.add(inp, 3, pRow);
+			priceTable.add(rout, 4, pRow);
 		}
-		
-		totalResults.add(rout);
-		priceTable.add(inp, 3, pRow);
-		priceTable.add(rout, 4, pRow);
-		
-//				priceTable.setVerticalAlignment(1, pRow, Table.VERTICAL_ALIGN_TOP);
-//				priceTable.setVerticalAlignment(2, pRow, Table.VERTICAL_ALIGN_TOP);
-//				priceTable.setVerticalAlignment(3, pRow, Table.VERTICAL_ALIGN_TOP);
-//				priceTable.setVerticalAlignment(4, pRow, Table.VERTICAL_ALIGN_TOP);
-//				priceTable.add(getText(price.getCurrency().getCurrencyAbbreviation()), 3, pRow);
 		if (useTravelLook) {
 			priceTable.setRowColor(pRow, TravelManager.GRAY);
 		}
@@ -739,7 +732,6 @@ public class SupplierBrowser extends TravelBlock {
 		table.setVerticalAlignment(2, row, Table.VERTICAL_ALIGN_TOP);
 		table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_LEFT);
 		table.add(getText(getProductBusiness(iwc).getProductNameWithNumber(product, true, localeID), headerStyleClass), 2, row++);
-		
 		Link images = null;
 		try {
 			TxText descriptionText;
@@ -750,9 +742,7 @@ public class SupplierBrowser extends TravelBlock {
 				table.setCellpadding(2, row, 2);
 				table.setVerticalAlignment(2, row, Table.VERTICAL_ALIGN_TOP);
 				table.add(getText(ch.getLocalizedText().getBody()), 2, row);
-				// TODO wait for build, then change back
-//				if (ch.hasFiles()) {
-				if (ch.getFiles() != null && !ch.getFiles().isEmpty()) {
+				if (ch.getFiles() != null) {
 					images = new Link(getText(getResourceBundle().getLocalizedString("travel.images", "Images"), linkStyleClass));
 					images.setWindowToOpen(ProductImageSlideShowWindow.class);
 					images.addParameter(ProductImageSlideShowWindow.PARAMETER_PRODUCT_ID, product.getPrimaryKey().toString());
@@ -764,8 +754,7 @@ public class SupplierBrowser extends TravelBlock {
 		}
 		table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_LEFT);
 		table.setVerticalAlignment(2, row, Table.VERTICAL_ALIGN_TOP);
-		
-		
+
 		if (addDetailLink && plugin.isProductSearchCompleted(iwc)) {
 			Link details = getLink(getResourceBundle().getLocalizedString("travel.book", "Book"));
 			details.addParameter(ACTION, ACTION_VIEW_DETAILS);
@@ -777,7 +766,6 @@ public class SupplierBrowser extends TravelBlock {
 			table.add(images, 3, row);
 			table.setCellpadding(3, row, 2);
 		} else if (addDetailLink && !plugin.isProductSearchCompleted(iwc)){
-//			table.add(getText(getResourceBundle().getLocalizedString("travel.search_for_availability","Search for availability")), 3, startRow);
 			table.setAlignment(3, startRow, Table.HORIZONTAL_ALIGN_RIGHT);
 			table.setVerticalAlignment(3, row, Table.VERTICAL_ALIGN_TOP);
 			table.setCellpadding(3, row, 2);
@@ -798,6 +786,58 @@ public class SupplierBrowser extends TravelBlock {
 			table.setRowColor(row, TravelManager.GRAY);
 		}
 		table.mergeCells(1, startRow, 1, row);
+
+		if (showPriceWithProductInformation && plugin.isProductSearchCompleted(iwc) && addDetailLink) {
+			Table priceTable = new Table();
+			priceTable.setCellpaddingAndCellspacing(1);
+			int pRow = 1;
+			table.add(priceTable, 2, ++row);
+			priceTable.mergeCells(1, pRow, 4, pRow);
+			priceTable.add(getText(getResourceBundle().getLocalizedString("travel.prices", "Prices"), headerStyleClass), 1, pRow++);
+			
+			try {
+				Collection addresses = getServiceHandler(iwc).getProductBusiness().getDepartureAddresses(product, from, true);
+				if (addresses == null || addresses.isEmpty()) {
+					int addressId = -1;
+					int timeframeId = -1;
+					Timeframe timeframe = getServiceHandler(iwc).getProductBusiness().getTimeframe(product, from, addressId);
+					if (timeframe != null) {
+						timeframeId = timeframe.getID();
+					}
+					ProductPriceHome ppHome = (ProductPriceHome) IDOLookup.getHome(ProductPrice.class);
+					pRow = listPrices(product, iwc, priceTable, pRow, addressId, timeframeId, ppHome, null, numberOfDays);
+				} else {
+					Iterator aIter = addresses.iterator();
+					TravelAddress tAddress;
+					while (aIter.hasNext()) {
+						tAddress = (TravelAddress) aIter.next();
+						int timeframeId = -1;
+						int addressId = tAddress.getID();
+						if (useTravelLook) {
+							priceTable.setRowColor(pRow, TravelManager.backgroundColor);
+							priceTable.add(TravelManager.getHeaderText(tAddress.getName()), 1, pRow++);
+						} else {
+							priceTable.add(getText(tAddress.getName(), headerStyleClass), 1, pRow++);
+						}
+						Timeframe timeframe = getServiceHandler(iwc).getProductBusiness().getTimeframe(product, from, addressId);
+						if (timeframe != null) {
+							timeframeId = timeframe.getID();
+						}
+						ProductPriceHome ppHome = (ProductPriceHome) IDOLookup.getHome(ProductPrice.class);
+						pRow = listPrices(product, iwc, priceTable, pRow, addressId, timeframeId, ppHome, null, numberOfDays);
+					}
+				}
+			} catch (FinderException e) {
+				e.printStackTrace();
+			}
+			catch (RemoteException e) {
+				e.printStackTrace();
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
 		++row;
 		return row;
 	}
@@ -1062,6 +1102,10 @@ public class SupplierBrowser extends TravelBlock {
 	
 	public void setUseTravelLook(boolean use) {
 		this.useTravelLook = use;
+	}
+	
+	public void setShowPriceWithProductInformation(boolean show) {
+		showPriceWithProductInformation = show;
 	}
 	
 	private ServiceSearchSession getSearchSession(IWUserContext iwc) {
