@@ -1,5 +1,5 @@
 /*
- * $Id: HotelBrowser.java,v 1.9 2005/08/30 02:14:02 gimmi Exp $
+ * $Id: HotelBrowser.java,v 1.10 2005/09/05 15:38:43 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -55,40 +55,11 @@ public class HotelBrowser extends TravelBlock implements SupplierBrowserPlugin {
 	}
 
 	public Collection[] getProductSearchInputs(IWContext iwc, IWResourceBundle iwrb) {
-		Collection texts = new Vector();
-		Collection ios = new Vector();
-		
-		texts.add(iwrb.getLocalizedString("minimum_rating", "Minimum rating"));
-		texts.add(iwrb.getLocalizedString("maximum_rating", "Maximum rating"));
-		
-		DropdownMenu min = new DropdownMenu(PARAMETER_MIN_RATING);
-		min.addMenuElement("-1", "");
-		min.addMenuElement("1", "1");
-		min.addMenuElement("2", "2");
-		min.addMenuElement("3", "3");
-		min.addMenuElement("4", "4");
-		min.addMenuElement("5", "5");
-		DropdownMenu max = new DropdownMenu(PARAMETER_MAX_RATING);
-		max.addMenuElement("-1", "");
-		max.addMenuElement("1", "1");
-		max.addMenuElement("2", "2");
-		max.addMenuElement("3", "3");
-		max.addMenuElement("4", "4");
-		max.addMenuElement("5", "5");
-		
-
-		String pMin = iwc.getParameter(PARAMETER_MIN_RATING);
-		if (pMin != null) {
-			min.setSelectedElement(pMin);
-		}
-		String pMax = iwc.getParameter(PARAMETER_MAX_RATING);
-		if (pMax != null) {
-			max.setSelectedElement(pMax);
-		}
-		ios.add(min);
-		ios.add(max);
-		
-		return new Collection[]{texts, ios};
+//		Collection texts = new Vector();
+//		Collection ios = new Vector();
+//		
+//		return new Collection[]{texts, ios};
+		return getSupplierSearchInputs(iwc, iwrb);
 	}	
 
 	public Collection[] getSupplierSearchInputs(IWContext iwc, IWResourceBundle iwrb) {
@@ -153,10 +124,41 @@ public class HotelBrowser extends TravelBlock implements SupplierBrowserPlugin {
 		ios.add(from);
 		ios.add(to);
 
-		
-		
 		ios.add(spHotelTypes);
 		ios.add(roomTypeDrop);
+		
+
+		texts.add(iwrb.getLocalizedString("minimum_rating", "Minimum rating"));
+		texts.add(iwrb.getLocalizedString("maximum_rating", "Maximum rating"));
+		
+		DropdownMenu min = new DropdownMenu(PARAMETER_MIN_RATING);
+		min.addMenuElement("-1", "");
+		min.addMenuElement("1", "1");
+		min.addMenuElement("2", "2");
+		min.addMenuElement("3", "3");
+		min.addMenuElement("4", "4");
+		min.addMenuElement("5", "5");
+		DropdownMenu max = new DropdownMenu(PARAMETER_MAX_RATING);
+		max.addMenuElement("-1", "");
+		max.addMenuElement("1", "1");
+		max.addMenuElement("2", "2");
+		max.addMenuElement("3", "3");
+		max.addMenuElement("4", "4");
+		max.addMenuElement("5", "5");
+		
+
+		String pMin = iwc.getParameter(PARAMETER_MIN_RATING);
+		if (pMin != null) {
+			min.setSelectedElement(pMin);
+		}
+		String pMax = iwc.getParameter(PARAMETER_MAX_RATING);
+		if (pMax != null) {
+			max.setSelectedElement(pMax);
+		}
+		ios.add(min);
+		ios.add(max);
+		
+		
 		
 		return new Collection[]{texts, ios};
 	}
