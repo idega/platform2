@@ -49,6 +49,9 @@ public class CurrencyCalculator extends PresentationObjectContainer {
 	private String fontStyleClass = null;
 	private String ioStyleClass = null;
 	private String linkStyleClass = null;
+
+	private String defaultTo = null;
+	private String defaultFrom = null;
 	
 	private int objectSpacing = 0;
 	
@@ -95,7 +98,14 @@ public class CurrencyCalculator extends PresentationObjectContainer {
 			from.addMenuElement(holder.getCurrencyName(), holder.getCurrencyName());
 			to.addMenuElement(holder.getCurrencyName(), holder.getCurrencyName());
 		}
-		from.setSelectedElement(CurrencyBusiness.defaultCurrency);
+		if (defaultFrom != null) {
+			from.setSelectedElement(defaultFrom);
+		} else {
+			from.setSelectedElement(CurrencyBusiness.defaultCurrency);
+		}
+		if (defaultTo != null) {
+			to.setSelectedElement(defaultTo);
+		}
 		
 		if (!useRemoteScripting) {
 			to.addMenuElement(this.parameterAll,"ALL");
@@ -300,5 +310,13 @@ public class CurrencyCalculator extends PresentationObjectContainer {
 	
 	public void setUseRemoteScripting(boolean useRemoteScripting) {
 		this.useRemoteScripting = useRemoteScripting;
+	}
+	
+	public void setDefaultFromCurrency(String defaultFrom) {
+		this.defaultFrom = defaultFrom;
+	}
+	
+	public void setDefaultToCurrency(String defaultTo) {
+		this.defaultTo = defaultTo;
 	}
 }
