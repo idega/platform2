@@ -144,10 +144,10 @@ public class CreditCardBusinessBean extends IBOServiceBean implements CreditCard
 			try {
 				String type = ccInfo.getType();
 				if (CreditCardMerchant.MERCHANT_TYPE_TPOS.equals(type)) {
-					TPosMerchantHome tposHome = (TPosMerchantHome) IDOLookup.getHome(TPosMerchant.class);
+					TPosMerchantHome tposHome = (TPosMerchantHome) IDOLookup.getHome(TPosMerchant.class, ccInfo.getDatasource());
 					return tposHome.findByPrimaryKey(new Integer(ccInfo.getMerchantPKString()));
 				} else if (CreditCardMerchant.MERCHANT_TYPE_KORTHATHJONUSTAN.equals(type)) {
-					KortathjonustanMerchantHome kortHome = (KortathjonustanMerchantHome) IDOLookup.getHome(KortathjonustanMerchant.class);
+					KortathjonustanMerchantHome kortHome = (KortathjonustanMerchantHome) IDOLookup.getHome(KortathjonustanMerchant.class, ccInfo.getDatasource());
 					return kortHome.findByPrimaryKey(new Integer(ccInfo.getMerchantPKString()));
 				}
 			} catch (Exception e) {
@@ -344,7 +344,7 @@ public class CreditCardBusinessBean extends IBOServiceBean implements CreditCard
 			}
 			
 			// Creating a new one
-			CreditCardInformationHome infoHome = (CreditCardInformationHome) IDOLookup.getHome(CreditCardInformation.class);
+			CreditCardInformationHome infoHome = (CreditCardInformationHome) IDOLookup.getHome(CreditCardInformation.class, merchant.getDatasource());
 			CreditCardInformation info = infoHome.create();
 			info.setType(merchant.getType());
 			info.setMerchantPK(merchant.getPrimaryKey());
@@ -377,7 +377,7 @@ public class CreditCardBusinessBean extends IBOServiceBean implements CreditCard
 	  			try {
 	  				System.out.println("---- Starting backwards.... -----");
 	  				System.out.println("---- ... TPosID = "+TPosID+" -----");
-	  				TPosMerchantHome tposHome = (TPosMerchantHome) IDOLookup.getHome(TPosMerchant.class);
+	  				TPosMerchantHome tposHome = (TPosMerchantHome) IDOLookup.getHome(TPosMerchant.class, supplier.getDatasource());
 					TPosMerchant merchant = tposHome.findByPrimaryKey(new Integer(TPosID));
 					addCreditCardMerchant(supplier, merchant);
 					log("CreditCardBusiness : backwards compatability fix for CreditCard merchant");
@@ -391,7 +391,7 @@ public class CreditCardBusinessBean extends IBOServiceBean implements CreditCard
 	}
 	
 	public Collection getCreditCardInformations(Group supplierManager) throws FinderException, IDOLookupException {
-		CreditCardInformationHome ccInfoHome = (CreditCardInformationHome) IDOLookup.getHome(CreditCardInformation.class);
+		CreditCardInformationHome ccInfoHome = (CreditCardInformationHome) IDOLookup.getHome(CreditCardInformation.class, supplierManager.getDatasource());
 		return ccInfoHome.findBySupplierManager(supplierManager);
 	}
 	
@@ -460,13 +460,13 @@ public class CreditCardBusinessBean extends IBOServiceBean implements CreditCard
 		if (info != null) {
 			try {
 				if ( CreditCardMerchant.MERCHANT_TYPE_TPOS.equals(info.getType()) ){
-					TPosAuthorisationEntriesBeanHome authEntHome = (TPosAuthorisationEntriesBeanHome) IDOLookup.getHome(TPosAuthorisationEntriesBean.class);
+					TPosAuthorisationEntriesBeanHome authEntHome = (TPosAuthorisationEntriesBeanHome) IDOLookup.getHome(TPosAuthorisationEntriesBean.class, info.getDatasource());
 					TPosAuthorisationEntriesBean entry = authEntHome.findByAuthorisationIdRsp(authorizationCode, stamp);
 					if (entry != null) {
 						return entry;
 					}
 				} else if ( CreditCardMerchant.MERCHANT_TYPE_KORTHATHJONUSTAN.equals(info.getType()) ) {
-					KortathjonustanAuthorisationEntriesHome authEntHome = (KortathjonustanAuthorisationEntriesHome) IDOLookup.getHome(KortathjonustanAuthorisationEntries.class);
+					KortathjonustanAuthorisationEntriesHome authEntHome = (KortathjonustanAuthorisationEntriesHome) IDOLookup.getHome(KortathjonustanAuthorisationEntries.class, info.getDatasource());
 					KortathjonustanAuthorisationEntries entry = authEntHome.findByAuthorizationCode(authorizationCode, stamp);
 					if (entry != null) {
 						return entry;
@@ -479,7 +479,7 @@ public class CreditCardBusinessBean extends IBOServiceBean implements CreditCard
 		} else {
 			try {
 				log("Cannot find creditCardInformation for = "+ info.getType()+", "+info.getMerchantPKString()+" looking up authEntry in TPOS...authCode = "+authorizationCode);
-				TPosAuthorisationEntriesBeanHome authEntHome = (TPosAuthorisationEntriesBeanHome) IDOLookup.getHome(TPosAuthorisationEntriesBean.class);
+				TPosAuthorisationEntriesBeanHome authEntHome = (TPosAuthorisationEntriesBeanHome) IDOLookup.getHome(TPosAuthorisationEntriesBean.class, info.getDatasource());
 				TPosAuthorisationEntriesBean entry = authEntHome.findByAuthorisationIdRsp(authorizationCode, stamp);
 				if (entry != null) {
 					return entry;
