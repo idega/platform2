@@ -7,9 +7,7 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Vector;
-
 import javax.ejb.FinderException;
-
 import com.idega.block.category.data.ICCategory;
 import com.idega.block.category.presentation.CategoryBlock;
 import com.idega.block.questions.business.QAndALayoutHandler;
@@ -18,7 +16,6 @@ import com.idega.block.questions.data.Question;
 import com.idega.block.text.business.ContentHelper;
 import com.idega.block.text.business.TextFinder;
 import com.idega.business.IBOLookup;
-import com.idega.core.data.ICTreeNode;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -424,9 +421,9 @@ public class QuestionsAndAnswers2 extends CategoryBlock {
         while (iter.hasNext()) {
             ICCategory cat = (ICCategory) iter.next();
             Integer catId = (Integer) cat.getPrimaryKey();
-            Integer catParentId = new Integer(cat.getParentId());
-            ICTreeNode node = cat.getParentNode();
-            int i = cat.getChildCount();
+//            Integer catParentId = new Integer(cat.getParentId());
+//            ICTreeNode node = cat.getParentNode();
+//            int i = cat.getChildCount();
             
             // create and add a category header...
             getAPCategory(poc, cat);
