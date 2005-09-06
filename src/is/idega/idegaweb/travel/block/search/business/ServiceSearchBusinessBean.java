@@ -663,6 +663,9 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		while(tokenizer.hasMoreTokens()){
 			String remoteWeb = tokenizer.nextToken();
 			if(remoteWeb.indexOf(remoteDomainToExclude)==-1){
+				if(remoteWeb.endsWith("/")){
+					remoteWeb = remoteWeb.substring(0,remoteWeb.length()-1);
+				}
 				String response = FileUtil.getStringFromURL(remoteWeb+webserviceURI+methodQuery);
 				if( response.indexOf("iwtravel-ok")==-1){
 					logError("Webservice failed on : "+remoteWeb+" message was : "+response);
