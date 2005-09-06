@@ -1,5 +1,5 @@
 /*
- * $Id: ServiceSearchBusiness.java,v 1.17 2005/07/05 22:43:10 gimmi Exp $
+ * $Id: ServiceSearchBusiness.java,v 1.18 2005/09/06 15:43:25 eiki Exp $
  * Created on Jul 4, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -35,10 +35,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2005/07/05 22:43:10 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/09/06 15:43:25 $ by $Author: eiki $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 public interface ServiceSearchBusiness extends IBOService {
 
@@ -181,6 +181,12 @@ public interface ServiceSearchBusiness extends IBOService {
 	 */
 	public void clearAllEngineCache() throws java.rmi.RemoteException;
 
+	/**
+	 * @see is.idega.idegaweb.travel.block.search.business.ServiceSearchBusinessBean#clearAllEngineCache
+	 */
+	public void clearAllEngineCache(String remoteDomainToExclude) throws java.rmi.RemoteException;
+
+	
 	/**
 	 * @see is.idega.idegaweb.travel.block.search.business.ServiceSearchBusinessBean#setNewBookingsInBasket
 	 */

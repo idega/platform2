@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.Vector;
 import javax.ejb.FinderException;
 import javax.transaction.UserTransaction;
@@ -59,6 +60,7 @@ import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
 import com.idega.user.data.User;
+import com.idega.util.FileUtil;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -68,6 +70,8 @@ import com.idega.util.IWTimestamp;
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class ServiceSearchBusinessBean extends IBOServiceBean implements ServiceSearchBusiness, ActionListener {
+
+	public static final String REMOTE_TRAVEL_APPLICATION_URL_CSV_LIST = "REMOTE_TRAVEL_APPLICATION_URL_CSV_LIST";
 
 	private HashMap resultMap = new HashMap();
 
@@ -630,11 +634,55 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		}
   }
   
+  
+  /**
+   * This method throws away the local search results cache and calls remote webservices of other portals to clear their cache.
+   */
   public void clearAllEngineCache() {
-	resultMap = new HashMap();
-	getIWApplicationContext().getIWMainApplication().getIWCacheManager().invalidateCache(SEARCH_FORM_CACHE_KEY);
-	System.out.println("[ServiceSearchBusinessBean] Invalidating stored search results");
+	  clearAllEngineCache(null);
   }
+  
+  /**
+   * This method throws away the local search results cache and calls remote webservices of other portals to clear their cache.
+   * Except for the remoteDomainToExclude domain
+   * @param remoteDomainToExclude
+   */
+  public void clearAllEngineCache(String remoteDomainToExclude) {
+	resultMap = new HashMap();
+	log("Invalidating LOCAL stored search results");
+	getIWApplicationContext().getIWMainApplication().getIWCacheManager().invalidateCache(SEARCH_FORM_CACHE_KEY);
+	
+	
+	
+	IWBundle bundle =  getIWMainApplication().getBundle("is.idega.travel");
+	String remoteTravelWebs = bundle.getProperty(REMOTE_TRAVEL_APPLICATION_URL_CSV_LIST,"");
+	if(!"".equals(remoteTravelWebs)){
+		log("Invalidating REMOTE stored search results");
+		
+		StringTokenizer tokenizer = new StringTokenizer(remoteTravelWebs,",");
+		String webserviceURI = bundle.getVirtualPathWithFileNameString("services/IWTravelWS.jws");
+		String methodQuery = "?method=decacheAllSupplierManagers";
+		while(tokenizer.hasMoreTokens()){
+			String remoteWeb = tokenizer.nextToken();
+			if(remoteWeb.indexOf(remoteDomainToExclude)==-1){
+				String response = FileUtil.getStringFromURL(remoteWeb+webserviceURI+methodQuery);
+				if( response.indexOf("iwtravel-ok")==-1){
+					logError("Webservice failed on :"+remoteWeb+" message was : "+response);
+				}
+				else{
+					log("Webservice successful for :"+remoteWeb);
+				}
+			}
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	}
 
   
   public void setNewBookingsInBasket(IWContext iwc, String[] newBookingIds) throws RemoteException {
