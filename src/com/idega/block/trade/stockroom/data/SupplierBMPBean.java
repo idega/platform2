@@ -385,7 +385,7 @@ public class SupplierBMPBean extends GenericEntity implements Supplier{
 		return this.idoFindPKsByQuery(query);
 	}
 		
-	public Collection ejbFindByPostalCodes(Group supplierManager, String[] from, String[] to, Collection criterias) throws IDORelationshipException, FinderException {
+	public Collection ejbFindByPostalCodes(Group supplierManager, String[] from, String[] to, Collection criterias, String supplierName) throws IDORelationshipException, FinderException {
 		int fromLength = from.length;
 		int toLength = to.length;
 		if (fromLength != toLength) {
@@ -428,6 +428,10 @@ public class SupplierBMPBean extends GenericEntity implements Supplier{
 				
 				query.addCriteria(mainOR);
 			}
+		}
+		
+		if (supplierName != null) {
+			query.addCriteria(new MatchCriteria(new Column(table, COLUMN_NAME_NAME_ALL_CAPS), MatchCriteria.LIKE, "%"+supplierName.toUpperCase()+"%"));
 		}
 		
 		if (criterias != null) {

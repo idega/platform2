@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierHomeImpl.java,v 1.10 2005/06/18 17:54:36 gimmi Exp $
+ * $Id: SupplierHomeImpl.java,v 1.11 2005/09/06 15:47:29 gimmi Exp $
  * Created on 18.6.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -18,10 +18,10 @@ import com.idega.user.data.Group;
 
 /**
  * 
- *  Last modified: $Date: 2005/06/18 17:54:36 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/09/06 15:47:29 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class SupplierHomeImpl extends IDOFactory implements SupplierHome {
 
@@ -80,10 +80,10 @@ public class SupplierHomeImpl extends IDOFactory implements SupplierHome {
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findByPostalCodes(Group supplierManager, String[] from, String[] to, Collection criterias)
+	public Collection findByPostalCodes(Group supplierManager, String[] from, String[] to, Collection criterias, String supplierName)
 			throws IDORelationshipException, FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SupplierBMPBean) entity).ejbFindByPostalCodes(supplierManager, from, to, criterias);
+		java.util.Collection ids = ((SupplierBMPBean) entity).ejbFindByPostalCodes(supplierManager, from, to, criterias, supplierName);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}

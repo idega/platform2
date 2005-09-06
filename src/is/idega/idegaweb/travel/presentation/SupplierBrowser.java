@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowser.java,v 1.22 2005/09/05 23:06:19 gimmi Exp $
+ * $Id: SupplierBrowser.java,v 1.23 2005/09/06 15:47:35 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -81,6 +81,7 @@ public class SupplierBrowser extends TravelBlock {
 	private static final String PARAMETER_PRODUCT_ID = AbstractSearchForm.PARAMETER_PRODUCT_ID;
 	public static final String PARAMETER_FROM = AbstractSearchForm.PARAMETER_FROM_DATE;
 	public static final String PARAMETER_TO = AbstractSearchForm.PARAMETER_TO_DATE;
+	public static final String PARAMETER_SUPPLIER_NAME = AbstractSearchForm.PARAMETER_SUPPLIER_NAME;
 
 	protected DecimalFormat df = new DecimalFormat("0.00");
 
@@ -1026,7 +1027,7 @@ public class SupplierBrowser extends TravelBlock {
 	// Move to a better location later... when possible
 	private Collection getSuppliers(IWContext iwc) throws IDOCompositePrimaryKeyException {
 		try {
-			Collection coll = getSupplierHome().findByPostalCodes(supplierManager, postalCodes[0], postalCodes[1], plugin.getSupplierSearchCriterias(iwc));
+			Collection coll = getSupplierHome().findByPostalCodes(supplierManager, postalCodes[0], postalCodes[1], plugin.getSupplierSearchCriterias(iwc), iwc.getParameter(PARAMETER_SUPPLIER_NAME));
 			return plugin.filterSuppliers(coll, supplierManager, iwc, postalCodes, useOnlinePrices, useSearchPriceCategoryKey);
 		}
 		catch (IDORelationshipException e) {
