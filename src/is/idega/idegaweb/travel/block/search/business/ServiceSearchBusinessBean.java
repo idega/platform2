@@ -672,7 +672,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 				}
 			}
 			else{
-				log("Skipping round-trip decache for calling remote server : "+remoteDomainToExclude);
+				log("Skipping round-trip decaching for calling remote server : "+remoteDomainToExclude);
 			}
 		}
 	}
