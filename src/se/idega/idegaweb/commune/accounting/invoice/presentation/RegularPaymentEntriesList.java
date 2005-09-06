@@ -1182,11 +1182,6 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 				return null;
 			}
 			public void setDatasource(String datasource) {}
-
-			public EJBLocalHome getEJBLocalHome(String datasource) {
-				return null;
-			}
-
 		};
 	}
 

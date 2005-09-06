@@ -1089,10 +1089,6 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 			public Collection decode(String[] pks){return null;}
 			public String getDatasource() {return null;}
 			public void setDatasource(String datasource) {}
-
-			public EJBLocalHome getEJBLocalHome(String datasource) {
-				return null;
-			}
 		};
 	}
 	
