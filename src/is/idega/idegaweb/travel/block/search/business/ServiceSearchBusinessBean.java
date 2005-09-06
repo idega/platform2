@@ -652,26 +652,27 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 	log("Invalidating LOCAL stored search results");
 	getIWApplicationContext().getIWMainApplication().getIWCacheManager().invalidateCache(SEARCH_FORM_CACHE_KEY);
 	
-	
-	
 	IWBundle bundle =  getIWMainApplication().getBundle("is.idega.travel");
 	String remoteTravelWebs = bundle.getProperty(REMOTE_TRAVEL_APPLICATION_URL_CSV_LIST,"");
 	if(!"".equals(remoteTravelWebs)){
 		log("Invalidating REMOTE stored search results");
 		
 		StringTokenizer tokenizer = new StringTokenizer(remoteTravelWebs,",");
-		String webserviceURI = bundle.getVirtualPathWithFileNameString("services/IWTravelWS.jws");
+		String webserviceURI = "/idegaweb/bundles/is.idega.travel.bundle/resources/services/IWTravelWS.jws";
 		String methodQuery = "?method=decacheAllSupplierManagers";
 		while(tokenizer.hasMoreTokens()){
 			String remoteWeb = tokenizer.nextToken();
 			if(remoteWeb.indexOf(remoteDomainToExclude)==-1){
 				String response = FileUtil.getStringFromURL(remoteWeb+webserviceURI+methodQuery);
 				if( response.indexOf("iwtravel-ok")==-1){
-					logError("Webservice failed on :"+remoteWeb+" message was : "+response);
+					logError("Webservice failed on : "+remoteWeb+" message was : "+response);
 				}
 				else{
 					log("Webservice successful for :"+remoteWeb);
 				}
+			}
+			else{
+				log("Skipping round-trip decache for calling remote server : "+remoteDomainToExclude);
 			}
 		}
 	}
