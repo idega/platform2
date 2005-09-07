@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.137 2005/07/21 19:59:36 laddi Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.138 2005/09/07 11:39:14 palli Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -545,6 +545,14 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 								if (6 > value.intValue() || value.intValue() > 13)
 									match = false;
 								break;
+							case 8 :
+								if (1 > value.intValue() || value.intValue() > 3)
+									match = false;
+								break;
+							case 9 :
+								if (value.intValue() != 3)
+									match = false;
+								break;
 						}
 					}
 				}
@@ -724,6 +732,23 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				if (!match)
 					return 0;
 			}
+			else if (condition.equals(RuleTypeConstant.CONDITION_ID_MANAGEMENT_TYPE)) {
+				Integer value = (Integer) param.getInterval();
+				Iterator i = cond.iterator();
+				boolean match = true;
+				while (i.hasNext() && match) {
+					Condition regCond = (Condition) i.next();
+					if (regCond.getConditionID() == Integer.parseInt(RuleTypeConstant.CONDITION_ID_MANAGEMENT_TYPE)) {
+						int id = regCond.getIntervalID();
+						if (id != value.intValue()) {
+							match = false;
+						}
+					}
+				}
+
+				if (!match)
+					return 0;
+			}
 			else if (condition.equals(RuleTypeConstant.CONDITION_ID_SCHOOL_YEAR)) {
 				String value = (String) param.getInterval();
 				Iterator i = cond.iterator();
@@ -825,6 +850,26 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 							case 18 :
 								if (!"GS4".equals(value))
 									match = false;
+								break;
+							case 19 :
+								try {
+									int intValue = Integer.parseInt(value);
+									if (1 > intValue || intValue > 5) {
+										match = false;
+									}
+								}
+								catch (Exception e) {
+								}
+								break;
+							case 20 :
+								try {
+									int intValue = Integer.parseInt(value);
+									if (6 > intValue || intValue > 9) {
+										match = false;
+									}
+								}
+								catch (Exception e) {
+								}
 								break;
 						}
 					}
@@ -1349,6 +1394,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		arr.add(new Object[] { new Integer(5), ">=7" });
 		arr.add(new Object[] { new Integer(6), "5-8" });
 		arr.add(new Object[] { new Integer(7), "6-13" });
+		arr.add(new Object[] { new Integer(8), "1-3" });
+		arr.add(new Object[] { new Integer(9), "3" });
 
 		return arr;
 	}
@@ -1381,6 +1428,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		arr.add(new Object[] { new Integer(16), "GS2" });
 		arr.add(new Object[] { new Integer(17), "GS3" });
 		arr.add(new Object[] { new Integer(18), "GS4" });
+		arr.add(new Object[] { new Integer(19), "1-5" });
+		arr.add(new Object[] { new Integer(20), "6-9" });
 
 		return arr;
 	}

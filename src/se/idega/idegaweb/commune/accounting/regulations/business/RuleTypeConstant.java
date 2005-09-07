@@ -24,4 +24,7 @@ public class RuleTypeConstant {
 	
 	//Added 27.10.2003 - Palli
 	public final static String CONDITION_ID_EMPLOYMENT = "12";
+	
+	//Added 07.09.2005 - Palli
+	public final static String CONDITION_ID_MANAGEMENT_TYPE = "13";
 }
