@@ -587,6 +587,7 @@ public class BookerBean extends IBOServiceBean implements Booker{
 	
 	public  boolean deleteBooking(Booking booking) throws RemoteException {
 		invalidateCache(((Integer) booking.getPrimaryKey()).intValue());
+		invalidateBookingCountCache(booking.getServiceID());
 		booking.setIsValid(false);
 		booking.store();
 		return true;
