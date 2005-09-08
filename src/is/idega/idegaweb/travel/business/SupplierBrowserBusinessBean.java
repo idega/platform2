@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowserBusinessBean.java,v 1.6 2005/09/05 10:37:08 gimmi Exp $
+ * $Id: SupplierBrowserBusinessBean.java,v 1.7 2005/09/08 22:29:21 gimmi Exp $
  * Created on Jul 6, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import javax.ejb.CreateException;
+import javax.ejb.FinderException;
 import com.idega.block.basket.business.BasketBusiness;
 import com.idega.block.basket.data.BasketEntry;
 import com.idega.block.trade.stockroom.data.Supplier;
@@ -36,6 +37,8 @@ import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.business.IBOServiceBean;
+import com.idega.core.data.ICApplicationBinding;
+import com.idega.core.data.ICApplicationBindingHome;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -310,16 +313,16 @@ public class SupplierBrowserBusinessBean extends IBOServiceBean  implements Supp
 						HotelSearch hs = new HotelSearch();
 						input = hs.getHotelTypeDropdown(supplierManager, getResourceBundle(), el.getAttributeValue(ATTRIBUTE_NAME));
 						String selected = el.getAttributeValue(ATTRIBUTE_SELECTED);
-						if (selected != null && selected.equalsIgnoreCase("true")) {
-							((DropdownMenu) input).setSelectedElement(el.getAttributeValue(ATTRIBUTE_VALUE));
+						if (selected != null) {
+							((DropdownMenu) input).setSelectedElement(selected);
 						}
 					}
 					else if (type.equalsIgnoreCase(TYPE_ROOM)) {
 						HotelSearch hs = new HotelSearch();
 						input = hs.getRoomTypeDropdown(supplierManager, el.getAttributeValue(ATTRIBUTE_NAME));
 						String selected = el.getAttributeValue(ATTRIBUTE_SELECTED);
-						if (selected != null && selected.equalsIgnoreCase("true")) {
-							((DropdownMenu) input).setSelectedElement(el.getAttributeValue(ATTRIBUTE_VALUE));
+						if (selected != null) {
+							((DropdownMenu) input).setSelectedElement(selected);
 						}
 					}
 					// Tour Specific
@@ -330,8 +333,8 @@ public class SupplierBrowserBusinessBean extends IBOServiceBean  implements Supp
 							Collection tourTypes = tth.findByCategoryUsedBySuppliers(el.getAttributeValue(ATTRIBUTE_TOUR_TYPE), sHome.findAll(supplierManager));
 							input = new DropdownMenu(tourTypes, el.getAttributeValue(ATTRIBUTE_NAME));
 							String selected = el.getAttributeValue(ATTRIBUTE_SELECTED);
-							if (selected != null && selected.equalsIgnoreCase("true")) {
-								((DropdownMenu) input).setSelectedElement(el.getAttributeValue(ATTRIBUTE_VALUE));
+							if (selected != null) {
+								((DropdownMenu) input).setSelectedElement(selected);
 							}
 						}
 						catch (Exception e1) {
@@ -370,16 +373,25 @@ public class SupplierBrowserBusinessBean extends IBOServiceBean  implements Supp
 	}
 	
 	protected String getDatasource() throws RemoteException {
-		if (datasource == null) {
-			String tmp = getBundle().getProperty(IWBundleStarter.DATASOURCE);
-			if (tmp != null) {
-				datasource = tmp;
-			} else {
-				datasource = "default";
-			}
-		}
-		
-		return datasource;
+		  String tmp = null;
+		  try {
+			  ICApplicationBindingHome abHome = (ICApplicationBindingHome) IDOLookup.getHome(ICApplicationBinding.class);
+			  ICApplicationBinding ab = abHome.findByPrimaryKey(IWBundleStarter.DATASOURCE);
+			  tmp = ab.getValue();
+		  }
+		  catch (IDOLookupException e1) {
+			  e1.printStackTrace();
+		  }
+		  catch (FinderException e) {
+			  e.printStackTrace();
+		  }
+		  
+		  if (tmp != null) {
+			  datasource = tmp;
+		  } else {
+			  datasource = "default";
+		  }
+		  return datasource;
 	}
 	
 	public ServiceHandler getServiceHandler() {
