@@ -279,7 +279,7 @@ public class HotelSearch extends AbstractSearchForm {
 	private DropdownMenu getRoomTypeDropdown(Collection suppliers, String parameterName) {
 		Collection roomTypes = new Vector();
 		try {
-			RoomTypeHome trh = (RoomTypeHome) IDOLookup.getHome(RoomType.class);
+			RoomTypeHome trh = (RoomTypeHome) IDOLookup.getHome(RoomType.class, getDatasource());
 			roomTypes = trh.findAllUsedBySuppliers(suppliers);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -300,7 +300,7 @@ public class HotelSearch extends AbstractSearchForm {
 	public DropdownMenu getRoomTypeDropdown(Group supplierManager, String parameterName) {
 		try {
 //			RoomTypeHome trh = (RoomTypeHome) IDOLookup.getHome(RoomType.class);
-			SupplierHome sHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
+			SupplierHome sHome = (SupplierHome) IDOLookup.getHome(Supplier.class, getDatasource());
 //			Collection hotelTypes = trh.findAllUsedBySuppliers(sHome.findAll(supplierManager));
 			return getRoomTypeDropdown(sHome.findAll(supplierManager), parameterName);
 		} catch (Exception e) {
@@ -313,8 +313,8 @@ public class HotelSearch extends AbstractSearchForm {
 	public DropdownMenu getHotelTypeDropdown(Group supplierManager, IWResourceBundle iwrb, String parameterName) {
 		
 		try {
-			HotelTypeHome trh = (HotelTypeHome) IDOLookup.getHome(HotelType.class);
-			SupplierHome sHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
+			HotelTypeHome trh = (HotelTypeHome) IDOLookup.getHome(HotelType.class, getDatasource());
+			SupplierHome sHome = (SupplierHome) IDOLookup.getHome(Supplier.class, getDatasource());
 			Collection hotelTypes = trh.findAllUsedBySuppliers(sHome.findAll(supplierManager));
 			return getHotelTypeDropdown(hotelTypes, iwrb, parameterName);
 		} catch (Exception e) {

@@ -32,7 +32,10 @@ import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.accesscontrol.business.NotLoggedOnException;
+import com.idega.core.data.ICApplicationBinding;
+import com.idega.core.data.ICApplicationBindingHome;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -300,9 +303,21 @@ public class TravelBlock extends Block {
   	return tsm;
   }
   
-  protected String getDatasource() throws RemoteException {
+  protected String getDatasource() {
 	  if (datasource == null) {
-		  String tmp = getBundle().getProperty(IWBundleStarter.DATASOURCE);
+		  String tmp = null;
+		  try {
+			  ICApplicationBindingHome abHome = (ICApplicationBindingHome) IDOLookup.getHome(ICApplicationBinding.class);
+			  ICApplicationBinding ab = abHome.findByPrimaryKey(IWBundleStarter.DATASOURCE);
+			  tmp = ab.getValue();
+		  }
+		  catch (IDOLookupException e1) {
+			  e1.printStackTrace();
+		  }
+		  catch (FinderException e) {
+			  e.printStackTrace();
+		  }
+		  
 		  if (tmp != null) {
 			  datasource = tmp;
 		  } else {

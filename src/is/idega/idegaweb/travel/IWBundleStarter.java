@@ -1,5 +1,5 @@
 /*
- * $Id: IWBundleStarter.java,v 1.2 2005/06/20 17:03:12 gimmi Exp $
+ * $Id: IWBundleStarter.java,v 1.3 2005/09/08 22:28:50 gimmi Exp $
  * Created on 10.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -11,15 +11,20 @@ package is.idega.idegaweb.travel;
 
 import java.util.Collection;
 import java.util.Iterator;
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
 import com.idega.core.component.data.ICObject;
+import com.idega.core.data.ICApplicationBinding;
+import com.idega.core.data.ICApplicationBindingHome;
 import com.idega.data.IDOFactory;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
 
 
 public class IWBundleStarter implements com.idega.idegaweb.IWBundleStartable {
 
-	public static final String DATASOURCE = "datasource";
+	public static final String DATASOURCE = "travel.datasource";
 
 	public void start(IWBundle starterBundle) {
 		System.out.print("Travel bundle starting ... ");
@@ -32,7 +37,37 @@ public class IWBundleStarter implements com.idega.idegaweb.IWBundleStartable {
 	
 	private void checkDataSource(IWBundle bundle) {
 		// Switching the datasource
-		String dataSource = bundle.getProperty(DATASOURCE);
+		String dataSource = null;
+		try {
+			ICApplicationBindingHome abHome = (ICApplicationBindingHome) IDOLookup.getHome(ICApplicationBinding.class);
+			ICApplicationBinding ab = abHome.findByPrimaryKey(DATASOURCE);
+			dataSource = ab.getValue();
+		}
+		catch (IDOLookupException e1) {
+			e1.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		
+		if (dataSource == null) {
+			dataSource = bundle.getProperty("datasource");
+			try {
+				ICApplicationBindingHome abHome = (ICApplicationBindingHome) IDOLookup.getHome(ICApplicationBinding.class);
+				ICApplicationBinding ab = abHome.create();
+				ab.setKey(DATASOURCE);
+				ab.setValue(dataSource);
+				ab.setBindingType("travel.binding");
+				ab.store();
+			}
+			catch (IDOLookupException e1) {
+				e1.printStackTrace();
+			}
+			catch (CreateException e) {
+				e.printStackTrace();
+			}
+		}
+
 		System.out.print("datasource = "+dataSource);
 		if (dataSource != null) {
 			try {

@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowser.java,v 1.23 2005/09/06 15:47:35 gimmi Exp $
+ * $Id: SupplierBrowser.java,v 1.24 2005/09/08 22:28:50 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -185,7 +185,7 @@ public class SupplierBrowser extends TravelBlock {
 		}
 		if (suppMan != null && supplierManager == null) {
 			try {
-				GroupHome gHome = (GroupHome) IDOLookup.getHome(Group.class, getSupplierHome().getDatasource());
+				GroupHome gHome = (GroupHome) IDOLookup.getHome(Group.class, super.getDatasource());
 				supplierManager = gHome.findByPrimaryKey(new Integer(suppMan));
 			}
 			catch (IDOLookupException e) {
@@ -237,7 +237,7 @@ public class SupplierBrowser extends TravelBlock {
 		String pId = iwc.getParameter(PARAMETER_PRODUCT_ID);
 		if (pId != null) {
 			try {
-				ProductHome pHome = (ProductHome) IDOLookup.getHome(Product.class);
+				ProductHome pHome = (ProductHome) IDOLookup.getHome(Product.class, getDatasource());
 				product = pHome.findByPrimaryKey(new Integer(pId));
 				bookingForm = getServiceHandler(iwc).getBookingForm(iwc, product, false);
 			}
@@ -389,6 +389,8 @@ public class SupplierBrowser extends TravelBlock {
 				if (timeframe != null) {
 					timeframeId = timeframe.getID();
 				}
+//				ProductPriceHome ppHome = (ProductPriceHome) IDOLookup.getHome(ProductPrice.class, getDatasource());
+//				pRow = listPrices(iwc, priceTable, pRow, addressId, timeframeId, ppHome, totalResults, numberOfDays);
 				ProductPriceHome ppHome = (ProductPriceHome) IDOLookup.getHome(ProductPrice.class);
 				pRow = listPrices(product, iwc, priceTable, pRow, addressId, timeframeId, ppHome, totalResults, numberOfDays);
 			} else {
@@ -408,6 +410,8 @@ public class SupplierBrowser extends TravelBlock {
 					if (timeframe != null) {
 						timeframeId = timeframe.getID();
 					}
+//					ProductPriceHome ppHome = (ProductPriceHome) IDOLookup.getHome(ProductPrice.class, getDatasource());
+//					pRow = listPrices(iwc, priceTable, pRow, addressId, timeframeId, ppHome, totalResults, numberOfDays);
 					ProductPriceHome ppHome = (ProductPriceHome) IDOLookup.getHome(ProductPrice.class);
 					pRow = listPrices(product, iwc, priceTable, pRow, addressId, timeframeId, ppHome, totalResults, numberOfDays);
 				}
@@ -492,7 +496,7 @@ public class SupplierBrowser extends TravelBlock {
 		boolean usePickups = false;
 		Collection pickups = null;
 		try {
-			PickupPlaceHome ppHome = (PickupPlaceHome) IDOLookup.getHome(PickupPlace.class);
+			PickupPlaceHome ppHome = (PickupPlaceHome) IDOLookup.getHome(PickupPlace.class, getDatasource());
 			pickups = ppHome.findHotelPickupPlaces(product);
 			usePickups = pickups != null && !pickups.isEmpty();
 		} catch (FinderException f) {
@@ -712,9 +716,9 @@ public class SupplierBrowser extends TravelBlock {
 			ICFile file = product.getFile();
 			if (file != null) {
 				image = new Image(Integer.parseInt(file.getPrimaryKey().toString()));
+				image.setDatasource(product.getDatasource());
 				if (imageStyleClass != null) {
 					image.setStyleClass(imageStyleClass);
-					image.setDatasource(product.getDatasource());
 				}
 				image.setMaxImageWidth(Integer.parseInt(imageWidth));
 			}
@@ -1120,7 +1124,7 @@ public class SupplierBrowser extends TravelBlock {
 	
 	private SupplierHome getSupplierHome() {
 		try {
-			return (SupplierHome) IDOLookup.getHome(Supplier.class);
+			return (SupplierHome) IDOLookup.getHome(Supplier.class, getDatasource());
 		}
 		catch (IDOLookupException e) {
 			throw new IDORuntimeException(e);
