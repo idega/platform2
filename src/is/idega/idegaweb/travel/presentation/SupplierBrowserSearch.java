@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowserSearch.java,v 1.6 2005/09/06 15:46:33 gimmi Exp $
+ * $Id: SupplierBrowserSearch.java,v 1.7 2005/09/08 22:29:56 gimmi Exp $
  * Created on Aug 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -60,7 +60,10 @@ public class SupplierBrowserSearch extends TravelBlock {
 	private String engineName = null;
 	private XMLElement engineHeading = null;
 	private String engineStyleClass =  null;
-	
+	private String defaultSearchForm = null;
+	private String defaultParameterName = null;
+	private String defaultParameterValue = null;
+
 	
 	public SupplierBrowserSearch() {
 		setCacheable(getCacheKey(),0);
@@ -100,6 +103,7 @@ public class SupplierBrowserSearch extends TravelBlock {
 		String returnString = "";
 		try {
 			if (engineDefinitionFile != null) {
+				returnString += engineDefinitionFile;
 				engineXML = new File(engineDefinitionFile);
 				XMLParser parser = new XMLParser();
 				XMLDocument doc = parser.parse(engineXML);
@@ -116,6 +120,8 @@ public class SupplierBrowserSearch extends TravelBlock {
 				String form = iwc.getParameter(PARAMETER_FORM);
 				if (form != null) {
 					currentForm = form;
+				} else if (defaultSearchForm != null){
+					currentForm = defaultSearchForm;
 				}
 				Collection coll = getSupplierBrowserBusiness(iwc).getParameters(engineName, currentForm);
 				if (coll != null) {
@@ -126,6 +132,7 @@ public class SupplierBrowserSearch extends TravelBlock {
 					}
 				}
 				returnString += engineName+"_"+currentForm;
+				returnString += defaultParameterName+"_"+defaultParameterValue;
 			} else {
 				returnString += Double.toString(Math.random());
 				System.out.println("[SupplierBrowserSerach] CacheState = "+returnString);
@@ -169,7 +176,11 @@ public class SupplierBrowserSearch extends TravelBlock {
 		Form form = new Form();
 		form.maintainParameter(PARAMETER_FORM);
 		form.addParameter(SupplierBrowser.SHOW_SEARCH_INPUTS, Boolean.toString(false));
-		form.setPageToSubmitTo(Integer.parseInt(sf.getPageID()));
+		try {
+			form.setPageToSubmitTo(Integer.parseInt(sf.getPageID()));
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		}
 
 		Iterator it = ps.iterator();
 		while (it.hasNext()) {
@@ -212,6 +223,15 @@ public class SupplierBrowserSearch extends TravelBlock {
 	public void setSupplierManagerID(int supplierManagerId) throws FinderException, RemoteException {
 		this.supplierManagerId = supplierManagerId;
 		
+	}
+	
+	public void setDefaultSearchEngine(String defaultSearchForm) {
+		this.defaultSearchForm = defaultSearchForm;
+	}
+	
+	public void setDefaultParameter(String  parameterName, String parameterValue) {
+		this.defaultParameterName  = parameterName;
+		this.defaultParameterValue = parameterValue;
 	}
 	
 	public SupplierBrowserBusiness getSupplierBrowserBusiness(IWContext iwc) {
