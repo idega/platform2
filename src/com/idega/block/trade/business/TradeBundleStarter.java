@@ -16,9 +16,14 @@ import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
 import com.idega.core.component.data.ICObject;
+import com.idega.core.data.ICApplicationBinding;
+import com.idega.core.data.ICApplicationBindingHome;
 import com.idega.data.IDOFactory;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
 import com.idega.util.EventTimer;
@@ -28,7 +33,7 @@ public class TradeBundleStarter implements IWBundleStartable,ActionListener{
 	private IWBundle bundle_;
 	private EventTimer timer;
 	public static final String IW_CURRENCY_TIMER = "iw_currency_timer";
-	public static final String DATASOURCE = "datasource";
+	public static final String DATASOURCE = "travel.datasource";
 	
 	public TradeBundleStarter() {
 	}
@@ -49,7 +54,39 @@ public class TradeBundleStarter implements IWBundleStartable,ActionListener{
 	 */
 	private void checkDataSource(IWBundle bundle) {
 		// Switching the datasource
-		String dataSource = bundle.getProperty(DATASOURCE);
+		String dataSource = null;
+		try {
+			ICApplicationBindingHome abHome = (ICApplicationBindingHome) IDOLookup.getHome(ICApplicationBinding.class);
+			ICApplicationBinding ab = abHome.findByPrimaryKey(DATASOURCE);
+			dataSource = ab.getValue();
+		}
+		catch (IDOLookupException e1) {
+			e1.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		
+		if (dataSource == null) {
+			dataSource = bundle.getProperty("datasource");
+			if (dataSource != null) {
+				try {
+					ICApplicationBindingHome abHome = (ICApplicationBindingHome) IDOLookup.getHome(ICApplicationBinding.class);
+					ICApplicationBinding ab = abHome.create();
+					ab.setKey(DATASOURCE);
+					ab.setValue(dataSource);
+					ab.setBindingType("travel.binding");
+					ab.store();
+				}
+				catch (IDOLookupException e1) {
+					e1.printStackTrace();
+				}
+				catch (CreateException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
 		if (dataSource != null) {
 			try {
 				Collection entities = bundle.getDataObjects();
