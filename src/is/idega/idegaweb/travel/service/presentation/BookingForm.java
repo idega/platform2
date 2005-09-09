@@ -4025,16 +4025,22 @@ public abstract class BookingForm extends TravelManager{
 			String year = iwc.getParameter(CalendarParameters.PARAMETER_YEAR);
 			String month = iwc.getParameter(CalendarParameters.PARAMETER_MONTH);
 			String day = iwc.getParameter(CalendarParameters.PARAMETER_DAY);
+			String fromStamp = iwc.getParameter(parameterFromDate);
 			
-			_stamp = new IWTimestamp(IWTimestamp.RightNow());
-			if (year != null) {
-				_stamp.setYear(Integer.parseInt(year));	
-			}
-			if (month != null) {
-				_stamp.setMonth(Integer.parseInt(month));	
-			}
-			if (day != null) {
-				_stamp.setDay(Integer.parseInt(day));	
+			if (fromStamp != null) {
+				_stamp = new IWTimestamp(fromStamp);
+			} else {
+				_stamp = new IWTimestamp(IWTimestamp.RightNow());
+				
+				if (year != null) {
+					_stamp.setYear(Integer.parseInt(year));	
+				}
+				if (month != null) {
+					_stamp.setMonth(Integer.parseInt(month));	
+				}
+				if (day != null) {
+					_stamp.setDay(Integer.parseInt(day));	
+				}
 			}
 		}else {
 			try {
