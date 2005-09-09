@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowserSearch.java,v 1.7 2005/09/08 22:29:56 gimmi Exp $
+ * $Id: SupplierBrowserSearch.java,v 1.8 2005/09/09 16:16:52 gimmi Exp $
  * Created on Aug 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -190,8 +190,8 @@ public class SupplierBrowserSearch extends TravelBlock {
 
 		Paragraph inputLayer = new Paragraph();
 		inputLayer.setStyleClass("fi");
-		inputLayer.add(new ResetButton(getResourceBundle().getLocalizedString("reset", "reset")));
 		inputLayer.add(new SubmitButton(getResourceBundle().getLocalizedString("search","search")));
+		inputLayer.add(new ResetButton(getResourceBundle().getLocalizedString("reset", "reset")));
 		form.add(inputLayer);
 
 		Layer mainLayer = new Layer();
