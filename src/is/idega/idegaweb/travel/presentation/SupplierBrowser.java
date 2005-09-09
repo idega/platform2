@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowser.java,v 1.24 2005/09/08 22:28:50 gimmi Exp $
+ * $Id: SupplierBrowser.java,v 1.25 2005/09/09 16:16:00 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -458,15 +458,11 @@ public class SupplierBrowser extends TravelBlock {
 		}
 		linkTable.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_LEFT);
 		linkTable.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
-//		linkTable.setAlignment(3, 1, Table.HORIZONTAL_ALIGN_RIGHT);
 		linkTable.setWidth(2, 1, 170);
 		linkTable.setBorder(0);
 		if (useTravelLook) {
 			linkTable.setRowColor(1, TravelManager.GRAY);
 		}
-//		table.mergeCells(1, row, 3, row);
-//		table.add(linkTable, 1, row++);
-		
 		
 		Link link = getLink(getResourceBundle().getLocalizedString("travel.add_to_basket", "Add to basket"));
 		
@@ -474,14 +470,9 @@ public class SupplierBrowser extends TravelBlock {
 		link.setOnClick(formRef+".elements['"+AbstractSearchForm.ACTION+"'].value='"+AbstractSearchForm.ACTION_ADD_TO_BASKET+"';"+formRef+".elements['"+ACTION+"'].value='"+ACTION_VIEW_DETAILS+"';"+formRef+".submit();return false;");
 		form.setEventListener(SearchEventListener.class);
 
-//		table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_RIGHT);
-//		table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
-//		table.add(back, 1, row);
-
 		linkTable.add(back, 1, 1);
 		linkTable.add(link, 2, 1);
 		
-//		form.add(Text.BREAK);
 		form.add(table);
 		addExtraBookingElements(form);
 //		form.add(Text.BREAK);
@@ -996,6 +987,7 @@ public class SupplierBrowser extends TravelBlock {
 		link.maintainParameter(PARAMETER_SUPPLIER_MANAGER, iwc);
 		link.addParameter(PARAMETER_SUPPLIER_ID, supplier.getPrimaryKey().toString());
 		link.addParameter(SHOW_SEARCH_INPUTS, Boolean.toString(showInputs));
+		link.addParameter(PARAMETER_SUPPLIER_NAME, supplier.getName());
 		String[] params = plugin.getParameters();
 		if (params != null) {
 			for (int i = 0; i < params.length; i++) {
