@@ -128,12 +128,12 @@ public class CurrencyBusiness {
 						holder.setCurrencyName(currencyValues.getText());
 						holder.setCurrencyAbbreviation(currencyValues.getText());
 					}
-					else if (currencyValues.getName().equalsIgnoreCase(buy_value))
-						holder.setBuyValue(Float.parseFloat(currencyValues.getText()));
-					else if (currencyValues.getName().equalsIgnoreCase(sell_value))
-						holder.setSellValue(Float.parseFloat(currencyValues.getText()));
+					else if (currencyValues.getName().equalsIgnoreCase(buy_value)) {
+						holder.setBuyValue(Float.parseFloat(TextSoap.findAndReplace(currencyValues.getText(),",", ".")));
+					} else if (currencyValues.getName().equalsIgnoreCase(sell_value))
+						holder.setSellValue(Float.parseFloat(TextSoap.findAndReplace(currencyValues.getText(),",", ".")));
 					else if (currencyValues.getName().equalsIgnoreCase(middle_value))
-						holder.setMiddleValue(Float.parseFloat(currencyValues.getText()));
+						holder.setMiddleValue(Float.parseFloat(TextSoap.findAndReplace(currencyValues.getText(),",", ".")));
 					a++;
 				}
 				holder.setTimestamp(stamp);
