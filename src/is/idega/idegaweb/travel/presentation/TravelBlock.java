@@ -303,7 +303,7 @@ public class TravelBlock extends Block {
   	return tsm;
   }
   
-  protected String getDatasource() {
+  protected static String getDatasource() {
 	  if (datasource == null) {
 		  String tmp = null;
 		  try {
