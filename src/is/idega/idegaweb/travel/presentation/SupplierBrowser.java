@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowser.java,v 1.26 2005/09/09 18:27:40 gimmi Exp $
+ * $Id: SupplierBrowser.java,v 1.27 2005/09/10 12:55:39 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -738,7 +738,7 @@ public class SupplierBrowser extends TravelBlock {
 				table.setCellpadding(2, row, 2);
 				table.setVerticalAlignment(2, row, Table.VERTICAL_ALIGN_TOP);
 				table.add(getText(ch.getLocalizedText().getBody()), 2, row);
-				if (ch.getFiles() != null) {
+				if (ch.getFiles() != null && !ch.getFiles().isEmpty()) {
 					images = new Link(getText(getResourceBundle().getLocalizedString("travel.images", "Images"), linkStyleClass));
 					images.setPublicWindowToOpen(ProductImageSlideShowWindow.class);
 					images.addParameter(ProductImageSlideShowWindow.PARAMETER_PRODUCT_ID, product.getPrimaryKey().toString());
