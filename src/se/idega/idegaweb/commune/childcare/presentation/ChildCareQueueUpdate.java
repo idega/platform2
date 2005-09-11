@@ -11,12 +11,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.ejb.FinderException;
+
 import se.idega.idegaweb.commune.childcare.data.ChildCareQueue;
 import se.idega.idegaweb.commune.presentation.CitizenChildren;
 
 import com.idega.block.navigation.presentation.UserHomeLink;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
+import com.idega.business.IBOLookupException;
 import com.idega.core.location.data.Address;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Script;
@@ -62,12 +65,18 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 	
 	private int _action = -1;
 	private int _stage = -1;
-	private int _childID = -1;
+	
+	private int _childID = -1;	
+	private String childID = null;
+	
 	private int maximumChecked = 5;
 	private boolean _hasPlacing = false;
 	
 	private BackButton back;
 	private User child;
+	
+	private String prmChildId = CitizenChildren.getChildIDParameterName();
+	private String prmChildUniqueId = CitizenChildren.getChildUniqueIDParameterName();
 	
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
@@ -614,7 +623,60 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 		else
 			_stage = STAGE_ONE;
 
-		if (iwc.isParameterSet(CitizenChildren.prmChildId))
-			_childID = Integer.parseInt(iwc.getParameter(CitizenChildren.prmChildId));
+		_childID = getChildId(iwc);
+		
 	}
+	
+	private int getChildId(IWContext iwc) {
+		if (childID != null){
+			_childID = Integer.parseInt(childID);
+			return _childID;
+		}
+		else if (iwc.isParameterSet(prmChildUniqueId)){
+			String childUniqueId = iwc.getParameter(prmChildUniqueId);
+			User child = null;
+			Object objChildId = null;
+			if (childUniqueId != null){
+				try {
+					child = getUserBusiness(iwc).getUserByUniqueId(childUniqueId);	
+				}
+				catch (IBOLookupException ibe){
+					log (ibe);
+				}
+				catch (FinderException fe){
+					log (fe);
+				}
+				catch (RemoteException re){
+					log (re);
+				}
+				
+				if (child != null)
+					objChildId = child.getPrimaryKey();
+				
+				if(objChildId != null)
+				    return ((Integer) (objChildId)).intValue();
+				else
+				    return -1;
+				
+			}
+			else {
+				return -1;
+			}
+		}
+		else {
+			String childId = iwc.getParameter(prmChildId);
+			if (childId != null) {
+				iwc.setSessionAttribute(prmChildId, childId);
+			}
+			else {
+				childId = (String) iwc.getSessionAttribute(prmChildId);
+			}
+			if(childId!=null)
+			    return Integer.parseInt(childId);
+			else
+			    return -1;
+		}
+	}
+	
+	
 }
