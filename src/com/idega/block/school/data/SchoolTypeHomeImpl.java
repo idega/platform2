@@ -1,64 +1,95 @@
+/*
+ * Created on 2005-sep-09
+ *
+ * To change the template for this generated file go to
+ * Window - Preferences - Java - Code Generation - Code and Comments
+ */
 package com.idega.block.school.data;
 
+import java.util.Collection;
 
-public class SchoolTypeHomeImpl extends com.idega.data.IDOFactory implements SchoolTypeHome
-{
- protected Class getEntityInterfaceClass(){
-  return SchoolType.class;
- }
+import javax.ejb.FinderException;
 
+import com.idega.data.IDOFactory;
 
- public SchoolType create() throws javax.ejb.CreateException{
-  return (SchoolType) super.createIDO();
- }
+/**
+ * @author Malin
+ *
+ * To change the template for this generated type comment go to
+ * Window - Preferences - Java - Code Generation - Code and Comments
+ */
+public class SchoolTypeHomeImpl extends IDOFactory implements SchoolTypeHome {
+	protected Class getEntityInterfaceClass() {
+		return SchoolType.class;
+	}
 
+	public SchoolType create() throws javax.ejb.CreateException {
+		return (SchoolType) super.createIDO();
+	}
 
-public java.util.Collection findAllByCategory(java.lang.String p0,boolean p1)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((SchoolTypeBMPBean)entity).ejbFindAllByCategory(p0,p1);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public SchoolType findByPrimaryKey(Object pk)
+			throws javax.ejb.FinderException {
+		return (SchoolType) super.findByPrimaryKeyIDO(pk);
+	}
 
-public java.util.Collection findAllByCategory(java.lang.String p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((SchoolTypeBMPBean)entity).ejbFindAllByCategory(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public Collection findAllSchoolTypes() throws javax.ejb.FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolTypeBMPBean) entity)
+				.ejbFindAllSchoolTypes();
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public java.util.Collection findAllFreetimeTypes()throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((SchoolTypeBMPBean)entity).ejbFindAllFreetimeTypes();
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public Collection findAllByCategory(String category)
+			throws javax.ejb.FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolTypeBMPBean) entity)
+				.ejbFindAllByCategory(category);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public java.util.Collection findAllFreetimeTypes(java.lang.String p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((SchoolTypeBMPBean)entity).ejbFindAllFreetimeTypes(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public Collection findAllByCategory(String category,
+			boolean showFreetimeTypes) throws javax.ejb.FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolTypeBMPBean) entity)
+				.ejbFindAllByCategory(category, showFreetimeTypes);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public java.util.Collection findAllSchoolTypes()throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((SchoolTypeBMPBean)entity).ejbFindAllSchoolTypes();
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public SchoolType findByTypeKey(String typeKey)
+			throws javax.ejb.FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((SchoolTypeBMPBean) entity).ejbFindByTypeKey(typeKey);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
 
-public SchoolType findByTypeKey(java.lang.String p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((SchoolTypeBMPBean)entity).ejbFindByTypeKey(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.findByPrimaryKey(pk);
-}
+	public SchoolType findByTypeString(String typeString)
+			throws javax.ejb.FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((SchoolTypeBMPBean) entity)
+				.ejbFindByTypeString(typeString);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
 
- public SchoolType findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (SchoolType) super.findByPrimaryKeyIDO(pk);
- }
+	public Collection findAllFreetimeTypes() throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolTypeBMPBean) entity)
+				.ejbFindAllFreetimeTypes();
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-
+	public Collection findAllFreetimeTypes(String category)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolTypeBMPBean) entity)
+				.ejbFindAllFreetimeTypes(category);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
 }
