@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowserSearch.java,v 1.8 2005/09/09 16:16:52 gimmi Exp $
+ * $Id: SupplierBrowserSearch.java,v 1.9 2005/09/11 14:18:49 gimmi Exp $
  * Created on Aug 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -29,6 +29,7 @@ import com.idega.presentation.Layer;
 import com.idega.presentation.text.Heading2;
 import com.idega.presentation.text.Paragraph;
 import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.FieldSet;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.Label;
 import com.idega.presentation.ui.ResetButton;
@@ -183,16 +184,23 @@ public class SupplierBrowserSearch extends TravelBlock {
 		}
 
 		Iterator it = ps.iterator();
+		FieldSet fieldSet = new FieldSet();
 		while (it.hasNext()) {
 			Paragraph p = (Paragraph) it.next();
-			form.add(p);
+			if (getSupplierBrowserBusiness(iwc).isSeparator(p)) {
+				form.add(fieldSet);
+				fieldSet = new FieldSet();
+			} else {
+				fieldSet.add(p);
+			}
 		}
-
+		form.add(fieldSet);
+		
 		Paragraph inputLayer = new Paragraph();
 		inputLayer.setStyleClass("fi");
 		inputLayer.add(new SubmitButton(getResourceBundle().getLocalizedString("search","search")));
 		inputLayer.add(new ResetButton(getResourceBundle().getLocalizedString("reset", "reset")));
-		form.add(inputLayer);
+		fieldSet.add(inputLayer);
 
 		Layer mainLayer = new Layer();
 		mainLayer.setStyleClass(maindiv);
@@ -210,7 +218,9 @@ public class SupplierBrowserSearch extends TravelBlock {
 			l2.setStyleClass(engineStyleClass);
 		}
 		
-		l2.add(form2);
+		FieldSet fs = new FieldSet();
+		fs.add(form2);
+		l2.add(fs);
 		l2.add(form);
 		mainLayer.add(l2);
 		add(mainLayer);
