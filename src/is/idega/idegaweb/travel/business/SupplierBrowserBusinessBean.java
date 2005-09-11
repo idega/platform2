@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowserBusinessBean.java,v 1.7 2005/09/08 22:29:21 gimmi Exp $
+ * $Id: SupplierBrowserBusinessBean.java,v 1.8 2005/09/11 14:14:55 gimmi Exp $
  * Created on Jul 6, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -223,8 +223,7 @@ public class SupplierBrowserBusinessBean extends IBOServiceBean  implements Supp
 				} 
 			}
 		}
-		else 
-		if (e.getName().equalsIgnoreCase(ELEMENT_SEARCH_INPUT)) {
+		else if (e.getName().equalsIgnoreCase(ELEMENT_SEARCH_INPUT)) {
 			Paragraph p = new Paragraph();
 			String styleClass = e.getAttributeValue(ATTRIBUTE_STYLE_CLASS);
 			if (styleClass != null) {
@@ -235,10 +234,7 @@ public class SupplierBrowserBusinessBean extends IBOServiceBean  implements Supp
 		}
 		else if (e.getName().equalsIgnoreCase(ELEMENT_SEPARATOR)) {
 			Paragraph p = new Paragraph();
-			Label label = new Label();
-			label.setValue(ELEMENT_SEPARATOR);
-			p.add(label);
-			p.add((InterfaceObject)null);
+			p.setName(ELEMENT_SEPARATOR);
 			paragraphs.add(p);
 		}
 		
@@ -247,6 +243,10 @@ public class SupplierBrowserBusinessBean extends IBOServiceBean  implements Supp
 		while (iter.hasNext()) {
 			listElement(supplierManager, (XMLElement) iter.next(), paragraphs);
 		}
+	}
+	
+	public boolean isSeparator(Paragraph paragraph) {
+		return paragraph.getName() != null && paragraph.getName().equals(ELEMENT_SEPARATOR);
 	}
 	
 	private void handleSearchInput(Group supplierManager, XMLElement e, Paragraph p) throws RemoteException {

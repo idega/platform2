@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowserBusiness.java,v 1.2 2005/08/24 13:19:33 gimmi Exp $
+ * $Id: SupplierBrowserBusiness.java,v 1.3 2005/09/11 14:14:55 gimmi Exp $
  * Created on Aug 19, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -17,6 +17,7 @@ import javax.ejb.CreateException;
 import com.idega.block.basket.business.BasketBusiness;
 import com.idega.business.IBOService;
 import com.idega.data.IDOAddRelationshipException;
+import com.idega.presentation.text.Paragraph;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.xml.XMLException;
@@ -24,10 +25,10 @@ import com.idega.xml.XMLException;
 
 /**
  * 
- *  Last modified: $Date: 2005/08/24 13:19:33 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/09/11 14:14:55 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public interface SupplierBrowserBusiness extends IBOService {
 
@@ -56,4 +57,5 @@ public interface SupplierBrowserBusiness extends IBOService {
 	 * @see is.idega.idegaweb.travel.business.SupplierBrowserBusinessBean#getServiceHandler
 	 */
 	public ServiceHandler getServiceHandler() throws java.rmi.RemoteException;
+	public boolean isSeparator(Paragraph paragraph);
 }
