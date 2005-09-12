@@ -170,6 +170,7 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 	private Form getFirstStage(IWContext iwc, Collection choices) {
 		Form form = new Form();
 		form.maintainParameter(CitizenChildren.prmChildId);
+		form.maintainParameter(CitizenChildren.prmChildUniqueId);
 		
 		Table table = new Table();
 		table.setWidth(Table.HUNDRED_PERCENT);
@@ -259,6 +260,7 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 		else {
 			Form form = new Form();
 			form.maintainParameter(CitizenChildren.prmChildId);
+			form.maintainParameter(CitizenChildren.prmChildUniqueId);
 			form.setOnSubmit("return checkInputs(findObj('"+PARAMETER_QUEUE+"'))");
 		
 			Script script = form.getAssociatedFormScript();
@@ -331,6 +333,7 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 		else {
 			Form form = new Form();
 			form.maintainParameter(CitizenChildren.prmChildId);
+			form.maintainParameter(CitizenChildren.prmChildUniqueId);
 			form.maintainParameter(PARAMETER_MESSAGE);
 		
 			Table table = new Table();
@@ -628,6 +631,7 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 	}
 	
 	private int getChildId(IWContext iwc) {
+		
 		if (childID != null){
 			_childID = Integer.parseInt(childID);
 			return _childID;
@@ -662,7 +666,7 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 			else {
 				return -1;
 			}
-		}
+		} //slut else if
 		else {
 			String childId = iwc.getParameter(prmChildId);
 			if (childId != null) {
