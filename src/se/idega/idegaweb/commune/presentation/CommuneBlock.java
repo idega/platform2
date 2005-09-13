@@ -17,6 +17,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Layer;
 import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
 import com.idega.presentation.text.DownloadLink;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
@@ -147,7 +148,7 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	private ICPage formBackPage;
 	private boolean iUseStyleNames;
 
-	private String _width = "600";
+	private String _width = Table.HUNDRED_PERCENT;
 	//private String _width = iwb.getProperty("table.width"); 
 
 	public String getBundleIdentifier() {
