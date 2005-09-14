@@ -136,7 +136,7 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
 
     product.addTravelAddresses(addressIds);
     clearAddressMaps(product);
-    timeframeMap.remove(product.getPrimaryKey());
+    invalidateTimeframeCache(product);
     clearProductCache(supplierId);
     return ((Integer) product.getPrimaryKey()).intValue();
   }
@@ -195,15 +195,19 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
 
   public void deleteProduct(Product product) throws RemoteException , IDOException {
     products.remove(product.getPrimaryKey().toString());
-    timeframeMap.remove(product.getPrimaryKey());
+    invalidateTimeframeCache(product);
     product.invalidate();
   }
 
   public Product updateProduct(Product product) throws RemoteException, FinderException, IDOException {
     products.remove(product.getPrimaryKey().toString() );
-    timeframeMap.remove(product.getPrimaryKey());
+    invalidateTimeframeCache(product);
     product.store();
     return getProduct( (Integer) product.getPrimaryKey() );
+  }
+  
+  public void invalidateTimeframeCache(Product product) {
+	    timeframeMap.remove(product.getPrimaryKey());
   }
 
   public ProductCategory getProductCategory(int categoryID) {

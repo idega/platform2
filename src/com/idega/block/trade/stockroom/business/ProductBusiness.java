@@ -1,5 +1,5 @@
 /*
- * $Id: ProductBusiness.java,v 1.46 2005/08/30 02:01:14 gimmi Exp $
+ * $Id: ProductBusiness.java,v 1.47 2005/09/14 14:57:22 gimmi Exp $
  * Created on Aug 29, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -35,10 +35,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2005/08/30 02:01:14 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/09/14 14:57:22 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.46 $
+ * @version $Revision: 1.47 $
  */
 public interface ProductBusiness extends IBOService {
 
@@ -344,4 +344,5 @@ public interface ProductBusiness extends IBOService {
 	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getProductPriceHome
 	 */
 	public ProductPriceHome getProductPriceHome() throws RemoteException;
+	public void invalidateTimeframeCache(Product product);
 }
