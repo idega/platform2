@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowser.java,v 1.27 2005/09/10 12:55:39 gimmi Exp $
+ * $Id: SupplierBrowser.java,v 1.28 2005/09/14 17:05:14 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -38,6 +38,7 @@ import com.idega.block.trade.stockroom.data.TravelAddress;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
+import com.idega.core.builder.data.ICPage;
 import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOCompositePrimaryKeyException;
 import com.idega.data.IDOLookup;
@@ -109,6 +110,7 @@ public class SupplierBrowser extends TravelBlock {
 	private boolean useTravelLook = false;
 	private boolean showInputs = true;
 	private boolean showPriceWithProductInformation = false;
+	private ICPage basketPage = null;
 	
 	public SupplierBrowser() {
 		
@@ -307,7 +309,9 @@ public class SupplierBrowser extends TravelBlock {
 
 		int row = 1;
 		
-		if (getSearchSession(iwc).getAddToBasketSuccess() && iwc.isParameterSet(AbstractSearchForm.ACTION)) {
+		boolean successfulAdd = getSearchSession(iwc).getAddToBasketSuccess() && iwc.isParameterSet(AbstractSearchForm.ACTION);
+		
+		if (successfulAdd) {
 			if (useTravelLook) {
 				table.mergeCells(1, row, 3, row);
 				table.setRowColor(row, TravelManager.GRAY);
@@ -463,21 +467,26 @@ public class SupplierBrowser extends TravelBlock {
 		if (useTravelLook) {
 			linkTable.setRowColor(1, TravelManager.GRAY);
 		}
-		
-		Link link = getLink(getResourceBundle().getLocalizedString("travel.add_to_basket", "Add to basket"));
-		
-		String formRef = "document.forms['"+form.getID()+"']";
-		link.setOnClick(formRef+".elements['"+AbstractSearchForm.ACTION+"'].value='"+AbstractSearchForm.ACTION_ADD_TO_BASKET+"';"+formRef+".elements['"+ACTION+"'].value='"+ACTION_VIEW_DETAILS+"';"+formRef+".submit();return false;");
-		form.setEventListener(SearchEventListener.class);
+
+		Link link = null;
+		if (successfulAdd && basketPage != null) {
+			link = getLink(getResourceBundle().getLocalizedString("travel.view_basket", "View basket"));
+			link.setPage(basketPage);
+		} else {
+			link = getLink(getResourceBundle().getLocalizedString("travel.add_to_basket", "Add to basket"));
+			
+			String formRef = "document.forms['"+form.getID()+"']";
+			link.setOnClick(formRef+".elements['"+AbstractSearchForm.ACTION+"'].value='"+AbstractSearchForm.ACTION_ADD_TO_BASKET+"';"+formRef+".elements['"+ACTION+"'].value='"+ACTION_VIEW_DETAILS+"';"+formRef+".submit();return false;");
+			form.setEventListener(SearchEventListener.class);
+
+		}
 
 		linkTable.add(back, 1, 1);
 		linkTable.add(link, 2, 1);
 		
 		form.add(table);
 		addExtraBookingElements(form);
-//		form.add(Text.BREAK);
 		form.add(priceTable);
-//		form.add(Text.BREAK);
 		form.add(linkTable);
 	}
 
@@ -507,7 +516,7 @@ public class SupplierBrowser extends TravelBlock {
 		extraTable.mergeCells(1, stRow, 2, stRow);
 		if (useTravelLook) {
 			extraTable.setRowColor(stRow, TravelManager.backgroundColor);
-			extraTable.add(TravelManager.getHeaderText(getResourceBundle().getLocalizedString("travel.booking_options", "Bookng options")), 1, stRow);
+			extraTable.add(TravelManager.getHeaderText(getResourceBundle().getLocalizedString("travel.booking_options", "Booking options")), 1, stRow);
 		} else {
 			extraTable.add(getText(getResourceBundle().getLocalizedString("travel.booking_options", "Bookng options"), headerStyleClass), 1, stRow);
 		}
@@ -759,6 +768,7 @@ public class SupplierBrowser extends TravelBlock {
 			table.add(details, 3, startRow);
 			table.setAlignment(3, startRow, Table.HORIZONTAL_ALIGN_RIGHT);
 			table.setVerticalAlignment(3, row, Table.VERTICAL_ALIGN_TOP);
+			table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
 			table.add(images, 3, row);
 			table.setCellpadding(3, row, 2);
 		} else if (addDetailLink && !plugin.isProductSearchCompleted(iwc)){
@@ -787,6 +797,7 @@ public class SupplierBrowser extends TravelBlock {
 			Table priceTable = new Table();
 			priceTable.setCellpaddingAndCellspacing(1);
 			int pRow = 1;
+			table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_LEFT);
 			table.add(priceTable, 2, ++row);
 			priceTable.mergeCells(1, pRow, 4, pRow);
 			priceTable.add(getText(getResourceBundle().getLocalizedString("travel.prices", "Prices"), headerStyleClass), 1, pRow++);
@@ -1103,6 +1114,10 @@ public class SupplierBrowser extends TravelBlock {
 	
 	public void setShowPriceWithProductInformation(boolean show) {
 		showPriceWithProductInformation = show;
+	}
+	
+	public void setBasketPage(ICPage page) {
+		this.basketPage = page;
 	}
 	
 	private ServiceSearchSession getSearchSession(IWUserContext iwc) {
