@@ -40,6 +40,9 @@ import javax.transaction.UserTransaction;
 
 import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.idegaweb.commune.accounting.regulations.business.EmploymentTypeFinderBusiness;
+import se.idega.idegaweb.commune.accounting.regulations.business.ManagementTypeFinderBusiness;
+import se.idega.idegaweb.commune.accounting.regulations.data.ManagementType;
+import se.idega.idegaweb.commune.accounting.regulations.data.ManagementTypeHome;
 import se.idega.idegaweb.commune.accounting.userinfo.business.UserInfoService;
 import se.idega.idegaweb.commune.accounting.userinfo.data.HouseHoldFamily;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
@@ -132,7 +135,7 @@ import com.lowagie.text.xml.XmlPeer;
  * @author palli
  * @version 1.0
  */
-public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCareBusiness, CaseBusiness, EmploymentTypeFinderBusiness {
+public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCareBusiness, CaseBusiness, EmploymentTypeFinderBusiness, ManagementTypeFinderBusiness {
 
 	private static String PROP_OUTSIDE_SCHOOL_AREA = "not_in_commune_school_area";
 
@@ -4831,6 +4834,22 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public Collection findAllEmploymentTypes() {
 		try {
 			EmploymentTypeHome home = (EmploymentTypeHome) IDOLookup.getHome(EmploymentType.class);
+
+			return home.findAll();
+		}
+		catch (IDOLookupException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	public Collection findAllManagementTypes() {
+		try {
+			ManagementTypeHome home = (ManagementTypeHome) IDOLookup.getHome(ManagementType.class);
 
 			return home.findAll();
 		}

@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.138 2005/09/07 11:39:14 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.139 2005/09/19 21:59:37 palli Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -1601,6 +1601,17 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		catch (IBOLookupException ex) {
 			// do nothing
 		}
+
+		try {
+			// check if the class has an implementation
+			IBOLookup.getServiceInstance(getIWApplicationContext() , ManagementTypeFinderBusiness.class);
+			arr.add(new ConditionHolder(RuleTypeConstant.CONDITION_ID_MANAGEMENT_TYPE, "Management type", LP + "management", ManagementTypeFinderBusiness.class, "findAllManagementTypes", "getLocalizationKey", ""));
+		}
+		catch (IBOLookupException ex) {
+			// do nothing
+		}
+
+		
 		return arr;
 
 	}
