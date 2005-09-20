@@ -2,7 +2,9 @@ package se.idega.idegaweb.commune.childcare;
 
 import java.util.Iterator;
 import java.util.List;
+
 import se.idega.idegaweb.commune.accounting.regulations.business.EmploymentTypeFinderBusiness;
+import se.idega.idegaweb.commune.accounting.regulations.business.ManagementTypeFinderBusiness;
 import se.idega.idegaweb.commune.care.business.CareConstants;
 import se.idega.idegaweb.commune.care.presentation.ChildContracts;
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
@@ -10,6 +12,7 @@ import se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean;
 import se.idega.idegaweb.commune.childcare.business.ChildCareDeceasedUserBusiness;
 import se.idega.idegaweb.commune.childcare.presentation.ChildContractsImpl;
 import se.idega.idegaweb.commune.user.business.DeceasedUserBusiness;
+
 import com.idega.block.process.business.CaseCodeManager;
 import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWBundle;
@@ -42,6 +45,7 @@ public class IWBundleStarter implements IWBundleStartable {
 
 	public void start(IWBundle starterBundle) {
 		IBOLookup.registerImplementationForBean(EmploymentTypeFinderBusiness.class, ChildCareBusinessBean.class);
+		IBOLookup.registerImplementationForBean(ManagementTypeFinderBusiness.class, ChildCareBusinessBean.class);
 		ImplementorRepository repository = ImplementorRepository.getInstance();
 		repository.addImplementor(DeceasedUserBusiness.class, ChildCareDeceasedUserBusiness.class);
 		repository.addImplementor(ChildContracts.class, ChildContractsImpl.class);
