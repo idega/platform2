@@ -1,6 +1,6 @@
 /*
- * $Id: School.java,v 1.41 2005/08/09 16:32:21 laddi Exp $
- * Created on Aug 6, 2005
+ * $Id: School.java,v 1.42 2005/09/20 00:28:25 palli Exp $
+ * Created on Aug 17, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -12,7 +12,9 @@ package com.idega.block.school.data;
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.util.Collection;
+
 import javax.ejb.FinderException;
+
 import com.idega.block.text.data.LocalizedText;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.location.data.Commune;
@@ -28,25 +30,38 @@ import com.idega.user.data.Group;
 
 
 /**
- * Last modified: $Date: 2005/08/09 16:32:21 $ by $Author: laddi $
  * 
- * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.41 $
+ *  Last modified: $Date: 2005/09/20 00:28:25 $ by $Author: palli $
+ * 
+ * @author <a href="mailto:bluebottle@idega.com">bluebottle</a>
+ * @version $Revision: 1.42 $
  */
 public interface School extends IDOEntity, IDOLegacyEntity, MetaDataCapable {
 
-	public School getAfterSchoolCareProvider();
-	
-	public Object getAfterSchoolCareProviderPK();
-	
-	public void setAfterSchoolCareProvider(School provider);
-	
-	public void setAfterSchoolCareProvider(Object providerPK);
-	
 	/**
 	 * @see com.idega.block.school.data.SchoolBMPBean#getName
 	 */
 	public String getName();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolBMPBean#getAfterSchoolCareProvider
+	 */
+	public School getAfterSchoolCareProvider();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolBMPBean#getAfterSchoolCareProviderPK
+	 */
+	public Object getAfterSchoolCareProviderPK();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolBMPBean#setAfterSchoolCareProvider
+	 */
+	public void setAfterSchoolCareProvider(School provider);
+
+	/**
+	 * @see com.idega.block.school.data.SchoolBMPBean#setAfterSchoolCareProvider
+	 */
+	public void setAfterSchoolCareProvider(Object providerPK);
 
 	/**
 	 * @see com.idega.block.school.data.SchoolBMPBean#getSchoolAreaId
@@ -72,6 +87,11 @@ public interface School extends IDOEntity, IDOLegacyEntity, MetaDataCapable {
 	 * @see com.idega.block.school.data.SchoolBMPBean#setSchoolAreaId
 	 */
 	public void setSchoolAreaId(int id);
+
+	/**
+	 * @see com.idega.block.school.data.SchoolBMPBean#setSchoolArea
+	 */
+	public void setSchoolArea(SchoolArea area);
 
 	/**
 	 * @see com.idega.block.school.data.SchoolBMPBean#setSchoolSubAreaId
@@ -517,4 +537,5 @@ public interface School extends IDOEntity, IDOLegacyEntity, MetaDataCapable {
 	 * @see com.idega.block.school.data.SchoolBMPBean#removeAllStudyPaths
 	 */
 	public void removeAllStudyPaths() throws IDORemoveRelationshipException;
+
 }

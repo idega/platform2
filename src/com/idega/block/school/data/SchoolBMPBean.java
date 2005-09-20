@@ -176,6 +176,9 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 	public void setSchoolAreaId(int id) {
 		this.setColumn(SCHOOLAREA, id);
 	}
+	public void setSchoolArea(SchoolArea area) {
+		this.setColumn(SCHOOLAREA, area);
+	}
 	public void setSchoolSubAreaId(int id) {
 		this.setColumn(SCHOOLSUBAREA, id);
 	}
