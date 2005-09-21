@@ -8,7 +8,6 @@ package is.idega.idegaweb.member.isi.block.clubs.presentation;
 
 import is.idega.idegaweb.member.isi.block.clubs.business.ClubInfoBusinessBean;
 import is.idega.idegaweb.member.util.IWMemberConstants;
-
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,7 +15,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.presentation.Block;
@@ -113,10 +111,17 @@ public class ClubInfoBar extends Block {
 			    divName = division.getName();
 			}
 		    Link link = new Link(divName);
-			link.setPage(Integer.parseInt(divisionInfoPageId));
-			if(_callingDomain!=null && _callingDomain.length()>0) {
-				link.setHostname(_callingDomain);
-			}
+		    
+		    String divisionHomepageURL = division.getHomePageURL();
+		    if(divisionHomepageURL!=null && !"".equals(divisionHomepageURL) ){
+		    		link.setURL(divisionHomepageURL);
+		    }
+		    else{
+		    		link.setPage(Integer.parseInt(divisionInfoPageId));
+				if(_callingDomain!=null && _callingDomain.length()>0) {
+					link.setHostname(_callingDomain);
+				}
+		    }
 			topLevelMenu = menuBar.createCSSMenu(division.getName(), link);
 		} else {
 			topLevelMenu = menuBar.createCSSMenu(division.getName());
