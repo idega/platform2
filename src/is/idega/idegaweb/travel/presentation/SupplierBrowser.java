@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowser.java,v 1.29 2005/09/22 14:36:53 gimmi Exp $
+ * $Id: SupplierBrowser.java,v 1.30 2005/09/22 18:23:33 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -925,7 +925,7 @@ public class SupplierBrowser extends TravelBlock {
 				if (desc != null && !desc.trim().equals("")) {
 					if (!useTravelLook) {
 						table.setRowHeight(row, "1");
-						table.setRowStyleClass(++row, "sbrowser_header_background_line");
+						table.setRowStyleClass(row++, "sbrowser_header_background_line");
 					}
 					table.add(getText(desc), 2, row);
 					table.setRowPadding(row, 2);
