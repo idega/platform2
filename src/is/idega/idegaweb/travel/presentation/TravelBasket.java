@@ -1,5 +1,5 @@
 /*
- * $Id: TravelBasket.java,v 1.3 2005/08/27 15:37:15 gimmi Exp $
+ * $Id: TravelBasket.java,v 1.4 2005/09/22 14:29:29 gimmi Exp $
  * Created on 22.6.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -93,6 +93,7 @@ public class TravelBasket extends TravelBlock {
 		BookingForm bf;
 		float totalPrice = 0;
 		float price;
+		boolean tooManyCurrencies = false;
 		int localeID = iwc.getCurrentLocaleId();
 		Locale locale = iwc.getCurrentLocale();
 		Link remove = null;
@@ -121,7 +122,8 @@ public class TravelBasket extends TravelBlock {
 			if (curr != null && (currency == null)) {
 				currency = curr;
 			} else if (curr != null && !currency.equals(curr)) {
-				throw new Exception("Too many currencies");
+				tooManyCurrencies = true;
+//				throw new Exception("Too many currencies");
 			}
 			table.add(getText(decimalFormat.format(price)+" "+currency), 3, row);
 			
@@ -152,40 +154,46 @@ public class TravelBasket extends TravelBlock {
 			table.add(getBoldText(decimalFormat.format(totalPrice)+" "+currency), 3, row++);
 
 			if (showCheckoutLink) {
-				Link book = getLink(super.getResourceBundle().getLocalizedString("travel.check_out", "Check out"));
-				if (bookingURL != null) {
-					book.setURL(bookingURL);
-				}
-				if (bookingPage != null) {
-					book.setPage(bookingPage);
-				}
-				if (bookingClass != null) {
-					book.setClassToInstanciate(bookingClass);
-				}
-	 
-				book.addParameter(AbstractSearchForm.ACTION, AbstractSearchForm.ACTION_BOOKING_FORM);
-				book.addParameter(AbstractSearchForm.PARAMETER_REFERENCE_NUMBER, IWTimestamp.RightNow().toString());
-					
-				if (checkoutIsOnAnotherServer) {
-					if (encryptedListenerName == null) {
-						book.setEventListener(SearchEventListener.class);
-					} else {
-						book.setEventListener(encryptedListenerName);
+				
+				if (!tooManyCurrencies) {
+					Link book = getLink(super.getResourceBundle().getLocalizedString("travel.check_out", "Check out"));
+					if (bookingURL != null) {
+						book.setURL(bookingURL);
 					}
-					Collection values = basketBusiness.getBasket().values();
-					if (values != null) {
-						Iterator viter = values.iterator();
-						while (viter.hasNext()) {
-							BasketEntry e = (BasketEntry) viter.next();
-							book.addParameter(ServiceSearchBusinessBean.PARAMETER_BOOKING_IDS_FOR_BASKET, e.getItem().getItemID().toString());
+					if (bookingPage != null) {
+						book.setPage(bookingPage);
+					}
+					if (bookingClass != null) {
+						book.setClassToInstanciate(bookingClass);
+					}
+		 
+					book.addParameter(AbstractSearchForm.ACTION, AbstractSearchForm.ACTION_BOOKING_FORM);
+					book.addParameter(AbstractSearchForm.PARAMETER_REFERENCE_NUMBER, IWTimestamp.RightNow().toString());
+						
+					if (checkoutIsOnAnotherServer) {
+						if (encryptedListenerName == null) {
+							book.setEventListener(SearchEventListener.class);
+						} else {
+							book.setEventListener(encryptedListenerName);
+						}
+						Collection values = basketBusiness.getBasket().values();
+						if (values != null) {
+							Iterator viter = values.iterator();
+							while (viter.hasNext()) {
+								BasketEntry e = (BasketEntry) viter.next();
+								book.addParameter(ServiceSearchBusinessBean.PARAMETER_BOOKING_IDS_FOR_BASKET, e.getItem().getItemID().toString());
+							}
 						}
 					}
+					table.add(book, 3, row);
+				} else {
+					table.add(getText(getResourceBundle().getLocalizedString("travel.too_many_currencies", "Too many currencies")), 3, row);
+					
 				}
 				if (useTravelLook) {
 					table.setRowColor(row, TravelManager.GRAY);
 				}
 
-				table.add(book, 3, row);
 				if (showDeleteLink) {
 					table.mergeCells(3, row, 4, row);
 				}
