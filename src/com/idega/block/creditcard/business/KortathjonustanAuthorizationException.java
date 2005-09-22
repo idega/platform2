@@ -42,14 +42,12 @@ public class KortathjonustanAuthorizationException extends CreditCardAuthorizati
 		} catch (NumberFormatException ignore) {}
 		
 		switch (number) {
-			case 1029 :
-				return (iwrb.getLocalizedString("cc.creditcard_number_incorrect","Creditcard number incorrect"));
-//			case 10909 :
-//				return (iwrb.getLocalizedString("cc.error_maybe_CVC","An error occured, CVC code could be incorrect"));
-			case 10102 :
+			case 946 :
+				return (iwrb.getLocalizedString("cc.system_failure_retry","System failure - Retry"));
+			case 100 :
 				return (iwrb.getLocalizedString("cc.declined","Declined"));
-			case 10101 :
-				return (iwrb.getLocalizedString("cc.card_is_expired","Card is expired"));
+			case 909 :
+				return (iwrb.getLocalizedString("cc.system_failure_error","System failure - Error"));
 			default:
 				return (iwrb.getLocalizedString("cc.cannot_connect","Cannot communicate with server"));
 		}

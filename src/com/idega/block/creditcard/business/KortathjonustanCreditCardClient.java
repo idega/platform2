@@ -536,7 +536,7 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 					CreditCardAuthorizationException cce = new CreditCardAuthorizationException();
 					cce.setDisplayError(refundProperties.get(PROPERTY_ACTION_CODE_TEXT).toString());
 					cce.setErrorMessage(refundProperties.get(PROPERTY_ERROR_TEXT).toString());
-					cce.setErrorNumber(refundProperties.get(PROPERTY_ERROR_CODE).toString());
+					cce.setErrorNumber(refundProperties.get(PROPERTY_ACTION_CODE).toString());
 					throw cce;
 				}
 			}
@@ -629,7 +629,7 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 					KortathjonustanAuthorizationException cce = new KortathjonustanAuthorizationException();
 					cce.setDisplayError(captureProperties.get(PROPERTY_ACTION_CODE_TEXT).toString());
 					cce.setErrorMessage(captureProperties.get(PROPERTY_ERROR_TEXT).toString());
-					cce.setErrorNumber(captureProperties.get(PROPERTY_ERROR_CODE).toString());
+					cce.setErrorNumber(captureProperties.get(PROPERTY_ACTION_CODE).toString());
 					throw cce;
 				}
 			}
@@ -713,7 +713,7 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 						cce.setErrorMessage(properties.get(PROPERTY_ERROR_TEXT).toString());
 					} catch (NullPointerException n) {}
 					try {
-						cce.setErrorNumber(properties.get(PROPERTY_ERROR_CODE).toString());
+						cce.setErrorNumber(properties.get(PROPERTY_ACTION_CODE).toString());
 					} catch (NullPointerException n) {}
 					throw cce;
 				}
