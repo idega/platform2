@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowserBusinessBean.java,v 1.8 2005/09/11 14:14:55 gimmi Exp $
+ * $Id: SupplierBrowserBusinessBean.java,v 1.9 2005/09/22 14:39:48 gimmi Exp $
  * Created on Jul 6, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -320,6 +320,7 @@ public class SupplierBrowserBusinessBean extends IBOServiceBean  implements Supp
 					else if (type.equalsIgnoreCase(TYPE_ROOM)) {
 						HotelSearch hs = new HotelSearch();
 						input = hs.getRoomTypeDropdown(supplierManager, el.getAttributeValue(ATTRIBUTE_NAME));
+						((DropdownMenu) input).addMenuElementFirst("-1", iwrb.getLocalizedString("travel.any_types", "Any type"));
 						String selected = el.getAttributeValue(ATTRIBUTE_SELECTED);
 						if (selected != null) {
 							((DropdownMenu) input).setSelectedElement(selected);
