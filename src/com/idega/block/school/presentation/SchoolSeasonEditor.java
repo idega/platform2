@@ -4,116 +4,121 @@ import java.rmi.RemoteException;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
-
+import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Table;
+import com.idega.presentation.Layer;
+import com.idega.presentation.Table2;
+import com.idega.presentation.TableColumn;
+import com.idega.presentation.TableColumnGroup;
+import com.idega.presentation.TableRow;
+import com.idega.presentation.TableRowGroup;
+import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.Label;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.util.SelectorUtility;
 import com.idega.util.IWTimestamp;
 
 /**
- * <p>
  * Title:
- * </p>
- * <p>
  * Description:
- * </p>
- * <p>
  * Copyright: Copyright (c) 2002
- * </p>
- * <p>
  * Company:
- * </p>
  * 
- * @author <br>
- *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
+ * @author <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
  * @version 1.0
  */
 
 public class SchoolSeasonEditor extends SchoolBlock {
 
+	private static final String PARAMETER_ACTION = "sch_season_prm_action";
+	private static final String PARAMETER_SCHOOL_SEASON_PK = "prm_school_season_pk";
+	private static final String PARAMETER_NAME = "prm_name";
+	private static final String PARAMETER_CATEGORY = "prm_category";
+	private static final String PARAMETER_SEASON_START = "prm_season_start";
+	private static final String PARAMETER_SEASON_END = "prm_season_end";
+	private static final String PARAMETER_CHOICE_START_DATE = "prm_choice_start_date";
+	private static final String PARAMETER_CHOICE_END_DATE = "prm_choice_end_date";
+	
+	private static final int ACTION_VIEW = 1;
+	private static final int ACTION_EDIT = 2;
+	private static final int ACTION_NEW = 3;
+	private static final int ACTION_SAVE = 4;
+	private static final int ACTION_DELETE = 5;
+	
 	protected void init(IWContext iwc) throws Exception {
-		Form F = new Form();
+		switch (parseAction(iwc)) {
+			case ACTION_VIEW:
+				showList(iwc);
+				break;
 
-		if (iwc.isParameterSet("sch_save_season")) {
-			saveArea(iwc);
-			F.add(getListTable(iwc, null));
-		}
-		else if (iwc.isParameterSet("sch_delete_season")) {
-			int id = Integer.parseInt(iwc.getParameter("sch_delete_season"));
-			getBusiness().removeSchoolSeason(id);
-			F.add(getListTable(iwc, null));
-		}
-		else if (iwc.isParameterSet("sch_school_season_id")) {
-			int id = Integer.parseInt(iwc.getParameter("sch_school_season_id"));
-			F.add(getInput(iwc, id));
+			case ACTION_EDIT:
+				Object schoolPK = iwc.getParameter(PARAMETER_SCHOOL_SEASON_PK);
+				showEditor(iwc, schoolPK);
+				break;
 
-		}
-		else if (iwc.isParameterSet("sch_new_season")) {
-			F.add(getInput(iwc, -1));
-		}
-		else
-			F.add(getListTable(iwc, null));
+			case ACTION_NEW:
+				showEditor(iwc, null);
+				break;
 
-		add(F);
+			case ACTION_SAVE:
+				saveArea(iwc);
+				showList(iwc);
+				break;
 
+			case ACTION_DELETE:
+				getBusiness().removeSchoolSeason(iwc.getParameter(PARAMETER_SCHOOL_SEASON_PK));
+				showList(iwc);
+				break;
+		}
 	}
 
-	private PresentationObject getInput(IWContext iwc, int id) throws java.rmi.RemoteException {
-		return getInputTable(iwc, getBusiness().getSchoolSeason(new Integer(id)));
+	private int parseAction(IWContext iwc) {
+		if (iwc.isParameterSet(PARAMETER_ACTION)) {
+			return Integer.parseInt(iwc.getParameter(PARAMETER_ACTION));
+		}
+		return ACTION_VIEW;
 	}
 
 	private void saveArea(IWContext iwc) throws java.rmi.RemoteException {
-		if (iwc.isParameterSet("sch_save_season")) {
-			String id = iwc.getParameter("sch_school_season_id");
-			String name = iwc.getParameter("sch_season_name");
-			String start = iwc.getParameter("sch_season_start");
-			String end = iwc.getParameter("sch_season_end");
-			String startdate = iwc.getParameter("sch_season_start_date");
-			String duedate = iwc.getParameter("sch_season_due_date");
-			String category = iwc.getParameter("sch_type_cat");
-			int aid = -1;
-			Date startDate = null;
-			Date endDate = null;
-			Date dueDate = null;
-			Date choiceStartDate = null;
-			if (id != null) {
-				aid = Integer.parseInt(id);
-			}
-			if (start != null) {
-				startDate = new IWTimestamp(start).getSQLDate();
-			}
-			if (end != null) {
-				endDate = new IWTimestamp(end).getSQLDate();
-			}
-			if (duedate != null) {
-				dueDate = new IWTimestamp(duedate).getSQLDate();
-			}
-			if (startdate != null) {
-				choiceStartDate = new IWTimestamp(startdate).getSQLDate();
-			}
-			getBusiness().storeSchoolSeason(aid, name, startDate, endDate, choiceStartDate, dueDate, category);
+		String id = iwc.getParameter(PARAMETER_SCHOOL_SEASON_PK);
+		String name = iwc.getParameter(PARAMETER_NAME);
+		String category = iwc.getParameter(PARAMETER_CATEGORY);
+		Date startDate = iwc.isParameterSet(PARAMETER_SEASON_START) ? new IWTimestamp(iwc.getParameter(PARAMETER_SEASON_START)).getDate() : null;
+		Date endDate = iwc.isParameterSet(PARAMETER_SEASON_END) ? new IWTimestamp(iwc.getParameter(PARAMETER_SEASON_END)).getDate() : null;
+		Date dueDate = iwc.isParameterSet(PARAMETER_CHOICE_END_DATE) ? new IWTimestamp(iwc.getParameter(PARAMETER_CHOICE_END_DATE)).getDate() : null;
+		Date choiceStartDate = iwc.isParameterSet(PARAMETER_CHOICE_START_DATE) ? new IWTimestamp(iwc.getParameter(PARAMETER_CHOICE_START_DATE)).getDate() : null;
+
+		int aid = -1;
+		if (id != null) {
+			aid = Integer.parseInt(id);
 		}
+		getBusiness().storeSchoolSeason(aid, name, startDate, endDate, choiceStartDate, dueDate, category);
 	}
 
-	public PresentationObject getListTable(IWContext iwc, SchoolSeason season) {
-		Table table = new Table();
+	public void showList(IWContext iwc) {
+		Form form = new Form();
+		form.setStyleClass(STYLENAME_SCHOOL_FORM);
+		
+		Table2 table = new Table2();
 		table.setCellpadding(0);
 		table.setCellspacing(0);
-		table.setWidth(Table.HUNDRED_PERCENT);
-		table.setColumns(5);
-		table.setWidth(5, 12);
-		int row = 1;
-		int col = 1;
+		table.setWidth("100%");
+		table.setStyleClass(STYLENAME_LIST_TABLE);
+
+		TableColumnGroup columnGroup = table.createColumnGroup();
+		TableColumn column = columnGroup.createColumn();
+		column.setSpan(5);
+		column = columnGroup.createColumn();
+		column.setSpan(2);
+		column.setWidth("12");
 
 		Collection seasons = null;
 		try {
@@ -123,130 +128,148 @@ public class SchoolSeasonEditor extends SchoolBlock {
 			seasons = new ArrayList();
 		}
 
-		table.setCellpaddingLeft(1, row, 12);
-		table.add(getSmallHeader(localize("name", "Name")), col++, row);
-		table.add(getSmallHeader(localize("start", "Start")), col++, row);
-		table.add(getSmallHeader(localize("end", "End")), col++, row);
-		table.add(getSmallHeader(localize("due_date", "Due date")), col++, row);
-		table.setRowStyleClass(row++, getHeaderRowClass());
+		TableRowGroup group = table.createHeaderRowGroup();
+		TableRow row = group.createRow();
+		row.createHeaderCell().add(new Text(localize("name", "Name")));
+		row.createHeaderCell().add(new Text(localize("category", "Category")));
+		row.createHeaderCell().add(new Text(localize("start", "Start")));
+		row.createHeaderCell().add(new Text(localize("end", "End")));
+		row.createHeaderCell().add(new Text(localize("due_date", "Due date")));
+		row.createHeaderCell();
+		row.createHeaderCell();
 
+		group = table.createBodyRowGroup();
+		int iRow = 1;
 		java.util.Iterator iter = seasons.iterator();
-		SchoolSeason sarea;
-		IWTimestamp startDate;
-		IWTimestamp endDate;
-		IWTimestamp dueDate;
 		while (iter.hasNext()) {
-			col = 1;
-			sarea = (SchoolSeason) iter.next();
-			try {
-				startDate = sarea.getSchoolSeasonStart() != null ? new IWTimestamp(sarea.getSchoolSeasonStart()) : null;
-				endDate = sarea.getSchoolSeasonEnd() != null ? new IWTimestamp(sarea.getSchoolSeasonEnd()) : null;
-				dueDate = sarea.getChoiceEndDate() != null ? new IWTimestamp(sarea.getChoiceEndDate()) : null;
-				Link L = new Link(getEditIcon(localize("edit", "Edit")));
-				L.addParameter("sch_school_season_id", ((Integer) sarea.getPrimaryKey()).intValue());
-				
-				table.setCellpaddingLeft(1, row, 12);
-				table.setCellpaddingRight(table.getColumns(), row, 12);
-				table.add(getSmallText(sarea.getSchoolSeasonName()), col++, row);
-				if (startDate != null) {
-					table.add(getSmallText(startDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), col++, row);
-				}
-				else {
-					table.add(getSmallText("-"), col++, row);
-				}
-				if (endDate != null) {
-					table.add(getSmallText(endDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), col++, row);
-				}
-				else {
-					table.add(getSmallText("-"), col++, row);
-				}
-				if (dueDate != null) {
-					table.add(getSmallText(dueDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), col++, row);
-				}
-				else {
-					table.add(getSmallText("-"), col++, row);
-				}
-				table.add(L, col, row);
+			SchoolSeason season = (SchoolSeason) iter.next();
+			row = group.createRow();
 
-				if (row % 2 == 0) {
-					table.setRowStyleClass(row, getDarkRowClass());
+			try {
+				IWTimestamp startDate = season.getSchoolSeasonStart() != null ? new IWTimestamp(season.getSchoolSeasonStart()) : null;
+				IWTimestamp endDate = season.getSchoolSeasonEnd() != null ? new IWTimestamp(season.getSchoolSeasonEnd()) : null;
+				IWTimestamp dueDate = season.getChoiceEndDate() != null ? new IWTimestamp(season.getChoiceEndDate()) : null;
+				SchoolCategory category = season.getSchoolCategory();
+				
+				Link edit = new Link(getEditIcon(localize("edit", "Edit")));
+				edit.addParameter(PARAMETER_SCHOOL_SEASON_PK, season.getPrimaryKey().toString());
+				edit.addParameter(PARAMETER_ACTION, ACTION_EDIT);
+
+				Link delete = new Link(getDeleteIcon(localize("delete", "Delete")));
+				delete.addParameter(PARAMETER_SCHOOL_SEASON_PK, season.getPrimaryKey().toString());
+				delete.addParameter(PARAMETER_ACTION, ACTION_DELETE);
+
+				row.createCell().add(new Text(season.getSchoolSeasonName()));
+				row.createCell().add(new Text(category != null ? localize(category.getLocalizedKey(), category.getName()) : "-"));
+				row.createCell().add(new Text(startDate != null ? startDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT) : "-"));
+				row.createCell().add(new Text(endDate != null ? endDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT) : "-"));
+				row.createCell().add(new Text(dueDate != null ? dueDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT) : "-"));
+				row.createCell().add(edit);
+				row.createCell().add(delete);
+
+				if (iRow % 2 == 0) {
+					row.setStyleClass(STYLENAME_LIST_TABLE_EVEN_ROW);
 				}
 				else {
-					table.setRowStyleClass(row, getLightRowClass());
+					row.setStyleClass(STYLENAME_LIST_TABLE_ODD_ROW);
 				}
 			}
 			catch (Exception ex) {
 				ex.printStackTrace();
 			}
-			row++;
+			iRow++;
 		}
+		form.add(table);
+		form.add(new Break());
 
-		table.setHeight(row++, 12);
-		table.setCellpaddingLeft(1, row, 12);
-		table.mergeCells(1, row, table.getColumns(), row);
-		GenericButton newLink = getButton(new GenericButton("new", localize("season.new", "New season")));
-		newLink.setPageToOpen(iwc.getCurrentIBPageID());
-		newLink.addParameterToPage("sch_new_season", "true");
-		table.add(newLink, 1, row);
+		SubmitButton newLink = (SubmitButton) getButton(new SubmitButton(localize("season.new", "New season"), PARAMETER_ACTION, String.valueOf(ACTION_NEW)));
+		form.add(newLink);
 
-		return table;
+		add(form);
 	}
 
-	public PresentationObject getInputTable(IWContext iwc, SchoolSeason bean) throws RemoteException {
-		Table T = new Table(3, 8);
-		T.mergeCells(1, 1, 3, 1);
-		T.add(getHeader(localize("school_season", "SchoolSeason")), 1, 1);
-		T.add(getHeader(localize("name", "Name")), 1, 2);
-		T.add(getHeader(localize("start", "Start")), 1, 3);
-		T.add(getHeader(localize("end", "End")), 1, 4);
-		T.add(getHeader(localize("start_date", "Start date")), 1, 5);
-		T.add(getHeader(localize("due_date", "Duedate")), 1, 6);
-		T.add(getHeader(localize("school_category", "School category")), 1, 7);
-
-		TextInput inputName = (TextInput) getStyledInterface(new TextInput("sch_season_name"));
-		DateInput inputStart = (DateInput) getStyledInterface(new DateInput("sch_season_start"));
-		DateInput inputEnd = (DateInput) getStyledInterface(new DateInput("sch_season_end"));
-		DateInput inputStartDate = (DateInput) getStyledInterface(new DateInput("sch_season_start_date"));
-		DateInput inputDueDate = (DateInput) getStyledInterface(new DateInput("sch_season_due_date"));
+	public void showEditor(IWContext iwc, Object seasonPK) throws RemoteException {
+		Form form = new Form();
+		form.setStyleClass(STYLENAME_SCHOOL_FORM);
+		
+		TextInput inputName = new TextInput(PARAMETER_NAME);
+		DateInput inputStart = new DateInput(PARAMETER_SEASON_START);
+		DateInput inputEnd = new DateInput(PARAMETER_SEASON_END);
+		DateInput inputStartDate = new DateInput(PARAMETER_CHOICE_START_DATE);
+		DateInput inputDueDate = new DateInput(PARAMETER_CHOICE_END_DATE);
 		SelectorUtility util = new SelectorUtility();
-		DropdownMenu drpCategory = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu("sch_type_cat"), getBusiness().getSchoolCategories(), "getLocalizedKey", getResourceBundle()));
-		int beanId = -1;
-		if (bean != null) {
+		DropdownMenu drpCategory = (DropdownMenu) util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_CATEGORY), getBusiness().getSchoolCategories(), "getLocalizedKey", getResourceBundle());
+		
+		if (seasonPK != null) {
 			try {
-				beanId = ((Integer) bean.getPrimaryKey()).intValue();
-				inputName.setContent(bean.getSchoolSeasonName());
-				inputStart.setDate(bean.getSchoolSeasonStart());
-				inputEnd.setDate(bean.getSchoolSeasonEnd());
-				if (bean.getChoiceStartDate() != null) {
-					inputStartDate.setDate(bean.getChoiceStartDate());
+				SchoolSeason season = getBusiness().getSchoolSeason(seasonPK);
+
+				inputName.setContent(season.getSchoolSeasonName());
+				inputStart.setDate(season.getSchoolSeasonStart());
+				inputEnd.setDate(season.getSchoolSeasonEnd());
+				if (season.getChoiceStartDate() != null) {
+					inputStartDate.setDate(season.getChoiceStartDate());
 				}
-				inputDueDate.setDate(bean.getChoiceEndDate());
-				if (bean.getSchoolCategoryPK() != null) {
-					drpCategory.setSelectedElement(bean.getSchoolCategoryPK());
+				inputDueDate.setDate(season.getChoiceEndDate());
+				if (season.getSchoolCategoryPK() != null) {
+					drpCategory.setSelectedElement(season.getSchoolCategoryPK());
 				}
-				T.add(new HiddenInput("sch_school_season_id", String.valueOf(beanId)));
+				form.add(new HiddenInput(PARAMETER_SCHOOL_SEASON_PK, seasonPK.toString()));
 			}
 			catch (Exception ex) {
 			}
 		}
 
-		T.add(inputName, 3, 2);
-		T.add(inputStart, 3, 3);
-		T.add(inputEnd, 3, 4);
-		T.add(inputStartDate, 3, 5);
-		T.add(inputDueDate, 3, 6);
-		T.add(drpCategory, 3, 7);
-		T.add(getButton(new SubmitButton(localize("save", "Save"), "sch_save_season", "true")), 3, 8);
-		GenericButton cancel = getButton(new GenericButton("cancel", localize("cancel", "Cancel")));
-		cancel.setPageToOpen(iwc.getCurrentIBPageID());
-		T.add(cancel, 3, 8);
-		if (beanId > 0) {
-			GenericButton delete = getButton(new GenericButton("delete", localize("delete", "Delete")));
-			delete.setPageToOpen(iwc.getCurrentIBPageID());
-			delete.addParameterToPage("sch_delete_season", beanId);
-			T.add(delete, 3, 8);
-		}
+		Layer layer = new Layer(Layer.DIV);
+		layer.setStyleClass(STYLENAME_FORM_ELEMENT);
+		Label label = new Label(localize("name", "Name"), inputName);
+		layer.add(label);
+		layer.add(inputName);
+		form.add(layer);
 
-		return T;
+		layer = new Layer(Layer.DIV);
+		layer.setStyleClass(STYLENAME_FORM_ELEMENT);
+		label = new Label(localize("school_category", "School category"), drpCategory);
+		layer.add(label);
+		layer.add(drpCategory);
+		form.add(layer);
+
+		layer = new Layer(Layer.DIV);
+		layer.setStyleClass(STYLENAME_FORM_ELEMENT);
+		label = new Label(localize("start", "Start"), inputStart);
+		layer.add(label);
+		layer.add(inputStart);
+		form.add(layer);
+		
+		layer = new Layer(Layer.DIV);
+		layer.setStyleClass(STYLENAME_FORM_ELEMENT);
+		label = new Label(localize("end", "End"), inputEnd);
+		layer.add(label);
+		layer.add(inputEnd);
+		form.add(layer);
+		
+		layer = new Layer(Layer.DIV);
+		layer.setStyleClass(STYLENAME_FORM_ELEMENT);
+		label = new Label(localize("start_date", "Start date"), inputStartDate);
+		layer.add(label);
+		layer.add(inputStartDate);
+		form.add(layer);
+		
+		layer = new Layer(Layer.DIV);
+		layer.setStyleClass(STYLENAME_FORM_ELEMENT);
+		label = new Label(localize("due_date", "Duedate"), inputDueDate);
+		layer.add(label);
+		layer.add(inputDueDate);
+		form.add(layer);
+
+		form.add(new Break());
+
+		SubmitButton save = (SubmitButton) getButton(new SubmitButton(localize("save", "Save"), PARAMETER_ACTION, String.valueOf(ACTION_SAVE)));
+		SubmitButton cancel = (SubmitButton) getButton(new SubmitButton(localize("cancel", "Cancel"), PARAMETER_ACTION, String.valueOf(ACTION_VIEW)));
+
+		form.add(cancel);
+		form.add(save);
+
+		add(form);
 	}
 }

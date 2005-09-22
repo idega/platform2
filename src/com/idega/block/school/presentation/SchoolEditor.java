@@ -4,7 +4,6 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
-
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
 import com.idega.block.school.data.SchoolType;
@@ -16,14 +15,22 @@ import com.idega.core.location.data.Commune;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Table;
+import com.idega.presentation.Layer;
+import com.idega.presentation.Table2;
+import com.idega.presentation.TableColumn;
+import com.idega.presentation.TableColumnGroup;
+import com.idega.presentation.TableRow;
+import com.idega.presentation.TableRowGroup;
+import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.text.ListItem;
+import com.idega.presentation.text.Lists;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.Label;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
@@ -36,8 +43,31 @@ import com.idega.presentation.ui.util.SelectorUtility;
 
 public class SchoolEditor extends SchoolBlock {
 
-	boolean _useProviderStringId = false;
+	private static final String PARAMETER_ACTION = "sch_prm_action";
+	private static final String PARAMETER_SCHOOL_PK = "prm_school_pk";
+	private static final String PARAMETER_PROVIDER_STRING_ID = "prm_provider_string_id";
+	private static final String PARAMETER_NAME = "prm_name";
+	private static final String PARAMETER_ADDRESS = "prm_address";
+	private static final String PARAMETER_INFO = "prm_info";
+	private static final String PARAMETER_AREA = "prm_area";
+	private static final String PARAMETER_ZIPCODE = "prm_zipcode";
+	private static final String PARAMETER_ZIPAREA = "prm_ziparea";
+	private static final String PARAMETER_PHONE = "prm_phone";
+	private static final String PARAMETER_KEYCODE = "prm_keycode";
+	private static final String PARAMETER_LONGITUDE = "prm_longitude";
+	private static final String PARAMETER_LATITUDE = "prm_latitude";
+	private static final String PARAMETER_COMMUNE = "prm_commune";
+	private static final String PARAMETER_TYPE_PKS = "prm_type_pks";
+	private static final String PARAMETER_YEAR_PKS = "prm_year_pks";
+	private static final String PARAMETER_AFTER_SCHOOL_CARE_PROVIDER_PK = "prm_care_provider_pk";
+
+	private static final int ACTION_VIEW = 1;
+	private static final int ACTION_EDIT = 2;
+	private static final int ACTION_NEW = 3;
+	private static final int ACTION_SAVE = 4;
+	private static final int ACTION_DELETE = 5;
 	
+	boolean _useProviderStringId = false;
 	Collection schoolTypeIds = null;
 	
 	public boolean getUseProviderStringId() {
@@ -49,99 +79,106 @@ public class SchoolEditor extends SchoolBlock {
 	}
 
 	protected void init(IWContext iwc) throws Exception {
-		Form F = new Form();
+		switch (parseAction(iwc)) {
+			case ACTION_VIEW:
+				showList(iwc);
+				break;
 
-		if (iwc.isParameterSet("sch_save_school")) {
-			saveSchool(iwc);
-			F.add(getListTable(iwc));
-		}
-		else if (iwc.isParameterSet("sch_delete_school")) {
-			int id = Integer.parseInt(iwc.getParameter("sch_delete_school"));
-			getBusiness().removeSchool(id);
-			F.add(getListTable(iwc));
-		}
-		else if (iwc.isParameterSet("sch_school_id")) {
-			int id = Integer.parseInt(iwc.getParameter("sch_school_id"));
-			F.add(getInput(iwc, id));
+			case ACTION_EDIT:
+				Object schoolPK = iwc.getParameter(PARAMETER_SCHOOL_PK);
+				showEditor(iwc, schoolPK);
+				break;
 
-		}
-		else if (iwc.isParameterSet("sch_new_school")) {
-			F.add(getInput(iwc, -1));
-		}
-		else
-			F.add(getListTable(iwc));
+			case ACTION_NEW:
+				showEditor(iwc, null);
+				break;
 
-		add(F);
+			case ACTION_SAVE:
+				saveSchool(iwc);
+				showList(iwc);
+				break;
 
+			case ACTION_DELETE:
+				getBusiness().removeProvider(iwc.getParameter(PARAMETER_SCHOOL_PK));
+				showList(iwc);
+				break;
+		}
 	}
-
-	private PresentationObject getInput(IWContext iwc, int id) throws java.rmi.RemoteException {
-		return getInputTable(iwc, getBusiness().getSchool(new Integer(id)));
+	
+	private int parseAction(IWContext iwc) {
+		if (iwc.isParameterSet(PARAMETER_ACTION)) {
+			return Integer.parseInt(iwc.getParameter(PARAMETER_ACTION));
+		}
+		return ACTION_VIEW;
 	}
 
 	private void saveSchool(IWContext iwc) throws java.rmi.RemoteException {
-		if (iwc.isParameterSet("sch_save_school")) {
-			String id = iwc.getParameter("sch_school_id");
+		String pk = iwc.getParameter(PARAMETER_SCHOOL_PK);
 
-			String providerStringId = iwc.getParameter("sch_provider_string_id");
-			String name = iwc.getParameter("sch_name");
-			String address = iwc.getParameter("sch_address");
-			String info = iwc.getParameter("sch_info");
-			//String type = iwc.getParameter("sch_type_id");
-			String area = iwc.getParameter("sch_area_id");
-			String zipcode = iwc.getParameter("sch_zip_code");
-			String ziparea = iwc.getParameter("sch_zip_area");
-			String phone = iwc.getParameter("sch_phone");
-			String keycode = iwc.getParameter("sch_keycode");
-			String lon = iwc.getParameter("sch_lon");
-			String lat = iwc.getParameter("sch_lat");
-			String commune = iwc.getParameter("sch_commune");
-			String[] type_ids = iwc.getParameterValues("sch_type_ids");
-			String[] year_ids = iwc.getParameterValues("sch_year_ids");
-			int[] types = new int[0];
-			int[] years = new int[0];
-			if (type_ids != null && type_ids.length > 0) {
-				types = new int[type_ids.length];
-				for (int i = 0; i < type_ids.length; i++) {
-					types[i] = Integer.parseInt(type_ids[i]);
-				}
+		String providerStringId = iwc.getParameter(PARAMETER_PROVIDER_STRING_ID);
+		String name = iwc.getParameter(PARAMETER_NAME);
+		String address = iwc.getParameter(PARAMETER_ADDRESS);
+		String info = iwc.getParameter(PARAMETER_INFO);
+		String area = iwc.getParameter(PARAMETER_AREA);
+		String zipcode = iwc.getParameter(PARAMETER_ZIPCODE);
+		String ziparea = iwc.getParameter(PARAMETER_ZIPAREA);
+		String phone = iwc.getParameter(PARAMETER_PHONE);
+		String keycode = iwc.getParameter(PARAMETER_KEYCODE);
+		String lon = iwc.getParameter(PARAMETER_LONGITUDE);
+		String lat = iwc.getParameter(PARAMETER_LATITUDE);
+		String commune = iwc.getParameter(PARAMETER_COMMUNE);
+		String[] type_ids = iwc.getParameterValues(PARAMETER_TYPE_PKS);
+		String[] year_ids = iwc.getParameterValues(PARAMETER_YEAR_PKS);
+		int[] types = new int[0];
+		int[] years = new int[0];
+		if (type_ids != null && type_ids.length > 0) {
+			types = new int[type_ids.length];
+			for (int i = 0; i < type_ids.length; i++) {
+				types[i] = Integer.parseInt(type_ids[i]);
+			}
 
+		}
+		if (year_ids != null && year_ids.length > 0) {
+			years = new int[year_ids.length];
+			for (int i = 0; i < year_ids.length; i++) {
+				years[i] = Integer.parseInt(year_ids[i]);
 			}
-			if (year_ids != null && year_ids.length > 0) {
-				years = new int[year_ids.length];
-				for (int i = 0; i < year_ids.length; i++) {
-					years[i] = Integer.parseInt(year_ids[i]);
-				}
 
-			}
-			int areaId = -1, sid = -1;
-			if (id != null) sid = Integer.parseInt(id);
-			if (area != null) areaId = Integer.parseInt(area);
+		}
+		int areaId = -1, sid = -1;
+		if (pk != null) sid = Integer.parseInt(pk);
+		if (area != null) areaId = Integer.parseInt(area);
 
-			Integer communePK = null;
-			if (commune != null) {
-				communePK = new Integer(commune);
-			}
-			
-			Object providerID = iwc.isParameterSet("provider_id") ? iwc.getParameter("provider_id") : null;
-			
-			//		System.err.println("school id is "+id);
-			School school = getBusiness().storeSchool(sid, name, info, address, zipcode, ziparea, phone, keycode, lat, lon, areaId, types, years, communePK, providerStringId);
-			if (providerID != null) {
-				school.setAfterSchoolCareProvider(providerID);
-				school.store();
-			}
+		Integer communePK = null;
+		if (commune != null) {
+			communePK = new Integer(commune);
+		}
+		
+		Object providerID = iwc.isParameterSet(PARAMETER_AFTER_SCHOOL_CARE_PROVIDER_PK) ? iwc.getParameter(PARAMETER_AFTER_SCHOOL_CARE_PROVIDER_PK) : null;
+		
+		School school = getBusiness().storeSchool(sid, name, info, address, zipcode, ziparea, phone, keycode, lat, lon, areaId, types, years, communePK, providerStringId);
+		if (providerID != null) {
+			school.setAfterSchoolCareProvider(providerID);
+			school.store();
 		}
 	}
 
-	public PresentationObject getListTable(IWContext iwc) throws RemoteException {
-		Table table = new Table();
+	public void showList(IWContext iwc) throws RemoteException {
+		Form form = new Form();
+		form.setStyleClass(STYLENAME_SCHOOL_FORM);
+		
+		Table2 table = new Table2();
+		table.setWidth("100%");
 		table.setCellpadding(0);
 		table.setCellspacing(0);
-		table.setColumns(8);
-		table.setWidth(8, 12);
-		table.setWidth(Table.HUNDRED_PERCENT);
-		int row = 1;
+		table.setStyleClass(STYLENAME_LIST_TABLE);
+		
+		TableColumnGroup columnGroup = table.createColumnGroup();
+		TableColumn column = columnGroup.createColumn();
+		column.setSpan(7);
+		column = columnGroup.createColumn();
+		column.setSpan(2);
+		column.setWidth("12");
 
 		Collection schools = new java.util.Vector(0);
 		try {
@@ -155,131 +192,141 @@ public class SchoolEditor extends SchoolBlock {
 		catch (java.rmi.RemoteException rex) {
 
 		}
-		int col = 1;
 
-		table.setCellpaddingLeft(1, row, 12);
-		table.add(getSmallHeader(localize("name", "Name")), col++, row);
-		table.add(getSmallHeader(localize("area", "Area")), col++, row);
-		table.add(getSmallHeader(localize("address", "Address")), col++, row);
-		table.add(getSmallHeader(localize("zipcode", "Zipcode")), col++, row);
-		table.add(getSmallHeader(localize("ziparea", "Ziparea")), col++, row);
-		table.add(getSmallHeader(localize("commune", "Commune")), col++, row);
-		table.add(getSmallHeader(localize("phone", "Phone")), col++, row);
-		table.setRowStyleClass(row++, getHeaderRowClass());
-
+		TableRowGroup group = table.createHeaderRowGroup();
+		TableRow row = group.createRow();
+		row.createHeaderCell().add(new Text(localize("name", "Name")));
+		row.createHeaderCell().add(new Text(localize("area", "Area")));
+		row.createHeaderCell().add(new Text(localize("address", "Address")));
+		row.createHeaderCell().add(new Text(localize("zipcode", "Zipcode")));
+		row.createHeaderCell().add(new Text(localize("ziparea", "Ziparea")));
+		row.createHeaderCell().add(new Text(localize("commune", "Commune")));
+		row.createHeaderCell().add(new Text(localize("phone", "Phone")));
+		row.createHeaderCell();
+		row.createHeaderCell();
+		
+		group = table.createBodyRowGroup();
+		int iRow = 1;
+		
 		Iterator iter = schools.iterator();
 		School school;
 		SchoolArea area;
-		Commune communePK;
-		col = 1;
+		Commune commune;
 		while (iter.hasNext()) {
+			row = group.createRow();
 			school = (School) iter.next();
 			try {
-				Link L = new Link(getEditIcon(localize("edit", "Edit")));
-				L.addParameter("sch_school_id", ((Integer) school.getPrimaryKey()).intValue());
+				Link edit = new Link(getEditIcon(localize("edit", "Edit")));
+				edit.addParameter(PARAMETER_SCHOOL_PK, school.getPrimaryKey().toString());
+				edit.addParameter(PARAMETER_ACTION, ACTION_EDIT);
+				
+				Link delete = new Link(getDeleteIcon(localize("delete", "Delete")));
+				delete.addParameter(PARAMETER_SCHOOL_PK, school.getPrimaryKey().toString());
+				delete.addParameter(PARAMETER_ACTION, ACTION_DELETE);
+
 				area = school.getSchoolArea();
-				communePK = school.getCommune();
+				commune = school.getCommune();
 				
-				table.setCellpaddingLeft(1, row, 12);
-				table.setCellpaddingRight(table.getColumns(), row, 12);
-				table.add(getSmallText(school.getSchoolName()), col++, row);
+				row.createCell().add(new Text(school.getSchoolName()));
 				if (area != null) {
-					table.add(getSmallText(area.getName()), col++, row);
+					row.createCell().add(new Text(area.getName()));
 				}
 				else {
-					table.add(getSmallText("-"), col++, row);
+					row.createCell().add(new Text("-"));
 				}
-				table.add(getSmallText(school.getSchoolAddress()), col++, row);
-				table.add(getSmallText(school.getSchoolZipCode()), col++, row);
-				table.add(getSmallText(school.getSchoolZipArea()), col++, row);
-				if (communePK != null) {
-					table.add(getSmallText(communePK.getCommuneName()), col, row);
+				row.createCell().add(new Text(school.getSchoolAddress()));
+				row.createCell().add(new Text(school.getSchoolZipCode()));
+				row.createCell().add(new Text(school.getSchoolZipArea()));
+				if (commune != null) {
+					row.createCell().add(new Text(commune.getCommuneName()));
 				}
-				col++;
-				table.add(getSmallText(school.getSchoolPhone()), col++, row);
-				table.add(L, col++, row);
+				else {
+					row.createCell().add(new Text("-"));
+				}
+				row.createCell().add(new Text(school.getSchoolPhone()));
+				row.createCell().add(edit);
+				row.createCell().add(delete);
 				
-				if (row % 2 == 0) {
-					table.setRowStyleClass(row, getDarkRowClass());
+				if (iRow % 2 == 0) {
+					row.setStyleClass(STYLENAME_LIST_TABLE_EVEN_ROW);
 				}
 				else {
-					table.setRowStyleClass(row, getLightRowClass());
+					row.setStyleClass(STYLENAME_LIST_TABLE_ODD_ROW);
 				}
 			}
 			catch (Exception ex) {
 				ex.printStackTrace();
 			}
-			row++;
-			col = 1;
+			iRow++;
 		}
 
-		table.setHeight(row++, 12);
-		table.setCellpaddingLeft(1, row, 12);
-		table.mergeCells(1, row, table.getColumns(), row);
-		GenericButton newLink = getButton(new GenericButton("new", localize("school.new", "New school")));
-		newLink.setPageToOpen(iwc.getCurrentIBPageID());
-		newLink.addParameterToPage("sch_new_school", "true");
-		table.add(newLink, 1, row);
+		form.add(table);
+		form.add(new Break());
+		
+		SubmitButton newLink = (SubmitButton) getButton(new SubmitButton(localize("school.new", "New school"), PARAMETER_ACTION, String.valueOf(ACTION_NEW)));
+		form.add(newLink);
 
-		return table;
+		add(form);
 	}
 
-	public PresentationObject getInputTable(IWContext iwc, School ent) throws java.rmi.RemoteException {
-		int last = 17;
-		Table T = new Table(3, last);
-		T.mergeCells(1, 1, 3, 1);
-
-		TextInput inputProviderStringId = (TextInput) getStyledInterface(new TextInput("sch_provider_string_id"));
+	public void showEditor(IWContext iwc, Object schoolPK) throws java.rmi.RemoteException {
+		Form form = new Form();
+		form.setStyleClass(STYLENAME_SCHOOL_FORM);
+		
+		TextInput inputProviderStringId = new TextInput(PARAMETER_PROVIDER_STRING_ID);
 		inputProviderStringId.setAsNotEmpty(localize("sch_provider_id_not_empty", "Provider id must be entered."));
-		TextInput inputName = (TextInput) getStyledInterface(new TextInput("sch_name"));
-		TextInput inputAddress = (TextInput) getStyledInterface(new TextInput("sch_address"));
-		TextArea inputInfo = (TextArea) getStyledInterface(new TextArea("sch_info"));
 
-		TextInput inputZipCode = (TextInput) getStyledInterface(new TextInput("sch_zip_code"));
-		TextInput inputZipArea = (TextInput) getStyledInterface(new TextInput("sch_zip_area"));
-		TextInput inputPhone = (TextInput) getStyledInterface(new TextInput("sch_phone"));
-		TextInput inputKeyCode = (TextInput) getStyledInterface(new TextInput("sch_keycode"));
-		TextInput inputLON = (TextInput) getStyledInterface(new TextInput("sch_lon"));
-		TextInput inputLAT = (TextInput) getStyledInterface(new TextInput("sch_lat"));
-		DropdownMenu drpArea = (DropdownMenu) getStyledInterface(new DropdownMenu(getSchoolAreas(), "sch_area_id"));
+		TextInput inputName = new TextInput(PARAMETER_NAME);
+		TextInput inputAddress = new TextInput(PARAMETER_ADDRESS);
+		TextArea inputInfo = new TextArea(PARAMETER_INFO);
+
+		TextInput inputZipCode = new TextInput(PARAMETER_ZIPCODE);
+		TextInput inputZipArea = new TextInput(PARAMETER_ZIPAREA);
+		TextInput inputPhone = new TextInput(PARAMETER_PHONE);
+		TextInput inputKeyCode = new TextInput(PARAMETER_KEYCODE);
+		TextInput inputLON = new TextInput(PARAMETER_LONGITUDE);
+		TextInput inputLAT = new TextInput(PARAMETER_LATITUDE);
+		
+		DropdownMenu drpArea = new DropdownMenu(getSchoolAreas(), PARAMETER_AREA);
 		drpArea.setMenuElementFirst("-1", "");
-		DropdownMenu communes = (DropdownMenu) getStyledInterface(new DropdownMenu("sch_commune"));
+		
+		DropdownMenu communes = new DropdownMenu(PARAMETER_COMMUNE);
 		SelectorUtility su = new SelectorUtility();
 		su.getSelectorFromIDOEntities(communes, getCommuneBusiness(iwc).getCommunes(), "getCommuneName");
 
-		DropdownMenu providers = (DropdownMenu) getStyledInterface(new DropdownMenu("provider_id"));
+		DropdownMenu providers = new DropdownMenu(PARAMETER_AFTER_SCHOOL_CARE_PROVIDER_PK);
 		Collection schools = getBusiness().findAllSchoolsByCategory(getBusiness().getCategoryElementarySchool().getCategory());
 		su.getSelectorFromIDOEntities(providers, schools, "getSchoolName");
+		providers.setMenuElementFirst("", "");
 		
 		Map schooltypes = null, schoolyears = null;
 		Commune commune = null;
-		int Id = -1;
-		if (ent != null) {
-
+		if (schoolPK != null) {
+			School school = getBusiness().getSchool(schoolPK);
+			
 			try {
-				schooltypes = getSchoolRelatedSchoolTypes(ent);
-				schoolyears = getSchoolRelatedSchoolYears(ent);
-				commune = ent.getCommune();
+				schooltypes = getSchoolRelatedSchoolTypes(school);
+				schoolyears = getSchoolRelatedSchoolYears(school);
+				commune = school.getCommune();
 
-				Id = ((Integer) ent.getPrimaryKey()).intValue();
 				if (_useProviderStringId) {
-					inputProviderStringId.setContent(ent.getProviderStringId());
+					inputProviderStringId.setContent(school.getProviderStringId());
 				}
-				inputName.setContent(ent.getSchoolName());
-				inputAddress.setContent(ent.getSchoolAddress());
-				inputInfo.setContent(ent.getSchoolInfo());
-				inputZipCode.setContent(ent.getSchoolZipCode());
-				inputZipArea.setContent(ent.getSchoolZipArea());
-				inputPhone.setContent(ent.getSchoolPhone());
-				inputKeyCode.setContent(ent.getSchoolKeyCode());
-				inputLON.setContent(ent.getSchoolLongitude());
-				inputLAT.setContent(ent.getSchoolLatitude());
-				drpArea.setSelectedElement(String.valueOf(ent.getSchoolAreaId()));
+				inputName.setContent(school.getSchoolName());
+				inputAddress.setContent(school.getSchoolAddress());
+				inputInfo.setContent(school.getSchoolInfo());
+				inputZipCode.setContent(school.getSchoolZipCode());
+				inputZipArea.setContent(school.getSchoolZipArea());
+				inputPhone.setContent(school.getSchoolPhone());
+				inputKeyCode.setContent(school.getSchoolKeyCode());
+				inputLON.setContent(school.getSchoolLongitude());
+				inputLAT.setContent(school.getSchoolLatitude());
+				drpArea.setSelectedElement(String.valueOf(school.getSchoolAreaId()));
 				if (commune != null) {
 					communes.setSelectedElement(commune.getPrimaryKey().toString());
 				}
-				if (ent.getAfterSchoolCareProviderPK() != null) {
-					providers.setSelectedElement(ent.getAfterSchoolCareProviderPK().toString());
+				if (school.getAfterSchoolCareProviderPK() != null) {
+					providers.setSelectedElement(school.getAfterSchoolCareProviderPK().toString());
 				}
 			}
 			catch (Exception ex) {
@@ -292,115 +339,160 @@ public class SchoolEditor extends SchoolBlock {
 			}
 		}
 
-		int row = 2;
-
-		T.add(new HiddenInput("sch_school_id", String.valueOf(Id)));
-		if (_useProviderStringId) {
-			T.add(getHeader(localize("provider_id", "Provider ID")), 1, row++);
+		if (schoolPK != null) {
+			form.add(new HiddenInput(PARAMETER_SCHOOL_PK, schoolPK.toString()));
 		}
-		T.add(getHeader(localize("name", "Name")), 1, row++);
-		T.add(getHeader(localize("address", "Address")), 1, row++);
-		T.add(getHeader(localize("zipcode", "Zipcode")), 1, row++);
-		T.add(getHeader(localize("ziparea", "Ziparea")), 1, row++);
-		T.add(getHeader(localize("phone", "Phone")), 1, row++);
-		T.add(getHeader(localize("info", "Info")), 1, row++);
-		T.add(getHeader(localize("keycode", "Keycode")), 1, row++);
-		T.add(getHeader(localize("latitude", "Latitude")), 1, row++);
-		T.add(getHeader(localize("longitude", "Longitude")), 1, row++);
-		T.add(getHeader(localize("commune", "Commune")), 1, row++);
-		T.add(getHeader(localize("school_area", "SchoolArea")), 1, row++);
-		T.add(getHeader(localize("after_school_care_provider", "After school care provider")), 1, row++);
-
-		row = 2;
-		//T.add(drpType,3,row++);
-
+		
+		Layer layer;
+		Label label;
 		if (_useProviderStringId) {
-			T.add(inputProviderStringId, 3, row++);
+			layer = new Layer(Layer.DIV);
+			layer.setStyleClass(STYLENAME_FORM_ELEMENT);
+			label = new Label(localize("provider_id", "Provider ID"), inputProviderStringId);
+			layer.add(label);
+			layer.add(inputProviderStringId);
+			form.add(layer);
 		}
-		T.add(inputName, 3, row++);
-		T.add(inputAddress, 3, row++);
-		T.add(inputZipCode, 3, row++);
-		T.add(inputZipArea, 3, row++);
-		T.add(inputPhone, 3, row++);
-		T.add(inputInfo, 3, row++);
-		T.add(inputKeyCode, 3, row++);
-		T.add(inputLAT, 3, row++);
-		T.add(inputLON, 3, row++);
-		T.add(communes, 3, row++);
-		T.add(drpArea, 3, row++);
-		T.add(providers, 3, row++);
 
-		Table typeTable = new Table();
-		int row2 = 1;
+		layer = new Layer(Layer.DIV);
+		layer.setStyleClass(STYLENAME_FORM_ELEMENT);
+		label = new Label(localize("name", "Name"), inputName);
+		layer.add(label);
+		layer.add(inputName);
+		form.add(layer);
+
+		layer = new Layer(Layer.DIV);
+		layer.setStyleClass(STYLENAME_FORM_ELEMENT);
+		label = new Label(localize("address", "Address"), inputAddress);
+		layer.add(label);
+		layer.add(inputAddress);
+		form.add(layer);
+		
+		layer = new Layer(Layer.DIV);
+		layer.setStyleClass(STYLENAME_FORM_ELEMENT);
+		label = new Label(localize("zipcode", "zipcode"), inputZipCode);
+		layer.add(label);
+		layer.add(inputZipCode);
+		form.add(layer);
+		
+		layer = new Layer(Layer.DIV);
+		layer.setStyleClass(STYLENAME_FORM_ELEMENT);
+		label = new Label(localize("ziparea", "Ziparea"), inputZipArea);
+		layer.add(label);
+		layer.add(inputZipArea);
+		form.add(layer);
+		
+		layer = new Layer(Layer.DIV);
+		layer.setStyleClass(STYLENAME_FORM_ELEMENT);
+		label = new Label(localize("phone", "Phone"), inputPhone);
+		layer.add(label);
+		layer.add(inputPhone);
+		form.add(layer);
+		
+		layer = new Layer(Layer.DIV);
+		layer.setStyleClass(STYLENAME_FORM_ELEMENT);
+		label = new Label(localize("info", "Info"), inputInfo);
+		layer.add(label);
+		layer.add(inputInfo);
+		form.add(layer);
+		
+		layer = new Layer(Layer.DIV);
+		layer.setStyleClass(STYLENAME_FORM_ELEMENT);
+		label = new Label(localize("keycode", "keycode"), inputKeyCode);
+		layer.add(label);
+		layer.add(inputKeyCode);
+		form.add(layer);
+		
+		layer = new Layer(Layer.DIV);
+		layer.setStyleClass(STYLENAME_FORM_ELEMENT);
+		label = new Label(localize("inputKeyCode", "Latitude"), inputLAT);
+		layer.add(label);
+		layer.add(inputLAT);
+		form.add(layer);
+		
+		layer = new Layer(Layer.DIV);
+		layer.setStyleClass(STYLENAME_FORM_ELEMENT);
+		label = new Label(localize("longitude", "Longitude"), inputLON);
+		layer.add(label);
+		layer.add(inputLON);
+		form.add(layer);
+		
+		layer = new Layer(Layer.DIV);
+		layer.setStyleClass(STYLENAME_FORM_ELEMENT);
+		label = new Label(localize("commune", "Commune"), communes);
+		layer.add(label);
+		layer.add(communes);
+		form.add(layer);
+		
+		layer = new Layer(Layer.DIV);
+		layer.setStyleClass(STYLENAME_FORM_ELEMENT);
+		label = new Label(localize("school_area", "SchoolArea"), drpArea);
+		layer.add(label);
+		layer.add(drpArea);
+		form.add(layer);
+
+		layer = new Layer(Layer.DIV);
+		layer.setStyleClass(STYLENAME_FORM_ELEMENT);
+		label = new Label(localize("after_school_care_provider", "After school care provider"), providers);
+		layer.add(label);
+		layer.add(providers);
+		form.add(layer);
+
+		form.add(new Break());
+		Lists list = new Lists();
 		Collection types = getSchoolTypes();
 		if (types != null && !types.isEmpty()) {
-			java.util.Iterator iter = types.iterator();
+			Iterator iter = types.iterator();
 			boolean hasMap = schooltypes != null;
-			SchoolType type;
-			CheckBox chk = new CheckBox("sch_type_ids");
-			CheckBox tjk;
-			Integer primaryKey;
+			
 			while (iter.hasNext()) {
-				type = (SchoolType) iter.next();
-				primaryKey = (Integer) type.getPrimaryKey();
-				tjk = (CheckBox) chk.clone();
-				tjk.setValue(primaryKey.intValue());
-				if (hasMap && schooltypes.containsKey(primaryKey)) {
-					tjk.setChecked(true);
-				}
-				typeTable.add(tjk, 1, row2);
-				typeTable.add(type.getSchoolTypeName(), 2, row2);
-				//row2++;
+				SchoolType type = (SchoolType) iter.next();
+				ListItem item = new ListItem();
 
-				Table yearTable = new Table();
-				/////////////////
-				Collection years = getSchoolYears(primaryKey.intValue());
+				CheckBox typeCheck = new CheckBox(PARAMETER_TYPE_PKS, type.getPrimaryKey().toString());
+				if (hasMap && schooltypes.containsKey(type.getPrimaryKey())) {
+					typeCheck.setChecked(true);
+				}
+				
+				label = new Label(type.getSchoolTypeName(), typeCheck);
+				item.add(typeCheck);
+				item.add(label);
+				list.add(item);
+
+				Collection years = getSchoolYears(((Integer) type.getPrimaryKey()).intValue());
 				if (years != null && !years.isEmpty()) {
-					java.util.Iterator yearIter = years.iterator();
+					Lists yearList = new Lists();
+					
+					Iterator yearIter = years.iterator();
 					boolean yearMap = schoolyears != null;
-					SchoolYear year;
-					CheckBox ytjk;
-					int col3 = 1;
-					int row3 = 1;
 					while (yearIter.hasNext()) {
-						year = (SchoolYear) yearIter.next();
-						ytjk =  getCheckBox("sch_year_ids", year.getPrimaryKey().toString());
+						SchoolYear year = (SchoolYear) yearIter.next();
+						ListItem yearItem = new ListItem();
+						
+						CheckBox yearCheck = new CheckBox(PARAMETER_YEAR_PKS, year.getPrimaryKey().toString());
 						if (yearMap && schoolyears.containsKey(year.getPrimaryKey())) {
-							ytjk.setChecked(true);
+							yearCheck.setChecked(true);
 						}
-						yearTable.add(ytjk, col3, row3++);
-						yearTable.add(year.getSchoolYearName(), col3++, row3);
-						row3 = 1;
-
+						
+						label = new Label(year.getSchoolYearName(), yearCheck);
+						yearItem.add(yearCheck);
+						yearItem.add(label);
+						yearList.add(yearItem);
 					}
-
+					item.add(yearList);
 				}
-
-				//typeTable.mergeCells(1,row2,2,row2);
-				typeTable.setVerticalAlignment(1, row2, Table.VERTICAL_ALIGN_TOP);
-				typeTable.setVerticalAlignment(2, row2, Table.VERTICAL_ALIGN_TOP);
-				typeTable.setVerticalAlignment(3, row2, Table.VERTICAL_ALIGN_TOP);
-				typeTable.add(yearTable, 3, row2);
-				++row2;
-				//////////////////
 			}
-
+			form.add(list);
 		}
+		form.add(new Break());
 
-		T.add(typeTable, 1, 14);
+		SubmitButton save = (SubmitButton) getButton(new SubmitButton(localize("save", "Save"), PARAMETER_ACTION, String.valueOf(ACTION_SAVE)));
+		SubmitButton cancel = (SubmitButton) getButton(new SubmitButton(localize("cancel", "Cancel"), PARAMETER_ACTION, String.valueOf(ACTION_VIEW)));
 
-		T.add(getButton(new SubmitButton(localize("save", "Save"), "sch_save_school", "true")), 3, last);
-		GenericButton cancel = getButton(new GenericButton("cancel", localize("cancel", "Cancel")));
-		cancel.setPageToOpen(iwc.getCurrentIBPageID());
-		T.add(cancel, 3, last);
-		if (Id > 0) {
-			GenericButton delete = getButton(new GenericButton("delete", localize("delete", "Delete")));
-			delete.setPageToOpen(iwc.getCurrentIBPageID());
-			delete.addParameterToPage("sch_delete_school", Id);
-			T.add(delete, 3, last);
-		}
+		form.add(cancel);
+		form.add(save);
 
-		return T;
+		add(form);
 	}
 
 	private Map getSchoolRelatedSchoolTypes(School school) throws java.rmi.RemoteException {

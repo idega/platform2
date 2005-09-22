@@ -1,5 +1,5 @@
 /*
- * $Id: IWBundleStarter.java,v 1.1 2005/05/11 07:14:20 laddi Exp $
+ * $Id: IWBundleStarter.java,v 1.2 2005/09/22 11:42:59 laddi Exp $
  * Created on 28.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -15,10 +15,12 @@ import javax.ejb.FinderException;
 import com.idega.block.school.data.SchoolCategoryBMPBean;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolSeasonHome;
+import com.idega.block.school.presentation.SchoolBlock;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
+import com.idega.idegaweb.include.GlobalIncludeManager;
 
 
 public class IWBundleStarter implements IWBundleStartable {
@@ -32,6 +34,9 @@ public class IWBundleStarter implements IWBundleStartable {
 	}
 	
 	private void updateData() {
+		GlobalIncludeManager includeManager = GlobalIncludeManager.getInstance();
+		includeManager.addBundleStyleSheet(SchoolBlock.IW_BUNDLE_IDENTIFIER, "/style/school.css");
+
 		try {
 			SchoolSeasonHome home = (SchoolSeasonHome) IDOLookup.getHome(SchoolSeason.class);
 			Collection seasons = home.findAllSchoolSeasonsWithoutCategory();

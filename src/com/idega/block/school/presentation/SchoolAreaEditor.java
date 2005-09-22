@@ -3,93 +3,110 @@ package com.idega.block.school.presentation;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
-
 import com.idega.block.school.data.SchoolArea;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Table;
+import com.idega.presentation.Layer;
+import com.idega.presentation.Table2;
+import com.idega.presentation.TableColumn;
+import com.idega.presentation.TableColumnGroup;
+import com.idega.presentation.TableRow;
+import com.idega.presentation.TableRowGroup;
+import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.Label;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 
 /**
- * <p>
  * Title:
- * </p>
- * <p>
  * Description:
- * </p>
- * <p>
  * Copyright: Copyright (c) 2002
- * </p>
- * <p>
  * Company:
- * </p>
  * 
- * @author <br>
- *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
+ * @author <a href="mailto:aron@idega.is">Aron Birkir</a>
  * @version 1.0
  */
 
 public class SchoolAreaEditor extends SchoolBlock {
 
+	private static final String PARAMETER_ACTION = "sch_area_prm_action";
+	private static final String PARAMETER_SCHOOL_AREA_PK = "prm_school_area_pk";
+	private static final String PARAMETER_NAME = "prm_name";
+	private static final String PARAMETER_CITY = "prm_city";
+	private static final String PARAMETER_INFO = "prm_info";
+
+	private static final int ACTION_VIEW = 1;
+	private static final int ACTION_EDIT = 2;
+	private static final int ACTION_NEW = 3;
+	private static final int ACTION_SAVE = 4;
+	private static final int ACTION_DELETE = 5;
+
 	protected void init(IWContext iwc) throws Exception {
-		Form F = new Form();
+		switch (parseAction(iwc)) {
+			case ACTION_VIEW:
+				showList(iwc);
+				break;
 
-		if (iwc.isParameterSet("sch_save_area")) {
-			saveArea(iwc);
-			F.add(getListTable(iwc, null));
-		}
-		else if (iwc.isParameterSet("sch_delete_area")) {
-			int id = Integer.parseInt(iwc.getParameter("sch_delete_area"));
-			getBusiness().removeSchoolArea(id);
-			F.add(getListTable(iwc, null));
-		}
-		else if (iwc.isParameterSet("sch_school_area_id")) {
-			int id = Integer.parseInt(iwc.getParameter("sch_school_area_id"));
-			F.add(getInput(iwc, id));
+			case ACTION_EDIT:
+				Object schoolPK = iwc.getParameter(PARAMETER_SCHOOL_AREA_PK);
+				showEditor(iwc, schoolPK);
+				break;
 
-		}
-		else if (iwc.isParameterSet("sch_new_area")) {
-			F.add(getInput(iwc, -1));
-		}
-		else
-			F.add(getListTable(iwc, null));
+			case ACTION_NEW:
+				showEditor(iwc, null);
+				break;
 
-		add(F);
+			case ACTION_SAVE:
+				saveArea(iwc);
+				showList(iwc);
+				break;
 
+			case ACTION_DELETE:
+				getBusiness().removeSchoolArea(iwc.getParameter(PARAMETER_SCHOOL_AREA_PK));
+				showList(iwc);
+				break;
+		}
 	}
 
-	private PresentationObject getInput(IWContext iwc, int id) throws java.rmi.RemoteException {
-		return getInputTable(iwc, getBusiness().getSchoolArea(new Integer(id)));
+	private int parseAction(IWContext iwc) {
+		if (iwc.isParameterSet(PARAMETER_ACTION)) {
+			return Integer.parseInt(iwc.getParameter(PARAMETER_ACTION));
+		}
+		return ACTION_VIEW;
 	}
 
 	private void saveArea(IWContext iwc) throws java.rmi.RemoteException {
-		if (iwc.isParameterSet("sch_save_area")) {
-			String id = iwc.getParameter("sch_school_area_id");
-			String name = iwc.getParameter("sch_area_name");
-			String city = iwc.getParameter("sch_area_city");
-			String info = iwc.getParameter("sch_area_info");
-			int aid = -1;
-			if (id != null) {
-				aid = Integer.parseInt(id);
-			}
-			getBusiness().storeSchoolArea(aid, name, info, city);
+		String id = iwc.getParameter(PARAMETER_SCHOOL_AREA_PK);
+		String name = iwc.getParameter(PARAMETER_NAME);
+		String city = iwc.getParameter(PARAMETER_CITY);
+		String info = iwc.getParameter(PARAMETER_INFO);
+		int aid = -1;
+		if (id != null) {
+			aid = Integer.parseInt(id);
 		}
+		getBusiness().storeSchoolArea(aid, name, info, city);
 	}
 
-	public PresentationObject getListTable(IWContext iwc, SchoolArea area) {
-		Table table = new Table();
+	public void showList(IWContext iwc) {
+		Form form = new Form();
+		form.setStyleClass(STYLENAME_SCHOOL_FORM);
+		
+		Table2 table = new Table2();
 		table.setCellpadding(0);
 		table.setCellspacing(0);
-		table.setWidth(Table.HUNDRED_PERCENT);
-		table.setColumns(4);
-		table.setWidth(4, 12);
-		int row = 1;
+		table.setWidth("100%");
+		table.setStyleClass(STYLENAME_LIST_TABLE);
+		
+		TableColumnGroup columnGroup = table.createColumnGroup();
+		TableColumn column = columnGroup.createColumn();
+		column.setSpan(3);
+		column = columnGroup.createColumn();
+		column.setSpan(2);
+		column.setWidth("12");
 
 		Collection schoolAreas = null;
 		try {
@@ -99,89 +116,106 @@ public class SchoolAreaEditor extends SchoolBlock {
 			schoolAreas = new ArrayList();
 		}
 		
-		table.setCellpaddingLeft(1, row, 12);
-		table.add(getSmallHeader(localize("name", "Name")), 1, row);
-		table.add(getSmallHeader(localize("city", "City")), 2, row);
-		table.add(getSmallHeader(localize("info", "Info")), 3, row);
-		table.setRowStyleClass(row++, getHeaderRowClass());
+		TableRowGroup group = table.createHeaderRowGroup();
+		TableRow row = group.createRow();
+		row.createHeaderCell().add(new Text(localize("name", "Name")));
+		row.createHeaderCell().add(new Text(localize("city", "City")));
+		row.createHeaderCell().add(new Text(localize("info", "Info")));
+		row.createHeaderCell();
+		row.createHeaderCell();
 
+		group = table.createBodyRowGroup();
+		int iRow = 1;
 		java.util.Iterator iter = schoolAreas.iterator();
-		SchoolArea sarea;
 		while (iter.hasNext()) {
-			sarea = (SchoolArea) iter.next();
+			SchoolArea area = (SchoolArea) iter.next();
+			row = group.createRow();
+
 			try {
-				Link L = new Link(getEditIcon(localize("edit", "Edit")));
-				L.addParameter("sch_school_area_id", ((Integer) sarea.getPrimaryKey()).intValue());
+				Link edit = new Link(getEditIcon(localize("edit", "Edit")));
+				edit.addParameter(PARAMETER_SCHOOL_AREA_PK, area.getPrimaryKey().toString());
+				edit.addParameter(PARAMETER_ACTION, ACTION_EDIT);
 
-				table.setCellpaddingLeft(1, row, 12);
-				table.setCellpaddingRight(table.getColumns(), row, 12);
-				table.add(getSmallText(sarea.getSchoolAreaName()), 1, row);
-				table.add(getSmallText(sarea.getSchoolAreaCity()), 2, row);
-				table.add(getSmallText(sarea.getSchoolAreaInfo()), 3, row);
-				table.add(L, 4, row);
+				Link delete = new Link(getDeleteIcon(localize("delete", "Delete")));
+				delete.addParameter(PARAMETER_SCHOOL_AREA_PK, area.getPrimaryKey().toString());
+				delete.addParameter(PARAMETER_ACTION, ACTION_DELETE);
 
-				if (row % 2 == 0) {
-					table.setRowStyleClass(row, getDarkRowClass());
+				row.createCell().add(new Text(area.getSchoolAreaName()));
+				row.createCell().add(new Text(area.getSchoolAreaCity()));
+				row.createCell().add(new Text(area.getSchoolAreaInfo()));
+				row.createCell().add(edit);
+				row.createCell().add(delete);
+
+				if (iRow % 2 == 0) {
+					row.setStyleClass(STYLENAME_LIST_TABLE_EVEN_ROW);
 				}
 				else {
-					table.setRowStyleClass(row, getLightRowClass());
+					row.setStyleClass(STYLENAME_LIST_TABLE_ODD_ROW);
 				}
 			}
 			catch (Exception ex) {
 				ex.printStackTrace();
 			}
-			row++;
+			iRow++;
 		}
 
-		table.setHeight(row++, 12);
-		table.setCellpaddingLeft(1, row, 12);
-		table.mergeCells(1, row, table.getColumns(), row);
-		GenericButton newLink = getButton(new GenericButton("new", localize("area.new", "New area")));
-		newLink.setPageToOpen(iwc.getCurrentIBPageID());
-		newLink.addParameterToPage("sch_new_area", "true");
-		table.add(newLink, 1, row);
+		form.add(table);
+		form.add(new Break());
 
-		return table;
+		SubmitButton newLink = (SubmitButton) getButton(new SubmitButton(localize("area.new", "New area"), PARAMETER_ACTION, String.valueOf(ACTION_NEW)));
+		form.add(newLink);
+
+		add(form);
 	}
 
-	public PresentationObject getInputTable(IWContext iwc, SchoolArea area) {
-		Table T = new Table(3, 6);
-		T.mergeCells(1, 1, 3, 1);
-		T.add(getHeader(localize("school_area", "SchoolArea")), 1, 1);
-		T.add(getHeader(localize("name", "Name")), 1, 2);
-		T.add(getHeader(localize("city", "City")), 1, 3);
-		T.add(getHeader(localize("info", "Info")), 1, 4);
+	public void showEditor(IWContext iwc, Object areaPK) {
+		Form form = new Form();
+		form.setStyleClass(STYLENAME_SCHOOL_FORM);
 
-		TextInput inputName = (TextInput) getStyledInterface(new TextInput("sch_area_name"));
-		TextInput inputCity = (TextInput) getStyledInterface(new TextInput("sch_area_city"));
-		TextArea inputInfo = (TextArea) getStyledInterface(new TextArea("sch_area_info"));
-		int areaId = -1;
-		if (area != null) {
+		TextInput inputName = new TextInput(PARAMETER_NAME);
+		TextInput inputCity = new TextInput(PARAMETER_CITY);
+		TextArea inputInfo = new TextArea(PARAMETER_INFO);
+		if (areaPK != null) {
 			try {
-				areaId = ((Integer) area.getPrimaryKey()).intValue();
+				SchoolArea area = getBusiness().getSchoolArea(areaPK);
 				inputName.setContent(area.getSchoolAreaName());
 				inputCity.setContent(area.getSchoolAreaCity());
 				inputInfo.setContent(area.getSchoolAreaInfo());
-				T.add(new HiddenInput("sch_school_area_id", String.valueOf(areaId)));
+				form.add(new HiddenInput(PARAMETER_SCHOOL_AREA_PK, areaPK.toString()));
 			}
 			catch (Exception ex) {
 			}
 		}
 
-		T.add(inputName, 3, 2);
-		T.add(inputCity, 3, 3);
-		T.add(inputInfo, 3, 4);
-		T.add(getButton(new SubmitButton(localize("save", "Save"), "sch_save_area", "true")), 3, 5);
-		GenericButton cancel = getButton(new GenericButton("cancel", localize("cancel", "Cancel")));
-		cancel.setPageToOpen(iwc.getCurrentIBPageID());
-		T.add(cancel, 3, 5);
-		if (areaId > 0) {
-			GenericButton delete = getButton(new GenericButton("delete", localize("delete", "Delete")));
-			delete.setPageToOpen(iwc.getCurrentIBPageID());
-			delete.addParameterToPage("sch_delete_area", areaId);
-			T.add(delete, 3, 5);
-		}
+		Layer layer = new Layer(Layer.DIV);
+		layer.setStyleClass(STYLENAME_FORM_ELEMENT);
+		Label label = new Label(localize("name", "Name"), inputName);
+		layer.add(label);
+		layer.add(inputName);
+		form.add(layer);
 
-		return T;
+		layer = new Layer(Layer.DIV);
+		layer.setStyleClass(STYLENAME_FORM_ELEMENT);
+		label = new Label(localize("city", "City"), inputCity);
+		layer.add(label);
+		layer.add(inputCity);
+		form.add(layer);
+
+		layer = new Layer(Layer.DIV);
+		layer.setStyleClass(STYLENAME_FORM_ELEMENT);
+		label = new Label(localize("info", "Info"), inputInfo);
+		layer.add(label);
+		layer.add(inputInfo);
+		form.add(layer);
+
+		form.add(new Break());
+
+		SubmitButton save = (SubmitButton) getButton(new SubmitButton(localize("save", "Save"), PARAMETER_ACTION, String.valueOf(ACTION_SAVE)));
+		SubmitButton cancel = (SubmitButton) getButton(new SubmitButton(localize("cancel", "Cancel"), PARAMETER_ACTION, String.valueOf(ACTION_VIEW)));
+
+		form.add(cancel);
+		form.add(save);
+
+		add(form);
 	}
 }

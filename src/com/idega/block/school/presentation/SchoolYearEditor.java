@@ -4,7 +4,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-
+import javax.ejb.FinderException;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryHome;
 import com.idega.block.school.data.SchoolType;
@@ -12,13 +12,19 @@ import com.idega.block.school.data.SchoolTypeHome;
 import com.idega.block.school.data.SchoolYear;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Table;
+import com.idega.presentation.Layer;
+import com.idega.presentation.Table2;
+import com.idega.presentation.TableColumn;
+import com.idega.presentation.TableColumnGroup;
+import com.idega.presentation.TableRow;
+import com.idega.presentation.TableRowGroup;
+import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.Label;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
@@ -43,144 +49,176 @@ import com.idega.presentation.ui.TextInput;
  */
 
 public class SchoolYearEditor extends SchoolBlock {
+	
+	private static final String PARAMETER_ACTION = "sch_year_prm_action";
+	private static final String PARAMETER_SCHOOL_YEAR_PK = "prm_school_year_pk";
+	private static final String PARAMETER_NAME = "prm_name";
+	private static final String PARAMETER_INFO = "prm_info";
+	private static final String PARAMETER_CATEGORY = "prm_category";
+	private static final String PARAMETER_LOCALIZED_KEY = "prm_localized_key";
+	private static final String PARAMETER_TYPE = "prm_type";
+	private static final String PARAMETER_AGE = "prm_age";
+	
+	private static final int ACTION_VIEW = 1;
+	private static final int ACTION_EDIT = 2;
+	private static final int ACTION_NEW = 3;
+	private static final int ACTION_SAVE = 4;
+	private static final int ACTION_DELETE = 5;
+	
+	private String iSchoolCategory;
 
 	protected void init(IWContext iwc) throws Exception {
-		Form F = new Form();
+		switch (parseAction(iwc)) {
+			case ACTION_VIEW:
+				showList(iwc);
+				break;
 
-		if (iwc.isParameterSet("sch_save_year")) {
-			saveYear(iwc);
-			F.add(getListTable(iwc, null));
-		}
-		else if (iwc.isParameterSet("sch_delete_year")) {
-			int id = Integer.parseInt(iwc.getParameter("sch_delete_year"));
-			getBusiness().removeSchoolYear(id);
-			F.add(getListTable(iwc, null));
-		}
-		else if (iwc.isParameterSet("sch_school_year_id")) {
-			int id = Integer.parseInt(iwc.getParameter("sch_school_year_id"));
-			F.add(getInput(iwc, id));
+			case ACTION_EDIT:
+				Object schoolPK = iwc.getParameter(PARAMETER_SCHOOL_YEAR_PK);
+				showEditor(iwc, schoolPK);
+				break;
 
-		}
-		else if (iwc.isParameterSet("sch_new_area")) {
-			F.add(getInput(iwc, -1));
-		}
-		else
-			F.add(getListTable(iwc, null));
+			case ACTION_NEW:
+				showEditor(iwc, null);
+				break;
 
-		add(F);
+			case ACTION_SAVE:
+				saveYear(iwc);
+				showList(iwc);
+				break;
 
+			case ACTION_DELETE:
+				getBusiness().removeSchoolYear(iwc.getParameter(PARAMETER_SCHOOL_YEAR_PK));
+				showList(iwc);
+				break;
+		}
 	}
 
-	private PresentationObject getInput(IWContext iwc, int id) throws java.rmi.RemoteException {
-		return getInputTable(iwc, getBusiness().getSchoolYear(new Integer(id)));
+	private int parseAction(IWContext iwc) {
+		if (iwc.isParameterSet(PARAMETER_ACTION)) {
+			return Integer.parseInt(iwc.getParameter(PARAMETER_ACTION));
+		}
+		return ACTION_VIEW;
 	}
 
 	private void saveYear(IWContext iwc) throws java.rmi.RemoteException {
-		if (iwc.isParameterSet("sch_save_year")) {
-			String id = iwc.getParameter("sch_school_year_id");
-			String name = iwc.getParameter("sch_year_name");
-			String type = iwc.getParameter("sch_type");
-			String age = iwc.getParameter("sch_year_age");
-			String info = iwc.getParameter("sch_year_info");
-			String localizedKey = iwc.getParameter("localized_key");
-			String category = null;
-			if (iwc.isParameterSet("sch_category")) {
-				category = iwc.getParameter("sch_category");
-			}
-			int iAge = -1, sid = -1, stid = -1;
-			if (id != null) sid = Integer.parseInt(id);
-			if (age != null && age.length() > 0) iAge = Integer.parseInt(age);
-			if (type != null) stid = Integer.parseInt(type);
-			getBusiness().storeSchoolYear(sid, name, stid, category, info, localizedKey, iAge);
+		String id = iwc.getParameter(PARAMETER_SCHOOL_YEAR_PK);
+		String name = iwc.getParameter(PARAMETER_NAME);
+		String type = iwc.getParameter(PARAMETER_TYPE);
+		String age = iwc.getParameter(PARAMETER_AGE);
+		String info = iwc.getParameter(PARAMETER_INFO);
+		String localizedKey = iwc.getParameter(PARAMETER_LOCALIZED_KEY);
+		String category;
+		if (iSchoolCategory != null) {
+			category = iSchoolCategory;
 		}
+		else {
+			category = iwc.getParameter(PARAMETER_CATEGORY);
+		}
+		int iAge = -1, sid = -1, stid = -1;
+		if (id != null) sid = Integer.parseInt(id);
+		if (age != null && age.length() > 0) iAge = Integer.parseInt(age);
+		if (type != null) stid = Integer.parseInt(type);
+		getBusiness().storeSchoolYear(sid, name, stid, category, info, localizedKey, iAge);
 	}
 
-	public PresentationObject getListTable(IWContext iwc, SchoolYear area) {
-		Table table = new Table();
+	public void showList(IWContext iwc) {
+		Form form = new Form();
+		form.setStyleClass(STYLENAME_SCHOOL_FORM);
+		
+		Table2 table = new Table2();
 		table.setCellpadding(0);
 		table.setCellspacing(0);
-		table.setWidth(Table.HUNDRED_PERCENT);
-		table.setColumns(5);
-		table.setWidth(5, 12);
-		int row = 1;
-		int col = 1;
+		table.setWidth("100%");
+		table.setStyleClass(STYLENAME_LIST_TABLE);
+
+		TableColumnGroup columnGroup = table.createColumnGroup();
+		TableColumn column = columnGroup.createColumn();
+		column.setSpan(5);
+		column = columnGroup.createColumn();
+		column.setSpan(2);
+		column.setWidth("12");
 
 		Collection years = null;
 		try {
-			years = getBusiness().findAllSchoolYears();
+			if (iSchoolCategory != null) {
+				years = getBusiness().findSchoolYearsBySchoolCategory(iSchoolCategory);
+			}
+			else {
+				years = getBusiness().findAllSchoolYears();
+			}
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			years = new ArrayList();
 		}
 		catch (RemoteException rex) {
 			years = new ArrayList();
 		}
 
-		table.setCellpaddingLeft(1, row, 12);
-		table.add(getSmallHeader(localize("name", "Name")), col++, row);
-		table.add(getSmallHeader(localize("school_type", "Type")), col++, row);
-		table.add(getSmallHeader(localize("info", "Info")), col++, row);
-		table.add(getSmallHeader(localize("age", "Age")), col++, row);
-		table.setRowStyleClass(row++, getHeaderRowClass());
+		TableRowGroup group = table.createHeaderRowGroup();
+		TableRow row = group.createRow();
+		row.createHeaderCell().add(new Text(localize("name", "Name")));
+		row.createHeaderCell().add(new Text(localize("category", "Category")));
+		row.createHeaderCell().add(new Text(localize("school_type", "Type")));
+		row.createHeaderCell().add(new Text(localize("info", "Info")));
+		row.createHeaderCell().add(new Text(localize("age", "Age")));
+		row.createHeaderCell();
+		row.createHeaderCell();
 
+		group = table.createBodyRowGroup();
+		int iRow = 1;
 		Iterator iter = years.iterator();
-		SchoolYear sYear;
-		SchoolType sType;
 		while (iter.hasNext()) {
-			col = 1;
-			sYear = (SchoolYear) iter.next();
-			sType = sYear.getSchoolType();
+			SchoolYear year = (SchoolYear) iter.next();
+			SchoolType type = year.getSchoolType();
+			SchoolCategory category = year.getSchoolCategory();
+			row = group.createRow();
 
-			Link L = new Link(getEditIcon(localize("edit", "Edit")));
-			L.addParameter("sch_school_year_id", ((Integer) sYear.getPrimaryKey()).intValue());
+			Link edit = new Link(getEditIcon(localize("edit", "Edit")));
+			edit.addParameter(PARAMETER_SCHOOL_YEAR_PK, year.getPrimaryKey().toString());
+			edit.addParameter(PARAMETER_ACTION, ACTION_EDIT);
+			
+			Link delete = new Link(getDeleteIcon(localize("delete", "Delete")));
+			delete.addParameter(PARAMETER_SCHOOL_YEAR_PK, year.getPrimaryKey().toString());
+			delete.addParameter(PARAMETER_ACTION, ACTION_DELETE);
 
-			table.setCellpaddingLeft(1, row, 12);
-			table.setCellpaddingRight(table.getColumns(), row, 12);
-			table.add(getSmallText(sYear.getSchoolYearName()), col++, row);
-			if (sType != null) {
-				table.add(getSmallText(localize(sType.getLocalizationKey(), sType.getName())), col++, row);
+			row.createCell().add(new Text(year.getSchoolYearName()));
+			row.createCell().add(new Text(category != null ? localize(category.getLocalizedKey(), category.getName()) : "-"));
+			row.createCell().add(new Text(type != null ? localize(type.getLocalizationKey(), type.getName()) : "-"));
+			row.createCell().add(new Text(year.getSchoolYearInfo() != null ? year.getSchoolYearInfo() : "-"));
+			row.createCell().add(new Text(year.getSchoolYearAge() > 0 ? String.valueOf(year.getSchoolYearAge()) : "-"));
+			row.createCell().add(edit);
+			row.createCell().add(delete);
+
+			if (iRow % 2 == 0) {
+				row.setStyleClass(STYLENAME_LIST_TABLE_EVEN_ROW);
 			}
 			else {
-				table.add(getSmallText("-"), col++, row);
+				row.setStyleClass(STYLENAME_LIST_TABLE_ODD_ROW);
 			}
-			table.add(getSmallText(sYear.getSchoolYearInfo()), col++, row);
-			table.add(getSmallText(String.valueOf(sYear.getSchoolYearAge())), col++, row);
-			table.add(L, col++, row);
 
-			if (row % 2 == 0) {
-				table.setRowStyleClass(row, getDarkRowClass());
-			}
-			else {
-				table.setRowStyleClass(row, getLightRowClass());
-			}
-			row++;
+			iRow++;
 		}
+		form.add(table);
+		form.add(new Break());
 
-		table.setHeight(row++, 12);
-		table.setCellpaddingLeft(1, row, 12);
-		table.mergeCells(1, row, table.getColumns(), row);
-		GenericButton newLink = getButton(new GenericButton("new", localize("year.new", "New year")));
-		newLink.setPageToOpen(iwc.getCurrentIBPageID());
-		newLink.addParameterToPage("sch_new_area", "true");
-		table.add(newLink, 1, row);
+		SubmitButton newLink = (SubmitButton) getButton(new SubmitButton(localize("year.new", "New year"), PARAMETER_ACTION, String.valueOf(ACTION_NEW)));
+		form.add(newLink);
 
-		return table;
+		add(form);
 	}
 
-	public PresentationObject getInputTable(IWContext iwc, SchoolYear entity) {
-		Table T = new Table(3, 8);
-		T.mergeCells(1, 1, 3, 1);
-		T.add(getHeader(localize("school_year", "SchoolYear")), 1, 1);
-		T.add(getHeader(localize("name", "Name")), 1, 2);
-		T.add(getHeader(localize("school_type", "Type")), 1, 3);
-		T.add(getHeader(localize("info", "Info")), 1, 4);
-		T.add(getHeader(localize("age", "Age")), 1, 5);
-		T.add(getHeader(localize("localized_key", "Localized key")), 1, 6);
-		T.add(getHeader(localize("category", "Category")), 1, 7);
-
-		TextInput inputName = (TextInput) getStyledInterface(new TextInput("sch_year_name"));
-		TextInput inputAge = (TextInput) getStyledInterface(new TextInput("sch_year_age"));
-		DropdownMenu inputType = (DropdownMenu) getStyledInterface(new DropdownMenu("sch_type"));
-		TextArea inputInfo = (TextArea) getStyledInterface(new TextArea("sch_year_info"));
-		TextInput localizedKey = (TextInput) getStyledInterface(new TextInput("localized_key"));
-		DropdownMenu inputCategory = (DropdownMenu) getStyledInterface(new DropdownMenu("sch_category"));
+	public void showEditor(IWContext iwc, Object yearPK) {
+		Form form = new Form();
+		form.setStyleClass(STYLENAME_SCHOOL_FORM);
+		
+		TextInput inputName = new TextInput(PARAMETER_NAME);
+		TextInput inputAge = new TextInput(PARAMETER_AGE);
+		DropdownMenu inputType = new DropdownMenu(PARAMETER_TYPE);
+		TextArea inputInfo = new TextArea(PARAMETER_INFO);
+		TextInput localizedKey = new TextInput(PARAMETER_LOCALIZED_KEY);
+		DropdownMenu inputCategory = new DropdownMenu(PARAMETER_CATEGORY);
 
 		try {
 			SchoolTypeHome stHome = (SchoolTypeHome) IDOLookup.getHome(SchoolType.class);
@@ -191,7 +229,6 @@ public class SchoolYearEditor extends SchoolBlock {
 			inputType.addMenuElementFirst("-1", "");
 		}
 		catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -201,7 +238,7 @@ public class SchoolYearEditor extends SchoolBlock {
 			Iterator iter = coll.iterator();
 			while (iter.hasNext()) {
 				SchoolCategory category = (SchoolCategory) iter.next();
-				inputCategory.addMenuElement(category.getCategory(), localize(category.getLocalizedKey(), category.getCategory()));
+				inputCategory.addMenuElement(category.getCategory(), localize(category.getLocalizedKey(), category.getName()));
 			}
 			inputCategory.addMenuElementFirst("", "");
 		}
@@ -209,43 +246,82 @@ public class SchoolYearEditor extends SchoolBlock {
 			e.printStackTrace();
 		}
 
-		int beanId = -1;
-		if (entity != null) {
+		if (yearPK != null) {
 			try {
-				beanId = ((Integer) entity.getPrimaryKey()).intValue();
-				inputName.setContent(entity.getSchoolYearName());
-				inputInfo.setContent(entity.getSchoolYearInfo());
-				inputAge.setContent(String.valueOf(entity.getSchoolYearAge()));
-				inputType.setSelectedElement(entity.getSchoolTypeId());
-				if (entity.getLocalizedKey() != null) {
-					localizedKey.setContent(entity.getLocalizedKey());
+				SchoolYear year = getBusiness().getSchoolYear(yearPK);
+
+				inputName.setContent(year.getSchoolYearName());
+				inputInfo.setContent(year.getSchoolYearInfo());
+				inputAge.setContent(String.valueOf(year.getSchoolYearAge()));
+				inputType.setSelectedElement(year.getSchoolTypeId());
+				if (year.getLocalizedKey() != null) {
+					localizedKey.setContent(year.getLocalizedKey());
 				}
-				if (entity.getSchoolCategory() != null) {
-					inputCategory.setSelectedElement(entity.getSchoolCategoryPK().toString());
+				if (year.getSchoolCategory() != null) {
+					inputCategory.setSelectedElement(year.getSchoolCategory().getCategory());
 				}
-				T.add(new HiddenInput("sch_school_year_id", String.valueOf(beanId)));
+				form.add(new HiddenInput(PARAMETER_SCHOOL_YEAR_PK, yearPK.toString()));
 			}
 			catch (Exception ex) {
 			}
 		}
 
-		T.add(inputName, 3, 2);
-		T.add(inputType, 3, 3);
-		T.add(inputInfo, 3, 4);
-		T.add(inputAge, 3, 5);
-		T.add(localizedKey, 3, 6);
-		T.add(inputCategory, 3, 7);
-		T.add(getButton(new SubmitButton(localize("save", "Save"), "sch_save_year", "true")), 3, 8);
-		GenericButton cancel = getButton(new GenericButton("cancel", localize("cancel", "Cancel")));
-		cancel.setPageToOpen(iwc.getCurrentIBPageID());
-		T.add(cancel, 3, 8);
-		if (beanId > 0) {
-			GenericButton delete = getButton(new GenericButton("delete", localize("delete", "Delete")));
-			delete.setPageToOpen(iwc.getCurrentIBPageID());
-			delete.addParameterToPage("sch_delete_year", beanId);
-			T.add(delete, 3, 8);
-		}
+		Layer layer = new Layer(Layer.DIV);
+		layer.setStyleClass(STYLENAME_FORM_ELEMENT);
+		Label label = new Label(localize("name", "Name"), inputName);
+		layer.add(label);
+		layer.add(inputName);
+		form.add(layer);
 
-		return T;
+		if (iSchoolCategory == null) {
+			layer = new Layer(Layer.DIV);
+			layer.setStyleClass(STYLENAME_FORM_ELEMENT);
+			label = new Label(localize("category", "Category"), inputCategory);
+			layer.add(label);
+			layer.add(inputCategory);
+			form.add(layer);
+		}
+		
+		layer = new Layer(Layer.DIV);
+		layer.setStyleClass(STYLENAME_FORM_ELEMENT);
+		label = new Label(localize("school_type", "Type"), inputType);
+		layer.add(label);
+		layer.add(inputType);
+		form.add(layer);
+
+		layer = new Layer(Layer.DIV);
+		layer.setStyleClass(STYLENAME_FORM_ELEMENT);
+		label = new Label(localize("info", "Info"), inputInfo);
+		layer.add(label);
+		layer.add(inputInfo);
+		form.add(layer);
+
+		layer = new Layer(Layer.DIV);
+		layer.setStyleClass(STYLENAME_FORM_ELEMENT);
+		label = new Label(localize("localized_key", "Localized key"), localizedKey);
+		layer.add(label);
+		layer.add(localizedKey);
+		form.add(layer);
+
+		layer = new Layer(Layer.DIV);
+		layer.setStyleClass(STYLENAME_FORM_ELEMENT);
+		label = new Label(localize("age", "Age"), inputAge);
+		layer.add(label);
+		layer.add(inputAge);
+		form.add(layer);
+		
+		form.add(new Break());
+
+		SubmitButton save = (SubmitButton) getButton(new SubmitButton(localize("save", "Save"), PARAMETER_ACTION, String.valueOf(ACTION_SAVE)));
+		SubmitButton cancel = (SubmitButton) getButton(new SubmitButton(localize("cancel", "Cancel"), PARAMETER_ACTION, String.valueOf(ACTION_VIEW)));
+
+		form.add(cancel);
+		form.add(save);
+
+		add(form);
+	}
+	
+	public void setSchoolCategory(String category) {
+		this.iSchoolCategory = category;
 	}
 }

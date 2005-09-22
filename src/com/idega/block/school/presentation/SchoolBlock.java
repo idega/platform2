@@ -31,6 +31,12 @@ public abstract class SchoolBlock extends Block {
 
   public final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.school";
 
+  public final static String STYLENAME_FORM_ELEMENT = "FormElement";
+  public final static String STYLENAME_SCHOOL_FORM = "schoolForm";
+  public final static String STYLENAME_LIST_TABLE = "listTable";
+  public final static String STYLENAME_LIST_TABLE_ODD_ROW = "listTable_oddRow";
+  public final static String STYLENAME_LIST_TABLE_EVEN_ROW = "listTable_evenRow";
+
   public final static String STYLENAME_HEADER_ROW = "HeaderRow";
 	public final static String STYLENAME_LIGHT_ROW = "LightRow";
 	public final static String STYLENAME_DARK_ROW = "DarkRow";
@@ -164,7 +170,8 @@ public abstract class SchoolBlock extends Block {
 	}
 	
 	protected GenericButton getButton(GenericButton button) {
-		return (GenericButton) setStyle(button,STYLENAME_INTERFACE_BUTTON);
+		button.setStyleClass(STYLENAME_INTERFACE_BUTTON);
+		return button;
 	}
 	
 	protected CheckBox getCheckBox(String name, String value) {

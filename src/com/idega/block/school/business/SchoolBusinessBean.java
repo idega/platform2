@@ -368,7 +368,11 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	}
 
 	public void removeProvider(int id) throws RemoveException {
-		School school = getSchool(new Integer(id));
+		removeProvider(new Integer(id));
+	}
+	
+	public void removeProvider(Object primaryKey) throws RemoveException {
+		School school = getSchool(primaryKey);
 		school.addSchoolTypesRemoveOther(new int[0]);
 		school.addSchoolYearsRemoveOther(new int[0]);
 		try {
@@ -1384,10 +1388,14 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			return null;
 		}
 	}
-
+	
 	public void removeSchoolYear(int id) {
+		removeSchoolYear(new Integer(id));
+	}
+
+	public void removeSchoolYear(Object schoolYearPK) {
 		try {
-			SchoolYear area = getSchoolYear(new Integer(id));
+			SchoolYear area = getSchoolYear(schoolYearPK);
 			area.remove();
 		}
 		catch (Exception ex) {
@@ -1496,8 +1504,12 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	}
 
 	public void removeSchoolType(int id) {
+		removeSchoolType(new Integer(id));
+	}
+	
+	public void removeSchoolType(Object schoolTypePK) {
 		try {
-			SchoolType type = getSchoolType(new Integer(id));
+			SchoolType type = getSchoolType(schoolTypePK);
 			type.remove();
 		}
 		catch (Exception ex) {
@@ -1635,8 +1647,12 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	}
 
 	public void removeSchoolSeason(int id) {
+		removeSchoolSeason(new Integer(id));
+	}
+	
+	public void removeSchoolSeason(Object schoolSeasonPK) {
 		try {
-			SchoolSeason season = getSchoolSeason(new Integer(id));
+			SchoolSeason season = getSchoolSeason(schoolSeasonPK);
 			season.remove();
 		}
 		catch (Exception ex) {
@@ -2556,8 +2572,12 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	}
 
 	public void removeSchoolArea(int id) {
+		removeSchoolArea(new Integer(id));
+	}
+	
+	public void removeSchoolArea(Object schoolAreaPK) {
 		try {
-			SchoolArea area = getSchoolArea(new Integer(id));
+			SchoolArea area = getSchoolArea(schoolAreaPK);
 			area.remove();
 		}
 		catch (Exception ex) {

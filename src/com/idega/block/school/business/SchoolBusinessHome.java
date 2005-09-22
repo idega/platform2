@@ -1,6 +1,6 @@
 /*
- * $Id: SchoolBusinessHome.java,v 1.12 2005/08/30 15:59:07 gimmi Exp $
- * Created on Aug 30, 2005
+ * $Id: SchoolBusinessHome.java,v 1.13 2005/09/22 11:42:59 laddi Exp $
+ * Created on Sep 22, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -13,11 +13,10 @@ import com.idega.business.IBOHome;
 
 
 /**
+ * Last modified: $Date: 2005/09/22 11:42:59 $ by $Author: laddi $
  * 
- *  Last modified: $Date: 2005/08/30 15:59:07 $ by $Author: gimmi $
- * 
- * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.12 $
+ * @author <a href="mailto:laddi@idega.com">laddi</a>
+ * @version $Revision: 1.13 $
  */
 public interface SchoolBusinessHome extends IBOHome {
 
