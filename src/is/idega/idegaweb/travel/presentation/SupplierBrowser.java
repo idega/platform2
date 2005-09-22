@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowser.java,v 1.28 2005/09/14 17:05:14 gimmi Exp $
+ * $Id: SupplierBrowser.java,v 1.29 2005/09/22 14:36:53 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -84,8 +84,8 @@ public class SupplierBrowser extends TravelBlock {
 	public static final String PARAMETER_TO = AbstractSearchForm.PARAMETER_TO_DATE;
 	public static final String PARAMETER_SUPPLIER_NAME = AbstractSearchForm.PARAMETER_SUPPLIER_NAME;
 
-	protected DecimalFormat df = new DecimalFormat("0.00");
-
+	protected DecimalFormat df = new DecimalFormat("#,###");
+	
 	private String[][] postalCodes = null;
 	private Group supplierManager = null;
 	private Product product = null;
@@ -451,6 +451,7 @@ public class SupplierBrowser extends TravelBlock {
 		
 		
 		Table linkTable = new Table(2, 1);
+		linkTable.setStyleClass("sb_linktable");
 		if  (useTravelLook) {
 			linkTable.setColor(TravelManager.WHITE);
 			linkTable.setCellpaddingAndCellspacing(1);
@@ -736,7 +737,15 @@ public class SupplierBrowser extends TravelBlock {
 		table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
 		table.setVerticalAlignment(2, row, Table.VERTICAL_ALIGN_TOP);
 		table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_LEFT);
-		table.add(getText(getProductBusiness(iwc).getProductNameWithNumber(product, true, localeID), headerStyleClass), 2, row++);
+		table.add(getText(product.getProductName(localeID), headerStyleClass), 2, row);
+		if (plugin.displaySupplierResults()) {
+			table.add(getText(" - "+product.getSupplier().getName(), headerStyleClass), 2, row++);
+		} else {
+			++row;
+		}
+		if (!useTravelLook) {
+			table.setRowStyleClass(row++, "sbrowser_header_background_line");
+		}
 		Link images = null;
 		try {
 			TxText descriptionText;
@@ -902,20 +911,35 @@ public class SupplierBrowser extends TravelBlock {
 						e.printStackTrace();
 					}
 				}
-				table.add(getText(supplier.getName(), headerStyleClass), 2, row);
-				table.add(getText(Text.BREAK), 2, row);
-				table.add(getText(supplier.getDescription()), 2, row);
-				table.add(getDetailLink(supplier, iwc), 3, row);
-				
+				int sRow = row;
 				table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
 				table.setVerticalAlignment(2, row, Table.VERTICAL_ALIGN_TOP);
 				table.setVerticalAlignment(3, row, Table.VERTICAL_ALIGN_TOP);
 				table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_LEFT);
 				table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
+				table.setRowPadding(row, 2);
+				table.add(getText(supplier.getName(), headerStyleClass), 2, row);
+				table.add(getDetailLink(supplier, iwc), 3, row++);
+//				table.add(getText(Text.BREAK), 2, row);
+				String desc = supplier.getDescription();
+				if (desc != null && !desc.trim().equals("")) {
+					if (!useTravelLook) {
+						table.setRowHeight(row, "1");
+						table.setRowStyleClass(++row, "sbrowser_header_background_line");
+					}
+					table.add(getText(desc), 2, row);
+					table.setRowPadding(row, 2);
+					table.setVerticalAlignment(2, row, Table.VERTICAL_ALIGN_TOP);
+					table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_LEFT);
+					table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
+				}
+				
 //				table.setVerticalAlignment(4, row, Table.VERTICAL_ALIGN_TOP);
 				
-				table.setRowPadding(row, 2);
 				
+				if (sRow != row) {
+					table.mergeCells(1, sRow, 1, row);
+				}
 				if (useTravelLook) {
 					table.setRowColor(row++, TravelManager.GRAY);
 				} else {
