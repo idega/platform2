@@ -3,8 +3,11 @@ package com.idega.block.school.presentation;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import javax.ejb.FinderException;
+import com.idega.block.school.business.SchoolYearComparator;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryHome;
 import com.idega.block.school.data.SchoolType;
@@ -139,13 +142,13 @@ public class SchoolYearEditor extends SchoolBlock {
 		column.setSpan(2);
 		column.setWidth("12");
 
-		Collection years = null;
+		List years = null;
 		try {
 			if (iSchoolCategory != null) {
-				years = getBusiness().findSchoolYearsBySchoolCategory(iSchoolCategory);
+				years = new ArrayList(getBusiness().findSchoolYearsBySchoolCategory(iSchoolCategory));
 			}
 			else {
-				years = getBusiness().findAllSchoolYears();
+				years = new ArrayList(getBusiness().findAllSchoolYears());
 			}
 		}
 		catch (FinderException fe) {
@@ -155,6 +158,7 @@ public class SchoolYearEditor extends SchoolBlock {
 		catch (RemoteException rex) {
 			years = new ArrayList();
 		}
+		Collections.sort(years, new SchoolYearComparator());
 
 		TableRowGroup group = table.createHeaderRowGroup();
 		TableRow row = group.createRow();

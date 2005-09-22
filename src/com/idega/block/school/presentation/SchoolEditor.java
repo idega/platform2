@@ -1,18 +1,20 @@
 package com.idega.block.school.presentation;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import com.idega.block.school.business.SchoolYearComparator;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
 import com.idega.block.school.data.SchoolType;
-import com.idega.block.school.data.SchoolTypeHome;
 import com.idega.block.school.data.SchoolYear;
 import com.idega.business.IBOLookup;
 import com.idega.core.location.business.CommuneBusiness;
 import com.idega.core.location.data.Commune;
-import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
@@ -68,7 +70,7 @@ public class SchoolEditor extends SchoolBlock {
 	private static final int ACTION_DELETE = 5;
 	
 	boolean _useProviderStringId = false;
-	Collection schoolTypeIds = null;
+	String iSchoolCategory = null;
 	
 	public boolean getUseProviderStringId() {
 		return _useProviderStringId;
@@ -181,16 +183,11 @@ public class SchoolEditor extends SchoolBlock {
 		column.setWidth("12");
 
 		Collection schools = new java.util.Vector(0);
-		try {
-			if (schoolTypeIds == null) {
-				schools = getBusiness().findAllSchools();
-			}
-			else {
-				schools = getBusiness().findAllSchoolsByType(schoolTypeIds);
-			}
+		if (iSchoolCategory == null) {
+			schools = getBusiness().findAllSchools();
 		}
-		catch (java.rmi.RemoteException rex) {
-
+		else {
+			schools = getBusiness().findAllSchoolsByCategory(iSchoolCategory);
 		}
 
 		TableRowGroup group = table.createHeaderRowGroup();
@@ -295,7 +292,7 @@ public class SchoolEditor extends SchoolBlock {
 		su.getSelectorFromIDOEntities(communes, getCommuneBusiness(iwc).getCommunes(), "getCommuneName");
 
 		DropdownMenu providers = new DropdownMenu(PARAMETER_AFTER_SCHOOL_CARE_PROVIDER_PK);
-		Collection schools = getBusiness().findAllSchoolsByCategory(getBusiness().getCategoryElementarySchool().getCategory());
+		Collection schools = getBusiness().findAllSchoolsByCategory(getBusiness().getCategoryChildcare().getCategory());
 		su.getSelectorFromIDOEntities(providers, schools, "getSchoolName");
 		providers.setMenuElementFirst("", "");
 		
@@ -459,8 +456,9 @@ public class SchoolEditor extends SchoolBlock {
 				item.add(label);
 				list.add(item);
 
-				Collection years = getSchoolYears(((Integer) type.getPrimaryKey()).intValue());
+				List years = new ArrayList(getSchoolYears(((Integer) type.getPrimaryKey()).intValue()));
 				if (years != null && !years.isEmpty()) {
+					Collections.sort(years, new SchoolYearComparator());
 					Lists yearList = new Lists();
 					
 					Iterator yearIter = years.iterator();
@@ -504,7 +502,12 @@ public class SchoolEditor extends SchoolBlock {
 	}
 
 	private Collection getSchoolTypes() throws java.rmi.RemoteException {
-		return getBusiness().findAllSchoolTypes();
+		if (iSchoolCategory != null) {
+			return getBusiness().findAllSchoolTypesInCategory(iSchoolCategory);
+		}
+		else {
+			return getBusiness().findAllSchoolTypes();
+		}
 	}
 
 	private Collection getSchoolYears(int schoolTypeId) throws java.rmi.RemoteException {
@@ -516,16 +519,7 @@ public class SchoolEditor extends SchoolBlock {
 	}
 
 	public void setSchoolTypeCategory(String typeCategory) {
-		if (typeCategory != null && !typeCategory.equals("")) {
-			try {
-				SchoolTypeHome sth = (SchoolTypeHome) IDOLookup.getHome(SchoolType.class);
-				schoolTypeIds = sth.findAllByCategory(typeCategory);
-			}
-			catch (Exception e) {
-				e.printStackTrace(System.err);
-			}
-		}
-
+		iSchoolCategory = typeCategory;
 	}
 
 	public CommuneBusiness getCommuneBusiness(IWApplicationContext iwac) throws RemoteException {

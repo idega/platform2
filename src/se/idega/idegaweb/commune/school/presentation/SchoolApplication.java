@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolApplication.java,v 1.3 2005/09/02 01:13:38 gimmi Exp $
+ * $Id: SchoolApplication.java,v 1.4 2005/09/22 13:47:38 laddi Exp $
  * Created on Aug 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -13,11 +13,13 @@ import java.rmi.RemoteException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.care.business.CareConstants;
 import se.idega.idegaweb.commune.school.business.SchoolAreaCollectionHandler;
+import com.idega.block.school.business.SchoolYearComparator;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.core.builder.data.ICPage;
@@ -48,10 +50,10 @@ import com.idega.user.data.User;
 import com.idega.util.PersonalIDFormatter;
 
 /**
- * Last modified: $Date: 2005/09/02 01:13:38 $ by $Author: gimmi $
+ * Last modified: $Date: 2005/09/22 13:47:38 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class SchoolApplication extends SchoolBlock {
 
@@ -248,8 +250,10 @@ public class SchoolApplication extends SchoolBlock {
 		
 		Collection areas = getSchoolBusiness().findAllSchoolAreas();
 		
+		List years = new ArrayList(getBusiness().getSchoolYears());
+		Collections.sort(years, new SchoolYearComparator());
 		SelectorUtility util = new SelectorUtility();
-		DropdownMenu yearDropdown = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(SchoolAreaCollectionHandler.PARAMETER_SCHOOL_YEAR), getBusiness().getSchoolYears(), "getSchoolYearName"));
+		DropdownMenu yearDropdown = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(SchoolAreaCollectionHandler.PARAMETER_SCHOOL_YEAR), years, "getSchoolYearName"));
 		yearDropdown.addMenuElementFirst("-1", localize("application.select_year", "Select year"));
 		
 		applicationTable.add(getSmallHeader(localize("application.school_year", "School year")), 1, 1);
