@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowser.java,v 1.30 2005/09/22 18:23:33 gimmi Exp $
+ * $Id: SupplierBrowser.java,v 1.31 2005/09/23 11:33:17 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -109,7 +109,7 @@ public class SupplierBrowser extends TravelBlock {
 	private boolean useBasket = false;
 	private boolean useTravelLook = false;
 	private boolean showInputs = true;
-	private boolean showPriceWithProductInformation = false;
+	private boolean showPriceWithProductInformation = true;
 	private ICPage basketPage = null;
 	
 	public SupplierBrowser() {
