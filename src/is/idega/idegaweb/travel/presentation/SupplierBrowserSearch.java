@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowserSearch.java,v 1.9 2005/09/11 14:18:49 gimmi Exp $
+ * $Id: SupplierBrowserSearch.java,v 1.10 2005/09/23 11:32:42 gimmi Exp $
  * Created on Aug 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -9,6 +9,7 @@
  */
 package is.idega.idegaweb.travel.presentation;
 
+import is.idega.idegaweb.travel.block.search.presentation.AbstractSearchForm;
 import is.idega.idegaweb.travel.business.SupplierBrowserBusiness;
 import is.idega.idegaweb.travel.business.SupplierBrowserBusinessBean;
 import is.idega.idegaweb.travel.data.SupplierBrowserSearchForm;
@@ -132,6 +133,9 @@ public class SupplierBrowserSearch extends TravelBlock {
 						returnString+= "_"+iwc.getParameter(p);
 					}
 				}
+				
+				String sName = iwc.getParameter(AbstractSearchForm.PARAMETER_SUPPLIER_NAME);
+				returnString += AbstractSearchForm.PARAMETER_SUPPLIER_NAME+"_"+sName;
 				returnString += engineName+"_"+currentForm;
 				returnString += defaultParameterName+"_"+defaultParameterValue;
 			} else {
