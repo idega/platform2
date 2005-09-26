@@ -1,11 +1,76 @@
+/**
+ * 
+ */
 package se.idega.idegaweb.commune.accounting.school.business;
 
+import java.util.Collection;
+import java.util.Map;
 
-public interface ProviderBusiness extends com.idega.business.IBOService
-{
- public void deleteProvider(java.lang.String p0)throws se.idega.idegaweb.commune.accounting.school.business.ProviderException, java.rmi.RemoteException;
- public java.util.Collection findAllSchools() throws java.rmi.RemoteException;
- public java.util.Collection findAllSchoolsByOperationalField(java.lang.String p0) throws java.rmi.RemoteException;
- public se.idega.idegaweb.commune.accounting.school.data.Provider getProvider(int p0) throws se.idega.idegaweb.commune.accounting.school.business.StudyPathException, java.rmi.RemoteException;
- public void saveProvider(java.lang.String p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,java.lang.String p6,java.lang.String p7,java.lang.String p8,java.lang.String p9,java.lang.String p10,java.lang.String p11,java.lang.String p12,java.util.Map p13,java.lang.String p14,java.lang.String p15,java.lang.String p16,java.lang.String p17,java.sql.Date p18,java.lang.String p19,java.lang.String p20,java.lang.String p21,java.lang.String p22,java.lang.String p23,java.lang.String p24,java.lang.String p25,java.lang.String p26,java.lang.String p27,java.lang.String p28,java.lang.String p29,boolean p30)throws se.idega.idegaweb.commune.accounting.school.business.ProviderException, java.rmi.RemoteException;
+
+import se.idega.idegaweb.commune.accounting.school.data.Provider;
+
+import com.idega.business.IBOService;
+
+/**
+ * @author Dainis
+ *
+ */
+public interface ProviderBusiness extends IBOService {
+    /**
+     * @see se.idega.idegaweb.commune.accounting.school.business.ProviderBusinessBean#saveProvider
+     */
+    public void saveProvider(String schoolId, String providerStringId,
+            String name, String info, String address, String zipCode,
+            String zipArea, String phone, String keyCode, String latitude,
+            String longitude, String schoolAreaId, String schoolSubAreaId,
+            Map schoolTypeMap, String organizationNumber,
+            String extraProviderId, String providerTypeId,
+            String schoolManagementTypeId, java.sql.Date terminationDate,
+            String communeId, String countryId,
+            String centralizedAdministration, String invisibleForCitizen,
+            String paymentByInvoice, String stateSubsidyGrant, String postgiro,
+            String bankgiro, String statisticsType, String ownPosting,
+            String doublePosting, boolean useProviderStringId)
+            throws ProviderException, java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.accounting.school.business.ProviderBusinessBean#saveProvider
+     */
+    public void saveProvider(String schoolId, String providerStringId,
+            String name, String info, String address, String zipCode,
+            String zipArea, String phone, String keyCode, String latitude,
+            String longitude, String schoolAreaId, String schoolSubAreaId,
+            Map schoolTypeMap, String organizationNumber,
+            String extraProviderId, String providerTypeId,
+            String schoolManagementTypeId, java.sql.Date terminationDate,
+            String communeId, String countryId,
+            String centralizedAdministration, String invisibleForCitizen,
+            String paymentByInvoice, String stateSubsidyGrant, String postgiro,
+            String bankgiro, String statisticsType, String ownPosting,
+            String doublePosting, boolean useProviderStringId,
+            String sortByBirthdate) throws ProviderException,
+            java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.accounting.school.business.ProviderBusinessBean#deleteProvider
+     */
+    public void deleteProvider(String id) throws ProviderException,
+            java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.accounting.school.business.ProviderBusinessBean#getProvider
+     */
+    public Provider getProvider(int schoolId) throws java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.accounting.school.business.ProviderBusinessBean#findAllSchools
+     */
+    public Collection findAllSchools() throws java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.accounting.school.business.ProviderBusinessBean#findAllSchoolsByOperationalField
+     */
+    public Collection findAllSchoolsByOperationalField(String operationalField)
+            throws java.rmi.RemoteException;
+
 }
