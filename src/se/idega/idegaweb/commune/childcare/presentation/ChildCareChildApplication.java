@@ -67,6 +67,8 @@ public class ChildCareChildApplication extends ChildCareBlock {
 
 	private final static String EMAIL_PROVIDER_SUBJECT = "child_care.application_received_subject";
 	private final static String EMAIL_PROVIDER_MESSAGE = "child_care.application_received_body";
+    
+    private final static String QUEUE_SORTED_BY_BIRTHDATE = "child_care.queue_sorted_by_date_of_birth";
 	
 	private Collection areas;
 	private Map providerMap;
@@ -76,6 +78,8 @@ public class ChildCareChildApplication extends ChildCareBlock {
 	private boolean isAdmin = false;
 	private boolean hasActivePlacement = false;
 	private boolean hasPermission = false;
+    
+    private boolean showQueueSortedByBirthdateMessage = false;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
@@ -182,7 +186,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		table.add(getErrorText(localize("not_permitted", "You do not have permission")), 1, 1);
 		add(table);
 	}
-	
+	  
 	private void viewForm(IWContext iwc) throws RemoteException {
 		boolean hasOffers = false;
 		boolean hasPendingApplications = false;
@@ -204,11 +208,13 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			table.setCellpadding(0);
 			table.setCellspacing(0);
 			form.add(table);
+            
+            Table inputTable = getInputTable(iwc); 
 		
 			int row = 1;
 			table.add(getChildInfoTable(iwc), 1, row++);
-			table.setHeight(row++, 12);
-			table.add(getInputTable(iwc), 1, row++);
+			table.setHeight(row++, 12);            
+			table.add(inputTable, 1, row++);
 			table.setHeight(row++, 12);
 	
 			GenericButton showPrognosis = getButton(new GenericButton("show_prognosis", localize("child_care.view_prognosis", "View prognosis")));
@@ -452,7 +458,13 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		catch (RemoteException e) {
 			// empty
 		}
-
+        
+        if (showQueueSortedByBirthdateMessage) {
+            table.add(getSmallText("* "
+                    + localize(QUEUE_SORTED_BY_BIRTHDATE,
+                            "Queue sorted by date of birth")), 3, 4); 
+        }
+        
 		return table;
 	}
 
@@ -570,7 +582,8 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		buffer.append("\n}\n");
 		return buffer.toString();
 	}
-	
+
+
 	private ProviderDropdownDouble getDropdown(Locale locale, String primaryName, String secondaryName) {
 		ProviderDropdownDouble dropdown = new ProviderDropdownDouble(primaryName, secondaryName);
 		String emptyString = localize("child_care.select_provider","Select provider...");
@@ -581,12 +594,27 @@ public class ChildCareChildApplication extends ChildCareBlock {
 				areas = getBusiness().getSchoolBusiness().findAllSchoolAreas();
 			if (providerMap == null)
 				providerMap = getBusiness().getProviderAreaMap(areas, currentProvider, locale, emptyString, false);
-				
+			
+            
 			if (areas != null && providerMap != null) {
 				Iterator iter = areas.iterator();
 				while (iter.hasNext()) {
 					SchoolArea area = (SchoolArea) iter.next();
-					dropdown.addMenuElement(area.getPrimaryKey().toString(), area.getSchoolAreaName(), (Map) providerMap.get(area));
+                    Map areaProviders = (Map) providerMap.get(area);
+                    
+                    // if at least one provider has set order by birthdate property, then according
+                    // flag is set, so message about it will be shown to the user
+                    if ( (areaProviders != null) && (!showQueueSortedByBirthdateMessage) ) {
+                        for (Iterator it = areaProviders.keySet().iterator(); it.hasNext();) {
+                            Object key = it.next();                            
+                            School provider = (School) areaProviders.get(key);
+                            if (provider.getSortByBirthdate()) {
+                                showQueueSortedByBirthdateMessage = true;
+                            }
+                        }
+                    }
+                    
+					dropdown.addMenuElement(area.getPrimaryKey().toString(), area.getSchoolAreaName(), areaProviders);
 				}
 			}
 		}
