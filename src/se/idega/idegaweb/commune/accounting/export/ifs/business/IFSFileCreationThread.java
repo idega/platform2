@@ -38,7 +38,6 @@ import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
 import se.idega.idegaweb.commune.accounting.school.business.ProviderBusiness;
-import se.idega.idegaweb.commune.accounting.school.business.StudyPathException;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
