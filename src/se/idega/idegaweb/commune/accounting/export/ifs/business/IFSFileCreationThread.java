@@ -595,9 +595,6 @@ public class IFSFileCreationThread extends Thread {
 				try {
 					prov = provBiz.getProvider(pHead.getSchoolID());
 				}
-				catch (StudyPathException e4) {
-					e4.printStackTrace();
-				}
 				catch (RemoteException e4) {
 					e4.printStackTrace();
 				}
