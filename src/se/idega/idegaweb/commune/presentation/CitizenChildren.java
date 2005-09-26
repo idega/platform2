@@ -95,7 +95,7 @@ public class CitizenChildren extends CommuneBlock {
 		try {
 			CommuneUserBusiness business = (CommuneUserBusiness) IBOLookup.getServiceInstance(iwc, CommuneUserBusiness.class);
 			Address address = business.getUsersMainAddress(user);
-			return address.getCommune().equals(business.getDefaultCommune());
+			return address.getPostalCode().getCommune().equals(business.getDefaultCommune());
 		}
 		catch (RemoteException re) {
 			throw new IBORuntimeException(re);
