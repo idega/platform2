@@ -8,10 +8,12 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;
 
+import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.util.PIDChecker;
 
 import com.idega.business.IBOLookup;
 import com.idega.business.IBORuntimeException;
+import com.idega.core.location.data.Address;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
@@ -49,6 +51,8 @@ public class CitizenChildren extends CommuneBlock {
 	private boolean showOutOfRangeChildren =true;
 	private int fromAge = -1, toAge = 100;
 	private boolean addLoggedInUser = false;
+	
+	private boolean useCommuneRestriction = false;
 
 	public CitizenChildren() {
 		
@@ -60,6 +64,11 @@ public class CitizenChildren extends CommuneBlock {
 		iwrb = getResourceBundle(iwc);
 		userID = iwc.getUserId();
 		if (userID > 0) {
+			if (useCommuneRestriction && !belongsToCommune(iwc, iwc.getCurrentUser())) {
+				add(getErrorText(localize("does_not_belong_to_commune", "You have to live in the commune to be able to use this function.")));
+				return;
+			}
+
 			user = ((UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class)).getUser(userID);
 			Table T = new Table();
 			int row = 1;
@@ -80,6 +89,17 @@ public class CitizenChildren extends CommuneBlock {
 		}
 		else
 			add(iwrb.getLocalizedString("citizen_children.no_citizen_logged_on", "You are not a citizen of Nacka Commune"));
+	}
+	
+	private boolean belongsToCommune(IWContext iwc, User user) {
+		try {
+			CommuneUserBusiness business = (CommuneUserBusiness) IBOLookup.getServiceInstance(iwc, CommuneUserBusiness.class);
+			Address address = business.getUsersMainAddress(user);
+			return address.getCommune().equals(business.getDefaultCommune());
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
 	}
 
 	public static String getChildIDParameterName() {
@@ -293,5 +313,9 @@ public class CitizenChildren extends CommuneBlock {
 	 **/
 	public void setShowOutOfRangeChilds(boolean show){
 		this.showOutOfRangeChildren = show;
+	}
+	
+	public void setUseCommuneRestriction(boolean useRestriction) {
+		useCommuneRestriction = useRestriction;
 	}
 }
