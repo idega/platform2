@@ -68,6 +68,11 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	}
 	
 	private void setHasPrognosis() throws RemoteException {
+		if (!getChildCareBusiness().usePrognosis()) {
+			hasPrognosis = new Boolean(true);
+			return;
+		}
+		
 		ChildCarePrognosis prognosis = getChildCareBusiness().getPrognosis(getChildCareID());
 		if (prognosis != null) {
 			IWTimestamp stamp = new IWTimestamp();

@@ -159,6 +159,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	
 	private final static String PROPERTY_USE_PRESCHOOL_LINE = "use_preschool_line";
 
+	private final static String PROPERTY_USE_PROGNOSIS = "use_prognosis";
+
 	private final static String PROPERTY_SEND_JOINT_MESSAGE_TO_OTHER_CUSTODIAN = "send_joint_message_to_other_custodian_on_child_care_choice";
 
 	private final static String STATUS_NOT_PROCESSED = String.valueOf(ChildCareConstants.STATUS_SENT_IN);
@@ -206,6 +208,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		catch (IDOLookupException ile) {
 			throw new IBORuntimeException(ile);
 		}
+	}
+	
+	public boolean usePrognosis() {
+		IWBundle bundle = getIWApplicationContext().getIWMainApplication().getBundle(getBundleIdentifier());
+		return bundle.getBooleanProperty(PROPERTY_USE_PROGNOSIS, true);
 	}
 
 	public ChildCarePrognosis getPrognosis(int providerID) {

@@ -1,6 +1,6 @@
 /*
- * $Id: ChildCareBusinessHome.java 1.1 Sep 19, 2005 bluebottle Exp $
- * Created on Sep 19, 2005
+ * $Id: ChildCareBusinessHome.java 1.1 Sep 26, 2005 laddi Exp $
+ * Created on Sep 26, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -13,14 +13,12 @@ import com.idega.business.IBOHome;
 
 
 /**
+ * Last modified: $Date: 2004/06/28 09:09:50 $ by $Author: laddi $
  * 
- *  Last modified: $Date: 2004/06/28 09:09:50 $ by $Author: bluebottle $
- * 
- * @author <a href="mailto:bluebottle@idega.com">bluebottle</a>
+ * @author <a href="mailto:laddi@idega.com">laddi</a>
  * @version $Revision: 1.1 $
  */
 public interface ChildCareBusinessHome extends IBOHome {
 
 	public ChildCareBusiness create() throws javax.ejb.CreateException, java.rmi.RemoteException;
-
 }
