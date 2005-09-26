@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolCareApplication.java,v 1.2 2005/08/10 15:48:50 thomas Exp $
+ * $Id: AfterSchoolCareApplication.java,v 1.3 2005/09/26 19:57:00 laddi Exp $
  * Created on Aug 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -19,6 +19,7 @@ import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DropdownMenu;
@@ -33,10 +34,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/08/10 15:48:50 $ by $Author: thomas $
+ * Last modified: $Date: 2005/09/26 19:57:00 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class AfterSchoolCareApplication extends SchoolApplication {
 	
@@ -248,13 +249,15 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 			applicationTable.add(no, 3, aRow);
 			applicationTable.add(noAnswer, 4, aRow++);
 	
-			applicationTable.mergeCells(2, aRow, 4, aRow);
+			applicationTable.mergeCells(1, aRow, 4, aRow);
 			applicationTable.add(getSmallHeader(localize("child.allergies_details", "Allergies details")), 1, aRow);
-			applicationTable.add(getTextArea(PARAMETER_ALLERGIES_DETAILS, getCareBusiness().getAllergiesDetails(getSession().getUser())), 2, aRow++);
+			applicationTable.add(new Break(), 1, aRow);
+			applicationTable.add(getTextArea(PARAMETER_ALLERGIES_DETAILS, getCareBusiness().getAllergiesDetails(getSession().getUser())), 1, aRow++);
 	
-			applicationTable.mergeCells(2, aRow, 4, aRow);
+			applicationTable.mergeCells(1, aRow, 4, aRow);
 			applicationTable.add(getSmallHeader(localize("child.last_care_provider", "Last care provider")), 1, aRow);
-			applicationTable.add(getTextArea(PARAMETER_LAST_CARE_PROVIDER, getCareBusiness().getLastCareProvider(getSession().getUser())), 2, aRow++);
+			applicationTable.add(new Break(), 1, aRow);
+			applicationTable.add(getTextArea(PARAMETER_LAST_CARE_PROVIDER, getCareBusiness().getLastCareProvider(getSession().getUser())), 1, aRow++);
 	
 			applicationTable.add(getSmallHeader(localize("child.can_contact_last_care_provider", "Can contact last care provider")), 1, aRow);
 			yes = getRadioButton(PARAMETER_CAN_CONTACT_LAST_PROVIDER, Boolean.TRUE.toString());
@@ -269,9 +272,10 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 			applicationTable.add(yes, 2, aRow);
 			applicationTable.add(no, 3, aRow++);
 	
-			applicationTable.mergeCells(2, aRow, 4, aRow);
+			applicationTable.mergeCells(1, aRow, 4, aRow);
 			applicationTable.add(getSmallHeader(localize("child.other_information", "Other information")), 1, aRow);
-			applicationTable.add(getTextArea(PARAMETER_OTHER_INFORMATION, getCareBusiness().getOtherInformation(getSession().getUser())), 2, aRow++);
+			applicationTable.add(new Break(), 1, aRow);
+			applicationTable.add(getTextArea(PARAMETER_OTHER_INFORMATION, getCareBusiness().getOtherInformation(getSession().getUser())), 1, aRow++);
 		}
 		
 		applicationTable.add(getSmallHeader(localize("child.can_diplay_after_school_images_images", "Can display images")), 1, aRow);

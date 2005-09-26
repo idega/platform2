@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolApplication.java,v 1.4 2005/09/22 13:47:38 laddi Exp $
+ * $Id: SchoolApplication.java,v 1.5 2005/09/26 19:57:00 laddi Exp $
  * Created on Aug 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -34,6 +34,7 @@ import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.remotescripting.RemoteScriptHandler;
+import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
@@ -50,10 +51,10 @@ import com.idega.user.data.User;
 import com.idega.util.PersonalIDFormatter;
 
 /**
- * Last modified: $Date: 2005/09/22 13:47:38 $ by $Author: laddi $
+ * Last modified: $Date: 2005/09/26 19:57:00 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class SchoolApplication extends SchoolBlock {
 
@@ -285,7 +286,7 @@ public class SchoolApplication extends SchoolBlock {
 		message.setWidth(Table.HUNDRED_PERCENT);
 		message.setRows(6);
 		
-		table.add(getText(localize("application.other_school_information", "Other school information")), 1, row++);
+		table.add(getText(localize("application.other_school_message", "Message")), 1, row++);
 		table.add(message, 1, row++);
 		table.setHeight(row++, 18);
 		
@@ -599,7 +600,7 @@ public class SchoolApplication extends SchoolBlock {
 		table.add(getPersonInfoTable(iwc, getSession().getUser()), 1, row++);
 		table.setHeight(row++, 6);
 		
-		table.add(getText(localize("application.child_information", "Child information")), 1, row++);
+		table.add(getHeader(localize("application.child_information", "Child information")), 1, row++);
 		table.setHeight(row++, 6);
 		
 		Table applicationTable = new Table(4, 9);
@@ -656,13 +657,15 @@ public class SchoolApplication extends SchoolBlock {
 		applicationTable.add(no, 3, aRow);
 		applicationTable.add(noAnswer, 4, aRow++);
 
-		applicationTable.mergeCells(2, aRow, 4, aRow);
+		applicationTable.mergeCells(1, aRow, 4, aRow);
 		applicationTable.add(getSmallHeader(localize("child.allergies_details", "Allergies details")), 1, aRow);
-		applicationTable.add(getTextArea(PARAMETER_ALLERGIES_DETAILS, getCareBusiness().getAllergiesDetails(getSession().getUser())), 2, aRow++);
+		applicationTable.add(new Break(), 1, aRow);
+		applicationTable.add(getTextArea(PARAMETER_ALLERGIES_DETAILS, getCareBusiness().getAllergiesDetails(getSession().getUser())), 1, aRow++);
 
-		applicationTable.mergeCells(2, aRow, 4, aRow);
+		applicationTable.mergeCells(1, aRow, 4, aRow);
 		applicationTable.add(getSmallHeader(localize("child.last_care_provider", "Last care provider")), 1, aRow);
-		applicationTable.add(getTextArea(PARAMETER_LAST_CARE_PROVIDER, getCareBusiness().getLastCareProvider(getSession().getUser())), 2, aRow++);
+		applicationTable.add(new Break(), 1, aRow);
+		applicationTable.add(getTextArea(PARAMETER_LAST_CARE_PROVIDER, getCareBusiness().getLastCareProvider(getSession().getUser())), 1, aRow++);
 
 		applicationTable.add(getSmallHeader(localize("child.can_contact_last_care_provider", "Can contact last care provider")), 1, aRow);
 		yes = getRadioButton(PARAMETER_CAN_CONTACT_LAST_PROVIDER, Boolean.TRUE.toString());
@@ -677,9 +680,10 @@ public class SchoolApplication extends SchoolBlock {
 		applicationTable.add(yes, 2, aRow);
 		applicationTable.add(no, 3, aRow++);
 
-		applicationTable.mergeCells(2, aRow, 4, aRow);
+		applicationTable.mergeCells(1, aRow, 4, aRow);
 		applicationTable.add(getSmallHeader(localize("child.other_information", "Other information")), 1, aRow);
-		applicationTable.add(getTextArea(PARAMETER_OTHER_INFORMATION, getCareBusiness().getOtherInformation(getSession().getUser())), 2, aRow++);
+		applicationTable.add(new Break(), 1, aRow);
+		applicationTable.add(getTextArea(PARAMETER_OTHER_INFORMATION, getCareBusiness().getOtherInformation(getSession().getUser())), 1, aRow++);
 
 		applicationTable.add(getSmallHeader(localize("child.can_diplay_images", "Can display images")), 1, aRow);
 		yes = getRadioButton(PARAMETER_CAN_DISPLAY_IMAGES, Boolean.TRUE.toString());
