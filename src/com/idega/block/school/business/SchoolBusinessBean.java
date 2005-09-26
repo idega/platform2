@@ -541,12 +541,22 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 				sub_area_id, type_ids, year_ids, organizationNumber, extraProviderId, managementTypeId, terminationDate,
 				communePK, countryId, centralizedAdministration, invisibleForCitizen, null);
 	}
+    
+    public School storeSchool(int id, String name, String info, String address, String zipcode, String ziparea,
+            String phone, String keycode, String latitude, String longitude, int area_id, int sub_area_id, int[] type_ids,
+            int[] year_ids, String organizationNumber, String extraProviderId, String managementTypeId,
+            java.sql.Date terminationDate, Object communePK, int countryId, Boolean centralizedAdministration,
+            Boolean invisibleForCitizen, String providerStringId) throws RemoteException {
+        return storeSchool(id, name, info, address, zipcode, ziparea, phone, keycode, latitude, longitude, area_id,
+                sub_area_id, type_ids, year_ids, organizationNumber, extraProviderId, managementTypeId, terminationDate,
+                communePK, countryId, centralizedAdministration, invisibleForCitizen, null, null);
+    }   
 
 	public School storeSchool(int id, String name, String info, String address, String zipcode, String ziparea,
 			String phone, String keycode, String latitude, String longitude, int area_id, int sub_area_id, int[] type_ids,
 			int[] year_ids, String organizationNumber, String extraProviderId, String managementTypeId,
 			java.sql.Date terminationDate, Object communePK, int countryId, Boolean centralizedAdministration,
-			Boolean invisibleForCitizen, String providerStringId) throws RemoteException {
+			Boolean invisibleForCitizen, String providerStringId, Boolean sortByBirthdate) throws RemoteException {
 		SchoolHome shome = getSchoolHome();
 		School newSchool;
 		try {
@@ -606,6 +616,9 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			newSchool.setInvisibleForCitizen(invisibleForCitizen.booleanValue());
 		if (providerStringId != null)
 			newSchool.setProviderStringId(providerStringId);
+        if (sortByBirthdate != null)
+            newSchool.setSortByBirthdate(sortByBirthdate.booleanValue());
+        
 		newSchool.store();
 		if (type_ids != null)
 			newSchool.addSchoolTypesRemoveOther(type_ids);

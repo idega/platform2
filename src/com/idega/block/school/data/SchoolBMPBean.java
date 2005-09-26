@@ -86,7 +86,9 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 	public final static String INVISIBLE_FOR_CITIZEN = "invisible_for_citizen";
 	/** Anders 10 Jan 2005 */
 	public final static String PROVIDER_STRING_ID = "provider_string_id";
-	public final static String AFTER_SCHOOL_CARE_PROVIDER = "after_school_care_id";
+	public final static String AFTER_SCHOOL_CARE_PROVIDER = "after_school_care_id";    
+    /** Dainis 23 Sep 2005 */
+    public final static String SORT_BY_BIRTHDATE = "sort_by_birthdate";   
 	
 	public void initializeAttributes() {
 		this.addAttribute(getIDColumnName());
@@ -136,6 +138,8 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 		this.addManyToManyRelationShip(SchoolStudyPath.class, "sch_school_study_path");
 		this.addAttribute(PROVIDER_STRING_ID, "Extra provider id", true, true, String.class, 40);
 		addManyToOneRelationship(AFTER_SCHOOL_CARE_PROVIDER, School.class);
+        // Dainis 23 Sep 2005
+        this.addAttribute(SORT_BY_BIRTHDATE, "Sorted by date of birth", true, true, Boolean.class);
 	}
 	public String getEntityName() {
 		return SCHOOL;
@@ -231,7 +235,7 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 		this.setColumn(MANAGEMENT_TYPE, id);
 	}
 	public String getSchoolName() {
-		return this.getStringColumnValue(NAME);
+		return (this.getSortByBirthdate() ? "*" : "") + this.getStringColumnValue(NAME);
 	}
 	public void setSchoolName(String name) {
 		this.setColumn(NAME, name);
@@ -995,4 +999,12 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 	public void removeAllStudyPaths() throws IDORemoveRelationshipException {
 		this.idoRemoveFrom(SchoolStudyPath.class);
 	}
+    
+    public boolean getSortByBirthdate() {
+        return getBooleanColumnValue(SORT_BY_BIRTHDATE);
+    }
+    
+    public void setSortByBirthdate(boolean arg) {
+        setColumn(SORT_BY_BIRTHDATE, arg);
+    }
 }
