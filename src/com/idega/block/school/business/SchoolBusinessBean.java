@@ -1674,7 +1674,17 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	}
 
 	public Collection findAllSchoolSeasons() {
-		return findAllSchoolSeasons(null);
+		return findAllSchoolSeasons((SchoolCategory) null);
+	}
+	
+	public Collection findAllSchoolSeasons(String schoolCategory) {
+		try {
+			return findAllSchoolSeasons(getSchoolCategoryHome().findByPrimaryKey(schoolCategory));
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return new ArrayList();
+		}
 	}
 
 	public Collection findAllSchoolSeasons(SchoolCategory category) {

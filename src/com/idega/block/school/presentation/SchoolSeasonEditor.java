@@ -53,6 +53,8 @@ public class SchoolSeasonEditor extends SchoolBlock {
 	private static final int ACTION_SAVE = 4;
 	private static final int ACTION_DELETE = 5;
 	
+	private String iSchoolCategory;
+
 	protected void init(IWContext iwc) throws Exception {
 		switch (parseAction(iwc)) {
 			case ACTION_VIEW:
@@ -90,7 +92,13 @@ public class SchoolSeasonEditor extends SchoolBlock {
 	private void saveArea(IWContext iwc) throws java.rmi.RemoteException {
 		String id = iwc.getParameter(PARAMETER_SCHOOL_SEASON_PK);
 		String name = iwc.getParameter(PARAMETER_NAME);
-		String category = iwc.getParameter(PARAMETER_CATEGORY);
+		String category = null;
+		if (iSchoolCategory == null) {
+			category = iwc.getParameter(PARAMETER_CATEGORY);
+		}
+		else {
+			category = iSchoolCategory;
+		}
 		Date startDate = iwc.isParameterSet(PARAMETER_SEASON_START) ? new IWTimestamp(iwc.getParameter(PARAMETER_SEASON_START)).getDate() : null;
 		Date endDate = iwc.isParameterSet(PARAMETER_SEASON_END) ? new IWTimestamp(iwc.getParameter(PARAMETER_SEASON_END)).getDate() : null;
 		Date dueDate = iwc.isParameterSet(PARAMETER_CHOICE_END_DATE) ? new IWTimestamp(iwc.getParameter(PARAMETER_CHOICE_END_DATE)).getDate() : null;
@@ -122,7 +130,12 @@ public class SchoolSeasonEditor extends SchoolBlock {
 
 		Collection seasons = null;
 		try {
-			seasons = getBusiness().findAllSchoolSeasons();
+			if (iSchoolCategory != null) {
+				seasons = getBusiness().findAllSchoolSeasons(iSchoolCategory);
+			}
+			else {
+				seasons = getBusiness().findAllSchoolSeasons();
+			}
 		}
 		catch (RemoteException rex) {
 			seasons = new ArrayList();
@@ -227,12 +240,14 @@ public class SchoolSeasonEditor extends SchoolBlock {
 		layer.add(inputName);
 		form.add(layer);
 
-		layer = new Layer(Layer.DIV);
-		layer.setStyleClass(STYLENAME_FORM_ELEMENT);
-		label = new Label(localize("school_category", "School category"), drpCategory);
-		layer.add(label);
-		layer.add(drpCategory);
-		form.add(layer);
+		if (iSchoolCategory == null) {
+			layer = new Layer(Layer.DIV);
+			layer.setStyleClass(STYLENAME_FORM_ELEMENT);
+			label = new Label(localize("school_category", "School category"), drpCategory);
+			layer.add(label);
+			layer.add(drpCategory);
+			form.add(layer);
+		}
 
 		layer = new Layer(Layer.DIV);
 		layer.setStyleClass(STYLENAME_FORM_ELEMENT);
@@ -271,5 +286,9 @@ public class SchoolSeasonEditor extends SchoolBlock {
 		form.add(save);
 
 		add(form);
+	}
+
+	public void setSchoolCategory(String category) {
+		this.iSchoolCategory = category;
 	}
 }
