@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolCareApplication.java,v 1.12 2005/09/27 15:31:41 laddi Exp $
+ * $Id: AfterSchoolCareApplication.java,v 1.13 2005/09/27 15:43:55 laddi Exp $
  * Created on Aug 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -34,10 +34,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/09/27 15:31:41 $ by $Author: laddi $
+ * Last modified: $Date: 2005/09/27 15:43:55 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class AfterSchoolCareApplication extends SchoolApplication {
 	
@@ -527,7 +527,7 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 	
 	private void save(IWContext iwc) throws RemoteException {
 	
-		Object seasonPK = iwc.getParameter(PARAMETER_SEASON);
+		Integer seasonPK = new Integer(iwc.getParameter(PARAMETER_SEASON));
 		Integer providerPK = new Integer(iwc.getParameter(PARAMETER_PROVIDER));
 		SchoolSeason season = getSchoolBusiness().getSchoolSeason(seasonPK);
 		School provider = getSchoolBusiness().getSchool(providerPK);
