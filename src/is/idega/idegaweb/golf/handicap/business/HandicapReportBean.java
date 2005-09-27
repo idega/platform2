@@ -1,5 +1,5 @@
 /*
- * $Id: HandicapReportBean.java,v 1.5 2005/02/07 15:05:11 laddi Exp $
+ * $Id: HandicapReportBean.java,v 1.6 2005/09/27 12:50:47 sigtryggur Exp $
  * Created on 7.2.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -37,10 +37,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/02/07 15:05:11 $ by $Author: laddi $
+ * Last modified: $Date: 2005/09/27 12:50:47 $ by $Author: sigtryggur $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class HandicapReportBean extends IBOSessionBean  implements HandicapReport{
 
@@ -50,6 +50,9 @@ public class HandicapReportBean extends IBOSessionBean  implements HandicapRepor
 	private static final String FIELD_CLUB = "golf_club";
 	private static final String FIELD_NAME = "name";
 	private static final String FIELD_PERSONAL_ID = "personal_id";
+	private static final String FIELD_YEAR_OF_BIRTH = "year_of_birth";
+	private static final String FIELD_MAIN_CLUB = "main_club";
+	private static final String FIELD_SUB_CLUBS = "sub_clubs";
 	private static final String FIELD_HANDICAP = "handicap";
 	private static final String FIELD_DATE = "date";
 	private static final String FIELD_POINTS = "points";
@@ -87,6 +90,18 @@ public class HandicapReportBean extends IBOSessionBean  implements HandicapRepor
 		personalID.setLocalizedName(getLocalizedString(FIELD_PERSONAL_ID, "Personal ID"), currentLocale);
 		reportCollection.addField(personalID);
 
+		ReportableField yearOfBirthField = new ReportableField(FIELD_YEAR_OF_BIRTH, String.class);
+		yearOfBirthField.setLocalizedName(getLocalizedString(FIELD_YEAR_OF_BIRTH, "Year of birth"), currentLocale);
+		reportCollection.addField(yearOfBirthField);
+
+		ReportableField mainClubField = new ReportableField(FIELD_MAIN_CLUB, String.class);
+		mainClubField.setLocalizedName(getLocalizedString(FIELD_MAIN_CLUB, "Main club"), currentLocale);
+		reportCollection.addField(mainClubField);
+
+		ReportableField subClubsField = new ReportableField(FIELD_SUB_CLUBS, String.class);
+		subClubsField.setLocalizedName(getLocalizedString(FIELD_SUB_CLUBS, "Sub clubs"), currentLocale);
+		reportCollection.addField(subClubsField);
+
 		ReportableField handicap = new ReportableField(FIELD_HANDICAP, String.class);
 		handicap.setLocalizedName(getLocalizedString(FIELD_HANDICAP, "Handicap"), currentLocale);
 		reportCollection.addField(handicap);
@@ -111,8 +126,10 @@ public class HandicapReportBean extends IBOSessionBean  implements HandicapRepor
 					continue;
 				}
 				
+				String yearOfBirth = null;
 				if (member.getDateOfBirth() != null) {
 					IWTimestamp dateOfBirth = new IWTimestamp(member.getDateOfBirth());
+					yearOfBirth = dateOfBirth.getDateString("yyyy");
 					if (yearFrom != null && dateOfBirth.getYear() < yearFrom.intValue()) {
 						continue;
 					}
@@ -131,11 +148,25 @@ public class HandicapReportBean extends IBOSessionBean  implements HandicapRepor
 					continue;
 				}
 				
+				String mainClub = member.getMainUnion().getName();
+				String subClubs = "";
+				Union[] unions = member.getUnions();
+				for (int i=0; i<unions.length; i++) {
+				    if (!mainClub.equals(unions[i].getName())) {
+				        subClubs = subClubs + unions[i].getName();
+				        if (i+1<unions.length && !mainClub.equals(unions[i+1].getName())) {
+					        subClubs = subClubs+", ";
+					    }
+				    }
+				}
 				ReportableData data = new ReportableData();
 
 				data.addData(club, memberUnion.getName());
 				data.addData(name, member.getName());
 				data.addData(personalID, member.getSocialSecurityNumber());
+				data.addData(yearOfBirthField, yearOfBirth);
+				//data.addData(mainClubField, mainClub);
+				data.addData(subClubsField, subClubs);
 				data.addData(handicap, memberInfo.getHandicap() < 100 ? TextSoap.decimalFormat(memberInfo.getHandicap(), 1) : "-");
 
 				reportCollection.add(data);
@@ -143,6 +174,9 @@ public class HandicapReportBean extends IBOSessionBean  implements HandicapRepor
 		}
 		catch (FinderException fe) {
 			log(fe);
+		}
+		catch (SQLException sqle) {
+			log(sqle);
 		}
 
 		return reportCollection;
