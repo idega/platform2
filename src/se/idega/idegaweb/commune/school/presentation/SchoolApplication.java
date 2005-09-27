@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolApplication.java,v 1.5 2005/09/26 19:57:00 laddi Exp $
+ * $Id: SchoolApplication.java,v 1.6 2005/09/27 08:31:09 laddi Exp $
  * Created on Aug 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -35,6 +35,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.remotescripting.RemoteScriptHandler;
 import com.idega.presentation.text.Break;
+import com.idega.presentation.text.HorizontalRule;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
@@ -51,10 +52,10 @@ import com.idega.user.data.User;
 import com.idega.util.PersonalIDFormatter;
 
 /**
- * Last modified: $Date: 2005/09/26 19:57:00 $ by $Author: laddi $
+ * Last modified: $Date: 2005/09/27 08:31:09 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class SchoolApplication extends SchoolBlock {
 
@@ -156,7 +157,7 @@ public class SchoolApplication extends SchoolBlock {
 			table.add(getPersonInfoTable(iwc, getSession().getUser()), 1, row++);
 			table.setHeight(row++, 6);
 			
-			table.add(getText(localize("application.home_school_information", "Home school information")), 1, row++);
+			table.add(getHeader(localize("application.home_school_information", "Home school information")), 1, row++);
 			table.setHeight(row++, 6);
 			
 			School school = getBusiness().getHomeSchoolForUser(getSession().getUser());
@@ -240,7 +241,7 @@ public class SchoolApplication extends SchoolBlock {
 		table.add(getPersonInfoTable(iwc, getSession().getUser()), 1, row++);
 		table.setHeight(row++, 6);
 		
-		table.add(getText(localize("application.other_school_information", "Other school information")), 1, row++);
+		table.add(getHeader(localize("application.other_school_information", "Other school information")), 1, row++);
 		table.setHeight(row++, 6);
 		
 		Table applicationTable = new Table(3, 4);
@@ -256,6 +257,9 @@ public class SchoolApplication extends SchoolBlock {
 		SelectorUtility util = new SelectorUtility();
 		DropdownMenu yearDropdown = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(SchoolAreaCollectionHandler.PARAMETER_SCHOOL_YEAR), years, "getSchoolYearName"));
 		yearDropdown.addMenuElementFirst("-1", localize("application.select_year", "Select year"));
+		if (iwc.isParameterSet(SchoolAreaCollectionHandler.PARAMETER_SCHOOL_YEAR)) {
+			yearDropdown.setSelectedElement(iwc.getParameter(SchoolAreaCollectionHandler.PARAMETER_SCHOOL_YEAR));
+		}
 		
 		applicationTable.add(getSmallHeader(localize("application.school_year", "School year")), 1, 1);
 		applicationTable.add(yearDropdown, 2, 1);
@@ -264,6 +268,21 @@ public class SchoolApplication extends SchoolBlock {
 			DropdownMenu areaDropdown = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_AREA + "_" + a), areas, "getSchoolAreaName"));
 			areaDropdown.addMenuElementFirst("", localize("appilcation.select_area", "Select area"));
 			DropdownMenu schoolDropdown = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_SCHOOLS + "_" + a));
+			if (iwc.isParameterSet(SchoolAreaCollectionHandler.PARAMETER_SCHOOL_YEAR) && iwc.isParameterSet(PARAMETER_AREA + "_" + a) && iwc.isParameterSet(PARAMETER_SCHOOLS + "_" + a)) {
+				try {
+					Collection schools = getSchoolBusiness().getSchoolHome().findAllByAreaAndTypesAndYear(Integer.parseInt(iwc.getParameter(PARAMETER_AREA + "_" + a)), getSchoolBusiness().getSchoolTypesForCategory(getSchoolBusiness().getCategoryElementarySchool(), false), Integer.parseInt(iwc.getParameter(SchoolAreaCollectionHandler.PARAMETER_SCHOOL_YEAR)));
+			    Iterator iter = schools.iterator();
+			    while (iter.hasNext()) {
+			    		School school = (School) iter.next();
+			    		schoolDropdown.addMenuElement(school.getPrimaryKey().toString(), school.getSchoolName());
+			    }
+					schoolDropdown.addMenuElementFirst("-1", localize("select_school","Select school"));
+				}
+				catch (FinderException fe) {
+					fe.printStackTrace();
+				}
+				schoolDropdown.setSelectedElement(iwc.getParameter(PARAMETER_SCHOOLS + "_" + a));
+			}
 
 			applicationTable.add(getSmallHeader(localize("application.school_" + a, "School choice nr. " + a)), 1, a + 1);
 			applicationTable.add(areaDropdown, 2, a + 1);
@@ -320,8 +339,8 @@ public class SchoolApplication extends SchoolBlock {
 		table.add(getPersonInfoTable(iwc, getSession().getUser()), 1, row++);
 		table.setHeight(row++, 6);
 		
-		table.add(getText(localize("application.custodian_information", "Custodian information")), 1, row++);
-		table.setHeight(row++, 6);
+		table.add(getHeader(localize("application.custodian_information", "Custodian information")), 1, row++);
+		table.setHeight(row++, 18);
 		
 		Table applicationTable = new Table();
 		applicationTable.setCellpadding(0);
@@ -338,10 +357,16 @@ public class SchoolApplication extends SchoolBlock {
 			
 			if (iter.hasNext()) {
 				applicationTable.setHeight(aRow++, 6);
+				applicationTable.mergeCells(1, aRow, applicationTable.getColumns(), aRow);
+				applicationTable.add(new HorizontalRule(), 1, aRow++);
+				applicationTable.setHeight(aRow++, 6);
 			}
 		}
 
-		applicationTable.setHeight(aRow++, 12);
+		applicationTable.setHeight(aRow++, 6);
+		applicationTable.mergeCells(1, aRow, applicationTable.getColumns(), aRow);
+		applicationTable.add(new HorizontalRule(), 1, aRow++);
+		applicationTable.setHeight(aRow++, 6);
 		
 		User custodian = getCareBusiness().getExtraCustodian(getSession().getUser());
 		if (iwc.isParameterSet(PARAMETER_PERSONAL_ID)) {
@@ -532,7 +557,7 @@ public class SchoolApplication extends SchoolBlock {
 		table.setHeight(row++, 6);
 		
 		table.add(getText(localize("application.relative_information", "Relative information")), 1, row++);
-		table.setHeight(row++, 6);
+		table.setHeight(row++, 18);
 		
 		Table applicationTable = new Table();
 		applicationTable.setCellpadding(0);
@@ -562,6 +587,9 @@ public class SchoolApplication extends SchoolBlock {
 			aRow = addParentToTable(iwc, applicationTable, relative, aRow, false, a, true);
 			
 			if (a == 1) {
+				applicationTable.setHeight(aRow++, 6);
+				applicationTable.mergeCells(1, aRow, applicationTable.getColumns(), aRow);
+				applicationTable.add(new HorizontalRule(), 1, aRow++);
 				applicationTable.setHeight(aRow++, 6);
 			}
 		}
@@ -635,7 +663,8 @@ public class SchoolApplication extends SchoolBlock {
 
 		applicationTable.mergeCells(2, aRow, 4, aRow);
 		applicationTable.add(getSmallHeader(localize("child.growth_deviation_details", "Growth deviation details")), 1, aRow);
-		applicationTable.add(getTextArea(PARAMETER_GROWTH_DEVIATION_DETAILS, getCareBusiness().getGrowthDeviationDetails(getSession().getUser())), 2, aRow++);
+		applicationTable.add(new Break(), 1, aRow);
+		applicationTable.add(getTextArea(PARAMETER_GROWTH_DEVIATION_DETAILS, getCareBusiness().getGrowthDeviationDetails(getSession().getUser())), 1, aRow++);
 
 		applicationTable.add(getSmallHeader(localize("child.has_allergies", "Has allergies")), 1, aRow);
 		yes = getRadioButton(PARAMETER_ALLERGIES, Boolean.TRUE.toString());
@@ -905,6 +934,9 @@ public class SchoolApplication extends SchoolBlock {
 		form.maintainParameter(PARAMETER_SCHOOLS + "_1");
 		form.maintainParameter(PARAMETER_SCHOOLS + "_2");
 		form.maintainParameter(PARAMETER_SCHOOLS + "_3");
+		form.maintainParameter(PARAMETER_AREA + "_1");
+		form.maintainParameter(PARAMETER_AREA + "_2");
+		form.maintainParameter(PARAMETER_AREA + "_3");
 		form.maintainParameter(SchoolAreaCollectionHandler.PARAMETER_SCHOOL_YEAR);
 		form.maintainParameter(PARAMETER_MESSAGE);
 		form.maintainParameter(PARAMETER_HOME_SCHOOL);

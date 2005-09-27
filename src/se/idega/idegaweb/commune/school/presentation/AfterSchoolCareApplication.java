@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolCareApplication.java,v 1.4 2005/09/27 07:41:47 laddi Exp $
+ * $Id: AfterSchoolCareApplication.java,v 1.5 2005/09/27 08:31:09 laddi Exp $
  * Created on Aug 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -34,10 +34,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/09/27 07:41:47 $ by $Author: laddi $
+ * Last modified: $Date: 2005/09/27 08:31:09 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class AfterSchoolCareApplication extends SchoolApplication {
 	
@@ -131,7 +131,7 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 			table.add(getPersonInfoTable(iwc, getSession().getUser()), 1, row++);
 			table.setHeight(row++, 6);
 			
-			table.add(getHeader(localize("after_school_application.application_for_after_school_care", "Application for after school care")), 1, row++);
+			table.add(getText(localize("after_school_application.application_information", "Application for after school care information")), 1, row++);
 			table.setHeight(row++, 12);
 			
 			Table applicationTable = new Table(2, 3);
@@ -188,7 +188,7 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		table.add(getPersonInfoTable(iwc, getSession().getUser()), 1, row++);
 		table.setHeight(row++, 6);
 		
-		table.add(getText(localize("application.child_information", "Child information")), 1, row++);
+		table.add(getHeader(localize("application.child_information", "Child information")), 1, row++);
 		table.setHeight(row++, 6);
 		
 		Table applicationTable = new Table();
@@ -327,7 +327,7 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		table.add(getPersonInfoTable(iwc, getSession().getUser()), 1, row++);
 		table.setHeight(row++, 6);
 		
-		table.add(getText(localize("application.care_time_information", "Care time information")), 1, row++);
+		table.add(getHeader(localize("application.care_time_information", "Care time information")), 1, row++);
 		table.setHeight(row++, 6);
 		
 		Table applicationTable = new Table(4, 5);
