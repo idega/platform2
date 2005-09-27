@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolCareApplication.java,v 1.14 2005/09/27 19:33:58 laddi Exp $
+ * $Id: AfterSchoolCareApplication.java,v 1.15 2005/09/27 19:54:13 laddi Exp $
  * Created on Aug 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -34,10 +34,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/09/27 19:33:58 $ by $Author: laddi $
+ * Last modified: $Date: 2005/09/27 19:54:13 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class AfterSchoolCareApplication extends SchoolApplication {
 	
@@ -532,13 +532,13 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		SchoolSeason season = getSchoolBusiness().getSchoolSeason(seasonPK);
 		School provider = getSchoolBusiness().getSchool(providerPK);
 		
-		String[] pickedUpStrings = iwc.getParameterValues(PARAMETER_PICKED_UP);
-		boolean[] pickedUp = new boolean[pickedUpStrings.length];
-		for (int a = 0; a < pickedUpStrings.length; a++) {
-			pickedUp[a] = new Boolean(pickedUpStrings[a]).booleanValue();
-		}
-		String[] time = iwc.getParameterValues(PARAMETER_TIME);
 		int[] days = { 1, 2, 3, 4, 5 };
+		String[] time = new String[days.length];
+		boolean[] pickedUp = new boolean[days.length];
+		for (int a = 0; a < days.length; a++) {
+			pickedUp[a] = new Boolean(iwc.getParameter(PARAMETER_PICKED_UP + "_" + (a+1))).booleanValue();
+			time[a] = iwc.getParameter(PARAMETER_TIME + "_" + (a+1));
+		}
 		
 		String payerName = iwc.getParameter(PARAMETER_PAYER_NAME);
 		String payerPersonalID = iwc.getParameter(PARAMETER_PAYER_PERSONAL_ID);
