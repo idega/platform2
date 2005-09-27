@@ -338,6 +338,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 	
 	public void storeDays(ChildCareApplication application, int[] dayOfWeek, String[] timeOfDeparture, boolean[] pickedUp) {
 		try {
+			System.out.println(timeOfDeparture);
 			for (int a = 0; a < dayOfWeek.length; a++) {
 				if (timeOfDeparture[a] != "-1") {
 					AfterSchoolCareDays days = getAfterSchoolCareDaysHome().create();
