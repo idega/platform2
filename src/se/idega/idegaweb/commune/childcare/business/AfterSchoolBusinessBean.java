@@ -418,7 +418,8 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 				choice.store();
 			}
 			
-			storeDays(choice, days, timeOfDeparture, pickedUp);
+			//TODO: Fix this mess...
+			//storeDays(choice, days, timeOfDeparture, pickedUp);
 			
 			IWTimestamp registerDate = new IWTimestamp(season.getSchoolSeasonStart());
 			
