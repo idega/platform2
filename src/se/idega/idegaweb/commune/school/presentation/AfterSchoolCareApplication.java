@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolCareApplication.java,v 1.7 2005/09/27 12:18:17 laddi Exp $
+ * $Id: AfterSchoolCareApplication.java,v 1.8 2005/09/27 12:29:32 laddi Exp $
  * Created on Aug 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -34,10 +34,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/09/27 12:18:17 $ by $Author: laddi $
+ * Last modified: $Date: 2005/09/27 12:29:32 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class AfterSchoolCareApplication extends SchoolApplication {
 	
@@ -286,9 +286,9 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		applicationTable.add(yes, 2, aRow);
 		applicationTable.add(no, 3, aRow++);
 
-		applicationTable.mergeCells(2, aRow, 4, aRow);
 		applicationTable.add(getSmallHeader(localize("child.other_after_school_information", "Other after school care information")), 1, aRow);
-		applicationTable.add(getTextArea(PARAMETER_AFTER_SCHOOL_INFORMATION, getBusiness().getAfterSchoolCareOtherInformation(getSession().getUser())), 2, aRow);
+		applicationTable.add(new Break(), 1, aRow);
+		applicationTable.add(getTextArea(PARAMETER_AFTER_SCHOOL_INFORMATION, getBusiness().getAfterSchoolCareOtherInformation(getSession().getUser())), 1, aRow);
 
 		table.setHeight(row++, 18);
 		
@@ -324,7 +324,7 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		table.add(getPersonInfoTable(iwc, getSession().getUser()), 1, row++);
 		table.setHeight(row++, 6);
 		
-		table.add(getHeader(localize("application.care_time_information", "Care time information")), 1, row++);
+		table.add(getText(localize("application.care_time_information", "Care time information")), 1, row++);
 		table.setHeight(row++, 6);
 		
 		Table applicationTable = new Table(4, 5);

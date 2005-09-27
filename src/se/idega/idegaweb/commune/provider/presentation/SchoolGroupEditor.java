@@ -127,6 +127,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 		table.setCellspacing(0);
 		table.setHeight(2, 12);
 		table.setHeight(4, 12);
+		table.setWidth(getWidth());
 		
 		table.add(getNavigationForm(showStudyPaths), 1, 1);
 		
