@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolCareApplication.java,v 1.5 2005/09/27 08:31:09 laddi Exp $
+ * $Id: AfterSchoolCareApplication.java,v 1.6 2005/09/27 09:25:35 laddi Exp $
  * Created on Aug 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -34,10 +34,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/09/27 08:31:09 $ by $Author: laddi $
+ * Last modified: $Date: 2005/09/27 09:25:35 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class AfterSchoolCareApplication extends SchoolApplication {
 	
@@ -223,9 +223,9 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 			applicationTable.add(no, 3, aRow);
 			applicationTable.add(noAnswer, 4, aRow++);
 	
-			applicationTable.mergeCells(2, aRow, 4, aRow);
 			applicationTable.add(getSmallHeader(localize("child.growth_deviation_details", "Growth deviation details")), 1, aRow);
-			applicationTable.add(getTextArea(PARAMETER_GROWTH_DEVIATION_DETAILS, getCareBusiness().getGrowthDeviationDetails(getSession().getUser())), 2, aRow++);
+			applicationTable.add(new Break(), 1, aRow);
+			applicationTable.add(getTextArea(PARAMETER_GROWTH_DEVIATION_DETAILS, getCareBusiness().getGrowthDeviationDetails(getSession().getUser())), 1, aRow++);
 	
 			applicationTable.add(getSmallHeader(localize("child.has_allergies", "Has allergies")), 1, aRow);
 			yes = getRadioButton(PARAMETER_ALLERGIES, Boolean.TRUE.toString());
@@ -247,12 +247,10 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 			applicationTable.add(no, 3, aRow);
 			applicationTable.add(noAnswer, 4, aRow++);
 	
-			applicationTable.mergeCells(1, aRow, 4, aRow);
 			applicationTable.add(getSmallHeader(localize("child.allergies_details", "Allergies details")), 1, aRow);
 			applicationTable.add(new Break(), 1, aRow);
 			applicationTable.add(getTextArea(PARAMETER_ALLERGIES_DETAILS, getCareBusiness().getAllergiesDetails(getSession().getUser())), 1, aRow++);
 	
-			applicationTable.mergeCells(1, aRow, 4, aRow);
 			applicationTable.add(getSmallHeader(localize("child.last_care_provider", "Last care provider")), 1, aRow);
 			applicationTable.add(new Break(), 1, aRow);
 			applicationTable.add(getTextArea(PARAMETER_LAST_CARE_PROVIDER, getCareBusiness().getLastCareProvider(getSession().getUser())), 1, aRow++);
@@ -270,7 +268,6 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 			applicationTable.add(yes, 2, aRow);
 			applicationTable.add(no, 3, aRow++);
 	
-			applicationTable.mergeCells(1, aRow, 4, aRow);
 			applicationTable.add(getSmallHeader(localize("child.other_information", "Other information")), 1, aRow);
 			applicationTable.add(new Break(), 1, aRow);
 			applicationTable.add(getTextArea(PARAMETER_OTHER_INFORMATION, getCareBusiness().getOtherInformation(getSession().getUser())), 1, aRow++);
