@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolCareApplication.java,v 1.10 2005/09/27 13:46:30 laddi Exp $
+ * $Id: AfterSchoolCareApplication.java,v 1.11 2005/09/27 15:18:29 laddi Exp $
  * Created on Aug 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -34,10 +34,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/09/27 13:46:30 $ by $Author: laddi $
+ * Last modified: $Date: 2005/09/27 15:18:29 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class AfterSchoolCareApplication extends SchoolApplication {
 	
@@ -441,7 +441,7 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		table.add(getPersonInfoTable(iwc, getSession().getUser()), 1, row++);
 		table.setHeight(row++, 6);
 		
-		table.add(getHeader(localize("application.creditcard_information", "Creditcard information")), 1, row++);
+		table.add(getText(localize("application.creditcard_information", "Creditcard information")), 1, row++);
 		table.setHeight(row++, 12);
 		
 		Table applicationTable = new Table(2, 5);

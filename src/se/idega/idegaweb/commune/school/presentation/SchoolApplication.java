@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolApplication.java,v 1.10 2005/09/27 13:46:30 laddi Exp $
+ * $Id: SchoolApplication.java,v 1.11 2005/09/27 15:18:29 laddi Exp $
  * Created on Aug 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -52,10 +52,10 @@ import com.idega.user.data.User;
 import com.idega.util.PersonalIDFormatter;
 
 /**
- * Last modified: $Date: 2005/09/27 13:46:30 $ by $Author: laddi $
+ * Last modified: $Date: 2005/09/27 15:18:29 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class SchoolApplication extends SchoolBlock {
 
@@ -95,6 +95,7 @@ public class SchoolApplication extends SchoolBlock {
 	protected static final String PARAMETER_CAN_DISPLAY_IMAGES = "prm_can_display_images";
 
 	private boolean iHomeSchoolChosen = false;
+	private boolean iSchoolChange = false;
 	
 	private ICPage iAfterSchoolCarePage;
 	protected ICPage iHomePage;
@@ -222,7 +223,12 @@ public class SchoolApplication extends SchoolBlock {
 		if (!iwc.isParameterSet(PARAMETER_SEASON)) {
 			SchoolSeason season = null;
 			try {
-				season = getCareBusiness().getCurrentSeason();
+				if (iSchoolChange) {
+					season = getSchoolBusiness().getCurrentSchoolSeason(getSchoolBusiness().getCategoryElementarySchool());
+				}
+				else {
+					season = getCareBusiness().getCurrentSeason();
+				}
 			}
 			catch (FinderException fe) {
 				log(fe);
@@ -265,7 +271,7 @@ public class SchoolApplication extends SchoolBlock {
 		applicationTable.add(getSmallHeader(localize("application.school_year", "School year")), 1, 1);
 		applicationTable.add(yearDropdown, 2, 1);
 		
-		for (int a = 1; a <= 3; a++) {
+		for (int a = 1; a <= (iSchoolChange ? 1 : 3); a++) {
 			DropdownMenu areaDropdown = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_AREA + "_" + a), areas, "getSchoolAreaName"));
 			areaDropdown.addMenuElementFirst("", localize("appilcation.select_area", "Select area"));
 			DropdownMenu schoolDropdown = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_SCHOOLS + "_" + a));
@@ -914,6 +920,9 @@ public class SchoolApplication extends SchoolBlock {
 		if (iwc.isParameterSet(PARAMETER_ACTION)) {
 			action = Integer.parseInt(iwc.getParameter(PARAMETER_ACTION));
 		}
+		else if (iSchoolChange) {
+			action = ACTION_PHASE_2;
+		}
 		
 		iHomeSchoolChosen = false;
 		if (iwc.isParameterSet(PARAMETER_HOME_SCHOOL)) {
@@ -954,19 +963,20 @@ public class SchoolApplication extends SchoolBlock {
 		
 		return relations;
 	}
-
 	
 	protected ICPage getHomePage() {
 		return iHomePage;
 	}
-
 	
 	public void setHomePage(ICPage homePage) {
 		iHomePage = homePage;
 	}
-
 	
 	public void setAfterSchoolCarePage(ICPage afterSchoolCarePage) {
 		iAfterSchoolCarePage = afterSchoolCarePage;
+	}
+	
+	public void setAsSchoolChange(boolean schoolChange) {
+		iSchoolChange = schoolChange;
 	}
 }
