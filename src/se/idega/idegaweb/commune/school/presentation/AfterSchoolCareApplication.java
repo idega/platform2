@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolCareApplication.java,v 1.11 2005/09/27 15:18:29 laddi Exp $
+ * $Id: AfterSchoolCareApplication.java,v 1.12 2005/09/27 15:31:41 laddi Exp $
  * Created on Aug 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -34,10 +34,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/09/27 15:18:29 $ by $Author: laddi $
+ * Last modified: $Date: 2005/09/27 15:31:41 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class AfterSchoolCareApplication extends SchoolApplication {
 	
@@ -477,7 +477,8 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		IWTimestamp stamp = new IWTimestamp();
 		DropdownMenu validYear = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_VALID_YEAR));
 		validYear.keepStatusOnAction(true);
-		for (int a = stamp.getYear(); a <= stamp.getYear() + 10; a++) {
+		int year = stamp.getYear();
+		for (int a = year; a <= year + 10; a++) {
 			validYear.addMenuElement(stamp.getYear(), String.valueOf(stamp.getYear()));
 			stamp.addYears(1);
 		}
@@ -527,7 +528,7 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 	private void save(IWContext iwc) throws RemoteException {
 	
 		Object seasonPK = iwc.getParameter(PARAMETER_SEASON);
-		Object providerPK = iwc.getParameter(PARAMETER_PROVIDER);
+		Integer providerPK = new Integer(iwc.getParameter(PARAMETER_PROVIDER));
 		SchoolSeason season = getSchoolBusiness().getSchoolSeason(seasonPK);
 		School provider = getSchoolBusiness().getSchool(providerPK);
 		
