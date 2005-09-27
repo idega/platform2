@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolCareApplication.java,v 1.3 2005/09/26 19:57:00 laddi Exp $
+ * $Id: AfterSchoolCareApplication.java,v 1.4 2005/09/27 07:41:47 laddi Exp $
  * Created on Aug 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -34,10 +34,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/09/26 19:57:00 $ by $Author: laddi $
+ * Last modified: $Date: 2005/09/27 07:41:47 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class AfterSchoolCareApplication extends SchoolApplication {
 	
@@ -113,10 +113,8 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		if (getBusiness().hasSchoolPlacing(getSession().getUser(), season)) {
 			SchoolClassMember placement = getBusiness().getSchoolPlacing(getSession().getUser(), season);
 			SchoolClass group = placement.getSchoolClass();
-			//School school = group.getSchool();
-			//School provider = school.getAfterSchoolCareProvider();
 			School school = group.getSchool();
-			School provider = group.getSchool();
+			School provider = school.getAfterSchoolCareProvider();
 			if (provider == null) {
 				add(getErrorText(localize("no_after_school_care_provider_found", "No after school care provider was found for the school the student is placed in.")));
 				return;
