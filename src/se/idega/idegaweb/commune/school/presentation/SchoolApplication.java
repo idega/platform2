@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolApplication.java,v 1.6 2005/09/27 08:31:09 laddi Exp $
+ * $Id: SchoolApplication.java,v 1.7 2005/09/27 08:35:22 laddi Exp $
  * Created on Aug 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -52,10 +52,10 @@ import com.idega.user.data.User;
 import com.idega.util.PersonalIDFormatter;
 
 /**
- * Last modified: $Date: 2005/09/27 08:31:09 $ by $Author: laddi $
+ * Last modified: $Date: 2005/09/27 08:35:22 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class SchoolApplication extends SchoolBlock {
 
@@ -584,7 +584,7 @@ public class SchoolApplication extends SchoolBlock {
 				}
 			}
 
-			aRow = addParentToTable(iwc, applicationTable, relative, aRow, false, a, true);
+			aRow = addParentToTable(iwc, applicationTable, relative, aRow, true, a, true);
 			
 			if (a == 1) {
 				applicationTable.setHeight(aRow++, 6);
