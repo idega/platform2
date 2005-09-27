@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolCareApplication.java,v 1.13 2005/09/27 15:43:55 laddi Exp $
+ * $Id: AfterSchoolCareApplication.java,v 1.14 2005/09/27 19:33:58 laddi Exp $
  * Created on Aug 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -34,10 +34,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/09/27 15:43:55 $ by $Author: laddi $
+ * Last modified: $Date: 2005/09/27 19:33:58 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class AfterSchoolCareApplication extends SchoolApplication {
 	
@@ -45,8 +45,8 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 	protected static final int ACTION_PHASE_7 = 7;
 
 	private static final String PARAMETER_PROVIDER = "prm_provider";
-	private static final String PARAMETER_TIME = "prm_provider";
-	private static final String PARAMETER_PICKED_UP = "prm_provider";
+	private static final String PARAMETER_TIME = "prm_time";
+	private static final String PARAMETER_PICKED_UP = "prm_picked_up";
 	private static final String PARAMETER_CREDITCARD_PAYMENT = "prm_creditcard_payment";
 
 	private static final String PARAMETER_PAYER_NAME = "prm_payer_name";
@@ -388,7 +388,7 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		table.add(getPersonInfoTable(iwc, getSession().getUser()), 1, row++);
 		table.setHeight(row++, 6);
 		
-		table.add(getHeader(localize("application.payment_information", "Payment information")), 1, row++);
+		table.add(getText(localize("application.payment_information", "Payment information")), 1, row++);
 		table.setHeight(row++, 6);
 		
 		table.add(getHeader(localize("application.payment_details", "Payment details")), 1, row++);
