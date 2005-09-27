@@ -106,9 +106,8 @@ public class ChildCareChildApplication extends ChildCareBlock {
 				
 			case ACTION_SUBMIT :
 				submitForm(iwc);
-				break;					
-				
-					
+				break;
+                
 			}
 		}
 		else{
@@ -434,7 +433,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 	}
 
 	private Table getChildInfoTable(IWContext iwc) {
-		Table table = new Table(3,3);
+		Table table = new Table(3,5);
 		table.setColumns(3);
 		table.setCellpadding(2);
 		table.setCellspacing(0);
@@ -460,9 +459,10 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		}
         
         if (showQueueSortedByBirthdateMessage) {
+            table.setHeight(4, 12);  
             table.add(getSmallText("* "
                     + localize(QUEUE_SORTED_BY_BIRTHDATE,
-                            "Queue sorted by date of birth")), 3, 4); 
+                            "Queue sorted by date of birth")), 3, 5); 
         }
         
 		return table;
@@ -593,8 +593,8 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			if (areas == null)
 				areas = getBusiness().getSchoolBusiness().findAllSchoolAreas();
 			if (providerMap == null)
-				providerMap = getBusiness().getProviderAreaMap(areas, currentProvider, locale, emptyString, false);
-			
+				providerMap = getBusiness().getProviderAreaMap(areas,
+                        currentProvider, locale, emptyString, false);			
             
 			if (areas != null && providerMap != null) {
 				Iterator iter = areas.iterator();
@@ -604,14 +604,17 @@ public class ChildCareChildApplication extends ChildCareBlock {
                     
                     // if at least one provider has set order by birthdate property, then according
                     // flag is set, so message about it will be shown to the user
-                    if ( (areaProviders != null) && (!showQueueSortedByBirthdateMessage) ) {
+                    // XXX refactor it to more reusable method
+                    if ( (areaProviders != null) && (!showQueueSortedByBirthdateMessage) ) {                        
                         for (Iterator it = areaProviders.keySet().iterator(); it.hasNext();) {
-                            Object key = it.next();                            
+                            Object key = it.next(); 
                             School provider = (School) areaProviders.get(key);
-                            if (provider.getSortByBirthdate()) {
-                                showQueueSortedByBirthdateMessage = true;
+                            if (provider instanceof School) {
+                                if (provider.getSortByBirthdate()) {
+                                    showQueueSortedByBirthdateMessage = true;
+                                }
                             }
-                        }
+                        }                        
                     }
                     
 					dropdown.addMenuElement(area.getPrimaryKey().toString(), area.getSchoolAreaName(), areaProviders);
