@@ -1,5 +1,5 @@
 /*
- * $Id: HandicapReportBean.java,v 1.6 2005/09/27 12:50:47 sigtryggur Exp $
+ * $Id: HandicapReportBean.java,v 1.7 2005/09/27 12:56:19 sigtryggur Exp $
  * Created on 7.2.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -37,10 +37,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/09/27 12:50:47 $ by $Author: sigtryggur $
+ * Last modified: $Date: 2005/09/27 12:56:19 $ by $Author: sigtryggur $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class HandicapReportBean extends IBOSessionBean  implements HandicapReport{
 
@@ -94,9 +94,9 @@ public class HandicapReportBean extends IBOSessionBean  implements HandicapRepor
 		yearOfBirthField.setLocalizedName(getLocalizedString(FIELD_YEAR_OF_BIRTH, "Year of birth"), currentLocale);
 		reportCollection.addField(yearOfBirthField);
 
-		ReportableField mainClubField = new ReportableField(FIELD_MAIN_CLUB, String.class);
-		mainClubField.setLocalizedName(getLocalizedString(FIELD_MAIN_CLUB, "Main club"), currentLocale);
-		reportCollection.addField(mainClubField);
+		//ReportableField mainClubField = new ReportableField(FIELD_MAIN_CLUB, String.class);
+		//mainClubField.setLocalizedName(getLocalizedString(FIELD_MAIN_CLUB, "Main club"), currentLocale);
+		//reportCollection.addField(mainClubField);
 
 		ReportableField subClubsField = new ReportableField(FIELD_SUB_CLUBS, String.class);
 		subClubsField.setLocalizedName(getLocalizedString(FIELD_SUB_CLUBS, "Sub clubs"), currentLocale);
