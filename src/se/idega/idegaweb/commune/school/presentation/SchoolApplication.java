@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolApplication.java,v 1.12 2005/09/27 19:15:26 laddi Exp $
+ * $Id: SchoolApplication.java,v 1.13 2005/09/27 20:15:11 laddi Exp $
  * Created on Aug 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -52,10 +52,10 @@ import com.idega.user.data.User;
 import com.idega.util.PersonalIDFormatter;
 
 /**
- * Last modified: $Date: 2005/09/27 19:15:26 $ by $Author: laddi $
+ * Last modified: $Date: 2005/09/27 20:15:11 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class SchoolApplication extends SchoolBlock {
 
@@ -535,7 +535,7 @@ public class SchoolApplication extends SchoolBlock {
 		table.setHeight(row++, 5);
 		
 		table.add(getText(localize("relation", "Relation")), 1, row++);
-		DropdownMenu relationMenu = getRelationDropdown();
+		DropdownMenu relationMenu = getRelationDropdown(custodian);
 		if (custodian != null) {
 			String relation = getCareBusiness().getUserRelation(getSession().getUser(), custodian);
 			if (relation != null) {
@@ -866,12 +866,11 @@ public class SchoolApplication extends SchoolBlock {
 		String[] workPhones = iwc.getParameterValues(PARAMETER_WORK_PHONE);
 		String[] mobilePhones = iwc.getParameterValues(PARAMETER_MOBILE_PHONE);
 		String[] emails = iwc.getParameterValues(PARAMETER_EMAIL);
-		String[] relations = iwc.getParameterValues(PARAMETER_RELATION);
 		
 		if (userPKs != null) {
 			for (int a = 0; a < userPKs.length; a++) {
 				String userPK = userPKs[a];
-				String relation = relations[a];
+				String relation = iwc.getParameter(PARAMETER_RELATION + "_" + userPK);
 				User custodian = getUserBusiness().getUser(new Integer(userPK));
 				
 				if (storeRelatives) {
@@ -881,7 +880,7 @@ public class SchoolApplication extends SchoolBlock {
 					if (getUserBusiness().getMemberFamilyLogic().isCustodianOf(custodian, getSession().getUser())) {
 						getCareBusiness().updateUserInfo(custodian, homePhones[a], workPhones[a], mobilePhones[a], emails[a]);
 						if (relation != null && relation.length() > 0) {
-							getCareBusiness().storeUserRelation(getSession().getUser(), custodian, relations[a]);
+							getCareBusiness().storeUserRelation(getSession().getUser(), custodian, relation);
 						}
 					}
 					else {
@@ -953,8 +952,8 @@ public class SchoolApplication extends SchoolBlock {
 		return form;
 	}
 	
-	private DropdownMenu getRelationDropdown() {
-		DropdownMenu relations = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_RELATION));
+	private DropdownMenu getRelationDropdown(User relative) {
+		DropdownMenu relations = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_RELATION + (relative != null ? "_" + relative.getPrimaryKey().toString() : "")));
 		relations.addMenuElement("", localize("select_relation", "Select relation"));
 		relations.addMenuElement(CareConstants.RELATION_MOTHER, localize("relation.mother", "Mother"));
 		relations.addMenuElement(CareConstants.RELATION_FATHER, localize("relation.father", "Father"));

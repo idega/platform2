@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolCareApplication.java,v 1.15 2005/09/27 19:54:13 laddi Exp $
+ * $Id: AfterSchoolCareApplication.java,v 1.16 2005/09/27 20:15:11 laddi Exp $
  * Created on Aug 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -34,10 +34,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/09/27 19:54:13 $ by $Author: laddi $
+ * Last modified: $Date: 2005/09/27 20:15:11 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class AfterSchoolCareApplication extends SchoolApplication {
 	
@@ -652,7 +652,7 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		end.setTime(17, 15, 0);
 		
 		while (stamp.getTime().before(end.getTime())) {
-			menu.addMenuElement(stamp.toSQLTimeString(), stamp.getDateString("HH:mm", locale));
+			menu.addMenuElement(stamp.getDateString("HH:mm:ss"), stamp.getDateString("HH:mm", locale));
 			stamp.addMinutes(30);
 		}
 		
