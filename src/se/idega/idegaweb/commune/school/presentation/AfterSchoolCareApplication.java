@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolCareApplication.java,v 1.6 2005/09/27 09:25:35 laddi Exp $
+ * $Id: AfterSchoolCareApplication.java,v 1.7 2005/09/27 12:18:17 laddi Exp $
  * Created on Aug 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -34,10 +34,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/09/27 09:25:35 $ by $Author: laddi $
+ * Last modified: $Date: 2005/09/27 12:18:17 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class AfterSchoolCareApplication extends SchoolApplication {
 	
@@ -541,8 +541,8 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		String payerPersonalID = iwc.getParameter(PARAMETER_PAYER_PERSONAL_ID);
 		String cardType = iwc.getParameter(PARAMETER_CARD_TYPE);
 		String cardNumber = iwc.getParameter(PARAMETER_CARD_NUMBER);
-		int validMonth = Integer.parseInt(iwc.getParameter(PARAMETER_VALID_MONTH));
-		int validYear = Integer.parseInt(iwc.getParameter(PARAMETER_VALID_YEAR));
+		int validMonth = iwc.isParameterSet(PARAMETER_VALID_MONTH) ? Integer.parseInt(iwc.getParameter(PARAMETER_VALID_MONTH)) : -1;
+		int validYear = iwc.isParameterSet(PARAMETER_VALID_MONTH) ? Integer.parseInt(iwc.getParameter(PARAMETER_VALID_YEAR)) : -1;
 
 		boolean saved = getAfterSchoolBusiness().storeAfterSchoolCare(new IWTimestamp(), iwc.getCurrentUser(), getSession().getUser(), provider, null, season, days, time, pickedUp, payerName, payerPersonalID, cardType, cardNumber, validMonth, validYear);
 		
