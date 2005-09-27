@@ -1,8 +1,8 @@
 /*
- * $Id: GolfUserPluginBusiness.java,v 1.6 2005/07/14 11:21:41 eiki Exp $
- * Created on Dec 7, 2004
+ * $Id: GolfUserPluginBusiness.java,v 1.7 2005/09/27 17:33:58 eiki Exp $
+ * Created on Sep 27, 2005
  *
- * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
+ * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
  * This software is the proprietary information of Idega hf.
  * Use is subject to license terms.
@@ -26,32 +26,32 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2005/07/14 11:21:41 $ by $Author: eiki $
+ *  Last modified: $Date: 2005/09/27 17:33:58 $ by $Author: eiki $
  * 
  * @author <a href="mailto:eiki@idega.com">eiki</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public interface GolfUserPluginBusiness extends IBOService, UserGroupPlugInBusiness {
 
 	/**
 	 * @see is.idega.idegaweb.golf.business.plugin.GolfUserPluginBusinessBean#afterGroupCreateOrUpdate
 	 */
-	public void afterGroupCreateOrUpdate(Group group,Group parentGroup) throws CreateException, RemoteException;
+	public void afterGroupCreateOrUpdate(Group group, Group parentGroup) throws CreateException, RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.golf.business.plugin.GolfUserPluginBusinessBean#afterUserCreateOrUpdate
 	 */
-	public void afterUserCreateOrUpdate(User user,Group parentGroup) throws CreateException, RemoteException;
+	public void afterUserCreateOrUpdate(User user, Group parentGroup) throws CreateException, RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.golf.business.plugin.GolfUserPluginBusinessBean#beforeGroupRemove
 	 */
-	public void beforeGroupRemove(Group group,Group parentGroup) throws RemoveException, RemoteException;
+	public void beforeGroupRemove(Group group, Group parentGroup) throws RemoveException, RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.golf.business.plugin.GolfUserPluginBusinessBean#beforeUserRemove
 	 */
-	public void beforeUserRemove(User user,Group parentGroup) throws RemoveException, RemoteException;
+	public void beforeUserRemove(User user, Group parentGroup) throws RemoveException, RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.golf.business.plugin.GolfUserPluginBusinessBean#getGroupPropertiesTabs
@@ -72,6 +72,11 @@ public interface GolfUserPluginBusiness extends IBOService, UserGroupPlugInBusin
 	 * @see is.idega.idegaweb.golf.business.plugin.GolfUserPluginBusinessBean#getUserPropertiesTabs
 	 */
 	public List getUserPropertiesTabs(User user) throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.golf.business.plugin.GolfUserPluginBusinessBean#isCurrentUserGolfAdmin
+	 */
+	public boolean isCurrentUserGolfAdmin(IWContext iwc) throws RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.golf.business.plugin.GolfUserPluginBusinessBean#instanciateEditor
@@ -113,9 +118,10 @@ public interface GolfUserPluginBusiness extends IBOService, UserGroupPlugInBusin
 	 * @see is.idega.idegaweb.golf.business.plugin.GolfUserPluginBusinessBean#canCreateSubGroup
 	 */
 	public String canCreateSubGroup(Group group, String groupTypeOfSubGroup) throws RemoteException;
-	
+
 	/**
-	 * @see is.idega.idegaweb.golf.business.plugin.GolfUserPluginBusinessBean#isGolfAdmin
+	 * @see is.idega.idegaweb.golf.business.plugin.GolfUserPluginBusinessBean#registerGolferToClubAndGolfDotIs
 	 */
-	public boolean isCurrentUserGolfAdmin(IWContext iwc) throws RemoteException;
+	public String registerGolferToClubAndGolfDotIs(String ssn, String clubNumber, String clubMembershipType)
+			throws RemoteException;
 }
