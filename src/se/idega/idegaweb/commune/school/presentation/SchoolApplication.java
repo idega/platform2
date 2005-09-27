@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolApplication.java,v 1.8 2005/09/27 09:25:35 laddi Exp $
+ * $Id: SchoolApplication.java,v 1.9 2005/09/27 09:46:53 laddi Exp $
  * Created on Aug 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -52,10 +52,10 @@ import com.idega.user.data.User;
 import com.idega.util.PersonalIDFormatter;
 
 /**
- * Last modified: $Date: 2005/09/27 09:25:35 $ by $Author: laddi $
+ * Last modified: $Date: 2005/09/27 09:46:53 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class SchoolApplication extends SchoolBlock {
 
@@ -161,8 +161,9 @@ public class SchoolApplication extends SchoolBlock {
 			table.setHeight(row++, 18);
 			
 			School school = getBusiness().getHomeSchoolForUser(getSession().getUser());
-			Collection years = getBusiness().getSchoolYearsInSchool(school);
-			
+			List years = new ArrayList(getBusiness().getSchoolYearsInSchool(school));
+			Collections.sort(years, new SchoolYearComparator());
+
 			Table applicationTable = new Table(2, 3);
 			applicationTable.add(getSmallHeader(localize("application.home_school", "Home school") + ":"), 1, 1);
 			applicationTable.add(getSmallText(school.getSchoolName()), 2, 1);
