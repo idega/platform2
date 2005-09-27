@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolApplication.java,v 1.11 2005/09/27 15:18:29 laddi Exp $
+ * $Id: SchoolApplication.java,v 1.12 2005/09/27 19:15:26 laddi Exp $
  * Created on Aug 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -52,10 +52,10 @@ import com.idega.user.data.User;
 import com.idega.util.PersonalIDFormatter;
 
 /**
- * Last modified: $Date: 2005/09/27 15:18:29 $ by $Author: laddi $
+ * Last modified: $Date: 2005/09/27 19:15:26 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class SchoolApplication extends SchoolBlock {
 
@@ -541,6 +541,7 @@ public class SchoolApplication extends SchoolBlock {
 			if (relation != null) {
 				relationMenu.setSelectedElement(relation);
 			}
+			relationMenu.setAsNotEmpty(localize("must_select_relation", "You must select a relation to the child."), "-1");
 		}
 		table.add(relationMenu, 1, row++);
 		
