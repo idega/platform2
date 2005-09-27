@@ -1,5 +1,5 @@
 /*
- * $Id: ClubHandler.java,v 1.3 2005/02/07 13:56:06 laddi Exp $
+ * $Id: ClubHandler.java,v 1.4 2005/09/27 16:30:57 sigtryggur Exp $
  * Created on 7.2.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -21,20 +21,22 @@ import javax.ejb.FinderException;
 
 import com.idega.business.InputHandler;
 import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.DropdownMenu;
 
 
 /**
- * Last modified: $Date: 2005/02/07 13:56:06 $ by $Author: laddi $
+ * Last modified: $Date: 2005/09/27 16:30:57 $ by $Author: sigtryggur $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class ClubHandler extends DropdownMenu implements InputHandler {
 
 	public void main(IWContext iwc) throws Exception {
+	    IWResourceBundle iwrb = this.getResourceBundle(iwc);
 		UnionHome home = (UnionHome) IDOLookup.getHomeLegacy(Union.class);
 
 		Union mainUnion = null;
@@ -55,7 +57,7 @@ public class ClubHandler extends DropdownMenu implements InputHandler {
 					addMenuElement(union.getPrimaryKey().toString(), union.getAbbrevation());
 				}
 			}
-			addMenuElementFirst("", "");
+			addMenuElementFirst("-1", iwrb.getLocalizedString("ClubHandler.all_clubs","All clubs"));
 		}
 		
 		super.main(iwc);
@@ -86,9 +88,13 @@ public class ClubHandler extends DropdownMenu implements InputHandler {
 	 */
 	public Object getResultingObject(String[] value, IWContext iwc) throws Exception {
 		if (value != null && value.length > 0) {
-			UnionHome home = (UnionHome) IDOLookup.getHomeLegacy(Union.class);
-			Union union = home.findByPrimaryKey(new Integer(value[0].toString()));
-			return union;
+			if (value[0].equals("-1")) {
+			    return null;
+			} else {
+			    UnionHome home = (UnionHome) IDOLookup.getHomeLegacy(Union.class);
+			    Union union = home.findByPrimaryKey(new Integer(value[0].toString()));
+			    return union;
+			}
 		}
 		else
 			return null;
