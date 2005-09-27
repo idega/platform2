@@ -40,6 +40,7 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 	private int sort = -1;
 	private boolean showNotYetActive = false;
 	private boolean _requiresPrognosis = true;
+	private boolean iShowGroupButtons = true;
 	
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
@@ -66,25 +67,27 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 			table.add(getNavigationTable(), 1, 1);
 			table.add(getChildrenTable(iwc), 1, 3);
 			
-			String localized = "";
-			if (getSession().getGroupID() != -1)
-				localized = localize("child_care.change_group", "Change group");
-			else
-				localized = localize("child_care.create_group", "Create group");
-	
-			GenericButton createGroup = getButton(new GenericButton("create_change_group", localized));
-			createGroup.setWindowToOpen(ChildCareWindow.class);
-			createGroup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_CREATE_GROUP);
-			createGroup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
-			table.add(createGroup, 1, 5);
-			
-			if (getSession().getGroupID() != -1 && getBusiness().getSchoolBusiness().getNumberOfStudentsInClass(getSession().getGroupID()) == 0) {
-				GenericButton deleteGroup = getButton(new GenericButton("delete_group", localize("child_care.delete_group", "Delete group")));
-				deleteGroup.setWindowToOpen(ChildCareWindow.class);
-				deleteGroup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_ACTION, ChildCareAdminWindow.ACTION_DELETE_GROUP);
-				deleteGroup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
-				table.add(Text.getNonBrakingSpace(), 1, 5);
-				table.add(deleteGroup, 1, 5);
+			if (iShowGroupButtons) {
+				String localized = "";
+				if (getSession().getGroupID() != -1)
+					localized = localize("child_care.change_group", "Change group");
+				else
+					localized = localize("child_care.create_group", "Create group");
+		
+				GenericButton createGroup = getButton(new GenericButton("create_change_group", localized));
+				createGroup.setWindowToOpen(ChildCareWindow.class);
+				createGroup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_CREATE_GROUP);
+				createGroup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
+				table.add(createGroup, 1, 5);
+				
+				if (getSession().getGroupID() != -1 && getBusiness().getSchoolBusiness().getNumberOfStudentsInClass(getSession().getGroupID()) == 0) {
+					GenericButton deleteGroup = getButton(new GenericButton("delete_group", localize("child_care.delete_group", "Delete group")));
+					deleteGroup.setWindowToOpen(ChildCareWindow.class);
+					deleteGroup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_ACTION, ChildCareAdminWindow.ACTION_DELETE_GROUP);
+					deleteGroup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
+					table.add(Text.getNonBrakingSpace(), 1, 5);
+					table.add(deleteGroup, 1, 5);
+				}
 			}
 		}
 		else {
@@ -382,10 +385,15 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 			}
 		}
 	}
+	
 	/**
 	 * @param requiresPrognosis The requiresPrognosis to set.
 	 */
 	public void setRequiresPrognosis(boolean requiresPrognosis) {
 		this._requiresPrognosis = requiresPrognosis;
+	}
+	
+	public void setShowGroupButtons(boolean showButtons) {
+		iShowGroupButtons = showButtons;
 	}
 }
