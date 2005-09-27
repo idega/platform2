@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolCareApplication.java,v 1.9 2005/09/27 12:40:14 laddi Exp $
+ * $Id: AfterSchoolCareApplication.java,v 1.10 2005/09/27 13:46:30 laddi Exp $
  * Created on Aug 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -34,10 +34,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/09/27 12:40:14 $ by $Author: laddi $
+ * Last modified: $Date: 2005/09/27 13:46:30 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class AfterSchoolCareApplication extends SchoolApplication {
 	
@@ -71,7 +71,7 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 				break;
 				
 			case ACTION_PHASE_3:
-				showPhaseFour(iwc, ACTION_PHASE_4, ACTION_PHASE_2);
+				showPhaseFour(iwc, ACTION_PHASE_4, ACTION_PHASE_2, ACTION_PHASE_3);
 				break;
 				
 			case ACTION_PHASE_4:
@@ -169,7 +169,7 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 	protected void showPhaseThree(IWContext iwc) throws RemoteException {
 		saveChildInfo(iwc);
 
-		super.showPhaseThree(iwc, ACTION_PHASE_3, ACTION_PHASE_1);
+		super.showPhaseThree(iwc, ACTION_PHASE_3, ACTION_PHASE_1, ACTION_PHASE_2);
 	}
 
 	protected void showPhaseFour2(IWContext iwc) throws RemoteException {
@@ -355,7 +355,7 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		}
 
 		table.setHeight(row++, 12);
-		table.add(getErrorText(localize("application.opening_hours", "The after school care providers are open until 17:15.")));
+		table.add(getErrorText(localize("application.opening_hours", "The after school care providers are open until 17:15.")), 1, row++);
 		table.setHeight(row++, 18);
 
 		SubmitButton previous = (SubmitButton) getButton(new SubmitButton(localize("previous", "Previous")));

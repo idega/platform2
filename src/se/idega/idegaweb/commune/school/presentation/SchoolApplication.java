@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolApplication.java,v 1.9 2005/09/27 09:46:53 laddi Exp $
+ * $Id: SchoolApplication.java,v 1.10 2005/09/27 13:46:30 laddi Exp $
  * Created on Aug 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -52,10 +52,10 @@ import com.idega.user.data.User;
 import com.idega.util.PersonalIDFormatter;
 
 /**
- * Last modified: $Date: 2005/09/27 09:46:53 $ by $Author: laddi $
+ * Last modified: $Date: 2005/09/27 13:46:30 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class SchoolApplication extends SchoolBlock {
 
@@ -113,11 +113,11 @@ public class SchoolApplication extends SchoolBlock {
 				break;
 				
 			case ACTION_PHASE_3:
-				showPhaseThree(iwc, ACTION_PHASE_4, iHomeSchoolChosen ? ACTION_PHASE_1 : ACTION_PHASE_2);
+				showPhaseThree(iwc, ACTION_PHASE_4, iHomeSchoolChosen ? ACTION_PHASE_1 : ACTION_PHASE_2, ACTION_PHASE_3);
 				break;
 				
 			case ACTION_PHASE_4:
-				showPhaseFour(iwc, ACTION_PHASE_5, ACTION_PHASE_3);
+				showPhaseFour(iwc, ACTION_PHASE_5, ACTION_PHASE_3, ACTION_PHASE_4);
 				break;
 				
 			case ACTION_PHASE_5:
@@ -325,11 +325,11 @@ public class SchoolApplication extends SchoolBlock {
 		add(form);
 	}
 
-	protected void showPhaseThree(IWContext iwc, int nextPhase, int previousPhase) throws RemoteException {
+	protected void showPhaseThree(IWContext iwc, int nextPhase, int previousPhase, int currentPhase) throws RemoteException {
 		saveCustodianInfo(iwc, true);
 		
 		Form form = createForm();
-		form.addParameter(PARAMETER_ACTION, String.valueOf(ACTION_PHASE_3));
+		form.addParameter(PARAMETER_ACTION, String.valueOf(currentPhase));
 		
 		Table table = new Table();
 		table.setCellpadding(0);
@@ -541,12 +541,12 @@ public class SchoolApplication extends SchoolBlock {
 		return row;
 	}
 
-	protected void showPhaseFour(IWContext iwc, int nextPhase, int previousPhase) throws RemoteException {
+	protected void showPhaseFour(IWContext iwc, int nextPhase, int previousPhase, int currentPhase) throws RemoteException {
 		saveCustodianInfo(iwc, false);
 		saveChildInfo(iwc);
 
 		Form form = createForm();
-		form.addParameter(PARAMETER_ACTION, String.valueOf(ACTION_PHASE_4));
+		form.addParameter(PARAMETER_ACTION, String.valueOf(currentPhase));
 		
 		Table table = new Table();
 		table.setCellpadding(0);
