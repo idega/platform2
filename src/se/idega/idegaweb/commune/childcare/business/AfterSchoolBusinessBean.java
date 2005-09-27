@@ -340,7 +340,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 		try {
 			System.out.println(timeOfDeparture);
 			for (int a = 0; a < dayOfWeek.length; a++) {
-				if (timeOfDeparture[a] != "-1") {
+				if (timeOfDeparture[a] != null) {
 					AfterSchoolCareDays days = getAfterSchoolCareDaysHome().create();
 					days.setApplication(application);
 					days.setDayOfWeek(dayOfWeek[a]);

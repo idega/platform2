@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolCareApplication.java,v 1.16 2005/09/27 20:15:11 laddi Exp $
+ * $Id: AfterSchoolCareApplication.java,v 1.17 2005/09/27 21:06:37 laddi Exp $
  * Created on Aug 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -34,10 +34,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/09/27 20:15:11 $ by $Author: laddi $
+ * Last modified: $Date: 2005/09/27 21:06:37 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class AfterSchoolCareApplication extends SchoolApplication {
 	
@@ -640,7 +640,7 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 	
 	private DropdownMenu getTimeDropdown(String parameterName, Locale locale) {
 		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(parameterName));
-		menu.addMenuElementFirst("-1", localize("not_staying", "Not staying"));
+		menu.addMenuElementFirst("", localize("not_staying", "Not staying"));
 		menu.keepStatusOnAction(true);
 		
 		IWTimestamp stamp = new IWTimestamp();
