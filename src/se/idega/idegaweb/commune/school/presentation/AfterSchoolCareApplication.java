@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolCareApplication.java,v 1.8 2005/09/27 12:29:32 laddi Exp $
+ * $Id: AfterSchoolCareApplication.java,v 1.9 2005/09/27 12:40:14 laddi Exp $
  * Created on Aug 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -34,10 +34,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/09/27 12:29:32 $ by $Author: laddi $
+ * Last modified: $Date: 2005/09/27 12:40:14 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class AfterSchoolCareApplication extends SchoolApplication {
 	
@@ -354,6 +354,8 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 			applicationTable.add(getSmallText(localize("application.walks_self", "Walks home")), 4, aRow++);
 		}
 
+		table.setHeight(row++, 12);
+		table.add(getErrorText(localize("application.opening_hours", "The after school care providers are open until 17:15.")));
 		table.setHeight(row++, 18);
 
 		SubmitButton previous = (SubmitButton) getButton(new SubmitButton(localize("previous", "Previous")));
