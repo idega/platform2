@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderStat.java,v 1.2 2005/02/01 21:27:34 malin Exp $
+ * $Id: ProviderStat.java,v 1.3 2005/09/28 14:14:32 dainis Exp $
  * Created on 8.9.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -13,10 +13,10 @@ import java.util.Date;
 
 /**
  * 
- *  Last modified: $Date: 2005/02/01 21:27:34 $ by $Author: malin $
+ *  Last modified: $Date: 2005/09/28 14:14:32 $ by $Author: dainis $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ProviderStat{
     
@@ -31,6 +31,7 @@ public class ProviderStat{
     private Integer providerCapacity;
     private Integer queueTotal;
     private Integer vacancies;
+    private Boolean queueSortedByBirthdate;
    
 
     /**
@@ -171,4 +172,22 @@ public class ProviderStat{
     public void setVacancies(Integer vacancies) {
     	this.vacancies = vacancies;
     }
+    
+    
+    public Boolean getQueueSortedByBirthdate() {
+        return queueSortedByBirthdate;
+    }
+    public void setQueueSortedByBirthdate(Boolean queueSortedByBirthdate) {
+        this.queueSortedByBirthdate = queueSortedByBirthdate;
+    }
+    public void setQueueSortedByBirthdate(String queueSortedByBirthdate) {
+        if (queueSortedByBirthdate != null) {
+            if (queueSortedByBirthdate.equalsIgnoreCase("Y")) {
+                this.queueSortedByBirthdate = Boolean.TRUE;
+                return;
+            }
+        }
+        this.queueSortedByBirthdate = Boolean.FALSE;
+    }
+    
 }
