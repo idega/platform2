@@ -14,6 +14,7 @@ import se.idega.idegaweb.commune.childcare.business.ProviderStat;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.util.IWTimestamp;
 
@@ -22,14 +23,15 @@ import com.idega.util.IWTimestamp;
  */
 public class ChildCarePrognosisStatistics extends ChildCareBlock {
     
-    
+    private final static String QUEUE_SORTED_BY_BIRTHDATE = "child_care.queue_sorted_by_date_of_birth";
+    private boolean containsSortedByBirthdateProvider = false;    
 
     /**
      * 
      */
     public ChildCarePrognosisStatistics() {
         // cache for 30 minutes
-       setCacheable(getCacheKey(),30*60*1000);
+        setCacheable(getCacheKey(), 30 * 60 * 1000);
     }
     
     
@@ -43,7 +45,14 @@ public class ChildCarePrognosisStatistics extends ChildCareBlock {
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
 	 */
 	public void init(IWContext iwc) throws Exception {
-		add(getProviderStatTable(iwc));
+        Table providerStatTable = getProviderStatTable(iwc);
+        
+        if (this.containsSortedByBirthdateProvider) {
+            add(getSortedByBirthdateMessage());
+            add(new Break());    
+        }
+        
+		add(providerStatTable);
 		add(new Break());
 		
 		CloseButton close = (CloseButton) getButton(new CloseButton(localize("close", "Close")));
@@ -162,7 +171,18 @@ public class ChildCarePrognosisStatistics extends ChildCareBlock {
 				else
 					table.setRowColor(row, getZebraColor2());
 				
-				table.add(getSmallText(stat.getProviderName()), column++, row);
+                //dainis
+                String providerName = stat.getProviderName();
+                if (stat.getQueueSortedByBirthdate().equals(Boolean.TRUE)) {                    
+                    providerName = "*" + providerName;
+                    this.containsSortedByBirthdateProvider = true;
+                }
+                table.add(getSmallText(providerName), column++, row);    
+                //end of dains
+                ///table.add(getSmallText(stat.getProviderName()), column++, row);
+                /// that was the old code
+                
+				
 				//table.add(getSmallText(String.valueOf(getBusiness().getQueueByProvider(providerID))), column++, row);
 				table.add(getSmallText(String.valueOf(getBusiness().getQueueTotalByProvider(providerID, null, null, false))), column++, row);
 				
@@ -230,4 +250,10 @@ public class ChildCarePrognosisStatistics extends ChildCareBlock {
 
 		return table;
 	}
+    
+    private Text getSortedByBirthdateMessage() {
+        return getSmallText("* "
+                + localize(QUEUE_SORTED_BY_BIRTHDATE,
+                "Queue sorted by date of birth"));
+    }    
 }

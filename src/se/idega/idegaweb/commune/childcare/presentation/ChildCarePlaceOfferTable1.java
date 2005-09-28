@@ -49,6 +49,8 @@ class ChildCarePlaceOfferTable1 extends Table {
 	private List offerList;
 
 	final static String[] REQUEST_INFO = new String[] { "ccatp1_request_info", "Request info" };
+    
+    private boolean containsSortedByBirthdateProvider = false;
 
 	private void initConstants(ChildCareCustomerApplicationTable page) {
 		if (!_initializeStatics) {
@@ -118,6 +120,13 @@ class ChildCarePlaceOfferTable1 extends Table {
 			if (isOffer) {
 				offerPresented = true;
 			}
+            
+            if (!this.isContainsSortedByBirthdateProvider()) {
+                School provider = app.getProvider();
+                if (provider.getSortByBirthdate()) {
+                    this.setContainsSortedByBirthdateProvider(true);
+                }
+            }
 
 			row++;
 		}
@@ -350,4 +359,13 @@ class ChildCarePlaceOfferTable1 extends Table {
 			return null;
 		}
 	}
+
+    public boolean isContainsSortedByBirthdateProvider() {
+        return containsSortedByBirthdateProvider;
+    }
+
+    public void setContainsSortedByBirthdateProvider(
+            boolean containsSortedByBirthdateProvider) {
+        this.containsSortedByBirthdateProvider = containsSortedByBirthdateProvider;
+    }
 }
