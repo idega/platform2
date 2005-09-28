@@ -1,5 +1,5 @@
 /*
- * $Id: HandicapReportBean.java,v 1.7 2005/09/27 12:56:19 sigtryggur Exp $
+ * $Id: HandicapReportBean.java,v 1.8 2005/09/28 14:58:12 sigtryggur Exp $
  * Created on 7.2.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -16,6 +16,7 @@ import is.idega.idegaweb.golf.entity.MemberInfo;
 import is.idega.idegaweb.golf.entity.Scorecard;
 import is.idega.idegaweb.golf.entity.ScorecardHome;
 import is.idega.idegaweb.golf.entity.Union;
+import is.idega.idegaweb.golf.entity.UnionHome;
 
 import java.sql.Date;
 import java.sql.SQLException;
@@ -37,10 +38,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/09/27 12:56:19 $ by $Author: sigtryggur $
+ * Last modified: $Date: 2005/09/28 14:58:12 $ by $Author: sigtryggur $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class HandicapReportBean extends IBOSessionBean  implements HandicapReport{
 
@@ -51,7 +52,7 @@ public class HandicapReportBean extends IBOSessionBean  implements HandicapRepor
 	private static final String FIELD_NAME = "name";
 	private static final String FIELD_PERSONAL_ID = "personal_id";
 	private static final String FIELD_YEAR_OF_BIRTH = "year_of_birth";
-	private static final String FIELD_MAIN_CLUB = "main_club";
+	private static final String FIELD_GENDER = "member_gender";
 	private static final String FIELD_SUB_CLUBS = "sub_clubs";
 	private static final String FIELD_HANDICAP = "handicap";
 	private static final String FIELD_DATE = "date";
@@ -72,15 +73,15 @@ public class HandicapReportBean extends IBOSessionBean  implements HandicapRepor
 		return _iwrb.getLocalizedString(PREFIX + key, defaultValue);
 	}
 
-	public ReportableCollection getClubReport(Union union, String gender, Integer yearFrom, Integer yearTo, Float handicapFrom, Float handicapTo) {
+	public ReportableCollection getClubReport(Union union, String genderFilter, Integer yearFrom, Integer yearTo, Float handicapFrom, Float handicapTo) {
 		initializeBundlesIfNeeded();
 		Locale currentLocale = getUserContext().getCurrentLocale();
 		
 		ReportableCollection reportCollection = new ReportableCollection();
 
-		ReportableField club = new ReportableField(FIELD_CLUB, String.class);
-		club.setLocalizedName(getLocalizedString(FIELD_CLUB, "Club"), currentLocale);
-		reportCollection.addField(club);
+		ReportableField clubField = new ReportableField(FIELD_CLUB, String.class);
+		clubField.setLocalizedName(getLocalizedString(FIELD_CLUB, "Club"), currentLocale);
+		reportCollection.addField(clubField);
 
 		ReportableField name = new ReportableField(FIELD_NAME, String.class);
 		name.setLocalizedName(getLocalizedString(FIELD_NAME, "Name"), currentLocale);
@@ -94,9 +95,9 @@ public class HandicapReportBean extends IBOSessionBean  implements HandicapRepor
 		yearOfBirthField.setLocalizedName(getLocalizedString(FIELD_YEAR_OF_BIRTH, "Year of birth"), currentLocale);
 		reportCollection.addField(yearOfBirthField);
 
-		//ReportableField mainClubField = new ReportableField(FIELD_MAIN_CLUB, String.class);
-		//mainClubField.setLocalizedName(getLocalizedString(FIELD_MAIN_CLUB, "Main club"), currentLocale);
-		//reportCollection.addField(mainClubField);
+		ReportableField genderField = new ReportableField(FIELD_GENDER, String.class);
+		genderField.setLocalizedName(getLocalizedString(FIELD_GENDER, "Gender"), currentLocale);
+		reportCollection.addField(genderField);
 
 		ReportableField subClubsField = new ReportableField(FIELD_SUB_CLUBS, String.class);
 		subClubsField.setLocalizedName(getLocalizedString(FIELD_SUB_CLUBS, "Sub clubs"), currentLocale);
@@ -108,7 +109,25 @@ public class HandicapReportBean extends IBOSessionBean  implements HandicapRepor
 
 		try {
 			MemberHome home = (MemberHome) IDOLookup.getHomeLegacy(Member.class);
-			Collection members = home.findAllByUnion(union, gender);
+			Collection members = null;
+			if (union != null) {
+			    members = home.findAllByUnion(union, genderFilter);
+			} else {
+			    UnionHome unionHome = (UnionHome) IDOLookup.getHomeLegacy(Union.class);
+			    Collection clubs = unionHome.findAllUnions();
+				Iterator iter = clubs.iterator();
+				while (iter.hasNext()) {
+					Union club = (Union) iter.next();
+					if (club.getUnionType().equalsIgnoreCase("golf_club")) {
+					    if(members == null) {
+					        members = home.findAllByUnion(club, genderFilter);
+					    } else {
+						    Collection clubMembers = home.findAllByUnion(club, genderFilter);
+							members.addAll(clubMembers);
+					    }
+					}
+				}
+			}
 			Iterator iter = members.iterator();
 			while (iter.hasNext()) {
 				Member member = (Member) iter.next();
@@ -148,24 +167,23 @@ public class HandicapReportBean extends IBOSessionBean  implements HandicapRepor
 					continue;
 				}
 				
-				String mainClub = member.getMainUnion().getName();
 				String subClubs = "";
 				Union[] unions = member.getUnions();
 				for (int i=0; i<unions.length; i++) {
-				    if (!mainClub.equals(unions[i].getName())) {
+				    if (!memberUnion.getName().equals(unions[i].getName())) {
 				        subClubs = subClubs + unions[i].getName();
-				        if (i+1<unions.length && !mainClub.equals(unions[i+1].getName())) {
+				        if (i+1<unions.length && !memberUnion.getName().equals(unions[i+1].getName())) {
 					        subClubs = subClubs+", ";
 					    }
 				    }
 				}
 				ReportableData data = new ReportableData();
 
-				data.addData(club, memberUnion.getName());
+				data.addData(clubField, memberUnion.getName());
 				data.addData(name, member.getName());
 				data.addData(personalID, member.getSocialSecurityNumber());
 				data.addData(yearOfBirthField, yearOfBirth);
-				//data.addData(mainClubField, mainClub);
+				data.addData(genderField, member.getGender());
 				data.addData(subClubsField, subClubs);
 				data.addData(handicap, memberInfo.getHandicap() < 100 ? TextSoap.decimalFormat(memberInfo.getHandicap(), 1) : "-");
 
