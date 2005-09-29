@@ -33,6 +33,11 @@ public interface School extends IDOEntity, IDOLegacyEntity, MetaDataCapable {
     public String getName();
 
     /**
+     * @see com.idega.block.school.data.SchoolBMPBean#getNameWithStarIfQueueSortedByBirthdate
+     */
+    public String getNameWithStarIfQueueSortedByBirthdate();
+
+    /**
      * @see com.idega.block.school.data.SchoolBMPBean#getAfterSchoolCareProvider
      */
     public School getAfterSchoolCareProvider();

@@ -148,6 +148,10 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 	public String getName() {
 		return getSchoolName();
 	}
+    
+    public String getNameWithStarIfQueueSortedByBirthdate(){
+        return (this.getSortByBirthdate() ? "*" : "") + getSchoolName();
+    }
 	
 	public School getAfterSchoolCareProvider() {
 		return (School) getColumnValue(AFTER_SCHOOL_CARE_PROVIDER);
@@ -235,7 +239,7 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 		this.setColumn(MANAGEMENT_TYPE, id);
 	}
 	public String getSchoolName() {
-		return (this.getSortByBirthdate() ? "*" : "") + this.getStringColumnValue(NAME);
+		return this.getStringColumnValue(NAME);
 	}
 	public void setSchoolName(String name) {
 		this.setColumn(NAME, name);
