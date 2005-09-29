@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolCareDaysBMPBean.java,v 1.1 2005/08/09 16:35:19 laddi Exp $
+ * $Id: AfterSchoolCareDaysBMPBean.java,v 1.2 2005/09/29 07:16:04 laddi Exp $
  * Created on Aug 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -10,6 +10,7 @@
 package se.idega.idegaweb.commune.childcare.data;
 
 import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.Collection;
 import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
@@ -17,13 +18,14 @@ import com.idega.data.GenericEntity;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;
+import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2005/08/09 16:35:19 $ by $Author: laddi $
+ * Last modified: $Date: 2005/09/29 07:16:04 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class AfterSchoolCareDaysBMPBean extends GenericEntity  implements AfterSchoolCareDays{
 
@@ -50,7 +52,7 @@ public class AfterSchoolCareDaysBMPBean extends GenericEntity  implements AfterS
 		addManyToOneRelationship(COLUMN_APPLICATION, ChildCareApplication.class);
 		
 		addAttribute(COLUMN_DAY_OF_WEEK, "Day of week", Integer.class);
-		addAttribute(COLUMN_TIME_OF_DEPARTURE, "Time of departure", Time.class);
+		addAttribute(COLUMN_TIME_OF_DEPARTURE, "Time of departure", Timestamp.class);
 		addAttribute(COLUMN_PICKED_UP, "Picked up", Boolean.class);
 	}
 	
@@ -68,7 +70,12 @@ public class AfterSchoolCareDaysBMPBean extends GenericEntity  implements AfterS
 	}
 	
 	public Time getTimeOfDeparture() {
-		return getTimeColumnValue(COLUMN_TIME_OF_DEPARTURE);
+		Timestamp timestamp = getTimestampColumnValue(COLUMN_TIME_OF_DEPARTURE);
+		if (timestamp != null) {
+			IWTimestamp stamp = new IWTimestamp(timestamp);
+			return stamp.getTime();
+		}
+		return null;
 	}
 	
 	public boolean isPickedUp() {
@@ -89,7 +96,8 @@ public class AfterSchoolCareDaysBMPBean extends GenericEntity  implements AfterS
 	}
 	
 	public void setTimeOfDeparture(Time time) {
-		setColumn(COLUMN_TIME_OF_DEPARTURE, time);
+		IWTimestamp stamp = new IWTimestamp(time);
+		setColumn(COLUMN_TIME_OF_DEPARTURE, stamp.getTimestamp());
 	}
 	
 	public void setPickedUp(boolean pickedUp) {
