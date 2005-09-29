@@ -59,8 +59,6 @@ public class ChildCareBlock extends CommuneBlock {
 	private static final String PROPERTY_CONTRACT_COLOR = "child_care_contract_color";
 	private static final String PROPERTY_PENDING_COLOR = "child_care_pending_color";
     
-    private final static String QUEUE_SORTED_BY_BIRTHDATE = "child_care.queue_sorted_by_date_of_birth";
-
 	public void main(IWContext iwc) throws Exception{
 		setResourceBundle(getResourceBundle(iwc));
 		business = getChildCareBusiness(iwc);
