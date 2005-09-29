@@ -21,7 +21,9 @@ import com.idega.business.IBOLookup;
 import com.idega.business.IBORuntimeException;
 import com.idega.data.IDORelationshipException;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.util.SelectorUtility;
 import com.idega.user.data.User;
@@ -58,6 +60,8 @@ public class ChildCareBlock extends CommuneBlock {
 	private static final String PROPERTY_PARENTS_ACCEPTED_COLOR = "child_care_parents_accepted_color";
 	private static final String PROPERTY_CONTRACT_COLOR = "child_care_contract_color";
 	private static final String PROPERTY_PENDING_COLOR = "child_care_pending_color";
+    
+    private final static String QUEUE_SORTED_BY_BIRTHDATE = "child_care.queue_sorted_by_date_of_birth";
 
 	public void main(IWContext iwc) throws Exception{
 		setResourceBundle(getResourceBundle(iwc));
@@ -398,4 +402,21 @@ public class ChildCareBlock extends CommuneBlock {
 	public boolean isAllowChangeGroupFromToday() {
 		return allowChangeGroupFromToday;
 	}
+        
+    
+    public PresentationObjectContainer getSortedByBirthdateExplanation() {
+        
+        PresentationObjectContainer cont = new PresentationObjectContainer();
+        Text star = new Text("* ");
+        star.setStyleClass("childcare_SmallExplanationTextStar");
+        Text sorted = new Text(localize(QUEUE_SORTED_BY_BIRTHDATE,
+                "Queue sorted by date of birth"));
+        sorted.setStyleClass("childcare_SmallExplanationText");
+        
+        cont.getChildren().add(star);        
+        cont.getChildren().add(sorted);
+        
+        return cont;
+    }    
+    
 }

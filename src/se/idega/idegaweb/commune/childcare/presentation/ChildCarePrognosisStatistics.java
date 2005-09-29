@@ -12,6 +12,7 @@ import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.childcare.business.ProviderStat;
 
 import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Text;
@@ -23,7 +24,6 @@ import com.idega.util.IWTimestamp;
  */
 public class ChildCarePrognosisStatistics extends ChildCareBlock {
     
-    private final static String QUEUE_SORTED_BY_BIRTHDATE = "child_care.queue_sorted_by_date_of_birth";
     private boolean containsSortedByBirthdateProvider = false;    
 
     /**
@@ -48,7 +48,7 @@ public class ChildCarePrognosisStatistics extends ChildCareBlock {
         Table providerStatTable = getProviderStatTable(iwc);
         
         if (this.containsSortedByBirthdateProvider) {
-            add(getSortedByBirthdateMessage());
+            add(getSortedByBirthdateExplanation());
             add(new Break());    
         }
         
@@ -58,74 +58,6 @@ public class ChildCarePrognosisStatistics extends ChildCareBlock {
 		CloseButton close = (CloseButton) getButton(new CloseButton(localize("close", "Close")));
 		add(close);
 	}
-
-	/*private Table getProviderTable(IWContext iwc) throws RemoteException {
-		Table table = getTable(7);
-		table.setWidth(Table.HUNDRED_PERCENT);
-		int row = 2;
-		int column = 1;
-
-		table.add(getLocalizedSmallHeader("child_care.prognosis_3m","Prognosis (3M)"), 3, 1);
-		table.add(getLocalizedSmallHeader("child_care.prognosis_priority_3m","Priority (3M)"), 4, 1);
-		table.add(getLocalizedSmallHeader("child_care.prognosis_12m","Prognosis (12M)"), 5, 1);
-		table.add(getLocalizedSmallHeader("child_care.prognosis_priority_12m","Priority (12M)"), 6, 1);
-		table.add(getLocalizedSmallHeader("child_care.last_updated","Last updated"), 7, 1);
-
-		SchoolBusiness sb = getBusiness().getSchoolBusiness();
-		
-		Collection c = sb.findAllSchoolsByType(getBusiness().getSchoolBusiness().findAllSchoolTypesForChildCare());
-		c = sb.getHomeCommuneSchools(c);		
-		List providers = new Vector(c);
-		if (providers != null && !providers.isEmpty()) {
-			School school;
-			ChildCarePrognosis prognosis;
-			int providerID = -1;
-			
-			Collections.sort(providers, new SchoolComparator(iwc.getCurrentLocale()));
-			Iterator iter = providers.iterator();
-			while (iter.hasNext()) {
-				column = 1;
-				school = (School) iter.next();
-				providerID = ((Integer)school.getPrimaryKey()).intValue();
-				prognosis = getBusiness().getPrognosis(providerID);
-				
-				if (row % 2 == 0)
-					table.setRowColor(row, getZebraColor1());
-				else
-					table.setRowColor(row, getZebraColor2());
-
-				table.add(getSmallText(school.getSchoolName()), column++, row);
-				//table.add(getSmallText(String.valueOf(getBusiness().getQueueByProvider(providerID))), column++, row);
-				table.add(getSmallText(String.valueOf(getBusiness().getQueueTotalByProvider(providerID))), column++, row);
-				if (prognosis != null) {
-					table.add(getSmallText(String.valueOf(prognosis.getThreeMonthsPrognosis())), column++, row);
-					if (prognosis.getThreeMonthsPriority() != -1)
-						table.add(getSmallText(String.valueOf(prognosis.getThreeMonthsPriority())), column++, row);
-					else
-						table.add(getSmallText("-"), column++, row);
-					table.add(getSmallText(String.valueOf(prognosis.getOneYearPrognosis())), column++, row);
-					if (prognosis.getOneYearPriority() != -1)
-						table.add(getSmallText(String.valueOf(prognosis.getOneYearPriority())), column++, row);
-					else
-						table.add(getSmallText("-"), column++, row);
-					table.add(getSmallText(new IWTimestamp(prognosis.getUpdatedDate()).getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row++);
-				}
-				else {
-					table.add(getSmallText("-"), column++, row);
-					table.add(getSmallText("-"), column++, row);
-					table.add(getSmallText("-"), column++, row++);
-				}
-			}
-		}
-		table.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_CENTER);
-		table.setColumnAlignment(3, Table.HORIZONTAL_ALIGN_CENTER);
-		table.setColumnAlignment(4, Table.HORIZONTAL_ALIGN_CENTER);
-		table.setColumnAlignment(5, Table.HORIZONTAL_ALIGN_CENTER);
-		table.setColumnAlignment(6, Table.HORIZONTAL_ALIGN_CENTER);
-		table.setColumnAlignment(7, Table.HORIZONTAL_ALIGN_CENTER);
-		
-		return table;
-	}*/
 	
 	private Table getProviderStatTable(IWContext iwc) throws RemoteException{
 		Table table = getTable(10);
@@ -170,18 +102,8 @@ public class ChildCarePrognosisStatistics extends ChildCareBlock {
 					table.setRowColor(row, getZebraColor1());
 				else
 					table.setRowColor(row, getZebraColor2());
-				
-                //dainis
-                String providerName = stat.getProviderName();
-                if (stat.getQueueSortedByBirthdate().equals(Boolean.TRUE)) {                    
-                    providerName = "*" + providerName;
-                    this.containsSortedByBirthdateProvider = true;
-                }
-                table.add(getSmallText(providerName), column++, row);    
-                //end of dains
-                ///table.add(getSmallText(stat.getProviderName()), column++, row);
-                /// that was the old code
-                
+
+                table.add(getProviderName(stat), column++, row);
 				
 				//table.add(getSmallText(String.valueOf(getBusiness().getQueueByProvider(providerID))), column++, row);
 				table.add(getSmallText(String.valueOf(getBusiness().getQueueTotalByProvider(providerID, null, null, false))), column++, row);
@@ -249,11 +171,19 @@ public class ChildCarePrognosisStatistics extends ChildCareBlock {
 		table.add(getLocalizedSmallHeader("child_care.queue_order","Queue order"), column++, row++);
 
 		return table;
-	}
+	} 
     
-    private Text getSortedByBirthdateMessage() {
-        return getSmallText("* "
-                + localize(QUEUE_SORTED_BY_BIRTHDATE,
-                "Queue sorted by date of birth"));
-    }    
+    private PresentationObjectContainer getProviderName(ProviderStat provider) {
+        PresentationObjectContainer nameContainer = new PresentationObjectContainer();        
+        if (provider.getQueueSortedByBirthdate().equals(Boolean.TRUE)) {            
+            Text star = new Text("* ");
+            star.setStyleClass("childcare_SmallExplanationTextStar");            
+            nameContainer.add(star);            
+            
+            this.containsSortedByBirthdateProvider = true;
+        }  
+        nameContainer.add(getSmallText(provider.getProviderName()));        
+        return nameContainer;
+    }     
+   
 }

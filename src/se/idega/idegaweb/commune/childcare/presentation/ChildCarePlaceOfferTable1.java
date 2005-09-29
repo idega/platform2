@@ -12,6 +12,7 @@ import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
 import com.idega.block.school.data.School;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
+import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Script;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
@@ -181,8 +182,6 @@ class ChildCarePlaceOfferTable1 extends Table {
 		int ownerId = ((Integer)app.getOwner().getPrimaryKey()).intValue();
 		boolean isAfterSchoolApplication = _page.childCarebusiness.isAfterSchoolApplication(app);
 
-		School provider = app.getProvider();
-		String name = app.getChoiceNumber() + ": " + provider.getName() + _page.getDebugInfo(app);
 		String validUntil = app.getOfferValidUntil() != null ? VALID_UNTIL + " " + app.getOfferValidUntil() + "." : "";
 		String offerText = isOffer ? app.getChoiceNumber() + ": " + GRANTED + " " + app.getFromDate() + ". " + validUntil : "";
 		if (isOffer)
@@ -206,15 +205,9 @@ class ChildCarePlaceOfferTable1 extends Table {
 		else if (disable) {
 			textColor = "grey";
 		}
-
-		if (name != null) {
-			Text t = _page.getSmallText(name);
-			if (isAccepted) {
-				t.setBold();
-			}
-			t.setStyleAttribute("color:" + textColor);
-			add(t, column++, row);
-		}
+        
+        //adding choice number and provider name
+        add(getProviderName(app, isAccepted, textColor), column++, row);        
 
 		String validateDateScript = "false";
 		String alertTerminateContractScript = "false";
@@ -303,6 +296,37 @@ class ChildCarePlaceOfferTable1 extends Table {
 		return new String[] { validateDateScript, alertTerminateContractScript };
 
 	}
+
+    private PresentationObjectContainer getProviderName(ChildCareApplication app, boolean isAccepted, String textColor) {
+        PresentationObjectContainer nameContainer = new PresentationObjectContainer(); 
+        
+        School provider = app.getProvider();
+
+        String choiceNumber = app.getChoiceNumber() + ": "; 
+        String name =  provider.getName() + _page.getDebugInfo(app);
+        
+        Text t = _page.getSmallText(choiceNumber);
+        if (isAccepted) {
+            t.setBold();
+        }
+        t.setStyleAttribute("color:" + textColor);
+        nameContainer.add(t);    
+        
+        if (provider.getSortByBirthdate()) {
+            Text star = new Text("* ");
+            star.setStyleClass("childcare_SmallExplanationTextStar");
+            
+            nameContainer.add(star);
+        }        
+
+        t = _page.getSmallText(name);
+        if (isAccepted) {
+            t.setBold();
+        }
+        t.setStyleAttribute("color:" + textColor);
+        nameContainer.add(t);
+        return nameContainer;
+    }
 
 	/**
 	 * Method createTable.

@@ -36,7 +36,7 @@ public class ProviderDropdownDouble extends SelectDropdownDouble {
 	protected String getValue(IWContext iwc, Object value) {
 		if (value instanceof School) {
 			School school = (School) value;
-			return school.getSchoolName();
+			return school.getNameWithStarIfQueueSortedByBirthdate();
 		}
 		else {
 			IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);

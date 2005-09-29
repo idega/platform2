@@ -42,7 +42,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.106 2005/09/28 14:15:33 dainis Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.107 2005/09/29 10:47:46 dainis Exp $
  * @since 12.2.2003 
  */
 
@@ -89,8 +89,6 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 	private boolean _hasAcceptedApplication = false;
 	private boolean hasPermission = false;
     
-    private final static String QUEUE_SORTED_BY_BIRTHDATE = "child_care.queue_sorted_by_date_of_birth";
-	
 	/**
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
 	 */
@@ -101,7 +99,6 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 		}
 		
 		childID = getChildId(iwc);
-
 		
 		setCacheable(false);
 		childCarebusiness = getChildCareBusiness(iwc);
@@ -556,9 +553,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 			layoutTbl.setHeight(row++, 12);
             
             if (appTable.isContainsSortedByBirthdateProvider()) {
-                layoutTbl.add(getSmallText("* "
-                        + localize(QUEUE_SORTED_BY_BIRTHDATE,
-                        "Queue sorted by date of birth")), 1, row++);
+                layoutTbl.add(getSortedByBirthdateExplanation(), 1, row++);
                 layoutTbl.setHeight(row++, 6);
             }
 

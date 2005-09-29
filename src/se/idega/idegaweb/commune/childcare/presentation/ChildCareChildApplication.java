@@ -16,6 +16,7 @@ import se.idega.idegaweb.commune.care.business.CareConstants;
 import se.idega.idegaweb.commune.care.check.data.GrantedCheck;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
+
 import com.idega.block.navigation.presentation.UserHomeLink;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
@@ -67,9 +68,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 
 	private final static String EMAIL_PROVIDER_SUBJECT = "child_care.application_received_subject";
 	private final static String EMAIL_PROVIDER_MESSAGE = "child_care.application_received_body";
-    
-    private final static String QUEUE_SORTED_BY_BIRTHDATE = "child_care.queue_sorted_by_date_of_birth";
-	
+        
 	private Collection areas;
 	private Map providerMap;
 	private School currentProvider;
@@ -460,9 +459,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
         
         if (showQueueSortedByBirthdateMessage) {
             table.setHeight(4, 12);  
-            table.add(getSmallText("* "
-                    + localize(QUEUE_SORTED_BY_BIRTHDATE,
-                            "Queue sorted by date of birth")), 3, 5); 
+            table.add(getSortedByBirthdateExplanation(), 3, 5); 
         }
         
 		return table;
@@ -483,9 +480,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		buffer.append("\n\t var four = 0;");
 		buffer.append("\n\t var five = 0;");
 		buffer.append("\n\t var length = 0;");
-
-			
-		
+        
 		
 		buffer.append("\n\n\t if (dropOne.selectedIndex > 0) {\n\t\t one = dropOne.options[dropOne.selectedIndex].value;\n\t\t length++;\n\t }");
 		buffer.append("\n\t if (dropTwo.selectedIndex > 0) {\n\t\t two = dropTwo.options[dropTwo.selectedIndex].value;\n\t\t length++;\n\t }");
@@ -603,8 +598,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
                     Map areaProviders = (Map) providerMap.get(area);
                     
                     // if at least one provider has set order by birthdate property, then according
-                    // flag is set, so message about it will be shown to the user
-                    // XXX refactor it to more reusable method
+                    // flag is set, so message about it will be shown to the user                    
                     if ( (areaProviders != null) && (!showQueueSortedByBirthdateMessage) ) {                        
                         for (Iterator it = areaProviders.keySet().iterator(); it.hasNext();) {
                             Object key = it.next(); 

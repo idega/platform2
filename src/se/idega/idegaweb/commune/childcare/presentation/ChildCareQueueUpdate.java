@@ -22,6 +22,7 @@ import com.idega.block.school.data.SchoolArea;
 import com.idega.business.IBOLookupException;
 import com.idega.core.location.data.Address;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Script;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
@@ -78,7 +79,6 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 	private String prmChildId = CitizenChildren.getChildIDParameterName();
 	private String prmChildUniqueId = CitizenChildren.getChildUniqueIDParameterName();
     
-    private final static String QUEUE_SORTED_BY_BIRTHDATE = "child_care.queue_sorted_by_date_of_birth";
     private boolean containsSortedByBirthdateProvider = false;    
 	
 	/**
@@ -140,42 +140,34 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 			table.add(getStageText(), 1, row++);
 			table.setHeight(row++, 18);
 			
+            Form stageForm = null; 
+            
 			switch (_stage) {
 				case STAGE_ONE :
-//					if (_hasPlacing) {
-						table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
-						table.add(getExportAllButton(), 1, row++);
-						table.setHeight(row++, 18);
-//					}   
+					table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
+					table.add(getExportAllButton(), 1, row++);
+					table.setHeight(row++, 18); 
                     
-                    Form firstStage = getFirstStage(iwc, choices);
-                    if (this.isContainsSortedByBirthdateProvider()) {
-                        table.add(getSortedByBirthdateMessage(), 1, row++);
-                        table.setHeight(row++, 6);                        
-                    }
-					table.add(firstStage, 1, row);
+                    stageForm = getFirstStage(iwc, choices);                    
 					break;
+                    
 				case STAGE_TWO :
-                    Form secondStage = getSecondStage(iwc, choices, choiceMap);
-                    if (this.isContainsSortedByBirthdateProvider()) {
-                        table.add(getSortedByBirthdateMessage(), 1, row++);
-                        table.setHeight(row++, 6);                        
-                    }
-					table.add(secondStage, 1, row);
+                    stageForm = getSecondStage(iwc, choices, choiceMap);
 					break;
+                    
 				case STAGE_THREE :
-                    Form thirdStage = getThirdStage(iwc, choices, choiceMap);
-                    if (this.isContainsSortedByBirthdateProvider()) {
-                        table.add(getSortedByBirthdateMessage(), 1, row++);
-                        table.setHeight(row++, 6);                        
-                    }
-					table.add(thirdStage, 1, row);
+                    stageForm = getThirdStage(iwc, choices, choiceMap);
 					break;
 			}
-		
-			add(table);
-		}
-		else {
+            
+            if (this.isContainsSortedByBirthdateProvider()) {
+                table.add(getSortedByBirthdateExplanation(), 1, row++);
+                table.setHeight(row++, 6);                        
+            }
+            table.add(stageForm, 1, row);		
+			add(table);    
+            
+		} else {            
 			Table table = new Table(1, 3);
 			table.setCellpaddingAndCellspacing(0);
 			table.setHeight(2, 12);
@@ -185,12 +177,6 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 			add(table);
 		}
 	}
-
-    private Text getSortedByBirthdateMessage() {
-        return getSmallText("* "
-                + localize(QUEUE_SORTED_BY_BIRTHDATE,
-                "Queue sorted by date of birth"));
-    }
 	
 	private Form getFirstStage(IWContext iwc, Collection choices) {
 		Form form = new Form();
@@ -241,7 +227,7 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 				table.setRowColor(row, getZebraColor2());
 
 			table.add(getSmallText(String.valueOf(row - 1)), column++, row);
-			table.add(getSmallText(provider.getSchoolName()), column++, row);
+			table.add(getProviderNameFirstStage(provider), column++, row);
 			table.add(getSmallText(area.getSchoolAreaName()), column++, row);
 			table.add(getSmallText(queueDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
 			table.add(getSmallText("("+queuePosition+")"), column++, row);
@@ -394,7 +380,7 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 				choice = new HiddenInput(PARAMETER_QUEUE, choices[a]);
 			
 				table.add(getSmallHeader(localize("child_care.provider","Provider")+" "+String.valueOf(a+1)+":"), 1, row);
-				table.add(getSmallText(area.getSchoolAreaName()+": "+provider.getSchoolName()), 3, row);
+				table.add(getProviderNameThirdStage(area, provider), 3, row);
 				table.add(date, 5, row);
 				table.add(choice, 5, row++);
                 
@@ -419,6 +405,29 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 			return form;
 		}
 	}
+    
+    
+    private PresentationObjectContainer getProviderNameFirstStage(School provider) {
+        PresentationObjectContainer nameContainer = new PresentationObjectContainer();        
+        if (provider.getSortByBirthdate()) {
+            Text star = new Text("* ");
+            star.setStyleClass("childcare_SmallExplanationTextStar");            
+            nameContainer.add(star);            
+        }  
+        nameContainer.add(getSmallText(provider.getSchoolName()));        
+        return nameContainer;
+    }  
+    
+    private PresentationObjectContainer getProviderNameThirdStage(SchoolArea area, School provider) {        
+        PresentationObjectContainer nameContainer = new PresentationObjectContainer();        
+        if (provider.getSortByBirthdate()) {
+            Text star = new Text("* ");
+            star.setStyleClass("childcare_SmallExplanationTextStar");
+            nameContainer.add(star);
+        }
+        nameContainer.add(getSmallText(area.getSchoolAreaName() + ": " + provider.getSchoolName()));        
+        return nameContainer;
+    }    
 
     private void analyzeProvidersSortedByBirthdate(School provider) {
         if (!this.isContainsSortedByBirthdateProvider()) {
@@ -453,7 +462,7 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 			ChildCareQueue queue = (ChildCareQueue) choiceMap.get(choices[a]);
 			School provider = queue.getProvider();
 			SchoolArea area = provider.getSchoolArea();
-			drop.addMenuElement(choices[a], area.getSchoolAreaName()+": "+provider.getSchoolName());
+			drop.addMenuElement(choices[a], (provider.getSortByBirthdate() ? "* " : "") + area.getSchoolAreaName()+": "+provider.getSchoolName());
             
             analyzeProvidersSortedByBirthdate(provider);  
             
