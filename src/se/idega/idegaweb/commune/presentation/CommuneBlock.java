@@ -17,6 +17,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Layer;
 import com.idega.presentation.PresentationObject;
+import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.DownloadLink;
 import com.idega.presentation.text.Link;
@@ -72,6 +73,10 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	public final static String STYLENAME_DARK_ROW = "DarkRow";
 	public final static String STYLENAME_TEXT = "Text";
 	public final static String STYLENAME_SMALL_TEXT = "SmallText";
+    
+    public final static String STYLENAME_SMALL_EXPLANATION_TEXT = "SmallExplanationText";
+    public final static String STYLENAME_SMALL_EXPLANATION_STAR_TEXT = "SmallExplanationTextStar";
+    
 	public final static String STYLENAME_BIG_HEADER = "BigHeader";
 	public final static String STYLENAME_HEADER = "Header";
 	public final static String STYLENAME_SMALL_HEADER = "SmallHeader";
@@ -108,6 +113,10 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	private final static String DEFAULT_ZEBRA_COLOR_2 = "#f4f4f4";
 	private final static String DEFAULT_TEXT_FONT_STYLE = "font-weight:plain;";
 	private final static String DEFAULT_SMALL_TEXT_FONT_STYLE = "font-style:normal;color:#000000;font-size:10px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:plain;";
+    
+    private final static String DEFAULT_SMALL_EXPLANATION_TEXT_FONT_STYLE = "font-style:normal;color:#000000;font-size:10px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:plain;";
+    private final static String DEFAULT_SMALL_EXPLANATION_STAR_TEXT_FONT_STYLE = "font-style:normal;color:#FF0000;font-size:10px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:plain;";
+    
 	private final static String DEFAULT_HEADER_FONT_STYLE = "font-weight:bold;";
 	private final static String DEFAULT_SMALL_HEADER_FONT_STYLE = "font-style:normal;color:#000000;font-size:10px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:bold;";
 	private final static String DEFAULT_LINK_FONT_STYLE = "color:#0000cc;";
@@ -149,6 +158,8 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	private boolean iUseStyleNames;
 
 	private String _width = Table.HUNDRED_PERCENT;
+    
+    private final static String QUEUE_SORTED_BY_BIRTHDATE = "child_care.queue_sorted_by_date_of_birth";
 	//private String _width = iwb.getProperty("table.width"); 
 
 	public String getBundleIdentifier() {
@@ -641,8 +652,9 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	 */
 	public Map getStyleNames() {
 		HashMap map = new HashMap();
-		String[] styleNames = { STYLENAME_HEADING_ROW, STYLENAME_HEADER_ROW2, STYLENAME_HEADER_ROW, STYLENAME_LIGHT_ROW, STYLENAME_DARK_ROW, STYLENAME_BIG_HEADER, STYLENAME_TEXT, STYLENAME_SMALL_TEXT, STYLENAME_HEADER, STYLENAME_SMALL_HEADER, STYLENAME_LINK, STYLENAME_LIST_HEADER, STYLENAME_LIST_TEXT, STYLENAME_LIST_LINK, STYLENAME_ERROR_TEXT, STYLENAME_SMALL_ERROR_TEXT, STYLENAME_INTERFACE, STYLENAME_SMALL_LINK, STYLENAME_SMALL_LINK+":hover", STYLENAME_TEMPLATE_LINK, STYLENAME_TEMPLATE_LINK+":hover", STYLENAME_TEMPLATE_HEADER, STYLENAME_TEMPLATE_SMALL_HEADER, STYLENAME_TEMPLATE_LINK_SELECTED, STYLENAME_TEMPLATE_LINK_SELECTED+":hover", STYLENAME_TEMPLATE_SUBLINK, STYLENAME_TEMPLATE_SUBLINK+":hover", STYLENAME_TEMPLATE_SUBLINK_SELECTED, STYLENAME_TEMPLATE_SUBLINK_SELECTED+":hover", STYLENAME_TEMPLATE_HEADER_LINK, STYLENAME_TEMPLATE_HEADER_LINK+":hover", STYLENAME_TEMPLATE_LINK2, STYLENAME_TEMPLATE_LINK2+":hover", STYLENAME_TEMPLATE_LINK3, STYLENAME_TEMPLATE_LINK3+":hover", STYLENAME_CHECKBOX, STYLENAME_INTERFACE_BUTTON, STYLENAME_SMALL_HEADER_LINK, STYLENAME_SMALL_HEADER_LINK+":hover",STYLENAME_WINDOW_HEADER,STYLENAME_WINDOW_BODY };
-		String[] styleValues = { "", "", "", "", "", "", DEFAULT_TEXT_FONT_STYLE, DEFAULT_SMALL_TEXT_FONT_STYLE, DEFAULT_HEADER_FONT_STYLE, DEFAULT_SMALL_HEADER_FONT_STYLE, DEFAULT_LINK_FONT_STYLE, DEFAULT_LIST_HEADER_FONT_STYLE, DEFAULT_LIST_FONT_STYLE, DEFAULT_LIST_LINK_FONT_STYLE, DEFAULT_ERROR_TEXT_FONT_STYLE, DEFAULT_SMALL_ERROR_TEXT_FONT_STYLE, DEFAULT_INTERFACE_STYLE, DEFAULT_SMALL_LINK_FONT_STYLE, DEFAULT_SMALL_LINK_FONT_STYLE_HOVER, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", DEFAULT_CHECKBOX_STYLE, DEFAULT_INTERFACE_BUTTON_STYLE, DEFAULT_SMALL_HEADER_LINK_FONT_STYLE, DEFAULT_SMALL_HEADER_LINK_FONT_STYLE_HOVER ,DEFAULT_WINDOW_HEADER_STYLE,DEFAULT_WINDOW_BODY_STYLE};
+		String[] styleNames = { STYLENAME_HEADING_ROW, STYLENAME_HEADER_ROW2, STYLENAME_HEADER_ROW, STYLENAME_LIGHT_ROW, STYLENAME_DARK_ROW, STYLENAME_BIG_HEADER, STYLENAME_TEXT, STYLENAME_SMALL_TEXT, STYLENAME_HEADER, STYLENAME_SMALL_HEADER, STYLENAME_LINK, STYLENAME_LIST_HEADER, STYLENAME_LIST_TEXT, STYLENAME_LIST_LINK, STYLENAME_ERROR_TEXT, STYLENAME_SMALL_ERROR_TEXT, STYLENAME_INTERFACE, STYLENAME_SMALL_LINK, STYLENAME_SMALL_LINK+":hover", STYLENAME_TEMPLATE_LINK, STYLENAME_TEMPLATE_LINK+":hover", STYLENAME_TEMPLATE_HEADER, STYLENAME_TEMPLATE_SMALL_HEADER, STYLENAME_TEMPLATE_LINK_SELECTED, STYLENAME_TEMPLATE_LINK_SELECTED+":hover", STYLENAME_TEMPLATE_SUBLINK, STYLENAME_TEMPLATE_SUBLINK+":hover", STYLENAME_TEMPLATE_SUBLINK_SELECTED, STYLENAME_TEMPLATE_SUBLINK_SELECTED+":hover", STYLENAME_TEMPLATE_HEADER_LINK, STYLENAME_TEMPLATE_HEADER_LINK+":hover", STYLENAME_TEMPLATE_LINK2, STYLENAME_TEMPLATE_LINK2+":hover", STYLENAME_TEMPLATE_LINK3, STYLENAME_TEMPLATE_LINK3+":hover", STYLENAME_CHECKBOX, STYLENAME_INTERFACE_BUTTON, STYLENAME_SMALL_HEADER_LINK, STYLENAME_SMALL_HEADER_LINK+":hover",STYLENAME_WINDOW_HEADER,STYLENAME_WINDOW_BODY, STYLENAME_SMALL_EXPLANATION_TEXT, STYLENAME_SMALL_EXPLANATION_STAR_TEXT };
+		
+        String[] styleValues = { "", "", "", "", "", "", DEFAULT_TEXT_FONT_STYLE, DEFAULT_SMALL_TEXT_FONT_STYLE, DEFAULT_HEADER_FONT_STYLE, DEFAULT_SMALL_HEADER_FONT_STYLE, DEFAULT_LINK_FONT_STYLE, DEFAULT_LIST_HEADER_FONT_STYLE, DEFAULT_LIST_FONT_STYLE, DEFAULT_LIST_LINK_FONT_STYLE, DEFAULT_ERROR_TEXT_FONT_STYLE, DEFAULT_SMALL_ERROR_TEXT_FONT_STYLE, DEFAULT_INTERFACE_STYLE, DEFAULT_SMALL_LINK_FONT_STYLE, DEFAULT_SMALL_LINK_FONT_STYLE_HOVER, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", DEFAULT_CHECKBOX_STYLE, DEFAULT_INTERFACE_BUTTON_STYLE, DEFAULT_SMALL_HEADER_LINK_FONT_STYLE, DEFAULT_SMALL_HEADER_LINK_FONT_STYLE_HOVER ,DEFAULT_WINDOW_HEADER_STYLE,DEFAULT_WINDOW_BODY_STYLE, DEFAULT_SMALL_EXPLANATION_TEXT_FONT_STYLE, DEFAULT_SMALL_EXPLANATION_STAR_TEXT_FONT_STYLE };
 
 		for (int a = 0; a < styleNames.length; a++) {
 			map.put(styleNames[a], styleValues[a]);
@@ -755,4 +767,21 @@ public class CommuneBlock extends com.idega.presentation.Block {
 		
 		return area;
 	}	
+    
+    // this should be removed from here, but for now it lives here 
+    // because not all Child care classes extend ChildCareBlock
+    public PresentationObjectContainer getSortedByBirthdateExplanation() {
+        
+        PresentationObjectContainer cont = new PresentationObjectContainer();               
+        Text star = getStyleText("* ", STYLENAME_SMALL_EXPLANATION_STAR_TEXT);      
+        Text sorted = getStyleText(localize(QUEUE_SORTED_BY_BIRTHDATE,
+                "Queue sorted by date of birth"),
+                STYLENAME_SMALL_EXPLANATION_TEXT);
+        
+        cont.getChildren().add(star);        
+        cont.getChildren().add(sorted);
+        
+        return cont;
+    }
+    
 }

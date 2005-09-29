@@ -10,6 +10,7 @@ import java.util.Iterator;
 import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.childcare.business.ProviderStat;
+import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObjectContainer;
@@ -177,7 +178,7 @@ public class ChildCarePrognosisStatistics extends ChildCareBlock {
         PresentationObjectContainer nameContainer = new PresentationObjectContainer();        
         if (provider.getQueueSortedByBirthdate().equals(Boolean.TRUE)) {            
             Text star = new Text("* ");
-            star.setStyleClass("childcare_SmallExplanationTextStar");            
+            star.setStyleClass("commune_" + CommuneBlock.STYLENAME_SMALL_EXPLANATION_STAR_TEXT);            
             nameContainer.add(star);            
             
             this.containsSortedByBirthdateProvider = true;

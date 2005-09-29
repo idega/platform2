@@ -15,6 +15,7 @@ import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.childcare.data.ChildCareQueue;
 import se.idega.idegaweb.commune.presentation.CitizenChildren;
+import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
 import com.idega.block.navigation.presentation.UserHomeLink;
 import com.idega.block.school.data.School;
@@ -411,7 +412,7 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
         PresentationObjectContainer nameContainer = new PresentationObjectContainer();        
         if (provider.getSortByBirthdate()) {
             Text star = new Text("* ");
-            star.setStyleClass("childcare_SmallExplanationTextStar");            
+            star.setStyleClass("commune_" + CommuneBlock.STYLENAME_SMALL_EXPLANATION_STAR_TEXT);            
             nameContainer.add(star);            
         }  
         nameContainer.add(getSmallText(provider.getSchoolName()));        
@@ -422,7 +423,7 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
         PresentationObjectContainer nameContainer = new PresentationObjectContainer();        
         if (provider.getSortByBirthdate()) {
             Text star = new Text("* ");
-            star.setStyleClass("childcare_SmallExplanationTextStar");
+            star.setStyleClass("commune_" + CommuneBlock.STYLENAME_SMALL_EXPLANATION_STAR_TEXT);
             nameContainer.add(star);
         }
         nameContainer.add(getSmallText(area.getSchoolAreaName() + ": " + provider.getSchoolName()));        

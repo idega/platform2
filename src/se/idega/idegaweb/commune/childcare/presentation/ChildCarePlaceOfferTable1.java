@@ -8,6 +8,7 @@ import java.util.SortedSet;
 
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
+import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
 import com.idega.block.school.data.School;
 import com.idega.presentation.IWContext;
@@ -313,8 +314,8 @@ class ChildCarePlaceOfferTable1 extends Table {
         nameContainer.add(t);    
         
         if (provider.getSortByBirthdate()) {
-            Text star = new Text("* ");
-            star.setStyleClass("childcare_SmallExplanationTextStar");
+            Text star = new Text("* "); 
+            star.setStyleClass("commune_" + CommuneBlock.STYLENAME_SMALL_EXPLANATION_STAR_TEXT);
             
             nameContainer.add(star);
         }        
