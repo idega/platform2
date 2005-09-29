@@ -47,6 +47,8 @@ import com.idega.util.IWTimestamp;
  * @version 1.0
  */
 public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements ChildCareBusiness, AfterSchoolBusiness {
+	
+	private static final String PROPERTY_DEFAULT_AFTER_SCHOOL_CARE_TYPE = "default_after_school_care_type";
 
 	private AfterSchoolChoiceHome getAfterSchoolChoiceHome() {
 		try {
@@ -421,9 +423,10 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 			storeDays(choice, days, timeOfDeparture, pickedUp);
 			
 			IWTimestamp registerDate = new IWTimestamp(season.getSchoolSeasonStart());
+			SchoolType type = getSchoolBusiness().getSchoolType(new Integer(this.getBundle().getProperty(PROPERTY_DEFAULT_AFTER_SCHOOL_CARE_TYPE, "61")));
 			
 			SchoolClass group = getDefaultGroup(provider, season);
-			SchoolClassMember member = getSchoolBusiness().storeSchoolClassMemberCC(((Integer) child.getPrimaryKey()).intValue(), ((Integer) group.getPrimaryKey()).intValue(), group.getSchoolTypeId(), registerDate.getTimestamp(), ((Integer) user.getPrimaryKey()).intValue(), message);
+			SchoolClassMember member = getSchoolBusiness().storeSchoolClassMemberCC(((Integer) child.getPrimaryKey()).intValue(), ((Integer) group.getPrimaryKey()).intValue(), type != null ? ((Integer) type.getPrimaryKey()).intValue() : -1, registerDate.getTimestamp(), ((Integer) user.getPrimaryKey()).intValue(), message);
 			// returns false if storing failed else true
 			return (member != null);
 		}
