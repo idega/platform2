@@ -168,6 +168,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	private final static String[] STATUS_IN_QUEUE = { String.valueOf(ChildCareConstants.STATUS_SENT_IN), String.valueOf(ChildCareConstants.STATUS_PRIORITY), String.valueOf(ChildCareConstants.STATUS_ACCEPTED), String.valueOf(ChildCareConstants.STATUS_PARENTS_ACCEPT), String.valueOf(ChildCareConstants.STATUS_CONTRACT) };
 
 	private static final String PLACEMENT_HELPER = "PlacementHelper";
+    
+    private static final int ORDER_BY_QUEUE_DATE = 1;    // see ChildCareApplicationBMPBean ORDER_BY_QUEUE_DATE
+    private static final int ORDER_BY_DATE_OF_BIRTH = 2; // see ChildCareApplicationBMPBean ORDER_BY_DATE_OF_BIRTH
 
 	public String getBundleIdentifier() {
 		return Constants.IW_BUNDLE_IDENTIFIER;
@@ -953,12 +956,25 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public int getNumberInQueue(ChildCareApplication application) {
+	
+    public int getNumberInQueue(ChildCareApplication application) {
+        return getNumberInQueue(application, ORDER_BY_QUEUE_DATE);
+    }
+    
+    public int getNumberInQueue(ChildCareApplication application, int orderBy) {
 		try {
 			String[] caseStatus = { getCaseStatusDeleted().getStatus(), getCaseStatusInactive().getStatus(), getCaseStatusCancelled().getStatus(), getCaseStatusReady().getStatus() };
 			int numberInQueue = 0;
-			numberInQueue += getChildCareApplicationHome().getPositionInQueue(application.getQueueDate(), application.getProviderId(), caseStatus);
-			numberInQueue += getChildCareApplicationHome().getPositionInQueueByDate(application.getQueueOrder(), application.getQueueDate(), application.getProviderId(), caseStatus);
+            
+            Date queueDate = null;
+            if (orderBy == ORDER_BY_DATE_OF_BIRTH) {                
+                queueDate = application.getChild().getDateOfBirth();
+            }else {
+                queueDate = application.getQueueDate();
+            }
+            
+			numberInQueue += getChildCareApplicationHome().getPositionInQueue(queueDate, application.getProviderId(), caseStatus, orderBy);
+			numberInQueue += getChildCareApplicationHome().getPositionInQueueByDate(application.getQueueOrder(), queueDate, application.getProviderId(), caseStatus, orderBy);
 			return numberInQueue;
 		}
 		catch (IDOException e) {
@@ -966,24 +982,43 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public int getNumberInQueueByStatus(ChildCareApplication application) {
+    
+    public int getNumberInQueueByStatus(ChildCareApplication application) {
+        return getNumberInQueueByStatus(application, ORDER_BY_QUEUE_DATE);
+    }
+    
+	public int getNumberInQueueByStatus(ChildCareApplication application, int orderBy) {
 		try {
 			int numberInQueue = 0;
-			numberInQueue += getChildCareApplicationHome().getPositionInQueue(application.getQueueDate(), application.getProviderId(), String.valueOf(application.getApplicationStatus()));
-			numberInQueue += getChildCareApplicationHome().getPositionInQueueByDate(application.getQueueOrder(), application.getQueueDate(), application.getProviderId(), String.valueOf(application.getApplicationStatus()));
+            
+            Date queueDate = null;
+            if (orderBy == ORDER_BY_DATE_OF_BIRTH) {                
+                queueDate = application.getChild().getDateOfBirth();
+            }else {
+                queueDate = application.getQueueDate();
+            }            
+            
+			numberInQueue += getChildCareApplicationHome().getPositionInQueue(queueDate, application.getProviderId(), String.valueOf(application.getApplicationStatus()), orderBy);
+			numberInQueue += getChildCareApplicationHome().getPositionInQueueByDate(application.getQueueOrder(), queueDate, application.getProviderId(), String.valueOf(application.getApplicationStatus()), orderBy);
 			return numberInQueue;
 		}
 		catch (IDOException e) {
 			return -1;
 		}
 	}
+    
+    
 
-	public Collection getUnhandledApplicationsByProvider(int providerId, int numberOfEntries, int startingEntry) {
+    public Collection getUnhandledApplicationsByProvider(int providerId, int numberOfEntries, int startingEntry) {        
+        return getUnhandledApplicationsByProvider(providerId, numberOfEntries, startingEntry, ORDER_BY_QUEUE_DATE);
+    }
+    
+	public Collection getUnhandledApplicationsByProvider(int providerId, int numberOfEntries, int startingEntry, int orderBy) {
 		try {
 			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
 			String[] caseStatus = { getCaseStatusDeleted().getStatus(), getCaseStatusInactive().getStatus(), getCaseStatusCancelled().getStatus(), getCaseStatusReady().getStatus() };
 
-			return home.findAllCasesByProviderAndNotInStatus(providerId, caseStatus, numberOfEntries, startingEntry);
+			return home.findAllCasesByProviderAndNotInStatus(providerId, caseStatus, numberOfEntries, startingEntry, orderBy);
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
@@ -994,23 +1029,28 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			return null;
 		}
 	}
-
-	public Collection getUnhandledApplicationsByProvider(int providerId, int numberOfEntries, int startingEntry, int sortBy, Date fromDate, Date toDate) {
-		try {
-			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
-			String[] caseStatus = { getCaseStatusDeleted().getStatus(), getCaseStatusInactive().getStatus(), getCaseStatusCancelled().getStatus(), getCaseStatusReady().getStatus() };
-
-			return home.findAllCasesByProviderAndNotInStatus(providerId, sortBy, fromDate, toDate, caseStatus, numberOfEntries, startingEntry);
-		}
-		catch (RemoteException e) {
-			e.printStackTrace();
-			return null;
-		}
-		catch (FinderException e) {
-			e.printStackTrace();
-			return null;
-		}
+    
+    public Collection getUnhandledApplicationsByProvider(int providerId, int numberOfEntries, int startingEntry, int sortBy, Date fromDate, Date toDate) {
+        return getUnhandledApplicationsByProvider(providerId, numberOfEntries, startingEntry, sortBy, fromDate, toDate, ORDER_BY_QUEUE_DATE);
 	}
+    
+
+    public Collection getUnhandledApplicationsByProvider(int providerId, int numberOfEntries, int startingEntry, int sortBy, Date fromDate, Date toDate, int orderBy) {
+        try {
+            ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
+            String[] caseStatus = { getCaseStatusDeleted().getStatus(), getCaseStatusInactive().getStatus(), getCaseStatusCancelled().getStatus(), getCaseStatusReady().getStatus() };
+
+            return home.findAllCasesByProviderAndNotInStatus(providerId, sortBy, fromDate, toDate, caseStatus, numberOfEntries, startingEntry, orderBy);
+        }
+        catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+        catch (FinderException e) {
+            e.printStackTrace();
+            return null;
+        }        
+    }    
 
 	public Collection getUnhandledApplicationsByChild(int childID, String caseCode) {
 		try {

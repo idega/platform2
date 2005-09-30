@@ -3,6 +3,7 @@
  */
 package se.idega.idegaweb.commune.childcare.business;
 
+
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -317,10 +318,22 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness,
             throws java.rmi.RemoteException;
 
     /**
+     * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getNumberInQueue
+     */
+    public int getNumberInQueue(ChildCareApplication application, int orderBy)
+            throws java.rmi.RemoteException;
+
+    /**
      * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getNumberInQueueByStatus
      */
     public int getNumberInQueueByStatus(ChildCareApplication application)
             throws java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getNumberInQueueByStatus
+     */
+    public int getNumberInQueueByStatus(ChildCareApplication application,
+            int orderBy) throws java.rmi.RemoteException;
 
     /**
      * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getUnhandledApplicationsByProvider
@@ -333,8 +346,22 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness,
      * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getUnhandledApplicationsByProvider
      */
     public Collection getUnhandledApplicationsByProvider(int providerId,
+            int numberOfEntries, int startingEntry, int orderBy)
+            throws java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getUnhandledApplicationsByProvider
+     */
+    public Collection getUnhandledApplicationsByProvider(int providerId,
             int numberOfEntries, int startingEntry, int sortBy, Date fromDate,
             Date toDate) throws java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getUnhandledApplicationsByProvider
+     */
+    public Collection getUnhandledApplicationsByProvider(int providerId,
+            int numberOfEntries, int startingEntry, int sortBy, Date fromDate,
+            Date toDate, int orderBy) throws java.rmi.RemoteException;
 
     /**
      * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getUnhandledApplicationsByChild

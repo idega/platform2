@@ -12,6 +12,7 @@ import se.idega.idegaweb.commune.childcare.business.ChildCareQueueWriter;
 import se.idega.idegaweb.commune.childcare.business.QueueCleaningSession;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 
+import com.idega.block.school.data.School;
 import com.idega.business.IBOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -51,6 +52,9 @@ public class ChildCareAdmin extends ChildCareBlock {
 	public Boolean _queueCleaned = null;
 
 	private boolean _showQueueCleaning = false;
+    
+    public static final int ORDER_BY_QUEUE_DATE = 1;    // see ChildCareApplicationBMPBean ORDER_BY_QUEUE_DATE
+    public static final int ORDER_BY_DATE_OF_BIRTH = 2; // see ChildCareApplicationBMPBean ORDER_BY_DATE_OF_BIRTH
 
 	/*
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
@@ -89,7 +93,7 @@ public class ChildCareAdmin extends ChildCareBlock {
         table.add(getPDFLink(), 1, 5);
         table.add(Text.getNonBrakingSpace(), 1, 5);
         table.add(getXSLLink(), 1, 5);
-         table.add(getApplicationTable(iwc), 1, 7);
+        table.add(getApplicationTable(iwc), 1, 7);
         table.add(getLegendTable(true), 1, 9);
     }
 
@@ -138,6 +142,9 @@ public class ChildCareAdmin extends ChildCareBlock {
 	
 	private Collection getApplicationCollection() throws RemoteException {
 		Collection applications = null;
+        
+        int ordering = getOrdering(); 
+        
 		if (getSession().getSortBy() != -1 && getSession().getSortBy() != SORT_ALL){
 			try {
 				IWTimestamp stamp = new IWTimestamp();
@@ -163,8 +170,11 @@ public class ChildCareAdmin extends ChildCareBlock {
 					to = stamp.getDate();					
 				}
 					
-				//applications = getBusiness().getUnhandledApplicationsByProvider(getSession().getChildCareID(), _numberPerPage, _start, getSession().getSortBy(), getSession().getFromTimestamp().getDate(), getSession().getToTimestamp().getDate());	
-				applications = getBusiness().getUnhandledApplicationsByProvider(getSession().getChildCareID(), _numberPerPage, _start, getSession().getSortBy(), from, to);
+				//applications = getBusiness().getUnhandledApplicationsByProvider(getSession().getChildCareID(), _numberPerPage, _start, getSession().getSortBy(), getSession().getFromTimestamp().getDate(), getSession().getToTimestamp().getDate());
+				applications = getBusiness()                
+                        .getUnhandledApplicationsByProvider(
+                                getSession().getChildCareID(), _numberPerPage,
+                                _start, getSession().getSortBy(), from, to, ordering);
 			}
 			catch (Exception e){
 				log(e);
@@ -172,9 +182,15 @@ public class ChildCareAdmin extends ChildCareBlock {
 			}
 		}
 		else
-			applications = getBusiness().getUnhandledApplicationsByProvider(getSession().getChildCareID(), _numberPerPage, _start);
+			applications = getBusiness().getUnhandledApplicationsByProvider(getSession().getChildCareID(), _numberPerPage, _start, ordering);
 		return applications;
 	}
+
+    private int getOrdering() throws RemoteException {
+        School provider = getSession().getProvider();
+        int ordering = provider.getSortByBirthdate() ? ORDER_BY_DATE_OF_BIRTH : ORDER_BY_QUEUE_DATE;
+        return ordering;
+    }
 	
 	
 	
@@ -204,7 +220,9 @@ public class ChildCareAdmin extends ChildCareBlock {
 		applicationTable.add(getLocalizedSmallHeader("child_care.placement_date","Placement date"), column++, row);
 		applicationTable.add(getLocalizedSmallHeader("child_care.order","Order"), column++, row);
 		applicationTable.add(getLocalizedSmallHeader("child_care.queue_order","Queue order"), column++, row++);
-				
+
+        int ordering = getOrdering(); 
+        
 		Collection applications = getApplicationCollection();
 		
 		int numberInqueueNoOffer = getBusiness().getNumberOfUnhandledApplicationsByProvider(getSession().getChildCareID());
@@ -229,11 +247,13 @@ public class ChildCareAdmin extends ChildCareBlock {
 				child = application.getChild();
 				queueDate = new IWCalendar(iwc.getCurrentLocale(), application.getQueueDate());
 				placementDate = new IWCalendar(iwc.getCurrentLocale(), application.getFromDate());
-				queueOrder = getBusiness().getNumberInQueue(application);
+				
+                queueOrder = getBusiness().getNumberInQueue(application, ordering);
 				if (application.getApplicationStatus() == getBusiness().getStatusSentIn())
-					netOrder = getBusiness().getNumberInQueueByStatus(application);
+					netOrder = getBusiness().getNumberInQueueByStatus(application, ordering);
 				else
 					netOrder = -1;
+                
 				hasOtherPlacing = getBusiness().hasBeenPlacedWithOtherProvider(application.getChildId(), getSession().getChildCareID());
 				hasSchoolPlacement = getBusiness().hasSchoolPlacement(child);
 				hasMessage = application.getMessage() != null;		

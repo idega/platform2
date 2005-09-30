@@ -20,6 +20,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
+import se.idega.idegaweb.commune.childcare.presentation.ChildCareAdmin;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
 import com.idega.block.school.data.School;
@@ -81,6 +82,8 @@ public class ChildCareQueueWriter extends DownloadWriter implements MediaWritabl
 
 	public final static String XLS = "xls";
 	public final static String PDF = "pdf";
+    
+    private int providerId = 0;
 	
 	public ChildCareQueueWriter() {
 	}
@@ -94,7 +97,7 @@ public class ChildCareQueueWriter extends DownloadWriter implements MediaWritabl
 			
 			if (req.getParameter(PARAMETER_PROVIDER_ID) != null) {
 				//int groupID = Integer.parseInt(req.getParameter(PARAMETER_GROUP_ID));
-				int providerID = Integer.parseInt(req.getParameter(PARAMETER_PROVIDER_ID));
+				providerId = Integer.parseInt(req.getParameter(PARAMETER_PROVIDER_ID));
 				int sortBy = Integer.parseInt(req.getParameter(PARAMETER_SORT_BY));
 				int numberPerPage = Integer.parseInt(req.getParameter(PARAMETER_NUMBER_PER_PAGE));
 				int start = Integer.parseInt(req.getParameter(PARAMETER_START));
@@ -112,11 +115,11 @@ public class ChildCareQueueWriter extends DownloadWriter implements MediaWritabl
 					
 				Collection applications = null;
 				if (stampFrom != null && stampTo != null)
-					applications = getApplicationCollection(iwc, providerID, sortBy, numberPerPage, start, stampFrom.getDate(), stampTo.getDate());
+					applications = getApplicationCollection(iwc, providerId, sortBy, numberPerPage, start, stampFrom.getDate(), stampTo.getDate());
 				else {
-					applications = getApplicationCollection(iwc, providerID, sortBy, numberPerPage, start, null, null);
+					applications = getApplicationCollection(iwc, providerId, sortBy, numberPerPage, start, null, null);
 				}
-				schoolName = business.getSchoolBusiness().getSchool(new Integer(providerID)).getSchoolName();
+				schoolName = business.getSchoolBusiness().getSchool(new Integer(providerId)).getSchoolName();
 								
 				String type = req.getParameter(PARAMETER_TYPE);
 				if (type.equals(PDF)) {
@@ -154,137 +157,159 @@ public class ChildCareQueueWriter extends DownloadWriter implements MediaWritabl
 			System.err.println("buffer is null");
 	}
 	
-	public MemoryFileBuffer writeXLS(Collection applications, IWContext iwc) throws Exception {
-		MemoryFileBuffer buffer = new MemoryFileBuffer();
-		MemoryOutputStream mos = new MemoryOutputStream(buffer);
-		if (!applications.isEmpty()) {
-	    HSSFWorkbook wb = new HSSFWorkbook();
-	    HSSFSheet sheet = wb.createSheet(schoolName);
-	    sheet.setColumnWidth((short)0, (short) (30 * 256));
-	    sheet.setColumnWidth((short)1, (short) (14 * 256));
-	    sheet.setColumnWidth((short)2, (short) (14 * 256));
-	    sheet.setColumnWidth((short)3, (short) (14 * 256));
-		sheet.setColumnWidth((short)4, (short) (14 * 256));
-		sheet.setColumnWidth((short)5, (short) (14 * 256));
-		sheet.setColumnWidth((short)6, (short) (14 * 256));
-		sheet.setColumnWidth((short)7, (short) (30 * 256));
-		
-	    HSSFFont font = wb.createFont();
-	    font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
-	    font.setFontHeightInPoints((short)12);
-	    HSSFCellStyle style = wb.createCellStyle();
-	    style.setFont(font);
+	public MemoryFileBuffer writeXLS(Collection applications, IWContext iwc)
+            throws Exception {
+        MemoryFileBuffer buffer = new MemoryFileBuffer();
+        MemoryOutputStream mos = new MemoryOutputStream(buffer);
+        if (!applications.isEmpty()) {
+            HSSFWorkbook wb = new HSSFWorkbook();
+            HSSFSheet sheet = wb.createSheet(schoolName);
+            sheet.setColumnWidth((short) 0, (short) (30 * 256));
+            sheet.setColumnWidth((short) 1, (short) (14 * 256));
+            sheet.setColumnWidth((short) 2, (short) (14 * 256));
+            sheet.setColumnWidth((short) 3, (short) (14 * 256));
+            sheet.setColumnWidth((short) 4, (short) (14 * 256));
+            sheet.setColumnWidth((short) 5, (short) (14 * 256));
+            sheet.setColumnWidth((short) 6, (short) (14 * 256));
+            sheet.setColumnWidth((short) 7, (short) (30 * 256));
 
-			int cellRow = 0;
-			HSSFRow row = sheet.createRow((short)cellRow++);
-			HSSFCell cell = row.createCell((short)0);
-			cell.setCellValue(schoolName);
-			cell.setCellStyle(style);
-			cell = row.createCell((short)1);
-			
-			if (groupName != null) {
-				row = sheet.createRow((short)cellRow++);
-				cell = row.createCell((short)0);
-				cell.setCellValue(groupName);
-				cell.setCellStyle(style);
-			}
-			
-			row = sheet.createRow((short)cellRow++);
-			
-	    row = sheet.createRow((short)cellRow++);
-	    
-	    cell = row.createCell((short)0);
-	    cell.setCellValue(iwrb.getLocalizedString("child_care.name","Name"));
-	    cell.setCellStyle(style);
-	    cell = row.createCell((short)1);
-	    cell.setCellValue(iwrb.getLocalizedString("child_care.personal_id","Personal ID"));
-	    cell.setCellStyle(style);
-	    cell = row.createCell((short)2);
-	    cell.setCellValue(iwrb.getLocalizedString("child_care.queue_date","Queue date"));
-	    cell.setCellStyle(style);
-		cell = row.createCell((short)3);
-		cell.setCellValue(iwrb.getLocalizedString("child_care.placement_date","Placement date"));
-		cell.setCellStyle(style);
-	    cell = row.createCell((short)4);
-	    cell.setCellValue(iwrb.getLocalizedString("child_care.order","Order"));
-	    cell.setCellStyle(style);
-	    cell = row.createCell((short)5);
-	    cell.setCellValue(iwrb.getLocalizedString("child_care.queue_order","Queue order"));
-	    cell.setCellStyle(style);
-	    cell = row.createCell((short)6);
-	    cell.setCellValue(iwrb.getLocalizedString("child_care.status","Status"));
-	    cell.setCellStyle(style);
-	    cell = row.createCell((short)7);
-	    cell.setCellValue(iwrb.getLocalizedString("child_care.current_provider","Current provider"));
-	    cell.setCellStyle(style);
+            HSSFFont font = wb.createFont();
+            font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+            font.setFontHeightInPoints((short) 12);
+            HSSFCellStyle style = wb.createCellStyle();
+            style.setFont(font);
 
-	       
-			ChildCareApplication application;
-			User child;
-	    	IWCalendar queueDate;
-	    	IWCalendar placementDate;
-	    	String statusCC = null;
-	    	//boolean hasOtherPlacing = false;
-	    	//boolean hasMessage = false;
-	    	int queueOrder = -1;
-	    	int netOrder = -1;
-	    				
-			Iterator iter = applications.iterator();
-			while (iter.hasNext()) {
-				row = sheet.createRow((short)cellRow++);
-				application = (ChildCareApplication) iter.next();
-				child = application.getChild();
-				
-				queueDate = new IWCalendar(iwc.getCurrentLocale(), application.getQueueDate());
-	    		placementDate = new IWCalendar(iwc.getCurrentLocale(), application.getFromDate());
-	    		queueOrder = getChildCareBusiness(iwc).getNumberInQueue(application);
-	    		statusCC = getChildCareBusiness(iwc).getStatusString(application.getApplicationStatus());
-	    		
-	    		School provider = getChildCareBusiness(iwc).getCurrentProviderByPlacement(application.getChildId());
-	    		String school = null;
-	    		if (provider != null){
-	    			school = provider.getName();				
-	    		} else {
-	    			school = "";
-	    		}
-	    		
-	    		if (application.getApplicationStatus() == getChildCareBusiness(iwc).getStatusSentIn())
-	    			netOrder = getChildCareBusiness(iwc).getNumberInQueueByStatus(application);
-	    		else
-	    			netOrder = -1;
-	    		
-	    		//hasOtherPlacing = getChildCareBusiness(iwc).hasBeenPlacedWithOtherProvider(application.getChildId(), providerID);
-	    		//hasMessage = application.getMessage() != null;
-	    		
-			Name name = new Name(child.getFirstName(), child.getMiddleName(), child.getLastName());
-		    row.createCell((short)0).setCellValue(name.getName(locale, true));
-		    row.createCell((short)1).setCellValue(PersonalIDFormatter.format(child.getPersonalID(), locale));
-		    
-		    if (queueDate != null) {
-			    row.createCell((short)2).setCellValue(queueDate.getLocaleDate(IWCalendar.SHORT));
-			 }
-			if (placementDate != null){			
-				row.createCell((short)3).setCellValue(placementDate.getLocaleDate(IWCalendar.SHORT));
-		    }
-		    if (netOrder != -1)
-			    row.createCell((short)4).setCellValue(netOrder);
-				
-			if (queueOrder != -1)
-			    row.createCell((short)5).setCellValue(queueOrder);
-						
-			
-			row.createCell((short)6).setCellValue(statusCC);
-			
-			row.createCell((short)7).setCellValue(school);
-		    
-			
-			}
-			wb.write(mos);
-	}
+            int cellRow = 0;
+            HSSFRow row = sheet.createRow((short) cellRow++);
+            HSSFCell cell = row.createCell((short) 0);
+            cell.setCellValue(schoolName);
+            cell.setCellStyle(style);
+            cell = row.createCell((short) 1);
 
-	buffer.setMimeType("application/x-msexcel");
-	return buffer;
-}
+            if (groupName != null) {
+                row = sheet.createRow((short) cellRow++);
+                cell = row.createCell((short) 0);
+                cell.setCellValue(groupName);
+                cell.setCellStyle(style);
+            }
+
+            row = sheet.createRow((short) cellRow++);
+
+            row = sheet.createRow((short) cellRow++);
+
+            cell = row.createCell((short) 0);
+            cell.setCellValue(iwrb
+                    .getLocalizedString("child_care.name", "Name"));
+            cell.setCellStyle(style);
+            cell = row.createCell((short) 1);
+            cell.setCellValue(iwrb.getLocalizedString("child_care.personal_id",
+                    "Personal ID"));
+            cell.setCellStyle(style);
+            cell = row.createCell((short) 2);
+            cell.setCellValue(iwrb.getLocalizedString("child_care.queue_date",
+                    "Queue date"));
+            cell.setCellStyle(style);
+            cell = row.createCell((short) 3);
+            cell.setCellValue(iwrb.getLocalizedString(
+                    "child_care.placement_date", "Placement date"));
+            cell.setCellStyle(style);
+            cell = row.createCell((short) 4);
+            cell.setCellValue(iwrb.getLocalizedString("child_care.order",
+                    "Order"));
+            cell.setCellStyle(style);
+            cell = row.createCell((short) 5);
+            cell.setCellValue(iwrb.getLocalizedString("child_care.queue_order",
+                    "Queue order"));
+            cell.setCellStyle(style);
+            cell = row.createCell((short) 6);
+            cell.setCellValue(iwrb.getLocalizedString("child_care.status",
+                    "Status"));
+            cell.setCellStyle(style);
+            cell = row.createCell((short) 7);
+            cell.setCellValue(iwrb.getLocalizedString(
+                    "child_care.current_provider", "Current provider"));
+            cell.setCellStyle(style);
+
+            ChildCareApplication application;
+            User child;
+            IWCalendar queueDate;
+            IWCalendar placementDate;
+            String statusCC = null;
+            // boolean hasOtherPlacing = false;
+            // boolean hasMessage = false;
+            int queueOrder = -1;
+            int netOrder = -1;
+
+            int ordering = getOrdering(providerId); 
+            
+            Iterator iter = applications.iterator();
+            while (iter.hasNext()) {
+                row = sheet.createRow((short) cellRow++);
+                application = (ChildCareApplication) iter.next();
+                child = application.getChild();
+
+                queueDate = new IWCalendar(iwc.getCurrentLocale(), application
+                        .getQueueDate());
+                placementDate = new IWCalendar(iwc.getCurrentLocale(),
+                        application.getFromDate());
+                queueOrder = getChildCareBusiness(iwc).getNumberInQueue(application, ordering);
+                statusCC = getChildCareBusiness(iwc).getStatusString(
+                        application.getApplicationStatus());
+
+                School provider = getChildCareBusiness(iwc)
+                        .getCurrentProviderByPlacement(application.getChildId());
+                String school = null;
+                if (provider != null) {
+                    school = provider.getName();
+                } else {
+                    school = "";
+                }
+
+                if (application.getApplicationStatus() == getChildCareBusiness(
+                        iwc).getStatusSentIn())
+                    netOrder = getChildCareBusiness(iwc)
+                            .getNumberInQueueByStatus(application, ordering);
+                else
+                    netOrder = -1;
+
+                // hasOtherPlacing =
+                // getChildCareBusiness(iwc).hasBeenPlacedWithOtherProvider(application.getChildId(),
+                // providerID);
+                //hasMessage = application.getMessage() != null;
+
+                Name name = new Name(child.getFirstName(), child
+                        .getMiddleName(), child.getLastName());
+                row.createCell((short) 0).setCellValue(
+                        name.getName(locale, true));
+                row.createCell((short) 1).setCellValue(
+                        PersonalIDFormatter.format(child.getPersonalID(),
+                                locale));
+
+                if (queueDate != null) {
+                    row.createCell((short) 2).setCellValue(
+                            queueDate.getLocaleDate(IWCalendar.SHORT));
+                }
+                if (placementDate != null) {
+                    row.createCell((short) 3).setCellValue(
+                            placementDate.getLocaleDate(IWCalendar.SHORT));
+                }
+                if (netOrder != -1)
+                    row.createCell((short) 4).setCellValue(netOrder);
+
+                if (queueOrder != -1)
+                    row.createCell((short) 5).setCellValue(queueOrder);
+
+                row.createCell((short) 6).setCellValue(statusCC);
+
+                row.createCell((short) 7).setCellValue(school);
+
+            }
+            wb.write(mos);
+        }
+
+        buffer.setMimeType("application/x-msexcel");
+        return buffer;
+    }
 
 	
 	
@@ -321,6 +346,7 @@ public class ChildCareQueueWriter extends DownloadWriter implements MediaWritabl
 						
 			Table datatable = getTable(headers, sizes);
 			Iterator iter = applications.iterator();
+            
 			while (iter.hasNext()) {
 				application = (ChildCareApplication) iter.next();
 				child = application.getChild();
@@ -403,10 +429,15 @@ public class ChildCareQueueWriter extends DownloadWriter implements MediaWritabl
 
 	private Collection getApplicationCollection(IWContext iwc, int childcareId, int sortBy, int numberPerPage, int start, Date fromDate, Date toDate) throws RemoteException {
 		Collection applications;
+        
+        int ordering = getOrdering(childcareId); 
+        
 		if (sortBy != -1 && fromDate != null && toDate != null) // && sortBy != SORT_ALL)
-			applications = getChildCareBusiness(iwc).getUnhandledApplicationsByProvider(childcareId, numberPerPage, start, sortBy, fromDate, toDate);
+			applications = getChildCareBusiness(iwc).getUnhandledApplicationsByProvider(childcareId, numberPerPage, start, sortBy, fromDate, toDate, ordering);
 		else
-		applications = getChildCareBusiness(iwc).getUnhandledApplicationsByProvider(childcareId);
+		    //applications = getChildCareBusiness(iwc).getUnhandledApplicationsByProvider(childcareId);
+            //Dainis 2005-09-30: lets use the same method as in ChildCareAdmin instead
+            applications = getChildCareBusiness(iwc).getUnhandledApplicationsByProvider(childcareId, Integer.MAX_VALUE, 0, ordering);
 		
 		return applications;
 	}
@@ -418,4 +449,11 @@ public class ChildCareQueueWriter extends DownloadWriter implements MediaWritabl
 	protected CommuneUserBusiness getCommuneUserBusiness(IWApplicationContext iwc) throws RemoteException {
 		return (CommuneUserBusiness) IBOLookup.getServiceInstance(iwc, CommuneUserBusiness.class);	
 	}
+    
+    private int getOrdering(int providerId) throws RemoteException {
+        School provider = business.getSchoolBusiness().getSchool(new Integer(providerId));
+        int ordering = provider.getSortByBirthdate() ? ChildCareAdmin.ORDER_BY_DATE_OF_BIRTH : ChildCareAdmin.ORDER_BY_QUEUE_DATE;
+        return ordering;
+    }    
+    
 }
