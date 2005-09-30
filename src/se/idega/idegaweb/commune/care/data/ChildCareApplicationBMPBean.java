@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareApplicationBMPBean.java,v 1.18 2005/04/25 13:08:36 laddi Exp $
+ * $Id: ChildCareApplicationBMPBean.java,v 1.19 2005/09/30 18:07:45 dainis Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -84,6 +84,9 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	protected final int SORT_DATE_OF_BIRTH = 1;
 	protected final int SORT_QUEUE_DATE = 2;
 	protected final int SORT_PLACEMENT_DATE = 3;
+    
+    public final int ORDER_BY_QUEUE_DATE = 1;
+    public final int ORDER_BY_DATE_OF_BIRTH = 2;
 	
 	/**
 	 * @see com.idega.block.process.data.AbstractCaseBMPBean#getCaseCodeKey()
@@ -526,31 +529,56 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		return idoFindPKsBySQL(sql.toString(), numberOfEntries, startingEntry);
 	}	
 	
-	public Collection ejbFindAllCasesByProviderAndNotInStatus(int providerId, String[] caseStatus, int numberOfEntries, int startingEntry) throws FinderException {
+    public Collection ejbFindAllCasesByProviderAndNotInStatus(int providerId, String[] caseStatus, int numberOfEntries, int startingEntry) throws FinderException {
+        return ejbFindAllCasesByProviderAndNotInStatus(providerId, caseStatus, numberOfEntries, startingEntry, ORDER_BY_QUEUE_DATE);
+    }
+    
+    public Collection ejbFindAllCasesByProviderAndNotInStatus(int providerId, String[] caseStatus, int numberOfEntries, int startingEntry, int orderBy) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).append(" c, proc_case p");
-		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+        
+        if ( orderBy == ORDER_BY_DATE_OF_BIRTH ) {
+            sql.append(", ic_user u"); 
+            sql.appendWhereEquals("c."+CHILD_ID, "u.ic_user_id");
+            
+            sql.appendAndEquals("c."+getIDColumnName(), "p.proc_case_id");
+        } else {
+            sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+        }        
+		
 		sql.appendAndEquals("c."+PROVIDER_ID,providerId);
 		if (caseStatus != null)
 			sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
-		//sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
-		sql.appendOrderBy("c."+APPLICATION_STATUS+" desc, c."+QUEUE_DATE+", c."+QUEUE_ORDER);
+		        
+        String s = null;
+        if (orderBy == ORDER_BY_DATE_OF_BIRTH) {
+            s = "u.date_of_birth asc,";
+        } else {
+            s = "c." + QUEUE_DATE + ",";
+        }
+        sql.appendOrderBy("c." + APPLICATION_STATUS + " desc, " + s + " c." + QUEUE_ORDER);
 
 		return idoFindPKsBySQL(sql.toString(), numberOfEntries, startingEntry);
 	}	
-	
-	public Collection ejbFindAllCasesByProviderAndNotInStatus(int providerId, int sortBy, Date fromDate, Date toDate, String[] caseStatus, int numberOfEntries, int startingEntry) throws FinderException {
+    	
+    public Collection ejbFindAllCasesByProviderAndNotInStatus(int providerId, int sortBy, Date fromDate, Date toDate, String[] caseStatus, int numberOfEntries, int startingEntry) throws FinderException {
+        return ejbFindAllCasesByProviderAndNotInStatus(providerId, sortBy, fromDate, toDate, caseStatus, numberOfEntries, startingEntry, ORDER_BY_QUEUE_DATE);
+    }
+    
+	public Collection ejbFindAllCasesByProviderAndNotInStatus(int providerId, int sortBy, Date fromDate, Date toDate, String[] caseStatus, int numberOfEntries, int startingEntry, int orderBy) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).append(" c, proc_case p");
-		if (sortBy == SORT_DATE_OF_BIRTH)
+		if ( (sortBy == SORT_DATE_OF_BIRTH)||(orderBy == ORDER_BY_DATE_OF_BIRTH) )
 			sql.append(", ic_user u");
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+PROVIDER_ID,providerId);
 		if (caseStatus != null)
 			sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
 		//sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
-		if (sortBy == SORT_DATE_OF_BIRTH) {
-			sql.appendAndEquals("c."+CHILD_ID, "u.ic_user_id");
+        
+        if ( (sortBy == SORT_DATE_OF_BIRTH)||(orderBy == ORDER_BY_DATE_OF_BIRTH) )
+            sql.appendAndEquals("c."+CHILD_ID, "u.ic_user_id");
+		if (sortBy == SORT_DATE_OF_BIRTH) {			
 			sql.appendAnd().append("u.date_of_birth").appendGreaterThanOrEqualsSign().append(fromDate);
 			sql.appendAnd().append("u.date_of_birth").appendLessThanOrEqualsSign().append(toDate);
 		}
@@ -562,7 +590,14 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 			sql.appendAnd().append("c."+FROM_DATE).appendGreaterThanOrEqualsSign().append(fromDate);
 			sql.appendAnd().append("c."+FROM_DATE).appendLessThanOrEqualsSign().append(toDate);
 		}
-		sql.appendOrderBy("c."+APPLICATION_STATUS+" desc, c."+QUEUE_DATE+", c."+QUEUE_ORDER);
+        
+        String s = null;
+        if (orderBy == ORDER_BY_DATE_OF_BIRTH) {
+            s = "u.date_of_birth asc,";
+        } else {
+            s = "c." + QUEUE_DATE + ",";
+        }
+		sql.appendOrderBy("c." + APPLICATION_STATUS + " desc, " + s + " c." + QUEUE_ORDER);
 
 		return idoFindPKsBySQL(sql.toString(), numberOfEntries, startingEntry);
 	}	
@@ -1102,55 +1137,112 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		return idoGetNumberOfRecords(sql);
 	}
 	
-	public int ejbHomeGetPositionInQueue(Date queueDate, int providerID, String[] caseStatus) throws IDOException {
-		
+    public int ejbHomeGetPositionInQueue(Date queueDate, int providerID, String[] caseStatus) throws IDOException {
+        return ejbHomeGetPositionInQueue(queueDate, providerID, caseStatus, ORDER_BY_QUEUE_DATE);
+    }
+	public int ejbHomeGetPositionInQueue(Date queueDate, int providerID, String[] caseStatus, int orderBy) throws IDOException {		
 		Table table = new Table(this);
 		Table caseTable = new Table(Case.class);
-		SelectQuery query = new SelectQuery(table);
-		query.addColumn(table,CHILD_ID);
-		query.setAsCountQuery(true);
+        Table userTable = null;
+        
+        SelectQuery query = new SelectQuery(table);
+        query.addColumn(table,CHILD_ID);
+        query.setAsCountQuery(true);        
 		query.addJoin(table,getIDColumnName(),caseTable,"proc_case_id");
-		query.addCriteria(new MatchCriteria(table,PROVIDER_ID,MatchCriteria.EQUALS, providerID));
-		// not in statuses, strange but seems to do it ( aron )
+        if (orderBy == ORDER_BY_DATE_OF_BIRTH) {
+            userTable = new Table(User.class);            
+            query.addJoin(table, CHILD_ID, userTable, User.FIELD_USER_ID);
+        }        
+		query.addCriteria(new MatchCriteria(table,PROVIDER_ID,MatchCriteria.EQUALS, providerID));		
 		query.addCriteria(new InCriteria(caseTable,"case_status",caseStatus,true));
-		query.addCriteria(new MatchCriteria(table,QUEUE_DATE,MatchCriteria.LESS,queueDate));
+        if (orderBy == ORDER_BY_DATE_OF_BIRTH) {    
+            query.addCriteria(new MatchCriteria(userTable, User.FIELD_DATE_OF_BIRTH, MatchCriteria.LESS, queueDate));
+        } else {
+            query.addCriteria(new MatchCriteria(table,QUEUE_DATE,MatchCriteria.LESS,queueDate));
+        }        
 		return idoGetNumberOfRecords(query);
 	}
-
-	public int ejbHomeGetPositionInQueue(Date queueDate, int providerID, String applicationStatus) throws IDOException {
+    
+    
+    public int ejbHomeGetPositionInQueue(Date queueDate, int providerID, String applicationStatus) throws IDOException {
+        return ejbHomeGetPositionInQueue(queueDate, providerID, applicationStatus, ORDER_BY_QUEUE_DATE);
+    }
+	public int ejbHomeGetPositionInQueue(Date queueDate, int providerID, String applicationStatus, int orderBy) throws IDOException {
 		Table table = new Table(this);
+        Table userTable = null;
+        
 		SelectQuery query = new SelectQuery(table);
 		query.addColumn(table,CHILD_ID);
+        if (orderBy == ORDER_BY_DATE_OF_BIRTH) {
+            userTable = new Table(User.class);            
+            query.addJoin(table, CHILD_ID, userTable, User.FIELD_USER_ID);
+        }         
 		query.addCriteria(new MatchCriteria(table,PROVIDER_ID,MatchCriteria.EQUALS,providerID));
-		query.addCriteria(new MatchCriteria(table,APPLICATION_STATUS,MatchCriteria.EQUALS,applicationStatus,true));
-		query.addCriteria(new MatchCriteria(table,QUEUE_DATE,MatchCriteria.LESS,queueDate));
+		query.addCriteria(new MatchCriteria(table,APPLICATION_STATUS,MatchCriteria.EQUALS,applicationStatus,true));		
+        if (orderBy == ORDER_BY_DATE_OF_BIRTH) {    
+            query.addCriteria(new MatchCriteria(userTable, User.FIELD_DATE_OF_BIRTH, MatchCriteria.LESS, queueDate));
+        } else {
+            query.addCriteria(new MatchCriteria(table,QUEUE_DATE,MatchCriteria.LESS,queueDate));
+        }  
+        
 		query.setAsCountQuery(true);
 		return idoGetNumberOfRecords(query);
 	}
 	
-	public int ejbHomeGetPositionInQueueByDate(int queueOrder, Date queueDate, int providerID, String[] caseStatus) throws IDOException {
+    public int ejbHomeGetPositionInQueueByDate(int queueOrder, Date queueDate, int providerID, String[] caseStatus) throws IDOException {
+        return ejbHomeGetPositionInQueueByDate(queueOrder, queueDate, providerID, caseStatus, ORDER_BY_QUEUE_DATE);
+    }
+	public int ejbHomeGetPositionInQueueByDate(int queueOrder, Date queueDate, int providerID, String[] caseStatus, int orderBy) throws IDOException {
 		Table table = new Table(this,"c");
 		Table caseTable = new Table(Case.class,"p");
+        Table userTable = null;
+        
 		SelectQuery query = new SelectQuery(table);
 		query.addColumn(table,CHILD_ID);
 		query.addJoin(table,getIDColumnName(),caseTable,"proc_case_id");
+        if (orderBy == ORDER_BY_DATE_OF_BIRTH) {
+            userTable = new Table(User.class, "u");            
+            query.addJoin(table, CHILD_ID, userTable, User.FIELD_USER_ID);
+        }          
+        
 		query.addCriteria(new MatchCriteria(table,PROVIDER_ID,MatchCriteria.EQUALS,providerID));
-		query.addCriteria(new MatchCriteria(table,QUEUE_DATE,MatchCriteria.EQUALS,queueDate));
+		
+        if (orderBy == ORDER_BY_DATE_OF_BIRTH) {
+            query.addCriteria(new MatchCriteria(userTable, User.FIELD_DATE_OF_BIRTH, MatchCriteria.EQUALS, queueDate));
+        } else {
+            query.addCriteria(new MatchCriteria(table,QUEUE_DATE,MatchCriteria.EQUALS,queueDate));
+        }
+        
 		query.addCriteria(new MatchCriteria(table,QUEUE_ORDER,MatchCriteria.LESSEQUAL,queueOrder));
 		//		 not in statuses, strange but seems to do it ( aron )
-		query.addCriteria(new InCriteria(caseTable,"case_status",caseStatus,true));
+		query.addCriteria(new InCriteria(caseTable, "case_status",caseStatus,true));
 		query.setAsCountQuery(true);
 		return idoGetNumberOfRecords(query);
 	}
 
-	public int ejbHomeGetPositionInQueueByDate(int queueOrder, Date queueDate, int providerID, String applicationStatus) throws IDOException {
+    public int ejbHomeGetPositionInQueueByDate(int queueOrder, Date queueDate, int providerID, String applicationStatus) throws IDOException {
+        return ejbHomeGetPositionInQueueByDate(queueOrder, queueDate, providerID, applicationStatus, ORDER_BY_QUEUE_DATE);
+    }
+	public int ejbHomeGetPositionInQueueByDate(int queueOrder, Date queueDate, int providerID, String applicationStatus, int orderBy) throws IDOException {
 		Table table = new Table(this,"c");
+        Table userTable = null;
+        
 		SelectQuery query = new SelectQuery(table);
-		query.addColumn(table,CHILD_ID);
+		query.addColumn(table,CHILD_ID);        
+        if (orderBy == ORDER_BY_DATE_OF_BIRTH) {
+            userTable = new Table(User.class, "u");            
+            query.addJoin(table, CHILD_ID, userTable, User.FIELD_USER_ID);
+        }          
 		query.addCriteria(new MatchCriteria(table,PROVIDER_ID,MatchCriteria.EQUALS,providerID));
-		query.addCriteria(new MatchCriteria(table,APPLICATION_STATUS,MatchCriteria.EQUALS,applicationStatus,true));
-		query.addCriteria(new MatchCriteria(table,QUEUE_DATE,MatchCriteria.EQUALS,queueDate));
-		query.addCriteria(new MatchCriteria(table,QUEUE_ORDER,MatchCriteria.LESSEQUAL,queueOrder));
+		query.addCriteria(new MatchCriteria(table,APPLICATION_STATUS,MatchCriteria.EQUALS,applicationStatus,true));		
+        if (orderBy == ORDER_BY_DATE_OF_BIRTH) {
+            query.addCriteria(new MatchCriteria(userTable, User.FIELD_DATE_OF_BIRTH, MatchCriteria.EQUALS, queueDate));
+            query.addCriteria(new MatchCriteria(table,QUEUE_ORDER,MatchCriteria.LESS,queueOrder));
+        } else {
+            query.addCriteria(new MatchCriteria(table,QUEUE_DATE,MatchCriteria.EQUALS,queueDate));
+            query.addCriteria(new MatchCriteria(table,QUEUE_ORDER,MatchCriteria.LESSEQUAL,queueOrder));
+        }		
+        
 		query.setAsCountQuery(true);
 		
 		return idoGetNumberOfRecords(query);
