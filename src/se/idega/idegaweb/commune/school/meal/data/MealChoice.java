@@ -1,6 +1,6 @@
 /*
- * $Id: MealChoice.java,v 1.1 2005/08/10 23:03:11 laddi Exp $
- * Created on Aug 10, 2005
+ * $Id: MealChoice.java,v 1.2 2005/10/02 22:12:23 laddi Exp $
+ * Created on Oct 2, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -9,6 +9,7 @@
  */
 package se.idega.idegaweb.commune.school.meal.data;
 
+import com.idega.block.finance.data.AccountEntry;
 import com.idega.block.process.data.Case;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolSeason;
@@ -17,10 +18,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/08/10 23:03:11 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/02 22:12:23 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public interface MealChoice extends IDOEntity, Case {
 
@@ -65,6 +66,16 @@ public interface MealChoice extends IDOEntity, Case {
 	public Object getSeasonPK();
 
 	/**
+	 * @see se.idega.idegaweb.commune.school.meal.data.MealChoiceBMPBean#getAccountEntry
+	 */
+	public AccountEntry getAccountEntry();
+
+	/**
+	 * @see se.idega.idegaweb.commune.school.meal.data.MealChoiceBMPBean#getAccountEntryPK
+	 */
+	public Object getAccountEntryPK();
+
+	/**
 	 * @see se.idega.idegaweb.commune.school.meal.data.MealChoiceBMPBean#getComments
 	 */
 	public String getComments();
@@ -98,6 +109,16 @@ public interface MealChoice extends IDOEntity, Case {
 	 * @see se.idega.idegaweb.commune.school.meal.data.MealChoiceBMPBean#setSeason
 	 */
 	public void setSeason(SchoolSeason season);
+
+	/**
+	 * @see se.idega.idegaweb.commune.school.meal.data.MealChoiceBMPBean#setAccountEntry
+	 */
+	public void setAccountEntry(Object accountEntryPK);
+
+	/**
+	 * @see se.idega.idegaweb.commune.school.meal.data.MealChoiceBMPBean#setAccountEntry
+	 */
+	public void setAccountEntry(AccountEntry accountEntry);
 
 	/**
 	 * @see se.idega.idegaweb.commune.school.meal.data.MealChoiceBMPBean#setSeason

@@ -1,5 +1,5 @@
 /*
- * $Id: MealBusinessBean.java,v 1.5 2005/10/02 18:41:15 laddi Exp $
+ * $Id: MealBusinessBean.java,v 1.6 2005/10/02 22:12:23 laddi Exp $
  * Created on Aug 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -34,6 +34,9 @@ import se.idega.idegaweb.commune.school.meal.data.MealPriceHome;
 import se.idega.idegaweb.commune.school.meal.data.MealVacationDay;
 import se.idega.idegaweb.commune.school.meal.data.MealVacationDayHome;
 import se.idega.idegaweb.commune.school.meal.util.MealConstants;
+import com.idega.block.finance.data.AccountEntry;
+import com.idega.block.finance.data.AccountEntryBMPBean;
+import com.idega.block.finance.data.AccountEntryHome;
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.block.school.business.SchoolBusiness;
@@ -44,6 +47,8 @@ import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.data.IDOCreateException;
 import com.idega.data.IDOException;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.user.data.User;
 import com.idega.util.IWCalendar;
 import com.idega.util.IWTimestamp;
@@ -52,10 +57,10 @@ import com.idega.util.text.Name;
 
 
 /**
- * Last modified: $Date: 2005/10/02 18:41:15 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/02 22:12:23 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class MealBusinessBean extends CaseBusinessBean implements CaseBusiness , MealBusiness{
 
@@ -282,6 +287,17 @@ public class MealBusinessBean extends CaseBusinessBean implements CaseBusiness ,
 		}
 	}
 	
+	public Collection getChoicesByClaimStatus(School school) {
+		try {
+			String[] statuses = { AccountEntryBMPBean.statusCreated, AccountEntryBMPBean.statusBilled };
+			return getChoiceHome().findAllBySchoolAndClaimStatus(school, statuses);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return new ArrayList();
+		}
+	}
+	
 	public Collection getSchoolDiners(School school, Date date, Boolean showEmployees) {
 		try {
 			IWTimestamp stamp = new IWTimestamp(date);
@@ -408,6 +424,7 @@ public class MealBusinessBean extends CaseBusinessBean implements CaseBusiness ,
 			choice.setEmployee(user.equals(performer));
 			changeCaseStatus(choice, getCaseStatusOpenString(), performer);
 			
+			float totalAmount = 0;
 			for (int i = 0; i < months.length; i++) {
 				Date date = months[i];
 				MonthValues values = (MonthValues) monthValues.get(date);
@@ -431,8 +448,23 @@ public class MealBusinessBean extends CaseBusinessBean implements CaseBusiness ,
 				choiceMonth.setMilk(values.isMilk());
 				choiceMonth.setFruits(values.isFruits());
 				choiceMonth.setAmount(values.getAmount());
+				totalAmount += values.getAmount();
 				
 				choiceMonth.store();
+			}
+			
+			try {
+				AccountEntry entry = ((AccountEntryHome) IDOLookup.getHome(AccountEntry.class)).create();
+				entry.setUserId(((Integer) user.getPrimaryKey()).intValue());
+				entry.setTotal(totalAmount);
+				entry.setStatus(AccountEntryBMPBean.statusCreated);
+				entry.store();
+				
+				choice.setAccountEntry(entry);
+				choice.store();
+			}
+			catch (IDOLookupException ile) {
+				ile.printStackTrace();
 			}
 			
 			if (!user.equals(performer)) {

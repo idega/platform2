@@ -1,5 +1,5 @@
 /*
- * $Id: MealChoiceBMPBean.java,v 1.1 2005/08/10 23:03:11 laddi Exp $
+ * $Id: MealChoiceBMPBean.java,v 1.2 2005/10/02 22:12:23 laddi Exp $
  * Created on Aug 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -12,10 +12,14 @@ package se.idega.idegaweb.commune.school.meal.data;
 import java.util.Collection;
 import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.school.meal.util.MealConstants;
+import com.idega.block.finance.data.AccountEntry;
+import com.idega.block.finance.data.AccountEntryBMPBean;
 import com.idega.block.process.data.AbstractCaseBMPBean;
 import com.idega.block.process.data.Case;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolSeason;
+import com.idega.data.IDORelationshipException;
+import com.idega.data.query.InCriteria;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;
@@ -23,10 +27,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/08/10 23:03:11 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/02 22:12:23 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class MealChoiceBMPBean extends AbstractCaseBMPBean implements Case , MealChoice{
 	
@@ -37,6 +41,7 @@ public class MealChoiceBMPBean extends AbstractCaseBMPBean implements Case , Mea
 	private static final String COLUMN_SEASON = "season_id";
 	private static final String COLUMN_COMMENTS = "comments";
 	private static final String COLUMN_IS_EMPLOYEE = "is_employee";
+	private static final String COLUMN_ACCOUNT_ENTRY = "account_entry_id";
 
 	/* (non-Javadoc)
 	 * @see com.idega.block.process.data.AbstractCaseBMPBean#getCaseCodeKey()
@@ -68,6 +73,7 @@ public class MealChoiceBMPBean extends AbstractCaseBMPBean implements Case , Mea
 		addManyToOneRelationship(COLUMN_USER, "User", User.class);
 		addManyToOneRelationship(COLUMN_SCHOOL, "School", School.class);
 		addManyToOneRelationship(COLUMN_SEASON, "Season", SchoolSeason.class);
+		addOneToOneRelationship(COLUMN_ACCOUNT_ENTRY, "Account Entry", AccountEntry.class);
 		
 		addAttribute(COLUMN_COMMENTS, "Comments", String.class, 4000);
 		addAttribute(COLUMN_IS_EMPLOYEE, "Is employee", Boolean.class);
@@ -98,6 +104,14 @@ public class MealChoiceBMPBean extends AbstractCaseBMPBean implements Case , Mea
 		return getIntegerColumnValue(COLUMN_SEASON);
 	}
 	
+	public AccountEntry getAccountEntry() {
+		return (AccountEntry) getColumnValue(COLUMN_ACCOUNT_ENTRY);
+	}
+	
+	public Object getAccountEntryPK() {
+		return getIntegerColumnValue(COLUMN_ACCOUNT_ENTRY);
+	}
+	
 	public String getComments() {
 		return getStringColumnValue(COLUMN_COMMENTS);
 	}
@@ -125,6 +139,14 @@ public class MealChoiceBMPBean extends AbstractCaseBMPBean implements Case , Mea
 	
 	public void setSeason(SchoolSeason season) {
 		setColumn(COLUMN_SEASON, season);
+	}
+	
+	public void setAccountEntry(Object accountEntryPK) {
+		setColumn(COLUMN_ACCOUNT_ENTRY, accountEntryPK);
+	}
+	
+	public void setAccountEntry(AccountEntry accountEntry) {
+		setColumn(COLUMN_ACCOUNT_ENTRY, accountEntry);
 	}
 	
 	public void setSeason(Object seasonPK) {
@@ -159,6 +181,25 @@ public class MealChoiceBMPBean extends AbstractCaseBMPBean implements Case , Mea
 		query.addColumn(table, getIDColumnName());
 		query.addCriteria(new MatchCriteria(table, COLUMN_SCHOOL, MatchCriteria.EQUALS, school));
 		query.addCriteria(new MatchCriteria(table, COLUMN_SEASON, MatchCriteria.EQUALS, season));
+		
+		return idoFindPKsByQuery(query);
+	}
+	
+	public Collection ejbFindAllBySchoolAndClaimStatus(School school, String[] statuses) throws FinderException {
+		Table table = new Table(this);
+		Table accountEntry = new Table(AccountEntry.class);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(table, getIDColumnName());
+		try {
+			query.addJoin(table, accountEntry);
+		}
+		catch (IDORelationshipException ire) {
+			ire.printStackTrace();
+			throw new FinderException(ire.getMessage());
+		}
+		query.addCriteria(new MatchCriteria(table, COLUMN_SCHOOL, MatchCriteria.EQUALS, school));
+		query.addCriteria(new InCriteria(accountEntry, AccountEntryBMPBean.getColumnNameStatus(), statuses));
 		
 		return idoFindPKsByQuery(query);
 	}
