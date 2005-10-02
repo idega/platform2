@@ -1,5 +1,5 @@
 /*
- * $Id: MealBusinessBean.java,v 1.3 2005/08/12 19:29:50 gimmi Exp $
+ * $Id: MealBusinessBean.java,v 1.4 2005/10/02 13:44:24 laddi Exp $
  * Created on Aug 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -13,12 +13,15 @@ import is.idega.block.family.business.NoCustodianFound;
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
@@ -30,6 +33,7 @@ import se.idega.idegaweb.commune.school.meal.data.MealPrice;
 import se.idega.idegaweb.commune.school.meal.data.MealPriceHome;
 import se.idega.idegaweb.commune.school.meal.data.MealVacationDay;
 import se.idega.idegaweb.commune.school.meal.data.MealVacationDayHome;
+import se.idega.idegaweb.commune.school.meal.util.MealConstants;
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.block.school.business.SchoolBusiness;
@@ -48,10 +52,10 @@ import com.idega.util.text.Name;
 
 
 /**
- * Last modified: $Date: 2005/08/12 19:29:50 $ by $Author: gimmi $
+ * Last modified: $Date: 2005/10/02 13:44:24 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class MealBusinessBean extends CaseBusinessBean implements CaseBusiness , MealBusiness{
 
@@ -149,6 +153,30 @@ public class MealBusinessBean extends CaseBusinessBean implements CaseBusiness ,
 		}
 	}
 	
+	public Collection getVacationDays(School school) {
+		try {
+			return getVacationDayHome().findAllBySchool(school);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return new ArrayList();
+		}
+	}
+	
+	public MealVacationDay getVacationDay(Object vacationDayPK) throws FinderException {
+		return getVacationDayHome().findByPrimaryKey(vacationDayPK);
+	}
+	
+	public void deleteVacationDay(Object vacationDayPK) throws RemoveException {
+		try {
+			MealVacationDay vacationDay = getVacationDay(vacationDayPK);
+			vacationDay.remove();
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+		}
+	}
+	
 	private boolean hasPriceForDate(School school, Date date) {
 		try {
 			return getPriceHome().getCountBySchoolAndDate(school, date) > 0;
@@ -159,14 +187,46 @@ public class MealBusinessBean extends CaseBusinessBean implements CaseBusiness ,
 		}
 	}
 	
+	public boolean hasChoiceForDate(User user, School school, SchoolSeason season, Date date) {
+		IWTimestamp stamp = new IWTimestamp(date);
+		try {
+			return getChoiceMonthHome().getNumberOfChoicesForUser(user, school, season, stamp.getMonth(), stamp.getYear()) > 0;
+		}
+		catch (IDOException ie) {
+			ie.printStackTrace();
+			return false;
+		}
+	}
+	
+	public MealPrice getMealPrice(Object pricePK) throws FinderException {
+		return getPriceHome().findByPrimaryKey(pricePK);
+	}
+	
+	public void deleteMealPrice(Object pricePK) throws RemoveException {
+		try {
+			MealPrice price = getMealPrice(pricePK);
+			price.remove();
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+		}
+	}
+	
 	public MealPrice getMealPrice(School school, Date date) throws FinderException {
 		return getPriceHome().findBySchoolAndDate(school, date);
 	}
 	
-	public void storePrices(School school, Date validFrom, Date validTo, float dayPrice, float monthPrice, float milkPrice, float fruitPrice) throws IDOCreateException {
+	public void storePrices(Object pricePK, School school, Date validFrom, Date validTo, float dayPrice, float monthPrice, float milkPrice, float fruitPrice) throws IDOCreateException {
 		try {
-			if (!hasPriceForDate(school, validFrom) && !hasPriceForDate(school, validTo)) {
-				MealPrice price = getPriceHome().create();
+			if ((!hasPriceForDate(school, validFrom) && !hasPriceForDate(school, validTo)) || pricePK != null) {
+				MealPrice price = null;
+				if (pricePK != null) {
+					price = getPriceHome().findByPrimaryKey(pricePK);
+				}
+				else {
+					price = getPriceHome().create();
+				}
+
 				price.setSchool(school);
 				price.setValidFrom(validFrom);
 				price.setValidTo(validTo);
@@ -181,52 +241,75 @@ public class MealBusinessBean extends CaseBusinessBean implements CaseBusiness ,
 				throw new IDOCreateException("Price already exist in the period supplied.");
 			}
 		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			throw new IDOCreateException(fe);
+		}
 		catch (CreateException ce) {
 			throw new IDOCreateException(ce);
 		}
 	}
 	
-	public void storeVacationDays(School school, Date fromDate, String type, int numberOfDays) throws IDOCreateException {
+	public void storeVacationDays(Object vacationDayPK, School school, Date fromDate, Date toDate, String type, String name) throws IDOCreateException {
 		try {
-			IWTimestamp stamp = new IWTimestamp(fromDate);
-			
-			for (int a = 0; a < numberOfDays; a++) {
-				if (a > 0) {
-					stamp.addDays(1);
-				}
-				
-				MealVacationDay day = null;
-				try {
-					day = getVacationDayHome().findBySchoolAndDate(school, stamp.getDate());
-				}
-				catch (FinderException fe) {
-					day = getVacationDayHome().create();
-					day.setSchool(school);
-					day.setDate(stamp.getDate());
-				}
-				day.setType(type);
-				
-				day.store();
+			MealVacationDay day = null;
+			try {
+				day = getVacationDayHome().findByPrimaryKey(vacationDayPK);
 			}
+			catch (FinderException fe) {
+				day = getVacationDayHome().create();
+				day.setSchool(school);
+			}
+			day.setValidFrom(fromDate);
+			day.setValidTo(toDate);
+			day.setType(type);
+			day.setName(name);
+			
+			day.store();
 		}
 		catch (CreateException ce) {
 			throw new IDOCreateException(ce);
 		}
 	}
 	
-	public float getPriceForMonth(Date month, School school, MonthValues values) {
+	public Collection getSchoolPrices(School school) {
 		try {
-			MealPrice price = getPriceHome().findBySchoolAndDate(school, month);
+			return getPriceHome().findAllBySchool(school);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return new ArrayList();
+		}
+	}
+	
+	private boolean isHoliday(Map holidays, Date date, boolean isEmployee) {
+		if (holidays.containsKey(date)) {
+			MealVacationDay day = (MealVacationDay) holidays.get(date);
+			if (day.getType().equals(MealConstants.TYPE_TEACHER_WORK_DAY) && isEmployee) {
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+	
+	public MonthValues calculatePrices(Date month, School school, MonthValues values, boolean isEmployee) throws FinderException {
+		MealPrice price = getPriceHome().findBySchoolAndDate(school, month);
+		
+		float monthPrice = price.getMealPricePerMonth();
+		if (monthPrice < 1) {
+			float mealPricePerDay = price.getMealPricePerDay();
+			Map holidays = getHolidaysForMonth(school, month);
 			
-			float monthPrice = price.getMealPricePerMonth();
-			if (monthPrice < 1) {
-				float mealPricePerDay = price.getMealPricePerDay();
-				IWCalendar cal = new IWCalendar(month);
-				IWTimestamp stamp = new IWTimestamp(1, cal.getMonth(), cal.getYear());
-				int monthLength = cal.getLengthOfMonth(cal.getMonth(), cal.getYear());
-				for (int i = 1; i <= monthLength; i++) {
-					int dow = stamp.getDayOfWeek();
-					switch (dow) {
+			IWCalendar cal = new IWCalendar(month);
+			IWTimestamp stamp = new IWTimestamp(1, cal.getMonth(), cal.getYear());
+			stamp.setAsTime();
+			
+			int monthLength = cal.getLengthOfMonth(cal.getMonth(), cal.getYear());
+			for (int i = 1; i <= monthLength; i++) {
+				int dayOfWeek = stamp.getDayOfWeek();
+				if (!isHoliday(holidays, stamp.getDate(), isEmployee)) {
+					switch (dayOfWeek) {
 						case Calendar.MONDAY :
 							if (values.isMonday()) {
 								monthPrice += mealPricePerDay;
@@ -253,27 +336,51 @@ public class MealBusinessBean extends CaseBusinessBean implements CaseBusiness ,
 							}
 							break;
 					}
-					stamp.addDays(1);
 				}
+				stamp.addDays(1);
 			}
-			
-			if (values.isFruits()) {
-				monthPrice += price.getFruitsPrice();
-			}
-			
-			if (values.isMilk()) {
-				monthPrice += price.getFruitsPrice();
-			}
-			return monthPrice;
 		}
-		catch (FinderException e) {
-			e.printStackTrace();
+		values.setMealAmount(monthPrice);
+		
+		if (values.isFruits()) {
+			values.setFruitAmount(price.getFruitsPrice());
 		}
 		
-		// Saekja MealPrice....
-		// ath mealprice per day, mealprice per month
-		// fr‡ 1 til 31... er virkur dagur... hefur barn m‡lt’? ?ennan dag...
-		return 0;
+		if (values.isMilk()) {
+			values.setMilkAmount(price.getMilkPrice());
+		}
+
+		return values;
+	}
+	
+	private Map getHolidaysForMonth(School school, Date month) {
+		Map holidays = new HashMap();
+		
+		IWCalendar calendar = new IWCalendar();
+		IWTimestamp from = new IWTimestamp(month);
+		from.setDay(1);
+		IWTimestamp to = new IWTimestamp(month);
+		to.setDay(calendar.getLengthOfMonth(to.getMonth(), to.getYear()));
+		
+		try {
+			Collection vacationDays = getVacationDayHome().findAllBySchoolAndPeriod(school, from.getDate(), to.getDate());
+			Iterator iter = vacationDays.iterator();
+			while (iter.hasNext()) {
+				MealVacationDay vacationDay = (MealVacationDay) iter.next();
+				from = new IWTimestamp(vacationDay.getValidFrom());
+				to = new IWTimestamp(vacationDay.getValidTo());
+				
+				while(from.isEarlierThan(to) || from.isEqualTo(to)) {
+					holidays.put(from.getDate(), vacationDay);
+					from.addDays(1);
+				}
+			}
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+		}
+		
+		return holidays;
 	}
 	
 	public MealChoice storeChoice(MealChoice choice, User user, School school, SchoolSeason season, String comments, Date[] months, Map monthValues, User performer) throws IDOCreateException {
@@ -302,6 +409,9 @@ public class MealBusinessBean extends CaseBusinessBean implements CaseBusiness ,
 				catch (FinderException fe) {
 					choiceMonth = getChoiceMonthHome().create();
 				}
+				choiceMonth.setChoice(choice);
+				choiceMonth.setMonth(month.getMonth());
+				choiceMonth.setYear(month.getYear());
 				choiceMonth.setMondays(values.isMonday());
 				choiceMonth.setTuesdays(values.isTuesday());
 				choiceMonth.setWednesdays(values.isWednesday());
@@ -314,10 +424,12 @@ public class MealBusinessBean extends CaseBusinessBean implements CaseBusiness ,
 				choiceMonth.store();
 			}
 			
-			String subject = getLocalizedString("choice_sent_subject", "Meal choice sent");
-			String body = getLocalizedString("choice_sent_body", "You have made a meal choice to {1} for {0}, {2}.");
-			
-			sendMessageToParents(choice, subject, body);
+			if (!user.equals(performer)) {
+				String subject = getLocalizedString("choice_sent_subject", "Meal choice sent");
+				String body = getLocalizedString("choice_sent_body", "You have made a meal choice to {1} for {0}, {2}.");
+				
+				sendMessageToParents(choice, subject, body);
+			}
 
 			return choice;
 		}

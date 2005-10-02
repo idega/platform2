@@ -1,5 +1,5 @@
 /*
- * $Id: MonthValues.java,v 1.1 2005/08/10 23:03:11 laddi Exp $ Created on Aug 10, 2005
+ * $Id: MonthValues.java,v 1.2 2005/10/02 13:44:24 laddi Exp $ Created on Aug 10, 2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  * 
@@ -10,10 +10,10 @@ package se.idega.idegaweb.commune.school.meal.business;
 
 
 /**
- * Last modified: $Date: 2005/08/10 23:03:11 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/02 13:44:24 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class MonthValues {
 
@@ -27,13 +27,43 @@ public class MonthValues {
 	private boolean fruits = false;
 
 	private float amount = 0;
+	private float milkAmount = 0;
+	private float fruitAmount = 0;
+	private float mealAmount = 0;
 
-	public float getAmount() {
-		return amount;
+	public float getMealAmount() {
+		return mealAmount;
 	}
 
+	public void setMealAmount(float amount) {
+		this.mealAmount = amount;
+	}
+
+	public float getMilkAmount() {
+		return milkAmount;
+	}
+
+	public void setMilkAmount(float amount) {
+		this.milkAmount = amount;
+	}
+
+	public float getFruitAmount() {
+		return fruitAmount;
+	}
+
+	public void setFruitAmount(float amount) {
+		this.fruitAmount = amount;
+	}
+	
 	public void setAmount(float amount) {
 		this.amount = amount;
+	}
+	
+	public float getAmount() {
+		if (amount > 0) {
+			return amount;
+		}
+		return getMealAmount() + getMilkAmount() + getFruitAmount();
 	}
 
 	public boolean isFriday() {

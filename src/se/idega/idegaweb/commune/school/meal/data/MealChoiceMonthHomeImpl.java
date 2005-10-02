@@ -1,6 +1,6 @@
 /*
- * $Id: MealChoiceMonthHomeImpl.java,v 1.1 2005/08/10 23:03:11 laddi Exp $
- * Created on Aug 10, 2005
+ * $Id: MealChoiceMonthHomeImpl.java,v 1.2 2005/10/02 13:44:24 laddi Exp $
+ * Created on Oct 2, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -11,14 +11,18 @@ package se.idega.idegaweb.commune.school.meal.data;
 
 import java.util.Collection;
 import javax.ejb.FinderException;
+import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolSeason;
+import com.idega.data.IDOException;
 import com.idega.data.IDOFactory;
+import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/08/10 23:03:11 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/02 13:44:24 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class MealChoiceMonthHomeImpl extends IDOFactory implements MealChoiceMonthHome {
 
@@ -46,5 +50,14 @@ public class MealChoiceMonthHomeImpl extends IDOFactory implements MealChoiceMon
 		Object pk = ((MealChoiceMonthBMPBean) entity).ejbFindByChoice(choice, month, year);
 		this.idoCheckInPooledEntity(entity);
 		return this.findByPrimaryKey(pk);
+	}
+
+	public int getNumberOfChoicesForUser(User user, School school, SchoolSeason season, int month, int year)
+			throws IDOException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		int theReturn = ((MealChoiceMonthBMPBean) entity).ejbHomeGetNumberOfChoicesForUser(user, school, season, month,
+				year);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
 	}
 }

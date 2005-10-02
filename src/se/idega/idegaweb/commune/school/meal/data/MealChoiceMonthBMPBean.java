@@ -1,5 +1,5 @@
 /*
- * $Id: MealChoiceMonthBMPBean.java,v 1.1 2005/08/10 23:03:11 laddi Exp $
+ * $Id: MealChoiceMonthBMPBean.java,v 1.2 2005/10/02 13:44:24 laddi Exp $
  * Created on Aug 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -11,17 +11,23 @@ package se.idega.idegaweb.commune.school.meal.data;
 
 import java.util.Collection;
 import javax.ejb.FinderException;
+import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolSeason;
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOException;
+import com.idega.data.IDORelationshipException;
+import com.idega.data.query.CountColumn;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;
+import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/08/10 23:03:11 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/02 13:44:24 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class MealChoiceMonthBMPBean extends GenericEntity  implements MealChoiceMonth{
 
@@ -119,6 +125,14 @@ public class MealChoiceMonthBMPBean extends GenericEntity  implements MealChoice
 		setColumn(COLUMN_MEAL_CHOICE, choicePK);
 	}
 	
+	public void setMonth(int month) {
+		setColumn(COLUMN_MONTH, month);
+	}
+	
+	public void setYear(int year) {
+		setColumn(COLUMN_YEAR, year);
+	}
+	
 	public void setMondays(boolean hasDay) {
 		setColumn(COLUMN_MONDAYS, hasDay);
 	}
@@ -174,5 +188,26 @@ public class MealChoiceMonthBMPBean extends GenericEntity  implements MealChoice
 		query.addCriteria(new MatchCriteria(table, COLUMN_YEAR, MatchCriteria.EQUALS, year));
 		
 		return idoFindOnePKByQuery(query);
+	}
+	
+	public int ejbHomeGetNumberOfChoicesForUser(User user, School school, SchoolSeason season, int month, int year) throws IDOException {
+		Table table = new Table(this);
+		Table choice = new Table(MealChoice.class);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new CountColumn(table, getIDColumnName()));
+		try {
+			query.addJoin(table, choice);
+		}
+		catch (IDORelationshipException ire) {
+			throw new IDOException(ire);
+		}
+		query.addCriteria(new MatchCriteria(choice, "user_id", MatchCriteria.EQUALS, user));
+		query.addCriteria(new MatchCriteria(choice, "school_id", MatchCriteria.EQUALS, school));
+		query.addCriteria(new MatchCriteria(choice, "season_id", MatchCriteria.EQUALS, season));
+		query.addCriteria(new MatchCriteria(table, COLUMN_MONTH, MatchCriteria.EQUALS, month));
+		query.addCriteria(new MatchCriteria(table, COLUMN_YEAR, MatchCriteria.EQUALS, year));
+		
+		return idoGetNumberOfRecords(query);
 	}
 }

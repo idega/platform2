@@ -1,6 +1,6 @@
 /*
- * $Id: MealBusinessHome.java,v 1.2 2005/08/12 19:29:50 gimmi Exp $
- * Created on Aug 12, 2005
+ * $Id: MealBusinessHome.java,v 1.3 2005/10/02 13:44:24 laddi Exp $
+ * Created on Oct 2, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -13,11 +13,10 @@ import com.idega.business.IBOHome;
 
 
 /**
+ * Last modified: $Date: 2005/10/02 13:44:24 $ by $Author: laddi $
  * 
- *  Last modified: $Date: 2005/08/12 19:29:50 $ by $Author: gimmi $
- * 
- * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.2 $
+ * @author <a href="mailto:laddi@idega.com">laddi</a>
+ * @version $Revision: 1.3 $
  */
 public interface MealBusinessHome extends IBOHome {
 

@@ -1,6 +1,6 @@
 /*
- * $Id: MealVacationDay.java,v 1.1 2005/08/10 23:03:11 laddi Exp $
- * Created on Aug 10, 2005
+ * $Id: MealVacationDay.java,v 1.2 2005/10/02 13:44:24 laddi Exp $
+ * Created on Oct 2, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -15,10 +15,10 @@ import com.idega.data.IDOEntity;
 
 
 /**
- * Last modified: $Date: 2005/08/10 23:03:11 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/02 13:44:24 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public interface MealVacationDay extends IDOEntity {
 
@@ -33,14 +33,24 @@ public interface MealVacationDay extends IDOEntity {
 	public Object getSchoolPK();
 
 	/**
-	 * @see se.idega.idegaweb.commune.school.meal.data.MealVacationDayBMPBean#getDate
+	 * @see se.idega.idegaweb.commune.school.meal.data.MealVacationDayBMPBean#getValidFrom
 	 */
-	public Date getDate();
+	public Date getValidFrom();
 
 	/**
-	 * @see se.idega.idegaweb.commune.school.meal.data.MealVacationDayBMPBean#getVacationType
+	 * @see se.idega.idegaweb.commune.school.meal.data.MealVacationDayBMPBean#getValidTo
 	 */
-	public String getVacationType();
+	public Date getValidTo();
+
+	/**
+	 * @see se.idega.idegaweb.commune.school.meal.data.MealVacationDayBMPBean#getType
+	 */
+	public String getType();
+
+	/**
+	 * @see se.idega.idegaweb.commune.school.meal.data.MealVacationDayBMPBean#getName
+	 */
+	public String getName();
 
 	/**
 	 * @see se.idega.idegaweb.commune.school.meal.data.MealVacationDayBMPBean#setSchool
@@ -53,12 +63,22 @@ public interface MealVacationDay extends IDOEntity {
 	public void setSchool(Object schoolPK);
 
 	/**
-	 * @see se.idega.idegaweb.commune.school.meal.data.MealVacationDayBMPBean#setDate
+	 * @see se.idega.idegaweb.commune.school.meal.data.MealVacationDayBMPBean#setValidFrom
 	 */
-	public void setDate(Date date);
+	public void setValidFrom(Date date);
+
+	/**
+	 * @see se.idega.idegaweb.commune.school.meal.data.MealVacationDayBMPBean#setValidTo
+	 */
+	public void setValidTo(Date date);
 
 	/**
 	 * @see se.idega.idegaweb.commune.school.meal.data.MealVacationDayBMPBean#setType
 	 */
 	public void setType(String type);
+
+	/**
+	 * @see se.idega.idegaweb.commune.school.meal.data.MealVacationDayBMPBean#setName
+	 */
+	public void setName(String name);
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: MealVacationDayBMPBean.java,v 1.1 2005/08/10 23:03:11 laddi Exp $
+ * $Id: MealVacationDayBMPBean.java,v 1.2 2005/10/02 13:44:24 laddi Exp $
  * Created on Aug 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -20,18 +20,20 @@ import com.idega.data.query.Table;
 
 
 /**
- * Last modified: $Date: 2005/08/10 23:03:11 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/02 13:44:24 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class MealVacationDayBMPBean extends GenericEntity  implements MealVacationDay{
 
 	private static final String ENTITY_NAME = "comm_meal_vacation_days";
 	
 	private static final String COLUMN_SCHOOL = "school_id";
-	private static final String COLUMN_DATE = "from";
+	private static final String COLUMN_VALID_FROM = "valid_from";
+	private static final String COLUMN_VALID_TO = "valid_to";
 	private static final String COLUMN_TYPE = "type";
+	private static final String COLUMN_NAME = "name";
 	
 	/* (non-Javadoc)
 	 * @see com.idega.data.GenericEntity#getEntityName()
@@ -48,8 +50,10 @@ public class MealVacationDayBMPBean extends GenericEntity  implements MealVacati
 		
 		addManyToOneRelationship(COLUMN_SCHOOL, School.class);
 		
-		addAttribute(COLUMN_DATE, "Date", Date.class);
+		addAttribute(COLUMN_VALID_FROM, "From", Date.class);
+		addAttribute(COLUMN_VALID_TO, "To", Date.class);
 		addAttribute(COLUMN_TYPE, "Vacation type", String.class);
+		addAttribute(COLUMN_NAME, "Name", String.class);
 	}
 
 	//Getters
@@ -61,12 +65,20 @@ public class MealVacationDayBMPBean extends GenericEntity  implements MealVacati
 		return getIntegerColumnValue(COLUMN_SCHOOL);
 	}
 	
-	public Date getDate() {
-		return getDateColumnValue(COLUMN_DATE);
+	public Date getValidFrom() {
+		return getDateColumnValue(COLUMN_VALID_FROM);
 	}
 	
-	public String getVacationType() {
+	public Date getValidTo() {
+		return getDateColumnValue(COLUMN_VALID_TO);
+	}
+	
+	public String getType() {
 		return getStringColumnValue(COLUMN_TYPE);
+	}
+	
+	public String getName() {
+		return getStringColumnValue(COLUMN_NAME);
 	}
 	
 	//Setters
@@ -78,12 +90,20 @@ public class MealVacationDayBMPBean extends GenericEntity  implements MealVacati
 		setColumn(COLUMN_SCHOOL, schoolPK);
 	}
 	
-	public void setDate(Date date) {
-		setColumn(COLUMN_DATE, date);
+	public void setValidFrom(Date date) {
+		setColumn(COLUMN_VALID_FROM, date);
+	}
+	
+	public void setValidTo(Date date) {
+		setColumn(COLUMN_VALID_TO, date);
 	}
 	
 	public void setType(String type) {
 		setColumn(COLUMN_TYPE, type);
+	}
+	
+	public void setName(String name) {
+		setColumn(COLUMN_NAME, name);
 	}
 	
 	//Finders
@@ -93,7 +113,7 @@ public class MealVacationDayBMPBean extends GenericEntity  implements MealVacati
 		SelectQuery query = new SelectQuery(table);
 		query.addColumn(table, getIDColumnName());
 		query.addCriteria(new MatchCriteria(table, COLUMN_SCHOOL, MatchCriteria.EQUALS, school));
-		query.addOrder(table, COLUMN_DATE, true);
+		query.addOrder(table, COLUMN_VALID_FROM, true);
 		
 		return idoFindPKsByQuery(query);
 	}
@@ -104,9 +124,9 @@ public class MealVacationDayBMPBean extends GenericEntity  implements MealVacati
 		SelectQuery query = new SelectQuery(table);
 		query.addColumn(table, getIDColumnName());
 		query.addCriteria(new MatchCriteria(table, COLUMN_SCHOOL, MatchCriteria.EQUALS, school));
-		query.addCriteria(new MatchCriteria(table, COLUMN_DATE, MatchCriteria.LESSEQUAL, to));
-		query.addCriteria(new MatchCriteria(table, COLUMN_DATE, MatchCriteria.GREATEREQUAL, from));
-		query.addOrder(table, COLUMN_DATE, true);
+		query.addCriteria(new MatchCriteria(table, COLUMN_VALID_TO, MatchCriteria.LESSEQUAL, to));
+		query.addCriteria(new MatchCriteria(table, COLUMN_VALID_FROM, MatchCriteria.GREATEREQUAL, from));
+		query.addOrder(table, COLUMN_VALID_FROM, true);
 		
 		return idoFindPKsByQuery(query);
 	}
@@ -117,7 +137,7 @@ public class MealVacationDayBMPBean extends GenericEntity  implements MealVacati
 		SelectQuery query = new SelectQuery(table);
 		query.addColumn(table, getIDColumnName());
 		query.addCriteria(new MatchCriteria(table, COLUMN_SCHOOL, MatchCriteria.EQUALS, school));
-		query.addCriteria(new MatchCriteria(table, COLUMN_DATE, MatchCriteria.EQUALS, date));
+		query.addCriteria(new MatchCriteria(table, COLUMN_VALID_FROM, MatchCriteria.EQUALS, date));
 		
 		return idoFindOnePKByQuery(query);
 	}

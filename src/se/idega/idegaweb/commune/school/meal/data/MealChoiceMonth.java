@@ -1,6 +1,6 @@
 /*
- * $Id: MealChoiceMonth.java,v 1.1 2005/08/10 23:03:11 laddi Exp $
- * Created on Aug 10, 2005
+ * $Id: MealChoiceMonth.java,v 1.2 2005/10/02 13:44:24 laddi Exp $
+ * Created on Oct 2, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -13,10 +13,10 @@ import com.idega.data.IDOEntity;
 
 
 /**
- * Last modified: $Date: 2005/08/10 23:03:11 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/02 13:44:24 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public interface MealChoiceMonth extends IDOEntity {
 
@@ -79,6 +79,16 @@ public interface MealChoiceMonth extends IDOEntity {
 	 * @see se.idega.idegaweb.commune.school.meal.data.MealChoiceMonthBMPBean#setChoice
 	 */
 	public void setChoice(Object choicePK);
+
+	/**
+	 * @see se.idega.idegaweb.commune.school.meal.data.MealChoiceMonthBMPBean#setMonth
+	 */
+	public void setMonth(int month);
+
+	/**
+	 * @see se.idega.idegaweb.commune.school.meal.data.MealChoiceMonthBMPBean#setYear
+	 */
+	public void setYear(int year);
 
 	/**
 	 * @see se.idega.idegaweb.commune.school.meal.data.MealChoiceMonthBMPBean#setMondays

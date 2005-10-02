@@ -1,5 +1,5 @@
 /*
- * $Id: MealBlock.java,v 1.2 2005/08/12 19:30:43 gimmi Exp $
+ * $Id: MealBlock.java,v 1.3 2005/10/02 13:44:24 laddi Exp $
  * Created on Aug 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -28,24 +28,30 @@ import com.idega.core.location.data.PostalCode;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.Table;
-import com.idega.presentation.text.Break;
+import com.idega.presentation.Layer;
+import com.idega.presentation.text.Heading1;
+import com.idega.presentation.text.Text;
 import com.idega.user.business.NoEmailFoundException;
 import com.idega.user.business.NoPhoneFoundException;
 import com.idega.user.data.User;
 import com.idega.util.PersonalIDFormatter;
 
 /**
- * Last modified: $Date: 2005/08/12 19:30:43 $ by $Author: gimmi $
+ * Last modified: $Date: 2005/10/02 13:44:24 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public abstract class MealBlock extends CommuneBlock {
 	
 	private MealBusiness business;
 	private MealSession session;
 	private CommuneUserBusiness uBusiness;
+	
+	protected static final String STYLENAME_MEAL_FORM = "mealForm";
+  protected final static String STYLENAME_LIST_TABLE = "listTable";
+  protected final static String STYLENAME_LIST_TABLE_ODD_ROW = "listTable_oddRow";
+  protected final static String STYLENAME_LIST_TABLE_EVEN_ROW = "listTable_evenRow";
 	
 	public void main(IWContext iwc) throws Exception {
 		setBundle(getBundle(iwc));
@@ -102,17 +108,17 @@ public abstract class MealBlock extends CommuneBlock {
 	
 	public abstract void present(IWContext iwc);
 	
-	protected Table getPersonInfoTable(IWContext iwc, SchoolClassMember member) throws RemoteException {
-		Table table = new Table();
-		table.setCellpadding(getCellpadding());
-		table.setCellspacing(0);
-		table.setColumns(3);
-		table.setWidth(Table.HUNDRED_PERCENT);
-		int row = 1;
-		
+	protected Layer getPersonInfo(IWContext iwc, SchoolClassMember member) throws RemoteException {
 		User user = member.getStudent();
 		SchoolClass group = member.getSchoolClass();
 		School school = group.getSchool();
+		
+		return getPersonInfo(iwc, user, school, group);
+	}
+	
+	protected Layer getPersonInfo(IWContext iwc, User user, School school, SchoolClass group) throws RemoteException {
+		Layer layer = new Layer();
+		layer.setID("personInfo");
 		
 		Address address = getUserBusiness().getUsersMainAddress(user);
 		PostalCode postal = null;
@@ -134,62 +140,109 @@ public abstract class MealBlock extends CommuneBlock {
 			email = null;
 		}
 		
-		table.add(getSmallHeader(localize("name", "Name")), 1, row);
-		table.add(new Break(), 1, row);
-		table.add(getText(user.getName()), 1, row);
+		Layer formElement = new Layer(Layer.DIV);
+		formElement.setStyleClass("personInfoItem");
+		Heading1 heading = new Heading1(localize("name", "Name"));
+		Text text = new Text(user.getName());
+		formElement.add(heading);
+		formElement.add(text);
+		layer.add(formElement);
 		
-		table.add(getSmallHeader(localize("personal_id", "Personal ID")), 2, row);
-		table.add(new Break(), 2, row);
-		table.add(getText(PersonalIDFormatter.format(user.getPersonalID(), iwc.getCurrentLocale())), 2, row);
-
-		table.add(getSmallHeader(localize("home_phone", "Home phone")), 3, row);
-		table.add(new Break(), 3, row);
+		formElement = new Layer(Layer.DIV);
+		formElement.setStyleClass("personInfoItem");
+		heading = new Heading1(localize("personal_id", "Personal ID"));
+		text = new Text(PersonalIDFormatter.format(user.getPersonalID(), iwc.getCurrentLocale()));
+		formElement.add(heading);
+		formElement.add(text);
+		layer.add(formElement);
+		
+		formElement = new Layer(Layer.DIV);
+		formElement.setStyleClass("personInfoItem");
+		heading = new Heading1(localize("home_phone", "Home phone"));
 		if (phone != null && phone.getNumber() != null) {
-			table.add(getText(phone.getNumber()), 3, row);
+			text = new Text(phone.getNumber());
 		}
-		row++;
+		else {
+			text = new Text("-");
+		}
+		formElement.add(heading);
+		formElement.add(text);
+		layer.add(formElement);
 		
-		table.add(getSmallHeader(localize("address", "Address")), 1, row);
-		table.add(getSmallHeader(localize("zip_code", "Postal code")), 2, row);
-		table.add(getSmallHeader(localize("zip_city", "City")), 2, row);
-		table.add(new Break(), 1, row);
-		table.add(new Break(), 2, row);
-		table.add(new Break(), 3, row);
+		formElement = new Layer(Layer.DIV);
+		formElement.setStyleClass("personInfoItem");
+		heading = new Heading1(localize("address", "Address"));
 		if (address != null) {
-			table.add(getText(address.getStreetAddress()), 1, row);
+			text = new Text(address.getStreetAddress());
 		}
+		else {
+			text = new Text("-");
+		}
+		formElement.add(heading);
+		formElement.add(text);
+		layer.add(formElement);
+		
+		formElement = new Layer(Layer.DIV);
+		formElement.setStyleClass("personInfoItem");
+		heading = new Heading1(localize("zip_code", "Postal code"));
 		if (postal != null) {
-			table.add(getText(postal.getPostalCode()), 2, row);
-			table.add(getText(postal.getName()), 3, row);
+			text = new Text(postal.getPostalCode());
 		}
-		row++;
+		else {
+			text = new Text("-");
+		}
+		formElement.add(heading);
+		formElement.add(text);
+		layer.add(formElement);
 		
-		table.add(getSmallHeader(localize("school", "School")), 1, row);
-		table.add(getSmallHeader(localize("group", "Group")), 2, row);
-		table.add(getSmallHeader(localize("email", "E-mail")), 3, row);
-		table.add(new Break(), 1, row);
-		table.add(new Break(), 2, row);
-		table.add(new Break(), 3, row);
-		if (school != null) {
-			table.add(getText(school.getSchoolName()), 1, row);
+		formElement = new Layer(Layer.DIV);
+		formElement.setStyleClass("personInfoItem");
+		heading = new Heading1(localize("zip_city", "City"));
+		if (postal != null) {
+			text = new Text(postal.getName());
 		}
-		if (group != null) {
-			table.add(getText(group.getSchoolClassName()), 2, row);
+		else {
+			text = new Text("-");
 		}
-		if (email != null && email.getEmailAddress() != null) {
-			table.add(getText(email.getEmailAddress()), 3, row);
-		}
-		row++;
+		formElement.add(heading);
+		formElement.add(text);
+		layer.add(formElement);
 		
-		table.setWidth(1, "33%");
-		table.setWidth(2, "33%");
-		table.setWidth(3, "33%");
+		if (school != null && group != null) {
+			formElement = new Layer(Layer.DIV);
+			formElement.setStyleClass("personInfoItem");
+			heading = new Heading1(localize("school", "School"));
+			text = new Text(school.getSchoolName());
+			formElement.add(heading);
+			formElement.add(text);
+			layer.add(formElement);
+			
+			formElement = new Layer(Layer.DIV);
+			formElement.setStyleClass("personInfoItem");
+			heading = new Heading1(localize("group", "Group"));
+			text = new Text(group.getSchoolClassName());
+			formElement.add(heading);
+			formElement.add(text);
+			layer.add(formElement);
+		}
 
-		table.setHeight(row, 6);
-		table.mergeCells(1, row, table.getColumns(), row);
-		table.setBottomCellBorder(1, row++, 1, "#D7D7D7", "solid");
-		table.setHeight(row++, 6);
+		formElement = new Layer(Layer.DIV);
+		formElement.setStyleClass("personInfoItem");
+		heading = new Heading1(localize("email", "E-mail"));
+		if (email != null && email.getEmailAddress() != null) {
+			text = new Text(email.getEmailAddress());
+		}
+		else {
+			text = new Text("-");
+		}
+		formElement.add(heading);
+		formElement.add(text);
+		layer.add(formElement);
 		
-		return table;
+		Layer clear = new Layer(Layer.DIV);
+		clear.setStyleClass("Clear");
+		layer.add(clear);
+		
+		return layer;
 	}
 }

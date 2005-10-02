@@ -1,5 +1,5 @@
 /*
- * $Id: MealApplication.java,v 1.3 2005/08/12 19:31:42 gimmi Exp $
+ * $Id: MealApplication.java,v 1.4 2005/10/02 13:44:24 laddi Exp $
  * Created on Aug 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -11,23 +11,35 @@ package se.idega.idegaweb.commune.school.meal.presentation;
 
 import java.rmi.RemoteException;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.school.meal.business.MonthValues;
-import se.idega.idegaweb.commune.school.meal.data.MealPrice;
 import se.idega.idegaweb.commune.school.meal.util.MealConstants;
 import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.business.IBORuntimeException;
+import com.idega.core.builder.data.ICPage;
 import com.idega.data.IDOCreateException;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Layer;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Heading1;
+import com.idega.presentation.text.ListItem;
+import com.idega.presentation.text.Lists;
+import com.idega.presentation.text.Paragraph;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.Label;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.user.data.User;
@@ -36,10 +48,10 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2005/08/12 19:31:42 $ by $Author: gimmi $
+ * Last modified: $Date: 2005/10/02 13:44:24 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class MealApplication extends MealBlock {
 	
@@ -58,11 +70,14 @@ public class MealApplication extends MealBlock {
 	private static final int ACTION_OVERVIEW = 4;
 	private static final int ACTION_SAVE = 5;
 	
-	private SchoolSeason season;
-	private SchoolClassMember placement;
+	private User user;
 	private School school;
+	private SchoolSeason season;
+	private SchoolClass group;
+	private SchoolClassMember placement;
 	
 	private boolean iUseEmployeeView = false;
+	private ICPage iHomePage;
 
 	/* (non-Javadoc)
 	 * @see se.idega.idegaweb.commune.school.meal.presentation.MealBlock#present(com.idega.presentation.IWContext)
@@ -81,10 +96,22 @@ public class MealApplication extends MealBlock {
 					return;
 				}
 			}
-			placement = getBusiness().getSchoolPlacing(getUser(iwc), season);
-			if (placement == null && !isEmployeeView()) {
-				add(getErrorText(localize("no_placement_found", "No placement found for user")));
-				return;
+			user = getUser(iwc);
+			if (!isEmployeeView()) {
+				placement = getBusiness().getSchoolPlacing(getUser(iwc), season);
+				if (placement == null) {
+					add(getErrorText(localize("no_placement_found", "No placement found for user")));
+					return;
+				}
+				else {
+					group = placement.getSchoolClass();
+					school = group.getSchool();
+					user = placement.getStudent();
+				}
+			}
+			else {
+				school = getSession().getSchool();
+				user = iwc.getCurrentUser();
 			}
 			
 			switch (parseAction(iwc)) {
@@ -117,46 +144,49 @@ public class MealApplication extends MealBlock {
 	private void showPhaseOne(IWContext iwc) throws RemoteException {
 		Form form = createForm(iwc, ACTION_PHASE_ONE);
 		
-		Table table = new Table();
-		table.setCellpadding(0);
-		table.setCellspacing(0);
-		table.setWidth(Table.HUNDRED_PERCENT);
-		form.add(table);
-		int row = 1;
-
-		if (!isEmployeeView()) {
-			table.add(getPersonInfoTable(iwc, placement), 1, row++);
-			table.setHeight(row++, 6);
-		}
+		form.add(getPersonInfo(iwc, user, school, group));
 		
-		table.add(getHeader(localize("application.months", "Months")), 1, row++);
-		table.setHeight(row++, 6);
+		Layer layer = new Layer(Layer.DIV);
+		layer.setID("phasesDiv");
+		form.add(layer);
 		
-		table.add(getText(localize("application.months_information", "Months information")), 1, row++);
-		table.setHeight(row++, 12);
+		layer.add(new Heading1(localize("application.months", "Months")));
+		
+		Paragraph paragraph = new Paragraph();
+		paragraph.add(new Text(localize("application.months_information", "Months information")));
+		layer.add(paragraph);
 		
 		IWCalendar calendar = new IWCalendar();
 		IWTimestamp seasonStart = new IWTimestamp(season.getSchoolSeasonStart());
 		IWTimestamp seasonEnd = new IWTimestamp(season.getSchoolSeasonEnd());
 		
+		Lists monthList = new Lists();
+		monthList.setID("monthList");
 		while (seasonStart.isEarlierThan(seasonEnd)) {
-			CheckBox box = getCheckBox(PARAMETER_MONTH, seasonStart.toString());
+			ListItem item = new ListItem();
+			CheckBox box = new CheckBox(PARAMETER_MONTH, seasonStart.toString());
 			box.keepStatusOnAction(true);
+			if (getBusiness().hasChoiceForDate(user, school, season, seasonStart.getDate())) {
+				box.setChecked(true);
+				box.setDisabled(true);
+			}
+			Label label = new Label(calendar.getMonthName(seasonStart.getMonth(), iwc.getCurrentLocale(), IWCalendar.FULL), box);
 			
-			table.add(box, 1, row);
-			table.add(Text.getNonBrakingSpace(), 1, row);
-			table.add(calendar.getMonthName(seasonStart.getMonth(), iwc.getCurrentLocale(), IWCalendar.FULL), 1, row++);
+			item.add(box);
+			item.add(label);
+			monthList.add(item);
 			
 			seasonStart.addMonths(1);
 		}
+		layer.add(monthList);
 		
-		table.setHeight(row++, 18);
+		Layer buttonLayer = new Layer(Layer.DIV);
+		buttonLayer.setStyleClass("buttonDiv");
+		layer.add(buttonLayer);
 		
-		SubmitButton next = (SubmitButton) getButton(new SubmitButton(localize("next", "Next")));
+		SubmitButton next = new SubmitButton(localize("next", "Next"));
 		next.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_PHASE_TWO));
-		table.add(next, 1, row);
-		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
-		table.setCellpaddingRight(1, row, 12);
+		buttonLayer.add(next);
 
 		add(form);
 	}
@@ -164,127 +194,123 @@ public class MealApplication extends MealBlock {
 	private void showPhaseTwo(IWContext iwc) throws RemoteException {
 		Form form = createForm(iwc, ACTION_PHASE_TWO);
 		
-		Table table = new Table();
-		table.setCellpadding(0);
-		table.setCellspacing(0);
-		table.setWidth(Table.HUNDRED_PERCENT);
-		form.add(table);
-		int row = 1;
+		form.add(getPersonInfo(iwc, user, school, group));
 
-		if (!isEmployeeView()) {
-			table.add(getPersonInfoTable(iwc, placement), 1, row++);
-			table.setHeight(row++, 6);
-		}
+		Layer layer = new Layer(Layer.DIV);
+		layer.setID("phasesDiv");
+		form.add(layer);
 		
-		table.add(getHeader(localize("application.days", "Days")), 1, row++);
-		table.setHeight(row++, 6);
-		
-		table.add(getText(localize("application.days_information", "Days information")), 1, row++);
-		table.setHeight(row++, 12);
+		layer.add(new Heading1(localize("application.days", "Days")));
+
+		Paragraph paragraph = new Paragraph();
+		paragraph.add(new Text(localize("application.days_information", "Days information")));
+		layer.add(paragraph);
 		
 		String[] months = iwc.getParameterValues(PARAMETER_MONTH);
-		if (months.length == 0) {
+		if (months == null || months.length == 0) {
 			getParentPage().setAlertOnLoad(localize("must_select_month", "You must select at least one month"));
 			showPhaseOne(iwc);
 			return;
 		}
 		
-		Table dayTable = new Table();
-		dayTable.setColumns(3);
-		dayTable.setCellspacing(5);
-		dayTable.setCellpadding(0);
-		dayTable.setWidth(Table.HUNDRED_PERCENT);
-		table.add(dayTable, 1, row++);
-		int dColumn = 1;
-		int dRow = 1;
-		
 		for (int i = 0; i < months.length; i++) {
 			IWTimestamp month = new IWTimestamp(months[i]);
-			dayTable.add(getMonth(month, iwc.getCurrentLocale()), dColumn++, dRow);
-			
-			if ((i + 1) % 3 == 0) {
-				dColumn = 1;
-				dRow++;
-			}
+			layer.add(getMonth(month, iwc.getCurrentLocale()));
 		}
-		dayTable.setWidth(1, "33%");
-		dayTable.setWidth(2, "33%");
-		dayTable.setWidth(3, "33%");
 		
-		table.setHeight(row++, 18);
+		Layer clear = new Layer(Layer.DIV);
+		clear.setStyleClass("Clear");
+		layer.add(clear);
 		
-		SubmitButton previous = (SubmitButton) getButton(new SubmitButton(localize("previous", "Previous")));
+		Layer buttonLayer = new Layer(Layer.DIV);
+		buttonLayer.setStyleClass("buttonDiv");
+		layer.add(buttonLayer);
+		
+		SubmitButton previous = new SubmitButton(localize("previous", "Previous"));
 		previous.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_PHASE_ONE));
-		SubmitButton next = (SubmitButton) getButton(new SubmitButton(localize("next", "Next")));
+		SubmitButton next = new SubmitButton(localize("next", "Next"));
 		next.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_PHASE_THREE));
-		
-		table.add(previous, 1, row);
-		table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
-		table.add(next, 1, row);
-		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
-		table.setCellpaddingRight(1, row, 12);
+		buttonLayer.add(previous);
+		buttonLayer.add(next);
 
 		add(form);
 	}
 	
-	private Table getMonth(IWTimestamp month, Locale locale) {
-		Table table = new Table();
-		table.setCellpadding(0);
-		table.setCellspacing(0);
-		int row = 1;
+	private Layer getMonth(IWTimestamp month, Locale locale) {
+		Layer layer = new Layer(Layer.DIV);
+		layer.setStyleClass("dayItem");
 		
 		IWCalendar calendar = new IWCalendar();
 		
-		table.add(getSmallHeader(calendar.getMonthName(month.getMonth(), locale, IWCalendar.FULL)), 1, row++);
-		table.setHeight(row++, 6);
+		layer.add(new Heading1(calendar.getMonthName(month.getMonth(), locale, IWCalendar.FULL)));
+
+		Lists daysList = new Lists();
+		daysList.setID("daysList");
+		layer.add(daysList);
 		
-		CheckBox monday = getCheckBox(PARAMETER_DAYS + "_" + month.toString(), MealConstants.DAY_MONDAY);
+		CheckBox monday = new CheckBox(PARAMETER_DAYS + "_" + month.toString(), MealConstants.DAY_MONDAY);
 		monday.keepStatusOnAction(true);
-		CheckBox tuesday = getCheckBox(PARAMETER_DAYS + "_" + month.toString(), MealConstants.DAY_TUESDAY);
+		CheckBox tuesday = new CheckBox(PARAMETER_DAYS + "_" + month.toString(), MealConstants.DAY_TUESDAY);
 		tuesday.keepStatusOnAction(true);
-		CheckBox wednesday = getCheckBox(PARAMETER_DAYS + "_" + month.toString(), MealConstants.DAY_WEDNESDAY);
+		CheckBox wednesday = new CheckBox(PARAMETER_DAYS + "_" + month.toString(), MealConstants.DAY_WEDNESDAY);
 		wednesday.keepStatusOnAction(true);
-		CheckBox thursday = getCheckBox(PARAMETER_DAYS + "_" + month.toString(), MealConstants.DAY_THURSDAY);
+		CheckBox thursday = new CheckBox(PARAMETER_DAYS + "_" + month.toString(), MealConstants.DAY_THURSDAY);
 		thursday.keepStatusOnAction(true);
-		CheckBox friday = getCheckBox(PARAMETER_DAYS + "_" + month.toString(), MealConstants.DAY_FRIDAY);
+		CheckBox friday = new CheckBox(PARAMETER_DAYS + "_" + month.toString(), MealConstants.DAY_FRIDAY);
 		friday.keepStatusOnAction(true);
 		
-		CheckBox milk = getCheckBox(PARAMETER_MILK + "_" + month.toString(), Boolean.TRUE.toString());
+		CheckBox milk = new CheckBox(PARAMETER_MILK + "_" + month.toString(), Boolean.TRUE.toString());
 		milk.keepStatusOnAction(true);
-		CheckBox fruits = getCheckBox(PARAMETER_FRUITS + "_" + month.toString(), Boolean.TRUE.toString());
+		CheckBox fruits = new CheckBox(PARAMETER_FRUITS + "_" + month.toString(), Boolean.TRUE.toString());
 		fruits.keepStatusOnAction(true);
 		
-		table.add(monday, 1, row);
-		table.add(Text.getNonBrakingSpace(), 1, row);
-		table.add(getSmallText(localize("monday", "Monday")), 1, row++);
+		ListItem item = new ListItem();
+		Label label = new Label(localize("monday", "Monday"), monday);
+		item.add(monday);
+		item.add(label);
+		daysList.add(item);
+
+		item = new ListItem();
+		label = new Label(localize("tuesday", "Tuesday"), tuesday);
+		item.add(tuesday);
+		item.add(label);
+		daysList.add(item);
 		
-		table.add(tuesday, 1, row);
-		table.add(Text.getNonBrakingSpace(), 1, row);
-		table.add(getSmallText(localize("tuesday", "Tuesday")), 1, row++);
+		item = new ListItem();
+		label = new Label(localize("wednesday", "Wednesday"), wednesday);
+		item.add(wednesday);
+		item.add(label);
+		daysList.add(item);
 		
-		table.add(wednesday, 1, row);
-		table.add(Text.getNonBrakingSpace(), 1, row);
-		table.add(getSmallText(localize("wednesday", "Wednesday")), 1, row++);
+		item = new ListItem();
+		label = new Label(localize("thursday", "Thursday"), thursday);
+		item.add(thursday);
+		item.add(label);
+		daysList.add(item);
 		
-		table.add(thursday, 1, row);
-		table.add(Text.getNonBrakingSpace(), 1, row);
-		table.add(getSmallText(localize("thursday", "Thursday")), 1, row++);
+		item = new ListItem();
+		label = new Label(localize("friday", "Friday"), friday);
+		item.add(friday);
+		item.add(label);
+		daysList.add(item);
 		
-		table.add(friday, 1, row);
-		table.add(Text.getNonBrakingSpace(), 1, row);
-		table.add(getSmallText(localize("friday", "Friday")), 1, row++);
+		item = new ListItem();
+		item.add(Text.getNonBrakingSpace());
+		daysList.add(item);
 		
-		table.setHeight(row++, 6);
+		item = new ListItem();
+		label = new Label(localize("milk", "Milk"), milk);
+		item.add(milk);
+		item.add(label);
+		daysList.add(item);
 		
-		table.add(milk, 1, row);
-		table.add(Text.getNonBrakingSpace(), 1, row);
-		table.add(getSmallText(localize("milk", "Milk")), 1, row++);
+		item = new ListItem();
+		label = new Label(localize("fruits", "Fruits"), fruits);
+		item.add(fruits);
+		item.add(label);
+		daysList.add(item);
 		
-		table.add(fruits, 1, row);
-		table.add(Text.getNonBrakingSpace(), 1, row);
-		table.add(getSmallText(localize("fruits", "Fruits")), 1, row++);
-		
-		return table;
+		return layer;
 	}
 	/**
 	 * 
@@ -293,20 +319,15 @@ public class MealApplication extends MealBlock {
 	 * @param value MonthValues ... this will be populated in the method
 	 * @return
 	 */
-	private Table getMonthInfo(IWContext iwc, IWTimestamp month, Locale locale, MonthValues values) {
-		Table table = new Table();
-		table.setCellpadding(0);
-		table.setCellspacing(0);
-		int row = 1;
+	private float getMonthInfo(IWContext iwc, IWTimestamp month, MonthValues values, Layer topLayer) throws RemoteException {
+		Layer layer = new Layer(Layer.DIV);
+		layer.setStyleClass("dayItem");
 		
 		IWCalendar calendar = new IWCalendar();
 		
-		table.add(getSmallHeader(calendar.getMonthName(month.getMonth(), locale, IWCalendar.FULL)), 1, row++);
-		table.setHeight(row++, 6);
+		layer.add(new Heading1(calendar.getMonthName(month.getMonth(), iwc.getCurrentLocale(), IWCalendar.FULL)));
 		
 		String[] days = iwc.getParameterValues(PARAMETER_DAYS + "_" + month.toString());
-		String fruits = iwc.getParameter(PARAMETER_FRUITS + "_" + month.toString());
-		String milk = iwc.getParameter(PARAMETER_MILK + "_" + month.toString());
 		if (days != null) {
 			for (int j = 0; j < days.length; j++) {
 				if (days[j].equals(MealConstants.DAY_MONDAY)) {
@@ -326,100 +347,93 @@ public class MealApplication extends MealBlock {
 				}
 			}
 		}
-		values.setFruits(fruits != null);
-		values.setMilk(milk != null);
-
-		MealPrice price = null;
+		values.setFruits(iwc.isParameterSet(PARAMETER_FRUITS + "_" + month.toString()));
+		values.setMilk(iwc.isParameterSet(PARAMETER_MILK + "_" + month.toString()));
 		try {
-			if (school == null) {
-				if (placement != null) {
-					school = placement.getSchoolClass().getSchool();
-				} else {
-					school = getUserBusiness().getFirstManagingSchoolForUser(getUser(iwc));
-				}
-			}
-			price = getBusiness().getMealPrice(school, month.getDate());
+			values = getBusiness().calculatePrices(month.getDate(), getSession().getSchool(), values, isEmployeeView());
 		}
-		catch (RemoteException e) {
-			e.printStackTrace();
-		}
-		catch (FinderException e) {
-			e.printStackTrace();
+		catch (FinderException fe) {
+			getParentPage().setAlertOnLoad(localize("application.no_price_found_for_month", "No price was found for month: ") + month.getDateString("MMM. yyyy", iwc.getCurrentLocale()));
+			return 0;
 		}
 		
+		List listOfDays = new ArrayList();
 		if (values.isMonday()) {
-			table.add(getSmallText(localize("monday", "Monday")), 1, row++);
+			listOfDays.add(new Text(localize("monday", "Monday")));
 		}
 		if (values.isTuesday()) {
-			table.add(getSmallText(localize("tuesday", "Tuesday")), 1, row++);
+			listOfDays.add(new Text(localize("tuesday", "Tuesday")));
 		}
 		if (values.isWednesday()) {
-			table.add(getSmallText(localize("wednesday", "Wednesday")), 1, row++);
+			listOfDays.add(new Text(localize("wednesday", "Wednesday")));
 		}
 		if (values.isThursday()) {
-			table.add(getSmallText(localize("thursday", "Thursday")), 1, row++);
+			listOfDays.add(new Text(localize("thursday", "Thursday")));
 		}
 		if (values.isFriday()) {
-			table.add(getSmallText(localize("friday", "Friday")), 1, row++);
+			listOfDays.add(new Text(localize("friday", "Friday")));
 		}
 		
-		table.setHeight(row++, 6);
-		
+		if (!listOfDays.isEmpty()) {
+			Lists list = new Lists();
+			Iterator iter = listOfDays.iterator();
+			while (iter.hasNext()) {
+				ListItem item = new ListItem();
+				Text text = (Text) iter.next();
+				item.add(text);
+				list.add(item);
+			}
+			layer.add(list);
+		}
 		
 		Table pTable = new Table();
 		pTable.setWidth("100%");
 		pTable.add(getSmallText(localize("meal", "Meal")), 1, 1);
 		pTable.add(getSmallText(localize("milk", "Milk")), 1, 2);
 		pTable.add(getSmallText(localize("fruits", "Fruits")), 1, 3);
-		if (price != null) {
-			pTable.add(getSmallText(new Integer((int) price.getMealPricePerDay()).toString()), 2, 1);
-			pTable.add(getSmallText(new Integer((int) price.getMilkPrice()).toString()), 2, 2);
-			pTable.add(getSmallText(new Integer((int) price.getFruitsPrice()).toString()), 2, 3);
-		}
+		pTable.add(getSmallText(new Float((int) values.getMealAmount()).toString()), 2, 1);
+		pTable.add(getSmallText(new Float((int) values.getMilkAmount()).toString()), 2, 2);
+		pTable.add(getSmallText(new Float((int) values.getFruitAmount()).toString()), 2, 3);
 		pTable.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_RIGHT);
-		table.add(pTable, 1, row++);
-		return table;
+		layer.add(pTable);
+		
+		layer.add(new HiddenInput(PARAMETER_AMOUNT + "_" + month.toString(), String.valueOf(values.getAmount())));
+		topLayer.add(layer);
+		
+		return values.getAmount();
 	}
 	
 	private void showPhaseThree(IWContext iwc) throws RemoteException {
 		Form form = createForm(iwc, ACTION_PHASE_THREE);
 		
-		Table table = new Table();
-		table.setCellpadding(0);
-		table.setCellspacing(0);
-		table.setWidth(Table.HUNDRED_PERCENT);
-		form.add(table);
-		int row = 1;
-
-		if (!isEmployeeView()) {
-			table.add(getPersonInfoTable(iwc, placement), 1, row++);
-			table.setHeight(row++, 6);
-		}
+		form.add(getPersonInfo(iwc, user, school, group));
 		
-		table.add(getHeader(localize("application.comments", "Comments")), 1, row++);
-		table.setHeight(row++, 6);
+		Layer layer = new Layer(Layer.DIV);
+		layer.setID("phasesDiv");
+		form.add(layer);
 		
-		table.add(getText(localize("application.comments_information", "Comments information")), 1, row++);
-		table.setHeight(row++, 12);
+		layer.add(new Heading1(localize("application.comments", "Comments")));
 		
-		TextArea comments = (TextArea) getStyledInterface(new TextArea(PARAMETER_COMMENTS));
+		Paragraph paragraph = new Paragraph();
+		paragraph.add(new Text(localize("application.comments_information", "Comments information")));
+		layer.add(paragraph);
+		
+		TextArea comments = new TextArea(PARAMETER_COMMENTS);
 		comments.setWidth(Table.HUNDRED_PERCENT);
 		comments.setRows(8);
 		comments.keepStatusOnAction();
-		table.add(comments, 1, row++);
+		layer.add(comments);
 		
-		table.setHeight(row++, 18);
+		Layer buttonLayer = new Layer(Layer.DIV);
+		buttonLayer.setStyleClass("buttonDiv");
+		layer.add(buttonLayer);
 		
-		SubmitButton previous = (SubmitButton) getButton(new SubmitButton(localize("previous", "Previous")));
+		SubmitButton previous = new SubmitButton(localize("previous", "Previous"));
 		previous.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_PHASE_TWO));
-		SubmitButton next = (SubmitButton) getButton(new SubmitButton(localize("next", "Next")));
+		SubmitButton next = new SubmitButton(localize("next", "Next"));
 		next.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_OVERVIEW));
-		
-		table.add(previous, 1, row);
-		table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
-		table.add(next, 1, row);
-		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
-		table.setCellpaddingRight(1, row, 12);
+		buttonLayer.add(previous);
+		buttonLayer.add(next);
 
 		add(form);
 	}
@@ -427,60 +441,59 @@ public class MealApplication extends MealBlock {
 	private void showOverview(IWContext iwc) throws RemoteException {
 		Form form = createForm(iwc, ACTION_OVERVIEW);
 		
-		Table table = new Table();
-		table.setCellpadding(0);
-		table.setCellspacing(0);
-		table.setWidth(Table.HUNDRED_PERCENT);
-		form.add(table);
-		int row = 1;
-
-		if (!isEmployeeView()) {
-			table.add(getPersonInfoTable(iwc, placement), 1, row++);
-			table.setHeight(row++, 6);
+		form.add(isEmployeeView() ? getPersonInfo(iwc, iwc.getCurrentUser(), null, null) : getPersonInfo(iwc, placement));
+		
+		Layer layer = new Layer(Layer.DIV);
+		layer.setID("phasesDiv");
+		form.add(layer);
+		
+		layer.add(new Heading1(localize("application.overview", "Overview")));
+		
+		Paragraph paragraph = new Paragraph();
+		paragraph.add(new Text(localize("application.overview_information", "Overview information")));
+		layer.add(paragraph);
+		
+		if (iwc.isParameterSet(PARAMETER_COMMENTS)) {
+			layer.add(new Heading1(localize("application.comments", "Comments")));
+			
+			paragraph = new Paragraph();
+			paragraph.add(new Text(iwc.getParameter(PARAMETER_COMMENTS)));
+			layer.add(paragraph);
 		}
-		
-		Table dayTable = new Table();
-		dayTable.setColumns(3);
-		dayTable.setCellspacing(5);
-		dayTable.setCellpadding(0);
-		dayTable.setWidth(Table.HUNDRED_PERCENT);
-		table.add(dayTable, 1, row++);
-		int dColumn = 1;
-		int dRow = 1;
-		
+
+		boolean canSave = true;
 		String[] months = iwc.getParameterValues(PARAMETER_MONTH);
-//		MonthValues[] values = new MonthValues[months.length];
 		float totalPrice = 0;
 		for (int i = 0; i < months.length; i++) {
 			IWTimestamp month = new IWTimestamp(months[i]);
-			dayTable.setVerticalAlignment(dColumn, dRow, Table.VERTICAL_ALIGN_TOP);
 			MonthValues values = new MonthValues();
-			dayTable.add(getMonthInfo(iwc, month, iwc.getCurrentLocale(), values), dColumn++, dRow);
-			
-			totalPrice += getBusiness().getPriceForMonth(month.getDate(), school, values);
-			if ((i + 1) % 3 == 0) {
-				dColumn = 1;
-				dRow++;
+			float monthPrice = getMonthInfo(iwc, month, values, layer);
+			if (monthPrice == 0) {
+				canSave = false;
 			}
+			totalPrice += monthPrice;
 		}
-		if (dColumn != 1) {
-			++dRow;
-		}
-		dayTable.add(getSmallHeader(localize("total_payment", "Total payment")+ " : "+(int) totalPrice), 3, dRow);
-		dayTable.setWidth(1, "33%");
-		dayTable.setWidth(2, "33%");
-		dayTable.setWidth(3, "33%");
-				
-		SubmitButton save = (SubmitButton) getButton(new SubmitButton(localize("save", "Save")));
-		save.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_SAVE));
-		SubmitButton previous = (SubmitButton) getButton(new SubmitButton(localize("previous", "Previous")));
-		previous.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_PHASE_THREE));
+
+		Layer clear = new Layer(Layer.DIV);
+		clear.setStyleClass("Clear");
+		layer.add(clear);
 		
-		table.add(previous, 1, row);
-		table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
-		table.add(save, 1, row);
-		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
-		table.setCellpaddingRight(1, row, 12);
+		Layer priceLayer = new Layer(Layer.DIV);
+		priceLayer.setID("priceDiv");
+		priceLayer.add(new Text(localize("total_payment", "Total payment") + " : " + (int) totalPrice));
+		layer.add(priceLayer);
+				
+		Layer buttonLayer = new Layer(Layer.DIV);
+		buttonLayer.setStyleClass("buttonDiv");
+		layer.add(buttonLayer);
+		
+		SubmitButton save = new SubmitButton(localize("save", "Save"));
+		save.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_SAVE));
+		save.setDisabled(!canSave);
+		SubmitButton previous = new SubmitButton(localize("previous", "Previous"));
+		previous.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_PHASE_THREE));
+		buttonLayer.add(previous);
+		buttonLayer.add(save);
 
 		add(form);
 	}
@@ -514,8 +527,26 @@ public class MealApplication extends MealBlock {
 		}
 		
 		try {
-			//TODO: Need to use the correct school if no placement exist (for employee that is...)
-			getBusiness().storeChoice(null, getUser(iwc), placement != null ? placement.getSchoolClass().getSchool() : null, season, comments, months, values, iwc.getCurrentUser());
+			getBusiness().storeChoice(null, user, school, season, comments, months, values, iwc.getCurrentUser());
+			
+			Layer layer = new Layer(Layer.DIV);
+			layer.setID("phasesDiv");
+			add(layer);
+			
+			layer.add(new Heading1(localize("application.save_completed", "Application sent")));
+
+			Paragraph paragraph = new Paragraph();
+			paragraph.add(new Text(localize("application.save_confirmation", "Your application for a school meal has been sent and processed.")));
+			layer.add(paragraph);
+			
+			if (getHomePage() != null) {
+				Layer buttonLayer = new Layer(Layer.DIV);
+				buttonLayer.setStyleClass("buttonDiv");
+				layer.add(buttonLayer);
+				
+				GenericButton home = new GenericButton(localize("my_page", "My page"));
+				home.setPageToOpen(getHomePage());
+			}
 		}
 		catch (IDOCreateException ice) {
 			ice.printStackTrace();
@@ -524,18 +555,24 @@ public class MealApplication extends MealBlock {
 	
 	private Form createForm(IWContext iwc, int actionPhase) {
 		Form form = new Form();
-		form.setMethod("POST");
-		form.maintainParameter(PARAMETER_MONTH);
-		form.maintainParameter(PARAMETER_COMMENTS);
+		form.setID("mealForm");
+		if (actionPhase != ACTION_PHASE_ONE) {
+			form.maintainParameter(PARAMETER_MONTH);
+		}
+		if (actionPhase != ACTION_PHASE_THREE) {
+			form.maintainParameter(PARAMETER_COMMENTS);
+		}
 		form.addParameter(PARAMETER_ACTION, actionPhase);
 		
-		String[] months = iwc.getParameterValues(PARAMETER_MONTH);
-		if (months != null) {
-			for (int i = 0; i < months.length; i++) {
-				String month = months[i];
-				form.maintainParameter(PARAMETER_DAYS + "_" + month);
-				form.maintainParameter(PARAMETER_MILK + "_" + month);
-				form.maintainParameter(PARAMETER_FRUITS + "_" + month);
+		if (actionPhase != ACTION_PHASE_TWO) {
+			String[] months = iwc.getParameterValues(PARAMETER_MONTH);
+			if (months != null) {
+				for (int i = 0; i < months.length; i++) {
+					String month = months[i];
+					form.maintainParameter(PARAMETER_DAYS + "_" + month);
+					form.maintainParameter(PARAMETER_MILK + "_" + month);
+					form.maintainParameter(PARAMETER_FRUITS + "_" + month);
+				}
 			}
 		}
 		
@@ -560,12 +597,19 @@ public class MealApplication extends MealBlock {
 		return user;
 	}
 
-	public boolean isEmployeeView() {
+	private boolean isEmployeeView() {
 		return iUseEmployeeView;
 	}
-
 	
 	public void setUseEmployeeView(boolean useEmployeeView) {
 		iUseEmployeeView = useEmployeeView;
+	}
+	
+	private ICPage getHomePage() {
+		return iHomePage;
+	}
+	
+	public void setHomePage(ICPage page) {
+		iHomePage = page;
 	}
 }

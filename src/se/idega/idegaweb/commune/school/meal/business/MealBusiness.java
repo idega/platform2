@@ -1,6 +1,6 @@
 /*
- * $Id: MealBusiness.java,v 1.2 2005/08/12 19:29:50 gimmi Exp $
- * Created on Aug 12, 2005
+ * $Id: MealBusiness.java,v 1.3 2005/10/02 13:44:24 laddi Exp $
+ * Created on Oct 2, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -10,11 +10,14 @@
 package se.idega.idegaweb.commune.school.meal.business;
 
 import java.sql.Date;
+import java.util.Collection;
 import java.util.Map;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.school.meal.data.MealChoice;
 import se.idega.idegaweb.commune.school.meal.data.MealPrice;
+import se.idega.idegaweb.commune.school.meal.data.MealVacationDay;
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
@@ -26,11 +29,10 @@ import com.idega.user.data.User;
 
 
 /**
+ * Last modified: $Date: 2005/10/02 13:44:24 $ by $Author: laddi $
  * 
- *  Last modified: $Date: 2005/08/12 19:29:50 $ by $Author: gimmi $
- * 
- * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.2 $
+ * @author <a href="mailto:laddi@idega.com">laddi</a>
+ * @version $Revision: 1.3 $
  */
 public interface MealBusiness extends IBOService, CaseBusiness {
 
@@ -60,26 +62,63 @@ public interface MealBusiness extends IBOService, CaseBusiness {
 	public SchoolClassMember getSchoolPlacing(User user, SchoolSeason season) throws java.rmi.RemoteException;
 
 	/**
-	 * @see se.idega.idegaweb.commune.school.meal.business.MealBusinessBean#getPriceForDate
+	 * @see se.idega.idegaweb.commune.school.meal.business.MealBusinessBean#getVacationDays
+	 */
+	public Collection getVacationDays(School school) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.school.meal.business.MealBusinessBean#getVacationDay
+	 */
+	public MealVacationDay getVacationDay(Object vacationDayPK) throws FinderException, java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.school.meal.business.MealBusinessBean#deleteVacationDay
+	 */
+	public void deleteVacationDay(Object vacationDayPK) throws RemoveException, java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.school.meal.business.MealBusinessBean#hasChoiceForDate
+	 */
+	public boolean hasChoiceForDate(User user, School school, SchoolSeason season, Date date)
+			throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.school.meal.business.MealBusinessBean#getMealPrice
+	 */
+	public MealPrice getMealPrice(Object pricePK) throws FinderException, java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.school.meal.business.MealBusinessBean#deleteMealPrice
+	 */
+	public void deleteMealPrice(Object pricePK) throws RemoveException, java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.school.meal.business.MealBusinessBean#getMealPrice
 	 */
 	public MealPrice getMealPrice(School school, Date date) throws FinderException, java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.school.meal.business.MealBusinessBean#storePrices
 	 */
-	public void storePrices(School school, Date validFrom, Date validTo, float dayPrice, float monthPrice,
-			float milkPrice, float fruitPrice) throws IDOCreateException, java.rmi.RemoteException;
+	public void storePrices(Object pricePK, School school, Date validFrom, Date validTo, float dayPrice,
+			float monthPrice, float milkPrice, float fruitPrice) throws IDOCreateException, java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.school.meal.business.MealBusinessBean#storeVacationDays
 	 */
-	public void storeVacationDays(School school, Date fromDate, String type, int numberOfDays)
-			throws IDOCreateException, java.rmi.RemoteException;
+	public void storeVacationDays(Object vacationDayPK, School school, Date fromDate, Date toDate, String type,
+			String name) throws IDOCreateException, java.rmi.RemoteException;
 
 	/**
-	 * @see se.idega.idegaweb.commune.school.meal.business.MealBusinessBean#getPriceForMonth
+	 * @see se.idega.idegaweb.commune.school.meal.business.MealBusinessBean#getSchoolPrices
 	 */
-	public float getPriceForMonth(Date month, School school, MonthValues values) throws java.rmi.RemoteException;
+	public Collection getSchoolPrices(School school) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.school.meal.business.MealBusinessBean#calculatePrices
+	 */
+	public MonthValues calculatePrices(Date month, School school, MonthValues values, boolean isEmployee)
+			throws FinderException, java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.school.meal.business.MealBusinessBean#storeChoice
@@ -90,6 +129,5 @@ public interface MealBusiness extends IBOService, CaseBusiness {
 	/**
 	 * @see se.idega.idegaweb.commune.school.meal.business.MealBusinessBean#sendMessageToParents
 	 */
-	public void sendMessageToParents(MealChoice application, String subject, String body)
-			throws java.rmi.RemoteException;
+	public void sendMessageToParents(MealChoice application, String subject, String body) throws java.rmi.RemoteException;
 }
