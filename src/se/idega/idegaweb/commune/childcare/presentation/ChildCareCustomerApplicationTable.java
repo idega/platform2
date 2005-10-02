@@ -42,7 +42,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.107 2005/09/29 10:47:46 dainis Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.108 2005/10/02 23:41:04 palli Exp $
  * @since 12.2.2003 
  */
 
@@ -572,7 +572,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 			layoutTbl.setHeight(row++, 12);
 			layoutTbl.add(new UserHomeLink(), 1, row);
 		}
-		return ((ChildCarePlaceOfferTable1) appTable).getOnSubmitHandler();
+		return appTable.getOnSubmitHandler();
 	}
 
 	private Table getPlacedAtSchool(IWContext iwc, boolean hasActiveApplication) throws RemoteException {
