@@ -1,5 +1,5 @@
 /*
- * $Id: MealSessionBean.java,v 1.3 2005/10/02 13:44:24 laddi Exp $
+ * $Id: MealSessionBean.java,v 1.4 2005/10/02 23:01:27 laddi Exp $
  * Created on Aug 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -21,10 +21,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/10/02 13:44:24 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/02 23:01:27 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class MealSessionBean extends IBOSessionBean  implements MealSession{
 
@@ -93,7 +93,7 @@ public class MealSessionBean extends IBOSessionBean  implements MealSession{
 	private School getSchoolIDFromUser(User user) throws RemoteException {
 		if (user != null) {
 			try {
-				School school = getUserBusiness().getFirstManagingMusicSchoolForUser(user);
+				School school = getUserBusiness().getFirstManagingSchoolForUser(user);
 				if (school != null) {
 					iSchool = school;
 				}
