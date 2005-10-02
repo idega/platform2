@@ -1,5 +1,5 @@
 /*
- * $Id: MealChoiceMonthBMPBean.java,v 1.2 2005/10/02 13:44:24 laddi Exp $
+ * $Id: MealChoiceMonthBMPBean.java,v 1.3 2005/10/02 18:41:15 laddi Exp $
  * Created on Aug 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -24,10 +24,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/10/02 13:44:24 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/02 18:41:15 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class MealChoiceMonthBMPBean extends GenericEntity  implements MealChoiceMonth{
 
@@ -174,6 +174,29 @@ public class MealChoiceMonthBMPBean extends GenericEntity  implements MealChoice
 		query.addCriteria(new MatchCriteria(table, COLUMN_MEAL_CHOICE, MatchCriteria.EQUALS, choice));
 		query.addOrder(table, COLUMN_YEAR, true);
 		query.addOrder(table, COLUMN_MONTH, true);
+		
+		return idoFindPKsByQuery(query);
+	}
+	
+	public Collection ejbFindAllBySchool(School school, int month, int year, Boolean showEmployees) throws FinderException {
+		Table table = new Table(this);
+		Table choice = new Table(MealChoice.class);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(table, getIDColumnName());
+		try {
+			query.addJoin(table, choice);
+		}
+		catch (IDORelationshipException ire) {
+			throw new FinderException(ire.getMessage());
+		}
+		query.addCriteria(new MatchCriteria(choice, "school_id", MatchCriteria.EQUALS, school));
+		query.addCriteria(new MatchCriteria(table, COLUMN_MONTH, MatchCriteria.EQUALS, month));
+		query.addCriteria(new MatchCriteria(table, COLUMN_YEAR, MatchCriteria.EQUALS, year));
+		query.addCriteria(new MatchCriteria(table, COLUMN_MEAL_CHOICE, MatchCriteria.EQUALS, choice));
+		if (showEmployees != null) {
+			query.addCriteria(new MatchCriteria(choice, "is_employee", MatchCriteria.EQUALS, showEmployees.booleanValue()));
+		}
 		
 		return idoFindPKsByQuery(query);
 	}

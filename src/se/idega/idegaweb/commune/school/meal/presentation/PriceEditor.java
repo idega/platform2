@@ -1,5 +1,5 @@
 /*
- * $Id: PriceEditor.java,v 1.1 2005/10/02 13:44:24 laddi Exp $
+ * $Id: PriceEditor.java,v 1.2 2005/10/02 18:41:14 laddi Exp $
  * Created on Sep 30, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -41,10 +41,10 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2005/10/02 13:44:24 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/02 18:41:14 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class PriceEditor extends MealBlock {
 	
@@ -208,7 +208,7 @@ public class PriceEditor extends MealBlock {
 		buttonLayer.setStyleClass("buttonDiv");
 		form.add(buttonLayer);
 		
-		SubmitButton newLink = (SubmitButton) getButton(new SubmitButton(localize("new_price", "New price"), PARAMETER_ACTION, String.valueOf(ACTION_NEW)));
+		SubmitButton newLink = new SubmitButton(localize("new_price", "New price"), PARAMETER_ACTION, String.valueOf(ACTION_NEW));
 		buttonLayer.add(newLink);
 
 		add(form);
@@ -385,9 +385,9 @@ public class PriceEditor extends MealBlock {
 		buttonLayer.setStyleClass("buttonDiv");
 		layer.add(buttonLayer);
 		
-		SubmitButton back = (SubmitButton) getButton(new SubmitButton(localize("back", "Back")));
+		SubmitButton back = new SubmitButton(localize("back", "Back"));
 		back.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_VIEW));
-		SubmitButton next = (SubmitButton) getButton(new SubmitButton(localize("save", "Save")));
+		SubmitButton next = new SubmitButton(localize("save", "Save"));
 		next.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_SAVE));
 		buttonLayer.add(back);
 		buttonLayer.add(next);

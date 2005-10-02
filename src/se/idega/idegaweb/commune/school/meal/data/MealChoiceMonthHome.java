@@ -1,5 +1,5 @@
 /*
- * $Id: MealChoiceMonthHome.java,v 1.2 2005/10/02 13:44:24 laddi Exp $
+ * $Id: MealChoiceMonthHome.java,v 1.3 2005/10/02 18:41:15 laddi Exp $
  * Created on Oct 2, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -19,10 +19,13 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/10/02 13:44:24 $ by $Author: laddi $
+ * <p>
+ * TODO laddi Describe Type MealChoiceMonthHome
+ * </p>
+ *  Last modified: $Date: 2005/10/02 18:41:15 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public interface MealChoiceMonthHome extends IDOHome {
 
@@ -34,6 +37,11 @@ public interface MealChoiceMonthHome extends IDOHome {
 	 * @see se.idega.idegaweb.commune.school.meal.data.MealChoiceMonthBMPBean#ejbFindAllByChoice
 	 */
 	public Collection findAllByChoice(MealChoice choice) throws FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.school.meal.data.MealChoiceMonthBMPBean#ejbFindAllBySchool
+	 */
+	public Collection findAllBySchool(School school, int month, int year, Boolean showEmployees) throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.school.meal.data.MealChoiceMonthBMPBean#ejbFindByChoice

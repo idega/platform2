@@ -1,5 +1,5 @@
 /*
- * $Id: MealBusinessBean.java,v 1.4 2005/10/02 13:44:24 laddi Exp $
+ * $Id: MealBusinessBean.java,v 1.5 2005/10/02 18:41:15 laddi Exp $
  * Created on Aug 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -52,10 +52,10 @@ import com.idega.util.text.Name;
 
 
 /**
- * Last modified: $Date: 2005/10/02 13:44:24 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/02 18:41:15 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class MealBusinessBean extends CaseBusinessBean implements CaseBusiness , MealBusiness{
 
@@ -275,6 +275,17 @@ public class MealBusinessBean extends CaseBusinessBean implements CaseBusiness ,
 	public Collection getSchoolPrices(School school) {
 		try {
 			return getPriceHome().findAllBySchool(school);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return new ArrayList();
+		}
+	}
+	
+	public Collection getSchoolDiners(School school, Date date, Boolean showEmployees) {
+		try {
+			IWTimestamp stamp = new IWTimestamp(date);
+			return getChoiceMonthHome().findAllBySchool(school, stamp.getMonth(), stamp.getYear(), showEmployees);
 		}
 		catch (FinderException fe) {
 			fe.printStackTrace();
