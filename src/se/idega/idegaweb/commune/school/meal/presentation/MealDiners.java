@@ -20,6 +20,9 @@ import com.idega.business.IBORuntimeException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
 import com.idega.presentation.Table2;
+import com.idega.presentation.TableCell2;
+import com.idega.presentation.TableColumn;
+import com.idega.presentation.TableColumnGroup;
 import com.idega.presentation.TableRow;
 import com.idega.presentation.TableRowGroup;
 import com.idega.presentation.text.Heading1;
@@ -34,6 +37,7 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.data.User;
 import com.idega.util.IWCalendar;
 import com.idega.util.IWTimestamp;
+import com.idega.util.PersonalIDFormatter;
 import com.idega.util.text.Name;
 
 
@@ -87,7 +91,7 @@ public class MealDiners extends MealBlock {
 		}
 	}
 	
-	private void showSelector(IWContext iwc) throws RemoteException {
+	private void showSelector(IWContext iwc) {
 		Form form = new Form();
 		form.setID("mealForm");
 		form.addParameter(PARAMETER_ACTION, ACTION_SELECT);
@@ -113,6 +117,7 @@ public class MealDiners extends MealBlock {
 		ListItem item = new ListItem();
 		RadioButton button = new RadioButton(PARAMETER_SHOW, String.valueOf(SHOW_STUDENTS));
 		button.setSelected(true);
+		button.keepStatusOnAction(true);
 		Label label = new Label(localize("diners.show_students", "Show students"), button);
 		item.add(button);
 		item.add(label);
@@ -120,6 +125,7 @@ public class MealDiners extends MealBlock {
 		
 		item = new ListItem();
 		button = new RadioButton(PARAMETER_SHOW, String.valueOf(SHOW_TEACHERS));
+		button.keepStatusOnAction(true);
 		label = new Label(localize("diners.show_teacher", "Show teachers"), button);
 		item.add(button);
 		item.add(label);
@@ -127,6 +133,7 @@ public class MealDiners extends MealBlock {
 		
 		item = new ListItem();
 		button = new RadioButton(PARAMETER_SHOW, String.valueOf(SHOW_ALL));
+		button.keepStatusOnAction(true);
 		label = new Label(localize("diners.show_all", "Show all"), button);
 		item.add(button);
 		item.add(label);
@@ -142,6 +149,7 @@ public class MealDiners extends MealBlock {
 		while (seasonStart.isEarlierThan(seasonEnd)) {
 			item = new ListItem();
 			button = new RadioButton(PARAMETER_MONTH, seasonStart.toString());
+			button.keepStatusOnAction(true);
 			if (!selected) {
 				button.setSelected(true);
 				selected = true;
@@ -170,12 +178,8 @@ public class MealDiners extends MealBlock {
 	private void showDiners(IWContext iwc) throws RemoteException {
 		Form form = new Form();
 		form.setID(STYLENAME_MEAL_FORM);
-		
-		Table2 table = new Table2();
-		table.setWidth("100%");
-		table.setCellpadding(0);
-		table.setCellspacing(0);
-		table.setStyleClass(STYLENAME_LIST_TABLE);
+		form.maintainParameter(PARAMETER_MONTH);
+		form.maintainParameter(PARAMETER_SHOW);
 		
 		IWTimestamp stamp = new IWTimestamp(iwc.getParameter(PARAMETER_MONTH));
 		Boolean showEmployees = null;
@@ -193,11 +197,28 @@ public class MealDiners extends MealBlock {
 				break;
 		}
 		
+		IWCalendar calendar = new IWCalendar();
+		form.add(new Heading1(calendar.getMonthName(stamp.getMonth(), iwc.getCurrentLocale(), IWCalendar.FULL)));
+
+		Table2 table = new Table2();
+		table.setWidth("100%");
+		table.setCellpadding(0);
+		table.setCellspacing(0);
+		table.setStyleClass(STYLENAME_LIST_TABLE);
+		
+		TableColumnGroup columnGroup = table.createColumnGroup();
+		TableColumn column = columnGroup.createColumn();
+		column.setSpan(2);
+		column = columnGroup.createColumn();
+		column.setSpan(7);
+		column.setCellHorizontalAlignment(Table2.HORIZONTAL_ALIGNMENT_CENTER);
+		
 		Collection diners = getBusiness().getSchoolDiners(getSession().getSchool(), stamp.getDate(), showEmployees);
 
 		TableRowGroup group = table.createHeaderRowGroup();
 		TableRow row = group.createRow();
 		row.createHeaderCell().add(new Text(localize("diners.name", "Name")));
+		row.createHeaderCell().add(new Text(localize("diners.personal_id", "Personal ID")));
 		row.createHeaderCell().add(new Text(localize("monday", "Monday")));
 		row.createHeaderCell().add(new Text(localize("tuesday", "Tuesday")));
 		row.createHeaderCell().add(new Text(localize("wednesday", "Wednesday")));
@@ -209,6 +230,13 @@ public class MealDiners extends MealBlock {
 		group = table.createBodyRowGroup();
 		int iRow = 1;
 		
+		int mondays = 0;
+		int tuesdays = 0;
+		int wednesdays = 0;
+		int thursdays = 0;
+		int fridays = 0;
+		int milk = 0;
+		int fruits = 0;
 		Iterator iter = diners.iterator();
 		while (iter.hasNext()) {
 			row = group.createRow();
@@ -219,45 +247,53 @@ public class MealDiners extends MealBlock {
 			
 			try {
 				row.createCell().add(new Text(name.getName(iwc.getCurrentLocale())));
+				row.createCell().add(new Text(user.getPersonalID() != null ? PersonalIDFormatter.format(user.getPersonalID(), iwc.getCurrentLocale()) : "-"));
 				
 				if (dinerMonth.hasMondays()) {
 					row.createCell().add(new Text("X"));
+					mondays++;
 				}
 				else {
 					row.createCell().add(new Text("-"));
 				}
 				if (dinerMonth.hasTuesdays()) {
 					row.createCell().add(new Text("X"));
+					tuesdays++;
 				}
 				else {
 					row.createCell().add(new Text("-"));
 				}
 				if (dinerMonth.hasWednesdays()) {
 					row.createCell().add(new Text("X"));
+					wednesdays++;
 				}
 				else {
 					row.createCell().add(new Text("-"));
 				}
 				if (dinerMonth.hasThursdays()) {
 					row.createCell().add(new Text("X"));
+					thursdays++;
 				}
 				else {
 					row.createCell().add(new Text("-"));
 				}
 				if (dinerMonth.hasFridays()) {
 					row.createCell().add(new Text("X"));
+					fridays++;
 				}
 				else {
 					row.createCell().add(new Text("-"));
 				}
 				if (dinerMonth.hasMilk()) {
 					row.createCell().add(new Text("X"));
+					milk++;
 				}
 				else {
 					row.createCell().add(new Text("-"));
 				}
 				if (dinerMonth.hasFruits()) {
 					row.createCell().add(new Text("X"));
+					fruits++;
 				}
 				else {
 					row.createCell().add(new Text("-"));
@@ -273,8 +309,24 @@ public class MealDiners extends MealBlock {
 			catch (Exception ex) {
 				ex.printStackTrace();
 			}
-			iRow++;
+			
+			if (iter.hasNext()) {
+				iRow++;
+			}
 		}
+		
+		group = table.createFooterRowGroup();
+		row = group.createRow();
+		TableCell2 cell = row.createCell();
+		cell.setColumnSpan(2);
+		cell.add(new Text(localize("diners.total", "Total")));
+		row.createCell().add(new Text(String.valueOf(mondays)));
+		row.createCell().add(new Text(String.valueOf(tuesdays)));
+		row.createCell().add(new Text(String.valueOf(wednesdays)));
+		row.createCell().add(new Text(String.valueOf(thursdays)));
+		row.createCell().add(new Text(String.valueOf(fridays)));
+		row.createCell().add(new Text(String.valueOf(milk)));
+		row.createCell().add(new Text(String.valueOf(fruits)));
 
 		form.add(table);
 		
@@ -289,7 +341,7 @@ public class MealDiners extends MealBlock {
 	}
 
 	private int parseAction(IWContext iwc) {
-		int action = ACTION_VIEW;
+		int action = ACTION_SELECT;
 		if (iwc.isParameterSet(PARAMETER_ACTION)) {
 			action = Integer.parseInt(iwc.getParameter(PARAMETER_ACTION));
 		}

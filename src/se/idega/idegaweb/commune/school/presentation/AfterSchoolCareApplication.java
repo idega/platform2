@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolCareApplication.java,v 1.17 2005/09/27 21:06:37 laddi Exp $
+ * $Id: AfterSchoolCareApplication.java,v 1.18 2005/10/02 21:11:06 laddi Exp $
  * Created on Aug 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -34,10 +34,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/09/27 21:06:37 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/02 21:11:06 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 public class AfterSchoolCareApplication extends SchoolApplication {
 	
@@ -61,6 +61,20 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 	private boolean iHideDetailsPhases = false;
 
 	public void present(IWContext iwc) throws Exception {
+		SchoolSeason season = null;
+		try {
+			season = getCareBusiness().getCurrentSeason();
+		}
+		catch (FinderException fe) {
+			log(fe);
+			add(getErrorText(localize("no_season_found", "No season found...")));
+			return;
+		}
+		if (getBusiness().hasAfterSchoolCarePlacing(getSession().getUser(), season)) {
+			add(getErrorText(localize("has_granted_after_school_care_choice", "Child already has a granted after school care choice")));
+			return;
+		}
+
 		switch (parseAction(iwc)) {
 			case ACTION_PHASE_1:
 				showPhaseOne(iwc);

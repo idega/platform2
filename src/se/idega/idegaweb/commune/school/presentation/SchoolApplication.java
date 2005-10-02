@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolApplication.java,v 1.13 2005/09/27 20:15:11 laddi Exp $
+ * $Id: SchoolApplication.java,v 1.14 2005/10/02 21:11:06 laddi Exp $
  * Created on Aug 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -19,8 +19,10 @@ import java.util.List;
 import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.care.business.CareConstants;
 import se.idega.idegaweb.commune.school.business.SchoolAreaCollectionHandler;
+import se.idega.idegaweb.commune.school.data.SchoolChoice;
 import com.idega.block.school.business.SchoolYearComparator;
 import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolArea;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.contact.data.Email;
@@ -52,10 +54,10 @@ import com.idega.user.data.User;
 import com.idega.util.PersonalIDFormatter;
 
 /**
- * Last modified: $Date: 2005/09/27 20:15:11 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/02 21:11:06 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class SchoolApplication extends SchoolBlock {
 
@@ -64,6 +66,7 @@ public class SchoolApplication extends SchoolBlock {
 	protected static final int ACTION_PHASE_3 = 3;
 	protected static final int ACTION_PHASE_4 = 4;
 	protected static final int ACTION_PHASE_5 = 5;
+	protected static final int ACTION_OVERVIEW = 6;
 	protected static final int ACTION_SAVE = 0;
 	
 	protected static final String PARAMETER_ACTION = "prm_action";
@@ -96,6 +99,7 @@ public class SchoolApplication extends SchoolBlock {
 
 	private boolean iHomeSchoolChosen = false;
 	private boolean iSchoolChange = false;
+	private boolean iUseHomeSchool = true;
 	
 	private ICPage iAfterSchoolCarePage;
 	protected ICPage iHomePage;
@@ -104,6 +108,25 @@ public class SchoolApplication extends SchoolBlock {
 	 * @see se.idega.idegaweb.commune.school.presentation.SchoolBlock#init(com.idega.presentation.IWContext)
 	 */
 	public void present(IWContext iwc) throws Exception {
+		SchoolSeason season = null;
+		try {
+			if (iSchoolChange) {
+				season = getSchoolBusiness().getCurrentSchoolSeason(getSchoolBusiness().getCategoryElementarySchool());
+			}
+			else {
+				season = getCareBusiness().getCurrentSeason();
+			}
+		}
+		catch (FinderException fe) {
+			log(fe);
+			add(getErrorText(localize("no_season_found", "No season found...")));
+			return;
+		}
+		if (getBusiness().hasSchoolPlacing(getSession().getUser(), season) && !iSchoolChange) {
+			add(getErrorText(localize("has_granted_choice", "Child already has a granted choice")));
+			return;
+		}
+		
 		switch (parseAction(iwc)) {
 			case ACTION_PHASE_1:
 				showPhaseOne(iwc);
@@ -123,6 +146,10 @@ public class SchoolApplication extends SchoolBlock {
 				
 			case ACTION_PHASE_5:
 				showPhaseFive(iwc);
+				break;
+				
+			case ACTION_OVERVIEW:
+				showOverview(iwc);
 				break;
 				
 			case ACTION_SAVE:
@@ -220,8 +247,8 @@ public class SchoolApplication extends SchoolBlock {
 		saveCustodianInfo(iwc, false);
 
 		Form form = createForm();
+		SchoolSeason season = null;
 		if (!iwc.isParameterSet(PARAMETER_SEASON)) {
-			SchoolSeason season = null;
 			try {
 				if (iSchoolChange) {
 					season = getSchoolBusiness().getCurrentSchoolSeason(getSchoolBusiness().getCategoryElementarySchool());
@@ -272,6 +299,14 @@ public class SchoolApplication extends SchoolBlock {
 		applicationTable.add(yearDropdown, 2, 1);
 		
 		for (int a = 1; a <= (iSchoolChange ? 1 : 3); a++) {
+			SchoolChoice choice = null;
+			try {
+				choice = getBusiness().getChoice(getSession().getUser(), season, a);
+			}
+			catch (FinderException fe) {
+				fe.printStackTrace();
+			}
+			
 			DropdownMenu areaDropdown = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_AREA + "_" + a), areas, "getSchoolAreaName"));
 			areaDropdown.addMenuElementFirst("", localize("appilcation.select_area", "Select area"));
 			DropdownMenu schoolDropdown = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_SCHOOLS + "_" + a));
@@ -290,6 +325,24 @@ public class SchoolApplication extends SchoolBlock {
 				}
 				areaDropdown.setSelectedElement(iwc.getParameter(PARAMETER_AREA + "_" + a));
 				schoolDropdown.setSelectedElement(iwc.getParameter(PARAMETER_SCHOOLS + "_" + a));
+			}
+			else if (choice != null) {
+				School school = choice.getChosenSchool();
+				SchoolArea area = school.getSchoolArea();
+				try {
+					Collection schools = getSchoolBusiness().getSchoolHome().findAllByAreaAndTypesAndYear(((Integer) area.getPrimaryKey()).intValue(), getSchoolBusiness().getSchoolTypesForCategory(getSchoolBusiness().getCategoryElementarySchool(), false), Integer.parseInt(iwc.getParameter(SchoolAreaCollectionHandler.PARAMETER_SCHOOL_YEAR)));
+			    Iterator iter = schools.iterator();
+			    while (iter.hasNext()) {
+			    		School element = (School) iter.next();
+			    		schoolDropdown.addMenuElement(element.getPrimaryKey().toString(), element.getSchoolName());
+			    }
+					schoolDropdown.addMenuElementFirst("-1", localize("select_school","Select school"));
+				}
+				catch (FinderException fe) {
+					fe.printStackTrace();
+				}
+				areaDropdown.setSelectedElement(area.getPrimaryKey().toString());
+				schoolDropdown.setSelectedElement(school.getPrimaryKey().toString());
 			}
 
 			applicationTable.add(getSmallHeader(localize("application.school_" + a, "School choice nr. " + a)), 1, a + 1);
@@ -752,6 +805,43 @@ public class SchoolApplication extends SchoolBlock {
 
 		add(form);
 	}
+	
+	private void showOverview(IWContext iwc) throws RemoteException {
+		Form form = createForm();
+		form.addParameter(PARAMETER_ACTION, String.valueOf(ACTION_PHASE_5));
+		
+		Table table = new Table();
+		table.setCellpadding(0);
+		table.setCellspacing(0);
+		table.setWidth(Table.HUNDRED_PERCENT);
+		form.add(table);
+		int row = 1;
+		
+		table.add(getPersonInfoTable(iwc, getSession().getUser()), 1, row++);
+		table.setHeight(row++, 6);
+		
+		
+		
+		table.setHeight(row++, 18);
+		
+		SubmitButton previous = (SubmitButton) getButton(new SubmitButton(localize("previous", "Previous")));
+		previous.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_PHASE_5));
+		SubmitButton next = (SubmitButton) getButton(new SubmitButton(localize("send", "Send")));
+		next.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_SAVE));
+		
+		table.add(previous, 1, row);
+		table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
+		table.add(next, 1, row);
+		table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
+		table.add(getHelpButton("help_school_application_phase_5"), 1, row);
+		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
+		table.setCellpaddingRight(1, row, 12);
+		
+		next.setSubmitConfirm(localize("confirm_application_submit", "Are you sure you want to send the application?"));
+		form.setToDisableOnSubmit(next, true);
+
+		add(form);
+	}
 
 	private void save(IWContext iwc) throws RemoteException {
 		saveChildInfo(iwc);
@@ -916,7 +1006,7 @@ public class SchoolApplication extends SchoolBlock {
 	}
 	
 	private int parseAction(IWContext iwc) {
-		int action = ACTION_PHASE_1;
+		int action = iUseHomeSchool ? ACTION_PHASE_1 : ACTION_PHASE_2;
 		if (iwc.isParameterSet(PARAMETER_ACTION)) {
 			action = Integer.parseInt(iwc.getParameter(PARAMETER_ACTION));
 		}
@@ -978,5 +1068,9 @@ public class SchoolApplication extends SchoolBlock {
 	
 	public void setAsSchoolChange(boolean schoolChange) {
 		iSchoolChange = schoolChange;
+	}
+	
+	public void setUseHomeSchool(boolean useHomeSchool) {
+		iUseHomeSchool = useHomeSchool;
 	}
 }
