@@ -2112,12 +2112,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public Collection getOpenAndGrantedApplicationsByProvider(int providerId) {
+    public Collection getOpenAndGrantedApplicationsByProvider(int providerId) {
+        return getOpenAndGrantedApplicationsByProvider(providerId, ORDER_BY_QUEUE_DATE); 
+    }
+    public Collection getOpenAndGrantedApplicationsByProvider(int providerId, int orderBy) {
 		try {
 			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
 			String caseStatus[] = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus() };
 
-			return home.findAllCasesByProviderStatus(providerId, caseStatus);
+			return home.findAllCasesByProviderStatus(providerId, caseStatus, orderBy);
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
