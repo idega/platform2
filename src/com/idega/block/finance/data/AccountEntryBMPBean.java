@@ -60,7 +60,8 @@ public class AccountEntryBMPBean extends com.idega.data.GenericEntity implements
     addAttribute(getColumnNameFinalDueDate(), "final due date", true, true, Timestamp.class);
     addAttribute(getColumnNameUserId(), "userId", true, true, Integer.class, "many-to-one", User.class);
     addAttribute(getColumnNameDisallowanceDate(), "disallowance date", true, true, Timestamp.class);
-    addAttribute(getColumnNameBatchNumber(), "batch number", true, true, Integer.class);
+    addManyToOneRelationship(getColumnNameBatchNumber(), Batch.class);
+//    addAttribute(getColumnNameBatchNumber(), "batch number", true, true, Integer.class);
     addAttribute(getColumnNameDueDate(), "due date", true, true, Date.class);
     addAttribute(getColumnNamePenalIntrestCode(), "penal int code", true, true, String.class);
     addAttribute(getColumnNamePenalIntrestProsent(), "penal int prosent", true, true, Double.class);
