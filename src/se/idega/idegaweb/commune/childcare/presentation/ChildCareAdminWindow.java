@@ -271,6 +271,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private SubmitButton _submitButton = null;
 	
 	private boolean isEndDateSet = false;
+    
+    private static final int ORDER_BY_QUEUE_DATE = 1;    // see ChildCareApplicationBMPBean ORDER_BY_QUEUE_DATE
+    private static final int ORDER_BY_DATE_OF_BIRTH = 2; // see ChildCareApplicationBMPBean ORDER_BY_DATE_OF_BIRTH    
 		
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
@@ -1530,6 +1533,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		String providerId = iwc.getParameter(CCConstants.PROVIDER_ID);
 		String appId = iwc.getParameter(CCConstants.APPID);
 		School school = getBusiness().getSchoolBusiness().getSchool(providerId);
+        int ordering = school.getSortByBirthdate() ? ORDER_BY_DATE_OF_BIRTH : ORDER_BY_QUEUE_DATE;
 
 		ChildCarePrognosis prognosis = getBusiness().getPrognosis(Integer.parseInt(providerId));
 
@@ -1539,7 +1543,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		// add(new Text("ProviderId: " + providerId));
 		if (providerId != null) {
-			Collection applications = getBusiness().getOpenAndGrantedApplicationsByProvider(new Integer(providerId).intValue());
+			Collection applications = getBusiness().getOpenAndGrantedApplicationsByProvider(new Integer(providerId).intValue(), ordering);
 
 			Iterator i = applications.iterator();
 
@@ -1553,7 +1557,12 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			while (i.hasNext()) {
 				ChildCareApplication app = (ChildCareApplication) i.next();
 
-				Text queueOrder = getSmallText("" + getBusiness().getNumberInQueue(app)), queueDate = getSmallText(app.getQueueDate().toString()), fromDate = getSmallText(app.getFromDate().toString());
+				Text queueOrder = getSmallText("" + getBusiness().getNumberInQueue(app, ordering)); 
+                
+                Date date = school.getSortByBirthdate() ? app.getChild().getDateOfBirth() : app.getQueueDate();              
+                Text queueDate = getSmallText(date.toString()); 
+                
+                Text fromDate = getSmallText(app.getFromDate().toString());
 				// currentAppId = style.getSmallText(""+app.getNodeID()); //debug only
 
 				appTbl.add(queueOrder, 1, row);

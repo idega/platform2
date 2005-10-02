@@ -154,6 +154,16 @@ public class ChildCareApplicationHomeImpl extends IDOFactory implements
         return this.getEntityCollectionForPrimaryKeys(ids);
     }
 
+    public Collection findAllCasesByProviderStatus(int providerId,
+            String[] caseStatus, int orderBy) throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((ChildCareApplicationBMPBean) entity)
+                .ejbFindAllCasesByProviderStatus(providerId, caseStatus,
+                        orderBy);
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
+
     public Collection findAllByAreaAndApplicationStatus(Object areaID,
             String[] applicationStatus, String caseCode, Date queueDate,
             Date placementDate, boolean firstHandOnly) throws FinderException {

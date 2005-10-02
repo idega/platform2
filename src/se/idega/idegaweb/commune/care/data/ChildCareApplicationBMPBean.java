@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareApplicationBMPBean.java,v 1.19 2005/09/30 18:07:45 dainis Exp $
+ * $Id: ChildCareApplicationBMPBean.java,v 1.20 2005/10/02 14:34:47 dainis Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -602,14 +602,34 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		return idoFindPKsBySQL(sql.toString(), numberOfEntries, startingEntry);
 	}	
 	
-	public Collection ejbFindAllCasesByProviderStatus(int providerId, String caseStatus[]) throws FinderException {
+    public Collection ejbFindAllCasesByProviderStatus(int providerId, String caseStatus[]) throws FinderException {
+        return ejbFindAllCasesByProviderStatus(providerId, caseStatus,  ORDER_BY_QUEUE_DATE);
+    }
+    
+    public Collection ejbFindAllCasesByProviderStatus(int providerId, String caseStatus[], int orderBy) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).append(" c, proc_case p");
+        
+        if(orderBy == ORDER_BY_DATE_OF_BIRTH) 
+            sql.append(", ic_user u");
+        
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+        
+        if(orderBy == ORDER_BY_DATE_OF_BIRTH) 
+            sql.appendAndEquals("c."+CHILD_ID, "u.ic_user_id");
+        
 		sql.appendAndEquals("c."+PROVIDER_ID,providerId);
 		//sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
 		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(caseStatus);
-		sql.appendOrderBy("c."+QUEUE_DATE+",c."+QUEUE_ORDER);
+		
+        String order;
+        if(orderBy == ORDER_BY_DATE_OF_BIRTH){
+            order = "u.date_of_birth";
+        } else {
+            order = "c. "+ QUEUE_DATE; 
+        }
+        
+        sql.appendOrderBy(order + ",c."+QUEUE_ORDER);
 
 		return idoFindPKsBySQL(sql.toString());
 	}

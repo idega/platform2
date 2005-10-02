@@ -53,6 +53,9 @@ class ChildCarePlaceOfferTable1 extends Table {
 	final static String[] REQUEST_INFO = new String[] { "ccatp1_request_info", "Request info" };
     
     private boolean containsSortedByBirthdateProvider = false;
+    private static final int ORDER_BY_QUEUE_DATE = 1;    // see ChildCareApplicationBMPBean ORDER_BY_QUEUE_DATE
+    private static final int ORDER_BY_DATE_OF_BIRTH = 2; // see ChildCareApplicationBMPBean ORDER_BY_DATE_OF_BIRTH
+    
 
 	private void initConstants(ChildCareCustomerApplicationTable page) {
 		if (!_initializeStatics) {
@@ -250,8 +253,14 @@ class ChildCarePlaceOfferTable1 extends Table {
 			add(_page.getSmallText(created.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
 			setNoWrap(column, row);
 			add(_page.getSmallText(validFrom.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
-			
-			int queuePosition = getChildCareBusiness(iwc).getNumberInQueue(app);
+			            
+            int queuePosition;
+            if (app.getProvider().getSortByBirthdate()) {
+                queuePosition = getChildCareBusiness(iwc).getNumberInQueue(app, ORDER_BY_DATE_OF_BIRTH);
+            } else {
+                queuePosition = getChildCareBusiness(iwc).getNumberInQueue(app, ORDER_BY_QUEUE_DATE);
+            }
+            
 			add(_page.getSmallText(String.valueOf(queuePosition)), column++, row);
 		}
 

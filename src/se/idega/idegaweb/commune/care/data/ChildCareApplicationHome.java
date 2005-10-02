@@ -103,6 +103,12 @@ public interface ChildCareApplicationHome extends IDOHome {
             String[] caseStatus) throws FinderException;
 
     /**
+     * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindAllCasesByProviderStatus
+     */
+    public Collection findAllCasesByProviderStatus(int providerId,
+            String[] caseStatus, int orderBy) throws FinderException;
+
+    /**
      * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindAllByAreaAndApplicationStatus
      */
     public Collection findAllByAreaAndApplicationStatus(Object areaID,
