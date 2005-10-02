@@ -188,7 +188,12 @@ public class ChildCareAdmin extends ChildCareBlock {
 
     private int getOrdering() throws RemoteException {
         School provider = getSession().getProvider();
-        int ordering = provider.getSortByBirthdate() ? ORDER_BY_DATE_OF_BIRTH : ORDER_BY_QUEUE_DATE;
+        int ordering;
+        if (provider != null) {
+            ordering = provider.getSortByBirthdate() ? ORDER_BY_DATE_OF_BIRTH : ORDER_BY_QUEUE_DATE;
+        } else {
+            ordering = ORDER_BY_QUEUE_DATE;
+        }
         return ordering;
     }
 	
@@ -220,14 +225,15 @@ public class ChildCareAdmin extends ChildCareBlock {
 		applicationTable.add(getLocalizedSmallHeader("child_care.placement_date","Placement date"), column++, row);
 		applicationTable.add(getLocalizedSmallHeader("child_care.order","Order"), column++, row);
 		applicationTable.add(getLocalizedSmallHeader("child_care.queue_order","Queue order"), column++, row++);
-
-        int ordering = getOrdering(); 
         
 		Collection applications = getApplicationCollection();
 		
 		int numberInqueueNoOffer = getBusiness().getNumberOfUnhandledApplicationsByProvider(getSession().getChildCareID());
 		
 		if (applications != null && !applications.isEmpty()) {
+            
+            int ordering = getOrdering(); 
+            
 			ChildCareApplication application;
 			User child;
 			IWCalendar queueDate;
