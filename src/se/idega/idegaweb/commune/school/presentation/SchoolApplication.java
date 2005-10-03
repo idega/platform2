@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolApplication.java,v 1.14 2005/10/02 21:11:06 laddi Exp $
+ * $Id: SchoolApplication.java,v 1.15 2005/10/03 17:42:51 laddi Exp $
  * Created on Aug 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -54,10 +54,10 @@ import com.idega.user.data.User;
 import com.idega.util.PersonalIDFormatter;
 
 /**
- * Last modified: $Date: 2005/10/02 21:11:06 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/03 17:42:51 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class SchoolApplication extends SchoolBlock {
 
@@ -330,7 +330,7 @@ public class SchoolApplication extends SchoolBlock {
 				School school = choice.getChosenSchool();
 				SchoolArea area = school.getSchoolArea();
 				try {
-					Collection schools = getSchoolBusiness().getSchoolHome().findAllByAreaAndTypesAndYear(((Integer) area.getPrimaryKey()).intValue(), getSchoolBusiness().getSchoolTypesForCategory(getSchoolBusiness().getCategoryElementarySchool(), false), Integer.parseInt(iwc.getParameter(SchoolAreaCollectionHandler.PARAMETER_SCHOOL_YEAR)));
+					Collection schools = getSchoolBusiness().getSchoolHome().findAllByAreaAndTypesAndYear(((Integer) area.getPrimaryKey()).intValue(), getSchoolBusiness().getSchoolTypesForCategory(getSchoolBusiness().getCategoryElementarySchool(), false), choice.getSchoolYearID());
 			    Iterator iter = schools.iterator();
 			    while (iter.hasNext()) {
 			    		School element = (School) iter.next();
@@ -343,6 +343,7 @@ public class SchoolApplication extends SchoolBlock {
 				}
 				areaDropdown.setSelectedElement(area.getPrimaryKey().toString());
 				schoolDropdown.setSelectedElement(school.getPrimaryKey().toString());
+				yearDropdown.setSelectedElement(choice.getSchoolYearID());
 			}
 
 			applicationTable.add(getSmallHeader(localize("application.school_" + a, "School choice nr. " + a)), 1, a + 1);
