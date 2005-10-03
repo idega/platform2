@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowser.java,v 1.31 2005/09/23 11:33:17 gimmi Exp $
+ * $Id: SupplierBrowser.java,v 1.32 2005/10/03 11:33:18 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -45,6 +45,7 @@ import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORuntimeException;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -83,6 +84,7 @@ public class SupplierBrowser extends TravelBlock {
 	public static final String PARAMETER_FROM = AbstractSearchForm.PARAMETER_FROM_DATE;
 	public static final String PARAMETER_TO = AbstractSearchForm.PARAMETER_TO_DATE;
 	public static final String PARAMETER_SUPPLIER_NAME = AbstractSearchForm.PARAMETER_SUPPLIER_NAME;
+	private static final String PARAMETER_PLUGIN = "sb_pp";
 
 	protected DecimalFormat df = new DecimalFormat("#,###");
 	
@@ -111,12 +113,21 @@ public class SupplierBrowser extends TravelBlock {
 	private boolean showInputs = true;
 	private boolean showPriceWithProductInformation = true;
 	private ICPage basketPage = null;
+	private int numberOfCharactersBeforeMoreButton = 300;
 	
 	public SupplierBrowser() {
 		
 	}
 	
 	public static void main(String[] args) {
+	}
+	/**
+	 * Use this to initialize the SupplierBrowser if it is not added to a page, 
+	 * but methods used.
+	 */
+	public void initialize(IWContext iwc) throws RemoteException {
+		super.initializer(iwc);
+		init(iwc);
 	}
 	
 	public void main(IWContext iwc) throws Exception {
@@ -225,6 +236,10 @@ public class SupplierBrowser extends TravelBlock {
 				++i;
 			}
 			
+		}
+		if (pluginClassName == null) {
+			String sPlugin = iwc.getParameter(PARAMETER_PLUGIN);
+			pluginClassName = IWMainApplication.decryptClassName(sPlugin);
 		}
 		
 		if (pluginClassName != null) {
@@ -710,6 +725,15 @@ public class SupplierBrowser extends TravelBlock {
 		
 		form.add(table);
 	}
+	
+	public Table getProductInfo(IWContext iwc, Product product, boolean addDetailLink) throws RemoteException {
+		Table table = new Table();
+		table.setCellpaddingAndCellspacing(0);
+//		table.setBorder(1);
+		numberOfCharactersBeforeMoreButton = -1;
+		addProductInfo(iwc, table, 1, iwc.getCurrentLocaleId(), product, addDetailLink);
+		return table;
+	}
 
 	private int addProductInfo(IWContext iwc, Table table, int row, int localeID, Product product, boolean addDetailLink) throws RemoteException {
 		Image image = null;
@@ -744,9 +768,11 @@ public class SupplierBrowser extends TravelBlock {
 			++row;
 		}
 		if (!useTravelLook) {
+			table.setHeight(row, "1");
 			table.setRowStyleClass(row++, "sbrowser_header_background_line");
 		}
 		Link images = null;
+		Link moreLink = null;
 		try {
 			TxText descriptionText;
 			descriptionText = product.getText();
@@ -755,7 +781,26 @@ public class SupplierBrowser extends TravelBlock {
 				ch = ContentFinder.getContentHelper(descriptionText.getContentId(), localeID, product.getDatasource());
 				table.setCellpadding(2, row, 2);
 				table.setVerticalAlignment(2, row, Table.VERTICAL_ALIGN_TOP);
-				table.add(getText(ch.getLocalizedText().getBody()), 2, row);
+				String desc = "";
+				if (ch != null && ch.getLocalizedText() != null) {
+					desc = ch.getLocalizedText().getBody();
+				}
+				boolean showMoreButton = desc.length() > numberOfCharactersBeforeMoreButton && numberOfCharactersBeforeMoreButton > 0;
+				if (showMoreButton) {
+					desc = desc.substring(0, numberOfCharactersBeforeMoreButton);
+				}
+				
+				table.add(getText(desc), 2, row);
+				if (showMoreButton) {
+					moreLink = new Link(getResourceBundle().getLocalizedString("more", "More"));
+					moreLink.setPublicWindowToOpen(SupplierBrowserDetailsWindow.class);
+					moreLink.addParameter(SupplierBrowserDetailsWindow.PARAMETER_PRODUCT_ID, product.getPrimaryKey().toString());
+					moreLink.addParameter(PARAMETER_PLUGIN, plugin.getClass().getName());
+					table.add(" ... ", 2, row);
+					table.setCellpaddingBottom(3, row, 2);
+					table.setCellpaddingRight(3, row, 2);
+				}
+
 				if (ch.getFiles() != null && !ch.getFiles().isEmpty()) {
 					images = new Link(getText(getResourceBundle().getLocalizedString("travel.images", "Images"), linkStyleClass));
 					images.setPublicWindowToOpen(ProductImageSlideShowWindow.class);
@@ -776,21 +821,27 @@ public class SupplierBrowser extends TravelBlock {
 			addParametersToLink(iwc, details);
 			table.add(details, 3, startRow);
 			table.setAlignment(3, startRow, Table.HORIZONTAL_ALIGN_RIGHT);
-			table.setVerticalAlignment(3, row, Table.VERTICAL_ALIGN_TOP);
-			table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
-			table.add(images, 3, row);
-			table.setCellpadding(3, row, 2);
+			table.setVerticalAlignment(3, (startRow+2), Table.VERTICAL_ALIGN_TOP);
+			table.setAlignment(3, (startRow+2), Table.HORIZONTAL_ALIGN_RIGHT);
+			table.add(images, 3, (startRow+2));
+			table.setCellpadding(3, (startRow+2), 2);
 		} else if (addDetailLink && !plugin.isProductSearchCompleted(iwc)){
 			table.setAlignment(3, startRow, Table.HORIZONTAL_ALIGN_RIGHT);
-			table.setVerticalAlignment(3, row, Table.VERTICAL_ALIGN_TOP);
-			table.setCellpadding(3, row, 2);
+			table.setVerticalAlignment(3, (startRow+2), Table.VERTICAL_ALIGN_TOP);
+			table.setCellpadding(3, (startRow+2), 2);
 
 			if (images != null) {
-				table.add(images, 3, row);
+				table.add(images, 3, (startRow+2));
 			}
 		} else {
 			table.mergeCells(2, startRow, 3, startRow);
-			table.mergeCells(2, row, 3, row);
+			table.mergeCells(2, (startRow+2), 3, (startRow+2));
+		}
+		
+		if (moreLink != null) {
+			table.add(Text.getBreak(), 3, (startRow+2));
+			table.add(moreLink, 3, (startRow+2));
+			table.setAlignment(3, (startRow+2), Table.HORIZONTAL_ALIGN_RIGHT);
 		}
 //		else {
 //			table.mergeCells(2, (row-1), 3, (row-1));
@@ -899,55 +950,7 @@ public class SupplierBrowser extends TravelBlock {
 			Image image = null;
 			while (iter.hasNext()) {
 				supplier = (Supplier) iter.next();
-				file = supplier.getICFile();
-				if (file != null) {
-					try {
-						image = new Image(((Integer) file.getPrimaryKey()).intValue());
-						image.setMaxImageWidth(Integer.parseInt(imageWidth));
-						image.setDatasource(supplier.getDatasource());
-						table.add(image, 1, row);
-					}
-					catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-				int sRow = row;
-				table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
-				table.setVerticalAlignment(2, row, Table.VERTICAL_ALIGN_TOP);
-				table.setVerticalAlignment(3, row, Table.VERTICAL_ALIGN_TOP);
-				table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_LEFT);
-				table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
-				table.setRowPadding(row, 2);
-				table.add(getText(supplier.getName(), headerStyleClass), 2, row);
-				table.add(getDetailLink(supplier, iwc), 3, row++);
-//				table.add(getText(Text.BREAK), 2, row);
-				String desc = supplier.getDescription();
-				if (desc != null && !desc.trim().equals("")) {
-					if (!useTravelLook) {
-						table.setRowHeight(row, "1");
-						table.setRowStyleClass(row++, "sbrowser_header_background_line");
-					}
-					table.add(getText(desc), 2, row);
-					table.setRowPadding(row, 2);
-					table.setVerticalAlignment(2, row, Table.VERTICAL_ALIGN_TOP);
-					table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_LEFT);
-					table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
-				}
-				
-//				table.setVerticalAlignment(4, row, Table.VERTICAL_ALIGN_TOP);
-				
-				
-				if (sRow != row) {
-					table.mergeCells(1, sRow, 1, row);
-				}
-				if (useTravelLook) {
-					table.setRowColor(row++, TravelManager.GRAY);
-				} else {
-					row++;
-					table.setHeight(row, 1);
-					table.setRowStyleClass(row, "sbrowser_background_line");
-					row++;
-				}
+				row = addSupplierInfo(iwc, table, row, supplier, true);
 				
 			}
 			
@@ -956,6 +959,95 @@ public class SupplierBrowser extends TravelBlock {
 		}
 		
 		form.add(table);
+	}
+
+	public Table getSupplierInfo(IWContext iwc, Supplier supplier) throws RemoteException {
+		Table table = new Table();
+		table.setCellpaddingAndCellspacing(0);
+		numberOfCharactersBeforeMoreButton = -1;
+		addSupplierInfo(iwc, table, 1, supplier, false);
+		return table;
+	}
+	
+	private int addSupplierInfo(IWContext iwc, Table table, int row, Supplier supplier,  boolean showDetailLink) throws RemoteException {
+		ICFile file;
+		Image image;
+		file = supplier.getICFile();
+		if (file != null) {
+			try {
+				image = new Image(((Integer) file.getPrimaryKey()).intValue());
+				image.setMaxImageWidth(Integer.parseInt(imageWidth));
+				image.setDatasource(supplier.getDatasource());
+				table.add(image, 1, row);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		int sRow = row;
+		table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
+		table.setVerticalAlignment(2, row, Table.VERTICAL_ALIGN_TOP);
+		table.setVerticalAlignment(3, row, Table.VERTICAL_ALIGN_TOP);
+		table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_LEFT);
+		table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
+		table.setRowPadding(row, 2);
+		table.add(getText(supplier.getName(), headerStyleClass), 2, row);
+		table.setColumnWidth(1, imageWidth);
+		if (showDetailLink) {
+			table.add(getDetailLink(supplier, iwc), 3, row++);
+		} else {
+			++row;
+		}
+//				table.add(getText(Text.BREAK), 2, row);
+		String desc = supplier.getDescription();
+		// TEST
+//		if (numberOfCharactersBeforeMoreButton > 0) {
+//			numberOfCharactersBeforeMoreButton = 100;
+//		}
+		if (desc != null && !desc.trim().equals("")) {
+			boolean showMoreButton = desc.length() > numberOfCharactersBeforeMoreButton && numberOfCharactersBeforeMoreButton > 0;
+			if (showMoreButton) {
+				desc = desc.substring(0, numberOfCharactersBeforeMoreButton);
+			}
+			if (!useTravelLook) {
+				table.setRowHeight(row, "1");
+				table.setRowStyleClass(row++, "sbrowser_header_background_line");
+			}
+			table.add(getText(desc), 2, row);
+			table.setRowPadding(row, 2);
+			table.setVerticalAlignment(2, row, Table.VERTICAL_ALIGN_TOP);
+			table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_LEFT);
+			table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
+			if (showMoreButton) {
+				Link moreLink = new Link(getResourceBundle().getLocalizedString("more", "More"));
+				moreLink.setPublicWindowToOpen(SupplierBrowserDetailsWindow.class);
+				moreLink.addParameter(SupplierBrowserDetailsWindow.PARAMETER_SUPPLIER_ID, supplier.getPrimaryKey().toString());
+				moreLink.addParameter(PARAMETER_PLUGIN, IWMainApplication.getEncryptedClassName(plugin.getClass()));
+				table.add(" ... ", 2, row);
+				table.add(moreLink, 3, row);
+//				table.setRowPadding(row, 2);
+				table.setVerticalAlignment(3, row, Table.VERTICAL_ALIGN_TOP);
+//				table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_LEFT);
+				table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
+				
+			}
+		}
+		
+//				table.setVerticalAlignment(4, row, Table.VERTICAL_ALIGN_TOP);
+		
+		
+		if (sRow != row) {
+			table.mergeCells(1, sRow, 1, row);
+		}
+		if (useTravelLook) {
+			table.setRowColor(row++, TravelManager.GRAY);
+		} else {
+			row++;
+			table.setHeight(row, 1);
+			table.setRowStyleClass(row, "sbrowser_background_line");
+			row++;
+		}
+		return row;
 	}
 
 	/**
@@ -1142,6 +1234,10 @@ public class SupplierBrowser extends TravelBlock {
 	
 	public void setBasketPage(ICPage page) {
 		this.basketPage = page;
+	}
+	
+	public void setNumberOfCharactersBeforeMoreButton(int numberOfCharacters) {
+		numberOfCharactersBeforeMoreButton = numberOfCharacters;
 	}
 	
 	private ServiceSearchSession getSearchSession(IWUserContext iwc) {
