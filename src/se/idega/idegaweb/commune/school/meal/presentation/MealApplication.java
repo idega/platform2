@@ -1,5 +1,5 @@
 /*
- * $Id: MealApplication.java,v 1.4 2005/10/02 13:44:24 laddi Exp $
+ * $Id: MealApplication.java,v 1.5 2005/10/03 10:00:43 laddi Exp $
  * Created on Aug 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -48,10 +48,10 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2005/10/02 13:44:24 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/03 10:00:43 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class MealApplication extends MealBlock {
 	
@@ -350,7 +350,7 @@ public class MealApplication extends MealBlock {
 		values.setFruits(iwc.isParameterSet(PARAMETER_FRUITS + "_" + month.toString()));
 		values.setMilk(iwc.isParameterSet(PARAMETER_MILK + "_" + month.toString()));
 		try {
-			values = getBusiness().calculatePrices(month.getDate(), getSession().getSchool(), values, isEmployeeView());
+			values = getBusiness().calculatePrices(month.getDate(), school, values, isEmployeeView());
 		}
 		catch (FinderException fe) {
 			getParentPage().setAlertOnLoad(localize("application.no_price_found_for_month", "No price was found for month: ") + month.getDateString("MMM. yyyy", iwc.getCurrentLocale()));

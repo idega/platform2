@@ -1,5 +1,5 @@
 /*
- * $Id: VacationEditor.java,v 1.1 2005/10/02 13:44:24 laddi Exp $
+ * $Id: VacationEditor.java,v 1.2 2005/10/03 10:00:43 laddi Exp $
  * Created on Oct 2, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -40,10 +40,10 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2005/10/02 13:44:24 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/03 10:00:43 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class VacationEditor extends MealBlock {
 
@@ -82,7 +82,7 @@ public class VacationEditor extends MealBlock {
 							showEditor(vacationDay);
 						}
 						catch (FinderException fe) {
-							add(new Text(localize("no_price_found_with_pk", "No price found with primary key...")));
+							add(new Text(localize("no_vacation_found_with_pk", "No vacation found with primary key...")));
 							add(new Break());
 							showVacationList(iwc);
 						}
@@ -190,7 +190,7 @@ public class VacationEditor extends MealBlock {
 		buttonLayer.setStyleClass("buttonDiv");
 		form.add(buttonLayer);
 		
-		SubmitButton newLink = (SubmitButton) getButton(new SubmitButton(localize("new_price", "New price"), PARAMETER_ACTION, String.valueOf(ACTION_NEW)));
+		SubmitButton newLink = (SubmitButton) getButton(new SubmitButton(localize("new_vacation", "New vacation"), PARAMETER_ACTION, String.valueOf(ACTION_NEW)));
 		buttonLayer.add(newLink);
 
 		add(form);
