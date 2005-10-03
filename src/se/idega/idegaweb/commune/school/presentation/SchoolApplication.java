@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolApplication.java,v 1.15 2005/10/03 17:42:51 laddi Exp $
+ * $Id: SchoolApplication.java,v 1.16 2005/10/03 18:08:18 laddi Exp $
  * Created on Aug 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -54,10 +54,10 @@ import com.idega.user.data.User;
 import com.idega.util.PersonalIDFormatter;
 
 /**
- * Last modified: $Date: 2005/10/03 17:42:51 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/03 18:08:18 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class SchoolApplication extends SchoolBlock {
 
@@ -329,21 +329,23 @@ public class SchoolApplication extends SchoolBlock {
 			else if (choice != null) {
 				School school = choice.getChosenSchool();
 				SchoolArea area = school.getSchoolArea();
-				try {
-					Collection schools = getSchoolBusiness().getSchoolHome().findAllByAreaAndTypesAndYear(((Integer) area.getPrimaryKey()).intValue(), getSchoolBusiness().getSchoolTypesForCategory(getSchoolBusiness().getCategoryElementarySchool(), false), choice.getSchoolYearID());
-			    Iterator iter = schools.iterator();
-			    while (iter.hasNext()) {
-			    		School element = (School) iter.next();
-			    		schoolDropdown.addMenuElement(element.getPrimaryKey().toString(), element.getSchoolName());
-			    }
-					schoolDropdown.addMenuElementFirst("-1", localize("select_school","Select school"));
+				if (area != null) {
+					try {
+						Collection schools = getSchoolBusiness().getSchoolHome().findAllByAreaAndTypesAndYear(((Integer) area.getPrimaryKey()).intValue(), getSchoolBusiness().getSchoolTypesForCategory(getSchoolBusiness().getCategoryElementarySchool(), false), choice.getSchoolYearID());
+				    Iterator iter = schools.iterator();
+				    while (iter.hasNext()) {
+				    		School element = (School) iter.next();
+				    		schoolDropdown.addMenuElement(element.getPrimaryKey().toString(), element.getSchoolName());
+				    }
+						schoolDropdown.addMenuElementFirst("-1", localize("select_school","Select school"));
+					}
+					catch (FinderException fe) {
+						fe.printStackTrace();
+					}
+					areaDropdown.setSelectedElement(area.getPrimaryKey().toString());
+					schoolDropdown.setSelectedElement(school.getPrimaryKey().toString());
+					yearDropdown.setSelectedElement(choice.getSchoolYearID());
 				}
-				catch (FinderException fe) {
-					fe.printStackTrace();
-				}
-				areaDropdown.setSelectedElement(area.getPrimaryKey().toString());
-				schoolDropdown.setSelectedElement(school.getPrimaryKey().toString());
-				yearDropdown.setSelectedElement(choice.getSchoolYearID());
 			}
 
 			applicationTable.add(getSmallHeader(localize("application.school_" + a, "School choice nr. " + a)), 1, a + 1);
