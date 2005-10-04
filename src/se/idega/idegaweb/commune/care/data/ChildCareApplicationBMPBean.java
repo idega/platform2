@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareApplicationBMPBean.java,v 1.20 2005/10/02 14:34:47 dainis Exp $
+ * $Id: ChildCareApplicationBMPBean.java,v 1.21 2005/10/04 12:42:16 dainis Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -1175,8 +1175,10 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
         }        
 		query.addCriteria(new MatchCriteria(table,PROVIDER_ID,MatchCriteria.EQUALS, providerID));		
 		query.addCriteria(new InCriteria(caseTable,"case_status",caseStatus,true));
-        if (orderBy == ORDER_BY_DATE_OF_BIRTH) {    
-            query.addCriteria(new MatchCriteria(userTable, User.FIELD_DATE_OF_BIRTH, MatchCriteria.LESS, queueDate));
+        if (orderBy == ORDER_BY_DATE_OF_BIRTH) {   
+            if(queueDate != null) { // there are children without birth date 
+                query.addCriteria(new MatchCriteria(userTable, User.FIELD_DATE_OF_BIRTH, MatchCriteria.LESS, queueDate));
+            }
         } else {
             query.addCriteria(new MatchCriteria(table,QUEUE_DATE,MatchCriteria.LESS,queueDate));
         }        
@@ -1200,7 +1202,9 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		query.addCriteria(new MatchCriteria(table,PROVIDER_ID,MatchCriteria.EQUALS,providerID));
 		query.addCriteria(new MatchCriteria(table,APPLICATION_STATUS,MatchCriteria.EQUALS,applicationStatus,true));		
         if (orderBy == ORDER_BY_DATE_OF_BIRTH) {    
-            query.addCriteria(new MatchCriteria(userTable, User.FIELD_DATE_OF_BIRTH, MatchCriteria.LESS, queueDate));
+            if(queueDate != null) { // there are children without birth date 
+                query.addCriteria(new MatchCriteria(userTable, User.FIELD_DATE_OF_BIRTH, MatchCriteria.LESS, queueDate));
+            }
         } else {
             query.addCriteria(new MatchCriteria(table,QUEUE_DATE,MatchCriteria.LESS,queueDate));
         }  
@@ -1228,7 +1232,9 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		query.addCriteria(new MatchCriteria(table,PROVIDER_ID,MatchCriteria.EQUALS,providerID));
 		
         if (orderBy == ORDER_BY_DATE_OF_BIRTH) {
-            query.addCriteria(new MatchCriteria(userTable, User.FIELD_DATE_OF_BIRTH, MatchCriteria.EQUALS, queueDate));
+            if(queueDate != null) { // there are children without birth date 
+                query.addCriteria(new MatchCriteria(userTable, User.FIELD_DATE_OF_BIRTH, MatchCriteria.EQUALS, queueDate));
+            }
         } else {
             query.addCriteria(new MatchCriteria(table,QUEUE_DATE,MatchCriteria.EQUALS,queueDate));
         }
@@ -1256,7 +1262,9 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		query.addCriteria(new MatchCriteria(table,PROVIDER_ID,MatchCriteria.EQUALS,providerID));
 		query.addCriteria(new MatchCriteria(table,APPLICATION_STATUS,MatchCriteria.EQUALS,applicationStatus,true));		
         if (orderBy == ORDER_BY_DATE_OF_BIRTH) {
-            query.addCriteria(new MatchCriteria(userTable, User.FIELD_DATE_OF_BIRTH, MatchCriteria.EQUALS, queueDate));
+            if(queueDate != null) { // there are children without birth date 
+                query.addCriteria(new MatchCriteria(userTable, User.FIELD_DATE_OF_BIRTH, MatchCriteria.EQUALS, queueDate));
+            }
             query.addCriteria(new MatchCriteria(table,QUEUE_ORDER,MatchCriteria.LESS,queueOrder));
         } else {
             query.addCriteria(new MatchCriteria(table,QUEUE_DATE,MatchCriteria.EQUALS,queueDate));
