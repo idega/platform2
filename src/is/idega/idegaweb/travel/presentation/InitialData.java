@@ -400,7 +400,8 @@ public class InitialData extends TravelManager {
 		
 		Link deleteLink = new Link(iwrb.getImage("buttons/delete.gif"));
 		deleteLink.addParameter(this.sAction, this.parameterInvalidate);
-		
+		deleteLink.setOnClick("return confirm('"+super.getResourceBundle().getLocalizedString("travel.are_you_sure","Are you sure")+"?');");
+
 		Link chooseLink = new Link(iwrb.getImage("buttons/use.gif"));
 		chooseLink.addParameter(this.sAction, this.parameterChoose);
 		
