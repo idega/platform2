@@ -215,9 +215,7 @@ public class ChildCareStatistics extends ChildCareBlock {
 				queueWithin3MonthsSum += queueWithin3Months;
 				queueWithin12MonthsSum += queueWithin12Months;
 				
-				//table.add(getSmallText(school.getSchoolName()), column++, row);
-                table.add(getProviderName(school), column++, row);
-                
+                table.add(getProviderName(school), column++, row);                
 				table.add(getSmallText(String.valueOf(queueOrder)), column++, row);
 				table.add(getSmallText(String.valueOf(queueTotal)), column++, row);
 				table.add(getSmallText(String.valueOf(queueWithin3Months)), column++, row);
@@ -433,7 +431,7 @@ public class ChildCareStatistics extends ChildCareBlock {
             
             this.containsSortedByBirthdateProvider = true;
         }  
-        nameContainer.add(getSmallText(provider.getName()));        
+        nameContainer.add(getSmallText(provider.getSchoolName()));        
         return nameContainer;
     }    
 }
