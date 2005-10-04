@@ -15,6 +15,7 @@ import java.util.TreeMap;
 import java.util.Vector;
 
 import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosis;
+import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.business.SchoolComparator;
@@ -26,7 +27,7 @@ import com.idega.core.location.business.CommuneBusiness;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
+import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Text;
@@ -72,6 +73,8 @@ public class ChildCareStatistics extends ChildCareBlock {
 	private Date _toDate = null;
 	
 	private boolean _useSorting = false;
+    
+    private boolean containsSortedByBirthdateProvider = false;     
 	
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
@@ -88,101 +91,14 @@ public class ChildCareStatistics extends ChildCareBlock {
 				break;
 			case ORDER_BY_FIRST_HAND_CHOICES :
 				add(getAllProviderTable(iwc, true));
-//				add(getFirstHandProviderTable(iwc));
 				break;
 		}
 	}
-
-/*
-	private Table getFirstHandProviderTable(IWContext iwc) throws RemoteException {
-		Table table = getTable(2);
-		table.setWidth(Table.HUNDRED_PERCENT);
-		int row = 1;
-		int column = 1;
-
-		table.add(getLocalizedSmallHeader("child_care.name","Name"), column++, row);
-		table.add(getLocalizedSmallHeader("child_care.number_of_applications","Applications"), column++, row++);
-
-		Collection schoolTypes = null;
-		switch (_schoolTypes) {
-			case SCHOOL_TYPES_CHILD_CARE:
-				schoolTypes = getBusiness().getSchoolBusiness().findAllSchoolTypesForChildCare();
-				break;
-			case SCHOOL_TYPES_PRE_SCHOOL:
-				schoolTypes = getBusiness().getPreSchoolTypes();
-				break;
-			case SCHOOL_TYPES_FAMILY_DAYCARE:
-				schoolTypes = getBusiness().getFamilyDayCareTypes();
-				break;
-			case SCHOOL_TYPES_FAMILY_AFTER_SCHOOL:
-				schoolTypes = getBusiness().getFamilyAfterSchoolTypes();
-				break;
-		}
-
-		List providers = null;
-		if (_areaID == -1) 
-			providers = new Vector(getBusiness().getSchoolBusiness().findAllSchoolsByType(schoolTypes));
-		else
-			providers = new Vector(getBusiness().getSchoolBusiness().findAllSchoolsByAreaAndTypes(_areaID, schoolTypes));
-
-		Date from = null;
-		try {
-			from = Date.valueOf(iwc.getParameter(PARAMETER_FROM_DATE));
-		} catch (Exception e) {}
-		
-		Date to = null;
-		try {
-			to = Date.valueOf(iwc.getParameter(PARAMETER_TO_DATE));
-		} catch (Exception e) {}
-
-		if (providers != null && !providers.isEmpty()) {
-			School school;
-			int providerID = -1;
-			
-			if (_useSorting)
-				Collections.sort(providers, new SchoolComparator(iwc.getCurrentLocale()));
-			
-			Iterator iter = providers.iterator();
-			while (iter.hasNext()) {
-				column = 1;
-				school = (School) iter.next();
-				providerID = ((Integer)school.getPrimaryKey()).intValue();
-				
-				if (row % 2 == 0)
-					table.setRowColor(row, getZebraColor1());
-				else
-					table.setRowColor(row, getZebraColor2());
-
-				table.add(getSmallText(school.getSchoolName()), column++, row);
-				int nrOfChoices = 0;
-				switch (_queueType) {
-					case QUEUE_TYPE_ALL:
-						nrOfChoices = getBusiness().getNumberOfFirstHandChoicesByProvider(providerID, from, to);
-						break;
-					case QUEUE_TYPE_NETTO:
-						nrOfChoices = getBusiness().getNumberOfFirstHandNettoChoicesByProvider(providerID, from, to);
-						break;
-					case QUEUE_TYPE_BRUTTO:
-						nrOfChoices = getBusiness().getNumberOfFirstHandBruttoChoicesByProvider(providerID, from, to);
-						break;						
-				}
-				table.add(getSmallText(String.valueOf(nrOfChoices)), column++, row++);
-			}
-		}
-		table.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_CENTER);
-		table.setColumnAlignment(3, Table.HORIZONTAL_ALIGN_CENTER);
-		table.setColumnAlignment(4, Table.HORIZONTAL_ALIGN_CENTER);
-		table.setColumnAlignment(5, Table.HORIZONTAL_ALIGN_CENTER);
-		table.setColumnAlignment(6, Table.HORIZONTAL_ALIGN_CENTER);
-		
-		return table;
-	}
-*/
 	
-	private PresentationObject getAllProviderTable(IWContext iwc, boolean isFirstHandOnly) throws RemoteException {
-		//Table table = getTable(8);
-		
+	private PresentationObjectContainer getAllProviderTable(IWContext iwc, boolean isFirstHandOnly) throws RemoteException {
+
 		ScrollTable table = new ScrollTable();
+        
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
 		table.setColumns(8);
@@ -299,7 +215,9 @@ public class ChildCareStatistics extends ChildCareBlock {
 				queueWithin3MonthsSum += queueWithin3Months;
 				queueWithin12MonthsSum += queueWithin12Months;
 				
-				table.add(getSmallText(school.getSchoolName()), column++, row);
+				//table.add(getSmallText(school.getSchoolName()), column++, row);
+                table.add(getProviderName(school), column++, row);
+                
 				table.add(getSmallText(String.valueOf(queueOrder)), column++, row);
 				table.add(getSmallText(String.valueOf(queueTotal)), column++, row);
 				table.add(getSmallText(String.valueOf(queueWithin3Months)), column++, row);
@@ -339,18 +257,13 @@ public class ChildCareStatistics extends ChildCareBlock {
 		table.setColumnAlignment(6, Table.HORIZONTAL_ALIGN_CENTER);
 		table.setColumnAlignment(7, Table.HORIZONTAL_ALIGN_CENTER);
 		
-		return table;
+        PresentationObjectContainer container = new PresentationObjectContainer();        
+        if (this.containsSortedByBirthdateProvider) {
+            container.add(getSortedByBirthdateExplanation());
+        }
+        container.add(table);
+		return container;
 	}
-	
-	/*private Table getTable(int columns) {
-		Table table = new Table();
-		table.setCellpadding(getCellpadding());
-		table.setCellspacing(getCellspacing());
-		table.setColumns(columns);
-		table.setRowColor(1, getHeaderColor());
-
-		return table;
-	}*/
 	
 	private Form getNavigationTable(IWContext iwc) throws RemoteException {
 		Form form = new Form();
@@ -510,4 +423,17 @@ public class ChildCareStatistics extends ChildCareBlock {
 	protected CommuneBusiness getCommuneBusiness(IWApplicationContext iwac) throws RemoteException {
 		return (CommuneBusiness) IBOLookup.getServiceInstance(iwac, CommuneBusiness.class);
 	}
+    
+    private PresentationObjectContainer getProviderName(School provider) {
+        PresentationObjectContainer nameContainer = new PresentationObjectContainer();        
+        if (provider.getSortByBirthdate()) {            
+            Text star = new Text("* ");
+            star.setStyleClass("commune_" + CommuneBlock.STYLENAME_SMALL_EXPLANATION_STAR_TEXT);            
+            nameContainer.add(star);            
+            
+            this.containsSortedByBirthdateProvider = true;
+        }  
+        nameContainer.add(getSmallText(provider.getName()));        
+        return nameContainer;
+    }    
 }
