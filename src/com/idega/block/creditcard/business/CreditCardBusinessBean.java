@@ -478,8 +478,8 @@ public class CreditCardBusinessBean extends IBOServiceBean implements CreditCard
 			}
 		} else {
 			try {
-				log("Cannot find creditCardInformation for = "+ info.getType()+", "+info.getMerchantPKString()+" looking up authEntry in TPOS...authCode = "+authorizationCode);
-				TPosAuthorisationEntriesBeanHome authEntHome = (TPosAuthorisationEntriesBeanHome) IDOLookup.getHome(TPosAuthorisationEntriesBean.class, info.getDatasource());
+//				log("Cannot find creditCardInformation for authEntry in TPOS...authCode = "+authorizationCode);
+				TPosAuthorisationEntriesBeanHome authEntHome = (TPosAuthorisationEntriesBeanHome) IDOLookup.getHome(TPosAuthorisationEntriesBean.class);//, info.getDatasource());
 				TPosAuthorisationEntriesBean entry = authEntHome.findByAuthorisationIdRsp(authorizationCode, stamp);
 				if (entry != null) {
 					return entry;
