@@ -603,10 +603,10 @@ public class ChildCareChildApplication extends ChildCareBlock {
                         for (Iterator it = areaProviders.keySet().iterator(); it.hasNext();) {
                             Object key = it.next(); 
                             School provider = (School) areaProviders.get(key);
-//                            if (provider instanceof School) {
+                            if (provider != null) {  
                                 if (provider.getSortByBirthdate()) {
-                                    showQueueSortedByBirthdateMessage = true;
-//                                }
+                                    showQueueSortedByBirthdateMessage = true; 
+                                }
                             }
                         }                        
                     }
