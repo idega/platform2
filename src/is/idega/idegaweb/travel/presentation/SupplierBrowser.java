@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowser.java,v 1.32 2005/10/03 11:33:18 gimmi Exp $
+ * $Id: SupplierBrowser.java,v 1.33 2005/10/05 22:48:31 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -114,6 +114,7 @@ public class SupplierBrowser extends TravelBlock {
 	private boolean showPriceWithProductInformation = true;
 	private ICPage basketPage = null;
 	private int numberOfCharactersBeforeMoreButton = 300;
+	private int spaceBetweenItems = 0;
 	
 	public SupplierBrowser() {
 		
@@ -327,24 +328,29 @@ public class SupplierBrowser extends TravelBlock {
 		boolean successfulAdd = getSearchSession(iwc).getAddToBasketSuccess() && iwc.isParameterSet(AbstractSearchForm.ACTION);
 		
 		if (successfulAdd) {
-			if (useTravelLook) {
-				table.mergeCells(1, row, 3, row);
-				table.setRowColor(row, TravelManager.GRAY);
+			Table succtable = new Table();
+			if (width != null) {
+				succtable.setWidth(width);
 			}
-			table.mergeCells(1, row, 3, row);
-			table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_CENTER);
-			table.add(getText(getResourceBundle().getLocalizedString("travel.added_successfully_to_basket", "Added successfully to basket"), headerStyleClass), 1, row++);
+			if (useTravelLook) {
+				succtable.setRowColor(1, TravelManager.GRAY);
+			}
+			succtable.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_CENTER);
+			succtable.add(getText(getResourceBundle().getLocalizedString("travel.added_successfully_to_basket", "Added successfully to basket"), headerStyleClass), 1, 1);
 //			link.setText(getText(getResourceBundle().getLocalizedString("travel.add_another_to_basket", "Add another to basket"), linkStyleClass));
-			
+			form.add(succtable);
 		} else if (iwc.isParameterSet(AbstractSearchForm.ACTION)) {
-			if (useTravelLook) {
-				table.mergeCells(1, row, 3, row);
-				table.setRowColor(row, TravelManager.GRAY);
+			Table succtable = new Table();
+			if (width != null) {
+				succtable.setWidth(width);
 			}
-			table.mergeCells(1, row, 3, row);
-			table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_CENTER);
-			table.add(getErrorText(getResourceBundle().getLocalizedString("travel.failed_adding_to_basket", "Failed adding to basket")+", "+getSearchSession(iwc).getAddToBasketError(getResourceBundle())), 1, row++);
+			if (useTravelLook) {
+				succtable.setRowColor(1, TravelManager.GRAY);
+			}
+			succtable.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_CENTER);
+			succtable.add(getErrorText(getResourceBundle().getLocalizedString("travel.failed_adding_to_basket", "Failed adding to basket")+", "+getSearchSession(iwc).getAddToBasketError(getResourceBundle())), 1, 1);
 //			linkTable.add(link, 2, 1);
+			form.add(succtable);
 
 		}
 
@@ -378,15 +384,14 @@ public class SupplierBrowser extends TravelBlock {
 		if (useTravelLook) {
 			priceTable.add(TravelManager.getHeaderText(getResourceBundle().getLocalizedString("travel.prices", "Prices")), 1, pRow);
 			priceTable.add(TravelManager.getHeaderText(getResourceBundle().getLocalizedString("travel.per_unit", "Per Unit")), 2, pRow);
-			priceTable.add(TravelManager.getHeaderText(getResourceBundle().getLocalizedString("travel.count", "Count")), 3, pRow);
+			priceTable.add(TravelManager.getHeaderText(bookingForm.getUnitNamePlural(getResourceBundle())), 3, pRow);
 			priceTable.add(TravelManager.getHeaderText(getResourceBundle().getLocalizedString("travel.sum", "Sum")), 4, pRow);
 			priceTable.setRowColor(pRow, TravelManager.backgroundColor);
 		} else {
 			priceTable.add(getText(getResourceBundle().getLocalizedString("travel.prices", "Prices"), headerStyleClass), 1, pRow);
 			priceTable.add(getText(getResourceBundle().getLocalizedString("travel.per_unit", "Per Unit"), headerStyleClass), 2, pRow);
-			priceTable.add(getText(getResourceBundle().getLocalizedString("travel.count", "Count"), headerStyleClass), 3, pRow);
+			priceTable.add(getText(bookingForm.getUnitNamePlural(getResourceBundle()), headerStyleClass), 3, pRow);
 			priceTable.add(getText(getResourceBundle().getLocalizedString("travel.sum", "Sum"), headerStyleClass), 4, pRow);
-
 		}
 		++pRow;
 		
@@ -501,8 +506,8 @@ public class SupplierBrowser extends TravelBlock {
 		linkTable.add(link, 2, 1);
 		
 		form.add(table);
-		addExtraBookingElements(form);
 		form.add(priceTable);
+		addExtraBookingElements(form);
 		form.add(linkTable);
 	}
 
@@ -613,12 +618,21 @@ public class SupplierBrowser extends TravelBlock {
 				Iterator glitter = misc.iterator();
 				if (glitter.hasNext()) {
 					if (useTravelLook) {
-						priceTable.mergeCells(1, pRow, 4, pRow);
+//						priceTable.mergeCells(1, pRow, 4, pRow);
 						priceTable.add(getText(getResourceBundle().getLocalizedString("travel.miscellanious_prices", "Miscellanious prices"), headerStyleClass), 1, pRow);
+						priceTable.add(getText(getResourceBundle().getLocalizedString("travel.per_unit", "Per Unit"), headerStyleClass), 2, pRow);
+						priceTable.add(getText(getResourceBundle().getLocalizedString("travel.qty", "Qty."), headerStyleClass), 3, pRow);
+						priceTable.add(getText(getResourceBundle().getLocalizedString("travel.sum", "Sum"), headerStyleClass), 4, pRow);
+//						priceTable.add(getText(getResourceBundle().getLocalizedString("travel.miscellanious_prices", "Miscellanious prices"), headerStyleClass), 1, pRow);
 						priceTable.setRowColor(pRow++, TravelManager.GRAY);
 					} else {
-						priceTable.mergeCells(1, pRow, 4, pRow);
-						priceTable.add(getText(getResourceBundle().getLocalizedString("travel.other_prices", "Other prices"), headerStyleClass), 1, pRow++);
+						priceTable.add(getText(getResourceBundle().getLocalizedString("travel.miscellanious_prices", "Miscellanious prices"), headerStyleClass), 1, pRow);
+						if (totalResults == null) {
+							priceTable.mergeCells(1, pRow, 4, pRow++);
+						} else {
+							priceTable.add(getText(getResourceBundle().getLocalizedString("travel.qty", "Qty."), headerStyleClass), 3, pRow++);
+						}
+
 					}
 				}
 				while (glitter.hasNext()) {
@@ -769,6 +783,10 @@ public class SupplierBrowser extends TravelBlock {
 		}
 		if (!useTravelLook) {
 			table.setHeight(row, "1");
+			if (!addDetailLink) {
+				table.mergeCells(2, row, 3, row);
+			}
+			table.setCellpadding(2, row, 0);
 			table.setRowStyleClass(row++, "sbrowser_header_background_line");
 		}
 		Link images = null;
@@ -843,16 +861,15 @@ public class SupplierBrowser extends TravelBlock {
 			table.add(moreLink, 3, (startRow+2));
 			table.setAlignment(3, (startRow+2), Table.HORIZONTAL_ALIGN_RIGHT);
 		}
-//		else {
-//			table.mergeCells(2, (row-1), 3, (row-1));
-//			table.mergeCells(2, row, 3, row);
-//		}
+
 		if (useTravelLook) {
 			table.setRowColor((row-1), TravelManager.GRAY);
 			table.setRowColor(row, TravelManager.GRAY);
 		}
-		table.mergeCells(1, startRow, 1, row);
-
+		
+		
+		row = plugin.addProductInfo(product, table, row, getResourceBundle());
+		
 		if (showPriceWithProductInformation && plugin.isProductSearchCompleted(iwc) && addDetailLink) {
 			Table priceTable = new Table();
 			priceTable.setCellpaddingAndCellspacing(1);
@@ -905,7 +922,16 @@ public class SupplierBrowser extends TravelBlock {
 			}
 		}
 
+		table.mergeCells(1, startRow, 1, row);
 		++row;
+		
+		if (spaceBetweenItems > 0) {
+			if (useTravelLook) {
+				table.setRowColor(row, TravelManager.GRAY);
+			}
+			table.setHeight(row++, spaceBetweenItems);
+		}
+
 		return row;
 	}
 	
@@ -1039,6 +1065,12 @@ public class SupplierBrowser extends TravelBlock {
 		if (sRow != row) {
 			table.mergeCells(1, sRow, 1, row);
 		}
+		if (spaceBetweenItems > 0) {
+			if (useTravelLook) {
+				table.setRowColor(row, TravelManager.GRAY);
+			}
+			table.setHeight(row++, spaceBetweenItems);
+		}
 		if (useTravelLook) {
 			table.setRowColor(row++, TravelManager.GRAY);
 		} else {
@@ -1047,6 +1079,7 @@ public class SupplierBrowser extends TravelBlock {
 			table.setRowStyleClass(row, "sbrowser_background_line");
 			row++;
 		}
+		
 		return row;
 	}
 
@@ -1238,6 +1271,10 @@ public class SupplierBrowser extends TravelBlock {
 	
 	public void setNumberOfCharactersBeforeMoreButton(int numberOfCharacters) {
 		numberOfCharactersBeforeMoreButton = numberOfCharacters;
+	}
+	
+	public void setSpaceBetweenItems(int spaceBetweenItems) {
+		this.spaceBetweenItems = spaceBetweenItems;		
 	}
 	
 	private ServiceSearchSession getSearchSession(IWUserContext iwc) {
