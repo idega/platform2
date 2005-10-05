@@ -33,7 +33,6 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.BackButton;
-import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
@@ -608,6 +607,7 @@ public class InitialData extends TravelManager {
 		TextArea description = new TextArea("supplier_description");
 		description.setWidth(inputSizeStr);
 		description.setHeight("80");
+		description.setMaximumCharacters(500);
 		TextInput address = new TextInput("supplier_address");
 		address.setSize(inputSize);
 		
@@ -639,16 +639,16 @@ public class InitialData extends TravelManager {
 
 		ImageInserter im = new ImageInserter("s_image_id");
 		
-		Collection suppRoles = new Vector();
-		Collection suppManRoles = new Vector();
+//		Collection suppRoles = new Vector();
+//		Collection suppManRoles = new Vector();
 		
 		if (supplier_id != -1) {
 			table.add(new HiddenInput(this.parameterSupplierId,Integer.toString(supplier_id)));
 			
 			lSupplier = ((com.idega.block.trade.stockroom.data.SupplierHome) IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(supplier_id);
 			Group supplierManager = lSupplier.getSupplierManager();
-			suppManRoles = super.getSupplierManagerBusiness(iwc).getRolesAsString(supplierManager);
-			suppRoles = super.getSupplierManagerBusiness(iwc).getRolesAsString(lSupplier);
+//			suppManRoles = super.getSupplierManagerBusiness(iwc).getRolesAsString(supplierManager);
+//			suppRoles = super.getSupplierManagerBusiness(iwc).getRolesAsString(lSupplier);
 
 			if (lSupplier.getICFile() != null) {
 				im = new ImageInserter( ((Integer)lSupplier.getICFile().getPrimaryKey()).intValue(), "s_image_id");
@@ -673,7 +673,7 @@ public class InitialData extends TravelManager {
 //					postalCode.setSelectedElement(iPostalCodeId);
 				}
 			} else if (super.isSupplierManager()) {
-				suppManRoles = super.getSupplierManagerBusiness(iwc).getRolesAsString(getSupplierManager());
+//				suppManRoles = super.getSupplierManagerBusiness(iwc).getRolesAsString(getSupplierManager());
 			}
 			
 			List phones = lSupplier.getHomePhone();
@@ -823,21 +823,21 @@ public class InitialData extends TravelManager {
 			table.setRowColor(row,super.GRAY);
 		}
 		
-		if (super.isSupplierManager()) {
-			table.add(getHeaderText(iwrb.getLocalizedString("travel.roles", "Roles")), 1, ++row);
-			table.setRowColor(row, backgroundColor);
-			table.mergeCells(1, row, 3, row);
-			Iterator suppManRolesIter = suppManRoles.iterator();
-			while (suppManRolesIter.hasNext()) {
-				String role = (String) suppManRolesIter.next();
-				CheckBox box = new CheckBox(role);
-				box.setChecked(suppRoles.contains(role));
-				table.add(box, 1, ++row);
-				table.add(getText(iwrb.getLocalizedString("travel.role."+role, role)), 2, row);
-				table.setRowColor(row, GRAY);
-				table.mergeCells(2,row,3,row);
-			}
-		}
+//		if (super.isSupplierManager()) {
+//			table.add(getHeaderText(iwrb.getLocalizedString("travel.roles", "Roles")), 1, ++row);
+//			table.setRowColor(row, backgroundColor);
+//			table.mergeCells(1, row, 3, row);
+//			Iterator suppManRolesIter = suppManRoles.iterator();
+//			while (suppManRolesIter.hasNext()) {
+//				String role = (String) suppManRolesIter.next();
+//				CheckBox box = new CheckBox(role);
+//				box.setChecked(suppRoles.contains(role));
+//				table.add(box, 1, ++row);
+//				table.add(getText(iwrb.getLocalizedString("travel.role."+role, role)), 2, row);
+//				table.setRowColor(row, GRAY);
+//				table.mergeCells(2,row,3,row);
+//			}
+//		}
 		
 		++row;
 		table.add(Text.NON_BREAKING_SPACE,1,row);
