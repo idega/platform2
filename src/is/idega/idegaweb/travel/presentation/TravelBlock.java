@@ -55,7 +55,7 @@ public class TravelBlock extends Block {
   protected boolean isInPermissionGroup = false;
   protected boolean isSuperAdmin = false;
   protected boolean expiredLogin = false;
-  protected static DecimalFormat decimalFormat = new DecimalFormat("0.00");
+  protected static DecimalFormat decimalFormat = new DecimalFormat("#,###");//new DecimalFormat("0.00");
   private static String datasource = null;
 
   public static final String IW_BUNDLE_IDENTIFIER = "is.idega.travel";
