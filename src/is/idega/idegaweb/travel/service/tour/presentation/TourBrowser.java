@@ -1,5 +1,5 @@
 /*
- * $Id: TourBrowser.java,v 1.10 2005/08/30 02:05:14 gimmi Exp $
+ * $Id: TourBrowser.java,v 1.11 2005/10/05 22:45:10 gimmi Exp $
  * Created on 28.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -290,6 +290,10 @@ public class TourBrowser extends TravelBlock implements SupplierBrowserPlugin {
 
 	public Collection filterSuppliers(Collection suppliers, Group supplierManager, IWContext iwc, String[][] postalCodes, boolean onlineOnly, boolean useSearchPriceCategoryKey) {
 		return suppliers;
+	}
+
+	public int addProductInfo(Product product, com.idega.presentation.Table table, int row, IWResourceBundle iwrb) {
+		return row;
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowserPlugin.java,v 1.7 2005/08/30 02:23:33 gimmi Exp $
+ * $Id: SupplierBrowserPlugin.java,v 1.8 2005/10/05 22:45:10 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -19,6 +19,7 @@ import com.idega.data.IDOLookupException;
 import com.idega.data.IDORelationshipException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
 import com.idega.user.data.Group;
 
 
@@ -91,4 +92,17 @@ public interface SupplierBrowserPlugin {
 	 * Returns Array of Collection ... arr[0] contains string and arr[1] the InterfaceObjects
 	 */
 	public Collection[] getExtraBookingFormElements(Product product, IWResourceBundle iwrb);
+	
+	/**
+	 * can be used to add special info in the product in the productInfo screen
+	 * <p>
+	 * TODO gimmi describe method addProductInfo
+	 * </p>
+	 * @param product
+	 * @param table
+	 * @param row
+	 * @param iwrb
+	 * @return
+	 */
+	public int addProductInfo(Product product, Table table, int row, IWResourceBundle iwrb); 
 }
