@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowserSearchForm.java,v 1.1 2005/08/24 13:28:19 gimmi Exp $
+ * $Id: SupplierBrowserSearchForm.java,v 1.2 2005/10/05 22:43:48 gimmi Exp $
  * Created on Aug 19, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -12,8 +12,8 @@ package is.idega.idegaweb.travel.data;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;
+import com.idega.presentation.PresentationObject;
 import com.idega.presentation.text.Paragraph;
-import com.idega.presentation.ui.InterfaceObject;
 import com.idega.presentation.ui.Label;
 
 
@@ -73,7 +73,7 @@ public class SupplierBrowserSearchForm {
 			while (cIter.hasNext()) {
 				Object obj = cIter.next();
 				if (!(obj instanceof Label)) {
-					parameters.add(((InterfaceObject)obj).getName());
+					parameters.add(((PresentationObject)obj).getName());
 				}
 			}
 		}

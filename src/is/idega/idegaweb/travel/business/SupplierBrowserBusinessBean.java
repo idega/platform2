@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowserBusinessBean.java,v 1.9 2005/09/22 14:39:48 gimmi Exp $
+ * $Id: SupplierBrowserBusinessBean.java,v 1.10 2005/10/05 22:43:48 gimmi Exp $
  * Created on Jul 6, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -46,8 +46,10 @@ import com.idega.data.IDORuntimeException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
 import com.idega.presentation.text.Paragraph;
 import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.DatePicker;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.InterfaceObject;
 import com.idega.presentation.ui.Label;
@@ -81,6 +83,7 @@ public class SupplierBrowserBusinessBean extends IBOServiceBean  implements Supp
 	public static final String TYPE_DROPDOWN = "dropdown";
 	public static final String TYPE_DROPDOWN_MENU_ITEM = "menuItem";
 	public static final String TYPE_DATE = "date";
+	public static final String TYPE_DATE_PICKER = "datepicker";
 	public static final String ATTRIBUTE_DATE_MODIFIER = "dateModifier";
 	public static final String TYPE_TEXT = "text";
 	public static final String TYPE_LOCATION = "location";
@@ -271,7 +274,7 @@ public class SupplierBrowserBusinessBean extends IBOServiceBean  implements Supp
 				} else if (el.getName().equalsIgnoreCase(SEARCH_INPUT_VALUE)) {
 					String type = el.getAttributeValue(ATTRIBUTE_TYPE);
 					String styleClass = el.getAttributeValue(ATTRIBUTE_STYLE_CLASS);
-					InterfaceObject input = null;
+					PresentationObject input = null;
 					if (type.equalsIgnoreCase(TYPE_TEXT)) {
 						input = new TextInput(el.getAttributeValue(ATTRIBUTE_NAME));
 					}
@@ -296,6 +299,16 @@ public class SupplierBrowserBusinessBean extends IBOServiceBean  implements Supp
 							stamp.addDays(Integer.parseInt(modder));
 						}
 						((DateInput)input).setDate(stamp.getDate());
+					} 
+					else if (type.equalsIgnoreCase(TYPE_DATE_PICKER)) {
+						input = new DatePicker(el.getAttributeValue(ATTRIBUTE_NAME));
+						String modder = el.getAttributeValue(ATTRIBUTE_DATE_MODIFIER);
+						IWTimestamp stamp = IWTimestamp.RightNow();
+						if (modder != null) {
+							stamp.addDays(Integer.parseInt(modder));
+						}
+						((DatePicker)input).setDate(stamp.getDate());
+						((DatePicker)input).keepStatusOnAction(true);
 					} 
 					else if (type.equalsIgnoreCase(TYPE_LOCATION)) {
 						try {
@@ -354,7 +367,9 @@ public class SupplierBrowserBusinessBean extends IBOServiceBean  implements Supp
 					} else {
 						input.setStyleClass(defaultIOStyleClass);
 					}
-					input.keepStatusOnAction();
+					if (input instanceof InterfaceObject) {
+						((InterfaceObject)input).keepStatusOnAction();
+					} 
 					p.add(input);
 				}
 			}
