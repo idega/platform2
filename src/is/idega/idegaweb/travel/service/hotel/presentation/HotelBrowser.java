@@ -1,5 +1,5 @@
 /*
- * $Id: HotelBrowser.java,v 1.11 2005/10/05 22:45:10 gimmi Exp $
+ * $Id: HotelBrowser.java,v 1.12 2005/10/06 20:27:38 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -51,7 +51,7 @@ public class HotelBrowser extends TravelBlock implements SupplierBrowserPlugin {
 	private static final String PARAMETER_MIN_RATING = "hb_mir";
 	
 	public boolean isProductSearchCompleted(IWContext iwc) {
-		return iwc.isParameterSet(PARAMETER_FROM_DATE) && iwc.isParameterSet(PARAMETER_TO_DATE);
+		return iwc.isParameterSet(PARAMETER_FROM_DATE) && (iwc.isParameterSet(PARAMETER_TO_DATE) || iwc.isParameterSet(SupplierBrowser.PARAMETER_NUMBER_OF_DAYS));
 	}
 
 	public Collection[] getProductSearchInputs(IWContext iwc, IWResourceBundle iwrb) {
@@ -205,6 +205,7 @@ public class HotelBrowser extends TravelBlock implements SupplierBrowserPlugin {
 	public Collection getProducts(Supplier supplier, Group supplierManager, IWContext iwc, String[][] postalCodes, boolean onlineOnly, boolean useSearchPriceCategoryKey) throws IDOLookupException, FinderException {
 		String from = (String) iwc.getParameter(PARAMETER_FROM_DATE);
 		String to = (String) iwc.getParameter(PARAMETER_TO_DATE);
+		String noDays = (String) iwc.getParameter(SupplierBrowser.PARAMETER_NUMBER_OF_DAYS);
 		String roomType = (String) iwc.getParameter(PARAMETER_ROOM_TYPE);
 		String hotelType = (String) iwc.getParameter(PARAMETER_ACCOMMODATION_TYPE);
 		String min = (String) iwc.getParameter(PARAMETER_MIN_RATING);
@@ -217,6 +218,9 @@ public class HotelBrowser extends TravelBlock implements SupplierBrowserPlugin {
 		IWTimestamp toStamp = null;
 		if (to != null) {
 			toStamp = new IWTimestamp(to);
+		} else if (noDays != null && from != null) {
+			toStamp = new IWTimestamp(from);
+			toStamp.addDays(Integer.parseInt(noDays));
 		}
 		
 		String[] roomTypes = null;

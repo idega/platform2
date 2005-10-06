@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowser.java,v 1.34 2005/10/06 13:06:52 gimmi Exp $
+ * $Id: SupplierBrowser.java,v 1.35 2005/10/06 20:28:32 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -83,6 +83,7 @@ public class SupplierBrowser extends TravelBlock {
 	private static final String PARAMETER_PRODUCT_ID = AbstractSearchForm.PARAMETER_PRODUCT_ID;
 	public static final String PARAMETER_FROM = AbstractSearchForm.PARAMETER_FROM_DATE;
 	public static final String PARAMETER_TO = AbstractSearchForm.PARAMETER_TO_DATE;
+	public static final String PARAMETER_NUMBER_OF_DAYS = AbstractSearchForm.PARAMETER_MANY_DAYS;
 	public static final String PARAMETER_SUPPLIER_NAME = AbstractSearchForm.PARAMETER_SUPPLIER_NAME;
 	private static final String PARAMETER_PLUGIN = "sb_pp";
 
@@ -147,6 +148,7 @@ public class SupplierBrowser extends TravelBlock {
 			form.maintainParameter(PARAMETER_SUPPLIER_ID);
 			form.maintainParameter(PARAMETER_PRODUCT_ID);
 			form.maintainParameter(PARAMETER_FROM);
+			form.maintainParameter(PARAMETER_NUMBER_OF_DAYS);
 			form.maintainParameter(SHOW_SEARCH_INPUTS);
 			String[] params = plugin.getParameters();
 			if (params != null) {
@@ -182,6 +184,7 @@ public class SupplierBrowser extends TravelBlock {
 		link.maintainParameter(PARAMETER_SUPPLIER_MANAGER, iwc);
 		link.maintainParameter(PARAMETER_SUPPLIER_ID, iwc);
 		link.maintainParameter(PARAMETER_FROM, iwc);
+		link.maintainParameter(PARAMETER_NUMBER_OF_DAYS, iwc);
 		link.addParameter(SHOW_SEARCH_INPUTS, Boolean.toString(showInputs));
 		String[] params = plugin.getParameters();
 		if (params != null) {
@@ -286,8 +289,10 @@ public class SupplierBrowser extends TravelBlock {
 			IWTimestamp to = null;
 			if (iwc.isParameterSet(PARAMETER_TO)) {
 				to = new  IWTimestamp(iwc.getParameter(PARAMETER_TO));
+				numberOfDays = bookingForm.getNumberOfDays(from, to);
+			} else if (iwc.isParameterSet(PARAMETER_NUMBER_OF_DAYS)) {
+				numberOfDays = Integer.parseInt(iwc.getParameter(PARAMETER_NUMBER_OF_DAYS));
 			}
-			numberOfDays = bookingForm.getNumberOfDays(from, to);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1148,6 +1153,7 @@ public class SupplierBrowser extends TravelBlock {
 		link.addParameter(PARAMETER_SUPPLIER_ID, supplier.getPrimaryKey().toString());
 		link.addParameter(SHOW_SEARCH_INPUTS, Boolean.toString(showInputs));
 		link.addParameter(PARAMETER_SUPPLIER_NAME, supplier.getName());
+		link.maintainParameter(PARAMETER_NUMBER_OF_DAYS, iwc);
 		String[] params = plugin.getParameters();
 		if (params != null) {
 			for (int i = 0; i < params.length; i++) {
