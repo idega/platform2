@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowser.java,v 1.33 2005/10/05 22:48:31 gimmi Exp $
+ * $Id: SupplierBrowser.java,v 1.34 2005/10/06 13:06:52 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -1069,7 +1069,7 @@ public class SupplierBrowser extends TravelBlock {
 			if (useTravelLook) {
 				table.setRowColor(row, TravelManager.GRAY);
 			}
-			table.setHeight(row++, spaceBetweenItems);
+			table.setHeight(++row, spaceBetweenItems);
 		}
 		if (useTravelLook) {
 			table.setRowColor(row++, TravelManager.GRAY);
