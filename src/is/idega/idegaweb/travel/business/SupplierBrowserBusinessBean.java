@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowserBusinessBean.java,v 1.10 2005/10/05 22:43:48 gimmi Exp $
+ * $Id: SupplierBrowserBusinessBean.java,v 1.11 2005/10/06 20:24:36 gimmi Exp $
  * Created on Jul 6, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -80,6 +80,7 @@ public class SupplierBrowserBusinessBean extends IBOServiceBean  implements Supp
 	public static final String ATTRIBUTE_LAYER_IDS = "divIDs";
 	public static final String ATTRIBUTE_SELECTED = "selected";
 	public static final String ATTRIBUTE_PAGE_ID = "pageID";
+	public static final String ATTRIBUTE_SIZE = "size";
 	public static final String TYPE_DROPDOWN = "dropdown";
 	public static final String TYPE_DROPDOWN_MENU_ITEM = "menuItem";
 	public static final String TYPE_DATE = "date";
@@ -276,7 +277,15 @@ public class SupplierBrowserBusinessBean extends IBOServiceBean  implements Supp
 					String styleClass = el.getAttributeValue(ATTRIBUTE_STYLE_CLASS);
 					PresentationObject input = null;
 					if (type.equalsIgnoreCase(TYPE_TEXT)) {
+						String size = el.getAttributeValue(ATTRIBUTE_SIZE);
+						String value = el.getAttributeValue(ATTRIBUTE_VALUE);
 						input = new TextInput(el.getAttributeValue(ATTRIBUTE_NAME));
+						if (size != null) {
+							((TextInput)input).setSize(Integer.parseInt(size));
+						}
+						if (value != null) {
+							((TextInput)input).setValue(value);
+						}
 					}
 					else if (type.equalsIgnoreCase(TYPE_DROPDOWN)) {
 						input = new DropdownMenu(el.getAttributeValue(ATTRIBUTE_NAME));
