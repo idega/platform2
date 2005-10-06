@@ -53,6 +53,8 @@ public class CurrencyCalculator extends PresentationObjectContainer {
 	private String defaultTo = null;
 	private String defaultFrom = null;
 	
+	private String disclamer = null;
+	
 	private int objectSpacing = 0;
 	
 	public static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.trade";
@@ -148,13 +150,14 @@ public class CurrencyCalculator extends PresentationObjectContainer {
 			if (sTo != null) to.setSelectedElement(sTo);
 			if (sFrom != null) from.setSelectedElement(sFrom);
 			
-			table.add(getText(iwrb.getLocalizedString("from", "From")), 1,1);
-			table.add(getText(iwrb.getLocalizedString("to","To")), 2,1);
-			table.add(getText(iwrb.getLocalizedString("price","Price")), 1,3);
-			table.add(getText(iwrb.getLocalizedString("new_price","New price")), 3,3);
-			table.add(from, 1,2);
-			table.add(to, 2,2);
-			table.add(price, 1,4);
+			int row = 1;
+			table.add(getText(iwrb.getLocalizedString("currency", "Currency")), 1,row);
+			table.add(getText(iwrb.getLocalizedString("amount","Amount")), 2,row++);
+//			table.add(getText(iwrb.getLocalizedString("price","Price")), 2,1);
+//			table.add(getText(iwrb.getLocalizedString("new_price","New price")), 3,3);
+			table.add(from, 1,row);
+			table.add(price, 2,row++);
+			table.add(to, 1,row);
 			
 			if (ioStyleClass != null) {
 				from.setStyleClass(ioStyleClass);
@@ -165,16 +168,16 @@ public class CurrencyCalculator extends PresentationObjectContainer {
 			
 			
 			if (!useRemoteScripting) {
-				table.add(getText(getNewPrice(iwc)), 3, 4);
+				table.add(getText(getNewPrice(iwc)), 2, row);
 			} else {
 				from.setOnChange(rsh.getSubmitEvent(iwc));
 				to.setOnChange  (rsh.getSubmitEvent(iwc));
 				if (calculateOnType) {
 					price.setOnKeyUp(rsh.getSubmitEvent(iwc));
 				}
-				table.add(resultText, 3, 4);
+				table.add(resultText, 2, row);
 			}
-			table.setAlignment(3,4,"right");
+			table.setAlignment(2, row++ ,"right");
 			
 			Link calc = getLink(iwrb.getLocalizedString("calculate", "Calculate"));
 			if (!useRemoteScripting) {
@@ -182,8 +185,9 @@ public class CurrencyCalculator extends PresentationObjectContainer {
 			} else {
 				calc.setOnClick(rsh.getSubmitEvent(iwc));
 			}
-			table.add(Text.getNonBrakingSpace(), 2, 4);
-			table.add(calc, 2, 4);
+//			table.add(Text.getNonBrakingSpace(), 2, 4);
+			table.add(calc, 2, row);
+			table.setAlignment(2, row++ ,"right");
 
 			if (objectSpacing > 0) {
 				table.setCellpaddingBottom(1, 1, objectSpacing);
@@ -192,7 +196,7 @@ public class CurrencyCalculator extends PresentationObjectContainer {
 				table.setCellpaddingBottom(2, 2, objectSpacing);
 				table.setCellpaddingBottom(1, 3, objectSpacing);
 				table.setCellpaddingBottom(2, 3, objectSpacing);
-				table.setCellpaddingBottom(3, 3, objectSpacing);
+//				table.setCellpaddingBottom(3, 3, objectSpacing);
 				table.setCellpaddingBottom(1, 4, objectSpacing);
 				table.setCellpaddingBottom(2, 4, objectSpacing);
 			}
@@ -224,26 +228,30 @@ public class CurrencyCalculator extends PresentationObjectContainer {
 			add(table);
 		}
 		add(Text.BREAK);
-		add(getDisclamer(iwc));
+		Table disc = getDisclamer(iwc);
+		add(disc);
 	}
 
 	private Table getDisclamer(IWContext iwc) {
 		Table table = new Table();
 		table.setAlignment(1,1,Table.HORIZONTAL_ALIGN_LEFT);
-		if (CurrencyBusiness.getCurrencyUrl() != null) {
-			table.add(getText(iwrb.getLocalizedString("uses_latest_rates", "Uses latest available rates")+ ". ("+CurrencyBusiness.getCurrencyUrl()+")"));
+		if (disclamer == null) {
+			if (CurrencyBusiness.getCurrencyUrl() != null) {
+				table.add(getText(iwrb.getLocalizedString("uses_latest_rates", "Uses latest available rates")+ ". ("+CurrencyBusiness.getCurrencyUrl()+")"));
+			} else {
+				table.add(getText(iwrb.getLocalizedString("displayed_without_guarantee","Displayed without guarantee")));
+			}
+	
+			table.addBreak();
+			table.add(getText(iwrb.getLocalizedString("last_update_at", "Last update at")+ " : "));
+			if (CurrencyBusiness.getLastUpdate() != null) {
+				table.add(getText(CurrencyBusiness.getLastUpdate().getLocaleDateAndTime(iwc.getLocale())));
+			} else {
+				table.add(getText(iwrb.getLocalizedString("unknown", "Unknown")));
+			}
 		} else {
-			table.add(getText(iwrb.getLocalizedString("displayed_without_guarantee","Displayed without guarantee")));
+			table.add(getText(disclamer));
 		}
-
-		table.addBreak();
-		table.add(getText(iwrb.getLocalizedString("last_update_at", "Last update at")+ " : "));
-		if (CurrencyBusiness.getLastUpdate() != null) {
-			table.add(getText(CurrencyBusiness.getLastUpdate().getLocaleDateAndTime(iwc.getLocale())));
-		} else {
-			table.add(getText(iwrb.getLocalizedString("unknown", "Unknown")));
-		}
-		
 		return table;
 	}
 	
@@ -318,5 +326,9 @@ public class CurrencyCalculator extends PresentationObjectContainer {
 	
 	public void setDefaultToCurrency(String defaultTo) {
 		this.defaultTo = defaultTo;
+	}
+	
+	public void setDisclamer(String disclamer) {
+		this.disclamer = disclamer;
 	}
 }
