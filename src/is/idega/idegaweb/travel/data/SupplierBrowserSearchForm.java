@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowserSearchForm.java,v 1.2 2005/10/05 22:43:48 gimmi Exp $
+ * $Id: SupplierBrowserSearchForm.java,v 1.3 2005/10/06 18:51:35 gimmi Exp $
  * Created on Aug 19, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -51,7 +51,15 @@ public class SupplierBrowserSearchForm {
 	}
 	
 	public Collection getParagraphs() {
-		return ps;
+		if (ps != null) {
+			Collection coll = new Vector();
+			Iterator it = ps.iterator();
+			while (it.hasNext()) {
+				coll.add( ((PresentationObject) it.next()).clone());
+			}
+			return coll;
+		}
+		return null;
 	}
 	
 	public String getPageID() {
