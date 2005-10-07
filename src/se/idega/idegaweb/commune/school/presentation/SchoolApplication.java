@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolApplication.java,v 1.16 2005/10/03 18:08:18 laddi Exp $
+ * $Id: SchoolApplication.java,v 1.17 2005/10/07 13:17:28 laddi Exp $
  * Created on Aug 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -24,6 +24,7 @@ import com.idega.block.school.business.SchoolYearComparator;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
 import com.idega.block.school.data.SchoolSeason;
+import com.idega.block.school.data.SchoolYear;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
@@ -51,13 +52,14 @@ import com.idega.presentation.ui.util.SelectorUtility;
 import com.idega.user.business.NoEmailFoundException;
 import com.idega.user.business.NoPhoneFoundException;
 import com.idega.user.data.User;
+import com.idega.util.Age;
 import com.idega.util.PersonalIDFormatter;
 
 /**
- * Last modified: $Date: 2005/10/03 18:08:18 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/07 13:17:28 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class SchoolApplication extends SchoolBlock {
 
@@ -103,6 +105,7 @@ public class SchoolApplication extends SchoolBlock {
 	
 	private ICPage iAfterSchoolCarePage;
 	protected ICPage iHomePage;
+	private int iMaxAge = -1;
 
 	/* (non-Javadoc)
 	 * @see se.idega.idegaweb.commune.school.presentation.SchoolBlock#init(com.idega.presentation.IWContext)
@@ -175,6 +178,14 @@ public class SchoolApplication extends SchoolBlock {
 			}
 			form.addParameter(PARAMETER_SEASON, season.getPrimaryKey().toString());
 			
+			SchoolChoice choice = null;
+			try {
+				choice = getBusiness().getChoice(getSession().getUser(), season, 1);
+			}
+			catch (FinderException fe) {
+				fe.printStackTrace();
+			}
+
 			Table table = new Table();
 			table.setCellpadding(0);
 			table.setCellspacing(0);
@@ -198,6 +209,18 @@ public class SchoolApplication extends SchoolBlock {
 			
 			SelectorUtility util = new SelectorUtility();
 			DropdownMenu yearDropdown = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(SchoolAreaCollectionHandler.PARAMETER_SCHOOL_YEAR), years, "getSchoolYearName"));
+			if (choice != null) {
+				yearDropdown.setSelectedElement(choice.getSchoolYearID());
+			}
+			else {
+				try {
+					SchoolYear year = getBusiness().getSchoolYearForUser(getSession().getUser());
+					yearDropdown.setSelectedElement(year.getPrimaryKey().toString());
+				}
+				catch (FinderException fe) {
+					//No school found for age...
+				}
+			}
 			yearDropdown.keepStatusOnAction(true);
 			applicationTable.add(getSmallHeader(localize("application.year", "Year") + ":"), 1, 2);
 			applicationTable.add(yearDropdown, 2, 2);
@@ -264,6 +287,9 @@ public class SchoolApplication extends SchoolBlock {
 			}
 			form.addParameter(PARAMETER_SEASON, season.getPrimaryKey().toString());
 		}
+		else {
+			season = getSchoolBusiness().getSchoolSeason(new Integer(iwc.getParameter(PARAMETER_SEASON)));
+		}
 		
 		Table table = new Table();
 		table.setCellpadding(0);
@@ -293,6 +319,15 @@ public class SchoolApplication extends SchoolBlock {
 		yearDropdown.addMenuElementFirst("-1", localize("application.select_year", "Select year"));
 		if (iwc.isParameterSet(SchoolAreaCollectionHandler.PARAMETER_SCHOOL_YEAR)) {
 			yearDropdown.setSelectedElement(iwc.getParameter(SchoolAreaCollectionHandler.PARAMETER_SCHOOL_YEAR));
+		}
+		else {
+			try {
+				SchoolYear year = getBusiness().getSchoolYearForUser(getSession().getUser());
+				yearDropdown.setSelectedElement(year.getPrimaryKey().toString());
+			}
+			catch (FinderException fe) {
+				//No school found for age...
+			}
 		}
 		
 		applicationTable.add(getSmallHeader(localize("application.school_year", "School year")), 1, 1);
@@ -597,7 +632,7 @@ public class SchoolApplication extends SchoolBlock {
 			if (relation != null) {
 				relationMenu.setSelectedElement(relation);
 			}
-			relationMenu.setAsNotEmpty(localize("must_select_relation", "You must select a relation to the child."), "-1");
+			relationMenu.setAsNotEmpty(localize("must_select_relation", "You must select a relation to the child."), "");
 		}
 		table.add(relationMenu, 1, row++);
 		
@@ -787,6 +822,19 @@ public class SchoolApplication extends SchoolBlock {
 		}
 		applicationTable.add(yes, 2, aRow);
 		applicationTable.add(no, 3, aRow++);
+		
+		for (int a = 1; a <= applicationTable.getRows(); a++) {
+			if (a > 1) {
+				applicationTable.setLeftCellBorder(2, a, 1, "#D7D7D7", "solid");
+				applicationTable.setLeftCellBorder(3, a, 1, "#D7D7D7", "solid");
+				applicationTable.setLeftCellBorder(4, a, 1, "#D7D7D7", "solid");
+			}
+			
+			applicationTable.setCellpaddingRight(1, a, 6);
+			applicationTable.setAlignment(2, a, Table.HORIZONTAL_ALIGN_CENTER);
+			applicationTable.setAlignment(3, a, Table.HORIZONTAL_ALIGN_CENTER);
+			applicationTable.setAlignment(4, a, Table.HORIZONTAL_ALIGN_CENTER);
+		}
 
 		table.setHeight(row++, 18);
 		
@@ -895,26 +943,37 @@ public class SchoolApplication extends SchoolBlock {
 				Object[] arguments = { getSession().getUser().getFirstName(), getBusiness().getHomeSchoolForUser(getSession().getUser()).getSchoolName() };
 				table.add(getText(MessageFormat.format(localize("application.home_school_confirmation", "{1} has received your application for a school placement and has placed {0}Êin the school."), arguments)), 1, row++);
 				
+				boolean showAfterSchoolCare = true;
+				Age age = new Age(getSession().getUser().getDateOfBirth());
+				if (iMaxAge > 0 && iMaxAge < age.getYears()) {
+					showAfterSchoolCare = false;
+				}
+				
 				table.setHeight(row++, 12);
 				table.add(getHeader(localize("application.after_school_care", "After school care")), 1, row++);
-				table.setHeight(row++, 6);
-				table.add(getText(localize("application.after_school_care_information", "Information about after school care")), 1, row++);
+				if (showAfterSchoolCare) {
+					table.setHeight(row++, 6);
+					table.add(getText(localize("application.after_school_care_information", "Information about after school care")), 1, row++);
+				}
 				table.setHeight(row++, 18);
 				
 				GenericButton home = getButton(new GenericButton(localize("my_page", "My page")));
 				if (iHomePage != null) {
 					home.setPageToOpen(iHomePage);
 				}
-				GenericButton afterSchoolCare = getButton(new GenericButton(localize("apply_for_after_school_care", "Apply for after school care")));
-				if (iAfterSchoolCarePage != null) {
-					afterSchoolCare.setPageToOpen(iAfterSchoolCarePage);
-				}
 
 				table.add(home, 1, row);
-				table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
-				table.add(afterSchoolCare, 1, row);
 				table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
 				table.setCellpaddingRight(1, row, 12);
+
+				if (showAfterSchoolCare) {
+					GenericButton afterSchoolCare = getButton(new GenericButton(localize("apply_for_after_school_care", "Apply for after school care")));
+					if (iAfterSchoolCarePage != null) {
+						afterSchoolCare.setPageToOpen(iAfterSchoolCarePage);
+					}
+					table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
+					table.add(afterSchoolCare, 1, row);
+				}
 			}
 			else {
 				table.add(getText(localize("application.other_school_confirmation", "Your application for a school placement has been sent and will be processed.")), 1, row++);
@@ -1075,5 +1134,9 @@ public class SchoolApplication extends SchoolBlock {
 	
 	public void setUseHomeSchool(boolean useHomeSchool) {
 		iUseHomeSchool = useHomeSchool;
+	}
+	
+	public void setMaxAfterSchoolCareAge(int age) {
+		iMaxAge = age;
 	}
 }

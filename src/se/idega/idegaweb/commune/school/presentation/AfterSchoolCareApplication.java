@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolCareApplication.java,v 1.18 2005/10/02 21:11:06 laddi Exp $
+ * $Id: AfterSchoolCareApplication.java,v 1.19 2005/10/07 13:17:28 laddi Exp $
  * Created on Aug 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -34,10 +34,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/10/02 21:11:06 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/07 13:17:28 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
 public class AfterSchoolCareApplication extends SchoolApplication {
 	
@@ -304,6 +304,19 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		applicationTable.add(new Break(), 1, aRow);
 		applicationTable.add(getTextArea(PARAMETER_AFTER_SCHOOL_INFORMATION, getBusiness().getAfterSchoolCareOtherInformation(getSession().getUser())), 1, aRow);
 
+		for (int a = 1; a <= applicationTable.getRows(); a++) {
+			if (a > 1) {
+				applicationTable.setLeftCellBorder(2, a, 1, "#D7D7D7", "solid");
+				applicationTable.setLeftCellBorder(3, a, 1, "#D7D7D7", "solid");
+				applicationTable.setLeftCellBorder(4, a, 1, "#D7D7D7", "solid");
+			}
+			
+			applicationTable.setCellpaddingRight(1, a, 6);
+			applicationTable.setAlignment(2, a, Table.HORIZONTAL_ALIGN_CENTER);
+			applicationTable.setAlignment(3, a, Table.HORIZONTAL_ALIGN_CENTER);
+			applicationTable.setAlignment(4, a, Table.HORIZONTAL_ALIGN_CENTER);
+		}
+
 		table.setHeight(row++, 18);
 		
 		SubmitButton previous = (SubmitButton) getButton(new SubmitButton(localize("previous", "Previous")));
@@ -389,6 +402,19 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 	}
 	
 	private void showPhaseSix(IWContext iwc) throws RemoteException {
+		boolean timesSet = false;
+		for (int i = 0; i < 5; i++) {
+			if (iwc.isParameterSet(PARAMETER_TIME + "_" + (i+1))) {
+				timesSet = true;
+				break;
+			}
+		}
+		if (!timesSet) {
+			getParentPage().setAlertOnLoad(localize("must_select_departure_times", "You have to select times for departure"));
+			showPhaseFive(iwc);
+			return;
+		}
+		
 		Form form = createForm();
 		form.addParameter(PARAMETER_ACTION, String.valueOf(ACTION_PHASE_6));
 		
