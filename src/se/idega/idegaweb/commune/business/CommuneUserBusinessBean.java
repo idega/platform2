@@ -26,6 +26,7 @@ import com.idega.core.accesscontrol.data.LoginInfo;
 import com.idega.core.accesscontrol.data.LoginInfoHome;
 import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.core.accesscontrol.data.LoginTableHome;
+import com.idega.core.business.ICApplicationBindingBusiness;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.location.business.AddressBusiness;
@@ -367,9 +368,19 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		if (rootOtherCommuneCitizenGroup != null)
 			return rootOtherCommuneCitizenGroup;
 
-		final IWApplicationContext iwc = getIWApplicationContext();
-		final IWMainApplicationSettings settings = iwc.getApplicationSettings();
-		String groupId = settings.getProperty(ROOT_OTHER_COMMUNE_CITIZEN_GROUP_ID_PARAMETER_NAME);
+		final IWApplicationContext iwac = getIWApplicationContext();
+		ICApplicationBindingBusiness applicationBindingBusiness = (ICApplicationBindingBusiness)  IBOLookup.getServiceInstance(iwac, ICApplicationBindingBusiness.class);
+		String groupId = null;
+		// look up ic application binding
+		if (applicationBindingBusiness.contains(ROOT_OTHER_COMMUNE_CITIZEN_GROUP_ID_PARAMETER_NAME)) {
+			groupId = applicationBindingBusiness.get(ROOT_OTHER_COMMUNE_CITIZEN_GROUP_ID_PARAMETER_NAME);
+		}
+		else {
+			IWMainApplicationSettings settings = iwac.getApplicationSettings();
+			groupId = settings.getProperty(ROOT_OTHER_COMMUNE_CITIZEN_GROUP_ID_PARAMETER_NAME);
+			// put into the database
+			applicationBindingBusiness.put(ROOT_OTHER_COMMUNE_CITIZEN_GROUP_ID_PARAMETER_NAME, groupId);
+		}
 		if (groupId != null) {
 			final GroupHome groupHome = getGroupHome();
 			rootOtherCommuneCitizenGroup = groupHome.findByPrimaryKey(new Integer(groupId));
