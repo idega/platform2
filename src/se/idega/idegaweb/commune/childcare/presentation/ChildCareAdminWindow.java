@@ -2170,6 +2170,10 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 	private void createGroup(IWContext iwc) throws RemoteException {
 		String groupName = iwc.getParameter(PARAMETER_GROUP_NAME);
+		if (groupName.trim().length() == 0) {
+			getParentPage().setAlertOnLoad(localize("empty_name_value", "Can not store group with empty name value"));
+			return;
+		}
 		int schoolTypeId = new Integer(iwc.getParameter(PARAMETER_SCHOOL_TYPES)).intValue();
 
 		getBusiness().getSchoolBusiness().storeSchoolClass(getSession().getGroupID(), groupName, getSession().getChildCareID(), schoolTypeId, -1, null, null);
