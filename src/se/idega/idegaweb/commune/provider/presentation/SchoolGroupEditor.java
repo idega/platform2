@@ -572,6 +572,10 @@ public class SchoolGroupEditor extends ProviderBlock {
 	private void saveGroup(IWContext iwc) {
 		String groupStringId = iwc.getParameter(PARAMETER_GROUP_STRING_ID);
 		String name = iwc.getParameter(PARAMETER_GROUP_NAME);
+		if (name.trim().length() == 0) {
+			getParentPage().setAlertOnLoad(localize("empty_name_value", "Can not store group with empty name value"));
+			return;
+		}
 		String[] years = iwc.getParameterValues(PARAMETER_SCHOOL_YEARS);
 		String[] studyPaths = iwc.getParameterValues(PARAMETER_STUDY_PATHS);
 		String[] teachers = new String[4];
