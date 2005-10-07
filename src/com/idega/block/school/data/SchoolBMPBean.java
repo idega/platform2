@@ -86,6 +86,7 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 	public final static String INVISIBLE_FOR_CITIZEN = "invisible_for_citizen";
 	/** Anders 10 Jan 2005 */
 	public final static String PROVIDER_STRING_ID = "provider_string_id";
+	public final static String JUNIOR_HIGH_SCHOOL = "junior_high_school_id";    
 	public final static String AFTER_SCHOOL_CARE_PROVIDER = "after_school_care_id";    
     /** Dainis 23 Sep 2005 */
     public final static String SORT_BY_BIRTHDATE = "sort_by_birthdate";   
@@ -138,6 +139,7 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 		this.addManyToManyRelationShip(SchoolStudyPath.class, "sch_school_study_path");
 		this.addAttribute(PROVIDER_STRING_ID, "Extra provider id", true, true, String.class, 40);
 		addManyToOneRelationship(AFTER_SCHOOL_CARE_PROVIDER, School.class);
+		addManyToOneRelationship(JUNIOR_HIGH_SCHOOL, School.class);
         // Dainis 23 Sep 2005
         this.addAttribute(SORT_BY_BIRTHDATE, "Sorted by date of birth", true, true, Boolean.class);
 	}
@@ -167,6 +169,22 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 	
 	public void setAfterSchoolCareProvider(Object providerPK) {
 		setColumn(AFTER_SCHOOL_CARE_PROVIDER, providerPK);
+	}
+
+	public School getJuniorHighSchool() {
+		return (School) getColumnValue(JUNIOR_HIGH_SCHOOL);
+	}
+	
+	public Object getJuniorHighSchoolPK() {
+		return getIntegerColumnValue(JUNIOR_HIGH_SCHOOL);
+	}
+	
+	public void setJuniorHighSchool(School school) {
+		setColumn(JUNIOR_HIGH_SCHOOL, school);
+	}
+	
+	public void setJuniorHighSchool(Object schoolPK) {
+		setColumn(JUNIOR_HIGH_SCHOOL, schoolPK);
 	}
 
 	public int getSchoolAreaId() {

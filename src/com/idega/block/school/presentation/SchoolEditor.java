@@ -61,6 +61,7 @@ public class SchoolEditor extends SchoolBlock {
 	private static final String PARAMETER_COMMUNE = "prm_commune";
 	private static final String PARAMETER_TYPE_PKS = "prm_type_pks";
 	private static final String PARAMETER_YEAR_PKS = "prm_year_pks";
+	private static final String PARAMETER_JUNIOR_HIGH_SCHOOL = "prm_junior_high_school_pk";
 	private static final String PARAMETER_AFTER_SCHOOL_CARE_PROVIDER_PK = "prm_care_provider_pk";
 
 	private static final int ACTION_VIEW = 1;
@@ -156,11 +157,20 @@ public class SchoolEditor extends SchoolBlock {
 			communePK = new Integer(commune);
 		}
 		
+		Object juniorHighID = iwc.isParameterSet(PARAMETER_JUNIOR_HIGH_SCHOOL) ? iwc.getParameter(PARAMETER_JUNIOR_HIGH_SCHOOL) : null;
 		Object providerID = iwc.isParameterSet(PARAMETER_AFTER_SCHOOL_CARE_PROVIDER_PK) ? iwc.getParameter(PARAMETER_AFTER_SCHOOL_CARE_PROVIDER_PK) : null;
+		boolean store = false;
 		
 		School school = getBusiness().storeSchool(sid, name, info, address, zipcode, ziparea, phone, keycode, lat, lon, areaId, types, years, communePK, providerStringId);
+		if (juniorHighID != null) {
+			school.setJuniorHighSchool(juniorHighID);
+			store = true;
+		}
 		if (providerID != null) {
 			school.setAfterSchoolCareProvider(providerID);
+			store = true;
+		}
+		if (store) {
 			school.store();
 		}
 	}
@@ -291,8 +301,13 @@ public class SchoolEditor extends SchoolBlock {
 		SelectorUtility su = new SelectorUtility();
 		su.getSelectorFromIDOEntities(communes, getCommuneBusiness(iwc).getCommunes(), "getCommuneName");
 
+		DropdownMenu juniorHighs = new DropdownMenu(PARAMETER_JUNIOR_HIGH_SCHOOL);
+		Collection schools = getBusiness().findAllSchoolsByCategory(getBusiness().getCategoryElementarySchool().getCategory());
+		su.getSelectorFromIDOEntities(juniorHighs, schools, "getSchoolName");
+		juniorHighs.setMenuElementFirst("", "");
+		
 		DropdownMenu providers = new DropdownMenu(PARAMETER_AFTER_SCHOOL_CARE_PROVIDER_PK);
-		Collection schools = getBusiness().findAllSchoolsByCategory(getBusiness().getCategoryChildcare().getCategory());
+		schools = getBusiness().findAllSchoolsByCategory(getBusiness().getCategoryChildcare().getCategory());
 		su.getSelectorFromIDOEntities(providers, schools, "getSchoolName");
 		providers.setMenuElementFirst("", "");
 		
@@ -321,6 +336,9 @@ public class SchoolEditor extends SchoolBlock {
 				drpArea.setSelectedElement(String.valueOf(school.getSchoolAreaId()));
 				if (commune != null) {
 					communes.setSelectedElement(commune.getPrimaryKey().toString());
+				}
+				if (school.getJuniorHighSchoolPK() != null) {
+					juniorHighs.setSelectedElement(school.getJuniorHighSchoolPK().toString());
 				}
 				if (school.getAfterSchoolCareProviderPK() != null) {
 					providers.setSelectedElement(school.getAfterSchoolCareProviderPK().toString());
@@ -426,6 +444,13 @@ public class SchoolEditor extends SchoolBlock {
 		label = new Label(localize("school_area", "SchoolArea"), drpArea);
 		layer.add(label);
 		layer.add(drpArea);
+		form.add(layer);
+
+		layer = new Layer(Layer.DIV);
+		layer.setStyleClass(STYLENAME_FORM_ELEMENT);
+		label = new Label(localize("junior_high_school", "Junior high school"), juniorHighs);
+		layer.add(label);
+		layer.add(juniorHighs);
 		form.add(layer);
 
 		layer = new Layer(Layer.DIV);

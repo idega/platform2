@@ -1,10 +1,14 @@
 package com.idega.block.school.data;
 
-import com.idega.data.*;
-
 import java.util.Collection;
-
 import javax.ejb.FinderException;
+import com.idega.data.GenericEntity;
+import com.idega.data.IDOFinderException;
+import com.idega.data.IDOQuery;
+import com.idega.data.IDORelationshipException;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.Table;
 
 /**
  * <p>
@@ -216,6 +220,24 @@ public class SchoolYearBMPBean extends GenericEntity implements SchoolYear {
 
 	public Collection ejbFindAllByAge(SchoolType schoolType, int age) throws javax.ejb.FinderException {
 		return super.idoFindPKsBySQL("select * from " + getEntityName() + " where " + AGE + " like '" + age + "' AND " + SCHOOL_TYPE + " = '" + schoolType.getPrimaryKey().toString() + "'");
+	}
+	
+	public Object ejbFindByAge(SchoolCategory category, int age) throws FinderException {
+		Table table = new Table(this);
+		Table types = new Table(SchoolType.class);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(table, getIDColumnName(), true);
+		try {
+			query.addJoin(table, types);
+		}
+		catch (IDORelationshipException ire) {
+			throw new FinderException(ire.getMessage());
+		}
+		query.addCriteria(new MatchCriteria(table, AGE, MatchCriteria.EQUALS, age));
+		query.addCriteria(new MatchCriteria(types, "school_category", MatchCriteria.EQUALS, category));
+		
+		return idoFindOnePKByQuery(query);
 	}
 
 	public Collection ejbFindAllByIDs(String[] schoolYearIDs) throws FinderException {
