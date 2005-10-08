@@ -30,7 +30,9 @@ public class SchoolTypeSelector extends Block {
 	private String _selColor;
 	private int _spaceBetween = 5;
 	private String _category;
-
+	private boolean _showOnlyFreetime = false;
+	private boolean _showOnlyNonFreetime = false;
+	
 	public void main(IWContext iwc) throws RemoteException {
 		init(iwc);
 
@@ -56,11 +58,17 @@ public class SchoolTypeSelector extends Block {
 		Collection coll;
 		if (_category != null) {
 			coll = stb.findAllSchoolTypesInCategory(_category);
+			
 		}
 		else {
 			coll = stb.findAllSchoolTypes();
 		}
 
+		if (_showOnlyFreetime)
+			coll = stb.findAllSchoolTypesInCategoryFreeTime(_category);
+		else if (_showOnlyNonFreetime)
+			coll = stb.findAllSchoolTypesInCategory(_category, false);
+		
 		if (coll != null) {
 			SchoolType sType;
 			Table table = new Table();
@@ -73,6 +81,7 @@ public class SchoolTypeSelector extends Block {
 			while (iter.hasNext()) {
 				sType = (SchoolType) iter.next();
 				sTypeId = ((Integer) sType.getPrimaryKey()).intValue();
+				
 				
 				if (sTypeId == _schoolTypeId) {
 					table.add(getText(sType.getName(), true), col, row);
@@ -164,5 +173,13 @@ public class SchoolTypeSelector extends Block {
 
 	public void setSchoolCategory(String category) {
 		_category = category;
+	}
+	
+	public void setShowOnlyFreetimeType(boolean showOnlyFreetime) {
+		_showOnlyFreetime = showOnlyFreetime;
+	}
+	
+	public void setShowOnlyNonFreetimeType(boolean showOnlyNonFreetime) {
+		_showOnlyNonFreetime = showOnlyNonFreetime;
 	}
 }
