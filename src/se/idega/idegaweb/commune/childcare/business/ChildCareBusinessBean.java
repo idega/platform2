@@ -4969,6 +4969,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
+	public int getOutsideSchoolArea(){
+		IWBundle iwb = getIWApplicationContext().getIWMainApplication().getBundle(getBundleIdentifier());
+		int areaID = Integer.parseInt(iwb.getProperty(PROP_OUTSIDE_SCHOOL_AREA, "-1"));
+		
+		return areaID;
+	}
 	public Collection findSentInAndRejectedApplicationsByArea(Object area, int monthsInQueue, int weeksToPlacementDate, boolean firstHandOnly, String caseCode) throws FinderException {
 		IWTimestamp months = new IWTimestamp();
 		months.addMonths(-monthsInQueue);

@@ -1082,6 +1082,12 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness,
             throws java.rmi.RemoteException;
 
     /**
+     * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getOutsideSchoolArea
+     */
+    public int getOutsideSchoolArea()
+    	throws java.rmi.RemoteException;
+    
+    /**
      * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getQueueTotalByProvider
      */
     public int getQueueTotalByProvider(int providerID, Date from, Date to,
