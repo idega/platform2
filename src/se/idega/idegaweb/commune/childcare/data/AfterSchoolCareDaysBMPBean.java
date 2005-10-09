@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolCareDaysBMPBean.java,v 1.2 2005/09/29 07:16:04 laddi Exp $
+ * $Id: AfterSchoolCareDaysBMPBean.java,v 1.3 2005/10/09 12:12:13 laddi Exp $
  * Created on Aug 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -22,14 +22,14 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2005/09/29 07:16:04 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/09 12:12:13 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class AfterSchoolCareDaysBMPBean extends GenericEntity  implements AfterSchoolCareDays{
 
-	private static final String ENTITY_NAME = "comm_after_school_care_days";
+	private static final String ENTITY_NAME = "comm_after_sch_care_days";
 	
 	private static final String COLUMN_APPLICATION = "application_id";
 	private static final String COLUMN_DAY_OF_WEEK = "day_of_week";
