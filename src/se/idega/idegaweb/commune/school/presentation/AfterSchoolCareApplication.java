@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolCareApplication.java,v 1.21 2005/10/09 14:44:01 laddi Exp $
+ * $Id: AfterSchoolCareApplication.java,v 1.22 2005/10/09 14:54:52 laddi Exp $
  * Created on Aug 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -34,10 +34,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/10/09 14:44:01 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/09 14:54:52 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.21 $
+ * @version $Revision: 1.22 $
  */
 public class AfterSchoolCareApplication extends SchoolApplication {
 	
@@ -231,7 +231,7 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 				}
 			}
 			else {
-				noAnswer.setSelected(true);
+				no.setSelected(true);
 			}
 			applicationTable.add(yes, 2, aRow);
 			applicationTable.add(no, 3, aRow);
@@ -255,7 +255,7 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 				}
 			}
 			else {
-				noAnswer.setSelected(true);
+				no.setSelected(true);
 			}
 			applicationTable.add(yes, 2, aRow);
 			applicationTable.add(no, 3, aRow);
