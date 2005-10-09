@@ -405,10 +405,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 	
 	public boolean storeAfterSchoolCare(IWTimestamp stamp, User user, User child, School provider, String message, SchoolSeason season, int[] days, String[] timeOfDeparture, boolean[] pickedUp, String payerName, String payerPersonalID, String cardType, String cardNumber, int validMonth, int validYear) {
 		try {
-			String subject = "";
-			String body = "";
-			
-			AfterSchoolChoice choice = createAfterSchoolChoice(stamp, user, (Integer) child.getPrimaryKey(), (Integer) provider.getPrimaryKey(), new Integer(1), message, getCaseStatusReady(), null, season.getSchoolSeasonStart(), season, subject, body);
+			AfterSchoolChoice choice = createAfterSchoolChoice(stamp, user, (Integer) child.getPrimaryKey(), (Integer) provider.getPrimaryKey(), new Integer(1), message, getCaseStatusReady(), null, season.getSchoolSeasonStart(), season, "", "");
 			if (payerName != null) {
 				choice.setPayerName(payerName);
 				choice.setPayerPersonalID(payerPersonalID);
@@ -426,6 +423,11 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 			
 			SchoolClass group = getDefaultGroup(provider, season);
 			SchoolClassMember member = getSchoolBusiness().storeSchoolClassMemberCC(((Integer) child.getPrimaryKey()).intValue(), ((Integer) group.getPrimaryKey()).intValue(), type != null ? ((Integer) type.getPrimaryKey()).intValue() : -1, registerDate.getTimestamp(), ((Integer) user.getPrimaryKey()).intValue(), message);
+			
+			String subject = getLocalizedString("application.after_school_choice_received_subject", "After school care choice received");
+			String body = getLocalizedString("application.after_school_choice_received_body", "{1} has received the application for an after school care placing for {0}, {2}.  The application has been handled and your child has a placing at the provider.");
+			sendMessageToParents(choice, subject, body);
+
 			// returns false if storing failed else true
 			return (member != null);
 		}
