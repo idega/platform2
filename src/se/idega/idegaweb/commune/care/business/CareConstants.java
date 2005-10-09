@@ -1,5 +1,5 @@
 /*
- * $Id: CareConstants.java,v 1.5 2005/08/10 15:08:46 thomas Exp $
+ * $Id: CareConstants.java,v 1.6 2005/10/09 14:44:01 laddi Exp $
  * Created on Oct 19, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -12,10 +12,10 @@ package se.idega.idegaweb.commune.care.business;
 
 /**
  * 
- *  Last modified: $Date: 2005/08/10 15:08:46 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/10/09 14:44:01 $ by $Author: laddi $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class CareConstants {
 	
@@ -46,6 +46,9 @@ public class CareConstants {
 	public static final String RELATION_FATHER = "father";
 	public static final String RELATION_STEPMOTHER = "stepmother";
 	public static final String RELATION_STEPFATHER = "stepfather";
+	public static final String RELATION_GRANDMOTHER = "grandmother";
+	public static final String RELATION_GRANDFATHER = "grandfather";
+	public static final String RELATION_SIBLING = "sibling";
 	public static final String RELATION_OTHER = "other";
 	
 	public static final String CARD_TYPE_EUROCARD = "eurocard";

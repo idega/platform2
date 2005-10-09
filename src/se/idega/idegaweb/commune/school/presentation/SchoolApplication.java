@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolApplication.java,v 1.17 2005/10/07 13:17:28 laddi Exp $
+ * $Id: SchoolApplication.java,v 1.18 2005/10/09 14:44:01 laddi Exp $
  * Created on Aug 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -56,10 +56,10 @@ import com.idega.util.Age;
 import com.idega.util.PersonalIDFormatter;
 
 /**
- * Last modified: $Date: 2005/10/07 13:17:28 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/09 14:44:01 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 public class SchoolApplication extends SchoolBlock {
 
@@ -598,6 +598,9 @@ public class SchoolApplication extends SchoolBlock {
 		if (phone != null) {
 			homePhone.setContent(phone.getNumber());
 		}
+		if (custodian != null && isExtraCustodian) {
+			homePhone.setAsNotEmpty(localize("must_enter_home_phone", "You must enter a home phone for relative."));
+		}
 		if (work != null) {
 			workPhone.setContent(work.getNumber());
 		}
@@ -755,7 +758,7 @@ public class SchoolApplication extends SchoolBlock {
 			}
 		}
 		else {
-			noAnswer.setSelected(true);
+			no.setSelected(true);
 		}
 		applicationTable.add(yes, 2, aRow);
 		applicationTable.add(no, 3, aRow);
@@ -779,7 +782,7 @@ public class SchoolApplication extends SchoolBlock {
 			}
 		}
 		else {
-			noAnswer.setSelected(true);
+			no.setSelected(true);
 		}
 		applicationTable.add(yes, 2, aRow);
 		applicationTable.add(no, 3, aRow);
@@ -841,7 +844,7 @@ public class SchoolApplication extends SchoolBlock {
 		SubmitButton previous = (SubmitButton) getButton(new SubmitButton(localize("previous", "Previous")));
 		previous.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_PHASE_4));
 		SubmitButton next = (SubmitButton) getButton(new SubmitButton(localize("next", "Next")));
-		next.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_SAVE));
+		next.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_OVERVIEW));
 		
 		table.add(previous, 1, row);
 		table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
@@ -851,15 +854,14 @@ public class SchoolApplication extends SchoolBlock {
 		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		table.setCellpaddingRight(1, row, 12);
 		
-		next.setSubmitConfirm(localize("confirm_application_submit", "Are you sure you want to send the application?"));
-		form.setToDisableOnSubmit(next, true);
-
 		add(form);
 	}
 	
 	private void showOverview(IWContext iwc) throws RemoteException {
+		saveChildInfo(iwc);
+
 		Form form = createForm();
-		form.addParameter(PARAMETER_ACTION, String.valueOf(ACTION_PHASE_5));
+		form.addParameter(PARAMETER_ACTION, String.valueOf(ACTION_OVERVIEW));
 		
 		Table table = new Table();
 		table.setCellpadding(0);
@@ -871,7 +873,73 @@ public class SchoolApplication extends SchoolBlock {
 		table.add(getPersonInfoTable(iwc, getSession().getUser()), 1, row++);
 		table.setHeight(row++, 6);
 		
+		table.add(getHeader(localize("application.overview", "Overview")), 1, row++);
+		table.setHeight(row++, 6);
 		
+		Table verifyTable = new Table();
+		verifyTable.setCellpadding(getCellpadding());
+		verifyTable.setCellspacing(getCellspacing());
+		verifyTable.setColumns(2);
+		table.add(verifyTable, 1, row++);
+		int iRow = 1;
+		
+		String school1 = iwc.getParameter(PARAMETER_SCHOOLS + "_1");
+		String school2 = iwc.getParameter(PARAMETER_SCHOOLS + "_2");
+		String school3 = iwc.getParameter(PARAMETER_SCHOOLS + "_3");
+		
+		String yearPK = iwc.getParameter(SchoolAreaCollectionHandler.PARAMETER_SCHOOL_YEAR);
+		String message = iwc.getParameter(PARAMETER_MESSAGE);
+
+		if (iHomeSchoolChosen) {
+			School school = getBusiness().getHomeSchoolForUser(getSession().getUser());
+			if (school != null) {
+				verifyTable.add(getSmallHeader(localize("application.home_school", "Home school")), 1, iRow);
+				verifyTable.add(getText(school.getSchoolName()), 2, iRow++);
+			}
+		}
+		else {
+			if (school1 != null) {
+				School school = getSchoolBusiness().getSchool(school1);
+				if (school != null) {
+					verifyTable.add(getSmallHeader(localize("application.first_school", "First school")), 1, iRow);
+					verifyTable.add(getText(school.getSchoolName()), 2, iRow++);
+				}
+			}
+			
+			if (school2 != null) {
+				School school = getSchoolBusiness().getSchool(school2);
+				if (school != null) {
+					verifyTable.add(getSmallHeader(localize("application.second_school", "Second school")), 1, iRow);
+					verifyTable.add(getText(school.getSchoolName()), 2, iRow++);
+				}
+			}
+			
+			if (school3 != null) {
+				School school = getSchoolBusiness().getSchool(school3);
+				if (school != null) {
+					verifyTable.add(getSmallHeader(localize("application.third_school", "Third school")), 1, iRow);
+					verifyTable.add(getText(school.getSchoolName()), 2, iRow++);
+				}
+			}
+		}
+		
+		verifyTable.setHeight(iRow++, 6);
+		
+		if (yearPK != null) {
+			SchoolYear year = getSchoolBusiness().getSchoolYear(yearPK);
+			if (year != null) {
+				verifyTable.add(getSmallHeader(localize("application.year", "Year")), 1, iRow);
+				verifyTable.add(getText(year.getSchoolYearName()), 2, iRow++);
+			}
+		}
+		
+		verifyTable.setHeight(iRow++, 6);
+		
+		if (message != null) {
+			verifyTable.add(getSmallHeader(localize("application.message", "Message")), 1, iRow++);
+			verifyTable.mergeCells(1, iRow, 2, iRow);
+			verifyTable.add(getText(message), 1, iRow++);
+		}
 		
 		table.setHeight(row++, 18);
 		
@@ -884,7 +952,7 @@ public class SchoolApplication extends SchoolBlock {
 		table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
 		table.add(next, 1, row);
 		table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
-		table.add(getHelpButton("help_school_application_phase_5"), 1, row);
+		table.add(getHelpButton("help_school_application_overview"), 1, row);
 		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		table.setCellpaddingRight(1, row, 12);
 		
@@ -893,9 +961,14 @@ public class SchoolApplication extends SchoolBlock {
 
 		add(form);
 	}
+	
+	private void viewApplication(IWContext iwc) {
+		Form form = new Form();
+
+		add(form);
+	}
 
 	private void save(IWContext iwc) throws RemoteException {
-		saveChildInfo(iwc);
 		boolean saved = false;
 		
 		Object seasonPK = iwc.getParameter(PARAMETER_SEASON);
@@ -1111,6 +1184,9 @@ public class SchoolApplication extends SchoolBlock {
 		relations.addMenuElement(CareConstants.RELATION_FATHER, localize("relation.father", "Father"));
 		relations.addMenuElement(CareConstants.RELATION_STEPMOTHER, localize("relation.stepmother", "Stepmother"));
 		relations.addMenuElement(CareConstants.RELATION_STEPFATHER, localize("relation.stepfather", "Stepfather"));
+		relations.addMenuElement(CareConstants.RELATION_GRANDMOTHER, localize("relation.grandmother", "Grandmother"));
+		relations.addMenuElement(CareConstants.RELATION_GRANDFATHER, localize("relation.grandfather", "Grandfather"));
+		relations.addMenuElement(CareConstants.RELATION_SIBLING, localize("relation.sibling", "Sibling"));
 		relations.addMenuElement(CareConstants.RELATION_OTHER, localize("relation.other", "Other"));
 		
 		return relations;

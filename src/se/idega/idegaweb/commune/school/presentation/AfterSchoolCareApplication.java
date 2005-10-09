@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolCareApplication.java,v 1.20 2005/10/09 12:38:31 laddi Exp $
+ * $Id: AfterSchoolCareApplication.java,v 1.21 2005/10/09 14:44:01 laddi Exp $
  * Created on Aug 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -34,10 +34,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/10/09 12:38:31 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/09 14:44:01 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  */
 public class AfterSchoolCareApplication extends SchoolApplication {
 	
