@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolCareApplication.java,v 1.19 2005/10/07 13:17:28 laddi Exp $
+ * $Id: AfterSchoolCareApplication.java,v 1.20 2005/10/09 12:38:31 laddi Exp $
  * Created on Aug 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -34,10 +34,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/10/07 13:17:28 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/09 12:38:31 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  */
 public class AfterSchoolCareApplication extends SchoolApplication {
 	
@@ -577,7 +577,7 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		boolean[] pickedUp = new boolean[days.length];
 		for (int a = 0; a < days.length; a++) {
 			pickedUp[a] = new Boolean(iwc.getParameter(PARAMETER_PICKED_UP + "_" + (a+1))).booleanValue();
-			time[a] = iwc.getParameter(PARAMETER_TIME + "_" + (a+1));
+			time[a] = iwc.isParameterSet(PARAMETER_TIME + "_" + (a+1)) ? iwc.getParameter(PARAMETER_TIME + "_" + (a+1)) : null;
 		}
 		
 		String payerName = iwc.getParameter(PARAMETER_PAYER_NAME);

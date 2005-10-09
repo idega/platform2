@@ -341,13 +341,12 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 	public void storeDays(ChildCareApplication application, int[] dayOfWeek, String[] timeOfDeparture, boolean[] pickedUp) {
 		try {
 			for (int a = 0; a < dayOfWeek.length; a++) {
-				if (timeOfDeparture[a] != null) {
+				if (timeOfDeparture[a] != null && timeOfDeparture[a].length() > 0) {
 					AfterSchoolCareDays days = getAfterSchoolCareDaysHome().create();
 					days.setApplication(application);
 					days.setDayOfWeek(dayOfWeek[a]);
 					days.setPickedUp(pickedUp[a]);
 					
-					System.out.println(timeOfDeparture[a]);
 					IWTimestamp stamp = new IWTimestamp(timeOfDeparture[a]);
 					stamp.setAsTime();
 					days.setTimeOfDeparture(stamp.getTime());
