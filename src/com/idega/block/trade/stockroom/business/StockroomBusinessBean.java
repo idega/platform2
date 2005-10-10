@@ -592,11 +592,13 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
 	 * @param methodQuery
 	 */
 	protected void executeRemoteService(String remoteDomainToExclude, String methodQuery, String webserviceURI) {
-		IWBundle bundle =  getIWMainApplication().getBundle("is.idega.travel");
+		IWBundle bundle =  getIWMainApplication().getBundle("com.idega.block.trade");
 		String remoteTravelWebs = bundle.getProperty(REMOTE_TRAVEL_APPLICATION_URL_CSV_LIST,"");
-		if(!"".equals(remoteTravelWebs)){
+		if(!"".equals(remoteTravelWebs) && remoteTravelWebs != null){
 //			log("Invalidating REMOTE stored search results");
-			
+			if (remoteDomainToExclude == null) {
+				remoteDomainToExclude = "";
+			}
 			StringTokenizer tokenizer = new StringTokenizer(remoteTravelWebs,",");
 			while(tokenizer.hasMoreTokens()){
 				String remoteWeb = tokenizer.nextToken();
