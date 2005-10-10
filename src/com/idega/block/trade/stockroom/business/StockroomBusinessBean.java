@@ -597,6 +597,9 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
 		if(!"".equals(remoteTravelWebs) && remoteTravelWebs != null){
 //			log("Invalidating REMOTE stored search results");
 
+			String prmCallingServer = "remoteCallingHostName";
+			IWContext iwc = IWContext.getInstance();
+			
 			StringTokenizer tokenizer = new StringTokenizer(remoteTravelWebs,",");
 			while(tokenizer.hasMoreTokens()){
 				String remoteWeb = tokenizer.nextToken();
@@ -604,7 +607,7 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
 					if(remoteWeb.endsWith("/")){
 						remoteWeb = remoteWeb.substring(0,remoteWeb.length()-1);
 					}
-					String response = FileUtil.getStringFromURL(remoteWeb+webserviceURI+"?method="+methodQuery);
+					String response = FileUtil.getStringFromURL(remoteWeb+webserviceURI+"?method="+methodQuery+"&"+prmCallingServer+"="+iwc.getServerName());
 					if( response.indexOf("iwtravel-ok")==-1){
 						logError("Webservice method : "+methodQuery+" failed on : "+remoteWeb+" message was : "+response);
 					}
