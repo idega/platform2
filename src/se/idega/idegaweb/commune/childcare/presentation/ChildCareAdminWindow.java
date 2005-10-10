@@ -255,7 +255,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 	//private CloseButton close;
 	
-	private SubmitButton close;
+	private GenericButton close;
 
 	private Form form;
 
@@ -390,8 +390,14 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		//close.setPageToOpen(getParentPageID());
 		//close.addParameterToPage(PARAMETER_ACTION, ACTION_CLOSE);
 		//close button doesn't seem to be working to reload parent page so use submit instead to close
-		close = (SubmitButton) getStyledInterface(new SubmitButton(localize("close_window", "Close"), PARAMETER_ACTION, String.valueOf(ACTION_CLOSE)));
+	  
+		//close = getStyledInterface(new GenericButton(localize("close_window", "Close"), PARAMETER_ACTION, String.valueOf(ACTION_CLOSE)));
 
+		//	ac - okt 2005
+		close = (GenericButton) getStyledInterface(new GenericButton(localize("close window", "Close")));
+	  close.setPageToOpen(getParentPageID());
+	  close.addParameterToPage(PARAMETER_ACTION, ACTION_CLOSE);
+	  
 		String userName = null;
 		String personalId = null;
 		String personalIdUserName = "";

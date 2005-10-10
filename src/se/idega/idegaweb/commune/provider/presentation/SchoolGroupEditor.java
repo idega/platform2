@@ -541,7 +541,8 @@ public class SchoolGroupEditor extends ProviderBlock {
 		
 		table.add(Text.getNonBrakingSpace(), 1, row);
 
-		SubmitButton cancel = (SubmitButton) getButton(new SubmitButton(localize("cancel", "Cancel")));
+		GenericButton cancel = getButton(new GenericButton(localize("cancel", "Cancel")));
+		cancel.setPageToOpen(getParentPageID());
 		cancel.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_VIEW));
 		table.add(cancel, 1, row);
 		
