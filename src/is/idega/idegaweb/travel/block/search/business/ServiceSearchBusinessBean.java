@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.StringTokenizer;
 import java.util.Vector;
 import javax.ejb.FinderException;
 import javax.transaction.UserTransaction;
@@ -60,7 +59,6 @@ import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
 import com.idega.user.data.User;
-import com.idega.util.FileUtil;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -71,7 +69,6 @@ import com.idega.util.IWTimestamp;
  */
 public class ServiceSearchBusinessBean extends IBOServiceBean implements ServiceSearchBusiness, ActionListener {
 
-	public static final String REMOTE_TRAVEL_APPLICATION_URL_CSV_LIST = "REMOTE_TRAVEL_APPLICATION_URL_CSV_LIST";
 
 	private HashMap resultMap = new HashMap();
 
@@ -579,8 +576,13 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 	public TravelSessionManager getTravelSessionManager(IWUserContext iwuc) throws RemoteException {
 		return (TravelSessionManager) IBOLookup.getSessionInstance(iwuc, TravelSessionManager.class);
 	}
-	public TravelStockroomBusiness getTravelStockroomBusiness() throws RemoteException {
-		return (TravelStockroomBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), TravelStockroomBusiness.class);
+	public TravelStockroomBusiness getTravelStockroomBusiness() {
+		try {
+			return (TravelStockroomBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), TravelStockroomBusiness.class);
+		}
+		catch (IBOLookupException e) {
+			throw new IBORuntimeException(e);
+		}
 	}
 	
 	public TravelStockroomBusiness getBusiness(Product product) throws RemoteException, FinderException {
@@ -652,41 +654,11 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 	log("Invalidating LOCAL stored search results");
 	getIWApplicationContext().getIWMainApplication().getIWCacheManager().invalidateCache(SEARCH_FORM_CACHE_KEY);
 	
-	IWBundle bundle =  getIWMainApplication().getBundle("is.idega.travel");
-	String remoteTravelWebs = bundle.getProperty(REMOTE_TRAVEL_APPLICATION_URL_CSV_LIST,"");
-	if(!"".equals(remoteTravelWebs)){
-		log("Invalidating REMOTE stored search results");
-		
-		StringTokenizer tokenizer = new StringTokenizer(remoteTravelWebs,",");
-		String webserviceURI = "/idegaweb/bundles/is.idega.travel.bundle/resources/services/IWTravelWS.jws";
-		String methodQuery = "?method=decacheAllSupplierManagers";
-		while(tokenizer.hasMoreTokens()){
-			String remoteWeb = tokenizer.nextToken();
-			if(remoteWeb.indexOf(remoteDomainToExclude)==-1){
-				if(remoteWeb.endsWith("/")){
-					remoteWeb = remoteWeb.substring(0,remoteWeb.length()-1);
-				}
-				String response = FileUtil.getStringFromURL(remoteWeb+webserviceURI+methodQuery);
-				if( response.indexOf("iwtravel-ok")==-1){
-					logError("Webservice failed on : "+remoteWeb+" message was : "+response);
-				}
-				else{
-					log("Webservice successful for :"+remoteWeb);
-				}
-			}
-			else{
-				log("Skipping round-trip decaching for calling remote server : "+remoteDomainToExclude);
-			}
-		}
-	}
+	String methodQuery = "decacheAllSupplierManagers";
+	getTravelStockroomBusiness().executeRemoteService(remoteDomainToExclude, methodQuery);
 	
-	
-	
-	
-	
-	
-	
-	}
+  }
+
 
   
   public void setNewBookingsInBasket(IWContext iwc, String[] newBookingIds) throws RemoteException {
@@ -739,7 +711,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 				}
 			}
 			
-			getBooker().invalidateCache(booking.getID());
+			getBooker().invalidateCache(booking.getPrimaryKey().toString());
 			
 			booking.setIsValid(false);
 			booking.store();
@@ -957,7 +929,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 			BookingForm bf = getServiceHandler().getBookingForm(iwc, booking.getService().getProduct(), false);
 			bf.sendEmails(iwc, booking, iwrb, supplierManager);
 
-			getBooker().invalidateCache(booking.getID());
+			getBooker().invalidateCache(booking.getPrimaryKey().toString());
 			
 		}
 		
