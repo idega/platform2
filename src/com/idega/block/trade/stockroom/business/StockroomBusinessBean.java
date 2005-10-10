@@ -596,13 +596,11 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
 		String remoteTravelWebs = bundle.getProperty(REMOTE_TRAVEL_APPLICATION_URL_CSV_LIST,"");
 		if(!"".equals(remoteTravelWebs) && remoteTravelWebs != null){
 //			log("Invalidating REMOTE stored search results");
-			if (remoteDomainToExclude == null) {
-				remoteDomainToExclude = "";
-			}
+
 			StringTokenizer tokenizer = new StringTokenizer(remoteTravelWebs,",");
 			while(tokenizer.hasMoreTokens()){
 				String remoteWeb = tokenizer.nextToken();
-				if(remoteWeb.indexOf(remoteDomainToExclude)==-1){
+				if(remoteDomainToExclude == null || remoteWeb.indexOf(remoteDomainToExclude)==-1){
 					if(remoteWeb.endsWith("/")){
 						remoteWeb = remoteWeb.substring(0,remoteWeb.length()-1);
 					}
