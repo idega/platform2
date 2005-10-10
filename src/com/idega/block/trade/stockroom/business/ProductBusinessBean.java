@@ -135,21 +135,27 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
     }
 
     product.addTravelAddresses(addressIds);
-    clearAddressMaps(product);
-    invalidateTimeframeCache(product);
-    clearProductCache(supplierId);
+    clearAddressMaps(product.getPrimaryKey().toString());
+	  invalidateProductCache(product.getPrimaryKey().toString());
+    clearProductCache(Integer.toString(supplierId));
     return ((Integer) product.getPrimaryKey()).intValue();
   }
   
-  private void clearAddressMaps(Product product) {
-	    productDepartureAddresses.put(product.getPrimaryKey().toString()+false, null); 
-	    productDepartureAddresses.put(product.getPrimaryKey().toString()+true, null); 
-	    productDepartureAddresses2 = new HashMap();
+  public boolean clearAddressMaps(String productID, String remoteDomainToExclude) {
+    productDepartureAddresses.put(productID+false, null); 
+    productDepartureAddresses.put(productID+true, null); 
+    productDepartureAddresses2 = new HashMap();
+	getStockroomBusiness().executeRemoteService(remoteDomainToExclude, "clearAddressMaps&productID="+productID);
+	return true;
+  }
+  
+  private boolean clearAddressMaps(String productID) {
+	  return clearAddressMaps(productID, null);
   }
 
   public void addTravelAddress(Product product, TravelAddress travelAddress) {
 	  product.addTravelAddress(travelAddress);
-	  clearAddressMaps(product);
+	  clearAddressMaps(product.getPrimaryKey().toString());
   }
   
   public void addArrivalAddress(Product product, Address address) {
@@ -158,12 +164,12 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
   
   public void removeTravelAddress(Product product, TravelAddress travelAddress) throws IDORemoveRelationshipException {
 	  product.removeTravelAddress(travelAddress);
-	  clearAddressMaps(product);
+	  clearAddressMaps(product.getPrimaryKey().toString());
   }
   
   public void removeAllTravelAddresses(Product product) throws IDORemoveRelationshipException {
 	  product.removeAllFrom(TravelAddress.class);
-	  clearAddressMaps(product);
+	  clearAddressMaps(product.getPrimaryKey().toString());
   }
   
   public String getProductIdParameter() {
@@ -192,24 +198,28 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
       return (Product) obj;
     }
   }
+  
+  public boolean invalidateProductCache(String productID) {
+	  return invalidateProductCache(productID, null);
+  }
+  public boolean invalidateProductCache(String productID, String remoteDomainToExclude) {
+	  products.remove(productID);
+	  timeframeMap.remove(productID);
+	  getStockroomBusiness().executeRemoteService(remoteDomainToExclude, "invalidateProductCache&productID="+productID);
+	  return true;
+  }
 
   public void deleteProduct(Product product) throws RemoteException , IDOException {
-    products.remove(product.getPrimaryKey().toString());
-    invalidateTimeframeCache(product);
+	  invalidateProductCache(product.getPrimaryKey().toString());
     product.invalidate();
   }
 
   public Product updateProduct(Product product) throws RemoteException, FinderException, IDOException {
-    products.remove(product.getPrimaryKey().toString() );
-    invalidateTimeframeCache(product);
+	  invalidateProductCache(product.getPrimaryKey().toString());
     product.store();
     return getProduct( (Integer) product.getPrimaryKey() );
   }
   
-  public void invalidateTimeframeCache(Product product) {
-	    timeframeMap.remove(product.getPrimaryKey());
-  }
-
   public ProductCategory getProductCategory(int categoryID) {
     try {
       return ((com.idega.block.trade.stockroom.data.ProductCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ProductCategory.class)).findByPrimaryKeyLegacy(categoryID);
@@ -288,11 +298,16 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
     return localeDrop;
   }
 
-
-  public void clearProductCache(int supplierId) {
+  public boolean clearProductCache(String supplierId) {
+	  return clearProductCache(supplierId, null);
+  }
+	  
+  public boolean clearProductCache(String supplierId, String remoteDomainToExclude) {
     getIWApplicationContext().removeApplicationAttribute(productsApplication+supplierId);
     getIWApplicationContext().getIWMainApplication().getIWCacheManager().invalidateCache(ProductCatalog.CACHE_KEY);
     this.triggerActionEvent(COMMAND_CLEAR_CACHE);
+	getStockroomBusiness().executeRemoteService(remoteDomainToExclude, "clearProductCache&supplierID="+supplierId);
+    return true;
   }
 
   public List getProducts(IWContext iwc, int supplierId) throws RemoteException{
@@ -408,10 +423,10 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
   
   private HashMap timeframeMap = new HashMap();
   public Timeframe[] getTimeframes(Product product) throws SQLException {
-	  Timeframe[] returner = (Timeframe[]) timeframeMap.get(product.getPrimaryKey());
+	  Timeframe[] returner = (Timeframe[]) timeframeMap.get(product.getPrimaryKey().toString());
 	  if (returner == null) {
 		  returner = product.getTimeframes();
-		  timeframeMap.put(product.getPrimaryKey(), returner);
+		  timeframeMap.put(product.getPrimaryKey().toString(), returner);
 	  }
 	  return returner;
   }
@@ -632,8 +647,13 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
 	    return (ProductPriceHome) IDOLookup.getHome(ProductPrice.class);
   }
 
-  protected StockroomBusiness getStockroomBusiness() throws RemoteException {
-    return (StockroomBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), StockroomBusiness.class);
+  protected StockroomBusiness getStockroomBusiness() {
+    try {
+		return (StockroomBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), StockroomBusiness.class);
+	}
+	catch (IBOLookupException e) {
+		throw new IBORuntimeException(e);
+	}
   }
   
   public ProductPriceBusiness getProductPriceBusiness() {

@@ -1,5 +1,5 @@
 /*
- * $Id: StockroomBusiness.java,v 1.45 2005/05/13 04:36:59 gimmi Exp $
+ * $Id: StockroomBusiness.java,v 1.46 2005/10/10 10:51:24 gimmi Exp $
  * Created on 12.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -28,10 +28,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2005/05/13 04:36:59 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/10/10 10:51:24 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.45 $
+ * @version $Revision: 1.46 $
  */
 public interface StockroomBusiness extends IBOService {
 
@@ -186,4 +186,7 @@ public interface StockroomBusiness extends IBOService {
 	 */
 	public boolean isBetween(IWTimestamp from, IWTimestamp to, IWTimestamp stampToCheck, boolean yearly,
 			boolean bordersCount) throws java.rmi.RemoteException;
+
+	public void executeRemoteService(String remoteDomainToExclude, String methodQuery);
+
 }

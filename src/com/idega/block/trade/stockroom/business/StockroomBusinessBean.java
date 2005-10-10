@@ -7,6 +7,7 @@ import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import com.idega.block.trade.business.CurrencyBusiness;
@@ -37,10 +38,12 @@ import com.idega.data.IDOCompositePrimaryKeyException;
 import com.idega.data.IDOFinderException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
+import com.idega.util.FileUtil;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -53,6 +56,9 @@ import com.idega.util.IWTimestamp;
  */
 
 public class StockroomBusinessBean extends IBOServiceBean implements StockroomBusiness {
+
+	public static final String REMOTE_TRAVEL_APPLICATION_URL_CSV_LIST = "REMOTE_TRAVEL_APPLICATION_URL_CSV_LIST";
+	
 
   public StockroomBusinessBean() {
   }
@@ -114,7 +120,7 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
 	  if (addressId != -1) {
 		  prPrice.addTravelAddress(new Integer(addressId));
 	  }
-	  getProductPriceBusiness().invalidateCache(productId);
+	  getProductPriceBusiness().invalidateCache(Integer.toString(productId));
 	  return prPrice;
   }
 
@@ -573,5 +579,45 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
 			throw new IBORuntimeException(e);
 		}
 	}
+
+	public void executeRemoteService(String remoteDomainToExclude, String methodQuery) {
+		executeRemoteService(remoteDomainToExclude, methodQuery, "/idegaweb/bundles/com.idega.block.trade.bundle/resources/services/IWTradeWS.jws");
+	}
+	
+	/**
+	 * <p>
+	 * Method for calling methods on remote domains
+	 * </p>
+	 * @param remoteDomainToExclude
+	 * @param methodQuery
+	 */
+	protected void executeRemoteService(String remoteDomainToExclude, String methodQuery, String webserviceURI) {
+		IWBundle bundle =  getIWMainApplication().getBundle("is.idega.travel");
+		String remoteTravelWebs = bundle.getProperty(REMOTE_TRAVEL_APPLICATION_URL_CSV_LIST,"");
+		if(!"".equals(remoteTravelWebs)){
+//			log("Invalidating REMOTE stored search results");
+			
+			StringTokenizer tokenizer = new StringTokenizer(remoteTravelWebs,",");
+			while(tokenizer.hasMoreTokens()){
+				String remoteWeb = tokenizer.nextToken();
+				if(remoteWeb.indexOf(remoteDomainToExclude)==-1){
+					if(remoteWeb.endsWith("/")){
+						remoteWeb = remoteWeb.substring(0,remoteWeb.length()-1);
+					}
+					String response = FileUtil.getStringFromURL(remoteWeb+webserviceURI+"?method="+methodQuery);
+					if( response.indexOf("iwtravel-ok ")==-1){
+						logError("Webservice method : "+methodQuery+" failed on : "+remoteWeb+" message was : "+response);
+					}
+					else{
+						log("Webservice method : "+methodQuery+" successful for :"+remoteWeb);
+					}
+				}
+				else{
+					log("Skipping round-trip decaching for calling remote server : "+remoteDomainToExclude);
+				}
+			}
+		}
+	}
+
 
 }

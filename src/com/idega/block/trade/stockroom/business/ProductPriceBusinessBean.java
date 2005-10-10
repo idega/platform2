@@ -1,5 +1,5 @@
 /*
- * $Id: ProductPriceBusinessBean.java,v 1.1 2005/08/11 14:02:46 gimmi Exp $
+ * $Id: ProductPriceBusinessBean.java,v 1.2 2005/10/10 10:51:24 gimmi Exp $
  * Created on Aug 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -18,6 +18,9 @@ import javax.ejb.FinderException;
 import com.idega.block.trade.stockroom.data.PriceCategoryBMPBean;
 import com.idega.block.trade.stockroom.data.ProductPrice;
 import com.idega.block.trade.stockroom.data.ProductPriceHome;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
+import com.idega.business.IBORuntimeException;
 import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -144,17 +147,17 @@ public class ProductPriceBusinessBean extends IBOServiceBean  implements Product
 		return t;
 	}
 	
-	public boolean invalidateCache(int productId) {
-		mapForProductPriceMap.put(new Integer(productId), null);
+
+	public boolean invalidateCache(String productId) {
+		return  invalidateCache(productId, null);
+	}
+
+	
+	public boolean invalidateCache(String productID, String remoteDomainToExclude) {
+		mapForProductPriceMap.put(new Integer(productID), null);
+		getStockroomBusiness().executeRemoteService(remoteDomainToExclude, "invalidatePriceCache&productID="+productID);
 		return true;
 	}
-	
-	public boolean invalidateCache() {
-		mapForProductPriceMap.clear();
-		return true;
-	}
-	
-	
 	
 	public Collection getMiscellaneousPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly) throws FinderException {
 		return getProductPriceHome().findMiscellaneousPrices(productId, timeframeId, addressId, netBookingOnly, -1);
@@ -164,6 +167,14 @@ public class ProductPriceBusinessBean extends IBOServiceBean  implements Product
 		return getProductPriceHome().findProductPrices(productId, timeframeId, addressId, netBookingOnly, 1, currencyId, null);
 	}
 
+	protected StockroomBusiness getStockroomBusiness() {
+		try {
+			return (StockroomBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), StockroomBusiness.class);
+		}
+		catch (IBOLookupException e) {
+			throw new IBORuntimeException(e);
+		}
+	}
 	
 	public ProductPriceHome getProductPriceHome() {
 		try {
