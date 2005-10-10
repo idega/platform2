@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import com.idega.axis.util.AxisUtil;
 import com.idega.block.trade.business.CurrencyBusiness;
 import com.idega.block.trade.business.CurrencyHolder;
 import com.idega.block.trade.stockroom.data.PriceCategory;
@@ -598,8 +599,7 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
 //			log("Invalidating REMOTE stored search results");
 
 			String prmCallingServer = "remoteCallingHostName";
-			IWContext iwc = IWContext.getInstance();
-			
+			String serverName = AxisUtil.getHttpServletRequest().getServerName();
 			StringTokenizer tokenizer = new StringTokenizer(remoteTravelWebs,",");
 			while(tokenizer.hasMoreTokens()){
 				String remoteWeb = tokenizer.nextToken();
@@ -607,7 +607,7 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
 					if(remoteWeb.endsWith("/")){
 						remoteWeb = remoteWeb.substring(0,remoteWeb.length()-1);
 					}
-					String response = FileUtil.getStringFromURL(remoteWeb+webserviceURI+"?method="+methodQuery+"&"+prmCallingServer+"="+iwc.getServerName());
+					String response = FileUtil.getStringFromURL(remoteWeb+webserviceURI+"?method="+methodQuery+"&"+prmCallingServer+"="+serverName);
 					if( response.indexOf("iwtravel-ok")==-1){
 						logError("Webservice method : "+methodQuery+" failed on : "+remoteWeb+" message was : "+response);
 					}
