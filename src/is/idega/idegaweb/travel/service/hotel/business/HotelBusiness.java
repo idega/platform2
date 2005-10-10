@@ -1,5 +1,5 @@
 /*
- * $Id: HotelBusiness.java,v 1.11 2005/08/24 13:23:40 gimmi Exp $
+ * $Id: HotelBusiness.java,v 1.12 2005/10/10 10:57:26 gimmi Exp $
  * Created on Aug 12, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -26,10 +26,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2005/08/24 13:23:40 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/10/10 10:57:26 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public interface HotelBusiness extends IBOService, TravelStockroomBusiness {
 
@@ -84,4 +84,7 @@ public interface HotelBusiness extends IBOService, TravelStockroomBusiness {
 	 * @see is.idega.idegaweb.travel.service.hotel.business.HotelBusinessBean#supportsSupplyPool
 	 */
 	public boolean supportsSupplyPool() throws java.rmi.RemoteException;
+	public boolean invalidateHotel(String hotelID);
+	public boolean invalidateHotel(String hotelID, String remoteDomainToExclude);
+
 }

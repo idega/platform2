@@ -1896,7 +1896,7 @@ public Form getFormMaintainingAllParameters(IWContext iwc) throws FinderExceptio
 //	    booking.store();
 			gBooking.setIsValid(false);
 			gBooking.store();
-      getBooker(iwc).invalidateCache(((Integer)gBooking.getPrimaryKey()).intValue());
+      getBooker(iwc).invalidateCache(gBooking.getPrimaryKey().toString());
 
 	    inquiryId = getInquirer(iwc).sendInquery(surname+" "+lastname, email, stamp, _product.getID() , numberOfSeats, comment, gBooking.getID(), _reseller, null);
 	

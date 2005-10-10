@@ -23,4 +23,7 @@ public interface TourBusiness extends TravelStockroomBusiness
  public com.idega.util.IWTimestamp getNextAvailableDay(com.idega.presentation.IWContext p0,is.idega.idegaweb.travel.service.tour.data.Tour p1,com.idega.block.trade.stockroom.data.Product p2,com.idega.block.trade.stockroom.data.Timeframe[] p3,com.idega.util.IWTimestamp p4) throws java.rmi.RemoteException;
  public java.util.List getDepartureDays(com.idega.presentation.IWContext p0,com.idega.block.trade.stockroom.data.Product p1,boolean p2) throws java.rmi.RemoteException;
  public com.idega.util.IWTimestamp getNextAvailableDay(com.idega.presentation.IWContext p0,is.idega.idegaweb.travel.service.tour.data.Tour p1,com.idega.block.trade.stockroom.data.Product p2,com.idega.block.trade.stockroom.data.Timeframe p3,com.idega.util.IWTimestamp p4) throws java.rmi.RemoteException;
+ public boolean invalidateTour(String tourID);
+  public boolean invalidateTour(String tourID, String remoteDomainToExclude);
+
 }

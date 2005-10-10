@@ -3797,7 +3797,7 @@ public abstract class BookingForm extends TravelManager{
 				gBooking.setIsValid(false);
 				gBooking.setPaymentTypeId(Booking.PAYMENT_TYPE_ID_NO_PAYMENT);
 				gBooking.store();
-        getBooker(iwc).invalidateCache(((Integer)gBooking.getPrimaryKey()).intValue());
+        getBooker(iwc).invalidateCache(gBooking.getPrimaryKey().toString());
 				GeneralBooking tBook;
 				Iterator iter1 = bookings.iterator();
 				while (iter1.hasNext()) {
@@ -3805,7 +3805,7 @@ public abstract class BookingForm extends TravelManager{
 					tBook.setIsValid(false);
 					tBook.setPaymentTypeId(Booking.PAYMENT_TYPE_ID_NO_PAYMENT);
 					tBook.store();
-	        getBooker(iwc).invalidateCache(((Integer)tBook.getPrimaryKey()).intValue());
+	        getBooker(iwc).invalidateCache(tBook.getPrimaryKey().toString());
 				}
 				
 				System.out.println("Starting Creditcard Payment : "+IWTimestamp.RightNow().toString());
@@ -3985,7 +3985,7 @@ public abstract class BookingForm extends TravelManager{
         booking = (Booking) bookings.get(counter);
         booking.setIsValid(false);
         booking.store();
-        getBooker(iwc).invalidateCache(((Integer)booking.getPrimaryKey()).intValue());
+        getBooker(iwc).invalidateCache(booking.getPrimaryKey().toString());
 
         inquiryId = getInquirer(iwc).sendInquery(surname+" "+lastname, email, fromStamp, _product.getID() , numberOfSeats, comment, booking.getID(), _reseller, creditCardReferenceString);
 

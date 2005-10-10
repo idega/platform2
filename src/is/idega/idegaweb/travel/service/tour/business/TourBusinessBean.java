@@ -98,7 +98,8 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
           Service service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHome(Service.class)).findByPrimaryKey(new Integer(serviceId));
           Product product = getProductBusiness().getProduct(serviceId);// Product(serviceId);
           Tour tour;
-          tourMap.remove(product.getPrimaryKey());
+
+          invalidateTour(product.getPrimaryKey().toString());
 
           if (tourId == -1) {
             tour = ((is.idega.idegaweb.travel.service.tour.data.TourHome)com.idega.data.IDOLookup.getHome(Tour.class)).create();
@@ -186,6 +187,15 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
       return serviceId;
   }
 
+  public boolean invalidateTour(String tourID) {
+	  return invalidateTour(tourID, null);
+  }
+  public boolean invalidateTour(String tourID, String remoteDomainToExclude) {
+      tourMap.remove(tourID);
+	  super.executeRemoteService(remoteDomainToExclude, "invalidateTour&tourID="+tourID);
+	  return true;
+  }
+  
   public int getNumberOfTours(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp) {
     int returner = 0;
     try {
@@ -528,7 +538,7 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
       return null;
     }
   }
-	public void invalidateMaxDayCache(Collection products) throws RemoteException {
+	public boolean invalidateMaxDayCache(Collection products) {
 		super.invalidateMaxDayCache(products);
 		if (products != null) {
 			Iterator iter = products.iterator();
@@ -536,6 +546,7 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
 				maxBookings.remove(((Product) iter.next()).getPrimaryKey());
 			}
 		}
+		return true;
 	}
 
 	private HashMap maxBookings = new HashMap();

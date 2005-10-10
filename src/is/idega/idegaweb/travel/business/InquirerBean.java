@@ -187,7 +187,7 @@ public class InquirerBean extends IBOServiceBean implements Inquirer{
             booking = inquery.getBooking();
             booking.setIsValid(true);
             booking.store();
-            getBooker().invalidateCache(inquery.getBookingId());
+            getBooker().invalidateCache(Integer.toString(inquery.getBookingId()));
           }
         }
 
@@ -320,7 +320,7 @@ public class InquirerBean extends IBOServiceBean implements Inquirer{
                 booking = inquery.getBooking();
                 booking.setIsValid(true);
                 booking.store();
-                getBooker().invalidateCache(inq.getBookingId());
+                getBooker().invalidateCache(Integer.toString(inq.getBookingId()));
               }
     				}
     			}

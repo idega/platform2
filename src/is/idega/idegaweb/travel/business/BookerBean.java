@@ -30,6 +30,8 @@ import com.idega.block.trade.stockroom.data.TravelAddress;
 import com.idega.block.trade.stockroom.data.TravelAddressBMPBean;
 import com.idega.block.trade.stockroom.data.TravelAddressHome;
 import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
+import com.idega.business.IBORuntimeException;
 import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOLookup;
@@ -169,8 +171,8 @@ public class BookerBean extends IBOServiceBean implements Booker{
 				TravelAddress tAddress = taHome.findByPrimaryKey(addressId);
 				temp.addTravelAddress(tAddress);
 			}
-			invalidateBookingCountCache(temp.getServiceID());
-			invalidateCache(returner);
+			invalidateBookingCountCache(Integer.toString(temp.getServiceID()));
+			invalidateCache(Integer.toString(returner));
 			//    temp.addTo(TravelAddress.class, addressId);
 		}catch (FinderException fe) {
 			throw new CreateException(fe.getMessage());
@@ -323,8 +325,13 @@ public class BookerBean extends IBOServiceBean implements Booker{
 	
 	HashMap bookingCountMap = new HashMap();
 	
-	public void invalidateBookingCountCache(int productId) {
+	public boolean invalidateBookingCountCache(String productId) {
+		return invalidateBookingCountCache(productId, null);
+	}
+	public boolean invalidateBookingCountCache(String productId, String remoteDomainToExclude) {
 		bookingCountMap.put(new Integer(productId), null);
+		getTravelStockroomBusiness().executeRemoteService(remoteDomainToExclude, "invalidateBookingCountCache&productID="+productId);
+		return true;
 	}
 	
 	public  int getBookingsTotalCount(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType, Collection travelAddresses, boolean orderByDateOfBooking) throws RemoteException{
@@ -586,8 +593,8 @@ public class BookerBean extends IBOServiceBean implements Booker{
 	}
 	
 	public  boolean deleteBooking(Booking booking) throws RemoteException {
-		invalidateCache(((Integer) booking.getPrimaryKey()).intValue());
-		invalidateBookingCountCache(booking.getServiceID());
+		invalidateCache(booking.getPrimaryKey().toString());
+		invalidateBookingCountCache(Integer.toString(booking.getServiceID()));
 		booking.setIsValid(false);
 		booking.store();
 		return true;
@@ -845,12 +852,17 @@ public class BookerBean extends IBOServiceBean implements Booker{
 		return -1;
 	}
 	
-	public void invalidateCache(int bookingID) {
-		this.triggerActionEvent(COMMAND_BOOKING, bookingID);
+	public boolean invalidateCache(String bookingID) {
+		return invalidateCache(bookingID, null);
+	}
+	public boolean invalidateCache(String bookingID, String remoteDomainToExclude) {
+		this.triggerActionEvent(COMMAND_BOOKING, Integer.parseInt(bookingID));
 		Iterator iter = cacheKeys.iterator();
 		while (iter.hasNext()) {
 			getIWApplicationContext().getIWMainApplication().getIWCacheManager().invalidateCache((String) iter.next());
 		}
+		getTravelStockroomBusiness().executeRemoteService(remoteDomainToExclude, "invalidateBookingCache&bookingID="+bookingID);
+		return true;
 	}
 	
 	public void addCacheKeyToInvalidateOnSave(String key) {
@@ -859,8 +871,13 @@ public class BookerBean extends IBOServiceBean implements Booker{
 		}
 	}
 	
-	private TravelStockroomBusiness getTravelStockroomBusiness() throws RemoteException{
-		return (TravelStockroomBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), TravelStockroomBusiness.class);
+	private TravelStockroomBusiness getTravelStockroomBusiness() {
+		try {
+			return (TravelStockroomBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), TravelStockroomBusiness.class);
+		}
+		catch (IBOLookupException e) {
+			throw new IBORuntimeException(e);
+		}
 	}
 	
 	public GeneralBookingHome getGeneralBookingHome() throws RemoteException {

@@ -249,7 +249,7 @@ public class TimeframeAdder extends TravelWindow {
 
 
     try {
-    	getProductBusiness(iwc).invalidateTimeframeCache(_product);
+    	getProductBusiness(iwc).invalidateProductCache(_product.getPrimaryKey().toString());
     	while (iwc.getParameter(this._parameterTimeframeFrom+(++counter)) != null) {
         String tfId = iwc.getParameter(this._parameterTimeframeId+counter);
         String tfFrom = iwc.getParameter(this._parameterTimeframeFrom+counter);

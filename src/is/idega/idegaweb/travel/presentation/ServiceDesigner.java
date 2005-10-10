@@ -227,7 +227,7 @@ private void finalize(IWContext iwc) throws Exception {
       int tourId = df.handleInsert(iwc);
       setService(iwc,tourId);
       removeSessionServiceId(iwc);
-      super.getBooker(iwc).invalidateBookingCountCache(tourId);
+      super.getBooker(iwc).invalidateBookingCountCache(Integer.toString(tourId));
     }
     tsb.removeServiceDayHashtable(iwc);
     priceCategoryCreation(iwc);

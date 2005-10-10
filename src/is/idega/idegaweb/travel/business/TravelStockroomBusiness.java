@@ -275,8 +275,9 @@ public interface TravelStockroomBusiness extends StockroomBusiness {
 	 */
 	public Collection getProductsSharingPool(Product product) throws RemoteException;
 
-	public void invalidateMaxDayCache(Collection products) throws RemoteException;
 	public void invalidateMaxDayCache(SupplyPool supplyPool) throws RemoteException;
+	public boolean invalidateMaxDayCache(Product product, String remoteDomainToExclude) throws RemoteException;
+	public boolean invalidateServiceCache(String serviceID, String remoteDomainToExclude);
 	
 	/**
 	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#getMaxBookings
@@ -292,4 +293,6 @@ public interface TravelStockroomBusiness extends StockroomBusiness {
 	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#supportsSupplyPool
 	 */
 	public boolean supportsSupplyPool() throws java.rmi.RemoteException;
+	public boolean removeServiceDayHashtable(IWContext iwc, String remoteDomainToExclude);
+	public boolean removeResellerHashtables(IWContext iwc, String remoteDomainToExclude);
 }

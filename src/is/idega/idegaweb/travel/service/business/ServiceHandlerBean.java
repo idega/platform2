@@ -307,7 +307,7 @@ public class ServiceHandlerBean extends IBOServiceBean implements ServiceHandler
   }
 
   public void removeProductApplication(IWContext iwc, int supplierId) throws RemoteException{
-    getProductBusiness().clearProductCache(supplierId);
+    getProductBusiness().clearProductCache(Integer.toString(supplierId));
     iwc.getIWMainApplication().getIWCacheManager().invalidateCache(ServiceViewer.CACHE_KEY+""+supplierId);
   }
 

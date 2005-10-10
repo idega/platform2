@@ -1,5 +1,5 @@
 /*
- * $Id: Booker.java,v 1.60 2005/08/30 02:08:32 gimmi Exp $
+ * $Id: Booker.java,v 1.61 2005/10/10 10:55:31 gimmi Exp $
  * Created on Aug 30, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -34,10 +34,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2005/08/30 02:08:32 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/10/10 10:55:31 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.60 $
+ * @version $Revision: 1.61 $
  */
 public interface Booker extends IBOService {
 
@@ -124,7 +124,8 @@ public interface Booker extends IBOService {
 	/**
 	 * @see is.idega.idegaweb.travel.business.BookerBean#invalidateBookingCountCache
 	 */
-	public void invalidateBookingCountCache(int productId) throws java.rmi.RemoteException;
+	public boolean invalidateBookingCountCache(String productId) throws java.rmi.RemoteException;
+	public boolean invalidateBookingCountCache(String productId, String remoteDomainToExclude);
 
 	/**
 	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookingsTotalCount
@@ -322,7 +323,8 @@ public interface Booker extends IBOService {
 	/**
 	 * @see is.idega.idegaweb.travel.business.BookerBean#invalidateCache
 	 */
-	public void invalidateCache(int bookingID) throws java.rmi.RemoteException;
+	public boolean invalidateCache(String bookingID) throws java.rmi.RemoteException;
+	public boolean invalidateCache(String bookingID, String remoteDomainToExclude);
 
 	/**
 	 * @see is.idega.idegaweb.travel.business.BookerBean#addCacheKeyToInvalidateOnSave
