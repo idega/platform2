@@ -599,7 +599,12 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
 //			log("Invalidating REMOTE stored search results");
 
 			String prmCallingServer = "remoteCallingHostName";
-			String serverName = AxisUtil.getHttpServletRequest().getServerName();
+			String serverName = "unspecified";
+			try {
+				serverName = AxisUtil.getHttpServletRequest().getServerName();
+			} catch (Exception e) {
+				serverName = IWContext.getInstance().getRequest().getServerName();
+			}
 			StringTokenizer tokenizer = new StringTokenizer(remoteTravelWebs,",");
 			while(tokenizer.hasMoreTokens()){
 				String remoteWeb = tokenizer.nextToken();
