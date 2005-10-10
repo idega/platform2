@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolApplication.java,v 1.18 2005/10/09 14:44:01 laddi Exp $
+ * $Id: SchoolApplication.java,v 1.19 2005/10/10 10:14:50 laddi Exp $
  * Created on Aug 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -56,10 +56,10 @@ import com.idega.util.Age;
 import com.idega.util.PersonalIDFormatter;
 
 /**
- * Last modified: $Date: 2005/10/09 14:44:01 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/10 10:14:50 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
 public class SchoolApplication extends SchoolBlock {
 
@@ -69,6 +69,7 @@ public class SchoolApplication extends SchoolBlock {
 	protected static final int ACTION_PHASE_4 = 4;
 	protected static final int ACTION_PHASE_5 = 5;
 	protected static final int ACTION_OVERVIEW = 6;
+	protected static final int ACTION_VIEW = 7;
 	protected static final int ACTION_SAVE = 0;
 	
 	protected static final String PARAMETER_ACTION = "prm_action";
@@ -102,6 +103,7 @@ public class SchoolApplication extends SchoolBlock {
 	private boolean iHomeSchoolChosen = false;
 	private boolean iSchoolChange = false;
 	private boolean iUseHomeSchool = true;
+	private boolean iShowOverview = false;
 	
 	private ICPage iAfterSchoolCarePage;
 	protected ICPage iHomePage;
@@ -125,14 +127,15 @@ public class SchoolApplication extends SchoolBlock {
 			add(getErrorText(localize("no_season_found", "No season found...")));
 			return;
 		}
-		if (getBusiness().hasSchoolPlacing(getSession().getUser(), season) && !iSchoolChange) {
-			add(getErrorText(localize("has_granted_choice", "Child already has a granted choice")));
-			return;
-		}
+		boolean hasPlacing = getBusiness().hasSchoolPlacing(getSession().getUser(), season);
 		
 		switch (parseAction(iwc)) {
+			case ACTION_VIEW:
+				viewApplication(iwc, season, hasPlacing);
+				break;
+			
 			case ACTION_PHASE_1:
-				showPhaseOne(iwc);
+				showPhaseOne(iwc, hasPlacing);
 				break;
 			
 			case ACTION_PHASE_2:
@@ -161,7 +164,12 @@ public class SchoolApplication extends SchoolBlock {
 		}
 	}
 
-	protected void showPhaseOne(IWContext iwc) throws RemoteException {
+	protected void showPhaseOne(IWContext iwc, boolean hasPlacing) throws RemoteException {
+		if (hasPlacing && !iSchoolChange) {
+			add(getErrorText(localize("has_granted_choice", "Child already has a granted choice")));
+			return;
+		}
+
 		if (getBusiness().hasHomeSchool(getSession().getUser())) {
 			saveCustodianInfo(iwc, false);
 			
@@ -857,7 +865,7 @@ public class SchoolApplication extends SchoolBlock {
 		add(form);
 	}
 	
-	private void showOverview(IWContext iwc) throws RemoteException {
+	protected void showOverview(IWContext iwc) throws RemoteException {
 		saveChildInfo(iwc);
 
 		Form form = createForm();
@@ -930,16 +938,57 @@ public class SchoolApplication extends SchoolBlock {
 			if (year != null) {
 				verifyTable.add(getSmallHeader(localize("application.year", "Year")), 1, iRow);
 				verifyTable.add(getText(year.getSchoolYearName()), 2, iRow++);
+				verifyTable.setHeight(iRow++, 6);
 			}
 		}
-		
-		verifyTable.setHeight(iRow++, 6);
 		
 		if (message != null) {
 			verifyTable.add(getSmallHeader(localize("application.message", "Message")), 1, iRow++);
 			verifyTable.mergeCells(1, iRow, 2, iRow);
 			verifyTable.add(getText(message), 1, iRow++);
+			verifyTable.setHeight(iRow++, 6);
 		}
+		
+		Boolean hasGrowthDeviation = getCareBusiness().hasGrowthDeviation(getSession().getUser());
+		String growthDeviation = getCareBusiness().getGrowthDeviationDetails(getSession().getUser());
+		Boolean hasAllergies = getCareBusiness().hasAllergies(getSession().getUser());
+		String allergies = getCareBusiness().getAllergiesDetails(getSession().getUser());
+		String lastCareProvider = getCareBusiness().getLastCareProvider(getSession().getUser());
+		boolean canContactLastProvider = getCareBusiness().canContactLastCareProvider(getSession().getUser());
+		String otherInformation = getCareBusiness().getOtherInformation(getSession().getUser());
+		boolean canDisplaySchoolImages = getBusiness().canDisplaySchoolImages(getSession().getUser());
+		
+		verifyTable.add(getSmallHeader(localize("child.has_growth_deviation", "Has growth deviation")), 1, iRow);
+		verifyTable.add(getSmallText(getBooleanString(hasGrowthDeviation)), 2, iRow++);
+		
+		if (growthDeviation != null) {
+			verifyTable.add(getSmallHeader(localize("child.growth_deviation_details", "Growth deviation details")), 1, iRow);
+			verifyTable.add(getSmallText(growthDeviation), 2, iRow++);
+		}
+		
+		verifyTable.add(getSmallHeader(localize("child.has_allergies", "Has allergies")), 1, iRow);
+		verifyTable.add(getSmallText(getBooleanString(hasAllergies)), 2, iRow++);
+
+		if (allergies != null) {
+			verifyTable.add(getSmallHeader(localize("child.allergies_details", "Allergies details")), 1, iRow);
+			verifyTable.add(getSmallText(allergies), 2, iRow++);
+		}
+		
+		if (lastCareProvider != null) {
+			verifyTable.add(getSmallHeader(localize("child.last_care_provider", "Last care provider")), 1, iRow);
+			verifyTable.add(getSmallText(lastCareProvider), 2, iRow++);
+		}
+		
+		verifyTable.add(getSmallHeader(localize("child.can_contact_last_care_provider", "Can contact last care provider")), 1, iRow);
+		verifyTable.add(getSmallText(getBooleanString(canContactLastProvider)), 2, iRow++);
+		
+		if (otherInformation != null) {
+			verifyTable.add(getSmallHeader(localize("child.other_information", "Other information")), 1, iRow);
+			verifyTable.add(getSmallText(otherInformation), 2, iRow++);
+		}
+		
+		verifyTable.add(getSmallHeader(localize("child.can_diplay_images", "Can display images")), 1, iRow);
+		verifyTable.add(getSmallText(getBooleanString(canDisplaySchoolImages)), 2, iRow++);
 		
 		table.setHeight(row++, 18);
 		
@@ -962,9 +1011,128 @@ public class SchoolApplication extends SchoolBlock {
 		add(form);
 	}
 	
-	private void viewApplication(IWContext iwc) {
+	private void viewApplication(IWContext iwc, SchoolSeason season, boolean hasPlacing) throws RemoteException {
 		Form form = new Form();
+		form.addParameter(PARAMETER_ACTION, "");
 
+		Table table = new Table();
+		table.setCellpadding(0);
+		table.setCellspacing(0);
+		table.setWidth(Table.HUNDRED_PERCENT);
+		form.add(table);
+		int row = 1;
+		
+		table.add(getPersonInfoTable(iwc, getSession().getUser()), 1, row++);
+		table.setHeight(row++, 6);
+		
+		table.add(getHeader(localize("application.view_application", "View application")), 1, row++);
+		table.setHeight(row++, 6);
+		
+		Table viewTable = new Table();
+		viewTable.setCellpadding(getCellpadding());
+		viewTable.setCellspacing(getCellspacing());
+		viewTable.setColumns(2);
+		table.add(viewTable, 1, row++);
+		int iRow = 1;
+		
+		SchoolYear year = null;
+		String message = null;
+		Collection choices = getBusiness().getChoices(getSession().getUser(), season);
+		
+		int count = 1;
+		Iterator iter = choices.iterator();
+		while (iter.hasNext()) {
+			SchoolChoice choice = (SchoolChoice) iter.next();
+			School school = choice.getChosenSchool();
+			
+			if (count == 1) {
+				viewTable.add(getSmallHeader(localize("application.first_school", "First school")), 1, iRow);
+			}
+			else if (count == 2) {
+				viewTable.add(getSmallHeader(localize("application.second_school", "Second school")), 1, iRow);
+			}
+			else if (count == 3) {
+				viewTable.add(getSmallHeader(localize("application.third_school", "Third school")), 1, iRow);
+			}
+			viewTable.add(getText(school.getSchoolName()), 2, iRow++);
+
+			if (year == null) {
+				year = choice.getSchoolYear();
+			}
+			if (message == null) {
+				message = choice.getMessage();
+			}
+		}
+		
+		viewTable.setHeight(iRow++, 6);
+		
+		if (year != null) {
+			viewTable.add(getSmallHeader(localize("application.year", "Year")), 1, iRow);
+			viewTable.add(getText(year.getSchoolYearName()), 2, iRow++);
+			viewTable.setHeight(iRow++, 6);
+		}
+		
+		if (message != null) {
+			viewTable.add(getSmallHeader(localize("application.message", "Message")), 1, iRow++);
+			viewTable.mergeCells(1, iRow, 2, iRow);
+			viewTable.add(getText(message), 1, iRow++);
+			viewTable.setHeight(iRow++, 6);
+		}
+		
+		Boolean hasGrowthDeviation = getCareBusiness().hasGrowthDeviation(getSession().getUser());
+		String growthDeviation = getCareBusiness().getGrowthDeviationDetails(getSession().getUser());
+		Boolean hasAllergies = getCareBusiness().hasAllergies(getSession().getUser());
+		String allergies = getCareBusiness().getAllergiesDetails(getSession().getUser());
+		String lastCareProvider = getCareBusiness().getLastCareProvider(getSession().getUser());
+		boolean canContactLastProvider = getCareBusiness().canContactLastCareProvider(getSession().getUser());
+		String otherInformation = getCareBusiness().getOtherInformation(getSession().getUser());
+		boolean canDisplaySchoolImages = getBusiness().canDisplaySchoolImages(getSession().getUser());
+		
+		viewTable.add(getSmallHeader(localize("child.has_growth_deviation", "Has growth deviation")), 1, iRow);
+		viewTable.add(getSmallText(getBooleanString(hasGrowthDeviation)), 2, iRow++);
+		
+		if (growthDeviation != null) {
+			viewTable.add(getSmallHeader(localize("child.growth_deviation_details", "Growth deviation details")), 1, iRow);
+			viewTable.add(getSmallText(growthDeviation), 2, iRow++);
+		}
+		
+		viewTable.add(getSmallHeader(localize("child.has_allergies", "Has allergies")), 1, iRow);
+		viewTable.add(getSmallText(getBooleanString(hasAllergies)), 2, iRow++);
+
+		if (allergies != null) {
+			viewTable.add(getSmallHeader(localize("child.allergies_details", "Allergies details")), 1, iRow);
+			viewTable.add(getSmallText(allergies), 2, iRow++);
+		}
+		
+		if (lastCareProvider != null) {
+			viewTable.add(getSmallHeader(localize("child.last_care_provider", "Last care provider")), 1, iRow);
+			viewTable.add(getSmallText(lastCareProvider), 2, iRow++);
+		}
+		
+		viewTable.add(getSmallHeader(localize("child.can_contact_last_care_provider", "Can contact last care provider")), 1, iRow);
+		viewTable.add(getSmallText(getBooleanString(canContactLastProvider)), 2, iRow++);
+		
+		if (otherInformation != null) {
+			viewTable.add(getSmallHeader(localize("child.other_information", "Other information")), 1, iRow);
+			viewTable.add(getSmallText(otherInformation), 2, iRow++);
+		}
+		
+		viewTable.add(getSmallHeader(localize("child.can_diplay_images", "Can display images")), 1, iRow);
+		viewTable.add(getSmallText(getBooleanString(canDisplaySchoolImages)), 2, iRow++);
+		
+		table.setHeight(row++, 18);
+		
+		SubmitButton next = (SubmitButton) getButton(new SubmitButton(localize("edit", "Edit")));
+		next.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_PHASE_1));
+		
+		if (!hasPlacing) {
+			table.add(next, 1, row);
+			table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
+		}
+		table.add(getHelpButton("help_school_application_view"), 1, row);
+		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
+		table.setCellpaddingRight(1, row, 12);
+		
 		add(form);
 	}
 
@@ -1145,8 +1313,13 @@ public class SchoolApplication extends SchoolBlock {
 		if (iwc.isParameterSet(PARAMETER_ACTION)) {
 			action = Integer.parseInt(iwc.getParameter(PARAMETER_ACTION));
 		}
-		else if (iSchoolChange) {
-			action = ACTION_PHASE_2;
+		else {
+			if (iSchoolChange) {
+				action = ACTION_PHASE_2;
+			}
+			if (iShowOverview) {
+				action = ACTION_VIEW;
+			}
 		}
 		
 		iHomeSchoolChosen = false;
@@ -1192,6 +1365,22 @@ public class SchoolApplication extends SchoolBlock {
 		return relations;
 	}
 	
+	private String getBooleanString(Boolean variable) {
+		if (variable == null) {
+			return localize("application.no_answer", "Won't answer");
+		}
+		return getBooleanString(variable.booleanValue());
+	}
+	
+	private String getBooleanString(boolean variable) {
+		if (variable) {
+			return localize("application.yes", "Yes");
+		}
+		else {
+			return localize("application.no", "No");
+		}
+	}
+	
 	protected ICPage getHomePage() {
 		return iHomePage;
 	}
@@ -1214,5 +1403,9 @@ public class SchoolApplication extends SchoolBlock {
 	
 	public void setMaxAfterSchoolCareAge(int age) {
 		iMaxAge = age;
+	}
+	
+	public void setShowOverview(boolean showOverview) {
+		iShowOverview = showOverview;
 	}
 }
