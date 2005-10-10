@@ -31,7 +31,7 @@ public class ChildCareChildren extends ChildCareBlock {
 
 	private int fromAge = -1;
 	private int toAge = 100;
-
+	private boolean _isCheckRequired= true;
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
 	 */
@@ -73,7 +73,8 @@ public class ChildCareChildren extends ChildCareBlock {
 					
 					boolean createLink = false;
 					GrantedCheck check = null;
-					if (this.isCheckRequired()) {
+					//if (this.isCheckRequired()) {
+					if (_isCheckRequired){
 						try {
 							check = getCheckBusiness(iwc).getGrantedCheckByChild(child);
 							if (check != null) {
@@ -127,6 +128,14 @@ public class ChildCareChildren extends ChildCareBlock {
 	public void setAgeRange(int from,int to){
 		this.fromAge = from;
 		this.toAge = to;
+	}
+	
+	/**
+	 * Sets if the component is to set children age range.
+	 * <br>This defaults to the range -1 to 1000
+	 **/
+	public void setIsCheckRequired(boolean isRequired){
+		_isCheckRequired = isRequired;
 	}
 	
 	private CheckBusiness getCheckBusiness(IWApplicationContext iwac) throws RemoteException {
