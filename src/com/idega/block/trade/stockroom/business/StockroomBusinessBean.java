@@ -605,7 +605,7 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
 						remoteWeb = remoteWeb.substring(0,remoteWeb.length()-1);
 					}
 					String response = FileUtil.getStringFromURL(remoteWeb+webserviceURI+"?method="+methodQuery);
-					if( response.indexOf("iwtravel-ok ")==-1){
+					if( response.indexOf("iwtravel-ok")==-1){
 						logError("Webservice method : "+methodQuery+" failed on : "+remoteWeb+" message was : "+response);
 					}
 					else{
