@@ -395,7 +395,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		//	ac - okt 2005
 		close = (GenericButton) getStyledInterface(new GenericButton(localize("close window", "Close")));
-	  close.setPageToOpen(getParentPageID());
+		close.setParentPageToOpen(_pageID);//because this is a window - use setParentPageToOpen, see above
 	  close.addParameterToPage(PARAMETER_ACTION, ACTION_CLOSE);
 	  
 		String userName = null;
@@ -1356,6 +1356,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		table.add(getSmallHeader(localize("child_care.enter_group_name", "Enter group name:")), 1, row++);
 		table.add(getSmallText(localize("child_care.group_name", "Name")), 1, row);
+		table.add("  ", 1, row);
 		table.add(textInput, 1, row++);
 
 		// school types
@@ -1375,6 +1376,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		}
 		table.add(getSmallHeader(localize("child_care.choose_school_type", "Choose school type:")), 1, row++);
 		table.add(getSmallText(localize("child_care.school_type", "School type")), 1, row);
+		table.add("  ", 1, row);
 		table.add(types, 1, row++);
 
 		String localized = "";
@@ -2176,10 +2178,6 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 	private void createGroup(IWContext iwc) throws RemoteException {
 		String groupName = iwc.getParameter(PARAMETER_GROUP_NAME);
-		if (groupName.trim().length() == 0) {
-			getParentPage().setAlertOnLoad(localize("empty_name_value", "Can not store group with empty name value"));
-			return;
-		}
 		int schoolTypeId = new Integer(iwc.getParameter(PARAMETER_SCHOOL_TYPES)).intValue();
 
 		getBusiness().getSchoolBusiness().storeSchoolClass(getSession().getGroupID(), groupName, getSession().getChildCareID(), schoolTypeId, -1, null, null);
