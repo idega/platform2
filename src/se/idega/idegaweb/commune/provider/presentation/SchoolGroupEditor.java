@@ -56,6 +56,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 	public final static String PARAMETER_TYPE_ID ="sge_type_id";
 	private final String PARAMETER_IS_SUBGROUP = "sge_is_subgroup";
 	
+	public static final int ACTION_CLOSE = 0;
 	public final int ACTION_VIEW = 1;
 	protected final int ACTION_EDIT = 2;
 	private final int ACTION_DELETE = 3;
@@ -353,6 +354,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 		table.setNoWrap(1, row);
 		TextInput name = (TextInput) getStyledInterface(new TextInput(PARAMETER_GROUP_NAME));
 		name.setAsNotEmpty(localize("must_supply_group_name", "You must enter a group name."));
+			
 		if (_group != null && _group.getSchoolClassName() != null)
 			name.setContent(_group.getSchoolClassName());
 		if (useStyleNames) {
@@ -538,12 +540,11 @@ public class SchoolGroupEditor extends ProviderBlock {
 		SubmitButton save = (SubmitButton) getButton(new SubmitButton(localize("save_group", "Save group")));
 		save.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_SAVE));
 		table.add(save, 1, row);
-		
 		table.add(Text.getNonBrakingSpace(), 1, row);
-
+		//ac okt 2005
 		GenericButton cancel = getButton(new GenericButton(localize("cancel", "Cancel")));
 		cancel.setPageToOpen(getParentPageID());
-		cancel.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_VIEW));
+		cancel.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_CLOSE));
 		table.add(cancel, 1, row);
 		
 		return form;
