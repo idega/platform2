@@ -391,7 +391,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	  
 		//close = getStyledInterface(new GenericButton(localize("close_window", "Close"), PARAMETER_ACTION, String.valueOf(ACTION_CLOSE)));
 
-		//	ac - okt 2005
+		//	ac - okt 2005 - instead of above mentioned - why do you need reloading the parent?
+		//and if you want to do that please use setParentPageToOpen(_pageID); instead, but I prefer nothing, just closing the window
 		close = (CloseButton) getStyledInterface(new CloseButton(localize("close_window", "Close")));
 	  close.addParameterToPage(PARAMETER_ACTION, ACTION_CLOSE);
 	  
