@@ -30,6 +30,7 @@ import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
@@ -66,6 +67,8 @@ public class SchoolGroupEditor extends ProviderBlock {
 	private int _groupID = -1;
 	private SchoolClass _group;
 	protected School _provider;
+	
+	private CloseButton cancel;
 	
 	private boolean showStudyPaths = false;
 	private boolean useStyleNames = false;
@@ -542,7 +545,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 		table.add(save, 1, row);
 		table.add(Text.getNonBrakingSpace(), 1, row);
 		//ac okt 2005
-		GenericButton cancel = getButton(new GenericButton(localize("cancel", "Cancel")));
+		cancel = (CloseButton) getStyledInterface(new CloseButton(localize("close_window", "Close")));
 		cancel.setPageToOpen(getParentPageID());
 		cancel.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_CLOSE));
 		table.add(cancel, 1, row);
