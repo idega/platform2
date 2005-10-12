@@ -253,10 +253,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 	// private IWTimestamp earliestDate;
 
-	//private CloseButton close;
+	private CloseButton close;
 	
-	private GenericButton close;
-
 	private Form form;
 
 	// private boolean restrictDates = false;
@@ -394,8 +392,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		//close = getStyledInterface(new GenericButton(localize("close_window", "Close"), PARAMETER_ACTION, String.valueOf(ACTION_CLOSE)));
 
 		//	ac - okt 2005
-		close = (GenericButton) getStyledInterface(new GenericButton(localize("close window", "Close")));
-		close.setParentPageToOpen(_pageID);//because this is a window - use setParentPageToOpen, see above
+		close = (CloseButton) getStyledInterface(new CloseButton(localize("close_window", "Close")));
 	  close.addParameterToPage(PARAMETER_ACTION, ACTION_CLOSE);
 	  
 		String userName = null;
@@ -1376,7 +1373,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		}
 		table.add(getSmallHeader(localize("child_care.choose_school_type", "Choose school type:")), 1, row++);
 		table.add(getSmallText(localize("child_care.school_type", "School type")), 1, row);
-		table.add("  ", 1, row);
+		//table.add("  ", 1, row);
 		table.add(types, 1, row++);
 
 		String localized = "";
@@ -1385,8 +1382,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		else
 			localized = localize("child_care.create_group", "Create group");
 
-	
+	//kannski er hægt a? bæta einhverju vi? ?ennan takka svo ekki sé hægt a? slá á space í groupname og reyna a? geyma
 		SubmitButton createGroup = (SubmitButton) getStyledInterface(new SubmitButton(localized, PARAMETER_ACTION, String.valueOf(ACTION_CREATE_GROUP)));
+		
 		form.setToDisableOnSubmit(createGroup, true);
 		table.add(createGroup, 1, row);
 		table.add(Text.getNonBrakingSpace(), 1, row);
@@ -2179,7 +2177,6 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private void createGroup(IWContext iwc) throws RemoteException {
 		String groupName = iwc.getParameter(PARAMETER_GROUP_NAME);
 		int schoolTypeId = new Integer(iwc.getParameter(PARAMETER_SCHOOL_TYPES)).intValue();
-
 		getBusiness().getSchoolBusiness().storeSchoolClass(getSession().getGroupID(), groupName, getSession().getChildCareID(), schoolTypeId, -1, null, null);
 
 		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
