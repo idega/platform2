@@ -1,5 +1,5 @@
 /*
- * $Id: CareBusinessBean.java,v 1.9 2005/08/09 16:34:50 laddi Exp $
+ * $Id: CareBusinessBean.java,v 1.10 2005/10/13 19:13:13 laddi Exp $
  * Created on Oct 13, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -38,10 +38,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2005/08/09 16:34:50 $ by $Author: laddi $
+ *  Last modified: $Date: 2005/10/13 19:13:13 $ by $Author: laddi $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class CareBusinessBean extends IBOServiceBean  implements CareBusiness{
 	
@@ -275,40 +275,42 @@ public class CareBusinessBean extends IBOServiceBean  implements CareBusiness{
 	
 	public List getRelatives(User child) {
 		List relatives = new ArrayList();
-		
-		try {
-			String relativePK = child.getMetaData(CareConstants.METADATA_RELATIVE_1);
-			if (relativePK != null) {
-				User relative = getUserBusiness().getUser(new Integer(relativePK));
-				if (relative != null) {
-					relatives.add(relative);
-				}
+
+		for (int a = 1; a <= 2; a++) {
+			String name = child.getMetaData((a == 1 ? CareConstants.METADATA_RELATIVE_1 : CareConstants.METADATA_RELATIVE_2) + "_name");
+			String relation = child.getMetaData((a == 1 ? CareConstants.METADATA_RELATIVE_1 : CareConstants.METADATA_RELATIVE_2) + "_relation");
+			String homePhone = 	child.getMetaData((a == 1 ? CareConstants.METADATA_RELATIVE_1 : CareConstants.METADATA_RELATIVE_2) + "_homePhone");
+			String workPhone = 	child.getMetaData((a == 1 ? CareConstants.METADATA_RELATIVE_1 : CareConstants.METADATA_RELATIVE_2) + "_workPhone");
+			String mobilePhone = child.getMetaData((a == 1 ? CareConstants.METADATA_RELATIVE_1 : CareConstants.METADATA_RELATIVE_2) + "_mobilePhone");
+			String email = child.getMetaData((a == 1 ? CareConstants.METADATA_RELATIVE_1 : CareConstants.METADATA_RELATIVE_2) + "_email");
+			
+			if (name != null) {
+				Relative relative = new Relative();
+				relative.setName(name);
+				relative.setRelation(relation);
+				relative.setHomePhone(homePhone);
+				relative.setWorkPhone(workPhone);
+				relative.setMobilePhone(mobilePhone);
+				relative.setEmail(email);
+				
+				relatives.add(relative);
 			}
-			relativePK = child.getMetaData(CareConstants.METADATA_RELATIVE_2);
-			if (relativePK != null) {
-				User relative = getUserBusiness().getUser(new Integer(relativePK));
-				if (relative != null) {
-					relatives.add(relative);
-				}
-			}
-		}
-		catch (RemoteException re) {
-			throw new IBORuntimeException(re);
 		}
 		
 		return relatives;
 	}
 	
-	public void storeRelative(User child, User relative, String relation, int number, String homePhone, String workPhone, String mobilePhone, String email) {
+	public void storeRelative(User child, String name, String relation, int number, String homePhone, String workPhone, String mobilePhone, String email) {
 		if (number > 2 || number < 1) {
 			return;
 		}
 		
-		updateUserInfo(relative, homePhone, workPhone, mobilePhone, email);
-		child.setMetaData(number == 1 ? CareConstants.METADATA_RELATIVE_1 : CareConstants.METADATA_RELATIVE_2, relative.getPrimaryKey().toString(), "com.idega.user.data.User");
-		if (relation != null && relation.length() > 0) {
-			storeUserRelation(child, relative, relation);
-		}
+		child.setMetaData((number == 1 ? CareConstants.METADATA_RELATIVE_1 : CareConstants.METADATA_RELATIVE_2) + "_name", name, "java.lang.String");
+		child.setMetaData((number == 1 ? CareConstants.METADATA_RELATIVE_1 : CareConstants.METADATA_RELATIVE_2) + "_relation", relation, "java.lang.String");
+		child.setMetaData((number == 1 ? CareConstants.METADATA_RELATIVE_1 : CareConstants.METADATA_RELATIVE_2) + "_homePhone", homePhone, "java.lang.String");
+		child.setMetaData((number == 1 ? CareConstants.METADATA_RELATIVE_1 : CareConstants.METADATA_RELATIVE_2) + "_workPhone", workPhone, "java.lang.String");
+		child.setMetaData((number == 1 ? CareConstants.METADATA_RELATIVE_1 : CareConstants.METADATA_RELATIVE_2) + "_mobilePhone", mobilePhone, "java.lang.String");
+		child.setMetaData((number == 1 ? CareConstants.METADATA_RELATIVE_1 : CareConstants.METADATA_RELATIVE_2) + "_email", email, "java.lang.String");
 	}
 	
 	public void storeUserRelation(User child, User relatedUser, String relation) {

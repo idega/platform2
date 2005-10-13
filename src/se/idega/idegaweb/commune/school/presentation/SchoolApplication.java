@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolApplication.java,v 1.19 2005/10/10 10:14:50 laddi Exp $
+ * $Id: SchoolApplication.java,v 1.20 2005/10/13 19:13:13 laddi Exp $
  * Created on Aug 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.care.business.CareConstants;
+import se.idega.idegaweb.commune.care.business.Relative;
 import se.idega.idegaweb.commune.school.business.SchoolAreaCollectionHandler;
 import se.idega.idegaweb.commune.school.data.SchoolChoice;
 import com.idega.block.school.business.SchoolYearComparator;
@@ -56,10 +57,10 @@ import com.idega.util.Age;
 import com.idega.util.PersonalIDFormatter;
 
 /**
- * Last modified: $Date: 2005/10/10 10:14:50 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/13 19:13:13 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  */
 public class SchoolApplication extends SchoolBlock {
 
@@ -650,6 +651,59 @@ public class SchoolApplication extends SchoolBlock {
 		return row;
 	}
 
+	private int addRelativeToTable(Table table, Relative relative, int row) {
+		table.setCellpaddingRight(1, row, 5);
+		table.add(getText(localize("name", "Name")), 1, row++);
+		table.mergeCells(1, row, 2, row);
+		table.add(getTextInput(PARAMETER_RELATIVE, relative != null ? relative.getName() : null, false), 1, row);
+		table.setHeight(row++, 5);
+		
+		table.setCellpaddingRight(1, row, 5);
+		table.setCellpaddingLeft(2, row, 5);
+		table.add(getText(localize("home_phone", "Home phone")), 1, row);
+		table.add(getText(localize("work_phone", "Work phone")), 2, row++);
+		TextInput homePhone = getTextInput(PARAMETER_HOME_PHONE, null, false);
+		TextInput workPhone = getTextInput(PARAMETER_WORK_PHONE, null, false);
+		if (relative != null && relative.getHomePhone() != null) {
+			homePhone.setContent(relative.getHomePhone());
+		}
+		if (relative != null && relative.getWorkPhone() != null) {
+			workPhone.setContent(relative.getWorkPhone());
+		}
+		table.setCellpaddingRight(1, row, 5);
+		table.setCellpaddingLeft(2, row, 5);
+		table.add(homePhone, 1, row);
+		table.add(workPhone, 2, row++);
+		table.setHeight(row++, 5);
+
+		table.setCellpaddingRight(1, row, 5);
+		table.setCellpaddingLeft(2, row, 5);
+		table.add(getText(localize("mobile_phone", "Mobile phone")), 1, row);
+		table.add(getText(localize("email", "E-mail")), 2, row++);
+		TextInput mobilePhone = getTextInput(PARAMETER_MOBILE_PHONE, null, false);
+		TextInput mail = getTextInput(PARAMETER_EMAIL, null, false);
+		if (relative != null && relative.getMobilePhone() != null) {
+			mobilePhone.setContent(relative.getMobilePhone());
+		}
+		if (relative != null && relative.getEmail() != null) {
+			mail.setContent(relative.getEmail());
+		}
+		table.setCellpaddingRight(1, row, 5);
+		table.setCellpaddingLeft(2, row, 5);
+		table.add(mobilePhone, 1, row);
+		table.add(mail, 2, row++);
+		table.setHeight(row++, 5);
+		
+		table.add(getText(localize("relation", "Relation")), 1, row++);
+		DropdownMenu relationMenu = getRelationDropdown(null);
+		if (relative != null && relative.getRelation() != null) {
+			relationMenu.setSelectedElement(relative.getRelation());
+		}
+		table.add(relationMenu, 1, row++);
+		
+		return row;
+	}
+
 	protected void showPhaseFour(IWContext iwc, int nextPhase, int previousPhase, int currentPhase) throws RemoteException {
 		saveCustodianInfo(iwc, false);
 		saveChildInfo(iwc);
@@ -679,23 +733,12 @@ public class SchoolApplication extends SchoolBlock {
 
 		List relatives = getCareBusiness().getRelatives(getSession().getUser());
 		for (int a = 1; a <= 2; a++) {
-			User relative = null;
+			Relative relative = null;
 			if (relatives.size() >= a) {
-				relative = (User) relatives.get(a - 1);
-			}
-			if (iwc.isParameterSet(PARAMETER_PERSONAL_ID + "_" + a)) {
-				saveCustodianInfo(iwc, true);
-				
-				String personalID = iwc.getParameter(PARAMETER_PERSONAL_ID + "_" + a);
-				try {
-					relative = getUserBusiness().getUser(personalID);
-				}
-				catch (FinderException fe) {
-					getParentPage().setAlertOnLoad(localize("no_user_found_with_personal_id", "No user found with personal ID") + ": " + personalID);
-				}
+				relative = (Relative) relatives.get(a - 1);
 			}
 
-			aRow = addParentToTable(iwc, applicationTable, relative, aRow, true, a, true);
+			aRow = addRelativeToTable(applicationTable, relative, aRow);
 			
 			if (a == 1) {
 				applicationTable.setHeight(aRow++, 6);
@@ -939,6 +982,9 @@ public class SchoolApplication extends SchoolBlock {
 				verifyTable.add(getSmallHeader(localize("application.year", "Year")), 1, iRow);
 				verifyTable.add(getText(year.getSchoolYearName()), 2, iRow++);
 				verifyTable.setHeight(iRow++, 6);
+				verifyTable.mergeCells(1, iRow, 2, iRow);
+				verifyTable.setBottomCellBorder(1, iRow++, 1, "#D7D7D7", "solid");
+				verifyTable.setHeight(iRow++, 6);
 			}
 		}
 		
@@ -946,6 +992,9 @@ public class SchoolApplication extends SchoolBlock {
 			verifyTable.add(getSmallHeader(localize("application.message", "Message")), 1, iRow++);
 			verifyTable.mergeCells(1, iRow, 2, iRow);
 			verifyTable.add(getText(message), 1, iRow++);
+			verifyTable.setHeight(iRow++, 6);
+			verifyTable.mergeCells(1, iRow, 2, iRow);
+			verifyTable.setBottomCellBorder(1, iRow++, 1, "#D7D7D7", "solid");
 			verifyTable.setHeight(iRow++, 6);
 		}
 		
@@ -963,6 +1012,7 @@ public class SchoolApplication extends SchoolBlock {
 		
 		if (growthDeviation != null) {
 			verifyTable.add(getSmallHeader(localize("child.growth_deviation_details", "Growth deviation details")), 1, iRow);
+			verifyTable.setVerticalAlignment(1, iRow, Table.VERTICAL_ALIGN_TOP);
 			verifyTable.add(getSmallText(growthDeviation), 2, iRow++);
 		}
 		
@@ -971,11 +1021,13 @@ public class SchoolApplication extends SchoolBlock {
 
 		if (allergies != null) {
 			verifyTable.add(getSmallHeader(localize("child.allergies_details", "Allergies details")), 1, iRow);
+			verifyTable.setVerticalAlignment(1, iRow, Table.VERTICAL_ALIGN_TOP);
 			verifyTable.add(getSmallText(allergies), 2, iRow++);
 		}
 		
 		if (lastCareProvider != null) {
 			verifyTable.add(getSmallHeader(localize("child.last_care_provider", "Last care provider")), 1, iRow);
+			verifyTable.setVerticalAlignment(1, iRow, Table.VERTICAL_ALIGN_TOP);
 			verifyTable.add(getSmallText(lastCareProvider), 2, iRow++);
 		}
 		
@@ -984,11 +1036,14 @@ public class SchoolApplication extends SchoolBlock {
 		
 		if (otherInformation != null) {
 			verifyTable.add(getSmallHeader(localize("child.other_information", "Other information")), 1, iRow);
+			verifyTable.setVerticalAlignment(1, iRow, Table.VERTICAL_ALIGN_TOP);
 			verifyTable.add(getSmallText(otherInformation), 2, iRow++);
 		}
 		
 		verifyTable.add(getSmallHeader(localize("child.can_diplay_images", "Can display images")), 1, iRow);
 		verifyTable.add(getSmallText(getBooleanString(canDisplaySchoolImages)), 2, iRow++);
+		verifyTable.setWidth(1, "50%");
+		verifyTable.setWidth(2, "50%");
 		
 		table.setHeight(row++, 18);
 		
@@ -1070,12 +1125,18 @@ public class SchoolApplication extends SchoolBlock {
 			viewTable.add(getSmallHeader(localize("application.year", "Year")), 1, iRow);
 			viewTable.add(getText(year.getSchoolYearName()), 2, iRow++);
 			viewTable.setHeight(iRow++, 6);
+			viewTable.mergeCells(1, iRow, 2, iRow);
+			viewTable.setBottomCellBorder(1, iRow++, 1, "#D7D7D7", "solid");
+			viewTable.setHeight(iRow++, 6);
 		}
 		
 		if (message != null) {
 			viewTable.add(getSmallHeader(localize("application.message", "Message")), 1, iRow++);
 			viewTable.mergeCells(1, iRow, 2, iRow);
 			viewTable.add(getText(message), 1, iRow++);
+			viewTable.setHeight(iRow++, 6);
+			viewTable.mergeCells(1, iRow, 2, iRow);
+			viewTable.setBottomCellBorder(1, iRow++, 1, "#D7D7D7", "solid");
 			viewTable.setHeight(iRow++, 6);
 		}
 		
@@ -1093,6 +1154,7 @@ public class SchoolApplication extends SchoolBlock {
 		
 		if (growthDeviation != null) {
 			viewTable.add(getSmallHeader(localize("child.growth_deviation_details", "Growth deviation details")), 1, iRow);
+			viewTable.setVerticalAlignment(1, iRow, Table.VERTICAL_ALIGN_TOP);
 			viewTable.add(getSmallText(growthDeviation), 2, iRow++);
 		}
 		
@@ -1101,11 +1163,13 @@ public class SchoolApplication extends SchoolBlock {
 
 		if (allergies != null) {
 			viewTable.add(getSmallHeader(localize("child.allergies_details", "Allergies details")), 1, iRow);
+			viewTable.setVerticalAlignment(1, iRow, Table.VERTICAL_ALIGN_TOP);
 			viewTable.add(getSmallText(allergies), 2, iRow++);
 		}
 		
 		if (lastCareProvider != null) {
 			viewTable.add(getSmallHeader(localize("child.last_care_provider", "Last care provider")), 1, iRow);
+			viewTable.setVerticalAlignment(1, iRow, Table.VERTICAL_ALIGN_TOP);
 			viewTable.add(getSmallText(lastCareProvider), 2, iRow++);
 		}
 		
@@ -1114,11 +1178,14 @@ public class SchoolApplication extends SchoolBlock {
 		
 		if (otherInformation != null) {
 			viewTable.add(getSmallHeader(localize("child.other_information", "Other information")), 1, iRow);
+			viewTable.setVerticalAlignment(1, iRow, Table.VERTICAL_ALIGN_TOP);
 			viewTable.add(getSmallText(otherInformation), 2, iRow++);
 		}
-		
+				
 		viewTable.add(getSmallHeader(localize("child.can_diplay_images", "Can display images")), 1, iRow);
 		viewTable.add(getSmallText(getBooleanString(canDisplaySchoolImages)), 2, iRow++);
+		viewTable.setWidth(1, "50%");
+		viewTable.setWidth(2, "50%");
 		
 		table.setHeight(row++, 18);
 		
@@ -1259,17 +1326,20 @@ public class SchoolApplication extends SchoolBlock {
 		String[] workPhones = iwc.getParameterValues(PARAMETER_WORK_PHONE);
 		String[] mobilePhones = iwc.getParameterValues(PARAMETER_MOBILE_PHONE);
 		String[] emails = iwc.getParameterValues(PARAMETER_EMAIL);
+		String[] relations = iwc.getParameterValues(PARAMETER_RELATION);
 		
 		if (userPKs != null) {
 			for (int a = 0; a < userPKs.length; a++) {
 				String userPK = userPKs[a];
 				String relation = iwc.getParameter(PARAMETER_RELATION + "_" + userPK);
-				User custodian = getUserBusiness().getUser(new Integer(userPK));
 				
 				if (storeRelatives) {
-					getCareBusiness().storeRelative(getSession().getUser(), custodian, relation, a + 1, homePhones[a], workPhones[a], mobilePhones[a], emails[a]);
+					if (userPK.length() > 0) {
+						getCareBusiness().storeRelative(getSession().getUser(), userPK, relations[a], a + 1, homePhones[a], workPhones[a], mobilePhones[a], emails[a]);
+					}
 				}
 				else {
+					User custodian = getUserBusiness().getUser(new Integer(userPK));
 					if (getUserBusiness().getMemberFamilyLogic().isCustodianOf(custodian, getSession().getUser())) {
 						getCareBusiness().updateUserInfo(custodian, homePhones[a], workPhones[a], mobilePhones[a], emails[a]);
 						if (relation != null && relation.length() > 0) {
