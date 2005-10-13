@@ -19,6 +19,7 @@ import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
 import com.idega.presentation.Table2;
+import com.idega.presentation.TableCell2;
 import com.idega.presentation.TableColumn;
 import com.idega.presentation.TableColumnGroup;
 import com.idega.presentation.TableRow;
@@ -69,6 +70,8 @@ public class SchoolEditor extends SchoolBlock {
 	private static final int ACTION_NEW = 3;
 	private static final int ACTION_SAVE = 4;
 	private static final int ACTION_DELETE = 5;
+	
+	private String iNewKey = "school.new";
 	
 	boolean _useProviderStringId = false;
 	String iSchoolCategory = null;
@@ -202,15 +205,19 @@ public class SchoolEditor extends SchoolBlock {
 
 		TableRowGroup group = table.createHeaderRowGroup();
 		TableRow row = group.createRow();
-		row.createHeaderCell().add(new Text(localize("name", "Name")));
+		TableCell2 cell = row.createHeaderCell();
+		cell.setStyleClass("firstColumn");
+		cell.add(new Text(localize("name", "Name")));
 		row.createHeaderCell().add(new Text(localize("area", "Area")));
 		row.createHeaderCell().add(new Text(localize("address", "Address")));
 		row.createHeaderCell().add(new Text(localize("zipcode", "Zipcode")));
 		row.createHeaderCell().add(new Text(localize("ziparea", "Ziparea")));
 		row.createHeaderCell().add(new Text(localize("commune", "Commune")));
 		row.createHeaderCell().add(new Text(localize("phone", "Phone")));
-		row.createHeaderCell();
-		row.createHeaderCell();
+		row.createHeaderCell().add(Text.getNonBrakingSpace());
+		cell = row.createHeaderCell();
+		cell.setStyleClass("lastColumn");
+		cell.add(Text.getNonBrakingSpace());
 		
 		group = table.createBodyRowGroup();
 		int iRow = 1;
@@ -234,7 +241,9 @@ public class SchoolEditor extends SchoolBlock {
 				area = school.getSchoolArea();
 				commune = school.getCommune();
 				
-				row.createCell().add(new Text(school.getSchoolName()));
+				cell = row.createCell();
+				cell.setStyleClass("firstColumn");
+				cell.add(new Text(school.getSchoolName()));
 				if (area != null) {
 					row.createCell().add(new Text(area.getName()));
 				}
@@ -252,7 +261,9 @@ public class SchoolEditor extends SchoolBlock {
 				}
 				row.createCell().add(new Text(school.getSchoolPhone()));
 				row.createCell().add(edit);
-				row.createCell().add(delete);
+				cell = row.createCell();
+				cell.setStyleClass("lastColumn");
+				cell.add(delete);
 				
 				if (iRow % 2 == 0) {
 					row.setStyleClass(STYLENAME_LIST_TABLE_EVEN_ROW);
@@ -270,7 +281,7 @@ public class SchoolEditor extends SchoolBlock {
 		form.add(table);
 		form.add(new Break());
 		
-		SubmitButton newLink = (SubmitButton) getButton(new SubmitButton(localize("school.new", "New school"), PARAMETER_ACTION, String.valueOf(ACTION_NEW)));
+		SubmitButton newLink = (SubmitButton) getButton(new SubmitButton(localize(iNewKey, "New school"), PARAMETER_ACTION, String.valueOf(ACTION_NEW)));
 		form.add(newLink);
 
 		add(form);
@@ -550,5 +561,8 @@ public class SchoolEditor extends SchoolBlock {
 	public CommuneBusiness getCommuneBusiness(IWApplicationContext iwac) throws RemoteException {
 		return (CommuneBusiness) IBOLookup.getServiceInstance(iwac, CommuneBusiness.class);
 	}
-
+	
+	public void setNewSchoolLocalizedKey(String newSchoolLocalizedKey) {
+		iNewKey = newSchoolLocalizedKey;
+	}
 }

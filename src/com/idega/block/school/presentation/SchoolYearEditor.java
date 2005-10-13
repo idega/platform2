@@ -17,6 +17,7 @@ import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
 import com.idega.presentation.Table2;
+import com.idega.presentation.TableCell2;
 import com.idega.presentation.TableColumn;
 import com.idega.presentation.TableColumnGroup;
 import com.idega.presentation.TableRow;
@@ -162,13 +163,17 @@ public class SchoolYearEditor extends SchoolBlock {
 
 		TableRowGroup group = table.createHeaderRowGroup();
 		TableRow row = group.createRow();
-		row.createHeaderCell().add(new Text(localize("name", "Name")));
+		TableCell2 cell = row.createHeaderCell();
+		cell.setStyleClass("firstColumn");
+		cell.add(new Text(localize("name", "Name")));
 		row.createHeaderCell().add(new Text(localize("category", "Category")));
 		row.createHeaderCell().add(new Text(localize("school_type", "Type")));
 		row.createHeaderCell().add(new Text(localize("info", "Info")));
 		row.createHeaderCell().add(new Text(localize("age", "Age")));
-		row.createHeaderCell();
-		row.createHeaderCell();
+		row.createHeaderCell().add(Text.getNonBrakingSpace());
+		cell = row.createHeaderCell();
+		cell.setStyleClass("lastColumn");
+		cell.add(Text.getNonBrakingSpace());
 
 		group = table.createBodyRowGroup();
 		int iRow = 1;
@@ -187,13 +192,17 @@ public class SchoolYearEditor extends SchoolBlock {
 			delete.addParameter(PARAMETER_SCHOOL_YEAR_PK, year.getPrimaryKey().toString());
 			delete.addParameter(PARAMETER_ACTION, ACTION_DELETE);
 
-			row.createCell().add(new Text(year.getSchoolYearName()));
+			cell = row.createCell();
+			cell.setStyleClass("firstColumn");
+			cell.add(new Text(year.getSchoolYearName()));
 			row.createCell().add(new Text(category != null ? localize(category.getLocalizedKey(), category.getName()) : "-"));
 			row.createCell().add(new Text(type != null ? localize(type.getLocalizationKey(), type.getName()) : "-"));
 			row.createCell().add(new Text(year.getSchoolYearInfo() != null ? year.getSchoolYearInfo() : "-"));
 			row.createCell().add(new Text(year.getSchoolYearAge() > 0 ? String.valueOf(year.getSchoolYearAge()) : "-"));
 			row.createCell().add(edit);
-			row.createCell().add(delete);
+			cell = row.createCell();
+			cell.setStyleClass("lastColumn");
+			cell.add(delete);
 
 			if (iRow % 2 == 0) {
 				row.setStyleClass(STYLENAME_LIST_TABLE_EVEN_ROW);

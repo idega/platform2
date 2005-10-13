@@ -8,6 +8,7 @@ import com.idega.block.school.data.SchoolType;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
 import com.idega.presentation.Table2;
+import com.idega.presentation.TableCell2;
 import com.idega.presentation.TableColumn;
 import com.idega.presentation.TableColumnGroup;
 import com.idega.presentation.TableRow;
@@ -167,13 +168,17 @@ public class SchoolTypeEditor extends SchoolBlock {
 		
 		TableRowGroup group = table.createHeaderRowGroup();
 		TableRow row = group.createRow();
-		row.createHeaderCell().add(new Text(localize("name", "Name")));
+		TableCell2 cell = row.createHeaderCell();
+		cell.setStyleClass("firstColumn");
+		cell.add(new Text(localize("name", "Name")));
 		row.createHeaderCell().add(new Text(localize("info", "Info")));
 		row.createHeaderCell().add(new Text(localize("category", "Category")));
 		row.createHeaderCell().add(new Text(localize("max_school_age", "Max school age")));
 		row.createHeaderCell().add(new Text(localize("order", "Order")));
-		row.createHeaderCell();
-		row.createHeaderCell();
+		row.createHeaderCell().add(Text.getNonBrakingSpace());
+		cell = row.createHeaderCell();
+		cell.setStyleClass("lastColumn");
+		cell.add(Text.getNonBrakingSpace());
 
 		group = table.createBodyRowGroup();
 		int iRow = 1;
@@ -192,13 +197,17 @@ public class SchoolTypeEditor extends SchoolBlock {
 				delete.addParameter(PARAMETER_SCHOOL_TYPE_PK, sType.getPrimaryKey().toString());
 				delete.addParameter(PARAMETER_ACTION, ACTION_DELETE);
 
-				row.createCell().add(new Text(sType.getSchoolTypeName()));
+				cell = row.createCell();
+				cell.setStyleClass("firstColumn");
+				cell.add(new Text(sType.getSchoolTypeName()));
 				row.createCell().add(new Text(sType.getSchoolTypeInfo()));
 				row.createCell().add(new Text(localize(category.getLocalizedKey(), category.getName())));
 				row.createCell().add(new Text(sType.getMaxSchoolAge() > 0 ? String.valueOf(sType.getMaxSchoolAge()) : "-"));
 				row.createCell().add(new Text(sType.getOrder() > 0 ? String.valueOf(sType.getOrder()) : "-"));
 				row.createCell().add(edit);
-				row.createCell().add(delete);
+				cell = row.createCell();
+				cell.setStyleClass("lastColumn");
+				cell.add(delete);
 
 				if (iRow % 2 == 0) {
 					row.setStyleClass(STYLENAME_LIST_TABLE_EVEN_ROW);

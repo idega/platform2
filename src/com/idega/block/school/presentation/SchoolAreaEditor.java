@@ -7,6 +7,7 @@ import com.idega.block.school.data.SchoolArea;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
 import com.idega.presentation.Table2;
+import com.idega.presentation.TableCell2;
 import com.idega.presentation.TableColumn;
 import com.idega.presentation.TableColumnGroup;
 import com.idega.presentation.TableRow;
@@ -118,11 +119,15 @@ public class SchoolAreaEditor extends SchoolBlock {
 		
 		TableRowGroup group = table.createHeaderRowGroup();
 		TableRow row = group.createRow();
-		row.createHeaderCell().add(new Text(localize("name", "Name")));
+		TableCell2 cell = row.createHeaderCell();
+		cell.setStyleClass("firstColumn");
+		cell.add(new Text(localize("name", "Name")));
 		row.createHeaderCell().add(new Text(localize("city", "City")));
 		row.createHeaderCell().add(new Text(localize("info", "Info")));
-		row.createHeaderCell();
-		row.createHeaderCell();
+		row.createHeaderCell().add(Text.getNonBrakingSpace());
+		cell = row.createHeaderCell();
+		cell.setStyleClass("lastColumn");
+		cell.add(Text.getNonBrakingSpace());
 
 		group = table.createBodyRowGroup();
 		int iRow = 1;
@@ -140,11 +145,15 @@ public class SchoolAreaEditor extends SchoolBlock {
 				delete.addParameter(PARAMETER_SCHOOL_AREA_PK, area.getPrimaryKey().toString());
 				delete.addParameter(PARAMETER_ACTION, ACTION_DELETE);
 
-				row.createCell().add(new Text(area.getSchoolAreaName()));
+				cell = row.createCell();
+				cell.setStyleClass("firstColumn");
+				cell.add(new Text(area.getSchoolAreaName()));
 				row.createCell().add(new Text(area.getSchoolAreaCity()));
 				row.createCell().add(new Text(area.getSchoolAreaInfo()));
 				row.createCell().add(edit);
-				row.createCell().add(delete);
+				cell = row.createCell();
+				cell.setStyleClass("lastColumn");
+				cell.add(delete);
 
 				if (iRow % 2 == 0) {
 					row.setStyleClass(STYLENAME_LIST_TABLE_EVEN_ROW);
