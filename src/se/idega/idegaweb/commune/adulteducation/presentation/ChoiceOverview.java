@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceOverview.java,v 1.9 2005/05/31 12:08:41 laddi Exp $
+ * $Id: ChoiceOverview.java,v 1.10 2005/10/13 08:09:37 palli Exp $
  * Created on May 11, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -27,10 +27,10 @@ import com.idega.presentation.ui.SubmitButton;
 
 
 /**
- * Last modified: $Date: 2005/05/31 12:08:41 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/13 08:09:37 $ by $Author: palli $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class ChoiceOverview extends AdultEducationBlock {
 	
@@ -58,7 +58,7 @@ public class ChoiceOverview extends AdultEducationBlock {
 		form.add(table);
 		int row = 1;
 		
-		Collection seasons = getBusiness().getPendingSeasons();
+		Collection seasons = getBusiness().getSeasons();
 		Iterator iter = seasons.iterator();
 		while (iter.hasNext()) {
 			SchoolSeason season = (SchoolSeason) iter.next();

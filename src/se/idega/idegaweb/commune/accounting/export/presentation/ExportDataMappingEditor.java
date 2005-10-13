@@ -18,6 +18,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.IntegerInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 
@@ -44,6 +45,9 @@ public class ExportDataMappingEditor extends AccountingBlock {
 	private static final String PARAMETER_CASH_FLOW_IN = "edm_cash_flow_in";
 	private static final String PARAMETER_CASH_FLOW_OUT = "edm_cash_flow_out";
 	private static final String PARAMETER_PROVIDER_AUTHORIZATION = "edm_provider_authorization";
+	private static final String PARAMETER_CREATE_PAYMENT_OUTSIDE_COMMUNE = "edm_create_outside_payment";
+	private static final String PARAMETER_USE_SPECIFIED_DAYS = "edm_use_specified_days";
+	private static final String PARAMETER_SPECIFIED_DAYS = "edm_specified_days";
 
 	private final static String KEY_ERROR_LENGTH	= "posting_parm_edit.error_length";
 	
@@ -67,7 +71,7 @@ public class ExportDataMappingEditor extends AccountingBlock {
 		Script script = new Script();
 		script.addFunction("validateForm", getValidateFormScript());
 
-		Table table = new Table(3, 35);
+		Table table = new Table(3, 37);
 		table.setCellpadding(0);
 		table.setCellspacing(0);
 		table.setWidth(2, 12);
@@ -101,42 +105,6 @@ public class ExportDataMappingEditor extends AccountingBlock {
 		table.setNoWrap(1, row);
 		table.add(journalNumber, 3, row++);
 
-//		TextInput account = getTextInput(PARAMETER_ACCOUNT, "", _inputWidth, 255);
-//		if (_mapping != null && _mapping.getAccount() != null)
-//			account.setContent(_mapping.getAccount());
-		
-//		table.setHeight(row++, 3);
-//		table.add(getSmallHeader(localize("export.account", "Account") + ":"), 1, row);
-//		table.setNoWrap(1, row);
-//		table.add(account, 3, row++);
-		
-//		TextInput counterAccount = getTextInput(PARAMETER_COUNTER_ACCOUNT, "", _inputWidth, 255);
-//		if (_mapping != null && _mapping.getCounterAccount() != null)
-//			counterAccount.setContent(_mapping.getCounterAccount());
-		
-//		table.setHeight(row++, 3);
-//		table.add(getSmallHeader(localize("export.counter_account", "Counter account") + ":"), 1, row);
-//		table.setNoWrap(1, row);
-//		table.add(counterAccount, 3, row++);
-		
-//		TextInput payableAccount = getTextInput(PARAMETER_PAYABLE_ACCOUNT, "", _inputWidth, 255);
-//		if (_mapping != null && _mapping.getPayableAccount() != null)
-//			payableAccount.setContent(_mapping.getPayableAccount());
-		
-//		table.setHeight(row++, 3);
-//		table.add(getSmallHeader(localize("export.payable_account", "Payable account") + ":"), 1, row);
-//		table.setNoWrap(1, row);
-//		table.add(payableAccount, 3, row++);
-		
-//		TextInput customerClaimAccount = getTextInput(PARAMETER_CUSTOMER_CLAIM_ACCOUNT, "", _inputWidth, 255);
-//		if (_mapping != null && _mapping.getCustomerClaimAccount() != null)
-//			customerClaimAccount.setContent(_mapping.getCustomerClaimAccount());
-		
-//		table.setHeight(row++, 3);
-//		table.add(getSmallHeader(localize("export.customer_claim_account", "Customer claim account") + ":"), 1, row);
-//		table.setNoWrap(1, row);
-//		table.add(customerClaimAccount, 3, row++);
-		
 		TextInput fileCreationFolder = getTextInput(PARAMETER_FILE_CREATION_FOLDER, "", _inputWidth * 3, 255);
 		if (_mapping != null && _mapping.getFileCreationFolder() != null)
 			fileCreationFolder.setContent(_mapping.getFileCreationFolder());
@@ -232,7 +200,31 @@ public class ExportDataMappingEditor extends AccountingBlock {
 		table.mergeCells(1, row, 3, row);
 		table.add(providerAuthorization, 1, row);
 		table.add(getSmallHeader(Text.NON_BREAKING_SPACE + localize("export.provider_authorization", "Provider authorization")), 1, row++);
-				
+
+		CheckBox createPayments = getCheckBox(PARAMETER_CREATE_PAYMENT_OUTSIDE_COMMUNE, "true");
+		if (_mapping != null) {
+			createPayments.setChecked(_mapping.getCreatePaymentsForCommuneProvidersOutsideCommune());
+		}
+
+		table.setHeight(row++, 9);
+		table.mergeCells(1, row, 3, row);
+		table.add(createPayments, 1, row);
+		table.add(getSmallHeader(Text.NON_BREAKING_SPACE + localize("export.create_outside_payments", "Create payments for commune schools outside default commune")), 1, row++);
+
+		CheckBox useSpecifiedDays = getCheckBox(PARAMETER_USE_SPECIFIED_DAYS, "true");
+		IntegerInput specifiedDays = getIntegerInput(PARAMETER_SPECIFIED_DAYS, 0);
+		if (_mapping != null) {
+			useSpecifiedDays.setChecked(_mapping.getUseSpecifiedNumberOfDaysPrMonth());
+			specifiedDays.setValue(_mapping.getSpecifiedNumberOfDaysPrMonth());
+		}
+
+		table.setHeight(row++, 9);
+		table.mergeCells(1, row, 3, row);
+		table.add(useSpecifiedDays, 1, row);
+		table.add(getSmallHeader(Text.NON_BREAKING_SPACE + localize("export.use_specified_days", "Use specified days pr. month") + Text.NON_BREAKING_SPACE), 1, row);
+		table.add(specifiedDays, 1, row);
+		table.add(getSmallHeader(Text.NON_BREAKING_SPACE + localize("export.days","days")), 1, row);
+		
 		form.add(table);
 
 		String accountString = "";
@@ -308,7 +300,22 @@ public class ExportDataMappingEditor extends AccountingBlock {
 				cashFlowOut = true;
 			if (iwc.isParameterSet(PARAMETER_PROVIDER_AUTHORIZATION))
 				providerAuthorization = true;
-				
+			
+			boolean createForOutsideCommune = false;
+			boolean useSpecificDays = false;
+			int specificDays = -1;
+			
+			if (iwc.isParameterSet(PARAMETER_CREATE_PAYMENT_OUTSIDE_COMMUNE)) {
+				createForOutsideCommune = true;
+			}
+			if (iwc.isParameterSet(PARAMETER_USE_SPECIFIED_DAYS)) {
+				useSpecificDays = true;
+				if (iwc.isParameterSet(PARAMETER_SPECIFIED_DAYS)) {
+					String days = iwc.getParameter(PARAMETER_SPECIFIED_DAYS);
+					specificDays = Integer.parseInt(days);
+				}
+			}
+			
 			try {
 				getBusiness().getExportBusiness().storeExportDataMapping(
 						_operationalField, 
@@ -326,7 +333,10 @@ public class ExportDataMappingEditor extends AccountingBlock {
 						Integer.parseInt(iwc.getParameter(PARAMETER_STANDARD_PAYMENT_DAY)), 
 						cashFlowIn, 
 						cashFlowOut, 
-						providerAuthorization);
+						providerAuthorization,
+						createForOutsideCommune,
+						useSpecificDays,
+						specificDays);
 			}
 			catch (RemoteException e) {
 				e.printStackTrace();

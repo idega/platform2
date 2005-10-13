@@ -1,5 +1,5 @@
 /*
- * $Id: ManagementTypeBMPBean.java,v 1.1 2005/09/07 11:39:46 palli Exp $ Created on
+ * $Id: ManagementTypeBMPBean.java,v 1.2 2005/10/13 08:09:37 palli Exp $ Created on
  * Sep 7, 2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -66,6 +66,15 @@ public class ManagementTypeBMPBean extends GenericEntity implements ManagementTy
 		return getStringColumnValue(COLUMN_MANAGEMENT_TYPE);
 	}
 
+	public boolean isCommuneManagementType() {
+		String type = getManagementType();
+		if (type.equals(COMMUNE)) {
+			return true;
+		}
+		
+		return false;
+	}
+	
 	public Collection ejbFindAll() throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);

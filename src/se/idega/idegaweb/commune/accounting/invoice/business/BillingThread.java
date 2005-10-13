@@ -401,7 +401,14 @@ public abstract class BillingThread extends Thread{
 				lastCheckDay = time;
 			}
 		}
-		PlacementTimes placementTimes = new PlacementTimes (firstCheckDay, lastCheckDay);
+		
+		PlacementTimes placementTimes;
+		if (categoryPosting.getUseSpecifiedNumberOfDaysPrMonth()) {
+			placementTimes = new PlacementTimes (firstCheckDay, lastCheckDay, categoryPosting.getSpecifiedNumberOfDaysPrMonth());
+		}
+		else {
+			placementTimes = new PlacementTimes (firstCheckDay, lastCheckDay, -1);			
+		}
 		if(placementTimes.getDays()<0f && displayWarning){
 			errorRelated.append(getLocalizedString("invoice.PlacementDays","Placement days")+":"+placementTimes.getDays());
 			createNewErrorMessage(errorRelated, getLocalizedString("invoice.WarningNegativePlacementTimeFound","Warning. Negative placement time found"));

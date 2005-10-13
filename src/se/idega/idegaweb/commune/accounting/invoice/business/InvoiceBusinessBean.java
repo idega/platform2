@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import javax.ejb.CreateException;
+import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import javax.transaction.SystemException;
@@ -21,6 +22,7 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import se.idega.idegaweb.commune.accounting.business.AccountingUtil;
+import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.invoice.data.BatchRun;
 import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunError;
 import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunErrorHome;
@@ -77,11 +79,11 @@ import com.idega.util.IWTimestamp;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2005/03/02 11:00:34 $ by $Author: palli $
+ * Last modified: $Date: 2005/10/13 08:09:38 $ by $Author: palli $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.135 $
+ * @version $Revision: 1.136 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness, CareInvoiceBusiness {
@@ -1113,11 +1115,28 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		if (schoolClassMember.getRemovedDate() != null) {
 			eDate = new Date(schoolClassMember.getRemovedDate().getTime());
 		}
-		PlacementTimes placementTimes = calculateTime(sDate, eDate, month);
+		
+		ExportDataMapping categoryPosting = null;
+		try {
+			categoryPosting = getCategoryPosting(schoolClassMember.getSchoolType().getCategory());
+		}
+		catch (IDOLookupException e) {
+			e.printStackTrace();
+		}
+		catch (EJBException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		
+		PlacementTimes placementTimes = calculateTime(sDate, eDate, month, categoryPosting);
+		
+		
 		return placementTimes;
 	}
 
-	private PlacementTimes calculateTime(Date start, Date end, CalendarMonth month){
+	private PlacementTimes calculateTime(Date start, Date end, CalendarMonth month, ExportDataMapping categoryPosting){
 		IWTimestamp firstCheckDay = new IWTimestamp(start);
 		firstCheckDay.setAsDate();
 		IWTimestamp time = new IWTimestamp(month.getFirstDateOfMonth());
@@ -1133,9 +1152,21 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 				lastCheckDay = time;
 			}
 		}
-		PlacementTimes placementTimes = new PlacementTimes (firstCheckDay, lastCheckDay);
+		PlacementTimes placementTimes;
+		if (categoryPosting != null && categoryPosting.getUseSpecifiedNumberOfDaysPrMonth()) {
+			placementTimes = new PlacementTimes (firstCheckDay, lastCheckDay, categoryPosting.getSpecifiedNumberOfDaysPrMonth());
+		}
+		else {
+			placementTimes = new PlacementTimes (firstCheckDay, lastCheckDay, -1);			
+		}
 		return placementTimes;
 	}
+	
+	private ExportDataMapping getCategoryPosting(SchoolCategory category) throws FinderException, IDOLookupException, EJBException {
+		return (ExportDataMapping) IDOLookup.getHome(ExportDataMapping.class).findByPrimaryKeyIDO(
+				category.getPrimaryKey());
+	}
+
 	
 	private Regulation findRegulation
 		(final PaymentRecord paymentRecord, final SchoolCategory schoolCategory,

@@ -31,6 +31,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.IntegerInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.util.SelectorUtility;
@@ -465,6 +466,10 @@ public abstract class AccountingBlock extends CommuneBlock {
 	 */
 	protected CheckBox getCheckBox(String parameter, String value) {
 		return (CheckBox) getStyledInterface(new CheckBox(parameter, value));
+	}
+	
+	protected IntegerInput getIntegerInput(String parameter, int value) {
+		return (IntegerInput) getStyledInterface(new IntegerInput(parameter, value));
 	}
 	
 	protected boolean isOperationalFieldChildcareSelected(IWContext iwc){

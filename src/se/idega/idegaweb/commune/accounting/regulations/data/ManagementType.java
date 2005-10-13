@@ -1,6 +1,6 @@
 /*
- * $Id: ManagementType.java,v 1.1 2005/09/07 11:39:46 palli Exp $
- * Created on Sep 7, 2005
+ * $Id: ManagementType.java,v 1.2 2005/10/13 08:09:37 palli Exp $
+ * Created on Oct 11, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -16,10 +16,10 @@ import com.idega.data.IDOEntity;
 
 /**
  * 
- *  Last modified: $Date: 2005/09/07 11:39:46 $ by $Author: palli $
+ *  Last modified: $Date: 2005/10/13 08:09:37 $ by $Author: palli $
  * 
  * @author <a href="mailto:bluebottle@idega.com">bluebottle</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public interface ManagementType extends IDOEntity {
 
@@ -42,5 +42,10 @@ public interface ManagementType extends IDOEntity {
 	 * @see se.idega.idegaweb.commune.accounting.regulations.data.ManagementTypeBMPBean#getLocalizationKey
 	 */
 	public String getLocalizationKey();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.ManagementTypeBMPBean#isCommuneManagementType
+	 */
+	public boolean isCommuneManagementType();
 
 }
