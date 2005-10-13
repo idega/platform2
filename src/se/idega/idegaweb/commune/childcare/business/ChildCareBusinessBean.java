@@ -414,7 +414,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						queueDate = new IWTimestamp(queueDates[i]);
 					}
 
-					if (canChangeApplication(appl, providerID, fromDate, queueDate)) {
+					if (canChangeApplication(appl, providerID, fromDate, queueDate, message)) {
 						if (appl.getProviderId() != providerID && appl.getProviderId() != -1) {
 							if (removeFromQueue(appl, user, provider)) {
 								appl = getChildCareApplicationHome().create();
@@ -585,8 +585,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return false;
 	}
 
-	private boolean canChangeApplication(ChildCareApplication application, int newProviderID, IWTimestamp newFromDate, IWTimestamp newQueueDate) {
+	private boolean canChangeApplication(ChildCareApplication application, int newProviderID, IWTimestamp newFromDate, IWTimestamp newQueueDate, String newMessage) {
 		int oldProviderID = application.getProviderId();
+		String oldMessage = application.getMessage();
 		IWTimestamp oldFromDate = new IWTimestamp();
 		IWTimestamp oldQueueDate = new IWTimestamp();
 		if (application.getFromDate() != null)
@@ -601,10 +602,21 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				return true;
 			if (!oldQueueDate.equals(newQueueDate))
 				return true;
+			if (newMessage != null){
+				if (oldMessage == null)
+					return true;
+				else if (oldMessage == null && newMessage ==null)
+					return false;
+				else if (!oldMessage.equals(newMessage))
+					return true;	
+			}
+			
 			return false;
 		}
 	}
-
+	private boolean canChangeApplication(ChildCareApplication application, int newProviderID, IWTimestamp newFromDate, IWTimestamp newQueueDate) {
+	return canChangeApplication(application, newProviderID, newFromDate, newQueueDate, null);	
+	}
 	public void changePlacingDate(int applicationID, Date placingDate, String preSchool) {
 		try {
 			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
