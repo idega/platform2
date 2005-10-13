@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolApplication.java,v 1.21 2005/10/13 20:07:53 laddi Exp $
+ * $Id: SchoolApplication.java,v 1.22 2005/10/13 20:10:52 laddi Exp $
  * Created on Aug 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -57,10 +57,10 @@ import com.idega.util.Age;
 import com.idega.util.PersonalIDFormatter;
 
 /**
- * Last modified: $Date: 2005/10/13 20:07:53 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/13 20:10:52 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.21 $
+ * @version $Revision: 1.22 $
  */
 public class SchoolApplication extends SchoolBlock {
 
@@ -1016,6 +1016,10 @@ public class SchoolApplication extends SchoolBlock {
 			verifyTable.add(getSmallText(growthDeviation), 2, iRow++);
 		}
 		
+		verifyTable.setHeight(iRow++, 6);
+		verifyTable.setBottomCellBorder(1, iRow++, 1, "#D7D7D7", "solid");
+		verifyTable.setHeight(iRow++, 6);
+
 		verifyTable.add(getSmallHeader(localize("child.has_allergies", "Has allergies")), 1, iRow);
 		verifyTable.add(getSmallText(getBooleanString(hasAllergies)), 2, iRow++);
 
@@ -1025,19 +1029,34 @@ public class SchoolApplication extends SchoolBlock {
 			verifyTable.add(getSmallText(allergies), 2, iRow++);
 		}
 		
+		verifyTable.setHeight(iRow++, 6);
+		verifyTable.setBottomCellBorder(1, iRow++, 1, "#D7D7D7", "solid");
+		verifyTable.setHeight(iRow++, 6);
+
 		if (lastCareProvider != null) {
 			verifyTable.add(getSmallHeader(localize("child.last_care_provider", "Last care provider")), 1, iRow);
 			verifyTable.setVerticalAlignment(2, iRow, Table.VERTICAL_ALIGN_TOP);
 			verifyTable.add(getSmallText(lastCareProvider), 2, iRow++);
+
+			verifyTable.setHeight(iRow++, 6);
+			verifyTable.setBottomCellBorder(1, iRow++, 1, "#D7D7D7", "solid");
+			verifyTable.setHeight(iRow++, 6);
 		}
 		
 		verifyTable.add(getSmallHeader(localize("child.can_contact_last_care_provider", "Can contact last care provider")), 1, iRow);
 		verifyTable.add(getSmallText(getBooleanString(canContactLastProvider)), 2, iRow++);
 		
+		verifyTable.setHeight(iRow++, 6);
+		verifyTable.setBottomCellBorder(1, iRow++, 1, "#D7D7D7", "solid");
+		verifyTable.setHeight(iRow++, 6);
+
 		if (otherInformation != null) {
 			verifyTable.add(getSmallHeader(localize("child.other_information", "Other information")), 1, iRow);
 			verifyTable.setVerticalAlignment(2, iRow, Table.VERTICAL_ALIGN_TOP);
 			verifyTable.add(getSmallText(otherInformation), 2, iRow++);
+			verifyTable.setHeight(iRow++, 6);
+			verifyTable.setBottomCellBorder(1, iRow++, 1, "#D7D7D7", "solid");
+			verifyTable.setHeight(iRow++, 6);
 		}
 		
 		verifyTable.add(getSmallHeader(localize("child.can_diplay_images", "Can display images")), 1, iRow);
@@ -1158,6 +1177,10 @@ public class SchoolApplication extends SchoolBlock {
 			viewTable.add(getSmallText(growthDeviation), 2, iRow++);
 		}
 		
+		viewTable.setHeight(iRow++, 6);
+		viewTable.setBottomCellBorder(1, iRow++, 1, "#D7D7D7", "solid");
+		viewTable.setHeight(iRow++, 6);
+
 		viewTable.add(getSmallHeader(localize("child.has_allergies", "Has allergies")), 1, iRow);
 		viewTable.add(getSmallText(getBooleanString(hasAllergies)), 2, iRow++);
 
@@ -1167,19 +1190,33 @@ public class SchoolApplication extends SchoolBlock {
 			viewTable.add(getSmallText(allergies), 2, iRow++);
 		}
 		
+		viewTable.setHeight(iRow++, 6);
+		viewTable.setBottomCellBorder(1, iRow++, 1, "#D7D7D7", "solid");
+		viewTable.setHeight(iRow++, 6);
+
 		if (lastCareProvider != null) {
 			viewTable.add(getSmallHeader(localize("child.last_care_provider", "Last care provider")), 1, iRow);
 			viewTable.setVerticalAlignment(2, iRow, Table.VERTICAL_ALIGN_TOP);
 			viewTable.add(getSmallText(lastCareProvider), 2, iRow++);
+			viewTable.setHeight(iRow++, 6);
+			viewTable.setBottomCellBorder(1, iRow++, 1, "#D7D7D7", "solid");
+			viewTable.setHeight(iRow++, 6);
 		}
 		
 		viewTable.add(getSmallHeader(localize("child.can_contact_last_care_provider", "Can contact last care provider")), 1, iRow);
 		viewTable.add(getSmallText(getBooleanString(canContactLastProvider)), 2, iRow++);
 		
+		viewTable.setHeight(iRow++, 6);
+		viewTable.setBottomCellBorder(1, iRow++, 1, "#D7D7D7", "solid");
+		viewTable.setHeight(iRow++, 6);
+
 		if (otherInformation != null) {
 			viewTable.add(getSmallHeader(localize("child.other_information", "Other information")), 1, iRow);
 			viewTable.setVerticalAlignment(2, iRow, Table.VERTICAL_ALIGN_TOP);
 			viewTable.add(getSmallText(otherInformation), 2, iRow++);
+			viewTable.setHeight(iRow++, 6);
+			viewTable.setBottomCellBorder(1, iRow++, 1, "#D7D7D7", "solid");
+			viewTable.setHeight(iRow++, 6);
 		}
 				
 		viewTable.add(getSmallHeader(localize("child.can_diplay_images", "Can display images")), 1, iRow);
