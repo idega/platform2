@@ -1,6 +1,6 @@
 /*
- * $Id: Contract.java,v 1.16 2005/05/31 09:47:34 palli Exp $
- * Created on May 26, 2005
+ * $Id: Contract.java,v 1.17 2005/10/13 08:06:51 palli Exp $
+ * Created on Aug 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -22,10 +22,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2005/05/31 09:47:34 $ by $Author: palli $
+ *  Last modified: $Date: 2005/10/13 08:06:51 $ by $Author: palli $
  * 
  * @author <a href="mailto:bluebottle@idega.com">bluebottle</a>
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public interface Contract extends IDOEntity {
 
@@ -218,6 +218,16 @@ public interface Contract extends IDOEntity {
 	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean#getHasPhone
 	 */
 	public boolean getHasPhone();
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean#getPhoneFromDate
+	 */
+	public Timestamp getPhoneFromDate();
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean#getPhoneToDate
+	 */
+	public Timestamp getPhoneToDate();
 
 	/**
 	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean#setStatusCreated

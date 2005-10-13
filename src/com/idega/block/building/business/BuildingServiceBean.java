@@ -5,6 +5,7 @@
 package com.idega.block.building.business;
 
 import java.rmi.RemoteException;
+import java.sql.SQLException;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
@@ -250,26 +251,118 @@ public class BuildingServiceBean extends IBOServiceBean implements BuildingServi
 	
 	public void removeComplex(Integer complexID) {
 		
+		try {
+			Complex complex = getComplexHome().findByPrimaryKey(complexID);
+			complex.delete();
+		}
+		catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void removeBuilding(Integer buildingID) {
-		
+		try {
+			Building building = getBuildingHome().findByPrimaryKey(buildingID);
+			building.delete();
+		}
+		catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void removeFloor(Integer floorID) {
+		try {
+			Floor floor = getFloorHome().findByPrimaryKey(floorID);
+			floor.delete();
+		}
+		catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 	
 	public void removeApartment(Integer apartmentID) {
-		
+		try {
+			Apartment apartment = getApartmentHome().findByPrimaryKey(apartmentID);
+			apartment.delete();
+		}
+		catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void removeApartmentCategory(Integer categoryID) {
-		
+		try {
+			ApartmentCategory apCat = getApartmentCategoryHome().findByPrimaryKey(categoryID);
+			apCat.delete();
+		}
+		catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void removeApartmentType(Integer categoryID) {
-		
+		try {
+			ApartmentType apType = getApartmentTypeHome().findByPrimaryKey(categoryID);
+			apType.delete();
+		}
+		catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void removeRoom(Integer roomID) {

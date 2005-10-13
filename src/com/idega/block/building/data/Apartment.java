@@ -1,8 +1,7 @@
 package com.idega.block.building.data;
 
-import com.idega.block.text.data.TextEntity;
 
-public interface Apartment extends TextEntity
+public interface Apartment extends BuildingEntity
 
 {
  public com.idega.block.building.data.ApartmentType getApartmentType();

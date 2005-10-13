@@ -434,6 +434,7 @@ public class TariffAssessments extends Finance {
 					IWTimestamp paydate = new IWTimestamp(date);
 					IWTimestamp startdate = new IWTimestamp(start);
 					IWTimestamp enddate = new IWTimestamp(end);
+					enddate.setTime(23,59,59);
 					//add(paydate.getISLDate());
 					debug("Starting Execution " + IWTimestamp.RightNow().toString());
 					handler.executeAssessment(iwc,getFinanceCategoryId(), groupID, roundName,new Integer( 1),

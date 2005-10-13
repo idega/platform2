@@ -1,6 +1,6 @@
 /*
- * $Id: ContractHomeImpl.java,v 1.12 2005/05/31 09:47:34 palli Exp $
- * Created on May 26, 2005
+ * $Id: ContractHomeImpl.java,v 1.13 2005/10/13 08:06:51 palli Exp $
+ * Created on Aug 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -21,10 +21,10 @@ import com.idega.data.IDOFactory;
 
 /**
  * 
- *  Last modified: $Date: 2005/05/31 09:47:34 $ by $Author: palli $
+ *  Last modified: $Date: 2005/10/13 08:06:51 $ by $Author: palli $
  * 
  * @author <a href="mailto:bluebottle@idega.com">bluebottle</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class ContractHomeImpl extends IDOFactory implements ContractHome {
 
@@ -232,6 +232,15 @@ public class ContractHomeImpl extends IDOFactory implements ContractHome {
 	public Collection findByUserAndStatus(Integer userId, String status) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		java.util.Collection ids = ((ContractBMPBean) entity).ejbFindByUserAndStatus(userId, status);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findByUserAndStatusAndRentedBeforeDate(Integer userId, String status, Date date)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ContractBMPBean) entity).ejbFindByUserAndStatusAndRentedBeforeDate(userId, status,
+				date);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
