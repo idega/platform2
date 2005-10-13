@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowserBusinessBean.java,v 1.11 2005/10/06 20:24:36 gimmi Exp $
+ * $Id: SupplierBrowserBusinessBean.java,v 1.12 2005/10/13 15:55:54 gimmi Exp $
  * Created on Jul 6, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -57,6 +57,7 @@ import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
+import com.idega.util.database.PoolManager;
 import com.idega.xml.XMLDocument;
 import com.idega.xml.XMLElement;
 import com.idega.xml.XMLException;
@@ -411,7 +412,7 @@ public class SupplierBrowserBusinessBean extends IBOServiceBean  implements Supp
 			  e.printStackTrace();
 		  }
 		  
-		  if (tmp != null) {
+		  if (tmp != null && PoolManager.getInstance().hasDatasource(tmp)) {
 			  datasource = tmp;
 		  } else {
 			  datasource = "default";

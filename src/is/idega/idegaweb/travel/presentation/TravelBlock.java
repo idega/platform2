@@ -45,6 +45,7 @@ import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
+import com.idega.util.database.PoolManager;
 
 /**
  * @author gimmi
@@ -318,7 +319,7 @@ public class TravelBlock extends Block {
 			  e.printStackTrace();
 		  }
 		  
-		  if (tmp != null) {
+		  if (tmp != null && PoolManager.getInstance().hasDatasource(tmp)) {
 			  datasource = tmp;
 		  } else {
 			  datasource = "default";
