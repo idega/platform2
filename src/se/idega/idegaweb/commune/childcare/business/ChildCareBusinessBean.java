@@ -614,9 +614,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			return false;
 		}
 	}
-	private boolean canChangeApplication(ChildCareApplication application, int newProviderID, IWTimestamp newFromDate, IWTimestamp newQueueDate) {
-	return canChangeApplication(application, newProviderID, newFromDate, newQueueDate, null);	
-	}
+
 	public void changePlacingDate(int applicationID, Date placingDate, String preSchool) {
 		try {
 			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
