@@ -1,5 +1,5 @@
 /*
- * $Id: IWBundleStarter.java,v 1.3 2005/09/08 22:28:50 gimmi Exp $
+ * $Id: IWBundleStarter.java,v 1.4 2005/10/13 15:51:48 gimmi Exp $
  * Created on 10.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -20,6 +20,7 @@ import com.idega.data.IDOFactory;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
+import com.idega.util.database.PoolManager;
 
 
 public class IWBundleStarter implements com.idega.idegaweb.IWBundleStartable {
@@ -68,8 +69,7 @@ public class IWBundleStarter implements com.idega.idegaweb.IWBundleStartable {
 			}
 		}
 
-		System.out.print("datasource = "+dataSource);
-		if (dataSource != null) {
+		if (dataSource != null && PoolManager.getInstance().hasDatasource(dataSource)) {
 			try {
 				Collection entities = bundle.getDataObjects();
 				if (entities != null){

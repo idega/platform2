@@ -27,6 +27,7 @@ import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
 import com.idega.util.EventTimer;
+import com.idega.util.database.PoolManager;
 
 public class TradeBundleStarter implements IWBundleStartable,ActionListener{
 	
@@ -87,7 +88,7 @@ public class TradeBundleStarter implements IWBundleStartable,ActionListener{
 			}
 		}
 		
-		if (dataSource != null) {
+		if (dataSource != null && PoolManager.getInstance().hasDatasource(dataSource)) {
 			try {
 				Collection entities = bundle.getDataObjects();
 				if (entities != null){
