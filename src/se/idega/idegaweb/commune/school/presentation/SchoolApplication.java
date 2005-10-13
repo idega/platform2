@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolApplication.java,v 1.20 2005/10/13 19:13:13 laddi Exp $
+ * $Id: SchoolApplication.java,v 1.21 2005/10/13 20:07:53 laddi Exp $
  * Created on Aug 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -57,10 +57,10 @@ import com.idega.util.Age;
 import com.idega.util.PersonalIDFormatter;
 
 /**
- * Last modified: $Date: 2005/10/13 19:13:13 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/13 20:07:53 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  */
 public class SchoolApplication extends SchoolBlock {
 
@@ -655,7 +655,7 @@ public class SchoolApplication extends SchoolBlock {
 		table.setCellpaddingRight(1, row, 5);
 		table.add(getText(localize("name", "Name")), 1, row++);
 		table.mergeCells(1, row, 2, row);
-		table.add(getTextInput(PARAMETER_RELATIVE, relative != null ? relative.getName() : null, false), 1, row);
+		table.add(getTextInput(PARAMETER_RELATIVE, relative != null ? relative.getName() : null, false), 1, row++);
 		table.setHeight(row++, 5);
 		
 		table.setCellpaddingRight(1, row, 5);
@@ -1012,7 +1012,7 @@ public class SchoolApplication extends SchoolBlock {
 		
 		if (growthDeviation != null) {
 			verifyTable.add(getSmallHeader(localize("child.growth_deviation_details", "Growth deviation details")), 1, iRow);
-			verifyTable.setVerticalAlignment(1, iRow, Table.VERTICAL_ALIGN_TOP);
+			verifyTable.setVerticalAlignment(2, iRow, Table.VERTICAL_ALIGN_TOP);
 			verifyTable.add(getSmallText(growthDeviation), 2, iRow++);
 		}
 		
@@ -1021,13 +1021,13 @@ public class SchoolApplication extends SchoolBlock {
 
 		if (allergies != null) {
 			verifyTable.add(getSmallHeader(localize("child.allergies_details", "Allergies details")), 1, iRow);
-			verifyTable.setVerticalAlignment(1, iRow, Table.VERTICAL_ALIGN_TOP);
+			verifyTable.setVerticalAlignment(2, iRow, Table.VERTICAL_ALIGN_TOP);
 			verifyTable.add(getSmallText(allergies), 2, iRow++);
 		}
 		
 		if (lastCareProvider != null) {
 			verifyTable.add(getSmallHeader(localize("child.last_care_provider", "Last care provider")), 1, iRow);
-			verifyTable.setVerticalAlignment(1, iRow, Table.VERTICAL_ALIGN_TOP);
+			verifyTable.setVerticalAlignment(2, iRow, Table.VERTICAL_ALIGN_TOP);
 			verifyTable.add(getSmallText(lastCareProvider), 2, iRow++);
 		}
 		
@@ -1036,7 +1036,7 @@ public class SchoolApplication extends SchoolBlock {
 		
 		if (otherInformation != null) {
 			verifyTable.add(getSmallHeader(localize("child.other_information", "Other information")), 1, iRow);
-			verifyTable.setVerticalAlignment(1, iRow, Table.VERTICAL_ALIGN_TOP);
+			verifyTable.setVerticalAlignment(2, iRow, Table.VERTICAL_ALIGN_TOP);
 			verifyTable.add(getSmallText(otherInformation), 2, iRow++);
 		}
 		
@@ -1092,7 +1092,7 @@ public class SchoolApplication extends SchoolBlock {
 		
 		SchoolYear year = null;
 		String message = null;
-		Collection choices = getBusiness().getChoices(getSession().getUser(), season);
+		Collection choices = getBusiness().getAllChoices(getSession().getUser(), season);
 		
 		int count = 1;
 		Iterator iter = choices.iterator();
@@ -1154,7 +1154,7 @@ public class SchoolApplication extends SchoolBlock {
 		
 		if (growthDeviation != null) {
 			viewTable.add(getSmallHeader(localize("child.growth_deviation_details", "Growth deviation details")), 1, iRow);
-			viewTable.setVerticalAlignment(1, iRow, Table.VERTICAL_ALIGN_TOP);
+			viewTable.setVerticalAlignment(2, iRow, Table.VERTICAL_ALIGN_TOP);
 			viewTable.add(getSmallText(growthDeviation), 2, iRow++);
 		}
 		
@@ -1163,13 +1163,13 @@ public class SchoolApplication extends SchoolBlock {
 
 		if (allergies != null) {
 			viewTable.add(getSmallHeader(localize("child.allergies_details", "Allergies details")), 1, iRow);
-			viewTable.setVerticalAlignment(1, iRow, Table.VERTICAL_ALIGN_TOP);
+			viewTable.setVerticalAlignment(2, iRow, Table.VERTICAL_ALIGN_TOP);
 			viewTable.add(getSmallText(allergies), 2, iRow++);
 		}
 		
 		if (lastCareProvider != null) {
 			viewTable.add(getSmallHeader(localize("child.last_care_provider", "Last care provider")), 1, iRow);
-			viewTable.setVerticalAlignment(1, iRow, Table.VERTICAL_ALIGN_TOP);
+			viewTable.setVerticalAlignment(2, iRow, Table.VERTICAL_ALIGN_TOP);
 			viewTable.add(getSmallText(lastCareProvider), 2, iRow++);
 		}
 		
@@ -1178,7 +1178,7 @@ public class SchoolApplication extends SchoolBlock {
 		
 		if (otherInformation != null) {
 			viewTable.add(getSmallHeader(localize("child.other_information", "Other information")), 1, iRow);
-			viewTable.setVerticalAlignment(1, iRow, Table.VERTICAL_ALIGN_TOP);
+			viewTable.setVerticalAlignment(2, iRow, Table.VERTICAL_ALIGN_TOP);
 			viewTable.add(getSmallText(otherInformation), 2, iRow++);
 		}
 				
