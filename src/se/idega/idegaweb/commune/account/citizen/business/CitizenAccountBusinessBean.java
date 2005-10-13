@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.85 2005/04/06 08:28:02 anna Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.86 2005/10/13 18:36:11 laddi Exp $
  * Copyright (C) 2002 Idega hf. All Rights Reserved. This software is the
  * proprietary information of Idega hf. Use is subject to license terms.
  */
@@ -37,7 +37,7 @@ import se.idega.idegaweb.commune.account.citizen.data.CitizenApplicantPutChildre
 import se.idega.idegaweb.commune.account.citizen.data.CitizenApplicantPutChildrenHome;
 import se.idega.idegaweb.commune.account.data.AccountApplication;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
-import se.idega.idegaweb.commune.message.business.MessageBusiness;
+import se.idega.idegaweb.commune.message.business.CommuneMessageBusiness;
 import se.idega.util.PIDChecker;
 
 import com.idega.business.IBOLookupException;
@@ -72,11 +72,11 @@ import com.idega.util.LocaleUtil;
 import com.idega.util.text.Name;
 
 /**
- * Last modified: $Date: 2005/04/06 08:28:02 $ by $Author: anna $
+ * Last modified: $Date: 2005/10/13 18:36:11 $ by $Author: laddi $
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg </a>
- * @version $Revision: 1.85 $
+ * @version $Revision: 1.86 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
 
@@ -818,7 +818,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		String messageSubject = getNewPasswordWasCreatedSubject();
 		String messageBody = getNewPasswordWasCreatedMessageBody(userName, loginName, newPassword);
 		// send letter or email to user
-		MessageBusiness messageBusiness = getMessageBusiness();
+		CommuneMessageBusiness messageBusiness = getMessageBusiness();
 		//MessageSession messageSession = messageBusiness.getMessageSession(iwuc);
 		//Message messageLetter = null;
 		//Message messageEmail = null;

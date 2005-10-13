@@ -1,5 +1,5 @@
 /*
- * $Id: MealBusinessBean.java,v 1.6 2005/10/02 22:12:23 laddi Exp $
+ * $Id: MealBusinessBean.java,v 1.7 2005/10/13 18:36:11 laddi Exp $
  * Created on Aug 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -23,8 +23,7 @@ import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
-import se.idega.idegaweb.commune.message.business.MessageBusiness;
-import se.idega.idegaweb.commune.message.data.Message;
+import se.idega.idegaweb.commune.message.business.CommuneMessageBusiness;
 import se.idega.idegaweb.commune.school.meal.data.MealChoice;
 import se.idega.idegaweb.commune.school.meal.data.MealChoiceHome;
 import se.idega.idegaweb.commune.school.meal.data.MealChoiceMonth;
@@ -39,6 +38,7 @@ import com.idega.block.finance.data.AccountEntryBMPBean;
 import com.idega.block.finance.data.AccountEntryHome;
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.business.CaseBusinessBean;
+import com.idega.block.process.message.data.Message;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClassMember;
@@ -57,10 +57,10 @@ import com.idega.util.text.Name;
 
 
 /**
- * Last modified: $Date: 2005/10/02 22:12:23 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/13 18:36:11 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class MealBusinessBean extends CaseBusinessBean implements CaseBusiness , MealBusiness{
 
@@ -82,9 +82,9 @@ public class MealBusinessBean extends CaseBusinessBean implements CaseBusiness ,
 		}
 	}
 
-	private MessageBusiness getMessageBusiness() {
+	private CommuneMessageBusiness getMessageBusiness() {
 		try {
-			return (MessageBusiness) this.getServiceInstance(MessageBusiness.class);
+			return (CommuneMessageBusiness) this.getServiceInstance(CommuneMessageBusiness.class);
 		}
 		catch (RemoteException e) {
 			throw new IBORuntimeException(e.getMessage());

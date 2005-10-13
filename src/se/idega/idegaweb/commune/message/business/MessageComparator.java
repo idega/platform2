@@ -2,8 +2,8 @@ package se.idega.idegaweb.commune.message.business;
 
 import java.util.Comparator;
 
-import se.idega.idegaweb.commune.message.data.Message;
 
+import com.idega.block.process.message.data.Message;
 import com.idega.util.IWTimestamp;
 
 /**

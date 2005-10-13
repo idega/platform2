@@ -1,5 +1,5 @@
 /*
- * $Id: UserMessageHomeImpl.java,v 1.8 2004/10/12 08:33:33 aron Exp $
+ * $Id: UserMessageHomeImpl.java,v 1.9 2005/10/13 18:36:11 laddi Exp $
  * Created on 7.10.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -13,6 +13,7 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.process.message.data.Message;
 import com.idega.data.IDOException;
 import com.idega.data.IDOFactory;
 import com.idega.user.data.Group;
@@ -20,21 +21,21 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/12 08:33:33 $ by $Author: aron $
+ *  Last modified: $Date: 2005/10/13 18:36:11 $ by $Author: laddi $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class UserMessageHomeImpl extends IDOFactory implements UserMessageHome {
     protected Class getEntityInterfaceClass() {
         return UserMessage.class;
     }
 
-    public UserMessage create() throws javax.ejb.CreateException {
+    public Message create() throws javax.ejb.CreateException {
         return (UserMessage) super.createIDO();
     }
 
-    public UserMessage findByPrimaryKey(Object pk)
+    public Message findByPrimaryKey(Object pk)
             throws javax.ejb.FinderException {
         return (UserMessage) super.findByPrimaryKeyIDO(pk);
     }

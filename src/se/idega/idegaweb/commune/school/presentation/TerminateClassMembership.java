@@ -19,10 +19,10 @@ import se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntryHome
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.care.resource.data.ResourceClassMember;
 import se.idega.idegaweb.commune.care.resource.data.ResourceClassMemberHome;
-import se.idega.idegaweb.commune.message.business.MessageBusiness;
-import se.idega.idegaweb.commune.message.data.Message;
+import se.idega.idegaweb.commune.message.business.CommuneMessageBusiness;
 import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
 
+import com.idega.block.process.message.data.Message;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClass;
@@ -52,10 +52,10 @@ import com.idega.util.IWTimestamp;
  * TerminateClassMembership is an IdegaWeb block were the user can terminate a
  * membership in a school class. 
  * <p>
- * Last modified: $Date: 2005/01/11 09:20:19 $ by $Author: malin $
+ * Last modified: $Date: 2005/10/13 18:36:11 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.37 $
+ * @version $Revision: 1.38 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
@@ -238,8 +238,8 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
 			table.add (new Text (subject), 1, 1);
 			
 			// send confirmation message
-			final MessageBusiness messageBusiness = (MessageBusiness) IBOLookup
-					.getServiceInstance (context, MessageBusiness.class);
+			final CommuneMessageBusiness messageBusiness = (CommuneMessageBusiness) IBOLookup
+					.getServiceInstance (context, CommuneMessageBusiness.class);
 			final CommuneUserBusiness communeUserBusiness
 					= (CommuneUserBusiness) IBOLookup.getServiceInstance
 					(context, CommuneUserBusiness.class);

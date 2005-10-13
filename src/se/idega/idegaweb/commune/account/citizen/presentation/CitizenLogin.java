@@ -6,7 +6,7 @@ package se.idega.idegaweb.commune.account.citizen.presentation;
 import java.text.MessageFormat;
 import java.util.Map;
 
-import se.idega.idegaweb.commune.message.business.MessageBusiness;
+import se.idega.idegaweb.commune.message.business.CommuneMessageBusiness;
 
 import com.idega.block.login.presentation.Login;
 import com.idega.block.login.presentation.WelcomeMessage;
@@ -266,9 +266,9 @@ public class CitizenLogin extends Login {
 		return map;
 	}
 	
-	private MessageBusiness getMessageBusiness(IWApplicationContext iwac) {
+	private CommuneMessageBusiness getMessageBusiness(IWApplicationContext iwac) {
 		try {
-			return (MessageBusiness) IBOLookup.getServiceInstance(iwac, MessageBusiness.class);
+			return (CommuneMessageBusiness) IBOLookup.getServiceInstance(iwac, CommuneMessageBusiness.class);
 		}
 		catch (IBOLookupException ile) {
 			throw new IBORuntimeException(ile);

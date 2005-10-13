@@ -28,7 +28,7 @@ import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosis;
 import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosisHome;
 import se.idega.idegaweb.commune.childcare.data.ChildCareQueue;
 import se.idega.idegaweb.commune.childcare.data.ChildCareQueueHome;
-import se.idega.idegaweb.commune.message.business.MessageBusiness;
+import se.idega.idegaweb.commune.message.business.CommuneMessageBusiness;
 
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.data.Case;
@@ -965,7 +965,7 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness,
     /**
      * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getMessageBusiness
      */
-    public MessageBusiness getMessageBusiness() throws java.rmi.RemoteException;
+    public CommuneMessageBusiness getMessageBusiness() throws java.rmi.RemoteException;
 
     /**
      * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getUserBusiness

@@ -13,6 +13,7 @@ import java.util.Locale;
 import java.util.Vector;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import se.idega.idegaweb.commune.care.business.PlacementHelper;
@@ -27,7 +28,6 @@ import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseStatus;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClass;
-import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBORuntimeException;
@@ -48,8 +48,6 @@ import com.idega.util.IWTimestamp;
  */
 public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements ChildCareBusiness, AfterSchoolBusiness {
 	
-	private static final String PROPERTY_DEFAULT_AFTER_SCHOOL_CARE_TYPE = "default_after_school_care_type";
-
 	private AfterSchoolChoiceHome getAfterSchoolChoiceHome() {
 		try {
 			return (AfterSchoolChoiceHome) IDOLookup.getHome(AfterSchoolChoice.class);
@@ -313,7 +311,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 						locale, true);
 				if (contractFile != null) {
 					try {
-						PrintedLetterMessage message = ((PrintedLetterMessageHome) IDOLookup.getHome(PrintedLetterMessage.class)).create();
+						PrintedLetterMessage message = (PrintedLetterMessage) ((PrintedLetterMessageHome) IDOLookup.getHome(PrintedLetterMessage.class)).create();
 						message.setOwner(application.getOwner());
 						message.setParentCase(application);
 						message.setSubject(getLocalizedString("after_school_care_contract_pdf", "After school care contract"));
@@ -340,6 +338,23 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 	
 	public void storeDays(ChildCareApplication application, int[] dayOfWeek, String[] timeOfDeparture, boolean[] pickedUp) {
 		try {
+			try {
+				Collection days = getAfterSchoolCareDaysHome().findAllByApplication(application);
+				Iterator iter = days.iterator();
+				while (iter.hasNext()) {
+					AfterSchoolCareDays day = (AfterSchoolCareDays) iter.next();
+					try {
+						day.remove();
+					}
+					catch (RemoveException re) {
+						re.printStackTrace();
+					}
+				}
+			}
+			catch (FinderException fe) {
+				//Nothing found...
+			}
+			
 			for (int a = 0; a < dayOfWeek.length; a++) {
 				if (timeOfDeparture[a] != null && timeOfDeparture[a].length() > 0) {
 					AfterSchoolCareDays days = getAfterSchoolCareDaysHome().create();
@@ -405,7 +420,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 	
 	public boolean storeAfterSchoolCare(IWTimestamp stamp, User user, User child, School provider, String message, SchoolSeason season, int[] days, String[] timeOfDeparture, boolean[] pickedUp, String payerName, String payerPersonalID, String cardType, String cardNumber, int validMonth, int validYear) {
 		try {
-			AfterSchoolChoice choice = createAfterSchoolChoice(stamp, user, (Integer) child.getPrimaryKey(), (Integer) provider.getPrimaryKey(), new Integer(1), message, getCaseStatusReady(), null, season.getSchoolSeasonStart(), season, "", "");
+			AfterSchoolChoice choice = createAfterSchoolChoice(stamp, user, (Integer) child.getPrimaryKey(), (Integer) provider.getPrimaryKey(), new Integer(1), message, getCaseStatusPreliminary(), null, season.getSchoolSeasonStart(), season, "", "");
 			if (payerName != null) {
 				choice.setPayerName(payerName);
 				choice.setPayerPersonalID(payerPersonalID);
@@ -418,18 +433,12 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 			
 			storeDays(choice, days, timeOfDeparture, pickedUp);
 			
-			IWTimestamp registerDate = new IWTimestamp(season.getSchoolSeasonStart());
-			SchoolType type = getSchoolBusiness().getSchoolType(new Integer(this.getBundle().getProperty(PROPERTY_DEFAULT_AFTER_SCHOOL_CARE_TYPE, "61")));
-			
-			SchoolClass group = getDefaultGroup(provider, season);
-			SchoolClassMember member = getSchoolBusiness().storeSchoolClassMemberCC(((Integer) child.getPrimaryKey()).intValue(), ((Integer) group.getPrimaryKey()).intValue(), type != null ? ((Integer) type.getPrimaryKey()).intValue() : -1, registerDate.getTimestamp(), ((Integer) user.getPrimaryKey()).intValue(), message);
-			
 			String subject = getLocalizedString("application.after_school_choice_received_subject", "After school care choice received");
-			String body = getLocalizedString("application.after_school_choice_received_body", "{1} has received the application for an after school care placing for {0}, {2}.  The application has been handled and your child has a placing at the provider.");
+			String body = getLocalizedString("application.after_school_choice_received_body", "{1} has received the application for an after school care placing for {0}, {2}.  The application will be processed.");
 			sendMessageToParents(choice, subject, body);
 
 			// returns false if storing failed else true
-			return (member != null);
+			return true;
 		}
 		catch (RemoteException re) {
 			throw new IBORuntimeException(re);

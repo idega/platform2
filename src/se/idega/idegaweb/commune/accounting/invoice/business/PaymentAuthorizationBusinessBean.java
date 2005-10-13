@@ -1,5 +1,5 @@
 /*
- * $Id: PaymentAuthorizationBusinessBean.java,v 1.8 2004/10/14 10:53:12 thomas Exp $
+ * $Id: PaymentAuthorizationBusinessBean.java,v 1.9 2005/10/13 18:36:12 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -24,7 +24,7 @@ import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.care.business.CareBusiness;
 import se.idega.idegaweb.commune.care.data.ChildCareContract;
 import se.idega.idegaweb.commune.care.data.ChildCareContractHome;
-import se.idega.idegaweb.commune.message.business.MessageBusiness;
+import se.idega.idegaweb.commune.message.business.CommuneMessageBusiness;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.business.SchoolUserBusiness;
 import com.idega.block.school.data.School;
@@ -42,7 +42,7 @@ import com.idega.user.data.User;
  * This business handles the logic for Payment authorisation
  * 
  * <p>
- * $Id: PaymentAuthorizationBusinessBean.java,v 1.8 2004/10/14 10:53:12 thomas Exp $
+ * $Id: PaymentAuthorizationBusinessBean.java,v 1.9 2005/10/13 18:36:12 laddi Exp $
  *
  * @author Kelly
  */
@@ -215,8 +215,8 @@ public class PaymentAuthorizationBusinessBean extends IBOServiceBean implements 
 	/**
 	 * Returns message business. 
 	 */	
-	protected MessageBusiness getMessageBusiness() throws RemoteException {
-		return (MessageBusiness) this.getServiceInstance(MessageBusiness.class);
+	protected CommuneMessageBusiness getMessageBusiness() throws RemoteException {
+		return (CommuneMessageBusiness) this.getServiceInstance(CommuneMessageBusiness.class);
 	}
 	
 	/**	

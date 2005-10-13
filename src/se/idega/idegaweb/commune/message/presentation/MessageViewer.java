@@ -3,11 +3,11 @@ package se.idega.idegaweb.commune.message.presentation;
 import java.rmi.RemoteException;
 import java.text.MessageFormat;
 
-import se.idega.idegaweb.commune.message.business.MessageBusiness;
-import se.idega.idegaweb.commune.message.data.Message;
+import se.idega.idegaweb.commune.message.business.CommuneMessageBusiness;
 import se.idega.idegaweb.commune.message.event.MessageListener;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
+import com.idega.block.process.message.data.Message;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
@@ -157,11 +157,11 @@ public class MessageViewer extends CommuneBlock {
 
 		table.add(getSmallText(TextSoap.formatText(msg.getBody())),2,row++);
 
-		if (msg.getSenderID() != -1) {
+		if (msg.getSender() != null) {
 			SubmitButton reply = (SubmitButton) getStyledInterface(new SubmitButton(localize("message.Reply", "Reply"), PARAMETER_METHOD, String.valueOf(METHOD_REPLY_MESSAGE)));
 			table.add(reply, 1, row);
 			table.add(Text.getNonBrakingSpace(), 1, row);
-			form.addParameter(PARAMETER_SENDER_ID, msg.getSenderID());
+			form.addParameter(PARAMETER_SENDER_ID, msg.getSender().getPrimaryKey().toString());
 		}
 
 		table.add(close,1,row);
@@ -250,8 +250,8 @@ public class MessageViewer extends CommuneBlock {
 			_pageID = Integer.parseInt(iwc.getParameter(PARAMETER_PAGE_ID));
 	}
 
-	private MessageBusiness getMessageBusiness(IWContext iwc) throws RemoteException {
-		return (MessageBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, MessageBusiness.class);
+	private CommuneMessageBusiness getMessageBusiness(IWContext iwc) throws RemoteException {
+		return (CommuneMessageBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, CommuneMessageBusiness.class);
 	}
 
 

@@ -1,6 +1,6 @@
 package se.idega.idegaweb.commune.message.event;
 
-import se.idega.idegaweb.commune.message.business.MessageBusiness;
+import se.idega.idegaweb.commune.message.business.CommuneMessageBusiness;
 import se.idega.idegaweb.commune.message.business.MessageSession;
 
 import com.idega.event.IWPageEventListener;
@@ -59,8 +59,8 @@ public class MessageListener implements IWPageEventListener {
   		session.setIfUserPreferesMessageByEmail(false);
   }
   
-  private MessageBusiness getMessageBusiness(IWContext iwc) throws Exception {
-    return (MessageBusiness)com.idega.business.IBOLookup.getServiceInstance(iwc,MessageBusiness.class);
+  private CommuneMessageBusiness getMessageBusiness(IWContext iwc) throws Exception {
+    return (CommuneMessageBusiness)com.idega.business.IBOLookup.getServiceInstance(iwc,CommuneMessageBusiness.class);
   }
 
   private MessageSession getMessageSession(IWContext iwc) throws Exception {

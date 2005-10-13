@@ -64,17 +64,17 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingField;
 import se.idega.idegaweb.commune.accounting.posting.data.PostingFieldBMPBean;
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
-import se.idega.idegaweb.commune.message.business.MessageBusiness;
+import se.idega.idegaweb.commune.message.business.CommuneMessageBusiness;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessageHome;
 import se.idega.idegaweb.commune.printing.business.DocumentBusiness;
 
 /**
- * Last modified: $Date: 2004/10/14 07:33:24 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/13 18:36:12 $ by $Author: laddi $
  *
  * @author <a href="mailto:gimmi@idega.is">Grimur Jonsson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.35 $
+ * @version $Revision: 1.36 $
  */
 public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmountBusiness, InvoiceStrings {
 	private final static Font SANSSERIF_FONT
@@ -227,7 +227,7 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		icFile.store();
 		//result.put (CHECK_AMOUNT_FILE_KEY, icFile.getPrimaryKey());
 		PrintedLetterMessage queueItem
-				= getPrintedLetterMessageHome ().create();
+				= (PrintedLetterMessage) getPrintedLetterMessageHome ().create();
 		final StringBuffer subject = new StringBuffer ();
 		subject.append (localize (CHECK_AMOUNT_LIST_KEY,
 															CHECK_AMOUNT_LIST_DEFAULT));
@@ -273,7 +273,7 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		outStream.close();
 		
 		// send mails with document attached
-		final MessageBusiness messageBusiness = getMessageBusiness ();
+		final CommuneMessageBusiness messageBusiness = getMessageBusiness ();
 		for (Iterator i = emailReceivers.iterator(); i.hasNext();) {
 			Email email = (Email) i.next();
 			if (messageBusiness.getIfCanSendEmail()) {
@@ -741,9 +741,9 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		}
 	}
  
-	private MessageBusiness getMessageBusiness () {
+	private CommuneMessageBusiness getMessageBusiness () {
 		try {
-			return (MessageBusiness) getServiceInstance (MessageBusiness.class);
+			return (CommuneMessageBusiness) getServiceInstance (CommuneMessageBusiness.class);
 		}	catch (RemoteException e) {
 			throw new IBORuntimeException(e);
 		}

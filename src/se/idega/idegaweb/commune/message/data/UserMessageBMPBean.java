@@ -6,6 +6,7 @@ import javax.ejb.FinderException;
 
 import com.idega.block.process.data.AbstractCaseBMPBean;
 import com.idega.block.process.data.Case;
+import com.idega.block.process.message.data.Message;
 import com.idega.data.IDOException;
 import com.idega.data.query.SelectQuery;
 import com.idega.user.data.Group;

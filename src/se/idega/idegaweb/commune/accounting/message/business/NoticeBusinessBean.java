@@ -1,5 +1,5 @@
 /*
- * $Id: NoticeBusinessBean.java,v 1.14 2004/05/24 10:15:50 anders Exp $
+ * $Id: NoticeBusinessBean.java,v 1.15 2005/10/13 18:36:11 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -17,9 +17,9 @@ import java.util.Iterator;
 import java.util.Map;
 
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
-import se.idega.idegaweb.commune.message.business.MessageBusiness;
-import se.idega.idegaweb.commune.message.data.Message;
+import se.idega.idegaweb.commune.message.business.CommuneMessageBusiness;
 
+import com.idega.block.process.message.data.Message;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
@@ -34,10 +34,10 @@ import com.idega.user.data.User;
 /** 
  * Business logic for notice messages.
  * <p>
- * Last modified: $Date: 2004/05/24 10:15:50 $ by $Author: anders $
+ * Last modified: $Date: 2005/10/13 18:36:11 $ by $Author: laddi $
  *
  * @author Anders Lindman
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class NoticeBusinessBean extends com.idega.business.IBOServiceBean implements NoticeBusiness  {
 
@@ -163,7 +163,7 @@ public class NoticeBusinessBean extends com.idega.business.IBOServiceBean implem
 	/**
 	 * Returns message business. 
 	 */	
-	public MessageBusiness getMessageBusiness() throws RemoteException {
-		return (MessageBusiness) this.getServiceInstance(MessageBusiness.class);
+	public CommuneMessageBusiness getMessageBusiness() throws RemoteException {
+		return (CommuneMessageBusiness) this.getServiceInstance(CommuneMessageBusiness.class);
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: MessageLetterContext.java,v 1.2 2005/04/20 14:32:08 malin Exp $
+ * $Id: MessageLetterContext.java,v 1.3 2005/10/13 18:36:11 laddi Exp $
  * Created on 15.10.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -21,9 +21,9 @@ import java.util.Map;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.business.Constants;
 import se.idega.idegaweb.commune.business.NoUserAddressException;
-import se.idega.idegaweb.commune.message.data.Message;
 
 import com.idega.block.pdf.business.PrintingContextImpl;
+import com.idega.block.process.message.data.Message;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.core.location.data.Address;
@@ -44,10 +44,10 @@ import com.idega.xml.XMLOutput;
 
 /**
  * 
- *  Last modified: $Date: 2005/04/20 14:32:08 $ by $Author: malin $
+ *  Last modified: $Date: 2005/10/13 18:36:11 $ by $Author: laddi $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class MessageLetterContext extends PrintingContextImpl {
     

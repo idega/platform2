@@ -29,7 +29,7 @@ import javax.xml.parsers.SAXParserFactory;
 
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.business.NoUserAddressException;
-import se.idega.idegaweb.commune.message.business.MessageBusiness;
+import se.idega.idegaweb.commune.message.business.CommuneMessageBusiness;
 import se.idega.idegaweb.commune.message.business.MessagePdfHandler;
 import se.idega.idegaweb.commune.message.data.MessageConstants;
 import se.idega.idegaweb.commune.message.data.MessageHandlerInfo;
@@ -266,7 +266,7 @@ public class DocumentBusinessBean extends com.idega.business.IBOServiceBean impl
 		    SystemArchivationMessageHome msgHome = getSystemArchivationMessageHome();
 		    if (msgHome != null) {
 				for (int i = 0; i < primaryKeys.length; i++) {
-					msg = msgHome.findByPrimaryKey(primaryKeys[i]);
+					msg = (PrintMessage) msgHome.findByPrimaryKey(primaryKeys[i]);
 					coll.add(msg);
 				}
 			}
@@ -275,7 +275,7 @@ public class DocumentBusinessBean extends com.idega.business.IBOServiceBean impl
 		    PrintedLetterMessageHome msgHome = getPrintedLetterMessageHome();
 		    if (msgHome != null) {
 				for (int i = 0; i < primaryKeys.length; i++) {
-					msg = msgHome.findByPrimaryKey(primaryKeys[i]);
+					msg = (PrintMessage) msgHome.findByPrimaryKey(primaryKeys[i]);
 					coll.add(msg);
 				}
 			}
@@ -440,9 +440,9 @@ public class DocumentBusinessBean extends com.idega.business.IBOServiceBean impl
 		}
 	}
 
-	protected MessageBusiness getMessageBusiness() {
+	protected CommuneMessageBusiness getMessageBusiness() {
 		try {
-			return (MessageBusiness) getServiceInstance(MessageBusiness.class);
+			return (CommuneMessageBusiness) getServiceInstance(CommuneMessageBusiness.class);
 		}
 		catch (Exception e) {
 			throw new IBORuntimeException(e);

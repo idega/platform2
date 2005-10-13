@@ -1,6 +1,6 @@
 /*
- * $Id: PrintedLetterMessageHome.java 1.1 Jun 12, 2005 laddi Exp $
- * Created on Jun 12, 2005
+ * $Id: PrintedLetterMessageHome.java 1.1 Oct 12, 2005 laddi Exp $
+ * Created on Oct 12, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -11,8 +11,9 @@ package se.idega.idegaweb.commune.message.data;
 
 import java.util.Collection;
 import javax.ejb.FinderException;
+import com.idega.block.process.message.data.MessageHome;
 import com.idega.block.school.data.School;
-import com.idega.data.IDOHome;
+import com.idega.data.IDOException;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
@@ -24,11 +25,7 @@ import com.idega.util.IWTimestamp;
  * @author <a href="mailto:laddi@idega.com">laddi</a>
  * @version $Revision: 1.1 $
  */
-public interface PrintedLetterMessageHome extends IDOHome {
-
-	public PrintedLetterMessage create() throws javax.ejb.CreateException;
-
-	public PrintedLetterMessage findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
+public interface PrintedLetterMessageHome extends MessageHome {
 
 	/**
 	 * @see se.idega.idegaweb.commune.message.data.PrintedLetterMessageBMPBean#ejbFindMessages
@@ -187,25 +184,41 @@ public interface PrintedLetterMessageHome extends IDOHome {
 	public Collection findLetters(String[] msgId) throws FinderException;
 
 	/**
-	 * @see se.idega.idegaweb.commune.message.data.PrintedLetterMessageBMPBean#ejbFindMessagesByStatus
+	 * @see se.idega.idegaweb.commune.message.data.PrintedLetterMessageBMPBean#ejbFindMessages
 	 */
-	public Collection findMessagesByStatus(User user, String[] status, int numberOfEntries, int startingEntry)
+	public java.util.Collection findMessages(com.idega.user.data.User user, String[] status)
+			throws javax.ejb.FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.message.data.PrintedLetterMessageBMPBean#ejbFindMessages
+	 */
+	public Collection findMessages(User user, String[] status, int numberOfEntries, int startingEntry)
 			throws FinderException;
 
 	/**
-	 * @see se.idega.idegaweb.commune.message.data.PrintedLetterMessageBMPBean#ejbFindMessagesByStatus
+	 * @see se.idega.idegaweb.commune.message.data.PrintedLetterMessageBMPBean#ejbFindMessages
 	 */
-	public Collection findMessagesByStatus(Group group, String[] status) throws FinderException;
+	public Collection findMessages(Group group, String[] status) throws FinderException;
 
 	/**
-	 * @see se.idega.idegaweb.commune.message.data.PrintedLetterMessageBMPBean#ejbFindMessagesByStatus
+	 * @see se.idega.idegaweb.commune.message.data.PrintedLetterMessageBMPBean#ejbFindMessages
 	 */
-	public Collection findMessagesByStatus(Group group, String[] status, int numberOfEntries, int startingEntry)
+	public Collection findMessages(Group group, String[] status, int numberOfEntries, int startingEntry)
 			throws FinderException;
 
 	/**
-	 * @see se.idega.idegaweb.commune.message.data.PrintedLetterMessageBMPBean#ejbFindMessagesByStatus
+	 * @see se.idega.idegaweb.commune.message.data.PrintedLetterMessageBMPBean#ejbFindMessages
 	 */
-	public Collection findMessagesByStatus(User user, Collection groups, String[] status, int numberOfEntries,
-			int startingEntry) throws FinderException;
+	public Collection findMessages(User user, Collection groups, String[] status, int numberOfEntries, int startingEntry)
+			throws FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.message.data.PrintedLetterMessageBMPBean#ejbHomeGetNumberOfMessages
+	 */
+	public int getNumberOfMessages(User user, Collection groups, String[] status) throws IDOException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.message.data.PrintedLetterMessageBMPBean#ejbHomeGetNumberOfMessages
+	 */
+	public int getNumberOfMessages(User user, String[] status) throws IDOException;
 }

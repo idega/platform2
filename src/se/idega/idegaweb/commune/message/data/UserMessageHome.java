@@ -1,5 +1,5 @@
 /*
- * $Id: UserMessageHome.java,v 1.4 2004/10/12 08:33:33 aron Exp $
+ * $Id: UserMessageHome.java,v 1.5 2005/10/13 18:36:11 laddi Exp $
  * Created on 7.10.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -10,26 +10,20 @@
 package se.idega.idegaweb.commune.message.data;
 
 import java.util.Collection;
-
 import javax.ejb.FinderException;
-
+import com.idega.block.process.message.data.MessageHome;
 import com.idega.data.IDOException;
-import com.idega.data.IDOHome;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/12 08:33:33 $ by $Author: aron $
+ *  Last modified: $Date: 2005/10/13 18:36:11 $ by $Author: laddi $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
-public interface UserMessageHome extends IDOHome {
-    public UserMessage create() throws javax.ejb.CreateException;
-
-    public UserMessage findByPrimaryKey(Object pk)
-            throws javax.ejb.FinderException;
+public interface UserMessageHome extends MessageHome {
 
     /**
      * @see se.idega.idegaweb.commune.message.data.UserMessageBMPBean#ejbFindMessages

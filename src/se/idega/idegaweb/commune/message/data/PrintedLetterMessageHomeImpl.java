@@ -1,6 +1,6 @@
 /*
- * $Id: PrintedLetterMessageHomeImpl.java 1.1 Jun 12, 2005 laddi Exp $
- * Created on Jun 12, 2005
+ * $Id: PrintedLetterMessageHomeImpl.java 1.1 Oct 12, 2005 laddi Exp $
+ * Created on Oct 12, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -11,7 +11,9 @@ package se.idega.idegaweb.commune.message.data;
 
 import java.util.Collection;
 import javax.ejb.FinderException;
+import com.idega.block.process.message.data.Message;
 import com.idega.block.school.data.School;
+import com.idega.data.IDOException;
 import com.idega.data.IDOFactory;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
@@ -30,11 +32,11 @@ public class PrintedLetterMessageHomeImpl extends IDOFactory implements PrintedL
 		return PrintedLetterMessage.class;
 	}
 
-	public PrintedLetterMessage create() throws javax.ejb.CreateException {
+	public Message create() throws javax.ejb.CreateException {
 		return (PrintedLetterMessage) super.createIDO();
 	}
 
-	public PrintedLetterMessage findByPrimaryKey(Object pk) throws javax.ejb.FinderException {
+	public Message findByPrimaryKey(Object pk) throws javax.ejb.FinderException {
 		return (PrintedLetterMessage) super.findByPrimaryKeyIDO(pk);
 	}
 
@@ -268,37 +270,59 @@ public class PrintedLetterMessageHomeImpl extends IDOFactory implements PrintedL
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findMessagesByStatus(User user, String[] status, int numberOfEntries, int startingEntry)
+	public java.util.Collection findMessages(com.idega.user.data.User user, String[] status)
+			throws javax.ejb.FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((PrintedLetterMessageBMPBean) entity).ejbFindMessages(user, status);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findMessages(User user, String[] status, int numberOfEntries, int startingEntry)
 			throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((PrintedLetterMessageBMPBean) entity).ejbFindMessagesByStatus(user, status,
-				numberOfEntries, startingEntry);
+		java.util.Collection ids = ((PrintedLetterMessageBMPBean) entity).ejbFindMessages(user, status, numberOfEntries,
+				startingEntry);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findMessagesByStatus(Group group, String[] status) throws FinderException {
+	public Collection findMessages(Group group, String[] status) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((PrintedLetterMessageBMPBean) entity).ejbFindMessagesByStatus(group, status);
+		java.util.Collection ids = ((PrintedLetterMessageBMPBean) entity).ejbFindMessages(group, status);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findMessagesByStatus(Group group, String[] status, int numberOfEntries, int startingEntry)
+	public Collection findMessages(Group group, String[] status, int numberOfEntries, int startingEntry)
 			throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((PrintedLetterMessageBMPBean) entity).ejbFindMessagesByStatus(group, status,
+		java.util.Collection ids = ((PrintedLetterMessageBMPBean) entity).ejbFindMessages(group, status, numberOfEntries,
+				startingEntry);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findMessages(User user, Collection groups, String[] status, int numberOfEntries, int startingEntry)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((PrintedLetterMessageBMPBean) entity).ejbFindMessages(user, groups, status,
 				numberOfEntries, startingEntry);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findMessagesByStatus(User user, Collection groups, String[] status, int numberOfEntries,
-			int startingEntry) throws FinderException {
+	public int getNumberOfMessages(User user, Collection groups, String[] status) throws IDOException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((PrintedLetterMessageBMPBean) entity).ejbFindMessagesByStatus(user, groups, status,
-				numberOfEntries, startingEntry);
+		int theReturn = ((PrintedLetterMessageBMPBean) entity).ejbHomeGetNumberOfMessages(user, groups, status);
 		this.idoCheckInPooledEntity(entity);
-		return this.getEntityCollectionForPrimaryKeys(ids);
+		return theReturn;
+	}
+
+	public int getNumberOfMessages(User user, String[] status) throws IDOException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		int theReturn = ((PrintedLetterMessageBMPBean) entity).ejbHomeGetNumberOfMessages(user, status);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
 	}
 }

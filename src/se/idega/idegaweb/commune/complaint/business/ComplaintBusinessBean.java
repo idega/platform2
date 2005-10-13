@@ -8,13 +8,13 @@ import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.complaint.data.Complaint;
 import se.idega.idegaweb.commune.complaint.data.ComplaintHome;
-import se.idega.idegaweb.commune.message.business.MessageBusiness;
-import se.idega.idegaweb.commune.message.data.Message;
+import se.idega.idegaweb.commune.message.business.CommuneMessageBusiness;
 
 import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.block.process.data.CaseCode;
 import com.idega.block.process.data.CaseStatus;
 import com.idega.block.process.data.CaseStatusHome;
+import com.idega.block.process.message.data.Message;
 import com.idega.user.data.User;
 
 /**
@@ -64,7 +64,7 @@ public class ComplaintBusinessBean extends CaseBusinessBean implements Complaint
 	public Collection findAllComplaintTypes() throws FinderException,RemoteException {
 		Collection collection = getCaseCodeHome().findAllCaseCodes();
 		
-		MessageBusiness msg = (MessageBusiness) com.idega.business.IBOLookup.getServiceInstance(getIWApplicationContext(), MessageBusiness.class);
+		CommuneMessageBusiness msg = (CommuneMessageBusiness) com.idega.business.IBOLookup.getServiceInstance(getIWApplicationContext(), CommuneMessageBusiness.class);
 		collection.remove(msg.getCaseCodePrintedLetterMessage());
 		//collection.remove(msg.getCaseCodeSystemArchivationMessage());
 		collection.remove(msg.getCaseCodeUserMessage());
@@ -103,7 +103,7 @@ public class ComplaintBusinessBean extends CaseBusinessBean implements Complaint
 	}
 
 	public void sendMessageToCitizen(Complaint complaint, int userID, String subject, String body) throws CreateException,RemoteException {
-		MessageBusiness msg = (MessageBusiness) com.idega.business.IBOLookup.getServiceInstance(getIWApplicationContext(), MessageBusiness.class);
+		CommuneMessageBusiness msg = (CommuneMessageBusiness) com.idega.business.IBOLookup.getServiceInstance(getIWApplicationContext(), CommuneMessageBusiness.class);
 		Message message = msg.createUserMessage(userID, subject, body);
 		message.setParentCase(complaint);
 		message.store();

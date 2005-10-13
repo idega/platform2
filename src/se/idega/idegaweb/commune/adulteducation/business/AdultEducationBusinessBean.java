@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.45 2005/10/13 08:09:37 palli Exp $
+ * $Id: AdultEducationBusinessBean.java,v 1.46 2005/10/13 18:36:12 laddi Exp $
  * Created on 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -44,7 +44,7 @@ import se.idega.idegaweb.commune.adulteducation.data.CoursePackageHome;
 import se.idega.idegaweb.commune.adulteducation.data.SchoolCoursePackage;
 import se.idega.idegaweb.commune.adulteducation.data.SchoolCoursePackageHome;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
-import se.idega.idegaweb.commune.message.business.MessageBusiness;
+import se.idega.idegaweb.commune.message.business.CommuneMessageBusiness;
 
 import com.idega.block.pdf.business.PrintingContext;
 import com.idega.block.pdf.business.PrintingService;
@@ -90,10 +90,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/10/13 08:09:37 $ by $Author: palli $
+ * Last modified: $Date: 2005/10/13 18:36:12 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.45 $
+ * @version $Revision: 1.46 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements CaseBusiness, AdultEducationBusiness {
 
@@ -298,9 +298,9 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Case
 		}
 	}
 
-	private MessageBusiness getMessageBusiness() {
+	private CommuneMessageBusiness getMessageBusiness() {
 		try {
-			return (MessageBusiness) this.getServiceInstance(MessageBusiness.class);
+			return (CommuneMessageBusiness) this.getServiceInstance(CommuneMessageBusiness.class);
 		}
 		catch (RemoteException e) {
 			throw new IBORuntimeException(e.getMessage());

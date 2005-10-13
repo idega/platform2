@@ -72,8 +72,7 @@ import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosisHome;
 import se.idega.idegaweb.commune.childcare.data.ChildCareQueue;
 import se.idega.idegaweb.commune.childcare.data.ChildCareQueueHome;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
-import se.idega.idegaweb.commune.message.business.MessageBusiness;
-import se.idega.idegaweb.commune.message.data.Message;
+import se.idega.idegaweb.commune.message.business.CommuneMessageBusiness;
 
 import com.idega.block.contract.business.ContractService;
 import com.idega.block.contract.data.Contract;
@@ -85,6 +84,7 @@ import com.idega.block.pdf.business.PrintingService;
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.block.process.data.Case;
+import com.idega.block.process.message.data.Message;
 import com.idega.block.school.business.SchoolAreaComparator;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.business.SchoolComparator;
@@ -690,7 +690,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			Object[] arguments = { child.getName(), application.getProvider().getSchoolName(), new IWTimestamp(application.getFromDate()).toSQLDateString(), child.getPersonalID() };
 
 			if (users != null) {
-				MessageBusiness messageBiz = getMessageBusiness();
+				CommuneMessageBusiness messageBiz = getMessageBusiness();
 				Iterator it = users.iterator();
 				while (it.hasNext()) {
 					SchoolUser providerUser = (SchoolUser) it.next();
@@ -3611,9 +3611,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return MessageFormat.format(desc, arguments);
 	}
 
-	public MessageBusiness getMessageBusiness() {
+	public CommuneMessageBusiness getMessageBusiness() {
 		try {
-			return (MessageBusiness) this.getServiceInstance(MessageBusiness.class);
+			return (CommuneMessageBusiness) this.getServiceInstance(CommuneMessageBusiness.class);
 		}
 		catch (RemoteException e) {
 			throw new IBORuntimeException(e.getMessage());

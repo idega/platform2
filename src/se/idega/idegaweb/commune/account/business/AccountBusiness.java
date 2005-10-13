@@ -17,7 +17,7 @@ public void acceptApplication(int p0,com.idega.user.data.User p1,boolean p2,bool
  public java.util.Collection getAllRejectedApplications()throws javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
  public java.util.Iterator getAllRejectedApplicationsIterator()throws javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
  public java.lang.String getBundleIdentifier() throws java.rmi.RemoteException;
- public se.idega.idegaweb.commune.message.business.MessageBusiness getMessageBusiness()throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public se.idega.idegaweb.commune.message.business.CommuneMessageBusiness getMessageBusiness()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public java.lang.String getRejectMessageSubject() throws java.rmi.RemoteException;
  public void rejectApplication(int p0,com.idega.user.data.User p1,java.lang.String p2)throws java.rmi.RemoteException,javax.ejb.CreateException,javax.ejb.FinderException, java.rmi.RemoteException;
  public void rejectApplication(int p0,com.idega.user.data.User p1)throws java.rmi.RemoteException,javax.ejb.CreateException,javax.ejb.FinderException, java.rmi.RemoteException;

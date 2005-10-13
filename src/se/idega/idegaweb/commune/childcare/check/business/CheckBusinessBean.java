@@ -13,9 +13,9 @@ import se.idega.idegaweb.commune.care.check.data.Check;
 import se.idega.idegaweb.commune.care.check.data.CheckHome;
 import se.idega.idegaweb.commune.care.check.data.GrantedCheck;
 import se.idega.idegaweb.commune.care.check.data.GrantedCheckHome;
-import se.idega.idegaweb.commune.message.business.MessageBusiness;
-import se.idega.idegaweb.commune.message.data.Message;
+import se.idega.idegaweb.commune.message.business.CommuneMessageBusiness;
 import com.idega.block.process.business.CaseBusinessBean;
+import com.idega.block.process.message.data.Message;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.SchoolType;
 import com.idega.core.location.data.Address;
@@ -285,8 +285,8 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		return (UserBusiness) com.idega.business.IBOLookup.getServiceInstance(getIWApplicationContext(), UserBusiness.class);
 	}
 
-	private MessageBusiness getMessageBusiness() throws RemoteException {
-		return (MessageBusiness) com.idega.business.IBOLookup.getServiceInstance(getIWApplicationContext(), MessageBusiness.class);
+	private CommuneMessageBusiness getMessageBusiness() throws RemoteException {
+		return (CommuneMessageBusiness) com.idega.business.IBOLookup.getServiceInstance(getIWApplicationContext(), CommuneMessageBusiness.class);
 	}
 	
 	private FamilyLogic getMemberFamilyLogic() throws RemoteException {

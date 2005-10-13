@@ -1,5 +1,5 @@
 /*
- * $Id: DefaultLetterContext.java,v 1.2 2004/12/05 09:52:31 laddi Exp $
+ * $Id: DefaultLetterContext.java,v 1.3 2005/10/13 18:36:11 laddi Exp $
  * Created on 15.10.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -12,16 +12,16 @@ package se.idega.idegaweb.commune.printing.business;
 import java.io.File;
 import java.io.IOException;
 
-import se.idega.idegaweb.commune.message.data.Message;
 
+import com.idega.block.process.message.data.Message;
 import com.idega.idegaweb.IWUserContext;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/05 09:52:31 $ by $Author: laddi $
+ *  Last modified: $Date: 2005/10/13 18:36:11 $ by $Author: laddi $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class DefaultLetterContext extends MessageLetterContext {
     

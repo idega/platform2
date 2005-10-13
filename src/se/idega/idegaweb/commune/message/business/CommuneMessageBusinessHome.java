@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessHome.java,v 1.4 2004/11/02 21:22:41 aron Exp $
+ * $Id: CommuneMessageBusinessHome.java,v 1.1 2005/10/13 18:36:11 laddi Exp $
  * Created on 2.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -16,13 +16,13 @@ import com.idega.business.IBOHome;
 
 /**
  * 
- *  Last modified: $Date: 2004/11/02 21:22:41 $ by $Author: aron $
+ *  Last modified: $Date: 2005/10/13 18:36:11 $ by $Author: laddi $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.1 $
  */
-public interface MessageBusinessHome extends IBOHome {
-    public MessageBusiness create() throws javax.ejb.CreateException,
+public interface CommuneMessageBusinessHome extends IBOHome {
+    public CommuneMessageBusiness create() throws javax.ejb.CreateException,
             java.rmi.RemoteException;
 
 }

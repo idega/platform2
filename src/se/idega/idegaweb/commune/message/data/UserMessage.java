@@ -1,5 +1,5 @@
 /*
- * $Id: UserMessage.java,v 1.7 2004/10/12 08:33:33 aron Exp $
+ * $Id: UserMessage.java,v 1.8 2005/10/13 18:36:11 laddi Exp $
  * Created on 7.10.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -12,15 +12,16 @@ package se.idega.idegaweb.commune.message.data;
 
 
 import com.idega.block.process.data.Case;
+import com.idega.block.process.message.data.Message;
 import com.idega.data.IDOEntity;
 import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/12 08:33:33 $ by $Author: aron $
+ *  Last modified: $Date: 2005/10/13 18:36:11 $ by $Author: laddi $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public interface UserMessage extends IDOEntity, Message, Case {
     /**

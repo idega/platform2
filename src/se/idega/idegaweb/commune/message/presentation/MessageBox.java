@@ -7,13 +7,13 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Vector;
 
-import se.idega.idegaweb.commune.message.business.MessageBusiness;
+import se.idega.idegaweb.commune.message.business.CommuneMessageBusiness;
 import se.idega.idegaweb.commune.message.business.MessageComparator;
 import se.idega.idegaweb.commune.message.business.MessageSession;
-import se.idega.idegaweb.commune.message.data.Message;
 import se.idega.idegaweb.commune.message.event.MessageListener;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
+import com.idega.block.process.message.data.Message;
 import com.idega.presentation.CollectionNavigator;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
@@ -328,8 +328,8 @@ public class MessageBox extends CommuneBlock {
 	}
 	
 
-	protected MessageBusiness getMessageBusiness(IWContext iwc) throws Exception {
-		return (MessageBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, MessageBusiness.class);
+	protected CommuneMessageBusiness getMessageBusiness(IWContext iwc) throws Exception {
+		return (CommuneMessageBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, CommuneMessageBusiness.class);
 	}
 
   private MessageSession getMessageSession(IWContext iwc) throws Exception {

@@ -3,7 +3,7 @@ package se.idega.idegaweb.commune.business;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import javax.ejb.FinderException;
-import se.idega.idegaweb.commune.message.business.MessageBusiness;
+import se.idega.idegaweb.commune.message.business.CommuneMessageBusiness;
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.data.CaseCode;
 import com.idega.business.IBOServiceBean;
@@ -27,8 +27,8 @@ public class CommuneCaseBusinessBean extends IBOServiceBean implements CommuneCa
 		return (CaseBusiness)this.getServiceInstance(CaseBusiness.class);
 	}
 	
-	public MessageBusiness getMessageBusiness()throws RemoteException{
-		return (MessageBusiness)this.getServiceInstance(MessageBusiness.class);
+	public CommuneMessageBusiness getMessageBusiness()throws RemoteException{
+		return (CommuneMessageBusiness)this.getServiceInstance(CommuneMessageBusiness.class);
 	}
 	
 	

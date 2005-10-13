@@ -1,5 +1,5 @@
 /*
- * $Id: PasswordLetterContext.java,v 1.1 2004/11/04 20:34:48 aron Exp $
+ * $Id: PasswordLetterContext.java,v 1.2 2005/10/13 18:36:11 laddi Exp $
  * Created on 15.10.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -15,18 +15,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import se.idega.idegaweb.commune.message.data.Message;
 
+import com.idega.block.process.message.data.Message;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.xml.XMLDocument;
 import com.idega.xml.XMLElement;
 
 /**
  * 
- *  Last modified: $Date: 2004/11/04 20:34:48 $ by $Author: aron $
+ *  Last modified: $Date: 2005/10/13 18:36:11 $ by $Author: laddi $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class PasswordLetterContext extends MessageLetterContext {
     

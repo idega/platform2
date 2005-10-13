@@ -15,11 +15,11 @@ import se.cubecon.bun24.viewpoint.data.Viewpoint;
 import se.cubecon.bun24.viewpoint.data.ViewpointBMPBean;
 import se.cubecon.bun24.viewpoint.data.ViewpointHome;
 import se.cubecon.bun24.viewpoint.presentation.ViewpointForm;
-import se.idega.idegaweb.commune.message.business.MessageBusiness;
-import se.idega.idegaweb.commune.message.data.Message;
+import se.idega.idegaweb.commune.message.business.CommuneMessageBusiness;
 import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.block.process.data.CaseStatus;
 import com.idega.block.process.data.CaseStatusHome;
+import com.idega.block.process.message.data.Message;
 import com.idega.business.IBOLookup;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -28,10 +28,10 @@ import com.idega.user.data.Group;
 import com.idega.user.data.User;
 
 /**
- * Last modified: $Date: 2005/07/07 15:23:35 $ by $Author: thomas $
+ * Last modified: $Date: 2005/10/13 18:36:12 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class ViewpointBusinessBean extends CaseBusinessBean  implements ViewpointBusiness {
 
@@ -74,7 +74,7 @@ public class ViewpointBusinessBean extends CaseBusinessBean  implements Viewpoin
         final String messageSubject
                 = getLocalizedString (CONFIRMSUBJECT_KEY,
                                       CONFIRMSUBJECT_DEFAULT);
-		final MessageBusiness messageBusiness = getMessageBusiness ();
+		final CommuneMessageBusiness messageBusiness = getMessageBusiness ();
 		final Message message = messageBusiness.createUserMessage
                 (viewpoint.getUserId ().intValue (), messageSubject,
                  messageBody);
@@ -110,7 +110,7 @@ public class ViewpointBusinessBean extends CaseBusinessBean  implements Viewpoin
         final String messageSubject
                 = getLocalizedString (CONFIRMSUBJECT_KEY,
                                       CONFIRMSUBJECT_DEFAULT);
-		final MessageBusiness messageBusiness = getMessageBusiness ();
+		final CommuneMessageBusiness messageBusiness = getMessageBusiness ();
         messageBusiness.sendMessage (userEmail, messageSubject, messageBody);
     }
 
@@ -161,7 +161,7 @@ public class ViewpointBusinessBean extends CaseBusinessBean  implements Viewpoin
                 + (questionLine.length () > 400
                    ? (questionLine.substring (0, 397) + "...")
                    : questionLine) + "\n";
-        final MessageBusiness messageBusiness = getMessageBusiness ();
+        final CommuneMessageBusiness messageBusiness = getMessageBusiness ();
         final Integer userId = viewpoint.getUserId ();
         final String email = viewpoint.getUserEmail ();
         final String subject = "Re: " + viewpoint.getSubject ();
@@ -191,9 +191,9 @@ public class ViewpointBusinessBean extends CaseBusinessBean  implements Viewpoin
         return (ViewpointHome) IDOLookup.getHome (Viewpoint.class);
     }
 
-    private MessageBusiness getMessageBusiness () throws RemoteException {
-        return (MessageBusiness) IBOLookup.getServiceInstance
-                (getIWApplicationContext(), MessageBusiness.class);
+    private CommuneMessageBusiness getMessageBusiness () throws RemoteException {
+        return (CommuneMessageBusiness) IBOLookup.getServiceInstance
+                (getIWApplicationContext(), CommuneMessageBusiness.class);
     }
 
     public TopCategory [] findAllTopCategories () throws RemoteException,

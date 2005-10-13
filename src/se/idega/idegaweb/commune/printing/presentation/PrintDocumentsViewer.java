@@ -6,8 +6,7 @@ import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
-import se.idega.idegaweb.commune.message.business.MessageBusiness;
-import se.idega.idegaweb.commune.message.data.Message;
+import se.idega.idegaweb.commune.message.business.CommuneMessageBusiness;
 import se.idega.idegaweb.commune.message.data.PrintMessage;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
 import se.idega.idegaweb.commune.presentation.ColumnList;
@@ -16,6 +15,7 @@ import se.idega.idegaweb.commune.printing.business.DocumentBusiness;
 import se.idega.idegaweb.commune.printing.business.DocumentService;
 import se.idega.idegaweb.commune.printing.data.PrintDocuments;
 
+import com.idega.block.process.message.data.Message;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.location.data.Address;
 import com.idega.presentation.ExceptionWrapper;
@@ -168,7 +168,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 	}
 
 	public void init(IWContext iwc) throws RemoteException {
-		MessageBusiness msgBuiz = getMessageBusiness(iwc);
+		CommuneMessageBusiness msgBuiz = getMessageBusiness(iwc);
 		statusUnprinted = msgBuiz.getCaseStatusOpen().getStatus();
 		statusPrinted = msgBuiz.getCaseStatusReady().getStatus();
 		statusDeleted = msgBuiz.getCaseStatusInactive().getStatus();
@@ -305,7 +305,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 	private void printMessage(IWContext iwc) throws Exception {
 		//int userID = ((Integer) iwc.getCurrentUser().getPrimaryKey()).intValue();
 		if (msgID > 0) {
-			PrintedLetterMessage msg =getDocumentBusiness(iwc).getPrintedLetterMessageHome().findByPrimaryKey(new Integer(msgID));
+			PrintedLetterMessage msg = (PrintedLetterMessage) getDocumentBusiness(iwc).getPrintedLetterMessageHome().findByPrimaryKey(new Integer(msgID));
 			//fileID =getDocumentBusiness(iwc).writePDF(msg,iwc.getCurrentUser(),localize("printdoc.letter_filename","LetterPDF"),iwc.getApplicationSettings().getDefaultLocale(),true);
 			
 			//TODO
@@ -1325,10 +1325,10 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		add(unPrintedNames);
 	}
 
-	private MessageBusiness getMessageBusiness(IWContext iwc) throws RemoteException {
-		return (MessageBusiness) com.idega.business.IBOLookup.getServiceInstance(
+	private CommuneMessageBusiness getMessageBusiness(IWContext iwc) throws RemoteException {
+		return (CommuneMessageBusiness) com.idega.business.IBOLookup.getServiceInstance(
 			iwc,
-			MessageBusiness.class);
+			CommuneMessageBusiness.class);
 	}
 
 	private DocumentBusiness getDocumentBusiness(IWContext iwc) throws RemoteException {

@@ -1,5 +1,5 @@
 /*
- * $Id: DocumentServiceBean.java,v 1.3 2004/12/05 09:50:32 laddi Exp $
+ * $Id: DocumentServiceBean.java,v 1.4 2005/10/13 18:36:11 laddi Exp $
  * Created on 15.10.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -18,7 +18,7 @@ import java.util.Iterator;
 
 import javax.ejb.CreateException;
 
-import se.idega.idegaweb.commune.message.business.MessageBusiness;
+import se.idega.idegaweb.commune.message.business.CommuneMessageBusiness;
 import se.idega.idegaweb.commune.message.data.MessageConstants;
 import se.idega.idegaweb.commune.message.data.PrintMessage;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
@@ -44,10 +44,10 @@ import com.lowagie.text.pdf.PdfReader;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/05 09:50:32 $ by $Author: laddi $
+ *  Last modified: $Date: 2005/10/13 18:36:11 $ by $Author: laddi $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class DocumentServiceBean extends IBOServiceBean  implements DocumentService{
     
@@ -72,7 +72,7 @@ public class DocumentServiceBean extends IBOServiceBean  implements DocumentServ
     }
     
    
-    private Integer storeStreamToICFile(IWUserContext iwuc,MessageBusiness msgServ,PrintMessage msg,InputStream is,String fileName,int lengthOfFile,boolean flagPrinted) {
+    private Integer storeStreamToICFile(IWUserContext iwuc,CommuneMessageBusiness msgServ,PrintMessage msg,InputStream is,String fileName,int lengthOfFile,boolean flagPrinted) {
         try {
             ICFile file = createFile(null,fileName,is,lengthOfFile);
             msgServ.setMessageFile(msg,flagPrinted,iwuc.getCurrentUser(),file);
@@ -116,7 +116,7 @@ public class DocumentServiceBean extends IBOServiceBean  implements DocumentServ
             
             PrintingService pserv = getPrintingService();
             
-            MessageBusiness msgBuiz = getMessageService();
+            CommuneMessageBusiness msgBuiz = getMessageService();
             int lettersProcessed = 0;
             for (Iterator iter = msgs.iterator(); iter.hasNext();) {
                PrintMessage msg = (PrintMessage) iter.next();
@@ -297,7 +297,7 @@ public class DocumentServiceBean extends IBOServiceBean  implements DocumentServ
         return (DocumentBusiness)getServiceInstance(DocumentBusiness.class);
     }
     
-    public MessageBusiness getMessageService()throws IBOLookupException {
-        return (MessageBusiness) getServiceInstance(MessageBusiness.class);
+    public CommuneMessageBusiness getMessageService()throws IBOLookupException {
+        return (CommuneMessageBusiness) getServiceInstance(CommuneMessageBusiness.class);
 	}
 }

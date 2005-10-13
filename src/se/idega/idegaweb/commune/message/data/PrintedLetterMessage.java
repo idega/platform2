@@ -1,6 +1,6 @@
 /*
- * $Id: PrintedLetterMessage.java 1.1 Jun 12, 2005 laddi Exp $
- * Created on Jun 12, 2005
+ * $Id: PrintedLetterMessage.java 1.1 Oct 12, 2005 laddi Exp $
+ * Created on Oct 12, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
