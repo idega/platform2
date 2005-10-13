@@ -282,7 +282,7 @@ public class RunDistanceTab extends UserGroupTab{
 				distance.setChildrenPriceInISK(((Float) fieldValues.get(PARAMETER_CHILDREN_PRICE_ISK)).floatValue());
 				distance.setChildrenPriceInEUR(((Float) fieldValues.get(PARAMETER_CHILDREN_PRICE_EUR)).floatValue());
 
-				distance.setNumberOfSplits(((Integer) fieldValues.get(PARAMETER_CHILDREN_PRICE_EUR)).intValue());
+				distance.setNumberOfSplits(((Integer) fieldValues.get(PARAMETER_NUMBER_OF_SPLITS)).intValue());
 
 				distance.store();
 			}
@@ -308,7 +308,7 @@ public class RunDistanceTab extends UserGroupTab{
 		childrenPriceISK.setContent(((Float) fieldValues.get(PARAMETER_CHILDREN_PRICE_ISK)).toString());
 		childrenPriceEUR.setContent(((Float) fieldValues.get(PARAMETER_CHILDREN_PRICE_EUR)).toString());
 
-		numberOfSplits.setSelectedElement(((Integer) fieldValues.get(PARAMETER_CHILDREN_PRICE_EUR)).intValue());
+		numberOfSplits.setSelectedElement(((Integer) fieldValues.get(PARAMETER_NUMBER_OF_SPLITS)).intValue());
 	}
 	
 	public String getBundleIdentifier() {
