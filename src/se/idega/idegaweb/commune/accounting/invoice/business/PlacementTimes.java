@@ -1,7 +1,8 @@
 package se.idega.idegaweb.commune.accounting.invoice.business;
 
-import com.idega.util.IWTimestamp;
 import se.idega.idegaweb.commune.accounting.business.AccountingUtil;
+
+import com.idega.util.IWTimestamp;
 
 /**
  * Holder for times that are calculated for placement times
@@ -12,10 +13,12 @@ import se.idega.idegaweb.commune.accounting.business.AccountingUtil;
 public class PlacementTimes {
 	private final IWTimestamp firstCheckDay;
 	private final IWTimestamp lastCheckDay;
+	private final int specificNumberOfDaysPrMonth;
 	
-	public PlacementTimes (final IWTimestamp firstCheckDay, final IWTimestamp lastCheckDay) {
+	public PlacementTimes (final IWTimestamp firstCheckDay, final IWTimestamp lastCheckDay, int specificNumberOfDays) {
 		this.firstCheckDay = firstCheckDay;
 		this.lastCheckDay = lastCheckDay;
+		specificNumberOfDaysPrMonth = specificNumberOfDays;
 	}
 
 	public int getDays () {
@@ -41,7 +44,10 @@ public class PlacementTimes {
 		return firstCheckDay;
 	}
 
-	private static int daysInMonth (final IWTimestamp date) {
+	private int daysInMonth (final IWTimestamp date) {
+		if (specificNumberOfDaysPrMonth > 0) {
+			return this.specificNumberOfDaysPrMonth;
+		}
 		final IWTimestamp firstDay = new IWTimestamp (date);
 		firstDay.setDay (1);
 		final IWTimestamp lastDay = new IWTimestamp (firstDay);
