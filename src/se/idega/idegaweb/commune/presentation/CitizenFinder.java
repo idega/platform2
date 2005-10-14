@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenFinder.java,v 1.1 2005/10/14 09:27:55 laddi Exp $
+ * $Id: CitizenFinder.java,v 1.2 2005/10/14 09:57:39 laddi Exp $
  * Created on Oct 14, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -10,19 +10,23 @@
 package se.idega.idegaweb.commune.presentation;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
 import javax.ejb.FinderException;
 import com.idega.business.IBORuntimeException;
+import com.idega.data.IDOLookup;
 import com.idega.event.IWPageEventListener;
 import com.idega.idegaweb.IWException;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.User;
+import com.idega.user.data.UserHome;
 
 
 /**
- * Last modified: $Date: 2005/10/14 09:27:55 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/14 09:57:39 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class CitizenFinder extends CommuneUserFinder implements IWPageEventListener {
 
@@ -49,6 +53,17 @@ public class CitizenFinder extends CommuneUserFinder implements IWPageEventListe
 		return false;
 	}
 
+	protected Collection getUsers(IWContext iwc, String searchString) throws RemoteException {
+		try {
+			UserHome home = (UserHome) IDOLookup.getHome(User.class);
+			return home.findUsersBySearchCondition(searchString, false);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return new ArrayList();
+		}
+	}
+	
 	/* (non-Javadoc)
 	 * @see se.idega.idegaweb.commune.presentation.CommuneUserFinder#addUser(com.idega.presentation.IWContext, com.idega.user.data.User)
 	 */
