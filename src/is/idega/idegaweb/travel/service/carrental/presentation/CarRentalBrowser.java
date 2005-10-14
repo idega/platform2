@@ -1,5 +1,5 @@
 /*
- * $Id: CarRentalBrowser.java,v 1.5 2005/10/06 20:27:38 gimmi Exp $
+ * $Id: CarRentalBrowser.java,v 1.6 2005/10/14 15:20:57 gimmi Exp $
  * Created on 18.6.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -223,8 +223,31 @@ public class CarRentalBrowser extends TravelBlock implements SupplierBrowserPlug
 	}
 
 	public Collection filterSuppliers(Collection suppliers, Group supplierManager, IWContext iwc, String[][] postalCodes, boolean onlineOnly, boolean useSearchPriceCategoryKey) {
+		if (suppliers != null && isProductSearchCompleted(iwc)) {
+			Iterator sIter = suppliers.iterator();
+			Supplier supp;
+			Collection products;
+			Collection returner = new Vector();
+			while (sIter.hasNext()) {
+				supp = (Supplier) sIter.next();
+				try {
+					products = getProducts(supp, supplierManager, iwc, postalCodes, onlineOnly, useSearchPriceCategoryKey);
+					if (products != null && !products.isEmpty()) {
+						returner.add(supp);
+					}
+				}
+				catch (IDOLookupException e) {
+					e.printStackTrace();
+				}
+				catch (FinderException e) {
+					e.printStackTrace();
+				}
+			}
+			return returner;
+		}
 		return suppliers;
 	}
+	
 	public int addProductInfo(Product product, com.idega.presentation.Table table, int row, IWResourceBundle iwrb) {
 		return row;
 	}
