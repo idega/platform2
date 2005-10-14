@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolCareDaysBMPBean.java,v 1.3 2005/10/09 12:12:13 laddi Exp $
+ * $Id: AfterSchoolCareDaysBMPBean.java,v 1.4 2005/10/14 06:54:24 laddi Exp $
  * Created on Aug 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -22,10 +22,10 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2005/10/09 12:12:13 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/14 06:54:24 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class AfterSchoolCareDaysBMPBean extends GenericEntity  implements AfterSchoolCareDays{
 
@@ -112,6 +112,17 @@ public class AfterSchoolCareDaysBMPBean extends GenericEntity  implements AfterS
 		query.addColumn(table, getIDColumnName());
 		query.addCriteria(new MatchCriteria(table, COLUMN_APPLICATION, MatchCriteria.EQUALS, application));
 		query.addOrder(table, COLUMN_DAY_OF_WEEK, true);
+		
+		return idoFindPKsByQuery(query);
+	}
+	
+	public Object ejbFindByApplicationAndDayOfWeek(ChildCareApplication application, int dayOfWeek) throws FinderException {
+		Table table = new Table(this);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(table, getIDColumnName());
+		query.addCriteria(new MatchCriteria(table, COLUMN_APPLICATION, MatchCriteria.EQUALS, application));
+		query.addCriteria(new MatchCriteria(table, COLUMN_DAY_OF_WEEK, MatchCriteria.EQUALS, dayOfWeek));
 		
 		return idoFindPKsByQuery(query);
 	}

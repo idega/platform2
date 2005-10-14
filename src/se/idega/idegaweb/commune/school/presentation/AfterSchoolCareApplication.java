@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolCareApplication.java,v 1.22 2005/10/09 14:54:52 laddi Exp $
+ * $Id: AfterSchoolCareApplication.java,v 1.23 2005/10/14 06:54:24 laddi Exp $
  * Created on Aug 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -10,9 +10,13 @@
 package se.idega.idegaweb.commune.school.presentation;
 
 import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Locale;
 import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.care.business.CareConstants;
+import se.idega.idegaweb.commune.care.data.AfterSchoolChoice;
+import se.idega.idegaweb.commune.childcare.data.AfterSchoolCareDays;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassMember;
@@ -34,15 +38,16 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/10/09 14:54:52 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/14 06:54:24 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.22 $
+ * @version $Revision: 1.23 $
  */
 public class AfterSchoolCareApplication extends SchoolApplication {
 	
 	protected static final int ACTION_PHASE_6 = 6;
 	protected static final int ACTION_PHASE_7 = 7;
+	protected static final int ACTION_VIEW = 9;
 
 	private static final String PARAMETER_PROVIDER = "prm_provider";
 	private static final String PARAMETER_TIME = "prm_time";
@@ -70,14 +75,19 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 			add(getErrorText(localize("no_season_found", "No season found...")));
 			return;
 		}
+		boolean hasOpenApplication = getAfterSchoolBusiness().hasOpenApplication(getSession().getUser(), season, 1);
 		if (getBusiness().hasAfterSchoolCarePlacing(getSession().getUser(), season)) {
 			add(getErrorText(localize("has_granted_after_school_care_choice", "Child already has a granted after school care choice")));
 			return;
 		}
 
 		switch (parseAction(iwc)) {
+			case ACTION_VIEW:
+				viewApplication(iwc, season);
+				break;
+			
 			case ACTION_PHASE_1:
-				showPhaseOne(iwc);
+				showPhaseOne(iwc, hasOpenApplication);
 				break;
 			
 			case ACTION_PHASE_2:
@@ -93,15 +103,15 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 				break;
 				
 			case ACTION_PHASE_5:
-				showPhaseFive(iwc);
+				showPhaseFive(iwc, season);
 				break;
 				
 			case ACTION_PHASE_6:
-				showPhaseSix(iwc);
+				showPhaseSix(iwc, season);
 				break;
 				
 			case ACTION_PHASE_7:
-				showPhaseSeven(iwc);
+				showPhaseSeven(iwc, season);
 				break;
 				
 			case ACTION_SAVE:
@@ -110,7 +120,11 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		}
 	}
 	
-	protected void showPhaseOne(IWContext iwc) throws RemoteException {
+	protected void showPhaseOne(IWContext iwc, boolean hasOpenApplication) throws RemoteException {
+		if (!hasOpenApplication) {
+			add(getErrorText(localize("has_granted_after_school_care_choice", "Child already has a granted after school care choice")));
+			return;
+		}
 		Form form = createForm();
 		
 		SchoolSeason season = null;
@@ -335,7 +349,7 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		add(form);
 	}
 	
-	protected void showPhaseFive(IWContext iwc) throws RemoteException {
+	protected void showPhaseFive(IWContext iwc, SchoolSeason season) throws RemoteException {
 		saveChildInfo(iwc);
 
 		Form form = createForm();
@@ -361,15 +375,39 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		table.add(applicationTable, 1, row++);
 		int aRow = 1;
 		
+		AfterSchoolChoice choice = null;
+		try {
+			choice = getAfterSchoolBusiness().findChoiceByChild(getSession().getUser(), season, 1);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+		}
+		
 		String[] days = { localize("monday", "Monday"), localize("tuesday", "Tuesday"), localize("wednesday", "Wednesday"), localize("thursday", "Thursday"), localize("friday", "Friday") };
 		for (int a = 0; a <= 4; a++) {
+			AfterSchoolCareDays day = null;
+			if (choice != null) {
+				try {
+					day = getAfterSchoolBusiness().getDay(choice, (a+1));
+				}
+				catch (FinderException fe) {
+					//Nothing found...
+				}
+			}
+			
 			applicationTable.add(getSmallHeader(days[a]), 1, aRow);
-			applicationTable.add(getTimeDropdown(PARAMETER_TIME + "_" + (a+1), iwc.getCurrentLocale()), 2, aRow);
+			applicationTable.add(getTimeDropdown(PARAMETER_TIME + "_" + (a+1), iwc.getCurrentLocale(), day), 2, aRow);
 			
 			RadioButton pickedUp = getRadioButton(PARAMETER_PICKED_UP + "_" + (a+1), Boolean.TRUE.toString());
 			pickedUp.setSelected(true);
+			if (day != null) {
+				pickedUp.setSelected(day.isPickedUp());
+			}
 			pickedUp.keepStatusOnAction(true);
 			RadioButton walksSelf = getRadioButton(PARAMETER_PICKED_UP + "_" + (a+1), Boolean.FALSE.toString());
+			if (day != null) {
+				walksSelf.setSelected(!day.isPickedUp());
+			}
 			walksSelf.keepStatusOnAction(true);
 			
 			applicationTable.add(pickedUp, 3, aRow);
@@ -401,7 +439,7 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		add(form);
 	}
 	
-	private void showPhaseSix(IWContext iwc) throws RemoteException {
+	private void showPhaseSix(IWContext iwc, SchoolSeason season) throws RemoteException {
 		boolean timesSet = false;
 		for (int i = 0; i < 5; i++) {
 			if (iwc.isParameterSet(PARAMETER_TIME + "_" + (i+1))) {
@@ -434,10 +472,24 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		table.add(getHeader(localize("application.payment_details", "Payment details")), 1, row++);
 		table.setHeight(row++, 12);
 		
+		AfterSchoolChoice choice = null;
+		try {
+			choice = getAfterSchoolBusiness().findChoiceByChild(getSession().getUser(), season, 1);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+		}
+		
 		RadioButton giro = getRadioButton(PARAMETER_CREDITCARD_PAYMENT, Boolean.FALSE.toString());
 		giro.setSelected(true);
+		if (choice != null) {
+			giro.setSelected(choice.getPayerName() == null);
+		}
 		giro.keepStatusOnAction(true);
 		RadioButton creditcard = getRadioButton(PARAMETER_CREDITCARD_PAYMENT, Boolean.TRUE.toString());
+		if (choice != null) {
+			creditcard.setSelected(choice.getPayerName() != null);
+		}
 		creditcard.keepStatusOnAction(true);
 		
 		table.add(giro, 1, row);
@@ -449,13 +501,26 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(getSmallText(localize("application.payment_creditcard", "Payment with creditcard")), 1, row++);
 
+		SubmitButton next = (SubmitButton) getButton(new SubmitButton(localize("next", "Next")));
+		next.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_PHASE_7));
+		next.setDisabled(true);
+		
+		CheckBox agree = getCheckBox("agree", Boolean.TRUE.toString());
+		agree.setToEnableWhenChecked(next);
+		agree.setToDisableWhenUnchecked(next);
+		
+		table.setHeight(row++, 12);
+
+		table.add(getText(localize("application.agreement", "Agreement information")), 1, row++);
+		table.setHeight(row++, 6);
+		table.add(agree, 1, row);
+		table.add(Text.getNonBrakingSpace(), 1, row);
+		table.add(getHeader(localize("application.agree_terms", "Yes, I agree")), 1, row++);
+		
 		table.setHeight(row++, 18);
 
 		SubmitButton previous = (SubmitButton) getButton(new SubmitButton(localize("previous", "Previous")));
 		previous.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_PHASE_5));
-		SubmitButton next = (SubmitButton) getButton(new SubmitButton(localize("next", "Next")));
-		next.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_PHASE_7));
-		
 		table.add(previous, 1, row);
 		table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
 		table.add(next, 1, row);
@@ -467,7 +532,7 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		add(form);
 	}
 	
-	private void showPhaseSeven(IWContext iwc) throws RemoteException {
+	private void showPhaseSeven(IWContext iwc, SchoolSeason season) throws RemoteException {
 		Form form = createForm();
 		form.addParameter(PARAMETER_ACTION, String.valueOf(ACTION_PHASE_7));
 		
@@ -490,10 +555,24 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		table.add(applicationTable, 1, row++);
 		table.setHeight(row++, 12);
 		
+		AfterSchoolChoice choice = null;
+		try {
+			choice = getAfterSchoolBusiness().findChoiceByChild(getSession().getUser(), season, 1);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+		}
+		
 		TextInput payerName = getTextInput(PARAMETER_PAYER_NAME, null);
+		if (choice != null && choice.getPayerName() != null) {
+			payerName.setContent(choice.getPayerName());
+		}
 		payerName.keepStatusOnAction(true);
 		payerName.setLength(24);
 		TextInput payerPersonalID = getTextInput(PARAMETER_PAYER_PERSONAL_ID, null);
+		if (choice != null && choice.getPayerPersonalID() != null) {
+			payerPersonalID.setContent(choice.getPayerPersonalID());
+		}
 		payerPersonalID.setAsPersonalID(iwc.getCurrentLocale(), localize("application.personal_id_invalid", "Personal ID invalid."));
 		payerPersonalID.keepStatusOnAction(true);
 		payerPersonalID.setLength(24);
@@ -501,14 +580,23 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		DropdownMenu cardType = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_CARD_TYPE));
 		cardType.addMenuElement(CareConstants.CARD_TYPE_EUROCARD, localize("application.eurocard", "Eurocard"));
 		cardType.addMenuElement(CareConstants.CARD_TYPE_VISA, localize("application.visa", "Visa"));
+		if (choice != null && choice.getCardType() != null) {
+			cardType.setSelectedElement(choice.getCardType());
+		}
 		cardType.keepStatusOnAction(true);
 		
 		TextInput cardNumber = getTextInput(PARAMETER_CARD_NUMBER, null);
+		if (choice != null && choice.getCardNumber() != null) {
+			cardNumber.setContent(choice.getCardNumber());
+		}
 		cardNumber.setLength(16);
 		cardNumber.setMaxlength(16);
 		cardNumber.keepStatusOnAction(true);
 		
 		DropdownMenu validMonth = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_VALID_MONTH));
+		if (choice != null && choice.getCardValidMonth() != -1) {
+			validMonth.setSelectedElement(choice.getCardValidMonth());
+		}
 		validMonth.keepStatusOnAction(true);
 		for (int a = 1; a <= 12; a++) {
 			validMonth.addMenuElement(a, TextSoap.addZero(a));
@@ -516,6 +604,9 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		
 		IWTimestamp stamp = new IWTimestamp();
 		DropdownMenu validYear = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_VALID_YEAR));
+		if (choice != null && choice.getCardValidYear() != -1) {
+			validYear.setSelectedElement(choice.getCardValidYear());
+		}
 		validYear.keepStatusOnAction(true);
 		int year = stamp.getYear();
 		for (int a = year; a <= year + 10; a++) {
@@ -537,18 +628,8 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		applicationTable.add(validYear, 2, 5);
 
 		SubmitButton next = (SubmitButton) getButton(new SubmitButton(localize("next", "Next")));
-		next.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_SAVE));
+		next.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_OVERVIEW));
 
-		CheckBox agree = getCheckBox("agree", Boolean.TRUE.toString());
-		agree.setToEnableWhenChecked(next);
-		agree.setToDisableWhenUnchecked(next);
-		
-		table.add(getText(localize("application.agreement", "Agreement information")), 1, row++);
-		table.setHeight(row++, 6);
-		table.add(agree, 1, row);
-		table.add(Text.getNonBrakingSpace(), 1, row);
-		table.add(getHeader(localize("application.agree_terms", "Yes, I agree")), 1, row++);
-		
 		table.setHeight(row++, 18);
 
 		SubmitButton previous = (SubmitButton) getButton(new SubmitButton(localize("previous", "Previous")));
@@ -562,6 +643,278 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		table.setCellpaddingRight(1, row, 12);
 
+		add(form);
+	}
+	
+	protected void showOverview(IWContext iwc) throws RemoteException {
+		Form form = createForm();
+		form.addParameter(PARAMETER_ACTION, String.valueOf(ACTION_OVERVIEW));
+		
+		Table table = new Table();
+		table.setCellpadding(0);
+		table.setCellspacing(0);
+		table.setWidth(Table.HUNDRED_PERCENT);
+		form.add(table);
+		int row = 1;
+		
+		table.add(getPersonInfoTable(iwc, getSession().getUser()), 1, row++);
+		table.setHeight(row++, 6);
+		
+		table.add(getHeader(localize("application.overview", "Overview")), 1, row++);
+		table.setHeight(row++, 18);
+		
+		Table verifyTable = new Table();
+		verifyTable.setCellpadding(getCellpadding());
+		verifyTable.setCellspacing(getCellspacing());
+		verifyTable.setColumns(2);
+		table.add(verifyTable, 1, row++);
+		int iRow = 1;
+		
+		Integer providerPK = new Integer(iwc.getParameter(PARAMETER_PROVIDER));
+		School provider = getSchoolBusiness().getSchool(providerPK);
+		
+		verifyTable.add(getSmallHeader(localize("application.after_school_care_provider", "Provider")), 1, iRow);
+		verifyTable.add(getSmallText(provider.getSchoolName()), 2, iRow++);
+
+		verifyTable.setHeight(iRow++, 6);
+		verifyTable.mergeCells(1, iRow, 2, iRow);
+		verifyTable.setBottomCellBorder(1, iRow++, 1, "#D7D7D7", "solid");
+		verifyTable.setHeight(iRow++, 6);
+
+		String[] days = { localize("monday", "Monday"), localize("tuesday", "Tuesday"), localize("wednesday", "Wednesday"), localize("thursday", "Thursday"), localize("friday", "Friday") };
+		for (int a = 0; a < days.length; a++) {
+			boolean pickedUp = new Boolean(iwc.getParameter(PARAMETER_PICKED_UP + "_" + (a+1))).booleanValue();
+			String time = iwc.isParameterSet(PARAMETER_TIME + "_" + (a+1)) ? iwc.getParameter(PARAMETER_TIME + "_" + (a+1)) : null;
+			
+			if (time.length() > 0) {
+				verifyTable.add(getSmallHeader(days[a]), 1, iRow);
+				verifyTable.add(getSmallText(time + " - " + (pickedUp ? localize("application.picked_up", "Is picked up") : localize("application.walks_self", "Walks home"))), 2, iRow++);
+			}
+		}
+		
+		verifyTable.setHeight(iRow++, 6);
+		verifyTable.mergeCells(1, iRow, 2, iRow);
+		verifyTable.setBottomCellBorder(1, iRow++, 1, "#D7D7D7", "solid");
+		verifyTable.setHeight(iRow++, 6);
+
+		boolean creditcardPayment = false;
+		if (iwc.isParameterSet(PARAMETER_CREDITCARD_PAYMENT)) {
+			creditcardPayment = new Boolean(iwc.getParameter(PARAMETER_CREDITCARD_PAYMENT)).booleanValue();
+		}
+		String payerName = iwc.getParameter(PARAMETER_PAYER_NAME);
+		String payerPersonalID = iwc.getParameter(PARAMETER_PAYER_PERSONAL_ID);
+		String cardType = iwc.getParameter(PARAMETER_CARD_TYPE);
+		String cardNumber = iwc.getParameter(PARAMETER_CARD_NUMBER);
+		int validMonth = iwc.isParameterSet(PARAMETER_VALID_MONTH) ? Integer.parseInt(iwc.getParameter(PARAMETER_VALID_MONTH)) : -1;
+		int validYear = iwc.isParameterSet(PARAMETER_VALID_MONTH) ? Integer.parseInt(iwc.getParameter(PARAMETER_VALID_YEAR)) : -1;
+
+		if (creditcardPayment) {
+			verifyTable.mergeCells(1, iRow, 2, iRow);
+			verifyTable.add(getBooleanTable(getSmallHeader(localize("application.payment_creditcard", "Payment with creditcard")), true), 1, iRow++);
+			verifyTable.setHeight(iRow++, 6);
+			
+			verifyTable.add(getSmallHeader(localize("application.payer_name", "Name")), 1, iRow);
+			verifyTable.add(getSmallText(payerName), 2, iRow++);
+			
+			verifyTable.add(getSmallHeader(localize("application.payer_personal_id", "Personal ID")), 1, iRow);
+			verifyTable.add(getSmallText(payerPersonalID), 2, iRow++);
+			
+			verifyTable.add(getSmallHeader(localize("application.card_type", "Card type")), 1, iRow);
+			verifyTable.add(getSmallText(cardType), 2, iRow++);
+			
+			verifyTable.add(getSmallHeader(localize("application.card_number", "Card number")), 1, iRow);
+			verifyTable.add(getSmallText(cardNumber), 2, iRow++);
+			
+			verifyTable.add(getSmallHeader(localize("application.card_valid_time", "Card valid through")), 1, iRow);
+			verifyTable.add(getSmallText(validMonth + "/" + validYear), 2, iRow++);
+			
+		}
+		else {
+			verifyTable.mergeCells(1, iRow, 2, iRow);
+			verifyTable.add(getBooleanTable(getSmallHeader(localize("application.payment_giro", "Payment with giro")), true), 1, iRow++);
+		}
+		
+		verifyTable.setHeight(iRow++, 6);
+		verifyTable.mergeCells(1, iRow, 2, iRow);
+		verifyTable.setBottomCellBorder(1, iRow++, 1, "#D7D7D7", "solid");
+		verifyTable.setHeight(iRow++, 6);		
+		
+		if (!iHideDetailsPhases) {
+			row = addChildInformation(verifyTable, getSession().getUser(), row);
+		}
+		
+		boolean canDisplayImages = getBusiness().canDisplayAfterSchoolCareImages(getSession().getUser());
+		String otherAfterSchoolInformation = getBusiness().getAfterSchoolCareOtherInformation(getSession().getUser());
+		verifyTable.mergeCells(1, iRow, table.getColumns(), iRow);
+		verifyTable.add(getBooleanTable(getSmallHeader(localize("child.can_diplay_after_school_images_images", "Can display images")), canDisplayImages), 1, iRow++);
+		
+		if (otherAfterSchoolInformation != null) {
+			verifyTable.setHeight(iRow++, 6);
+			verifyTable.mergeCells(1, iRow, 2, iRow);
+			verifyTable.setBottomCellBorder(1, iRow++, 1, "#D7D7D7", "solid");
+			verifyTable.setHeight(iRow++, 6);		
+			
+			verifyTable.mergeCells(1, iRow, table.getColumns(), iRow);
+			verifyTable.add(getTextAreaTable(getSmallHeader(localize("child.other_after_school_information", "Other after school information")), otherAfterSchoolInformation), 1, iRow++);
+		}
+		
+		verifyTable.setWidth(1, "50%");
+		verifyTable.setWidth(2, "50%");
+
+		table.setHeight(row++, 18);
+
+		SubmitButton previous = (SubmitButton) getButton(new SubmitButton(localize("previous", "Previous")));
+		previous.setValueOnClick(PARAMETER_ACTION, String.valueOf(creditcardPayment ? ACTION_PHASE_7 : ACTION_PHASE_6));
+		SubmitButton next = (SubmitButton) getButton(new SubmitButton(localize("next", "Next")));
+		next.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_SAVE));
+		
+		table.add(previous, 1, row);
+		table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
+		table.add(next, 1, row);
+		table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
+		table.add(getHelpButton("help_after_school_care_application_overview"), 1, row);
+		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
+		table.setCellpaddingRight(1, row, 12);
+		
+		next.setSubmitConfirm(localize("confirm_after_school_application_submit", "Are you sure you want to send the application?"));
+		form.setToDisableOnSubmit(next, true);
+
+		add(form);
+	}
+	
+	private void viewApplication(IWContext iwc, SchoolSeason season) throws RemoteException {
+		Form form = createForm();
+		form.addParameter(PARAMETER_ACTION, String.valueOf(""));
+		
+		Table table = new Table();
+		table.setCellpadding(0);
+		table.setCellspacing(0);
+		table.setWidth(Table.HUNDRED_PERCENT);
+		form.add(table);
+		int row = 1;
+		
+		table.add(getPersonInfoTable(iwc, getSession().getUser()), 1, row++);
+		table.setHeight(row++, 6);
+		
+		table.add(getHeader(localize("application.overview", "Overview")), 1, row++);
+		table.setHeight(row++, 18);
+		
+		Table verifyTable = new Table();
+		verifyTable.setCellpadding(getCellpadding());
+		verifyTable.setCellspacing(getCellspacing());
+		verifyTable.setColumns(2);
+		table.add(verifyTable, 1, row++);
+		int iRow = 1;
+		
+		AfterSchoolChoice choice = null;
+		try {
+			choice = getAfterSchoolBusiness().findChoiceByChild(getSession().getUser(), season, 1);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+		}
+		
+		School provider = choice.getProvider();
+		
+		verifyTable.add(getSmallHeader(localize("application.after_school_care_provider", "Provider")), 1, iRow);
+		verifyTable.add(getSmallText(provider.getSchoolName()), 2, iRow++);
+
+		verifyTable.setHeight(iRow++, 6);
+		verifyTable.mergeCells(1, iRow, 2, iRow);
+		verifyTable.setBottomCellBorder(1, iRow++, 1, "#D7D7D7", "solid");
+		verifyTable.setHeight(iRow++, 6);
+
+		String[] localizedDays = { localize("monday", "Monday"), localize("tuesday", "Tuesday"), localize("wednesday", "Wednesday"), localize("thursday", "Thursday"), localize("friday", "Friday") };
+		Collection days = getAfterSchoolBusiness().getDays(choice);
+		if (!days.isEmpty()) {
+			Iterator iter = days.iterator();
+			while (iter.hasNext()) {
+				AfterSchoolCareDays day = (AfterSchoolCareDays) iter.next();
+				IWTimestamp stamp = new IWTimestamp(day.getTimeOfDeparture());
+				boolean pickedUp = day.isPickedUp();
+				
+				verifyTable.add(getSmallHeader(localizedDays[day.getDayOfWeek() - 1]), 1, iRow);
+				verifyTable.add(getSmallText(stamp.getDateString("HH:mm", iwc.getCurrentLocale()) + " - " + (pickedUp ? localize("application.picked_up", "Is picked up") : localize("application.walks_self", "Walks home"))), 2, iRow++);
+			}
+			
+			verifyTable.setHeight(iRow++, 6);
+			verifyTable.mergeCells(1, iRow, 2, iRow);
+			verifyTable.setBottomCellBorder(1, iRow++, 1, "#D7D7D7", "solid");
+			verifyTable.setHeight(iRow++, 6);
+		}
+
+		boolean creditcardPayment = choice.getPayerName() == null;
+		String payerName = choice.getPayerName();
+		String payerPersonalID = choice.getPayerPersonalID();
+		String cardType = choice.getCardType();
+		String cardNumber = choice.getCardNumber();
+		int validMonth = choice.getCardValidMonth();
+		int validYear = choice.getCardValidYear();
+
+		if (creditcardPayment) {
+			verifyTable.mergeCells(1, iRow, 2, iRow);
+			verifyTable.add(getBooleanTable(getSmallHeader(localize("application.payment_creditcard", "Payment with creditcard")), true), 1, iRow++);
+			verifyTable.setHeight(iRow++, 6);
+			
+			verifyTable.add(getSmallHeader(localize("application.payer_name", "Name")), 1, iRow);
+			verifyTable.add(getSmallText(payerName), 2, iRow++);
+			
+			verifyTable.add(getSmallHeader(localize("application.payer_personal_id", "Personal ID")), 1, iRow);
+			verifyTable.add(getSmallText(payerPersonalID), 2, iRow++);
+			
+			verifyTable.add(getSmallHeader(localize("application.card_type", "Card type")), 1, iRow);
+			verifyTable.add(getSmallText(cardType), 2, iRow++);
+			
+			verifyTable.add(getSmallHeader(localize("application.card_number", "Card number")), 1, iRow);
+			verifyTable.add(getSmallText(cardNumber), 2, iRow++);
+			
+			verifyTable.add(getSmallHeader(localize("application.card_valid_time", "Card valid through")), 1, iRow);
+			verifyTable.add(getSmallText(validMonth + "/" + validYear), 2, iRow++);
+			
+		}
+		else {
+			verifyTable.mergeCells(1, iRow, 2, iRow);
+			verifyTable.add(getBooleanTable(getSmallHeader(localize("application.payment_giro", "Payment with giro")), true), 1, iRow++);
+		}
+		
+		verifyTable.setHeight(iRow++, 6);
+		verifyTable.mergeCells(1, iRow, 2, iRow);
+		verifyTable.setBottomCellBorder(1, iRow++, 1, "#D7D7D7", "solid");
+		verifyTable.setHeight(iRow++, 6);		
+		
+		row = addChildInformation(verifyTable, getSession().getUser(), row);
+		
+		boolean canDisplayImages = getBusiness().canDisplayAfterSchoolCareImages(getSession().getUser());
+		String otherAfterSchoolInformation = getBusiness().getAfterSchoolCareOtherInformation(getSession().getUser());
+		verifyTable.mergeCells(1, iRow, table.getColumns(), iRow);
+		verifyTable.add(getBooleanTable(getSmallHeader(localize("child.can_diplay_after_school_images_images", "Can display images")), canDisplayImages), 1, iRow++);
+		
+		if (otherAfterSchoolInformation != null) {
+			verifyTable.setHeight(iRow++, 6);
+			verifyTable.mergeCells(1, iRow, 2, iRow);
+			verifyTable.setBottomCellBorder(1, iRow++, 1, "#D7D7D7", "solid");
+			verifyTable.setHeight(iRow++, 6);		
+			
+			verifyTable.mergeCells(1, iRow, table.getColumns(), iRow);
+			verifyTable.add(getTextAreaTable(getSmallHeader(localize("child.other_after_school_information", "Other after school information")), otherAfterSchoolInformation), 1, iRow++);
+		}
+		
+		verifyTable.setWidth(1, "50%");
+		verifyTable.setWidth(2, "50%");
+
+		table.setHeight(row++, 18);
+
+		SubmitButton next = (SubmitButton) getButton(new SubmitButton(localize("edit", "Edit")));
+		next.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_PHASE_1));
+		
+		if (choice.getStatus().equals(getBusiness().getCaseStatusPreliminary().getStatus())) {
+			table.add(next, 1, row);
+			table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
+		}
+		table.add(getHelpButton("help_after_school_application_view"), 1, row);
+		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
+		table.setCellpaddingRight(1, row, 12);
+		
 		add(form);
 	}
 	
@@ -639,7 +992,7 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 	}
 
 	private int parseAction(IWContext iwc) {
-		int action = ACTION_PHASE_1;
+		int action = iShowOverview ? ACTION_VIEW : ACTION_PHASE_1;
 		if (iwc.isParameterSet(PARAMETER_ACTION)) {
 			action = Integer.parseInt(iwc.getParameter(PARAMETER_ACTION));
 		}
@@ -653,7 +1006,7 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 			creditcardPayment = new Boolean(iwc.getParameter(PARAMETER_CREDITCARD_PAYMENT)).booleanValue();
 		}
 		if (action == ACTION_PHASE_7 && !creditcardPayment) {
-			action = ACTION_SAVE;
+			action = ACTION_OVERVIEW;
 		}
 
 		return action;
@@ -678,7 +1031,7 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		return form;
 	}
 	
-	private DropdownMenu getTimeDropdown(String parameterName, Locale locale) {
+	private DropdownMenu getTimeDropdown(String parameterName, Locale locale, AfterSchoolCareDays day) {
 		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(parameterName));
 		menu.addMenuElementFirst("", localize("not_staying", "Not staying"));
 		menu.keepStatusOnAction(true);
@@ -694,6 +1047,11 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		while (stamp.getTime().before(end.getTime())) {
 			menu.addMenuElement(stamp.getDateString("HH:mm:ss"), stamp.getDateString("HH:mm", locale));
 			stamp.addMinutes(30);
+		}
+		
+		if (day != null) {
+			IWTimestamp time = new IWTimestamp(day.getTimeOfDeparture());
+			menu.setSelectedElement(time.getDateString("HH:mm:ss", locale));
 		}
 		
 		return menu;

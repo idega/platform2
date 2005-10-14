@@ -1,6 +1,6 @@
 /*
- * $Id: AfterSchoolCareDaysHome.java,v 1.1 2005/08/09 16:35:19 laddi Exp $
- * Created on Aug 7, 2005
+ * $Id: AfterSchoolCareDaysHome.java,v 1.2 2005/10/14 06:54:24 laddi Exp $
+ * Created on Oct 14, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -16,10 +16,10 @@ import com.idega.data.IDOHome;
 
 
 /**
- * Last modified: $Date: 2005/08/09 16:35:19 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/14 06:54:24 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public interface AfterSchoolCareDaysHome extends IDOHome {
 
@@ -31,4 +31,10 @@ public interface AfterSchoolCareDaysHome extends IDOHome {
 	 * @see se.idega.idegaweb.commune.childcare.data.AfterSchoolCareDaysBMPBean#ejbFindAllByApplication
 	 */
 	public Collection findAllByApplication(ChildCareApplication application) throws FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.data.AfterSchoolCareDaysBMPBean#ejbFindByApplicationAndDayOfWeek
+	 */
+	public AfterSchoolCareDays findByApplicationAndDayOfWeek(ChildCareApplication application, int dayOfWeek)
+			throws FinderException;
 }

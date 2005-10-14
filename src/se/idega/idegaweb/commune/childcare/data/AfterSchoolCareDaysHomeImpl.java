@@ -1,6 +1,6 @@
 /*
- * $Id: AfterSchoolCareDaysHomeImpl.java,v 1.1 2005/08/09 16:35:19 laddi Exp $
- * Created on Aug 7, 2005
+ * $Id: AfterSchoolCareDaysHomeImpl.java,v 1.2 2005/10/14 06:54:24 laddi Exp $
+ * Created on Oct 14, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -16,10 +16,10 @@ import com.idega.data.IDOFactory;
 
 
 /**
- * Last modified: $Date: 2005/08/09 16:35:19 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/14 06:54:24 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class AfterSchoolCareDaysHomeImpl extends IDOFactory implements AfterSchoolCareDaysHome {
 
@@ -40,5 +40,13 @@ public class AfterSchoolCareDaysHomeImpl extends IDOFactory implements AfterScho
 		java.util.Collection ids = ((AfterSchoolCareDaysBMPBean) entity).ejbFindAllByApplication(application);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public AfterSchoolCareDays findByApplicationAndDayOfWeek(ChildCareApplication application, int dayOfWeek)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((AfterSchoolCareDaysBMPBean) entity).ejbFindByApplicationAndDayOfWeek(application, dayOfWeek);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
 	}
 }

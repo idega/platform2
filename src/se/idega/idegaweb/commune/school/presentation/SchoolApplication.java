@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolApplication.java,v 1.25 2005/10/14 05:08:20 laddi Exp $
+ * $Id: SchoolApplication.java,v 1.26 2005/10/14 06:54:25 laddi Exp $
  * Created on Aug 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -58,10 +58,10 @@ import com.idega.util.Age;
 import com.idega.util.PersonalIDFormatter;
 
 /**
- * Last modified: $Date: 2005/10/14 05:08:20 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/14 06:54:25 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.25 $
+ * @version $Revision: 1.26 $
  */
 public class SchoolApplication extends SchoolBlock {
 
@@ -105,7 +105,7 @@ public class SchoolApplication extends SchoolBlock {
 	private boolean iHomeSchoolChosen = false;
 	private boolean iSchoolChange = false;
 	private boolean iUseHomeSchool = true;
-	private boolean iShowOverview = false;
+	protected boolean iShowOverview = false;
 	
 	private ICPage iAfterSchoolCarePage;
 	protected ICPage iHomePage;
@@ -946,7 +946,7 @@ public class SchoolApplication extends SchoolBlock {
 			School school = getBusiness().getHomeSchoolForUser(getSession().getUser());
 			if (school != null) {
 				verifyTable.add(getSmallHeader(localize("application.home_school", "Home school")), 1, iRow);
-				verifyTable.add(getText(school.getSchoolName()), 2, iRow++);
+				verifyTable.add(getSmallText(school.getSchoolName()), 2, iRow++);
 			}
 		}
 		else {
@@ -999,7 +999,7 @@ public class SchoolApplication extends SchoolBlock {
 			verifyTable.setHeight(iRow++, 6);
 		}
 		
-		row = addChildInformation(verifyTable, getSession().getUser(), row);
+		iRow = addChildInformation(verifyTable, getSession().getUser(), iRow);
 		
 		boolean canDisplaySchoolImages = getBusiness().canDisplaySchoolImages(getSession().getUser());
 		verifyTable.mergeCells(1, iRow, verifyTable.getColumns(), iRow);
@@ -1126,7 +1126,7 @@ public class SchoolApplication extends SchoolBlock {
 		add(form);
 	}
 	
-	private int addChildInformation(Table table, User child, int iRow) throws RemoteException {
+	protected int addChildInformation(Table table, User child, int iRow) throws RemoteException {
 		Boolean hasGrowthDeviation = getCareBusiness().hasGrowthDeviation(child);
 		String growthDeviation = getCareBusiness().getGrowthDeviationDetails(child);
 		Boolean hasAllergies = getCareBusiness().hasAllergies(child);
@@ -1198,7 +1198,7 @@ public class SchoolApplication extends SchoolBlock {
 		return iRow;
 	}
 	
-	private Table getBooleanTable(Text text, boolean checked) {
+	protected Table getBooleanTable(Text text, boolean checked) {
 		Table table = new Table(3, 1);
 		table.setCellpadding(0);
 		table.setCellspacing(0);
@@ -1214,7 +1214,7 @@ public class SchoolApplication extends SchoolBlock {
 		return table;
 	}
 
-	private Table getTextInputTable(Text text, String value) {
+	protected Table getTextInputTable(Text text, String value) {
 		Table table = new Table(1, 2);
 		table.setCellpadding(0);
 		table.setCellspacing(0);
@@ -1229,7 +1229,7 @@ public class SchoolApplication extends SchoolBlock {
 		return table;
 	}
 
-	private Table getTextAreaTable(Text text, String value) {
+	protected Table getTextAreaTable(Text text, String value) {
 		Table table = new Table(1, 2);
 		table.setCellpadding(0);
 		table.setCellspacing(0);

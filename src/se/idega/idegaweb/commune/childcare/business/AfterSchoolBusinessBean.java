@@ -98,6 +98,22 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 		return getAfterSchoolChoiceHome().findByChildAndChoiceNumberAndSeason(childID, new Integer(choiceNumber), seasonID,
 				caseStatus);
 	}
+	
+	public boolean hasOpenApplication(User child, SchoolSeason season, int choiceNumber) {
+		String[] caseStatus = { getCaseStatusPreliminary().getStatus(), getCaseStatusInactive().getStatus() };
+		try{
+			getAfterSchoolChoiceHome().findByChildAndChoiceNumberAndSeason((Integer) child.getPrimaryKey(), new Integer(choiceNumber), (Integer) season.getPrimaryKey(), caseStatus);
+			return true;
+		}
+		catch (FinderException fe) {
+			return false;
+		}
+	}
+	
+	public AfterSchoolChoice findChoiceByChild(User child, SchoolSeason season, int choiceNumber) throws FinderException {
+		String[] caseStatus = { getCaseStatusPreliminary().getStatus(), getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus(), getCaseStatusInactive().getStatus() };
+		return getAfterSchoolChoiceHome().findByChildAndChoiceNumberAndSeason((Integer) child.getPrimaryKey(), new Integer(choiceNumber), (Integer) season.getPrimaryKey(), caseStatus);
+	}
 
 	public boolean acceptAfterSchoolChoice(Object afterSchoolChoiceID, User performer) {
 		AfterSchoolChoice choice = null;
@@ -334,6 +350,20 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 			}
 		}
 		return users;
+	}
+	
+	public Collection getDays(AfterSchoolChoice choice) {
+		try {
+			return getAfterSchoolCareDaysHome().findAllByApplication(choice);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return new ArrayList();
+		}
+	}
+	
+	public AfterSchoolCareDays getDay(AfterSchoolChoice choice, int dayOfWeek) throws FinderException {
+		return getAfterSchoolCareDaysHome().findByApplicationAndDayOfWeek(choice, dayOfWeek);
 	}
 	
 	public void storeDays(ChildCareApplication application, int[] dayOfWeek, String[] timeOfDeparture, boolean[] pickedUp) {

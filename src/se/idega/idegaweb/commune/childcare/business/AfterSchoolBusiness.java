@@ -1,6 +1,6 @@
 /*
- * $Id: AfterSchoolBusiness.java,v 1.13 2005/08/10 15:46:38 thomas Exp $
- * Created on Aug 9, 2005
+ * $Id: AfterSchoolBusiness.java,v 1.14 2005/10/14 06:54:24 laddi Exp $
+ * Created on Oct 14, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -18,6 +18,7 @@ import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.care.data.AfterSchoolChoice;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
+import se.idega.idegaweb.commune.childcare.data.AfterSchoolCareDays;
 import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseStatus;
 import com.idega.block.school.data.School;
@@ -30,10 +31,10 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2005/08/10 15:46:38 $ by $Author: thomas $
+ * Last modified: $Date: 2005/10/14 06:54:24 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public interface AfterSchoolBusiness extends IBOService, ChildCareBusiness {
 
@@ -58,6 +59,17 @@ public interface AfterSchoolBusiness extends IBOService, ChildCareBusiness {
 	 */
 	public AfterSchoolChoice findChoicesByChildAndChoiceNumberAndSeason(Integer childID, int choiceNumber,
 			Integer seasonID) throws FinderException, java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.AfterSchoolBusinessBean#hasOpenApplication
+	 */
+	public boolean hasOpenApplication(User child, SchoolSeason season, int choiceNumber) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.AfterSchoolBusinessBean#findChoiceByChild
+	 */
+	public AfterSchoolChoice findChoiceByChild(User child, SchoolSeason season, int choiceNumber) throws FinderException,
+			java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.AfterSchoolBusinessBean#acceptAfterSchoolChoice
@@ -88,6 +100,17 @@ public interface AfterSchoolBusiness extends IBOService, ChildCareBusiness {
 	 */
 	public Collection createContractsForChildrenWithSchoolPlacement(int providerId, User user, Locale locale)
 			throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.AfterSchoolBusinessBean#getDays
+	 */
+	public Collection getDays(AfterSchoolChoice choice) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.AfterSchoolBusinessBean#getDay
+	 */
+	public AfterSchoolCareDays getDay(AfterSchoolChoice choice, int dayOfWeek) throws FinderException,
+			java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.AfterSchoolBusinessBean#storeDays
