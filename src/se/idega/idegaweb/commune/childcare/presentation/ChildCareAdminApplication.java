@@ -52,6 +52,9 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 	public static ICPage ccOverviewPage;
 	public static ICPage ascOverviewPage;
 	private Boolean _canEdit;
+    
+    private static final int ORDER_BY_QUEUE_DATE = 1;    // see ChildCareApplicationBMPBean ORDER_BY_QUEUE_DATE
+    private static final int ORDER_BY_DATE_OF_BIRTH = 2; // see ChildCareApplicationBMPBean ORDER_BY_DATE_OF_BIRTH
 	
 	//private boolean _useSubmitConfirm;
 	
@@ -379,8 +382,13 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 			int numberInQueue = 1;
 			boolean hasPriority = application.getHasPriority();
 			boolean isAfterSchoolApplication = getBusiness().isAfterSchoolApplication(application);
-			if (!isAfterSchoolApplication)
-				numberInQueue = getBusiness().getNumberInQueueByStatus(application);
+			if (!isAfterSchoolApplication) {
+                int orderBy = ORDER_BY_QUEUE_DATE;
+                if (application.getProvider().getSortByBirthdate()) {
+                    orderBy = ORDER_BY_DATE_OF_BIRTH;
+                }
+                numberInQueue = getBusiness().getNumberInQueueByStatus(application, orderBy);
+            }		
 			
 			char status = application.getApplicationStatus();
 
