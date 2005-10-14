@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowser.java,v 1.35 2005/10/06 20:28:32 gimmi Exp $
+ * $Id: SupplierBrowser.java,v 1.36 2005/10/14 15:06:10 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -334,6 +334,9 @@ public class SupplierBrowser extends TravelBlock {
 		
 		if (successfulAdd) {
 			Table succtable = new Table();
+			if (useTravelLook) {
+				succtable = TravelManager.getTable();
+			}
 			if (width != null) {
 				succtable.setWidth(width);
 			}
@@ -837,6 +840,11 @@ public class SupplierBrowser extends TravelBlock {
 		table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_LEFT);
 		table.setVerticalAlignment(2, row, Table.VERTICAL_ALIGN_TOP);
 
+		int rowsToAdd = 2;
+		if (useTravelLook)  {
+			rowsToAdd = 1;
+		}
+		
 		if (addDetailLink && plugin.isProductSearchCompleted(iwc)) {
 			Link details = getLink(getResourceBundle().getLocalizedString("travel.book", "Book"));
 			details.addParameter(ACTION, ACTION_VIEW_DETAILS);
@@ -844,27 +852,29 @@ public class SupplierBrowser extends TravelBlock {
 			addParametersToLink(iwc, details);
 			table.add(details, 3, startRow);
 			table.setAlignment(3, startRow, Table.HORIZONTAL_ALIGN_RIGHT);
-			table.setVerticalAlignment(3, (startRow+2), Table.VERTICAL_ALIGN_TOP);
-			table.setAlignment(3, (startRow+2), Table.HORIZONTAL_ALIGN_RIGHT);
-			table.add(images, 3, (startRow+2));
-			table.setCellpadding(3, (startRow+2), 2);
+			table.setVerticalAlignment(3, (startRow+rowsToAdd), Table.VERTICAL_ALIGN_TOP);
+			table.setAlignment(3, (startRow+rowsToAdd), Table.HORIZONTAL_ALIGN_RIGHT);
+			table.add(images, 3, (startRow+rowsToAdd));
+			table.setCellpadding(3, (startRow+rowsToAdd), 2);
 		} else if (addDetailLink && !plugin.isProductSearchCompleted(iwc)){
 			table.setAlignment(3, startRow, Table.HORIZONTAL_ALIGN_RIGHT);
-			table.setVerticalAlignment(3, (startRow+2), Table.VERTICAL_ALIGN_TOP);
-			table.setCellpadding(3, (startRow+2), 2);
+			table.setVerticalAlignment(3, (startRow+rowsToAdd), Table.VERTICAL_ALIGN_TOP);
+			table.setCellpadding(3, (startRow+rowsToAdd), 2);
 
 			if (images != null) {
-				table.add(images, 3, (startRow+2));
+				table.add(images, 3, (startRow+rowsToAdd));
 			}
 		} else {
 			table.mergeCells(2, startRow, 3, startRow);
-			table.mergeCells(2, (startRow+2), 3, (startRow+2));
+			table.mergeCells(2, (startRow+rowsToAdd), 3, (startRow+rowsToAdd));
 		}
 		
 		if (moreLink != null) {
-			table.add(Text.getBreak(), 3, (startRow+2));
-			table.add(moreLink, 3, (startRow+2));
-			table.setAlignment(3, (startRow+2), Table.HORIZONTAL_ALIGN_RIGHT);
+			if (images != null) {
+				table.add(Text.getBreak(), 3, (startRow+rowsToAdd));
+			}
+			table.add(moreLink, 3, (startRow+rowsToAdd));
+			table.setAlignment(3, (startRow+rowsToAdd), Table.HORIZONTAL_ALIGN_RIGHT);
 		}
 
 		if (useTravelLook) {
@@ -879,8 +889,11 @@ public class SupplierBrowser extends TravelBlock {
 			Table priceTable = new Table();
 			priceTable.setCellpaddingAndCellspacing(1);
 			int pRow = 1;
-			table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_LEFT);
 			table.add(priceTable, 2, ++row);
+			table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_LEFT);
+			if (useTravelLook) {
+				table.setRowColor(row, TravelManager.GRAY);
+			}
 			priceTable.mergeCells(1, pRow, 4, pRow);
 			priceTable.add(getText(getResourceBundle().getLocalizedString("travel.prices", "Prices"), headerStyleClass), 1, pRow++);
 			
@@ -1024,6 +1037,10 @@ public class SupplierBrowser extends TravelBlock {
 		table.setRowPadding(row, 2);
 		table.add(getText(supplier.getName(), headerStyleClass), 2, row);
 		table.setColumnWidth(1, imageWidth);
+		if (useTravelLook) {
+			table.setRowColor(row, TravelManager.GRAY);
+		}
+
 		if (showDetailLink) {
 			table.add(getDetailLink(supplier, iwc), 3, row++);
 		} else {
@@ -1065,7 +1082,7 @@ public class SupplierBrowser extends TravelBlock {
 		}
 		
 //				table.setVerticalAlignment(4, row, Table.VERTICAL_ALIGN_TOP);
-		
+//		table.setBorder(1);
 		
 		if (sRow != row) {
 			table.mergeCells(1, sRow, 1, row);
