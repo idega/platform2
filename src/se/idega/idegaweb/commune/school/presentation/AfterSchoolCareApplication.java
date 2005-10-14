@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolCareApplication.java,v 1.23 2005/10/14 06:54:24 laddi Exp $
+ * $Id: AfterSchoolCareApplication.java,v 1.24 2005/10/14 07:44:52 laddi Exp $
  * Created on Aug 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -38,10 +38,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/10/14 06:54:24 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/14 07:44:52 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.23 $
+ * @version $Revision: 1.24 $
  */
 public class AfterSchoolCareApplication extends SchoolApplication {
 	
@@ -76,10 +76,6 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 			return;
 		}
 		boolean hasOpenApplication = getAfterSchoolBusiness().hasOpenApplication(getSession().getUser(), season, 1);
-		if (getBusiness().hasAfterSchoolCarePlacing(getSession().getUser(), season)) {
-			add(getErrorText(localize("has_granted_after_school_care_choice", "Child already has a granted after school care choice")));
-			return;
-		}
 
 		switch (parseAction(iwc)) {
 			case ACTION_VIEW:
