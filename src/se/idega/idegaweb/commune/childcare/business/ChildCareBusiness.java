@@ -965,7 +965,8 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness,
     /**
      * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getMessageBusiness
      */
-    public CommuneMessageBusiness getMessageBusiness() throws java.rmi.RemoteException;
+    public CommuneMessageBusiness getMessageBusiness()
+            throws java.rmi.RemoteException;
 
     /**
      * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getUserBusiness
@@ -1081,12 +1082,6 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness,
     public int getQueueByProvider(int providerID)
             throws java.rmi.RemoteException;
 
-    /**
-     * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getOutsideSchoolArea
-     */
-    public int getOutsideSchoolArea()
-    	throws java.rmi.RemoteException;
-    
     /**
      * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getQueueTotalByProvider
      */
@@ -1490,6 +1485,11 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness,
      */
     public Collection findUnhandledApplicationsNotInCommune()
             throws java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getOutsideSchoolArea
+     */
+    public int getOutsideSchoolArea() throws java.rmi.RemoteException;
 
     /**
      * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#findSentInAndRejectedApplicationsByArea

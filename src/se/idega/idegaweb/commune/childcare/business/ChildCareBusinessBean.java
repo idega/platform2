@@ -423,7 +423,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						if (user != null)
 							appl.setOwner(user);
 						appl.setProviderId(providerID);
-						appl.setFromDate(fromDate.getDate());
+						appl.setFromDate(fromDate.getDate()); 
+                        appl.setFromDateRequested(fromDate.getDate()); //XXX check if this should be used in other places where setFromDate is used?
+                        
 						if (message != null)
 							appl.setMessage(message);
 						else
@@ -1828,25 +1830,25 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public void createCancelForm(ChildCareApplication application, Date cancelDate, Locale locale) {
 		UserTransaction t = getSessionContext().getUserTransaction();
 		try {
-			t.begin();
-      
-			application.setRequestedCancelDate(cancelDate);
-			application.setApplicationStatus(getStatusWaiting());
+            t.begin();
 
-			MemoryFileBuffer buffer = new MemoryFileBuffer();
-      OutputStream mos = new MemoryOutputStream(buffer);
-      InputStream mis = new MemoryInputStream(buffer);
-     
-      PrintingContext pcx = new CancelFormContext(getIWApplicationContext(), application, locale);
-      pcx.setDocumentStream(mos);
-      getPrintingService().printDocument(pcx);
-      ICFile file = createFile(null, "cancel_form", mis, buffer.length());
+            application.setRequestedCancelDate(cancelDate);
+            application.setApplicationStatus(getStatusWaiting());
 
-			application.setCancelFormFile(file);
-			application.store();
-			
-			t.commit();
-		}
+            MemoryFileBuffer buffer = new MemoryFileBuffer();
+            OutputStream mos = new MemoryOutputStream(buffer);
+            InputStream mis = new MemoryInputStream(buffer);
+
+            PrintingContext pcx = new CancelFormContext(getIWApplicationContext(), application, locale);
+            pcx.setDocumentStream(mos);
+            getPrintingService().printDocument(pcx);
+            ICFile file = createFile(null, "cancel_form", mis, buffer.length());
+
+            application.setCancelFormFile(file);
+            application.store();
+
+            t.commit();
+        }
 		catch (Exception e) {
 			try {
 				t.rollback();
