@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolApplication.java,v 1.27 2005/10/14 09:27:55 laddi Exp $
+ * $Id: SchoolApplication.java,v 1.28 2005/10/14 12:24:01 laddi Exp $
  * Created on Aug 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -58,10 +58,10 @@ import com.idega.util.Age;
 import com.idega.util.PersonalIDFormatter;
 
 /**
- * Last modified: $Date: 2005/10/14 09:27:55 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/14 12:24:01 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.27 $
+ * @version $Revision: 1.28 $
  */
 public class SchoolApplication extends SchoolBlock {
 
@@ -70,7 +70,7 @@ public class SchoolApplication extends SchoolBlock {
 	protected static final int ACTION_PHASE_3 = 3;
 	protected static final int ACTION_PHASE_4 = 4;
 	protected static final int ACTION_PHASE_5 = 5;
-	protected static final int ACTION_OVERVIEW = 6;
+	protected static final int ACTION_OVERVIEW = 10;
 	protected static final int ACTION_VIEW = 7;
 	protected static final int ACTION_SAVE = 0;
 	

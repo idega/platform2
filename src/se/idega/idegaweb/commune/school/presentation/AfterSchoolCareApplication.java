@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolCareApplication.java,v 1.25 2005/10/14 09:27:55 laddi Exp $
+ * $Id: AfterSchoolCareApplication.java,v 1.26 2005/10/14 12:24:01 laddi Exp $
  * Created on Aug 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -38,10 +38,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/10/14 09:27:55 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/14 12:24:01 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.25 $
+ * @version $Revision: 1.26 $
  */
 public class AfterSchoolCareApplication extends SchoolApplication {
 	
@@ -108,6 +108,10 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 				
 			case ACTION_PHASE_7:
 				showPhaseSeven(iwc, season);
+				break;
+				
+			case ACTION_OVERVIEW:
+				showOverview(iwc);
 				break;
 				
 			case ACTION_SAVE:
