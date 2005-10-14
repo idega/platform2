@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolCareApplication.java,v 1.26 2005/10/14 12:24:01 laddi Exp $
+ * $Id: AfterSchoolCareApplication.java,v 1.27 2005/10/14 12:37:48 laddi Exp $
  * Created on Aug 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -38,10 +38,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/10/14 12:24:01 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/14 12:37:48 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.26 $
+ * @version $Revision: 1.27 $
  */
 public class AfterSchoolCareApplication extends SchoolApplication {
 	
@@ -466,10 +466,10 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		table.add(getPersonInfoTable(iwc, getSession().getUser()), 1, row++);
 		table.setHeight(row++, 6);
 		
-		table.add(getText(localize("application.payment_information", "Payment information")), 1, row++);
+		table.add(getHeader(localize("application.payment_information", "Payment information")), 1, row++);
 		table.setHeight(row++, 6);
 		
-		table.add(getHeader(localize("application.payment_details", "Payment details")), 1, row++);
+		table.add(getText(localize("application.payment_details", "Payment details")), 1, row++);
 		table.setHeight(row++, 12);
 		
 		AfterSchoolChoice choice = null;
