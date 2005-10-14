@@ -216,6 +216,21 @@ public interface ChildCareApplication extends IDOEntity, Case {
     public Date getCancelConfirmationReceived();
 
     /**
+     * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#getFromDateRequested
+     */
+    public Date getFromDateRequested();
+
+    /**
+     * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#getCancelRequestReceived
+     */
+    public Date getCancelRequestReceived();
+
+    /**
+     * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#getCancelDateRequested
+     */
+    public Date getCancelDateRequested();
+
+    /**
      * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#setProviderId
      */
     public void setProviderId(int id);
@@ -409,6 +424,21 @@ public interface ChildCareApplication extends IDOEntity, Case {
      * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#setCancelConfirmationReceived
      */
     public void setCancelConfirmationReceived(Date date);
+
+    /**
+     * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#setFromDateRequested
+     */
+    public void setFromDateRequested(Date date);
+
+    /**
+     * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#setCancelRequestReceived
+     */
+    public void setCancelRequestReceived(Date date);
+
+    /**
+     * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#setCancelDateRequested
+     */
+    public void setCancelDateRequested(Date date);
 
     /**
      * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#isAcceptedByParent

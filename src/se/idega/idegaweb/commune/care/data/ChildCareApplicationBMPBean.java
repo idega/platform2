@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareApplicationBMPBean.java,v 1.21 2005/10/04 12:42:16 dainis Exp $
+ * $Id: ChildCareApplicationBMPBean.java,v 1.22 2005/10/14 22:27:44 dainis Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -79,7 +79,10 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	protected final static String EXTRA_CONTRACT_MESSAGE = "extra_contract_message";
 	protected final static String EXTRA_CONTRACT_OTHER = "extra_contract_other";
 	protected final static String EXTRA_CONTRACT_OTHER_MESSAGE = "extra_contract_message_other";
-	
+    
+    protected final static String FROM_DATE_REQUESTED = "from_date_requested"; // Requested start date
+    protected final static String CANCEL_REQUEST_RECEIVED = "cancel_request_received"; // The date the parents want as the last day of placement
+    protected final static String CANCEL_DATE_REQUESTED = "cancel_date_requested"; // The date the parent registered the cancellation
 	
 	protected final int SORT_DATE_OF_BIRTH = 1;
 	protected final int SORT_QUEUE_DATE = 2;
@@ -149,6 +152,11 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		addAttribute(CANCEL_PARENTAL_LEAVE, "Cancel reason", Boolean.class);
 		addAttribute(CANCEL_CONFIRMATION_RECEIVED, "Cancel confirmation received", Date.class);
 		addManyToOneRelationship(CANCEL_FORM_FILE_ID,ICFile.class);
+        
+        addAttribute(FROM_DATE_REQUESTED, "", true, true, java.sql.Date.class);
+        addAttribute(CANCEL_REQUEST_RECEIVED, "", true, true, java.sql.Date.class);
+        addAttribute(CANCEL_DATE_REQUESTED, "", true, true, java.sql.Date.class);
+        
 	}
 	
 	public int getProviderId() {
@@ -311,7 +319,19 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	public Date getCancelConfirmationReceived() {
 		return getDateColumnValue(CANCEL_CONFIRMATION_RECEIVED);
 	}
-	
+    
+    public Date getFromDateRequested(){
+        return getDateColumnValue(FROM_DATE_REQUESTED);
+    }
+    
+    public Date getCancelRequestReceived(){
+        return getDateColumnValue(CANCEL_REQUEST_RECEIVED);
+    }
+
+    public Date getCancelDateRequested(){
+        return getDateColumnValue(CANCEL_DATE_REQUESTED);
+    }
+    
 	public void setProviderId(int id) {
 		setColumn(PROVIDER_ID,id);
 	}
@@ -469,7 +489,19 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	public void setCancelConfirmationReceived(Date date) {
 		setColumn(CANCEL_CONFIRMATION_RECEIVED, date);
 	}
+    
+    public void setFromDateRequested(Date date) {
+        setColumn(FROM_DATE_REQUESTED, date);
+    }
+   
+    public void setCancelRequestReceived(Date date) {
+        setColumn(CANCEL_REQUEST_RECEIVED, date);
+    }
 	
+    public void setCancelDateRequested(Date date) {
+        setColumn(CANCEL_DATE_REQUESTED, date);
+    }
+    
 	public Collection ejbFindAll() throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
@@ -1265,11 +1297,12 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
             if(queueDate != null) { // there are children without birth date 
                 query.addCriteria(new MatchCriteria(userTable, User.FIELD_DATE_OF_BIRTH, MatchCriteria.EQUALS, queueDate));
             }
-            query.addCriteria(new MatchCriteria(table,QUEUE_ORDER,MatchCriteria.LESS,queueOrder));
+            //query.addCriteria(new MatchCriteria(table,QUEUE_ORDER,MatchCriteria.LESS,queueOrder)); 
         } else {
             query.addCriteria(new MatchCriteria(table,QUEUE_DATE,MatchCriteria.EQUALS,queueDate));
-            query.addCriteria(new MatchCriteria(table,QUEUE_ORDER,MatchCriteria.LESSEQUAL,queueOrder));
+            //query.addCriteria(new MatchCriteria(table,QUEUE_ORDER,MatchCriteria.LESSEQUAL,queueOrder));
         }		
+        query.addCriteria(new MatchCriteria(table,QUEUE_ORDER,MatchCriteria.LESSEQUAL,queueOrder));
         
 		query.setAsCountQuery(true);
 		
