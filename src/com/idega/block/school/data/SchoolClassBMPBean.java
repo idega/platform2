@@ -384,7 +384,11 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass {
 				"sch_school_year y, ").append(SCHOOL_CLASS_YEAR + " sy");
 		query.appendWhereEquals(SCHOOL, schoolID).appendAndEquals("s." + getIDColumnName(), "sy." + getIDColumnName()).appendAndEquals(
 				"sy.sch_school_year_id", "y.sch_school_year_id");
-		query.appendAnd().append("y.sch_school_year_id").appendInArray(schoolYearIDs);
+		
+		if(schoolYearIDs!=null){
+			query.appendAnd().append("y.sch_school_year_id").appendInArray(schoolYearIDs);	
+		}
+		
 		if (schoolSeasonID != -1) {
 			query.appendAndEquals(SEASON, schoolSeasonID);
 		}
