@@ -101,7 +101,12 @@ public class VoucherWindow extends Window {
 			    String numMethod = iwc.getParameter(this.parameterNumber);
 			    if (numMethod != null && !numMethod.equals("")) {
 			    	GeneralBookingHome gbHome = (GeneralBookingHome) IDOLookup.getHome(GeneralBooking.class);
-			    	GeneralBooking bg = gbHome.findByPrimaryKey(new Integer((Integer.parseInt(numMethod) - Voucher.voucherNumberChanger)));
+			    	GeneralBooking bg = null;
+			    	try {
+			    		bg = gbHome.findByPrimaryKey(new Integer((Integer.parseInt(numMethod) - Voucher.voucherNumberChanger)));
+			    	} catch (Exception e) {
+					  //table.add(iwrb.getLocalizedString("travel.voucher_number_not_found","Voucher number not found")+" "+numMethod);
+			    	}
 //			      GeneralBooking[] gBooking = (GeneralBooking[]) (is.idega.idegaweb.travel.data.GeneralBookingBMPBean.getStaticInstance(GeneralBooking.class)).findAllByColumn(is.idega.idegaweb.travel.data.GeneralBookingBMPBean.getStaticInstance(GeneralBooking.class).getIDColumnName(), (Integer.parseInt(numMethod) - Voucher.voucherNumberChanger));
 //			      if (gBooking.length > 0) {
 			    	if (bg != null) {
@@ -157,6 +162,7 @@ public class VoucherWindow extends Window {
       numText.setFontColor(TravelManager.WHITE);
     TextInput numInp = new TextInput(parameterNumber);
       numInp.setSize(25);
+      numInp.setAsIntegers(iwrb.getLocalizedString("travel.numbers_only_as_voucher_number", "Please use numbers only as the Voucher number"));
     SubmitButton searchNum = new SubmitButton(iwrb.getLocalizedImageButton("travel.search","Search"), searchAction, searchMethodNumber);
 
 

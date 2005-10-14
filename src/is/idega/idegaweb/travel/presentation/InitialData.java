@@ -181,6 +181,7 @@ public class InitialData extends TravelManager {
 		}else if (super.isSupplierManager()) {
 			menu.addMenuElement("", iwrb.getLocalizedString("travel.supplier_information","Supplier information"));
 			menu.addMenuElement(this.parameterCreditCardRefund, iwrb.getLocalizedString("travel.credidcard","Creditcard"));
+			menu.addMenuElement(this.parameterVoucher, iwrb.getLocalizedString("travel.vouchers","Vouchers"));
 //			menu.addMenuElement(this.parameterTPosProperties, iwrb.getLocalizedString("travel.credidcard_properties","Creditcard Properties"));
 		}
 		menu.setToSubmit();
@@ -357,6 +358,8 @@ public class InitialData extends TravelManager {
 					}catch (Exception e) {
 						e.printStackTrace(System.err);
 					}
+				}else if (selected.equals(this.parameterVoucher)) {
+					add(VoucherWindow.getReferenceNumberForm(iwrb));
 				}
 			}
 			else if (action.equals(this.parameterNew)) {
