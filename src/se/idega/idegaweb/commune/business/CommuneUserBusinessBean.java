@@ -865,7 +865,9 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	public User getCustodianForChild(int childID) throws RemoteException {
 		return getCustodianForChild(getUser(childID));
 	}
-	
+		/**
+	 * FIXME This method return a "random" parent if neither has an account. Always return the mother ? OR BETTER let a Case refer to two owners or more...
+	 */
 	public User getCustodianForChild(User child) throws RemoteException {
 		User performer = null;
 		Collection parents = getParentsForChild(child);

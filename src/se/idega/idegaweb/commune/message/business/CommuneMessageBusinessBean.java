@@ -1,5 +1,5 @@
 /*
- * $Id: CommuneMessageBusinessBean.java,v 1.1 2005/10/13 18:36:11 laddi Exp $
+ * $Id: CommuneMessageBusinessBean.java,v 1.2 2005/10/14 21:53:23 eiki Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -30,6 +30,7 @@ import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseCode;
 import com.idega.block.process.message.business.MessageBusiness;
 import com.idega.block.process.message.business.MessageBusinessBean;
+import com.idega.block.process.message.business.MessageTypeManager;
 import com.idega.block.process.message.data.Message;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
@@ -71,6 +72,9 @@ public class CommuneMessageBusinessBean extends MessageBusinessBean implements C
 	public static final String USER_PROP_SEND_TO_EMAIL = "msg_send_email";
 
 	public CommuneMessageBusinessBean() {
+		MessageTypeManager typeManager = MessageTypeManager.getInstance();
+		typeManager.addDataClassForType(MessageConstants.TYPE_USER_MESSAGE, UserMessage.class);
+		//typeManager.addDataClassForType(MessageConstants.TYPE_SYSTEM_PRINT_MAIL_MESSAGE, PrintedLetterMessage.class);
 	}
 	
 	private UserMessageHome getUserMessageHome()throws RemoteException{
