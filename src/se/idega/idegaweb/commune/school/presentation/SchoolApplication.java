@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolApplication.java,v 1.24 2005/10/14 05:05:36 laddi Exp $
+ * $Id: SchoolApplication.java,v 1.25 2005/10/14 05:08:20 laddi Exp $
  * Created on Aug 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -58,10 +58,10 @@ import com.idega.util.Age;
 import com.idega.util.PersonalIDFormatter;
 
 /**
- * Last modified: $Date: 2005/10/14 05:05:36 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/14 05:08:20 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.24 $
+ * @version $Revision: 1.25 $
  */
 public class SchoolApplication extends SchoolBlock {
 
@@ -1002,7 +1002,7 @@ public class SchoolApplication extends SchoolBlock {
 		row = addChildInformation(verifyTable, getSession().getUser(), row);
 		
 		boolean canDisplaySchoolImages = getBusiness().canDisplaySchoolImages(getSession().getUser());
-		verifyTable.mergeCells(1, iRow, table.getColumns(), iRow);
+		verifyTable.mergeCells(1, iRow, verifyTable.getColumns(), iRow);
 		verifyTable.add(getBooleanTable(getSmallHeader(localize("child.can_diplay_images", "Can display images")), canDisplaySchoolImages), 1, iRow);
 		verifyTable.setWidth(1, "50%");
 		verifyTable.setWidth(2, "50%");
