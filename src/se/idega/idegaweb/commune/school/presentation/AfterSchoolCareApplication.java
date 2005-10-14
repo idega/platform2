@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolCareApplication.java,v 1.28 2005/10/14 12:39:20 laddi Exp $
+ * $Id: AfterSchoolCareApplication.java,v 1.29 2005/10/14 12:44:32 laddi Exp $
  * Created on Aug 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -38,10 +38,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/10/14 12:39:20 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/14 12:44:32 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.28 $
+ * @version $Revision: 1.29 $
  */
 public class AfterSchoolCareApplication extends SchoolApplication {
 	
@@ -740,7 +740,7 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		verifyTable.setHeight(iRow++, 6);		
 		
 		if (!iHideDetailsPhases) {
-			row = addChildInformation(verifyTable, getSession().getUser(), row);
+			iRow = addChildInformation(verifyTable, getSession().getUser(), iRow);
 		}
 		
 		boolean canDisplayImages = getBusiness().canDisplayAfterSchoolCareImages(getSession().getUser());
@@ -886,7 +886,7 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		verifyTable.setBottomCellBorder(1, iRow++, 1, "#D7D7D7", "solid");
 		verifyTable.setHeight(iRow++, 6);		
 		
-		row = addChildInformation(verifyTable, getSession().getUser(), row);
+		iRow = addChildInformation(verifyTable, getSession().getUser(), iRow);
 		
 		boolean canDisplayImages = getBusiness().canDisplayAfterSchoolCareImages(getSession().getUser());
 		String otherAfterSchoolInformation = getBusiness().getAfterSchoolCareOtherInformation(getSession().getUser());
