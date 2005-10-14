@@ -1,16 +1,13 @@
 package se.idega.idegaweb.commune.presentation;
 
 import is.idega.block.family.business.FamilyLogic;
-
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;
-
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.util.PIDChecker;
-
 import com.idega.business.IBOLookup;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.location.data.Address;
@@ -25,7 +22,6 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
 import com.idega.util.Age;
@@ -38,8 +34,6 @@ import com.idega.util.PersonalIDFormatter;
 public class CitizenChildren extends CommuneBlock {
 	//private IWBundle iwb;
 	private IWResourceBundle iwrb;
-	private int userID;
-	private User user;
 	private Text buttonLabel;
 	//private Text ssnLabel;
 	public static final String prmChildId = "comm_child_id";
@@ -63,14 +57,12 @@ public class CitizenChildren extends CommuneBlock {
 	public void main(IWContext iwc) throws java.rmi.RemoteException {
 		//iwb = getBundle(iwc);
 		iwrb = getResourceBundle(iwc);
-		userID = iwc.getUserId();
-		if (userID > 0) {
+		if (iwc.isLoggedOn()) {
 			if (useCommuneRestriction && !belongsToCommune(iwc, getUser(iwc))) {
 				add(getErrorText(localize("does_not_belong_to_commune", "You have to live in the commune to be able to use this function.")));
 				return;
 			}
 
-			user = ((UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class)).getUser(userID);
 			Table T = new Table();
 			int row = 1;
 			int col = 1;
@@ -149,16 +141,16 @@ public class CitizenChildren extends CommuneBlock {
 		addLoggedInUser = addUser;
 	}
 
-	private Form getChildrenForm(IWContext iwc) {
+	private Form getChildrenForm(IWContext iwc) throws RemoteException {
 		Form f = new Form();
 		Table T = new Table();
 		T.setCellpadding(0);
 		T.setCellspacing(0);
 		
 		int row = 1;
-		Collection childs = getChilds(iwc, this.user);
+		Collection childs = getChilds(iwc, getUser(iwc));
 		if (addLoggedInUser()) {
-			childs.add(user);
+			childs.add(getUser(iwc));
 		}
 		if (childs != null && !childs.isEmpty()) {
 			boolean useUniqueID = true;

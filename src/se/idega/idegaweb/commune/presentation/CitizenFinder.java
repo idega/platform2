@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenFinder.java,v 1.2 2005/10/14 09:57:39 laddi Exp $
+ * $Id: CitizenFinder.java,v 1.3 2005/10/14 10:37:01 laddi Exp $
  * Created on Oct 14, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -23,10 +23,10 @@ import com.idega.user.data.UserHome;
 
 
 /**
- * Last modified: $Date: 2005/10/14 09:57:39 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/14 10:37:01 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class CitizenFinder extends CommuneUserFinder implements IWPageEventListener {
 
@@ -89,7 +89,7 @@ public class CitizenFinder extends CommuneUserFinder implements IWPageEventListe
 	 * @see se.idega.idegaweb.commune.presentation.CommuneUserFinder#getSearchSubmitDisplay()
 	 */
 	public String getSearchSubmitDisplay() {
-		return localize("user.find_user","Find user");
+		return localize("user.search","Search");
 	}
 
 	/**
@@ -111,6 +111,6 @@ public class CitizenFinder extends CommuneUserFinder implements IWPageEventListe
 	}
 
 	public String getSubmitDisplay() {
-		return localize("user.search", "Search");
+		return localize("user.find_user", "Find user");
 	}
 }
