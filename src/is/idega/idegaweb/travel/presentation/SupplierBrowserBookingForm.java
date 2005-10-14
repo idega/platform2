@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowserBookingForm.java,v 1.5 2005/07/08 14:35:11 gimmi Exp $
+ * $Id: SupplierBrowserBookingForm.java,v 1.6 2005/10/14 15:05:50 gimmi Exp $
  * Created on Jul 4, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -41,6 +41,7 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.util.IWTimestamp;
 
@@ -285,12 +286,17 @@ public class SupplierBrowserBookingForm extends TravelManager {
 		TextInput name = getStyleTextInput(new TextInput(BookingForm.PARAMETER_FIRST_NAME));
 		TextInput email = getStyleTextInput(new TextInput(BookingForm.PARAMETER_EMAIL));
 		TextInput phone = getStyleTextInput(new TextInput(BookingForm.PARAMETER_PHONE));
-//		TextArea comment = new TextArea(BookingForm.PARAMETER_COMMENT);
+		TextInput address = getStyleTextInput(new TextInput(BookingForm.PARAMETER_ADDRESS));
+		TextInput city = getStyleTextInput(new TextInput(BookingForm.PARAMETER_CITY));
+		TextInput areaCode = getStyleTextInput(new TextInput(BookingForm.PARAMETER_AREA_CODE));
+		TextInput country = getStyleTextInput(new TextInput(BookingForm.PARAMETER_COUNTRY));
+		
+		TextArea comment = new TextArea(BookingForm.PARAMETER_COMMENT);
 //		if (ioStyleClass != null) {
 //			comment.setStyleClass(ioStyleClass);
 //		}
-//		comment.setWidth("150");
-//		comment.setHeight("60");
+		comment.setWidth("150");
+		comment.setHeight("60");
 		
 		DropdownMenu payType = getBooker(iwc).getPaymentTypeDropdown(getResourceBundle(), BookingForm.PARAMETER_PAYMENT_TYPE);
 		payType.setToEnableWhenSelected(ccName, Integer.toString(Booking.PAYMENT_TYPE_ID_CREDIT_CARD));
@@ -302,7 +308,11 @@ public class SupplierBrowserBookingForm extends TravelManager {
 		name.keepStatusOnAction();
 		email.keepStatusOnAction();
 		phone.keepStatusOnAction();
-//		comment.keepStatusOnAction();
+		address.keepStatusOnAction();
+		city.keepStatusOnAction();
+		areaCode.keepStatusOnAction();
+		country.keepStatusOnAction();
+		comment.keepStatusOnAction();
 		payType.keepStatusOnAction();
 		
 		ccName.keepStatusOnAction();
@@ -339,9 +349,21 @@ public class SupplierBrowserBookingForm extends TravelManager {
 		table.add(getText(getResourceBundle().getLocalizedString("travel.phone", "Phone")), 1, row);
 		table.add(phone, 2, row++);
 		table.setRowColor(row, GRAY);
-//		table.add(getText(getResourceBundle().getLocalizedString("travel.comment", "Comment")), 1, row);
-//		table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
-//		table.add(comment, 2, row++);
+		table.add(getText(getResourceBundle().getLocalizedString("travel.address", "Address")), 1, row);
+		table.add(address, 2, row++);
+		table.setRowColor(row, GRAY);
+		table.add(getText(getResourceBundle().getLocalizedString("travel.city", "City")), 1, row);
+		table.add(city, 2, row++);
+		table.setRowColor(row, GRAY);
+		table.add(getText(getResourceBundle().getLocalizedString("travel.area_code", "Area Code")), 1, row);
+		table.add(areaCode, 2, row++);
+		table.setRowColor(row, GRAY);
+		table.add(getText(getResourceBundle().getLocalizedString("travel.country", "Country")), 1, row);
+		table.add(country, 2, row++);
+		table.setRowColor(row, GRAY);
+		table.add(getText(getResourceBundle().getLocalizedString("travel.comment", "Comment")), 1, row);
+		table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
+		table.add(comment, 2, row++);
 		
 		
 		
