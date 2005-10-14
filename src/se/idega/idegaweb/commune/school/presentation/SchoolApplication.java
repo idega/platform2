@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolApplication.java,v 1.26 2005/10/14 06:54:25 laddi Exp $
+ * $Id: SchoolApplication.java,v 1.27 2005/10/14 09:27:55 laddi Exp $
  * Created on Aug 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -58,10 +58,10 @@ import com.idega.util.Age;
 import com.idega.util.PersonalIDFormatter;
 
 /**
- * Last modified: $Date: 2005/10/14 06:54:25 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/14 09:27:55 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.26 $
+ * @version $Revision: 1.27 $
  */
 public class SchoolApplication extends SchoolBlock {
 
@@ -106,6 +106,7 @@ public class SchoolApplication extends SchoolBlock {
 	private boolean iSchoolChange = false;
 	private boolean iUseHomeSchool = true;
 	protected boolean iShowOverview = false;
+	private boolean iUseSessionUser = false;
 	
 	private ICPage iAfterSchoolCarePage;
 	protected ICPage iHomePage;
@@ -163,6 +164,15 @@ public class SchoolApplication extends SchoolBlock {
 			case ACTION_SAVE:
 				save(iwc);
 				break;
+		}
+	}
+	
+	protected User getUser(IWContext iwc) throws RemoteException {
+		if (iUseSessionUser) {
+			return getUserSession(iwc).getUser();
+		}
+		else {
+			return iwc.getCurrentUser();
 		}
 	}
 
@@ -1256,7 +1266,7 @@ public class SchoolApplication extends SchoolBlock {
 		if (iHomeSchoolChosen) {
 			Object schoolPK = getBusiness().getHomeSchoolForUser(getSession().getUser()).getPrimaryKey();
 			try {
-				getBusiness().saveHomeSchoolChoice(iwc.getCurrentUser(), getSession().getUser(), schoolPK, seasonPK, yearPK, language, message);
+				getBusiness().saveHomeSchoolChoice(getUser(iwc), getSession().getUser(), schoolPK, seasonPK, yearPK, language, message);
 				saved = true;
 			}
 			catch (IDOCreateException ice) {
@@ -1272,7 +1282,7 @@ public class SchoolApplication extends SchoolBlock {
 				}
 			}
 			try {
-				getBusiness().saveChoices(iwc.getCurrentUser(), getSession().getUser(), schools, seasonPK, yearPK, language, message);
+				getBusiness().saveChoices(getUser(iwc), getSession().getUser(), schools, seasonPK, yearPK, language, message);
 				saved = true;
 			}
 			catch (IDOCreateException ice) {
@@ -1504,5 +1514,10 @@ public class SchoolApplication extends SchoolBlock {
 	
 	public void setShowOverview(boolean showOverview) {
 		iShowOverview = showOverview;
+	}
+
+	
+	public void setUseSessionUser(boolean useSessionUser) {
+		iUseSessionUser = useSessionUser;
 	}
 }

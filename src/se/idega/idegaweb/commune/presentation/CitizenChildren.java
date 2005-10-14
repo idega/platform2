@@ -53,6 +53,7 @@ public class CitizenChildren extends CommuneBlock {
 	private boolean addLoggedInUser = false;
 	
 	private boolean useCommuneRestriction = false;
+	private boolean iUseSessionUser = false;
 
 	public CitizenChildren() {
 		
@@ -64,7 +65,7 @@ public class CitizenChildren extends CommuneBlock {
 		iwrb = getResourceBundle(iwc);
 		userID = iwc.getUserId();
 		if (userID > 0) {
-			if (useCommuneRestriction && !belongsToCommune(iwc, iwc.getCurrentUser())) {
+			if (useCommuneRestriction && !belongsToCommune(iwc, getUser(iwc))) {
 				add(getErrorText(localize("does_not_belong_to_commune", "You have to live in the commune to be able to use this function.")));
 				return;
 			}
@@ -228,7 +229,7 @@ public class CitizenChildren extends CommuneBlock {
 	 */
 	protected boolean getShowChild(IWContext iwc, User child) {
 		try {
-			return getFamilyLogic(iwc).isChildInCustodyOf(child, iwc.getCurrentUser());
+			return getFamilyLogic(iwc).isChildInCustodyOf(child, getUser(iwc));
 		}
 		catch (RemoteException re) {
 			return false;
@@ -289,6 +290,15 @@ public class CitizenChildren extends CommuneBlock {
 	protected Class getEventListener() {
 		return null;
 	}
+	
+	protected User getUser(IWContext iwc) throws RemoteException {
+		if (iUseSessionUser) {
+			return getUserSession(iwc).getUser();
+		}
+		else {
+			return iwc.getCurrentUser();
+		}
+	}
 
 	/**
 	 * Sets if the component is to show the search for to search by personal_id.
@@ -317,5 +327,10 @@ public class CitizenChildren extends CommuneBlock {
 	
 	public void setUseCommuneRestriction(boolean useRestriction) {
 		useCommuneRestriction = useRestriction;
+	}
+
+	
+	public void setUseSessionUser(boolean userSessionUser) {
+		iUseSessionUser = userSessionUser;
 	}
 }

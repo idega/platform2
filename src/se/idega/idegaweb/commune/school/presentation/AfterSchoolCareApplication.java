@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolCareApplication.java,v 1.24 2005/10/14 07:44:52 laddi Exp $
+ * $Id: AfterSchoolCareApplication.java,v 1.25 2005/10/14 09:27:55 laddi Exp $
  * Created on Aug 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -38,10 +38,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/10/14 07:44:52 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/14 09:27:55 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.24 $
+ * @version $Revision: 1.25 $
  */
 public class AfterSchoolCareApplication extends SchoolApplication {
 	
@@ -809,6 +809,10 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		catch (FinderException fe) {
 			fe.printStackTrace();
 		}
+		if (choice == null) {
+			add(getErrorText(localize("has_no_after_school_care_choice", "Child has no after school care choice")));
+			return;
+		}
 		
 		School provider = choice.getProvider();
 		
@@ -936,7 +940,7 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		int validMonth = iwc.isParameterSet(PARAMETER_VALID_MONTH) ? Integer.parseInt(iwc.getParameter(PARAMETER_VALID_MONTH)) : -1;
 		int validYear = iwc.isParameterSet(PARAMETER_VALID_MONTH) ? Integer.parseInt(iwc.getParameter(PARAMETER_VALID_YEAR)) : -1;
 
-		boolean saved = getAfterSchoolBusiness().storeAfterSchoolCare(new IWTimestamp(), iwc.getCurrentUser(), getSession().getUser(), provider, null, season, days, time, pickedUp, payerName, payerPersonalID, cardType, cardNumber, validMonth, validYear);
+		boolean saved = getAfterSchoolBusiness().storeAfterSchoolCare(new IWTimestamp(), getUser(iwc), getSession().getUser(), provider, null, season, days, time, pickedUp, payerName, payerPersonalID, cardType, cardNumber, validMonth, validYear);
 		
 		if (saved) {
 			Table table = new Table();

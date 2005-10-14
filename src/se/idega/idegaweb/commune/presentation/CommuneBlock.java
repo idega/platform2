@@ -6,12 +6,14 @@ import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.business.Constants;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
+import com.idega.business.IBORuntimeException;
 import com.idega.core.builder.data.ICPage;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWPropertyList;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWResourceMessage;
+import com.idega.idegaweb.IWUserContext;
 import com.idega.idegaweb.help.presentation.Help;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -32,6 +34,7 @@ import com.idega.presentation.ui.ResetButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
+import com.idega.user.business.UserSession;
 import com.idega.user.data.User;
 
 /**
@@ -689,6 +692,15 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	
 	protected CommuneUserBusiness getUserBusiness(IWApplicationContext  iwc) throws IBOLookupException {
 		return (CommuneUserBusiness) IBOLookup.getServiceInstance(iwc, CommuneUserBusiness.class);
+	}
+	
+	protected UserSession getUserSession(IWUserContext iwuc) {
+		try {
+			return (UserSession) IBOLookup.getSessionInstance(iwuc, UserSession.class);
+		}
+		catch (IBOLookupException ile) {
+			throw new IBORuntimeException(ile);
+		}
 	}
 	
 	/**
