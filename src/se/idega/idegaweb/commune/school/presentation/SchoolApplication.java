@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolApplication.java,v 1.23 2005/10/13 20:53:37 laddi Exp $
+ * $Id: SchoolApplication.java,v 1.24 2005/10/14 05:05:36 laddi Exp $
  * Created on Aug 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -58,10 +58,10 @@ import com.idega.util.Age;
 import com.idega.util.PersonalIDFormatter;
 
 /**
- * Last modified: $Date: 2005/10/13 20:53:37 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/14 05:05:36 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.23 $
+ * @version $Revision: 1.24 $
  */
 public class SchoolApplication extends SchoolBlock {
 
@@ -926,7 +926,7 @@ public class SchoolApplication extends SchoolBlock {
 		table.setHeight(row++, 6);
 		
 		table.add(getHeader(localize("application.overview", "Overview")), 1, row++);
-		table.setHeight(row++, 6);
+		table.setHeight(row++, 18);
 		
 		Table verifyTable = new Table();
 		verifyTable.setCellpadding(getCellpadding());
@@ -1102,7 +1102,7 @@ public class SchoolApplication extends SchoolBlock {
 			viewTable.setHeight(iRow++, 6);
 		}
 		
-		row = addChildInformation(viewTable, getSession().getUser(), row);
+		iRow = addChildInformation(viewTable, getSession().getUser(), iRow);
 		
 		boolean canDisplaySchoolImages = getBusiness().canDisplaySchoolImages(getSession().getUser());
 		viewTable.mergeCells(1, iRow, table.getColumns(), iRow);
@@ -1162,6 +1162,7 @@ public class SchoolApplication extends SchoolBlock {
 			}
 			
 			table.setHeight(iRow++, 6);
+			table.mergeCells(1, iRow, table.getColumns(), iRow);
 			table.setBottomCellBorder(1, iRow++, 1, "#D7D7D7", "solid");
 			table.setHeight(iRow++, 6);
 		}
@@ -1171,6 +1172,7 @@ public class SchoolApplication extends SchoolBlock {
 			table.add(getTextInputTable(getSmallHeader(localize("child.last_care_provider", "Last care provider")), lastCareProvider), 1, iRow++);
 
 			table.setHeight(iRow++, 6);
+			table.mergeCells(1, iRow, table.getColumns(), iRow);
 			table.setBottomCellBorder(1, iRow++, 1, "#D7D7D7", "solid");
 			table.setHeight(iRow++, 6);
 		}
@@ -1179,6 +1181,7 @@ public class SchoolApplication extends SchoolBlock {
 		table.add(getBooleanTable(getSmallHeader(localize("child.can_contact_last_care_provider", "Can contact last care provider")), canContactLastProvider), 1, iRow++);
 		
 		table.setHeight(iRow++, 6);
+		table.mergeCells(1, iRow, table.getColumns(), iRow);
 		table.setBottomCellBorder(1, iRow++, 1, "#D7D7D7", "solid");
 		table.setHeight(iRow++, 6);
 
@@ -1187,6 +1190,7 @@ public class SchoolApplication extends SchoolBlock {
 			table.add(getTextAreaTable(getSmallHeader(localize("child.other_information", "Other information")), otherInformation), 1, iRow++);
 
 			table.setHeight(iRow++, 6);
+			table.mergeCells(1, iRow, table.getColumns(), iRow);
 			table.setBottomCellBorder(1, iRow++, 1, "#D7D7D7", "solid");
 			table.setHeight(iRow++, 6);
 		}
