@@ -2309,8 +2309,10 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		ChildCareApplication application = getBusiness().getApplication(_applicationID);
 		application.setApplicationStatus(getBusiness().getStatusParentTerminated());
-		application.setCancelMessage(iwc.getParameter(PARAMETER_REJECT_MESSAGE));
-		application.setRequestedCancelDate(stamp.getDate());
+		application.setCancelMessage(iwc.getParameter(PARAMETER_REJECT_MESSAGE));        		
+        application.setCancelRequestReceived(new IWTimestamp(new Date()).getDate());
+        application.setCancelDateRequested(stamp.getDate());                     
+		application.setRequestedCancelDate(stamp.getDate());        
 		application.setParentalLeave(parentalLeave);
 		application.store();
 
