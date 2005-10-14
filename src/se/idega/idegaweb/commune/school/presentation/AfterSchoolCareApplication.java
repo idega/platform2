@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolCareApplication.java,v 1.27 2005/10/14 12:37:48 laddi Exp $
+ * $Id: AfterSchoolCareApplication.java,v 1.28 2005/10/14 12:39:20 laddi Exp $
  * Created on Aug 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -38,10 +38,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/10/14 12:37:48 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/14 12:39:20 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.27 $
+ * @version $Revision: 1.28 $
  */
 public class AfterSchoolCareApplication extends SchoolApplication {
 	
@@ -686,7 +686,7 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 			boolean pickedUp = new Boolean(iwc.getParameter(PARAMETER_PICKED_UP + "_" + (a+1))).booleanValue();
 			String time = iwc.isParameterSet(PARAMETER_TIME + "_" + (a+1)) ? iwc.getParameter(PARAMETER_TIME + "_" + (a+1)) : null;
 			
-			if (time.length() > 0) {
+			if (time != null) {
 				verifyTable.add(getSmallHeader(days[a]), 1, iRow);
 				verifyTable.add(getSmallText(time + " - " + (pickedUp ? localize("application.picked_up", "Is picked up") : localize("application.walks_self", "Walks home"))), 2, iRow++);
 			}
