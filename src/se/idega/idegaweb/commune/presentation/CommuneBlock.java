@@ -190,7 +190,7 @@ public class CommuneBlock extends com.idega.presentation.Block {
 
 	protected Help getHelpButton(String key) {
 		Help help = new Help();
-		help.setHelpTextBundle(Constants.IW_BUNDLE_IDENTIFIER);
+		help.setHelpTextBundle(getBundleIdentifier());
 		help.setHelpTextKey(key);
 		help.setImage(getBundle().getImage("help.gif"));
 		return help;
