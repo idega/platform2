@@ -1,5 +1,5 @@
 /*
- * $Id: MealApplication.java,v 1.5 2005/10/03 10:00:43 laddi Exp $
+ * $Id: MealApplication.java,v 1.6 2005/10/16 20:22:11 laddi Exp $
  * Created on Aug 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -11,7 +11,9 @@ package se.idega.idegaweb.commune.school.meal.presentation;
 
 import java.rmi.RemoteException;
 import java.sql.Date;
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -45,13 +47,14 @@ import com.idega.presentation.ui.TextArea;
 import com.idega.user.data.User;
 import com.idega.util.IWCalendar;
 import com.idega.util.IWTimestamp;
+import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/10/03 10:00:43 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/16 20:22:11 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class MealApplication extends MealBlock {
 	
@@ -165,12 +168,13 @@ public class MealApplication extends MealBlock {
 		while (seasonStart.isEarlierThan(seasonEnd)) {
 			ListItem item = new ListItem();
 			CheckBox box = new CheckBox(PARAMETER_MONTH, seasonStart.toString());
+			box.setStyleClass("checkbox");
 			box.keepStatusOnAction(true);
 			if (getBusiness().hasChoiceForDate(user, school, season, seasonStart.getDate())) {
 				box.setChecked(true);
 				box.setDisabled(true);
 			}
-			Label label = new Label(calendar.getMonthName(seasonStart.getMonth(), iwc.getCurrentLocale(), IWCalendar.FULL), box);
+			Label label = new Label(TextSoap.capitalize(calendar.getMonthName(seasonStart.getMonth(), iwc.getCurrentLocale(), IWCalendar.FULL)), box);
 			
 			item.add(box);
 			item.add(label);
@@ -187,6 +191,8 @@ public class MealApplication extends MealBlock {
 		SubmitButton next = new SubmitButton(localize("next", "Next"));
 		next.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_PHASE_TWO));
 		buttonLayer.add(next);
+		
+		buttonLayer.add(getHelpButton("meal_application_help"));
 
 		add(form);
 	}
@@ -232,6 +238,7 @@ public class MealApplication extends MealBlock {
 		next.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_PHASE_THREE));
 		buttonLayer.add(previous);
 		buttonLayer.add(next);
+		buttonLayer.add(getHelpButton("meal_application_help"));
 
 		add(form);
 	}
@@ -242,26 +249,33 @@ public class MealApplication extends MealBlock {
 		
 		IWCalendar calendar = new IWCalendar();
 		
-		layer.add(new Heading1(calendar.getMonthName(month.getMonth(), locale, IWCalendar.FULL)));
+		layer.add(new Heading1(TextSoap.capitalize(calendar.getMonthName(month.getMonth(), locale, IWCalendar.FULL))));
 
 		Lists daysList = new Lists();
 		daysList.setID("daysList");
 		layer.add(daysList);
 		
 		CheckBox monday = new CheckBox(PARAMETER_DAYS + "_" + month.toString(), MealConstants.DAY_MONDAY);
+		monday.setStyleClass("checkbox");
 		monday.keepStatusOnAction(true);
 		CheckBox tuesday = new CheckBox(PARAMETER_DAYS + "_" + month.toString(), MealConstants.DAY_TUESDAY);
+		tuesday.setStyleClass("checkbox");
 		tuesday.keepStatusOnAction(true);
 		CheckBox wednesday = new CheckBox(PARAMETER_DAYS + "_" + month.toString(), MealConstants.DAY_WEDNESDAY);
+		wednesday.setStyleClass("checkbox");
 		wednesday.keepStatusOnAction(true);
 		CheckBox thursday = new CheckBox(PARAMETER_DAYS + "_" + month.toString(), MealConstants.DAY_THURSDAY);
+		thursday.setStyleClass("checkbox");
 		thursday.keepStatusOnAction(true);
 		CheckBox friday = new CheckBox(PARAMETER_DAYS + "_" + month.toString(), MealConstants.DAY_FRIDAY);
+		thursday.setStyleClass("checkbox");
 		friday.keepStatusOnAction(true);
 		
 		CheckBox milk = new CheckBox(PARAMETER_MILK + "_" + month.toString(), Boolean.TRUE.toString());
+		milk.setStyleClass("checkbox");
 		milk.keepStatusOnAction(true);
 		CheckBox fruits = new CheckBox(PARAMETER_FRUITS + "_" + month.toString(), Boolean.TRUE.toString());
+		fruits.setStyleClass("checkbox");
 		fruits.keepStatusOnAction(true);
 		
 		ListItem item = new ListItem();
@@ -325,7 +339,7 @@ public class MealApplication extends MealBlock {
 		
 		IWCalendar calendar = new IWCalendar();
 		
-		layer.add(new Heading1(calendar.getMonthName(month.getMonth(), iwc.getCurrentLocale(), IWCalendar.FULL)));
+		layer.add(new Heading1(TextSoap.capitalize(calendar.getMonthName(month.getMonth(), iwc.getCurrentLocale(), IWCalendar.FULL))));
 		
 		String[] days = iwc.getParameterValues(PARAMETER_DAYS + "_" + month.toString());
 		if (days != null) {
@@ -386,17 +400,19 @@ public class MealApplication extends MealBlock {
 			layer.add(list);
 		}
 		
-		Table pTable = new Table();
-		pTable.setWidth("100%");
-		pTable.add(getSmallText(localize("meal", "Meal")), 1, 1);
-		pTable.add(getSmallText(localize("milk", "Milk")), 1, 2);
-		pTable.add(getSmallText(localize("fruits", "Fruits")), 1, 3);
-		pTable.add(getSmallText(new Float((int) values.getMealAmount()).toString()), 2, 1);
-		pTable.add(getSmallText(new Float((int) values.getMilkAmount()).toString()), 2, 2);
-		pTable.add(getSmallText(new Float((int) values.getFruitAmount()).toString()), 2, 3);
-		pTable.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_RIGHT);
-		layer.add(pTable);
+		NumberFormat format = NumberFormat.getCurrencyInstance(iwc.getCurrentLocale());
+		Lists list = new Lists();
+		list.setID("priceList");
 		
+		ListItem item = new ListItem();
+		item.add(new Text(localize("meal", "Meal") + ": " + format.format(values.getMealAmount())));
+		
+		item = new ListItem();
+		item.add(new Text(localize("milk", "Milk") + ": " + format.format(values.getMilkAmount())));
+		
+		item = new ListItem();
+		item.add(new Text(localize("fruits", "Fruits") + ": " + format.format(values.getFruitAmount())));
+
 		layer.add(new HiddenInput(PARAMETER_AMOUNT + "_" + month.toString(), String.valueOf(values.getAmount())));
 		topLayer.add(layer);
 		
@@ -434,6 +450,7 @@ public class MealApplication extends MealBlock {
 		next.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_OVERVIEW));
 		buttonLayer.add(previous);
 		buttonLayer.add(next);
+		buttonLayer.add(getHelpButton("meal_application_help"));
 
 		add(form);
 	}
@@ -478,9 +495,10 @@ public class MealApplication extends MealBlock {
 		clear.setStyleClass("Clear");
 		layer.add(clear);
 		
+		NumberFormat format = NumberFormat.getCurrencyInstance(iwc.getCurrentLocale());
 		Layer priceLayer = new Layer(Layer.DIV);
 		priceLayer.setID("priceDiv");
-		priceLayer.add(new Text(localize("total_payment", "Total payment") + " : " + (int) totalPrice));
+		priceLayer.add(new Text(localize("total_payment", "Total payment") + " : " + format.format(totalPrice)));
 		layer.add(priceLayer);
 				
 		Layer buttonLayer = new Layer(Layer.DIV);
@@ -494,6 +512,7 @@ public class MealApplication extends MealBlock {
 		previous.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_PHASE_THREE));
 		buttonLayer.add(previous);
 		buttonLayer.add(save);
+		buttonLayer.add(getHelpButton("meal_application_help"));
 
 		add(form);
 	}

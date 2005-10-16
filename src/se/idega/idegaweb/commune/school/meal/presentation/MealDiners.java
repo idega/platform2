@@ -116,6 +116,7 @@ public class MealDiners extends MealBlock {
 		
 		ListItem item = new ListItem();
 		RadioButton button = new RadioButton(PARAMETER_SHOW, String.valueOf(SHOW_STUDENTS));
+		button.setStyleClass("checkbox");
 		button.setSelected(true);
 		button.keepStatusOnAction(true);
 		Label label = new Label(localize("diners.show_students", "Show students"), button);
@@ -125,6 +126,7 @@ public class MealDiners extends MealBlock {
 		
 		item = new ListItem();
 		button = new RadioButton(PARAMETER_SHOW, String.valueOf(SHOW_TEACHERS));
+		button.setStyleClass("checkbox");
 		button.keepStatusOnAction(true);
 		label = new Label(localize("diners.show_teacher", "Show teachers"), button);
 		item.add(button);
@@ -133,6 +135,7 @@ public class MealDiners extends MealBlock {
 		
 		item = new ListItem();
 		button = new RadioButton(PARAMETER_SHOW, String.valueOf(SHOW_ALL));
+		button.setStyleClass("checkbox");
 		button.keepStatusOnAction(true);
 		label = new Label(localize("diners.show_all", "Show all"), button);
 		item.add(button);
@@ -149,6 +152,7 @@ public class MealDiners extends MealBlock {
 		while (seasonStart.isEarlierThan(seasonEnd)) {
 			item = new ListItem();
 			button = new RadioButton(PARAMETER_MONTH, seasonStart.toString());
+			button.setStyleClass("checkbox");
 			button.keepStatusOnAction(true);
 			if (!selected) {
 				button.setSelected(true);
