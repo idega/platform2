@@ -1,5 +1,5 @@
 /*
- * $Id: MealApplication.java,v 1.6 2005/10/16 20:22:11 laddi Exp $
+ * $Id: MealApplication.java,v 1.7 2005/10/17 10:28:51 laddi Exp $
  * Created on Aug 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -13,7 +13,6 @@ import java.rmi.RemoteException;
 import java.sql.Date;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -51,10 +50,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/10/16 20:22:11 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/17 10:28:51 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class MealApplication extends MealBlock {
 	
@@ -189,6 +188,7 @@ public class MealApplication extends MealBlock {
 		layer.add(buttonLayer);
 		
 		SubmitButton next = new SubmitButton(localize("next", "Next"));
+		next.setStyleClass("button");
 		next.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_PHASE_TWO));
 		buttonLayer.add(next);
 		
@@ -233,8 +233,10 @@ public class MealApplication extends MealBlock {
 		layer.add(buttonLayer);
 		
 		SubmitButton previous = new SubmitButton(localize("previous", "Previous"));
+		previous.setStyleClass("button");
 		previous.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_PHASE_ONE));
 		SubmitButton next = new SubmitButton(localize("next", "Next"));
+		next.setStyleClass("button");
 		next.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_PHASE_THREE));
 		buttonLayer.add(previous);
 		buttonLayer.add(next);
@@ -445,8 +447,10 @@ public class MealApplication extends MealBlock {
 		layer.add(buttonLayer);
 		
 		SubmitButton previous = new SubmitButton(localize("previous", "Previous"));
+		previous.setStyleClass("button");
 		previous.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_PHASE_TWO));
 		SubmitButton next = new SubmitButton(localize("next", "Next"));
+		next.setStyleClass("button");
 		next.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_OVERVIEW));
 		buttonLayer.add(previous);
 		buttonLayer.add(next);
@@ -506,9 +510,11 @@ public class MealApplication extends MealBlock {
 		layer.add(buttonLayer);
 		
 		SubmitButton save = new SubmitButton(localize("save", "Save"));
+		save.setStyleClass("button");
 		save.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_SAVE));
 		save.setDisabled(!canSave);
 		SubmitButton previous = new SubmitButton(localize("previous", "Previous"));
+		previous.setStyleClass("button");
 		previous.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_PHASE_THREE));
 		buttonLayer.add(previous);
 		buttonLayer.add(save);
@@ -564,6 +570,7 @@ public class MealApplication extends MealBlock {
 				layer.add(buttonLayer);
 				
 				GenericButton home = new GenericButton(localize("my_page", "My page"));
+				home.setStyleClass("button");
 				home.setPageToOpen(getHomePage());
 			}
 		}

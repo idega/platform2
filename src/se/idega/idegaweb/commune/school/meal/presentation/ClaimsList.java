@@ -1,5 +1,5 @@
 /*
- * $Id: ClaimsList.java,v 1.1 2005/10/02 22:12:23 laddi Exp $
+ * $Id: ClaimsList.java,v 1.2 2005/10/17 10:28:51 laddi Exp $
  * Created on Oct 2, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -22,18 +22,20 @@ import com.idega.presentation.Table2;
 import com.idega.presentation.TableCell2;
 import com.idega.presentation.TableRow;
 import com.idega.presentation.TableRowGroup;
+import com.idega.presentation.text.Heading1;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.user.data.User;
+import com.idega.util.IWCalendar;
 import com.idega.util.PersonalIDFormatter;
 import com.idega.util.text.Name;
 
 
 /**
- * Last modified: $Date: 2005/10/02 22:12:23 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/17 10:28:51 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ClaimsList extends MealBlock {
 
@@ -58,6 +60,10 @@ public class ClaimsList extends MealBlock {
 		Form form = new Form();
 		form.setID(STYLENAME_MEAL_FORM);
 		
+		Heading1 heading = new Heading1(localize("claims.claim_list", "Claim list"));
+		heading.setStyleClass("heading");
+		form.add(heading);
+
 		Table2 table = new Table2();
 		table.setWidth("100%");
 		table.setCellpadding(0);
@@ -112,9 +118,9 @@ public class ClaimsList extends MealBlock {
 		group = table.createFooterRowGroup();
 		row = group.createRow();
 		TableCell2 cell = row.createCell();
-		cell.setColumnSpan(3);
+		cell.setColumnSpan(2);
 		cell.add(new Text(localize("diners.total", "Total")));
-		row.createCell().add(new Text(String.valueOf(totalAmount)));
+		row.createCell().add(new Text(format.format(totalAmount)));
 
 		form.add(table);
 		add(form);

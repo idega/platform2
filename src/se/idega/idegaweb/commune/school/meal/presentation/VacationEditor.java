@@ -1,5 +1,5 @@
 /*
- * $Id: VacationEditor.java,v 1.2 2005/10/03 10:00:43 laddi Exp $
+ * $Id: VacationEditor.java,v 1.3 2005/10/17 10:28:51 laddi Exp $
  * Created on Oct 2, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -40,10 +40,10 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2005/10/03 10:00:43 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/17 10:28:51 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class VacationEditor extends MealBlock {
 
@@ -131,8 +131,8 @@ public class VacationEditor extends MealBlock {
 		row.createHeaderCell().add(new Text(localize("vacation_editor.valid_to", "Valid to")));
 		row.createHeaderCell().add(new Text(localize("vacation_editor.type", "Type")));
 		row.createHeaderCell().add(new Text(localize("vacation_editor.name", "Name")));
-		row.createHeaderCell();
-		row.createHeaderCell();
+		row.createHeaderCell().add(Text.getNonBrakingSpace());
+		row.createHeaderCell().add(Text.getNonBrakingSpace());
 		
 		group = table.createBodyRowGroup();
 		int iRow = 1;
@@ -191,6 +191,7 @@ public class VacationEditor extends MealBlock {
 		form.add(buttonLayer);
 		
 		SubmitButton newLink = (SubmitButton) getButton(new SubmitButton(localize("new_vacation", "New vacation"), PARAMETER_ACTION, String.valueOf(ACTION_NEW)));
+		newLink.setStyleClass("button");
 		buttonLayer.add(newLink);
 
 		add(form);
@@ -279,8 +280,10 @@ public class VacationEditor extends MealBlock {
 		layer.add(buttonLayer);
 		
 		SubmitButton back = (SubmitButton) getButton(new SubmitButton(localize("back", "Back")));
+		back.setStyleClass("button");
 		back.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_VIEW));
 		SubmitButton next = (SubmitButton) getButton(new SubmitButton(localize("save", "Save")));
+		next.setStyleClass("button");
 		next.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_SAVE));
 		buttonLayer.add(back);
 		buttonLayer.add(next);

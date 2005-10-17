@@ -173,6 +173,7 @@ public class MealDiners extends MealBlock {
 		layer.add(buttonLayer);
 		
 		SubmitButton next = new SubmitButton(localize("view", "View"));
+		next.setStyleClass("button");
 		next.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_VIEW));
 		buttonLayer.add(next);
 
@@ -202,7 +203,9 @@ public class MealDiners extends MealBlock {
 		}
 		
 		IWCalendar calendar = new IWCalendar();
-		form.add(new Heading1(calendar.getMonthName(stamp.getMonth(), iwc.getCurrentLocale(), IWCalendar.FULL)));
+		Heading1 heading = new Heading1(calendar.getMonthName(stamp.getMonth(), iwc.getCurrentLocale(), IWCalendar.FULL));
+		heading.setStyleClass("heading");
+		form.add(heading);
 
 		Table2 table = new Table2();
 		table.setWidth("100%");
@@ -223,11 +226,11 @@ public class MealDiners extends MealBlock {
 		TableRow row = group.createRow();
 		row.createHeaderCell().add(new Text(localize("diners.name", "Name")));
 		row.createHeaderCell().add(new Text(localize("diners.personal_id", "Personal ID")));
-		row.createHeaderCell().add(new Text(localize("monday", "Monday")));
-		row.createHeaderCell().add(new Text(localize("tuesday", "Tuesday")));
-		row.createHeaderCell().add(new Text(localize("wednesday", "Wednesday")));
-		row.createHeaderCell().add(new Text(localize("thursday", "Thursday")));
-		row.createHeaderCell().add(new Text(localize("friday", "Friday")));
+		row.createHeaderCell().add(new Text(localize("mon", "Mon")));
+		row.createHeaderCell().add(new Text(localize("tue", "Tue")));
+		row.createHeaderCell().add(new Text(localize("wed", "Wed")));
+		row.createHeaderCell().add(new Text(localize("thu", "Thu")));
+		row.createHeaderCell().add(new Text(localize("fri", "Fri")));
 		row.createHeaderCell().add(new Text(localize("milk", "Milk")));
 		row.createHeaderCell().add(new Text(localize("fruits", "Fruits")));
 		
@@ -338,8 +341,9 @@ public class MealDiners extends MealBlock {
 		buttonLayer.setStyleClass("buttonDiv");
 		form.add(buttonLayer);
 		
-		SubmitButton newLink = new SubmitButton(localize("back", "Back"), PARAMETER_ACTION, String.valueOf(ACTION_SELECT));
-		buttonLayer.add(newLink);
+		SubmitButton back = new SubmitButton(localize("back", "Back"), PARAMETER_ACTION, String.valueOf(ACTION_SELECT));
+		back.setStyleClass("button");
+		buttonLayer.add(back);
 
 		add(form);
 	}
