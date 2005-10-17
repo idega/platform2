@@ -338,14 +338,14 @@ private Currency getCurrency(int currId) throws IDOLookupException, FinderExcept
   }
 
   public int[] ejbHomeGetCurrenciesInUse(int productId) {
-		return ejbHomeGetCurrenciesInUse(productId, -1);
+		return ejbHomeGetCurrenciesInUse(productId, null);
   }
   public int[] ejbHomeGetCurrenciesInUse(int productId, int visibility) {
 		return ejbHomeGetCurrenciesInUse(productId, new int[]{visibility});
   }
   
   public int[] ejbHomeGetCurrenciesInUse(int productId, int[] visibility) {
-    String sql = getSQLQuery(productId, -1, -1, -1, -1, visibility);
+	String sql = getSQLQuery(productId, -1, -1, -1, -1, visibility, null, -1, null);
     sql = TextSoap.findAndReplace(sql, getProductPriceTableName()+".*", "distinct "+getColumnNameCurrencyId());
     try {
       String[] sIds = SimpleQuerier.executeStringQuery(sql);
