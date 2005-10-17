@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderBusinessBean.java,v 1.20 2005/09/26 12:58:52 dainis Exp $
+ * $Id: ProviderBusinessBean.java,v 1.21 2005/10/17 09:53:08 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -32,10 +32,10 @@ import se.idega.idegaweb.commune.care.data.ProviderAccountingPropertiesHome;
 /** 
  * Business logic for providers with accounting information.
  * <p>
- * Last modified: $Date: 2005/09/26 12:58:52 $ by $Author: dainis $
+ * Last modified: $Date: 2005/10/17 09:53:08 $ by $Author: palli $
  *
  * @author Anders Lindman
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  */
 public class ProviderBusinessBean extends com.idega.business.IBOServiceBean implements ProviderBusiness {
 
@@ -55,74 +55,6 @@ public class ProviderBusinessBean extends com.idega.business.IBOServiceBean impl
 	public final static String DEFAULT_CANNOT_DELETE_PROVIDER = "The provider cannot be deleted due to technical error.";
 	public final static String DEFAULT_PROVIDER_STRING_ID_MISSING = "A prover id must be entered.";
 
-	/**
-	 * Finds all study paths.
-	 * @return collection of study path objects
-	 * @see se.idega.idegaweb.commune.accounting.school.data.StudyPath 
-	 */
-	/*
-	public Collection findAllStudyPaths() {
-		try {
-			SchoolStudyPathHome home = getSchoolStudyPathHome();
-			return home.findAll();				
-		} catch (RemoteException e) {
-			return null;
-		} catch (FinderException e) {
-			return null;
-		}
-	}	
-*/
-	
-	
-    /**
-     * Saves a provider object.
-     * Creates a new persistent school object by calling saveProvider method.
-     * Created for backwards compatibility, feel free to remove this method if nothing uses it.
-     * @throws ProviderException if invalid parameters
-     */
-    public void saveProvider(
-            String schoolId,
-            String providerStringId,
-            String name,
-            String info,
-            String address,
-            String zipCode,
-            String zipArea,
-            String phone,
-            String keyCode,
-            String latitude,
-            String longitude,
-            String schoolAreaId,
-            String schoolSubAreaId,
-            Map schoolTypeMap,
-            String organizationNumber,
-            String extraProviderId,
-            String providerTypeId,
-            String schoolManagementTypeId,
-            java.sql.Date terminationDate,
-            String communeId,
-            String countryId,
-            String centralizedAdministration,
-            String invisibleForCitizen,
-            String paymentByInvoice,
-            String stateSubsidyGrant,
-            String postgiro,
-            String bankgiro,
-            String statisticsType,
-            String ownPosting,
-            String doublePosting,
-            boolean useProviderStringId) throws ProviderException {
-        
-        saveProvider(schoolId, providerStringId, name, info, address, zipCode,
-                zipArea, phone, keyCode, latitude, longitude, schoolAreaId,
-                schoolSubAreaId, schoolTypeMap, organizationNumber,
-                extraProviderId, providerTypeId, schoolManagementTypeId,
-                terminationDate, communeId, countryId,
-                centralizedAdministration, invisibleForCitizen,
-                paymentByInvoice, stateSubsidyGrant, postgiro, bankgiro,
-                statisticsType, ownPosting, doublePosting, useProviderStringId, null);
-    }
-    
     /**
      * Saves a provider object. Creates a new persistent school object and
      * provider accounting properties object if nescessary.
@@ -162,7 +94,8 @@ public class ProviderBusinessBean extends com.idega.business.IBOServiceBean impl
 			String ownPosting,
 			String doublePosting,
 			boolean useProviderStringId, 
-            String sortByBirthdate) throws ProviderException {
+             String sortByBirthdate, 
+             String girotext) throws ProviderException {
 
 		// Provider string id
 		if (useProviderStringId) {
@@ -246,7 +179,7 @@ public class ProviderBusinessBean extends com.idega.business.IBOServiceBean impl
 					getBoolean(centralizedAdministration),
 					getBoolean(invisibleForCitizen),
 					providerStringId,
-                    getBoolean(sortByBirthdate));
+                     getBoolean(sortByBirthdate));
 			int id = ((Integer) school.getPrimaryKey()).intValue();
 			ProviderAccountingProperties pap = null;
 			ProviderAccountingPropertiesHome home = getProviderAccountingPropertiesHome();
@@ -269,6 +202,7 @@ public class ProviderBusinessBean extends com.idega.business.IBOServiceBean impl
 			}
 			pap.setOwnPosting(ownPosting);
 			pap.setDoublePosting(doublePosting);
+			pap.setGiroText(girotext);
 			pap.store();
 		} catch (RemoteException e) { 
 			throw new ProviderException(KEY_CANNOT_SAVE_PROVIDER, DEFAULT_CANNOT_SAVE_PROVIDER);

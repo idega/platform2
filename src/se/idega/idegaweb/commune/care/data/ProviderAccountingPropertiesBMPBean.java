@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderAccountingPropertiesBMPBean.java,v 1.2 2004/10/15 10:41:51 thomas Exp $
+ * $Id: ProviderAccountingPropertiesBMPBean.java,v 1.3 2005/10/17 09:54:16 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -18,10 +18,10 @@ import javax.ejb.FinderException;
 /**
  * Entity bean holding accounting information for school (provider) entries.
  * <p>
- * Last modified: $Date: 2004/10/15 10:41:51 $ by $Author: thomas $
+ * Last modified: $Date: 2005/10/17 09:54:16 $ by $Author: palli $
  *
  * @author Anders Lindman
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ProviderAccountingPropertiesBMPBean extends GenericEntity implements ProviderAccountingProperties {
 
@@ -36,6 +36,7 @@ public class ProviderAccountingPropertiesBMPBean extends GenericEntity implement
 	private static final String COLUMN_BANKGIRO = "bankgiro";
 	private static final String COLUMN_OWN_POSTING = "own_posting";
 	private static final String COLUMN_DOUBLE_POSTING = "double_posting";
+	private static final String COLUMN_GIROTEXT = "girotext";
 		
 	/**
 	 * @see com.idega.data.GenericEntity#getEntityName()
@@ -68,6 +69,7 @@ public class ProviderAccountingPropertiesBMPBean extends GenericEntity implement
 		addAttribute(COLUMN_BANKGIRO, "Bankgiro", true, true, String.class);
 		addAttribute(COLUMN_OWN_POSTING, "Own posting string", true, true, String.class, 1000);
 		addAttribute(COLUMN_DOUBLE_POSTING, "Double posting string", true, true, String.class, 1000);
+		addAttribute(COLUMN_GIROTEXT, "Giro text", true, true, String.class, 255);
 	}
 	
 	public School getSchool() {
@@ -124,6 +126,10 @@ public class ProviderAccountingPropertiesBMPBean extends GenericEntity implement
 		return getStringColumnValue(COLUMN_DOUBLE_POSTING);	
 	}
 
+	public String getGiroText() {
+		return getStringColumnValue(COLUMN_GIROTEXT);
+	}
+	
 	public void setSchoolId(int id) { 
 		setColumn(COLUMN_SCHOOL_ID, id); 
 	}
@@ -158,6 +164,10 @@ public class ProviderAccountingPropertiesBMPBean extends GenericEntity implement
 
 	public void setDoublePosting(String s) { 
 		setColumn(COLUMN_DOUBLE_POSTING, s); 
+	}
+	
+	public void setGiroText(String text) {
+		setColumn(COLUMN_GIROTEXT, text);
 	}
 
 	public Collection ejbFindAllByPaymentByInvoice

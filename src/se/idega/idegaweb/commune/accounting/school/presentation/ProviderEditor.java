@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderEditor.java,v 1.35 2005/09/26 13:00:37 dainis Exp $
+ * $Id: ProviderEditor.java,v 1.36 2005/10/17 09:53:40 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -62,10 +62,10 @@ import com.idega.presentation.ui.TextArea;
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2005/09/26 13:00:37 $ by $Author: dainis $
+ * Last modified: $Date: 2005/10/17 09:53:40 $ by $Author: palli $
  *
  * @author Anders Lindman
- * @version $Revision: 1.35 $
+ * @version $Revision: 1.36 $
  */
 public class ProviderEditor extends AccountingBlock {
 
@@ -108,6 +108,7 @@ public class ProviderEditor extends AccountingBlock {
 	private final static String PARAMETER_STATE_SUBSIDY_GRANT = PP + "state_subsidy_grant";
 	private final static String PARAMETER_POSTGIRO = PP + "postgiro";
 	private final static String PARAMETER_BANKGIRO = PP + "bankgiro";
+	private final static String PARAMETER_GIROTEXT = PP + "girotext";
 	private final static String PARAMETER_STATISTICS_TYPE = PP + "statistics_type";
 	private final static String PARAMETER_DELETE_ID = PP + "delete_id";
 	private final static String PARAMETER_OPERATIONAL_FIELD = PP + "operational_field";
@@ -150,6 +151,7 @@ public class ProviderEditor extends AccountingBlock {
 	private final static String KEY_STATE_SUBSIDY_GRANT = KP + "state_subsidy_grant";
 	private final static String KEY_POSTGIRO = KP + "postgiro";
 	private final static String KEY_BANKGIRO = KP + "bankgiro";
+	private final static String KEY_GIROTEXT = KP + "girotext";
 	private final static String KEY_STATISTICS_TYPE = KP + "statistics_type";
 	private final static String KEY_SCHOOL_AREA_SELECTOR_HEADER = KP + "school_area_selector_header";
 	private final static String KEY_SCHOOL_SUB_AREA_SELECTOR_HEADER = KP + "school_sub_area_selector_header";
@@ -312,7 +314,8 @@ public class ProviderEditor extends AccountingBlock {
                 null, // doublePosting,
                 null, // errorMessage,
                 true, // isNew,
-                ""); // sortedByDateOfBirth)
+                "",  // sortedByDateOfBirth
+                ""); //Girotext
         add(af);
         
 	}
@@ -369,7 +372,8 @@ public class ProviderEditor extends AccountingBlock {
 			doublePosting, 
 			errorMessage, 
 			!iwc.isParameterSet(PARAMETER_SCHOOL_ID),
-            getParameter(iwc, PARAMETER_SORTED_BY_DATE_OF_BIRTH)));		
+             getParameter(iwc, PARAMETER_SORTED_BY_DATE_OF_BIRTH),
+             getParameter(iwc, PARAMETER_GIROTEXT)));		
 	}	
 
 	/*
@@ -437,7 +441,8 @@ public class ProviderEditor extends AccountingBlock {
 					provider.getDoublePosting(),
 					null,
 					false,
-                    school.getSortByBirthdate() ? "true" : ""));
+                     school.getSortByBirthdate() ? "true" : "",
+                     provider.getGiroText()));
 		} catch (RemoteException e) {
 			add(new ExceptionWrapper(e));
 		}
@@ -508,7 +513,8 @@ public class ProviderEditor extends AccountingBlock {
 					ownPosting, 
 					doublePosting,
 					_useProviderStringId,
-                    getParameter(iwc, PARAMETER_SORTED_BY_DATE_OF_BIRTH)); 
+                     getParameter(iwc, PARAMETER_SORTED_BY_DATE_OF_BIRTH),
+                     getParameter(iwc, PARAMETER_GIROTEXT)); 
 		} catch (RemoteException e) {
 			add(new ExceptionWrapper(e));
 			return;
@@ -553,7 +559,8 @@ public class ProviderEditor extends AccountingBlock {
 					doublePosting,
 					errorMessage,
 					!iwc.isParameterSet(PARAMETER_EDIT),
-                    getParameter(iwc, PARAMETER_SORTED_BY_DATE_OF_BIRTH)));
+                     getParameter(iwc, PARAMETER_SORTED_BY_DATE_OF_BIRTH),
+                     getParameter(iwc, PARAMETER_GIROTEXT)));
 		} else {
 			handleDefaultAction(iwc);
 		}
@@ -764,7 +771,8 @@ public class ProviderEditor extends AccountingBlock {
 			String doublePosting,
 			String errorMessage,
 			boolean isNew, 
-            String sortedByDateOfBirth) {
+             String sortedByDateOfBirth,
+             String girotext) {
 
 		providerStringId = providerStringId == null ? "" : providerStringId;
 		name = name == null ? "" : name;
@@ -783,7 +791,8 @@ public class ProviderEditor extends AccountingBlock {
 		extraProviderId = extraProviderId == null ? "" : extraProviderId;
 		postgiro = postgiro == null ? "" : postgiro;
 		bankgiro = bankgiro == null ? "" : bankgiro;
-				
+		girotext = girotext == null ? "" : girotext;	
+		
 		ApplicationForm app = new ApplicationForm(this);
 		if (isNew) {
 			app.setLocalizedTitle(KEY_TITLE_ADD, "Create new provider");
@@ -912,6 +921,12 @@ public class ProviderEditor extends AccountingBlock {
 		table.add(getCheckBoxTable(PARAMETER_CENTRALIZED_ADMINISTRATION, centralizedAdministration, KEY_CENTRALIZED_ADMINISTRATION, "Centralized administration"), 2, row++);
 		table.mergeCells(2, row, 4, row);
 		table.add(getCheckBoxTable(PARAMETER_INVISIBLE_FOR_CITIZEN, invisibleForCitizen, KEY_INVISIBLE_FOR_CITIZEN, "Invisible for citizen"), 2, row++);
+
+		table.mergeCells(2, row, 4, row);
+		table.add(getText("&nbsp;"), 2, row);
+		table.add(getSmallHeader(localize(KEY_GIROTEXT, "Girotext")), 2, row);
+		table.add(getText("&nbsp;&nbsp;&nbsp;&nbsp;"), 2, row);
+		table.add(this.getTextArea(PARAMETER_GIROTEXT, girotext), 2, row++);
 		
 		row++;
 		table.mergeCells(2, row, 4, row);
