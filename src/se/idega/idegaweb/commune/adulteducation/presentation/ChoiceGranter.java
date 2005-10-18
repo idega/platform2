@@ -1,11 +1,11 @@
 /*
- * $Id: ChoiceGranter.java,v 1.17 2005/06/12 13:46:45 laddi Exp $
- * Created on May 24, 2005
- *
+ * $Id: ChoiceGranter.java,v 1.18 2005/10/18 14:41:28 palli Exp $ Created on May
+ * 24, 2005
+ * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
+ * 
+ * This software is the proprietary information of Idega hf. Use is subject to
+ * license terms.
  */
 package se.idega.idegaweb.commune.adulteducation.presentation;
 
@@ -55,39 +55,60 @@ import com.idega.util.PersonalIDFormatter;
 import com.idega.util.text.Name;
 
 /**
- * Last modified: $Date: 2005/06/12 13:46:45 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/18 14:41:28 $ by $Author: palli $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 public class ChoiceGranter extends AdultEducationBlock implements IWPageEventListener {
 
 	private static final String PARAMETER_ACTION = "prm_action";
+
 	private static final String PARAMETER_SEASON = "prm_season";
+
 	private static final String PARAMETER_USER = "prm_user";
+
 	private static final String PARAMETER_UNIQUE_ID = "prm_unique_id";
+
 	private static final String PARAMETER_SCHOOL_TYPE = "prm_school_type";
+
 	private static final String PARAMETER_FROM_DATE = "prm_from_date";
+
 	private static final String PARAMETER_TO_DATE = "prm_to_date";
+
 	private static final String PARAMETER_SORT = "prm_sort";
-	
+
 	private static final String PARAMETER_REQUIREMENT_1 = "prm_requirement_1";
+
 	private static final String PARAMETER_REQUIREMENT_2 = "prm_requirement_2";
+
 	private static final String PARAMETER_REQUIREMENT_3 = "prm_requirement_3";
+
 	private static final String PARAMETER_REQUIREMENT_4 = "prm_requirement_4";
+
 	private static final String PARAMETER_SPECIAL_REQUIREMENT = "prm_special_requirement";
+
 	private static final String PARAMETER_PRIORITY = "prm_priority";
+
 	private static final String PARAMETER_NOTES = "prm_notes";
+
 	private static final String PARAMETER_REJECTION_MESSAGE = "prm_rejection_message";
-	
+
 	private static final int ACTION_VIEW = 1;
+
 	private static final int ACTION_EDIT = 2;
+
 	private static final int ACTION_SAVE = 3;
+
 	private static final int ACTION_GRANT = 4;
+
 	private static final int ACTION_DENY = 5;
+
 	private static final int ACTION_REMOVE = 6;
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see se.idega.idegaweb.commune.adulteducation.presentation.AdultEducationBlock#present(com.idega.presentation.IWContext)
 	 */
 	public void present(IWContext iwc) {
@@ -96,26 +117,26 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 				case ACTION_VIEW:
 					showChoices(iwc);
 					break;
-					
+
 				case ACTION_EDIT:
 					showEditor(iwc);
 					break;
-					
+
 				case ACTION_SAVE:
 					save(iwc);
 					showChoices(iwc);
 					break;
-					
+
 				case ACTION_GRANT:
 					grant(iwc);
 					showChoices(iwc);
 					break;
-					
+
 				case ACTION_DENY:
 					deny(iwc);
 					showChoices(iwc);
 					break;
-					
+
 				case ACTION_REMOVE:
 					remove(iwc);
 					showChoices(iwc);
@@ -126,7 +147,7 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 			throw new IBORuntimeException(re);
 		}
 	}
-	
+
 	private void showChoices(IWContext iwc) throws RemoteException {
 		Form form = new Form();
 		form.addParameter(PARAMETER_ACTION, "");
@@ -134,11 +155,11 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		form.addParameter(PARAMETER_SCHOOL_SEASON, "");
 		form.addParameter(PARAMETER_USER, "");
 		form.setEventListener(ChoiceGranter.class);
-		
+
 		form.add(getNavigationTable());
 		form.add(new Break(2));
 		form.add(getChoices(iwc));
-		
+
 		add(form);
 	}
 
@@ -146,20 +167,22 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		Table table = new Table(7, 3);
 		table.setCellpadding(3);
 		table.setCellspacing(0);
-		
+
 		SelectorUtility util = new SelectorUtility();
-		
-		DropdownMenu seasons = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_SEASON), getBusiness().getSeasons(), "getSeasonName"));
+
+		DropdownMenu seasons = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(
+				PARAMETER_SEASON), getBusiness().getSeasons(), "getSeasonName"));
 		if (getSession().getSchoolSeason() != null) {
 			seasons.setSelectedElement(getSession().getSchoolSeason().getPrimaryKey().toString());
 		}
 
-		DropdownMenu types = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_SCHOOL_TYPE), getBusiness().getSchoolTypes(), "getLocalizationKey", getResourceBundle()));
+		DropdownMenu types = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(
+				PARAMETER_SCHOOL_TYPE), getBusiness().getSchoolTypes(), "getLocalizationKey", getResourceBundle()));
 		types.addMenuElementFirst("-1", localize("show_all", "All"));
 		if (getSession().getSchoolType() != null) {
 			types.setSelectedElement(getSession().getSchoolType().getPrimaryKey().toString());
 		}
-		
+
 		DropdownMenu sort = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_SORT));
 		sort.addMenuElement(AdultEducationConstants.SORT_ALL, localize("show_all", "All"));
 		sort.addMenuElement(AdultEducationConstants.SORT_UNHANDLED, localize("show_unhandled", "Unhandled"));
@@ -168,15 +191,15 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		if (getSession().getSort() != -1) {
 			sort.setSelectedElement(getSession().getSort());
 		}
-		
+
 		DateInput fromDate = (DateInput) getStyledInterface(new DateInput(PARAMETER_FROM_DATE));
 		fromDate.setDate(getSession().getFromDate());
-		
+
 		DateInput toDate = (DateInput) getStyledInterface(new DateInput(PARAMETER_TO_DATE));
 		toDate.setDate(getSession().getToDate());
-		
+
 		SubmitButton button = (SubmitButton) getButton(new SubmitButton(localize("search", "Search")));
-		
+
 		table.add(getSmallHeader(localize("school_season", "School season") + ":"), 1, 1);
 		table.add(seasons, 2, 1);
 		table.add(getSmallHeader(localize("school_type", "School type") + ":"), 3, 1);
@@ -192,10 +215,10 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		table.add(getSmallHeader(localize("to_date", "To date") + ":"), 2, 3);
 		table.add(Text.getNonBrakingSpace(), 2, 3);
 		table.add(toDate, 2, 3);
-		
+
 		return table;
 	}
-	
+
 	private Table getChoices(IWContext iwc) throws RemoteException {
 		Table table = new Table();
 		table.setWidth(Table.HUNDRED_PERCENT);
@@ -205,119 +228,139 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		table.setRowColor(1, getHeaderColor());
 		int row = 1;
 		int column = 1;
-		
-		table.add(getLocalizedSmallHeader("case_number","Case number"), column++, row);
-		table.add(getLocalizedSmallHeader("date","Date"), column++, row);
-		table.add(getLocalizedSmallHeader("personal_id","Personal ID"), column++, row);
-		table.add(getLocalizedSmallHeader("handler","Handler"), column++, row);
-		table.add(getLocalizedSmallHeader("status","Status"), column++, row++);
+
+		table.add(getLocalizedSmallHeader("case_number", "Case number"), column++, row);
+		table.add(getLocalizedSmallHeader("date", "Date"), column++, row);
+		table.add(getLocalizedSmallHeader("personal_id", "Personal ID"), column++, row);
+		table.add(getLocalizedSmallHeader("handler", "Handler"), column++, row);
+		table.add(getLocalizedSmallHeader("status", "Status"), column++, row++);
 
 		Collection choices = null;
 		switch (getSession().getSort()) {
 			case AdultEducationConstants.SORT_UNHANDLED:
-				choices = getBusiness().getUnhandledChoices(getSession().getSchoolSeason(), getSession().getSchoolType(), getSession().getFromDate(), getSession().getToDate(), null);
+				if (getSession().getSchoolSeason() != null) {
+					choices = getBusiness().getUnhandledChoices(getSession().getSchoolSeason(),
+							getSession().getSchoolType(), getSession().getFromDate(), getSession().getToDate(), null);
+				}
 				break;
-				
+
 			case AdultEducationConstants.SORT_HANDLED:
-				choices = getBusiness().getHandledChoices(getSession().getSchoolSeason(), getSession().getSchoolType(), getSession().getFromDate(), getSession().getToDate(), null);
+				if (getSession().getSchoolSeason() != null) {
+					choices = getBusiness().getHandledChoices(getSession().getSchoolSeason(),
+							getSession().getSchoolType(), getSession().getFromDate(), getSession().getToDate(), null);
+				}
 				break;
-				
+
 			case AdultEducationConstants.SORT_HANDLER:
-				choices = getBusiness().getChoices(getSession().getSchoolSeason(), getSession().getSchoolType(), getSession().getFromDate(), getSession().getToDate(), iwc.getCurrentUser());
+				if (getSession().getSchoolSeason() != null) {
+					choices = getBusiness().getChoices(getSession().getSchoolSeason(), getSession().getSchoolType(),
+							getSession().getFromDate(), getSession().getToDate(), iwc.getCurrentUser());
+				}
 				break;
 
 			case AdultEducationConstants.SORT_ALL:
-				choices = getBusiness().getChoices(getSession().getSchoolSeason(), getSession().getSchoolType(), getSession().getFromDate(), getSession().getToDate(), null);
+				if (getSession().getSchoolSeason() != null) {
+					choices = getBusiness().getChoices(getSession().getSchoolSeason(), getSession().getSchoolType(),
+							getSession().getFromDate(), getSession().getToDate(), null);
+				}
 				break;
 
 			default:
-				choices = getBusiness().getChoices(getSession().getSchoolSeason(), getSession().getSchoolType(), getSession().getFromDate(), getSession().getToDate(), null);
+				if (getSession().getSchoolSeason() != null) {
+					choices = getBusiness().getChoices(getSession().getSchoolSeason(), getSession().getSchoolType(),
+							getSession().getFromDate(), getSession().getToDate(), null);
+				}
 				break;
 		}
-		Iterator iter = choices.iterator();
-		while (iter.hasNext()) {
-			AdultEducationChoice choice = (AdultEducationChoice) iter.next();
-			IWTimestamp date = new IWTimestamp(choice.getChoiceDate());
-			User user = choice.getUser();
-			Group handler = choice.getHandler();
-			column = 1;
-			
-			Link link = getSmallLink(choice.getPrimaryKey().toString());
-			link.addParameter(PARAMETER_CHOICE, choice.getPrimaryKey().toString());
-			if (user.getUniqueId() != null) {
-				link.addParameter(PARAMETER_UNIQUE_ID, user.getUniqueId());
-			}
-			else {
-				link.addParameter(PARAMETER_USER, user.getPrimaryKey().toString());
-			}
-			link.addParameter(PARAMETER_ACTION, String.valueOf(ACTION_EDIT));
-			link.setEventListener(ChoiceGranter.class);
-			
-			if (row % 2 == 0) {
-				table.setRowColor(row, getZebraColor1());
-			}
-			else {
-				table.setRowColor(row, getZebraColor2());
-			}
+		if (choices != null) {
+			Iterator iter = choices.iterator();
+			while (iter.hasNext()) {
+				AdultEducationChoice choice = (AdultEducationChoice) iter.next();
+				IWTimestamp date = new IWTimestamp(choice.getChoiceDate());
+				User user = choice.getUser();
+				Group handler = choice.getHandler();
+				column = 1;
 
-			table.add(link, column++, row);
-			table.add(getSmallText(date.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
-			table.add(getSmallText(PersonalIDFormatter.format(user.getPersonalID(), iwc.getCurrentLocale())), column++, row);
-			if (handler != null && !handler.getPrimaryKey().equals(user.getPrimaryKey())) {
-				table.add(getSmallText(getUserBusiness(iwc).getNameOfGroupOrUser(handler)), column++, row);
-			}
-			else {
-				table.add(getSmallText("-"), column++, row);
-			}
-			table.add(getLocalizedSmallText("case_status." + choice.getStatus(), choice.getStatus()), column++, row);
-			
-			if (choice.getCaseStatus().equals(getBusiness().getCaseStatusReview())) {
-				AdultEducationCourse course = choice.getCourse();
+				Link link = getSmallLink(choice.getPrimaryKey().toString());
+				link.addParameter(PARAMETER_CHOICE, choice.getPrimaryKey().toString());
+				if (user.getUniqueId() != null) {
+					link.addParameter(PARAMETER_UNIQUE_ID, user.getUniqueId());
+				}
+				else {
+					link.addParameter(PARAMETER_USER, user.getPrimaryKey().toString());
+				}
+				link.addParameter(PARAMETER_ACTION, String.valueOf(ACTION_EDIT));
+				link.setEventListener(ChoiceGranter.class);
 
-				SubmitButton delete = new SubmitButton(getDeleteIcon(localize("delete_choice", "Delete choice")), PARAMETER_ACTION, String.valueOf(ACTION_REMOVE));
-				delete.setDescription(localize("delete_choices", "Delete choices"));
-				delete.setValueOnClick(PARAMETER_STUDY_PATH, course.getStudyPathPK().toString());
-				delete.setValueOnClick(PARAMETER_SCHOOL_SEASON, course.getSchoolSeasonPK().toString());
-				delete.setValueOnClick(PARAMETER_USER, user.getPrimaryKey().toString());
-				delete.setSubmitConfirm(localize("confirm_choice_delete", "Are you sure you want to remove the choice?"));
-				table.add(delete, column++, row);
+				if (row % 2 == 0) {
+					table.setRowColor(row, getZebraColor1());
+				}
+				else {
+					table.setRowColor(row, getZebraColor2());
+				}
+
+				table.add(link, column++, row);
+				table.add(getSmallText(date.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
+				table.add(getSmallText(PersonalIDFormatter.format(user.getPersonalID(), iwc.getCurrentLocale())),
+						column++, row);
+				if (handler != null && !handler.getPrimaryKey().equals(user.getPrimaryKey())) {
+					table.add(getSmallText(getUserBusiness(iwc).getNameOfGroupOrUser(handler)), column++, row);
+				}
+				else {
+					table.add(getSmallText("-"), column++, row);
+				}
+				table.add(getLocalizedSmallText("case_status." + choice.getStatus(), choice.getStatus()), column++, row);
+
+				if (choice.getCaseStatus().equals(getBusiness().getCaseStatusReview())) {
+					AdultEducationCourse course = choice.getCourse();
+
+					SubmitButton delete = new SubmitButton(getDeleteIcon(localize("delete_choice", "Delete choice")),
+							PARAMETER_ACTION, String.valueOf(ACTION_REMOVE));
+					delete.setDescription(localize("delete_choices", "Delete choices"));
+					delete.setValueOnClick(PARAMETER_STUDY_PATH, course.getStudyPathPK().toString());
+					delete.setValueOnClick(PARAMETER_SCHOOL_SEASON, course.getSchoolSeasonPK().toString());
+					delete.setValueOnClick(PARAMETER_USER, user.getPrimaryKey().toString());
+					delete.setSubmitConfirm(localize("confirm_choice_delete",
+							"Are you sure you want to remove the choice?"));
+					table.add(delete, column++, row);
+				}
+
+				row++;
 			}
-			
-			row++;
 		}
-		
+
 		return table;
 	}
-	
+
 	private void showEditor(IWContext iwc) throws RemoteException {
 		Form form = new Form();
 		form.addParameter(PARAMETER_ACTION, "-1");
-		
+
 		Table table = new Table();
 		table.setCellpadding(0);
 		table.setCellspacing(0);
 		table.setWidth(Table.HUNDRED_PERCENT);
 		form.add(table);
 		int row = 1;
-		
+
 		Table infoTable = new Table();
 		infoTable.setColumns(4);
 		table.setCellpadding(1, row, 10);
 		table.setCellBorder(1, row, 1, "#999999", "solid");
 		table.add(infoTable, 1, row++);
 		table.setHeight(row++, 12);
-		
+
 		AdultEducationChoice choice = getSession().getChoice();
 		AdultEducationCourse course = choice.getCourse();
 		SchoolStudyPath path = course.getStudyPath();
 		SchoolType type = path.getSchoolType();
 		SchoolSeason season = course.getSchoolSeason();
-		
+
 		User user = choice.getUser();
 		Name name = new Name(user.getFirstName(), user.getMiddleName(), user.getLastName());
 		Address address = getUserBusiness(iwc).getUsersMainAddress(user);
 		PostalCode code = address != null ? address.getPostalCode() : null;
-		Commune commune = code != null ? code.getCommune(): null;
+		Commune commune = code != null ? code.getCommune() : null;
 		Phone homePhone = null;
 		Phone workPhone = null;
 		Phone mobilePhone = null;
@@ -350,7 +393,8 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		Collection reasons = null;
 		AdultEducationPersonalInfo info = null;
 		try {
-			info = getBusiness().getAdultEducationPersonalHome().findByUserId(new Integer(choice.getUserPK().toString()));
+			info = getBusiness().getAdultEducationPersonalHome().findByUserId(
+					new Integer(choice.getUserPK().toString()));
 		}
 		catch (FinderException fe) {
 			fe.printStackTrace();
@@ -366,30 +410,32 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		infoTable.add(getSmallHeader(localize("case_number", "Case number") + ":"), 1, 1);
 		infoTable.mergeCells(2, 1, 4, 1);
 		infoTable.add(getSmallText(choice.getPrimaryKey().toString()), 2, 1);
-		
+
 		infoTable.add(getSmallHeader(localize("school_type", "School type") + ":"), 1, 2);
 		infoTable.mergeCells(2, 2, 4, 2);
 		infoTable.add(getSmallText(localize(type.getLocalizationKey(), type.getSchoolTypeName())), 2, 2);
-		
+
 		infoTable.add(getSmallHeader(localize("student", "Student") + ":"), 1, 3);
 		infoTable.mergeCells(2, 3, 4, 3);
-		infoTable.add(getSmallText(PersonalIDFormatter.format(user.getPersonalID(), iwc.getCurrentLocale()) + ", " + name.getLastName() + " " + name.getFirstName()), 2, 3);
-		
+		infoTable.add(getSmallText(PersonalIDFormatter.format(user.getPersonalID(), iwc.getCurrentLocale()) + ", "
+				+ name.getLastName() + " " + name.getFirstName()), 2, 3);
+
 		infoTable.add(getSmallHeader(localize("address", "Address") + ":"), 1, 4);
-		infoTable.add(getSmallText((address != null ? address.getStreetAddress() : "-") + ", " + (code != null ? code.getPostalAddress() : "-")), 2, 4);
-		
+		infoTable.add(getSmallText((address != null ? address.getStreetAddress() : "-") + ", "
+				+ (code != null ? code.getPostalAddress() : "-")), 2, 4);
+
 		if (commune != null) {
 			infoTable.setCellpaddingLeft(3, 4, 12);
 			infoTable.add(getSmallHeader(localize("commune", "Commune") + ":"), 3, 4);
 			infoTable.add(getSmallText(commune.getCommuneName()), 4, 4);
 		}
-		
+
 		infoTable.setHeight(5, 16);
-		
+
 		infoTable.add(getSmallHeader(localize("home_phone", "Home phone") + ":"), 1, 6);
 		infoTable.mergeCells(2, 6, 4, 6);
 		infoTable.add(getSmallText((homePhone != null ? homePhone.getNumber() : "-")), 2, 6);
-		
+
 		StringBuffer workAndMobilePhone = new StringBuffer();
 		infoTable.add(getSmallHeader(localize("work_mobile_phone", "Work/Mobile phone") + ":"), 1, 7);
 		if (workPhone != null && workPhone.getNumber() != null) {
@@ -403,7 +449,7 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		}
 		infoTable.mergeCells(2, 7, 4, 7);
 		infoTable.add(getSmallText(workAndMobilePhone.toString()), 2, 7);
-		
+
 		infoTable.add(getSmallHeader(localize("email", "E-mail") + ":"), 1, 8);
 		infoTable.mergeCells(2, 8, 4, 8);
 		if (mail != null && mail.getEmailAddress() != null) {
@@ -414,19 +460,19 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		else {
 			infoTable.add(getSmallText("-"), 2, 8);
 		}
-		
+
 		Table pathTable = new Table(2, 1);
 		pathTable.setWidth(Table.HUNDRED_PERCENT);
 		pathTable.setCellpadding(0);
 		pathTable.setCellspacing(0);
 		table.add(pathTable, 1, row++);
 		table.setHeight(row++, 8);
-		
+
 		pathTable.add(getSmallHeader(localize("choice_for_path", "Choice for study path") + ": "), 1, 1);
 		pathTable.add(getSmallText(path.getDescription()), 1, 1);
 		pathTable.add(getSmallHeader(localize("school_season", "School season") + ": "), 2, 1);
 		pathTable.add(getSmallText(season.getSchoolSeasonName()), 2, 1);
-		
+
 		Collection choices = getBusiness().getChoices(user);
 		choices.remove(choice);
 		if (!choices.isEmpty()) {
@@ -434,13 +480,13 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 			table.setHeight(row++, 8);
 			table.add(getHeader(localize("other_choices", "Other choices")), 1, row++);
 			table.setHeight(row++, 6);
-			
+
 			Table choiceTable = new Table();
 			choiceTable.setColumns(3);
 			table.add(choiceTable, 1, row++);
 			table.setHeight(row++, 8);
 			int choiceRow = 1;
-			
+
 			Iterator iter = choices.iterator();
 			while (iter.hasNext()) {
 				AdultEducationChoice element = (AdultEducationChoice) iter.next();
@@ -448,7 +494,7 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 				SchoolStudyPath elementPath = elementCourse.getStudyPath();
 				SchoolSeason elementSeason = elementCourse.getSchoolSeason();
 				CaseStatus status = element.getCaseStatus();
-				
+
 				if (status.equals(getBusiness().getCaseStatusGranted())) {
 					choiceTable.add(getSmallText(elementPath.getDescription()), 1, choiceRow);
 				}
@@ -466,7 +512,8 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 					choiceTable.add(link, 1, choiceRow);
 				}
 				choiceTable.add(getSmallText(elementSeason.getSchoolSeasonName()), 2, choiceRow);
-				choiceTable.add(getSmallText(localize("case_status." + status.getStatus(), status.getStatus())), 3, choiceRow);
+				choiceTable.add(getSmallText(localize("case_status." + status.getStatus(), status.getStatus())), 3,
+						choiceRow);
 				choiceTable.setCellpaddingRight(1, choiceRow, 12);
 				choiceTable.setCellpaddingRight(2, choiceRow++, 12);
 			}
@@ -501,7 +548,7 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		infoTable.setHeight(2, 60);
 		infoTable.setHeight(3, 60);
 		table.add(infoTable, 1, row++);
-		
+
 		Text studies = getSmallText("");
 		boolean addComma = false;
 		if (info.getEduA()) {
@@ -548,13 +595,14 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 				studies.addToText(Text.BREAK);
 			}
 			Country country = info.getEduGCountry();
-			studies.addToText(info.getEduG() + " - " + country.getName() + " - " + getResourceBundle().getLocalizedString("persInfo.education_G_Years") + info.getEduGYears());
+			studies.addToText(info.getEduG() + " - " + country.getName() + " - "
+					+ getResourceBundle().getLocalizedString("persInfo.education_G_Years") + info.getEduGYears());
 		}
 		infoTable.add(getSmallHeader(localize("studies", "Studies")), 1, 1);
 		infoTable.add(new Break(), 1, 1);
 		infoTable.add(studies, 1, 1);
 		infoTable.setCellpaddingRight(1, 1, 12);
-		
+
 		Text previousStudies = getSmallText("");
 		addComma = false;
 		if (info.getEduHA()) {
@@ -582,7 +630,7 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		infoTable.add(new Break(), 1, 2);
 		infoTable.add(previousStudies, 1, 2);
 		infoTable.setCellpaddingRight(1, 2, 12);
-		
+
 		String studying = "";
 		if (info.getFulltime()) {
 			studying = getResourceBundle().getLocalizedString("persInfo.fulltime");
@@ -617,7 +665,7 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		infoTable.add(getSmallHeader(localize("languages", "Languages")), 2, 1);
 		infoTable.add(new Break(), 2, 1);
 		infoTable.add(languages, 2, 1);
-		
+
 		String studySupport = "";
 		if (info.getStudySupport()) {
 			studySupport = getResourceBundle().getLocalizedString("persInfo.study_support");
@@ -655,7 +703,7 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		infoTable.add(getSmallHeader(localize("work_situation", "Work situation")), 2, 3);
 		infoTable.add(new Break(), 2, 3);
 		infoTable.add(workSituation, 2, 3);
-		
+
 		GenericButton button = getButton(new GenericButton(localize("edit_personal_info", "Edit personal info")));
 		button.setWindowToOpen(PersonalInfoWindow.class);
 		table.setHeight(row++, 8);
@@ -677,7 +725,7 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		requirement3.setChecked(choice.hasGrantedRule3());
 		CheckBox requirement4 = getCheckBox(PARAMETER_REQUIREMENT_4, Boolean.TRUE.toString());
 		requirement4.setChecked(choice.hasGrantedRule4());
-		
+
 		table.add(requirement1, 1, row);
 		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(getSmallText(localize("requirement_1", "Requirement 1")), 1, row++);
@@ -690,7 +738,7 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		table.add(requirement4, 1, row);
 		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(getSmallText(localize("requirement_4", "Requirement 4") + ": "), 1, row);
-		
+
 		TextArea specialRequirement = (TextArea) getStyledInterface(new TextArea(PARAMETER_SPECIAL_REQUIREMENT));
 		specialRequirement.setWidth(Table.HUNDRED_PERCENT);
 		specialRequirement.setRows(3);
@@ -699,7 +747,7 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		}
 		table.add(specialRequirement, 1, row);
 		table.setVerticalAlignment(1, row++, Table.VERTICAL_ALIGN_TOP);
-		
+
 		DropdownMenu priority = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_PRIORITY));
 		priority.addMenuElement("-1", "");
 		for (int a = 0; a <= 5; a++) {
@@ -711,7 +759,7 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		table.setHeight(row++, 18);
 		table.add(getSmallHeader(localize("priority", "Priority") + ": "), 1, row);
 		table.add(priority, 1, row++);
-		
+
 		TextArea notes = (TextArea) getStyledInterface(new TextArea(PARAMETER_NOTES));
 		notes.setWidth(Table.HUNDRED_PERCENT);
 		notes.setRows(5);
@@ -721,38 +769,39 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		table.setHeight(row++, 18);
 		table.add(getSmallHeader(localize("notes", "Notes")), 1, row++);
 		table.add(notes, 1, row++);
-		
+
 		StandardMessageArea standardMsgArea = new StandardMessageArea();
 		standardMsgArea.setCategory("VUXSTDMSG");
 		standardMsgArea.setTextAreaName(PARAMETER_REJECTION_MESSAGE);
-		
+
 		TextArea rejectionMessage = (TextArea) getStyledInterface(standardMsgArea.getTextArea(table));
 		rejectionMessage.setRows(4);
 		rejectionMessage.setWidth(Table.HUNDRED_PERCENT);
 		table.setHeight(row++, 18);
 		table.add(getSmallHeader(localize("rejection_message", "Rejection message")), 1, row++);
 		table.add(rejectionMessage, 1, row++);
-		
+
 		Table messageList = standardMsgArea.getMessageList(table);
 		table.setHeight(row++, 18);
 		table.add(getSmallHeader(localize("standard_messages", "Standard messages")), 1, row++);
 		table.add(messageList, 1, row++);
 
 		table.setHeight(row++, 18);
-		
+
 		SubmitButton grant = (SubmitButton) getButton(new SubmitButton(localize("grant", "Grant")));
 		grant.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_GRANT));
-		
+
 		SubmitButton deny = (SubmitButton) getButton(new SubmitButton(localize("deny", "Deny")));
 		deny.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_DENY));
-		
+
 		SubmitButton save = (SubmitButton) getButton(new SubmitButton(localize("save_notes", "Save notes")));
 		save.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_SAVE));
-		
-		GenericButton msgButton = getButton(new GenericButton("create_standard_message",localize("new_standard_message", "New Standard message")));
+
+		GenericButton msgButton = getButton(new GenericButton("create_standard_message", localize(
+				"new_standard_message", "New Standard message")));
 		msgButton.setWindowToOpen(standardMsgArea.getManageWindowClass());
 		msgButton.addParameters(standardMsgArea.getCreateParameters());
-		
+
 		table.add(grant, 1, row);
 		grant.setOnSubmitFunction("checkApplication", getSubmitCheckScript());
 		table.add(Text.getNonBrakingSpace(), 1, row);
@@ -764,7 +813,7 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 
 		add(form);
 	}
-	
+
 	private int parseAction(IWContext iwc) {
 		if (iwc.isParameterSet(PARAMETER_ACTION)) {
 			return Integer.parseInt(iwc.getParameter(PARAMETER_ACTION));
@@ -773,9 +822,10 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 	}
 
 	private void remove(IWContext iwc) throws RemoteException {
-		getBusiness().removeChoices(iwc.getParameter(PARAMETER_STUDY_PATH), iwc.getParameter(PARAMETER_SCHOOL_SEASON), iwc.getParameter(PARAMETER_USER), iwc.getCurrentUser());
+		getBusiness().removeChoices(iwc.getParameter(PARAMETER_STUDY_PATH), iwc.getParameter(PARAMETER_SCHOOL_SEASON),
+				iwc.getParameter(PARAMETER_USER), iwc.getCurrentUser());
 	}
-	
+
 	private void grant(IWContext iwc) throws RemoteException {
 		boolean requirement1 = iwc.isParameterSet(PARAMETER_REQUIREMENT_1);
 		boolean requirement2 = iwc.isParameterSet(PARAMETER_REQUIREMENT_2);
@@ -784,13 +834,14 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		String requirementNotes = iwc.getParameter(PARAMETER_SPECIAL_REQUIREMENT);
 		String notes = iwc.getParameter(PARAMETER_NOTES);
 		int priority = Integer.parseInt(iwc.getParameter(PARAMETER_PRIORITY));
-		
-		getBusiness().grantChoice(getSession().getChoice(), requirement1, requirement2, requirement3, requirement4, requirementNotes, notes, priority, iwc.getCurrentUser());
+
+		getBusiness().grantChoice(getSession().getChoice(), requirement1, requirement2, requirement3, requirement4,
+				requirementNotes, notes, priority, iwc.getCurrentUser());
 	}
 
 	private void deny(IWContext iwc) throws RemoteException {
 		String rejectionMessage = iwc.getParameter(PARAMETER_REJECTION_MESSAGE);
-		
+
 		getBusiness().denyChoice(getSession().getChoice(), rejectionMessage, iwc.getCurrentUser());
 	}
 
@@ -802,8 +853,9 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		String requirementNotes = iwc.getParameter(PARAMETER_SPECIAL_REQUIREMENT);
 		String notes = iwc.getParameter(PARAMETER_NOTES);
 		int priority = Integer.parseInt(iwc.getParameter(PARAMETER_PRIORITY));
-		
-		getBusiness().saveChoiceChanges(getSession().getChoice(), requirement1, requirement2, requirement3, requirement4, requirementNotes, notes, priority, iwc.getCurrentUser());
+
+		getBusiness().saveChoiceChanges(getSession().getChoice(), requirement1, requirement2, requirement3,
+				requirement4, requirementNotes, notes, priority, iwc.getCurrentUser());
 	}
 
 	public boolean actionPerformed(IWContext iwc) throws IWException {
@@ -897,7 +949,8 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		buffer.append("\n\t var rule2 = ").append("findObj('").append(PARAMETER_REQUIREMENT_2).append("');");
 		buffer.append("\n\t var rule3 = ").append("findObj('").append(PARAMETER_REQUIREMENT_3).append("');");
 		buffer.append("\n\t var rule4 = ").append("findObj('").append(PARAMETER_REQUIREMENT_4).append("');");
-		buffer.append("\n\t var ruleNotes = ").append("findObj('").append(PARAMETER_SPECIAL_REQUIREMENT).append("').value;");
+		buffer.append("\n\t var ruleNotes = ").append("findObj('").append(PARAMETER_SPECIAL_REQUIREMENT).append(
+				"').value;");
 		buffer.append("\n\t var priority = ").append("findObj('").append(PARAMETER_PRIORITY).append("');");
 
 		buffer.append("\n\t var one = eval(rule1.checked);");
