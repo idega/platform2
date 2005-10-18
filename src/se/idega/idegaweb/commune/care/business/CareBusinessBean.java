@@ -1,5 +1,5 @@
 /*
- * $Id: CareBusinessBean.java,v 1.10 2005/10/13 19:13:13 laddi Exp $
+ * $Id: CareBusinessBean.java,v 1.11 2005/10/18 20:14:24 laddi Exp $
  * Created on Oct 13, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -38,10 +38,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2005/10/13 19:13:13 $ by $Author: laddi $
+ *  Last modified: $Date: 2005/10/18 20:14:24 $ by $Author: laddi $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class CareBusinessBean extends IBOServiceBean  implements CareBusiness{
 	
@@ -239,12 +239,12 @@ public class CareBusinessBean extends IBOServiceBean  implements CareBusiness{
 		return child.getMetaData(CareConstants.METADATA_LAST_CARE_PROVIDER);
 	}
 
-	public boolean canContactLastCareProvider(User child) {
+	public Boolean canContactLastCareProvider(User child) {
 		String meta = child.getMetaData(CareConstants.METADATA_CAN_CONTACT_LAST_PROVIDER);
 		if (meta != null) {
-			return new Boolean(meta).booleanValue();
+			return new Boolean(meta);
 		}
-		return false;
+		return null;
 	}
 	
 	public String getOtherInformation(User child) {

@@ -1,6 +1,6 @@
 /*
- * $Id: CareBusiness.java,v 1.9 2005/10/13 19:13:13 laddi Exp $
- * Created on Oct 13, 2005
+ * $Id: CareBusiness.java,v 1.10 2005/10/18 20:14:24 laddi Exp $
+ * Created on Oct 18, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -23,10 +23,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/10/13 19:13:13 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/18 20:14:24 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public interface CareBusiness extends IBOService {
 
@@ -95,7 +95,7 @@ public interface CareBusiness extends IBOService {
 	/**
 	 * @see se.idega.idegaweb.commune.care.business.CareBusinessBean#canContactLastCareProvider
 	 */
-	public boolean canContactLastCareProvider(User child) throws java.rmi.RemoteException;
+	public Boolean canContactLastCareProvider(User child) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.business.CareBusinessBean#getOtherInformation

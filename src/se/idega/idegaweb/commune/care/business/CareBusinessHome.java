@@ -1,6 +1,6 @@
 /*
- * $Id: CareBusinessHome.java,v 1.6 2005/10/13 19:13:13 laddi Exp $
- * Created on Oct 13, 2005
+ * $Id: CareBusinessHome.java,v 1.7 2005/10/18 20:14:24 laddi Exp $
+ * Created on Oct 18, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -13,10 +13,10 @@ import com.idega.business.IBOHome;
 
 
 /**
- * Last modified: $Date: 2005/10/13 19:13:13 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/18 20:14:24 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public interface CareBusinessHome extends IBOHome {
 

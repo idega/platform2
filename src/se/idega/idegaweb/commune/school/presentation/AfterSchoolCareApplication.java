@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolCareApplication.java,v 1.29 2005/10/14 12:44:32 laddi Exp $
+ * $Id: AfterSchoolCareApplication.java,v 1.30 2005/10/18 20:14:24 laddi Exp $
  * Created on Aug 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -34,14 +34,15 @@ import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.util.IWTimestamp;
+import com.idega.util.text.SocialSecurityNumber;
 import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/10/14 12:44:32 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/18 20:14:24 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.29 $
+ * @version $Revision: 1.30 $
  */
 public class AfterSchoolCareApplication extends SchoolApplication {
 	
@@ -228,9 +229,9 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		
 		applicationTable.add(getSmallHeader(localize("yes", "Yes")), 2, aRow);
 		applicationTable.add(getSmallHeader(localize("no", "No")), 3, aRow);
-		applicationTable.add(getSmallHeader(localize("no_answer", "Won't answer")), 4, aRow++);
 		
 		if (!iHideDetailsPhases) {
+			applicationTable.add(getSmallHeader(localize("no_answer", "Won't answer")), 4, aRow++);
 			applicationTable.add(getSmallHeader(localize("child.has_growth_deviation", "Has growth deviation")), 1, aRow);
 			RadioButton yes = getRadioButton(PARAMETER_GROWTH_DEVIATION, Boolean.TRUE.toString());
 			RadioButton no = getRadioButton(PARAMETER_GROWTH_DEVIATION, Boolean.FALSE.toString());
@@ -286,12 +287,17 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 			applicationTable.add(getSmallHeader(localize("child.can_contact_last_care_provider", "Can contact last care provider")), 1, aRow);
 			yes = getRadioButton(PARAMETER_CAN_CONTACT_LAST_PROVIDER, Boolean.TRUE.toString());
 			no = getRadioButton(PARAMETER_CAN_CONTACT_LAST_PROVIDER, Boolean.FALSE.toString());
-			boolean canContactLastProvider = getCareBusiness().canContactLastCareProvider(getSession().getUser());
-			if (canContactLastProvider) {
-				yes.setSelected(true);
+			Boolean canContactLastProvider = getCareBusiness().canContactLastCareProvider(getSession().getUser());
+			if (canContactLastProvider != null) {
+				if (canContactLastProvider.booleanValue()) {
+					yes.setSelected(true);
+				}
+				else {
+					no.setSelected(true);
+				}
 			}
 			else {
-				no.setSelected(true);
+				yes.setSelected(true);
 			}
 			applicationTable.add(yes, 2, aRow);
 			applicationTable.add(no, 3, aRow++);
@@ -304,12 +310,17 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		applicationTable.add(getSmallHeader(localize("child.can_diplay_after_school_images_images", "Can display images")), 1, aRow);
 		RadioButton yes = getRadioButton(PARAMETER_CAN_DISPLAY_IMAGES, Boolean.TRUE.toString());
 		RadioButton no = getRadioButton(PARAMETER_CAN_DISPLAY_IMAGES, Boolean.FALSE.toString());
-		boolean canDisplayImages = getBusiness().canDisplayAfterSchoolCareImages(getSession().getUser());
-		if (canDisplayImages) {
-			yes.setSelected(true);
+		Boolean canDisplayImages = getBusiness().canDisplayAfterSchoolCareImages(getSession().getUser());
+		if (canDisplayImages != null) {
+			if (canDisplayImages.booleanValue()) {
+				yes.setSelected(true);
+			}
+			else {
+				no.setSelected(true);
+			}
 		}
 		else {
-			no.setSelected(true);
+			yes.setSelected(true);
 		}
 		applicationTable.add(yes, 2, aRow);
 		applicationTable.add(no, 3, aRow++);
@@ -322,13 +333,17 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 			if (a > 1) {
 				applicationTable.setLeftCellBorder(2, a, 1, "#D7D7D7", "solid");
 				applicationTable.setLeftCellBorder(3, a, 1, "#D7D7D7", "solid");
-				applicationTable.setLeftCellBorder(4, a, 1, "#D7D7D7", "solid");
+				if (!iHideDetailsPhases) {
+					applicationTable.setLeftCellBorder(4, a, 1, "#D7D7D7", "solid");
+				}
 			}
 			
 			applicationTable.setCellpaddingRight(1, a, 6);
 			applicationTable.setAlignment(2, a, Table.HORIZONTAL_ALIGN_CENTER);
 			applicationTable.setAlignment(3, a, Table.HORIZONTAL_ALIGN_CENTER);
-			applicationTable.setAlignment(4, a, Table.HORIZONTAL_ALIGN_CENTER);
+			if (!iHideDetailsPhases) {
+				applicationTable.setAlignment(4, a, Table.HORIZONTAL_ALIGN_CENTER);
+			}
 		}
 
 		table.setHeight(row++, 18);
@@ -481,12 +496,12 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		}
 		
 		RadioButton giro = getRadioButton(PARAMETER_CREDITCARD_PAYMENT, Boolean.FALSE.toString());
-		giro.setSelected(true);
 		if (choice != null) {
 			giro.setSelected(choice.getPayerName() == null);
 		}
 		giro.keepStatusOnAction(true);
 		RadioButton creditcard = getRadioButton(PARAMETER_CREDITCARD_PAYMENT, Boolean.TRUE.toString());
+		creditcard.setSelected(true);
 		if (choice != null) {
 			creditcard.setSelected(choice.getPayerName() != null);
 		}
@@ -647,6 +662,34 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 	}
 	
 	protected void showOverview(IWContext iwc) throws RemoteException {
+		boolean creditcardPayment = false;
+		if (iwc.isParameterSet(PARAMETER_CREDITCARD_PAYMENT)) {
+			creditcardPayment = new Boolean(iwc.getParameter(PARAMETER_CREDITCARD_PAYMENT)).booleanValue();
+		}
+		
+		if (creditcardPayment) {
+			SchoolSeason season = null;
+			try {
+				season = getCareBusiness().getCurrentSeason();
+			}
+			catch (FinderException fe) {
+				log(fe);
+				add(getErrorText(localize("no_season_found", "No season found...")));
+				return;
+			}
+
+			if (!iwc.isParameterSet(PARAMETER_PAYER_NAME)) {
+				getParentPage().setAlertOnLoad(localize("must_enter_personal_id", "You must enter a personal ID"));
+				showPhaseSeven(iwc, season);
+				return;
+			}
+			if (!SocialSecurityNumber.isValidSocialSecurityNumber(iwc.getParameter(PARAMETER_PAYER_PERSONAL_ID), iwc.getCurrentLocale())) {
+				getParentPage().setAlertOnLoad(localize("invalid_personal_id", "Invalid personal ID"));
+				showPhaseSeven(iwc, season);
+				return;
+			}
+		}
+
 		Form form = createForm();
 		form.addParameter(PARAMETER_ACTION, String.valueOf(ACTION_OVERVIEW));
 		
@@ -697,10 +740,6 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		verifyTable.setBottomCellBorder(1, iRow++, 1, "#D7D7D7", "solid");
 		verifyTable.setHeight(iRow++, 6);
 
-		boolean creditcardPayment = false;
-		if (iwc.isParameterSet(PARAMETER_CREDITCARD_PAYMENT)) {
-			creditcardPayment = new Boolean(iwc.getParameter(PARAMETER_CREDITCARD_PAYMENT)).booleanValue();
-		}
 		String payerName = iwc.getParameter(PARAMETER_PAYER_NAME);
 		String payerPersonalID = iwc.getParameter(PARAMETER_PAYER_PERSONAL_ID);
 		String cardType = iwc.getParameter(PARAMETER_CARD_TYPE);
@@ -743,10 +782,10 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 			iRow = addChildInformation(verifyTable, getSession().getUser(), iRow);
 		}
 		
-		boolean canDisplayImages = getBusiness().canDisplayAfterSchoolCareImages(getSession().getUser());
+		Boolean canDisplayImages = getBusiness().canDisplayAfterSchoolCareImages(getSession().getUser());
 		String otherAfterSchoolInformation = getBusiness().getAfterSchoolCareOtherInformation(getSession().getUser());
 		verifyTable.mergeCells(1, iRow, table.getColumns(), iRow);
-		verifyTable.add(getBooleanTable(getSmallHeader(localize("child.can_diplay_after_school_images_images", "Can display images")), canDisplayImages), 1, iRow++);
+		verifyTable.add(getBooleanTable(getSmallHeader(localize("child.can_diplay_after_school_images_images_info", "Can display images")), canDisplayImages != null ? canDisplayImages.booleanValue() : true), 1, iRow++);
 		
 		if (otherAfterSchoolInformation != null) {
 			verifyTable.setHeight(iRow++, 6);
@@ -755,7 +794,7 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 			verifyTable.setHeight(iRow++, 6);		
 			
 			verifyTable.mergeCells(1, iRow, table.getColumns(), iRow);
-			verifyTable.add(getTextAreaTable(getSmallHeader(localize("child.other_after_school_information", "Other after school information")), otherAfterSchoolInformation), 1, iRow++);
+			verifyTable.add(getTextAreaTable(getSmallHeader(localize("child.other_after_school_information_info", "Other after school information")), otherAfterSchoolInformation), 1, iRow++);
 		}
 		
 		verifyTable.setWidth(1, "50%");
@@ -888,10 +927,10 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		
 		iRow = addChildInformation(verifyTable, getSession().getUser(), iRow);
 		
-		boolean canDisplayImages = getBusiness().canDisplayAfterSchoolCareImages(getSession().getUser());
+		Boolean canDisplayImages = getBusiness().canDisplayAfterSchoolCareImages(getSession().getUser());
 		String otherAfterSchoolInformation = getBusiness().getAfterSchoolCareOtherInformation(getSession().getUser());
 		verifyTable.mergeCells(1, iRow, table.getColumns(), iRow);
-		verifyTable.add(getBooleanTable(getSmallHeader(localize("child.can_diplay_after_school_images_images", "Can display images")), canDisplayImages), 1, iRow++);
+		verifyTable.add(getBooleanTable(getSmallHeader(localize("child.can_diplay_after_school_images_images_info", "Can display images")), canDisplayImages != null ? canDisplayImages.booleanValue(): true), 1, iRow++);
 		
 		if (otherAfterSchoolInformation != null) {
 			verifyTable.setHeight(iRow++, 6);
@@ -900,7 +939,7 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 			verifyTable.setHeight(iRow++, 6);		
 			
 			verifyTable.mergeCells(1, iRow, table.getColumns(), iRow);
-			verifyTable.add(getTextAreaTable(getSmallHeader(localize("child.other_after_school_information", "Other after school information")), otherAfterSchoolInformation), 1, iRow++);
+			verifyTable.add(getTextAreaTable(getSmallHeader(localize("child.other_after_school_information_info", "Other after school information")), otherAfterSchoolInformation), 1, iRow++);
 		}
 		
 		verifyTable.setWidth(1, "50%");

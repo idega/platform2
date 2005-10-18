@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolApplication.java,v 1.28 2005/10/14 12:24:01 laddi Exp $
+ * $Id: SchoolApplication.java,v 1.29 2005/10/18 20:14:24 laddi Exp $
  * Created on Aug 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -58,10 +58,10 @@ import com.idega.util.Age;
 import com.idega.util.PersonalIDFormatter;
 
 /**
- * Last modified: $Date: 2005/10/14 12:24:01 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/18 20:14:24 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.28 $
+ * @version $Revision: 1.29 $
  */
 public class SchoolApplication extends SchoolBlock {
 
@@ -861,9 +861,14 @@ public class SchoolApplication extends SchoolBlock {
 		applicationTable.add(getSmallHeader(localize("child.can_contact_last_care_provider", "Can contact last care provider")), 1, aRow);
 		yes = getRadioButton(PARAMETER_CAN_CONTACT_LAST_PROVIDER, Boolean.TRUE.toString());
 		no = getRadioButton(PARAMETER_CAN_CONTACT_LAST_PROVIDER, Boolean.FALSE.toString());
-		boolean canContactLastProvider = getCareBusiness().canContactLastCareProvider(getSession().getUser());
-		if (canContactLastProvider) {
-			yes.setSelected(true);
+		Boolean canContactLastProvider = getCareBusiness().canContactLastCareProvider(getSession().getUser());
+		if (canContactLastProvider != null) {
+			if (canContactLastProvider.booleanValue()) {
+				yes.setSelected(true);
+			}
+			else {
+				no.setSelected(true);
+			}
 		}
 		else {
 			no.setSelected(true);
@@ -1013,7 +1018,7 @@ public class SchoolApplication extends SchoolBlock {
 		
 		boolean canDisplaySchoolImages = getBusiness().canDisplaySchoolImages(getSession().getUser());
 		verifyTable.mergeCells(1, iRow, verifyTable.getColumns(), iRow);
-		verifyTable.add(getBooleanTable(getSmallHeader(localize("child.can_diplay_images", "Can display images")), canDisplaySchoolImages), 1, iRow);
+		verifyTable.add(getBooleanTable(getSmallHeader(localize("child.can_diplay_images_info", "Can display images")), canDisplaySchoolImages), 1, iRow);
 		verifyTable.setWidth(1, "50%");
 		verifyTable.setWidth(2, "50%");
 		
@@ -1116,7 +1121,7 @@ public class SchoolApplication extends SchoolBlock {
 		
 		boolean canDisplaySchoolImages = getBusiness().canDisplaySchoolImages(getSession().getUser());
 		viewTable.mergeCells(1, iRow, table.getColumns(), iRow);
-		viewTable.add(getBooleanTable(getSmallHeader(localize("child.can_diplay_images", "Can display images")), canDisplaySchoolImages), 1, iRow);
+		viewTable.add(getBooleanTable(getSmallHeader(localize("child.can_diplay_images_info", "Can display images")), canDisplaySchoolImages), 1, iRow);
 		viewTable.setWidth(1, "50%");
 		viewTable.setWidth(2, "50%");
 
@@ -1142,17 +1147,17 @@ public class SchoolApplication extends SchoolBlock {
 		Boolean hasAllergies = getCareBusiness().hasAllergies(child);
 		String allergies = getCareBusiness().getAllergiesDetails(child);
 		String lastCareProvider = getCareBusiness().getLastCareProvider(child);
-		boolean canContactLastProvider = getCareBusiness().canContactLastCareProvider(child);
+		Boolean canContactLastProvider = getCareBusiness().canContactLastCareProvider(child);
 		String otherInformation = getCareBusiness().getOtherInformation(child);
 		
 		if (hasGrowthDeviation != null) {
 			table.mergeCells(1, iRow, table.getColumns(), iRow);
-			table.add(getBooleanTable(getSmallHeader(localize("child.has_growth_deviation", "Has growth deviation")), hasGrowthDeviation.booleanValue()), 1, iRow++);
+			table.add(getBooleanTable(getSmallHeader(localize("child.has_growth_deviation_info", "Has growth deviation")), hasGrowthDeviation.booleanValue()), 1, iRow++);
 
 			if (growthDeviation != null) {
 				table.setHeight(iRow++, 6);
 				table.mergeCells(1, iRow, table.getColumns(), iRow);
-				table.add(getTextAreaTable(getSmallHeader(localize("child.growth_deviation_details", "Growth deviation details")), growthDeviation), 1, iRow++);
+				table.add(getTextAreaTable(getSmallHeader(localize("child.growth_deviation_details_info", "Growth deviation details")), growthDeviation), 1, iRow++);
 			}
 			
 			table.setHeight(iRow++, 6);
@@ -1163,12 +1168,12 @@ public class SchoolApplication extends SchoolBlock {
 		
 		if (hasAllergies != null) {
 			table.mergeCells(1, iRow, table.getColumns(), iRow);
-			table.add(getBooleanTable(getSmallHeader(localize("child.has_allergies", "Has allergies")), hasAllergies.booleanValue()), 1, iRow++);
+			table.add(getBooleanTable(getSmallHeader(localize("child.has_allergies_info", "Has allergies")), hasAllergies.booleanValue()), 1, iRow++);
 	
 			if (allergies != null) {
 				table.setHeight(iRow++, 6);
 				table.mergeCells(1, iRow, table.getColumns(), iRow);
-				table.add(getTextAreaTable(getSmallHeader(localize("child.allergies_details", "Allergies details")), allergies), 1, iRow++);
+				table.add(getTextAreaTable(getSmallHeader(localize("child.allergies_details_info", "Allergies details")), allergies), 1, iRow++);
 			}
 			
 			table.setHeight(iRow++, 6);
@@ -1179,7 +1184,7 @@ public class SchoolApplication extends SchoolBlock {
 		
 		if (lastCareProvider != null) {
 			table.mergeCells(1, iRow, table.getColumns(), iRow);
-			table.add(getTextInputTable(getSmallHeader(localize("child.last_care_provider", "Last care provider")), lastCareProvider), 1, iRow++);
+			table.add(getTextInputTable(getSmallHeader(localize("child.last_care_provider_info", "Last care provider")), lastCareProvider), 1, iRow++);
 
 			table.setHeight(iRow++, 6);
 			table.mergeCells(1, iRow, table.getColumns(), iRow);
@@ -1188,7 +1193,7 @@ public class SchoolApplication extends SchoolBlock {
 		}
 		
 		table.mergeCells(1, iRow, table.getColumns(), iRow);
-		table.add(getBooleanTable(getSmallHeader(localize("child.can_contact_last_care_provider", "Can contact last care provider")), canContactLastProvider), 1, iRow++);
+		table.add(getBooleanTable(getSmallHeader(localize("child.can_contact_last_care_provider_info", "Can contact last care provider")), canContactLastProvider != null ? canContactLastProvider.booleanValue() : false), 1, iRow++);
 		
 		table.setHeight(iRow++, 6);
 		table.mergeCells(1, iRow, table.getColumns(), iRow);
@@ -1197,7 +1202,7 @@ public class SchoolApplication extends SchoolBlock {
 
 		if (otherInformation != null) {
 			table.mergeCells(1, iRow, table.getColumns(), iRow);
-			table.add(getTextAreaTable(getSmallHeader(localize("child.other_information", "Other information")), otherInformation), 1, iRow++);
+			table.add(getTextAreaTable(getSmallHeader(localize("child.other_information_info", "Other information")), otherInformation), 1, iRow++);
 
 			table.setHeight(iRow++, 6);
 			table.mergeCells(1, iRow, table.getColumns(), iRow);
