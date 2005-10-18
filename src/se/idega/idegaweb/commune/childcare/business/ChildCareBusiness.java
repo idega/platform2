@@ -1676,7 +1676,10 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness,
      * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getUsePreschoolLine
      */
     public boolean getUsePreschoolLine() throws java.rmi.RemoteException;
-
+    /**
+     * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getMarkChildrenOutsideCommune
+     */
+    public boolean getMarkChildrenOutsideCommune() throws java.rmi.RemoteException;
     /**
      * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getCaseParameters
      */

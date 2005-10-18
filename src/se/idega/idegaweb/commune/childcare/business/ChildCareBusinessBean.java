@@ -160,6 +160,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	private final static String PROPERTY_USE_PRESCHOOL_LINE = "use_preschool_line";
 
 	private final static String PROPERTY_USE_PROGNOSIS = "use_prognosis";
+	
+	private final static String PROPERTY_MARK_CHILDREN_OUTSIDE_COMMUNE = "mark_children_outside_commune_in_prognosis";
 
 	private final static String PROPERTY_SEND_JOINT_MESSAGE_TO_OTHER_CUSTODIAN = "send_joint_message_to_other_custodian_on_child_care_choice";
 
@@ -5657,6 +5659,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		boolean usePreschoolLine = bundle.getBooleanProperty(PROPERTY_USE_PRESCHOOL_LINE, true);
 		
 		return usePreschoolLine;
+	}
+
+	public boolean getMarkChildrenOutsideCommune(){
+		IWBundle bundle = getIWApplicationContext().getIWMainApplication().getBundle(getBundleIdentifier());
+		boolean markChildrenOutsideCommune = bundle.getBooleanProperty(PROPERTY_MARK_CHILDREN_OUTSIDE_COMMUNE, false);
+		
+		return markChildrenOutsideCommune;
 	}
 
 	public Map getCaseParameters(Case theCase) {
