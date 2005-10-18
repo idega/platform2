@@ -12,12 +12,14 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
 import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.block.pki.data.NBSSignedEntity;
 import se.idega.block.pki.presentation.NBSSigningBlock;
+import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.care.business.PlacementHelper;
 import se.idega.idegaweb.commune.care.data.CareTimeBMPBean;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
@@ -38,6 +40,7 @@ import com.idega.block.school.data.SchoolClassMemberLog;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.presentation.SchoolClassDropdownDouble;
 import com.idega.builder.business.BuilderLogic;
+import com.idega.business.IBOLookup;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
@@ -61,6 +64,7 @@ import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.Window;
 import com.idega.user.business.NoPhoneFoundException;
+import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
@@ -250,6 +254,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private boolean _showPreSchool;
 	
 	private boolean _showParental;
+	
+	private boolean _markChildrenOutsideCommune;
 
 	// private IWTimestamp earliestDate;
 
@@ -1572,7 +1578,31 @@ public class ChildCareAdminWindow extends ChildCareBlock {
                 
                 Text fromDate = getSmallText(app.getFromDate().toString());
 				// currentAppId = style.getSmallText(""+app.getNodeID()); //debug only
-
+                CommuneUserBusiness communeUserService = (CommuneUserBusiness)IBOLookup.getServiceInstance(this.getIWApplicationContext(),CommuneUserBusiness.class);
+                Group communeGroup=null;
+                try{
+                	communeGroup = communeUserService.getRootCitizenGroup();
+                }
+                catch (CreateException ce){
+                	log(ce);
+                }
+                catch (FinderException fe){
+                	log(fe);
+                }
+                
+                int communeGroupID = ((Integer) communeGroup.getPrimaryKey()).intValue();
+                
+                if (_markChildrenOutsideCommune){
+                	  if (communeGroupID != app.getChild().getPrimaryGroupID() && app.getNodeID() != new Integer(appId).intValue()){
+    					//make children red and bold if child is outside of commune living
+                    	makeRedAndBold(queueOrder);
+                    	makeRedAndBold(queueDate);
+                    	makeRedAndBold(fromDate);
+    				}
+                }
+              
+                
+                
 				appTbl.add(queueOrder, 1, row);
 				appTbl.add(queueDate, 2, row);
 				appTbl.add(fromDate, 3, row);
@@ -1615,7 +1645,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		layoutTbl.add(getSmallText(prognosisText), 2, row++);
 
 		layoutTbl.setRowHeight(row++, "20px");
-
+		
 		layoutTbl.add(appTbl, 1, row);
 		layoutTbl.mergeCells(1, row, 2, row);
 		row++;
@@ -1637,7 +1667,11 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		t.setStyleAttribute("color:blue");
 		return t;
 	}
-
+	private Text makeRedAndBold(Text t) {
+		t.setBold(true);
+		t.setStyleAttribute("color:red");
+		return t;
+	}
 	private Table getEndContractForm() {
 		Table layoutTbl = new Table();
 		layoutTbl.setCellpadding(5);
@@ -1998,6 +2032,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			_showParental = getBusiness().getUseParental();
 			_showEmploymentDrop = getBusiness().getUseEmployment();
 			_showPreSchool = getBusiness().getUsePreschoolLine();
+			_markChildrenOutsideCommune = getBusiness().getMarkChildrenOutsideCommune();
 		}
 		catch (RemoteException re) {
 			log(re);
