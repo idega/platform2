@@ -1,5 +1,5 @@
 /*
- * $Id: ClaimsList.java,v 1.2 2005/10/17 10:28:51 laddi Exp $
+ * $Id: ClaimsList.java,v 1.3 2005/10/18 09:05:35 laddi Exp $
  * Created on Oct 2, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -26,16 +26,15 @@ import com.idega.presentation.text.Heading1;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.user.data.User;
-import com.idega.util.IWCalendar;
 import com.idega.util.PersonalIDFormatter;
 import com.idega.util.text.Name;
 
 
 /**
- * Last modified: $Date: 2005/10/17 10:28:51 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/18 09:05:35 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ClaimsList extends MealBlock {
 
@@ -74,10 +73,16 @@ public class ClaimsList extends MealBlock {
 
 		TableRowGroup group = table.createHeaderRowGroup();
 		TableRow row = group.createRow();
-		row.createHeaderCell().add(new Text(localize("claims.name", "Name")));
+		TableCell2 cell = row.createHeaderCell();
+		cell.setStyleClass("firstColumn");
+		cell.add(new Text(localize("claims.name", "Name")));
+		
 		row.createHeaderCell().add(new Text(localize("claims.personal_id", "Personal ID")));
 		row.createHeaderCell().add(new Text(localize("claims.amount", "Amount")));
-		row.createHeaderCell().add(new Text(localize("claims.status", "Status")));
+		
+		cell = row.createHeaderCell();
+		cell.setStyleClass("lastColumn");
+		cell.add(new Text(localize("claims.status", "Status")));
 		
 		group = table.createBodyRowGroup();
 		int iRow = 1;
@@ -95,10 +100,17 @@ public class ClaimsList extends MealBlock {
 			if (entry != null) {
 				String status = entry.getStatus().equals(AccountEntryBMPBean.statusCreated) ? localize("created", "Created") : localize("billed", "Billed");
 				try {
-					row.createCell().add(new Text(name.getName(iwc.getCurrentLocale())));
+					cell = row.createCell();
+					cell.setStyleClass("firstColumn");
+					cell.add(new Text(name.getName(iwc.getCurrentLocale())));
+
 					row.createCell().add(new Text(user.getPersonalID() != null ? PersonalIDFormatter.format(user.getPersonalID(), iwc.getCurrentLocale()) : "-"));
 					row.createCell().add(new Text(format.format(entry.getTotal())));
-					row.createCell().add(new Text(status));
+					
+					cell = row.createCell();
+					cell.setStyleClass("lastColumn");
+					cell.add(new Text(status));
+					
 					totalAmount += entry.getTotal();
 					
 					if (iRow % 2 == 0) {
@@ -117,7 +129,7 @@ public class ClaimsList extends MealBlock {
 
 		group = table.createFooterRowGroup();
 		row = group.createRow();
-		TableCell2 cell = row.createCell();
+		cell = row.createCell();
 		cell.setColumnSpan(2);
 		cell.add(new Text(localize("diners.total", "Total")));
 		row.createCell().add(new Text(format.format(totalAmount)));

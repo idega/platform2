@@ -224,7 +224,10 @@ public class MealDiners extends MealBlock {
 
 		TableRowGroup group = table.createHeaderRowGroup();
 		TableRow row = group.createRow();
-		row.createHeaderCell().add(new Text(localize("diners.name", "Name")));
+		TableCell2 cell = row.createHeaderCell();
+		cell.setStyleClass("firstColumn");
+		cell.add(new Text(localize("diners.name", "Name")));
+
 		row.createHeaderCell().add(new Text(localize("diners.personal_id", "Personal ID")));
 		row.createHeaderCell().add(new Text(localize("mon", "Mon")));
 		row.createHeaderCell().add(new Text(localize("tue", "Tue")));
@@ -232,7 +235,10 @@ public class MealDiners extends MealBlock {
 		row.createHeaderCell().add(new Text(localize("thu", "Thu")));
 		row.createHeaderCell().add(new Text(localize("fri", "Fri")));
 		row.createHeaderCell().add(new Text(localize("milk", "Milk")));
-		row.createHeaderCell().add(new Text(localize("fruits", "Fruits")));
+		
+		cell = row.createHeaderCell();
+		cell.setStyleClass("lastColumn");
+		cell.add(new Text(localize("fruits", "Fruits")));
 		
 		group = table.createBodyRowGroup();
 		int iRow = 1;
@@ -253,7 +259,10 @@ public class MealDiners extends MealBlock {
 			Name name = new Name(user.getFirstName(), user.getMiddleName(), user.getLastName());
 			
 			try {
-				row.createCell().add(new Text(name.getName(iwc.getCurrentLocale())));
+				cell = row.createCell();
+				cell.setStyleClass("firstColumn");
+				cell.add(new Text(name.getName(iwc.getCurrentLocale())));
+
 				row.createCell().add(new Text(user.getPersonalID() != null ? PersonalIDFormatter.format(user.getPersonalID(), iwc.getCurrentLocale()) : "-"));
 				
 				if (dinerMonth.hasMondays()) {
@@ -298,12 +307,14 @@ public class MealDiners extends MealBlock {
 				else {
 					row.createCell().add(new Text("-"));
 				}
+				cell = row.createCell();
+				cell.setStyleClass("lastColumn");
 				if (dinerMonth.hasFruits()) {
-					row.createCell().add(new Text("X"));
+					cell.add(new Text("X"));
 					fruits++;
 				}
 				else {
-					row.createCell().add(new Text("-"));
+					cell.add(new Text("-"));
 				}
 				
 				if (iRow % 2 == 0) {
@@ -324,7 +335,7 @@ public class MealDiners extends MealBlock {
 		
 		group = table.createFooterRowGroup();
 		row = group.createRow();
-		TableCell2 cell = row.createCell();
+		cell = row.createCell();
 		cell.setColumnSpan(2);
 		cell.add(new Text(localize("diners.total", "Total")));
 		row.createCell().add(new Text(String.valueOf(mondays)));

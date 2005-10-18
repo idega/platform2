@@ -1,5 +1,5 @@
 /*
- * $Id: MealApplication.java,v 1.7 2005/10/17 10:28:51 laddi Exp $
+ * $Id: MealApplication.java,v 1.8 2005/10/18 09:05:35 laddi Exp $
  * Created on Aug 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -50,10 +50,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/10/17 10:28:51 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/18 09:05:35 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class MealApplication extends MealBlock {
 	
@@ -392,6 +392,7 @@ public class MealApplication extends MealBlock {
 		
 		if (!listOfDays.isEmpty()) {
 			Lists list = new Lists();
+			list.setID("dayList");
 			Iterator iter = listOfDays.iterator();
 			while (iter.hasNext()) {
 				ListItem item = new ListItem();
@@ -405,6 +406,7 @@ public class MealApplication extends MealBlock {
 		NumberFormat format = NumberFormat.getCurrencyInstance(iwc.getCurrentLocale());
 		Lists list = new Lists();
 		list.setID("priceList");
+		layer.add(list);
 		
 		ListItem item = new ListItem();
 		item.add(new Text(localize("meal", "Meal") + ": " + format.format(values.getMealAmount())));

@@ -1,5 +1,5 @@
 /*
- * $Id: VacationEditor.java,v 1.3 2005/10/17 10:28:51 laddi Exp $
+ * $Id: VacationEditor.java,v 1.4 2005/10/18 09:05:35 laddi Exp $
  * Created on Oct 2, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -21,6 +21,7 @@ import com.idega.data.IDOCreateException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
 import com.idega.presentation.Table2;
+import com.idega.presentation.TableCell2;
 import com.idega.presentation.TableColumn;
 import com.idega.presentation.TableColumnGroup;
 import com.idega.presentation.TableRow;
@@ -40,10 +41,10 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2005/10/17 10:28:51 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/18 09:05:35 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class VacationEditor extends MealBlock {
 
@@ -128,11 +129,17 @@ public class VacationEditor extends MealBlock {
 		TableRowGroup group = table.createHeaderRowGroup();
 		TableRow row = group.createRow();
 		row.createHeaderCell().add(new Text(localize("vacation_editor.valid_from", "Valid from")));
-		row.createHeaderCell().add(new Text(localize("vacation_editor.valid_to", "Valid to")));
+		TableCell2 cell = row.createHeaderCell();
+		cell.setStyleClass("firstColumn");
+		cell.add(new Text(localize("vacation_editor.valid_to", "Valid to")));
+
 		row.createHeaderCell().add(new Text(localize("vacation_editor.type", "Type")));
 		row.createHeaderCell().add(new Text(localize("vacation_editor.name", "Name")));
 		row.createHeaderCell().add(Text.getNonBrakingSpace());
-		row.createHeaderCell().add(Text.getNonBrakingSpace());
+		
+		cell = row.createHeaderCell();
+		cell.setStyleClass("lastColumn");
+		cell.add(Text.getNonBrakingSpace());
 		
 		group = table.createBodyRowGroup();
 		int iRow = 1;
@@ -154,7 +161,10 @@ public class VacationEditor extends MealBlock {
 				delete.addParameter(PARAMETER_VACATION_PK, vacationDay.getPrimaryKey().toString());
 				delete.addParameter(PARAMETER_ACTION, ACTION_DELETE);
 
-				row.createCell().add(new Text(validFrom.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)));
+				cell = row.createCell();
+				cell.setStyleClass("firstColumn");
+				cell.add(new Text(validFrom.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)));
+				
 				if (!validTo.isEqualTo(validFrom)) {
 					row.createCell().add(new Text(validTo.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)));
 				}
@@ -169,7 +179,10 @@ public class VacationEditor extends MealBlock {
 					row.createCell().add(new Text("-"));
 				}
 				row.createCell().add(edit);
-				row.createCell().add(delete);
+				
+				cell = row.createCell();
+				cell.setStyleClass("lastColumn");
+				cell.add(delete);
 				
 				if (iRow % 2 == 0) {
 					row.setStyleClass(STYLENAME_LIST_TABLE_EVEN_ROW);

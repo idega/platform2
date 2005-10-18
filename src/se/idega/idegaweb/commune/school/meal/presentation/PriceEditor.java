@@ -1,5 +1,5 @@
 /*
- * $Id: PriceEditor.java,v 1.3 2005/10/17 10:28:51 laddi Exp $
+ * $Id: PriceEditor.java,v 1.4 2005/10/18 09:05:35 laddi Exp $
  * Created on Sep 30, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -20,6 +20,7 @@ import com.idega.data.IDOCreateException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
 import com.idega.presentation.Table2;
+import com.idega.presentation.TableCell2;
 import com.idega.presentation.TableColumn;
 import com.idega.presentation.TableColumnGroup;
 import com.idega.presentation.TableRow;
@@ -41,10 +42,10 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2005/10/17 10:28:51 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/18 09:05:35 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class PriceEditor extends MealBlock {
 	
@@ -131,13 +132,20 @@ public class PriceEditor extends MealBlock {
 
 		TableRowGroup group = table.createHeaderRowGroup();
 		TableRow row = group.createRow();
-		row.createHeaderCell().add(new Text(localize("valid_from", "Valid from")));
+		TableCell2 cell = row.createHeaderCell();
+		cell.setStyleClass("firstColumn");
+		cell.add(new Text(localize("valid_from", "Valid from")));
+
 		row.createHeaderCell().add(new Text(localize("valid_to", "Valid to")));
 		row.createHeaderCell().add(new Text(localize("month_price", "Month price")));
 		row.createHeaderCell().add(new Text(localize("day_price", "Day price")));
 		row.createHeaderCell().add(new Text(localize("milk_price", "Milk price")));
 		row.createHeaderCell().add(new Text(localize("fruit_price", "Fruit price")));
-		row.createHeaderCell().add(Text.getNonBrakingSpace());
+		
+		cell = row.createHeaderCell();
+		cell.setStyleClass("lastColumn");
+		cell.add(Text.getNonBrakingSpace());
+		
 		row.createHeaderCell().add(Text.getNonBrakingSpace());
 		
 		group = table.createBodyRowGroup();
@@ -160,7 +168,10 @@ public class PriceEditor extends MealBlock {
 				delete.addParameter(PARAMETER_PRICE_PK, price.getPrimaryKey().toString());
 				delete.addParameter(PARAMETER_ACTION, ACTION_DELETE);
 
-				row.createCell().add(new Text(validFrom.getDateString("MMM. yyyy", iwc.getCurrentLocale())));
+				cell = row.createCell();
+				cell.setStyleClass("firstColumn");
+				cell.add(new Text(validFrom.getDateString("MMM. yyyy", iwc.getCurrentLocale())));
+				
 				row.createCell().add(new Text(validTo.getDateString("MMM. yyyy", iwc.getCurrentLocale())));
 				if (price.getMealPricePerMonth() != -1) {
 					row.createCell().add(new Text(String.valueOf(price.getMealPricePerMonth())));
@@ -187,7 +198,10 @@ public class PriceEditor extends MealBlock {
 					row.createCell().add(new Text("-"));
 				}
 				row.createCell().add(edit);
-				row.createCell().add(delete);
+				
+				cell = row.createCell();
+				cell.setStyleClass("lastColumn");
+				cell.add(delete);
 				
 				if (iRow % 2 == 0) {
 					row.setStyleClass(STYLENAME_LIST_TABLE_EVEN_ROW);
