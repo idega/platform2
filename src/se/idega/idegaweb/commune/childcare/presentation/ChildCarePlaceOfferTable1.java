@@ -186,8 +186,8 @@ class ChildCarePlaceOfferTable1 extends Table {
 		int ownerId = ((Integer)app.getOwner().getPrimaryKey()).intValue();
 		boolean isAfterSchoolApplication = _page.childCarebusiness.isAfterSchoolApplication(app);
 
-		String validUntil = app.getOfferValidUntil() != null ? VALID_UNTIL + " " + app.getOfferValidUntil() + "." : "";
-		String offerText = isOffer ? app.getChoiceNumber() + ": " + GRANTED + " " + app.getFromDate() + ". " + validUntil : "";
+		String validUntil = app.getOfferValidUntil() != null ? VALID_UNTIL + " " + new IWTimestamp(app.getOfferValidUntil()).getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT) + "." : "";
+		String offerText = isOffer ? app.getChoiceNumber() + ": " + GRANTED + " " + new IWTimestamp(app.getFromDate()).getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT) + ". " + validUntil : "";
 		if (isOffer)
 			addToOfferList(offerText);
 
@@ -196,6 +196,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 
 		boolean isAccepted = app.isAcceptedByParent();
 		boolean isCancelled = app.isCancelledOrRejectedByParent();
+		boolean canDelete = _page.getBundle().getBooleanProperty("can_delete_after_school_care_choices", true);
 
 		int index = row - 1;
 		int column = 1;
@@ -286,7 +287,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 			add(popup, column++, row);
 		}
 		
-		if (!isCancelled) {
+		if (!isCancelled && canDelete) {
 			Link delete = new Link(_page.getDeleteIcon(_page.localize(DELETE_TOOLTIP)));
 			delete.setOnClick("return confirm('" + CONFIRM_DELETE + "')");
 			delete.addParameter(CCConstants.ACTION, CCConstants.ACTION_DELETE);
