@@ -56,8 +56,8 @@ import com.idega.util.IWTimestamp;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2005/10/19 08:42:13 $ by $Author: anna $
- * @version $Revision: 1.149 $
+ *         Last modified: $Date: 2005/10/19 11:24:41 $ by $Author: anna $
+ * @version $Revision: 1.150 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -1018,7 +1018,6 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		sql.appendSelect().append(SchoolSeasonBMPBean.SCHOOLSEASON + "_id");
 		sql.appendFrom().append(SchoolSeasonBMPBean.SCHOOLSEASON);
 		sql.appendWhere(SchoolSeasonBMPBean.SCHOOLSEASON + "_id" + " in ");
-
 		sql.appendLeftParenthesis();
 		sql.appendSelect().append(SchoolSeasonBMPBean.SCHOOLSEASON + "_id");
 		sql.appendFrom().append(SchoolSeasonBMPBean.SCHOOLSEASON);
@@ -1028,7 +1027,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		sql.appendAnd().append(SchoolSeasonBMPBean.END).appendGreaterThanOrEqualsSign();
 		sql.append(new Date(System.currentTimeMillis()));
 		sql.appendRightParenthesis().appendRightParenthesis();
-		sql.appendRightParenthesis().appendRightParenthesis();
+		sql.appendRightParenthesis();//.appendRightParenthesis();
 
 
 		// AND (m.invoice_int in (...)
