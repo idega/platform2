@@ -42,12 +42,9 @@ import com.idega.data.IDOFinderException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDORemoveRelationshipException;
-import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWMainApplicationSettings;
 import com.idega.presentation.IWContext;
 import com.idega.repository.data.ImplementorRepository;
-import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.NoEmailFoundException;
 import com.idega.user.business.NoPhoneFoundException;
 import com.idega.user.business.UserBusiness;
@@ -55,7 +52,6 @@ import com.idega.user.business.UserBusinessBean;
 import com.idega.user.data.Gender;
 import com.idega.user.data.GenderHome;
 import com.idega.user.data.Group;
-import com.idega.user.data.GroupHome;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
 import com.idega.util.IWTimestamp;
@@ -323,78 +319,23 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	 * throws a CreateException if it failed to locate or create the group.
 	 */
 	public Group getRootCitizenGroup() throws CreateException, FinderException, RemoteException {
-		Commune commune = getCommuneBusiness().getDefaultCommune();
-		if(null!= commune) {
-			Group group = commune.getGroup();
-			if(null!=group) {
-				return group;
-			}
+		if (rootCitizenGroup == null) {
+			Commune commune = getCommuneBusiness().getDefaultCommune();
+			rootCitizenGroup =  getGroupCreateIfNecessaryStoreInCommune(commune, ROOT_CITIZEN_GROUP_ID_PARAMETER_NAME, "Commune Citizens", "The Root Group for all Citizens of the Commune");
 		}
-
-		//create the default group
-
-		if (rootCitizenGroup != null)
-			return rootCitizenGroup;
-
-		final IWApplicationContext iwc = getIWApplicationContext();
-		final IWMainApplicationSettings settings = iwc.getApplicationSettings();
-		String groupId = settings.getProperty(ROOT_CITIZEN_GROUP_ID_PARAMETER_NAME);
-		if (groupId != null) {
-			final GroupHome groupHome = getGroupHome();
-			rootCitizenGroup = groupHome.findByPrimaryKey(new Integer(groupId));
-		}
-		else {
-			System.err.println("trying to store Commune Root group");
-			final GroupBusiness groupBusiness = getGroupBusiness();
-			rootCitizenGroup = groupBusiness.createGroup("Commune Citizens", "The Root Group for all Citizens of the Commune");
-			
-			//settings.setProperty(ROOT_CITIZEN_GROUP_ID_PARAMETER_NAME, rootCitizenGroup.getPrimaryKey());
-		}
-		getCommuneBusiness().getDefaultCommune().setGroup(rootCitizenGroup);
 		return rootCitizenGroup;
 	}
+
 	/**
 	 * Creates (if not available) and returns the default usergroup for  all
 	 * citizens not living in the commune, read from imports. throws a
 	 * CreateException if it failed to locate or create the group.
 	 */
 	public Group getRootOtherCommuneCitizensGroup() throws CreateException, FinderException, RemoteException {
-		Commune commune = getCommuneBusiness().getOtherCommuneCreateIfNotExist();
-		if(null!= commune) {
-			Group group = commune.getGroup();
-			if(null!=group) {
-				return group;
-			}
+		if (rootOtherCommuneCitizenGroup == null) {
+			Commune commune = getCommuneBusiness().getOtherCommuneCreateIfNotExist();
+			rootOtherCommuneCitizenGroup = getGroupCreateIfNecessaryStoreInCommune(commune, ROOT_OTHER_COMMUNE_CITIZEN_GROUP_ID_PARAMETER_NAME, "Non-Commune Citizens", "The Root Group for all Citizens in other Communes");
 		}
-		//create the default group
-		if (rootOtherCommuneCitizenGroup != null)
-			return rootOtherCommuneCitizenGroup;
-
-		final IWApplicationContext iwac = getIWApplicationContext();
-		ICApplicationBindingBusiness applicationBindingBusiness = (ICApplicationBindingBusiness)  IBOLookup.getServiceInstance(iwac, ICApplicationBindingBusiness.class);
-		String groupId = null;
-		// look up ic application binding
-		if (applicationBindingBusiness.contains(ROOT_OTHER_COMMUNE_CITIZEN_GROUP_ID_PARAMETER_NAME)) {
-			groupId = applicationBindingBusiness.get(ROOT_OTHER_COMMUNE_CITIZEN_GROUP_ID_PARAMETER_NAME);
-		}
-		else {
-			IWMainApplicationSettings settings = iwac.getApplicationSettings();
-			groupId = settings.getProperty(ROOT_OTHER_COMMUNE_CITIZEN_GROUP_ID_PARAMETER_NAME);
-			// put into the database
-			applicationBindingBusiness.put(ROOT_OTHER_COMMUNE_CITIZEN_GROUP_ID_PARAMETER_NAME, groupId);
-		}
-		if (groupId != null) {
-			final GroupHome groupHome = getGroupHome();
-			rootOtherCommuneCitizenGroup = groupHome.findByPrimaryKey(new Integer(groupId));
-		}
-		else {
-			System.out.println("Trying to store OtherCommuneCitizens Root group");
-			final GroupBusiness groupBusiness = getGroupBusiness();
-			rootOtherCommuneCitizenGroup = groupBusiness.createGroup("Non-Commune Citizens", "The Root Group for all Citizens in other Communes.");
-			
-//			settings.setProperty(ROOT_OTHER_COMMUNE_CITIZEN_GROUP_ID_PARAMETER_NAME, rootOtherCommuneCitizenGroup.getPrimaryKey());
-		}
-		getCommuneBusiness().getOtherCommuneCreateIfNotExist().setGroup(rootOtherCommuneCitizenGroup);
 		return rootOtherCommuneCitizenGroup;
 	}
 	
@@ -405,24 +346,8 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
      * @throws CreateException if it failed to locate or create the group.
 	 */
 	public Group getRootCustomerChoiceGroup () throws CreateException, FinderException, RemoteException {
-
-		if (rootCustomerChoiceGroup != null) {
-			return rootCustomerChoiceGroup;
-        }
-
-		final IWApplicationContext iwc = getIWApplicationContext();
-		final IWMainApplicationSettings settings = iwc.getApplicationSettings();
-		String groupId = settings.getProperty(ROOT_CUSTOMER_CHOICE_GROUP_ID_PARAMETER_NAME);
-		if (groupId != null) {
-			final GroupHome groupHome = getGroupHome();
-			rootCustomerChoiceGroup = groupHome.findByPrimaryKey(new Integer(groupId));
-		} else {
-			//final GroupHome groupHome = getGroupHome();
-
-			System.err.println("trying to store Customer Choice Root group");
-			final GroupBusiness groupBusiness = getGroupBusiness();
-			rootCustomerChoiceGroup = groupBusiness.createGroup("Kundvalsgruppen", "Kundvalsgruppen");
-			settings.setProperty(ROOT_CUSTOMER_CHOICE_GROUP_ID_PARAMETER_NAME, rootCustomerChoiceGroup.getPrimaryKey());
+		if (rootCustomerChoiceGroup == null) {
+			rootCustomerChoiceGroup = getGroupCreateIfNecessaryStoreAsApplicationBinding(ROOT_CUSTOMER_CHOICE_GROUP_ID_PARAMETER_NAME, "Kundvalsgruppen", "Kundvalsgruppen");
 		}
 		return rootCustomerChoiceGroup;
 	}
@@ -433,22 +358,8 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	 * CreateException if it failed to locate or create the group.
 	 */
 	public Group getRootProtectedCitizenGroup() throws CreateException, FinderException, RemoteException {
-		//create the default group
-		if (rootProtectedCitizenGroup != null)
-			return rootProtectedCitizenGroup;
-
-		final IWApplicationContext iwc = getIWApplicationContext();
-		final IWMainApplicationSettings settings = iwc.getApplicationSettings();
-		String groupId = settings.getProperty(ROOT_PROTECTED_CITIZEN_GROUP_ID_PARAMETER_NAME);
-		if (groupId != null) {
-			final GroupHome groupHome = getGroupHome();
-			rootProtectedCitizenGroup = groupHome.findByPrimaryKey(new Integer(groupId));
-		}
-		else {
-			System.err.println("trying to store Commune Protected Citizen Root group");
-			final GroupBusiness groupBusiness = getGroupBusiness();
-			rootProtectedCitizenGroup = groupBusiness.createGroup("Commune Protected Citizens", "The Commune Protected Citizen Root Group.");
-			settings.setProperty(ROOT_PROTECTED_CITIZEN_GROUP_ID_PARAMETER_NAME, rootProtectedCitizenGroup.getPrimaryKey());
+		if (rootProtectedCitizenGroup == null) {
+			rootProtectedCitizenGroup = getGroupCreateIfNecessaryStoreAsApplicationBinding(ROOT_PROTECTED_CITIZEN_GROUP_ID_PARAMETER_NAME, "Commune Protected Citizens", "The Commune Protected Citizen Root Group.");
 		}
 		return rootProtectedCitizenGroup;
 	}
@@ -459,24 +370,10 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	 * CreateException if it failed to locate or create the group.
 	 */
 	public Group getRootDeceasedCitizensGroup() throws CreateException, FinderException, RemoteException {
-		//create the default group
-		if (rootDeceasedCitizensGroup != null)
-			return rootDeceasedCitizensGroup;
-
-		final IWApplicationContext iwc = getIWApplicationContext();
-		final IWMainApplicationSettings settings = iwc.getApplicationSettings();
-		String groupId = settings.getProperty(ROOT_CITIZEN_DECEASED_ID_PARAMETER_NAME);
-		if (groupId != null) {
-			final GroupHome groupHome = getGroupHome();
-			rootDeceasedCitizensGroup = groupHome.findByPrimaryKey(new Integer(groupId));
+		if (rootDeceasedCitizensGroup == null) {
+			rootDeceasedCitizensGroup = getGroupCreateIfNecessaryStoreAsApplicationBinding(ROOT_CITIZEN_DECEASED_ID_PARAMETER_NAME,"Deceased Citizens", "The Commune Deceased Citizen Root Group.");
 		}
-		else {
-			System.err.println("trying to store Citizen Deceased Root group");
-			final GroupBusiness groupBusiness = getGroupBusiness();
-			rootDeceasedCitizensGroup = groupBusiness.createGroup("Deceased Citizens", "The Commune Deceased Citizen Root Group.");
-			settings.setProperty(ROOT_CITIZEN_DECEASED_ID_PARAMETER_NAME, rootDeceasedCitizensGroup.getPrimaryKey());
-		}
-		return rootProtectedCitizenGroup;
+		return rootDeceasedCitizensGroup;
 	}
 
 
@@ -1264,4 +1161,46 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		}
 		return schoolBusiness;
 	}
+
+	private Group getGroupCreateIfNecessaryStoreAsApplicationBinding(String parameter, String createName, String createDescription) throws RemoteException, CreateException, FinderException {
+		return getGroupCreateIfNecessaryStoreAsApplicationBinding(parameter, createName, createDescription, true);
+	}
+
+	private Group getGroupCreateIfNecessaryStoreInCommune(Commune commune, String parameter, String createName, String createDescription) throws RemoteException, CreateException, FinderException {
+		Group group = commune.getGroup();
+		if (group == null) {
+			group = getGroupCreateIfNecessaryStoreAsApplicationBinding(parameter, createName, createDescription, false);
+			commune.setGroup(group);
+			commune.store();
+		}
+		return group;
+	}
+	
+	
+	private Group getGroupCreateIfNecessaryStoreAsApplicationBinding(String parameter, String createName, String createDescription, boolean store) throws RemoteException, CreateException, FinderException {	
+		ICApplicationBindingBusiness applicationBindingBusiness = (ICApplicationBindingBusiness)  IBOLookup.getServiceInstance(getIWApplicationContext(), ICApplicationBindingBusiness.class);
+		// look up ic application binding
+		String groupId = applicationBindingBusiness.get(parameter);
+		Group group = null;
+		if (groupId != null) {
+			group = getGroupHome().findByPrimaryKey(new Integer(groupId));
+		}
+		else {
+			System.err.println("Trying to store " + createName + " group");
+			group = getGroupBusiness().createGroup(createName, createDescription);
+			if (store) {
+				groupId = group.getPrimaryKey().toString();
+				try {
+					applicationBindingBusiness.put(parameter, groupId);
+				}
+				catch (RemoveException ex) {
+					throw new CreateException("[CommuneUserBusiness} Creation of " + createName + " has no primary key");
+				}
+			}
+		}
+	return group;
+	}
+	
+
+
 }
