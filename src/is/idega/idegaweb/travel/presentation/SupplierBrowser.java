@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowser.java,v 1.36 2005/10/14 15:06:10 gimmi Exp $
+ * $Id: SupplierBrowser.java,v 1.37 2005/10/19 11:10:56 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -85,7 +85,13 @@ public class SupplierBrowser extends TravelBlock {
 	public static final String PARAMETER_TO = AbstractSearchForm.PARAMETER_TO_DATE;
 	public static final String PARAMETER_NUMBER_OF_DAYS = AbstractSearchForm.PARAMETER_MANY_DAYS;
 	public static final String PARAMETER_SUPPLIER_NAME = AbstractSearchForm.PARAMETER_SUPPLIER_NAME;
+	
 	private static final String PARAMETER_PLUGIN = "sb_pp";
+	private static final String PARAMETER_SHOW_PRICES = "sb_par_show_p";
+	private static final String PARAMETER_HEADER_STYLE_CLASS = "sb_par_head_styleClass";
+	private static final String PARAMETER_LINK_STYLE_CLASS = "sb_par_link_styleClass";
+	private static final String PARAMETER_TEXT_STYLE_CLASS = "sb_par_text_styleClass";
+	private static final String PARAMETER_USE_ONLINE_PRICES = "sb_P_uop";
 
 	protected DecimalFormat df = new DecimalFormat("#,###");
 	
@@ -295,6 +301,23 @@ public class SupplierBrowser extends TravelBlock {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+
+		// Setting parameters
+		if (iwc.isParameterSet(PARAMETER_SHOW_PRICES)) {
+			setShowPriceWithProductInformation(Boolean.valueOf(iwc.getParameter(PARAMETER_SHOW_PRICES)).booleanValue());
+		}
+		if (iwc.isParameterSet(PARAMETER_HEADER_STYLE_CLASS)) {
+			setHeaderStyleClass(iwc.getParameter(PARAMETER_HEADER_STYLE_CLASS));
+		}
+		if (iwc.isParameterSet(PARAMETER_LINK_STYLE_CLASS)) {
+			setLinkStyleClass(iwc.getParameter(PARAMETER_LINK_STYLE_CLASS));
+		}
+		if (iwc.isParameterSet(PARAMETER_TEXT_STYLE_CLASS)) {
+			setTextStyleClass(iwc.getParameter(PARAMETER_TEXT_STYLE_CLASS));
+		}
+		if (iwc.isParameterSet(PARAMETER_USE_ONLINE_PRICES)) {
+			setUseOnlinePrices(Boolean.valueOf(iwc.getParameter(PARAMETER_USE_ONLINE_PRICES)).booleanValue());
 		}
 
 	}
@@ -818,10 +841,10 @@ public class SupplierBrowser extends TravelBlock {
 				
 				table.add(getText(desc), 2, row);
 				if (showMoreButton) {
-					moreLink = new Link(getResourceBundle().getLocalizedString("more", "More"));
+					moreLink = getLink(getResourceBundle().getLocalizedString("more", "More"));
 					moreLink.setPublicWindowToOpen(SupplierBrowserDetailsWindow.class);
 					moreLink.addParameter(SupplierBrowserDetailsWindow.PARAMETER_PRODUCT_ID, product.getPrimaryKey().toString());
-					moreLink.addParameter(PARAMETER_PLUGIN, plugin.getClass().getName());
+					addParametersToMoreLink(moreLink);
 					table.add(" ... ", 2, row);
 					table.setCellpaddingBottom(3, row, 2);
 					table.setCellpaddingRight(3, row, 2);
@@ -1070,7 +1093,7 @@ public class SupplierBrowser extends TravelBlock {
 				Link moreLink = new Link(getResourceBundle().getLocalizedString("more", "More"));
 				moreLink.setPublicWindowToOpen(SupplierBrowserDetailsWindow.class);
 				moreLink.addParameter(SupplierBrowserDetailsWindow.PARAMETER_SUPPLIER_ID, supplier.getPrimaryKey().toString());
-				moreLink.addParameter(PARAMETER_PLUGIN, IWMainApplication.getEncryptedClassName(plugin.getClass()));
+				addParametersToMoreLink(moreLink);
 				table.add(" ... ", 2, row);
 				table.add(moreLink, 3, row);
 //				table.setRowPadding(row, 2);
@@ -1103,6 +1126,21 @@ public class SupplierBrowser extends TravelBlock {
 		}
 		
 		return row;
+	}
+
+	/**
+	 * <p>
+	 * TODO gimmi describe method addParametersToMoreLink
+	 * </p>
+	 * @param moreLink
+	 */
+	private void addParametersToMoreLink(Link moreLink) {
+		moreLink.addParameter(PARAMETER_PLUGIN, IWMainApplication.getEncryptedClassName(plugin.getClass()));
+		moreLink.addParameter(PARAMETER_SHOW_PRICES, Boolean.toString(showPriceWithProductInformation));
+		moreLink.addParameter(PARAMETER_USE_ONLINE_PRICES, Boolean.toString(useOnlinePrices));
+		moreLink.addParameter(PARAMETER_HEADER_STYLE_CLASS, headerStyleClass);
+		moreLink.addParameter(PARAMETER_LINK_STYLE_CLASS, linkStyleClass);
+		moreLink.addParameter(PARAMETER_TEXT_STYLE_CLASS, textStyleClass);
 	}
 
 	/**
@@ -1163,7 +1201,7 @@ public class SupplierBrowser extends TravelBlock {
 	}
 	
 	private Link getDetailLink(Supplier supplier, IWContext iwc) throws RemoteException {
-		Link link = new Link(getText(getResourceBundle().getLocalizedString("details", "Details"), linkStyleClass));
+		Link link = new Link(getText(getResourceBundle().getLocalizedString(plugin.getLocalizationPrefix()+"details", "Details"), linkStyleClass));
 		link.addParameter(ACTION, ACTION_VIEW_PRODUCTS);
 		link.maintainParameter(PARAMETER_POSTAL_CODES, iwc);
 		link.maintainParameter(PARAMETER_SUPPLIER_MANAGER, iwc);
@@ -1298,6 +1336,10 @@ public class SupplierBrowser extends TravelBlock {
 	
 	public void setSpaceBetweenItems(int spaceBetweenItems) {
 		this.spaceBetweenItems = spaceBetweenItems;		
+	}
+	
+	public void setImageWidth(String width) {
+		this.imageWidth = width;
 	}
 	
 	private ServiceSearchSession getSearchSession(IWUserContext iwc) {
