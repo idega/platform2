@@ -56,8 +56,8 @@ import com.idega.util.IWTimestamp;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2005/09/02 08:02:51 $ by $Author: gimmi $
- * @version $Revision: 1.148 $
+ *         Last modified: $Date: 2005/10/19 08:42:13 $ by $Author: anna $
+ * @version $Revision: 1.149 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -982,6 +982,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 
 		// AND ((c.sch_school_season_id IS NULL AND m.removed_date IS NULL )
 		// OR c.sch_school_season_id in
+		
 		//  (SELECT sch_school_season_id FROM sch_school_season
 		//   WHERE season_start in
 		//    (SELECT max (season_start) FROM
@@ -992,7 +993,8 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		sql.appendAndIsNull(M_ + REMOVED_DATE);
 		sql.appendRightParenthesis().appendOr();
 		sql.append(C_ + SchoolClassBMPBean.SEASON).append(" in ");
-		sql.appendLeftParenthesis();
+		
+		/*sql.appendLeftParenthesis();
 		sql.appendSelect().append(SchoolSeasonBMPBean.SCHOOLSEASON + "_id");
 		sql.appendFrom().append(SchoolSeasonBMPBean.SCHOOLSEASON);
 		sql.appendWhere(SchoolSeasonBMPBean.START + " in ");
@@ -1004,7 +1006,30 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		sql.appendWhere(SchoolSeasonBMPBean.START).appendLessThanSign();
 		sql.append(new Date(System.currentTimeMillis()));
 		sql.appendRightParenthesis().appendRightParenthesis();
+		sql.appendRightParenthesis().appendRightParenthesis();*/
+		
+//	Christoffer - the above code changes to:
+		/*(SELECT sch_school_season_id FROM sch_school_season WHERE sch_school_season_id in 
+		  (SELECT sch_school_season_id FROM sch_school_season 
+		  WHERE season_start <= sysDate AND school_category = 'ELEMENTARY_SCHOOL' AND season_end >= sysDate));*/
+		
+		//Anna - ..and therefore the code is changed too:
+		sql.appendLeftParenthesis();
+		sql.appendSelect().append(SchoolSeasonBMPBean.SCHOOLSEASON + "_id");
+		sql.appendFrom().append(SchoolSeasonBMPBean.SCHOOLSEASON);
+		sql.appendWhere(SchoolSeasonBMPBean.SCHOOLSEASON + "_id" + " in ");
+
+		sql.appendLeftParenthesis();
+		sql.appendSelect().append(SchoolSeasonBMPBean.SCHOOLSEASON + "_id");
+		sql.appendFrom().append(SchoolSeasonBMPBean.SCHOOLSEASON);
+		sql.appendWhere(SchoolSeasonBMPBean.START).appendLessThanOrEqualsSign();
+		sql.append(new Date(System.currentTimeMillis()));
+		sql.appendAndEquals(SchoolCategoryBMPBean.COLUMN_CATEGORY, "ELEMENTARY_SCHOOL");
+		sql.appendAnd().append(SchoolSeasonBMPBean.END).appendGreaterThanOrEqualsSign();
+		sql.append(new Date(System.currentTimeMillis()));
 		sql.appendRightParenthesis().appendRightParenthesis();
+		sql.appendRightParenthesis().appendRightParenthesis();
+
 
 		// AND (m.invoice_int in (...)
 		// OR m.comp_by_agreement = true
