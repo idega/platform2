@@ -7,9 +7,6 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 
-import javax.ejb.FinderException;
-
-import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
@@ -18,7 +15,6 @@ import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
-import com.idega.user.data.UserHome;
 import com.idega.util.PersonalIDFormatter;
 import com.idega.util.text.Name;
 import com.idega.util.text.TextSoap;
@@ -66,18 +62,17 @@ public abstract class CommuneUserFinder extends CommuneBlock {
 				last = TextSoap.capitalize(last);
 			String pid = iwc.getParameter(PARAMETER_PERSONAL_ID);
 			pid = pid.replaceAll("-", "");
-			UserHome home = (UserHome) IDOLookup.getHome(User.class);
-			try {
-				users = home.findUsersByConditions(first, middle, last, pid, null, null, -1, -1, -1, -1, null, null, true, false);
-			} catch (FinderException e) {
-				e.printStackTrace();
-			}
 			
+			users = getUser(iwc, first, middle, last, pid);	
 		}
 	}
 	
 	protected Collection getUsers(IWContext iwc, String searchString) throws RemoteException {
-		return getUserBusiness(iwc).findSchoolChildrenBySearchCondition(searchString);
+		return getUserBusiness(iwc).findUsersBySearchCondition(searchString);
+	}
+	
+	protected Collection getUser(IWContext iwc, String firstName, String middleName, String lastName, String pid) throws RemoteException {
+		return getUserBusiness(iwc).findUsersByConditions(firstName, middleName, lastName, pid);
 	}
 	
 	private void drawForm(IWContext iwc) {
