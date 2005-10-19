@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowserPlugin.java,v 1.8 2005/10/05 22:45:10 gimmi Exp $
+ * $Id: SupplierBrowserPlugin.java,v 1.9 2005/10/19 11:08:21 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -104,5 +104,7 @@ public interface SupplierBrowserPlugin {
 	 * @param iwrb
 	 * @return
 	 */
-	public int addProductInfo(Product product, Table table, int row, IWResourceBundle iwrb); 
+	public int addProductInfo(Product product, Table table, int row, IWResourceBundle iwrb);
+	
+	public String getLocalizationPrefix();
 }

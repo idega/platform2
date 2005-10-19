@@ -1,5 +1,5 @@
 /*
- * $Id: TourBrowser.java,v 1.11 2005/10/05 22:45:10 gimmi Exp $
+ * $Id: TourBrowser.java,v 1.12 2005/10/19 11:08:21 gimmi Exp $
  * Created on 28.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -294,6 +294,10 @@ public class TourBrowser extends TravelBlock implements SupplierBrowserPlugin {
 
 	public int addProductInfo(Product product, com.idega.presentation.Table table, int row, IWResourceBundle iwrb) {
 		return row;
+	}
+
+	public String getLocalizationPrefix() {
+		return "tour_browser_";
 	}
 
 }

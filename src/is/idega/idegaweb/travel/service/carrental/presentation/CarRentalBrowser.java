@@ -1,5 +1,5 @@
 /*
- * $Id: CarRentalBrowser.java,v 1.6 2005/10/14 15:20:57 gimmi Exp $
+ * $Id: CarRentalBrowser.java,v 1.7 2005/10/19 11:08:21 gimmi Exp $
  * Created on 18.6.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -250,5 +250,9 @@ public class CarRentalBrowser extends TravelBlock implements SupplierBrowserPlug
 	
 	public int addProductInfo(Product product, com.idega.presentation.Table table, int row, IWResourceBundle iwrb) {
 		return row;
+	}
+
+	public String getLocalizationPrefix() {
+		return "carrental_browser_";
 	}
 }
