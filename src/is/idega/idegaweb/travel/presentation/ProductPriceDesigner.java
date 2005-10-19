@@ -118,7 +118,9 @@ public class ProductPriceDesigner extends TravelWindow {
       }else{
         _currencyId = _settings.getCurrencyId();
       }
-    }catch (Exception e) {}
+    }catch (Exception e) {
+    	e.printStackTrace();
+    }
 
 		ServiceHandler sh = (ServiceHandler) IBOLookup.getServiceInstance(iwc, ServiceHandler.class);
 		try {
