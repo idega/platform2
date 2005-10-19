@@ -39,6 +39,8 @@ import com.idega.core.location.data.CountryHome;
 import com.idega.core.location.data.PostalCode;
 import com.idega.data.IDOCreateException;
 import com.idega.data.IDOFinderException;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.data.IDORemoveRelationshipException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
@@ -1141,6 +1143,22 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		return false;
 	}
 		
+	public Collection findSchoolChildrenByConditions(String firstName, String middleName, String lastName, String pid) {
+		UserHome home;
+		try {
+			home = (UserHome) IDOLookup.getHome(User.class);
+			return home.findUsersByConditions(firstName, middleName, lastName, pid, null, null, -1, -1, -1, SCHOOLCHILDREN_AGE, null, null, true, false);
+		}
+		catch (IDOLookupException e1) {
+			e1.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
 	public Collection findSchoolChildrenBySearchCondition(String searchString) {
 		try {
 			Collection users = new ArrayList();
@@ -1162,6 +1180,45 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 			return new ArrayList();
 		}
 	}
+
+	public Collection findUsersByConditions(String firstName, String middleName, String lastName, String pid) {
+		UserHome home;
+		try {
+			home = (UserHome) IDOLookup.getHome(User.class);
+			return home.findUsersByConditions(firstName, middleName, lastName, pid, null, null, -1, -1, -1, -1, null, null, true, false);
+		}
+		catch (IDOLookupException e1) {
+			e1.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	public Collection findUsersBySearchCondition(String searchString) {
+		try {
+			Collection users = new ArrayList();
+			StringTokenizer tokenizer = new StringTokenizer(searchString, " ");
+			while (tokenizer.hasMoreElements()) {
+				String element = (String) tokenizer.nextElement();
+				Collection results = this.getUserHome().findUsersBySearchCondition(trimSearchString(element), true);
+				if (results != null) {
+					if (users.isEmpty())
+						users.addAll(results);
+					else
+						users.retainAll(results);
+				}
+			}
+			return users;
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return new ArrayList();
+		}
+	}
+
 	
 	private String trimSearchString(String string) {
 		String temp = string;

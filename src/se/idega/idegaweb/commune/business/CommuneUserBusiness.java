@@ -1,6 +1,6 @@
 /*
- * $Id: CommuneUserBusiness.java,v 1.46 2005/04/06 09:28:16 laddi Exp $
- * Created on 6.4.2005
+ * $Id: CommuneUserBusiness.java,v 1.47 2005/10/19 11:44:38 palli Exp $
+ * Created on Oct 14, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -10,18 +10,24 @@
 package se.idega.idegaweb.commune.business;
 
 import is.idega.block.family.business.FamilyLogic;
+
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Date;
+
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+
+
 import com.idega.block.school.data.School;
 import com.idega.business.IBOService;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.Commune;
+import com.idega.core.location.data.Country;
+import com.idega.core.location.data.PostalCode;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Gender;
 import com.idega.user.data.Group;
@@ -30,13 +36,11 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * <p>
- * TODO laddi Describe Type CommuneUserBusiness
- * </p>
- *  Last modified: $Date: 2005/04/06 09:28:16 $ by $Author: laddi $
  * 
- * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.46 $
+ *  Last modified: $Date: 2005/10/19 11:44:38 $ by $Author: palli $
+ * 
+ * @author <a href="mailto:bluebottle@idega.com">bluebottle</a>
+ * @version $Revision: 1.47 $
  */
 public interface CommuneUserBusiness extends IBOService, UserBusiness {
 
@@ -53,6 +57,13 @@ public interface CommuneUserBusiness extends IBOService, UserBusiness {
 			IWTimestamp dateOfBirth) throws CreateException, java.rmi.RemoteException;
 
 	/**
+	 * @see se.idega.idegaweb.commune.business.CommuneUserBusinessBean#updateUsersMainAddressOrCreateIfDoesNotExist
+	 */
+	public Address updateUsersMainAddressOrCreateIfDoesNotExist(User user, String streetNameAndNumber,
+			PostalCode postalCode, Country country, String city, String province, String poBox, Integer communeID)
+			throws CreateException, RemoteException;
+
+	/**
 	 * @see se.idega.idegaweb.commune.business.CommuneUserBusinessBean#createCitizen
 	 */
 	public User createCitizen(String firstname, String middlename, String lastname, String personalID, Gender gender,
@@ -61,8 +72,8 @@ public interface CommuneUserBusiness extends IBOService, UserBusiness {
 	/**
 	 * @see se.idega.idegaweb.commune.business.CommuneUserBusinessBean#createOrUpdateCitizenByPersonalID
 	 */
-	public User createOrUpdateCitizenByPersonalID(String firstName, String middleName, String lastName, String personalID)
-			throws CreateException, java.rmi.RemoteException;
+	public User createOrUpdateCitizenByPersonalID(String firstName, String middleName, String lastName,
+			String personalID) throws CreateException, java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.business.CommuneUserBusinessBean#createOrUpdateCitizenByPersonalID
@@ -91,8 +102,8 @@ public interface CommuneUserBusiness extends IBOService, UserBusiness {
 	/**
 	 * @see se.idega.idegaweb.commune.business.CommuneUserBusinessBean#createCommuneAdministrator
 	 */
-	public User createCommuneAdministrator(String firstname, String middlename, String lastname) throws CreateException,
-			RemoteException;
+	public User createCommuneAdministrator(String firstname, String middlename, String lastname)
+			throws CreateException, RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.business.CommuneUserBusinessBean#createProviderAdministrator
@@ -282,9 +293,26 @@ public interface CommuneUserBusiness extends IBOService, UserBusiness {
 	public boolean setUserAsDeceased(Integer userID, Date deceasedDate) throws java.rmi.RemoteException;
 
 	/**
+	 * @see se.idega.idegaweb.commune.business.CommuneUserBusinessBean#findSchoolChildrenByConditions
+	 */
+	public Collection findSchoolChildrenByConditions(String firstName, String middleName, String lastName, String pid)
+			throws java.rmi.RemoteException;
+
+	/**
 	 * @see se.idega.idegaweb.commune.business.CommuneUserBusinessBean#findSchoolChildrenBySearchCondition
 	 */
 	public Collection findSchoolChildrenBySearchCondition(String searchString) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.business.CommuneUserBusinessBean#findUsersByConditions
+	 */
+	public Collection findUsersByConditions(String firstName, String middleName, String lastName, String pid)
+			throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.business.CommuneUserBusinessBean#findUsersBySearchCondition
+	 */
+	public Collection findUsersBySearchCondition(String searchString) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.business.CommuneUserBusinessBean#getNameLastFirst
@@ -295,4 +323,5 @@ public interface CommuneUserBusiness extends IBOService, UserBusiness {
 	 * @see se.idega.idegaweb.commune.business.CommuneUserBusinessBean#getPostalAddress
 	 */
 	public Address getPostalAddress(User user) throws RemoteException, NoUserAddressException;
+
 }
