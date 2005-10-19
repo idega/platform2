@@ -30,6 +30,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.PrintButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.util.IWTimestamp;
@@ -48,21 +49,21 @@ public class BookingRefunder extends TravelBlock {
 	private static final String PARAMETER_CC_YEAR = "ccy";
 	private static final String PARAMETER_CC_CVC = "cccvc";
 	private static final String PARAMETER_AMOUNT = "cca";
-
+	
 	private static final String ACTION = "p_a";
 	private static final String PARAMETER_VERIFY = "p_v";
 	private static final String PARAMETER_CONFIRMED = "p_c";
 	
 	public static final int HOURS_BEFORE_REFUND_EXPIRES = 48;
-  private DecimalFormat df = new DecimalFormat("0.00");
-  
+	private DecimalFormat df = new DecimalFormat("0.00");
+	
 	private int dateInputSize = 3;
-  private int ccInputSize = 19;
-  private int amountInputSize = 10;
-  private int tableWidth = 400;
-
-  private GeneralBooking booking = null;
-  private Product product = null;
+	private int ccInputSize = 19;
+	private int amountInputSize = 10;
+	private int tableWidth = 400;
+	
+	private GeneralBooking booking = null;
+	private Product product = null;
 	private CreditCardAuthorizationEntry ccAuthEntry = null;
 	private CreditCardClient ccClient = null;
 	private IWResourceBundle iwrb = null;
@@ -71,7 +72,7 @@ public class BookingRefunder extends TravelBlock {
 	private String headerStyle = null;
 	private String textStyle = null;
 	private String errorTextStyle = null;
-		
+	
 	public void main(IWContext iwc) throws Exception {
 		super.main(iwc);
 		init(iwc);
@@ -99,7 +100,7 @@ public class BookingRefunder extends TravelBlock {
 				}
 			} catch (FinderException e) {
 			}
-
+			
 			try {
 				ccAuthEntry = getCreditCardBusiness(iwc).getAuthorizationEntry(bookingSupplier, booking.getCreditcardAuthorizationNumber(), new IWTimestamp(booking.getDateOfBooking()));
 				ccClient = getCreditCardBusiness(iwc).getCreditCardClient(bookingSupplier, new IWTimestamp(booking.getDateOfBooking()));
@@ -118,7 +119,7 @@ public class BookingRefunder extends TravelBlock {
 		int row = 1;
 		
 		String action  = iwc.getParameter(ACTION);
-
+		
 		boolean hasPermission = (bookingSupplier.equals(super.getSupplier()) || super.isSuperAdmin); 
 		
 		if (isSupplierManager() && !hasPermission) {
@@ -133,7 +134,7 @@ public class BookingRefunder extends TravelBlock {
 				++row;
 				table.add(getErrorText(iwrb.getLocalizedString("travel.not_booked_with_a_creditcard_long", "This booking was not booked using a creditcard. Please contact the supplier if this is incorrect.")), 1, row);
 			} else if (action == null){
-		    row = creditcardInputForm(iwc, table, row);
+				row = creditcardInputForm(iwc, table, row);
 			} else if (action.equals(PARAMETER_VERIFY)) {
 				row = verificationForm(iwc, table, row);
 			} else if (action.equals(PARAMETER_CONFIRMED)) {
@@ -161,7 +162,7 @@ public class BookingRefunder extends TravelBlock {
 				++row;
 				table.add(getErrorText(iwrb.getLocalizedString("travel.cannot_refund_long", "This booking can not be refunded here, please contact the supplier.")), 1, row);
 			} else if (action == null){
-		    row = creditcardInputForm(iwc, table, row);
+				row = creditcardInputForm(iwc, table, row);
 			} else if (action.equals(PARAMETER_VERIFY)) {
 				row = verificationForm(iwc, table, row);
 			} else if (action.equals(PARAMETER_CONFIRMED)) {
@@ -173,275 +174,284 @@ public class BookingRefunder extends TravelBlock {
 	}
 	
 	private int verificationForm(IWContext iwc, Table table, int row) throws RemoteException{
-    String number = iwc.getParameter(PARAMETER_CC_NUMBER);
-    String year   = iwc.getParameter(PARAMETER_CC_YEAR);
-    String month  = iwc.getParameter(PARAMETER_CC_MONTH);
-    String cvc  = iwc.getParameter(PARAMETER_CC_CVC);
-    String amount = iwc.getParameter(PARAMETER_AMOUNT);
-	  amount = TextSoap.findAndReplace(amount,',','.');
-
-    Text ccNumber = getText(iwrb.getLocalizedString("travel.credidcard_number","Creditcard number"));
-    Text ccYear   = getText(iwrb.getLocalizedString("travel.year","Year"));
-    Text ccMonth  = getText(iwrb.getLocalizedString("travel.month","Month"));
-    Text ccCVC = getText(iwrb.getLocalizedString("travel.cc.cvc","Cardholder Verification Code (CVC)"));
-    Text ccAmount   = getText(iwrb.getLocalizedString("travel.amount","Amount"));
-    Text notANumber = getErrorText("X");
-	  notANumber.setFontColor("RED");
-
-    boolean error = false;
-    boolean incorrectCCNum = false;
-    boolean incorrectCCDate = false;
-    boolean cardNumberWarning = false;
-    table.mergeCells(1,row,3,row);
-    table.add(getHeaderText(iwrb.getLocalizedString("travel.is_information_correct","Is the following information correct ?")), 1, row);
-    //table.setRowColor(row, backgroundColor);
-
-    ++row;
-    table.add(ccNumber,2,row);
-    table.add(number,3,row);
-    table.setAlignment(3, row, "right");
-    try {
-    		if (this.ccAuthEntry.getCardNumber() != null) {
-	    		incorrectCCNum = !getCreditCardBusiness(iwc).verifyCreditCardNumber(number,this.ccAuthEntry);
-	    		error = incorrectCCNum;
-	      Long.parseLong(number);
-    		} else {
-    			if (bookingSupplier.equals(super.getSupplier()) || super.isSuperAdmin ) {
-    				cardNumberWarning = true;
-    			} else {
-    				incorrectCCNum = true;
-    				error = true;
-    			}
-    		}
-    }catch (NumberFormatException n) {
-      table.add(notANumber,4,row);
-      error = true;
-    } catch (IllegalArgumentException e) {
-      error = true;
-    		e.printStackTrace();
-    }
-    incorrectCCDate = !ccAuthEntry.getCardExpires().equals(month+year);
-    if (incorrectCCDate) {
-    		System.out.println("BookingRefunder : ExpireDate is incorrect ("+month+year+")");
-    		error = true;
-    }
-    
-    ++row;
-    table.add(ccMonth,2,row);
-    table.add(month,3,row);
-    table.setAlignment(3, row, "right");
-    try {
-      if (Integer.parseInt(month) < 1 || Integer.parseInt(month) > 12) {
-        throw new NumberFormatException();
-      }
-    }catch (NumberFormatException n) {
-      table.add(notANumber,4,row);
-      error = true;
-    }
-
-    ++row;
-    table.add(ccYear,2,row);
-    table.add(year,3,row);
-    table.setAlignment(3, row, "right");
-    try {
-      Integer.parseInt(year);
-    }catch (NumberFormatException n) {
-      table.add(notANumber,4,row);
-      error = true;
-    }
-    
-    if (getCreditCardBusiness(iwc).getUseCVC(ccClient)) {
-	    ++row;
-	    table.add(ccCVC, 2, row);
-	    table.add(cvc, 3, row);
-	    table.setAlignment(3, row, "right");
-	    try {
-	    		Integer.parseInt(cvc);
-	    } catch (NumberFormatException e) {
-	    		table.add(notANumber, 4, row);
-	    		error = true;
-	    }
-    }
-
-
-    ++row;
-    ++row;
-    table.add(ccAmount,2,row);
-    table.add(amount,3,row);
-    table.setAlignment(3, row, "right");
-    try {
-      Float.parseFloat(amount);
-    }catch (NumberFormatException n) {
-      table.add(notANumber,4,row);
-      error = true;
-    }
-
-	  if (incorrectCCNum || incorrectCCDate) {
+		String number = iwc.getParameter(PARAMETER_CC_NUMBER);
+		String year   = iwc.getParameter(PARAMETER_CC_YEAR);
+		String month  = iwc.getParameter(PARAMETER_CC_MONTH);
+		String cvc  = iwc.getParameter(PARAMETER_CC_CVC);
+		String amount = iwc.getParameter(PARAMETER_AMOUNT);
+		amount = TextSoap.findAndReplace(amount,',','.');
+		
+		Text ccNumber = getText(iwrb.getLocalizedString("travel.credidcard_number","Creditcard number"));
+		Text ccYear   = getText(iwrb.getLocalizedString("travel.year","Year"));
+		Text ccMonth  = getText(iwrb.getLocalizedString("travel.month","Month"));
+		Text ccCVC = getText(iwrb.getLocalizedString("travel.cc.cvc","Cardholder Verification Code (CVC)"));
+		Text ccAmount   = getText(iwrb.getLocalizedString("travel.amount","Amount"));
+		Text notANumber = getErrorText("X");
+		notANumber.setFontColor("RED");
+		
+		boolean error = false;
+		boolean incorrectCCNum = false;
+		boolean incorrectCCDate = false;
+		boolean cardNumberWarning = false;
+		table.mergeCells(1,row,3,row);
+		table.add(getHeaderText(iwrb.getLocalizedString("travel.please_verify_cc_info","Please verify that your credit card information and amount is correct and press yes")), 1, row);
+		//table.setRowColor(row, backgroundColor);
+		
+		++row;
+		table.add(ccNumber,2,row);
+		table.add(number,3,row);
+		table.setAlignment(3, row, "right");
+		try {
+			if (this.ccAuthEntry.getCardNumber() != null) {
+				incorrectCCNum = !getCreditCardBusiness(iwc).verifyCreditCardNumber(number,this.ccAuthEntry);
+				error = incorrectCCNum;
+				Long.parseLong(number);
+			} else {
+				if (bookingSupplier.equals(super.getSupplier()) || super.isSuperAdmin ) {
+					cardNumberWarning = true;
+				} else {
+					incorrectCCNum = true;
+					error = true;
+				}
+			}
+		}catch (NumberFormatException n) {
+			table.add(notANumber,4,row);
+			error = true;
+		} catch (IllegalArgumentException e) {
+			error = true;
+			e.printStackTrace();
+		}
+		incorrectCCDate = !ccAuthEntry.getCardExpires().equals(month+year);
+		if (incorrectCCDate) {
+			System.out.println("BookingRefunder : ExpireDate is incorrect ("+month+year+")");
+			error = true;
+		}
+		
+		++row;
+		table.add(ccMonth,2,row);
+		table.add(month,3,row);
+		table.setAlignment(3, row, "right");
+		try {
+			if (Integer.parseInt(month) < 1 || Integer.parseInt(month) > 12) {
+				throw new NumberFormatException();
+			}
+		}catch (NumberFormatException n) {
+			table.add(notANumber,4,row);
+			error = true;
+		}
+		
+		++row;
+		table.add(ccYear,2,row);
+		table.add(year,3,row);
+		table.setAlignment(3, row, "right");
+		try {
+			Integer.parseInt(year);
+		}catch (NumberFormatException n) {
+			table.add(notANumber,4,row);
+			error = true;
+		}
+		
+		if (getCreditCardBusiness(iwc).getUseCVC(ccClient)) {
+			++row;
+			table.add(ccCVC, 2, row);
+			table.add(cvc, 3, row);
+			table.setAlignment(3, row, "right");
+			try {
+				Integer.parseInt(cvc);
+			} catch (NumberFormatException e) {
+				table.add(notANumber, 4, row);
+				error = true;
+			}
+		}
+		
+		
+		++row;
+		++row;
+		table.add(ccAmount,2,row);
+		table.add(amount,3,row);
+		table.setAlignment(3, row, "right");
+		try {
+			Float.parseFloat(amount);
+		}catch (NumberFormatException n) {
+			table.add(notANumber,4,row);
+			error = true;
+		}
+		
+		if (incorrectCCNum || incorrectCCDate) {
 			++row;
 			table.mergeCells(1, row, 3, row);
 			table.add(getErrorText(iwrb.getLocalizedString("creditcard.credicard_info_not_the_same_as_on_booking", "Creditcard information is not the same as the one used when booking.")), 1, row);
-	  } 
-	  else if (cardNumberWarning) {
+		} 
+		else if (cardNumberWarning) {
 			++row;
 			table.mergeCells(1, row, 3, row);
 			table.add(getErrorText(iwrb.getLocalizedString("creditcard.warning_credicard_info_can_not_be_verified", "WARNING !!! Creditcard number can not be verified as being the same as used when booking.")), 1, row);
-	  }
-
-    ++row;
-    ++row;
-    table.mergeCells(1, row, 2, row);
-    table.setAlignment(3, row, "right");
-    table.add(new BackButton(iwrb.getLocalizedImageButton("creditcard.no", "No")),1 ,row);
-    SubmitButton sub  = new SubmitButton(iwrb.getLocalizedImageButton("creditcard.yes", "Yes"), ACTION, PARAMETER_CONFIRMED);
-	  table.add(new HiddenInput(this.PARAMETER_CC_NUMBER, number), 1, row);
-	  table.add(new HiddenInput(this.PARAMETER_CC_YEAR, year), 1, row);
-	  table.add(new HiddenInput(this.PARAMETER_CC_MONTH, month), 1, row);
-	  table.add(new HiddenInput(this.PARAMETER_CC_CVC), 1, row);
-	  table.add(new HiddenInput(this.PARAMETER_AMOUNT, amount), 1, row);
-	  
-    if (!error)
-    		table.add(sub, 3, row);
-
-    return row;
+		}
+		
+		++row;
+		++row;
+		table.mergeCells(1, row, 2, row);
+		table.setAlignment(3, row, "right");
+		table.add(new BackButton(iwrb.getLocalizedImageButton("creditcard.no", "No")),1 ,row);
+		SubmitButton sub  = new SubmitButton(iwrb.getLocalizedImageButton("creditcard.yes", "Yes"), ACTION, PARAMETER_CONFIRMED);
+		table.add(new HiddenInput(this.PARAMETER_CC_NUMBER, number), 1, row);
+		table.add(new HiddenInput(this.PARAMETER_CC_YEAR, year), 1, row);
+		table.add(new HiddenInput(this.PARAMETER_CC_MONTH, month), 1, row);
+		table.add(new HiddenInput(this.PARAMETER_CC_CVC), 1, row);
+		table.add(new HiddenInput(this.PARAMETER_AMOUNT, amount), 1, row);
+		
+		if (!error)
+			table.add(sub, 3, row);
+		
+		return row;
 	}
 	
 	private int creditcardInputForm(IWContext iwc, Table table, int row) throws RemoteException, FinderException {
 		TextInput ccNum = new TextInput(PARAMETER_CC_NUMBER);
-			ccNum.setSize(ccInputSize);
-			TextInput ccMonth = new TextInput(PARAMETER_CC_MONTH);
-			ccMonth.setSize(dateInputSize);
-			TextInput ccYear = new TextInput(PARAMETER_CC_YEAR);
-			ccYear.setSize(dateInputSize);
-			TextInput amount = new TextInput(PARAMETER_AMOUNT);
-			amount.setSize(amountInputSize);
-			TextInput cvc = new TextInput(PARAMETER_CC_CVC);
-			cvc.setSize(5);
-			
-			table.add(getHeaderText(iwrb.getLocalizedString("travel.booking_refund", "Booking refund")), 1, row);
-			
+		ccNum.setSize(ccInputSize);
+		TextInput ccMonth = new TextInput(PARAMETER_CC_MONTH);
+		ccMonth.setSize(dateInputSize);
+		TextInput ccYear = new TextInput(PARAMETER_CC_YEAR);
+		ccYear.setSize(dateInputSize);
+		TextInput amount = new TextInput(PARAMETER_AMOUNT);
+		amount.setSize(amountInputSize);
+		TextInput cvc = new TextInput(PARAMETER_CC_CVC);
+		cvc.setSize(5);
+		
+		table.add(getHeaderText(iwrb.getLocalizedString("travel.please_enter_creditcard_number_and_ex", "Please enter your creditcard number and expiry date, and then press confirm")), 1, row);
+		
+		++row;
+		table.add(getText(iwrb.getLocalizedString("travel.credidcard_number","Creditcard number")), 1, row);
+		table.add(ccNum, 2, row);
+		table.mergeCells(2, row, 3, row);
+		//table.setRowColor(row, GRAY);
+		
+		++row;
+		table.add(getText(iwrb.getLocalizedString("travel.month","Month")), 1, row);
+		table.add(getText(" / "), 1, row);
+		table.add(getText(iwrb.getLocalizedString("travel.year","Year")), 1, row);
+		table.add(ccMonth, 2, row);
+		table.add(getText(" / "), 2, row);
+		table.add(ccYear, 2, row);
+		//table.setRowColor(row, GRAY);
+		
+		++row;
+		//table.setRowColor(row, GRAY);
+		table.add(getText(iwrb.getLocalizedString("travel.amount","Amount")), 1, row);
+		String sAmount = df.format(getBooker(iwc).getBookingPrice(getBooker(iwc).getMultibleBookings(booking)));
+		table.add(getText(sAmount), 2, row);
+		table.add(new HiddenInput(PARAMETER_AMOUNT, sAmount), 2, row);
+		//table.add(amount, 2, row);
+		//table.setRowColor(row, GRAY);
+		
+		if (getCreditCardBusiness(iwc).getUseCVC(ccClient)) {
 			++row;
-			table.add(getText(iwrb.getLocalizedString("travel.credidcard_number","Creditcard number")), 1, row);
-	    table.add(ccNum, 2, row);
-	    table.mergeCells(2, row, 3, row);
-	    //table.setRowColor(row, GRAY);
-	    
-	    ++row;
-	    table.add(getText(iwrb.getLocalizedString("travel.month","Month")), 1, row);
-	    table.add(getText(" / "), 1, row);
-	    table.add(getText(iwrb.getLocalizedString("travel.year","Year")), 1, row);
-	    table.add(ccMonth, 2, row);
-	    table.add(getText(" / "), 2, row);
-	    table.add(ccYear, 2, row);
-	    //table.setRowColor(row, GRAY);
-
-	    ++row;
-	    //table.setRowColor(row, GRAY);
-	    table.add(getText(iwrb.getLocalizedString("travel.amount","Amount")), 1, row);
-	    String sAmount = df.format(getBooker(iwc).getBookingPrice(getBooker(iwc).getMultibleBookings(booking)));
-	    table.add(getText(sAmount), 2, row);
-	    table.add(new HiddenInput(PARAMETER_AMOUNT, sAmount), 2, row);
-	    //table.add(amount, 2, row);
-	    //table.setRowColor(row, GRAY);
-
-	    if (getCreditCardBusiness(iwc).getUseCVC(ccClient)) {
-		    ++row;
-		    table.add(getText(iwrb.getLocalizedString("travel.cc.cvc","Cardholder Verification Code (CVC)")), 1,row);
-		    table.add(cvc, 2,row);
-				Link cvcLink = LinkGenerator.getLinkCVCExplanationPage(iwc, getText(iwrb.getLocalizedString("cc.what_is_cvc","What is CVC?")));
-				if (cvcLink != null) {
-					table.add(cvcLink, 2, row);
-				}
-	    }
-	    //table.setRowColor(row, GRAY);
-	    
-	    ++row;
-	    table.mergeCells(2, row, 3, row);
-	    table.setAlignment(2, row, "right");
-	    //table.setRowColor(row, GRAY);
-	    table.add(new SubmitButton(iwrb.getLocalizedImageButton("creditcard.save", "Save"), ACTION, PARAMETER_VERIFY),2 ,row);
-
-	    //table.setRowColor(1, backgroundColor);
-	    
-	    return row;
+			table.add(getText(iwrb.getLocalizedString("travel.cc.cvc","Cardholder Verification Code (CVC)")), 1,row);
+			table.add(cvc, 2,row);
+			Link cvcLink = LinkGenerator.getLinkCVCExplanationPage(iwc, getText(iwrb.getLocalizedString("cc.what_is_cvc","What is CVC?")));
+			if (cvcLink != null) {
+				table.add(cvcLink, 2, row);
+			}
+		}
+		//table.setRowColor(row, GRAY);
+		
+		++row;
+		table.mergeCells(2, row, 3, row);
+		table.setAlignment(2, row, "right");
+		//table.setRowColor(row, GRAY);
+		table.add(new SubmitButton(iwrb.getLocalizedImageButton("creditcard.confirm", "Confirm"), ACTION, PARAMETER_VERIFY),2 ,row);
+		
+		//table.setRowColor(1, backgroundColor);
+		
+		return row;
 	}
 	
-  private void complete(IWContext iwc, Table table, int row) {
-    String number = iwc.getParameter(PARAMETER_CC_NUMBER);
-    String year   = iwc.getParameter(PARAMETER_CC_YEAR);
-    String month  = iwc.getParameter(PARAMETER_CC_MONTH);
-    String amount = iwc.getParameter(PARAMETER_AMOUNT);
-    String cvc = iwc.getParameter(PARAMETER_CC_CVC);
+	private void complete(IWContext iwc, Table table, int row) {
+		String number = iwc.getParameter(PARAMETER_CC_NUMBER);
+		String year   = iwc.getParameter(PARAMETER_CC_YEAR);
+		String month  = iwc.getParameter(PARAMETER_CC_MONTH);
+		String amount = iwc.getParameter(PARAMETER_AMOUNT);
+		String cvc = iwc.getParameter(PARAMETER_CC_CVC);
+		
+		
+		try{
+			if (!ccAuthEntry.getCardExpires().equals(month+year)) {
+				CreditCardAuthorizationException e = new CreditCardAuthorizationException();
+				e.setDisplayError(iwrb.getLocalizedString("travel.card_expire_date_wrong", "Creditcard expire date is incorrect."));
+				throw e;
+			}
+			System.out.println("Starting CreditCard refund : "+IWTimestamp.RightNow().toString());
+			number = number.replaceAll(" ", "");
+			number = number.replaceAll("-", "");
+			String heimild = ccClient.doRefund(number,month,year,cvc,Float.parseFloat(amount),ccAuthEntry.getCurrency(), ccAuthEntry.getPrimaryKey(), ccAuthEntry.getExtraField());
+			//booking.setCreditcardAuthorizationNumber(heimild);
+//			booking.setIsValid(false);
+			getBooker(iwc).deleteBooking(booking, true);
+//			booking.store();
+			System.out.println("Ending CreditCard refund : "+IWTimestamp.RightNow().toString());
+			
+			table.add(getText(iwrb.getLocalizedString("travel.booking_has_been_canceled","Your booking has been canceled and refunded to your credit card.")),1,row);
+			table.mergeCells(1,row,2,row);
 
+			++row;
+			table.add(getText(iwrb.getLocalizedString("travel.cancelation_confirmation_code_is","The cancelation confirmation code is")),1,row);
+			table.add(getText(heimild),2, row);
+			table.setAlignment(2, row, "right");
 
-	  try{
-  		if (!ccAuthEntry.getCardExpires().equals(month+year)) {
-  			CreditCardAuthorizationException e = new CreditCardAuthorizationException();
-  			e.setDisplayError(iwrb.getLocalizedString("travel.card_expire_date_wrong", "Creditcard expire date is incorrect."));
-  			throw e;
-  		}
-	    System.out.println("Starting CreditCard refund : "+IWTimestamp.RightNow().toString());
-      number = number.replaceAll(" ", "");
-      number = number.replaceAll("-", "");
-	    String heimild = ccClient.doRefund(number,month,year,cvc,Float.parseFloat(amount),ccAuthEntry.getCurrency(), ccAuthEntry.getPrimaryKey(), ccAuthEntry.getExtraField());
-	    //booking.setCreditcardAuthorizationNumber(heimild);
-//	    booking.setIsValid(false);
-	    getBooker(iwc).deleteBooking(booking, true);
-//	    booking.store();
-	    System.out.println("Ending CreditCard refund : "+IWTimestamp.RightNow().toString());
-	
-	    table.add(getText(iwrb.getLocalizedString("travel.success","Success")),1,row);
-	    table.mergeCells(1,row,2,row);
-	    //table.setRowColor(row, backgroundColor);
-	    ++row;
-	    table.add(getText(iwrb.getLocalizedString("travel.credidcard_authorization_number","Creditcard authorization number")),1,row);
-	    table.add(getText(heimild),2, row);
-	    table.setAlignment(2, row, "right");
-	    
-	    BookingForm bf = getServiceHandler(iwc).getBookingForm(iwc, product);
-	    bf.sendEmails(iwc, booking, iwrb, true, null);
-	  }
-	  catch(CreditCardAuthorizationException e) {
-	    String errMsge = e.getErrorMessage();
-	    String errNumb = e.getErrorNumber();
-	    String display = e.getDisplayError();
-	
-	    ++row;
-	    table.add(getErrorText(iwrb.getLocalizedString("travel.error","Error")),1,row);
-	    table.add(getErrorText(display),2, row);
-	    
-	    ++row;
-	    table.setRowHeight(row, "12");
-	    ++row;
-	    table.add(new BackButton(iwrb.getLocalizedImageButton("travel.back", "Back")), 1, row);
-	
-	  }
-	  catch (Exception e) {
-	    table.add(getErrorText(iwrb.getLocalizedString("travel.error","Error")),1,row);
-	    table.mergeCells(1,row,2,row);
-	    //table.setRowColor(row, backgroundColor);
-	
-	    ++row;
-	    table.add(getErrorText(iwrb.getLocalizedString("travel.unknown_error","Unknown error")),1,row);
+			++row;
+			table.add(getText(iwrb.getLocalizedString("travel.please_write_down_confirmation_code_etc","Please write down the confirmation code or print this page before you exit or close the browser.")),1,row);
+			table.mergeCells(1,row,2,row);
+
+			++row;
+			table.add(new PrintButton(), 2, row);
+			table.setAlignment(2, row, "right");
+
+			
+			BookingForm bf = getServiceHandler(iwc).getBookingForm(iwc, product);
+			bf.sendEmails(iwc, booking, iwrb, true, null);
+		}
+		catch(CreditCardAuthorizationException e) {
+			String errMsge = e.getErrorMessage();
+			String errNumb = e.getErrorNumber();
+			String display = e.getDisplayError();
+			
+			++row;
+			table.add(getErrorText(iwrb.getLocalizedString("travel.error","Error")),1,row);
+			table.add(getErrorText(display),2, row);
+			
+			++row;
+			table.setRowHeight(row, "12");
+			++row;
+			table.add(new BackButton(iwrb.getLocalizedImageButton("travel.back", "Back")), 1, row);
+			
+		}
+		catch (Exception e) {
+			table.add(getErrorText(iwrb.getLocalizedString("travel.error","Error")),1,row);
+			table.mergeCells(1,row,2,row);
+			//table.setRowColor(row, backgroundColor);
+			
+			++row;
+			table.add(getErrorText(iwrb.getLocalizedString("travel.unknown_error","Unknown error")),1,row);
 			table.mergeCells(1, row, 2, row);
-
-	    ++row;
-	    table.setRowHeight(row, "12");
-	    ++row;
-	    table.add(new BackButton(iwrb.getLocalizedImageButton("travel.back", "Back")), 1, row);
-
-	    e.printStackTrace(System.err);
-	  }
-
-
-  }
-
+			
+			++row;
+			table.setRowHeight(row, "12");
+			++row;
+			table.add(new BackButton(iwrb.getLocalizedImageButton("travel.back", "Back")), 1, row);
+			
+			e.printStackTrace(System.err);
+		}
+		
+		
+	}
+	
 	private boolean isTooLateToRefund() {
 		IWTimestamp dateOfBooking = new IWTimestamp(booking.getDateOfBooking());
 		int hoursBetween = IWTimestamp.getHoursBetween(dateOfBooking, IWTimestamp.RightNow());
 		
 		return (hoursBetween > HOURS_BEFORE_REFUND_EXPIRES);
 	}
-
+	
 	private boolean isPastBookingDate() {
 		return IWTimestamp.RightNow().isLaterThan(new IWTimestamp(booking.getBookingDate()));
 	}
@@ -452,7 +462,7 @@ public class BookingRefunder extends TravelBlock {
 		int row = 1;
 		
 		boolean notFound = iwc.isParameterSet(PARAMETER_REFERENCE_NUMBER);
-
+		
 		if (notFound) {
 			form.add(getErrorText(iwrb.getLocalizedString("travel.booking_not_found","Booking not found")));
 		}
@@ -461,7 +471,9 @@ public class BookingRefunder extends TravelBlock {
 		
 		
 		table.mergeCells(1, row, 2, row);
-		//table.setRowColor(row, backgroundColor);
+		table.add(getHeaderText(iwrb.getLocalizedString("travel.secure_cancelation_form", "Secure cancelation form")), 1, row);
+		++row;
+		table.mergeCells(1, row, 2, row);
 		table.add(getHeaderText(iwrb.getLocalizedString("travel.please_type_in_your_reference_number", "Please type in your reference number")), 1, row);
 		
 		
@@ -513,7 +525,7 @@ public class BookingRefunder extends TravelBlock {
 	public void setHeaderFontStyle(String style) {
 		this.headerStyle = style;
 	}
-
+	
 	public void setFontStyle(String style) {
 		this.textStyle = style;
 	}
@@ -521,29 +533,29 @@ public class BookingRefunder extends TravelBlock {
 	public void setErrorFontStyle(String style) {
 		this.errorTextStyle = style;
 	}
-		
-  public CreditCardBusiness getCreditCardBusiness(IWApplicationContext iwac) {
+	
+	public CreditCardBusiness getCreditCardBusiness(IWApplicationContext iwac) {
 		try {
-		return (CreditCardBusiness) IBOLookup.getServiceInstance(iwac, CreditCardBusiness.class);
+			return (CreditCardBusiness) IBOLookup.getServiceInstance(iwac, CreditCardBusiness.class);
 		} catch (IBOLookupException e) {
 			throw new IBORuntimeException(e);
 		}
 	}
-
-  protected ProductBusiness getProductBusiness(IWApplicationContext iwac) {
-  		try {
-	    return (ProductBusiness) IBOLookup.getServiceInstance(iwac, ProductBusiness.class);
+	
+	protected ProductBusiness getProductBusiness(IWApplicationContext iwac) {
+		try {
+			return (ProductBusiness) IBOLookup.getServiceInstance(iwac, ProductBusiness.class);
 		} catch (IBOLookupException e) {
 			throw new IBORuntimeException(e);
 		}
-  }
- 
-  protected Booker getBooker(IWApplicationContext iwac) {
-  		try {
-  			return (Booker) IBOLookup.getServiceInstance(iwac, Booker.class);
-  		} catch (IBOLookupException e) {
-  			throw new IBORuntimeException(e);
-  		}
-  }
-  
+	}
+	
+	protected Booker getBooker(IWApplicationContext iwac) {
+		try {
+			return (Booker) IBOLookup.getServiceInstance(iwac, Booker.class);
+		} catch (IBOLookupException e) {
+			throw new IBORuntimeException(e);
+		}
+	}
+	
 }
