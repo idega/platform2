@@ -549,7 +549,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
             Boolean invisibleForCitizen, String providerStringId) throws RemoteException {
         return storeSchool(id, name, info, address, zipcode, ziparea, phone, keycode, latitude, longitude, area_id,
                 sub_area_id, type_ids, year_ids, organizationNumber, extraProviderId, managementTypeId, terminationDate,
-                communePK, countryId, centralizedAdministration, invisibleForCitizen, null, null);
+                communePK, countryId, centralizedAdministration, invisibleForCitizen, providerStringId, null);
     }   
 
 	public School storeSchool(int id, String name, String info, String address, String zipcode, String ziparea,
