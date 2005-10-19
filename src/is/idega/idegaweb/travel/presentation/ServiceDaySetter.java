@@ -571,10 +571,7 @@ public class ServiceDaySetter extends TravelWindow {
 		table.mergeCells(1, row, 5, row);
 		table.setRowColor(row, TravelManager.GRAY);
 		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
-		//to get the day-by-day form, the more link has to be commited in
-    if (isTestMode(iwc)) {
     	table.add(moreLink, 1, row);
-    }
 		table.add(Text.BREAK);
 		table.add(new SubmitButton(_iwrb.getLocalizedImageButton("travel.update","Update"), ACTION, PARAMETER_UPDATE), 1, row);
 		
