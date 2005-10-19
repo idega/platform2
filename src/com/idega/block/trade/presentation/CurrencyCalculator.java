@@ -18,6 +18,7 @@ import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.TextInput;
+import com.idega.util.IWTimestamp;
 import com.idega.util.text.TextSoap;
 
 /**
@@ -38,6 +39,7 @@ public class CurrencyCalculator extends PresentationObjectContainer {
 	public static  String PARAMETER_PRICE = "price";
 	private String parameterAll = "ALL";
 	private String PARAMETER_REMOTE_CALL = "prm_rc";
+	private String DATE_PLACEHOLDER = "[date]";
 	
 	private IWResourceBundle iwrb;
 	private IWBundle bundle;
@@ -250,6 +252,9 @@ public class CurrencyCalculator extends PresentationObjectContainer {
 				table.add(getText(iwrb.getLocalizedString("unknown", "Unknown")));
 			}
 		} else {
+			if (disclamer.indexOf(DATE_PLACEHOLDER) > -1) {
+				disclamer = TextSoap.findAndReplace(disclamer, DATE_PLACEHOLDER, IWTimestamp.RightNow().getLocaleDate(iwc.getCurrentLocale()));
+			}
 			table.add(getText(disclamer));
 		}
 		return table;
