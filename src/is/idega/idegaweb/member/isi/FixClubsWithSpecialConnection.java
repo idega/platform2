@@ -1,5 +1,5 @@
 /*
- * $Id: FixClubsWithSpecialConnection.java,v 1.1 2005/05/31 10:00:32 palli Exp $ Created on Apr 28, 2005
+ * $Id: FixClubsWithSpecialConnection.java,v 1.2 2005/10/20 11:35:00 palli Exp $ Created on Apr 28, 2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  * 
@@ -9,8 +9,12 @@
 package is.idega.idegaweb.member.isi;
 
 import is.idega.idegaweb.member.util.IWMemberConstants;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
+
 import com.idega.data.IDOLookup;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -19,10 +23,10 @@ import com.idega.user.data.GroupHome;
 
 /**
  * 
- * Last modified: $Date: 2005/05/31 10:00:32 $ by $Author: palli $
+ * Last modified: $Date: 2005/10/20 11:35:00 $ by $Author: palli $
  * 
  * @author <a href="mailto:palli@idega.com">palli </a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class FixClubsWithSpecialConnection extends Block {
 
@@ -48,12 +52,29 @@ public class FixClubsWithSpecialConnection extends Block {
 	public void main(IWContext iwc) throws Exception {
 		super.main(iwc);
 		Collection specialConnectionClub = findAllClubsWithSpecialConnection(iwc);
-		System.out.println("number of clubs = " + specialConnectionClub.size());
+		removeParentless(specialConnectionClub);
+		/*System.out.println("number of clubs = " + specialConnectionClub.size());
 		Iterator it = specialConnectionClub.iterator();
 		while (it.hasNext()) {
 			Group club = (Group) it.next();
 			updateClub(club);
+		}*/
+	}
+	
+	private Collection removeParentless(Collection clubs) {
+		System.out.println("number of clubs before removing parentless = " + clubs.size());
+		ArrayList clubsWithParents = new ArrayList();
+		Iterator it = clubs.iterator();
+		while (it.hasNext()) {
+			Group club = (Group) it.next();
+			List parents = club.getParentGroups();
+			if (parents != null && !parents.isEmpty()) {
+				clubsWithParents.add(club);
+			}
 		}
+		
+		System.out.println("number of clubs after removing parentless = " + clubsWithParents.size());
+		return clubsWithParents;
 	}
 
 	private Collection findAllClubsWithSpecialConnection(IWContext iwc) {
@@ -87,6 +108,10 @@ public class FixClubsWithSpecialConnection extends Block {
 			System.out.println("Group " + club.getName() + " is not a club");
 			return;
 		}
+
+		club.removeMetaData(CLUB_CONNECTION);
+		club.setMetaData(CLUB_MAKE, MULTI_DIVISION_CONNECTION);
+		club.store();
 		
 		if (division != null) {
 			String divisionConnection = division.getMetaData(DIVISION_CONNECTION);
@@ -94,9 +119,6 @@ public class FixClubsWithSpecialConnection extends Block {
 				System.out.println("Already a connection on division for club " + club.getName());
 				return;
 			}
-			club.removeMetaData(CLUB_CONNECTION);
-			club.setMetaData(CLUB_MAKE, MULTI_DIVISION_CONNECTION);
-			club.store();
 			
 			if (connection != null && !"".equals(connection)) {
 				division.setMetaData(DIVISION_CONNECTION, connection);
