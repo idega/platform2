@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderAccountingPropertiesHomeImpl.java,v 1.2 2005/10/17 09:54:16 palli Exp $
+ * $Id: ProviderAccountingPropertiesHomeImpl.java,v 1.3 2005/10/20 10:18:21 anna Exp $
  * Created on Oct 17, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -18,10 +18,10 @@ import com.idega.data.IDOFactory;
 
 /**
  * 
- *  Last modified: $Date: 2005/10/17 09:54:16 $ by $Author: palli $
+ *  Last modified: $Date: 2005/10/20 10:18:21 $ by $Author: anna $
  * 
  * @author <a href="mailto:bluebottle@idega.com">bluebottle</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ProviderAccountingPropertiesHomeImpl extends IDOFactory implements ProviderAccountingPropertiesHome {
 
@@ -41,7 +41,7 @@ public class ProviderAccountingPropertiesHomeImpl extends IDOFactory implements 
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		java.util.Collection ids = ((ProviderAccountingPropertiesBMPBean) entity).ejbFindAllByPaymentByInvoice(hasPaymentByInvoice);
 		this.idoCheckInPooledEntity(entity);
-		return this.getEntityCollectionForPrimaryKeys(ids);
+		return ids;
 	}
 
 }
