@@ -443,7 +443,8 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		try {
 			Group rootGroup = getSchoolBusiness().getRootSchoolAdministratorGroup();
 			Group highSchoolRootGroup = getSchoolBusiness().getRootHighSchoolAdministratorGroup();
-			if (user.getPrimaryGroup().equals(rootGroup) || user.getPrimaryGroup().equals(highSchoolRootGroup)) {
+			Group adultEducationRootGroup = getSchoolBusiness().getRootAdultEducationAdministratorGroup();
+			if (user.getPrimaryGroup().equals(rootGroup) || user.getPrimaryGroup().equals(highSchoolRootGroup) || user.getPrimaryGroup().equals(adultEducationRootGroup)) {
 				SchoolUserBusiness sub = (SchoolUserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), SchoolUserBusiness.class);
 				Collection schoolIds = sub.getSchools(user);
 				if (!schoolIds.isEmpty()) {
