@@ -56,8 +56,8 @@ import com.idega.util.IWTimestamp;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2005/10/20 01:08:43 $ by $Author: palli $
- * @version $Revision: 1.151 $
+ *         Last modified: $Date: 2005/10/20 11:50:00 $ by $Author: anna $
+ * @version $Revision: 1.152 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -1027,7 +1027,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		sql.appendFrom().append(SchoolSeasonBMPBean.SCHOOLSEASON);
 		sql.appendWhere(SchoolSeasonBMPBean.START).appendLessThanOrEqualsSign();
 		sql.append(new Date(System.currentTimeMillis()));
-		sql.appendAndEquals(SchoolCategoryBMPBean.COLUMN_CATEGORY, "ELEMENTARY_SCHOOL");
+		sql.appendAndEqualsQuoted(SchoolSeasonBMPBean.SCHOOL_CATEGORY, "ELEMENTARY_SCHOOL");
 		sql.appendAnd().append(SchoolSeasonBMPBean.END).appendGreaterThanOrEqualsSign();
 		sql.append(new Date(System.currentTimeMillis()));
 		sql.appendRightParenthesis().appendRightParenthesis();
