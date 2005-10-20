@@ -450,7 +450,10 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 	
 	public boolean storeAfterSchoolCare(IWTimestamp stamp, User user, User child, School provider, String message, SchoolSeason season, int[] days, String[] timeOfDeparture, boolean[] pickedUp, String payerName, String payerPersonalID, String cardType, String cardNumber, int validMonth, int validYear) {
 		try {
-			AfterSchoolChoice choice = createAfterSchoolChoice(stamp, user, (Integer) child.getPrimaryKey(), (Integer) provider.getPrimaryKey(), new Integer(1), message, getCaseStatusPreliminary(), null, season.getSchoolSeasonStart(), season, "", "");
+			String subject = getLocalizedString("application.after_school_choice_received_subject", "After school care choice received");
+			String body = getLocalizedString("application.after_school_choice_received_body", "{1} has received the application for an after school care placing for {0}, {2}.  The application will be processed.");
+
+			AfterSchoolChoice choice = createAfterSchoolChoice(stamp, user, (Integer) child.getPrimaryKey(), (Integer) provider.getPrimaryKey(), new Integer(1), message, getCaseStatusPreliminary(), null, season.getSchoolSeasonStart(), season, subject, body);
 			if (payerName != null) {
 				choice.setPayerName(payerName);
 				choice.setPayerPersonalID(payerPersonalID);
@@ -462,10 +465,6 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 			}
 			
 			storeDays(choice, days, timeOfDeparture, pickedUp);
-			
-			String subject = getLocalizedString("application.after_school_choice_received_subject", "After school care choice received");
-			String body = getLocalizedString("application.after_school_choice_received_body", "{1} has received the application for an after school care placing for {0}, {2}.  The application will be processed.");
-			sendMessageToParents(choice, subject, body);
 
 			// returns false if storing failed else true
 			return true;
