@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationStudentPlacings.java,v 1.1 2005/10/19 11:41:33 palli Exp $
+ * $Id: AdultEducationStudentPlacings.java,v 1.2 2005/10/20 01:07:32 palli Exp $
  * Created on Oct 19, 2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -19,6 +19,7 @@ import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolClassMemberGrade;
 import com.idega.block.school.data.SchoolSeason;
+import com.idega.block.school.data.SchoolStudyPath;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.core.contact.data.Email;
@@ -135,7 +136,7 @@ public class AdultEducationStudentPlacings extends AdultEducationBlock {
 		IWTimestamp terminated = null;
 		SchoolClassMemberGrade grade = null;
 		
-		Collection placings = getBusiness().getSchoolBusiness().findClassMemberInSchool(
+		Collection placings = getBusiness().getSchoolBusiness().findClassMemberInAdultEducation(
 				getSchoolCommuneSession(iwc).getStudentID(), getSchoolCommuneSession(iwc).getSchoolID());
 		Iterator iter = placings.iterator();
 		while (iter.hasNext()) {
@@ -171,7 +172,18 @@ public class AdultEducationStudentPlacings extends AdultEducationBlock {
 			//Course code
 			table.add(getSmallText(group.getCode()), column++, row);
 			//Study path
-			//table.add(getSmallText(member.gets), column++, row);
+			if (member.getStudyPathId() > 0) {
+				SchoolStudyPath path = getBusiness().getSchoolBusiness().getSchoolStudyPath(new Integer(member.getStudyPathId()));
+				if (path != null && path.getDescription() != null) {
+					table.add(getSmallText(path.getDescription()), column++, row);					
+				}
+				else {
+					table.add(getSmallText("-"), column++, row);
+				}
+			} 
+			else {
+				table.add(getSmallText("-"), column++, row);
+			}
 			//Start date
 			table.add(getSmallText(validFrom.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
 			//End date

@@ -1586,6 +1586,13 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			return category.getCategory();
 		return null;
 	}
+	
+	public String getAdultEducationSchoolCategory() {
+		SchoolCategory category = getCategoryAdultEducation();
+		if (category != null)
+			return category.getCategory();
+		return null;		
+	}
 
 	/**
 	 * @return The School type key registered for Highschool types.
@@ -1604,6 +1611,10 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 
 	public Collection findAllSchoolTypesForSchool() {
 		return findAllSchoolTypesInCategory(getElementarySchoolSchoolCategory());
+	}
+
+	public Collection findAllSchoolTypesForAdultEducation() {
+		return findAllSchoolTypesInCategory(getAdultEducationSchoolCategory());
 	}
 
 	public void storeSchoolType(int id, String name, String info, String category, String locKey, int maxAge,
@@ -1825,6 +1836,16 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 	}
 
+	public Collection findClassMemberInAdultEducation(int studentID, int schoolID) {
+		try {
+			Collection types = findAllSchoolTypesForAdultEducation();
+			return getSchoolClassMemberHome().findByStudentAndSchoolAndTypes(studentID, schoolID, types);
+		}
+		catch (FinderException fe) {
+			return new Vector();
+		}
+	}
+	
 	public Collection findClassMemberInChildCare(int studentID, int schoolID) {
 		try {
 			Collection types = findAllSchoolTypesForChildCare();

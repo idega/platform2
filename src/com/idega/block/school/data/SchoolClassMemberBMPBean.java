@@ -56,8 +56,8 @@ import com.idega.util.IWTimestamp;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2005/10/19 11:24:41 $ by $Author: anna $
- * @version $Revision: 1.150 $
+ *         Last modified: $Date: 2005/10/20 01:08:43 $ by $Author: palli $
+ * @version $Revision: 1.151 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -500,6 +500,8 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		sql.appendRightParenthesis();
 		sql.appendOrderBy(REGISTER_DATE + " desc");
 
+		System.out.println("<ejbFindByStudentAndSchoolAndTypes> = " + sql.toString());
+		
 		return super.idoFindPKsBySQL(sql.toString());
 	}
 
@@ -536,6 +538,8 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		IDOQuery sql = idoQuery();
 		sql.appendSelectCountFrom(this.getTableName() + " mb" + "," + SchoolClassBMPBean.SCHOOLCLASS + " cl").appendWhere().append(" mb." + MEMBER).appendEqualSign().append(userID).appendAnd().append("cl." + SchoolClassBMPBean.SCHOOL).appendEqualSign().append(schoolID).appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
 
+		System.out.println("<ejbHomeGetNumberOfPlacingsAtSchool(int userID, int schoolID)> sql = "+sql.toString());
+		
 		return this.idoGetNumberOfRecords(sql);
 	}
 
