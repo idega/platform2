@@ -174,6 +174,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
     private static final int ORDER_BY_QUEUE_DATE = 1;    // see ChildCareApplicationBMPBean ORDER_BY_QUEUE_DATE
     private static final int ORDER_BY_DATE_OF_BIRTH = 2; // see ChildCareApplicationBMPBean ORDER_BY_DATE_OF_BIRTH
 
+	private static final String PROPERTY_CHILDCARE_CONTRACT_ALTERNATIVE_PDF = "childcare.contract_alternative_pdf";
+
 	public String getBundleIdentifier() {
 		return Constants.IW_BUNDLE_IDENTIFIER;
 
@@ -2419,7 +2421,18 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			}
 
 			boolean hasBankId = new NBSLoginBusinessBean().hasBankLogin(application.getOwner());
-			ICFile contractFile = createContractContentToApplication(application, locale, validFrom, changeStatus, hasBankId);
+			
+			//ICFile contractFile = createContractContentToApplication(application, locale, validFrom, changeStatus, hasBankId);
+			IWBundle bundle = getIWApplicationContext().getIWMainApplication().getBundle(getBundleIdentifier());
+			boolean useAlternativePDFGenerationMethod =  bundle.getBooleanProperty(PROPERTY_CHILDCARE_CONTRACT_ALTERNATIVE_PDF, false);
+			
+			ICFile contractFile = null;
+			if (!useAlternativePDFGenerationMethod) { // let's use old method
+				contractFile = createContractContentToApplication(application, locale, validFrom, changeStatus, hasBankId);
+			} else { // bundle property tells us to use new method
+				contractFile = createContractContentToApplicationAlternativeMethod(application, locale, validFrom, changeStatus, hasBankId);
+			}
+			
 			if (createNew && contractFile != null) {
 				if (changeStatus) {
 					application.setApplicationStatus(getStatusContract());
@@ -2521,6 +2534,41 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	private ICFile createContractContentToApplicationAlternativeMethod(ChildCareApplication application, Locale locale, IWTimestamp validFrom, boolean changeStatus, boolean hasBankId) {
+		MemoryFileBuffer buffer = new MemoryFileBuffer();
+        OutputStream mos = new MemoryOutputStream(buffer);
+        InputStream mis = new MemoryInputStream(buffer);
+
+        PrintingContext pcx = new ChildCareContractFormContext(getIWApplicationContext(), application, locale);
+        pcx.setDocumentStream(mos);
+        
+        ICFile contractFile = null;
+        try {
+			getPrintingService().printDocument(pcx);
+			contractFile = createFile(null, "child_care_contract_form", mis, buffer.length());
+			String contractText = null; //XXX this should be text of the contract! must find the way to make the textual representation
+			
+			ContractService service = (ContractService) getServiceInstance(ContractService.class);
+			Contract contract = service.getContractHome().create(
+					((Integer) application.getOwner().getPrimaryKey())
+							.intValue(), getContractCategory(), validFrom,
+					null, "C", contractText);
+			int contractId = ((Integer) contract.getPrimaryKey()).intValue();
+
+			contract.addFileToContract(contractFile);
+
+			application.setContractId(contractId);
+			application.setContractFileId(((Integer) contractFile.getPrimaryKey()).intValue());			
+			
+		} catch (Exception e) {			
+			e.printStackTrace();
+		}
+		
+		
+		
+		return contractFile;
 	}
 
 	private String breakString(String page, int maxLineLength) {
