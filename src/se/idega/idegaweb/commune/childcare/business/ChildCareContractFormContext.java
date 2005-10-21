@@ -5,7 +5,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
@@ -33,7 +35,18 @@ import com.idega.xml.XMLOutput;
 /**
  * Used to create 
  * 
- * TODO: this and CancelFormContext should be refactored so both would use one parent class which both would than extend/implement
+ * TODO: this and CancelFormContext should be refactored so both would use one parent class which both would than extend/implement maybe?
+ * 
+ * Properties that are added to context are:
+ * iwb		IWBundle
+ * iwrb 	IWResourceBundle
+ * user		User 	retrieved by application.getOwner
+ * child	User	retrieved by application.getChild
+ * provider	School	retrieved by application.getProvider
+ * adress	Address	postal adress of the user, see above
+ * postalCode	PostalCode	postal code of the abovementioned address
+ * parent1	User
+ * parent2	User
  * 
  * @author dainis
  */
@@ -74,13 +87,13 @@ public class ChildCareContractFormContext extends PrintingContextImpl {
 			try {
 				CommuneUserBusiness userBuiz = getUserService(iwac);
 				address = userBuiz.getAddressHome().create();
-				address.setStreetName("");
-				address.setStreetNumber("");
+				address.setStreetName(""); //why?
+				address.setStreetNumber(""); //why?
 
 				code = userBuiz.getAddressBusiness().getPostalCodeHome()
 						.create();
-				code.setName("");
-				code.setPostalCode("");
+				code.setName(""); //why?
+				code.setPostalCode(""); //why?
 			} catch (CreateException ce) {
 				ce.printStackTrace();
 			} catch (RemoteException re) {
@@ -90,6 +103,29 @@ public class ChildCareContractFormContext extends PrintingContextImpl {
 		props.put("address", address);
 		props.put("postalCode", code);
 		props.put("application", application);
+		
+		//parents
+		User parent1 = application.getOwner();
+		User parent2 = null;
+		
+		try {
+			CommuneUserBusiness userBusiness = getUserService(iwac);  
+			
+			Collection parents = userBusiness.getParentsForChild(child);
+			if (parents != null) {
+				Iterator iter = parents.iterator();
+				while (iter.hasNext()) {
+					User parent = (User) iter.next();
+					if (((Integer) parent.getPrimaryKey()).intValue() != ((Integer) parent1.getPrimaryKey()).intValue())
+						parent2 = parent;
+				}
+			}
+			props.put("parent1", parent1);
+			props.put("parent2", parent2);
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 
 		addDocumentProperties(props);
 		setResourceDirectory(new File(getResourcRealPath(getBundle(iwac),
