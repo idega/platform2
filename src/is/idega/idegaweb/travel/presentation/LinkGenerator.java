@@ -188,7 +188,7 @@ public static Link getLinkToRefunderForm(IWContext iwc) {
 		if (pageID != null) {
 			link.setPage(Integer.parseInt(pageID));
 		}
-  		link.setTarget(Link.TARGET_BLANK_WINDOW);
+//  		link.setTarget(Link.TARGET_BLANK_WINDOW);
 
   		return link;  }
   
@@ -205,7 +205,7 @@ public static Link getLinkToRefunderForm(IWContext iwc) {
 		if (pageID != null) {
 			link.setPage(Integer.parseInt(pageID));
 		}
-  		link.setTarget(Link.TARGET_BLANK_WINDOW);
+//  		link.setTarget(Link.TARGET_BLANK_WINDOW);
 
   		return link;  }
   
