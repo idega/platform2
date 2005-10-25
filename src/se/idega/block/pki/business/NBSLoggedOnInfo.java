@@ -24,6 +24,8 @@ public class NBSLoggedOnInfo extends LoggedOnInfo {
 	private final static String _nameKey = "CN";
 	private final static String _organizationKey = "O";
 	private final static String _countryKey = "C";
+	private final static String givenNameKey = "givenName";
+	private final static String SurNameKey = "SN";
 	
 	public String getNBSPersonalID(){
 		return _nbsAuthResult.getSubjectAttributeValue(KEY_PERSONAL_ID);
@@ -41,9 +43,13 @@ public class NBSLoggedOnInfo extends LoggedOnInfo {
 		return _nbsAuthResult.getSubjectAttributeValue(_countryKey);
 	}
 	
+	public String getGivenName(){
+		return _nbsAuthResult.getSubjectAttributeValue(givenNameKey);
+	}
 	
-	
-	
+	public String getSurName(){
+		return _nbsAuthResult.getSubjectAttributeValue(SurNameKey);
+	}
 	
 	
 	

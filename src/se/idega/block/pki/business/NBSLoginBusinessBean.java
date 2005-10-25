@@ -113,11 +113,10 @@ public class NBSLoginBusinessBean extends LoginBusinessBean {
 	}
 
 	/**
-	 * 
-	 * @param loginRecords - all login records for one user
+	 * if requireExisitingLogin is true then this method throws an exception if the user hasn't already gotten a login, otherwise it will create a new bankId login
 	 * @return LoginTable record to log on the system
 	 */
-	public LoginTable chooseLoginRecord(IWContext iwc, LoginTable[] loginRecords, User user) throws Exception {
+	public LoginTable chooseLoginRecord(IWContext iwc, LoginTable[] loginRecords, User user,boolean requireExisitingLogin) throws Exception {
 		LoginTable chosenRecord = null;
 		if (loginRecords != null) {
 			for (int i = 0; i < loginRecords.length; i++) {
@@ -129,10 +128,20 @@ public class NBSLoginBusinessBean extends LoginBusinessBean {
 		}
 
 		if (chosenRecord == null) {
-
-			if (loginRecords.length > 0) {
+			boolean mayCreateNewLogin=false;
+			if(!requireExisitingLogin){
+				mayCreateNewLogin=true;
+			}
+			else{
+				if(loginRecords.length > 0){
+					mayCreateNewLogin=true;
+				}
+			}
+			
+			if(mayCreateNewLogin){
+			//if (loginRecords.length > 0) {
 				String newLogin = StringHandler.getRandomString(20);
-				chosenRecord = LoginDBHandler.createLogin(loginRecords[0].getUserId(), newLogin, "noPassword");
+				chosenRecord = LoginDBHandler.createLogin(user.getID(), newLogin, "noPassword");
 				chosenRecord.setLoginType(NBSLoginBusinessBean.PKI_LOGIN_TYPE);
 				chosenRecord.store();
 				return chosenRecord;
@@ -297,8 +306,16 @@ public class NBSLoginBusinessBean extends LoginBusinessBean {
 
 	/**
 	 * temp: same implementation as in superclass
+	 * This method by default throws an exception if the user hasn't already gotten a login.
 	 */
 	public boolean logInByPersonalID(IWContext iwc, String personalID) throws Exception {
+		return logInByPersonalID(iwc,personalID,true);
+	}
+	
+	/**
+	 * if requireExisitingLogin is true then this method throws an exception if the user hasn't already gotten a login.
+	 */
+	public boolean logInByPersonalID(IWContext iwc, String personalID,boolean requireExistingLogin) throws Exception {
 		boolean returner = false;
 		try {
 			com.idega.user.data.User user = getUserBusiness(iwc).getUser(personalID);
@@ -308,7 +325,7 @@ public class NBSLoginBusinessBean extends LoginBusinessBean {
 			LoginTable[] login_table = (LoginTable[])loginRecords.toArray(new LoginTable[loginRecords.size()]);
 
 
-			LoginTable lTable = this.chooseLoginRecord(iwc, login_table, user);
+			LoginTable lTable = this.chooseLoginRecord(iwc, login_table, user,requireExistingLogin);
 			if (lTable != null) {
 				returner = logIn(iwc, lTable);
 				if (returner)

@@ -6,6 +6,7 @@
  */
 package se.idega.block.pki.presentation;
 
+import se.idega.block.pki.business.NBSLoggedOnInfo;
 import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.nexus.nbs.sdk.HttpMessage;
 import se.nexus.nbs.sdk.NBSException;
@@ -40,7 +41,9 @@ public class NBSLogin extends Login {
 	private final static String IW_BUNDLE_IDENTIFIER = "se.idega.block.pki";
 	
 	public final static String PRM_PERSONAL_ID = "nbs_personal_id";
-
+	public final static String PRM_GIVEN_NAME = "nbs_given_name";
+	public final static String PRM_SURNAME = "nbs_surname";
+	
 	private String _loginHandlerClass = NBSLoginBusinessBean.class.getName();
 
 	/** Names for objects stored in the servlet context or session. */
@@ -126,7 +129,14 @@ public class NBSLogin extends Login {
 				NBSException nbsEX = NBSLoginBusinessBean.getNBSException(iwc);
 				Exception ex = NBSLoginBusinessBean.getException(iwc);
 				String errorMessage = iwc.getParameter(NBSSigningApplet.PARM_ERROR_MESSAGE);
-				
+				NBSLoginBusinessBean nbsloginbean = NBSLoginBusinessBean.createNBSLoginBusiness();
+				NBSLoggedOnInfo info = nbsloginbean.getBankIDLoggedOnInfo(iwc);
+				String givenName=null;
+				String surName=null;
+				if(info!=null){
+					givenName= info.getGivenName();
+					surName = info.getSurName();
+				}
 				if (nbsEX != null ) {
 					// handle Exception
 					showLoginApplet = false;
@@ -174,9 +184,9 @@ public class NBSLogin extends Login {
 						if(start != -1 && end != -1){
 							personalID = message.substring(start,end);
 						}
-						if(_forwardToApplicationPage && _applicationPage != null){
-							iwc.forwardToIBPage(this.getParentPage(),_applicationPage);
-						}
+						//if(_forwardToApplicationPage && _applicationPage != null){
+						//	iwc.forwardToIBPage(this.getParentPage(),_applicationPage);
+						//}
 						message = iwrb.getLocalizedString(NBSLoginBusinessBean.IWEX_USER_HAS_NO_ACCOUNT,"User has no account");
 					}
 					
@@ -199,9 +209,28 @@ public class NBSLogin extends Login {
 						
 						
 						//
-						if(message.startsWith(NBSLoginBusinessBean.IWEX_USER_HAS_NO_ACCOUNT)){
-							iwc.forwardToIBPage(this.getParentPage(),_applicationPage);
-						}
+						//if(message.startsWith(NBSLoginBusinessBean.IWEX_USER_HAS_NO_ACCOUNT)){
+							//iwc.forwardToIBPage(this.getParentPage(),_applicationPage);
+							String pageUri = getBuilderService(iwc).getPageURI(getApplicationPage());
+							if(pageUri.indexOf("?")==-1){
+								pageUri+="?";
+							}
+							else{
+								pageUri+="&";
+							}
+							pageUri+=PRM_PERSONAL_ID;
+							pageUri+="=";
+							pageUri+=personalID;
+							pageUri+="&";
+							pageUri+=PRM_GIVEN_NAME;
+							pageUri+="=";
+							pageUri+=givenName;
+							pageUri+="&";
+							pageUri+=PRM_SURNAME;
+							pageUri+="=";
+							pageUri+=surName;
+							getParentPage().setToRedirect(pageUri);
+						//}
 					}
 					this.add(tryAgain);
 										
