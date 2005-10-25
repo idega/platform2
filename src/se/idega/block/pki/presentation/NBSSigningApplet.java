@@ -348,14 +348,14 @@ public class NBSSigningApplet extends PresentationObjectContainer {
 		Script script = new Script();
 		
 		if(scriptString.indexOf("onLogonOK")!= -1){
-			script.addFunction("onLogonOK","\n function onLogonOK(logonMessage) {\n document.LogonForm.cbtInput.value = logonMessage;\n document.LogonForm.submit()\n }\n");
+			script.addFunction("onLogonOK","\n function onLogonOK(logonMessage) {\n document.forms['LogonForm'].cbtInput.value = logonMessage;\n document.forms['LogonForm'].submit()\n }\n");
 			if(_errorPageID != -1){
 				script.addFunction("onLogonCancel","\n function onLogonCancel(reason, message) {\n alert(reason+\"; \"+message);\n location = \""+iwc.getRequestURI()+"?"+ICBuilderConstants.IB_PAGE_PARAMETER+"="+_errorPageID+"&"+PARM_ERROR_MESSAGE+"=\"+message;\n }\n ");
 			} else {
 				script.addFunction("onLogonCancel","\n function onLogonCancel(reason, message) {\n alert(reason+\"; \"+message);\n location = \""+_errorPageUrl+((_errorPageUrl.indexOf('?')==-1)?"?":"")+PARM_ERROR_MESSAGE+"=\"+message;\n }\n ");
 			}
 		} else {
-			script.addFunction("noSignOK","\n function onSignOK(signMessage) {\n document.LogonForm.cbtInput.value = signMessage;\n document.LogonForm.submit()\n }\n");
+			script.addFunction("noSignOK","\n function onSignOK(signMessage) {\n document.forms['LogonForm'].cbtInput.value = signMessage;\n document.forms['LogonForm'].submit()\n }\n");
 			if(_errorPageID != -1){
 				script.addFunction("onSignCancel","\n function onSignCancel(reason, message) {\n alert(reason+\"; \"+message);\n location = \""+iwc.getRequestURI()+"?"+ICBuilderConstants.IB_PAGE_PARAMETER+"="+_errorPageID+"&"+PARM_ERROR_MESSAGE+"=\"+message;\n }\n ");
 			} else {
