@@ -1,5 +1,5 @@
 /*
- * $Id: MealApplication.java,v 1.9 2005/10/25 09:17:56 laddi Exp $
+ * $Id: MealApplication.java,v 1.10 2005/10/25 09:19:15 laddi Exp $
  * Created on Aug 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -30,7 +30,6 @@ import com.idega.core.builder.data.ICPage;
 import com.idega.data.IDOCreateException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
-import com.idega.presentation.Table;
 import com.idega.presentation.text.Heading1;
 import com.idega.presentation.text.ListItem;
 import com.idega.presentation.text.Lists;
@@ -50,10 +49,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/10/25 09:17:56 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/25 09:19:15 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class MealApplication extends MealBlock {
 	
