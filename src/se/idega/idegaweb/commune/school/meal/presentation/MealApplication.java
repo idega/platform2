@@ -1,5 +1,5 @@
 /*
- * $Id: MealApplication.java,v 1.8 2005/10/18 09:05:35 laddi Exp $
+ * $Id: MealApplication.java,v 1.9 2005/10/25 09:17:56 laddi Exp $
  * Created on Aug 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -50,10 +50,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/10/18 09:05:35 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/25 09:17:56 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class MealApplication extends MealBlock {
 	
@@ -270,7 +270,7 @@ public class MealApplication extends MealBlock {
 		thursday.setStyleClass("checkbox");
 		thursday.keepStatusOnAction(true);
 		CheckBox friday = new CheckBox(PARAMETER_DAYS + "_" + month.toString(), MealConstants.DAY_FRIDAY);
-		thursday.setStyleClass("checkbox");
+		friday.setStyleClass("checkbox");
 		friday.keepStatusOnAction(true);
 		
 		CheckBox milk = new CheckBox(PARAMETER_MILK + "_" + month.toString(), Boolean.TRUE.toString());
@@ -439,8 +439,7 @@ public class MealApplication extends MealBlock {
 		layer.add(paragraph);
 		
 		TextArea comments = new TextArea(PARAMETER_COMMENTS);
-		comments.setWidth(Table.HUNDRED_PERCENT);
-		comments.setRows(8);
+		comments.setStyleClass("textarea");
 		comments.keepStatusOnAction();
 		layer.add(comments);
 		
