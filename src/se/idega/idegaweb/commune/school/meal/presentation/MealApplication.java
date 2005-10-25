@@ -1,5 +1,5 @@
 /*
- * $Id: MealApplication.java,v 1.10 2005/10/25 09:19:15 laddi Exp $
+ * $Id: MealApplication.java,v 1.11 2005/10/25 10:35:57 laddi Exp $
  * Created on Aug 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -49,10 +49,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/10/25 09:19:15 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/25 10:35:57 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class MealApplication extends MealBlock {
 	
@@ -409,12 +409,15 @@ public class MealApplication extends MealBlock {
 		
 		ListItem item = new ListItem();
 		item.add(new Text(localize("meal", "Meal") + ": " + format.format(values.getMealAmount())));
+		list.add(item);
 		
 		item = new ListItem();
 		item.add(new Text(localize("milk", "Milk") + ": " + format.format(values.getMilkAmount())));
+		list.add(item);
 		
 		item = new ListItem();
 		item.add(new Text(localize("fruits", "Fruits") + ": " + format.format(values.getFruitAmount())));
+		list.add(item);
 
 		layer.add(new HiddenInput(PARAMETER_AMOUNT + "_" + month.toString(), String.valueOf(values.getAmount())));
 		topLayer.add(layer);
