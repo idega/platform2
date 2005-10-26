@@ -31,11 +31,17 @@ import com.idega.util.IWTimestamp;
 public class SchoolSeasonBMPBean extends GenericEntity implements SchoolSeason {
 
 	public final static String SCHOOLSEASON = "sch_school_season";
+
 	public final static String START = "season_start";
+
 	public final static String END = "season_end";
+
 	public final static String DUE_DATE = "due_date";
+
 	public final static String START_DATE = "start_date";
+
 	public final static String SCHOOL_CATEGORY = "school_category";
+
 	public final static String NAME = "name";
 
 	public String getEntityName() {
@@ -49,7 +55,7 @@ public class SchoolSeasonBMPBean extends GenericEntity implements SchoolSeason {
 		addAttribute(END, "End", true, true, Date.class);
 		addAttribute(START_DATE, "Choice start date", Date.class);
 		addAttribute(DUE_DATE, "Choice end date", Date.class);
-		
+
 		addManyToOneRelationship(SCHOOL_CATEGORY, SchoolCategory.class);
 	}
 
@@ -116,28 +122,28 @@ public class SchoolSeasonBMPBean extends GenericEntity implements SchoolSeason {
 	public java.util.Collection ejbFindAllSchoolSeasons() throws FinderException {
 		return ejbFindAllSchoolSeasons(null);
 	}
-	
+
 	public java.util.Collection ejbFindAllSchoolSeasonsWithoutCategory() throws FinderException {
 		Table table = new Table(this);
-		
+
 		SelectQuery query = new SelectQuery(table);
 		query.addColumn(new WildCardColumn());
 		query.addCriteria(new MatchCriteria(table.getColumn(SCHOOL_CATEGORY), false));
 		query.addOrder(table, START, true);
-		
+
 		return idoFindPKsByQuery(query);
 	}
-	
+
 	public java.util.Collection ejbFindAllSchoolSeasons(SchoolCategory category) throws FinderException {
 		Table table = new Table(this);
-		
+
 		SelectQuery query = new SelectQuery(table);
 		query.addColumn(new WildCardColumn());
 		if (category != null) {
 			query.addCriteria(new MatchCriteria(table, SCHOOL_CATEGORY, MatchCriteria.EQUALS, category));
 		}
 		query.addOrder(table, START, true);
-		
+
 		return idoFindPKsByQuery(query);
 	}
 
@@ -145,7 +151,7 @@ public class SchoolSeasonBMPBean extends GenericEntity implements SchoolSeason {
 	 * Gets the previous season to this one.
 	 * 
 	 * @throws FinderException
-	 *           if none is found
+	 *             if none is found
 	 */
 	public SchoolSeason getPreviousSeason() throws FinderException {
 		return getSchoolSeasonHome().findPreviousSchoolSeason(this);
@@ -162,54 +168,56 @@ public class SchoolSeasonBMPBean extends GenericEntity implements SchoolSeason {
 	 * @param schoolSeason
 	 * @return
 	 * @throws FinderException
-	 *           If an error occured during the search
+	 *             If an error occured during the search
 	 */
 	public java.util.Collection ejbFindAllPreviousSchoolSeasons(SchoolSeason schoolSeason) throws FinderException {
 		Table table = new Table(this);
-		
+
 		SelectQuery query = new SelectQuery(table);
 		query.addColumn(new WildCardColumn());
-		query.addCriteria(new MatchCriteria(table, SCHOOL_CATEGORY, MatchCriteria.EQUALS, schoolSeason.getSchoolCategoryPK()));
+		query.addCriteria(new MatchCriteria(table, SCHOOL_CATEGORY, MatchCriteria.EQUALS,
+				schoolSeason.getSchoolCategoryPK()));
 		query.addCriteria(new MatchCriteria(table, START, MatchCriteria.LESS, schoolSeason.getSchoolSeasonStart()));
 		query.addOrder(table, START, true);
-		
+
 		return idoFindPKsByQuery(query);
 	}
 
 	public Integer ejbFindPreviousSchoolSeason(SchoolSeason schoolSeason) throws FinderException {
 		Table table = new Table(this);
-		
+
 		SelectQuery query = new SelectQuery(table);
 		query.addColumn(new WildCardColumn());
-		query.addCriteria(new MatchCriteria(table, SCHOOL_CATEGORY, MatchCriteria.EQUALS, schoolSeason.getSchoolCategoryPK()));
+		query.addCriteria(new MatchCriteria(table, SCHOOL_CATEGORY, MatchCriteria.EQUALS,
+				schoolSeason.getSchoolCategoryPK()));
 		query.addCriteria(new MatchCriteria(table, START, MatchCriteria.LESS, schoolSeason.getSchoolSeasonStart()));
 		query.addOrder(table, START, false);
-		
+
 		return (Integer) idoFindOnePKByQuery(query);
 	}
 
 	public Integer ejbFindSeasonByDate(SchoolCategory category, Date date) throws FinderException {
 		Table table = new Table(this);
-		
+
 		SelectQuery query = new SelectQuery(table);
 		query.addColumn(new WildCardColumn());
 		query.addCriteria(new MatchCriteria(table, SCHOOL_CATEGORY, MatchCriteria.EQUALS, category));
 		query.addCriteria(new MatchCriteria(table, START, MatchCriteria.LESSEQUAL, date));
 		query.addCriteria(new MatchCriteria(table, END, MatchCriteria.GREATEREQUAL, date));
 		query.addOrder(table, START, true);
-		
+
 		return (Integer) idoFindOnePKByQuery(query);
 	}
 
 	public Collection ejbFindPendingSeasonsByDate(SchoolCategory category, Date date) throws FinderException {
 		Table table = new Table(this);
-		
+
 		SelectQuery query = new SelectQuery(table);
 		query.addColumn(new WildCardColumn());
 		query.addCriteria(new MatchCriteria(table, SCHOOL_CATEGORY, MatchCriteria.EQUALS, category));
 		query.addCriteria(new MatchCriteria(table, START, MatchCriteria.GREATER, date));
 		query.addOrder(table, START, true);
-		
+
 		return (Collection) idoFindPKsByQuery(query);
 	}
 
@@ -217,41 +225,56 @@ public class SchoolSeasonBMPBean extends GenericEntity implements SchoolSeason {
 		return ejbFindSeasonByDate(category, new IWTimestamp().getDate());
 	}
 
-	public Collection ejbFindSchoolSeasonsActiveInTimePeriod(SchoolCategory category, Date firstDateInPeriod, Date lastDateInPeriod)
-			throws FinderException {
+	public Collection ejbFindSchoolSeasonsActiveInTimePeriod(SchoolCategory category, Date firstDateInPeriod,
+			Date lastDateInPeriod) throws FinderException {
 		Table table = new Table(this);
-		
+
 		SelectQuery query = new SelectQuery(table);
 		query.addColumn(new WildCardColumn());
 		query.addCriteria(new MatchCriteria(table, SCHOOL_CATEGORY, MatchCriteria.EQUALS, category));
 		query.addCriteria(new MatchCriteria(table, START, MatchCriteria.LESSEQUAL, firstDateInPeriod));
 		query.addCriteria(new MatchCriteria(table, END, MatchCriteria.GREATEREQUAL, firstDateInPeriod));
 		query.addOrder(table, START, true);
-		
+
+		return idoFindPKsByQuery(query);
+	}
+
+	public Collection ejbFindCurrentSchoolSeasons(SchoolCategory category) throws FinderException {
+		Table table = new Table(this);
+
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn());
+		query.addCriteria(new MatchCriteria(table, SCHOOL_CATEGORY, MatchCriteria.EQUALS, category));
+		query.addCriteria(new MatchCriteria(table, START_DATE, MatchCriteria.LESSEQUAL, IWTimestamp.RightNow().getDate()));
+		query.addCriteria(new MatchCriteria(table, DUE_DATE, MatchCriteria.GREATEREQUAL, IWTimestamp.RightNow().getDate()));
+		query.addOrder(table, START, true);
+
 		return idoFindPKsByQuery(query);
 	}
 
 	public Integer ejbFindNextSeason(SchoolSeason currentSeason) throws FinderException {
 		Table table = new Table(this);
-		
+
 		SelectQuery query = new SelectQuery(table);
 		query.addColumn(new WildCardColumn());
-		query.addCriteria(new MatchCriteria(table, SCHOOL_CATEGORY, MatchCriteria.EQUALS, currentSeason.getSchoolCategoryPK()));
-		query.addCriteria(new MatchCriteria(table, START, MatchCriteria.GREATEREQUAL, currentSeason.getSchoolSeasonEnd()));
+		query.addCriteria(new MatchCriteria(table, SCHOOL_CATEGORY, MatchCriteria.EQUALS,
+				currentSeason.getSchoolCategoryPK()));
+		query.addCriteria(new MatchCriteria(table, START, MatchCriteria.GREATEREQUAL,
+				currentSeason.getSchoolSeasonEnd()));
 		query.addOrder(table, START, true);
-		
+
 		return (Integer) idoFindOnePKByQuery(query);
 	}
 
 	public Integer ejbFindNextSeason(SchoolCategory category, Date date) throws FinderException {
 		Table table = new Table(this);
-		
+
 		SelectQuery query = new SelectQuery(table);
 		query.addColumn(new WildCardColumn());
 		query.addCriteria(new MatchCriteria(table, SCHOOL_CATEGORY, MatchCriteria.EQUALS, category));
 		query.addCriteria(new MatchCriteria(table, START, MatchCriteria.GREATEREQUAL, date));
 		query.addOrder(table, START, true);
-		
+
 		return (Integer) idoFindOnePKByQuery(query);
 	}
 }
