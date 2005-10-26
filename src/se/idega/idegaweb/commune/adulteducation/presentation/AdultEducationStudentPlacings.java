@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationStudentPlacings.java,v 1.2 2005/10/20 01:07:32 palli Exp $
+ * $Id: AdultEducationStudentPlacings.java,v 1.3 2005/10/26 16:05:21 palli Exp $
  * Created on Oct 19, 2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -25,6 +25,7 @@ import com.idega.business.IBOLookupException;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.location.data.Address;
+import com.idega.data.IDORelationshipException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
@@ -48,7 +49,7 @@ public class AdultEducationStudentPlacings extends AdultEducationBlock {
 		table.setWidth(getWidth());
 
 		int row = 1;
-		GenericButton back = (GenericButton) getStyledInterface(new GenericButton("back", localize("back", "Back")));
+		GenericButton back = (GenericButton) getStyledInterface(new GenericButton("back", localize("adult_education_student_placing_back", "Back")));
 		if (getResponsePage() != null)
 			back.setPageToOpen(getResponsePage());
 
@@ -172,18 +173,37 @@ public class AdultEducationStudentPlacings extends AdultEducationBlock {
 			//Course code
 			table.add(getSmallText(group.getCode()), column++, row);
 			//Study path
+			SchoolStudyPath path = null;
+			StringBuffer pathText = null;
 			if (member.getStudyPathId() > 0) {
-				SchoolStudyPath path = getBusiness().getSchoolBusiness().getSchoolStudyPath(new Integer(member.getStudyPathId()));
-				if (path != null && path.getDescription() != null) {
-					table.add(getSmallText(path.getDescription()), column++, row);					
-				}
-				else {
-					table.add(getSmallText("-"), column++, row);
-				}
+				path = getBusiness().getSchoolBusiness().getSchoolStudyPath(new Integer(member.getStudyPathId()));
 			} 
 			else {
-				table.add(getSmallText("-"), column++, row);
+				Collection studyPaths = null;
+				try {
+					studyPaths = member.getStudyPaths();
+				}
+				catch (IDORelationshipException e) {
+					studyPaths = null;
+				}
+				
+				if (studyPaths != null && !studyPaths.isEmpty()) {
+					Iterator it = studyPaths.iterator();
+					if (it.hasNext()) {
+						path = (SchoolStudyPath) it.next();
+					}
+				}
 			}
+
+			if (path != null && path.getDescription() != null) {
+				pathText = new StringBuffer(path.getDescription());
+				pathText.append(", ");
+				pathText.append(path.getPoints());
+				table.add(getSmallText(pathText.toString()), column++, row);		
+			}
+			else {
+				table.add(getSmallText("-"), column++, row);
+			}			
 			//Start date
 			table.add(getSmallText(validFrom.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
 			//End date
