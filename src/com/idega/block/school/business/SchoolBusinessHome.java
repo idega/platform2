@@ -1,6 +1,6 @@
 /*
- * $Id: SchoolBusinessHome.java,v 1.16 2005/10/20 01:08:09 palli Exp $
- * Created on Oct 20, 2005
+ * $Id: SchoolBusinessHome.java,v 1.17 2005/10/26 16:04:15 palli Exp $
+ * Created on Oct 26, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -16,10 +16,10 @@ import com.idega.business.IBOHome;
 
 /**
  * 
- *  Last modified: $Date: 2005/10/20 01:08:09 $ by $Author: palli $
+ *  Last modified: $Date: 2005/10/26 16:04:15 $ by $Author: palli $
  * 
  * @author <a href="mailto:bluebottle@idega.com">bluebottle</a>
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public interface SchoolBusinessHome extends IBOHome {
 

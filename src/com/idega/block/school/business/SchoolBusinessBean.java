@@ -1708,6 +1708,23 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			return new java.util.Vector();
 		}
 	}
+	
+	/**
+	 * Returns all season where the due_date >= TODAY and start_date <= TODAY.
+	 * 
+	 * @param category
+	 * @return
+	 */
+	public Collection findAllCurrentSeasons(SchoolCategory category) {
+		try {
+			SchoolSeasonHome shome = (SchoolSeasonHome) IDOLookup.getHome(SchoolSeason.class);
+			return shome.findCurrentSchoolSeasons(category);
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+			return new java.util.Vector();
+		}
+	}
 
 	public Collection findAllPreviousSchoolSeasons(SchoolSeason schoolSeason) {
 		try {
