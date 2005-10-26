@@ -9,9 +9,8 @@ package se.idega.block.pki.business;
 import java.io.File;
 import java.util.Collection;
 import java.util.Iterator;
-
 import javax.ejb.FinderException;
-
+import javax.servlet.http.HttpServletResponse;
 import se.nexus.nbs.sdk.HttpMessage;
 import se.nexus.nbs.sdk.NBSAuthResult;
 import se.nexus.nbs.sdk.NBSException;
@@ -19,18 +18,21 @@ import se.nexus.nbs.sdk.NBSResult;
 import se.nexus.nbs.sdk.NBSServerFactory;
 import se.nexus.nbs.sdk.NBSServerHttp;
 import se.nexus.nbs.sdk.servlet.ServletUtil;
-
 import com.idega.core.accesscontrol.business.LoggedOnInfo;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginCreateException;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.core.accesscontrol.data.LoginTableHome;
+import com.idega.core.builder.business.BuilderService;
+import com.idega.core.builder.business.BuilderServiceFactory;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWContext;
+import com.idega.servlet.filter.IWAuthenticator;
+import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.StringHandler;
 
@@ -89,7 +91,7 @@ public class NBSLoginBusinessBean extends LoginBusinessBean {
 					info.setNbsAuthResult((NBSAuthResult)result);
 					this.setBankIDLoggedOnInfo(iwc, info);
 					logInUser(iwc, result);
-
+					
 					break;
 				case (NBSResult.TYPE_SIGN) :
 					throw new Exception("Unexpected result: NBSResult = TYPE_SIGN");
@@ -222,6 +224,21 @@ public class NBSLoginBusinessBean extends LoginBusinessBean {
 			if (!loginSuccessful) {
 				throw new Exception(IWEX_PKI_USR_NOT_REGISTERED + "#" + personalID + "#");
 			}
+			
+			if (iwc.isParameterSet(IWAuthenticator.PARAMETER_REDIRECT_USER_TO_PRIMARY_GROUP_HOME_PAGE)){
+				if(iwc.isLoggedOn()||LoginBusinessBean.isLogOnAction(iwc)) {
+					Group prmg = iwc.getCurrentUser().getPrimaryGroup(); 
+					if (prmg != null) {
+						int homePageID = prmg.getHomePageID();
+						if (homePageID > 0) {
+							BuilderService builderService = BuilderServiceFactory.getBuilderService(iwc);
+							HttpServletResponse response = iwc.getResponse();
+							response.sendRedirect(builderService.getPageURI(homePageID));
+						}
+					}
+				}
+			}
+			
 		} catch (Exception ex) {
 			this.carryOnException(iwc, ex);
 			//System.out.println("idegaWeb Login failed for personalId : '" + personalID + "'");

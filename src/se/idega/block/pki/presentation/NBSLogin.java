@@ -14,7 +14,6 @@ import se.nexus.nbs.sdk.NBSMessageHttp;
 import se.nexus.nbs.sdk.NBSMessageResult;
 import se.nexus.nbs.sdk.NBSServerHttp;
 import se.nexus.nbs.sdk.servlet.ServletUtil;
-
 import com.idega.block.login.presentation.Login;
 import com.idega.core.accesscontrol.business.LoggedOnInfo;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
@@ -25,6 +24,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Parameter;
+import com.idega.servlet.filter.IWAuthenticator;
 
 /**
  * @author <a href="mailto:gummi@idega.is">Guðmundur Ágúst Sæmundsson</a>
@@ -263,6 +263,9 @@ public class NBSLogin extends Login {
 				//applet.setAction(IWMainApplication.getIWMainApplication(iwc.getServletContext()).getTranslatedURIWithContext(_pkiServletUrl));
 				applet.setEventListenerClassName(this._loginHandlerClass);
 				applet.addParameter(new Parameter(LoginBusinessBean.LoginStateParameter, "login"));
+				if(sendUserToHomePage){
+					applet.addParameter(new Parameter(IWAuthenticator.PARAMETER_REDIRECT_USER_TO_PRIMARY_GROUP_HOME_PAGE,"redirect"));
+				}
 				
 
 				if(_colorPanel!=null){
