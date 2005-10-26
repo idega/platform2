@@ -1,6 +1,6 @@
 /*
- * $Id: CommuneUserBusiness.java,v 1.47 2005/10/19 11:44:38 palli Exp $
- * Created on Oct 14, 2005
+ * $Id: CommuneUserBusiness.java,v 1.48 2005/10/26 18:13:35 eiki Exp $
+ * Created on Oct 26, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -10,16 +10,12 @@
 package se.idega.idegaweb.commune.business;
 
 import is.idega.block.family.business.FamilyLogic;
-
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Date;
-
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-
-
 import com.idega.block.school.data.School;
 import com.idega.business.IBOService;
 import com.idega.core.contact.data.Email;
@@ -37,10 +33,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2005/10/19 11:44:38 $ by $Author: palli $
+ *  Last modified: $Date: 2005/10/26 18:13:35 $ by $Author: eiki $
  * 
- * @author <a href="mailto:bluebottle@idega.com">bluebottle</a>
- * @version $Revision: 1.47 $
+ * @author <a href="mailto:eiki@idega.com">eiki</a>
+ * @version $Revision: 1.48 $
  */
 public interface CommuneUserBusiness extends IBOService, UserBusiness {
 
@@ -126,6 +122,11 @@ public interface CommuneUserBusiness extends IBOService, UserBusiness {
 	 * @see se.idega.idegaweb.commune.business.CommuneUserBusinessBean#getRootCitizenGroup
 	 */
 	public Group getRootCitizenGroup() throws CreateException, FinderException, RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.business.CommuneUserBusinessBean#getRootAcceptedCitizenGroup
+	 */
+	public Group getRootAcceptedCitizenGroup() throws CreateException, RemoteException, FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.business.CommuneUserBusinessBean#getRootOtherCommuneCitizensGroup
@@ -323,5 +324,4 @@ public interface CommuneUserBusiness extends IBOService, UserBusiness {
 	 * @see se.idega.idegaweb.commune.business.CommuneUserBusinessBean#getPostalAddress
 	 */
 	public Address getPostalAddress(User user) throws RemoteException, NoUserAddressException;
-
 }

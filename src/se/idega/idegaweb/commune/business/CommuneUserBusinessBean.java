@@ -68,6 +68,7 @@ import com.idega.util.text.TextSoap;
 public class CommuneUserBusinessBean extends UserBusinessBean implements CommuneUserBusiness,UserBusiness {
 
 	private final String ROOT_CITIZEN_GROUP_ID_PARAMETER_NAME = "commune_id";
+	private final String ROOT_ACCEPTED_CITIZEN_GROUP_ID_PARAMETER_NAME = "accepted_citizen_group_id";
 	private final String ROOT_OTHER_COMMUNE_CITIZEN_GROUP_ID_PARAMETER_NAME = "special_citizen_group_id";
 	private final String ROOT_PROTECTED_CITIZEN_GROUP_ID_PARAMETER_NAME = "protected_citizen_group_id";
 	private final String ROOT_CUSTOMER_CHOICE_GROUP_ID_PARAMETER_NAME = "customer_choice_group_id";
@@ -76,6 +77,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	private final int SCHOOLCHILDREN_AGE = 12;
 	
 	private Group rootCitizenGroup;
+	private Group rootAcceptedCitizenGroup;
 	private Group rootOtherCommuneCitizenGroup;
 	private Group rootProtectedCitizenGroup;
 	private Group rootCustomerChoiceGroup;
@@ -325,6 +327,22 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		}
 		return rootCitizenGroup;
 	}
+	
+	
+	/**
+	 * Creates (if not available) and returns the group for citizens that have a citizen account
+	 * throws a CreateException if it failed to locate or create the group.
+	 * @throws FinderException 
+	 */
+	public Group getRootAcceptedCitizenGroup() throws CreateException, RemoteException, FinderException {
+		if (rootAcceptedCitizenGroup == null) {
+			Group parent = getRootCitizenGroup();
+		
+			rootAcceptedCitizenGroup = getGroupCreateIfNecessaryStoreAsApplicationBinding(ROOT_ACCEPTED_CITIZEN_GROUP_ID_PARAMETER_NAME, "Commune Accepted Citizens", "The group for all citizens with an account in the commune",true,parent);
+		}
+		return rootCitizenGroup;
+	}
+
 
 	/**
 	 * Creates (if not available) and returns the default usergroup for  all
@@ -1177,8 +1195,11 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		return group;
 	}
 	
+	private Group getGroupCreateIfNecessaryStoreAsApplicationBinding(String parameter, String createName, String createDescription, boolean store) throws RemoteException, CreateException, FinderException{
+		return getGroupCreateIfNecessaryStoreAsApplicationBinding(parameter,createName,createDescription,store,null);
+	}
 	
-	private Group getGroupCreateIfNecessaryStoreAsApplicationBinding(String parameter, String createName, String createDescription, boolean store) throws RemoteException, CreateException, FinderException {	
+	private Group getGroupCreateIfNecessaryStoreAsApplicationBinding(String parameter, String createName, String createDescription, boolean store , Group parentGroup) throws RemoteException, CreateException, FinderException {	
 		ICApplicationBindingBusiness applicationBindingBusiness = (ICApplicationBindingBusiness)  IBOLookup.getServiceInstance(getIWApplicationContext(), ICApplicationBindingBusiness.class);
 		// look up ic application binding
 		String groupId = applicationBindingBusiness.get(parameter);
@@ -1188,7 +1209,13 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		}
 		else {
 			System.err.println("Trying to store " + createName + " group");
+			if(parentGroup==null){
 			group = getGroupBusiness().createGroup(createName, createDescription);
+			}
+			else{
+				getGroupBusiness().createGroupUnder(createName, createDescription, parentGroup);
+			}
+			
 			if (store) {
 				groupId = group.getPrimaryKey().toString();
 				try {

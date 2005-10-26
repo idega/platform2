@@ -1,6 +1,6 @@
 /*
- * $Id: CommuneUserBusinessHomeImpl.java,v 1.4 2005/10/19 11:44:38 palli Exp $
- * Created on Oct 14, 2005
+ * $Id: CommuneUserBusinessHomeImpl.java,v 1.5 2005/10/26 18:13:35 eiki Exp $
+ * Created on Oct 26, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -9,19 +9,15 @@
  */
 package se.idega.idegaweb.commune.business;
 
-
-
-
-
 import com.idega.business.IBOHomeImpl;
 
 
 /**
  * 
- *  Last modified: $Date: 2005/10/19 11:44:38 $ by $Author: palli $
+ *  Last modified: $Date: 2005/10/26 18:13:35 $ by $Author: eiki $
  * 
- * @author <a href="mailto:bluebottle@idega.com">bluebottle</a>
- * @version $Revision: 1.4 $
+ * @author <a href="mailto:eiki@idega.com">eiki</a>
+ * @version $Revision: 1.5 $
  */
 public class CommuneUserBusinessHomeImpl extends IBOHomeImpl implements CommuneUserBusinessHome {
 
@@ -32,5 +28,4 @@ public class CommuneUserBusinessHomeImpl extends IBOHomeImpl implements CommuneU
 	public CommuneUserBusiness create() throws javax.ejb.CreateException {
 		return (CommuneUserBusiness) super.createIBO();
 	}
-
 }
