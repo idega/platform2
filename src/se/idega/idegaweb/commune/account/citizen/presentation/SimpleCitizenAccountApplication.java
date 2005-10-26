@@ -17,6 +17,7 @@ package se.idega.idegaweb.commune.account.citizen.presentation;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import se.idega.idegaweb.commune.account.citizen.business.CitizenAccountBusiness;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import com.idega.business.IBOLookup;
@@ -24,6 +25,8 @@ import com.idega.core.accesscontrol.business.UserHasLoginException;
 import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.core.accesscontrol.data.LoginTableHome;
 import com.idega.core.location.business.CommuneBusiness;
+import com.idega.core.location.data.Address;
+import com.idega.core.location.data.Commune;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.ExceptionWrapper;
@@ -46,12 +49,12 @@ import com.idega.util.text.SocialSecurityNumber;
  * {@link se.idega.idegaweb.commune.account.citizen.business}and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2005/04/19 10:43:59 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/26 17:20:24 $ by $Author: eiki $
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg </a>
  * @author <a href="mail:malin.anulf@agurait.com">Malin Anulf </a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class SimpleCitizenAccountApplication extends CommuneBlock {
 
@@ -76,6 +79,7 @@ public class SimpleCitizenAccountApplication extends CommuneBlock {
 	private final static String YOU_MUST_BE_18_DEFAULT = "You have to be 18 to apply for a citizen account";
 
 	private boolean _sendEmail = false;
+	private String communeUniqueIdsCSV;
 
 	private final static String SSN_DEFAULT = "Personnummer";
 	private 	final static String SSN_KEY = "caa_ssn";
@@ -101,6 +105,8 @@ public class SimpleCitizenAccountApplication extends CommuneBlock {
 	private final static String ERROR_EMAILS_DONT_MATCH_DEFAULT = "Emails don't match";
 	private final static String ERROR_NOT_VALID_PERSONAL_ID = "scaa_not_valid_personal_id";
 	private final static String ERROR_NOT_VALID_PERSONAL_ID_DEFAULT = "The personal ID is not valid";
+	private static final String ERROR_APPLYING_FOR_WRONG_COMMUNE = "scaaa_user_in_wrong_commune";
+	private static final String ERROR_APPLYING_FOR_WRONG_COMMUNE_DEFAULT = "You do not belong to the commune you are applying for according to our records and the application cannot be finished. Please contact your commune if you think this is an error.";
 
 	public void main(final IWContext iwc) {
 		setResourceBundle(getResourceBundle(iwc));
@@ -148,6 +154,8 @@ public class SimpleCitizenAccountApplication extends CommuneBlock {
 			String phoneWork = iwc.getParameter(PHONE_CELL_KEY).toString();
 			CitizenAccountBusiness business = (CitizenAccountBusiness) IBOLookup.getServiceInstance(iwc, CitizenAccountBusiness.class);
 			User user = business.getUserIcelandic(ssn);
+			
+			
 			if (user == null) {
 				// unknown or user not in system applies
 				final Text text = new Text(localize(UNKNOWN_CITIZEN_KEY, UNKNOWN_CITIZEN_DEFAULT));
@@ -157,19 +165,54 @@ public class SimpleCitizenAccountApplication extends CommuneBlock {
 				viewSimpleApplicationForm(iwc);
 			}
 			else {
-				Collection logins = new ArrayList();
+				
+				//FIRST CHECK IF THE USER IS IN THE CORRECT COMMUNE!
+				boolean inCorrectCommune = false;
+//				TODO check if must be in a certain commune, create a setmethod for that, make sure the user is added to the root commune and the accepted group
+				if( getCommuneUniqueIdsCSV()!=null ){
+					String communesCSV = getCommuneUniqueIdsCSV();
+					//for better uniqueness
+					communesCSV = ","+communesCSV+",";
+					
+					Collection addresses = user.getAddresses();
+					Iterator iter = addresses.iterator();
+					while(iter.hasNext() && !inCorrectCommune) {
+						Address address = (Address) iter.next();
+						Commune commune = address.getCommune();
+						
+						if(commune!=null){
+							String userCommune = commune.getCommuneCode();
+							if(userCommune!=null){
+								if( communesCSV.indexOf(","+userCommune+",") > -1 ){
+									inCorrectCommune = true;
+								}
+							}
+						}
+					}
+					
+					if(!inCorrectCommune){
+						throw new Exception(localize(ERROR_APPLYING_FOR_WRONG_COMMUNE,ERROR_APPLYING_FOR_WRONG_COMMUNE_DEFAULT));
+					}
+				}
+				
+				
 				try {
+					Collection logins = new ArrayList();
 					logins.addAll(getLoginTableHome().findLoginsForUser(user));
+					if (!logins.isEmpty()) { 
+						throw new UserHasLoginException();
+					}	
 				}
 				catch (Exception e) {
 					// no problem, no login found
 				}
-				if (!logins.isEmpty()) { throw new UserHasLoginException(); }
+				
 				if (email != null && email.length() > 0) {
 					if (emailRepeat == null || !email.equals(emailRepeat)) {
 						throw new Exception(localize(ERROR_EMAILS_DONT_MATCH, ERROR_EMAILS_DONT_MATCH_DEFAULT));
 					}
 				}
+			
 				if (null == business.insertApplication(iwc, user, ssn, email, phoneHome, phoneWork, _sendEmail)) {
 					// known user applied, but couldn't be submitted
 					throw new Exception(localize(ERROR_NO_INSERT_KEY, ERROR_NO_INSERT_DEFAULT));
@@ -200,6 +243,23 @@ public class SimpleCitizenAccountApplication extends CommuneBlock {
 			viewSimpleApplicationForm(iwc);
 		}
 	}
+
+	/**
+	 * 
+	 * @return a comma seperated values string with unique ids of communes in the IC_COMMUNE table
+	 */
+	public String getCommuneUniqueIdsCSV() {
+		return communeUniqueIdsCSV;
+	}
+	
+	/**
+	 * If the parameter is set then the applications checks if the user has an address registered to one of the commune ids in this string
+	 * @param communeUniqueIdsCSV a comma seperated values string with unique ids of communes in the IC_COMMUNE table
+	 */
+	public void getCommuneUniqueIdsCSV(String communeUniqueIdsCSV) {
+		this.communeUniqueIdsCSV = communeUniqueIdsCSV;
+	}
+
 
 	private Table createTable() {
 		final Table table = new Table();
