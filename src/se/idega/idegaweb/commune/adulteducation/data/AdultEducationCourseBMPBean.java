@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationCourseBMPBean.java,v 1.8 2005/06/20 13:49:13 laddi Exp $
+ * $Id: AdultEducationCourseBMPBean.java,v 1.9 2005/10/27 22:34:16 palli Exp $
  * Created on 27.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -177,7 +177,7 @@ public class AdultEducationCourseBMPBean extends GenericEntity  implements Adult
 		query.addColumn(new WildCardColumn(table));
 		query.addCriteria(new MatchCriteria(table, SCHOOL_SEASON, MatchCriteria.EQUALS, season));
 		query.addCriteria(new MatchCriteria(table, CODE, MatchCriteria.EQUALS, code));
-		
+
 		return idoFindOnePKByQuery(query);
 	}
 

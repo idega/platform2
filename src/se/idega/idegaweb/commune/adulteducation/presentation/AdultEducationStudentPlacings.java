@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationStudentPlacings.java,v 1.3 2005/10/26 16:05:21 palli Exp $
+ * $Id: AdultEducationStudentPlacings.java,v 1.4 2005/10/27 22:34:16 palli Exp $
  * Created on Oct 19, 2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -13,6 +13,8 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 
+import javax.ejb.FinderException;
+
 import se.idega.idegaweb.commune.school.business.SchoolCommuneSession;
 
 import com.idega.block.school.data.SchoolClass;
@@ -25,7 +27,6 @@ import com.idega.business.IBOLookupException;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.location.data.Address;
-import com.idega.data.IDORelationshipException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
@@ -174,29 +175,20 @@ public class AdultEducationStudentPlacings extends AdultEducationBlock {
 			table.add(getSmallText(group.getCode()), column++, row);
 			//Study path
 			SchoolStudyPath path = null;
-			StringBuffer pathText = null;
-			if (member.getStudyPathId() > 0) {
-				path = getBusiness().getSchoolBusiness().getSchoolStudyPath(new Integer(member.getStudyPathId()));
-			} 
-			else {
-				Collection studyPaths = null;
+			if (group.getCode() != null && !"".equals(group.getCode())) {
 				try {
-					studyPaths = member.getStudyPaths();
+					path = getBusiness().getCourse(season.getPrimaryKey(), group.getCode()).getStudyPath();
 				}
-				catch (IDORelationshipException e) {
-					studyPaths = null;
+				catch (RemoteException e) {
+					e.printStackTrace();
 				}
-				
-				if (studyPaths != null && !studyPaths.isEmpty()) {
-					Iterator it = studyPaths.iterator();
-					if (it.hasNext()) {
-						path = (SchoolStudyPath) it.next();
-					}
+				catch (FinderException e) {
+					e.printStackTrace();
 				}
-			}
+			} 
 
 			if (path != null && path.getDescription() != null) {
-				pathText = new StringBuffer(path.getDescription());
+				StringBuffer pathText = new StringBuffer(path.getDescription());
 				pathText.append(", ");
 				pathText.append(path.getPoints());
 				table.add(getSmallText(pathText.toString()), column++, row);		
@@ -211,7 +203,7 @@ public class AdultEducationStudentPlacings extends AdultEducationBlock {
 				table.add(getSmallText(terminated.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
 			}
 			else {
-				table.add(getSmallText("-"), column++, row++);
+				table.add(getSmallText("-"), column++, row);
 			}
 			//Grade
 			if (grade != null && grade.getGrade() != null && grade.getGrade().getGrade() != null) {
