@@ -641,6 +641,11 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass {
 				+ String.valueOf(schoolID) + " and (" + COLUMN_VALID + " = '" + VALID + "' or " + COLUMN_VALID + " is null)");
 	}
 
+	public Integer ejbFindOneByCode(String code) throws FinderException {
+		return (Integer) super.idoFindOnePKBySQL("select * from " + this.getEntityName() + " where " + COLUMN_CODE + " = '"
+				+ code + "' and (" + COLUMN_VALID + " = '" + VALID + "' or " + COLUMN_VALID + " is null)");
+	}
+
 	public Collection getSubGroupPlacements() throws IDORelationshipException {
 		if (getIsSubGroup()) {
 			return this.idoGetRelatedEntities(SchoolClassMember.class);

@@ -1,6 +1,6 @@
 /*
- * $Id: SchoolClassMember.java,v 1.43 2005/08/17 14:02:23 palli Exp $
- * Created on Aug 15, 2005
+ * $Id: SchoolClassMember.java,v 1.44 2005/10/27 11:03:12 palli Exp $
+ * Created on Oct 26, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -22,13 +22,12 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2005/08/17 14:02:23 $ by $Author: palli $
+ *  Last modified: $Date: 2005/10/27 11:03:12 $ by $Author: palli $
  * 
  * @author <a href="mailto:bluebottle@idega.com">bluebottle</a>
- * @version $Revision: 1.43 $
+ * @version $Revision: 1.44 $
  */
 public interface SchoolClassMember extends IDOEntity {
-
 	public final static String FIELD_SCHOOLCLASSMEMBERID = "sch_class_member_id";
 	public final static String FIELD_SCHOOLCLASSMEMBER = "sch_class_member";
 	public final static String FIELD_MEMBER = "ic_user_id";
@@ -46,6 +45,7 @@ public interface SchoolClassMember extends IDOEntity {
 	public final static String FIELD_LATEST_INVOICE_DATE = "latest_invoice_date";
 
 	
+
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#setClassMemberId
 	 */

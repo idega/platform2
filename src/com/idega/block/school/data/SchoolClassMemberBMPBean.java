@@ -56,8 +56,8 @@ import com.idega.util.IWTimestamp;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2005/10/20 11:50:00 $ by $Author: anna $
- * @version $Revision: 1.152 $
+ *         Last modified: $Date: 2005/10/27 11:03:12 $ by $Author: palli $
+ * @version $Revision: 1.153 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -611,6 +611,14 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		return this.idoGetNumberOfRecords(sql);
 	}
 
+	public int ejbHomeGetNumberOfPlacingsByClass(SchoolClass schoolClass) throws IDOException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectCountFrom(this);
+		sql.appendWhereEquals(SCHOOLCLASS, schoolClass);
+		
+		return this.idoGetNumberOfRecords(sql);
+	}
+	
 	public Collection ejbFindAllSubGroupPlacements(int userID, int schoolID, int seasonID) throws FinderException {
 		IDOQuery query = idoQuery();
 		query.appendSelectAllFrom(this).append(" mb, ").append(SchoolClassBMPBean.SCHOOLCLASS).append(" cl");

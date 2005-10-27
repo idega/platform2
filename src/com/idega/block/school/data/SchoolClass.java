@@ -1,6 +1,6 @@
 /*
- * $Id: SchoolClass.java,v 1.29 2005/06/13 07:05:16 laddi Exp $
- * Created on Jun 13, 2005
+ * $Id: SchoolClass.java,v 1.30 2005/10/27 11:03:12 palli Exp $
+ * Created on Oct 26, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -11,6 +11,8 @@ package com.idega.block.school.data;
 
 import java.sql.Timestamp;
 import java.util.Collection;
+
+
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOEntity;
 import com.idega.data.IDORelationshipException;
@@ -19,10 +21,11 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/06/13 07:05:16 $ by $Author: laddi $
  * 
- * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.29 $
+ *  Last modified: $Date: 2005/10/27 11:03:12 $ by $Author: palli $
+ * 
+ * @author <a href="mailto:bluebottle@idega.com">bluebottle</a>
+ * @version $Revision: 1.30 $
  */
 public interface SchoolClass extends IDOEntity {
 
@@ -255,4 +258,5 @@ public interface SchoolClass extends IDOEntity {
 	 * @see com.idega.block.school.data.SchoolClassBMPBean#getSubGroupPlacements
 	 */
 	public Collection getSubGroupPlacements() throws IDORelationshipException;
+
 }

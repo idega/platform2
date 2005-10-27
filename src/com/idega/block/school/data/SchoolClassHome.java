@@ -1,6 +1,6 @@
 /*
- * $Id: SchoolClassHome.java,v 1.33 2005/06/13 07:05:15 laddi Exp $
- * Created on Jun 13, 2005
+ * $Id: SchoolClassHome.java,v 1.34 2005/10/27 11:03:12 palli Exp $
+ * Created on Oct 26, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -10,17 +10,20 @@
 package com.idega.block.school.data;
 
 import java.util.Collection;
+
 import javax.ejb.FinderException;
+
 import com.idega.data.IDOException;
 import com.idega.data.IDOHome;
 import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/06/13 07:05:15 $ by $Author: laddi $
  * 
- * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.33 $
+ *  Last modified: $Date: 2005/10/27 11:03:12 $ by $Author: palli $
+ * 
+ * @author <a href="mailto:bluebottle@idega.com">bluebottle</a>
+ * @version $Revision: 1.34 $
  */
 public interface SchoolClassHome extends IDOHome {
 
@@ -216,4 +219,10 @@ public interface SchoolClassHome extends IDOHome {
 	 * @see com.idega.block.school.data.SchoolClassBMPBean#ejbFindOneBySchool
 	 */
 	public SchoolClass findOneBySchool(int schoolID) throws FinderException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#ejbFindOneByCode
+	 */
+	public SchoolClass findOneByCode(String code) throws FinderException;
+
 }

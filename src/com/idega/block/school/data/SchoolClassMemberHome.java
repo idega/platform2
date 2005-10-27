@@ -1,6 +1,6 @@
 /*
- * $Id: SchoolClassMemberHome.java,v 1.74 2005/08/17 14:02:24 palli Exp $
- * Created on Aug 15, 2005
+ * $Id: SchoolClassMemberHome.java,v 1.75 2005/10/27 11:03:13 palli Exp $
+ * Created on Oct 26, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -24,10 +24,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2005/08/17 14:02:24 $ by $Author: palli $
+ *  Last modified: $Date: 2005/10/27 11:03:13 $ by $Author: palli $
  * 
  * @author <a href="mailto:bluebottle@idega.com">bluebottle</a>
- * @version $Revision: 1.74 $
+ * @version $Revision: 1.75 $
  */
 public interface SchoolClassMemberHome extends IDOHome {
 
@@ -164,6 +164,11 @@ public interface SchoolClassMemberHome extends IDOHome {
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbHomeGetNumberOfSubGroupPlacings
 	 */
 	public int getNumberOfSubGroupPlacings(int userID, int schoolClassID) throws IDOException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbHomeGetNumberOfPlacingsByClass
+	 */
+	public int getNumberOfPlacingsByClass(SchoolClass schoolClass) throws IDOException;
 
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbFindAllSubGroupPlacements

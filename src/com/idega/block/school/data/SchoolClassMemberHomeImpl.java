@@ -1,6 +1,6 @@
 /*
- * $Id: SchoolClassMemberHomeImpl.java,v 1.74 2005/08/17 14:02:24 palli Exp $
- * Created on Aug 15, 2005
+ * $Id: SchoolClassMemberHomeImpl.java,v 1.75 2005/10/27 11:03:12 palli Exp $
+ * Created on Oct 26, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -24,10 +24,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2005/08/17 14:02:24 $ by $Author: palli $
+ *  Last modified: $Date: 2005/10/27 11:03:12 $ by $Author: palli $
  * 
  * @author <a href="mailto:bluebottle@idega.com">bluebottle</a>
- * @version $Revision: 1.74 $
+ * @version $Revision: 1.75 $
  */
 public class SchoolClassMemberHomeImpl extends IDOFactory implements SchoolClassMemberHome {
 
@@ -226,6 +226,13 @@ public class SchoolClassMemberHomeImpl extends IDOFactory implements SchoolClass
 	public int getNumberOfSubGroupPlacings(int userID, int schoolClassID) throws IDOException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		int theReturn = ((SchoolClassMemberBMPBean) entity).ejbHomeGetNumberOfSubGroupPlacings(userID, schoolClassID);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
+
+	public int getNumberOfPlacingsByClass(SchoolClass schoolClass) throws IDOException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		int theReturn = ((SchoolClassMemberBMPBean) entity).ejbHomeGetNumberOfPlacingsByClass(schoolClass);
 		this.idoCheckInPooledEntity(entity);
 		return theReturn;
 	}
