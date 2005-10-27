@@ -1210,10 +1210,10 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		else {
 			System.err.println("Trying to store " + createName + " group");
 			if(parentGroup==null){
-			group = getGroupBusiness().createGroup(createName, createDescription);
+				group = getGroupBusiness().createGroup(createName, createDescription);
 			}
 			else{
-				getGroupBusiness().createGroupUnder(createName, createDescription, parentGroup);
+				group = getGroupBusiness().createGroupUnder(createName, createDescription, parentGroup);
 			}
 			
 			if (store) {

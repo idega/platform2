@@ -49,12 +49,12 @@ import com.idega.util.text.SocialSecurityNumber;
  * {@link se.idega.idegaweb.commune.account.citizen.business}and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2005/10/26 17:20:24 $ by $Author: eiki $
+ * Last modified: $Date: 2005/10/27 20:19:36 $ by $Author: eiki $
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg </a>
  * @author <a href="mail:malin.anulf@agurait.com">Malin Anulf </a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class SimpleCitizenAccountApplication extends CommuneBlock {
 
@@ -70,7 +70,7 @@ public class SimpleCitizenAccountApplication extends CommuneBlock {
 	private final static String PHONE_CELL_KEY = "scaa_cell_phone";
 	private final static String PHONE_CELL_DEFAULT = "Cell phone";
 	private final static String CITIZEN_ACCOUNT_INFO_KEY = "scaa_account_info";
-	private final static String CITIZEN_ACCOUNT_INFO_DEFAULT = "If you don't have an email addrss your login info will be sent to you by snail mail.";
+	private final static String CITIZEN_ACCOUNT_INFO_DEFAULT = "If you don't have an email address your login info will be sent to you by snail mail.";
 	private final static String MANDATORY_FIELD_EXPL_KEY = "scaa_mandatory_field_expl";
 	private final static String MANDATORY_FIELD_EXPL_DEFAULT = "Fields marked with a star (*) are mandatory";
 	private final static String UNKNOWN_CITIZEN_KEY = "scaa_unknown_citizen";
