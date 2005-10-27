@@ -1,6 +1,6 @@
 /*
- * $Id: AdultEducationBusiness.java,v 1.29 2005/08/10 00:19:28 laddi Exp $
- * Created on Aug 9, 2005
+ * $Id: AdultEducationBusiness.java,v 1.30 2005/10/27 11:07:26 palli Exp $
+ * Created on Oct 26, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -13,9 +13,11 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Locale;
+
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
+
 import se.idega.idegaweb.commune.accounting.school.business.StudyPathBusiness;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoice;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourse;
@@ -24,6 +26,7 @@ import se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfoH
 import se.idega.idegaweb.commune.adulteducation.data.CoursePackage;
 import se.idega.idegaweb.commune.adulteducation.data.SchoolCoursePackage;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
+
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.data.Case;
 import com.idega.block.school.business.SchoolBusiness;
@@ -42,10 +45,11 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/08/10 00:19:28 $ by $Author: laddi $
  * 
- * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.29 $
+ *  Last modified: $Date: 2005/10/27 11:07:26 $ by $Author: palli $
+ * 
+ * @author <a href="mailto:bluebottle@idega.com">bluebottle</a>
+ * @version $Revision: 1.30 $
  */
 public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 
@@ -97,12 +101,14 @@ public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getCoursesWithStudents
 	 */
-	public Collection getCoursesWithStudents(Object season, Object school, Object group) throws java.rmi.RemoteException;
+	public Collection getCoursesWithStudents(Object season, Object school, Object group)
+			throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getCourses
 	 */
-	public Collection getCourses(Object season, Object type, Object school, Object group) throws java.rmi.RemoteException;
+	public Collection getCourses(Object season, Object type, Object school, Object group)
+			throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getGroups
@@ -128,6 +134,16 @@ public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 			java.rmi.RemoteException;
 
 	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#hasPlacement
+	 */
+	public boolean hasPlacement(String courseCode) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getNumberOfPlacementsForCourse
+	 */
+	public int getNumberOfPlacementsForCourse(String courseCode) throws java.rmi.RemoteException;
+
+	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#hasActiveChoices
 	 */
 	public boolean hasActiveChoices(SchoolSeason season, AdultEducationCourse course) throws java.rmi.RemoteException;
@@ -135,7 +151,8 @@ public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getNumberOfActiveChoices
 	 */
-	public int getNumberOfActiveChoices(SchoolSeason season, AdultEducationCourse course) throws java.rmi.RemoteException;
+	public int getNumberOfActiveChoices(SchoolSeason season, AdultEducationCourse course)
+			throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getChoices
@@ -267,9 +284,10 @@ public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#storeCourse
 	 */
-	public AdultEducationCourse storeCourse(Object season, Object oldSeason, String code, String oldCode, Object school,
-			Object studyPath, Date startDate, Date endDate, String comment, int length, boolean notActive, boolean update)
-			throws CreateException, DuplicateValueException, java.rmi.RemoteException;
+	public AdultEducationCourse storeCourse(Object season, Object oldSeason, String code, String oldCode,
+			Object school, Object studyPath, Date startDate, Date endDate, String comment, int length,
+			boolean notActive, boolean update) throws CreateException, DuplicateValueException,
+			java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#storeChoices
@@ -299,7 +317,8 @@ public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#saveChoiceChanges
 	 */
 	public void saveChoiceChanges(AdultEducationChoice choice, boolean rule1, boolean rule2, boolean rule3,
-			boolean rule4, String ruleNotes, String notes, int priority, User performer) throws java.rmi.RemoteException;
+			boolean rule4, String ruleNotes, String notes, int priority, User performer)
+			throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#removeCourse
@@ -320,8 +339,8 @@ public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#placeChoices
 	 */
-	public void placeChoices(Object[] choicePKs, SchoolClass group, AdultEducationCourse course, Date date, User performer)
-			throws java.rmi.RemoteException;
+	public void placeChoices(Object[] choicePKs, SchoolClass group, AdultEducationCourse course, Date date,
+			User performer) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#rejectChoices
@@ -362,8 +381,9 @@ public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 			int educationCountryID, boolean nativeThisCountry, boolean citizenThisCountry, boolean educationA,
 			boolean educationB, boolean educationC, boolean educationD, boolean educationE, String educationF,
 			String educationG, int eduGCountryID, int eduYears, boolean eduHA, boolean eduHB, boolean eduHC,
-			String eduHCommune, boolean fulltime, boolean langSfi, boolean langSas, boolean langOther, boolean studySupport,
-			boolean workUnEmpl, boolean workEmpl, boolean workKicked, String workOther) throws java.rmi.RemoteException;
+			String eduHCommune, boolean fulltime, boolean langSfi, boolean langSas, boolean langOther,
+			boolean studySupport, boolean workUnEmpl, boolean workEmpl, boolean workKicked, String workOther)
+			throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#createOverviewPDF
@@ -474,4 +494,5 @@ public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 	 */
 	public Collection getSchoolCoursePackages(School school, SchoolSeason season, CoursePackage coursePackage)
 			throws java.rmi.RemoteException;
+
 }

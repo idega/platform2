@@ -1,5 +1,5 @@
 /*
- * $Id: CourseEditor.java,v 1.8 2005/10/14 14:29:09 palli Exp $ Created on
+ * $Id: CourseEditor.java,v 1.9 2005/10/27 11:07:26 palli Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -47,10 +47,10 @@ import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
 /**
- * Last modified: $Date: 2005/10/14 14:29:09 $ by $Author: palli $
+ * Last modified: $Date: 2005/10/27 11:07:26 $ by $Author: palli $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class CourseEditor extends AdultEducationBlock {
 
@@ -239,6 +239,9 @@ public class CourseEditor extends AdultEducationBlock {
 		TextInput code = (TextInput) getStyledInterface(new TextInput(PARAMETER_CODE));
 		if (iCourse != null) {
 			code.setContent(iCourse.getCode());
+			if (hasCoursePlacements(iCourse.getCode())) {
+				code.setDisabled(true);
+			}
 		}
 		if (iAction == ACTION_EDIT && iCourse != null) {
 			table.add(new HiddenInput(PARAMETER_UPDATE, Boolean.TRUE.toString()));
@@ -312,7 +315,7 @@ public class CourseEditor extends AdultEducationBlock {
 		table.add(new Break(), 3, 1);
 		table.add(startDate, 3, 1);
 
-		table.add(getSmallHeader(localize("comment", "Comment")), 1, 2);
+		table.add(getSmallHeader(localize("course_comment", "Comment")), 1, 2);
 		table.add(new Break(), 1, 2);
 		table.mergeCells(1, 2, 2, 2);
 		table.add(comment, 1, 2);
@@ -335,6 +338,16 @@ public class CourseEditor extends AdultEducationBlock {
 		table.add(store, 3, 3);
 
 		return table;
+	}
+	
+	private boolean hasCoursePlacements(String courseCode) {
+		try {
+			return getBusiness().hasPlacement(courseCode);
+		}
+		catch (RemoteException e) {
+		}
+		
+		return false;
 	}
 
 	private Table getCourses(IWContext iwc) {
@@ -406,7 +419,12 @@ public class CourseEditor extends AdultEducationBlock {
 					table.add(getSmallText(String.valueOf(course.getLength())), 4, row);
 					table.add(edit, 5, row);
 					table.add(copy, 6, row);
-					table.add(delete, 7, row++);
+					if (hasCoursePlacements(course.getCode())) {
+						row++;
+					}
+					else {
+						table.add(delete, 7, row++);
+					}
 				}
 			}
 			catch (RemoteException re) {
