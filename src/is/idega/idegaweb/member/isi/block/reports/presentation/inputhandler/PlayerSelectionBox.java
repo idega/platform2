@@ -91,7 +91,8 @@ public class PlayerSelectionBox extends GroupSelectionBox  {
 		
 		if (group.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER) ||
 			group.getGroupType().equals(IWMemberConstants.GROUP_TYPE_GENERAL) ||
-			group.getGroupType().equals(IWMemberConstants.GROUP_TYPE_TEMPORARY)   ) {
+			group.getGroupType().equals(IWMemberConstants.GROUP_TYPE_TEMPORARY) ||
+			group.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_PRACTICE_PLAYER)) {
 			divisions.add(group);
 		}
 
