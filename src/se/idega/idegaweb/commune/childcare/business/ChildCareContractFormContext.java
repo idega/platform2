@@ -53,16 +53,15 @@ import com.idega.xml.XMLOutput;
 public class ChildCareContractFormContext extends PrintingContextImpl {
 
 	protected IWBundle iwb;
-
 	protected IWResourceBundle iwrb;
 
 	public ChildCareContractFormContext(IWApplicationContext iwac,
-			ChildCareApplication application, Locale locale) {
-		init(iwac, application, locale);
+			ChildCareApplication application, Locale locale, boolean isChange) {
+		init(iwac, application, locale, isChange);
 	}
 
 	private void init(IWApplicationContext iwac,
-			ChildCareApplication application, Locale locale) {
+			ChildCareApplication application, Locale locale, boolean isChange) {
 		Map props = new HashMap();
 
 		props.put("iwb", getBundle(iwac));
@@ -126,7 +125,31 @@ public class ChildCareContractFormContext extends PrintingContextImpl {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-
+        
+        //to be able to retreive additional info about parents in cosy way, like phone 
+        //numbers and so on, we must use helper object ChildCareContractAdditonalInfo        
+        ChildCareContractAdditonalInfo additionalInfo;
+        try {            
+            additionalInfo = new ChildCareContractAdditonalInfo(parent1, parent2, getUserService(iwac));
+            props.put("additionalInfo", additionalInfo);
+        } catch (IBOLookupException e1) {            
+            e1.printStackTrace();
+        }
+        
+        //care time
+        String careTime = "...";
+        String careTimeChange = "...";
+        String applicationCareTime = application.getCareTime();        
+        if (applicationCareTime != null && !isChange) {
+            careTime = applicationCareTime;
+        }        
+        if (applicationCareTime != null && isChange) {
+            careTimeChange = applicationCareTime;
+        }        
+        props.put("careTime", careTime);
+        props.put("careTimeChange", careTimeChange);
+        
+        
 		addDocumentProperties(props);
 		setResourceDirectory(new File(getResourcRealPath(getBundle(iwac),
 				locale)));

@@ -1283,13 +1283,36 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 		int oldFileID = application.getContractFileId();
 		IWTimestamp fromDate = new IWTimestamp(newDate);
+        
+        int fileID = 0;
+        
+        IWBundle bundle = getIWApplicationContext().getIWMainApplication().getBundle(getBundleIdentifier());
+        boolean useAlternativePDFGenerationMethod =  bundle.getBooleanProperty(PROPERTY_CHILDCARE_CONTRACT_ALTERNATIVE_PDF, false);
+        
+        if (!useAlternativePDFGenerationMethod) { // let's use old method        
+    		ITextXMLHandler pdfHandler = new ITextXMLHandler(ITextXMLHandler.PDF);
+    		List buffers = pdfHandler.writeToBuffers(getTagMap(application, locale, fromDate, false), getXMLContractPdfURL(getIWApplicationContext().getIWMainApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
+    
+    		ICFile contractFile = pdfHandler.writeToDatabase((MemoryFileBuffer) buffers.get(0), "contract.pdf", pdfHandler.getPDFMimeType());
+    		fileID = ((Integer) contractFile.getPrimaryKey()).intValue();
+        } else { // bundle property tells us to use new method
+            MemoryFileBuffer buffer = new MemoryFileBuffer();
+            OutputStream mos = new MemoryOutputStream(buffer);
+            InputStream mis = new MemoryInputStream(buffer);
 
-		ITextXMLHandler pdfHandler = new ITextXMLHandler(ITextXMLHandler.PDF);
-		List buffers = pdfHandler.writeToBuffers(getTagMap(application, locale, fromDate, false), getXMLContractPdfURL(getIWApplicationContext().getIWMainApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
-
-		ICFile contractFile = pdfHandler.writeToDatabase((MemoryFileBuffer) buffers.get(0), "contract.pdf", pdfHandler.getPDFMimeType());
-		int fileID = ((Integer) contractFile.getPrimaryKey()).intValue();
-
+            PrintingContext pcx = new ChildCareContractFormContext(getIWApplicationContext(), application, locale, false);
+            pcx.setDocumentStream(mos);            
+         
+            getPrintingService().printDocument(pcx);
+            try {
+                ICFile contractFile = createFile(null, "child_care_contract_form", mis, buffer.length());
+                fileID = ((Integer) contractFile.getPrimaryKey()).intValue();                
+            } catch (CreateException e) {                
+                e.printStackTrace();
+            }
+            
+        }       
+        
 		application.setContractFileId(fileID);
 		application.setFromDate(newDate);
 		if (application.getRejectionDate() != null) {
@@ -2422,7 +2445,6 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 			boolean hasBankId = new NBSLoginBusinessBean().hasBankLogin(application.getOwner());
 			
-			//ICFile contractFile = createContractContentToApplication(application, locale, validFrom, changeStatus, hasBankId);
 			IWBundle bundle = getIWApplicationContext().getIWMainApplication().getBundle(getBundleIdentifier());
 			boolean useAlternativePDFGenerationMethod =  bundle.getBooleanProperty(PROPERTY_CHILDCARE_CONTRACT_ALTERNATIVE_PDF, false);
 			
@@ -2541,7 +2563,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
         OutputStream mos = new MemoryOutputStream(buffer);
         InputStream mis = new MemoryInputStream(buffer);
 
-        PrintingContext pcx = new ChildCareContractFormContext(getIWApplicationContext(), application, locale);
+        PrintingContext pcx = new ChildCareContractFormContext(getIWApplicationContext(), application, locale, !changeStatus);
         pcx.setDocumentStream(mos);
         
         ICFile contractFile = null;
@@ -4869,12 +4891,41 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				alterValidFromDate(application, fromDate.getDate(), employmentTypeID, locale, admin);
 			}
 			else {
-				ITextXMLHandler pdfHandler = new ITextXMLHandler(ITextXMLHandler.TXT + ITextXMLHandler.PDF);
-				List buffers = pdfHandler.writeToBuffers(getTagMap(application, locale, fromDate, false), getXMLContractPdfURL(getIWApplicationContext().getIWMainApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
-				if (buffers != null && buffers.size() == 2) {
-					String contractText = pdfHandler.bufferToString((MemoryFileBuffer) buffers.get(1));
-					ICFile contractFile = pdfHandler.writeToDatabase((MemoryFileBuffer) buffers.get(0), "contract.pdf", pdfHandler.getPDFMimeType());
-					ContractService service = (ContractService) getServiceInstance(ContractService.class);
+               
+                // this is the file generation part
+                ICFile contractFile = null;
+                String contractText = "";
+                
+                IWBundle bundle = getIWApplicationContext().getIWMainApplication().getBundle(getBundleIdentifier());
+                boolean useAlternativePDFGenerationMethod =  bundle.getBooleanProperty(PROPERTY_CHILDCARE_CONTRACT_ALTERNATIVE_PDF, false);
+                if (!useAlternativePDFGenerationMethod) { // let's use old method
+                    ITextXMLHandler pdfHandler = new ITextXMLHandler(ITextXMLHandler.TXT + ITextXMLHandler.PDF);
+                    List buffers = pdfHandler.writeToBuffers(getTagMap(application, locale, fromDate, false), getXMLContractPdfURL(getIWApplicationContext().getIWMainApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
+                    if (buffers != null && buffers.size() == 2) {
+                        contractText = pdfHandler.bufferToString((MemoryFileBuffer) buffers.get(1));
+                        contractFile = pdfHandler.writeToDatabase((MemoryFileBuffer) buffers.get(0), "contract.pdf", pdfHandler.getPDFMimeType());
+                    }
+                } else { // bundle property tells us to use new method
+                    // XXX contract text is null now. there should be a way to make it work...
+                    MemoryFileBuffer buffer = new MemoryFileBuffer();
+                    OutputStream mos = new MemoryOutputStream(buffer);
+                    InputStream mis = new MemoryInputStream(buffer);
+
+                    PrintingContext pcx = new ChildCareContractFormContext(getIWApplicationContext(), application, locale, false);
+                    pcx.setDocumentStream(mos);            
+                 
+                    getPrintingService().printDocument(pcx);
+                    try {
+                        contractFile = createFile(null, "child_care_contract_form", mis, buffer.length());                                        
+                    } catch (CreateException e) {                         
+                        e.printStackTrace();
+                        contractFile = null;
+                    }                    
+                }  
+				// end of file generation part	
+                
+                if(contractFile != null){    
+                    ContractService service = (ContractService) getServiceInstance(ContractService.class);
 					Contract contract = service.getContractHome().create(((Integer) application.getOwner().getPrimaryKey()).intValue(), getContractCategory(), fromDate, toDate, "C", contractText);
 					int contractID = ((Integer) contract.getPrimaryKey()).intValue();
 
@@ -4905,6 +4956,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					 */
 					application.store();
 				}
+
 			}
 
 			t.commit();
