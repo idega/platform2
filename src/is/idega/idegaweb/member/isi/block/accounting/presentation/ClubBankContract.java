@@ -1,5 +1,5 @@
 /*
- * $Id: ClubBankContract.java,v 1.2 2005/05/31 10:01:14 palli Exp $ Created on
+ * $Id: ClubBankContract.java,v 1.3 2005/10/28 11:02:55 palli Exp $ Created on
  * Feb 17, 2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -39,10 +39,10 @@ import com.idega.user.data.Group;
 
 /**
  * 
- * Last modified: $Date: 2005/05/31 10:01:14 $ by $Author: palli $
+ * Last modified: $Date: 2005/10/28 11:02:55 $ by $Author: palli $
  * 
  * @author <a href="mailto:birna@idega.com">birna</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ClubBankContract extends CashierSubWindowTemplate {
 
@@ -263,8 +263,8 @@ public class ClubBankContract extends CashierSubWindowTemplate {
 		t.add(labelAccountId, 6, row);
 		t.add(labelClaimantsSSN, 7, row);
 		t.add(labelClaimantsName, 8, row);
-		t.add(labelUsername, 9, row);
-		t.add(labelPsw, 10, row++);
+		t.add(labelUsername, 9, row++);
+//		t.add(labelPsw, 10, row++);
 
 		if (contracts != null && !contracts.isEmpty()) {
 			Iterator it = contracts.iterator();
@@ -305,7 +305,7 @@ public class ClubBankContract extends CashierSubWindowTemplate {
 				t.add(bi.getClaimantsSSN(), 7, row);
 				t.add(bi.getClaimantsName(), 8, row);
 				t.add(bi.getUsername(), 9, row);
-				t.add(bi.getPassword(), 10, row);
+//				t.add(bi.getPassword(), 10, row);
 				row++;
 			}
 

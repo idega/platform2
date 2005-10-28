@@ -1,6 +1,6 @@
 /*
- * $Id: FinanceEntryHomeImpl.java,v 1.20 2005/05/31 10:00:56 palli Exp $
- * Created on May 19, 2005
+ * $Id: FinanceEntryHomeImpl.java,v 1.21 2005/10/28 11:02:20 palli Exp $
+ * Created on Oct 4, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -23,10 +23,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2005/05/31 10:00:56 $ by $Author: palli $
+ *  Last modified: $Date: 2005/10/28 11:02:20 $ by $Author: palli $
  * 
  * @author <a href="mailto:bluebottle@idega.com">bluebottle</a>
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  */
 public class FinanceEntryHomeImpl extends IDOFactory implements FinanceEntryHome {
 

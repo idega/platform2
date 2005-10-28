@@ -19,8 +19,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.ejb.FinderException;
-
 import com.idega.block.basket.business.BasketBusiness;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
@@ -36,7 +34,6 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.UserBusiness;
-import com.idega.user.data.User;
 
 /**
  * @author palli
@@ -78,20 +75,14 @@ public class BankPlugin extends CashierSubWindowTemplate implements
     protected static final String LABEL_AMOUNT_PAID = "isi_acc_ccp_amount_paid";
 
     protected static final String LABEL_SUM = "isi_acc_ccp_sum";
+    
+    protected static final String LABEL_DUE_DATE = "isi_acc_due_date";
+    
+    protected static final String LABEL_FINAL_DUE_DATE = "isi_acc_final_due_date";
 
     private static final String ERROR_NO_SSN_ENTERED = "isi_acc_ccp_no_ssn_entered";
 
     private static final String ERROR_SSN_NOT_FOUND = "isi_acc_ccp_ssn_not_found";
-
-    private static final String ERROR_NO_CARD_TYPE_SELECTED = "isi_acc_ccp_no_type_selected";
-
-    private static final String ERROR_NO_CARD_NUMBER_ENTERED = "isi_acc_ccp_no_card_number_entered";
-
-    private static final String ERROR_NO_EXP_ENTERED = "isi_acc_ccp_no_exp_entered";
-
-    private static final String ERROR_NO_NOP_SELECTED = "isi_acc_ccp_no_nop_selected";
-
-    private static final String ERROR_NO_DOFP_ENTERED = "isi_acc_ccp_no_dofp_entered";
 
     /*
      * (non-Javadoc)
@@ -105,33 +96,17 @@ public class BankPlugin extends CashierSubWindowTemplate implements
         if (isContractDone) {
             errorList = new ArrayList();
             String paramSSN = iwc.getParameter(LABEL_SSN);
-            User ssnUser = null;
 
             if (paramSSN == null || "".equals(paramSSN)) {
                 errorList.add(ERROR_NO_SSN_ENTERED);
-            } else {
-                ssnUser = null;
-                try {
-                    ssnUser = getUserBusiness(iwc).getUser(paramSSN);
-                } catch (FinderException e) {
-                    ssnUser = null;
-                }
-				catch (RemoteException e) {
-					e.printStackTrace();
-					return false;
-				}
-
-                if (ssnUser == null) {
-                    errorList.add(ERROR_SSN_NOT_FOUND);
-                }
-            }
+            } 
 
             if (!errorList.isEmpty()) { return false; }
 
             try {
             		Map basket = getBasketBusiness(iwc).getBasket();
             		getAccountingBusiness(iwc).insertPayment(type, amount,
-					iwc.getCurrentUser(), basket, iwc);
+					iwc.getCurrentUser(), basket, iwc, paramSSN);
 
 
                 return true;
@@ -207,7 +182,6 @@ public class BankPlugin extends CashierSubWindowTemplate implements
             ssn.setValue(paramSSN);
         }
         inputTable.add(ssn, 1, row);
-
 
         row += 2;
 
@@ -310,6 +284,8 @@ public class BankPlugin extends CashierSubWindowTemplate implements
 
 		returnObject.add(t);
 		Link receipt = new Link(iwrb.getLocalizedString(LABEL_RECEIPT,"Receipt"));
+		receipt.addParameter("receipt_payment_type", iwc.getParameter(LABEL_PAYMENT_TYPE));
+		receipt.addParameter("receipt_ssn", iwc.getParameter(LABEL_SSN));
 		receipt.setWindowToOpen(DefaultCheckoutReceiptWindow.class);
 		returnObject.add(receipt);
 

@@ -142,12 +142,12 @@ public class EditTariffList extends CashierSubWindowTemplate {
 
 		boolean insert = false;
 		
-		try {
+		/*try {
 			insert = getAccountingBusiness(iwc).insertTariff(getClub(), getDivision(), group, type, text, amount, fromTimestamp.getDate(), toTimestamp.getDate(), applChildren, skip);
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
-		}
+		}*/
 		
 		return insert;
 	}

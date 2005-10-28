@@ -1,6 +1,6 @@
 /*
- * $Id: AccountingBusiness.java,v 1.39 2005/07/14 01:00:43 eiki Exp $
- * Created on May 31, 2005
+ * $Id: AccountingBusiness.java,v 1.40 2005/10/28 11:03:46 palli Exp $
+ * Created on Oct 21, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -37,10 +37,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2005/07/14 01:00:43 $ by $Author: eiki $
+ *  Last modified: $Date: 2005/10/28 11:03:46 $ by $Author: palli $
  * 
  * @author <a href="mailto:bluebottle@idega.com">bluebottle</a>
- * @version $Revision: 1.39 $
+ * @version $Revision: 1.40 $
  */
 public interface AccountingBusiness extends IBOService, UserGroupPlugInBusiness {
 
@@ -48,8 +48,8 @@ public interface AccountingBusiness extends IBOService, UserGroupPlugInBusiness 
 	 * @see is.idega.idegaweb.member.isi.block.accounting.business.AccountingBusinessBean#doAssessment
 	 */
 	public boolean doAssessment(String name, Group club, Group division, String groupId, User user,
-			boolean includeChildren, String[] tariffs, Timestamp paymentDate, Timestamp runOnDate)
-			throws java.rmi.RemoteException;
+			boolean includeChildren, String tariff, Timestamp paymentDate, Date tariffValidFrom, Date tariffValidTo,
+			String amount, String skip) throws java.rmi.RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.business.AccountingBusinessBean#findAllTariffByClub
@@ -74,15 +74,8 @@ public interface AccountingBusiness extends IBOService, UserGroupPlugInBusiness 
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.business.AccountingBusinessBean#insertTariff
 	 */
-	public boolean insertTariff(Group club, Group division, String groupId, String typeId, String text, String amount,
-			Date from, Date to, boolean applyToChildren, String skip) throws java.rmi.RemoteException;
-
-	/**
-	 * @see is.idega.idegaweb.member.isi.block.accounting.business.AccountingBusinessBean#insertTariff
-	 */
-	public boolean insertTariff(Group club, Group division, Group group, ClubTariffType type, String text,
-			double amount, Date from, Date to, boolean applyToChildren, String skipList, List skip)
-			throws java.rmi.RemoteException;
+	public ClubTariff insertTariff(Group club, Group division, Group group, ClubTariffType type, String text,
+			double amount, Date from, Date to) throws java.rmi.RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.business.AccountingBusinessBean#findDivisionForGroup
@@ -152,8 +145,8 @@ public interface AccountingBusiness extends IBOService, UserGroupPlugInBusiness 
 	 * @see is.idega.idegaweb.member.isi.block.accounting.business.AccountingBusinessBean#insertAssessmentRound
 	 */
 	public AssessmentRound insertAssessmentRound(String name, Group club, Group division, Group group, User user,
-			Timestamp start, Timestamp end, boolean includeChildren, Timestamp paymentDate, Timestamp runOnDate)
-			throws java.rmi.RemoteException;
+			Timestamp start, Timestamp end, boolean includeChildren, Timestamp paymentDate, Date tariffValidFrom,
+			Date tariffValidTo, String amount) throws java.rmi.RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.business.AccountingBusinessBean#deleteAssessmentRound

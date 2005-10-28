@@ -194,6 +194,7 @@ public class DefaultCheckoutPlugin extends CashierSubWindowTemplate
 
 		returnObject.add(t);
 		Link receipt = new Link(iwrb.getLocalizedString(LABEL_RECEIPT,"Receipt"));
+		receipt.addParameter("receipt_payment_type", iwc.getParameter(LABEL_PAYMENT_TYPE));
 		receipt.setWindowToOpen(DefaultCheckoutReceiptWindow.class);
 		returnObject.add(receipt);
 

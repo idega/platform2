@@ -31,7 +31,6 @@ import java.rmi.RemoteException;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -39,7 +38,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
@@ -97,7 +95,8 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 	 *            The last payment date to be put in the FinanceEntry.
 	 */
 	public boolean doAssessment(String name, Group club, Group division, String groupId, User user,
-			boolean includeChildren, String tariffs[], Timestamp paymentDate, Timestamp runOnDate) {
+			boolean includeChildren, String tariff, Timestamp paymentDate, Date tariffValidFrom, Date tariffValidTo,
+			String amount, String skip) {
 		Group group = null;
 		if (groupId != null) {
 			try {
@@ -117,9 +116,9 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 
 		IWTimestamp now = IWTimestamp.RightNow();
 		AssessmentRound round = insertAssessmentRound(name, club, division, group, user, now.getTimestamp(), null,
-				includeChildren, paymentDate, runOnDate);
+				includeChildren, paymentDate, tariffValidFrom, tariffValidTo, amount);
 
-		Thread assRoundThread = new AssessmentRoundThread(round, getIWApplicationContext(), Arrays.asList(tariffs));
+		Thread assRoundThread = new AssessmentRoundThread(round, getIWApplicationContext(), tariff, skip);
 		assRoundThread.start();
 
 		return true;
@@ -180,100 +179,54 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		return null;
 	}
 
-	public boolean insertTariff(Group club, Group division, String groupId, String typeId, String text, String amount,
-			Date from, Date to, boolean applyToChildren, String skip) {
-		Group group = null;
-		if (groupId != null) {
-			try {
-				GroupHome gHome = (GroupHome) IDOLookup.getHome(Group.class);
-				group = gHome.findByPrimaryKey(new Integer(groupId));
-			}
-			catch (IDOLookupException e) {
-				e.printStackTrace();
-			}
-			catch (NumberFormatException e) {
-				e.printStackTrace();
-			}
-			catch (FinderException e) {
-				e.printStackTrace();
-			}
-		}
+	/*
+	 * public boolean insertTariff(Group club, Group division, String groupId,
+	 * String typeId, String text, String amount, Date from, Date to, boolean
+	 * applyToChildren, String skip) { Group group = null; if (groupId != null) {
+	 * try { GroupHome gHome = (GroupHome) IDOLookup.getHome(Group.class); group =
+	 * gHome.findByPrimaryKey(new Integer(groupId)); } catch (IDOLookupException
+	 * e) { e.printStackTrace(); } catch (NumberFormatException e) {
+	 * e.printStackTrace(); } catch (FinderException e) { e.printStackTrace(); } }
+	 * 
+	 * ClubTariffType type = null; if (typeId != null) { try { type =
+	 * getClubTariffTypeHome().findByPrimaryKey(new Integer(typeId)); } catch
+	 * (NumberFormatException e) { e.printStackTrace(); } catch (FinderException
+	 * e) { e.printStackTrace(); } }
+	 * 
+	 * double am = 0.0d; try { am = Double.parseDouble(amount); } catch
+	 * (Exception e) { }
+	 * 
+	 * return insertTariff(club, division, group, type, text, am, from, to,
+	 * applyToChildren, skip, null); }
+	 */
 
-		ClubTariffType type = null;
-		if (typeId != null) {
-			try {
-				type = getClubTariffTypeHome().findByPrimaryKey(new Integer(typeId));
-			}
-			catch (NumberFormatException e) {
-				e.printStackTrace();
-			}
-			catch (FinderException e) {
-				e.printStackTrace();
-			}
-		}
-
-		double am = 0.0d;
+	public ClubTariff insertTariff(Group club, Group division, Group group, ClubTariffType type, String text,
+			double amount, Date from, Date to) {
+		ClubTariff eTariff = null;
 		try {
-			am = Double.parseDouble(amount);
-		}
-		catch (Exception e) {
-		}
-
-		return insertTariff(club, division, group, type, text, am, from, to, applyToChildren, skip, null);
-	}
-
-	public boolean insertTariff(Group club, Group division, Group group, ClubTariffType type, String text,
-			double amount, Date from, Date to, boolean applyToChildren, String skipList, List skip) {
-		if (skip == null || skip.isEmpty()) {
-			skip = new ArrayList();
-
-			StringTokenizer tok = new StringTokenizer(skipList, ";");
-			while (tok.hasMoreElements()) {
-				String str = (String) tok.nextElement();
-				skip.add(str);
-			}
-		}
-
-		ClubTariff eTariff;
-		try {
-			if (!skip.contains(group.getGroupType())) {
-				if (division == null) {
-					division = findDivisionForGroup(group);
-				}
-
-				eTariff = getClubTariffHome().create();
-				eTariff.setClub(club);
-				eTariff.setDivision(division);
-				eTariff.setGroup(group);
-				eTariff.setTariffType(type);
-				eTariff.setText(text);
-				eTariff.setAmount(amount);
-				eTariff.setPeriodFrom(from);
-				eTariff.setPeriodTo(to);
-
-				eTariff.store();
+			if (division == null) {
+				division = findDivisionForGroup(group);
 			}
 
-			if (applyToChildren) {
-				Iterator children = group.getChildrenIterator();
-				if (children != null) {
-					while (children.hasNext()) {
-						Group child = (Group) children.next();
-						boolean ret = insertTariff(club, division, child, type, text, amount, from, to,
-								applyToChildren, skipList, skip);
-						if (!ret)
-							return ret;
-					}
-				}
-			}
+			eTariff = getClubTariffHome().create();
+			eTariff.setClub(club);
+			eTariff.setDivision(division);
+			eTariff.setGroup(group);
+			eTariff.setTariffType(type);
+			eTariff.setText(text);
+			eTariff.setAmount(amount);
+			eTariff.setPeriodFrom(from);
+			eTariff.setPeriodTo(to);
 
-			return true;
+			eTariff.store();
+
+			return eTariff;
 		}
 		catch (CreateException e) {
 			e.printStackTrace();
 		}
 
-		return false;
+		return eTariff;
 	}
 
 	public Group findDivisionForGroup(Group group) {
@@ -535,7 +488,8 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 	}
 
 	public AssessmentRound insertAssessmentRound(String name, Group club, Group division, Group group, User user,
-			Timestamp start, Timestamp end, boolean includeChildren, Timestamp paymentDate, Timestamp runOnDate) {
+			Timestamp start, Timestamp end, boolean includeChildren, Timestamp paymentDate, Date tariffValidFrom,
+			Date tariffValidTo, String amount) {
 		AssessmentRound round = null;
 		try {
 			round = getAssessmentRoundHome().create();
@@ -557,7 +511,17 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 			}
 			round.setIncludeChildren(includeChildren);
 			round.setPaymentDate(paymentDate);
-			round.setRunOnDate(runOnDate);
+
+			double am = 0.0d;
+			try {
+				am = Double.parseDouble(amount);
+			}
+			catch (Exception e) {
+			}
+
+			round.setAmount(am);
+			round.setPeriodFrom(tariffValidFrom);
+			round.setPeriodTo(tariffValidTo);
 
 			round.store();
 		}

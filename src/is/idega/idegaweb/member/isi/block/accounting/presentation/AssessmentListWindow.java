@@ -115,6 +115,7 @@ public class AssessmentListWindow extends StyledIWAdminWindow {
 		t.add(labelUser, 3, row);
 		t.add(labelPersonalID, 4, row);
 		t.add(labelTariff, 5, row);
+		t.setAlignment(6, row, "RIGHT");
 		t.add(labelAmount, 6, row);
 		row++;
 		

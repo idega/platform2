@@ -1,6 +1,6 @@
 /*
- * $Id: FinanceEntry.java,v 1.17 2005/05/31 10:00:56 palli Exp $
- * Created on May 19, 2005
+ * $Id: FinanceEntry.java,v 1.18 2005/10/28 11:02:20 palli Exp $
+ * Created on Oct 4, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -11,6 +11,7 @@ package is.idega.idegaweb.member.isi.block.accounting.data;
 
 import is.idega.idegaweb.member.isi.block.accounting.export.creditcard.data.Batch;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 
 
@@ -23,10 +24,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2005/05/31 10:00:56 $ by $Author: palli $
+ *  Last modified: $Date: 2005/10/28 11:02:20 $ by $Author: palli $
  * 
  * @author <a href="mailto:bluebottle@idega.com">bluebottle</a>
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 public interface FinanceEntry extends IDOEntity, BasketItem {
 
@@ -414,6 +415,36 @@ public interface FinanceEntry extends IDOEntity, BasketItem {
 	 * @see is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean#setPayedByUser
 	 */
 	public void setPayedByUser(User user);
+
+	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean#getDueDate
+	 */
+	public Date getDueDate();
+
+	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean#setDueDate
+	 */
+	public void setDueDate(Date dueDate);
+
+	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean#getFinalDueDate
+	 */
+	public Date getFinalDueDate();
+
+	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean#setFinalDueDate
+	 */
+	public void setFinalDueDate(Date finalDueDate);
+
+	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean#getPayedBySSN
+	 */
+	public String getPayedBySSN();
+
+	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean#setPayedBySSN
+	 */
+	public void setPayedBySSN(String ssn);
 
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean#getItemDescription

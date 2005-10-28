@@ -7,6 +7,7 @@
  */
 package is.idega.idegaweb.member.isi.block.accounting.data;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Collection;
 
@@ -36,6 +37,11 @@ public class AssessmentRoundBMPBean extends GenericEntity implements AssessmentR
 	protected final static String COLUMN_DELETED = "deleted";
 	protected final static String COLUMN_PAYMENT_DATE = "payment_date";
 	protected final static String COLUMN_RUN_ON_DATE = "run_on_date";
+	
+//	protected final static String COLUMN_TARIFF_TYPE = "tariff_type_id";
+	protected final static String COLUMN_AMOUNT = "amount";
+	protected final static String COLUMN_PERIOD_FROM = "period_from";
+	protected final static String COLUMN_PERIOD_TO = "period_to";
 
 	/*
 	 * (non-Javadoc)
@@ -66,6 +72,11 @@ public class AssessmentRoundBMPBean extends GenericEntity implements AssessmentR
 		addManyToManyRelationShip(ClubTariffType.class);
 		addAttribute(COLUMN_PAYMENT_DATE, "The payment date for the entries", true, true, Timestamp.class);
 		addAttribute(COLUMN_RUN_ON_DATE, "The date the batch is run on", true, true, Timestamp.class);
+
+//		addManyToOneRelationship(COLUMN_TARIFF_TYPE, ClubTariffType.class);
+		addAttribute(COLUMN_AMOUNT, "Amount", true, true, Double.class);
+		addAttribute(COLUMN_PERIOD_FROM, "Period from", true, true, Date.class);
+		addAttribute(COLUMN_PERIOD_TO, "Period to", true, true, Date.class);
 	}
 
 	public void addTariffType(ClubTariffType tariffType) throws IDOAddRelationshipException {
@@ -135,6 +146,26 @@ public class AssessmentRoundBMPBean extends GenericEntity implements AssessmentR
 	public void setRunOnDate(Timestamp time) {
 		setColumn(COLUMN_RUN_ON_DATE, time);
 	}
+
+/*	public void setTariffTypeId(int id) {
+		setColumn(COLUMN_TARIFF_TYPE, id);
+	}
+
+	public void setTariffType(ClubTariffType type) {
+		setColumn(COLUMN_TARIFF_TYPE, type);
+	}*/
+
+	public void setAmount(double amount) {
+		setColumn(COLUMN_AMOUNT, amount);
+	}
+
+	public void setPeriodFrom(Date from) {
+		setColumn(COLUMN_PERIOD_FROM, from);
+	}
+
+	public void setPeriodTo(Date to) {
+		setColumn(COLUMN_PERIOD_TO, to);
+	}
 	
 	public String getName() {
 		return getStringColumnValue(COLUMN_NAME);
@@ -198,6 +229,26 @@ public class AssessmentRoundBMPBean extends GenericEntity implements AssessmentR
 	
 	public Timestamp getRunOnDate() {
 		return (Timestamp) getColumnValue(COLUMN_RUN_ON_DATE);
+	}
+	
+/*	public int getTariffTypeId() {
+		return getIntColumnValue(COLUMN_TARIFF_TYPE);
+	}
+
+	public ClubTariffType getTariffType() {
+		return (ClubTariffType) getColumnValue(COLUMN_TARIFF_TYPE);
+	}*/
+
+	public double getAmount() {
+		return getDoubleColumnValue(COLUMN_AMOUNT);
+	}
+
+	public Date getPeriodFrom() {
+		return getDateColumnValue(COLUMN_PERIOD_FROM);
+	}
+
+	public Date getPeriodTo() {
+		return getDateColumnValue(COLUMN_PERIOD_TO);
 	}
 	
 	public Collection ejbFindAllByClubAndDivision(Group club, Group div) throws FinderException {
