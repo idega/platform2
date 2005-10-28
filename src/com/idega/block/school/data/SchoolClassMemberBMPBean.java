@@ -56,8 +56,8 @@ import com.idega.util.IWTimestamp;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2005/10/27 11:03:12 $ by $Author: palli $
- * @version $Revision: 1.153 $
+ *         Last modified: $Date: 2005/10/28 12:32:25 $ by $Author: anna $
+ * @version $Revision: 1.154 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -1859,6 +1859,10 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		this.idoRemoveFrom(SchoolStudyPath.class);
 	}
 	
+	public void removeAllSubGroups() throws IDORemoveRelationshipException {
+		this.idoRemoveFrom(SchoolClass.class);
+	}
+	
 	public Collection getStudyPaths() throws IDORelationshipException {
 		return this.idoGetRelatedEntities(SchoolStudyPath.class);
 	}
@@ -1879,6 +1883,14 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		}
 		catch (FinderException fe) {
 			fe.printStackTrace();
+		}
+		try {
+			removeAllSubGroups();
+			removeAllStudyPaths();
+		}
+		catch (IDORemoveRelationshipException irre) {
+			irre.printStackTrace();
+			throw new RemoveException(irre.getMessage());
 		}
 		super.remove();
 	}
