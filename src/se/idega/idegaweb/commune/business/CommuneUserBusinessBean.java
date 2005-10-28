@@ -340,7 +340,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		
 			rootAcceptedCitizenGroup = getGroupCreateIfNecessaryStoreAsApplicationBinding(ROOT_ACCEPTED_CITIZEN_GROUP_ID_PARAMETER_NAME, "Commune Accepted Citizens", "The group for all citizens with an account in the commune",true,parent);
 		}
-		return rootCitizenGroup;
+		return rootAcceptedCitizenGroup;
 	}
 
 
