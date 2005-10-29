@@ -12,6 +12,7 @@ import java.util.List;
 import javax.ejb.FinderException;
 
 import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
 import com.idega.user.data.Group;
 
 /**
@@ -35,6 +36,11 @@ public class DivisionSelectionBox extends GroupSelectionBox  {
 			return this.getResourceBundle(iwc).getLocalizedString("DivisionSelectionBox.all_or_none_selected","All");
 		}
 		return super.getDisplayForResultingObject(value, iwc);
+	}
+
+	public PresentationObject getHandlerObject(String name, String value, IWContext iwc) {
+	    selectAllOnSubmitIfNoneSelected = false;
+	    return super.getHandlerObject(name, value, iwc);
 	}
 
 	//only allow this league to select itself

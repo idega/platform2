@@ -15,6 +15,8 @@ import java.util.Locale;
 import java.util.Map;
 import javax.ejb.FinderException;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.data.CachedGroup;
 import com.idega.user.data.Group;
 
@@ -44,6 +46,11 @@ public class PlayerSelectionBox extends GroupSelectionBox  {
 			return this.getResourceBundle(iwc).getLocalizedString("PlayerSelectionBox.all_or_none_selected","All");
 		}
 		return super.getDisplayForResultingObject(value, iwc);
+	}
+
+	public PresentationObject getHandlerObject(String name, String value, IWContext iwc) {
+	    selectAllOnSubmitIfNoneSelected = false;
+	    return super.getHandlerObject(name, value, iwc);
 	}
 	
 	//only allow this league to select itself

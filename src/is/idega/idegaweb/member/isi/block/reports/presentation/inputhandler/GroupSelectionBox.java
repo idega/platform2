@@ -44,6 +44,7 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 	private String userType;
 	private WorkReportBusiness workBiz;
 	private boolean isInitialized = false; 
+	protected boolean selectAllOnSubmitIfNoneSelected = true;
 
 	/**
 	 * Creates a new <code>GroupSelectionBox</code> with all groups.
@@ -211,7 +212,8 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 	public PresentationObject getHandlerObject(String name, String value, IWContext iwc) {
 		initialize(iwc);
 		this.setName(name);
-		this.selectAllOnSubmitIfNoneSelected();
+		if (selectAllOnSubmitIfNoneSelected)
+			this.selectAllOnSubmitIfNoneSelected();
 		if (value != null) {
 			this.setSelectedElement(value);
 		}
