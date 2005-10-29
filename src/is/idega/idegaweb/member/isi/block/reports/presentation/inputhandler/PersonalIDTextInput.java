@@ -9,6 +9,7 @@ import com.idega.business.InputHandler;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.TextInput;
+import com.idega.util.text.TextSoap;
 
 /**
  * @author Sigtryggur
@@ -17,7 +18,6 @@ import com.idega.presentation.ui.TextInput;
 public class PersonalIDTextInput extends TextInput implements InputHandler {
 
 	public Object convertSingleResultingObjectToType(Object value, String className) {
-		System.out.println("###################convertSingleResultingObjectToType");
 		return null;
 	}
 
@@ -26,7 +26,6 @@ public class PersonalIDTextInput extends TextInput implements InputHandler {
 	}
 
 	public PresentationObject getHandlerObject(String name,	Collection values, IWContext iwc) {
-		System.out.println("##################getHandlerObject1");
 		return null;
 	}
 
@@ -40,8 +39,11 @@ public class PersonalIDTextInput extends TextInput implements InputHandler {
 
 	public Object getResultingObject(String[] value, IWContext iwc)	throws Exception {
 		String personalID = null;
-		if (value != null && value.length == 1)
+		if (value != null && value.length == 1) {
 			personalID = value[0];
+			personalID = TextSoap.findAndCut(personalID, "-");
+			personalID = TextSoap.removeWhiteSpace(personalID);
+		}
 		return personalID;
 	}
 }
