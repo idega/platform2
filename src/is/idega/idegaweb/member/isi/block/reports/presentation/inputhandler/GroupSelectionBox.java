@@ -45,6 +45,13 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 	private WorkReportBusiness workBiz;
 	private boolean isInitialized = false; 
 	protected boolean selectAllOnSubmitIfNoneSelected = true;
+	
+	private boolean addAllOptionToList = false;
+	private String addAllOptionToListDisplayKey = null;
+	private String addAllOptionToListDisplayValue = null;
+	
+	private final static String DEFAULT_ADD_ALL_DISPLAY_KEY = "all_groups";
+	private final static String DEFAULT_ADD_ALL_DISPLAY_VALUE = "All groups";	
 
 	/**
 	 * Creates a new <code>GroupSelectionBox</code> with all groups.
@@ -107,6 +114,17 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 				//stupid but neccesary
 				List groups = ListUtil.convertCollectionToList(groupCollection);
 				sortList(iwc, groups);
+				
+				if (addAllOptionToList) {
+					if (addAllOptionToListDisplayKey == null || addAllOptionToListDisplayKey.equals("")) {
+						addAllOptionToListDisplayKey = DEFAULT_ADD_ALL_DISPLAY_KEY;
+					}
+					
+					if (addAllOptionToListDisplayValue == null || addAllOptionToListDisplayValue.equals("")) {
+						addAllOptionToListDisplayValue = DEFAULT_ADD_ALL_DISPLAY_VALUE;
+					}
+					addMenuElement(-1, getResourceBundle(iwc).getLocalizedString(addAllOptionToListDisplayKey, addAllOptionToListDisplayValue));
+				}
 				
 				Iterator iter = groups.iterator();
 				int size = groups.size();
@@ -412,4 +430,15 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 		return value;
 	}
 
+	public void setAddAllOptionToList(boolean addOption) {
+		addAllOptionToList = addOption;
+	}
+	
+	public void setAddAllOptionToListDisplayKey(String key) {
+		addAllOptionToListDisplayKey = key;
+	}
+	
+	public void setAddAllOptionToListDisplayValue(String value) {
+		addAllOptionToListDisplayValue = value;
+	}
 }
