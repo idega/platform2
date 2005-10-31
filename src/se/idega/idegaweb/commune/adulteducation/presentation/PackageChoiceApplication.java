@@ -1,5 +1,5 @@
 /*
- * $Id: PackageChoiceApplication.java,v 1.3 2005/08/10 00:19:27 laddi Exp $
+ * $Id: PackageChoiceApplication.java,v 1.4 2005/10/31 17:21:22 palli Exp $
  * Created on May 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -32,10 +32,10 @@ import com.idega.presentation.ui.util.SelectorUtility;
 
 
 /**
- * Last modified: $Date: 2005/08/10 00:19:27 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/31 17:21:22 $ by $Author: palli $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class PackageChoiceApplication extends AdultEducationBlock {
 
@@ -85,7 +85,7 @@ public class PackageChoiceApplication extends AdultEducationBlock {
 		
 		SelectorUtility util = new SelectorUtility();
 		
-		DropdownMenu seasons = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_SCHOOL_SEASON), getBusiness().getSeasons(), "getSeasonName"));
+		DropdownMenu seasons = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_SCHOOL_SEASON), getBusiness().getCurrentSeasons(), "getSeasonName"));
 		seasons.addMenuElementFirst("", localize("select_season", "Select season"));
 		if (iSchoolSeasonPK != null) {
 			seasons.setSelectedElement(iSchoolSeasonPK.toString());

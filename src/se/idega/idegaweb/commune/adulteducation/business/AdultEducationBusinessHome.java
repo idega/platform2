@@ -1,6 +1,6 @@
 /*
- * $Id: AdultEducationBusinessHome.java,v 1.29 2005/10/27 11:07:26 palli Exp $
- * Created on Oct 26, 2005
+ * $Id: AdultEducationBusinessHome.java,v 1.30 2005/10/31 17:21:22 palli Exp $
+ * Created on Oct 31, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -17,10 +17,10 @@ import com.idega.business.IBOHome;
 
 /**
  * 
- *  Last modified: $Date: 2005/10/27 11:07:26 $ by $Author: palli $
+ *  Last modified: $Date: 2005/10/31 17:21:22 $ by $Author: palli $
  * 
  * @author <a href="mailto:bluebottle@idega.com">bluebottle</a>
- * @version $Revision: 1.29 $
+ * @version $Revision: 1.30 $
  */
 public interface AdultEducationBusinessHome extends IBOHome {
 

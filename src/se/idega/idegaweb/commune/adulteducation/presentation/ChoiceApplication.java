@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceApplication.java,v 1.10 2005/05/20 12:11:23 laddi Exp $
+ * $Id: ChoiceApplication.java,v 1.11 2005/10/31 17:21:22 palli Exp $
  * Created on May 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -41,10 +41,10 @@ import com.idega.presentation.ui.util.SelectorUtility;
 
 
 /**
- * Last modified: $Date: 2005/05/20 12:11:23 $ by $Author: laddi $
+ * Last modified: $Date: 2005/10/31 17:21:22 $ by $Author: palli $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class ChoiceApplication extends AdultEducationBlock {
 
@@ -148,7 +148,7 @@ public class ChoiceApplication extends AdultEducationBlock {
 			table.add(new HiddenInput(PARAMETER_STUDY_PATH_GROUP, iStudyPathGroupPK.toString()));
 		}
 		
-		DropdownMenu seasons = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_SCHOOL_SEASON), getBusiness().getSeasons(), "getSeasonName"));
+		DropdownMenu seasons = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_SCHOOL_SEASON), getBusiness().getCurrentSeasons(), "getSeasonName"));
 		seasons.addMenuElementFirst("", localize("select_season", "Select season"));
 		if (iSchoolSeasonPK != null) {
 			seasons.setSelectedElement(iSchoolSeasonPK.toString());

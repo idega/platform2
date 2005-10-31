@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.48 2005/10/27 11:07:26 palli Exp $
+ * $Id: AdultEducationBusinessBean.java,v 1.49 2005/10/31 17:21:22 palli Exp $
  * Created on 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -90,10 +90,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/10/27 11:07:26 $ by $Author: palli $
+ * Last modified: $Date: 2005/10/31 17:21:22 $ by $Author: palli $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.48 $
+ * @version $Revision: 1.49 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements CaseBusiness, AdultEducationBusiness {
 
@@ -785,12 +785,32 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Case
 		}
 	}
 
+	//
+	
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusiness#getSeasons()
 	 */
 	public Collection getSeasons() {
+		try {
+			return getSchoolBusiness().findAllSchoolSeasons(getCategory());		
+		}
+		catch (FinderException fe) {
+			throw new IBORuntimeException(
+					"Adult education block not properly set up, school category data entry is missing");
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusiness#getSeasons()
+	 */
+	public Collection getCurrentSeasons() {
 		try {
 			return getSchoolBusiness().findAllCurrentSeasons(getCategory());
 		}

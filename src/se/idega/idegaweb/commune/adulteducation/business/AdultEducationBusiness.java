@@ -1,6 +1,6 @@
 /*
- * $Id: AdultEducationBusiness.java,v 1.30 2005/10/27 11:07:26 palli Exp $
- * Created on Oct 26, 2005
+ * $Id: AdultEducationBusiness.java,v 1.31 2005/10/31 17:21:22 palli Exp $
+ * Created on Oct 31, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -46,10 +46,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2005/10/27 11:07:26 $ by $Author: palli $
+ *  Last modified: $Date: 2005/10/31 17:21:22 $ by $Author: palli $
  * 
  * @author <a href="mailto:bluebottle@idega.com">bluebottle</a>
- * @version $Revision: 1.30 $
+ * @version $Revision: 1.31 $
  */
 public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 
@@ -255,6 +255,11 @@ public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getSeasons
 	 */
 	public Collection getSeasons() throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getCurrentSeasons
+	 */
+	public Collection getCurrentSeasons() throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getNextSeasons
