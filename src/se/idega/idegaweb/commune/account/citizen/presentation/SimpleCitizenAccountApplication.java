@@ -49,12 +49,12 @@ import com.idega.util.text.SocialSecurityNumber;
  * {@link se.idega.idegaweb.commune.account.citizen.business}and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2005/10/27 20:19:36 $ by $Author: eiki $
+ * Last modified: $Date: 2005/10/31 19:39:26 $ by $Author: eiki $
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg </a>
  * @author <a href="mail:malin.anulf@agurait.com">Malin Anulf </a>
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class SimpleCitizenAccountApplication extends CommuneBlock {
 
@@ -256,11 +256,10 @@ public class SimpleCitizenAccountApplication extends CommuneBlock {
 	 * If the parameter is set then the applications checks if the user has an address registered to one of the commune ids in this string
 	 * @param communeUniqueIdsCSV a comma seperated values string with unique ids of communes in the IC_COMMUNE table
 	 */
-	public void getCommuneUniqueIdsCSV(String communeUniqueIdsCSV) {
+	public void setCommuneUniqueIdsCSV(String communeUniqueIdsCSV) {
 		this.communeUniqueIdsCSV = communeUniqueIdsCSV;
 	}
-
-
+	
 	private Table createTable() {
 		final Table table = new Table();
 		table.setCellspacing(getCellpadding());
