@@ -338,7 +338,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		if (rootAcceptedCitizenGroup == null) {
 			Group parent = getRootCitizenGroup();
 		
-			rootAcceptedCitizenGroup = getGroupCreateIfNecessaryStoreAsApplicationBinding(ROOT_ACCEPTED_CITIZEN_GROUP_ID_PARAMETER_NAME, "Commune Accepted Citizens", "The group for all citizens with an account in the commune",true,parent);
+			rootAcceptedCitizenGroup = getGroupCreateIfNecessaryStoreAsApplicationBinding(ROOT_ACCEPTED_CITIZEN_GROUP_ID_PARAMETER_NAME, "Commune Accepted Citizens", "The group for all citizens with an account in the commune",parent);
 		}
 		return rootAcceptedCitizenGroup;
 	}
@@ -1181,25 +1181,21 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		return schoolBusiness;
 	}
 
-	private Group getGroupCreateIfNecessaryStoreAsApplicationBinding(String parameter, String createName, String createDescription) throws RemoteException, CreateException, FinderException {
-		return getGroupCreateIfNecessaryStoreAsApplicationBinding(parameter, createName, createDescription, true);
-	}
-
 	private Group getGroupCreateIfNecessaryStoreInCommune(Commune commune, String parameter, String createName, String createDescription) throws RemoteException, CreateException, FinderException {
 		Group group = commune.getGroup();
 		if (group == null) {
-			group = getGroupCreateIfNecessaryStoreAsApplicationBinding(parameter, createName, createDescription, false);
+			group = getGroupCreateIfNecessaryStoreAsApplicationBinding(parameter, createName, createDescription);
 			commune.setGroup(group);
 			commune.store();
 		}
 		return group;
 	}
 	
-	private Group getGroupCreateIfNecessaryStoreAsApplicationBinding(String parameter, String createName, String createDescription, boolean store) throws RemoteException, CreateException, FinderException{
-		return getGroupCreateIfNecessaryStoreAsApplicationBinding(parameter,createName,createDescription,store,null);
+	private Group getGroupCreateIfNecessaryStoreAsApplicationBinding(String parameter, String createName, String createDescription) throws RemoteException, CreateException, FinderException{
+		return getGroupCreateIfNecessaryStoreAsApplicationBinding(parameter,createName,createDescription,null);
 	}
 	
-	private Group getGroupCreateIfNecessaryStoreAsApplicationBinding(String parameter, String createName, String createDescription, boolean store , Group parentGroup) throws RemoteException, CreateException, FinderException {	
+	private Group getGroupCreateIfNecessaryStoreAsApplicationBinding(String parameter, String createName, String createDescription, Group parentGroup) throws RemoteException, CreateException, FinderException {	
 		ICApplicationBindingBusiness applicationBindingBusiness = (ICApplicationBindingBusiness)  IBOLookup.getServiceInstance(getIWApplicationContext(), ICApplicationBindingBusiness.class);
 		// look up ic application binding
 		String groupId = applicationBindingBusiness.get(parameter);
@@ -1216,15 +1212,14 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 				group = getGroupBusiness().createGroupUnder(createName, createDescription, parentGroup);
 			}
 			
-			if (store) {
-				groupId = group.getPrimaryKey().toString();
-				try {
-					applicationBindingBusiness.put(parameter, groupId);
-				}
-				catch (RemoveException ex) {
-					throw new CreateException("[CommuneUserBusiness} Creation of " + createName + " has no primary key");
-				}
+			groupId = group.getPrimaryKey().toString();
+			try {
+				applicationBindingBusiness.put(parameter, groupId);
 			}
+			catch (RemoveException ex) {
+				throw new CreateException("[CommuneUserBusiness} Creation of " + createName + " has no primary key");
+			}
+		
 		}
 	return group;
 	}
