@@ -49,12 +49,12 @@ import com.idega.util.text.SocialSecurityNumber;
  * {@link se.idega.idegaweb.commune.account.citizen.business}and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2005/10/31 23:05:37 $ by $Author: eiki $
+ * Last modified: $Date: 2005/10/31 23:12:55 $ by $Author: eiki $
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg </a>
  * @author <a href="mail:malin.anulf@agurait.com">Malin Anulf </a>
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
 public class SimpleCitizenAccountApplication extends CommuneBlock {
 
@@ -253,6 +253,10 @@ public class SimpleCitizenAccountApplication extends CommuneBlock {
 	 */
 	private void addMessageAndFormBelowIt(IWContext iwc, String messageLocalizationKey, String messageDefaultLocalizationValue) {
 		String localized = localize(messageLocalizationKey, messageDefaultLocalizationValue);
+		//FIXME should not be necessery but I'm getting empty strings!...
+		if(localized == null || "".equals(localized)){
+			localized = messageDefaultLocalizationValue;
+		}
 		Text text = new Text(localized,true,false,false);
 		text.setFontColor(COLOR_RED);
 		add(text);
