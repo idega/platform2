@@ -49,12 +49,12 @@ import com.idega.util.text.SocialSecurityNumber;
  * {@link se.idega.idegaweb.commune.account.citizen.business}and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2005/10/31 19:39:26 $ by $Author: eiki $
+ * Last modified: $Date: 2005/10/31 23:05:37 $ by $Author: eiki $
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg </a>
  * @author <a href="mail:malin.anulf@agurait.com">Malin Anulf </a>
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 public class SimpleCitizenAccountApplication extends CommuneBlock {
 
@@ -86,7 +86,7 @@ public class SimpleCitizenAccountApplication extends CommuneBlock {
 	private final static String TEXT_APPLICATION_SUBMITTED_DEFAULT = "Application is submitted.";
 	private final static String TEXT_APPLICATION_SUBMITTED_KEY = "scaa_app_submitted";
 
-	private final static String GOTO_FORGOT_PASSWORD_DEFAULT = "Klicka på länken \"Jag har glömt mitt användarnamn eller lösenord\"";
+	private final static String GOTO_FORGOT_PASSWORD_DEFAULT = "Click on the link \"Forgotten username/password\"";
 	private final static String GOTO_FORGOT_PASSWORD_KEY = "scaa_goto_forgot_password_key";
 
 	private final static String USER_ALLREADY_HAS_A_LOGIN_DEFAULT = "You already have an account";
@@ -105,10 +105,10 @@ public class SimpleCitizenAccountApplication extends CommuneBlock {
 	private final static String ERROR_EMAILS_DONT_MATCH_DEFAULT = "Emails don't match";
 	private final static String ERROR_NOT_VALID_PERSONAL_ID = "scaa_not_valid_personal_id";
 	private final static String ERROR_NOT_VALID_PERSONAL_ID_DEFAULT = "The personal ID is not valid";
-	private static final String ERROR_APPLYING_FOR_WRONG_COMMUNE = "scaaa_user_in_wrong_commune";
+	private static final String ERROR_APPLYING_FOR_WRONG_COMMUNE = "scaa_user_in_wrong_commune";
 	private static final String ERROR_APPLYING_FOR_WRONG_COMMUNE_DEFAULT = "You do not belong to the commune you are applying for according to our records and the application cannot be finished. Please contact your commune if you think this is an error.";
 
-	public void main(final IWContext iwc) {
+	public void main(IWContext iwc) {
 		setResourceBundle(getResourceBundle(iwc));
 
 		try {
@@ -144,10 +144,12 @@ public class SimpleCitizenAccountApplication extends CommuneBlock {
 		add(accountForm);
 	}
 
-	private void submitSimpleForm(final IWContext iwc) {
-		try {
-			String ssn = iwc.getParameter(SSN_KEY);
-			if (!isOver18(ssn)) { throw new Exception(localize(YOU_MUST_BE_18_KEY, YOU_MUST_BE_18_DEFAULT)); }
+	private void submitSimpleForm(IWContext iwc) throws RemoteException {
+		String ssn = iwc.getParameter(SSN_KEY);
+			if (!isOver18(ssn)) { 
+				addMessageAndFormBelowIt(iwc, YOU_MUST_BE_18_KEY, YOU_MUST_BE_18_DEFAULT); 
+				
+			}
 			String email = iwc.getParameter(EMAIL_KEY).toString();
 			String emailRepeat = iwc.getParameter(EMAIL_KEY_REPEAT).toString();
 			String phoneHome = iwc.getParameter(PHONE_HOME_KEY).toString();
@@ -158,11 +160,8 @@ public class SimpleCitizenAccountApplication extends CommuneBlock {
 			
 			if (user == null) {
 				// unknown or user not in system applies
-				final Text text = new Text(localize(UNKNOWN_CITIZEN_KEY, UNKNOWN_CITIZEN_DEFAULT));
-				text.setFontColor(COLOR_RED);
-				add(text);
-				add(new Break(2));
-				viewSimpleApplicationForm(iwc);
+				addMessageAndFormBelowIt(iwc,UNKNOWN_CITIZEN_KEY, UNKNOWN_CITIZEN_DEFAULT);
+				return;
 			}
 			else {
 				
@@ -191,7 +190,8 @@ public class SimpleCitizenAccountApplication extends CommuneBlock {
 					}
 					
 					if(!inCorrectCommune){
-						throw new Exception(localize(ERROR_APPLYING_FOR_WRONG_COMMUNE,ERROR_APPLYING_FOR_WRONG_COMMUNE_DEFAULT));
+						addMessageAndFormBelowIt(iwc, ERROR_APPLYING_FOR_WRONG_COMMUNE,ERROR_APPLYING_FOR_WRONG_COMMUNE_DEFAULT);
+						return;
 					}
 				}
 				
@@ -200,7 +200,12 @@ public class SimpleCitizenAccountApplication extends CommuneBlock {
 					Collection logins = new ArrayList();
 					logins.addAll(getLoginTableHome().findLoginsForUser(user));
 					if (!logins.isEmpty()) { 
-						throw new UserHasLoginException();
+						Text text = new Text(localize(USER_ALLREADY_HAS_A_LOGIN_KEY, USER_ALLREADY_HAS_A_LOGIN_DEFAULT) + ". " + localize(GOTO_FORGOT_PASSWORD_KEY, GOTO_FORGOT_PASSWORD_DEFAULT) + '.', true, false, false);
+						text.setFontColor(COLOR_RED);
+						add(text);
+						add(new Break(2));
+						viewSimpleApplicationForm(iwc);
+						return;
 					}	
 				}
 				catch (Exception e) {
@@ -209,39 +214,50 @@ public class SimpleCitizenAccountApplication extends CommuneBlock {
 				
 				if (email != null && email.length() > 0) {
 					if (emailRepeat == null || !email.equals(emailRepeat)) {
-						throw new Exception(localize(ERROR_EMAILS_DONT_MATCH, ERROR_EMAILS_DONT_MATCH_DEFAULT));
+						addMessageAndFormBelowIt(iwc, ERROR_EMAILS_DONT_MATCH,ERROR_EMAILS_DONT_MATCH_DEFAULT);
+						return;
 					}
 				}
 			
-				if (null == business.insertApplication(iwc, user, ssn, email, phoneHome, phoneWork, _sendEmail)) {
-					// known user applied, but couldn't be submitted
-					throw new Exception(localize(ERROR_NO_INSERT_KEY, ERROR_NO_INSERT_DEFAULT));
-				}
-				else {
-					// known user applied and was submitted
-					if (getResponsePage() != null) {
-						iwc.forwardToIBPage(getParentPage(), getResponsePage());
+				try {
+					if (null == business.insertApplication(iwc, user, ssn, email, phoneHome, phoneWork, _sendEmail)) {
+						// known user applied, but couldn't be submitted
+						addMessageAndFormBelowIt(iwc,ERROR_NO_INSERT_KEY, ERROR_NO_INSERT_DEFAULT);
 					}
 					else {
-						add(new Text(localize(TEXT_APPLICATION_SUBMITTED_KEY, TEXT_APPLICATION_SUBMITTED_DEFAULT)));
+						// known user applied and was submitted
+						if (getResponsePage() != null) {
+							iwc.forwardToIBPage(getParentPage(), getResponsePage());
+						}
+						else {
+							add(new Text(localize(TEXT_APPLICATION_SUBMITTED_KEY, TEXT_APPLICATION_SUBMITTED_DEFAULT)));
+						}
 					}
 				}
+				catch (UserHasLoginException e) {
+					Text text = new Text(localize(USER_ALLREADY_HAS_A_LOGIN_KEY, USER_ALLREADY_HAS_A_LOGIN_DEFAULT) + ". " + localize(GOTO_FORGOT_PASSWORD_KEY, GOTO_FORGOT_PASSWORD_DEFAULT) + '.', true, false, false);
+					text.setFontColor(COLOR_RED);
+					add(text);
+					add(new Break(2));
+					viewSimpleApplicationForm(iwc);
+					return;
+				}
 			}
-		}
-		catch (UserHasLoginException uhle) {
-			Text text = new Text(localize(USER_ALLREADY_HAS_A_LOGIN_KEY, USER_ALLREADY_HAS_A_LOGIN_DEFAULT) + ". " + localize(GOTO_FORGOT_PASSWORD_KEY, GOTO_FORGOT_PASSWORD_DEFAULT) + '.', true, false, false);
-			text.setFontColor(COLOR_RED);
-			add(text);
-			add(new Break(2));
-			viewSimpleApplicationForm(iwc);
-		}
-		catch (Exception e) {
-			Text text = new Text(e.getMessage(), true, false, false);
-			text.setFontColor(COLOR_RED);
-			add(text);
-			add(new Break(2));
-			viewSimpleApplicationForm(iwc);
-		}
+	}
+
+	/**
+	 * Adds the  message above the form
+	 * @param iwc
+	 * @param errorLocalizationKey
+	 * @param errorDefaultLocalizationValue
+	 */
+	private void addMessageAndFormBelowIt(IWContext iwc, String messageLocalizationKey, String messageDefaultLocalizationValue) {
+		String localized = localize(messageLocalizationKey, messageDefaultLocalizationValue);
+		Text text = new Text(localized,true,false,false);
+		text.setFontColor(COLOR_RED);
+		add(text);
+		add(new Break(2));
+		viewSimpleApplicationForm(iwc);
 	}
 
 	/**
