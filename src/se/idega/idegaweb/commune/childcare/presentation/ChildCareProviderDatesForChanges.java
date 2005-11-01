@@ -1,7 +1,12 @@
 package se.idega.idegaweb.commune.childcare.presentation;
 
 import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Iterator;
 
+import com.idega.block.school.data.School;
+import com.idega.idegaweb.IWMainApplication;
+import com.idega.io.DownloadWriter;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Table;
@@ -9,6 +14,7 @@ import com.idega.presentation.text.Break;
 import com.idega.presentation.text.DownloadLink;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.util.IWTimestamp;
@@ -21,11 +27,15 @@ import com.idega.util.IWTimestamp;
  */
 public class ChildCareProviderDatesForChanges extends ChildCareBlock {
     // request parameters
+    protected final static String PARAMETER_PROVIDER_ID = "cc_provider_id";    
 	protected static final String PARAMETER_START_FROM = "cc_start_from";
 	protected static final String PARAMETER_START_TO = "cc_start_to";	
 	protected static final String PARAMETER_END_FROM = "cc_end_from";
 	protected static final String PARAMETER_END_TO = "cc_end_to";
+    
+    protected static final int ALL_PROVIDERS = -1;
 	
+    private int providerId = ALL_PROVIDERS;
 	private IWTimestamp startFromTimestamp;
 	private IWTimestamp startToTimestamp;	
 	private IWTimestamp endFromTimestamp;
@@ -53,6 +63,10 @@ public class ChildCareProviderDatesForChanges extends ChildCareBlock {
         PresentationObjectContainer container = new PresentationObjectContainer();
         
         Form form = new Form();
+        form.setAction(iwc.getIWMainApplication().getMediaServletURI());
+        form.setMethod("post");
+        form.addParameter(DownloadWriter.PRM_WRITABLE_CLASS, IWMainApplication.getEncryptedClassName(ChildCareDatesForChangesWriter.class));
+        form.setToShowLoadingOnSubmit(false);        
         
         Table table = new Table(1,3);
         form.add(table);
@@ -62,11 +76,16 @@ public class ChildCareProviderDatesForChanges extends ChildCareBlock {
         table.setBorder(0);
         
         int row = 1;
+        table.add(getSmallHeader(localize("child_care.provider", "Provider") + ":"), 1, row);
+        table.add(new Break(), 1, row);
+        table.add(getProviderMenu(getProviderId()), 1, row++); 
         
         table.add(getDateInputs(), 1, row++);
         
-        SubmitButton submit = (SubmitButton) getStyledInterface(new SubmitButton("OK"));
-        table.add(submit, 1, row++);
+        SubmitButton submit = (SubmitButton) getStyledInterface(new SubmitButton("OK"));        
+        table.add(submit, 1, row);
+        table.setAlignment(1, row++, Table.HORIZONTAL_ALIGN_RIGHT);
+        
         
         table.add(getXLSLink(), 1, row++);
         
@@ -92,12 +111,19 @@ public class ChildCareProviderDatesForChanges extends ChildCareBlock {
         table.add(getSmallHeader(localize("child_care.from", "From") + ":"), 2, 2); 
         table.add(new Break(), 2, 2);
         
+        IWTimestamp stamp = new IWTimestamp();
+        
         DateInput registerDateFrom = (DateInput) getStyledInterface(new DateInput(PARAMETER_START_FROM, true));        
 		if (getStartFromTimestamp() != null)
-			registerDateFrom.setDate(getStartFromTimestamp().getDate()); 
+			registerDateFrom.setDate(getStartFromTimestamp().getDate());
+        registerDateFrom.setYearRange(stamp.getYear() - 11, stamp.getYear()+3);
+        registerDateFrom.setAsNotEmpty(localize("child_care.must_select_from_date","You have to select a from date"));
+        
         DateInput removeDateFrom = (DateInput) getStyledInterface(new DateInput(PARAMETER_END_FROM, true));
 		if (getEndFromTimestamp() != null)
-			removeDateFrom.setDate(getEndFromTimestamp().getDate());          
+			removeDateFrom.setDate(getEndFromTimestamp().getDate()); 
+        removeDateFrom.setYearRange(stamp.getYear() - 11, stamp.getYear()+3);
+        removeDateFrom.setAsNotEmpty(localize("child_care.must_select_from_date","You have to select a from date"));        
         
         table.add(registerDateFrom, 2, 1);
         table.add(removeDateFrom, 2, 2);   
@@ -109,10 +135,15 @@ public class ChildCareProviderDatesForChanges extends ChildCareBlock {
         
         DateInput registerDateTo = (DateInput) getStyledInterface(new DateInput(PARAMETER_START_TO, true));
 		if (getStartToTimestamp() != null)
-			registerDateTo.setDate(getStartToTimestamp().getDate());         
+			registerDateTo.setDate(getStartToTimestamp().getDate()); 
+        registerDateTo.setYearRange(stamp.getYear() - 11, stamp.getYear()+3);
+        registerDateTo.setAsNotEmpty(localize("child_care.must_select_to_date","You have to select a to date"));        
+                
         DateInput removeDateTo = (DateInput) getStyledInterface(new DateInput(PARAMETER_END_TO, true));   
 		if (getEndToTimestamp() != null)
 			removeDateTo.setDate(getEndToTimestamp().getDate());
+        removeDateTo.setYearRange(stamp.getYear() - 11, stamp.getYear()+3);
+        removeDateTo.setAsNotEmpty(localize("child_care.must_select_to_date","You have to select a to date"));                
 		
         table.add(registerDateTo, 3, 1);
         table.add(removeDateTo, 3, 2);  
@@ -126,6 +157,9 @@ public class ChildCareProviderDatesForChanges extends ChildCareBlock {
      * @param iwc
      */
     private void parse(IWContext iwc) {
+        if (iwc.isParameterSet(PARAMETER_PROVIDER_ID)) 
+            this.setProviderId(Integer.parseInt(iwc.getParameter(PARAMETER_PROVIDER_ID)));
+        
     	if (iwc.isParameterSet(PARAMETER_START_FROM))
 			this.setStartFromTimestamp(stringToIWTimestamp(iwc.getParameter(PARAMETER_START_FROM))); 
     	
@@ -163,7 +197,7 @@ public class ChildCareProviderDatesForChanges extends ChildCareBlock {
 	private Link getXLSLink() throws RemoteException {
 		DownloadLink link = new DownloadLink(getBundle().getImage("shared/xls.gif"));
 		link.setMediaWriterClass(ChildCareDatesForChangesWriter.class);
-		link.addParameter(ChildCareDatesForChangesWriter.PARAMETER_PROVIDER_ID, getSession().getChildCareID());
+		link.addParameter(PARAMETER_PROVIDER_ID, this.getProviderId());
 		if (getStartFromTimestamp() != null)
 			link.addParameter(PARAMETER_START_FROM, String.valueOf(getStartFromTimestamp().getDate()));
 		if (getStartToTimestamp() != null)
@@ -208,6 +242,37 @@ public class ChildCareProviderDatesForChanges extends ChildCareBlock {
 	public void setStartToTimestamp(IWTimestamp startToTimestamp) {
 		this.startToTimestamp = startToTimestamp;
 	}
+    
+    
+    private DropdownMenu getProviderMenu(int providerId) {
+        DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_PROVIDER_ID));
+        menu.addMenuElementFirst("-1", localize("child_care.all_providers", "All providers"));  ///xxx add this localized string     
+        menu.setSelectedElement(providerId); 
+        
+        Collection providers = null;
+        try {
+            providers = getBusiness().getSchoolBusiness().findAllSchoolsByType(getBusiness().getSchoolBusiness().findAllSchoolTypesForChildCare());
+        } catch (RemoteException e) {            
+            e.printStackTrace();
+        }
+        if (providers != null) {
+            Iterator iter = providers.iterator();
+            while (iter.hasNext()) {
+                School element = (School) iter.next();
+                menu.addMenuElement(element.getPrimaryKey().toString(), element.getSchoolName());
+            }
+        }
+        
+        return menu;
+    }
+
+    public int getProviderId() {
+        return providerId;
+    }
+
+    public void setProviderId(int providerId) {
+        this.providerId = providerId;
+    }
      
     
 }

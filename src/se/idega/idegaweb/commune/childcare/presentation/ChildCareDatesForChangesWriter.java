@@ -3,21 +3,37 @@ package se.idega.idegaweb.commune.childcare.presentation;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
+import se.idega.idegaweb.commune.care.data.ChildCareApplication;
+import se.idega.idegaweb.commune.care.data.ChildCareContract;
+import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
+
+import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolClassMember;
+import com.idega.business.IBOLookup;
+import com.idega.core.user.data.User;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.io.DownloadWriter;
 import com.idega.io.MediaWritable;
 import com.idega.io.MemoryFileBuffer;
 import com.idega.io.MemoryInputStream;
 import com.idega.io.MemoryOutputStream;
 import com.idega.presentation.IWContext;
+import com.idega.util.IWCalendar;
+import com.idega.util.IWTimestamp;
 
 /**
  * This class generates Excel output for ChildCareProviderDatesForChanges block
@@ -27,25 +43,43 @@ import com.idega.presentation.IWContext;
  */
 public class ChildCareDatesForChangesWriter extends DownloadWriter implements
 		MediaWritable {
-	
-	public final static String PARAMETER_PROVIDER_ID = "provider_id";
 
 	private MemoryFileBuffer buffer = null;
 
 	public void init(HttpServletRequest req, IWContext iwc) {
 		try {
 			// parse params
+            Integer providerId = new Integer(req.getParameter(ChildCareProviderDatesForChanges.PARAMETER_PROVIDER_ID));
+            
+            IWTimestamp startFromStamp = getIWTimestampParameter(req, ChildCareProviderDatesForChanges.PARAMETER_START_FROM);
+            IWTimestamp startToStamp = getIWTimestampParameter(req, ChildCareProviderDatesForChanges.PARAMETER_START_TO);            
+            IWTimestamp endFromStamp = getIWTimestampParameter(req, ChildCareProviderDatesForChanges.PARAMETER_END_FROM);
+            IWTimestamp endToStamp = getIWTimestampParameter(req, ChildCareProviderDatesForChanges.PARAMETER_END_TO);            
 
 			// get data from business
-
+            ChildCareBusiness business = getChildCareBusiness(iwc);
+		    Collection contracts = business
+                    .getChildCareContractsByProviderAndClassMemberDates(
+                            providerId, startFromStamp.getDate(), startToStamp
+                                    .getDate(), endFromStamp.getDate(),
+                            endToStamp.getDate());
+            
 			// genereate xls
-			buffer = writeXLS(iwc);
-			setAsDownload(iwc, "childcare_queue.xls", buffer.length());
+			buffer = writeXLS(iwc, contracts);
+			setAsDownload(iwc, "dates_for_changes.xls", buffer.length());
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+
+    private IWTimestamp getIWTimestampParameter(HttpServletRequest req, String paramName) {
+        String date = req.getParameter(paramName);                                                        
+        IWTimestamp stamp = null;            
+        if (date != null)
+            stamp = new IWTimestamp(date);
+        return stamp;
+    }
 	
 	public String getMimeType() {
 		if (buffer != null)
@@ -67,30 +101,126 @@ public class ChildCareDatesForChangesWriter extends DownloadWriter implements
 	}	
 
 	
-	private MemoryFileBuffer writeXLS(IWContext iwc) throws Exception {
-
+	private MemoryFileBuffer writeXLS(IWContext iwc, Collection contracts) throws Exception {
 		MemoryFileBuffer buffer = new MemoryFileBuffer();
 		MemoryOutputStream mos = new MemoryOutputStream(buffer);
 
 		HSSFWorkbook wb = new HSSFWorkbook();
 		HSSFSheet sheet = wb.createSheet("Worksheet");
 		
-		HSSFFont font = wb.createFont();
-        font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
-        font.setFontHeightInPoints((short) 12);
-        HSSFCellStyle style = wb.createCellStyle();
-        style.setFont(font);
-		
-		//now we create headers for columns
-		int cellRow = 0;
-        HSSFRow row = sheet.createRow((short) cellRow++);
-		
+		int rowNum = 0;
         
-
+        HSSFRow row = sheet.createRow((short) rowNum++);
+        fillHeaderRow(wb, sheet, row);        
+        
+        //loop through data and add it to excel
+        if (contracts != null) {
+            ChildCareContract contract = null;
+            ChildCareApplication application = null;
+            SchoolClassMember classMember = null;
+            User child = null;
+            School provider = null;
+            
+            Iterator iter = contracts.iterator();            
+            while (iter.hasNext()) {
+                 contract = (ChildCareContract) iter.next();
+                 application = contract.getApplication();
+                 classMember = contract.getSchoolClassMember();
+                 child = application.getChild();
+                 provider = application.getProvider();
+                 
+                 // add data to row
+                 row = sheet.createRow((short) rowNum++);
+                 fillDataRow(iwc, wb, sheet, row, contract, application, classMember, child, provider);
+                 
+            }
+        }
+        
 		wb.write(mos);
 
 		buffer.setMimeType("application/x-msexcel");
 		return buffer;
 	}
+    
+    
+    /**
+     * Fills given row with headers
+     * 
+     * @param wb
+     * @param sheet
+     * @param row
+     */
+    private void fillHeaderRow(HSSFWorkbook wb, HSSFSheet sheet, HSSFRow row) { 
+        //create style of header font
+        HSSFFont font = wb.createFont();
+        font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+        font.setFontHeightInPoints((short) 11);
+        HSSFCellStyle style = wb.createCellStyle();
+        style.setFont(font);
+        
+        // here we could create array of strings, I mean headers
+        String[] headers = { "Name", "PersId", "Provider", "Req. start",
+                "System start", "Cancel made", "Req. cancel", "System cancel",
+                "Diff start dates", "Diff end dates" };
+        
+        HSSFCell cell;        
+        for (int i = 0; i < headers.length; i++) {
+            cell = row.createCell((short) i);
+            cell.setCellValue(headers[i]);
+            cell.setCellStyle(style);
+            
+            sheet.setColumnWidth((short) i, (short) (16 * 256)); 
+        }  
+        
+    }
+    
+    protected ChildCareBusiness getChildCareBusiness(IWApplicationContext iwc) throws RemoteException {
+        return (ChildCareBusiness) IBOLookup.getServiceInstance(iwc, ChildCareBusiness.class);  
+    }
+    
+    private void fillDataRow(IWContext iwc, HSSFWorkbook wb, HSSFSheet sheet, HSSFRow row,
+            ChildCareContract contract, ChildCareApplication application,
+            SchoolClassMember classMember, User child, School provider){        
+        row.createCell((short) 0).setCellValue(child.getFirstName() + " " + child.getLastName());
+        row.createCell((short) 1).setCellValue(child.getPersonalID());
+        row.createCell((short) 2).setCellValue(provider.getName());
+        
+        Date fromDateRequested = application.getFromDateRequested();
+        Date registerDate = classMember.getRegisterDate();
+        Date cancelRequestReceived = application.getCancelRequestReceived();
+        Date cancelDateRequested = application.getCancelDateRequested();
+        Date removedDate = classMember.getRemovedDate();      
+           
+        row.createCell((short) 3).setCellValue(dateToLocalizedString(iwc, fromDateRequested));  
+        row.createCell((short) 4).setCellValue(dateToLocalizedString(iwc, registerDate));
+        row.createCell((short) 5).setCellValue(dateToLocalizedString(iwc, cancelRequestReceived));
+        row.createCell((short) 6).setCellValue(dateToLocalizedString(iwc, cancelDateRequested));
+        row.createCell((short) 7).setCellValue(dateToLocalizedString(iwc, removedDate));        
+        
+        row.createCell((short) 8).setCellValue(daysBetweenDates(fromDateRequested, registerDate));
+        row.createCell((short) 9).setCellValue(daysBetweenDates(cancelDateRequested, removedDate));
+        
+    }
+    
+    private String dateToLocalizedString(IWContext iwc, Date date){
+        String s = "";        
+        if(date != null) {
+            IWCalendar iwcal = new IWCalendar(iwc.getCurrentLocale(), date);
+            s = iwcal.getLocaleDate(IWCalendar.SHORT);
+        }        
+        return s;
+    }
+    
+    private String daysBetweenDates(Date date1, Date date2) {
+        String s = "";        
+        if (date1 != null && date2 != null) {
+            IWTimestamp stamp1 = new IWTimestamp(date1);
+            IWTimestamp stamp2 = new IWTimestamp(date2);
+            
+            int days = IWTimestamp.getDaysBetween(stamp1, stamp2);
+            s = Integer.toString(days);
+        }       
+        return s;
+    }
 
 }
