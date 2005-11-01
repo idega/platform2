@@ -5,7 +5,9 @@ package se.idega.idegaweb.commune.care.data;
 
 import java.sql.Date;
 import java.util.Collection;
+
 import javax.ejb.FinderException;
+
 import com.idega.block.contract.data.Contract;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClassBMPBean;
@@ -686,4 +688,41 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 		
 		return idoFindPKsByQuery(query);
 	}
+    
+    /**
+     * Finds contracts, according to params
+     * 
+     * @return
+     * @throws FinderException
+     */
+    public Collection ejbFindAllByProviderAndClassMemberDateRange(Integer schoolId,
+            Date startFrom, Date startTo, Date endFrom, Date endTo)
+            throws FinderException {        
+        IDOQuery query = idoQuery();
+        query.appendSelect();
+        
+        //query.append(" cca.* ");
+        query.append(" max(cca.comm_childcare_archive_id) as comm_childcare_archive_id "); // looks like most databases have support for this function         
+        
+        query.appendFrom();
+        query.append(getEntityName()).append(" cca, ");
+        query.append(SchoolClassMemberBMPBean.SCHOOLCLASSMEMBER).append(" scm, ");
+        query.append(ChildCareApplicationBMPBean.ENTITY_NAME).append(" cc ");        
+        query.appendWhere();
+        query.appendEquals("cca.sch_class_member_id", "scm.sch_class_member_id");
+        query.appendAndEquals("cca.application_id", "cc.comm_childcare_id");
+        
+        if (schoolId != null) {
+            query.appendAndEquals("cc.provider_id", schoolId);    
+        }
+        
+        query.appendAnd().append("scm.register_date >= ").append(startFrom);
+        query.appendAnd().append("scm.register_date <= ").append(startTo);
+        query.appendAnd().append("scm.removed_date >= ").append(endFrom);
+        query.appendAnd().append("scm.removed_date <= ").append(endTo);
+        
+        query.appendGroupBy(" cca.application_id ");
+                
+        return idoFindPKsByQuery(query);
+    }
 }
