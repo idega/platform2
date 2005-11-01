@@ -26,7 +26,7 @@ import com.idega.util.IWTimestamp;
  *
  */
 public class ChildCareProviderDatesForChanges extends ChildCareBlock {
-    // request parameters
+
     protected final static String PARAMETER_PROVIDER_ID = "cc_provider_id";    
 	protected static final String PARAMETER_START_FROM = "cc_start_from";
 	protected static final String PARAMETER_START_TO = "cc_start_to";	
