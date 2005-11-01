@@ -1,5 +1,5 @@
 /*
- * $Id: CommuneMessageBusinessBean.java,v 1.2 2005/10/14 21:53:23 eiki Exp $
+ * $Id: CommuneMessageBusinessBean.java,v 1.3 2005/11/01 13:04:21 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.message.data.MessageHandlerInfo;
 import se.idega.idegaweb.commune.message.data.MessageHandlerInfoHome;
@@ -32,8 +33,10 @@ import com.idega.block.process.message.business.MessageBusiness;
 import com.idega.block.process.message.business.MessageBusinessBean;
 import com.idega.block.process.message.business.MessageTypeManager;
 import com.idega.block.process.message.data.Message;
+import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
+import com.idega.core.business.ICApplicationBindingBusiness;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.contact.data.Email;
 import com.idega.core.file.data.ICFile;
@@ -579,11 +582,10 @@ public class CommuneMessageBusinessBean extends MessageBusinessBean implements C
 		String forcedToAddress = null;
 		String bccReceiver = null;
 		try{
-			IWBundle iwb = getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
-			mailServer = iwb.getProperty(PROP_SYSTEM_SMTP_MAILSERVER,DEFAULT_SMTP_MAILSERVER);
-			fromAddress = iwb.getProperty(PROP_MESSAGEBOX_FROM_ADDRESS,DEFAULT_MESSAGEBOX_FROM_ADDRESS);
-			forcedToAddress = iwb.getProperty(PROP_SYSTEM_FORCED_RECEIVER,"notset");
-			bccReceiver = iwb.getProperty(PROP_SYSTEM_BCC_RECEIVER,"notset");
+			mailServer = getPropertyValue(PROP_SYSTEM_SMTP_MAILSERVER,DEFAULT_SMTP_MAILSERVER);
+			fromAddress = getPropertyValue(PROP_MESSAGEBOX_FROM_ADDRESS,DEFAULT_MESSAGEBOX_FROM_ADDRESS);
+			forcedToAddress = getPropertyValue(PROP_SYSTEM_FORCED_RECEIVER,"notset");
+			bccReceiver = getPropertyValue(PROP_SYSTEM_BCC_RECEIVER,"notset");
 		}
 		catch(Exception e){
 			System.err.println("MessageBusinessBean: Error getting mail property from bundle");
@@ -721,4 +723,41 @@ public class CommuneMessageBusinessBean extends MessageBusinessBean implements C
 		
 	}
 
+	/**
+	 * Gets the value for a property name ... replaces the bundle properties that were used previously
+	 * @param propertyName
+	 * @return
+	 */
+	private String getPropertyValue(String propertyName, String defaultValue) {
+		try {
+			String value = getBindingBusiness().get(propertyName);
+			if (value != null) {
+				return value;
+			}
+			else {
+				IWBundle iwb = getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+				value = iwb.getProperty(propertyName);
+				getBindingBusiness().put(propertyName, value != null ? value : defaultValue);
+			}
+		}
+		catch (RemoveException re) {
+			re.printStackTrace();
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
+		catch (CreateException ce) {
+			ce.printStackTrace();
+		}
+		return defaultValue;
+	}
+	
+	private ICApplicationBindingBusiness getBindingBusiness() {
+		try {
+			return (ICApplicationBindingBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ICApplicationBindingBusiness.class);
+		}
+		catch (IBOLookupException ibe) {
+			throw new IBORuntimeException(ibe);
+		}
+	}
 }

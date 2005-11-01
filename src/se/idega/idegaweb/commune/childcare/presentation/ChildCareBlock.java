@@ -4,7 +4,9 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 
+import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 
 import se.idega.idegaweb.commune.care.business.CareBusiness;
 import se.idega.idegaweb.commune.care.data.CareTime;
@@ -18,8 +20,11 @@ import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
+import com.idega.core.business.ICApplicationBindingBusiness;
 import com.idega.data.IDORelationshipException;
+import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.DropdownMenu;
@@ -64,9 +69,9 @@ public class ChildCareBlock extends CommuneBlock {
 		business = getChildCareBusiness(iwc);
 		session = getChildCareSession(iwc);
 		careBusiness = getCareBusiness(iwc);
-		checkRequired = getBundle(iwc).getBooleanProperty(PROPERTY_CHECK_REQUIRED, true);
-		usePredefinedCareTimeValues = getBundle(iwc).getBooleanProperty(PROPERTY_USE_PREDEFINED_CARE_TIME_VALUES, false);
-		allowChangeGroupFromToday = getBundle(iwc).getBooleanProperty(PROPERTY_ALLOW_CHANGE_GROUP_FROM_TODAY, true);
+		checkRequired = new Boolean(getPropertyValue(getBundle(iwc), PROPERTY_CHECK_REQUIRED, Boolean.TRUE.toString())).booleanValue();
+		usePredefinedCareTimeValues = new Boolean(getPropertyValue(getBundle(iwc), PROPERTY_USE_PREDEFINED_CARE_TIME_VALUES, Boolean.FALSE.toString())).booleanValue();
+		allowChangeGroupFromToday = new Boolean(getPropertyValue(getBundle(iwc), PROPERTY_ALLOW_CHANGE_GROUP_FROM_TODAY, Boolean.TRUE.toString())).booleanValue();
 		initialize();
 		
 		ACCEPTED_COLOR = getBundle(iwc).getProperty(PROPERTY_ACCEPTED_COLOR, "#FFE0E0");
@@ -399,4 +404,40 @@ public class ChildCareBlock extends CommuneBlock {
 		return allowChangeGroupFromToday;
 	}
     
+	/**
+	 * Gets the value for a property name ... replaces the bundle properties that were used previously
+	 * @param propertyName
+	 * @return
+	 */
+	private String getPropertyValue(IWBundle iwb, String propertyName, String defaultValue) {
+		try {
+			String value = getBindingBusiness().get(propertyName);
+			if (value != null) {
+				return value;
+			}
+			else {
+				value = iwb.getProperty(propertyName);
+				getBindingBusiness().put(propertyName, value != null ? value : defaultValue);
+			}
+		}
+		catch (RemoveException re) {
+			re.printStackTrace();
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
+		catch (CreateException ce) {
+			ce.printStackTrace();
+		}
+		return defaultValue;
+	}
+	
+	private ICApplicationBindingBusiness getBindingBusiness() {
+		try {
+			return (ICApplicationBindingBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ICApplicationBindingBusiness.class);
+		}
+		catch (IBOLookupException ibe) {
+			throw new IBORuntimeException(ibe);
+		}
+	}
 }
