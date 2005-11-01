@@ -20,7 +20,7 @@ import com.idega.data.IDOQuery;
  */
 public class BatchBMPBean extends GenericEntity implements Batch {
 
-    protected final static String ENTITY_NAME = "isi_creditcard_batch";
+    protected final static String ENTITY_NAME = "fin_batch";
 
     protected final static String COLUMN_BATCH_NUMBER = "batch_number";
     
