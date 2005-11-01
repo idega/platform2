@@ -5807,4 +5807,20 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			return new ArrayList();
 		}
 	}
+    
+    public Collection getChildCareContractsByProviderAndClassMemberDates(
+            Integer schoolId, Date startFrom, Date startTo, Date endFrom,
+            Date endTo) {
+        ChildCareContractHome home = getChildCareContractArchiveHome();
+        Collection contracts = null;
+        try {
+            contracts = home.findAllByProviderAndClassMemberDateRange(
+                    schoolId.intValue() > 0 ? schoolId : null, 
+                    startFrom, startTo, endFrom, endTo);
+        } catch (FinderException e) {
+            e.printStackTrace();
+        }
+        return contracts;
+    }
+    
 }

@@ -1676,10 +1676,13 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness,
      * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getUsePreschoolLine
      */
     public boolean getUsePreschoolLine() throws java.rmi.RemoteException;
+
     /**
      * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getMarkChildrenOutsideCommune
      */
-    public boolean getMarkChildrenOutsideCommune() throws java.rmi.RemoteException;
+    public boolean getMarkChildrenOutsideCommune()
+            throws java.rmi.RemoteException;
+
     /**
      * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getCaseParameters
      */
@@ -1697,5 +1700,12 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness,
             String toCareTime, Date dayOfChange, Date fromDateOfBirth,
             Date toDateOfBirth, User performer, Locale locale)
             throws java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getChildCareContractsByProviderAndClassMemberDates
+     */
+    public Collection getChildCareContractsByProviderAndClassMemberDates(
+            Integer schoolId, Date startFrom, Date startTo, Date endFrom,
+            Date endTo) throws java.rmi.RemoteException;
 
 }
