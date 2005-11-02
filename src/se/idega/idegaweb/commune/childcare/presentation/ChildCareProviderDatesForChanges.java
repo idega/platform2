@@ -6,6 +6,7 @@ import java.util.Iterator;
 
 import com.idega.block.school.data.School;
 import com.idega.idegaweb.IWMainApplication;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.io.DownloadWriter;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObjectContainer;
@@ -40,13 +41,19 @@ public class ChildCareProviderDatesForChanges extends ChildCareBlock {
 	private IWTimestamp startToTimestamp;	
 	private IWTimestamp endFromTimestamp;
 	private IWTimestamp endToTimestamp;	
-	
-	
+    
+    public final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune.childcare";
+    
+	private IWResourceBundle iwrb = null;
+    
     /**
      * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
      */
     public void init(IWContext iwc) throws Exception {
         if (isCommuneAdministrator(iwc)) {
+            
+            setIwrb(iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc));
+            
             parse(iwc);
             add(getGui(iwc));
         }
@@ -76,18 +83,17 @@ public class ChildCareProviderDatesForChanges extends ChildCareBlock {
         table.setBorder(0);
         
         int row = 1;
-        table.add(getSmallHeader(localize("child_care.provider", "Provider") + ":"), 1, row);
+        table.add(getSmallHeader(getLocalizedString("provider", "Provider") + ":"), 1, row);
         table.add(new Break(), 1, row);
         table.add(getProviderMenu(getProviderId()), 1, row++); 
         
         table.add(getDateInputs(), 1, row++);
         
-        SubmitButton submit = (SubmitButton) getStyledInterface(new SubmitButton("OK"));        
+        SubmitButton submit = (SubmitButton) getStyledInterface(new SubmitButton(getLocalizedString("ok","OK")));        
         table.add(submit, 1, row);
-        table.setAlignment(1, row++, Table.HORIZONTAL_ALIGN_RIGHT);
+        table.setAlignment(1, row++, Table.HORIZONTAL_ALIGN_RIGHT);        
         
-        
-        table.add(getXLSLink(), 1, row++);
+        //table.add(getXLSLink(), 1, row++);
         
         container.getChildren().add(form);        
         return container;
@@ -103,12 +109,12 @@ public class ChildCareProviderDatesForChanges extends ChildCareBlock {
         table.setBorder(0);
         table.setCellspacing(5);
         
-        table.add(getSmallHeader(localize("child_care.select_start_date", "Select start date:")), 1, 1);
-        table.add(getSmallHeader(localize("child_care.select_end_date", "End date:")), 1, 2);
+        table.add(getSmallHeader(getLocalizedString("select_start_date", "Select start date") + ":"), 1, 1);
+        table.add(getSmallHeader(getLocalizedString("end_date", "End date") + ":"), 1, 2);
         
-        table.add(getSmallHeader(localize("child_care.from", "From") + ":"), 2, 1);
+        table.add(getSmallHeader(getLocalizedString("from", "From") + ":"), 2, 1);
         table.add(new Break(), 2, 1);
-        table.add(getSmallHeader(localize("child_care.from", "From") + ":"), 2, 2); 
+        table.add(getSmallHeader(getLocalizedString("to", "To") + ":"), 2, 2); 
         table.add(new Break(), 2, 2);
         
         IWTimestamp stamp = new IWTimestamp();
@@ -117,33 +123,33 @@ public class ChildCareProviderDatesForChanges extends ChildCareBlock {
 		if (getStartFromTimestamp() != null)
 			registerDateFrom.setDate(getStartFromTimestamp().getDate());
         registerDateFrom.setYearRange(stamp.getYear() - 11, stamp.getYear()+3);
-        registerDateFrom.setAsNotEmpty(localize("child_care.must_select_from_date","You have to select a from date"));
+        registerDateFrom.setAsNotEmpty(getLocalizedString("please_fill_start_from", "Please fill in start date from field!"));
         
         DateInput removeDateFrom = (DateInput) getStyledInterface(new DateInput(PARAMETER_END_FROM, true));
 		if (getEndFromTimestamp() != null)
 			removeDateFrom.setDate(getEndFromTimestamp().getDate()); 
         removeDateFrom.setYearRange(stamp.getYear() - 11, stamp.getYear()+3);
-        removeDateFrom.setAsNotEmpty(localize("child_care.must_select_from_date","You have to select a from date"));        
+        removeDateFrom.setAsNotEmpty(getLocalizedString("please_fill_start_to", "Please fill in start date to field!"));        
         
         table.add(registerDateFrom, 2, 1);
         table.add(removeDateFrom, 2, 2);   
         
-        table.add(getSmallHeader(localize("child_care.to", "To") + ":"), 3, 1);
+        table.add(getSmallHeader(getLocalizedString("to", "To") + ":"), 3, 1);
         table.add(new Break(), 3, 1);   
-        table.add(getSmallHeader(localize("child_care.to", "To") + ":"), 3, 2);
+        table.add(getSmallHeader(getLocalizedString("to", "To") + ":"), 3, 2);
         table.add(new Break(), 3, 2);   
         
         DateInput registerDateTo = (DateInput) getStyledInterface(new DateInput(PARAMETER_START_TO, true));
 		if (getStartToTimestamp() != null)
 			registerDateTo.setDate(getStartToTimestamp().getDate()); 
         registerDateTo.setYearRange(stamp.getYear() - 11, stamp.getYear()+3);
-        registerDateTo.setAsNotEmpty(localize("child_care.must_select_to_date","You have to select a to date"));        
+        registerDateTo.setAsNotEmpty(getLocalizedString("please_fill_end_from", "Please fill in end date from field!"));        
                 
         DateInput removeDateTo = (DateInput) getStyledInterface(new DateInput(PARAMETER_END_TO, true));   
 		if (getEndToTimestamp() != null)
 			removeDateTo.setDate(getEndToTimestamp().getDate());
         removeDateTo.setYearRange(stamp.getYear() - 11, stamp.getYear()+3);
-        removeDateTo.setAsNotEmpty(localize("child_care.must_select_to_date","You have to select a to date"));                
+        removeDateTo.setAsNotEmpty(getLocalizedString("please_fill_end_to", "Please fill in end date to field!"));                
 		
         table.add(registerDateTo, 3, 1);
         table.add(removeDateTo, 3, 2);  
@@ -246,7 +252,7 @@ public class ChildCareProviderDatesForChanges extends ChildCareBlock {
     
     private DropdownMenu getProviderMenu(int providerId) {
         DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_PROVIDER_ID));
-        menu.addMenuElementFirst("-1", localize("child_care.all_providers", "All providers"));  ///xxx add this localized string     
+        menu.addMenuElementFirst("-1", getLocalizedString("all_providers", "All providers"));  ///xxx add this localized string     
         menu.setSelectedElement(providerId); 
         
         Collection providers = null;
@@ -273,6 +279,18 @@ public class ChildCareProviderDatesForChanges extends ChildCareBlock {
     public void setProviderId(int providerId) {
         this.providerId = providerId;
     }
-     
+
+    public IWResourceBundle getIwrb() {
+        return iwrb;
+    }
+
+    public void setIwrb(IWResourceBundle iwrb) {
+        this.iwrb = iwrb;
+    }
+    
+    private String getLocalizedString(String key, String defaultValue) {      
+        String s = getIwrb().getLocalizedString(this.getClass().getSimpleName() + "." + key, defaultValue);        
+        return s;
+    }     
     
 }

@@ -26,6 +26,7 @@ import com.idega.block.school.data.SchoolClassMember;
 import com.idega.business.IBOLookup;
 import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.io.DownloadWriter;
 import com.idega.io.MediaWritable;
 import com.idega.io.MemoryFileBuffer;
@@ -45,9 +46,13 @@ public class ChildCareDatesForChangesWriter extends DownloadWriter implements
 		MediaWritable {
 
 	private MemoryFileBuffer buffer = null;
+    
+    private IWResourceBundle iwrb = null;
 
 	public void init(HttpServletRequest req, IWContext iwc) {
 		try {
+            setIwrb(iwc.getIWMainApplication().getBundle(ChildCareProviderDatesForChanges.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc));
+            
 			// parse params
             Integer providerId = new Integer(req.getParameter(ChildCareProviderDatesForChanges.PARAMETER_PROVIDER_ID));
             
@@ -159,9 +164,17 @@ public class ChildCareDatesForChangesWriter extends DownloadWriter implements
         style.setFont(font);
         
         // here we could create array of strings, I mean headers
-        String[] headers = { "Name", "PersId", "Provider", "Req. start",
-                "System start", "Cancel made", "Req. cancel", "System cancel",
-                "Diff start dates", "Diff end dates" };
+        String[] headers = { 
+                getLocalizedString("name", "Name"), 
+                getLocalizedString("persId", "PersId"), 
+                getLocalizedString("provider", "Provider"), 
+                getLocalizedString("reqStart", "Req. start"),
+                getLocalizedString("systemStart", "System start"), 
+                getLocalizedString("cancelMade", "Cancel made"), 
+                getLocalizedString("reqCancel", "Req. cancel"), 
+                getLocalizedString("systemCancel", "System cancel"),
+                getLocalizedString("diffStartDates", "Diff start dates"), 
+                getLocalizedString("diffEndDates", "Diff end dates") };
         
         HSSFCell cell;        
         for (int i = 0; i < headers.length; i++) {
@@ -222,5 +235,18 @@ public class ChildCareDatesForChangesWriter extends DownloadWriter implements
         }       
         return s;
     }
+    
+    private String getLocalizedString(String key, String defaultValue) {      
+        String s = getIwrb().getLocalizedString(this.getClass().getSimpleName() + "." + key, defaultValue);        
+        return s;
+    }
+
+    public IWResourceBundle getIwrb() {
+        return iwrb;
+    }
+
+    public void setIwrb(IWResourceBundle iwrb) {
+        this.iwrb = iwrb;
+    }     
 
 }
