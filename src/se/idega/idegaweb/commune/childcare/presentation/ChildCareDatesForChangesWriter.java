@@ -7,6 +7,7 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -236,8 +237,13 @@ public class ChildCareDatesForChangesWriter extends DownloadWriter implements
         return s;
     }
     
-    private String getLocalizedString(String key, String defaultValue) {      
-        String s = getIwrb().getLocalizedString(this.getClass().getSimpleName() + "." + key, defaultValue);        
+    private String getLocalizedString(String key, String defaultValue) {
+        String simpleName = null;        
+        StringTokenizer parser = new StringTokenizer(this.getClass().getName(), ".");
+        while (parser.hasMoreTokens()) {
+            simpleName = parser.nextToken();
+        }        
+        String s = getIwrb().getLocalizedString(simpleName + "." + key, defaultValue);        
         return s;
     }
 

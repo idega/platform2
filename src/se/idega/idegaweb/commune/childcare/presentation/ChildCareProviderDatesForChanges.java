@@ -3,6 +3,7 @@ package se.idega.idegaweb.commune.childcare.presentation;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.StringTokenizer;
 
 import com.idega.block.school.data.School;
 import com.idega.idegaweb.IWMainApplication;
@@ -289,7 +290,12 @@ public class ChildCareProviderDatesForChanges extends ChildCareBlock {
     }
     
     private String getLocalizedString(String key, String defaultValue) {      
-        String s = getIwrb().getLocalizedString(this.getClass().getSimpleName() + "." + key, defaultValue);        
+        String simpleName = null;        
+        StringTokenizer parser = new StringTokenizer(this.getClass().getName(), ".");
+        while (parser.hasMoreTokens()) {
+            simpleName = parser.nextToken();
+        }        
+        String s = getIwrb().getLocalizedString(simpleName + "." + key, defaultValue);        
         return s;
     }     
     
