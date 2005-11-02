@@ -286,69 +286,70 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
   }
     
   public String isUserSuitedForGroup(User user, Group targetGroup) throws RemoteException  {  
-    // get my resource bundle for all the messages
-    IWResourceBundle iwrb = getResourceBundle();
-    // get date of birth
-    Date date = user.getDateOfBirth();
-    if (date == null) {
-      return iwrb.getLocalizedString("age_gender_date_of_birth_of_user_not_set", "The date of birth is not set");
-    }
-    GregorianCalendar dateOfBirth = new GregorianCalendar();
-    dateOfBirth.setTime(date);
-    // get gender of user
-    int genderId = user.getGenderID();
-    if (genderId < 0) {
-      return iwrb.getLocalizedString("age_gender_gender_unknown", "The gender is unknown");
-    }
-    int myGenderId = -1;
-    boolean genderOkay = false;
-    try {
-      myGenderId = getMyGenderIdForGenderId(new Integer(genderId));
-    // test gender of target group
-    genderOkay = (
-      (isNeutral(targetGroup)) ||
-      (isFemale(targetGroup) && myGenderId == FEMALE) ||
-      (isMale(targetGroup) && myGenderId == MALE));
-    }
-    catch (RemoteException rm)  {
-      throw new RuntimeException(rm.getMessage());
-    }
-    catch (FinderException fex) {
-      throw new EJBException(fex.getMessage());
-    }
-    // is gender okay?
-    if (! genderOkay) {
-      return iwrb.getLocalizedString("age_gender_wrong_gender_of_user", "The user's gender is not allowed for the group");
-    }
-    // gender is okay.....
-    
-    // do we have to check the age at all?
-    if (isAgeLimitStringentCondition(targetGroup))  {
-      // test age of target group
-      GregorianCalendar keyDate = getKeyDateForYearZero(targetGroup);
-      int keyDateDay = keyDate.get(Calendar.DAY_OF_MONTH);
-      int keyDateMonth = keyDate.get(Calendar.MONTH);
-      int yearOfBirth = dateOfBirth.get(Calendar.YEAR);
-      int dateOfBirthDay = dateOfBirth.get(Calendar.DAY_OF_MONTH);
-      int dateOfBirthMonth = dateOfBirth.get(Calendar.MONTH);
-      boolean birthdayAfterKeyDate = ( keyDateMonth < dateOfBirthMonth ) || (keyDateMonth == dateOfBirthMonth && keyDateDay < dateOfBirthDay);
-      // get age
-      Calendar rightNow = Calendar.getInstance();
-      int currentYear = rightNow.get(Calendar.YEAR);
-      int userAge = currentYear - yearOfBirth;
-      int lowerAgeLimit = getLowerAgeLimit(targetGroup);
-      int upperAgeLimit = getUpperAgeLimit(targetGroup);
-      // test lower age
-      if (userAge < lowerAgeLimit || (userAge == lowerAgeLimit && birthdayAfterKeyDate) ) {
-        return iwrb.getLocalizedString("age_gender_user_too_young", "The user is too young");
-      }
-      // test upper age
-      if (userAge > upperAgeLimit + 1 || (userAge == upperAgeLimit + 1 && ! birthdayAfterKeyDate) ) {
-        return iwrb.getLocalizedString("age_gender_user_too_old", "The user is too old");
-      }
-    }
-    // everything is fine
-    return null;
+	  // get my resource bundle for all the messages
+	  IWResourceBundle iwrb = getResourceBundle();
+	  
+	  // get gender of user
+	  int genderId = user.getGenderID();
+	  if (genderId < 0) {
+		  return iwrb.getLocalizedString("age_gender_gender_unknown", "The gender is unknown");
+	  }
+	  int myGenderId = -1;
+	  boolean genderOkay = false;
+	  try {
+		  myGenderId = getMyGenderIdForGenderId(new Integer(genderId));
+		  // test gender of target group
+		  genderOkay = (
+				  (isNeutral(targetGroup)) ||
+				  (isFemale(targetGroup) && myGenderId == FEMALE) ||
+				  (isMale(targetGroup) && myGenderId == MALE));
+	  }
+	  catch (RemoteException rm)  {
+		  throw new RuntimeException(rm.getMessage());
+	  }
+	  catch (FinderException fex) {
+		  throw new EJBException(fex.getMessage());
+	  }
+	  // is gender okay?
+	  if (! genderOkay) {
+		  return iwrb.getLocalizedString("age_gender_wrong_gender_of_user", "The user's gender is not allowed for the group");
+	  }
+	  // gender is okay.....
+	  
+	  // do we have to check the age at all?
+	  if (isAgeLimitStringentCondition(targetGroup))  {
+		  // get date of birth
+		  Date date = user.getDateOfBirth();
+		  if (date == null) {
+			  return iwrb.getLocalizedString("age_gender_date_of_birth_of_user_not_set", "The date of birth is not set");
+		  }
+		  GregorianCalendar dateOfBirth = new GregorianCalendar();
+		  dateOfBirth.setTime(date);
+		  // test age of target group
+		  GregorianCalendar keyDate = getKeyDateForYearZero(targetGroup);
+		  int keyDateDay = keyDate.get(Calendar.DAY_OF_MONTH);
+		  int keyDateMonth = keyDate.get(Calendar.MONTH);
+		  int yearOfBirth = dateOfBirth.get(Calendar.YEAR);
+		  int dateOfBirthDay = dateOfBirth.get(Calendar.DAY_OF_MONTH);
+		  int dateOfBirthMonth = dateOfBirth.get(Calendar.MONTH);
+		  boolean birthdayAfterKeyDate = ( keyDateMonth < dateOfBirthMonth ) || (keyDateMonth == dateOfBirthMonth && keyDateDay < dateOfBirthDay);
+		  // get age
+		  Calendar rightNow = Calendar.getInstance();
+		  int currentYear = rightNow.get(Calendar.YEAR);
+		  int userAge = currentYear - yearOfBirth;
+		  int lowerAgeLimit = getLowerAgeLimit(targetGroup);
+		  int upperAgeLimit = getUpperAgeLimit(targetGroup);
+		  // test lower age
+		  if (userAge < lowerAgeLimit || (userAge == lowerAgeLimit && birthdayAfterKeyDate) ) {
+			  return iwrb.getLocalizedString("age_gender_user_too_young", "The user is too young");
+		  }
+		  // test upper age
+		  if (userAge > upperAgeLimit + 1 || (userAge == upperAgeLimit + 1 && ! birthdayAfterKeyDate) ) {
+			  return iwrb.getLocalizedString("age_gender_user_too_old", "The user is too old");
+		  }
+	  }
+	  // everything is fine
+	  return null;
   }
   
   public GregorianCalendar getKeyDateForYearZero(Group group) {
