@@ -701,8 +701,7 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
         IDOQuery query = idoQuery();
         query.appendSelect();
         
-        //query.append(" cca.* ");
-        query.append(" max(cca.comm_childcare_archive_id) as comm_childcare_archive_id "); // looks like most databases have support for this function         
+        query.append(" cca.comm_childcare_archive_id ");                 
         
         query.appendFrom();
         query.append(getEntityName()).append(" cca, ");
@@ -721,7 +720,10 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
         query.appendAnd().append("scm.removed_date >= ").append(endFrom);
         query.appendAnd().append("scm.removed_date <= ").append(endTo);
         
-        query.appendGroupBy(" cca.application_id ");
+        query.appendAnd().append(" cca.comm_childcare_archive_id = ");
+        query.append("(select max(comm_childcare_archive_id) from comm_childcare_archive cca_sub");
+        query.append(" where cca_sub.application_id = cca.application_id)"); 
+        query.append(" order by scm.removed_date - cc.cancel_date_requested desc ");
                 
         return idoFindPKsByQuery(query);
     }

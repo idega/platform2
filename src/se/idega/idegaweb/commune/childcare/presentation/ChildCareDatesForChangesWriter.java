@@ -211,7 +211,7 @@ public class ChildCareDatesForChangesWriter extends DownloadWriter implements
         row.createCell((short) 6).setCellValue(dateToLocalizedString(iwc, cancelDateRequested));
         row.createCell((short) 7).setCellValue(dateToLocalizedString(iwc, removedDate));        
         
-        row.createCell((short) 8).setCellValue(daysBetweenDates(fromDateRequested, registerDate));
+        row.createCell((short) 8).setCellValue(daysBetweenDates(registerDate, fromDateRequested));
         row.createCell((short) 9).setCellValue(daysBetweenDates(cancelDateRequested, removedDate));
         
     }
