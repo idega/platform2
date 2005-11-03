@@ -532,7 +532,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			data.addData(nameField, userString );
 			data.addData(personalIDField, personalID );
 			data.addData(phoneField, phoneNumber );
-			data.addData(amountField, new Double(financeEntry.getAmount()) );
+			data.addData(amountField, financeEntry.getItemPrice() );
 			data.addData(entryDateField, new IWTimestamp(financeEntry.getDateOfEntry()).getDateString("dd.MM.yy")  );
 			data.addData(itemPriceField, financeEntry.getItemPrice());
 			data.addData(infoField, financeEntry.getInfo() );
@@ -675,6 +675,13 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 				}
 				phoneNumber = getPhoneNumber(user);
 			}
+			Double amount = null;
+			if (financeEntry.getType().equals(FinanceEntryBMPBean.TYPE_PAYMENT)) {
+			    amount = new Double(financeEntry.getAmount()*-1);
+			}
+			else {
+			    amount = financeEntry.getItemPrice();
+			}
 			tariffType = financeEntry.getTariffType();
 			if (tariffType != null)
 				tariffTypeString = tariffType.getName();
@@ -687,7 +694,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			data.addData(nameField, userString );
 			data.addData(personalIDField, personalID );
 			data.addData(phoneField, phoneNumber );
-			data.addData(amountField, new Double(financeEntry.getAmount()) );
+			data.addData(amountField, amount );
 			data.addData(entryDateField, new IWTimestamp(financeEntry.getDateOfEntry()).getDateString("dd.MM.yy")  );			
 			data.addData(infoField, financeEntry.getInfo() );
 			data.addData(tariffTypeField, tariffTypeString );		
