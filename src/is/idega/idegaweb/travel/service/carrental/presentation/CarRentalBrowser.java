@@ -1,5 +1,5 @@
 /*
- * $Id: CarRentalBrowser.java,v 1.7 2005/10/19 11:08:21 gimmi Exp $
+ * $Id: CarRentalBrowser.java,v 1.8 2005/11/03 16:58:24 gimmi Exp $
  * Created on 18.6.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -138,7 +138,13 @@ public class CarRentalBrowser extends TravelBlock implements SupplierBrowserPlug
 		String from = (String) iwc.getParameter(SupplierBrowser.PARAMETER_FROM);
 		String to = (String) iwc.getParameter(PARAMETER_TO_DATE);
 		String noDays = (String) iwc.getParameter(SupplierBrowser.PARAMETER_NUMBER_OF_DAYS);
-	
+		String units = (String) iwc.getParameter(SupplierBrowser.PARAMETER_NUMBER_OF_UNITS);
+		
+		int iUnits = 1;
+		if (units != null) {
+			iUnits = Integer.parseInt(units);
+		}
+		
 		IWTimestamp fromStamp = null;
 		if (from != null) {
 			fromStamp = new IWTimestamp(from);
@@ -165,7 +171,7 @@ public class CarRentalBrowser extends TravelBlock implements SupplierBrowserPlug
 				product =pHome.findByPrimaryKey(car.getPrimaryKey());
 				try {
 					if (checkValidity) {
-						if (getBookingBusiness(iwc).getIsProductValid(iwc, product, fromStamp, toStamp, onlineOnly, useSearchPriceCategoryKey)) {
+						if (getBookingBusiness(iwc).getIsProductValid(iwc, product, fromStamp, toStamp, iUnits, onlineOnly, useSearchPriceCategoryKey)) {
 							pColl.add(product);
 						}
 					} else {

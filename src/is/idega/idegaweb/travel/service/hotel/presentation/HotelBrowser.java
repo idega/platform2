@@ -1,5 +1,5 @@
 /*
- * $Id: HotelBrowser.java,v 1.13 2005/10/19 11:08:21 gimmi Exp $
+ * $Id: HotelBrowser.java,v 1.14 2005/11/03 16:58:24 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -210,6 +210,12 @@ public class HotelBrowser extends TravelBlock implements SupplierBrowserPlugin {
 		String hotelType = (String) iwc.getParameter(PARAMETER_ACCOMMODATION_TYPE);
 		String min = (String) iwc.getParameter(PARAMETER_MIN_RATING);
 		String max = (String) iwc.getParameter(PARAMETER_MAX_RATING);
+		String units = (String) iwc.getParameter(SupplierBrowser.PARAMETER_NUMBER_OF_UNITS);
+		
+		int iUnits = 1;
+		if (units != null) {
+			iUnits = Integer.parseInt(units);
+		}
 		
 		IWTimestamp fromStamp = null;
 		if (from != null) {
@@ -257,7 +263,7 @@ public class HotelBrowser extends TravelBlock implements SupplierBrowserPlugin {
 					product = getProductBusiness(iwc).getProduct(((Integer) hotel.getPrimaryKey()).intValue());
 					if (checkValidity) {
 //						t.start();
-						if (getBookingBusiness(iwc).getIsProductValid(iwc, product, fromStamp, toStamp, onlineOnly, useSearchPriceCategoryKey)) {
+						if (getBookingBusiness(iwc).getIsProductValid(iwc, product, fromStamp, toStamp, iUnits, onlineOnly, useSearchPriceCategoryKey)) {
 							pColl.add(product);
 						}
 //						t.stop();
