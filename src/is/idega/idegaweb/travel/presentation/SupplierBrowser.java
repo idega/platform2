@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowser.java,v 1.37 2005/10/19 11:10:56 gimmi Exp $
+ * $Id: SupplierBrowser.java,v 1.38 2005/11/03 16:56:42 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -85,6 +85,7 @@ public class SupplierBrowser extends TravelBlock {
 	public static final String PARAMETER_TO = AbstractSearchForm.PARAMETER_TO_DATE;
 	public static final String PARAMETER_NUMBER_OF_DAYS = AbstractSearchForm.PARAMETER_MANY_DAYS;
 	public static final String PARAMETER_SUPPLIER_NAME = AbstractSearchForm.PARAMETER_SUPPLIER_NAME;
+	public static final String PARAMETER_NUMBER_OF_UNITS = "sb_nou";
 	
 	private static final String PARAMETER_PLUGIN = "sb_pp";
 	private static final String PARAMETER_SHOW_PRICES = "sb_par_show_p";
@@ -122,7 +123,7 @@ public class SupplierBrowser extends TravelBlock {
 	private ICPage basketPage = null;
 	private int numberOfCharactersBeforeMoreButton = 300;
 	private int spaceBetweenItems = 0;
-	
+	private boolean unitQuantityUsed = false;
 	public SupplierBrowser() {
 		
 	}
@@ -156,6 +157,7 @@ public class SupplierBrowser extends TravelBlock {
 			form.maintainParameter(PARAMETER_FROM);
 			form.maintainParameter(PARAMETER_NUMBER_OF_DAYS);
 			form.maintainParameter(SHOW_SEARCH_INPUTS);
+			form.maintainParameter(PARAMETER_NUMBER_OF_UNITS);
 			String[] params = plugin.getParameters();
 			if (params != null) {
 				for (int i = 0; i < params.length; i++) {
@@ -191,6 +193,7 @@ public class SupplierBrowser extends TravelBlock {
 		link.maintainParameter(PARAMETER_SUPPLIER_ID, iwc);
 		link.maintainParameter(PARAMETER_FROM, iwc);
 		link.maintainParameter(PARAMETER_NUMBER_OF_DAYS, iwc);
+		link.maintainParameter(PARAMETER_NUMBER_OF_UNITS, iwc);
 		link.addParameter(SHOW_SEARCH_INPUTS, Boolean.toString(showInputs));
 		String[] params = plugin.getParameters();
 		if (params != null) {
@@ -686,6 +689,9 @@ public class SupplierBrowser extends TravelBlock {
 			
 		}
 
+		String units = iwc.getParameter(PARAMETER_NUMBER_OF_UNITS);
+		boolean useUnit = !unitQuantityUsed && units != null;
+		
 		boolean useInputs = (totalResults != null);
 		
 		priceTable.add(getText(price.getPriceCategory().getName()), 1, pRow);
@@ -696,12 +702,21 @@ public class SupplierBrowser extends TravelBlock {
 		
 		if (useInputs) {
 			TextInput inp = new TextInput(textInputPrefix+price.getPrimaryKey().toString());
-			inp.setContent("0");
 			inp.setSize(3);
 			
 			ResultOutput rout = new ResultOutput("tmp"+price.getPrimaryKey().toString(), "0");
 			rout.setSize(7);
 			rout.add(inp, ResultOutput.OPERATOR_MULTIPLY+fPrice+ResultOutput.OPERATOR_MULTIPLY+numberOfDays);
+			if (useUnit) {
+				inp.setContent(units);
+				rout.setContent(Integer.toString((int) (fPrice*numberOfDays*Integer.parseInt(units))));
+				totalResults.setContent(Integer.toString((int) (fPrice*numberOfDays*Integer.parseInt(units))));
+				unitQuantityUsed = true;
+			} else {
+				inp.setContent("0");
+			}
+			
+			
 			if (interfaceObjectStyleClass != null) {
 				inp.setStyleClass(interfaceObjectStyleClass);
 				rout.setStyleClass(interfaceObjectStyleClass);
@@ -710,6 +725,7 @@ public class SupplierBrowser extends TravelBlock {
 			totalResults.add(rout);
 			priceTable.add(inp, 3, pRow);
 			priceTable.add(rout, 4, pRow);
+//			totalResults.setValue(Integer.toString(Integer.parseInt(totalResults.getValueAsString()) + Integer.parseInt(rout.getValueAsString())));
 		}
 		if (useTravelLook) {
 			priceTable.setRowColor(pRow, TravelManager.GRAY);
@@ -1209,6 +1225,7 @@ public class SupplierBrowser extends TravelBlock {
 		link.addParameter(SHOW_SEARCH_INPUTS, Boolean.toString(showInputs));
 		link.addParameter(PARAMETER_SUPPLIER_NAME, supplier.getName());
 		link.maintainParameter(PARAMETER_NUMBER_OF_DAYS, iwc);
+		link.maintainParameter(PARAMETER_NUMBER_OF_UNITS, iwc);
 		String[] params = plugin.getParameters();
 		if (params != null) {
 			for (int i = 0; i < params.length; i++) {
