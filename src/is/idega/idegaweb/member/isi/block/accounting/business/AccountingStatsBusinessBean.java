@@ -680,7 +680,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			    amount = new Double(financeEntry.getAmount()*-1);
 			}
 			else {
-			    amount = financeEntry.getItemPrice();
+			    amount = new Double(financeEntry.getAmount()-financeEntry.getDiscountAmount());
 			}
 			tariffType = financeEntry.getTariffType();
 			if (tariffType != null)
