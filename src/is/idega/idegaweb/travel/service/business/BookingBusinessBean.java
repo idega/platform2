@@ -43,6 +43,10 @@ public class BookingBusinessBean extends IBOServiceBean  implements BookingBusin
 	}
 
 	public boolean getIsProductValid(IWContext iwc, Product product, IWTimestamp from, IWTimestamp to, boolean onlineOnly, boolean useSearchPriceCategoryKey) throws Exception {
+		return getIsProductValid(iwc, product, from, to, 1, onlineOnly, useSearchPriceCategoryKey);
+	}
+
+	public boolean getIsProductValid(IWContext iwc, Product product, IWTimestamp from, IWTimestamp to, int numberOfUnits, boolean onlineOnly, boolean useSearchPriceCategoryKey) throws Exception {
 		IWTimestamp tmp;
 		Collection addresses;
 		int addressId;
@@ -77,7 +81,7 @@ public class BookingBusinessBean extends IBOServiceBean  implements BookingBusin
 				/** Checking if day is available */
 				productIsValid = getServiceHandler().getServiceBusiness(product).getIfDay(iwc, product, getProductBusiness().getTimeframes(product), tmp, false, true);
 				if (productIsValid) {
-					productIsValid = !bf.isFullyBooked(iwc, product, tmp);
+					productIsValid = !bf.isFullyBooked(iwc, product, tmp, numberOfUnits);
 				}
 				if (productIsValid) {
 					productIsValid = !bf.isUnderBooked(iwc, product, tmp);
