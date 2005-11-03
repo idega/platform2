@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowserBusinessBean.java,v 1.12 2005/10/13 15:55:54 gimmi Exp $
+ * $Id: SupplierBrowserBusinessBean.java,v 1.13 2005/11/03 16:55:17 gimmi Exp $
  * Created on Jul 6, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -317,6 +317,7 @@ public class SupplierBrowserBusinessBean extends IBOServiceBean  implements Supp
 						if (modder != null) {
 							stamp.addDays(Integer.parseInt(modder));
 						}
+						((DatePicker)input).setUseJSCalendar(false);
 						((DatePicker)input).setDate(stamp.getDate());
 						((DatePicker)input).keepStatusOnAction(true);
 					} 
