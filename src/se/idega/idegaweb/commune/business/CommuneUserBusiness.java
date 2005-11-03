@@ -1,6 +1,6 @@
 /*
- * $Id: CommuneUserBusiness.java,v 1.48 2005/10/26 18:13:35 eiki Exp $
- * Created on Oct 26, 2005
+ * $Id: CommuneUserBusiness.java,v 1.49 2005/11/03 18:29:29 eiki Exp $
+ * Created on Nov 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -33,10 +33,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2005/10/26 18:13:35 $ by $Author: eiki $
+ *  Last modified: $Date: 2005/11/03 18:29:29 $ by $Author: eiki $
  * 
  * @author <a href="mailto:eiki@idega.com">eiki</a>
- * @version $Revision: 1.48 $
+ * @version $Revision: 1.49 $
  */
 public interface CommuneUserBusiness extends IBOService, UserBusiness {
 
@@ -324,4 +324,9 @@ public interface CommuneUserBusiness extends IBOService, UserBusiness {
 	 * @see se.idega.idegaweb.commune.business.CommuneUserBusinessBean#getPostalAddress
 	 */
 	public Address getPostalAddress(User user) throws RemoteException, NoUserAddressException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.business.CommuneUserBusinessBean#getUsersCommuneURL
+	 */
+	public String getUsersCommuneURL(User user) throws java.rmi.RemoteException;
 }
