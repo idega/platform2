@@ -1,5 +1,5 @@
 /*
- * $Id: ControlListBusinessBean.java,v 1.22 2004/10/14 10:53:12 thomas Exp $
+ * $Id: ControlListBusinessBean.java,v 1.23 2005/11/03 11:30:59 gimmi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -13,24 +13,23 @@ import java.rmi.RemoteException;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeSet;
-import java.util.Iterator;
 import javax.ejb.FinderException;
-
-import com.idega.block.school.business.SchoolBusiness;
-import com.idega.block.school.data.School;
-import com.idega.business.IBOServiceBean;
-import com.idega.data.IDOLookup;
-
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
 import se.idega.idegaweb.commune.care.data.ChildCareContract;
 import se.idega.idegaweb.commune.care.data.ChildCareContractHome;
+import com.idega.block.school.business.SchoolBusiness;
+import com.idega.block.school.business.SchoolComparator;
+import com.idega.block.school.data.School;
+import com.idega.business.IBOServiceBean;
+import com.idega.data.IDOLookup;
+import com.idega.presentation.IWContext;
 
 /**
  * This business handles the logic to retrieve a control list after a batch run.
@@ -39,11 +38,11 @@ import se.idega.idegaweb.commune.care.data.ChildCareContractHome;
  * from the payment records.
  * It does this for the "compare month" and "with month".
  * <p>
- * Last modified: $Date: 2004/10/14 10:53:12 $ by $Author: thomas $
+ * Last modified: $Date: 2005/11/03 11:30:59 $ by $Author: gimmi $
  *
  * @author <a href="mailto:kjell@lindman.se">Kjell Lindman</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.22 $
+ * @version $Revision: 1.23 $
  *
  */
 public class ControlListBusinessBean extends IBOServiceBean implements ControlListBusiness {
@@ -85,20 +84,8 @@ public class ControlListBusinessBean extends IBOServiceBean implements ControlLi
 			""+withMonth.toString(),
 			""+compareMonth.toString()}
 		);
+		Collection schools = new TreeSet(new SchoolComparator(IWContext.getInstance().getCurrentLocale()));
 
-		final Collection schools = new TreeSet (new Comparator () {
-				final String getName (final Object o) {
-					return ((School) o).getName ();
-				}
-
-				public int compare (final Object o1, final Object o2) {
-					return getName (o1).compareToIgnoreCase (getName (o2));
-				}
-
-				public boolean equals (final Object o) {
-					return o.hashCode () == hashCode ();
-				}
-			});
 		for (Iterator i = getProvidersFromPaymentHeadersByPeriodAndSchoolCategory
 						 (withMonth, opField).iterator(); i.hasNext ();) {
 			schools.add (((PaymentHeader) i.next ()).getSchool ());
