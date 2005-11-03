@@ -101,6 +101,7 @@ import com.idega.block.school.data.SchoolUser;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
+import com.idega.core.business.ICApplicationBindingBusiness;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.file.data.ICFileHome;
@@ -115,6 +116,7 @@ import com.idega.data.IDORuntimeException;
 import com.idega.data.IDOStoreException;
 import com.idega.exception.IWBundleDoesNotExist;
 import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.io.MemoryFileBuffer;
 import com.idega.io.MemoryInputStream;
 import com.idega.io.MemoryOutputStream;
@@ -2629,7 +2631,39 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	private int getContractCategory() {
 		IWBundle bundle = getIWApplicationContext().getIWMainApplication().getBundle(getBundleIdentifier());
-		return Integer.parseInt(bundle.getProperty(PROPERTY_CONTRACT_CATEGORY, "2"));
+		return Integer.parseInt(getPropertyValue(bundle, PROPERTY_CONTRACT_CATEGORY, "2"));
+	}
+
+	private String getPropertyValue(IWBundle iwb, String propertyName, String defaultValue) {
+		try {
+			String value = getBindingBusiness().get(propertyName);
+			if (value != null) {
+				return value;
+			}
+			else {
+				value = iwb.getProperty(propertyName);
+				getBindingBusiness().put(propertyName, value != null ? value : defaultValue);
+			}
+		}
+		catch (RemoveException re) {
+			re.printStackTrace();
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
+		catch (CreateException ce) {
+			ce.printStackTrace();
+		}
+		return defaultValue;
+	}
+
+	private ICApplicationBindingBusiness getBindingBusiness() {
+		try {
+			return (ICApplicationBindingBusiness) IBOLookup.getServiceInstance(IWMainApplication.getDefaultIWApplicationContext(), ICApplicationBindingBusiness.class);
+		}
+		catch (IBOLookupException ibe) {
+			throw new IBORuntimeException(ibe);
+		}
 	}
 
 	public boolean assignContractToApplication(String ids[], User user, Locale locale) {
@@ -5735,35 +5769,35 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	
 	public boolean getUseVacancies(){
 		IWBundle bundle = getIWApplicationContext().getIWMainApplication().getBundle(getBundleIdentifier());
-		boolean useVacancies = bundle.getBooleanProperty(PROPERTY_USE_VACANCIES, false);
+		boolean useVacancies = new Boolean(getPropertyValue(bundle, PROPERTY_USE_VACANCIES, "false")).booleanValue();
 		
 		return useVacancies;
 	}
 	
 	public boolean getUseEmployment(){
 		IWBundle bundle = getIWApplicationContext().getIWMainApplication().getBundle(getBundleIdentifier());
-		boolean useEmployment = bundle.getBooleanProperty(PROPERTY_USE_EMPLOYMENT, true);
+		boolean useEmployment = new Boolean(getPropertyValue(bundle, PROPERTY_USE_EMPLOYMENT, "true")).booleanValue();
 		
 		return useEmployment;
 	}
 	
 	public boolean getUseParental(){
 		IWBundle bundle = getIWApplicationContext().getIWMainApplication().getBundle(getBundleIdentifier());
-		boolean useParental = bundle.getBooleanProperty(PROPERTY_USE_PARENTAL, true);
+		boolean useParental = new Boolean(getPropertyValue(bundle, PROPERTY_USE_PARENTAL, "true")).booleanValue();
 		
 		return useParental;
 	}
 	
 	public boolean getUsePreschoolLine(){
 		IWBundle bundle = getIWApplicationContext().getIWMainApplication().getBundle(getBundleIdentifier());
-		boolean usePreschoolLine = bundle.getBooleanProperty(PROPERTY_USE_PRESCHOOL_LINE, true);
+		boolean usePreschoolLine = new Boolean(getPropertyValue(bundle, PROPERTY_USE_PRESCHOOL_LINE, "true")).booleanValue();
 		
 		return usePreschoolLine;
 	}
 
 	public boolean getMarkChildrenOutsideCommune(){
 		IWBundle bundle = getIWApplicationContext().getIWMainApplication().getBundle(getBundleIdentifier());
-		boolean markChildrenOutsideCommune = bundle.getBooleanProperty(PROPERTY_MARK_CHILDREN_OUTSIDE_COMMUNE, false);
+		boolean markChildrenOutsideCommune = new Boolean(getPropertyValue(bundle, PROPERTY_MARK_CHILDREN_OUTSIDE_COMMUNE, "false")).booleanValue();
 		
 		return markChildrenOutsideCommune;
 	}
