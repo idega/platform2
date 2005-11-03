@@ -4679,6 +4679,10 @@ public abstract class BookingForm extends TravelManager{
 	 * @throws FinderException
 	 */
 	public boolean isFullyBooked(IWContext iwc, Product product, IWTimestamp stamp) throws RemoteException, CreateException, FinderException {
+		return isFullyBooked(iwc, product, stamp, 1);
+	}
+
+	public boolean isFullyBooked(IWContext iwc, Product product, IWTimestamp stamp, int numberOfUnits) throws RemoteException, CreateException, FinderException {
 		int max = 0;
 		if (_reseller != null) {
 			Contract cont = super.getContractBusiness(iwc).getContract(_reseller, product);
@@ -4699,7 +4703,8 @@ public abstract class BookingForm extends TravelManager{
 			}
 			int addressId = getAddressIDToUse(iwc, addresses);
 			int currentBookings = super.getBooker(iwc).getBookingsTotalCount(product.getID(), stamp, addressId);
-			if (currentBookings >= max) {
+//			if (currentBookings >= max) {
+			if (max - currentBookings < numberOfUnits) {
 				_useInquiryForm = true;
 				return true;	
 			}
@@ -4718,6 +4723,9 @@ public abstract class BookingForm extends TravelManager{
 	 * @throws FinderException
 	 */
 	public boolean isUnderBooked(IWContext iwc, Product product, IWTimestamp stamp) throws RemoteException, CreateException, FinderException {
+		return isUnderBooked(iwc, product, stamp, 1);
+	}
+	public boolean isUnderBooked(IWContext iwc, Product product, IWTimestamp stamp, int numberOfUnits) throws RemoteException, CreateException, FinderException {
 
 		int min = getServiceHandler(iwc).getServiceBusiness(product).getMinBookings(product, stamp);
 		if (min > 0 ) {
@@ -4730,7 +4738,8 @@ public abstract class BookingForm extends TravelManager{
 			}
 			int addressId = getAddressIDToUse(iwc, addresses);
 			int currentBookings = super.getBooker(iwc).getBookingsTotalCount(product.getID(), stamp, addressId);
-			if (currentBookings < min) {
+			if (min > numberOfUnits +currentBookings) {
+//			if (currentBookings < min) {
 				_useInquiryForm = true;
 				return true;	
 			}
@@ -5058,7 +5067,7 @@ public abstract class BookingForm extends TravelManager{
 					}
 					
 					SendMail sm = new SendMail();
-					sm.send(suppEmail, bookEmail, "", "", "mail.idega.is", "Booking",mailText.toString());
+					sm.send(suppEmail, bookEmail, "", "", "smtp.hive.is", "Booking",mailText.toString());
 					doubleSendSuccessful = true;
 				}catch (MessagingException me) {
 					doubleSendSuccessful = false;
@@ -5126,7 +5135,7 @@ public abstract class BookingForm extends TravelManager{
 					}
 					
 					SendMail sm = new SendMail();
-					sm.send(fromEmail, suppEmail, "", "", "mail.idega.is", subject,mailText.toString());
+					sm.send(fromEmail, suppEmail, "", "", "smtp.hive.is", subject,mailText.toString());
 				}catch (MessagingException me) {
 					me.printStackTrace(System.err);
 				}

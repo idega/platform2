@@ -1746,7 +1746,7 @@ public class HotelBookingForm extends BookingForm {
   	return (HotelHome) IDOLookup.getHome(Hotel.class);	
   }
 
-  public boolean isFullyBooked(IWContext iwc, Product product, IWTimestamp stamp) throws RemoteException, CreateException, FinderException {
+  public boolean isFullyBooked(IWContext iwc, Product product, IWTimestamp stamp, int numberOfUnits) throws RemoteException, CreateException, FinderException {
 	  Hotel hotel = getHotelBusiness(iwc).getHotel(product.getPrimaryKey());//getHotelHome().findByPrimaryKey( product.getPrimaryKey() );
 	  int max = 0;
 	  
@@ -1772,7 +1772,8 @@ public class HotelBookingForm extends BookingForm {
 		  //int currentBookings = getHotelBooker(iwc).getBookingsTotalCount(product.getID(), stamp, addressId);
 		  int currentBookings = getHotelBooker(iwc).getBookingsTotalCount(( (Integer) product.getPrimaryKey()).intValue(), stamp, -1, null );
 //		  int currentBookings = getHotelBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) product.getPrimaryKey()).intValue(), stamp, null, -1, new int[]{}, null );
-		  return (currentBookings >= max);
+		  return (max - currentBookings < numberOfUnits);
+//		  return (currentBookings >= max);
 	  }
 	  
 	  return false;

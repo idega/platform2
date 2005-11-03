@@ -1967,7 +1967,7 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
     }
   }
 
-	public boolean isFullyBooked(IWContext iwc, Product product, IWTimestamp stamp) throws RemoteException, CreateException, FinderException {
+	public boolean isFullyBooked(IWContext iwc, Product product, IWTimestamp stamp, int numberOfUnits) throws RemoteException, CreateException, FinderException {
 		Tour tour = getTourHome().findByPrimaryKey(product.getPrimaryKey());
 		int max = 0;
 		if (_reseller != null) {
@@ -1999,7 +1999,7 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
 		    
 		    int addressId = super.getAddressIDToUse(iwc, addresses);
 			int currentBookings = getTourBooker(iwc).getBookingsTotalCount( product.getID() , stamp, addressId);
-			if (currentBookings >= max) {
+			if (max - currentBookings < numberOfUnits) {
 				_useInquiryForm = true;
 				return true;	
 			}
@@ -2008,7 +2008,7 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
 //		return super.isFullyBooked( iwc, product, stamp);
 	}
 
-	public boolean isUnderBooked(IWContext iwc, Product product, IWTimestamp stamp) throws RemoteException, CreateException, FinderException {
+	public boolean isUnderBooked(IWContext iwc, Product product, IWTimestamp stamp, int numberOfUnits) throws RemoteException, CreateException, FinderException {
 		Tour tour = getTourHome().findByPrimaryKey(product.getPrimaryKey());
 		int min = tour.getMinimumSeats();
 		if (min > 0) {
@@ -2022,12 +2022,13 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
 		    
 		    int addressId = super.getAddressIDToUse(iwc, addresses);
 			int currentBookings = getTourBooker(iwc).getBookingsTotalCount( product.getID() , stamp, addressId);
-			if (currentBookings < min) {
+			if (min > numberOfUnits +currentBookings) {
+//			if (currentBookings < min) {
 				_useInquiryForm = true;
 				return true;	
 			}
 		}
-		return super.isUnderBooked( iwc, product, stamp);
+		return super.isUnderBooked( iwc, product, stamp, numberOfUnits);
 	}
 
 
