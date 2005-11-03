@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowserSearchForm.java,v 1.3 2005/10/06 18:51:35 gimmi Exp $
+ * $Id: SupplierBrowserSearchForm.java,v 1.4 2005/11/03 16:55:38 gimmi Exp $
  * Created on Aug 19, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.Vector;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.text.Paragraph;
+import com.idega.presentation.ui.DatePicker;
 import com.idega.presentation.ui.Label;
 
 
@@ -55,7 +56,8 @@ public class SupplierBrowserSearchForm {
 			Collection coll = new Vector();
 			Iterator it = ps.iterator();
 			while (it.hasNext()) {
-				coll.add( ((PresentationObject) it.next()).clone());
+				PresentationObject po = (PresentationObject) ((PresentationObject) it.next()).clone();
+				coll.add( po );
 			}
 			return coll;
 		}
@@ -80,7 +82,10 @@ public class SupplierBrowserSearchForm {
 			Iterator cIter = c.iterator();
 			while (cIter.hasNext()) {
 				Object obj = cIter.next();
-				if (!(obj instanceof Label)) {
+				if (obj instanceof DatePicker) {
+					parameters.add(((DatePicker)obj).getChooserParameter());
+				}
+				else if (!(obj instanceof Label)) {
 					parameters.add(((PresentationObject)obj).getName());
 				}
 			}
