@@ -94,6 +94,8 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 		addManyToOneRelationship(COLUMN_REG_SPEC_TYPE_ID, RegulationSpecType.class);
 		addManyToOneRelationship(COLUMN_CHILDCARE_CONTRACT_ID, ChildCareContract.class);
 		
+		addIndex(COLUMN_PAYMENT_RECORD_ID);
+		
 		setNullable(COLUMN_INVOICE_HEADER, true);
 	}
 	public InvoiceHeader getInvoiceHeader() {
