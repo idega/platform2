@@ -4976,7 +4976,7 @@ public abstract class BookingForm extends TravelManager{
 			Product prod = pHome.findByPrimaryKey(new Integer(gBooking.getServiceID()));
 			ProductBusiness pBus =  (ProductBusiness) IBOLookup.getServiceInstance(iwc, ProductBusiness.class);
 			CreditCardBusiness ccBus = (CreditCardBusiness) IBOLookup.getServiceInstance(iwc, CreditCardBusiness.class);
-			
+			String host = super.getBundle().getProperty("OUTGOING_MAILSERVER", "mail.idega.is");
 			Supplier suppl = ((SupplierHome) IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(prod.getSupplierId());
 			List addresses = suppl.getAddresses();
 			List phones = suppl.getPhones();
@@ -5067,7 +5067,7 @@ public abstract class BookingForm extends TravelManager{
 					}
 					
 					SendMail sm = new SendMail();
-					sm.send(suppEmail, bookEmail, "", "", "smtp.hive.is", "Booking",mailText.toString());
+					sm.send(suppEmail, bookEmail, "", "", host, "Booking",mailText.toString());
 					doubleSendSuccessful = true;
 				}catch (MessagingException me) {
 					doubleSendSuccessful = false;
@@ -5135,7 +5135,7 @@ public abstract class BookingForm extends TravelManager{
 					}
 					
 					SendMail sm = new SendMail();
-					sm.send(fromEmail, suppEmail, "", "", "smtp.hive.is", subject,mailText.toString());
+					sm.send(fromEmail, suppEmail, "", "", host, subject,mailText.toString());
 				}catch (MessagingException me) {
 					me.printStackTrace(System.err);
 				}
