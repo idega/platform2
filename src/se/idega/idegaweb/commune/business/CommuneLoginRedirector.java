@@ -1,5 +1,5 @@
 /*
- * $Id: CommuneLoginRedirector.java,v 1.1 2005/11/03 22:24:14 eiki Exp $
+ * $Id: CommuneLoginRedirector.java,v 1.2 2005/11/04 14:19:37 eiki Exp $
  * Created on Nov 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -17,6 +17,7 @@ import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.core.accesscontrol.business.AuthenticationBusiness;
 import com.idega.core.accesscontrol.business.AuthenticationListener;
+import com.idega.core.accesscontrol.business.ServletFilterChainInterruptException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
@@ -41,8 +42,9 @@ public class CommuneLoginRedirector implements AuthenticationListener, ServletCo
 	 * Called when a user successfully logs on
 	 * @param iwc request and response wrapper
 	 * @param currentUser
+	 * @throws ServletFilterChainInterruptException 
 	 */
-	public void onLogon(IWContext iwc,User currentUser){
+	public void onLogon(IWContext iwc,User currentUser) throws ServletFilterChainInterruptException{
 		//get address and commune code and forward to correct server...
 		boolean tryRedirect = iwc.isParameterSet(PARAMETER_REDIRECT_TO_COMMUNE_WEB);
 		
@@ -53,7 +55,7 @@ public class CommuneLoginRedirector implements AuthenticationListener, ServletCo
 				if(communeURL!=null){
 					try {
 						iwc.getResponse().sendRedirect(communeURL);
-						return;
+						throw new ServletFilterChainInterruptException("CommuneLoginRedirector sending the user to his home commune website: "+communeURL);
 					}
 					catch (IOException e) {
 						e.printStackTrace();
