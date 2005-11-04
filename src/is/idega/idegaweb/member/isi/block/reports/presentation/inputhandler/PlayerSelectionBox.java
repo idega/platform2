@@ -30,18 +30,18 @@ public class PlayerSelectionBox extends GroupSelectionBox  {
 	private Map applicationCachedGroups = null;
 	private Map applicationCachedParents = null;
 	private Map cachedGroups = new HashMap();
+	private boolean showParentGroupNameInGroupName = true;
+
+	public PlayerSelectionBox() {
+		this(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER);
+	}
 
 	public PlayerSelectionBox(String name) {
 		super(name,IWMemberConstants.GROUP_TYPE_CLUB_PLAYER);
 	}
 
-	public PlayerSelectionBox() {
-		super();
-		setGroupType(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER);
-		setName(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER);
-	}
-	
 	public String getDisplayForResultingObject(Object value, IWContext iwc) {
+	    showParentGroupNameInGroupName = false;
 		if (value == null) {
 			return this.getResourceBundle(iwc).getLocalizedString("PlayerSelectionBox.all_or_none_selected","All");
 		}
@@ -80,15 +80,17 @@ public class PlayerSelectionBox extends GroupSelectionBox  {
 	    if (group == null) return null;
 	    
 	    String groupName = group.getName();
-	    String parentName = null;
-	    try {
-	        parentName = getParentName(group); 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
-	    if (parentName != null && !parentName.equals("")) {
-	        groupName = groupName + " ("+parentName+")";
-	    }
+		if (showParentGroupNameInGroupName) {
+	    	String parentName = null;
+		    try {
+		        parentName = getParentName(group); 
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		    }
+		    if (parentName != null && !parentName.equals("")) {
+		        groupName = groupName + " ("+parentName+")";
+		    }
+		}
 		return groupName;
 	}
 	
@@ -194,8 +196,8 @@ public class PlayerSelectionBox extends GroupSelectionBox  {
 				comp = collator.compare(parentNode0, parentNode1);
 								
 				if(comp == 0) {
-					String groupName0 = getNameForGroup(group0);
-					String groupName1 = getNameForGroup(group1);
+					String groupName0 = group0.getName();
+					String groupName1 = group1.getName();
 					comp = collator.compare(groupName0, groupName1);
 				}
 			} 
