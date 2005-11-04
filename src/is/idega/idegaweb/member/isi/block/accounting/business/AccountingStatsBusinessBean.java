@@ -1046,8 +1046,10 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			reportCollection.addAll(datas);
 		}
 		
-		ReportableField[] sortFields = new ReportableField[] {divisionField, paymentTypeField, groupField, nameField, personalIDField };
-		Comparator comparator = new FieldsComparator(sortFields);
+		Comparator dateComparator = new DateComparator();
+		ReportableField[] sortFields = new ReportableField[] {entryDateField, divisionField, paymentTypeField, groupField, nameField, personalIDField };
+		Comparator[] comparators = new Comparator[] {dateComparator, null, null, null, null, null};
+		Comparator comparator = new FieldsComparator(sortFields, comparators);
 		Collections.sort(reportCollection, comparator);
 		
 		//finished return the collection
@@ -1112,23 +1114,44 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 	
 	class DateComparator implements Comparator {
 
-		public int compare(Object arg0, Object arg1) {			int comp = 0;
+		public int compare(Object arg0, Object arg1) {
+		    int comp = 0;
 			try {
-				String[] sta0 = ((String) arg0).trim().split("\\.");
-				String[] sta1 = ((String) arg1).split("\\.");
-				String year0 = sta0[2];
-				String year1 = sta1[2];
-				comp = year0.compareTo(year1);
-
-				if(comp == 0) {
-				    String month0 = sta0[1];
-					String month1 = sta1[1];
-					comp = month0.compareTo(month1);				    
+			    int dateStringLength =  ((String) arg0).length();
+				if (dateStringLength > 8) {
+					String[] sta0 = ((String) arg0).split(" ");
+					String[] sta1 = ((String) arg1).split(" ");
+					String year0 = sta0[2];
+					String year1 = sta1[2];
+					comp = year1.compareTo(year0);
+					if(comp == 0) {
+						int month0 = monthList.indexOf(sta0[1].substring(0, 3));
+						int month1 = monthList.indexOf(sta1[1].substring(0, 3));
+						comp = month1 - month0;
+					}
+					if(comp == 0) {
+						int day0 = Integer.parseInt(sta0[0].substring(0, sta0[0].length()-1)); // substring to take the dot away
+						int day1 = Integer.parseInt(sta1[0].substring(0, sta1[0].length()-1));
+						comp = day1 - day0;
+					}
 				}
-				if(comp == 0) {
-				    String day0 = sta0[0];
-					String day1 = sta1[0];
-					comp = day0.compareTo(day1);
+				else {
+					String[] sta0 = ((String) arg0).split("\\.");
+					String[] sta1 = ((String) arg1).split("\\.");
+					String year0 = sta0[2];
+					String year1 = sta1[2];
+					comp = year1.compareTo(year0);
+	
+					if(comp == 0) {
+					    String month0 = sta0[1];
+						String month1 = sta1[1];
+						comp = month1.compareTo(month0);				    
+					}
+					if(comp == 0) {
+					    String day0 = sta0[0];
+						String day1 = sta1[0];
+						comp = day1.compareTo(day0);
+					}
 				}
 			} 
 			catch(Exception e) {
@@ -1136,5 +1159,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			}
 			return comp;
 		}
+	
+		private List monthList = Arrays.asList(new String[] {"jan", "feb", "mar", "apr", "ma\u00ED", "j\u00FAn", "j\u00FAl", "\u00E1g\u00FA", "sep", 
+			"okt", "n\u00F3v", "des"});
 	}
 }
