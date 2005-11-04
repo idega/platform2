@@ -80,8 +80,8 @@ public class ChildCareSiblingListWriter extends DownloadWriter implements MediaW
 	
 	public final static String PARAMETER_TYPE = "print_type";
 
-	public final static String XLS = "xls";
-	public final static String PDF = "pdf";
+//	public final static String XLS = "xls";
+	//public final static String PDF = "pdf";
     
     private int providerId = 0;
 	
@@ -121,15 +121,15 @@ public class ChildCareSiblingListWriter extends DownloadWriter implements MediaW
 				}
 				schoolName = business.getSchoolBusiness().getSchool(new Integer(providerId)).getSchoolName();
 								
-				String type = req.getParameter(PARAMETER_TYPE);
-				if (type.equals(PDF)) {
-					buffer = writePDF(applications, iwc);
-					setAsDownload(iwc,"childcare_siblinglist.pdf",buffer.length());
-				}
-				else if (type.equals(XLS)) {
+				//String type = req.getParameter(PARAMETER_TYPE);
+				//if (type.equals(PDF)) {
+					//buffer = writePDF(applications, iwc);
+					//setAsDownload(iwc,"childcare_siblinglist.pdf",buffer.length());
+				//}
+				//else if (type.equals(XLS)) {
 					buffer = writeXLS(applications, iwc);
 					setAsDownload(iwc,"childcare_siblinglist.xls",buffer.length());
-				}
+			//	}
 				
 			}
 		}
@@ -310,103 +310,6 @@ public class ChildCareSiblingListWriter extends DownloadWriter implements MediaW
         buffer.setMimeType("application/x-msexcel");
         return buffer;
     }
-
-	
-	
-	public MemoryFileBuffer writePDF(Collection applications, IWContext iwc) throws Exception {
-		MemoryFileBuffer buffer = new MemoryFileBuffer();
-		MemoryOutputStream mos = new MemoryOutputStream(buffer);
-		if (!applications.isEmpty()) {
-			Document document = new Document(PageSize.A4, 50, 50, 50, 50);
-			PdfWriter writer = PdfWriter.getInstance(document, mos);
-			document.addTitle(schoolName);
-			document.addAuthor("Idega Reports");
-			document.addSubject(schoolName);
-			document.open();
-			
-			document.add(new Phrase(schoolName+"\n", new Font(Font.HELVETICA, 12, Font.BOLD)));
-			//if (groupName != null)
-			//	document.add(new Phrase(groupName+"\n", new Font(Font.HELVETICA, 12, Font.BOLD)));
-			document.add(new Phrase("\n", new Font(Font.HELVETICA, 12, Font.BOLD)));
-			
-			Cell cell;
-			
-			String[] headers = {iwrb.getLocalizedString("child_care.name","Name"), iwrb.getLocalizedString("child_care.personal_id","Personal ID"),
-					iwrb.getLocalizedString("child_care.queue_date","Queue date"), iwrb.getLocalizedString("child_care.placement_date_pdf","Placement date"),
-					iwrb.getLocalizedString("child_care.current_provider_pdf","Current provider")};
-		
-			
-			
-			int[] sizes = { 20, 15, 10, 10, 10};
-
-			ChildCareApplication application;
-			User child;
-			IWCalendar queueDate;
-			IWCalendar placementDate;
-						
-			Table datatable = getTable(headers, sizes);
-			Iterator iter = applications.iterator();
-            
-			while (iter.hasNext()) {
-				application = (ChildCareApplication) iter.next();
-				child = application.getChild();
-				
-				queueDate = new IWCalendar(iwc.getCurrentLocale(), application.getQueueDate());
-				placementDate = new IWCalendar(iwc.getCurrentLocale(), application.getFromDate());
-								
-				School provider = getChildCareBusiness(iwc).getCurrentProviderByPlacement(application.getChildId());
-				String school = null;
-				if (provider != null){
-					school = provider.getName();				
-				} else {
-					school = "";
-				}
-				
-				Name name = new Name(child.getFirstName(), child.getMiddleName(), child.getLastName());
-				
-				cell = new Cell(new Phrase(name.getName(locale, true), new Font(Font.HELVETICA, 10, Font.BOLD)));
-				cell.setBorder(Rectangle.NO_BORDER);
-				datatable.addCell(cell);
-
-				cell = new Cell(new Phrase(PersonalIDFormatter.format(child.getPersonalID(), locale), new Font(Font.HELVETICA, 10, Font.BOLD)));
-				cell.setBorder(Rectangle.NO_BORDER);
-				datatable.addCell(cell);
-				
-				if (queueDate != null) {
-					cell = new Cell(new Phrase(queueDate.getLocaleDate(IWCalendar.SHORT), new Font(Font.HELVETICA, 10, Font.BOLD)));
-					cell.setBorder(Rectangle.NO_BORDER);
-					datatable.addCell(cell);	
-				}
-				if (placementDate != null){	
-					cell = new Cell(new Phrase(placementDate.getLocaleDate(IWCalendar.SHORT), new Font(Font.HELVETICA, 10, Font.BOLD)));
-					cell.setBorder(Rectangle.NO_BORDER);
-					datatable.addCell(cell);
-				}
-				
-				cell = new Cell(new Phrase(school, new Font(Font.HELVETICA, 10, Font.BOLD)));
-				cell.setBorder(Rectangle.NO_BORDER);
-				datatable.addCell(cell);
-				
-			}		
-				
-				//hasOtherPlacing = getChildCareBusiness(iwc).hasBeenPlacedWithOtherProvider(application.getChildId(), providerID);
-				//hasMessage = application.getMessage() != null;
-							
-				if (!writer.fitsPage(datatable)) {
-					datatable.deleteLastRow();
-					document.add(datatable);
-					document.newPage();
-					datatable = getTable(headers, sizes);
-				}
-			
-			document.add(datatable);
-			document.close();
-			writer.setPdfVersion(PdfWriter.VERSION_1_2);
-		}
-		
-		buffer.setMimeType("application/pdf");
-		return buffer;
-	}
 	
 	private Table getTable(String[] headers, int[] sizes) throws BadElementException, DocumentException {
 		Table datatable = new Table(headers.length);

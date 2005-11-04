@@ -9,11 +9,14 @@ import se.idega.idegaweb.commune.care.business.CareConstants;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.business.ChildCareConstants;
 import se.idega.idegaweb.commune.childcare.business.ChildCareQueueWriter;
+import se.idega.idegaweb.commune.childcare.business.ChildCareSiblingListWriter;
 import se.idega.idegaweb.commune.childcare.business.QueueCleaningSession;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 
 import com.idega.block.school.data.School;
 import com.idega.business.IBOLookup;
+import com.idega.idegaweb.IWMainApplication;
+import com.idega.io.DownloadWriter;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
@@ -52,7 +55,8 @@ public class ChildCareAdmin extends ChildCareBlock {
 	public Boolean _queueCleaned = null;
 
 	private boolean _showQueueCleaning = false;
-    
+	private boolean showViewSiblingListButton = false;
+	
     public static final int ORDER_BY_QUEUE_DATE = 1;    // see ChildCareApplicationBMPBean ORDER_BY_QUEUE_DATE
     public static final int ORDER_BY_DATE_OF_BIRTH = 2; // see ChildCareApplicationBMPBean ORDER_BY_DATE_OF_BIRTH
 
@@ -90,9 +94,21 @@ public class ChildCareAdmin extends ChildCareBlock {
         //table.add(getNavigator(iwc), 1, 3);
         //table.add(getApplicationTable(iwc), 1, 5);
         table.add(getLegendTable(true), 1, 3);
-        table.add(getPDFLink(), 1, 5);
-        table.add(Text.getNonBrakingSpace(), 1, 5);
-        table.add(getXSLLink(), 1, 5);
+        if(getShowViewSiblingListButton()) {
+        	Table buttonTable = new Table(3,1);
+            buttonTable.add(getSiblingListButton(iwc),1,1);            
+            buttonTable.add(getPDFLink(), 2, 1);            
+            buttonTable.add(getXSLLink(), 3, 1);
+            buttonTable.setBorder(0);        
+            buttonTable.setCellpadding(1);            
+            table.add(buttonTable,1,5);
+        } else {
+        	//table.add(Text.getNonBrakingSpace(), 1, 5);
+            table.add(getPDFLink(), 1, 5);
+            table.add(Text.getNonBrakingSpace(), 1, 5);
+            table.add(getXSLLink(), 1, 5);
+        }
+                        
         table.add(getApplicationTable(iwc), 1, 7);
         table.add(getLegendTable(true), 1, 9);
     }
@@ -495,6 +511,25 @@ public class ChildCareAdmin extends ChildCareBlock {
 		return link;
 	}
 	
+	private Form getSiblingListButton(IWContext iwc) throws RemoteException {
+		Form form = new Form();
+		form.setAction(iwc.getIWMainApplication().getMediaServletURI());
+		form.addParameter(DownloadWriter.PRM_WRITABLE_CLASS, IWMainApplication.getEncryptedClassName(ChildCareSiblingListWriter.class));
+		
+		//form.addParameter(ChildCareQueueWriter.PARAMETER_TYPE, ChildCareSiblingListWriter.XLS);
+		form.addParameter(ChildCareQueueWriter.PARAMETER_PROVIDER_ID, getSession().getChildCareID());
+		form.addParameter(ChildCareQueueWriter.PARAMETER_SORT_BY, getSession().getSortBy());
+		form.addParameter(ChildCareQueueWriter.PARAMETER_NUMBER_PER_PAGE, _numberPerPage);
+		form.addParameter(ChildCareQueueWriter.PARAMETER_START, _start);
+		SubmitButton button = (SubmitButton) getButton(new SubmitButton(localize("child_care.sibling_list", "See sibling list"),
+		PARAMETER_CLEAN_QUEUE,		
+		Boolean.TRUE.toString()));
+		form.setToShowLoadingOnSubmit(false);
+		form.setToDisableOnSubmit(button, true);
+		form.add(button);		
+		return form;
+		}
+
 	
 	
 	/**
@@ -502,5 +537,13 @@ public class ChildCareAdmin extends ChildCareBlock {
 	 */
 	public void setShowQueueCleaning(boolean showQueueCleaning) {
 		_showQueueCleaning = showQueueCleaning;
+	}
+
+	public boolean getShowViewSiblingListButton() {
+		return showViewSiblingListButton;
+	}
+
+	public void setShowViewSiblingListButton(boolean viewSiblingListButton) {
+		showViewSiblingListButton = viewSiblingListButton;
 	}
 }
