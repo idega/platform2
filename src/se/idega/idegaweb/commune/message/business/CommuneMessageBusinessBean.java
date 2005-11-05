@@ -1,5 +1,5 @@
 /*
- * $Id: CommuneMessageBusinessBean.java,v 1.3 2005/11/01 13:04:21 laddi Exp $
+ * $Id: CommuneMessageBusinessBean.java,v 1.4 2005/11/05 15:23:07 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -650,14 +650,7 @@ public class CommuneMessageBusinessBean extends MessageBusinessBean implements C
 	}
 	
 	public boolean getIfCanSendEmail() {
-		boolean canSend = false;
-		IWPropertyList propertyList = getIWApplicationContext().getSystemProperties().getProperties("mail_properties");
-		if (propertyList != null) {
-			String property = propertyList.getProperty("can_send_email");
-			if (property != null)
-				canSend = Boolean.valueOf(property).booleanValue();
-		}
-		return canSend;
+		return Boolean.valueOf(getPropertyValue("can_send_email", Boolean.FALSE.toString())).booleanValue();
 	}
 
 	public void setIfUserPreferesMessageByEmail(User user,boolean preference){
