@@ -1435,10 +1435,36 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public ICFile recreateContractFile(ChildCareContract archive, Locale locale) throws IDORemoveRelationshipException, RemoteException, IWBundleDoesNotExist, IDOAddRelationshipException {
 		Contract contract = archive.getContract();
 		contract.removeFileFromContract(archive.getContractFile());
-		ITextXMLHandler pdfHandler = new ITextXMLHandler(ITextXMLHandler.PDF);
-		List buffers = pdfHandler.writeToBuffers(getTagMap(archive.getApplication(), locale, archive.getCareTime(), new IWTimestamp(archive.getValidFromDate()), false), getXMLContractPdfURL(getIWApplicationContext().getIWMainApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
 
-		ICFile contractFile = pdfHandler.writeToDatabase((MemoryFileBuffer) buffers.get(0), "contract.pdf", pdfHandler.getPDFMimeType());
+		IWBundle bundle = getIWApplicationContext().getIWMainApplication().getBundle(getBundleIdentifier());
+        boolean useAlternativePDFGenerationMethod =  bundle.getBooleanProperty(PROPERTY_CHILDCARE_CONTRACT_ALTERNATIVE_PDF, false);
+		
+        ICFile contractFile = null;
+        
+        if (!useAlternativePDFGenerationMethod) { // let's use old method
+        	ITextXMLHandler pdfHandler = new ITextXMLHandler(ITextXMLHandler.PDF);
+    		List buffers = pdfHandler.writeToBuffers(getTagMap(archive.getApplication(), locale, archive.getCareTime(), new IWTimestamp(archive.getValidFromDate()), false), getXMLContractPdfURL(getIWApplicationContext().getIWMainApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
+
+    		contractFile = pdfHandler.writeToDatabase((MemoryFileBuffer) buffers.get(0), "contract.pdf", pdfHandler.getPDFMimeType());
+
+        } else { // bundle property tells us to use new method
+        	MemoryFileBuffer buffer = new MemoryFileBuffer();
+            OutputStream mos = new MemoryOutputStream(buffer);
+            InputStream mis = new MemoryInputStream(buffer);
+            
+            PrintingContext pcx = new ChildCareContractFormContext(getIWApplicationContext(), archive.getApplication(), locale, false);
+            pcx.setDocumentStream(mos);    
+            
+            getPrintingService().printDocument(pcx);
+            try {
+                contractFile = createFile(null, "child_care_contract_form", mis, buffer.length());                                
+            } catch (CreateException e) {                
+                e.printStackTrace();
+            }
+    
+        }
+        	
+		
 		Date endDate = archive.getTerminatedDate();
 		contract.setValidTo(endDate);
 		if (endDate != null) {
