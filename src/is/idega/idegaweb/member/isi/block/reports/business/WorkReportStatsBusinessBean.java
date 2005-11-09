@@ -2535,61 +2535,61 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		
 		//selected year stuff
 		//tekjur
-		ReportableField income = new ReportableField("income", Integer.class);
+		ReportableField income = new ReportableField("income", Long.class);
 		income.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.income", "Income"), currentLocale);
 		reportCollection.addField(income);
 		//gjold
-		ReportableField expenses = new ReportableField("expenses", Integer.class);
+		ReportableField expenses = new ReportableField("expenses", Long.class);
 		expenses.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.expenses", "Expenses"), currentLocale);
 		reportCollection.addField(expenses);
 		//afkoma (tekjur-gjold)
-		ReportableField incomeMinusExpenses = new ReportableField("incMexp", Integer.class);
+		ReportableField incomeMinusExpenses = new ReportableField("incMexp", Long.class);
 		incomeMinusExpenses.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.incMexp", "incMexp"), currentLocale);
 		reportCollection.addField(incomeMinusExpenses);
 		//veltufjarmunir
-		ReportableField rollingMoney = new ReportableField("rollingmoney", Integer.class);
+		ReportableField rollingMoney = new ReportableField("rollingmoney", Long.class);
 		rollingMoney.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.rollingmoney", "Rollingmoney"), currentLocale);
 		reportCollection.addField(rollingMoney);
 		//fastafjarmunir
-		ReportableField rigidMoney = new ReportableField("rigidMoney", Integer.class);
+		ReportableField rigidMoney = new ReportableField("rigidMoney", Long.class);
 		rigidMoney.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.rigidMoney", "Rigidmoney"), currentLocale);
 		reportCollection.addField(rigidMoney);
 		//skuldir
-		ReportableField debts = new ReportableField("debts", Integer.class);
+		ReportableField debts = new ReportableField("debts", Long.class);
 		debts.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.debts", "Debts"), currentLocale);
 		reportCollection.addField(debts);
 		//peningaleg stada (veltufjarmunir-skuldir)
-		ReportableField rollingMoneyMinusDebts = new ReportableField("rollingMDebts", Integer.class);
+		ReportableField rollingMoneyMinusDebts = new ReportableField("rollingMDebts", Long.class);
 		rollingMoneyMinusDebts.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.rollingMDebts", "RollingMDebts"), currentLocale);
 		reportCollection.addField(rollingMoneyMinusDebts);
 		
 		////////////////////////////////////////////////////
 		//comparing year stuff
-		ReportableField comparingIncome = new ReportableField("Cincome", Integer.class);
+		ReportableField comparingIncome = new ReportableField("Cincome", Long.class);
 		comparingIncome.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.income", "Income"), currentLocale);
 		reportCollection.addField(comparingIncome);
 		//gjold
-		ReportableField comparingExpenses = new ReportableField("Cexpenses", Integer.class);
+		ReportableField comparingExpenses = new ReportableField("Cexpenses", Long.class);
 		comparingExpenses.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.expenses", "Expenses"), currentLocale);
 		reportCollection.addField(comparingExpenses);
 		//afkoma (tekjur-gjold)
-		ReportableField comparingIncomeMinusExpenses = new ReportableField("CincMexp", Integer.class);
+		ReportableField comparingIncomeMinusExpenses = new ReportableField("CincMexp", Long.class);
 		comparingIncomeMinusExpenses.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.incMexp", "incMexp"), currentLocale);
 		reportCollection.addField(comparingIncomeMinusExpenses);
 		//veltufjarmunir
-		ReportableField comparingRollingMoney = new ReportableField("Crollingmoney", Integer.class);
+		ReportableField comparingRollingMoney = new ReportableField("Crollingmoney", Long.class);
 		comparingRollingMoney.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.rollingmoney", "Rollingmoney"), currentLocale);
 		reportCollection.addField(comparingRollingMoney);
 		//fastafjarmunir
-		ReportableField comparingRigidMoney = new ReportableField("CrigidMoney", Integer.class);
+		ReportableField comparingRigidMoney = new ReportableField("CrigidMoney", Long.class);
 		comparingRigidMoney.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.rigidMoney", "Rigidmoney"), currentLocale);
 		reportCollection.addField(comparingRigidMoney);
 		//skuldir
-		ReportableField comparingDebts = new ReportableField("Cdebts", Integer.class);
+		ReportableField comparingDebts = new ReportableField("Cdebts", Long.class);
 		comparingDebts.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.debts", "Debts"), currentLocale);
 		reportCollection.addField(comparingDebts);
 		//peningaleg stada (veltufjarmunir-skuldir)
-		ReportableField comparingRollingMoneyMinusDebts = new ReportableField("CrollingMDebts", Integer.class);
+		ReportableField comparingRollingMoneyMinusDebts = new ReportableField("CrollingMDebts", Long.class);
 		comparingRollingMoneyMinusDebts.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.rollingMDebts", "RollingMDebts"), currentLocale);
 		reportCollection.addField(comparingRollingMoneyMinusDebts);
 		
@@ -2597,48 +2597,48 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		////////////////THE Sum-hidden fields
 		//selected year stuff
 		//tekjur
-		ReportableField incomeSum = new ReportableField("incomeSum", Integer.class);
+		ReportableField incomeSum = new ReportableField("incomeSum", Long.class);
 		
 		//gjold
-		ReportableField expensesSum  = new ReportableField("expensesSum", Integer.class);
+		ReportableField expensesSum  = new ReportableField("expensesSum", Long.class);
 		reportCollection.addField(expenses);
 		//afkoma (tekjur-gjold)
-		ReportableField incomeMinusExpensesSum  = new ReportableField("incMexpSum", Integer.class);
+		ReportableField incomeMinusExpensesSum  = new ReportableField("incMexpSum", Long.class);
 		reportCollection.addField(incomeMinusExpenses);
 		//veltufjarmunir
-		ReportableField rollingMoneySum  = new ReportableField("rollingmoneySum", Integer.class);
+		ReportableField rollingMoneySum  = new ReportableField("rollingmoneySum", Long.class);
 		reportCollection.addField(rollingMoney);
 		//fastafjarmunir
-		ReportableField rigidMoneySum  = new ReportableField("rigidMoneySum", Integer.class);
+		ReportableField rigidMoneySum  = new ReportableField("rigidMoneySum", Long.class);
 		reportCollection.addField(rigidMoney);
 		//skuldir
-		ReportableField debtsSum  = new ReportableField("debtsSum", Integer.class);
+		ReportableField debtsSum  = new ReportableField("debtsSum", Long.class);
 		reportCollection.addField(debts);
 		//peningaleg stada (veltufjarmunir-skuldir)
-		ReportableField rollingMoneyMinusDebtsSum  = new ReportableField("rollingMDebtsSum", Integer.class);
+		ReportableField rollingMoneyMinusDebtsSum  = new ReportableField("rollingMDebtsSum", Long.class);
 		reportCollection.addField(rollingMoneyMinusDebts);
 		
 		////////////////////////////////////////////////////
 		//comparing year stuff
-		ReportableField comparingIncomeSum  = new ReportableField("CincomeSum", Integer.class);
+		ReportableField comparingIncomeSum  = new ReportableField("CincomeSum", Long.class);
 		reportCollection.addField(comparingIncome);
 		//gjold
-		ReportableField comparingExpensesSum  = new ReportableField("CexpensesSum", Integer.class);
+		ReportableField comparingExpensesSum  = new ReportableField("CexpensesSum", Long.class);
 		reportCollection.addField(comparingExpenses);
 		//afkoma (tekjur-gjold)
-		ReportableField comparingIncomeMinusExpensesSum  = new ReportableField("CincMexpSum", Integer.class);
+		ReportableField comparingIncomeMinusExpensesSum  = new ReportableField("CincMexpSum", Long.class);
 		reportCollection.addField(comparingIncomeMinusExpenses);
 		//veltufjarmunir
-		ReportableField comparingRollingMoneySum  = new ReportableField("CrollingmoneySum", Integer.class);
+		ReportableField comparingRollingMoneySum  = new ReportableField("CrollingmoneySum", Long.class);
 		reportCollection.addField(comparingRollingMoney);
 		//fastafjarmunir
-		ReportableField comparingRigidMoneySum  = new ReportableField("CrigidMoneySum", Integer.class);
+		ReportableField comparingRigidMoneySum  = new ReportableField("CrigidMoneySum", Long.class);
 		reportCollection.addField(comparingRigidMoney);
 		//skuldir
-		ReportableField comparingDebtsSum  = new ReportableField("CdebtsSum", Integer.class);
+		ReportableField comparingDebtsSum  = new ReportableField("CdebtsSum", Long.class);
 		reportCollection.addField(comparingDebts);
 		//peningaleg stada (veltufjarmunir-skuldir)
-		ReportableField comparingRollingMoneyMinusDebtsSum  = new ReportableField("CrollingMDebtsSum", Integer.class);
+		ReportableField comparingRollingMoneyMinusDebtsSum  = new ReportableField("CrollingMDebtsSum", Long.class);
 		reportCollection.addField(comparingRollingMoneyMinusDebts);
 		
 		//end sum stuff
@@ -2704,21 +2704,21 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 						regData.addData(regionalUnionAbbreviation, regionalUnionIdentifier);
 						regData.addData(clubType, getClubTypeString(report));
 						
-						regData.addData(income, new Integer(0));
-						regData.addData(expenses, new Integer(0));
-						regData.addData(incomeMinusExpenses,new Integer(0));
-						regData.addData(rollingMoney, new Integer(0));
-						regData.addData(rigidMoney, new Integer(0));
-						regData.addData(debts, new Integer(0));
-						regData.addData(rollingMoneyMinusDebts,new Integer(0));
+						regData.addData(income, new Long(0));
+						regData.addData(expenses, new Long(0));
+						regData.addData(incomeMinusExpenses,new Long(0));
+						regData.addData(rollingMoney, new Long(0));
+						regData.addData(rigidMoney, new Long(0));
+						regData.addData(debts, new Long(0));
+						regData.addData(rollingMoneyMinusDebts,new Long(0));
 						
-						regData.addData(comparingIncome, new Integer(0));
-						regData.addData(comparingExpenses, new Integer(0));
-						regData.addData(comparingIncomeMinusExpenses,new Integer(0));
-						regData.addData(comparingRollingMoney, new Integer(0));
-						regData.addData(comparingRigidMoney, new Integer(0));
-						regData.addData(comparingDebts, new Integer(0));
-						regData.addData(comparingRollingMoneyMinusDebts,new Integer(0));
+						regData.addData(comparingIncome, new Long(0));
+						regData.addData(comparingExpenses, new Long(0));
+						regData.addData(comparingIncomeMinusExpenses,new Long(0));
+						regData.addData(comparingRollingMoney, new Long(0));
+						regData.addData(comparingRigidMoney, new Long(0));
+						regData.addData(comparingDebts, new Long(0));
+						regData.addData(comparingRollingMoneyMinusDebts,new Long(0));
 						
 						regData.addData(dummyOrderingField,"A");
 					}
@@ -2728,47 +2728,47 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					//Amounts for selected year
 					//income is account key collection
 					Collection incomeKeys = getWorkReportBusiness().getWorkReportAccountKeyHome().findIncomeAccountKeysWithoutSubKeys();
-					int incomeTotal = getWorkReportBusiness().getTotalAmmountOfAccountRecordsByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyCollection(reportId,wrGroupId,incomeKeys);
-					addToIntegerCount(income,regData,incomeTotal);
+					long incomeTotal = getWorkReportBusiness().getTotalAmmountOfAccountRecordsByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyCollection(reportId,wrGroupId,incomeKeys);
+					addToLongCount(income,regData,incomeTotal);
 					//expenses is account key collection
 					Collection expensesKeys = getWorkReportBusiness().getWorkReportAccountKeyHome().findExpensesAccountKeysWithoutSubKeys();
-					int expensesTotal = getWorkReportBusiness().getTotalAmmountOfAccountRecordsByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyCollection(reportId,wrGroupId,expensesKeys);
-					addToIntegerCount(expenses,regData,expensesTotal);
+					long expensesTotal = getWorkReportBusiness().getTotalAmmountOfAccountRecordsByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyCollection(reportId,wrGroupId,expensesKeys);
+					addToLongCount(expenses,regData,expensesTotal);
 					//income minus expenses
-					addToIntegerCount(incomeMinusExpenses,regData,incomeTotal - expensesTotal);
+					addToLongCount(incomeMinusExpenses,regData,incomeTotal - expensesTotal);
 					//rollingMoney FIN_89998
-					int rollingMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(reportId,wrGroupId,"FIN_89998");
-					addToIntegerCount(rollingMoney,regData,rollingMoneyTotal);
+					long rollingMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(reportId,wrGroupId,"FIN_89998");
+					addToLongCount(rollingMoney,regData,rollingMoneyTotal);
 					//rigidMoney FIN_84999
-					int rigidMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(reportId,wrGroupId,"FIN_84999");
-					addToIntegerCount(rigidMoney,regData,rigidMoneyTotal);
+					long rigidMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(reportId,wrGroupId,"FIN_84999");
+					addToLongCount(rigidMoney,regData,rigidMoneyTotal);
 					//debts FIN_99998
-					int debtsTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(reportId,wrGroupId,"FIN_99998");
-					addToIntegerCount(debts,regData,debtsTotal);
+					long debtsTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(reportId,wrGroupId,"FIN_99998");
+					addToLongCount(debts,regData,debtsTotal);
 					//rollingmoney minus debts
-					addToIntegerCount(rollingMoneyMinusDebts,regData,(rollingMoneyTotal-debtsTotal));
+					addToLongCount(rollingMoneyMinusDebts,regData,(rollingMoneyTotal-debtsTotal));
 					
 					//Amounts for comparingYear
 					if(comparingReportId!=-1 && comparingWrGroupId!=-1){//just zero's otherwise
 						//income is account key collection
-						int comparingIncomeTotal = getWorkReportBusiness().getTotalAmmountOfAccountRecordsByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyCollection(comparingReportId,comparingWrGroupId,incomeKeys);
-						addToIntegerCount(comparingIncome,regData,comparingIncomeTotal);
+						long comparingIncomeTotal = getWorkReportBusiness().getTotalAmmountOfAccountRecordsByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyCollection(comparingReportId,comparingWrGroupId,incomeKeys);
+						addToLongCount(comparingIncome,regData,comparingIncomeTotal);
 						//expenses is account key collection
-						int comparingExpensesTotal = getWorkReportBusiness().getTotalAmmountOfAccountRecordsByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyCollection(comparingReportId,comparingWrGroupId,expensesKeys);
-						addToIntegerCount(comparingExpenses,regData,comparingExpensesTotal);
+						long comparingExpensesTotal = getWorkReportBusiness().getTotalAmmountOfAccountRecordsByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyCollection(comparingReportId,comparingWrGroupId,expensesKeys);
+						addToLongCount(comparingExpenses,regData,comparingExpensesTotal);
 						//income minus expenses
-						addToIntegerCount(comparingIncomeMinusExpenses,regData,comparingIncomeTotal - comparingExpensesTotal);
+						addToLongCount(comparingIncomeMinusExpenses,regData,comparingIncomeTotal - comparingExpensesTotal);
 						//rollingMoney FIN_89998
-						int comparingRollingMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(comparingReportId,comparingWrGroupId,"FIN_89998");
-						addToIntegerCount(comparingRollingMoney,regData,comparingRollingMoneyTotal);
+						long comparingRollingMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(comparingReportId,comparingWrGroupId,"FIN_89998");
+						addToLongCount(comparingRollingMoney,regData,comparingRollingMoneyTotal);
 						//rigidMoney FIN_84999
-						int comparingRigidMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(comparingReportId,comparingWrGroupId,"FIN_84999");
-						addToIntegerCount(comparingRigidMoney,regData,comparingRigidMoneyTotal);
+						long comparingRigidMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(comparingReportId,comparingWrGroupId,"FIN_84999");
+						addToLongCount(comparingRigidMoney,regData,comparingRigidMoneyTotal);
 						//debts FIN_99998
-						int comparingDebtsTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(comparingReportId,comparingWrGroupId,"FIN_99998");
-						addToIntegerCount(comparingDebts,regData,comparingDebtsTotal);
+						long comparingDebtsTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(comparingReportId,comparingWrGroupId,"FIN_99998");
+						addToLongCount(comparingDebts,regData,comparingDebtsTotal);
 						//rollingmoney minus debts
-						addToIntegerCount(comparingRollingMoneyMinusDebts,regData,(comparingRollingMoneyTotal-comparingDebtsTotal));
+						addToLongCount(comparingRollingMoneyMinusDebts,regData,(comparingRollingMoneyTotal-comparingDebtsTotal));
 					}
 					
 					recordsMapKeyedByLeagueIdentifierAndClubsName.put(mapKey,regData);
@@ -2823,21 +2823,21 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 						leagueData.addData(regionalUnionAbbreviation, "Samtals");
 						leagueData.addData(clubType, "");
 						
-						leagueData.addData(income, new Integer(0));
-						leagueData.addData(expenses, new Integer(0));
-						leagueData.addData(incomeMinusExpenses,new Integer(0));
-						leagueData.addData(rollingMoney, new Integer(0));
-						leagueData.addData(rigidMoney, new Integer(0));
-						leagueData.addData(debts, new Integer(0));
-						leagueData.addData(rollingMoneyMinusDebts,new Integer(0));
+						leagueData.addData(income, new Long(0));
+						leagueData.addData(expenses, new Long(0));
+						leagueData.addData(incomeMinusExpenses,new Long(0));
+						leagueData.addData(rollingMoney, new Long(0));
+						leagueData.addData(rigidMoney, new Long(0));
+						leagueData.addData(debts, new Long(0));
+						leagueData.addData(rollingMoneyMinusDebts,new Long(0));
 						
-						leagueData.addData(comparingIncome, new Integer(0));
-						leagueData.addData(comparingExpenses, new Integer(0));
-						leagueData.addData(comparingIncomeMinusExpenses,new Integer(0));
-						leagueData.addData(comparingRollingMoney, new Integer(0));
-						leagueData.addData(comparingRigidMoney, new Integer(0));
-						leagueData.addData(comparingDebts, new Integer(0));
-						leagueData.addData(comparingRollingMoneyMinusDebts,new Integer(0));
+						leagueData.addData(comparingIncome, new Long(0));
+						leagueData.addData(comparingExpenses, new Long(0));
+						leagueData.addData(comparingIncomeMinusExpenses,new Long(0));
+						leagueData.addData(comparingRollingMoney, new Long(0));
+						leagueData.addData(comparingRigidMoney, new Long(0));
+						leagueData.addData(comparingDebts, new Long(0));
+						leagueData.addData(comparingRollingMoneyMinusDebts,new Long(0));
 						
 						leagueData.addData(dummyOrderingField,"B");
 						
@@ -2847,23 +2847,23 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 							//income is account key collection
 							
 							incomeTotal = getWorkReportBusiness().getTotalAmmountOfAccountRecordsByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyCollection(leagueReportId,mainBoardWRGroupId,incomeKeys);
-							addToIntegerCount(income,leagueData,incomeTotal);
+							addToLongCount(income,leagueData,incomeTotal);
 							//expenses is account key collection
 							expensesTotal = getWorkReportBusiness().getTotalAmmountOfAccountRecordsByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyCollection(leagueReportId,mainBoardWRGroupId,expensesKeys);
-							addToIntegerCount(expenses,leagueData,expensesTotal);
+							addToLongCount(expenses,leagueData,expensesTotal);
 							//income minus expenses
-							addToIntegerCount(incomeMinusExpenses,leagueData,incomeTotal - expensesTotal);
+							addToLongCount(incomeMinusExpenses,leagueData,incomeTotal - expensesTotal);
 							//rollingMoney FIN_89998
 							rollingMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(leagueReportId,mainBoardWRGroupId,"FIN_89998");
-							addToIntegerCount(rollingMoney,leagueData,rollingMoneyTotal);
+							addToLongCount(rollingMoney,leagueData,rollingMoneyTotal);
 							//rigidMoney FIN_84999
 							rigidMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(leagueReportId,mainBoardWRGroupId,"FIN_84999");
-							addToIntegerCount(rigidMoney,leagueData,rigidMoneyTotal);
+							addToLongCount(rigidMoney,leagueData,rigidMoneyTotal);
 							//debts FIN_99998
 							debtsTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(leagueReportId,mainBoardWRGroupId,"FIN_99998");
-							addToIntegerCount(debts,leagueData,debtsTotal);
+							addToLongCount(debts,leagueData,debtsTotal);
 							//rollingmoney minus debts
-							addToIntegerCount(rollingMoneyMinusDebts,leagueData,(rollingMoneyTotal-debtsTotal));
+							addToLongCount(rollingMoneyMinusDebts,leagueData,(rollingMoneyTotal-debtsTotal));
 							
 						}
 						
@@ -2872,24 +2872,24 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 							//Amounts for comparingYear
 							
 							//income is account key collection
-							int comparingIncomeTotal = getWorkReportBusiness().getTotalAmmountOfAccountRecordsByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyCollection(comparingLeagueReportId,comparingMainBoardWRGroupId,incomeKeys);
-							addToIntegerCount(comparingIncome,leagueData,comparingIncomeTotal);
+							long comparingIncomeTotal = getWorkReportBusiness().getTotalAmmountOfAccountRecordsByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyCollection(comparingLeagueReportId,comparingMainBoardWRGroupId,incomeKeys);
+							addToLongCount(comparingIncome,leagueData,comparingIncomeTotal);
 							//expenses is account key collection
-							int comparingExpensesTotal = getWorkReportBusiness().getTotalAmmountOfAccountRecordsByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyCollection(comparingLeagueReportId,comparingMainBoardWRGroupId,expensesKeys);
-							addToIntegerCount(comparingExpenses,leagueData,comparingExpensesTotal);
+							long comparingExpensesTotal = getWorkReportBusiness().getTotalAmmountOfAccountRecordsByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyCollection(comparingLeagueReportId,comparingMainBoardWRGroupId,expensesKeys);
+							addToLongCount(comparingExpenses,leagueData,comparingExpensesTotal);
 							//income minus expenses
-							addToIntegerCount(comparingIncomeMinusExpenses,leagueData,comparingIncomeTotal - comparingExpensesTotal);
+							addToLongCount(comparingIncomeMinusExpenses,leagueData,comparingIncomeTotal - comparingExpensesTotal);
 							//rollingMoney FIN_89998
-							int comparingRollingMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(comparingLeagueReportId,comparingMainBoardWRGroupId,"FIN_89998");
-							addToIntegerCount(comparingRollingMoney,leagueData,comparingRollingMoneyTotal);
+							long comparingRollingMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(comparingLeagueReportId,comparingMainBoardWRGroupId,"FIN_89998");
+							addToLongCount(comparingRollingMoney,leagueData,comparingRollingMoneyTotal);
 							//rigidMoney FIN_84999
-							int comparingRigidMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(comparingLeagueReportId,comparingMainBoardWRGroupId,"FIN_84999");
-							addToIntegerCount(comparingRigidMoney,leagueData,comparingRigidMoneyTotal);
+							long comparingRigidMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(comparingLeagueReportId,comparingMainBoardWRGroupId,"FIN_84999");
+							addToLongCount(comparingRigidMoney,leagueData,comparingRigidMoneyTotal);
 							//debts FIN_99998
-							int comparingDebtsTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(comparingLeagueReportId,comparingMainBoardWRGroupId,"FIN_99998");
-							addToIntegerCount(comparingDebts,leagueData,comparingDebtsTotal);
+							long comparingDebtsTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(comparingLeagueReportId,comparingMainBoardWRGroupId,"FIN_99998");
+							addToLongCount(comparingDebts,leagueData,comparingDebtsTotal);
 							//rollingmoney minus debts
-							addToIntegerCount(comparingRollingMoneyMinusDebts,leagueData,(comparingRollingMoneyTotal-comparingDebtsTotal));
+							addToLongCount(comparingRollingMoneyMinusDebts,leagueData,(comparingRollingMoneyTotal-comparingDebtsTotal));
 						}
 						
 						
@@ -2904,7 +2904,8 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 						division = getWorkReportBusiness().getWorkReportDivisionBoardHome().findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(reportId,wrGroupId);
 					}
 					catch (FinderException e) {
-						e.printStackTrace();
+//						System.out.println("Division not found for workReport: "+report.getGroupName()+"/"+report.getYearOfReport()+ " and workReportGroup: "+league.getName()+"/"+league.getYearOfReport());
+					    //e.printStackTrace();
 					}
 					
 					if(division!=null && division.hasNationalLeague()){
@@ -2919,21 +2920,21 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 							divDataSum.addData(regionalUnionAbbreviation, "Samtals");
 							divDataSum.addData(clubType,"");
 							
-							divDataSum.addData(income, new Integer(0));
-							divDataSum.addData(expenses, new Integer(0));
-							divDataSum.addData(incomeMinusExpenses,new Integer(0));
-							divDataSum.addData(rollingMoney, new Integer(0));
-							divDataSum.addData(rigidMoney, new Integer(0));
-							divDataSum.addData(debts, new Integer(0));
-							divDataSum.addData(rollingMoneyMinusDebts,new Integer(0));
+							divDataSum.addData(income, new Long(0));
+							divDataSum.addData(expenses, new Long(0));
+							divDataSum.addData(incomeMinusExpenses,new Long(0));
+							divDataSum.addData(rollingMoney, new Long(0));
+							divDataSum.addData(rigidMoney, new Long(0));
+							divDataSum.addData(debts, new Long(0));
+							divDataSum.addData(rollingMoneyMinusDebts,new Long(0));
 							
-							divDataSum.addData(comparingIncome, new Integer(0));
-							divDataSum.addData(comparingExpenses, new Integer(0));
-							divDataSum.addData(comparingIncomeMinusExpenses,new Integer(0));
-							divDataSum.addData(comparingRollingMoney, new Integer(0));
-							divDataSum.addData(comparingRigidMoney, new Integer(0));
-							divDataSum.addData(comparingDebts, new Integer(0));
-							divDataSum.addData(comparingRollingMoneyMinusDebts,new Integer(0));
+							divDataSum.addData(comparingIncome, new Long(0));
+							divDataSum.addData(comparingExpenses, new Long(0));
+							divDataSum.addData(comparingIncomeMinusExpenses,new Long(0));
+							divDataSum.addData(comparingRollingMoney, new Long(0));
+							divDataSum.addData(comparingRigidMoney, new Long(0));
+							divDataSum.addData(comparingDebts, new Long(0));
+							divDataSum.addData(comparingRollingMoneyMinusDebts,new Long(0));
 							
 							
 							
@@ -2942,20 +2943,20 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 							divDataSum.addData(dummyOrderingField,"C");
 						}
 						
-						addToIntegerCountFromFieldInAnotherReportableData(income,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(expenses,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(incomeMinusExpenses,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(rollingMoney,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(rigidMoney,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(debts,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(rollingMoneyMinusDebts,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(comparingIncome,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(comparingExpenses,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(comparingIncomeMinusExpenses,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(comparingRollingMoney,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(comparingRigidMoney,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(comparingDebts,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(comparingRollingMoneyMinusDebts,divDataSum,regData);
+						addToLongCountFromFieldInAnotherReportableData(income,divDataSum,regData);
+						addToLongCountFromFieldInAnotherReportableData(expenses,divDataSum,regData);
+						addToLongCountFromFieldInAnotherReportableData(incomeMinusExpenses,divDataSum,regData);
+						addToLongCountFromFieldInAnotherReportableData(rollingMoney,divDataSum,regData);
+						addToLongCountFromFieldInAnotherReportableData(rigidMoney,divDataSum,regData);
+						addToLongCountFromFieldInAnotherReportableData(debts,divDataSum,regData);
+						addToLongCountFromFieldInAnotherReportableData(rollingMoneyMinusDebts,divDataSum,regData);
+						addToLongCountFromFieldInAnotherReportableData(comparingIncome,divDataSum,regData);
+						addToLongCountFromFieldInAnotherReportableData(comparingExpenses,divDataSum,regData);
+						addToLongCountFromFieldInAnotherReportableData(comparingIncomeMinusExpenses,divDataSum,regData);
+						addToLongCountFromFieldInAnotherReportableData(comparingRollingMoney,divDataSum,regData);
+						addToLongCountFromFieldInAnotherReportableData(comparingRigidMoney,divDataSum,regData);
+						addToLongCountFromFieldInAnotherReportableData(comparingDebts,divDataSum,regData);
+						addToLongCountFromFieldInAnotherReportableData(comparingRollingMoneyMinusDebts,divDataSum,regData);
 						
 						
 						recordsMapKeyedByLeagueIdentifierAndClubsName.put(divMapKey,divDataSum);
@@ -2971,40 +2972,40 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 							divDataSum.addData(regionalUnionAbbreviation, "Samtals");
 							divDataSum.addData(clubType,"");
 							
-							divDataSum.addData(income, new Integer(0));
-							divDataSum.addData(expenses, new Integer(0));
-							divDataSum.addData(incomeMinusExpenses,new Integer(0));
-							divDataSum.addData(rollingMoney, new Integer(0));
-							divDataSum.addData(rigidMoney, new Integer(0));
-							divDataSum.addData(debts, new Integer(0));
-							divDataSum.addData(rollingMoneyMinusDebts,new Integer(0));
+							divDataSum.addData(income, new Long(0));
+							divDataSum.addData(expenses, new Long(0));
+							divDataSum.addData(incomeMinusExpenses,new Long(0));
+							divDataSum.addData(rollingMoney, new Long(0));
+							divDataSum.addData(rigidMoney, new Long(0));
+							divDataSum.addData(debts, new Long(0));
+							divDataSum.addData(rollingMoneyMinusDebts,new Long(0));
 							
-							divDataSum.addData(comparingIncome, new Integer(0));
-							divDataSum.addData(comparingExpenses, new Integer(0));
-							divDataSum.addData(comparingIncomeMinusExpenses,new Integer(0));
-							divDataSum.addData(comparingRollingMoney, new Integer(0));
-							divDataSum.addData(comparingRigidMoney, new Integer(0));
-							divDataSum.addData(comparingDebts, new Integer(0));
-							divDataSum.addData(comparingRollingMoneyMinusDebts,new Integer(0));
+							divDataSum.addData(comparingIncome, new Long(0));
+							divDataSum.addData(comparingExpenses, new Long(0));
+							divDataSum.addData(comparingIncomeMinusExpenses,new Long(0));
+							divDataSum.addData(comparingRollingMoney, new Long(0));
+							divDataSum.addData(comparingRigidMoney, new Long(0));
+							divDataSum.addData(comparingDebts, new Long(0));
+							divDataSum.addData(comparingRollingMoneyMinusDebts,new Long(0));
 							
 							divDataSum.addData(dummyOrderingField,"D");
 						}
 						
-						addToIntegerCountFromFieldInAnotherReportableData(income,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(expenses,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(incomeMinusExpenses,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(rollingMoney,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(rigidMoney,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(debts,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(rollingMoneyMinusDebts,divDataSum,regData);
+						addToLongCountFromFieldInAnotherReportableData(income,divDataSum,regData);
+						addToLongCountFromFieldInAnotherReportableData(expenses,divDataSum,regData);
+						addToLongCountFromFieldInAnotherReportableData(incomeMinusExpenses,divDataSum,regData);
+						addToLongCountFromFieldInAnotherReportableData(rollingMoney,divDataSum,regData);
+						addToLongCountFromFieldInAnotherReportableData(rigidMoney,divDataSum,regData);
+						addToLongCountFromFieldInAnotherReportableData(debts,divDataSum,regData);
+						addToLongCountFromFieldInAnotherReportableData(rollingMoneyMinusDebts,divDataSum,regData);
 						
-						addToIntegerCountFromFieldInAnotherReportableData(comparingIncome,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(comparingExpenses,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(comparingIncomeMinusExpenses,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(comparingRollingMoney,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(comparingRigidMoney,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(comparingDebts,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(comparingRollingMoneyMinusDebts,divDataSum,regData);
+						addToLongCountFromFieldInAnotherReportableData(comparingIncome,divDataSum,regData);
+						addToLongCountFromFieldInAnotherReportableData(comparingExpenses,divDataSum,regData);
+						addToLongCountFromFieldInAnotherReportableData(comparingIncomeMinusExpenses,divDataSum,regData);
+						addToLongCountFromFieldInAnotherReportableData(comparingRollingMoney,divDataSum,regData);
+						addToLongCountFromFieldInAnotherReportableData(comparingRigidMoney,divDataSum,regData);
+						addToLongCountFromFieldInAnotherReportableData(comparingDebts,divDataSum,regData);
+						addToLongCountFromFieldInAnotherReportableData(comparingRollingMoneyMinusDebts,divDataSum,regData);
 						
 						
 						recordsMapKeyedByLeagueIdentifierAndClubsName.put(noDivMapKey,divDataSum);
@@ -3022,76 +3023,76 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 						divDataSum.addData(regionalUnionAbbreviation, "Samtals");
 						divDataSum.addData(clubType,"");
 						
-						divDataSum.addData(income, new Integer(0));
-						divDataSum.addData(expenses, new Integer(0));
-						divDataSum.addData(incomeMinusExpenses,new Integer(0));
-						divDataSum.addData(rollingMoney, new Integer(0));
-						divDataSum.addData(rigidMoney, new Integer(0));
-						divDataSum.addData(debts, new Integer(0));
-						divDataSum.addData(rollingMoneyMinusDebts,new Integer(0));
+						divDataSum.addData(income, new Long(0));
+						divDataSum.addData(expenses, new Long(0));
+						divDataSum.addData(incomeMinusExpenses,new Long(0));
+						divDataSum.addData(rollingMoney, new Long(0));
+						divDataSum.addData(rigidMoney, new Long(0));
+						divDataSum.addData(debts, new Long(0));
+						divDataSum.addData(rollingMoneyMinusDebts,new Long(0));
 						
-						divDataSum.addData(comparingIncome, new Integer(0));
-						divDataSum.addData(comparingExpenses, new Integer(0));
-						divDataSum.addData(comparingIncomeMinusExpenses,new Integer(0));
-						divDataSum.addData(comparingRollingMoney, new Integer(0));
-						divDataSum.addData(comparingRigidMoney, new Integer(0));
-						divDataSum.addData(comparingDebts, new Integer(0));
-						divDataSum.addData(comparingRollingMoneyMinusDebts,new Integer(0));
+						divDataSum.addData(comparingIncome, new Long(0));
+						divDataSum.addData(comparingExpenses, new Long(0));
+						divDataSum.addData(comparingIncomeMinusExpenses,new Long(0));
+						divDataSum.addData(comparingRollingMoney, new Long(0));
+						divDataSum.addData(comparingRigidMoney, new Long(0));
+						divDataSum.addData(comparingDebts, new Long(0));
+						divDataSum.addData(comparingRollingMoneyMinusDebts,new Long(0));
 						
 						//sum for layout
 						
-						divDataSum.addData(incomeSum, new Integer(0));
-						divDataSum.addData(expensesSum, new Integer(0));
-						divDataSum.addData(incomeMinusExpensesSum,new Integer(0));
-						divDataSum.addData(rollingMoneySum, new Integer(0));
-						divDataSum.addData(rigidMoneySum, new Integer(0));
-						divDataSum.addData(debtsSum, new Integer(0));
-						divDataSum.addData(rollingMoneyMinusDebtsSum,new Integer(0));
+						divDataSum.addData(incomeSum, new Long(0));
+						divDataSum.addData(expensesSum, new Long(0));
+						divDataSum.addData(incomeMinusExpensesSum,new Long(0));
+						divDataSum.addData(rollingMoneySum, new Long(0));
+						divDataSum.addData(rigidMoneySum, new Long(0));
+						divDataSum.addData(debtsSum, new Long(0));
+						divDataSum.addData(rollingMoneyMinusDebtsSum,new Long(0));
 						
-						divDataSum.addData(comparingIncomeSum, new Integer(0));
-						divDataSum.addData(comparingExpensesSum, new Integer(0));
-						divDataSum.addData(comparingIncomeMinusExpensesSum,new Integer(0));
-						divDataSum.addData(comparingRollingMoneySum, new Integer(0));
-						divDataSum.addData(comparingRigidMoneySum, new Integer(0));
-						divDataSum.addData(comparingDebtsSum, new Integer(0));
-						divDataSum.addData(comparingRollingMoneyMinusDebtsSum,new Integer(0));
+						divDataSum.addData(comparingIncomeSum, new Long(0));
+						divDataSum.addData(comparingExpensesSum, new Long(0));
+						divDataSum.addData(comparingIncomeMinusExpensesSum,new Long(0));
+						divDataSum.addData(comparingRollingMoneySum, new Long(0));
+						divDataSum.addData(comparingRigidMoneySum, new Long(0));
+						divDataSum.addData(comparingDebtsSum, new Long(0));
+						divDataSum.addData(comparingRollingMoneyMinusDebtsSum,new Long(0));
 						
 						
 						divDataSum.addData(dummyOrderingField,"E");
 					}
 					
-					addToIntegerCountFromFieldInAnotherReportableData(income,divDataSum,regData);					
-					addToIntegerCountFromFieldInAnotherReportableData(expenses,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(incomeMinusExpenses,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(rollingMoney,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(rigidMoney,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(debts,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(rollingMoneyMinusDebts,divDataSum,regData);
+					addToLongCountFromFieldInAnotherReportableData(income,divDataSum,regData);					
+					addToLongCountFromFieldInAnotherReportableData(expenses,divDataSum,regData);
+					addToLongCountFromFieldInAnotherReportableData(incomeMinusExpenses,divDataSum,regData);
+					addToLongCountFromFieldInAnotherReportableData(rollingMoney,divDataSum,regData);
+					addToLongCountFromFieldInAnotherReportableData(rigidMoney,divDataSum,regData);
+					addToLongCountFromFieldInAnotherReportableData(debts,divDataSum,regData);
+					addToLongCountFromFieldInAnotherReportableData(rollingMoneyMinusDebts,divDataSum,regData);
 					
-					addToIntegerCountFromFieldInAnotherReportableData(comparingIncome,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(comparingExpenses,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(comparingIncomeMinusExpenses,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(comparingRollingMoney,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(comparingRigidMoney,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(comparingDebts,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(comparingRollingMoneyMinusDebts,divDataSum,regData);
+					addToLongCountFromFieldInAnotherReportableData(comparingIncome,divDataSum,regData);
+					addToLongCountFromFieldInAnotherReportableData(comparingExpenses,divDataSum,regData);
+					addToLongCountFromFieldInAnotherReportableData(comparingIncomeMinusExpenses,divDataSum,regData);
+					addToLongCountFromFieldInAnotherReportableData(comparingRollingMoney,divDataSum,regData);
+					addToLongCountFromFieldInAnotherReportableData(comparingRigidMoney,divDataSum,regData);
+					addToLongCountFromFieldInAnotherReportableData(comparingDebts,divDataSum,regData);
+					addToLongCountFromFieldInAnotherReportableData(comparingRollingMoneyMinusDebts,divDataSum,regData);
 					
 					//sum stuff
-					addToIntegerCountFromFieldInAnotherReportableData(income, incomeSum,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(expenses,expensesSum,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(incomeMinusExpenses, incomeMinusExpensesSum,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(rollingMoney, rollingMoneySum,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(rigidMoney,rigidMoneySum,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(debts,debtsSum,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(rollingMoneyMinusDebts,rollingMoneyMinusDebtsSum,divDataSum,regData);
+					addToLongCountFromFieldInAnotherReportableData(income, incomeSum,divDataSum,regData);
+					addToLongCountFromFieldInAnotherReportableData(expenses,expensesSum,divDataSum,regData);
+					addToLongCountFromFieldInAnotherReportableData(incomeMinusExpenses, incomeMinusExpensesSum,divDataSum,regData);
+					addToLongCountFromFieldInAnotherReportableData(rollingMoney, rollingMoneySum,divDataSum,regData);
+					addToLongCountFromFieldInAnotherReportableData(rigidMoney,rigidMoneySum,divDataSum,regData);
+					addToLongCountFromFieldInAnotherReportableData(debts,debtsSum,divDataSum,regData);
+					addToLongCountFromFieldInAnotherReportableData(rollingMoneyMinusDebts,rollingMoneyMinusDebtsSum,divDataSum,regData);
 					
-					addToIntegerCountFromFieldInAnotherReportableData(comparingIncome,comparingIncomeSum,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(comparingExpenses,comparingExpensesSum,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(comparingIncomeMinusExpenses,comparingIncomeMinusExpensesSum,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(comparingRollingMoney,comparingRollingMoneySum,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(comparingRigidMoney,comparingRigidMoneySum,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(comparingDebts,comparingDebtsSum,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(comparingRollingMoneyMinusDebts,comparingRollingMoneyMinusDebtsSum,divDataSum,regData);
+					addToLongCountFromFieldInAnotherReportableData(comparingIncome,comparingIncomeSum,divDataSum,regData);
+					addToLongCountFromFieldInAnotherReportableData(comparingExpenses,comparingExpensesSum,divDataSum,regData);
+					addToLongCountFromFieldInAnotherReportableData(comparingIncomeMinusExpenses,comparingIncomeMinusExpensesSum,divDataSum,regData);
+					addToLongCountFromFieldInAnotherReportableData(comparingRollingMoney,comparingRollingMoneySum,divDataSum,regData);
+					addToLongCountFromFieldInAnotherReportableData(comparingRigidMoney,comparingRigidMoneySum,divDataSum,regData);
+					addToLongCountFromFieldInAnotherReportableData(comparingDebts,comparingDebtsSum,divDataSum,regData);
+					addToLongCountFromFieldInAnotherReportableData(comparingRollingMoneyMinusDebts,comparingRollingMoneyMinusDebtsSum,divDataSum,regData);
 					
 					
 					recordsMapKeyedByLeagueIdentifierAndClubsName.put(allSumKey,divDataSum);
@@ -5094,6 +5095,53 @@ private ReportableData addToIntegerCountFromFieldInAnotherReportableData(Reporta
 		Integer oldCount = (Integer)reportableData.getFieldValue(reportableFieldTo);
 		if(count!=null && oldCount!=null) {
 			count = new Integer(oldCount.intValue()+count.intValue());
+		} 
+		
+		reportableData.addData(reportableFieldTo,count);//swap
+	}
+	
+	return reportableData;
+}
+
+private ReportableData addToLongCount(ReportableField reportableField, ReportableData reportableData, long longToAdd) {
+	if(reportableData!=null){//update count
+		Long count = (Long)reportableData.getFieldValue(reportableField);
+		if(count!=null) {
+			count = new Long(count.longValue()+longToAdd);
+		} else {
+			if(longToAdd>0){
+				count = new Long(longToAdd);
+			}
+			else{
+				count = new Long(0);
+			}
+		}
+		reportableData.addData(reportableField,count);//swap
+	}
+	
+	return reportableData;
+}
+
+private ReportableData addToLongCountFromFieldInAnotherReportableData(ReportableField reportableField, ReportableData reportableData, ReportableData dataToGetCountFrom) {
+	if(reportableData!=null && dataToGetCountFrom!=null){//update count
+		Long count = (Long)dataToGetCountFrom.getFieldValue(reportableField);
+		Long oldCount = (Long)reportableData.getFieldValue(reportableField);
+		if(count!=null && oldCount!=null) {
+			count = new Long(oldCount.longValue()+count.longValue());
+		} 
+		
+		reportableData.addData(reportableField,count);//swap
+	}
+	
+	return reportableData;
+}
+
+private ReportableData addToLongCountFromFieldInAnotherReportableData(ReportableField reportableFieldFrom,ReportableField reportableFieldTo, ReportableData reportableData, ReportableData dataToGetCountFrom) {
+	if(reportableData!=null && dataToGetCountFrom!=null){//update count
+		Long count = (Long)dataToGetCountFrom.getFieldValue(reportableFieldFrom);
+		Long oldCount = (Long)reportableData.getFieldValue(reportableFieldTo);
+		if(count!=null && oldCount!=null) {
+			count = new Long(oldCount.longValue()+count.longValue());
 		} 
 		
 		reportableData.addData(reportableFieldTo,count);//swap
