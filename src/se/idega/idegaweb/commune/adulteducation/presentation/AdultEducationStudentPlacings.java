@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationStudentPlacings.java,v 1.4 2005/10/27 22:34:16 palli Exp $
+ * $Id: AdultEducationStudentPlacings.java,v 1.4.2.1 2005/11/09 00:17:07 palli Exp $
  * Created on Oct 19, 2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -149,6 +149,9 @@ public class AdultEducationStudentPlacings extends AdultEducationBlock {
 			validFrom = new IWTimestamp(member.getRegisterDate());
 			if (member.getRemovedDate() != null) {
 				terminated = new IWTimestamp(member.getRemovedDate());
+			}
+			else {
+				terminated = null;
 			}
 			grade = getBusiness().getStudentGrade(member);
 
