@@ -124,13 +124,13 @@ public class ChildCareProviderDatesForChanges extends ChildCareBlock {
 		if (getStartFromTimestamp() != null)
 			registerDateFrom.setDate(getStartFromTimestamp().getDate());
         registerDateFrom.setYearRange(stamp.getYear() - 11, stamp.getYear()+3);
-        registerDateFrom.setAsNotEmpty(getLocalizedString("please_fill_start_from", "Please fill in start date from field!"));
+        //registerDateFrom.setAsNotEmpty(getLocalizedString("please_fill_start_from", "Please fill in start date from field!"));
         
         DateInput removeDateFrom = (DateInput) getStyledInterface(new DateInput(PARAMETER_END_FROM, true));
 		if (getEndFromTimestamp() != null)
 			removeDateFrom.setDate(getEndFromTimestamp().getDate()); 
         removeDateFrom.setYearRange(stamp.getYear() - 11, stamp.getYear()+3);
-        removeDateFrom.setAsNotEmpty(getLocalizedString("please_fill_start_to", "Please fill in start date to field!"));        
+        //removeDateFrom.setAsNotEmpty(getLocalizedString("please_fill_start_to", "Please fill in start date to field!"));        
         
         table.add(registerDateFrom, 2, 1);
         table.add(removeDateFrom, 2, 2);   
@@ -144,13 +144,13 @@ public class ChildCareProviderDatesForChanges extends ChildCareBlock {
 		if (getStartToTimestamp() != null)
 			registerDateTo.setDate(getStartToTimestamp().getDate()); 
         registerDateTo.setYearRange(stamp.getYear() - 11, stamp.getYear()+3);
-        registerDateTo.setAsNotEmpty(getLocalizedString("please_fill_end_from", "Please fill in end date from field!"));        
+        //registerDateTo.setAsNotEmpty(getLocalizedString("please_fill_end_from", "Please fill in end date from field!"));        
                 
         DateInput removeDateTo = (DateInput) getStyledInterface(new DateInput(PARAMETER_END_TO, true));   
 		if (getEndToTimestamp() != null)
 			removeDateTo.setDate(getEndToTimestamp().getDate());
         removeDateTo.setYearRange(stamp.getYear() - 11, stamp.getYear()+3);
-        removeDateTo.setAsNotEmpty(getLocalizedString("please_fill_end_to", "Please fill in end date to field!"));                
+        //removeDateTo.setAsNotEmpty(getLocalizedString("please_fill_end_to", "Please fill in end date to field!"));                
 		
         table.add(registerDateTo, 3, 1);
         table.add(removeDateTo, 3, 2);  

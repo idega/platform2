@@ -715,11 +715,18 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
             query.appendAndEquals("cc.provider_id", schoolId);    
         }
         
-        query.appendAnd().append("scm.register_date >= ").append(startFrom);
-        query.appendAnd().append("scm.register_date <= ").append(startTo);
-        query.appendAnd().append("scm.removed_date >= ").append(endFrom);
-        query.appendAnd().append("scm.removed_date <= ").append(endTo);
-        
+        if(startFrom != null) {
+        	query.appendAnd().append("scm.register_date >= ").append(startFrom);
+        }
+        if (startTo != null) { 
+        	query.appendAnd().append("scm.register_date <= ").append(startTo);
+        }
+        if (endFrom != null){ 
+        	query.appendAnd().append("scm.removed_date >= ").append(endFrom);
+        }
+        if (endTo != null) { 
+        	query.appendAnd().append("scm.removed_date <= ").append(endTo);
+        }
         query.appendAnd().append(" cca.comm_childcare_archive_id = ");
         query.append("(select max(comm_childcare_archive_id) from comm_childcare_archive cca_sub");
         query.append(" where cca_sub.application_id = cca.application_id)"); 

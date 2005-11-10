@@ -56,22 +56,21 @@ public class ChildCareDatesForChangesWriter extends DownloadWriter implements
             
 			// parse params
             Integer providerId = new Integer(req.getParameter(ChildCareProviderDatesForChanges.PARAMETER_PROVIDER_ID));
+                        
+            java.sql.Date startFromDate = getSqlDateParameter(req, ChildCareProviderDatesForChanges.PARAMETER_START_FROM);
+            java.sql.Date startToDate = getSqlDateParameter(req, ChildCareProviderDatesForChanges.PARAMETER_START_TO);            
+            java.sql.Date endFromDate = getSqlDateParameter(req, ChildCareProviderDatesForChanges.PARAMETER_END_FROM);
+            java.sql.Date endToDate = getSqlDateParameter(req, ChildCareProviderDatesForChanges.PARAMETER_END_TO);
             
-            IWTimestamp startFromStamp = getIWTimestampParameter(req, ChildCareProviderDatesForChanges.PARAMETER_START_FROM);
-            IWTimestamp startToStamp = getIWTimestampParameter(req, ChildCareProviderDatesForChanges.PARAMETER_START_TO);            
-            IWTimestamp endFromStamp = getIWTimestampParameter(req, ChildCareProviderDatesForChanges.PARAMETER_END_FROM);
-            IWTimestamp endToStamp = getIWTimestampParameter(req, ChildCareProviderDatesForChanges.PARAMETER_END_TO);            
-
 			// get data from business
             ChildCareBusiness business = getChildCareBusiness(iwc);
 		    Collection contracts = business
-                    .getChildCareContractsByProviderAndClassMemberDates(
-                            providerId, startFromStamp.getDate(), startToStamp
-                                    .getDate(), endFromStamp.getDate(),
-                            endToStamp.getDate());
+					.getChildCareContractsByProviderAndClassMemberDates(
+							providerId, startFromDate, startToDate,
+							endFromDate, endToDate);
             
 			// genereate xls
-			buffer = writeXLS(iwc, contracts);
+			buffer = writeXls(iwc, contracts);
 			setAsDownload(iwc, "dates_for_changes.xls", buffer.length());
 
 		} catch (Exception e) {
@@ -80,12 +79,20 @@ public class ChildCareDatesForChangesWriter extends DownloadWriter implements
 	}
 
     private IWTimestamp getIWTimestampParameter(HttpServletRequest req, String paramName) {
-        String date = req.getParameter(paramName);                                                        
+    	String date = req.getParameter(paramName);                                                        
         IWTimestamp stamp = null;            
-        if (date != null)
+        if (date.length() > 0)
             stamp = new IWTimestamp(date);
         return stamp;
     }
+    
+    private java.sql.Date getSqlDateParameter(HttpServletRequest req, String paramName) {
+    	java.sql.Date date = null;                                                        
+        IWTimestamp stamp = getIWTimestampParameter(req, paramName);            
+        if (stamp != null)
+            date = stamp.getDate();
+        return date;
+    }    
 	
 	public String getMimeType() {
 		if (buffer != null)
@@ -107,7 +114,7 @@ public class ChildCareDatesForChangesWriter extends DownloadWriter implements
 	}	
 
 	
-	private MemoryFileBuffer writeXLS(IWContext iwc, Collection contracts) throws Exception {
+	private MemoryFileBuffer writeXls(IWContext iwc, Collection contracts) throws Exception {
 		MemoryFileBuffer buffer = new MemoryFileBuffer();
 		MemoryOutputStream mos = new MemoryOutputStream(buffer);
 
