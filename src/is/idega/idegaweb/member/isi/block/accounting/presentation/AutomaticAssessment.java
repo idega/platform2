@@ -162,7 +162,7 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
 			//@TODO Add skip to list!!!!
 			execute = getAccountingBusiness(iwc).doAssessment(name, getClub(), getDivision(), group,
 					iwc.getCurrentUser(), includeChildren, tariff, paymentDateTimestamp.getTimestamp(),
-					tariffValidFromTimestamp.getDate(), tariffValidFromTimestamp.getDate(), amount, skip);
+					tariffValidFromTimestamp.getDate(), tariffValidToTimestamp.getDate(), amount, skip);
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
