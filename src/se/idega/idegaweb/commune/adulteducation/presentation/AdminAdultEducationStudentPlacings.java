@@ -1,5 +1,5 @@
 /*
- * $Id: AdminAdultEducationStudentPlacings.java,v 1.1.2.1 2005/11/15 10:12:21 palli Exp $
+ * $Id: AdminAdultEducationStudentPlacings.java,v 1.1.2.2 2005/11/15 10:15:52 palli Exp $
  * Created on Oct 19, 2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -16,8 +16,6 @@ import java.util.Iterator;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
-import se.idega.idegaweb.commune.school.business.SchoolCommuneSession;
-
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolClassMemberGrade;
@@ -26,20 +24,14 @@ import com.idega.block.school.data.SchoolStudyPath;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
-import com.idega.core.contact.data.Email;
-import com.idega.core.contact.data.Phone;
-import com.idega.core.location.data.Address;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.business.UserSession;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
-import com.idega.util.PersonalIDFormatter;
-import com.idega.util.text.Name;
 
 public class AdminAdultEducationStudentPlacings extends AdultEducationBlock {
 
@@ -494,82 +486,6 @@ public class AdminAdultEducationStudentPlacings extends AdultEducationBlock {
 		table.setColumnAlignment(4, Table.HORIZONTAL_ALIGN_CENTER);
 
 		return table;
-	}
-
-	protected Table getInformationTable(IWContext iwc) throws RemoteException {
-		Table table = new Table();
-		table.setWidth(Table.HUNDRED_PERCENT);
-		table.setCellpadding(0);
-		table.setCellspacing(0);
-		table.setColumns(3);
-		table.setWidth(1, "100");
-		table.setWidth(2, "6");
-		int row = 1;
-
-		User user = getBusiness().getUserBusiness().getUser(
-				getSchoolCommuneSession(iwc).getStudentID());
-		if (user != null) {
-			Address address = getBusiness().getUserBusiness()
-					.getUsersMainAddress(user);
-
-			table.add(getLocalizedSmallHeader("school.student", "Student"), 1,
-					row);
-			Name name = new Name(user.getFirstName(), user.getMiddleName(),
-					user.getLastName());
-			table.add(getSmallText(name.getName(iwc.getApplicationSettings()
-					.getDefaultLocale(), true)), 3, row);
-			table.add(getSmallText(" - "), 3, row);
-			table.add(getSmallText(PersonalIDFormatter.format(user
-					.getPersonalID(), iwc.getCurrentLocale())), 3, row++);
-
-			if (address != null) {
-				table.add(getLocalizedSmallHeader("school.address", "Address"),
-						1, row);
-				table.add(getSmallText(address.getStreetAddress()), 3, row);
-				if (address.getPostalAddress() != null)
-					table.add(getSmallText(", " + address.getPostalAddress()),
-							3, row);
-				row++;
-			}
-
-			table.setHeight(row++, 12);
-
-			Phone phone = getBusiness().getUserBusiness().getHomePhone(user);
-			Email email = getBusiness().getUserBusiness().getEmail(user);
-
-			if (phone != null && phone.getNumber() != null) {
-				table.add(
-						getSmallText(localize("school.phone", "Phone") + ": "),
-						3, row);
-				table.add(getSmallText(phone.getNumber()), 3, row++);
-			}
-			if (email != null && email.getEmailAddress() != null) {
-				Link link = getSmallLink(email.getEmailAddress());
-				link.setURL("mailto:" + email.getEmailAddress(), false, false);
-				table.add(link, 3, row++);
-			}
-
-			table.setHeight(row++, 12);
-		}
-
-		return table;
-	}
-
-	/*
-	 * private SchoolCommuneBusiness getSchoolCommuneBusiness(IWContext iwc) {
-	 * try { return (SchoolCommuneBusiness) IBOLookup.getServiceInstance(iwc,
-	 * SchoolCommuneBusiness.class); } catch (IBOLookupException e) {
-	 * e.printStackTrace(); return null; } }
-	 */
-
-	private SchoolCommuneSession getSchoolCommuneSession(IWContext iwc) {
-		try {
-			return (SchoolCommuneSession) IBOLookup.getSessionInstance(iwc,
-					SchoolCommuneSession.class);
-		} catch (IBOLookupException e) {
-			e.printStackTrace();
-			return null;
-		}
 	}
 
 	protected UserSession getUserSession(IWUserContext iwuc) {
