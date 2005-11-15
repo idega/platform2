@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 import javax.ejb.CreateException;
+import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import javax.transaction.UserTransaction;
@@ -1862,6 +1863,17 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			return new Vector();
 		}
 	}
+
+	public Collection findClassMemberInAdultEducation(int studentID) {
+		try {
+			Collection types = findAllSchoolTypesForAdultEducation();
+			return getSchoolClassMemberHome().findByStudentAndTypes(studentID, types);
+		}
+		catch (FinderException fe) {
+			return new Vector();
+		}
+	}
+
 	
 	public Collection findClassMemberInChildCare(int studentID, int schoolID) {
 		try {
@@ -1977,6 +1989,19 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 	}
 
+	public void deleteSchoolClassMemberEntry(int schoolClassMemberId) {
+		try {
+			SchoolClassMember member = getSchoolClassMemberHome().findByPrimaryKey(new Integer(schoolClassMemberId));
+			member.remove();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		} catch (EJBException e) {
+			e.printStackTrace();
+		} catch (RemoveException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void removeSchoolClassMemberFromClass(int studentID, int schoolClassID) {
 		try {
 			SchoolClass group = this.findSchoolClass(new Integer(schoolClassID));
