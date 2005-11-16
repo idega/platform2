@@ -144,7 +144,7 @@ public class ChildCareDatesForChangesWriter extends DownloadWriter implements
                  
                  // add data to row
                  row = sheet.createRow((short) rowNum++);
-                 fillDataRow(iwc, wb, sheet, row, contract, application, classMember, child, provider);
+                 fillDataRow(iwc, row, application, classMember, child, provider);
                  
             }
         }
@@ -199,8 +199,8 @@ public class ChildCareDatesForChangesWriter extends DownloadWriter implements
         return (ChildCareBusiness) IBOLookup.getServiceInstance(iwc, ChildCareBusiness.class);  
     }
     
-    private void fillDataRow(IWContext iwc, HSSFWorkbook wb, HSSFSheet sheet, HSSFRow row,
-            ChildCareContract contract, ChildCareApplication application,
+    private void fillDataRow(IWContext iwc, HSSFRow row,
+            ChildCareApplication application,
             SchoolClassMember classMember, User child, School provider){        
         row.createCell((short) 0).setCellValue(child.getFirstName() + " " + child.getLastName());
         row.createCell((short) 1).setCellValue(child.getPersonalID());
