@@ -3,6 +3,8 @@ package is.idega.idegaweb.member.isi.block.reports.presentation;
 import is.idega.idegaweb.member.business.MemberUserBusiness;
 import is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusiness;
 import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
+import is.idega.idegaweb.member.util.IWMemberConstants;
+
 import java.rmi.RemoteException;
 import java.util.List;
 import com.idega.block.datareport.presentation.ReportGenerator;
@@ -54,6 +56,8 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 	protected static final String ACTION = "iwme_wr_act";
 
 	protected static final String ACTION_WORK_SELECT_REPORT = "iwme_wr_act_b1";
+	protected static final String ACTION_WORK_SELECT_REGIONAL_UNION_REPORT = "iwme_wr_act_b1a";
+	protected static final String ACTION_WORK_SELECT_LEAGUE_REPORT = "iwme_wr_act_b1b";
 	protected static final String ACTION_EDIT_MEMBER_LIST = "iwme_wr_act_b2";
 	protected static final String ACTION_EDIT_ACCOUNT = "iwme_wr_act_b3";
 	protected static final String ACTION_EDIT_BOARD = "iwme_wr_act_b4";
@@ -136,6 +140,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		//add the main content
 		if (action != null) {			
 			WorkReportSelector selector = null;
+		    WorkReportGroupSelector groupSelector = null;
 			
 
 			//depending on the user type set the currect stuff
@@ -145,6 +150,20 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 				helpTextKey = ACTION_WORK_SELECT_REPORT + "_help";
 				this.setTitle(iwrb.getLocalizedString(ACTION_WORK_SELECT_REPORT, "Select report"));
 				this.addTitle(iwrb.getLocalizedString(ACTION_WORK_SELECT_REPORT, "Select report"), TITLE_STYLECLASS);
+			}
+			if (action.equals(ACTION_WORK_SELECT_REGIONAL_UNION_REPORT)) {
+				groupSelector = new WorkReportGroupSelector();
+				selectorIsSet = true;
+				helpTextKey = ACTION_WORK_SELECT_REGIONAL_UNION_REPORT + "_help";
+				this.setTitle(iwrb.getLocalizedString(ACTION_WORK_SELECT_REGIONAL_UNION_REPORT, "Select regional union report"));
+				this.addTitle(iwrb.getLocalizedString(ACTION_WORK_SELECT_REGIONAL_UNION_REPORT, "Select regional union report"), TITLE_STYLECLASS);
+			}
+			if (action.equals(ACTION_WORK_SELECT_LEAGUE_REPORT)) {
+				groupSelector = new WorkReportGroupSelector();
+				selectorIsSet = true;
+				helpTextKey = ACTION_WORK_SELECT_LEAGUE_REPORT + "_help";
+				this.setTitle(iwrb.getLocalizedString(ACTION_WORK_SELECT_LEAGUE_REPORT, "Select league report"));
+				this.addTitle(iwrb.getLocalizedString(ACTION_WORK_SELECT_LEAGUE_REPORT, "Select league report"), TITLE_STYLECLASS);
 			}
 			if (action.equals(ACTION_EDIT_MEMBER_LIST)) {
 				selector = new WorkReportMemberEditor();
@@ -308,6 +327,13 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 				selector.setUserType(getUserType());
 				table.add(selector, 2, 1);
 			}
+			if (groupSelector != null) {
+				if (groupId != null) {
+					groupSelector.setGroupId(groupId.intValue());
+				}
+				groupSelector.setUserType(getUserType());
+				table.add(groupSelector, 2, 1);
+			}
 			if(!action.equals(ACTION_STATISTICS)) {
 				Table helpTable =new Table(1,1);
 				helpTable.setWidth(Table.HUNDRED_PERCENT);
@@ -413,6 +439,24 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		selectReport.add(formatText(iwrb.getLocalizedString("workreportwindow.select_report", "Select report"), true));
 		selectReport.addParameter(ACTION, ACTION_WORK_SELECT_REPORT);
 		selectReport.addParameter(WorkReportConstants.WR_SESSION_CLEAR, "TRUE");
+
+//		B.1.A
+		LinkContainer selectRegionalUnionReport = new LinkContainer();
+		//added for a styled link font:
+		selectRegionalUnionReport.setStyleClass(styledLink);
+		selectRegionalUnionReport.add(formatText(iwrb.getLocalizedString("workreportwindow.select_regional_union_report", "Select regional union report"), true));
+		selectRegionalUnionReport.addParameter(ACTION, ACTION_WORK_SELECT_REGIONAL_UNION_REPORT);
+		selectRegionalUnionReport.addParameter(WorkReportConstants.WR_SESSION_PARAM_GROUP_TYPE, IWMemberConstants.GROUP_TYPE_REGIONAL_UNION);
+		selectRegionalUnionReport.addParameter(WorkReportConstants.WR_SESSION_CLEAR, "TRUE");
+
+//		B.1.B
+		LinkContainer selectLeagueReport = new LinkContainer();
+		//added for a styled link font:
+		selectLeagueReport.setStyleClass(styledLink);
+		selectLeagueReport.add(formatText(iwrb.getLocalizedString("workreportwindow.select_league_report", "Select league report"), true));
+		selectLeagueReport.addParameter(ACTION, ACTION_WORK_SELECT_LEAGUE_REPORT);
+		selectLeagueReport.addParameter(WorkReportConstants.WR_SESSION_PARAM_GROUP_TYPE, IWMemberConstants.GROUP_TYPE_LEAGUE);
+		selectLeagueReport.addParameter(WorkReportConstants.WR_SESSION_CLEAR, "TRUE");
 
 		//B.2
 		Text workOnReport = formatText(iwrb.getLocalizedString("workreportwindow.edit_report", "Edit report"), true);
@@ -859,42 +903,45 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 
 		if (type != null) {
 			//add to window
-			menu.add(operations, 1, 1);
-			menu.setRowColor(1, COLOR_MIDDLE);
-			menu.add(getHelpWithGrayImage("workreportwindow.operations_help",true),2,1);
-			menu.add(selectReport, 1, 2);
+		    int row = 1;
+			menu.add(operations, 1, row);
+			menu.setRowColor(row, COLOR_MIDDLE);
+			menu.add(getHelpWithGrayImage("workreportwindow.operations_help",true),2,row++);
+			menu.add(selectReport, 1, row++);
 
 			if(WorkReportConstants.WR_USER_TYPE_UNION.equals(type) || WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type)  || iwc.isSuperAdmin()) {
-				menu.add(uploadReport, 1, 4);
-				menu.setRowColor(4, COLOR_MIDDLE);
-				menu.add(getHelpWithGrayImage("workreportwindow.uploadReport_help",true),2,4);
-				menu.add(uploadList, 1, 5);
+			    menu.add(selectRegionalUnionReport, 1, row++);
+			    menu.add(selectLeagueReport, 1, row++);
+			    menu.add(uploadReport, 1, row);
+				menu.setRowColor(row, COLOR_MIDDLE);
+				menu.add(getHelpWithGrayImage("workreportwindow.uploadReport_help",true),2,row++);
+				menu.add(uploadList, 1, row++);
 			}
 			
-			menu.add(workOnReport, 1, 6);
-			menu.setRowColor(6, COLOR_MIDDLE);
-			menu.add(getHelpWithGrayImage("workreportwindow.workOnReport_help",true),2,6);
-			menu.add(editList, 1, 7);
+			menu.add(workOnReport, 1, row);
+			menu.setRowColor(row, COLOR_MIDDLE);
+			menu.add(getHelpWithGrayImage("workreportwindow.workOnReport_help",true),2,row++);
+			menu.add(editList, 1, row++);
 			
 			if (WorkReportConstants.WR_USER_TYPE_UNION.equals(type) || WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type) || iwc.isSuperAdmin()) {
-				menu.add(reportsOverview, 1, 8);
+				menu.add(reportsOverview, 1, row++);
 			}
 
-			menu.add(sendReport, 1, 9);
+			menu.add(sendReport, 1, row++);
 
 			if (WorkReportConstants.WR_USER_TYPE_UNION.equals(type) || WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type) || iwc.isSuperAdmin()) {
-				menu.add(closeReport, 1, 10);
+				menu.add(closeReport, 1, row++);
 			}
 			
 			if (WorkReportConstants.WR_USER_TYPE_UNION.equals(type) || WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type)  || iwc.isSuperAdmin()) {
-				menu.add(createReports, 1, 11);
+				menu.add(createReports, 1, row++);
 			}
 
 			if (type!=null  || iwc.isSuperAdmin()) {
-				menu.add(statistics, 1, 12);
-				menu.setRowColor(12, COLOR_MIDDLE);
-				menu.add(getHelpWithGrayImage("workreportwindow.statistics_help",true),2,12);
-				menu.add(stats, 1, 13);
+				menu.add(statistics, 1, row);
+				menu.setRowColor(row, COLOR_MIDDLE);
+				menu.add(getHelpWithGrayImage("workreportwindow.statistics_help",true),2,row++);
+				menu.add(stats, 1, row++);
 			}
 			
 
