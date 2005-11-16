@@ -2480,7 +2480,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			if (!useAlternativePDFGenerationMethod) { // let's use old method
 				contractFile = createContractContentToApplication(application, locale, validFrom, changeStatus, hasBankId);
 			} else { // bundle property tells us to use new method
-				contractFile = createContractContentToApplicationAlternativeMethod(application, locale, validFrom, changeStatus, hasBankId);
+				contractFile = createContractContentToApplicationAlternativeMethod(application, locale, validFrom, changeStatus);
 			}
 			
 			if (createNew && contractFile != null) {
@@ -2586,7 +2586,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return null;
 	}
 	
-	private ICFile createContractContentToApplicationAlternativeMethod(ChildCareApplication application, Locale locale, IWTimestamp validFrom, boolean changeStatus, boolean hasBankId) {
+	private ICFile createContractContentToApplicationAlternativeMethod(ChildCareApplication application, Locale locale, IWTimestamp validFrom, boolean changeStatus) {
 		MemoryFileBuffer buffer = new MemoryFileBuffer();
         OutputStream mos = new MemoryOutputStream(buffer);
         InputStream mis = new MemoryInputStream(buffer);
