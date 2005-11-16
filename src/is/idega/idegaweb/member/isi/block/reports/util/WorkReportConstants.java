@@ -47,6 +47,8 @@ public class WorkReportConstants extends IWMemberConstants {
 
     public static final String WR_SESSION_PARAM_WORK_REPORT_YEAR = "wr_sess_wr_yr";
 
+    public static final String WR_SESSION_PARAM_GROUP_TYPE = "wr_sess_wr_gt";
+
     public static final String WR_SESSION_CLEAR = "wr_sess_clear";
 
     // application property name
