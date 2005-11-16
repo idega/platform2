@@ -143,7 +143,7 @@ public class NBSLoginBusinessBean extends LoginBusinessBean {
 			if(mayCreateNewLogin){
 			//if (loginRecords.length > 0) {
 				String newLogin = StringHandler.getRandomString(20);
-				chosenRecord = LoginDBHandler.createLogin(user.getID(), newLogin, "noPassword");
+				chosenRecord = LoginDBHandler.createLogin(user, newLogin, "noPassword");
 				chosenRecord.setLoginType(NBSLoginBusinessBean.PKI_LOGIN_TYPE);
 				chosenRecord.store();
 				return chosenRecord;
