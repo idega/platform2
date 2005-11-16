@@ -53,7 +53,7 @@ public class ClubSelector extends Block {
 	protected Table stepTable = null;
 
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
-	private static final String STEP_NAME_LOCALIZATION_KEY = "clubselector.step_name";
+	protected static final String STEP_NAME_LOCALIZATION_KEY = "clubselector.step_name";
 	
 	/**
 	 * @return
@@ -130,45 +130,9 @@ public class ClubSelector extends Block {
 		//sets this step as bold, if another class calls it this will be overridden
 		setAsCurrentStepByStepLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
 		
-		String paramRegionalUnionId = getParameterFromSessionOrRequest(iwc,WorkReportConstants.WR_SESSION_PARAM_REGIONAL_UNION_ID);
-		String paramClubId = getParameterFromSessionOrRequest(iwc,WorkReportConstants.WR_SESSION_PARAM_CLUB_ID);
-		
-		if( paramClubId!=null || getClubId()!=-1 ){
-			if( clubId == -1 ) clubId = Integer.parseInt(paramClubId);
-			iwc.setSessionAttribute(WorkReportConstants.WR_SESSION_PARAM_CLUB_ID,paramClubId);
-			
-			if( paramRegionalUnionId != null && !paramRegionalUnionId.equals("") ){
-				regionalUnionId = Integer.parseInt(paramRegionalUnionId);
-				iwc.setSessionAttribute(WorkReportConstants.WR_SESSION_PARAM_REGIONAL_UNION_ID,paramRegionalUnionId);
-			}
-			
-			if(regionalUnionId!=-1 && clubId!=regionalUnionId){
-				Text regionalUnionText = new Text(this.getWorkReportBusiness(iwc).getGroupBusiness().getGroupByGroupID(regionalUnionId).getName(),true,true,false);
-				addToStepsExtraInfo(STEP_NAME_LOCALIZATION_KEY,regionalUnionText);
-				//add(" / ");
-			}
-			
-			if(clubId!=-1 && clubId!=regionalUnionId){
-				addToStepsExtraInfo(STEP_NAME_LOCALIZATION_KEY,new Text(" / "));
-				Text clubText = new Text(this.getWorkReportBusiness(iwc).getGroupBusiness().getGroupByGroupID(clubId).getName(),true,true,false);
-				addToStepsExtraInfo(STEP_NAME_LOCALIZATION_KEY,clubText);
-			}
+		if (!initializeClubSelectionForm(iwc)) {	
+		    addClubSelectionForm(iwc);
 		}
-		else{
-			if(paramRegionalUnionId!=null){
-				regionalUnionId = Integer.parseInt(paramRegionalUnionId);
-				iwc.setSessionAttribute(WorkReportConstants.WR_SESSION_PARAM_REGIONAL_UNION_ID,paramRegionalUnionId);
-				if(regionalUnionId!=-1 && clubId!=regionalUnionId){
-					Text regionalUnionText = new Text(this.getWorkReportBusiness(iwc).getGroupBusiness().getGroupByGroupID(regionalUnionId).getName(),true,true,false);
-					addToStepsExtraInfo(STEP_NAME_LOCALIZATION_KEY,regionalUnionText);
-				}
-				
-			}
-						
-			addClubSelectionForm();
-		}
-		
-		
 	}
     
     // this method ruins the layout of all editors, therefore this method is overwritten by the editors
@@ -205,12 +169,7 @@ public class ClubSelector extends Block {
 		
 	}
 
-	protected void addClubSelectionForm() throws RemoteException {
-		DropdownMenu clubMenu = null;
-		DropdownMenu regMenu = null;
-		
-		Collection clubs = null;
-		Collection regionalUnions = null;
+	protected void addClubSelectionForm(IWContext iwc) throws RemoteException {
 		
 		Form clubSelectorForm = new Form();
 		
@@ -221,31 +180,7 @@ public class ClubSelector extends Block {
 		table.mergeCells(1,4,2,4);
 		table.setAlignment(1,4,Table.HORIZONTAL_ALIGN_RIGHT);
 		
-		if( getRegionalUnionId() !=-1 ){
-			try {
-				regionalUnions = new ArrayList();
-				regionalUnions.add(reportBiz.getGroupBusiness().getGroupByGroupID(getRegionalUnionId()));
-				regMenu = new DropdownMenu(regionalUnions,WorkReportConstants.WR_SESSION_PARAM_REGIONAL_UNION_ID);
-				//regMenu.setDisabled(true);
-				clubs = reportBiz.getClubGroupsForRegionUnionGroup(reportBiz.getGroupBusiness().getGroupByGroupID(getRegionalUnionId()));
-				clubMenu = new DropdownMenu(clubs,WorkReportConstants.WR_SESSION_PARAM_CLUB_ID);
-			}
-			catch (FinderException e) {
-				e.printStackTrace();
-			}
-		}else{
-			regionalUnions = reportBiz.getAllRegionalUnionGroups();
-			regMenu = new DropdownMenu(regionalUnions,WorkReportConstants.WR_SESSION_PARAM_REGIONAL_UNION_ID);
-		}
-		
-		table.add(iwrb.getLocalizedString("clubselector.select_regional_union_and_club","Select the desired club."),1,1);
-		table.add(iwrb.getLocalizedString("clubselector.regional_union","Regional union"),1,2);
-		table.add(regMenu,2,2);		
-
-		if( clubMenu!=null ){
-			table.add(iwrb.getLocalizedString("clubselector.club","Club"),1,3);
-			table.add(clubMenu,2,3);
-		} 
+		addContentToTable(table, iwc);
 		
 		SubmitButton submit = new SubmitButton(iwrb.getLocalizedString("clubselector.continue","continue"));
 		submit.setAsImageButton(true);
@@ -348,7 +283,84 @@ public class ClubSelector extends Block {
 		return temp;
 	}
 	
+	protected boolean initializeClubSelectionForm(IWContext iwc) throws RemoteException, FinderException {
+	    boolean parametersInitialized = false;
+	    String paramRegionalUnionId = getParameterFromSessionOrRequest(iwc,WorkReportConstants.WR_SESSION_PARAM_REGIONAL_UNION_ID);
+		String paramClubId = getParameterFromSessionOrRequest(iwc,WorkReportConstants.WR_SESSION_PARAM_CLUB_ID);
+		
+		if( paramClubId!=null || getClubId()!=-1 ){
+			if( clubId == -1 ) clubId = Integer.parseInt(paramClubId);
+			iwc.setSessionAttribute(WorkReportConstants.WR_SESSION_PARAM_CLUB_ID,paramClubId);
+			
+			if( paramRegionalUnionId != null && !paramRegionalUnionId.equals("") ){
+				regionalUnionId = Integer.parseInt(paramRegionalUnionId);
+				iwc.setSessionAttribute(WorkReportConstants.WR_SESSION_PARAM_REGIONAL_UNION_ID,paramRegionalUnionId);
+			}
+			
+			if(regionalUnionId!=-1 && clubId!=regionalUnionId){
+				Text regionalUnionText = new Text(this.getWorkReportBusiness(iwc).getGroupBusiness().getGroupByGroupID(regionalUnionId).getName(),true,true,false);
+				addToStepsExtraInfo(STEP_NAME_LOCALIZATION_KEY,regionalUnionText);
+				//add(" / ");
+			}
+
+			if(clubId!=-1 && regionalUnionId!=-1 && clubId!=regionalUnionId){
+				addToStepsExtraInfo(STEP_NAME_LOCALIZATION_KEY,new Text(" / "));
+			}
+
+			if(clubId!=-1 && clubId!=regionalUnionId){
+				Text clubText = new Text(this.getWorkReportBusiness(iwc).getGroupBusiness().getGroupByGroupID(clubId).getName(),true,true,false);
+				addToStepsExtraInfo(STEP_NAME_LOCALIZATION_KEY,clubText);
+			}
+			parametersInitialized = true;
+		}
+		else{
+			if(paramRegionalUnionId!=null){
+				regionalUnionId = Integer.parseInt(paramRegionalUnionId);
+				iwc.setSessionAttribute(WorkReportConstants.WR_SESSION_PARAM_REGIONAL_UNION_ID,paramRegionalUnionId);
+				if(regionalUnionId!=-1 && clubId!=regionalUnionId){
+					Text regionalUnionText = new Text(this.getWorkReportBusiness(iwc).getGroupBusiness().getGroupByGroupID(regionalUnionId).getName(),true,true,false);
+					addToStepsExtraInfo(STEP_NAME_LOCALIZATION_KEY,regionalUnionText);
+				}
+				
+			}
+			parametersInitialized = false;
+		}
+	    return parametersInitialized;
+	}
 	
+	protected void addContentToTable(Table table, IWContext iwc) throws RemoteException {	
+		
+	    DropdownMenu clubMenu = null;
+		DropdownMenu regMenu = null;
+		
+		Collection clubs = null;
+		Collection regionalUnions = null;
+		if( getRegionalUnionId() !=-1 ){
+			try {
+				regionalUnions = new ArrayList();
+				regionalUnions.add(reportBiz.getGroupBusiness().getGroupByGroupID(getRegionalUnionId()));
+				regMenu = new DropdownMenu(regionalUnions,WorkReportConstants.WR_SESSION_PARAM_REGIONAL_UNION_ID);
+				//regMenu.setDisabled(true);
+				clubs = reportBiz.getClubGroupsForRegionUnionGroup(reportBiz.getGroupBusiness().getGroupByGroupID(getRegionalUnionId()));
+				clubMenu = new DropdownMenu(clubs,WorkReportConstants.WR_SESSION_PARAM_CLUB_ID);
+			}
+			catch (FinderException e) {
+				e.printStackTrace();
+			}
+		}else{
+			regionalUnions = reportBiz.getAllRegionalUnionGroups();
+			regMenu = new DropdownMenu(regionalUnions,WorkReportConstants.WR_SESSION_PARAM_REGIONAL_UNION_ID);
+		}
+		
+		table.add(iwrb.getLocalizedString("clubselector.select_regional_union_and_club","Select the desired group."),1,1);
+		table.add(iwrb.getLocalizedString("clubselector.regional_union","Regional union"),1,2);
+		table.add(regMenu,2,2);		
+
+		if( clubMenu!=null ){
+			table.add(iwrb.getLocalizedString("clubselector.club","Club"),1,3);
+			table.add(clubMenu,2,3);
+		}
+	}
 	
 	
 }
