@@ -1,5 +1,5 @@
 /*
- * $Id: AdminAdultEducationStudentPlacings.java,v 1.1.2.2 2005/11/15 10:15:52 palli Exp $
+ * $Id: AdminAdultEducationStudentPlacings.java,v 1.1.2.3 2005/11/16 11:52:22 palli Exp $
  * Created on Oct 19, 2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -12,6 +12,8 @@ package se.idega.idegaweb.commune.adulteducation.presentation;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
@@ -27,7 +29,11 @@ import com.idega.business.IBORuntimeException;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SelectDropdownDouble;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.business.UserSession;
 import com.idega.user.data.User;
@@ -48,6 +54,14 @@ public class AdminAdultEducationStudentPlacings extends AdultEducationBlock {
 	private final static String PARAM_EDIT_ID = "adultadmin.edit";
 
 	private final static String PARAM_SAVE_ID = "adultadmin.save";
+
+	private final static String PARAM_DATE_FROM = "adultadmin.date_from";
+
+	private final static String PARAM_DATE_TO = "adultadmin.date_to";
+
+	private final static String PARAM_COURSE_CODE = "adultadmin.course_code";
+
+	private final static String PARAM_GROUP = "adultadmin.group";
 
 	/*
 	 * (non-Javadoc)
@@ -98,7 +112,33 @@ public class AdminAdultEducationStudentPlacings extends AdultEducationBlock {
 	}
 
 	protected void save(IWContext iwc) {
-
+		String saveClassMemberId = iwc.getParameter(PARAM_SAVE_ID);
+		String groupId = iwc.getParameter(PARAM_GROUP);
+		String dateFromString = iwc.getParameter(PARAM_DATE_FROM);
+		String dateToString = iwc.getParameter(PARAM_DATE_TO);
+		try {
+			SchoolClassMember member = getBusiness().getSchoolBusiness().getSchoolClassMemberHome().findByPrimaryKey(
+					new Integer(saveClassMemberId));
+			member.setSchoolClassId(new Integer(groupId).intValue());
+			IWTimestamp dateFrom = new IWTimestamp(dateFromString);
+			member.setRegisterDate(dateFrom.getTimestamp());
+			if (dateToString == null || "".equals(dateToString)) {
+				member.setRemovedDate(null);
+			} 
+			else {
+				IWTimestamp dateTo = new IWTimestamp(dateToString);
+				member.setRemovedDate(dateTo.getTimestamp());
+			}
+			
+			member.store();
+			
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
 	}
 
 	protected void delete(IWContext iwc) {
@@ -117,10 +157,12 @@ public class AdminAdultEducationStudentPlacings extends AdultEducationBlock {
 	protected void edit(IWContext iwc) {
 		String placementId = iwc.getParameter(PARAM_EDIT_ID);
 
+		Form f = new Form();
 		Table table = new Table();
 		table.setCellpadding(0);
 		table.setCellspacing(0);
 		table.setWidth(getWidth());
+		f.add(table);
 
 		int row = 1;
 
@@ -133,7 +175,7 @@ public class AdminAdultEducationStudentPlacings extends AdultEducationBlock {
 				"Edit placement within adult education")), 1, row++);
 		table.setRowHeight(row++, "3");
 		try {
-			table.add(getEditTable(iwc, placementId), 1, row++);
+			table.add(getEditTable(placementId), 1, row++);
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
 		} catch (RemoteException e) {
@@ -146,28 +188,18 @@ public class AdminAdultEducationStudentPlacings extends AdultEducationBlock {
 			table.setCellpaddingLeft(1, row, 12);
 			table.setCellpaddingRight(1, row, 12);
 		}
-
-		add(table);
+		add(f);
 	}
 
-	protected Table getEditTable(IWContext iwc, String placementId) throws NumberFormatException, RemoteException, FinderException {
+	protected Table getEditTable(String placementId)
+			throws NumberFormatException, RemoteException, FinderException {
 		Table table = new Table();
 		table.setWidth(getWidth());
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
 		table.setColumns(3);
-		if (useStyleNames()) {
-			table.setRowStyleClass(1, getHeaderRowClass());
-		} else {
-			table.setRowColor(1, getHeaderColor());
-		}
 
 		int row = 1;
-
-		if (useStyleNames()) {
-			table.setCellpaddingLeft(1, row, 12);
-			table.setCellpaddingRight(table.getColumns(), row, 12);
-		}
 
 		SchoolClassMember member;
 		SchoolClass group;
@@ -193,50 +225,7 @@ public class AdminAdultEducationStudentPlacings extends AdultEducationBlock {
 				1, row);
 		table.add(getSmallText(group.getSchool().getName()), 2, row++);
 
-		// Course code
-		table.add(getLocalizedSmallHeader("adultadmin.code", "Course code"), 1,
-				row);
-		table.add(getSmallText(group.getCode()), 2, row++);
-
-		/*
-		 *         SelectDropdownDouble divInput = new SelectDropdownDouble(
-                LABEL_DIVISION, LABEL_GROUP);
-        divInput.addEmptyElement(iwrb.getLocalizedString(ELEMENT_ALL_DIVISIONS,
-                "All divisions"), iwrb.getLocalizedString(ELEMENT_ALL_GROUPS,
-                "All groups"));
-        ArrayList divisions = new ArrayList();
-        getClubDivisions(divisions, getClub());
-        if (!divisions.isEmpty()) {
-            Iterator it = divisions.iterator();
-            while (it.hasNext()) {
-                Group division = (Group) it.next();
-                ArrayList groups = new ArrayList();
-                getGroupsUnderDivision(groups, division);
-                Map map = new LinkedHashMap();
-                if (groups != null && !groups.isEmpty()) {
-                    map.put("-1", iwrb.getLocalizedString(ELEMENT_ALL_GROUPS,
-                            "All groups"));
-
-                    Iterator it2 = groups.iterator();
-                    while (it2.hasNext()) {
-                        Group group = (Group) it2.next();
-                        map.put(group.getPrimaryKey().toString(), group
-                                .getName());
-                    }
-                }
-                divInput.addMenuElement(division.getPrimaryKey().toString(),
-                        division.getName(), map);
-            }
-        }
-
-		 * 
-		 */
-		
-		
-		// Study path
-		table.add(
-				getLocalizedSmallHeader("adultadmin.study_path", "Study path"),
-				1, row);
+		// Get the study path
 		SchoolStudyPath path = null;
 		if (group.getCode() != null && !"".equals(group.getCode())) {
 			try {
@@ -248,6 +237,48 @@ public class AdminAdultEducationStudentPlacings extends AdultEducationBlock {
 				e.printStackTrace();
 			}
 		}
+
+		// Course code
+		table.add(getLocalizedSmallHeader("adultadmin.code_and_group",
+				"Course code / group"), 1, row);
+
+		SelectDropdownDouble codeInput = new SelectDropdownDouble(
+				PARAM_COURSE_CODE, PARAM_GROUP);
+		Collection classes = getBusiness().getSchoolBusiness()
+				.getSchoolClassHome().findBySchoolAndSeason(
+						group.getSchoolId(), group.getSchoolSeasonId());
+		if (!classes.isEmpty()) {
+			Iterator it = classes.iterator();
+			while (it.hasNext()) {
+				SchoolClass sClass = (SchoolClass) it.next();
+				if (sClass.getCode() != null && !"".equals(sClass.getCode())) {
+					try {
+						SchoolStudyPath sClassStudyPath = getBusiness()
+								.getCourse(season.getPrimaryKey(),
+										sClass.getCode()).getStudyPath();
+
+						if (path != null && sClassStudyPath != null
+								&& path.equals(sClassStudyPath)) {
+							Map map = new LinkedHashMap();
+							map.put(sClass.getPrimaryKey().toString(), sClass
+									.getName());
+							codeInput.addMenuElement(sClass.getPrimaryKey()
+									.toString(), sClass.getCode(), map);
+						}
+					} catch (RemoteException e) {
+						e.printStackTrace();
+					} catch (FinderException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		table.add(codeInput, 2, row++);
+
+		// Study path
+		table.add(
+				getLocalizedSmallHeader("adultadmin.study_path", "Study path"),
+				1, row);
 
 		if (path != null && path.getDescription() != null) {
 			StringBuffer pathText = new StringBuffer(path.getDescription());
@@ -262,22 +293,32 @@ public class AdminAdultEducationStudentPlacings extends AdultEducationBlock {
 		table.add(
 				getLocalizedSmallHeader("adultadmin.start_date", "Start date"),
 				1, row);
-		table.add(getSmallText(validFrom.getLocaleDate(iwc.getCurrentLocale(),
-				IWTimestamp.SHORT)), 2, row++);
+		/*
+		 * table.add(getSmallText(validFrom.getLocaleDate(iwc.getCurrentLocale(),
+		 * IWTimestamp.SHORT)), 2, row++);
+		 */
+		DateInput dateFrom = new DateInput(PARAM_DATE_FROM);
+		dateFrom.setDate(validFrom.getDate());
+		table.add(dateFrom, 2, row++);
 
 		// End date
 		table.add(getLocalizedSmallHeader("adultadmin.end_date", "End date"),
 				1, row);
+		/*
+		 * if (terminated != null) {
+		 * table.add(getSmallText(terminated.getLocaleDate(iwc
+		 * .getCurrentLocale(), IWTimestamp.SHORT)), 2, row++); } else {
+		 * table.add(getSmallText("-"), 2, row++); }
+		 */
+		DateInput dateTo = new DateInput(PARAM_DATE_TO);
 		if (terminated != null) {
-			table.add(getSmallText(terminated.getLocaleDate(iwc
-					.getCurrentLocale(), IWTimestamp.SHORT)), 2, row++);
-		} else {
-			table.add(getSmallText("-"), 2, row++);
+			dateTo.setDate(terminated.getDate());
 		}
+		table.add(dateTo, 2, row++);
 
 		// Grade
 		table.add(getLocalizedSmallHeader("adultadmin.grade", "Grade"), 1,
-				row++);
+				row);
 		if (grade != null && grade.getGrade() != null
 				&& grade.getGrade().getGrade() != null) {
 			table.add(getSmallText(grade.getGrade().getGrade()), 2, row++);
@@ -285,21 +326,23 @@ public class AdminAdultEducationStudentPlacings extends AdultEducationBlock {
 			table.add(getSmallText("-"), 2, row++);
 		}
 
-		SubmitButton save = new SubmitButton(getEditIcon(localize(
-				"adultadmin.save", "Save")));
+		SubmitButton save = new SubmitButton(localize(
+				"adultadmin.save", "Save"), PARAM_SAVE_ID, member.getPrimaryKey().toString());
 		save.setDescription(localize("adultadmin.save_tooltip",
 				"Click here to save placement"));
-		save.setValueOnClick(PARAM_SAVE_ID, member.getPrimaryKey().toString());
 		table.add(save, 3, row);
 
 		return table;
 	}
 
 	protected void showList(IWContext iwc, User user) {
+		Form f = new Form();
 		Table table = new Table();
 		table.setCellpadding(0);
 		table.setCellspacing(0);
 		table.setWidth(getWidth());
+
+		f.add(table);
 
 		int row = 1;
 
@@ -335,10 +378,14 @@ public class AdminAdultEducationStudentPlacings extends AdultEducationBlock {
 			table.setCellpaddingRight(1, row, 12);
 		}
 
-		add(table);
+		table.add(new HiddenInput(PARAM_EDIT_ID, ""));
+		table.add(new HiddenInput(PARAM_DELETE_ID, ""));
+
+		add(f);
 	}
 
-	protected Table getPlacingsTable(IWContext iwc, User user) throws RemoteException{
+	protected Table getPlacingsTable(IWContext iwc, User user)
+			throws RemoteException {
 		Table table = new Table();
 		table.setWidth(getWidth());
 		table.setCellpadding(getCellpadding());
