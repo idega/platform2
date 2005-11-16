@@ -13,8 +13,6 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
-import com.idega.presentation.text.DownloadLink;
-import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
@@ -67,7 +65,7 @@ public class ChildCareProviderDatesForChanges extends ChildCareBlock {
      * @return PresentationObjectContainer
      * @throws RemoteException 
      */
-    private PresentationObjectContainer getGui(IWContext iwc) throws RemoteException {
+    private PresentationObjectContainer getGui(IWContext iwc) {
         PresentationObjectContainer container = new PresentationObjectContainer();
         
         Form form = new Form();
@@ -201,7 +199,7 @@ public class ChildCareProviderDatesForChanges extends ChildCareBlock {
      * @return
      * @throws RemoteException
      */
-	private Link getXLSLink() throws RemoteException {
+/*	private Link getXLSLink() {
 		DownloadLink link = new DownloadLink(getBundle().getImage("shared/xls.gif"));
 		link.setMediaWriterClass(ChildCareDatesForChangesWriter.class);
 		link.addParameter(PARAMETER_PROVIDER_ID, this.getProviderId());
@@ -215,7 +213,7 @@ public class ChildCareProviderDatesForChanges extends ChildCareBlock {
 			link.addParameter(PARAMETER_END_TO, String.valueOf(getEndToTimestamp().getDate()));		
 
 		return link;
-	}    
+	} */    
     
 
 	public IWTimestamp getEndFromTimestamp() {
