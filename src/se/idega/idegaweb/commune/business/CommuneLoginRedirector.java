@@ -1,5 +1,5 @@
 /*
- * $Id: CommuneLoginRedirector.java,v 1.2 2005/11/04 14:19:37 eiki Exp $
+ * $Id: CommuneLoginRedirector.java,v 1.2.2.1 2005/11/16 01:06:40 palli Exp $
  * Created on Nov 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -28,7 +28,7 @@ public class CommuneLoginRedirector implements AuthenticationListener, ServletCo
 	
 	public static final String PARAMETER_REDIRECT_TO_COMMUNE_WEB = "redirectToCommuneWeb";
 
-	public CommuneLoginRedirector(){};
+	public CommuneLoginRedirector(){}
 	
 	/**
 	 * 
