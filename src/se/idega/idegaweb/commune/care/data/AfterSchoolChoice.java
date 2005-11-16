@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolChoice.java,v 1.2 2005/08/09 16:34:50 laddi Exp $
+ * $Id: AfterSchoolChoice.java,v 1.2.2.1 2005/11/16 23:23:27 sigtryggur Exp $
  * Created on Aug 9, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -13,10 +13,10 @@ import com.idega.data.IDOEntity;
 
 
 /**
- * Last modified: $Date: 2005/08/09 16:34:50 $ by $Author: laddi $
+ * Last modified: $Date: 2005/11/16 23:23:27 $ by $Author: sigtryggur $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.2.2.1 $
  */
 public interface AfterSchoolChoice extends IDOEntity, ChildCareApplication {
 
@@ -66,6 +66,11 @@ public interface AfterSchoolChoice extends IDOEntity, ChildCareApplication {
 	public int getCardValidYear();
 
 	/**
+	 * @see se.idega.idegaweb.commune.care.data.AfterSchoolChoiceBMPBean#getFClass
+	 */
+	public boolean getFClass();
+
+	/**
 	 * @see se.idega.idegaweb.commune.care.data.AfterSchoolChoiceBMPBean#setSchoolSeasonId
 	 */
 	public void setSchoolSeasonId(int schoolSeasonID);
@@ -99,4 +104,8 @@ public interface AfterSchoolChoice extends IDOEntity, ChildCareApplication {
 	 * @see se.idega.idegaweb.commune.care.data.AfterSchoolChoiceBMPBean#setCardValidYear
 	 */
 	public void setCardValidYear(int year);
+	/**
+	 * @see se.idega.idegaweb.commune.care.data.AfterSchoolChoiceBMPBean#setFClass
+	 */
+	public void setFClass(boolean fClass);
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolChoiceBMPBean.java,v 1.3 2005/08/09 16:34:50 laddi Exp $
+ * $Id: AfterSchoolChoiceBMPBean.java,v 1.3.2.1 2005/11/16 23:23:27 sigtryggur Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -92,6 +92,11 @@ public class AfterSchoolChoiceBMPBean extends ChildCareApplicationBMPBean implem
 		return getIntColumnValue(COLUMN_CARD_VALID_YEAR);
 	}
 
+	public boolean getFClass() {
+	    //	Not implemented. Just a temp fix so the build will continue
+	    return false;
+	}
+
 	public void setSchoolSeasonId(int schoolSeasonID) {
 		setColumn(SCHOOL_SEASON, schoolSeasonID);
 	}
@@ -118,6 +123,10 @@ public class AfterSchoolChoiceBMPBean extends ChildCareApplicationBMPBean implem
 	
 	public void setCardValidYear(int year) {
 		setColumn(COLUMN_CARD_VALID_YEAR, year);
+	}
+
+	public void setFClass(boolean fClass) {
+		//Not implemented. Just a temp fix so the build will continue 
 	}
 
 	public Collection ejbFindByChildAndSeason(Integer childID, Integer seasonID) throws javax.ejb.FinderException {
