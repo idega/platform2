@@ -1,7 +1,6 @@
 package se.idega.idegaweb.commune.childcare.business;
 
 import is.idega.block.family.business.FamilyLogic;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -21,12 +20,9 @@ import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.presentation.ChildCareAdmin;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
-
-import se.idega.idegaweb.commune.care.business.CareConstants;
-import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.business.SchoolBusinessBean;
-
 import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolClassMember;
 import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
@@ -249,20 +245,30 @@ public class ChildCareSiblingListWriter extends DownloadWriter implements MediaW
                     ChildCareBusiness ccbb = getChildCareBusiness(iwc);                 	
                 	if (childId.equals(siblingId)) {
                 		continue;
-                	} else {                              
+                	} else {                                         		
                 		if(ccbb.getActivePlacement(siblingId.intValue())!=null) {
                 			if(siblingcounter>=1) {                			                			
                     			row = sheet.createRow((short) cellRow++);
                     		}
                     		Name childname = new Name(sibling.getFirstName(), sibling
-                                    .getMiddleName(), sibling.getLastName());            			
-                    		row.createCell((short) 0).setCellValue(name.getName(locale, true));
-                            row.createCell((short) 1).setCellValue(PersonalIDFormatter.format(child.getPersonalID(),locale));
-                            row.createCell((short) 2).setCellValue(childname.getName(locale, true));
-                         	row.createCell((short) 3).setCellValue(PersonalIDFormatter.format(sibling.getPersonalID(),locale));                         	
-                         	ChildCareApplication app = ccbb.getActivePlacement(siblingId.intValue());
+                                    .getMiddleName(), sibling.getLastName());
+                    		if(name.getName(locale, true)!=null) {
+                    			row.createCell((short) 0).setCellValue(name.getName(locale, true));
+                    		}
+                    		if(child.getPersonalID()!=null) {
+                    			row.createCell((short) 1).setCellValue(PersonalIDFormatter.format(child.getPersonalID(),locale));
+                    		}
+                    		if(childname.getName(locale, true)!=null) {
+                    			row.createCell((short) 2).setCellValue(childname.getName(locale, true));
+                    		}
+                    		if(sibling.getPersonalID()!=null) {
+                    			row.createCell((short) 3).setCellValue(PersonalIDFormatter.format(sibling.getPersonalID(),locale));                         	
+                    		}
+                    		ChildCareApplication app = ccbb.getActivePlacement(siblingId.intValue());
                          	School prov = ccbb.getCurrentProviderByPlacement(siblingId.intValue());
-                         	row.createCell((short) 4).setCellValue(prov.getName());
+                         	if(prov.getName()!=null) {
+                         		row.createCell((short) 4).setCellValue(prov.getName());
+                         	}
                          	IWCalendar splacementDate = new IWCalendar(iwc.getCurrentLocale(), app.getFromDate());                     	
                          	if (splacementDate != null) {
                                 row.createCell((short) 5).setCellValue(
@@ -270,7 +276,7 @@ public class ChildCareSiblingListWriter extends DownloadWriter implements MediaW
                             }                         	
                          	Integer providerId = (Integer)prov.getPrimaryKey();
                          	SchoolBusinessBean schoolBean = new SchoolBusinessBean();
-                         	SchoolClassMember schoolClassMember = schoolBean.getSchoolClassMemberHome().findLatestByUserAndSchool(siblingId.intValue(), providerId.intValue());
+                         	SchoolClassMember schoolClassMember = schoolBean.getSchoolClassMemberHome().findLatestByUserAndSchool(siblingId.intValue(), providerId.intValue());                         
                          	if(schoolClassMember.getRemovedDate()!=null) { 
 	                         	IWCalendar splacementEndDate = new IWCalendar(iwc.getCurrentLocale(), schoolClassMember.getRemovedDate());                     	
 	                         	if (splacementEndDate != null) {
