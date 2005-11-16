@@ -1,5 +1,5 @@
 /*
- * $Id: MemberUserBusiness.java,v 1.12 2005/07/14 01:02:26 eiki Exp $
+ * $Id: MemberUserBusiness.java,v 1.12.4.1 2005/11/16 22:51:56 sigtryggur Exp $
  * Created on Jan 4, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -23,10 +23,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2005/07/14 01:02:26 $ by $Author: eiki $
+ *  Last modified: $Date: 2005/11/16 22:51:56 $ by $Author: sigtryggur $
  * 
  * @author <a href="mailto:palli@idega.com">palli</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.12.4.1 $
  */
 public interface MemberUserBusiness extends IBOService, UserBusiness {
 
@@ -93,6 +93,11 @@ public interface MemberUserBusiness extends IBOService, UserBusiness {
 	 */
 	public List getGroupListForUserFromTopNodesAndGroupType(User user, String groupType, IWUserContext iwuc)
 			throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberUserBusinessBean#getAllRegionalUnionGroups
+	 */
+	public Collection getAllGroupsByGroupType(String groupType) throws RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.business.MemberUserBusinessBean#getAllRegionalUnionGroups

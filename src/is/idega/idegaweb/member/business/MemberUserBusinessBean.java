@@ -407,6 +407,19 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 
 	
 	/** 
+	 * @return All groups with a certain type
+	 * @throws RemoteException
+	 */
+	public Collection getAllGroupsByGroupType(String groupType) throws RemoteException{
+		try {
+			return this.getGroupBusiness().getGroupHome().findGroupsByType(groupType);
+		}
+		catch (FinderException e) {
+			return ListUtil.getEmptyList();
+		}
+	}
+
+	/** 
 	 * @return All groups with the type iwme_regional_union
 	 * @throws RemoteException
 	 */
