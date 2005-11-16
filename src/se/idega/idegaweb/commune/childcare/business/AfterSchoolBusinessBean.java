@@ -24,6 +24,8 @@ import se.idega.idegaweb.commune.childcare.data.AfterSchoolCareDays;
 import se.idega.idegaweb.commune.childcare.data.AfterSchoolCareDaysHome;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessageHome;
+import se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness;
+
 import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseStatus;
 import com.idega.block.school.data.School;
@@ -157,6 +159,14 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 	public AfterSchoolChoice createAfterSchoolChoice(IWTimestamp stamp, User user, Integer childID, Integer providerID,
 			Integer choiceNumber, String message, CaseStatus caseStatus, Case parentCase, Date placementDate,
 			SchoolSeason season, String subject, String body) throws CreateException, RemoteException {
+		return  createAfterSchoolChoice(stamp, user, childID, providerID,
+				choiceNumber, message, caseStatus, parentCase, placementDate,
+				season, subject, body, false);
+	}
+		
+	public AfterSchoolChoice createAfterSchoolChoice(IWTimestamp stamp, User user, Integer childID, Integer providerID,
+			Integer choiceNumber, String message, CaseStatus caseStatus, Case parentCase, Date placementDate,
+			SchoolSeason season, String subject, String body, boolean isFClassAndPrio) throws CreateException, RemoteException {
 		if (season == null) {
 			try {
 				season = getCareBusiness().getCurrentSeason();
@@ -202,6 +212,19 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 		}
 		if (parentCase != null)
 			choice.setParentCase(parentCase);
+		
+		if(isFClassAndPrio){
+			choice.setFClass(true);			
+			
+			School provider = getSchoolBusiness().getSchool(providerID);
+			User applyingChild = getUserBusiness().getUser(childID);
+			SchoolChoiceBusiness scb = getSchoolChoiceBusiness();
+			
+			if(scb.hasPriority(provider, choice.getOwner(), applyingChild))	{		
+				choice.setHasQueuePriority(true);
+			}
+		}
+		
 		try {
 			choice.store();
 		}
@@ -214,6 +237,10 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 
 	public List createAfterSchoolChoices(User user, Integer childId, Integer[] providerIDs, String message,
 			String[] placementDates, SchoolSeason season, String subject, String body) throws IDOCreateException {
+		return createAfterSchoolChoices(user, childId, providerIDs, message, placementDates, season, subject, body, false);
+	}	
+	public List createAfterSchoolChoices(User user, Integer childId, Integer[] providerIDs, String message,
+			String[] placementDates, SchoolSeason season, String subject, String body, boolean isFClassAndPrio) throws IDOCreateException {
 		int caseCount = 3;
 		IWTimestamp stamp;
 		List returnList = new Vector(3);
@@ -242,7 +269,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 						}
 					}
 					choice = createAfterSchoolChoice(timeNow, user, childId, providerIDs[i], new Integer(i + 1), message, status,
-							choice, stamp.getDate(), season, subject, body);
+							choice, stamp.getDate(), season, subject, body, isFClassAndPrio);
 					returnList.add(choice);
 				}
 			}
@@ -477,4 +504,13 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 			return false;
 		}
 	}
+	
+	public SchoolChoiceBusiness getSchoolChoiceBusiness() {
+		try {
+			return (SchoolChoiceBusiness) this.getServiceInstance(SchoolChoiceBusiness.class);
+		}
+		catch (RemoteException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
+	}	
 }
