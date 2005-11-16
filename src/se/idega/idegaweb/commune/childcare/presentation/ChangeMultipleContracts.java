@@ -1,5 +1,5 @@
 /*
- * $Id: ChangeMultipleContracts.java,v 1.2 2005/06/14 13:13:57 laddi Exp $
+ * $Id: ChangeMultipleContracts.java,v 1.2.2.1 2005/11/16 01:17:36 palli Exp $
  * Created on Jun 13, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -31,10 +31,10 @@ import com.idega.util.text.Name;
 
 
 /**
- * Last modified: $Date: 2005/06/14 13:13:57 $ by $Author: laddi $
+ * Last modified: $Date: 2005/11/16 01:17:36 $ by $Author: palli $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.2.2.1 $
  */
 public class ChangeMultipleContracts extends ChildCareBlock {
 	
@@ -64,7 +64,7 @@ public class ChangeMultipleContracts extends ChildCareBlock {
 			fromCareTime = getCareTimeMenu(PARAMETER_FROM_CARE_TIME);
 		}
 		else {
-			fromCareTime = (TextInput) getStyledInterface(new TextInput(PARAMETER_FROM_CARE_TIME));
+			fromCareTime = getStyledInterface(new TextInput(PARAMETER_FROM_CARE_TIME));
 			((TextInput) fromCareTime).setAsNotEmpty(localize("child_care.child_care_time_required", "You must fill in the child care time."));
 			((TextInput) fromCareTime).setAsIntegers(localize("child_care.only_integers_allowed", "Not a valid child care time."));
 		}
@@ -78,7 +78,7 @@ public class ChangeMultipleContracts extends ChildCareBlock {
 			toCareTime = getCareTimeMenu(PARAMETER_TO_CARE_TIME);
 		}
 		else {
-			toCareTime = (TextInput) getStyledInterface(new TextInput(PARAMETER_TO_CARE_TIME));
+			toCareTime = getStyledInterface(new TextInput(PARAMETER_TO_CARE_TIME));
 			((TextInput) toCareTime).setAsNotEmpty(localize("child_care.child_care_time_required", "You must fill in the child care time."));
 			((TextInput) toCareTime).setAsIntegers(localize("child_care.only_integers_allowed", "Not a valid child care time."));
 		}
