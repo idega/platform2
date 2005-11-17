@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.86 2005/10/13 18:36:11 laddi Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.86.2.1 2005/11/17 15:11:03 anna Exp $
  * Copyright (C) 2002 Idega hf. All Rights Reserved. This software is the
  * proprietary information of Idega hf. Use is subject to license terms.
  */
@@ -72,11 +72,11 @@ import com.idega.util.LocaleUtil;
 import com.idega.util.text.Name;
 
 /**
- * Last modified: $Date: 2005/10/13 18:36:11 $ by $Author: laddi $
+ * Last modified: $Date: 2005/11/17 15:11:03 $ by $Author: anna $
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg </a>
- * @version $Revision: 1.86 $
+ * @version $Revision: 1.86.2.1 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
 
@@ -577,7 +577,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 					 IDOAddRelationshipException {
 		final String childSsn = child.getSsn();
 		if (childSsn != null && childSsn.trim().length() > 0) {
-			final Gender childGender = pidChecker.isFemale(ssn)
+			final Gender childGender = pidChecker.isFemale(childSsn)
 					? genderHome.getFemaleGender() : genderHome.getMaleGender();
 			final Date childBirth = pidChecker.getDateFromPersonalID(childSsn);
 			final IWTimestamp childTimestamp = childBirth != null
@@ -615,9 +615,9 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 					= home.findByApplicationId(applicationID);
 			final String cohabitantSsn = cohabitant.getSsn();
 			if (cohabitantSsn != null && cohabitantSsn.trim().length() > 0) {
-				final Gender cohabitantGender = pidChecker.isFemale(ssn)
+				final Gender cohabitantGender = pidChecker.isFemale(cohabitantSsn)
 						? genderHome.getFemaleGender() : genderHome.getMaleGender();
-				final Date cohabitantBirth = pidChecker.getDateFromPersonalID(ssn);
+				final Date cohabitantBirth = pidChecker.getDateFromPersonalID(cohabitantSsn);
 				final IWTimestamp cohabitantTimestamp = cohabitantBirth != null
 						? new IWTimestamp(cohabitantBirth.getTime()) : null;
 				final User cohabitantUser = notNackaResident
