@@ -80,6 +80,8 @@ public class LedgerWindow extends StyledIWAdminWindow{
 	public static final String PRINT_LEDGER = "led_pr";
 	public static final String PRINT_WITH_DATA = "0";
 	public static final String PRINT_EMPTY = "1";
+
+	protected static final String PHONE_TYPE_PATH = PhoneType.class.getName() + ".IC_PHONE_TYPE_ID|TYPE_DISPLAY_NAME";
 	
 	//parameter names
 	public static String creatorFieldParameterName = "creator";
@@ -667,12 +669,42 @@ public class LedgerWindow extends StyledIWAdminWindow{
 				int i;
 				Table table = new Table();
 				for (i = 0; i < phone.length; i++) {
-					if(phone[i].getPhoneTypeId() == 3) {
-						table.add(browser.getDefaultConverter().getPresentationObject((GenericEntity) phone[i], path, browser, iwc));
+					if(phone[i].getPhoneTypeId() == PhoneType.MOBILE_PHONE_ID) {
+					    table.add(getPresentationObjectForPhone(phone[i], path, browser, iwc));
+					    //table.add(browser.getDefaultConverter().getPresentationObject((GenericEntity) phone[i], path, browser, iwc));
 					}
 				}
 				return table;
 			}
+
+			private PresentationObject getPresentationObjectForPhone(Object genericEntity, EntityPath path, EntityBrowser browser, IWContext iwc)  {
+                StringBuffer displayValues = new StringBuffer();
+                List list = path.getValues((EntityRepresentation) genericEntity);
+                Iterator valueIterator = list.iterator();
+                EntityPath currentPath = path;
+                while (valueIterator.hasNext()) {
+					Object object = valueIterator.next();
+                	// if there is no entry the object is null
+                	if (object == null) {
+                		object = "";
+                	}
+                	else {
+                    	// get localized string for phone type
+                    	String shortKey = currentPath.getShortKeySection();
+                    	currentPath = path.getNextEntityPath();
+                    	String phoneType = object.toString();
+                    	if (PHONE_TYPE_PATH.equals(shortKey)) {
+                    		object = getBundle(iwc).getResourceBundle(iwc).getLocalizedString(phoneType, phoneType);
+                    	}
+                	}
+                	displayValues.append(object.toString());
+                	// append white space
+                	displayValues.append(' ');  
+                }
+                Text text = new Text();
+                text.setText(displayValues.toString());               
+                return text;
+              }
 		};
 		/*EntityToPresentationObjectConverter converterParent = new EntityToPresentationObjectConverter() {
 		 public PresentationObject getHeaderPresentationObject(EntityPath entityPath, EntityBrowser browser, IWContext iwc) {
