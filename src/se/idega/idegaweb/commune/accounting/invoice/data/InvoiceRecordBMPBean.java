@@ -451,6 +451,14 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 		sql.append(" rec.").append(COLUMN_SCHOOL_TYPE_ID).appendInCollection(schoolTypes);
 		return idoGetNumberOfRecords(sql);
 	}
+
+	public int ejbHomeGetNumberOfInvoicesForStudent(SchoolClassMember student) throws IDOException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectCountFrom(this);
+		sql.appendWhereEquals(COLUMN_SCHOOL_CLASS_MEMBER_ID, student);
+
+		return idoGetNumberOfRecords(sql);
+	}
 	
 	public double ejbHomeGetTotalAmountForSchoolTypesAndMonth(Collection schoolTypes, CalendarMonth month) throws IDOException {
 		// get the first and the last date of the month

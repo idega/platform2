@@ -57,7 +57,24 @@ public class BatchRunSemaphore {
 		highRunFlag = false;
 	}
 	
+
+	private static boolean adultRunFlag = false;
+	public static synchronized boolean getAdultRunSemaphore(){
+		if(adultRunFlag){
+			System.out.println("Adult education semaphore refused");
+			return false;
+		}else{
+			adultRunFlag = true;
+			System.out.println("Adult education semaphore gotten");
+			return true;
+		}
+	}
 	
+	public static void releaseAdultRunSemaphore(){
+		System.out.println("Adult education semaphore released");
+		adultRunFlag = false;
+	}
+
 	/**
 	 * @return Returns the childcareRunFlag.
 	 */
@@ -79,4 +96,10 @@ public class BatchRunSemaphore {
 		return highRunFlag;
 	}
 
+	/**
+	 * @return Returns the highRunFlag.
+	 */
+	public static boolean isAdultRunFlag() {
+		return adultRunFlag;
+	}	
 }

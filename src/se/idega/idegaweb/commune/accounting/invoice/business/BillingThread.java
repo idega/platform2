@@ -84,8 +84,8 @@ public abstract class BillingThread extends Thread{
 	protected BatchRun batchRunLogger=null;
 	protected ErrorLogger errorRelated = null;
 	protected boolean running;
-	private boolean testRun;
-	private School school;
+	protected boolean testRun;
+	protected School school;
 	private static String IW_BUNDLE_IDENTIFIER="se.idega.idegaweb.commune.accounting";
 	
 	public BillingThread(Date dateInMonth, IWApplicationContext iwc, School school, boolean testRun){
@@ -237,7 +237,7 @@ public abstract class BillingThread extends Thread{
 				//float vatPercent = postingDetail.getVATPercent();
 				//float vatPercentage = vatPercent/100;
 				//float newTotalAmount = AccountingUtil.roundAmount(amount*months);
-				float newTotalVATAmount = AccountingUtil.roundAmount(postingDetail.getVATAmount()*months);				
+				float newTotalVATAmount = newTotalVATAmount = AccountingUtil.roundAmount(postingDetail.getVATAmount()*months);
 				
 				try {
 					//regSpecType = this.getRegulationSpecTypeHome().findByRegulationSpecType(ruleSpecType);

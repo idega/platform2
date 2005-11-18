@@ -1,11 +1,5 @@
-/*
- * $Id: SchoolClassMemberHomeImpl.java,v 1.75 2005/10/27 11:03:12 palli Exp $
- * Created on Oct 26, 2005
- *
- * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
+/**
+ * 
  */
 package com.idega.block.school.data;
 
@@ -20,17 +14,14 @@ import com.idega.data.IDOFactory;
 import com.idega.data.IDOLookupException;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
-
+import com.idega.util.IWTimestamp;
 
 /**
- * 
- *  Last modified: $Date: 2005/10/27 11:03:12 $ by $Author: palli $
- * 
- * @author <a href="mailto:bluebottle@idega.com">bluebottle</a>
- * @version $Revision: 1.75 $
+ * @author bluebottle
+ *
  */
-public class SchoolClassMemberHomeImpl extends IDOFactory implements SchoolClassMemberHome {
-
+public class SchoolClassMemberHomeImpl extends IDOFactory implements
+		SchoolClassMemberHome {
 	protected Class getEntityInterfaceClass() {
 		return SchoolClassMember.class;
 	}
@@ -39,585 +30,719 @@ public class SchoolClassMemberHomeImpl extends IDOFactory implements SchoolClass
 		return (SchoolClassMember) super.createIDO();
 	}
 
-	public SchoolClassMember findByPrimaryKey(Object pk) throws javax.ejb.FinderException {
+	public SchoolClassMember findByPrimaryKey(Object pk)
+			throws javax.ejb.FinderException {
 		return (SchoolClassMember) super.findByPrimaryKeyIDO(pk);
 	}
 
-	public Collection findAllOrderedByRegisterDate(User user) throws FinderException {
+	public Collection findAllOrderedByRegisterDate(User user)
+			throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindAllOrderedByRegisterDate(user);
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindAllOrderedByRegisterDate(user);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findAllOrderedByRegisterDate(int userID) throws FinderException {
+	public Collection findAllOrderedByRegisterDate(int userID)
+			throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindAllOrderedByRegisterDate(userID);
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindAllOrderedByRegisterDate(userID);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findBySchoolClass(SchoolClass schoolClass) throws FinderException {
+	public Collection findBySchoolClass(SchoolClass schoolClass)
+			throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindBySchoolClass(schoolClass);
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindBySchoolClass(schoolClass);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findBySchoolClass(int schoolClassID) throws FinderException {
+	public Collection findBySchoolClass(int schoolClassID)
+			throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindBySchoolClass(schoolClassID);
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindBySchoolClass(schoolClassID);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findAllBySchoolClass(SchoolClass schoolClass) throws FinderException {
+	public Collection findAllBySchoolClass(SchoolClass schoolClass)
+			throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindAllBySchoolClass(schoolClass);
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindAllBySchoolClass(schoolClass);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findBySchoolClasses(Collection schoolClasses) throws FinderException {
+	public Collection findBySchoolClasses(Collection schoolClasses)
+			throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindBySchoolClasses(schoolClasses);
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindBySchoolClasses(schoolClasses);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findBySchoolClassAndYear(int schoolClassID, int schoolYearID) throws FinderException {
+	public Collection findBySchoolClassAndYear(int schoolClassID,
+			int schoolYearID) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindBySchoolClassAndYear(schoolClassID,
-				schoolYearID);
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindBySchoolClassAndYear(schoolClassID, schoolYearID);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findBySchoolClassAndYearAndStudyPath(SchoolClass group, SchoolYear schoolYear,
-			SchoolStudyPath studyPath) throws FinderException {
+	public Collection findBySchoolClassAndYearAndStudyPath(SchoolClass group,
+			SchoolYear schoolYear, SchoolStudyPath studyPath)
+			throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindBySchoolClassAndYearAndStudyPath(group,
-				schoolYear, studyPath);
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindBySchoolClassAndYearAndStudyPath(group, schoolYear,
+						studyPath);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findBySchoolAndSeasonAndYearAndStudyPath(School school, SchoolSeason season, SchoolYear year,
-			SchoolStudyPath studyPath) throws FinderException {
+	public Collection findBySchoolAndSeasonAndYearAndStudyPath(School school,
+			SchoolSeason season, SchoolYear year, SchoolStudyPath studyPath)
+			throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindBySchoolAndSeasonAndYearAndStudyPath(
-				school, season, year, studyPath);
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindBySchoolAndSeasonAndYearAndStudyPath(school, season,
+						year, studyPath);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
 	public Collection findByStudent(User student) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindByStudent(student);
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindByStudent(student);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
 	public Collection findByStudent(int studentID) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindByStudent(studentID);
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindByStudent(studentID);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findByStudentAndTypes(int studentID, Collection schoolTypes) throws FinderException {
+	public Collection findByStudentAndTypes(int studentID,
+			Collection schoolTypes) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindByStudentAndTypes(studentID, schoolTypes);
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindByStudentAndTypes(studentID, schoolTypes);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public java.util.Collection findAllBySchoolAndUsersWithSchoolYearAndNotRemoved(int schoolId,
-			java.util.Collection users) throws javax.ejb.FinderException {
+	public java.util.Collection findAllBySchoolAndUsersWithSchoolYearAndNotRemoved(
+			int schoolId, java.util.Collection users)
+			throws javax.ejb.FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindAllBySchoolAndUsersWithSchoolYearAndNotRemoved(
-				schoolId, users);
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindAllBySchoolAndUsersWithSchoolYearAndNotRemoved(
+						schoolId, users);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findByStudentAndSchoolAndTypes(int studentID, int schoolID, Collection schoolTypes)
+	public Collection findByStudentAndSchoolAndTypes(int studentID,
+			int schoolID, Collection schoolTypes) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindByStudentAndSchoolAndTypes(studentID, schoolID,
+						schoolTypes);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public SchoolClassMember findByUserAndSchoolClass(User user,
+			SchoolClass schoolClass) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindByUserAndSchoolClass(user, schoolClass);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
+
+	public SchoolClassMember findByUserAndSchoolClass(int userID,
+			int schoolClassID) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindByUserAndSchoolClass(userID, schoolClassID);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
+
+	public SchoolClassMember findByUserAndSeason(User user, SchoolSeason season)
 			throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindByStudentAndSchoolAndTypes(studentID,
-				schoolID, schoolTypes);
-		this.idoCheckInPooledEntity(entity);
-		return this.getEntityCollectionForPrimaryKeys(ids);
-	}
-
-	public SchoolClassMember findByUserAndSchoolClass(User user, SchoolClass schoolClass) throws FinderException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		Object pk = ((SchoolClassMemberBMPBean) entity).ejbFindByUserAndSchoolClass(user, schoolClass);
+		Object pk = ((SchoolClassMemberBMPBean) entity).ejbFindByUserAndSeason(
+				user, season);
 		this.idoCheckInPooledEntity(entity);
 		return this.findByPrimaryKey(pk);
 	}
 
-	public SchoolClassMember findByUserAndSchoolClass(int userID, int schoolClassID) throws FinderException {
+	public SchoolClassMember findByUserAndSeason(int userID, int seasonID)
+			throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		Object pk = ((SchoolClassMemberBMPBean) entity).ejbFindByUserAndSchoolClass(userID, schoolClassID);
+		Object pk = ((SchoolClassMemberBMPBean) entity).ejbFindByUserAndSeason(
+				userID, seasonID);
 		this.idoCheckInPooledEntity(entity);
 		return this.findByPrimaryKey(pk);
 	}
 
-	public SchoolClassMember findByUserAndSeason(User user, SchoolSeason season) throws FinderException {
+	public SchoolClassMember findByUserAndSchool(int userID, int schoolID)
+			throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		Object pk = ((SchoolClassMemberBMPBean) entity).ejbFindByUserAndSeason(user, season);
+		Object pk = ((SchoolClassMemberBMPBean) entity).ejbFindByUserAndSchool(
+				userID, schoolID);
 		this.idoCheckInPooledEntity(entity);
 		return this.findByPrimaryKey(pk);
 	}
 
-	public SchoolClassMember findByUserAndSeason(int userID, int seasonID) throws FinderException {
+	public int getNumberOfPlacingsAtSchool(int userID, int schoolID)
+			throws IDOException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		Object pk = ((SchoolClassMemberBMPBean) entity).ejbFindByUserAndSeason(userID, seasonID);
-		this.idoCheckInPooledEntity(entity);
-		return this.findByPrimaryKey(pk);
-	}
-
-	public SchoolClassMember findByUserAndSchool(int userID, int schoolID) throws FinderException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		Object pk = ((SchoolClassMemberBMPBean) entity).ejbFindByUserAndSchool(userID, schoolID);
-		this.idoCheckInPooledEntity(entity);
-		return this.findByPrimaryKey(pk);
-	}
-
-	public int getNumberOfPlacingsAtSchool(int userID, int schoolID) throws IDOException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		int theReturn = ((SchoolClassMemberBMPBean) entity).ejbHomeGetNumberOfPlacingsAtSchool(userID, schoolID);
+		int theReturn = ((SchoolClassMemberBMPBean) entity)
+				.ejbHomeGetNumberOfPlacingsAtSchool(userID, schoolID);
 		this.idoCheckInPooledEntity(entity);
 		return theReturn;
 	}
 
 	public int getNumberOfPlacings(int userID) throws IDOException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		int theReturn = ((SchoolClassMemberBMPBean) entity).ejbHomeGetNumberOfPlacings(userID);
+		int theReturn = ((SchoolClassMemberBMPBean) entity)
+				.ejbHomeGetNumberOfPlacings(userID);
 		this.idoCheckInPooledEntity(entity);
 		return theReturn;
 	}
 
-	public int getNumberOfPlacings(int userID, int schoolClassID) throws IDOException {
+	public int getNumberOfPlacings(int userID, int schoolClassID)
+			throws IDOException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		int theReturn = ((SchoolClassMemberBMPBean) entity).ejbHomeGetNumberOfPlacings(userID, schoolClassID);
+		int theReturn = ((SchoolClassMemberBMPBean) entity)
+				.ejbHomeGetNumberOfPlacings(userID, schoolClassID);
 		this.idoCheckInPooledEntity(entity);
 		return theReturn;
 	}
 
-	public int getNumberOfPlacingsBySchoolCategory(User child, SchoolCategory schoolCategory) throws IDOException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		int theReturn = ((SchoolClassMemberBMPBean) entity).ejbHomeGetNumberOfPlacingsBySchoolCategory(child,
-				schoolCategory);
-		this.idoCheckInPooledEntity(entity);
-		return theReturn;
-	}
-
-	public int getNumberOfPlacingsBySeasonAndSchoolCategory(User child, SchoolSeason season,
+	public int getNumberOfPlacingsBySchoolCategory(User child,
 			SchoolCategory schoolCategory) throws IDOException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		int theReturn = ((SchoolClassMemberBMPBean) entity).ejbHomeGetNumberOfPlacingsBySeasonAndSchoolCategory(child,
-				season, schoolCategory);
+		int theReturn = ((SchoolClassMemberBMPBean) entity)
+				.ejbHomeGetNumberOfPlacingsBySchoolCategory(child,
+						schoolCategory);
 		this.idoCheckInPooledEntity(entity);
 		return theReturn;
 	}
 
-	public int getNumberOfSubGroupPlacings(int userID, int schoolClassID) throws IDOException {
+	public int getNumberOfPlacingsBySeasonAndSchoolCategory(User child,
+			SchoolSeason season, SchoolCategory schoolCategory)
+			throws IDOException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		int theReturn = ((SchoolClassMemberBMPBean) entity).ejbHomeGetNumberOfSubGroupPlacings(userID, schoolClassID);
+		int theReturn = ((SchoolClassMemberBMPBean) entity)
+				.ejbHomeGetNumberOfPlacingsBySeasonAndSchoolCategory(child,
+						season, schoolCategory);
 		this.idoCheckInPooledEntity(entity);
 		return theReturn;
 	}
 
-	public int getNumberOfPlacingsByClass(SchoolClass schoolClass) throws IDOException {
+	public int getNumberOfSubGroupPlacings(int userID, int schoolClassID)
+			throws IDOException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		int theReturn = ((SchoolClassMemberBMPBean) entity).ejbHomeGetNumberOfPlacingsByClass(schoolClass);
+		int theReturn = ((SchoolClassMemberBMPBean) entity)
+				.ejbHomeGetNumberOfSubGroupPlacings(userID, schoolClassID);
 		this.idoCheckInPooledEntity(entity);
 		return theReturn;
 	}
 
-	public Collection findAllSubGroupPlacements(int userID, int schoolID, int seasonID) throws FinderException {
+	public int getNumberOfPlacingsByClass(SchoolClass schoolClass)
+			throws IDOException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindAllSubGroupPlacements(userID, schoolID,
-				seasonID);
+		int theReturn = ((SchoolClassMemberBMPBean) entity)
+				.ejbHomeGetNumberOfPlacingsByClass(schoolClass);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
+
+	public Collection findAllSubGroupPlacements(int userID, int schoolID,
+			int seasonID) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindAllSubGroupPlacements(userID, schoolID, seasonID);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public SchoolClassMember findLatestByUserAndSchool(int userID, int schoolID) throws FinderException {
+	public SchoolClassMember findLatestByUserAndSchool(int userID, int schoolID)
+			throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		Object pk = ((SchoolClassMemberBMPBean) entity).ejbFindLatestByUserAndSchool(userID, schoolID);
+		Object pk = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindLatestByUserAndSchool(userID, schoolID);
 		this.idoCheckInPooledEntity(entity);
 		return this.findByPrimaryKey(pk);
 	}
 
-	public SchoolClassMember findLatestByUserAndSchool(int userID, int schoolID, Collection schoolTypes)
-			throws FinderException {
+	public SchoolClassMember findLatestByUserAndSchool(int userID,
+			int schoolID, Collection schoolTypes) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		Object pk = ((SchoolClassMemberBMPBean) entity).ejbFindLatestByUserAndSchool(userID, schoolID, schoolTypes);
+		Object pk = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindLatestByUserAndSchool(userID, schoolID, schoolTypes);
 		this.idoCheckInPooledEntity(entity);
 		return this.findByPrimaryKey(pk);
 	}
 
 	public SchoolClassMember findLatestByUser(User user) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		Object pk = ((SchoolClassMemberBMPBean) entity).ejbFindLatestByUser(user);
+		Object pk = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindLatestByUser(user);
 		this.idoCheckInPooledEntity(entity);
 		return this.findByPrimaryKey(pk);
 	}
 
-	public SchoolClassMember findLatestByUserAndSchoolType(User user, SchoolType type) throws FinderException {
+	public SchoolClassMember findLatestByUserAndSchoolType(User user,
+			SchoolType type) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		Object pk = ((SchoolClassMemberBMPBean) entity).ejbFindLatestByUserAndSchoolType(user, type);
+		Object pk = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindLatestByUserAndSchoolType(user, type);
 		this.idoCheckInPooledEntity(entity);
 		return this.findByPrimaryKey(pk);
 	}
 
-	public SchoolClassMember findLatestByUserAndSchCategory(User user, SchoolCategory cat) throws FinderException {
+	public SchoolClassMember findLatestByUserAndSchCategory(User user,
+			SchoolCategory cat) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		Object pk = ((SchoolClassMemberBMPBean) entity).ejbFindLatestByUserAndSchCategory(user, cat);
+		Object pk = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindLatestByUserAndSchCategory(user, cat);
 		this.idoCheckInPooledEntity(entity);
 		return this.findByPrimaryKey(pk);
 	}
 
-	public SchoolClassMember findLatestByUserAndSchCategoryAndSeason(User user, SchoolCategory cat, SchoolSeason season)
+	public SchoolClassMember findLatestByUserAndSchCategoryAndSeason(User user,
+			SchoolCategory cat, SchoolSeason season) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindLatestByUserAndSchCategoryAndSeason(user, cat, season);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
+
+	public Collection findActiveByCategorySeasonAndSchools(SchoolCategory cat,
+			SchoolSeason season, String[] schoolIds, boolean notInSchools)
 			throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		Object pk = ((SchoolClassMemberBMPBean) entity).ejbFindLatestByUserAndSchCategoryAndSeason(user, cat, season);
-		this.idoCheckInPooledEntity(entity);
-		return this.findByPrimaryKey(pk);
-	}
-
-	public Collection findActiveByCategorySeasonAndSchools(SchoolCategory cat, SchoolSeason season, String[] schoolIds,
-			boolean notInSchools) throws FinderException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindActiveByCategorySeasonAndSchools(cat,
-				season, schoolIds, notInSchools);
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindActiveByCategorySeasonAndSchools(cat, season,
+						schoolIds, notInSchools);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findAllByCategory(SchoolCategory category) throws FinderException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindAllByCategory(category);
-		this.idoCheckInPooledEntity(entity);
-		return this.getEntityCollectionForPrimaryKeys(ids);
-	}
-
-	public SchoolClassMember findActiveByStudentSchoolAndCategory(int studentId, int schoolId, SchoolCategory category)
+	public Collection findAllByCategory(SchoolCategory category)
 			throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		Object pk = ((SchoolClassMemberBMPBean) entity).ejbFindActiveByStudentSchoolAndCategory(studentId, schoolId,
-				category);
-		this.idoCheckInPooledEntity(entity);
-		return this.findByPrimaryKey(pk);
-	}
-
-	public SchoolClassMember findNotTerminatedByStudentSchoolAndCategory(int studentId, int schoolId,
-			SchoolCategory category) throws FinderException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		Object pk = ((SchoolClassMemberBMPBean) entity).ejbFindNotTerminatedByStudentSchoolAndCategory(studentId,
-				schoolId, category);
-		this.idoCheckInPooledEntity(entity);
-		return this.findByPrimaryKey(pk);
-	}
-
-	public Collection findAllByUserAndSchoolCategory(User user, SchoolCategory cat) throws FinderException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindAllByUserAndSchoolCategory(user, cat);
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindAllByCategory(category);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public SchoolClassMember findLatestFromElemAndHighSchoolByUser(User user) throws FinderException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		Object pk = ((SchoolClassMemberBMPBean) entity).ejbFindLatestFromElemAndHighSchoolByUser(user);
-		this.idoCheckInPooledEntity(entity);
-		return this.findByPrimaryKey(pk);
-	}
-
-	public SchoolClassMember findLatestFromElemAndHighSchoolByUserAndSeason(User user, SchoolSeason season)
+	public SchoolClassMember findActiveByStudentSchoolAndCategory(
+			int studentId, int schoolId, SchoolCategory category)
 			throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		Object pk = ((SchoolClassMemberBMPBean) entity).ejbFindLatestFromElemAndHighSchoolByUserAndSeason(user, season);
+		Object pk = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindActiveByStudentSchoolAndCategory(studentId, schoolId,
+						category);
 		this.idoCheckInPooledEntity(entity);
 		return this.findByPrimaryKey(pk);
 	}
 
-	public Collection findByStudentAndSchool(int userID, int schoolID) throws FinderException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindByStudentAndSchool(userID, schoolID);
-		this.idoCheckInPooledEntity(entity);
-		return this.getEntityCollectionForPrimaryKeys(ids);
-	}
-
-	public Collection findAllByUserAndSeason(User user, SchoolSeason season) throws FinderException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindAllByUserAndSeason(user, season);
-		this.idoCheckInPooledEntity(entity);
-		return this.getEntityCollectionForPrimaryKeys(ids);
-	}
-
-	public Collection findAllBySchoolStudyPath(SchoolStudyPath studyPath) throws FinderException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindAllBySchoolStudyPath(studyPath);
-		this.idoCheckInPooledEntity(entity);
-		return this.getEntityCollectionForPrimaryKeys(ids);
-	}
-
-	public Collection findAllByUserAndSeason(int userID, int seasonID) throws FinderException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindAllByUserAndSeason(userID, seasonID);
-		this.idoCheckInPooledEntity(entity);
-		return this.getEntityCollectionForPrimaryKeys(ids);
-	}
-
-	public Collection findAllCurrentInvoiceCompensationBySchoolTypeAndSchools(String operationalField,
-			Collection schools) throws FinderException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindAllCurrentInvoiceCompensationBySchoolTypeAndSchools(
-				operationalField, schools);
-		this.idoCheckInPooledEntity(entity);
-		return this.getEntityCollectionForPrimaryKeys(ids);
-	}
-
-	public SchoolClassMember findByUserAndSchoolAndSeason(int userID, int schoolID, int seasonID)
+	public SchoolClassMember findNotTerminatedByStudentSchoolAndCategory(
+			int studentId, int schoolId, SchoolCategory category)
 			throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		Object pk = ((SchoolClassMemberBMPBean) entity).ejbFindByUserAndSchoolAndSeason(userID, schoolID, seasonID);
+		Object pk = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindNotTerminatedByStudentSchoolAndCategory(studentId,
+						schoolId, category);
 		this.idoCheckInPooledEntity(entity);
 		return this.findByPrimaryKey(pk);
 	}
 
-	public SchoolClassMember findByUserAndSchoolAndSeason(int userID, int schoolID, int seasonID, Collection schoolTypes)
+	public Collection findAllByUserAndSchoolCategory(User user,
+			SchoolCategory cat) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindAllByUserAndSchoolCategory(user, cat);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public SchoolClassMember findLatestFromElemAndHighSchoolByUser(User user)
 			throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		Object pk = ((SchoolClassMemberBMPBean) entity).ejbFindByUserAndSchoolAndSeason(userID, schoolID, seasonID,
-				schoolTypes);
+		Object pk = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindLatestFromElemAndHighSchoolByUser(user);
 		this.idoCheckInPooledEntity(entity);
 		return this.findByPrimaryKey(pk);
 	}
 
-	public SchoolClassMember findByUserAndSchoolAndSeasonAndStudyPath(int userID, int schoolID, int seasonID,
-			int studyPathID) throws FinderException {
+	public SchoolClassMember findLatestFromElemAndHighSchoolByUserAndSeason(
+			User user, SchoolSeason season) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		Object pk = ((SchoolClassMemberBMPBean) entity).ejbFindByUserAndSchoolAndSeasonAndStudyPath(userID, schoolID,
-				seasonID, studyPathID);
+		Object pk = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindLatestFromElemAndHighSchoolByUserAndSeason(user, season);
 		this.idoCheckInPooledEntity(entity);
 		return this.findByPrimaryKey(pk);
 	}
 
-	public int countByUserAndSchoolAndSeasonAndStudyPath(int userID, int schoolID, int seasonID, int studyPathID)
+	public Collection findByStudentAndSchool(int userID, int schoolID)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindByStudentAndSchool(userID, schoolID);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findAllByUserAndSeason(User user, SchoolSeason season)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindAllByUserAndSeason(user, season);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findAllBySchoolStudyPath(SchoolStudyPath studyPath)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindAllBySchoolStudyPath(studyPath);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findAllByUserAndSeason(int userID, int seasonID)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindAllByUserAndSeason(userID, seasonID);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findAllCurrentInvoiceCompensationBySchoolTypeAndSchools(
+			String operationalField, Collection schools) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindAllCurrentInvoiceCompensationBySchoolTypeAndSchools(
+						operationalField, schools);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public SchoolClassMember findByUserAndSchoolAndSeason(int userID,
+			int schoolID, int seasonID) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindByUserAndSchoolAndSeason(userID, schoolID, seasonID);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
+
+	public SchoolClassMember findByUserAndSchoolAndSeason(int userID,
+			int schoolID, int seasonID, Collection schoolTypes)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindByUserAndSchoolAndSeason(userID, schoolID, seasonID,
+						schoolTypes);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
+
+	public SchoolClassMember findByUserAndSchoolAndSeasonAndStudyPath(
+			int userID, int schoolID, int seasonID, int studyPathID)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindByUserAndSchoolAndSeasonAndStudyPath(userID, schoolID,
+						seasonID, studyPathID);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
+
+	public int countByUserAndSchoolAndSeasonAndStudyPath(int userID,
+			int schoolID, int seasonID, int studyPathID) throws IDOException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		int theReturn = ((SchoolClassMemberBMPBean) entity)
+				.ejbHomeCountByUserAndSchoolAndSeasonAndStudyPath(userID,
+						schoolID, seasonID, studyPathID);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
+
+	public int countByUserAndSchoolAndSeasonAndStudyPath(User user,
+			School school, SchoolSeason season, SchoolStudyPath studyPath)
 			throws IDOException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		int theReturn = ((SchoolClassMemberBMPBean) entity).ejbHomeCountByUserAndSchoolAndSeasonAndStudyPath(userID,
-				schoolID, seasonID, studyPathID);
+		int theReturn = ((SchoolClassMemberBMPBean) entity)
+				.ejbHomeCountByUserAndSchoolAndSeasonAndStudyPath(user, school,
+						season, studyPath);
 		this.idoCheckInPooledEntity(entity);
 		return theReturn;
 	}
 
-	public int countByUserAndSchoolAndSeasonAndStudyPath(User user, School school, SchoolSeason season,
-			SchoolStudyPath studyPath) throws IDOException {
+	public Collection findBySchoolAndSeasonAndYear(int schoolID, int seasonID,
+			int yearID) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		int theReturn = ((SchoolClassMemberBMPBean) entity).ejbHomeCountByUserAndSchoolAndSeasonAndStudyPath(user,
-				school, season, studyPath);
-		this.idoCheckInPooledEntity(entity);
-		return theReturn;
-	}
-
-	public Collection findBySchoolAndSeasonAndYear(int schoolID, int seasonID, int yearID) throws FinderException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindBySchoolAndSeasonAndYear(schoolID,
-				seasonID, yearID);
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindBySchoolAndSeasonAndYear(schoolID, seasonID, yearID);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findBySchoolAndSeason(int schoolID, int seasonID) throws FinderException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindBySchoolAndSeason(schoolID, seasonID);
-		this.idoCheckInPooledEntity(entity);
-		return this.getEntityCollectionForPrimaryKeys(ids);
-	}
-
-	public Collection findBySchool(int schoolID, int schoolClassID) throws FinderException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindBySchool(schoolID, schoolClassID);
-		this.idoCheckInPooledEntity(entity);
-		return this.getEntityCollectionForPrimaryKeys(ids);
-	}
-
-	public Collection findBySchool(int schoolID, int schoolClassID, Date date) throws FinderException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindBySchool(schoolID, schoolClassID, date);
-		this.idoCheckInPooledEntity(entity);
-		return this.getEntityCollectionForPrimaryKeys(ids);
-	}
-
-	public Collection findBySchool(int schoolID, int schoolClassID, String schoolCategory, Date date)
+	public Collection findBySchoolAndSeason(int schoolID, int seasonID)
 			throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindBySchool(schoolID, schoolClassID,
-				schoolCategory, date);
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindBySchoolAndSeason(schoolID, seasonID);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findBySchool(int schoolID, int schoolClassID, Date date, boolean showNotYetActive)
+	public Collection findBySchool(int schoolID, int schoolClassID)
 			throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindBySchool(schoolID, schoolClassID, date,
-				showNotYetActive);
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindBySchool(schoolID, schoolClassID);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findBySchool(int schoolID, int schoolClassID, String schoolCategory, Date date,
+	public Collection findBySchool(int schoolID, int schoolClassID, Date date)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindBySchool(schoolID, schoolClassID, date);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findBySchool(int schoolID, int schoolClassID,
+			String schoolCategory, Date date) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindBySchool(schoolID, schoolClassID, schoolCategory, date);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findBySchool(int schoolID, int schoolClassID, Date date,
 			boolean showNotYetActive) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindBySchool(schoolID, schoolClassID,
-				schoolCategory, date, showNotYetActive);
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindBySchool(schoolID, schoolClassID, date,
+						showNotYetActive);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findBySchoolAndLog(int schoolID, int schoolClassID, String schoolCategory, Date date)
+	public Collection findBySchool(int schoolID, int schoolClassID,
+			String schoolCategory, Date date, boolean showNotYetActive)
 			throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindBySchoolAndLog(schoolID, schoolClassID,
-				schoolCategory, date);
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindBySchool(schoolID, schoolClassID, schoolCategory, date,
+						showNotYetActive);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findBySchoolAndLog(int schoolID, int schoolClassID, String schoolCategory, Date date,
-			boolean showNotYetActive) throws FinderException {
+	public Collection findBySchoolAndLog(int schoolID, int schoolClassID,
+			String schoolCategory, Date date) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindBySchoolAndLog(schoolID, schoolClassID,
-				schoolCategory, date, showNotYetActive);
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindBySchoolAndLog(schoolID, schoolClassID, schoolCategory,
+						date);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findBySchoolChildcare(int schoolID, int schoolClassID, Date date, boolean showNotYetActive)
+	public Collection findBySchoolAndLog(int schoolID, int schoolClassID,
+			String schoolCategory, Date date, boolean showNotYetActive)
 			throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindBySchoolChildcare(schoolID,
-				schoolClassID, date, showNotYetActive);
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindBySchoolAndLog(schoolID, schoolClassID, schoolCategory,
+						date, showNotYetActive);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findBySchoolChildcare(int schoolID, int schoolClassID, String schoolCategory, Date date,
-			boolean showNotYetActive) throws FinderException {
+	public Collection findBySchoolChildcare(int schoolID, int schoolClassID,
+			Date date, boolean showNotYetActive) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindBySchoolChildcare(schoolID,
-				schoolClassID, schoolCategory, date, showNotYetActive);
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindBySchoolChildcare(schoolID, schoolClassID, date,
+						showNotYetActive);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findAllLastYearStudentsBySeasonAndMaximumAge(SchoolSeason season, int maxAge)
+	public Collection findBySchoolChildcare(int schoolID, int schoolClassID,
+			String schoolCategory, Date date, boolean showNotYetActive)
 			throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindAllLastYearStudentsBySeasonAndMaximumAge(
-				season, maxAge);
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindBySchoolChildcare(schoolID, schoolClassID,
+						schoolCategory, date, showNotYetActive);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findAllLastYearStudentsBySeasonAndYear(SchoolSeason season, SchoolYear year)
+	public Collection findAllLastYearStudentsBySeasonAndMaximumAge(
+			SchoolSeason season, int maxAge) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindAllLastYearStudentsBySeasonAndMaximumAge(season, maxAge);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findAllLastYearStudentsBySeasonAndYear(
+			SchoolSeason season, SchoolYear year) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindAllLastYearStudentsBySeasonAndYear(season, year);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findAllLastYearStudentsBySeasonAndYearAndMaximumAge(
+			SchoolSeason season, SchoolYear year, int maxAge)
 			throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindAllLastYearStudentsBySeasonAndYear(
-				season, year);
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindAllLastYearStudentsBySeasonAndYearAndMaximumAge(season,
+						year, maxAge);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findAllLastYearStudentsBySeasonAndYearAndMaximumAge(SchoolSeason season, SchoolYear year,
-			int maxAge) throws FinderException {
+	public Collection findAllBySeasonAndSchoolYear(SchoolSeason season,
+			SchoolYear schoolYear) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindAllLastYearStudentsBySeasonAndYearAndMaximumAge(
-				season, year, maxAge);
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindAllBySeasonAndSchoolYear(season, schoolYear);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findAllBySeasonAndSchoolYear(SchoolSeason season, SchoolYear schoolYear) throws FinderException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindAllBySeasonAndSchoolYear(season,
-				schoolYear);
-		this.idoCheckInPooledEntity(entity);
-		return this.getEntityCollectionForPrimaryKeys(ids);
-	}
-
-	public int getNumberOfUsersNotAssignedToClassOnGivenDate(Group citizenGroup, Date date, Collection classes,
-			Date firstDateOfBirth, Date lastDateOfBirth) throws IDOException, IDOLookupException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		int theReturn = ((SchoolClassMemberBMPBean) entity).ejbHomeGetNumberOfUsersNotAssignedToClassOnGivenDate(
-				citizenGroup, date, classes, firstDateOfBirth, lastDateOfBirth);
-		this.idoCheckInPooledEntity(entity);
-		return theReturn;
-	}
-
-	public int getNumberOfUsersNotAssignedToClassOnGivenDateNew(Group citizenGroup, Date date,
-			SchoolSeason schoolSeason, Date firstDateOfBirth, Date lastDateOfBirth) throws IDOException,
+	public int getNumberOfUsersNotAssignedToClassOnGivenDate(
+			Group citizenGroup, Date date, Collection classes,
+			Date firstDateOfBirth, Date lastDateOfBirth) throws IDOException,
 			IDOLookupException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		int theReturn = ((SchoolClassMemberBMPBean) entity).ejbHomeGetNumberOfUsersNotAssignedToClassOnGivenDateNew(
-				citizenGroup, date, schoolSeason, firstDateOfBirth, lastDateOfBirth);
+		int theReturn = ((SchoolClassMemberBMPBean) entity)
+				.ejbHomeGetNumberOfUsersNotAssignedToClassOnGivenDate(
+						citizenGroup, date, classes, firstDateOfBirth,
+						lastDateOfBirth);
 		this.idoCheckInPooledEntity(entity);
 		return theReturn;
 	}
 
-	public Collection findAllByUserAndPeriodAndSchoolCategory(User child, Date period, SchoolCategory category)
+	public int getNumberOfUsersNotAssignedToClassOnGivenDateNew(
+			Group citizenGroup, Date date, SchoolSeason schoolSeason,
+			Date firstDateOfBirth, Date lastDateOfBirth) throws IDOException,
+			IDOLookupException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		int theReturn = ((SchoolClassMemberBMPBean) entity)
+				.ejbHomeGetNumberOfUsersNotAssignedToClassOnGivenDateNew(
+						citizenGroup, date, schoolSeason, firstDateOfBirth,
+						lastDateOfBirth);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
+
+	public Collection findAllByUserAndPeriodAndSchoolCategory(User child,
+			Date period, SchoolCategory category) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindAllByUserAndPeriodAndSchoolCategory(child, period,
+						category);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findByCategorydManagementCommune(String category,
+			String managementType, int communeId, int seasonId)
 			throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindAllByUserAndPeriodAndSchoolCategory(
-				child, period, category);
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindByCategorydManagementCommune(category, managementType,
+						communeId, seasonId);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findByCategorydManagementCommune(String category, String managementType, int communeId,
-			int seasonId) throws FinderException {
+	public Collection findByCategorydManagementCommune(String category,
+			String managementType, int communeId, int seasonId,
+			boolean newestFirst) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindByCategorydManagementCommune(category,
-				managementType, communeId, seasonId);
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindByCategorydManagementCommune(category, managementType,
+						communeId, seasonId, newestFirst);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findByCategorydManagementCommune(String category, String managementType, int communeId,
-			int seasonId, boolean newestFirst) throws FinderException {
+	public int getNumberOfPlacingsAtSchool(School school, SchoolSeason season,
+			SchoolYear department, SchoolStudyPath instrument, String types,
+			Commune commune) throws IDOException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindByCategorydManagementCommune(category,
-				managementType, communeId, seasonId, newestFirst);
-		this.idoCheckInPooledEntity(entity);
-		return this.getEntityCollectionForPrimaryKeys(ids);
-	}
-
-	public int getNumberOfPlacingsAtSchool(School school, SchoolSeason season, SchoolYear department,
-			SchoolStudyPath instrument, String types, Commune commune) throws IDOException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		int theReturn = ((SchoolClassMemberBMPBean) entity).ejbHomeGetNumberOfPlacingsAtSchool(school, season,
-				department, instrument, types, commune);
+		int theReturn = ((SchoolClassMemberBMPBean) entity)
+				.ejbHomeGetNumberOfPlacingsAtSchool(school, season, department,
+						instrument, types, commune);
 		this.idoCheckInPooledEntity(entity);
 		return theReturn;
 	}
 
 	public Collection getInvoiceIntervalTypes() {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		Collection theReturn = ((SchoolClassMemberBMPBean) entity).ejbHomeGetInvoiceIntervalTypes();
+		Collection theReturn = ((SchoolClassMemberBMPBean) entity)
+				.ejbHomeGetInvoiceIntervalTypes();
 		this.idoCheckInPooledEntity(entity);
 		return theReturn;
 	}
 
 	public Collection findSubGroupPlacements() throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindSubGroupPlacements();
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindSubGroupPlacements();
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findPlacementsBySchoolTypeAndRegisterDateAndGradeInPeriod(
+			SchoolType type, IWTimestamp periodFrom, IWTimestamp periodTo)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity)
+				.ejbFindPlacementsBySchoolTypeAndRegisterDateAndGradeInPeriod(
+						type, periodFrom, periodTo);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}

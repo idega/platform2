@@ -1,26 +1,18 @@
-/*
- * $Id: SchoolClassMemberGrade.java,v 1.1 2005/06/20 12:55:48 laddi Exp $
- * Created on Jun 20, 2005
- *
- * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
+/**
+ * 
  */
 package com.idega.block.school.data;
 
 import java.sql.Timestamp;
+
+
 import com.idega.data.IDOEntity;
 
-
 /**
- * Last modified: $Date: 2005/06/20 12:55:48 $ by $Author: laddi $
- * 
- * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @author bluebottle
+ *
  */
 public interface SchoolClassMemberGrade extends IDOEntity {
-
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberGradeBMPBean#getStudent
 	 */
@@ -70,4 +62,5 @@ public interface SchoolClassMemberGrade extends IDOEntity {
 	 * @see com.idega.block.school.data.SchoolClassMemberGradeBMPBean#setLocked
 	 */
 	public void setLocked(boolean locked);
+
 }

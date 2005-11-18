@@ -1,72 +1,353 @@
+/**
+ * 
+ */
 package se.idega.idegaweb.commune.accounting.invoice.data;
 
+import java.sql.Date;
 
-public interface InvoiceRecord extends com.idega.data.IDOEntity
-{
- public float getAmount();
- public float getAmountVAT();
- public java.lang.String getChangedBy();
- public se.idega.idegaweb.commune.care.data.ChildCareContract getChildCareContract();
- public java.lang.String getCreatedBy();
- public java.sql.Date getDateChanged();
- public java.sql.Date getDateCreated();
- public int getDays();
- public java.lang.String getDoublePosting();
- public se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader getInvoiceHeader();
- public int getInvoiceHeaderId();
- public java.lang.String getInvoiceText();
- public java.lang.String getInvoiceText2();
- public java.lang.String getNotes();
- public int getOrderId();
- public java.lang.String getOwnPosting();
- public se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord getPaymentRecord();
- public int getPaymentRecordId();
- public java.sql.Date getPeriodEndCheck();
- public java.sql.Date getPeriodEndPlacement();
- public java.sql.Date getPeriodStartCheck();
- public java.sql.Date getPeriodStartPlacement();
- public com.idega.block.school.data.School getProvider();
- public int getProviderId();
- public se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType getRegSpecType();
- public int getRegSpecTypeId();
- public java.lang.String getRuleText();
- public com.idega.block.school.data.SchoolClassMember getSchoolClassMember();
- public int getSchoolClassMemberId();
- public com.idega.block.school.data.SchoolType getSchoolType();
- public int getSchoolTypeId();
- public se.idega.idegaweb.commune.accounting.regulations.data.Regulation getVATRuleRegulation();
- public int getVATRuleRegulationId();
- public void setAmount(float p0);
- public void setAmountVAT(float p0);
- public void setChangedBy(java.lang.String p0);
- public void setChildCareContract(se.idega.idegaweb.commune.care.data.ChildCareContract p0);
- public void setCreatedBy(java.lang.String p0);
- public void setDateChanged(java.sql.Date p0);
- public void setDateCreated(java.sql.Date p0);
- public void setDays(int p0);
- public void setDoublePosting(java.lang.String p0);
- public void setInvoiceHeader(se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader p0);
- public void setInvoiceHeaderId(int p0);
- public void setInvoiceText(java.lang.String p0);
- public void setInvoiceText2(java.lang.String p0);
- public void setNotes(java.lang.String p0);
- public void setOrderId(int p0);
- public void setOwnPosting(java.lang.String p0);
- public void setPaymentRecord(se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord p0);
- public void setPaymentRecordId(int p0);
- public void setPeriodEndCheck(java.sql.Date p0);
- public void setPeriodEndPlacement(java.sql.Date p0);
- public void setPeriodStartCheck(java.sql.Date p0);
- public void setPeriodStartPlacement(java.sql.Date p0);
- public void setProvider(com.idega.block.school.data.School p0);
- public void setProviderId(int p0);
- public void setRegSpecType(se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType p0);
- public void setRegSpecTypeId(int p0);
- public void setRuleText(java.lang.String p0);
- public void setSchoolClassMember(com.idega.block.school.data.SchoolClassMember p0);
- public void setSchoolClassMemberId(int p0);
- public void setSchoolType(com.idega.block.school.data.SchoolType p0);
- public void setSchoolTypeId(int p0);
- public void setVATRuleRegulation(se.idega.idegaweb.commune.accounting.regulations.data.Regulation p0);
- public void setVATRuleRegulation(int p0);
+
+import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
+import se.idega.idegaweb.commune.care.data.ChildCareContract;
+
+import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolClassMember;
+import com.idega.block.school.data.SchoolType;
+import com.idega.data.IDOEntity;
+
+/**
+ * @author bluebottle
+ *
+ */
+public interface InvoiceRecord extends IDOEntity {
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#getInvoiceHeader
+	 */
+	public InvoiceHeader getInvoiceHeader();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#getInvoiceHeaderId
+	 */
+	public int getInvoiceHeaderId();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#getPaymentRecordId
+	 */
+	public int getPaymentRecordId();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#getPaymentRecord
+	 */
+	public PaymentRecord getPaymentRecord();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#getProviderId
+	 */
+	public int getProviderId();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#getProvider
+	 */
+	public School getProvider();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#getSchoolClassMemberId
+	 */
+	public int getSchoolClassMemberId();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#getSchoolClassMember
+	 */
+	public SchoolClassMember getSchoolClassMember();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#getSchoolTypeId
+	 */
+	public int getSchoolTypeId();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#getSchoolType
+	 */
+	public SchoolType getSchoolType();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#getInvoiceText
+	 */
+	public String getInvoiceText();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#getInvoiceText2
+	 */
+	public String getInvoiceText2();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#getRuleText
+	 */
+	public String getRuleText();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#getDays
+	 */
+	public int getDays();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#getPeriodStartCheck
+	 */
+	public Date getPeriodStartCheck();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#getPeriodEndCheck
+	 */
+	public Date getPeriodEndCheck();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#getPeriodStartPlacement
+	 */
+	public Date getPeriodStartPlacement();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#getPeriodEndPlacement
+	 */
+	public Date getPeriodEndPlacement();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#getDateCreated
+	 */
+	public Date getDateCreated();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#getCreatedBy
+	 */
+	public String getCreatedBy();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#getDateChanged
+	 */
+	public Date getDateChanged();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#getChangedBy
+	 */
+	public String getChangedBy();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#getAmount
+	 */
+	public float getAmount();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#getAmountVAT
+	 */
+	public float getAmountVAT();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#getNotes
+	 */
+	public String getNotes();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#getOrderId
+	 */
+	public int getOrderId();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#getRegSpecTypeId
+	 */
+	public int getRegSpecTypeId();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#getRegSpecType
+	 */
+	public RegulationSpecType getRegSpecType();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#getOwnPosting
+	 */
+	public String getOwnPosting();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#getDoublePosting
+	 */
+	public String getDoublePosting();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#getChildCareContract
+	 */
+	public ChildCareContract getChildCareContract();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setInvoiceHeaderId
+	 */
+	public void setInvoiceHeaderId(int i);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setInvoiceHeader
+	 */
+	public void setInvoiceHeader(InvoiceHeader i);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setPaymentRecordId
+	 */
+	public void setPaymentRecordId(int i);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setPaymentRecord
+	 */
+	public void setPaymentRecord(PaymentRecord p);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setProviderId
+	 */
+	public void setProviderId(int i);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setProvider
+	 */
+	public void setProvider(School s);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setSchoolClassMemberId
+	 */
+	public void setSchoolClassMemberId(int i);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setSchoolClassMember
+	 */
+	public void setSchoolClassMember(SchoolClassMember scm);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setSchoolTypeId
+	 */
+	public void setSchoolTypeId(int i);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setSchoolType
+	 */
+	public void setSchoolType(SchoolType st);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setInvoiceText
+	 */
+	public void setInvoiceText(String s);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setInvoiceText2
+	 */
+	public void setInvoiceText2(String s);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setRuleText
+	 */
+	public void setRuleText(String s);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setDays
+	 */
+	public void setDays(int i);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setPeriodStartCheck
+	 */
+	public void setPeriodStartCheck(Date d);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setPeriodEndCheck
+	 */
+	public void setPeriodEndCheck(Date d);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setPeriodStartPlacement
+	 */
+	public void setPeriodStartPlacement(Date d);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setPeriodEndPlacement
+	 */
+	public void setPeriodEndPlacement(Date d);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setDateCreated
+	 */
+	public void setDateCreated(Date d);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setCreatedBy
+	 */
+	public void setCreatedBy(String s);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setDateChanged
+	 */
+	public void setDateChanged(Date d);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setChangedBy
+	 */
+	public void setChangedBy(String s);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setAmount
+	 */
+	public void setAmount(float f);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setAmountVAT
+	 */
+	public void setAmountVAT(float f);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setNotes
+	 */
+	public void setNotes(String s);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setOrderId
+	 */
+	public void setOrderId(int i);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setRegSpecTypeId
+	 */
+	public void setRegSpecTypeId(int i);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setRegSpecType
+	 */
+	public void setRegSpecType(RegulationSpecType r);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setOwnPosting
+	 */
+	public void setOwnPosting(String s);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setDoublePosting
+	 */
+	public void setDoublePosting(String s);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#getVATRuleRegulationId
+	 */
+	public int getVATRuleRegulationId();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setVATRuleRegulation
+	 */
+	public void setVATRuleRegulation(int regulationId);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#getVATRuleRegulation
+	 */
+	public Regulation getVATRuleRegulation();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setVATRuleRegulation
+	 */
+	public void setVATRuleRegulation(Regulation regulation);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setChildCareContract
+	 */
+	public void setChildCareContract(ChildCareContract contract);
+
 }
