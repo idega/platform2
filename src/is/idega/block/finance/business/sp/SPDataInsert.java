@@ -1,5 +1,5 @@
 /*
- * $Id: SPDataInsert.java,v 1.1 2005/04/04 10:03:31 birna Exp $
+ * $Id: SPDataInsert.java,v 1.1.4.1 2005/11/18 17:33:16 palli Exp $
  * Created on Feb 8, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -29,10 +29,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2005/04/04 10:03:31 $ by $Author: birna $
+ *  Last modified: $Date: 2005/11/18 17:33:16 $ by $Author: palli $
  * 
  * @author <a href="mailto:birna@idega.com">birna</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.1.4.1 $
  */
 public class SPDataInsert /*extends Window*/ implements InvoiceDataInsert {
 	
@@ -229,6 +229,8 @@ public class SPDataInsert /*extends Window*/ implements InvoiceDataInsert {
 			buffer.append("00");
 			/*Gengiskodi - 1*/
 			buffer.append("0");
+			//Autt			
+			buffer.append(" ");
 			/*Greidslukodi - 1*/
 			buffer.append(" ");
 			/*Fyrri afslattur - 11*/
@@ -240,7 +242,7 @@ public class SPDataInsert /*extends Window*/ implements InvoiceDataInsert {
 			/*Dagafjoldi seinni afslattar - 2*/
 			buffer.append("00");
 			/*Afslattarkodi - 1*/
-			buffer.append("0");
+			buffer.append(" ");
 			/*Innborgunarkodi - 1*/
 			buffer.append("1");
 			/*Birtingarkodi - 1*/
