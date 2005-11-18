@@ -721,6 +721,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		entityBrowser.setName("LedgerWindow");
 		entityBrowser.setDefaultNumberOfRows(Math.min(users.size(), 30));
 		entityBrowser.setWidth(Table.HUNDRED_PERCENT);
+		entityBrowser.setUseExternalForm(true);
 		
 		String nameKey = User.class.getName() + ".FIRST_NAME:" + User.class.getName() + ".MIDDLE_NAME:" + User.class.getName() + ".LAST_NAME";
 		String entryKey = CalendarEntry.class.getName() + ".CAL_ENTRY_DATE";
