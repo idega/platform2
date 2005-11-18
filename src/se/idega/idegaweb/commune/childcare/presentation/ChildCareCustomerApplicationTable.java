@@ -42,7 +42,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.108 2005/10/02 23:41:04 palli Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.108.2.1 2005/11/18 10:09:18 laddi Exp $
  * @since 12.2.2003 
  */
 
@@ -780,17 +780,11 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 		}
 		Table appTable = new ChildCarePlaceOfferTable2(iwc, this, apps);
 
-		GenericButton cancelBtn = getButton(new GenericButton("cancel", localize(CANCEL)));
-		cancelBtn.setPageToOpen(getParentPageID());
-		cancelBtn.addParameterToPage(CCConstants.ACTION, CCConstants.ACTION_CANCEL_2);
-
 		SubmitButton submitBtn = (SubmitButton) getButton(new SubmitButton(localize(SUBMIT)));
 
 		layoutTbl.add(new HiddenInput(CCConstants.ACTION, String.valueOf(CCConstants.ACTION_SUBMIT_2)), 1, 1);
 		layoutTbl.add(appTable, 1, 1);
 		layoutTbl.setHeight(2, 12);
-		layoutTbl.add(cancelBtn, 1, 3);
-		layoutTbl.add(Text.getNonBrakingSpace(), 1, 3);
 		layoutTbl.add(submitBtn, 1, 3);
 		layoutTbl.setAlignment(1, 3, Table.HORIZONTAL_ALIGN_RIGHT);
 
