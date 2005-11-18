@@ -446,7 +446,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						appl.setMethod(1);
 						appl.setChoiceNumber(i + 1);
 						stamp.addSeconds((1 - ((i + 1) * 1)));
-						appl.setCreated(stamp.getTimestamp());
+						if (appl.getProviderId() != providerID || appl.getCreated() == null) {
+							appl.setCreated(stamp.getTimestamp());
+						}
 						appl.setQueueOrder(((Integer) appl.getPrimaryKey()).intValue());
 						appl.setApplicationStatus(getStatusSentIn());
 
