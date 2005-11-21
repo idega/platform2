@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.86.2.1 2005/11/17 15:11:03 anna Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.86.2.2 2005/11/21 01:11:19 palli Exp $
  * Copyright (C) 2002 Idega hf. All Rights Reserved. This software is the
  * proprietary information of Idega hf. Use is subject to license terms.
  */
@@ -72,11 +72,11 @@ import com.idega.util.LocaleUtil;
 import com.idega.util.text.Name;
 
 /**
- * Last modified: $Date: 2005/11/17 15:11:03 $ by $Author: anna $
+ * Last modified: $Date: 2005/11/21 01:11:19 $ by $Author: palli $
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg </a>
- * @version $Revision: 1.86.2.1 $
+ * @version $Revision: 1.86.2.2 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
 
@@ -519,7 +519,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 			User cohabitant = null;
 			if (applicant.hasCohabitant()) {
 				cohabitant = createCohabitant
-						(applicationID, ssn, genderHome, pidChecker, userBusiness,
+						(applicationID, genderHome, pidChecker, userBusiness,
 						 notNackaResident, user, address, homePhone, familyLogic);
 			}
 			if (applicant.getChildrenCount() > 0) {
@@ -529,7 +529,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 						= home.findByApplicationId(applicationID);
 				for (int i = 0; i < children.length; i++) {
 					final CitizenApplicantChildren child = children [i];
-					createChild (ssn, genderHome, pidChecker, userBusiness,
+					createChild (genderHome, pidChecker, userBusiness,
 											 notNackaResident, user,cohabitant, address,	homePhone, familyLogic,
 											 child);
 				}
@@ -569,7 +569,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 	}*/
 
 	private void createChild
-		(final String ssn, final GenderHome genderHome, final PIDChecker pidChecker,
+		(final GenderHome genderHome, final PIDChecker pidChecker,
 		 final CommuneUserBusiness userBusiness, final boolean notNackaResident,
 		 final User user,User cohabitant, Address address, Phone homePhone,
 		 final FamilyLogic familyLogic, final CitizenApplicantChildren child)
@@ -601,7 +601,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 	}
 
 	private User createCohabitant
-		(final int applicationID, final String ssn, final GenderHome genderHome,
+		(final int applicationID, final GenderHome genderHome,
 		 final PIDChecker pidChecker, final CommuneUserBusiness userBusiness,
 		 final boolean notNackaResident, final User user, Address address,
 		 Phone homePhone, final FamilyLogic familyLogic)
