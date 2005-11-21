@@ -92,6 +92,10 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 	protected final static String STATUS_READY = "R";
 
 	protected final static String STATUS_SENT = "S";
+	
+	protected final static String STATUS_PAYED = "P";
+	
+	protected final static String STATUS_ERROR = "E";
 
 	public final static String TYPE_ASSESSMENT = "A";
 
