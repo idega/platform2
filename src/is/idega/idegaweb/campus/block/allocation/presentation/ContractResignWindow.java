@@ -161,7 +161,7 @@ public class ContractResignWindow extends CampusWindow {
 						now = new IWTimestamp(eContract.getValidTo());
 					}
 					movDate.setEarliestPossibleDate(now.getDate(), localize("must_select_one_month_ahead",
-							"You must select a data at least one month later then today"));
+							"You must select a date at least one month later then today"));
 					// Edit.setStyle(movDate);
 					movDate.setStyleAttribute("style", Edit.styleAttribute);
 
@@ -183,9 +183,9 @@ public class ContractResignWindow extends CampusWindow {
 						row++;
 					}
 					else {
-						if (DATESYNC) {
-							T.add(new HiddenInput(prmDateSync, "true"));
-						}
+/*						if (DATESYNC) {
+							T.add(new HiddenInput(prmDateSync, "false"));
+						}*/
 					}
 					TextInput newAddress = new TextInput("new_address");
 					newAddress.setAsNotEmpty(localize("err_new_address", "You must enter a new address"));

@@ -1,5 +1,5 @@
 /*
- * $Id: BankInfoBusinessBean.java,v 1.2 2005/05/31 09:45:57 palli Exp $ Created
+ * $Id: BankInfoBusinessBean.java,v 1.2.2.1 2005/11/21 16:45:40 palli Exp $ Created
  * on Feb 18, 2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -25,10 +25,10 @@ import com.idega.user.data.Group;
 
 /**
  * 
- * Last modified: $Date: 2005/05/31 09:45:57 $ by $Author: palli $
+ * Last modified: $Date: 2005/11/21 16:45:40 $ by $Author: palli $
  * 
  * @author <a href="mailto:birna@idega.com">birna</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.2.2.1 $
  */
 public class BankInfoBusinessBean extends IBOServiceBean implements BankInfoBusiness {
 
@@ -54,6 +54,7 @@ public class BankInfoBusinessBean extends IBOServiceBean implements BankInfoBusi
 			if (group != null && !"-1".equals(group)) {
 				bi.setGroupId(Integer.valueOf(group).intValue());
 			}
+			//bi.set
 			bi.setClaimantsBankBranchNumber(branch);
 			bi.setAccountBook(66);
 			bi.setAccountId(accountId);

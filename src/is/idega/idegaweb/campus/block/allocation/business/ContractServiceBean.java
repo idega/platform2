@@ -1,5 +1,5 @@
 /*
- * $Id: ContractServiceBean.java,v 1.24 2005/05/31 09:46:52 palli Exp $
+ * $Id: ContractServiceBean.java,v 1.24.4.1 2005/11/21 16:47:12 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -56,6 +56,7 @@ import com.idega.block.building.data.Apartment;
 import com.idega.block.building.data.ApartmentHome;
 import com.idega.block.finance.business.AccountManager;
 import com.idega.business.IBOServiceBean;
+import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.user.data.User;
@@ -153,7 +154,9 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 	
 	public void createUserLogin(User user, Integer groupID, String login, String pass, boolean generatePasswd)
 		throws Exception {
-		getUserService().generateUserLogin(user);
+		LoginTable loginEntry = getUserService().generateUserLogin(user);
+		loginEntry.setLastChanged(null);
+		loginEntry.store();
 	}
 	
 	

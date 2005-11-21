@@ -51,6 +51,7 @@ public class PhoneFinanceHandler implements FinanceHandler {
 	// public static float tax = 1.245f;
 	public static float tax = 1.0f;
 	public static float fastaGjald = -923.0f;
+	public static int fastaGjaldsLykill = 4415;
 
 	int count = 0;
 
@@ -178,6 +179,11 @@ public class PhoneFinanceHandler implements FinanceHandler {
 						AccountKey AK = ((AccountKeyHome) IDOLookup.getHome(AccountKey.class)).findByPrimaryKey((accountKeyId));
 						TariffKey TK = ((TariffKeyHome) IDOLookup.getHome(TariffKey.class)).findByPrimaryKey(new Integer(
 								AK.getTariffKeyId()));
+						
+						AccountKey fastaAK = ((AccountKeyHome) IDOLookup.getHome(AccountKey.class)).findByPrimaryKey((new Integer(fastaGjaldsLykill)));
+						TariffKey fastaTK = ((TariffKeyHome) IDOLookup.getHome(TariffKey.class)).findByPrimaryKey(new Integer(
+								fastaAK.getTariffKeyId()));						
+						
 						Integer phAccId;
 						Iterator iter = entries.iterator();
 						AccountEntry AE;
@@ -197,7 +203,7 @@ public class PhoneFinanceHandler implements FinanceHandler {
 									E.put(phAccId, AE);
 									//Fastagjald. 
 									AccountEntry entry = insertEntry(new Integer(accounts.getFinanceAccountId()), roundId, paydate,
-												fastaGjald, AK, TK, cashierId, building.getDivision(), "Fastagjald");
+												fastaGjald, fastaAK, fastaTK, cashierId, building.getDivision(), "Fastagjald");
 									entry.setTotal(entry.getNetto() * tax);
 									entry.store();
 								}

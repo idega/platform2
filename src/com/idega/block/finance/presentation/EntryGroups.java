@@ -1,4 +1,5 @@
 package com.idega.block.finance.presentation;
+
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -14,31 +15,77 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DateInput;
-import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
-
 import com.idega.util.IWTimestamp;
+
 /**
-
- * Title:
- * Description:
- * Copyright:    Copyright (c) 2000-2001 idega.is All Rights Reserved
- * Company:      idega
-  *@author <a href="mailto:aron@idega.is">Aron Birkir</a>
+ * 
+ * Title: Description: Copyright: Copyright (c) 2000-2001 idega.is All Rights
+ * Reserved Company: idega
+ * 
+ * @author <a href="mailto:aron@idega.is">Aron Birkir</a>
  * @version 1.1
-
+ * 
  */
 public class EntryGroups extends Finance {
+
+	protected static final String LOC_KEY_REAL_COUNT = "real_count";
+
+	protected static final String LOC_KEY_FILE_NAME = "file_name";
+
+	protected static final String LOC_KEY_GROUP_DATE = "group_date";
+
+	protected static final String LOC_KEY_NEW = "new";
+
+	protected static final String LOC_KEY_VIEW = "view";
+
+	protected static final String LOC_KEY_GROUP_NOT_CREATED = "group_not_created";
+
+	protected static final String LOC_KEY_GROUP_CREATED = "group_created";
+
+	protected static final String LOC_KEY_INVALID_DATE = "invalid_date";
+
+	protected static final String LOC_KEY_SUCCESS = "succeded";
+
+	protected static final String LOC_KEY_FAILED = "failed";
+
+	protected static final String LOC_KEY_ACCESS_DENIED = "access_denied";
+
+	protected static final String LOC_KEY_NO_GROUPS = "no_groups";
+
+	protected static final String LOC_KEY_ENTRY_NAME = "entry_name";
+
+	protected static final String LOC_KEY_LAST_UPDATED = "last_updated";
+
+	protected static final String LOC_KEY_AMOUNT = "amount";
+
+	protected static final String LOC_KEY_IS_EMPTY = "is_empty";
+
+	protected static final String PARAM_DUE_DATE = "due_date";
+
+	protected static final String PARAM_PAYMENT_DATE = "payment_date";
+
+	protected static final String PARAM_COMMIT = "commit";
+
+	protected static final String PARAM_GROUP_DATE_FROM = "entries_from";
+
+	protected static final String PARAM_GROUP_DATE_TO = "entries_to";
+
+	protected static final String PARAM_ENTRY_GROUP_ID = "entry_group_id";
+
 	protected final int ACT1 = 1, ACT2 = 2, ACT3 = 3, ACT4 = 4, ACT5 = 5;
+
 	public String strAction = "tt_action";
-	
+
 	public String getLocalizedNameKey() {
 		return "entrygroups";
 	}
+
 	public String getLocalizedNameValue() {
 		return "Entrygroups";
 	}
+
 	protected void control(IWContext iwc) {
 		if (isAdmin) {
 			try {
@@ -50,81 +97,86 @@ public class EntryGroups extends Finance {
 					String sAct = iwc.getParameter(strAction);
 					int iAct = Integer.parseInt(sAct);
 					switch (iAct) {
-						case ACT1 :
+						case ACT1:
 							MO = getTableOfGroups(iwc);
 							break;
-						case ACT2 :
+						case ACT2:
 							MO = doMainTable(iwc);
 							break;
-						case ACT3 :
+						case ACT3:
 							MO = doSomeThing(iwc);
 							break;
-						case ACT4 :
+						case ACT4:
 							MO = getTableOfAssessmentAccounts(iwc);
 							break;
-						default :
+						default:
 							MO = getTableOfGroups(iwc);
 							break;
 					}
 				}
-				
-				setLocalizedTitle("entry_groups", "Entry groups");
+
+				setLocalizedTitle(getLocalizedNameKey(), getLocalizedNameValue());
 				setSearchPanel(makeLinkTable(1));
 				setMainPanel(MO);
-			
+
 			}
 			catch (Exception S) {
 				S.printStackTrace();
 			}
 		}
 		else
-			add(getErrorText(localize("access_denied", "Access denies")));
+			add(getErrorText(localize(LOC_KEY_ACCESS_DENIED, "Access denies")));
 	}
-	private PresentationObject doSomeThing(IWContext iwc) {
-		PresentationObject MO = new Text("failed");
-		if (iwc.getParameter("ent_to") != null) {
-			String dateFrom = iwc.getParameter("ent_from");
-			String dateTo = iwc.getParameter("ent_to");
-			if (!"".equals(dateTo)) {
-				IWTimestamp to = new IWTimestamp(dateTo);
-				IWTimestamp from = null;
-				if (!"".equals(dateFrom))
-					from = new IWTimestamp(dateFrom);
-				doGroup(iwc, from, to);
-				return new Text("Succeeded");
-			}
-			return new Text("Invalid to date");
+
+	protected PresentationObject doSomeThing(IWContext iwc) {
+		PresentationObject MO = new Text(localize(LOC_KEY_INVALID_DATE, "Invalid to date"));
+		String dateFrom = iwc.getParameter(PARAM_GROUP_DATE_FROM);
+		String paymentDateString = iwc.getParameter(PARAM_PAYMENT_DATE);
+		String dueDateString = iwc.getParameter(PARAM_DUE_DATE);
+		if (dateFrom != null && !"".equals(dateFrom) && paymentDateString != null && !"".equals(paymentDateString)
+				&& dueDateString != null && !"".equals(dueDateString)) {
+			String dateTo = iwc.getParameter(PARAM_GROUP_DATE_TO);
+			IWTimestamp to = new IWTimestamp(dateTo);
+			IWTimestamp from = null;
+			if (!"".equals(dateFrom))
+				from = new IWTimestamp(dateFrom);
+
+			IWTimestamp paymentDate = new IWTimestamp(paymentDateString);
+			IWTimestamp dueDate = new IWTimestamp(dueDateString);
+			doGroup(iwc, from, to, paymentDate, dueDate);
+
+			return new Text(localize(LOC_KEY_SUCCESS, "Succeded"));
 		}
 		return MO;
 	}
-	private PresentationObject doGroup(IWContext iwc, IWTimestamp from, IWTimestamp to) {
+
+	protected PresentationObject doGroup(IWContext iwc, IWTimestamp from, IWTimestamp to, IWTimestamp paymentDate, IWTimestamp dueDate) {
 		try {
-			//System.err.println(" doGroup start :"+IWTimestamp.RightNow().toString());
-			//CampusAssessmentBusiness.groupEntries(from,to);
-			AssessmentBusiness assBuiz =
-				(AssessmentBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, AssessmentBusiness.class);
-			assBuiz.groupEntriesWithSQL(from, to);
-			//System.err.println(" doGroup end   :"+IWTimestamp.RightNow().toString());
-			return getHeader(localize("group_created", "Group was created"));
+			AssessmentBusiness assBuiz = (AssessmentBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc,
+					AssessmentBusiness.class);
+			EntryGroup group = assBuiz.groupEntriesWithSQL(from, to, paymentDate, dueDate);
+							
+			return getHeader(localize(LOC_KEY_GROUP_CREATED, "Group was created"));
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
-			return getHeader(localize("group_not_created", "Group was not created"));
+			return getHeader(localize(LOC_KEY_GROUP_NOT_CREATED, "Group was not created"));
 		}
 	}
+
 	protected PresentationObject makeLinkTable(int menuNr) {
 		Table LinkTable = new Table(3, 1);
 		int last = 3;
 		LinkTable.setWidth(Table.HUNDRED_PERCENT);
 		LinkTable.setCellpadding(2);
 		LinkTable.setCellspacing(1);
-		
+
 		LinkTable.setWidth(last, Table.HUNDRED_PERCENT);
-		Link Link1 = new Link(getHeader(localize("view", "View")));
-		
+		Link Link1 = new Link(getHeader(localize(LOC_KEY_VIEW, "View")));
+
 		Link1.addParameter(this.strAction, String.valueOf(this.ACT1));
-		Link Link2 = new Link(getHeader(localize("new", "New")));
-		
+		Link Link2 = new Link(getHeader(localize(LOC_KEY_NEW, "New")));
+
 		Link2.addParameter(this.strAction, String.valueOf(this.ACT2));
 		if (isAdmin) {
 			LinkTable.add(Link1, 1, 1);
@@ -132,78 +184,74 @@ public class EntryGroups extends Finance {
 		}
 		return LinkTable;
 	}
-	private PresentationObject getTableOfGroups(IWContext iwc) throws java.rmi.RemoteException {
-		Table T = new Table();
-		int row = 2;
-		//List L = Finder.listOfEntryGroups();
+
+	protected PresentationObject getTableOfGroups(IWContext iwc) throws java.rmi.RemoteException {
+		Table displayTable = new Table();
+		int row = 1;
 		Collection groups = null;
 		try {
 			groups = getFinanceService().getEntryGroupHome().findAll();
-		} catch (RemoteException e) {
+		}
+		catch (RemoteException e) {
 			e.printStackTrace();
-		} catch (FinderException e) {
+		}
+		catch (FinderException e) {
 			e.printStackTrace();
 		}
 		if (groups != null) {
-			
-			T.add(getHeader(localize("group_id", "Group id")), 1, 1);
-			T.add(getHeader(localize("group_date", "Group date")), 2, 1);
-			T.add(getHeader(localize("entry_from", "Entries from")), 3, 1);
-			T.add(getHeader(localize("entry_to", "Entries to")), 4, 1);
-			T.add(getHeader(localize("file_name", "File name")), 5, 1);
-			T.add(getHeader(localize("real_count", "Real count")), 6, 1);
-			//T.add(getHeader(sRollBack),4,1);
-			int col = 1;
-			row = 2;
+			displayTable.add(getHeader(localize(PARAM_ENTRY_GROUP_ID, "Group id")), 1, row);
+			displayTable.add(getHeader(localize(LOC_KEY_GROUP_DATE, "Group date")), 2, row);
+			displayTable.add(getHeader(localize(PARAM_GROUP_DATE_FROM, "Entries from")), 3, row);
+			displayTable.add(getHeader(localize(PARAM_GROUP_DATE_TO, "Entries to")), 4, row);
+			displayTable.add(getHeader(localize(LOC_KEY_FILE_NAME, "File name")), 5, row);
+			displayTable.add(getHeader(localize(LOC_KEY_REAL_COUNT, "Real count")), 6, row);
+			displayTable.add(getHeader(localize(PARAM_PAYMENT_DATE, "Payment date")), 7, row);
+			displayTable.add(getHeader(localize(PARAM_DUE_DATE, "Due date")), 8, row++);
+
 			EntryGroup EG;
 			for (Iterator iter = groups.iterator(); iter.hasNext();) {
 				EG = (EntryGroup) iter.next();
-		
-				col = 1;
-				
-				T.add(getGroupLink(EG.getName(), (Integer)EG.getPrimaryKey()), col++, row);
-				T.add(getText(new IWTimestamp(EG.getGroupDate()).getLocaleDate(iwc)), col++, row);
-				T.add(getText(String.valueOf(EG.getEntryIdFrom())), col++, row);
-				T.add(getText(String.valueOf(EG.getEntryIdTo())), col++, row);
-				T.add(getText(EG.getFileName()), col++, row);
-				AssessmentBusiness assBuiz =
-					(AssessmentBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, AssessmentBusiness.class);
-				T.add(getText(String.valueOf(assBuiz.getGroupEntryCount(EG))), col++, row);
-				/*
-				
-				Link R = new Link(iwb.getImage("rollback.gif"));
-				
-				R.addParameter("rollback",AR.getID());
-				
-				R.addParameter(strAction ,ACT5);
-				
-				
-				
-				T.add(R,col++,row);
-				
-				*/
+				displayTable.add(getGroupLink(EG.getName(), (Integer) EG.getPrimaryKey()), 1, row);
+				displayTable.add(getText(new IWTimestamp(EG.getGroupDate()).getLocaleDate(iwc.getCurrentLocale())), 2,
+						row);
+				displayTable.add(getText(String.valueOf(EG.getEntryIdFrom())), 3, row);
+				displayTable.add(getText(String.valueOf(EG.getEntryIdTo())), 4, row);
+				if (EG.getFileId() > 0) {
+					displayTable.add(new Link(EG.getFileId()), 5, row);				
+				}
+				AssessmentBusiness assBuiz = (AssessmentBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc,
+						AssessmentBusiness.class);
+				displayTable.add(getText(String.valueOf(assBuiz.getGroupEntryCount(EG))), 6, row);
+				if (EG.getFileInvoiceDate() != null) {
+				displayTable.add(
+						getText(new IWTimestamp(EG.getFileInvoiceDate()).getLocaleDate(iwc.getCurrentLocale())), 7, row);
+				}
+				if (EG.getFileDueDate() != null) {
+				displayTable.add(getText(new IWTimestamp(EG.getFileDueDate()).getLocaleDate(iwc.getCurrentLocale())),
+						8, row);
+				}
 				row++;
 			}
-			T.setWidth("100%");
-			T.setCellpadding(2);
-			T.setCellspacing(1);
-			T.setHorizontalZebraColored(getZebraColor1(),getZebraColor2());
-			T.setRowColor(1, getHeaderColor());
+			displayTable.setWidth("100%");
+			displayTable.setCellpadding(2);
+			displayTable.setCellspacing(1);
+			displayTable.setHorizontalZebraColored(getZebraColor1(), getZebraColor2());
+			displayTable.setRowColor(1, getHeaderColor());
 			row++;
 		}
 		else
-			T.add(localize("no_groups", "No groups"), 1, row);
-		return T;
+			displayTable.add(localize(LOC_KEY_NO_GROUPS, "No groups"), 1, row);
+		return displayTable;
 	}
-	private PresentationObject getTableOfAssessmentAccounts(IWContext iwc) {
+
+	protected PresentationObject getTableOfAssessmentAccounts(IWContext iwc) {
 		Table T = new Table();
-		String id = iwc.getParameter("entry_group_id");
+		String id = iwc.getParameter(PARAM_ENTRY_GROUP_ID);
 		if (id != null) {
-			//List L = Finder.listOfEntriesInGroup(Integer.parseInt(id));
 			Collection entries = null;
 			try {
 				entries = getFinanceService().getAccountEntryHome().findByEntryGroup(Integer.valueOf(id));
-			} 
+			}
 			catch (NumberFormatException e) {
 				e.printStackTrace();
 			}
@@ -214,14 +262,13 @@ public class EntryGroups extends Finance {
 				e.printStackTrace();
 			}
 			if (entries != null) {
-			
-				T.add(getHeader(localize("entry_name", "Entry name")), 1, 1);
-				T.add(getHeader(localize("last_updated", "Last updated")), 2, 1);
-				T.add(getHeader(localize("amount", "Amount")), 3, 1);
+
+				T.add(getHeader(localize(LOC_KEY_ENTRY_NAME, "Entry name")), 1, 1);
+				T.add(getHeader(localize(LOC_KEY_LAST_UPDATED, "Last updated")), 2, 1);
+				T.add(getHeader(localize(LOC_KEY_AMOUNT, "Amount")), 3, 1);
 				int col = 1;
 				int row = 2;
 				AccountEntry A;
-				//java.text.NumberFormat nf = java.text.NumberFormat.getNumberInstance(iwc.getCurrentLocale());
 				for (Iterator iter = entries.iterator(); iter.hasNext();) {
 					A = (AccountEntry) iter.next();
 					col = 1;
@@ -233,58 +280,55 @@ public class EntryGroups extends Finance {
 				T.setWidth("100%");
 				T.setCellpadding(2);
 				T.setCellspacing(1);
-				T.setHorizontalZebraColored(getZebraColor1(),getZebraColor2());
+				T.setHorizontalZebraColored(getZebraColor1(), getZebraColor2());
 				T.setRowColor(1, getHeaderColor());
 				row++;
 			}
 			else
-				add(getErrorText("is empty"));
+				add(getErrorText(localize(LOC_KEY_IS_EMPTY, "is empty")));
 		}
 		return T;
 	}
-	private PresentationObject doMainTable(IWContext iwc) {
-		Table T = new Table();
+
+	protected PresentationObject doMainTable(IWContext iwc) {
+		Table inputTable = new Table();
 		int row = 2;
-		T.add(getHeader(localize("entries_from", "Entries from")), 1, row);
+		inputTable.add(getHeader(localize(PARAM_GROUP_DATE_FROM, "Entries from")), 1, row);
 		IWTimestamp today = IWTimestamp.RightNow();
-		DateInput di1 = new DateInput("ent_from", true);
-		//di.setDate(new IWTimestamp(1,today.getMonth(),today.getYear()).getSQLDate());
-		T.add(di1, 2, row);
-		row++;
-		T.add(getHeader(localize("entries_to", "Entries to")), 1, row);
-		DateInput di2 = new DateInput("ent_to", true);
-		di2.setDate(today.getSQLDate());
-		T.add(di2, 2, row);
-		SubmitButton sb = new SubmitButton("commit", localize("commit", "Commit"));
-		sb = (SubmitButton) setStyle(sb,STYLENAME_INTERFACE);
-		DropdownMenu drpAccountTypes = new DropdownMenu("account_type");
-		drpAccountTypes.addMenuElement(
-			com.idega.block.finance.data.AccountBMPBean.typeFinancial,
-			localize("financial", "Financial"));
-		drpAccountTypes.addMenuElement(
-			com.idega.block.finance.data.AccountBMPBean.typePhone,
-			localize("phone", "phone"));
-		drpAccountTypes = (DropdownMenu) setStyle(drpAccountTypes,STYLENAME_INTERFACE);
-		row++;
-		T.add(sb, 2, row);
-		row++;
-		T.setHorizontalZebraColored(getZebraColor1(),getZebraColor2());
-		T.setRowColor(1, getHeaderColor());
-		T.mergeCells(1, 1, 2, 1);
-		T.setWidth("100%");
-		T.add(new HiddenInput(this.strAction, String.valueOf(this.ACT3)));
-		
-		return T;
+		DateInput di1 = new DateInput(PARAM_GROUP_DATE_FROM, true);
+		inputTable.add(di1, 2, row++);
+		inputTable.add(getHeader(localize(PARAM_GROUP_DATE_TO, "Entries to")), 1, row);
+		DateInput di2 = new DateInput(PARAM_GROUP_DATE_TO, true);
+		di2.setDate(today.getDate());
+		inputTable.add(di2, 2, row++);
+		inputTable.add(getHeader(localize(PARAM_PAYMENT_DATE, "Payment date")), 1, row);
+		DateInput paymentDate = new DateInput(PARAM_PAYMENT_DATE, true);
+		inputTable.add(paymentDate, 2, row++);
+		inputTable.add(getHeader(localize(PARAM_DUE_DATE, "Due date")), 1, row);
+		DateInput dueDate = new DateInput(PARAM_DUE_DATE, true);
+		inputTable.add(dueDate, 2, row++);
+
+		SubmitButton sb = new SubmitButton(PARAM_COMMIT, localize(PARAM_COMMIT, "Commit"));
+		sb = (SubmitButton) setStyle(sb, STYLENAME_INTERFACE);
+		inputTable.setAlignment(2, row, "RIGHT");
+		inputTable.add(sb, 2, row);
+		inputTable.setHorizontalZebraColored(getZebraColor1(), getZebraColor2());
+		inputTable.setRowColor(1, getHeaderColor());
+		inputTable.mergeCells(1, 1, 2, 1);
+		inputTable.setWidth("100%");
+		inputTable.add(new HiddenInput(strAction, String.valueOf(ACT3)));
+
+		return inputTable;
 	}
 
-	private Link getGroupLink(String name, Integer id) {
+	protected Link getGroupLink(String name, Integer id) {
 		Link L = new Link(getText(name));
 		L.addParameter(strAction, ACT4);
-		L.addParameter("entry_group_id", id.toString());
-		
+		L.addParameter(PARAM_ENTRY_GROUP_ID, id.toString());
+
 		return L;
 	}
-	
+
 	public void main(IWContext iwc) {
 		control(iwc);
 	}

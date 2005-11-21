@@ -1,10 +1,27 @@
+/**
+ * 
+ */
 package com.idega.block.finance.data;
 
+import java.util.Collection;
 
-public interface EntryGroupHome extends com.idega.data.IDOHome
-{
- public EntryGroup create() throws javax.ejb.CreateException;
- public EntryGroup findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
- public java.util.Collection findAll()throws javax.ejb.FinderException;
+import javax.ejb.FinderException;
+
+import com.idega.data.IDOHome;
+
+/**
+ * @author bluebottle
+ *
+ */
+public interface EntryGroupHome extends IDOHome {
+	public EntryGroup create() throws javax.ejb.CreateException;
+
+	public EntryGroup findByPrimaryKey(Object pk)
+			throws javax.ejb.FinderException;
+
+	/**
+	 * @see com.idega.block.finance.data.EntryGroupBMPBean#ejbFindAll
+	 */
+	public Collection findAll() throws FinderException;
 
 }

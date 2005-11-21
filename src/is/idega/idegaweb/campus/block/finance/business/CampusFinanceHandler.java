@@ -628,6 +628,9 @@ public class CampusFinanceHandler implements FinanceHandler {
 		catch (IBOLookupException e) {
 			e.printStackTrace();
 		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
 
 	}
 

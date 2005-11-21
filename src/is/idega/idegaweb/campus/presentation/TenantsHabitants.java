@@ -305,6 +305,8 @@ public class TenantsHabitants extends CampusBlock implements Campus {
 			table.add(formatText(collected.getApartment()), column++, row);
 			table.add(formatText(collected.getFloor()), column++, row);
 			table.add(formatText(collected.getPhone()), column++, row);
+			
+			//collected.getUserID()
 /*			if (isAdmin) {
 				String emailString = collected.getEmail();
 				if (emailString != null && !"".equals(emailString.trim())) {

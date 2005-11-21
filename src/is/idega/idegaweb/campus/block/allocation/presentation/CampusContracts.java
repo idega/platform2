@@ -458,6 +458,7 @@ public class CampusContracts extends CampusBlock {
 		drp.addMenuElement("R", getStatus("R"));
 		drp.addMenuElement("U", getStatus("U"));
 		drp.addMenuElement("E", getStatus("E"));
+		drp.addMenuElement("G", getStatus("G"));
 		drp.setSelectedElement(selected);
 		return drp;
 	}

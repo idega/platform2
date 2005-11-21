@@ -7,6 +7,7 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 import com.idega.block.category.data.CategoryEntityBMPBean;
+import com.idega.core.file.data.ICFile;
 
 /**
  * Title: Description: Copyright: Copyright (c) 2001 Company: idega multimedia
@@ -35,6 +36,7 @@ public class EntryGroupBMPBean extends CategoryEntityBMPBean implements com.ideg
 		addAttribute(getColumnNameInfo(), "Info", true, true, String.class);
 		addAttribute(getColumnNameFileInvoiceDate(), "Invoice date", true, true, java.sql.Timestamp.class);
 		addAttribute(getColumnNameFileDueDate(), "Due date", true, true, java.sql.Timestamp.class);
+		addManyToOneRelationship(getColumnNameFileId(), ICFile.class);
 	}
 
 	public String getEntityName() {
@@ -80,6 +82,10 @@ public class EntryGroupBMPBean extends CategoryEntityBMPBean implements com.ideg
 
 	public static String getColumnNameFileDueDate() {
 		return "FILE_DUE_DATE";
+	}
+	
+	public static String getColumnNameFileId() {
+		return "IC_FILE_ID";
 	}
 
 	public String getName() {
@@ -148,6 +154,22 @@ public class EntryGroupBMPBean extends CategoryEntityBMPBean implements com.ideg
 	
 	public void setFileDueDate(Timestamp dueDate) {
 		setColumn(getColumnNameFileDueDate(), dueDate);
+	}
+	
+	public void setFileId(int fileId) {
+		setColumn(getColumnNameFileId(),fileId);
+	} 
+	
+	public int getFileId() {
+		return getIntColumnValue(getColumnNameFileId());
+	}
+	
+	public void setFile(ICFile file) {
+		setColumn(getColumnNameFileId(),file);
+	}
+	
+	public ICFile getFile() {
+		return (ICFile)getColumnValue(getColumnNameFileId());
 	}
 
 	
