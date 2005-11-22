@@ -19,7 +19,6 @@ import com.idega.presentation.Table;
  */
 public class UserStatsWindow extends StyledIWAdminWindow {
     
-    private String styledLink = "styledLinkGeneral";
     private IWResourceBundle iwrb;
     private IWBundle iwb;
     public static final String STATS_INVOCATION_NAME_FROM_BUNDLE = "STATS_INVOCATION_NAME_FROM_BUNDLE";
@@ -44,8 +43,9 @@ public class UserStatsWindow extends StyledIWAdminWindow {
         iwrb = getResourceBundle(iwc);
         iwb = getBundle(iwc);     
         
-        setTitle(iwrb.getLocalizedString("userstatswindow.userstats"));
-        addTitle(iwrb.getLocalizedString("userstatswindow.userstats"), TITLE_STYLECLASS);
+        String windowTitle = iwc.getParameter(STATS_LOCALIZABLE_KEY_NAME);
+        setTitle(iwrb.getLocalizedString(windowTitle));
+        addTitle(iwrb.getLocalizedString(windowTitle), TITLE_STYLECLASS);
         Table table = new Table(2, 1);
         table.setWidthAndHeightToHundredPercent();
         table.setColumnWidth(1, "200");
