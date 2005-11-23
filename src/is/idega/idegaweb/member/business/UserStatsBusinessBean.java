@@ -56,13 +56,15 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
     private GroupBusiness groupBiz = null;
 	private IWBundle _iwb = null;
 	private IWResourceBundle _iwrb = null;
+	private IWResourceBundle _userIwrb = null;
 	private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member";
+	private final static String USER_IW_BUNDLE_IDENTIFIER = "com.idega.user";
 	private static final String USR_STAT_PREFIX = "usr_stat_";
 
 	private static final String LOCALIZED_CURRENT_DATE = "UserStatsBusiness.current_date";
 	private static final String LOCALIZED_NAME = "UserStatsBusiness.name";
 	private static final String LOCALIZED_PERSONAL_ID = "UserStatsBusiness.personal_id";
-	private static final String LOCALIZED_GROUP_NAME = "UserStatsBusiness.group_name";
+	private static final String LOCALIZED_GROUP_TYPE = "UserStatsBusiness.group_type";
 	private static final String LOCALIZED_GROUP_PATH = "UserStatsBusiness.group_path";
 	private static final String LOCALIZED_USER_STATUS = "UserStatsBusiness.user_status";
 	private static final String LOCALIZED_STREET_ADDRESS = "UserStatsBusiness.street_address";
@@ -72,7 +74,7 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 
 	private static final String FIELD_NAME_NAME = "name";
 	private static final String FIELD_NAME_PERSONAL_ID = "personal_id";
-	private static final String FIELD_NAME_GROUP_NAME = "group_name";
+	private static final String FIELD_NAME_GROUP_TYPE = "group_type";
 	private static final String FIELD_NAME_GROUP_PATH = "group_path";
 	private static final String FIELD_NAME_USER_STATUS = "user_status";
 	private static final String FIELD_NAME_STREET_ADDRESS = "street_address";
@@ -88,6 +90,7 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 			_iwb = this.getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
 		}
 		_iwrb = _iwb.getResourceBundle(this.getUserContext().getCurrentLocale());
+		_userIwrb = this.getIWApplicationContext().getIWMainApplication().getBundle(USER_IW_BUNDLE_IDENTIFIER).getResourceBundle(this.getUserContext().getCurrentLocale());
 	}
 
     
@@ -149,11 +152,11 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 		    }
 			if (group != null) {
 			    if (groupsRecursiveFilter != null && groupsRecursiveFilter.equals("checked")) {
-				    groups = getGroupBusiness().getChildGroupsRecursiveResultFiltered(group, groupTypesFilter, true, true);
+				    groups = getGroupBusiness().getChildGroupsRecursiveResultFiltered(group, groupTypesFilter, true, true, true);
 				} else {
 				    groups = new ArrayList();
-				    groups.add(group);
 				}
+			    groups.add(group);
 			}
 		} catch (FinderException e) {
 		    e.printStackTrace();
@@ -212,7 +215,7 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 			   	    streetAddressString = address.getStreetAddress();
 			   	    postalAddressString = address.getPostalAddress();
 			   	}
-			     while (parIt.hasNext()) {				     
+			     while (parIt.hasNext()) {
 			         Group parentGroup = (Group)parIt.next();
 			         List userStatuses = null;
 			         String userStatusString = null;
@@ -238,7 +241,6 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 			             
 			         }
 			         
-			         String parentGroupName = parentGroup.getName();
 			         String parentGroupPath = getParentGroupPath(parentGroup, topNodes);
 				     // create a new ReportData for each row	    
 			         ReportableData data = new ReportableData();
@@ -274,8 +276,151 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 		return reportCollection;
     }
 
-    private String getPhoneNumber(User user) {
-		Collection phones = user.getPhones();
+	public ReportableCollection getStatisticsForGroups(String groupIDFilter, String groupsRecursiveFilter, Collection groupTypesFilter) throws RemoteException {
+	    initializeBundlesIfNeeded();
+		ReportableCollection reportCollection = new ReportableCollection();
+		Locale currentLocale = this.getUserContext().getCurrentLocale();
+		
+		//PARAMETES
+		//Add extra...because the inputhandlers supply the basic header texts
+		
+		reportCollection.addExtraHeaderParameter(
+				"label_current_date", _iwrb.getLocalizedString(LOCALIZED_CURRENT_DATE, "Current date"),
+				"current_date", TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale, IWTimestamp.LONG,IWTimestamp.SHORT),"GMT"));
+ 	
+		//PARAMETERS that are also FIELDS
+		 //data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
+		 //The name you give the field/parameter must not contain spaces or special characters		
+		 ReportableField nameField = new ReportableField(FIELD_NAME_NAME, String.class);
+		 nameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_NAME, "Name"), currentLocale);
+		 reportCollection.addField(nameField);
+
+		 ReportableField groupTypeField = new ReportableField(FIELD_NAME_GROUP_TYPE, String.class);
+		 groupTypeField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_GROUP_TYPE, "Group Type"),currentLocale);
+		 reportCollection.addField(groupTypeField);
+
+		 ReportableField groupPathField = new ReportableField(FIELD_NAME_GROUP_PATH, String.class);
+		 groupPathField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_GROUP_PATH, "Group Path"), currentLocale);
+		 reportCollection.addField(groupPathField);
+		 
+		 ReportableField streetAddressField = new ReportableField(FIELD_NAME_STREET_ADDRESS, String.class);
+		 streetAddressField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_STREET_ADDRESS, "Street Address"), currentLocale);
+		 reportCollection.addField(streetAddressField);
+		 
+		 ReportableField postalAddressField = new ReportableField(FIELD_NAME_POSTAL_ADDRESS, String.class);
+		 postalAddressField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_POSTAL_ADDRESS, "Postal Address"), currentLocale);
+		 reportCollection.addField(postalAddressField); 
+		 
+		 ReportableField phoneField = new ReportableField(FIELD_NAME_PHONE, String.class);
+		 phoneField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PHONE, "Phone"), currentLocale);
+		 reportCollection.addField(phoneField);
+		 
+		 ReportableField emailField = new ReportableField(FIELD_NAME_EMAIL, String.class);
+		 emailField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_EMAIL, "Email"), currentLocale);
+		 reportCollection.addField(emailField);
+		
+		Group topGroup = null;
+		Collection groups = null;
+		try {
+		    if (groupIDFilter != null && !groupIDFilter.equals("")) {
+		        groupIDFilter = groupIDFilter.substring(groupIDFilter.lastIndexOf("_")+1);
+		        topGroup = getGroupBusiness().getGroupByGroupID(Integer.parseInt((groupIDFilter)));
+		    }
+			if (topGroup != null) {
+			    if (groupsRecursiveFilter != null && groupsRecursiveFilter.equals("checked")) {
+			        groups = getGroupBusiness().getChildGroupsRecursiveResultFiltered(topGroup, groupTypesFilter, true, true, false);
+				} else {
+				    groups = new ArrayList();
+				}
+			    groups.add(topGroup);
+			}
+		} catch (FinderException e) {
+		    e.printStackTrace();
+    	}
+			Collection topNodes = getUserBusiness().getUsersTopGroupNodesByViewAndOwnerPermissions(getUserContext().getCurrentUser(),getUserContext());
+			Map usersByGroups = new TreeMap();
+			AddressTypeHome addressHome = (AddressTypeHome) IDOLookup.getHome(AddressType.class);
+			AddressType at1 = null;
+			try {
+			    at1 = addressHome.findAddressType1();
+			} catch (FinderException e) {
+			    e.printStackTrace();
+			}
+			Iterator iter = groups.iterator();
+			while (iter.hasNext()) {
+			    Group group = (Group) iter.next();
+			    Collection parentGroupCollection = null;
+			     try {
+			         parentGroupCollection = getGroupHome().findParentGroups(Integer.parseInt(group.getPrimaryKey().toString()));
+			     } catch (FinderException e) {
+			         System.out.println(e.getMessage());
+			     }
+			     Iterator parIt = parentGroupCollection.iterator();
+
+			    String groupTypeString = _userIwrb.getLocalizedString(group.getGroupType(), group.getGroupType());
+			   	Collection emails =  group.getEmails();
+			   	Email email = null;
+			   	String emailString = null;
+			   	if (!emails.isEmpty()) {
+			   	    email = (Email)emails.iterator().next();
+			   	    emailString = email.getEmailAddress();
+			   	}
+			   	Collection addresses = null;
+			   	if (at1 != null) {			   	    
+				   	try {
+                        addresses = group.getAddresses(at1);
+                    } catch (IDOLookupException e1) {
+                        e1.printStackTrace();
+                    } catch (IDOCompositePrimaryKeyException e1) {
+                        e1.printStackTrace();
+                    } catch (IDORelationshipException e1) {
+                        e1.printStackTrace();
+                    }
+			   	}
+			    Address address = null;
+			    String streetAddressString = null;
+			    String postalAddressString = null;
+			   	if (addresses != null && !addresses.isEmpty()) {
+			   	    address = (Address)addresses.iterator().next();
+			   	    streetAddressString = address.getStreetAddress();
+			   	    postalAddressString = address.getPostalAddress();
+			   	}
+			   	while (parIt.hasNext()) {				     
+			        Group parentGroup = (Group)parIt.next();
+			        String parentGroupPath = getParentGroupPath(parentGroup, topNodes);
+				    // create a new ReportData for each row	    
+			        ReportableData data = new ReportableData();
+			        //	add the data to the correct fields/columns
+				    data.addData(nameField, group.getName() );
+				    data.addData(groupTypeField, groupTypeString);
+				    data.addData(groupPathField, parentGroupPath);
+				    data.addData(emailField, emailString);
+				    data.addData(streetAddressField, streetAddressString);
+				    data.addData(postalAddressField, postalAddressString);
+				    data.addData(phoneField, getPhoneNumber(group));
+				    List statsForGroup = (List) usersByGroups.get(group.getPrimaryKey());
+					if (statsForGroup == null)
+						statsForGroup = new Vector();
+					statsForGroup.add(data);
+					usersByGroups.put(group.getPrimaryKey(), statsForGroup);
+				}
+			}
+			// iterate through the ordered map and ordered lists and add to the final collection
+			Iterator statsDataIter = usersByGroups.keySet().iterator();
+			while (statsDataIter.hasNext()) {
+				List datas = (List) usersByGroups.get(statsDataIter.next());
+				// don't forget to add the row to the collection
+				reportCollection.addAll(datas);
+			}			 	
+
+    	ReportableField[] sortFields = new ReportableField[] {groupPathField, nameField };
+		Comparator comparator = new FieldsComparator(sortFields);
+		Collections.sort(reportCollection, comparator);
+		return reportCollection;
+	}
+
+    private String getPhoneNumber(Group group) {
+		Collection phones = group.getPhones();
 		String phoneNumber = "";
 		if (!phones.isEmpty()) {
 			Phone phone = null;
@@ -325,7 +470,7 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 	                 }
 	                 else {
 	                     try {
-		                     parentGroup = (Group) groupBiz.getGroupByGroupID(parentID.intValue());
+		                     parentGroup = groupBiz.getGroupByGroupID(parentID.intValue());
 			                 cachedGroups.put(groupKey, parentGroup);
 	                     } catch (Exception e) {
 	                         break;
