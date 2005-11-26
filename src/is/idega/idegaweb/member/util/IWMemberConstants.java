@@ -102,7 +102,12 @@ public class IWMemberConstants {
 	public static final String STATUS_ASSISTANT_COACH = "STAT_ASSCOACH";
 	
 	public static final String ORDER_BY_NAME = "name_order";
+	public static final String ORDER_BY_GROUP_PATH = "group_path_order";
+	public static final String ORDER_BY_GROUP_TYPE = "group_type_order";
+	public static final String ORDER_BY_DATE_OF_BIRTH = "date_of_birth_order";
+	public static final String ORDER_BY_USER_STATUS = "user_status_order";
 	public static final String ORDER_BY_ADDRESS = "address_order";
+	public static final String ORDER_BY_POSTAL_ADDRESS = "postal_address_order";
 	public static final String ORDER_BY_POSTAL_CODE = "postal_code_order";
 	public static final String ORDER_BY_GROUP_NAME = "group_name_order";
 	public static final String ORDER_BY_ENTRY_DATE = "entry_date_order";
