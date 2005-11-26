@@ -3,6 +3,7 @@
  */
 package is.idega.idegaweb.member.business;
 
+import is.idega.idegaweb.member.util.IWMemberConstants;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -94,7 +95,7 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 	}
 
     
-    public ReportableCollection getStatisticsForUsers(String groupIDFilter, String groupsRecursiveFilter, Collection groupTypesFilter, Collection userStatusesFilter, Integer yearOfBirthFromFilter, Integer yearOfBirthToFilter, String genderFilter) throws RemoteException {        
+    public ReportableCollection getStatisticsForUsers(String groupIDFilter, String groupsRecursiveFilter, Collection groupTypesFilter, Collection userStatusesFilter, Integer yearOfBirthFromFilter, Integer yearOfBirthToFilter, String genderFilter, String dynamicLayout, String orderBy) throws RemoteException {        
 
         initializeBundlesIfNeeded();
 		ReportableCollection reportCollection = new ReportableCollection();
@@ -268,15 +269,38 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 				// don't forget to add the row to the collection
 				reportCollection.addAll(datas);
 			}			 	
-			 
-    	
-    	ReportableField[] sortFields = new ReportableField[] {groupPathField, nameField, personalIDField };
+
+    	ReportableField[] sortFields = null;
+    	List orderByFields = new ArrayList();
+    	if (dynamicLayout.equals("-1")) {
+    		orderByFields.add(groupPathField);
+    	}
+		if (orderBy != null) {
+			if (!dynamicLayout.equals("-1") && orderBy.equals(IWMemberConstants.ORDER_BY_GROUP_PATH)) {
+	    		orderByFields.add(groupPathField);
+	    	} else if (orderBy.equals(IWMemberConstants.ORDER_BY_NAME)) {
+	    		orderByFields.add(nameField);
+	    	} else if (orderBy.equals(IWMemberConstants.ORDER_BY_USER_STATUS)) {
+	    		orderByFields.add(userStatusField);
+	    	} else if (orderBy.equals(IWMemberConstants.ORDER_BY_ADDRESS)) {
+	    		orderByFields.add(streetAddressField);
+	    	} else if (orderBy.equals(IWMemberConstants.ORDER_BY_POSTAL_ADDRESS)) {
+	    		orderByFields.add(postalAddressField);
+	    	}
+		} else {
+    		orderByFields.add(nameField);
+		}
+		
+		sortFields = new ReportableField[orderByFields.size()];
+    	for (int i=0; i<orderByFields.size(); i++) {
+    		sortFields[i] = (ReportableField)orderByFields.get(i);
+    	}
 		Comparator comparator = new FieldsComparator(sortFields);
 		Collections.sort(reportCollection, comparator);
 		return reportCollection;
     }
 
-	public ReportableCollection getStatisticsForGroups(String groupIDFilter, String groupsRecursiveFilter, Collection groupTypesFilter) throws RemoteException {
+	public ReportableCollection getStatisticsForGroups(String groupIDFilter, String groupsRecursiveFilter, Collection groupTypesFilter, String dynamicLayout, String orderBy) throws RemoteException {
 	    initializeBundlesIfNeeded();
 		ReportableCollection reportCollection = new ReportableCollection();
 		Locale currentLocale = this.getUserContext().getCurrentLocale();
@@ -413,7 +437,31 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 				reportCollection.addAll(datas);
 			}			 	
 
-    	ReportableField[] sortFields = new ReportableField[] {groupPathField, nameField };
+    	ReportableField[] sortFields = null;
+    	List orderByFields = new ArrayList();
+    	if (dynamicLayout.equals("-1")) {
+    		orderByFields.add(groupPathField);
+    	}
+		if (orderBy != null) {
+			if (!dynamicLayout.equals("-1") && orderBy.equals(IWMemberConstants.ORDER_BY_GROUP_PATH)) {
+	    		orderByFields.add(groupPathField);
+	    	} else if (orderBy.equals(IWMemberConstants.ORDER_BY_NAME)) {
+	    		orderByFields.add(nameField);
+	    	} else if (orderBy.equals(IWMemberConstants.ORDER_BY_GROUP_TYPE)) {
+	    		orderByFields.add(groupTypeField);
+	    	} else if (orderBy.equals(IWMemberConstants.ORDER_BY_ADDRESS)) {
+	    		orderByFields.add(streetAddressField);
+	    	} else if (orderBy.equals(IWMemberConstants.ORDER_BY_POSTAL_ADDRESS)) {
+	    		orderByFields.add(postalAddressField);
+	    	}
+		} else {
+    		orderByFields.add(nameField);
+		}
+		
+		sortFields = new ReportableField[orderByFields.size()];
+    	for (int i=0; i<orderByFields.size(); i++) {
+    		sortFields[i] = (ReportableField)orderByFields.get(i);
+    	}
 		Comparator comparator = new FieldsComparator(sortFields);
 		Collections.sort(reportCollection, comparator);
 		return reportCollection;
