@@ -24,7 +24,6 @@ import com.idega.block.entity.presentation.converter.CheckBoxConverter;
 import com.idega.block.entity.presentation.converter.editable.DropDownMenuConverter;
 import com.idega.block.entity.presentation.converter.editable.OptionProvider;
 import com.idega.business.IBOLookup;
-import com.idega.core.data.ICTreeNode;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.file.data.ICFileHome;
 import com.idega.data.EntityRepresentation;
@@ -397,11 +396,13 @@ public class ReportQueryOverview extends Block {
 		  				Iterator iterator = designFolder.getChildrenIterator();
 		  				if (iterator != null) {
 		  					while (iterator.hasNext())	{
-		  						ICTreeNode node = (ICTreeNode) iterator.next();
-		  						String name = node.getNodeName();
-		  						int id = node.getNodeID();
-		  						String idAsString = Integer.toString(id);
-		  						optionMap.put(idAsString, name);
+		  						ICFile node = (ICFile) iterator.next();
+		  						if (!node.isFolder()) {
+		  							String name = node.getNodeName();
+			  						int id = node.getNodeID();
+			  						String idAsString = Integer.toString(id);
+			  						optionMap.put(idAsString, name);
+		  						}
 		  					}
 		  				}
 					}
