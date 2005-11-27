@@ -10,10 +10,10 @@ import com.idega.presentation.ui.DropDownMenuInputHandler;
  * <p>
  * TODO sigtryggur Describe Type OrderByUserDetailsDropDownMenu
  * </p>
- *  Last modified: $Date: 2005/11/26 17:10:18 $ by $Author: sigtryggur $
+ *  Last modified: $Date: 2005/11/27 00:35:02 $ by $Author: sigtryggur $
  * 
  * @author <a href="mailto:sigtryggur@idega.com">sigtryggur</a>
- * @version $Revision: 1.1.2.1 $
+ * @version $Revision: 1.1.2.2 $
  */
 public class OrderByUserDetailsDropDownMenu extends DropDownMenuInputHandler {
 
@@ -23,6 +23,7 @@ public class OrderByUserDetailsDropDownMenu extends DropDownMenuInputHandler {
 	private static final String ORDER_BY_ADDRESS = IWMemberConstants.ORDER_BY_ADDRESS;
 	private static final String ORDER_BY_POSTAL_ADDRESS = IWMemberConstants.ORDER_BY_POSTAL_ADDRESS;
 	
+	protected static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 	private static final String CLASS_NAME_PREFIX = "OrderByUserDetailsDropDownMenu.";
 
 	public PresentationObject getHandlerObject(String name, String value, IWContext iwc) {
@@ -43,5 +44,9 @@ public class OrderByUserDetailsDropDownMenu extends DropDownMenuInputHandler {
 		}
 		else
 			return "";
+	}
+
+	public String getBundleIdentifier() {
+		return IW_BUNDLE_IDENTIFIER;
 	}
 }
