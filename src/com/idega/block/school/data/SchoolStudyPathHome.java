@@ -1,11 +1,5 @@
-/*
- * $Id: SchoolStudyPathHome.java,v 1.18 2005/06/12 13:46:09 laddi Exp $
- * Created on Jun 12, 2005
- *
- * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
+/**
+ * 
  */
 package com.idega.block.school.data;
 
@@ -16,10 +10,13 @@ import com.idega.data.IDORelationshipException;
 
 
 /**
- * Last modified: $Date: 2005/06/12 13:46:09 $ by $Author: laddi $
+ * <p>
+ * TODO Dainis Describe Type SchoolStudyPathHome
+ * </p>
+ *  Last modified: $Date: 2005/11/28 18:54:52 $ by $Author: dainis $
  * 
- * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.18 $
+ * @author <a href="mailto:Dainis@idega.com">Dainis</a>
+ * @version $Revision: 1.18.2.1 $
  */
 public interface SchoolStudyPathHome extends IDOHome {
 
@@ -101,6 +98,11 @@ public interface SchoolStudyPathHome extends IDOHome {
 	public Collection findBySchoolType(SchoolType schoolType, SchoolStudyPathGroup group) throws FinderException;
 
 	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#ejbFindBySchoolStudyPathGroup
+	 */
+	public Collection findBySchoolStudyPathGroup(SchoolStudyPathGroup group) throws FinderException;
+
+	/**
 	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#ejbFindBySchoolCategory
 	 */
 	public Collection findBySchoolCategory(SchoolCategory schoolCategory) throws FinderException;
@@ -108,7 +110,8 @@ public interface SchoolStudyPathHome extends IDOHome {
 	/**
 	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#ejbFindBySchoolAndSchoolCategory
 	 */
-	public Collection findBySchoolAndSchoolCategory(School school, SchoolCategory schoolCategory) throws FinderException;
+	public Collection findBySchoolAndSchoolCategory(School school, SchoolCategory schoolCategory)
+			throws FinderException;
 
 	/**
 	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#ejbFindBySchool

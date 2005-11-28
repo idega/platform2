@@ -108,29 +108,29 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
         return getBooleanColumnValue (COLUMN_IS_VALID);
     }
     
-  public void setIsValid(boolean isValid) {
-  		setColumn(COLUMN_IS_VALID, isValid);
-  }
+    public void setIsValid(boolean isValid) {
+		setColumn(COLUMN_IS_VALID, isValid);
+	}
 
-  public int getPoints() {
-	return getIntColumnValue(COLUMN_POINTS);
-}
+	public int getPoints() {
+		return getIntColumnValue(COLUMN_POINTS);
+	}
 
-public void setPoints(int points) {
-	setColumn(COLUMN_POINTS, points);
-}
+	public void setPoints(int points) {
+		setColumn(COLUMN_POINTS, points);
+	}
 
-public SchoolStudyPathGroup getStudyPathGroup() {
-	return (SchoolStudyPathGroup) getColumnValue(COLUMN_STUDY_PATH_GROUP_ID);
-}
+	public SchoolStudyPathGroup getStudyPathGroup() {
+		return (SchoolStudyPathGroup) getColumnValue(COLUMN_STUDY_PATH_GROUP_ID);
+	}
 
-public int getStudyPathGroupID() {
-	return getIntColumnValue(COLUMN_STUDY_PATH_GROUP_ID);
-}
+	public int getStudyPathGroupID() {
+		return getIntColumnValue(COLUMN_STUDY_PATH_GROUP_ID);
+	}
 
-public void setStudyPathGroupID(int study_path_group) {
-	setColumn(COLUMN_STUDY_PATH_GROUP_ID, study_path_group);
-}
+	public void setStudyPathGroupID(int study_path_group) {
+		setColumn(COLUMN_STUDY_PATH_GROUP_ID, study_path_group);
+	}
   
 	public void remove() {
 		setIsValid(false);
@@ -305,6 +305,17 @@ public void setStudyPathGroupID(int study_path_group) {
 		query.appendOrderBy(COLUMN_CODE);
 		return idoFindPKsByQuery(query);
 	}
+	
+	public Collection ejbFindBySchoolStudyPathGroup(SchoolStudyPathGroup group) throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this);
+		query.append(" where ");
+		query.append(" (").append(COLUMN_IS_VALID).append(" is null");
+		query.append(" OR ").append(COLUMN_IS_VALID).append(" = 'Y')");
+		query.appendAndEquals(COLUMN_STUDY_PATH_GROUP_ID, group.getPrimaryKey().toString());
+		query.appendOrderBy(COLUMN_CODE);
+		return idoFindPKsByQuery(query);
+	}	
 
 	public Collection ejbFindBySchoolCategory(SchoolCategory schoolCategory) throws FinderException {
 		IDOQuery query = idoQuery();

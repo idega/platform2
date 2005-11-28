@@ -1,11 +1,5 @@
-/*
- * $Id: SchoolStudyPathHomeImpl.java,v 1.19 2005/06/12 13:46:09 laddi Exp $
- * Created on Jun 12, 2005
- *
- * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
+/**
+ * 
  */
 package com.idega.block.school.data;
 
@@ -16,10 +10,13 @@ import com.idega.data.IDORelationshipException;
 
 
 /**
- * Last modified: $Date: 2005/06/12 13:46:09 $ by $Author: laddi $
+ * <p>
+ * TODO Dainis Describe Type SchoolStudyPathHomeImpl
+ * </p>
+ *  Last modified: $Date: 2005/11/28 18:54:52 $ by $Author: dainis $
  * 
- * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.19 $
+ * @author <a href="mailto:Dainis@idega.com">Dainis</a>
+ * @version $Revision: 1.19.2.1 $
  */
 public class SchoolStudyPathHomeImpl extends IDOFactory implements SchoolStudyPathHome {
 
@@ -136,6 +133,13 @@ public class SchoolStudyPathHomeImpl extends IDOFactory implements SchoolStudyPa
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
+	public Collection findBySchoolStudyPathGroup(SchoolStudyPathGroup group) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolStudyPathBMPBean) entity).ejbFindBySchoolStudyPathGroup(group);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
 	public Collection findBySchoolCategory(SchoolCategory schoolCategory) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		java.util.Collection ids = ((SchoolStudyPathBMPBean) entity).ejbFindBySchoolCategory(schoolCategory);
@@ -143,7 +147,8 @@ public class SchoolStudyPathHomeImpl extends IDOFactory implements SchoolStudyPa
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findBySchoolAndSchoolCategory(School school, SchoolCategory schoolCategory) throws FinderException {
+	public Collection findBySchoolAndSchoolCategory(School school, SchoolCategory schoolCategory)
+			throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		java.util.Collection ids = ((SchoolStudyPathBMPBean) entity).ejbFindBySchoolAndSchoolCategory(school,
 				schoolCategory);
