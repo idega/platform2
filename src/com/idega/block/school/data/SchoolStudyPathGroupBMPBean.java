@@ -23,8 +23,7 @@ public class SchoolStudyPathGroupBMPBean extends GenericEntity implements School
 	private static String TABLE_NAME           = "SCH_STUDY_PATH_GROUP";
 	private static String COLUMN_GROUP_NAME    = "GROUP_NAME";
 	private static String COLUMN_LOCALIZED_KEY = "LOCALIZED_KEY";
-
-	
+	private static String COLUMN_SCH_SCHOOL_TYPE_ID = "SCH_SCHOOL_TYPE_ID";	
 	
 	public String getEntityName() {
 		return TABLE_NAME;
@@ -34,7 +33,7 @@ public class SchoolStudyPathGroupBMPBean extends GenericEntity implements School
 		addAttribute(getIDColumnName());
 		addAttribute(COLUMN_GROUP_NAME, "group name", true, true, String.class);
 		addAttribute(COLUMN_LOCALIZED_KEY, "localized key", String.class);
-		
+		addManyToOneRelationship(COLUMN_SCH_SCHOOL_TYPE_ID, SchoolType.class);		
 	}
 	
 	public Collection ejbFindAllStudyPathGroups() throws FinderException {
@@ -66,5 +65,13 @@ public class SchoolStudyPathGroupBMPBean extends GenericEntity implements School
 
 	public void setLocalizationKey(String localizedkey) {
 		setColumn(COLUMN_LOCALIZED_KEY, localizedkey);
+	}
+	
+	public SchoolType getSchoolType() {
+		return (SchoolType) getColumnValue(COLUMN_SCH_SCHOOL_TYPE_ID);		
+	}
+	
+	public void setSchoolType(SchoolType type) {
+		setColumn(COLUMN_SCH_SCHOOL_TYPE_ID, type);				
 	}
 }
