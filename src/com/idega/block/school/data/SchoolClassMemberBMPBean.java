@@ -56,8 +56,8 @@ import com.idega.util.IWTimestamp;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2005/11/18 17:29:45 $ by $Author: palli $
- * @version $Revision: 1.154.2.1 $
+ *         Last modified: $Date: 2005/11/28 19:32:05 $ by $Author: dainis $
+ * @version $Revision: 1.154.2.2 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -81,6 +81,8 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	public final static String PLACEMENT_PARAGRAPH = "placement_paragraph";
 	public final static String COMPENSATION_BY_AGREEMENT = "comp_by_agreement";
 	public static final String STUDY_PATH = "study_path";
+	public final static String HANDICRAFT_ID = "handicraft_id"; // relation to sch_study_path.study_path_id	
+	
 	private final static String PK = "school_class_member.invoice_interval.";
 	private final static String KEY_INVOICE_INTERVAL_VALUE_TERM = PK + "term";
 	private final static String KEY_INVOICE_INTERVAL_VALUE_MONTH = PK + "month";
@@ -111,6 +113,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		
 		addManyToManyRelationShip(SchoolClass.class, "sch_sub_group_placements");
 		addManyToManyRelationShip(SchoolStudyPath.class, "sch_member_study_path");
+		this.addManyToOneRelationship(HANDICRAFT_ID, SchoolStudyPath.class);
 
 		addIndex("IDX_SCH_CLASS_MEMBER_1", new String[]{ MEMBER, SCHOOL_TYPE});
 	}
@@ -302,6 +305,22 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	public int getStudyPathId() {
 		return this.getIntColumnValue(STUDY_PATH);
 	}
+	
+	public SchoolStudyPath getHandicraft() {
+		return (SchoolStudyPath) getColumnValue(HANDICRAFT_ID);
+	}
+	
+	public int getHandicraftId() {
+		return getIntColumnValue(HANDICRAFT_ID);
+	}
+	
+	public void setHandicraft(SchoolStudyPath path) {
+		setColumn(HANDICRAFT_ID, path);
+	}
+	
+	public void setHandicraftId(int schoolStudyPathId) {
+		setColumn(HANDICRAFT_ID, schoolStudyPathId);
+	}	
 
 	public Collection ejbFindAllOrderedByRegisterDate(User user) throws FinderException {
 		int userID = ((Integer) user.getPrimaryKey()).intValue();
@@ -847,6 +866,30 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		return (Integer) this.idoFindOnePKByQuery(query);
 	}
 
+	public Collection ejbFindAllNotTerminatedByStudent(int studentId) throws FinderException {		
+		Table table = new Table(this);
+		//Table typeTable = new Table(SchoolType.class);
+		Table schoolClassTable = new Table(SchoolClass.class);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn());
+		try {
+		//	query.addJoin(table, typeTable);
+			query.addJoin(table, schoolClassTable);
+		} catch (IDORelationshipException ire) {
+			throw new FinderException(ire.getMessage()); 
+		}
+		query.addCriteria(new MatchCriteria(table, MEMBER, MatchCriteria.EQUALS, studentId));
+		//query.addCriteria(new MatchCriteria(schoolClassTable, SchoolClassBMPBean.SCHOOL, MatchCriteria.EQUALS, schoolId));
+		//query.addCriteria(new MatchCriteria(typeTable, SchoolTypeBMPBean.SCHOOLCATEGORY, MatchCriteria.EQUALS, category));
+		Date today = new Date(System.currentTimeMillis());
+		Criteria a = new MatchCriteria(table, REMOVED_DATE, MatchCriteria.GREATER, today);
+		Criteria b = new MatchCriteria(table, REMOVED_DATE, MatchCriteria.IS, MatchCriteria.NULL);
+		query.addCriteria(new OR(a, b));
+        query.addOrder(table, REGISTER_DATE, false);        
+		return this.idoFindPKsByQuery(query);
+	}
+	
 	public Collection ejbFindAllByUserAndSchoolCategory(User user, SchoolCategory cat) throws FinderException {
 		IDOQuery sql = idoQuery();
 
@@ -1948,4 +1991,11 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		}
 		super.remove();
 	}
+	
+	//XXX: for testing purposes only
+	public Collection ejbFindAll() throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this).append(" where rownum < 1000");		
+		return idoFindPKsByQuery(query);
+    }
 }

@@ -5,17 +5,21 @@ package com.idega.block.school.data;
 
 import java.sql.Timestamp;
 import java.util.Collection;
-
-
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOEntity;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
 import com.idega.user.data.User;
 
+
 /**
- * @author bluebottle
- *
+ * <p>
+ * TODO Marie Thunberg Describe Type SchoolClassMember
+ * </p>
+ *  Last modified: $Date: 2005/11/28 19:32:06 $ by $Author: dainis $
+ * 
+ * @author <a href="mailto:Marie Thunberg@idega.com">Marie Thunberg</a>
+ * @version $Revision: 1.44.2.2 $
  */
 public interface SchoolClassMember extends IDOEntity {
 	public final static String FIELD_SCHOOLCLASSMEMBERID = "sch_class_member_id";
@@ -32,8 +36,8 @@ public interface SchoolClassMember extends IDOEntity {
 	//Added for the kompliterings project
 	public final static String FIELD_COMPENSATION_BY_INVOICE = "comp_by_invoice";
 	public final static String FIELD_INVOICE_INTERVAL = "invoice_int";
-	public final static String FIELD_LATEST_INVOICE_DATE = "latest_invoice_date";
-	
+	public final static String FIELD_LATEST_INVOICE_DATE = "latest_invoice_date";	
+
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#setClassMemberId
 	 */
@@ -265,6 +269,26 @@ public interface SchoolClassMember extends IDOEntity {
 	public int getStudyPathId();
 
 	/**
+	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#getHandicraft
+	 */
+	public SchoolStudyPath getHandicraft();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#getHandicraftId
+	 */
+	public int getHandicraftId();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#setHandicraft
+	 */
+	public void setHandicraft(SchoolStudyPath path);
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#setHandicraftId
+	 */
+	public void setHandicraftId(int schoolStudyPathId);
+
+	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#getSubGroups
 	 */
 	public Collection getSubGroups() throws IDORelationshipException;
@@ -272,32 +296,27 @@ public interface SchoolClassMember extends IDOEntity {
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#addToGroup
 	 */
-	public void addToGroup(SchoolClass group)
-			throws IDOAddRelationshipException;
+	public void addToGroup(SchoolClass group) throws IDOAddRelationshipException;
 
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#addSchoolYear
 	 */
-	public void addSchoolYear(SchoolYear year)
-			throws IDOAddRelationshipException;
+	public void addSchoolYear(SchoolYear year) throws IDOAddRelationshipException;
 
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#addStudyPath
 	 */
-	public void addStudyPath(SchoolStudyPath path)
-			throws IDOAddRelationshipException;
+	public void addStudyPath(SchoolStudyPath path) throws IDOAddRelationshipException;
 
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#removeFromGroup
 	 */
-	public void removeFromGroup(SchoolClass group)
-			throws IDORemoveRelationshipException;
+	public void removeFromGroup(SchoolClass group) throws IDORemoveRelationshipException;
 
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#removeStudyPath
 	 */
-	public void removeStudyPath(SchoolStudyPath path)
-			throws IDORemoveRelationshipException;
+	public void removeStudyPath(SchoolStudyPath path) throws IDORemoveRelationshipException;
 
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#removeAllStudyPaths
@@ -313,5 +332,4 @@ public interface SchoolClassMember extends IDOEntity {
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#getStudyPaths
 	 */
 	public Collection getStudyPaths() throws IDORelationshipException;
-
 }
