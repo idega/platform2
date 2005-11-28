@@ -1,5 +1,5 @@
 /*
- * $Id: SpouseOccupationBMPBean.java,v 1.4 2004/06/06 11:57:13 gimmi Exp $
+ * $Id: SpouseOccupationBMPBean.java,v 1.4.4.1 2005/11/28 11:53:50 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,43 +12,64 @@ package is.idega.idegaweb.campus.block.application.data;
 import java.sql.SQLException;
 
 import javax.ejb.FinderException;
+
+import com.idega.data.GenericEntity;
+
 /**
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class SpouseOccupationBMPBean
-	extends com.idega.data.GenericEntity
-	implements is.idega.idegaweb.campus.block.application.data.SpouseOccupation {
-	private static final String name_ = "cam_spouse_occ";
-	private static final String description_ = "description";
+public class SpouseOccupationBMPBean extends GenericEntity
+		implements SpouseOccupation{
+	private static final String ENTITY_NAME = "cam_spouse_occ";
+
+	private static final String COLUMN_DESCRIPTION = "description";
+
+	private static final String COLUMN_LOC_KEY = "localization_key";
+	
 	public SpouseOccupationBMPBean() {
 		super();
 	}
+
 	public SpouseOccupationBMPBean(int id) throws SQLException {
 		super(id);
 	}
+
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		addAttribute(description_, "Description", true, true, "java.lang.String");
-		super.setMaxLength(description_, 255);
+		addAttribute(COLUMN_DESCRIPTION, "Description", true, true, String.class, 255);
+		addAttribute(COLUMN_LOC_KEY, "Localization key", true, true, String.class, 255);
 	}
+
 	public String getEntityName() {
-		return (name_);
+		return (ENTITY_NAME);
 	}
+
 	public String getDescriptionColumnName() {
-		return (description_);
+		return (COLUMN_DESCRIPTION);
 	}
+
 	public String getName() {
 		return (getDescription());
 	}
+
 	public String getDescription() {
-		return ((String) getColumnValue(description_));
+		return getStringColumnValue(COLUMN_DESCRIPTION);
 	}
+
 	public void setDescription(String description) {
-		setColumn(description_, description);
+		setColumn(COLUMN_DESCRIPTION, description);
 	}
+	
+	public void setLocalizationKey(String key) {
+		setColumn(COLUMN_LOC_KEY, key);
+	}
+
+	public String getLocalizationKey() {
+		return getStringColumnValue(COLUMN_LOC_KEY);
+	}
+	
 	public java.util.Collection ejbFindAll() throws FinderException {
 		return super.idoFindAllIDsBySQL();
 	}
-	
 }
