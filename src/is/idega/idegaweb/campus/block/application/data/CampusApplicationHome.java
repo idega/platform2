@@ -1,19 +1,65 @@
+/**
+ * 
+ */
 package is.idega.idegaweb.campus.block.application.data;
 
 import java.util.Collection;
 
 import javax.ejb.FinderException;
 
+import com.idega.data.IDOException;
+import com.idega.data.IDOHome;
+import com.idega.data.IDORelationshipException;
 
-public interface CampusApplicationHome extends com.idega.data.IDOHome
-{
- public CampusApplication create() throws javax.ejb.CreateException;
- public CampusApplication findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
- public java.util.Collection findAll()throws javax.ejb.FinderException;
- public java.util.Collection findAllByApplicationId(int p0)throws javax.ejb.FinderException;
- public java.util.Collection findBySQL(java.lang.String p0)throws javax.ejb.FinderException;
- public java.util.Collection findBySubjectAndStatus(java.lang.Integer p0,java.lang.String p1,java.lang.String p2)throws javax.ejb.FinderException;
- public java.util.Collection findBySubjectAndStatus(java.lang.Integer p0,java.lang.String p1,java.lang.String p2,int p3,int p4)throws javax.ejb.FinderException;
- public int getCountBySubjectAndStatus(java.lang.Integer p0,java.lang.String p1)throws com.idega.data.IDORelationshipException,com.idega.data.IDOException;
- public Collection findByApartmentTypeAndComplex(Integer typeId,	Integer complexID) throws FinderException;
+/**
+ * @author bluebottle
+ *
+ */
+public interface CampusApplicationHome extends IDOHome {
+	public CampusApplication create() throws javax.ejb.CreateException;
+
+	public CampusApplication findByPrimaryKey(Object pk)
+			throws javax.ejb.FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.CampusApplicationBMPBean#ejbFindAllByApplicationId
+	 */
+	public java.util.Collection findAllByApplicationId(int id)
+			throws javax.ejb.FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.CampusApplicationBMPBean#ejbFindBySubjectAndStatus
+	 */
+	public Collection findBySubjectAndStatus(Integer subjectID, String status,
+			String order) throws FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.CampusApplicationBMPBean#ejbFindBySubjectAndStatus
+	 */
+	public Collection findBySubjectAndStatus(Integer subjectID, String status,
+			String order, int numberOfRecords, int startingIndex)
+			throws FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.CampusApplicationBMPBean#ejbHomeGetCountBySubjectAndStatus
+	 */
+	public int getCountBySubjectAndStatus(Integer subjectID, String status)
+			throws IDORelationshipException, IDOException;
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.CampusApplicationBMPBean#ejbFindAll
+	 */
+	public Collection findAll() throws FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.CampusApplicationBMPBean#ejbFindBySQL
+	 */
+	public Collection findBySQL(String sql) throws FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.CampusApplicationBMPBean#ejbFindByApartmentTypeAndComplex
+	 */
+	public Collection findByApartmentTypeAndComplex(Integer typeId,
+			Integer complexID) throws FinderException;
+
 }

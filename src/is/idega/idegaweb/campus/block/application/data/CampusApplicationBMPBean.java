@@ -9,6 +9,7 @@ import javax.ejb.FinderException;
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.Application;
 import com.idega.block.application.data.ApplicationBMPBean;
+import com.idega.data.GenericEntity;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDORelationshipException;
@@ -24,20 +25,19 @@ import com.idega.data.query.WildCardColumn;
  * @author <a href="mailto:palli@idega.is">Pall Helgason </a>
  * @version 1.0
  */
-public class CampusApplicationBMPBean extends com.idega.data.GenericEntity
-		implements
-		is.idega.idegaweb.campus.block.application.data.CampusApplication {
-	private static final String name_ = "cam_application";
+public class CampusApplicationBMPBean extends GenericEntity implements
+		CampusApplication {
+	private static final String ENTITY_NAME = "cam_application";
 
-	private static final String applicationId_ = "app_application_id";
+	private static final String COLUMN_APPLICATION = "app_application_id";
 
-	private static final String currentResidenceId_ = "cam_curr_res_id";
+	private static final String COLUMN_CURR_RESIDENCE = "cam_curr_res_id";
 
-	private static final String spouseOccupationId_ = "cam_spouse_occ_id";
+	private static final String COLUMN_SPOUSE_OCCUPATION = "cam_spouse_occ_id";
 
-	private static final String studyBeginMonth_ = "study_begin_mo";
+	private static final String COLUMN_STUDY_BEGIN_MONTH = "study_begin_mo";
 
-	private static final String studyBeginYear_ = "study_begin_yr";
+	private static final String COLUMN_STUDY_BEGIN_YEAR = "study_begin_yr";
 
 	private static final String studyEndMonth_ = "study_end_mo";
 
@@ -83,6 +83,8 @@ public class CampusApplicationBMPBean extends com.idega.data.GenericEntity
 
 	private static final String PRIORITY_LEVEL = "priority_level";
 
+	private static final String COLUMN_SCHOOL = "school";
+
 	public CampusApplicationBMPBean() {
 		super();
 	}
@@ -93,348 +95,316 @@ public class CampusApplicationBMPBean extends com.idega.data.GenericEntity
 
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		addAttribute(applicationId_, "Campus application id", true, true,
-				java.lang.Integer.class, "one-to-one",
-				com.idega.block.application.data.Application.class);
-		addAttribute(
-				currentResidenceId_,
-				"Current residency",
-				true,
-				true,
-				java.lang.Integer.class,
-				"one-to-many",
-				is.idega.idegaweb.campus.block.application.data.CurrentResidency.class);
-		addAttribute(
-				spouseOccupationId_,
-				"Spouse occupation",
-				true,
-				true,
-				java.lang.Integer.class,
-				"one-to-many",
-				is.idega.idegaweb.campus.block.application.data.SpouseOccupation.class);
-		addAttribute(studyBeginMonth_, "Study begins (month)", true, true,
-				java.lang.Integer.class);
-		addAttribute(studyBeginYear_, "Study begins (year)", true, true,
-				java.lang.Integer.class);
+		addOneToOneRelationship(COLUMN_APPLICATION, Application.class);
+		addManyToOneRelationship(COLUMN_CURR_RESIDENCE, CurrentResidency.class);
+		addManyToOneRelationship(COLUMN_SPOUSE_OCCUPATION,
+				SpouseOccupation.class);
+		addAttribute(COLUMN_STUDY_BEGIN_MONTH, "Study begins (month)", true,
+				true, Integer.class);
+		addAttribute(COLUMN_STUDY_BEGIN_YEAR, "Study begins (year)", true,
+				true, Integer.class);
 		addAttribute(studyEndMonth_, "Study ends (month)", true, true,
-				java.lang.Integer.class);
+				Integer.class);
 		addAttribute(studyEndYear_, "Study ends (year)", true, true,
-				java.lang.Integer.class);
-		addAttribute(faculty_, "Faculty", true, true, java.lang.String.class);
-		addAttribute(studyTrack_, "Study track", true, true,
-				java.lang.String.class);
-		addAttribute(spouseName_, "Spouses name", true, true,
-				java.lang.String.class);
-		addAttribute(spouseSSN_, "Spouses SSN", true, true,
-				java.lang.String.class);
-		addAttribute(spouseSchool_, "Spouses school", true, true,
-				java.lang.String.class);
+				Integer.class);
+		addAttribute(faculty_, "Faculty", true, true, String.class, 255);
+		addAttribute(studyTrack_, "Study track", true, true, String.class, 255);
+		addAttribute(spouseName_, "Spouses name", true, true, String.class, 255);
+		addAttribute(spouseSSN_, "Spouses SSN", true, true, String.class, 20);
+		addAttribute(spouseSchool_, "Spouses school", true, true, String.class,
+				255);
 		addAttribute(spouseStudyTrack_, "Spouses study track", true, true,
-				java.lang.String.class);
+				String.class, 255);
 		addAttribute(spouseStudyBeginMonth_, "Spouses study begins (month)",
-				true, true, java.lang.Integer.class);
+				true, true, Integer.class);
 		addAttribute(spouseStudyBeginYear_, "Spouses study begins (year)",
-				true, true, java.lang.Integer.class);
+				true, true, Integer.class);
 		addAttribute(spouseStudyEndMonth_, "Spouses study ends (month)", true,
-				true, java.lang.Integer.class);
+				true, Integer.class);
 		addAttribute(spouseStudyEndYear_, "Spouses study ends (year)", true,
-				true, java.lang.Integer.class);
-		addAttribute(children_, "Children info", true, true,
-				java.lang.String.class);
-		addAttribute(income_, "Income", true, true, java.lang.Integer.class);
-		addAttribute(spouseIncome_, "Spouses income", true, true,
-				java.lang.Integer.class);
+				true, Integer.class);
+		addAttribute(children_, "Children info", true, true, String.class, 4000);
+		addAttribute(income_, "Income", true, true, Integer.class);
+		addAttribute(spouseIncome_, "Spouses income", true, true, Integer.class);
 		addAttribute(housingFrom_, "Want housing from", true, true,
-				java.sql.Date.class);
+				Boolean.class);
 		addAttribute(onWaitinglist_, "Want to be on waiting list", true, true,
-				java.lang.String.class);
+				Boolean.class);
 		addAttribute(wantFurniture_, "Want to rent furniture", true, true,
-				java.lang.String.class);
+				Boolean.class);
 		addAttribute(contactPhone_, "If not reachable, call", true, true,
-				java.lang.String.class);
-		addAttribute(otherInfo_, "Other info", true, true,
-				java.lang.String.class);
-		addAttribute(email_, "Email", true, true, java.lang.String.class);
-		addAttribute(PRIORITY_LEVEL, "Priority level", true, true, String.class);
-		setMaxLength(faculty_, 255);
-		setMaxLength(studyTrack_, 255);
-		setMaxLength(spouseName_, 255);
-		setMaxLength(spouseSSN_, 20);
-		setMaxLength(spouseSchool_, 255);
-		setMaxLength(spouseStudyTrack_, 255);
-		setMaxLength(children_, 4000);
-		setMaxLength(onWaitinglist_, 1);
-		setMaxLength(wantFurniture_, 1);
-		setMaxLength(contactPhone_, 40);
-		setMaxLength(otherInfo_, 4000);
-		setMaxLength(email_, 255);
-		setMaxLength(PRIORITY_LEVEL, 1);
-		setNullable(currentResidenceId_, true);
-		setNullable(spouseOccupationId_, true);
+				String.class, 40);
+		addAttribute(otherInfo_, "Other info", true, true, String.class, 4000);
+		addAttribute(email_, "Email", true, true, String.class, 255);
+		addAttribute(PRIORITY_LEVEL, "Priority level", true, true,
+				String.class, 1);
+		addManyToOneRelationship(COLUMN_SCHOOL, School.class);
+		setNullable(COLUMN_CURR_RESIDENCE, true);
+		setNullable(COLUMN_SPOUSE_OCCUPATION, true);
 	}
 
 	public String getEntityName() {
-		return (name_);
+		return ENTITY_NAME;
 	}
 
 	public String getApplicationIdColumnName() {
-		return (applicationId_);
+		return COLUMN_APPLICATION;
 	}
 
 	public Application getApplication() {
-		return (Application) getColumnValue(applicationId_);
+		return (Application) getColumnValue(COLUMN_APPLICATION);
 	}
 
 	public String getCurrentResidenceIdColumnName() {
-		return (currentResidenceId_);
+		return COLUMN_CURR_RESIDENCE;
 	}
 
 	public String getSpouseOccupationIdColumnName() {
-		return (spouseOccupationId_);
+		return COLUMN_SPOUSE_OCCUPATION;
 	}
 
 	public String getStudyBeginMonthColumnName() {
-		return (studyBeginMonth_);
+		return COLUMN_STUDY_BEGIN_MONTH;
 	}
 
 	public String getStudyBeginYearColumnName() {
-		return (studyBeginYear_);
+		return COLUMN_STUDY_BEGIN_YEAR;
 	}
 
 	public String getStudyEndMonthColumnName() {
-		return (studyEndMonth_);
+		return studyEndMonth_;
 	}
 
 	public String getStudyEndYearColumnName() {
-		return (studyEndYear_);
+		return studyEndYear_;
 	}
 
 	public String getFacultyColumnName() {
-		return (faculty_);
+		return faculty_;
 	}
 
 	public String getStudyTrackColumnName() {
-		return (studyTrack_);
+		return studyTrack_;
 	}
 
 	public String getSpouseNameColumnName() {
-		return (spouseName_);
+		return spouseName_;
 	}
 
 	public String getSpouseSSNColumnName() {
-		return (spouseSSN_);
+		return spouseSSN_;
 	}
 
 	public String getSpouseSchoolColumnName() {
-		return (spouseSchool_);
+		return spouseSchool_;
 	}
 
 	public String getSpouseStudyTrackColumnName() {
-		return (spouseStudyTrack_);
+		return spouseStudyTrack_;
 	}
 
 	public String getSpouseStudyBeginMonthColumnName() {
-		return (spouseStudyBeginMonth_);
+		return spouseStudyBeginMonth_;
 	}
 
 	public String getSpouseStudyBeginYearColumnName() {
-		return (spouseStudyBeginYear_);
+		return spouseStudyBeginYear_;
 	}
 
 	public String getSpouseStudyEndMonthColumnName() {
-		return (spouseStudyEndMonth_);
+		return spouseStudyEndMonth_;
 	}
 
 	public String getSpouseStudyEndYearColumnName() {
-		return (spouseStudyEndYear_);
+		return spouseStudyEndYear_;
 	}
 
 	public String getChildrenColumnName() {
-		return (children_);
+		return children_;
 	}
 
 	public String getIncomeColumnName() {
-		return (income_);
+		return income_;
 	}
 
 	public String getSpouseIncomeColumnName() {
-		return (spouseIncome_);
+		return spouseIncome_;
 	}
 
 	public String getHousingFromColumnName() {
-		return (housingFrom_);
+		return housingFrom_;
 	}
 
 	public String getOnWaitinglistColumnName() {
-		return (onWaitinglist_);
+		return onWaitinglist_;
 	}
 
 	public String getWantFurnitureColumnName() {
-		return (wantFurniture_);
+		return wantFurniture_;
 	}
 
 	public String getContactPhoneColumnName() {
-		return (contactPhone_);
+		return contactPhone_;
 	}
 
 	public String getOtherInfoColumnName() {
-		return (otherInfo_);
+		return otherInfo_;
 	}
 
 	public String getEmailColumnName() {
-		return (email_);
+		return email_;
 	}
 
 	public void setAppApplicationId(int id) {
-		setColumn(applicationId_, id);
+		setColumn(COLUMN_APPLICATION, id);
 	}
 
 	public void setAppApplicationId(Integer id) {
-		setColumn(applicationId_, id);
+		setColumn(COLUMN_APPLICATION, id);
 	}
 
 	public Integer getAppApplicationId() {
-		return (getIntegerColumnValue(applicationId_));
+		return getIntegerColumnValue(COLUMN_APPLICATION);
 	}
 
 	public Integer getCurrentResidenceId() {
-		return (getIntegerColumnValue(currentResidenceId_));
+		return getIntegerColumnValue(COLUMN_CURR_RESIDENCE);
 	}
 
 	public Integer getSpouseOccupationId() {
-		return (getIntegerColumnValue(spouseOccupationId_));
+		return getIntegerColumnValue(COLUMN_SPOUSE_OCCUPATION);
 	}
 
 	public Integer getStudyBeginMonth() {
-		return (getIntegerColumnValue(studyBeginMonth_));
+		return getIntegerColumnValue(COLUMN_STUDY_BEGIN_MONTH);
 	}
 
 	public Integer getStudyBeginYear() {
-		return (getIntegerColumnValue(studyBeginYear_));
+		return getIntegerColumnValue(COLUMN_STUDY_BEGIN_YEAR);
 	}
 
 	public Integer getStudyEndMonth() {
-		return (getIntegerColumnValue(studyEndMonth_));
+		return getIntegerColumnValue(studyEndMonth_);
 	}
 
 	public Integer getStudyEndYear() {
-		return (getIntegerColumnValue(studyEndYear_));
+		return getIntegerColumnValue(studyEndYear_);
 	}
 
 	public String getFaculty() {
-		return (getStringColumnValue(faculty_));
+		return getStringColumnValue(faculty_);
 	}
 
 	public String getStudyTrack() {
-		return (getStringColumnValue(studyTrack_));
+		return getStringColumnValue(studyTrack_);
 	}
 
 	public String getSpouseName() {
-		return (getStringColumnValue(spouseName_));
+		return getStringColumnValue(spouseName_);
 	}
 
 	public String getSpouseSSN() {
-		return (getStringColumnValue(spouseSSN_));
+		return getStringColumnValue(spouseSSN_);
 	}
 
 	public String getSpouseSchool() {
-		return (getStringColumnValue(spouseSchool_));
+		return getStringColumnValue(spouseSchool_);
 	}
 
 	public String getSpouseStudyTrack() {
-		return (getStringColumnValue(spouseStudyTrack_));
+		return getStringColumnValue(spouseStudyTrack_);
 	}
 
 	public Integer getSpouseStudyBeginMonth() {
-		return (getIntegerColumnValue(spouseStudyBeginMonth_));
+		return getIntegerColumnValue(spouseStudyBeginMonth_);
 	}
 
 	public Integer getSpouseStudyBeginYear() {
-		return (getIntegerColumnValue(spouseStudyBeginYear_));
+		return getIntegerColumnValue(spouseStudyBeginYear_);
 	}
 
 	public Integer getSpouseStudyEndMonth() {
-		return (getIntegerColumnValue(spouseStudyEndMonth_));
+		return getIntegerColumnValue(spouseStudyEndMonth_);
 	}
 
 	public Integer getSpouseStudyEndYear() {
-		return (getIntegerColumnValue(spouseStudyEndYear_));
+		return getIntegerColumnValue(spouseStudyEndYear_);
 	}
 
 	public String getChildren() {
-		return (getStringColumnValue(children_));
+		return getStringColumnValue(children_);
 	}
 
 	public Integer getIncome() {
-		return (getIntegerColumnValue(income_));
+		return getIntegerColumnValue(income_);
 	}
 
 	public Integer getSpouseIncome() {
-		return (getIntegerColumnValue(spouseIncome_));
+		return getIntegerColumnValue(spouseIncome_);
 	}
 
 	public Date getHousingFrom() {
-		return ((Date) getColumnValue(housingFrom_));
+		return (Date) getColumnValue(housingFrom_);
 	}
 
 	public boolean getOnWaitinglist() {
-		String tmp = getStringColumnValue(onWaitinglist_);
-		if (tmp.equalsIgnoreCase("y"))
-			return (true);
-		else
-			return (false);
+		return getBooleanColumnValue(onWaitinglist_, true);
 	}
 
 	public boolean getWantFurniture() {
-		String tmp = getStringColumnValue(wantFurniture_);
-		if (tmp.equalsIgnoreCase("y"))
-			return (true);
-		else
-			return (false);
+		return getBooleanColumnValue(wantFurniture_, false);
 	}
 
 	public String getContactPhone() {
-		return (getStringColumnValue(contactPhone_));
+		return getStringColumnValue(contactPhone_);
 	}
 
 	public String getOtherInfo() {
-		return (getStringColumnValue(otherInfo_));
+		return getStringColumnValue(otherInfo_);
 	}
 
 	public String getEmail() {
-		return (getStringColumnValue(email_));
+		return getStringColumnValue(email_);
+	}
+	
+	public int getSchoolID() {
+		return getIntColumnValue(COLUMN_SCHOOL);
+	}
+	
+	public School getSchool() {
+		return (School) getColumnValue(COLUMN_SCHOOL);		
 	}
 
 	public void setCurrentResidenceId(Integer id) {
-		setColumn(currentResidenceId_, id);
+		setColumn(COLUMN_CURR_RESIDENCE, id);
 	}
 
 	public void setCurrentResidenceId(int id) {
-		setColumn(currentResidenceId_, id);
+		setColumn(COLUMN_CURR_RESIDENCE, id);
 	}
 
 	public void setSpouseOccupationId(Integer id) {
-		setColumn(spouseOccupationId_, id);
+		setColumn(COLUMN_SPOUSE_OCCUPATION, id);
 	}
 
 	public void setSpouseOccupationId(int id) {
-		setColumn(spouseOccupationId_, id);
+		setColumn(COLUMN_SPOUSE_OCCUPATION, id);
 	}
 
 	public void setStudyBeginMonth(Integer month) {
-		setColumn(studyBeginMonth_, month);
+		setColumn(COLUMN_STUDY_BEGIN_MONTH, month);
 	}
 
 	public void setStudyBeginMonth(int month) {
-		setColumn(studyBeginMonth_, month);
+		setColumn(COLUMN_STUDY_BEGIN_MONTH, month);
 	}
 
 	public void setStudyBeginYear(Integer year) {
-		setColumn(studyBeginYear_, year);
+		setColumn(COLUMN_STUDY_BEGIN_YEAR, year);
 	}
 
 	public void setStudyBeginYear(int year) {
-		setColumn(studyBeginYear_, year);
+		setColumn(COLUMN_STUDY_BEGIN_YEAR, year);
 	}
 
 	public void setStudyEndMonth(Integer month) {
@@ -534,17 +504,11 @@ public class CampusApplicationBMPBean extends com.idega.data.GenericEntity
 	}
 
 	public void setOnWaitinglist(boolean putOnList) {
-		if (putOnList)
-			setColumn(onWaitinglist_, "Y");
-		else
-			setColumn(onWaitinglist_, "N");
+		setColumn(onWaitinglist_, putOnList);
 	}
 
 	public void setWantFurniture(boolean furniture) {
-		if (furniture)
-			setColumn(wantFurniture_, "Y");
-		else
-			setColumn(wantFurniture_, "N");
+		setColumn(wantFurniture_, furniture);
 	}
 
 	public void setContactPhone(String contactPhone) {
@@ -566,6 +530,14 @@ public class CampusApplicationBMPBean extends com.idega.data.GenericEntity
 	public void setPriorityLevel(String level) {
 		setColumn(PRIORITY_LEVEL, level);
 	}
+	
+	public void setSchoolID(int schoolID) {
+		setColumn(COLUMN_SCHOOL, schoolID);
+	}
+	
+	public void setSchool(School school) {
+		setColumn(COLUMN_SCHOOL, school);		
+	}
 
 	public static String getPriorityColumnName() {
 		return PRIORITY_LEVEL;
@@ -576,7 +548,7 @@ public class CampusApplicationBMPBean extends com.idega.data.GenericEntity
 		StringBuffer sql = new StringBuffer("select * from ");
 		sql.append(getTableName());
 		sql.append(" where ");
-		sql.append(applicationId_);
+		sql.append(COLUMN_APPLICATION);
 		sql.append(" = ");
 		sql.append(id);
 		return super.idoFindPKsBySQL(sql.toString());
@@ -611,18 +583,18 @@ public class CampusApplicationBMPBean extends com.idega.data.GenericEntity
 
 		Table campusApplication = new Table(this, "c");
 		Table application = new Table(Application.class, "a");
-		Table applicant = new Table(Applicant.class,"b");
+		Table applicant = new Table(Applicant.class, "b");
 
 		SelectQuery query = new SelectQuery(campusApplication);
 		query.setAsCountQuery(count);
-		//query.setAsDistinct(true);
+		// query.setAsDistinct(true);
 		if (!count)
 			query.addColumn(new WildCardColumn(campusApplication));
 		else
 			query.addColumn(new WildCardColumn());
 
 		query.addJoin(campusApplication, application);
-		query.addJoin(application,applicant);
+		query.addJoin(application, applicant);
 		if (subjectID != null && subjectID.intValue() > 0)
 			query.addCriteria(new MatchCriteria(new Column(application,
 					ApplicationBMPBean.getSubjectIdColumnName()),
@@ -646,7 +618,8 @@ public class CampusApplicationBMPBean extends com.idega.data.GenericEntity
 
 	public Collection getApplied() {
 		try {
-			return ((AppliedHome) IDOLookup.getHome(Applied.class)).findByApplicationID((Integer)this.getPrimaryKey());
+			return ((AppliedHome) IDOLookup.getHome(Applied.class))
+					.findByApplicationID((Integer) this.getPrimaryKey());
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException("Error in getApplied() : "
@@ -657,7 +630,6 @@ public class CampusApplicationBMPBean extends com.idega.data.GenericEntity
 	public Collection ejbFindByApartmentTypeAndComplex(Integer typeId,
 			Integer complexID) throws FinderException {
 		StringBuffer sql = new StringBuffer("select ");
-		//if(!(btype && bcmplx))
 		sql.append(" distinct ");
 		sql.append(getEntityName());
 		sql.append(".* ");
@@ -667,11 +639,6 @@ public class CampusApplicationBMPBean extends com.idega.data.GenericEntity
 		sql.append(" where ca.app_application_id = an.app_application_id ");
 		sql.append(" and an.app_applicant_id = aa.app_applicant_id ");
 		sql.append(" and aa.app_applicant_id = wl.app_applicant_id ");
-		/*
-		 * if (bapplied) { sql.append(" and ad.bu_aprt_type_id =
-		 * wl.bu_apartment_type_id "); sql.append(" and ad.bu_complex_id =
-		 * wl.bu_complex_id "); }
-		 */
 		if (typeId != null && typeId.intValue() > 0) {
 			sql.append(" and wl.bu_apartment_type_id =  ");
 			sql.append(typeId);
