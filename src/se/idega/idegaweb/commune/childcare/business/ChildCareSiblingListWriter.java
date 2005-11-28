@@ -1,7 +1,6 @@
 package se.idega.idegaweb.commune.childcare.business;
 
 import is.idega.block.family.business.FamilyLogic;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -10,21 +9,17 @@ import java.sql.Date;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.presentation.ChildCareAdmin;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
-
 import com.idega.block.school.business.SchoolBusinessBean;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClassMember;
@@ -42,6 +37,13 @@ import com.idega.util.IWCalendar;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
 import com.idega.util.text.Name;
+import com.lowagie.text.BadElementException;
+import com.lowagie.text.Cell;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Font;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.Rectangle;
+import com.lowagie.text.Table;
 
 /**
  * Title:	ChildCareSiblingListWriter
@@ -211,7 +213,7 @@ public class ChildCareSiblingListWriter extends DownloadWriter implements MediaW
             
             ChildCareApplication application;
             User child;          
-//            IWCalendar placementDate;
+            IWCalendar placementDate;
             
             Iterator iter = applications.iterator();
             while (iter.hasNext()) {
@@ -219,10 +221,10 @@ public class ChildCareSiblingListWriter extends DownloadWriter implements MediaW
                 application = (ChildCareApplication) iter.next();
                 child = application.getChild();
 
-//                placementDate = new IWCalendar(iwc.getCurrentLocale(),
-//                        application.getFromDate());
-//                School provider = getChildCareBusiness(iwc)
-//                        .getCurrentProviderByPlacement(application.getChildId());              
+                placementDate = new IWCalendar(iwc.getCurrentLocale(),
+                        application.getFromDate());
+                School provider = getChildCareBusiness(iwc)
+                        .getCurrentProviderByPlacement(application.getChildId());              
 
                 Name name = new Name(child.getFirstName(), child
                         .getMiddleName(), child.getLastName());
@@ -243,8 +245,11 @@ public class ChildCareSiblingListWriter extends DownloadWriter implements MediaW
                     ChildCareBusiness ccbb = getChildCareBusiness(iwc);                 	
                 	if (childId.equals(siblingId)) {
                 		continue;
-                	} else {                                         		
-                		if(ccbb.getActivePlacement(siblingId.intValue())!=null) {
+                	} else {                		
+                		/*ccbb.getActivePlacement(siblingId.intValue())!=null*/
+                		School prov = ccbb.getCurrentProviderByPlacement(siblingId.intValue());
+            			//if(prov==null) { System.out.println("Provider is null?? wtf??!?"); }
+                		if( ccbb.hasActiveNotRemovedPlacements(siblingId.intValue())&&(prov!=null) ) {
                 			if(siblingcounter>=1) {                			                			
                     			row = sheet.createRow((short) cellRow++);
                     		}
@@ -262,28 +267,36 @@ public class ChildCareSiblingListWriter extends DownloadWriter implements MediaW
                     		if(sibling.getPersonalID()!=null) {
                     			row.createCell((short) 3).setCellValue(PersonalIDFormatter.format(sibling.getPersonalID(),locale));                         	
                     		}
-                    		ChildCareApplication app = ccbb.getActivePlacement(siblingId.intValue());
-                         	School prov = ccbb.getCurrentProviderByPlacement(siblingId.intValue());
-                         	if(prov.getName()!=null) {
-                         		row.createCell((short) 4).setCellValue(prov.getName());
-                         	}
-                         	IWCalendar splacementDate = new IWCalendar(iwc.getCurrentLocale(), app.getFromDate());                     	
-                         	if (splacementDate != null) {
-                                row.createCell((short) 5).setCellValue(
-                                        splacementDate.getLocaleDate(IWCalendar.SHORT));
-                            }                         	
-                         	Integer providerId = (Integer)prov.getPrimaryKey();
-                         	SchoolBusinessBean schoolBean = new SchoolBusinessBean();
-                         	SchoolClassMember schoolClassMember = schoolBean.getSchoolClassMemberHome().findLatestByUserAndSchool(siblingId.intValue(), providerId.intValue());                         
-                         	if(schoolClassMember.getRemovedDate()!=null) { 
-	                         	IWCalendar splacementEndDate = new IWCalendar(iwc.getCurrentLocale(), schoolClassMember.getRemovedDate());                     	
-	                         	if (splacementEndDate != null) {
-	                                row.createCell((short) 6).setCellValue(
-	                                        splacementEndDate.getLocaleDate(IWCalendar.SHORT));
-	                            }
-                         	} else {
-                         	    row.createCell((short) 6).setCellValue("");
-                         	}
+                    		try {                    			                    			
+                    			Integer providerId = (Integer)prov.getPrimaryKey();
+                    			if(prov.getName()!=null) {
+                             		row.createCell((short) 4).setCellValue(prov.getName());
+                             		//System.out.println("Provider name is : "+ prov.getName());
+                             	} else {
+                             		row.createCell((short) 4).setCellValue("");
+                             	}
+                    			ChildCareApplication app = ccbb.getActivePlacement(siblingId.intValue());
+                    			IWCalendar splacementDate = new IWCalendar(iwc.getCurrentLocale(), app.getFromDate());                     	
+                    			if (splacementDate != null) {
+                    				  row.createCell((short) 5).setCellValue(
+                    				          splacementDate.getLocaleDate(IWCalendar.SHORT));
+                    			}
+                    			SchoolBusinessBean schoolBean = new SchoolBusinessBean();
+                             	SchoolClassMember schoolClassMember = schoolBean.getSchoolClassMemberHome().findLatestByUserAndSchool(siblingId.intValue(), providerId.intValue());                         
+                             	if(schoolClassMember.getRemovedDate()!=null) { 
+    	                         	IWCalendar splacementEndDate = new IWCalendar(iwc.getCurrentLocale(), schoolClassMember.getRemovedDate());                     	
+    	                         	if (splacementEndDate != null) {
+    	                                row.createCell((short) 6).setCellValue(
+    	                                        splacementEndDate.getLocaleDate(IWCalendar.SHORT));
+    	                            } else {
+    	                         	    row.createCell((short) 6).setCellValue("");
+    	                         	}
+                             	} else {
+                             	    row.createCell((short) 6).setCellValue("");
+                             	}                             	
+                    		} catch(NullPointerException e) {
+                    			//lalalalala
+                    		}    
                     		siblingcounter++;
                      	}
                 	}
@@ -301,7 +314,7 @@ public class ChildCareSiblingListWriter extends DownloadWriter implements MediaW
 		return service;
 	}
 	
-/*	private Table getTable(String[] headers, int[] sizes) throws BadElementException, DocumentException {
+	private Table getTable(String[] headers, int[] sizes) throws BadElementException, DocumentException {
 		Table datatable = new Table(headers.length);
 		datatable.setPadding(0.0f);
 		datatable.setSpacing(0.0f);
@@ -318,7 +331,7 @@ public class ChildCareSiblingListWriter extends DownloadWriter implements MediaW
 		datatable.setDefaultCellBorder(Rectangle.NO_BORDER);
 		datatable.setDefaultRowspan(1);
 		return datatable;
-	}*/
+	}
 
 	private Collection getApplicationCollection(IWContext iwc, int childcareId, int sortBy, int numberPerPage, int start, Date fromDate, Date toDate) throws RemoteException {
 		Collection applications;

@@ -93,6 +93,7 @@ import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassMember;
+import com.idega.block.school.data.SchoolClassMemberHome;
 import com.idega.block.school.data.SchoolClassMemberLog;
 import com.idega.block.school.data.SchoolHome;
 import com.idega.block.school.data.SchoolType;
@@ -191,6 +192,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			throw new IBORuntimeException(ile);
 		}
 	}
+	
+	private SchoolClassMemberHome getSchoolClassMemberHome() {
+		try {
+			return (SchoolClassMemberHome) IDOLookup.getHome(SchoolClassMember.class);
+		}
+		catch (IDOLookupException ile) {
+			throw new IBORuntimeException(ile);
+		}
+	}	
 
 	public ChildCarePrognosisHome getChildCarePrognosisHome() {
 		try {
@@ -4707,6 +4717,28 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
+	public boolean hasActiveNotRemovedPlacements(int childId) {
+		try {
+			System.out.println("----------------------------------- ||||||||||||| --------------------------------");
+			//ejbFindNotTerminatedByStudent
+			Collection members = (Collection)this.getSchoolClassMemberHome().findAllNotTerminatedByStudent(childId);
+			if(!members.isEmpty()&&(members!=null)) {
+				return true;				
+			} else { return false; }
+			/*Iterator i = members.iterator();
+			while (i.hasNext()) {
+				SchoolClassMember member = (SchoolClassMember) i.next();
+				//if (member.isActive()) { //XXX
+					return true;
+				//}
+			}
+			return false;*/
+		}
+		catch (FinderException ex) {
+			return false;
+		}
+	}
+	
 	public boolean hasActivePlacementNotWithProvider(int childID, int providerID) {
 		try {
 			int numberOfPlacings = getChildCareContractArchiveHome().getNumberOfActiveNotWithProvider(childID, providerID);
