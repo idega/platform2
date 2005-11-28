@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolChoice.java,v 1.2.2.1 2005/11/16 23:23:27 sigtryggur Exp $
+ * $Id: AfterSchoolChoice.java,v 1.2.2.2 2005/11/28 12:49:54 dainis Exp $
  * Created on Aug 9, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -13,10 +13,10 @@ import com.idega.data.IDOEntity;
 
 
 /**
- * Last modified: $Date: 2005/11/16 23:23:27 $ by $Author: sigtryggur $
+ * Last modified: $Date: 2005/11/28 12:49:54 $ by $Author: dainis $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2.2.1 $
+ * @version $Revision: 1.2.2.2 $
  */
 public interface AfterSchoolChoice extends IDOEntity, ChildCareApplication {
 
@@ -104,8 +104,10 @@ public interface AfterSchoolChoice extends IDOEntity, ChildCareApplication {
 	 * @see se.idega.idegaweb.commune.care.data.AfterSchoolChoiceBMPBean#setCardValidYear
 	 */
 	public void setCardValidYear(int year);
+
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.AfterSchoolChoiceBMPBean#setFClass
 	 */
 	public void setFClass(boolean fClass);
+
 }

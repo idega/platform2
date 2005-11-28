@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolChoiceBMPBean.java,v 1.3.2.1 2005/11/16 23:23:27 sigtryggur Exp $
+ * $Id: AfterSchoolChoiceBMPBean.java,v 1.3.2.2 2005/11/28 12:49:54 dainis Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -33,7 +33,8 @@ public class AfterSchoolChoiceBMPBean extends ChildCareApplicationBMPBean implem
 	private final static String COLUMN_CARD_TYPE = "card_type";
 	private final static String COLUMN_CARD_NUMBER = "card_number";
 	private final static String COLUMN_CARD_VALID_MONTH = "card_valid_month";
-	private final static String COLUMN_CARD_VALID_YEAR = "card_valid_year";
+	private final static String COLUMN_CARD_VALID_YEAR = "card_valid_year";	
+	private final static String COLUMN_F_CLASS = "f_class";
 
 	/**
 	 * @see com.idega.block.process.data.AbstractCaseBMPBean#getCaseCodeKey()
@@ -62,6 +63,8 @@ public class AfterSchoolChoiceBMPBean extends ChildCareApplicationBMPBean implem
 		addAttribute(COLUMN_CARD_NUMBER, "Card number", String.class);
 		addAttribute(COLUMN_CARD_VALID_MONTH, "Valid month", Integer.class);
 		addAttribute(COLUMN_CARD_VALID_YEAR, "Valid year", Integer.class);
+		
+		addAttribute(COLUMN_F_CLASS, "F-class", java.lang.Boolean.class);
 	}
 
 	public int getSchoolSeasonId() {
@@ -91,11 +94,10 @@ public class AfterSchoolChoiceBMPBean extends ChildCareApplicationBMPBean implem
 	public int getCardValidYear() {
 		return getIntColumnValue(COLUMN_CARD_VALID_YEAR);
 	}
-
+	
 	public boolean getFClass() {
-	    //	Not implemented. Just a temp fix so the build will continue
-	    return false;
-	}
+		return getBooleanColumnValue(COLUMN_F_CLASS, false);
+	}	
 
 	public void setSchoolSeasonId(int schoolSeasonID) {
 		setColumn(SCHOOL_SEASON, schoolSeasonID);
@@ -124,10 +126,10 @@ public class AfterSchoolChoiceBMPBean extends ChildCareApplicationBMPBean implem
 	public void setCardValidYear(int year) {
 		setColumn(COLUMN_CARD_VALID_YEAR, year);
 	}
-
+	
 	public void setFClass(boolean fClass) {
-		//Not implemented. Just a temp fix so the build will continue 
-	}
+		setColumn(COLUMN_F_CLASS, fClass);
+	}	
 
 	public Collection ejbFindByChildAndSeason(Integer childID, Integer seasonID) throws javax.ejb.FinderException {
 		IDOQuery query = super.idoQueryGetSelect().appendWhereEquals(CHILD_ID, childID.intValue());
