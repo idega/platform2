@@ -3,19 +3,15 @@
  *
  * This software is the proprietary information of Idega software.
  * Use is subject to license terms.
- *
  */
 
-package is.idega.idegaweb.member.isi.block.accounting.export.creditcard.presentation;
+package is.idega.idegaweb.member.isi.block.accounting.export.presentation;
 
-import is.idega.idegaweb.member.isi.block.accounting.export.creditcard.business.ExportBusiness;
-import is.idega.idegaweb.member.isi.block.accounting.export.creditcard.data.Batch;
+import is.idega.idegaweb.member.isi.block.accounting.export.business.ExportBusiness;
 import is.idega.idegaweb.member.isi.block.accounting.presentation.CashierSubWindowTemplate;
 import is.idega.idegaweb.member.isi.block.accounting.presentation.CashierWindow;
 
 import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.Iterator;
 
 import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWApplicationContext;
@@ -29,15 +25,14 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.util.IWTimestamp;
 
-
 /**
  * @author palli
  */
-public class SendFiles extends CashierSubWindowTemplate {
+public class GetFiles extends CashierSubWindowTemplate {
 
     protected static final String ACTION_SUBMIT = "sf_submit";
     
-    protected static final String LABEL_DATE_FROM = "sf_date_from";
+//    protected static final String LABEL_DATE_FROM = "sf_date_from";
     
     protected static final String LABEL_DATE_TO = "sf_date_to";
 
@@ -53,19 +48,19 @@ public class SendFiles extends CashierSubWindowTemplate {
 
     protected static final String ERROR_ALREADY_RUNNING = "sf_thread_already_running";
     
-    public SendFiles() {
+    public GetFiles() {
         super();
     }
     
     public boolean sendFiles(IWContext iwc) {
-        String dateFrom = iwc.getParameter(LABEL_DATE_FROM);
+//        String dateFrom = iwc.getParameter(LABEL_DATE_FROM);
         String dateTo = iwc.getParameter(LABEL_DATE_TO);
         
-        try {
+/*        try {
             return getExportBusiness(iwc).createFileFromContracts(dateFrom, dateTo);
         } catch (RemoteException e) {
             e.printStackTrace();
-        }
+        }*/
         
         return false;
     }
@@ -94,8 +89,8 @@ public class SendFiles extends CashierSubWindowTemplate {
         inputTable.setCellpadding(5);
 
         int row = 1;
-        Text labelDateFrom = new Text(iwrb.getLocalizedString(LABEL_DATE_FROM, "Date from"));
-        labelDateFrom.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+/*        Text labelDateFrom = new Text(iwrb.getLocalizedString(LABEL_DATE_FROM, "Date from"));
+        labelDateFrom.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);*/
         Text labelDateTo = new Text(iwrb.getLocalizedString(LABEL_DATE_TO, "Date to"));
         labelDateTo.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
         Text labelBatchNumber = new Text(iwrb.getLocalizedString(LABEL_BATCH_NUMBER, "Batch number"));
@@ -112,18 +107,18 @@ public class SendFiles extends CashierSubWindowTemplate {
         SubmitButton submit = new SubmitButton(iwrb.getLocalizedString(
                 ACTION_SUBMIT, "Submit"), ACTION_SUBMIT, "submit");
 
-        IWTimestamp dateFrom = null;
+//        IWTimestamp dateFrom = null;
         IWTimestamp dateTo = null;
-        String dateFromString = iwc.getParameter(LABEL_DATE_FROM);
+//        String dateFromString = iwc.getParameter(LABEL_DATE_FROM);
         String dateToString = iwc.getParameter(LABEL_DATE_TO);
         
-        try {
+/*        try {
             if (dateFromString != null) {
                 dateFrom = new IWTimestamp(dateFromString); 
             }
         } catch (Exception e) {
             dateFrom = null;
-        }
+        }*/
         
         try {
             if (dateToString != null) {
@@ -134,10 +129,10 @@ public class SendFiles extends CashierSubWindowTemplate {
             dateTo = null;
         }
         
-        DateInput dateFromInput = new DateInput(LABEL_DATE_FROM, true);
+/*        DateInput dateFromInput = new DateInput(LABEL_DATE_FROM, true);
         if (dateFrom != null) {
             dateFromInput.setDate(dateFrom.getDate());
-        }
+        }*/
         DateInput dateToInput = new DateInput(LABEL_DATE_TO, true);
         if (dateTo != null) {
             dateToInput.setDate(dateTo.getDate());
@@ -145,14 +140,14 @@ public class SendFiles extends CashierSubWindowTemplate {
             dateToInput.setToCurrentDate();            
         }
         
-        inputTable.add(labelDateFrom, 1, row);
+//        inputTable.add(labelDateFrom, 1, row);
         inputTable.add(labelDateTo, 2, row++);
-        inputTable.add(dateFromInput, 1, row);
+//        inputTable.add(dateFromInput, 1, row);
         inputTable.add(dateToInput, 2, row);
         inputTable.setAlignment(3, row, "RIGHT");
         inputTable.add(submit, 3, row);
         
-        Collection batches = null;
+/*        Collection batches = null;
         try {
             batches = getExportBusiness(iwc).findAllBatches();
         } catch (RemoteException e) {
@@ -196,7 +191,7 @@ public class SendFiles extends CashierSubWindowTemplate {
                 
                 row++;
             }
-        }
+        }*/
         
         f.maintainParameter(CashierWindow.ACTION);
         f.maintainParameter(CashierWindow.PARAMETER_GROUP_ID);

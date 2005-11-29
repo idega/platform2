@@ -6,7 +6,7 @@
  *
  */
 
-package is.idega.idegaweb.member.isi.block.accounting.export.creditcard.data;
+package is.idega.idegaweb.member.isi.block.accounting.export.data;
 
 import is.idega.idegaweb.member.isi.block.accounting.data.CreditCardType;
 

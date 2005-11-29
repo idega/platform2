@@ -1,10 +1,35 @@
+/**
+ * 
+ */
 package com.idega.block.finance.data;
 
 
-public interface Bank extends com.idega.data.IDOEntity {
+
+import com.idega.data.IDOEntity;
+
+/**
+ * @author bluebottle
+ *
+ */
+public interface Bank extends IDOEntity {
+	/**
+	 * @see com.idega.block.finance.data.BankBMPBean#getBankName
+	 */
 	public String getBankName();
+
+	/**
+	 * @see com.idega.block.finance.data.BankBMPBean#getBankSSN
+	 */
 	public String getBankSSN();
-	
+
+	/**
+	 * @see com.idega.block.finance.data.BankBMPBean#setBankName
+	 */
 	public void setBankName(String bankName);
+
+	/**
+	 * @see com.idega.block.finance.data.BankBMPBean#setBankSSN
+	 */
 	public void setBankSSN(String bankSSN);
+
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.65 2005/06/22 23:51:08 palli Exp $
+ * $Id: CampusApprover.java,v 1.65.4.1 2005/11/29 16:55:17 palli Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -132,7 +132,7 @@ public class CampusApprover extends CampusBlock {
 	}
 
 	protected void control(IWContext iwc) throws RemoteException {
-		// debugParameters(iwc);
+		debugParameters(iwc);
 		init(iwc);
 		if (isAdmin) {
 			if (iwc.isParameterSet(ACT_TRASH_APPLICATION)) {
@@ -780,7 +780,9 @@ public class CampusApprover extends CampusBlock {
 			noEmailText.setBold();
 			T.add(noEmailText, col, row++);
 		}
-		T.add(getText(eCampusApplication.getFaculty()), col, row++);
+		if (eCampusApplication.getFaculty() != null) {
+			T.add(getText(eCampusApplication.getFaculty()), col, row++);
+		}
 		T.add(getText(eCampusApplication.getStudyTrack()), col, row++);
 		String beginMonth = (eCampusApplication.getStudyBeginMonth().toString());
 		String endMonth = (eCampusApplication.getStudyEndMonth().toString());
@@ -923,14 +925,14 @@ public class CampusApprover extends CampusBlock {
 			T.add(getHeader(localize("ssn", "Socialnumber")), col, row++);
 			T.add(getHeader(localize("school", "School")), col, row++);
 			T.add(getHeader(localize("studytrack", "Study Track")), col, row++);
-			T.add(getHeader(localize("study_begins", "Study begins")), col, row++);
+	 		T.add(getHeader(localize("study_begins", "Study begins")), col, row++);
 			T.add(getHeader(localize("study_ends", "Study ends")), col, row++);
 			// T.add(getHeader(localize("income","Income")),col,row++);
 			col = 2;
 			row = 1;
-			T.add(getText(spouse.getName()), col, row++);
-			T.add(getText(spouse.getSSN()), col, row++);
-			T.add(getText(eCampusApplication.getSpouseSchool()), col, row++);
+			T.add(getText(spouse.getName() != null ? spouse.getName() : ""), col, row++);
+			T.add(getText(spouse.getSSN() != null ? spouse.getSSN() : ""), col, row++);
+			T.add(getText(eCampusApplication.getSpouseSchool() != null ? eCampusApplication.getSpouseSchool() : ""), col, row++);
 			T.add(getText(eCampusApplication.getSpouseStudyTrack()), col, row++);
 			String beginMonth = (eCampusApplication.getSpouseStudyBeginMonth().toString());
 			String endMonth = (eCampusApplication.getSpouseStudyEndMonth().toString());
@@ -970,10 +972,10 @@ public class CampusApprover extends CampusBlock {
 		String endYear = String.valueOf(today.getYear());
 		if (eCampusApplication != null && spouse != null) {
 			// System.err.println("spouse "+spouse.getID());
-			tiSpName.setContent(spouse.getName());
-			tiSpSsn.setContent(spouse.getSSN());
-			tiSpSchl.setContent(eCampusApplication.getSpouseSchool());
-			tiSpStTr.setContent(eCampusApplication.getSpouseStudyTrack());
+			tiSpName.setContent(spouse.getName() != null ? spouse.getName() : "");
+			tiSpSsn.setContent(spouse.getSSN() != null ? spouse.getSSN() : "");
+			tiSpSchl.setContent(eCampusApplication.getSpouseSchool() != null ? eCampusApplication.getSpouseSchool() : "");
+			tiSpStTr.setContent(eCampusApplication.getSpouseStudyTrack() != null ? eCampusApplication.getSpouseStudyTrack() : "");
 			// tiSPIncome.setContent(eCampusApplication.getSpouseIncome().toString());
 			beginMonth = eCampusApplication.getSpouseStudyBeginMonth().toString();
 			endMonth = eCampusApplication.getSpouseStudyEndMonth().toString();
@@ -1383,14 +1385,6 @@ public class CampusApprover extends CampusBlock {
 	private PresentationObject getKnobs() {
 		Table T = new Table(5, 1);
 		T.setHorizontalAlignment("center");
-		/*
-		 * if (iterator != null) { if (iterator.hasPrevious()) { Link lLast =
-		 * new Link(getResourceBundle().getImage("back.gif"));
-		 * lLast.addParameter(ACT_VIEW, "-2"); T.add(lLast, 1, 1); } if
-		 * (iterator.hasNext()) { Link lNext = new
-		 * Link(getResourceBundle().getImage("next.gif"));
-		 * lNext.addParameter(ACT_VIEW, "-4"); T.add(lNext, 5, 1); } }
-		 */
 		Link lList = new Link(getBundle().getImage("list.gif"));
 		T.add(lList, 3, 1);
 		T.setCellpadding(1);
@@ -1608,7 +1602,11 @@ public class CampusApprover extends CampusBlock {
 	}
 
 	public void main(IWContext iwc) throws RemoteException {
-		isAdmin = iwc.hasEditPermission(this);
-		control(iwc);
+		try {
+			isAdmin = iwc.hasEditPermission(this);
+			control(iwc);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

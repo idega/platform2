@@ -7,7 +7,7 @@
  */
 package is.idega.idegaweb.member.isi.block.accounting.data;
 
-import is.idega.idegaweb.member.isi.block.accounting.export.creditcard.data.Batch;
+import is.idega.idegaweb.member.isi.block.accounting.export.data.Batch;
 
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -31,7 +31,7 @@ import com.idega.util.IWTimestamp;
  */
 public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, BasketItem {
 
-	protected final static String ENTITY_NAME = "isi_ass_entry"; // :)
+	protected final static String ENTITY_NAME = "isi_ass_entry"; 
 
 	protected final static String COLUMN_USER_ID = "user_id";
 
@@ -77,7 +77,7 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 
 	protected final static String COLUMN_PAYMENT_CONTRACT_ID = "pay_cont_id";
 
-	protected final static String COLUMN_CREDIT_CARD_BATCH_ID = "cc_batch_id";
+	protected final static String COLUMN_ISI_BATCH_ID = "isi_batch_id";
 
 	protected final static String COLUMN_PAYED_BY_USER_ID = "payed_by_user_id";
 
@@ -89,7 +89,7 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 
 	protected final static String STATUS_CREATED = "C";
 
-	protected final static String STATUS_READY = "R";
+//	protected final static String STATUS_READY = "R";
 
 	protected final static String STATUS_SENT = "S";
 	
@@ -152,7 +152,7 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 		addAttribute(COLUMN_PAYMENT_DATE, "Payment date", true, true, Timestamp.class);
 		addAttribute(COLUMN_SENT, "Sent", true, true, Boolean.class);
 		addManyToOneRelationship(COLUMN_PAYMENT_CONTRACT_ID, PaymentContract.class);
-		addManyToOneRelationship(COLUMN_CREDIT_CARD_BATCH_ID, Batch.class);
+		addManyToOneRelationship(COLUMN_ISI_BATCH_ID, Batch.class);
 		addManyToOneRelationship(COLUMN_PAYED_BY_USER_ID, User.class);
 		addAttribute(COLUMN_DUE_DATE, "Due date", true, true, Date.class);
 		addAttribute(COLUMN_FINAL_DUE_DATE, "Due date", true, true, Date.class);
@@ -170,9 +170,9 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 		setColumn(COLUMN_STATUS, STATUS_CREATED);
 	}
 
-	public void setStatusReady() {
+/*	public void setStatusReady() {
 		setColumn(COLUMN_STATUS, STATUS_READY);
-	}
+	}*/
 
 	public void setStatusSent() {
 		setColumn(COLUMN_STATUS, STATUS_SENT);
@@ -458,20 +458,20 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 		return getIntColumnValue(COLUMN_PAYMENT_CONTRACT_ID);
 	}
 
-	public void setCreditCardBatchID(int id) {
-		setColumn(COLUMN_CREDIT_CARD_BATCH_ID, id);
+	public void setISIBatchID(int id) {
+		setColumn(COLUMN_ISI_BATCH_ID, id);
 	}
 
-	public void setCreditCardBatch(Batch batch) {
-		setColumn(COLUMN_CREDIT_CARD_BATCH_ID, batch);
+	public void setISIBatch(Batch batch) {
+		setColumn(COLUMN_ISI_BATCH_ID, batch);
 	}
 
-	public int getCreditCardBatchID() {
-		return getIntColumnValue(COLUMN_CREDIT_CARD_BATCH_ID);
+	public int getISIBatchID() {
+		return getIntColumnValue(COLUMN_ISI_BATCH_ID);
 	}
 
-	public Batch getCreditCardBatch() {
-		return (Batch) getColumnValue(COLUMN_CREDIT_CARD_BATCH_ID);
+	public Batch getISIBatch() {
+		return (Batch) getColumnValue(COLUMN_ISI_BATCH_ID);
 	}
 
 	public int getPayedByUserID() {
@@ -728,14 +728,51 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 		sql.appendSelectAllFrom(this);
 		sql.appendWhereEquals(COLUMN_GROUP_ID, group);
 		sql.appendAndEquals(COLUMN_PAYMENT_TYPE_ID, type);
+		sql.appendAnd();
+		sql.append(COLUMN_ISI_BATCH_ID);
+		sql.append(" is null ");
 		if (dateFrom != null) {
 			sql.appendAnd();
-			// sql.append
+			sql.append(COLUMN_DATE_OF_ENTRY);
+			sql.appendGreaterThanOrEqualsSign();
+			sql.append(dateFrom);
+		}
+		if (dateTo != null) {
+			sql.appendAnd();
+			sql.append(COLUMN_DATE_OF_ENTRY);
+			sql.appendLessThanOrEqualsSign();
+			sql.append(dateTo);
 		}
 
 		return idoFindPKsByQuery(sql);
 	}
 
+	public Collection ejbFindAllByPaymentTypeNotInBatch(PaymentType type, IWTimestamp dateFrom,
+			IWTimestamp dateTo) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhereEquals(COLUMN_PAYMENT_TYPE_ID, type);
+		sql.appendAnd();
+		sql.append(COLUMN_ISI_BATCH_ID);
+		sql.append(" is null ");
+		if (dateFrom != null) {
+			sql.appendAnd();
+			sql.append(COLUMN_DATE_OF_ENTRY);
+			sql.appendGreaterThanOrEqualsSign();
+			sql.append(dateFrom);
+		}
+		if (dateTo != null) {
+			sql.appendAnd();
+			sql.append(COLUMN_DATE_OF_ENTRY);
+			sql.appendLessThanOrEqualsSign();
+			sql.append(dateTo);
+		}
+
+		System.out.println("sql = " + sql.toString());
+		
+		return idoFindPKsByQuery(sql);
+	}
+	
 	// The methods needed to be implemented to be a BasketItem
 
 	/*

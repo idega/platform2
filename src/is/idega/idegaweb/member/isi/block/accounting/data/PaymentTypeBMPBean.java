@@ -41,6 +41,10 @@ public class PaymentTypeBMPBean extends GenericEntity implements PaymentType {
     
     protected final static String LOC_KEY_BANK = "isi_payment_type_bank";
     
+    protected final static String LOC_KEY_CREDITCARD_SYSTEM = "isi_payment_type_creditcard_system";
+    
+    protected final static String LOC_KEY_BANK_SYSTEM = "isi_payment_type_bank_system";
+    
     /*
      * (non-Javadoc)
      * 
@@ -129,6 +133,26 @@ public class PaymentTypeBMPBean extends GenericEntity implements PaymentType {
         sql.appendWhereEquals(COLUMN_DELETED, false);
         sql.appendAnd();
         sql.appendEqualsQuoted(COLUMN_LOCALIZATION_KEY, LOC_KEY_CREDITCARD);
+
+        return idoFindOnePKByQuery(sql);        
+    }
+    
+    public Object ejbFindPaymentTypeCreditcardSystem() throws FinderException {
+        IDOQuery sql = idoQuery();
+        sql.appendSelectAllFrom(this);
+        sql.appendWhereEquals(COLUMN_DELETED, false);
+        sql.appendAnd();
+        sql.appendEqualsQuoted(COLUMN_LOCALIZATION_KEY, LOC_KEY_CREDITCARD_SYSTEM);
+
+        return idoFindOnePKByQuery(sql);        
+    }
+
+    public Object ejbFindPaymentTypeBankSystem() throws FinderException {
+        IDOQuery sql = idoQuery();
+        sql.appendSelectAllFrom(this);
+        sql.appendWhereEquals(COLUMN_DELETED, false);
+        sql.appendAnd();
+        sql.appendEqualsQuoted(COLUMN_LOCALIZATION_KEY, LOC_KEY_BANK_SYSTEM);
 
         return idoFindOnePKByQuery(sql);        
     }

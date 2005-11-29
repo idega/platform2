@@ -1,15 +1,9 @@
-/*
- * $Id: FinanceEntry.java,v 1.18 2005/10/28 11:02:20 palli Exp $
- * Created on Oct 4, 2005
- *
- * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
+/**
+ * 
  */
 package is.idega.idegaweb.member.isi.block.accounting.data;
 
-import is.idega.idegaweb.member.isi.block.accounting.export.creditcard.data.Batch;
+import is.idega.idegaweb.member.isi.block.accounting.export.data.Batch;
 
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -21,25 +15,15 @@ import com.idega.data.IDOPrimaryKey;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 
-
 /**
- * 
- *  Last modified: $Date: 2005/10/28 11:02:20 $ by $Author: palli $
- * 
- * @author <a href="mailto:bluebottle@idega.com">bluebottle</a>
- * @version $Revision: 1.18 $
+ * @author bluebottle
+ *
  */
 public interface FinanceEntry extends IDOEntity, BasketItem {
-
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean#setStatusCreated
 	 */
 	public void setStatusCreated();
-
-	/**
-	 * @see is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean#setStatusReady
-	 */
-	public void setStatusReady();
 
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean#setStatusSent
@@ -377,24 +361,24 @@ public interface FinanceEntry extends IDOEntity, BasketItem {
 	public int getPaymentContractId();
 
 	/**
-	 * @see is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean#setCreditCardBatchID
+	 * @see is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean#setISIBatchID
 	 */
-	public void setCreditCardBatchID(int id);
+	public void setISIBatchID(int id);
 
 	/**
-	 * @see is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean#setCreditCardBatch
+	 * @see is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean#setISIBatch
 	 */
-	public void setCreditCardBatch(Batch batch);
+	public void setISIBatch(Batch batch);
 
 	/**
-	 * @see is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean#getCreditCardBatchID
+	 * @see is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean#getISIBatchID
 	 */
-	public int getCreditCardBatchID();
+	public int getISIBatchID();
 
 	/**
-	 * @see is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean#getCreditCardBatch
+	 * @see is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean#getISIBatch
 	 */
-	public Batch getCreditCardBatch();
+	public Batch getISIBatch();
 
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean#getPayedByUserID

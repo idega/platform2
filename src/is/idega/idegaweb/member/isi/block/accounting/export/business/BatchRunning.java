@@ -6,7 +6,7 @@
  *
  */
 
-package is.idega.idegaweb.member.isi.block.accounting.export.creditcard.business;
+package is.idega.idegaweb.member.isi.block.accounting.export.business;
 
 /**
  * @author palli
@@ -21,7 +21,7 @@ public class BatchRunning {
             System.out.println("Reserving sendFiles batch");
             return true;
         } else {
-            System.out.println("Can't resever sendFiles batch, already running");
+            System.out.println("Can't reserve sendFiles batch, already running");
             return false;
         }
     }
@@ -38,7 +38,7 @@ public class BatchRunning {
             System.out.println("Reserving getFiles batch");
             return true;
         } else {
-            System.out.println("Can't resever getFiles batch, already running");
+            System.out.println("Can't reserve getFiles batch, already running");
             return false;
         }
     }

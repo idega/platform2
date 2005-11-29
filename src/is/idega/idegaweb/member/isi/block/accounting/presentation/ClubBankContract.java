@@ -1,5 +1,5 @@
 /*
- * $Id: ClubBankContract.java,v 1.3 2005/10/28 11:02:55 palli Exp $ Created on
+ * $Id: ClubBankContract.java,v 1.3.2.1 2005/11/29 16:55:20 palli Exp $ Created on
  * Feb 17, 2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -21,6 +21,8 @@ import java.util.regex.Pattern;
 import javax.ejb.FinderException;
 
 import com.idega.block.finance.business.BankInfoBusiness;
+import com.idega.block.finance.data.Bank;
+import com.idega.block.finance.data.BankBranch;
 import com.idega.block.finance.data.BankInfo;
 import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWApplicationContext;
@@ -39,10 +41,10 @@ import com.idega.user.data.Group;
 
 /**
  * 
- * Last modified: $Date: 2005/10/28 11:02:55 $ by $Author: palli $
+ * Last modified: $Date: 2005/11/29 16:55:20 $ by $Author: palli $
  * 
  * @author <a href="mailto:birna@idega.com">birna</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.3.2.1 $
  */
 public class ClubBankContract extends CashierSubWindowTemplate {
 
@@ -120,8 +122,10 @@ public class ClubBankContract extends CashierSubWindowTemplate {
 		if (iwc.isParameterSet(ACTION_SUBMIT)) {
 			if (!saveContract(iwc)) {
 				Table error = new Table();
-				Text labelError = new Text(iwrb.getLocalizedString(ERROR_COULD_NOT_SAVE, "Could not save:"));
-				labelError.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE_RED);
+				Text labelError = new Text(iwrb.getLocalizedString(
+						ERROR_COULD_NOT_SAVE, "Could not save:"));
+				labelError
+						.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE_RED);
 
 				int r = 1;
 				error.add(labelError, 1, r++);
@@ -129,16 +133,17 @@ public class ClubBankContract extends CashierSubWindowTemplate {
 					Iterator it = errorList.iterator();
 					while (it.hasNext()) {
 						String loc = (String) it.next();
-						Text errorText = new Text(iwrb.getLocalizedString(loc, loc));
-						errorText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE_RED);
+						Text errorText = new Text(iwrb.getLocalizedString(loc,
+								loc));
+						errorText
+								.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE_RED);
 
 						error.add(errorText, 1, r++);
 					}
 				}
 				f.add(error);
 			}
-		}
-		else if (iwc.isParameterSet(ACTION_DELETE)) {
+		} else if (iwc.isParameterSet(ACTION_DELETE)) {
 			if (!deleteContract(iwc)) {
 				Table error = new Table();
 				error.add("Could not delete contract!!");
@@ -151,31 +156,44 @@ public class ClubBankContract extends CashierSubWindowTemplate {
 		inputTable.setCellpadding(5);
 
 		int row = 1;
-		Text labelDivisionGroup = new Text(iwrb.getLocalizedString(LABEL_DIVISION, "Division") + "/"
-				+ iwrb.getLocalizedString(LABEL_GROUP, "Group"));
+		Text labelDivisionGroup = new Text(iwrb.getLocalizedString(
+				LABEL_DIVISION, "Division")
+				+ "/" + iwrb.getLocalizedString(LABEL_GROUP, "Group"));
 		labelDivisionGroup.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-		Text labelDivision = new Text(iwrb.getLocalizedString(LABEL_DIVISION, "Division"));
+		Text labelDivision = new Text(iwrb.getLocalizedString(LABEL_DIVISION,
+				"Division"));
 		labelDivision.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-		Text labelGroup = new Text(iwrb.getLocalizedString(LABEL_GROUP, "Group"));
+		Text labelGroup = new Text(iwrb
+				.getLocalizedString(LABEL_GROUP, "Group"));
 		labelGroup.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-		Text labelBankBranchNumber = new Text(iwrb.getLocalizedString(LABEL_BANK_BRANCH_NR, "Bank branch number"));
-		labelBankBranchNumber.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-		Text labelLedger = new Text(iwrb.getLocalizedString(LABEL_LEDGER, "Ledger"));
+		Text labelBankBranchNumber = new Text(iwrb.getLocalizedString(
+				LABEL_BANK_BRANCH_NR, "Bank branch number"));
+		labelBankBranchNumber
+				.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+		Text labelLedger = new Text(iwrb.getLocalizedString(LABEL_LEDGER,
+				"Ledger"));
 		labelLedger.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-		Text labelAccountId = new Text(iwrb.getLocalizedString(LABEL_ACCOUNT_ID, "Account id"));
+		Text labelAccountId = new Text(iwrb.getLocalizedString(
+				LABEL_ACCOUNT_ID, "Account id"));
 		labelAccountId.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-		Text labelClaimantsSSN = new Text(iwrb.getLocalizedString(LABEL_CLAIMANTS_SSN, "Claimants SSN"));
+		Text labelClaimantsSSN = new Text(iwrb.getLocalizedString(
+				LABEL_CLAIMANTS_SSN, "Claimants SSN"));
 		labelClaimantsSSN.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-		Text labelClaimantsName = new Text(iwrb.getLocalizedString(LABEL_CLAIMANTS_NAME, "Claimants name"));
+		Text labelClaimantsName = new Text(iwrb.getLocalizedString(
+				LABEL_CLAIMANTS_NAME, "Claimants name"));
 		labelClaimantsName.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-		Text labelUsername = new Text(iwrb.getLocalizedString(LABEL_USERNAME, "Username"));
+		Text labelUsername = new Text(iwrb.getLocalizedString(LABEL_USERNAME,
+				"Username"));
 		labelUsername.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-		Text labelPsw = new Text(iwrb.getLocalizedString(LABEL_PASSWORD, "Password"));
+		Text labelPsw = new Text(iwrb.getLocalizedString(LABEL_PASSWORD,
+				"Password"));
 		labelPsw.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 
-		SelectDropdownDouble divInput = new SelectDropdownDouble(LABEL_DIVISION, LABEL_GROUP);
-		divInput.addEmptyElement(iwrb.getLocalizedString(ELEMENT_ALL_DIVISIONS, "All divisions"),
-				iwrb.getLocalizedString(ELEMENT_ALL_GROUPS, "All groups"));
+		SelectDropdownDouble divInput = new SelectDropdownDouble(
+				LABEL_DIVISION, LABEL_GROUP);
+		divInput.addEmptyElement(iwrb.getLocalizedString(ELEMENT_ALL_DIVISIONS,
+				"All divisions"), iwrb.getLocalizedString(ELEMENT_ALL_GROUPS,
+				"All groups"));
 		ArrayList divisions = new ArrayList();
 		getClubDivisions(divisions, getClub());
 		if (!divisions.isEmpty()) {
@@ -186,25 +204,53 @@ public class ClubBankContract extends CashierSubWindowTemplate {
 				getGroupsUnderDivision(groups, division);
 				Map map = new LinkedHashMap();
 				if (groups != null && !groups.isEmpty()) {
-					map.put("-1", iwrb.getLocalizedString(ELEMENT_ALL_GROUPS, "All groups"));
+					map.put("-1", iwrb.getLocalizedString(ELEMENT_ALL_GROUPS,
+					"All groups"));
 					Iterator it2 = groups.iterator();
 					while (it2.hasNext()) {
 						Group group = (Group) it2.next();
-						map.put(group.getPrimaryKey().toString(), group.getName());
+						map.put(group.getPrimaryKey().toString(), group
+								.getName());
 					}
 				}
-				divInput.addMenuElement(division.getPrimaryKey().toString(), division.getName(), map);
+				divInput.addMenuElement(division.getPrimaryKey().toString(),
+						division.getName(), map);
 			}
 		}
 
-		TextInput branchInput = new TextInput(LABEL_BANK_BRANCH_NR);
-		branchInput.setMaxlength(4);
-		branchInput.setLength(5);
-
-		/*
-		 * TextInput ledgerInput = new TextInput(LABEL_LEDGER);
-		 * ledgerInput.setMaxlength(2); ledgerInput.setLength(5);
-		 */
+		SelectDropdownDouble bankInput = new SelectDropdownDouble("BANKS",
+				LABEL_BANK_BRANCH_NR);
+		try {
+			Collection banks = getBankInfoBusiness(iwc).getBankHome().findAll();
+			if (banks != null && !banks.isEmpty()) {
+				Iterator it = banks.iterator();
+				while (it.hasNext()) {
+					Bank bank = (Bank) it.next();
+					Collection branches = null;
+					try {
+						branches = getBankInfoBusiness(iwc).getBankBranchHome()
+								.findByBank(bank);
+					} catch (FinderException e2) {
+						branches = null;
+					}
+					if (branches != null && !branches.isEmpty()) {
+						Iterator it2 = branches.iterator();
+						Map map = new LinkedHashMap();
+						while (it2.hasNext()) {
+							BankBranch branch = (BankBranch) it2.next();
+							map.put(branch.getPrimaryKey().toString(), branch
+									.getBankBranchNumber());
+						}
+						bankInput.addMenuElement(bank.getPrimaryKey()
+								.toString(), bank.getBankName(), map);
+					}
+				}
+			}
+		} catch (RemoteException e1) {
+			e1.printStackTrace();
+		} catch (FinderException e1) {
+			e1.printStackTrace();
+		}
 
 		TextInput accountIdInput = new TextInput(LABEL_ACCOUNT_ID);
 		accountIdInput.setMaxlength(3);
@@ -223,8 +269,8 @@ public class ClubBankContract extends CashierSubWindowTemplate {
 		TextInput pswInput = new TextInput(LABEL_PASSWORD);
 		pswInput.setAsPasswordInput(true);
 
-		SubmitButton submit = new SubmitButton(iwrb.getLocalizedString(ACTION_SUBMIT, "Submit"), ACTION_SUBMIT,
-				"submit");
+		SubmitButton submit = new SubmitButton(iwrb.getLocalizedString(
+				ACTION_SUBMIT, "Submit"), ACTION_SUBMIT, "submit");
 
 		inputTable.add(labelDivisionGroup, 1, row);
 		inputTable.add(labelBankBranchNumber, 2, row);
@@ -236,7 +282,7 @@ public class ClubBankContract extends CashierSubWindowTemplate {
 		inputTable.add(labelPsw, 8, row++);
 
 		inputTable.add(divInput, 1, row);
-		inputTable.add(branchInput, 2, row);
+		inputTable.add(bankInput, 2, row);
 		inputTable.add("66", 3, row);
 		inputTable.add(accountIdInput, 4, row);
 		inputTable.add(ssnInput, 5, row);
@@ -248,7 +294,12 @@ public class ClubBankContract extends CashierSubWindowTemplate {
 		Collection contracts = null;
 
 		if (getClub() != null) {
-			contracts = getBankInfoBusiness(iwc).findAllContractsByClub(getClub());
+			try {
+				contracts = getBankInfoBusiness(iwc).findAllContractsByClub(
+						getClub());
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
 		}
 
 		row = 1;
@@ -264,53 +315,55 @@ public class ClubBankContract extends CashierSubWindowTemplate {
 		t.add(labelClaimantsSSN, 7, row);
 		t.add(labelClaimantsName, 8, row);
 		t.add(labelUsername, 9, row++);
-//		t.add(labelPsw, 10, row++);
 
 		if (contracts != null && !contracts.isEmpty()) {
 			Iterator it = contracts.iterator();
 			while (it.hasNext()) {
 				BankInfo bi = (BankInfo) it.next();
-				CheckBox deleteCheck = new CheckBox(LABEL_DELETE, bi.getPrimaryKey().toString());
+				CheckBox deleteCheck = new CheckBox(LABEL_DELETE, bi
+						.getPrimaryKey().toString());
 				t.add(deleteCheck, 1, row);
 
 				if (bi.getDivisionId() != -1) {
 					Group div = getGroupById(bi.getDivisionId(), iwc);
 					if (div != null) {
 						t.add(div.getName(), 2, row);
+					} else {
+						t.add(iwrb.getLocalizedString(ELEMENT_ALL_DIVISIONS,
+								"All divisions"), 2, row);
 					}
-					else {
-						t.add(iwrb.getLocalizedString(ELEMENT_ALL_DIVISIONS, "All divisions"), 2, row);
-					}
-				}
-				else {
-					t.add(iwrb.getLocalizedString(ELEMENT_ALL_DIVISIONS, "All divisions"), 2, row);
+				} else {
+					t.add(iwrb.getLocalizedString(ELEMENT_ALL_DIVISIONS,
+							"All divisions"), 2, row);
 				}
 
 				if (bi.getGroupId() != -1) {
 					Group group = getGroupById(bi.getGroupId(), iwc);
 					if (group != null) {
 						t.add(group.getName(), 3, row);
+					} else {
+						t.add(iwrb.getLocalizedString(ELEMENT_ALL_GROUPS,
+								"All groups"), 3, row);
 					}
-					else {
-						t.add(iwrb.getLocalizedString(ELEMENT_ALL_GROUPS, "All groups"), 3, row);
-					}
-				}
-				else {
-					t.add(iwrb.getLocalizedString(ELEMENT_ALL_GROUPS, "All groups"), 3, row);
+				} else {
+					t.add(iwrb.getLocalizedString(ELEMENT_ALL_GROUPS,
+							"All groups"), 3, row);
 				}
 
-				t.add(bi.getClaimantsBankBranchNumber(), 4, row);
+				if (bi.getClaimantsBankBranch() != null) {
+					t.add(bi.getClaimantsBankBranch().getBankBranchNumber(), 4,
+							row);
+				}
 				t.add(Integer.toString(bi.getAccountBook()), 5, row);
 				t.add(bi.getAccountId(), 6, row);
 				t.add(bi.getClaimantsSSN(), 7, row);
 				t.add(bi.getClaimantsName(), 8, row);
 				t.add(bi.getUsername(), 9, row);
-//				t.add(bi.getPassword(), 10, row);
 				row++;
 			}
 
-			SubmitButton delete = new SubmitButton(iwrb.getLocalizedString(ACTION_DELETE, "Delete"), ACTION_DELETE,
-					"delete");
+			SubmitButton delete = new SubmitButton(iwrb.getLocalizedString(
+					ACTION_DELETE, "Delete"), ACTION_DELETE, "delete");
 			delete.setToEnableWhenChecked(LABEL_DELETE);
 			t.add(delete, 10, ++row);
 			t.setAlignment(10, row, "RIGHT");
@@ -364,29 +417,46 @@ public class ClubBankContract extends CashierSubWindowTemplate {
 			errorList.add(ERROR_NO_PSW_ENTERED);
 		}
 
-		if (branch != null && branch.length() != 4 && !validateAsNumber(branch)) {
-			errorList.add(ERROR_BB_NR_NOT_VALID);
-		}
 		if (accountId != null && accountId.length() != 3) {
 			errorList.add(ERROR_ACCOUNT_ID_NOT_VALID);
 		}
 		if (ssn != null && ssn.length() != 10 && !validateAsNumber(ssn)) {
 			errorList.add(ERROR_CLAIMANTS_SSN_NOT_VALID);
 		}
-		if (name != null && !validateAsNonEmptySpaceAndNonIllegalCharacters(name)) {
+		if (name != null
+				&& !validateAsNonEmptySpaceAndNonIllegalCharacters(name)) {
 			errorList.add(ERROR_CLAIMANTS_NAME_NOT_VALID);
 		}
-		if (username != null && !validateAsNonEmptySpaceAndNonIllegalCharacters(username)) {
+		if (username != null
+				&& !validateAsNonEmptySpaceAndNonIllegalCharacters(username)) {
 			errorList.add(ERROR_USERNAME_NOT_VALID);
 		}
-		if (password != null && !validateAsNonEmptySpaceAndNonIllegalCharacters(password)) {
+		if (password != null
+				&& !validateAsNonEmptySpaceAndNonIllegalCharacters(password)) {
 			errorList.add(ERROR_PSW_NOT_VALID);
+		}
+
+		if (branch != null) {
+			errorList.add(ERROR_BB_NR_NOT_VALID);
+		}
+
+		Integer branchId = null;
+
+		try {
+			branchId = new Integer(branch);
+		} catch (NumberFormatException e) {
+
 		}
 
 		boolean insert = false;
 
-		insert = getBankInfoBusiness(iwc).insertBankInfoContract(getClub(), div, group, branch, accountId, ssn, name,
-				username, password);
+		try {
+			insert = getBankInfoBusiness(iwc).insertBankInfoContract(getClub(),
+					div, group, branchId.intValue(), accountId, ssn, name,
+					username, password);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
 
 		return insert;
 	}
@@ -395,8 +465,7 @@ public class ClubBankContract extends CashierSubWindowTemplate {
 		String delete[] = iwc.getParameterValues(LABEL_DELETE);
 		try {
 			return getBankInfoBusiness(iwc).deleteContract(delete);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return false;
@@ -423,9 +492,9 @@ public class ClubBankContract extends CashierSubWindowTemplate {
 
 	protected BankInfoBusiness getBankInfoBusiness(IWApplicationContext iwc) {
 		try {
-			return (BankInfoBusiness) IBOLookup.getServiceInstance(iwc, BankInfoBusiness.class);
-		}
-		catch (RemoteException e) {
+			return (BankInfoBusiness) IBOLookup.getServiceInstance(iwc,
+					BankInfoBusiness.class);
+		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
 
@@ -435,13 +504,12 @@ public class ClubBankContract extends CashierSubWindowTemplate {
 	private Group getGroupById(int groupId, IWApplicationContext iwc) {
 		GroupBusiness biz = null;
 		try {
-			biz = (GroupBusiness) IBOLookup.getServiceInstance(iwc, GroupBusiness.class);
+			biz = (GroupBusiness) IBOLookup.getServiceInstance(iwc,
+					GroupBusiness.class);
 			return biz.getGroupByGroupID(groupId);
-		}
-		catch (RemoteException e) {
+		} catch (RemoteException e) {
 			e.printStackTrace();
-		}
-		catch (FinderException f) {
+		} catch (FinderException f) {
 			f.printStackTrace();
 		}
 

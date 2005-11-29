@@ -4,7 +4,6 @@
  */
 package is.idega.block.finance.business.li;
 
-
 import is.idega.block.finance.business.li.claims.Krafa;
 import is.idega.block.finance.business.li.claims.Krofur;
 import is.idega.block.finance.business.li.claims.LI_Innheimta_fyrirspurn_krofur;
@@ -30,8 +29,6 @@ import org.exolab.castor.xml.ValidationException;
 import com.idega.block.finance.business.BankFileManager;
 import com.idega.block.finance.business.BankInvoiceFileManager;
 import com.idega.block.finance.business.InvoiceDataInsert;
-
-
 
 /**
  * @author birna

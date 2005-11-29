@@ -6,10 +6,10 @@
  *
  */
 
-package is.idega.idegaweb.member.isi.block.accounting.export.creditcard.presentation;
+package is.idega.idegaweb.member.isi.block.accounting.export.presentation;
 
-import is.idega.idegaweb.member.isi.block.accounting.export.creditcard.business.ExportBusiness;
-import is.idega.idegaweb.member.isi.block.accounting.export.creditcard.data.Configuration;
+import is.idega.idegaweb.member.isi.block.accounting.export.business.ExportBusiness;
+import is.idega.idegaweb.member.isi.block.accounting.export.data.Configuration;
 import is.idega.idegaweb.member.isi.block.accounting.presentation.CashierSubWindowTemplate;
 import is.idega.idegaweb.member.isi.block.accounting.presentation.CashierWindow;
 

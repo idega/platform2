@@ -1,5 +1,5 @@
 /*
- * $Id: SPDataInsert.java,v 1.1.4.1 2005/11/18 17:33:16 palli Exp $
+ * $Id: SPDataInsert.java,v 1.1.4.2 2005/11/29 16:55:20 palli Exp $
  * Created on Feb 8, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -29,10 +29,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2005/11/18 17:33:16 $ by $Author: palli $
+ *  Last modified: $Date: 2005/11/29 16:55:20 $ by $Author: palli $
  * 
  * @author <a href="mailto:birna@idega.com">birna</a>
- * @version $Revision: 1.1.4.1 $
+ * @version $Revision: 1.1.4.2 $
  */
 public class SPDataInsert /*extends Window*/ implements InvoiceDataInsert {
 	
@@ -306,17 +306,13 @@ public class SPDataInsert /*extends Window*/ implements InvoiceDataInsert {
 		MultipartPostMethod post = new MultipartPostMethod(POST_METHOD);
 		File file = new File(FILE_NAME);
 				
-		try {
-			
-			post.addParameter("userid", bfm.getUsername(groupId));//"aistest");
-			post.addParameter("password",bfm.getPassword(groupId));//"gestur" + "\\&" + "gestur");
-			post.addParameter("KtFelags",bfm.getClaimantSSN(groupId));//"5709902259");
+		try {		
+			post.addParameter("userid", bfm.getUsername(groupId));
+			post.addParameter("password",bfm.getPassword(groupId));
+			post.addParameter("KtFelags",bfm.getClaimantSSN(groupId));
 			post.addParameter("Skra",file);
 			post.setDoAuthentication(false);
-			client.executeMethod(post);
-				
-//			System.out.println("responseString: " + post.getResponseBodyAsString());
-			
+			client.executeMethod(post);			
 		}
 		catch (FileNotFoundException e1) {
 			e1.printStackTrace();

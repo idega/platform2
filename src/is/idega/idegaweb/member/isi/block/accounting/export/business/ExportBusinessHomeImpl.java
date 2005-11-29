@@ -6,7 +6,7 @@
  *
  */
 
-package is.idega.idegaweb.member.isi.block.accounting.export.creditcard.business;
+package is.idega.idegaweb.member.isi.block.accounting.export.business;
 
 
 

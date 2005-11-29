@@ -58,7 +58,7 @@ public class BankInvoiceFileManager implements BankFileManager{
 	public String getBankBranchNumber(int groupId) {
 		BankInfo bi = getBankInfo(groupId);
 		if(bi != null) {
-			return bi.getClaimantsBankBranchNumber();
+			return bi.getClaimantsBankBranch().getBankBranchNumber();
 		}else {
 			return "";
 		}

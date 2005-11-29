@@ -143,6 +143,13 @@ public class CreditCardContractBMPBean extends GenericEntity implements
     public Collection ejbFindAll() throws FinderException {
         IDOQuery sql = idoQuery();
         sql.appendSelectAllFrom(this);
+        sql.appendWhere();
+        sql.appendLeftParenthesis();
+        sql.append(COLUMN_DELETED);
+        sql.append(" is null ");
+        sql.appendOr();
+        sql.appendEquals(COLUMN_DELETED,false);
+        sql.appendRightParenthesis();
 
         return idoFindPKsByQuery(sql);
     }
@@ -220,7 +227,63 @@ public class CreditCardContractBMPBean extends GenericEntity implements
         sql.appendWhereEquals(COLUMN_GROUP, group);
         sql.appendAnd();
         sql.appendEquals(COLUMN_CARD_TYPE, type);
+        sql.appendAnd();
+        sql.appendLeftParenthesis();
+        sql.appendEquals(COLUMN_DELETED, false);
+        sql.appendOr();
+        sql.append(COLUMN_DELETED);
+        sql.append(" is null");
+        sql.appendRightParenthesis();
         
+		System.out.println("sql = " + sql.toString());
+
+        return idoFindOnePKByQuery(sql);
+    }
+    
+    public Object ejbFindByDivisionAndType(Group division, CreditCardType type) throws FinderException {
+        IDOQuery sql = idoQuery();
+        sql.appendSelectAllFrom(this);
+        sql.appendWhereEquals(COLUMN_DIVISION, division);
+        sql.appendAnd();
+        sql.append(COLUMN_GROUP);
+        sql.append(" is null ");
+        sql.appendAnd();
+        sql.appendEquals(COLUMN_CARD_TYPE, type);
+        sql.appendAnd();
+        sql.appendLeftParenthesis();
+        sql.appendEquals(COLUMN_DELETED, false);
+        sql.appendOr();
+        sql.append(COLUMN_DELETED);
+        sql.append(" is null");
+        sql.appendRightParenthesis();
+
+		System.out.println("sql = " + sql.toString());
+
+        return idoFindOnePKByQuery(sql);
+    }
+
+    public Object ejbFindByClubAndType(Group club, CreditCardType type) throws FinderException {
+        IDOQuery sql = idoQuery();
+        sql.appendSelectAllFrom(this);
+        sql.appendWhereEquals(COLUMN_CLUB, club);
+        sql.appendAnd();
+        sql.append(COLUMN_DIVISION);
+        sql.append(" is null ");
+        sql.appendAnd();
+        sql.append(COLUMN_GROUP);
+        sql.append(" is null ");
+        sql.appendAnd();
+        sql.appendEquals(COLUMN_CARD_TYPE, type);
+        sql.appendAnd();
+        sql.appendLeftParenthesis();
+        sql.appendEquals(COLUMN_DELETED, false);
+        sql.appendOr();
+        sql.append(COLUMN_DELETED);
+        sql.append(" is null");
+        sql.appendRightParenthesis();
+
+		System.out.println("sql = " + sql.toString());
+
         return idoFindOnePKByQuery(sql);
     }
 }

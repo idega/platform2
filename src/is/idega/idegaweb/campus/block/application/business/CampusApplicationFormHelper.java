@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFormHelper.java,v 1.23 2004/06/30 08:36:37 aron Exp $
+ * $Id: CampusApplicationFormHelper.java,v 1.23.4.1 2005/11/29 16:55:20 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -42,14 +42,14 @@ import com.idega.util.IWTimestamp;
 import com.idega.util.SendMail;
 
 /**
- *
+ * 
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
 public class CampusApplicationFormHelper extends ApplicationFormHelper {
 
 	/**
-	 *
+	 * 
 	 */
 	public static void saveAppliedFor(IWContext iwc) {
 		String key1 = (String) iwc.getParameter("aprtType");
@@ -61,143 +61,142 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 		Applied applied3 = null;
 
 		try {
-			applied1 = ((AppliedHome) IDOLookup.getHome(Applied.class)).create();
+			applied1 = ((AppliedHome) IDOLookup.getHome(Applied.class))
+					.create();
 			int type = ApartmentTypeComplexHelper.getPartKey(key1, 1);
 			int complex = ApartmentTypeComplexHelper.getPartKey(key1, 2);
 			applied1.setApartmentTypeId(type);
 			applied1.setComplexId(complex);
 			applied1.setOrder(1);
-			
+
 			if ((key2 != null) && (!key2.equalsIgnoreCase("-1"))) {
-				applied2 = ((AppliedHome) IDOLookup.getHome(Applied.class)).create();
+				applied2 = ((AppliedHome) IDOLookup.getHome(Applied.class))
+						.create();
 				type = ApartmentTypeComplexHelper.getPartKey(key2, 1);
 				complex = ApartmentTypeComplexHelper.getPartKey(key2, 2);
 				applied2.setApartmentTypeId(type);
 				applied2.setComplexId(complex);
 				applied2.setOrder(2);
 			}
-			
+
 			if ((key3 != null) && (!key3.equalsIgnoreCase("-1"))) {
-				applied3 = ((AppliedHome) IDOLookup.getHome(Applied.class)).create();
+				applied3 = ((AppliedHome) IDOLookup.getHome(Applied.class))
+						.create();
 				type = ApartmentTypeComplexHelper.getPartKey(key3, 1);
 				complex = ApartmentTypeComplexHelper.getPartKey(key3, 2);
 				applied3.setApartmentTypeId(type);
 				applied3.setComplexId(complex);
 				applied3.setOrder(3);
 			}
-			
+
 			iwc.setSessionAttribute("applied1", applied1);
 			if (applied2 != null)
 				iwc.setSessionAttribute("applied2", applied2);
 			if (applied3 != null)
 				iwc.setSessionAttribute("applied3", applied3);
-		}
-		catch (IDOLookupException e) {
+		} catch (IDOLookupException e) {
 			e.printStackTrace();
-		}
-		catch (CreateException e) {
+		} catch (CreateException e) {
 			e.printStackTrace();
 		}
 	}
 
 	/**
-	 *
+	 * 
 	 */
 	public static String saveDataToDB(IWContext iwc) {
 		Applicant applicant = (Applicant) iwc.getSessionAttribute("applicant");
 		Applicant spouse = (Applicant) iwc.getSessionAttribute("spouse");
 		Vector childs = (Vector) iwc.getSessionAttribute("childs");
-		Application application = (Application) iwc.getSessionAttribute("application");
-		CampusApplication campusApplication = (CampusApplication) iwc.getSessionAttribute("campusapplication");
+		Application application = (Application) iwc
+				.getSessionAttribute("application");
+		CampusApplication campusApplication = (CampusApplication) iwc
+				.getSessionAttribute("campusapplication");
 		Applied applied1 = (Applied) iwc.getSessionAttribute("applied1");
 		Applied applied2 = (Applied) iwc.getSessionAttribute("applied2");
 		Applied applied3 = (Applied) iwc.getSessionAttribute("applied3");
 
 		String cypher = "";
 
-		javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
-		if(applicant!=null){
-		try {
-			t.begin();
-			applicant.store();
-			applicant.addChild(applicant);
-
-			if (spouse != null) {
-				spouse.store();
-				applicant.addChild(spouse);
-			}
-
-			if (childs != null && childs.size() > 0) {
-				for (int i = 0; i < childs.size(); i++) {
-					Applicant child = (Applicant) childs.get(i);
-					child.store();
-					applicant.addChild(child);
-				}
-			}
-
-			application.setApplicantId(((Integer)applicant.getPrimaryKey()).intValue());
-			application.store();
-
-			campusApplication.setAppApplicationId(((Integer)application.getPrimaryKey()).intValue());
-			campusApplication.store();
-
-			applied1.setApplicationId(new Integer(campusApplication.getPrimaryKey().toString()));
-			applied1.store();
-
-			if (applied2 != null) {
-				applied2.setApplicationId(new Integer(campusApplication.getPrimaryKey().toString()));
-				applied2.store();
-			}
-
-			if (applied3 != null) {
-				applied3.setApplicationId(new Integer(campusApplication.getPrimaryKey().toString()));
-				applied3.store();
-			}
-			/*
-			      ReferenceNumberHandler h = new ReferenceNumberHandler();
-			      String key = h.getCypherKey(iwc);
-			      CypherText ct = new CypherText();
-			
-			      String id = Integer.toString(application.getID());
-			      while (id.length() < 6)
-			        id = "0" + id;
-			
-			      cypher = ct.doCyper(id,key);
-			*/
-
-			cypher = ReferenceNumberFinder.getInstance(iwc).lookup(((Integer)application.getPrimaryKey()).intValue());
-
-			t.commit();
-			iwc.removeSessionAttribute("applicant");
-			iwc.removeSessionAttribute("spouse");
-			iwc.removeSessionAttribute("childs");
-			iwc.removeSessionAttribute("application");
-			iwc.removeSessionAttribute("campusapplication");
-			iwc.removeSessionAttribute("applied1");
-			iwc.removeSessionAttribute("applied2");
-			iwc.removeSessionAttribute("applied3");
-			iwc.removeSessionAttribute("aprtCat");
-		}
-		catch (Exception e) {
+		javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager
+				.getInstance();
+		if (applicant != null) {
 			try {
-				t.rollback();
+				t.begin();
+				applicant.store();
+				applicant.addChild(applicant);
+
+				if (spouse != null) {
+					spouse.store();
+					applicant.addChild(spouse);
+				}
+
+				if (childs != null && childs.size() > 0) {
+					for (int i = 0; i < childs.size(); i++) {
+						Applicant child = (Applicant) childs.get(i);
+						child.store();
+						applicant.addChild(child);
+					}
+				}
+
+				application
+						.setApplicantId(((Integer) applicant.getPrimaryKey())
+								.intValue());
+				application.store();
+
+				campusApplication.setAppApplicationId(((Integer) application
+						.getPrimaryKey()).intValue());
+				campusApplication.store();
+
+				applied1.setApplicationId(new Integer(campusApplication
+						.getPrimaryKey().toString()));
+				applied1.store();
+
+				if (applied2 != null) {
+					applied2.setApplicationId(new Integer(campusApplication
+							.getPrimaryKey().toString()));
+					applied2.store();
+				}
+
+				if (applied3 != null) {
+					applied3.setApplicationId(new Integer(campusApplication
+							.getPrimaryKey().toString()));
+					applied3.store();
+				}
+
+				cypher = ReferenceNumberFinder.getInstance(iwc).lookup(
+						((Integer) application.getPrimaryKey()).intValue());
+
+				t.commit();
+				iwc.removeSessionAttribute("applicant");
+				iwc.removeSessionAttribute("spouse");
+				iwc.removeSessionAttribute("childs");
+				iwc.removeSessionAttribute("application");
+				iwc.removeSessionAttribute("campusapplication");
+				iwc.removeSessionAttribute("applied1");
+				iwc.removeSessionAttribute("applied2");
+				iwc.removeSessionAttribute("applied3");
+				iwc.removeSessionAttribute("aprtCat");
+			} catch (Exception e) {
+				try {
+					t.rollback();
+				} catch (javax.transaction.SystemException ex) {
+					ex.printStackTrace();
+				}
+				e.printStackTrace();
+				return (null);
 			}
-			catch (javax.transaction.SystemException ex) {
-				ex.printStackTrace();
-			}
-			e.printStackTrace();
-			return (null);
-		}
 		}
 
 		String e_mail = campusApplication.getEmail();
-		if (e_mail != null && applicant!=null) {
+		if (e_mail != null && applicant != null) {
 			if (e_mail.length() > 0) {
 				try {
-					MailingListService MailingListBusiness = (MailingListService) IBOLookup.getServiceInstance(iwc,MailingListService.class);
-					MailingListBusiness.processMailEvent( new EntityHolder(applicant), LetterParser.SUBMISSION);
-				}
-				catch (RemoteException e1) {
+					MailingListService MailingListBusiness = (MailingListService) IBOLookup
+							.getServiceInstance(iwc, MailingListService.class);
+					MailingListBusiness.processMailEvent(new EntityHolder(
+							applicant), LetterParser.SUBMISSION);
+				} catch (RemoteException e1) {
 					e1.printStackTrace();
 				}
 			}
@@ -207,9 +206,9 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 	}
 
 	/**
-	 *
+	 * 
 	 */
-	public static void saveCampusInformation(IWContext iwc){
+	public static void saveCampusInformation(IWContext iwc) {
 		int studyBeginMon = 0;
 		int studyBeginYr = 0;
 		int studyEndMo = 0;
@@ -220,10 +219,12 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 		int spouseStudyEndYr = 0;
 		int currentResidence = 0;
 		int spouseOccupation = 0;
+		int schoolID = 0;
 
 		String faculty = iwc.getParameter("faculty");
+		String school = iwc.getParameter("school");
 		String studyTrack = iwc.getParameter("studyTrack");
-		//String resInfo = iwc.getParameter("resInfo");
+		// String resInfo = iwc.getParameter("resInfo");
 		String spouseName = iwc.getParameter("spouseName");
 		String spouseSSN = iwc.getParameter("spouseSSN");
 		String spouseSchool = iwc.getParameter("spouseSchool");
@@ -233,7 +234,7 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 		String spouseStudyBegin = iwc.getParameter("spouseStudyBegin");
 		String spouseStudyEnd = iwc.getParameter("spouseStudyEnd");
 
-		//String children = iwc.getParameter("children");
+		// String children = iwc.getParameter("children");
 		String wantHousingFrom = iwc.getParameter("wantHousingFrom");
 		String waitingList = iwc.getParameter("waitingList");
 		String furniture = iwc.getParameter("furniture");
@@ -244,27 +245,33 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 		CampusApplication application = null;
 		Applicant spouse = null;
 		try {
-			application = ((CampusApplicationHome) IDOLookup.getHome(CampusApplication.class)).create();
-			spouse = ((ApplicantHome) IDOLookup.getHome(Applicant.class)).create();
-		}
-		catch (IDOLookupException e1) {
+			application = ((CampusApplicationHome) IDOLookup
+					.getHome(CampusApplication.class)).create();
+			spouse = ((ApplicantHome) IDOLookup.getHome(Applicant.class))
+					.create();
+		} catch (IDOLookupException e1) {
 			e1.printStackTrace();
-		}
-		catch (CreateException e1) {
+		} catch (CreateException e1) {
 			e1.printStackTrace();
 		}
 		Vector childs = new Vector();
 
 		try {
-			currentResidence = Integer.parseInt(iwc.getParameter("currentResidence"));
-		}
-		catch (java.lang.NumberFormatException e) {
+			currentResidence = Integer.parseInt(iwc
+					.getParameter("currentResidence"));
+		} catch (java.lang.NumberFormatException e) {
 		}
 
 		try {
-			spouseOccupation = Integer.parseInt(iwc.getParameter("spouseOccupation"));
+			spouseOccupation = Integer.parseInt(iwc
+					.getParameter("spouseOccupation"));
+		} catch (java.lang.NumberFormatException e) {
 		}
-		catch (java.lang.NumberFormatException e) {
+
+		try {
+			schoolID = new Integer(school).intValue();
+		} catch (NumberFormatException e) {
+
 		}
 
 		if (studyBegin != null) {
@@ -272,8 +279,7 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 				IWTimestamp stamp = new IWTimestamp(studyBegin);
 				studyBeginMon = stamp.getMonth();
 				studyBeginYr = stamp.getYear();
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 
 			}
 		}
@@ -283,8 +289,7 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 				IWTimestamp stamp = new IWTimestamp(studyEnd);
 				studyEndMo = stamp.getMonth();
 				studyEndYr = stamp.getYear();
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 
 			}
 		}
@@ -294,8 +299,7 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 				IWTimestamp stamp = new IWTimestamp(spouseStudyBegin);
 				spouseStudyBeginMo = stamp.getMonth();
 				spouseStudyBeginYr = stamp.getYear();
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 
 			}
 		}
@@ -305,8 +309,7 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 				IWTimestamp stamp = new IWTimestamp(spouseStudyEnd);
 				spouseStudyEndMo = stamp.getMonth();
 				spouseStudyEndYr = stamp.getYear();
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 
 			}
 		}
@@ -317,7 +320,12 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 		application.setStudyBeginYear(studyBeginYr);
 		application.setStudyEndMonth(studyEndMo);
 		application.setStudyEndYear(studyEndYr);
-		application.setFaculty(faculty);
+		if (faculty != null) {
+			application.setFaculty(faculty);			
+		}
+		if (school != null) {
+			application.setSchoolID(schoolID);
+		}
 		application.setStudyTrack(studyTrack);
 		application.setSpouseName(spouseName);
 		application.setSpouseSSN(spouseSSN);
@@ -329,6 +337,7 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 		application.setSpouseStudyEndYear(spouseStudyEndYr);
 
 		IWTimestamp t = new IWTimestamp(wantHousingFrom);
+		System.out.println("want housing from = " + t.toString());
 		application.setHousingFrom(t.getDate());
 		if (waitingList == null)
 			application.setOnWaitinglist(false);
@@ -355,7 +364,8 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 			String name, birth;
 			for (int i = 0; i < count; i++) {
 				try {
-					Applicant child = ((ApplicantHome) IDOLookup.getHome(Applicant.class)).create();
+					Applicant child = ((ApplicantHome) IDOLookup
+							.getHome(Applicant.class)).create();
 					name = iwc.getParameter("childname" + i);
 					birth = iwc.getParameter("childbirth" + i);
 					if (name.length() > 0) {
@@ -364,11 +374,9 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 						child.setStatus("C");
 						childs.add(child);
 					}
-				}
-				catch (IDOLookupException e2) {
+				} catch (IDOLookupException e2) {
 					e2.printStackTrace();
-				}
-				catch (CreateException e2) {
+				} catch (CreateException e2) {
 					e2.printStackTrace();
 				}
 			}
@@ -378,33 +386,31 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 	}
 
 	/**
-	 *
+	 * 
 	 */
-	public static void saveSubject(IWContext iwc){
+	public static void saveSubject(IWContext iwc) {
 		String subject = (String) iwc.getParameter("subject");
 		String aprtCat = (String) iwc.getParameter("aprtCat");
 		try {
-			Application application = ((ApplicationHome) IDOLookup.getHome(Application.class)).create();
+			Application application = ((ApplicationHome) IDOLookup
+					.getHome(Application.class)).create();
 			application.setSubjectId(Integer.parseInt(subject));
 			application.setSubmitted(IWTimestamp.getTimestampRightNow());
 			application.setStatusSubmitted();
 			application.setStatusChanged(IWTimestamp.getTimestampRightNow());
 			iwc.setSessionAttribute("application", application);
 			iwc.setSessionAttribute("aprtCat", aprtCat);
-		}
-		catch (IDOLookupException e) {
+		} catch (IDOLookupException e) {
 			e.printStackTrace();
-		}
-		catch (NumberFormatException e) {
+		} catch (NumberFormatException e) {
 			e.printStackTrace();
-		}
-		catch (CreateException e) {
+		} catch (CreateException e) {
 			e.printStackTrace();
 		}
 	}
 
 	/**
-	 *
+	 * 
 	 */
 	public static Vector checkAparmentTypesSelected(IWContext iwc) {
 		String key1 = (String) iwc.getParameter("aprtType");
@@ -414,7 +420,8 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 		Vector ret = new Vector(3);
 
 		try {
-			ApartmentTypeHome ath = (ApartmentTypeHome)IDOLookup.getHome(ApartmentType.class);
+			ApartmentTypeHome ath = (ApartmentTypeHome) IDOLookup
+					.getHome(ApartmentType.class);
 			int type = ApartmentTypeComplexHelper.getPartKey(key1, 1);
 
 			ApartmentType room = ath.findByPrimaryKey(new Integer(type));
@@ -436,35 +443,39 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 				pic = room.getFloorPlanId();
 			}
 			ret.add(2, new Integer(pic));
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		return (ret);
 	}
-	
+
 	public static void sendApplicationConfirmationReminderEmail(IWContext iwc) {
-//		select app.app_application_id, email from cam_application cam, app_application app where cam.app_application_id = app.app_application_id and app.status = 'A' 
-		Map map = CampusApplicationFinder.getEmailAndApplicationIdForApprovedApplications();
-		
+		// select app.app_application_id, email from cam_application cam,
+		// app_application app where cam.app_application_id =
+		// app.app_application_id and app.status = 'A'
+		Map map = CampusApplicationFinder
+				.getEmailAndApplicationIdForApprovedApplications();
+
 		Set keys = map.keySet();
 		Iterator it = keys.iterator();
-		
+
 		ReferenceNumberFinder instance = ReferenceNumberFinder.getInstance(iwc);
 		StringBuffer body1 = new StringBuffer("English version follows\n\n");
 
 		body1.append("Ágæti viðtakandi\n\n");
-		body1.append("Þú átt inni umsókn um vist á Stúdentagörðum á skrifstofu okkar. Með því að nota tilvísunarnúmer getur þú fylgst með því hvar þú ert á biðlistanum. Farið er inná heimasíðuna okkar sem er: www.studentagardar.is og tilvísunarnúmerið slegið inn í viðeigandi reit og ýtt á get. Þá kemur upp staða þín á biðlistanum. Þar er þér einnig gefinn kostur á því að stafðfesta veru þína á biðlistanum með því að ýta á confirm. Staðfesta þarf á milli 1. og 5. hvers mánaðar, ef því er ekki sinnt dettur þú útaf biðlistanum.\n\n");
+		body1
+				.append("Þú átt inni umsókn um vist á Stúdentagörðum á skrifstofu okkar. Með því að nota tilvísunarnúmer getur þú fylgst með því hvar þú ert á biðlistanum. Farið er inná heimasíðuna okkar sem er: www.studentagardar.is og tilvísunarnúmerið slegið inn í viðeigandi reit og ýtt á get. Þá kemur upp staða þín á biðlistanum. Þar er þér einnig gefinn kostur á því að stafðfesta veru þína á biðlistanum með því að ýta á confirm. Staðfesta þarf á milli 1. og 5. hvers mánaðar, ef því er ekki sinnt dettur þú útaf biðlistanum.\n\n");
 		body1.append("Tilvísunarnúmerið þitt er: ");
 
 		StringBuffer tail1 = new StringBuffer("Skrifstofa Stúdentagarða\n");
-		//tail1.append("Vilborg Sverrisdóttir\n\n");
-		tail1.append("Þér er einnig bent á að setja inn netfang á þessari síðu og sjá til þess að það sem og símanúmerið sé alltaf rétt. Þetta er mjög mikilvægt svo hægt sé að ná sambandi við þig þegar þörf krefur.\n");
-
+		// tail1.append("Vilborg Sverrisdóttir\n\n");
+		tail1
+				.append("Þér er einnig bent á að setja inn netfang á þessari síðu og sjá til þess að það sem og símanúmerið sé alltaf rétt. Þetta er mjög mikilvægt svo hægt sé að ná sambandi við þig þegar þörf krefur.\n");
 
 		StringBuffer body2 = new StringBuffer("To Whom It May Concern:\n\n");
-		body2.append("You have an application at Student Housing, by using your reference number you can monitor where you are on the waiting list. To do that you go on our website: www.studenthousing.is and write your reference number in tilv?sunarnr. and push get. There you can see your status on the waiting list and there you also have to confirm that you want to stay on the waiting list, you have to do that between the 1st and the 5th of each month. If that is not done you will loose your place on the waiting list. At this site you can also update your phone number and e-mail address. It is very important that you keep these information always updated.\n\n");
+		body2
+				.append("You have an application at Student Housing, by using your reference number you can monitor where you are on the waiting list. To do that you go on our website: www.studenthousing.is and write your reference number in tilv?sunarnr. and push get. There you can see your status on the waiting list and there you also have to confirm that you want to stay on the waiting list, you have to do that between the 1st and the 5th of each month. If that is not done you will loose your place on the waiting list. At this site you can also update your phone number and e-mail address. It is very important that you keep these information always updated.\n\n");
 		body2.append("Your reference number is: ");
 
 		StringBuffer tail2 = new StringBuffer("Best regards,\n");
@@ -473,9 +484,9 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 		tail2.append("E-mail: studentagardar@fs.is");
 
 		while (it.hasNext()) {
-			Integer id = (Integer)it.next();
-			String email = (String)map.get(id);
-			
+			Integer id = (Integer) it.next();
+			String email = (String) map.get(id);
+
 			String cypher = instance.lookup(id.intValue());
 
 			StringBuffer totalText = new StringBuffer(body1.toString());
@@ -487,15 +498,16 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 			totalText.append(cypher);
 			totalText.append("\n\n");
 			totalText.append(tail2.toString());
-						
+
 			try {
-				SendMail.send("postmaster@studenthousing.is",email,null,"palli@idega.is","mail.idega.is","?minning/Reminder",totalText.toString());
-			}
-			catch (MessagingException e) {
+				SendMail.send("postmaster@studenthousing.is", email, null,
+						"palli@idega.is", "mail.idega.is", "?minning/Reminder",
+						totalText.toString());
+			} catch (MessagingException e) {
 				e.printStackTrace();
 			}
-			
+
 		}
-		
+
 	}
 }

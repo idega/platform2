@@ -22,7 +22,7 @@ public class SchoolBMPBean extends GenericEntity implements School {
 	}
 
 	public String getEntityName() {
-		return null;
+		return ENTITY_NAME;
 	}
 
 	public void initializeAttributes() {

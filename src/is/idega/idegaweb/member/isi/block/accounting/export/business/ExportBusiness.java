@@ -6,9 +6,9 @@
  *
  */
 
-package is.idega.idegaweb.member.isi.block.accounting.export.creditcard.business;
+package is.idega.idegaweb.member.isi.block.accounting.export.business;
 
-import is.idega.idegaweb.member.isi.block.accounting.export.creditcard.data.Configuration;
+import is.idega.idegaweb.member.isi.block.accounting.export.data.Configuration;
 
 import java.util.Collection;
 
@@ -21,19 +21,19 @@ import com.idega.util.IWTimestamp;
  */
 public interface ExportBusiness extends IBOService {
     /**
-     * @see is.idega.idegaweb.member.isi.block.accounting.export.creditcard.business.ExportBusinessBean#createFileFromContracts
+     * @see is.idega.idegaweb.member.isi.block.accounting.export.business.ExportBusinessBean#createFileFromContracts
      */
     public boolean createFileFromContracts(String dateFrom, String dateTo)
             throws java.rmi.RemoteException;
 
     /**
-     * @see is.idega.idegaweb.member.isi.block.accounting.export.creditcard.business.ExportBusinessBean#getConfiguration
+     * @see is.idega.idegaweb.member.isi.block.accounting.export.business.ExportBusinessBean#getConfiguration
      */
     public Configuration getConfiguration(String typeID)
             throws java.rmi.RemoteException;
 
     /**
-     * @see is.idega.idegaweb.member.isi.block.accounting.export.creditcard.business.ExportBusinessBean#saveConfiguration
+     * @see is.idega.idegaweb.member.isi.block.accounting.export.business.ExportBusinessBean#saveConfiguration
      */
     public boolean saveConfiguration(String configurationID, String sendServer,
             String sendUser, String sendPasswd, String sendPath,
@@ -44,7 +44,7 @@ public interface ExportBusiness extends IBOService {
             throws java.rmi.RemoteException;
 
     /**
-     * @see is.idega.idegaweb.member.isi.block.accounting.export.creditcard.business.ExportBusinessBean#findAllBatches
+     * @see is.idega.idegaweb.member.isi.block.accounting.export.business.ExportBusinessBean#findAllBatches
      */
     public Collection findAllBatches() throws java.rmi.RemoteException;
 

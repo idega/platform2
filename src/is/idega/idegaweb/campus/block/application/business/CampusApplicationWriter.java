@@ -1,6 +1,6 @@
 /*
 
- * $Id: CampusApplicationWriter.java,v 1.8 2004/06/28 19:04:54 aron Exp $
+ * $Id: CampusApplicationWriter.java,v 1.8.4.1 2005/11/29 16:55:20 palli Exp $
 
  *
 
@@ -201,19 +201,19 @@ public class CampusApplicationWriter implements MediaWritable{
 					datatable.addCell((new Phrase(iwrb.getLocalizedString("name", "Name"),headerFont)));
 					datatable.addCell(applicant.getFullName());
 					datatable.addCell((new Phrase(iwrb.getLocalizedString("name", "Name"),headerFont)));
-					datatable.addCell(campusApplication.getSpouseName());
+					datatable.addCell(campusApplication.getSpouseName() != null ? campusApplication.getSpouseName() : "");
 					datatable.addCell((new Phrase(iwrb.getLocalizedString("ssn", "Socialnumber"),headerFont)));
 					datatable.addCell(applicant.getSSN());
 					datatable.addCell((new Phrase(iwrb.getLocalizedString("ssn", "Socialnumber"),headerFont)));
-					datatable.addCell(campusApplication.getSpouseSSN());
+					datatable.addCell(campusApplication.getSpouseSSN() != null ? campusApplication.getSpouseSSN() : "");
 					datatable.addCell((new Phrase(iwrb.getLocalizedString("legal_residence", "Legal Residence"),headerFont)));
 					datatable.addCell(applicant.getLegalResidence());
 					datatable.addCell((new Phrase(iwrb.getLocalizedString("school", "School"),headerFont)));
-					datatable.addCell(campusApplication.getSpouseSchool());
+					datatable.addCell(campusApplication.getSpouseSchool() != null ? campusApplication.getSpouseSchool() : "");
 					datatable.addCell((new Phrase(iwrb.getLocalizedString("residence", "Residence"),headerFont)));
 					datatable.addCell(applicant.getResidence());
 					datatable.addCell((new Phrase(iwrb.getLocalizedString("studytrack", "Study Track"),headerFont)));
-					datatable.addCell(campusApplication.getSpouseStudyTrack());
+					datatable.addCell(campusApplication.getSpouseStudyTrack() != null ? campusApplication.getSpouseStudyTrack() : "");
 					datatable.addCell((new Phrase(iwrb.getLocalizedString("po", "PO"),headerFont)));
 					datatable.addCell(applicant.getLegalResidence());
 					datatable.addCell((new Phrase(iwrb.getLocalizedString("study_begins", "Study begins"),headerFont)));
@@ -229,7 +229,7 @@ public class CampusApplicationWriter implements MediaWritable{
 						campusApplication.getSpouseStudyEndMonth()
 							+ " "
 							+ campusApplication.getSpouseStudyEndYear();
-					datatable.addCell(studybegin);
+					datatable.addCell(studyend);
 					datatable.addCell((new Phrase(iwrb.getLocalizedString("email", "Email"),headerFont)));
 					datatable.addCell(campusApplication.getEmail());
 					datatable.addCell((new Phrase(iwrb.getLocalizedString("income", "Income"),headerFont)));
@@ -238,7 +238,7 @@ public class CampusApplicationWriter implements MediaWritable{
 					else 
 						datatable.addCell("");
 					datatable.addCell((new Phrase(iwrb.getLocalizedString("faculty", "Faculty"),headerFont)));
-					datatable.addCell(campusApplication.getFaculty());
+					datatable.addCell(campusApplication.getFaculty() != null ? campusApplication.getFaculty() : "");
 					datatable.setDefaultColspan(2);
 					datatable.addCell((new Phrase(iwrb.getLocalizedString("children", "Children"),headerFont)));
 					datatable.setDefaultColspan(1);
@@ -272,7 +272,7 @@ public class CampusApplicationWriter implements MediaWritable{
 						campusApplication.getStudyEndMonth()
 							+ " "
 							+ campusApplication.getStudyEndYear();
-					datatable.addCell(studybegin);
+					datatable.addCell(studyend);
 					datatable.setDefaultColspan(2);
 					datatable.addCell(size >= 3 ? (String) children.get(2) : "");
 					datatable.setDefaultColspan(1);

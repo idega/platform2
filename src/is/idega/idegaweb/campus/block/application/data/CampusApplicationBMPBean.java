@@ -39,49 +39,49 @@ public class CampusApplicationBMPBean extends GenericEntity implements
 
 	private static final String COLUMN_STUDY_BEGIN_YEAR = "study_begin_yr";
 
-	private static final String studyEndMonth_ = "study_end_mo";
+	private static final String COLUMN_STUDY_END_MONTH = "study_end_mo";
 
-	private static final String studyEndYear_ = "study_end_yr";
+	private static final String COLUMN_STUDY_END_YEAR = "study_end_yr";
 
-	private static final String faculty_ = "faculty";
+	private static final String COLUMN_FACULTY = "faculty";
 
-	private static final String studyTrack_ = "study_track";
+	private static final String COLUMN_STUDY_TRACK = "study_track";
 
-	private static final String spouseName_ = "spouse_name";
+	private static final String COLUMN_SPOUSE_NAME = "spouse_name";
 
-	private static final String spouseSSN_ = "spouse_ssn";
+	private static final String COLUMN_SPOUSE_SSN = "spouse_ssn";
 
-	private static final String spouseSchool_ = "spouse_school";
+	private static final String COLUMN_SPOUSE_SCHOOL = "spouse_school";
 
-	private static final String spouseStudyTrack_ = "spouse_study_track";
+	private static final String COLUMN_SPOUSE_STUDY_TRACK = "spouse_study_track";
 
-	private static final String spouseStudyBeginMonth_ = "spouse_study_begin_mo";
+	private static final String COLUMN_SPOUSE_STUDY_BEGIN_MONTH = "spouse_study_begin_mo";
 
-	private static final String spouseStudyBeginYear_ = "spouse_study_begin_yr";
+	private static final String COLUMN_SPOUSE_BEGIN_YEAR = "spouse_study_begin_yr";
 
-	private static final String spouseStudyEndMonth_ = "spouse_study_end_mo";
+	private static final String COLUMN_SPOUSE_STUDY_END_MONTH = "spouse_study_end_mo";
 
-	private static final String spouseStudyEndYear_ = "spouse_study_end_yr";
+	private static final String COLUMN_SPOUSE_STUDY_END_YEAR = "spouse_study_end_yr";
 
-	private static final String children_ = "children";
+	private static final String COLUMN_CHILDREN = "children";
 
-	private static final String income_ = "income";
+	private static final String COLUMN_INCOME = "income";
 
-	private static final String spouseIncome_ = "spouse_income";
+	private static final String COLUMN_SPOUSE_INCOME = "spouse_income";
 
-	private static final String housingFrom_ = "housing_from";
+	private static final String COLUMN_HOUSING_FROM = "housing_from";
 
-	private static final String onWaitinglist_ = "on_waitinglist";
+	private static final String COLUMN_ON_WAITING_LIST = "on_waitinglist";
 
-	private static final String wantFurniture_ = "want_furniture";
+	private static final String COLUMN_WANT_FURNITURE = "want_furniture";
 
-	private static final String contactPhone_ = "contact_phone";
+	private static final String COLUMN_CONTACT_PHONE = "contact_phone";
 
-	private static final String otherInfo_ = "other_info";
+	private static final String COLUMN_OTHER_INFO = "other_info";
 
-	private static final String email_ = "email";
+	private static final String COLUMN_EMAIL = "email";
 
-	private static final String PRIORITY_LEVEL = "priority_level";
+	private static final String COLUMN_PRIORITY_LEVEL = "priority_level";
 
 	private static final String COLUMN_SCHOOL = "school";
 
@@ -103,40 +103,40 @@ public class CampusApplicationBMPBean extends GenericEntity implements
 				true, Integer.class);
 		addAttribute(COLUMN_STUDY_BEGIN_YEAR, "Study begins (year)", true,
 				true, Integer.class);
-		addAttribute(studyEndMonth_, "Study ends (month)", true, true,
+		addAttribute(COLUMN_STUDY_END_MONTH, "Study ends (month)", true, true,
 				Integer.class);
-		addAttribute(studyEndYear_, "Study ends (year)", true, true,
+		addAttribute(COLUMN_STUDY_END_YEAR, "Study ends (year)", true, true,
 				Integer.class);
-		addAttribute(faculty_, "Faculty", true, true, String.class, 255);
-		addAttribute(studyTrack_, "Study track", true, true, String.class, 255);
-		addAttribute(spouseName_, "Spouses name", true, true, String.class, 255);
-		addAttribute(spouseSSN_, "Spouses SSN", true, true, String.class, 20);
-		addAttribute(spouseSchool_, "Spouses school", true, true, String.class,
+		addAttribute(COLUMN_FACULTY, "Faculty", true, true, String.class, 255);
+		addAttribute(COLUMN_STUDY_TRACK, "Study track", true, true, String.class, 255);
+		addAttribute(COLUMN_SPOUSE_NAME, "Spouses name", true, true, String.class, 255);
+		addAttribute(COLUMN_SPOUSE_SSN, "Spouses SSN", true, true, String.class, 20);
+		addAttribute(COLUMN_SPOUSE_SCHOOL, "Spouses school", true, true, String.class,
 				255);
-		addAttribute(spouseStudyTrack_, "Spouses study track", true, true,
+		addAttribute(COLUMN_SPOUSE_STUDY_TRACK, "Spouses study track", true, true,
 				String.class, 255);
-		addAttribute(spouseStudyBeginMonth_, "Spouses study begins (month)",
+		addAttribute(COLUMN_SPOUSE_STUDY_BEGIN_MONTH, "Spouses study begins (month)",
 				true, true, Integer.class);
-		addAttribute(spouseStudyBeginYear_, "Spouses study begins (year)",
+		addAttribute(COLUMN_SPOUSE_BEGIN_YEAR, "Spouses study begins (year)",
 				true, true, Integer.class);
-		addAttribute(spouseStudyEndMonth_, "Spouses study ends (month)", true,
+		addAttribute(COLUMN_SPOUSE_STUDY_END_MONTH, "Spouses study ends (month)", true,
 				true, Integer.class);
-		addAttribute(spouseStudyEndYear_, "Spouses study ends (year)", true,
+		addAttribute(COLUMN_SPOUSE_STUDY_END_YEAR, "Spouses study ends (year)", true,
 				true, Integer.class);
-		addAttribute(children_, "Children info", true, true, String.class, 4000);
-		addAttribute(income_, "Income", true, true, Integer.class);
-		addAttribute(spouseIncome_, "Spouses income", true, true, Integer.class);
-		addAttribute(housingFrom_, "Want housing from", true, true,
+		addAttribute(COLUMN_CHILDREN, "Children info", true, true, String.class, 4000);
+		addAttribute(COLUMN_INCOME, "Income", true, true, Integer.class);
+		addAttribute(COLUMN_SPOUSE_INCOME, "Spouses income", true, true, Integer.class);
+		addAttribute(COLUMN_HOUSING_FROM, "Want housing from", true, true,
+				Date.class);
+		addAttribute(COLUMN_ON_WAITING_LIST, "Want to be on waiting list", true, true,
 				Boolean.class);
-		addAttribute(onWaitinglist_, "Want to be on waiting list", true, true,
+		addAttribute(COLUMN_WANT_FURNITURE, "Want to rent furniture", true, true,
 				Boolean.class);
-		addAttribute(wantFurniture_, "Want to rent furniture", true, true,
-				Boolean.class);
-		addAttribute(contactPhone_, "If not reachable, call", true, true,
+		addAttribute(COLUMN_CONTACT_PHONE, "If not reachable, call", true, true,
 				String.class, 40);
-		addAttribute(otherInfo_, "Other info", true, true, String.class, 4000);
-		addAttribute(email_, "Email", true, true, String.class, 255);
-		addAttribute(PRIORITY_LEVEL, "Priority level", true, true,
+		addAttribute(COLUMN_OTHER_INFO, "Other info", true, true, String.class, 4000);
+		addAttribute(COLUMN_EMAIL, "Email", true, true, String.class, 255);
+		addAttribute(COLUMN_PRIORITY_LEVEL, "Priority level", true, true,
 				String.class, 1);
 		addManyToOneRelationship(COLUMN_SCHOOL, School.class);
 		setNullable(COLUMN_CURR_RESIDENCE, true);
@@ -172,87 +172,87 @@ public class CampusApplicationBMPBean extends GenericEntity implements
 	}
 
 	public String getStudyEndMonthColumnName() {
-		return studyEndMonth_;
+		return COLUMN_STUDY_END_MONTH;
 	}
 
 	public String getStudyEndYearColumnName() {
-		return studyEndYear_;
+		return COLUMN_STUDY_END_YEAR;
 	}
 
 	public String getFacultyColumnName() {
-		return faculty_;
+		return COLUMN_FACULTY;
 	}
 
 	public String getStudyTrackColumnName() {
-		return studyTrack_;
+		return COLUMN_STUDY_TRACK;
 	}
 
 	public String getSpouseNameColumnName() {
-		return spouseName_;
+		return COLUMN_SPOUSE_NAME;
 	}
 
 	public String getSpouseSSNColumnName() {
-		return spouseSSN_;
+		return COLUMN_SPOUSE_SSN;
 	}
 
 	public String getSpouseSchoolColumnName() {
-		return spouseSchool_;
+		return COLUMN_SPOUSE_SCHOOL;
 	}
 
 	public String getSpouseStudyTrackColumnName() {
-		return spouseStudyTrack_;
+		return COLUMN_SPOUSE_STUDY_TRACK;
 	}
 
 	public String getSpouseStudyBeginMonthColumnName() {
-		return spouseStudyBeginMonth_;
+		return COLUMN_SPOUSE_STUDY_BEGIN_MONTH;
 	}
 
 	public String getSpouseStudyBeginYearColumnName() {
-		return spouseStudyBeginYear_;
+		return COLUMN_SPOUSE_BEGIN_YEAR;
 	}
 
 	public String getSpouseStudyEndMonthColumnName() {
-		return spouseStudyEndMonth_;
+		return COLUMN_SPOUSE_STUDY_END_MONTH;
 	}
 
 	public String getSpouseStudyEndYearColumnName() {
-		return spouseStudyEndYear_;
+		return COLUMN_SPOUSE_STUDY_END_YEAR;
 	}
 
 	public String getChildrenColumnName() {
-		return children_;
+		return COLUMN_CHILDREN;
 	}
 
 	public String getIncomeColumnName() {
-		return income_;
+		return COLUMN_INCOME;
 	}
 
 	public String getSpouseIncomeColumnName() {
-		return spouseIncome_;
+		return COLUMN_SPOUSE_INCOME;
 	}
 
 	public String getHousingFromColumnName() {
-		return housingFrom_;
+		return COLUMN_HOUSING_FROM;
 	}
 
 	public String getOnWaitinglistColumnName() {
-		return onWaitinglist_;
+		return COLUMN_ON_WAITING_LIST;
 	}
 
 	public String getWantFurnitureColumnName() {
-		return wantFurniture_;
+		return COLUMN_WANT_FURNITURE;
 	}
 
 	public String getContactPhoneColumnName() {
-		return contactPhone_;
+		return COLUMN_CONTACT_PHONE;
 	}
 
 	public String getOtherInfoColumnName() {
-		return otherInfo_;
+		return COLUMN_OTHER_INFO;
 	}
 
 	public String getEmailColumnName() {
-		return email_;
+		return COLUMN_EMAIL;
 	}
 
 	public void setAppApplicationId(int id) {
@@ -284,87 +284,87 @@ public class CampusApplicationBMPBean extends GenericEntity implements
 	}
 
 	public Integer getStudyEndMonth() {
-		return getIntegerColumnValue(studyEndMonth_);
+		return getIntegerColumnValue(COLUMN_STUDY_END_MONTH);
 	}
 
 	public Integer getStudyEndYear() {
-		return getIntegerColumnValue(studyEndYear_);
+		return getIntegerColumnValue(COLUMN_STUDY_END_YEAR);
 	}
 
 	public String getFaculty() {
-		return getStringColumnValue(faculty_);
+		return getStringColumnValue(COLUMN_FACULTY);
 	}
 
 	public String getStudyTrack() {
-		return getStringColumnValue(studyTrack_);
+		return getStringColumnValue(COLUMN_STUDY_TRACK);
 	}
 
 	public String getSpouseName() {
-		return getStringColumnValue(spouseName_);
+		return getStringColumnValue(COLUMN_SPOUSE_NAME);
 	}
 
 	public String getSpouseSSN() {
-		return getStringColumnValue(spouseSSN_);
+		return getStringColumnValue(COLUMN_SPOUSE_SSN);
 	}
 
 	public String getSpouseSchool() {
-		return getStringColumnValue(spouseSchool_);
+		return getStringColumnValue(COLUMN_SPOUSE_SCHOOL);
 	}
 
 	public String getSpouseStudyTrack() {
-		return getStringColumnValue(spouseStudyTrack_);
+		return getStringColumnValue(COLUMN_SPOUSE_STUDY_TRACK);
 	}
 
 	public Integer getSpouseStudyBeginMonth() {
-		return getIntegerColumnValue(spouseStudyBeginMonth_);
+		return getIntegerColumnValue(COLUMN_SPOUSE_STUDY_BEGIN_MONTH);
 	}
 
 	public Integer getSpouseStudyBeginYear() {
-		return getIntegerColumnValue(spouseStudyBeginYear_);
+		return getIntegerColumnValue(COLUMN_SPOUSE_BEGIN_YEAR);
 	}
 
 	public Integer getSpouseStudyEndMonth() {
-		return getIntegerColumnValue(spouseStudyEndMonth_);
+		return getIntegerColumnValue(COLUMN_SPOUSE_STUDY_END_MONTH);
 	}
 
 	public Integer getSpouseStudyEndYear() {
-		return getIntegerColumnValue(spouseStudyEndYear_);
+		return getIntegerColumnValue(COLUMN_SPOUSE_STUDY_END_YEAR);
 	}
 
 	public String getChildren() {
-		return getStringColumnValue(children_);
+		return getStringColumnValue(COLUMN_CHILDREN);
 	}
 
 	public Integer getIncome() {
-		return getIntegerColumnValue(income_);
+		return getIntegerColumnValue(COLUMN_INCOME);
 	}
 
 	public Integer getSpouseIncome() {
-		return getIntegerColumnValue(spouseIncome_);
+		return getIntegerColumnValue(COLUMN_SPOUSE_INCOME);
 	}
 
 	public Date getHousingFrom() {
-		return (Date) getColumnValue(housingFrom_);
+		return (Date) getColumnValue(COLUMN_HOUSING_FROM);
 	}
 
 	public boolean getOnWaitinglist() {
-		return getBooleanColumnValue(onWaitinglist_, true);
+		return getBooleanColumnValue(COLUMN_ON_WAITING_LIST, true);
 	}
 
 	public boolean getWantFurniture() {
-		return getBooleanColumnValue(wantFurniture_, false);
+		return getBooleanColumnValue(COLUMN_WANT_FURNITURE, false);
 	}
 
 	public String getContactPhone() {
-		return getStringColumnValue(contactPhone_);
+		return getStringColumnValue(COLUMN_CONTACT_PHONE);
 	}
 
 	public String getOtherInfo() {
-		return getStringColumnValue(otherInfo_);
+		return getStringColumnValue(COLUMN_OTHER_INFO);
 	}
 
 	public String getEmail() {
-		return getStringColumnValue(email_);
+		return getStringColumnValue(COLUMN_EMAIL);
 	}
 	
 	public int getSchoolID() {
@@ -408,127 +408,127 @@ public class CampusApplicationBMPBean extends GenericEntity implements
 	}
 
 	public void setStudyEndMonth(Integer month) {
-		setColumn(studyEndMonth_, month);
+		setColumn(COLUMN_STUDY_END_MONTH, month);
 	}
 
 	public void setStudyEndMonth(int month) {
-		setColumn(studyEndMonth_, month);
+		setColumn(COLUMN_STUDY_END_MONTH, month);
 	}
 
 	public void setStudyEndYear(Integer year) {
-		setColumn(studyEndYear_, year);
+		setColumn(COLUMN_STUDY_END_YEAR, year);
 	}
 
 	public void setStudyEndYear(int year) {
-		setColumn(studyEndYear_, year);
+		setColumn(COLUMN_STUDY_END_YEAR, year);
 	}
 
 	public void setFaculty(String faculty) {
-		setColumn(faculty_, faculty);
+		setColumn(COLUMN_FACULTY, faculty);
 	}
 
 	public void setStudyTrack(String studyTrack) {
-		setColumn(studyTrack_, studyTrack);
+		setColumn(COLUMN_STUDY_TRACK, studyTrack);
 	}
 
 	public void setSpouseName(String spouseName) {
-		setColumn(spouseName_, spouseName);
+		setColumn(COLUMN_SPOUSE_NAME, spouseName);
 	}
 
 	public void setSpouseSSN(String ssn) {
-		setColumn(spouseSSN_, ssn);
+		setColumn(COLUMN_SPOUSE_SSN, ssn);
 	}
 
 	public void setSpouseSchool(String school) {
-		setColumn(spouseSchool_, school);
+		setColumn(COLUMN_SPOUSE_SCHOOL, school);
 	}
 
 	public void setSpouseStudyTrack(String studyTrack) {
-		setColumn(spouseStudyTrack_, studyTrack);
+		setColumn(COLUMN_SPOUSE_STUDY_TRACK, studyTrack);
 	}
 
 	public void setSpouseStudyBeginMonth(Integer month) {
-		setColumn(spouseStudyBeginMonth_, month);
+		setColumn(COLUMN_SPOUSE_STUDY_BEGIN_MONTH, month);
 	}
 
 	public void setSpouseStudyBeginMonth(int month) {
-		setColumn(spouseStudyBeginMonth_, month);
+		setColumn(COLUMN_SPOUSE_STUDY_BEGIN_MONTH, month);
 	}
 
 	public void setSpouseStudyBeginYear(Integer year) {
-		setColumn(spouseStudyBeginYear_, year);
+		setColumn(COLUMN_SPOUSE_BEGIN_YEAR, year);
 	}
 
 	public void setSpouseStudyBeginYear(int year) {
-		setColumn(spouseStudyBeginYear_, year);
+		setColumn(COLUMN_SPOUSE_BEGIN_YEAR, year);
 	}
 
 	public void setSpouseStudyEndMonth(Integer month) {
-		setColumn(spouseStudyEndMonth_, month);
+		setColumn(COLUMN_SPOUSE_STUDY_END_MONTH, month);
 	}
 
 	public void setSpouseStudyEndMonth(int month) {
-		setColumn(spouseStudyEndMonth_, month);
+		setColumn(COLUMN_SPOUSE_STUDY_END_MONTH, month);
 	}
 
 	public void setSpouseStudyEndYear(Integer year) {
-		setColumn(spouseStudyEndYear_, year);
+		setColumn(COLUMN_SPOUSE_STUDY_END_YEAR, year);
 	}
 
 	public void setSpouseStudyEndYear(int year) {
-		setColumn(spouseStudyEndYear_, year);
+		setColumn(COLUMN_SPOUSE_STUDY_END_YEAR, year);
 	}
 
 	public void setChildren(String children) {
-		setColumn(children_, children);
+		setColumn(COLUMN_CHILDREN, children);
 	}
 
 	public void setIncome(Integer income) {
-		setColumn(income_, income);
+		setColumn(COLUMN_INCOME, income);
 	}
 
 	public void setIncome(int income) {
-		setColumn(income_, income);
+		setColumn(COLUMN_INCOME, income);
 	}
 
 	public void setSpouseIncome(Integer income) {
-		setColumn(spouseIncome_, income);
+		setColumn(COLUMN_SPOUSE_INCOME, income);
 	}
 
 	public void setSpouseIncome(int income) {
-		setColumn(spouseIncome_, income);
+		setColumn(COLUMN_SPOUSE_INCOME, income);
 	}
 
 	public void setHousingFrom(Date from) {
-		setColumn(housingFrom_, from);
+		setColumn(COLUMN_HOUSING_FROM, from);
 	}
 
 	public void setOnWaitinglist(boolean putOnList) {
-		setColumn(onWaitinglist_, putOnList);
+		setColumn(COLUMN_ON_WAITING_LIST, putOnList);
 	}
 
 	public void setWantFurniture(boolean furniture) {
-		setColumn(wantFurniture_, furniture);
+		setColumn(COLUMN_WANT_FURNITURE, furniture);
 	}
 
 	public void setContactPhone(String contactPhone) {
-		setColumn(contactPhone_, contactPhone);
+		setColumn(COLUMN_CONTACT_PHONE, contactPhone);
 	}
 
 	public void setOtherInfo(String info) {
-		setColumn(otherInfo_, info);
+		setColumn(COLUMN_OTHER_INFO, info);
 	}
 
 	public void setEmail(String email) {
-		setColumn(email_, email);
+		setColumn(COLUMN_EMAIL, email);
 	}
 
 	public String getPriorityLevel() {
-		return getStringColumnValue(PRIORITY_LEVEL);
+		return getStringColumnValue(COLUMN_PRIORITY_LEVEL);
 	}
 
 	public void setPriorityLevel(String level) {
-		setColumn(PRIORITY_LEVEL, level);
+		setColumn(COLUMN_PRIORITY_LEVEL, level);
 	}
 	
 	public void setSchoolID(int schoolID) {
@@ -540,7 +540,7 @@ public class CampusApplicationBMPBean extends GenericEntity implements
 	}
 
 	public static String getPriorityColumnName() {
-		return PRIORITY_LEVEL;
+		return COLUMN_PRIORITY_LEVEL;
 	}
 
 	public java.util.Collection ejbFindAllByApplicationId(int id)

@@ -9,9 +9,9 @@ package is.idega.idegaweb.member.isi.block.accounting.presentation;
 
 import is.idega.idegaweb.member.business.MemberUserBusiness;
 import is.idega.idegaweb.member.isi.block.accounting.business.AccountingBusiness;
-import is.idega.idegaweb.member.isi.block.accounting.export.creditcard.presentation.GetFiles;
-import is.idega.idegaweb.member.isi.block.accounting.export.creditcard.presentation.SendFiles;
-import is.idega.idegaweb.member.isi.block.accounting.export.creditcard.presentation.Setup;
+import is.idega.idegaweb.member.isi.block.accounting.export.presentation.GetFiles;
+import is.idega.idegaweb.member.isi.block.accounting.export.presentation.SendFiles;
+import is.idega.idegaweb.member.isi.block.accounting.export.presentation.Setup;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
