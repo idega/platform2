@@ -4721,7 +4721,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		try {
 			System.out.println("----------------------------------- ||||||||||||| --------------------------------");
 			//ejbFindNotTerminatedByStudent
-			Collection members = (Collection)this.getSchoolClassMemberHome().findAllNotTerminatedByStudent(childId);
+			Collection members = getSchoolClassMemberHome().findAllNotTerminatedByStudent(childId);
 			if(!members.isEmpty()&&(members!=null)) {
 				return true;				
 			} else { return false; }
