@@ -1,5 +1,5 @@
 /*
- * $Id: SPDataInsertTest.java,v 1.1.2.1 2005/11/29 16:55:20 palli Exp $ Created on Nov 2,
+ * $Id: SPDataInsertTest.java,v 1.1.2.2 2005/11/30 22:48:37 palli Exp $ Created on Nov 2,
  * 2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -349,20 +349,10 @@ public class SPDataInsertTest extends Block {
 	private MultipartPostMethod sendCreateClaimsRequest() {
 		HttpClient client = new HttpClient();
 		client.setStrictMode(false);
-		MultipartPostMethod post = new MultipartPostMethod(SITE + POST_METHOD);
-		
-		post.setUseExpectHeader(true);
-		post.setFollowRedirects(true);
-		
+		MultipartPostMethod post = new MultipartPostMethod(SITE + POST_METHOD);		
 		File file = new File(FILE_NAME);
 
 		try {
-/*			post.addParameter("userid", "Lolo7452");// "aistest");
-			post.addParameter("password", "313233343536");// "gestur"
-			// + "\\&" +
-			// "gestur");
-			post.addParameter("KtFelags", "6812933379");// "5709902259");
-			post.addParameter("Skra", file);*/
 			post.addParameter("notendanafn", "lolo7452");// "aistest");
 			post.addParameter("password", "12345felix");
 			post.addParameter("KtFelags", "6812933379");// "5709902259");

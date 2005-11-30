@@ -34,6 +34,8 @@ public class BatchBMPBean extends GenericEntity implements Batch {
 	protected final static String COLUMN_CREATED = "created";
 
 	protected final static String COLUMN_SENT = "sent";
+	
+	protected final static String COLUMN_FIN_BATCH = "fin_batch_id";
 
 	// For the creditcard batches
 	protected final static String COLUMN_CC_TYPE = "cc_card_type_id";
@@ -77,6 +79,7 @@ public class BatchBMPBean extends GenericEntity implements Batch {
 				String.class, 255);
 
 		addManyToOneRelationship(COLUMN_BANK_INFO, BankInfo.class);
+		addOneToOneRelationship(COLUMN_FIN_BATCH, com.idega.block.finance.data.Batch.class);
 	}
 
 	// Setters
@@ -127,6 +130,14 @@ public class BatchBMPBean extends GenericEntity implements Batch {
 	public void setBankInfo(BankInfo info) {
 		setColumn(COLUMN_BANK_INFO, info);
 	}
+	
+	public void setFinBatchID(int batchID) {
+		setColumn(COLUMN_FIN_BATCH, batchID);
+	}
+	
+	public void setFinBatch(com.idega.block.finance.data.Batch batch) {
+		setColumn(COLUMN_FIN_BATCH, batch);
+	}
 
 	// Getters
 	public String getBatchNumber() {
@@ -145,6 +156,14 @@ public class BatchBMPBean extends GenericEntity implements Batch {
 		return getStringColumnValue(COLUMN_BATCH_TYPE);
 	}
 
+	public boolean getIsBankType() {
+		return getStringColumnValue(COLUMN_BATCH_TYPE).equals(TYPE_BANK_BATCH);
+	}
+
+	public boolean getIsCreditcardType() {
+		return getStringColumnValue(COLUMN_BATCH_TYPE).equals(TYPE_CREDITCARD_BATCH);
+	}
+	
 	public int getCreditcardTypeID() {
 		return getIntColumnValue(COLUMN_CC_TYPE);
 	}
@@ -172,6 +191,14 @@ public class BatchBMPBean extends GenericEntity implements Batch {
 	public BankInfo getBankInfo() {
 		return (BankInfo) getColumnValue(COLUMN_BANK_INFO);
 	}
+	
+	public int getFinBatchID() {
+		return getIntColumnValue(COLUMN_FIN_BATCH);
+	}
+	
+	public com.idega.block.finance.data.Batch getFinBatch() {
+		return (com.idega.block.finance.data.Batch) getColumnValue(COLUMN_FIN_BATCH);
+	}
 
 	public Collection ejbFindAll() throws FinderException {
 		IDOQuery sql = idoQuery();
@@ -196,6 +223,29 @@ public class BatchBMPBean extends GenericEntity implements Batch {
 		return idoFindOnePKByQuery(sql);
 	}
 
+	public Collection ejbFindAllUnsent() throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhere();
+		sql.append(COLUMN_SENT);
+		sql.append(" is null");
+
+		return idoFindPKsByQuery(sql);
+	}
+
+	public Collection ejbFindAllWithoutFiles() throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhere();
+		sql.append(COLUMN_SENT);
+		sql.append(" is null");
+		sql.appendAnd();
+		sql.append(COLUMN_FIN_BATCH);
+		sql.append(" is null");
+		
+		return idoFindPKsByQuery(sql);
+	}
+	
 	public Object ejbFindUnsentByBankInfo(BankInfo info) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
@@ -214,6 +264,6 @@ public class BatchBMPBean extends GenericEntity implements Batch {
 		sql.appendSelectAllFrom(this);
 		sql.appendOrderByDescending(getIDColumnName());
 
-		return idoFindPKsBySQL(sql.toString());
+		return idoFindPKsByQuery(sql);
 	}
 }

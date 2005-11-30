@@ -3,6 +3,7 @@
  */
 package is.idega.idegaweb.member.isi.block.accounting.data;
 
+import is.idega.idegaweb.member.isi.block.accounting.export.data.Batch;
 
 import java.sql.Date;
 import java.util.Collection;
@@ -92,5 +93,10 @@ public interface FinanceEntryHome extends IDOHome {
 	 */
 	public Collection findAllByPaymentTypeNotInBatch(PaymentType type,
 			IWTimestamp dateFrom, IWTimestamp dateTo) throws FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean#ejbFindAllByBatch
+	 */
+	public Collection findAllByBatch(Batch batch) throws FinderException;
 
 }

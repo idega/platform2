@@ -17,6 +17,8 @@ import is.idega.idegaweb.member.isi.block.accounting.data.PaymentTypeHome;
 import is.idega.idegaweb.member.isi.block.accounting.export.data.Batch;
 import is.idega.idegaweb.member.isi.block.accounting.export.data.BatchHome;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -77,7 +79,6 @@ public class ExportBusinessThread extends Thread {
 			try {
 				createBatches(dateFrom, dateTo);
 				createFiles();
-				encryptFiles();
 				sendFiles();
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -92,15 +93,18 @@ public class ExportBusinessThread extends Thread {
 
 	private void createBatches(IWTimestamp dateFrom, IWTimestamp dateTo)
 			throws IDOLookupException, FinderException, CreateException {
-		FinanceEntryHome fHome = (FinanceEntryHome) IDOLookup.getHome(FinanceEntry.class);
+		FinanceEntryHome fHome = (FinanceEntryHome) IDOLookup
+				.getHome(FinanceEntry.class);
 		PaymentTypeHome pHome = (PaymentTypeHome) IDOLookup
 				.getHome(PaymentType.class);
 		PaymentType creditCard = pHome.findPaymentTypeCreditcardSystem();
 		PaymentType bank = pHome.findPaymentTypeBankSystem();
 
-		Collection creditCardEntries = fHome.findAllByPaymentTypeNotInBatch(creditCard, dateFrom, dateTo);
-		Collection bankEntries = fHome.findAllByPaymentTypeNotInBatch(bank, dateFrom, dateTo);
-		
+		Collection creditCardEntries = fHome.findAllByPaymentTypeNotInBatch(
+				creditCard, dateFrom, dateTo);
+		Collection bankEntries = fHome.findAllByPaymentTypeNotInBatch(bank,
+				dateFrom, dateTo);
+
 		if (creditCardEntries != null) {
 			Iterator it = creditCardEntries.iterator();
 			while (it.hasNext()) {
@@ -127,38 +131,47 @@ public class ExportBusinessThread extends Thread {
 			}
 		}
 	}
-	
-	private CreditCardContract getCreditCardContractForEntry(FinanceEntry entry) throws IDOLookupException {
+
+	private CreditCardContract getCreditCardContractForEntry(FinanceEntry entry)
+			throws IDOLookupException {
 		if (entry.getPaymentContract() == null) {
 			return null;
 		}
-		
+
 		CreditCardContract ret = null;
-		
-		CreditCardContractHome cHome = (CreditCardContractHome) IDOLookup.getHome(CreditCardContract.class);
+
+		CreditCardContractHome cHome = (CreditCardContractHome) IDOLookup
+				.getHome(CreditCardContract.class);
 		try {
-			ret = (CreditCardContract) cHome.findByGroupAndType(entry.getGroup(), entry.getPaymentContract().getCardType());
+			ret = (CreditCardContract) cHome.findByGroupAndType(entry
+					.getGroup(), entry.getPaymentContract().getCardType());
 		} catch (FinderException e) {
 			try {
-				ret = (CreditCardContract) cHome.findByDivisionAndType(entry.getDivision(), entry.getPaymentContract().getCardType());
+				ret = (CreditCardContract) cHome.findByDivisionAndType(entry
+						.getDivision(), entry.getPaymentContract()
+						.getCardType());
 			} catch (FinderException e1) {
 				try {
-					ret = (CreditCardContract) cHome.findByClubAndType(entry.getClub(), entry.getPaymentContract().getCardType());
+					ret = (CreditCardContract) cHome.findByClubAndType(entry
+							.getClub(), entry.getPaymentContract()
+							.getCardType());
 				} catch (FinderException e2) {
-					//Add to some kind of log?
+					// Add to some kind of log?
 					ret = null;
 				}
 			}
 		}
-		
+
 		return ret;
 	}
-	
-	private Batch getBatchForCreditCardContract(CreditCardContract contract) throws IDOLookupException, CreateException {
+
+	private Batch getBatchForCreditCardContract(CreditCardContract contract)
+			throws IDOLookupException, CreateException {
 		BatchHome bHome = (BatchHome) IDOLookup.getHome(Batch.class);
 		Batch ret = null;
 		try {
-			ret = bHome.findUnsentByContractAndCreditCardType(contract, contract.getCardType());
+			ret = bHome.findUnsentByContractAndCreditCardType(contract,
+					contract.getCardType());
 		} catch (FinderException e) {
 			ret = bHome.create();
 			ret.setBatchNumber("");
@@ -171,10 +184,11 @@ public class ExportBusinessThread extends Thread {
 
 		return ret;
 	}
-	
-	private BankInfo getBankInfoForEntry(FinanceEntry entry) throws IDOLookupException {
+
+	private BankInfo getBankInfoForEntry(FinanceEntry entry)
+			throws IDOLookupException {
 		BankInfo ret = null;
-		
+
 		BankInfoHome bHome = (BankInfoHome) IDOLookup.getHome(BankInfo.class);
 		try {
 			ret = (BankInfo) bHome.findByGroup(entry.getGroup());
@@ -185,16 +199,17 @@ public class ExportBusinessThread extends Thread {
 				try {
 					ret = (BankInfo) bHome.findByClub(entry.getClub());
 				} catch (FinderException e2) {
-					//Add to some kind of log?
+					// Add to some kind of log?
 					ret = null;
 				}
 			}
 		}
-		
+
 		return ret;
 	}
-	
-	private Batch getBatchForBankInfo(BankInfo info) throws IDOLookupException, CreateException {
+
+	private Batch getBatchForBankInfo(BankInfo info) throws IDOLookupException,
+			CreateException {
 		BatchHome bHome = (BatchHome) IDOLookup.getHome(Batch.class);
 		Batch ret = null;
 		try {
@@ -212,15 +227,85 @@ public class ExportBusinessThread extends Thread {
 	}
 
 	private void createFiles() {
-		// Create creditcard files
+		BatchHome bHome;
+		try {
+			bHome = (BatchHome) IDOLookup.getHome(Batch.class);
+			Collection batchesWithoutFiles = bHome.findAllWithoutFiles();
+			Iterator it = batchesWithoutFiles.iterator();
+			while (it.hasNext()) {
+				Batch batch = (Batch) it.next();
+				if (batch.getIsBankType()) {
+					createBankFileForBatch(batch);
+				} else {
+					createCreditcardFileForBatch(batch);
+				}
+			}
+		} catch (IDOLookupException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
 	}
 
-	private void encryptFiles() {
-		// Do nothing
-	}
+	private void createBankFileForBatch(Batch batch) {
+		try {
+			FinanceEntryHome fHome = (FinanceEntryHome) IDOLookup.getHome(FinanceEntry.class);
+			Collection entriesInBatch = fHome.findAllByBatch(batch);
 
+			com.idega.block.finance.data.BatchHome finBatchHome = (com.idega.block.finance.data.BatchHome) IDOLookup.getHome(com.idega.block.finance.data.Batch.class);
+			com.idega.block.finance.data.Batch finBatch = finBatchHome.create();
+			finBatch.setBatchNumber(batch.getBatchNumber());
+			finBatch.setCreated(IWTimestamp.getTimestampRightNow());
+			finBatch.store();
+			
+			Iterator it = entriesInBatch.iterator();
+			while (it.hasNext()) {
+				FinanceEntry entry = (FinanceEntry) it.next();
+				
+			}
+		} catch (IDOLookupException e) {
+			e.printStackTrace();
+		} catch (CreateException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void createCreditcardFileForBatch(Batch batch) {
+		try {
+			File tempfile = File.createTempFile("bat",null);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private void sendFiles() {
-		// Call ftp methods for creditcard entries and bank methods for bank
-		// entries
+		BatchHome bHome;
+		try {
+			bHome = (BatchHome) IDOLookup.getHome(Batch.class);
+			Collection unsentBatches = bHome.findAllUnsent();
+			Iterator it = unsentBatches.iterator();
+			while (it.hasNext()) {
+				Batch batch = (Batch) it.next();
+				if (batch.getIsBankType()) {
+					sendBankBatch(batch);
+				} else {
+					sendCreditcardBatch(batch);
+				}
+			}
+		} catch (IDOLookupException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void sendBankBatch(Batch batch) {
+		
+	}
+	
+	private void sendCreditcardBatch(Batch batch) {
+		
 	}
 }

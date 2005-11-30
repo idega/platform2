@@ -772,6 +772,17 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 		
 		return idoFindPKsByQuery(sql);
 	}
+
+	public Collection ejbFindAllByBatch(Batch batch) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhereEquals(COLUMN_ISI_BATCH_ID, batch);
+
+		System.out.println("sql = " + sql.toString());
+		
+		return idoFindPKsByQuery(sql);
+	}
+
 	
 	// The methods needed to be implemented to be a BasketItem
 

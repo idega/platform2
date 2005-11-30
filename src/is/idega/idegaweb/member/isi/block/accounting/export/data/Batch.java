@@ -78,6 +78,16 @@ public interface Batch extends IDOEntity {
 	public void setBankInfo(BankInfo info);
 
 	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.export.data.BatchBMPBean#setFinBatchID
+	 */
+	public void setFinBatchID(int batchID);
+
+	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.export.data.BatchBMPBean#setFinBatch
+	 */
+	public void setFinBatch(com.idega.block.finance.data.Batch batch);
+
+	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.export.data.BatchBMPBean#getBatchNumber
 	 */
 	public String getBatchNumber();
@@ -96,6 +106,16 @@ public interface Batch extends IDOEntity {
 	 * @see is.idega.idegaweb.member.isi.block.accounting.export.data.BatchBMPBean#getType
 	 */
 	public String getType();
+
+	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.export.data.BatchBMPBean#getIsBankType
+	 */
+	public boolean getIsBankType();
+
+	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.export.data.BatchBMPBean#getIsCreditcardType
+	 */
+	public boolean getIsCreditcardType();
 
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.export.data.BatchBMPBean#getCreditcardTypeID
@@ -131,5 +151,15 @@ public interface Batch extends IDOEntity {
 	 * @see is.idega.idegaweb.member.isi.block.accounting.export.data.BatchBMPBean#getBankInfo
 	 */
 	public BankInfo getBankInfo();
+
+	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.export.data.BatchBMPBean#getFinBatchID
+	 */
+	public int getFinBatchID();
+
+	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.export.data.BatchBMPBean#getFinBatch
+	 */
+	public com.idega.block.finance.data.Batch getFinBatch();
 
 }

@@ -35,6 +35,16 @@ public interface BatchHome extends IDOHome {
 			throws FinderException;
 
 	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.export.data.BatchBMPBean#ejbFindAllUnsent
+	 */
+	public Collection findAllUnsent() throws FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.export.data.BatchBMPBean#ejbFindAllWithoutFiles
+	 */
+	public Collection findAllWithoutFiles() throws FinderException;
+
+	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.export.data.BatchBMPBean#ejbFindUnsentByBankInfo
 	 */
 	public Batch findUnsentByBankInfo(BankInfo info) throws FinderException;

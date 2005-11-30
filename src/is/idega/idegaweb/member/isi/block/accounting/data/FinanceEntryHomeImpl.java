@@ -3,6 +3,7 @@
  */
 package is.idega.idegaweb.member.isi.block.accounting.data;
 
+import is.idega.idegaweb.member.isi.block.accounting.export.data.Batch;
 
 import java.sql.Date;
 import java.util.Collection;
@@ -135,6 +136,14 @@ public class FinanceEntryHomeImpl extends IDOFactory implements
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		java.util.Collection ids = ((FinanceEntryBMPBean) entity)
 				.ejbFindAllByPaymentTypeNotInBatch(type, dateFrom, dateTo);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findAllByBatch(Batch batch) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((FinanceEntryBMPBean) entity)
+				.ejbFindAllByBatch(batch);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}

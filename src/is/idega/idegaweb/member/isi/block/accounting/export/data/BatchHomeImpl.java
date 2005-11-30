@@ -47,6 +47,21 @@ public class BatchHomeImpl extends IDOFactory implements BatchHome {
 		return this.findByPrimaryKey(pk);
 	}
 
+	public Collection findAllUnsent() throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((BatchBMPBean) entity).ejbFindAllUnsent();
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findAllWithoutFiles() throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((BatchBMPBean) entity)
+				.ejbFindAllWithoutFiles();
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
 	public Batch findUnsentByBankInfo(BankInfo info) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		Object pk = ((BatchBMPBean) entity).ejbFindUnsentByBankInfo(info);
