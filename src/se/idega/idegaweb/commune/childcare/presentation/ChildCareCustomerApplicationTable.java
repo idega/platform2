@@ -42,7 +42,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.108.2.1 2005/11/18 10:09:18 laddi Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.108.2.2 2005/11/30 14:28:08 dainis Exp $
  * @since 12.2.2003 
  */
 
@@ -73,6 +73,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 	private final static String PARAMETER_DELETE_OFFER = "delete_offer";
 	
 	private final static int ACTION_DELETE_OFFER = 1111;
+	private static final String LIST_OF_USER_DECISIONS = "listOfUserDecisions";
 	
 	private String CHILD_ID = CitizenChildren.getChildIDParameterName();
 	private String CHILD_UNIQUE_ID = CitizenChildren.getChildUniqueIDParameterName();
@@ -143,13 +144,20 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 		
 		switch (action) {
 			case CCConstants.ACTION_SUBMIT_1 :
-				boolean forwardToEndPage = handleAcceptStatus(iwc, getAcceptedStatus(iwc));
+				
+				iwc.setSessionAttribute(LIST_OF_USER_DECISIONS, getAcceptedStatus(iwc));
+				
+				boolean forwardToEndPage = handleAcceptStatus(iwc, false);
 				applications = findApplications(iwc);
 				
-				if (getChildCareBusiness(iwc).hasOutstandingOffers(childID, _caseCode)) {
-					form.setOnSubmit(createPagePhase1(iwc, layoutTbl, applications));
-				}
-				else {
+				//throw out the application(s) which user has chosen, because they are not shown on the next page (page 2)				
+				throwOutApplicationsAcceptedByUser(iwc, applications);				
+				
+				//dainis: I think this is not needed here
+				//if (getChildCareBusiness(iwc).hasOutstandingOffers(childID, _caseCode)) {
+				//	form.setOnSubmit(createPagePhase1(iwc, layoutTbl, applications));
+				//}
+				//else {
 					if (forwardToEndPage) {
 						if (getEndPage() != null) {
 							iwc.forwardToIBPage(getParentPage(), getEndPage());
@@ -160,10 +168,11 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 					else {
 						form.setOnSubmit(createPagePhase2(iwc, layoutTbl, applications));
 					}
-				}
+				//}
 				break;
 
 			case CCConstants.ACTION_SUBMIT_2 :
+				handleAcceptStatus(iwc, true);
 				handleKeepQueueStatus(iwc, getKeepInQueue(iwc));
 				if (getEndPage() != null) {
 					iwc.forwardToIBPage(getParentPage(), getEndPage());
@@ -239,6 +248,21 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 		
 	}
 
+	private void throwOutApplicationsAcceptedByUser(IWContext iwc, Collection applications) throws RemoteException {
+		List listOfDecisions = (List) iwc.getSessionAttribute(LIST_OF_USER_DECISIONS);
+		Iterator iter = listOfDecisions.iterator();
+		while (iter.hasNext()) {
+			AcceptedStatus status = (AcceptedStatus) iter.next();
+
+			if (status.isDefined()) {
+				ChildCareApplication applicationToBeRemoved = childCarebusiness.getApplicationByPrimaryKey(status._appid);
+				if (status.isAccepted()) {
+					applications.remove(applicationToBeRemoved);
+				}
+			}
+		}
+	}
+
 	/**
 	 * Finds and returns the command action
 	 * @param iwc
@@ -311,11 +335,14 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 	/**
 	 * Method handleAcceptStatus handles the accept/reject requests from screen 1.
 	 * @param iwc
-	 * @param l List of AcceptedStatus objects.
+	 * @param listOfDecisions List of AcceptedStatus objects.
 	 * @throws RemoteException
 	 */
-	private boolean handleAcceptStatus(IWContext iwc, List l) throws RemoteException {
-		Iterator i = l.iterator();
+	private boolean handleAcceptStatus(IWContext iwc, boolean saveToDatabase) throws RemoteException {
+		
+		List listOfDecisions = (List) iwc.getSessionAttribute(LIST_OF_USER_DECISIONS);
+		Iterator i = listOfDecisions.iterator();
+		
 		int acceptedChoiceNumber = 10;
 		int acceptedApplicationID = -1;
 		boolean isAfterSchoolApplication = false;
@@ -332,6 +359,10 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 						"Svar på erbjudande om plats");
 				if (childCarebusiness.isAfterSchoolApplication(application))
 					isAfterSchoolApplication = true;
+
+				if (!saveToDatabase) {
+					continue;
+				}
 
 				if (status.isAccepted()) {
 					acceptedApplicationID = Integer.valueOf(status._appid).intValue();
@@ -388,25 +419,28 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 				}
 			}
 		}
-
-		boolean canKeepAllChoices = this.getBundle().getBooleanProperty(PROPERTY_CAN_KEEP_ALL_CHOICES_ON_ACCEPT, true);
 		
-		if (!canKeepAllChoices) {
-			//Removing other applications from the queue
-			Collection applications = findApplications(iwc);
-			Iterator allaps = applications.iterator();
-			//If choice 1 accepted, choice 2 shall not be deleted, unless it is already an accepted offer
-			int deleteFromChoice = acceptedChoiceNumber == 1 ? 2 : acceptedChoiceNumber;
-	
-			while (allaps.hasNext()) {
-				ChildCareApplication app = (ChildCareApplication) allaps.next();
-	
-				if (app.getChoiceNumber() > deleteFromChoice //TODO: This is probably not nessesary anymore (Roar)
-				|| (acceptedChoiceNumber == 2 && app.getChoiceNumber() == 1 && isAccepted(app))) {
-					childCarebusiness.removeFromQueue(app.getNodeID(), app.getOwner());
-					//app.setApplicationStatus(childCarebusiness.getStatusCancelled());
-					
-					deleteApplication(app);
+		if (saveToDatabase) { 
+		
+			boolean canKeepAllChoices = this.getBundle().getBooleanProperty(PROPERTY_CAN_KEEP_ALL_CHOICES_ON_ACCEPT, true);		
+			
+			if (!canKeepAllChoices) {
+				//Removing other applications from the queue
+				Collection applications = findApplications(iwc);
+				Iterator allaps = applications.iterator();
+				//If choice 1 accepted, choice 2 shall not be deleted, unless it is already an accepted offer
+				int deleteFromChoice = acceptedChoiceNumber == 1 ? 2 : acceptedChoiceNumber;
+		
+				while (allaps.hasNext()) {
+					ChildCareApplication app = (ChildCareApplication) allaps.next();
+		
+					if (app.getChoiceNumber() > deleteFromChoice //TODO: This is probably not nessesary anymore (Roar)
+					|| (acceptedChoiceNumber == 2 && app.getChoiceNumber() == 1 && isAccepted(app))) {
+						childCarebusiness.removeFromQueue(app.getNodeID(), app.getOwner());
+						//app.setApplicationStatus(childCarebusiness.getStatusCancelled());
+						
+						deleteApplication(app);
+					}
 				}
 			}
 		}
@@ -778,13 +812,20 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 				return "return true";
 			}
 		}
+		
 		Table appTable = new ChildCarePlaceOfferTable2(iwc, this, apps);
+
+		GenericButton cancelBtn = getButton(new GenericButton("cancel", localize(CANCEL)));
+		cancelBtn.setPageToOpen(getParentPageID());
+		cancelBtn.addParameterToPage(CCConstants.ACTION, CCConstants.ACTION_CANCEL_2);
 
 		SubmitButton submitBtn = (SubmitButton) getButton(new SubmitButton(localize(SUBMIT)));
 
 		layoutTbl.add(new HiddenInput(CCConstants.ACTION, String.valueOf(CCConstants.ACTION_SUBMIT_2)), 1, 1);
 		layoutTbl.add(appTable, 1, 1);
 		layoutTbl.setHeight(2, 12);
+		layoutTbl.add(cancelBtn, 1, 3);
+		layoutTbl.add(Text.getNonBrakingSpace(), 1, 3);
 		layoutTbl.add(submitBtn, 1, 3);
 		layoutTbl.setAlignment(1, 3, Table.HORIZONTAL_ALIGN_RIGHT);
 
