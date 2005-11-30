@@ -63,7 +63,7 @@ public class CashierWindow extends StyledIWAdminWindow {
 
 	protected static final String COLOR_LIGHTEST = "#EFEFEF";
 
-	// private static final String ACTION_TARIFF = "isi_acc_cw_act_tariff";
+	private static final String ACTION_TARIFF = "isi_acc_cw_act_tariff";
 
 	private static final String ACTION_TARIFF_TYPE = "isi_acc_cw_act_tariff_type";
 
@@ -155,15 +155,13 @@ public class CashierWindow extends StyledIWAdminWindow {
 		String sGroupId = iwc.getParameter(PARAMETER_GROUP_ID);
 		if (sGroupId != null) {
 			try {
-				eGroup = getGroupBusiness(iwc).getGroupByGroupID(new Integer(sGroupId).intValue());
-			}
-			catch (NumberFormatException e1) {
+				eGroup = getGroupBusiness(iwc).getGroupByGroupID(
+						new Integer(sGroupId).intValue());
+			} catch (NumberFormatException e1) {
 				e1.printStackTrace();
-			}
-			catch (RemoteException e1) {
+			} catch (RemoteException e1) {
 				e1.printStackTrace();
-			}
-			catch (FinderException e1) {
+			} catch (FinderException e1) {
 				e1.printStackTrace();
 			}
 		}
@@ -172,15 +170,13 @@ public class CashierWindow extends StyledIWAdminWindow {
 		String sClubId = iwc.getParameter(PARAMETER_CLUB_ID);
 		if (sClubId != null) {
 			try {
-				eClub = getGroupBusiness(iwc).getGroupByGroupID(new Integer(sClubId).intValue());
-			}
-			catch (NumberFormatException e1) {
+				eClub = getGroupBusiness(iwc).getGroupByGroupID(
+						new Integer(sClubId).intValue());
+			} catch (NumberFormatException e1) {
 				e1.printStackTrace();
-			}
-			catch (RemoteException e1) {
+			} catch (RemoteException e1) {
 				e1.printStackTrace();
-			}
-			catch (FinderException e1) {
+			} catch (FinderException e1) {
 				e1.printStackTrace();
 			}
 		}
@@ -190,15 +186,13 @@ public class CashierWindow extends StyledIWAdminWindow {
 		String sDivId = iwc.getParameter(PARAMETER_DIVISION_ID);
 		if (sDivId != null) {
 			try {
-				eDiv = getGroupBusiness(iwc).getGroupByGroupID(new Integer(sDivId).intValue());
-			}
-			catch (NumberFormatException e1) {
+				eDiv = getGroupBusiness(iwc).getGroupByGroupID(
+						new Integer(sDivId).intValue());
+			} catch (NumberFormatException e1) {
 				e1.printStackTrace();
-			}
-			catch (RemoteException e1) {
+			} catch (RemoteException e1) {
 				e1.printStackTrace();
-			}
-			catch (FinderException e1) {
+			} catch (FinderException e1) {
 				e1.printStackTrace();
 			}
 		}
@@ -210,15 +204,12 @@ public class CashierWindow extends StyledIWAdminWindow {
 				eUser = getUserBusiness(iwc).getUser(new Integer(sUserId));
 				iwc.setSessionAttribute(PARAMETER_USER_ID, eUser);
 
-			}
-			catch (NumberFormatException e) {
+			} catch (NumberFormatException e) {
+				e.printStackTrace();
+			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
-			catch (RemoteException e) {
-				e.printStackTrace();
-			}
-		}
-		else {
+		} else {
 			eUser = (User) iwc.getSessionAttribute(PARAMETER_USER_ID);
 		}
 
@@ -239,8 +230,7 @@ public class CashierWindow extends StyledIWAdminWindow {
 		if (!isCashierAdministrator) {
 			menu = new Table(2, 21);
 
-		}
-		else {
+		} else {
 			menu = new Table(2, 4);
 		}
 		menu.setWidth(Table.HUNDRED_PERCENT);
@@ -249,146 +239,189 @@ public class CashierWindow extends StyledIWAdminWindow {
 
 		if (!isCashierAdministrator) {
 			// Label for the operation that are applied to whole groups.
-			Text clubOperations = formatText(iwrb.getLocalizedString("isi_acc_cashierwindow.club_operations",
-					"Club operations"), true);
+			Text clubOperations = formatText(
+					iwrb.getLocalizedString(
+							"isi_acc_cashierwindow.club_operations",
+							"Club operations"), true);
 
 			// Label for the operations that are applied to individuals.
-			Text memberOperations = formatText(iwrb.getLocalizedString("isi_acc_cashierwindow.member_operations",
+			Text memberOperations = formatText(iwrb.getLocalizedString(
+					"isi_acc_cashierwindow.member_operations",
 					"Member operations"), true);
 
 			// Label for the reports.
-			Text reports = formatText(iwrb.getLocalizedString("isi_acc_cashierwindow.reports", "Reports"), true);
+			Text reports = formatText(iwrb.getLocalizedString(
+					"isi_acc_cashierwindow.reports", "Reports"), true);
 
-			Text ledger = formatText(iwrb.getLocalizedString("isi_acc_cashierwindow.ledger", "Ledger"), true);
+			Text ledger = formatText(iwrb.getLocalizedString(
+					"isi_acc_cashierwindow.ledger", "Ledger"), true);
 
 			LinkContainer editTariffType = new LinkContainer();
 			editTariffType.setStyleClass(styledLink);
-			editTariffType.add(formatText(iwrb.getLocalizedString("isi_acc_cashierwindow.edit_tariff_type",
+			editTariffType.add(formatText(iwrb.getLocalizedString(
+					"isi_acc_cashierwindow.edit_tariff_type",
 					"Edit club tariff type (A.12)")));
 			addParametersToMenuItems(editTariffType, ACTION_TARIFF_TYPE);
 
-			/*
-			 * LinkContainer editTariff = new LinkContainer();
-			 * editTariff.setStyleClass(styledLink);
-			 * editTariff.add(formatText(iwrb.getLocalizedString(
-			 * "isi_acc_cashierwindow.edit_tariff", "Edit club tariff list
-			 * (A.12)"))); addParametersToMenuItems(editTariff, ACTION_TARIFF);
-			 */
+			LinkContainer viewTariff = new LinkContainer();
+			viewTariff.setStyleClass(styledLink);
+			viewTariff.add(formatText(iwrb.getLocalizedString(
+					"isi_acc_cashierwindow.view_tariff",
+					"View club tariff list")));
+			addParametersToMenuItems(viewTariff, ACTION_TARIFF);
 
 			LinkContainer autoAss = new LinkContainer();
 			autoAss.setStyleClass(styledLink);
-			autoAss.add(formatText(iwrb.getLocalizedString("isi_acc_cashierwindow.auto_assessment",
+			autoAss.add(formatText(iwrb.getLocalizedString(
+					"isi_acc_cashierwindow.auto_assessment",
 					"Automatic assessment (A.15)")));
 			addParametersToMenuItems(autoAss, ACTION_AUTOMATIC_ASSESSMENT);
 
 			LinkContainer ccContract = new LinkContainer();
 			ccContract.setStyleClass(styledLink);
-			ccContract.add(formatText(iwrb.getLocalizedString("isi_acc_cashierwindow.cc_contract",
+			ccContract.add(formatText(iwrb.getLocalizedString(
+					"isi_acc_cashierwindow.cc_contract",
 					"Edit creditcard company contract (A.24)")));
-			addParametersToMenuItems(ccContract, ACTION_CREDITCARD_COMPANY_CONTRACT);
+			addParametersToMenuItems(ccContract,
+					ACTION_CREDITCARD_COMPANY_CONTRACT);
 
 			LinkContainer bContract = new LinkContainer();
 			bContract.setStyleClass(styledLink);
-			bContract.add(formatText(iwrb.getLocalizedString("isi_acc_cashierwindow.b_contract", "Edit bank contract")));
+			bContract.add(formatText(iwrb.getLocalizedString(
+					"isi_acc_cashierwindow.b_contract", "Edit bank contract")));
 			addParametersToMenuItems(bContract, ACTION_BANK_CONTRACT);
 
 			LinkContainer manAss = new LinkContainer();
 			manAss.setStyleClass(styledLink);
-			manAss.add(formatText(iwrb.getLocalizedString("isi_acc_cashierwindow.manual_assessment",
+			manAss.add(formatText(iwrb.getLocalizedString(
+					"isi_acc_cashierwindow.manual_assessment",
 					"Manual assessment (A.14)")));
 			addParametersToMenuItems(manAss, ACTION_MANUAL_ASSESSMENT);
 
 			LinkContainer paymentHistory = new LinkContainer();
 			paymentHistory.setStyleClass(styledLink);
-			paymentHistory.add(formatText(iwrb.getLocalizedString("isi_acc_cashierwindow.paymentHistory",
+			paymentHistory.add(formatText(iwrb.getLocalizedString(
+					"isi_acc_cashierwindow.paymentHistory",
 					"Payment history (3.11)")));
 			addParametersToMenuItems(paymentHistory, ACTION_PAYMENT_HISTORY);
 
 			LinkContainer selectPayments = new LinkContainer();
 			selectPayments.setStyleClass(styledLink);
-			selectPayments.add(formatText(iwrb.getLocalizedString("isi_acc_cashierwindow.select_payments",
+			selectPayments.add(formatText(iwrb.getLocalizedString(
+					"isi_acc_cashierwindow.select_payments",
 					"Select payments for user")));
 			addParametersToMenuItems(selectPayments, ACTION_SELECT_PAYMENTS);
 
 			LinkContainer checkOut = new LinkContainer();
 			checkOut.setStyleClass(styledLink);
-			checkOut.add(formatText(iwrb.getLocalizedString("isi_acc_cashierwindow.checkout", "Checkout")));
+			checkOut.add(formatText(iwrb.getLocalizedString(
+					"isi_acc_cashierwindow.checkout", "Checkout")));
 			addParametersToMenuItems(checkOut, ACTION_CHECKOUT);
 
-/*			LinkContainer nonPayedEntries = new LinkContainer();
-			nonPayedEntries.setStyleClass(styledLink);
-			nonPayedEntries.add(formatText(iwrb.getLocalizedString("isi_acc_cashierwindow.nonPayed", "Non-payed")));
-			// addParametersToMenuItems(checkOut, ACTION_CHECKOUT);
-
-			LinkContainer errorEntries = new LinkContainer();
-			errorEntries.setStyleClass(styledLink);
-			errorEntries.add(formatText(iwrb.getLocalizedString("isi_acc_cashierwindow.errorEntries", "Error entries")));
-			// addParametersToMenuItems(checkOut, ACTION_CHECKOUT);*/
+			/*
+			 * LinkContainer nonPayedEntries = new LinkContainer();
+			 * nonPayedEntries.setStyleClass(styledLink);
+			 * nonPayedEntries.add(formatText(iwrb.getLocalizedString("isi_acc_cashierwindow.nonPayed",
+			 * "Non-payed"))); // addParametersToMenuItems(checkOut,
+			 * ACTION_CHECKOUT);
+			 * 
+			 * LinkContainer errorEntries = new LinkContainer();
+			 * errorEntries.setStyleClass(styledLink);
+			 * errorEntries.add(formatText(iwrb.getLocalizedString("isi_acc_cashierwindow.errorEntries",
+			 * "Error entries"))); // addParametersToMenuItems(checkOut,
+			 * ACTION_CHECKOUT);
+			 */
 
 			// reports
 			LinkContainer paymentStatus = new LinkContainer();
 			paymentStatus.setStyleClass(styledLink);
-			paymentStatus.add(formatText(iwrb.getLocalizedString("isi_acc_cashierwindow.paymentStatus",
+			paymentStatus.add(formatText(iwrb.getLocalizedString(
+					"isi_acc_cashierwindow.paymentStatus",
 					"Payment Status (A.29.1)"), false));
 			addParametersToMenuItems(paymentStatus, ACTION_REPORTS);
-			paymentStatus.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE, "Invocation-A29.1.xml");
-			paymentStatus.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE, "Layout-A29.1.xml");
-			paymentStatus.addParameter(STATS_LOCALIZABLE_KEY_NAME, "isi_acc_cashierwindow.paymentStatus");
+			paymentStatus.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,
+					"Invocation-A29.1.xml");
+			paymentStatus.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,
+					"Layout-A29.1.xml");
+			paymentStatus.addParameter(STATS_LOCALIZABLE_KEY_NAME,
+					"isi_acc_cashierwindow.paymentStatus");
 
 			LinkContainer paymentOverview = new LinkContainer();
 			paymentOverview.setStyleClass(styledLink);
-			paymentOverview.add(formatText(iwrb.getLocalizedString("isi_acc_cashierwindow.paymentOverview",
+			paymentOverview.add(formatText(iwrb.getLocalizedString(
+					"isi_acc_cashierwindow.paymentOverview",
 					"Payment overview (A.29.2)")));
 			addParametersToMenuItems(paymentOverview, ACTION_REPORTS);
-			paymentOverview.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE, "Invocation-A29.2.xml");
-			paymentOverview.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE, "Layout-A29.2.xml");
-			paymentOverview.addParameter(STATS_LOCALIZABLE_KEY_NAME, "isi_acc_cashierwindow.paymentOverview");
+			paymentOverview.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,
+					"Invocation-A29.2.xml");
+			paymentOverview.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,
+					"Layout-A29.2.xml");
+			paymentOverview.addParameter(STATS_LOCALIZABLE_KEY_NAME,
+					"isi_acc_cashierwindow.paymentOverview");
 
 			LinkContainer debtOverview = new LinkContainer();
 			debtOverview.setStyleClass(styledLink);
-			debtOverview.add(formatText(iwrb.getLocalizedString("isi_acc_cashierwindow.debtOverview",
+			debtOverview.add(formatText(iwrb.getLocalizedString(
+					"isi_acc_cashierwindow.debtOverview",
 					"Debt overview (A.29.3)")));
 			addParametersToMenuItems(debtOverview, ACTION_REPORTS);
-			debtOverview.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE, "Invocation-A29.3.xml");
-			debtOverview.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE, "Layout-A29.3.xml");
-			debtOverview.addParameter(STATS_LOCALIZABLE_KEY_NAME, "isi_acc_cashierwindow.debtOverview");
+			debtOverview.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,
+					"Invocation-A29.3.xml");
+			debtOverview.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,
+					"Layout-A29.3.xml");
+			debtOverview.addParameter(STATS_LOCALIZABLE_KEY_NAME,
+					"isi_acc_cashierwindow.debtOverview");
 
 			LinkContainer entryOverview = new LinkContainer();
 			entryOverview.setStyleClass(styledLink);
-			entryOverview.add(formatText(iwrb.getLocalizedString("isi_acc_cashierwindow.entryOverview",
+			entryOverview.add(formatText(iwrb.getLocalizedString(
+					"isi_acc_cashierwindow.entryOverview",
 					"Entry overview (A.29.4)")));
 			addParametersToMenuItems(entryOverview, ACTION_REPORTS);
-			entryOverview.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE, "Invocation-A29.4.xml");
-			entryOverview.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE, "Layout-A29.4.xml");
-			entryOverview.addParameter(STATS_LOCALIZABLE_KEY_NAME, "isi_acc_cashierwindow.entryOverview");
+			entryOverview.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,
+					"Invocation-A29.4.xml");
+			entryOverview.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,
+					"Layout-A29.4.xml");
+			entryOverview.addParameter(STATS_LOCALIZABLE_KEY_NAME,
+					"isi_acc_cashierwindow.entryOverview");
 
 			LinkContainer latePaymentList = new LinkContainer();
 			latePaymentList.setStyleClass(styledLink);
-			latePaymentList.add(formatText(iwrb.getLocalizedString("isi_acc_cashierwindow.latePaymentList",
+			latePaymentList.add(formatText(iwrb.getLocalizedString(
+					"isi_acc_cashierwindow.latePaymentList",
 					"Late payment list (A.29.5)")));
 			addParametersToMenuItems(latePaymentList, ACTION_REPORTS);
-			latePaymentList.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE, "Invocation-A29.5.xml");
-			latePaymentList.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE, "Layout-A29.5.xml");
-			latePaymentList.addParameter(STATS_LOCALIZABLE_KEY_NAME, "isi_acc_cashierwindow.latePaymentList");
+			latePaymentList.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,
+					"Invocation-A29.5.xml");
+			latePaymentList.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,
+					"Layout-A29.5.xml");
+			latePaymentList.addParameter(STATS_LOCALIZABLE_KEY_NAME,
+					"isi_acc_cashierwindow.latePaymentList");
 
 			LinkContainer paymentList = new LinkContainer();
 			paymentList.setStyleClass(styledLink);
-			paymentList.add(formatText(iwrb.getLocalizedString("isi_acc_cashierwindow.paymentList",
+			paymentList.add(formatText(iwrb.getLocalizedString(
+					"isi_acc_cashierwindow.paymentList",
 					"Payment list (A.29.6)")));
 			addParametersToMenuItems(paymentList, ACTION_REPORTS);
-			paymentList.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE, "Invocation-A29.6.xml");
-			paymentList.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE, "Layout-A29.6.xml");
-			paymentList.addParameter(STATS_LOCALIZABLE_KEY_NAME, "isi_acc_cashierwindow.paymentList");
+			paymentList.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,
+					"Invocation-A29.6.xml");
+			paymentList.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,
+					"Layout-A29.6.xml");
+			paymentList.addParameter(STATS_LOCALIZABLE_KEY_NAME,
+					"isi_acc_cashierwindow.paymentList");
 
 			LinkContainer ledgerList = new LinkContainer();
 			ledgerList.setStyleClass(styledLink);
-			ledgerList.add(formatText(iwrb.getLocalizedString("isi_acc_cashierwindow.ledgerList", "Ledger list")));
+			ledgerList.add(formatText(iwrb.getLocalizedString(
+					"isi_acc_cashierwindow.ledgerList", "Ledger list")));
 			// ledgerList.addParameter(ACTION,ACTION_CASHIER_LEDGER);
 			addParametersToMenuItems(ledgerList, ACTION_CASHIER_LEDGER);
 
 			// add to window
 			menu.add(clubOperations, 1, 1);
-			menu.add(getHelpWithGrayImage("cashierwindow.clubOperations_help", true), 2, 1);
+			menu.add(getHelpWithGrayImage("cashierwindow.clubOperations_help",
+					true), 2, 1);
 			menu.setRowColor(1, COLOR_MIDDLE);
 			menu.add(editTariffType, 1, 2);
 			// menu.add(editTariff, 1, 3);
@@ -397,53 +430,65 @@ public class CashierWindow extends StyledIWAdminWindow {
 			menu.add(bContract, 1, 5);
 
 			menu.add(memberOperations, 1, 6);
-			menu.add(getHelpWithGrayImage("cashierwindow.memberOperations_help", true), 2, 6);
+			menu.add(getHelpWithGrayImage(
+					"cashierwindow.memberOperations_help", true), 2, 6);
 			menu.setRowColor(6, COLOR_MIDDLE);
 			menu.add(manAss, 1, 7);
 			menu.add(paymentHistory, 1, 8);
 			menu.add(selectPayments, 1, 9);
 			menu.add(checkOut, 1, 10);
-/*			menu.add(nonPayedEntries, 1, 11);
-			menu.add(errorEntries, 1, 12);*/
+			menu.add(viewTariff, 1, 11);
+			/*
+			 * menu.add(nonPayedEntries, 1, 11); menu.add(errorEntries, 1, 12);
+			 */
 
 			menu.add(reports, 1, 13);
-			menu.add(getHelpWithGrayImage("cashierwindow.reports_help", true), 2, 13);
+			menu.add(getHelpWithGrayImage("cashierwindow.reports_help", true),
+					2, 13);
 			menu.setRowColor(13, COLOR_MIDDLE);
 			menu.add(paymentStatus, 1, 14);
 			menu.add(debtOverview, 1, 15);
-			menu.add(paymentOverview, 1, 16);			
+			menu.add(paymentOverview, 1, 16);
 			menu.add(entryOverview, 1, 17);
-			//menu.add(latePaymentList, 1, 18);
+			// menu.add(latePaymentList, 1, 18);
 			menu.add(paymentList, 1, 18);
 
 			menu.add(ledger, 1, 20);
-			menu.add(getHelpWithGrayImage("cashierwindow.ledger_help", true), 2, 20);
+			menu.add(getHelpWithGrayImage("cashierwindow.ledger_help", true),
+					2, 20);
 			menu.setRowColor(20, COLOR_MIDDLE);
 			menu.add(ledgerList, 1, 21);
-		}
-		else {
-			Text admin = formatText(iwrb.getLocalizedString("isi_acc_cashierwindow.admin", "Admin"), true);
+		} else {
+			Text admin = formatText(iwrb.getLocalizedString(
+					"isi_acc_cashierwindow.admin", "Admin"), true);
 
 			LinkContainer adminCreditCardSendFiles = new LinkContainer();
 			adminCreditCardSendFiles.setStyleClass(styledLink);
 			adminCreditCardSendFiles.add(formatText(iwrb.getLocalizedString(
-					"isi_acc_cashierwindow.send_creditcard_files", "Send creditcard files ()")));
-			addParametersToMenuItems(adminCreditCardSendFiles, ADMIN_SEND_CREDITCARD_FILES);
+					"isi_acc_cashierwindow.send_creditcard_files",
+					"Send creditcard files ()")));
+			addParametersToMenuItems(adminCreditCardSendFiles,
+					ADMIN_SEND_CREDITCARD_FILES);
 
 			LinkContainer adminCreditCardGetFiles = new LinkContainer();
 			adminCreditCardGetFiles.setStyleClass(styledLink);
 			adminCreditCardGetFiles.add(formatText(iwrb.getLocalizedString(
-					"isi_acc_cashierwindow.get_creditcard_files", "Get creditcard files ()")));
-			addParametersToMenuItems(adminCreditCardGetFiles, ADMIN_GET_CREDITCARD_FILES);
+					"isi_acc_cashierwindow.get_creditcard_files",
+					"Get creditcard files ()")));
+			addParametersToMenuItems(adminCreditCardGetFiles,
+					ADMIN_GET_CREDITCARD_FILES);
 
 			LinkContainer adminCreditCardSetup = new LinkContainer();
 			adminCreditCardSetup.setStyleClass(styledLink);
-			adminCreditCardSetup.add(formatText(iwrb.getLocalizedString("isi_acc_cashierwindow.creditcard_setup",
+			adminCreditCardSetup.add(formatText(iwrb.getLocalizedString(
+					"isi_acc_cashierwindow.creditcard_setup",
 					"Creditcard setup ()")));
-			addParametersToMenuItems(adminCreditCardSetup, ADMIN_CREDITCARD_SETUP);
+			addParametersToMenuItems(adminCreditCardSetup,
+					ADMIN_CREDITCARD_SETUP);
 
 			menu.add(admin, 1, 1);
-			menu.add(getHelpWithGrayImage("cashierwindow.admin_help", true), 2, 1);
+			menu.add(getHelpWithGrayImage("cashierwindow.admin_help", true), 2,
+					1);
 			menu.setRowColor(1, COLOR_MIDDLE);
 			menu.add(adminCreditCardSendFiles, 1, 2);
 			menu.add(adminCreditCardGetFiles, 1, 3);
@@ -455,41 +500,47 @@ public class CashierWindow extends StyledIWAdminWindow {
 
 	private void addParametersToMenuItems(LinkContainer menuItem, String action) {
 		menuItem.addParameter(ACTION, action);
-		menuItem.addParameter(PARAMETER_GROUP_ID, ((Integer) eGroup.getPrimaryKey()).toString());
+		menuItem.addParameter(PARAMETER_GROUP_ID, ((Integer) eGroup
+				.getPrimaryKey()).toString());
 		if (eUser != null) {
-			menuItem.addParameter(PARAMETER_USER_ID, ((Integer) eUser.getPrimaryKey()).toString());
+			menuItem.addParameter(PARAMETER_USER_ID, ((Integer) eUser
+					.getPrimaryKey()).toString());
 		}
 		if (eDiv != null) {
-			menuItem.addParameter(PARAMETER_DIVISION_ID, ((Integer) eDiv.getPrimaryKey()).toString());
+			menuItem.addParameter(PARAMETER_DIVISION_ID, ((Integer) eDiv
+					.getPrimaryKey()).toString());
 		}
 		if (eClub != null) {
-			menuItem.addParameter(PARAMETER_CLUB_ID, ((Integer) eClub.getPrimaryKey()).toString());
+			menuItem.addParameter(PARAMETER_CLUB_ID, ((Integer) eClub
+					.getPrimaryKey()).toString());
 		}
 	}
 
 	protected boolean getHasPermissionToViewWindow(IWContext iwc) {
 		if (eClub == null) {
 			if (eGroup == null) {
-				Text errorText = new Text(iwrb.getLocalizedString("isi_acc_no_group_selected",
+				Text errorText = new Text(iwrb.getLocalizedString(
+						"isi_acc_no_group_selected",
 						"You must select a group in a club"));
-				errorText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE_RED);
+				errorText
+						.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE_RED);
 
 				add(errorText);
 				return false;
-			}
-			else {
+			} else {
 				try {
 					eClub = getAccountingBusiness(iwc).findClubForGroup(eGroup);
-				}
-				catch (RemoteException e) {
+				} catch (RemoteException e) {
 					e.printStackTrace();
 					eClub = null;
 				}
 
 				if (eClub == null) {
-					Text errorText = new Text(iwrb.getLocalizedString("isi_acc_no_group_selected",
+					Text errorText = new Text(iwrb.getLocalizedString(
+							"isi_acc_no_group_selected",
 							"You must select a group in a club"));
-					errorText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE_RED);
+					errorText
+							.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE_RED);
 
 					add(errorText);
 					return false;
@@ -506,7 +557,8 @@ public class CashierWindow extends StyledIWAdminWindow {
 		}
 
 		if (!iwc.isLoggedOn()) {
-			Text errorText = new Text(iwrb.getLocalizedString("isi_acc_no_user",
+			Text errorText = new Text(iwrb.getLocalizedString(
+					"isi_acc_no_user",
 					"There is no user logged in. Please log in and try again."));
 			errorText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE_RED);
 
@@ -517,11 +569,16 @@ public class CashierWindow extends StyledIWAdminWindow {
 		// System.out.println("Going to get all the cashierGroups for the
 		// user");
 		User currentUser = iwc.getCurrentUser();
-		Collection cashierGroupsInClubForUser = getGroupsForUser(iwc, currentUser);
+		Collection cashierGroupsInClubForUser = getGroupsForUser(iwc,
+				currentUser);
 		// System.out.println("Done getting groups.");
-		if (cashierGroupsInClubForUser == null || cashierGroupsInClubForUser.isEmpty()) {
-			Text errorText = new Text(iwrb.getLocalizedString("isi_acc_user_not_cashier",
-					"You are not logged in as a cashier for this club. Please log in as a cashier and try again."));
+		if (cashierGroupsInClubForUser == null
+				|| cashierGroupsInClubForUser.isEmpty()) {
+			Text errorText = new Text(
+					iwrb
+							.getLocalizedString(
+									"isi_acc_user_not_cashier",
+									"You are not logged in as a cashier for this club. Please log in as a cashier and try again."));
 			errorText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE_RED);
 
 			add(errorText);
@@ -535,19 +592,18 @@ public class CashierWindow extends StyledIWAdminWindow {
 		while (it.hasNext()) {
 			Group cashierGroup = (Group) it.next();
 			try {
-				Group tmpDiv = getAccountingBusiness(iwc).findDivisionForGroup(cashierGroup);
+				Group tmpDiv = getAccountingBusiness(iwc).findDivisionForGroup(
+						cashierGroup);
 				if (first) {
 					eDiv = tmpDiv;
 					first = false;
-				}
-				else {
+				} else {
 					if (eDiv != null) {
 						eDiv = tmpDiv;
 					}
 				}
 
-			}
-			catch (RemoteException e) {
+			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
 		}
@@ -558,10 +614,12 @@ public class CashierWindow extends StyledIWAdminWindow {
 	private Collection getGroupsForUser(IWContext iwc, User user) {
 		ArrayList userCashierGroups = new ArrayList();
 		ArrayList userGroupsInClub = new ArrayList();
-		Collection allCashierGroups = iwc.getAccessController().getAllGroupsForRoleKey(ROLE_KEY_CASHIER, iwc);
+		Collection allCashierGroups = iwc.getAccessController()
+				.getAllGroupsForRoleKey(ROLE_KEY_CASHIER, iwc);
 
 		try {
-			Collection allUserGroups = getUserBusiness(iwc).getUserGroupsDirectlyRelated(user);
+			Collection allUserGroups = getUserBusiness(iwc)
+					.getUserGroupsDirectlyRelated(user);
 			if (allUserGroups != null && !allUserGroups.isEmpty()) {
 				Iterator it = allUserGroups.iterator();
 				while (it.hasNext()) {
@@ -576,14 +634,14 @@ public class CashierWindow extends StyledIWAdminWindow {
 				Iterator it = userCashierGroups.iterator();
 				while (it.hasNext()) {
 					Group group = (Group) it.next();
-					Group parent = getAccountingBusiness(iwc).findClubForGroup(group);
+					Group parent = getAccountingBusiness(iwc).findClubForGroup(
+							group);
 					if (parent != null && eClub.equals(parent)) {
 						userGroupsInClub.add(group);
 					}
 				}
 			}
-		}
-		catch (RemoteException e) {
+		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
 
@@ -592,10 +650,12 @@ public class CashierWindow extends StyledIWAdminWindow {
 
 	private boolean isCashierAdministrator(IWContext iwc) {
 		User user = iwc.getCurrentUser();
-		Collection allCashierAdminGroups = iwc.getAccessController().getAllGroupsForRoleKey(ROLE_KEY_CASHIER_ADMIN, iwc);
+		Collection allCashierAdminGroups = iwc.getAccessController()
+				.getAllGroupsForRoleKey(ROLE_KEY_CASHIER_ADMIN, iwc);
 
 		try {
-			Collection allUserGroups = getUserBusiness(iwc).getUserGroupsDirectlyRelated(user);
+			Collection allUserGroups = getUserBusiness(iwc)
+					.getUserGroupsDirectlyRelated(user);
 			if (allUserGroups != null && !allUserGroups.isEmpty()) {
 				Iterator it = allUserGroups.iterator();
 				while (it.hasNext()) {
@@ -606,8 +666,7 @@ public class CashierWindow extends StyledIWAdminWindow {
 				}
 			}
 
-		}
-		catch (RemoteException e) {
+		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
 
@@ -623,7 +682,8 @@ public class CashierWindow extends StyledIWAdminWindow {
 			return;
 		}
 
-		StringBuffer title = new StringBuffer(iwrb.getLocalizedString("isi_acc_cashier_window", "Cashier Window"));
+		StringBuffer title = new StringBuffer(iwrb.getLocalizedString(
+				"isi_acc_cashier_window", "Cashier Window"));
 		if (eClub != null) {
 			title.append(" - ");
 			title.append(eClub.getName());
@@ -657,112 +717,122 @@ public class CashierWindow extends StyledIWAdminWindow {
 		if (action != null) {
 			CashierSubWindowTemplate subWindow = null;
 			StringBuffer actionTitle = new StringBuffer();
-			/*
-			 * if (action.equals(ACTION_TARIFF)) {
-			 * actionTitle.append(iwrb.getLocalizedString(ACTION_TARIFF, "Edit
-			 * tariff list")); subWindow = new EditTariffList(); helpTextKey =
-			 * ACTION_TARIFF + "_help"; } else
-			 */
-			if (action.equals(ACTION_TARIFF_TYPE)) {
-				actionTitle.append(iwrb.getLocalizedString(ACTION_TARIFF_TYPE, "Edit tariff type"));
+
+			if (action.equals(ACTION_TARIFF)) {
+				actionTitle.append(iwrb.getLocalizedString(ACTION_TARIFF,
+						"View tariff list"));
+				subWindow = new EditTariffList();
+				helpTextKey = ACTION_TARIFF + "_help";
+			} else if (action.equals(ACTION_TARIFF_TYPE)) {
+				actionTitle.append(iwrb.getLocalizedString(ACTION_TARIFF_TYPE,
+						"Edit tariff type"));
 				subWindow = new EditTariffType();
 				helpTextKey = ACTION_TARIFF_TYPE + "_help";
-			}
-			else if (action.equals(ACTION_MANUAL_ASSESSMENT)) {
-				actionTitle.append(iwrb.getLocalizedString(ACTION_MANUAL_ASSESSMENT, "Manual assessment"));
+			} else if (action.equals(ACTION_MANUAL_ASSESSMENT)) {
+				actionTitle.append(iwrb.getLocalizedString(
+						ACTION_MANUAL_ASSESSMENT, "Manual assessment"));
 				subWindow = new ManualAssessment();
 				helpTextKey = ACTION_MANUAL_ASSESSMENT + "_help";
-			}
-			else if (action.equals(ACTION_AUTOMATIC_ASSESSMENT)) {
-				actionTitle.append(iwrb.getLocalizedString(ACTION_AUTOMATIC_ASSESSMENT, "Automatic assessment"));
+			} else if (action.equals(ACTION_AUTOMATIC_ASSESSMENT)) {
+				actionTitle.append(iwrb.getLocalizedString(
+						ACTION_AUTOMATIC_ASSESSMENT, "Automatic assessment"));
 				subWindow = new AutomaticAssessment();
 				helpTextKey = ACTION_AUTOMATIC_ASSESSMENT + "_help";
-			}
-			else if (action.equals(ACTION_CREDITCARD_COMPANY_CONTRACT)) {
-				actionTitle.append(iwrb.getLocalizedString(ACTION_CREDITCARD_COMPANY_CONTRACT,
+			} else if (action.equals(ACTION_CREDITCARD_COMPANY_CONTRACT)) {
+				actionTitle.append(iwrb.getLocalizedString(
+						ACTION_CREDITCARD_COMPANY_CONTRACT,
 						"Club/division credit cardcontract"));
 				subWindow = new ClubCreditCardContract();
 				helpTextKey = ACTION_CREDITCARD_COMPANY_CONTRACT + "_help";
-			}
-			else if (action.equals(ACTION_BANK_CONTRACT)) {
-				actionTitle.append(iwrb.getLocalizedString(ACTION_BANK_CONTRACT, "Club/division bank contract"));
+			} else if (action.equals(ACTION_BANK_CONTRACT)) {
+				actionTitle.append(iwrb.getLocalizedString(
+						ACTION_BANK_CONTRACT, "Club/division bank contract"));
 				subWindow = new ClubBankContract();
 				helpTextKey = ACTION_BANK_CONTRACT + "_help";
-			}
-			else if (action.equals(ACTION_PAYMENT_HISTORY)) {
-				actionTitle.append(iwrb.getLocalizedString(ACTION_PAYMENT_HISTORY, "View user payment history"));
+			} else if (action.equals(ACTION_PAYMENT_HISTORY)) {
+				actionTitle.append(iwrb.getLocalizedString(
+						ACTION_PAYMENT_HISTORY, "View user payment history"));
 				subWindow = new UserPaymentHistory();
 				helpTextKey = ACTION_PAYMENT_HISTORY + "_help";
-			}
-			else if (action.equals(ACTION_SELECT_PAYMENTS)) {
-				actionTitle.append(iwrb.getLocalizedString(ACTION_SELECT_PAYMENTS, "Select payments"));
+			} else if (action.equals(ACTION_SELECT_PAYMENTS)) {
+				actionTitle.append(iwrb.getLocalizedString(
+						ACTION_SELECT_PAYMENTS, "Select payments"));
 				subWindow = new SelectPayments();
 				helpTextKey = ACTION_SELECT_PAYMENTS + "_help";
-			}
-			else if (action.equals(ACTION_CHECKOUT)) {
-				actionTitle.append(iwrb.getLocalizedString(ACTION_CHECKOUT, "Checkout"));
+			} else if (action.equals(ACTION_CHECKOUT)) {
+				actionTitle.append(iwrb.getLocalizedString(ACTION_CHECKOUT,
+						"Checkout"));
 				subWindow = new Checkout();
 				helpTextKey = ACTION_CHECKOUT + "_help";
-			}
-			else if (action.equals(ACTION_CASHIER_LEDGER)) {
-				actionTitle.append(iwrb.getLocalizedString(ACTION_CASHIER_LEDGER, "View cashier ledger"));
+			} else if (action.equals(ACTION_CASHIER_LEDGER)) {
+				actionTitle.append(iwrb.getLocalizedString(
+						ACTION_CASHIER_LEDGER, "View cashier ledger"));
 				subWindow = new CashierLedgerWindow();
 				helpTextKey = ACTION_CASHIER_LEDGER + "_help";
-			}
-			else if (action.equals(ADMIN_SEND_CREDITCARD_FILES)) {
-				actionTitle.append(iwrb.getLocalizedString(ADMIN_SEND_CREDITCARD_FILES, "Send creditcard files"));
+			} else if (action.equals(ADMIN_SEND_CREDITCARD_FILES)) {
+				actionTitle.append(iwrb.getLocalizedString(
+						ADMIN_SEND_CREDITCARD_FILES, "Send creditcard files"));
 				subWindow = new SendFiles();
 				helpTextKey = ADMIN_SEND_CREDITCARD_FILES + "_help";
-			}
-			else if (action.equals(ADMIN_GET_CREDITCARD_FILES)) {
-				actionTitle.append(iwrb.getLocalizedString(ADMIN_GET_CREDITCARD_FILES, "Get creditcard files"));
+			} else if (action.equals(ADMIN_GET_CREDITCARD_FILES)) {
+				actionTitle.append(iwrb.getLocalizedString(
+						ADMIN_GET_CREDITCARD_FILES, "Get creditcard files"));
 				subWindow = new GetFiles();
 				helpTextKey = ADMIN_GET_CREDITCARD_FILES + "_help";
-			}
-			else if (action.equals(ADMIN_CREDITCARD_SETUP)) {
-				actionTitle.append(iwrb.getLocalizedString(ADMIN_CREDITCARD_SETUP, "Creditcard setup"));
+			} else if (action.equals(ADMIN_CREDITCARD_SETUP)) {
+				actionTitle.append(iwrb.getLocalizedString(
+						ADMIN_CREDITCARD_SETUP, "Creditcard setup"));
 				subWindow = new Setup();
 				helpTextKey = ADMIN_CREDITCARD_SETUP + "_help";
-			}
-			else if (action.equals(ACTION_REPORTS)) {
-				actionTitle.append(iwrb.getLocalizedString(ACTION_REPORTS, "Reports"));
+			} else if (action.equals(ACTION_REPORTS)) {
+				actionTitle.append(iwrb.getLocalizedString(ACTION_REPORTS,
+						"Reports"));
 				ReportGenerator repGen = new ReportGenerator();
 				repGen.setParameterToMaintain(ACTION);
 				repGen.setParameterToMaintain(STATS_INVOCATION_PARAM);
 				repGen.setParameterToMaintain(STATS_LAYOUT_PARAM);
 				repGen.setParameterToMaintain(STATS_LAYOUT_NAME_FROM_BUNDLE);
-				repGen.setParameterToMaintain(STATS_INVOCATION_NAME_FROM_BUNDLE);
+				repGen
+						.setParameterToMaintain(STATS_INVOCATION_NAME_FROM_BUNDLE);
 				repGen.setParameterToMaintain(STATS_LOCALIZABLE_KEY_NAME);
 				repGen.setParameterToMaintain(PARAMETER_GROUP_ID);
 				repGen.setParameterToMaintain(PARAMETER_CLUB_ID);
 				String invocationKey = iwc.getParameter(STATS_INVOCATION_PARAM);
-				String invocationFileName = iwc.getParameter(STATS_INVOCATION_NAME_FROM_BUNDLE);
+				String invocationFileName = iwc
+						.getParameter(STATS_INVOCATION_NAME_FROM_BUNDLE);
 				String layoutKey = iwc.getParameter(STATS_LAYOUT_PARAM);
-				String layoutFileName = iwc.getParameter(STATS_LAYOUT_NAME_FROM_BUNDLE);
-				String localizedNameKey = iwc.getParameter(STATS_LOCALIZABLE_KEY_NAME);
-				if ((invocationKey != null && iwb.getProperty(invocationKey, "-1") != null)
+				String layoutFileName = iwc
+						.getParameter(STATS_LAYOUT_NAME_FROM_BUNDLE);
+				String localizedNameKey = iwc
+						.getParameter(STATS_LOCALIZABLE_KEY_NAME);
+				if ((invocationKey != null && iwb.getProperty(invocationKey,
+						"-1") != null)
 						|| invocationFileName != null) {
 
 					if (invocationFileName != null) {
-						repGen.setMethodInvocationBundleAndFileName(iwb, invocationFileName);
-					}
-					else {
-						Integer invocationICFileID = new Integer(iwb.getProperty(invocationKey));
+						repGen.setMethodInvocationBundleAndFileName(iwb,
+								invocationFileName);
+					} else {
+						Integer invocationICFileID = new Integer(iwb
+								.getProperty(invocationKey));
 
 						if (invocationICFileID.intValue() > 0) {
-							repGen.setMethodInvocationICFileID(invocationICFileID);
+							repGen
+									.setMethodInvocationICFileID(invocationICFileID);
 						}
 					}
 					if (layoutFileName != null) {
 						repGen.setLayoutBundleAndFileName(iwb, layoutFileName);
-					}
-					else if (layoutKey != null && iwb.getProperty(layoutKey, "-1") != null) {
-						Integer layoutICFileID = new Integer(iwb.getProperty(layoutKey));
+					} else if (layoutKey != null
+							&& iwb.getProperty(layoutKey, "-1") != null) {
+						Integer layoutICFileID = new Integer(iwb
+								.getProperty(layoutKey));
 						if (layoutICFileID.intValue() > 0)
 							repGen.setLayoutICFileID(layoutICFileID);
 					}
 					if (localizedNameKey != null) {
-						String reportName = iwrb.getLocalizedString(localizedNameKey);
+						String reportName = iwrb
+								.getLocalizedString(localizedNameKey);
 						repGen.setReportName(reportName);
 						table.add(formatHeadline(reportName), 2, 1); // not a
 						// selector
@@ -806,10 +876,9 @@ public class CashierWindow extends StyledIWAdminWindow {
 	protected MemberUserBusiness getMemberUserBusiness(IWApplicationContext iwc) {
 		if (membBiz == null) {
 			try {
-				membBiz = (MemberUserBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc,
-						MemberUserBusiness.class);
-			}
-			catch (java.rmi.RemoteException rme) {
+				membBiz = (MemberUserBusiness) com.idega.business.IBOLookup
+						.getServiceInstance(iwc, MemberUserBusiness.class);
+			} catch (java.rmi.RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());
 			}
 		}
@@ -819,9 +888,9 @@ public class CashierWindow extends StyledIWAdminWindow {
 	// service method
 	private GroupBusiness getGroupBusiness(IWContext iwc) {
 		try {
-			return (GroupBusiness) IBOLookup.getServiceInstance(iwc, GroupBusiness.class);
-		}
-		catch (RemoteException ex) {
+			return (GroupBusiness) IBOLookup.getServiceInstance(iwc,
+					GroupBusiness.class);
+		} catch (RemoteException ex) {
 			throw new RuntimeException(ex.getMessage());
 		}
 	}
@@ -829,18 +898,18 @@ public class CashierWindow extends StyledIWAdminWindow {
 	// service method
 	private UserBusiness getUserBusiness(IWContext iwc) {
 		try {
-			return (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
-		}
-		catch (RemoteException ex) {
+			return (UserBusiness) IBOLookup.getServiceInstance(iwc,
+					UserBusiness.class);
+		} catch (RemoteException ex) {
 			throw new RuntimeException(ex.getMessage());
 		}
 	}
 
 	private AccountingBusiness getAccountingBusiness(IWContext iwc) {
 		try {
-			return (AccountingBusiness) IBOLookup.getServiceInstance(iwc, AccountingBusiness.class);
-		}
-		catch (RemoteException e) {
+			return (AccountingBusiness) IBOLookup.getServiceInstance(iwc,
+					AccountingBusiness.class);
+		} catch (RemoteException e) {
 			throw new RuntimeException(e.getMessage());
 		}
 	}
