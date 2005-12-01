@@ -16,6 +16,7 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 import com.idega.block.basket.data.BasketItem;
+import com.idega.block.finance.data.AccountEntry;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOPrimaryKey;
 import com.idega.data.IDOQuery;
@@ -86,6 +87,8 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 	protected final static String COLUMN_FINAL_DUE_DATE = "final_due_date";
 	
 	protected final static String COLUMN_PAYED_BY_SSN = "payed_by_ssn";
+	
+	protected final static String COLUMN_ACCOUNT_ENTRY = "account_entry_id";
 
 	protected final static String STATUS_CREATED = "C";
 
@@ -157,6 +160,7 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 		addAttribute(COLUMN_DUE_DATE, "Due date", true, true, Date.class);
 		addAttribute(COLUMN_FINAL_DUE_DATE, "Due date", true, true, Date.class);
 		addAttribute(COLUMN_PAYED_BY_SSN, "Payed by ssn", true, true, String.class);
+		addOneToOneRelationship(COLUMN_ACCOUNT_ENTRY, AccountEntry.class);
 
 		setNullable(COLUMN_USER_ID, false);
 		setNullable(COLUMN_ASSESSMENT_ROUND_ID, true);
@@ -512,6 +516,22 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 
 	public void setPayedBySSN(String ssn) {
 		setColumn(COLUMN_PAYED_BY_SSN, ssn);
+	}
+	
+	public int getAccountEntryID() {
+		return getIntColumnValue(COLUMN_ACCOUNT_ENTRY);
+	}
+	
+	public AccountEntry getAccountEntry() {
+		return (AccountEntry) getColumnValue(COLUMN_ACCOUNT_ENTRY);
+	}
+	
+	public void setAccountEntryID(int accountEntryID) {
+		setColumn(COLUMN_ACCOUNT_ENTRY, accountEntryID);
+	}
+	
+	public void setAccountEntry(AccountEntry entry) {
+		setColumn(COLUMN_ACCOUNT_ENTRY, entry);		
 	}
 
 	public Collection ejbFindAllByAssessmentRound(AssessmentRound round) throws FinderException {

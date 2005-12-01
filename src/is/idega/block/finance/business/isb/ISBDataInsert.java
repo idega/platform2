@@ -1,5 +1,5 @@
 /*
- * $Id: ISBDataInsert.java,v 1.3 2005/03/15 11:04:06 birna Exp $
+ * $Id: ISBDataInsert.java,v 1.3.4.1 2005/12/01 00:36:41 palli Exp $
  * Created on Dec 20, 2004
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -15,72 +15,65 @@ import is.idega.block.finance.business.isb.ws.AstandKrofu;
 import is.idega.block.finance.business.isb.ws.Krafa;
 import is.idega.block.finance.business.isb.ws.KrofurWSSoapStub;
 import is.idega.block.finance.business.isb.ws.UppreiknudKrafa;
+
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.Calendar;
+
 import org.apache.axis.AxisFault;
+
 import com.idega.block.finance.business.BankFileManager;
 import com.idega.block.finance.business.BankInvoiceFileManager;
 import com.idega.block.finance.business.InvoiceDataInsert;
+import com.idega.block.finance.data.BankInfo;
 
 /**
  * 
- *  Last modified: $Date: 2005/03/15 11:04:06 $ by $Author: birna $
+ *  Last modified: $Date: 2005/12/01 00:36:41 $ by $Author: palli $
  * 
  * @author <a href="mailto:birna@idega.com">birna</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.3.4.1 $
  */
 public class ISBDataInsert /*extends Window*/ implements InvoiceDataInsert{
 	
 	private static String ACTION_URL = "https://ws-test.isb.is/adgerdirv1/krofur.asmx";
-	
-/*	public ISBDataInsert() {
-		setWidth(500);
-		setHeight(500);
-	}
-	public void main(IWContext iwc)throws Exception{
-		Form f = new Form();
-		SubmitButton sb = new SubmitButton("submit","submit","submit");
-		SubmitButton bs = new SubmitButton("getdata", "getdata", "getdata");
-		f.add(sb);
-		f.add(bs);
-		if(iwc.getParameter("submit") != null && !iwc.getParameter("submit").equals("") && iwc.getParameter("submit").equals("submit")) {
-			createClaimsInBank(0,170498);
-		}
-		if(iwc.getParameter("getdata") != null && !iwc.getParameter("getdata").equals("") && iwc.getParameter("getdata").equals("getdata")) {
-			getClaimStatusFromBank(0, 170498);
-		}
-		add(f);
-	}*/
-	public void createClaimsInBank(int batchNumber, int groupId) {
-		ArrayOfKrafa arrayOfKrafa = new ArrayOfKrafa();
-		BankFileManager bfm = new BankInvoiceFileManager();
+
+	public void createClaimsInBank(int batchNumber, BankInfo info) {
+		BankFileManager bfm = new BankInvoiceFileManager(info);
 		
+		createClaimsInBank(batchNumber, bfm);
+	}
+	
+	public void createClaimsInBank(int batchNumber, int groupId) {
+		BankFileManager bfm = new BankInvoiceFileManager(groupId);
+
+		createClaimsInBank(batchNumber, bfm);
+	}
+	
+	private void createClaimsInBank(int batchNumber, BankFileManager bfm) {
+		
+		ArrayOfKrafa arrayOfKrafa = new ArrayOfKrafa();
 		Integer[] krofuNumer = bfm.getInvoiceNumbers(batchNumber);
 		
-/*		Integer[] krofuNumer = new Integer[2];
-		krofuNumer[0] = new Integer(1);
-		krofuNumer[1] = new Integer(2);
-*/		
 		Krafa[] krofur = new Krafa[krofuNumer.length]; 
 		for(int i=0; i<krofuNumer.length; i++) {
 			Krafa krafa = new Krafa();
 			
 			int number = krofuNumer[i].intValue();
 			krafa.setKrofunumer(number);
-			krafa.setKennitalaKrofuhafa(bfm.getClaimantSSN(groupId));//"0904649069"
+			krafa.setKennitalaKrofuhafa(bfm.getClaimantSSN());//"0904649069"
 			krafa.setGjalddagi(bfm.getDueDate(number));//Calendar.getInstance()
 			krafa.setFaerslugerd(bfm.getBookkeepingType(number));//"K"
 			//add 4 years to the due date (gjalddagi) for nidurfellingardag - 4 years is the max
 			Calendar nidurfellingardagur = bfm.getDueDate(number);//Calendar.getInstance();
 			nidurfellingardagur.add(Calendar.YEAR,4);
 			krafa.setNidurfellingardagur(nidurfellingardagur);
-			krafa.setAudkenni(bfm.getClaimantsAccountId(groupId));//"IAS"
+			krafa.setAudkenni(bfm.getClaimantsAccountId());//"IAS"
 			krafa.setKennitalaGreidanda(bfm.getPayersSSN(number));//"0904649069"
-			krafa.setBankanumer(Integer.valueOf(bfm.getBankBranchNumber(groupId)).intValue());//515
-			krafa.setHofudbok(bfm.getAccountBook(groupId));//66
+			krafa.setBankanumer(Integer.valueOf(bfm.getBankBranchNumber()).intValue());//515
+			krafa.setHofudbok(bfm.getAccountBook());//66
 			krafa.setUpphaed(new BigDecimal(bfm.getAmount(number)));
 			krafa.setTilvisun(String.valueOf(batchNumber));
 			krafa.setSedilnumer("");
@@ -139,8 +132,8 @@ public class ISBDataInsert /*extends Window*/ implements InvoiceDataInsert{
 		KrofurWSSoapStub ws = null;
 		try {
 			ws = new KrofurWSSoapStub(new URL(ACTION_URL),null);
-			ws.setUsername(bfm.getUsername(groupId));
-			ws.setPassword(bfm.getPassword(groupId));
+			ws.setUsername(bfm.getUsername());
+			ws.setPassword(bfm.getPassword());
 			//sending the request to the bank
 			BigDecimal bunkanumer = ws.stofnaKrofubunka(arrayOfKrafa);
 //			System.out.println("bunkanumer: " + bunkanumer);
@@ -163,8 +156,23 @@ public class ISBDataInsert /*extends Window*/ implements InvoiceDataInsert{
 	 *  (non-Javadoc)
 	 * @see com.idega.block.finance.business.InvoiceDataInsert#getClaimStatusFromBank(int, int)
 	 */
-	public void getClaimStatusFromBank(int batchNumber, int groupId, java.util.Date from, java.util.Date to) {
-		BankFileManager bfm = new BankInvoiceFileManager();
+	public void getClaimStatusFromBank(int batchNumber, BankInfo info,
+			java.util.Date from, java.util.Date to) {
+		BankFileManager bfm = new BankInvoiceFileManager(info);
+
+		getClaimStatusFromBank(batchNumber, bfm, from, to);
+	}
+
+	public void getClaimStatusFromBank(int batchNumber, int groupId,
+			java.util.Date from, java.util.Date to) {
+		BankFileManager bfm = new BankInvoiceFileManager(groupId);
+
+		getClaimStatusFromBank(batchNumber, bfm, from, to);
+	}
+
+	private void getClaimStatusFromBank(int batchNumber, BankFileManager bfm,
+			java.util.Date from, java.util.Date to) {
+		//BankFileManager bfm = new BankInvoiceFileManager();
 		ArrayOfUppreiknudKrafa arrayOfKrofur = new ArrayOfUppreiknudKrafa();
 		
 
@@ -201,7 +209,20 @@ public class ISBDataInsert /*extends Window*/ implements InvoiceDataInsert{
 		}
 		
 	}
-	public void deleteClaim(int groupId, int claimNumber, java.util.Date dueDate, String payersSSN) {
+	public void deleteClaim(BankInfo info, int claimNumber,
+			java.util.Date dueDate, String payersSSN) {
+		BankFileManager bfm = new BankInvoiceFileManager(info);
+		deleteClaim(bfm, claimNumber, dueDate, payersSSN);
+	}
+
+	public void deleteClaim(int groupId, int claimNumber,
+			java.util.Date dueDate, String payersSSN) {
+		BankFileManager bfm = new BankInvoiceFileManager(groupId);
+		deleteClaim(bfm, claimNumber, dueDate, payersSSN);
+	}
+
+	private void deleteClaim(BankFileManager bfm, int claimNumber,
+			java.util.Date dueDate, String payersSSN) {
 		
 	}
 

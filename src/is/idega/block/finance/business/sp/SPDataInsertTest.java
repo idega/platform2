@@ -1,5 +1,5 @@
 /*
- * $Id: SPDataInsertTest.java,v 1.1.2.2 2005/11/30 22:48:37 palli Exp $ Created on Nov 2,
+ * $Id: SPDataInsertTest.java,v 1.1.2.3 2005/12/01 00:36:41 palli Exp $ Created on Nov 2,
  * 2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -333,7 +333,7 @@ public class SPDataInsertTest extends Block {
 	}
 
 	public void getClaimStatusFromBank(int batchNumber, int groupId, java.util.Date from, java.util.Date to) {
-		BankFileManager bfm = new BankInvoiceFileManager();
+		BankFileManager bfm = new BankInvoiceFileManager(groupId);
 		String response = sendGetClaimStatusRequest(bfm, groupId, new IWTimestamp(from).getDateString("yyyyMMdd"),
 				new IWTimestamp(to).getDateString("yyyyMMdd"));
 		String number = response.substring(6, 12);
@@ -392,11 +392,11 @@ public class SPDataInsertTest extends Block {
 
 		String response = new String();
 		try {
-			post.addParameter("notendanafn", bfm.getUsername(groupId));
-			post.addParameter("password", bfm.getPassword(groupId));
-			post.addParameter("KtFelags", bfm.getClaimantSSN(groupId));
+			post.addParameter("notendanafn", bfm.getUsername());
+			post.addParameter("password", bfm.getPassword());
+			post.addParameter("KtFelags", bfm.getClaimantSSN());
 			post.addParameter("Reikningsnr", "");
-			String claimantAccountId = bfm.getClaimantsAccountId(groupId);
+			String claimantAccountId = bfm.getClaimantsAccountId();
 			if (claimantAccountId != null && !claimantAccountId.equals("")) {
 				if (claimantAccountId.length() < 3)
 					claimantAccountId = zeroString.substring(0, 3 - claimantAccountId.length());

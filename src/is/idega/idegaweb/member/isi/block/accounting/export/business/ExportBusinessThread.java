@@ -25,6 +25,8 @@ import java.util.Iterator;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
+import com.idega.block.finance.data.AccountEntry;
+import com.idega.block.finance.data.AccountEntryHome;
 import com.idega.block.finance.data.BankInfo;
 import com.idega.block.finance.data.BankInfoHome;
 import com.idega.data.IDOLookup;
@@ -261,6 +263,8 @@ public class ExportBusinessThread extends Thread {
 			Iterator it = entriesInBatch.iterator();
 			while (it.hasNext()) {
 				FinanceEntry entry = (FinanceEntry) it.next();
+				AccountEntry accEntry = ((AccountEntryHome) IDOLookup.getHome(AccountEntry.class)).create();
+				accEntry.setInvoiceNumber((Integer) entry.getPrimaryKey());
 				
 			}
 		} catch (IDOLookupException e) {

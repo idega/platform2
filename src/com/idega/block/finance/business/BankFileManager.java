@@ -19,21 +19,21 @@ public interface BankFileManager {
 	int[] getInvoiceNumbers(String claimantsSSN, Timestamp dueDate);
 	
 	//<notandanafn>
-	String getUsername(int groupId);
+	String getUsername();
 	//<lykilord>
-	String getPassword(int groupId);
+	String getPassword();
 	//<session_id>
 	String getSessionId();
 	
 	//<kt_krofuhafa>
-	String getClaimantSSN(int groupId);
-	String getClaimantName(int groupId);
+	String getClaimantSSN();
+	String getClaimantName();
 	//<faerslugerd>
 	String getBookkeepingType(int invoiceNumber);
 	//<banki>
-	String getBankBranchNumber(int groupId);
+	String getBankBranchNumber();
 	//<hofudbok>
-	int getAccountBook(int groupId);
+	int getAccountBook();
 	//<numer>
 	String getClaimNumber(int invoiceNumber);
 	//<gjalddagi>
@@ -47,7 +47,7 @@ public interface BankFileManager {
 	//<nidurfellingardagur>
 	String getDisallowanceDate(int invoiceNumber);
 	//<audkenni>
-	String getClaimantsAccountId(int groupId);
+	String getClaimantsAccountId();
 	//<hreyfingardagur_fra>
 	String getTransactionDayFrom(int invoiceNumber);
 	//<hreyfingardagur_til>

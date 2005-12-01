@@ -10,6 +10,7 @@ import java.sql.Timestamp;
 
 
 import com.idega.block.basket.data.BasketItem;
+import com.idega.block.finance.data.AccountEntry;
 import com.idega.data.IDOEntity;
 import com.idega.data.IDOPrimaryKey;
 import com.idega.user.data.Group;
@@ -429,6 +430,26 @@ public interface FinanceEntry extends IDOEntity, BasketItem {
 	 * @see is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean#setPayedBySSN
 	 */
 	public void setPayedBySSN(String ssn);
+
+	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean#getAccountEntryID
+	 */
+	public int getAccountEntryID();
+
+	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean#getAccountEntry
+	 */
+	public AccountEntry getAccountEntry();
+
+	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean#setAccountEntryID
+	 */
+	public void setAccountEntryID(int accountEntryID);
+
+	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean#setAccountEntry
+	 */
+	public void setAccountEntry(AccountEntry entry);
 
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean#getItemDescription

@@ -4,6 +4,8 @@
  */
 package com.idega.block.finance.business;
 
+import com.idega.block.finance.data.BankInfo;
+
 
 /**
  * InvoiceDataInsert is to used to insert data into files that are sent to the banks to create
@@ -20,6 +22,8 @@ public interface InvoiceDataInsert {
 	 * @param groupId - the id for the group that is the claimant for the invoices
 	 */
 	public void createClaimsInBank(int batchNumber, int groupId);
+
+	public void createClaimsInBank(int batchNumber, BankInfo info);
 	
 	/**
 	 * Formats the file/data to be sent to the bank when receiving claim status
@@ -28,7 +32,9 @@ public interface InvoiceDataInsert {
 	 * @param groupId
 	 */
 	public void getClaimStatusFromBank(int batchNumber, int groupId, java.util.Date from, java.util.Date to);
-	
+
+	public void getClaimStatusFromBank(int batchNumber, BankInfo info, java.util.Date from, java.util.Date to);
+
 	/**
 	 * Formats the file/data to be sent to the bank when deleting a single claim
 	 * @param groupId
@@ -37,4 +43,7 @@ public interface InvoiceDataInsert {
 	 * @param payersSSN
 	 */
 	public void deleteClaim(int groupId, int claimNumber, java.util.Date dueDate, String payersSSN);
+	
+	public void deleteClaim(BankInfo info, int claimNumber, java.util.Date dueDate, String payersSSN);
+
 }
