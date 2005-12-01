@@ -19,10 +19,10 @@ import com.idega.util.IWTimestamp;
  * <p>
  * TODO Marie Thunberg Describe Type SchoolClassMemberHome
  * </p>
- *  Last modified: $Date: 2005/11/28 19:32:06 $ by $Author: dainis $
+ *  Last modified: $Date: 2005/12/01 22:27:19 $ by $Author: dainis $
  * 
  * @author <a href="mailto:Marie Thunberg@idega.com">Marie Thunberg</a>
- * @version $Revision: 1.75.2.2 $
+ * @version $Revision: 1.75.2.3 $
  */
 public interface SchoolClassMemberHome extends IDOHome {
 
@@ -440,8 +440,4 @@ public interface SchoolClassMemberHome extends IDOHome {
 	public Collection findPlacementsBySchoolTypeAndRegisterDateAndGradeInPeriod(SchoolType type,
 			IWTimestamp periodFrom, IWTimestamp periodTo) throws FinderException;
 
-	/**
-	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbFindAll
-	 */
-	public Collection findAll() throws FinderException;
 }

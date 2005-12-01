@@ -19,10 +19,10 @@ import com.idega.util.IWTimestamp;
  * <p>
  * TODO Marie Thunberg Describe Type SchoolClassMemberHomeImpl
  * </p>
- *  Last modified: $Date: 2005/11/28 19:32:06 $ by $Author: dainis $
+ *  Last modified: $Date: 2005/12/01 22:27:19 $ by $Author: dainis $
  * 
  * @author <a href="mailto:Marie Thunberg@idega.com">Marie Thunberg</a>
- * @version $Revision: 1.75.2.2 $
+ * @version $Revision: 1.75.2.3 $
  */
 public class SchoolClassMemberHomeImpl extends IDOFactory implements SchoolClassMemberHome {
 
@@ -633,10 +633,4 @@ public class SchoolClassMemberHomeImpl extends IDOFactory implements SchoolClass
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findAll() throws FinderException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindAll();
-		this.idoCheckInPooledEntity(entity);
-		return this.getEntityCollectionForPrimaryKeys(ids);
-	}
 }
