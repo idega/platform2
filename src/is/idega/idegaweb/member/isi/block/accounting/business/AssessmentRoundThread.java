@@ -47,22 +47,20 @@ public class AssessmentRoundThread extends Thread {
 
 	private String skipList = null;
 
-//	private double amount = 0.0d;
+	// private double amount = 0.0d;
 
-	public AssessmentRoundThread(AssessmentRound assessmentRound, IWApplicationContext iwac, String tariff,
-			String skip) {
+	public AssessmentRoundThread(AssessmentRound assessmentRound,
+			IWApplicationContext iwac, String tariff, String skip) {
 		round = assessmentRound;
 		this.iwac = iwac;
 		if (tariff != null) {
 			this.tariff = tariff;
 		}
 
-/*		this.amount = 0.0d;
-		try {
-			this.amount = Double.parseDouble(amount);
-		}
-		catch (Exception e) {
-		}*/
+		/*
+		 * this.amount = 0.0d; try { this.amount = Double.parseDouble(amount); }
+		 * catch (Exception e) { }
+		 */
 
 		this.skipList = skip;
 	}
@@ -77,21 +75,18 @@ public class AssessmentRoundThread extends Thread {
 		}
 
 		try {
-			ClubTariffType tariffType = ((ClubTariffTypeHome) IDOLookup.getHome(ClubTariffType.class)).findByPrimaryKey(new Integer(
-					tariff));
+			ClubTariffType tariffType = ((ClubTariffTypeHome) IDOLookup
+					.getHome(ClubTariffType.class))
+					.findByPrimaryKey(new Integer(tariff));
 			round.addTariffType(tariffType);
 			assessGroup(top, round.getIncludeChildren(), tariffType, skip);
-		}
-		catch (IDOLookupException e) {
+		} catch (IDOLookupException e) {
 			e.printStackTrace();
-		}
-		catch (NumberFormatException e) {
+		} catch (NumberFormatException e) {
 			e.printStackTrace();
-		}
-		catch (FinderException e) {
+		} catch (FinderException e) {
 			e.printStackTrace();
-		}
-		catch (IDOAddRelationshipException e) {
+		} catch (IDOAddRelationshipException e) {
 			e.printStackTrace();
 		}
 
@@ -100,47 +95,49 @@ public class AssessmentRoundThread extends Thread {
 		round.store();
 	}
 
-	private void assessGroup(Group group, boolean includeChildren, ClubTariffType tariffType, Collection skip) {
+	private void assessGroup(Group group, boolean includeChildren,
+			ClubTariffType tariffType, Collection skip) {
 		if (!skip.contains(group.getGroupType())) {
 			try {
 				ClubTariff tariff = createTariffForGroup(group, tariffType);
-				Collection users = getUserBusiness().getUsersInGroup(group);
-				if (users != null && !users.isEmpty()) {
-					Iterator userIt = users.iterator();
-					while (userIt.hasNext()) {
-						User user = (User) userIt.next();
+				if (round.getAmount() != 0.0f) {
+					Collection users = getUserBusiness().getUsersInGroup(group);
+					if (users != null && !users.isEmpty()) {
+						Iterator userIt = users.iterator();
+						while (userIt.hasNext()) {
+							User user = (User) userIt.next();
 
-						FinanceEntry entry = getFinanceEntryHome().create();
-						entry.setUser(user);
-						entry.setAssessment(round);
-						entry.setClub(round.getClub());
-						Group division = round.getDivision();
-						if (division == null) {
-							division = getAccountingBusiness().findDivisionForGroup(group);
+							FinanceEntry entry = getFinanceEntryHome().create();
+							entry.setUser(user);
+							entry.setAssessment(round);
+							entry.setClub(round.getClub());
+							Group division = round.getDivision();
+							if (division == null) {
+								division = getAccountingBusiness()
+										.findDivisionForGroup(group);
+							}
+							entry.setDivision(division);
+							entry.setGroup(group);
+							entry.setAmount(round.getAmount());
+							entry.setDateOfEntry(IWTimestamp
+									.getTimestampRightNow());
+							entry.setInfo(tariff.getText());
+							// entry.setInfo("Test keyrsla");
+							entry.setTariff(tariff);
+							entry.setTariffType(tariffType);
+							entry.setStatusCreated();
+							entry.setTypeAssessment();
+							entry.setEntryOpen(true);
+							entry.setInsertedByUser(round.getExecutedBy());
+							entry.store();
 						}
-						entry.setDivision(division);
-						entry.setGroup(group);
-						entry.setAmount(round.getAmount());
-						entry.setDateOfEntry(IWTimestamp.getTimestampRightNow());
-						entry.setInfo(tariff.getText());
-						//entry.setInfo("Test keyrsla");
-						entry.setTariff(tariff);
-						entry.setTariffType(tariffType);
-						entry.setStatusCreated();
-						entry.setTypeAssessment();
-						entry.setEntryOpen(true);
-						entry.setInsertedByUser(round.getExecutedBy());
-						entry.store();
 					}
 				}
-			}
-			catch (IDOLookupException e) {
+			} catch (IDOLookupException e) {
 				e.printStackTrace();
-			}
-			catch (RemoteException e) {
+			} catch (RemoteException e) {
 				e.printStackTrace();
-			}
-			catch (CreateException e) {
+			} catch (CreateException e) {
 				e.printStackTrace();
 			}
 		}
@@ -161,9 +158,11 @@ public class AssessmentRoundThread extends Thread {
 			StringBuffer name = new StringBuffer(type.getName());
 			name.append(" - ");
 			name.append(round.getName());
-			return getAccountingBusiness().insertTariff(round.getClub(), round.getDivision(), group, type, name.toString(), round.getAmount(), round.getPeriodFrom(), round.getPeriodTo());
-		}
-		catch (RemoteException e) {
+			return getAccountingBusiness().insertTariff(round.getClub(),
+					round.getDivision(), group, type, name.toString(),
+					round.getAmount(), round.getPeriodFrom(),
+					round.getPeriodTo());
+		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
 		return null;
@@ -171,18 +170,18 @@ public class AssessmentRoundThread extends Thread {
 
 	private UserBusiness getUserBusiness() {
 		try {
-			return (UserBusiness) IBOLookup.getServiceInstance(iwac, UserBusiness.class);
-		}
-		catch (RemoteException e) {
+			return (UserBusiness) IBOLookup.getServiceInstance(iwac,
+					UserBusiness.class);
+		} catch (RemoteException e) {
 			throw new IBORuntimeException(e.getMessage());
 		}
 	}
 
 	private AccountingBusiness getAccountingBusiness() {
 		try {
-			return (AccountingBusiness) IBOLookup.getServiceInstance(iwac, AccountingBusiness.class);
-		}
-		catch (RemoteException e) {
+			return (AccountingBusiness) IBOLookup.getServiceInstance(iwac,
+					AccountingBusiness.class);
+		} catch (RemoteException e) {
 			throw new IBORuntimeException(e.getMessage());
 		}
 	}
@@ -190,8 +189,7 @@ public class AssessmentRoundThread extends Thread {
 	private FinanceEntryHome getFinanceEntryHome() {
 		try {
 			return (FinanceEntryHome) IDOLookup.getHome(FinanceEntry.class);
-		}
-		catch (IDOLookupException e) {
+		} catch (IDOLookupException e) {
 			e.printStackTrace();
 		}
 
