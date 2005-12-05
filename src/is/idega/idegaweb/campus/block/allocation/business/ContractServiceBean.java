@@ -1,5 +1,5 @@
 /*
- * $Id: ContractServiceBean.java,v 1.24.4.1 2005/11/21 16:47:12 palli Exp $
+ * $Id: ContractServiceBean.java,v 1.24.4.2 2005/12/05 17:12:08 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -63,131 +63,111 @@ import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.database.ConnectionBroker;
 
-
 /**
- * Title: Service Bean for the campus contract system
- * Description:
- * Copyright:    Copyright (c) 2000-2001 idega.is All Rights Reserved
- * Company:      idega
+ * Title: Service Bean for the campus contract system Description: Copyright:
+ * Copyright (c) 2000-2001 idega.is All Rights Reserved Company: idega
+ * 
  * @author <a href="mailto:aron@idega.is">Aron Birkir</a>
  */
 
-public class ContractServiceBean extends IBOServiceBean implements ContractService {
-	public final static int NAME = 0,
-		SSN = 1,
-		APARTMENT = 2,
-		FLOOR = 3,
-		BUILDING = 4,
-		COMPLEX = 5,
-		CATEGORY = 6,
-		TYPE = 7,
-		CONTRACT = 8,
-		APPLICANT = 9;
-	public String signContract(
-		Integer contractID,
-		Integer groupID,
-		Integer cashierID,Integer financeCategoryID,
-		String sEmail,
-		boolean sendMail,
-		boolean newAccount,
-		boolean newPhoneAccount,
-		boolean newLogin,
-		boolean generatePasswd,
-		IWResourceBundle iwrb,
-		String login,
-		String passwd) {
+public class ContractServiceBean extends IBOServiceBean implements
+		ContractService {
+	public final static int NAME = 0, SSN = 1, APARTMENT = 2, FLOOR = 3,
+			BUILDING = 4, COMPLEX = 5, CATEGORY = 6, TYPE = 7, CONTRACT = 8,
+			APPLICANT = 9;
+
+	public String signContract(Integer contractID, Integer groupID,
+			Integer cashierID, Integer financeCategoryID, String sEmail,
+			boolean sendMail, boolean newAccount, boolean newPhoneAccount,
+			boolean newLogin, boolean generatePasswd, IWResourceBundle iwrb,
+			String login, String passwd) {
 		Contract eContract = null;
 		String pass = null;
-		javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
+		javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager
+				.getInstance();
 		try {
 			t.begin();
 			eContract = getContractHome().findByPrimaryKey(contractID);
 			if (eContract != null) {
 				Integer userID = eContract.getUserId();
-				System.err.println("Signing user " + userID.toString() + " contract id : " + contractID);
+				System.err.println("Signing user " + userID.toString()
+						+ " contract id : " + contractID);
 				if (sEmail != null && sEmail.trim().length() > 0) {
 					getUserService().addNewUserEmail(userID.intValue(), sEmail);
 				}
 				if (newAccount) {
-					String prefix = iwrb.getLocalizedString("finance", "Finance");
-					AccountManager.makeNewFinanceAccount(
-						userID.intValue(),
-						prefix + " - " + String.valueOf(userID),
-						"",
-						cashierID.intValue(),
-						financeCategoryID.intValue());
+					String prefix = iwrb.getLocalizedString("finance",
+							"Finance");
+					AccountManager.makeNewFinanceAccount(userID.intValue(),
+							prefix + " - " + String.valueOf(userID), "",
+							cashierID.intValue(), financeCategoryID.intValue());
 				}
 				if (newPhoneAccount) {
 					String prefix = iwrb.getLocalizedString("phone", "Phone");
-					AccountManager.makeNewPhoneAccount(
-						userID.intValue(),
-						prefix + " - " + String.valueOf(userID),
-						"",
-						cashierID.intValue(),
-						financeCategoryID.intValue());
+					AccountManager.makeNewPhoneAccount(userID.intValue(),
+							prefix + " - " + String.valueOf(userID), "",
+							cashierID.intValue(), financeCategoryID.intValue());
 				}
 				if (newLogin && groupID.intValue() > 0) {
 					User user = getUserService().getUser(userID);
 					createUserLogin(user, groupID, login, pass, generatePasswd);
-					//addUserToTenantGroup(groupID,user);
+					// addUserToTenantGroup(groupID,user);
 					getUserService().setAsTenant(user);
 				}
 				deleteFromWaitingList(eContract);
 				changeApplicationStatus(eContract);
 				eContract.setStatusSigned();
 				eContract.store();
-				getMailingListService().processMailEvent(contractID.intValue(), LetterParser.SIGNATURE);
+				getMailingListService().processMailEvent(contractID.intValue(),
+						LetterParser.SIGNATURE);
 			}
 			t.commit();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			try {
 				t.rollback();
-			}
-			catch (javax.transaction.SystemException ex) {
+			} catch (javax.transaction.SystemException ex) {
 				ex.printStackTrace();
 			}
 		}
 		return pass;
 	}
-	
-	public void createUserLogin(User user, Integer groupID, String login, String pass, boolean generatePasswd)
-		throws Exception {
+
+	public void createUserLogin(User user, Integer groupID, String login,
+			String pass, boolean generatePasswd) throws Exception {
 		LoginTable loginEntry = getUserService().generateUserLogin(user);
 		loginEntry.setLastChanged(null);
 		loginEntry.store();
 	}
-	
-	
-	
+
 	/**
 	 * @param groupID
 	 * @param user
 	 * @throws FinderException
 	 * @throws RemoteException
 	 */
-	public void addUserToTenantGroup(Integer groupID, User user) throws FinderException, RemoteException {
-		/*Group group = getUserService().getGroupHome().findByPrimaryKey(groupID);
-		
-		int userGroupID = user.getGroupID();
-		String oldGroupId[] = new String[0];
-		try {
-			oldGroupId = SimpleQuerier.executeStringQuery("select user_representative from ic_user where ic_user_id = "+user.getPrimaryKey().toString());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		if(oldGroupId[0]!=null)
-			userGroupID = Integer.parseInt(oldGroupId[0]);
-		
-		group.addGroup(userGroupID);
-		*/
-		
+	public void addUserToTenantGroup(Integer groupID, User user)
+			throws FinderException, RemoteException {
+		/*
+		 * Group group =
+		 * getUserService().getGroupHome().findByPrimaryKey(groupID);
+		 * 
+		 * int userGroupID = user.getGroupID(); String oldGroupId[] = new
+		 * String[0]; try { oldGroupId =
+		 * SimpleQuerier.executeStringQuery("select user_representative from
+		 * ic_user where ic_user_id = "+user.getPrimaryKey().toString()); }
+		 * catch (Exception e) { e.printStackTrace(); } if(oldGroupId[0]!=null)
+		 * userGroupID = Integer.parseInt(oldGroupId[0]);
+		 * 
+		 * group.addGroup(userGroupID);
+		 */
+
 	}
 
 	public void changeApplicationStatus(Contract eContract) throws Exception {
-		
-		Collection L = getApplicationService().getApplicationHome().findByApplicantID(eContract.getApplicantId());
+
+		Collection L = getApplicationService().getApplicationHome()
+				.findByApplicantID(eContract.getApplicantId());
 		if (L != null) {
 			Iterator I = L.iterator();
 			while (I.hasNext()) {
@@ -197,95 +177,98 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 			}
 		}
 	}
-	
+
 	public void deleteFromWaitingList(Contract eContract) {
-			deleteFromWaitingList(eContract.getApplicant());
+		deleteFromWaitingList(eContract.getApplicant());
 	}
-	
+
 	public void deleteFromWaitingList(Applicant applicant) {
-		Collection L =
-			WaitingListFinder.listOfWaitingList(
-				WaitingListFinder.APPLICANT,
-				((Integer)applicant.getPrimaryKey()).intValue(),
-				0,
-				0);
+		Collection L = WaitingListFinder.listOfWaitingList(
+				WaitingListFinder.APPLICANT, ((Integer) applicant
+						.getPrimaryKey()).intValue(), 0, 0);
 		if (L != null) {
 			Iterator I = L.iterator();
 
 			while (I.hasNext()) {
 				try {
 					((WaitingList) I.next()).remove();
-				}
-				catch (EJBException e) {
+				} catch (EJBException e) {
 					e.printStackTrace();
-				}
-				catch (RemoveException e) {
+				} catch (RemoveException e) {
 					e.printStackTrace();
 				}
 			}
 		}
 	}
-	
-	public void endContract(Integer contractID,IWTimestamp movingDate,String info, boolean datesync){
+
+	public void endContract(Integer contractID, IWTimestamp movingDate,
+			String info, boolean datesync) {
 		try {
-			endContract(getContractHome().findByPrimaryKey(contractID),movingDate,info,datesync);
+			endContract(getContractHome().findByPrimaryKey(contractID),
+					movingDate, info, datesync);
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		} catch (FinderException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	public void endContract(Contract C, IWTimestamp movingDate, String info, boolean datesync) {
+
+	public void endContract(Contract C, IWTimestamp movingDate, String info,
+			boolean datesync) {
 		try {
-			
-			if(movingDate!=null)
+
+			if (movingDate != null)
 				C.setMovingDate(movingDate.getDate());
 			if (datesync)
 				C.setValidTo(movingDate.getDate());
 			C.setResignInfo(info);
 			C.setStatusEnded();
 			C.store();
-			getMailingListService().processMailEvent(((Integer)C.getPrimaryKey()).intValue(), LetterParser.TERMINATION);
-		}
-		catch (IDOStoreException e) {
+			getMailingListService().processMailEvent(
+					((Integer) C.getPrimaryKey()).intValue(),
+					LetterParser.TERMINATION);
+		} catch (IDOStoreException e) {
 			e.printStackTrace();
-		}
-		catch (RemoteException e) {
+		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	public void endExpiredContracts(){
+
+	public void endExpiredContracts() {
 		Collection contracts;
 		try {
-			contracts = getContractHome().findByStatusAndValidBeforeDate(ContractBMPBean.STATUS_SIGNED,IWTimestamp.RightNow().getDate());
-			if(contracts!=null )
-			    System.out.println(contracts.size()+" contracts found to be ended");
+			contracts = getContractHome().findByStatusAndValidBeforeDate(
+					ContractBMPBean.STATUS_SIGNED,
+					IWTimestamp.RightNow().getDate());
+			if (contracts != null)
+				System.out.println(contracts.size()
+						+ " contracts found to be ended");
 			for (Iterator iter = contracts.iterator(); iter.hasNext();) {
 				Contract contract = (Contract) iter.next();
-				endContract(contract,null,null,false);
-				
+				endContract(contract, null, null, false);
+
 			}
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		} catch (FinderException e) {
 			e.printStackTrace();
 		}
-	
+
 	}
-	
-	public void garbageEndedContracts(java.sql.Date lastChangeDate){
-	    Collection contracts;
+
+	public void garbageEndedContracts(java.sql.Date lastChangeDate) {
+		Collection contracts;
 		try {
-			contracts = getContractHome().findByStatusAndChangeDate(ContractBMPBean.STATUS_ENDED,lastChangeDate);
-			if(contracts!=null )
-			    System.out.println(contracts.size()+" ended contracts found to be garbaged");
+			contracts = getContractHome().findByStatusAndChangeDate(
+					ContractBMPBean.STATUS_ENDED, lastChangeDate);
+			if (contracts != null)
+				System.out.println(contracts.size()
+						+ " ended contracts found to be garbaged");
 			for (Iterator iter = contracts.iterator(); iter.hasNext();) {
 				Contract contract = (Contract) iter.next();
 				contract.setStatusGarbage();
 				contract.store();
-				
+
 			}
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -293,18 +276,20 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 			e.printStackTrace();
 		}
 	}
-	
-	public void garbageResignedContracts(java.sql.Date lastChangeDate){
-	    Collection contracts;
+
+	public void garbageResignedContracts(java.sql.Date lastChangeDate) {
+		Collection contracts;
 		try {
-			contracts = getContractHome().findByStatusAndChangeDate(ContractBMPBean.STATUS_RESIGNED,lastChangeDate);
-			if(contracts!=null )
-			    System.out.println(contracts.size()+" resigned contracts found to be garbaged");
+			contracts = getContractHome().findByStatusAndChangeDate(
+					ContractBMPBean.STATUS_RESIGNED, lastChangeDate);
+			if (contracts != null)
+				System.out.println(contracts.size()
+						+ " resigned contracts found to be garbaged");
 			for (Iterator iter = contracts.iterator(); iter.hasNext();) {
 				Contract contract = (Contract) iter.next();
 				contract.setStatusGarbage();
 				contract.store();
-				
+
 			}
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -312,18 +297,20 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 			e.printStackTrace();
 		}
 	}
-	
-	public void finalizeGarbageContracts(java.sql.Date lastChangeDate){
+
+	public void finalizeGarbageContracts(java.sql.Date lastChangeDate) {
 		Collection contracts;
 		try {
-			contracts = getContractHome().findByStatusAndChangeDate(ContractBMPBean.STATUS_GARBAGE,lastChangeDate);
-			if(contracts!=null )
-			    System.out.println(contracts.size()+" contracts found to be finalized");
+			contracts = getContractHome().findByStatusAndChangeDate(
+					ContractBMPBean.STATUS_GARBAGE, lastChangeDate);
+			if (contracts != null)
+				System.out.println(contracts.size()
+						+ " contracts found to be finalized");
 			for (Iterator iter = contracts.iterator(); iter.hasNext();) {
 				Contract contract = (Contract) iter.next();
 				contract.setStatusFinalized();
 				contract.store();
-				
+
 			}
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -331,26 +318,26 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 			e.printStackTrace();
 		}
 	}
-	public void returnKey( Integer contractID,User currentUser) {
+
+	public void returnKey(Integer contractID, User currentUser) {
 		try {
 			Contract C = getContractHome().findByPrimaryKey(contractID);
 			C.setEnded();
 			C.store();
-			getUserService().removeAsCurrentTenant(C.getUser(),currentUser);
-			getMailingListService().processMailEvent(contractID.intValue(), LetterParser.RETURN);
-		}
-		catch (IDOStoreException e) {
+			getUserService().removeAsCurrentTenant(C.getUser(), currentUser);
+			getMailingListService().processMailEvent(contractID.intValue(),
+					LetterParser.RETURN);
+		} catch (IDOStoreException e) {
 			e.printStackTrace();
-		}
-		catch (RemoteException e) {
+		} catch (RemoteException e) {
 			e.printStackTrace();
-		}
-		catch (FinderException e) {
+		} catch (FinderException e) {
 			e.printStackTrace();
 		} catch (CampusGroupException e) {
 			e.printStackTrace();
 		}
 	}
+
 	public void deliverKey(Integer contractID, Timestamp when) {
 		try {
 			Contract C = getContractHome().findByPrimaryKey(contractID);
@@ -360,24 +347,25 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 				C.setStarted(when);
 			C.store();
 			getUserService().setAsCurrentTenant(C.getUser());
-			getMailingListService().processMailEvent(contractID.intValue(), LetterParser.DELIVER);
-		}
-		catch (IDOStoreException e) {
+			getMailingListService().processMailEvent(contractID.intValue(),
+					LetterParser.DELIVER);
+		} catch (IDOStoreException e) {
 			e.printStackTrace();
-		}
-		catch (RemoteException e) {
+		} catch (RemoteException e) {
 			e.printStackTrace();
-		}
-		catch (FinderException e) {
+		} catch (FinderException e) {
 			e.printStackTrace();
 		} catch (CampusGroupException e) {
 			e.printStackTrace();
 		}
 	}
+
 	public void deliverKey(Integer contractID) {
 		deliverKey(contractID, null);
 	}
-	public void resignContract(Integer contractID, IWTimestamp movingDate, String info, boolean datesync) {
+
+	public void resignContract(Integer contractID, IWTimestamp movingDate,
+			String info, boolean datesync) {
 		try {
 			Contract C = getContractHome().findByPrimaryKey(contractID);
 			C.setMovingDate(movingDate.getDate());
@@ -386,20 +374,20 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 			C.setResignInfo(info);
 			C.setStatusResigned();
 			C.store();
-			getMailingListService().processMailEvent(contractID.intValue(), LetterParser.RESIGN);
-		}
-		catch (IDOStoreException e) {
+			getMailingListService().processMailEvent(contractID.intValue(),
+					LetterParser.RESIGN);
+		} catch (IDOStoreException e) {
 			e.printStackTrace();
-		}
-		catch (RemoteException e) {
+		} catch (RemoteException e) {
 			e.printStackTrace();
-		}
-		catch (FinderException e) {
+		} catch (FinderException e) {
 			e.printStackTrace();
 		}
 	}
-	public Contract createNewContract(Integer userID, Integer applicantID, Integer apartmentID, Date from, Date to)
-		throws RemoteException, CreateException {
+
+	public Contract createNewContract(Integer userID, Integer applicantID,
+			Integer apartmentID, Date from, Date to) throws RemoteException,
+			CreateException {
 		Contract contract = getContractHome().create();
 		contract.setApartmentId(apartmentID);
 		contract.setApplicantId(applicantID);
@@ -409,257 +397,291 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 		contract.setValidTo((java.sql.Date) to);
 		contract.store();
 		getMailingListService().processMailEvent(
-			((Integer) contract.getPrimaryKey()).intValue(),
-			LetterParser.ALLOCATION);
+				((Integer) contract.getPrimaryKey()).intValue(),
+				LetterParser.ALLOCATION);
 		return contract;
 	}
-	
-	public User createUserFamily(Applicant applicant, String[] emails)throws RemoteException,CreateException,CampusGroupException{
-		User user = createNewUser(applicant,emails);
+
+	public User createUserFamily(Applicant applicant, String[] emails)
+			throws RemoteException, CreateException, CampusGroupException {
+		System.out.println("Creating user");
+		User user = createNewUser(applicant, emails);
+		System.out.println("Setting user as tenant");
 		getUserService().setAsTenant(user);
-		ApplicantFamily family = getApplicationService().getApplicantFamily(applicant);
+		System.out.println("Getting family");
+		ApplicantFamily family = getApplicationService().getApplicantFamily(
+				applicant);
+		System.out.println("Getting spouse");
 		Applicant applicantSpouse = family.getSpouse();
-		if(applicantSpouse!=null){
-			User uspouse = createNewUser(applicantSpouse,null);
-			getUserService().setAsTenantSpouse(user,uspouse);
+		System.out.println("Checking spuse");
+		if (applicantSpouse != null) {
+			System.out.println("Creating spouse");
+			User uspouse = createNewUser(applicantSpouse, null);
+			System.out.println("Set spouse as tenant spouse");
+			getUserService().setAsTenantSpouse(user, uspouse);
 		}
+		System.out.println("Getting children");
 		Collection children = family.getChildren();
-		if(children!=null && !children.isEmpty()){
+		System.out.println("Checking chilren");
+		if (children != null && !children.isEmpty()) {
+			System.out.println("There are children");
 			for (Iterator iter = children.iterator(); iter.hasNext();) {
+				System.out.println("Getting child");
 				Applicant applicantChild = (Applicant) iter.next();
-				User child = createNewUser(applicantChild,null);
-				getUserService().setAsTenantChild(user,child);
+				System.out.println("Create child");
+				User child = createNewUser(applicantChild, null);
+				System.out.println("Set child as tenant");
+				getUserService().setAsTenantChild(user, child);
 			}
 		}
 		return user;
 	}
-	
-	public User createNewUser(Applicant A, String[] emails) throws RemoteException, CreateException {
-		//User user = getUserService().createUser(A.getFirstName(), A.getMiddleName(), A.getLastName(), A.getSSN());
+
+	public User createNewUser(Applicant A, String[] emails)
+			throws RemoteException, CreateException {
+		// User user = getUserService().createUser(A.getFirstName(),
+		// A.getMiddleName(), A.getLastName(), A.getSSN());
 		User user = null;
-		if(getAllowedTemporaryPersonalID().contains(A.getSSN()))
-			 user = getUserService().createUser(A.getFirstName(), A.getMiddleName(), A.getLastName(), A.getSSN());
+		if (getAllowedTemporaryPersonalID().contains(A.getSSN()))
+			user = getUserService().createUser(A.getFirstName(),
+					A.getMiddleName(), A.getLastName(), A.getSSN());
 		else
-			 user = getUserService().createUserByPersonalIDIfDoesNotExist(A.getFirstName(), A.getMiddleName(), A.getLastName(), A.getSSN(),null,null);
-		if (user!=null && emails != null && emails.length > 0) {
+			user = getUserService().createUserByPersonalIDIfDoesNotExist(
+					A.getFirstName(), A.getMiddleName(), A.getLastName(),
+					A.getSSN(), null, null);
+		if (user != null && emails != null && emails.length > 0) {
 			Integer userID = (Integer) user.getPrimaryKey();
 			getUserService().addNewUserEmail(userID.intValue(), emails[0]);
 		}
 		return user;
 	}
+
 	public boolean deleteAllocation(Integer contractID, User currentUser) {
 		try {
 			Contract eContract = getContractHome().findByPrimaryKey(contractID);
-			//getUserService().deleteUser(eContract.getUserId().intValue(), currentUser);
+			// getUserService().deleteUser(eContract.getUserId().intValue(),
+			// currentUser);
 			eContract.remove();
 			return true;
-		}
-		catch (RemoteException e) {
+		} catch (RemoteException e) {
 			e.printStackTrace();
-		}
-		catch (EJBException e) {
+		} catch (EJBException e) {
 			e.printStackTrace();
-		}
-		catch (FinderException e) {
+		} catch (FinderException e) {
 			e.printStackTrace();
-		}
-		catch (RemoveException e) {
+		} catch (RemoveException e) {
 			e.printStackTrace();
 		}
 		return false;
-     
-    }
- 
 
-   public  IWTimestamp[] getContractStampsFromPeriod(ApartmentTypePeriods ATP,int monthOverlap){
-     IWTimestamp contractDateFrom = IWTimestamp.RightNow();
-     IWTimestamp contractDateTo = IWTimestamp.RightNow();
-     if(ATP!=null){
-        // Period checking
-        //System.err.println("ATP exists");
-        boolean first = ATP.hasFirstPeriod();
-        boolean second = ATP.hasSecondPeriod();
-         IWTimestamp today = new IWTimestamp();
-
-        // Two Periods
-        if(first && second){
-
-          if(today.getMonth() > ATP.getFirstDateMonth()+monthOverlap && today.getMonth() <= ATP.getSecondDateMonth()+monthOverlap ){
-            contractDateFrom = new IWTimestamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear());
-            contractDateTo = new IWTimestamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear()+1);
-          }
-          else if(today.getMonth() <= 12){
-            contractDateFrom = new IWTimestamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear()+1);
-            contractDateTo = new IWTimestamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear()+1);
-          }
-          else{
-            contractDateFrom = new IWTimestamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear());
-            contractDateTo = new IWTimestamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear());
-          }
-
-        }
-        // One Periods
-        else if(first && !second){
-          //System.err.println("two sectors");
-          contractDateFrom = new IWTimestamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear());
-          contractDateTo = new IWTimestamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear()+1);
-        }
-        else if(!first && second){
-          //System.err.println("two sectors");
-          contractDateFrom = new IWTimestamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear());
-          contractDateTo = new IWTimestamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear()+1);
-        }
-     }
-
-      IWTimestamp[] stamps = {contractDateFrom,contractDateTo};
-      return stamps;
-  }
-
- 
-
-	public IWTimestamp[] getContractStampsForApartment(Integer apartmentID) throws FinderException,RemoteException{
-		Apartment ap = getBuildingService().getApartmentHome().findByPrimaryKey(apartmentID);
-		return getContractStampsForApartment(ap);
 	}
-	public IWTimestamp[] getContractStampsForApartment(Apartment apartment) {
-		try {
-			ApartmentTypePeriods ATP = getApartmentTypePeriod(new Integer(apartment.getApartmentTypeId()));
-			// ContractFinder.getPeriod(apartment.getApartmentTypeId());
-			return getContractStampsFromPeriod(ATP, new Integer(1));
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	public IWTimestamp[] getContractStampsFromPeriod(ApartmentTypePeriods ATP, Integer monthOverlap) {
+
+	public IWTimestamp[] getContractStampsFromPeriod(ApartmentTypePeriods ATP,
+			int monthOverlap) {
 		IWTimestamp contractDateFrom = IWTimestamp.RightNow();
 		IWTimestamp contractDateTo = IWTimestamp.RightNow();
 		if (ATP != null) {
 			// Period checking
-			//System.err.println("ATP exists");
+			// System.err.println("ATP exists");
+			boolean first = ATP.hasFirstPeriod();
+			boolean second = ATP.hasSecondPeriod();
+			IWTimestamp today = new IWTimestamp();
+
+			// Two Periods
+			if (first && second) {
+
+				if (today.getMonth() > ATP.getFirstDateMonth() + monthOverlap
+						&& today.getMonth() <= ATP.getSecondDateMonth()
+								+ monthOverlap) {
+					contractDateFrom = new IWTimestamp(ATP.getSecondDateDay(),
+							ATP.getSecondDateMonth(), today.getYear());
+					contractDateTo = new IWTimestamp(ATP.getFirstDateDay(), ATP
+							.getFirstDateMonth(), today.getYear() + 1);
+				} else if (today.getMonth() <= 12) {
+					contractDateFrom = new IWTimestamp(ATP.getFirstDateDay(),
+							ATP.getFirstDateMonth(), today.getYear() + 1);
+					contractDateTo = new IWTimestamp(ATP.getSecondDateDay(),
+							ATP.getSecondDateMonth(), today.getYear() + 1);
+				} else {
+					contractDateFrom = new IWTimestamp(ATP.getFirstDateDay(),
+							ATP.getFirstDateMonth(), today.getYear());
+					contractDateTo = new IWTimestamp(ATP.getSecondDateDay(),
+							ATP.getSecondDateMonth(), today.getYear());
+				}
+
+			}
+			// One Periods
+			else if (first && !second) {
+				// System.err.println("two sectors");
+				contractDateFrom = new IWTimestamp(ATP.getFirstDateDay(), ATP
+						.getFirstDateMonth(), today.getYear());
+				contractDateTo = new IWTimestamp(ATP.getFirstDateDay(), ATP
+						.getFirstDateMonth(), today.getYear() + 1);
+			} else if (!first && second) {
+				// System.err.println("two sectors");
+				contractDateFrom = new IWTimestamp(ATP.getSecondDateDay(), ATP
+						.getSecondDateMonth(), today.getYear());
+				contractDateTo = new IWTimestamp(ATP.getSecondDateDay(), ATP
+						.getSecondDateMonth(), today.getYear() + 1);
+			}
+		}
+
+		IWTimestamp[] stamps = { contractDateFrom, contractDateTo };
+		return stamps;
+	}
+
+	public IWTimestamp[] getContractStampsForApartment(Integer apartmentID)
+			throws FinderException, RemoteException {
+		Apartment ap = getBuildingService().getApartmentHome()
+				.findByPrimaryKey(apartmentID);
+		return getContractStampsForApartment(ap);
+	}
+
+	public IWTimestamp[] getContractStampsForApartment(Apartment apartment) {
+		try {
+			ApartmentTypePeriods ATP = getApartmentTypePeriod(new Integer(
+					apartment.getApartmentTypeId()));
+			// ContractFinder.getPeriod(apartment.getApartmentTypeId());
+			return getContractStampsFromPeriod(ATP, new Integer(1));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public IWTimestamp[] getContractStampsFromPeriod(ApartmentTypePeriods ATP,
+			Integer monthOverlap) {
+		IWTimestamp contractDateFrom = IWTimestamp.RightNow();
+		IWTimestamp contractDateTo = IWTimestamp.RightNow();
+		if (ATP != null) {
+			// Period checking
+			// System.err.println("ATP exists");
 			boolean first = ATP.hasFirstPeriod();
 			boolean second = ATP.hasSecondPeriod();
 			IWTimestamp today = new IWTimestamp();
 			// Two Periods
 			if (first && second) {
-				if (today.getMonth() > ATP.getFirstDateMonth() + monthOverlap.intValue()
-					&& today.getMonth() <= ATP.getSecondDateMonth() + monthOverlap.intValue()) {
-					contractDateFrom =
-						new IWTimestamp(ATP.getSecondDateDay(), ATP.getSecondDateMonth(), today.getYear());
-					contractDateTo =
-						new IWTimestamp(ATP.getFirstDateDay(), ATP.getFirstDateMonth(), today.getYear() + 1);
-				}
-				else if (today.getMonth() <= 12) {
-					contractDateFrom =
-						new IWTimestamp(ATP.getFirstDateDay(), ATP.getFirstDateMonth(), today.getYear() + 1);
-					contractDateTo =
-						new IWTimestamp(ATP.getSecondDateDay(), ATP.getSecondDateMonth(), today.getYear() + 1);
-				}
-				else {
-					contractDateFrom = new IWTimestamp(ATP.getFirstDateDay(), ATP.getFirstDateMonth(), today.getYear());
-					contractDateTo = new IWTimestamp(ATP.getSecondDateDay(), ATP.getSecondDateMonth(), today.getYear());
+				if (today.getMonth() > ATP.getFirstDateMonth()
+						+ monthOverlap.intValue()
+						&& today.getMonth() <= ATP.getSecondDateMonth()
+								+ monthOverlap.intValue()) {
+					contractDateFrom = new IWTimestamp(ATP.getSecondDateDay(),
+							ATP.getSecondDateMonth(), today.getYear());
+					contractDateTo = new IWTimestamp(ATP.getFirstDateDay(), ATP
+							.getFirstDateMonth(), today.getYear() + 1);
+				} else if (today.getMonth() <= 12) {
+					contractDateFrom = new IWTimestamp(ATP.getFirstDateDay(),
+							ATP.getFirstDateMonth(), today.getYear() + 1);
+					contractDateTo = new IWTimestamp(ATP.getSecondDateDay(),
+							ATP.getSecondDateMonth(), today.getYear() + 1);
+				} else {
+					contractDateFrom = new IWTimestamp(ATP.getFirstDateDay(),
+							ATP.getFirstDateMonth(), today.getYear());
+					contractDateTo = new IWTimestamp(ATP.getSecondDateDay(),
+							ATP.getSecondDateMonth(), today.getYear());
 				}
 			}
 			// One Periods
 			else if (first && !second) {
-				//System.err.println("two sectors");
-				contractDateFrom = new IWTimestamp(ATP.getFirstDateDay(), ATP.getFirstDateMonth(), today.getYear());
-				contractDateTo = new IWTimestamp(ATP.getFirstDateDay(), ATP.getFirstDateMonth(), today.getYear() + 1);
-			}
-			else if (!first && second) {
-				//System.err.println("two sectors");
-				contractDateFrom = new IWTimestamp(ATP.getSecondDateDay(), ATP.getSecondDateMonth(), today.getYear());
-				contractDateTo = new IWTimestamp(ATP.getSecondDateDay(), ATP.getSecondDateMonth(), today.getYear() + 1);
+				// System.err.println("two sectors");
+				contractDateFrom = new IWTimestamp(ATP.getFirstDateDay(), ATP
+						.getFirstDateMonth(), today.getYear());
+				contractDateTo = new IWTimestamp(ATP.getFirstDateDay(), ATP
+						.getFirstDateMonth(), today.getYear() + 1);
+			} else if (!first && second) {
+				// System.err.println("two sectors");
+				contractDateFrom = new IWTimestamp(ATP.getSecondDateDay(), ATP
+						.getSecondDateMonth(), today.getYear());
+				contractDateTo = new IWTimestamp(ATP.getSecondDateDay(), ATP
+						.getSecondDateMonth(), today.getYear() + 1);
 			}
 		}
 		IWTimestamp[] stamps = { contractDateFrom, contractDateTo };
 		return stamps;
 	}
-	public String getLocalizedStatus(com.idega.idegaweb.IWResourceBundle iwrb, String status) {
+
+	public String getLocalizedStatus(com.idega.idegaweb.IWResourceBundle iwrb,
+			String status) {
 		String r = "";
 		char c = status.charAt(0);
 		switch (c) {
-			case 'C' :
-				r = iwrb.getLocalizedString("created", "Created");
-				break;
-			case 'P' :
-				r = iwrb.getLocalizedString("printed", "Printed");
-				break;
-			case 'S' :
-				r = iwrb.getLocalizedString("signed", "Signed");
-				break;
-			case 'E' :
-				r = iwrb.getLocalizedString("ended", "Ended");
-				break;
-			case 'G' :
-				r = iwrb.getLocalizedString("garbage", "Garbage");
-				break;
-			case 'U' :
-				r = iwrb.getLocalizedString("resigned", "Resigned");
-				break;
-			case 'R' :
-				r = iwrb.getLocalizedString("rejected", "Rejected");
-				break;
-			case 'T' :
-				r = iwrb.getLocalizedString("terminated", "Terminated");
-				break;
-			
-			case 'Z' :
-				r = iwrb.getLocalizedString("storage", "Storage");
-				break;
-			case 'D' :
-				r = iwrb.getLocalizedString("denied", "Denied");
-				break;
-			case 'F' :
-				r = iwrb.getLocalizedString("finalized", "Finalized");
-				break;
-				
-			/*
-			 * 
-			 public static final String statusCreated = "C";
-  public static final String statusPrinted = "P";
-  public static final String statusSigned = "S";
-  public static final String statusRejected = "R";
-  public static final String statusTerminated = "T";
-  public static final String statusEnded = "E";
-  public static final String statusResigned = "U";
-  public static final String statusGarbage = "G";
-  public static final String statusStorage = "Z";
-  public static final String statusDenied = "D";
-  public static final String statusFinalized = "F";
-			 */
+		case 'C':
+			r = iwrb.getLocalizedString("created", "Created");
+			break;
+		case 'P':
+			r = iwrb.getLocalizedString("printed", "Printed");
+			break;
+		case 'S':
+			r = iwrb.getLocalizedString("signed", "Signed");
+			break;
+		case 'E':
+			r = iwrb.getLocalizedString("ended", "Ended");
+			break;
+		case 'G':
+			r = iwrb.getLocalizedString("garbage", "Garbage");
+			break;
+		case 'U':
+			r = iwrb.getLocalizedString("resigned", "Resigned");
+			break;
+		case 'R':
+			r = iwrb.getLocalizedString("rejected", "Rejected");
+			break;
+		case 'T':
+			r = iwrb.getLocalizedString("terminated", "Terminated");
+			break;
+
+		case 'Z':
+			r = iwrb.getLocalizedString("storage", "Storage");
+			break;
+		case 'D':
+			r = iwrb.getLocalizedString("denied", "Denied");
+			break;
+		case 'F':
+			r = iwrb.getLocalizedString("finalized", "Finalized");
+			break;
+
+		/*
+		 * 
+		 * public static final String statusCreated = "C"; public static final
+		 * String statusPrinted = "P"; public static final String statusSigned =
+		 * "S"; public static final String statusRejected = "R"; public static
+		 * final String statusTerminated = "T"; public static final String
+		 * statusEnded = "E"; public static final String statusResigned = "U";
+		 * public static final String statusGarbage = "G"; public static final
+		 * String statusStorage = "Z"; public static final String statusDenied =
+		 * "D"; public static final String statusFinalized = "F";
+		 */
 		}
 		return r;
 	}
+
 	public boolean doGarbageContract(Integer contractID) {
 		try {
 			Contract eContract = getContractHome().findByPrimaryKey(contractID);
 			eContract.setStatusGarbage();
 			eContract.store();
 			return true;
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			return false;
 		}
 	}
+
 	public ApartmentTypePeriods getApartmentTypePeriod(Integer typeID) {
 		try {
 			ApartmentTypePeriodsHome aHome = (ApartmentTypePeriodsHome) getIDOHome(ApartmentTypePeriods.class);
 			Collection periods = aHome.findByApartmentType(typeID);
 			if (periods != null && !periods.isEmpty())
 				return (ApartmentTypePeriods) periods.iterator().next();
-		}
-		catch (RemoteException e) {
+		} catch (RemoteException e) {
 			e.printStackTrace();
-		}
-		catch (FinderException e) {
+		} catch (FinderException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
 
-	private Collection getAvailableEntries(int entity, int iApartmentTypeId, int iComplexId) {
+	private Collection getAvailableEntries(int entity, int iApartmentTypeId,
+			int iComplexId) {
 		StringBuffer sql = new StringBuffer("select ");
 		try {
 			if (entity == APARTMENT)
@@ -668,13 +690,14 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 				sql.append(" con.* ");
 			else
 				throw new IllegalArgumentException();
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 			return null;
 		}
-		sql.append(" from bu_apartment a,bu_floor f,bu_building b,app_applicant p ");
-		sql.append(",bu_complex c,bu_aprt_type t,bu_aprt_cat y,cam_contract con ");
+		sql
+				.append(" from bu_apartment a,bu_floor f,bu_building b,app_applicant p ");
+		sql
+				.append(",bu_complex c,bu_aprt_type t,bu_aprt_cat y,cam_contract con ");
 		sql.append(" where a.bu_aprt_type_id = t.bu_aprt_type_id ");
 		sql.append(" and t.bu_aprt_cat_id = y.bu_aprt_cat_id");
 		sql.append(" and a.bu_floor_id = f.bu_floor_id ");
@@ -682,7 +705,7 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 		sql.append(" and b.bu_complex_id = c.bu_complex_id ");
 		sql.append(" and a.bu_apartment_id = con.bu_apartment_id");
 		sql.append(" and con.app_applicant_id = p.app_applicant_id");
-		/** @todo  which contract statuses are defined apartment as available */
+		/** @todo which contract statuses are defined apartment as available */
 		// 
 		sql.append(" and con.status not in ('G') ");
 		// not the ones in garbage
@@ -699,116 +722,136 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 			Collection L = null;
 			if (entity == CONTRACT)
 				L = getContractHome().findBySQL(sql.toString());
-			//L = EntityFinder.getInstance().findAll(Contract.class, sql.toString());
+			// L = EntityFinder.getInstance().findAll(Contract.class,
+			// sql.toString());
 			else if (entity == APARTMENT)
-				L = ((ApartmentHome) getIDOHome(Apartment.class)).findBySQL(sql.toString());
+				L = ((ApartmentHome) getIDOHome(Apartment.class)).findBySQL(sql
+						.toString());
 			return L;
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			ex.printStackTrace();
 			return null;
 		}
 	}
-	public Contract allocate(
-		Integer contractID,
-		Integer apartmentID,
-		Integer applicantID,
-		Date validFrom,
-		Date validTo)
-		throws AllocationException {
-		//javax.transaction.TransactionManager transaction= com.idega.transaction.IdegaTransactionManager.getInstance();
+
+	public Contract allocate(Integer contractID, Integer apartmentID,
+			Integer applicantID, Date validFrom, Date validTo)
+			throws AllocationException {
+		// javax.transaction.TransactionManager transaction=
+		// com.idega.transaction.IdegaTransactionManager.getInstance();
 		UserTransaction transaction = getSessionContext().getUserTransaction();
 		try {
 			if (apartmentID != null && apartmentID.intValue() > 0) {
-				Apartment apartment = getBuildingService().getApartmentHome().findByPrimaryKey(apartmentID);
-				IWTimestamp firstAllowedFromDate = new IWTimestamp(getNextAvailableDate(apartment).getTime());
+				Apartment apartment = getBuildingService().getApartmentHome()
+						.findByPrimaryKey(apartmentID);
+				IWTimestamp firstAllowedFromDate = new IWTimestamp(
+						getNextAvailableDate(apartment).getTime());
 				firstAllowedFromDate.setAsDate();
 				if (validFrom != null && validTo != null) {
-					IWTimestamp from = new IWTimestamp((java.sql.Date) validFrom);
+					IWTimestamp from = new IWTimestamp(
+							(java.sql.Date) validFrom);
 					IWTimestamp to = new IWTimestamp((java.sql.Date) validTo);
 					from.setAsDate();
 					to.setAsDate();
-					//System.err.println("Saving new contract : Applicant : " + sApplicantId);
-					//System.err.println("Must be from : " + mustBeFrom.toString() + " , is from " + from.toString());
+					// System.err.println("Saving new contract : Applicant : " +
+					// sApplicantId);
+					// System.err.println("Must be from : " +
+					// mustBeFrom.toString() + " , is from " + from.toString());
 					if (firstAllowedFromDate.isLaterThan(from)) {
 						throw new AllocationException("Contract dates overlap");
 					}
 					if (applicantID != null) {
 						if (apartmentID.intValue() > 0) {
-							Applicant applicant =
-								getApplicationService().getApplicantHome().findByPrimaryKey(applicantID);
-							Collection applicantNewContracts =
-								getContractHome().findByApplicantAndStatus(applicantID, ContractBMPBean.STATUS_CREATED);
-							if (applicantNewContracts == null || applicantNewContracts.isEmpty()) {
-								String[] emails = getApplicationService().getApplicantEmail(applicantID.intValue());
+							Applicant applicant = getApplicationService()
+									.getApplicantHome().findByPrimaryKey(
+											applicantID);
+							Collection applicantNewContracts = getContractHome()
+									.findByApplicantAndStatus(applicantID,
+											ContractBMPBean.STATUS_CREATED);
+							if (applicantNewContracts == null
+									|| applicantNewContracts.isEmpty()) {
+								String[] emails = getApplicationService()
+										.getApplicantEmail(
+												applicantID.intValue());
 								Contract contract = null;
 								try {
 									transaction.begin();
-									User eUser = createUserFamily(applicant, emails);
-									//System.out.println("user created "+eUser.getPrimaryKey());
-									contract =createNewContract((Integer) eUser.getPrimaryKey(),(Integer) applicant.getPrimaryKey(),	apartmentID,	from.getDate(),	to.getDate());
+									System.out.println("Creating user family");
+									User eUser = createUserFamily(applicant,
+											emails);
+									System.out.println("User family created");
+									System.out.println("user id = " + eUser.getPrimaryKey());
+									System.out.println("applicant id = " + applicant.getPrimaryKey());
+									System.out.println("appartment id = " + apartmentID);
+									System.out.println("from.getDate() = " + from.getDate());
+									System.out.println("to.getDate() = " + to.getDate());
+									contract = createNewContract(
+											(Integer) eUser.getPrimaryKey(),
+											(Integer) applicant.getPrimaryKey(),
+											apartmentID, from.getDate(), to
+													.getDate());
 									transaction.commit();
-								}
-								catch (Exception e1) {
+								} catch (Exception e1) {
 									try {
 										transaction.rollback();
-									}
-									catch (Exception e2) {
+									} catch (Exception e2) {
 										e2.printStackTrace();
-										throw new AllocationException("Transaction: " + e2.getMessage());
+										throw new AllocationException(
+												"Transaction: "
+														+ e2.getMessage());
 									}
-									//e1.printStackTrace();
-									throw new AllocationException("Transaction: " + e1.getMessage());
+									// e1.printStackTrace();
+									throw new AllocationException(
+											"Transaction: " + e1.getMessage());
 								}
 								return contract;
+							} else {
+								throw new AllocationException(
+										"Applicant has already a new contract");
 							}
-							else {
-								throw new AllocationException("Applicant has already a new contract");
-							}
-						}
-						else if (contractID != null && contractID.intValue() > 0) {
-							Contract contract = getContractHome().findByPrimaryKey(contractID);
+						} else if (contractID != null
+								&& contractID.intValue() > 0) {
+							Contract contract = getContractHome()
+									.findByPrimaryKey(contractID);
 							contract.setValidFrom(from.getDate());
 							contract.setValidTo(to.getDate());
 							if (apartmentID != null) {
 								contract.setApartmentId(apartmentID);
 								contract.store();
 								return contract;
+							} else {
+								throw new AllocationException(
+										"No apartment supplied for current contract");
 							}
-							else {
-								throw new AllocationException("No apartment supplied for current contract");
-							}
-						}
-						else {
+						} else {
 							if (contractID == null)
-								throw new AllocationException("No apartment or contract supplied ");
+								throw new AllocationException(
+										"No apartment or contract supplied ");
 						}
-					}
-					else {
+					} else {
 						throw new AllocationException("No applicant supplied");
 					}
+				} else {
+					throw new AllocationException(
+							"No dates supplied to contract");
 				}
-				else {
-					throw new AllocationException("No dates supplied to contract");
-				}
-			}
-			else {
+			} else {
 				throw new AllocationException("No apartment to contract");
 			}
-		}
-		catch (IDOStoreException e) {
+		} catch (IDOStoreException e) {
 			throw new AllocationException(e.getMessage());
 		}
-		
+
 		catch (RemoteException e) {
 			throw new AllocationException(e.getMessage());
-		}
-		catch (FinderException e) {
+		} catch (FinderException e) {
 			throw new AllocationException(e.getMessage());
 		}
 		throw new AllocationException("No contract info was supplied");
 	}
-	public Period getValidPeriod(Contract contract, Apartment apartment, Integer dayBuffer, Integer monthOverlap) {
+
+	public Period getValidPeriod(Contract contract, Apartment apartment,
+			Integer dayBuffer, Integer monthOverlap) {
 		IWTimestamp contractDateFrom = new IWTimestamp();
 		IWTimestamp contractDateTo = new IWTimestamp();
 		ApartmentTypePeriods ATP = null;
@@ -816,14 +859,18 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 		if (contract != null) {
 			contractDateTo = new IWTimestamp(contract.getValidTo());
 			contractDateFrom = new IWTimestamp(contract.getValidFrom());
-			return new Period( contractDateFrom.getDate(),contractDateTo.getDate());
+			return new Period(contractDateFrom.getDate(), contractDateTo
+					.getDate());
 		}
-		// if we have an apartment lets see if there exist some definitions for it
+		// if we have an apartment lets see if there exist some definitions for
+		// it
 		else if (apartment != null) {
-			ATP = getApartmentTypePeriod(new Integer(apartment.getApartmentTypeId()));
+			ATP = getApartmentTypePeriod(new Integer(apartment
+					.getApartmentTypeId()));
 			// Period checking
-			//System.err.println("ATP exists");
-			IWTimestamp[] stamps = getContractStampsFromPeriod(ATP, monthOverlap);
+			// System.err.println("ATP exists");
+			IWTimestamp[] stamps = getContractStampsFromPeriod(ATP,
+					monthOverlap);
 			contractDateTo = stamps[1];
 			contractDateFrom = stamps[0];
 			if (dayBuffer.intValue() > 0) {
@@ -832,85 +879,95 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 			// end of Period checks
 		}
 		// are the System Properties set
-		else if (
-			getIWApplicationContext().getApplicationAttribute(SystemPropertiesBMPBean.getEntityTableName()) != null) {
-			SystemProperties SysProps =
-				(SystemProperties) getIWApplicationContext().getApplicationAttribute(
-					SystemPropertiesBMPBean.getEntityTableName());
+		else if (getIWApplicationContext().getApplicationAttribute(
+				SystemPropertiesBMPBean.getEntityTableName()) != null) {
+			SystemProperties SysProps = (SystemProperties) getIWApplicationContext()
+					.getApplicationAttribute(
+							SystemPropertiesBMPBean.getEntityTableName());
 			contractDateTo = new IWTimestamp(SysProps.getValidToDate());
 			contractDateFrom = new IWTimestamp();
-		}
-		else {
+		} else {
 			contractDateTo = new IWTimestamp();
 			contractDateFrom = new IWTimestamp();
 		}
-		int years = contractDateTo.getYear()-contractDateFrom.getYear();
-		//int months = contractDateTo.getMonth()-contractDateFrom.getMonth();
+		int years = contractDateTo.getYear() - contractDateFrom.getYear();
+		// int months = contractDateTo.getMonth()-contractDateFrom.getMonth();
 		Date nextAvailable = getNextAvailableDate(apartment);
-		if (nextAvailable != null ){
+		if (nextAvailable != null) {
 			IWTimestamp nextD = new IWTimestamp(nextAvailable.getTime());
-			if(nextD.isLaterThan(contractDateFrom) )
+			if (nextD.isLaterThan(contractDateFrom))
 				contractDateFrom = nextD;
 		}
-		if(years>0)
-			contractDateTo.setYear(contractDateFrom.getYear()+years);
-		
-		
+		if (years > 0)
+			contractDateTo.setYear(contractDateFrom.getYear() + years);
+
 		return new Period(contractDateFrom.getDate(), contractDateTo.getDate());
 	}
-	
+
 	/**
 	 * Returns the first date that the given apartment can be rented from.
 	 * Contracts with getAllocateableStatuses() are checked.
 	 */
 	public Date getNextAvailableDate(Apartment apartment) {
-		ApartmentContracts apartmentContracts = new ApartmentContracts(apartment,getAllocateableStatuses());
+		ApartmentContracts apartmentContracts = new ApartmentContracts(
+				apartment, getAllocateableStatuses());
 		Date nextAvailable = apartmentContracts.getNextDate();
 		// If apartment is not in contract table:
-		if (!apartmentContracts.hasContracts() && apartment.getUnavailableUntil() != null) {
+		if (!apartmentContracts.hasContracts()
+				&& apartment.getUnavailableUntil() != null) {
 			nextAvailable = (Date) apartment.getUnavailableUntil();
 		}
 		return nextAvailable;
 	}
-	public void resetWaitingListRejection(Integer waitingListID) throws RemoteException, FinderException {
+
+	public void resetWaitingListRejection(Integer waitingListID)
+			throws RemoteException, FinderException {
 		try {
-			WaitingList wl = getWaitingListHome().findByPrimaryKey(waitingListID);
+			WaitingList wl = getWaitingListHome().findByPrimaryKey(
+					waitingListID);
 			wl.setRejectFlag(false);
 			wl.store();
-		}
-		catch (IDOStoreException e) {
+		} catch (IDOStoreException e) {
 			e.printStackTrace();
 			throw new RemoteException(e.getMessage());
 		}
 	}
-	public void reactivateWaitingList(Integer waitingListID) throws RemoteException, FinderException {
+
+	public void reactivateWaitingList(Integer waitingListID)
+			throws RemoteException, FinderException {
 		try {
-			WaitingList wl = getWaitingListHome().findByPrimaryKey(waitingListID);
-			wl.setRemovedFromList(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.NO);
+			WaitingList wl = getWaitingListHome().findByPrimaryKey(
+					waitingListID);
+			wl
+					.setRemovedFromList(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.NO);
 			wl.store();
-		}
-		catch (IDOStoreException e) {
+		} catch (IDOStoreException e) {
 			e.printStackTrace();
 			throw new RemoteException(e.getMessage());
 		}
 	}
+
 	/**
 	 * remove waitinglist entry from database
 	 */
-	public void removeWaitingList(Integer waitingListID) throws RemoteException, FinderException {
+	public void removeWaitingList(Integer waitingListID)
+			throws RemoteException, FinderException {
 		try {
-			WaitingList wl = getWaitingListHome().findByPrimaryKey(waitingListID);
+			WaitingList wl = getWaitingListHome().findByPrimaryKey(
+					waitingListID);
 			wl.remove();
-		}
-		catch (RemoveException e) {
+		} catch (RemoveException e) {
 			e.printStackTrace();
 			throw new RemoteException(e.getMessage());
 		}
 	}
+
 	/**
-	 * Gets a map of firsta available dates for apartments , keyed by apartmentID
+	 * Gets a map of firsta available dates for apartments , keyed by
+	 * apartmentID
 	 */
-	public Map getAvailableApartmentDates(Integer aprtTypeID, Integer cplxID) throws FinderException {
+	public Map getAvailableApartmentDates(Integer aprtTypeID, Integer cplxID)
+			throws FinderException {
 		Hashtable map = new Hashtable();
 		Connection conn = null;
 		Statement stmt = null;
@@ -926,15 +983,13 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 				date = RS.getDate(2);
 				map.put(apartmentID, date);
 			}
-			
+
 			RS.close();
-		}
-		catch (SQLException e) {
+		} catch (SQLException e) {
 			throw new FinderException(e.getMessage());
-		}
-		finally{
+		} finally {
 			try {
-				if(stmt!=null)
+				if (stmt != null)
 					stmt.close();
 			} catch (SQLException e1) {
 				e1.printStackTrace();
@@ -943,25 +998,26 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 		}
 		return map;
 	}
-	private String getAvailableApartmentDatesSQL(Integer aprtTypeID, Integer cplxID) {
+
+	private String getAvailableApartmentDatesSQL(Integer aprtTypeID,
+			Integer cplxID) {
 		StringBuffer sql = new StringBuffer();
 		sql
-			.append("	 select c.bu_apartment_id,max(c.valid_to) ")
-			.append(" from cam_contract c, bu_apartment a, bu_floor f, bu_building b, bu_aprt_type t, bu_complex x")
-			.append(" where c.bu_apartment_id = a.bu_apartment_id ")
-			.append(" and a.bu_floor_id = f.bu_floor_id ")
-			.append(" and f.bu_building_id = b.bu_building_id ")
-			.append(" and b.bu_complex_id = ")
-			.append(cplxID)
-			.append(" and a.bu_aprt_type_id = ")
-			.append(aprtTypeID)
-			.append(" and c.status not in('G') ")
-			.append(" group by c.bu_apartment_id ");
+				.append("	 select c.bu_apartment_id,max(c.valid_to) ")
+				.append(
+						" from cam_contract c, bu_apartment a, bu_floor f, bu_building b, bu_aprt_type t, bu_complex x")
+				.append(" where c.bu_apartment_id = a.bu_apartment_id ")
+				.append(" and a.bu_floor_id = f.bu_floor_id ").append(
+						" and f.bu_building_id = b.bu_building_id ").append(
+						" and b.bu_complex_id = ").append(cplxID).append(
+						" and a.bu_aprt_type_id = ").append(aprtTypeID).append(
+						" and c.status not in('G') ").append(
+						" group by c.bu_apartment_id ");
 		return sql.toString();
 	}
-	
-	
-	public Map getApplicantContractsByStatus(String status) throws RemoteException, FinderException {
+
+	public Map getApplicantContractsByStatus(String status)
+			throws RemoteException, FinderException {
 		Map map = new Hashtable();
 		Collection contracts = getContractHome().findByStatus(status);
 		for (Iterator iter = contracts.iterator(); iter.hasNext();) {
@@ -970,57 +1026,70 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 		}
 		return map;
 	}
-	
+
 	/**
-	 * Returns statuses:  signed, ended,resigned and terminated.
+	 * Returns statuses: signed, ended,resigned and terminated.
 	 */
-	public String[] getRentableStatuses(){
-		String[] statuses = {ContractBMPBean.STATUS_SIGNED, ContractBMPBean.STATUS_ENDED, ContractBMPBean.STATUS_RESIGNED,
-				ContractBMPBean.STATUS_TERMINATED};
+	public String[] getRentableStatuses() {
+		String[] statuses = { ContractBMPBean.STATUS_SIGNED,
+				ContractBMPBean.STATUS_ENDED, ContractBMPBean.STATUS_RESIGNED,
+				ContractBMPBean.STATUS_TERMINATED };
 		return statuses;
 	}
-	
+
 	/**
 	 * Returns statuses: created,printed, signed, ended,resigned and terminated.
 	 */
-	public String[] getAllocateableStatuses(){
-		String[] statuses = {ContractBMPBean.STATUS_CREATED,ContractBMPBean.STATUS_PRINTED,ContractBMPBean.STATUS_SIGNED, ContractBMPBean.STATUS_ENDED, ContractBMPBean.STATUS_RESIGNED,
-				ContractBMPBean.STATUS_TERMINATED};
+	public String[] getAllocateableStatuses() {
+		String[] statuses = { ContractBMPBean.STATUS_CREATED,
+				ContractBMPBean.STATUS_PRINTED, ContractBMPBean.STATUS_SIGNED,
+				ContractBMPBean.STATUS_ENDED, ContractBMPBean.STATUS_RESIGNED,
+				ContractBMPBean.STATUS_TERMINATED };
 		return statuses;
 	}
-	
-	public Collection getAllowedTemporaryPersonalID(){
+
+	public Collection getAllowedTemporaryPersonalID() {
 		ArrayList list = new ArrayList(1);
 		list.add("9999999999");
 		return list;
 	}
-	
-	public Map getNewApplicantContracts() throws RemoteException, FinderException {
+
+	public Map getNewApplicantContracts() throws RemoteException,
+			FinderException {
 		return getApplicantContractsByStatus(ContractBMPBean.STATUS_CREATED);
 	}
+
 	public CampusUserService getUserService() throws RemoteException {
 		return (CampusUserService) getServiceInstance(CampusUserService.class);
 	}
+
 	public ContractHome getContractHome() throws RemoteException {
 		return (ContractHome) getIDOHome(Contract.class);
 	}
+
 	public ContractTextHome getContractTextHome() throws RemoteException {
 		return (ContractTextHome) getIDOHome(ContractText.class);
 	}
+
 	public WaitingListHome getWaitingListHome() throws RemoteException {
 		return (WaitingListHome) getIDOHome(WaitingList.class);
 	}
-	public ContractAccountApartmentHome getContractAccountApartmentHome() throws RemoteException{
-		return ((ContractAccountApartmentHome) getIDOHome(ContractAccountApartment.class));	
+
+	public ContractAccountApartmentHome getContractAccountApartmentHome()
+			throws RemoteException {
+		return ((ContractAccountApartmentHome) getIDOHome(ContractAccountApartment.class));
 	}
+
 	public MailingListService getMailingListService() throws RemoteException {
 		return (MailingListService) getServiceInstance(MailingListService.class);
 	}
+
 	public ApplicationService getApplicationService() throws RemoteException {
 		return (ApplicationService) getServiceInstance(ApplicationService.class);
 	}
-	public BuildingService getBuildingService() throws RemoteException{
-		return (BuildingService)getServiceInstance(BuildingService.class);
+
+	public BuildingService getBuildingService() throws RemoteException {
+		return (BuildingService) getServiceInstance(BuildingService.class);
 	}
-	
+
 }
