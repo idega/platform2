@@ -130,16 +130,17 @@ public class EntryGroups extends Finance {
 
 	protected PresentationObject doSomeThing(IWContext iwc) {
 		PresentationObject MO = new Text(localize(LOC_KEY_INVALID_DATE, "Invalid to date"));
-		String dateFrom = iwc.getParameter(PARAM_GROUP_DATE_FROM);
+		String dateTo = iwc.getParameter(PARAM_GROUP_DATE_TO);
 		String paymentDateString = iwc.getParameter(PARAM_PAYMENT_DATE);
 		String dueDateString = iwc.getParameter(PARAM_DUE_DATE);
-		if (dateFrom != null && !"".equals(dateFrom) && paymentDateString != null && !"".equals(paymentDateString)
+		if (dateTo != null && !"".equals(dateTo) && paymentDateString != null && !"".equals(paymentDateString)
 				&& dueDateString != null && !"".equals(dueDateString)) {
-			String dateTo = iwc.getParameter(PARAM_GROUP_DATE_TO);
+			String dateFrom = iwc.getParameter(PARAM_GROUP_DATE_FROM);
 			IWTimestamp to = new IWTimestamp(dateTo);
 			IWTimestamp from = null;
-			if (!"".equals(dateFrom))
+			if (dateFrom != null && !"".equals(dateFrom)) {
 				from = new IWTimestamp(dateFrom);
+			}
 
 			IWTimestamp paymentDate = new IWTimestamp(paymentDateString);
 			IWTimestamp dueDate = new IWTimestamp(dueDateString);
