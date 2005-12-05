@@ -86,17 +86,17 @@ public class IWMemberConstants {
 	public static final String GROUP_TYPE_CLUB_PRACTICE_PLAYER = "iwme_club_practice_player";
 	
 
-	public static final String MEMBER_BOARD_CHAIR_MAN = "chairman";
-	public static final String MEMBER_BOARD_VICE_CHAIRMAN ="vice_chairman";
-	public static final String MEMBER_CASHIER = "cashier";
-	public static final String MEMBER_SECRETARY = "secretary";
-	public static final String MEMBER_BOARD_MEMBER = "board_member";
-	public static final String MEMBER_EXTRA_BOARD = "extra_board";
-	public static final String MEMBER_STAND_IN = "stand_in";
-	public static final String MEMBER_CO_CHIEF = "co-chief";
-	public static final String MEMBER_CEO = "ceo";
-	public static final String MEMBER_PRESIDENT = "president";
-	public static final String MEMBER_VICE_PRESIDENT = "vice_president";
+	public static final String MEMBER_BOARD_CHAIR_MAN = "STAT_B_CHAIR"; //"chairman";
+	public static final String MEMBER_BOARD_VICE_CHAIRMAN = "STAT_B_VICECHAIR"; //"vice_chairman";
+	public static final String MEMBER_CASHIER =  "STAT_B_CASH"; //"cashier";
+	public static final String MEMBER_SECRETARY = "STAT_B_SECR"; //"secretary";
+	public static final String MEMBER_BOARD_MEMBER = "STAT_B_MAINBOARD"; //"board_member";
+	public static final String MEMBER_EXTRA_BOARD = "STAT_B_EXTRABOARD"; //"extra_board";
+	public static final String MEMBER_STAND_IN = "STAT_B_EXTRA"; //"stand_in";
+	public static final String MEMBER_CO_CHIEF = "STAT_B_COCHIEF"; //"co-chief";
+	public static final String MEMBER_CEO = "STAT_B_CEO"; //"ceo";
+	public static final String MEMBER_PRESIDENT = "STAT_B_PRES"; //"president";
+	public static final String MEMBER_VICE_PRESIDENT = "STAT_B_VICEPRES"; //"vice_president";
 	
 	public static final String STATUS_COACH = "STAT_COACH";
 	public static final String STATUS_ASSISTANT_COACH = "STAT_ASSCOACH";
@@ -112,5 +112,5 @@ public class IWMemberConstants {
 	public static final String ORDER_BY_GROUP_NAME = "group_name_order";
 	public static final String ORDER_BY_ENTRY_DATE = "entry_date_order";
 	
-  public static final String[] STATUS = {"chairman","vice_chairman","cashier","secretary","board_member","extra_board","stand_in","co-chief"};
+  public static final String[] STATUS = {MEMBER_BOARD_CHAIR_MAN,MEMBER_BOARD_VICE_CHAIRMAN,MEMBER_CASHIER,MEMBER_SECRETARY,MEMBER_BOARD_MEMBER,MEMBER_EXTRA_BOARD,MEMBER_STAND_IN,MEMBER_CO_CHIEF,MEMBER_CEO,MEMBER_PRESIDENT,MEMBER_VICE_PRESIDENT};
 }
