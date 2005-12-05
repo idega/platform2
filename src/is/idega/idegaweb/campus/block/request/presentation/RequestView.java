@@ -1,5 +1,5 @@
 /*
- * $Id: RequestView.java,v 1.12 2005/03/02 11:10:32 palli Exp $
+ * $Id: RequestView.java,v 1.12.4.1 2005/12/05 17:06:40 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,7 +8,6 @@
  *
  */
 package is.idega.idegaweb.campus.block.request.presentation;
-
 
 import is.idega.idegaweb.campus.block.request.business.RequestBusiness;
 import is.idega.idegaweb.campus.presentation.CampusWindow;
@@ -33,203 +32,237 @@ import com.idega.util.IWTimestamp;
  * @version 1.0
  */
 public class RequestView extends CampusWindow {
- 
-  protected final static String REQUEST_SEND = "request_send";
-  protected final static String REQUEST_TYPE = "request_type";
-  public final static String REQUEST_STREET = "request_street";
-  public final static String REQUEST_APRT = "request_aprt";
-  public final static String REQUEST_NAME = "request_name";
-  public final static String REQUEST_TEL = "request_tel";
-  public final static String REQUEST_EMAIL = "request_email";
-  protected final static String REQUEST_TABLE_TITLE = "request_table_title";
 
-  protected final static String REQUEST_DATE_OF_CRASH = "request_date_of_crash";
-  protected final static String REQUEST_COMMENT = "request_comment";
-  protected final static String REQUEST_TIME = "request_time";
-  protected final static String REQUEST_DAYTIME = "request_daytime";
-  protected final static String REQUEST_SPECIAL_TIME = "request_special_time";
+	protected final static String REQUEST_SEND = "request_send";
 
-  protected final static String REQUEST_NO_COMMENT = "request_no_comment";
-  protected final static String REQUEST_NO_DATE_OF_CRASH = "request_no_date_of_crash";
-  protected final static String REQUEST_NO_SPECIAL_TIME = "request_no_special_time";
+	protected final static String REQUEST_TYPE = "request_type";
 
-  protected final static String REQUEST_REPAIR = "request_repair";
-  protected final static String REQUEST_COMPUTER = "request_computer";
+	public final static String REQUEST_STREET = "request_street";
 
-  private boolean _isAdmin;
-  private boolean _isLoggedOn;
-  private User _eUser = null;
+	public final static String REQUEST_APRT = "request_aprt";
 
-  /**
-   *
-   */
-  public RequestView() {
-    setWidth(650);
-    setHeight(450);
-    setResizable(true);
-  }
+	public final static String REQUEST_NAME = "request_name";
 
-  /**
-   *
-   */
-  public String getBundleIdentifier() {
-    return(IW_BUNDLE_IDENTIFIER);
-  }
+	public final static String REQUEST_TEL = "request_tel";
 
-  /**
-   *
-   */
-  protected void control(IWContext iwc) {
+	public final static String REQUEST_EMAIL = "request_email";
 
-    if (_isAdmin || _isLoggedOn){
+	protected final static String REQUEST_TABLE_TITLE = "request_table_title";
 
-      if (iwc.isParameterSet(REQUEST_SEND)) {
-        boolean check = doSendRequest(iwc);
-        if (check) {
-          setParentToReload();
-          close();
-        }
-      }
+	protected final static String REQUEST_DATE_OF_CRASH = "request_date_of_crash";
 
-      addMainForm(iwc);
-    }
-    else
-      add(getText(localize("access_denied","Access denied")));
-  }
+	protected final static String REQUEST_COMMENT = "request_comment";
 
-  /**
-   *
-   */
-  protected boolean doSendRequest(IWContext iwc) {
-    String comment = iwc.getParameter(REQUEST_COMMENT);
-    String dateOfFailureString = iwc.getParameter(REQUEST_DATE_OF_CRASH);
-    String type = iwc.getParameter(REQUEST_TYPE);
-    if (type.equals(REQUEST_COMPUTER))
-      type = RequestBusiness.REQUEST_COMPUTER;
-    else
-      type = RequestBusiness.REQUEST_REPAIR;
-    String special = iwc.getParameter(REQUEST_SPECIAL_TIME);
+	protected final static String REQUEST_TIME = "request_time";
 
-    System.out.println("DateOfFailureString = " + dateOfFailureString);
+	protected final static String REQUEST_DAYTIME = "request_daytime";
 
-    IWTimestamp t = new IWTimestamp();
-    t = IWTimestamp.RightNow();
+	protected final static String REQUEST_SPECIAL_TIME = "request_special_time";
 
-    boolean insert = RequestBusiness.insertRequest(((Integer)_eUser.getPrimaryKey()).intValue(),comment,t.getTimestamp(),type,special);
+	protected final static String REQUEST_NO_COMMENT = "request_no_comment";
 
-    return(insert);
-  }
+	protected final static String REQUEST_NO_DATE_OF_CRASH = "request_no_date_of_crash";
 
-  /**
-   *
-   */
-  protected void addMainForm(IWContext iwc) {
-    Form form = new Form();
-    add(form);
+	protected final static String REQUEST_NO_SPECIAL_TIME = "request_no_special_time";
 
-    DropdownMenu mnu = new DropdownMenu(REQUEST_TYPE);
-    mnu.addMenuElement(REQUEST_COMPUTER,"Tölvuviðgerð");
-    mnu.addMenuElement(REQUEST_REPAIR,"Almenn viðgerð");
-    mnu.setToSubmit();
-    Edit.setStyle(mnu);
-    form.add(mnu);
+	protected final static String REQUEST_REPAIR = "request_repair";
 
-    String type = iwc.getParameter(REQUEST_TYPE);
-    if (type == null)
-      type = REQUEST_REPAIR;
-    mnu.setSelectedElement(type);
+	protected final static String REQUEST_COMPUTER = "request_computer";
 
-    String street = iwc.getParameter(REQUEST_STREET);
-    String aprt = iwc.getParameter(REQUEST_APRT);
-    String name = iwc.getParameter(REQUEST_NAME);
-    String telephone = iwc.getParameter(REQUEST_TEL);
-    String email = iwc.getParameter(REQUEST_EMAIL);
+	private boolean isAdmin;
 
-    DataTable data = new DataTable();
-    data.setWidth("100%");
-    data.addTitle(localize(REQUEST_TABLE_TITLE,"Senda beiðni"));
-    data.addButton(new SubmitButton(REQUEST_SEND,"Senda beiðni"));
-    form.add(data);
+	private boolean isLoggedOn;
 
-    int row = 1;
-    data.add(getHeader(localize(REQUEST_STREET,"Götuheiti")),1,row);
-    data.add(getText(street),2,row);
-    row++;
-    data.add(getHeader(localize(REQUEST_APRT,"Herb./íbúð")),1,row);
-    data.add(getText(aprt),2,row);
-    row++;
-    data.add(getHeader(localize(REQUEST_NAME,"Nafn")),1,row);
-    data.add(getText(name),2,row);
-    row++;
-    data.add(getHeader(localize(REQUEST_TEL,"Símanúmer")),1,row);
-    data.add(getText(telephone),2,row);
-    row++;
-    data.add(getHeader(localize(REQUEST_EMAIL,"email")),1,row);
-    data.add(getText(email),2,row);
-    row++;
+	private User eUser = null;
 
-    if (type.equals(REQUEST_REPAIR))
-      addRepair(data,row);
-    else if (type.equals(REQUEST_COMPUTER))
-      addComputer(data,row);
+	/**
+	 * 
+	 */
+	public RequestView() {
+		setWidth(650);
+		setHeight(450);
+		setResizable(true);
+	}
 
-    form.add(new HiddenInput(REQUEST_STREET,street));
-    form.add(new HiddenInput(REQUEST_APRT,aprt));
-    form.add(new HiddenInput(REQUEST_NAME,name));
-    form.add(new HiddenInput(REQUEST_TEL,telephone));
-    form.add(new HiddenInput(REQUEST_EMAIL,email));
-  }
+	/**
+	 * 
+	 */
+	public String getBundleIdentifier() {
+		return (IW_BUNDLE_IDENTIFIER);
+	}
 
-  /**
-   *
-   */
-  protected void addRepair(DataTable data, int row) {
-    data.add(getHeader(localize(REQUEST_DATE_OF_CRASH,"Dagsetning bilunar")),1,row);
-    DateInput dateOfCrash = new DateInput(REQUEST_DATE_OF_CRASH);
-    dateOfCrash.setToCurrentDate();
-    Edit.setStyle(dateOfCrash);
-    data.add(dateOfCrash,2,row);
-    row++;
-    data.add(getHeader(localize(REQUEST_COMMENT,"Athugasemdir")),1,row);
-    TextArea comment = new TextArea(REQUEST_COMMENT,"",60,5);
-    Edit.setStyle(comment);
-    data.add(comment,2,row);
-    row++;
-    data.add(new RadioButton(REQUEST_TIME,REQUEST_DAYTIME),1,row);
-    data.add(getHeader(localize(REQUEST_DAYTIME,"Viðgerð má fara fram á dagvinnutíma, án þess að nokkur sé heima.Þriðjudagar eru almennir viðgerðardagar.")),2,row);
-    row++;
-    data.add(new RadioButton(REQUEST_TIME,REQUEST_SPECIAL_TIME),1,row);
-    data.add(getHeader(localize(REQUEST_SPECIAL_TIME,"Ég óska eftir sérstakri tímasetningu og að viðgerð verði framkvæmd: ")),2,row);
-    data.add(new TextInput(REQUEST_SPECIAL_TIME),2,row);
-    row++;
-  }
+	/**
+	 * 
+	 */
+	protected void control(IWContext iwc) {
 
-  /**
-   *
-   */
-  protected void addComputer(DataTable data, int row) {
-    data.add(getHeader(localize(REQUEST_DATE_OF_CRASH,"Dagsetning bilunar")),1,row);
-    DateInput dateOfCrash = new DateInput(REQUEST_DATE_OF_CRASH);
-    Edit.setStyle(dateOfCrash);
-    data.add(dateOfCrash,2,row);
-    row++;
-    data.add(getHeader(localize(REQUEST_COMMENT,"Athugasemdir")),1,row);
-    TextArea comment = new TextArea(REQUEST_COMMENT,"",60,5);
-    Edit.setStyle(comment);
-    data.add(comment,2,row);
-    row++;
-    data.add(getHeader(localize(REQUEST_SPECIAL_TIME,"Ég óska eftir sérstakri tímasetningu og að viðgerð verði framkvæmd: ")),2,row);
-    data.add(new TextInput(REQUEST_SPECIAL_TIME),2,row);
-    row++;
-  }
+		if (isAdmin || isLoggedOn) {
 
-  /**
-   *
-   */
-  public void main(IWContext iwc) throws Exception {
-    _eUser = iwc.getCurrentUser();
-    _isAdmin = iwc.hasEditPermission(this);
-    _isLoggedOn = LoginBusinessBean.isLoggedOn(iwc);
-    control(iwc);
-  }
+			if (iwc.isParameterSet(REQUEST_SEND)) {
+				boolean check = doSendRequest(iwc);
+				if (check) {
+					setParentToReload();
+					close();
+				}
+			}
+
+			addMainForm(iwc);
+		} else
+			add(getText(localize("access_denied", "Access denied")));
+	}
+
+	/**
+	 * 
+	 */
+	protected boolean doSendRequest(IWContext iwc) {
+		String comment = iwc.getParameter(REQUEST_COMMENT);
+		String dateOfFailureString = iwc.getParameter(REQUEST_DATE_OF_CRASH);
+		String type = iwc.getParameter(REQUEST_TYPE);
+		if (type.equals(REQUEST_COMPUTER))
+			type = RequestBusiness.REQUEST_COMPUTER;
+		else
+			type = RequestBusiness.REQUEST_REPAIR;
+		String special = iwc.getParameter(REQUEST_SPECIAL_TIME);
+
+		System.out.println("DateOfFailureString = " + dateOfFailureString);
+
+		IWTimestamp t = new IWTimestamp();
+		t = IWTimestamp.RightNow();
+
+		boolean insert = RequestBusiness.insertRequest(((Integer) eUser
+				.getPrimaryKey()).intValue(), comment, t.getTimestamp(), type,
+				special);
+
+		return (insert);
+	}
+
+	/**
+	 * 
+	 */
+	protected void addMainForm(IWContext iwc) {
+		Form form = new Form();
+		add(form);
+
+		DropdownMenu mnu = new DropdownMenu(REQUEST_TYPE);
+		mnu.addMenuElement(REQUEST_COMPUTER, "Fix computer");
+		mnu.addMenuElement(REQUEST_REPAIR, "General repair");
+		mnu.setToSubmit();
+		Edit.setStyle(mnu);
+		form.add(mnu);
+
+		String type = iwc.getParameter(REQUEST_TYPE);
+		if (type == null)
+			type = REQUEST_REPAIR;
+		mnu.setSelectedElement(type);
+
+		String street = iwc.getParameter(REQUEST_STREET);
+		String aprt = iwc.getParameter(REQUEST_APRT);
+		String name = iwc.getParameter(REQUEST_NAME);
+		String telephone = iwc.getParameter(REQUEST_TEL);
+		String email = iwc.getParameter(REQUEST_EMAIL);
+
+		DataTable data = new DataTable();
+		data.setWidth("100%");
+		data.addTitle(localize(REQUEST_TABLE_TITLE, "Senda beiðni"));
+		data.addButton(new SubmitButton(REQUEST_SEND, "Senda beiðni"));
+		form.add(data);
+
+		int row = 1;
+		data.add(getHeader(localize(REQUEST_STREET, "Götuheiti")), 1, row);
+		data.add(getText(street), 2, row);
+		row++;
+		data.add(getHeader(localize(REQUEST_APRT, "Herb./íbúð")), 1, row);
+		data.add(getText(aprt), 2, row);
+		row++;
+		data.add(getHeader(localize(REQUEST_NAME, "Nafn")), 1, row);
+		data.add(getText(name), 2, row);
+		row++;
+		data.add(getHeader(localize(REQUEST_TEL, "Símanúmer")), 1, row);
+		data.add(getText(telephone), 2, row);
+		row++;
+		data.add(getHeader(localize(REQUEST_EMAIL, "email")), 1, row);
+		data.add(getText(email), 2, row);
+		row++;
+
+		if (type.equals(REQUEST_REPAIR))
+			addRepair(data, row);
+		else if (type.equals(REQUEST_COMPUTER))
+			addComputer(data, row);
+
+		form.add(new HiddenInput(REQUEST_STREET, street));
+		form.add(new HiddenInput(REQUEST_APRT, aprt));
+		form.add(new HiddenInput(REQUEST_NAME, name));
+		form.add(new HiddenInput(REQUEST_TEL, telephone));
+		form.add(new HiddenInput(REQUEST_EMAIL, email));
+	}
+
+	/**
+	 * 
+	 */
+	protected void addRepair(DataTable data, int row) {
+		data
+				.add(getHeader(localize(REQUEST_DATE_OF_CRASH,
+						"Dagsetning bilunar")), 1, row);
+		DateInput dateOfCrash = new DateInput(REQUEST_DATE_OF_CRASH);
+		dateOfCrash.setToCurrentDate();
+		Edit.setStyle(dateOfCrash);
+		data.add(dateOfCrash, 2, row);
+		row++;
+		data.add(getHeader(localize(REQUEST_COMMENT, "Athugasemdir")), 1, row);
+		TextArea comment = new TextArea(REQUEST_COMMENT, "", 60, 5);
+		Edit.setStyle(comment);
+		data.add(comment, 2, row);
+		row++;
+		data.add(new RadioButton(REQUEST_TIME, REQUEST_DAYTIME), 1, row);
+		data
+				.add(
+						getHeader(localize(
+								REQUEST_DAYTIME,
+								"Viðgerð má fara fram á dagvinnutíma, án þess að nokkur sé heima.Þriðjudagar eru almennir viðgerðardagar.")),
+						2, row);
+		row++;
+		data.add(new RadioButton(REQUEST_TIME, REQUEST_SPECIAL_TIME), 1, row);
+		data
+				.add(
+						getHeader(localize(REQUEST_SPECIAL_TIME,
+								"Ég óska eftir sérstakri tímasetningu og að viðgerð verði framkvæmd: ")),
+						2, row);
+		data.add(new TextInput(REQUEST_SPECIAL_TIME), 2, row);
+		row++;
+	}
+
+	/**
+	 * 
+	 */
+	protected void addComputer(DataTable data, int row) {
+		data
+				.add(getHeader(localize(REQUEST_DATE_OF_CRASH,
+						"Dagsetning bilunar")), 1, row);
+		DateInput dateOfCrash = new DateInput(REQUEST_DATE_OF_CRASH);
+		Edit.setStyle(dateOfCrash);
+		data.add(dateOfCrash, 2, row);
+		row++;
+		data.add(getHeader(localize(REQUEST_COMMENT, "Athugasemdir")), 1, row);
+		TextArea comment = new TextArea(REQUEST_COMMENT, "", 60, 5);
+		Edit.setStyle(comment);
+		data.add(comment, 2, row);
+		row++;
+		data
+				.add(
+						getHeader(localize(REQUEST_SPECIAL_TIME,
+								"Ég óska eftir sérstakri tímasetningu og að viðgerð verði framkvæmd: ")),
+						2, row);
+		data.add(new TextInput(REQUEST_SPECIAL_TIME), 2, row);
+		row++;
+	}
+
+	/**
+	 * 
+	 */
+	public void main(IWContext iwc) throws Exception {
+		eUser = iwc.getCurrentUser();
+		isAdmin = iwc.hasEditPermission(this);
+		isLoggedOn = LoginBusinessBean.isLoggedOn(iwc);
+		control(iwc);
+	}
 }
