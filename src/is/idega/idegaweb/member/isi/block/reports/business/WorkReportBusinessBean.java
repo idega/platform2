@@ -60,7 +60,10 @@ import com.idega.transaction.IdegaTransactionManager;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.user.data.Group;
+import com.idega.user.data.GroupHome;
 import com.idega.user.data.User;
+import com.idega.user.data.UserStatus;
+import com.idega.user.data.UserStatusHome;
 import com.idega.util.Age;
 import com.idega.util.IWTimestamp;
 import com.idega.util.ListUtil;
@@ -925,6 +928,39 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			ex.printStackTrace(System.err);
 			throw new RuntimeException(message);
 		}
+		Collection homePhones = user.getPhones(String.valueOf(PhoneType.HOME_PHONE_ID));
+		if (homePhones != null && !homePhones.isEmpty()) {
+			member.setHomePhone(((Phone)(homePhones.iterator().next())).getNumber());
+		}
+		Collection workPhones = user.getPhones(String.valueOf(PhoneType.WORK_PHONE_ID));
+		if (workPhones != null && !workPhones.isEmpty()) {
+			member.setWorkPhone(((Phone)(workPhones.iterator().next())).getNumber());
+		}
+		Collection faxes = user.getPhones(String.valueOf(PhoneType.FAX_NUMBER_ID));
+		if (faxes != null && !faxes.isEmpty()) {
+			member.setFax(((Phone)(faxes.iterator().next())).getNumber());
+		}
+		Collection emails = user.getEmails();
+		if (emails != null && !emails.isEmpty()) {
+			member.setEmail(((Email)(emails.iterator().next())).getEmailAddress());
+		}
+		List userStatuses = null;
+		String userStatusKey = null;
+		WorkReport report = null;
+        try {
+        	report = getWorkReportHome().findByPrimaryKey(new Integer(reportID));
+        	Group boardGroup = ((GroupHome)IDOLookup.getHome(Group.class)).findBoardGroupByClubIDAndLeagueID(report.getGroupId(),workReportGroup.getGroupId());
+        	userStatuses = (List) ((UserStatusHome)IDOLookup.getHome(UserStatus.class)).findAllActiveByUserIdAndGroupId(Integer.parseInt(user.getPrimaryKey().toString()),Integer.parseInt(boardGroup.getPrimaryKey().toString()));
+        } catch (FinderException e) {
+            System.out.println("No boardGroup found for user="+member.getName()+" in club="+report.getGroupName()+" connected to league="+workReportGroup.getName());            
+        } catch (IDOLookupException e) {
+            System.out.println(e.getMessage());
+        }
+        if (userStatuses != null && !userStatuses.isEmpty()) {
+        	UserStatus userStatus =(UserStatus)userStatuses.iterator().next();
+            userStatusKey = userStatus.getStatus().getStatusKey();
+            member.setStatus(userStatusKey);
+        }
 		member.store();
 		return member;
 	}
