@@ -55,7 +55,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 	public Boolean _queueCleaned = null;
 
 	private boolean _showQueueCleaning = false;
-	private boolean showViewSiblingListButton = true;
+	private boolean showViewSiblingListButton = false;
 	
     public static final int ORDER_BY_QUEUE_DATE = 1;    // see ChildCareApplicationBMPBean ORDER_BY_QUEUE_DATE
     public static final int ORDER_BY_DATE_OF_BIRTH = 2; // see ChildCareApplicationBMPBean ORDER_BY_DATE_OF_BIRTH
@@ -522,7 +522,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 		SubmitButton button = (SubmitButton) getButton(new SubmitButton(localize("child_care.sibling_list", "See sibling list"),
 		PARAMETER_CLEAN_QUEUE,		
 		Boolean.TRUE.toString()));
-		form.setToShowLoadingOnSubmit(false);		
+		form.setToShowLoadingOnSubmit(true);		
 		form.setToDisableOnSubmit(button, true);
 		form.add(button);		
 		return form;
