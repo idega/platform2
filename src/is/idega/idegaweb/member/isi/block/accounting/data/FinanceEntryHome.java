@@ -95,8 +95,19 @@ public interface FinanceEntryHome extends IDOHome {
 			IWTimestamp dateFrom, IWTimestamp dateTo) throws FinderException;
 
 	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean#ejbFindAllByPaymentTypesNotInBatch
+	 */
+	public Collection findAllByPaymentTypesNotInBatch(String[] paymentTypes,
+			IWTimestamp dateFrom, IWTimestamp dateTo) throws FinderException;
+
+	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean#ejbFindAllByBatch
 	 */
 	public Collection findAllByBatch(Batch batch) throws FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean#ejbFindAllByBatchID
+	 */
+	public Collection findAllByBatchID(int batchID) throws FinderException;
 
 }

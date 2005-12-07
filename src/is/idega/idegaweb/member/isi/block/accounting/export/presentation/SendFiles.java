@@ -24,6 +24,7 @@ import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.Form;
@@ -56,6 +57,8 @@ public class SendFiles extends CashierSubWindowTemplate {
 	protected static final String LABEL_BATCH_TYPE = "sf_batch_type";
 
 	protected static final String ERROR_ALREADY_RUNNING = "sf_thread_already_running";
+	
+	public static final String BATCH_ID = "batch_id";
 
 	public SendFiles() {
 		super();
@@ -189,11 +192,17 @@ public class SendFiles extends CashierSubWindowTemplate {
 			Iterator it = batches.iterator();
 			while (it.hasNext()) {
 				Batch batch = (Batch) it.next();
+				String batchNumber = null;
 				if (batch.getBatchNumber() != null && !"".equals(batch.getBatchNumber())) {
-					t.add(batch.getBatchNumber(), 1, row);
+					batchNumber = batch.getBatchNumber();
 				} else {
-					t.add(batch.getPrimaryKey().toString(), 1, row);					
+					batchNumber = batch.getPrimaryKey().toString();					
 				}
+				
+				Link batchLink = new Link(batchNumber);
+				batchLink.setParameter(BATCH_ID, batchNumber);
+				batchLink.setWindowToOpen(EntriesInBatch.class);
+				t.add(batchLink, 1, row);
 
 				if (batch.getCreated() != null) {
 					IWTimestamp created = new IWTimestamp(batch.getCreated());

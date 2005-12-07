@@ -788,15 +788,52 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 			sql.append(dateTo);
 		}
 
+		return idoFindPKsByQuery(sql);
+	}
+
+	public Collection ejbFindAllByPaymentTypesNotInBatch(String [] paymentTypes, IWTimestamp dateFrom,
+			IWTimestamp dateTo) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhere();
+		sql.append(COLUMN_PAYMENT_TYPE_ID);
+		sql.appendInArray(paymentTypes);
+		sql.appendAnd();
+		sql.append(COLUMN_ISI_BATCH_ID);
+		sql.append(" is null ");
+		if (dateFrom != null) {
+			sql.appendAnd();
+			sql.append(COLUMN_DATE_OF_ENTRY);
+			sql.appendGreaterThanOrEqualsSign();
+			sql.append(dateFrom);
+		}
+		if (dateTo != null) {
+			sql.appendAnd();
+			sql.append(COLUMN_DATE_OF_ENTRY);
+			sql.appendLessThanOrEqualsSign();
+			sql.append(dateTo);
+		}
+		
+		sql.appendOrderBy(getIDColumnName());
+
+		return idoFindPKsByQuery(sql);
+	}
+
+	
+	public Collection ejbFindAllByBatch(Batch batch) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhereEquals(COLUMN_ISI_BATCH_ID, batch);
+
 		System.out.println("sql = " + sql.toString());
 		
 		return idoFindPKsByQuery(sql);
 	}
 
-	public Collection ejbFindAllByBatch(Batch batch) throws FinderException {
+	public Collection ejbFindAllByBatchID(int batchID) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
-		sql.appendWhereEquals(COLUMN_ISI_BATCH_ID, batch);
+		sql.appendWhereEquals(COLUMN_ISI_BATCH_ID, batchID);
 
 		System.out.println("sql = " + sql.toString());
 		

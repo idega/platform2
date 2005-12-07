@@ -9,14 +9,19 @@ package is.idega.idegaweb.member.isi.block.accounting.presentation;
 
 import is.idega.idegaweb.member.business.MemberUserBusiness;
 import is.idega.idegaweb.member.isi.block.accounting.business.AccountingBusiness;
+import is.idega.idegaweb.member.isi.block.accounting.export.presentation.EntriesNotInBatch;
 import is.idega.idegaweb.member.isi.block.accounting.export.presentation.GetFiles;
+import is.idega.idegaweb.member.isi.block.accounting.export.presentation.RunLog;
 import is.idega.idegaweb.member.isi.block.accounting.export.presentation.SendFiles;
 import is.idega.idegaweb.member.isi.block.accounting.export.presentation.Setup;
+
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+
 import javax.ejb.FinderException;
+
 import com.idega.block.datareport.presentation.ReportGenerator;
 import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWApplicationContext;
@@ -102,6 +107,10 @@ public class CashierWindow extends StyledIWAdminWindow {
 	private static final String ADMIN_GET_CREDITCARD_FILES = "isi_acc_cw_get_creditcard_files";
 
 	private static final String ADMIN_CREDITCARD_SETUP = "isi_acc_cw_creditcard_setup";
+
+	private static final String ADMIN_UNBATCHED_FILES = "isi_acc_cw_unbatched";
+
+	private static final String ADMIN_RUN_LOG = "isi_acc_cw_runlog";
 
 	private static final String HELP_TEXT_KEY = "cashier_window";
 
@@ -231,7 +240,7 @@ public class CashierWindow extends StyledIWAdminWindow {
 			menu = new Table(2, 21);
 
 		} else {
-			menu = new Table(2, 4);
+			menu = new Table(2, 6);
 		}
 		menu.setWidth(Table.HUNDRED_PERCENT);
 		menu.setCellpadding(3);
@@ -428,16 +437,18 @@ public class CashierWindow extends StyledIWAdminWindow {
 			menu.add(autoAss, 1, 3);
 			menu.add(ccContract, 1, 4);
 			menu.add(bContract, 1, 5);
+			menu.add(viewTariff, 1, 6);
 
-			menu.add(memberOperations, 1, 6);
+			menu.add(memberOperations, 1, 7);
 			menu.add(getHelpWithGrayImage(
-					"cashierwindow.memberOperations_help", true), 2, 6);
-			menu.setRowColor(6, COLOR_MIDDLE);
-			menu.add(manAss, 1, 7);
-			menu.add(paymentHistory, 1, 8);
-			menu.add(selectPayments, 1, 9);
-			menu.add(checkOut, 1, 10);
-			menu.add(viewTariff, 1, 11);
+					"cashierwindow.memberOperations_help", true), 2, 7);
+			menu.setRowColor(7, COLOR_MIDDLE);
+			menu.add(manAss, 1, 8);
+			menu.add(paymentHistory, 1, 9);
+			menu.add(selectPayments, 1, 10);
+			menu.add(Text.getNonBrakingSpace(), 1, 11);
+			menu.add(Text.getNonBrakingSpace(), 1, 11);
+			menu.add(checkOut, 1, 11);
 			/*
 			 * menu.add(nonPayedEntries, 1, 11); menu.add(errorEntries, 1, 12);
 			 */
@@ -486,6 +497,23 @@ public class CashierWindow extends StyledIWAdminWindow {
 			addParametersToMenuItems(adminCreditCardSetup,
 					ADMIN_CREDITCARD_SETUP);
 
+			LinkContainer adminUnbatched = new LinkContainer();
+			adminUnbatched.setStyleClass(styledLink);
+			adminUnbatched.add(formatText(iwrb.getLocalizedString(
+					"isi_acc_cashierwindow.unbatched",
+					"Entries not in a batch")));
+			addParametersToMenuItems(adminUnbatched,
+					ADMIN_UNBATCHED_FILES);
+
+			LinkContainer adminRunLog = new LinkContainer();
+			adminRunLog.setStyleClass(styledLink);
+			adminRunLog.add(formatText(iwrb.getLocalizedString(
+					"isi_acc_cashierwindow.runlog",
+					"Run log")));
+			addParametersToMenuItems(adminRunLog,
+					ADMIN_RUN_LOG);
+
+			
 			menu.add(admin, 1, 1);
 			menu.add(getHelpWithGrayImage("cashierwindow.admin_help", true), 2,
 					1);
@@ -493,6 +521,8 @@ public class CashierWindow extends StyledIWAdminWindow {
 			menu.add(adminCreditCardSendFiles, 1, 2);
 			menu.add(adminCreditCardGetFiles, 1, 3);
 			menu.add(adminCreditCardSetup, 1, 4);
+			menu.add(adminUnbatched, 1, 5);
+			menu.add(adminRunLog, 1, 6);
 		}
 
 		return menu;
@@ -784,6 +814,16 @@ public class CashierWindow extends StyledIWAdminWindow {
 						ADMIN_CREDITCARD_SETUP, "Creditcard setup"));
 				subWindow = new Setup();
 				helpTextKey = ADMIN_CREDITCARD_SETUP + "_help";
+			} else if (action.equals(ADMIN_UNBATCHED_FILES)) {
+				actionTitle.append(iwrb.getLocalizedString(
+						ADMIN_UNBATCHED_FILES, "Entries not in a batch"));
+				subWindow = new EntriesNotInBatch();
+				helpTextKey = ADMIN_UNBATCHED_FILES + "_help";
+			} else if (action.equals(ADMIN_RUN_LOG)) {
+				actionTitle.append(iwrb.getLocalizedString(
+						ADMIN_RUN_LOG, "Run log"));
+				subWindow = new RunLog();
+				helpTextKey = ADMIN_RUN_LOG + "_help";
 			} else if (action.equals(ACTION_REPORTS)) {
 				actionTitle.append(iwrb.getLocalizedString(ACTION_REPORTS,
 						"Reports"));

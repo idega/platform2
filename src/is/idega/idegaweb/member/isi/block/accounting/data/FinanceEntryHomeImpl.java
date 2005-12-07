@@ -140,10 +140,28 @@ public class FinanceEntryHomeImpl extends IDOFactory implements
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
+	public Collection findAllByPaymentTypesNotInBatch(String[] paymentTypes,
+			IWTimestamp dateFrom, IWTimestamp dateTo) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((FinanceEntryBMPBean) entity)
+				.ejbFindAllByPaymentTypesNotInBatch(paymentTypes, dateFrom,
+						dateTo);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
 	public Collection findAllByBatch(Batch batch) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		java.util.Collection ids = ((FinanceEntryBMPBean) entity)
 				.ejbFindAllByBatch(batch);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findAllByBatchID(int batchID) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((FinanceEntryBMPBean) entity)
+				.ejbFindAllByBatchID(batchID);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}

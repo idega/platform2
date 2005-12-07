@@ -75,6 +75,8 @@ public class Checkout extends CashierSubWindowTemplate {
 	private final static String LABEL_REMOVE_FROM_BASKET = "isi_acc_co_remove_from_basket";
 
 	private final static String LABEL_TO_PAY = CheckoutPlugin.LABEL_TO_PAY;
+	
+	private final static String LABEL_CONFIRM = "isi_acc_co_confirm_payment";
 
 	private final static int STATUS_VIEW_BASKET = 0;
 
@@ -314,6 +316,7 @@ public class Checkout extends CashierSubWindowTemplate {
 
 		SubmitButton pay = new SubmitButton(iwrb.getLocalizedString(ACTION_PAY,
 				"Pay"), ACTION_PAY, "pay");
+		pay.setSubmitConfirm(iwrb.getLocalizedString(LABEL_CONFIRM, "Are you sure you want to pay these entries?"));
 
 		Map entries = null;
 		try {
