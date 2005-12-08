@@ -168,7 +168,7 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 			AddressTypeHome addressHome = (AddressTypeHome) IDOLookup.getHome(AddressType.class);
 			AddressType at1 = null;
 			try {
-			    at1 = addressHome.findAddressType1();
+			    at1 = addressHome.findAddressType2();
 			} catch (FinderException e) {
 			    e.printStackTrace();
 			}
@@ -366,7 +366,7 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 			AddressTypeHome addressHome = (AddressTypeHome) IDOLookup.getHome(AddressType.class);
 			AddressType at1 = null;
 			try {
-			    at1 = addressHome.findAddressType1();
+			    at1 = addressHome.findAddressType2();
 			} catch (FinderException e) {
 			    e.printStackTrace();
 			}
