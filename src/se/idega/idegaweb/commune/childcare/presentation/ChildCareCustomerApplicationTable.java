@@ -42,7 +42,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.108.2.2 2005/11/30 14:28:08 dainis Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.108.2.3 2005/12/09 15:28:44 dainis Exp $
  * @since 12.2.2003 
  */
 
@@ -158,7 +158,10 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 				//	form.setOnSubmit(createPagePhase1(iwc, layoutTbl, applications));
 				//}
 				//else {
-					if (forwardToEndPage) {
+					if (forwardToEndPage) { //which actually means that these are after school applications
+						
+						handleAcceptStatus(iwc, true);  //and so we must save to database														
+						
 						if (getEndPage() != null) {
 							iwc.forwardToIBPage(getParentPage(), getEndPage());
 						}
