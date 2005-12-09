@@ -31,6 +31,7 @@ import com.idega.core.contact.data.PhoneType;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.AddressType;
 import com.idega.core.location.data.AddressTypeHome;
+import com.idega.core.location.data.Country;
 import com.idega.data.IDOCompositePrimaryKeyException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -70,6 +71,7 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 	private static final String LOCALIZED_USER_STATUS = "UserStatsBusiness.user_status";
 	private static final String LOCALIZED_STREET_ADDRESS = "UserStatsBusiness.street_address";
 	private static final String LOCALIZED_POSTAL_ADDRESS = "UserStatsBusiness.postal_address";
+	private static final String LOCALIZED_COUNTRY = "UserStatsBusiness.country";
 	private static final String LOCALIZED_PHONE = "UserStatsBusiness.phone";
 	private static final String LOCALIZED_EMAIL = "UserStatsBusiness.email";
 
@@ -80,6 +82,7 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 	private static final String FIELD_NAME_USER_STATUS = "user_status";
 	private static final String FIELD_NAME_STREET_ADDRESS = "street_address";
 	private static final String FIELD_NAME_POSTAL_ADDRESS = "postal_address";
+	private static final String FIELD_NAME_COUNTRY = "country";
 	private static final String FIELD_NAME_PHONE = "phone";
 	private static final String FIELD_NAME_EMAIL = "email";
 	
@@ -134,6 +137,10 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 		 ReportableField postalAddressField = new ReportableField(FIELD_NAME_POSTAL_ADDRESS, String.class);
 		 postalAddressField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_POSTAL_ADDRESS, "Postal Address"), currentLocale);
 		 reportCollection.addField(postalAddressField); 
+
+		 ReportableField countryField = new ReportableField(FIELD_NAME_COUNTRY, String.class);
+		 countryField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_COUNTRY, "Country"), currentLocale);
+		 reportCollection.addField(countryField);
 		 
 		 ReportableField phoneField = new ReportableField(FIELD_NAME_PHONE, String.class);
 		 phoneField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PHONE, "Phone"), currentLocale);
@@ -211,10 +218,15 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 			    Address address = null;
 			    String streetAddressString = null;
 			    String postalAddressString = null;
+			    String countryString = null;
 			   	if (addresses != null && !addresses.isEmpty()) {
 			   	    address = (Address)addresses.iterator().next();
 			   	    streetAddressString = address.getStreetAddress();
 			   	    postalAddressString = address.getPostalAddress();
+			   	    Country country = address.getCountry();
+			   	    if (country != null) {
+			   	    	countryString = country.getName();
+			   	    }
 			   	}
 			     while (parIt.hasNext()) {
 			         Group parentGroup = (Group)parIt.next();
@@ -253,6 +265,7 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 				     data.addData(emailField, emailString);
 				     data.addData(streetAddressField, streetAddressString);
 				     data.addData(postalAddressField, postalAddressString);
+				     data.addData(countryField, countryString);
 				     data.addData(phoneField, getPhoneNumber(user));
 				     List statsForGroup = (List) usersByGroups.get(parentGroup.getPrimaryKey());
 						if (statsForGroup == null)
