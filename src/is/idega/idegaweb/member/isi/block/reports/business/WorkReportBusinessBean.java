@@ -2231,7 +2231,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 									addWorkReportGroupToEntity(workReportId, workReportGroup, wrMember);
 								}
 								else {
-									System.err.print("[WorkReportBusiness] error getting user with id "
+									System.err.println("[WorkReportBusiness] error getting user with id "
 											+ user.getPrimaryKey() + " from existing workreport members map");
 								}
 							}
