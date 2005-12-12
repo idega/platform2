@@ -291,8 +291,6 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 		if (orderBy != null) {
 			if (!dynamicLayout.equals("-1") && orderBy.equals(IWMemberConstants.ORDER_BY_GROUP_PATH)) {
 	    		orderByFields.add(groupPathField);
-	    	} else if (orderBy.equals(IWMemberConstants.ORDER_BY_NAME)) {
-	    		orderByFields.add(nameField);
 	    	} else if (orderBy.equals(IWMemberConstants.ORDER_BY_USER_STATUS)) {
 	    		orderByFields.add(userStatusField);
 	    	} else if (orderBy.equals(IWMemberConstants.ORDER_BY_ADDRESS)) {
@@ -300,9 +298,8 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 	    	} else if (orderBy.equals(IWMemberConstants.ORDER_BY_POSTAL_ADDRESS)) {
 	    		orderByFields.add(postalAddressField);
 	    	}
-		} else {
-    		orderByFields.add(nameField);
 		}
+    	orderByFields.add(nameField);
 		
 		sortFields = new ReportableField[orderByFields.size()];
     	for (int i=0; i<orderByFields.size(); i++) {
@@ -458,8 +455,6 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 		if (orderBy != null) {
 			if (!dynamicLayout.equals("-1") && orderBy.equals(IWMemberConstants.ORDER_BY_GROUP_PATH)) {
 	    		orderByFields.add(groupPathField);
-	    	} else if (orderBy.equals(IWMemberConstants.ORDER_BY_NAME)) {
-	    		orderByFields.add(nameField);
 	    	} else if (orderBy.equals(IWMemberConstants.ORDER_BY_GROUP_TYPE)) {
 	    		orderByFields.add(groupTypeField);
 	    	} else if (orderBy.equals(IWMemberConstants.ORDER_BY_ADDRESS)) {
@@ -467,9 +462,8 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 	    	} else if (orderBy.equals(IWMemberConstants.ORDER_BY_POSTAL_ADDRESS)) {
 	    		orderByFields.add(postalAddressField);
 	    	}
-		} else {
-    		orderByFields.add(nameField);
 		}
+   		orderByFields.add(nameField);
 		
 		sortFields = new ReportableField[orderByFields.size()];
     	for (int i=0; i<orderByFields.size(); i++) {
