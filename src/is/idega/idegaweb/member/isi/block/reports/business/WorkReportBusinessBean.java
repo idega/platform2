@@ -947,13 +947,28 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		List userStatuses = null;
 		String userStatusKey = null;
 		WorkReport report = null;
+		Group boardGroup = null;
         try {
         	report = getWorkReportHome().findByPrimaryKey(new Integer(reportID));
-        	Group boardGroup = ((GroupHome)IDOLookup.getHome(Group.class)).findBoardGroupByClubIDAndLeagueID(report.getGroupId(),workReportGroup.getGroupId());
+        	String mainBoardName = getIWApplicationContext().getIWMainApplication().getBundle(ClubSelector.IW_BUNDLE_IDENTIFIER).getProperty(WorkReportConstants.WR_MAIN_BOARD_NAME, "ADA");
+        	if (workReportGroup.getName().equals(mainBoardName)) {
+        		List mainCommittee = new ArrayList();
+        		mainCommittee.add(IWMemberConstants.GROUP_TYPE_CLUB_COMMITTEE_MAIN);
+        		Collection mainComm = null;
+       			mainComm = this.getGroupBusiness().getChildGroupsRecursiveResultFiltered(report.getGroupId().intValue(),mainCommittee,true);
+       			if (mainComm != null && !mainComm.isEmpty()) {
+        			boardGroup = (Group)mainComm.iterator().next();
+        		}
+        	} else {
+        		
+            	boardGroup = ((GroupHome)IDOLookup.getHome(Group.class)).findBoardGroupByClubIDAndLeagueID(report.getGroupId(),workReportGroup.getGroupId());
+        	}
         	userStatuses = (List) ((UserStatusHome)IDOLookup.getHome(UserStatus.class)).findAllActiveByUserIdAndGroupId(Integer.parseInt(user.getPrimaryKey().toString()),Integer.parseInt(boardGroup.getPrimaryKey().toString()));
         } catch (FinderException e) {
             System.out.println("No boardGroup found for user="+member.getName()+" in club="+report.getGroupName()+" connected to league="+workReportGroup.getName());            
         } catch (IDOLookupException e) {
+            System.out.println(e.getMessage());
+        } catch (RemoteException e) {
             System.out.println(e.getMessage());
         }
         if (userStatuses != null && !userStatuses.isEmpty()) {
