@@ -96,7 +96,7 @@ public class ChildCareAdmin extends ChildCareBlock {
         table.add(getLegendTable(true), 1, 3);
         if(getShowViewSiblingListButton()) {
         	Table buttonTable = new Table(3,1);
-            buttonTable.add(getSiblingListButton(iwc),1,1);            
+            buttonTable.add(getSiblingListXLSLink(),1,1);            
             buttonTable.add(getPDFLink(), 2, 1);            
             buttonTable.add(getXSLLink(), 3, 1);
             buttonTable.setBorder(0);        
@@ -528,6 +528,23 @@ public class ChildCareAdmin extends ChildCareBlock {
 		return form;
 		}
 
+	protected Link getSiblingListXLSLink() throws RemoteException {
+		DownloadLink link = new DownloadLink(getBundle().getImage("shared/xls.gif"));
+		link.setMediaWriterClass(ChildCareQueueWriter.class);
+		
+		link.addParameter(DownloadWriter.PRM_WRITABLE_CLASS, IWMainApplication.getEncryptedClassName(ChildCareSiblingListWriter.class));		
+		link.addParameter(ChildCareSiblingListWriter.PARAMETER_PROVIDER_ID, getSession().getChildCareID());
+		link.addParameter(ChildCareSiblingListWriter.PARAMETER_SORT_BY, getSession().getSortBy());
+		link.addParameter(ChildCareSiblingListWriter.PARAMETER_NUMBER_PER_PAGE, _numberPerPage);
+		link.addParameter(ChildCareSiblingListWriter.PARAMETER_START, _start);
+		
+		
+		/*if (getSession().getFromTimestamp() != null)
+			link.addParameter(ChildCareQueueWriter.PARAMETER_FROM_DATE, String.valueOf(getSession().getFromTimestamp().getDate()));
+		if (getSession().getToTimestamp() != null)
+			link.addParameter(ChildCareQueueWriter.PARAMETER_TO_DATE, String.valueOf(getSession().getToTimestamp().getDate()));*/
+		return link;
+	}
 	
 	
 	/**
