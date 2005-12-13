@@ -1,5 +1,5 @@
 /*
- * $Id: SpecialConnectionUpdateThread.java,v 1.5 2005/06/21 22:49:57 palli Exp $
+ * $Id: SpecialConnectionUpdateThread.java,v 1.5.4.1 2005/12/13 13:46:32 palli Exp $
  * Created on Jan 4, 2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -32,10 +32,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- * Last modified: $Date: 2005/06/21 22:49:57 $ by $Author: palli $
+ * Last modified: $Date: 2005/12/13 13:46:32 $ by $Author: palli $
  * 
  * @author <a href="mailto:palli@idega.com">palli </a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.5.4.1 $
  */
 public class SpecialConnectionUpdateThread extends Thread {
 
@@ -46,7 +46,8 @@ public class SpecialConnectionUpdateThread extends Thread {
 	/**
 	 * 
 	 */
-	public SpecialConnectionUpdateThread(Group special, IWApplicationContext iwac) {
+	public SpecialConnectionUpdateThread(Group special,
+			IWApplicationContext iwac) {
 		this.special = special;
 		this.iwac = iwac;
 	}
@@ -57,7 +58,8 @@ public class SpecialConnectionUpdateThread extends Thread {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		System.out.println("Starting update thread : " + IWTimestamp.getTimestampRightNow());
+		System.out.println("Starting update thread : "
+				+ IWTimestamp.getTimestampRightNow());
 		Group league = null;
 		Group template = null;
 		if (special.getGroupType().equals(IWMemberConstants.GROUP_TYPE_LEAGUE)) {
@@ -68,7 +70,8 @@ public class SpecialConnectionUpdateThread extends Thread {
 			Iterator it = children.iterator();
 			while (it.hasNext()) {
 				child = (Group) it.next();
-				if (child.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_TEMPLATE)) {
+				if (child.getGroupType().equals(
+						IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_TEMPLATE)) {
 					foundIt = true;
 					break;
 				}
@@ -76,8 +79,8 @@ public class SpecialConnectionUpdateThread extends Thread {
 			if (foundIt && child != null) {
 				template = child;
 			}
-		}
-		else if (special.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_TEMPLATE)) {
+		} else if (special.getGroupType().equals(
+				IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_TEMPLATE)) {
 			template = special;
 			league = findLeagueForTemplate(template);
 		}
@@ -85,8 +88,9 @@ public class SpecialConnectionUpdateThread extends Thread {
 		if (league != null && template != null) {
 			updateOrAddMissingGroupsInClubs(league, template);
 		}
-		
-		System.out.println("Update thread done : " + IWTimestamp.getTimestampRightNow());
+
+		System.out.println("Update thread done : "
+				+ IWTimestamp.getTimestampRightNow());
 	}
 
 	private Group findLeagueForTemplate(Group template) {
@@ -100,7 +104,8 @@ public class SpecialConnectionUpdateThread extends Thread {
 			Iterator it = parents.iterator();
 			while (it.hasNext()) {
 				parent = (Group) it.next();
-				if (parent.getGroupType().equals(IWMemberConstants.GROUP_TYPE_LEAGUE)) {
+				if (parent.getGroupType().equals(
+						IWMemberConstants.GROUP_TYPE_LEAGUE)) {
 					return parent;
 				}
 			}
@@ -114,14 +119,18 @@ public class SpecialConnectionUpdateThread extends Thread {
 	 * 4. If any are missing, create them 5. If any aliases are missing to
 	 * groups, then create them
 	 */
-	private void updateOrAddMissingGroupsInClubs(Group league, Group divisionTemplate) {
+	private void updateOrAddMissingGroupsInClubs(Group league,
+			Group divisionTemplate) {
 		try {
 			// Find all clubs connected to league. These just have one division.
-			Collection clubs = ((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findGroupsByMetaData(
-					IWMemberConstants.META_DATA_CLUB_LEAGUE_CONNECTION, ((Integer) league.getPrimaryKey()).toString());
+			Collection clubs = ((GroupHome) com.idega.data.IDOLookup
+					.getHome(Group.class)).findGroupsByMetaData(
+					IWMemberConstants.META_DATA_CLUB_LEAGUE_CONNECTION,
+					((Integer) league.getPrimaryKey()).toString());
 			// Find all the division in the other clubs, that are connected to
 			// the league.
-			Collection divisions = ((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findGroupsByMetaData(
+			Collection divisions = ((GroupHome) com.idega.data.IDOLookup
+					.getHome(Group.class)).findGroupsByMetaData(
 					IWMemberConstants.META_DATA_DIVISION_LEAGUE_CONNECTION,
 					((Integer) league.getPrimaryKey()).toString());
 			// Find the league club division group. If it's null, just use the
@@ -132,7 +141,8 @@ public class SpecialConnectionUpdateThread extends Thread {
 				Iterator it = leagueGroups.iterator();
 				while (it.hasNext() && leaguePlayerGroup == null) {
 					Group leagueGroup = (Group) it.next();
-					if (leagueGroup.getGroupType().equals(IWMemberConstants.GROUP_TYPE_LEAGUE_CLUB_DIVISION)) {
+					if (leagueGroup.getGroupType().equals(
+							IWMemberConstants.GROUP_TYPE_LEAGUE_CLUB_DIVISION)) {
 						leaguePlayerGroup = leagueGroup;
 					}
 				}
@@ -148,7 +158,8 @@ public class SpecialConnectionUpdateThread extends Thread {
 					Group club = (Group) it.next();
 					Group division = findDivisionForClub(club);
 					if (division != null) {
-						updateDivision(division, divisionTemplate, club, leaguePlayerGroup);
+						updateDivision(division, divisionTemplate, club,
+								leaguePlayerGroup);
 					}
 				}
 			}
@@ -160,53 +171,59 @@ public class SpecialConnectionUpdateThread extends Thread {
 					Group division = (Group) it.next();
 					Group club = findClubForGroup(division);
 					if (club != null) {
-						updateDivision(division, divisionTemplate, club, leaguePlayerGroup);
+						updateDivision(division, divisionTemplate, club,
+								leaguePlayerGroup);
 					}
 				}
 			}
-		}
-		catch (IDOLookupException e) {
+		} catch (IDOLookupException e) {
 			e.printStackTrace();
-		}
-		catch (FinderException e) {
+		} catch (FinderException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void updateDivision(Group division, Group divisionTemplate, Group club, Group specialPlayerAliasGroupParent) {
+	private void updateDivision(Group division, Group divisionTemplate,
+			Group club, Group specialPlayerAliasGroupParent) {
 		try {
 			Collection divisionTemplateGroups = divisionTemplate.getChildren();
-			Collection templateOwners = getGroupBusiness().getOwnerUsersForGroup(specialPlayerAliasGroupParent);
+			Collection templateOwners = getGroupBusiness()
+					.getOwnerUsersForGroup(specialPlayerAliasGroupParent);
 			Iterator it = divisionTemplateGroups.iterator();
 			while (it.hasNext()) {
 				Group templateGroup = (Group) it.next();
-				Group templateReferance = findTemplateReferanceInDivision(division, templateGroup);
+				Group templateReferance = findTemplateReferanceInDivision(
+						division, templateGroup);
 				if (templateReferance == null) {
 					// add group to the division
-					Group newGroup = addGroupToDivision(division, templateGroup, templateOwners);
+					Group newGroup = addGroupToDivision(division,
+							templateGroup, templateOwners);
 					if (newGroup != null) {
-						addOrUpdateReferenceToGroupToLeague(specialPlayerAliasGroupParent, templateGroup, newGroup,
-								club.getName(), templateOwners);
+						addOrUpdateReferenceToGroupToLeague(
+								specialPlayerAliasGroupParent, templateGroup,
+								newGroup, club.getName(), templateOwners);
 					}
-				}
-				else {
+				} else {
 					// check for the alias group and add if missing.
-					addOrUpdateReferenceToGroupToLeague(specialPlayerAliasGroupParent, templateGroup,
+					addOrUpdateReferenceToGroupToLeague(
+							specialPlayerAliasGroupParent, templateGroup,
 							templateReferance, club.getName(), templateOwners);
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	private Group addGroupToDivision(Group division, Group templateGroup, Collection templateOwners) {
+	private Group addGroupToDivision(Group division, Group templateGroup,
+			Collection templateOwners) {
 		try {
-			if (templateGroup.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER_TEMPLATE)) {
+			if (templateGroup.getGroupType().equals(
+					IWMemberConstants.GROUP_TYPE_CLUB_PLAYER_TEMPLATE)) {
 				// Create a copy of the player group under the
 				// club/division.
-				Group newGroup = getGroupBusiness().createGroupUnder(templateGroup.getName(), "",
+				Group newGroup = getGroupBusiness().createGroupUnder(
+						templateGroup.getName(), "",
 						IWMemberConstants.GROUP_TYPE_CLUB_PLAYER, division);
 				// This is a hack to store the connection between the copy
 				// and the original. Should maybe be replaced with some
@@ -225,70 +242,99 @@ public class SpecialConnectionUpdateThread extends Thread {
 					Iterator owners = templateOwners.iterator();
 					while (owners.hasNext()) {
 						User owner = (User) owners.next();
-						getGroupBusiness().applyOwnerAndAllGroupPermissionsToNewlyCreatedGroupForUserAndHisPrimaryGroup(
-								newGroup, owner);
+						getGroupBusiness()
+								.applyOwnerAndAllGroupPermissionsToNewlyCreatedGroupForUserAndHisPrimaryGroup(
+										newGroup, owner);
 					}
 				}
-				
-				Collection divisionOwners = getGroupBusiness().getOwnerUsersForGroup(division);
+
+				Collection divisionOwners = getGroupBusiness()
+						.getOwnerUsersForGroup(division);
 				if (divisionOwners != null && !divisionOwners.isEmpty()) {
 					Iterator owners = divisionOwners.iterator();
 					while (owners.hasNext()) {
 						User owner = (User) owners.next();
-						getGroupBusiness().applyAllGroupPermissionsForGroupToUsersPrimaryGroup(newGroup, owner);
+						getGroupBusiness()
+								.applyAllGroupPermissionsForGroupToUsersPrimaryGroup(
+										newGroup, owner);
 					}
 				}
 
 				return newGroup;
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		return null;
 	}
 
-	private void addOrUpdateReferenceToGroupToLeague(Group leagueReferanceParent, Group divisionTemplate, Group group,
+	private void addOrUpdateReferenceToGroupToLeague(
+			Group leagueReferanceParent, Group divisionTemplate, Group group,
 			String clubName, Collection templateOwners) {
 
-		Group topGroup = findOrCreateTopReferanceGroupForDivision(leagueReferanceParent, divisionTemplate,
-				templateOwners);
+		Group topGroup = findOrCreateTopReferanceGroupForDivision(
+				leagueReferanceParent, divisionTemplate, templateOwners);
 		if (topGroup != null) {
 			try {
 				// Create a link to the actual group in the club, with
 				// a new name and put it under the group created above.
+				Group newSpecialPlayerAliasGroup = null;
+				Iterator it = topGroup.getChildrenIterator();
+				while (it.hasNext() && newSpecialPlayerAliasGroup == null) {
+					Group child = (Group) it.next();
+					if (child.getGroupType().equals(
+							IWMemberConstants.GROUP_TYPE_ALIAS)) {
+						if (child.getAliasID() == ((Integer) group
+								.getPrimaryKey()).intValue()) {
+							newSpecialPlayerAliasGroup = child;
+						}
+					}
+				}
+
 				String name = group.getName();
 				if (clubName != null) {
 					name += " (" + clubName + ")";
 				}
-				Group newSpecialPlayerAliasGroup = getGroupBusiness().createGroupUnder(name, "",
-						IWMemberConstants.GROUP_TYPE_ALIAS, topGroup);
-				newSpecialPlayerAliasGroup.setAlias(group);
-				newSpecialPlayerAliasGroup.store();
-				if (templateOwners != null && !templateOwners.isEmpty()) {
-					Iterator owners = templateOwners.iterator();
-					while (owners.hasNext()) {
-						User owner = (User) owners.next();
-						getGroupBusiness().applyOwnerAndAllGroupPermissionsToNewlyCreatedGroupForUserAndHisPrimaryGroup(
-								newSpecialPlayerAliasGroup, owner);
+
+				if (newSpecialPlayerAliasGroup == null) {
+					newSpecialPlayerAliasGroup = getGroupBusiness()
+							.createGroupUnder(name, "",
+									IWMemberConstants.GROUP_TYPE_ALIAS,
+									topGroup);
+					newSpecialPlayerAliasGroup.setAlias(group);
+					newSpecialPlayerAliasGroup.store();
+					if (templateOwners != null && !templateOwners.isEmpty()) {
+						Iterator owners = templateOwners.iterator();
+						while (owners.hasNext()) {
+							User owner = (User) owners.next();
+							getGroupBusiness()
+									.applyOwnerAndAllGroupPermissionsToNewlyCreatedGroupForUserAndHisPrimaryGroup(
+											newSpecialPlayerAliasGroup, owner);
+						}
 					}
+				} else {
+					newSpecialPlayerAliasGroup.setName(name);
+					newSpecialPlayerAliasGroup.store();
 				}
-			}
-			catch (Exception e) {
+
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 
 		}
 	}
 
-	private Group findOrCreateTopReferanceGroupForDivision(Group leagueReferanceParent, Group divisionTemplate,
+	private Group findOrCreateTopReferanceGroupForDivision(
+			Group leagueReferanceParent, Group divisionTemplate,
 			Collection templateOwners) {
 		Iterator it = leagueReferanceParent.getChildrenIterator();
 		while (it.hasNext()) {
 			Group child = (Group) it.next();
-			if (child.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER)) {
-				if (child.getAliasID() == ((Integer) divisionTemplate.getPrimaryKey()).intValue()) {
+			if (child.getGroupType().equals(
+					IWMemberConstants.GROUP_TYPE_CLUB_PLAYER)) {
+				if (child.getAliasID() == ((Integer) divisionTemplate
+						.getPrimaryKey()).intValue()) {
 					return child;
 				}
 			}
@@ -297,8 +343,10 @@ public class SpecialConnectionUpdateThread extends Thread {
 		try {
 			// Create a new group under the league_club_division
 			// group that links to the playerGroup in the league.
-			Group topReferanceGroupForDivision = getGroupBusiness().createGroupUnder(divisionTemplate.getName(), "",
-					IWMemberConstants.GROUP_TYPE_CLUB_PLAYER, leagueReferanceParent);
+			Group topReferanceGroupForDivision = getGroupBusiness()
+					.createGroupUnder(divisionTemplate.getName(), "",
+							IWMemberConstants.GROUP_TYPE_CLUB_PLAYER,
+							leagueReferanceParent);
 			// This is a hack to store the connection between the
 			// copy and the original. Should maybe be replaced with
 			// some metadata.
@@ -312,14 +360,14 @@ public class SpecialConnectionUpdateThread extends Thread {
 				Iterator owners = templateOwners.iterator();
 				while (owners.hasNext()) {
 					User owner = (User) owners.next();
-					getGroupBusiness().applyOwnerAndAllGroupPermissionsToNewlyCreatedGroupForUserAndHisPrimaryGroup(
-							topReferanceGroupForDivision, owner);
+					getGroupBusiness()
+							.applyOwnerAndAllGroupPermissionsToNewlyCreatedGroupForUserAndHisPrimaryGroup(
+									topReferanceGroupForDivision, owner);
 				}
 			}
 
 			return topReferanceGroupForDivision;
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -330,11 +378,13 @@ public class SpecialConnectionUpdateThread extends Thread {
 	 * Finds the group in the division that is connected to the templateGroup
 	 * and updates the metadata for it.
 	 */
-	private Group findTemplateReferanceInDivision(Group division, Group templateGroup) {
+	private Group findTemplateReferanceInDivision(Group division,
+			Group templateGroup) {
 		Iterator divisionGroups = division.getChildrenIterator();
 		try {
 			Map metadata = templateGroup.getMetaDataAttributes();
-			int template_id = ((Integer) templateGroup.getPrimaryKey()).intValue();
+			int template_id = ((Integer) templateGroup.getPrimaryKey())
+					.intValue();
 			while (divisionGroups.hasNext()) {
 				Group divGroup = (Group) divisionGroups.next();
 				if (divGroup.getAliasID() == template_id) {
@@ -344,11 +394,12 @@ public class SpecialConnectionUpdateThread extends Thread {
 					// value.
 					Map currentMetadata = divGroup.getMetaDataAttributes();
 					if (currentMetadata != null && !currentMetadata.isEmpty()) {
-						Iterator currMetaIt = currentMetadata.keySet().iterator();
+						Iterator currMetaIt = currentMetadata.keySet()
+								.iterator();
 						while (currMetaIt.hasNext()) {
 							divGroup.removeMetaData((String) currMetaIt.next());
 						}
-						
+
 						divGroup.store();
 					}
 					divGroup.setMetaDataAttributes(metadata);
@@ -357,8 +408,7 @@ public class SpecialConnectionUpdateThread extends Thread {
 					return divGroup;
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -392,7 +442,8 @@ public class SpecialConnectionUpdateThread extends Thread {
 			Iterator it = children.iterator();
 			while (it.hasNext()) {
 				Group child = (Group) it.next();
-				if (child.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION)) {
+				if (child.getGroupType().equals(
+						IWMemberConstants.GROUP_TYPE_CLUB_DIVISION)) {
 					return child;
 				}
 			}
@@ -406,9 +457,9 @@ public class SpecialConnectionUpdateThread extends Thread {
 	private GroupBusiness getGroupBusiness() {
 		GroupBusiness business = null;
 		try {
-			business = (GroupBusiness) IBOLookup.getServiceInstance(iwac, GroupBusiness.class);
-		}
-		catch (IBOLookupException e) {
+			business = (GroupBusiness) IBOLookup.getServiceInstance(iwac,
+					GroupBusiness.class);
+		} catch (IBOLookupException e) {
 			e.printStackTrace();
 		}
 		return business;
