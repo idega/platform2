@@ -51,7 +51,7 @@ public class PhoneFinanceHandler implements FinanceHandler {
 	// public static float tax = 1.245f;
 	public static float tax = 1.0f;
 	public static float fastaGjald = -923.0f;
-	public static int fastaGjaldsLykill = 4415;
+	public static int fastaGjaldsLykill = 25; //key 4415;
 
 	int count = 0;
 
