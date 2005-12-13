@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
 import com.idega.block.basket.business.BasketBusiness;
@@ -117,6 +118,35 @@ public class Checkout extends CashierSubWindowTemplate {
 		}
 	}
 
+	private void updateBasket(IWContext iwc) {
+		Map entries = null;
+		try {
+			entries = getBasketBusiness(iwc).getBasket();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+
+		if (entries != null && !entries.isEmpty()) {
+			Iterator it = entries.keySet().iterator();
+
+			while (it.hasNext()) {
+				FinanceEntry entry = (FinanceEntry) ((BasketEntry) entries
+						.get(it.next())).getItem();
+				try {
+					entry = getAccountingBusiness(iwc).getFinanceEntryByPrimaryKey((Integer)entry.getPrimaryKey());
+					getBasketBusiness(iwc).removeItem(entry);						
+					if (entry.getEntryOpen()) {
+						getBasketBusiness(iwc).addItem(entry);
+					} 
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				} catch (EJBException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
 	private void updateDiscount(IWContext iwc) {
 		try {
 			Map entries = null;
@@ -246,6 +276,7 @@ public class Checkout extends CashierSubWindowTemplate {
 	public void main(IWContext iwc) {
 		int status = getCurrentStatus(iwc);
 
+		updateBasket(iwc);
 		switch (status) {
 			case STATUS_VIEW_BASKET :
 				viewBasket(iwc);
