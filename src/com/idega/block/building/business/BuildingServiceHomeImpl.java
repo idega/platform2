@@ -1,17 +1,24 @@
+/**
+ * 
+ */
 package com.idega.block.building.business;
 
 
-public class BuildingServiceHomeImpl extends com.idega.business.IBOHomeImpl implements BuildingServiceHome
-{
- protected Class getBeanInterfaceClass(){
-  return BuildingService.class;
- }
 
+import com.idega.business.IBOHomeImpl;
 
- public BuildingService create() throws javax.ejb.CreateException{
-  return (BuildingService) super.createIBO();
- }
+/**
+ * @author bluebottle
+ *
+ */
+public class BuildingServiceHomeImpl extends IBOHomeImpl implements
+		BuildingServiceHome {
+	protected Class getBeanInterfaceClass() {
+		return BuildingService.class;
+	}
 
-
+	public BuildingService create() throws javax.ejb.CreateException {
+		return (BuildingService) super.createIBO();
+	}
 
 }

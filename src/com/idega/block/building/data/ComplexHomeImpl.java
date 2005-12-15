@@ -1,29 +1,36 @@
+/**
+ * 
+ */
 package com.idega.block.building.data;
 
+import java.util.Collection;
 
-public class ComplexHomeImpl extends com.idega.data.IDOFactory implements ComplexHome
-{
- protected Class getEntityInterfaceClass(){
-  return Complex.class;
- }
+import javax.ejb.FinderException;
 
+import com.idega.data.IDOFactory;
 
- public Complex create() throws javax.ejb.CreateException{
-  return (Complex) super.createIDO();
- }
+/**
+ * @author bluebottle
+ *
+ */
+public class ComplexHomeImpl extends IDOFactory implements ComplexHome {
+	protected Class getEntityInterfaceClass() {
+		return Complex.class;
+	}
 
+	public Complex create() throws javax.ejb.CreateException {
+		return (Complex) super.createIDO();
+	}
 
-public java.util.Collection findAll()throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((ComplexBMPBean)entity).ejbFindAll();
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public Complex findByPrimaryKey(Object pk) throws javax.ejb.FinderException {
+		return (Complex) super.findByPrimaryKeyIDO(pk);
+	}
 
- public Complex findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (Complex) super.findByPrimaryKeyIDO(pk);
- }
-
-
+	public Collection findAll() throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ComplexBMPBean) entity).ejbFindAll();
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
 }

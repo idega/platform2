@@ -1,10 +1,26 @@
+/**
+ * 
+ */
 package com.idega.block.building.data;
 
+import java.util.Collection;
 
-public interface ComplexHome extends com.idega.data.IDOHome
-{
- public Complex create() throws javax.ejb.CreateException;
- public Complex findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
- public java.util.Collection findAll()throws javax.ejb.FinderException;
+import javax.ejb.FinderException;
+
+import com.idega.data.IDOHome;
+
+/**
+ * @author bluebottle
+ *
+ */
+public interface ComplexHome extends IDOHome {
+	public Complex create() throws javax.ejb.CreateException;
+
+	public Complex findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
+
+	/**
+	 * @see com.idega.block.building.data.ComplexBMPBean#ejbFindAll
+	 */
+	public Collection findAll() throws FinderException;
 
 }

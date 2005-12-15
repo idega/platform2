@@ -1,13 +1,75 @@
+/**
+ * 
+ */
 package com.idega.block.building.data;
 
-public interface Complex extends BuildingEntity
-{
- public java.util.Collection getBuildings();
- public int getImageId();
- public java.lang.String getInfo();
- public java.lang.String getName();
- public void setImageId(int p0);
- public void setImageId(java.lang.Integer p0);
- public void setInfo(java.lang.String p0);
- public void setName(java.lang.String p0);
+import java.util.Collection;
+
+import com.idega.core.builder.data.ICPage;
+
+/**
+ * @author bluebottle
+ *
+ */
+public interface Complex extends BuildingEntity {
+	/**
+	 * @see com.idega.block.building.data.ComplexBMPBean#getName
+	 */
+	public String getName();
+
+	/**
+	 * @see com.idega.block.building.data.ComplexBMPBean#getInfo
+	 */
+	public String getInfo();
+
+	/**
+	 * @see com.idega.block.building.data.ComplexBMPBean#getImageId
+	 */
+	public int getImageId();
+
+	/**
+	 * @see com.idega.block.building.data.ComplexBMPBean#getFlashPageID
+	 */
+	public int getFlashPageID();
+
+	/**
+	 * @see com.idega.block.building.data.ComplexBMPBean#getFlashPage
+	 */
+	public ICPage getFlashPage();
+
+	/**
+	 * @see com.idega.block.building.data.ComplexBMPBean#setName
+	 */
+	public void setName(String name);
+
+	/**
+	 * @see com.idega.block.building.data.ComplexBMPBean#setInfo
+	 */
+	public void setInfo(String info);
+
+	/**
+	 * @see com.idega.block.building.data.ComplexBMPBean#setImageId
+	 */
+	public void setImageId(int image_id);
+
+	/**
+	 * @see com.idega.block.building.data.ComplexBMPBean#setImageId
+	 */
+	public void setImageId(Integer image_id);
+
+	/**
+	 * @see com.idega.block.building.data.ComplexBMPBean#setFlashPageID
+	 */
+	public void setFlashPageID(int pageID);
+
+	/**
+	 * @see com.idega.block.building.data.ComplexBMPBean#setFlashPage
+	 */
+	public void setFlashPage(ICPage page);
+
+	/**
+	 * @see com.idega.block.building.data.ComplexBMPBean#getBuildings
+	 */
+	public Collection getBuildings();
+
 }

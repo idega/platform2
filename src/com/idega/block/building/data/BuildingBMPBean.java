@@ -5,6 +5,7 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 import com.idega.core.file.data.ICFile;
+import com.idega.data.IDOQuery;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.SelectQuery;
@@ -131,11 +132,12 @@ public class BuildingBMPBean extends com.idega.block.text.data.TextEntityBMPBean
 	}
 
 	public Collection ejbFindByComplex(Integer complexID) throws FinderException {
-		Table building = new Table(this);
-		SelectQuery query = new SelectQuery(building);
-		query.addColumn(new WildCardColumn(building));
-		query.addCriteria(new MatchCriteria(building, BU_COMPLEX_ID, MatchCriteria.EQUALS, complexID.intValue()));
-		return idoFindPKsBySQL(query.toString());
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this);
+		query.appendWhereEquals(BU_COMPLEX_ID, complexID);
+		query.appendOrderBy(NAME);
+		
+		return idoFindPKsByQuery(query);
 	}
 
 	public Collection ejbHomeGetImageFilesByComplex(Integer complexID) throws FinderException {

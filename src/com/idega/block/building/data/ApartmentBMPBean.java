@@ -5,6 +5,7 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 import com.idega.data.IDOException;
+import com.idega.data.IDOQuery;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.query.Column;
 import com.idega.data.query.MatchCriteria;
@@ -224,7 +225,7 @@ public class ApartmentBMPBean extends com.idega.block.text.data.TextEntityBMPBea
 		if(complexID !=null && complexID.intValue()>0){
 			query.addCriteria(new MatchCriteria(building,BuildingBMPBean.BU_COMPLEX_ID,MatchCriteria.EQUALS,complexID.intValue()));
 			if(order)
-				query.addOrder(complex,ComplexBMPBean.NAME,true);
+				query.addOrder(complex,ComplexBMPBean.COLUMN_NAME,true);
 			
 		}
 		if(buildingID !=null && buildingID.intValue()>0 ){
@@ -251,11 +252,12 @@ public class ApartmentBMPBean extends com.idega.block.text.data.TextEntityBMPBea
 	}
 	
 	public Collection ejbFindByFloor(Integer floorID)throws FinderException{
-		Table floor =new Table(this);
-		SelectQuery query =new SelectQuery(floor);
-		query.addColumn(new WildCardColumn(floor));
-		query.addCriteria(new MatchCriteria(floor,BU_FLOOR_ID,MatchCriteria.EQUALS,floorID.intValue()));
-		return idoFindPKsBySQL(query.toString());	
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this);
+		query.appendWhereEquals(BU_FLOOR_ID, floorID);
+		query.appendOrderBy(NAME);
+		
+		return idoFindPKsByQuery(query);	
 	}
 	
 	public Collection ejbFindAll() throws FinderException{

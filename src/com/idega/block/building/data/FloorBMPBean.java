@@ -4,11 +4,8 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
+import com.idega.data.IDOQuery;
 import com.idega.data.IDORelationshipException;
-import com.idega.data.query.MatchCriteria;
-import com.idega.data.query.SelectQuery;
-import com.idega.data.query.Table;
-import com.idega.data.query.WildCardColumn;
 
 /**
 
@@ -76,11 +73,12 @@ public class FloorBMPBean extends com.idega.block.text.data.TextEntityBMPBean  i
 	}
 	
 	public Collection ejbFindByBuilding(Integer buildingID)throws FinderException{
-		Table building =new Table(this);
-		SelectQuery query =new SelectQuery(building);
-		query.addColumn(new WildCardColumn(building));
-		query.addCriteria(new MatchCriteria(building,BU_BUILDING_ID,MatchCriteria.EQUALS,buildingID.intValue()));
-		return idoFindPKsBySQL(query.toString());	
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this);
+		query.appendWhereEquals(BU_BUILDING_ID, buildingID);
+		query.appendOrderBy(NAME);
+		
+		return idoFindPKsByQuery(query);	
 	}
 	
 	

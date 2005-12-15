@@ -180,6 +180,13 @@ public class BuildingViewer extends Block {
 			complexTable.add(complexLink, 1, 4);
 			complexTable.add("&nbsp;&nbsp;&nbsp;", 1, 4);
 			complexTable.add(locationLink, 1, 4);
+			if (complex.getFlashPageID() > 0) {
+				Image flashImage = iwrb_.getImage("/building/flash.gif");
+				Link flashLink = new Link(flashImage);
+				flashLink.setPage(complex.getFlashPageID());
+				complexTable.add("&nbsp;&nbsp;&nbsp;", 1, 4);
+				complexTable.add(flashLink, 1, 4);				
+			}
 
 			String divideText = "<br>.........<br><br>";
 

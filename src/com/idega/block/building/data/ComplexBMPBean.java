@@ -4,64 +4,104 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.text.data.TextEntityBMPBean;
+import com.idega.core.builder.data.ICPage;
+import com.idega.data.IDOQuery;
+
 /**
- * Title:
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:      idega multimedia
- * @author       <a href="mailto:aron@idega.is">Aron Birkir</a>
+ * Title: Description: Copyright: Copyright (c) 2001 Company: idega multimedia
+ * 
+ * @author <a href="mailto:aron@idega.is">Aron Birkir</a>
  * @version 1.0
  */
-public class ComplexBMPBean extends com.idega.block.text.data.TextEntityBMPBean implements com.idega.block.building.data.Complex {
-	
-	protected static final String IC_IMAGE_ID = "ic_image_id";
-	protected static final String INFO = "info";
-	public static final String NAME = "name";
-	protected static final String BU_COMPLEX = "bu_complex";
-	
+public class ComplexBMPBean extends TextEntityBMPBean implements Complex {
+
+	protected static final String ENTITY_NAME = "bu_complex";
+
+	protected static final String COLUMN_NAME = "name";
+
+	protected static final String COLUMN_INFO = "info";
+
+	protected static final String COLUMN_IMAGE = "ic_image_id";
+
+	protected static final String COLUMN_FLASH_PAGE = "flash_page_id";
+
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		addAttribute(NAME, "Name", true, true, java.lang.String.class);
-		addAttribute(INFO, "Info", true, true, java.lang.String.class, 4000);
-		addAttribute(IC_IMAGE_ID, "Map", true, true, java.lang.Integer.class);
+		addAttribute(COLUMN_NAME, "Name", String.class);
+		addAttribute(COLUMN_INFO, "Info", String.class, 4000);
+		addAttribute(COLUMN_IMAGE, "Map", Integer.class);
+		addManyToOneRelationship(COLUMN_FLASH_PAGE, ICPage.class);
 	}
+
 	public String getEntityName() {
-		return BU_COMPLEX;
+		return ENTITY_NAME;
 	}
+
+	// getters
 	public String getName() {
-		return getStringColumnValue(NAME);
+		return getStringColumnValue(COLUMN_NAME);
 	}
-	public void setName(String name) {
-		setColumn(NAME, name);
-	}
+
 	public String getInfo() {
-		return getStringColumnValue(INFO);
+		return getStringColumnValue(COLUMN_INFO);
 	}
-	public void setInfo(String info) {
-		setColumn(INFO, info);
-	}
+
 	public int getImageId() {
-		return getIntColumnValue(IC_IMAGE_ID);
+		return getIntColumnValue(COLUMN_IMAGE);
 	}
+
+	public int getFlashPageID() {
+		return getIntColumnValue(COLUMN_FLASH_PAGE);
+	}
+	
+	public ICPage getFlashPage() {
+		return (ICPage) getColumnValue(COLUMN_FLASH_PAGE);
+	}
+	
+	// setters
+	public void setName(String name) {
+		setColumn(COLUMN_NAME, name);
+	}
+
+	public void setInfo(String info) {
+		setColumn(COLUMN_INFO, info);
+	}
+
 	public void setImageId(int image_id) {
-		setColumn(IC_IMAGE_ID, image_id);
+		setColumn(COLUMN_IMAGE, image_id);
 	}
+
 	public void setImageId(Integer image_id) {
-		setColumn(IC_IMAGE_ID, image_id);
+		setColumn(COLUMN_IMAGE, image_id);
 	}
 	
-	public Collection ejbFindAll() throws FinderException{
-		return idoFindAllIDsBySQL();
+	public void setFlashPageID(int pageID) {
+		setColumn(COLUMN_FLASH_PAGE, pageID);
 	}
 	
-	public Collection getBuildings(){
+	public void setFlashPage(ICPage page) {
+		setColumn(COLUMN_FLASH_PAGE, page);
+	}
+
+	// ejb
+	public Collection ejbFindAll() throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this);
+		query.appendOrderBy(COLUMN_NAME);
+
+		System.out.println("query = " + query.toString());
+		
+		return this.idoFindPKsByQuery(query);
+	}
+
+	public Collection getBuildings() {
 		try {
 			return super.idoGetRelatedEntities(Building.class);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
-			throw new RuntimeException("Error in getBuildings() : " + e.getMessage());
+			throw new RuntimeException("Error in getBuildings() : "
+					+ e.getMessage());
 		}
 	}
-	
 }
