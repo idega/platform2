@@ -952,10 +952,8 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
         	report = getWorkReportHome().findByPrimaryKey(new Integer(reportID));
         	String mainBoardName = getIWApplicationContext().getIWMainApplication().getBundle(ClubSelector.IW_BUNDLE_IDENTIFIER).getProperty(WorkReportConstants.WR_MAIN_BOARD_NAME, "ADA");
         	if (workReportGroup.getName().equals(mainBoardName)) {
-        		List mainCommittee = new ArrayList();
-        		mainCommittee.add(IWMemberConstants.GROUP_TYPE_CLUB_COMMITTEE_MAIN);
-        		Collection mainComm = null;
-       			mainComm = this.getGroupBusiness().getChildGroupsRecursiveResultFiltered(report.getGroupId().intValue(),mainCommittee,true);
+        		Group club = getGroupBusiness().getGroupByGroupID(report.getGroupId().intValue());
+        		Collection mainComm = getMainBoardGroupCollection(club);
        			if (mainComm != null && !mainComm.isEmpty()) {
         			boardGroup = (Group)mainComm.iterator().next();
         		}
@@ -1809,14 +1807,12 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		try {
 			//so we don't duplicate them!
 			try {
-				getWorkReportDivisionBoardHome().findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(workReportId, ((Integer) mainBoardGroup.getPrimaryKey()).intValue());
+				getWorkReportDivisionBoardHome().findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(workReportId, groupId);
 			}
 			catch (FinderException e) {
 				try {
-					createWorkReportDivisionBoard(workReportId, getGroupBusiness().getGroupByGroupID(mainBoardGroup.getGroupId().intValue()), mainBoardGroup);
-				}
-				catch (RemoteException e1) {
-					e1.printStackTrace();
+					Group club = groupBusiness.getGroupByGroupID(groupId);
+					createWorkReportDivisionBoard(workReportId, club, mainBoardGroup);
 				}
 				catch (FinderException e1) {
 					e1.printStackTrace();
@@ -1874,39 +1870,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		
 		List divisionType = new ArrayList();
 		divisionType.add(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION);
-		List mainCommittee = new ArrayList();
-		mainCommittee.add(IWMemberConstants.GROUP_TYPE_CLUB_COMMITTEE_MAIN);
-		
-		if(type.equals(IWMemberConstants.GROUP_TYPE_CLUB)) {
-			mainComm = groupBusiness.getChildGroupsRecursiveResultFiltered(groupId,mainCommittee,true);
-		}
-		else if(type.equals(IWMemberConstants.GROUP_TYPE_LEAGUE)){
-			List committees = new ArrayList();
-			committees.add(IWMemberConstants.GROUP_TYPE_LEAGUE_COMMITTEE);
-			Collection comm = groupBusiness.getChildGroups(club, committees, true);
-			if(comm!=null && !comm.isEmpty()){
-				Iterator iter = comm.iterator(); 
-				Group group = null;
-				while (iter.hasNext() && (mainComm==null || mainComm.isEmpty())) {
-					group = (Group) iter.next();
-					mainComm = groupBusiness.getChildGroupsRecursiveResultFiltered( ((Integer)group.getPrimaryKey()).intValue(),mainCommittee,true);
-				}
-			}
-		}
-		else if(type.equals(IWMemberConstants.GROUP_TYPE_REGIONAL_UNION)){
-			List committees = new ArrayList();
-			committees.add(IWMemberConstants.GROUP_TYPE_REGIONAL_UNION_COMMITTEE);
-			Collection comm = groupBusiness.getChildGroups(club, committees, true);
-			if(comm!=null && !comm.isEmpty()){
-				Iterator iter = comm.iterator(); 
-				Group group = null;
-				while (iter.hasNext() && (mainComm==null || mainComm.isEmpty())) {
-					group = (Group) iter.next();
-					mainComm = groupBusiness.getChildGroupsRecursiveResultFiltered( ((Integer)group.getPrimaryKey()).intValue(),mainCommittee,true);
-				}
-			}
-		}
-		
+		mainComm = getMainBoardGroupCollection(club);
 		//
 		// create work report board members
 		//
@@ -1969,6 +1933,45 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 						
 	
 		return true;
+	}
+
+	private Collection getMainBoardGroupCollection(Group group) throws RemoteException {
+		Collection mainComm = null;
+		if (group != null) {
+			List mainCommittee = new ArrayList();
+			mainCommittee.add(IWMemberConstants.GROUP_TYPE_CLUB_COMMITTEE_MAIN);
+			String type = group.getGroupType();
+			if(type.equals(IWMemberConstants.GROUP_TYPE_CLUB)) {
+				mainComm = getGroupBusiness().getChildGroupsRecursiveResultFiltered(((Integer)group.getPrimaryKey()).intValue(),mainCommittee,true);
+			}
+			else if(type.equals(IWMemberConstants.GROUP_TYPE_LEAGUE)){
+				List committees = new ArrayList();
+				committees.add(IWMemberConstants.GROUP_TYPE_LEAGUE_COMMITTEE);
+				Collection comm = getGroupBusiness().getChildGroups(group, committees, true);
+				if(comm!=null && !comm.isEmpty()){
+					Iterator iter = comm.iterator(); 
+					Group committee = null;
+					while (iter.hasNext() && (mainComm==null || mainComm.isEmpty())) {
+						committee = (Group) iter.next();
+						mainComm = getGroupBusiness().getChildGroupsRecursiveResultFiltered( ((Integer)committee.getPrimaryKey()).intValue(),mainCommittee,true);
+					}
+				}
+			}
+			else if(type.equals(IWMemberConstants.GROUP_TYPE_REGIONAL_UNION)){
+				List committees = new ArrayList();
+				committees.add(IWMemberConstants.GROUP_TYPE_REGIONAL_UNION_COMMITTEE);
+				Collection comm = getGroupBusiness().getChildGroups(group, committees, true);
+				if(comm!=null && !comm.isEmpty()){
+					Iterator iter = comm.iterator(); 
+					Group committee = null;
+					while (iter.hasNext() && (mainComm==null || mainComm.isEmpty())) {
+						committee = (Group) iter.next();
+						mainComm = getGroupBusiness().getChildGroupsRecursiveResultFiltered( ((Integer)committee.getPrimaryKey()).intValue(),mainCommittee,true);
+					}
+				}
+			}
+		}
+		return mainComm;
 	}
 
 	/**
