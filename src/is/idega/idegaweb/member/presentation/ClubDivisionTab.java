@@ -156,8 +156,8 @@ public class ClubDivisionTab extends UserGroupTab{
                     e.printStackTrace();
                 }
 
-                Group group = (Group) (home.findByPrimaryKey(new Integer(
-                        groupId)));
+                Group group = home.findByPrimaryKey(new Integer(
+                        groupId));
                 boardGroupField.setSelectedGroup(groupId, group.getName());
             }
         } catch (Exception e) {
@@ -300,8 +300,10 @@ public class ClubDivisionTab extends UserGroupTab{
                 fieldValues.put(connectionToSpecialFieldName, connection);
             else
                 fieldValues.put(connectionToSpecialFieldName, "");
-            if (boardGroup != null)
+            if (boardGroup != null) {
+            	boardGroup = boardGroup.substring(boardGroup.lastIndexOf("_") + 1);
                 fieldValues.put(boardGroupFieldName, boardGroup);
+            }
             else
                 fieldValues.put(boardGroupFieldName, "");
 
@@ -319,9 +321,9 @@ public class ClubDivisionTab extends UserGroupTab{
     public boolean store(IWContext iwc) {
         Group group;
         try {
-            group = (Group) (((GroupHome) com.idega.data.IDOLookup
+            group = ((GroupHome) com.idega.data.IDOLookup
                     .getHome(Group.class)).findByPrimaryKey(new Integer(
-                    getGroupId())));
+                    getGroupId()));
 
             String number = (String) fieldValues.get(numberFieldName);
             String ssn = (String) fieldValues.get(ssnFieldName);
@@ -368,9 +370,9 @@ public class ClubDivisionTab extends UserGroupTab{
     public void initFieldContents() {
         Group group;
         try {
-            group = (Group) (((GroupHome) com.idega.data.IDOLookup
+            group = ((GroupHome) com.idega.data.IDOLookup
                     .getHome(Group.class)).findByPrimaryKey(new Integer(
-                    getGroupId())));
+                    getGroupId()));
 
             String number = group.getMetaData(IWMemberConstants.META_DATA_DIVISION_NUMBER);
             String ssn = group.getMetaData(IWMemberConstants.META_DATA_DIVISION_SSN);
