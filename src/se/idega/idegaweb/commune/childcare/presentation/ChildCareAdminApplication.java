@@ -502,7 +502,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 					createContract.setOnClick("this.style.display='none';");
 					
 					disabledCreateContract = (GenericButton) getStyledInterface(new GenericButton("create_contract", localize("child_care.create_contract","Create contract")));
-				  disabledCreateContract.setDisabled(true);
+				    disabledCreateContract.setDisabled(true);
 				}
 
 				GenericButton changeDate = getButton("change_date", localize("child_care.change_date","Change date"), ChildCareAdminWindow.METHOD_CHANGE_DATE);
@@ -521,15 +521,17 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 				}
 				else {
 					if (getBusiness().hasTerminationInFutureNotWithProvider(getSession().getChildID(), getSession().getChildCareID())) {
-						ChildCareContract archive = getBusiness().getLatestTerminatedContract(getSession().getChildID());
+						
+						ChildCareContract archive = getBusiness().getLatestTerminatedContract(getSession().getChildID()); 
+						
 						if (archive != null) {
 							IWTimestamp terminationDate = new IWTimestamp(archive.getTerminatedDate());
-							//terminationDate.addDays(1);
 														
 							IWTimestamp validFrom = new IWTimestamp(application.getFromDate());
-							dateWarning = localize("child_care.earliest_possible_placement_date", "Earliest possible placement date") + ": " + terminationDate.getLocaleDate(iwc.getLocale(), IWTimestamp.SHORT);
+							
 							if (terminationDate.isLaterThanOrEquals(validFrom)) {
 								terminationDate.addDays(1);
+								dateWarning = localize("child_care.earliest_possible_placement_date", "Earliest possible placement date") + ": " + terminationDate.getLocaleDate(iwc.getLocale(), IWTimestamp.SHORT);
 								changeDate.addParameterToWindow(ChildCareAdminWindow.PARAMETER_EARLIEST_DATE, terminationDate.toString());
 								table.add(changeDate, 3, 1);
 								disabledCreateContract.setToolTip(localize("child_care.tooltip.button.create_contract.startdate_is_before_latest_termination","Start date is before latest termination date"));
