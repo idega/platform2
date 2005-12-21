@@ -4805,8 +4805,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public ChildCareContract getLatestTerminatedContract(int childID) {
 		try {
-			IWTimestamp stamp = new IWTimestamp();
-			return getChildCareContractArchiveHome().findLatestTerminatedContractByChild(childID, stamp.getDate());
+			//IWTimestamp stamp = new IWTimestamp();
+			//return getChildCareContractArchiveHome().findLatestTerminatedContractByChild(childID, stamp.getDate());			
+			return getChildCareContractArchiveHome().findLatestTerminatedContractByChild(childID, null);
 		}
 		catch (FinderException e) {
 			return null;
