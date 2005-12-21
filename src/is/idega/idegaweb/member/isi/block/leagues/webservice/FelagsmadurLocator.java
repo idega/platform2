@@ -22,6 +22,7 @@ public class FelagsmadurLocator extends org.apache.axis.client.Service implement
     }
 
     // Use to get a proxy class for FelagsmadurSoap
+    //TODO SIGTRYGGUR breyta thessu i alvoru slodina
     private java.lang.String FelagsmadurSoap_address = "http://ksi2.skyrr.is/ssl/vefthjon_felix/felagsmadur.asmx";
 
     public java.lang.String getFelagsmadurSoapAddress() {
