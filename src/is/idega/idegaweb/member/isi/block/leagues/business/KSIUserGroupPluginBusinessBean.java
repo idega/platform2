@@ -1,5 +1,5 @@
 /*
- * $Id: KSIUserGroupPluginBusinessBean.java,v 1.10 2005/08/15 16:47:40 eiki Exp $
+ * $Id: KSIUserGroupPluginBusinessBean.java,v 1.10.4.1 2005/12/21 22:30:03 eiki Exp $
  * Created on Jul 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -445,6 +445,19 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 		}
 		
 		Date date = Date.valueOf(dateOfActivation);
+		IWTimestamp now = new IWTimestamp();
+		IWTimestamp dateWithTime = new IWTimestamp(date);
+		
+		//if date is today, then set the date equal to now so the group relation is changed "right away"
+		if(dateWithTime.getDay()==now.getDay() && dateWithTime.getMonth()==now.getMonth() && dateWithTime.getYear()==now.getYear()){
+			dateWithTime = now;
+		}
+		else{
+			//set midnight of the day before
+			dateWithTime.addDays(-1);
+			dateWithTime.setHour(23);
+			dateWithTime.setMinute(59);
+		}
 		
 		Collection clubs = getGroupBusiness().getGroupsByMetaDataKeyAndValue(IWMemberConstants.META_DATA_CLUB_NUMBER,clubNumberToRegisterTo);
 		Group clubTo = null;
@@ -471,7 +484,7 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 									GroupRelation rel = (GroupRelation) iterator.next();
 									if(!rel.isPassive()){
 										rel.setPassivePending();
-										rel.setTerminationDate((new IWTimestamp(date)).getTimestamp());
+										rel.setTerminationDate((dateWithTime).getTimestamp());
 										rel.setPassiveBy(((Integer)ksiUser.getPrimaryKey()).intValue());
 										rel.store();
 									}
