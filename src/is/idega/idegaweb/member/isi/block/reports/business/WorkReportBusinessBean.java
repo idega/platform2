@@ -1601,8 +1601,12 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	 * @param member
 	 * @return true if successful else false.
 	 */
+	public boolean changeWorkReportGroupOfEntity(int workReportID, WorkReportGroup oldGroup, WorkReportGroup newGroup, IDOEntity member) {
+		return changeWorkReportGroupOfEntity(workReportID, oldGroup, newGroup, member, null);
+	}
+
 	public boolean changeWorkReportGroupOfEntity(int workReportID, WorkReportGroup oldGroup, WorkReportGroup newGroup,
-			IDOEntity member) {
+			IDOEntity member, Map cachedMemberCollections) {
 		TransactionManager manager = com.idega.transaction.IdegaTransactionManager.getInstance();
 		try {
 			manager.begin();
@@ -1618,10 +1622,26 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 						System.err.println("Error adding relation to workreportgroup, maybe relation is already there");
 					}
 				}
-				Collection memberIDs = newGroup.getMemberIDs();
+				Collection memberIDs = null;
+				if (cachedMemberCollections != null) {
+					if (cachedMemberCollections.containsKey(newGroup.getPrimaryKey())) {
+						memberIDs = (Collection)cachedMemberCollections.get(newGroup.getPrimaryKey());
+					}
+					else {
+						memberIDs = newGroup.getMemberIDs();
+						cachedMemberCollections.put(newGroup.getPrimaryKey(),memberIDs);
+					}
+				}
+				else {
+					memberIDs = newGroup.getMemberIDs();
+				}
 				if (memberIDs != null && !memberIDs.contains(member.getPrimaryKey())) {
 				    try {
 						newGroup.addMember(member);
+						if (cachedMemberCollections != null) {
+							memberIDs.add(member.getPrimaryKey());
+							cachedMemberCollections.put(newGroup.getPrimaryKey(), memberIDs);
+						}
 					}
 					catch (IDOAddRelationshipException e) {
 						System.err.println("Error adding relation to workreportgroup, maybe relation is already there");
@@ -1632,6 +1652,9 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			if (oldGroup != null) {
 				try {
 					oldGroup.removeMember(member);
+					if (cachedMemberCollections != null) {
+						cachedMemberCollections.remove(oldGroup.getPrimaryKey());
+					}
 				}
 				catch (IDORemoveRelationshipException e) {
 					e.printStackTrace();
@@ -1665,7 +1688,11 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	 * @return true if successful else false.
 	 */
 	public boolean addWorkReportGroupToEntity(int workReportID, WorkReportGroup newGroup, IDOEntity entity) {
-		return changeWorkReportGroupOfEntity(workReportID, null, newGroup, entity);
+		return addWorkReportGroupToEntity(workReportID, newGroup, entity, null);
+	}
+
+	public boolean addWorkReportGroupToEntity(int workReportID, WorkReportGroup newGroup, IDOEntity entity, Map cachedMemberIDs) {
+		return changeWorkReportGroupOfEntity(workReportID, null, newGroup, entity, cachedMemberIDs);
 	}
 
 	/**
@@ -2165,7 +2192,6 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		//3. Get all player groups under each division
 		//4. Get all users under player groups and register them to the
 		// division
-		Collection childGroups;
 		List divisionType = new ArrayList();
 		divisionType.add(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION);
 		List playerType = new ArrayList();
@@ -2187,6 +2213,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			return false;
 		}
 		Iterator userIterator = allUsers.iterator();
+		Map cachedMemberIDCollections = new HashMap();
 		while (userIterator.hasNext()) {
 			User user = (User) userIterator.next();
 			if (validateSSN(user.getPersonalID())) {
@@ -2202,7 +2229,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 						if (existingMember == null)
 							continue;
 						// add ADA league to member
-						addWorkReportGroupToEntity(workReportId, mainBoardGroup, existingMember);
+						addWorkReportGroupToEntity(workReportId, mainBoardGroup, existingMember, cachedMemberIDCollections);
 						idExistingMember.put(userPrimaryKey, existingMember);
 					}
 					catch (CreateException ex) {
@@ -2246,7 +2273,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 								WorkReportMember wrMember = (WorkReportMember) idExistingMember.get(user.getPrimaryKey());
 								//do we need to check if it exists first?
 								if (wrMember != null) {
-									addWorkReportGroupToEntity(workReportId, workReportGroup, wrMember);
+									addWorkReportGroupToEntity(workReportId, workReportGroup, wrMember,cachedMemberIDCollections);
 								}
 								else {
 									System.err.println("[WorkReportBusiness] error getting user with id "
