@@ -2592,11 +2592,18 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			buffer.append("\n\t\t }");
 		}
 
+		/* commented out so two future contracts can be created
 		if (getBusiness().hasFutureContracts(_applicationID)) {
-			buffer.append("\n\t\t if (careTime != oldCareTime || schoolType != oldSchoolType) {");
+			if (isUsePredefinedCareTimeValues()) {
+				buffer.append("\n\t\t if (careTime != oldCareTime || schoolType != oldSchoolType) {"); 					
+			}
+			else {
+				buffer.append("\n\t\t if (careTimeCode != oldCareTime || schoolType != oldSchoolType) {"); 
+			}
 			buffer.append("\n\t\t\t dateMessage = '").append(localize("childcare.future_contracts_must_be_removed", "Future contracts must be removed before care time can be altered.")).append("';");
 			buffer.append("\n\t\t }");			
 		}
+		*/
 		
 		buffer.append("\n\t }");
 
