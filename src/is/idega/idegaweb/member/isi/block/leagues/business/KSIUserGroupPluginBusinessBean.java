@@ -1,5 +1,5 @@
 /*
- * $Id: KSIUserGroupPluginBusinessBean.java,v 1.10.4.1 2005/12/21 22:30:03 eiki Exp $
+ * $Id: KSIUserGroupPluginBusinessBean.java,v 1.10.4.2 2005/12/22 18:57:06 eiki Exp $
  * Created on Jul 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -28,6 +28,7 @@ import javax.ejb.FinderException;
 import javax.xml.rpc.ServiceException;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBOService;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.business.UserGroupPlugInBusiness;
@@ -43,18 +44,21 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 	public static final String KSI_UUID = "f3d0b26f-79f1-11d9-bd42-054a20130abb";
 	public static final String KSI_CLUB_NUMBER = "14";
 	public static final String WS_RETURN_VALUE_SUCCESS = "success";
+	public static final String ISI_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 	
 	public void afterUserCreateOrUpdate(User user, Group parentGroup) throws CreateException, RemoteException {
 		//after a player is registered he must be added to the KSI system via a webservice
 		boolean useWebService = useWebService(parentGroup);
 		MemberUserBusiness biz = getMemberUserBusiness();
+		
 		if(useWebService){
+			IWResourceBundle iwrb = getResourceBundle();
 			Group club;
 			try {
 				club = biz.getClubForGroup(parentGroup);
 			}
 			catch (NoClubFoundException e) {
-				throw new CreateException("[KSIUserGroupPluginBusiness] - No club found for target group.");
+				throw new CreateException(iwrb.getLocalizedString("ksi.no_club_for_target_group","There is no club for the target group!"));
 			}
 			
 			String clubNumber = club.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER);
@@ -63,25 +67,29 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 				if(clubName!=null && !"".equals(clubName)){
 					try {
 						String msg = registerPlayerToClubViaWebService(user.getPersonalID(),Integer.parseInt(clubNumber.trim()),clubName);
+
+						Object[] messageFormatVariables = {user.getPersonalID(),parentGroup.getName(),parentGroup.getUniqueId(),club.getName(),club.getUniqueId(),msg};
+						
 						if(!msg.equals(WS_RETURN_VALUE_SUCCESS)){
-							throw new CreateException("[KSIUserGroupPluginBusiness] - Failed to create the user in the KSI system (webservice) for pin:"+user.getPersonalID()+" in group : "+parentGroup.getUniqueId()+":"+parentGroup.getUniqueId()+" in club : "+club.getUniqueId()+":"+club.getUniqueId()+" The message was "+msg);
+							throw new CreateException(iwrb.getLocalizedAndFormattedString("ksi.webservice_failed_to_create_user_in_ksi_system",
+									"Failed to create the user in the KSI system (webservice) for pin:{0} in group : {1}:{2} in club : {3}:{4} The message was {5}",messageFormatVariables));
 						}
 					}
 					catch (NumberFormatException e) {
 						e.printStackTrace();
-						throw new CreateException("[KSIUserGroupPluginBusiness] - Failed to create the user in the KSI system for pin:"+user.getPersonalID()+" in group : "+parentGroup.getUniqueId()+":"+parentGroup.getUniqueId()+" in club : "+club.getUniqueId()+":"+club.getUniqueId()+" the club number is not an integer!");
+						throw new CreateException(iwrb.getLocalizedString("ksi.club_number_is_not_a_number","The club number is not an integer!"));
 					}
 					catch (ServiceException e) {
 						e.printStackTrace();
-						throw new CreateException("[KSIUserGroupPluginBusiness] - Failed to create the user in the KSI system (webservice) for pin:"+user.getPersonalID()+" in group : "+parentGroup.getUniqueId()+":"+parentGroup.getUniqueId()+" in club : "+club.getUniqueId()+":"+club.getUniqueId()+". Webservice failed!");
+						throw new CreateException(iwrb.getLocalizedString("ksi.webservice_service_error","The KSI Webservice failed or was unreachable, the error was: ")+e.getMessage());
 					}
 				}
 				else{
-					throw new CreateException("[KSIUserGroupPluginBusiness] - No name was found for target group's club.");
+					throw new CreateException(iwrb.getLocalizedString("ksi.no_club_name_for_target_group","No name was found for target group's club."));
 				}
 			}
 			else{
-				throw new CreateException("[KSIUserGroupPluginBusiness] - No club number was found for target group's club.");
+				throw new CreateException(iwrb.getLocalizedString("ksi.no_club_number_for_target_group", "No club number was found for target group's club."));
 			}
 		}
 	}
@@ -92,6 +100,7 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 		if(errorMessage==null){
 			boolean isClubExchangeDep = isClubMemberExchangeDependent(targetGroup);
 			boolean isNationalityDep = isNationalityDependent(targetGroup);
+			IWResourceBundle iwrb = getResourceBundle();
 			
 			if(isClubExchangeDep || isNationalityDep){
 				MemberUserBusiness biz = getMemberUserBusiness();
@@ -108,7 +117,7 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 					}
 					catch (ServiceException e1) {
 						e1.printStackTrace();
-						return "KSI webservice cannot be reached, please call ISI or KSI and let them know.";
+						iwrb.getLocalizedString("ksi.webservice_unreachable","KSI webservice cannot be reached, please call ISI or KSI and let them know.");
 					}
 					
 					String wsClubNumb = Integer.toString(clubNumberFromWebService);
@@ -117,7 +126,7 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 						clubNumber = biz.getClubNumberForGroup(targetGroup);
 					}
 					catch (NoClubFoundException e1) {
-						return "There is no club for the target group!";
+						return iwrb.getLocalizedString("ksi.no_club_for_target_group","There is no club for the target group!");
 					}
 					
 					
@@ -125,7 +134,7 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 						clubNumber = clubNumber.trim();
 					}
 					else{
-						return "The club of the target group is missing its club number, please let ISI know about it!";
+						return iwrb.getLocalizedString("ksi.no_club_number","The club of the target group is missing its club number, please let ISI know about it!");
 					}
 					
 					//Via webservice
@@ -139,14 +148,14 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 					playerRegisteredInOtherClubInMemberSystem = isRegisteredPlayerInOtherClubThanTargetGroupBelongsTo(user,targetGroup);
 				}
 				catch (NoClubFoundException e1) {
-					return "There is no club for the target group!";
+					return iwrb.getLocalizedString("ksi.no_club_for_target_group","There is no club for the target group!");
 				}
 				catch (NoDivisionFoundException e1) {
-					return "There is no division for the target group!";
+					return iwrb.getLocalizedString("ksi.no_division_for_target_group","There is no division for the target group!");
 				}
 				catch (FinderException e1) {
 					e1.printStackTrace();
-					return "There is no league connected to the division of the target group";
+					return iwrb.getLocalizedString("ksi.no_league_for_target_groups_division","There is no league connected to the division of the target group");
 				}
 				//INIT OF VARIABLES ENDS//
 				/////////////////////////
@@ -158,10 +167,10 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 						errorMessage = checkClubExchangeDependency(user,targetGroup,playerRegisteredInOtherClubInMemberSystem,usingWebService,playerRegisteredInWebService,playerRegisteredInOtherClubInWebService,clubNumberFromWebService);
 					}
 					catch (NoDivisionFoundException e) {
-						return "There is no division for the target group!";
+						return iwrb.getLocalizedString("ksi.no_division_for_target_group","There is no division for the target group!");
 					}
 					catch (NoClubFoundException e) {
-						return "There is no club for the target group!";
+						return iwrb.getLocalizedString("ksi.no_club_for_target_group","There is no club for the target group!");
 					}
 				}
 				
@@ -320,14 +329,14 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 	}
 	
 	protected String checkClubExchangeDependency(User user, Group targetGroup, boolean playerRegisteredInOtherClubInMemberSystem, boolean usingWebService, boolean playerRegisteredInWebService, boolean playerRegisteredInOtherClubInWebService, int clubNumberFromWebService) throws NoDivisionFoundException, RemoteException, NoClubFoundException {
-		
+		IWResourceBundle iwrb = getResourceBundle();
 		if(playerRegisteredInOtherClubInMemberSystem){
 			//here we need the club...
-			return "The player is registered to another club at the moment please contact that club and have him removed or contact the league and ask for a club member exchange";
+			return iwrb.getLocalizedString("ksi.player_in_another_club_in_member_system","The player is registered to another club at the moment please contact that club and have him removed or contact the league and ask for a club member exchange");
 		}else if(usingWebService){
 			if(playerRegisteredInWebService){
 				if(playerRegisteredInOtherClubInWebService){
-					return "The player is registered to another club you need to contact the league and apply for a club member exchange";
+					return  iwrb.getLocalizedString("ksi.player_in_another_club_in_ksi_system","The player is registered to another club you need to contact the league and apply for a club member exchange");
 				}
 			}
 		}
@@ -358,24 +367,23 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 //		ß Or_sending birtist á skjánum: “Jón Jónsson, kt. 123456-7890, er nú _egar skrá_ur í Knattspyrnufélagi_ X.”
 //		ß Hva› me› ﬂegar menn eru ﬂegar skrá›ir í felix í ö›ru félagi
 		boolean icelandicNationality = hasIcelandicCitizenship(user);
-		
+		IWResourceBundle iwrb = getResourceBundle();
 		
 		if(!icelandicNationality && !usingWebService){
-			return "The player does not have an Icelandic citizenship and might still have a foreign players permit. Please contact the league and ask for a club member exchange.";
+			return  iwrb.getLocalizedString("ksi.no_icelandic_citizenship","The player does not have an Icelandic citizenship and might still have a foreign players permit. Please contact the league and ask for a club member exchange.");
 		}
 		else if(playerRegisteredInOtherClubInMemberSystem){
 			//here we need the club...
-			return "The player is registered to another club at the moment please contact that club and have him removed or contact the league and ask for a club member exchange";
+			return iwrb.getLocalizedString("ksi.player_in_another_club_in_member_system","The player is registered to another club at the moment please contact that club and have him removed or contact the league and ask for a club member exchange");	
 		}
 		else if(!icelandicNationality && usingWebService){
 			if(playerRegisteredInWebService){
 				if(playerRegisteredInOtherClubInWebService){
-					
-					return "The player is registered to another club you need to contact the league and apply for a club member exchange";
+					return  iwrb.getLocalizedString("ksi.player_in_another_club_in_ksi_system","The player is registered to another club you need to contact the league and apply for a club member exchange");
 				}
 			}
 			else{
-				return "The player does not have an Icelandic citizenship and might still have a foreign players permit. Please contact the league and apply for a club member exchange.";
+				return  iwrb.getLocalizedString("ksi.no_icelandic_citizenship","The player does not have an Icelandic citizenship and might still have a foreign players permit. Please contact the league and ask for a club member exchange.");
 			}
 		}
 		
@@ -503,4 +511,7 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 		return WS_RETURN_VALUE_SUCCESS;
 	}
 	
+	protected String getBundleIdentifier() {
+		return ISI_BUNDLE_IDENTIFIER;
+	}
 }
