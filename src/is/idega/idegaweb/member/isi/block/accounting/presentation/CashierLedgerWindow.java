@@ -88,8 +88,7 @@ public class CashierLedgerWindow extends CashierSubWindowTemplate {
 						userBiz.callAllUserGroupPluginAfterUserCreateOrUpdateMethod(user, ledgerGroup);
 					}
 					else {
-						Text error = new Text(useriwrb.getLocalizedString("new_user.cannot_add_user_" + errorMessage,
-								errorMessage));
+						Text error = new Text(errorMessage);
 						error.setStyleClass("errorMessage");
 						add(error);
 						addBreak();
@@ -107,11 +106,12 @@ public class CashierLedgerWindow extends CashierSubWindowTemplate {
 						e1.printStackTrace();
 					}
 					String msg = e.getMessage();
+					
 					String errorMSG = useriwrb.getLocalizedString(
-							"new_user.transaction_rollback_" + msg,
-							"User could not be created/added because of the error: "
-									+ msg
-									+ " Please try again or contact the system administrator if you think it is a server error.");
+							"new_user.transaction_rollback",
+							"User could not be created/added because of the error: ")
+							+ msg
+							+ useriwrb.getLocalizedString("new_user.try_again"," Please try again or contact the system administrator if you think it is a server error.");
 					Text error = new Text(errorMSG);
 					error.setStyleClass("errorMessage");
 					add(error);
