@@ -32,8 +32,6 @@ import com.idega.util.IWTimestamp;
  */
 public class UserHistoryList extends Page {
 
-	private Collection groups = null;
-
 	public UserHistoryList() {
 		super();
 	}
@@ -159,15 +157,18 @@ public class UserHistoryList extends Page {
 	 * @return the groups name
 	 */ 
 	private String getGroupName(Group group) {
-		String name = group.getName();
-		if(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER.equals(group.getGroupType())) {
-			Collection parents = group.getParentGroups();
-			Iterator iter = parents.iterator();
-			while(iter.hasNext()) {
-				Group parent = (Group) iter.next();
-				if(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION.equals(parent.getGroupType())) {
-					name = parent.getName() + " - " + name;
-					break;
+		String name = "";
+		if (group != null) {
+			name = group.getName();
+			if(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER.equals(group.getGroupType())) {
+				Collection parents = group.getParentGroups();
+				Iterator iter = parents.iterator();
+				while(iter.hasNext()) {
+					Group parent = (Group) iter.next();
+					if(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION.equals(parent.getGroupType())) {
+						name = parent.getName() + " - " + name;
+						break;
+					}
 				}
 			}
 		}
