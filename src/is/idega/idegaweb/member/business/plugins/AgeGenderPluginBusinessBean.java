@@ -18,6 +18,8 @@ import com.idega.business.IBOServiceBean;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.UnavailableIWContext;
+import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.user.data.Gender;
@@ -99,7 +101,7 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
   }
   
   private int getGender(Group group) throws RemoteException, FinderException {
-    String genderIdString = (String) group.getMetaData(GENDER_META_DATA_KEY);
+    String genderIdString = group.getMetaData(GENDER_META_DATA_KEY);
     if (genderIdString == null || NULL.equals(genderIdString))
       // meta data was not set
       // return NEUTRAL
@@ -113,8 +115,8 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
     
   	if(malePrimaryKeyFromDatastore == null){
   		GenderHome home = (GenderHome) this.getIDOHome(Gender.class);
-  	    malePrimaryKeyFromDatastore = ((Integer) home.getMaleGender().getPrimaryKey());
-  	    femalePrimaryKeyFromDatastore = ((Integer) home.getFemaleGender().getPrimaryKey()); 
+  	    malePrimaryKeyFromDatastore = home.getMaleGender().getPrimaryKey();
+  	    femalePrimaryKeyFromDatastore = home.getFemaleGender().getPrimaryKey(); 
   	}
   	
     if (genderId.equals(malePrimaryKeyFromDatastore))
@@ -146,7 +148,7 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
   }
   
   public boolean isAgeLimitStringentCondition(Group group) {
-    String ageLimitIsStringentConditionString = (String) group.getMetaData(AGE_LIMIT_IS_STRINGENT_CONDITION_META_DATA_KEY);
+    String ageLimitIsStringentConditionString = group.getMetaData(AGE_LIMIT_IS_STRINGENT_CONDITION_META_DATA_KEY);
     return !(ageLimitIsStringentConditionString == null || 
               NULL.equals(ageLimitIsStringentConditionString) ||
               ! (new Boolean(ageLimitIsStringentConditionString).booleanValue()));
@@ -162,7 +164,7 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
   }
   
   public int getLowerAgeLimit(Group group)  {
-    String lowerAgeLimitString = (String) group.getMetaData(LOWER_AGE_LIMIT_META_DATA_KEY);
+    String lowerAgeLimitString = group.getMetaData(LOWER_AGE_LIMIT_META_DATA_KEY);
     if (lowerAgeLimitString == null || NULL.equals(lowerAgeLimitString))
       return LOWER_AGE_LIMIT_DEFAULT;
     else
@@ -178,7 +180,7 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
   }
  
   public int getUpperAgeLimit(Group group)  {
-    String upperAgeLimitString = (String) group.getMetaData(UPPER_AGE_LIMIT_META_DATA_KEY);
+    String upperAgeLimitString = group.getMetaData(UPPER_AGE_LIMIT_META_DATA_KEY);
     if (upperAgeLimitString == null || NULL.equals(upperAgeLimitString))
       return UPPER_AGE_LIMIT_DEFAULT;
     else
@@ -203,7 +205,7 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
   }
   
   public String getKeyDateForAge(Group group)  {
-    String keyDateForAgeString = (String) group.getMetaData(KEY_DATE_FOR_AGE_META_DATA_KEY);
+    String keyDateForAgeString = group.getMetaData(KEY_DATE_FOR_AGE_META_DATA_KEY);
     if (keyDateForAgeString == null || NULL.equals(keyDateForAgeString))
       return DEFAULT_KEY_DATE;
     else
@@ -378,9 +380,18 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
     return calendar;
   }   
 
-  private IWResourceBundle getResourceBundle() {
+  protected IWResourceBundle getResourceBundle() {
     IWMainApplication mainApp = getIWApplicationContext().getIWMainApplication();
     Locale locale = mainApp.getSettings().getDefaultLocale();
+    
+    try {
+		IWContext iwc = IWContext.getInstance();
+		locale = iwc.getCurrentLocale();
+	}
+	catch (UnavailableIWContext e) {
+
+	}
+	
     IWBundle bundle = mainApp.getBundle(getBundleIdentifier());
     return bundle.getResourceBundle(locale);
   }
@@ -426,14 +437,14 @@ public void setClubMemberExchangeDependent(Group group, boolean isDependent){
 }
   
 public boolean isNationalityDependent(Group group){
-	String nDep = (String) group.getMetaData(META_DATA_NATIONALITY_DEPENDENT);
+	String nDep = group.getMetaData(META_DATA_NATIONALITY_DEPENDENT);
     return !(nDep == null || 
               NULL.equals(nDep) ||
               ! (new Boolean(nDep).booleanValue()));
 }
 
 public boolean isClubMemberExchangeDependent(Group group){
-	String cDep = (String) group.getMetaData(META_DATA_CLUB_MEMBER_EXCHANGE_DEPENDENT);
+	String cDep = group.getMetaData(META_DATA_CLUB_MEMBER_EXCHANGE_DEPENDENT);
     return !(cDep == null || 
               NULL.equals(cDep) ||
               ! (new Boolean(cDep).booleanValue()));	
