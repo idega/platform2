@@ -183,14 +183,20 @@ public abstract class CommuneUserFinder extends CommuneBlock {
 							radio = getRadioButton(getParameterName(iwc), user.getPrimaryKey().toString());	
 						}
 						else{
-							if (user.getUniqueId() != null){
+							
+							/* With studentfinder this doesn't work, so i commented it out.
+							 * it returns strange unique id(looks like hash), not userid that
+							 * is needed for StudentPlacements to work with. */
+							
+							/*if (user.getUniqueId() != null){
 								iwc.removeSessionAttribute(getParameterName(iwc));
-								radio = getRadioButton(getParameterUniqueName(iwc), user.getUniqueId());							
+								String temp = user.getUniqueId();
+								radio = getRadioButton(getParameterUniqueName(iwc), user.getPrimaryKey().toString());							
 							}
-							else {
+							else {*/
 								iwc.removeSessionAttribute(getParameterUniqueName(iwc));
 								radio = getRadioButton(getParameterName(iwc), user.getPrimaryKey().toString());							
-							}
+							//}
 						}
 						
 						if (row == 3)
