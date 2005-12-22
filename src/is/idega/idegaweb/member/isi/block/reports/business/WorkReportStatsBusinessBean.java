@@ -51,7 +51,6 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	private IWBundle _iwb = null;
 	private IWResourceBundle _iwrb = null;
 	private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
-	private final long millisecondsInOneDay = 8640000;
 	
 	// keys for localized strings
 	private static final String LOCALIZED_LABEL = "WorkReportStatsBusiness.label";
@@ -86,11 +85,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	private static final String LOCALIZED_MEMBERS_LAST_YEAR = "WorkReportStatsBusiness.members_last_year";
 	private static final String LOCALIZED_PLAYERS_THIS_YEAR = "WorkReportStatsBusiness.players_this_year";
 	private static final String LOCALIZED_PLAYERS_LAST_YEAR = "WorkReportStatsBusiness.players_last_year";
-	private static final String LOCALIZED_COMPETITORS_THIS_YEAR = "WorkReportStatsBusiness.competitors_this_year";
-	private static final String LOCALIZED_COMPETITORS_LAST_YEAR = "WorkReportStatsBusiness.competitors_last_year";
 	private static final String LOCALIZED_CLUB_COUNT_INCACTIVE = "WorkReportStatsBusiness.club_count_inactive";
-	private static final String LOCALIZED_CLUB_COUNT_THIS_YEAR = "WorkReportStatsBusiness.club_count_this_year";
-	private static final String LOCALIZED_CLUB_COUNT_LAST_YEAR = "WorkReportStatsBusiness.club_count_last_year";
 	private static final String LOCALIZED_TOTAL = "WorkReportStatsBusiness.total";
 	private static final String LOCALIZED_MEMBERS_ANNUAL_CHANGE = "WorkReportStatsBusiness.member_annual_change";
 	private static final String LOCALIZED_MEMBERS_ANNUAL_CHANGE_PERCENT = "WorkReportStatsBusiness.member_annual_change_percent";
@@ -99,7 +94,6 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	private static final String LOCALIZED_PLAYERS_ANNUAL_CHANGE_PERCENT = "WorkReportStatsBusiness.player_annual_change_percent";
 	private static final String LOCALIZED_PLAYERS_ANNUAL_CHANGE_PERCENT_OF_TOTAL = "WorkReportStatsBusiness.player_annual_change_percent_of_total";
 	private static final String LOCALIZED_PERCENT_REPORTS_DONE = "WorkReportStatsBusiness.percent_reports_done";
-	private static final String LOCALIZED_COUNT = "WorkReportStatsBusiness.count";
 	private static final String LOCALIZED_MEMBERS_SINGLE_DIVISION = "WorkReportStatsBusiness.single_division_members";
 	private static final String LOCALIZED_MEMBERS_MULTI_DIVISION = "WorkReportStatsBusiness.multi_division_members";
 	private static final String LOCALIZED_PLAYERS_SINGLE_DIVISION = "WorkReportStatsBusiness.single_division_players";
@@ -143,7 +137,6 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	private static final String FIELD_NAME_MEN_UNDER_AGE_LAST_YEAR = "menUnderAgeLimitLastYear";
 	private static final String FIELD_NAME_MEN_OVER_OR_EQUAL_AGE_LAST_YEAR = "menOverOrEqualAgeLimitLastYear";
 	private static final String FIELD_NAME_ALL_UNDER_AGE_LAST_YEAR = "bothGendersUnderAgeLastYear";
-	private static final String FIELD_NAME_ALL_OVER_OR_EQUAL_AGE_LAST_YEAR = "bothGendersEqualOverAgeLastYear";
 	private static final String FIELD_NAME_ALL_AGES_LAST_YEAR = "bothGendersLastYear";
 	private static final String FIELD_NAME_IS_IN_UMFI = "isInUMFI";
 	private static final String FIELD_NAME_WORK_REPORT_STATUS = "workreport_status";
@@ -155,14 +148,10 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	private static final String FIELD_NAME_MEMBERS_LAST_YEAR = "members_last_year";
 	private static final String FIELD_NAME_PLAYERS_THIS_YEAR = "players_this_year";
 	private static final String FIELD_NAME_PLAYERS_LAST_YEAR = "players_last_year";
-	private static final String FIELD_NAME_COMPETITORS_THIS_YEAR = "competitors_this_year";
-	private static final String FIELD_NAME_COMPETITORS_LAST_YEAR = "competitors_last_year";
 	private static final String FIELD_NAME_CLUB_COUNT_DONE = "club_count_done";
 	private static final String FIELD_NAME_CLUB_COUNT_NOT_DONE = "club_count_not_done";
 	private static final String FIELD_NAME_CLUB_COUNT_SOME_DONE = "club_count_some_done";
 	private static final String FIELD_NAME_CLUB_COUNT_INACTIVE = "club_count_inactive";
-	private static final String FIELD_NAME_CLUB_COUNT_THIS_YEAR = "club_count_this_year";
-	private static final String FIELD_NAME_CLUB_COUNT_LAST_YEAR = "club_count_last_year";
 	private static final String FIELD_NAME_MEMBERS_ANNUAL_CHANGE = "annual_member_change";
 	private static final String FIELD_NAME_MEMBERS_ANNUAL_CHANGE_PERCENT = "annual_member_change_percent";
 	private static final String FIELD_NAME_MEMBERS_ANNUAL_CHANGE_PERCENT_OF_TOTAL = "annual_member_change_percent_of_total";
@@ -170,7 +159,6 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	private static final String FIELD_NAME_PLAYERS_ANNUAL_CHANGE_PERCENT = "annual_player_change_percent";
 	private static final String FIELD_NAME_PLAYERS_ANNUAL_CHANGE_PERCENT_OF_TOTAL = "annual_player_change_percent_of_total";
 	private static final String FIELD_NAME_PERCENT_REPORTS_DONE = "percent_reports_done";
-	private static final String FIELD_NAME_COUNT = "count";
 	private static final String FIELD_NAME_MEMBERS_SINGLE_DIVISION = "members_single_division";
 	private static final String FIELD_NAME_MEMBERS_MULTI_DIVISION = "member_multi_division";
 	private static final String FIELD_NAME_PLAYERS_SINGLE_DIVISION = "players_single_division";
@@ -427,7 +415,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					leagueGroupIdList.add(wrGroup.getGroupId());
 				}
 				else{
-					if(!((Integer)wrGroup.getGroupId()).equals(mainGroupId) ){
+					if(!wrGroup.getGroupId().equals(mainGroupId) ){
 						leagueGroupIdList.add(wrGroup.getGroupId());
 					}
 				}
@@ -832,7 +820,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				Iterator iterator = leagues.iterator();
 				while (iterator.hasNext()) {
 					WorkReportGroup league = (WorkReportGroup) iterator.next();
-					Integer leagueKey = (Integer) league.getGroupId();//for comparison this must be the same key both years
+					Integer leagueKey = league.getGroupId();//for comparison this must be the same key both years
 					
 					if (!leagueGroupIdList.contains(league.getGroupId())) {
 						continue; //don't process this one, go to next
@@ -991,7 +979,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				Iterator iterator = leagues.iterator();
 				while (iterator.hasNext()) {
 					WorkReportGroup league = (WorkReportGroup) iterator.next();
-					Integer leagueKey = (Integer) league.getGroupId();//for comparison this must be the same key both years
+					Integer leagueKey = league.getGroupId();//for comparison this must be the same key both years
 					
 					if (!leagueGroupIdList.contains(league.getGroupId())) {
 						continue; //don't process this one, go to next
@@ -2904,7 +2892,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 						division = getWorkReportBusiness().getWorkReportDivisionBoardHome().findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(reportId,wrGroupId);
 					}
 					catch (FinderException e) {
-//						System.out.println("Division not found for workReport: "+report.getGroupName()+"/"+report.getYearOfReport()+ " and workReportGroup: "+league.getName()+"/"+league.getYearOfReport());
+						System.out.println("Division not found for workReport: "+report.getGroupName()+"/"+report.getYearOfReport()+ " and workReportGroup: "+league.getName()+"/"+league.getYearOfReport());
 					    //e.printStackTrace();
 					}
 					
@@ -3809,7 +3797,6 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 
 		
 		Collection reports = getWorkReportBusiness().getWorkReportsForRegionalUnionCollection(year.intValue(), regionalUnionsFilter);
-		WorkReportGroup mainBoardReportGroup = getWorkReportBusiness().getMainBoardWorkReportGroup(year.intValue());
 		Map regionalUnionsStatsMap = new TreeMap();
 		//Iterating through workreports and creating report data 
 		Iterator iter = reports.iterator();
@@ -4076,8 +4063,6 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		// iterate through the ordered map and ordered lists and add to the final collection
 		reportCollection.addAll(regDataCollection);
 		
-		int mMissingTotal = mLastYearTotal - mThisYearTotal;
-		int pMissingTotal = pLastYearTotal - pThisYearTotal;
 		// get the percentage from total and create last row
 		Iterator rData = regDataCollection.iterator();
 		DecimalFormat format = new DecimalFormat("##0.#");
@@ -4091,7 +4076,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			int mLast = ((Integer)rd.getFieldValue(membersLastYear)).intValue();
 			int mMissing = mLast - mNow;
 			rd.addData(membersAnnualChange, new Integer(mMissing));
-			double mChange = getChange((double) mNow, (double) mLast);
+			double mChange = getChange(mNow, mLast);
 			rd.addData(membersAnnualChangePercent, mChange<0.0?"":Integer.toString((int)mChange));
 			double mwn = ((double)mMissing)/((double)mLastYearTotal)*100.0;
 			
@@ -4103,7 +4088,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			int pLast = ((Integer)rd.getFieldValue(playersLastYear)).intValue();
 			int pMissing = pLast - pNow;
 			rd.addData(playersAnnualChange, new Integer(pMissing));
-			double pChange = getChange((double) pNow, (double) pLast);
+			double pChange = getChange(pNow, pLast);
 			rd.addData(playersAnnualChangePercent, pChange<0.0?"":Integer.toString((int)pChange));
 			double pwn = ((double)pMissing)/((double)pLastYearTotal)*100.0;
 			
@@ -4134,7 +4119,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	}
 	
 	private double getChange(double now, double last) {
-		return last==0?(now==0?0:-1):(((double)now)/((double)last)*100.0);
+		return last==0?(now==0?0:-1):(now/last*100.0);
 	}
 	
 	/*
@@ -4307,13 +4292,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		}
 		
 		boolean filterByAge = !(age1==0 && age2==123);
-		
-		WorkReportGroup mainBoard = getWorkReportBusiness().getMainBoardWorkReportGroup(year.intValue());
-		Integer mainGroupId = null;
-		if(mainBoard!=null) {
-			mainGroupId = mainBoard.getGroupId();
-		}
-		
+
 		//initialize stuff
 		initializeBundlesIfNeeded();
 		ReportableCollection reportCollection = new ReportableCollection();
@@ -4372,7 +4351,6 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			try {
 				leagues = report.getLeagues();
 			} catch (IDOException e) {
-				// TODO Auto-generated catch block
 				System.out.println("Exception getting leagues for club " + cName);
 				e.printStackTrace();
 				continue;
@@ -4380,7 +4358,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			Iterator iterator = leagues.iterator();
 			while (iterator.hasNext()) {
 				WorkReportGroup league = (WorkReportGroup) iterator.next();
-				Integer leagueKey = (Integer) league.getGroupId();//for comparison this must be the same key both years
+				Integer leagueKey = league.getGroupId();//for comparison this must be the same key both years
 				
 				if (!leagueGroupIdList.contains(league.getGroupId())) {
 					continue; //don't process this one, go to next
@@ -4622,7 +4600,6 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				try {
 					leagues = report.getLeagues();
 				} catch (IDOException e) {
-					// TODO Auto-generated catch block
 					System.out.println("Exception getting leagues for club " + cName);
 					e.printStackTrace();
 					continue;
@@ -4630,7 +4607,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				Iterator iterator = leagues.iterator();
 				while (iterator.hasNext()) {
 					WorkReportGroup league = (WorkReportGroup) iterator.next();
-					Integer leagueKey = (Integer) league.getGroupId();//for comparison this must be the same key both years
+					Integer leagueKey = league.getGroupId();//for comparison this must be the same key both years
 					if (!leagueGroupIdList.contains(league.getGroupId())) {
 						continue; //don't process this one, go to next
 					}
@@ -5069,35 +5046,6 @@ private ReportableData addToIntegerCount(ReportableField reportableField, Report
 			}
 		}
 		reportableData.addData(reportableField,count);//swap
-	}
-	
-	return reportableData;
-}
-
-private ReportableData addToIntegerCountFromFieldInAnotherReportableData(ReportableField reportableField, ReportableData reportableData, ReportableData dataToGetCountFrom) {
-	if(reportableData!=null && dataToGetCountFrom!=null){//update count
-		Integer count = (Integer)dataToGetCountFrom.getFieldValue(reportableField);
-		Integer oldCount = (Integer)reportableData.getFieldValue(reportableField);
-		if(count!=null && oldCount!=null) {
-			count = new Integer(oldCount.intValue()+count.intValue());
-		} 
-		
-		reportableData.addData(reportableField,count);//swap
-	}
-	
-	return reportableData;
-}
-
-
-private ReportableData addToIntegerCountFromFieldInAnotherReportableData(ReportableField reportableFieldFrom,ReportableField reportableFieldTo, ReportableData reportableData, ReportableData dataToGetCountFrom) {
-	if(reportableData!=null && dataToGetCountFrom!=null){//update count
-		Integer count = (Integer)dataToGetCountFrom.getFieldValue(reportableFieldFrom);
-		Integer oldCount = (Integer)reportableData.getFieldValue(reportableFieldTo);
-		if(count!=null && oldCount!=null) {
-			count = new Integer(oldCount.intValue()+count.intValue());
-		} 
-		
-		reportableData.addData(reportableFieldTo,count);//swap
 	}
 	
 	return reportableData;
