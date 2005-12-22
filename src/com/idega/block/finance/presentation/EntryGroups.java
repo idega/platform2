@@ -155,7 +155,7 @@ public class EntryGroups extends Finance {
 		try {
 			AssessmentBusiness assBuiz = (AssessmentBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc,
 					AssessmentBusiness.class);
-			EntryGroup group = assBuiz.groupEntriesWithSQL(from, to, paymentDate, dueDate);
+			assBuiz.groupEntriesWithSQL(from, to, paymentDate, dueDate);
 							
 			return getHeader(localize(LOC_KEY_GROUP_CREATED, "Group was created"));
 		}
