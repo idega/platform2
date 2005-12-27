@@ -42,7 +42,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.108.2.5 2005/12/13 17:14:00 dainis Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.108.2.6 2005/12/27 10:09:13 igors Exp $
  * @since 12.2.2003 
  */
 
@@ -219,6 +219,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 				getChildCareBusiness(iwc).removeFromQueue(application, iwc.getCurrentUser());
 				applications = findApplications(iwc);
 				form.setOnSubmit(createPagePhase1(iwc, layoutTbl, applications));
+				updateChoiceNumber(applications);				
 
 				break;
 
@@ -511,6 +512,93 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 		application.store();
 		//deletedApps.add(application);
 	}
+	             
+	private void updateChoiceNumber(Collection applications) throws RemoteException {
+			
+		    boolean index_exist[];
+			index_exist = new boolean[6];
+			index_exist[1] = false;
+			index_exist[2] = false;
+			index_exist[3] = false;
+			index_exist[4] = false;
+			index_exist[5] = false;
+
+			int index_place[];
+			index_place = new int[6];
+			index_place[1]=0;
+			index_place[2]=0;
+			index_place[3]=0;
+			index_place[4]=0;
+			index_place[5]=0;
+			
+			Iterator allaps = applications.iterator();
+			while (allaps.hasNext()) {
+				ChildCareApplication app = (ChildCareApplication) allaps.next();
+	
+				if(!app.isActive()){
+				   if(app.getChoiceNumber()==1){
+					   index_exist[1] = true;
+					   index_place[1] = 1;
+				   }
+				   if(app.getChoiceNumber()==2){
+					   index_exist[2] = true;
+					   index_place[2] = 2;
+				   }
+				   if(app.getChoiceNumber()==3){
+					   index_exist[3] = true;
+					   index_place[3] = 3;
+				   }
+				   if(app.getChoiceNumber()==4){
+					   index_exist[4] = true;
+					   index_place[4] = 4;
+				   }
+				   if(app.getChoiceNumber()==5){
+					   index_exist[5] = true;
+					   index_place[5] = 5;
+				   }
+				
+				}
+			}
+            
+			for(int i=1;i<=5;i++){
+				if(index_exist[i]){
+					int choiceNumberCounter=1;
+					for(int j=1;j<=5;j++){
+						   if ((index_place[j]>0)&&(index_place[j] < index_place[i])) choiceNumberCounter++; 	
+					}
+					index_place[i] = choiceNumberCounter;
+				}
+			}
+
+			allaps = applications.iterator();
+			while (allaps.hasNext()) {
+				ChildCareApplication app = (ChildCareApplication) allaps.next();
+	
+				if(!app.isActive()){
+				   if ((app.getChoiceNumber()==1) && (index_exist[1])){
+					   app.setChoiceNumber(index_place[1]);
+					   app.store();
+				   }
+				   if((app.getChoiceNumber()==2) && (index_exist[2])){
+					   app.setChoiceNumber(index_place[2]);
+					   app.store();
+				   }
+				   if((app.getChoiceNumber()==3) && (index_exist[3])){
+					   app.setChoiceNumber(index_place[3]);
+					   app.store();
+				   }
+				   if((app.getChoiceNumber()==4) && (index_exist[4])){
+					   app.setChoiceNumber(index_place[4]);
+					   app.store();
+				   }
+				   if((app.getChoiceNumber()==5) && (index_exist[5])){
+					   app.setChoiceNumber(index_place[5]);
+					   app.store();
+				   }
+				
+				}
+			}			
+	}	
 
 	/**
 	 * Represent a accept/reject request for an applications
@@ -587,7 +675,8 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 		if (numberOfApplications == 0) {
 			layoutTbl.add(getSmallErrorText(localize(NO_APPLICATION)), 1, 1);
 			return "";
-		}
+		}	
+		
 		layoutTbl.add(new HiddenInput(CCConstants.ACTION, String.valueOf(CCConstants.ACTION_SUBMIT_1)), 1, 1);
 		boolean hasActiveApplication = getChildCareBusiness(iwc).hasActiveApplication(childID, _caseCode);
 		Table placementInfo = getPlacedAtSchool(iwc, hasActiveApplication);
@@ -595,7 +684,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 		boolean hasOffer = getChildCareBusiness(iwc).hasOutstandingOffers(childID, _caseCode);
 
         ChildCarePlaceOfferTable1 appTable = new ChildCarePlaceOfferTable1(iwc, this, sortApplications(applications, false), hasOffer, hasActiveApplication, _hasAcceptedApplication);
-
+		
 		GenericButton cancelBtn = getButton(new GenericButton("cancel", localize(CANCEL)));
 		cancelBtn.setPageToOpen(getParentPageID());
 		cancelBtn.addParameterToPage(CCConstants.ACTION, CCConstants.ACTION_CANCEL_1);
@@ -604,6 +693,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 		SubmitButton submitBtn = (SubmitButton) getButton(new SubmitButton(localize(submitName)));
 		
 		int row = 1;
+		
 		layoutTbl.add(placementInfo, 1, row++);
 		if (applications.size() > 0) {
 			layoutTbl.setHeight(row++, 12);
@@ -612,9 +702,10 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
                 layoutTbl.add(getSortedByBirthdateExplanation(), 1, row++);
                 layoutTbl.setHeight(row++, 6);
             }
-
+            
 			layoutTbl.add(appTable, 1, row++);
 		}
+		
 		if (hasOffer) {
 			layoutTbl.setHeight(row++, 12);
 			layoutTbl.add(cancelBtn, 1, row);
@@ -788,6 +879,8 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 				//TODO implement BankID stuff...
 			}
 		}
+		
+		
 		/*else {
 			layoutTbl.setHeight(row++, 12);
 			layoutTbl.add(getSmallErrorText(localize(NO_PLACEMENT)), 1, row);
@@ -891,7 +984,8 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 			
 			
 			applications = getChildCareBusiness(iwc).getUnhandledApplicationsByChild(childID, _caseCode);
-
+			
+			
 			//Add canceled and removed applications from this session	
 			/*Collection deletedApps = (Collection) iwc.getSessionAttribute(DELETED_APPLICATIONS);
 			if (deletedApps != null) {
