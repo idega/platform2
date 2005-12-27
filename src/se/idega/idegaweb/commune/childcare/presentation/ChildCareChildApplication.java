@@ -17,6 +17,7 @@ import se.idega.idegaweb.commune.care.check.data.GrantedCheck;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
 
+
 import com.idega.block.navigation.presentation.UserHomeLink;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
@@ -63,6 +64,9 @@ public class ChildCareChildApplication extends ChildCareBlock {
 	private final static String PID = "cca_pid";
 	private final static String ADDRESS = "cca_address";
 	private final static String CARE_FROM = "cca_care_from";
+
+	private static final String PROPERTY_CAN_KEEP_ALL_CHOICES_ON_ACCEPT = "can_keep_all_choices_when_acception_offer";
+
 	private final static String APPLICATION_INSERTED = "cca_application_ok";
 	private final static String APPLICATION_FAILURE = "cca_application_failed";
 
@@ -199,8 +203,15 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		}
 		
 		if ((!_noCheckError && !hasOffers && !hasPendingApplications) || isAdmin) {
+
+			
+			//update ChoiseNumbers
+
+			//Collection applications = getBusiness().getApplicationsForChild(child);
+			
+			//getBusiness(). getApplicationsForChild(child);
+			
 			Form form = new Form();
-		
 			Table table = new Table();
 			table.setWidth(getWidth());
 			table.setCellpadding(0);
@@ -258,29 +269,31 @@ public class ChildCareChildApplication extends ChildCareBlock {
 	
 	private void submitForm(IWContext iwc) {
 		boolean done = false;
-		try {
-			int numberOfApplications = hasActivePlacement ? 4 : 5;
-			//if (getBusiness().getAcceptedApplicationsByChild(getSession().getChildID()) != null) {
-			if (getBusiness().getAcceptedApplicationsByChild(((Integer) child.getPrimaryKey()).intValue()) != null) {
-				numberOfApplications--;
-			}
+		boolean canKeepAllChoices = this.getBundle().getBooleanProperty(PROPERTY_CAN_KEEP_ALL_CHOICES_ON_ACCEPT, true);
 
+		try {
+		
+			int numberOfApplications = canKeepAllChoices ? 4 : 1;
+			if (!hasActivePlacement) numberOfApplications = 5;
+			
 			int[] providers = new int[numberOfApplications];
 			String[] dates = new String[numberOfApplications];
 			Date[] queueDates = new Date[numberOfApplications];
 			
+			
 			for (int i = 0; i < numberOfApplications; i++) {
-				providers[i] = iwc.isParameterSet(PARAM_PROVIDER + "_" + (i + 1)) ? Integer.parseInt(iwc.getParameter(PARAM_PROVIDER + "_" + (i + 1))) : -1;
-				dates[i] = iwc.isParameterSet(PARAM_DATE + "_" + (i + 1)) ? iwc.getParameter(PARAM_DATE + "_" + (i + 1)) : null;
-				if (isAdmin) {
-					if (iwc.isParameterSet(PARAM_QUEUE_DATE + "_" + (i + 1))) {
-						queueDates[i] = new IWTimestamp(iwc.getParameter(PARAM_QUEUE_DATE + "_" + (i + 1))).getDate();
-					}
-					else
-						queueDates[i] = null;
-				}
+					providers[i] = iwc.isParameterSet(PARAM_PROVIDER + "_" + (i + 1)) ? Integer.parseInt(iwc.getParameter(PARAM_PROVIDER + "_" + (i + 1))) : -1;
+					dates[i] = iwc.isParameterSet(PARAM_DATE + "_" + (i + 1)) ? iwc.getParameter(PARAM_DATE + "_" + (i + 1)) : null;
+					if (isAdmin) {
+						if (iwc.isParameterSet(PARAM_QUEUE_DATE + "_" + (i + 1))) {
+							queueDates[i] = new IWTimestamp(iwc.getParameter(PARAM_QUEUE_DATE + "_" + (i + 1))).getDate();
+						}
+						else
+							queueDates[i] = null;
+				    }
 			}
-				
+
+			
 			if (!isAdmin) {
 				Collection applications = getBusiness().getApplicationsForChild(child);
 				loop:
@@ -311,12 +324,15 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			}
 
 			done = getBusiness().insertApplications(parent, providers, dates, message, check != null ? ((Integer) check.getPrimaryKey()).intValue() : -1, ((Integer) child.getPrimaryKey()).intValue(), subject, body, false, sendMessages, queueDates, null);
+			
+
+			
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
 			done = false;
 		}
-
+  
 		if (done) {
 			if (getResponsePage() != null)
 				iwc.forwardToIBPage(getParentPage(), getResponsePage());
@@ -327,9 +343,60 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			add(new Text(localize(APPLICATION_FAILURE, "Failed to submit application")));
 	}
 	
+
+	private void updateChoiceNumber()  {
+		
+		int first_index = 0;
+		int second_index = 0;
+		ChildCareApplication app=null;
+
+		
+		for (int i = 1; i <= 5; i++) {
+			app = null;
+			try {
+				app = getBusiness().getNonActiveApplication(((Integer) child.getPrimaryKey()).intValue(), i);
+				if (app != null) {
+					first_index=i;
+				}
+				else break;
+			}
+			catch (RemoteException re) {
+			   app=null;
+			}
+		}
+        
+		if(first_index >= 4) return;
+		
+		for (int i = first_index+1; i <= 5; i++) {
+			app = null;
+			try {
+				app = getBusiness().getNonActiveApplication(((Integer) child.getPrimaryKey()).intValue(), i);
+				if (app != null) {
+					second_index=i;
+					break;
+				}
+				else if(i == 5) return;
+				
+			}
+			catch (RemoteException re) {
+			   app=null;
+			}
+		}
+		if (second_index > 0){
+			app.setChoiceNumber(first_index+1);
+			app.store();
+		}
+		
+		updateChoiceNumber();
+		
+	}	
+		
 	private Table getInputTable(IWContext iwc) throws RemoteException {
+		
+		updateChoiceNumber();
+		
 		Table inputTable = new Table();
-		inputTable.setCellspacing(0);
+		inputTable.setCellspacing(0);  
 		inputTable.setCellpadding(2);
 		inputTable.setColumns(3);
 
@@ -339,7 +406,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 
 		String provider = localize(PARAM_PROVIDER, "Provider");
 		String from = localize(CARE_FROM, "From") + ":";
-		String message = null;
+		String message = null; 
 		Text providerText = null;
 		Text fromText = getSmallHeader(from);
 		Text queueDateText = getSmallHeader(localize("child_care.queue_data", "Queue date") + ":");
@@ -347,29 +414,37 @@ public class ChildCareChildApplication extends ChildCareBlock {
 
 		ChildCareApplication application = null;
 		int areaID = -1;
-		int numberOfApplications = hasActivePlacement ? 4 : 5;
-		//if (getBusiness().getAcceptedApplicationsByChild(getSession().getChildID()) != null) {
-		if (getBusiness().getAcceptedApplicationsByChild(((Integer) child.getPrimaryKey()).intValue()) != null) {
-			numberOfApplications--;
-		}
+		
+		
+	     
+		boolean canKeepAllChoices = this.getBundle().getBooleanProperty(PROPERTY_CAN_KEEP_ALL_CHOICES_ON_ACCEPT, true);		
+		int numberOfApplications = canKeepAllChoices ? 4 : 1;  // TODO is it really 1 ?
+		if (!hasActivePlacement) numberOfApplications = 5;
+
+		
 		for (int i = 1; i < (numberOfApplications + 1); i++) {
+            
+			application = null;
 			try {
-				//application = getBusiness().getNonActiveApplication(getSession().getChildID(), i);
+
 				application = getBusiness().getNonActiveApplication(((Integer) child.getPrimaryKey()).intValue(), i);
 				if (application != null) {
 					areaID = application.getProvider().getSchoolAreaId();
 					message = application.getMessage();
+					
 				}
 			}
 			catch (RemoteException re) {
 				application = null;
 			}
-			
+
 			ProviderDropdownDouble dropdown = (ProviderDropdownDouble) getStyledInterface(getDropdown(iwc.getCurrentLocale(), PARAM_AREA + "_" + i, PARAM_PROVIDER + "_" + i));
 			if (application != null) {
 				dropdown.setSelectedValues(String.valueOf(areaID), String.valueOf(application.getProviderId()));
 			}
+
 			providerText = getSmallHeader(provider + Text.NON_BREAKING_SPACE + i + ":");
+			
 			inputTable.add(providerText, 1, row);
 			//inputTable.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
 			inputTable.add(dropdown, 3, row++);
@@ -413,7 +488,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			}
 
 			inputTable.setHeight(row++, 12);
-		}
+	   }
 		
 		TextArea messageArea = (TextArea) getStyledInterface(new TextArea(PARAM_MESSAGE));
 		messageArea.setRows(4);
