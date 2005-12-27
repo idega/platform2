@@ -38,6 +38,8 @@ class ChildCarePlaceOfferTable1 extends Table {
 	private static Text HEADER_QUEUE_POSITION;
 	private static String CONFIRM_DELETE;
 	private static String CONFIRM_REQUEST;
+	
+	private int itemRow;
 
 	private static String GRANTED, VALID_UNTIL;
 
@@ -84,21 +86,24 @@ class ChildCarePlaceOfferTable1 extends Table {
 
 		initConstants(parent);
 		Iterator i = applications.iterator();
+		//int row = 2;
 		int row = 2;
 		boolean offerPresented = false;
+		itemRow = 1;
 
 		//To avoid more than the first offer to be presented with accept/reject possibilities
 		StringBuffer validateDateScript = new StringBuffer("false ");
 		StringBuffer alertTerminateContractScript = new StringBuffer("false ");
 
 		boolean choiceOneAccepted = false;
-		while (i.hasNext()) {
+		int itemRow = 2;   
+		while (i.hasNext()) { 
 			ChildCareApplication app = ((ComparableApp) i.next()).getApplication();
-
-			if (app.isActive()) {
+			itemRow = app.getChoiceNumber();
+			if (app.isActive()) {   
 				continue;
 			}
-
+			
 			//Only first offer should be presented with possibility to accept / reject
 			boolean isOffer = app.getStatus().equalsIgnoreCase(ChildCareCustomerApplicationTable.STATUS_BVJD);
 
@@ -114,11 +119,11 @@ class ChildCarePlaceOfferTable1 extends Table {
 
 			//Adding row to the table
 			validateDateScript.append(" || ");
-			alertTerminateContractScript.append(" || ");
+			alertTerminateContractScript.append(" || ");  
 
 			//String[] scripts = addToTable(iwc, row, app, isOffer, offerPresented, disableAccept, iwc.getSessionAttribute(_page.REQ_BUTTON + app.getNodeID()) != null);
 			String[] scripts = addToTable(iwc, row, app, isOffer, offerPresented, disableAccept, hasAcceptedApplication);
-
+						
 			validateDateScript.append(scripts[0]);
 			alertTerminateContractScript.append(scripts[1]);
 
@@ -133,7 +138,7 @@ class ChildCarePlaceOfferTable1 extends Table {
                 }
             }
 
-			row++;
+			row++;  
 		}
 		
 		if (offerList != null) {
@@ -186,8 +191,10 @@ class ChildCarePlaceOfferTable1 extends Table {
 		int ownerId = ((Integer)app.getOwner().getPrimaryKey()).intValue();
 		boolean isAfterSchoolApplication = _page.childCarebusiness.isAfterSchoolApplication(app);
 
+
 		String validUntil = app.getOfferValidUntil() != null ? VALID_UNTIL + " " + new IWTimestamp(app.getOfferValidUntil()).getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT) + "." : "";
 		String offerText = isOffer ? app.getChoiceNumber() + ": " + GRANTED + " " + new IWTimestamp(app.getFromDate()).getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT) + ". " + validUntil : "";
+		
 		if (isOffer)
 			addToOfferList(offerText);
 
@@ -213,6 +220,7 @@ class ChildCarePlaceOfferTable1 extends Table {
         
         //adding choice number and provider name
         add(getProviderName(app, isAccepted, textColor), column++, row);        
+		
 
 		String validateDateScript = "false";
 		String alertTerminateContractScript = "false";
@@ -313,7 +321,9 @@ class ChildCarePlaceOfferTable1 extends Table {
         
         School provider = app.getProvider();
 
-        String choiceNumber = app.getChoiceNumber() + ": "; 
+      //  String choiceNumber = app.getChoiceNumber() + ": "; 
+        String choiceNumber = itemRow + ": ";
+		itemRow ++ ;
         String name =  provider.getName() + _page.getDebugInfo(app);
         
         Text t = _page.getSmallText(choiceNumber);
@@ -398,6 +408,8 @@ class ChildCarePlaceOfferTable1 extends Table {
     public boolean isContainsSortedByBirthdateProvider() {
         return containsSortedByBirthdateProvider;
     }
+	
+	
 
     public void setContainsSortedByBirthdateProvider(
             boolean containsSortedByBirthdateProvider) {
