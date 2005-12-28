@@ -25,7 +25,6 @@ import com.idega.block.importer.presentation.Importer;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
-import com.idega.core.location.business.AddressBusiness;
 import com.idega.core.location.business.CommuneBusiness;
 import com.idega.core.location.data.Commune;
 import com.idega.core.location.data.PostalCode;
@@ -96,7 +95,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 	private final static String FATE_DECEASED = "LÉST";
 	private final static String FATE_CHANGE_PERSONAL_ID = "BRFD";
 	private final static String FATE_REMOVED = "BRFL";
-	private final static String FATE_CHANGE_OLD_ID = "BRNN";
+	//private final static String FATE_CHANGE_OLD_ID = "BRNN";
 	private boolean postalCodeFix = false;
 	private boolean relationsOnly = false;
 	private boolean citizenGroupFix = false;
@@ -110,7 +109,6 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 	private NationalRegisterBusiness natBiz;
 	private UserBusiness uBiz;
 	private CommuneBusiness cBiz;
-	private AddressBusiness aBiz;
 
 	/**
 	 * @see com.idega.block.importer.business.ImportFileHandler#handleRecords()
@@ -125,7 +123,6 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			natBiz = (NationalRegisterBusiness) getServiceInstance(NationalRegisterBusiness.class);
 			uBiz = (UserBusiness) getServiceInstance(UserBusiness.class);
 			cBiz = (CommuneBusiness) getServiceInstance(CommuneBusiness.class);
-			aBiz = (AddressBusiness) getServiceInstance(AddressBusiness.class);
 			//if the transaction failes all the users and their relations are removed
 //			transaction.begin();
 			try {
@@ -276,9 +273,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 	private boolean handleFamilyRelation() throws RemoteException {
 		UserHome userHome = null; 
 		NationalRegisterBusiness natReg = null;
-		FamilyLogic familyLogic = null;
 		try {
-			familyLogic = (FamilyLogic) getServiceInstance(FamilyLogic.class);
 			natReg = (NationalRegisterBusiness) getServiceInstance(NationalRegisterBusiness.class);
 			UserBusiness userBusiness = (UserBusiness) getServiceInstance(UserBusiness.class);
 			userHome = userBusiness.getUserHome();
@@ -304,11 +299,8 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			int intervalBetweenOutput = 100;
 			
 			Iterator keysIter = affectedFamilies.iterator();
-			Iterator ssnIter;
 			String key;
-			String ssn;
 			int counter = 0;
-			Collection ssnColl;
 			Collection familyColl;
 			System.out.println("NatRegImport Total families to handle = "+totalRecords);
 			System.out.println("NatRegImport processing family relations RECORD [0] time: " + IWTimestamp.getTimestampRightNow().toString());
@@ -319,7 +311,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 
 				try {
 					familyColl = getFamilyMemberHome().findAllByFamilyNR(key);
-					handleFamilyCollection(natReg, familyLogic, userHome, familyColl);
+					handleFamilyCollection(natReg, userHome, familyColl);
 				} catch (Exception e) {
 					System.out.println("NatRegImport ERROR, familyRelation failed for family : "+key);
 					e.printStackTrace();
@@ -362,7 +354,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 	 * @throws RemoveException
 	 * @throws RemoteException
 	 */
-	private boolean handleFamilyCollection(NationalRegisterBusiness natRegBus, FamilyLogic familyLogic, UserHome uHome, Collection coll) throws RemoteException, RemoveException {
+	private boolean handleFamilyCollection(NationalRegisterBusiness natRegBus, UserHome uHome, Collection coll) throws RemoteException, RemoveException {
 		if (coll != null) {
 			FamilyLogicBean memFamLog = (FamilyLogicBean) getServiceInstance(FamilyLogicBean.class);
 			
@@ -708,6 +700,10 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 					e.printStackTrace();
 					return false;
 				}
+				user.setDeleted(true);
+				user.setDeletedBy(((Integer)performer.getPrimaryKey()).intValue());
+				user.setDeletedWhen(IWTimestamp.getTimestampRightNow());
+				user.store();
 				FamilyLogic familyService = getMemberFamilyLogic();
 				IWTimestamp dom = new IWTimestamp();
 				if (dateOfModification != null && !"".equals(dateOfModification.trim())) {
