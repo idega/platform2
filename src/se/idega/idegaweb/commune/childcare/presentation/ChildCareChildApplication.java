@@ -189,7 +189,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		add(table);
 	}
 	  
-	private void viewForm(IWContext iwc) throws RemoteException {
+	private void viewForm(IWContext iwc) {
 		boolean hasOffers = false;
 		boolean hasPendingApplications = false;
 		if (child != null) {
@@ -391,7 +391,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		
 	}	
 		
-	private Table getInputTable(IWContext iwc) throws RemoteException {
+	private Table getInputTable(IWContext iwc) {
 		
 		updateChoiceNumber();
 		
