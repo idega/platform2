@@ -96,7 +96,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 		StringBuffer alertTerminateContractScript = new StringBuffer("false ");
 
 		boolean choiceOneAccepted = false;
-		int itemRow = 2;   
+//		int itemRow = 2;   
 		while (i.hasNext()) { 
 			ChildCareApplication app = ((ComparableApp) i.next()).getApplication();
 			itemRow = app.getChoiceNumber();
