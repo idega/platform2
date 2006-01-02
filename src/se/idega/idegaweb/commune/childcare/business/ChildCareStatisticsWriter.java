@@ -398,6 +398,11 @@ public class ChildCareStatisticsWriter {
 		return stamp.getDateString("yyyy-MM-dd");	
 	}
 	
+	private java.sql.Date utilDateToSqlDate(Date d) {
+		if(d == null) return null;
+		return new java.sql.Date(d.getTime());
+	}
+	
 	private Collection getExportData()  {
 		Date firstDateOfCurrentMonth = this.getFirstDateOfCurrentMonth();
 		Date lastDateOfCurrentMonth = this.getLastDateOfCurrentMonth();
@@ -414,7 +419,10 @@ public class ChildCareStatisticsWriter {
 			
 			for(; placementsIterator.hasNext();) {
 				SchoolClassMember placement = (SchoolClassMember) placementsIterator.next();
-
+				
+				///malin: here we get all contracts for this placement				
+				Vector placementContracts = (Vector) getChildCareContractHome().findAllBySchoolClassMember(placement);
+				
 				Date registerDate = timestampToRoundedDate(placement.getRegisterDate()); //java.sql.Timestamp; and only contains date
 				if (registerDate == null ) continue;
 
@@ -422,7 +430,9 @@ public class ChildCareStatisticsWriter {
 				
 				//XXX this should be done in SQL in the first place
 				if (registerDate.compareTo(lastDateOfCurrentMonth) > 0)	continue;
-				if (removedDate != null && removedDate.compareTo(firstDateOfCurrentMonth) < 0)	continue;
+				if (removedDate != null && removedDate.compareTo(firstDateOfCurrentMonth) < 0)	continue;				
+				if (registerDate.compareTo(firstDateOfCurrentMonth) < 0 && 
+						(removedDate == null || removedDate.compareTo(lastDateOfCurrentMonth) > 0)) continue;				
 				
 				Iterator placementLogs = getSchoolClassMemberLogHome().findAllBySchoolClassMember(placement).iterator();
 				while (placementLogs.hasNext()){
@@ -435,7 +445,7 @@ public class ChildCareStatisticsWriter {
 					
 //					2.	IF it’s a new placement where sch_class_member.register_date >= 1st of current month 
 //					AND sch_class_member.register_date <= last date of current month					
-					if (registerDate.equals(startDate) & isDateInInterval(registerDate, firstDateOfCurrentMonth, lastDateOfCurrentMonth))  //placement started
+					if (registerDate.equals(startDate) && isDateInInterval(registerDate, firstDateOfCurrentMonth, lastDateOfCurrentMonth))  //placement started
 						takeThisPlacement = true;
 
 //					3.	IF it’s a placement that ends (has removed_date set in sch_class_member) and 
@@ -448,16 +458,70 @@ public class ChildCareStatisticsWriter {
 //						sch_class_member_log.start date >= 1st of current month 
 //						AND sch_class_member_log.start date <= last date of current month)
 					if (takeThisPlacement || isDateInInterval(startDate, firstDateOfCurrentMonth, lastDateOfCurrentMonth)) // group was changed
-					{
+					{						
 						String careTime = "care_time_string";
+						if (((Integer)log.getPrimaryKey()).intValue() == 298 ) {
+							System.out.println("lalalla");
+						}
+						
+						//malin
+						//get the one archive we need (start date is the same), 
+						//get caretime string and then throw it away
+						ChildCareContract contract = null;
+						for (Iterator contractsIter = placementContracts.iterator();contractsIter.hasNext();) {
+							ChildCareContract c = (ChildCareContract) contractsIter.next();						
+							contract = null;
+							
+							Date validFromDate = c.getValidFromDate(); //java.util.Date , only date
+							if (validFromDate == null) continue;
+							
+							if (validFromDate.equals(startDate)) {
+								contract = c;
+								break;
+							}
+						}
+						if (contract != null) {
+							careTime = contract.getCareTime();
+							placementContracts.remove(contract);
+						}
+						
+						/*
+						//XXX get the real care time, like this: select * from comm_childcare_archive where ....
+						try {
+							ChildCareContract ccc = getChildCareContractHome()
+								.findContractByPlacementAndStartDate(log.getSchoolClassMember(), utilDateToSqlDate(startDate));
+							careTime = ccc.getCareTime();	
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						*/
+						
 						uberCollection.add(new DataForExport(log.getSchoolClassMember(),startDate, endDate, careTime));					
 					}
 					
 				}
 				
+				//this is the place for rule 5
+				// if there's something left in placementContracts, then we will use them
+				if (!placementContracts.isEmpty()) {
+					for (Iterator contractsIter = placementContracts.iterator();contractsIter.hasNext();) {
+						ChildCareContract contract = (ChildCareContract) contractsIter.next();
+						
+//						5.	IF a caretime has been changed (new entry in comm_childcare_archive with 
+//							comm_childcare_archive.start date >=1st of current month AND comm_childcare_archive.start date <= last date of current month)
+						Date validFromDate = contract.getValidFromDate(); //java.util.Date , only date
+						if (validFromDate == null) continue;
+						
+						if ( isDateInInterval(validFromDate, firstDateOfCurrentMonth, lastDateOfCurrentMonth)) {
+							uberCollection.add(new DataForExport(contract.getSchoolClassMember(),validFromDate, null, contract.getCareTime()));					
+						}
+					}
+					
+				}
+
 			}
-			
-			//get all contracts
+			/*
+			//get all contracts  ///malin: this should be removed.
 			//retrieve the contracts we need
 			//... and add them to the ubercollection		
 
@@ -477,6 +541,8 @@ public class ChildCareStatisticsWriter {
 				}				
 				
 			}	
+			*/
+			
 			
 			//reshuffle the ubercollection so it is in correct order
 			Collections.sort(uberCollection);
@@ -516,16 +582,18 @@ public class ChildCareStatisticsWriter {
 		String contents;
 		Date startDate;
 		
+		String EMPTY_DATE = "          "; //10 spaces
+		
 		public DataForExport(SchoolClassMember member, Date startDate, Date endDate, String careTimeString) {
 			this.startDate = startDate;
 			try {
 			this.contents = 
 				member.getSchoolClass().getSchool().getExtraProviderId() + SEPARATOR +
 				member.getSchoolClass().getGroupStringId() + SEPARATOR +
-				member.getStudent().getPersonalID() + SEPARATOR + 
+				formatPersonalId(member.getStudent().getPersonalID()) + SEPARATOR + 
 				dateToString(startDate) + SEPARATOR +
-				dateToString(endDate) + SEPARATOR +
-				careTimeString + SEPARATOR +
+				formatEndDate(dateToString(endDate)) + SEPARATOR +
+				formatCaretime(careTimeString) + SEPARATOR +
 				member.getSchoolType().getTypeStringId() + 
 				"\r\n";	
 			} catch (Exception e) {
@@ -533,6 +601,28 @@ public class ChildCareStatisticsWriter {
 				e.printStackTrace();
 			}
 		}
+		
+		public String formatPersonalId(String personalId) {
+			if (personalId == null) return null;
+			return personalId.substring(2, personalId.length()-1);
+		}
+		
+		public String formatEndDate(String s) {
+			if (s == null) return null;
+			if (s.length() < 10)
+				return EMPTY_DATE;
+			else
+				return s;
+		}	
+		
+		public String formatCaretime(String s) {
+			if (s == null) return null;
+			if (s.length() == 1) 
+				return "0" + s;
+			else 
+				return s;
+		}
+		
 
 		public int compareTo(Object arg0) { // must return > 0 if argument is smaller
 			try {
@@ -568,6 +658,10 @@ public class ChildCareStatisticsWriter {
 		public void setContents(String contents) {
 			this.contents = contents;
 		}
+		
+		
+		
+		
 	}		
 	// end of contract and placement changes
 }
