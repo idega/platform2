@@ -189,7 +189,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		add(table);
 	}
 	  
-	private void viewForm(IWContext iwc) {
+	private void viewForm(IWContext iwc) throws RemoteException {
 		boolean hasOffers = false;
 		boolean hasPendingApplications = false;
 		if (child != null) {
@@ -391,7 +391,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		
 	}	
 		
-	private Table getInputTable(IWContext iwc) {
+	private Table getInputTable(IWContext iwc) throws RemoteException {
 		
 		updateChoiceNumber();
 		
@@ -471,7 +471,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		//	else Nacka doesn't want the dates to be set by default
 		//		date.setToCurrentDate();
 			if (isAdmin)
-				date.setYearRange(stamp.getYear() - 5, stamp.getYear() + 5);
+				date.setYearRange(stamp.getYear() - 7, stamp.getYear() + 5);
 			inputTable.add(fromText, 1, row);
 			inputTable.add(date, 3, row++);
 			
