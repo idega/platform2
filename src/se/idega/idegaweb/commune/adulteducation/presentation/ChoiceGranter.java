@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceGranter.java,v 1.18 2005/10/18 14:41:28 palli Exp $ Created on May
+ * $Id: ChoiceGranter.java,v 1.18.2.1 2006/01/03 11:04:13 dainis Exp $ Created on May
  * 24, 2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -55,10 +55,10 @@ import com.idega.util.PersonalIDFormatter;
 import com.idega.util.text.Name;
 
 /**
- * Last modified: $Date: 2005/10/18 14:41:28 $ by $Author: palli $
+ * Last modified: $Date: 2006/01/03 11:04:13 $ by $Author: dainis $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.18.2.1 $
  */
 public class ChoiceGranter extends AdultEducationBlock implements IWPageEventListener {
 
@@ -193,10 +193,14 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		}
 
 		DateInput fromDate = (DateInput) getStyledInterface(new DateInput(PARAMETER_FROM_DATE));
-		fromDate.setDate(getSession().getFromDate());
+		fromDate.setDate(getSession().getFromDate());		
+		IWTimestamp stamp = new IWTimestamp(getSession().getFromDate());
+		fromDate.setYearRange(stamp.getYear() - 1, stamp.getYear() + 5);
 
 		DateInput toDate = (DateInput) getStyledInterface(new DateInput(PARAMETER_TO_DATE));
 		toDate.setDate(getSession().getToDate());
+		stamp = new IWTimestamp(getSession().getToDate());
+		toDate.setYearRange(stamp.getYear() - 1, stamp.getYear() + 5);
 
 		SubmitButton button = (SubmitButton) getButton(new SubmitButton(localize("search", "Search")));
 
