@@ -538,7 +538,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 				else
 					queueDate.setToCurrentDate();
 				if (isAdmin)
-					queueDate.setYearRange(stamp.getYear() - 5, stamp.getYear() + 5);
+					queueDate.setYearRange(stamp.getYear() - 7, stamp.getYear() + 5);
 				inputTable.add(queueDateText, 1, row);
 				inputTable.add(queueDate, 3, row++);
 			}
