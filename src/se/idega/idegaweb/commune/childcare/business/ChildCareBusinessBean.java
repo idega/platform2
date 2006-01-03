@@ -623,12 +623,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			if (!oldQueueDate.equals(newQueueDate))
 				return true;
 			if (newMessage != null){
-				if (oldMessage == null)
+				/*if (oldMessage == null)
 					return true;
 				else if (oldMessage == null && newMessage ==null)
 					return false;
 				else if (!oldMessage.equals(newMessage))
-					return true;	
+					return true;
+					*/	
 			}
 			
 			return false;
