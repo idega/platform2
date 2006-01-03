@@ -13,6 +13,7 @@ import is.idega.idegaweb.member.isi.block.accounting.data.PaymentTypeHome;
 
 import java.rmi.RemoteException;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
@@ -126,6 +127,8 @@ public class Checkout extends CashierSubWindowTemplate {
 			e.printStackTrace();
 		}
 
+		ArrayList toAdd = new ArrayList();
+		
 		if (entries != null && !entries.isEmpty()) {
 			Iterator it = entries.keySet().iterator();
 
@@ -134,9 +137,10 @@ public class Checkout extends CashierSubWindowTemplate {
 						.get(it.next())).getItem();
 				try {
 					entry = getAccountingBusiness(iwc).getFinanceEntryByPrimaryKey((Integer)entry.getPrimaryKey());
-					getBasketBusiness(iwc).removeItem(entry);						
+//					getBasketBusiness(iwc).removeItem(entry);						
 					if (entry.getEntryOpen()) {
-						getBasketBusiness(iwc).addItem(entry);
+						toAdd.add(entry);
+//						getBasketBusiness(iwc).addItem(entry);
 					} 
 				} catch (RemoteException e) {
 					e.printStackTrace();
@@ -144,6 +148,20 @@ public class Checkout extends CashierSubWindowTemplate {
 					e.printStackTrace();
 				}
 			}
+			
+			try {
+				getBasketBusiness(iwc).emptyBasket();
+				if (!toAdd.isEmpty()) {
+					Iterator it2 = toAdd.iterator();
+					while (it2.hasNext()) {
+						FinanceEntry entry2 = (FinanceEntry) it2.next();
+						getBasketBusiness(iwc).addItem(entry2);
+					}
+				}
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+			
 		}
 	}
 	
