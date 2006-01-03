@@ -1,5 +1,5 @@
 /*
- * $Id: StudentEditor.java,v 1.9 2005/06/29 15:46:10 laddi Exp $
+ * $Id: StudentEditor.java,v 1.9.2.1 2006/01/03 16:25:04 dainis Exp $
  * Created on Jun 2, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -51,10 +51,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/06/29 15:46:10 $ by $Author: laddi $
+ * Last modified: $Date: 2006/01/03 16:25:04 $ by $Author: dainis $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.9.2.1 $
  */
 public class StudentEditor extends AdultEducationBlock implements IWPageEventListener {
 	
@@ -478,6 +478,7 @@ public class StudentEditor extends AdultEducationBlock implements IWPageEventLis
 		DateInput input = (DateInput) getStyledInterface(new DateInput(PARAMETER_TERMINATED_DATE));
 		input.setEarliestPossibleDate(startDate.getDate(), localize("end_date_earlier_than_start_date", "You must select a date later than the start date."));
 		input.setDate(stamp.getDate());
+		input.setYearRange(stamp.getYear() - 1, stamp.getYear() + 5);
 		
 		table.add(getSmallHeader(localize("terminated_date", "Terminated date")), 1, row);
 		table.add(Text.getNonBrakingSpace(), 1, row);
