@@ -28,7 +28,7 @@ import com.idega.repository.data.RefactorClassRegistry;
 public class IWBundleStarter implements IWBundleStartable {
 
 	private static HashMap pollers = new HashMap();
-	private static DirectoryPoller poller;
+//	private static DirectoryPoller poller;
 	/**
 	 * Starts all the pollers for automatic imports
 	 * @see com.idega.idegaweb.IWBundleStartable#start(com.idega.idegaweb.IWBundle)
