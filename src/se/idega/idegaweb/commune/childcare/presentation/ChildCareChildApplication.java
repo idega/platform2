@@ -277,7 +277,10 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		try {
 			ChildCareApplication app=null;
 			app = null;
-			app = getBusiness().getActivePlacement(((Integer) child.getPrimaryKey()));
+			
+			int childId=-1;
+			childId = ((Integer)child.getPrimaryKey()).intValue();
+			app = getBusiness().getActivePlacement(childId);
 			if(app!=null){
 					char c = app.getApplicationStatus(); 
 				if( (c=='C')||
@@ -423,7 +426,15 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			try {
 				ChildCareApplication app=null;
 				app = null;
-				app = getBusiness().getActivePlacement(((Integer) child.getPrimaryKey()));
+				int childId=-1;
+				childId = ((Integer)child.getPrimaryKey()).intValue();
+				
+                 				
+				app = getBusiness().getActivePlacement(childId);
+				
+				
+				
+				
 				if(app!=null){
  					char c = app.getApplicationStatus(); 
 					if( (c=='C')||
