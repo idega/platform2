@@ -80,6 +80,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 	private boolean _noCheckError = false;
 	private boolean isAdmin = false;
 	private boolean hasActivePlacement = false;
+
 	private boolean hasPermission = false;
     
     private boolean showQueueSortedByBirthdateMessage = false;
@@ -94,6 +95,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			try {
 				currentProvider = getBusiness().getCurrentProviderByPlacement(((Integer) child.getPrimaryKey()).intValue());
 				hasActivePlacement = getBusiness().hasActiveApplication(((Integer) child.getPrimaryKey()).intValue(), CareConstants.CASE_CODE_KEY);
+				
 			}
 			catch (RemoteException re) {
 				currentProvider = null;
@@ -271,10 +273,32 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		boolean done = false;
 		boolean canKeepAllChoices = this.getBundle().getBooleanProperty(PROPERTY_CAN_KEEP_ALL_CHOICES_ON_ACCEPT, true);
 
+		boolean inProcess = false;
 		try {
+			ChildCareApplication app=null;
+			app = null;
+			app = getBusiness().getActivePlacement(((Integer) child.getPrimaryKey()));
+			if(app!=null){
+					char c = app.getApplicationStatus(); 
+				if( (c=='C')||
+					(c=='D')||
+					(c=='E')||
+					(c=='F'))							
+				{
+					inProcess = true;
+				}
+			}
+		}
+		catch (RemoteException re) {
+		   
+		}
 		
+		
+		try {
+			boolean hasPlacement = getBusiness().hasSchoolPlacement(child);
 			int numberOfApplications = canKeepAllChoices ? 4 : 1;
-			if (!hasActivePlacement) numberOfApplications = 5;
+			if ((!hasActivePlacement)&&(!inProcess)) numberOfApplications = 5;
+			
 			
 			int[] providers = new int[numberOfApplications];
 			String[] dates = new String[numberOfApplications];
@@ -394,6 +418,26 @@ public class ChildCareChildApplication extends ChildCareBlock {
 	private Table getInputTable(IWContext iwc) throws RemoteException {
 		
 		updateChoiceNumber();
+		 
+		boolean inProcess = false;
+			try {
+				ChildCareApplication app=null;
+				app = null;
+				app = getBusiness().getActivePlacement(((Integer) child.getPrimaryKey()));
+				if(app!=null){
+ 					char c = app.getApplicationStatus(); 
+					if( (c=='C')||
+ 					    (c=='D')||
+						(c=='E')||
+						(c=='F'))							
+					{
+						inProcess = true;
+					}
+				}
+			}
+			catch (RemoteException re) {
+			   
+			}
 		
 		Table inputTable = new Table();
 		inputTable.setCellspacing(0);  
@@ -416,10 +460,11 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		int areaID = -1;
 		
 		
+		
 	     
 		boolean canKeepAllChoices = this.getBundle().getBooleanProperty(PROPERTY_CAN_KEEP_ALL_CHOICES_ON_ACCEPT, true);		
 		int numberOfApplications = canKeepAllChoices ? 4 : 1;  // TODO is it really 1 ?
-		if (!hasActivePlacement) numberOfApplications = 5;
+		if ((!hasActivePlacement)&&(!inProcess)) numberOfApplications = 5;
 
 		
 		for (int i = 1; i < (numberOfApplications + 1); i++) {
