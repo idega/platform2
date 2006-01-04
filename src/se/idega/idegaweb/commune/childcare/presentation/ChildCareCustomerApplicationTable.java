@@ -42,7 +42,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.108.2.7 2005/12/28 10:18:14 palli Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.108.2.8 2006/01/04 12:48:03 igors Exp $
  * @since 12.2.2003 
  */
 
@@ -513,7 +513,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 		//deletedApps.add(application);
 	}
 	             
-	private void updateChoiceNumber(Collection applications) {
+	private void updateChoiceNumber(Collection applications) throws RemoteException {
 			
 		    boolean index_exist[];
 			index_exist = new boolean[6];
@@ -953,6 +953,11 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 		ChildCareBusiness b = getChildCareBusiness(iwc);
 		b.deleteOffer(applicationId, iwc.getCurrentUser());
 		ChildCareApplication app = b.getApplication(applicationId);
+		
+		app.setChoiceNumber(5);   // Igors 2006.01.04
+		app.setContractId(null);  //
+		app.store();              //
+		
 		User child = app.getChild();
 		DateFormat format = DateFormat.getDateInstance(DateFormat.SHORT, iwc.getCurrentLocale());
 		Date today = new Date(System.currentTimeMillis());

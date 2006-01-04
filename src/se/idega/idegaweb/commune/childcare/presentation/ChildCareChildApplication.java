@@ -207,12 +207,6 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		if ((!_noCheckError && !hasOffers && !hasPendingApplications) || isAdmin) {
 
 			
-			//update ChoiseNumbers
-
-			//Collection applications = getBusiness().getApplicationsForChild(child);
-			
-			//getBusiness(). getApplicationsForChild(child);
-			
 			Form form = new Form();
 			Table table = new Table();
 			table.setWidth(getWidth());
@@ -278,9 +272,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			ChildCareApplication app=null;
 			app = null;
 			
-			int childId=-1;
-			childId = ((Integer)child.getPrimaryKey()).intValue();
-			app = getBusiness().getActivePlacement(childId);
+			app = getBusiness().getAcceptedApplicationsByChild(((Integer)child.getPrimaryKey()).intValue());
 			if(app!=null){
 					char c = app.getApplicationStatus(); 
 				if( (c=='C')||
@@ -426,11 +418,9 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			try {
 				ChildCareApplication app=null;
 				app = null;
-				int childId=-1;
-				childId = ((Integer)child.getPrimaryKey()).intValue();
+			
+				app = getBusiness().getAcceptedApplicationsByChild(((Integer)child.getPrimaryKey()).intValue());
 				
-                 				
-				app = getBusiness().getActivePlacement(childId);
 				
 				
 				
