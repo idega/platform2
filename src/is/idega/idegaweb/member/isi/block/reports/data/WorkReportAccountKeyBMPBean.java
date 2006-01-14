@@ -115,7 +115,7 @@ public class WorkReportAccountKeyBMPBean extends GenericEntity implements WorkRe
 	}
 
 	public Collection ejbFindIncomeAccountKeys() throws FinderException {
-		StringBuffer sql = new StringBuffer("select * from ");
+		StringBuffer sql = new StringBuffer("select " + getIDColumnName() + " from ");
 		sql.append(getEntityName());
 		sql.append(" where ");
 		sql.append(COLUMN_NAME_KEY_TYPE);
@@ -130,7 +130,7 @@ public class WorkReportAccountKeyBMPBean extends GenericEntity implements WorkRe
 	}
 	
 	public Collection ejbFindIncomeAccountKeysWithoutSubKeys() throws FinderException {
-		StringBuffer sql = new StringBuffer("select * from ");
+		StringBuffer sql = new StringBuffer("select " + getIDColumnName() + " from ");
 		sql.append(getEntityName());
 		sql.append(" where ");
 		sql.append(COLUMN_NAME_KEY_TYPE);
@@ -148,7 +148,7 @@ public class WorkReportAccountKeyBMPBean extends GenericEntity implements WorkRe
 
 	
 	public Collection ejbFindExpensesAccountKeys() throws FinderException {
-		StringBuffer sql = new StringBuffer("select * from ");
+		StringBuffer sql = new StringBuffer("select " + getIDColumnName() + " from ");
 		sql.append(getEntityName());
 		sql.append(" where ");
 		sql.append(COLUMN_NAME_KEY_TYPE);
@@ -163,7 +163,7 @@ public class WorkReportAccountKeyBMPBean extends GenericEntity implements WorkRe
 	}
 	
 	public Collection ejbFindExpensesAccountKeysWithoutSubKeys() throws FinderException {
-		StringBuffer sql = new StringBuffer("select * from ");
+		StringBuffer sql = new StringBuffer("select " + getIDColumnName() + " from ");
 		sql.append(getEntityName());
 		sql.append(" where ");
 		sql.append(COLUMN_NAME_KEY_TYPE);
@@ -179,7 +179,7 @@ public class WorkReportAccountKeyBMPBean extends GenericEntity implements WorkRe
 	}
 	
 	public Collection ejbFindAssetAccountKeys() throws FinderException {
-		StringBuffer sql = new StringBuffer("select * from ");
+		StringBuffer sql = new StringBuffer("select " + getIDColumnName() + " from ");
 		sql.append(getEntityName());
 		sql.append(" where ");
 		sql.append(COLUMN_NAME_KEY_TYPE);
@@ -194,7 +194,7 @@ public class WorkReportAccountKeyBMPBean extends GenericEntity implements WorkRe
 	}
 	
 	public Collection ejbFindAssetAccountKeysWithoutSubKeys() throws FinderException {
-		StringBuffer sql = new StringBuffer("select * from ");
+		StringBuffer sql = new StringBuffer("select " + getIDColumnName() + " from ");
 		sql.append(getEntityName());
 		sql.append(" where ");
 		sql.append(COLUMN_NAME_KEY_TYPE);
@@ -212,7 +212,7 @@ public class WorkReportAccountKeyBMPBean extends GenericEntity implements WorkRe
 
 
 	public Collection ejbFindDeptAccountKeys() throws FinderException {
-		StringBuffer sql = new StringBuffer("select * from ");
+		StringBuffer sql = new StringBuffer("select " + getIDColumnName() + " from ");
 		sql.append(getEntityName());
 		sql.append(" where ");
 		sql.append(COLUMN_NAME_KEY_TYPE);
@@ -227,7 +227,7 @@ public class WorkReportAccountKeyBMPBean extends GenericEntity implements WorkRe
 	}	
 	
 	public Collection ejbFindDeptAccountKeysWithoutSubKeys() throws FinderException {
-		StringBuffer sql = new StringBuffer("select * from ");
+		StringBuffer sql = new StringBuffer("select " + getIDColumnName() + " from ");
 		sql.append(getEntityName());
 		sql.append(" where ");
 		sql.append(COLUMN_NAME_KEY_TYPE);
