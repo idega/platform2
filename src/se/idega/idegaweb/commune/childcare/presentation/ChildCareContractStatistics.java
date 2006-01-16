@@ -3,8 +3,13 @@
  */
 package se.idega.idegaweb.commune.childcare.presentation;
 
+import java.sql.Timestamp;
 import java.text.DecimalFormat;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.Iterator;
+import java.util.Vector;
 import se.idega.idegaweb.commune.childcare.business.ChildCareStatisticsWriter;
 import com.idega.core.file.data.ICFile;
 import com.idega.presentation.IWContext;
@@ -12,6 +17,7 @@ import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.util.IWTimestamp;
@@ -22,6 +28,7 @@ import com.idega.util.IWTimestamp;
 public class ChildCareContractStatistics extends ChildCareBlock {
 
 	private static final String PARAMETER_CREATE_REPORT = "create_report";
+	private static final String PARAMETER_REPORT_DATE = "report_date";
 	
 	private ICFile statisticsFolder;
 	private boolean createReport = false;
@@ -173,13 +180,15 @@ public class ChildCareContractStatistics extends ChildCareBlock {
 		if (iwc.isParameterSet(PARAMETER_CREATE_REPORT)) {
 			this.createExport = true;
 			
+			Date reportDate = new IWTimestamp(iwc.getParameter(PARAMETER_REPORT_DATE)).getDate();
+			
 //			ContractAndPlacementChangesExportWriter writer = 
 //					new ContractAndPlacementChangesExportWriter();
 
 			ChildCareStatisticsWriter writer = 
 				new ChildCareStatisticsWriter();
 			
-			this.exportCreated = writer.createExportFile(this.getIwc(), this.getExportFolder());			
+			this.exportCreated = writer.createExportFile(this.getIwc(), this.getExportFolder(), reportDate);			
 		}		
 	}
 	
@@ -190,6 +199,7 @@ public class ChildCareContractStatistics extends ChildCareBlock {
 			Table table = new Table(1, 3);
 			table.setCellpadding(0);
 			table.setCellspacing(0);
+			table.setBorder(0);
 			table.setHeight(2, 12);
 			table.setWidth(getWidth());
 			
@@ -226,7 +236,11 @@ public class ChildCareContractStatistics extends ChildCareBlock {
 		//table.add(getLocalizedSmallHeader("child_care.mimetype", "Mimetype"), column++, row++);
 		row++;
 		
-		Iterator iter = getExportFolder().getChildrenIterator();
+		// we need the newest exports on top.
+		Vector exportFiles = (Vector) getExportFolder().getChildren();
+		Collections.sort(exportFiles, new ExportFileComparator());
+		
+		Iterator iter = exportFiles.iterator();		
 		
 		if (iter != null) {
 			while (iter.hasNext()) {
@@ -267,6 +281,17 @@ public class ChildCareContractStatistics extends ChildCareBlock {
 		Form form = new Form();
 		form.addParameter(PARAMETER_CREATE_REPORT, "true");
 		
+		DateInput date = new DateInput(PARAMETER_REPORT_DATE);		
+		date = (DateInput) getStyledInterface(date);
+		IWTimestamp stamp = new IWTimestamp();
+		date.setYearRange(stamp.getYear() - 5, stamp.getYear() + 2);
+	
+		date.setDate(stamp.getDate());	
+		date.setAsNotEmpty(localize("placements_export.fill_date", "Fill date!"));
+		date.setToShowDay(false);
+		
+		form.add(date);
+		
 		SubmitButton button = (SubmitButton) getButton(new SubmitButton(localize("child_care.create_report", "Create report")));
 		form.add(button);
 		
@@ -293,7 +318,27 @@ public class ChildCareContractStatistics extends ChildCareBlock {
 	
 	public void setIwc(IWContext iwc) {
 		this.iwc = iwc;
-	}	
+	}
+	
+	//comparator for ordering list of export files
+	public class ExportFileComparator implements Comparator {
+		
+		public int compare(Object o1, Object o2) {		
+			
+			ICFile f1 = (ICFile) o1;
+			ICFile f2 = (ICFile) o2;
+			
+			Timestamp t1 = f1.getCreationDate();
+			Timestamp t2 = f2.getCreationDate();
+			
+			if (t1.equals(t2)) return 0;
+			if (t1.before(t2))
+				return 1;
+			else
+				return -1;
+
+		}
+	}
 
 	// end of Contract and placement changes	
 	
