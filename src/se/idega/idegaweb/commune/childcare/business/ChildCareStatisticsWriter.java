@@ -6,6 +6,10 @@ package se.idega.idegaweb.commune.childcare.business;
 import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.Format;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -14,23 +18,19 @@ import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Vector;
-
 import javax.ejb.FinderException;
-
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.care.data.CareTime;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.care.data.ChildCareContract;
 import se.idega.idegaweb.commune.care.data.ChildCareContractHome;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
-
 import com.idega.block.process.data.CaseLog;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
@@ -280,7 +280,7 @@ public class ChildCareStatisticsWriter {
 	
 	private boolean isDebuggingGoingOn = false;
 	
-	public boolean createExportFile(IWContext iwc, ICFile folder) {
+	public boolean createExportFile(IWContext iwc, ICFile folder, Date reportDate) {
 		
 		this.iwc = iwc;
 		
@@ -289,7 +289,7 @@ public class ChildCareStatisticsWriter {
 			MemoryOutputStream mos = new MemoryOutputStream(buffer);
 			
 			
-			Iterator iter = getExportData().iterator(); 
+			Iterator iter = getExportData(reportDate).iterator(); 
 			while (iter.hasNext()) {
 				DataForExport row = (DataForExport) iter.next();
 				try {
@@ -308,10 +308,17 @@ public class ChildCareStatisticsWriter {
 			file.setFileValue(mis);
 			file.setMimeType("text/plain");
 			
-			IWTimestamp toDate = new IWTimestamp();
-			String s = toDate.toString().replaceAll(":", ""); // on windows filenames cannot contain colons
+//			IWTimestamp stamp = new IWTimestamp();
+//			String s = stamp.toString().replaceAll(":", "_"); // on windows filenames cannot contain colons
+//			s = s.toString().replaceAll(" ", "_");
+//			s = s.substring(0, s.length()- 3); //cut off seconds (last 3 characters)
 			
-			file.setName("export " + s + ".txt");			
+			//real guys use DateFormatter :)
+			//Date now = new Date();
+			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd_HH_mm");  //export_2006-01-13_21_02.txt
+		    String s = formatter.format(new Date());			 
+			
+			file.setName("export_" + s + ".txt");			
 			file.setFileSize(buffer.length());
 			file.store();
 			
@@ -332,28 +339,40 @@ public class ChildCareStatisticsWriter {
 	private Date getFirstDateOfCurrentMonth() {		
 	    Calendar cal = roundCalendarToDate(new GregorianCalendar());
 	    
-	    if (isDebuggingGoingOn) {
-		    cal.add(Calendar.YEAR, -1);
-		    cal.add(Calendar.MONTH, -1);
-	    }
+	    //cal.add(Calendar.MONTH, 1); //XXX debug
 	        
 	    int firstDay = cal.getActualMinimum(Calendar.DAY_OF_MONTH); // It will be 1	    
 	    cal.set(Calendar.DAY_OF_MONTH, firstDay);
+	    cal = roundCalendarToDate(cal);
 	    
-	    return new Date(cal.getTimeInMillis());
+	    //return new Date(cal.getTimeInMillis());
+	    return roundDateToDate(cal.getTime());	
+	    
 	}	
 
 	private Date getLastDateOfCurrentMonth() {		
 	    Calendar cal = roundCalendarToDate(new GregorianCalendar());
 	    
-	    if (isDebuggingGoingOn) {
-	    	cal.add(Calendar.YEAR, -1);	
-	    } 	    	
+	    //cal.add(Calendar.MONTH, 1); //XXX debug
 	        
 	    int days = cal.getActualMaximum(Calendar.DAY_OF_MONTH);	    
 	    cal.set(Calendar.DAY_OF_MONTH, days);
+	    cal = roundCalendarToDate(cal);
 
-	    return new Date(cal.getTimeInMillis());
+	    //return new Date(cal.getTimeInMillis());
+	    return roundDateToDate(cal.getTime());	
+	}
+	
+	private Date getLastDateOfSpecifiedDatesMonth(Date date) {
+		Calendar cal = roundCalendarToDate(new GregorianCalendar());
+		cal.setTimeInMillis(date.getTime());		
+	    
+	    //cal.add(Calendar.MONTH, 1); //XXX debug
+	        
+	    int days = cal.getActualMaximum(Calendar.DAY_OF_MONTH);	    
+	    cal.set(Calendar.DAY_OF_MONTH, days);	    
+
+	    return roundDateToDate(cal.getTime());	
 	}
 	
 	private Calendar roundCalendarToDate(Calendar cal){
@@ -369,8 +388,25 @@ public class ChildCareStatisticsWriter {
 		
 		Calendar cal = new GregorianCalendar();
 		cal.setTimeInMillis(stamp.getTime());
-		return roundCalendarToDate(cal).getTime();
+		return roundDateToDate(roundCalendarToDate(cal).getTime());
 		
+	}
+	
+	private Date roundDateToDate(Date date) {
+		if (date == null) {
+			return null;
+		}
+		
+		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+	    String s = formatter.format(date);
+		
+	    Date roundedDate = null;
+	    try {
+			roundedDate = (Date) formatter.parse(s);
+		}
+		catch (ParseException e) {}		
+	    
+	    return roundedDate;
 	}
 	
 	/*
@@ -403,36 +439,50 @@ public class ChildCareStatisticsWriter {
 		return new java.sql.Date(d.getTime());
 	}
 	
-	private Collection getExportData()  {
-		Date firstDateOfCurrentMonth = this.getFirstDateOfCurrentMonth();
-		Date lastDateOfCurrentMonth = this.getLastDateOfCurrentMonth();
+	private Collection getExportData(Date reportDate)  {
+		
+		//Date firstDateOfCurrentMonth = this.getFirstDateOfCurrentMonth();
+		//Date lastDateOfCurrentMonth = this.getLastDateOfCurrentMonth();
+		Date firstDateOfCurrentMonth = roundDateToDate(reportDate);
+		Date lastDateOfCurrentMonth = getLastDateOfSpecifiedDatesMonth(reportDate);
+		
+//		long a = reportDate.getTime();
+//		long b = firstDateOfCurrentMonth.getTime();
 		
 		Vector uberCollection = new Vector();
+		Vector smallCollection = null;		
 		
 		try {
 			//get all placements
 			//retrieve the placements we need and add them to the ubercolection
-
-			Iterator placementsIterator =  getSchoolClassMemberHome().findAllByCategory(getSchoolBusiness().getCategoryChildcare()).iterator();
+			//Collection allPlacements = getSchoolClassMemberHome().findAllByCategory(getSchoolBusiness().getCategoryChildcare());
+			Collection allPlacements = getSchoolClassMemberHome().findAllByCategoryForPlacementChangesExport(getSchoolBusiness().getCategoryChildcare(), utilDateToSqlDate(firstDateOfCurrentMonth), utilDateToSqlDate(lastDateOfCurrentMonth));
+			
+			Iterator placementsIterator =  allPlacements.iterator();
 			
 			boolean takeThisPlacement = false;
 			
 			for(; placementsIterator.hasNext();) {
 				SchoolClassMember placement = (SchoolClassMember) placementsIterator.next();
-				
-				///malin: here we get all contracts for this placement				
-				Vector placementContracts = (Vector) getChildCareContractHome().findAllBySchoolClassMember(placement);
+								
+				smallCollection = new Vector();
 				
 				Date registerDate = timestampToRoundedDate(placement.getRegisterDate()); //java.sql.Timestamp; and only contains date
 				if (registerDate == null ) continue;
 
 				Date removedDate = timestampToRoundedDate(placement.getRemovedDate()); //java.sql.Timestamp; contains date and time
 				
+				/* moved to sql level
+				 * SchoolClassMemberBMPBean.ejbFindAllByCategoryForPlacementChangesExport
 				//XXX this should be done in SQL in the first place
 				if (registerDate.compareTo(lastDateOfCurrentMonth) > 0)	continue;
 				if (removedDate != null && removedDate.compareTo(firstDateOfCurrentMonth) < 0)	continue;				
 				if (registerDate.compareTo(firstDateOfCurrentMonth) < 0 && 
 						(removedDate == null || removedDate.compareTo(lastDateOfCurrentMonth) > 0)) continue;				
+				*/				
+				
+				// here get all contracts for this placement 				
+				Vector placementContracts = (Vector) getChildCareContractHome().findAllBySchoolClassMember(placement);				
 				
 				Iterator placementLogs = getSchoolClassMemberLogHome().findAllBySchoolClassMember(placement).iterator();
 				while (placementLogs.hasNext()){
@@ -440,8 +490,8 @@ public class ChildCareStatisticsWriter {
 					
 					SchoolClassMemberLog log = (SchoolClassMemberLog) placementLogs.next();
 					
-					Date startDate = log.getStartDate(); //java.util.Date, contains date only
-					Date endDate = log.getEndDate(); //java.util.Date, contains date only
+					Date startDate = log.getStartDate(); 	//java.util.Date, contains date only
+					Date endDate = log.getEndDate(); 		//java.util.Date, contains date only
 					
 //					2.	IF it’s a new placement where sch_class_member.register_date >= 1st of current month 
 //					AND sch_class_member.register_date <= last date of current month					
@@ -459,14 +509,12 @@ public class ChildCareStatisticsWriter {
 //						AND sch_class_member_log.start date <= last date of current month)
 					if (takeThisPlacement || isDateInInterval(startDate, firstDateOfCurrentMonth, lastDateOfCurrentMonth)) // group was changed
 					{						
-						String careTime = "care_time_string";
-						if (((Integer)log.getPrimaryKey()).intValue() == 298 ) {
-							System.out.println("lalalla");
-						}
+						String careTime = "care_time_string_not_found";
 						
-						//malin
-						//get the one archive we need (start date is the same), 
-						//get caretime string and then throw it away
+//				        step 1.  look for  caretime string, which contract.validFromDate = log.startDate
+//			            if found, then:
+//			                -   caretime string is found;
+//			                -   throw away this contract from contracts array
 						ChildCareContract contract = null;
 						for (Iterator contractsIter = placementContracts.iterator();contractsIter.hasNext();) {
 							ChildCareContract c = (ChildCareContract) contractsIter.next();						
@@ -480,23 +528,42 @@ public class ChildCareStatisticsWriter {
 								break;
 							}
 						}
-						if (contract != null) {
-							careTime = contract.getCareTime();
+						if (contract != null) {							
 							placementContracts.remove(contract);
 						}
 						
-						/*
-						//XXX get the real care time, like this: select * from comm_childcare_archive where ....
-						try {
-							ChildCareContract ccc = getChildCareContractHome()
-								.findContractByPlacementAndStartDate(log.getSchoolClassMember(), utilDateToSqlDate(startDate));
-							careTime = ccc.getCareTime();	
-						} catch (Exception e) {
-							e.printStackTrace();
+//				        step 2.  if caretime not found in step 1., then look for   contract.validFromDate < log.startDate (and the closest one to log.startDate)
+//			            if found, then:
+//			                -   caretime string is found;
+						if (contract == null) {	
+							for (Iterator contractsIter = placementContracts.iterator();contractsIter.hasNext();) {
+								ChildCareContract c = (ChildCareContract) contractsIter.next();	
+								
+								Date validFromDate = c.getValidFromDate(); //java.util.Date , only date
+								if (validFromDate == null) continue; //fool's protection
+								
+								if (validFromDate.before(startDate)) {
+									if (contract != null ) {
+										if (contract.getValidFromDate().before(c.getValidFromDate())) {
+											contract = c;											
+										}
+									} else {
+										contract = c;
+									}
+								}
+								
+							}
 						}
-						*/
 						
-						uberCollection.add(new DataForExport(log.getSchoolClassMember(),startDate, endDate, careTime));					
+						if (contract != null) {
+							careTime = contract.getCareTime();
+						}
+						
+						Date endOfPlacementDate = null;
+						if (removedDate != null && endDate != null && removedDate.equals(endDate)) {
+							endOfPlacementDate = removedDate;
+						}
+						smallCollection.add(new DataForExport(log.getSchoolClassMember(),startDate, endOfPlacementDate, careTime));					
 					}
 					
 				}
@@ -512,40 +579,50 @@ public class ChildCareStatisticsWriter {
 						Date validFromDate = contract.getValidFromDate(); //java.util.Date , only date
 						if (validFromDate == null) continue;
 						
+						Date terminatedDate = contract.getTerminatedDate();
+						Date endOfPlacementDate = null;
+						if (removedDate != null && terminatedDate != null && removedDate.equals(terminatedDate)) {
+							endOfPlacementDate = removedDate;
+						}
+						
 						if ( isDateInInterval(validFromDate, firstDateOfCurrentMonth, lastDateOfCurrentMonth)) {
-							uberCollection.add(new DataForExport(contract.getSchoolClassMember(),validFromDate, null, contract.getCareTime()));					
+							smallCollection.add(new DataForExport(contract.getSchoolClassMember(),validFromDate, endOfPlacementDate, contract.getCareTime()));					
 						}
 					}
 					
 				}
+				
+				/*
+				there is a trick now: if placement has removed_date set, then in the last record for this placement we must show this removed date. And only in last!
+				e.g. instead of this:
+				null;null;0109286393;2006-01-10;          ;02;null
+		        null;null;0109286393;2006-01-14;2006-01-24;02;null <caretime change
+		        null;null;0109286393;2006-01-18;2006-01-24;33;null <placement change			
+					
+				this must be shown:
+				null;null;0109286393;2006-01-10;          ;02;null
+		        null;null;0109286393;2006-01-14;          ;02;null 
+		        null;null;0109286393;2006-01-18;2006-01-24;33;null
+				*/
+				if (removedDate != null && (!smallCollection.isEmpty())) {
+					Collections.sort(smallCollection);
+					
+					for (int i = 0; i < (smallCollection.size() - 1); i++) {
+						DataForExport dfe = (DataForExport) smallCollection.elementAt(i);
+						if (dfe.getEndDate() != null) {
+							dfe.setEndDate(null);
+						}
+					}
+					
+				}	
+				
+				
+				uberCollection.addAll(smallCollection);
 
 			}
-			/*
-			//get all contracts  ///malin: this should be removed.
-			//retrieve the contracts we need
-			//... and add them to the ubercollection		
-
-			Iterator contractsIterator = getChildCareContractHome().findChangedBetween(
-					new java.sql.Date(firstDateOfCurrentMonth.getTime()), new java.sql.Date(lastDateOfCurrentMonth.getTime())).iterator(); //TODO: check, if this date conversion is okay.
-			
-			while (contractsIterator.hasNext()) {
-				ChildCareContract contract = (ChildCareContract) contractsIterator.next();
-				
-//				5.	IF a caretime has been changed (new entry in comm_childcare_archive with 
-//					comm_childcare_archive.start date >=1st of current month AND comm_childcare_archive.start date <= last date of current month)
-				Date validFromDate = contract.getValidFromDate(); //java.util.Date , only date
-				if (validFromDate == null) continue;
-				
-				if ( isDateInInterval(validFromDate, firstDateOfCurrentMonth, lastDateOfCurrentMonth)) {
-					uberCollection.add(new DataForExport(contract.getSchoolClassMember(),validFromDate, null, contract.getCareTime()));					
-				}				
-				
-			}	
-			*/
-			
 			
 			//reshuffle the ubercollection so it is in correct order
-			Collections.sort(uberCollection);
+			Collections.sort(uberCollection);	
 			
 			return uberCollection;
 			
@@ -559,7 +636,7 @@ public class ChildCareStatisticsWriter {
 
 
 	private boolean isDateInInterval(Date date, Date startDate, Date endDate) {
-		return date.compareTo(startDate) >= 0 || date.compareTo(endDate) <= 0;
+		return date.compareTo(startDate) >= 0 && date.compareTo(endDate) <= 0; 
 	}	
 	
 	private SchoolClassMemberHome getSchoolClassMemberHome() throws IDOLookupException {
@@ -578,33 +655,25 @@ public class ChildCareStatisticsWriter {
 		return (ChildCareContractHome) IDOLookup.getHome(ChildCareContract.class);
 	}
 	
-	private class DataForExport implements Comparable {
-		String contents;
-		Date startDate;
+	private class DataForExport implements Comparable {			
+		
+		SchoolClassMember member = null;
+		Date startDate  = null;
+		Date endDate  = null;
+		String careTimeString = null;		
 		
 		String EMPTY_DATE = "          "; //10 spaces
 		
 		public DataForExport(SchoolClassMember member, Date startDate, Date endDate, String careTimeString) {
+			this.member = member;
 			this.startDate = startDate;
-			try {
-			this.contents = 
-				member.getSchoolClass().getSchool().getExtraProviderId() + SEPARATOR +
-				member.getSchoolClass().getGroupStringId() + SEPARATOR +
-				formatPersonalId(member.getStudent().getPersonalID()) + SEPARATOR + 
-				dateToString(startDate) + SEPARATOR +
-				formatEndDate(dateToString(endDate)) + SEPARATOR +
-				formatCaretime(careTimeString) + SEPARATOR +
-				member.getSchoolType().getTypeStringId() + 
-				"\r\n";	
-			} catch (Exception e) {
-				System.out.println("error in DataForExport");
-				e.printStackTrace();
-			}
+			this.endDate = endDate;
+			this.careTimeString = careTimeString;
 		}
 		
 		public String formatPersonalId(String personalId) {
 			if (personalId == null) return null;
-			return personalId.substring(2, personalId.length()-1);
+			return personalId.substring(2, personalId.length());
 		}
 		
 		public String formatEndDate(String s) {
@@ -652,15 +721,33 @@ public class ChildCareStatisticsWriter {
 		}
 		
 		public String getContents() {
+			String contents = null;	
+			try {
+				contents = 
+				member.getSchoolClass().getSchool().getExtraProviderId() + SEPARATOR +
+				member.getSchoolClass().getGroupStringId() + SEPARATOR +
+				formatPersonalId(member.getStudent().getPersonalID()) + SEPARATOR + 
+				dateToString(startDate) + SEPARATOR +
+				formatEndDate(dateToString(endDate)) + SEPARATOR +
+				formatCaretime(careTimeString) + SEPARATOR +
+				member.getSchoolType().getTypeStringId() + 
+				"\r\n";	
+			} catch (Exception e) {
+				System.out.println("error in DataForExport");
+				e.printStackTrace();
+			}
 			return contents;
 		}
+
 		
-		public void setContents(String contents) {
-			this.contents = contents;
+		public Date getEndDate() {
+			return endDate;
 		}
+
 		
-		
-		
+		public void setEndDate(Date endDate) {
+			this.endDate = endDate;
+		}		
 		
 	}		
 	// end of contract and placement changes
