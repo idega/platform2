@@ -39,7 +39,6 @@ import com.idega.user.data.GroupRelation;
 import com.idega.user.data.User;
 import com.idega.user.data.UserBMPBean;
 import com.idega.util.IWTimestamp;
-import com.sun.org.apache.xerces.internal.impl.dv.dtd.NOTATIONDatatypeValidator;
 
 /**
  * <p>
@@ -57,8 +56,8 @@ import com.sun.org.apache.xerces.internal.impl.dv.dtd.NOTATIONDatatypeValidator;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2006/01/16 09:44:27 $ by $Author: dainis $
- * @version $Revision: 1.154.2.4 $
+ *         Last modified: $Date: 2006/01/16 09:53:27 $ by $Author: dainis $
+ * @version $Revision: 1.154.2.5 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
