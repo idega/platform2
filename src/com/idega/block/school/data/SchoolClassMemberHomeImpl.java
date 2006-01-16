@@ -12,17 +12,16 @@ import com.idega.data.IDOFactory;
 import com.idega.data.IDOLookupException;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
-import com.idega.util.IWTimestamp;
 
 
 /**
  * <p>
- * TODO Marie Thunberg Describe Type SchoolClassMemberHomeImpl
+ * TODO Dainis Describe Type SchoolClassMemberHomeImpl
  * </p>
- *  Last modified: $Date: 2005/12/01 22:27:19 $ by $Author: dainis $
+ *  Last modified: $Date: 2006/01/16 09:44:27 $ by $Author: dainis $
  * 
- * @author <a href="mailto:Marie Thunberg@idega.com">Marie Thunberg</a>
- * @version $Revision: 1.75.2.3 $
+ * @author <a href="mailto:Dainis@idega.com">Dainis</a>
+ * @version $Revision: 1.75.2.4 $
  */
 public class SchoolClassMemberHomeImpl extends IDOFactory implements SchoolClassMemberHome {
 
@@ -296,6 +295,15 @@ public class SchoolClassMemberHomeImpl extends IDOFactory implements SchoolClass
 	public Collection findAllByCategory(SchoolCategory category) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindAllByCategory(category);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findAllByCategoryForPlacementChangesExport(SchoolCategory category, Date startDate, Date endDate)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindAllByCategoryForPlacementChangesExport(
+				category, startDate, endDate);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
@@ -623,14 +631,4 @@ public class SchoolClassMemberHomeImpl extends IDOFactory implements SchoolClass
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
-
-	public Collection findPlacementsBySchoolTypeAndRegisterDateAndGradeInPeriod(SchoolType type,
-			IWTimestamp periodFrom, IWTimestamp periodTo) throws FinderException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindPlacementsBySchoolTypeAndRegisterDateAndGradeInPeriod(
-				type, periodFrom, periodTo);
-		this.idoCheckInPooledEntity(entity);
-		return this.getEntityCollectionForPrimaryKeys(ids);
-	}
-
 }
