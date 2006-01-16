@@ -16,10 +16,10 @@ import com.idega.user.data.User;
  * <p>
  * TODO Dainis Describe Type SchoolClassMember
  * </p>
- *  Last modified: $Date: 2006/01/16 09:44:27 $ by $Author: dainis $
+ *  Last modified: $Date: 2006/01/16 16:05:23 $ by $Author: dainis $
  * 
  * @author <a href="mailto:Dainis@idega.com">Dainis</a>
- * @version $Revision: 1.44.2.3 $
+ * @version $Revision: 1.44.2.4 $
  */
 public interface SchoolClassMember extends IDOEntity {
 	
@@ -37,7 +37,8 @@ public interface SchoolClassMember extends IDOEntity {
 	//Added for the kompliterings project
 	public final static String FIELD_COMPENSATION_BY_INVOICE = "comp_by_invoice";
 	public final static String FIELD_INVOICE_INTERVAL = "invoice_int";
-	public final static String FIELD_LATEST_INVOICE_DATE = "latest_invoice_date";	
+	public final static String FIELD_LATEST_INVOICE_DATE = "latest_invoice_date";		
+
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#setClassMemberId
 	 */

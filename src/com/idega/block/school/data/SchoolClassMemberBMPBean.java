@@ -56,8 +56,8 @@ import com.idega.util.IWTimestamp;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2006/01/16 09:53:27 $ by $Author: dainis $
- * @version $Revision: 1.154.2.5 $
+ *         Last modified: $Date: 2006/01/16 16:07:46 $ by $Author: dainis $
+ * @version $Revision: 1.154.2.6 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -1921,6 +1921,61 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		query.appendAndEquals("c.sub_group", true);
 		return idoFindPKsByQuery(query);
 	}
+	
+	public Collection ejbFindPlacementsBySchoolTypeAndRegisterDateAndGradeInPeriod(SchoolType type, IWTimestamp periodFrom, IWTimestamp periodTo) throws FinderException {
+		//select * from sch_class_member m where m.sch_school_type_id = 67 and m.register_date < '2005-11-16' and 
+		//(m.removed_date is null or m.removed_date >= '2005-10-16' 
+		//or m.sch_class_member_id in (
+		//select g.sch_class_member_id from sch_class_member_grade g where g.created < '2005-11-16' and g.created >= '2005-10-15' 
+		//and g.sch_class_member_grade_id in (
+		//select min(g2.sch_class_member_grade_id) from sch_class_member_grade g2 where g2.sch_class_member_id = m.sch_class_member_id)))
+
+		IDOQuery subquery2 = idoQuery();
+		subquery2.appendSelect();
+		subquery2.append("min(g2.sch_class_member_grade_id)");
+		subquery2.appendFrom("sch_class_member_grade g2");
+		subquery2.appendWhereEquals("g2.sch_class_member_id", "m.sch_class_member_id");
+		
+		IDOQuery subquery = idoQuery();
+		subquery.appendSelect();
+		subquery.append("g.sch_class_member_id");
+		subquery.appendFrom("sch_class_member_grade g");
+		subquery.appendWhere();
+		subquery.append("g.created");
+		subquery.appendLessThanSign();
+		subquery.append(periodTo);
+		subquery.appendAnd();
+		subquery.append("g.created");
+		subquery.appendGreaterThanOrEqualsSign();
+		subquery.append(periodFrom);
+		subquery.appendAnd();
+		subquery.append("g.sch_class_member_grade_id");
+		subquery.appendIn(subquery2);
+		
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this).append(" m");
+		query.appendWhereEquals("m." + SCHOOL_TYPE, type);
+		query.appendAnd();
+		query.append("m." + REGISTER_DATE);
+		query.appendLessThanSign();
+		query.append(periodTo);
+		query.appendAnd();
+		query.appendLeftParenthesis();
+		query.append("m." + REMOVED_DATE + " is null");
+		query.appendOr();
+		query.append("m." + REMOVED_DATE);
+		query.appendGreaterThanOrEqualsSign();
+		query.append(periodFrom);
+		query.appendOr();
+		query.append("m." + getIDColumnName());
+		query.appendIn(subquery);
+		query.appendRightParenthesis();
+		
+		System.out.println("sql = " + query.toString());
+		
+		return idoFindPKsByQuery(query);
+	}
+	
 	
 	public Collection getSubGroups() throws IDORelationshipException {
 		return this.idoGetRelatedEntities(SchoolClass.class);

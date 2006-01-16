@@ -12,16 +12,17 @@ import com.idega.data.IDOHome;
 import com.idega.data.IDOLookupException;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 
 
 /**
  * <p>
  * TODO Dainis Describe Type SchoolClassMemberHome
  * </p>
- *  Last modified: $Date: 2006/01/16 09:44:28 $ by $Author: dainis $
+ *  Last modified: $Date: 2006/01/16 16:05:23 $ by $Author: dainis $
  * 
  * @author <a href="mailto:Dainis@idega.com">Dainis</a>
- * @version $Revision: 1.75.2.4 $
+ * @version $Revision: 1.75.2.5 $
  */
 public interface SchoolClassMemberHome extends IDOHome {
 
@@ -438,4 +439,10 @@ public interface SchoolClassMemberHome extends IDOHome {
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbFindSubGroupPlacements
 	 */
 	public Collection findSubGroupPlacements() throws FinderException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbFindPlacementsBySchoolTypeAndRegisterDateAndGradeInPeriod
+	 */
+	public Collection findPlacementsBySchoolTypeAndRegisterDateAndGradeInPeriod(SchoolType type,
+			IWTimestamp periodFrom, IWTimestamp periodTo) throws FinderException;
 }
