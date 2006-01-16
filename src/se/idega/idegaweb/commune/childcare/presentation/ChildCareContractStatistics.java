@@ -238,37 +238,40 @@ public class ChildCareContractStatistics extends ChildCareBlock {
 		
 		// we need the newest exports on top.
 		Vector exportFiles = (Vector) getExportFolder().getChildren();
-		Collections.sort(exportFiles, new ExportFileComparator());
 		
-		Iterator iter = exportFiles.iterator();		
-		
-		if (iter != null) {
-			while (iter.hasNext()) {
-				column = 1;
-				ICFile file = (ICFile) iter.next();
-				
-				double size = 0;
-				if (!file.isFolder()) {
-					size = (double) file.getFileSize().intValue() / (double) 1024;					
-				}
-				DecimalFormat format = new DecimalFormat("0.0 KB");
-
-				if (row % 2 == 0)
-					table.setRowColor(row, getZebraColor1());
-				else
-					table.setRowColor(row, getZebraColor2());
+		if (exportFiles != null) {		
+					
+			Collections.sort(exportFiles, new ExportFileComparator());		
+			Iterator iter = exportFiles.iterator();		
+			
+			if (iter != null) {
+				while (iter.hasNext()) {
+					column = 1;
+					ICFile file = (ICFile) iter.next();
+					
+					double size = 0;
+					if (!file.isFolder()) {
+						size = (double) file.getFileSize().intValue() / (double) 1024;					
+					}
+					DecimalFormat format = new DecimalFormat("0.0 KB");
 	
-				Link link = getSmallLink(file.getName());
-				link.setFile(file);
-				
-				table.add(link, column++, row);
-				table.setNoWrap(column, row);
-				table.add(getSmallText(format.format(size)), column++, row);
-				table.setNoWrap(column, row);
-				table.add(getSmallText(new IWTimestamp(file.getCreationDate()).getLocaleDateAndTime(iwc.getCurrentLocale(), IWTimestamp.SHORT, IWTimestamp.SHORT)), column++, row);
-				//table.setNoWrap(column, row);
-				//table.add(getSmallText(file.getMimeType()), column++, mos.write(new String("hello, world").getBytes()););
-				row++;	
+					if (row % 2 == 0)
+						table.setRowColor(row, getZebraColor1());
+					else
+						table.setRowColor(row, getZebraColor2());
+		
+					Link link = getSmallLink(file.getName());
+					link.setFile(file);
+					
+					table.add(link, column++, row);
+					table.setNoWrap(column, row);
+					table.add(getSmallText(format.format(size)), column++, row);
+					table.setNoWrap(column, row);
+					table.add(getSmallText(new IWTimestamp(file.getCreationDate()).getLocaleDateAndTime(iwc.getCurrentLocale(), IWTimestamp.SHORT, IWTimestamp.SHORT)), column++, row);
+					//table.setNoWrap(column, row);
+					//table.add(getSmallText(file.getMimeType()), column++, mos.write(new String("hello, world").getBytes()););
+					row++;	
+				}
 			}
 		}
 		table.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_RIGHT);
