@@ -1,6 +1,3 @@
-/*
- * Created on 11.4.2003
- */
 package se.idega.idegaweb.commune.childcare.presentation;
 
 import java.rmi.RemoteException;
@@ -291,7 +288,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		
 		try {
 			boolean hasPlacement = getBusiness().hasSchoolPlacement(child);
-			int numberOfApplications = canKeepAllChoices ? 4 : 1;
+			int numberOfApplications = 4;	
 			if ((!hasActivePlacement)&&(!inProcess)) numberOfApplications = 5;
 			
 			
@@ -464,7 +461,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		
 	     
 		boolean canKeepAllChoices = this.getBundle().getBooleanProperty(PROPERTY_CAN_KEEP_ALL_CHOICES_ON_ACCEPT, true);		
-		int numberOfApplications = canKeepAllChoices ? 4 : 1;  // TODO is it really 1 ?
+		int numberOfApplications = 4;		
 		if ((!hasActivePlacement)&&(!inProcess)) numberOfApplications = 5;
 
 		
@@ -731,7 +728,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
                             }
                         }                        
                     }
-                    
+                     
 					dropdown.addMenuElement(area.getPrimaryKey().toString(), area.getSchoolAreaName(), areaProviders);
 				}
 			}
