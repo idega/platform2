@@ -269,6 +269,8 @@ public class ChildCareStatistics extends ChildCareBlock {
 		Table table = new Table();
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
+		
+		IWTimestamp stamp = new IWTimestamp();
 
 		table.add(getSmallHeader(localize("child_care.from", "From")), 1, 1);
 		DateInput from = new DateInput(PARAMETER_FROM_DATE);
@@ -277,15 +279,17 @@ public class ChildCareStatistics extends ChildCareBlock {
 		if (_fromDate != null) {
 			from.setDate(_fromDate);
 		}
+		from.setYearRange(stamp.getYear() - 2, stamp.getYear() + 5);
 		table.add(from, 2, 1);
 		
 		table.add(getSmallHeader(localize("child_care.to", "To")), 3, 1);
 		DateInput to = new DateInput(PARAMETER_TO_DATE);
 		to.setToDisplayDayLast(true);
-		to = (DateInput) getStyledInterface(to);
+		to = (DateInput) getStyledInterface(to);		
 		if (_toDate != null) {
 			to.setDate(_toDate);
 		}
+		to.setYearRange(stamp.getYear() - 2, stamp.getYear() + 5);
 		table.add(to, 4, 1);
 		form.add(table);
 		form.add(Text.getBreak());
