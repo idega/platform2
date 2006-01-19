@@ -672,8 +672,7 @@ public class ChildCareStatisticsWriter {
 		
 		public String formatPersonalId(String personalId) {
 			if (personalId == null) return null;
-			//return personalId.substring(2, personalId.length());
-			return personalId;
+			return personalId.substring(2, personalId.length());
 		}
 		
 		public String formatEndDate(String s) {
