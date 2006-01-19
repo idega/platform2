@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.text.DateFormat;
-import java.text.Format;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -402,7 +401,7 @@ public class ChildCareStatisticsWriter {
 		
 	    Date roundedDate = null;
 	    try {
-			roundedDate = (Date) formatter.parse(s);
+			roundedDate = formatter.parse(s);
 		}
 		catch (ParseException e) {}		
 	    
@@ -673,7 +672,8 @@ public class ChildCareStatisticsWriter {
 		
 		public String formatPersonalId(String personalId) {
 			if (personalId == null) return null;
-			return personalId.substring(2, personalId.length());
+			//return personalId.substring(2, personalId.length());
+			return personalId;
 		}
 		
 		public String formatEndDate(String s) {
