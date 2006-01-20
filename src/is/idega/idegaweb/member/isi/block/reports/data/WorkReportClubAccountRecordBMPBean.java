@@ -114,7 +114,7 @@ public class WorkReportClubAccountRecordBMPBean extends GenericEntity implements
             int reportId, int wrGroupId, Collection keys)
             throws FinderException {
         IDOQuery sql = idoQuery();
-        sql.appendSelectAllFrom(this).appendWhere().appendEquals(
+        sql.appendSelect().append(getIDColumnName()).appendFrom(this.getTableName()).appendWhere().appendEquals(
                 COLUMN_NAME_REPORT_ID, reportId).appendAnd().appendEquals(
                 COLUMN_NAME_WORK_REPORT_GROUP, wrGroupId).appendAnd().append(
                 COLUMN_NAME_ACCOUNT_KEY_ID).appendInCollection(keys);
@@ -126,7 +126,7 @@ public class WorkReportClubAccountRecordBMPBean extends GenericEntity implements
             int reportId, int wrGroupId, int accountKeyId)
             throws FinderException {
         IDOQuery sql = idoQuery();
-        sql.appendSelectAllFrom(this).appendWhere().appendEquals(
+        sql.appendSelect().append(getIDColumnName()).appendFrom(this.getTableName()).appendWhere().appendEquals(
                 COLUMN_NAME_REPORT_ID, reportId).appendAnd().appendEquals(
                 COLUMN_NAME_WORK_REPORT_GROUP, wrGroupId).appendAnd()
                 .appendEquals(COLUMN_NAME_ACCOUNT_KEY_ID, accountKeyId);
