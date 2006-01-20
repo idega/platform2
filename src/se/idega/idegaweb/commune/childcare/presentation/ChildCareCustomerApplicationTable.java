@@ -42,7 +42,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.108.2.8 2006/01/04 12:48:03 igors Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.108.2.9 2006/01/20 13:46:09 palli Exp $
  * @since 12.2.2003 
  */
 
@@ -513,7 +513,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 		//deletedApps.add(application);
 	}
 	             
-	private void updateChoiceNumber(Collection applications) throws RemoteException {
+	private void updateChoiceNumber(Collection applications) {
 			
 		    boolean index_exist[];
 			index_exist = new boolean[6];

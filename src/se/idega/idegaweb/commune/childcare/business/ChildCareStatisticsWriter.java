@@ -277,7 +277,7 @@ public class ChildCareStatisticsWriter {
 	
 	IWContext iwc;
 	
-	private boolean isDebuggingGoingOn = false;
+//	private boolean isDebuggingGoingOn = false;
 	
 	public boolean createExportFile(IWContext iwc, ICFile folder, Date reportDate) {
 		
@@ -335,7 +335,7 @@ public class ChildCareStatisticsWriter {
 	}
 
 	
-	private Date getFirstDateOfCurrentMonth() {		
+/*	private Date getFirstDateOfCurrentMonth() {		
 	    Calendar cal = roundCalendarToDate(new GregorianCalendar());
 	    
 	    //cal.add(Calendar.MONTH, 1); //XXX debug
@@ -347,9 +347,9 @@ public class ChildCareStatisticsWriter {
 	    //return new Date(cal.getTimeInMillis());
 	    return roundDateToDate(cal.getTime());	
 	    
-	}	
+	}*/	
 
-	private Date getLastDateOfCurrentMonth() {		
+/*	private Date getLastDateOfCurrentMonth() {		
 	    Calendar cal = roundCalendarToDate(new GregorianCalendar());
 	    
 	    //cal.add(Calendar.MONTH, 1); //XXX debug
@@ -360,7 +360,7 @@ public class ChildCareStatisticsWriter {
 
 	    //return new Date(cal.getTimeInMillis());
 	    return roundDateToDate(cal.getTime());	
-	}
+	}*/
 	
 	private Date getLastDateOfSpecifiedDatesMonth(Date date) {
 		Calendar cal = roundCalendarToDate(new GregorianCalendar());

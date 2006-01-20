@@ -607,7 +607,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	private boolean canChangeApplication(ChildCareApplication application, int newProviderID, IWTimestamp newFromDate, IWTimestamp newQueueDate, String newMessage) {
 		int oldProviderID = application.getProviderId();
-		String oldMessage = application.getMessage();
+//		String oldMessage = application.getMessage();
 		IWTimestamp oldFromDate = new IWTimestamp();
 		IWTimestamp oldQueueDate = new IWTimestamp();
 		if (application.getFromDate() != null)

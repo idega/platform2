@@ -62,7 +62,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 	private final static String ADDRESS = "cca_address";
 	private final static String CARE_FROM = "cca_care_from";
 
-	private static final String PROPERTY_CAN_KEEP_ALL_CHOICES_ON_ACCEPT = "can_keep_all_choices_when_acception_offer";
+//	private static final String PROPERTY_CAN_KEEP_ALL_CHOICES_ON_ACCEPT = "can_keep_all_choices_when_acception_offer";
 
 	private final static String APPLICATION_INSERTED = "cca_application_ok";
 	private final static String APPLICATION_FAILURE = "cca_application_failed";
@@ -188,7 +188,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		add(table);
 	}
 	  
-	private void viewForm(IWContext iwc) throws RemoteException {
+	private void viewForm(IWContext iwc) {
 		boolean hasOffers = false;
 		boolean hasPendingApplications = false;
 		if (child != null) {
@@ -262,7 +262,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 	
 	private void submitForm(IWContext iwc) {
 		boolean done = false;
-		boolean canKeepAllChoices = this.getBundle().getBooleanProperty(PROPERTY_CAN_KEEP_ALL_CHOICES_ON_ACCEPT, true);
+//		boolean canKeepAllChoices = this.getBundle().getBooleanProperty(PROPERTY_CAN_KEEP_ALL_CHOICES_ON_ACCEPT, true);
 
 		boolean inProcess = false;
 		try {
@@ -287,7 +287,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		
 		
 		try {
-			boolean hasPlacement = getBusiness().hasSchoolPlacement(child);
+//			boolean hasPlacement = getBusiness().hasSchoolPlacement(child);
 			int numberOfApplications = 4;	
 			if ((!hasActivePlacement)&&(!inProcess)) numberOfApplications = 5;
 			
@@ -407,7 +407,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		
 	}	
 		
-	private Table getInputTable(IWContext iwc) throws RemoteException {
+	private Table getInputTable(IWContext iwc) {
 		
 		updateChoiceNumber();
 		 
@@ -460,7 +460,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		
 		
 	     
-		boolean canKeepAllChoices = this.getBundle().getBooleanProperty(PROPERTY_CAN_KEEP_ALL_CHOICES_ON_ACCEPT, true);		
+		//boolean canKeepAllChoices = this.getBundle().getBooleanProperty(PROPERTY_CAN_KEEP_ALL_CHOICES_ON_ACCEPT, true);		
 		int numberOfApplications = 4;		
 		if ((!hasActivePlacement)&&(!inProcess)) numberOfApplications = 5;
 
