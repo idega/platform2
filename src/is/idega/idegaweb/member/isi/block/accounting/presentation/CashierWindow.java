@@ -446,8 +446,8 @@ public class CashierWindow extends StyledIWAdminWindow {
 			menu.add(manAss, 1, 8);
 			menu.add(paymentHistory, 1, 9);
 			menu.add(selectPayments, 1, 10);
-			menu.add(Text.getNonBrakingSpace(), 1, 11);
-			menu.add(Text.getNonBrakingSpace(), 1, 11);
+			//menu.add(Text.getNonBrakingSpace(), 1, 11);
+			//menu.add(Text.getNonBrakingSpace(), 1, 11);
 			menu.add(checkOut, 1, 11);
 			/*
 			 * menu.add(nonPayedEntries, 1, 11); menu.add(errorEntries, 1, 12);
