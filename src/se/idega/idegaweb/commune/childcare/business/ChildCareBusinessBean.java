@@ -164,6 +164,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	private final static String PROPERTY_USE_PROGNOSIS = "use_prognosis";
 	
+	private final static String PROPERTY_SHOW_PRIORITIES = "show_priorities";
+	
 	private final static String PROPERTY_MARK_CHILDREN_OUTSIDE_COMMUNE = "mark_children_outside_commune_in_prognosis";
 
 	private final static String PROPERTY_SEND_JOINT_MESSAGE_TO_OTHER_CUSTODIAN = "send_joint_message_to_other_custodian_on_child_care_choice";
@@ -234,6 +236,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return bundle.getBooleanProperty(PROPERTY_USE_PROGNOSIS, true);
 	}
 
+	public boolean showPriorities() {
+		IWBundle bundle = getIWApplicationContext().getIWMainApplication().getBundle(getBundleIdentifier());
+		return new Boolean(getPropertyValue(bundle, PROPERTY_SHOW_PRIORITIES, "true")).booleanValue();
+	}
+	
 	public ChildCarePrognosis getPrognosis(int providerID) {
 		try {
 			return getChildCarePrognosisHome().findPrognosis(providerID);
