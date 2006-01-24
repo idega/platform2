@@ -13,17 +13,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.Vector;
-
 import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosis;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
-
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.business.SchoolComparator;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
 import com.idega.block.school.data.SchoolSubArea;
+import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBOLookup;
 import com.idega.core.location.business.CommuneBusiness;
+import com.idega.data.IDORelationshipException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
@@ -63,7 +63,8 @@ public class ChildCareStatistics extends ChildCareBlock {
 	protected static final int QUEUE_TYPE_ALL = 1;
 	protected static final int QUEUE_TYPE_NETTO = 2;
 	protected static final int QUEUE_TYPE_BRUTTO = 3;
-
+	
+	protected static final String ELEMENTARY_SCHOOL_TYPE = "ELEMENTARY_SCHOOL"; 
 	private int _action = ORDER_BY_ALL_CHOICES;
 	private int _areaID = -1;
 	private int _subAreaID = -1;
@@ -95,10 +96,9 @@ public class ChildCareStatistics extends ChildCareBlock {
 		}
 	}
 	
-	private PresentationObjectContainer getAllProviderTable(IWContext iwc, boolean isFirstHandOnly) throws RemoteException {
+	private PresentationObjectContainer getAllProviderTable(IWContext iwc, boolean isFirstHandOnly)	throws RemoteException {
 
 		ScrollTable table = new ScrollTable();
-        
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
 		table.setColumns(8);
@@ -108,16 +108,14 @@ public class ChildCareStatistics extends ChildCareBlock {
 		table.setHeight(400);
 		int row = 1;
 		int column = 1;
-
-		table.add(getLocalizedSmallHeader("child_care.name","Name"), column++, row);
-		table.add(getLocalizedSmallHeader("child_care.not_processed","Order"), column++, row);
-		table.add(getLocalizedSmallHeader("child_care.queue_order","Queue order"), column++, row);
-		table.add(getLocalizedSmallHeader("child_care.placement_within_3_month","Within months (3)"), column++, row);
-		table.add(getLocalizedSmallHeader("child_care.placement_within_12_month","Within months (12)"), column++, row);
-		table.add(getLocalizedSmallHeader("child_care.prognosis_3m","Prognosis (3M)"), column++, row);
-		table.add(getLocalizedSmallHeader("child_care.prognosis_12m","Prognosis (12M)"), column++, row);
-		table.add(getLocalizedSmallHeader("child_care.last_updated","Last updated"), column++, row++);
-
+		table.add(getLocalizedSmallHeader("child_care.name", "Name"), column++, row);
+		table.add(getLocalizedSmallHeader("child_care.not_processed", "Order"), column++, row);
+		table.add(getLocalizedSmallHeader("child_care.queue_order", "Queue order"), column++, row);
+		table.add(getLocalizedSmallHeader("child_care.placement_within_3_month", "Within months (3)"), column++, row);
+		table.add(getLocalizedSmallHeader("child_care.placement_within_12_month", "Within months (12)"), column++, row);
+		table.add(getLocalizedSmallHeader("child_care.prognosis_3m", "Prognosis (3M)"), column++, row);
+		table.add(getLocalizedSmallHeader("child_care.prognosis_12m", "Prognosis (12M)"), column++, row);
+		table.add(getLocalizedSmallHeader("child_care.last_updated", "Last updated"), column++, row++);
 		Collection schoolTypes = null;
 		switch (_schoolTypes) {
 			case SCHOOL_TYPES_CHILD_CARE:
@@ -133,133 +131,155 @@ public class ChildCareStatistics extends ChildCareBlock {
 				schoolTypes = getBusiness().getFamilyAfterSchoolTypes();
 				break;
 		}
-		
 		List providers = null;
 		if (_areaID == -1 && _subAreaID == -1) {
 			providers = new Vector(getBusiness().getSchoolBusiness().findAllSchoolsByType(schoolTypes));
-		} else if (_subAreaID == -1) {
-			providers = new Vector(getBusiness().getSchoolBusiness().findAllSchoolsByAreaAndTypes(_areaID, schoolTypes));
-		} else {
-			providers = new Vector(getBusiness().getSchoolBusiness().findAllSchoolsBySubAreaAndTypes(_subAreaID, schoolTypes));
 		}
-
+		else if (_subAreaID == -1) {
+			providers = new Vector(getBusiness().getSchoolBusiness().findAllSchoolsByAreaAndTypes(_areaID, schoolTypes));
+		}
+		else {
+			providers = new Vector(getBusiness().getSchoolBusiness().findAllSchoolsBySubAreaAndTypes(_subAreaID,
+					schoolTypes));
+		}
 		Date from = null;
 		try {
 			from = Date.valueOf(iwc.getParameter(PARAMETER_FROM_DATE));
-		} catch (Exception e) {}
-		
+		}
+		catch (Exception e) {
+		}
 		Date to = null;
 		try {
 			to = Date.valueOf(iwc.getParameter(PARAMETER_TO_DATE));
-		} catch (Exception e) {}
-		
+		}
+		catch (Exception e) {
+		}
 		if (providers != null && !providers.isEmpty()) {
-			int defaultCommuneId = ((Integer) getCommuneBusiness(iwc).getDefaultCommune().getPrimaryKey()).intValue(); 
-			
+			int defaultCommuneId = ((Integer) getCommuneBusiness(iwc).getDefaultCommune().getPrimaryKey()).intValue();
 			School school;
 			ChildCarePrognosis prognosis;
 			int providerID = -1;
-			
 			if (_useSorting)
 				Collections.sort(providers, new SchoolComparator(iwc.getCurrentLocale()));
-
 			int queueOrderSum = 0;
 			int queueTotalSum = 0;
 			int queueWithin3MonthsSum = 0;
 			int queueWithin12MonthsSum = 0;
 			int prognosisThreeMonthsSum = 0;
 			int prognosisOneYearSum = 0;
-			
 			Iterator iter = providers.iterator();
 			while (iter.hasNext()) {
 				column = 1;
 				school = (School) iter.next();
-				if (school.getCommuneId() != defaultCommuneId) {
-					continue;
+				boolean isElementary = false;
+				try {
+					Collection types = null;
+					SchoolType type = null;
+					String category = null;
+					types = school.getSchoolTypes();
+					if (types != null && !types.isEmpty()) {
+						Iterator tmp_iter = types.iterator();
+						while (tmp_iter.hasNext()) {
+							type = (SchoolType) tmp_iter.next();
+							category = type.getSchoolCategory();
+							if (type.getSchoolCategory() == ELEMENTARY_SCHOOL_TYPE)
+								isElementary = true;
+						}
+					}
 				}
-				providerID = ((Integer)school.getPrimaryKey()).intValue();
-				prognosis = getBusiness().getPrognosis(providerID);
-				
-				if (row % 2 == 0)
-					table.setRowColor(row, getZebraColor1());
-				else
-					table.setRowColor(row, getZebraColor2());
-
-				int queueOrder = 0;
-				int queueTotal = 0;
-				int queueWithin3Months = 0;
-				int queueWithin12Months = 0;
-				
-				switch (_queueType) {
-					case QUEUE_TYPE_ALL:
-						queueOrder = getBusiness().getQueueByProvider(providerID, from, to, isFirstHandOnly);
-						queueTotal = getBusiness().getQueueTotalByProvider(providerID, from, to, isFirstHandOnly);
-						queueWithin3Months = getBusiness().getQueueTotalByProviderWithinMonths(providerID, 3, isFirstHandOnly);
-						queueWithin12Months = getBusiness().getQueueTotalByProviderWithinMonths(providerID, 12, isFirstHandOnly);
-						break;
-					case QUEUE_TYPE_NETTO:
-						queueOrder = getBusiness().getNettoQueueByProvider(providerID, from, to, isFirstHandOnly);
-						queueTotal = getBusiness().getNettoQueueTotalByProvider(providerID, from, to, isFirstHandOnly);
-						queueWithin3Months = getBusiness().getNettoQueueTotalByProviderWithinMonths(providerID, 3, isFirstHandOnly);
-						queueWithin12Months = getBusiness().getNettoQueueTotalByProviderWithinMonths(providerID, 12, isFirstHandOnly);
-						break;
-					case QUEUE_TYPE_BRUTTO:
-						queueOrder = getBusiness().getBruttoQueueByProvider(providerID, from, to, isFirstHandOnly);
-						queueTotal = getBusiness().getBruttoQueueTotalByProvider(providerID, from, to, isFirstHandOnly);
-						queueWithin3Months = getBusiness().getBruttoQueueTotalByProviderWithinMonths(providerID, 3, isFirstHandOnly);
-						queueWithin12Months = getBusiness().getBruttoQueueTotalByProviderWithinMonths(providerID, 12, isFirstHandOnly);
-						break;						
+				catch (IDORelationshipException e) {
+					e.printStackTrace();
 				}
-				queueOrderSum += queueOrder;
-				queueTotalSum += queueTotal;
-				queueWithin3MonthsSum += queueWithin3Months;
-				queueWithin12MonthsSum += queueWithin12Months;
-				
-                table.add(getProviderName(school), column++, row);                
-				table.add(getSmallText(String.valueOf(queueOrder)), column++, row);
-				table.add(getSmallText(String.valueOf(queueTotal)), column++, row);
-				table.add(getSmallText(String.valueOf(queueWithin3Months)), column++, row);
-				table.add(getSmallText(String.valueOf(queueWithin12Months)), column++, row);
-				if (prognosis != null) {
-					int prognosisThreeMonths = prognosis.getThreeMonthsPrognosis();
-					int prognosisOneYear = prognosis.getOneYearPrognosis();
-					table.add(getSmallText(String.valueOf(prognosisThreeMonths)), column++, row);
-					table.add(getSmallText(String.valueOf(prognosisOneYear)), column++, row);
-					table.add(getSmallText(new IWTimestamp(prognosis.getUpdatedDate()).getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row++);
-					prognosisThreeMonthsSum += prognosisThreeMonths;
-					prognosisOneYearSum += prognosisOneYear;
-				}
-				else {
-					table.add(getSmallText("-"), column++, row);
-					table.add(getSmallText("-"), column++, row);
-					table.add(getSmallText("-"), column++, row++);
-				}
-			}
-
+				if (!isElementary) {
+					if (school.getCommuneId() != defaultCommuneId) {
+						continue;
+					}
+					providerID = ((Integer) school.getPrimaryKey()).intValue();
+					prognosis = getBusiness().getPrognosis(providerID);
+					if (row % 2 == 0)
+						table.setRowColor(row, getZebraColor1());
+					else
+						table.setRowColor(row, getZebraColor2());
+					int queueOrder = 0;
+					int queueTotal = 0;
+					int queueWithin3Months = 0;
+					int queueWithin12Months = 0;
+					switch (_queueType) {
+						case QUEUE_TYPE_ALL:
+							queueOrder = getBusiness().getQueueByProvider(providerID, from, to, isFirstHandOnly);
+							queueTotal = getBusiness().getQueueTotalByProvider(providerID, from, to, isFirstHandOnly);
+							queueWithin3Months = getBusiness().getQueueTotalByProviderWithinMonths(providerID, 3,
+									isFirstHandOnly);
+							queueWithin12Months = getBusiness().getQueueTotalByProviderWithinMonths(providerID, 12,
+									isFirstHandOnly);
+							break;
+						case QUEUE_TYPE_NETTO:
+							queueOrder = getBusiness().getNettoQueueByProvider(providerID, from, to, isFirstHandOnly);
+							queueTotal = getBusiness().getNettoQueueTotalByProvider(providerID, from, to,
+									isFirstHandOnly);
+							queueWithin3Months = getBusiness().getNettoQueueTotalByProviderWithinMonths(providerID, 3,
+									isFirstHandOnly);
+							queueWithin12Months = getBusiness().getNettoQueueTotalByProviderWithinMonths(providerID,
+									12, isFirstHandOnly);
+							break;
+						case QUEUE_TYPE_BRUTTO:
+							queueOrder = getBusiness().getBruttoQueueByProvider(providerID, from, to, isFirstHandOnly);
+							queueTotal = getBusiness().getBruttoQueueTotalByProvider(providerID, from, to,
+									isFirstHandOnly);
+							queueWithin3Months = getBusiness().getBruttoQueueTotalByProviderWithinMonths(providerID, 3,
+									isFirstHandOnly);
+							queueWithin12Months = getBusiness().getBruttoQueueTotalByProviderWithinMonths(providerID,
+									12, isFirstHandOnly);
+							break;
+					}
+					queueOrderSum += queueOrder;
+					queueTotalSum += queueTotal;
+					queueWithin3MonthsSum += queueWithin3Months;
+					queueWithin12MonthsSum += queueWithin12Months;
+					table.add(getProviderName(school), column++, row);
+					table.add(getSmallText(String.valueOf(queueOrder)), column++, row);
+					table.add(getSmallText(String.valueOf(queueTotal)), column++, row);
+					table.add(getSmallText(String.valueOf(queueWithin3Months)), column++, row);
+					table.add(getSmallText(String.valueOf(queueWithin12Months)), column++, row);
+					if (prognosis != null) {
+						int prognosisThreeMonths = prognosis.getThreeMonthsPrognosis();
+						int prognosisOneYear = prognosis.getOneYearPrognosis();
+						table.add(getSmallText(String.valueOf(prognosisThreeMonths)), column++, row);
+						table.add(getSmallText(String.valueOf(prognosisOneYear)), column++, row);
+						table.add(getSmallText(new IWTimestamp(prognosis.getUpdatedDate()).getLocaleDate(
+								iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row++);
+						prognosisThreeMonthsSum += prognosisThreeMonths;
+						prognosisOneYearSum += prognosisOneYear;
+					}
+					else {
+						table.add(getSmallText("-"), column++, row);
+						table.add(getSmallText("-"), column++, row);
+						table.add(getSmallText("-"), column++, row++);
+					}
+				}// isElementarySchool
+			} // end while
+			
 			column = 1;
-		
-			table.add(getLocalizedSmallHeader("child_care.sum","Sum"), column++, row);
+			table.add(getLocalizedSmallHeader("child_care.sum", "Sum"), column++, row);
 			table.add(getSmallHeader(String.valueOf(queueOrderSum)), column++, row);
 			table.add(getSmallHeader(String.valueOf(queueTotalSum)), column++, row);
 			table.add(getSmallHeader(String.valueOf(queueWithin3MonthsSum)), column++, row);
 			table.add(getSmallHeader(String.valueOf(queueWithin12MonthsSum)), column++, row);
 			table.add(getSmallHeader(String.valueOf(prognosisThreeMonthsSum)), column++, row);
-			table.add(getSmallHeader(String.valueOf(prognosisOneYearSum)), column++, row);		
-			table.add(getSmallHeader("-"), column++, row++);		
+			table.add(getSmallHeader(String.valueOf(prognosisOneYearSum)), column++, row);
+			table.add(getSmallHeader("-"), column++, row++);
 		}
-		
 		table.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_CENTER);
 		table.setColumnAlignment(3, Table.HORIZONTAL_ALIGN_CENTER);
 		table.setColumnAlignment(4, Table.HORIZONTAL_ALIGN_CENTER);
 		table.setColumnAlignment(5, Table.HORIZONTAL_ALIGN_CENTER);
 		table.setColumnAlignment(6, Table.HORIZONTAL_ALIGN_CENTER);
 		table.setColumnAlignment(7, Table.HORIZONTAL_ALIGN_CENTER);
-		
-        PresentationObjectContainer container = new PresentationObjectContainer();        
-        if (this.containsSortedByBirthdateProvider) {
-            container.add(getSortedByBirthdateExplanation());
-        }
-        container.add(table);
+		PresentationObjectContainer container = new PresentationObjectContainer();
+		if (this.containsSortedByBirthdateProvider) {
+			container.add(getSortedByBirthdateExplanation());
+		}
+		container.add(table);
 		return container;
 	}
 	
