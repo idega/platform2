@@ -2263,7 +2263,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private void sendExtraMessage(IWContext iwc,ChildCareApplication application,IWTimestamp date) throws RemoteException {
 		
 		User ch = application.getChild(); 
-		IWTimestamp stamp = new IWTimestamp();
+		//IWTimestamp stamp = new IWTimestamp();
 		String messageBody,messageSubject;
 		
 		messageBody =  localize("ccecw_encon_extra_message_part1","Contract for"); 
