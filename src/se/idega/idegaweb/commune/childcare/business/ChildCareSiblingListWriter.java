@@ -1,7 +1,6 @@
 package se.idega.idegaweb.commune.childcare.business;
 
 import is.idega.block.family.business.FamilyLogic;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -10,21 +9,17 @@ import java.sql.Date;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.presentation.ChildCareAdmin;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
-
 import com.idega.block.school.business.SchoolBusinessBean;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClassMember;
@@ -42,6 +37,13 @@ import com.idega.util.IWCalendar;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
 import com.idega.util.text.Name;
+import com.lowagie.text.BadElementException;
+import com.lowagie.text.Cell;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Font;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.Rectangle;
+import com.lowagie.text.Table;
 
 /**
  * Title:	ChildCareSiblingListWriter
@@ -146,7 +148,9 @@ public class ChildCareSiblingListWriter extends DownloadWriter implements MediaW
         MemoryOutputStream mos = new MemoryOutputStream(buffer);
         if (!applications.isEmpty()) {
             HSSFWorkbook wb = new HSSFWorkbook();
-            HSSFSheet sheet = wb.createSheet(schoolName);
+            // title of excel's sheet cannot be longer than 31 char
+            String sheetTitle = schoolName.length() <= 31 ? schoolName : schoolName.substring(0, schoolName.length());
+            HSSFSheet sheet = wb.createSheet(sheetTitle);
             sheet.setColumnWidth((short) 0, (short) (30 * 256));
             sheet.setColumnWidth((short) 1, (short) (14 * 256));
             sheet.setColumnWidth((short) 2, (short) (30 * 256));
@@ -211,18 +215,12 @@ public class ChildCareSiblingListWriter extends DownloadWriter implements MediaW
             
             ChildCareApplication application;
             User child;          
-//            IWCalendar placementDate = null;
             
             Iterator iter = applications.iterator();
             while (iter.hasNext()) {
                 row = sheet.createRow((short) cellRow++);
                 application = (ChildCareApplication) iter.next();
                 child = application.getChild();
-
-//                placementDate = new IWCalendar(iwc.getCurrentLocale(),
-//                        application.getFromDate());
-//                School provider = getChildCareBusiness(iwc)
-//                        .getCurrentProviderByPlacement(application.getChildId());              
 
                 Name name = new Name(child.getFirstName(), child
                         .getMiddleName(), child.getLastName());
@@ -312,7 +310,7 @@ public class ChildCareSiblingListWriter extends DownloadWriter implements MediaW
 		return service;
 	}
 	
-/*	private Table getTable(String[] headers, int[] sizes) throws BadElementException, DocumentException {
+	private Table getTable(String[] headers, int[] sizes) throws BadElementException, DocumentException {
 		Table datatable = new Table(headers.length);
 		datatable.setPadding(0.0f);
 		datatable.setSpacing(0.0f);
@@ -329,7 +327,7 @@ public class ChildCareSiblingListWriter extends DownloadWriter implements MediaW
 		datatable.setDefaultCellBorder(Rectangle.NO_BORDER);
 		datatable.setDefaultRowspan(1);
 		return datatable;
-	}*/
+	}
 
 	private Collection getApplicationCollection(IWContext iwc, int childcareId, int sortBy, int numberPerPage, int start, Date fromDate, Date toDate) throws RemoteException {
 		Collection applications;
