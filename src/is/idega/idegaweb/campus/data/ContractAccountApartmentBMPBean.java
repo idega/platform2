@@ -35,7 +35,7 @@ public class ContractAccountApartmentBMPBean extends GenericView implements Cont
 	 * 
 	 * select cc.cam_contract_id,cc.ic_user_id,cc.bu_apartment_id,
 	 * fa.fin_account_id,fa.account_type, fa.balance,fa.name,
-	 * cc.valid_from,cc.valid_to,cc.deliver_date,cc.return_date,cc.status,cc.rented
+	 * cc.valid_from,cc.valid_to,cc.deliver_date,cc.return_date,cc.status,cc.rented,
 	 * ba.bu_aprt_type_id , bc.bu_aprt_cat_id,
 	 * bf.bu_floor_id,bb.bu_building_id,bx.bu_complex_id from cam_contract
 	 * cc,fin_account fa,bu_apartment ba, bu_floor bf,bu_building bb,bu_complex
@@ -229,7 +229,7 @@ public class ContractAccountApartmentBMPBean extends GenericView implements Cont
 		sql.append(") AS ");
 		sql.append(" select cc.cam_contract_id,cc.ic_user_id,cc.bu_apartment_id, ");
 		sql.append(" fa.fin_account_id,fa.account_type, fa.balance,fa.name, ");
-		sql.append(" cc.valid_from,cc.valid_to,cc.deliver_date,cc.return_date,cc.status,cc.rented ");
+		sql.append(" cc.valid_from,cc.valid_to,cc.deliver_date,cc.return_date,cc.status,cc.rented, ");
 		sql.append(" ba.bu_aprt_type_id , bc.bu_aprt_cat_id, ");
 		sql.append(" bf.bu_floor_id,bb.bu_building_id,bx.bu_complex_id ");
 		sql.append(" from cam_contract cc,fin_account fa,bu_apartment ba, ");
