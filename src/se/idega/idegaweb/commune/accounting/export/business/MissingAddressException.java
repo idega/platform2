@@ -5,20 +5,20 @@
  * Use is subject to license terms.
  *
  */
-package se.idega.idegaweb.commune.accounting.export.ifs.business;
+package se.idega.idegaweb.commune.accounting.export.business;
 
 import se.idega.idegaweb.commune.accounting.business.AccountingException;
 
 /**
  * @author palli
  */
-public class IFSMissingCheckTaxaException extends AccountingException {
+public class MissingAddressException extends AccountingException {
 
 	/**
 	 * @param textKey
 	 * @param defaultText
 	 */
-	public IFSMissingCheckTaxaException(String textKey, String defaultText) {
+	public MissingAddressException(String textKey, String defaultText) {
 		super(textKey, defaultText);
 	}
 }

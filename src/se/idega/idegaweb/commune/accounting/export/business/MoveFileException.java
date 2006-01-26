@@ -1,4 +1,4 @@
-package se.idega.idegaweb.commune.accounting.export.ifs.business;
+package se.idega.idegaweb.commune.accounting.export.business;
 
 /**
  * @author Joakim

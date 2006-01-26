@@ -47,6 +47,8 @@ public class ExportDataMappingBMPBean extends GenericEntity implements ExportDat
 
 	private static final String COLUMN_IFS_FILE_FOLDER = "ifs_file_folder";
 
+	private static final String COLUMN_EXPORT_FILE_FOLDER = "export_file_folder";
+	
 	private static final String COLUMN_FILE_BACKUP_FOLDER = "file_backup_folder";
 
 	private static final String COLUMN_LIST_CREATION_FOLDER = "list_folder";
@@ -107,6 +109,7 @@ public class ExportDataMappingBMPBean extends GenericEntity implements ExportDat
 		addAttribute(COLUMN_PROVIDER_AUTHORIZATION, "Requires provider authorization", Boolean.class);
 		addAttribute(COLUMN_FILE_CREATION_FOLDER, "Folder to create files for this type in", String.class, 255);
 		addAttribute(COLUMN_IFS_FILE_FOLDER, "Folder where IFS reads files for this type", String.class, 255);
+		addAttribute(COLUMN_EXPORT_FILE_FOLDER, "Folder where external system reads files", String.class, 255);
 		addAttribute(COLUMN_LIST_CREATION_FOLDER, "Folder to create lists for this type in", String.class, 255);
 		addAttribute(COLUMN_USE_SPECIFIED_DAYS_PR_MONTH, "Whether or not to use a specified nr. of days pr month in calculations", Boolean.class);
 		addAttribute(COLUMN_DAYS_PR_MONTH, "The number of specified days pr. month", Integer.class);
@@ -164,6 +167,10 @@ public class ExportDataMappingBMPBean extends GenericEntity implements ExportDat
 
 	public String getIFSFileFolder() {
 		return getStringColumnValue(COLUMN_IFS_FILE_FOLDER);
+	}
+
+	public String getExportFileFolder() {
+		return getStringColumnValue(COLUMN_EXPORT_FILE_FOLDER);
 	}
 
 	public String getFileBackupFolder() {
@@ -245,6 +252,10 @@ public class ExportDataMappingBMPBean extends GenericEntity implements ExportDat
 
 	public void setIFSFileFolder(String folder) {
 		setColumn(COLUMN_IFS_FILE_FOLDER, folder);
+	}
+
+	public void setExportFileFolder(String folder) {
+		setColumn(COLUMN_EXPORT_FILE_FOLDER, folder);
 	}
 
 	public void setFileBackupFolder(String folder) {

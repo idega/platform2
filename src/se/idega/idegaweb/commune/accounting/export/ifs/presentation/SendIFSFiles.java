@@ -16,8 +16,8 @@ import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
+import se.idega.idegaweb.commune.accounting.export.business.MoveFileException;
 import se.idega.idegaweb.commune.accounting.export.ifs.business.IFSBusiness;
-import se.idega.idegaweb.commune.accounting.export.ifs.business.MoveFileException;
 import se.idega.idegaweb.commune.accounting.invoice.business.CheckAmountBusiness;
 import se.idega.idegaweb.commune.accounting.invoice.data.CheckAmountBroadcast;
 import se.idega.idegaweb.commune.accounting.invoice.data.CheckAmountBroadcastHome;

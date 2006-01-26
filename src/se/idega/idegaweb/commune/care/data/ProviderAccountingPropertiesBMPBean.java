@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderAccountingPropertiesBMPBean.java,v 1.3 2005/10/17 09:54:16 palli Exp $
+ * $Id: ProviderAccountingPropertiesBMPBean.java,v 1.3.2.1 2006/01/26 14:36:34 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -18,10 +18,10 @@ import javax.ejb.FinderException;
 /**
  * Entity bean holding accounting information for school (provider) entries.
  * <p>
- * Last modified: $Date: 2005/10/17 09:54:16 $ by $Author: palli $
+ * Last modified: $Date: 2006/01/26 14:36:34 $ by $Author: palli $
  *
  * @author Anders Lindman
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.3.2.1 $
  */
 public class ProviderAccountingPropertiesBMPBean extends GenericEntity implements ProviderAccountingProperties {
 
@@ -37,6 +37,7 @@ public class ProviderAccountingPropertiesBMPBean extends GenericEntity implement
 	private static final String COLUMN_OWN_POSTING = "own_posting";
 	private static final String COLUMN_DOUBLE_POSTING = "double_posting";
 	private static final String COLUMN_GIROTEXT = "girotext";
+	private static final String COLUMN_CREATE_INVOICE_RECORD = "invoiced";
 		
 	/**
 	 * @see com.idega.data.GenericEntity#getEntityName()
@@ -70,6 +71,7 @@ public class ProviderAccountingPropertiesBMPBean extends GenericEntity implement
 		addAttribute(COLUMN_OWN_POSTING, "Own posting string", true, true, String.class, 1000);
 		addAttribute(COLUMN_DOUBLE_POSTING, "Double posting string", true, true, String.class, 1000);
 		addAttribute(COLUMN_GIROTEXT, "Giro text", true, true, String.class, 255);
+		addAttribute(COLUMN_CREATE_INVOICE_RECORD, "Create invoice record yes/no", true, true, Boolean.class);
 	}
 	
 	public School getSchool() {
@@ -130,6 +132,10 @@ public class ProviderAccountingPropertiesBMPBean extends GenericEntity implement
 		return getStringColumnValue(COLUMN_GIROTEXT);
 	}
 	
+	public boolean getCreateInvoiceRecord() {
+		return getBooleanColumnValue(COLUMN_CREATE_INVOICE_RECORD, false);
+	}
+	
 	public void setSchoolId(int id) { 
 		setColumn(COLUMN_SCHOOL_ID, id); 
 	}
@@ -168,6 +174,10 @@ public class ProviderAccountingPropertiesBMPBean extends GenericEntity implement
 	
 	public void setGiroText(String text) {
 		setColumn(COLUMN_GIROTEXT, text);
+	}
+	
+	public void setCreateInvoiceRecord(boolean createRecord) {
+		setColumn(COLUMN_CREATE_INVOICE_RECORD, createRecord);
 	}
 
 	public Collection ejbFindAllByPaymentByInvoice

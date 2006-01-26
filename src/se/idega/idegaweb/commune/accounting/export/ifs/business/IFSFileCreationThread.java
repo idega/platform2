@@ -21,6 +21,10 @@ import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import se.idega.idegaweb.commune.accounting.business.AccountingUtil;
+import se.idega.idegaweb.commune.accounting.export.business.MissingPostalCodeException;
+import se.idega.idegaweb.commune.accounting.export.business.MissingAddressException;
+import se.idega.idegaweb.commune.accounting.export.business.MissingCheckTaxaException;
+import se.idega.idegaweb.commune.accounting.export.business.MissingCustodianException;
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.IFSCheckHeader;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.IFSCheckHeaderHome;
@@ -866,15 +870,15 @@ public class IFSFileCreationThread extends Thread {
 				try {
 					User custodian = iHead.getCustodian();
 					if (custodian == null) {
-						throw new IFSMissingCustodianException("ifs_missing_custodian", "Missing custodian");
+						throw new MissingCustodianException("ifs_missing_custodian", "Missing custodian");
 					}
 					Address mainAddress = getIFSBusiness().getUserBusiness().getUsersMainAddress(iHead.getCustodian());
 					if (mainAddress == null) {
-						throw new IFSMissingAddressException("ifs_missing_address", "Missing address");
+						throw new MissingAddressException("ifs_missing_address", "Missing address");
 					}
 					PostalCode poCode = mainAddress.getPostalCode();
 					if (poCode == null) {
-						throw new IFSMissingPostalCodeException("ifs_missing_postalcode", "Missing postalcode");
+						throw new MissingPostalCodeException("ifs_missing_postalcode", "Missing postalcode");
 					}
 					if (rec != null && !rec.isEmpty()) {
 						Iterator irIt = rec.iterator();
@@ -1022,7 +1026,7 @@ public class IFSFileCreationThread extends Thread {
 							InvoiceRecord iRec = (InvoiceRecord) irIt.next();
 							String posting = iRec.getOwnPosting();
 							if (posting == null) {
-								throw new IFSMissingCheckTaxaException("ifs_missing_checktaxa", "Missing checktaxa");
+								throw new MissingCheckTaxaException("ifs_missing_checktaxa", "Missing checktaxa");
 							}
 							if (iRec.getAmount() != 0.0f) {
 								// Posttype
@@ -1240,7 +1244,7 @@ public class IFSFileCreationThread extends Thread {
 					iHead.setStatus('L');
 					iHead.store();
 				}
-				catch (IFSMissingCustodianException e) {
+				catch (MissingCustodianException e) {
 					IFSCheckRecordHome home = getIFSCheckRecordHome();
 					if (home != null) {
 						try {
@@ -1255,7 +1259,7 @@ public class IFSFileCreationThread extends Thread {
 						}
 					}
 				}
-				catch (IFSMissingAddressException e) {
+				catch (MissingAddressException e) {
 					IFSCheckRecordHome home = getIFSCheckRecordHome();
 					if (home != null) {
 						try {
@@ -1270,7 +1274,7 @@ public class IFSFileCreationThread extends Thread {
 						}
 					}
 				}
-				catch (IFSMissingPostalCodeException e) {
+				catch (MissingPostalCodeException e) {
 					IFSCheckRecordHome home = getIFSCheckRecordHome();
 					if (home != null) {
 						try {
@@ -1285,7 +1289,7 @@ public class IFSFileCreationThread extends Thread {
 						}
 					}
 				}
-				catch (IFSMissingCheckTaxaException e) {
+				catch (MissingCheckTaxaException e) {
 					IFSCheckRecordHome home = getIFSCheckRecordHome();
 					if (home != null) {
 						try {

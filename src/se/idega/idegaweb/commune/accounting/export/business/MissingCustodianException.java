@@ -5,15 +5,15 @@
  * Use is subject to license terms.
  *
  */
-package se.idega.idegaweb.commune.accounting.export.ifs.business;
+package se.idega.idegaweb.commune.accounting.export.business;
 
 import se.idega.idegaweb.commune.accounting.business.AccountingException;
 
 /**
  * @author palli
  */
-public class IFSMissingCustodianException extends AccountingException {
-	public IFSMissingCustodianException(String key, String text) {
+public class MissingCustodianException extends AccountingException {
+	public MissingCustodianException(String key, String text) {
 		super(key,text);
 	}
 }

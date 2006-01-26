@@ -1,11 +1,5 @@
-/*
- * $Id: ExportDataMapping.java,v 1.5 2005/10/13 08:09:37 palli Exp $
- * Created on Oct 10, 2005
- *
- * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
+/**
+ * 
  */
 package se.idega.idegaweb.commune.accounting.export.data;
 
@@ -14,16 +8,11 @@ package se.idega.idegaweb.commune.accounting.export.data;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.data.IDOEntity;
 
-
 /**
- * 
- *  Last modified: $Date: 2005/10/13 08:09:37 $ by $Author: palli $
- * 
- * @author <a href="mailto:bluebottle@idega.com">bluebottle</a>
- * @version $Revision: 1.5 $
+ * @author bluebottle
+ *
  */
 public interface ExportDataMapping extends IDOEntity {
-
 	/**
 	 * @see se.idega.idegaweb.commune.accounting.export.data.ExportDataMappingBMPBean#getPrimaryKeyClass
 	 */
@@ -93,6 +82,11 @@ public interface ExportDataMapping extends IDOEntity {
 	 * @see se.idega.idegaweb.commune.accounting.export.data.ExportDataMappingBMPBean#getIFSFileFolder
 	 */
 	public String getIFSFileFolder();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.export.data.ExportDataMappingBMPBean#getExportFileFolder
+	 */
+	public String getExportFileFolder();
 
 	/**
 	 * @see se.idega.idegaweb.commune.accounting.export.data.ExportDataMappingBMPBean#getFileBackupFolder
@@ -195,6 +189,11 @@ public interface ExportDataMapping extends IDOEntity {
 	public void setIFSFileFolder(String folder);
 
 	/**
+	 * @see se.idega.idegaweb.commune.accounting.export.data.ExportDataMappingBMPBean#setExportFileFolder
+	 */
+	public void setExportFileFolder(String folder);
+
+	/**
 	 * @see se.idega.idegaweb.commune.accounting.export.data.ExportDataMappingBMPBean#setFileBackupFolder
 	 */
 	public void setFileBackupFolder(String folder);
@@ -222,6 +221,7 @@ public interface ExportDataMapping extends IDOEntity {
 	/**
 	 * @see se.idega.idegaweb.commune.accounting.export.data.ExportDataMappingBMPBean#setCreatePaymentsForCommuneProvidersOutsideCommune
 	 */
-	public void setCreatePaymentsForCommuneProvidersOutsideCommune(boolean createPayments);
+	public void setCreatePaymentsForCommuneProvidersOutsideCommune(
+			boolean createPayments);
 
 }
