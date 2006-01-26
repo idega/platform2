@@ -310,7 +310,7 @@ public class ChildCareSiblingListWriter extends DownloadWriter implements MediaW
 		return service;
 	}
 	
-	private Table getTable(String[] headers, int[] sizes) throws BadElementException, DocumentException {
+/*	private Table getTable(String[] headers, int[] sizes) throws BadElementException, DocumentException {
 		Table datatable = new Table(headers.length);
 		datatable.setPadding(0.0f);
 		datatable.setSpacing(0.0f);
@@ -327,7 +327,7 @@ public class ChildCareSiblingListWriter extends DownloadWriter implements MediaW
 		datatable.setDefaultCellBorder(Rectangle.NO_BORDER);
 		datatable.setDefaultRowspan(1);
 		return datatable;
-	}
+	}*/
 
 	private Collection getApplicationCollection(IWContext iwc, int childcareId, int sortBy, int numberPerPage, int start, Date fromDate, Date toDate) throws RemoteException {
 		Collection applications;
