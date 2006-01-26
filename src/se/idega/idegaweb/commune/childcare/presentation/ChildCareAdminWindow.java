@@ -2260,65 +2260,51 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		close();
 	}
 
-	private void sendExtraMessage(IWContext iwc,ChildCareApplication application,IWTimestamp date) throws RemoteException {
+
+	private void sendExtraMessage(IWContext iwc,ChildCareApplication application,IWTimestamp date,char c) throws RemoteException {
 		
+		if((c!='F')&&(c!='R')) return;
 		User ch = application.getChild(); 
-		//IWTimestamp stamp = new IWTimestamp();
+		IWTimestamp stamp = new IWTimestamp();
 		String messageBody,messageSubject;
+		Object[] arguments = { ch.getName(), PersonalIDFormatter.format(ch.getPersonalID(), iwc.getCurrentLocale()), date.getDateString("yyyy-MM-dd"), application.getProvider().getSchoolName() };
+		messageBody =  localize("ccaw_extra_message_body","Contract for {0}, {1} has been ended from {2}. You will receive the termination contract in regular mail in a couple of days. Please sign it and return it to the provider as soon as possible. Your placement won’t be completely ended until it is returned. \r\n \r\n Best regards, \r\n {3}"); 
 		
-		messageBody =  localize("ccecw_encon_extra_message_part1","Contract for"); 
-		messageBody += " "+ch.getName()+", ";
-		messageBody += PersonalIDFormatter.format(ch.getPersonalID(), iwc.getCurrentLocale())+" ";
-		messageBody += localize("ccecw_encon_extra_message_part2","has been ended from");
-		messageBody += " "+date.getDateString("yyyy-MM-dd")+". "; 
-		messageBody += localize("ccecw_encon_extra_message_part3","You will receive the termination contract in regular mail in a couple of days. Please sign it and return it to the provider as soon as possible. Your placement won’t be completely ended until it is returned.");  
-		messageBody += "\r\n";
-		messageBody += "\r\n";
-		messageBody += localize("ccecw_encon_extra_message_part4","Best regards \n ");
-		messageBody += "\r\n";
-		messageBody += application.getProvider().getSchoolName();
-		
-		messageSubject = localize("ccecw_encon_extra_message_part0", "Extra message:End of contract");
+		messageBody = MessageFormat.format(messageBody, arguments);
+		messageSubject = localize("ccaw_extra_message_subject", "End of contract");
 		getBusiness().sendMessageToParents(application, messageSubject,messageBody);
 	}	
 
 	private void cancelContract(IWContext iwc) throws RemoteException {
 		ChildCareApplication application = getBusiness().getApplicationForChildAndProvider(_userID, getSession().getChildCareID());
+
+		IWTimestamp date = new IWTimestamp(iwc.getParameter(PARAMETER_CANCEL_DATE));
+        sendExtraMessage(iwc,application,date,application.getApplicationStatus());
+		
 		if (application != null) {
 			//if (application.getApplicationStatus() == getBusiness().getStatusReady() || application.getApplicationStatus() == getBusiness().getStatusParentTerminated()) {
 			if (application.getApplicationStatus() == getBusiness().getStatusReady()) {
-				IWTimestamp date = new IWTimestamp(iwc.getParameter(PARAMETER_CANCEL_DATE));
-
 				if (application.getApplicationStatus() == getBusiness().getStatusReady()) {
 					boolean parentalLeave = true;
 					if (iwc.isParameterSet(PARAMETER_CANCEL_REASON)) {
 						parentalLeave = Boolean.valueOf(iwc.getParameter(PARAMETER_CANCEL_REASON)).booleanValue();
 					}
-		
 					application.setApplicationStatus(getBusiness().getStatusParentTerminated());
 					application.setRequestedCancelDate(date.getDate());
 					application.setParentalLeave(parentalLeave);
 					application.store();
 				}
-
 				getBusiness().createCancelForm(application, date.getDate(), iwc.getCurrentLocale());
 				isEndDateSet = true;
-				//getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
-				//getParentPage().close();
 			}
 			else if (application.getApplicationStatus() == getBusiness().getStatusParentTerminated()) {
-				IWTimestamp date = new IWTimestamp(iwc.getParameter(PARAMETER_CANCEL_DATE));
 				getBusiness().createCancelForm(application, date.getDate(), iwc.getCurrentLocale());
-				//getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
-				//getParentPage().close();
+		        sendExtraMessage(iwc,application,date,application.getApplicationStatus());
 				isEndDateSet = true;
-				sendExtraMessage(iwc,application,date);  
-				
 			}
 			else if (application.getApplicationStatus() == getBusiness().getStatusWaiting()) {
-				IWTimestamp date = new IWTimestamp(iwc.getParameter(PARAMETER_CANCEL_DATE));
 				application.setCancelConfirmationReceived(date.getDate());
-				
+
 				String reasonMessage = "";
 				if (application.getParentalLeave())
 					reasonMessage = localize("child_care.parental_leave", "Parental leave");
@@ -2335,8 +2321,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				getParentPage().close();
 			}
 		}
-	}
-
+	}		
+	
 	private void moveToGroup(IWContext iwc) throws RemoteException {
 		int groupID = Integer.parseInt(iwc.getParameter(getSession().getParameterGroupID()));
 		getBusiness().moveToGroup(_placementID, groupID, iwc.getCurrentUser());
