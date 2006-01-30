@@ -2265,7 +2265,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		
 		if((c!='F')&&(c!='R')) return;
 		User ch = application.getChild(); 
-		IWTimestamp stamp = new IWTimestamp();
+//		IWTimestamp stamp = new IWTimestamp();
 		String messageBody,messageSubject;
 		Object[] arguments = { ch.getName(), PersonalIDFormatter.format(ch.getPersonalID(), iwc.getCurrentLocale()), date.getDateString("yyyy-MM-dd"), application.getProvider().getSchoolName() };
 		messageBody =  localize("ccaw_extra_message_body","Contract for {0}, {1} has been ended from {2}. You will receive the termination contract in regular mail in a couple of days. Please sign it and return it to the provider as soon as possible. Your placement won’t be completely ended until it is returned. \r\n \r\n Best regards, \r\n {3}"); 
