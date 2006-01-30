@@ -1,26 +1,15 @@
-/*
- * $Id: Building.java,v 1.14 2005/06/08 11:42:06 palli Exp $
- * Created on Jun 6, 2005
- *
- * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
+/**
+ * 
  */
 package com.idega.block.building.data;
 
 import java.util.Collection;
 
-
 /**
- * 
- *  Last modified: $Date: 2005/06/08 11:42:06 $ by $Author: palli $
- * 
- * @author <a href="mailto:palli@idega.com">palli</a>
- * @version $Revision: 1.14 $
+ * @author bluebottle
+ *
  */
 public interface Building extends BuildingEntity {
-
 	/**
 	 * @see com.idega.block.building.data.BuildingBMPBean#getName
 	 */
@@ -110,6 +99,26 @@ public interface Building extends BuildingEntity {
 	 * @see com.idega.block.building.data.BuildingBMPBean#setDivision
 	 */
 	public void setDivision(String division);
+
+	/**
+	 * @see com.idega.block.building.data.BuildingBMPBean#getPostalCode
+	 */
+	public String getPostalCode();
+
+	/**
+	 * @see com.idega.block.building.data.BuildingBMPBean#setPostalCode
+	 */
+	public void setPostalCode(String postalCode);
+
+	/**
+	 * @see com.idega.block.building.data.BuildingBMPBean#getPostalAddress
+	 */
+	public String getPostalAddress();
+
+	/**
+	 * @see com.idega.block.building.data.BuildingBMPBean#setPostalAddress
+	 */
+	public void setPostalAddress(String postalAddress);
 
 	/**
 	 * @see com.idega.block.building.data.BuildingBMPBean#getFloors

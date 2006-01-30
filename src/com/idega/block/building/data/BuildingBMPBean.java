@@ -37,6 +37,10 @@ public class BuildingBMPBean extends com.idega.block.text.data.TextEntityBMPBean
 	protected static final String BU_BUILDING = "bu_building";
 	
 	protected static final String DIVISION = "division";
+	
+	protected static final String POSTAL_CODE = "postal_code";
+	
+	protected static final String POSTAL_ADDRESS = "postal_address";
 
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
@@ -47,7 +51,9 @@ public class BuildingBMPBean extends com.idega.block.text.data.TextEntityBMPBean
 		addAttribute(STREET, "Street", true, true, java.lang.String.class);
 		addAttribute(STREET_NUMBER, "Streetnumber", true, true, java.lang.Integer.class);
 		addAttribute(SERIE, "Serie", true, true, java.lang.String.class, 2);
-		addAttribute(DIVISION, "DIVISION", true, true, String.class, 2);
+		addAttribute(DIVISION, "Division", true, true, String.class, 2);
+		addAttribute(POSTAL_CODE, "Postal code", true, true, String.class);
+		addAttribute(POSTAL_ADDRESS, "Postal address", true, true, String.class);
 		super.setMaxLength(INFO, 4000);
 	}
 
@@ -125,6 +131,22 @@ public class BuildingBMPBean extends com.idega.block.text.data.TextEntityBMPBean
 	
 	public void setDivision(String division) {
 		setColumn(DIVISION, division);
+	}
+	
+	public String getPostalCode() {
+		return getStringColumnValue(POSTAL_CODE);
+	}
+	
+	public void setPostalCode(String postalCode) {
+		setColumn(POSTAL_CODE, postalCode);
+	}
+	
+	public String getPostalAddress() {
+		return getStringColumnValue(POSTAL_ADDRESS);
+	}
+	
+	public void setPostalAddress(String postalAddress) {
+		setColumn(POSTAL_ADDRESS, postalAddress);
 	}
 	
 	public Collection ejbFindAll() throws FinderException {
