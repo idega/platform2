@@ -2,6 +2,7 @@ package se.idega.idegaweb.commune.childcare.presentation;
 
 import java.rmi.RemoteException;
 import java.sql.Date;
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
@@ -62,7 +63,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 	private final static String ADDRESS = "cca_address";
 	private final static String CARE_FROM = "cca_care_from";
 
-//	private static final String PROPERTY_CAN_KEEP_ALL_CHOICES_ON_ACCEPT = "can_keep_all_choices_when_acception_offer";
+	private static final String PROPERTY_CAN_KEEP_ALL_CHOICES_ON_ACCEPT = "can_keep_all_choices_when_acception_offer";
 
 	private final static String APPLICATION_INSERTED = "cca_application_ok";
 	private final static String APPLICATION_FAILURE = "cca_application_failed";
@@ -73,7 +74,13 @@ public class ChildCareChildApplication extends ChildCareBlock {
 	private Collection areas;
 	private Map providerMap;
 	private School currentProvider;
-	
+
+	private int provider_1 = 0;
+	private int provider_2 = 0;
+	private int provider_3 = 0;
+	private int provider_4 = 0;
+	private int provider_5 = 0;
+
 	private boolean _noCheckError = false;
 	private boolean isAdmin = false;
 	private boolean hasActivePlacement = false;
@@ -140,7 +147,6 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			_action = ACTION_VIEW_FORM;
 		}
 
-		//child = getBusiness().getUserBusiness().getUser(getSession().getChildID());
 		try {
 			if (getSession().getUniqueID() != null)
 				child = getBusiness().getUserBusiness().getUserByUniqueId(getSession().getUniqueID());
@@ -188,7 +194,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		add(table);
 	}
 	  
-	private void viewForm(IWContext iwc) {
+	private void viewForm(IWContext iwc) throws RemoteException {
 		boolean hasOffers = false;
 		boolean hasPendingApplications = false;
 		if (child != null) {
@@ -260,18 +266,20 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		}
 	}
 	
+	
 	private void submitForm(IWContext iwc) {
 		boolean done = false;
-//		boolean canKeepAllChoices = this.getBundle().getBooleanProperty(PROPERTY_CAN_KEEP_ALL_CHOICES_ON_ACCEPT, true);
 
 		boolean inProcess = false;
 		try {
 			ChildCareApplication app=null;
 			app = null;
 			
+			boolean dateIsCorrect=true;
 			app = getBusiness().getAcceptedApplicationsByChild(((Integer)child.getPrimaryKey()).intValue());
 			if(app!=null){
-					char c = app.getApplicationStatus(); 
+					char c = app.getApplicationStatus();
+					
 				if( (c=='C')||
 					(c=='D')||
 					(c=='E')||
@@ -285,9 +293,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		   
 		}
 		
-		
 		try {
-//			boolean hasPlacement = getBusiness().hasSchoolPlacement(child);
 			int numberOfApplications = 4;	
 			if ((!hasActivePlacement)&&(!inProcess)) numberOfApplications = 5;
 			
@@ -296,9 +302,9 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			String[] dates = new String[numberOfApplications];
 			Date[] queueDates = new Date[numberOfApplications];
 			
-			
 			for (int i = 0; i < numberOfApplications; i++) {
-					providers[i] = iwc.isParameterSet(PARAM_PROVIDER + "_" + (i + 1)) ? Integer.parseInt(iwc.getParameter(PARAM_PROVIDER + "_" + (i + 1))) : -1;
+					try{
+				    providers[i] = iwc.isParameterSet(PARAM_PROVIDER + "_" + (i + 1)) ? Integer.parseInt(iwc.getParameter(PARAM_PROVIDER + "_" + (i + 1))) : -1;
 					dates[i] = iwc.isParameterSet(PARAM_DATE + "_" + (i + 1)) ? iwc.getParameter(PARAM_DATE + "_" + (i + 1)) : null;
 					if (isAdmin) {
 						if (iwc.isParameterSet(PARAM_QUEUE_DATE + "_" + (i + 1))) {
@@ -307,6 +313,10 @@ public class ChildCareChildApplication extends ChildCareBlock {
 						else
 							queueDates[i] = null;
 				    }
+					}  catch(NullPointerException e) {
+					     //TODO
+				       }
+					
 			}
 
 			
@@ -407,21 +417,14 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		
 	}	
 		
-	private Table getInputTable(IWContext iwc) {
+	private Table getInputTable(IWContext iwc) throws RemoteException {
 		
 		updateChoiceNumber();
-		 
 		boolean inProcess = false;
 			try {
 				ChildCareApplication app=null;
 				app = null;
-			
 				app = getBusiness().getAcceptedApplicationsByChild(((Integer)child.getPrimaryKey()).intValue());
-				
-				
-				
-				
-				
 				if(app!=null){
  					char c = app.getApplicationStatus(); 
 					if( (c=='C')||
@@ -456,11 +459,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 
 		ChildCareApplication application = null;
 		int areaID = -1;
-		
-		
-		
 	     
-		//boolean canKeepAllChoices = this.getBundle().getBooleanProperty(PROPERTY_CAN_KEEP_ALL_CHOICES_ON_ACCEPT, true);		
 		int numberOfApplications = 4;		
 		if ((!hasActivePlacement)&&(!inProcess)) numberOfApplications = 5;
 
@@ -470,12 +469,24 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			application = null;
 			try {
 
+				
 				application = getBusiness().getNonActiveApplication(((Integer) child.getPrimaryKey()).intValue(), i);
 				if (application != null) {
+                   try{
+					if(i==1) provider_1 = application.getProviderId();
+					if(i==2) provider_2 = application.getProviderId();
+					if(i==3) provider_3 = application.getProviderId();
+					if(i==4) provider_4 = application.getProviderId();
+					if(i==5) provider_5 = application.getProviderId();
+				    }  catch(NullPointerException e) {
+				     //TODO
+			       }					
+					
 					areaID = application.getProvider().getSchoolAreaId();
 					message = application.getMessage();
 					
 				}
+				
 			}
 			catch (RemoteException re) {
 				application = null;
@@ -687,12 +698,129 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		buffer.append("\n\t\t alert('").append(message).append("');");
 		buffer.append("\n\t\t return false;");
 		buffer.append("\n\t }");
+		
 		if (!hasActivePlacement) {
 			message = localize("child_care.less_than_five_chosen", "You have chosen less than five choices.  An offer can not be guaranteed within three months.");
 			buffer.append("\n\t if(length < 5)\n\t\t return confirm('").append(message).append("');");
 			buffer.append("\n\t return true;");
 		}
-		buffer.append("\n}\n");
+
+		
+		IWTimestamp stamp = new IWTimestamp();
+		int year = stamp.getYear();
+		int month = stamp.getMonth();
+		int day = stamp.getDay();
+		message = localize("child_care.no_date_back_in_time", "You cannot set a date back in time");
+		
+//		if ITEM_1 CHECK
+		buffer.append("\n\t if(" );
+		// rule 1 check year
+        buffer.append("( (one!="+String.valueOf(provider_1)+") && ");
+		buffer.append("  (dateYearOne.options[dateYearOne.selectedIndex].value  < "+String.valueOf(year)+ ") )");		
+		// rule 2 check month + year
+		buffer.append("\n\t || ");		
+        buffer.append("( (one!="+String.valueOf(provider_1)+") && ");
+		buffer.append("  (dateYearOne.options[dateYearOne.selectedIndex].value == "+String.valueOf(year)+ ")   &&");
+		buffer.append("  (dateMonthOne.options[dateMonthOne.selectedIndex].value < "+String.valueOf(month)+ ") )");
+		// rule 3 check day + month + year
+		buffer.append("\n\t || ");		
+        buffer.append("( (one!="+String.valueOf(provider_1)+") && ");
+		buffer.append("  (dateYearOne.options[dateYearOne.selectedIndex].value == "+String.valueOf(year)+ ")    && ");
+		buffer.append("  (dateMonthOne.options[dateMonthOne.selectedIndex].value == "+String.valueOf(month)+ ") && ");
+		buffer.append("  (dateDayOne.options[dateDayOne.selectedIndex].value  < "+String.valueOf(day)+ ") )"); 
+		buffer.append("){");  
+		buffer.append("\n\t\t alert('").append(message).append("');");		
+		buffer.append("\n\t\t return false;");
+		buffer.append("\n\t} ");		
+		
+//		if ITEM_2 CHECK
+		buffer.append("\n\t if(" );
+		// rule 1 check year
+        buffer.append("( (two!="+String.valueOf(provider_2)+") && ");
+		buffer.append("  (dateYearTwo.options[dateYearTwo.selectedIndex].value  < "   + String.valueOf(year)+ ") )");		
+		// rule 2 check month + year
+		buffer.append("\n\t || ");		
+        buffer.append("( (two!="+String.valueOf(provider_2)+") && ");
+		buffer.append("  (dateYearTwo.options[dateYearTwo.selectedIndex].value == "   + String.valueOf(year)+ ")   &&");
+		buffer.append("  (dateMonthTwo.options[dateMonthTwo.selectedIndex].value  < " + String.valueOf(month)+ ") )");
+		// rule 3 check day + month + year
+		buffer.append("\n\t || ");		
+        buffer.append("( (two!="+String.valueOf(provider_2)+") && ");
+		buffer.append("  (dateYearTwo.options[dateYearTwo.selectedIndex].value == "   + String.valueOf(year)+ ")   && ");
+		buffer.append("  (dateMonthTwo.options[dateMonthTwo.selectedIndex].value == " + String.valueOf(month)+ ") && ");
+		buffer.append("  (dateDayTwo.options[dateDayTwo.selectedIndex].value  < "     + String.valueOf(day)+ ") )"); 
+		buffer.append("){");  
+		buffer.append("\n\t\t alert('").append(message).append("');");		
+		buffer.append("\n\t\t return false;");
+		buffer.append("\n\t} ");		
+
+//		if ITEM_3 CHECK
+		buffer.append("\n\t if(" );
+		// rule 1 check year
+        buffer.append("( (three!="+String.valueOf(provider_3)+") && ");
+		buffer.append("  (dateYearThree.options[dateYearThree.selectedIndex].value  < "   + String.valueOf(year)+ ") )");		
+		// rule 2 check month + year
+		buffer.append("\n\t || ");		
+        buffer.append("( (three!="+String.valueOf(provider_3)+") && ");
+		buffer.append("  (dateYearThree.options[dateYearThree.selectedIndex].value == "   + String.valueOf(year)+ ")   &&");
+		buffer.append("  (dateMonthThree.options[dateMonthThree.selectedIndex].value  < " + String.valueOf(month)+ ") )");
+		// rule 3 check day + month + year
+		buffer.append("\n\t || ");		
+        buffer.append("( (three!="+String.valueOf(provider_3)+") && ");
+		buffer.append("  (dateYearThree.options[dateYearThree.selectedIndex].value == "   + String.valueOf(year)+ ")   && ");
+		buffer.append("  (dateMonthThree.options[dateMonthThree.selectedIndex].value == " + String.valueOf(month)+ ") && ");
+		buffer.append("  (dateDayThree.options[dateDayThree.selectedIndex].value  < "     + String.valueOf(day)+ ") )"); 
+		buffer.append("){");  
+		buffer.append("\n\t\t alert('").append(message).append("');");		
+		buffer.append("\n\t\t return false;");
+		buffer.append("\n\t} ");		
+
+//		if ITEM_4 CHECK
+		buffer.append("\n\t if(" );
+		// rule 1 check year
+        buffer.append("( (four!="+String.valueOf(provider_4)+") && ");
+		buffer.append("  (dateYearFour.options[dateYearFour.selectedIndex].value  < "   + String.valueOf(year)+ ") )");		
+		// rule 2 check month + year
+		buffer.append("\n\t || ");		
+        buffer.append("( (four!="+String.valueOf(provider_4)+") && ");
+		buffer.append("  (dateYearFour.options[dateYearFour.selectedIndex].value == "   + String.valueOf(year)+ ")   &&");
+		buffer.append("  (dateMonthFour.options[dateMonthFour.selectedIndex].value  < " + String.valueOf(month)+ ") )");
+		// rule 3 check day + month + year
+		buffer.append("\n\t || ");		
+        buffer.append("( (four!="+String.valueOf(provider_4)+") && ");
+		buffer.append("  (dateYearFour.options[dateYearFour.selectedIndex].value == "   + String.valueOf(year)+ ")   && ");
+		buffer.append("  (dateMonthFour.options[dateMonthFour.selectedIndex].value == " + String.valueOf(month)+ ") && ");
+		buffer.append("  (dateDayFour.options[dateDayFour.selectedIndex].value  < "     + String.valueOf(day)+ ") )"); 
+		buffer.append("){");  
+		buffer.append("\n\t\t alert('").append(message).append("');");		
+		buffer.append("\n\t\t return false;");
+		buffer.append("\n\t} ");		
+
+//		if ITEM_5 CHECK
+		buffer.append("\n\t if(" );
+		// rule 1 check year
+        buffer.append("( (five!="+String.valueOf(provider_5)+") && ");
+		buffer.append("  (dateYearFive.options[dateYearFive.selectedIndex].value  < "   + String.valueOf(year)+ ") )");		
+		// rule 2 check month + year
+		buffer.append("\n\t || ");		
+        buffer.append("( (five!="+String.valueOf(provider_5)+") && ");
+		buffer.append("  (dateYearFive.options[dateYearFive.selectedIndex].value == "   + String.valueOf(year)+ ")   &&");
+		buffer.append("  (dateMonthFive.options[dateMonthFive.selectedIndex].value  < " + String.valueOf(month)+ ") )");
+		// rule 3 check day + month + year
+		buffer.append("\n\t || ");		
+        buffer.append("( (five!="+String.valueOf(provider_5)+") && ");
+		buffer.append("  (dateYearFive.options[dateYearFive.selectedIndex].value == "   + String.valueOf(year)+ ")   && ");
+		buffer.append("  (dateMonthFive.options[dateMonthFive.selectedIndex].value == " + String.valueOf(month)+ ") && ");
+		buffer.append("  (dateDayFive.options[dateDayFive.selectedIndex].value  < "     + String.valueOf(day)+ ") )"); 
+		buffer.append("){");  
+		buffer.append("\n\t\t alert('").append(message).append("');");		
+		buffer.append("\n\t\t return false;");
+		buffer.append("\n\t} ");		
+		
+		
+		buffer.append("\n\n}");
+
+		
 		return buffer.toString();
 	}
 
