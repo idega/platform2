@@ -2,7 +2,6 @@ package se.idega.idegaweb.commune.childcare.presentation;
 
 import java.rmi.RemoteException;
 import java.sql.Date;
-import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
@@ -14,7 +13,6 @@ import se.idega.idegaweb.commune.care.business.CareConstants;
 import se.idega.idegaweb.commune.care.check.data.GrantedCheck;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
-
 
 import com.idega.block.navigation.presentation.UserHomeLink;
 import com.idega.block.school.data.School;
@@ -63,7 +61,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 	private final static String ADDRESS = "cca_address";
 	private final static String CARE_FROM = "cca_care_from";
 
-	private static final String PROPERTY_CAN_KEEP_ALL_CHOICES_ON_ACCEPT = "can_keep_all_choices_when_acception_offer";
+//	private static final String PROPERTY_CAN_KEEP_ALL_CHOICES_ON_ACCEPT = "can_keep_all_choices_when_acception_offer";
 
 	private final static String APPLICATION_INSERTED = "cca_application_ok";
 	private final static String APPLICATION_FAILURE = "cca_application_failed";
@@ -194,7 +192,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		add(table);
 	}
 	  
-	private void viewForm(IWContext iwc) throws RemoteException {
+	private void viewForm(IWContext iwc) {
 		boolean hasOffers = false;
 		boolean hasPendingApplications = false;
 		if (child != null) {
@@ -275,7 +273,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			ChildCareApplication app=null;
 			app = null;
 			
-			boolean dateIsCorrect=true;
+//			boolean dateIsCorrect=true;
 			app = getBusiness().getAcceptedApplicationsByChild(((Integer)child.getPrimaryKey()).intValue());
 			if(app!=null){
 					char c = app.getApplicationStatus();
@@ -417,7 +415,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		
 	}	
 		
-	private Table getInputTable(IWContext iwc) throws RemoteException {
+	private Table getInputTable(IWContext iwc) {
 		
 		updateChoiceNumber();
 		boolean inProcess = false;
