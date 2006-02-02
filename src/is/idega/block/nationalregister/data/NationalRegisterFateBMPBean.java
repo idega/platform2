@@ -40,12 +40,12 @@ public class NationalRegisterFateBMPBean extends GenericEntity implements
 					.getHome(NationalRegisterFate.class)).create();
 			changePid
 					.setFateCode(NationalRegisterConstants.FATE_CHANGE_PERSONAL_ID);
-			deceased.store();
+			changePid.store();
 
 			NationalRegisterFate removed = ((NationalRegisterFateHome) IDOLookup
 					.getHome(NationalRegisterFate.class)).create();
-			deceased.setFateCode(NationalRegisterConstants.FATE_REMOVED);
-			deceased.store();
+			removed.setFateCode(NationalRegisterConstants.FATE_REMOVED);
+			removed.store();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
