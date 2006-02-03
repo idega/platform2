@@ -338,14 +338,14 @@ public class Importer extends StyledIWAdminWindow {
 				setParentToReload();
 			}
 			else 
-				buttonTable.add(new StyledButton(new BackButton(iwrb.getLocalizedString("importer.back", "back"))), 2, 1);
+				buttonTable.add(new StyledButton(new BackButton(iwrb.getLocalizedString("importer.back", "back"))), 1, 1);
 			
 			mainTable.add(contentTable, 1, 3);
 			mainTable.setHeight(4, 5);
 		}
 		else {
 			headerTable.add(new Text(iwrb.getLocalizedString("importer.failure", "Failed")+": "+iwrb.getLocalizedString("importer.no.file.selected", "No file selected!")), 1, row++);
-			buttonTable.add(new StyledButton(new BackButton(iwrb.getLocalizedString("importer.back", "back"))), 2, 1);
+			buttonTable.add(new StyledButton(new BackButton(iwrb.getLocalizedString("importer.back", "back"))), 1, 1);
 		}
 		Help help = getHelp(HELP_TEXT_KEY);
 		bottomTable.add(help, 1, 1);
