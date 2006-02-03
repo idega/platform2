@@ -148,7 +148,10 @@ public class ChildCareGroupWriter extends DownloadWriter implements MediaWritabl
 		MemoryOutputStream mos = new MemoryOutputStream(buffer);
 		if (!students.isEmpty()) {
 	    HSSFWorkbook wb = new HSSFWorkbook();
-	    HSSFSheet sheet = wb.createSheet(schoolName);
+	    
+        String sheetTitle = schoolName.length() <= 31 ? schoolName : schoolName.substring(0, 32); //the name of worksheet can be 31 symbols max
+        HSSFSheet sheet = wb.createSheet(sheetTitle);
+        
 	    sheet.setColumnWidth((short)0, (short) (30 * 256));
 	    sheet.setColumnWidth((short)1, (short) (14 * 256));
 	    sheet.setColumnWidth((short)2, (short) (30 * 256));
