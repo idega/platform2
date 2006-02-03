@@ -163,12 +163,10 @@ public class ChildCareQueueWriter extends DownloadWriter implements MediaWritabl
         MemoryOutputStream mos = new MemoryOutputStream(buffer);
         if (!applications.isEmpty()) {
             HSSFWorkbook wb = new HSSFWorkbook();
-            HSSFSheet sheet = null;
-            if(schoolName.length() <= 31) { //the name of worksheet can be 31 symbols max
-            	sheet = wb.createSheet(schoolName);
-            } else {
-            	sheet = wb.createSheet(schoolName.substring(0, 30));
-            }
+
+            String sheetTitle = schoolName.length() <= 31 ? schoolName : schoolName.substring(0, 32); //the name of worksheet can be 31 symbols max
+            HSSFSheet sheet = wb.createSheet(sheetTitle);
+            
             sheet.setColumnWidth((short) 0, (short) (30 * 256));
             sheet.setColumnWidth((short) 1, (short) (14 * 256));
             sheet.setColumnWidth((short) 2, (short) (14 * 256));
