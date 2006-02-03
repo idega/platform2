@@ -76,6 +76,8 @@ public class Importer extends StyledIWAdminWindow {
 	private String importFile;
 	public Importer() {
 		this.setAllMargins(0);
+		setHeight(400);
+		setWidth(400);
 	}
 	/**
 	 * Method setFolderPath. Use this set method if you want to select files from the local filesystem.
@@ -186,7 +188,7 @@ public class Importer extends StyledIWAdminWindow {
 		//SimpleFileChooser chooser = new SimpleFileChooser(form, IMPORT_FILE_IDS);
 
 		Table mainTable = new Table();
-		mainTable.setWidth(200);
+		mainTable.setWidth(Table.HUNDRED_PERCENT);
 		mainTable.setHeight(100);
 		mainTable.setCellpadding(0);
 		mainTable.setCellspacing(0);
@@ -196,13 +198,14 @@ public class Importer extends StyledIWAdminWindow {
 		table.setCellpaddingAndCellspacing(0);
 		table.setWidth(Table.HUNDRED_PERCENT);
 		table.setHeight(60);
-		
+		table.setCellpadding(0);
+		table.setCellspacing(5);
 		FileInput chooser = new FileInput();
 		Help help = getHelp(HELP_TEXT_KEY);
 		SubmitButton confirm = new SubmitButton(iwrb.getLocalizedString("confirm","Confirm"));
-		confirm.setAsImageButton(true);
+		StyledButton styledConfirm = new StyledButton(confirm);
 		CloseButton close = new CloseButton(iwrb.getLocalizedString("close", "Close"));
-		close.setAsImageButton(true);
+		StyledButton styledClose = new StyledButton(close);
 		
 		table.add(iwrb.getLocalizedString("importer.select_file", "Select a file to import"+":"),1,1);
 		table.add(new HiddenInput(ACTION_PARAMETER, IMPORT_FILES),1,2);
@@ -210,21 +213,23 @@ public class Importer extends StyledIWAdminWindow {
 		table.add(new HiddenInput(PARAMETER_IMPORT_FILE, importFile),1,2);
 		table.add(chooser,1,2);
 		
+		Table buttonTable = new Table();
+		buttonTable.add(styledConfirm,1,1);
+		buttonTable.add(styledClose,2,1);
+
 		Table bottomTable = new Table();
 		bottomTable.setCellpadding(0);
 		bottomTable.setCellspacing(5);
 		bottomTable.setWidth(Table.HUNDRED_PERCENT);
-		bottomTable.setHeight(39);
 		bottomTable.setStyleClass(MAIN_STYLECLASS);
 		bottomTable.add(help,1,1);
 		bottomTable.setAlignment(2,1,Table.HORIZONTAL_ALIGN_RIGHT);
-		bottomTable.add(confirm,2,1);
-		bottomTable.add(Text.getNonBrakingSpace(),2,1);
-		bottomTable.add(close,2,1);
+		bottomTable.add(buttonTable,2,1);
 		
 		mainTable.setVerticalAlignment(1,1,Table.VERTICAL_ALIGN_TOP);
 		mainTable.setVerticalAlignment(1,3,Table.VERTICAL_ALIGN_TOP);
 		mainTable.add(table,1,1);
+		mainTable.setHeight(2, 5);
 		mainTable.add(bottomTable,1,3);
 		
 		form.add(mainTable);
@@ -235,21 +240,41 @@ public class Importer extends StyledIWAdminWindow {
 	 * @param iwc
 	 */
 	private void importFiles(IWContext iwc) throws Exception {
-		Table table = getFrameTable();
+		Form form = new Form();
+		Table mainTable = new Table();
+		mainTable.setCellspacing(0);
+		mainTable.setCellpadding(0);
+		mainTable.setWidth(Table.HUNDRED_PERCENT);
+		mainTable.setHeight(2, 5);
+		Table headerTable = getFrameTable();
+		headerTable.setCellpadding(0);
+		headerTable.setCellspacing(5);
+		Table contentTable = getFrameTable();
+		contentTable.setCellpadding(0);
+		contentTable.setCellspacing(5);
+		Table bottomTable = getFrameTable();
+		bottomTable.setCellpadding(0);
+		bottomTable.setCellspacing(5);
+		bottomTable.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_LEFT);
+		bottomTable.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+		Table buttonTable = new Table();
+		buttonTable.setCellpadding(0);
+		buttonTable.setCellspacing(0);
+		buttonTable.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+		
 		int row = 1;
-		Text header = new Text(iwrb.getLocalizedString("importer.importing", "Importer : Importing"));
-		header.setBold();
-		table.add(header, 1, row++);
 		Text done = new Text(iwrb.getLocalizedString("importer.done.importing", "Done importing:"));
-		table.add(done, 1, row++);
+		headerTable.add(done, 1, row++);
 		String[] values = null;
 		if (usingLocalFileSystem){
 			values = iwc.getParameterValues(IMPORT_FILE_PATHS); //for local file importing
 		}
 		else if(isInApplication){
-			UploadFile file = iwc.getUploadedFile();
-			String[] temp = {file.getAbsolutePath()};
-			values = temp;
+			if(iwc.isUploadedFileSet()) {
+				UploadFile file = iwc.getUploadedFile();
+				String[] temp = {file.getAbsolutePath()};
+				values = temp;
+			}
 		}
 		else{
 			values = iwc.getParameterValues(IMPORT_FILE_IDS);
@@ -258,8 +283,6 @@ public class Importer extends StyledIWAdminWindow {
 		String handler = iwc.getParameter(this.PARAMETER_IMPORT_HANDLER);
 		String fileClass = iwc.getParameter(this.PARAMETER_IMPORT_FILE);
 		if (values != null) {
-			table.resize(7, table.getRows() + 1);
-			table.mergeCells(1, 2, 7, 2);
 			// for each file to import
 			for (int i = 0; i < values.length; i++) {
 				boolean success = false;
@@ -281,14 +304,13 @@ public class Importer extends StyledIWAdminWindow {
 				}
 				String status = null;
 				if (!success) {
-				    iwrb.getLocalizedString("importer.failure", "Failed");
+					status = iwrb.getLocalizedString("importer.failure", "Failed");
 				} else if (failedRecords.size() != 0) {
-				    iwrb.getLocalizedString("importer.not_all imported", "Not all records imported");
+					status = iwrb.getLocalizedString("importer.not_all imported", "Not all records imported");
 				} else {
-				    iwrb.getLocalizedString("importer.success", "Success");
+					status = iwrb.getLocalizedString("importer.success", "Success");
 				}
-				Text fileStatus = new Text(path.substring(path.lastIndexOf(com.idega.util.FileUtil.getFileSeparator()),path.length()) + " : " + status);
-				fileStatus.setBold();
+				Text fileStatus = new Text(path.substring(path.lastIndexOf(com.idega.util.FileUtil.getFileSeparator())+1,path.length()) + ": " + status);
 				if (success && !usingLocalFileSystem &&!isInApplication) {
 					//@todo move to a business method
 					Integer id = new Integer(values[i]);
@@ -299,29 +321,40 @@ public class Importer extends StyledIWAdminWindow {
 					record.store();
 					//getImportBusiness(iwc).updateImportRecord(getImportBusiness(iwc));
 				}
-				table.addBreak(1, 2);
-				table.add(fileStatus, 1, row++);
+				headerTable.add(fileStatus, 1, row++);
+				row = 1;
 				if (failedRecords.size() != 0) {
-				    table.resize(7, table.getRows() + failedRecords.size()+1);
 				    Text failed = new Text(iwrb.getLocalizedString("importer.number_of_failed_records", "Number of failed record was:")+" "+String.valueOf(failedRecords.size()));
-					table.add(failed, 1, row++);
+					contentTable.add(failed, 1, row++);
 					for (int j=0;j<failedRecords.size();j++) {
 					    failed = new Text(String.valueOf(failedRecords.get(j)));
-						table.add(failed, 1, row++);
+					    failed.setBold(false);
+					    contentTable.add(failed, 1, row++);
 					}
 				}
 			}
 			if(isInApplication){
-				table.add(new StyledButton(new CloseButton(iwrb.getLocalizedString("importer.close", "close"))), 7, row++); 
+				buttonTable.add(new StyledButton(new CloseButton(iwrb.getLocalizedString("importer.close", "close"))), 1, 1); 
 				setParentToReload();
 			}
-			else table.add(new StyledButton(new BackButton(iwrb.getLocalizedString("importer.back", "back"))), 7, row++);
+			else 
+				buttonTable.add(new StyledButton(new BackButton(iwrb.getLocalizedString("importer.back", "back"))), 2, 1);
+			
+			mainTable.add(contentTable, 1, 3);
+			mainTable.setHeight(4, 5);
 		}
 		else {
-			table.add(new Text(iwrb.getLocalizedString("importer.no.file.selected", "No file selected!")), 1, row++);
-			table.add(new StyledButton(new BackButton(iwrb.getLocalizedString("importer.back", "back"))), 7, values.length + row++);
+			headerTable.add(new Text(iwrb.getLocalizedString("importer.failure", "Failed")+": "+iwrb.getLocalizedString("importer.no.file.selected", "No file selected!")), 1, row++);
+			buttonTable.add(new StyledButton(new BackButton(iwrb.getLocalizedString("importer.back", "back"))), 2, 1);
 		}
-		add(table);
+		Help help = getHelp(HELP_TEXT_KEY);
+		bottomTable.add(help, 1, 1);
+		bottomTable.add(buttonTable,2,1);
+		mainTable.add(headerTable, 1, 1);
+		mainTable.setHeight(2, 5);
+		mainTable.add(bottomTable, 1, 5);
+		form.add(mainTable);
+		add(form,iwc);
 	}
 	/**
 	 * Method showIWFileSystemSelection.
@@ -524,11 +557,9 @@ public class Importer extends StyledIWAdminWindow {
 	}
 	private Table getFrameTable() {
 		if (frameTable == null) {
-			frameTable = new Table(7, 3);
+			frameTable = new Table();
+			frameTable.setStyleClass(MAIN_STYLECLASS);
 			frameTable.setWidth(Table.HUNDRED_PERCENT);
-			frameTable.mergeCells(1, 1, 7, 1); //merge the header
-			//header color
-			frameTable.setRowColor(1, headerColor.getHexColorString());
 		}
 		return (Table) frameTable.clone();
 	}
