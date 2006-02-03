@@ -1,5 +1,5 @@
 /*
- * $Id: Member.java,v 1.13 2005/02/08 10:10:38 laddi Exp $
+ * $Id: Member.java,v 1.13.4.1 2006/02/03 17:04:16 palli Exp $
  * Created on 8.2.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -22,10 +22,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/02/08 10:10:38 $ by $Author: laddi $
+ * Last modified: $Date: 2006/02/03 17:04:16 $ by $Author: palli $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.13.4.1 $
  */
 public interface Member extends IDOLegacyEntity, UniqueIDCapable {
 
@@ -278,5 +278,9 @@ public interface Member extends IDOLegacyEntity, UniqueIDCapable {
 	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#getICUser
 	 */
 	public User getICUser();
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#getICUserID
+	 */
+	public int getICUserID();
 
 }

@@ -612,7 +612,11 @@ public class MemberBMPBean extends GenericEntity implements Member {
 	public User getICUser() {
 		return (User)getColumnValue(COLUMNNAME_IC_USER_ID);
 	}
-	
+
+	public int getICUserID() {
+		return getIntColumnValue(COLUMNNAME_IC_USER_ID);
+	}
+
 	public Object ejbFindMemberByIWMemberSystemUser(User user) throws FinderException {
 		return idoFindOnePKByQuery(idoQueryGetSelect().appendWhereEquals(COLUMNNAME_IC_USER_ID,user));
 	}
