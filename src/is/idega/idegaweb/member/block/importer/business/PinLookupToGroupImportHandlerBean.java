@@ -14,15 +14,12 @@ import javax.transaction.UserTransaction;
 import com.idega.block.importer.business.ImportFileHandler;
 import com.idega.block.importer.data.ImportFile;
 import com.idega.business.IBOSessionBean;
-import com.idega.core.location.business.AddressBusiness;
 import com.idega.presentation.PresentationObject;
 import com.idega.user.business.UserBusiness;
-import com.idega.user.data.Gender;
 import com.idega.user.data.Group;
 import com.idega.user.data.Status;
 import com.idega.user.data.StatusHome;
 import com.idega.user.data.User;
-import com.idega.user.data.UserHome;
 import com.idega.user.data.UserStatus;
 import com.idega.user.data.UserStatusHome;
 import com.idega.util.IWTimestamp;
@@ -38,20 +35,16 @@ import com.idega.util.text.TextSoap;
  */
 public class PinLookupToGroupImportHandlerBean extends IBOSessionBean implements PinLookupToGroupImportHandler, ImportFileHandler {
 	private static final int PIN_COLUMN = 0;
-	private static final int NAME_COLUMN = 1;
+	//private static final int NAME_COLUMN = 1;
 	private static final int STATUS_COLUMN = 2;
 	private List userProperties;
-	private UserHome home;
 	private UserStatusHome userStatusHome;
 	private StatusHome statusHome;
-	private AddressBusiness addressBiz;
 	private UserBusiness userBiz;
 	private Group rootGroup;
 	private ImportFile file;
 	private UserTransaction transaction;
 	private ArrayList failedRecords;
-	private Gender male;
-	private Gender female;
 	public PinLookupToGroupImportHandlerBean() {
 	}
 	public boolean handleRecords() throws RemoteException {
@@ -109,7 +102,7 @@ public class PinLookupToGroupImportHandlerBean extends IBOSessionBean implements
 		User user = null;
 		//variables
 		String statusId = null;
-		String name = null;
+		//String name = null;
 		String PIN = null;
 		
 		try{
