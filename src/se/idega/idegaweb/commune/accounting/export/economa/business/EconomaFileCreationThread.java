@@ -12,6 +12,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -63,6 +64,9 @@ public class EconomaFileCreationThread extends Thread {
 	protected Locale currentLocale = null;
 
 	protected IWApplicationContext iwac = null;
+	
+	private final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune.accounting";
+
 
 	// private final static String IW_BUNDLE_IDENTIFIER =
 	// "se.idega.idegaweb.commune.accounting";
@@ -203,12 +207,11 @@ public class EconomaFileCreationThread extends Thread {
 		StringBuffer fileName1 = null;
 		StringBuffer fileName2 = null;
 		StringBuffer fileName3 = null;
-/*		StringBuffer fileName4 = null;
-		StringBuffer fileName5 = null;
-		StringBuffer fileName6 = null;
-		StringBuffer fileName7 = null;
-		StringBuffer fileName8 = null;
-		StringBuffer fileName9 = null;*/
+		/*
+		 * StringBuffer fileName4 = null; StringBuffer fileName5 = null;
+		 * StringBuffer fileName6 = null; StringBuffer fileName7 = null;
+		 * StringBuffer fileName8 = null; StringBuffer fileName9 = null;
+		 */
 		if (childCare != null && (fileFolder != null || listFolder != null)
 				&& school != null /* && highSchool != null */) {
 			if (schoolCategory.equals(childCare.getPrimaryKey())) {
@@ -537,9 +540,9 @@ public class EconomaFileCreationThread extends Thread {
 	 * pRec.setStatus('L'); pRec.store(); } } pHead.setStatus('L');
 	 * pHead.store(); } bWriter.close(); } }
 	 */
-	private void createInvoiceFiles(String fileName1, String schoolCategory, IWTimestamp executionDate,
-			Locale currentLocale, EconomaCheckHeader checkHeader)
-			throws IOException {
+	private void createInvoiceFiles(String fileName1, String schoolCategory,
+			IWTimestamp executionDate, Locale currentLocale,
+			EconomaCheckHeader checkHeader) throws IOException {
 		Collection iHeaders = null;
 		try {
 			iHeaders = ((InvoiceHeaderHome) IDOLookup
@@ -805,60 +808,83 @@ public class EconomaFileCreationThread extends Thread {
 
 						int type50counter = 1;
 						HashMap map = new HashMap();
+						HashMap regular = new HashMap();
 						while (irIt.hasNext()) {
 							InvoiceRecord iRec = (InvoiceRecord) irIt.next();
 
 							if (iRec.getAmount() != 0.0f) {
-								if (map.containsKey(iRec.getChildCareContract()
-										.getPrimaryKey())) {
-									InvoiceRecord r = (InvoiceRecord) map
-											.get(iRec.getChildCareContract()
-													.getPrimaryKey());
-									r.setAmount(r.getAmount()
-											+ iRec.getAmount());
-									map.put(iRec.getChildCareContract()
-											.getPrimaryKey(), r);
+								if (iRec.getChildCareContract() != null) {
+									if (map.containsKey(iRec
+											.getChildCareContract()
+											.getPrimaryKey())) {
+										InvoiceRecord r = (InvoiceRecord) map
+												.get(iRec
+														.getChildCareContract()
+														.getPrimaryKey());
+										r.setAmount(r.getAmount()
+												+ iRec.getAmount());
+										map.put(iRec.getChildCareContract()
+												.getPrimaryKey(), r);
+									} else {
+										map.put(iRec.getChildCareContract()
+												.getPrimaryKey(), iRec);
+									}
 								} else {
-									map.put(iRec.getChildCareContract()
-											.getPrimaryKey(), iRec);
+									if (regular.containsKey(iRec.getSchoolClassMember().getPrimaryKey())) {
+										ArrayList regList = (ArrayList) regular.get(iRec.getSchoolClassMember().getPrimaryKey());
+										regList.add(iRec);
+										regular.put(iRec.getSchoolClassMember().getPrimaryKey(), regList);
+									} else {
+										ArrayList regList = new ArrayList();
+										regList.add(iRec);
+										regular.put(iRec.getSchoolClassMember().getPrimaryKey(), regList);										
+									}
 								}
 							}
 						}
 
 						Iterator recordIterator = map.keySet().iterator();
 						while (recordIterator.hasNext()) {
-							InvoiceRecord r = (InvoiceRecord) map.get(recordIterator
-									.next());
+							InvoiceRecord r = (InvoiceRecord) map
+									.get(recordIterator.next());
 
 							if (r.getAmount() != 0.0f) {
 								// Posttype
 								bWriter.write("50");
-								//Extftg
+								// Extftg
 								bWriter.write("01602");
-								//Rutinkod
+								// Rutinkod
 								bWriter.write("SBO");
-								//orderno
+								// orderno
 								bWriter.write(type30counterString);
-								//vsamhkod
+								// vsamhkod
 								bWriter.write("01");
-								//radnr
+								// radnr
 								String type50counterString = format3
-								.format(type50counter);
+										.format(type50counter);
 								bWriter.write(type50counterString);
-								//radnrtxt
+								// radnrtxt
 								bWriter.write("000");
-								//fomdat
-								IWTimestamp t = new IWTimestamp(r.getPeriodStartCheck());
+								// fomdat
+								IWTimestamp t = new IWTimestamp(r
+										.getPeriodStartCheck());
 								bWriter.write(t.getDateString("yyyyMMdd"));
-								//tomdat
+								// tomdat
 								t = new IWTimestamp(r.getPeriodEndCheck());
 								bWriter.write(t.getDateString("yyyyMMdd"));
-								//artnr
+								// artnr
 								bWriter.write("INGEN-MOMS   ");
-								//benamn
+								// benamn
 								String text = r.getInvoiceText();
-								if (text == null)
+								if (text == null) {
 									text = "";
+								} else {
+									String start = text.substring(0, 6);
+									if ("Check ".equals(start)) {
+										String localized = iwac.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getResourceBundle(currentLocale).getLocalizedString("Check", "Check");
+										text = localized + text.substring(5);
+									}
+								}
 								if (text.length() < 30) {
 									StringBuffer tb = new StringBuffer(text);
 									while (tb.length() < 30) {
@@ -869,31 +895,32 @@ public class EconomaFileCreationThread extends Thread {
 									text = text.substring(0, 30);
 								}
 								bWriter.write(text);
-								//avsrnamn
+								// avsrnamn
 								bWriter.write(empty.substring(0, 30));
-								//konto
-								StringBuffer postingString = new StringBuffer(r.getOwnPosting());
+								// konto
+								StringBuffer postingString = new StringBuffer(r
+										.getOwnPosting());
 								while (postingString.length() < 45) {
 									postingString.append(' ');
 								}
 								bWriter.write(postingString.toString());
-								//ktonamn
+								// ktonamn
 								bWriter.write(empty.substring(0, 30));
-								//signata
-								bWriter.write(empty.substring(0,1));
-								//antal
+								// signata
+								bWriter.write(empty.substring(0, 1));
+								// antal
 								bWriter.write("00000000000");
-								//sort
+								// sort
 								bWriter.write(empty.substring(0, 6));
-								//avsrper
+								// avsrper
 								bWriter.write(empty.substring(0, 13));
-								//signapris
+								// signapris
 								bWriter.write(empty.substring(0, 1));
-								//apris
+								// apris
 								bWriter.write("0000000000000");
-								//signrabs
+								// signrabs
 								bWriter.write(empty.substring(0, 1));
-								//rabsats
+								// rabsats
 								bWriter.write("00000");
 								// signbel
 								long am = AccountingUtil.roundAmount(r
@@ -903,7 +930,7 @@ public class EconomaFileCreationThread extends Thread {
 									isNegative = true;
 									bWriter.write("-");
 								} else {
-									bWriter.write(" ");
+									bWriter.write("+");
 								}
 								// Belopp
 								am = Math.abs(am * 100);
@@ -911,12 +938,12 @@ public class EconomaFileCreationThread extends Thread {
 								bWriter.write(amount);
 								// signmsat
 								bWriter.write(empty.substring(0, 1));
-								//momssats
+								// momssats
 								bWriter.write("0000");
 								// signmbel
 								bWriter.write(empty.substring(0, 1));
-								//momsbel
-								bWriter.write("0000000000000");								
+								// momsbel
+								bWriter.write("0000000000000");
 								// omrade
 								bWriter.write(empty.substring(0, 3));
 								// kategori
@@ -931,24 +958,24 @@ public class EconomaFileCreationThread extends Thread {
 								count50type++;
 								type50counter++;
 								bWriter.newLine();
-								
-								//posttyp
+
+								// posttyp
 								bWriter.write("60");
-								//extftg
+								// extftg
 								bWriter.write("01602");
-								//rutinkod
+								// rutinkod
 								bWriter.write("SBO");
-								//orderno
+								// orderno
 								bWriter.write(type30counterString);
-								//vsamhkod
+								// vsamhkod
 								bWriter.write("01");
-								//radnr
+								// radnr
 								bWriter.write(type50counterString);
-								//radnrtxt
+								// radnrtxt
 								bWriter.write("001");
-								//texttype
+								// texttype
 								bWriter.write("  U");
-								//text
+								// text
 								text = r.getInvoiceText2();
 								if (text == null)
 									text = "";
@@ -962,9 +989,156 @@ public class EconomaFileCreationThread extends Thread {
 									text = text.substring(0, 60);
 								}
 								bWriter.write(text);
-								//filler
+								// filler
 								bWriter.write(empty.substring(0, 206));
 								bWriter.newLine();
+								
+								if (regular.containsKey(r.getSchoolClassMember().getPrimaryKey())) {
+									ArrayList regList = (ArrayList) regular.get(r.getSchoolClassMember().getPrimaryKey());
+									Iterator regit = regList.iterator();
+									while (regit.hasNext()) {
+										InvoiceRecord regRecord = (InvoiceRecord) regit.next();
+										
+									
+										if (regRecord.getAmount() != 0.0f) {
+											// Posttype
+											bWriter.write("50");
+											// Extftg
+											bWriter.write("01602");
+											// Rutinkod
+											bWriter.write("SBO");
+											// orderno
+											bWriter.write(type30counterString);
+											// vsamhkod
+											bWriter.write("01");
+											// radnr
+											bWriter.write(type50counterString);
+											// radnrtxt
+											bWriter.write("000");
+											// fomdat
+											t = new IWTimestamp(regRecord
+													.getPeriodStartCheck());
+											bWriter.write(t.getDateString("yyyyMMdd"));
+											// tomdat
+											t = new IWTimestamp(regRecord.getPeriodEndCheck());
+											bWriter.write(t.getDateString("yyyyMMdd"));
+											// artnr
+											bWriter.write("INGEN-MOMS   ");
+											// benamn
+											text = regRecord.getInvoiceText();
+											if (text == null)
+												text = "";
+											if (text.length() < 30) {
+												StringBuffer tb = new StringBuffer(text);
+												while (tb.length() < 30) {
+													tb.append(' ');
+												}
+												text = tb.toString();
+											} else if (text.length() > 30) {
+												text = text.substring(0, 30);
+											}
+											bWriter.write(text);
+											// avsrnamn
+											bWriter.write(empty.substring(0, 30));
+											// konto
+											postingString = new StringBuffer(regRecord
+													.getOwnPosting());
+											while (postingString.length() < 45) {
+												postingString.append(' ');
+											}
+											bWriter.write(postingString.toString());
+											// ktonamn
+											bWriter.write(empty.substring(0, 30));
+											// signata
+											bWriter.write(empty.substring(0, 1));
+											// antal
+											bWriter.write("00000000000");
+											// sort
+											bWriter.write(empty.substring(0, 6));
+											// avsrper
+											bWriter.write(empty.substring(0, 13));
+											// signapris
+											bWriter.write(empty.substring(0, 1));
+											// apris
+											bWriter.write("0000000000000");
+											// signrabs
+											bWriter.write(empty.substring(0, 1));
+											// rabsats
+											bWriter.write("00000");
+											// signbel
+											am = AccountingUtil.roundAmount(regRecord
+													.getAmount());
+											isNegative = false;
+											if (am < 0) {
+												isNegative = true;
+												bWriter.write("-");
+											} else {
+												bWriter.write("+");
+											}
+											// Belopp
+											am = Math.abs(am * 100);
+											amount = format.format(am);
+											bWriter.write(amount);
+											// signmsat
+											bWriter.write(empty.substring(0, 1));
+											// momssats
+											bWriter.write("0000");
+											// signmbel
+											bWriter.write(empty.substring(0, 1));
+											// momsbel
+											bWriter.write("0000000000000");
+											// omrade
+											bWriter.write(empty.substring(0, 3));
+											// kategori
+											bWriter.write(empty.substring(0, 3));
+											// Filler
+											bWriter.write(empty.substring(0, 15));
+
+											if (!isNegative)
+												totalsum += am;
+											else
+												totalsum -= am;
+											count50type++;
+											type50counter++;
+											bWriter.newLine();
+
+											// posttyp
+											bWriter.write("60");
+											// extftg
+											bWriter.write("01602");
+											// rutinkod
+											bWriter.write("SBO");
+											// orderno
+											bWriter.write(type30counterString);
+											// vsamhkod
+											bWriter.write("01");
+											// radnr
+											bWriter.write(type50counterString);
+											// radnrtxt
+											bWriter.write("001");
+											// texttype
+											bWriter.write("  U");
+											// text
+											text = regRecord.getInvoiceText2();
+											if (text == null)
+												text = "";
+											if (text.length() < 60) {
+												StringBuffer tb = new StringBuffer(text);
+												while (tb.length() < 60) {
+													tb.append(' ');
+												}
+												text = tb.toString();
+											} else if (text.length() > 60) {
+												text = text.substring(0, 60);
+											}
+											bWriter.write(text);
+											// filler
+											bWriter.write(empty.substring(0, 206));
+											bWriter.newLine();
+										}
+										
+									}
+								}
 							}
 						}
 					}
@@ -1013,25 +1187,25 @@ public class EconomaFileCreationThread extends Thread {
 							e1.printStackTrace();
 						}
 					}
-				} 
+				}
 			}
 			// Posttyp
 			bWriter.write("90");
 			//
 			bWriter.write("01602");
-			//rutinkod
+			// rutinkod
 			bWriter.write("SBO");
-			//ordernr
+			// ordernr
 			bWriter.write("99999");
-			//vsamhkod
+			// vsamhkod
 			bWriter.write(empty.substring(0, 2));
-			//radnr
+			// radnr
 			bWriter.write("000");
-			//radnrtxt
+			// radnrtxt
 			bWriter.write("000");
-			//antframo
+			// antframo
 			bWriter.write(format2.format(count30type));
-			//antframr
+			// antframr
 			bWriter.write(format2.format(count50type));
 			// signbel
 			if (totalsum < 0) {

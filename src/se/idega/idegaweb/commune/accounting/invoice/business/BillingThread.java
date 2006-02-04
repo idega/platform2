@@ -37,6 +37,7 @@ import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
+import se.idega.idegaweb.commune.accounting.school.business.ProviderBusiness;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
 import se.idega.idegaweb.commune.care.data.ChildCareContract;
 import se.idega.idegaweb.commune.care.data.ChildCareContractHome;
@@ -592,6 +593,10 @@ public abstract class BillingThread extends Thread{
 
 	protected InvoiceBusiness getInvoiceBusiness() throws RemoteException {
 		return (InvoiceBusiness) IBOLookup.getServiceInstance(iwc, InvoiceBusiness.class);
+	}
+
+	protected ProviderBusiness getProviderBusiness() throws RemoteException {
+		return (ProviderBusiness) IBOLookup.getServiceInstance(iwc, ProviderBusiness.class);
 	}
 
 	protected InvoiceHeaderHome getInvoiceHeaderHome() throws RemoteException {
