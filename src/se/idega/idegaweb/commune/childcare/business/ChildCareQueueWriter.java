@@ -164,7 +164,7 @@ public class ChildCareQueueWriter extends DownloadWriter implements MediaWritabl
         if (!applications.isEmpty()) {
             HSSFWorkbook wb = new HSSFWorkbook();
 
-            String sheetTitle = schoolName.length() <= 31 ? schoolName : schoolName.substring(0, 32); //the name of worksheet can be 31 symbols max
+            String sheetTitle = schoolName.length() <= 31 ? schoolName : schoolName.substring(0, 31); //the name of worksheet can be 31 symbols max
             HSSFSheet sheet = wb.createSheet(sheetTitle);
             
             sheet.setColumnWidth((short) 0, (short) (30 * 256));
