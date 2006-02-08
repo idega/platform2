@@ -128,7 +128,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
     Collection leagues;
     try {
-      leagues = workReportBusiness.getLeaguesOfWorkReportById(getWorkReportId());
+      leagues = workReportBusiness.getLeaguesOfWorkReportById(getWorkReportId(), iwc);
       WorkReportGroup workReportGroup = workReportBusiness.getMainBoardWorkReportGroup(getYear());
       mainBoardId = (Integer) workReportGroup.getPrimaryKey();
     }
@@ -140,10 +140,15 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       throw new RuntimeException("[WorkReportMemberEditor]: Can't retrieve WorkReportGroups.");
     }
     catch (IDOException idEx) {
+      // add error message
+      Table errorMessageTable = getErrorMessageTable();
+      Text text = new Text(idEx.getMessage());
+      errorMessageTable.add(text);
+      add(errorMessageTable);
       System.err.println(
         "[WorkReportMemberEditor]: Can't retrieve WorkReportGroups. Message is: "
           + idEx.getMessage());
-      idEx.printStackTrace(System.err);
+      //idEx.printStackTrace(System.err);
       leagues = new ArrayList();
     }
     fieldList = new ArrayList();

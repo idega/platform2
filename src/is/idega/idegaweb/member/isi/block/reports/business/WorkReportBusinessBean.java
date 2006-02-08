@@ -54,6 +54,7 @@ import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
 import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.transaction.IdegaTransactionManager;
@@ -1171,10 +1172,14 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	 *            id of the work report
 	 * @return a collection of WorkReportGroups
 	 */
-	public Collection getLeaguesOfWorkReportById(int id) throws IDOException {
+	public Collection getLeaguesOfWorkReportById(int id, IWContext iwc) throws IDOException {
 		WorkReport workReport = getWorkReportById(id);
 		int year = workReport.getYearOfReport().intValue();
 		WorkReportGroup mainBoard = getMainBoardWorkReportGroup(year);
+		IWResourceBundle iwrb = getBundle().getResourceBundle(iwc);
+		if (mainBoard == null) {
+			throw new IDOException(iwrb.getLocalizedString("work_report.no_mainboard_created_for_year","No mainboard has been created for year:")+" "+year);
+		}
 		Integer mainBoardId = (Integer) mainBoard.getPrimaryKey();
 		Collection leagues = workReport.getLeagues();
 		Iterator leagueIterator = leagues.iterator();
@@ -1530,7 +1535,8 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			catch (FinderException ex) {
 				System.err.println("[WorkReportBusiness] Could not find old WorkReportGroup (name: "
 						+ workReportGroupName + " , year: " + year + " ) Message is: " + ex.getMessage());
-				ex.printStackTrace(System.err);
+				//ex.printStackTrace(System.err);
+				System.err.println(ex.getMessage());
 				return null;
 			}
 		}
@@ -2735,6 +2741,10 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		catch (FinderException e) {
 			return ListUtil.getEmptyList();
 		}
+	}
+
+	protected String getBundleIdentifier(){
+		return IW_BUNDLE_IDENTIFIER;
 	}
 
 	/*

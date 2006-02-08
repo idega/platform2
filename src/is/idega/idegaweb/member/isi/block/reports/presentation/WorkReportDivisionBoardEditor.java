@@ -68,6 +68,7 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
 //  private static final String CHECK_BOX = "checkBox";
 
   private static final String LEAGUE = "league";
+  private String errorMessageStyle = "errorMessage";
 
   private static final String HOME_PAGE = WorkReportDivisionBoard.class.getName()+".HOME_PAGE";
   private static final String PERSONAL_ID = WorkReportDivisionBoard.class.getName()+".PERSONAL_ID";
@@ -247,11 +248,15 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     try {
       int workReportId = getWorkReportId();
       coll = workReportBusiness.getAllWorkReportDivisionBoardForWorkReportId(workReportId);
-      leagues = workReportBusiness.getLeaguesOfWorkReportById(workReportId);
+      leagues = workReportBusiness.getLeaguesOfWorkReportById(workReportId, iwc);
     } 
     catch (Exception e) {
-      System.err.println("[WorkReportDivisionBoardEditor] Can't get members. Message was: "+ e.getMessage());
-      e.printStackTrace(System.err);
+    	Table errorMessageTable = getErrorMessageTable();
+        Text text = new Text(e.getMessage());
+        errorMessageTable.add(text);
+        add(errorMessageTable);
+    	System.err.println("[WorkReportDivisionBoardEditor] Can't get members. Message was: "+ e.getMessage());
+      //e.printStackTrace(System.err);
       coll = new ArrayList();
       leagues = new ArrayList();
     }
@@ -651,6 +656,15 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
       ex.printStackTrace(System.err);
       throw new RuntimeException(message);
     }
+  }
+
+  public Table getErrorMessageTable() {
+    Table errorMessageTable = new Table(1, 1);
+    errorMessageTable.setCellpaddingAndCellspacing(0);
+    errorMessageTable.setWidth(Table.HUNDRED_PERCENT);
+    errorMessageTable.setAlignment(1, 1, "center");
+    errorMessageTable.setStyleClass(1, 1, errorMessageStyle);
+    return errorMessageTable;
   }
 
   class WorkReportTextConverter implements  EntityToPresentationObjectConverter  {    

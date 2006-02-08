@@ -1,5 +1,5 @@
 /*
- * $Id: WorkReportBusiness.java,v 1.63 2005/07/28 17:40:11 sigtryggur Exp $
+ * $Id: WorkReportBusiness.java,v 1.63.4.1 2006/02/08 12:29:17 sigtryggur Exp $
  * Created on Dec 3, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -33,6 +33,7 @@ import com.idega.business.IBOService;
 import com.idega.data.IDOEntity;
 import com.idega.data.IDOException;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.user.business.UserGroupPlugInBusiness;
@@ -42,10 +43,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2005/07/28 17:40:11 $ by $Author: sigtryggur $
+ *  Last modified: $Date: 2006/02/08 12:29:17 $ by $Author: sigtryggur $
  * 
  * @author <a href="mailto:eiki@idega.com">eiki</a>
- * @version $Revision: 1.63 $
+ * @version $Revision: 1.63.4.1 $
  */
 public interface WorkReportBusiness extends IBOService, MemberUserBusiness, UserGroupPlugInBusiness {
 
@@ -352,7 +353,7 @@ public interface WorkReportBusiness extends IBOService, MemberUserBusiness, User
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusinessBean#getLeaguesOfWorkReportById
 	 */
-	public Collection getLeaguesOfWorkReportById(int id) throws IDOException, java.rmi.RemoteException;
+	public Collection getLeaguesOfWorkReportById(int id, IWContext iwc) throws IDOException, java.rmi.RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusinessBean#getFileName

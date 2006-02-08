@@ -457,11 +457,16 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         List workReportLeagues;
         try {
             workReportLeagues = new ArrayList(workReportBusiness
-                    .getLeaguesOfWorkReportById(workReportIdTemp));
+                    .getLeaguesOfWorkReportById(workReportIdTemp, iwc));
         } catch (IDOException ex) {
+            // add error message
+            Table errorMessageTable = getErrorMessageTable();
+            Text text = new Text(ex.getMessage());
+            errorMessageTable.add(text);
+            add(errorMessageTable);
             String message = "[WorkReportAccountEditor]: Can't retrieve leagues.";
             System.err.println(message + " Message is: " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            //ex.printStackTrace(System.err);
             workReportLeagues = new ArrayList();
         } catch (RemoteException ex) {
             String message = "[WorkReportAccountEditor]: Can't retrieve leagues.";

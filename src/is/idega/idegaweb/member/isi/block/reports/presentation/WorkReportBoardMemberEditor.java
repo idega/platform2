@@ -442,13 +442,17 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     WorkReportBusiness business = getWorkReportBusiness(iwc);
     Collection coll = null;
     try {
-      coll = business.getLeaguesOfWorkReportById(getWorkReportId());
+      coll = business.getLeaguesOfWorkReportById(getWorkReportId(), iwc);
     }
     catch (Exception ex) {
+      Table errorMessageTable = getErrorMessageTable();
+      Text text = new Text(ex.getMessage());
+      errorMessageTable.add(text);
+      add(errorMessageTable);
       System.err.println(
         "[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness. Message is: "
           + ex.getMessage());
-      ex.printStackTrace(System.err);
+      //ex.printStackTrace(System.err);
       throw new RuntimeException("[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness.");
     }
     DropdownMenu dropdownMenu = new DropdownMenu(LEAGUE_KEY);
@@ -582,7 +586,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
         WorkReportBusiness business = getWorkReportBusiness(iwc);
         Collection coll = null;
         try {
-          coll = business.getLeaguesOfWorkReportById(getWorkReportId());
+          coll = business.getLeaguesOfWorkReportById(getWorkReportId(), iwc);
         }
         catch (Exception ex) {
           System.err.println(
