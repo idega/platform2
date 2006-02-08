@@ -1,5 +1,5 @@
 /*
- * $Id: AdminAdultEducationStudentPlacings.java,v 1.1.2.3 2005/11/16 11:52:22 palli Exp $
+ * $Id: AdminAdultEducationStudentPlacings.java,v 1.1.2.4 2006/02/08 16:37:06 dainis Exp $
  * Created on Oct 19, 2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -299,6 +299,7 @@ public class AdminAdultEducationStudentPlacings extends AdultEducationBlock {
 		 */
 		DateInput dateFrom = new DateInput(PARAM_DATE_FROM);
 		dateFrom.setDate(validFrom.getDate());
+		dateFrom.setYearRange(validFrom.getYear() - 2, validFrom.getYear() + 5);
 		table.add(dateFrom, 2, row++);
 
 		// End date
@@ -313,6 +314,10 @@ public class AdminAdultEducationStudentPlacings extends AdultEducationBlock {
 		DateInput dateTo = new DateInput(PARAM_DATE_TO);
 		if (terminated != null) {
 			dateTo.setDate(terminated.getDate());
+			dateTo.setYearRange(terminated.getYear() -2, terminated.getYear() + 5);
+		} else {
+			IWTimestamp now = new IWTimestamp();
+			dateTo.setYearRange(now.getYear() - 2, now.getYear() + 5);
 		}
 		table.add(dateTo, 2, row++);
 
