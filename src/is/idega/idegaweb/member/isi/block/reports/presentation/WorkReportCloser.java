@@ -16,6 +16,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.StyledButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.util.IWTimestamp;
 
@@ -120,7 +121,7 @@ public class WorkReportCloser extends Block {
 		}		
 		
 		SubmitButton save = new SubmitButton(PARAM_SAVE,iwrb.getLocalizedString("workreportscloser.save_button","save"));
-		save.setAsImageButton(true);
+		StyledButton styledSave = new StyledButton(save);
 		
 
 
@@ -133,22 +134,27 @@ public class WorkReportCloser extends Block {
 		table.add(toDate,2,3);
 		
 	
-
+		Table buttonTable = new Table();
+		buttonTable.setCellpadding(0);
+		buttonTable.setCellspacing(0);
+		buttonTable.setWidth(2, "5");
 		
 		boolean isTempClosed = getWorkReportBusiness(iwc).areAllWorkReportsTemporarelyReadOnly();
 		
 		if(!isTempClosed) {
 			SubmitButton tempCloseAll = new SubmitButton(PARAM_TEMP_CLOSE,iwrb.getLocalizedString("workreportscloser.temp_close_button","temporarely close all"));
-			tempCloseAll.setAsImageButton(true);
-			table.add(tempCloseAll,2,4);
+			StyledButton styledTempCloseAll = new StyledButton(tempCloseAll);
+			buttonTable.add(styledTempCloseAll,1,1);
 		}
 		else {
 			SubmitButton cancelTempClose = new SubmitButton(PARAM_OPEN,iwrb.getLocalizedString("workreportscloser.temp_open_button","cancel temporarely closing"));
-			cancelTempClose.setAsImageButton(true);
-			table.add(cancelTempClose,2,4);	
+			StyledButton styledCancelTempClose = new StyledButton(cancelTempClose);
+			buttonTable.add(styledCancelTempClose,1,1);	
 		}
 		
-		table.add(save,2,4);
+		buttonTable.add(styledSave,3,1);
+		table.mergeCells(1,4,2,4);
+		table.add(buttonTable,1,4);
 
 		
 
