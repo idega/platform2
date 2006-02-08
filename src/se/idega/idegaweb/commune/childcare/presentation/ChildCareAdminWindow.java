@@ -1067,6 +1067,21 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			dateInput.setEarliestPossibleDate(date.getDate(), localize(helper.getEarliestPlacementMessage().getKey(), helper.getEarliestPlacementMessage().getMessage()));
 			dateInput.setDate(date.getDate());
 		}
+				
+		try { // admins can enter dates backwards in time
+			if (isAdministrator(iwc)) {				
+				IWTimestamp eigthYearsAgo = new IWTimestamp(stamp); // minus 8 years
+				eigthYearsAgo.addYears(-8);
+				
+				dateInput.setYearRange(eigthYearsAgo.getYear(), stamp.getYear() + 5);
+				//dateInput.setEarliestPossibleDate(eigthYearsAgo.getDate(), localize(helper.getEarliestPlacementMessage().getKey(), helper.getEarliestPlacementMessage().getMessage()));			    
+			}
+		}
+		catch (Exception e1) {
+			e1.printStackTrace();
+		}
+		
+		
 		dateInput.setAsNotEmpty(localize("child_care.must_select_date", "You must select a date."));
 		table.add(getSmallHeader(localize("child_care.new_date", "Select the new placement date")), 1, row++);
 		table.add(dateInput, 1, row++);
@@ -2605,13 +2620,13 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				buffer.append("\n\t\t\t dateMessage = '").append(localize("childcare.deadline_passed", "Deadline has passed earliest date possible is ") + " " + format.format(deadlinePeriod.getFirstTimestamp().getDate())).append("';");
 			} else {
 				buffer.append("\n\t\t\t dateMessage = '").append(localize("childcare.deadline_still_within", "You can not choose a date back in time.")).append("';");
-			}
-			buffer.append("\n\t\t }");
+			}			
 		} else {
 			buffer.append("\n\t\t if (d < ").append(IWTimestamp.RightNow().getDateString("yyyyMMdd")).append(") {");
 			buffer.append("\n\t\t\t dateMessage = '").append(localize("school.dates_back_in_time_not_allowed", "You can not choose a date back in time.")).append("';");
-			buffer.append("\n\t\t }");
 		}
+		
+		buffer.append("\n\t\t }");
 
 		/* commented out so two future contracts can be created
 		if (getBusiness().hasFutureContracts(_applicationID)) {
