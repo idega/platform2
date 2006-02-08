@@ -393,6 +393,11 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 				userType = WorkReportConstants.WR_USER_TYPE_CLUB;
 				return ((Integer) ((Group)club.iterator().next()).getPrimaryKey());
 			}
+			List division = getWorkReportBusiness(iwc).getDivisionListForUserFromTopNodes(user, iwc); //should only be one
+			if (!division.isEmpty()) {
+				userType = WorkReportConstants.WR_USER_TYPE_DIVISION;
+				return ((Integer) ((Group)division.iterator().next()).getPrimaryKey());
+			}
 
 		}
 		catch (RemoteException e) {

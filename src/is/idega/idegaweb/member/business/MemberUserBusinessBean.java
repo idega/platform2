@@ -381,6 +381,13 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 	}
 	
 	/*
+	  * Return a list of Division groups if the user has a division as a top node.
+	 */
+	public List getDivisionListForUserFromTopNodes(User user, IWUserContext iwuc) throws RemoteException{
+		return getGroupListForUserFromTopNodesAndGroupType(user,IWMemberConstants.GROUP_TYPE_CLUB_DIVISION,iwuc);
+	}
+	
+	/*
 	 * Return a list of Regional Union groups if the user has a Regional Union as a top node.
 	 */
 	public List getRegionalUnionListForUserFromTopNodes(User user, IWUserContext iwuc) throws RemoteException{

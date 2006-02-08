@@ -55,7 +55,7 @@ public class DivisionSelectionBox extends GroupSelectionBox  {
 				e.printStackTrace();
 			}
 		}
-		if(club!=null && WorkReportConstants.WR_USER_TYPE_CLUB.equals(getUserType())){
+		if(club!=null && (WorkReportConstants.WR_USER_TYPE_CLUB.equals(getUserType()) || WorkReportConstants.WR_USER_TYPE_DIVISION.equals(getUserType()))){
 			
 			List divisions = new ArrayList();
 			getClubDivisions(divisions, club);

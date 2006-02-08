@@ -31,6 +31,8 @@ public class WorkReportConstants extends IWMemberConstants {
 
     public static final String WR_USER_TYPE_CLUB = "CLUB";
 
+    public static final String WR_USER_TYPE_DIVISION = "DIVISION";
+
     public static final String WR_USER_TYPE_REGIONAL_UNION = "REGIONAL_UNION";
 
     public static final String WR_USER_TYPE_UNION = "UNION";
