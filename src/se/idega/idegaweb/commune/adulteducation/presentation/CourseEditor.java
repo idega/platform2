@@ -1,5 +1,5 @@
 /*
- * $Id: CourseEditor.java,v 1.9 2005/10/27 11:07:26 palli Exp $ Created on
+ * $Id: CourseEditor.java,v 1.9.2.1 2006/02/08 17:04:14 dainis Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -13,14 +13,11 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
-
 import se.idega.idegaweb.commune.adulteducation.business.DuplicateValueException;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourse;
-
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.business.SchoolUserBusiness;
 import com.idega.block.school.data.School;
@@ -47,10 +44,10 @@ import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
 /**
- * Last modified: $Date: 2005/10/27 11:07:26 $ by $Author: palli $
+ * Last modified: $Date: 2006/02/08 17:04:14 $ by $Author: dainis $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.9.2.1 $
  */
 public class CourseEditor extends AdultEducationBlock {
 
@@ -252,26 +249,35 @@ public class CourseEditor extends AdultEducationBlock {
 		code.setMaxlength(20);
 
 		DateInput startDate = (DateInput) getStyledInterface(new DateInput(PARAMETER_START_DATE));
+		IWTimestamp startDateValue = new IWTimestamp();
 		if (iSchoolSeason != null) {
 			startDate.setDate(iSchoolSeason.getSchoolSeasonStart());
+			startDateValue = new IWTimestamp(iSchoolSeason.getSchoolSeasonStart());
 		}
 		if (iCourse != null) {
 			startDate.setDate(iCourse.getStartDate());
+			startDateValue = new IWTimestamp(iCourse.getStartDate());
 		}
 		if (!(iAction == ACTION_DELETE || iAction == ACTION_STORE)) {
 			startDate.keepStatusOnAction(true);
 		}
+		startDate.setYearRange(startDateValue.getYear() - 2, startDateValue.getYear() + 5);
 
 		DateInput endDate = (DateInput) getStyledInterface(new DateInput(PARAMETER_END_DATE));
+		IWTimestamp endDateValue = new IWTimestamp();
 		if (iSchoolSeason != null) {
 			endDate.setDate(iSchoolSeason.getSchoolSeasonEnd());
+			endDateValue = new IWTimestamp(iSchoolSeason.getSchoolSeasonEnd());
 		}
 		if (iCourse != null) {
 			endDate.setDate(iCourse.getEndDate());
+			endDateValue = new IWTimestamp(iCourse.getEndDate());
 		}
 		if (!(iAction == ACTION_DELETE || iAction == ACTION_STORE)) {
 			endDate.keepStatusOnAction(true);
 		}
+		endDate.setYearRange(endDateValue.getYear() - 2, endDateValue.getYear() + 5);
+		
 
 		TextInput comment = (TextInput) getStyledInterface(new TextInput(PARAMETER_COMMENT));
 		if (iCourse != null) {
