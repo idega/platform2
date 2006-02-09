@@ -534,6 +534,11 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness, EmploymentT
 	public ChildCareApplication getAcceptedApplicationsByChild(int childID) throws java.rmi.RemoteException;
 
 	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getAcceptedChildCareApplicationByChild
+	 */
+	public ChildCareApplication getAcceptedChildCareApplicationByChild(int childID) throws java.rmi.RemoteException;
+
+	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getApplicationsByProvider
 	 */
 	public Collection getApplicationsByProvider(int providerId) throws java.rmi.RemoteException;
