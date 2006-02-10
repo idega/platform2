@@ -5,7 +5,7 @@
 package se.idega.idegaweb.commune.childcare.business;
 
 import is.idega.block.family.business.NoCustodianFound;
-
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -15,6 +15,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -30,14 +31,12 @@ import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.Vector;
 import java.util.logging.Level;
-
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
-
 import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.idegaweb.commune.accounting.regulations.business.EmploymentTypeFinderBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.ManagementTypeFinderBusiness;
@@ -73,7 +72,6 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareQueue;
 import se.idega.idegaweb.commune.childcare.data.ChildCareQueueHome;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 import se.idega.idegaweb.commune.message.business.CommuneMessageBusiness;
-
 import com.idega.block.contract.business.ContractService;
 import com.idega.block.contract.data.Contract;
 import com.idega.block.contract.data.ContractTag;
@@ -102,10 +100,11 @@ import com.idega.block.school.data.SchoolUser;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
-import com.idega.core.business.ICApplicationBindingBusiness;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.file.data.ICFileHome;
+import com.idega.core.localisation.data.ICLanguage;
+import com.idega.core.localisation.data.ICLanguageHome;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.PostalCode;
 import com.idega.data.IDOAddRelationshipException;
@@ -117,7 +116,7 @@ import com.idega.data.IDORuntimeException;
 import com.idega.data.IDOStoreException;
 import com.idega.exception.IWBundleDoesNotExist;
 import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWMainApplication;
+import com.idega.idegaweb.IWMainApplicationSettings;
 import com.idega.io.MemoryFileBuffer;
 import com.idega.io.MemoryInputStream;
 import com.idega.io.MemoryOutputStream;
@@ -139,6 +138,15 @@ import com.lowagie.text.xml.XmlPeer;
  * @version 1.0
  */
 public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCareBusiness, CaseBusiness, EmploymentTypeFinderBusiness, ManagementTypeFinderBusiness {
+
+	public static final String METADATA_MULTI_LANGUAGE_HOME = "multi_language_home";
+	public static final String METADATA_LANGUAGES = "multi_languages";
+	public static final String METADATA_HAS_CUSTODIAN_STUDIES = "has_studies";
+	public static final String METADATA_CUSTODIAN_STUDY = "studies";
+	public static final String METADATA_CUSTODIAN_STUDY_START = "study_start";
+	public static final String METADATA_CUSTODIAN_STUDY_END = "study_end";
+	public static final String METADATA_CAN_DISPLAY_CHILD_CARE_IMAGE = "can_display_child_care_image";
+	public static final String METADATA_OTHER_INFORMATION = "child_care_information";
 
 	private static String PROP_OUTSIDE_SCHOOL_AREA = "not_in_commune_school_area";
 
@@ -233,7 +241,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	
 	public boolean usePrognosis() {
 		IWBundle bundle = getIWApplicationContext().getIWMainApplication().getBundle(getBundleIdentifier());
-		return bundle.getBooleanProperty(PROPERTY_USE_PROGNOSIS, true);
+		return new Boolean(getPropertyValue(bundle, PROPERTY_USE_PROGNOSIS, "true")).booleanValue();
 	}
 
 	public boolean showPriorities() {
@@ -386,6 +394,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 
 	public boolean insertApplications(User user, int provider[], String[] dates, String message, int checkId, int childId, String subject, String body, boolean freetimeApplication, boolean sendMessages, Date[] queueDates, boolean[] hasPriority) {
+		return insertApplications(user, provider, dates, message, null, null, checkId, childId, subject, body, freetimeApplication, sendMessages, queueDates, hasPriority);
+	}
+	
+	public boolean insertApplications(User user, int provider[], String[] dates, String message, Time fromTime, Time toTime, int checkId, int childId, String subject, String body, boolean freetimeApplication, boolean sendMessages, Date[] queueDates, boolean[] hasPriority) {
 		UserTransaction t = getSessionContext().getUserTransaction();
 		IWBundle bundle = getIWApplicationContext().getIWMainApplication().getBundle(getBundleIdentifier());
 
@@ -463,11 +475,18 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						appl.setMethod(1);
 						appl.setChoiceNumber(i + 1);
 						stamp.addSeconds((1 - ((i + 1) * 1)));
-						if (appl.getProviderId() != providerID || appl.getCreated() == null) {
-							appl.setCreated(stamp.getTimestamp());
-						}
+						appl.setCreated(stamp.getTimestamp());
 						appl.setQueueOrder(((Integer) appl.getPrimaryKey()).intValue());
 						appl.setApplicationStatus(getStatusSentIn());
+						
+						if (fromTime != null) {
+							IWTimestamp from = new IWTimestamp(fromTime);
+							appl.setFromTime(from.getTimestamp());
+						}
+						if (toTime != null) {
+							IWTimestamp to = new IWTimestamp(toTime);
+							appl.setToTime(to.getTimestamp());
+						}
 
 						if (hasPriority != null)
 							appl.setHasQueuePriority(hasPriority[i]);
@@ -614,7 +633,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	private boolean canChangeApplication(ChildCareApplication application, int newProviderID, IWTimestamp newFromDate, IWTimestamp newQueueDate, String newMessage) {
 		int oldProviderID = application.getProviderId();
-//		String oldMessage = application.getMessage();
+		String oldMessage = application.getMessage();
 		IWTimestamp oldFromDate = new IWTimestamp();
 		IWTimestamp oldQueueDate = new IWTimestamp();
 		if (application.getFromDate() != null)
@@ -630,13 +649,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			if (!oldQueueDate.equals(newQueueDate))
 				return true;
 			if (newMessage != null){
-				/*if (oldMessage == null)
+				if (oldMessage == null)
 					return true;
 				else if (oldMessage == null && newMessage ==null)
 					return false;
 				else if (!oldMessage.equals(newMessage))
-					return true;
-					*/	
+					return true;	
 			}
 			
 			return false;
@@ -646,15 +664,21 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public void changePlacingDate(int applicationID, Date placingDate, String preSchool) {
 		try {
 			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
+			changePlacingDate(application, placingDate, preSchool);
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void changePlacingDate(ChildCareApplication application, Date placingDate, String preSchool) {
+		try {
 			application.setHasDateSet(true);
 			application.setFromDate(placingDate);
 			application.setPreSchool(preSchool);
 			application.store();
 		}
 		catch (IDOStoreException e) {
-			e.printStackTrace();
-		}
-		catch (FinderException e) {
 			e.printStackTrace();
 		}
 	}
@@ -1196,10 +1220,27 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 
 	public boolean placeApplication(int applicationID, String subject, String body, String childCareTime, int groupID, int schoolTypeID, int employmentTypeID, IWTimestamp terminationDate, User user, Locale locale) {
+		try {
+			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
+			placeApplication(application, subject, body, childCareTime, groupID, schoolTypeID, employmentTypeID, terminationDate, user, locale);
+			
+			return true;
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+		}
+		
+		return false;
+	}
+
+	public boolean placeApplication(ChildCareApplication application, String subject, String body, String childCareTime, int groupID, int schoolTypeID, int employmentTypeID, IWTimestamp terminationDate, User user, Locale locale) {
+		return placeApplication(application, subject, body, null, childCareTime, groupID, schoolTypeID, employmentTypeID, terminationDate, user, locale);
+	}
+	
+	public boolean placeApplication(ChildCareApplication application, String subject, String body, File attachment, String childCareTime, int groupID, int schoolTypeID, int employmentTypeID, IWTimestamp terminationDate, User user, Locale locale) {
 		UserTransaction t = super.getSessionContext().getUserTransaction();
 		try {
 			t.begin();
-			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
 			application.setCareTime(childCareTime);
 			if (terminationDate != null) {
 				application.setRejectionDate(terminationDate.getDate());
@@ -1209,7 +1250,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				IWTimestamp endDate = application.getRejectionDate() != null ? new IWTimestamp(application.getRejectionDate()) : null;
 				SchoolClassMember member = getSchoolBusiness().storeSchoolClassMemberCC(application.getChildId(), groupID, schoolTypeID, fromDate.getTimestamp(), endDate != null ? endDate.getTimestamp() : null, ((Integer) user.getPrimaryKey()).intValue(), null);
 				getSchoolBusiness().addToSchoolClassMemberLog(member, member.getSchoolClass(), fromDate.getDate(), endDate != null ? endDate.getDate() : null, user);
-				sendMessageToParents(application, subject, body);
+				sendMessageToParents(application, subject, body, attachment);
 			}
 			alterValidFromDate(application, application.getFromDate(), employmentTypeID, locale, user);
 			application.setApplicationStatus(getStatusReady());
@@ -1247,15 +1288,6 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				}
 			} catch (Exception e) {}
 			t.commit();
-		}
-		catch (FinderException e) {
-			e.printStackTrace();
-			try {
-				t.rollback();
-			}
-			catch (Exception e1) {
-				e1.printStackTrace();
-			}
 		}
 		catch (NoPlacementFoundException e) {
 			e.printStackTrace();
@@ -2017,50 +2049,55 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		try {
 			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
 			ChildCareApplication application = home.findByPrimaryKey(new Integer(applicationId));
+	
+			return rejectOffer(application, user);
+		}
+		catch (FinderException fe) {
+			log(fe);
+		}
+		catch (IDOLookupException ile) {
+			throw new IBORuntimeException(ile);
+		}
+		return false;
+	}
+	
+	public boolean rejectOffer(ChildCareApplication application, User user) {
+		UserTransaction t = getSessionContext().getUserTransaction();
+		try {
+			t.begin();
+			CaseBusiness caseBiz = (CaseBusiness) getServiceInstance(CaseBusiness.class);
+			IWTimestamp now = new IWTimestamp();
+			application.setRejectionDate(now.getDate());
+			application.setApplicationStatus(getStatusRejected());
+			caseBiz.changeCaseStatus(application, getCaseStatusInactive().getStatus(), user);
 
-			UserTransaction t = getSessionContext().getUserTransaction();
-			try {
-				t.begin();
-				CaseBusiness caseBiz = (CaseBusiness) getServiceInstance(CaseBusiness.class);
-				IWTimestamp now = new IWTimestamp();
-				application.setRejectionDate(now.getDate());
-				application.setApplicationStatus(getStatusRejected());
-				caseBiz.changeCaseStatus(application, getCaseStatusInactive().getStatus(), user);
+			String subject = getLocalizedString("child_care.rejected_offer_subject", "A placing offer replied to.");
+			String body = getLocalizedString("child_care.rejected_offer_body", "Custodian for {0}, {5} rejects an offer for placing at {1}.");
+			sendMessageToProvider(application, subject, body);
 
-				String subject = getLocalizedString("child_care.rejected_offer_subject", "A placing offer replied to.");
-				String body = getLocalizedString("child_care.rejected_offer_body", "Custodian for {0}, {5} rejects an offer for placing at {1}.");
-				sendMessageToProvider(application, subject, body);
-
-				if (isAfterSchoolApplication(application) && application.getChildCount() > 0) {
-					Iterator iter = application.getChildrenIterator();
-					while (iter.hasNext()) {
-						Case element = (Case) iter.next();
-						if (element instanceof ChildCareApplication) {
-							application = (ChildCareApplication) element;
-							application.setApplicationStatus(getStatusSentIn());
-							caseBiz.changeCaseStatus(application, getCaseStatusOpen().getStatus(), user);
-						}
+			if (isAfterSchoolApplication(application) && application.getChildCount() > 0) {
+				Iterator iter = application.getChildrenIterator();
+				while (iter.hasNext()) {
+					Case element = (Case) iter.next();
+					if (element instanceof ChildCareApplication) {
+						application = (ChildCareApplication) element;
+						application.setApplicationStatus(getStatusSentIn());
+						caseBiz.changeCaseStatus(application, getCaseStatusOpen().getStatus(), user);
 					}
 				}
-
-				t.commit();
-
-				return true;
 			}
-			catch (Exception e) {
-				try {
-					t.rollback();
-				}
-				catch (SystemException ex) {
-					ex.printStackTrace();
-				}
-				e.printStackTrace();
+
+			t.commit();
+
+			return true;
+		}
+		catch (Exception e) {
+			try {
+				t.rollback();
 			}
-		}
-		catch (RemoteException e) {
-			e.printStackTrace();
-		}
-		catch (FinderException e) {
+			catch (SystemException ex) {
+				ex.printStackTrace();
+			}
 			e.printStackTrace();
 		}
 
@@ -2285,6 +2322,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		String applicationStatus[] = { String.valueOf(getStatusRejected()), String.valueOf(getStatusTimedOut()), String.valueOf(getStatusDenied()) };
 		return getChildCareApplicationHome().findApplicationsByProviderAndStatus(providerID, applicationStatus, fromDateOfBirth != null ? new IWTimestamp(fromDateOfBirth).getDate() : null, toDateOfBirth != null ? new IWTimestamp(toDateOfBirth).getDate() : null, fromDate != null ? new IWTimestamp(fromDate).getDate() : null, toDate != null ? new IWTimestamp(toDate).getDate() : null);
 	}
+	
+	public void parentsAgree(ChildCareApplication application, User user) {
+		String subject = getLocalizedString("child_care.accepted_offer_subject", "A placing offer replied to.");
+		String body = getLocalizedString("child_care.accepted_offer_body", "Custodian for {0}, {5} accepts an offer for placing at {1}.");
+		parentsAgree(application, user, subject, body);
+	}
 
 	public void parentsAgree(int applicationID, User user, String subject, String message) {
 		try {
@@ -2436,12 +2479,31 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			}
 		}		
 	}
-	
+
 	public ICFile assignContractToApplication(int applicationID, int archiveID, String childCareTime, IWTimestamp validFrom, int employmentTypeID, User user, Locale locale, boolean changeStatus, boolean createNewStudent, int schoolTypeId, int schoolClassId) {
+		try {
+			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
+			return assignContractToApplication(application, archiveID, childCareTime, validFrom, employmentTypeID, user, locale, changeStatus, createNewStudent, schoolTypeId, schoolClassId);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+		}
+
+		return null;
+	}
+
+	public ICFile assignContractToApplication(ChildCareApplication application, int archiveID, String childCareTime, IWTimestamp validFrom, int employmentTypeID, User user, Locale locale, boolean changeStatus, boolean createNewStudent, int schoolTypeId, int schoolClassId) {
+		return assignContractToApplication(application, archiveID, childCareTime, validFrom, employmentTypeID, user, locale, changeStatus, createNewStudent, schoolTypeId, schoolClassId, true);
+	}
+
+	public ICFile assignContractToApplication(ChildCareApplication application, int archiveID, String childCareTime, IWTimestamp validFrom, int employmentTypeID, User user, Locale locale, boolean changeStatus, boolean createNewStudent, int schoolTypeId, int schoolClassId, boolean sendMessages) {
+		return assignContractToApplication(null, application, archiveID, childCareTime, validFrom, employmentTypeID, user, locale, changeStatus, createNewStudent, schoolTypeId, schoolClassId, sendMessages);
+	}
+	
+	public ICFile assignContractToApplication(PrintingContext printingContext, ChildCareApplication application, int archiveID, String childCareTime, IWTimestamp validFrom, int employmentTypeID, User user, Locale locale, boolean changeStatus, boolean createNewStudent, int schoolTypeId, int schoolClassId, boolean sendMessages) {
 		UserTransaction transaction = getSessionContext().getUserTransaction();
 		try {
 			transaction.begin();
-			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
 			application.setCareTime(childCareTime);
 
 			if (validFrom == null)
@@ -2509,21 +2571,28 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			boolean useAlternativePDFGenerationMethod =  bundle.getBooleanProperty(PROPERTY_CHILDCARE_CONTRACT_ALTERNATIVE_PDF, false);
 			
 			ICFile contractFile = null;
-			if (!useAlternativePDFGenerationMethod) { // let's use old method
+			if (!useAlternativePDFGenerationMethod || printingContext == null) { // let's use old method
 				contractFile = createContractContentToApplication(application, locale, validFrom, changeStatus, hasBankId);
 			} else { // bundle property tells us to use new method
-				contractFile = createContractContentToApplicationAlternativeMethod(application, locale, validFrom, changeStatus);
+				if (printingContext != null) {
+					contractFile = createContractContentToApplicationAlternativeMethod(application, locale, validFrom, changeStatus, hasBankId);
+				}
+				else {
+					contractFile = createContractContentToApplicationAlternativeMethod(printingContext, application, locale, validFrom, changeStatus, hasBankId);
+				}
 			}
 			
 			if (createNew && contractFile != null) {
 				if (changeStatus) {
 					application.setApplicationStatus(getStatusContract());
 					changeCaseStatus(application, getCaseStatusContract().getStatus(), user);
-					createMessagesForParentsOnContractCreation(application, locale, hasBankId);
+					if (sendMessages)
+						createMessagesForParentsOnContractCreation(application, locale, hasBankId);
 				}
 				else {
 					changeCaseStatus(application, application.getCaseStatus().getStatus(), user);
-					createMessagesForParentsOnContractCareTimeAlter(application, locale, hasBankId);
+					if (sendMessages)
+						createMessagesForParentsOnContractCareTimeAlter(application, locale, hasBankId);
 				}
 			}
 
@@ -2618,12 +2687,16 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return null;
 	}
 	
-	private ICFile createContractContentToApplicationAlternativeMethod(ChildCareApplication application, Locale locale, IWTimestamp validFrom, boolean changeStatus) {
+	private ICFile createContractContentToApplicationAlternativeMethod(ChildCareApplication application, Locale locale, IWTimestamp validFrom, boolean changeStatus, boolean hasBankId) {
+    PrintingContext pcx = new ChildCareContractFormContext(getIWApplicationContext(), application, locale, !changeStatus);
+    return createContractContentToApplicationAlternativeMethod(pcx, application, locale, validFrom, changeStatus, hasBankId);
+	}
+	
+	private ICFile createContractContentToApplicationAlternativeMethod(PrintingContext pcx, ChildCareApplication application, Locale locale, IWTimestamp validFrom, boolean changeStatus, boolean hasBankId) {
 		MemoryFileBuffer buffer = new MemoryFileBuffer();
         OutputStream mos = new MemoryOutputStream(buffer);
         InputStream mis = new MemoryInputStream(buffer);
 
-        PrintingContext pcx = new ChildCareContractFormContext(getIWApplicationContext(), application, locale, !changeStatus);
         pcx.setDocumentStream(mos);
         
         ICFile contractFile = null;
@@ -2693,35 +2766,14 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 
 	private String getPropertyValue(IWBundle iwb, String propertyName, String defaultValue) {
-		try {
-			String value = getBindingBusiness().get(propertyName);
-			if (value != null) {
-				return value;
-			}
-			else {
-				value = iwb.getProperty(propertyName);
-				getBindingBusiness().put(propertyName, value != null ? value : defaultValue);
-			}
+		IWMainApplicationSettings settings = getIWMainApplication().getSettings();
+		String value = settings.getProperty(propertyName);
+		if (value != null) {
+			return value;
 		}
-		catch (RemoveException re) {
-			re.printStackTrace();
-		}
-		catch (RemoteException re) {
-			throw new IBORuntimeException(re);
-		}
-		catch (CreateException ce) {
-			ce.printStackTrace();
-		}
+		value = iwb.getProperty(propertyName);
+		settings.setProperty(propertyName, value != null ? value : defaultValue);
 		return defaultValue;
-	}
-
-	private ICApplicationBindingBusiness getBindingBusiness() {
-		try {
-			return (ICApplicationBindingBusiness) IBOLookup.getServiceInstance(IWMainApplication.getDefaultIWApplicationContext(), ICApplicationBindingBusiness.class);
-		}
-		catch (IBOLookupException ibe) {
-			throw new IBORuntimeException(ibe);
-		}
 	}
 
 	public boolean assignContractToApplication(String ids[], User user, Locale locale) {
@@ -4739,20 +4791,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public boolean hasActiveNotRemovedPlacements(int childId) {
 		try {
-			System.out.println("----------------------------------- ||||||||||||| --------------------------------");
-			//ejbFindNotTerminatedByStudent
-			Collection members = getSchoolClassMemberHome().findAllNotTerminatedByStudent(childId);
+			Collection members = this.getSchoolClassMemberHome().findAllNotTerminatedByStudent(childId);
 			if(!members.isEmpty()&&(members!=null)) {
 				return true;				
-			} else { return false; }
-			/*Iterator i = members.iterator();
-			while (i.hasNext()) {
-				SchoolClassMember member = (SchoolClassMember) i.next();
-				//if (member.isActive()) { //XXX
-					return true;
-				//}
 			}
-			return false;*/
+			else {
+				return false;
+			}
 		}
 		catch (FinderException ex) {
 			return false;
@@ -4795,9 +4840,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public boolean hasTerminationInFutureNotWithProvider(int childID, int providerID) {
+	public boolean hasTerminationInFutureNotWithProvider(int childID, int providerID, IWTimestamp stamp) {
 		try {
-			IWTimestamp stamp = new IWTimestamp();
 			int numberOfPlacings = getChildCareContractArchiveHome().getNumberOfTerminatedLaterNotWithProvider(childID, providerID, stamp.getDate());
 			if (numberOfPlacings > 0)
 				return true;
@@ -4809,7 +4853,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 
 	public boolean hasTerminationInFuture(int childID) {
-		return hasTerminationInFutureNotWithProvider(childID, -1);
+		return hasTerminationInFutureNotWithProvider(childID, -1, new IWTimestamp());
 	}
 
 	public Date getEarliestPossiblePlacementDate(int childID) {
@@ -5548,7 +5592,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return true;
 	}
 
-	protected CareBusiness getCareBusiness() {
+	public CareBusiness getCareBusiness() {
 		try {
 			return (CareBusiness) this.getServiceInstance(CareBusiness.class);
 		}
@@ -5640,6 +5684,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public void sendMessageToParents(ChildCareApplication application, String subject, String body) {
 		sendMessageToParents(application, subject, body, false);
 	}
+	
+	public void sendMessageToParents(ChildCareApplication application, String subject, String body, File attachment) {
+		sendMessageToParents(application, subject, body, body, attachment, false, true);
+	}
 
 	public void sendMessageToParents(ChildCareApplication application, String subject, String body, boolean alwaysSendLetter) {
 		sendMessageToParents(application, subject, body, body, alwaysSendLetter, true);
@@ -5650,6 +5698,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 
 	public void sendMessageToParents(ChildCareApplication application, String subject, String body, String letterBody, boolean alwaysSendLetter, boolean sendToOtherParent) {
+	}
+	
+	public void sendMessageToParents(ChildCareApplication application, String subject, String body, String letterBody, File attachment, boolean alwaysSendLetter, boolean sendToOtherParent) {
 		try {
 			User child = application.getChild();
 			Object[] arguments = { new Name(child.getFirstName(), child.getMiddleName(), child.getLastName()).getName(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), true), application.getProvider().getSchoolName(), PersonalIDFormatter.format(child.getPersonalID(), getIWApplicationContext().getApplicationSettings().getDefaultLocale()), application.getLastReplyDate() != null ? new IWTimestamp(application.getLastReplyDate()).getLocaleDate(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), IWTimestamp.SHORT) : "xxx", application.getOfferValidUntil() != null ? new IWTimestamp(application.getOfferValidUntil()).getLocaleDate(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), IWTimestamp.SHORT) : "" };
@@ -5690,7 +5741,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		if (application.getCode().equals(CareConstants.AFTER_SCHOOL_CASE_CODE_KEY))
 			return true;
 		return false;
-	}
+	}	
+
 
 	public ChildCareApplication getApplication(int applicationID) {
 		try {
@@ -5881,15 +5933,6 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return markChildrenOutsideCommune;
 	}
 
-	public Map getCaseParameters(Case theCase) {
-		ChildCareApplication application = (ChildCareApplication) theCase;
-		
-		Map map = new HashMap();
-		map.put("cc_user_id", String.valueOf(application.getChildId()));
-		
-		return null;
-	}
-	
 	public Class getEventListener() {
 		return ChildCareEventListener.class;
 	}
@@ -5935,5 +5978,101 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
         }
         return contracts;
     }
+
+    public ChildCareContract getChildCareContractBySchoolClassMember(SchoolClassMember member) {
+        ChildCareContractHome home = getChildCareContractArchiveHome();
+        try {
+			return home.findBySchoolClassMember(member);
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+    }
+
     
+  	public boolean canDisplayChildCareImages(User child) {
+  		String meta = child.getMetaData(METADATA_CAN_DISPLAY_CHILD_CARE_IMAGE);
+  		if (meta != null) {
+  			return new Boolean(meta).booleanValue();
+  		}
+  		return false;
+  	}
+  	
+  	public String getChildareOtherInformation(User child) {
+  		return child.getMetaData(METADATA_OTHER_INFORMATION);
+  	}
+  	
+  	public boolean hasMultiLanguageHome(User child) {
+  		String meta = child.getMetaData(METADATA_MULTI_LANGUAGE_HOME);
+  		if (meta != null) {
+  			return new Boolean(meta).booleanValue();
+  		}
+  		return false;
+  	}
+  	
+  	public ICLanguage getLanguage(User child) {
+  		String meta = child.getMetaData(METADATA_LANGUAGES);
+  		if (meta != null) {
+  			try {
+  				ICLanguageHome languageHome = (ICLanguageHome) IDOLookup.getHome(ICLanguage.class);
+    			return languageHome.findByPrimaryKey(new Integer(meta));
+  			}
+  			catch (IDOLookupException ile) {
+  				throw new IBORuntimeException(ile);
+  			}
+  			catch (FinderException fe) {
+  				fe.printStackTrace();
+  			}
+  		}
+  		return null;
+  	}
+  	
+  	public void storeChildCareInformation(User child, boolean canDisplayImage, String otherAfterSchoolCareInformation, boolean multiLanguageHome, String language) {
+  		child.setMetaData(METADATA_CAN_DISPLAY_CHILD_CARE_IMAGE, String.valueOf(canDisplayImage));
+  		child.setMetaData(METADATA_OTHER_INFORMATION, otherAfterSchoolCareInformation);
+  		child.setMetaData(METADATA_MULTI_LANGUAGE_HOME, String.valueOf(multiLanguageHome));
+  		child.setMetaData(METADATA_LANGUAGES, language);
+  		child.store();
+  	}
+  	
+  	public boolean hasStudies(User custodian) {
+  		String meta = custodian.getMetaData(METADATA_HAS_CUSTODIAN_STUDIES);
+  		if (meta != null) {
+  			return new Boolean(meta).booleanValue();
+  		}
+  		return false;
+  	}
+  	
+  	public String getStudies(User custodian) {
+  		return custodian.getMetaData(METADATA_CUSTODIAN_STUDY);
+  	}
+  	
+  	public Date getStudyStart(User custodian) {
+  		String meta = custodian.getMetaData(METADATA_CUSTODIAN_STUDY_START);
+  		if (meta != null) {
+  			return new IWTimestamp(meta).getDate();
+  		}
+  		return null;
+  	}
+  	
+  	public Date getStudyEnd(User custodian) {
+  		String meta = custodian.getMetaData(METADATA_CUSTODIAN_STUDY_END);
+  		if (meta != null) {
+  			return new IWTimestamp(meta).getDate();
+  		}
+  		return null;
+  	}
+  	
+  	public void storeCustodianInformation(User custodian, boolean hasStudies, String studies, Date studyStart, Date studyEnd) {
+  		custodian.setMetaData(METADATA_HAS_CUSTODIAN_STUDIES, String.valueOf(hasStudies));
+  		custodian.setMetaData(METADATA_CUSTODIAN_STUDY, studies);
+  		if (studyStart != null) {
+  			custodian.setMetaData(METADATA_CUSTODIAN_STUDY_START, studyStart.toString());
+  		}
+  		if (studyEnd != null) {
+  			custodian.setMetaData(METADATA_CUSTODIAN_STUDY_END, studyEnd.toString());
+  		}
+  		custodian.store();
+  	}
 }
