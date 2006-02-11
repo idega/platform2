@@ -60,8 +60,10 @@ public class MemberGroupData {
 		Iterator statusIter = statuses.iterator();
 		while(statusIter.hasNext()) {
 			UserStatus status = (UserStatus) statusIter.next();
-			statusGroupIdSet.add(status.getGroup().getPrimaryKey());
-			processStatus(status);
+			if (status.getGroupId() != -1) {
+				statusGroupIdSet.add(status.getGroup().getPrimaryKey());
+				processStatus(status);
+			}
 		}
 		
 		Iterator iter = history.iterator();
