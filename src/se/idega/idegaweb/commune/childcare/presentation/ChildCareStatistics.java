@@ -175,15 +175,15 @@ public class ChildCareStatistics extends ChildCareBlock {
 				try {
 					Collection types = null;
 					SchoolType type = null;
-					//String category = null;
 					types = school.getSchoolTypes();
 					if (types != null && !types.isEmpty()) {
 						Iterator tmp_iter = types.iterator();
 						while (tmp_iter.hasNext()) {
 							type = (SchoolType) tmp_iter.next();
-							//category = type.getSchoolCategory();
-							if (type.getSchoolCategory() == ELEMENTARY_SCHOOL_TYPE)
+					        if (type.getSchoolCategory().matches(ELEMENTARY_SCHOOL_TYPE)){
 								isElementary = true;
+								break;
+							}	
 						}
 					}
 				}
