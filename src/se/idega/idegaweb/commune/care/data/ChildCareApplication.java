@@ -4,6 +4,8 @@
 package se.idega.idegaweb.commune.care.data;
 
 import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
 import se.idega.idegaweb.commune.care.check.data.GrantedCheck;
 import com.idega.block.contract.data.Contract;
 import com.idega.block.process.data.Case;
@@ -17,10 +19,10 @@ import com.idega.user.data.User;
  * <p>
  * TODO Dainis Describe Type ChildCareApplication
  * </p>
- *  Last modified: $Date: 2006/02/09 15:53:04 $ by $Author: dainis $
+ *  Last modified: $Date: 2006/02/12 21:58:50 $ by $Author: palli $
  * 
  * @author <a href="mailto:Dainis@idega.com">Dainis</a>
- * @version $Revision: 1.8.2.1 $
+ * @version $Revision: 1.8.2.2 $
  */
 public interface ChildCareApplication extends IDOEntity, Case {
 
@@ -33,6 +35,26 @@ public interface ChildCareApplication extends IDOEntity, Case {
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#getCaseCodeDescription
 	 */
 	public String getCaseCodeDescription();
+
+	/**
+	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#getFromTime
+	 */
+	public Time getFromTime();
+
+	/**
+	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#setFromTime
+	 */
+	public void setFromTime(Timestamp stamp);
+
+	/**
+	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#getToTime
+	 */
+	public Time getToTime();
+
+	/**
+	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#setToTime
+	 */
+	public void setToTime(Timestamp stamp);
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#getProviderId

@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareApplicationBMPBean.java,v 1.22.2.1 2006/02/09 15:53:03 dainis Exp $
+ * $Id: ChildCareApplicationBMPBean.java,v 1.22.2.2 2006/02/12 21:58:50 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -10,13 +10,12 @@
 package se.idega.idegaweb.commune.care.data;
 
 import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.Collection;
-
 import javax.ejb.FinderException;
-
 import se.idega.idegaweb.commune.care.business.CareConstants;
 import se.idega.idegaweb.commune.care.check.data.GrantedCheck;
-
 import com.idega.block.contract.data.Contract;
 import com.idega.block.process.data.AbstractCaseBMPBean;
 import com.idega.block.process.data.Case;
@@ -30,6 +29,7 @@ import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;
 import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 
 /**
  * This class does something very clever.....
@@ -83,6 +83,9 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
     protected final static String FROM_DATE_REQUESTED = "from_date_requested"; // Requested start date
     protected final static String CANCEL_REQUEST_RECEIVED = "cancel_request_received"; // The date the parents want as the last day of placement
     protected final static String CANCEL_DATE_REQUESTED = "cancel_date_requested"; // The date the parent registered the cancellation
+    
+  protected final static String FROM_TIME = "from_time";
+  protected final static String TO_TIME = "to_time";
 	
 	protected final int SORT_DATE_OF_BIRTH = 1;
 	protected final int SORT_QUEUE_DATE = 2;
@@ -157,6 +160,32 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
         addAttribute(CANCEL_REQUEST_RECEIVED, "", true, true, java.sql.Date.class);
         addAttribute(CANCEL_DATE_REQUESTED, "", true, true, java.sql.Date.class);
         
+    addAttribute(FROM_TIME, "From time", Timestamp.class);
+    addAttribute(TO_TIME, "To time", Timestamp.class);
+	}
+	
+	public Time getFromTime() {
+		Timestamp stamp = getTimestampColumnValue(FROM_TIME);
+		if (stamp != null) {
+			return new IWTimestamp(stamp).getTime();
+		}
+		return null;
+	}
+	
+	public void setFromTime(Timestamp stamp) {
+		setColumn(FROM_TIME, stamp);
+	}
+	
+	public Time getToTime() {
+		Timestamp stamp = getTimestampColumnValue(TO_TIME);
+		if (stamp != null) {
+			return new IWTimestamp(stamp).getTime();
+		}
+		return null;
+	}
+	
+	public void setToTime(Timestamp stamp) {
+		setColumn(TO_TIME, stamp);
 	}
 	
 	public int getProviderId() {

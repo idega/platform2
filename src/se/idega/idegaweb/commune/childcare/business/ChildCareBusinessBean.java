@@ -5,6 +5,7 @@
 package se.idega.idegaweb.commune.childcare.business;
 
 import is.idega.block.family.business.NoCustodianFound;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,12 +32,14 @@ import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.Vector;
 import java.util.logging.Level;
+
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
+
 import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.idegaweb.commune.accounting.regulations.business.EmploymentTypeFinderBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.ManagementTypeFinderBusiness;
@@ -72,6 +75,7 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareQueue;
 import se.idega.idegaweb.commune.childcare.data.ChildCareQueueHome;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 import se.idega.idegaweb.commune.message.business.CommuneMessageBusiness;
+
 import com.idega.block.contract.business.ContractService;
 import com.idega.block.contract.data.Contract;
 import com.idega.block.contract.data.ContractTag;
@@ -5687,6 +5691,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	
 	public void sendMessageToParents(ChildCareApplication application, String subject, String body, File attachment) {
 		sendMessageToParents(application, subject, body, body, attachment, false, true);
+	}
+
+	public void sendMessageToParents(ChildCareApplication application, String subject, String body, String letterBody, File attachment, boolean alwaysSendLetter, boolean sendToOtherParent) {
+		sendMessageToParents(application, subject, body, letterBody, alwaysSendLetter, sendToOtherParent);
 	}
 
 	public void sendMessageToParents(ChildCareApplication application, String subject, String body, boolean alwaysSendLetter) {

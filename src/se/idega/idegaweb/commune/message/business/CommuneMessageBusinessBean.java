@@ -1,5 +1,5 @@
 /*
- * $Id: CommuneMessageBusinessBean.java,v 1.4.2.1 2006/02/12 00:08:18 igors Exp $
+ * $Id: CommuneMessageBusinessBean.java,v 1.4.2.2 2006/02/12 21:57:22 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -11,11 +11,12 @@ package se.idega.idegaweb.commune.message.business;
 
 import java.io.File;
 import java.rmi.RemoteException;
-import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Iterator;
+
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.message.data.MessageHandlerInfo;
 import se.idega.idegaweb.commune.message.data.MessageHandlerInfoHome;
@@ -26,6 +27,7 @@ import se.idega.idegaweb.commune.message.data.SystemArchivationMessage;
 import se.idega.idegaweb.commune.message.data.SystemArchivationMessageHome;
 import se.idega.idegaweb.commune.message.data.UserMessage;
 import se.idega.idegaweb.commune.message.data.UserMessageHome;
+
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseCode;
