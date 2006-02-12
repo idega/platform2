@@ -43,6 +43,7 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 	//private static final String COLUMN_VAT_TYPE = "vat_type";
 	private static final String COLUMN_VAT_RULE_REGULATION_ID="VAT_RULE_REGULATION_ID";
 	private static final String COLUMN_ORDER_ID = "order_id";
+	private static final String COLUMN_VERNR = "vernr";
 	
 	public String getEntityName() {
 		return ENTITY_NAME;
@@ -67,6 +68,7 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 		addAttribute(COLUMN_OWN_POSTING, "", true, true, java.lang.String.class, 1000);
 		addAttribute(COLUMN_DOUBLE_POSTING, "", true, true, java.lang.String.class, 1000);
 		//addAttribute(COLUMN_VAT_TYPE, "", true, true, java.lang.Integer.class);
+		addAttribute(COLUMN_VERNR, "", String.class, 255);
 
 		addAttribute(COLUMN_ORDER_ID, "", true, true, java.lang.Integer.class);
 		addManyToOneRelationship(COLUMN_PAYMENT_HEADER, PaymentHeader.class);
@@ -206,6 +208,14 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 	}
 	public void setOrderId(int i) {
 		setColumn(COLUMN_ORDER_ID, i);
+	}
+	
+	public void setVernr(String vernr) {
+		setColumn(COLUMN_VERNR, vernr);
+	}
+	
+	public String getVernr() {
+		return getStringColumnValue(COLUMN_VERNR);
 	}
 	
 	/**

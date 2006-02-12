@@ -1,141 +1,211 @@
+/**
+ * 
+ */
 package se.idega.idegaweb.commune.accounting.invoice.data;
 
+import java.sql.Date;
+import java.util.Collection;
 
-public class PaymentRecordHomeImpl extends com.idega.data.IDOFactory implements PaymentRecordHome
-{
- protected Class getEntityInterfaceClass(){
-  return PaymentRecord.class;
- }
+import javax.ejb.FinderException;
 
+import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 
- public PaymentRecord create() throws javax.ejb.CreateException{
-  return (PaymentRecord) super.createIDO();
- }
+import com.idega.data.IDOException;
+import com.idega.data.IDOFactory;
+import com.idega.util.CalendarMonth;
 
+/**
+ * @author bluebottle
+ *
+ */
+public class PaymentRecordHomeImpl extends IDOFactory implements
+		PaymentRecordHome {
+	protected Class getEntityInterfaceClass() {
+		return PaymentRecord.class;
+	}
 
-public java.util.Collection findByMonth(com.idega.util.CalendarMonth p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((PaymentRecordBMPBean)entity).ejbFindByMonth(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public PaymentRecord create() throws javax.ejb.CreateException {
+		return (PaymentRecord) super.createIDO();
+	}
 
-public java.util.Collection findByMonthAndCategory(com.idega.util.CalendarMonth p0,java.lang.String p1)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((PaymentRecordBMPBean)entity).ejbFindByMonthAndCategory(p0,p1);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public PaymentRecord findByPrimaryKey(Object pk)
+			throws javax.ejb.FinderException {
+		return (PaymentRecord) super.findByPrimaryKeyIDO(pk);
+	}
 
-public java.util.Collection findByPaymentHeader(se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((PaymentRecordBMPBean)entity).ejbFindByPaymentHeader(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public Collection findByPaymentHeader(PaymentHeader paymentHeader)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((PaymentRecordBMPBean) entity)
+				.ejbFindByPaymentHeader(paymentHeader);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public PaymentRecord findByPaymentHeaderAndPostingStringsAndRuleSpecTypeAndPaymentTextAndMonth(se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,com.idega.util.CalendarMonth p5)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((PaymentRecordBMPBean)entity).ejbFindByPaymentHeaderAndPostingStringsAndRuleSpecTypeAndPaymentTextAndMonth(p0,p1,p2,p3,p4,p5);
-	this.idoCheckInPooledEntity(entity);
-	return this.findByPrimaryKey(pk);
-}
+	public Collection findByPaymentHeaders(Collection headers)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((PaymentRecordBMPBean) entity)
+				.ejbFindByPaymentHeaders(headers);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public PaymentRecord findByPaymentHeaderAndPostingStringsAndVATRuleRegulationAndPaymentTextAndMonth(se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader p0,java.lang.String p1,java.lang.String p2,se.idega.idegaweb.commune.accounting.regulations.data.Regulation p3,java.lang.String p4,com.idega.util.CalendarMonth p5)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((PaymentRecordBMPBean)entity).ejbFindByPaymentHeaderAndPostingStringsAndVATRuleRegulationAndPaymentTextAndMonth(p0,p1,p2,p3,p4,p5);
-	this.idoCheckInPooledEntity(entity);
-	return this.findByPrimaryKey(pk);
-}
+	public PaymentRecord findByPostingStrings(String ownPostingString,
+			String doublePostingString) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((PaymentRecordBMPBean) entity).ejbFindByPostingStrings(
+				ownPostingString, doublePostingString);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
 
-public java.util.Collection findByPaymentHeaders(java.util.Collection p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((PaymentRecordBMPBean)entity).ejbFindByPaymentHeaders(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public PaymentRecord findByPostingStringsAndRuleSpecTypeAndPaymentTextAndMonth(
+			String ownPostingString, String doublePostingString,
+			String ruleSpecType, String text, CalendarMonth month)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((PaymentRecordBMPBean) entity)
+				.ejbFindByPostingStringsAndRuleSpecTypeAndPaymentTextAndMonth(
+						ownPostingString, doublePostingString, ruleSpecType,
+						text, month);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
 
-public PaymentRecord findByPostingStrings(java.lang.String p0,java.lang.String p1)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((PaymentRecordBMPBean)entity).ejbFindByPostingStrings(p0,p1);
-	this.idoCheckInPooledEntity(entity);
-	return this.findByPrimaryKey(pk);
-}
+	public PaymentRecord findByPaymentHeaderAndPostingStringsAndRuleSpecTypeAndPaymentTextAndMonth(
+			PaymentHeader header, String ownPostingString,
+			String doublePostingString, String ruleSpecType, String text,
+			CalendarMonth month) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((PaymentRecordBMPBean) entity)
+				.ejbFindByPaymentHeaderAndPostingStringsAndRuleSpecTypeAndPaymentTextAndMonth(
+						header, ownPostingString, doublePostingString,
+						ruleSpecType, text, month);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
 
-public PaymentRecord findByPostingStringsAndRuleSpecTypeAndPaymentTextAndMonth(java.lang.String p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,com.idega.util.CalendarMonth p4)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((PaymentRecordBMPBean)entity).ejbFindByPostingStringsAndRuleSpecTypeAndPaymentTextAndMonth(p0,p1,p2,p3,p4);
-	this.idoCheckInPooledEntity(entity);
-	return this.findByPrimaryKey(pk);
-}
+	public PaymentRecord findByPaymentHeaderAndPostingStringsAndVATRuleRegulationAndPaymentTextAndMonth(
+			PaymentHeader pHeader, String ownPostingString,
+			String doublePostingString, Regulation vatRuleRegulation,
+			String text, CalendarMonth month) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((PaymentRecordBMPBean) entity)
+				.ejbFindByPaymentHeaderAndPostingStringsAndVATRuleRegulationAndPaymentTextAndMonth(
+						pHeader, ownPostingString, doublePostingString,
+						vatRuleRegulation, text, month);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
 
-public PaymentRecord findByPostingStringsAndVATRuleRegulationAndPaymentTextAndMonthAndStatus(java.lang.String p0,java.lang.String p1,se.idega.idegaweb.commune.accounting.regulations.data.Regulation p2,java.lang.String p3,com.idega.util.CalendarMonth p4,char p5)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((PaymentRecordBMPBean)entity).ejbFindByPostingStringsAndVATRuleRegulationAndPaymentTextAndMonthAndStatus(p0,p1,p2,p3,p4,p5);
-	this.idoCheckInPooledEntity(entity);
-	return this.findByPrimaryKey(pk);
-}
+	public PaymentRecord findByPostingStringsAndVATRuleRegulationAndPaymentTextAndMonthAndStatus(
+			String ownPostingString, String doublePostingString,
+			Regulation vatRuleRegulation, String text, CalendarMonth month,
+			char status) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((PaymentRecordBMPBean) entity)
+				.ejbFindByPostingStringsAndVATRuleRegulationAndPaymentTextAndMonthAndStatus(
+						ownPostingString, doublePostingString,
+						vatRuleRegulation, text, month, status);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
 
- public PaymentRecord findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (PaymentRecord) super.findByPrimaryKeyIDO(pk);
- }
+	public Collection findByMonth(CalendarMonth month) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((PaymentRecordBMPBean) entity)
+				.ejbFindByMonth(month);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
+	public Collection findByMonthAndCategory(CalendarMonth month,
+			String categoryId) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((PaymentRecordBMPBean) entity)
+				.ejbFindByMonthAndCategory(month, categoryId);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public int getCountForMonthAndStatusLH(com.idega.util.CalendarMonth p0)throws com.idega.data.IDOException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((PaymentRecordBMPBean)entity).ejbHomeGetCountForMonthAndStatusLH(p0);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
+	public int getCountForMonthAndStatusLH(CalendarMonth month)
+			throws IDOException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		int theReturn = ((PaymentRecordBMPBean) entity)
+				.ejbHomeGetCountForMonthAndStatusLH(month);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
 
-public int getCountForMonthCategoryAndStatusLH(com.idega.util.CalendarMonth p0,java.lang.String p1)throws com.idega.data.IDOException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((PaymentRecordBMPBean)entity).ejbHomeGetCountForMonthCategoryAndStatusLH(p0,p1);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
+	public int getCountForMonthCategoryAndStatusLH(CalendarMonth month,
+			String category) throws IDOException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		int theReturn = ((PaymentRecordBMPBean) entity)
+				.ejbHomeGetCountForMonthCategoryAndStatusLH(month, category);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
 
-public int getCountForMonthCategoryAndStatusLHorT(com.idega.util.CalendarMonth p0,java.lang.String p1)throws com.idega.data.IDOException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((PaymentRecordBMPBean)entity).ejbHomeGetCountForMonthCategoryAndStatusLHorT(p0,p1);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
+	public int getCountForMonthCategoryAndStatusLHorT(CalendarMonth month,
+			String category) throws IDOException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		int theReturn = ((PaymentRecordBMPBean) entity)
+				.ejbHomeGetCountForMonthCategoryAndStatusLHorT(month, category);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
 
-public int getPlacementCountForSchoolCategoryAndMonth(java.lang.String p0,com.idega.util.CalendarMonth p1)throws com.idega.data.IDOException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((PaymentRecordBMPBean)entity).ejbHomeGetPlacementCountForSchoolCategoryAndMonth(p0,p1);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
+	public int getPlacementCountForSchoolCategoryAndMonth(
+			String schoolCategoryID, CalendarMonth month) throws IDOException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		int theReturn = ((PaymentRecordBMPBean) entity)
+				.ejbHomeGetPlacementCountForSchoolCategoryAndMonth(
+						schoolCategoryID, month);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
 
-public int getPlacementCountForSchoolIdAndDateAndSchoolCategory(int p0,java.sql.Date p1,java.lang.String p2)throws com.idega.data.IDOException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((PaymentRecordBMPBean)entity).ejbHomeGetPlacementCountForSchoolIdAndDateAndSchoolCategory(p0,p1,p2);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
+	public int getPlacementCountForSchoolIdAndDateAndSchoolCategory(
+			int schoolID, Date period, String schoolCategoryID)
+			throws IDOException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		int theReturn = ((PaymentRecordBMPBean) entity)
+				.ejbHomeGetPlacementCountForSchoolIdAndDateAndSchoolCategory(
+						schoolID, period, schoolCategoryID);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
 
-public int getTotAmountForProviderAndPeriod(int p0,java.sql.Date p1,java.lang.String p2)throws com.idega.data.IDOException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((PaymentRecordBMPBean)entity).ejbHomeGetTotAmountForProviderAndPeriod(p0,p1,p2);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
+	public int getTotalVATAmountForPaymentHeaderAndMonthAndVATRuleRegulation(
+			PaymentHeader ph, CalendarMonth month, Regulation vatRuleRegulation)
+			throws IDOException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		int theReturn = ((PaymentRecordBMPBean) entity)
+				.ejbHomeGetTotalVATAmountForPaymentHeaderAndMonthAndVATRuleRegulation(
+						ph, month, vatRuleRegulation);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
 
-public int getTotAmountForSchoolCategoryAndPeriod(java.lang.String p0,java.sql.Date p1)throws com.idega.data.IDOException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((PaymentRecordBMPBean)entity).ejbHomeGetTotAmountForSchoolCategoryAndPeriod(p0,p1);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
+	public int getTotAmountForSchoolCategoryAndPeriod(String schoolCategoryID,
+			Date period) throws IDOException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		int theReturn = ((PaymentRecordBMPBean) entity)
+				.ejbHomeGetTotAmountForSchoolCategoryAndPeriod(
+						schoolCategoryID, period);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
 
-public int getTotalVATAmountForPaymentHeaderAndMonthAndVATRuleRegulation(se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader p0,com.idega.util.CalendarMonth p1,se.idega.idegaweb.commune.accounting.regulations.data.Regulation p2)throws com.idega.data.IDOException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((PaymentRecordBMPBean)entity).ejbHomeGetTotalVATAmountForPaymentHeaderAndMonthAndVATRuleRegulation(p0,p1,p2);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
-
+	public int getTotAmountForProviderAndPeriod(int providerID, Date period,
+			String schoolCategoryID) throws IDOException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		int theReturn = ((PaymentRecordBMPBean) entity)
+				.ejbHomeGetTotAmountForProviderAndPeriod(providerID, period,
+						schoolCategoryID);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
 
 }

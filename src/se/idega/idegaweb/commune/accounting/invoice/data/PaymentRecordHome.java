@@ -1,26 +1,138 @@
+/**
+ * 
+ */
 package se.idega.idegaweb.commune.accounting.invoice.data;
 
+import java.sql.Date;
+import java.util.Collection;
 
-public interface PaymentRecordHome extends com.idega.data.IDOHome
-{
- public PaymentRecord create() throws javax.ejb.CreateException;
- public PaymentRecord findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
- public java.util.Collection findByMonth(com.idega.util.CalendarMonth p0)throws javax.ejb.FinderException;
- public java.util.Collection findByMonthAndCategory(com.idega.util.CalendarMonth p0,java.lang.String p1)throws javax.ejb.FinderException;
- public java.util.Collection findByPaymentHeader(se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader p0)throws javax.ejb.FinderException;
- public PaymentRecord findByPaymentHeaderAndPostingStringsAndRuleSpecTypeAndPaymentTextAndMonth(se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,com.idega.util.CalendarMonth p5)throws javax.ejb.FinderException;
- public PaymentRecord findByPaymentHeaderAndPostingStringsAndVATRuleRegulationAndPaymentTextAndMonth(se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader p0,java.lang.String p1,java.lang.String p2,se.idega.idegaweb.commune.accounting.regulations.data.Regulation p3,java.lang.String p4,com.idega.util.CalendarMonth p5)throws javax.ejb.FinderException;
- public java.util.Collection findByPaymentHeaders(java.util.Collection p0)throws javax.ejb.FinderException;
- public PaymentRecord findByPostingStrings(java.lang.String p0,java.lang.String p1)throws javax.ejb.FinderException;
- public PaymentRecord findByPostingStringsAndRuleSpecTypeAndPaymentTextAndMonth(java.lang.String p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,com.idega.util.CalendarMonth p4)throws javax.ejb.FinderException;
- public PaymentRecord findByPostingStringsAndVATRuleRegulationAndPaymentTextAndMonthAndStatus(java.lang.String p0,java.lang.String p1,se.idega.idegaweb.commune.accounting.regulations.data.Regulation p2,java.lang.String p3,com.idega.util.CalendarMonth p4,char p5)throws javax.ejb.FinderException;
- public int getCountForMonthAndStatusLH(com.idega.util.CalendarMonth p0)throws com.idega.data.IDOException;
- public int getCountForMonthCategoryAndStatusLH(com.idega.util.CalendarMonth p0,java.lang.String p1)throws com.idega.data.IDOException;
- public int getCountForMonthCategoryAndStatusLHorT(com.idega.util.CalendarMonth p0,java.lang.String p1)throws com.idega.data.IDOException;
- public int getPlacementCountForSchoolCategoryAndMonth(java.lang.String p0,com.idega.util.CalendarMonth p1)throws com.idega.data.IDOException;
- public int getPlacementCountForSchoolIdAndDateAndSchoolCategory(int p0,java.sql.Date p1,java.lang.String p2)throws com.idega.data.IDOException;
- public int getTotAmountForProviderAndPeriod(int p0,java.sql.Date p1,java.lang.String p2)throws com.idega.data.IDOException;
- public int getTotAmountForSchoolCategoryAndPeriod(java.lang.String p0,java.sql.Date p1)throws com.idega.data.IDOException;
- public int getTotalVATAmountForPaymentHeaderAndMonthAndVATRuleRegulation(se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader p0,com.idega.util.CalendarMonth p1,se.idega.idegaweb.commune.accounting.regulations.data.Regulation p2)throws com.idega.data.IDOException;
+import javax.ejb.FinderException;
+
+import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
+
+import com.idega.data.IDOException;
+import com.idega.data.IDOHome;
+import com.idega.util.CalendarMonth;
+
+/**
+ * @author bluebottle
+ *
+ */
+public interface PaymentRecordHome extends IDOHome {
+	public PaymentRecord create() throws javax.ejb.CreateException;
+
+	public PaymentRecord findByPrimaryKey(Object pk)
+			throws javax.ejb.FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordBMPBean#ejbFindByPaymentHeader
+	 */
+	public Collection findByPaymentHeader(PaymentHeader paymentHeader)
+			throws FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordBMPBean#ejbFindByPaymentHeaders
+	 */
+	public Collection findByPaymentHeaders(Collection headers)
+			throws FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordBMPBean#ejbFindByPostingStrings
+	 */
+	public PaymentRecord findByPostingStrings(String ownPostingString,
+			String doublePostingString) throws FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordBMPBean#ejbFindByPostingStringsAndRuleSpecTypeAndPaymentTextAndMonth
+	 */
+	public PaymentRecord findByPostingStringsAndRuleSpecTypeAndPaymentTextAndMonth(
+			String ownPostingString, String doublePostingString,
+			String ruleSpecType, String text, CalendarMonth month)
+			throws FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordBMPBean#ejbFindByPaymentHeaderAndPostingStringsAndRuleSpecTypeAndPaymentTextAndMonth
+	 */
+	public PaymentRecord findByPaymentHeaderAndPostingStringsAndRuleSpecTypeAndPaymentTextAndMonth(
+			PaymentHeader header, String ownPostingString,
+			String doublePostingString, String ruleSpecType, String text,
+			CalendarMonth month) throws FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordBMPBean#ejbFindByPaymentHeaderAndPostingStringsAndVATRuleRegulationAndPaymentTextAndMonth
+	 */
+	public PaymentRecord findByPaymentHeaderAndPostingStringsAndVATRuleRegulationAndPaymentTextAndMonth(
+			PaymentHeader pHeader, String ownPostingString,
+			String doublePostingString, Regulation vatRuleRegulation,
+			String text, CalendarMonth month) throws FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordBMPBean#ejbFindByPostingStringsAndVATRuleRegulationAndPaymentTextAndMonthAndStatus
+	 */
+	public PaymentRecord findByPostingStringsAndVATRuleRegulationAndPaymentTextAndMonthAndStatus(
+			String ownPostingString, String doublePostingString,
+			Regulation vatRuleRegulation, String text, CalendarMonth month,
+			char status) throws FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordBMPBean#ejbFindByMonth
+	 */
+	public Collection findByMonth(CalendarMonth month) throws FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordBMPBean#ejbFindByMonthAndCategory
+	 */
+	public Collection findByMonthAndCategory(CalendarMonth month,
+			String categoryId) throws FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordBMPBean#ejbHomeGetCountForMonthAndStatusLH
+	 */
+	public int getCountForMonthAndStatusLH(CalendarMonth month)
+			throws IDOException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordBMPBean#ejbHomeGetCountForMonthCategoryAndStatusLH
+	 */
+	public int getCountForMonthCategoryAndStatusLH(CalendarMonth month,
+			String category) throws IDOException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordBMPBean#ejbHomeGetCountForMonthCategoryAndStatusLHorT
+	 */
+	public int getCountForMonthCategoryAndStatusLHorT(CalendarMonth month,
+			String category) throws IDOException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordBMPBean#ejbHomeGetPlacementCountForSchoolCategoryAndMonth
+	 */
+	public int getPlacementCountForSchoolCategoryAndMonth(
+			String schoolCategoryID, CalendarMonth month) throws IDOException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordBMPBean#ejbHomeGetPlacementCountForSchoolIdAndDateAndSchoolCategory
+	 */
+	public int getPlacementCountForSchoolIdAndDateAndSchoolCategory(
+			int schoolID, Date period, String schoolCategoryID)
+			throws IDOException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordBMPBean#ejbHomeGetTotalVATAmountForPaymentHeaderAndMonthAndVATRuleRegulation
+	 */
+	public int getTotalVATAmountForPaymentHeaderAndMonthAndVATRuleRegulation(
+			PaymentHeader ph, CalendarMonth month, Regulation vatRuleRegulation)
+			throws IDOException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordBMPBean#ejbHomeGetTotAmountForSchoolCategoryAndPeriod
+	 */
+	public int getTotAmountForSchoolCategoryAndPeriod(String schoolCategoryID,
+			Date period) throws IDOException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordBMPBean#ejbHomeGetTotAmountForProviderAndPeriod
+	 */
+	public int getTotAmountForProviderAndPeriod(int providerID, Date period,
+			String schoolCategoryID) throws IDOException;
 
 }

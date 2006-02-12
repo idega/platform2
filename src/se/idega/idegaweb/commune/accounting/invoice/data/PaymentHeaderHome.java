@@ -1,21 +1,118 @@
+/**
+ * 
+ */
 package se.idega.idegaweb.commune.accounting.invoice.data;
 
+import java.sql.Date;
+import java.util.Collection;
 
-public interface PaymentHeaderHome extends com.idega.data.IDOHome
-{
- public PaymentHeader create() throws javax.ejb.CreateException;
- public PaymentHeader findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
- public java.util.Collection findByMonthAndSchoolCategory(com.idega.util.CalendarMonth p0,com.idega.block.school.data.SchoolCategory p1)throws javax.ejb.FinderException;
- public java.util.Collection findBySchoolAndSchoolCategoryPKAndStatus(java.lang.Object p0,java.lang.Object p1,java.lang.String p2)throws javax.ejb.FinderException;
- public java.util.Collection findBySchoolCategoryAndPeriod(java.lang.String p0,java.sql.Date p1)throws javax.ejb.EJBException,javax.ejb.FinderException;
- public java.util.Collection findBySchoolCategoryAndPeriodForPrivate(com.idega.block.school.data.SchoolCategory p0,java.sql.Date p1)throws com.idega.data.IDOLookupException,javax.ejb.EJBException,javax.ejb.FinderException;
- public java.util.Collection findBySchoolCategoryAndSchoolAndPeriod(java.lang.String p0,java.lang.Integer p1,java.sql.Date p2,java.sql.Date p3)throws javax.ejb.FinderException;
- public PaymentHeader findBySchoolCategoryAndSchoolAndPeriodAndStatus(com.idega.block.school.data.School p0,com.idega.block.school.data.SchoolCategory p1,com.idega.util.TimePeriod p2,java.lang.String p3)throws javax.ejb.FinderException;
- public PaymentHeader findBySchoolCategorySchoolPeriod(com.idega.block.school.data.School p0,com.idega.block.school.data.SchoolCategory p1,java.sql.Date p2)throws javax.ejb.FinderException;
- public java.util.Collection findBySchoolCategoryStatusInCommuneWithCommunalManagement(java.lang.String p0,char p1)throws javax.ejb.FinderException;
- public java.util.Collection findBySchoolCategoryStatusOutsideCommuneOrWithoutCommunalManagement(java.lang.String p0,char p1)throws javax.ejb.FinderException;
- public java.util.Collection findByStatusAndSchoolId(char p0,int p1)throws javax.ejb.EJBException,javax.ejb.FinderException;
- public int getPlacementCountForSchoolAndPeriod(int p0,java.sql.Date p1,java.lang.String p2)throws com.idega.data.IDOException;
- public int getProviderCountForSchoolCategoryAndPeriod(java.lang.String p0,java.sql.Date p1)throws com.idega.data.IDOException;
- public java.util.Collection findAllBySchoolCategoryAndSchoolAndPeriodAndStatus(com.idega.block.school.data.School p0,com.idega.block.school.data.SchoolCategory p1,com.idega.util.TimePeriod p2,java.lang.String p3)throws javax.ejb.FinderException;
+import javax.ejb.EJBException;
+import javax.ejb.FinderException;
+
+import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolCategory;
+import com.idega.data.IDOException;
+import com.idega.data.IDOHome;
+import com.idega.data.IDOLookupException;
+import com.idega.util.CalendarMonth;
+import com.idega.util.TimePeriod;
+
+/**
+ * @author bluebottle
+ *
+ */
+public interface PaymentHeaderHome extends IDOHome {
+	public PaymentHeader create() throws javax.ejb.CreateException;
+
+	public PaymentHeader findByPrimaryKey(Object pk)
+			throws javax.ejb.FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#ejbFindBySchoolCategorySchoolPeriod
+	 */
+	public PaymentHeader findBySchoolCategorySchoolPeriod(School school,
+			SchoolCategory schoolCategory, Date period) throws FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#ejbFindBySchoolCategoryAndSchoolAndPeriodAndStatus
+	 */
+	public PaymentHeader findBySchoolCategoryAndSchoolAndPeriodAndStatus(
+			School school, SchoolCategory schoolCategory, TimePeriod period,
+			String status) throws FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#ejbFindAllBySchoolCategoryAndSchoolAndPeriodAndStatus
+	 */
+	public Collection findAllBySchoolCategoryAndSchoolAndPeriodAndStatus(
+			School school, SchoolCategory schoolCategory, TimePeriod period,
+			String status) throws FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#ejbHomeGetProviderCountForSchoolCategoryAndPeriod
+	 */
+	public int getProviderCountForSchoolCategoryAndPeriod(
+			String schoolCategoryID, Date period) throws IDOException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#ejbHomeGetPlacementCountForSchoolAndPeriod
+	 */
+	public int getPlacementCountForSchoolAndPeriod(int schoolID, Date period,
+			String schoolCategoryID) throws IDOException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#ejbFindBySchoolAndSchoolCategoryPKAndStatus
+	 */
+	public Collection findBySchoolAndSchoolCategoryPKAndStatus(Object schoolPK,
+			Object schoolCategoryPK, String status) throws FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#ejbFindBySchoolCategoryAndPeriodForPrivate
+	 */
+	public Collection findBySchoolCategoryAndPeriodForPrivate(
+			SchoolCategory schoolCategory, Date period)
+			throws IDOLookupException, EJBException, FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#ejbFindByStatusAndSchoolId
+	 */
+	public Collection findByStatusAndSchoolId(char status, int schoolID)
+			throws EJBException, FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#ejbFindBySchoolCategoryAndSchoolAndPeriod
+	 */
+	public Collection findBySchoolCategoryAndSchoolAndPeriod(
+			String schoolCategory, Integer providerId, Date startPeriod,
+			Date endPeriod) throws FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#ejbFindBySchoolCategoryStatusInCommuneWithCommunalManagement
+	 */
+	public Collection findBySchoolCategoryStatusInCommuneWithCommunalManagement(
+			String schoolCategory, char status) throws FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#ejbFindBySchoolCategoryStatusOutsideCommuneOrWithoutCommunalManagement
+	 */
+	public Collection findBySchoolCategoryStatusOutsideCommuneOrWithoutCommunalManagement(
+			String schoolCategory, char status) throws FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#ejbFindBySchoolCategoryAndStatus
+	 */
+	public Collection findBySchoolCategoryAndStatus(String schoolCategory,
+			char status) throws FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#ejbFindBySchoolCategoryAndPeriod
+	 */
+	public Collection findBySchoolCategoryAndPeriod(String sc, Date period)
+			throws EJBException, FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#ejbFindByMonthAndSchoolCategory
+	 */
+	public Collection findByMonthAndSchoolCategory(CalendarMonth month,
+			SchoolCategory schoolCategory) throws FinderException;
+
 }

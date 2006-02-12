@@ -1,23 +1,104 @@
+/**
+ * 
+ */
 package se.idega.idegaweb.commune.accounting.invoice.data;
 
+import java.sql.Date;
 
-public interface PaymentHeader extends com.idega.data.IDOEntity
-{
- public java.sql.Date getDateAttested();
- public java.sql.Date getPeriod();
- public com.idega.block.school.data.School getSchool();
- public com.idega.block.school.data.SchoolCategory getSchoolCategory();
- public java.lang.String getSchoolCategoryID();
- public int getSchoolID();
- public int getSignatureID();
- public char getStatus();
- public void setDateAttested(java.sql.Date p0);
- public void setPeriod(java.sql.Date p0);
- public void setSchool(com.idega.block.school.data.School p0);
- public void setSchoolCategory(com.idega.block.school.data.SchoolCategory p0);
- public void setSchoolCategoryID(int p0);
- public void setSchoolID(int p0);
- public void setSignaturelID(com.idega.user.data.User p0);
- public void setSignaturelID(int p0);
- public void setStatus(char p0);
+
+import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolCategory;
+import com.idega.data.IDOEntity;
+import com.idega.user.data.User;
+
+/**
+ * @author bluebottle
+ *
+ */
+public interface PaymentHeader extends IDOEntity {
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#getSchoolID
+	 */
+	public int getSchoolID();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#getSchool
+	 */
+	public School getSchool();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#getSchoolCategoryID
+	 */
+	public String getSchoolCategoryID();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#getSchoolCategory
+	 */
+	public SchoolCategory getSchoolCategory();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#getSignatureID
+	 */
+	public int getSignatureID();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#getStatus
+	 */
+	public char getStatus();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#getDateAttested
+	 */
+	public Date getDateAttested();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#getPeriod
+	 */
+	public Date getPeriod();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#setSchoolID
+	 */
+	public void setSchoolID(int i);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#setSchool
+	 */
+	public void setSchool(School s);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#setSchoolCategoryID
+	 */
+	public void setSchoolCategoryID(int i);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#setSchoolCategory
+	 */
+	public void setSchoolCategory(SchoolCategory s);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#setSignaturelID
+	 */
+	public void setSignaturelID(int i);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#setSignaturelID
+	 */
+	public void setSignaturelID(User u);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#setStatus
+	 */
+	public void setStatus(char c);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#setDateAttested
+	 */
+	public void setDateAttested(Date d);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#setPeriod
+	 */
+	public void setPeriod(Date d);
+
 }
