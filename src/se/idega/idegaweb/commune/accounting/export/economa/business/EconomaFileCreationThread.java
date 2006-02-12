@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.StringTokenizer;
 
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
@@ -38,6 +39,11 @@ import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeaderHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
 
 import com.idega.block.school.data.SchoolCategory;
@@ -64,9 +70,8 @@ public class EconomaFileCreationThread extends Thread {
 	protected Locale currentLocale = null;
 
 	protected IWApplicationContext iwac = null;
-	
-	private final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune.accounting";
 
+	private final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune.accounting";
 
 	// private final static String IW_BUNDLE_IDENTIFIER =
 	// "se.idega.idegaweb.commune.accounting";
@@ -121,7 +126,7 @@ public class EconomaFileCreationThread extends Thread {
 		try {
 			header = getEconomaBusiness()
 					.getEconomaCheckHeaderBySchoolCategory(schoolCategory);
-		} catch (RemoteException e) {
+		} catch (Exception e) {
 		}
 
 		if (header == null) {
@@ -198,22 +203,11 @@ public class EconomaFileCreationThread extends Thread {
 			e3.printStackTrace();
 		}
 
-		/*
-		 * SchoolCategory highSchool = null; try { highSchool =
-		 * getEconomaBusiness().getSchoolBusiness().getCategoryHighSchool(); }
-		 * catch (RemoteException e4) { e4.printStackTrace(); }
-		 */
-
 		StringBuffer fileName1 = null;
 		StringBuffer fileName2 = null;
 		StringBuffer fileName3 = null;
-		/*
-		 * StringBuffer fileName4 = null; StringBuffer fileName5 = null;
-		 * StringBuffer fileName6 = null; StringBuffer fileName7 = null;
-		 * StringBuffer fileName8 = null; StringBuffer fileName9 = null;
-		 */
 		if (childCare != null && (fileFolder != null || listFolder != null)
-				&& school != null /* && highSchool != null */) {
+				&& school != null) {
 			if (schoolCategory.equals(childCare.getPrimaryKey())) {
 				if (fileFolder != null) {
 					fileName1 = new StringBuffer(fileFolder);
@@ -229,34 +223,15 @@ public class EconomaFileCreationThread extends Thread {
 					fileName2.append(".txt");
 					fileName3.append(".txt");
 				}
-				/*
-				 * if (listFolder != null) { fileName4 = new
-				 * StringBuffer(listFolder);
-				 * fileName4.append("n24_kontrollista_hvd_bom_"); fileName5 =
-				 * new StringBuffer(listFolder);
-				 * fileName5.append("n24_kontrollista_lev_bom_"); fileName6 =
-				 * new StringBuffer(listFolder);
-				 * fileName6.append("n24_attestlista_lev_bom_"); fileName7 = new
-				 * StringBuffer(listFolder);
-				 * fileName7.append("n24_attestlista_knd_bom_"); fileName8 = new
-				 * StringBuffer(listFolder);
-				 * fileName8.append("n24_avvikelselista_knd_bom_"); fileName9 =
-				 * new StringBuffer(listFolder);
-				 * fileName9.append("n24_kommun_bom_");
-				 * fileName4.append(now.getDateString("yyMMdd_HHmm"));
-				 * fileName5.append(now.getDateString("yyMMdd_HHmm"));
-				 * fileName6.append(now.getDateString("yyMMdd_HHmm"));
-				 * fileName7.append(now.getDateString("yyMMdd_HHmm"));
-				 * fileName8.append(now.getDateString("yyMMdd_HHmm"));
-				 * fileName9.append(now.getDateString("yyMMdd_HHmm")); }
-				 */
-				/*
-				 * try { createPaymentFiles(fileName1.toString(),
-				 * fileName2.toString(), fileName4.toString(),
-				 * fileName5.toString(), fileName6.toString(),
-				 * fileName9.toString(), schoolCategory, now, paymentDate); }
-				 * catch (IOException e5) { e5.printStackTrace(); }
-				 */
+
+				try {
+					createPaymentFiles(fileName1.toString(), fileName2
+							.toString(), schoolCategory, now, paymentDate,
+							mapping);
+				} catch (IOException e5) {
+					e5.printStackTrace();
+				}
+
 				try {
 					createInvoiceFiles(fileName3.toString(), schoolCategory,
 							now, currentLocale, header);
@@ -274,272 +249,611 @@ public class EconomaFileCreationThread extends Thread {
 					fileName1.append(".txt");
 					fileName2.append(".txt");
 				}
-				/*
-				 * if (listFolder != null) { fileName4 = new
-				 * StringBuffer(listFolder);
-				 * fileName4.append("n24_kontrollista_hvd_gsk_"); fileName5 =
-				 * new StringBuffer(listFolder);
-				 * fileName5.append("n24_kontrollista_lev_gsk_"); fileName6 =
-				 * new StringBuffer(listFolder);
-				 * fileName6.append("n24_attestlista_lev_gsk_"); fileName9 = new
-				 * StringBuffer(listFolder);
-				 * fileName9.append("n24_kommun_gsk_");
-				 * fileName4.append(now.getDateString("yyMMdd_HHmm"));
-				 * fileName5.append(now.getDateString("yyMMdd_HHmm"));
-				 * fileName6.append(now.getDateString("yyMMdd_HHmm"));
-				 * fileName9.append(now.getDateString("yyMMdd_HHmm")); }
-				 */
-				/*
-				 * try { createPaymentFiles(fileName1.toString(),
-				 * fileName2.toString(), fileName4.toString(),
-				 * fileName5.toString(), fileName6.toString(),
-				 * fileName9.toString(), schoolCategory, now, paymentDate); }
-				 * catch (IOException e5) { e5.printStackTrace(); }
-				 */
+
+				try {
+					createPaymentFiles(fileName1.toString(), fileName2
+							.toString(), schoolCategory, now, paymentDate,
+							mapping);
+				} catch (IOException e5) {
+					e5.printStackTrace();
+				}
 			}
-			/*
-			 * else if (schoolCategory.equals(highSchool.getPrimaryKey())) { if
-			 * (fileFolder != null) { fileName1 = new StringBuffer(fileFolder);
-			 * fileName1.append("n24_Economa_hvd_gym_"); fileName2 = new
-			 * StringBuffer(fileFolder);
-			 * fileName2.append("n24_Economa_lev_gym_");
-			 * fileName1.append(now.getDateString("yyMMdd_HHmm"));
-			 * fileName2.append(now.getDateString("yyMMdd_HHmm")); } if
-			 * (listFolder != null) { fileName4 = new StringBuffer(listFolder);
-			 * fileName4.append("n24_kontrollista_hvd_gym_"); fileName5 = new
-			 * StringBuffer(listFolder);
-			 * fileName5.append("n24_kontrollista_lev_gym_"); fileName6 = new
-			 * StringBuffer(listFolder);
-			 * fileName6.append("n24_attestlista_lev_gym_"); fileName9 = new
-			 * StringBuffer(listFolder); fileName9.append("n24_kommun_gym_");
-			 * fileName4.append(now.getDateString("yyMMdd_HHmm"));
-			 * fileName5.append(now.getDateString("yyMMdd_HHmm"));
-			 * fileName6.append(now.getDateString("yyMMdd_HHmm"));
-			 * fileName9.append(now.getDateString("yyMMdd_HHmm")); } try {
-			 * createPaymentFiles(fileName1.toString(), fileName2.toString(),
-			 * fileName4.toString(), fileName5.toString(), fileName6.toString(),
-			 * fileName9.toString(), schoolCategory, now, paymentDate); } catch
-			 * (IOException e5) { e5.printStackTrace(); } }
-			 */
 		}
 		now = IWTimestamp.RightNow();
 		header.setEventEndTime(now.getTimestamp());
 		header.store();
 	}
 
-	/*
-	 * private void createPaymentFiles(String fileName1, String fileName2,
-	 * String fileName3, String fileName4, String fileName5, String fileName6,
-	 * String schoolCategory, IWTimestamp executionDate, IWTimestamp
-	 * paymentDate) throws IOException { //String localizedSchoolCategoryName =
-	 * iwac.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getResourceBundle( //
-	 * currentLocale).getLocalizedString("school_category." + schoolCategory);
-	 * Collection phInCommune = null; try { phInCommune = ((PaymentHeaderHome)
-	 * IDOLookup.getHome(PaymentHeader.class)).findBySchoolCategoryStatusInCommuneWithCommunalManagement(
-	 * schoolCategory, 'P'); } catch (IDOLookupException e) {
-	 * e.printStackTrace(); } catch (FinderException e) { e.printStackTrace(); }
-	 * Collection phOutsideCommune = null; try { phOutsideCommune =
-	 * ((PaymentHeaderHome)
-	 * IDOLookup.getHome(PaymentHeader.class)).findBySchoolCategoryStatusOutsideCommuneOrWithoutCommunalManagement(
-	 * schoolCategory, 'P'); } catch (IDOLookupException e1) {
-	 * e1.printStackTrace(); } catch (FinderException e1) {
-	 * e1.printStackTrace(); } if (phInCommune != null &&
-	 * !phInCommune.isEmpty()) { Collection rec = null; try { rec =
-	 * ((PaymentRecordHome)
-	 * IDOLookup.getHome(PaymentRecord.class)).findByPaymentHeaders(phInCommune); }
-	 * catch (IDOLookupException e2) { e2.printStackTrace(); } catch
-	 * (FinderException e2) { e2.printStackTrace(); } // try { //
-	 * excelFileUtil.createPaymentFilesExcel(rec, fileName3 + ".xls",
-	 * "Checkutbetalning " + localizedSchoolCategoryName // + ", egna kommunala
-	 * anordnare, " + executionDate.getDateString("yyyy-MM-dd"), //
-	 * EconomaCreateExcelFileUtil.FILE_TYPE_DOUBLE_POSTING); //
-	 * excelFileUtil.createPaymentFilesExcel(rec, fileName6 + ".xls",
-	 * "Utbetalningsattestlista " // + localizedSchoolCategoryName + ", egna
-	 * kommunala anordnare, " // + executionDate.getDateString("yyyy-MM-dd"),
-	 * EconomaCreateExcelFileUtil.FILE_TYPE_KOMMUN); // } // catch (IOException
-	 * e3) { // e3.printStackTrace(); // } // Collection phAll = new
-	 * ArrayList(); // phAll.addAll(phOutsideCommune); //
-	 * phAll.addAll(phInCommune); // try { //
-	 * excelFileUtil.createPaymentSigningFilesExcel(phAll, fileName5 + ".xls",
-	 * "Utbetalningsattestlista " // + localizedSchoolCategoryName + ", " +
-	 * executionDate.getDateString("yyyy-MM-dd")); // } // catch (IOException
-	 * e3) { // e3.printStackTrace(); // } // catch (FinderException e3) { //
-	 * e3.printStackTrace(); // } Iterator it = rec.iterator(); FileWriter
-	 * writer = null; try { writer = new FileWriter(fileName1); } catch
-	 * (IOException e4) { e4.printStackTrace(); } BufferedWriter bWriter = new
-	 * BufferedWriter(writer); PostingBusiness pb =
-	 * getEconomaBusiness().getPostingBusiness(); while (it.hasNext()) {
-	 * PaymentRecord pRec = (PaymentRecord) it.next(); if (pRec.getTotalAmount() !=
-	 * 0.0f) { bWriter.write(";");
-	 * bWriter.write(executionDate.getDateString("yyyy")); bWriter.write(";");
-	 * bWriter.write(pb.findFieldInStringByName(pRec.getOwnPosting(), "Konto"));
-	 * bWriter.write(";");
-	 * bWriter.write(pb.findFieldInStringByName(pRec.getOwnPosting(),
-	 * "Ansvar")); bWriter.write(";");
-	 * bWriter.write(pb.findFieldInStringByName(pRec.getOwnPosting(),
-	 * "Resurs")); bWriter.write(";");
-	 * bWriter.write(pb.findFieldInStringByName(pRec.getOwnPosting(),
-	 * "Verksamhet")); bWriter.write(";");
-	 * bWriter.write(pb.findFieldInStringByName(pRec.getOwnPosting(),
-	 * "Aktivitet")); bWriter.write(";");
-	 * bWriter.write(pb.findFieldInStringByName(pRec.getOwnPosting(),
-	 * "Projekt")); bWriter.write(";");
-	 * bWriter.write(pb.findFieldInStringByName(pRec.getOwnPosting(),
-	 * "Objekt")); bWriter.write(";");
-	 * bWriter.write(pb.findFieldInStringByName(pRec.getOwnPosting(),
-	 * "Motpart")); bWriter.write(";"); // anlaggningsnummer bWriter.write(";"); //
-	 * internranta bWriter.write(";"); bWriter.write("SEK"); bWriter.write(";"); //
-	 * empty bWriter.write(";"); // empty bWriter.write(";");
-	 * bWriter.write(Integer.toString(Math.round(pRec.getTotalAmount())));
-	 * bWriter.write(";"); // empty bWriter.write(";"); // empty
-	 * bWriter.write(";");
-	 * bWriter.write(Integer.toString(Math.round(pRec.getTotalAmount())));
-	 * bWriter.write(";"); // empty bWriter.write(";"); // empty
-	 * bWriter.write(";"); // empty bWriter.write(";"); // empty
-	 * bWriter.write(";"); bWriter.write(executionDate.getDateString("yyMM") + " " +
-	 * pRec.getPaymentText()); bWriter.write(";"); // empty bWriter.write(";"); //
-	 * empty bWriter.write(";"); // empty bWriter.write(";"); // empty
-	 * bWriter.write(";"); // empty bWriter.write(";"); // empty
-	 * bWriter.write(";");
-	 * bWriter.write(paymentDate.getDateString("yyyy-MM-dd"));
-	 * bWriter.write(";"); // empty bWriter.write(";"); // empty
-	 * bWriter.write(";"); bWriter.newLine(); bWriter.write(";");
-	 * bWriter.write(executionDate.getDateString("yyyy")); bWriter.write(";");
-	 * bWriter.write(pb.findFieldInStringByName(pRec.getDoublePosting(),
-	 * "Konto")); bWriter.write(";");
-	 * bWriter.write(pb.findFieldInStringByName(pRec.getDoublePosting(),
-	 * "Ansvar")); bWriter.write(";");
-	 * bWriter.write(pb.findFieldInStringByName(pRec.getDoublePosting(),
-	 * "Resurs")); bWriter.write(";");
-	 * bWriter.write(pb.findFieldInStringByName(pRec.getDoublePosting(),
-	 * "Verksamhet")); bWriter.write(";");
-	 * bWriter.write(pb.findFieldInStringByName(pRec.getDoublePosting(),
-	 * "Aktivitet")); bWriter.write(";");
-	 * bWriter.write(pb.findFieldInStringByName(pRec.getDoublePosting(),
-	 * "Projekt")); bWriter.write(";");
-	 * bWriter.write(pb.findFieldInStringByName(pRec.getDoublePosting(),
-	 * "Objekt")); bWriter.write(";");
-	 * bWriter.write(pb.findFieldInStringByName(pRec.getDoublePosting(),
-	 * "Motpart")); bWriter.write(";"); // anlaggningsnummer bWriter.write(";"); //
-	 * internranta bWriter.write(";"); bWriter.write("SEK"); bWriter.write(";"); //
-	 * empty bWriter.write(";"); // empty bWriter.write(";");
-	 * bWriter.write(Integer.toString(Math.round(-pRec.getTotalAmount())));
-	 * bWriter.write(";"); // empty bWriter.write(";"); // empty
-	 * bWriter.write(";");
-	 * bWriter.write(Integer.toString(Math.round(-pRec.getTotalAmount())));
-	 * bWriter.write(";"); // empty bWriter.write(";"); // empty
-	 * bWriter.write(";"); // empty bWriter.write(";"); // empty
-	 * bWriter.write(";"); bWriter.write(executionDate.getDateString("yyMM") + " " +
-	 * pRec.getPaymentText()); bWriter.write(";"); // empty bWriter.write(";"); //
-	 * empty bWriter.write(";"); // empty bWriter.write(";"); // empty
-	 * bWriter.write(";"); // empty bWriter.write(";"); // empty
-	 * bWriter.write(";");
-	 * bWriter.write(paymentDate.getDateString("yyyy-MM-dd"));
-	 * bWriter.write(";"); // empty bWriter.write(";"); // empty
-	 * bWriter.write(";"); bWriter.newLine(); } pRec.setStatus('L');
-	 * pRec.store(); } bWriter.close(); Iterator itor = phInCommune.iterator();
-	 * while (itor.hasNext()) { PaymentHeader head = (PaymentHeader)
-	 * itor.next(); head.setStatus('L'); head.store(); } } if (phOutsideCommune !=
-	 * null && !phOutsideCommune.isEmpty()) { NumberFormat format =
-	 * NumberFormat.getInstance(currentLocale);
-	 * format.setMaximumFractionDigits(2); format.setMinimumFractionDigits(2);
-	 * format.setMinimumIntegerDigits(1); format.setGroupingUsed(false); //
-	 * format. // Collection recOutside = null; // try { // recOutside =
-	 * ((PaymentRecordHome)
-	 * IDOLookup.getHome(PaymentRecord.class)).findByPaymentHeaders(phOutsideCommune); // } //
-	 * catch (IDOLookupException e2) { // e2.printStackTrace(); // } // catch
-	 * (FinderException e2) { // e2.printStackTrace(); // } // try { //
-	 * excelFileUtil.createPaymentFilesExcel(recOutside, fileName4 + ".xls",
-	 * "Checkutbetalning " // + localizedSchoolCategoryName + ", övriga
-	 * anordnare, " // + executionDate.getDateString("yyyy-MM-dd"),
-	 * EconomaCreateExcelFileUtil.FILE_TYPE_OWN_POSTING); // } // catch
-	 * (IOException e3) { // e3.printStackTrace(); // } // catch (Exception e3) { //
-	 * e3.printStackTrace(); // } FileWriter writer = new FileWriter(fileName2);
-	 * BufferedWriter bWriter = new BufferedWriter(writer); PostingBusiness pb =
-	 * getEconomaBusiness().getPostingBusiness(); ProviderBusiness provBiz =
-	 * getEconomaBusiness().getProviderBusiness(); Iterator phIt =
-	 * phOutsideCommune.iterator(); while (phIt.hasNext()) { PaymentHeader pHead =
-	 * (PaymentHeader) phIt.next(); School school = pHead.getSchool(); Provider
-	 * prov = null; try { prov = provBiz.getProvider(pHead.getSchoolID()); }
-	 * catch (RemoteException e4) { e4.printStackTrace(); } Collection rec =
-	 * null; try { rec = ((PaymentRecordHome)
-	 * IDOLookup.getHome(PaymentRecord.class)).findByPaymentHeader(pHead); }
-	 * catch (IDOLookupException e3) { e3.printStackTrace(); } catch
-	 * (FinderException e3) { e3.printStackTrace(); } if (rec != null &&
-	 * !rec.isEmpty()) { Iterator prIt = rec.iterator(); Iterator sumIt =
-	 * rec.iterator(); long sum = 0; while (sumIt.hasNext()) { PaymentRecord r =
-	 * (PaymentRecord) sumIt.next(); sum +=
-	 * AccountingUtil.roundAmount(r.getTotalAmount()); } String giro =
-	 * prov.getAccountingProperties().getBankgiro(); if (giro == null) giro =
-	 * prov.getAccountingProperties().getPostgiro(); if (giro == null) giro =
-	 * ""; bWriter.write("H"); bWriter.write(";"); bWriter.write(giro);
-	 * bWriter.write(";"); bWriter.write(((Integer)
-	 * pHead.getPrimaryKey()).toString()); bWriter.write(";");
-	 * bWriter.write(executionDate.getDateString("yyyy-MM-dd"));
-	 * bWriter.write(";"); bWriter.write("SUPPEXT"); bWriter.write(";");
-	 * bWriter.write(executionDate.getDateString("yyyy-MM-dd"));
-	 * bWriter.write(";");
-	 * bWriter.write(executionDate.getDateString("yyyy-MM-dd"));
-	 * bWriter.write(";");
-	 * bWriter.write(paymentDate.getDateString("yyyy-MM-dd"));
-	 * bWriter.write(";");
-	 * bWriter.write(Integer.toString(AccountingUtil.getDayDiff(executionDate,
-	 * paymentDate) + 1)); bWriter.write(";"); bWriter.write("SEK");
-	 * bWriter.write(";"); // empty bWriter.write("-"); bWriter.write(";");
-	 * bWriter.write("*"); bWriter.write(";"); for (int i = 13; i < 55; i++)
-	 * bWriter.write("-;"); bWriter.write("-"); bWriter.newLine();
-	 * bWriter.write("I"); bWriter.write(";"); bWriter.write(giro);
-	 * bWriter.write(";"); bWriter.write(((Integer)
-	 * pHead.getPrimaryKey()).toString()); bWriter.write(";");
-	 * bWriter.write("1"); bWriter.write(";"); // VAT code, changed L6 to 11...
-	 * bWriter.write("11"); bWriter.write(";");
-	 * bWriter.write(format.format(sum)); bWriter.write(";");
-	 * bWriter.write(format.format(sum)); bWriter.write(";");
-	 * bWriter.write("0,00"); bWriter.write(";"); bWriter.write("0,00");
-	 * bWriter.write(";"); for (int i = 10; i < 23; i++) bWriter.write("-;");
-	 * bWriter.write("-"); bWriter.newLine(); int row = 1; while
-	 * (prIt.hasNext()) { PaymentRecord pRec = (PaymentRecord) prIt.next(); if
-	 * (pRec.getTotalAmount() != 0.0f) { bWriter.write("P"); bWriter.write(";");
-	 * bWriter.write(giro); bWriter.write(";"); bWriter.write(((Integer)
-	 * pHead.getPrimaryKey()).toString()); bWriter.write(";");
-	 * bWriter.write("1"); bWriter.write(";");
-	 * bWriter.write(Integer.toString(row)); row++; bWriter.write(";"); String
-	 * tmp = pb.findFieldInStringByName(pRec.getOwnPosting(), "Konto"); if
-	 * ("".equals(tmp)) bWriter.write("-"); else bWriter.write(tmp);
-	 * bWriter.write(";"); tmp =
-	 * pb.findFieldInStringByName(pRec.getOwnPosting(), "Ansvar"); if
-	 * ("".equals(tmp)) bWriter.write("-"); else bWriter.write(tmp);
-	 * bWriter.write(";"); tmp =
-	 * pb.findFieldInStringByName(pRec.getOwnPosting(), "Resurs"); if
-	 * ("".equals(tmp)) bWriter.write("-"); else bWriter.write(tmp);
-	 * bWriter.write(";"); tmp =
-	 * pb.findFieldInStringByName(pRec.getOwnPosting(), "Verksamhet"); if
-	 * ("".equals(tmp)) bWriter.write("-"); else bWriter.write(tmp);
-	 * bWriter.write(";"); tmp =
-	 * pb.findFieldInStringByName(pRec.getOwnPosting(), "Aktivitet"); if
-	 * ("".equals(tmp)) bWriter.write("-"); else bWriter.write(tmp);
-	 * bWriter.write(";"); tmp =
-	 * pb.findFieldInStringByName(pRec.getOwnPosting(), "Projekt"); if
-	 * ("".equals(tmp)) bWriter.write("-"); else bWriter.write(tmp);
-	 * bWriter.write(";"); tmp =
-	 * pb.findFieldInStringByName(pRec.getOwnPosting(), "Objekt"); if
-	 * ("".equals(tmp)) bWriter.write("-"); else bWriter.write(tmp);
-	 * bWriter.write(";"); tmp =
-	 * pb.findFieldInStringByName(pRec.getOwnPosting(), "Motpart"); if
-	 * ("".equals(tmp)) bWriter.write("-"); else bWriter.write(tmp);
-	 * bWriter.write(";"); // anlaggningsnummer bWriter.write("-");
-	 * bWriter.write(";"); // internranta bWriter.write("-");
-	 * bWriter.write(";"); // empty bWriter.write("-"); bWriter.write(";");
-	 * bWriter.write(format.format(AccountingUtil.roundAmount(pRec.getTotalAmount())));
-	 * bWriter.write(";");
-	 * bWriter.write(format.format(AccountingUtil.roundAmount(pRec.getTotalAmount())));
-	 * bWriter.write(";"); // empty bWriter.write("-"); bWriter.write(";"); //
-	 * empty bWriter.write("-"); bWriter.write(";");
-	 * bWriter.write(school.getName() + ", " + pRec.getPaymentText());
-	 * bWriter.write(";"); bWriter.write("-"); bWriter.newLine(); }
-	 * pRec.setStatus('L'); pRec.store(); } } pHead.setStatus('L');
-	 * pHead.store(); } bWriter.close(); } }
-	 */
+	private void createPaymentFiles(String fileName1, String fileName2,
+			String schoolCategory, IWTimestamp executionDate,
+			IWTimestamp paymentDate, ExportDataMapping mapping)
+			throws IOException {
+
+		Collection headers = null;
+		try {
+			headers = ((PaymentHeaderHome) IDOLookup
+					.getHome(PaymentHeader.class))
+					.findBySchoolCategoryAndStatus(schoolCategory, 'P');
+		} catch (IDOLookupException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+
+		StringBuffer empty = new StringBuffer("");
+		for (int i = 0; i < 60; i++) {
+			empty.append("          ");
+		}
+
+		NumberFormat format = NumberFormat.getInstance(currentLocale);
+		format.setMaximumFractionDigits(0);
+		format.setMinimumFractionDigits(0);
+		format.setMinimumIntegerDigits(12);
+		format.setMaximumIntegerDigits(12);
+		format.setGroupingUsed(false);
+		NumberFormat format2 = NumberFormat.getInstance(currentLocale);
+		format2.setMaximumFractionDigits(0);
+		format2.setMinimumFractionDigits(0);
+		format2.setMinimumIntegerDigits(9);
+		format2.setMaximumIntegerDigits(9);
+		format2.setGroupingUsed(false);
+		NumberFormat format3 = NumberFormat.getInstance(currentLocale);
+		format3.setMaximumFractionDigits(0);
+		format3.setMinimumFractionDigits(0);
+		format3.setMinimumIntegerDigits(7);
+		format3.setMaximumIntegerDigits(7);
+		format3.setGroupingUsed(false);
+		NumberFormat format4 = NumberFormat.getInstance(currentLocale);
+		format4.setMaximumFractionDigits(0);
+		format4.setMinimumFractionDigits(0);
+		format4.setMinimumIntegerDigits(16);
+		format4.setMaximumIntegerDigits(16);
+		format4.setGroupingUsed(false);
+		// Payment file
+		if (headers != null && !headers.isEmpty()) {
+			Iterator it = headers.iterator();
+			FileWriter writer = null;
+			try {
+				writer = new FileWriter(fileName1);
+			} catch (IOException e4) {
+				e4.printStackTrace();
+			}
+			BufferedWriter bWriter = new BufferedWriter(writer);
+
+			bWriter.write("10");
+			bWriter.write("460");
+			bWriter.write("01602");
+			bWriter.write(executionDate.getDateString("yyyyMMdd"));
+			bWriter.write(executionDate.getDateString("hhmmss"));
+			bWriter.write(empty.substring(0, 560));
+			bWriter.newLine();
+
+			int numberOfHeaders = 0;
+			int numberOfRecords = 0;
+			long totalAmount = 0;
+			String vernr = mapping.getJournalNumber();
+			if (vernr == null) {
+				vernr = "1";
+			}
+
+			int vernrInt = Integer.valueOf(vernr).intValue();
+
+			while (it.hasNext()) {
+				PaymentHeader header = (PaymentHeader) it.next();
+				boolean includeHeader = false;
+				boolean isPostGiro = false;
+				String giroString = "";
+				String pGiroString = "";
+				String bGiroString = "";
+				String giroText = "";
+				if (header.getSchool() != null) {
+					Provider provider = getEconomaBusiness()
+							.getProviderBusiness().getProvider(
+									header.getSchoolID());
+					if (provider.getAccountingProperties().getBankgiro() != null) {
+						includeHeader = true;
+						giroString = provider.getAccountingProperties()
+								.getBankgiro();
+						bGiroString = giroString;
+					}
+
+					if (provider.getAccountingProperties().getPostgiro() != null) {
+						includeHeader = true;
+						isPostGiro = true;
+						giroString = provider.getAccountingProperties()
+								.getPostgiro();
+						pGiroString = giroString;
+					}
+
+					giroText = provider.getAccountingProperties().getGiroText();
+				}
+
+				if (includeHeader) {
+					bWriter.write("90");
+					bWriter.write("01602");
+					bWriter.write("12");
+					if (isPostGiro) {
+						bWriter.write("P");
+					} else {
+						bWriter.write("B");
+					}
+					if (giroString.length() < 15) {
+						StringBuffer p = new StringBuffer(giroString);
+						while (p.length() < 15)
+							p.append(' ');
+						giroString = p.toString();
+					} else if (giroString.length() > 15) {
+						giroString = giroString.substring(0, 15);
+					}
+					bWriter.write(giroString);
+					if (isPostGiro) {
+						bWriter.write("P");
+					} else {
+						bWriter.write("B");
+					}
+					if (bGiroString.length() < 10) {
+						StringBuffer p = new StringBuffer(bGiroString);
+						while (p.length() < 10)
+							p.append(' ');
+						bGiroString = p.toString();
+					} else if (bGiroString.length() > 10) {
+						bGiroString = bGiroString.substring(0, 10);
+					}
+					bWriter.write(bGiroString);
+					if (pGiroString.length() < 15) {
+						StringBuffer p = new StringBuffer(pGiroString);
+						while (p.length() < 15)
+							p.append(' ');
+						pGiroString = p.toString();
+					} else if (pGiroString.length() > 15) {
+						pGiroString = pGiroString.substring(0, 15);
+					}
+					bWriter.write(pGiroString);
+					bWriter.write(empty.substring(0, 2));
+					String sName = header.getSchool().getName();
+					if (sName.length() < 33) {
+						StringBuffer p = new StringBuffer(sName);
+						while (p.length() < 33)
+							p.append(' ');
+						sName = p.toString();
+					} else if (sName.length() > 33) {
+						sName = sName.substring(0, 33);
+					}
+					bWriter.write(sName);
+					String sAddress = header.getSchool().getSchoolAddress();
+					if (sAddress.length() < 27) {
+						StringBuffer p = new StringBuffer(sAddress);
+						while (p.length() < 27)
+							p.append(' ');
+						sAddress = p.toString();
+					} else if (sAddress.length() > 27) {
+						sAddress = sAddress.substring(0, 27);
+					}
+					bWriter.write(sAddress);
+					String sZipCode = header.getSchool().getSchoolZipCode();
+					if (sZipCode.length() < 10) {
+						StringBuffer p = new StringBuffer(sZipCode);
+						while (p.length() < 10)
+							p.append(' ');
+						sZipCode = p.toString();
+					} else if (sZipCode.length() > 10) {
+						sZipCode = sZipCode.substring(0, 10);
+					}
+					bWriter.write(sZipCode);
+					String sZipArea = header.getSchool().getSchoolZipArea();
+					if (sZipArea.length() < 20) {
+						StringBuffer p = new StringBuffer(sZipArea);
+						while (p.length() < 20)
+							p.append(' ');
+						sZipArea = p.toString();
+					} else if (sZipCode.length() > 20) {
+						sZipArea = sZipArea.substring(0, 20);
+					}
+					bWriter.write(sZipArea);
+					bWriter.write(empty.substring(0, 365));
+					bWriter.newLine();
+					numberOfHeaders++;
+
+					Collection records = null;
+					try {
+						records = ((PaymentRecordHome) IDOLookup
+								.getHome(PaymentRecord.class))
+								.findByPaymentHeader(header);
+					} catch (IDOLookupException e) {
+						e.printStackTrace();
+					} catch (FinderException e) {
+						e.printStackTrace();
+					}
+
+					if (records != null && !records.isEmpty()) {
+						Iterator rIt = records.iterator();
+						while (rIt.hasNext()) {
+							PaymentRecord rec = (PaymentRecord) rIt.next();
+							if (rec.getTotalAmount() != 0.0f) {
+								bWriter.write("91");
+								bWriter.write("01602");
+								bWriter.write("12");
+								if (isPostGiro) {
+									bWriter.write("P");
+								} else {
+									bWriter.write("B");
+								}
+								bWriter.write(giroString);
+								bWriter.write("UT");
+								String faknr = Integer.toString(vernrInt);
+								if (faknr.length() < 27) {
+									StringBuffer p = new StringBuffer(faknr);
+									while (p.length() < 27)
+										p.append(' ');
+									faknr = p.toString();
+								} else if (faknr.length() > 27) {
+									faknr = faknr.substring(0, 27);
+								}
+								bWriter.write(faknr);
+								long am = AccountingUtil.roundAmount(rec
+										.getTotalAmount());
+								am *= 100;
+								totalAmount += am;
+								bWriter.write(format.format(am));
+								bWriter.write(empty.substring(0, 5));
+								bWriter.write(paymentDate
+										.getDateString("yyyyMMdd"));
+								if (isPostGiro) {
+									bWriter.write("P");
+								} else {
+									bWriter.write("B");
+								}
+								bWriter.write(giroString);
+								bWriter.write(sName);
+								bWriter.write(sAddress);
+								sZipCode = header.getSchool()
+										.getSchoolZipCode();
+								sZipCode = sZipCode.replaceAll(" ", "");
+								if (sZipCode.length() < 5) {
+									StringBuffer p = new StringBuffer(sZipCode);
+									while (p.length() < 5)
+										p.append(' ');
+									sZipCode = p.toString();
+								} else if (sZipCode.length() > 5) {
+									sZipCode = sZipCode.substring(0, 5);
+								}
+								bWriter.write(sZipCode);
+								sZipArea = header.getSchool()
+										.getSchoolZipArea();
+								if (sZipArea.length() < 20) {
+									StringBuffer p = new StringBuffer(sZipArea);
+									while (p.length() < 20)
+										p.append(' ');
+									sZipArea = p.toString();
+								} else if (sZipCode.length() > 20) {
+									sZipArea = sZipArea.substring(0, 20);
+								}
+								bWriter.write(sZipArea);
+								String vernrString = Integer.toString(vernrInt);
+								if (vernrString.length() < 9) {
+									StringBuffer p = new StringBuffer(vernrString);
+									while (p.length() < 9)
+										p.append(' ');
+									vernrString = p.toString();
+								} else if (vernrString.length() > 9) {
+									vernrString = vernrString.substring(0, 9);
+								}
+								bWriter.write(vernrString);
+								bWriter.write(paymentDate
+										.getDateString("yyyyMMdd"));
+								bWriter.write(empty.substring(0, 12));
+								bWriter.write(empty.substring(0, 2));
+								if (isPostGiro) {
+									bWriter.write("P");
+								} else {
+									bWriter.write("B");
+								}
+								String text = rec.getPaymentText();
+								if (text.length() < 40) {
+									StringBuffer p = new StringBuffer(text);
+									while (p.length() < 40)
+										p.append(' ');
+									text = p.toString();
+								} else if (text.length() > 40) {
+									text = text.substring(0, 40);
+								}
+								bWriter.write(text);
+								if (giroText == null) {
+									bWriter.write(empty.substring(0, 40));
+								} else {
+									if (giroText.length() < 40) {
+										StringBuffer p = new StringBuffer(
+												giroText);
+										while (p.length() < 40)
+											p.append(' ');
+										giroText = p.toString();
+									} else if (giroText.length() > 40) {
+										giroText = giroText.substring(0, 40);
+									}
+									bWriter.write(giroText);
+								}
+								bWriter.write(empty.substring(0, 40));
+								bWriter.write(empty.substring(0, 40));
+								bWriter.write(empty.substring(0, 40));
+								bWriter.write(empty.substring(0, 40));
+								bWriter.write(empty.substring(0, 40));
+								bWriter.write(empty.substring(0, 40));
+								bWriter.write(empty.substring(0, 4));
+								bWriter.write(empty.substring(0, 33));
+								bWriter.write("SEK");
+								bWriter.write(empty.substring(0, 3));
+								bWriter.write(empty.substring(0, 6));
+								bWriter.write(empty.substring(0, 3));
+
+								bWriter.newLine();
+								numberOfRecords++;
+
+								rec.setVernr(format2.format(vernrInt));
+								vernrInt++;
+							}
+
+							rec.setStatus('L');
+							rec.store();
+						}
+					}
+				}
+
+				header.setStatus('L');
+				header.store();
+			}
+			mapping.setJournalNumber(Integer.toString(vernrInt));
+			mapping.store();
+
+			bWriter.write("50");
+			bWriter.write(format3.format(numberOfHeaders));
+			bWriter.write(format3.format(numberOfRecords));
+			bWriter.write(format4.format(totalAmount));
+			bWriter.write(empty.substring(0, 10));
+			bWriter.newLine();
+
+			bWriter.close();
+		}
+
+		NumberFormat format5 = NumberFormat.getInstance(currentLocale);
+		format5.setMaximumFractionDigits(0);
+		format5.setMinimumFractionDigits(0);
+		format5.setMinimumIntegerDigits(10);
+		format5.setMaximumIntegerDigits(10);
+		format5.setGroupingUsed(false);
+		NumberFormat format6 = NumberFormat.getInstance(currentLocale);
+		format6.setMaximumFractionDigits(0);
+		format6.setMinimumFractionDigits(0);
+		format6.setMinimumIntegerDigits(160);
+		format6.setMaximumIntegerDigits(160);
+		format6.setGroupingUsed(false);
+		NumberFormat format7 = NumberFormat.getInstance(currentLocale);
+		format7.setMaximumFractionDigits(0);
+		format7.setMinimumFractionDigits(0);
+		format7.setMinimumIntegerDigits(15);
+		format7.setMaximumIntegerDigits(15);
+		format7.setGroupingUsed(false);
+		NumberFormat format8 = NumberFormat.getInstance(currentLocale);
+		format8.setMaximumFractionDigits(0);
+		format8.setMinimumFractionDigits(0);
+		format8.setMinimumIntegerDigits(14);
+		format8.setMaximumIntegerDigits(14);
+		format8.setGroupingUsed(false);
+
+		// Bookkeeping file
+		if (headers != null && !headers.isEmpty()) {
+			Iterator it = headers.iterator();
+			FileWriter writer = new FileWriter(fileName2);
+			BufferedWriter bWriter = new BufferedWriter(writer);
+			PostingBusiness pb = getEconomaBusiness().getPostingBusiness();
+
+			bWriter.write("10");
+			bWriter.write("430");
+			bWriter.write("01602");
+			bWriter.write("720");
+			bWriter.write(executionDate.getDateString("yyMMdd"));
+			bWriter.write(executionDate.getDateString("hhmmss"));
+			bWriter.write(empty.substring(0, 3));
+			bWriter.write(empty.substring(0, 222));
+			bWriter.newLine();
+
+			int numberOfRecords = 0;
+			while (it.hasNext()) {
+				PaymentHeader header = (PaymentHeader) it.next();
+				Collection records = null;
+				try {
+					records = ((PaymentRecordHome) IDOLookup
+							.getHome(PaymentRecord.class))
+							.findByPaymentHeader(header);
+				} catch (IDOLookupException e) {
+					e.printStackTrace();
+				} catch (FinderException e) {
+					e.printStackTrace();
+				}
+
+				if (records != null && !records.isEmpty()) {
+					Iterator rIt = records.iterator();
+					while (rIt.hasNext()) {
+						PaymentRecord rec = (PaymentRecord) rIt.next();
+						if (rec.getTotalAmount() != 0.0f) {
+							bWriter.write("20");
+							bWriter.write("01602");
+							bWriter.write(format5.format(0));
+							bWriter.write(("180"));
+							bWriter.write(("180"));
+							if (rec.getVernr() != null) {
+								bWriter.write(rec.getVernr());
+							} else {
+								bWriter.write(format2.format(0));
+							}
+							bWriter.write(paymentDate.getDateString("yy"));
+							bWriter.write(paymentDate.getDateString("MM"));
+							bWriter.write("00");
+							bWriter.write(paymentDate.getDateString("dd"));
+							String own1 = pb.findFieldInStringByName(rec
+									.getOwnPosting(), "Ansvar");
+							String own2 = pb.findFieldInStringByName(rec
+									.getOwnPosting(), "Konto");
+							String own3 = pb.findFieldInStringByName(rec
+									.getOwnPosting(), "Verksamhet");
+							if (own1.length() < 10) {
+								StringBuffer p = new StringBuffer(own1);
+								while (p.length() < 10)
+									p.append(' ');
+								own1 = p.toString();
+							} else if (own1.length() > 10) {
+								own1 = own1.substring(0, 10);
+							}
+							bWriter.write(own1);
+							if (own2.length() < 10) {
+								StringBuffer p = new StringBuffer(own2);
+								while (p.length() < 10)
+									p.append(' ');
+								own2 = p.toString();
+							} else if (own2.length() > 10) {
+								own2 = own2.substring(0, 10);
+							}
+							bWriter.write(own2);
+							if (own3.length() < 10) {
+								StringBuffer p = new StringBuffer(own3);
+								while (p.length() < 10)
+									p.append(' ');
+								own3 = p.toString();
+							} else if (own3.length() > 10) {
+								own3 = own3.substring(0, 10);
+							}
+							bWriter.write(own3);
+							bWriter.write(empty.substring(0, 10));
+							bWriter.write(empty.substring(0, 10));
+							bWriter.write(empty.substring(0, 10));
+							bWriter.write(empty.substring(0, 10));
+							bWriter.write(empty.substring(0, 10));
+							bWriter.write(empty.substring(0, 10));
+							bWriter.write(empty.substring(0, 10));
+							if (rec.getTotalAmount() < 0.0f) {
+								bWriter.write(format8.format(Math.abs(AccountingUtil
+										.roundAmount(rec.getTotalAmount()) * 10)));
+								bWriter.write("p");
+							} else {
+								bWriter.write(format7.format(AccountingUtil
+									.roundAmount(rec.getTotalAmount()) * 100));
+							}
+							bWriter.write(format7.format(0));
+							bWriter.write("00000000000");
+							bWriter.write(empty.substring(0, 12));
+							String text = rec.getPaymentText();
+							if (text.length() < 36) {
+								StringBuffer p = new StringBuffer(text);
+								while (p.length() < 36)
+									p.append(' ');
+								text = p.toString();
+							} else if (text.length() > 36) {
+								text = text.substring(0, 36);
+							}
+							bWriter.write(text);
+							bWriter.write(empty.substring(0, 18));
+							bWriter.write(empty.substring(0, 3));
+							bWriter.newLine();
+							numberOfRecords++;
+
+							bWriter.write("20");
+							bWriter.write("01602");
+							bWriter.write(format5.format(0));
+							bWriter.write(("180"));
+							bWriter.write(("180"));
+							if (rec.getVernr() != null) {
+								bWriter.write(rec.getVernr());
+							} else {
+								bWriter.write(format2.format(0));
+							}
+							bWriter.write(paymentDate.getDateString("yy"));
+							bWriter.write(paymentDate.getDateString("MM"));
+							bWriter.write("00");
+							bWriter.write(paymentDate.getDateString("dd"));
+							String doublePosting = rec.getDoublePosting();
+							if (doublePosting == null
+									|| "".equals(doublePosting)) {
+								doublePosting = mapping.getPayableAccount();
+								if (doublePosting == null) {
+									doublePosting = "";
+								}
+							}
+							String double1 = pb.findFieldInStringByName(
+									doublePosting, "Ansvar");
+							String double2 = pb.findFieldInStringByName(
+									doublePosting, "Konto");
+							String double3 = pb.findFieldInStringByName(
+									doublePosting, "Verksamhet");
+							if (double1.length() < 10) {
+								StringBuffer p = new StringBuffer(double1);
+								while (p.length() < 10)
+									p.append(' ');
+								double1 = p.toString();
+							} else if (double1.length() > 10) {
+								double1 = double1.substring(0, 10);
+							}
+							bWriter.write(double1);
+							if (double2.length() < 10) {
+								StringBuffer p = new StringBuffer(double2);
+								while (p.length() < 10)
+									p.append(' ');
+								double2 = p.toString();
+							} else if (double2.length() > 10) {
+								double2 = double2.substring(0, 10);
+							}
+							bWriter.write(double2);
+							if (double3.length() < 10) {
+								StringBuffer p = new StringBuffer(double3);
+								while (p.length() < 10)
+									p.append(' ');
+								double3 = p.toString();
+							} else if (double3.length() > 10) {
+								double3 = double3.substring(0, 10);
+							}
+							bWriter.write(double3);
+							bWriter.write(empty.substring(0, 10));
+							bWriter.write(empty.substring(0, 10));
+							bWriter.write(empty.substring(0, 10));
+							bWriter.write(empty.substring(0, 10));
+							bWriter.write(empty.substring(0, 10));
+							bWriter.write(empty.substring(0, 10));
+							bWriter.write(empty.substring(0, 10));
+							if (rec.getTotalAmount() <= 0.0f) {
+								bWriter.write(format7.format(Math.abs(AccountingUtil
+										.roundAmount(rec.getTotalAmount()) * 100)));
+							} else {
+								bWriter.write(format8.format(AccountingUtil
+									.roundAmount(rec.getTotalAmount()) * 10));
+								bWriter.write("p");
+							}
+							bWriter.write(format7.format(0));
+							bWriter.write("00000000000");
+							bWriter.write(empty.substring(0, 12));
+							bWriter.write(text);
+							bWriter.write(empty.substring(0, 18));
+							bWriter.write(empty.substring(0, 3));
+							bWriter.newLine();
+							numberOfRecords++;
+						}
+
+						rec.setStatus('L');
+						rec.store();
+					}
+				}
+
+				header.setStatus('L');
+				header.store();
+			}
+
+			bWriter.write("50");
+			bWriter.write(format5.format(numberOfRecords));
+			bWriter.write(format6.format(0));
+			bWriter.write(empty.substring(0, 78));
+			bWriter.newLine();
+
+			bWriter.close();
+		}
+	}
+
 	private void createInvoiceFiles(String fileName1, String schoolCategory,
 			IWTimestamp executionDate, Locale currentLocale,
 			EconomaCheckHeader checkHeader) throws IOException {
@@ -645,12 +959,16 @@ public class EconomaFileCreationThread extends Thread {
 				Iterator it2 = rec.iterator();
 				while (it2.hasNext() && !createInvoice) {
 					InvoiceRecord r2 = (InvoiceRecord) it2.next();
-					Provider provider = getEconomaBusiness()
-							.getProviderBusiness().getProvider(
-									r2.getProviderId());
-					if (provider.getAccountingProperties()
-							.getCreateInvoiceRecord()) {
+					if (r2.getProvider() == null) {
 						createInvoice = true;
+					} else {
+						Provider provider = getEconomaBusiness()
+								.getProviderBusiness().getProvider(
+										r2.getProviderId());
+						if (provider.getAccountingProperties()
+								.getCreateInvoiceRecord()) {
+							createInvoice = true;
+						}
 					}
 				}
 
@@ -814,30 +1132,53 @@ public class EconomaFileCreationThread extends Thread {
 
 							if (iRec.getAmount() != 0.0f) {
 								if (iRec.getChildCareContract() != null) {
-									if (map.containsKey(iRec
-											.getChildCareContract()
-											.getPrimaryKey())) {
-										InvoiceRecord r = (InvoiceRecord) map
-												.get(iRec
-														.getChildCareContract()
-														.getPrimaryKey());
-										r.setAmount(r.getAmount()
-												+ iRec.getAmount());
-										map.put(iRec.getChildCareContract()
-												.getPrimaryKey(), r);
+									boolean addRecord = false;
+									if (iRec.getProvider() == null) {
+										addRecord = true;
 									} else {
-										map.put(iRec.getChildCareContract()
-												.getPrimaryKey(), iRec);
+										Provider provider = getEconomaBusiness()
+												.getProviderBusiness()
+												.getProvider(
+														iRec.getProviderId());
+										if (provider.getAccountingProperties()
+												.getCreateInvoiceRecord()) {
+											addRecord = true;
+										}
+									}
+
+									if (addRecord) {
+										if (map.containsKey(iRec
+												.getChildCareContract()
+												.getPrimaryKey())) {
+											InvoiceRecord r = (InvoiceRecord) map
+													.get(iRec
+															.getChildCareContract()
+															.getPrimaryKey());
+											r.setAmount(r.getAmount()
+													+ iRec.getAmount());
+											map.put(iRec.getChildCareContract()
+													.getPrimaryKey(), r);
+										} else {
+											map.put(iRec.getChildCareContract()
+													.getPrimaryKey(), iRec);
+										}
 									}
 								} else {
-									if (regular.containsKey(iRec.getSchoolClassMember().getPrimaryKey())) {
-										ArrayList regList = (ArrayList) regular.get(iRec.getSchoolClassMember().getPrimaryKey());
+									if (regular.containsKey(iRec
+											.getSchoolClassMember()
+											.getPrimaryKey())) {
+										ArrayList regList = (ArrayList) regular
+												.get(iRec
+														.getSchoolClassMember()
+														.getPrimaryKey());
 										regList.add(iRec);
-										regular.put(iRec.getSchoolClassMember().getPrimaryKey(), regList);
+										regular.put(iRec.getSchoolClassMember()
+												.getPrimaryKey(), regList);
 									} else {
 										ArrayList regList = new ArrayList();
 										regList.add(iRec);
-										regular.put(iRec.getSchoolClassMember().getPrimaryKey(), regList);										
+										regular.put(iRec.getSchoolClassMember()
+												.getPrimaryKey(), regList);
 									}
 								}
 							}
@@ -881,10 +1222,17 @@ public class EconomaFileCreationThread extends Thread {
 								} else {
 									String start = text.substring(0, 6);
 									if ("Check ".equals(start)) {
-										String localized = iwac.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getResourceBundle(currentLocale).getLocalizedString("Check", "Check");
+										String localized = iwac
+												.getIWMainApplication()
+												.getBundle(IW_BUNDLE_IDENTIFIER)
+												.getResourceBundle(
+														currentLocale)
+												.getLocalizedString("Check",
+														"Check");
 										text = localized + text.substring(5);
 									}
 								}
+
 								if (text.length() < 30) {
 									StringBuffer tb = new StringBuffer(text);
 									while (tb.length() < 30) {
@@ -979,6 +1327,11 @@ public class EconomaFileCreationThread extends Thread {
 								text = r.getInvoiceText2();
 								if (text == null)
 									text = "";
+								StringTokenizer token = new StringTokenizer(
+										text, ",");
+								if (token.hasMoreTokens()) {
+									text = token.nextToken();
+								}
 								if (text.length() < 60) {
 									StringBuffer tb = new StringBuffer(text);
 									while (tb.length() < 60) {
@@ -992,14 +1345,18 @@ public class EconomaFileCreationThread extends Thread {
 								// filler
 								bWriter.write(empty.substring(0, 206));
 								bWriter.newLine();
-								
-								if (regular.containsKey(r.getSchoolClassMember().getPrimaryKey())) {
-									ArrayList regList = (ArrayList) regular.get(r.getSchoolClassMember().getPrimaryKey());
+
+								if (regular
+										.containsKey(r.getSchoolClassMember()
+												.getPrimaryKey())) {
+									ArrayList regList = (ArrayList) regular
+											.get(r.getSchoolClassMember()
+													.getPrimaryKey());
 									Iterator regit = regList.iterator();
 									while (regit.hasNext()) {
-										InvoiceRecord regRecord = (InvoiceRecord) regit.next();
-										
-									
+										InvoiceRecord regRecord = (InvoiceRecord) regit
+												.next();
+
 										if (regRecord.getAmount() != 0.0f) {
 											// Posttype
 											bWriter.write("50");
@@ -1018,10 +1375,13 @@ public class EconomaFileCreationThread extends Thread {
 											// fomdat
 											t = new IWTimestamp(regRecord
 													.getPeriodStartCheck());
-											bWriter.write(t.getDateString("yyyyMMdd"));
+											bWriter.write(t
+													.getDateString("yyyyMMdd"));
 											// tomdat
-											t = new IWTimestamp(regRecord.getPeriodEndCheck());
-											bWriter.write(t.getDateString("yyyyMMdd"));
+											t = new IWTimestamp(regRecord
+													.getPeriodEndCheck());
+											bWriter.write(t
+													.getDateString("yyyyMMdd"));
 											// artnr
 											bWriter.write("INGEN-MOMS   ");
 											// benamn
@@ -1029,7 +1389,8 @@ public class EconomaFileCreationThread extends Thread {
 											if (text == null)
 												text = "";
 											if (text.length() < 30) {
-												StringBuffer tb = new StringBuffer(text);
+												StringBuffer tb = new StringBuffer(
+														text);
 												while (tb.length() < 30) {
 													tb.append(' ');
 												}
@@ -1039,35 +1400,48 @@ public class EconomaFileCreationThread extends Thread {
 											}
 											bWriter.write(text);
 											// avsrnamn
-											bWriter.write(empty.substring(0, 30));
+											bWriter.write(empty
+													.substring(0, 30));
 											// konto
-											postingString = new StringBuffer(regRecord
-													.getOwnPosting());
+											postingString = new StringBuffer(
+													regRecord.getOwnPosting());
 											while (postingString.length() < 45) {
 												postingString.append(' ');
 											}
-											bWriter.write(postingString.toString());
+											bWriter.write(postingString
+													.toString());
 											// ktonamn
-											bWriter.write(empty.substring(0, 30));
+											bWriter.write(empty
+													.substring(0, 30));
 											// signata
-											bWriter.write(empty.substring(0, 1));
+											bWriter
+													.write(empty
+															.substring(0, 1));
 											// antal
 											bWriter.write("00000000000");
 											// sort
-											bWriter.write(empty.substring(0, 6));
+											bWriter
+													.write(empty
+															.substring(0, 6));
 											// avsrper
-											bWriter.write(empty.substring(0, 13));
+											bWriter.write(empty
+													.substring(0, 13));
 											// signapris
-											bWriter.write(empty.substring(0, 1));
+											bWriter
+													.write(empty
+															.substring(0, 1));
 											// apris
 											bWriter.write("0000000000000");
 											// signrabs
-											bWriter.write(empty.substring(0, 1));
+											bWriter
+													.write(empty
+															.substring(0, 1));
 											// rabsats
 											bWriter.write("00000");
 											// signbel
-											am = AccountingUtil.roundAmount(regRecord
-													.getAmount());
+											am = AccountingUtil
+													.roundAmount(regRecord
+															.getAmount());
 											isNegative = false;
 											if (am < 0) {
 												isNegative = true;
@@ -1080,19 +1454,28 @@ public class EconomaFileCreationThread extends Thread {
 											amount = format.format(am);
 											bWriter.write(amount);
 											// signmsat
-											bWriter.write(empty.substring(0, 1));
+											bWriter
+													.write(empty
+															.substring(0, 1));
 											// momssats
 											bWriter.write("0000");
 											// signmbel
-											bWriter.write(empty.substring(0, 1));
+											bWriter
+													.write(empty
+															.substring(0, 1));
 											// momsbel
 											bWriter.write("0000000000000");
 											// omrade
-											bWriter.write(empty.substring(0, 3));
+											bWriter
+													.write(empty
+															.substring(0, 3));
 											// kategori
-											bWriter.write(empty.substring(0, 3));
+											bWriter
+													.write(empty
+															.substring(0, 3));
 											// Filler
-											bWriter.write(empty.substring(0, 15));
+											bWriter.write(empty
+													.substring(0, 15));
 
 											if (!isNegative)
 												totalsum += am;
@@ -1123,7 +1506,8 @@ public class EconomaFileCreationThread extends Thread {
 											if (text == null)
 												text = "";
 											if (text.length() < 60) {
-												StringBuffer tb = new StringBuffer(text);
+												StringBuffer tb = new StringBuffer(
+														text);
 												while (tb.length() < 60) {
 													tb.append(' ');
 												}
@@ -1133,15 +1517,172 @@ public class EconomaFileCreationThread extends Thread {
 											}
 											bWriter.write(text);
 											// filler
-											bWriter.write(empty.substring(0, 206));
+											bWriter.write(empty.substring(0,
+													206));
 											bWriter.newLine();
 										}
-										
+
 									}
+
+									regular.remove(r.getSchoolClassMember()
+											.getPrimaryKey());
+								}
+							}
+						}
+
+						Iterator regularIt = regular.keySet().iterator();
+						while (regularIt.hasNext()) {
+							ArrayList regList = (ArrayList) regular
+									.get(regularIt.next());
+							Iterator regit = regList.iterator();
+							while (regit.hasNext()) {
+								InvoiceRecord regRecord = (InvoiceRecord) regit
+										.next();
+
+								if (regRecord.getAmount() != 0.0f) {
+									// Posttype
+									bWriter.write("50");
+									// Extftg
+									bWriter.write("01602");
+									// Rutinkod
+									bWriter.write("SBO");
+									// orderno
+									bWriter.write(type30counterString);
+									// vsamhkod
+									bWriter.write("01");
+									// radnr
+									String type50counterString = format3
+											.format(type50counter);
+
+									bWriter.write(type50counterString);
+									// radnrtxt
+									bWriter.write("000");
+									// fomdat
+									IWTimestamp t = new IWTimestamp(regRecord
+											.getPeriodStartCheck());
+									bWriter.write(t.getDateString("yyyyMMdd"));
+									// tomdat
+									t = new IWTimestamp(regRecord
+											.getPeriodEndCheck());
+									bWriter.write(t.getDateString("yyyyMMdd"));
+									// artnr
+									bWriter.write("INGEN-MOMS   ");
+									// benamn
+									String text = regRecord.getInvoiceText();
+									if (text == null)
+										text = "";
+									if (text.length() < 30) {
+										StringBuffer tb = new StringBuffer(text);
+										while (tb.length() < 30) {
+											tb.append(' ');
+										}
+										text = tb.toString();
+									} else if (text.length() > 30) {
+										text = text.substring(0, 30);
+									}
+									bWriter.write(text);
+									// avsrnamn
+									bWriter.write(empty.substring(0, 30));
+									// konto
+									StringBuffer postingString = new StringBuffer(
+											regRecord.getOwnPosting());
+									while (postingString.length() < 45) {
+										postingString.append(' ');
+									}
+									bWriter.write(postingString.toString());
+									// ktonamn
+									bWriter.write(empty.substring(0, 30));
+									// signata
+									bWriter.write(empty.substring(0, 1));
+									// antal
+									bWriter.write("00000000000");
+									// sort
+									bWriter.write(empty.substring(0, 6));
+									// avsrper
+									bWriter.write(empty.substring(0, 13));
+									// signapris
+									bWriter.write(empty.substring(0, 1));
+									// apris
+									bWriter.write("0000000000000");
+									// signrabs
+									bWriter.write(empty.substring(0, 1));
+									// rabsats
+									bWriter.write("00000");
+									// signbel
+									long am = AccountingUtil
+											.roundAmount(regRecord.getAmount());
+									boolean isNegative = false;
+									if (am < 0) {
+										isNegative = true;
+										bWriter.write("-");
+									} else {
+										bWriter.write("+");
+									}
+									// Belopp
+									am = Math.abs(am * 100);
+									String amount = format.format(am);
+									bWriter.write(amount);
+									// signmsat
+									bWriter.write(empty.substring(0, 1));
+									// momssats
+									bWriter.write("0000");
+									// signmbel
+									bWriter.write(empty.substring(0, 1));
+									// momsbel
+									bWriter.write("0000000000000");
+									// omrade
+									bWriter.write(empty.substring(0, 3));
+									// kategori
+									bWriter.write(empty.substring(0, 3));
+									// Filler
+									bWriter.write(empty.substring(0, 15));
+
+									if (!isNegative)
+										totalsum += am;
+									else
+										totalsum -= am;
+									count50type++;
+									type50counter++;
+									bWriter.newLine();
+
+									// posttyp
+									bWriter.write("60");
+									// extftg
+									bWriter.write("01602");
+									// rutinkod
+									bWriter.write("SBO");
+									// orderno
+									bWriter.write(type30counterString);
+									// vsamhkod
+									bWriter.write("01");
+									// radnr
+									bWriter.write(type50counterString);
+									// radnrtxt
+									bWriter.write("001");
+									// texttype
+									bWriter.write("  U");
+									// text
+									text = regRecord.getInvoiceText2();
+									if (text == null)
+										text = "";
+									if (text.length() < 60) {
+										StringBuffer tb = new StringBuffer(text);
+										while (tb.length() < 60) {
+											tb.append(' ');
+										}
+										text = tb.toString();
+									} else if (text.length() > 60) {
+										text = text.substring(0, 60);
+									}
+									bWriter.write(text);
+									// filler
+									bWriter.write(empty.substring(0, 206));
+									bWriter.newLine();
 								}
 							}
 						}
 					}
+
 					iHead.setStatus('L');
 					iHead.store();
 				} catch (MissingCustodianException e) {
