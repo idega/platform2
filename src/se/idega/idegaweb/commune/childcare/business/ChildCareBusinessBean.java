@@ -1,5 +1,5 @@
 /*
- * $Id:$ Copyright (C) 2002 Idega hf. All Rights Reserved. This software is the
+ /* $Id:$ Copyright (C) 2002 Idega hf. All Rights Reserved. This software is the
  * proprietary information of Idega hf. Use is subject to license terms.
  */
 package se.idega.idegaweb.commune.childcare.business;
@@ -5697,35 +5697,82 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		sendMessageToParents(application, subject, body, letterBody, alwaysSendLetter, true);
 	}
 
-	public void sendMessageToParents(ChildCareApplication application, String subject, String body, String letterBody, boolean alwaysSendLetter, boolean sendToOtherParent) {
-	}
 	
-	public void sendMessageToParents(ChildCareApplication application, String subject, String body, String letterBody, File attachment, boolean alwaysSendLetter, boolean sendToOtherParent) {
+	public void sendMessageToParents(ChildCareApplication application, String subject, String body, String letterBody, boolean alwaysSendLetter, boolean sendToOtherParent) {
 		try {
 			User child = application.getChild();
 			Object[] arguments = { new Name(child.getFirstName(), child.getMiddleName(), child.getLastName()).getName(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), true), application.getProvider().getSchoolName(), PersonalIDFormatter.format(child.getPersonalID(), getIWApplicationContext().getApplicationSettings().getDefaultLocale()), application.getLastReplyDate() != null ? new IWTimestamp(application.getLastReplyDate()).getLocaleDate(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), IWTimestamp.SHORT) : "xxx", application.getOfferValidUntil() != null ? new IWTimestamp(application.getOfferValidUntil()).getLocaleDate(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), IWTimestamp.SHORT) : "" };
 
 			User appParent = application.getOwner();
-			if (getUserBusiness().getMemberFamilyLogic().isChildInCustodyOf(child, appParent)) {
-				Message message = getMessageBusiness().createUserMessage(application, appParent, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), true, alwaysSendLetter);
-				message.setParentCase(application);
-				message.store();
-			}
-			else {
-				sendToOtherParent = true;
-			}
-			
+			User parent2 = null;
+
 			if (sendToOtherParent) {
 				try {
 					Collection parents = getUserBusiness().getMemberFamilyLogic().getCustodiansFor(child);
 					Iterator iter = parents.iterator();
 					while (iter.hasNext()) {
 						User parent = (User) iter.next();
-						if (!parent.equals(appParent)) {							
-							boolean sendLetterIfNoEmail = !getUserBusiness().haveSameAddress(parent, appParent);
-							getMessageBusiness().createUserMessage(application, parent, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), sendLetterIfNoEmail, alwaysSendLetter);						
-						}
+						if (!parent.equals(appParent)) parent2 = parent;							
+						
 					}
+
+					
+					
+					if(parent2 == null){
+						if (getUserBusiness().getMemberFamilyLogic().isChildInCustodyOf(child, appParent)) {
+							Message message = getMessageBusiness().createUserMessage(application, appParent, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), true, alwaysSendLetter);
+							message.setParentCase(application);
+							message.store();
+						}	
+					}
+					else{
+						boolean messageWasSended = false;
+						if(appParent.getEmails() != null){
+							if (getUserBusiness().getMemberFamilyLogic().isChildInCustodyOf(child, appParent)) {
+								Message message = getMessageBusiness().createUserMessage(application, appParent, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), true, alwaysSendLetter);
+								message.setParentCase(application);
+								message.store();
+								messageWasSended = true;
+							}	
+							if(!messageWasSended) getMessageBusiness().createUserMessage(application, parent2, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), true, alwaysSendLetter);
+						}	
+						else{
+							if(parent2.getEmails()!=null){
+								if (getUserBusiness().getMemberFamilyLogic().isChildInCustodyOf(child, appParent)) {
+									Message message = getMessageBusiness().createUserMessage(application, appParent, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), false, alwaysSendLetter);
+									message.setParentCase(application);
+									message.store();
+								}	
+								getMessageBusiness().createUserMessage(application, parent2, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), true, alwaysSendLetter);
+							}
+							else{
+								if(getUserBusiness().haveSameAddress(parent2, appParent)){
+									if (getUserBusiness().getMemberFamilyLogic().isChildInCustodyOf(child, appParent)) {
+										Message message = getMessageBusiness().createUserMessage(application, appParent, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), true, alwaysSendLetter);
+										message.setParentCase(application);
+										message.store();
+										messageWasSended = true;
+									}	
+									if(!messageWasSended) getMessageBusiness().createUserMessage(application, parent2, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), true, alwaysSendLetter);
+
+								}
+								else{
+									if (getUserBusiness().getMemberFamilyLogic().isChildInCustodyOf(child, appParent)) {
+										Message message = getMessageBusiness().createUserMessage(application, appParent, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), true, alwaysSendLetter);
+										message.setParentCase(application);
+										message.store();
+										messageWasSended = true;
+									}	
+									if(!messageWasSended) getMessageBusiness().createUserMessage(application, parent2, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), true, alwaysSendLetter);
+									
+								}
+							}
+							
+						}
+							
+					}
+					
+					
 				}
 				catch (NoCustodianFound ncf) {
 					ncf.printStackTrace();
@@ -5736,6 +5783,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			re.printStackTrace();
 		}
 	}
+
+
+
 
 	public boolean isAfterSchoolApplication(Case application) {
 		if (application.getCode().equals(CareConstants.AFTER_SCHOOL_CASE_CODE_KEY))
