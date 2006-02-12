@@ -1,5 +1,5 @@
 /*
- * $Id: CommuneMessageBusinessBean.java,v 1.4 2005/11/05 15:23:07 laddi Exp $
+ * $Id: CommuneMessageBusinessBean.java,v 1.4.2.1 2006/02/12 00:08:18 igors Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -11,11 +11,11 @@ package se.idega.idegaweb.commune.message.business;
 
 import java.io.File;
 import java.rmi.RemoteException;
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Iterator;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-import javax.ejb.RemoveException;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.message.data.MessageHandlerInfo;
 import se.idega.idegaweb.commune.message.data.MessageHandlerInfoHome;
@@ -33,10 +33,8 @@ import com.idega.block.process.message.business.MessageBusiness;
 import com.idega.block.process.message.business.MessageBusinessBean;
 import com.idega.block.process.message.business.MessageTypeManager;
 import com.idega.block.process.message.data.Message;
-import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
-import com.idega.core.business.ICApplicationBindingBusiness;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.contact.data.Email;
 import com.idega.core.file.data.ICFile;
@@ -45,6 +43,7 @@ import com.idega.data.IDOException;
 import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
+import com.idega.idegaweb.IWMainApplicationSettings;
 import com.idega.idegaweb.IWPropertyList;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.user.business.UserBusiness;
@@ -224,6 +223,10 @@ public class CommuneMessageBusinessBean extends MessageBusinessBean implements C
 		return createUserMessage(parentCase, receiver, null, null, subject, body, letterBody, sendLetter, null, alwaysSendLetter);
 	}
 	
+	public Message createUserMessage(Case parentCase, User receiver, String subject, String body, String letterBody, File attachment, boolean sendLetter, boolean alwaysSendLetter) {
+		return createUserMessage(parentCase, receiver, null, null, subject, body, letterBody, sendLetter, null, alwaysSendLetter, true);
+	}
+	
 	public Message createUserMessage(Case parentCase, User receiver, User sender, String subject, String body, boolean sendLetter) {
 		return createUserMessage(parentCase, receiver, sender, null, subject, body, sendLetter);	
 	}
@@ -242,8 +245,12 @@ public class CommuneMessageBusinessBean extends MessageBusinessBean implements C
 	public Message createUserMessage(Case parentCase, User receiver, User sender, Group handler, String subject, String body, String letterBody, boolean pSendLetterIfNoEmail,String contentCode, boolean alwaysSendLetter) {
 		return createUserMessage(parentCase, receiver, sender, handler, subject, body, letterBody, pSendLetterIfNoEmail, contentCode, alwaysSendLetter, true); 
 	}
-	
+
 	public Message createUserMessage(Case parentCase, User receiver, User sender, Group handler, String subject, String body, String letterBody, boolean sendLetterIfNoEmail,String contentCode, boolean alwaysSendLetter, boolean sendMail) {
+		return createUserMessage(parentCase, receiver, sender, handler, subject, body, letterBody, null, sendLetterIfNoEmail, contentCode, alwaysSendLetter, sendMail);
+	}
+	
+	public Message createUserMessage(Case parentCase, User receiver, User sender, Group handler, String subject, String body, String letterBody, File attachment, boolean sendLetterIfNoEmail,String contentCode, boolean alwaysSendLetter, boolean sendMail) {
 	    MessageValue value = new MessageValue();
 	    value.setParentCase(parentCase);
 	    value.setReceiver(receiver);
@@ -256,17 +263,17 @@ public class CommuneMessageBusinessBean extends MessageBusinessBean implements C
 	    value.setContentCode(contentCode);
 	    value.setAlwaysSendLetter(new Boolean(alwaysSendLetter));
 	    value.setSendMail(new Boolean(sendMail));
+	    value.setAttachment(attachment);
 	    return createUserMessage(value);
 	    
 	}
 	
 	public Message createUserMessage(MessageValue msgValue){
-	    
+		
 		try {
 			if (msgValue.getLetterBody() == null) {
 			    msgValue.setLetterBody(msgValue.getBody());
 			}
-			
 			Message message = null;
 			boolean sendMail = getIfUserPreferesMessageByEmail(msgValue.getReceiver()) && msgValue.getSendMail().booleanValue();
 			boolean sendToBox = getIfUserPreferesMessageInMessageBox(msgValue.getReceiver());
@@ -283,7 +290,7 @@ public class CommuneMessageBusinessBean extends MessageBusinessBean implements C
 			    msgValue.setMessageType(getTypeUserMessage());
 				message = createMessage(msgValue);
 			}
-			
+
 			if (sendMail) {
 				boolean sendEmail = false;
 				Email mail = ((UserBusiness)getServiceInstance(UserBusiness.class)).getUserMail(msgValue.getReceiver());	
@@ -295,7 +302,7 @@ public class CommuneMessageBusinessBean extends MessageBusinessBean implements C
 				if ( sendEmail ) {
 					if (canSendEmail)
 						try {
-							sendMessage(mail.getEmailAddress(),msgValue.getSubject(),msgValue.getBody());
+							sendMessage(mail.getEmailAddress(),msgValue.getSubject(),msgValue.getBody(),msgValue.getAttachment());
 						}
 						catch (Exception e) {
 							doSendLetter |= msgValue.getSendLetterIfNoEmail().booleanValue();
@@ -313,6 +320,7 @@ public class CommuneMessageBusinessBean extends MessageBusinessBean implements C
 			//	if (pSendLetterIfNoEmail)
 			//		createPrintedLetterMessage(parentCase, receiver, subject, body,null,contentCode);
 			//}
+
 			if(doSendLetter){
 				createPrintedLetterMessage(msgValue);
 			}
@@ -722,35 +730,14 @@ public class CommuneMessageBusinessBean extends MessageBusinessBean implements C
 	 * @return
 	 */
 	private String getPropertyValue(String propertyName, String defaultValue) {
-		try {
-			String value = getBindingBusiness().get(propertyName);
-			if (value != null) {
-				return value;
-			}
-			else {
-				IWBundle iwb = getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
-				value = iwb.getProperty(propertyName);
-				getBindingBusiness().put(propertyName, value != null ? value : defaultValue);
-			}
+		IWMainApplicationSettings settings = getIWMainApplication().getSettings();
+		String value = settings.getProperty(propertyName);
+		if (value != null) {
+			return value;
 		}
-		catch (RemoveException re) {
-			re.printStackTrace();
-		}
-		catch (RemoteException re) {
-			throw new IBORuntimeException(re);
-		}
-		catch (CreateException ce) {
-			ce.printStackTrace();
-		}
+		IWBundle iwb = getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+		value = iwb.getProperty(propertyName);
+		settings.setProperty(propertyName, value != null ? value : defaultValue);
 		return defaultValue;
-	}
-	
-	private ICApplicationBindingBusiness getBindingBusiness() {
-		try {
-			return (ICApplicationBindingBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ICApplicationBindingBusiness.class);
-		}
-		catch (IBOLookupException ibe) {
-			throw new IBORuntimeException(ibe);
-		}
 	}
 }
