@@ -12,9 +12,11 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.commons.httpclient.ConnectTimeoutException;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.params.HttpConnectionParams;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.SecureProtocolSocketFactory;
 
@@ -133,6 +135,10 @@ public class SSLClient
       // Return a connected socket 
       return socket;
     }
+
+	public Socket createSocket(String arg0, int arg1, InetAddress arg2, int arg3, HttpConnectionParams arg4) throws IOException, UnknownHostException, ConnectTimeoutException {
+		throw new UnsupportedOperationException("Gimmi will fix this later :)");
+	}
   }
   
   public SSLClient(String strHost, int iPort, String _strKeyStore, String _strKeyStorePass, String _strRealmUser, String _strRealmPwd) 
