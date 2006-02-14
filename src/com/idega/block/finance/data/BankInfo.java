@@ -84,6 +84,11 @@ public interface BankInfo extends IDOEntity {
 	public String getPassword();
 
 	/**
+	 * @see com.idega.block.finance.data.BankInfoBMPBean#getDeleted
+	 */
+	public boolean getDeleted();
+
+	/**
 	 * @see com.idega.block.finance.data.BankInfoBMPBean#setAccountBook
 	 */
 	public void setAccountBook(int accountBook);
@@ -137,5 +142,10 @@ public interface BankInfo extends IDOEntity {
 	 * @see com.idega.block.finance.data.BankInfoBMPBean#setPassword
 	 */
 	public void setPassword(String pwd);
+
+	/**
+	 * @see com.idega.block.finance.data.BankInfoBMPBean#setDeleted
+	 */
+	public void setDeleted(boolean deleted);
 
 }

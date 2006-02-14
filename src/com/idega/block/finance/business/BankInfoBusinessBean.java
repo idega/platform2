@@ -1,5 +1,5 @@
 /*
- * $Id: BankInfoBusinessBean.java,v 1.2.2.2 2005/11/29 16:54:27 palli Exp $ Created
+ * $Id: BankInfoBusinessBean.java,v 1.2.2.3 2006/02/14 18:34:40 palli Exp $ Created
  * on Feb 18, 2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -29,10 +29,10 @@ import com.idega.user.data.Group;
 
 /**
  * 
- * Last modified: $Date: 2005/11/29 16:54:27 $ by $Author: palli $
+ * Last modified: $Date: 2006/02/14 18:34:40 $ by $Author: palli $
  * 
  * @author <a href="mailto:birna@idega.com">birna</a>
- * @version $Revision: 1.2.2.2 $
+ * @version $Revision: 1.2.2.3 $
  */
 public class BankInfoBusinessBean extends IBOServiceBean implements BankInfoBusiness {
 
@@ -104,7 +104,9 @@ public class BankInfoBusinessBean extends IBOServiceBean implements BankInfoBusi
 			for (int i = 0; i < ids.length; i++) {
 				Integer id = new Integer(ids[i]);
 				BankInfo bi = getBankInfoHome().findByPrimaryKey(id);
-				bi.remove();
+				//bi.remove();
+				bi.setDeleted(true);
+				bi.store();
 			}
 
 			return true;
@@ -116,9 +118,6 @@ public class BankInfoBusinessBean extends IBOServiceBean implements BankInfoBusi
 			e.printStackTrace();
 		}
 		catch (RemoteException e) {
-			e.printStackTrace();
-		}
-		catch (RemoveException e) {
 			e.printStackTrace();
 		}
 

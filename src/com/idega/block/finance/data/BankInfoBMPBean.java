@@ -19,69 +19,48 @@ import com.idega.user.data.GroupBMPBean;
  */
 public class BankInfoBMPBean extends GenericEntity implements BankInfo {
 
+	protected final static String ENTITY_NAME = "fin_bank_info";
+
+	protected final static String COLUMN_CLAIMANTS_SSN = "claimants_ssn";
+
+	protected final static String COLUMN_CLAIMANTS_NAME = "claimants_name";
+
+	protected final static String COLUMN_CLAIMANTS_BANK_BRANCH = "fin_bank_branch_id";
+
+	protected final static String COLUMN_ACCOUNT_BOOK = "account_book";
+
+	protected final static String COLUMN_ACCOUNT_ID = "account_id";
+
+	protected final static String COLUMN_GROUP_ID = GroupBMPBean
+			.getColumnNameGroupID();
+
+	protected final static String COLUMN_USER_NAME = "user_name";
+
+	protected final static String COLUMN_PASSWORD = "password";
+
+	protected final static String COLUMN_CLUB_ID = "club_id";
+
+	protected final static String COLUMN_DIVISION_ID = "division_id";
+
+	protected final static String COLUMN_DELETED = "deleted";
+
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		addAttribute(getColumnNameClaimantsSSN(), "claimants ssn", true, true,
-				String.class);
-		addAttribute(getColumnNameClaimantsName(), "claimants name", true,
-				true, String.class);
-		addAttribute(getColumnNameAccountBook(), "account book", true, true,
-				Integer.class);
-		addAttribute(getColumnNameAccountId(), "account id", true, true,
-				String.class);
-		addAttribute(getColumnNameUsername(), "user name", true, true,
-				String.class);
-		addAttribute(getColumnNamePassword(), "password", true, true,
-				String.class);
-		addManyToOneRelationship(getColumnNameClaimantsBankBranch(),
-				BankBranch.class);
-		addOneToOneRelationship(getColumnNameGroupId(), Group.class);
-		addManyToOneRelationship(getColumnNameDivisionId(), Group.class);
-		addManyToOneRelationship(getColumnNameClubId(), Group.class);
+		addAttribute(COLUMN_CLAIMANTS_SSN, "claimants ssn", String.class);
+		addAttribute(COLUMN_CLAIMANTS_NAME, "claimants name", String.class);
+		addAttribute(COLUMN_ACCOUNT_BOOK, "account book", Integer.class);
+		addAttribute(COLUMN_ACCOUNT_ID, "account id", String.class);
+		addAttribute(COLUMN_USER_NAME, "user name", String.class);
+		addAttribute(COLUMN_PASSWORD, "password", String.class);
+		addManyToOneRelationship(COLUMN_CLAIMANTS_BANK_BRANCH, BankBranch.class);
+		addOneToOneRelationship(COLUMN_GROUP_ID, Group.class);
+		addManyToOneRelationship(COLUMN_DIVISION_ID, Group.class);
+		addManyToOneRelationship(COLUMN_CLUB_ID, Group.class);
+		addAttribute(COLUMN_DELETED, "deleted", Boolean.class);
 	}
 
 	public static String getEntityTableName() {
-		return "fin_bank_info";
-	}
-
-	public static String getColumnNameClaimantsSSN() {
-		return "claimants_ssn";
-	}
-
-	public static String getColumnNameClaimantsName() {
-		return "claimants_name";
-	}
-
-	public static String getColumnNameClaimantsBankBranch() {
-		return "fin_bank_branch_id";
-	}
-
-	public static String getColumnNameAccountBook() {
-		return "account_book";
-	}
-
-	public static String getColumnNameAccountId() {
-		return "account_id";
-	}
-
-	public static String getColumnNameGroupId() {
-		return GroupBMPBean.getColumnNameGroupID();
-	}
-
-	public static String getColumnNameUsername() {
-		return "user_name";
-	}
-
-	public static String getColumnNamePassword() {
-		return "password";
-	}
-
-	public static String getColumnNameClubId() {
-		return "club_id";
-	}
-
-	public static String getColumnNameDivisionId() {
-		return "division_id";
+		return ENTITY_NAME;
 	}
 
 	public String getEntityName() {
@@ -89,61 +68,61 @@ public class BankInfoBMPBean extends GenericEntity implements BankInfo {
 	}
 
 	public int getAccountBook() {
-		return getIntColumnValue(getColumnNameAccountBook());
+		return getIntColumnValue(COLUMN_ACCOUNT_BOOK);
 	}
 
 	public String getAccountId() {
-		return getStringColumnValue(getColumnNameAccountId());
+		return getStringColumnValue(COLUMN_ACCOUNT_ID);
 	}
 
 	public int getClaimantsBankBranchId() {
-		return getIntColumnValue(getColumnNameClaimantsBankBranch());
+		return getIntColumnValue(COLUMN_CLAIMANTS_BANK_BRANCH);
 	}
 
 	public BankBranch getClaimantsBankBranch() {
-		return (BankBranch) getColumnValue(getColumnNameClaimantsBankBranch());
+		return (BankBranch) getColumnValue(COLUMN_CLAIMANTS_BANK_BRANCH);
 	}
-	
+
 	public int getClubId() {
-		return getIntColumnValue(getColumnNameClubId());
+		return getIntColumnValue(COLUMN_CLUB_ID);
 	}
-	
+
 	public Group getClub() {
-		return (Group) getColumnValue(getColumnNameClubId());
+		return (Group) getColumnValue(COLUMN_CLUB_ID);
 	}
 
 	public int getDivisionId() {
-		return getIntColumnValue(getColumnNameDivisionId());
+		return getIntColumnValue(COLUMN_DIVISION_ID);
 	}
-	
+
 	public Group getDivision() {
-		return (Group) getColumnValue(getColumnNameDivisionId());		
+		return (Group) getColumnValue(COLUMN_DIVISION_ID);
 	}
 
 	public String getClaimantsSSN() {
-		return getStringColumnValue(getColumnNameClaimantsSSN());
+		return getStringColumnValue(COLUMN_CLAIMANTS_SSN);
 	}
 
 	public String getClaimantsName() {
-		return getStringColumnValue(getColumnNameClaimantsName());
+		return getStringColumnValue(COLUMN_CLAIMANTS_NAME);
 	}
 
 	public int getGroupId() {
-		return getIntColumnValue(getColumnNameGroupId());
+		return getIntColumnValue(COLUMN_GROUP_ID);
 	}
 
 	public Group getGroup() {
-		return (Group) getColumnValue(getColumnNameGroupId());
+		return (Group) getColumnValue(COLUMN_GROUP_ID);
 	}
 
 	public String getUsername() {
-		return getStringColumnValue(getColumnNameUsername());
+		return getStringColumnValue(COLUMN_USER_NAME);
 	}
 
 	public String getPassword() {
 		String str = null;
 		try {
-			str = getStringColumnValue(getColumnNamePassword());
+			str = getStringColumnValue(COLUMN_PASSWORD);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			// str = null;
@@ -165,44 +144,48 @@ public class BankInfoBMPBean extends GenericEntity implements BankInfo {
 		return str;
 	}
 
+	public boolean getDeleted() {
+		return getBooleanColumnValue(COLUMN_DELETED, false);
+	}
+
 	public void setAccountBook(int accountBook) {
-		setColumn(getColumnNameAccountBook(), accountBook);
+		setColumn(COLUMN_ACCOUNT_BOOK, accountBook);
 	}
 
 	public void setAccountId(String accountId) {
-		setColumn(getColumnNameAccountId(), accountId);
+		setColumn(COLUMN_ACCOUNT_ID, accountId);
 	}
 
 	public void setClaimantsBankBranchId(int bankBranchId) {
-		setColumn(getColumnNameClaimantsBankBranch(), bankBranchId);
+		setColumn(COLUMN_CLAIMANTS_BANK_BRANCH, bankBranchId);
 	}
 
 	public void setClaimantsBankBranchNumber(BankBranch bankBranch) {
-		setColumn(getColumnNameClaimantsBankBranch(), bankBranch);
+		setColumn(COLUMN_CLAIMANTS_BANK_BRANCH, bankBranch);
 	}
 
 	public void setClubId(int clubId) {
-		setColumn(getColumnNameClubId(), clubId);
+		setColumn(COLUMN_CLUB_ID, clubId);
 	}
 
 	public void setDivisionId(int divisionId) {
-		setColumn(getColumnNameDivisionId(), divisionId);
+		setColumn(COLUMN_DIVISION_ID, divisionId);
 	}
 
 	public void setClaimantsSSN(String claimantsSSN) {
-		setColumn(getColumnNameClaimantsSSN(), claimantsSSN);
+		setColumn(COLUMN_CLAIMANTS_SSN, claimantsSSN);
 	}
 
 	public void setClaimantsName(String claimantsName) {
-		setColumn(getColumnNameClaimantsName(), claimantsName);
+		setColumn(COLUMN_CLAIMANTS_NAME, claimantsName);
 	}
 
 	public void setGroupId(int groupId) {
-		setColumn(getColumnNameGroupId(), groupId);
+		setColumn(COLUMN_GROUP_ID, groupId);
 	}
 
 	public void setUsername(String username) {
-		setColumn(getColumnNameUsername(), username);
+		setColumn(COLUMN_USER_NAME, username);
 	}
 
 	public void setPassword(String pwd) {
@@ -221,79 +204,112 @@ public class BankInfoBMPBean extends GenericEntity implements BankInfo {
 			if (str.equals("") && !pwd.equals("")) {
 				str = null;
 			}
-			setColumn(getColumnNamePassword(), str);
+			setColumn(COLUMN_PASSWORD, str);
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			setColumn(getColumnNamePassword(), pwd);
+			setColumn(COLUMN_PASSWORD, pwd);
 		}
 	}
 
-    public Collection ejbFindAll() throws FinderException {
-        IDOQuery sql = idoQuery();
-        sql.appendSelectAllFrom(this);
-/*        sql.appendWhere();
-        sql.appendLeftParenthesis();
-        sql.append(COLUMN_DELETED);
-        sql.append(" is null ");
-        sql.appendOr();
-        sql.appendEquals(COLUMN_DELETED,false);
-        sql.appendRightParenthesis();*/
+	public void setDeleted(boolean deleted) {
+		setColumn(COLUMN_DELETED, deleted);
+	}
 
-        return idoFindPKsByQuery(sql);
-    }
-	
+	public Collection ejbFindAll() throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhere();
+		sql.appendLeftParenthesis();
+		sql.append(COLUMN_DELETED);
+		sql.append(" is null ");
+		sql.appendOr();
+		sql.appendEquals(COLUMN_DELETED, false);
+		sql.appendRightParenthesis();
+
+		return idoFindPKsByQuery(sql);
+	}
+
 	public Integer ejbFindByGroupId(int groupId) throws FinderException {
 		IDOQuery query = idoQueryGetSelect();
-		query.appendWhereEquals(getColumnNameGroupId(), groupId);
+		query.appendWhereEquals(COLUMN_GROUP_ID, groupId);
+		query.appendAnd();
+		query.appendLeftParenthesis();
+		query.append(COLUMN_DELETED);
+		query.append(" is null ");
+		query.appendOr();
+		query.appendEquals(COLUMN_DELETED, false);
+		query.appendRightParenthesis();
+
 		return (Integer) idoFindOnePKByQuery(query);
 	}
 
 	public Collection ejbFindAllByClub(Group club) throws FinderException {
 		IDOQuery query = idoQuery();
 		query.appendSelectAllFrom(this);
-		query.appendWhereEquals(getColumnNameClubId(), ((Integer) club
-				.getPrimaryKey()).intValue());
-		System.out.println(query.toString());
+		query.appendWhereEquals(COLUMN_CLUB_ID,
+				((Integer) club.getPrimaryKey()).intValue());
+		query.appendAnd();
+		query.appendLeftParenthesis();
+		query.append(COLUMN_DELETED);
+		query.append(" is null ");
+		query.appendOr();
+		query.appendEquals(COLUMN_DELETED, false);
+		query.appendRightParenthesis();
+
 		return idoFindPKsByQuery(query);
 	}
-	
-    public Object ejbFindByGroup(Group group) throws FinderException {
-        IDOQuery sql = idoQuery();
-        sql.appendSelectAllFrom(this);
-        sql.appendWhereEquals(getColumnNameGroupId(), group);
- 
-		System.out.println("sql = " + sql.toString());
 
-        return idoFindOnePKByQuery(sql);
-    }
-    
-    public Object ejbFindByDivision(Group division) throws FinderException {
-        IDOQuery sql = idoQuery();
-        sql.appendSelectAllFrom(this);
-        sql.appendWhereEquals(getColumnNameDivisionId(), division);
-        sql.appendAnd();
-        sql.append(getColumnNameGroupId());
-        sql.append(" is null ");
+	public Object ejbFindByGroup(Group group) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhereEquals(COLUMN_GROUP_ID, group);
+		sql.appendAnd();
+		sql.appendLeftParenthesis();
+		sql.append(COLUMN_DELETED);
+		sql.append(" is null ");
+		sql.appendOr();
+		sql.appendEquals(COLUMN_DELETED, false);
+		sql.appendRightParenthesis();
 
-		System.out.println("sql = " + sql.toString());
+		return idoFindOnePKByQuery(sql);
+	}
 
-        return idoFindOnePKByQuery(sql);
-    }
+	public Object ejbFindByDivision(Group division) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhereEquals(COLUMN_DIVISION_ID, division);
+		sql.appendAnd();
+		sql.append(COLUMN_GROUP_ID);
+		sql.append(" is null ");
+		sql.appendAnd();
+		sql.appendLeftParenthesis();
+		sql.append(COLUMN_DELETED);
+		sql.append(" is null ");
+		sql.appendOr();
+		sql.appendEquals(COLUMN_DELETED, false);
+		sql.appendRightParenthesis();
 
-    public Object ejbFindByClub(Group club) throws FinderException {
-        IDOQuery sql = idoQuery();
-        sql.appendSelectAllFrom(this);
-        sql.appendWhereEquals(getColumnNameClubId(), club);
-        sql.appendAnd();
-        sql.append(getColumnNameDivisionId());
-        sql.append(" is null ");
-        sql.appendAnd();
-        sql.append(getColumnNameGroupId());
-        sql.append(" is null ");
+		return idoFindOnePKByQuery(sql);
+	}
 
-		System.out.println("sql = " + sql.toString());
+	public Object ejbFindByClub(Group club) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhereEquals(COLUMN_CLUB_ID, club);
+		sql.appendAnd();
+		sql.append(COLUMN_DIVISION_ID);
+		sql.append(" is null ");
+		sql.appendAnd();
+		sql.append(COLUMN_GROUP_ID);
+		sql.append(" is null ");
+		sql.appendAnd();
+		sql.appendLeftParenthesis();
+		sql.append(COLUMN_DELETED);
+		sql.append(" is null ");
+		sql.appendOr();
+		sql.appendEquals(COLUMN_DELETED, false);
+		sql.appendRightParenthesis();
 
-        return idoFindOnePKByQuery(sql);
-    }
-
+		return idoFindOnePKByQuery(sql);
+	}
 }
