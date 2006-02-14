@@ -191,7 +191,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
     private static final int ORDER_BY_QUEUE_DATE = 1;    // see ChildCareApplicationBMPBean ORDER_BY_QUEUE_DATE
     private static final int ORDER_BY_DATE_OF_BIRTH = 2; // see ChildCareApplicationBMPBean ORDER_BY_DATE_OF_BIRTH
 
-	private static final String PROPERTY_CHILDCARE_CONTRACT_ALTERNATIVE_PDF = "childcare.contract_alternative_pdf";
+    private static final String PROPERTY_CHILDCARE_CONTRACT_ALTERNATIVE_PDF = "cc.contract_alternative_pdf";
 
 	public String getBundleIdentifier() {
 		return Constants.IW_BUNDLE_IDENTIFIER;
