@@ -1,5 +1,5 @@
 /*
- * $Id: CommuneMessageBusinessBean.java,v 1.4.2.2 2006/02/12 21:57:22 palli Exp $
+ * $Id: CommuneMessageBusinessBean.java,v 1.4.2.3 2006/02/14 17:50:54 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -13,10 +13,8 @@ import java.io.File;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
-
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.message.data.MessageHandlerInfo;
 import se.idega.idegaweb.commune.message.data.MessageHandlerInfoHome;
@@ -27,7 +25,6 @@ import se.idega.idegaweb.commune.message.data.SystemArchivationMessage;
 import se.idega.idegaweb.commune.message.data.SystemArchivationMessageHome;
 import se.idega.idegaweb.commune.message.data.UserMessage;
 import se.idega.idegaweb.commune.message.data.UserMessageHome;
-
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseCode;
@@ -226,7 +223,7 @@ public class CommuneMessageBusinessBean extends MessageBusinessBean implements C
 	}
 	
 	public Message createUserMessage(Case parentCase, User receiver, String subject, String body, String letterBody, File attachment, boolean sendLetter, boolean alwaysSendLetter) {
-		return createUserMessage(parentCase, receiver, null, null, subject, body, letterBody, sendLetter, null, alwaysSendLetter, true);
+		return createUserMessage(parentCase, receiver, null, null, subject, body, letterBody, attachment, sendLetter, null, alwaysSendLetter, true);
 	}
 	
 	public Message createUserMessage(Case parentCase, User receiver, User sender, String subject, String body, boolean sendLetter) {

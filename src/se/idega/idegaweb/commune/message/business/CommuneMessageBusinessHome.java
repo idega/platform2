@@ -1,28 +1,27 @@
 /*
- * $Id: CommuneMessageBusinessHome.java,v 1.1 2005/10/13 18:36:11 laddi Exp $
- * Created on 2.11.2004
+ * $Id: CommuneMessageBusinessHome.java,v 1.1.2.1 2006/02/14 17:50:54 palli Exp $
+ * Created on Feb 13, 2006
  *
- * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
+ * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
  *
  * This software is the proprietary information of Idega hf.
  * Use is subject to license terms.
  */
 package se.idega.idegaweb.commune.message.business;
 
-
-
-
 import com.idega.business.IBOHome;
 
+
 /**
+ * <p>
+ * TODO laddi Describe Type CommuneMessageBusinessHome
+ * </p>
+ *  Last modified: $Date: 2006/02/14 17:50:54 $ by $Author: palli $
  * 
- *  Last modified: $Date: 2005/10/13 18:36:11 $ by $Author: laddi $
- * 
- * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.1 $
+ * @author <a href="mailto:laddi@idega.com">laddi</a>
+ * @version $Revision: 1.1.2.1 $
  */
 public interface CommuneMessageBusinessHome extends IBOHome {
-    public CommuneMessageBusiness create() throws javax.ejb.CreateException,
-            java.rmi.RemoteException;
 
+	public CommuneMessageBusiness create() throws javax.ejb.CreateException, java.rmi.RemoteException;
 }
