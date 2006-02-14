@@ -9,7 +9,9 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
+
 import javax.ejb.FinderException;
+
 import com.idega.block.finance.data.AccountEntry;
 import com.idega.block.finance.data.AccountEntryHome;
 import com.idega.block.finance.data.BankInfo;
@@ -61,7 +63,7 @@ public class BankInvoiceFileManager implements BankFileManager {
 	public String getAmount(int invoiceNumber) {
 		AccountEntry ae = getAccountEntry(invoiceNumber);
 		if (ae != null) {
-			return String.valueOf(((int) ae.getTotal() * 10) * 10);
+			return String.valueOf((int) ae.getTotal());
 		} else {
 			return "";
 		}
@@ -139,14 +141,15 @@ public class BankInvoiceFileManager implements BankFileManager {
 			} catch (FinderException e1) {
 				e1.printStackTrace();
 			}
-			Collection invoiceNumbers = null;
 			if (accountEntries != null) {
+				Integer[] invoiceNumbers = new Integer[accountEntries.size()];
 				Iterator i = accountEntries.iterator();
+				int j = 0;
 				while (i.hasNext()) {
 					AccountEntry accEntry = (AccountEntry) i.next();
-					invoiceNumbers.add(accEntry.getInvoiceNumber());
+					invoiceNumbers[j++] = accEntry.getInvoiceNumber();
 				}
-				return (Integer[]) invoiceNumbers.toArray();
+				return invoiceNumbers;
 			}
 		}
 		return null;

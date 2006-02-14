@@ -1,5 +1,5 @@
 /*
- * $Id: BankInfoBusinessBean.java,v 1.2.2.3 2006/02/14 18:34:40 palli Exp $ Created
+ * $Id: BankInfoBusinessBean.java,v 1.2.2.4 2006/02/14 22:59:06 palli Exp $ Created
  * on Feb 18, 2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -15,7 +15,6 @@ import java.util.Collection;
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
-import javax.ejb.RemoveException;
 
 import com.idega.block.finance.data.Bank;
 import com.idega.block.finance.data.BankBranch;
@@ -29,10 +28,10 @@ import com.idega.user.data.Group;
 
 /**
  * 
- * Last modified: $Date: 2006/02/14 18:34:40 $ by $Author: palli $
+ * Last modified: $Date: 2006/02/14 22:59:06 $ by $Author: palli $
  * 
  * @author <a href="mailto:birna@idega.com">birna</a>
- * @version $Revision: 1.2.2.3 $
+ * @version $Revision: 1.2.2.4 $
  */
 public class BankInfoBusinessBean extends IBOServiceBean implements BankInfoBusiness {
 
