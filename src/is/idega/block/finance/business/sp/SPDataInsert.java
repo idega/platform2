@@ -1,5 +1,5 @@
 /*
- * $Id: SPDataInsert.java,v 1.1.4.3 2005/12/01 00:36:41 palli Exp $
+ * $Id: SPDataInsert.java,v 1.1.4.4 2006/02/14 18:46:19 palli Exp $
  * Created on Feb 8, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -12,7 +12,6 @@ package is.idega.block.finance.business.sp;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -20,8 +19,13 @@ import java.util.Calendar;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.methods.MultipartPostMethod;
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.multipart.FilePart;
+import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
+import org.apache.commons.httpclient.methods.multipart.Part;
+import org.apache.commons.httpclient.methods.multipart.StringPart;
+import org.apache.commons.httpclient.params.HttpMethodParams;
 
 import com.idega.block.finance.business.BankFileManager;
 import com.idega.block.finance.business.BankInvoiceFileManager;
@@ -31,10 +35,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- * Last modified: $Date: 2005/12/01 00:36:41 $ by $Author: palli $
+ * Last modified: $Date: 2006/02/14 18:46:19 $ by $Author: palli $
  * 
  * @author <a href="mailto:birna@idega.com">birna</a>
- * @version $Revision: 1.1.4.3 $
+ * @version $Revision: 1.1.4.4 $
  */
 public class SPDataInsert /* extends Window */implements InvoiceDataInsert {
 
@@ -363,26 +367,39 @@ public class SPDataInsert /* extends Window */implements InvoiceDataInsert {
 
 	}
 
-	private MultipartPostMethod sendCreateClaimsRequest(BankFileManager bfm) {
-		HttpClient client = new HttpClient();
-		MultipartPostMethod post = new MultipartPostMethod(POST_METHOD);
+	private void sendCreateClaimsRequest(BankFileManager bfm) {
+		PostMethod filePost = new PostMethod(POST_METHOD);
 		File file = new File(FILE_NAME);
+		
+		filePost.getParams().setBooleanParameter(
+				HttpMethodParams.USE_EXPECT_CONTINUE, true);
 
 		try {
-			post.addParameter("userid", bfm.getUsername());
-			post.addParameter("password", bfm.getPassword());
-			post.addParameter("KtFelags", bfm.getClaimantSSN());
-			post.addParameter("Skra", file);
-			post.setDoAuthentication(false);
-			client.executeMethod(post);
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		} catch (IOException e2) {
-			e2.printStackTrace();
+			StringPart userPart = new StringPart("notendanafn", bfm.getUsername());
+			StringPart pwdPart = new StringPart("password", bfm.getPassword());
+			StringPart clubssnPart = new StringPart("KtFelags", bfm.getClaimantSSN());
+			FilePart filePart = new FilePart("Skra", file);
+			
+			Part[] parts = { userPart, pwdPart, clubssnPart, filePart };
+			filePost.setRequestEntity(new MultipartRequestEntity(parts,
+					filePost.getParams()));
+			HttpClient client = new HttpClient();
+			client.getHttpConnectionManager().getParams().setConnectionTimeout(
+					5000);
+
+			int status = client.executeMethod(filePost);
+			if (status == HttpStatus.SC_OK) {
+				System.out.println("Upload complete, response="
+						+ filePost.getResponseBodyAsString());
+			} else {
+				System.out.println("Upload failed, response="
+						+ HttpStatus.getStatusText(status));
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		} finally {
-			post.releaseConnection();
+			filePost.releaseConnection();
 		}
-		return post;
 	}
 
 	/**

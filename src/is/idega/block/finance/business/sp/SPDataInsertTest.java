@@ -1,5 +1,5 @@
 /*
- * $Id: SPDataInsertTest.java,v 1.1.2.3 2005/12/01 00:36:41 palli Exp $ Created on Nov 2,
+ * $Id: SPDataInsertTest.java,v 1.1.2.4 2006/02/14 18:46:19 palli Exp $ Created on Nov 2,
  * 2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -12,7 +12,6 @@ package is.idega.block.finance.business.sp;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -20,8 +19,14 @@ import java.util.Calendar;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.MultipartPostMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.multipart.FilePart;
+import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
+import org.apache.commons.httpclient.methods.multipart.Part;
+import org.apache.commons.httpclient.methods.multipart.StringPart;
+import org.apache.commons.httpclient.params.HttpMethodParams;
 
 import com.idega.block.finance.business.BankFileManager;
 import com.idega.block.finance.business.BankInvoiceFileManager;
@@ -32,30 +37,39 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.util.IWTimestamp;
 
 public class SPDataInsertTest extends Block {
-	
+
 	private static String SITE = "https://heimabanki.spar.is";
 
-	private static String POST_METHOD = "/HBScripts/ftbspar.dll?InnheimtaStofnaKrofuSkra";
+//	private static String POST_METHOD = "/HBScripts/ftbspar.dll?InnheimtaStofnaKrofuSkra";
+	private static String POST_METHOD = "/HBScripts/ftbspar.dll?InnheimtaSendaPrufuSkra";
 
 	private static String POST_ANSWER_METHOD = "/HBScripts/ftbspar.dll?InnheimtaSaekjaInnborganir";
 
-	private static String FILE_NAME = "iw_cache/sp.txt";
+	private static String FILE_NAME = "/Users/bluebottle/sp.txt";
 
 	private String emptyString = new String();
 
 	private String zeroString = new String();
 
+	public static void main(String[] args) {
+		System.out.println("Starting test");
+		SPDataInsertTest test = new SPDataInsertTest();
+		test.sendCreateClaimsRequest();
+	}
+	
 	public void main(IWContext iwc) throws Exception {
 		Form f = new Form();
 		SubmitButton sb = new SubmitButton("submit", "submit", "submit");
 		SubmitButton gd = new SubmitButton("getdata", "getdata", "getdata");
 		f.add(sb);
 		f.add(gd);
-		if (iwc.getParameter("submit") != null && !iwc.getParameter("submit").equals("")
+		if (iwc.getParameter("submit") != null
+				&& !iwc.getParameter("submit").equals("")
 				&& iwc.getParameter("submit").equals("submit")) { // getSessionId();
 			createClaimsInBank(1);
 		}
-		if (iwc.getParameter("getdata") != null && !iwc.getParameter("getdata").equals("")
+		if (iwc.getParameter("getdata") != null
+				&& !iwc.getParameter("getdata").equals("")
 				&& iwc.getParameter("getdata").equals("getdata")) {
 		}
 		add(f);
@@ -77,9 +91,10 @@ public class SPDataInsertTest extends Block {
 		String claimantSSN = "6812933379";// bfm.getClaimantSSN(groupId);
 		if (claimantSSN != null && !claimantSSN.equals("")) {
 			if (claimantSSN.length() < 10)
-				claimantSSN = zeroString.substring(0, 10 - claimantSSN.length()) + claimantSSN;
-		}
-		else {
+				claimantSSN = zeroString
+						.substring(0, 10 - claimantSSN.length())
+						+ claimantSSN;
+		} else {
 			claimantSSN = zeroString.substring(0, 10);
 		}
 
@@ -87,26 +102,25 @@ public class SPDataInsertTest extends Block {
 		if (bankNr != null && !bankNr.equals("")) {
 			if (bankNr.length() < 4)
 				bankNr = zeroString.substring(0, 4 - bankNr.length()) + bankNr;
-		}
-		else {
+		} else {
 			bankNr = zeroString.substring(0, 4);
 		}
 
 		String claimantName = "fri";// bfm.getClaimantName(groupId);
 		if (claimantName != null && !claimantName.equals("")) {
 			if (claimantName.length() < 8)
-				claimantName = claimantName + emptyString.substring(0, 8 - claimantName.length());
-		}
-		else {
+				claimantName = claimantName
+						+ emptyString.substring(0, 8 - claimantName.length());
+		} else {
 			claimantName = emptyString.substring(0, 8);
 		}
 
 		String claimantAccountId = "007";// bfm.getClaimantsAccountId(groupId);
 		if (claimantAccountId != null && !claimantAccountId.equals("")) {
 			if (claimantAccountId.length() < 3)
-				claimantAccountId = zeroString.substring(0, 3 - claimantAccountId.length());
-		}
-		else {
+				claimantAccountId = zeroString.substring(0,
+						3 - claimantAccountId.length());
+		} else {
 			claimantAccountId = zeroString.substring(0, 3);
 		}
 
@@ -118,7 +132,8 @@ public class SPDataInsertTest extends Block {
 		/* Faerslugerd - 1 */
 		buffer.append("H");// the type of the first line is: "hausfaersla" (H)
 		/* Keyrsludagur - 8 */
-		buffer.append(new IWTimestamp(Calendar.getInstance().getTime()).getDateString("yyyyMMdd"));// the
+		buffer.append(new IWTimestamp(Calendar.getInstance().getTime())
+				.getDateString("yyyyMMdd"));// the
 		// run
 		// date
 		// -
@@ -145,18 +160,20 @@ public class SPDataInsertTest extends Block {
 		// new
 		// Integer[2];
 		krofuNumer[0] = new Integer(1);
-//		krofuNumer[1] = new Integer(2);
-//		krofuNumer[2] = new Integer(3);
+		// krofuNumer[1] = new Integer(2);
+		// krofuNumer[2] = new Integer(3);
 
 		String[] payersSSNArray = new String[1];
 
-//		payersSSNArray[0] = new String("0405563469");
+		// payersSSNArray[0] = new String("0405563469");
 		payersSSNArray[0] = new String("0610703899");
-//		payersSSNArray[2] = new String("2012643759");
+		// payersSSNArray[2] = new String("2012643759");
 
 		String numberOfClaims = String.valueOf(krofuNumer.length);
 		if (numberOfClaims.length() < 6)
-			numberOfClaims = zeroString.substring(0, 6 - numberOfClaims.length()) + numberOfClaims;
+			numberOfClaims = zeroString.substring(0, 6 - numberOfClaims
+					.length())
+					+ numberOfClaims;
 
 		int totalAmount = 0;
 		String amountString = "10000";
@@ -169,32 +186,38 @@ public class SPDataInsertTest extends Block {
 			String payersSSN = payersSSNArray[i]; // bfm.getPayersSSN(number);
 			if (payersSSN != null && !payersSSN.equals("")) {
 				if (payersSSN.length() < 10)
-					payersSSN = zeroString.substring(0, 10 - payersSSN.length()) + payersSSN;
-			}
-			else {
+					payersSSN = zeroString
+							.substring(0, 10 - payersSSN.length())
+							+ payersSSN;
+			} else {
 				payersSSN = zeroString.substring(0, 10);
 			}
 
 			String numberString = String.valueOf(number);
 			if (numberString.length() < 6)
-				numberString = zeroString.substring(0, 6 - numberString.length()) + numberString;
+				numberString = zeroString.substring(0, 6 - numberString
+						.length())
+						+ numberString;
 
 			String amount = amountString;// bfm.getAmount(number);
 			if (amount != null && !amount.equals("")) {
 				if (amount.length() < 11)
-					amount = zeroString.substring(0, 11 - amount.length()) + amount;
+					amount = zeroString.substring(0, 11 - amount.length())
+							+ amount;
 			}
 
 			String batchString = String.valueOf(batchNumber);// String.valueOf(12);
 			if (batchString.length() < 16)
-				batchString = batchString + zeroString.substring(0, 16 - batchString.length());
+				batchString = batchString
+						+ zeroString.substring(0, 16 - batchString.length());
 
 			String noteNumber = null; // bfm.getNoteNumber(number);
 			if (noteNumber != null && !noteNumber.equals("")) {
 				if (noteNumber.length() < 7)
-					noteNumber = zeroString.substring(0, 7 - noteNumber.length()) + noteNumber;
-			}
-			else {
+					noteNumber = zeroString.substring(0, 7 - noteNumber
+							.length())
+							+ noteNumber;
+			} else {
 				noteNumber = zeroString.substring(0, 7);
 			}
 
@@ -272,7 +295,7 @@ public class SPDataInsertTest extends Block {
 			buffer.append("00");
 			/* Gengiskodi - 1 */
 			buffer.append("0");
-			//Autt			
+			// Autt
 			buffer.append(" ");
 			/* Greidslukodi - 1 */
 			buffer.append(" ");
@@ -298,7 +321,8 @@ public class SPDataInsertTest extends Block {
 
 		String totalString = String.valueOf(totalAmount);
 		if (totalString.length() < 15)
-			totalString = zeroString.substring(0, 15 - totalString.length()) + totalString;
+			totalString = zeroString.substring(0, 15 - totalString.length())
+					+ totalString;
 
 		// "lokafaersla" begins
 		/* Kt_krofuhafa - 10 */
@@ -318,23 +342,26 @@ public class SPDataInsertTest extends Block {
 		// "lokafaersla" ends
 
 		try {
-			BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME, false));
+			BufferedWriter writer = new BufferedWriter(new FileWriter(
+					FILE_NAME, false));
 			writer.write(buffer.toString());
 			writer.close();
 
-			BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME));
+			BufferedReader reader = new BufferedReader(
+					new FileReader(FILE_NAME));
 			reader.close();
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
 		sendCreateClaimsRequest();
 	}
 
-	public void getClaimStatusFromBank(int batchNumber, int groupId, java.util.Date from, java.util.Date to) {
+	public void getClaimStatusFromBank(int batchNumber, int groupId,
+			java.util.Date from, java.util.Date to) {
 		BankFileManager bfm = new BankInvoiceFileManager(groupId);
-		String response = sendGetClaimStatusRequest(bfm, groupId, new IWTimestamp(from).getDateString("yyyyMMdd"),
+		String response = sendGetClaimStatusRequest(bfm, groupId,
+				new IWTimestamp(from).getDateString("yyyyMMdd"),
 				new IWTimestamp(to).getDateString("yyyyMMdd"));
 		String number = response.substring(6, 12);
 		String faerslugerd = response.substring(20, 21);
@@ -342,38 +369,89 @@ public class SPDataInsertTest extends Block {
 		bfm.setInvoiceStatus(faerslugerd, Integer.parseInt(number));
 	}
 
-	public void deleteClaim(int groupId, int claimNumber, java.util.Date dueDate, String payersSSN) {
+	public void deleteClaim(int groupId, int claimNumber,
+			java.util.Date dueDate, String payersSSN) {
 
 	}
 
 	private MultipartPostMethod sendCreateClaimsRequest() {
-		HttpClient client = new HttpClient();
-		client.setStrictMode(false);
-		MultipartPostMethod post = new MultipartPostMethod(SITE + POST_METHOD);		
+		/*
+		 * HttpClient client = new HttpClient(); client.setStrictMode(false);
+		 * MultipartPostMethod post = new MultipartPostMethod(SITE +
+		 * POST_METHOD); File file = new File(FILE_NAME);
+		 * 
+		 * try { post.addParameter("notendanafn", "lolo7452");// "aistest");
+		 * post.addParameter("password", "12345felix");
+		 * post.addParameter("KtFelags", "6812933379");// "5709902259");
+		 * post.addParameter("Skra", file);
+		 * 
+		 * post.setDoAuthentication(false); client.executeMethod(post);
+		 * 
+		 * System.out.println("responseString: " +
+		 * post.getResponseBodyAsString()); } catch (FileNotFoundException e1) {
+		 * e1.printStackTrace(); } catch (IOException e2) {
+		 * e2.printStackTrace(); } finally { post.releaseConnection(); } return
+		 * post;
+		 */
+
+		PostMethod filePost = new PostMethod(SITE + POST_METHOD);
 		File file = new File(FILE_NAME);
+		
+		filePost.getParams().setBooleanParameter(
+				HttpMethodParams.USE_EXPECT_CONTINUE, true);
 
 		try {
-			post.addParameter("notendanafn", "lolo7452");// "aistest");
-			post.addParameter("password", "12345felix");
-			post.addParameter("KtFelags", "6812933379");// "5709902259");
-			post.addParameter("Skra", file);
+			StringPart userPart = new StringPart("notendanafn", "lolo7452");
+			StringPart pwdPart = new StringPart("password", "12345felix");
+			StringPart clubssnPart = new StringPart("KtFelags", "6812933379");
+			FilePart filePart = new FilePart("Skra", file);
+			
+			Part[] parts = { userPart, pwdPart, clubssnPart, filePart };
+			filePost.setRequestEntity(new MultipartRequestEntity(parts,
+					filePost.getParams()));
+			HttpClient client = new HttpClient();
+			client.getHttpConnectionManager().getParams().setConnectionTimeout(
+					5000);
 
-			post.setDoAuthentication(false);
-			client.executeMethod(post);
+			int status = client.executeMethod(filePost);
+			if (status == HttpStatus.SC_OK) {
+				System.out.println("Upload complete, response="
+						+ filePost.getResponseBodyAsString());
+			} else {
+				System.out.println("Upload failed, response="
+						+ HttpStatus.getStatusText(status));
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		} finally {
+			filePost.releaseConnection();
+		}
 
-			System.out.println("responseString: " + post.getResponseBodyAsString());
+		return null;
+		
+		/*
+		 * PostMethod authpost = new PostMethod(SITE + POST_METHOD);
+		 * 
+		 * authpost.getParams().setBooleanParameter(HttpMethodParams.USE_EXPECT_CONTINUE,
+		 * true); try {
+		 * 
+		 * HttpClient client = new HttpClient();
+		 * client.getHttpConnectionManager().getParams().setConnectionTimeout(
+		 * 5000);
+		 * 
+		 * File file = new File(FILE_NAME); // Prepare login parameters
+		 * NameValuePair inputFile = new NameValuePair("xmldata", file);
+		 * authpost.setRequestBody(new NameValuePair[] { inputFile });
+		 * 
+		 * int status = client.executeMethod(authpost); System.out.println("Form
+		 * post: " + authpost.getStatusLine().toString()); if (status ==
+		 * HttpStatus.SC_OK) { System.out.println("Submit complete, response=" +
+		 * authpost.getResponseBodyAsString()); } else {
+		 * System.out.println("Submit failed, response=" +
+		 * HttpStatus.getStatusText(status)); } } catch (Exception ex) {
+		 * ex.printStackTrace(); } finally { authpost.releaseConnection(); }
+		 */
 
-		}
-		catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		}
-		catch (IOException e2) {
-			e2.printStackTrace();
-		}
-		finally {
-			post.releaseConnection();
-		}
-		return post;
 	}
 
 	/**
@@ -383,11 +461,15 @@ public class SPDataInsertTest extends Block {
 	 * @param groupId
 	 * @return
 	 */
-	private String sendGetClaimStatusRequest(BankFileManager bfm, int groupId, String fromDate, String toDate) {
-/*		Protocol easyhttps = new Protocol("https", new EasySSLProtocolSocketFactory(), 443);*/
+	private String sendGetClaimStatusRequest(BankFileManager bfm, int groupId,
+			String fromDate, String toDate) {
+		/*
+		 * Protocol easyhttps = new Protocol("https", new
+		 * EasySSLProtocolSocketFactory(), 443);
+		 */
 
 		HttpClient client = new HttpClient();
-//		client.getHostConfiguration().setHost(SITE, 443, easyhttps);
+		// client.getHostConfiguration().setHost(SITE, 443, easyhttps);
 		PostMethod post = new PostMethod(SITE + POST_ANSWER_METHOD);
 
 		String response = new String();
@@ -399,9 +481,9 @@ public class SPDataInsertTest extends Block {
 			String claimantAccountId = bfm.getClaimantsAccountId();
 			if (claimantAccountId != null && !claimantAccountId.equals("")) {
 				if (claimantAccountId.length() < 3)
-					claimantAccountId = zeroString.substring(0, 3 - claimantAccountId.length());
-			}
-			else {
+					claimantAccountId = zeroString.substring(0,
+							3 - claimantAccountId.length());
+			} else {
 				claimantAccountId = zeroString.substring(0, 3);
 			}
 			post.addParameter("Audkenni", claimantAccountId);
@@ -416,17 +498,13 @@ public class SPDataInsertTest extends Block {
 
 			response = post.getResponseBodyAsString();
 
-		}
-		catch (HttpException e) {
+		} catch (HttpException e) {
 			e.printStackTrace();
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
-		}
-		finally {
+		} finally {
 			post.releaseConnection();
 		}
 		// System.out.println("response: " + response);
