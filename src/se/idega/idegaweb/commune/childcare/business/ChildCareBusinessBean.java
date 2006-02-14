@@ -2571,7 +2571,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			boolean useAlternativePDFGenerationMethod =  bundle.getBooleanProperty(PROPERTY_CHILDCARE_CONTRACT_ALTERNATIVE_PDF, false);
 			
 			ICFile contractFile = null;
-			if (!useAlternativePDFGenerationMethod || printingContext == null) { // let's use old method
+			if (!useAlternativePDFGenerationMethod) { // let's use old method
 				contractFile = createContractContentToApplication(application, locale, validFrom, changeStatus, hasBankId);
 			} else { // bundle property tells us to use new method
 				if (printingContext != null) {
