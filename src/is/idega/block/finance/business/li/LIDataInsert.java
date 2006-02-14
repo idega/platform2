@@ -14,6 +14,7 @@ import is.idega.block.finance.business.li.claims_delete.LI_Innheimta_krofur_eyda
 import is.idega.block.finance.business.li.sign_in.LI_Innskra;
 import is.idega.block.finance.business.li.sign_in_answer.LIInnskraSvar;
 import is.idega.block.finance.business.li.sign_out.LIUtskra;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -21,11 +22,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.util.Calendar;
+
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.exolab.castor.types.Date;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+
 import com.idega.block.finance.business.BankFileManager;
 import com.idega.block.finance.business.BankInvoiceFileManager;
 import com.idega.block.finance.business.InvoiceDataInsert;
@@ -330,7 +334,8 @@ public class LIDataInsert /* extends Window */implements InvoiceDataInsert {
 		PostMethod post = new PostMethod(POST_METHOD);
 
 		try {
-			post.setRequestBody(new FileInputStream(fileName));
+			//post.setRequestBody(new FileInputStream(fileName));
+			post.setRequestEntity(new InputStreamRequestEntity(new FileInputStream(fileName)));
 			client.executeMethod(post);
 			// System.out.println("responseString: " +
 			// post.getResponseBodyAsString());
