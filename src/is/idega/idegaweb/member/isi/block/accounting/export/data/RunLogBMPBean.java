@@ -49,6 +49,6 @@ public class RunLogBMPBean extends GenericEntity implements RunLog {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
 
-		return idoFindPKsBySQL(sql.toString());
+		return idoFindPKsByQuery(sql);
 	}
 }

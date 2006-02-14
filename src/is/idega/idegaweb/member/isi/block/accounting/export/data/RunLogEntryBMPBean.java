@@ -1,8 +1,12 @@
 package is.idega.idegaweb.member.isi.block.accounting.export.data;
 
 import java.sql.Timestamp;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOQuery;
 
 public class RunLogEntryBMPBean extends GenericEntity implements RunLogEntry {
 
@@ -68,5 +72,29 @@ public class RunLogEntryBMPBean extends GenericEntity implements RunLogEntry {
 	
 	public void setIsError(boolean isError) {
 		setColumn(COLUMN_IS_ERROR, isError);
+	}
+	
+	//ejb
+	public Collection ejbFindAll() throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+
+		return idoFindPKsByQuery(sql);
+	}
+
+	public Collection ejbFindByRunLog(RunLog log) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhereEquals(COLUMN_RUN_LOG, log);
+
+		return idoFindPKsByQuery(sql);
+	}
+
+	public Collection ejbFindByRunLogID(int logID) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhereEquals(COLUMN_RUN_LOG, logID);
+
+		return idoFindPKsByQuery(sql);
 	}
 }
