@@ -26,6 +26,7 @@ import java.util.Calendar;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.exolab.castor.types.Date;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -84,11 +85,11 @@ public class LIDataInsert /* extends Window */implements InvoiceDataInsert {
 			emptyString += " ";
 			zeroString += "0";
 		}
-		// Integer[] krofuNumer = bfm.getInvoiceNumbers(batchNumber);
+		Integer[] krofuNumer = bfm.getInvoiceNumbers(batchNumber);
 
-		Integer[] krofuNumer = new Integer[2];
+/*		Integer[] krofuNumer = new Integer[2];
 		krofuNumer[0] = new Integer(1);
-		krofuNumer[1] = new Integer(2);
+		krofuNumer[1] = new Integer(2);*/
 
 		LI_Innheimta_krofur_stofna stofnaKrofur = new LI_Innheimta_krofur_stofna();
 		Krofur krofur = new Krofur();
@@ -120,10 +121,12 @@ public class LIDataInsert /* extends Window */implements InvoiceDataInsert {
 							.getTime()));
 			krafa.setAudkenni(bfm.getClaimantsAccountId());// "037");
 			Upphaed upphaed = new Upphaed();
-			upphaed.setContent(new BigDecimal(100));// bfm.getAmount(number)));
+//			upphaed.setContent(new BigDecimal(100));// bfm.getAmount(number)));
+			upphaed.setContent(BigDecimal.valueOf(Long.parseLong(bfm.getAmount(number))));
 			krafa.setUpphaed(upphaed);
 			krafa.setTilvisunarnumer(batchString);
-			krafa.setEindagi(new Date(Calendar.getInstance().getTime()));// bfm.getFinalDueDate(number).getTime()));
+//			krafa.setEindagi(new Date(Calendar.getInstance().getTime()));// bfm.getFinalDueDate(number).getTime()));
+			krafa.setEindagi(new Date(bfm.getFinalDueDate(number).getTime()));
 			krafa.setAnnar_kostnadur(0);
 
 			/* Fields not needed... */
@@ -332,13 +335,14 @@ public class LIDataInsert /* extends Window */implements InvoiceDataInsert {
 	private PostMethod sendRequest(String fileName) {
 		HttpClient client = new HttpClient();
 		PostMethod post = new PostMethod(POST_METHOD);
+		post.getParams().setBooleanParameter(
+				HttpMethodParams.USE_EXPECT_CONTINUE, true);
 
 		try {
 			//post.setRequestBody(new FileInputStream(fileName));
 			post.setRequestEntity(new InputStreamRequestEntity(new FileInputStream(fileName)));
 			client.executeMethod(post);
-			// System.out.println("responseString: " +
-			// post.getResponseBodyAsString());
+			System.out.println("responseString: " + post.getResponseBodyAsString());
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		} catch (IOException e2) {
