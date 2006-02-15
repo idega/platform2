@@ -2574,7 +2574,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			if (!useAlternativePDFGenerationMethod) { // let's use old method
 				contractFile = createContractContentToApplication(application, locale, validFrom, changeStatus, hasBankId);
 			} else { // bundle property tells us to use new method
-				if (printingContext != null) {
+				if (printingContext == null) {
 					contractFile = createContractContentToApplicationAlternativeMethod(application, locale, validFrom, changeStatus, hasBankId);
 				}
 				else {
@@ -2688,8 +2688,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 	
 	private ICFile createContractContentToApplicationAlternativeMethod(ChildCareApplication application, Locale locale, IWTimestamp validFrom, boolean changeStatus, boolean hasBankId) {
-    PrintingContext pcx = new ChildCareContractFormContext(getIWApplicationContext(), application, locale, !changeStatus);
-    return createContractContentToApplicationAlternativeMethod(pcx, application, locale, validFrom, changeStatus, hasBankId);
+		PrintingContext pcx = new ChildCareContractFormContext(getIWApplicationContext(), application, locale, !changeStatus);
+		return createContractContentToApplicationAlternativeMethod(pcx, application, locale, validFrom, changeStatus, hasBankId);
 	}
 	
 	private ICFile createContractContentToApplicationAlternativeMethod(PrintingContext pcx, ChildCareApplication application, Locale locale, IWTimestamp validFrom, boolean changeStatus, boolean hasBankId) {
