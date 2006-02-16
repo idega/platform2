@@ -64,6 +64,16 @@ public interface CreditCardContract extends IDOEntity {
 	public void setDeleted(boolean deleted);
 
 	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.data.CreditCardContractBMPBean#setPersonalId
+	 */
+	public void setPersonalId(String personalId);
+
+	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.data.CreditCardContractBMPBean#setCompanyNumber
+	 */
+	public void setCompanyNumber(String companyNumber);
+
+	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.data.CreditCardContractBMPBean#getClubID
 	 */
 	public int getClubID();
@@ -112,5 +122,15 @@ public interface CreditCardContract extends IDOEntity {
 	 * @see is.idega.idegaweb.member.isi.block.accounting.data.CreditCardContractBMPBean#getDeleted
 	 */
 	public boolean getDeleted();
+
+	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.data.CreditCardContractBMPBean#getPersonalId
+	 */
+	public String getPersonalId();
+
+	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.data.CreditCardContractBMPBean#getCompanyNumber
+	 */
+	public String getCompanyNumber();
 
 }

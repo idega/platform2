@@ -23,6 +23,11 @@ public interface Bank extends IDOEntity {
 	public String getBankSSN();
 
 	/**
+	 * @see com.idega.block.finance.data.BankBMPBean#getPluginName
+	 */
+	public String getPluginName();
+
+	/**
 	 * @see com.idega.block.finance.data.BankBMPBean#setBankName
 	 */
 	public void setBankName(String bankName);
@@ -31,5 +36,10 @@ public interface Bank extends IDOEntity {
 	 * @see com.idega.block.finance.data.BankBMPBean#setBankSSN
 	 */
 	public void setBankSSN(String bankSSN);
+
+	/**
+	 * @see com.idega.block.finance.data.BankBMPBean#setPluginName
+	 */
+	public void setPluginName(String pluginName);
 
 }

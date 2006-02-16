@@ -30,7 +30,7 @@ import com.idega.util.IWTimestamp;
  * @author palli
  */
 public class EditTariffList extends CashierSubWindowTemplate {
-//	protected static final String ACTION_SUBMIT = "etl_submit";
+	protected static final String ACTION_SUBMIT = "etl_submit";
 
 	protected static final String ACTION_DELETE = "etl_delete";
 
@@ -51,20 +51,6 @@ public class EditTariffList extends CashierSubWindowTemplate {
 	protected static final String LABEL_CHILDREN = "isi_acc_etl_appl_children";
 
 	protected static final String LABEL_DELETE = "isi_acc_etl_delete";
-
-	// protected static final String PROPERTY_SKIP = "isi_acc_skip_assessment";
-
-/*	private static final String ERROR_NO_GROUP_SELECTED = "isi_acc_etl_no_group_selected";
-
-	private static final String ERROR_NO_TYPE_SELECTED = "isi_acc_etl_no_type_selected";
-
-	private static final String ERROR_NO_TEXT_ENTERED = "isi_acc_etl_no_text_entered";
-
-	private static final String ERROR_NO_AMOUNT_ENTERED = "isi_acc_etl_no_amount_entered";
-
-	private static final String ERROR_NO_FROM_DATE_SELECTED = "isi_acc_etl_no_from_date_selected";
-
-	private static final String ERROR_NO_TO_DATE_SELECTED = "isi_acc_etl_no_to_date_selected";*/
 
 	/**
 	 * 

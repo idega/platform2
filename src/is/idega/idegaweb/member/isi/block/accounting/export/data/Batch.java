@@ -10,6 +10,7 @@ import java.sql.Timestamp;
 
 
 import com.idega.block.finance.data.BankInfo;
+import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOEntity;
 
 /**
@@ -66,6 +67,16 @@ public interface Batch extends IDOEntity {
 	 * @see is.idega.idegaweb.member.isi.block.accounting.export.data.BatchBMPBean#setCreditCardFileName
 	 */
 	public void setCreditCardFileName(String fileName);
+
+	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.export.data.BatchBMPBean#setCreditCardFile
+	 */
+	public void setCreditCardFile(ICFile file);
+
+	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.export.data.BatchBMPBean#setCreditCardFileId
+	 */
+	public void setCreditCardFileId(int fileId);
 
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.export.data.BatchBMPBean#setBankInfoID
@@ -141,6 +152,16 @@ public interface Batch extends IDOEntity {
 	 * @see is.idega.idegaweb.member.isi.block.accounting.export.data.BatchBMPBean#getCreditCardFileName
 	 */
 	public String getCreditCardFileName();
+
+	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.export.data.BatchBMPBean#getCreditCardFile
+	 */
+	public ICFile getCreditCardFile();
+
+	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.export.data.BatchBMPBean#getCreditCardFileId
+	 */
+	public int getCreditCardFileId();
 
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.export.data.BatchBMPBean#getBankInfoID

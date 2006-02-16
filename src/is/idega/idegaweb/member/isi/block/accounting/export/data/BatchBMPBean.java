@@ -17,6 +17,7 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 import com.idega.block.finance.data.BankInfo;
+import com.idega.core.file.data.ICFile;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOQuery;
 
@@ -43,6 +44,8 @@ public class BatchBMPBean extends GenericEntity implements Batch {
 	protected final static String COLUMN_CC_CONTRACT = "cc_contract_id";
 
 	protected final static String COLUMN_CC_FILE_NAME = "cc_file_name";
+	
+	protected final static String COLUMN_CC_FILE = "cc_file_id";
 
 	// For the bank batches
 	protected final static String COLUMN_BANK_INFO = "bank_info_id";
@@ -77,6 +80,7 @@ public class BatchBMPBean extends GenericEntity implements Batch {
 		addManyToOneRelationship(COLUMN_CC_CONTRACT, CreditCardContract.class);
 		addAttribute(COLUMN_CC_FILE_NAME, "File name", true, true,
 				String.class, 255);
+		addAttribute(COLUMN_CC_FILE, "File", ICFile.class);
 
 		addManyToOneRelationship(COLUMN_BANK_INFO, BankInfo.class);
 		addOneToOneRelationship(COLUMN_FIN_BATCH, com.idega.block.finance.data.Batch.class);
@@ -121,6 +125,14 @@ public class BatchBMPBean extends GenericEntity implements Batch {
 
 	public void setCreditCardFileName(String fileName) {
 		setColumn(COLUMN_CC_FILE_NAME, fileName);
+	}
+	
+	public void setCreditCardFile(ICFile file) {
+		setColumn(COLUMN_CC_FILE, file);
+	}
+
+	public void setCreditCardFileId(int fileId) {
+		setColumn(COLUMN_CC_FILE, fileId);
 	}
 
 	public void setBankInfoID(int infoID) {
@@ -182,6 +194,14 @@ public class BatchBMPBean extends GenericEntity implements Batch {
 
 	public String getCreditCardFileName() {
 		return getStringColumnValue(COLUMN_CC_FILE_NAME);
+	}
+
+	public ICFile getCreditCardFile() {
+		return (ICFile) getColumnValue(COLUMN_CC_FILE);
+	}
+
+	public int getCreditCardFileId() {
+		return getIntColumnValue(COLUMN_CC_FILE);
 	}
 
 	public int getBankInfoID() {

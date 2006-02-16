@@ -34,6 +34,10 @@ public class CreditCardContractBMPBean extends GenericEntity implements
     protected final static String COLUMN_CARD_TYPE = "card_type_id";
 
     protected final static String COLUMN_DELETED = "deleted";
+    
+    protected final static String COLUMN_PERSONAL_ID = "personal_id";
+    
+    protected final static String COLUMN_COMPANY_NUMBER = "company_number";
 
     /*
      * (non-Javadoc)
@@ -58,6 +62,8 @@ public class CreditCardContractBMPBean extends GenericEntity implements
                 String.class);
         addManyToOneRelationship(COLUMN_CARD_TYPE, CreditCardType.class);
         addAttribute(COLUMN_DELETED, "Deleted", true, true, Boolean.class);
+        addAttribute(COLUMN_PERSONAL_ID, "Personal id", String.class, 20);
+        addAttribute(COLUMN_COMPANY_NUMBER, "Company number", String.class, 10);
     }
 
     public void setClubID(int id) {
@@ -100,6 +106,14 @@ public class CreditCardContractBMPBean extends GenericEntity implements
         setColumn(COLUMN_DELETED, deleted);
     }
     
+    public void setPersonalId(String personalId) {
+    		setColumn(COLUMN_PERSONAL_ID, personalId);
+    }
+    
+    public void setCompanyNumber(String companyNumber) {
+    		setColumn(COLUMN_COMPANY_NUMBER, companyNumber);
+    }
+    
     public int getClubID() {
         return getIntColumnValue(COLUMN_CLUB);
     }
@@ -138,6 +152,14 @@ public class CreditCardContractBMPBean extends GenericEntity implements
 
     public boolean getDeleted() {
         return getBooleanColumnValue(COLUMN_DELETED, false);
+    }
+    
+    public String getPersonalId() {
+    		return getStringColumnValue(COLUMN_PERSONAL_ID);
+    }
+    
+    public String getCompanyNumber() {
+    		return getStringColumnValue(COLUMN_COMPANY_NUMBER);
     }
     
     public Collection ejbFindAll() throws FinderException {

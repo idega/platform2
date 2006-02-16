@@ -16,12 +16,15 @@ import com.idega.data.GenericEntity;
  */
 public class BankBMPBean extends GenericEntity implements Bank {
 
+	protected final static String COLUMN_PLUGIN_NAME = "plugin"; 
+	
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
 		addAttribute(getColumnNameBankName(), "bank name", true, true,
 				String.class);
 		addAttribute(getColumnNameBankSSN(), "bank ssn", true, true,
 				String.class);
+		addAttribute(COLUMN_PLUGIN_NAME, "plugin", String.class);
 	}
 
 	public static String getEntityTableName() {
@@ -47,6 +50,10 @@ public class BankBMPBean extends GenericEntity implements Bank {
 	public String getBankSSN() {
 		return getStringColumnValue(getColumnNameBankSSN());
 	}
+	
+	public String getPluginName() {
+		return getStringColumnValue(COLUMN_PLUGIN_NAME);
+	}
 
 	public void setBankName(String bankName) {
 		setColumn(getColumnNameBankName(), bankName);
@@ -54,6 +61,10 @@ public class BankBMPBean extends GenericEntity implements Bank {
 
 	public void setBankSSN(String bankSSN) {
 		setColumn(getColumnNameBankSSN(), bankSSN);
+	}
+	
+	public void setPluginName(String pluginName) {
+		setColumn(COLUMN_PLUGIN_NAME, pluginName);
 	}
 
 	public Collection ejbFindAll() throws FinderException {
