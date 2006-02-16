@@ -27,6 +27,8 @@ public class MasterCardFileCreation implements CreditCardFileCreation {
 		FileWriter writer = new FileWriter(tempfile);
 		BufferedWriter bWriter = new BufferedWriter(writer);
 		
+		System.out.println("MasterCardFileCreation: file name = " + tempfile.getPath() + tempfile.getName());
+		
 		StringBuffer empty = new StringBuffer("");
 		for (int i = 0; i < 60; i++) {
 			empty.append("          ");

@@ -80,7 +80,7 @@ public class BatchBMPBean extends GenericEntity implements Batch {
 		addManyToOneRelationship(COLUMN_CC_CONTRACT, CreditCardContract.class);
 		addAttribute(COLUMN_CC_FILE_NAME, "File name", true, true,
 				String.class, 255);
-		addAttribute(COLUMN_CC_FILE, "File", ICFile.class);
+		addManyToOneRelationship(COLUMN_CC_FILE, ICFile.class);
 
 		addManyToOneRelationship(COLUMN_BANK_INFO, BankInfo.class);
 		addOneToOneRelationship(COLUMN_FIN_BATCH, com.idega.block.finance.data.Batch.class);

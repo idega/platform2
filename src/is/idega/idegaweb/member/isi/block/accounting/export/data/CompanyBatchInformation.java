@@ -4,7 +4,6 @@
 package is.idega.idegaweb.member.isi.block.accounting.export.data;
 
 
-
 import com.idega.data.IDOEntity;
 
 /**
@@ -12,6 +11,11 @@ import com.idega.data.IDOEntity;
  *
  */
 public interface CompanyBatchInformation extends IDOEntity {
+	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.export.data.CompanyBatchInformationBMPBean#getPrimaryKeyClass
+	 */
+	public Class getPrimaryKeyClass();
+
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.export.data.CompanyBatchInformationBMPBean#setCompanyNumber
 	 */

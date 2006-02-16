@@ -3,7 +3,6 @@
  */
 package is.idega.idegaweb.member.isi.block.accounting.export.data;
 
-
 import javax.ejb.FinderException;
 
 import com.idega.data.IDOFactory;

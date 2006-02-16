@@ -19,6 +19,7 @@ import java.util.Iterator;
 
 import com.idega.block.finance.data.BankInfo;
 import com.idega.business.IBOLookup;
+import com.idega.core.accesscontrol.business.NotLoggedOnException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
@@ -29,6 +30,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -67,10 +69,18 @@ public class SendFiles extends CashierSubWindowTemplate {
 	public boolean sendFiles(IWContext iwc) {
 		String dateFrom = iwc.getParameter(LABEL_DATE_FROM);
 		String dateTo = iwc.getParameter(LABEL_DATE_TO);
+		
+		String userName = "";
+		try {
+			User user = iwc.getCurrentUser();
+			userName = user.getName();
+		} catch (NotLoggedOnException e) {
+			userName = "automatic";
+		}
 
 		try {
 			return getExportBusiness(iwc).createFileFromContracts(dateFrom,
-					dateTo);
+					dateTo, userName);
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
@@ -241,6 +251,15 @@ public class SendFiles extends CashierSubWindowTemplate {
 					IWTimestamp sent = new IWTimestamp(batch.getSent());
 					t.add(sent.getDateString("dd.MM.yyyy HH:mm:ss"), 7, row);
 				}
+				
+				if (batch.getCreditCardFileId() > 0) {
+					String displayString = batch.getCreditCardFileName();
+					if (displayString == null) {
+						displayString = "File";
+					}
+					t.add(new Link(batch.getCreditCardFileId(), displayString), 8, row);				
+				}
+
 
 				row++;
 			}
