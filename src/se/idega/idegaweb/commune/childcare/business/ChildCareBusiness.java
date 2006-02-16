@@ -1508,7 +1508,7 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness, EmploymentT
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#sendMessageToParents
 	 */
 	public void sendMessageToParents(ChildCareApplication application, String subject, String body, String letterBody,
-			File attachment, boolean alwaysSendLetter, boolean sendToOtherParent);
+			File attachment, boolean alwaysSendLetter, boolean sendToOtherParent) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#isAfterSchoolApplication
