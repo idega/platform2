@@ -144,6 +144,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public static final String METADATA_HAS_CUSTODIAN_STUDIES = "has_studies";
 	public static final String METADATA_CUSTODIAN_STUDY = "studies";
 	public static final String METADATA_CUSTODIAN_STUDY_START = "study_start";
+	public static final String METADATA_CUSTODIAN_STUDY_END = "study_end";
 	public static final String METADATA_CAN_DISPLAY_CHILD_CARE_IMAGE = "can_display_child_care_image";
 	public static final String METADATA_OTHER_INFORMATION = "child_care_information";
 
