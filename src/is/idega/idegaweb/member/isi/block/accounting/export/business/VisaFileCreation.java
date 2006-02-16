@@ -23,7 +23,7 @@ import com.idega.util.IWTimestamp;
 public class VisaFileCreation implements CreditCardFileCreation {
 
 	public File createFile(CreditCardContract contract, Collection entries) throws IOException {
-		File tempfile = File.createTempFile("bat", null);
+		File tempfile = File.createTempFile(contract.getContractNumber(), null);
 		FileWriter writer = new FileWriter(tempfile);
 		BufferedWriter bWriter = new BufferedWriter(writer);
 		
@@ -151,7 +151,7 @@ public class VisaFileCreation implements CreditCardFileCreation {
 		CompanyBatchInformation info = null;
 		int seq = 0;
 		try {
-			info = ((CompanyBatchInformationHome) IDOLookup.getHome(CompanyBatchInformation.class)).findByPrimaryKey(contract.getCompanyNumber());
+			info = ((CompanyBatchInformationHome) IDOLookup.getHome(CompanyBatchInformation.class)).findByPrimaryKey(contract.getContractNumber());
 			String month = info.getBatchMonth();
 			if (month.equals(now.getDateString("MM"))) {
 				seq = info.getBatchNumber();
@@ -170,7 +170,7 @@ public class VisaFileCreation implements CreditCardFileCreation {
 		} catch (FinderException e) {
 			try {
 				info = ((CompanyBatchInformationHome) IDOLookup.getHome(CompanyBatchInformation.class)).create();
-				info.setCompanyNumber(contract.getCompanyNumber());
+				info.setCompanyNumber(contract.getContractNumber());
 				info.setBatchMonth(now.getDateString("MM"));
 				info.setBatchNumber(1);
 				info.store();
