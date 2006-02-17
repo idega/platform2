@@ -1309,6 +1309,11 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness, EmploymentT
 	public School getCurrentProviderByPlacement(int childID) throws java.rmi.RemoteException;
 
 	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getCurrentProviderByNotTerminatedPlacement
+	 */
+	public School getCurrentProviderByNotTerminatedPlacement(int childID) throws java.rmi.RemoteException;
+
+	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getLatestContract
 	 */
 	public ChildCareContract getLatestContract(int childID) throws java.rmi.RemoteException;

@@ -4892,6 +4892,32 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 		return null;
 	}
+	
+	/**
+	 * Works in almost the same way as getCurrentProviderByPlacement(int childID) 
+	 * except that if the placement has been terminated before today, then return null
+	 */
+	public School getCurrentProviderByNotTerminatedPlacement(int childID) {
+		ChildCareApplication application = getActiveApplicationByChild(childID);
+		if (application != null) {
+			return application.getProvider();
+		}
+		else {
+			ChildCareContract contract = getLatestTerminatedContract(childID);
+			if (contract != null) {
+				IWTimestamp now = new IWTimestamp();
+				Date terminatedDate = contract.getTerminatedDate();
+				if (terminatedDate != null && terminatedDate.before(now.getDate())) {					
+					return null;
+				}
+				else {
+					return contract.getApplication().getProvider();
+				}
+			}
+		}
+
+		return null;		
+	}	
 
 	public ChildCareContract getLatestContract(int childID) {
 		try {
