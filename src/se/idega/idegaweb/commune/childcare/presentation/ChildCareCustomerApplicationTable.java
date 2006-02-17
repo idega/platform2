@@ -42,7 +42,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.108.2.10 2006/02/09 15:58:53 dainis Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.108.2.11 2006/02/17 16:59:39 dainis Exp $
  * @since 12.2.2003 
  */
 
@@ -760,8 +760,8 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 			delete.setOnClick("return confirm('" + localize("child_care.delete_offer_confirm", "Are you sure you want to delete this offer?") + "')");
 			delete.addParameter(PARAMETER_APPLICATION_ID, String.valueOf(acceptedApplication.getPrimaryKey()));
 			delete.addParameter(PARAMETER_DELETE_OFFER, String.valueOf(true));
-			layoutTbl.add(delete, 5, row - 1);
-			layoutTbl.mergeCells(5, row - 1, 5, row);
+			layoutTbl.add(delete, 5, row - 2);
+			layoutTbl.mergeCells(5, row - 2, 5, row-1);
 
 			boolean hasBankId = false;
 			hasBankId = new NBSLoginBusinessBean().hasBankLogin(acceptedApplication.getOwner());
@@ -782,9 +782,19 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 						layoutTbl.add(signBtn, 3, row++);
 					}
 				}
-			}			
+			}
+			
+		    //if there is contract, let user print it 
+			if (acceptedApplication.getApplicationStatus() == getChildCareBusiness(iwc).getStatusContract()) {
+				GenericButton contractPopup = getShowContractButton(iwc, acceptedApplication);
+				if (contractPopup != null) {
+					layoutTbl.setHeight(row++, 12);				
+					layoutTbl.add(contractPopup, 3, row++);
+				}
+			}						
+			
 		}
-	
+		
 		ChildCareApplication activeApplication = this.getChildCareBusiness(iwc).getActiveApplicationByChild(childID); 
 		
 		if (activeApplication != null) {
@@ -829,10 +839,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 						layoutTbl.add(getSmallText(localize(START_CARETIME) + ":"), 1, row);
 						layoutTbl.add(getSmallText(startdate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT) + ", " + careTime), 3, row++);
 					}
-				}
-				
-				
-				
+				}					
 								
 				layoutTbl.setHeight(row++, 12);
 				GenericButton careTimePopup = getButton(new GenericButton("new_care_time", localize(NEW_CARETIME)));
@@ -865,8 +872,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 				}
 
 				if (archive != null) {
-					GenericButton contractPopup = getButton(new GenericButton("contract", localize("child_care.show_contract", "Show contract")));
-					contractPopup.setFileToOpen(archive.getContractFileID());
+					GenericButton contractPopup = getShowContractButton(iwc, activeApplication);
 					layoutTbl.add(Text.getNonBrakingSpace(), 3, row);
 					layoutTbl.add(contractPopup, 3, row);
 				}
@@ -887,6 +893,16 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 			layoutTbl.mergeCells(1, row, 3, row);
 		}*/
 		return layoutTbl;
+	}
+
+	private GenericButton getShowContractButton(IWContext iwc, ChildCareApplication application) throws RemoteException {
+		ChildCareContract archive = getChildCareBusiness(iwc).getValidContract(((Integer)application.getPrimaryKey()).intValue());
+		if (archive != null) {
+			GenericButton contractPopup = getButton(new GenericButton("contract", localize("child_care.show_contract", "Show contract")));
+			contractPopup.setFileToOpen(archive.getContractFileID());
+			return contractPopup;
+		}
+		return null;
 	}
 
 	
