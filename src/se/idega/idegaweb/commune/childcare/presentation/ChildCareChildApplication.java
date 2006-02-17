@@ -94,10 +94,9 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		parseAction(iwc);
 		
 		if (child != null) {
-			try {
-				currentProvider = getBusiness().getCurrentProviderByPlacement(((Integer) child.getPrimaryKey()).intValue());
+			try {				
+				currentProvider = getBusiness().getCurrentProviderByNotTerminatedPlacement(((Integer) child.getPrimaryKey()).intValue());
 				hasActivePlacement = getBusiness().hasActiveApplication(((Integer) child.getPrimaryKey()).intValue(), CareConstants.CASE_CODE_KEY);
-				
 			}
 			catch (RemoteException re) {
 				currentProvider = null;
