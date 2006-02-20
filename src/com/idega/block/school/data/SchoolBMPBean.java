@@ -89,7 +89,8 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 	public final static String JUNIOR_HIGH_SCHOOL = "junior_high_school_id";    
 	public final static String AFTER_SCHOOL_CARE_PROVIDER = "after_school_care_id";    
     /** Dainis 23 Sep 2005 */
-    public final static String SORT_BY_BIRTHDATE = "sort_by_birthdate";   
+    public final static String SORT_BY_BIRTHDATE = "sort_by_birthdate";
+    public static final String HAS_REFRESHMENTS = "has_refreshments";
 	
 	public void initializeAttributes() {
 		this.addAttribute(getIDColumnName());
@@ -142,6 +143,7 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 		addManyToOneRelationship(JUNIOR_HIGH_SCHOOL, School.class);
         // Dainis 23 Sep 2005
         this.addAttribute(SORT_BY_BIRTHDATE, "Sorted by date of birth", true, true, Boolean.class);
+        addAttribute(HAS_REFRESHMENTS, "Has refreshments", Boolean.class);
 	}
 	public String getEntityName() {
 		return SCHOOL;
@@ -177,6 +179,10 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 	
 	public Object getJuniorHighSchoolPK() {
 		return getIntegerColumnValue(JUNIOR_HIGH_SCHOOL);
+	}
+	
+	public boolean hasRefreshments() {
+		return getBooleanColumnValue(HAS_REFRESHMENTS);
 	}
 	
 	public void setJuniorHighSchool(School school) {
@@ -279,6 +285,10 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 	}
 	public void setSchoolVisitAddress(String visitaddress) {
 		this.setColumn(VISITADDRESS, visitaddress);
+	}
+	
+	public void setHasRefreshments(boolean hasRefreshments) {
+		setColumn(HAS_REFRESHMENTS, hasRefreshments);
 	}
 
 	public String getSchoolZipArea() {
@@ -634,6 +644,22 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 		return types;
 	}
 
+	public Collection findRelatedSchoolTypesWithFreetime(SchoolCategory category) throws IDORelationshipException {
+		Collection coll = findRelatedSchoolTypes();
+		Collection types = new ArrayList();
+		if (coll != null) {
+			Iterator iter = coll.iterator();
+			while (iter.hasNext()) {
+				SchoolType type = (SchoolType) iter.next();
+				if (type.getSchoolCategory().equals(category.getCategory())&&type.getIsFamilyFreetimeType()) {
+					types.add(type);
+				}
+			}
+		}
+		return types;
+	}
+
+	
 	public Collection findRelatedSchoolYears() throws com.idega.data.IDORelationshipException {
 		return super.idoGetRelatedEntities(SchoolYear.class);
 	}
