@@ -36,13 +36,13 @@ import com.idega.util.IWTimestamp;
 public class ExportBusinessBean extends IBOServiceBean implements
 		ExportBusiness {
 
-	public boolean createFileFromContracts(String dateFrom, String dateTo) {
-		if (!BatchRunning.reserveSendFileBatch()) {
+	public boolean createFileFromContracts(String dateFrom, String dateTo, String userName) {
+/*		if (!BatchRunning.reserveSendFileBatch()) {
 			return false;
 		}
 
-		Thread exportThread = new ExportBusinessThread(dateFrom, dateTo, true);
-		exportThread.start();
+		Thread exportThread = new ExportBusinessThread(dateFrom, dateTo, true, userName);
+		exportThread.start();*/
 
 		return true;
 	}

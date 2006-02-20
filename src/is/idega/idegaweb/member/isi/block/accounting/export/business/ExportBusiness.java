@@ -19,8 +19,8 @@ public interface ExportBusiness extends IBOService {
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.export.business.ExportBusinessBean#createFileFromContracts
 	 */
-	public boolean createFileFromContracts(String dateFrom, String dateTo)
-			throws java.rmi.RemoteException;
+	public boolean createFileFromContracts(String dateFrom, String dateTo,
+			String userName) throws java.rmi.RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.export.business.ExportBusinessBean#getConfiguration
