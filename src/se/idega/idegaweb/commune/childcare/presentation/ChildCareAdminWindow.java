@@ -1380,8 +1380,11 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		School school = getSession().getProvider();
 		Collection availableTypes = new ArrayList();
+		SchoolBusiness schBuiz = getBusiness().getSchoolBusiness();
+		SchoolCategory schcategory = schBuiz.getCategoryChildcare();		
+		
 		try {
-			availableTypes = school.getSchoolTypes();
+			availableTypes = school.findRelatedSchoolTypesWithFreetime(schcategory); //school.getSchoolTypes();
 		}
 		catch (IDORelationshipException ex) {
 			ex.printStackTrace();
@@ -2280,10 +2283,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		
 		if((c!='F')&&(c!='R')) return;
 		User ch = application.getChild(); 
-//		IWTimestamp stamp = new IWTimestamp();
 		String messageBody,messageSubject;
 		Object[] arguments = { ch.getName(), PersonalIDFormatter.format(ch.getPersonalID(), iwc.getCurrentLocale()), date.getDateString("yyyy-MM-dd"), application.getProvider().getSchoolName() };
-		messageBody =  localize("ccaw_extra_message_body","Contract for {0}, {1} has been ended from {2}. You will receive the termination contract in regular mail in a couple of days. Please sign it and return it to the provider as soon as possible. Your placement won’t be completely ended until it is returned. \r\n \r\n Best regards, \r\n {3}"); 
+		messageBody =  localize("ccaw_extra_message_body","Contract for {0}, {1} has been ended from {2}. You will receive the termination contract in regular mail in a couple of days. Please sign it and return it to the provider as soon as possible. Your placement wonï¿½t be completely ended until it is returned. \r\n \r\n Best regards, \r\n {3}"); 
 		
 		messageBody = MessageFormat.format(messageBody, arguments);
 		messageSubject = localize("ccaw_extra_message_subject", "End of contract");
@@ -2625,7 +2627,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			buffer.append("\n\t\t if (d < ").append(IWTimestamp.RightNow().getDateString("yyyyMMdd")).append(") {");
 			buffer.append("\n\t\t\t dateMessage = '").append(localize("school.dates_back_in_time_not_allowed", "You can not choose a date back in time.")).append("';");
 		}
-		
+
 		buffer.append("\n\t\t }");
 
 		/* commented out so two future contracts can be created
