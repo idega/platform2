@@ -130,6 +130,28 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 		Collection coll = this.idoFindIDsBySQL(sql.toString());
 		return coll;
 	}
+	
+	public Collection ejbFindBySchoolAndTypes(School school, int[] userTypes) throws FinderException {
+		StringBuffer query = new StringBuffer();
+		query.append("select * ");
+		query.append("from   sch_school_user, ic_user ");
+		query.append("where ");
+		query.append("		ic_user.ic_user_id = sch_school_user.ic_user_id ");
+		query.append("	and sch_school_user.sch_school_id=" + school.getPrimaryKey().toString() + " ");
+		
+		if (userTypes.length > 0) {
+			query.append(" and (");
+			for (int i = 0; i < userTypes.length; i++) {
+				if(i != 0) {
+					query.append(" or ");					
+				}
+				query.append(" sch_school_user.user_type = " + userTypes[i]);
+			}
+			query.append(") ");
+		}
+		
+		query.append("order by ");
+		query.append("	ic_user.last_name asc, ic_user.first_name asc ");			 
 
 	public Collection ejbFindBySchoolAndIsEconomicalResponsible (School school)
 		throws FinderException {
