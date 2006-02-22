@@ -153,6 +153,10 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 		query.append("order by ");
 		query.append("	ic_user.last_name asc, ic_user.first_name asc ");			 
 
+		Collection coll = this.idoFindIDsBySQL(query.toString());		
+		return coll;
+	}
+
 	public Collection ejbFindBySchoolAndIsEconomicalResponsible (School school)
 		throws FinderException {
 		final IDOQuery sql = idoQuery ();

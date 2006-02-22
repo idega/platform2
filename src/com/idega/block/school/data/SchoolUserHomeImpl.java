@@ -1,85 +1,108 @@
+/**
+ * 
+ */
 package com.idega.block.school.data;
 
-
-public class SchoolUserHomeImpl extends com.idega.data.IDOFactory implements SchoolUserHome
-{
- protected Class getEntityInterfaceClass(){
-  return SchoolUser.class;
- }
+import java.util.Collection;
+import javax.ejb.FinderException;
+import com.idega.data.IDOFactory;
+import com.idega.user.data.User;
 
 
- public SchoolUser create() throws javax.ejb.CreateException{
-  return (SchoolUser) super.createIDO();
- }
+/**
+ * <p>
+ * TODO Dainis Describe Type SchoolUserHomeImpl
+ * </p>
+ *  Last modified: $Date: 2004/06/28 09:09:50 $ by $Author: Dainis $
+ * 
+ * @author <a href="mailto:Dainis@idega.com">Dainis</a>
+ * @version $Revision: 1.1 $
+ */
+public class SchoolUserHomeImpl extends IDOFactory implements SchoolUserHome {
 
+	protected Class getEntityInterfaceClass() {
+		return SchoolUser.class;
+	}
 
-public java.util.Collection findBySchool(com.idega.block.school.data.School p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((SchoolUserBMPBean)entity).ejbFindBySchool(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public SchoolUser create() throws javax.ejb.CreateException {
+		return (SchoolUser) super.createIDO();
+	}
 
-public java.util.Collection findBySchoolAndDepartment(com.idega.block.school.data.School p0,int p1)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((SchoolUserBMPBean)entity).ejbFindBySchoolAndDepartment(p0,p1);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public SchoolUser findByPrimaryKey(Object pk) throws javax.ejb.FinderException {
+		return (SchoolUser) super.findByPrimaryKeyIDO(pk);
+	}
 
-public java.util.Collection findBySchoolAndMainHeadmaster(com.idega.block.school.data.School p0,int p1,boolean p2)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((SchoolUserBMPBean)entity).ejbFindBySchoolAndMainHeadmaster(p0,p1,p2);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public Collection findBySchoolAndType(School school, int userType) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolUserBMPBean) entity).ejbFindBySchoolAndType(school, userType);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public java.util.Collection findBySchoolAndIsEconomicalResponsible(com.idega.block.school.data.School p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((SchoolUserBMPBean)entity).ejbFindBySchoolAndIsEconomicalResponsible(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public Collection findBySchoolAndTypes(School school, int[] userTypes) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolUserBMPBean) entity).ejbFindBySchoolAndTypes(school, userTypes);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public java.util.Collection findBySchoolAndType(com.idega.block.school.data.School p0,int p1)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((SchoolUserBMPBean)entity).ejbFindBySchoolAndType(p0,p1);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public Collection findBySchoolAndIsEconomicalResponsible(School school) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolUserBMPBean) entity).ejbFindBySchoolAndIsEconomicalResponsible(school);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public java.util.Collection findBySchoolAndTypeAndDepartment(com.idega.block.school.data.School p0,int p1,int p2)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((SchoolUserBMPBean)entity).ejbFindBySchoolAndTypeAndDepartment(p0,p1,p2);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public Collection findBySchoolAndTypeAndDepartment(School school, int userType, int departmentID)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolUserBMPBean) entity).ejbFindBySchoolAndTypeAndDepartment(school, userType,
+				departmentID);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public java.util.Collection findBySchoolAndUser(com.idega.block.school.data.School p0,com.idega.user.data.User p1)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((SchoolUserBMPBean)entity).ejbFindBySchoolAndUser(p0,p1);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public Collection findBySchoolAndDepartment(School school, int departmentID) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolUserBMPBean) entity).ejbFindBySchoolAndDepartment(school, departmentID);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public java.util.Collection findByUser(com.idega.user.data.User p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((SchoolUserBMPBean)entity).ejbFindByUser(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public Collection findBySchoolAndMainHeadmaster(School school, int userType, boolean main_headmaster)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolUserBMPBean) entity).ejbFindBySchoolAndMainHeadmaster(school, userType,
+				main_headmaster);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
- public SchoolUser findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (SchoolUser) super.findByPrimaryKeyIDO(pk);
- }
+	public Collection findByUser(User user) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolUserBMPBean) entity).ejbFindByUser(user);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
+	public Collection findBySchoolAndUser(School school, User user) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolUserBMPBean) entity).ejbFindBySchoolAndUser(school, user);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public java.lang.Object getSchoolUserId(com.idega.block.school.data.School p0,com.idega.user.data.User p1,int p2)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.lang.Object theReturn = ((SchoolUserBMPBean)entity).ejbHomeGetSchoolUserId(p0,p1,p2);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
+	public Collection findBySchool(School school) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolUserBMPBean) entity).ejbFindBySchool(school);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-
+	public Object getSchoolUserId(School school, User user, int userType) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object theReturn = ((SchoolUserBMPBean) entity).ejbHomeGetSchoolUserId(school, user, userType);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
 }
