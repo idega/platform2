@@ -244,6 +244,21 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 		}
 		return users;
 	}
+	
+	/**
+	 * Gets the Users of a specific types for School school
+	 * @return A collection of com.idega.user.data.User entites
+	 */
+	public Collection getUsers(School school, int[] userTypes) throws RemoteException, FinderException {
+		Collection schUsers = getSchoolUserHome().findBySchoolAndTypes(school, userTypes);
+		Collection users = new Vector();
+		Iterator iter = schUsers.iterator();
+		while (iter.hasNext()) {
+			SchoolUser sUser = (SchoolUser)iter.next();
+			users.add(sUser.getUser());
+		}
+		return users;
+	}	
 
 	/**Malin
 		 * Gets the Users of a specific type for School school and usertype and specific department

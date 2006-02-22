@@ -1,23 +1,22 @@
-/*
- * Created on 2005-maj-03
- *
- * To change the template for this generated file go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+/**
+ * 
  */
 package com.idega.block.school.business;
 
-
-
 import com.idega.business.IBOHomeImpl;
 
+
 /**
- * @author Malin
- *
- * To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * <p>
+ * TODO Dainis Describe Type SchoolUserBusinessHomeImpl
+ * </p>
+ *  Last modified: $Date: 2004/06/28 09:09:50 $ by $Author: Dainis $
+ * 
+ * @author <a href="mailto:Dainis@idega.com">Dainis</a>
+ * @version $Revision: 1.1 $
  */
-public class SchoolUserBusinessHomeImpl extends IBOHomeImpl implements
-		SchoolUserBusinessHome {
+public class SchoolUserBusinessHomeImpl extends IBOHomeImpl implements SchoolUserBusinessHome {
+
 	protected Class getBeanInterfaceClass() {
 		return SchoolUserBusiness.class;
 	}
@@ -25,5 +24,4 @@ public class SchoolUserBusinessHomeImpl extends IBOHomeImpl implements
 	public SchoolUserBusiness create() throws javax.ejb.CreateException {
 		return (SchoolUserBusiness) super.createIBO();
 	}
-
 }
