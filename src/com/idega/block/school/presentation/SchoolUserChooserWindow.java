@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolUserChooserWindow.java,v 1.3 2005/06/07 12:35:28 laddi Exp $ Created on
+ * $Id: SchoolUserChooserWindow.java,v 1.3.2.1 2006/02/22 15:57:58 dainis Exp $ Created on
  * 24.2.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -26,7 +26,7 @@ import com.idega.user.presentation.UserChooserWindow;
  * Last modified: 24.2.2005 15:06:52 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna </a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.3.2.1 $
  */
 public class SchoolUserChooserWindow extends UserChooserWindow {
 
@@ -43,7 +43,14 @@ public class SchoolUserChooserWindow extends UserChooserWindow {
 	public School getProvider(IWContext iwc) {
 		School _provider = null;
 		try {
-			_provider = getSchoolBusiness(iwc).getSchool(iwc.getParameter(SchoolUserChooser.PARAMETER_SCHOOL_ID));
+			if (iwc.isParameterSet(SchoolUserChooser.PARAMETER_SCHOOL_ID)) {
+				_provider = getSchoolBusiness(iwc).getSchool(iwc.getParameter(SchoolUserChooser.PARAMETER_SCHOOL_ID));
+				if (iwc.getSessionAttribute(SchoolUserChooser.PARAMETER_SCHOOL_ID) == null) {
+					iwc.setSessionAttribute(SchoolUserChooser.PARAMETER_SCHOOL_ID, _provider);
+				}
+			} else {
+				_provider = (School) iwc.getSessionAttribute(SchoolUserChooser.PARAMETER_SCHOOL_ID);
+			}
 		}
 		catch (RemoteException ex) {
 			ex.printStackTrace();
@@ -73,16 +80,19 @@ public class SchoolUserChooserWindow extends UserChooserWindow {
 		}
 		try {
 			SchoolUserBusiness biz = getSchoolUserBusiness(iwc);
-			users = biz.getUsers(getProvider(iwc), SchoolUserBusinessBean.USER_TYPE_HEADMASTER);
-			users.addAll(biz.getUsers(getProvider(iwc), SchoolUserBusinessBean.USER_TYPE_ASSISTANT_HEADMASTER));
-			users.addAll(biz.getUsers(getProvider(iwc), SchoolUserBusinessBean.USER_TYPE_IB_COORDINATOR));
-			users.addAll(biz.getUsers(getProvider(iwc), SchoolUserBusinessBean.USER_TYPE_STUDY_AND_WORK_COUNCEL));
-			users.addAll(biz.getUsers(getProvider(iwc), SchoolUserBusinessBean.USER_TYPE_TEACHER));
-			users.addAll(biz.getUsers(getProvider(iwc), SchoolUserBusinessBean.USER_TYPE_WEB_ADMIN));
-			users.addAll(biz.getUsers(getProvider(iwc), SchoolUserBusinessBean.USER_TYPE_SCHOOL_MASTER));
-			users.addAll(biz.getUsers(getProvider(iwc), SchoolUserBusinessBean.USER_TYPE_CONTACT_PERSON));
-			users.addAll(biz.getUsers(getProvider(iwc), SchoolUserBusinessBean.USER_TYPE_EXPEDITION));
-			users.addAll(biz.getUsers(getProvider(iwc), SchoolUserBusinessBean.USER_TYPE_PROJECT_MANAGER));
+			int[] userTypes = {
+					SchoolUserBusinessBean.USER_TYPE_HEADMASTER, 
+					SchoolUserBusinessBean.USER_TYPE_ASSISTANT_HEADMASTER, 
+					SchoolUserBusinessBean.USER_TYPE_IB_COORDINATOR,
+					SchoolUserBusinessBean.USER_TYPE_STUDY_AND_WORK_COUNCEL,
+					SchoolUserBusinessBean.USER_TYPE_TEACHER,
+					SchoolUserBusinessBean.USER_TYPE_WEB_ADMIN,
+					SchoolUserBusinessBean.USER_TYPE_SCHOOL_MASTER,
+					SchoolUserBusinessBean.USER_TYPE_CONTACT_PERSON,
+					SchoolUserBusinessBean.USER_TYPE_EXPEDITION,
+					SchoolUserBusinessBean.USER_TYPE_PROJECT_MANAGER};			
+			
+			users = biz.getUsers(getProvider(iwc), userTypes);
 		}
 		catch (FinderException ex) {
 			ex.printStackTrace();
