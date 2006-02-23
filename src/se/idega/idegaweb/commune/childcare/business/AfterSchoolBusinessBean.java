@@ -16,6 +16,7 @@ import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
+import se.idega.idegaweb.commune.business.Constants;
 import se.idega.idegaweb.commune.care.business.PlacementHelper;
 import se.idega.idegaweb.commune.care.data.AfterSchoolChoice;
 import se.idega.idegaweb.commune.care.data.AfterSchoolChoiceHome;
@@ -25,13 +26,17 @@ import se.idega.idegaweb.commune.childcare.data.AfterSchoolCareDaysHome;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessageHome;
 import se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness;
-
+import com.idega.block.process.business.CaseBusiness;
+import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseStatus;
+import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolType;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOCreateException;
@@ -48,8 +53,12 @@ import com.idega.util.IWTimestamp;
  * @author aron
  * @version 1.0
  */
-public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements ChildCareBusiness, AfterSchoolBusiness {
+public class AfterSchoolBusinessBean extends CaseBusinessBean implements CaseBusiness, AfterSchoolBusiness {
 	
+	public String getBundleIdentifier() {
+		return Constants.IW_BUNDLE_IDENTIFIER;
+	}
+
 	private AfterSchoolChoiceHome getAfterSchoolChoiceHome() {
 		try {
 			return (AfterSchoolChoiceHome) IDOLookup.getHome(AfterSchoolChoice.class);
@@ -112,9 +121,20 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 		}
 	}
 	
+	public boolean hasCancelledApplication(User child, SchoolSeason season) {
+		String[] caseStatus = { getCaseStatusCancelled().getStatus() };
+		try{
+			getAfterSchoolChoiceHome().findByChildAndChoiceNumberAndSeason((Integer) child.getPrimaryKey(), new Integer(1), (Integer) season.getPrimaryKey(), caseStatus);
+			return false;
+		}
+		catch (FinderException fe) {
+			return true;
+		}
+	}
+	
 	public AfterSchoolChoice findChoiceByChild(User child, SchoolSeason season, int choiceNumber) throws FinderException {
 		String[] caseStatus = { getCaseStatusPreliminary().getStatus(), getCaseStatusReady().getStatus(), getCaseStatusContract().getStatus(), getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus(), getCaseStatusInactive().getStatus() };
-		return getAfterSchoolChoiceHome().findByChildAndChoiceNumberAndSeason((Integer) child.getPrimaryKey(), new Integer(choiceNumber), (Integer) season.getPrimaryKey(), caseStatus);
+		return getAfterSchoolChoiceHome().findByChildAndChoiceNumberAndSeason(new Integer(child.getPrimaryKey().toString()), new Integer(choiceNumber), new Integer(season.getPrimaryKey().toString()), caseStatus);
 	}
 
 	public boolean acceptAfterSchoolChoice(Object afterSchoolChoiceID, User performer) {
@@ -169,7 +189,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 			SchoolSeason season, String subject, String body, boolean isFClassAndPrio) throws CreateException, RemoteException {
 		if (season == null) {
 			try {
-				season = getCareBusiness().getCurrentSeason();
+				season = getChildCareBusiness().getCareBusiness().getCurrentSeason();
 			}
 			catch (FinderException fex) {
 				season = null;
@@ -205,10 +225,16 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 		stamp.addSeconds(1 - choiceNumber.intValue());
 		choice.setCreated(stamp.getTimestamp());
 		choice.setCaseStatus(caseStatus);
-		choice.setApplicationStatus(getStatusSentIn());
+		choice.setApplicationStatus(getChildCareBusiness().getStatusSentIn());
 		choice.setHasPriority(true);
+		                                                                        
+
+		String subjectP = getLocalizedString("After_school_care_request_subject", "After school care request");
+		String bodyP = getLocalizedString("After_school_care_request_body", "After school care request from {0}, {3}.");
+		getChildCareBusiness().sendMessageToProvider(choice, subjectP, bodyP);
+		
 		if (caseStatus.equals(getCaseStatusPreliminary())) {
-			sendMessageToParents(choice, subject, body);
+			getChildCareBusiness().sendMessageToParents(choice, subject, body);
 		}
 		if (parentCase != null)
 			choice.setParentCase(parentCase);
@@ -216,8 +242,8 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 		if(isFClassAndPrio){
 			choice.setFClass(true);			
 			
-			School provider = getSchoolBusiness().getSchool(providerID);
-			User applyingChild = getUserBusiness().getUser(childID);
+			School provider = getChildCareBusiness().getSchoolBusiness().getSchool(providerID);
+			User applyingChild = getChildCareBusiness().getUserBusiness().getUser(childID);
 			SchoolChoiceBusiness scb = getSchoolChoiceBusiness();
 			
 			if(scb.hasPriority(provider, choice.getOwner(), applyingChild))	{		
@@ -290,7 +316,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 
 	private boolean isFamilyFreetime(Integer providerID) {
 		try {
-			School provider = getSchoolBusiness().getSchool(providerID);
+			School provider = getChildCareBusiness().getSchoolBusiness().getSchool(providerID);
 			Collection types = provider.findRelatedSchoolTypes();
 			Iterator iter = types.iterator();
 			while (iter.hasNext()) {
@@ -309,7 +335,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 		return false;
 	}
 
-	public Collection createContractsForChildrenWithSchoolPlacement(int providerId, User user, Locale locale) {
+	public Collection createContractsForChildrenWithSchoolPlacement(int providerId, User user, Locale locale) throws RemoteException {
 		Collection users = new ArrayList();
 		Collection applications = findChoicesByProvider(providerId, "c.QUEUE_DATE");
 		Iterator iter = applications.iterator();
@@ -317,15 +343,15 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 			ChildCareApplication application = (ChildCareApplication) iter.next();
 			boolean hasSchoolPlacement = false;
 			try {
-				hasSchoolPlacement = getSchoolBusiness().hasActivePlacement(application.getChildId(), providerId,
-						getSchoolBusiness().getCategoryElementarySchool());
+				hasSchoolPlacement = getChildCareBusiness().getSchoolBusiness().hasActivePlacement(application.getChildId(), providerId,
+						getChildCareBusiness().getSchoolBusiness().getCategoryElementarySchool());
 			}
 			catch (RemoteException e) {
 			}
-			if (hasSchoolPlacement && (application.getApplicationStatus() == getStatusSentIn())) {
+			if (hasSchoolPlacement && (application.getApplicationStatus() == getChildCareBusiness().getStatusSentIn())) {
 				Date date = application.getFromDate();
 				try {
-					PlacementHelper helper = getPlacementHelper((Integer) application.getPrimaryKey());
+					PlacementHelper helper = getChildCareBusiness().getPlacementHelper((Integer) application.getPrimaryKey());
 					java.util.Date earliestDate = helper.getEarliestPlacementDate();
 					if (earliestDate != null) {
 						date = new Date(earliestDate.getTime());
@@ -350,7 +376,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 				else {
 					continue;
 				}
-				ICFile contractFile = assignContractToApplication(((Integer) application.getPrimaryKey()).intValue(), -1, null, null, -1, user,
+				ICFile contractFile = getChildCareBusiness().assignContractToApplication(((Integer) application.getPrimaryKey()).intValue(), -1, null, null, -1, user,
 						locale, true);
 				if (contractFile != null) {
 					try {
@@ -361,7 +387,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 						message.setBody("");
 						message.setMessageData(contractFile);
 						message.store();
-						getMessageBusiness().flagMessageAsPrinted(user, message);
+						getChildCareBusiness().getMessageBusiness().flagMessageAsPrinted(user, message);
 					}
 					catch (CreateException ce) {
 						ce.printStackTrace();
@@ -433,8 +459,8 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 
 	public SchoolClass getDefaultGroup(Object schoolPK, Object seasonPK) {
 		try {
-			School school = getSchoolBusiness().getSchool(schoolPK);
-			SchoolSeason season = getSchoolBusiness().getSchoolSeason(seasonPK);
+			School school = getChildCareBusiness().getSchoolBusiness().getSchool(schoolPK);
+			SchoolSeason season = getChildCareBusiness().getSchoolBusiness().getSchoolSeason(seasonPK);
 			return getDefaultGroup(school, season);
 		}
 		catch (RemoteException re) {
@@ -445,7 +471,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 	public SchoolClass getDefaultGroup(School school, SchoolSeason season) {
 		try {
 			try {
-				Collection groups = getSchoolBusiness().getSchoolClassHome().findBySchoolAndSeason(school, season);
+				Collection groups = getChildCareBusiness().getSchoolBusiness().getSchoolClassHome().findBySchoolAndSeason(school, season);
 				if (!groups.isEmpty()) {
 					Iterator iter = groups.iterator();
 					while (iter.hasNext()) {
@@ -456,7 +482,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 			}
 			catch (FinderException fe) {
 				try {
-					SchoolClass group = getSchoolBusiness().getSchoolClassHome().create();
+					SchoolClass group = getChildCareBusiness().getSchoolBusiness().getSchoolClassHome().create();
 					group.setSchool(school);
 					group.setSchoolSeason(season);
 					group.setValid(true);
@@ -474,37 +500,49 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 			throw new IBORuntimeException(re);
 		}
 	}
+
+	public AfterSchoolChoice storeAfterSchoolCare(IWTimestamp stamp, User user, User child, School provider, String message, SchoolSeason season, int[] days, String[] timeOfDeparture, boolean[] pickedUp, String payerName, String payerPersonalID, String cardType, String cardNumber, int validMonth, int validYear) {
+		return storeAfterSchoolCare(stamp, user, child, provider, message, season, days, timeOfDeparture, pickedUp, false, payerName, payerPersonalID, cardType, cardNumber, validMonth, validYear);
+	}
 	
-	public boolean storeAfterSchoolCare(IWTimestamp stamp, User user, User child, School provider, String message, SchoolSeason season, int[] days, String[] timeOfDeparture, boolean[] pickedUp, String payerName, String payerPersonalID, String cardType, String cardNumber, int validMonth, int validYear) {
+	public AfterSchoolChoice storeAfterSchoolCare(IWTimestamp stamp, User user, User child, School provider, String message, SchoolSeason season, int[] days, String[] timeOfDeparture, boolean[] pickedUp, boolean wantsRefreshments, String payerName, String payerPersonalID, String cardType, String cardNumber, int validMonth, int validYear) {
 		try {
 			String subject = getLocalizedString("application.after_school_choice_received_subject", "After school care choice received");
 			String body = getLocalizedString("application.after_school_choice_received_body", "{1} has received the application for an after school care placing for {0}, {2}.  The application will be processed.");
 
 			AfterSchoolChoice choice = createAfterSchoolChoice(stamp, user, (Integer) child.getPrimaryKey(), (Integer) provider.getPrimaryKey(), new Integer(1), message, getCaseStatusPreliminary(), null, season.getSchoolSeasonStart(), season, subject, body);
-			if (payerName != null) {
-				choice.setPayerName(payerName);
-				choice.setPayerPersonalID(payerPersonalID);
-				choice.setCardType(cardType);
-				choice.setCardNumber(cardNumber);
-				choice.setCardValidMonth(validMonth);
-				choice.setCardValidYear(validYear);
-				choice.store();
-			}
+			choice.setPayerName(payerName);
+			choice.setPayerPersonalID(payerPersonalID);
+			choice.setCardType(cardType);
+			choice.setCardNumber(cardNumber);
+			choice.setCardValidMonth(validMonth);
+			choice.setCardValidYear(validYear);
+			choice.setWantsRefreshments(wantsRefreshments);
+			choice.store();
 			
 			storeDays(choice, days, timeOfDeparture, pickedUp);
 
 			// returns false if storing failed else true
-			return true;
+			return choice;
 		}
 		catch (RemoteException re) {
 			throw new IBORuntimeException(re);
 		}
 		catch (CreateException ce) {
 			ce.printStackTrace();
-			return false;
+			return null;
 		}
 	}
 	
+	public SchoolBusiness getSchoolBusiness() {
+		try {
+			return (SchoolBusiness) this.getServiceInstance(SchoolBusiness.class);
+		}
+		catch (RemoteException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
+	}
+
 	public SchoolChoiceBusiness getSchoolChoiceBusiness() {
 		try {
 			return (SchoolChoiceBusiness) this.getServiceInstance(SchoolChoiceBusiness.class);
@@ -512,5 +550,15 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 		catch (RemoteException e) {
 			throw new IBORuntimeException(e.getMessage());
 		}
-	}	
+	}
+	
+	public ChildCareBusiness getChildCareBusiness() {
+		try {
+			return (ChildCareBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ChildCareBusiness.class);
+		}
+		catch (IBOLookupException e) {
+			throw new IBORuntimeException();
+		}
+	}
+	
 }
