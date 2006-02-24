@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolCareApplication.java,v 1.30 2005/10/18 20:14:24 laddi Exp $
+ * $Id: AfterSchoolCareApplication.java,v 1.30.2.1 2006/02/24 12:00:15 dainis Exp $
  * Created on Aug 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -39,10 +39,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/10/18 20:14:24 $ by $Author: laddi $
+ * Last modified: $Date: 2006/02/24 12:00:15 $ by $Author: dainis $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.30 $
+ * @version $Revision: 1.30.2.1 $
  */
 public class AfterSchoolCareApplication extends SchoolApplication {
 	
@@ -983,9 +983,9 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		int validMonth = iwc.isParameterSet(PARAMETER_VALID_MONTH) ? Integer.parseInt(iwc.getParameter(PARAMETER_VALID_MONTH)) : -1;
 		int validYear = iwc.isParameterSet(PARAMETER_VALID_MONTH) ? Integer.parseInt(iwc.getParameter(PARAMETER_VALID_YEAR)) : -1;
 
-		boolean saved = getAfterSchoolBusiness().storeAfterSchoolCare(new IWTimestamp(), getUser(iwc), getSession().getUser(), provider, null, season, days, time, pickedUp, payerName, payerPersonalID, cardType, cardNumber, validMonth, validYear);
+		AfterSchoolChoice choice = getAfterSchoolBusiness(iwc).storeAfterSchoolCare(new IWTimestamp(), getUser(iwc), applicant, provider, null, season, days, time, pickedUp, payerName, payerPersonalID, cardType, cardNumber, validMonth, validYear);
 		
-		if (saved) {
+		if (choice != null) {
 			Table table = new Table();
 			table.setCellpadding(0);
 			table.setCellspacing(0);
