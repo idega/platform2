@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolChoiceBMPBean.java,v 1.3.2.2 2005/11/28 12:49:54 dainis Exp $
+ * $Id: AfterSchoolChoiceBMPBean.java,v 1.3.2.3 2006/02/24 11:41:50 dainis Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -33,8 +33,9 @@ public class AfterSchoolChoiceBMPBean extends ChildCareApplicationBMPBean implem
 	private final static String COLUMN_CARD_TYPE = "card_type";
 	private final static String COLUMN_CARD_NUMBER = "card_number";
 	private final static String COLUMN_CARD_VALID_MONTH = "card_valid_month";
-	private final static String COLUMN_CARD_VALID_YEAR = "card_valid_year";	
+	private final static String COLUMN_CARD_VALID_YEAR = "card_valid_year";
 	private final static String COLUMN_F_CLASS = "f_class";
+	private final static String COLUMN_WANTS_REFRESHMENT = "wants_refreshment";
 
 	/**
 	 * @see com.idega.block.process.data.AbstractCaseBMPBean#getCaseCodeKey()
@@ -64,7 +65,9 @@ public class AfterSchoolChoiceBMPBean extends ChildCareApplicationBMPBean implem
 		addAttribute(COLUMN_CARD_VALID_MONTH, "Valid month", Integer.class);
 		addAttribute(COLUMN_CARD_VALID_YEAR, "Valid year", Integer.class);
 		
-		addAttribute(COLUMN_F_CLASS, "F-class", java.lang.Boolean.class);
+		addAttribute(COLUMN_F_CLASS, "F-class", Boolean.class);
+
+		addAttribute(COLUMN_WANTS_REFRESHMENT, "Wants refreshments", Boolean.class);
 	}
 
 	public int getSchoolSeasonId() {
@@ -97,7 +100,11 @@ public class AfterSchoolChoiceBMPBean extends ChildCareApplicationBMPBean implem
 	
 	public boolean getFClass() {
 		return getBooleanColumnValue(COLUMN_F_CLASS, false);
-	}	
+	}
+	
+	public boolean getWantsRefreshments() {
+		return getBooleanColumnValue(COLUMN_WANTS_REFRESHMENT, false);
+	}
 
 	public void setSchoolSeasonId(int schoolSeasonID) {
 		setColumn(SCHOOL_SEASON, schoolSeasonID);
@@ -130,6 +137,10 @@ public class AfterSchoolChoiceBMPBean extends ChildCareApplicationBMPBean implem
 	public void setFClass(boolean fClass) {
 		setColumn(COLUMN_F_CLASS, fClass);
 	}	
+	
+	public void setWantsRefreshments(boolean wantsRefreshments) {
+		setColumn(COLUMN_WANTS_REFRESHMENT, wantsRefreshments);
+	}
 
 	public Collection ejbFindByChildAndSeason(Integer childID, Integer seasonID) throws javax.ejb.FinderException {
 		IDOQuery query = super.idoQueryGetSelect().appendWhereEquals(CHILD_ID, childID.intValue());

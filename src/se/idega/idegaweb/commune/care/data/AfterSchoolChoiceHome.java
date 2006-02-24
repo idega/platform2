@@ -1,11 +1,5 @@
-/*
- * $Id: AfterSchoolChoiceHome.java,v 1.2 2005/08/09 16:34:50 laddi Exp $
- * Created on Aug 9, 2005
- *
- * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
+/**
+ * 
  */
 package se.idega.idegaweb.commune.care.data;
 
@@ -17,10 +11,13 @@ import com.idega.data.IDOHome;
 
 
 /**
- * Last modified: $Date: 2005/08/09 16:34:50 $ by $Author: laddi $
+ * <p>
+ * TODO Dainis Describe Type AfterSchoolChoiceHome
+ * </p>
+ *  Last modified: $Date: 2006/02/24 11:41:50 $ by $Author: dainis $
  * 
- * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @author <a href="mailto:Dainis@idega.com">Dainis</a>
+ * @version $Revision: 1.2.2.1 $
  */
 public interface AfterSchoolChoiceHome extends IDOHome {
 
@@ -42,8 +39,8 @@ public interface AfterSchoolChoiceHome extends IDOHome {
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.AfterSchoolChoiceBMPBean#ejbFindByChildAndChoiceNumberAndSeason
 	 */
-	public AfterSchoolChoice findByChildAndChoiceNumberAndSeason(Integer childID, Integer choiceNumber, Integer seasonID,
-			String[] caseStatus) throws FinderException;
+	public AfterSchoolChoice findByChildAndChoiceNumberAndSeason(Integer childID, Integer choiceNumber,
+			Integer seasonID, String[] caseStatus) throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.AfterSchoolChoiceBMPBean#ejbFindByChildAndProviderAndSeason

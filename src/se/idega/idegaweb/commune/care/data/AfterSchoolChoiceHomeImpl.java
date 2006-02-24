@@ -1,11 +1,5 @@
-/*
- * $Id: AfterSchoolChoiceHomeImpl.java,v 1.2 2005/08/09 16:34:50 laddi Exp $
- * Created on Aug 9, 2005
- *
- * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
+/**
+ * 
  */
 package se.idega.idegaweb.commune.care.data;
 
@@ -17,10 +11,13 @@ import com.idega.data.IDOFactory;
 
 
 /**
- * Last modified: $Date: 2005/08/09 16:34:50 $ by $Author: laddi $
+ * <p>
+ * TODO Dainis Describe Type AfterSchoolChoiceHomeImpl
+ * </p>
+ *  Last modified: $Date: 2006/02/24 11:41:50 $ by $Author: dainis $
  * 
- * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @author <a href="mailto:Dainis@idega.com">Dainis</a>
+ * @version $Revision: 1.2.2.1 $
  */
 public class AfterSchoolChoiceHomeImpl extends IDOFactory implements AfterSchoolChoiceHome {
 
@@ -52,8 +49,8 @@ public class AfterSchoolChoiceHomeImpl extends IDOFactory implements AfterSchool
 		return this.findByPrimaryKey(pk);
 	}
 
-	public AfterSchoolChoice findByChildAndChoiceNumberAndSeason(Integer childID, Integer choiceNumber, Integer seasonID,
-			String[] caseStatus) throws FinderException {
+	public AfterSchoolChoice findByChildAndChoiceNumberAndSeason(Integer childID, Integer choiceNumber,
+			Integer seasonID, String[] caseStatus) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		Object pk = ((AfterSchoolChoiceBMPBean) entity).ejbFindByChildAndChoiceNumberAndSeason(childID, choiceNumber,
 				seasonID, caseStatus);
@@ -64,8 +61,8 @@ public class AfterSchoolChoiceHomeImpl extends IDOFactory implements AfterSchool
 	public AfterSchoolChoice findByChildAndProviderAndSeason(int childID, int providerID, int seasonID,
 			String[] caseStatus) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		Object pk = ((AfterSchoolChoiceBMPBean) entity).ejbFindByChildAndProviderAndSeason(childID, providerID, seasonID,
-				caseStatus);
+		Object pk = ((AfterSchoolChoiceBMPBean) entity).ejbFindByChildAndProviderAndSeason(childID, providerID,
+				seasonID, caseStatus);
 		this.idoCheckInPooledEntity(entity);
 		return this.findByPrimaryKey(pk);
 	}
@@ -104,8 +101,8 @@ public class AfterSchoolChoiceHomeImpl extends IDOFactory implements AfterSchool
 
 	public Collection findAllCasesByProviderAndNotInStatus(int providerId, String[] caseStatus) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((AfterSchoolChoiceBMPBean) entity).ejbFindAllCasesByProviderAndNotInStatus(providerId,
-				caseStatus);
+		java.util.Collection ids = ((AfterSchoolChoiceBMPBean) entity).ejbFindAllCasesByProviderAndNotInStatus(
+				providerId, caseStatus);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
@@ -113,8 +110,8 @@ public class AfterSchoolChoiceHomeImpl extends IDOFactory implements AfterSchool
 	public Collection findAllCasesByProviderAndNotInStatus(int providerId, String[] caseStatus, String sorting)
 			throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((AfterSchoolChoiceBMPBean) entity).ejbFindAllCasesByProviderAndNotInStatus(providerId,
-				caseStatus, sorting);
+		java.util.Collection ids = ((AfterSchoolChoiceBMPBean) entity).ejbFindAllCasesByProviderAndNotInStatus(
+				providerId, caseStatus, sorting);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}

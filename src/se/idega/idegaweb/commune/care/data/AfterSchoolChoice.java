@@ -1,11 +1,5 @@
-/*
- * $Id: AfterSchoolChoice.java,v 1.2.2.2 2005/11/28 12:49:54 dainis Exp $
- * Created on Aug 9, 2005
- *
- * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
+/**
+ * 
  */
 package se.idega.idegaweb.commune.care.data;
 
@@ -13,10 +7,13 @@ import com.idega.data.IDOEntity;
 
 
 /**
- * Last modified: $Date: 2005/11/28 12:49:54 $ by $Author: dainis $
+ * <p>
+ * TODO Dainis Describe Type AfterSchoolChoice
+ * </p>
+ *  Last modified: $Date: 2006/02/24 11:41:50 $ by $Author: dainis $
  * 
- * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2.2.2 $
+ * @author <a href="mailto:Dainis@idega.com">Dainis</a>
+ * @version $Revision: 1.2.2.3 $
  */
 public interface AfterSchoolChoice extends IDOEntity, ChildCareApplication {
 
@@ -71,6 +68,11 @@ public interface AfterSchoolChoice extends IDOEntity, ChildCareApplication {
 	public boolean getFClass();
 
 	/**
+	 * @see se.idega.idegaweb.commune.care.data.AfterSchoolChoiceBMPBean#getWantsRefreshments
+	 */
+	public boolean getWantsRefreshments();
+
+	/**
 	 * @see se.idega.idegaweb.commune.care.data.AfterSchoolChoiceBMPBean#setSchoolSeasonId
 	 */
 	public void setSchoolSeasonId(int schoolSeasonID);
@@ -110,4 +112,8 @@ public interface AfterSchoolChoice extends IDOEntity, ChildCareApplication {
 	 */
 	public void setFClass(boolean fClass);
 
+	/**
+	 * @see se.idega.idegaweb.commune.care.data.AfterSchoolChoiceBMPBean#setWantsRefreshments
+	 */
+	public void setWantsRefreshments(boolean wantsRefreshments);
 }
