@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolCareApplication.java,v 1.30.2.1 2006/02/24 12:00:15 dainis Exp $
+ * $Id: AfterSchoolCareApplication.java,v 1.30.2.2 2006/02/24 12:27:29 dainis Exp $
  * Created on Aug 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -16,11 +16,16 @@ import java.util.Locale;
 import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.care.business.CareConstants;
 import se.idega.idegaweb.commune.care.data.AfterSchoolChoice;
+import se.idega.idegaweb.commune.childcare.business.AfterSchoolBusiness;
 import se.idega.idegaweb.commune.childcare.data.AfterSchoolCareDays;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolSeason;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
+import com.idega.business.IBORuntimeException;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
@@ -39,10 +44,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2006/02/24 12:00:15 $ by $Author: dainis $
+ * Last modified: $Date: 2006/02/24 12:27:29 $ by $Author: dainis $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.30.2.1 $
+ * @version $Revision: 1.30.2.2 $
  */
 public class AfterSchoolCareApplication extends SchoolApplication {
 	
@@ -983,7 +988,7 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 		int validMonth = iwc.isParameterSet(PARAMETER_VALID_MONTH) ? Integer.parseInt(iwc.getParameter(PARAMETER_VALID_MONTH)) : -1;
 		int validYear = iwc.isParameterSet(PARAMETER_VALID_MONTH) ? Integer.parseInt(iwc.getParameter(PARAMETER_VALID_YEAR)) : -1;
 
-		AfterSchoolChoice choice = getAfterSchoolBusiness(iwc).storeAfterSchoolCare(new IWTimestamp(), getUser(iwc), applicant, provider, null, season, days, time, pickedUp, payerName, payerPersonalID, cardType, cardNumber, validMonth, validYear);
+		AfterSchoolChoice choice = getAfterSchoolBusiness(iwc).storeAfterSchoolCare(new IWTimestamp(), getUser(iwc), getSession().getUser(), provider, null, season, days, time, pickedUp, payerName, payerPersonalID, cardType, cardNumber, validMonth, validYear);
 		
 		if (choice != null) {
 			Table table = new Table();
@@ -1102,5 +1107,14 @@ public class AfterSchoolCareApplication extends SchoolApplication {
 	
 	public void setHideDetailsPhases(boolean hideDetailsPhases) {
 		iHideDetailsPhases = hideDetailsPhases;
+	}
+	
+	protected AfterSchoolBusiness getAfterSchoolBusiness(IWApplicationContext iwac) {
+		try {
+			return (AfterSchoolBusiness) IBOLookup.getServiceInstance(iwac, AfterSchoolBusiness.class);
+		}
+		catch (IBOLookupException ile) {
+			throw new IBORuntimeException(ile);
+		}
 	}	
 }
