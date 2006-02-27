@@ -42,7 +42,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.108.2.11 2006/02/17 16:59:39 dainis Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.108.2.12 2006/02/27 17:15:48 dainis Exp $
  * @since 12.2.2003 
  */
 
@@ -746,7 +746,8 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 		layoutTbl.add(getSmallHeader(localize(PERSONAL_ID) + ":"), 1, row);
 		layoutTbl.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), 3, row++);
 		
-		ChildCareApplication acceptedApplication = getChildCareBusiness(iwc).getAcceptedChildCareApplicationByChild(childID);		
+		ChildCareApplication acceptedApplication = getChildCareBusiness(iwc)
+			.getAcceptedChildCareOrAfterSchoolCareApplicationByChild(childID);		
 		_hasAcceptedApplication = acceptedApplication != null;
 		if (_hasAcceptedApplication) {
 			IWTimestamp fromDate = new IWTimestamp(acceptedApplication.getFromDate());
