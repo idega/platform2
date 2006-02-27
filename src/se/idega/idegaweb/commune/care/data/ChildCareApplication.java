@@ -19,10 +19,10 @@ import com.idega.user.data.User;
  * <p>
  * TODO Dainis Describe Type ChildCareApplication
  * </p>
- *  Last modified: $Date: 2006/02/12 21:58:50 $ by $Author: palli $
+ *  Last modified: $Date: 2006/02/27 17:04:20 $ by $Author: dainis $
  * 
  * @author <a href="mailto:Dainis@idega.com">Dainis</a>
- * @version $Revision: 1.8.2.2 $
+ * @version $Revision: 1.8.2.3 $
  */
 public interface ChildCareApplication extends IDOEntity, Case {
 

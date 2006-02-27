@@ -17,10 +17,10 @@ import com.idega.user.data.User;
  * <p>
  * TODO Dainis Describe Type ChildCareApplicationHomeImpl
  * </p>
- *  Last modified: $Date: 2006/02/12 21:58:50 $ by $Author: palli $
+ *  Last modified: $Date: 2006/02/27 17:04:19 $ by $Author: dainis $
  * 
  * @author <a href="mailto:Dainis@idega.com">Dainis</a>
- * @version $Revision: 1.8.2.2 $
+ * @version $Revision: 1.8.2.3 $
  */
 public class ChildCareApplicationHomeImpl extends IDOFactory implements ChildCareApplicationHome {
 
@@ -425,6 +425,15 @@ public class ChildCareApplicationHomeImpl extends IDOFactory implements ChildCar
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		Object pk = ((ChildCareApplicationBMPBean) entity).ejbFindActiveApplicationByChildAndStatusAndCaseCode(childID,
 				caseStatus, caseCode);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
+
+	public ChildCareApplication findActiveApplicationByChildAndStatusAndCaseCodes(int childID, String[] caseStatus,
+			String[] caseCodes) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((ChildCareApplicationBMPBean) entity).ejbFindActiveApplicationByChildAndStatusAndCaseCodes(
+				childID, caseStatus, caseCodes);
 		this.idoCheckInPooledEntity(entity);
 		return this.findByPrimaryKey(pk);
 	}

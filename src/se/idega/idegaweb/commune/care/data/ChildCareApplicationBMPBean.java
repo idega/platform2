@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareApplicationBMPBean.java,v 1.22.2.2 2006/02/12 21:58:50 palli Exp $
+ * $Id: ChildCareApplicationBMPBean.java,v 1.22.2.3 2006/02/27 17:04:19 dainis Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -1009,15 +1009,20 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	}
 	
 	public Integer ejbFindActiveApplicationByChildAndStatusAndCaseCode(int childID, String[] caseStatus, String caseCode) throws FinderException {
+		String[] caseCodes = {caseCode};
+		return ejbFindActiveApplicationByChildAndStatusAndCaseCodes(childID, caseStatus, caseCodes);
+	}	
+	
+	public Integer ejbFindActiveApplicationByChildAndStatusAndCaseCodes(int childID, String[] caseStatus, String[] caseCodes) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).append(" c, proc_case p");
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+CHILD_ID,childID);
-		sql.appendAnd().appendEqualsQuoted("p.case_code", caseCode);
+		sql.appendAnd().append("p.case_code").appendInArrayWithSingleQuotes(caseCodes);
 		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(caseStatus);
 		sql.appendOrderBy(CHOICE_NUMBER);
 		return (Integer) idoFindOnePKByQuery(sql);
-	}	
+	}		
 	
 	public int ejbHomeGetNumberOfActiveApplications(int childID) throws IDOException {
 		return ejbHomeGetNumberOfActiveApplications(childID, null);
