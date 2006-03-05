@@ -392,10 +392,51 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 	public Integer ejbFindPreviousTerminatedContractByChild(ChildCareContract contract) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CHILD_ID, contract.getChildID());
-    sql.appendAnd().append(COLUMN_TERMINATED_DATE).appendLessThanSign().append(contract.getValidFromDate());
+		sql.appendAnd().append(COLUMN_TERMINATED_DATE).appendLessThanSign().append(contract.getValidFromDate());
 		sql.appendAnd().append(getIDColumnName()).appendNOTEqual().append(contract.getPrimaryKey());
 		sql.appendAnd().append(COLUMN_TERMINATED_DATE).appendIsNotNull();
 		sql.appendOrderBy(COLUMN_VALID_FROM_DATE+" desc");
+		return (Integer) idoFindOnePKByQuery(sql);
+	}
+	
+	/**
+	 * Gets the contract which stands before the supplied one
+	 * @param contract
+	 * @return
+	 * @throws FinderException
+	 */
+	public Integer ejbFindPreviousTerminatedContractByContract(ChildCareContract contract) throws FinderException {
+		IDOQuery sql = idoQuery();		
+		sql.appendSelectAllFrom(this);
+		sql.appendWhere();
+		sql.append(COLUMN_APPLICATION_ID).appendEqualSign().append(contract.getApplication());
+		sql.appendAnd().append(COLUMN_TERMINATED_DATE).appendIsNotNull();
+		sql.appendAnd().append(COLUMN_TERMINATED_DATE).appendLessThanSign().append(contract.getValidFromDate());
+		sql.appendAnd().append(getIDColumnName()).appendNOTEqual().append(contract.getPrimaryKey());		
+		sql.appendOrderBy(COLUMN_VALID_FROM_DATE + " desc");
+		
+		return (Integer) idoFindOnePKByQuery(sql);
+	}
+	
+	/** 
+	 * Finds the contract that stands after the supplied one
+	 * @param contract
+	 * @return
+	 * @throws FinderException
+	 */
+	public Integer ejbFindNextContractByContract(ChildCareContract contract) throws FinderException {
+		IDOQuery sql = idoQuery();		
+		sql.appendSelectAllFrom(this);
+		sql.appendWhere();
+		sql.append(COLUMN_APPLICATION_ID).appendEqualSign().append(contract.getApplication());
+		sql.appendAnd().append(COLUMN_VALID_FROM_DATE).appendGreaterThanSign();
+		if (contract.getTerminatedDate() != null) {
+			sql.append(contract.getTerminatedDate());
+		} else {
+			sql.append(contract.getValidFromDate());
+		}		
+		sql.appendOrderBy(COLUMN_VALID_FROM_DATE + " asc");
+		
 		return (Integer) idoFindOnePKByQuery(sql);
 	}
 
