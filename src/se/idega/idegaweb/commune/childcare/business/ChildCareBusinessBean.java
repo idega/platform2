@@ -1474,6 +1474,36 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 		return true;
 	}
+	
+
+	/**
+	 * this method gets the contract that before the one supplied as a parameter 
+	 * @param childcareContract
+	 * @return
+	 */
+	private ChildCareContract getNextContract(ChildCareContract childcareContract) {
+		ChildCareContract contract = null;
+		try {
+			contract = getChildCareContractArchiveHome().findNextContractByContract(childcareContract);
+		}
+		catch (FinderException e) {} //it's normal, that record is not found and there's no need to log that		
+		return contract;
+	}
+
+	/**
+	 * this method gets the contract that's after the one supplied as a parameter 
+	 * @param childcareContract
+	 * @return
+	 */	
+	private ChildCareContract getPreviousContract(ChildCareContract childcareContract) {
+		ChildCareContract contract = null;
+		try {
+			contract = getChildCareContractArchiveHome().findPreviousTerminatedContractByContract(childcareContract);
+		}
+		catch (FinderException e) {} //it's normal, that record is not found and there's no need to log that		
+		return contract;
+	}
+	
 
 	/**
 	 * Update contract with new field values, and recreate file attached to it.
@@ -1547,18 +1577,24 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				lastContract.store();
 			}
 			else {
-				application.setRejectionDate(lastContract.getTerminatedDate());
+				if (this.getNextContract(lastContract) == null) { // if this is the last contract
+					application.setRejectionDate(lastContract.getTerminatedDate());
+				}
 			}
-			application.setCareTime(lastContract.getCareTime());
-			application.setContractId(lastContract.getContractID());
-			application.setContractFileId(lastContract.getContractFileID());
-			if (application.getRejectionDate() == null) {
-				application.setApplicationStatus(getStatusReady());
-				changeCaseStatus(application, getCaseStatusReady().getStatus(), performer);
-			}
-			else {
-				application.setApplicationStatus(getStatusCancelled());
-				changeCaseStatus(application, getCaseStatusCancelled().getStatus(), performer);
+			
+			if (this.getNextContract(lastContract) == null) {  //only set if this is the last contract 
+				application.setCareTime(lastContract.getCareTime());
+				application.setContractId(lastContract.getContractID());
+				application.setContractFileId(lastContract.getContractFileID());
+				
+				if (application.getRejectionDate() == null) {
+					application.setApplicationStatus(getStatusReady());
+					changeCaseStatus(application, getCaseStatusReady().getStatus(), performer);
+				}
+				else {
+					application.setApplicationStatus(getStatusCancelled());
+					changeCaseStatus(application, getCaseStatusCancelled().getStatus(), performer);
+				}				
 			}
 			
 			// update school class member with correct dates
@@ -1569,7 +1605,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				Collection contractPlacements = getChildCareContractArchiveHome().findAllBySchoolClassMember(placement);
 				// only allow update when only one contract linked to the classmember
 				// or the one being changed is the first contract
-				if (lastContract.getTerminatedDate() != null) {
+				if (lastContract.getTerminatedDate() != null && this.getNextContract(lastContract) == null) {  
+					//and if this is really the last contract
 					placement.setRemovedDate((new IWTimestamp(lastContract.getTerminatedDate())).getTimestamp());
 					getSchoolBusiness().addToSchoolClassMemberLog(placement, placement.getSchoolClass(), lastContract.getTerminatedDate(), performer);
 				}
