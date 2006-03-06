@@ -15,6 +15,8 @@ import javax.ejb.RemoveException;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
+import com.idega.core.location.data.Commune;
+import com.idega.core.location.data.CommuneHome;
 import com.idega.core.location.data.Country;
 import com.idega.core.location.data.CountryHome;
 import com.idega.core.location.data.PostalCode;
@@ -35,6 +37,9 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 	private static Gender maleGender = null;
 	private static Gender femaleGender = null;
 	private static HashMap postalCodes = null;
+	private static HashMap countryIDs = null;
+	private static HashMap communeCodes = null;
+	private static HashMap cityNames = null;
 	
 	public NationalRegister getEntryBySSN(String ssn) {
 		try {
@@ -179,8 +184,19 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 			}
 			
 			
+			Country country = null;
+			Integer communeID = null;
+			String city = null;
+			if (commune.substring(0,2).equals("99")) {
+				country = getCountryByISOAbbreviation(commune.substring(2,4));
+			}
+			else {
+				country = getCountryByISOAbbreviation("IS");
+				communeID = getCommuneIDFromCommuneCode(commune);
+				city = getCityFromPostalCode(po,Integer.parseInt(country.getPrimaryKey().toString()));
+			}
 			
-			updateUserAddress(user, userBiz, address, po);
+			updateUserAddress(user, userBiz, address, po, country, city, communeID);
 			
 			if (citizenGroup != null) {
 				citizenGroup.addGroup(user);
@@ -230,11 +246,11 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 		}
 	}
 	
-	public void updateUserAddress(User user, UserBusiness userBiz, String address, String po) throws RemoteException, CreateException {
+	public void updateUserAddress(User user, UserBusiness userBiz, String address, String po, Country country, String city, Integer communeID) throws RemoteException, CreateException {
 		PostalCode postalCode = getPostalCode(po);
 
-		userBiz.updateUsersMainAddressOrCreateIfDoesNotExist(user, address, postalCode, null, null, null, null, null);
-		userBiz.updateUsersCoAddressOrCreateIfDoesNotExist(user, address, postalCode, null, null, null, null, null);
+		userBiz.updateUsersMainAddressOrCreateIfDoesNotExist(user, address, postalCode, country, city, null, null, communeID);
+		userBiz.updateUsersCoAddressOrCreateIfDoesNotExist(user, address, postalCode, country, city, null, null, communeID);
 	}
 
 	public PostalCode getPostalCode(String po) throws RemoteException {
@@ -433,4 +449,79 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 		return null;
 	}
 
+	public Country getCountryByISOAbbreviation(String isoAbbreviation) {
+		if (countryIDs == null) {
+			countryIDs = new HashMap();
+		}
+
+		if (countryIDs.containsKey(isoAbbreviation)) {
+			return (Country) countryIDs.get(isoAbbreviation);
+		} 
+		else {
+			try {
+				CountryHome home = (CountryHome) getIDOHome(Country.class);
+				Country country = home.findByIsoAbbreviation(isoAbbreviation);
+				countryIDs.put(isoAbbreviation, country);
+				return country;
+			}
+			catch (FinderException fe) {
+				return null;
+			}
+			catch (RemoteException re) {
+				return null;
+			}
+		}
+	}
+
+	public Integer getCommuneIDFromCommuneCode(String communeCode) {
+		if (communeCodes == null) {
+			communeCodes = new HashMap();
+		}
+
+		if (communeCodes.containsKey(communeCode)) {
+			return (Integer) communeCodes.get(communeCode);
+		} 
+		else {
+
+			try {
+				CommuneHome home = (CommuneHome) getIDOHome(Commune.class);
+				Commune commune = home.findByCommuneCode(communeCode);
+				communeCodes.put(communeCode, commune.getPrimaryKey());
+				return (Integer)commune.getPrimaryKey();
+			}
+			catch (FinderException fe) {
+				return null;
+			}
+			catch (RemoteException re) {
+				return null;
+			}
+		}
+	}
+
+	public String getCityFromPostalCode(String postalCodeIdentifier, int countryID ) {
+		if (cityNames == null) {
+			cityNames = new HashMap();
+		}
+
+		if (postalCodeIdentifier == null || postalCodeIdentifier.equals("   "))
+			return null;
+
+		if (cityNames.containsKey(postalCodeIdentifier)) {
+			return (String) cityNames.get(postalCodeIdentifier);
+		} 
+		else {
+			try {
+				PostalCodeHome home = (PostalCodeHome) getIDOHome(PostalCode.class);
+				PostalCode postalCode = home.findByPostalCodeAndCountryId(postalCodeIdentifier, countryID);
+				cityNames.put(postalCodeIdentifier, postalCode.getName());
+				return postalCode.getName();
+			}
+			catch (FinderException fe) {
+				return null;
+			}
+			catch (RemoteException re) {
+				return null;
+			}
+		}
+	}
 }

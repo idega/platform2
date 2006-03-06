@@ -887,7 +887,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
 					// User user = uBiz.getUser(ssn);
 					if (postalCodeFix) {
 						natBiz.updateUserAddress(uBiz.getUser(ssn), uBiz,
-								address, po);
+								address, po,null,null,null);
 					}
 					return true;
 				} catch (Exception e) {

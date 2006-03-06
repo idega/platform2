@@ -18,6 +18,7 @@ import javax.ejb.CreateException;
 import javax.ejb.RemoveException;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBOService;
+import com.idega.core.location.data.Country;
 import com.idega.core.location.data.PostalCode;
 import com.idega.presentation.PresentationObject;
 import com.idega.user.business.UserBusiness;
@@ -65,7 +66,7 @@ public interface NationalRegisterBusiness extends IBOService , UserGroupPlugInBu
 	/**
 	 * @see is.idega.block.nationalregister.business.NationalRegisterBusinessBean#updateUserAddress
 	 */
-	public void updateUserAddress(User user, UserBusiness userBiz, String address, String po) throws RemoteException,
+	public void updateUserAddress(User user, UserBusiness userBiz, String address, String po, Country country, String city, Integer communeID) throws RemoteException,
 			CreateException;
 
 	/**
