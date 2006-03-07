@@ -117,6 +117,33 @@ public class InvoiceRecordHomeImpl extends IDOFactory implements
 		return theReturn;
 	}
 
+	public int getNumberOfInvoicesForStudentWithVUXGradePayment(
+			SchoolClassMember student) throws IDOException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		int theReturn = ((InvoiceRecordBMPBean) entity)
+				.ejbHomeGetNumberOfInvoicesForStudentWithVUXGradePayment(student);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
+
+	public int getNumberOfInvoicesForStudentWithVUXPayment(
+			SchoolClassMember student) throws IDOException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		int theReturn = ((InvoiceRecordBMPBean) entity)
+				.ejbHomeGetNumberOfInvoicesForStudentWithVUXPayment(student);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
+
+	public Collection findBySchoolClassMember(SchoolClassMember student)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((InvoiceRecordBMPBean) entity)
+				.ejbFindBySchoolClassMember(student);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
 	public double getTotalAmountForSchoolTypesAndMonth(Collection schoolTypes,
 			CalendarMonth month) throws IDOException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();

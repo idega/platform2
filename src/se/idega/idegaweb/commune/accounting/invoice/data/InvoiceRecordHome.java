@@ -80,6 +80,24 @@ public interface InvoiceRecordHome extends IDOHome {
 			throws IDOException;
 
 	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#ejbHomeGetNumberOfInvoicesForStudentWithVUXGradePayment
+	 */
+	public int getNumberOfInvoicesForStudentWithVUXGradePayment(
+			SchoolClassMember student) throws IDOException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#ejbHomeGetNumberOfInvoicesForStudentWithVUXPayment
+	 */
+	public int getNumberOfInvoicesForStudentWithVUXPayment(
+			SchoolClassMember student) throws IDOException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#ejbFindBySchoolClassMember
+	 */
+	public Collection findBySchoolClassMember(SchoolClassMember student)
+			throws FinderException;
+
+	/**
 	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#ejbHomeGetTotalAmountForSchoolTypesAndMonth
 	 */
 	public double getTotalAmountForSchoolTypesAndMonth(Collection schoolTypes,

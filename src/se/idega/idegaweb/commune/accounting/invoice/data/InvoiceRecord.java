@@ -176,6 +176,16 @@ public interface InvoiceRecord extends IDOEntity {
 	public ChildCareContract getChildCareContract();
 
 	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#getVUXPayment
+	 */
+	public boolean getVUXPayment();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#getVUXGradePayment
+	 */
+	public boolean getVUXGradePayment();
+
+	/**
 	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setInvoiceHeaderId
 	 */
 	public void setInvoiceHeaderId(int i);
@@ -349,5 +359,15 @@ public interface InvoiceRecord extends IDOEntity {
 	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setChildCareContract
 	 */
 	public void setChildCareContract(ChildCareContract contract);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setVUXPayment
+	 */
+	public void setVUXPayment(boolean payment);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordBMPBean#setVUXGradePayment
+	 */
+	public void setVUXGradePayment(boolean payment);
 
 }
