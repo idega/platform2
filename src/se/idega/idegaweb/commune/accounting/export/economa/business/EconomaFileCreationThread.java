@@ -371,7 +371,7 @@ public class EconomaFileCreationThread extends Thread {
 				if (includeHeader) {
 					bWriter.write("90");
 					bWriter.write("01602");
-					bWriter.write("12");
+					bWriter.write("10");
 					if (isPostGiro) {
 						bWriter.write("P");
 					} else {
@@ -409,7 +409,7 @@ public class EconomaFileCreationThread extends Thread {
 						pGiroString = pGiroString.substring(0, 15);
 					}
 					bWriter.write(pGiroString);
-					bWriter.write(empty.substring(0, 2));
+					bWriter.write("30");
 					String sName = header.getSchool().getName();
 					if (sName.length() < 33) {
 						StringBuffer p = new StringBuffer(sName);
@@ -479,7 +479,15 @@ public class EconomaFileCreationThread extends Thread {
 									bWriter.write("B");
 								}
 								bWriter.write(giroString);
-								bWriter.write("UT");
+								long am = AccountingUtil.roundAmount(rec
+										.getTotalAmount());
+								am *= 100;
+								if (am > 0) {
+									bWriter.write("FA");									
+								} else {
+									bWriter.write("KR");
+								}
+								am = Math.abs(am);
 								String faknr = Integer.toString(vernrInt);
 								if (faknr.length() < 27) {
 									StringBuffer p = new StringBuffer(faknr);
@@ -490,9 +498,6 @@ public class EconomaFileCreationThread extends Thread {
 									faknr = faknr.substring(0, 27);
 								}
 								bWriter.write(faknr);
-								long am = AccountingUtil.roundAmount(rec
-										.getTotalAmount());
-								am *= 100;
 								totalAmount += am;
 								bWriter.write(format.format(am));
 								bWriter.write(empty.substring(0, 5));
@@ -543,11 +548,11 @@ public class EconomaFileCreationThread extends Thread {
 										.getDateString("yyyyMMdd"));
 								bWriter.write(empty.substring(0, 12));
 								bWriter.write(empty.substring(0, 2));
-								if (isPostGiro) {
-									bWriter.write("P");
-								} else {
-									bWriter.write("B");
-								}
+//								if (isPostGiro) {
+									bWriter.write(" ");
+//								} else {
+//									bWriter.write("B");
+//								}
 								String text = rec.getPaymentText();
 								if (text.length() < 40) {
 									StringBuffer p = new StringBuffer(text);
@@ -683,7 +688,18 @@ public class EconomaFileCreationThread extends Thread {
 							if (rec.getVernr() != null) {
 								bWriter.write(rec.getVernr());
 							} else {
-								bWriter.write(format2.format(0));
+								String vernr = mapping.getJournalNumber();
+								if (vernr == null) {
+									vernr = "1";
+								}
+
+								int vernrInt = Integer.valueOf(vernr).intValue();								
+								
+								bWriter.write(format2.format(vernrInt));
+								rec.setVernr(format2.format(vernrInt));
+								vernrInt++;
+								mapping.setJournalNumber(Integer.toString(vernrInt));
+								mapping.store();
 							}
 							bWriter.write(paymentDate.getDateString("yy"));
 							bWriter.write(paymentDate.getDateString("MM"));
@@ -763,7 +779,18 @@ public class EconomaFileCreationThread extends Thread {
 							if (rec.getVernr() != null) {
 								bWriter.write(rec.getVernr());
 							} else {
-								bWriter.write(format2.format(0));
+								String vernr = mapping.getJournalNumber();
+								if (vernr == null) {
+									vernr = "1";
+								}
+
+								int vernrInt = Integer.valueOf(vernr).intValue();								
+								
+								bWriter.write(format2.format(vernrInt));
+								rec.setVernr(format2.format(vernrInt));
+								vernrInt++;
+								mapping.setJournalNumber(Integer.toString(vernrInt));
+								mapping.store();
 							}
 							bWriter.write(paymentDate.getDateString("yy"));
 							bWriter.write(paymentDate.getDateString("MM"));
@@ -771,8 +798,8 @@ public class EconomaFileCreationThread extends Thread {
 							bWriter.write(paymentDate.getDateString("dd"));
 							String doublePosting = rec.getDoublePosting();
 							if (doublePosting == null
-									|| "".equals(doublePosting)) {
-								doublePosting = mapping.getPayableAccount();
+									|| "".equals(doublePosting.trim())) {
+								doublePosting = mapping.getPayableAccount().trim();
 								if (doublePosting == null) {
 									doublePosting = "";
 								}
@@ -957,8 +984,10 @@ public class EconomaFileCreationThread extends Thread {
 
 				boolean createInvoice = false;
 				Iterator it2 = rec.iterator();
-				while (it2.hasNext() && !createInvoice) {
+				float sum = 0.0f;
+				while (it2.hasNext()) {
 					InvoiceRecord r2 = (InvoiceRecord) it2.next();
+					if (!createInvoice) {
 					if (r2.getProvider() == null) {
 						createInvoice = true;
 					} else {
@@ -970,6 +999,13 @@ public class EconomaFileCreationThread extends Thread {
 							createInvoice = true;
 						}
 					}
+					}
+					
+					sum += r2.getAmount();
+				}
+				
+				if (sum == 0.0f) {
+					createInvoice = false;
 				}
 
 				try {
@@ -1369,6 +1405,7 @@ public class EconomaFileCreationThread extends Thread {
 											// vsamhkod
 											bWriter.write("01");
 											// radnr
+											type50counterString = format3.format(type50counter);
 											bWriter.write(type50counterString);
 											// radnrtxt
 											bWriter.write("000");
