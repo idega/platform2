@@ -1,11 +1,5 @@
-/*
- * $Id: AdultEducationBusiness.java,v 1.31 2005/10/31 17:21:22 palli Exp $
- * Created on Oct 31, 2005
- *
- * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
+/**
+ * 
  */
 package se.idega.idegaweb.commune.adulteducation.business;
 
@@ -13,11 +7,9 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Locale;
-
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
-
 import se.idega.idegaweb.commune.accounting.school.business.StudyPathBusiness;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoice;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourse;
@@ -26,7 +18,6 @@ import se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfoH
 import se.idega.idegaweb.commune.adulteducation.data.CoursePackage;
 import se.idega.idegaweb.commune.adulteducation.data.SchoolCoursePackage;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
-
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.data.Case;
 import com.idega.block.school.business.SchoolBusiness;
@@ -45,11 +36,13 @@ import com.idega.user.data.User;
 
 
 /**
+ * <p>
+ * TODO Dainis Describe Type AdultEducationBusiness
+ * </p>
+ *  Last modified: $Date: 2006/03/08 11:12:44 $ by $Author: dainis $
  * 
- *  Last modified: $Date: 2005/10/31 17:21:22 $ by $Author: palli $
- * 
- * @author <a href="mailto:bluebottle@idega.com">bluebottle</a>
- * @version $Revision: 1.31 $
+ * @author <a href="mailto:Dainis@idega.com">Dainis</a>
+ * @version $Revision: 1.31.2.1 $
  */
 public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 
@@ -97,6 +90,13 @@ public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getCourses
 	 */
 	public Collection getCourses(Object season, Object school, Object group) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#findAvailableCourses
+	 */
+	public Collection findAvailableCourses(SchoolType schoolType, SchoolSeason schoolSeason,
+			SchoolStudyPathGroup studyPathGroup, SchoolStudyPath studyPath, School school)
+			throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getCoursesWithStudents
@@ -285,6 +285,12 @@ public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getStudyPaths
 	 */
 	public Collection getStudyPaths(SchoolType type, SchoolStudyPathGroup group) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getStydyPathsBySchoolTypeAndSchoolStudyPathGroup
+	 */
+	public Collection getStydyPathsBySchoolTypeAndSchoolStudyPathGroup(SchoolType type, SchoolStudyPathGroup group)
+			throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#storeCourse
@@ -499,5 +505,4 @@ public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 	 */
 	public Collection getSchoolCoursePackages(School school, SchoolSeason season, CoursePackage coursePackage)
 			throws java.rmi.RemoteException;
-
 }
