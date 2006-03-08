@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Locale;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import se.idega.idegaweb.commune.care.business.CareBusiness;
 import se.idega.idegaweb.commune.care.data.AfterSchoolChoice;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.data.AfterSchoolCareDays;
@@ -31,10 +32,10 @@ import com.idega.util.IWTimestamp;
  * <p>
  * TODO Dainis Describe Type AfterSchoolBusiness
  * </p>
- *  Last modified: $Date: 2006/02/24 10:55:38 $ by $Author: dainis $
+ *  Last modified: $Date: 2006/03/08 17:06:37 $ by $Author: dainis $
  * 
  * @author <a href="mailto:Dainis@idega.com">Dainis</a>
- * @version $Revision: 1.14.2.2 $
+ * @version $Revision: 1.14.2.3 $
  */
 public interface AfterSchoolBusiness extends IBOService, CaseBusiness {
 
@@ -64,6 +65,11 @@ public interface AfterSchoolBusiness extends IBOService, CaseBusiness {
 	 */
 	public AfterSchoolChoice findChoicesByChildAndChoiceNumberAndSeason(Integer childID, int choiceNumber,
 			Integer seasonID) throws FinderException, java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.AfterSchoolBusinessBean#getOngoingAndNextSeasons
+	 */
+	public Collection getOngoingAndNextSeasons() throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.AfterSchoolBusinessBean#hasOpenApplication
@@ -184,4 +190,9 @@ public interface AfterSchoolBusiness extends IBOService, CaseBusiness {
 	 * @see se.idega.idegaweb.commune.childcare.business.AfterSchoolBusinessBean#getChildCareBusiness
 	 */
 	public ChildCareBusiness getChildCareBusiness() throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.AfterSchoolBusinessBean#getCareBusiness
+	 */
+	public CareBusiness getCareBusiness() throws java.rmi.RemoteException;
 }

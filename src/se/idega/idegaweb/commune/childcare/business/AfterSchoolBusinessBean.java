@@ -8,6 +8,7 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
@@ -17,6 +18,7 @@ import javax.ejb.RemoveException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import se.idega.idegaweb.commune.business.Constants;
+import se.idega.idegaweb.commune.care.business.CareBusiness;
 import se.idega.idegaweb.commune.care.business.PlacementHelper;
 import se.idega.idegaweb.commune.care.data.AfterSchoolChoice;
 import se.idega.idegaweb.commune.care.data.AfterSchoolChoiceHome;
@@ -32,6 +34,7 @@ import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseStatus;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolType;
@@ -108,6 +111,34 @@ public class AfterSchoolBusinessBean extends CaseBusinessBean implements CaseBus
 		String[] caseStatus = { getCaseStatusPreliminary().getStatus(), getCaseStatusInactive().getStatus() };
 		return getAfterSchoolChoiceHome().findByChildAndChoiceNumberAndSeason(childID, new Integer(choiceNumber), seasonID,
 				caseStatus);
+	}
+	
+	public Collection getOngoingAndNextSeasons(){
+		Collection currentAndNextSeasons = new LinkedList();
+		
+		try {
+			SchoolSeason ongoingSeason= getCareBusiness().getSchoolSeasonHome().findSeasonByDate(getChildCareBusiness().getSchoolBusiness().getCategoryElementarySchool(), new IWTimestamp().getDate());
+			SchoolCategory category = getSchoolBusiness().getCategoryElementarySchool();
+			Collection allSeasons = getSchoolBusiness().findAllSchoolSeasons(category);
+			
+			if (!allSeasons.isEmpty()) {
+				Iterator iter = allSeasons.iterator();
+				while (iter.hasNext()) {
+					SchoolSeason season = (SchoolSeason) iter.next();
+					if (! season.getSchoolSeasonStart().before(ongoingSeason.getSchoolSeasonStart())) {
+						currentAndNextSeasons.add(season);
+					}
+				}
+			}
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}		
+		
+		return currentAndNextSeasons;
 	}
 	
 	public boolean hasOpenApplication(User child, SchoolSeason season, int choiceNumber) {
@@ -555,6 +586,15 @@ public class AfterSchoolBusinessBean extends CaseBusinessBean implements CaseBus
 	public ChildCareBusiness getChildCareBusiness() {
 		try {
 			return (ChildCareBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ChildCareBusiness.class);
+		}
+		catch (IBOLookupException e) {
+			throw new IBORuntimeException();
+		}
+	}
+	
+	public CareBusiness getCareBusiness() {
+		try {
+			return (CareBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), CareBusiness.class);
 		}
 		catch (IBOLookupException e) {
 			throw new IBORuntimeException();
