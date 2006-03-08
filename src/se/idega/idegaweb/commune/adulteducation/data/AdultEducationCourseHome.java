@@ -1,11 +1,5 @@
-/*
- * $Id: AdultEducationCourseHome.java,v 1.3 2005/06/20 12:56:22 laddi Exp $
- * Created on Jun 20, 2005
- *
- * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
+/**
+ * 
  */
 package se.idega.idegaweb.commune.adulteducation.data;
 
@@ -20,10 +14,13 @@ import com.idega.data.IDOHome;
 
 
 /**
- * Last modified: $Date: 2005/06/20 12:56:22 $ by $Author: laddi $
+ * <p>
+ * TODO Dainis Describe Type AdultEducationCourseHome
+ * </p>
+ *  Last modified: $Date: 2006/03/08 11:10:00 $ by $Author: dainis $
  * 
- * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @author <a href="mailto:Dainis@idega.com">Dainis</a>
+ * @version $Revision: 1.3.2.1 $
  */
 public interface AdultEducationCourseHome extends IDOHome {
 
@@ -86,4 +83,10 @@ public interface AdultEducationCourseHome extends IDOHome {
 	 */
 	public Collection findAllBySeasonAndSchoolAndStudyPath(Object season, Object school, Object studyPath)
 			throws FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourseBMPBean#ejbFindAllAvailableCoursesByParameters
+	 */
+	public Collection findAllAvailableCoursesByParameters(SchoolType schoolType, SchoolSeason schoolSeason,
+			SchoolStudyPathGroup studyPathGroup, SchoolStudyPath studyPath, School school) throws FinderException;
 }

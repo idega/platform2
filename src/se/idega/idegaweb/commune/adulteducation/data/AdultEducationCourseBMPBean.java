@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationCourseBMPBean.java,v 1.9 2005/10/27 22:34:16 palli Exp $
+ * $Id: AdultEducationCourseBMPBean.java,v 1.9.2.1 2006/03/08 11:10:00 dainis Exp $
  * Created on 27.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -14,6 +14,7 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 import com.idega.block.process.data.Case;
 import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolBMPBean;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolSeason;
@@ -206,7 +207,9 @@ public class AdultEducationCourseBMPBean extends GenericEntity  implements Adult
 		SelectQuery query = new SelectQuery(table);
 		query.addColumn(table, SCHOOL, true);
 		query.addCriteria(new MatchCriteria(table, SCHOOL_SEASON, MatchCriteria.EQUALS, season));
-		query.addCriteria(new MatchCriteria(table, STUDY_PATH, MatchCriteria.EQUALS, studyPath));
+		if (studyPath != null) {
+			query.addCriteria(new MatchCriteria(table, STUDY_PATH, MatchCriteria.EQUALS, studyPath));
+		}
 		
 		return query.toString();
 	}
@@ -296,6 +299,50 @@ public class AdultEducationCourseBMPBean extends GenericEntity  implements Adult
 		query.addCriteria(new MatchCriteria(table, SCHOOL_SEASON, MatchCriteria.EQUALS, season));
 		query.addCriteria(new MatchCriteria(table, SCHOOL, MatchCriteria.EQUALS, school));
 		query.addCriteria(new MatchCriteria(table, STUDY_PATH, MatchCriteria.EQUALS, studyPath));
+		
+		return idoFindPKsByQuery(query);
+	}
+	
+	public Collection ejbFindAllAvailableCoursesByParameters(SchoolType schoolType, SchoolSeason schoolSeason, 
+			SchoolStudyPathGroup studyPathGroup, SchoolStudyPath studyPath, School school ) throws FinderException{		
+		Table courses = new Table(this);
+		Table schools = new Table(School.class);
+		Table studyPaths = new Table(SchoolStudyPath.class);
+		
+		SelectQuery query = new SelectQuery(courses);		
+		query.addColumn(new WildCardColumn(courses));
+		
+		try {
+			query.addJoin(courses, schools);
+			query.addJoin(courses, studyPaths);	
+		}
+		catch (IDORelationshipException e) {			
+			e.printStackTrace();
+			return null;
+		}
+		
+		query.addCriteria(new MatchCriteria(courses, NOT_ACTIVE, MatchCriteria.EQUALS, GenericEntity.COLUMN_VALUE_FALSE));
+		
+		if (schoolSeason != null ) {
+			query.addCriteria(new MatchCriteria(courses, SCHOOL_SEASON, MatchCriteria.EQUALS, schoolSeason));
+		}
+		if (studyPathGroup != null) {			
+			query.addCriteria(new MatchCriteria(studyPaths, "study_path_group_id", MatchCriteria.EQUALS, studyPathGroup));			
+		}
+		if (schoolType != null) {			
+			query.addCriteria(new MatchCriteria(studyPaths, "sch_school_type_id", MatchCriteria.EQUALS, schoolType));
+		}
+		
+		if (studyPath != null) {
+			query.addCriteria(new MatchCriteria(courses, STUDY_PATH, MatchCriteria.EQUALS, studyPath));
+		}
+		if (school != null) {
+			query.addCriteria(new MatchCriteria(courses, SCHOOL, MatchCriteria.EQUALS, school));
+		}		
+		
+		query.addOrder(schools, SchoolBMPBean.NAME, true); 
+		query.addOrder(studyPaths, "DESCRIPTION", true);
+		query.addOrder(courses, CODE, true);
 		
 		return idoFindPKsByQuery(query);
 	}

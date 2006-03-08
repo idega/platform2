@@ -1,11 +1,5 @@
-/*
- * $Id: AdultEducationCourseHomeImpl.java,v 1.3 2005/06/20 12:56:22 laddi Exp $
- * Created on Jun 20, 2005
- *
- * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
+/**
+ * 
  */
 package se.idega.idegaweb.commune.adulteducation.data;
 
@@ -20,10 +14,13 @@ import com.idega.data.IDOFactory;
 
 
 /**
- * Last modified: $Date: 2005/06/20 12:56:22 $ by $Author: laddi $
+ * <p>
+ * TODO Dainis Describe Type AdultEducationCourseHomeImpl
+ * </p>
+ *  Last modified: $Date: 2006/03/08 11:10:00 $ by $Author: dainis $
  * 
- * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @author <a href="mailto:Dainis@idega.com">Dainis</a>
+ * @version $Revision: 1.3.2.1 $
  */
 public class AdultEducationCourseHomeImpl extends IDOFactory implements AdultEducationCourseHome {
 
@@ -106,8 +103,8 @@ public class AdultEducationCourseHomeImpl extends IDOFactory implements AdultEdu
 	public Collection findAllBySeasonAndSchoolAndStudyPath(SchoolSeason season, School school, SchoolStudyPath studyPath)
 			throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((AdultEducationCourseBMPBean) entity).ejbFindAllBySeasonAndSchoolAndStudyPath(season,
-				school, studyPath);
+		java.util.Collection ids = ((AdultEducationCourseBMPBean) entity).ejbFindAllBySeasonAndSchoolAndStudyPath(
+				season, school, studyPath);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
@@ -115,8 +112,17 @@ public class AdultEducationCourseHomeImpl extends IDOFactory implements AdultEdu
 	public Collection findAllBySeasonAndSchoolAndStudyPath(Object season, Object school, Object studyPath)
 			throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((AdultEducationCourseBMPBean) entity).ejbFindAllBySeasonAndSchoolAndStudyPath(season,
-				school, studyPath);
+		java.util.Collection ids = ((AdultEducationCourseBMPBean) entity).ejbFindAllBySeasonAndSchoolAndStudyPath(
+				season, school, studyPath);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findAllAvailableCoursesByParameters(SchoolType schoolType, SchoolSeason schoolSeason,
+			SchoolStudyPathGroup studyPathGroup, SchoolStudyPath studyPath, School school) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((AdultEducationCourseBMPBean) entity).ejbFindAllAvailableCoursesByParameters(
+				schoolType, schoolSeason, studyPathGroup, studyPath, school);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
