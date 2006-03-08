@@ -69,6 +69,16 @@ public abstract class PaymentThreadAdultEducation extends BillingThread {
 
 	private static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune.adulteducation";
 
+	private boolean setVUXGradePayment = false;
+
+	private boolean setVUXPayment = false;
+	
+/*	private int days = 0;
+	
+	private IWTimestamp periodStartCheck = null;
+	
+	private IWTimestamp periodEndCheck = null;*/
+
 	public PaymentThreadAdultEducation(Date month, IWContext iwc) {
 		super(month, iwc);
 	}
@@ -108,40 +118,42 @@ public abstract class PaymentThreadAdultEducation extends BillingThread {
 		Iterator i = placements.iterator();
 		while (i.hasNext()) {
 			SchoolClassMember member = (SchoolClassMember) i.next();
-			Provider provider = null;
-			try {
-				provider = new Provider(Integer.parseInt(member
-						.getSchoolClass().getSchool().getPrimaryKey()
-						.toString()));
-				createPaymentForSchoolClassMember(regBus, provider, member);
-			} catch (NullPointerException e) {
-				// throw new SchoolMissingVitalDataException("");
-				e.printStackTrace();
-			} catch (EJBException e) {
-				e.printStackTrace();
-			} catch (PostingException e) {
-				e.printStackTrace();
-			} catch (RegulationException e) {
-				e.printStackTrace();
-			} catch (MissingFlowTypeException e) {
-				e.printStackTrace();
-			} catch (MissingConditionTypeException e) {
-				e.printStackTrace();
-			} catch (MissingRegSpecTypeException e) {
-				e.printStackTrace();
-			} catch (TooManyRegulationsException e) {
-				e.printStackTrace();
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			} catch (FinderException e) {
-				e.printStackTrace();
-			} catch (CreateException e) {
-				e.printStackTrace();
+			if (getInvoiceRecordCountForMemberWithVUXGradePayment(member) == 0) {
+				Provider provider = null;
+				try {
+					provider = new Provider(Integer.parseInt(member
+							.getSchoolClass().getSchool().getPrimaryKey()
+							.toString()));
+					createPaymentForSchoolClassMember(regBus, provider, member);
+				} catch (NullPointerException e) {
+					// throw new SchoolMissingVitalDataException("");
+					e.printStackTrace();
+				} catch (EJBException e) {
+					e.printStackTrace();
+				} catch (PostingException e) {
+					//createn
+					e.printStackTrace();
+				} catch (RegulationException e) {
+					e.printStackTrace();
+				} catch (MissingFlowTypeException e) {
+					e.printStackTrace();
+				} catch (MissingConditionTypeException e) {
+					e.printStackTrace();
+				} catch (MissingRegSpecTypeException e) {
+					e.printStackTrace();
+				} catch (TooManyRegulationsException e) {
+					e.printStackTrace();
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				} catch (FinderException e) {
+					e.printStackTrace();
+				} catch (CreateException e) {
+					e.printStackTrace();
+				}
 			}
 
 			if (!running) {
 				return;
-
 			}
 		}
 
@@ -241,18 +253,36 @@ public abstract class PaymentThreadAdultEducation extends BillingThread {
 		System.out.println("postings = " + postings.toString());
 		System.out.println("Member = " + member.getStudent().getName());
 		System.out.println("Member id = " + member.getPrimaryKey().toString());
+
+		setVUXGradePayment = false;
+		setVUXPayment = false;
+
 		float newAmount = getCheckAmount(postingDetail.getAmount(), member,
 				course);
 		System.out.println("new amount = " + newAmount);
 
 		postingDetail.setAmount(newAmount);
-		final PaymentRecord record = createPaymentRecord(postingDetail,
-				postings[0], postings[1], 1.0f, school);
-		System.out.println("paymentrecord = "
-				+ record.getPrimaryKey().toString());
-		createVATPaymentRecord(record, postingDetail, 1.0f, school, member.getSchoolType(), member
-				.getSchoolYear());
-		createInvoiceRecord(record, member, postingDetail, null);
+		if (newAmount > 0.0f) {
+			final PaymentRecord record = createPaymentRecord(postingDetail,
+					postings[0], postings[1], 1.0f, school);
+			System.out.println("paymentrecord = "
+					+ record.getPrimaryKey().toString());
+			createVATPaymentRecord(record, postingDetail, 1.0f, school, member
+					.getSchoolType(), member.getSchoolYear());
+			InvoiceRecord iRec = createInvoiceRecord(record, member, postingDetail, null);
+
+			if (setVUXGradePayment || setVUXPayment) {
+				if (setVUXGradePayment) {
+					iRec.setVUXGradePayment(true);
+				}
+				
+				if (setVUXPayment) {
+					iRec.setVUXPayment(true);
+				}
+								
+				iRec.store();
+			}
+		}
 	}
 
 	protected InvoiceRecord createInvoiceRecord(
@@ -260,7 +290,7 @@ public abstract class PaymentThreadAdultEducation extends BillingThread {
 			final SchoolClassMember placement,
 			final PostingDetail postingDetail, PlacementTimes checkPeriod)
 			throws RemoteException, CreateException {
-		 return createInvoiceRecord(paymentRecord, placement, postingDetail,
+		return createInvoiceRecord(paymentRecord, placement, postingDetail,
 				checkPeriod, periodFrom.getDate(), periodTo.getDate());
 	}
 
@@ -293,13 +323,18 @@ public abstract class PaymentThreadAdultEducation extends BillingThread {
 		} else {
 			if (member.getRemovedDate() != null) {
 				if (!isFirstGradeForMemberInPeriod(member)) {
-					if (getInvoiceRecordCountForMember(member) == 0) {
+					int nop = getInvoiceRecordCountForMemberWithVUXPayment(member);
+					if (nop == 0) {
+						setVUXPayment = true;
 						return originalAmount
 								* (parameters.getShortPercentage() / 100.0f);
 					} else {
 						return 0.0f;
 					}
 				} else {
+					setVUXGradePayment = true;
+					setVUXPayment = true;
+
 					if (getInvoiceRecordCountForMember(member) == 0) {
 						return originalAmount;
 					} else {
@@ -322,100 +357,95 @@ public abstract class PaymentThreadAdultEducation extends BillingThread {
 		IWTimestamp courseStartStamp = new IWTimestamp(course.getStartDate());
 		IWTimestamp courseEndStamp = new IWTimestamp(course.getEndDate());
 
-		int courseDays = getDayDiff(courseStartStamp,
-				courseEndStamp);
+		int courseDays = getDayDiff(courseStartStamp, courseEndStamp);
 		float paymentPrDay = (originalAmount * (parameters.getLongPercentage() / 100.0f))
 				/ courseDays;
 
 		if (removedStamp == null) {
-			if (getInvoiceRecordCountForMember(member) == 0) {
-				if (courseEndStamp.isLaterThan(periodTo)) {
-					return paymentPrDay
-							* getDayDiff(courseStartStamp,
-									periodTo);
+			if (courseEndStamp.isLaterThanOrEquals(periodFrom)) {
+				if (getInvoiceRecordCountForMember(member) == 0) {
+					if (courseEndStamp.isLaterThan(periodTo)) {
+						return paymentPrDay
+								* getDayDiff(courseStartStamp, periodTo);
+					} else {
+						setVUXPayment = true;
+						return originalAmount
+								* (parameters.getLongPercentage() / 100.0f);
+					}
 				} else {
-					return paymentPrDay * courseDays;
+					if (courseEndStamp.isLaterThan(periodTo)) {
+						return paymentPrDay * getDayDiff(periodFrom, periodTo);
+					} else {
+						setVUXPayment = true;
+						return paymentPrDay
+								* getDayDiff(periodFrom, courseEndStamp);
+					}
 				}
 			} else {
-				if (courseEndStamp.isLaterThan(periodTo)) {
-					return paymentPrDay
-							* getDayDiff(periodFrom, periodTo);
-				} else {
-					return paymentPrDay
-							* getDayDiff(periodFrom,
-									courseEndStamp);
-				}
+				return 0.0f;
 			}
 		} else {
 			if (!isFirstGradeForMemberInPeriod(member)) {
-				if (getInvoiceRecordCountForMember(member) == 0) {
-					if (removedStamp.isEarlierThan(courseEndStamp)) {
-						if (courseEndStamp.isEarlierThanOrEquals(periodTo)) {
-							return paymentPrDay
-									* getDayDiff(
-											courseStartStamp, removedStamp);
+				int nop = getInvoiceRecordCountForMemberWithVUXPayment(member);
+				if (removedStamp.isLaterThanOrEquals(periodFrom) && nop == 0) {
+					if (getInvoiceRecordCountForMember(member) == 0) {
+						if (removedStamp.isEarlierThan(courseEndStamp)) {
+							if (removedStamp.isEarlierThanOrEquals(periodTo)) {
+								setVUXPayment = true;
+								return paymentPrDay
+										* getDayDiff(courseStartStamp,
+												removedStamp);
+							} else {
+								return paymentPrDay
+										* getDayDiff(courseStartStamp, periodTo);
+							}
 						} else {
-							return paymentPrDay
-									* getDayDiff(
-											courseStartStamp, periodTo);
+							if (courseEndStamp.isEarlierThanOrEquals(periodTo)) {
+								setVUXPayment = true;
+								return originalAmount
+										* (parameters.getLongPercentage() / 100.0f);
+							} else {
+								return paymentPrDay
+										* getDayDiff(courseStartStamp, periodTo);
+							}
 						}
 					} else {
-						if (courseEndStamp.isEarlierThanOrEquals(periodTo)) {
-							return originalAmount
-									* (parameters.getLongPercentage() / 100.0f);
+						if (removedStamp.isEarlierThan(courseEndStamp)) {
+							if (removedStamp.isEarlierThanOrEquals(periodTo)) {
+								setVUXPayment = true;
+								return paymentPrDay
+										* getDayDiff(periodFrom, removedStamp);
+							} else {
+								return paymentPrDay
+										* getDayDiff(periodFrom, periodTo);
+							}
 						} else {
-							return paymentPrDay
-									* getDayDiff(
-											courseStartStamp, periodTo);
+							if (courseEndStamp.isEarlierThanOrEquals(periodTo)) {
+								setVUXPayment = true;
+								return paymentPrDay
+										* getDayDiff(periodFrom, courseEndStamp);
+							} else {
+								return paymentPrDay
+										* getDayDiff(periodFrom, periodTo);
+							}
 						}
 					}
 				} else {
-					if (removedStamp.isEarlierThan(courseEndStamp)) {
-						if (courseEndStamp.isEarlierThanOrEquals(periodTo)
-								&& courseStartStamp
-										.isEarlierThanOrEquals(periodFrom)) {
-							return paymentPrDay
-									* getDayDiff(periodFrom,
-											removedStamp);
-						} else if (courseEndStamp.isLaterThan(periodTo)
-								&& courseStartStamp
-										.isEarlierThanOrEquals(periodFrom)) {
-							return paymentPrDay
-									* getDayDiff(periodFrom,
-											periodTo);
-						} else if (courseEndStamp.isLaterThan(periodTo)
-								&& courseStartStamp.isLaterThan(periodFrom)) {
-							return paymentPrDay
-									* getDayDiff(
-											courseStartStamp, periodTo);
-						} else {
-							return paymentPrDay
-									* getDayDiff(
-											courseStartStamp, removedStamp);
-						}
-					} else {
-						if (courseEndStamp.isEarlierThanOrEquals(periodTo)) {
-							return paymentPrDay
-									* getDayDiff(periodFrom,
-											courseEndStamp);
-						} else {
-							return paymentPrDay
-									* getDayDiff(periodFrom,
-											periodTo);
-						}
-					}
+					return 0.0f;
 				}
 			} else {
+				setVUXPayment = true;
+				setVUXGradePayment = true;
+
 				if (getInvoiceRecordCountForMember(member) == 0) {
 					return originalAmount;
 				} else {
-					if (courseEndStamp.isEarlierThanOrEquals(periodTo)) {
+					if (courseEndStamp.isEarlierThanOrEquals(periodFrom)) {
 						return originalAmount
 								* (parameters.getLongGradePercentage() / 100.0f);
 					} else {
 						return paymentPrDay
-								* getDayDiff(periodFrom,
-										courseEndStamp)
+								* getDayDiff(periodFrom, courseEndStamp)
 								+ originalAmount
 								* (parameters.getLongGradePercentage() / 100.0f);
 					}
@@ -424,7 +454,6 @@ public abstract class PaymentThreadAdultEducation extends BillingThread {
 
 		}
 	}
-
 	private int getDayDiff(IWTimestamp from, IWTimestamp to) {
 		return AccountingUtil.getDayDiff(from, to) + 1;
 	}
@@ -442,65 +471,109 @@ public abstract class PaymentThreadAdultEducation extends BillingThread {
 				/ courseDays;
 
 		if (removedStamp == null) {
-			if (getInvoiceRecordCountForMember(member) == 0) {
-				if (getDayDiff(registerStamp, periodTo) < courseDays) {
-					return paymentPrDay
-							* AccountingUtil
-									.getDayDiff(registerStamp, periodTo);
+			int nop = getInvoiceRecordCountForMemberWithVUXPayment(member);
+			if (nop == 0) {
+				if (getInvoiceRecordCountForMember(member) == 0) {
+					if (getDayDiff(registerStamp, periodTo) < courseDays) {
+						return paymentPrDay
+								* getDayDiff(registerStamp,
+										periodTo);
+					} else {
+						setVUXPayment = true;
+						return originalAmount
+								* (parameters.getLongPercentage() / 100.0f);
+					}
 				} else {
-					return originalAmount
-							* (parameters.getLongPercentage() / 100.0f);
+					if (getDayDiff(registerStamp, periodTo) < courseDays) {
+						return paymentPrDay * getDayDiff(periodFrom, periodTo);
+					} else {
+						setVUXPayment = true;
+						return paymentPrDay
+								* (courseDays - getDayDiff(registerStamp, periodFrom) + 1);
+					}
 				}
 			} else {
-				if (getDayDiff(registerStamp, periodTo) < courseDays) {
-					return paymentPrDay
-							* getDayDiff(periodFrom, periodTo);
-				} else {
-					return paymentPrDay
-							* (courseDays - getDayDiff(
-									periodFrom, periodTo));
-				}
+				return 0.0f;
 			}
 		} else {
 			if (!isFirstGradeForMemberInPeriod(member)) {
-				if (getInvoiceRecordCountForMember(member) == 0) {
-					if (getDayDiff(registerStamp, removedStamp) / 7 >= course
-							.getLength()) {
-						return originalAmount
-								* (parameters.getLongPercentage() / 100.0f);
+				if (removedStamp.isLaterThanOrEquals(periodFrom)
+						&& getInvoiceRecordCountForMemberWithVUXPayment(member) == 0) {
+					if (getInvoiceRecordCountForMember(member) == 0) {
+						if (getDayDiff(registerStamp, removedStamp) >= courseDays) {
+							if (removedStamp.isEarlierThanOrEquals(periodTo)) {
+								setVUXPayment = true;
+								return originalAmount
+										* (parameters.getLongPercentage() / 100.0f);
+							} else {
+								if (getDayDiff(registerStamp, periodTo) < courseDays) {
+									return paymentPrDay
+											* getDayDiff(registerStamp,
+													periodTo);
+								} else {
+									setVUXPayment = true;
+									return originalAmount
+											* (parameters.getLongPercentage() / 100.0f);
+								}
+							}
+						} else {
+							if (removedStamp.isEarlierThanOrEquals(periodTo)) {
+								setVUXPayment = true;
+								return paymentPrDay
+										* getDayDiff(registerStamp,
+												removedStamp);
+							} else {
+								return paymentPrDay
+										* getDayDiff(registerStamp, periodTo);
+							}
+						}
 					} else {
-						return paymentPrDay
-								* getDayDiff(registerStamp,
-										removedStamp);
+						if (getDayDiff(registerStamp, removedStamp) >= courseDays) {
+							if (removedStamp.isEarlierThanOrEquals(periodTo)) {
+								setVUXPayment = true;
+								return paymentPrDay
+										* (courseDays - getDayDiff(registerStamp, periodFrom
+												) + 1);
+							} else {
+								if (getDayDiff(registerStamp, periodTo) < courseDays) {
+									return paymentPrDay
+											* getDayDiff(periodFrom, periodTo);
+								} else {
+									setVUXPayment = true;
+									return paymentPrDay
+											* (courseDays - getDayDiff(
+													registerStamp, periodFrom) + 1);
+								}
+							}
+						} else {
+							if (removedStamp.isEarlierThanOrEquals(periodTo)) {
+								setVUXPayment = true;
+								return paymentPrDay
+										* getDayDiff(periodFrom, removedStamp);
+							} else {
+								return paymentPrDay
+										* getDayDiff(periodFrom, periodTo);
+							}
+						}
 					}
 				} else {
-					if (getDayDiff(registerStamp, removedStamp) >= courseDays
-							&& getDayDiff(registerStamp,
-									periodFrom) < courseDays) {
-						return paymentPrDay
-								* getDayDiff(registerStamp,
-										periodFrom);
-					} else {
-						return paymentPrDay
-								* (getDayDiff(registerStamp,
-										removedStamp) - AccountingUtil
-										.getDayDiff(registerStamp, periodFrom));
-					}
+					return 0.0f;
 				}
 			} else {
+				setVUXPayment = true;
+				setVUXGradePayment = true;
 				if (getInvoiceRecordCountForMember(member) == 0) {
 					return originalAmount;
 				} else {
 					if (getDayDiff(registerStamp, periodFrom) >= courseDays) {
 						return originalAmount
-								* (parameters.getLongPercentage() / 100.0f);
+								* (parameters.getLongGradePercentage() / 100.0f);
 					} else {
 						return paymentPrDay
-								* (getDayDiff(registerStamp,
-										removedStamp) - AccountingUtil
-										.getDayDiff(registerStamp, periodFrom))
+								* (courseDays - getDayDiff(registerStamp,
+										periodFrom) + 1)
 								+ (originalAmount * (parameters
-										.getLongPercentage() / 100.0f));
+										.getLongGradePercentage() / 100.0f));
 					}
 				}
 			}
@@ -579,6 +652,36 @@ public abstract class PaymentThreadAdultEducation extends BillingThread {
 		try {
 			count = getInvoiceRecordHome()
 					.getNumberOfInvoicesForStudent(member);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (IDOException e) {
+			e.printStackTrace();
+		}
+
+		return count;
+	}
+
+	private int getInvoiceRecordCountForMemberWithVUXGradePayment(
+			SchoolClassMember member) {
+		int count = 0;
+		try {
+			count = getInvoiceRecordHome()
+					.getNumberOfInvoicesForStudentWithVUXGradePayment(member);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (IDOException e) {
+			e.printStackTrace();
+		}
+
+		return count;
+	}
+
+	private int getInvoiceRecordCountForMemberWithVUXPayment(
+			SchoolClassMember member) {
+		int count = 0;
+		try {
+			count = getInvoiceRecordHome()
+					.getNumberOfInvoicesForStudentWithVUXPayment(member);
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		} catch (IDOException e) {
