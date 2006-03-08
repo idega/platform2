@@ -1,23 +1,21 @@
-/*
- * Created on 2005-jun-01
- *
- * To change the template for this generated file go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+/**
+ * 
  */
 package se.idega.idegaweb.commune.accounting.school.business;
 
-
-
 import com.idega.business.IBOHome;
 
+
 /**
- * @author Malin
- *
- * To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * <p>
+ * TODO Dainis Describe Type StudyPathBusinessHome
+ * </p>
+ *  Last modified: $Date: 2006/03/08 11:05:20 $ by $Author: dainis $
+ * 
+ * @author <a href="mailto:Dainis@idega.com">Dainis</a>
+ * @version $Revision: 1.4.2.1 $
  */
 public interface StudyPathBusinessHome extends IBOHome {
-	public StudyPathBusiness create() throws javax.ejb.CreateException,
-			java.rmi.RemoteException;
 
+	public StudyPathBusiness create() throws javax.ejb.CreateException, java.rmi.RemoteException;
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: StudyPathBusinessBean.java,v 1.9 2005/07/20 17:52:00 malin Exp $
+ * $Id: StudyPathBusinessBean.java,v 1.9.2.1 2006/03/08 11:05:20 dainis Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -31,10 +31,10 @@ import com.idega.data.IDORelationshipException;
 /** 
  * Business logic for age values and regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2005/07/20 17:52:00 $ by $Author: malin $
+ * Last modified: $Date: 2006/03/08 11:05:20 $ by $Author: dainis $
  *
  * @author Anders Lindman
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.9.2.1 $
  */
 public class StudyPathBusinessBean extends com.idega.business.IBOServiceBean implements StudyPathBusiness  {
 
@@ -51,14 +51,14 @@ public class StudyPathBusinessBean extends com.idega.business.IBOServiceBean imp
 	public final static String KEY_CANNOT_DELETE_STUDY_PATH = KP + "cannot_delete_study_path";
 	public final static String KEY_CANNOT_FIND_STUDY_PATH = KP + "cannot_find_study_path";
 
-	public final static String DEFAULT_OPERATION_MISSING = "Verksamhet måste v?ljas.";
-	public final static String DEFAULT_STUDY_PATH_CODE_MISSING = "Koden för studievägen måste fyllas i.";
-	public final static String DEFAULT_STUDY_PATH_CODE_TOO_LONG = "Koden för studievägen får högst innehålla " + MAX_STUDY_PATH_CODE_LENGTH + " tecken.";
-	public final static String DEFAULT_DESCRIPTION_MISSING = "Beskrivning av studievägen måste fyllas i.";
+	public final static String DEFAULT_OPERATION_MISSING = "Verksamhet m?ste v?ljas.";
+	public final static String DEFAULT_STUDY_PATH_CODE_MISSING = "Koden f?r studiev?gen m?ste fyllas i.";
+	public final static String DEFAULT_STUDY_PATH_CODE_TOO_LONG = "Koden f?r studiev?gen f?r h?gst inneh?lla " + MAX_STUDY_PATH_CODE_LENGTH + " tecken.";
+	public final static String DEFAULT_DESCRIPTION_MISSING = "Beskrivning av studiev?gen m?ste fyllas i.";
 	public final static String DEFAULT_STUDY_PATH_CODE_ALREADY_EXISTS = "Det finns redan en studiev?g med denna kod.";
-	public final static String DEFAULT_CANNOT_SAVE_STUDY_PATH = "Studievägen kunde inte sparas på grund av tekniskt fel.";
-	public final static String DEFAULT_CANNOT_DELETE_STUDY_PATH = "Studievägen kunde inte tas bort på grund av tekniskt fel.";
-	public final static String DEFAULT_CANNOT_FIND_STUDY_PATH = "Kan ej hitta studievägen.";
+	public final static String DEFAULT_CANNOT_SAVE_STUDY_PATH = "Studiev?gen kunde inte sparas p? grund av tekniskt fel.";
+	public final static String DEFAULT_CANNOT_DELETE_STUDY_PATH = "Studiev?gen kunde inte tas bort p? grund av tekniskt fel.";
+	public final static String DEFAULT_CANNOT_FIND_STUDY_PATH = "Kan ej hitta studiev?gen.";
 
 	/**
 	 * Return study path home. 
@@ -160,6 +160,15 @@ public class StudyPathBusinessBean extends com.idega.business.IBOServiceBean imp
 		}
 	}
 	
+	public Collection findStudyPathsBySchoolTypeAndSchoolStudyPathGroup(SchoolType type, SchoolStudyPathGroup group) {
+		try {
+			return getSchoolStudyPathHome().findBySchoolTypeOrderByDescription(type, group);
+		}
+		catch (FinderException fe) {
+			return new ArrayList();
+		}
+	}
+	
 	public Collection findStudyPathsBySchool(School school) {
 		return findStudyPathsBySchool(school, null);
 	}
@@ -220,6 +229,15 @@ public class StudyPathBusinessBean extends com.idega.business.IBOServiceBean imp
 	public SchoolStudyPathGroup findStudyPathGroup(Object groupPK) {
 		try {
 			return getSchoolStudyPathGroupHome().findByPrimaryKey(groupPK);			
+		}
+		catch (FinderException e) {
+			return null;
+		}
+	}
+	
+	public SchoolStudyPath findStudyPath(Object pathPK) {
+		try {
+			return getSchoolStudyPathHome().findByPrimaryKey(pathPK);			
 		}
 		catch (FinderException e) {
 			return null;
