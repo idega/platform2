@@ -296,16 +296,24 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 	}
 
 	public Collection ejbFindBySchoolType(SchoolType schoolType, SchoolStudyPathGroup group) throws FinderException {
+		return ejbFindBySchoolType(schoolType, group, COLUMN_CODE);
+	}
+	
+	public Collection ejbFindBySchoolTypeOrderByDescription(SchoolType schoolType, SchoolStudyPathGroup group) throws FinderException {
+		return ejbFindBySchoolType(schoolType, group, COLUMN_DESCRIPTION);
+	}	
+	
+	public Collection ejbFindBySchoolType(SchoolType schoolType, SchoolStudyPathGroup group, String orderByColumn) throws FinderException {
 		IDOQuery query = idoQuery();
 		query.appendSelectAllFrom(this);
 		query.appendWhereEquals(COLUMN_SCHOOL_TYPE,schoolType.getPrimaryKey().toString());
 		query.append(" AND (").append(COLUMN_IS_VALID).append(" is null");
 		query.append(" OR ").append(COLUMN_IS_VALID).append(" = 'Y')");
 		query.appendAndEquals(COLUMN_STUDY_PATH_GROUP_ID, group.getPrimaryKey().toString());
-		query.appendOrderBy(COLUMN_CODE);
+		query.appendOrderBy(orderByColumn);
 		return idoFindPKsByQuery(query);
-	}
-	
+	}	
+
 	public Collection ejbFindBySchoolStudyPathGroup(SchoolStudyPathGroup group) throws FinderException {
 		IDOQuery query = idoQuery();
 		query.appendSelectAllFrom(this);
@@ -315,7 +323,7 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 		query.appendAndEquals(COLUMN_STUDY_PATH_GROUP_ID, group.getPrimaryKey().toString());
 		query.appendOrderBy(COLUMN_CODE);
 		return idoFindPKsByQuery(query);
-	}	
+	}		
 
 	public Collection ejbFindBySchoolCategory(SchoolCategory schoolCategory) throws FinderException {
 		IDOQuery query = idoQuery();

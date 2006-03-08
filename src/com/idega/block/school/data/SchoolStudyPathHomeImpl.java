@@ -13,10 +13,10 @@ import com.idega.data.IDORelationshipException;
  * <p>
  * TODO Dainis Describe Type SchoolStudyPathHomeImpl
  * </p>
- *  Last modified: $Date: 2005/11/28 18:54:52 $ by $Author: dainis $
+ *  Last modified: $Date: 2006/03/08 11:56:44 $ by $Author: dainis $
  * 
  * @author <a href="mailto:Dainis@idega.com">Dainis</a>
- * @version $Revision: 1.19.2.1 $
+ * @version $Revision: 1.19.2.2 $
  */
 public class SchoolStudyPathHomeImpl extends IDOFactory implements SchoolStudyPathHome {
 
@@ -129,6 +129,24 @@ public class SchoolStudyPathHomeImpl extends IDOFactory implements SchoolStudyPa
 	public Collection findBySchoolType(SchoolType schoolType, SchoolStudyPathGroup group) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		java.util.Collection ids = ((SchoolStudyPathBMPBean) entity).ejbFindBySchoolType(schoolType, group);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findBySchoolTypeOrderByDescription(SchoolType schoolType, SchoolStudyPathGroup group)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolStudyPathBMPBean) entity).ejbFindBySchoolTypeOrderByDescription(schoolType,
+				group);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findBySchoolType(SchoolType schoolType, SchoolStudyPathGroup group, String orderByColumn)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolStudyPathBMPBean) entity).ejbFindBySchoolType(schoolType, group,
+				orderByColumn);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}

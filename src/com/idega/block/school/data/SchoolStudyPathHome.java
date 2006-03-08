@@ -13,10 +13,10 @@ import com.idega.data.IDORelationshipException;
  * <p>
  * TODO Dainis Describe Type SchoolStudyPathHome
  * </p>
- *  Last modified: $Date: 2005/11/28 18:54:52 $ by $Author: dainis $
+ *  Last modified: $Date: 2006/03/08 11:56:44 $ by $Author: dainis $
  * 
  * @author <a href="mailto:Dainis@idega.com">Dainis</a>
- * @version $Revision: 1.18.2.1 $
+ * @version $Revision: 1.18.2.2 $
  */
 public interface SchoolStudyPathHome extends IDOHome {
 
@@ -96,6 +96,18 @@ public interface SchoolStudyPathHome extends IDOHome {
 	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#ejbFindBySchoolType
 	 */
 	public Collection findBySchoolType(SchoolType schoolType, SchoolStudyPathGroup group) throws FinderException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#ejbFindBySchoolTypeOrderByDescription
+	 */
+	public Collection findBySchoolTypeOrderByDescription(SchoolType schoolType, SchoolStudyPathGroup group)
+			throws FinderException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#ejbFindBySchoolType
+	 */
+	public Collection findBySchoolType(SchoolType schoolType, SchoolStudyPathGroup group, String orderByColumn)
+			throws FinderException;
 
 	/**
 	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#ejbFindBySchoolStudyPathGroup
