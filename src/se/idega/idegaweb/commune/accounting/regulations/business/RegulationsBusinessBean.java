@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.140.2.1 2005/11/09 00:30:03 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.140.2.2 2006/03/13 11:57:59 palli Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -587,6 +587,26 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 								break;
 							case 9:
 								if (value.intValue() != 3)
+									match = false;
+								break;
+							case 10:
+								if (1 > value.intValue() || value.intValue() > 6)
+									match = false;
+								break;
+							case 11:
+								if (4 > value.intValue() || value.intValue() > 6)
+									match = false;
+								break;
+							case 12:
+								if (5 > value.intValue() || value.intValue() > 7)
+									match = false;
+								break;
+							case 13:
+								if (6 > value.intValue() || value.intValue() > 10)
+									match = false;
+								break;
+							case 14:
+								if (9 > value.intValue() || value.intValue() > 13)
 									match = false;
 								break;
 						}
@@ -1454,6 +1474,11 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		arr.add(new Object[] { new Integer(7), "6-13" });
 		arr.add(new Object[] { new Integer(8), "1-3" });
 		arr.add(new Object[] { new Integer(9), "3" });
+		arr.add(new Object[] { new Integer(10), "1-6" });
+		arr.add(new Object[] { new Integer(11), "4-6" });
+		arr.add(new Object[] { new Integer(12), "5-7" });
+		arr.add(new Object[] { new Integer(13), "6-10" });
+		arr.add(new Object[] { new Integer(14), "9-13" });
 
 		return arr;
 	}
