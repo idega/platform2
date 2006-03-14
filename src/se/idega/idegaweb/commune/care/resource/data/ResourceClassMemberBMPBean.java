@@ -39,6 +39,8 @@ public class ResourceClassMemberBMPBean extends GenericEntity implements Resourc
   private static final String ENDDATE = "enddate";
   private static final String REGISTRATOR = "registrator";
   private static final String CREATEDDATE = "created_date";
+  private static final String TEACHER_ID = "teacher_id";
+  
   
   public String getEntityName() {
     return TABLE_NAME;
@@ -51,7 +53,8 @@ public class ResourceClassMemberBMPBean extends GenericEntity implements Resourc
     this.addAttribute(STARTDATE, "Startdate for resourceperiod", true, true, Date.class);
     this.addAttribute(ENDDATE, "Enddate for resourceperiod", true, true, Date.class);    
     this.addAttribute(REGISTRATOR, "registrator", true, true, Integer.class, MANY_TO_ONE, com.idega.core.user.data.User.class);
-    this.addAttribute(CREATEDDATE, "Date for resource placement creation", true, true, Date.class);    
+    this.addAttribute(CREATEDDATE, "Date for resource placement creation", true, true, Date.class);
+    this.addAttribute(TEACHER_ID, "Teacher id", true, true, String.class);
   }
   
   public Collection ejbFindAllByRscIdAndMemberId(Integer rscId, Integer mbrId) throws FinderException {
@@ -276,5 +279,14 @@ public class ResourceClassMemberBMPBean extends GenericEntity implements Resourc
   public Date getCreatedDate() {
   	return getDateColumnValue(CREATEDDATE);
   }
+  
+  public void setTeacherId(String tchid) {
+        setColumn(TEACHER_ID, tchid);
+    }
+    
+    public String getTeacherId() {
+        return getStringColumnValue(TEACHER_ID);
+    }
+  
   
 }
