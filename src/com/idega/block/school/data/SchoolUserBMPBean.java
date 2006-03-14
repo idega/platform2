@@ -2,12 +2,16 @@ package com.idega.block.school.data;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOQuery;
+import com.idega.data.IDORelationshipException;
+import com.idega.data.IDORemoveRelationshipException;
 import com.idega.user.data.User;
 
 /**
@@ -53,7 +57,29 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 		this.addAttribute(COLUMN_NAME_USER_TYPE, "user type", true, true, Integer.class);
 		this.addAttribute(COLUMN_NAME_SHOW_IN_CONTACTS, "show in contacts", true, true, Boolean.class);
 		this.addAttribute(COLUMN_NAME_MAIN_HEADMASTER, "main headmaster", true, true, Boolean.class);	
-		this.addAttribute(COLUMN_NAME_ECONOMY_RESP, "economical responsible", true, true, Boolean.class);	
+		this.addAttribute(COLUMN_NAME_ECONOMY_RESP, "economical responsible", true, true, Boolean.class);
+		
+		this.addManyToManyRelationShip(School.class);
+	}
+	
+	public Collection getSchools() throws IDORelationshipException {
+		return idoGetRelatedEntities(School.class);
+	}
+	
+	public void addSchools(Collection schools) throws IDOAddRelationshipException {
+		Iterator iter = schools.iterator();
+		while (iter.hasNext()) {
+			School school = (School) iter.next();
+			idoAddTo(school);
+		}
+	}
+	
+	public void removeSchool(School school) throws IDORemoveRelationshipException {
+		idoRemoveFrom(school);
+	}
+	
+	public void removeSchools() throws IDORemoveRelationshipException {
+		idoRemoveFrom(School.class);
 	}
 
 	public void setSchoolId(int schoolId) {
@@ -130,6 +156,39 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 		Collection coll = this.idoFindIDsBySQL(sql.toString());
 		return coll;
 	}
+    
+    /**
+     * Returns a Collection of SchoolUsers
+     * @param school School
+     * @param userType User type
+     * @return Collection
+     * @throws FinderException
+     */
+    public Collection ejbFindByTypes(int []userTypes) throws FinderException {
+        StringBuffer query = new StringBuffer();
+        query.append("select * ");
+        query.append("from   sch_school_user, ic_user ");
+        query.append("where ");
+        query.append("      ic_user.ic_user_id = sch_school_user.ic_user_id ");        
+        
+        if (userTypes.length > 0) {
+            query.append(" and (");
+            for (int i = 0; i < userTypes.length; i++) {
+                if(i != 0) {
+                    query.append(" or ");                   
+                }
+                query.append(" sch_school_user.user_type = " + userTypes[i]);
+            }
+            query.append(") ");
+        }
+        
+        query.append("order by ");
+        query.append("  ic_user.last_name asc, ic_user.first_name asc ");            
+
+        Collection coll = this.idoFindIDsBySQL(query.toString());       
+        return coll;
+
+    }    
 	
 	public Collection ejbFindBySchoolAndTypes(School school, int[] userTypes) throws FinderException {
 		StringBuffer query = new StringBuffer();
@@ -290,6 +349,17 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 		.append(user.getPrimaryKey().toString());	
 		
 		return this.idoFindIDsBySQL(sql.toString());
+	}
+	
+	public Object ejbFindForUser(User user) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this)
+		.appendWhere()
+		.append(COLUMN_NAME_USER_ID)
+		.appendEqualSign()
+		.append(user.getPrimaryKey().toString());	
+		
+		return this.idoFindOnePKBySQL(sql.toString());
 	}
 	
 	public Collection ejbFindBySchoolAndUser(School school, User user) throws FinderException {
