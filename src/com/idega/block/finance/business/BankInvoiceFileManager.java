@@ -70,6 +70,16 @@ public class BankInvoiceFileManager implements BankFileManager {
 
 	}
 
+	public String getAmount100(int invoiceNumber) {
+		AccountEntry ae = getAccountEntry(invoiceNumber);
+		if (ae != null) {
+			return String.valueOf((int) ae.getTotal() * 100);
+		} else {
+			return "";
+		}
+
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 

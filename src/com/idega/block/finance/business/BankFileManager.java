@@ -56,6 +56,8 @@ public interface BankFileManager {
 	String getStatus(int invoiceNumber);
 	//<upphaed>
 	String getAmount(int invoiceNumber);
+	//<upphaed i aurum> 
+	String getAmount100(int invoiceNumber);
 	//<tilvisunarnumer>
 	int getBatchNumber(int invoiceNumber);
 	//<eindagi>
