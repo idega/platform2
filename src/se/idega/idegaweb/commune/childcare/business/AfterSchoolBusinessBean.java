@@ -229,7 +229,7 @@ public class AfterSchoolBusinessBean extends CaseBusinessBean implements CaseBus
 		AfterSchoolChoice choice = null;
 		if (season != null) {
 			try {
-				Integer seasonId = new Integer((String) season.getPrimaryKey());
+				Integer seasonId = new Integer(season.getPrimaryKey().toString());
 				choice = findChoicesByChildAndChoiceNumberAndSeason(childID, choiceNumber.intValue(), seasonId);
 			}
 			catch (FinderException fex) {
@@ -247,7 +247,7 @@ public class AfterSchoolBusinessBean extends CaseBusinessBean implements CaseBus
 		choice.setChoiceNumber(choiceNumber.intValue());
 		choice.setMessage(message);
 		if (season != null) {
-			Integer seasonId = new Integer((String) season.getPrimaryKey());
+			Integer seasonId = new Integer(season.getPrimaryKey().toString());
 			choice.setSchoolSeasonId(seasonId.intValue());
 		}
 		if (placementDate != null)
@@ -258,11 +258,21 @@ public class AfterSchoolBusinessBean extends CaseBusinessBean implements CaseBus
 		choice.setCaseStatus(caseStatus);
 		choice.setApplicationStatus(getChildCareBusiness().getStatusSentIn());
 		choice.setHasPriority(true);
-		                                                                        
 
-		String subjectP = getLocalizedString("After_school_care_request_subject", "After school care request");
-		String bodyP = getLocalizedString("After_school_care_request_body", "After school care request from {0}, {3}.");
-		getChildCareBusiness().sendMessageToProvider(choice, subjectP, bodyP);
+		try {
+			if (stamp.isEarlierThan(getSchoolChoiceBusiness().getSchoolChoiceStartDate()) || (stamp.isLaterThan(getSchoolChoiceBusiness().getSchoolChoiceEndDate()))) {
+				String subjectP = getLocalizedString("After_school_care_request_subject", "After school care request");
+				String bodyP = getLocalizedString("After_school_care_request_body", "After school care request from {0}, {3}.");
+				getChildCareBusiness().sendMessageToProvider(choice, subjectP, bodyP);
+			}
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+
 		
 		if (caseStatus.equals(getCaseStatusPreliminary())) {
 			getChildCareBusiness().sendMessageToParents(choice, subject, body);
