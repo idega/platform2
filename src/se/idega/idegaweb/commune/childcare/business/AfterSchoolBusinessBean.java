@@ -8,7 +8,6 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
@@ -34,7 +33,6 @@ import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseStatus;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
-import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolType;
@@ -111,35 +109,7 @@ public class AfterSchoolBusinessBean extends CaseBusinessBean implements CaseBus
 		String[] caseStatus = { getCaseStatusPreliminary().getStatus(), getCaseStatusInactive().getStatus() };
 		return getAfterSchoolChoiceHome().findByChildAndChoiceNumberAndSeason(childID, new Integer(choiceNumber), seasonID,
 				caseStatus);
-	}
-	
-	public Collection getOngoingAndNextSeasons(){
-		Collection currentAndNextSeasons = new LinkedList();
-		
-		try {
-			SchoolSeason ongoingSeason= getCareBusiness().getSchoolSeasonHome().findSeasonByDate(getChildCareBusiness().getSchoolBusiness().getCategoryElementarySchool(), new IWTimestamp().getDate());
-			SchoolCategory category = getSchoolBusiness().getCategoryElementarySchool();
-			Collection allSeasons = getSchoolBusiness().findAllSchoolSeasons(category);
-			
-			if (!allSeasons.isEmpty()) {
-				Iterator iter = allSeasons.iterator();
-				while (iter.hasNext()) {
-					SchoolSeason season = (SchoolSeason) iter.next();
-					if (! season.getSchoolSeasonStart().before(ongoingSeason.getSchoolSeasonStart())) {
-						currentAndNextSeasons.add(season);
-					}
-				}
-			}
-		}
-		catch (RemoteException e) {
-			e.printStackTrace();
-		}
-		catch (FinderException e) {
-			e.printStackTrace();
-		}		
-		
-		return currentAndNextSeasons;
-	}
+	}	
 	
 	public boolean hasOpenApplication(User child, SchoolSeason season, int choiceNumber) {
 		String[] caseStatus = { getCaseStatusReady().getStatus(), getCaseStatusContract().getStatus(), getCaseStatusGranted().getStatus() };
@@ -310,6 +280,7 @@ public class AfterSchoolBusinessBean extends CaseBusinessBean implements CaseBus
 			String[] placementDates, SchoolSeason season, String subject, String body, boolean isFClassAndPrio) throws IDOCreateException {
 		int caseCount = 3;
 		IWTimestamp stamp;
+		SchoolSeason computedSeason;
 		List returnList = new Vector(3);
 		javax.transaction.UserTransaction trans = this.getSessionContext().getUserTransaction();
 		try {
@@ -335,8 +306,17 @@ public class AfterSchoolBusinessBean extends CaseBusinessBean implements CaseBus
 							status = other;
 						}
 					}
+					
+					// get according season for the choice, if season is null
+					computedSeason = season;
+					if (computedSeason == null) {
+						// take requested placement date (stamp) and find according season for it
+						computedSeason = getCareBusiness().getSchoolSeasonHome().findSeasonByDate(
+								getChildCareBusiness().getSchoolBusiness().getCategoryElementarySchool(),
+								stamp.getDate());
+					}
 					choice = createAfterSchoolChoice(timeNow, user, childId, providerIDs[i], new Integer(i + 1), message, status,
-							choice, stamp.getDate(), season, subject, body, isFClassAndPrio);
+							choice, stamp.getDate(), computedSeason, subject, body, isFClassAndPrio);
 					returnList.add(choice);
 				}
 			}
