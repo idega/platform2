@@ -1,6 +1,3 @@
-/*
- * Created on Sep 15, 2003
- */
 package se.idega.idegaweb.commune.childcare.business;
 
 import java.rmi.RemoteException;
@@ -8,6 +5,7 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
@@ -33,6 +31,7 @@ import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseStatus;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolType;
@@ -110,6 +109,34 @@ public class AfterSchoolBusinessBean extends CaseBusinessBean implements CaseBus
 		return getAfterSchoolChoiceHome().findByChildAndChoiceNumberAndSeason(childID, new Integer(choiceNumber), seasonID,
 				caseStatus);
 	}	
+	
+	public Collection getOngoingAndNextSeasons(){
+		Collection currentAndNextSeasons = new LinkedList();
+		
+		try {
+			SchoolSeason ongoingSeason= getCareBusiness().getSchoolSeasonHome().findSeasonByDate(getChildCareBusiness().getSchoolBusiness().getCategoryElementarySchool(), new IWTimestamp().getDate());
+			SchoolCategory category = getSchoolBusiness().getCategoryElementarySchool();
+			Collection allSeasons = getSchoolBusiness().findAllSchoolSeasons(category);
+			
+			if (!allSeasons.isEmpty()) {
+				Iterator iter = allSeasons.iterator();
+				while (iter.hasNext()) {
+					SchoolSeason season = (SchoolSeason) iter.next();
+					if (! season.getSchoolSeasonStart().before(ongoingSeason.getSchoolSeasonStart())) {
+						currentAndNextSeasons.add(season);
+					}
+				}
+			}
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}		
+		
+		return currentAndNextSeasons;
+	}
 	
 	public boolean hasOpenApplication(User child, SchoolSeason season, int choiceNumber) {
 		String[] caseStatus = { getCaseStatusReady().getStatus(), getCaseStatusContract().getStatus(), getCaseStatusGranted().getStatus() };
