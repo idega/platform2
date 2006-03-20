@@ -17,10 +17,10 @@ import com.idega.idegaweb.IWBundleStartable;
 import com.idega.repository.data.ImplementorRepository;
 
 /**
- * Last modified: $Date: 2005/07/05 16:46:39 $ by $Author: thomas $
+ * Last modified: $Date: 2006/03/20 02:10:50 $ by $Author: sigtryggur $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.4.2.1 $
  */
 public class IWBundleStarter implements IWBundleStartable {
 
@@ -68,7 +68,7 @@ public class IWBundleStarter implements IWBundleStartable {
 					cat.setName("Adult education");
 					cat.setLocalizedKey("school_category." + category);
 					cat.store();
-					System.out.println("[IWBundleStarter]ÊInserted school category for adult education");
+					System.out.println("[IWBundleStarter] Inserted school category for adult education");
 				}
 				catch (CreateException ce) {
 					ce.printStackTrace();
@@ -93,7 +93,7 @@ public class IWBundleStarter implements IWBundleStartable {
 					group.setGroupName(name);
 					group.setLocalizationKey("study_path_group." + name);
 					group.store();
-					System.out.println("[IWBundleStarter]ÊInserted study path group = " + name);
+					System.out.println("[IWBundleStarter] Inserted study path group = " + name);
 				}
 				catch (CreateException ce) {
 					ce.printStackTrace();
@@ -118,7 +118,7 @@ public class IWBundleStarter implements IWBundleStartable {
 					reason.setName(name);
 					reason.setLocalizedKey("vux_choice_reason." + name);
 					reason.store();
-					System.out.println("[IWBundleStarter]ÊInserted reason = " + name);
+					System.out.println("[IWBundleStarter] Inserted reason = " + name);
 				}
 				catch (CreateException ce) {
 					ce.printStackTrace();

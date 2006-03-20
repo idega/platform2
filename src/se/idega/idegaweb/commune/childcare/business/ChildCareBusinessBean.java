@@ -971,9 +971,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			transaction.begin();
 
 			String subject = getLocalizedString("child_care.application_timed_out_subject", "Old application removed from queue");
-			String body = getLocalizedString("child_care.application_timed_out_body", "Your application for {0}, {2},Êto {1}Êhas been removed from out queue after you failed to renew it. \n\nBest regards,\n{1}");
+			String body = getLocalizedString("child_care.application_timed_out_body", "Your application for {0}, {2}, to {1} has been removed from out queue after you failed to renew it. \n\nBest regards,\n{1}");
 
-			String providerBody = getLocalizedString("child_care.application_timed_out_provider_body", "An application for {0}, {3},Êhas been removed from your queue because the parents didn't renew the application.");
+			String providerBody = getLocalizedString("child_care.application_timed_out_provider_body", "An application for {0}, {3}, has been removed from your queue because the parents didn't renew the application.");
 
 			Iterator iter = applications.iterator();
 			while (iter.hasNext()) {

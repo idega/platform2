@@ -1,5 +1,5 @@
 /*
- * $Id: StudentEditor.java,v 1.9.2.1 2006/01/03 16:25:04 dainis Exp $
+ * $Id: StudentEditor.java,v 1.9.2.2 2006/03/20 02:10:50 sigtryggur Exp $
  * Created on Jun 2, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -51,10 +51,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2006/01/03 16:25:04 $ by $Author: dainis $
+ * Last modified: $Date: 2006/03/20 02:10:50 $ by $Author: sigtryggur $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.9.2.1 $
+ * @version $Revision: 1.9.2.2 $
  */
 public class StudentEditor extends AdultEducationBlock implements IWPageEventListener {
 	
@@ -437,7 +437,7 @@ public class StudentEditor extends AdultEducationBlock implements IWPageEventLis
 		SubmitButton sendMessage = (SubmitButton) getButton(new SubmitButton(localize("send_message", "Send message")));
 		sendMessage.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_SEND_MESSAGE));
 		
-		table.add(getHeader(TextSoap.formatText(localize("message_sending_info", "Enter a message that you want to send to the students.  The {x}Êhave different values attached to them that will be filled automatically.\r\n\r\nThey are:\r\n{0} = Course\r\n{1} = Course code\r\n{2} = School\r\n{3} = Start date."))), 1, row++);
+		table.add(getHeader(TextSoap.formatText(localize("message_sending_info", "Enter a message that you want to send to the students.  The {x} have different values attached to them that will be filled automatically.\r\n\r\nThey are:\r\n{0} = Course\r\n{1} = Course code\r\n{2} = School\r\n{3} = Start date."))), 1, row++);
 		
 		TextArea message = (TextArea) getStyledInterface(new TextArea(PARAMETER_MESSAGE));
 		message.setWidth(Table.HUNDRED_PERCENT);

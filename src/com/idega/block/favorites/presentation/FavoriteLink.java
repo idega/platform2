@@ -51,7 +51,7 @@ public class FavoriteLink extends FavoriteBlock implements IWPageEventListener {
 
 		if (iwc.isParameterSet(PARAMETER_ADD_PAGE)) {
 			Object[] arguments = { currentName };
-			getParentPage().setAlertOnLoad(MessageFormat.format(getResourceBundle().getLocalizedString("added_page_to_favorites", "Added page {0}Êto your intranet favorites"), arguments));
+			getParentPage().setAlertOnLoad(MessageFormat.format(getResourceBundle().getLocalizedString("added_page_to_favorites", "Added page {0} to your intranet favorites"), arguments));
 		}
 	}
 	

@@ -37,8 +37,8 @@ public class ChildCareReminderMailer extends ChildCareBlock {
 		try {			
 			IWResourceBundle iwrb = getIWApplicationContext().getIWMainApplication().getBundle(service.getBundleIdentifier()).getResourceBundle(getIWApplicationContext().getIWMainApplication().getSettings().getDefaultLocale());
 			String subject = iwrb.getLocalizedString("child_care.clean_queue_subject", "Old application in queue");
-			String body = iwrb.getLocalizedString("child_care.clean_queue_body", "Your application for {0}, {2},Êto {1}Êhas been in the queue for 6 months.  You now have until {3}Êto update your choices in the childcare overview.  After that, the choices will be removed from our queue. \n\nBest regards,\n{1}");
-			String letterBody = iwrb.getLocalizedString("child_care.clean_queue_body_letter", "Your application for {0}, {2},Êto {1}Êhas been in the queue for 6 months.  You now have until {3}Êto update your choices in the childcare overview.  After that, the choices will be removed from our queue. \n\nBest regards,\n{1}");
+			String body = iwrb.getLocalizedString("child_care.clean_queue_body", "Your application for {0}, {2}, to {1} has been in the queue for 6 months.  You now have until {3} to update your choices in the childcare overview.  After that, the choices will be removed from our queue. \n\nBest regards,\n{1}");
+			String letterBody = iwrb.getLocalizedString("child_care.clean_queue_body_letter", "Your application for {0}, {2}, to {1} has been in the queue for 6 months.  You now have until {3} to update your choices in the childcare overview.  After that, the choices will be removed from our queue. \n\nBest regards,\n{1}");
 
 			Iterator iter = applications.iterator();
 			while (iter.hasNext()) {

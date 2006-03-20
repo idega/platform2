@@ -1,5 +1,5 @@
 /*
- * $Id: QueueCleaningSessionBean.java,v 1.4 2005/02/04 09:09:04 laddi Exp $
+ * $Id: QueueCleaningSessionBean.java,v 1.4.2.1 2006/03/20 02:10:50 sigtryggur Exp $
  * Created on 25.11.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -27,10 +27,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- * Last modified: $Date: 2005/02/04 09:09:04 $ by $Author: laddi $
+ * Last modified: $Date: 2006/03/20 02:10:50 $ by $Author: sigtryggur $
  * 
  * @author <a href="mailto:aron@idega.com">aron </a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.4.2.1 $
  */
 public class QueueCleaningSessionBean extends IBOSessionBean implements QueueCleaningSession {
 
@@ -58,8 +58,8 @@ public class QueueCleaningSessionBean extends IBOSessionBean implements QueueCle
 			lastReplyDate.addDays(daysToReply);
 			IWResourceBundle iwrb = getIWApplicationContext().getIWMainApplication().getBundle(service.getBundleIdentifier()).getResourceBundle(getIWApplicationContext().getIWMainApplication().getSettings().getDefaultLocale());
 			String subject = iwrb.getLocalizedString("child_care.clean_queue_subject", "Old application in queue");
-			String body = iwrb.getLocalizedString("child_care.clean_queue_body", "Your application for {0}, {2},Êto {1}Êhas been in the queue for 6 months.  You now have until {3}Êto update your choices in the childcare overview.  After that, the choices will be removed from our queue. \n\nBest regards,\n{1}");
-			String letterBody = iwrb.getLocalizedString("child_care.clean_queue_body_letter", "Your application for {0}, {2},Êto {1}Êhas been in the queue for 6 months.  You now have until {3}Êto update your choices in the childcare overview.  After that, the choices will be removed from our queue. \n\nBest regards,\n{1}");
+			String body = iwrb.getLocalizedString("child_care.clean_queue_body", "Your application for {0}, {2}, to {1} has been in the queue for 6 months.  You now have until {3} to update your choices in the childcare overview.  After that, the choices will be removed from our queue. \n\nBest regards,\n{1}");
+			String letterBody = iwrb.getLocalizedString("child_care.clean_queue_body_letter", "Your application for {0}, {2}, to {1} has been in the queue for 6 months.  You now have until {3} to update your choices in the childcare overview.  After that, the choices will be removed from our queue. \n\nBest regards,\n{1}");
 
 			Iterator iter = applications.iterator();
 			while (iter.hasNext()) {

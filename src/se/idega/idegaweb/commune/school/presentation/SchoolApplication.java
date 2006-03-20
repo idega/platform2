@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolApplication.java,v 1.29 2005/10/18 20:14:24 laddi Exp $
+ * $Id: SchoolApplication.java,v 1.29.2.1 2006/03/20 02:10:50 sigtryggur Exp $
  * Created on Aug 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -58,10 +58,10 @@ import com.idega.util.Age;
 import com.idega.util.PersonalIDFormatter;
 
 /**
- * Last modified: $Date: 2005/10/18 20:14:24 $ by $Author: laddi $
+ * Last modified: $Date: 2006/03/20 02:10:50 $ by $Author: sigtryggur $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.29 $
+ * @version $Revision: 1.29.2.1 $
  */
 public class SchoolApplication extends SchoolBlock {
 
@@ -1307,7 +1307,7 @@ public class SchoolApplication extends SchoolBlock {
 			
 			if (iHomeSchoolChosen) {
 				Object[] arguments = { getSession().getUser().getFirstName(), getBusiness().getHomeSchoolForUser(getSession().getUser()).getSchoolName() };
-				table.add(getText(MessageFormat.format(localize("application.home_school_confirmation", "{1} has received your application for a school placement and has placed {0}Êin the school."), arguments)), 1, row++);
+				table.add(getText(MessageFormat.format(localize("application.home_school_confirmation", "{1} has received your application for a school placement and has placed {0} in the school."), arguments)), 1, row++);
 				
 				boolean showAfterSchoolCare = true;
 				Age age = new Age(getSession().getUser().getDateOfBirth());
