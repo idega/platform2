@@ -1,42 +1,228 @@
+/**
+ * 
+ */
 package se.idega.idegaweb.commune.care.resource.business;
 
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Map;
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
+import se.idega.idegaweb.commune.care.resource.data.Resource;
+import se.idega.idegaweb.commune.care.resource.data.ResourceClassMember;
+import se.idega.idegaweb.commune.care.resource.data.ResourcePermission;
+import com.idega.block.school.business.SchoolBusiness;
+import com.idega.block.school.data.SchoolCategoryHome;
+import com.idega.block.school.data.SchoolClassMember;
+import com.idega.business.IBOService;
+import com.idega.presentation.IWContext;
+import com.idega.user.business.UserBusiness;
 
-public interface ResourceBusiness extends com.idega.business.IBOService
+
+/**
+ * <p>
+ * TODO Maris_O Describe Type ResourceBusiness
+ * </p>
+ *  Last modified: $Date: 2006/03/21 08:58:42 $ by $Author: mariso $
+ * 
+ * @author <a href="mailto:Maris_O@idega.com">Maris_O</a>
+ * @version $Revision: 1.1.2.1 $
+ */
+public interface ResourceBusiness extends IBOService
 {
- public int countResourcePlacementsByRscIDAndMemberID(java.lang.Integer p0,java.lang.Integer p1) throws java.rmi.RemoteException;
- public void createResource(java.lang.String p0,int[] p1,int[] p2)throws java.rmi.RemoteException,javax.ejb.CreateException, java.rmi.RemoteException;
- public void createResourcePermission(int p0,int p1,boolean p2,boolean p3)throws java.rmi.RemoteException,javax.ejb.CreateException, java.rmi.RemoteException;
- public void createResourcePlacement(int p0,int p1,java.lang.String p2,java.lang.String p3,int p4)throws java.rmi.RemoteException,se.idega.idegaweb.commune.care.resource.business.DateException,se.idega.idegaweb.commune.care.resource.business.ResourceException,se.idega.idegaweb.commune.care.resource.business.ClassMemberException, java.rmi.RemoteException;
- public se.idega.idegaweb.commune.care.resource.data.ResourceClassMember createResourcePlacement(int p0,int p1,java.lang.String p2)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public se.idega.idegaweb.commune.care.resource.data.ResourceClassMember createResourcePlacement(int p0,int p1,java.lang.String p2,int p3)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public void createResourcePlacement(int p0,int p1,java.lang.String p2,java.lang.String p3,int p4,boolean p5)throws java.rmi.RemoteException,se.idega.idegaweb.commune.care.resource.business.DateException,se.idega.idegaweb.commune.care.resource.business.ResourceException,se.idega.idegaweb.commune.care.resource.business.ClassMemberException, java.rmi.RemoteException;
- public void deletePermissionsForResource(java.lang.Integer p0)throws java.rmi.RemoteException,javax.ejb.FinderException,javax.ejb.RemoveException, java.rmi.RemoteException;
- public void deleteResourceClassMember(java.lang.Integer p0)throws java.rmi.RemoteException,javax.ejb.FinderException,javax.ejb.RemoveException, java.rmi.RemoteException;
- public java.util.Collection findAllResources() throws java.rmi.RemoteException;
- public java.util.Collection findAllResourcesByCategory(java.lang.String p0) throws java.rmi.RemoteException;
- public java.util.Collection findAllSchoolCategories() throws java.rmi.RemoteException;
- public java.util.Collection findAllSchoolTypes() throws java.rmi.RemoteException;
- public java.util.Collection findAllSchoolYears() throws java.rmi.RemoteException;
- public void finishResourceClassMember(java.lang.Integer p0,java.lang.Integer p1,java.lang.String p2,java.lang.String p3)throws javax.ejb.FinderException,java.rmi.RemoteException,se.idega.idegaweb.commune.care.resource.business.DateException,se.idega.idegaweb.commune.care.resource.business.ClassMemberException, java.rmi.RemoteException;
- public void finishResourceClassMember(java.lang.Integer p0,java.lang.Integer p1,java.lang.String p2,java.lang.String p3,boolean p4)throws javax.ejb.FinderException,java.rmi.RemoteException,se.idega.idegaweb.commune.care.resource.business.DateException,se.idega.idegaweb.commune.care.resource.business.ClassMemberException, java.rmi.RemoteException;
- public java.util.Collection getAssignRightResourcesForGroup(java.lang.Integer p0) throws java.rmi.RemoteException;
- public java.util.Collection getAssignableResourcesByYearAndType(java.lang.String p0,java.lang.String p1) throws java.rmi.RemoteException;
- public java.util.Collection getAssignableResourcesForPlacement(java.lang.Integer p0,java.lang.Integer p1) throws java.rmi.RemoteException;
- public java.util.Map getRelatedSchoolTypes(se.idega.idegaweb.commune.care.resource.data.Resource p0) throws java.rmi.RemoteException;
- public java.util.Map getRelatedSchoolYears(se.idega.idegaweb.commune.care.resource.data.Resource p0) throws java.rmi.RemoteException;
- public se.idega.idegaweb.commune.care.resource.data.Resource getResourceByName(java.lang.String p0) throws java.rmi.RemoteException;
- public se.idega.idegaweb.commune.care.resource.data.Resource getResourceByPrimaryKey(java.lang.Integer p0) throws java.rmi.RemoteException;
- public java.util.Collection getResourcePlacementsByMbrIdOrderByRscName(java.lang.Integer p0) throws java.rmi.RemoteException;
- public java.util.Collection getResourcePlacementsByMemberId(java.lang.Integer p0) throws java.rmi.RemoteException;
- public java.lang.String getResourcesString(com.idega.block.school.data.SchoolClassMember p0) throws java.rmi.RemoteException;
- public java.lang.String getResourcesStringXtraInfo(com.idega.block.school.data.SchoolClassMember p0) throws java.rmi.RemoteException;
- public se.idega.idegaweb.commune.care.resource.data.ResourcePermission getRscPermByRscAndGrpId(java.lang.Integer p0,java.lang.Integer p1) throws java.rmi.RemoteException;
- public com.idega.block.school.business.SchoolBusiness getSchoolBusiness(com.idega.presentation.IWContext p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.block.school.data.SchoolCategoryHome getSchoolCategoryHome() throws java.rmi.RemoteException;
- public com.idega.block.school.data.SchoolClassMember getSchoolClassMember(java.lang.Integer p0) throws java.rmi.RemoteException;
- public com.idega.user.business.UserBusiness getUserBusiness()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public java.util.Collection getViewRightResourcesForGroup(java.lang.Integer p0) throws java.rmi.RemoteException;
- public boolean hasResources(int p0,java.lang.String p1) throws java.rmi.RemoteException;
- public void removeResource(java.lang.Integer p0) throws java.rmi.RemoteException;
- public void saveResource(boolean p0,java.lang.String p1,int[] p2,int[] p3,boolean p4,boolean p5,int p6,int p7)throws se.idega.idegaweb.commune.care.resource.business.ResourceException, java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.care.resource.business.ResourceBusinessBean#findAllSchoolTypes
+     */
+    public Collection findAllSchoolTypes() throws java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.care.resource.business.ResourceBusinessBean#findAllSchoolYears
+     */
+    public Collection findAllSchoolYears() throws java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.care.resource.business.ResourceBusinessBean#findAllResources
+     */
+    public Collection findAllResources() throws java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.care.resource.business.ResourceBusinessBean#getResourceByPrimaryKey
+     */
+    public Resource getResourceByPrimaryKey(Integer pk) throws java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.care.resource.business.ResourceBusinessBean#getResourceByName
+     */
+    public Resource getResourceByName(String name) throws java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.care.resource.business.ResourceBusinessBean#getAssignRightResourcesForGroup
+     */
+    public Collection getAssignRightResourcesForGroup(Integer grpId) throws java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.care.resource.business.ResourceBusinessBean#getViewRightResourcesForGroup
+     */
+    public Collection getViewRightResourcesForGroup(Integer grpId) throws java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.care.resource.business.ResourceBusinessBean#hasResources
+     */
+    public boolean hasResources(int schoolClassMemberID, String resourceIDs) throws java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.care.resource.business.ResourceBusinessBean#getAssignableResourcesForPlacement
+     */
+    public Collection getAssignableResourcesForPlacement(Integer grpID, Integer clsMemberID)
+            throws java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.care.resource.business.ResourceBusinessBean#getAssignableResourcesByYearAndType
+     */
+    public Collection getAssignableResourcesByYearAndType(String yearIdStr, String typeIdStr)
+            throws java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.care.resource.business.ResourceBusinessBean#getSchoolClassMember
+     */
+    public SchoolClassMember getSchoolClassMember(Integer memberID) throws java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.care.resource.business.ResourceBusinessBean#getSchoolBusiness
+     */
+    public SchoolBusiness getSchoolBusiness(IWContext iwc) throws RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.care.resource.business.ResourceBusinessBean#getRscPermByRscAndGrpId
+     */
+    public ResourcePermission getRscPermByRscAndGrpId(Integer rscId, Integer grpId) throws java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.care.resource.business.ResourceBusinessBean#getResourcePlacementsByMemberId
+     */
+    public Collection getResourcePlacementsByMemberId(Integer memberId) throws java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.care.resource.business.ResourceBusinessBean#getResourcePlacementsByMbrIdOrderByRscName
+     */
+    public Collection getResourcePlacementsByMbrIdOrderByRscName(Integer memberId) throws java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.care.resource.business.ResourceBusinessBean#countResourcePlacementsByRscIDAndMemberID
+     */
+    public int countResourcePlacementsByRscIDAndMemberID(Integer rID, Integer mID) throws java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.care.resource.business.ResourceBusinessBean#saveResource
+     */
+    public void saveResource(boolean isSavingExisting, String rscName, int[] typeInts, int[] yearInts,
+            boolean permitAssign, boolean permitView, int grpId, int rscId) throws ResourceException,
+            java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.care.resource.business.ResourceBusinessBean#createResource
+     */
+    public void createResource(String name, int[] typeInts, int[] yearInts) throws RemoteException, CreateException;
+
+    /**
+     * @see se.idega.idegaweb.commune.care.resource.business.ResourceBusinessBean#createResourcePermission
+     */
+    public void createResourcePermission(int rscId, int grpId, boolean permitAssign, boolean permitView)
+            throws RemoteException, CreateException;
+
+    /**
+     * @see se.idega.idegaweb.commune.care.resource.business.ResourceBusinessBean#createResourcePlacement
+     */
+    public ResourceClassMember createResourcePlacement(int rscId, int memberId, String startDateStr)
+            throws RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.care.resource.business.ResourceBusinessBean#createResourcePlacement
+     */
+    public ResourceClassMember createResourcePlacement(int rscId, int memberId, String startDateStr, int registratorID)
+            throws RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.care.resource.business.ResourceBusinessBean#createResourcePlacement
+     */
+    public void createResourcePlacement(int rscId, int memberId, String startDateStr, String endDateStr,
+            int registratorID, String teacherId) throws RemoteException, DateException, ResourceException,
+            ClassMemberException;
+
+    /**
+     * @see se.idega.idegaweb.commune.care.resource.business.ResourceBusinessBean#createResourcePlacement
+     */
+    public void createResourcePlacement(int rscId, int schClsMbrID, String startDateStr, String endDateStr,
+            int registratorID, boolean isCentralAdmin, String teacherId) throws RemoteException, DateException,
+            ResourceException, ClassMemberException;
+
+    /**
+     * @see se.idega.idegaweb.commune.care.resource.business.ResourceBusinessBean#finishResourceClassMember
+     */
+    public void finishResourceClassMember(Integer schClsMbrID, Integer rscClsMbrId, String startDateStr,
+            String endDateStr) throws FinderException, RemoteException, DateException, ClassMemberException;
+
+    /**
+     * @see se.idega.idegaweb.commune.care.resource.business.ResourceBusinessBean#finishResourceClassMember
+     */
+    public void finishResourceClassMember(Integer schClsMbrID, Integer rscClsMbrId, String startDateStr,
+            String endDateStr, boolean isCentralAdmin) throws FinderException, RemoteException, DateException,
+            ClassMemberException;
+
+    /**
+     * @see se.idega.idegaweb.commune.care.resource.business.ResourceBusinessBean#deletePermissionsForResource
+     */
+    public void deletePermissionsForResource(Integer rscId) throws RemoteException, FinderException, RemoveException;
+
+    /**
+     * @see se.idega.idegaweb.commune.care.resource.business.ResourceBusinessBean#deleteResourceClassMember
+     */
+    public void deleteResourceClassMember(Integer memberId) throws RemoteException, FinderException, RemoveException;
+
+    /**
+     * @see se.idega.idegaweb.commune.care.resource.business.ResourceBusinessBean#getRelatedSchoolTypes
+     */
+    public Map getRelatedSchoolTypes(Resource rsc) throws java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.care.resource.business.ResourceBusinessBean#getRelatedSchoolYears
+     */
+    public Map getRelatedSchoolYears(Resource rsc) throws java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.care.resource.business.ResourceBusinessBean#removeResource
+     */
+    public void removeResource(Integer rscId) throws java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.care.resource.business.ResourceBusinessBean#findAllSchoolCategories
+     */
+    public Collection findAllSchoolCategories() throws java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.care.resource.business.ResourceBusinessBean#findAllResourcesByCategory
+     */
+    public Collection findAllResourcesByCategory(String schCategoryID) throws java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.care.resource.business.ResourceBusinessBean#getResourcesString
+     */
+    public String getResourcesString(SchoolClassMember placement) throws java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.care.resource.business.ResourceBusinessBean#getResourcesStringXtraInfo
+     */
+    public String getResourcesStringXtraInfo(SchoolClassMember placement) throws java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.care.resource.business.ResourceBusinessBean#getSchoolCategoryHome
+     */
+    public SchoolCategoryHome getSchoolCategoryHome() throws java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.care.resource.business.ResourceBusinessBean#getUserBusiness
+     */
+    public UserBusiness getUserBusiness() throws RemoteException;
 }

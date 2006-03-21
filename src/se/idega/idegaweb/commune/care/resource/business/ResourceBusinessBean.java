@@ -524,8 +524,8 @@ public class ResourceBusinessBean extends IBOServiceBean implements ResourceBusi
 	 * @param startDate Startdate of this ResourcePlacement
 	 * @param endDate Enddate of this ResourcePlacement
 	 */
-	public void createResourcePlacement(int rscId, int memberId, String startDateStr, String endDateStr, int registratorID)  throws RemoteException, DateException, ResourceException, ClassMemberException {
-		createResourcePlacement(rscId, memberId, startDateStr, endDateStr, registratorID, true);
+	public void createResourcePlacement(int rscId, int memberId, String startDateStr, String endDateStr, int registratorID,String teacherId)  throws RemoteException, DateException, ResourceException, ClassMemberException {
+		createResourcePlacement(rscId, memberId, startDateStr, endDateStr, registratorID, true,teacherId);
 	}
   /**
    * Saves a ResourcePlacement to DB. Has boolean to set if we want to check past time of start date. 
@@ -537,7 +537,7 @@ public class ResourceBusinessBean extends IBOServiceBean implements ResourceBusi
    * @param endDate Enddate of this ResourcePlacement
    * @param isCentralAdmin check validity of start date if user is a provider
    */
-  public void createResourcePlacement(int rscId, int schClsMbrID, String startDateStr, String endDateStr, int registratorID, boolean isCentralAdmin)  throws RemoteException, DateException, ResourceException, ClassMemberException {
+  public void createResourcePlacement(int rscId, int schClsMbrID, String startDateStr, String endDateStr, int registratorID, boolean isCentralAdmin,String teacherId)  throws RemoteException, DateException, ResourceException, ClassMemberException {
       ResourceClassMemberHome rscClMbrHome = (ResourceClassMemberHome) getIDOHome(ResourceClassMember.class);
       try {
         IWTimestamp today = IWTimestamp.RightNow();
@@ -617,6 +617,7 @@ public class ResourceBusinessBean extends IBOServiceBean implements ResourceBusi
         rscMemberBmp.setResourceFK(rscId);
         rscMemberBmp.setMemberFK(schClsMbrID);
         rscMemberBmp.setStartDate(startDate);
+        rscMemberBmp.setTeacherId(teacherId);
         if (endDate != null)
         	rscMemberBmp.setEndDate(endDate);
         if (registratorID != -1)
