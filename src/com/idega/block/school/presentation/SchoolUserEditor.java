@@ -15,6 +15,7 @@ import com.idega.block.login.presentation.LoginEditorWindow;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.business.SchoolContentBusinessBean;
 import com.idega.block.school.business.SchoolUserBusiness;
+import com.idega.block.school.business.SchoolUserBusinessBean;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolDepartment;
 import com.idega.block.school.data.SchoolDepartmentHome;
@@ -186,8 +187,8 @@ public class SchoolUserEditor extends Block {
 		}
 
 		return table;
-	}
-
+	} 
+    
 	private Form schoolUsers(IWContext iwc, School school) throws RemoteException {
 		Form form = new Form();
 		
@@ -271,7 +272,7 @@ public class SchoolUserEditor extends Block {
 			input.setMarkupAttribute("class", "commune_Interface");
 		}
 	}
-
+    
 	private Table schoolUsersTable(IWContext iwc, School school, boolean addSubmitButton) throws RemoteException {
 		Table contTable = new Table();
 		int cRow = 0;
@@ -1777,7 +1778,7 @@ public class SchoolUserEditor extends Block {
 	private Table mainForm(IWContext iwc) throws RemoteException {
 		Table table = new Table(1, 2);
 		//table.add(getTextTitle(_iwrb.getLocalizedString("school.select_school", "Select School")), 1, 1);
-		table.add(getTextTitle(_school.getName()), 1, 1);
+		table.add(getTextTitle(_school.getName()));
 		//table.add(schoolList(iwc), 1, 2);
 		table.add(schoolUsers(iwc, _school), 1, 2);
 //		table.setVerticalAlignment(1, 2, Table.VERTICAL_ALIGN_TOP);
@@ -1817,16 +1818,19 @@ public class SchoolUserEditor extends Block {
 		_iwb = iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
 
 		String schoolId = iwc.getParameter(PARAMETER_SCHOOL_ID);
-		if (schoolId != null) {
+		if (schoolId != null && !schoolId.equals("")) {
 			try {
 				_school = getSchoolHome().findByPrimaryKey(new Integer(schoolId));
 			}
 			catch (FinderException e) {
 				e.printStackTrace(System.err);
 			}
-			String category = getSchoolUserBusiness(iwc).getSchoolCategory(_school);
-			PARAMETER_SCHOOL_HIGHSCHOOL = category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getHighSchoolSchoolCategory());
-			PARAMETER_SCHOOL_ADULTSCHOOL = category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getCategoryAdultEducation().getCategory());
+			if (_school!=null)
+            {
+                String category = getSchoolUserBusiness(iwc).getSchoolCategory(_school);
+    			PARAMETER_SCHOOL_HIGHSCHOOL = category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getHighSchoolSchoolCategory());
+    			PARAMETER_SCHOOL_ADULTSCHOOL = category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getCategoryAdultEducation().getCategory());
+            }
 			
 		}
 

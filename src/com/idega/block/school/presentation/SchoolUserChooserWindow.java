@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolUserChooserWindow.java,v 1.3.2.2 2006/03/14 10:01:14 mariso Exp $ Created on
+ * $Id: SchoolUserChooserWindow.java,v 1.3.2.3 2006/03/22 14:20:42 mariso Exp $ Created on
  * 24.2.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -12,8 +12,11 @@ package com.idega.block.school.presentation;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Vector;
+
 import javax.ejb.FinderException;
 import javax.faces.context.FacesContext;
+
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.business.SchoolUserBusiness;
 import com.idega.block.school.business.SchoolUserBusinessBean;
@@ -25,7 +28,6 @@ import com.idega.builder.business.BuilderConstants;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.data.IDOLookup;
-import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWMainApplicationSettings;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -35,14 +37,13 @@ import com.idega.presentation.ui.Form;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
 import com.idega.user.data.User;
-import com.idega.user.data.UserHome;
 import com.idega.user.presentation.UserChooserWindow;
 
 /**
  * Last modified: 24.2.2005 15:06:52 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna </a>
- * @version $Revision: 1.3.2.2 $
+ * @version $Revision: 1.3.2.3 $
  */
 public class SchoolUserChooserWindow extends UserChooserWindow {
 
@@ -206,15 +207,24 @@ public class SchoolUserChooserWindow extends UserChooserWindow {
 					SchoolUserBusinessBean.USER_TYPE_EXPEDITION,
 					SchoolUserBusinessBean.USER_TYPE_PROJECT_MANAGER};			
 			
-            if (isAdmin())
+            School prov = getProvider(iwc);
+            
+            if (prov==null)
             {
                 SchoolUserHome userHome;
-                userHome = (SchoolUserHome)IDOLookup.getHome(com.idega.user.data.User.class);
-                users = userHome.findByTypes(userTypes);              
+                userHome = (SchoolUserHome)IDOLookup.getHome(SchoolUser.class);
+                Collection schoolUsers = userHome.findByTypes(userTypes);
                 
+                users = new Vector();
+                Iterator iter = schoolUsers.iterator();
+                while (iter.hasNext()) 
+                {
+                    SchoolUser sUser = (SchoolUser)iter.next();
+                    users.add(sUser.getUser());
+                }                
             } else
             {
-                users = biz.getUsers(getProvider(iwc), userTypes);
+                users = biz.getUsers(prov , userTypes);
             }            			            
 		}
 		catch (FinderException ex) {
