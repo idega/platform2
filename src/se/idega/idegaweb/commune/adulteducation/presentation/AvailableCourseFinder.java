@@ -46,6 +46,8 @@ public class AvailableCourseFinder extends AdultEducationBlock {
 	
 	private final int ACTION_DEFAULT = 1;
 	private final int ACTION_SEARCH = 2;
+	
+	public static String NULL_COMMENT = "-";
 		
 	public void present(IWContext iwc) {
 		int action = parseAction(iwc);
@@ -302,6 +304,7 @@ public class AvailableCourseFinder extends AdultEducationBlock {
 				
 				column = 2;
 				String comment = course.getComment();
+				comment = (comment == null) ? NULL_COMMENT : comment;  
 				table.add(getSmallText(comment), column, ++row);				
 				table.mergeCells(column, row, 6, row);			
 				table.setStyle(1, row, "background-color", getZebraColor1());
