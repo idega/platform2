@@ -5,6 +5,8 @@ package com.idega.block.cal.presentation;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import com.idega.block.cal.business.CalBusiness;
 import com.idega.block.cal.data.AttendanceMark;
 import com.idega.idegaweb.IWApplicationContext;
@@ -184,15 +186,19 @@ public class NewMarkWindow extends StyledIWAdminWindow{
 			setAlertOnLoad(iwrb.getLocalizedString("newMarkWindow.mark_exists_msg","The selected Mark exists already. Please choose another one"));
 		}
 		else {
-			if(markID != null && !markID.equals("")) {
-				calBiz.createNewMark(Integer.parseInt(markID),mark, description);
+			try {
+				Pattern.compile(mark);
+				if(markID != null && !markID.equals("")) {
+					calBiz.createNewMark(Integer.parseInt(markID),mark, description);
+				}
+				else {
+					calBiz.createNewMark(-1,mark,description);
+				}
+				close();
+				setOnUnLoad("window.opener.parent.location.reload()");
+			} catch (PatternSyntaxException e) {
+			setAlertOnLoad(iwrb.getLocalizedString("newMarkWindow.mark_is_not_allowed_msg","The selected Mark is not allowed. Please choose another one"));
 			}
-			else {
-				calBiz.createNewMark(-1,mark,description);
-			}
-			
-//			setOnLoad("window.opener.parent.location.reload()");
-			close();
 		}
 		
 	}
@@ -214,7 +220,7 @@ public class NewMarkWindow extends StyledIWAdminWindow{
 		if(save != null && !save.equals("")) {
 			saveMark(iwc);
 		}
-		setOnUnLoad("window.opener.parent.location.reload()");
+		//setOnUnLoad("window.opener.parent.location.reload()");
 		add(form,iwc);
 		
 	}
