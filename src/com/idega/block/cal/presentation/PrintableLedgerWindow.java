@@ -166,7 +166,7 @@ public class PrintableLedgerWindow extends Window{
 		Timestamp fromD = getCalendarBusiness(iwc).getLedger(lID.intValue()).getDate();
 		IWTimestamp iwFromD = new IWTimestamp(fromD);
 		//fromDate is the start date of the ledger
-		fromDateField = iwFromD.getDateString("dd. MMMMMMMM yyyy");
+		fromDateField = iwFromD.getDateString("dd. MMMMMMMM yyyy", iwc.getCurrentLocale());
 		
 		allowedMarksField = new Table();
 		List marks = getCalendarBusiness(iwc).getAllMarks();
