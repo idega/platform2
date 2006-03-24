@@ -52,6 +52,7 @@ public class PlayerSelectionBox extends GroupSelectionBox  {
 
 	public PresentationObject getHandlerObject(String name, String value, IWContext iwc) {
 	    selectAllOnSubmitIfNoneSelected = false;
+	    autoSelectIfOnlyOneGroup = false;
 	    return super.getHandlerObject(name, value, iwc);
 	}
 	
