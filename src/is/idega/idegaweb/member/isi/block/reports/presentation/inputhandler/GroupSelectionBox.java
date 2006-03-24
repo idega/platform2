@@ -45,6 +45,7 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 	private WorkReportBusiness workBiz;
 	private boolean isInitialized = false; 
 	protected boolean selectAllOnSubmitIfNoneSelected = true;
+	protected boolean autoSelectIfOnlyOneGroup = true;
 	
 	private boolean addAllOptionToList = false;
 	private String addAllOptionToListDisplayKey = null;
@@ -140,7 +141,7 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 					if(showGroup) {
 						String id = group.getPrimaryKey().toString();
 						addMenuElement(id, name);
-						if(size==1){//might this cause problems? add as an option to the interface if it does.
+						if(size==1 && autoSelectIfOnlyOneGroup){//might this cause problems? add as an option to the interface if it does.
 							setSelectedElement(id);
 						//	setDisabled(true);//cannot change it
 							
