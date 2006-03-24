@@ -8,12 +8,12 @@ import com.idega.business.IBOHomeImpl;
 
 /**
  * <p>
- * TODO is Describe Type AfterSchoolBusinessHomeImpl
+ * TODO Dainis Describe Type AfterSchoolBusinessHomeImpl
  * </p>
- *  Last modified: $Date: 2006/03/17 16:43:03 $ by $Author: igors $
+ *  Last modified: $Date: 2006/03/24 13:19:43 $ by $Author: dainis $
  * 
- * @author <a href="mailto:is@idega.com">is</a>
- * @version $Revision: 1.3.2.5 $
+ * @author <a href="mailto:Dainis@idega.com">Dainis</a>
+ * @version $Revision: 1.3.2.6 $
  */
 public class AfterSchoolBusinessHomeImpl extends IBOHomeImpl implements AfterSchoolBusinessHome {
 

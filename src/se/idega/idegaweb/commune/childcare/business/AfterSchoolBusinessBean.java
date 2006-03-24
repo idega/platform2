@@ -383,12 +383,12 @@ public class AfterSchoolBusinessBean extends CaseBusinessBean implements CaseBus
 		return false;
 	}
 
-	public Collection createContractsForChildrenWithSchoolPlacement(int providerId, User user, Locale locale) throws RemoteException {
+	public Collection createContractsForChildrenWithSchoolPlacement(int providerId, User user, Locale locale, int seasonId) throws RemoteException {
 		Collection users = new ArrayList();
 		Collection applications = findChoicesByProvider(providerId, "c.QUEUE_DATE");
 		Iterator iter = applications.iterator();
 		while (iter.hasNext()) {
-			ChildCareApplication application = (ChildCareApplication) iter.next();
+			AfterSchoolChoice application = (AfterSchoolChoice) iter.next(); //AfterSchoolChoice extends ChildCareApplication
 			boolean hasSchoolPlacement = false;
 			try {
 				hasSchoolPlacement = getChildCareBusiness().getSchoolBusiness().hasActivePlacement(application.getChildId(), providerId,
@@ -396,7 +396,13 @@ public class AfterSchoolBusinessBean extends CaseBusinessBean implements CaseBus
 			}
 			catch (RemoteException e) {
 			}
+			
 			if (hasSchoolPlacement && (application.getApplicationStatus() == getChildCareBusiness().getStatusSentIn())) {
+				
+				if (seasonId != application.getSchoolSeasonId() ) {
+					continue;
+				}
+				
 				Date date = application.getFromDate();
 				try {
 					PlacementHelper helper = getChildCareBusiness().getPlacementHelper((Integer) application.getPrimaryKey());

@@ -30,12 +30,12 @@ import com.idega.util.IWTimestamp;
 
 /**
  * <p>
- * TODO is Describe Type AfterSchoolBusiness
+ * TODO Dainis Describe Type AfterSchoolBusiness
  * </p>
- *  Last modified: $Date: 2006/03/17 16:43:03 $ by $Author: igors $
+ *  Last modified: $Date: 2006/03/24 13:19:43 $ by $Author: dainis $
  * 
- * @author <a href="mailto:is@idega.com">is</a>
- * @version $Revision: 1.14.2.5 $
+ * @author <a href="mailto:Dainis@idega.com">Dainis</a>
+ * @version $Revision: 1.14.2.6 $
  */
 public interface AfterSchoolBusiness extends IBOService, CaseBusiness {
 
@@ -130,8 +130,8 @@ public interface AfterSchoolBusiness extends IBOService, CaseBusiness {
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.AfterSchoolBusinessBean#createContractsForChildrenWithSchoolPlacement
 	 */
-	public Collection createContractsForChildrenWithSchoolPlacement(int providerId, User user, Locale locale)
-			throws RemoteException;
+	public Collection createContractsForChildrenWithSchoolPlacement(int providerId, User user, Locale locale,
+			int seasonId) throws RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.AfterSchoolBusinessBean#getDays
