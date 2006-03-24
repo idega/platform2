@@ -140,7 +140,7 @@ public class AvailableCourseFinder extends AdultEducationBlock {
 				school.setSelectedElement(iSchoolPK.toString());
 			}
 			table.add(school, 2, 2);
-			
+			table.mergeCells(2, 2, 3, 2);			
 			
 			table.setAlignment(3, 3, "right");
 			SubmitButton search = (SubmitButton) getButton(new SubmitButton(localize("search", "Search"),
