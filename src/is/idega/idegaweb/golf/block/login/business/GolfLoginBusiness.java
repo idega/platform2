@@ -32,7 +32,7 @@ import com.idega.user.data.UserHome;
  */
 public class GolfLoginBusiness extends LoginBusinessBean implements IWPageEventListener {
 
-	public static String UserAttributeParameter = "member_login";
+	public static String UserAttributeParameter = AccessControl.USER_ATTRIBUTE_PARAMETER;
 
 	public static String UserAccessAttributeParameter = "member_access";
 
@@ -78,11 +78,13 @@ public class GolfLoginBusiness extends LoginBusinessBean implements IWPageEventL
 		return iwc.getParameter(GolfLoginBusiness.LoginStateParameterForGolf);
 	}
 
-	public static boolean isLoggedOn(IWContext modinfo) {
-		if (modinfo.getSessionAttribute(UserAttributeParameter) == null) {
-			return false;
-		}
-		return true;
+	/**
+	 * Moved this method to AccessControl (in golf package) because of circular dependencies
+	 * @param context
+	 * @return
+	 */
+	public static boolean isLoggedOn(IWContext context) {
+		return AccessControl.isLoggedOn(context);
 	}
 
 	public static void internalSetState(IWContext modinfo, String state) {

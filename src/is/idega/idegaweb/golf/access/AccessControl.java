@@ -18,7 +18,7 @@ import com.idega.presentation.PresentationObject;
  */
 
 public class AccessControl {
-
+	
 	public static final String ACCESSCONTROL_GROUP_PARAMETER = "iw_accesscontrol_group";
     public static final String PRM_PREFIX = "golf_";
     public static final String LOGIN_STATE_PARAMETER = PRM_PREFIX+LoginBusinessBean.LoginStateParameter;
@@ -170,6 +170,13 @@ public class AccessControl {
 		}
 		return false;
 
+	}
+	
+	public static boolean isLoggedOn(IWContext context) {
+		if (context.getSessionAttribute(AccessControl.USER_ATTRIBUTE_PARAMETER) == null) {
+			return false;
+		}
+		return true;
 	}
 
 }

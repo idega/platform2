@@ -10,13 +10,10 @@ import is.idega.idegaweb.golf.access.LoginTable;
 import is.idega.idegaweb.golf.access.LoginTableHome;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.MemberHome;
-
 import java.io.IOException;
 import java.sql.SQLException;
-
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.data.IDOLookup;
 import com.idega.event.IWPageEventListener;
