@@ -1,5 +1,5 @@
 /*
- * $Id: GolfUserPluginBusinessBean.java,v 1.13.4.1 2005/12/28 14:53:16 sigtryggur Exp $
+ * $Id: GolfUserPluginBusinessBean.java,v 1.13.4.2 2006/03/30 11:16:06 palli Exp $
  * Created on Nov 15, 2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -40,10 +40,10 @@ import com.idega.util.ListUtil;
 
 /**
  * A user application plugin for various golf specific stuff such as the Golfer
- * Info tab. Last modified: $Date: 2005/12/28 14:53:16 $ by $Author: sigtryggur $
+ * Info tab. Last modified: $Date: 2006/03/30 11:16:06 $ by $Author: palli $
  * 
  * @author <a href="mailto:eiki@idega.com">Eirikur S. Hrafnsson</a>
- * @version $Revision: 1.13.4.1 $
+ * @version $Revision: 1.13.4.2 $
  */
 public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGroupPlugInBusiness,
 		GolfUserPluginBusiness {
@@ -465,6 +465,91 @@ public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGr
 			e.printStackTrace();
 		}
 		return false;
+	}
+	
+	/**
+	 * Changes the users metadata and syncs with golf.is
+	 * @param ssn
+	 * @param clubNumber
+	 * @return
+	 * @throws RemoteException
+	 */
+	public String disableGolferInClub(String ssn, String clubNumber) throws RemoteException{
+		GroupBusiness groupBiz = getGroupBusiness();
+		UserBusiness userBiz = getUserBusiness();
+		User user = null;
+		try {
+			user = userBiz.getUser(ssn);
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+			return WS_ERROR_MSG_4_NO_PERSON_FOUND_WITH_THE_SOCIAL_SECURITY_NUMBER + ssn;
+		}
+		Collection clubs = groupBiz.getGroupsByMetaDataKeyAndValue(IWMemberConstants.META_DATA_CLUB_NUMBER, clubNumber);
+		
+		if (clubs != null && !clubs.isEmpty() && clubs.size() == 1) {
+			Group club = (Group) clubs.iterator().next();
+			
+			String clubAbbreviation = club.getAbbrevation();
+			if(clubAbbreviation!=null && !"".equals(clubAbbreviation)){				
+				String mainClub = user.getMetaData(GolfConstants.MAIN_CLUB_META_DATA_KEY);
+				String subClubs = user.getMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY);
+				
+				if (subClubs != null) {
+					List subs = getListFromSubClubsString(subClubs);
+					if(subs.contains(clubAbbreviation)){
+						subs.remove(clubAbbreviation);
+					}
+					if(!subs.isEmpty()){
+						user.setMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY, ListUtil.convertListOfStringsToCommaseparatedString(subs));
+					}
+					else{
+						//so we erase it on golf.is
+						user.setMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY, "");
+					}
+				}else{
+					//so we erase it on golf.is
+					user.setMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY, "");
+				}
+				
+				
+				if (mainClub !=null) {
+					if(mainClub.equalsIgnoreCase(clubAbbreviation)){
+						user.setMetaData(GolfConstants.MAIN_CLUB_META_DATA_KEY, "");
+					}
+				}
+				else{
+//					so we erase it on golf.is
+					user.setMetaData(GolfConstants.MAIN_CLUB_META_DATA_KEY, "");		
+				}
+				
+				//...and store
+				user.store();
+				
+				try {
+					//sync with golf.is
+					afterUserCreateOrUpdate(user,null);
+				}
+				catch (CreateException e) {
+					e.printStackTrace();
+					return WS_ERROR_MSG_6_PARTIAL_SUCCESS_BUT_FAILED_TO_UPDATE_GOLF_IS;
+				}
+				
+				
+			}
+			else{
+				return WS_ERROR_MSG_1_NO_CLUB_WITH_THE_NUMBER+clubNumber+" Club abbreviation was null";
+			}
+			
+			
+			
+			
+		}
+		else{
+			return WS_ERROR_MSG_1_NO_CLUB_WITH_THE_NUMBER+clubNumber;
+		}
+		
+		return WS_MSG_SUCCESS;
 	}
 
 	/**

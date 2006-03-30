@@ -8,7 +8,7 @@ package is.idega.idegaweb.golf.handicap.presentation;
  * @version 1.3
  */
 
-import is.idega.idegaweb.golf.block.login.business.GolfLoginBusiness;
+import is.idega.idegaweb.golf.access.AccessControl;
 import is.idega.idegaweb.golf.entity.Field;
 import is.idega.idegaweb.golf.entity.FieldHome;
 import is.idega.idegaweb.golf.entity.Member;
@@ -28,12 +28,9 @@ import is.idega.idegaweb.golf.service.GolfGroup;
 import is.idega.idegaweb.golf.tournament.business.TournamentSession;
 import is.idega.idegaweb.golf.tournament.even.TournamentEventListener;
 import is.idega.idegaweb.golf.util.GolfConstants;
-
 import java.io.IOException;
 import java.sql.SQLException;
-
 import javax.ejb.FinderException;
-
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
@@ -255,7 +252,7 @@ public class HandicapOverview extends GolfBlock {
 						tournamentName = tournament.getName();
 					}
 
-					int teeColorID = scoreCards[a].getTeeColorID();
+					//int teeColorID = scoreCards[a].getTeeColorID();
 					String fieldName = field.getName();
 					String teeName = teeColor.getName();
 
@@ -400,7 +397,7 @@ public class HandicapOverview extends GolfBlock {
 						if (isAdmin) {
 							table.add(update, 11, row);
 						}
-						else if (GolfLoginBusiness.isLoggedOn(modinfo) || iMemberID.equalsIgnoreCase("1")) {
+						else if (AccessControl.isLoggedOn(modinfo) || iMemberID.equalsIgnoreCase("1")) {
 							if (canWrite && tournamentName == null && !noIcons) {
 								table.add(update, 11, row);
 							}

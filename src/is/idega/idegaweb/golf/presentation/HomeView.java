@@ -1,7 +1,6 @@
 package is.idega.idegaweb.golf.presentation;
 
 import java.sql.SQLException;
-
 import com.idega.block.news.presentation.NewsReader;
 import com.idega.block.text.presentation.TextReader;
 import com.idega.presentation.IWContext;
@@ -40,7 +39,7 @@ public class HomeView extends GolferBlock {
 
     NewsReader news = new NewsReader();
 
-    news.setConnectionAttributes("golfer_page", golferPageData.getNewsReaderID());
+   // news.setConnectionAttributes("golfer_page", golferPageData.getNewsReaderID());
     //news.setNewsEditorURL("/golfers/newsIndex.jsp");
 //    news.setNumberOfDays(4);
     news.setHeadlineImageURL("/idegaweb/bundles/golf.bundle/resources/shared/bullet.gif");

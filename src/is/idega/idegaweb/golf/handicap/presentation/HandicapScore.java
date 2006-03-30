@@ -6,7 +6,7 @@ package is.idega.idegaweb.golf.handicap.presentation;
  * @author @version 1.0
  */
 
-import is.idega.idegaweb.golf.block.login.business.GolfLoginBusiness;
+import is.idega.idegaweb.golf.access.AccessControl;
 import is.idega.idegaweb.golf.entity.Field;
 import is.idega.idegaweb.golf.entity.FieldHome;
 import is.idega.idegaweb.golf.entity.Member;
@@ -16,12 +16,9 @@ import is.idega.idegaweb.golf.entity.TeeColor;
 import is.idega.idegaweb.golf.entity.TeeColorHome;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
 import is.idega.idegaweb.golf.util.GolfConstants;
-
 import java.io.IOException;
 import java.sql.SQLException;
-
 import javax.ejb.FinderException;
-
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -302,7 +299,7 @@ public class HandicapScore extends GolfBlock {
 		foreignRound.setWindowToOpen(HandicapRegisterForeign.class);
 		foreignRound.addParameterToWindow("member_id", member_id);
 		
-		if (GolfLoginBusiness.isLoggedOn(modinfo)) {
+		if (AccessControl.isLoggedOn(modinfo)) {
 			myTable.add(foreignRound, 1, row);
 	
 			if (teeID.length > 0) {
