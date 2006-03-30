@@ -1,5 +1,5 @@
 /*
- * $Id: GolfUserPluginBusinessBean.java,v 1.13.4.2 2006/03/30 11:16:06 palli Exp $
+ * $Id: GolfUserPluginBusinessBean.java,v 1.13.4.3 2006/03/30 13:01:19 palli Exp $
  * Created on Nov 15, 2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -40,10 +40,10 @@ import com.idega.util.ListUtil;
 
 /**
  * A user application plugin for various golf specific stuff such as the Golfer
- * Info tab. Last modified: $Date: 2006/03/30 11:16:06 $ by $Author: palli $
+ * Info tab. Last modified: $Date: 2006/03/30 13:01:19 $ by $Author: palli $
  * 
  * @author <a href="mailto:eiki@idega.com">Eirikur S. Hrafnsson</a>
- * @version $Revision: 1.13.4.2 $
+ * @version $Revision: 1.13.4.3 $
  */
 public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGroupPlugInBusiness,
 		GolfUserPluginBusiness {
@@ -452,7 +452,7 @@ public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGr
 	 * @throws NumberFormatException
 	 * @throws IBOLookupException
 	 */
-	private boolean isCorrectLeague(Group targetGroup) throws RemoteException {
+	protected boolean isCorrectLeague(Group targetGroup) throws RemoteException {
 		// check if the division of the target group is connected to GSI
 		try {
 			Group league = getLeagueForGroup(targetGroup);
@@ -562,7 +562,7 @@ public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGr
 	 * @throws FinderException
 	 * @throws IBOLookupException
 	 */
-	private Group getLeagueForGroup(Group targetGroup) throws NoDivisionFoundException, RemoteException,
+	protected Group getLeagueForGroup(Group targetGroup) throws NoDivisionFoundException, RemoteException,
 			NoClubFoundException, FinderException, IBOLookupException {
 		MemberUserBusiness biz = getMemberUserBusiness();
 		Group division;
@@ -578,9 +578,7 @@ public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGr
 			Group club = biz.getClubForGroup(targetGroup);
 			leagueId = club.getMetaData(IWMemberConstants.META_DATA_CLUB_LEAGUE_CONNECTION);
 		}
-		else {
-			return division;
-		}
+		
 		Group league = getGroupBusiness().getGroupByGroupID(Integer.parseInt(leagueId));
 		return league;
 	}
