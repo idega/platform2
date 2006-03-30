@@ -1,5 +1,5 @@
 /*
- * $Id: GolfUserPluginBusinessBean.java,v 1.13.4.3 2006/03/30 13:01:19 palli Exp $
+ * $Id: GolfUserPluginBusinessBean.java,v 1.13.4.4 2006/03/30 14:55:22 eiki Exp $
  * Created on Nov 15, 2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -9,6 +9,8 @@
  */
 package is.idega.idegaweb.golf.business.plugin;
 
+import is.idega.idegaweb.golf.entity.Member;
+import is.idega.idegaweb.golf.entity.MemberHome;
 import is.idega.idegaweb.golf.presentation.GolferTab;
 import is.idega.idegaweb.golf.util.GolfConstants;
 import is.idega.idegaweb.member.business.MemberUserBusiness;
@@ -20,13 +22,22 @@ import java.net.URLEncoder;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
+import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
+import com.idega.core.contact.data.Email;
+import com.idega.core.contact.data.Phone;
+import com.idega.core.location.business.AddressBusiness;
+import com.idega.core.location.data.Address;
+import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.user.business.GroupBusiness;
@@ -40,10 +51,10 @@ import com.idega.util.ListUtil;
 
 /**
  * A user application plugin for various golf specific stuff such as the Golfer
- * Info tab. Last modified: $Date: 2006/03/30 13:01:19 $ by $Author: palli $
+ * Info tab. Last modified: $Date: 2006/03/30 14:55:22 $ by $Author: eiki $
  * 
  * @author <a href="mailto:eiki@idega.com">Eirikur S. Hrafnsson</a>
- * @version $Revision: 1.13.4.3 $
+ * @version $Revision: 1.13.4.4 $
  */
 public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGroupPlugInBusiness,
 		GolfUserPluginBusiness {
@@ -313,7 +324,7 @@ public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGr
 		}
 		return userBiz;
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -590,4 +601,98 @@ public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGr
 	private List getListFromSubClubsString(String subClubAbbreviations) {
 		return ListUtil.convertCommaSeparatedStringToList(subClubAbbreviations);
 	}
+	
+	
+	/**
+	 * @param ssn The golfers social security number
+	 * @return Basic information about the golfer such as name,address,phone,handicap,sub and main clubs
+	 * @throws Exception 
+	 */
+	public Map getGolferInfo(String ssn) throws Exception{
+		Map info = new HashMap();
+		UserBusiness userBiz = getUserBusiness();
+		
+		try {
+			User user = userBiz.getUser(ssn);
+			//general stuff
+			info.put("name", user.getName());
+			info.put("ssn", user.getPersonalID());
+			info.put("date-of-birth", user.getDateOfBirth().toString());
+			info.put("gender", user.getGender().getName());
+			
+			//address
+			Address address = userBiz.getUsersMainAddress(user); 
+			if(address!=null){
+				String addressString = getAddressBusiness().getFullAddressString(address);
+				info.put("address",addressString);
+			}
+			
+			//email
+			Collection emails = user.getEmails();
+			if (emails != null && !emails.isEmpty()) {
+				Email email = (Email) emails.iterator().next();
+				info.put("email",email.getEmailAddress());
+			}
+			
+			//phone
+			try {
+				Phone fax;
+				fax = getUserBusiness().getPhoneHome().findUsersFaxPhone(user);
+				info.put("fax", fax.getNumber());
+			}
+			catch (FinderException e1) {
+				//e1.printStackTrace();
+			}
+			
+			
+			try {
+				Phone home = getUserBusiness().getPhoneHome().findUsersHomePhone(user);
+				info.put("home", home.getNumber());
+			}
+			catch (FinderException e1) {
+				//e1.printStackTrace();
+			}
+			try {
+				Phone mobile = getUserBusiness().getPhoneHome().findUsersMobilePhone(user);
+				info.put("mobile", mobile.getNumber());
+			}
+			catch (FinderException e1) {
+				//e1.printStackTrace();
+			}
+			
+			//golf stuff
+			String mainClub = user.getMetaData(GolfConstants.MAIN_CLUB_META_DATA_KEY);
+			info.put("main-club", mainClub);
+			
+			String subClubs = user.getMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY);
+			info.put("sub-clubs-csv", subClubs);
+			
+			try {
+				MemberHome mHome = (MemberHome) IDOLookup.getHome(Member.class);
+				Member member = mHome.findMemberByIWMemberSystemUser(user);
+				String handicap = Float.toString(member.getHandicap());
+				info.put("handicap", handicap);
+			}
+			catch (FinderException f) {
+				System.err.println("No record in Member for user: "+user.getName()+" ssn: "+user.getPersonalID());
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+			throw new Exception(WS_ERROR_MSG_4_NO_PERSON_FOUND_WITH_THE_SOCIAL_SECURITY_NUMBER + ssn);
+		}
+
+		return info;
+	}
+	
+	
+	
+	protected AddressBusiness getAddressBusiness() throws RemoteException {
+		return (AddressBusiness) IBOLookup.getServiceInstance(IWMainApplication.getDefaultIWApplicationContext(),
+				AddressBusiness.class);
+	}
+	
 }

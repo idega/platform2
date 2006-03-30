@@ -1,6 +1,6 @@
 /*
- * $Id: GolfUserPluginBusiness.java,v 1.7.4.1 2006/03/30 11:16:06 palli Exp $
- * Created on Mar 28, 2006
+ * $Id: GolfUserPluginBusiness.java,v 1.7.4.2 2006/03/30 14:55:22 eiki Exp $
+ * Created on Mar 30, 2006
  *
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
  *
@@ -12,6 +12,7 @@ package is.idega.idegaweb.golf.business.plugin;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.CreateException;
 import javax.ejb.RemoveException;
 import com.idega.business.IBOService;
@@ -26,10 +27,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2006/03/30 11:16:06 $ by $Author: palli $
+ *  Last modified: $Date: 2006/03/30 14:55:22 $ by $Author: eiki $
  * 
  * @author <a href="mailto:eiki@idega.com">eiki</a>
- * @version $Revision: 1.7.4.1 $
+ * @version $Revision: 1.7.4.2 $
  */
 public interface GolfUserPluginBusiness extends IBOService, UserGroupPlugInBusiness {
 
@@ -129,4 +130,9 @@ public interface GolfUserPluginBusiness extends IBOService, UserGroupPlugInBusin
 	 * @see is.idega.idegaweb.golf.business.plugin.GolfUserPluginBusinessBean#disableGolferInClub
 	 */
 	public String disableGolferInClub(String ssn, String clubNumber) throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.golf.business.plugin.GolfUserPluginBusinessBean#getGolferInfo
+	 */
+	public Map getGolferInfo(String ssn) throws Exception, java.rmi.RemoteException;
 }
