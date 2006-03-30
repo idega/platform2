@@ -384,6 +384,8 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 						if (phone.getPhoneTypeId() > 0) {
 							ph.setPhoneTypeId(phone.getPhoneTypeId());
 						}
+						//this is iceland, needed on golf.is
+						ph.setCountryId(1);
 						ph.store();
 					}
 				}
@@ -629,6 +631,7 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 				try {
 					if (user == null) {
 						user = getUserBusiness().getUser(pin);
+						user.setUniqueId(uuid);
 					}
 				}
 				catch (FinderException e) {
