@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationCourseBMPBean.java,v 1.9.2.1 2006/03/08 11:10:00 dainis Exp $
+ * $Id: AdultEducationCourseBMPBean.java,v 1.9.2.2 2006/03/31 18:09:24 dainis Exp $
  * Created on 27.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -197,18 +197,35 @@ public class AdultEducationCourseBMPBean extends GenericEntity  implements Adult
 		return idoFindPKsByQuery(query);
 	}
 
-	public static String getFindAllBySeasonAndStudyPathSchoolQuery(SchoolSeason season, SchoolStudyPath path) {
-		return getFindAllBySeasonAndStudyPathSchoolQuery((IDOEntity) season, (IDOEntity) path);
+	public static String getFindAllBySeasonAndStudyPathSchoolQuery(SchoolSeason season, SchoolStudyPath path, SchoolStudyPathGroup pathGroup) {
+		return getFindAllBySeasonAndStudyPathSchoolQuery((IDOEntity) season, (IDOEntity) path, (IDOEntity) pathGroup);
 	}
 	
-	public static String getFindAllBySeasonAndStudyPathSchoolQuery(Object season, Object studyPath) {
-		Table table = new Table(AdultEducationCourse.class);
+	public static String getFindAllBySeasonAndStudyPathSchoolQuery(Object season, Object studyPath, Object studyPathGroup) {
+		Table adultEducationCourseTable = new Table(AdultEducationCourse.class);
+		Table studyPathTable = new Table(SchoolStudyPath.class);
+		Table studyPathGroupTable = new Table(SchoolStudyPathGroup.class);
 		
-		SelectQuery query = new SelectQuery(table);
-		query.addColumn(table, SCHOOL, true);
-		query.addCriteria(new MatchCriteria(table, SCHOOL_SEASON, MatchCriteria.EQUALS, season));
+		SelectQuery query = new SelectQuery(adultEducationCourseTable);
+		query.addColumn(adultEducationCourseTable, SCHOOL, true);
+		
+		if (studyPathGroup != null) {
+			try {
+				query.addJoin(adultEducationCourseTable, studyPathTable);
+				query.addJoin(studyPathTable, studyPathGroupTable);
+				query.addCriteria(new MatchCriteria(studyPathGroupTable, studyPathGroupTable.getPrimaryKeyColumnName(), MatchCriteria.EQUALS, studyPathGroup));
+			}
+			catch (IDORelationshipException e) {			
+				e.printStackTrace();
+			}
+			catch (IDOCompositePrimaryKeyException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		query.addCriteria(new MatchCriteria(adultEducationCourseTable, SCHOOL_SEASON, MatchCriteria.EQUALS, season));
 		if (studyPath != null) {
-			query.addCriteria(new MatchCriteria(table, STUDY_PATH, MatchCriteria.EQUALS, studyPath));
+			query.addCriteria(new MatchCriteria(adultEducationCourseTable, STUDY_PATH, MatchCriteria.EQUALS, studyPath));
 		}
 		
 		return query.toString();
