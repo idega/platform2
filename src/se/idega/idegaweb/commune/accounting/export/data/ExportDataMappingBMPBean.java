@@ -60,6 +60,10 @@ public class ExportDataMappingBMPBean extends GenericEntity implements ExportDat
 	private static final String COLUMN_DAYS_PR_MONTH = "specified_day";
 
 	private static final String COLUMN_PAYMENTS_FOR_COMMUNES_OUTSIDE = "payments_for_comm_outside";
+	
+	private static final String COLUMN_USE_AGE_IN_POSTING = "use_age_in_posting";
+	
+	private static final String COLUMN_USE_CARE_TIME_IN_POSTING = "use_care_time_in_posting";
 
 	/*
 	 * (non-Javadoc)
@@ -114,6 +118,8 @@ public class ExportDataMappingBMPBean extends GenericEntity implements ExportDat
 		addAttribute(COLUMN_USE_SPECIFIED_DAYS_PR_MONTH, "Whether or not to use a specified nr. of days pr month in calculations", Boolean.class);
 		addAttribute(COLUMN_DAYS_PR_MONTH, "The number of specified days pr. month", Integer.class);
 		addAttribute(COLUMN_PAYMENTS_FOR_COMMUNES_OUTSIDE, "Pay commune providers outside of commune", Boolean.class);
+		addAttribute(COLUMN_USE_AGE_IN_POSTING, "Use age when getting posting parameters", Boolean.class);
+		addAttribute(COLUMN_USE_CARE_TIME_IN_POSTING, "Use care time when getting posting parameters", Boolean.class);
 	}
 
 	// Getters
@@ -195,6 +201,14 @@ public class ExportDataMappingBMPBean extends GenericEntity implements ExportDat
 	
 	public boolean getCreatePaymentsForCommuneProvidersOutsideCommune() {
 		return getBooleanColumnValue(COLUMN_PAYMENTS_FOR_COMMUNES_OUTSIDE, false);
+	}
+	
+	public boolean getUseAgeInPosting() {
+		return getBooleanColumnValue(COLUMN_USE_AGE_IN_POSTING, false);
+	}
+	
+	public boolean getUseCareTimeInPosting() {
+		return getBooleanColumnValue(COLUMN_USE_CARE_TIME_IN_POSTING, false);
 	}
 
 	// Setters
@@ -280,6 +294,14 @@ public class ExportDataMappingBMPBean extends GenericEntity implements ExportDat
 	
 	public void setCreatePaymentsForCommuneProvidersOutsideCommune(boolean createPayments) {
 		setColumn(COLUMN_PAYMENTS_FOR_COMMUNES_OUTSIDE, createPayments);
+	}
+	
+	public void setUseAgeInPosting(boolean useAge) {
+		setColumn(COLUMN_USE_AGE_IN_POSTING, useAge);
+	}
+	
+	public void setUseCareTimeInPosting(boolean useCareTime) {
+		setColumn(COLUMN_USE_CARE_TIME_IN_POSTING, useCareTime);
 	}
 
 	// Find methods

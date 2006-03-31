@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.64 2005/06/10 16:39:21 palli Exp $
+ * $Id: PostingBusinessBean.java,v 1.64.2.1 2006/03/31 11:34:29 palli Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -394,6 +394,10 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	 */
 	public PostingParameters getPostingParameterWithoutStudypath(Date date, int act_id, int reg_id, String com_id,
 			int com_bel_id, int schoolYear1_id) throws PostingParametersException {
+		return getPostingParameterWithoutStudypath(date, act_id, reg_id, com_id, com_bel_id, schoolYear1_id, 0, 0);
+	}
+	public PostingParameters getPostingParameterWithoutStudypath(Date date, int act_id, int reg_id, String com_id,
+			int com_bel_id, int schoolYear1_id, int age, int careTimeID) throws PostingParametersException {
 		logDebug("date: " + date);
 		logDebug("act_id: " + act_id);
 		logDebug("reg_id: " + reg_id);
@@ -406,7 +410,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 		try {
 			PostingParametersHome home = getPostingParametersHome();
 
-			pp = home.findPostingParameter(date, act_id, reg_id, com_id, com_bel_id, schoolYear1_id, -1, true);
+			pp = home.findPostingParameter(date, act_id, reg_id, com_id, com_bel_id, schoolYear1_id, -1, true, age, careTimeID);
 			if (pp == null) {
 				throw new PostingParametersException(KEY_ERROR_POST_NOT_FOUND, "Could not find parameter");
 			}
@@ -438,6 +442,11 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	 */
 	public PostingParameters getPostingParameterWithStudypath(Date date, int act_id, int reg_id, String com_id,
 			int com_bel_id, int schoolYear1_id, int studyPathID) throws PostingParametersException {
+		return getPostingParameterWithStudypath(date, act_id, reg_id, com_id, com_bel_id, schoolYear1_id, studyPathID, 0, 0);
+	}
+	
+	public PostingParameters getPostingParameterWithStudypath(Date date, int act_id, int reg_id, String com_id,
+			int com_bel_id, int schoolYear1_id, int studyPathID, int age, int careTimeID) throws PostingParametersException {
 		logDebug("date: " + date);
 		logDebug("act_id: " + act_id);
 		logDebug("reg_id: " + reg_id);
@@ -450,7 +459,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 		try {
 			PostingParametersHome home = getPostingParametersHome();
 
-			pp = home.findPostingParameter(date, act_id, reg_id, com_id, com_bel_id, schoolYear1_id, studyPathID, false);
+			pp = home.findPostingParameter(date, act_id, reg_id, com_id, com_bel_id, schoolYear1_id, studyPathID, false, age, careTimeID);
 			if (pp == null) {
 				throw new PostingParametersException(KEY_ERROR_POST_NOT_FOUND, "Could not find parameter");
 			}
@@ -497,6 +506,14 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			String activityID, String regSpecTypeID, String companyTypeID, String communeBelongingID,
 			String schoolYear1ID, String schoolYear2ID, String studyPathID, String ownPostingString,
 			String doublePostingString) throws PostingParametersException, RemoteException {
+		savePostingParameter(sppID, periodFrom, periodTo, changedSign, activityID, regSpecTypeID, companyTypeID, communeBelongingID, schoolYear1ID, schoolYear2ID, 
+				studyPathID, null, null, null, ownPostingString, doublePostingString);
+	}
+	
+	public void savePostingParameter(String sppID, Date periodFrom, Date periodTo, String changedSign,
+			String activityID, String regSpecTypeID, String companyTypeID, String communeBelongingID,
+			String schoolYear1ID, String schoolYear2ID, String studyPathID, String ageFrom, String ageTo, String careTime, String ownPostingString,
+			String doublePostingString) throws PostingParametersException, RemoteException {
 
 		PostingParametersHome home = null;
 		PostingParameters pp = null;
@@ -507,6 +524,10 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 		int parm5 = 0;
 		int parm6 = 0;
 		int parm7 = 0;
+		
+		int parm8 = 0;
+		int parm9 = 0;
+		int parm10 = 0;
 
 		if (((schoolYear1ID.compareTo("0") != 0) && (schoolYear2ID.compareTo("0") == 0))
 				|| ((schoolYear1ID.compareTo("0") == 0) && (schoolYear2ID.compareTo("0") != 0))) {
@@ -548,7 +569,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 				schoolYear2ID = "0";
 			if (studyPathID == null)
 				studyPathID = "0";
-
+						
 			parm1 = Integer.parseInt(activityID);
 			parm2 = Integer.parseInt(regSpecTypeID);
 			parm3 = companyTypeID;
@@ -557,8 +578,12 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			parm6 = Integer.parseInt(schoolYear2ID);
 			parm7 = Integer.parseInt(studyPathID);
 
+			parm8 = ageFrom == null ? 0 : Integer.parseInt(ageFrom);
+			parm9 = ageTo == null ? 0 : Integer.parseInt(ageTo);
+			parm10 = careTime == null ? 0 : Integer.parseInt(careTime);
+			
 			if (searchPP(periodFrom, periodTo, ownPostingString, doublePostingString, parm1, parm2, parm3, parm4,
-					parm5, parm6, parm7)) {
+					parm5, parm6, parm7, parm8, parm9, parm10)) {
 				throw new PostingParametersException(KEY_ERROR_POST_PARAM_SAME_ENTRY, "Denna post finns redan sparad!");
 			}
 
@@ -592,6 +617,9 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			pp.setSchoolYear1(parm5);
 			pp.setSchoolYear2(parm6);
 			pp.setStudyPath(parm7);
+			pp.setAgeFrom(parm8);
+			pp.setAgeTo(parm9);
+			pp.setCareTimeID(parm10);
 			pp.store();
 		}
 		catch (CreateException ce) {
@@ -603,7 +631,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	 * Compares a Posting Parameter with stored parameters @author Kjell
 	 */
 	private boolean searchPP(Date from, Date to, String ownPosting, String doublePosting, int code1, int code2,
-			String code3, int code4, int code5, int code6, int code7) {
+			String code3, int code4, int code5, int code6, int code7, int code8, int code9, int code10) {
 
 		try {
 			if (ownPosting == null || doublePosting == null) {
@@ -613,7 +641,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			PostingParameters pp = null;
 			try {
 				pp = home.findPostingParameter(from, to, ownPosting, doublePosting, code1, code2, code3, code4, code5,
-						code6, code7);
+						code6, code7, code8, code9, code10);
 			}
 			catch (FinderException e) {
 			}
@@ -621,65 +649,6 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			if (pp != null) {
 				return true;
 			}
-			/*
-			 * Iterator iter = null;
-			 * 
-			 * try { Collection ppCol = home.findAllPostingParameters(); iter =
-			 * ppCol.iterator(); } catch (FinderException e) {}
-			 * 
-			 * if (iter == null) { return false; } while (iter.hasNext()) {
-			 * PostingParameters pp = (PostingParameters) iter.next(); int eq =
-			 * 0;
-			 * 
-			 * if (pp.getPostingString() != null) { if
-			 * (pp.getPostingString().compareTo(ownPosting) == 0) { eq++; } }
-			 * 
-			 * if (pp.getDoublePostingString() != null) { if
-			 * (pp.getDoublePostingString().compareTo(doublePosting) == 0) {
-			 * eq++; } }
-			 * 
-			 * if (pp.getPeriodFrom() != null) { if
-			 * (pp.getPeriodFrom().compareTo(from) == 0) { eq++; } }
-			 * 
-			 * if (pp.getPeriodTo() != null) { if
-			 * (pp.getPeriodTo().compareTo(to) == 0) { eq++; } }
-			 * 
-			 * if (pp.getActivity() == null) { if (code1 == 0) { eq++; } } else
-			 * if (Integer.parseInt(pp.getActivity().getPrimaryKey().toString()) ==
-			 * code1) { eq++; }
-			 * 
-			 * if (pp.getRegSpecType() == null) { if (code2 == 0) { eq++; } }
-			 * else if
-			 * (Integer.parseInt(pp.getRegSpecType().getPrimaryKey().toString()) ==
-			 * code2) { eq++; }
-			 * 
-			 * if (pp.getCompanyType() == null) { if (code3.compareTo("0") == 0) {
-			 * eq++; } } else if
-			 * (pp.getCompanyType().getPrimaryKey().toString().compareTo(code3) ==
-			 * 0) { eq++; }
-			 * 
-			 * if (pp.getCommuneBelonging() == null) { if (code4 == 0) { eq++; } }
-			 * else if
-			 * (Integer.parseInt(pp.getCommuneBelonging().getPrimaryKey().toString()) ==
-			 * code4) { eq++; }
-			 * 
-			 * if (pp.getSchoolYear1() == null) { if (code5 == 0) { eq++; } }
-			 * else if
-			 * (Integer.parseInt(pp.getSchoolYear1().getPrimaryKey().toString()) ==
-			 * code5) { eq++; }
-			 * 
-			 * if (pp.getSchoolYear2() == null) { if (code6 == 0) { eq++; } }
-			 * else if
-			 * (Integer.parseInt(pp.getSchoolYear2().getPrimaryKey().toString()) ==
-			 * code6) { eq++; }
-			 * 
-			 * if (pp.getStudyPath() == null) { if (code7 == 0) { eq++; } } else
-			 * if
-			 * (Integer.parseInt(pp.getStudyPath().getPrimaryKey().toString()) ==
-			 * code7) { eq++; }
-			 * 
-			 * if (eq == 11) { return true; } }
-			 */
 		}
 		catch (RemoteException e) {
 			return false;
@@ -699,7 +668,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 		try {
 			PostingParameters pp = (PostingParameters) findPostingParameter(ppID);
 			pp.remove();
-			pp.store();
+			//pp.store();
 		}
 		catch (Exception e) {
 			e.printStackTrace(System.err);
@@ -936,7 +905,17 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	}
 
 	public String[] getPostingStrings(SchoolCategory category, SchoolType type, int regSpecType, Provider provider,
+			Date date, int age, int careTimeID) throws PostingException {
+		return getPostingStrings(category, type, regSpecType, provider, date, -1, -1, false, age, careTimeID);
+	}
+
+	public String[] getPostingStrings(SchoolCategory category, SchoolType type, int regSpecType, Provider provider,
 			Date date, int schoolYearId, int studyPathId, boolean noStudyPathId) throws PostingException {
+		return getPostingStrings(category, type, regSpecType, provider, date, schoolYearId, studyPathId, noStudyPathId, 0, 0);
+	}
+	
+	public String[] getPostingStrings(SchoolCategory category, SchoolType type, int regSpecType, Provider provider,
+			Date date, int schoolYearId, int studyPathId, boolean noStudyPathId, int age, int careTimeID) throws PostingException {
 		if (type == null) {
 			throw new PostingException("postingException.missing_school_tpe", "No school type found");
 		}
@@ -962,12 +941,12 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 				// must not be study path?
 				parameters = getPostingParameterWithoutStudypath(date, ((Integer) type.getPrimaryKey()).intValue(),
 						regSpecType, provider.getSchool().getManagementTypeId(),
-						((Integer) cbt.getPrimaryKey()).intValue(), schoolYearId);
+						((Integer) cbt.getPrimaryKey()).intValue(), schoolYearId, age, careTimeID);
 			}
 			else {
 				parameters = getPostingParameterWithStudypath(date, ((Integer) type.getPrimaryKey()).intValue(),
 						regSpecType, provider.getSchool().getManagementTypeId(),
-						((Integer) cbt.getPrimaryKey()).intValue(), schoolYearId, studyPathId);
+						((Integer) cbt.getPrimaryKey()).intValue(), schoolYearId, studyPathId, age, careTimeID);
 			}
 			
 			if (parameters == null) {

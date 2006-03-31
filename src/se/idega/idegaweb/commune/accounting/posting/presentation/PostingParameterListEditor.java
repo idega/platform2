@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterListEditor.java,v 1.42 2004/03/22 20:40:17 tryggvil Exp $
+ * $Id: PostingParameterListEditor.java,v 1.42.2.1 2006/03/31 11:34:30 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -48,10 +48,10 @@ import se.idega.idegaweb.commune.accounting.school.business.StudyPathBusiness;
  * It handles posting variables for both own and double entry accounting
  *  
  * <p>
- * $Id: PostingParameterListEditor.java,v 1.42 2004/03/22 20:40:17 tryggvil Exp $
+ * $Id: PostingParameterListEditor.java,v 1.42.2.1 2006/03/31 11:34:30 palli Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.42 $
+ * @version $Revision: 1.42.2.1 $
  */
 public class PostingParameterListEditor extends AccountingBlock {
 
@@ -72,6 +72,8 @@ public class PostingParameterListEditor extends AccountingBlock {
 	private final static String KEY_COM_BEL_HEADER_TWO = "posting_parm_edit.com_bel_headertwo";
 	private final static String KEY_STUDY_PATH_HEADER_ONE = "posting_parm_edit.study_path_headerone";
 	private final static String KEY_STUDY_PATH_HEADER_TWO = "posting_parm_edit.study_path_headertwo";
+	private final static String KEY_CARE_TIME_HEADER_ONE = "posting_parm_edit.care_time_headerone";
+	private final static String KEY_CARE_TIME_HEADER_TWO = "posting_parm_edit.care_time_headertwo";
 	
 	private final static String KEY_HEADER = "posting_parm_edit.header";
 	private final static String KEY_HEADER_OWN_ENTRY = "posting_parm_edit.header_own_entry";
@@ -96,6 +98,10 @@ public class PostingParameterListEditor extends AccountingBlock {
 	private final static String KEY_ALPHA = "posting_parm_edit.alpha_only";
 	private final static String KEY_STUDY_PATH = "posting_parm_edit.study_path";
 	
+	private final static String KEY_AGE_FROM = "posting_parm_edit.age_from";
+	private final static String KEY_AGE_TO = "posting_parm_edit.age_to";
+	private final static String KEY_CARE_TIME = "posting_parm_edit.care_time";
+	
 	private final static String PARAM_BUTTON_SAVE = "button_save";
 	private final static String PARAM_BUTTON_CANCEL = "button_cancel";
 	
@@ -117,7 +123,10 @@ public class PostingParameterListEditor extends AccountingBlock {
 	private final static String PARAM_SELECTOR_SCHOOL_YEAR1 = "selector_school_year1";
 	private final static String PARAM_SELECTOR_SCHOOL_YEAR2 = "selector_school_year2";
 	private final static String PARAM_SELECTOR_STUDY_PATH = "selector_study_path";	
-	
+	private final static String PARAM_SELECTOR_AGE_FROM = "selector_age_from";
+	private final static String PARAM_SELECTOR_AGE_TO = "selector_age_to";
+	private final static String PARAM_SELECTOR_CARE_TIME = "selector_care_time";
+
 	private ICPage _responsePage;
 	private String _errorText = "";
 	private String _theOwnString = "";
@@ -186,6 +195,9 @@ public class PostingParameterListEditor extends AccountingBlock {
 		_pMap.put(PARAM_SELECTOR_SCHOOL_YEAR1, iwc.getParameter(PARAM_SELECTOR_SCHOOL_YEAR1));
 		_pMap.put(PARAM_SELECTOR_SCHOOL_YEAR2, iwc.getParameter(PARAM_SELECTOR_SCHOOL_YEAR2));
 		_pMap.put(PARAM_SELECTOR_STUDY_PATH, iwc.getParameter(PARAM_SELECTOR_STUDY_PATH));
+		_pMap.put(PARAM_SELECTOR_AGE_FROM, iwc.getParameter(PARAM_SELECTOR_AGE_FROM));
+		_pMap.put(PARAM_SELECTOR_AGE_TO, iwc.getParameter(PARAM_SELECTOR_AGE_TO));
+		_pMap.put(PARAM_SELECTOR_CARE_TIME, iwc.getParameter(PARAM_SELECTOR_CARE_TIME));
 		
 		addTempFieldParameters(iwc, parseDate(iwc.getParameter(PARAM_PERIOD_FROM)));
 		
@@ -209,6 +221,9 @@ public class PostingParameterListEditor extends AccountingBlock {
 					iwc.getParameter(PARAM_SELECTOR_SCHOOL_YEAR1),
 					iwc.getParameter(PARAM_SELECTOR_SCHOOL_YEAR2),
 					iwc.getParameter(PARAM_SELECTOR_STUDY_PATH),
+					iwc.getParameter(PARAM_SELECTOR_AGE_FROM),
+					iwc.getParameter(PARAM_SELECTOR_AGE_TO),
+					iwc.getParameter(PARAM_SELECTOR_CARE_TIME),
 					_theOwnString,
 					_theDoubleString
 			);
@@ -436,6 +451,9 @@ public class PostingParameterListEditor extends AccountingBlock {
 			int schoolYearPK1 = Integer.parseInt((String) _pMap.get(PARAM_SELECTOR_SCHOOL_YEAR1));
 			int schoolYearPK2 = Integer.parseInt((String) _pMap.get(PARAM_SELECTOR_SCHOOL_YEAR2));
 			int studyPathPK = Integer.parseInt((String) _pMap.get(PARAM_SELECTOR_STUDY_PATH));
+			int ageFromPK = Integer.parseInt((String) _pMap.get(PARAM_SELECTOR_AGE_FROM));
+			int ageToPK = Integer.parseInt((String) _pMap.get(PARAM_SELECTOR_AGE_TO));
+			int careTimePK = Integer.parseInt((String) _pMap.get(PARAM_SELECTOR_CARE_TIME));
 			
 			if (pp != null) {
 				actPK = Integer.parseInt(pp.getActivity() != null ? 
@@ -451,7 +469,10 @@ public class PostingParameterListEditor extends AccountingBlock {
 				schoolYearPK2 = Integer.parseInt(pp.getSchoolYear2() != null ? 
 						pp.getSchoolYear2().getPrimaryKey().toString() : "0");				
 				studyPathPK = Integer.parseInt(pp.getStudyPath() != null ? 
-						pp.getStudyPath().getPrimaryKey().toString() : "0");				
+						pp.getStudyPath().getPrimaryKey().toString() : "0");
+				ageFromPK = pp.getAgeFrom();
+				ageToPK = pp.getAgeTo();
+				careTimePK = pp.getCareTimeID();
 			}
 			selectors.add(getLocalizedLabel(KEY_ACTIVITY, "Verksamhet"), 1, 1);
 			selectors.add(activitySelector(iwc, PARAM_SELECTOR_ACTIVITY, actPK), 2, 1);
@@ -469,9 +490,17 @@ public class PostingParameterListEditor extends AccountingBlock {
 			selectors.add(schoolYearSelector(iwc, PARAM_SELECTOR_SCHOOL_YEAR1, schoolYearPK1), 2, 5);
 			selectors.add(getLocalizedLabel(KEY_SCHOOL_YEAR_TO, "t o m"), 3, 5);
 			selectors.add(schoolYearSelector(iwc, PARAM_SELECTOR_SCHOOL_YEAR2, schoolYearPK2), 4, 5);
+			
+			selectors.add(getLocalizedLabel(KEY_AGE_FROM, "Age from"), 1, 6);
+			selectors.add(ageSelector(PARAM_SELECTOR_AGE_FROM, ageFromPK), 2, 6);
+			selectors.add(getLocalizedLabel(KEY_AGE_TO, "Age to"), 3, 6);
+			selectors.add(ageSelector(PARAM_SELECTOR_AGE_TO, ageToPK), 4, 6);
 
-			selectors.add(getLocalizedLabel(KEY_STUDY_PATH, "Studieväg"), 1, 6);
-			selectors.add(studyPathSelector(iwc, PARAM_SELECTOR_STUDY_PATH, studyPathPK), 2, 6);
+			selectors.add(getLocalizedLabel(KEY_CARE_TIME, "Care time"), 1, 7);
+			selectors.add(careTimeSelector(iwc, PARAM_SELECTOR_CARE_TIME, careTimePK), 2, 7);
+
+			selectors.add(getLocalizedLabel(KEY_STUDY_PATH, "Studieväg"), 1, 8);
+			selectors.add(studyPathSelector(iwc, PARAM_SELECTOR_STUDY_PATH, studyPathPK), 2, 8);
 
 		} catch (Exception e) {
 			super.add(new ExceptionWrapper(e, this));
@@ -661,6 +690,10 @@ public class PostingParameterListEditor extends AccountingBlock {
 			_pMap.put(PARAM_SELECTOR_SCHOOL_YEAR1, "0");
 			_pMap.put(PARAM_SELECTOR_SCHOOL_YEAR2, "0");
 			_pMap.put(PARAM_SELECTOR_STUDY_PATH, "0");
+			_pMap.put(PARAM_SELECTOR_AGE_FROM, "0");
+			_pMap.put(PARAM_SELECTOR_AGE_FROM, "0");
+			_pMap.put(PARAM_SELECTOR_AGE_TO, "0");
+			_pMap.put(PARAM_SELECTOR_CARE_TIME, "0");
 		}	
 	}
 
@@ -828,7 +861,31 @@ public class PostingParameterListEditor extends AccountingBlock {
 		return menu;
 	}
 	
+	/*
+	 */
+	private DropdownMenu ageSelector(String name, int refIndex) throws Exception {
+		DropdownMenu menu = new DropdownMenu(name);
+		menu = (DropdownMenu) getStyledInterface(menu);
+		menu.addMenuElementFirst("0", localize(KEY_SCHOOL_YEAR_SELECTOR_BLANK, "Inget"));
+		for (int i = 1; i < 16; i++) {
+			menu.addMenuElement(i, Integer.toString(i));
+		}
+		menu.setSelectedElement(refIndex);
+		return menu;
+	}
 	
+	/*
+	 */
+	private DropdownMenu careTimeSelector(IWContext iwc, String name, int refIndex) throws Exception {
+		DropdownMenu menu = (DropdownMenu) getStyledInterface(
+				getDropdownMenuLocalized(name, getRegulationsBusiness(iwc).findAllHourIntervals(), 
+				"getDisplayString"));
+		menu.addMenuElementFirst("0", localize(KEY_CARE_TIME_HEADER_ONE, "None"));
+		menu.addMenuElementFirst("0", localize(KEY_CARE_TIME_HEADER_TWO, "Select care time"));
+		menu.setSelectedElement(refIndex);
+		return menu;
+	}
+
 	private boolean hasError() {
 		return _errorText.length() == 0 ? false : true;
 	}

@@ -38,6 +38,8 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationExcep
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.RuleTypeConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.TooManyRegulationsException;
+import se.idega.idegaweb.commune.accounting.regulations.data.Condition;
+import se.idega.idegaweb.commune.accounting.regulations.data.ConditionHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.ConditionParameter;
 import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
@@ -76,10 +78,10 @@ import com.idega.util.CalendarMonth;
  * Holds most of the logic for the batchjob that creates the information that is
  * base for invoicing and payment data, that is sent to external finance system.
  * <p>
- * Last modified: $Date: 2006/02/04 00:33:45 $ by $Author: palli $
+ * Last modified: $Date: 2006/03/31 11:34:30 $ by $Author: palli $
  * 
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.156.2.1 $
+ * @version $Revision: 1.156.2.2 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -519,10 +521,42 @@ public class InvoiceChildcareThread extends BillingThread {
 							"invoice.RegelSpecTyp", "Regel Spec Typ")
 							+ ": " + regSpecType);
 
+					int age = 0;
+					int careTime = 0;
+					
+					if (categoryPosting.getUseAgeInPosting()) {
+						age = ageInYears;
+					}
+					
+					if (categoryPosting.getUseCareTimeInPosting()) {
+						Collection cond = null;
+						try {
+							cond = getConditionHome().findAllConditionsByRegulation(postingDetail.getRegulation());
+						}
+						catch (RemoteException e) {
+						}
+						catch (FinderException e) {
+						}
+						catch(NullPointerException e) {
+						}
+						
+						boolean foundCondition = false;
+						if (cond != null && !cond.isEmpty()) {
+							Iterator it = cond.iterator();
+							while (it.hasNext() && !foundCondition) {
+								Condition regCond = (Condition) it.next();
+								if (regCond.getConditionID() == Integer.parseInt(RuleTypeConstant.CONDITION_ID_HOURS)) {
+									careTime = regCond.getIntervalID();
+									foundCondition = true;
+								}
+							}
+						}
+					}
+					
 					String[] postings = getPostingBusiness().getPostingStrings(
 							category, schoolClassMember.getSchoolType(),
 							((Integer) regSpecType.getPrimaryKey()).intValue(),
-							provider, calculationDate);
+							provider, calculationDate, age, careTime);
 					String[] checkPost = getPostingBusiness()
 							.getPostingStrings(
 									category,
@@ -531,7 +565,7 @@ public class InvoiceChildcareThread extends BillingThread {
 											.findByRegulationSpecType(
 													RegSpecConstant.CHECKTAXA)
 											.getPrimaryKey()).intValue(),
-									provider, calculationDate);
+									provider, calculationDate, age, careTime);
 					PaymentRecord paymentRecord = createPaymentRecord(
 							postingDetail, postings[0], postings[1],
 							placementTimes.getMonths(), school); // MUST
@@ -670,7 +704,7 @@ public class InvoiceChildcareThread extends BillingThread {
 									schoolClassMember.getSchoolType(),
 									((Integer) regulation.getRegSpecType()
 											.getPrimaryKey()).intValue(),
-									provider, calculationDate);
+									provider, calculationDate,age, careTime);
 
 							// if this is a discounted subvention, then amount
 							// is allready
@@ -1527,5 +1561,9 @@ public class InvoiceChildcareThread extends BillingThread {
 
 	private ProviderTypeHome getProviderTypeHome() throws RemoteException {
 		return (ProviderTypeHome) IDOLookup.getHome(ProviderType.class);
+	}
+	
+	protected ConditionHome getConditionHome() throws RemoteException {
+		return (ConditionHome) com.idega.data.IDOLookup.getHome(Condition.class);
 	}
 }

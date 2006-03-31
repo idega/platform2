@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.140.2.2 2006/03/13 11:57:59 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.140.2.3 2006/03/31 11:34:30 palli Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -31,6 +31,8 @@ import se.idega.idegaweb.commune.accounting.invoice.business.RegularInvoiceBusin
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry;
 import se.idega.idegaweb.commune.accounting.regulations.data.ActivityType;
 import se.idega.idegaweb.commune.accounting.regulations.data.ActivityTypeHome;
+import se.idega.idegaweb.commune.accounting.regulations.data.CareTime;
+import se.idega.idegaweb.commune.accounting.regulations.data.CareTimeHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
 import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingTypeHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.Condition;
@@ -624,72 +626,35 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					Condition regCond = (Condition) i.next();
 					if (regCond.getConditionID() == Integer.parseInt(RuleTypeConstant.CONDITION_ID_HOURS)) {
 						int id = regCond.getIntervalID();
-						// I'll just use the fact that this is hardcoded.
-						switch (id) {
-							case 1:
-								if (1 > value.intValue() || value.intValue() > 25)
+						try {
+							CareTime careTime = getCareTimeHome().findByPrimaryKey(new Integer(id));
+							if (careTime.getCareTimeFrom() == -1) {
+								if (value.intValue() > careTime.getCareTimeTo()) {
 									match = false;
-								break;
-							case 2:
-								if (26 > value.intValue() || value.intValue() > 35)
+								}
+							}
+							else if (careTime.getCareTimeTo() == -1) {
+								if (value.intValue() < careTime.getCareTimeFrom()) {
 									match = false;
-								break;
-							case 3:
-								if (value.intValue() < 36)
+								}								
+							}
+							else if (careTime.getCareTimeFrom() == careTime.getCareTimeTo()) {
+								if (value.intValue() != careTime.getCareTimeFrom()) {
 									match = false;
-								break;
-							case 4:
-								if (value.intValue() > 24)
+								}								
+							} else {
+								if (value.intValue() < careTime.getCareTimeFrom() || value.intValue() > careTime.getCareTimeTo()) {
 									match = false;
-								break;
-							case 5:
-								if (value.intValue() < 25)
-									match = false;
-								break;
-							case 6:
-								if (value.intValue() > 13)
-									match = false;
-								break;
-							case 7:
-								if (value.intValue() < 14)
-									match = false;
-								break;
-							case 8:
-								if (1 > value.intValue() || value.intValue() > 15)
-									match = false;
-								break;
-							case 9:
-								if (16 > value.intValue() || value.intValue() > 25)
-									match = false;
-								break;
-							case 10:
-								if (1 > value.intValue())
-									match = false;
-								break;
-							case 11:
-								if (1 > value.intValue() || value.intValue() > 19)
-									match = false;
-								break;
-							case 12:
-								if (20 > value.intValue() || value.intValue() > 24)
-									match = false;
-								break;
-							case 13:
-								if (25 > value.intValue() || value.intValue() > 29)
-									match = false;
-								break;
-							case 14:
-								if (30 > value.intValue() || value.intValue() > 34)
-									match = false;
-								break;
-							case 15:
-								if (35 > value.intValue() || value.intValue() > 39)
-									match = false;
-								break;
-							case 16:
-								if (40 > value.intValue())
-									match = false;
-								break;
+								}								
+							}
+						} 
+						catch(RemoteException e) {
+							e.printStackTrace();
+							return 0;							
+						}
+						catch (FinderException e1) {
+							e1.printStackTrace();
+							return 0;
 						}
 					}
 				}
@@ -1431,26 +1396,16 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 * @author Kelly
 	 */
 	public Collection findAllHourIntervals() {
-		ArrayList arr = new ArrayList();
-		int index = 1;
-		arr.add(new Object[] { new Integer(index++), "1-25" });
-		arr.add(new Object[] { new Integer(index++), "26-35" });
-		arr.add(new Object[] { new Integer(index++), ">=36" });
-		arr.add(new Object[] { new Integer(index++), "<=24" });
-		arr.add(new Object[] { new Integer(index++), ">=25" });
-		arr.add(new Object[] { new Integer(index++), "<=13" });
-		arr.add(new Object[] { new Integer(index++), ">=14" });
-		arr.add(new Object[] { new Integer(index++), "1-15" });
-		arr.add(new Object[] { new Integer(index++), "16-25" });
-		arr.add(new Object[] { new Integer(index++), ">=1" });
-		arr.add(new Object[] { new Integer(index++), "1-19" });
-		arr.add(new Object[] { new Integer(index++), "20-24" });
-		arr.add(new Object[] { new Integer(index++), "25-29" });
-		arr.add(new Object[] { new Integer(index++), "30-34" });
-		arr.add(new Object[] { new Integer(index++), "35-39" });
-		arr.add(new Object[] { new Integer(index++), ">=40" });
-
-		return arr;
+		try {
+			CareTimeHome home = getCareTimeHome();
+			return home.findAllCareTimeValues();
+		}
+		catch (RemoteException e) {
+			return null;
+		}
+		catch (FinderException e) {
+			return null;
+		}
 	}
 
 	/**
@@ -1674,7 +1629,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 		arr.add(new ConditionHolder(RuleTypeConstant.CONDITION_ID_HOURS, "Timmar", LP + "timmar",
 				se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness.class,
-				"findAllHourIntervals", "", ""));
+				"findAllHourIntervals", "getDisplayString", ""));
 
 		arr.add(new ConditionHolder(RuleTypeConstant.CONDITION_ID_SIBLING_NR, "Syskonnr", LP + "syskonnr",
 				se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness.class,
@@ -2089,6 +2044,11 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		catch (Exception e1) {
 			e1.printStackTrace();
 		}
+		
+		if (ret != null) {
+			ret.setRegulation(reg);
+		}
+		
 		return ret;
 	}
 
@@ -2319,6 +2279,10 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		return (YesNoHome) com.idega.data.IDOLookup.getHome(YesNo.class);
 	}
 
+	protected CareTimeHome getCareTimeHome() throws RemoteException {
+		return (CareTimeHome) com.idega.data.IDOLookup.getHome(CareTime.class);
+	}
+	
 	protected SpecialCalculationTypeHome getSpecialCalculationTypeHome() throws RemoteException {
 		return (SpecialCalculationTypeHome) com.idega.data.IDOLookup.getHome(SpecialCalculationType.class);
 	}

@@ -1,85 +1,151 @@
+/**
+ * 
+ */
 package se.idega.idegaweb.commune.accounting.posting.data;
 
+import java.sql.Date;
+import java.util.Collection;
 
-public class PostingParametersHomeImpl extends com.idega.data.IDOFactory implements PostingParametersHome
-{
- protected Class getEntityInterfaceClass(){
-  return PostingParameters.class;
- }
+import javax.ejb.FinderException;
 
 
- public PostingParameters create() throws javax.ejb.CreateException{
-  return (PostingParameters) super.createIDO();
- }
+import com.idega.data.IDOFactory;
 
+/**
+ * @author bluebottle
+ *
+ */
+public class PostingParametersHomeImpl extends IDOFactory implements
+		PostingParametersHome {
+	protected Class getEntityInterfaceClass() {
+		return PostingParameters.class;
+	}
 
-public java.util.Collection findAllPostingParameters()throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((PostingParametersBMPBean)entity).ejbFindAllPostingParameters();
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public PostingParameters create() throws javax.ejb.CreateException {
+		return (PostingParameters) super.createIDO();
+	}
 
-public PostingParameters findPostingParameter(java.sql.Date p0,int p1,int p2,java.lang.String p3,int p4,int p5,int p6)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((PostingParametersBMPBean)entity).ejbFindPostingParameter(p0,p1,p2,p3,p4,p5,p6);
-	this.idoCheckInPooledEntity(entity);
-	return this.findByPrimaryKey(pk);
-}
+	public PostingParameters findByPrimaryKey(Object pk)
+			throws javax.ejb.FinderException {
+		return (PostingParameters) super.findByPrimaryKeyIDO(pk);
+	}
 
-public PostingParameters findPostingParameter(int p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((PostingParametersBMPBean)entity).ejbFindPostingParameter(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.findByPrimaryKey(pk);
-}
+	public Collection findPostingParametersByPeriod(Date from, Date to)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((PostingParametersBMPBean) entity)
+				.ejbFindPostingParametersByPeriod(from, to);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public PostingParameters findPostingParameter(int p0,int p1,int p2,int p3)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((PostingParametersBMPBean)entity).ejbFindPostingParameter(p0,p1,p2,p3);
-	this.idoCheckInPooledEntity(entity);
-	return this.findByPrimaryKey(pk);
-}
+	public Collection findPostingParametersByPeriodAndOperationalID(Date from,
+			Date to, String opID) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((PostingParametersBMPBean) entity)
+				.ejbFindPostingParametersByPeriodAndOperationalID(from, to,
+						opID);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public PostingParameters findPostingParameter(java.sql.Date p0,int p1,int p2,java.lang.String p3,int p4,int p5,int p6,boolean p7)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((PostingParametersBMPBean)entity).ejbFindPostingParameter(p0,p1,p2,p3,p4,p5,p6,p7);
-	this.idoCheckInPooledEntity(entity);
-	return this.findByPrimaryKey(pk);
-}
+	public Collection findPostingParametersByDate(Date date)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((PostingParametersBMPBean) entity)
+				.ejbFindPostingParametersByDate(date);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public PostingParameters findPostingParameter(java.sql.Date p0,java.sql.Date p1,java.lang.String p2,java.lang.String p3,int p4,int p5,java.lang.String p6,int p7,int p8,int p9,int p10)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((PostingParametersBMPBean)entity).ejbFindPostingParameter(p0,p1,p2,p3,p4,p5,p6,p7,p8,p9,p10);
-	this.idoCheckInPooledEntity(entity);
-	return this.findByPrimaryKey(pk);
-}
+	public Collection findAllPostingParameters() throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((PostingParametersBMPBean) entity)
+				.ejbFindAllPostingParameters();
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public java.util.Collection findPostingParametersByDate(java.sql.Date p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((PostingParametersBMPBean)entity).ejbFindPostingParametersByDate(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public PostingParameters findPostingParameter(Date date, int act_id,
+			int reg_id, String com_id, int com_bel_id, int school_year_id1,
+			int school_year_id2) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((PostingParametersBMPBean) entity)
+				.ejbFindPostingParameter(date, act_id, reg_id, com_id,
+						com_bel_id, school_year_id1, school_year_id2);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
 
-public java.util.Collection findPostingParametersByPeriod(java.sql.Date p0,java.sql.Date p1)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((PostingParametersBMPBean)entity).ejbFindPostingParametersByPeriod(p0,p1);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public PostingParameters findPostingParameter(Date date, int act_id,
+			int reg_id, String com_id, int com_bel_id, int school_year,
+			int study_path_id, boolean no_study_path) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((PostingParametersBMPBean) entity)
+				.ejbFindPostingParameter(date, act_id, reg_id, com_id,
+						com_bel_id, school_year, study_path_id, no_study_path);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
 
-public java.util.Collection findPostingParametersByPeriodAndOperationalID(java.sql.Date p0,java.sql.Date p1,String opID)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((PostingParametersBMPBean)entity).ejbFindPostingParametersByPeriodAndOperationalID(p0,p1,opID);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public PostingParameters findPostingParameter(Date date, int act_id,
+			int reg_id, String com_id, int com_bel_id, int school_year,
+			int study_path_id, boolean no_study_path, int age, int careTimeID)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((PostingParametersBMPBean) entity)
+				.ejbFindPostingParameter(date, act_id, reg_id, com_id,
+						com_bel_id, school_year, study_path_id, no_study_path,
+						age, careTimeID);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
 
- public PostingParameters findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (PostingParameters) super.findByPrimaryKeyIDO(pk);
- }
+	public PostingParameters findPostingParameter(int act, int reg, int comt,
+			int comb) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((PostingParametersBMPBean) entity)
+				.ejbFindPostingParameter(act, reg, comt, comb);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
 
+	public PostingParameters findPostingParameter(Date from, Date to,
+			String ownPosting, String doublePosting, int activityType,
+			int regSpecType, String companyType, int communeBelonging,
+			int schoolYear1, int schoolYear2, int studyPath)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((PostingParametersBMPBean) entity)
+				.ejbFindPostingParameter(from, to, ownPosting, doublePosting,
+						activityType, regSpecType, companyType,
+						communeBelonging, schoolYear1, schoolYear2, studyPath);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
 
+	public PostingParameters findPostingParameter(Date from, Date to,
+			String ownPosting, String doublePosting, int activityType,
+			int regSpecType, String companyType, int communeBelonging,
+			int schoolYear1, int schoolYear2, int studyPath, int ageFrom,
+			int ageTo, int careTime) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((PostingParametersBMPBean) entity)
+				.ejbFindPostingParameter(from, to, ownPosting, doublePosting,
+						activityType, regSpecType, companyType,
+						communeBelonging, schoolYear1, schoolYear2, studyPath,
+						ageFrom, ageTo, careTime);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
+
+	public PostingParameters findPostingParameter(int id)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((PostingParametersBMPBean) entity)
+				.ejbFindPostingParameter(id);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
 
 }

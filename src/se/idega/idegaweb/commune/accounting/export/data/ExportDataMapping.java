@@ -119,6 +119,16 @@ public interface ExportDataMapping extends IDOEntity {
 	public boolean getCreatePaymentsForCommuneProvidersOutsideCommune();
 
 	/**
+	 * @see se.idega.idegaweb.commune.accounting.export.data.ExportDataMappingBMPBean#getUseAgeInPosting
+	 */
+	public boolean getUseAgeInPosting();
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.export.data.ExportDataMappingBMPBean#getUseCareTimeInPosting
+	 */
+	public boolean getUseCareTimeInPosting();
+
+	/**
 	 * @see se.idega.idegaweb.commune.accounting.export.data.ExportDataMappingBMPBean#setOperationalField
 	 */
 	public void setOperationalField(String operationalField);
@@ -223,5 +233,15 @@ public interface ExportDataMapping extends IDOEntity {
 	 */
 	public void setCreatePaymentsForCommuneProvidersOutsideCommune(
 			boolean createPayments);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.export.data.ExportDataMappingBMPBean#setUseAgeInPosting
+	 */
+	public void setUseAgeInPosting(boolean useAge);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.export.data.ExportDataMappingBMPBean#setUseCareTimeInPosting
+	 */
+	public void setUseCareTimeInPosting(boolean useCareTime);
 
 }
