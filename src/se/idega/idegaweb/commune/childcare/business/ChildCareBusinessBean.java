@@ -5,6 +5,7 @@
 package se.idega.idegaweb.commune.childcare.business;
 
 import is.idega.block.family.business.NoCustodianFound;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,6 +19,7 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.MessageFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -31,12 +33,14 @@ import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.Vector;
 import java.util.logging.Level;
+
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
+
 import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.idegaweb.commune.accounting.regulations.business.EmploymentTypeFinderBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.ManagementTypeFinderBusiness;
@@ -72,6 +76,7 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareQueue;
 import se.idega.idegaweb.commune.childcare.data.ChildCareQueueHome;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 import se.idega.idegaweb.commune.message.business.CommuneMessageBusiness;
+
 import com.idega.block.contract.business.ContractService;
 import com.idega.block.contract.data.Contract;
 import com.idega.block.contract.data.ContractTag;
@@ -103,8 +108,6 @@ import com.idega.business.IBORuntimeException;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.file.data.ICFileHome;
-import com.idega.core.localisation.data.ICLanguage;
-import com.idega.core.localisation.data.ICLanguageHome;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.PostalCode;
 import com.idega.data.IDOAddRelationshipException;
@@ -138,15 +141,6 @@ import com.lowagie.text.xml.XmlPeer;
  * @version 1.0
  */
 public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCareBusiness, CaseBusiness, EmploymentTypeFinderBusiness, ManagementTypeFinderBusiness {
-
-	public static final String METADATA_MULTI_LANGUAGE_HOME = "multi_language_home";
-	public static final String METADATA_LANGUAGES = "multi_languages";
-	public static final String METADATA_HAS_CUSTODIAN_STUDIES = "has_studies";
-	public static final String METADATA_CUSTODIAN_STUDY = "studies";
-	public static final String METADATA_CUSTODIAN_STUDY_START = "study_start";
-	public static final String METADATA_CUSTODIAN_STUDY_END = "study_end";
-	public static final String METADATA_CAN_DISPLAY_CHILD_CARE_IMAGE = "can_display_child_care_image";
-	public static final String METADATA_OTHER_INFORMATION = "child_care_information";
 
 	private static String PROP_OUTSIDE_SCHOOL_AREA = "not_in_commune_school_area";
 
@@ -1252,7 +1246,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				getSchoolBusiness().addToSchoolClassMemberLog(member, member.getSchoolClass(), fromDate.getDate(), endDate != null ? endDate.getDate() : null, user);
 				sendMessageToParents(application, subject, body, attachment);
 			}
-			alterValidFromDate(application, application.getFromDate(), employmentTypeID, locale, user);
+			if (attachment == null) {
+				alterValidFromDate(application, application.getFromDate(), employmentTypeID, locale, user);
+			}
 			application.setApplicationStatus(getStatusReady());
 			application.store();
 			try {
@@ -1489,21 +1485,6 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		catch (FinderException e) {} //it's normal, that record is not found and there's no need to log that		
 		return contract;
 	}
-
-	/**
-	 * this method gets the contract that's after the one supplied as a parameter 
-	 * @param childcareContract
-	 * @return
-	 */	
-	private ChildCareContract getPreviousContract(ChildCareContract childcareContract) {
-		ChildCareContract contract = null;
-		try {
-			contract = getChildCareContractArchiveHome().findPreviousTerminatedContractByContract(childcareContract);
-		}
-		catch (FinderException e) {} //it's normal, that record is not found and there's no need to log that		
-		return contract;
-	}
-	
 
 	/**
 	 * Update contract with new field values, and recreate file attached to it.
@@ -1766,13 +1747,14 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public boolean acceptApplication(ChildCareApplication application, IWTimestamp validUntil, String subject, String message, User user) {
+	public boolean acceptApplication(ChildCareApplication application, IWTimestamp validUntil, float fee, String subject, String message, User user) {
 		UserTransaction t = getSessionContext().getUserTransaction();
 		try {
 			t.begin();
 			CaseBusiness caseBiz = (CaseBusiness) getServiceInstance(CaseBusiness.class);
 			application.setApplicationStatus(getStatusAccepted());
 			application.setOfferValidUntil(validUntil.getDate());
+			application.setFee(fee);
 			caseBiz.changeCaseStatus(application, getCaseStatusGranted().getStatus(), user);
 
 			sendMessageToParents(application, subject, message);
@@ -1782,7 +1764,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				Iterator iter = pending.iterator();
 				while (iter.hasNext()) {
 					ChildCareApplication app = (ChildCareApplication) iter.next();
-					changeCaseStatus(app, getCaseStatusOpen().getStatus(), user, null);
+					changeCaseStatus(app, getCaseStatusOpen().getStatus(), user, (Group)null);
 				}
 			}
 
@@ -2065,12 +2047,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return false;
 	}
 
-	public boolean acceptApplication(int applicationId, IWTimestamp validUntil, String subject, String message, User user) {
+	public boolean acceptApplication(int applicationId, IWTimestamp validUntil, float fee, String subject, String message, User user) {
 		try {
 			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
 			ChildCareApplication appl = home.findByPrimaryKey(new Integer(applicationId));
 
-			return acceptApplication(appl, validUntil, subject, message, user);
+			return acceptApplication(appl, validUntil, fee, subject, message, user);
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
@@ -2621,14 +2603,14 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			boolean useAlternativePDFGenerationMethod =  bundle.getBooleanProperty(PROPERTY_CHILDCARE_CONTRACT_ALTERNATIVE_PDF, false);
 			
 			ICFile contractFile = null;
-			if (!useAlternativePDFGenerationMethod) { // let's use old method
-				contractFile = createContractContentToApplication(application, locale, validFrom, changeStatus, hasBankId);
-			} else { // bundle property tells us to use new method
-				if (printingContext == null) {
+			if (printingContext != null) {
+				contractFile = createContractContentToApplicationAlternativeMethod(printingContext, application, locale, validFrom, changeStatus, hasBankId);
+			}
+			else {
+				if (!useAlternativePDFGenerationMethod) { // let's use old method
+					contractFile = createContractContentToApplication(application, locale, validFrom, changeStatus, hasBankId);
+				} else { // bundle property tells us to use new method
 					contractFile = createContractContentToApplicationAlternativeMethod(application, locale, validFrom, changeStatus, hasBankId);
-				}
-				else {
-					contractFile = createContractContentToApplicationAlternativeMethod(printingContext, application, locale, validFrom, changeStatus, hasBankId);
 				}
 			}
 			
@@ -5772,91 +5754,117 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public void sendMessageToParents(ChildCareApplication application, String subject, String body, String letterBody, boolean alwaysSendLetter) {
 		sendMessageToParents(application, subject, body, letterBody, alwaysSendLetter, true);
 	}
-
+	
 	public void sendMessageToParents(ChildCareApplication application, String subject, String body, String letterBody, boolean alwaysSendLetter, boolean sendToOtherParent) {
 		sendMessageToParents(application, subject, body, letterBody, null, alwaysSendLetter, sendToOtherParent);
-	}
+	}	
 	
 	public void sendMessageToParents(ChildCareApplication application, String subject, String body, String letterBody, File attachment, boolean alwaysSendLetter, boolean sendToOtherParent) {
 		try {
+			NumberFormat format = NumberFormat.getCurrencyInstance(getIWApplicationContext().getApplicationSettings().getDefaultLocale());
 			User child = application.getChild();
-			Object[] arguments = { new Name(child.getFirstName(), child.getMiddleName(), child.getLastName()).getName(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), true), application.getProvider().getSchoolName(), PersonalIDFormatter.format(child.getPersonalID(), getIWApplicationContext().getApplicationSettings().getDefaultLocale()), application.getLastReplyDate() != null ? new IWTimestamp(application.getLastReplyDate()).getLocaleDate(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), IWTimestamp.SHORT) : "xxx", application.getOfferValidUntil() != null ? new IWTimestamp(application.getOfferValidUntil()).getLocaleDate(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), IWTimestamp.SHORT) : "" };
+			Object[] arguments = { new Name(child.getFirstName(), child.getMiddleName(), child.getLastName()).getName(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), true), application.getProvider().getSchoolName(), PersonalIDFormatter.format(child.getPersonalID(), getIWApplicationContext().getApplicationSettings().getDefaultLocale()), application.getLastReplyDate() != null ? new IWTimestamp(application.getLastReplyDate()).getLocaleDate(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), IWTimestamp.SHORT) : "xxx", application.getOfferValidUntil() != null ? new IWTimestamp(application.getOfferValidUntil()).getLocaleDate(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), IWTimestamp.SHORT) : "", format.format(application.getFee()) };
 
 			User appParent = application.getOwner();
 			User parent2 = null;
 
-			if (sendToOtherParent) {
+			if(application.getPrognosis()!=null){  
+				// TODO
+				// 2006/03/30 Igors 
+				// getting ContractCanceledUserId from Prognosis field is not right way, but It's all what I can do right now to get userId who canceled contract
+				// for adding methods appilcation.setContractCanceledUserId(int userId) and appilcation.getContractCanceledUserId() 
+				int usrId = new Integer(application.getPrognosis()).intValue();
 				try {
+					appParent=getUser(usrId);
+				}
+				catch (FinderException e) {
+					e.printStackTrace();
+				}
+			}
+
+			
+			try {
+			    if (sendToOtherParent) {
 					Collection parents = getUserBusiness().getMemberFamilyLogic().getCustodiansFor(child);
 					Iterator iter = parents.iterator();
 					while (iter.hasNext()) {
 						User parent = (User) iter.next();
 						if (!parent.equals(appParent)) parent2 = parent;							
-						
 					}
-
-					
 					
 					if(parent2 == null){
-						if (getUserBusiness().getMemberFamilyLogic().isChildInCustodyOf(child, appParent)) {
-							Message message = getMessageBusiness().createUserMessage(application, appParent, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, true, alwaysSendLetter);
+						if((appParent.getEmails() != null) &&(!appParent.getEmails().isEmpty()) ){
+							Message message = getMessageBusiness().createUserMessage(application, appParent,null,null,subject,MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, false,null,false,true); 
 							message.setParentCase(application);
-							message.store();
-						}	
+						 	message.store();
+						}
+						else{
+						 	Message message = getMessageBusiness().createUserMessage(application, appParent,null,null,subject,MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, true,null,true,true);
+					     	message.setParentCase(application);
+						 	message.store();
+						}				
 					}
 					else{
-						boolean messageWasSended = false;
-						if(appParent.getEmails() != null){
-							if (getUserBusiness().getMemberFamilyLogic().isChildInCustodyOf(child, appParent)) {
-								Message message = getMessageBusiness().createUserMessage(application, appParent, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, true, alwaysSendLetter);
+						if(getUserBusiness().haveSameAddress(parent2, appParent)){                  
+							if((appParent.getEmails() != null) &&(!appParent.getEmails().isEmpty()) ){
+								Message message = getMessageBusiness().createUserMessage(application, appParent,null,null,subject,MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, false,null,false,true); 
 								message.setParentCase(application);
-								message.store();
-								messageWasSended = true;
-							}	
-							if(!messageWasSended) getMessageBusiness().createUserMessage(application, parent2, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, true, alwaysSendLetter);
-						}	
-						else{
-							if(parent2.getEmails()!=null){
-								if (getUserBusiness().getMemberFamilyLogic().isChildInCustodyOf(child, appParent)) {
-									Message message = getMessageBusiness().createUserMessage(application, appParent, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, false, alwaysSendLetter);
-									message.setParentCase(application);
-									message.store();
-								}	
-								getMessageBusiness().createUserMessage(application, parent2, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, true, alwaysSendLetter);
+							 	message.store();
 							}
 							else{
-								if(getUserBusiness().haveSameAddress(parent2, appParent)){
-									if (getUserBusiness().getMemberFamilyLogic().isChildInCustodyOf(child, appParent)) {
-										Message message = getMessageBusiness().createUserMessage(application, appParent, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, true, alwaysSendLetter);
-										message.setParentCase(application);
-										message.store();
-										messageWasSended = true;
-									}	
-									if(!messageWasSended) getMessageBusiness().createUserMessage(application, parent2, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, true, alwaysSendLetter);
-
-								}
-								else{
-									if (getUserBusiness().getMemberFamilyLogic().isChildInCustodyOf(child, appParent)) {
-										Message message = getMessageBusiness().createUserMessage(application, appParent, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, true, alwaysSendLetter);
-										message.setParentCase(application);
-										message.store();
-										messageWasSended = true;
-									}	
-									if(!messageWasSended) getMessageBusiness().createUserMessage(application, parent2, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, true, alwaysSendLetter);
-									
-								}
+							 	Message message = getMessageBusiness().createUserMessage(application, appParent,null,null,subject,MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, true,null,true,true);
+						     	message.setParentCase(application);
+							 	message.store();
 							}
-							
-						}
-							
+							Message message = getMessageBusiness().createUserMessage(application, parent2,null,null,subject,MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, false,null,false,true); 
+							message.setParentCase(application);
+						 	message.store();
+						} 
+						else { // not same address
+							if((appParent.getEmails() != null) &&(!appParent.getEmails().isEmpty()) ){
+								Message message = getMessageBusiness().createUserMessage(application, appParent,null,null,subject,MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, false,null,false,true); 
+								message.setParentCase(application);
+							 	message.store();
+							}
+							else{
+							 	Message message = getMessageBusiness().createUserMessage(application, appParent,null,null,subject,MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, true,null,true,true);
+						     	message.setParentCase(application);
+							 	message.store();
+							}
+
+							if((parent2.getEmails() != null) &&(!parent2.getEmails().isEmpty()) ){
+								Message message = getMessageBusiness().createUserMessage(application, parent2,null,null,subject,MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, false,null,false,true); 
+								message.setParentCase(application);
+							 	message.store();
+							}
+							else{
+							 	Message message = getMessageBusiness().createUserMessage(application, parent2,null,null,subject,MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, true,null,true,true);
+						     	message.setParentCase(application);
+							 	message.store();
+							}
+
+						} // end not same address
+
+					}	// end parent2!=null
+			    } // end SendToOtherParent
+			    
+				else { // send only for one parent   
+					if((appParent.getEmails() != null) &&(!appParent.getEmails().isEmpty()) ){
+						Message message = getMessageBusiness().createUserMessage(application, appParent,null,null,subject,MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, false,null,false,true); 
+						message.setParentCase(application);
+					 	message.store();
 					}
-					
-					
-				}
-				catch (NoCustodianFound ncf) {
-					ncf.printStackTrace();
+					else{
+					 	Message message = getMessageBusiness().createUserMessage(application, appParent,null,null,subject,MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, true,null,true,true);
+				     	message.setParentCase(application);
+					 	message.store();
+					}				
 				}
 			}
+			catch (NoCustodianFound ncf) {
+				ncf.printStackTrace();
+			}
+			
 		}
 		catch (RemoteException re) {
 			re.printStackTrace();
@@ -6120,88 +6128,4 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
     }
 
     
-  	public boolean canDisplayChildCareImages(User child) {
-  		String meta = child.getMetaData(METADATA_CAN_DISPLAY_CHILD_CARE_IMAGE);
-  		if (meta != null) {
-  			return new Boolean(meta).booleanValue();
-  		}
-  		return false;
-  	}
-  	
-  	public String getChildareOtherInformation(User child) {
-  		return child.getMetaData(METADATA_OTHER_INFORMATION);
-  	}
-  	
-  	public boolean hasMultiLanguageHome(User child) {
-  		String meta = child.getMetaData(METADATA_MULTI_LANGUAGE_HOME);
-  		if (meta != null) {
-  			return new Boolean(meta).booleanValue();
-  		}
-  		return false;
-  	}
-  	
-  	public ICLanguage getLanguage(User child) {
-  		String meta = child.getMetaData(METADATA_LANGUAGES);
-  		if (meta != null) {
-  			try {
-  				ICLanguageHome languageHome = (ICLanguageHome) IDOLookup.getHome(ICLanguage.class);
-    			return languageHome.findByPrimaryKey(new Integer(meta));
-  			}
-  			catch (IDOLookupException ile) {
-  				throw new IBORuntimeException(ile);
-  			}
-  			catch (FinderException fe) {
-  				fe.printStackTrace();
-  			}
-  		}
-  		return null;
-  	}
-  	
-  	public void storeChildCareInformation(User child, boolean canDisplayImage, String otherAfterSchoolCareInformation, boolean multiLanguageHome, String language) {
-  		child.setMetaData(METADATA_CAN_DISPLAY_CHILD_CARE_IMAGE, String.valueOf(canDisplayImage));
-  		child.setMetaData(METADATA_OTHER_INFORMATION, otherAfterSchoolCareInformation);
-  		child.setMetaData(METADATA_MULTI_LANGUAGE_HOME, String.valueOf(multiLanguageHome));
-  		child.setMetaData(METADATA_LANGUAGES, language);
-  		child.store();
-  	}
-  	
-  	public boolean hasStudies(User custodian) {
-  		String meta = custodian.getMetaData(METADATA_HAS_CUSTODIAN_STUDIES);
-  		if (meta != null) {
-  			return new Boolean(meta).booleanValue();
-  		}
-  		return false;
-  	}
-  	
-  	public String getStudies(User custodian) {
-  		return custodian.getMetaData(METADATA_CUSTODIAN_STUDY);
-  	}
-  	
-  	public Date getStudyStart(User custodian) {
-  		String meta = custodian.getMetaData(METADATA_CUSTODIAN_STUDY_START);
-  		if (meta != null) {
-  			return new IWTimestamp(meta).getDate();
-  		}
-  		return null;
-  	}
-  	
-  	public Date getStudyEnd(User custodian) {
-  		String meta = custodian.getMetaData(METADATA_CUSTODIAN_STUDY_END);
-  		if (meta != null) {
-  			return new IWTimestamp(meta).getDate();
-  		}
-  		return null;
-  	}
-  	
-  	public void storeCustodianInformation(User custodian, boolean hasStudies, String studies, Date studyStart, Date studyEnd) {
-  		custodian.setMetaData(METADATA_HAS_CUSTODIAN_STUDIES, String.valueOf(hasStudies));
-  		custodian.setMetaData(METADATA_CUSTODIAN_STUDY, studies);
-  		if (studyStart != null) {
-  			custodian.setMetaData(METADATA_CUSTODIAN_STUDY_START, studyStart.toString());
-  		}
-  		if (studyEnd != null) {
-  			custodian.setMetaData(METADATA_CUSTODIAN_STUDY_END, studyEnd.toString());
-  		}
-  		custodian.store();
-  	}
 }
