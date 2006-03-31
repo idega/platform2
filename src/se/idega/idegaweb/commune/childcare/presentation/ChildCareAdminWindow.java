@@ -144,6 +144,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	
 	public static final String PARAMETER_CLOSE = "cc_close";
 	
+	public static final String PARAMETER_FEE = "cc_fee";
+	
 	// private static final String PROPERTY_RESTRICT_DATES =
 	// "child_care_restrict_alter_date";
 
@@ -585,6 +587,13 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add(getSmallHeader(localize("child_care.offer_valid_until", "Offer valid until") + ":"), 1, row++);
 		table.add(dateInput, 1, row++);
 
+		if (iwc.getApplicationSettings().getBoolean(CCConstants.ATTRIBUTE_SHOW_FEE, false)) {
+			TextInput feeInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_FEE));
+	
+			table.add(getSmallHeader(localize("child_care.childcare_fee", "Fee") + ":"), 1, row++);
+			table.add(feeInput, 1, row++);
+		}
+		
 		HiddenInput action = new HiddenInput(PARAMETER_ACTION);
 		action.setValue(String.valueOf(ACTION_OFFER));
 		table.add(action, 1, 1);
@@ -1386,7 +1395,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		SchoolCategory schcategory = schBuiz.getCategoryChildcare();		
 		
 		try {
-			availableTypes = school.findRelatedSchoolTypesWithFreetime(schcategory); //school.getSchoolTypes();
+			availableTypes = school.findRelatedSchoolTypes(schcategory); //school.getSchoolTypes();
 		}
 		catch (IDORelationshipException ex) {
 			ex.printStackTrace();
@@ -2173,12 +2182,26 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		if (messageBody.indexOf("$datum$") != -1) {
 			messageBody = TextSoap.findAndReplace(messageBody, "$datum$", "{4}");
 		}
+		if (messageBody.indexOf("fee") != -1) {
+			messageBody = TextSoap.findAndReplace(messageBody, "$fee$", "{5}");
+		}
 		if (messageBody.indexOf("$link$") != -1) {
 			messageBody = TextSoap.findAndReplace(messageBody, "$link$", link);
 		}
 
 		IWTimestamp validUntil = new IWTimestamp(iwc.getParameter(PARAMETER_OFFER_VALID_UNTIL));
-		getBusiness().acceptApplication(_applicationID, validUntil, messageHeader, messageBody, iwc.getCurrentUser());
+		float fee = 0;
+		if (iwc.isParameterSet(PARAMETER_FEE)) {
+			try {
+				fee = Float.parseFloat(iwc.getParameter(PARAMETER_FEE));
+			}
+			catch (NumberFormatException nfe) {
+				nfe.printStackTrace();
+				fee = 0;
+			}
+		}
+		
+		getBusiness().acceptApplication(_applicationID, validUntil, fee, messageHeader, messageBody, iwc.getCurrentUser());
 
 		close();
 	}
@@ -2389,14 +2412,18 @@ public class ChildCareAdminWindow extends ChildCareBlock {
         application.setCancelDateRequested(stamp.getDate());                     
 		application.setRequestedCancelDate(stamp.getDate());        
 		application.setParentalLeave(parentalLeave);
+		application.setPrognosis(String.valueOf( iwc.getCurrentUserId() )); // SAVE UserId who has canceled contract
+		// TODO
+		// 2006/03/30 Igors 
+		// save ContractCanceledUserId using Prognosis field is not right way, but It's all what I can do right now to get userId who canceled contract
+		// for adding methods appilcation.setContractCanceledUserId(int userId) and appilcation.getContractCanceledUserId() 
+
 		application.store();
-
-		User owner = application.getOwner();
+		
+		User owner = iwc.getCurrentUser();
 		com.idega.core.user.data.User child = UserBusiness.getUser(application.getChildId());
-		getBusiness().sendMessageToParents(application, localize("ccecw_encon_par1", "Beg�ran om upps�gning av kontrakt gjord"), localize("ccecw_encon_par2", "Du har skickat en beg�ran om upps�gning av kontrakt f�r") + " " + child.getName() + " " + PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale()) + " " + localize("ccecw_encon_par3", "fr.o.m.") + " " + stamp.getDateString("yyyy-MM-dd") + ".");
-
-		getBusiness().sendMessageToProvider(application, localize("ccecw_encon_prov1", "Upps�gning av kontrakt"), owner.getName() + " " + localize("ccecw_encon_prov2", "har beg�rt upps�gning av kontrakt f�r") + " " + child.getName() + " " + PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale()) + ". " + localize("ccecw_encon_prov3", "Kontraktet ska upph�ra fr.o.m.") + " " + stamp.getDateString("yyyy-MM-dd") + ".", application.getOwner());
-
+		getBusiness().sendMessageToParents(application, localize("ccecw_encon_par1", "Beg???ran om upps???gning av kontrakt gjord"), localize("ccecw_encon_par2", "Du har skickat en beg???ran om upps???gning av kontrakt f???r") + " " + child.getName() + " " + PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale()) + " " + localize("ccecw_encon_par3", "fr.o.m.") + " " + stamp.getDateString("yyyy-MM-dd") + ".");
+		getBusiness().sendMessageToProvider(application, localize("ccecw_encon_prov1", "Upps�gning av kontrakt"), owner.getName() + " " + localize("ccecw_encon_prov2", "har beg�rt upps�gning av kontrakt f�r") + " " + child.getName() + " " + PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale()) + ". " + localize("ccecw_encon_prov3", "Kontraktet ska upph�ra fr.o.m.") + " " + stamp.getDateString("yyyy-MM-dd") + ".", owner);
 		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
 		getParentPage().close();
 	}
