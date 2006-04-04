@@ -3,7 +3,7 @@ package se.idega.idegaweb.commune.childcare.presentation;
 /**
  * enclosing_type
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: CCConstants.java,v 1.7 2003/05/28 18:16:18 roar Exp $
+ * @version $Id: CCConstants.java,v 1.7.6.1 2006/04/04 14:26:48 dainis Exp $
  * @since 14.2.2003 
  */
 interface CCConstants {
@@ -57,5 +57,7 @@ interface CCConstants {
 	final static int ACTION_CANCEL_3 = 7;		
 	final static int ACTION_REQUEST_INFO = 8;
 	final static int ACTION_DELETE = 9;
+	
+	final static String ATTRIBUTE_SHOW_FEE = "show_childcare_fee";
 
 }
