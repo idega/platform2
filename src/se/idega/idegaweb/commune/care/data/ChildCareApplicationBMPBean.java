@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareApplicationBMPBean.java,v 1.22.2.3 2006/02/27 17:04:19 dainis Exp $
+ * $Id: ChildCareApplicationBMPBean.java,v 1.22.2.4 2006/04/04 14:37:53 dainis Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -83,9 +83,10 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
     protected final static String FROM_DATE_REQUESTED = "from_date_requested"; // Requested start date
     protected final static String CANCEL_REQUEST_RECEIVED = "cancel_request_received"; // The date the parents want as the last day of placement
     protected final static String CANCEL_DATE_REQUESTED = "cancel_date_requested"; // The date the parent registered the cancellation
-    
+
   protected final static String FROM_TIME = "from_time";
   protected final static String TO_TIME = "to_time";
+  protected final static String FEE = "fee";
 	
 	protected final int SORT_DATE_OF_BIRTH = 1;
 	protected final int SORT_QUEUE_DATE = 2;
@@ -162,6 +163,15 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
         
     addAttribute(FROM_TIME, "From time", Timestamp.class);
     addAttribute(TO_TIME, "To time", Timestamp.class);
+    addAttribute(FEE, "Fee", Float.class);
+	}
+	
+	public float getFee() {
+		return getFloatColumnValue(FEE, 0);
+	}
+	
+	public void setFee(float fee) {
+		setColumn(FEE, fee);
 	}
 	
 	public Time getFromTime() {

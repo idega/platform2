@@ -19,10 +19,10 @@ import com.idega.user.data.User;
  * <p>
  * TODO Dainis Describe Type ChildCareApplication
  * </p>
- *  Last modified: $Date: 2006/02/27 17:04:20 $ by $Author: dainis $
+ *  Last modified: $Date: 2006/04/04 14:37:53 $ by $Author: dainis $
  * 
  * @author <a href="mailto:Dainis@idega.com">Dainis</a>
- * @version $Revision: 1.8.2.3 $
+ * @version $Revision: 1.8.2.4 $
  */
 public interface ChildCareApplication extends IDOEntity, Case {
 
@@ -35,6 +35,16 @@ public interface ChildCareApplication extends IDOEntity, Case {
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#getCaseCodeDescription
 	 */
 	public String getCaseCodeDescription();
+
+	/**
+	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#getFee
+	 */
+	public float getFee();
+
+	/**
+	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#setFee
+	 */
+	public void setFee(float fee);
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#getFromTime

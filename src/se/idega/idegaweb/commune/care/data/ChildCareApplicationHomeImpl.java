@@ -17,10 +17,10 @@ import com.idega.user.data.User;
  * <p>
  * TODO Dainis Describe Type ChildCareApplicationHomeImpl
  * </p>
- *  Last modified: $Date: 2006/02/27 17:04:19 $ by $Author: dainis $
+ *  Last modified: $Date: 2006/04/04 14:37:53 $ by $Author: dainis $
  * 
  * @author <a href="mailto:Dainis@idega.com">Dainis</a>
- * @version $Revision: 1.8.2.3 $
+ * @version $Revision: 1.8.2.4 $
  */
 public class ChildCareApplicationHomeImpl extends IDOFactory implements ChildCareApplicationHome {
 
