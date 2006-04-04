@@ -587,7 +587,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add(getSmallHeader(localize("child_care.offer_valid_until", "Offer valid until") + ":"), 1, row++);
 		table.add(dateInput, 1, row++);
 
-		if (iwc.getApplicationSettings().getBoolean(CCConstants.ATTRIBUTE_SHOW_FEE, false)) {
+		if (iwc.getApplicationSettings().getBooleanProperty(CCConstants.ATTRIBUTE_SHOW_FEE)) {
 			TextInput feeInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_FEE));
 	
 			table.add(getSmallHeader(localize("child_care.childcare_fee", "Fee") + ":"), 1, row++);
