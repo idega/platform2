@@ -343,7 +343,7 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 						message.append(presentation);	
 					}
 
-					return getChildCareBusiness(iwc).acceptApplication(Integer.parseInt(id),stamp,subject,message.toString(),iwc.getCurrentUser());
+					return getChildCareBusiness(iwc).acceptApplication(Integer.parseInt(id),stamp,0,subject,message.toString(),iwc.getCurrentUser());
 				}
 				catch (RemoteException e) {
 					e.printStackTrace();
