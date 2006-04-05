@@ -125,7 +125,7 @@ public class AvailableCourseFinder extends AdultEducationBlock {
 			table.add(new Break(), 2, 2);
 			Collection schools = null;
 			if (iSchoolSeasonPK != null && iStudyPathGroupPK != null && iSchoolTypePK != null) {
-				schools = getBusiness().getAvailableSchools(iStudyPathPK, iSchoolSeasonPK, iStudyPathGroupPK);
+				schools = getBusiness().getAvailableSchools(iStudyPathPK, iSchoolSeasonPK, iStudyPathGroupPK, iSchoolTypePK);
 			}
 			DropdownMenu school = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_SCHOOL));
 			school.addMenuElementFirst("", localize("select_school", "Select school"));
