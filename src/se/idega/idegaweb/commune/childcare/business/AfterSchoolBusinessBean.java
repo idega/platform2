@@ -40,6 +40,7 @@ import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOCreateException;
+import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDORelationshipException;
@@ -77,6 +78,17 @@ public class AfterSchoolBusinessBean extends CaseBusinessBean implements CaseBus
 		}
 	}
 
+	public int getNumberOfApplications(SchoolSeason season) {
+		try {
+			String[] statuses = { getCaseStatusPreliminary().getStatus(), getCaseStatusReady().getStatus() };
+			return getAfterSchoolChoiceHome().getChoiceStatistics(season, statuses);
+		}
+		catch (IDOException ie) {
+			ie.printStackTrace();
+			return 0;
+		}
+	}
+
 	public AfterSchoolChoice getAfterSchoolChoice(Object afterSchoolChoiceID) throws FinderException {
 		return getAfterSchoolChoiceHome().findByPrimaryKey(afterSchoolChoiceID);
 	}
@@ -108,7 +120,7 @@ public class AfterSchoolBusinessBean extends CaseBusinessBean implements CaseBus
 		String[] caseStatus = { getCaseStatusPreliminary().getStatus(), getCaseStatusInactive().getStatus() };
 		return getAfterSchoolChoiceHome().findByChildAndChoiceNumberAndSeason(childID, new Integer(choiceNumber), seasonID,
 				caseStatus);
-	}	
+	}
 	
 	public Collection getOngoingAndNextSeasons(){
 		Collection currentAndNextSeasons = new LinkedList();
@@ -258,9 +270,11 @@ public class AfterSchoolBusinessBean extends CaseBusinessBean implements CaseBus
 
 		try {
 			if (stamp.isEarlierThan(getSchoolChoiceBusiness().getSchoolChoiceStartDate()) || (stamp.isLaterThan(getSchoolChoiceBusiness().getSchoolChoiceEndDate()))) {
-				String subjectP = getLocalizedString("After_school_care_request_subject", "After school care request");
-				String bodyP = getLocalizedString("After_school_care_request_body", "After school care request from {0}, {3}.");
-				getChildCareBusiness().sendMessageToProvider(choice, subjectP, bodyP);
+				if(choice.getChoiceNumber()==1){
+				     String subjectP = getLocalizedString("After_school_care_request_subject", "After school care request");
+				     String bodyP = getLocalizedString("After_school_care_request_body", "After school care request from {0}, {3}.");
+				     getChildCareBusiness().sendMessageToProvider(choice, subjectP, bodyP);
+				}	 
 			}
 		}
 		catch (RemoteException e) {
@@ -395,7 +409,7 @@ public class AfterSchoolBusinessBean extends CaseBusinessBean implements CaseBus
 						getChildCareBusiness().getSchoolBusiness().getCategoryElementarySchool());
 			}
 			catch (RemoteException e) {
-			}
+			}			
 			
 			if (hasSchoolPlacement && (application.getApplicationStatus() == getChildCareBusiness().getStatusSentIn())) {
 				
