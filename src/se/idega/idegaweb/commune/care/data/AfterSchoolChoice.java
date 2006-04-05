@@ -3,6 +3,7 @@
  */
 package se.idega.idegaweb.commune.care.data;
 
+import com.idega.block.school.data.SchoolSeason;
 import com.idega.data.IDOEntity;
 
 
@@ -10,10 +11,10 @@ import com.idega.data.IDOEntity;
  * <p>
  * TODO Dainis Describe Type AfterSchoolChoice
  * </p>
- *  Last modified: $Date: 2006/02/24 11:41:50 $ by $Author: dainis $
+ *  Last modified: $Date: 2006/04/05 15:28:39 $ by $Author: dainis $
  * 
  * @author <a href="mailto:Dainis@idega.com">Dainis</a>
- * @version $Revision: 1.2.2.3 $
+ * @version $Revision: 1.2.2.4 $
  */
 public interface AfterSchoolChoice extends IDOEntity, ChildCareApplication {
 
@@ -31,6 +32,11 @@ public interface AfterSchoolChoice extends IDOEntity, ChildCareApplication {
 	 * @see se.idega.idegaweb.commune.care.data.AfterSchoolChoiceBMPBean#getSchoolSeasonId
 	 */
 	public int getSchoolSeasonId();
+
+	/**
+	 * @see se.idega.idegaweb.commune.care.data.AfterSchoolChoiceBMPBean#getSchoolSeason
+	 */
+	public SchoolSeason getSchoolSeason();
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.AfterSchoolChoiceBMPBean#getPayerName

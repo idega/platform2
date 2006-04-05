@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolChoiceBMPBean.java,v 1.3.2.3 2006/02/24 11:41:50 dainis Exp $
+ * $Id: AfterSchoolChoiceBMPBean.java,v 1.3.2.4 2006/04/05 15:28:39 dainis Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -9,13 +9,28 @@
  */
 package se.idega.idegaweb.commune.care.data;
 
+import java.sql.Date;
 import java.util.Collection;
+
 import javax.ejb.FinderException;
+
 import se.idega.idegaweb.commune.care.business.CareConstants;
+
+import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseStatus;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolSeason;
+import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
+import com.idega.data.IDORelationshipException;
+import com.idega.data.query.AND;
+import com.idega.data.query.CountColumn;
+import com.idega.data.query.InCriteria;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.OR;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.Table;
+import com.idega.user.data.User;
 
 /**
  * This  does something very clever.....
@@ -72,6 +87,10 @@ public class AfterSchoolChoiceBMPBean extends ChildCareApplicationBMPBean implem
 
 	public int getSchoolSeasonId() {
 		return getIntColumnValue(SCHOOL_SEASON);
+	}
+	
+	public SchoolSeason getSchoolSeason() {
+		return (SchoolSeason) getColumnValue(SCHOOL_SEASON);
 	}
 	
 	public String getPayerName() {
@@ -238,6 +257,62 @@ public class AfterSchoolChoiceBMPBean extends ChildCareApplicationBMPBean implem
 		sql.appendOrderBy(sorting+",c."+QUEUE_ORDER);
 
 		return idoFindPKsBySQL(sql.toString());
-	}	
+	}
 	
+	public Collection ejbFindByProviderAndSeasonAndStatuses(School provider, SchoolSeason season, String[] applicationStatus, Date terminationDate) throws FinderException {
+		Table table = new Table(this);
+		Table user = new Table(User.class);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(table, getIDColumnName());
+		try {
+			query.addJoin(table, user);
+		}
+		catch (IDORelationshipException e) {
+			e.printStackTrace();
+			throw new FinderException(e.getMessage());
+		}
+		query.addCriteria(new MatchCriteria(table, PROVIDER_ID, MatchCriteria.EQUALS, provider));
+		query.addCriteria(new MatchCriteria(table, SCHOOL_SEASON, MatchCriteria.EQUALS, season));
+		query.addCriteria(new InCriteria(table, APPLICATION_STATUS, applicationStatus));
+		query.addCriteria(new MatchCriteria(table, REJECTION_DATE, MatchCriteria.LESSEQUAL, terminationDate));
+		query.addOrder(user, "first_name", true);
+		query.addOrder(user, "middle_name", true);
+		query.addOrder(user, "last_name", true);
+
+		return idoFindPKsByQuery(query);
+	}
+	
+	public Collection ejbFindAllByDatesAndStatus(Date fromDate, Date toDate, String[] statuses) throws FinderException {
+		Table table = new Table(this);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(table, getIDColumnName());
+		query.addCriteria(new InCriteria(table, "application_status", statuses));
+		
+		AND and1 = new AND(new MatchCriteria(table, FROM_DATE, MatchCriteria.GREATEREQUAL, fromDate), new MatchCriteria(table, FROM_DATE, MatchCriteria.LESSEQUAL, toDate));
+		AND and2 = new AND(new MatchCriteria(table, REJECTION_DATE, MatchCriteria.GREATEREQUAL, fromDate), new MatchCriteria(table, REJECTION_DATE, MatchCriteria.LESSEQUAL, toDate));
+		OR or = new OR(and1, and2);
+		query.addCriteria(or);
+
+		return idoFindPKsByQuery(query);
+	}
+	
+	public int ejbHomeGetChoiceStatistics(SchoolSeason season, String[] statuses) throws IDOException {
+		Table choice = new Table(this, "c");
+		Table process = new Table(Case.class, "p");
+		
+		SelectQuery query = new SelectQuery(choice);
+		query.addColumn(new CountColumn(choice, this.getIDColumnName()));
+		try {
+			query.addJoin(choice, process);
+		}
+		catch (IDORelationshipException ile) {
+			throw new IDOException(ile.getMessage());
+		}
+		query.addCriteria(new InCriteria(process, "CASE_STATUS", statuses));
+		query.addCriteria(new MatchCriteria(choice, SCHOOL_SEASON, MatchCriteria.EQUALS, season));
+
+		return idoGetNumberOfRecords(query.toString());
+	}	
 }
