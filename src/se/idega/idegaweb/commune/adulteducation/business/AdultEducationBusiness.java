@@ -39,10 +39,10 @@ import com.idega.user.data.User;
  * <p>
  * TODO Dainis Describe Type AdultEducationBusiness
  * </p>
- *  Last modified: $Date: 2006/04/05 12:13:56 $ by $Author: dainis $
+ *  Last modified: $Date: 2006/04/05 15:20:35 $ by $Author: dainis $
  * 
  * @author <a href="mailto:Dainis@idega.com">Dainis</a>
- * @version $Revision: 1.31.2.3 $
+ * @version $Revision: 1.31.2.4 $
  */
 public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 
@@ -223,8 +223,7 @@ public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getAvailableSchools
 	 */
-	public Collection getAvailableSchools(Object studyPathPK, Object seasonPK, Object studyPathGroupPK)
-			throws java.rmi.RemoteException;
+	public Collection getAvailableSchools(Object studyPathPK, Object seasonPK) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getAvailableSchools
