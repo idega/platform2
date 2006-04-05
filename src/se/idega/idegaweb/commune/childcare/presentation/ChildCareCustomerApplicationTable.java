@@ -28,6 +28,7 @@ import com.idega.core.builder.data.ICPage;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.DownloadLink;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
@@ -42,7 +43,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.108.2.12 2006/02/27 17:15:48 dainis Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.108.2.13 2006/04/05 15:09:24 dainis Exp $
  * @since 12.2.2003 
  */
 
@@ -802,7 +803,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 			ChildCareContract archive = getChildCareBusiness(iwc).getValidContract(((Integer)activeApplication.getPrimaryKey()).intValue());
 			School school = activeApplication.getProvider();
 			boolean hasBankID = new NBSLoginBusinessBean().hasBankLogin(activeApplication.getOwner());
-
+			
 			//Collection allContracts = getChildCareBusiness(iwc).getContractsByApplication(((Integer)activeApplication.getPrimaryKey()).intValue());
 			
 			IWTimestamp today = new IWTimestamp();
@@ -836,9 +837,17 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 						if (i <= 1){
 							layoutTbl.add(getSmallHeader(localize(FUTURE_CONTRACT)), 1, row++);
 							i++;
-						}
+						}						
+						
 						layoutTbl.add(getSmallText(localize(START_CARETIME) + ":"), 1, row);
-						layoutTbl.add(getSmallText(startdate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT) + ", " + careTime), 3, row++);
+						layoutTbl.add(getSmallText(startdate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT) + ", " + careTime), 3, row);
+						
+						for (int ii = 0; ii < 2; ii++) {
+							layoutTbl.add(Text.getNonBrakingSpace(), 3, row);
+						}
+						
+						DownloadLink futureContractLink = getPDFLink(cc.getContractFileID(), localize("child_care.show_contract", "Show contract"));
+						layoutTbl.add(futureContractLink,  3, row++);
 					}
 				}					
 								
