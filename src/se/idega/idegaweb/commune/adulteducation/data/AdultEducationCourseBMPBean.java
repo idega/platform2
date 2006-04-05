@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationCourseBMPBean.java,v 1.9.2.3 2006/04/04 09:53:26 dainis Exp $
+ * $Id: AdultEducationCourseBMPBean.java,v 1.9.2.4 2006/04/05 12:14:59 dainis Exp $
  * Created on 27.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -198,21 +198,30 @@ public class AdultEducationCourseBMPBean extends GenericEntity  implements Adult
 		return idoFindPKsByQuery(query);
 	}
 
-	public static String getFindAllBySeasonAndStudyPathSchoolQuery(SchoolSeason season, SchoolStudyPath path, SchoolStudyPathGroup pathGroup) {
-		return getFindAllBySeasonAndStudyPathSchoolQuery((IDOEntity) season, (IDOEntity) path, (IDOEntity) pathGroup);
+	public static String getFindAllBySeasonAndStudyPathSchoolQuery(SchoolSeason season, SchoolStudyPath path, SchoolStudyPathGroup pathGroup, SchoolType schoolType) {
+		return getFindAllBySeasonAndStudyPathSchoolQuery((IDOEntity) season, (IDOEntity) path, (IDOEntity) pathGroup, (IDOEntity) schoolType);
 	}
 	
-	public static String getFindAllBySeasonAndStudyPathSchoolQuery(Object season, Object studyPath, Object studyPathGroup) {
+	public static String getFindAllBySeasonAndStudyPathSchoolQuery(Object season, Object studyPath, Object studyPathGroup, Object schoolType) {
 		Table adultEducationCourseTable = new Table(AdultEducationCourse.class);
 		Table studyPathTable = new Table(SchoolStudyPath.class);
 		Table studyPathGroupTable = new Table(SchoolStudyPathGroup.class);
+		Table schoolTypeTable = new Table(SchoolType.class);
 		
 		SelectQuery query = new SelectQuery(adultEducationCourseTable);
 		query.addColumn(adultEducationCourseTable, SCHOOL, true);
 		
-		if (studyPathGroup != null) {
+		if ((studyPathGroup != null) || (schoolType != null) ) {
 			try {
 				query.addJoin(adultEducationCourseTable, studyPathTable);
+			}
+			catch (IDORelationshipException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		if (studyPathGroup != null) {
+			try {				
 				query.addJoin(studyPathTable, studyPathGroupTable);
 				query.addCriteria(new MatchCriteria(studyPathGroupTable, studyPathGroupTable.getPrimaryKeyColumnName(), MatchCriteria.EQUALS, studyPathGroup));
 			}
@@ -227,6 +236,18 @@ public class AdultEducationCourseBMPBean extends GenericEntity  implements Adult
 		query.addCriteria(new MatchCriteria(adultEducationCourseTable, SCHOOL_SEASON, MatchCriteria.EQUALS, season));
 		if (studyPath != null) {
 			query.addCriteria(new MatchCriteria(adultEducationCourseTable, STUDY_PATH, MatchCriteria.EQUALS, studyPath));
+		}
+		
+		if (schoolType != null) {
+			try {
+				query.addJoin(studyPathTable, schoolTypeTable);			
+				query.addCriteria(new MatchCriteria(schoolTypeTable, schoolTypeTable.getPrimaryKeyColumnName(), MatchCriteria.EQUALS, schoolType));
+			} catch (IDORelationshipException e) {
+				e.printStackTrace();
+			}
+			catch (IDOCompositePrimaryKeyException e) {
+				e.printStackTrace();
+			}
 		}
 		
 		return query.toString();

@@ -17,10 +17,10 @@ import com.idega.data.IDOFactory;
  * <p>
  * TODO Dainis Describe Type AdultEducationCourseHomeImpl
  * </p>
- *  Last modified: $Date: 2006/03/31 18:09:24 $ by $Author: dainis $
+ *  Last modified: $Date: 2006/04/05 12:14:59 $ by $Author: dainis $
  * 
  * @author <a href="mailto:Dainis@idega.com">Dainis</a>
- * @version $Revision: 1.3.2.2 $
+ * @version $Revision: 1.3.2.3 $
  */
 public class AdultEducationCourseHomeImpl extends IDOFactory implements AdultEducationCourseHome {
 
