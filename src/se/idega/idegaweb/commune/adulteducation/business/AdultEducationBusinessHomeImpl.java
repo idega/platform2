@@ -10,10 +10,10 @@ import com.idega.business.IBOHomeImpl;
  * <p>
  * TODO Dainis Describe Type AdultEducationBusinessHomeImpl
  * </p>
- *  Last modified: $Date: 2006/03/31 18:13:24 $ by $Author: dainis $
+ *  Last modified: $Date: 2006/04/05 12:13:56 $ by $Author: dainis $
  * 
  * @author <a href="mailto:Dainis@idega.com">Dainis</a>
- * @version $Revision: 1.30.2.2 $
+ * @version $Revision: 1.30.2.3 $
  */
 public class AdultEducationBusinessHomeImpl extends IBOHomeImpl implements AdultEducationBusinessHome {
 
