@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.41 2005/09/09 16:25:23 eiki Exp $
+ * $Id: IBAddModuleWindow.java,v 1.41.2.1 2006/04/05 10:45:02 sigtryggur Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -22,6 +22,7 @@ import com.idega.core.component.data.ICObject;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.data.ICLocale;
 import com.idega.data.EntityFinder;
+import com.idega.data.GenericEntity;
 import com.idega.exception.IWBundleDoesNotExist;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWConstants;
@@ -32,8 +33,6 @@ import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.Window;
 
 /**
@@ -46,9 +45,6 @@ public class IBAddModuleWindow extends IBAdminWindow {
 	private static final String IB_PARENT_PARAMETER = BuilderLogic.IB_PARENT_PARAMETER;
 	private static final String IB_PAGE_PARAMETER = BuilderConstants.IB_PAGE_PARAMETER;
 	private static final String IB_LABEL_PARAMETER = BuilderLogic.IB_LABEL_PARAMETER;
-	private static final String IB_CONTROL_PARAMETER = BuilderLogic.IB_CONTROL_PARAMETER;
-	private static final String ACTION_EDIT = BuilderLogic.ACTION_EDIT;
-	private static final String ACTION_ADD = BuilderLogic.ACTION_ADD;
 	private static final String IW_BUNDLE_IDENTIFIER = BuilderLogic.IW_BUNDLE_IDENTIFIER;
 	private static final String INTERNAL_CONTROL_PARAMETER = "ib_adminwindow_par";
 
@@ -65,7 +61,7 @@ public class IBAddModuleWindow extends IBAdminWindow {
 	//Image button;
 
 	public IBAddModuleWindow() {
-		setWidth(340);
+		setWidth(400);
 		setHeight(400);
 		setResizable(true);
 		setScrollbar(true);
@@ -164,15 +160,6 @@ public class IBAddModuleWindow extends IBAdminWindow {
 	/**
 	 *
 	 */
-	private Form getForm() {
-		Form form = new Form();
-		form.add(new Parameter(INTERNAL_CONTROL_PARAMETER, "submit"));
-		return (form);
-	}
-
-	/**
-	 *
-	 */
 	private boolean hasSubmitted(IWContext iwc) {
 		return (iwc.isParameterSet(INTERNAL_CONTROL_PARAMETER));
 	}
@@ -192,7 +179,7 @@ public class IBAddModuleWindow extends IBAdminWindow {
 		theReturn.setColor(1, 1, "#ECECEC");
 		theReturn.setColor(2, 1, "#ECECEC");
 
-		ICObject staticICO = (ICObject) com.idega.core.component.data.ICObjectBMPBean.getStaticInstance(ICObject.class);
+		ICObject staticICO = (ICObject) GenericEntity.getStaticInstance(ICObject.class);
 		try {
 			List elements = null;
 			List blocks = null;
@@ -207,8 +194,8 @@ public class IBAddModuleWindow extends IBAdminWindow {
 			}
 
 			if (elements == null && blocks == null) {
-				elements = EntityFinder.findAllByColumn(staticICO, com.idega.core.component.data.ICObjectBMPBean.getObjectTypeColumnName(), com.idega.core.component.data.ICObjectBMPBean.COMPONENT_TYPE_ELEMENT);
-				blocks = EntityFinder.findAllByColumn(staticICO, com.idega.core.component.data.ICObjectBMPBean.getObjectTypeColumnName(), com.idega.core.component.data.ICObjectBMPBean.COMPONENT_TYPE_BLOCK);
+				elements = EntityFinder.findAllByColumnOrdered(staticICO, com.idega.core.component.data.ICObjectBMPBean.getObjectTypeColumnName(), com.idega.core.component.data.ICObjectBMPBean.COMPONENT_TYPE_ELEMENT, "OBJECT_NAME");
+				blocks = EntityFinder.findAllByColumnOrdered(staticICO, com.idega.core.component.data.ICObjectBMPBean.getObjectTypeColumnName(), com.idega.core.component.data.ICObjectBMPBean.COMPONENT_TYPE_BLOCK, "OBJECT_NAME");
 
 				ModuleComparator comparator = new ModuleComparator(iwc);
 				if (elements != null) {
@@ -268,7 +255,7 @@ public class IBAddModuleWindow extends IBAdminWindow {
 				item = (ICObject) iter.next();
 				try{
 					//iconLink = new Link(getIconForObject(item, iwc));
-					iconLink = getIconForObject(item, iwc);
+					iconLink = (Image) getIconForObject(item, iwc).clone();
 					
 					String bundleIdentifier = item.getBundleIdentifier();
 					String objectName = item.getClassName();
@@ -279,6 +266,9 @@ public class IBAddModuleWindow extends IBAdminWindow {
 								bundle = iwma.getBundle(bundleIdentifier);
 							}
 							objectName = bundle.getComponentName(objectName, currentLocale);
+						}
+						if (objectName != null && objectName.equals(item.getClassName())) {
+							objectName = objectName.substring(objectName.lastIndexOf(".") + 1);
 						}
 					}
 					catch (IWBundleDoesNotExist iwbne) {
@@ -293,21 +283,8 @@ public class IBAddModuleWindow extends IBAdminWindow {
 					
 					link = new Link(objectName);
 					link.setStyle(STYLE_NAME);
-					//link.addParameter(IB_CONTROL_PARAMETER, ACTION_ADD);
 					link.addParameter(INTERNAL_CONTROL_PARAMETER, " ");
 					link.addParameter(IC_OBJECT_INSTANCE_ID_PARAMETER, item.getPrimaryKey().toString());
-					/*link.maintainParameter(IB_PAGE_PARAMETER, iwc);
-					link.maintainParameter(IB_PARENT_PARAMETER, iwc);
-					link.maintainParameter(IB_LABEL_PARAMETER, iwc);*/
-	
-					/*System.out.println("Adding parameters to icon: " + (System.currentTimeMillis() - start) + " ms");
-					iconLink.addParameter(IB_CONTROL_PARAMETER, ACTION_ADD);
-					iconLink.addParameter(INTERNAL_CONTROL_PARAMETER, " ");
-					iconLink.addParameter(IC_OBJECT_INSTANCE_ID_PARAMETER, item.getID());
-					System.out.println("Maintaining parameters in icon: " + (System.currentTimeMillis() - start) + " ms");
-					iconLink.maintainParameter(IB_PAGE_PARAMETER, iwc);
-					iconLink.maintainParameter(IB_PARENT_PARAMETER, iwc);
-					iconLink.maintainParameter(IB_LABEL_PARAMETER, iwc);*/
 	
 					subComponentTable.add(iconLink, 1, ypos);
 					subComponentTable.add(link, 2, ypos);
