@@ -42,7 +42,7 @@ import com.idega.user.data.User;
  */
 public class GroupMemberList extends Block {
 	
-	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member";
+	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 	public static final String PARAM_NAME_GROUP_ID = "group_id";
 	public static final String PARAM_NAME_SHOW_CLUB_COMMITEE_MAIN = "show_main_commitee";
 	
