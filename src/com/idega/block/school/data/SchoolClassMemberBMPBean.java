@@ -56,8 +56,8 @@ import com.idega.util.IWTimestamp;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2006/01/16 16:07:46 $ by $Author: dainis $
- * @version $Revision: 1.154.2.6 $
+ *         Last modified: $Date: 2006/04/07 18:10:29 $ by $Author: igors $
+ * @version $Revision: 1.154.2.7 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -425,11 +425,13 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		Table table = new Table(this);
 		Table group = new Table(SchoolClass.class);
 		Table path = new Table(SchoolStudyPath.class);
+		Table user = new Table(User.class);
 		
 		SelectQuery query = new SelectQuery(table);
 		query.addColumn(new WildCardColumn(table));
 		try {
 			query.addJoin(table, group);
+			query.addJoin(table, user);
 		}
 		catch (IDORelationshipException ire) {
 			throw new FinderException(ire.getMessage());
@@ -455,6 +457,9 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 				throw new FinderException(icpe.getMessage());
 			}
 		}
+		query.addOrder(user, "first_name", true);
+		query.addOrder(user, "middle_name", true);
+		query.addOrder(user, "last_name", true);
 		
 		return idoFindPKsByQuery(query);
 	}
@@ -553,12 +558,14 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		return (Integer) this.idoFindOnePKBySQL(sql.toString());
 	}
 
+	public int ejbHomeGetNumberOfPlacingsAtSchool(User user, School school) throws IDOException {
+		return ejbHomeGetNumberOfPlacingsAtSchool(new Integer(user.getPrimaryKey().toString()).intValue(), new Integer(school.getPrimaryKey().toString()).intValue());
+	}
+	
 	public int ejbHomeGetNumberOfPlacingsAtSchool(int userID, int schoolID) throws IDOException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectCountFrom(this.getTableName() + " mb" + "," + SchoolClassBMPBean.SCHOOLCLASS + " cl").appendWhere().append(" mb." + MEMBER).appendEqualSign().append(userID).appendAnd().append("cl." + SchoolClassBMPBean.SCHOOL).appendEqualSign().append(schoolID).appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
 
-		System.out.println("<ejbHomeGetNumberOfPlacingsAtSchool(int userID, int schoolID)> sql = "+sql.toString());
-		
 		return this.idoGetNumberOfRecords(sql);
 	}
 
@@ -659,11 +666,10 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this.getTableName() + " mb" + "," + SchoolClassBMPBean.SCHOOLCLASS + " cl");
 		sql.appendWhereEquals(" mb." + MEMBER, userID);
-		sql.appendAndEquals("cl." + SchoolClassBMPBean.SCHOOL, schoolID);
 		sql.appendAnd().appendLeftParenthesis().append("cl." + SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().append(true).appendOr().append("cl." + SchoolClassBMPBean.COLUMN_VALID).appendIsNull().appendRightParenthesis();
 		sql.appendAndEquals(" mb." + SCHOOLCLASS, "cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
 		if (schoolTypes != null) {
-			sql.appendAnd().append("mb." + this.SCHOOL_TYPE).appendInCollection(schoolTypes);
+			sql.appendAnd().append("mb." + SchoolClassMemberBMPBean.SCHOOL_TYPE).appendInCollection(schoolTypes);
 		}
 
 		sql.appendOrderBy(REGISTER_DATE + " desc");
@@ -1167,7 +1173,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		sql.appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_SUB_GROUP).appendEqualSign().appendWithinSingleQuotes("N").appendOr().append("cl." + SchoolClassBMPBean.COLUMN_SUB_GROUP).append(" is null)");
 		sql.appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
 		if (schoolTypes != null) {
-			sql.appendAnd().append("mb." + this.SCHOOL_TYPE).appendInCollection(schoolTypes);
+			sql.appendAnd().append("mb." + SchoolClassMemberBMPBean.SCHOOL_TYPE).appendInCollection(schoolTypes);
 		}
 		return (Integer) idoFindOnePKBySQL(sql.toString());
 	}
@@ -1334,8 +1340,10 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		sql.appendWhereEquals("m.sch_school_type_id", "t.sch_school_type_id");
 		sql.appendAndEquals("m.sch_school_class_id", "c.sch_school_class_id");
 		sql.appendAndEquals("m.ic_user_id", "u.ic_user_id");
-		sql.appendAndEquals("c.school_id", schoolID).appendAnd();
-		sql.appendLeftParenthesis().appendEqualsQuoted("c.valid", "Y");
+		if (schoolID != -1) {
+			sql.appendAndEquals("c.school_id", schoolID);
+		}
+		sql.appendAnd().appendLeftParenthesis().appendEqualsQuoted("c.valid", "Y");
 		sql.appendOr().append("c.valid is null").appendRightParenthesis();
 		if (schoolCategory != null) {
 			sql.appendAndEqualsQuoted("t.school_category", schoolCategory);
@@ -1917,7 +1925,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	public Collection ejbFindSubGroupPlacements() throws FinderException {
 		IDOQuery query = idoQuery();
 		query.appendSelectAllFrom(this).append(" m, sch_school_class c");
-		query.appendWhereEquals("m."+this.SCHOOLCLASS, "c.sch_school_class_id");
+		query.appendWhereEquals("m."+SchoolClassMemberBMPBean.SCHOOLCLASS, "c.sch_school_class_id");
 		query.appendAndEquals("c.sub_group", true);
 		return idoFindPKsByQuery(query);
 	}
