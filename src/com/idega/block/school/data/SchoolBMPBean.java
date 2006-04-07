@@ -631,18 +631,34 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 	
 	public Collection findRelatedSchoolTypes(SchoolCategory category) throws IDORelationshipException {
 		Collection coll = findRelatedSchoolTypes();
-		Collection types = new ArrayList();
+		Collection types = new ArrayList();			
+		////debug
+		System.out.print(this.getClass().getName() + ".findRelatedSchoolTypes(): coll=" );
+		System.out.println(coll);
+		////debug		
 		if (coll != null) {
 			Iterator iter = coll.iterator();
 			while (iter.hasNext()) {
+				///debug
+				System.out.println("---------------------------------");
+				////debug
 				SchoolType type = (SchoolType) iter.next();
+				/////debug
+				System.out.println("type.getSchoolCategory()=" + type.getSchoolCategory());
+				System.out.println("category.getCategory()=" + category.getCategory());
+				/////debug
 				if (type.getSchoolCategory().equals(category.getCategory())) {
 					types.add(type);
 				}
+				/////debug
+				else {
+					System.out.println("not equal");
+				}
+				/////debug
 			}
 		}
 		return types;
-	}
+	}	
 
 	public Collection findRelatedSchoolTypesWithFreetime(SchoolCategory category) throws IDORelationshipException {
 		Collection coll = findRelatedSchoolTypes();
