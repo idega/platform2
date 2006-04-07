@@ -740,7 +740,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					SchoolUser providerUser = (SchoolUser) it.next();
 					User user = providerUser.getUser();
 					System.out.println("School user: " + user.getName());
-					messageBiz.createUserMessage(application, user, sender, subject, MessageFormat.format(message, arguments), false);
+					messageBiz.createUserMessage(application, user, sender, MessageFormat.format(subject, arguments), MessageFormat.format(message, arguments), false);
 				}
 			}
 			else
