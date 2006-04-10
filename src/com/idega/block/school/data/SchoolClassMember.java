@@ -16,12 +16,28 @@ import com.idega.user.data.User;
  * <p>
  * TODO Dainis Describe Type SchoolClassMember
  * </p>
- *  Last modified: $Date: 2006/04/10 15:11:14 $ by $Author: dainis $
+ *  Last modified: $Date: 2006/04/10 17:11:06 $ by $Author: sigtryggur $
  * 
  * @author <a href="mailto:Dainis@idega.com">Dainis</a>
- * @version $Revision: 1.44.2.5 $
+ * @version $Revision: 1.44.2.6 $
  */
 public interface SchoolClassMember extends IDOEntity {
+
+	public final static String FIELD_SCHOOLCLASSMEMBERID = "sch_class_member_id";
+	public final static String FIELD_SCHOOLCLASSMEMBER = "sch_class_member";
+	public final static String FIELD_MEMBER = "ic_user_id";
+	public final static String FIELD_NOTES = "notes";
+	public final static String FIELD_SCHOOLCLASS = "sch_school_class_id";
+	public final static String FIELD_REGISTER_DATE = "register_date";
+	public final static String FIELD_REMOVED_DATE = "removed_date";
+	public final static String FIELD_REGISTRATOR = "registrator";
+	public final static String FIELD_NEEDS_SPECIAL_ATTENTION = "NEEDS_SPECIAL_ATTENTION";
+	public final static String FIELD_SPECIALLY_PLACED = "SPECIALLY_PLACED";
+	public final static String FIELD_LANGUAGE = "LANGUAGE";
+	//Added for the kompliterings project
+	public final static String FIELD_COMPENSATION_BY_INVOICE = "comp_by_invoice";
+	public final static String FIELD_INVOICE_INTERVAL = "invoice_int";
+	public final static String FIELD_LATEST_INVOICE_DATE = "latest_invoice_date";		
 
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#setClassMemberId
