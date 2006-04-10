@@ -19,10 +19,10 @@ import com.idega.util.IWTimestamp;
  * <p>
  * TODO Dainis Describe Type SchoolClassMemberHomeImpl
  * </p>
- *  Last modified: $Date: 2006/01/16 16:05:23 $ by $Author: dainis $
+ *  Last modified: $Date: 2006/04/10 15:11:14 $ by $Author: dainis $
  * 
  * @author <a href="mailto:Dainis@idega.com">Dainis</a>
- * @version $Revision: 1.75.2.5 $
+ * @version $Revision: 1.75.2.6 $
  */
 public class SchoolClassMemberHomeImpl extends IDOFactory implements SchoolClassMemberHome {
 
@@ -178,6 +178,13 @@ public class SchoolClassMemberHomeImpl extends IDOFactory implements SchoolClass
 		Object pk = ((SchoolClassMemberBMPBean) entity).ejbFindByUserAndSchool(userID, schoolID);
 		this.idoCheckInPooledEntity(entity);
 		return this.findByPrimaryKey(pk);
+	}
+
+	public int getNumberOfPlacingsAtSchool(User user, School school) throws IDOException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		int theReturn = ((SchoolClassMemberBMPBean) entity).ejbHomeGetNumberOfPlacingsAtSchool(user, school);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
 	}
 
 	public int getNumberOfPlacingsAtSchool(int userID, int schoolID) throws IDOException {

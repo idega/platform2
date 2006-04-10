@@ -19,10 +19,10 @@ import com.idega.util.IWTimestamp;
  * <p>
  * TODO Dainis Describe Type SchoolClassMemberHome
  * </p>
- *  Last modified: $Date: 2006/01/16 16:05:23 $ by $Author: dainis $
+ *  Last modified: $Date: 2006/04/10 15:11:14 $ by $Author: dainis $
  * 
  * @author <a href="mailto:Dainis@idega.com">Dainis</a>
- * @version $Revision: 1.75.2.5 $
+ * @version $Revision: 1.75.2.6 $
  */
 public interface SchoolClassMemberHome extends IDOHome {
 
@@ -128,6 +128,11 @@ public interface SchoolClassMemberHome extends IDOHome {
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbFindByUserAndSchool
 	 */
 	public SchoolClassMember findByUserAndSchool(int userID, int schoolID) throws FinderException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbHomeGetNumberOfPlacingsAtSchool
+	 */
+	public int getNumberOfPlacingsAtSchool(User user, School school) throws IDOException;
 
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbHomeGetNumberOfPlacingsAtSchool
