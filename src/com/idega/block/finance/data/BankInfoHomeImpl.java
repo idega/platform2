@@ -71,4 +71,13 @@ public class BankInfoHomeImpl extends IDOFactory implements BankInfoHome {
 		return this.findByPrimaryKey(pk);
 	}
 
+	public BankInfo findByUserNameAndBankShortName(String userName,
+			String bankShortName) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((BankInfoBMPBean) entity)
+				.ejbFindByUserNameAndBankShortName(userName, bankShortName);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
+
 }

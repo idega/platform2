@@ -23,4 +23,9 @@ public interface BankHome extends IDOHome {
 	 */
 	public Collection findAll() throws FinderException;
 
+	/**
+	 * @see com.idega.block.finance.data.BankBMPBean#ejbFindByShotName
+	 */
+	public Bank findByShotName(String name) throws FinderException;
+
 }

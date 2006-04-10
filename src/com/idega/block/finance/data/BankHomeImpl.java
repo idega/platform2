@@ -33,4 +33,11 @@ public class BankHomeImpl extends IDOFactory implements BankHome {
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
+	public Bank findByShotName(String name) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((BankBMPBean) entity).ejbFindByShotName(name);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
+
 }

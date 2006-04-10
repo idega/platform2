@@ -50,4 +50,10 @@ public interface BankInfoHome extends IDOHome {
 	 */
 	public BankInfo findByClub(Group club) throws FinderException;
 
+	/**
+	 * @see com.idega.block.finance.data.BankInfoBMPBean#ejbFindByUserNameAndBankShortName
+	 */
+	public BankInfo findByUserNameAndBankShortName(String userName,
+			String bankShortName) throws FinderException;
+
 }

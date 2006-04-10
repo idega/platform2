@@ -312,4 +312,30 @@ public class BankInfoBMPBean extends GenericEntity implements BankInfo {
 
 		return idoFindOnePKByQuery(sql);
 	}
+	
+	public Object ejbFindByUserNameAndBankShortName(String userName, String bankShortName) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelect();
+		sql.append("info.* from ");
+		sql.append(getEntityName());
+		sql.append(" info, fin_bank_branch branch, fin_bank bank");
+		sql.appendWhereEquals("info.fin_bank_branch_id", "branch.fin_bank_branch_id");
+		sql.appendAnd();
+		sql.appendEquals("branch.bank_id", "bank.fin_bank_id");
+		sql.appendAnd();
+		sql.appendEqualsQuoted("bank.short_name", bankShortName);
+		sql.appendAnd();
+		sql.appendEqualsQuoted(COLUMN_USER_NAME, userName);
+		sql.appendAnd();
+		sql.appendLeftParenthesis();
+		sql.append(COLUMN_DELETED);
+		sql.append(" is null");
+		sql.appendOr();
+		sql.appendEquals(COLUMN_DELETED, false);
+		sql.appendRightParenthesis();
+		
+		System.out.println("sql = " + sql.toString());
+		
+		return idoFindOnePKByQuery(sql);
+	}
 }
