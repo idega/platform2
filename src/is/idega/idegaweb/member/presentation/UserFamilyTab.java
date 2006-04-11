@@ -59,8 +59,6 @@ public class UserFamilyTab extends UserTab {
 //		super.setName("Family");
 	}
 
-	public void init() {
-	}
 	public void updateFieldsDisplayStatus() {
 	}
 	public void initializeFields() {
