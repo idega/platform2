@@ -56,8 +56,8 @@ import com.idega.util.IWTimestamp;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2006/04/12 14:45:07 $ by $Author: igors $
- * @version $Revision: 1.154.2.8 $
+ *         Last modified: $Date: 2006/04/12 15:04:07 $ by $Author: igors $
+ * @version $Revision: 1.154.2.9 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -681,7 +681,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this.getTableName() + " mb" + "," + SchoolClassBMPBean.SCHOOLCLASS + " cl");
 		sql.appendWhereEquals(" mb." + MEMBER, userID);
-		sql.append(" and mb."+REGISTER_DATE+"<");
+		sql.append(" and mb."+REGISTER_DATE+"<=");
 		sql.append(placementDate);
 		sql.appendAnd().appendLeftParenthesis().append("cl." + SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().append(true).appendOr().append("cl." + SchoolClassBMPBean.COLUMN_VALID).appendIsNull().appendRightParenthesis();
 		sql.appendAndEquals(" mb." + SCHOOLCLASS, "cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
