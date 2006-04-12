@@ -19,10 +19,10 @@ import com.idega.util.IWTimestamp;
  * <p>
  * TODO Dainis Describe Type SchoolClassMemberHome
  * </p>
- *  Last modified: $Date: 2006/04/10 15:11:14 $ by $Author: dainis $
+ *  Last modified: $Date: 2006/04/12 14:45:07 $ by $Author: igors $
  * 
  * @author <a href="mailto:Dainis@idega.com">Dainis</a>
- * @version $Revision: 1.75.2.6 $
+ * @version $Revision: 1.75.2.7 $
  */
 public interface SchoolClassMemberHome extends IDOHome {
 
@@ -180,11 +180,17 @@ public interface SchoolClassMemberHome extends IDOHome {
 	 */
 	public SchoolClassMember findLatestByUserAndSchool(int userID, int schoolID) throws FinderException;
 
+
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbFindLatestByUserAndSchool
 	 */
 	public SchoolClassMember findLatestByUserAndSchool(int userID, int schoolID, Collection schoolTypes)
 			throws FinderException;
+
+	/** @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbFindLatestByUserAndSchoolAndPlacementDate
+	 */
+	public SchoolClassMember findLatestByUserAndSchoolAndPlacementDate(int userID, int schoolID, Collection schoolTypes,Date placementDate) throws FinderException;
+
 
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbFindLatestByUser

@@ -19,10 +19,10 @@ import com.idega.util.IWTimestamp;
  * <p>
  * TODO Dainis Describe Type SchoolClassMemberHomeImpl
  * </p>
- *  Last modified: $Date: 2006/04/10 15:11:14 $ by $Author: dainis $
+ *  Last modified: $Date: 2006/04/12 14:45:07 $ by $Author: igors $
  * 
  * @author <a href="mailto:Dainis@idega.com">Dainis</a>
- * @version $Revision: 1.75.2.6 $
+ * @version $Revision: 1.75.2.7 $
  */
 public class SchoolClassMemberHomeImpl extends IDOFactory implements SchoolClassMemberHome {
 
@@ -261,6 +261,15 @@ public class SchoolClassMemberHomeImpl extends IDOFactory implements SchoolClass
 		this.idoCheckInPooledEntity(entity);
 		return this.findByPrimaryKey(pk);
 	}
+
+	public SchoolClassMember findLatestByUserAndSchoolAndPlacementDate(int userID, int schoolID, Collection schoolTypes,Date placementDate)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((SchoolClassMemberBMPBean) entity).ejbFindLatestByUserAndSchoolAndPlacementDate(userID, schoolID, schoolTypes,placementDate);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
+
 
 	public SchoolClassMember findLatestByUser(User user) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
