@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.141 2005/07/27 14:19:52 laddi Exp $
+ * $Id: NewsReader.java,v 1.141.2.1 2006/04/18 22:02:01 sigtryggur Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -149,7 +149,6 @@ public class NewsReader extends CategoryBlock implements Builderaware {
 	public static final int COLLECTION_LAYOUT = NewsLayoutHandler.COLLECTION_LAYOUT;
 
 	private int iLayout = SINGLE_FILE_LAYOUT;
-	private int newsCount = 0;
 
 	private int visibleNewsRangeStart = 0;
 	private int visibleNewsRangeEnd = Integer.MAX_VALUE;
@@ -681,7 +680,6 @@ public class NewsReader extends CategoryBlock implements Builderaware {
 			}
 			else if (locText != null && !collection) {
 				// counting news
-				newsCount++;
 				sNewsBody = locText.getBody();
 				sNewsBody = sNewsBody == null ? "" : sNewsBody;
 
@@ -1376,20 +1374,12 @@ public class NewsReader extends CategoryBlock implements Builderaware {
 					newsImage.setAlignment("right");
 					newsImage.setBorder(ImageBorder);
 				}
-				// first news
-				if (newsCount == 1) {
-					if (newsImage.getWidth() == null || newsImage.getWidth().length() == 0) newsImage.setMaxImageWidth(ImageWidth);
-					return newsImage;
-				}
-				// other news
-				else {
-					if (newsImage.getWidth() == null || newsImage.getWidth().length() == 0) newsImage.setMaxImageWidth(ImageWidth);
-					Link L = new Link(newsImage);
-					L.addParameter(ImageWindow.prmImageId, imid);
-					if (addImageInfo) L.addParameter(ImageWindow.prmInfo, TextSoap.convertSpecialCharacters(headline));
-					L.setWindowToOpen(ImageWindow.class);
-					return L;
-				}
+				if (newsImage.getWidth() == null || newsImage.getWidth().length() == 0) newsImage.setMaxImageWidth(ImageWidth);
+				Link L = new Link(newsImage);
+				L.addParameter(ImageWindow.prmImageId, imid);
+				if (addImageInfo) L.addParameter(ImageWindow.prmInfo, TextSoap.convertSpecialCharacters(headline));
+				L.setWindowToOpen(ImageWindow.class);
+				return L;
 			}
 			catch (Exception ex) {
 				ex.printStackTrace();
