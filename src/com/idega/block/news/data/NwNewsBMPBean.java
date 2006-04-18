@@ -20,6 +20,7 @@ import com.idega.data.query.AND;
 import com.idega.data.query.Column;
 import com.idega.data.query.InCriteria;
 import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.OR;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;
 import com.idega.util.IWTimestamp;
@@ -207,7 +208,9 @@ public class NwNewsBMPBean extends com.idega.data.GenericEntity implements  NwNe
       if (!ignorePublishingDates ) {
       	IWTimestamp today = IWTimestamp.RightNow();
       	MatchCriteria from = new MatchCriteria(content, ContentBMPBean.getColumnNamePublishFrom(), MatchCriteria.LESSEQUAL, today.getTimestamp());
-      	MatchCriteria to = new MatchCriteria(content, ContentBMPBean.getColumnNamePublishTo(), MatchCriteria.GREATEREQUAL, today.getTimestamp());
+      	MatchCriteria toDate = new MatchCriteria(content, ContentBMPBean.getColumnNamePublishTo(), MatchCriteria.GREATEREQUAL, today.getTimestamp());
+      	MatchCriteria toIsNull = new MatchCriteria(content, ContentBMPBean.getColumnNamePublishTo(), MatchCriteria.IS, MatchCriteria.NULL);
+      	OR to = new OR(toDate,toIsNull);
       	query.addCriteria(new AND(from, to));
       }
       query.addOrder(content, ContentBMPBean.getColumnNameCreated(), false);
