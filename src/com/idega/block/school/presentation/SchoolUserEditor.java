@@ -15,7 +15,6 @@ import com.idega.block.login.presentation.LoginEditorWindow;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.business.SchoolContentBusinessBean;
 import com.idega.block.school.business.SchoolUserBusiness;
-import com.idega.block.school.business.SchoolUserBusinessBean;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolDepartment;
 import com.idega.block.school.data.SchoolDepartmentHome;
