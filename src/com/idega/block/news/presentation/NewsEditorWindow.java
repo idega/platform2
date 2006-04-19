@@ -629,7 +629,7 @@ private IWResourceBundle iwrb;
       ImageInserter imageInsert = new ImageInserter();
       imageInsert.setImSessionImageName(prmImageId);
       imageInsert.setUseBoxParameterName(prmUseImage);
-      imageInsert.setMaxImageWidth(130);
+      imageInsert.setMaxImageWidth(120);
       imageInsert.setHasUseBox(false);
       imageInsert.setSelected(false);
       Table imageTable = new Table();
