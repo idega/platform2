@@ -338,8 +338,7 @@ private IWResourceBundle iwrb;
       IWTimestamp today = IWTimestamp.RightNow();
       IWTimestamp pubFrom = sPubFrom!=null ? new IWTimestamp(sPubFrom):today;
       Timestamp newsDate = sNewsDate != null ? new IWTimestamp(sNewsDate).getTimestamp() : null;
-      today.addDays(defaultPublishDays);
-      IWTimestamp pubTo = sPubTo!=null ?new IWTimestamp(sPubTo):today;
+      IWTimestamp pubTo = (sPubTo!=null && !sPubTo.equals("")) ? new IWTimestamp(sPubTo) : null;
       Vector V = null;
       ICFile F = null;
       if(iImageId > 0){
@@ -356,7 +355,11 @@ private IWResourceBundle iwrb;
 
       //System.err.println(pubFrom.toSQLString());
       //System.err.println(pubTo.toString());
-      NwNews news = NewsBusiness.saveNews(iNwNewsId,iLocalizedTextId,iCategoryId ,sHeadline,sTeaser,sAuthor,sSource,sBody,iLocaleId,iUserId,iObjInsId,pubFrom.getTimestamp(),pubTo.getTimestamp(),V, newsDate);
+      Timestamp pubToStamp = null; 
+      if (pubTo!=null) {
+    	  pubToStamp = pubTo.getTimestamp();
+      }
+      NwNews news = NewsBusiness.saveNews(iNwNewsId,iLocalizedTextId,iCategoryId ,sHeadline,sTeaser,sAuthor,sSource,sBody,iLocaleId,iUserId,iObjInsId,pubFrom.getTimestamp(),pubToStamp,V, newsDate);
       if(news!=null)
         sNewsId = String.valueOf(news.getID());
     }
@@ -528,7 +531,6 @@ private IWResourceBundle iwrb;
 		
 		now.addYears(addYears);
     TimestampInput publishTo = new TimestampInput(prmPubTo,true);
-      publishTo.setTimestamp(now.getTimestamp());
       
     DropdownMenu LocaleDrop = ICLocalePresentation.getLocaleDropdownIdKeyed(prmLocale);
     LocaleDrop.setToSubmit();
@@ -614,11 +616,10 @@ private IWResourceBundle iwrb;
       IWTimestamp today = IWTimestamp.RightNow();
       publishFrom.setTimestamp(today.getTimestamp());
 
-			if (addYears > 0)
+			if (addYears > 0) {
 				today.addYears(addYears);
-			else
-      	today.addDays(defaultPublishDays);
-      publishTo.setTimestamp(today.getTimestamp());
+				publishTo.setTimestamp(today.getTimestamp());
+			}
       addHiddenInput(new HiddenInput(prmCategory ,String.valueOf(iCategoryId)));
     }
       addHiddenInput(new HiddenInput(prmObjInstId ,String.valueOf(iObjInsId)));
