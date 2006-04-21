@@ -1,5 +1,5 @@
 /*
- * $Id: SPDataInsert.java,v 1.1.4.4 2006/02/14 18:46:19 palli Exp $
+ * $Id: SPDataInsert.java,v 1.1.4.5 2006/04/21 11:22:34 palli Exp $
  * Created on Feb 8, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -35,10 +35,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- * Last modified: $Date: 2006/02/14 18:46:19 $ by $Author: palli $
+ * Last modified: $Date: 2006/04/21 11:22:34 $ by $Author: palli $
  * 
  * @author <a href="mailto:birna@idega.com">birna</a>
- * @version $Revision: 1.1.4.4 $
+ * @version $Revision: 1.1.4.5 $
  */
 public class SPDataInsert /* extends Window */implements InvoiceDataInsert {
 
@@ -151,7 +151,7 @@ public class SPDataInsert /* extends Window */implements InvoiceDataInsert {
 		for (int i = 0; i < krofuNumer.length; i++) {
 			int number = krofuNumer[i].intValue();
 
-			totalAmount += Integer.valueOf(bfm.getAmount(number)).intValue();
+			totalAmount += Integer.valueOf(bfm.getAmount100(number)).intValue();
 
 			String payersSSN = bfm.getPayersSSN(number);
 			if (payersSSN != null && !payersSSN.equals("")) {
@@ -169,7 +169,7 @@ public class SPDataInsert /* extends Window */implements InvoiceDataInsert {
 						.length())
 						+ numberString;
 
-			String amount = bfm.getAmount(number);
+			String amount = bfm.getAmount100(number);
 			if (amount != null && !amount.equals("")) {
 				if (amount.length() < 11)
 					amount = zeroString.substring(0, 11 - amount.length())
