@@ -1,5 +1,5 @@
 /*
- * $Id: KBDataInsert.java,v 1.5.4.1 2005/12/01 00:36:41 palli Exp $
+ * $Id: KBDataInsert.java,v 1.5.4.2 2006/04/21 11:20:25 palli Exp $
  * Created on Feb 8, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -12,15 +12,21 @@ package is.idega.block.finance.business.kb;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Calendar;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.methods.MultipartPostMethod;
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.multipart.FilePart;
+import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
+import org.apache.commons.httpclient.methods.multipart.Part;
+import org.apache.commons.httpclient.methods.multipart.StringPart;
+import org.apache.commons.httpclient.params.HttpMethodParams;
+
 import com.idega.block.finance.business.BankFileManager;
 import com.idega.block.finance.business.BankInvoiceFileManager;
 import com.idega.block.finance.business.InvoiceDataInsert;
@@ -29,13 +35,13 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- * Last modified: $Date: 2005/12/01 00:36:41 $ by $Author: palli $
+ * Last modified: $Date: 2006/04/21 11:20:25 $ by $Author: palli $
  * 
  * @author <a href="mailto:birna@idega.com">birna</a>
- * @version $Revision: 1.5.4.1 $
+ * @version $Revision: 1.5.4.2 $
  */
 public class KBDataInsert /* extends Window */implements InvoiceDataInsert {
-	private static String POST_METHOD = "https://www.bi.is/krofulinan/Pages/Senda_skra.aspx";
+	private static String POST_METHOD = "https://www.kbbanki.is/KBKrofur/Vefur/Pages/FileUpload.aspx";
 
 	private static String POST_ANSWER_METHOD = "https://www.bi.is/krofulinan/Pages/saekja_greidsluskra.aspx";
 
@@ -44,6 +50,8 @@ public class KBDataInsert /* extends Window */implements InvoiceDataInsert {
 	private String emptyString = new String();
 
 	private String zeroString = new String();
+	
+	private String batchName = null;
 
 	public void createClaimsInBank(int batchNumber, BankInfo info) {
 		BankFileManager bfm = new BankInvoiceFileManager(info);
@@ -144,7 +152,7 @@ public class KBDataInsert /* extends Window */implements InvoiceDataInsert {
 		for (int i = 0; i < krofuNumer.length; i++) {
 			int number = krofuNumer[i].intValue();
 
-			totalAmount += Integer.valueOf(bfm.getAmount(number)).intValue();
+			totalAmount += Integer.valueOf(bfm.getAmount100(number)).intValue();
 
 			String payersSSN = bfm.getPayersSSN(number);
 			if (payersSSN != null && !payersSSN.equals("")) {
@@ -162,7 +170,7 @@ public class KBDataInsert /* extends Window */implements InvoiceDataInsert {
 						.length())
 						+ numberString;
 
-			String amount = bfm.getAmount(number);
+			String amount = bfm.getAmount100(number);
 			if (amount != null && !amount.equals("")) {
 				if (amount.length() < 11)
 					amount = zeroString.substring(0, 11 - amount.length())
@@ -313,6 +321,10 @@ public class KBDataInsert /* extends Window */implements InvoiceDataInsert {
 			e.printStackTrace();
 		}
 
+		if (batchName == null) {
+			batchName = Integer.toString(batchNumber);
+		}
+		
 		sendCreateClaimsRequest(bfm);
 	}
 
@@ -358,7 +370,7 @@ public class KBDataInsert /* extends Window */implements InvoiceDataInsert {
 			java.util.Date dueDate, String payersSSN) {
 
 	}
-
+	
 	/**
 	 * Sends a http multipart post method to KBBanki to create the claims
 	 * 
@@ -366,11 +378,15 @@ public class KBDataInsert /* extends Window */implements InvoiceDataInsert {
 	 * @param groupId
 	 * @return
 	 */
-	private MultipartPostMethod sendCreateClaimsRequest(BankFileManager bfm) {
-		HttpClient client = new HttpClient();
+	private void sendCreateClaimsRequest(BankFileManager bfm) {
+/*		HttpClient client = new HttpClient();
 		MultipartPostMethod post = new MultipartPostMethod(POST_METHOD);
 		File file = new File(FILE_NAME);
-
+		
+		System.out.println("!!!kb:");
+		System.out.println("username = " + bfm.getUsername());
+		System.out.println("password = " + bfm.getPassword());
+		
 		try {
 			post.addParameter("cguser", bfm.getUsername());// "IK66TEST"
 			post.addParameter("cgpass", bfm.getPassword());// "KBIK66"
@@ -389,7 +405,41 @@ public class KBDataInsert /* extends Window */implements InvoiceDataInsert {
 		} finally {
 			post.releaseConnection();
 		}
-		return post;
+		return post;*/
+		
+		PostMethod filePost = new PostMethod(POST_METHOD);
+		File file = new File(FILE_NAME);
+		
+		filePost.getParams().setBooleanParameter(
+				HttpMethodParams.USE_EXPECT_CONTINUE, true);
+
+		try {
+			StringPart userPart = new StringPart("cguser", bfm.getUsername());
+			StringPart pwdPart = new StringPart("password", bfm.getPassword());
+			StringPart clubssnPart = new StringPart("cgclaimBatchName", batchName);
+			FilePart filePart = new FilePart("cgskra", file);
+			
+			Part[] parts = { userPart, pwdPart, clubssnPart, filePart };
+			filePost.setRequestEntity(new MultipartRequestEntity(parts,
+					filePost.getParams()));
+			HttpClient client = new HttpClient();
+			client.getHttpConnectionManager().getParams().setConnectionTimeout(
+					5000);
+
+			int status = client.executeMethod(filePost);
+			if (status == HttpStatus.SC_OK) {
+				System.out.println("Upload complete, response="
+						+ filePost.getResponseBodyAsString());
+			} else {
+				System.out.println("Upload failed, response="
+						+ HttpStatus.getStatusText(status));
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		} finally {
+			filePost.releaseConnection();
+		}
+
 	}
 
 	/**
