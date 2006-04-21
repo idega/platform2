@@ -1,5 +1,5 @@
 /*
- * $Id: ClubBankContract.java,v 1.3.2.1 2005/11/29 16:55:20 palli Exp $ Created on
+ * $Id: ClubBankContract.java,v 1.3.2.2 2006/04/21 11:22:58 palli Exp $ Created on
  * Feb 17, 2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -33,6 +33,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.PasswordInput;
 import com.idega.presentation.ui.SelectDropdownDouble;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
@@ -41,10 +42,10 @@ import com.idega.user.data.Group;
 
 /**
  * 
- * Last modified: $Date: 2005/11/29 16:55:20 $ by $Author: palli $
+ * Last modified: $Date: 2006/04/21 11:22:58 $ by $Author: palli $
  * 
  * @author <a href="mailto:birna@idega.com">birna</a>
- * @version $Revision: 1.3.2.1 $
+ * @version $Revision: 1.3.2.2 $
  */
 public class ClubBankContract extends CashierSubWindowTemplate {
 
@@ -266,8 +267,8 @@ public class ClubBankContract extends CashierSubWindowTemplate {
 
 		TextInput usernameInput = new TextInput(LABEL_USERNAME);
 
-		TextInput pswInput = new TextInput(LABEL_PASSWORD);
-		pswInput.setAsPasswordInput(true);
+		PasswordInput pswInput = new PasswordInput(LABEL_PASSWORD);
+		//pswInput.setAsPasswordInput(true);
 
 		SubmitButton submit = new SubmitButton(iwrb.getLocalizedString(
 				ACTION_SUBMIT, "Submit"), ACTION_SUBMIT, "submit");
@@ -392,6 +393,8 @@ public class ClubBankContract extends CashierSubWindowTemplate {
 		String username = iwc.getParameter(LABEL_USERNAME);
 		String password = iwc.getParameter(LABEL_PASSWORD);
 
+		System.out.println("[ClubBankContract] password = " + password);
+		
 		if (div == null || "".equals(div)) {
 			errorList.add(ERROR_NO_DIVISION_SELECTED);
 		}

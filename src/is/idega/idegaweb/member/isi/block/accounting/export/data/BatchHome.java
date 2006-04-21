@@ -54,4 +54,10 @@ public interface BatchHome extends IDOHome {
 	 */
 	public Collection findAllNewestFirst() throws FinderException;
 
+	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.export.data.BatchBMPBean#ejbFindAllByContractNewestFirst
+	 */
+	public Collection findAllByContractNewestFirst(Collection contracts)
+			throws FinderException;
+
 }

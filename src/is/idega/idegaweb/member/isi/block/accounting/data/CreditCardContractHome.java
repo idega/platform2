@@ -50,6 +50,13 @@ public interface CreditCardContractHome extends IDOHome {
 			throws FinderException;
 
 	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.data.CreditCardContractBMPBean#ejbFindAllByClubDivisionGroupAndType
+	 */
+	public Collection findAllByClubDivisionGroupAndType(Group club,
+			Group division, Group group, CreditCardType type, boolean getDeleted)
+			throws FinderException;
+
+	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.data.CreditCardContractBMPBean#ejbFindAllClubContracts
 	 */
 	public Collection findAllClubContracts() throws FinderException;

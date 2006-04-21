@@ -77,4 +77,13 @@ public class BatchHomeImpl extends IDOFactory implements BatchHome {
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
+	public Collection findAllByContractNewestFirst(Collection contracts)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((BatchBMPBean) entity)
+				.ejbFindAllByContractNewestFirst(contracts);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
 }

@@ -99,6 +99,11 @@ public interface Batch extends IDOEntity {
 	public void setFinBatch(com.idega.block.finance.data.Batch batch);
 
 	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.export.data.BatchBMPBean#setMarked
+	 */
+	public void setMarked(boolean marked);
+
+	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.export.data.BatchBMPBean#getBatchNumber
 	 */
 	public String getBatchNumber();
@@ -182,5 +187,10 @@ public interface Batch extends IDOEntity {
 	 * @see is.idega.idegaweb.member.isi.block.accounting.export.data.BatchBMPBean#getFinBatch
 	 */
 	public com.idega.block.finance.data.Batch getFinBatch();
+
+	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.export.data.BatchBMPBean#getMarked
+	 */
+	public boolean getMarked();
 
 }

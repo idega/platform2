@@ -363,10 +363,32 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 
 		return null;
 	}
+	
+	public CreditCardType getVisaCreditCardType() {
+		try {
+			return getCreditCardTypeHome().findTypeVisa();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
 
 	public Collection findAllCreditCardContractByClub(Group club) {
 		try {
 			return getCreditCardContractHome().findAllByClub(club);
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+	
+	public Collection findAllCreditCardContractByClubAndDivisionAndType(Group club, Group division, CreditCardType type) {
+		try {
+			return getCreditCardContractHome().findAllByClubDivisionGroupAndType(club, division, null, type, true);
 		}
 		catch (FinderException e) {
 			e.printStackTrace();

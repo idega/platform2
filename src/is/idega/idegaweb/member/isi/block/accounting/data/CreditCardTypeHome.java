@@ -1,10 +1,32 @@
+/**
+ * 
+ */
 package is.idega.idegaweb.member.isi.block.accounting.data;
 
+import java.util.Collection;
 
-public interface CreditCardTypeHome extends com.idega.data.IDOHome
-{
- public CreditCardType create() throws javax.ejb.CreateException;
- public CreditCardType findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
- public java.util.Collection findAll()throws javax.ejb.FinderException;
+import javax.ejb.FinderException;
+
+import com.idega.data.IDOHome;
+
+/**
+ * @author bluebottle
+ *
+ */
+public interface CreditCardTypeHome extends IDOHome {
+	public CreditCardType create() throws javax.ejb.CreateException;
+
+	public CreditCardType findByPrimaryKey(Object pk)
+			throws javax.ejb.FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.data.CreditCardTypeBMPBean#ejbFindAll
+	 */
+	public Collection findAll() throws FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.data.CreditCardTypeBMPBean#ejbFindTypeVisa
+	 */
+	public CreditCardType findTypeVisa() throws FinderException;
 
 }

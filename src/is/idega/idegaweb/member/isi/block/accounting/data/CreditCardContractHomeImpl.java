@@ -74,6 +74,17 @@ public class CreditCardContractHomeImpl extends IDOFactory implements
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
+	public Collection findAllByClubDivisionGroupAndType(Group club,
+			Group division, Group group, CreditCardType type, boolean getDeleted)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((CreditCardContractBMPBean) entity)
+				.ejbFindAllByClubDivisionGroupAndType(club, division, group,
+						type, getDeleted);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
 	public Collection findAllClubContracts() throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		java.util.Collection ids = ((CreditCardContractBMPBean) entity)

@@ -38,6 +38,8 @@ public class BatchBMPBean extends GenericEntity implements Batch {
 	
 	protected final static String COLUMN_FIN_BATCH = "fin_batch_id";
 
+	protected final static String COLUMN_MARKED = "marked";
+
 	// For the creditcard batches
 	protected final static String COLUMN_CC_TYPE = "cc_card_type_id";
 
@@ -53,6 +55,7 @@ public class BatchBMPBean extends GenericEntity implements Batch {
 	private final static String TYPE_BANK_BATCH = "B";
 	
 	private final static String TYPE_CREDITCARD_BATCH = "C";
+	
 
 	/*
 	 * (non-Javadoc)
@@ -84,6 +87,7 @@ public class BatchBMPBean extends GenericEntity implements Batch {
 
 		addManyToOneRelationship(COLUMN_BANK_INFO, BankInfo.class);
 		addOneToOneRelationship(COLUMN_FIN_BATCH, com.idega.block.finance.data.Batch.class);
+		addAttribute(COLUMN_MARKED, "Marked", Boolean.class);
 	}
 
 	// Setters
@@ -149,6 +153,10 @@ public class BatchBMPBean extends GenericEntity implements Batch {
 	
 	public void setFinBatch(com.idega.block.finance.data.Batch batch) {
 		setColumn(COLUMN_FIN_BATCH, batch);
+	}
+	
+	public void setMarked(boolean marked) {
+		setColumn(COLUMN_MARKED, marked);
 	}
 
 	// Getters
@@ -219,6 +227,10 @@ public class BatchBMPBean extends GenericEntity implements Batch {
 	public com.idega.block.finance.data.Batch getFinBatch() {
 		return (com.idega.block.finance.data.Batch) getColumnValue(COLUMN_FIN_BATCH);
 	}
+	
+	public boolean getMarked() {
+		return getBooleanColumnValue(COLUMN_MARKED, false);
+	}
 
 	public Collection ejbFindAll() throws FinderException {
 		IDOQuery sql = idoQuery();
@@ -274,8 +286,6 @@ public class BatchBMPBean extends GenericEntity implements Batch {
 		sql.append(COLUMN_SENT);
 		sql.append(" is null");
 
-		System.out.println("sql = " + sql.toString());
-
 		return idoFindOnePKByQuery(sql);
 	}
 	
@@ -284,6 +294,18 @@ public class BatchBMPBean extends GenericEntity implements Batch {
 		sql.appendSelectAllFrom(this);
 		sql.appendOrderByDescending(getIDColumnName());
 
+		return idoFindPKsByQuery(sql);
+	}
+	
+	public Collection ejbFindAllByContractNewestFirst(Collection contracts) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhere(this.COLUMN_CC_CONTRACT);
+		sql.appendInCollection(contracts);
+		sql.appendOrderByDescending(getIDColumnName());
+
+		System.out.println("sql = " + sql.toString());
+		
 		return idoFindPKsByQuery(sql);
 	}
 }

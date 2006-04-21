@@ -45,6 +45,12 @@ public interface ExportBusiness extends IBOService {
 	public Collection findAllBatches() throws java.rmi.RemoteException;
 
 	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.export.business.ExportBusinessBean#findAllBatchesByContract
+	 */
+	public Collection findAllBatchesByContract(Collection contract)
+			throws java.rmi.RemoteException;
+
+	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.export.business.ExportBusinessBean#findAllEntriesNotInBatch
 	 */
 	public Collection findAllEntriesNotInBatch()

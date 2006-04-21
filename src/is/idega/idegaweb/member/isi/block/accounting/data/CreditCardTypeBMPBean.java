@@ -98,4 +98,14 @@ public class CreditCardTypeBMPBean extends GenericEntity implements CreditCardTy
 
 		return idoFindPKsBySQL(sql.toString());
 	}	
+	
+	public Object ejbFindTypeVisa() throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhereEqualsQuoted(COLUMN_CREDITCARD_TYPE, TYPE_VISA);
+
+		System.out.println("sql = " + sql.toString());
+
+		return idoFindOnePKByQuery(sql);
+	}
 }

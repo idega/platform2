@@ -16,8 +16,15 @@ import is.idega.idegaweb.member.isi.block.accounting.data.PaymentType;
 import is.idega.idegaweb.member.isi.block.accounting.data.PaymentTypeHome;
 import is.idega.idegaweb.member.isi.block.accounting.export.data.Batch;
 import is.idega.idegaweb.member.isi.block.accounting.export.data.BatchHome;
+import is.idega.idegaweb.member.isi.block.accounting.export.data.Configuration;
+import is.idega.idegaweb.member.isi.block.accounting.export.data.ConfigurationHome;
+import is.idega.idegaweb.member.isi.block.accounting.export.data.RunLog;
+import is.idega.idegaweb.member.isi.block.accounting.export.data.RunLogEntry;
+import is.idega.idegaweb.member.isi.block.accounting.export.data.RunLogEntryHome;
+import is.idega.idegaweb.member.isi.block.accounting.export.data.RunLogHome;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -25,10 +32,13 @@ import java.util.Iterator;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
+import com.idega.block.finance.business.InvoiceDataInsert;
 import com.idega.block.finance.data.AccountEntry;
 import com.idega.block.finance.data.AccountEntryHome;
 import com.idega.block.finance.data.BankInfo;
 import com.idega.block.finance.data.BankInfoHome;
+import com.idega.core.file.data.ICFile;
+import com.idega.core.file.data.ICFileHome;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.util.IWTimestamp;
@@ -45,10 +55,16 @@ public class ExportBusinessThread extends Thread {
 
 	private String dateToString = null;
 
-	public ExportBusinessThread(String dateFrom, String dateTo, boolean isExport) {
+	private RunLog log = null;
+
+	private String userName = null;
+
+	public ExportBusinessThread(String dateFrom, String dateTo,
+			boolean isExport, String userName) {
 		dateFromString = dateFrom;
 		dateToString = dateTo;
 		this.isExport = isExport;
+		this.userName = userName;
 	}
 
 	/*
@@ -79,6 +95,7 @@ public class ExportBusinessThread extends Thread {
 			}
 
 			try {
+				createLog();
 				createBatches(dateFrom, dateTo);
 				createFiles();
 				sendFiles();
@@ -90,7 +107,31 @@ public class ExportBusinessThread extends Thread {
 		} else {
 			BatchRunning.releaseGetFilesBatch();
 		}
+	}
 
+	private void createLog() throws IDOLookupException, CreateException {
+		RunLogHome rHome = (RunLogHome) IDOLookup.getHome(RunLog.class);
+		log = rHome.create();
+		log.setCreatedBy(userName);
+		log.setCreatedDate(IWTimestamp.getTimestampRightNow());
+		log.store();
+	}
+
+	private void createLogEntry(String entryText, boolean isError) {
+		try {
+			RunLogEntryHome eHome = (RunLogEntryHome) IDOLookup
+					.getHome(RunLogEntry.class);
+			RunLogEntry entry = eHome.create();
+			entry.setDateOfEntry(IWTimestamp.getTimestampRightNow());
+			entry.setEntry(entryText);
+			entry.setIsError(isError);
+			entry.setRunLog(log);
+			entry.store();
+		} catch (IDOLookupException e) {
+			e.printStackTrace();
+		} catch (CreateException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void createBatches(IWTimestamp dateFrom, IWTimestamp dateTo)
@@ -158,7 +199,7 @@ public class ExportBusinessThread extends Thread {
 							.getClub(), entry.getPaymentContract()
 							.getCardType());
 				} catch (FinderException e2) {
-					// Add to some kind of log?
+					createLogEntry(e.getMessage(), true);
 					ret = null;
 				}
 			}
@@ -251,21 +292,34 @@ public class ExportBusinessThread extends Thread {
 
 	private void createBankFileForBatch(Batch batch) {
 		try {
-			FinanceEntryHome fHome = (FinanceEntryHome) IDOLookup.getHome(FinanceEntry.class);
+			FinanceEntryHome fHome = (FinanceEntryHome) IDOLookup
+					.getHome(FinanceEntry.class);
 			Collection entriesInBatch = fHome.findAllByBatch(batch);
 
-			com.idega.block.finance.data.BatchHome finBatchHome = (com.idega.block.finance.data.BatchHome) IDOLookup.getHome(com.idega.block.finance.data.Batch.class);
+			com.idega.block.finance.data.BatchHome finBatchHome = (com.idega.block.finance.data.BatchHome) IDOLookup
+					.getHome(com.idega.block.finance.data.Batch.class);
 			com.idega.block.finance.data.Batch finBatch = finBatchHome.create();
 			finBatch.setBatchNumber(batch.getBatchNumber());
 			finBatch.setCreated(IWTimestamp.getTimestampRightNow());
 			finBatch.store();
-			
+
+			batch.setFinBatch(finBatch);
+			batch.store();
+
 			Iterator it = entriesInBatch.iterator();
 			while (it.hasNext()) {
 				FinanceEntry entry = (FinanceEntry) it.next();
-				AccountEntry accEntry = ((AccountEntryHome) IDOLookup.getHome(AccountEntry.class)).create();
+				AccountEntry accEntry = ((AccountEntryHome) IDOLookup
+						.getHome(AccountEntry.class)).create();
 				accEntry.setInvoiceNumber((Integer) entry.getPrimaryKey());
-				
+				// accEntry.setAccountBook(entry.geta);
+				accEntry.setDueDate(entry.getDueDate());
+				accEntry.setTotal((float) entry.getAmount());
+				accEntry.setFinalDueDate(entry.getFinalDueDate());
+				accEntry.setUserId(entry.getPayedByUserID());
+				accEntry.setBatchNumber(((Integer) finBatch.getPrimaryKey())
+						.intValue());
+				accEntry.store();
 			}
 		} catch (IDOLookupException e) {
 			e.printStackTrace();
@@ -275,15 +329,47 @@ public class ExportBusinessThread extends Thread {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void createCreditcardFileForBatch(Batch batch) {
 		try {
-			File tempfile = File.createTempFile("bat",null);
+			Configuration conf = ((ConfigurationHome) IDOLookup
+					.getHome(Configuration.class)).findByCreditcardType(batch
+					.getCreditCardType());
+			CreditCardFileCreation create = (CreditCardFileCreation) Class
+					.forName(conf.getSendFTPFileCreationPlugin()).newInstance();
+
+			FinanceEntryHome fHome = (FinanceEntryHome) IDOLookup
+					.getHome(FinanceEntry.class);
+			Collection entriesInBatch = fHome.findAllByBatch(batch);
+
+			File creditCardFile = create.createFile(batch
+					.getCreditCardContract(), entriesInBatch);
+
+			ICFile file = ((ICFileHome) IDOLookup.getHome(ICFile.class))
+					.create();
+			file.setFileValue(new FileInputStream(creditCardFile));
+			file.setName(creditCardFile.getName());
+			file.store();
+			batch.setCreditCardFile(file);
+			batch.setCreditCardFileName(file.getName());
+			batch.store();
+		} catch (IDOLookupException e) {
+			e.printStackTrace();
+		} catch (CreateException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void sendFiles() {
 		BatchHome bHome;
 		try {
@@ -304,12 +390,55 @@ public class ExportBusinessThread extends Thread {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void sendBankBatch(Batch batch) {
-		
+		try {
+			InvoiceDataInsert insert = (InvoiceDataInsert) Class.forName(
+					batch.getBankInfo().getClaimantsBankBranch().getBank()
+							.getPluginName()).newInstance();
+			insert.createClaimsInBank(batch.getFinBatchID(), batch
+					.getBankInfo());
+
+			batch.setSent(IWTimestamp.getTimestampRightNow());
+			batch.store();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
-	
+
 	private void sendCreditcardBatch(Batch batch) {
-		
+		try {
+			Configuration conf = ((ConfigurationHome) IDOLookup
+					.getHome(Configuration.class)).findByCreditcardType(batch
+					.getCreditCardType());
+			String plugin = conf.getSendFTPFilePlugin();
+
+			boolean sent = false;
+			
+			if (plugin != null && !"".equals(plugin)) {
+				CreditCardSendFile send = (CreditCardSendFile) Class
+						.forName(plugin)
+						.newInstance();
+
+				sent = send.sendFile(conf, batch);
+			}
+
+			if (sent) {
+				batch.setSent(IWTimestamp.getTimestampRightNow());
+				batch.store();
+			} else {
+				System.out.println("Didn't send file");
+			}
+		} catch (IDOLookupException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 }

@@ -23,7 +23,10 @@ import com.idega.util.IWTimestamp;
 public class MasterCardFileCreation implements CreditCardFileCreation {
 
 	public File createFile(CreditCardContract contract, Collection entries) throws IOException {
-		File tempfile = File.createTempFile(contract.getContractNumber(), null);
+		StringBuffer fileName = new StringBuffer("MCI10");
+		fileName.append("7256001");
+		fileName.append(IWTimestamp.RightNow().getDateString("yyyyMMddhhmmss"));
+		File tempfile = File.createTempFile(fileName.toString(), ".txt");
 		FileWriter writer = new FileWriter(tempfile);
 		BufferedWriter bWriter = new BufferedWriter(writer);
 		
@@ -69,7 +72,9 @@ public class MasterCardFileCreation implements CreditCardFileCreation {
 		bWriter.write(format.format(entryCounter));
 		bWriter.write(now.getDateString("yyyyMMdd"));
 		bWriter.write(now.getDateString("hhmmss"));
-		bWriter.write(contract.getContractNumber());
+		//
+		//bWriter.write(contract.getContractNumber());
+		bWriter.write("7256001"); //Number for Getspa. Move to a parameter later.
 		//@Todo check for multiple entries pr. day pr. contract
 		bWriter.write("001");
 		bWriter.write("TEST"); //bWriter.write("PROD");
@@ -166,7 +171,7 @@ public class MasterCardFileCreation implements CreditCardFileCreation {
 		bWriter.write(format2.format(countDebit));
 		bWriter.write(format3.format(amountKredit * 100));
 		bWriter.write(format3.format(amountDebit * 100));
-		bWriter.write(format.format(entryCounter - 1));
+		bWriter.write(format2.format(entryCounter - 1));
 		entryCounter++;
 		bWriter.newLine();
 				

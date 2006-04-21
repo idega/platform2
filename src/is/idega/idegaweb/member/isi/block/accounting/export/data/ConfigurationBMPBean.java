@@ -48,6 +48,8 @@ public class ConfigurationBMPBean extends GenericEntity implements
     protected final static String COLUMN_SEND_FILE_CREATE_PATH = "ftp_send_file_create_path";
 
     protected final static String COLUMN_SEND_ENCRYPTION_PLUGIN = "ftp_send_enc_plug";
+    
+    protected final static String COLUMN_SEND_PLUGIN = "ftp_send_plug";
 
     protected final static String COLUMN_GET_SERVER = "ftp_get_server";
 
@@ -89,7 +91,8 @@ public class ConfigurationBMPBean extends GenericEntity implements
         addAttribute(COLUMN_SEND_FILE_CREATE_PATH, "Send path", true, true, String.class, 255);
         addAttribute(COLUMN_SEND_FILE_LAST_BATCH, "Last batch", true, true, String.class, 255);
         addAttribute(COLUMN_SEND_FILE_BATCH_DATE, "Batch date", true, true, Timestamp.class);
-        addAttribute(COLUMN_SEND_ENCRYPTION_PLUGIN, "Send encryption plugin", true, true, String.class, 255);        
+        addAttribute(COLUMN_SEND_ENCRYPTION_PLUGIN, "Send encryption plugin", true, true, String.class, 255);
+        addAttribute(COLUMN_SEND_PLUGIN, "Send plugin", String.class, 1024);
         addAttribute(COLUMN_GET_SERVER, "Get server", true, true, String.class, 255);
         addAttribute(COLUMN_GET_USER, "Get user", true, true, String.class, 255);
         addAttribute(COLUMN_GET_PASSWD, "Get pwd", true, true, String.class, 255);
@@ -146,6 +149,10 @@ public class ConfigurationBMPBean extends GenericEntity implements
     
     public void setSendFTPEncryptionPlugin(String plugin) {
         setColumn(COLUMN_SEND_ENCRYPTION_PLUGIN, plugin);
+    }
+    
+    public void setSendFTPFilePlugin(String plugin) {
+    		setColumn(COLUMN_SEND_PLUGIN, plugin);
     }
     
     public void setGetFTPServer(String server) {
@@ -225,6 +232,10 @@ public class ConfigurationBMPBean extends GenericEntity implements
         return getStringColumnValue(COLUMN_SEND_ENCRYPTION_PLUGIN);
     }
     
+    public String getSendFTPFilePlugin() {
+		return getStringColumnValue(COLUMN_SEND_PLUGIN);
+    }
+
     public String getGetFTPServer() {
         return getStringColumnValue(COLUMN_GET_SERVER);
     }

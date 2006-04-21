@@ -90,6 +90,8 @@ public class CashierWindow extends StyledIWAdminWindow {
 
 	public static final String ACTION_CHECKOUT = "isi_acc_cw_act_pay";
 
+	public static final String ACTION_VISA_FILES = "isi_acc_cw_visa_files";
+
 	private static final String ACTION_REPORTS = "isi_acc_cw_reports";
 
 	private static final String STATS_LOCALIZABLE_KEY_NAME = "STATS_LOCALIZABLE_KEY_NAME";
@@ -327,6 +329,12 @@ public class CashierWindow extends StyledIWAdminWindow {
 					"isi_acc_cashierwindow.checkout", "Checkout")));
 			addParametersToMenuItems(checkOut, ACTION_CHECKOUT);
 
+			LinkContainer visaFiles = new LinkContainer();
+			visaFiles.setStyleClass(styledLink);
+			visaFiles.add(formatText(iwrb.getLocalizedString(
+					"isi_acc_cashierwindow.visa_files", "VISA files")));
+			addParametersToMenuItems(visaFiles, ACTION_VISA_FILES);
+
 			/*
 			 * LinkContainer nonPayedEntries = new LinkContainer();
 			 * nonPayedEntries.setStyleClass(styledLink);
@@ -446,12 +454,8 @@ public class CashierWindow extends StyledIWAdminWindow {
 			menu.add(manAss, 1, 8);
 			menu.add(paymentHistory, 1, 9);
 			menu.add(selectPayments, 1, 10);
-			//menu.add(Text.getNonBrakingSpace(), 1, 11);
-			//menu.add(Text.getNonBrakingSpace(), 1, 11);
 			menu.add(checkOut, 1, 11);
-			/*
-			 * menu.add(nonPayedEntries, 1, 11); menu.add(errorEntries, 1, 12);
-			 */
+			menu.add(visaFiles, 1, 12);
 
 			menu.add(reports, 1, 13);
 			menu.add(getHelpWithGrayImage("cashierwindow.reports_help", true),
@@ -461,7 +465,6 @@ public class CashierWindow extends StyledIWAdminWindow {
 			menu.add(debtOverview, 1, 15);
 			menu.add(paymentOverview, 1, 16);
 			menu.add(entryOverview, 1, 17);
-			// menu.add(latePaymentList, 1, 18);
 			menu.add(paymentList, 1, 18);
 
 			menu.add(ledger, 1, 20);
@@ -477,52 +480,40 @@ public class CashierWindow extends StyledIWAdminWindow {
 			adminCreditCardSendFiles.setStyleClass(styledLink);
 			adminCreditCardSendFiles.add(formatText(iwrb.getLocalizedString(
 					"isi_acc_cashierwindow.send_creditcard_files",
-					"Send creditcard files ()")));
+					"Send creditcard files")));
 			addParametersToMenuItems(adminCreditCardSendFiles,
 					ADMIN_SEND_CREDITCARD_FILES);
-
-			LinkContainer adminCreditCardGetFiles = new LinkContainer();
-			adminCreditCardGetFiles.setStyleClass(styledLink);
-			adminCreditCardGetFiles.add(formatText(iwrb.getLocalizedString(
-					"isi_acc_cashierwindow.get_creditcard_files",
-					"Get creditcard files ()")));
-			addParametersToMenuItems(adminCreditCardGetFiles,
-					ADMIN_GET_CREDITCARD_FILES);
 
 			LinkContainer adminCreditCardSetup = new LinkContainer();
 			adminCreditCardSetup.setStyleClass(styledLink);
 			adminCreditCardSetup.add(formatText(iwrb.getLocalizedString(
 					"isi_acc_cashierwindow.creditcard_setup",
-					"Creditcard setup ()")));
+					"Creditcard setup")));
 			addParametersToMenuItems(adminCreditCardSetup,
 					ADMIN_CREDITCARD_SETUP);
 
 			LinkContainer adminUnbatched = new LinkContainer();
 			adminUnbatched.setStyleClass(styledLink);
-			adminUnbatched.add(formatText(iwrb.getLocalizedString(
-					"isi_acc_cashierwindow.unbatched",
-					"Entries not in a batch")));
-			addParametersToMenuItems(adminUnbatched,
-					ADMIN_UNBATCHED_FILES);
+			adminUnbatched.add(formatText(iwrb
+					.getLocalizedString("isi_acc_cashierwindow.unbatched",
+							"Entries not in a batch")));
+			addParametersToMenuItems(adminUnbatched, ADMIN_UNBATCHED_FILES);
 
 			LinkContainer adminRunLog = new LinkContainer();
 			adminRunLog.setStyleClass(styledLink);
 			adminRunLog.add(formatText(iwrb.getLocalizedString(
-					"isi_acc_cashierwindow.runlog",
-					"Run log")));
-			addParametersToMenuItems(adminRunLog,
-					ADMIN_RUN_LOG);
+					"isi_acc_cashierwindow.runlog", "Run log")));
+			addParametersToMenuItems(adminRunLog, ADMIN_RUN_LOG);
 
-			
 			menu.add(admin, 1, 1);
 			menu.add(getHelpWithGrayImage("cashierwindow.admin_help", true), 2,
 					1);
 			menu.setRowColor(1, COLOR_MIDDLE);
 			menu.add(adminCreditCardSendFiles, 1, 2);
-			menu.add(adminCreditCardGetFiles, 1, 3);
-			menu.add(adminCreditCardSetup, 1, 4);
-			menu.add(adminUnbatched, 1, 5);
-			menu.add(adminRunLog, 1, 6);
+			// menu.add(adminCreditCardGetFiles, 1, 3);
+			menu.add(adminCreditCardSetup, 1, 3);
+			menu.add(adminUnbatched, 1, 4);
+			menu.add(adminRunLog, 1, 5);
 		}
 
 		return menu;
@@ -794,6 +785,11 @@ public class CashierWindow extends StyledIWAdminWindow {
 						"Checkout"));
 				subWindow = new Checkout();
 				helpTextKey = ACTION_CHECKOUT + "_help";
+			} else if (action.equals(ACTION_VISA_FILES)) {
+				actionTitle.append(iwrb.getLocalizedString(ACTION_VISA_FILES,
+						"VISA files"));
+				subWindow = new VisaFiles();
+				helpTextKey = ACTION_VISA_FILES + "_help";
 			} else if (action.equals(ACTION_CASHIER_LEDGER)) {
 				actionTitle.append(iwrb.getLocalizedString(
 						ACTION_CASHIER_LEDGER, "View cashier ledger"));
@@ -820,8 +816,8 @@ public class CashierWindow extends StyledIWAdminWindow {
 				subWindow = new EntriesNotInBatch();
 				helpTextKey = ADMIN_UNBATCHED_FILES + "_help";
 			} else if (action.equals(ADMIN_RUN_LOG)) {
-				actionTitle.append(iwrb.getLocalizedString(
-						ADMIN_RUN_LOG, "Run log"));
+				actionTitle.append(iwrb.getLocalizedString(ADMIN_RUN_LOG,
+						"Run log"));
 				subWindow = new RunLog();
 				helpTextKey = ADMIN_RUN_LOG + "_help";
 			} else if (action.equals(ACTION_REPORTS)) {

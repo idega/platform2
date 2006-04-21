@@ -37,12 +37,12 @@ public class ExportBusinessBean extends IBOServiceBean implements
 		ExportBusiness {
 
 	public boolean createFileFromContracts(String dateFrom, String dateTo, String userName) {
-/*		if (!BatchRunning.reserveSendFileBatch()) {
+		if (!BatchRunning.reserveSendFileBatch()) {
 			return false;
 		}
 
 		Thread exportThread = new ExportBusinessThread(dateFrom, dateTo, true, userName);
-		exportThread.start();*/
+		exportThread.start();
 
 		return true;
 	}
@@ -127,9 +127,23 @@ public class ExportBusinessBean extends IBOServiceBean implements
 		}
 
 		return batches;
-
 	}
 
+	public Collection findAllBatchesByContract(Collection contract) {
+		Collection batches = null;
+
+		try {
+			BatchHome bHome = (BatchHome) IDOLookup.getHome(Batch.class);
+			batches = bHome.findAllByContractNewestFirst(contract);
+		} catch (RemoteException e1) {
+			e1.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+
+		return batches;		
+	}
+	
 	public Collection findAllEntriesNotInBatch() {
 		try {
 			FinanceEntryHome fHome = (FinanceEntryHome) IDOLookup

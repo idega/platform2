@@ -23,7 +23,7 @@ import com.idega.util.IWTimestamp;
 public class VisaFileCreation implements CreditCardFileCreation {
 
 	public File createFile(CreditCardContract contract, Collection entries) throws IOException {
-		File tempfile = File.createTempFile(contract.getContractNumber(), null);
+		File tempfile = File.createTempFile(contract.getContractNumber(), ".txt");
 		FileWriter writer = new FileWriter(tempfile);
 		BufferedWriter bWriter = new BufferedWriter(writer);
 		
