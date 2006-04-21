@@ -110,7 +110,7 @@ private IWResourceBundle iwrb;
 
   public NewsEditorWindow(){
     setWidth(570);
-    setHeight(620);
+    setHeight(700);
     setResizable(true);
     setScrollbar(true);
     setUnMerged();
@@ -539,6 +539,7 @@ private IWResourceBundle iwrb;
     //TextArea taBody = new TextArea(prmBody,65,18);
     TextEditor taBody = new TextEditor();
     taBody.setInputName(prmBody);
+    taBody.setHeight("230");
 
     TextArea taTeaser = new TextArea(prmTeaser,65,2);
 
