@@ -129,6 +129,11 @@ public interface ExportDataMapping extends IDOEntity {
 	public boolean getUseCareTimeInPosting();
 
 	/**
+	 * @see se.idega.idegaweb.commune.accounting.export.data.ExportDataMappingBMPBean#getInvoiceLimit
+	 */
+	public float getInvoiceLimit();
+
+	/**
 	 * @see se.idega.idegaweb.commune.accounting.export.data.ExportDataMappingBMPBean#setOperationalField
 	 */
 	public void setOperationalField(String operationalField);
@@ -243,5 +248,10 @@ public interface ExportDataMapping extends IDOEntity {
 	 * @see se.idega.idegaweb.commune.accounting.export.data.ExportDataMappingBMPBean#setUseCareTimeInPosting
 	 */
 	public void setUseCareTimeInPosting(boolean useCareTime);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.export.data.ExportDataMappingBMPBean#setInvoiceLimit
+	 */
+	public void setInvoiceLimit(float limit);
 
 }

@@ -1,11 +1,4 @@
-/*
- * Copyright (C) 2003 Idega software. All Rights Reserved.
- *
- * This software is the proprietary information of Idega software.
- * Use is subject to license terms.
- *
- */
-package se.idega.idegaweb.commune.accounting.export.economa.data;
+package se.idega.idegaweb.commune.accounting.export.raindance.data;
 
 import java.util.Collection;
 
@@ -14,10 +7,10 @@ import javax.ejb.FinderException;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOQuery;
 
-public class EconomaCheckRecordBMPBean extends GenericEntity implements
-		EconomaCheckRecord {
+public class RaindanceCheckRecordBMPBean extends GenericEntity implements
+		RaindanceCheckRecord {
 
-	private static final String ENTITY_NAME = "cacc_economa_check_record";
+	private static final String ENTITY_NAME = "cacc_raindance_check_record";
 
 	private static final String COLUMN_CHECK_HEADER_ID = "header_id";
 
@@ -25,7 +18,7 @@ public class EconomaCheckRecordBMPBean extends GenericEntity implements
 
 	private static final String COLUMN_ERROR = "error_key";
 
-	private static final String EVENT_MISSING_AMOUNT = "cacc_economa_check_missing_amount_on_check";
+	private static final String EVENT_MISSING_AMOUNT = "cacc_raindance_check_missing_amount_on_check";
 
 	/*
 	 * (non-Javadoc)
@@ -44,7 +37,7 @@ public class EconomaCheckRecordBMPBean extends GenericEntity implements
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
 		addManyToOneRelationship(COLUMN_CHECK_HEADER_ID,
-				EconomaCheckHeader.class);
+				RaindanceCheckHeader.class);
 		addAttribute(COLUMN_ERROR_CONCERNS, "Comments on check", true, true,
 				java.lang.String.class);
 		addAttribute(COLUMN_ERROR, "Key to localized description of error",
@@ -55,7 +48,7 @@ public class EconomaCheckRecordBMPBean extends GenericEntity implements
 		setColumn(COLUMN_CHECK_HEADER_ID, id);
 	}
 
-	public void setHeader(EconomaCheckHeader header) {
+	public void setHeader(RaindanceCheckHeader header) {
 		setColumn(COLUMN_CHECK_HEADER_ID, header);
 	}
 
@@ -63,8 +56,8 @@ public class EconomaCheckRecordBMPBean extends GenericEntity implements
 		return getIntColumnValue(COLUMN_CHECK_HEADER_ID);
 	}
 
-	public EconomaCheckHeader getHeader() {
-		return (EconomaCheckHeader) getColumnValue(COLUMN_CHECK_HEADER_ID);
+	public RaindanceCheckHeader getHeader() {
+		return (RaindanceCheckHeader) getColumnValue(COLUMN_CHECK_HEADER_ID);
 	}
 
 	public void setErrorAmountMissing() {
@@ -106,7 +99,7 @@ public class EconomaCheckRecordBMPBean extends GenericEntity implements
 		return idoFindPKsByQuery(query);
 	}
 
-	public Collection ejbFindAllByHeader(EconomaCheckHeader header)
+	public Collection ejbFindAllByHeader(RaindanceCheckHeader header)
 			throws FinderException {
 		return ejbFindAllByHeaderId(((Integer) header.getPrimaryKey())
 				.intValue());

@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.140.2.3 2006/03/31 11:34:30 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.140.2.4 2006/04/26 11:35:17 palli Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -627,7 +627,11 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					if (regCond.getConditionID() == Integer.parseInt(RuleTypeConstant.CONDITION_ID_HOURS)) {
 						int id = regCond.getIntervalID();
 						try {
+							//System.out.println("id = " + id);
 							CareTime careTime = getCareTimeHome().findByPrimaryKey(new Integer(id));
+							//System.out.println("value = " + value.intValue());
+							//System.out.println("careTime.from = " + careTime.getCareTimeFrom());
+							//System.out.println("careTime.to = " + careTime.getCareTimeTo());
 							if (careTime.getCareTimeFrom() == -1) {
 								if (value.intValue() > careTime.getCareTimeTo()) {
 									match = false;
@@ -647,6 +651,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 									match = false;
 								}								
 							}
+							//System.out.println("match = " + match);
 						} 
 						catch(RemoteException e) {
 							e.printStackTrace();

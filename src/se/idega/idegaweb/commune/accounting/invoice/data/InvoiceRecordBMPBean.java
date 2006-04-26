@@ -149,6 +149,7 @@ public class InvoiceRecordBMPBean extends GenericEntity implements
 		addIndex(COLUMN_PAYMENT_RECORD_ID);
 
 		setNullable(COLUMN_INVOICE_HEADER, true);
+		setNullable(COLUMN_VAT_RULE_REGULATION_ID, true);
 	}
 
 	public InvoiceHeader getInvoiceHeader() {

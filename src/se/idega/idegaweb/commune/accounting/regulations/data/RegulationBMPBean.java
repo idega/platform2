@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationBMPBean.java,v 1.32 2004/02/27 10:36:12 aron Exp $
+ * $Id: RegulationBMPBean.java,v 1.32.2.1 2006/04/26 11:35:17 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -22,7 +22,7 @@ import com.idega.util.CalendarMonth;
 /**
  * Entity bean for regulation entries.
  * <p>
- * $Id: RegulationBMPBean.java,v 1.32 2004/02/27 10:36:12 aron Exp $
+ * $Id: RegulationBMPBean.java,v 1.32.2.1 2006/04/26 11:35:17 palli Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
  * @version$
@@ -89,6 +89,7 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 		setNullable(COLUMN_REG_SPEC_TYPE_ID, true);
 		setNullable(COLUMN_CONDITION_TYPE_ID, true);
 		setNullable(COLUMN_SPECIAL_CALCULATION_ID, true);
+		setNullable(COLUMN_VAT_RULE_REGULATION_ID, true);
 		//setNullable(COLUMN_VAT_RULE_ID, true);
 	}
 

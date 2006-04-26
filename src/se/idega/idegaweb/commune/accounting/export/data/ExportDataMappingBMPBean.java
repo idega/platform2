@@ -64,6 +64,8 @@ public class ExportDataMappingBMPBean extends GenericEntity implements ExportDat
 	private static final String COLUMN_USE_AGE_IN_POSTING = "use_age_in_posting";
 	
 	private static final String COLUMN_USE_CARE_TIME_IN_POSTING = "use_care_time_in_posting";
+	
+	private static final String COLUMN_INVOICE_LIMIT = "invoice_limit";
 
 	/*
 	 * (non-Javadoc)
@@ -120,6 +122,7 @@ public class ExportDataMappingBMPBean extends GenericEntity implements ExportDat
 		addAttribute(COLUMN_PAYMENTS_FOR_COMMUNES_OUTSIDE, "Pay commune providers outside of commune", Boolean.class);
 		addAttribute(COLUMN_USE_AGE_IN_POSTING, "Use age when getting posting parameters", Boolean.class);
 		addAttribute(COLUMN_USE_CARE_TIME_IN_POSTING, "Use care time when getting posting parameters", Boolean.class);
+		addAttribute(COLUMN_INVOICE_LIMIT, "Invoice limit", Float.class);
 	}
 
 	// Getters
@@ -209,6 +212,10 @@ public class ExportDataMappingBMPBean extends GenericEntity implements ExportDat
 	
 	public boolean getUseCareTimeInPosting() {
 		return getBooleanColumnValue(COLUMN_USE_CARE_TIME_IN_POSTING, false);
+	}
+	
+	public float getInvoiceLimit() {
+		return getFloatColumnValue(COLUMN_INVOICE_LIMIT, 50.0f);
 	}
 
 	// Setters
@@ -302,6 +309,10 @@ public class ExportDataMappingBMPBean extends GenericEntity implements ExportDat
 	
 	public void setUseCareTimeInPosting(boolean useCareTime) {
 		setColumn(COLUMN_USE_CARE_TIME_IN_POSTING, useCareTime);
+	}
+	
+	public void setInvoiceLimit(float limit) {
+		setColumn(COLUMN_INVOICE_LIMIT, limit);
 	}
 
 	// Find methods
