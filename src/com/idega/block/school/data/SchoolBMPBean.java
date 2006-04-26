@@ -91,6 +91,8 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
     /** Dainis 23 Sep 2005 */
     public final static String SORT_BY_BIRTHDATE = "sort_by_birthdate";
     public static final String HAS_REFRESHMENTS = "has_refreshments";
+    /** Palli 24 Apr 2005*/
+    public final static String COLUMN_RESPONSIBLE_USER = "responsible_ic_user_id";
 	
 	public void initializeAttributes() {
 		this.addAttribute(getIDColumnName());
@@ -144,6 +146,8 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
         // Dainis 23 Sep 2005
         this.addAttribute(SORT_BY_BIRTHDATE, "Sorted by date of birth", true, true, Boolean.class);
         addAttribute(HAS_REFRESHMENTS, "Has refreshments", Boolean.class);
+        /** Palli 24 Apr 2005*/
+        addManyToOneRelationship(COLUMN_RESPONSIBLE_USER, User.class);
 	}
 	public String getEntityName() {
 		return SCHOOL;
@@ -398,6 +402,22 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 	
 	private Date getCurrentDate() {
 		return new Date(System.currentTimeMillis());
+	}
+	
+	public void setResponsibleUserId(int id) {
+		setColumn(COLUMN_RESPONSIBLE_USER, id);
+	}
+	
+	public void setResponsibleUser(User user) {
+		setColumn(COLUMN_RESPONSIBLE_USER, user);
+	}
+	
+	public int getResponsibleUserId() {
+		return getIntColumnValue(COLUMN_RESPONSIBLE_USER);
+	}
+	
+	public User getResponsibleUser() {
+		return (User) getColumnValue(COLUMN_RESPONSIBLE_USER);
 	}
 	
 	public Collection ejbFindAllBySchoolType(Collection typeIds) throws javax.ejb.FinderException {
