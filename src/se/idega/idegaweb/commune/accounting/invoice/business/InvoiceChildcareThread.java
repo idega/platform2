@@ -78,10 +78,10 @@ import com.idega.util.CalendarMonth;
  * Holds most of the logic for the batchjob that creates the information that is
  * base for invoicing and payment data, that is sent to external finance system.
  * <p>
- * Last modified: $Date: 2006/04/26 11:35:17 $ by $Author: palli $
+ * Last modified: $Date: 2006/04/26 14:29:26 $ by $Author: palli $
  * 
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.156.2.3 $
+ * @version $Revision: 1.156.2.4 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -1545,42 +1545,6 @@ public class InvoiceChildcareThread extends BillingThread {
 		invoiceRecord.setOwnPosting(ownPosting);
 		invoiceRecord.setDoublePosting(doublePosting);
 		invoiceRecord.setChildCareContract(contract);
-
-		System.out.println("     invoiceRecord.getAmount() = " + invoiceRecord.getAmount());
-		System.out.println("     invoiceRecord.getAmountVAT() = " + invoiceRecord.getAmountVAT());
-		System.out.println("     invoiceRecord.getChangedBy() = " + invoiceRecord.getChangedBy());
-		System.out.println("     invoiceRecord.getCreatedBy() = " + invoiceRecord.getCreatedBy());
-		System.out.println("     invoiceRecord.getDays() = " + invoiceRecord.getDays());
-		System.out.println("     invoiceRecord.getDoublePosting() = " + invoiceRecord.getDoublePosting());
-		System.out.println("     invoiceRecord.getInvoiceHeaderId() = " + invoiceRecord.getInvoiceHeaderId());
-		System.out.println("     invoiceRecord.getInvoiceText() = " + invoiceRecord.getInvoiceText());
-		System.out.println("     invoiceRecord.getInvoiceText2() = " + invoiceRecord.getInvoiceText2());
-		System.out.println("     invoiceRecord.getNotes() = " + invoiceRecord.getNotes());
-		System.out.println("     invoiceRecord.getOrderId() = " + invoiceRecord.getOrderId());
-		System.out.println("     invoiceRecord.getOwnPosting() = " + invoiceRecord.getOwnPosting());
-		System.out.println("     invoiceRecord.getPaymentRecordId() = " + invoiceRecord.getPaymentRecordId());
-		System.out.println("     invoiceRecord.getProviderId() = " + invoiceRecord.getProviderId());
-		System.out.println("     invoiceRecord.getRegSpecTypeId() = " + invoiceRecord.getRegSpecTypeId());
-		System.out.println("     invoiceRecord.getRuleText() = " + invoiceRecord.getRuleText());
-		System.out.println("     invoiceRecord.getSchoolClassMemberId() = " + invoiceRecord.getSchoolClassMemberId());
-		System.out.println("     invoiceRecord.getSchoolTypeId() = " + invoiceRecord.getSchoolTypeId());
-		System.out.println("!!!!!invoiceRecord.getVATRuleRegulationId() = " + invoiceRecord.getVATRuleRegulationId());
-		
-		if (invoiceRecord.getChildCareContract() != null) {
-			System.out.println("      invoiceRecord.getChildCareContract() = " + invoiceRecord.getChildCareContract().getPrimaryKey());
-		} else {
-			System.out.println("      invoiceRecord.getChildCareContract() = -1");			
-		}
-		
-		System.out.println("      invoiceRecord.getDateChanged() = " + invoiceRecord.getDateChanged());
-		System.out.println("      invoiceRecord.getDateCreated() = " + invoiceRecord.getDateCreated());
-		System.out.println("      invoiceRecord.getPeriodEndCheck() = " + invoiceRecord.getPeriodEndCheck());
-		System.out.println("      invoiceRecord.getPeriodEndPlacement() = " + invoiceRecord.getPeriodEndPlacement());
-		System.out.println("      invoiceRecord.getPeriodStartCheck() = " + invoiceRecord.getPeriodStartCheck());
-		System.out.println("      invoiceRecord.getPeriodStartPlacement() = " + invoiceRecord.getPeriodStartPlacement());
-		System.out.println("      invoiceRecord.getPrimaryKey() = " + invoiceRecord.getPrimaryKey());
-		System.out.println("      invoiceRecord.getVUXGradePayment() = " + invoiceRecord.getVUXGradePayment());
-		System.out.println("      invoiceRecord.getVUXPayment() = " + invoiceRecord.getVUXPayment());
 
 		invoiceRecord.store();
 
