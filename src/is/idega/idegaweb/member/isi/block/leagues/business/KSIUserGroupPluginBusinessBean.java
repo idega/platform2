@@ -1,5 +1,5 @@
 /*
- * $Id: KSIUserGroupPluginBusinessBean.java,v 1.10.4.2 2005/12/22 18:57:06 eiki Exp $
+ * $Id: KSIUserGroupPluginBusinessBean.java,v 1.10.4.3 2006/04/28 16:01:16 eiki Exp $
  * Created on Jul 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -25,7 +25,12 @@ import java.util.Collection;
 import java.util.Iterator;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import javax.xml.namespace.QName;
 import javax.xml.rpc.ServiceException;
+import javax.xml.soap.SOAPElement;
+import javax.xml.soap.SOAPException;
+import org.apache.axis.client.Stub;
+import org.apache.axis.message.SOAPHeaderElement;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBOService;
 import com.idega.idegaweb.IWResourceBundle;
@@ -314,9 +319,30 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 	 */
 	public String registerPlayerToClubViaWebService(String personalId, int clubNumber, String clubName) throws RemoteException, ServiceException{
 		FelagsmadurLocator locator = new FelagsmadurLocator();
+		QName serviceName = locator.getServiceName();
+		//FelagsmadurSoap_PortType wservice = locator.getFelagsmadurSoap(new URL("http://127.0.0.1:8080/ssl/vefthjon_felix/felagsmadur.asmx?"));
 		FelagsmadurSoap_PortType wservice = locator.getFelagsmadurSoap();
+		
+		SOAPHeaderElement authHeader = new SOAPHeaderElement(serviceName.getNamespaceURI(),"AuthHeader");
+		//authHeader.setMustUnderstand(true);
+		
+		try {
+			SOAPElement userName = authHeader.addChildElement("UserName");
+			userName.addTextNode("felix7");
+			SOAPElement password = authHeader.addChildElement("Password");
+			password.addTextNode("r2bold5");
+		
+			Stub stub = (Stub) wservice;
+			stub.setHeader(authHeader);
+		
+		}
+		catch (SOAPException e) {
+			e.printStackTrace();
+		}
+	
 		TVilla msg =  wservice.felagsmadur_Skra(personalId,clubNumber,clubName);
 		int error = msg.getIVilla();
+		
 		String text = msg.getSVilla_texti();
 		
 		if(error==0 || error==-2){
