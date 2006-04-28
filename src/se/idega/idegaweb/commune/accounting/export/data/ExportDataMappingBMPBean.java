@@ -66,6 +66,8 @@ public class ExportDataMappingBMPBean extends GenericEntity implements ExportDat
 	private static final String COLUMN_USE_CARE_TIME_IN_POSTING = "use_care_time_in_posting";
 	
 	private static final String COLUMN_INVOICE_LIMIT = "invoice_limit";
+	
+	private static final String COLUMN_SKIP_STUDENTS_OUTSIDE_COMMUNE = "skip_students_outside_commune";
 
 	/*
 	 * (non-Javadoc)
@@ -123,6 +125,7 @@ public class ExportDataMappingBMPBean extends GenericEntity implements ExportDat
 		addAttribute(COLUMN_USE_AGE_IN_POSTING, "Use age when getting posting parameters", Boolean.class);
 		addAttribute(COLUMN_USE_CARE_TIME_IN_POSTING, "Use care time when getting posting parameters", Boolean.class);
 		addAttribute(COLUMN_INVOICE_LIMIT, "Invoice limit", Float.class);
+		addAttribute(COLUMN_SKIP_STUDENTS_OUTSIDE_COMMUNE, "Skip students outside commune", Boolean.class);
 	}
 
 	// Getters
@@ -216,6 +219,10 @@ public class ExportDataMappingBMPBean extends GenericEntity implements ExportDat
 	
 	public float getInvoiceLimit() {
 		return getFloatColumnValue(COLUMN_INVOICE_LIMIT, 50.0f);
+	}
+	
+	public boolean getSkipStudentsOutsideCommune() {
+		return getBooleanColumnValue(COLUMN_SKIP_STUDENTS_OUTSIDE_COMMUNE, false);
 	}
 
 	// Setters
@@ -313,6 +320,10 @@ public class ExportDataMappingBMPBean extends GenericEntity implements ExportDat
 	
 	public void setInvoiceLimit(float limit) {
 		setColumn(COLUMN_INVOICE_LIMIT, limit);
+	}
+	
+	public void setSkipStudentsOutsideCommune(boolean skip) {
+		setColumn(COLUMN_SKIP_STUDENTS_OUTSIDE_COMMUNE, skip);
 	}
 
 	// Find methods

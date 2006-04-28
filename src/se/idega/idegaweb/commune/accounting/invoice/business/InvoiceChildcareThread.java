@@ -25,7 +25,9 @@ import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry;
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntry;
+import se.idega.idegaweb.commune.accounting.posting.business.MissingMandatoryFieldException;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
 import se.idega.idegaweb.commune.accounting.regulations.business.AgeBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.BruttoIncomeException;
 import se.idega.idegaweb.commune.accounting.regulations.business.LowIncomeException;
@@ -49,6 +51,7 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
 import se.idega.idegaweb.commune.accounting.userinfo.business.SiblingOrderException;
 import se.idega.idegaweb.commune.accounting.userinfo.business.UserInfoService;
 import se.idega.idegaweb.commune.accounting.userinfo.data.DateOfBirthMissingException;
+import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.care.data.ChildCareContract;
 import se.idega.idegaweb.commune.care.data.EmploymentType;
 import se.idega.idegaweb.commune.care.data.ProviderType;
@@ -78,10 +81,10 @@ import com.idega.util.CalendarMonth;
  * Holds most of the logic for the batchjob that creates the information that is
  * base for invoicing and payment data, that is sent to external finance system.
  * <p>
- * Last modified: $Date: 2006/04/26 14:29:26 $ by $Author: palli $
+ * Last modified: $Date: 2006/04/28 14:28:03 $ by $Author: palli $
  * 
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.156.2.4 $
+ * @version $Revision: 1.156.2.5 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -350,6 +353,9 @@ public class InvoiceChildcareThread extends BillingThread {
 								+ ":" + contract.getSchoolClassMemberId());
 						throw new NoSchoolClassMemberException("");
 					}
+					
+					
+					
 					// Fetch invoice receiver
 					custodian = getInvoiceReceiver(contract);
 					// Get school
@@ -382,13 +388,15 @@ public class InvoiceChildcareThread extends BillingThread {
 							throw new CommuneChildcareOutsideHomeCommuneException();
 						}
 					}
+					//DEFAULT COMMUNE STUFF
 					// Check if both provider and child is outside home commune
-					UserBusiness userBus = (UserBusiness) IBOLookup
-							.getServiceInstance(iwc, UserBusiness.class);
+//					UserBusiness userBus = (UserBusiness) IBOLookup
+//							.getServiceInstance(iwc, UserBusiness.class);
+					final boolean userIsInDefaultCommune = getCommuneUserBusiness().isInDefaultCommune(
+							child);
+
 					if (!commune.equals(homeCommune)
-							&& userBus.getUsersMainAddress(child)
-									.getCommuneID() != ((Integer) homeCommune
-									.getPrimaryKey()).intValue()) {
+							&& !userIsInDefaultCommune) {
 						throw new NotDefaultCommuneException(
 								getLocalizedString("invoice.School", "School")
 										+ ":"
@@ -398,6 +406,12 @@ public class InvoiceChildcareThread extends BillingThread {
 												"Student") + ":"
 										+ child.getName());
 					}
+					
+					if (categoryPosting.getSkipStudentsOutsideCommune() && !userIsInDefaultCommune) {
+						throw new NotDefaultCommuneException(getLocalizedString("invoice.Student", "Student") + ":"
+								+ child.getName());			
+					}
+
 
 					// if provider has payment by invoice set, then ignore this
 					// silently
@@ -1258,7 +1272,7 @@ public class InvoiceChildcareThread extends BillingThread {
 						}
 						invoiceRecord.setAmount(amount);
 						invoiceRecord.setVATRuleRegulation(regularInvoiceEntry
-								.getVatRuleRegulationId());
+								.getVatRuleRegulation());
 						// invoiceRecord.setAmountVAT
 						// (AccountingUtil.roundAmount(vat));
 						invoiceRecord.setAmountVAT(0);
@@ -1568,5 +1582,9 @@ public class InvoiceChildcareThread extends BillingThread {
 	
 	protected ConditionHome getConditionHome() throws RemoteException {
 		return (ConditionHome) com.idega.data.IDOLookup.getHome(Condition.class);
+	}
+	
+	private CommuneUserBusiness getCommuneUserBusiness() throws RemoteException {
+		return (CommuneUserBusiness) IBOLookup.getServiceInstance(iwc, CommuneUserBusiness.class);
 	}
 }

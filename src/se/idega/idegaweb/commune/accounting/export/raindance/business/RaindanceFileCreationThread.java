@@ -1,8 +1,9 @@
 package se.idega.idegaweb.commune.accounting.export.raindance.business;
 
 import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.rmi.RemoteException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -256,13 +257,9 @@ public class RaindanceFileCreationThread extends Thread {
 		// Internal payment file
 		if (headers != null && !headers.isEmpty()) {
 			Iterator it = headers.iterator();
-			FileWriter writer = null;
-			try {
-				writer = new FileWriter(fileName1);
-			} catch (IOException e4) {
-				e4.printStackTrace();
-			}
-			BufferedWriter bWriter = new BufferedWriter(writer);
+			OutputStreamWriter sWriter = new OutputStreamWriter(new FileOutputStream(fileName1), "ISO-8859-1");
+			//FileWriter writer = new FileWriter(fileName1);
+			BufferedWriter bWriter = new BufferedWriter(sWriter);
 
 			Map ownPostingMap = new HashMap();
 			Map doublePostingMap = new HashMap();
@@ -390,7 +387,7 @@ public class RaindanceFileCreationThread extends Thread {
 			keys = doublePostingMap.keySet().iterator();
 			while (keys.hasNext()) {
 				String doublePostingString = (String) keys.next();
-				PaymentRecord r = (PaymentRecord) ownPostingMap
+				PaymentRecord r = (PaymentRecord) doublePostingMap
 						.get(doublePostingString);
 
 				bWriter.write("20");
@@ -441,8 +438,9 @@ public class RaindanceFileCreationThread extends Thread {
 		// Bookkeeping file
 		if (headers != null && !headers.isEmpty()) {
 			Iterator it = headers.iterator();
-			FileWriter writer = new FileWriter(fileName2);
-			BufferedWriter bWriter = new BufferedWriter(writer);
+			OutputStreamWriter sWriter = new OutputStreamWriter(new FileOutputStream(fileName2), "ISO-8859-1");
+			//FileWriter writer = new FileWriter(fileName2);
+			BufferedWriter bWriter = new BufferedWriter(sWriter);
 			PostingBusiness pb = getRaindanceBusiness().getPostingBusiness();
 
 			int numberOfHLines = 0;
@@ -454,7 +452,14 @@ public class RaindanceFileCreationThread extends Thread {
 			format.setMaximumFractionDigits(0);
 			format.setMinimumFractionDigits(0);
 			format.setGroupingUsed(false);
-			
+
+			NumberFormat format14 = NumberFormat.getInstance(currentLocale);
+			format14.setMaximumFractionDigits(0);
+			format14.setMinimumFractionDigits(0);
+			format14.setMinimumIntegerDigits(14);
+			format14.setMaximumIntegerDigits(14);
+			format14.setGroupingUsed(false);
+
 			while (it.hasNext()) {
 				PaymentHeader header = (PaymentHeader) it.next();
 				Collection records = null;
@@ -539,7 +544,7 @@ public class RaindanceFileCreationThread extends Thread {
 					if (totalAmountPrHeader < 0.0f) {
 						bWriter.write("-");
 					} else {
-						bWriter.write("-");						
+						bWriter.write("+");						
 					}
 					bWriter.write(getStringByLengthLeftJustified(format.format(Math.abs(totalAmountPrHeader * 100)), 14));
 					bWriter.write(empty.substring(0, 1));
@@ -567,6 +572,7 @@ public class RaindanceFileCreationThread extends Thread {
 					Iterator rIt = records.iterator();
 					while (rIt.hasNext()) {
 						PaymentRecord rec = (PaymentRecord) rIt.next();
+						bWriter.write("R");
 						bWriter.write(getStringByLengthLeftJustified(pb.findFieldInStringByName(rec.getOwnPosting(), "Ansvar"), 3));
 						bWriter.write(getStringByLengthLeftJustified(pb.findFieldInStringByName(rec.getOwnPosting(), "Konto"), 7));
 						bWriter.write(getStringByLengthLeftJustified(pb.findFieldInStringByName(rec.getOwnPosting(), "Verksamhet"), 5));
@@ -579,7 +585,7 @@ public class RaindanceFileCreationThread extends Thread {
 						} else {
 							bWriter.write("+");							
 						}
-						bWriter.write(getStringByLengthLeftJustified(format.format(Math.abs(rec.getTotalAmount()) * 100), 14));
+						bWriter.write(format14.format(Math.abs(rec.getTotalAmount()) * 100));
 						bWriter.newLine();
 						numberOfRLines++;
 					}
@@ -689,9 +695,9 @@ public class RaindanceFileCreationThread extends Thread {
 			format14.setMaximumIntegerDigits(14);
 			format14.setGroupingUsed(false);
 
-			
-			FileWriter writer = new FileWriter(fileName1);
-			BufferedWriter bWriter = new BufferedWriter(writer);
+			OutputStreamWriter sWriter = new OutputStreamWriter(new FileOutputStream(fileName1), "ISO-8859-1");
+			//FileWriter writer = new FileWriter(fileName1);
+			BufferedWriter bWriter = new BufferedWriter(sWriter);
 			PostingBusiness pb = getRaindanceBusiness().getPostingBusiness();
 			int numberOfSLines = 0;
 			int numberOfRLines = 0;
@@ -891,7 +897,7 @@ public class RaindanceFileCreationThread extends Thread {
 								StringBuffer childString = new StringBuffer(); 
 								User child = r.getSchoolClassMember().getStudent();
 								if (child != null) {
-									childString.append(resp.getFirstName());
+									childString.append(child.getFirstName());
 									if (this.periodText != null) {
 										childString.append(", ");
 										childString.append(this.periodText);
@@ -1041,7 +1047,7 @@ public class RaindanceFileCreationThread extends Thread {
 						try {
 							RaindanceCheckRecord Raindance_rec = home.create();
 							Raindance_rec.setHeader(checkHeader);
-							Raindance_rec.setError(e.getTextKey());
+							Raindance_rec.setError(e.getTextKey().substring(0, 255));
 							Raindance_rec.setErrorConcerns("Faktura "
 									+ ((Integer) iHead.getPrimaryKey())
 											.toString());
@@ -1056,7 +1062,7 @@ public class RaindanceFileCreationThread extends Thread {
 						try {
 							RaindanceCheckRecord Raindance_rec = home.create();
 							Raindance_rec.setHeader(checkHeader);
-							Raindance_rec.setError(e.getTextKey());
+							Raindance_rec.setError(e.getTextKey().substring(0, 255));
 							Raindance_rec.setErrorConcerns("Fakturamottagare "
 									+ iHead.getCustodian().getPersonalID());
 							Raindance_rec.store();
@@ -1070,7 +1076,7 @@ public class RaindanceFileCreationThread extends Thread {
 						try {
 							RaindanceCheckRecord Raindance_rec = home.create();
 							Raindance_rec.setHeader(checkHeader);
-							Raindance_rec.setError(e.getTextKey());
+							Raindance_rec.setError(e.getTextKey().substring(0, 255));
 							Raindance_rec.setErrorConcerns("Fakturamottagare "
 									+ iHead.getCustodian().getPersonalID());
 							Raindance_rec.store();

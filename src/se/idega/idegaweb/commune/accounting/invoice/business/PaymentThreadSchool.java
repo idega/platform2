@@ -70,11 +70,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2005/10/13 08:09:37 $ by $Author: palli $
+ * Last modified: $Date: 2006/04/28 14:28:03 $ by $Author: palli $
  * 
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.142 $
+ * @version $Revision: 1.142.2.1 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -429,11 +429,19 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		// errorRelated.append("Default Commune "+userIsInDefaultCommune);
 		// errorRelated.append("Valid group "+placementIsInValidGroup);
 		// errorRelated.append("Comp by agreement "+comp_by_agreement);
+		//DEFAULT COMMUNE STUFF
 		if (!schoolIsInDefaultCommune && !userIsInDefaultCommune) {
 			throw new NotDefaultCommuneException(getLocalizedString("invoice.School", "School") + ":"
 					+ provider.getSchool().getName() + "; " + getLocalizedString("invoice.Student", "Student") + ":"
 					+ schoolClassMember.getStudent().getName());
 		}
+		
+		if (categoryPosting.getSkipStudentsOutsideCommune() && !userIsInDefaultCommune) {
+			throw new NotDefaultCommuneException(getLocalizedString("invoice.Student", "Student") + ":"
+					+ schoolClassMember.getStudent().getName());			
+		}
+		
+		
 		if (placementIsInValidGroup && placementIsInPeriod
 				&& (userIsInDefaultCommune || (schoolIsInDefaultCommune && !schoolIsPrivate)) && !comp_by_agreement) {
 

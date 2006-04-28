@@ -134,6 +134,11 @@ public interface ExportDataMapping extends IDOEntity {
 	public float getInvoiceLimit();
 
 	/**
+	 * @see se.idega.idegaweb.commune.accounting.export.data.ExportDataMappingBMPBean#getSkipStudentsOutsideCommune
+	 */
+	public boolean getSkipStudentsOutsideCommune();
+
+	/**
 	 * @see se.idega.idegaweb.commune.accounting.export.data.ExportDataMappingBMPBean#setOperationalField
 	 */
 	public void setOperationalField(String operationalField);
@@ -253,5 +258,10 @@ public interface ExportDataMapping extends IDOEntity {
 	 * @see se.idega.idegaweb.commune.accounting.export.data.ExportDataMappingBMPBean#setInvoiceLimit
 	 */
 	public void setInvoiceLimit(float limit);
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.export.data.ExportDataMappingBMPBean#setSkipStudentsOutsideCommune
+	 */
+	public void setSkipStudentsOutsideCommune(boolean skip);
 
 }
