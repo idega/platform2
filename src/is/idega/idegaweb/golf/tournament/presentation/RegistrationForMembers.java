@@ -152,7 +152,30 @@ public class RegistrationForMembers extends GolfBlock {
       Tournament tournament = getTournament(modinfo);
       Member member = (is.idega.idegaweb.golf.entity.Member) AccessControl.getMember(modinfo);
 
-      if (getTournament(modinfo).isDirectRegistration()) {
+      boolean isMemberValid = true;
+      if (tournament.getIsClosed()) {
+    	  	try {
+    	  		isMemberValid = false;
+			Union mUnion = member.getMainUnion();
+			Union tUnion = tournament.getUnion();
+			
+			if (mUnion != null && mUnion.equals(tUnion)) {
+				isMemberValid = true;
+			}
+			
+		} catch (Exception e) {
+		}
+      }
+      
+      if (!isMemberValid) {
+        	add(Text.getBreak());
+            add("<center>");
+            add(getLocalizedMessage("tournament.you_cannot_register_not_in_the_club","You can not register to this tournament, you are not a member of the club."));
+            add(Text.getBreak());
+            add(Text.getBreak());
+            add(closeButton);
+            add("</center>");
+      } else if (getTournament(modinfo).isDirectRegistration()) {
           String subAction = modinfo.getParameter("sub_action");
           if (subAction == null) {
             try {
