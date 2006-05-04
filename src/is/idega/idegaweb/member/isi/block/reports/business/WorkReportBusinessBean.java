@@ -962,7 +962,9 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
         		
             	boardGroup = ((GroupHome)IDOLookup.getHome(Group.class)).findBoardGroupByClubIDAndLeagueID(report.getGroupId(),workReportGroup.getGroupId());
         	}
-        	userStatuses = (List) ((UserStatusHome)IDOLookup.getHome(UserStatus.class)).findAllActiveByUserIdAndGroupId(Integer.parseInt(user.getPrimaryKey().toString()),Integer.parseInt(boardGroup.getPrimaryKey().toString()));
+        	if (boardGroup != null) {
+        		userStatuses = (List) ((UserStatusHome)IDOLookup.getHome(UserStatus.class)).findAllActiveByUserIdAndGroupId(Integer.parseInt(user.getPrimaryKey().toString()),Integer.parseInt(boardGroup.getPrimaryKey().toString()));
+        	}
         } catch (FinderException e) {
             System.out.println("No boardGroup found for user="+member.getName()+" in club="+report.getGroupName()+" connected to league="+workReportGroup.getName());            
         } catch (IDOLookupException e) {
