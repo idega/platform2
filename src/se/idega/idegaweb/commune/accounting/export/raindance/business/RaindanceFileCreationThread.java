@@ -382,7 +382,7 @@ public class RaindanceFileCreationThread extends Thread {
 				//}
 				bWriter.write(format.format(Math.abs(r.getTotalAmount() * 100)));
 				bWriter.write(paymentText.toString());
-				bWriter.write(empty.substring(0, 6));
+				bWriter.write(empty.substring(0, 5));
 				bWriter.newLine();
 				numberOfLines++;
 			}
@@ -415,7 +415,7 @@ public class RaindanceFileCreationThread extends Thread {
 				}*/
 				bWriter.write(format.format(Math.abs(r.getTotalAmount() * 100)));
 				bWriter.write(paymentText.toString());
-				bWriter.write(empty.substring(0, 6));
+				bWriter.write(empty.substring(0, 5));
 				bWriter.newLine();
 				numberOfLines++;
 			}
@@ -550,7 +550,7 @@ public class RaindanceFileCreationThread extends Thread {
 					} else {
 						bWriter.write("+");						
 					}
-					bWriter.write(getStringByLengthLeftJustified(format.format(Math.abs(totalAmountPrHeader * 100)), 14));
+					bWriter.write(format14.format(Math.abs(totalAmountPrHeader * 100)));
 					bWriter.write(empty.substring(0, 1));
 					if (isPostgiro) {
 						bWriter.write("PG1");
@@ -1061,7 +1061,7 @@ public class RaindanceFileCreationThread extends Thread {
 									+ ((Integer) iHead.getPrimaryKey())
 											.toString());
 							Raindance_rec.store();
-						} catch (CreateException e1) {
+						} catch (Exception e1) {
 							e1.printStackTrace();
 						}
 					}
@@ -1080,7 +1080,7 @@ public class RaindanceFileCreationThread extends Thread {
 							Raindance_rec.setErrorConcerns("Fakturamottagare "
 									+ iHead.getCustodian().getPersonalID());
 							Raindance_rec.store();
-						} catch (CreateException e1) {
+						} catch (Exception e1) {
 							e1.printStackTrace();
 						}
 					}
@@ -1099,7 +1099,7 @@ public class RaindanceFileCreationThread extends Thread {
 							Raindance_rec.setErrorConcerns("Fakturamottagare "
 									+ iHead.getCustodian().getPersonalID());
 							Raindance_rec.store();
-						} catch (CreateException e1) {
+						} catch (Exception e1) {
 							e1.printStackTrace();
 						}
 					}
