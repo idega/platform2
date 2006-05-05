@@ -1010,11 +1010,12 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					int playerCountByAgeAndGender = 0;
 					if(ageAndOrGenderCompare){	
 						playerCountByAgeAndGender = getWorkReportBusiness().getCountOfPlayersOfEqualAgeAndGenderByWorkReportAndWorkReportGroup(selectedAge,gender,report,league);
-						leagueStatsData = addToIntegerCount(ageAndGenderCount,leagueStatsData,playerCountByAgeAndGender);
-					}
+						leagueStatsData = addToIntegerCount(totalCountOfPlayersForLeague,leagueStatsData,playerCountByAgeAndGender);
+					} else {
 					
 					totalPlayerCount = getWorkReportBusiness().getCountOfPlayersByWorkReportAndWorkReportGroup(report, league);
 					leagueStatsData = addToIntegerCount(totalCountOfPlayersForLeague, leagueStatsData, totalPlayerCount);
+					}
 					cost = getWorkReportBusiness().getWorkReportExpensesByWorkReportIdAndWorkReportGroupId(((Integer)report.getPrimaryKey()).intValue(),((Integer)league.getPrimaryKey()).intValue());
 					leagueStatsData = addToIntegerCount(totalCost,leagueStatsData,cost);
 					
