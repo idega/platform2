@@ -351,6 +351,8 @@ public class RaindanceFileCreationThread extends Thread {
 			NumberFormat format = NumberFormat.getInstance(currentLocale);
 			format.setMaximumFractionDigits(0);
 			format.setMinimumFractionDigits(0);
+			format.setMaximumIntegerDigits(14);
+			format.setMinimumIntegerDigits(14);
 			format.setGroupingUsed(false);
 			
 			while (keys.hasNext()) {
@@ -373,13 +375,14 @@ public class RaindanceFileCreationThread extends Thread {
 					"Projekt"), 6));
 				bWriter.write(getStringByLengthLeftJustified(pb.findFieldInStringByName(ownPostingString,
 					"Aktivitet"), 4));
-				if (r.getTotalAmount() < 0.0f) {
+/*				if (r.getTotalAmount() < 0.0f) {
 					bWriter.write("-");
-				} else {
+				} else {*/
 					bWriter.write("+");					
-				}
+				//}
 				bWriter.write(format.format(Math.abs(r.getTotalAmount() * 100)));
 				bWriter.write(paymentText.toString());
+				bWriter.write(empty.substring(0, 6));
 				bWriter.newLine();
 				numberOfLines++;
 			}
@@ -405,19 +408,20 @@ public class RaindanceFileCreationThread extends Thread {
 					"Projekt"), 6));
 				bWriter.write(getStringByLengthLeftJustified(pb.findFieldInStringByName(doublePostingString,
 					"Aktivitet"), 4));
-				if (r.getTotalAmount() < 0.0f) {
+				//if (r.getTotalAmount() < 0.0f) {
 					bWriter.write("-");
-				} else {
+				/*} else {
 					bWriter.write("+");					
-				}
+				}*/
 				bWriter.write(format.format(Math.abs(r.getTotalAmount() * 100)));
 				bWriter.write(paymentText.toString());
+				bWriter.write(empty.substring(0, 6));
 				bWriter.newLine();
 				numberOfLines++;
 			}
 
 			bWriter.write("900");
-			bWriter.write(empty.substring(0, 19));			
+			bWriter.write(empty.substring(0, 17));			
 			bWriter.write(getStringByLengthRightJustified(Integer.toString(numberOfLines), 5));
 			bWriter.newLine();
 
@@ -1047,7 +1051,12 @@ public class RaindanceFileCreationThread extends Thread {
 						try {
 							RaindanceCheckRecord Raindance_rec = home.create();
 							Raindance_rec.setHeader(checkHeader);
-							Raindance_rec.setError(e.getTextKey().substring(0, 255));
+							if (e.getTextKey() != null && e.getTextKey().length() > 255) {
+								Raindance_rec.setError(e.getTextKey().substring(0, 255));
+								
+							} else {
+								Raindance_rec.setError(e.getTextKey());
+							}
 							Raindance_rec.setErrorConcerns("Faktura "
 									+ ((Integer) iHead.getPrimaryKey())
 											.toString());
@@ -1062,7 +1071,12 @@ public class RaindanceFileCreationThread extends Thread {
 						try {
 							RaindanceCheckRecord Raindance_rec = home.create();
 							Raindance_rec.setHeader(checkHeader);
-							Raindance_rec.setError(e.getTextKey().substring(0, 255));
+							if (e.getTextKey() != null && e.getTextKey().length() > 255) {
+								Raindance_rec.setError(e.getTextKey().substring(0, 255));
+								
+							} else {
+								Raindance_rec.setError(e.getTextKey());
+							}
 							Raindance_rec.setErrorConcerns("Fakturamottagare "
 									+ iHead.getCustodian().getPersonalID());
 							Raindance_rec.store();
@@ -1076,7 +1090,12 @@ public class RaindanceFileCreationThread extends Thread {
 						try {
 							RaindanceCheckRecord Raindance_rec = home.create();
 							Raindance_rec.setHeader(checkHeader);
-							Raindance_rec.setError(e.getTextKey().substring(0, 255));
+							if (e.getTextKey() != null && e.getTextKey().length() > 255) {
+								Raindance_rec.setError(e.getTextKey().substring(0, 255));
+								
+							} else {
+								Raindance_rec.setError(e.getTextKey());
+							}
 							Raindance_rec.setErrorConcerns("Fakturamottagare "
 									+ iHead.getCustodian().getPersonalID());
 							Raindance_rec.store();
