@@ -423,6 +423,7 @@ public class RaindanceFileCreationThread extends Thread {
 			bWriter.write("900");
 			bWriter.write(empty.substring(0, 17));			
 			bWriter.write(getStringByLengthRightJustified(Integer.toString(numberOfLines), 5));
+			bWriter.write(empty.substring(0, 2));			
 			bWriter.newLine();
 
 			bWriter.close();
@@ -600,7 +601,7 @@ public class RaindanceFileCreationThread extends Thread {
 			}
 
 			bWriter.write("S");
-			bWriter.write(getStringByLengthRightJustified(Integer.toString(numberOfHLines), 4));
+			bWriter.write(getStringByLengthRightJustified(Integer.toString(numberOfHLines), 5));
 			bWriter.write(getStringByLengthRightJustified(format.format(totalInFile * 100), 20));
 			bWriter.write(getStringByLengthRightJustified(Integer.toString(numberOfRLines), 5));
 			bWriter.newLine();
