@@ -625,6 +625,8 @@ public class RaindanceFileCreationThread extends Thread {
 			return original.substring(0, length);
 		}
 		
+		original = original.toUpperCase();
+		
 		return original;
 	}
 
@@ -642,6 +644,8 @@ public class RaindanceFileCreationThread extends Thread {
 		} else if (original.length() > length) {
 			return original.substring(0, length);
 		}
+		
+		original = original.toUpperCase();
 		
 		return original;
 	}
