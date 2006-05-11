@@ -80,7 +80,7 @@ public class ConfirmDeleteWindow extends StyledIWAdminWindow{
       		getCalendarBusiness(iwc).deleteLedger(Integer.parseInt(id));
         		l.setWindowToOpen(CalendarWindow.class);
         		setOnLoad("window.opener.close()"); 
-        		String script = "window.opener." + l.getWindowToOpenCallingScript(iwc);
+        		String script = "window.opener.window.opener." + l.getWindowToOpenCallingScript(iwc);
         		setOnLoad(script);
       		
       	}
