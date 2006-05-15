@@ -43,6 +43,7 @@ import com.idega.block.school.data.SchoolCategory;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.contact.data.Phone;
+import com.idega.core.location.business.CommuneBusiness;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.PostalCode;
 import com.idega.data.IDOLookup;
@@ -434,6 +435,20 @@ public class RaindanceFileCreationThread extends Thread {
 					.getHome(PaymentHeader.class))
 					.findBySchoolCategoryStatusInCommuneWithoutCommunalManagement(
 							schoolCategory, 'P');
+		} catch (IDOLookupException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			Collection extraheaders = ((PaymentHeaderHome) IDOLookup
+					.getHome(PaymentHeader.class))
+					.findBySchoolCategoryStatusOutsideCommuneWithCommunalManagement(
+							schoolCategory, 'P', getCommuneBusiness().getDefaultCommune());
+			if (extraheaders != null && !extraheaders.isEmpty()) {
+				headers.addAll(extraheaders);
+			}
 		} catch (IDOLookupException e) {
 			e.printStackTrace();
 		} catch (FinderException e) {
@@ -1137,6 +1152,15 @@ public class RaindanceFileCreationThread extends Thread {
 		try {
 			return (UserBusiness) IBOLookup.getServiceInstance(iwac,
 					UserBusiness.class);
+		} catch (RemoteException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
+	}
+
+	private CommuneBusiness getCommuneBusiness() {
+		try {
+			return (CommuneBusiness) IBOLookup.getServiceInstance(iwac,
+					CommuneBusiness.class);
 		} catch (RemoteException e) {
 			throw new IBORuntimeException(e.getMessage());
 		}
