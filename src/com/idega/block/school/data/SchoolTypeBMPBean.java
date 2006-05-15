@@ -47,6 +47,7 @@ public class SchoolTypeBMPBean extends GenericEntity implements SchoolType{
 		this.addAttribute(TYPE_STRING_ID,"Extra school type ID",true,true,String.class);
     
     addManyToOneRelationship(SCHOOLCATEGORY, SchoolCategory.class);
+    getEntityDefinition().setBeanCachingActiveByDefault(true);
   }
 
   public String getEntityName() {
@@ -150,15 +151,26 @@ public class SchoolTypeBMPBean extends GenericEntity implements SchoolType{
       SelectQuery query = new SelectQuery(table);
       query.addColumn(new WildCardColumn());
       query.addOrder(table,NAME,true); 
-      return idoFindPKsByQuery(query);
+      return super.idoFindPKsByQuery(query);
   }
 
   public Collection ejbFindAllByCategory(String category) throws javax.ejb.FinderException {
-      Table table = new Table(this);
+	  Table table = new Table(this);
 	  SelectQuery query = new SelectQuery(table);
 	  query.addColumn(new WildCardColumn());
 	  query.addCriteria(new MatchCriteria(table,SCHOOLCATEGORY,MatchCriteria.EQUALS,category,true));
 	  return idoFindPKsByQuery(query);
+  }
+  
+  
+
+  public String ejbFindAllByCategoryTest(String category) throws javax.ejb.FinderException {
+
+	  Table table = new Table(this);
+	  SelectQuery query = new SelectQuery(table);
+	  query.addColumn(new WildCardColumn());
+	  query.addCriteria(new MatchCriteria(table,SCHOOLCATEGORY,MatchCriteria.EQUALS,category,true));
+	  return query.toString();
   }
 
 	public Collection ejbFindAllByCategory(String category, boolean showFreetimeTypes) throws javax.ejb.FinderException {
@@ -190,6 +202,15 @@ public class SchoolTypeBMPBean extends GenericEntity implements SchoolType{
 	  query.addCriteria(new MatchCriteria(table,LOC_KEY,MatchCriteria.EQUALS,typeKey,true));
   	  return (Integer)super.idoFindOnePKByQuery(query);
   }
+  
+  public Integer ejbFindByName(String name) throws javax.ejb.FinderException{
+      Table table = new Table(this);
+	  SelectQuery query = new SelectQuery(table);
+	  query.addColumn(new WildCardColumn());
+	  query.addCriteria(new MatchCriteria(table,NAME,MatchCriteria.EQUALS,name,true));
+  	  return (Integer)super.idoFindOnePKByQuery(query);
+  }
+
   
   /**
 	 *	Finds one SchoolType from a typeString.
