@@ -69,6 +69,7 @@ import com.idega.util.TimePeriod;
 import com.idega.util.URLUtil;
 import com.idega.util.text.TextSoap;
 
+
 /**
  * @author laddi
  */
@@ -1408,14 +1409,25 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add(getSmallText(localize("child_care.group_name", "Name")), 1, row);
 		table.add("  ", 1, row);
 		table.add(textInput, 1, row++);
-
+		
 		School school = getSession().getProvider();
 		Collection availableTypes = new ArrayList();
 		SchoolBusiness schBuiz = getBusiness().getSchoolBusiness();
 		SchoolCategory schcategory = schBuiz.getCategoryChildcare();		
 
+		String aaaa = null;
+
 		try {
-			availableTypes = getBusiness().getSchoolBusiness().getSchoolTypeHome().findAllByCategory(schcategory.getPrimaryKey().toString());
+			String category = schcategory.getPrimaryKey().toString();	
+			aaaa = category + "|1|| "; 
+			com.idega.block.school.data.SchoolTypeHome sth = getBusiness().getSchoolBusiness().getSchoolTypeHome();
+			if(sth != null) aaaa = aaaa + "not null |2|| ";
+			else aaaa = aaaa +  "null |2|| ";
+			
+			aaaa = aaaa + sth.findAllByCategoryTest(category);
+			availableTypes = sth.findAllByCategory(category);
+			//availableTypes = getBusiness().getSchoolBusiness().getSchoolTypeHome().findAllByCategory(schcategory.getPrimaryKey().toString());
+			
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
@@ -1423,15 +1435,20 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		catch (FinderException e) {
 			e.printStackTrace();
 		}
+
+
+
 		
 		DropdownMenu types = getDropdownMenuLocalized(PARAMETER_SCHOOL_TYPES, availableTypes, "getLocalizationKey", "");
 		if (currentType != null) {
 			types.setSelectedElement(localize(currentType.getLocalizationKey(), ""));
 		}
 		table.add(getSmallHeader(localize("child_care.choose_school_type", "Choose school type:")), 1, row++);
-		table.add(getSmallText(localize("child_care.school_type", "School type")+";"), 1, row);
+		table.add(getSmallText(localize("child_care.school_type", "School type")), 1, row);
 		table.add("  ", 1, row);
 		table.add(types, 1, row++);
+		
+		table.add(getSmallText(aaaa), 1, row++);
 
 		String localized = "";
 		if (getSession().getGroupID() != -1) {
