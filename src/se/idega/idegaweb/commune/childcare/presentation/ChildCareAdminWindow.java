@@ -1415,18 +1415,10 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		SchoolBusiness schBuiz = getBusiness().getSchoolBusiness();
 		SchoolCategory schcategory = schBuiz.getCategoryChildcare();		
 
-		String aaaa = null;
 
 		try {
 			String category = schcategory.getPrimaryKey().toString();	
-			aaaa = category + "|1|| "; 
-			com.idega.block.school.data.SchoolTypeHome sth = getBusiness().getSchoolBusiness().getSchoolTypeHome();
-			if(sth != null) aaaa = aaaa + "not null |2|| ";
-			else aaaa = aaaa +  "null |2|| ";
-			
-			aaaa = aaaa + sth.findAllByCategoryTest(category);
-			availableTypes = sth.findAllByCategory(category);
-			//availableTypes = getBusiness().getSchoolBusiness().getSchoolTypeHome().findAllByCategory(schcategory.getPrimaryKey().toString());
+			availableTypes = getBusiness().getSchoolBusiness().getSchoolTypeHome().findAllByCategory(schcategory.getPrimaryKey().toString());
 			
 		}
 		catch (RemoteException e) {
@@ -1435,9 +1427,6 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		catch (FinderException e) {
 			e.printStackTrace();
 		}
-
-
-
 		
 		DropdownMenu types = getDropdownMenuLocalized(PARAMETER_SCHOOL_TYPES, availableTypes, "getLocalizationKey", "");
 		if (currentType != null) {
@@ -1447,8 +1436,6 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add(getSmallText(localize("child_care.school_type", "School type")), 1, row);
 		table.add("  ", 1, row);
 		table.add(types, 1, row++);
-		
-		table.add(getSmallText(aaaa), 1, row++);
 
 		String localized = "";
 		if (getSession().getGroupID() != -1) {
