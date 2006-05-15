@@ -11,6 +11,7 @@ import com.idega.block.school.data.SchoolBMPBean;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolManagementType;
 import com.idega.block.school.data.SchoolManagementTypeHome;
+import com.idega.core.location.data.Commune;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
@@ -324,6 +325,20 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 		return idoFindPKsBySQL(sql.toString());
 	}
 	
+	public Collection ejbFindBySchoolCategoryStatusOutsideCommuneWithCommunalManagement(String schoolCategory, char status, Commune commune) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.append("select p.* from " + ENTITY_NAME + " p, cacc_provider_acc_prop prop, cacc_provider_type t, sch_school s");
+		sql.appendWhereEqualsWithSingleQuotes("p." + COLUMN_SCHOOL_CATEGORY_ID,schoolCategory);
+		sql.appendAndEqualsQuoted("p." + COLUMN_STATUS,String.valueOf(status));
+		sql.appendAndEquals("p." + COLUMN_SCHOOL_ID, "prop.school_id");
+		sql.appendAndEquals("prop.provider_type_id", "t.provider_type_id");
+		sql.appendAndEqualsQuoted("t.localization_key","cacc_provider_type.commune");
+		sql.appendAndEquals("p." + COLUMN_SCHOOL_ID, "s.sch_school_id");
+		sql.appendAndEquals("s.commune", commune);
+		
+		return idoFindPKsBySQL(sql.toString());
+	}
+		
 	public Collection ejbFindBySchoolCategoryAndStatus(String schoolCategory, char status) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);

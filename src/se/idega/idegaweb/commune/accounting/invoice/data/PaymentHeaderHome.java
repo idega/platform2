@@ -11,6 +11,7 @@ import javax.ejb.FinderException;
 
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
+import com.idega.core.location.data.Commune;
 import com.idega.data.IDOException;
 import com.idega.data.IDOHome;
 import com.idega.data.IDOLookupException;
@@ -102,6 +103,13 @@ public interface PaymentHeaderHome extends IDOHome {
 	 */
 	public Collection findBySchoolCategoryStatusOutsideCommuneOrWithoutCommunalManagement(
 			String schoolCategory, char status) throws FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#ejbFindBySchoolCategoryStatusOutsideCommuneWithCommunalManagement
+	 */
+	public Collection findBySchoolCategoryStatusOutsideCommuneWithCommunalManagement(
+			String schoolCategory, char status, Commune commune)
+			throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#ejbFindBySchoolCategoryAndStatus

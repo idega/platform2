@@ -11,6 +11,7 @@ import javax.ejb.FinderException;
 
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
+import com.idega.core.location.data.Commune;
 import com.idega.data.IDOException;
 import com.idega.data.IDOFactory;
 import com.idega.data.IDOLookupException;
@@ -155,6 +156,17 @@ public class PaymentHeaderHomeImpl extends IDOFactory implements
 		java.util.Collection ids = ((PaymentHeaderBMPBean) entity)
 				.ejbFindBySchoolCategoryStatusOutsideCommuneOrWithoutCommunalManagement(
 						schoolCategory, status);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findBySchoolCategoryStatusOutsideCommuneWithCommunalManagement(
+			String schoolCategory, char status, Commune commune)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((PaymentHeaderBMPBean) entity)
+				.ejbFindBySchoolCategoryStatusOutsideCommuneWithCommunalManagement(
+						schoolCategory, status, commune);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
