@@ -2373,11 +2373,10 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		ChildCareApplication application = getBusiness().getApplicationForChildAndProvider(this._userID, getSession().getChildCareID());
 
 		IWTimestamp date = new IWTimestamp(iwc.getParameter(PARAMETER_CANCEL_DATE));
-        sendExtraMessage(iwc,application,date,application.getApplicationStatus());
 		
 		if (application != null) {
-			//if (application.getApplicationStatus() == getBusiness().getStatusReady() || application.getApplicationStatus() == getBusiness().getStatusParentTerminated()) {
-			if (application.getApplicationStatus() == getBusiness().getStatusReady()) {
+			if (application.getApplicationStatus() == getBusiness().getStatusReady() || application.getApplicationStatus() == getBusiness().getStatusParentTerminated()) {
+			//if (application.getApplicationStatus() == getBusiness().getStatusReady()) {
 				if (application.getApplicationStatus() == getBusiness().getStatusReady()) {
 					boolean parentalLeave = true;
 					if (iwc.isParameterSet(PARAMETER_CANCEL_REASON)) {
@@ -2387,6 +2386,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 					application.setRequestedCancelDate(date.getDate());
 					application.setParentalLeave(parentalLeave);
 					application.store();
+					
+			        sendExtraMessage(iwc,application,date,application.getApplicationStatus());
+					
 				}
 				getBusiness().createCancelForm(application, date.getDate(), iwc.getCurrentLocale());
 				this.isEndDateSet = true;
