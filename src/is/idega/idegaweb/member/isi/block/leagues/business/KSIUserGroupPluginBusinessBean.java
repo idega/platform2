@@ -1,5 +1,5 @@
 /*
- * $Id: KSIUserGroupPluginBusinessBean.java,v 1.10.4.3 2006/04/28 16:01:16 eiki Exp $
+ * $Id: KSIUserGroupPluginBusinessBean.java,v 1.10.4.4 2006/05/18 14:48:59 gimmi Exp $
  * Created on Jul 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -15,10 +15,10 @@ import is.idega.idegaweb.member.business.MemberUserBusiness;
 import is.idega.idegaweb.member.business.NoClubFoundException;
 import is.idega.idegaweb.member.business.NoDivisionFoundException;
 import is.idega.idegaweb.member.business.plugins.AgeGenderPluginBusinessBean;
-import is.idega.idegaweb.member.isi.block.leagues.webservice.FelagsmadurLocator;
-import is.idega.idegaweb.member.isi.block.leagues.webservice.FelagsmadurSoap_PortType;
-import is.idega.idegaweb.member.isi.block.leagues.webservice.TVilla;
 import is.idega.idegaweb.member.util.IWMemberConstants;
+import is.ksi.www2.ssl.vefthjon_Felix.Felagsmadur.FelagsmadurLocator;
+import is.ksi.www2.ssl.vefthjon_Felix.Felagsmadur.FelagsmadurSoap;
+import is.ksi.www2.ssl.vefthjon_Felix.Felagsmadur.TVilla;
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.util.Collection;
@@ -298,7 +298,7 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 	 */
 	public int getClubNumberForPlayerFromWebService(String personalId) throws ServiceException, RemoteException{
 		FelagsmadurLocator locator = new FelagsmadurLocator();
-		FelagsmadurSoap_PortType wservice = locator.getFelagsmadurSoap();
+		FelagsmadurSoap wservice = locator.getFelagsmadurSoap();
 		
 		int returnValue = wservice.felagsmadur_til(personalId);
 		
@@ -321,7 +321,7 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 		FelagsmadurLocator locator = new FelagsmadurLocator();
 		QName serviceName = locator.getServiceName();
 		//FelagsmadurSoap_PortType wservice = locator.getFelagsmadurSoap(new URL("http://127.0.0.1:8080/ssl/vefthjon_felix/felagsmadur.asmx?"));
-		FelagsmadurSoap_PortType wservice = locator.getFelagsmadurSoap();
+		FelagsmadurSoap wservice = locator.getFelagsmadurSoap();
 		
 		SOAPHeaderElement authHeader = new SOAPHeaderElement(serviceName.getNamespaceURI(),"AuthHeader");
 		//authHeader.setMustUnderstand(true);

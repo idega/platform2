@@ -1,5 +1,5 @@
 /*
- * $Id: KSIWSImpl.java,v 1.2 2005/07/14 13:57:54 eiki Exp $
+ * $Id: KSIWSImpl.java,v 1.2.4.1 2006/05/18 14:48:59 gimmi Exp $
  * Created on Jul 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -10,21 +10,56 @@
 package is.idega.idegaweb.member.isi.block.leagues.webservice;
 
 import is.idega.idegaweb.member.isi.block.leagues.business.KSIUserGroupPluginBusiness;
+import is.ksi.www2.ssl.vefthjon_Felix.Felagsmadur.FelagsmadurLocator;
+import is.ksi.www2.ssl.vefthjon_Felix.Felagsmadur.FelagsmadurSoap;
+import is.ksi.www2.ssl.vefthjon_Felix.Felagsmadur.TVilla;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
-import javax.xml.rpc.ParameterMode;
+import javax.xml.namespace.QName;
 import javax.xml.rpc.ServiceException;
-import org.apache.axis.client.Call;
-import org.apache.axis.client.Service;
-import org.apache.axis.encoding.XMLType;
+import javax.xml.soap.SOAPElement;
+import javax.xml.soap.SOAPException;
+import org.apache.axis.client.Stub;
+import org.apache.axis.message.SOAPHeaderElement;
 import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWMainApplication;
+
 
 
 public class KSIWSImpl implements KSIWS {
 
     public static void main(String[] args) {
  
+    	
+    	
+    	try {
+    		
+    		FelagsmadurLocator locator = new FelagsmadurLocator();
+    		FelagsmadurSoap wservice = locator.getFelagsmadurSoap();
+    	
+		//	String message = registerPlayerToClubViaWebService("2502785279",907, "Sm‡stund");
+			
+    		System.out.println("felagsmadur til : "+wservice.felagsmadur_til("2502785279"));
+    		
+    		
+			//System.out.println(message);
+		}
+		catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (ServiceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+//		catch (MalformedURLException e) {
+//			e.printStackTrace();
+//		}
+//		catch (SOAPException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+    	/*
         try {
         		FelagsmadurLocator locator = new FelagsmadurLocator();
         		FelagsmadurSoap_PortType wservice = locator.getFelagsmadurSoap();
@@ -44,12 +79,12 @@ public class KSIWSImpl implements KSIWS {
 			//String pin = "250278527";
 
 			//Ari thor hj‡ kr
-			String pin = "2804873179";
+			String pin = "2806723949";
 
 			//wrong club test
 //			String clubNumb = "999";
 			
-			String clubNumb = "101";
+			String clubNumb = "240";
 			String date = "25-02-2005";
       
 			Service service = new Service();
@@ -76,7 +111,16 @@ public class KSIWSImpl implements KSIWS {
 			e.printStackTrace();
 		}
    
-    
+    */
+		/* catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (SOAPException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} */
+		
     
 //        try {
 //            NewDocument service = new NewDocumentLocator();
@@ -103,6 +147,44 @@ public class KSIWSImpl implements KSIWS {
 
 
     }
+    
+    
+    
+    public static String registerPlayerToClubViaWebService(String personalId, int clubNumber, String clubName) throws RemoteException, ServiceException, MalformedURLException, SOAPException{
+		FelagsmadurLocator locator = new FelagsmadurLocator();
+		QName serviceName = locator.getServiceName();
+		//FelagsmadurSoap_PortType wservice = locator.getFelagsmadurSoap(new URL("http://127.0.0.1:8080/ssl/vefthjon_felix/felagsmadur.asmx?"));
+		FelagsmadurSoap wservice = locator.getFelagsmadurSoap();
+		
+		SOAPHeaderElement authHeader = new SOAPHeaderElement(serviceName.getNamespaceURI(),"AuthHeader");
+		//authHeader.setMustUnderstand(true);
+		
+		SOAPElement userName = authHeader.addChildElement("UserName");
+		userName.addTextNode("felix7");
+		SOAPElement password = authHeader.addChildElement("Password");
+		password.addTextNode("r2bold5");
+	
+		Stub stub = (Stub) wservice;
+		stub.setHeader(authHeader);
+		
+		
+//SET PROPERTY ADDS TO THE HTTP HEADER NOT SOAP HEADER
+//		stub._setProperty("Username","felix7");
+//		stub._setProperty("Password","r2bold5");
+//		stub.setUsername("felix7");
+//		stub.setPassword("r2bold5");
+//		stub._setProperty(Stub.USERNAME_PROPERTY,"felix7");
+//		stub._setProperty(Stub.PASSWORD_PROPERTY,"r2bold5");
+	
+		TVilla msg =  wservice.felagsmadur_Skra(personalId,clubNumber,clubName);
+		int error = msg.getIVilla();
+	
+		
+		String text = msg.getSVilla_texti();
+		
+		return error+" "+text;
+		
+	}
 
 	public String doClubMemberExchange(String personalIdOfPlayer, String clubNumberToRegisterTo, String dateOfActivation) {
 		KSIUserGroupPluginBusiness biz;
