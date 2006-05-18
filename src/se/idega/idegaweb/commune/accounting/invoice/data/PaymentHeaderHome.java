@@ -93,10 +93,24 @@ public interface PaymentHeaderHome extends IDOHome {
 			String schoolCategory, char status) throws FinderException;
 
 	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#ejbFindBySchoolCategoryStatusInCommuneWithCommunalManagement
+	 */
+	public Collection findBySchoolCategoryStatusInCommuneWithCommunalManagement(
+			String schoolCategory, char status, Commune commune)
+			throws FinderException;
+
+	/**
 	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#ejbFindBySchoolCategoryStatusInCommuneWithoutCommunalManagement
 	 */
 	public Collection findBySchoolCategoryStatusInCommuneWithoutCommunalManagement(
 			String schoolCategory, char status) throws FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#ejbFindBySchoolCategoryStatusInCommuneWithoutCommunalManagement
+	 */
+	public Collection findBySchoolCategoryStatusInCommuneWithoutCommunalManagement(
+			String schoolCategory, char status, Commune commune)
+			throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderBMPBean#ejbFindBySchoolCategoryStatusOutsideCommuneOrWithoutCommunalManagement

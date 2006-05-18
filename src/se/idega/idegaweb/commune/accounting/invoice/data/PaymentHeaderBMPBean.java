@@ -296,6 +296,22 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 		return idoFindPKsByQuery(sql);
 	}
 
+	public Collection ejbFindBySchoolCategoryStatusInCommuneWithCommunalManagement(String schoolCategory, char status, Commune commune) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.append("select p.* from " + ENTITY_NAME + " p, cacc_provider_acc_prop prop, cacc_provider_type t, sch_school s");
+		sql.appendWhereEqualsWithSingleQuotes("p." + COLUMN_SCHOOL_CATEGORY_ID,schoolCategory);
+		sql.appendAndEqualsQuoted("p." + COLUMN_STATUS,String.valueOf(status));
+		sql.appendAndEquals("p." + COLUMN_SCHOOL_ID, "prop.school_id");
+		sql.appendAndEquals("prop.provider_type_id", "t.provider_type_id");
+		sql.appendAndEqualsQuoted("t.localization_key","cacc_provider_type.commune");
+		sql.appendAndEquals("s.commune", commune);
+		
+		System.out.println("sql = " + sql.toString());
+		
+		return idoFindPKsByQuery(sql);
+	}
+
+	
 	public Collection ejbFindBySchoolCategoryStatusInCommuneWithoutCommunalManagement(String schoolCategory, char status) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.append("select p.* from " + ENTITY_NAME + " p, cacc_provider_acc_prop prop, cacc_provider_type t");
@@ -313,6 +329,24 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 		return idoFindPKsByQuery(sql);
 	}
 
+	public Collection ejbFindBySchoolCategoryStatusInCommuneWithoutCommunalManagement(String schoolCategory, char status, Commune commune) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.append("select p.* from " + ENTITY_NAME + " p, cacc_provider_acc_prop prop, cacc_provider_type t, sch_school s");
+		sql.appendWhereEqualsWithSingleQuotes("p." + COLUMN_SCHOOL_CATEGORY_ID,schoolCategory);
+		sql.appendAndEqualsQuoted("p." + COLUMN_STATUS,String.valueOf(status));
+		sql.appendAndEquals("p." + COLUMN_SCHOOL_ID, "prop.school_id");
+		sql.appendAndEquals("prop.provider_type_id", "t.provider_type_id");
+		sql.appendAnd();
+		sql.append("t.localization_key");
+		sql.appendNOTEqual();
+		sql.appendQuoted("cacc_provider_type.commune");
+		sql.appendAndEquals("s.commune", commune);
+		
+		System.out.println("sql = " + sql.toString());
+		
+		return idoFindPKsByQuery(sql);
+	}
+	
 	public Collection ejbFindBySchoolCategoryStatusOutsideCommuneOrWithoutCommunalManagement(String schoolCategory, char status) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.append("select p.* from " + ENTITY_NAME + " p, cacc_provider_acc_prop prop, cacc_provider_type t");
@@ -338,6 +372,8 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 		sql.append("s.commune");
 		sql.appendNOTEqual();
 		sql.append(commune);
+
+		System.out.println("sql = " + sql.toString());
 		
 		return idoFindPKsBySQL(sql.toString());
 	}

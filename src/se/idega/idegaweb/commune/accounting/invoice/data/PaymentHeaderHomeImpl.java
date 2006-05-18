@@ -140,12 +140,34 @@ public class PaymentHeaderHomeImpl extends IDOFactory implements
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
+	public Collection findBySchoolCategoryStatusInCommuneWithCommunalManagement(
+			String schoolCategory, char status, Commune commune)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((PaymentHeaderBMPBean) entity)
+				.ejbFindBySchoolCategoryStatusInCommuneWithCommunalManagement(
+						schoolCategory, status, commune);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
 	public Collection findBySchoolCategoryStatusInCommuneWithoutCommunalManagement(
 			String schoolCategory, char status) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		java.util.Collection ids = ((PaymentHeaderBMPBean) entity)
 				.ejbFindBySchoolCategoryStatusInCommuneWithoutCommunalManagement(
 						schoolCategory, status);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findBySchoolCategoryStatusInCommuneWithoutCommunalManagement(
+			String schoolCategory, char status, Commune commune)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((PaymentHeaderBMPBean) entity)
+				.ejbFindBySchoolCategoryStatusInCommuneWithoutCommunalManagement(
+						schoolCategory, status, commune);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
