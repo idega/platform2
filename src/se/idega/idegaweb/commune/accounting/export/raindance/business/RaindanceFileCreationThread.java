@@ -243,7 +243,7 @@ public class RaindanceFileCreationThread extends Thread {
 			headers = ((PaymentHeaderHome) IDOLookup
 					.getHome(PaymentHeader.class))
 					.findBySchoolCategoryStatusInCommuneWithCommunalManagement(
-							schoolCategory, 'P');
+							schoolCategory, 'P', getCommuneBusiness().getDefaultCommune());
 		} catch (IDOLookupException e) {
 			e.printStackTrace();
 		} catch (FinderException e) {
@@ -434,7 +434,7 @@ public class RaindanceFileCreationThread extends Thread {
 			headers = ((PaymentHeaderHome) IDOLookup
 					.getHome(PaymentHeader.class))
 					.findBySchoolCategoryStatusInCommuneWithoutCommunalManagement(
-							schoolCategory, 'P');
+							schoolCategory, 'P', getCommuneBusiness().getDefaultCommune());
 		} catch (IDOLookupException e) {
 			e.printStackTrace();
 		} catch (FinderException e) {
