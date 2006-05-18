@@ -433,28 +433,13 @@ public class RaindanceFileCreationThread extends Thread {
 		try {
 			headers = ((PaymentHeaderHome) IDOLookup
 					.getHome(PaymentHeader.class))
-					.findBySchoolCategoryStatusInCommuneWithoutCommunalManagement(
-							schoolCategory, 'P', getCommuneBusiness().getDefaultCommune());
+					.findBySchoolCategoryAndStatus(schoolCategory, 'P');
 		} catch (IDOLookupException e) {
 			e.printStackTrace();
 		} catch (FinderException e) {
 			e.printStackTrace();
 		}
 		
-		try {
-			Collection extraheaders = ((PaymentHeaderHome) IDOLookup
-					.getHome(PaymentHeader.class))
-					.findBySchoolCategoryStatusOutsideCommuneWithCommunalManagement(
-							schoolCategory, 'P', getCommuneBusiness().getDefaultCommune());
-			if (extraheaders != null && !extraheaders.isEmpty()) {
-				headers.addAll(extraheaders);
-			}
-		} catch (IDOLookupException e) {
-			e.printStackTrace();
-		} catch (FinderException e) {
-			e.printStackTrace();
-		}
-
 		// Bookkeeping file
 		if (headers != null && !headers.isEmpty()) {
 			Iterator it = headers.iterator();
