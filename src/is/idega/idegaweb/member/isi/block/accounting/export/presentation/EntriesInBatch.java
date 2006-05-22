@@ -19,6 +19,8 @@ import com.idega.presentation.text.Text;
 import com.idega.util.IWTimestamp;
 
 public class EntriesInBatch extends StyledIWAdminWindow {
+	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi.block.accounting";
+
 	private String backTableStyle = "back";
 
 	private String borderTableStyle = "borderAll";
@@ -141,4 +143,8 @@ public class EntriesInBatch extends StyledIWAdminWindow {
 
 		return null;
 	}
+
+    public String getBundleIdentifier() {
+        return IW_BUNDLE_IDENTIFIER;
+    }
 }
