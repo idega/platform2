@@ -312,25 +312,23 @@ public class RaindanceFileCreationThread extends Thread {
 
 								if (ownPosting != null) {
 									if (ownPostingMap.containsKey(ownPosting)) {
-										PaymentRecord r = (PaymentRecord) ownPostingMap
+										Float amount = (Float) ownPostingMap
 												.get(ownPosting);
-										r.setTotalAmount(r.getTotalAmount()
-												+ rec.getTotalAmount());
+										
+										ownPostingMap.put(ownPosting, new Float(amount.floatValue() + rec.getTotalAmount()));
 									} else {
-										ownPostingMap.put(ownPosting, rec);
+										ownPostingMap.put(ownPosting, new Float(rec.getTotalAmount()));
 									}
 								}
 
 								if (doublePosting != null) {
 									if (doublePostingMap
 											.containsKey(doublePosting)) {
-										PaymentRecord r = (PaymentRecord) doublePostingMap
+										Float amount = (Float) doublePostingMap
 												.get(doublePosting);
-										r.setTotalAmount(r.getTotalAmount()
-												+ rec.getTotalAmount());
+										ownPostingMap.put(doublePosting, new Float(amount.floatValue() + rec.getTotalAmount()));
 									} else {
-										doublePostingMap
-												.put(doublePosting, rec);
+										ownPostingMap.put(doublePosting, new Float(rec.getTotalAmount()));
 									}
 								}
 							}
@@ -358,7 +356,7 @@ public class RaindanceFileCreationThread extends Thread {
 			
 			while (keys.hasNext()) {
 				String ownPostingString = (String) keys.next();
-				PaymentRecord r = (PaymentRecord) ownPostingMap
+				Float amount = (Float) ownPostingMap
 						.get(ownPostingString);
 
 				bWriter.write("20");
@@ -381,7 +379,7 @@ public class RaindanceFileCreationThread extends Thread {
 				} else {*/
 					bWriter.write("+");					
 				//}
-				bWriter.write(format.format(Math.abs(r.getTotalAmount() * 100)));
+				bWriter.write(format.format(Math.abs(amount.floatValue() * 100)));
 				bWriter.write(paymentText.toString());
 				bWriter.write(empty.substring(0, 5));
 				bWriter.newLine();
@@ -391,7 +389,7 @@ public class RaindanceFileCreationThread extends Thread {
 			keys = doublePostingMap.keySet().iterator();
 			while (keys.hasNext()) {
 				String doublePostingString = (String) keys.next();
-				PaymentRecord r = (PaymentRecord) doublePostingMap
+				Float amount = (Float) doublePostingMap
 						.get(doublePostingString);
 
 				bWriter.write("20");
@@ -414,7 +412,7 @@ public class RaindanceFileCreationThread extends Thread {
 				/*} else {
 					bWriter.write("+");					
 				}*/
-				bWriter.write(format.format(Math.abs(r.getTotalAmount() * 100)));
+				bWriter.write(format.format(Math.abs(amount.floatValue() * 100)));
 				bWriter.write(paymentText.toString());
 				bWriter.write(empty.substring(0, 5));
 				bWriter.newLine();
