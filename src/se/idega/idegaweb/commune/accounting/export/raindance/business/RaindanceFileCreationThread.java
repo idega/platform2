@@ -326,9 +326,9 @@ public class RaindanceFileCreationThread extends Thread {
 											.containsKey(doublePosting)) {
 										Float amount = (Float) doublePostingMap
 												.get(doublePosting);
-										ownPostingMap.put(doublePosting, new Float(amount.floatValue() + rec.getTotalAmount()));
+										doublePostingMap.put(doublePosting, new Float(amount.floatValue() + rec.getTotalAmount()));
 									} else {
-										ownPostingMap.put(doublePosting, new Float(rec.getTotalAmount()));
+										doublePostingMap.put(doublePosting, new Float(rec.getTotalAmount()));
 									}
 								}
 							}
@@ -379,7 +379,7 @@ public class RaindanceFileCreationThread extends Thread {
 				} else {*/
 					bWriter.write("+");					
 				//}
-				bWriter.write(format.format(Math.abs(amount.floatValue() * 100)));
+				bWriter.write(format.format(Math.abs(Math.round(amount.floatValue()) * 100)));
 				bWriter.write(paymentText.toString());
 				bWriter.write(empty.substring(0, 5));
 				bWriter.newLine();
@@ -412,7 +412,7 @@ public class RaindanceFileCreationThread extends Thread {
 				/*} else {
 					bWriter.write("+");					
 				}*/
-				bWriter.write(format.format(Math.abs(amount.floatValue() * 100)));
+				bWriter.write(format.format(Math.abs(Math.round(amount.floatValue()) * 100)));
 				bWriter.write(paymentText.toString());
 				bWriter.write(empty.substring(0, 5));
 				bWriter.newLine();
