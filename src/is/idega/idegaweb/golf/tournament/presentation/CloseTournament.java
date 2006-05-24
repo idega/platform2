@@ -55,16 +55,27 @@ public class CloseTournament extends TournamentBlock {
 			tournament_id = Integer.toString(getTournamentID(modinfo));
 		}
 
-		if (tournament_id != null && mode.equalsIgnoreCase("")) {
-			main(tournament_id, modinfo);
-		}
+		if (tournament_id != null) {
+			Tournament tournament = null;
+			try {
+				tournament = ((TournamentHome) IDOLookup.getHomeLegacy(Tournament.class)).findByPrimaryKey(Integer.parseInt(tournament_id));
+			}
+			catch (FinderException fe) {
+				throw new SQLException(fe.getMessage());
+			}
 
-		if (tournament_id != null && mode.equals("select")) {
-			main2(tournament_id, modinfo);
-		}
+			if (mode.equalsIgnoreCase("")) {
+				main(tournament, modinfo);
+			}
 
-		if (tournament_id != null && mode.equals("update_handicap")) {
-			main3(tournament_id, modinfo);
+			if (mode.equals("select")) {
+				main2(tournament, modinfo);
+			}
+
+			if (mode.equals("update_handicap")) {
+				main3(tournament, modinfo);
+			}
+
 		}
 
 	}
@@ -118,23 +129,16 @@ public class CloseTournament extends TournamentBlock {
 
 	}
 
-	public void main(String tournament_id, IWContext modinfo) throws IOException, SQLException {
-		Tournament tournament = null;
-		try {
-			tournament = ((TournamentHome) IDOLookup.getHomeLegacy(Tournament.class)).findByPrimaryKey(Integer.parseInt(tournament_id));
-		}
-		catch (FinderException fe) {
-			throw new SQLException(fe.getMessage());
-		}
+	public void main(Tournament tournament, IWContext modinfo) throws IOException, SQLException {
 		TournamentRound[] rounds = tournament.getTournamentRounds();
 
 		int holes = rounds.length * tournament.getNumberOfHoles();
 
-		DisplayScores[] members = getTournamentBusiness(modinfo).getDisplayScores("t.tournament_id = " + tournament_id, "m.member_id", "having count(stroke_count) < " + holes);
+		DisplayScores[] members = getTournamentBusiness(modinfo).getDisplayScores("t.tournament_id = " + tournament.getID(), "m.member_id", "having count(stroke_count) < " + holes);
 
 		Form myForm = new Form();
 		myForm.add(new HiddenInput("mode", "select"));
-		myForm.add(new HiddenInput("tournament", tournament_id));
+		myForm.add(new HiddenInput("tournament", ""+tournament.getID()));
 
 		Table myTable = new Table();
 		myTable.mergeCells(1, 1, 2, 1);
@@ -150,9 +154,11 @@ public class CloseTournament extends TournamentBlock {
 		for (int a = 0; a < rounds.length; a++) {
 
 			DropdownMenu menu = new DropdownMenu("round_" + (a + 1));
-			menu.addMenuElement(0, iwrb.getLocalizedString("tournament.handicap_increase_decrease", "Handicap to increase and decrease"));
-			menu.addMenuElement(1, iwrb.getLocalizedString("tournament.handicap_decrease", "Handicap to decrease"));
-			menu.addMenuElement(2, iwrb.getLocalizedString("tournament.handicap_increase", "Handicap to increase"));
+			if (!tournament.getTournamentType().getUseGroups()) {
+				menu.addMenuElement(0, iwrb.getLocalizedString("tournament.handicap_increase_decrease", "Handicap to increase and decrease"));
+				menu.addMenuElement(1, iwrb.getLocalizedString("tournament.handicap_decrease", "Handicap to decrease"));
+				menu.addMenuElement(2, iwrb.getLocalizedString("tournament.handicap_increase", "Handicap to increase"));
+			}
 			menu.addMenuElement(3, iwrb.getLocalizedString("tournament.handicap_no_effect", "No change in handicap"));
 
 			Text roundText = new Text(iwrb.getLocalizedString("tournament.round", "Round") + " " + rounds[a].getRoundNumber() + ":");
@@ -172,19 +178,12 @@ public class CloseTournament extends TournamentBlock {
 
 	}
 
-	public void main2(String tournament_id, IWContext modinfo) throws IOException, SQLException {
-		Tournament tournament = null;
-		try {
-			tournament = ((TournamentHome) IDOLookup.getHomeLegacy(Tournament.class)).findByPrimaryKey(Integer.parseInt(tournament_id));
-		}
-		catch (FinderException fe) {
-			throw new SQLException(fe.getMessage());
-		}
+	public void main2(Tournament tournament, IWContext modinfo) throws IOException, SQLException {
 		TournamentRound[] rounds = tournament.getTournamentRounds();
 
 		Form myForm = new Form();
 		myForm.add(new HiddenInput("mode", "update_handicap"));
-		myForm.add(new HiddenInput("tournament", tournament_id));
+		myForm.add(new HiddenInput("tournament", ""+tournament.getID()));
 
 		Table myTable = new Table();
 		myTable.setCellpadding(3);
@@ -279,14 +278,7 @@ public class CloseTournament extends TournamentBlock {
 
 	}
 
-	public void main3(String tournament_id, IWContext modinfo) throws IOException, SQLException {
-		Tournament tournament = null;
-		try {
-			tournament = ((TournamentHome) IDOLookup.getHomeLegacy(Tournament.class)).findByPrimaryKey(Integer.parseInt(tournament_id));
-		}
-		catch (FinderException fe) {
-			throw new SQLException(fe.getMessage());
-		}
+	public void main3(Tournament tournament, IWContext modinfo) throws IOException, SQLException {
 		IWTimestamp stampur = new IWTimestamp(tournament.getStartTime());
 		stampur.addDays(-2);
 
@@ -297,7 +289,7 @@ public class CloseTournament extends TournamentBlock {
 			calculate = false;
 		}
 */
-		DisplayScores[] members = getTournamentBusiness(modinfo).getDisplayScores("t.tournament_id = " + tournament_id + " ", "m.member_id");
+		DisplayScores[] members = getTournamentBusiness(modinfo).getDisplayScores("t.tournament_id = " + tournament.getID() + " ", "m.member_id");
 
 		if (calculate) {
 			for (int a = 0; a < members.length; a++) {
@@ -322,7 +314,7 @@ public class CloseTournament extends TournamentBlock {
 		selectText.setBold();
 		myTable.add(selectText, 1, 1);
 
-		ResultsViewer results = new ResultsViewer(Integer.parseInt(tournament_id));
+		ResultsViewer results = new ResultsViewer(tournament.getID());
 
 		myTable.setAlignment(1, 3, "right");
 		myTable.add(getButton(new CloseButton()), 1, 3);

@@ -16,13 +16,14 @@ import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOLookup;
+import com.idega.data.MetaDataCapable;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;
 import com.idega.data.query.WildCardColumn;
 import com.idega.user.data.User;
 
-public class MemberBMPBean extends GenericEntity implements Member {
+public class MemberBMPBean extends GenericEntity implements Member, MetaDataCapable {
 
   public boolean debug = true;
   private final static String COLUMNNAME_IC_USER_ID = "IC_USER_ID";
@@ -57,6 +58,8 @@ public class MemberBMPBean extends GenericEntity implements Member {
     addIndex("IDX_MEMBER_3", new String[]{getFirstName(), getMiddleName(), getLastName()});
     addIndex("IDX_MEMBER_4", COLUMNNAME_IC_USER_ID);
     addIndex("IDX_MEMBER_5", COLUMNNAME_UNIQUE_ID);
+    
+    addMetaDataRelationship();
   }
 
   public String getEntityName(){
@@ -247,7 +250,7 @@ public class MemberBMPBean extends GenericEntity implements Member {
     UnionMemberInfo[] union = (UnionMemberInfo[]) ((UnionMemberInfo) IDOLookup.instanciateEntity(UnionMemberInfo.class)).findAll("select union_id from union_member_info where member_id = "+this.getID()+" and member_status='A' and membership_type = 'main'");
 
     if (union != null && union.length > 0) {
-        skilari = skilari = union[0].getUnionID(); 
+        skilari = union[0].getUnionID(); 
     }
 	//TABLE NOT USED ANY MORE!
 //    try{

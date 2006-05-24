@@ -14,4 +14,6 @@ public interface TournamentType extends is.idega.idegaweb.golf.entity.GolfEntity
  public void setTournamentType(java.lang.String p0);
  public void setWithHandicap(boolean p0);
  public void setWithoutHandicap(boolean p0);
+ public boolean getUseGroups();
+
 }

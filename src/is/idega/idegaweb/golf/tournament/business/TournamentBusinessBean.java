@@ -349,10 +349,14 @@ public class TournamentBusinessBean extends IBOServiceBean implements Tournament
 		TournamentGroup[] tGroup = tournament.getTournamentGroups();
 		Vector returner = new Vector();
 		for (int i = 0; i < tGroup.length; i++) {
-			if (isMemberInTournamentGroup(member, tGroup[i])) {
+			if (member != null) {
+				if (isMemberInTournamentGroup(member, tGroup[i])) {
+					returner.addElement(tGroup[i]);
+				}
+				else {
+				}
+			} else {
 				returner.addElement(tGroup[i]);
-			}
-			else {
 			}
 		}
 

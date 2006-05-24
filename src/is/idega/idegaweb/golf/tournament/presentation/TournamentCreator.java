@@ -23,6 +23,7 @@ import is.idega.idegaweb.golf.moduleobject.GolfDialog;
 
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.ejb.FinderException;
@@ -248,8 +249,8 @@ public class TournamentCreator extends TournamentBlock {
 	endTime.setYearRange(2001, IWTimestamp.RightNow().getYear() + 5);                
 
 	                TournamentType type = (TournamentType) IDOLookup.instanciateEntity(TournamentType.class);
-	                DropdownMenu tournamentTypeDrop = new DropdownMenu(type.getVisibleTournamentTypes());
-
+	                List  typeList = type.getVisibleTournamentTypes();
+	                DropdownMenu tournamentTypeDrop = new DropdownMenu(typeList);
 	                TournamentForm form = (TournamentForm) IDOLookup.instanciateEntity(TournamentForm.class);
 	                DropdownMenu tournamentFormDrop = new DropdownMenu(form.findAll());
 
@@ -276,7 +277,21 @@ public class TournamentCreator extends TournamentBlock {
 	                    numberInGroup.addMenuElement("3","3");
 	                    numberInGroup.addMenuElement("4","4");
 
-	                DropdownMenu interval = new DropdownMenu("tournament_admin_interval");
+		            DropdownMenu numberInTournamentGroup = new DropdownMenu("tournament_admin_number_in_tournament_group");
+		            numberInTournamentGroup.addMenuElement("1","1");
+		            numberInTournamentGroup.addMenuElement("2","2");
+		            numberInTournamentGroup.addMenuElement("3","3");
+		            numberInTournamentGroup.addMenuElement("4","4");
+            		numberInTournamentGroup.setDisabled(true);
+		            Iterator tIter = typeList.iterator();
+		            while (tIter.hasNext()) {
+		            	TournamentType  tt = (TournamentType) tIter.next();
+		            	if (tt.getUseGroups()) {
+		            		tournamentTypeDrop.setToEnableWhenSelected(numberInTournamentGroup, tt.getPrimaryKey().toString());
+		            	}
+		            }
+
+		            DropdownMenu interval = new DropdownMenu("tournament_admin_interval");
 	                    interval.addMenuElement("8","8");
 	                    interval.addMenuElement("10","10");
 	                    interval.addMenuElement("12","12");
@@ -318,7 +333,10 @@ public class TournamentCreator extends TournamentBlock {
 	                    numberOfDays.setContent(tournament.getNumberOfDays()+"");
 	                    numberOfHoles.setContent(tournament.getNumberOfHoles()+"");
 	                    numberOfRounds.setContent(tournament.getNumberOfRounds()+"");
-
+	                    if (tournament.getNumberInTournamentGroup() > 0) {
+	                    	numberInTournamentGroup.setSelectedElement(Integer.toString(tournament.getNumberInTournamentGroup()));
+	                    }
+	                    numberInTournamentGroup.setDisabled(!tournament.getTournamentType().getUseGroups());
 	                    maxHandicap.setContent(tournament.getMaxHandicap()+"");
 	                    maxFemaleHandicap.setContent(tournament.getFemaleMaxHandicap()+"");
 	                    if (tournament.getFirstRegistrationDate() != null) {
@@ -498,6 +516,12 @@ public class TournamentCreator extends TournamentBlock {
 	            table.setAlignment(2,row,"left");
 
 	            ++row;
+	            table.add(iwrb.getLocalizedString("tournament.number_in_tournament_group","Number in tournament group"),1,row);
+	            table.add(numberInTournamentGroup,2,row);
+	            table.setAlignment(1,row,"left");
+	            table.setAlignment(2,row,"left");
+
+	            ++row;
 	            table.add(iwrb.getLocalizedString("tournament.interval","Inteval"),1,row);
 	            table.add(interval,2,row);
 	            table.setAlignment(1,row,"left");
@@ -618,6 +642,11 @@ public class TournamentCreator extends TournamentBlock {
 	              if (maxHandicap.equals("")) maxHandicap = "36";
 	            String maxFemaleHandicap = modinfo.getParameter("tournament_admin_max_female_handicap");
 	              if (maxFemaleHandicap.equals("")) maxFemaleHandicap = "36";
+	            String sNumInTourGroup = modinfo.getParameter("tournament_admin_number_in_tournament_group");
+	            int numInTourGroup = -1;
+	            if (sNumInTourGroup != null && !sNumInTourGroup.equals("")) {
+	            	numInTourGroup = Integer.parseInt(sNumInTourGroup);
+	            }
 
 	            if ( maxHandicap.indexOf(",") != -1 ) {
 	                maxHandicap = maxHandicap.replace(',','.');
@@ -659,7 +688,7 @@ public class TournamentCreator extends TournamentBlock {
 	              tournament.setGroupTournament(true);
 	              tournament.setCreationDate(IWTimestamp.getTimestampRightNow());
 	              tournament.setIsClosed(false);
-
+	              tournament.setNumberInTournamentGroup(numInTourGroup);
 	              modinfo.setSessionAttribute("tournament_admin_create_tournament",tournament);
 
 

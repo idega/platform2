@@ -92,4 +92,6 @@ public interface Tournament extends is.idega.idegaweb.golf.entity.GolfEntity
  public void setUnion(is.idega.idegaweb.golf.entity.Union p0);
  public void setUnionId(java.lang.Integer p0);
  public void setUnionId(int p0);
+ public void setNumberInTournamentGroup(int number);
+ public int getNumberInTournamentGroup();
 }

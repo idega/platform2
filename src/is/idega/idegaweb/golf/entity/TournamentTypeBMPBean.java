@@ -23,7 +23,8 @@ public class TournamentTypeBMPBean extends GenericEntity implements TournamentTy
 		addAttribute("without_handicap","Án forgjafar",true,true,"java.lang.Boolean");
 		addAttribute("modifier","Margföldunarstuðull",true,true,"java.lang.Float");
 		addAttribute("name","Tegund móts",true,true,"java.lang.String");
-      	}
+		addAttribute("use_groups", "use groups", true, true, Boolean.class);
+     }
 
 	public String getEntityName(){
 		return "tournament_type";
@@ -67,6 +68,14 @@ public class TournamentTypeBMPBean extends GenericEntity implements TournamentTy
 
 	public void setName(String name){
 		setColumn("name",name);
+	}
+	
+	public void setUseGroups(boolean useGroups) {
+		setColumn("use_groups", useGroups);
+	}
+	
+	public boolean getUseGroups() {
+		return getBooleanColumnValue("use_groups");
 	}
 
         /**

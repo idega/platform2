@@ -49,6 +49,8 @@ public class TournamentBMPBean extends GenericEntity implements Tournament{
 		// added 15.6.2001
 		addAttribute("closed","Gert upp",true,true,"java.lang.Boolean");
 		addAttribute("closed_date","Gert upp hvenær",true,true,"java.sql.Timestamp");
+		// added 18.5.2006
+		addAttribute("number_in_tournament_group", "fjoldi i hop", Integer.class);
 
                 // added  31.9.2001
                 addManyToManyRelationShip(TournamentGroup.class,"tournament_tournament_group");
@@ -730,7 +732,14 @@ public class TournamentBMPBean extends GenericEntity implements Tournament{
         public Timestamp getClosedDate() {
             return (Timestamp) getColumnValue("closed_date");
         }
-
+        
+        public void setNumberInTournamentGroup(int number) {
+        	setColumn("number_in_tournament_group", number);
+        }
+        
+        public int getNumberInTournamentGroup() {
+        	return getIntColumnValue("number_in_tournament_group");
+        }
 	//todo :
 	//change the update function so it changes as well the tournament_round table
 
