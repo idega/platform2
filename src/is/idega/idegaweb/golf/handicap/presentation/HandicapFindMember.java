@@ -85,7 +85,10 @@ public class HandicapFindMember extends GolfWindow {
 				String kennitala = modinfo.getParameter("ssn");
 				String nafn = modinfo.getParameter("name");
 
-				Member[] member = (Member[]) ((Member) IDOLookup.instanciateEntity(Member.class)).findAllByColumnEquals("social_security_number", kennitala);
+				Member[] member = null;
+				if (kennitala != null && !kennitala.trim().equalsIgnoreCase("")) {
+					member = (Member[]) ((Member) IDOLookup.instanciateEntity(Member.class)).findAllByColumnEquals("social_security_number", kennitala);
+				}
 				if ((nafn != null && !nafn.equals("")) && (member == null || member.length == 0)) {
 					member = findMembersByName(modinfo, nafn);
 				}
