@@ -1,5 +1,5 @@
 /*
- * $Id: KSIUserGroupPluginBusinessBean.java,v 1.10.4.4 2006/05/18 14:48:59 gimmi Exp $
+ * $Id: KSIUserGroupPluginBusinessBean.java,v 1.10.4.5 2006/05/29 10:21:47 eiki Exp $
  * Created on Jul 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -143,7 +143,7 @@ public class KSIUserGroupPluginBusinessBean extends AgeGenderPluginBusinessBean 
 					}
 					
 					//Via webservice
-					playerRegisteredInWebService = (clubNumberFromWebService>-1);
+					playerRegisteredInWebService = (clubNumberFromWebService>-1) || (clubNumberFromWebService==-2);
 					playerRegisteredInOtherClubInWebService = (playerRegisteredInWebService) &&  (!wsClubNumb.equals(clubNumber));
 				}
 				
