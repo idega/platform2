@@ -109,13 +109,18 @@ public class Handicap {
 	}
 
 	public int getLeikHandicap(double slope, double course_rating, double field_par) {
+		return getLeikHandicap(slope, course_rating, field_par, grunn);
+	}
+	public int getLeikHandicap(double slope, double course_rating, double field_par, double grunnhandicap) {
 		BigDecimal courseRating = new BigDecimal(course_rating);
 		
-		double leikhandicap = grunn * (slope / 113) + (courseRating.setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue() - field_par);
+		double leikhandicap = grunnhandicap * (slope / 113) + (courseRating.setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue() - field_par);
 		BigDecimal bd = new BigDecimal(leikhandicap);
 		return bd.setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
 	}
 
+	
+	
 	public float getHandicapForScorecard(int tournament_id, int tee_color_id, float max_handicap) throws IOException, SQLException {
 		try {
 			Tournament tournament = ((TournamentHome) IDOLookup.getHomeLegacy(Tournament.class)).findByPrimaryKey(tournament_id);

@@ -1163,11 +1163,11 @@ public void saveDirectRegistration(IWContext modinfo, IWResourceBundle iwrb) thr
 		            	}
 		            }
 	            }
-	            
-	            /*
-	             * Group Registration DONE
-	             */
             }
+            
+            /*
+             * Group Registration DONE
+             */
             
             
         }

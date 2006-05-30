@@ -10,15 +10,22 @@ import is.idega.idegaweb.golf.entity.Field;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.MemberHome;
 import is.idega.idegaweb.golf.entity.StartingtimeView;
+import is.idega.idegaweb.golf.entity.Tee;
+import is.idega.idegaweb.golf.entity.TeeHome;
 import is.idega.idegaweb.golf.entity.Tournament;
+import is.idega.idegaweb.golf.entity.TournamentGroup;
 import is.idega.idegaweb.golf.entity.TournamentRound;
 import is.idega.idegaweb.golf.entity.TournamentRoundHome;
+import is.idega.idegaweb.golf.entity.TournamentTournamentGroup;
 import is.idega.idegaweb.golf.entity.Union;
+import is.idega.idegaweb.golf.handicap.business.Handicap;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
 import is.idega.idegaweb.golf.tournament.business.TournamentSession;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.FinderException;
 
@@ -96,7 +103,7 @@ public class TournamentStartingtimeList extends GolfBlock {
 			}
 			
 			cacheString = "tournament_startingtime_" + tournamentId + "_" + tournament_round_id + "_" + viewOnly + "_" + onlineRegistration + "_" + useBorder;
-//			cachedForm = (Form) modinfo.getApplicationAttribute(cacheString);
+			cachedForm = (Form) modinfo.getApplicationAttribute(cacheString);
 		}
 
 		if (cachedForm != null && !onlineRegistration) {
@@ -300,6 +307,27 @@ public class TournamentStartingtimeList extends GolfBlock {
 				membersPerTournamentGroup = tournament.getNumberInTournamentGroup();
 			}
 			int groupCounterNum = 0;
+			Handicap handicap = new Handicap(-1);
+			Map CR = new HashMap();
+			Map slope = new HashMap();
+			int par = field.getFieldPar();
+			try {
+				TournamentGroup[] groups = tournament.getTournamentGroups();
+				for (int i = 0; i < groups.length; i++) {
+					TournamentTournamentGroup[] tTGroup = (TournamentTournamentGroup[]) ((TournamentTournamentGroup) IDOLookup.instanciateEntity(TournamentTournamentGroup.class)).findAllByColumnEquals("tournament_id", tournament.getID() + "", "tournament_group_id", groups[i].getID() + "");
+					for (int j = 0; j < tTGroup.length; j++) {
+						Tee tee = ((TeeHome) IDOLookup.getHomeLegacy(Tee.class)).findByFieldAndTeeColorAndHoleNumber(field.getID(), tTGroup[j].getTeeColorId(), 1);
+						if (tee != null) {
+							CR.put(groups[i].getPrimaryKey(), new Float(tee.getCourseRating()));
+							slope.put(groups[i].getPrimaryKey(), new Integer(tee.getSlope()));
+//							CR = tee.getCourseRating();
+//							slope = tee.getSlope();
+						}
+					}
+				}
+			}
+			catch (Exception e) {
+			}
 
 			for (int y = 1; y <= tournamentRound.getStartingtees(); y++) {
 				// HARÐKÓÐUN DAUÐANS
@@ -377,8 +405,10 @@ public class TournamentStartingtimeList extends GolfBlock {
 							HiddenInput nameInp = new HiddenInput("groupname_for_group_"+groupCounter, group.getName());
 							table.add(nameInp, 2, row);
 							table.setAlignment(2, (row+1), Table.HORIZONTAL_ALIGN_CENTER);
-							table.add(new Text(getResourceBundle().getLocalizedString("tournament.handicap", "Handicap")+" : "+TextSoap.singleDecimalFormat(sView[i].getHandicap())), 2, (row+1) );
-							
+							int id = getTournamentBusiness(modinfo).getTournamentGroup(group, tournament);
+							int leikhandi = handicap.getLeikHandicap(((Integer)slope.get(new Integer(id))).doubleValue(), ((Float)CR.get(new Integer(id))).doubleValue(), (double) par, sView[i].getHandicap());
+							table.add(new Text(getResourceBundle().getLocalizedString("tournament.playing_handicap", "Playing Handicap")+" : "+leikhandi), 2, (row+1) );
+//							table.add(new Text(getResourceBundle().getLocalizedString("tournament.handicap", "Handicap")+" : "+TextSoap.singleDecimalFormat(sView[i].getHandicap())), 2, (row+1) );
 							
 							while (tokanizer.hasMoreTokens()) {
 								String mID = tokanizer.nextToken();

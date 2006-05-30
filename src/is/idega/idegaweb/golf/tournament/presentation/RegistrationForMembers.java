@@ -5,6 +5,9 @@ import is.idega.idegaweb.golf.entity.Field;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.MemberBMPBean;
 import is.idega.idegaweb.golf.entity.MemberHome;
+import is.idega.idegaweb.golf.entity.MemberInfo;
+import is.idega.idegaweb.golf.entity.MemberInfoHome;
+import is.idega.idegaweb.golf.entity.Scorecard;
 import is.idega.idegaweb.golf.entity.StartingtimeView;
 import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.entity.TournamentGroup;
@@ -13,11 +16,16 @@ import is.idega.idegaweb.golf.entity.TournamentHome;
 import is.idega.idegaweb.golf.entity.TournamentRound;
 import is.idega.idegaweb.golf.entity.TournamentRoundHome;
 import is.idega.idegaweb.golf.entity.Union;
+import is.idega.idegaweb.golf.entity.UnionMemberInfo;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
+
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+
 import javax.ejb.FinderException;
+
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
@@ -921,6 +929,13 @@ public class RegistrationForMembers extends GolfBlock {
         int[] errors = new int[4];
         TournamentGroup[] allGroupsInTournament = tournament.getTournamentGroups();
         DropdownMenu allGroups = new DropdownMenu(allGroupsInTournament,"extra_player_groups");
+        TextInput derName;
+        TextInput correction;
+        boolean star = false;
+
+        DropdownMenu memberGender = new DropdownMenu("extra_player_gender");
+            memberGender.addMenuElement("M",iwrb.getLocalizedString("tournament.male","Male"));
+            memberGender.addMenuElement("F",iwrb.getLocalizedString("tournament.female","Female"));
 
         for (int i = 1; i <= iNumberOfGroups ; i++) {
 
@@ -1045,6 +1060,167 @@ public class RegistrationForMembers extends GolfBlock {
                     }
                 }
             }
+            
+            /*
+             * Group registration !!!  ( ONLY TEE 1 implemented ADD TEE 10 )!!!
+             */
+            boolean useGroups = tournament.getTournamentType().getUseGroups();
+            if (useGroups) {
+            	String[] names = (String[]) modinfo.getParameterValues("groupname_for_group_"+i);
+            	int membersPerTournamentGroup = tournament.getNumberInTournamentGroup();
+            	int numInGrupNum = tournament.getNumberInGroup();
+            	int numberOfTournamentGroups = numInGrupNum / membersPerTournamentGroup;
+            	
+            	for (int k = 0; k < numberOfTournamentGroups; k++) {
+            		String groupName = names[k];
+		            numbers = (String[]) modinfo.getParameterValues("social_security_number_for_group_"+i+"_"+k);
+		            if (numbers != null) {
+			            // Checking for valid entries
+		            	boolean validNumbers = true;
+		            	String defaultName = "";
+		            	for (int j = 0; j < numbers.length; j++) {
+		            		if (defaultName.equals("")) {
+		            			defaultName = numbers[j].trim();
+		            		}
+		            		validNumbers &= !numbers[j].trim().equalsIgnoreCase("");
+		            	}
+
+		            	for (int j = 0; j < numbers.length && validNumbers; j++) {
+		                    if (!numbers[j].equals("")) {
+		                    	boolean isSSN = false;
+		                    	try {
+		                    		Integer.parseInt(numbers[j]);
+		                    		isSSN = true;
+		                    	} catch (Exception e) {
+		                    		isSSN = false;
+		                    	}
+		                        member =  (Member) MemberBMPBean.getMember(numbers[j]);
+		
+		                        if (member == null && isSSN) {
+		                            ++otherRow;
+		                            other.add(numbers[j],1,otherRow);
+		                            other.add(new HiddenInput("extra_player_social_security_number",numbers[j]),1,otherRow);
+		                            other.add(new HiddenInput("extra_player_starting_tee","1"),1,otherRow);
+		                            derName = new TextInput("extra_player_name");
+		                            other.add(derName,3,otherRow);
+		                            TextInput hand = new TextInput("extra_player_handicap");
+		                              hand.setSize(3);
+		                            try {
+		                                Integer.parseInt(numbers[j].substring(0,6));
+		                                Integer.parseInt(numbers[j].substring(9,10));
+		                            }
+		                            catch (NumberFormatException n) {
+		                                derName.setContent(iwrb.getLocalizedString("tournament.ssn_is_wrong","Social security number is incorrect"));
+		                            }
+		                            if (numbers[j].length() < 10) {
+		                                derName.setContent(iwrb.getLocalizedString("tournament.ssn_is_wrong","Social security number is incorrect"));
+		                            }
+		
+		                            other.add(allGroups,5,otherRow);
+		                            other.add(hand,7,otherRow);
+		                            other.add(memberGender, 9,otherRow);
+		                            other.add(new HiddenInput("extra_player_starting_time",""+i),1,otherRow);
+		                            CheckBox box = new CheckBox("extra_player",""+ (otherRow-2));
+		                            other.add(box,11,otherRow);
+		
+		                        }
+		                        else {
+		                        	boolean isRegistered = false;
+		                        	if (member != null) {
+		                        		isRegistered = getTournamentBusiness(modinfo).isMemberRegisteredInTournament(tournament, ((TournamentRoundHome) IDOLookup.getHomeLegacy(TournamentRound.class)).findByPrimaryKey(iTournamentRoundId),tournament.getNumberInGroup(),member);
+		                        		errors = getTournamentBusiness(modinfo).isMemberAllowedToRegister(member,tournament);
+		                        	} else {
+		                        		errors = new int[]{0, 0, 0, 0};
+		                        	}
+		                            
+		                            if ((groupName == null || groupName.trim().equals("")) && j==0) {
+		                            	if (member != null) {
+		                            		groupName = member.getName();
+		                            	} else {
+		                            		groupName = numbers[j];
+		                            	}
+		                            }
+		                            if ( (errors[0] == 0) && (errors[1] == 0) && (errors[2] == 0) && (errors[3] == 0)){
+		                                if (!isRegistered ) {
+		                                    List tGroups = getTournamentBusiness(modinfo).getTournamentGroups(member,tournament);
+		                                    if (tGroups != null) {
+		                                        ++tableRow;
+		                                        if (member != null) {
+		                                        	table.add(groupName +" - "+member.getName(),1,tableRow);
+		                                        } else {
+			                                        table.add(groupName +" - "+numbers[j],1,tableRow);
+
+		                                        }
+		                                        table.add(new HiddenInput("group_name",groupName),1,tableRow);
+		                                        if (member != null) {
+		                                        	table.add(new HiddenInput("member_id",""+member.getID()),1,tableRow);
+		                                        	table.add(new HiddenInput("member_name",""),1,tableRow);
+		                                        } else {
+		                                        	table.add(new HiddenInput("member_id","-1"),1,tableRow);
+		                                        	table.add(new HiddenInput("member_name",numbers[j]),1,tableRow);
+		                                        }
+		                                        table.add(new HiddenInput("starting_time",""+i),1,tableRow);
+		                                        table.add(new HiddenInput("starting_tee","1"),1,tableRow);
+		                                        table.add(new DropdownMenu(tGroups),3,tableRow);
+		                                        if (member != null) {
+			                                        if (member.getGender().equalsIgnoreCase("M")) {
+			                                            if (member.getHandicap() > tournament.getMaxHandicap() ) {
+			                                                table.add(tournament.getMaxHandicap()+" *("+member.getHandicap()+")",5,tableRow);
+			                                                star = true;
+			                                            }
+			                                            else {
+			                                                table.add(TextSoap.singleDecimalFormat(member.getHandicap())+"",5,tableRow);
+			                                            }
+			                                        }
+			                                        else {
+			                                            if (member.getHandicap() > tournament.getFemaleMaxHandicap() ) {
+			                                                table.add(tournament.getFemaleMaxHandicap()+" *("+member.getHandicap()+")",5,tableRow);
+			                                                star = true;
+			                                            }
+			                                            else {
+			                                                table.add(member.getHandicap()+"",5,tableRow);
+			                                            }
+			                                        }
+		                                        }
+		                                        correction = new TextInput("handicap_correction");
+		                                            correction.setSize(3);
+	                                            if (member == null) {
+	                                            	correction.setContent("36");
+	                                            }
+		                                        table.add(correction,5,tableRow);
+		                                    }
+		                                }
+		                                else {
+		                                        ++doneRow;
+		                                        done.setAlignment(1,doneRow,"left");
+		                                        done.add(member.getName(),1,doneRow);
+		                                }
+		                            }
+		                            else {
+		                                ++rejectsRow;
+		                                rejects.setAlignment(1,rejectsRow,"left");
+		                                rejects.add(member.getName(),1,rejectsRow);
+		                            }
+		                        }
+		                    }
+		                }
+		            	if (!validNumbers && !defaultName.equals("")) {
+		            		++rejectsRow;
+                            rejects.setAlignment(1,rejectsRow,"left");
+                            if (groupName.equals("")) {
+                            	rejects.add(defaultName,1,rejectsRow);
+                            } else {
+                            	rejects.add(groupName,1,rejectsRow);
+                            }
+                            rejects.add(getResourceBundle().getLocalizedString("too_few_golfers_in_group", "Too few golfers in the group"),2,rejectsRow);
+		            	}
+		            }
+	            }
+            }
+            /*
+             * Group Registration DONE
+             */
+
 
         }
 
@@ -1144,7 +1320,9 @@ public void finalizeDirectRegistration(IWContext modinfo, IWResourceBundle iwrb)
     String[] tournament_groups = modinfo.getParameterValues("tournament_group");
     String[] starting_time = modinfo.getParameterValues("starting_time");
     String[] starting_tee = modinfo.getParameterValues("starting_tee");
+    String[] groupNames = modinfo.getParameterValues("group_name");
     String sTournamentRoundId = modinfo.getParameter("tournament_round");
+    String handicapCorrection;
 
     Member member;
     TournamentGroup tGroup;
@@ -1152,32 +1330,199 @@ public void finalizeDirectRegistration(IWContext modinfo, IWResourceBundle iwrb)
     
     javax.transaction.TransactionManager tm = com.idega.transaction.IdegaTransactionManager.getInstance();
     if (member_ids != null) {
-        for (int i = 0; i < member_ids.length; i++) {
-            try {
-                tm.begin();
-                member = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(Integer.parseInt(member_ids[i]));
 
-                tGroup = ((TournamentGroupHome) IDOLookup.getHomeLegacy(TournamentGroup.class)).findByPrimaryKey(Integer.parseInt(tournament_groups[i]));
+    	if (tournament.getTournamentType().getUseGroups()) {
+    		int numInGroup = tournament.getNumberInTournamentGroup();
+    		String[] corrections = modinfo.getParameterValues("handicap_correction");
+    		String[] memberNames = modinfo.getParameterValues("member_name");
+    		
+    		MemberHome mHome = (MemberHome) IDOLookup.getHome(Member.class);
 
-                getTournamentBusiness(modinfo).registerMember(member,tournament,tournament_groups[i]);
-                if (starting_tee[i].equals("10")) {
-                	getTournamentBusiness(modinfo).setupStartingtime(modinfo, member,tournament,Integer.parseInt(sTournamentRoundId),Integer.parseInt(starting_time[i]),10);
-                }else {
-                	getTournamentBusiness(modinfo).setupStartingtime(modinfo, member,tournament,Integer.parseInt(sTournamentRoundId),Integer.parseInt(starting_time[i]));
+    		HashMap groups = new HashMap();
+    		HashMap groupMembers = new HashMap();
+    		int groupCounter = 0;
+    		for (int i = 0; i < member_ids.length; i++) {
+                tm = com.idega.transaction.IdegaTransactionManager.getInstance();
+    			try {
+    				tm.begin();
+        			String groupName = groupNames[i];
+    				Member group = (Member) groups.get(groupName);
+    				if (group == null) {
+    					// Create the group
+						group  = mHome.create();
+						group.setFirstName(groupName);
+						group.setSocialSecurityNumber("0000000000");
+						group.setGender("m");
+						group.store();
+						
+		                UnionMemberInfo uMInfo = (UnionMemberInfo) IDOLookup.createLegacy(UnionMemberInfo.class);
+	                    uMInfo.setUnionID(1);
+	                    uMInfo.setMemberID(group.getID() );
+	                    uMInfo.setMembershipType("main");
+	                    uMInfo.setMemberStatus("A");
+	                    uMInfo.insert();
+
+	                    groups.put(groupName, group);
+    				}
+    				Member[] mems = (Member[]) groupMembers.get(group);
+    				if (mems == null) {
+    					mems = new Member[numInGroup];
+    					groupCounter = 0;
+    					groupMembers.put(group, mems);
+    				}
+    				
+        			if (member_ids[i].equals("-1")) {
+        				// Create the member ...
+						member = mHome.create();
+						member.setFirstName(memberNames[i]);
+						member.setSocialSecurityNumber("0000000001");
+						member.store();
+        			} else {
+	                    member = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(Integer.parseInt(member_ids[i]));
+        			}
+        			mems[groupCounter++] = member;
+        			
+					handicapCorrection = corrections[i];
+                    if (handicapCorrection != null) {
+                        if (!handicapCorrection.equalsIgnoreCase("")) {
+                            correctHandicap(modinfo,member,handicapCorrection);
+                        }
+                    }
+					
+					if (groupCounter == numInGroup) {
+						String ids = "";
+						float totalHand = 0;
+						for (int kk=0; kk<numInGroup; kk++) {
+							if (kk != 0) {
+								ids+= ",";
+							}
+							totalHand += mems[kk].getHandicap();
+							ids += Integer.toString(mems[kk].getID());
+							
+						}
+						
+						switch (numInGroup) {
+							case 2:
+								totalHand = totalHand / (float) 5;
+								break;
+							case 3:
+								totalHand = totalHand / (float) 7.5;
+								break;
+							case 4:
+								totalHand = totalHand / (float) 10;
+								break;
+						}
+
+						correctHandicap(modinfo, group, Float.toString(totalHand));
+						
+						group.addMetaData("group_members", ids);
+						group.store();
+						// Group is full, time to finalize	
+	                    tGroup = ((TournamentGroupHome) IDOLookup.getHomeLegacy(TournamentGroup.class)).findByPrimaryKey(Integer.parseInt(tournament_groups[i]));
+						
+						getTournamentBusiness(modinfo).registerMember(group,tournament,tournament_groups[i]);
+                		getTournamentBusiness(modinfo).setupStartingtime(modinfo, group,tournament,Integer.parseInt(sTournamentRoundId),Integer.parseInt(starting_time[i]));
+					}
+					
+					tm.commit();
                 }
-                tm.commit();
-            }
-            catch (Exception ex) {
-                ex.printStackTrace(System.err);
-                try {
-                  tm.rollback();
-                }catch (javax.transaction.SystemException se) {
-                  se.printStackTrace(System.err);
+                catch (Exception ex) {
+                    ex.printStackTrace(System.err);
+                    try {
+	                      tm.rollback();
+	                    }catch (javax.transaction.SystemException se) {se.printStackTrace(System.err);}
                 }
-            }
-        }
+
+    		}
+    		
+    		
+    	} else {
+	    	for (int i = 0; i < member_ids.length; i++) {
+	            try {
+	                tm.begin();
+	                member = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(Integer.parseInt(member_ids[i]));
+	
+	                tGroup = ((TournamentGroupHome) IDOLookup.getHomeLegacy(TournamentGroup.class)).findByPrimaryKey(Integer.parseInt(tournament_groups[i]));
+	
+	                getTournamentBusiness(modinfo).registerMember(member,tournament,tournament_groups[i]);
+	                if (starting_tee[i].equals("10")) {
+	                	getTournamentBusiness(modinfo).setupStartingtime(modinfo, member,tournament,Integer.parseInt(sTournamentRoundId),Integer.parseInt(starting_time[i]),10);
+	                }else {
+	                	getTournamentBusiness(modinfo).setupStartingtime(modinfo, member,tournament,Integer.parseInt(sTournamentRoundId),Integer.parseInt(starting_time[i]));
+	                }
+	                tm.commit();
+	            }
+	            catch (Exception ex) {
+	                ex.printStackTrace(System.err);
+	                try {
+	                  tm.rollback();
+	                }catch (javax.transaction.SystemException se) {
+	                  se.printStackTrace(System.err);
+	                }
+	            }
+	        }
+	    }
     }
 
+}
+
+
+public void correctHandicap(IWContext modinfo,Member member ,String handicapString) {
+
+    try {
+          float handicap = 100;
+
+          if ( handicapString != null && handicapString.length() > 0 ) {
+            if ( handicapString.indexOf(",") != -1 ) {
+              handicapString = handicapString.replace(',','.');
+            }
+            handicap = Float.parseFloat(handicapString);
+          }
+
+          MemberInfo[] infos = (MemberInfo[]) ((MemberInfo) IDOLookup.instanciateEntity(MemberInfo.class)).findAllByColumnEquals("member_id",member.getID()+"");
+          MemberInfo memberInfo;
+          if (infos.length > 0) {
+              try {
+              	memberInfo = ((MemberInfoHome) IDOLookup.getHomeLegacy(MemberInfo.class)).findByPrimaryKey(member.getID());
+              }
+              catch (FinderException fe) {
+              	throw new SQLException(fe.getMessage());
+              }
+              memberInfo.setHandicap(handicap);
+              memberInfo.update();
+          }
+          else {
+              memberInfo = (MemberInfo) IDOLookup.createLegacy(MemberInfo.class);
+              memberInfo.setMemberId(member.getID());
+              memberInfo.setHandicap(handicap);
+              memberInfo.setFirstHandicap(handicap);
+              memberInfo.insert();
+          }
+
+          Tournament tournament = getTournament(modinfo);
+          IWTimestamp stampur = new IWTimestamp(tournament.getStartTime());
+            stampur.addDays(-1);
+
+
+          Scorecard scoreCard = (Scorecard) IDOLookup.createLegacy(Scorecard.class);
+            scoreCard.setMemberId(member.getID());
+            scoreCard.setTournamentRoundId(1);
+            scoreCard.setScorecardDate(stampur.getTimestamp());
+            scoreCard.setTotalPoints(0);
+            scoreCard.setHandicapBefore(memberInfo.getHandicap());
+            scoreCard.setHandicapAfter(handicap);
+            scoreCard.setSlope(0);
+            scoreCard.setCourseRating(0);
+            scoreCard.setTeeColorID(0);
+            scoreCard.setFieldID(0);
+            scoreCard.setHandicapCorrection(true);
+            scoreCard.insert();
+
+
+    }
+    catch (SQLException sq ) {
+        sq.printStackTrace(System.err);
+    }
 }
 
 private String getRoundTimeFromGrupNum(int num, Tournament tournament, TournamentRound tRound) {
