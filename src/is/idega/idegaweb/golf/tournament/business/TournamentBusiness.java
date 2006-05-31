@@ -1,5 +1,8 @@
 package is.idega.idegaweb.golf.tournament.business;
 
+import is.idega.idegaweb.golf.entity.Tournament;
+import is.idega.idegaweb.golf.entity.TournamentGroup;
+
 
 public interface TournamentBusiness extends com.idega.business.IBOService
 {
@@ -77,4 +80,5 @@ public interface TournamentBusiness extends com.idega.business.IBOService
  public boolean setupStartingtime(com.idega.presentation.IWContext p0,is.idega.idegaweb.golf.entity.Member p1,is.idega.idegaweb.golf.entity.Tournament p2,int p3,int p4)throws java.sql.SQLException, java.rmi.RemoteException;
  public boolean setupStartingtime(com.idega.presentation.IWContext p0,is.idega.idegaweb.golf.entity.Member p1,is.idega.idegaweb.golf.entity.Tournament p2,int p3,int p4,int p5)throws java.sql.SQLException, java.rmi.RemoteException;
  public boolean unblockStartingtime(com.idega.presentation.IWContext p0,int p1,int p2,int p3, int teeNumber)throws java.sql.SQLException, java.rmi.RemoteException;
+ public int getTeeColorIdForTournamentGroup(Tournament tournament, TournamentGroup tGroup) throws Exception;
 }

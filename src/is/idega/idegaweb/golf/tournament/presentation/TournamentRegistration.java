@@ -492,8 +492,11 @@ public void finalizeDirectRegistration(IWContext modinfo,IWResourceBundle iwrc) 
 							float totalHand = 0;
 
 		                    tGroup = ((TournamentGroupHome) IDOLookup.getHomeLegacy(TournamentGroup.class)).findByPrimaryKey(Integer.parseInt(tournament_groups[i]));
-
-							Tee tee = ((TeeHome) IDOLookup.getHomeLegacy(Tee.class)).findByFieldAndTeeColorAndHoleNumber(fieldID, tGroup.getTeeColorID(), 1);
+		                    int teeColorId = getTournamentBusiness(modinfo).getTeeColorIdForTournamentGroup(tournament, tGroup);
+		                    if (teeColorId < 0) {
+		                    	teeColorId = tGroup.getTeeColorID();
+		                    }
+							Tee tee = ((TeeHome) IDOLookup.getHomeLegacy(Tee.class)).findByFieldAndTeeColorAndHoleNumber(fieldID, teeColorId, 1);
 
 							for (int kk=0; kk<numInGroup; kk++) {
 								if (kk != 0) {

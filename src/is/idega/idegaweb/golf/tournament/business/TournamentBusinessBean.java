@@ -1339,6 +1339,14 @@ public class TournamentBusinessBean extends IBOServiceBean implements Tournament
 		}
 		return -1;
 	}
+	
+	public int getTeeColorIdForTournamentGroup(Tournament tournament, TournamentGroup tGroup) throws Exception {
+		String[] ids = SimpleQuerier.executeStringQuery("select tee_color_id from tournament_tournament_group where tournament_group_id = "+tGroup.getID()+" and tournament_id = "+tournament.getID());
+		if (ids != null && ids.length > 0 && ids[0] != null) {
+			return Integer.parseInt(ids[0]);
+		}
+		return -1;
+	}
 
 	public void setAllMemberToNotPaid(Tournament tournament) throws Exception {
 		SimpleQuerier.execute("update tournament_member set paid = 'N' where tournament_id = " + tournament.getID());
