@@ -355,8 +355,11 @@ public class TournamentResults extends GolfBlock {
 					Image dismissImage = iwb.getImage("shared/red.gif");
 					dismissImage.setHorizontalSpacing(4);
 					dismissImage.setAlignment("absmiddle");
-					if (dismissal.getName() != null) {
-						dismissImage.setName(dismissal.getName());
+					String name = dismissal.getName();
+					if (name != null) {
+						dismissImage.setName(name);
+						dismissImage.setToolTip(name);
+						dismissImage.setAlt(name);
 					}
 
 					myTable.add(dismissImage, 2, row);

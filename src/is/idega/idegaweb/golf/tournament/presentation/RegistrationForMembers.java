@@ -9,6 +9,8 @@ import is.idega.idegaweb.golf.entity.MemberInfo;
 import is.idega.idegaweb.golf.entity.MemberInfoHome;
 import is.idega.idegaweb.golf.entity.Scorecard;
 import is.idega.idegaweb.golf.entity.StartingtimeView;
+import is.idega.idegaweb.golf.entity.Tee;
+import is.idega.idegaweb.golf.entity.TeeHome;
 import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.entity.TournamentGroup;
 import is.idega.idegaweb.golf.entity.TournamentGroupHome;
@@ -17,8 +19,10 @@ import is.idega.idegaweb.golf.entity.TournamentRound;
 import is.idega.idegaweb.golf.entity.TournamentRoundHome;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.entity.UnionMemberInfo;
+import is.idega.idegaweb.golf.handicap.business.Handicap;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -1329,6 +1333,9 @@ public void finalizeDirectRegistration(IWContext modinfo, IWResourceBundle iwrb)
     Tournament tournament = getTournament(modinfo);
     
     javax.transaction.TransactionManager tm = com.idega.transaction.IdegaTransactionManager.getInstance();
+    int fieldID = tournament.getFieldId();
+    int fieldPar = tournament.getField().getFieldPar();
+    Handicap handicap = new Handicap(-1);
     if (member_ids != null) {
 
     	if (tournament.getTournamentType().getUseGroups()) {
@@ -1392,11 +1399,17 @@ public void finalizeDirectRegistration(IWContext modinfo, IWResourceBundle iwrb)
 					if (groupCounter == numInGroup) {
 						String ids = "";
 						float totalHand = 0;
+
+	                    tGroup = ((TournamentGroupHome) IDOLookup.getHomeLegacy(TournamentGroup.class)).findByPrimaryKey(Integer.parseInt(tournament_groups[i]));
+
+						Tee tee = ((TeeHome) IDOLookup.getHomeLegacy(Tee.class)).findByFieldAndTeeColorAndHoleNumber(fieldID, tGroup.getTeeColorID(), 1);
+
 						for (int kk=0; kk<numInGroup; kk++) {
 							if (kk != 0) {
 								ids+= ",";
 							}
-							totalHand += mems[kk].getHandicap();
+							int leikhandi = handicap.getLeikHandicap((double)tee.getSlope(), (double) tee.getCourseRating(), (double) fieldPar, mems[kk].getHandicap());
+							totalHand += leikhandi;
 							ids += Integer.toString(mems[kk].getID());
 							
 						}
@@ -1413,14 +1426,16 @@ public void finalizeDirectRegistration(IWContext modinfo, IWResourceBundle iwrb)
 								break;
 						}
 
-						correctHandicap(modinfo, group, Float.toString(totalHand));
+						BigDecimal bd = new BigDecimal(totalHand);
+						int leikhandi = bd.setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+
+						correctHandicap(modinfo, group, Integer.toString(leikhandi));
 						
 						group.addMetaData("group_members", ids);
 						group.store();
 						// Group is full, time to finalize	
-	                    tGroup = ((TournamentGroupHome) IDOLookup.getHomeLegacy(TournamentGroup.class)).findByPrimaryKey(Integer.parseInt(tournament_groups[i]));
-						
-						getTournamentBusiness(modinfo).registerMember(group,tournament,tournament_groups[i]);
+	                    
+	                    getTournamentBusiness(modinfo).registerMember(group,tournament,tournament_groups[i]);
                 		getTournamentBusiness(modinfo).setupStartingtime(modinfo, group,tournament,Integer.parseInt(sTournamentRoundId),Integer.parseInt(starting_time[i]));
 					}
 					
