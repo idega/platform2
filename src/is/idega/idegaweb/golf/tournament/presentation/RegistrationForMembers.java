@@ -1413,6 +1413,9 @@ public void finalizeDirectRegistration(IWContext modinfo, IWResourceBundle iwrb)
 								ids+= ",";
 							}
 							int leikhandi = handicap.getLeikHandicap((double)tee.getSlope(), (double) tee.getCourseRating(), (double) fieldPar, mems[kk].getHandicap());
+							if (leikhandi > tournament.getMaxHandicap()) {
+								leikhandi = (int) tournament.getMaxHandicap();
+							}
 							totalHand += leikhandi;
 							ids += Integer.toString(mems[kk].getID());
 							

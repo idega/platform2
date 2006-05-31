@@ -458,7 +458,11 @@ public class TournamentStartingtimeList extends GolfBlock {
 									} else {
 										table.add(new Text("-"), 4, row);
 									}
-									table.add(new Text(TextSoap.singleDecimalFormat(memberHandicap)), 5, row);
+									if (memberHandicap > tournament.getMaxHandicap()) {
+										table.add(new Text(TextSoap.singleDecimalFormat(memberHandicap) + " ("+tournament.getMaxHandicap()+")"), 5, row);
+									} else {
+										table.add(new Text(TextSoap.singleDecimalFormat(memberHandicap)), 5, row);
+									}
 									table.setStyleClass(2, row, styleClass);
 									table.setStyleClass(3, row, styleClass);
 									table.setStyleClass(4, row, styleClass);
