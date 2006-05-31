@@ -43,7 +43,7 @@ public class TournamentMembers extends GolfBlock {
 
       Tournament tournament = ((TournamentHome) IDOLookup.getHomeLegacy(Tournament.class)).findByPrimaryKey(Integer.parseInt(tournamentID));
       IWTimestamp tournStart = new IWTimestamp(tournament.getStartTime());
-
+      boolean useGroups = tournament.getTournamentType().getUseGroups();
       Form myForm = new Form();
         myForm.add(new HiddenInput("tournament_id",tournamentID));
 
@@ -105,7 +105,9 @@ public class TournamentMembers extends GolfBlock {
 
           memberTable.add(groupText,1,1);
           memberTable.add(memberText,2,2);
-          memberTable.add(sscText,3,2);
+          if (!useGroups) {
+              memberTable.add(sscText,3,2);
+          }
           memberTable.add(handicapText,4,2);
 
           for ( int a = 0; a < memberList.size(); a++ ) {
@@ -119,31 +121,40 @@ public class TournamentMembers extends GolfBlock {
             memberTable.add(numberText,1,a+3);
             memberTable.add(nameText,2,a+3);
 
-            String ssc = member.getSocialSecurityNumber();
-            if ( ssc.length() == 10 ) {
-              ssc = ssc.substring(0,6)+"-"+ssc.substring(6,ssc.length());
+            if (!useGroups) {
+	            String ssc = member.getSocialSecurityNumber();
+	            if ( ssc.length() == 10 ) {
+	              ssc = ssc.substring(0,6)+"-"+ssc.substring(6,ssc.length());
+	            }
+	            Text securityText = new Text(ssc);
+	              securityText.setFontSize(2);
+
+	            memberTable.add(securityText,3,a+3);
+
+
+	            String sql = "select handicap_after from scorecard where member_id = "+Integer.toString(member.getID())+" and scorecard_date < '"+tournStart.toSQLDateString()+"' order by scorecard_date desc";
+	
+	            String[] handicap = SimpleQuerier.executeStringQuery(sql);
+	
+	            Text hcpText = new Text("-");
+	              hcpText.setFontSize(2);
+	              if ( handicap.length > 0 ) {
+	                hcpText.setText(TextSoap.singleDecimalFormat(handicap[0]));
+	              }
+	              else {
+	                MemberInfo memberInfo = ((MemberInfoHome) IDOLookup.getHomeLegacy(MemberInfo.class)).findByPrimaryKey(member.getID());
+	                hcpText.setText(TextSoap.singleDecimalFormat(Float.toString(memberInfo.getFirstHandicap())));
+	              }
+	
+	            memberTable.add(hcpText,4,a+3);
+            } else {
+            	Text hcpText = new Text(Integer.toString((int)member.getHandicap()));
+	            memberTable.add(hcpText,4,a+3);
+            	// member == group
+            	// must 1st get members and calculate playing handicap 
+            	// and add
             }
 
-            Text securityText = new Text(ssc);
-              securityText.setFontSize(2);
-
-            memberTable.add(securityText,3,a+3);
-
-            String sql = "select handicap_after from scorecard where member_id = "+Integer.toString(member.getID())+" and scorecard_date < '"+tournStart.toSQLDateString()+"' order by scorecard_date desc";
-
-            String[] handicap = SimpleQuerier.executeStringQuery(sql);
-
-            Text hcpText = new Text("-");
-              hcpText.setFontSize(2);
-              if ( handicap.length > 0 ) {
-                hcpText.setText(TextSoap.singleDecimalFormat(handicap[0]));
-              }
-              else {
-                MemberInfo memberInfo = ((MemberInfoHome) IDOLookup.getHomeLegacy(MemberInfo.class)).findByPrimaryKey(member.getID());
-                hcpText.setText(TextSoap.singleDecimalFormat(Float.toString(memberInfo.getFirstHandicap())));
-              }
-
-            memberTable.add(hcpText,4,a+3);
           }
 
           memberTable.setColumnAlignment(1,"center");
