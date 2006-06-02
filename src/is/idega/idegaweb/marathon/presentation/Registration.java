@@ -1,5 +1,5 @@
 /*
- * $Id: Registration.java,v 1.25 2005/08/16 14:09:36 laddi Exp $
+ * $Id: Registration.java,v 1.25.4.1 2006/06/02 11:43:49 sigtryggur Exp $
  * Created on May 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -57,10 +57,10 @@ import com.idega.util.LocaleUtil;
 
 
 /**
- * Last modified: $Date: 2005/08/16 14:09:36 $ by $Author: laddi $
+ * Last modified: $Date: 2006/06/02 11:43:49 $ by $Author: sigtryggur $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.25 $
+ * @version $Revision: 1.25.4.1 $
  */
 public class Registration extends RunBlock {
 	
@@ -1120,7 +1120,7 @@ public class Registration extends RunBlock {
 		table.add(getText(localize("run_reg.delivery_of_race_material_body", "Participants can collect their race number and the t-shirt/sweatshirt here.")), 1, row++);
 
 		table.setHeight(row++, 16);
-		table.add(getHeader(localize("run_reg.receipt_info_headline", "Receipt Ð PRINT IT OUT")), 1, row++);
+		table.add(getHeader(localize("run_reg.receipt_info_headline", "Receipt - Please Print It Out")), 1, row++);
 		table.add(getText(localize("run_reg.receipt_info_headline_body", "This document is your receipt, please print this out and bring it with you when you get your race number and T-shirt/sweatshirt.")), 1, row++);
 
 		table.setHeight(row++, 16);

@@ -104,7 +104,7 @@ public class RegistrationReceivedPrintable extends Window {
 		table.add(getText(iwrb.getLocalizedString("run_reg.delivery_of_race_material_body", "Participants can collect their race number and the t-shirt/sweatshirt here.")), 1, row++);
 
 		table.setHeight(row++, 16);
-		table.add(getHeader(iwrb.getLocalizedString("run_reg.receipt_info_headline", "Receipt Ð PRINT IT OUT")), 1, row++);
+		table.add(getHeader(iwrb.getLocalizedString("run_reg.receipt_info_headline", "Receipt - Please Print It Out")), 1, row++);
 		table.add(getText(iwrb.getLocalizedString("run_reg.receipt_info_headline_body", "This document is your receipt, please print this out and bring it with you when you get your race number and T-shirt/sweatshirt.")), 1, row++);
 
 		table.setHeight(row++, 16);
