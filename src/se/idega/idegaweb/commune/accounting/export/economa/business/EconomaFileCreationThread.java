@@ -431,6 +431,8 @@ public class EconomaFileCreationThread extends Thread {
 					}
 					bWriter.write(sAddress);
 					String sZipCode = header.getSchool().getSchoolZipCode();
+					
+					sZipCode = sZipCode.replaceAll("\\s", "");
 					if (sZipCode.length() < 10) {
 						StringBuffer p = new StringBuffer(sZipCode);
 						while (p.length() < 10)
@@ -1820,5 +1822,4 @@ public class EconomaFileCreationThread extends Thread {
 		}
 		return null;
 	}
-
 }
