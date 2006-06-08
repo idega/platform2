@@ -658,7 +658,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 				add(form);
 			} else {
 				useArrangement(modinfo, members, arrangementAll, iwrb);
-				add(iwrb.getLocalizedString("tournament.ordering_finisher", "Ordering Finished"));
+				add(iwrb.getLocalizedString("tournament.ordering_finished", "Ordering Finished"));
 			}
 		}
 

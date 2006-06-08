@@ -64,7 +64,7 @@ public class BlockStartingtime extends GolfBlock {
     Tournament tournament = tournamentRound.getTournament();
 
     TextInput text = new TextInput("name");
-    table.add(iwrb.getLocalizedString("tournament.text","Texti")+":",1,1);
+    table.add(iwrb.getLocalizedString("tournament.text","Text")+":",1,1);
     table.add(text,2,1);
 
     DropdownMenu start = getTournamentBusiness(modinfo).getAvailableGrupNums("start",tournamentRound.getTournament(),tournamentRound);
