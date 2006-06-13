@@ -502,7 +502,11 @@ public void finalizeDirectRegistration(IWContext modinfo,IWResourceBundle iwrc) 
 								if (kk != 0) {
 									ids+= ",";
 								}
-								int leikhandi = handicap.getLeikHandicap((double)tee.getSlope(), (double) tee.getCourseRating(), (double) fieldPar, mems[kk].getHandicap());
+								float hc = mems[kk].getHandicap();
+								if (hc > tournament.getMaxHandicap()) {
+									hc = tournament.getMaxHandicap();
+								}
+								int leikhandi = handicap.getLeikHandicap((double)tee.getSlope(), (double) tee.getCourseRating(), (double) fieldPar, hc);
 								if (leikhandi > tournament.getMaxHandicap()) {
 									leikhandi = (int) tournament.getMaxHandicap();
 								}
