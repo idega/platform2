@@ -36,6 +36,7 @@ public class TournamentTourResults extends GolfBlock {
 	private int numberOfMembersToDisplay = -1;
 	private String width = null;
 	private boolean showTournamentDropdown = true;
+	private boolean useFormParameters = true;
 
 	private static final String PARAMETER_TOURNAMENT_IDS = "ttr_ptmids";
 	private static DecimalFormat format = new DecimalFormat("0.00");
@@ -46,7 +47,7 @@ public class TournamentTourResults extends GolfBlock {
 		if (tour != null) {
 			String currentTournamentIDS = modinfo.getParameter(PARAMETER_TOURNAMENT_IDS);
 			Collection tournamentIDs = new Vector();
-			if (currentTournamentIDS != null && showTournamentDropdown) {
+			if (currentTournamentIDS != null && useFormParameters) {
 				if (currentTournamentIDS.startsWith("__")) {
 					currentTournamentIDS = currentTournamentIDS.replaceAll("__", "");
 					StringTokenizer nizer = new StringTokenizer(currentTournamentIDS, "_");
@@ -200,6 +201,10 @@ public class TournamentTourResults extends GolfBlock {
 
 	public void setShowTournamentDropdown(boolean showTournamentDropdown) {
 		this.showTournamentDropdown = showTournamentDropdown;
+	}
+
+	public void setUseFormParameters(boolean useFormParameters) {
+		this.useFormParameters = useFormParameters;
 	}
 
 
