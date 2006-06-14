@@ -46,7 +46,7 @@ public class TournamentTourResults extends GolfBlock {
 		if (tour != null) {
 			String currentTournamentIDS = modinfo.getParameter(PARAMETER_TOURNAMENT_IDS);
 			Collection tournamentIDs = new Vector();
-			if (currentTournamentIDS != null) {
+			if (currentTournamentIDS != null && showTournamentDropdown) {
 				if (currentTournamentIDS.startsWith("__")) {
 					currentTournamentIDS = currentTournamentIDS.replaceAll("__", "");
 					StringTokenizer nizer = new StringTokenizer(currentTournamentIDS, "_");
@@ -75,7 +75,7 @@ public class TournamentTourResults extends GolfBlock {
 
 
 			if (showTournamentDropdown) {
-				DropdownMenu tournaments = new DropdownMenu(PARAMETER_TOURNAMENT_IDS);
+				DropdownMenu tournaments = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_TOURNAMENT_IDS));
 				tournaments.addMenuElement("-1", localize("tournament.all_tournaments", "All Tournaments"));
 				Collection allTournamentIDs = getTourHome().getTournamentIDs(tour);
 				if (allTournamentIDs != null) {
