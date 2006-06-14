@@ -283,6 +283,7 @@ public class TournamentCreator extends TournamentBlock {
 		            numberInTournamentGroup.addMenuElement("3","3");
 		            numberInTournamentGroup.addMenuElement("4","4");
             		numberInTournamentGroup.setDisabled(true);
+            		numberInTournamentGroup.setSelectedElement("2");
 		            Iterator tIter = typeList.iterator();
 		            while (tIter.hasNext()) {
 		            	TournamentType  tt = (TournamentType) tIter.next();
