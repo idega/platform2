@@ -50,6 +50,7 @@ public class TournamentAdministratorWindow extends GolfWindow {
 	public static String ADMIN_VIEW_REGISTER_MEMBER = "registerMembers";
 	public static String ADMIN_VIEW_PRINTING = "outPrints";
 	public static String ADMIN_VIEW_LISTS = "lists";
+	public static String ADMIN_VIEW_TOURS = "tours";
 
 	
 	/**
@@ -104,6 +105,8 @@ public class TournamentAdministratorWindow extends GolfWindow {
 						selectedTabText = localize("tournament.register_member","Register Member");
 					} else if (this instanceof TournamentCreatorWindow) {
 						selectedTabText = localize("tournament.modify_tournament","Modify Tournament");
+					} else if (this instanceof TournamentTourEditorWindow) {
+						selectedTabText = localize("tournament.tours","Tours");
 					} else if (this instanceof PrintingWindow) {
 						selectedTabText = localize("tournament.printouts","Printouts");
 					} else {
@@ -131,6 +134,8 @@ public class TournamentAdministratorWindow extends GolfWindow {
 				selectedTabText = localize("tournament.modify_tournament","Modify Tournament");
 			} else if (view.equals(ADMIN_VIEW_PRINTING)) {
 				selectedTabText = localize("tournament.printouts","Printouts");
+			} else if (view.equals(ADMIN_VIEW_TOURS)) {
+				selectedTabText = localize("tournament.tours","Tours");
 			}
 
 		
@@ -185,14 +190,15 @@ public class TournamentAdministratorWindow extends GolfWindow {
 	
 			Link lLists = getTemplateHeaderLink(localize("tournament.lists","Lists"));//new Link(iLists, TournamentListsWindow.class);
 			lLists.setClassToInstanciate(TournamentListsWindow.class);
-			//			Link lLists = new Link(iLists, "lists.jsp");
 			lLists.addParameter(ADMIN_VIEW_PARAMETER, ADMIN_VIEW_LISTS);
-	
-			//                myTable.add(opinmot,2,1);
 			
+			Link lTours = getTemplateHeaderLink(localize("tournament.tours","Tours"));
+			lTours.setClassToInstanciate(TournamentTourEditorWindow.class);
+			lTours.addParameter(ADMIN_VIEW_PARAMETER, ADMIN_VIEW_TOURS);
 	
 			this.emptyMenuArea();
 			this.addMenuLink(lSelectTournament);
+			this.addMenuLink(lTours);
 			this.addMenuLink(lLists);
 			this.addMenuLink(lPrintOuts);
 			this.addMenuLink(lFinish);

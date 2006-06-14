@@ -8,13 +8,30 @@ import is.idega.idegaweb.golf.entity.DisplayScores;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.Scorecard;
 import is.idega.idegaweb.golf.entity.Tournament;
+import is.idega.idegaweb.golf.entity.TournamentGroup;
 import is.idega.idegaweb.golf.entity.TournamentHome;
 import is.idega.idegaweb.golf.entity.TournamentRound;
+import is.idega.idegaweb.golf.entity.TournamentTour;
+import is.idega.idegaweb.golf.entity.TournamentTourHome;
+import is.idega.idegaweb.golf.entity.TournamentTourMember;
+import is.idega.idegaweb.golf.entity.TournamentTourMemberHome;
+import is.idega.idegaweb.golf.entity.TournamentTourMemberPK;
+import is.idega.idegaweb.golf.entity.TournamentTournamentTour;
+import is.idega.idegaweb.golf.entity.TournamentTournamentTourHome;
+import is.idega.idegaweb.golf.entity.TournamentTournamentTourPK;
+import is.idega.idegaweb.golf.tournament.business.ResultComparator;
+import is.idega.idegaweb.golf.tournament.business.ResultDataHandler;
+import is.idega.idegaweb.golf.tournament.business.ResultsCollector;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Vector;
 
 import javax.ejb.FinderException;
 
@@ -283,12 +300,12 @@ public class CloseTournament extends TournamentBlock {
 		stampur.addDays(-2);
 
 		boolean calculate = true;
-/*
+		/*
 		String query = modinfo.getParameter("calculate");
 		if (query == null) {
 			calculate = false;
 		}
-*/
+		 */
 		DisplayScores[] members = getTournamentBusiness(modinfo).getDisplayScores("t.tournament_id = " + tournament.getID() + " ", "m.member_id");
 
 		if (calculate) {
@@ -304,6 +321,100 @@ public class CloseTournament extends TournamentBlock {
 		tournament.update();
 		getTournamentBusiness(modinfo).removeTournamentBoxApplication(modinfo);
 		// :done
+
+
+		// TournamentTour scoring...
+		try {
+			TournamentTourHome ttHome = (TournamentTourHome) IDOLookup.getHome(TournamentTour.class);
+			TournamentTournamentTourHome tttHome = (TournamentTournamentTourHome) IDOLookup.getHome(TournamentTournamentTour.class);
+			TournamentTourMemberHome ttmHome = (TournamentTourMemberHome) IDOLookup.getHome(TournamentTourMember.class);
+			Collection tours = ttHome.findByTournamentID(tournament.getPrimaryKey());
+			if (tours != null && !tours.isEmpty()) {
+				Iterator iter = tours.iterator();
+				while (iter.hasNext()) {
+					int sorter = ResultComparator.TOTALSTROKES;
+					TournamentTour tour = (TournamentTour) iter.next();
+					TournamentTournamentTourPK pk = new TournamentTournamentTourPK(tournament.getPrimaryKey(), tour.getPrimaryKey());
+					TournamentTournamentTour ttTour = tttHome.findByPrimaryKey(pk);
+					int totalPoints = ttTour.getTotalScore();
+					float[] points = tour.getScoreSystem().getPointsDivision();
+					TournamentGroup[] groups = tournament.getTournamentGroups();
+					int tournamentId_ = tournament.getID();
+					
+					Object tournamentID = tournament.getPrimaryKey();
+					Object tournamentTourID = tour.getPrimaryKey();
+					
+					// TODO divide points between same score...
+					/*
+					 * First score = 20
+					 * 		set to member : 300pts
+					 * 2nd score = 18
+					 * 		set to member : 200pts
+					 * 3rd score = 18
+					 * 		
+					 */
+					
+					HashMap map = new HashMap();
+					HashMap scores = new HashMap();
+					
+					int tournamentType_ = tournament.getTournamentTypeId();
+//					ResultDataHandler handler = new ResultDataHandler(tournamentId_, tournamentType_, tournamentGroupId_, tournamentRounds_, gender_);
+					for (int i = 0; i < groups.length; i++) {
+						Object tournamentGroupID = groups[i].getPrimaryKey();
+						ResultDataHandler handler = new ResultDataHandler(tournamentId_, sorter, groups[i].getID(), null, null);
+						Vector result = handler.getTournamentMembers();
+						ResultComparator comparator = new ResultComparator(sorter);
+//						ResultComparator comparator = new ResultComparator(tournamentType_);
+						Collections.sort(result, comparator);
+						Iterator mIter = result.iterator();
+						int counter = 0;
+						while (mIter.hasNext()) {
+							ResultsCollector r = (ResultsCollector) mIter.next();
+							float score = (float) totalPoints * (points[counter] / (float) 100);
+							System.out.println("[CloseTournament : Member "+r.getName()+" receives the score : "+score);
+							Object memberID = new Integer(r.getMemberId());
+							TournamentTourMemberPK mPK = new TournamentTourMemberPK(tournamentID, tournamentTourID, tournamentGroupID, memberID);
+							TournamentTourMember ttMember = null;
+							try {
+								 ttMember = ttmHome.findByPrimaryKey(mPK);
+							} catch (FinderException f) {
+								ttMember = ttmHome.create(mPK);
+							}
+							ttMember.setScore(score);
+							ttMember.store();
+							
+							Collection coll = (Collection) map.get(new Integer(r.getTotalStrokes()));							
+							if (coll == null) {
+								// FIRST PLAYER WITH WITH SCORE.
+								coll = new Vector();
+								coll.add(ttMember);
+								scores.put(new Integer(r.getTotalStrokes()), new Float(score));
+								map.put(new Integer(r.getTotalStrokes()), coll);
+							} else {
+								// OTHER PLAYER WITH SAME SCORE...
+								coll.add(ttMember);
+								float totalScore = score + ((Float) scores.get(new Integer(r.getTotalStrokes()))).floatValue();
+								scores.put(new Integer(r.getTotalStrokes()), new Float(totalScore));
+								int numOfPlayers = coll.size();
+								Iterator pIter = coll.iterator();
+								float newScore = totalScore / (float) numOfPlayers;
+								while (pIter.hasNext()) {
+									TournamentTourMember rr = (TournamentTourMember) pIter.next();
+									rr.setScore(newScore);
+									System.out.println("[CloseTournament : Resetting member "+rr.getMember().getName()+" receives the score : "+newScore);
+									rr.store();
+								}
+							}
+							++counter;
+						}
+					}
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace(System.err);
+		}
+		// TournamentTour scoring done
 
 		Table myTable = new Table(1, 3);
 		myTable.setCellpadding(3);
