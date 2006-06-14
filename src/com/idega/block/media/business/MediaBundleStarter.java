@@ -137,6 +137,8 @@ public class MediaBundleStarter implements IWBundleStartable {
 	private String[] vector = { "FutureSplash vector animation (FutureWave)  spl", "application/futuresplash", "Macromedia Shockwave (Macromedia)", "application/x-director", "Macromedia Shockwave (Macromedia)", "application/x-shockwave-flash" };
 
 	private String[] video = { "MPEG video mpeg mpg mpe", "video/mpeg", "MPEG-2 video mpv2 mp2v", "video/mpeg-2", "Macintosh Quicktime qt mov", "video/quicktime", "Microsoft video  avi", "video/x-msvideo", "SGI Movie format movie", "video/x-sgi-movie", "QuickDraw3D scene data (Apple) 3dmf", "x-world/x-3dmf" };
+	
+	private String[] zip = { "Compressed Zip files", "application/x-zip-compressed" };
 
 	public MediaBundleStarter() {
 	}
@@ -177,6 +179,7 @@ public class MediaBundleStarter implements IWBundleStartable {
 		ICFileType vectors = (ICFileType)cm.getFromCachedTable(ICFileType.class, com.idega.core.file.data.ICFileTypeBMPBean.IC_FILE_TYPE_VECTOR_GRAPHICS);
 		ICFileType videos = (ICFileType)cm.getFromCachedTable(ICFileType.class, com.idega.core.file.data.ICFileTypeBMPBean.IC_FILE_TYPE_VIDEO);
 		ICFileType systems = (ICFileType)cm.getFromCachedTable(ICFileType.class, com.idega.core.file.data.ICFileTypeBMPBean.IC_FILE_TYPE_SYSTEM);
+		ICFileType zips = (ICFileType)cm.getFromCachedTable(ICFileType.class, com.idega.core.file.data.ICFileTypeBMPBean.IC_FILE_TYPE_ZIP);
 
 		//cache
 		ICMimeType mimes = ((com.idega.core.file.data.ICMimeTypeHome)com.idega.data.IDOLookup.getHomeLegacy(ICMimeType.class)).createLegacy();
@@ -191,6 +194,7 @@ public class MediaBundleStarter implements IWBundleStartable {
 			registerMimeType(image, images);
 			registerMimeType(vector, vectors);
 			registerMimeType(video, videos);
+			registerMimeType(zip, zips);
 		} catch (Exception ex) {
 			ex.printStackTrace(System.err);
 		}
