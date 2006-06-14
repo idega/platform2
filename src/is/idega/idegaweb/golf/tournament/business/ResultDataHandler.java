@@ -18,42 +18,42 @@ public class ResultDataHandler {
   private String gender_ = null;
   private int memberId_ = -1;
 
-  public ResultDataHandler(int tournamentId, int tournamentType) {
-    tournamentId_ = tournamentId;
-    tournamentType_ = tournamentType;
-  }
-
-  public ResultDataHandler(int tournamentId, int tournamentType, int tournamentGroupId) {
-    tournamentId_ = tournamentId;
-    tournamentType_ = tournamentType;
-    tournamentGroupId_ = tournamentGroupId;
-  }
-  public ResultDataHandler(int tournamentId, int tournamentType, String gender) {
-    tournamentId_ = tournamentId;
-    tournamentType_ = tournamentType;
-    gender_ = gender;
-  }
-
-  public ResultDataHandler(int tournamentId, int tournamentType, int[] tournamentRounds) {
-    tournamentId_ = tournamentId;
-    tournamentType_ = tournamentType;
-    tournamentRounds_ = tournamentRounds;
-  }
-
-  public ResultDataHandler(int tournamentId, int tournamentType, int tournamentGroupId, String gender) {
-    tournamentId_ = tournamentId;
-    tournamentType_ = tournamentType;
-    tournamentGroupId_ = tournamentGroupId;
-    gender_ = gender;
-  }
-
-  public ResultDataHandler(int tournamentId, int tournamentType, int tournamentGroupId, int[] tournamentRounds) {
-    tournamentId_ = tournamentId;
-    tournamentType_ = tournamentType;
-    tournamentGroupId_ = tournamentGroupId;
-    tournamentRounds_ = tournamentRounds;
-  }
-
+//  public ResultDataHandler(int tournamentId, int tournamentType) {
+//    tournamentId_ = tournamentId;
+//    tournamentType_ = tournamentType;
+//  }
+//
+//  public ResultDataHandler(int tournamentId, int tournamentType, int tournamentGroupId) {
+//    tournamentId_ = tournamentId;
+//    tournamentType_ = tournamentType;
+//    tournamentGroupId_ = tournamentGroupId;
+//  }
+//  public ResultDataHandler(int tournamentId, int tournamentType, String gender) {
+//    tournamentId_ = tournamentId;
+//    tournamentType_ = tournamentType;
+//    gender_ = gender;
+//  }
+//
+//  public ResultDataHandler(int tournamentId, int tournamentType, int[] tournamentRounds) {
+//    tournamentId_ = tournamentId;
+//    tournamentType_ = tournamentType;
+//    tournamentRounds_ = tournamentRounds;
+//  }
+//
+//  public ResultDataHandler(int tournamentId, int tournamentType, int tournamentGroupId, String gender) {
+//    tournamentId_ = tournamentId;
+//    tournamentType_ = tournamentType;
+//    tournamentGroupId_ = tournamentGroupId;
+//    gender_ = gender;
+//  }
+//
+//  public ResultDataHandler(int tournamentId, int tournamentType, int tournamentGroupId, int[] tournamentRounds) {
+//    tournamentId_ = tournamentId;
+//    tournamentType_ = tournamentType;
+//    tournamentGroupId_ = tournamentGroupId;
+//    tournamentRounds_ = tournamentRounds;
+//  }
+//
   public ResultDataHandler(int tournamentId, int tournamentType, int[] tournamentRounds, String gender) {
     tournamentId_ = tournamentId;
     tournamentType_ = tournamentType;
