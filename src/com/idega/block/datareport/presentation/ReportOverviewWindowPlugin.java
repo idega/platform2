@@ -63,7 +63,7 @@ public class ReportOverviewWindowPlugin implements ToolbarElement {
 	 * @see com.idega.user.app.ToolbarElement#getPriority(com.idega.presentation.IWContext)
 	 */
 	public int getPriority(IWContext iwc) {
-		return 9;
+		return 11;
 	}
 
 	/* (non-Javadoc)

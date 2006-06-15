@@ -62,7 +62,7 @@ public class CalendarWindowPlugin implements ToolbarElement {
 	 * @see com.idega.user.app.ToolbarElement#getPriority(com.idega.presentation.IWContext)
 	 */
 	public int getPriority(IWContext iwc) {
-		return 11;
+		return 9;
 	}
 
 	/* (non-Javadoc)
