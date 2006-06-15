@@ -12,6 +12,7 @@ import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
+import com.idega.data.SimpleQuerier;
 
 public class TournamentTourMemberBMPBean extends GenericEntity implements TournamentTourMember {
 
@@ -99,6 +100,24 @@ public class TournamentTourMemberBMPBean extends GenericEntity implements Tourna
 		return getFloatColumnValue(SCORE);
 	}
 	
+	public int[] ejbHomeGetTournamentGroupsInUse(TournamentTour tour) throws FinderException {
+		StringBuffer sql = new StringBuffer("select distinct tournament_group_id from tournament_tour_member where tournament_tour_id =")
+		.append(tour.getPrimaryKey().toString());
+		try {
+			String[] ids = SimpleQuerier.executeStringQuery(sql.toString());
+			if (ids != null) {
+				int[] iIds = new int[ids.length];
+				for (int i = 0; i < ids.length; i++) {
+					iIds[i] = Integer.parseInt(ids[i]);
+				}
+				return iIds;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new FinderException(e.getMessage());
+		}
+		return null;
+	}
 
 	/**
 	 * @return A collection of TournamentTourResultMember

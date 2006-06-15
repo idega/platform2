@@ -42,10 +42,18 @@ public class TournamentTourMemberHomeImpl extends IDOFactory implements Tourname
 		}
 	}
 
+	public int[] getTournamentGroupsInUse(TournamentTour tour) throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		int[] theReturn = ((TournamentTourMemberBMPBean) entity).ejbHomeGetTournamentGroupsInUse(tour);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
+
 	public Collection getScoresOrdered(TournamentTour tour, Collection tournamentPKs, Collection tournamentGroupPKs) throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
 		Collection theReturn = ((TournamentTourMemberBMPBean) entity).ejbHomeGetScoresOrdered(tour, tournamentPKs, tournamentGroupPKs);
 		this.idoCheckInPooledEntity(entity);
 		return theReturn;
 	}
+
 }

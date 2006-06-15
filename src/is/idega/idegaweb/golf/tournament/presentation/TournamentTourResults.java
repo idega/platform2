@@ -3,6 +3,8 @@ package is.idega.idegaweb.golf.tournament.presentation;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.MemberHome;
 import is.idega.idegaweb.golf.entity.Tournament;
+import is.idega.idegaweb.golf.entity.TournamentGroup;
+import is.idega.idegaweb.golf.entity.TournamentGroupHome;
 import is.idega.idegaweb.golf.entity.TournamentHome;
 import is.idega.idegaweb.golf.entity.TournamentTour;
 import is.idega.idegaweb.golf.entity.TournamentTourHome;
@@ -37,8 +39,10 @@ public class TournamentTourResults extends GolfBlock {
 	private String width = null;
 	private boolean showTournamentDropdown = true;
 	private boolean useFormParameters = true;
+	private boolean showTournamentGroupDropdown = true;
 
 	private static final String PARAMETER_TOURNAMENT_IDS = "ttr_ptmids";
+	private static final String PARAMETER_TOURNAMENT_GROUP_ID = "ttr_ptmgrid";
 	private static DecimalFormat format = new DecimalFormat("0.00");
 
 
@@ -62,19 +66,44 @@ public class TournamentTourResults extends GolfBlock {
 			} else {
 				tournamentIDs = getTourHome().getTournamentIDs(tour);
 			}
-			Collection tournamentGroupIDs = null;
-			if (tournamentGroupID > 0) {
-				tournamentGroupIDs = new Vector();
-				tournamentGroupIDs.add(new Integer(tournamentGroupID));
+			String grpID = modinfo.getParameter(PARAMETER_TOURNAMENT_GROUP_ID);
+			if (grpID != null && useFormParameters) {
+				tournamentGroupID = Integer.parseInt(grpID);
 			}
-			Collection tourMembers = getTourMemberHome().getScoresOrdered(tour, tournamentIDs, tournamentGroupIDs);
+			
+			
 			Table table = new Table();
 			if (width != null) {
 				table.setWidth(width);
 			}
 			int row = 1;
 
-
+			Table dropdownTable = new Table();
+			dropdownTable.setCellpadding(0);
+			dropdownTable.setCellspacing(0);
+			dropdownTable.setWidth("100%");
+			
+			if (showTournamentGroupDropdown) {
+				int[] ids = getTourMemberHome().getTournamentGroupsInUse(tour);
+				if (ids != null && ids.length > 0) {
+					DropdownMenu groups = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_TOURNAMENT_GROUP_ID));
+					groups.keepStatusOnAction(true);
+					groups.setToSubmit(true);
+					for (int i = 0; i < ids.length; i++) {
+						if (i == 0 && tournamentGroupID < 0) {
+							tournamentGroupID = ids[i];
+						}
+						TournamentGroup group = getTournamentGroupHome().findByPrimaryKey(ids[i]);
+						groups.addMenuElement(ids[i], group.getName());
+					}
+					groups.setSelectedElement(tournamentGroupID);
+					dropdownTable.add(groups, 1, 1);
+				} else {
+					showTournamentGroupDropdown = false;
+				}
+			}
+			
+			
 			if (showTournamentDropdown) {
 				DropdownMenu tournaments = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_TOURNAMENT_IDS));
 				tournaments.addMenuElement("-1", localize("tournament.all_tournaments", "All Tournaments"));
@@ -104,11 +133,24 @@ public class TournamentTourResults extends GolfBlock {
 				tournaments.keepStatusOnAction(true);
 				tournaments.setToSubmit(true);
 
-				table.add(tournaments, 1, row);
+				dropdownTable.add(tournaments, 2, 1);
+				dropdownTable.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+			}
+			
+			if (showTournamentDropdown || showTournamentGroupDropdown) {
+				table.add(dropdownTable, 1, row);
 				table.mergeCells(1, row, 3, row);
-				table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
 				++row;
 			}
+			
+			Collection tournamentGroupIDs = null;
+			if (tournamentGroupID > 0) {
+				tournamentGroupIDs = new Vector();
+				tournamentGroupIDs.add(new Integer(tournamentGroupID));
+			}
+
+			Collection tourMembers = getTourMemberHome().getScoresOrdered(tour, tournamentIDs, tournamentGroupIDs);
+			
 			
 			table.add(getHeader(localize("name", "Name")), 1, row);
 			table.add(getHeader(localize("union", "Union")), 2, row);
@@ -182,6 +224,13 @@ public class TournamentTourResults extends GolfBlock {
 			throw new IDORuntimeException(e);
 		}
 	}
+	protected TournamentGroupHome getTournamentGroupHome() {
+		try {
+			return (TournamentGroupHome) IDOLookup.getHome(TournamentGroup.class);
+		} catch (IDOLookupException e) {
+			throw new IDORuntimeException(e);
+		}
+	}
 
 	protected MemberHome getMemberHome() {
 		try {
@@ -205,6 +254,10 @@ public class TournamentTourResults extends GolfBlock {
 
 	public void setUseFormParameters(boolean useFormParameters) {
 		this.useFormParameters = useFormParameters;
+	}
+
+	public void setShowTournamentGroupDropdown(boolean showTournamentGroupDropdown) {
+		this.showTournamentGroupDropdown = showTournamentGroupDropdown;
 	}
 
 

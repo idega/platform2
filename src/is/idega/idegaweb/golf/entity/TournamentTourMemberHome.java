@@ -15,5 +15,7 @@ public interface TournamentTourMemberHome extends IDOHome {
 
 	public TournamentTourMember create(TournamentTourMemberPK primaryKey) throws CreateException;
 
+	public int[] getTournamentGroupsInUse(TournamentTour tour) throws FinderException;
+
 	public Collection getScoresOrdered(TournamentTour tour, Collection tournamentPKs, Collection tournamentGroupPKs) throws FinderException;
 }
