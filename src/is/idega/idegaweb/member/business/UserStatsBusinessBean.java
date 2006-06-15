@@ -3,6 +3,8 @@
  */
 package is.idega.idegaweb.member.business;
 
+import is.idega.idegaweb.member.presentation.GroupStatsWindowPlugin;
+import is.idega.idegaweb.member.presentation.UserStatsWindowPlugin;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -17,7 +19,9 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.Vector;
 
+import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 
 import com.idega.block.datareport.util.FieldsComparator;
 import com.idega.block.datareport.util.ReportableCollection;
@@ -38,8 +42,10 @@ import com.idega.data.IDOLookupException;
 import com.idega.data.IDORelationshipException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.PresentationObject;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
+import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
 import com.idega.user.data.User;
@@ -52,7 +58,7 @@ import com.idega.util.text.TextSoap;
  * @author Sigtryggur
  *
  */
-public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsBusiness{
+public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsBusiness, UserGroupPlugInBusiness {
     
     private UserBusiness userBiz = null;
     private GroupBusiness groupBiz = null;
@@ -570,5 +576,73 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 			userBiz = (UserBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), UserBusiness.class);
 		}	
 		return userBiz;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#getMainToolbarElements()
+	 */
+	public List getMainToolbarElements() throws RemoteException {
+		List list = new ArrayList(1);
+		list.add(new UserStatsWindowPlugin());
+		list.add(new GroupStatsWindowPlugin());
+		return list;
+	}
+
+	public void afterGroupCreateOrUpdate(Group group, Group parentGroup) throws CreateException, RemoteException {
+		// TODO Auto-generated method stub
+	}
+
+	public void afterUserCreateOrUpdate(User user, Group parentGroup) throws CreateException, RemoteException {
+		// TODO Auto-generated method stub
+	}
+
+	public void beforeGroupRemove(Group group, Group parentGroup) throws RemoveException, RemoteException {
+		// TODO Auto-generated method stub
+	}
+
+	public void beforeUserRemove(User user, Group parentGroup) throws RemoveException, RemoteException {
+		// TODO Auto-generated method stub
+	}
+
+	public String canCreateSubGroup(Group parentGroup, String groupTypeOfSubGroup) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List getGroupPropertiesTabs(Group group) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List getGroupToolbarElements(Group group) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List getUserPropertiesTabs(User user) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public PresentationObject instanciateEditor(Group group) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public PresentationObject instanciateViewer(Group group) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String isUserAssignableFromGroupToGroup(User user, Group sourceGroup, Group targetGroup) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String isUserSuitedForGroup(User user, Group targetGroup) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
