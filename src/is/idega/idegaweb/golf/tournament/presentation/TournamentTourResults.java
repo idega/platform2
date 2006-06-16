@@ -40,6 +40,7 @@ public class TournamentTourResults extends GolfBlock {
 	private boolean showTournamentDropdown = true;
 	private boolean useFormParameters = true;
 	private boolean showTournamentGroupDropdown = true;
+	private boolean showPlace = true;
 
 	private static final String PARAMETER_TOURNAMENT_IDS = "ttr_ptmids";
 	private static final String PARAMETER_TOURNAMENT_GROUP_ID = "ttr_ptmgrid";
@@ -139,7 +140,11 @@ public class TournamentTourResults extends GolfBlock {
 			
 			if (showTournamentDropdown || showTournamentGroupDropdown) {
 				table.add(dropdownTable, 1, row);
-				table.mergeCells(1, row, 3, row);
+				if (showPlace) {
+					table.mergeCells(1, row, 4, row);
+				} else {
+					table.mergeCells(1, row, 3, row);
+				}
 				++row;
 			}
 			
@@ -151,15 +156,24 @@ public class TournamentTourResults extends GolfBlock {
 
 			Collection tourMembers = getTourMemberHome().getScoresOrdered(tour, tournamentIDs, tournamentGroupIDs);
 			
-			
-			table.add(getHeader(localize("name", "Name")), 1, row);
-			table.add(getHeader(localize("union", "Union")), 2, row);
-			table.add(getHeader(localize("score", "Score")), 3, row);
-			table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
+			if (showPlace) {
+				table.setWidth(1, 10);
+				table.add(getHeader(localize("name", "Name")), 2, row);
+				table.add(getHeader(localize("union", "Union")), 3, row);
+				table.add(getHeader(localize("score", "Score")), 4, row);
+				table.setAlignment(4, row, Table.HORIZONTAL_ALIGN_RIGHT);
+			} else {
+				table.add(getHeader(localize("name", "Name")), 1, row);
+				table.add(getHeader(localize("union", "Union")), 2, row);
+				table.add(getHeader(localize("score", "Score")), 3, row);
+				table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
+			}
 			++row;
 			if (tourMembers != null) {
 				Iterator iter = tourMembers.iterator();
 				int counter = 0;
+				float prevScore = -1;
+				float score = -1;
 				boolean cont = true;
 				while (iter.hasNext() && cont) {
 					++counter;
@@ -168,13 +182,31 @@ public class TournamentTourResults extends GolfBlock {
 					}
 					TournamentTourResultMember m = (TournamentTourResultMember) iter.next();
 					Member member = getMemberHome().findByPrimaryKey(new Integer(m.getMemberID()));
-					table.add(member.getName(), 1, row);
-					table.add(member.getMainUnion().getAbbrevation(), 2, row);
-					table.add(format.format(m.getScore()), 3, row);
-					table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
-					table.setVerticalAlignment(2, row, Table.VERTICAL_ALIGN_TOP);
-					table.setVerticalAlignment(3, row, Table.VERTICAL_ALIGN_TOP);
-					table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
+					score = m.getScore();
+					if (showPlace) {
+						if (score == prevScore) {
+							table.add("-", 1, row);
+						} else {
+							table.add(Integer.toString(counter), 1, row);
+						}
+						prevScore = score;
+						table.add(member.getName(), 2, row);
+						table.add(member.getMainUnion().getAbbrevation(), 3, row);
+						table.add(format.format(score), 4, row);
+						table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
+						table.setVerticalAlignment(2, row, Table.VERTICAL_ALIGN_TOP);
+						table.setVerticalAlignment(3, row, Table.VERTICAL_ALIGN_TOP);
+						table.setVerticalAlignment(4, row, Table.VERTICAL_ALIGN_TOP);
+						table.setAlignment(4, row, Table.HORIZONTAL_ALIGN_RIGHT);
+					} else {
+						table.add(member.getName(), 1, row);
+						table.add(member.getMainUnion().getAbbrevation(), 2, row);
+						table.add(format.format(score), 3, row);
+						table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
+						table.setVerticalAlignment(2, row, Table.VERTICAL_ALIGN_TOP);
+						table.setVerticalAlignment(3, row, Table.VERTICAL_ALIGN_TOP);
+						table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
+					}
 					++row;
 				}
 			}
@@ -258,6 +290,10 @@ public class TournamentTourResults extends GolfBlock {
 
 	public void setShowTournamentGroupDropdown(boolean showTournamentGroupDropdown) {
 		this.showTournamentGroupDropdown = showTournamentGroupDropdown;
+	}
+
+	public void setShowPlace(boolean showPlace) {
+		this.showPlace = showPlace;
 	}
 
 
