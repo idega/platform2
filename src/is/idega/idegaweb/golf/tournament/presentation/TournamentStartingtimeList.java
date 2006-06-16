@@ -379,7 +379,7 @@ public class TournamentStartingtimeList extends GolfBlock {
 					String styleClass = null;
 					
 					for (int i = 0; i < sView.length; i++) {
-						if (areTournamentGroups) {
+						if (areTournamentGroups && membersPerTournamentGroup > 1) {
 							int groupID = sView[i].getMemberId();
 							Member group = mHome.findByPrimaryKey(groupID);
 							String ids = group.getMetaData("group_members");

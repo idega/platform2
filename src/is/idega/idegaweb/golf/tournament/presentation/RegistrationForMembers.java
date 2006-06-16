@@ -1069,7 +1069,7 @@ public class RegistrationForMembers extends GolfBlock {
              * Group registration !!!  ( ONLY TEE 1 implemented ADD TEE 10 )!!!
              */
             boolean useGroups = tournament.getTournamentType().getUseGroups();
-            if (useGroups) {
+            if (useGroups && tournament.getNumberInTournamentGroup() > 1) {
             	String[] names = (String[]) modinfo.getParameterValues("groupname_for_group_"+i);
             	int membersPerTournamentGroup = tournament.getNumberInTournamentGroup();
             	int numInGrupNum = tournament.getNumberInGroup();
