@@ -368,7 +368,8 @@ public class CloseTournament extends TournamentBlock {
 						Collections.sort(result, comparator);
 						Iterator mIter = result.iterator();
 						int counter = 0;
-						while (mIter.hasNext()) {
+						int length = points.length;
+						while (mIter.hasNext() && counter < length) {
 							ResultsCollector r = (ResultsCollector) mIter.next();
 							float score = (float) totalPoints * (points[counter] / (float) 100);
 							System.out.println("[CloseTournament : Member "+r.getName()+" receives the score : "+score);
