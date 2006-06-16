@@ -59,7 +59,7 @@ public class TournamentStartingtimeList extends GolfBlock {
 	private boolean forPrinting=false;
 	private Form form;
 	private String[] submitButtonParameter;
-	
+
 	public TournamentStartingtimeList(Tournament tournament, String tournament_round_id, boolean viewOnly, boolean onlineRegistration, boolean useBorder, boolean forPrinting) {
 		this.tournament = tournament;
 		this.tournament_round_id = tournament_round_id;
@@ -68,7 +68,7 @@ public class TournamentStartingtimeList extends GolfBlock {
 		this.useBorder = useBorder;
 		this.forPrinting = forPrinting;
 	}
-	
+
 	public TournamentStartingtimeList() {
 		viewOnly = true;
 		forPrinting = false;
@@ -91,11 +91,11 @@ public class TournamentStartingtimeList extends GolfBlock {
 
 		if (tournament != null) {
 			tournamentId = tournament.getID();
-			
+
 			if (tournament_round_id == null) {
 				tournament_round_id = modinfo.getParameter("tournament_round");
 			}
-			
+
 			cacheString = "tournament_startingtime_" + tournamentId + "_" + tournament_round_id + "_" + viewOnly + "_" + onlineRegistration + "_" + useBorder;
 			cachedForm = (Form) modinfo.getApplicationAttribute(cacheString);
 		}
@@ -116,15 +116,15 @@ public class TournamentStartingtimeList extends GolfBlock {
 		}	else if (tournament != null ){
 			form = new Form();
 			form.add(new HiddenInput("viewOnly", "" + viewOnly));
-			
-			
+
+
 			Table topTable = new Table();
 			Table table = new Table();
 			Table borderTable = new Table();
 			borderTable.setWidth(Table.HUNDRED_PERCENT);
 			borderTable.setCellpaddingAndCellspacing(0);
 			borderTable.setCellBorder(1, 1, 1, "#3A5A20", "solid");
-			
+
 			if (forPrinting) {
 				table.setWidth("600");
 				topTable.setWidth("600");
@@ -138,7 +138,7 @@ public class TournamentStartingtimeList extends GolfBlock {
 			table.setCellpadding(0);
 			table.setCellspacing(0);
 			topTable.setCellpaddingAndCellspacing(0);
-			
+
 			form.add(topTable);
 			borderTable.add(table);
 			form.add(borderTable);
@@ -210,23 +210,29 @@ public class TournamentStartingtimeList extends GolfBlock {
 			}
 			topTable.setHeight(1, 40);
 
-			
+
 			boolean areTournamentGroups =  tournament.getTournamentType().getUseGroups();
-			
+			int minutesBetween = tournament.getInterval();
+			int numberInGroup = tournament.getNumberInGroup();
+			int membersPerTournamentGroup = -1;
 			if (areTournamentGroups) {
+				membersPerTournamentGroup = tournament.getNumberInTournamentGroup();
+			}
+
+			if (areTournamentGroups && membersPerTournamentGroup > 1) {
 				Text tim = new Text(getResourceBundle().getLocalizedString("tournament.time", "Time"));
 				Text sc = new Text(getResourceBundle().getLocalizedString("tournament.social_security_number", "Social security number")+"/"+getResourceBundle().getLocalizedString("tournament.name", "Name"));
 				Text name = new Text(getResourceBundle().getLocalizedString("tournament.group_name", "Group name"));
 				Text club = new Text(getResourceBundle().getLocalizedString("tournament.union", "Union"));
 				Text hc = new Text(getResourceBundle().getLocalizedString("tournament.handicap", "Handicap"));
-	
+
 				table.add(tim, 1, row);
 				table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_CENTER);
 				table.add(name, 2, row);
 				table.add(sc, 3, row);
 				table.add(club, 4, row);
 				table.add(hc, 5, row);
-				
+
 				if (viewOnly || onlineRegistration) {
 					table.mergeCells(5, row, 7, row);
 				}
@@ -242,14 +248,14 @@ public class TournamentStartingtimeList extends GolfBlock {
 				Text name = new Text(getResourceBundle().getLocalizedString("tournament.name", "Name"));
 				Text club = new Text(getResourceBundle().getLocalizedString("tournament.club", "Club"));
 				Text hc = new Text(getResourceBundle().getLocalizedString("tournament.handicap", "Handicap"));
-	
+
 				table.add(tim, 1, row);
 				table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_CENTER);
 				table.add(sc, 2, row);
 				table.add(name, 3, row);
 				table.add(club, 4, row);
 				table.add(hc, 5, row);
-				
+
 				if (viewOnly || onlineRegistration) {
 					table.mergeCells(5, row, 7, row);
 				}
@@ -261,7 +267,7 @@ public class TournamentStartingtimeList extends GolfBlock {
 				}
 			}
 
-			
+
 			table.setRowStyleClass(row, getHeaderRowClass());
 
 			java.text.DecimalFormat extraZero = new java.text.DecimalFormat("00");
@@ -294,29 +300,23 @@ public class TournamentStartingtimeList extends GolfBlock {
 				displayTee = true;
 			}
 
-			int minutesBetween = tournament.getInterval();
-			int numberInGroup = tournament.getNumberInGroup();
-			int membersPerTournamentGroup = -1;
-			if (areTournamentGroups) {
-				membersPerTournamentGroup = tournament.getNumberInTournamentGroup();
-			}
 			int groupCounterNum = 0;
 			Handicap handicap = new Handicap(-1);
 //			Map CR = new HashMap();
 //			Map slope = new HashMap();
 //			int par = field.getFieldPar();
 //			try {
-//				TournamentGroup[] groups = tournament.getTournamentGroups();
-//				for (int i = 0; i < groups.length; i++) {
-//					TournamentTournamentGroup[] tTGroup = (TournamentTournamentGroup[]) ((TournamentTournamentGroup) IDOLookup.instanciateEntity(TournamentTournamentGroup.class)).findAllByColumnEquals("tournament_id", tournament.getID() + "", "tournament_group_id", groups[i].getID() + "");
-//					for (int j = 0; j < tTGroup.length; j++) {
-//						Tee tee = ((TeeHome) IDOLookup.getHomeLegacy(Tee.class)).findByFieldAndTeeColorAndHoleNumber(field.getID(), tTGroup[j].getTeeColorId(), 1);
-//						if (tee != null) {
-//							CR.put(groups[i].getPrimaryKey(), new Float(tee.getCourseRating()));
-//							slope.put(groups[i].getPrimaryKey(), new Integer(tee.getSlope()));
-//						}
-//					}
-//				}
+//			TournamentGroup[] groups = tournament.getTournamentGroups();
+//			for (int i = 0; i < groups.length; i++) {
+//			TournamentTournamentGroup[] tTGroup = (TournamentTournamentGroup[]) ((TournamentTournamentGroup) IDOLookup.instanciateEntity(TournamentTournamentGroup.class)).findAllByColumnEquals("tournament_id", tournament.getID() + "", "tournament_group_id", groups[i].getID() + "");
+//			for (int j = 0; j < tTGroup.length; j++) {
+//			Tee tee = ((TeeHome) IDOLookup.getHomeLegacy(Tee.class)).findByFieldAndTeeColorAndHoleNumber(field.getID(), tTGroup[j].getTeeColorId(), 1);
+//			if (tee != null) {
+//			CR.put(groups[i].getPrimaryKey(), new Float(tee.getCourseRating()));
+//			slope.put(groups[i].getPrimaryKey(), new Integer(tee.getSlope()));
+//			}
+//			}
+//			}
 //			}
 //			catch (Exception e) {
 //			}
@@ -377,7 +377,7 @@ public class TournamentStartingtimeList extends GolfBlock {
 					startInGroup = sView.length;
 
 					String styleClass = null;
-					
+
 					for (int i = 0; i < sView.length; i++) {
 						if (areTournamentGroups && membersPerTournamentGroup > 1) {
 							int groupID = sView[i].getMemberId();
@@ -391,7 +391,7 @@ public class TournamentStartingtimeList extends GolfBlock {
 							else {
 								styleClass = getDarkRowClass();
 							}
-							
+
 							table.setStyleClass(2, row, styleClass);
 							table.add(new Text(group.getName()), 2, row);
 							HiddenInput nameInp = new HiddenInput("groupname_for_group_"+groupCounter, group.getName());
@@ -412,7 +412,7 @@ public class TournamentStartingtimeList extends GolfBlock {
 									} catch (Exception e) {
 										System.out.println("TournamentController : cannot find paid status (message = "+e.getMessage()+")");
 									}
-//														paid.setChecked(sView[i].getPaid());
+//									paid.setChecked(sView[i].getPaid());
 									table.add(paid, 6, row);
 									table.setStyleClass(6, row, styleClass);
 									delete = getCheckBox("deleteMember", Integer.toString(sView[i].getMemberId()));
@@ -427,8 +427,8 @@ public class TournamentStartingtimeList extends GolfBlock {
 								table.mergeCells(5, row, 7, row);
 								table.setStyleClass(5, row, styleClass);
 							}
-							
-							
+
+
 							int handirow = (row+1);
 
 							int totalHandi = 0;
@@ -446,7 +446,7 @@ public class TournamentStartingtimeList extends GolfBlock {
 									styleClass = getDarkRowClass();
 								}
 								zebraRow++;
-								
+
 								table.setHeight(row, 10);
 								++numberOfMember;
 								if (i != 0) table.add(tooMany, 1, row);
@@ -479,9 +479,9 @@ public class TournamentStartingtimeList extends GolfBlock {
 							}
 //							double divider = 5;
 //							if (membersPerTournamentGroup == 3) {
-//								divider = 7.5;
+//							divider = 7.5;
 //							}else if (membersPerTournamentGroup == 4) {
-//								divider = 10;
+//							divider = 10;
 //							}
 //							BigDecimal bd = new BigDecimal((double) totalHandi / divider);
 //							int leikhandi = bd.setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
@@ -496,7 +496,7 @@ public class TournamentStartingtimeList extends GolfBlock {
 								styleClass = getDarkRowClass();
 							}
 							zebraRow++;
-							
+
 							table.setHeight(row, 10);
 							++numberOfMember;
 							if (i != 0) table.add(tooMany, 1, row);
@@ -511,7 +511,7 @@ public class TournamentStartingtimeList extends GolfBlock {
 							row++;
 						}
 					}
-					
+
 
 					row = addMemberInputs(table, row, roundNumber, tee_number, numberInGroup, groupCounter, startInGroup, zebraRow, areTournamentGroups, membersPerTournamentGroup);
 					startHour.addMinutes(minutesBetween);
@@ -546,14 +546,14 @@ public class TournamentStartingtimeList extends GolfBlock {
 			add(form);
 		} else {
 			logError("Tournament not found in session, or in parameter");
-			
+
 		}
 	}
 
 	private int addMemberInputs(Table table, int row, int roundNumber, int tee_number, int numberInGroup, int groupCounter, int startInGroup, int zebraRow, boolean useTournamentGroups, int membersPerTournamentGroup) {
 		TextInput socialNumber;
 		String styleClass;
-		if (useTournamentGroups) {
+		if (useTournamentGroups && membersPerTournamentGroup > 1) {
 			numberInGroup = numberInGroup / membersPerTournamentGroup;
 		}
 
@@ -565,26 +565,9 @@ public class TournamentStartingtimeList extends GolfBlock {
 			else {
 				styleClass = getDarkRowClass();
 			}
-
-			if (!useTournamentGroups) {
-				zebraRow++;
-
-				table.setHeight(row, 10);
-				if ((!viewOnly) && (roundNumber == 1)) {
-					if (tee_number == 10) {
-						socialNumber = (TextInput) getStyledInterface(new TextInput("social_security_number_for_group_" + groupCounter + "_"));
-					}
-					else {
-						socialNumber = (TextInput) getStyledInterface(new TextInput("social_security_number_for_group_" + groupCounter));
-					}
-					socialNumber.setLength(15);
-					socialNumber.setMaxlength(10);
-					table.add(socialNumber, 2, row);
-				}
-				table.mergeCells(2, row, 7, row);
-				table.setStyleClass(2, row++, styleClass);
-			} else {
-
+			
+			if (useTournamentGroups && membersPerTournamentGroup > 1) {
+//				if (!useTournamentGroups) {
 				table.setHeight(row, 10);
 				if ((!viewOnly) && (roundNumber == 1)) {
 					TextInput nameInp = new TextInput("groupname_for_group_"+groupCounter);
@@ -615,6 +598,26 @@ public class TournamentStartingtimeList extends GolfBlock {
 					table.setStyleClass(3, row++, styleClass);
 					zebraRow++;
 				}
+
+
+			} else {
+
+				zebraRow++;
+
+				table.setHeight(row, 10);
+				if ((!viewOnly) && (roundNumber == 1)) {
+					if (tee_number == 10) {
+						socialNumber = (TextInput) getStyledInterface(new TextInput("social_security_number_for_group_" + groupCounter + "_"));
+					}
+					else {
+						socialNumber = (TextInput) getStyledInterface(new TextInput("social_security_number_for_group_" + groupCounter));
+					}
+					socialNumber.setLength(15);
+					socialNumber.setMaxlength(10);
+					table.add(socialNumber, 2, row);
+				}
+				table.mergeCells(2, row, 7, row);
+				table.setStyleClass(2, row++, styleClass);
 
 			}
 		}
@@ -661,7 +664,7 @@ public class TournamentStartingtimeList extends GolfBlock {
 				} catch (Exception e) {
 					System.out.println("TournamentController : cannot find paid status (message = "+e.getMessage()+")");
 				}
-//									paid.setChecked(sView[i].getPaid());
+//				paid.setChecked(sView[i].getPaid());
 				table.add(paid, 6, row);
 				table.setStyleClass(6, row, styleClass);
 				delete = getCheckBox("deleteMember", Integer.toString(sView[i].getMemberId()));
@@ -677,13 +680,13 @@ public class TournamentStartingtimeList extends GolfBlock {
 			table.setStyleClass(5, row, styleClass);
 		}
 	}
-	
+
 	public void setSubmitButtonParameter(String name, String value) {
 		if (name != null && value != null) {
 			submitButtonParameter = new String[]{name, value};
 		}
 	}
-	
+
 	private TournamentSession getTournamentSession(IWContext iwc) {
 		try {
 			return (TournamentSession) IBOLookup.getSessionInstance(iwc, TournamentSession.class);	
