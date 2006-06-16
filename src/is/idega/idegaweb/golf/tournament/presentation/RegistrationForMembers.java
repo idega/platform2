@@ -1338,7 +1338,7 @@ public void finalizeDirectRegistration(IWContext modinfo, IWResourceBundle iwrb)
     Handicap handicap = new Handicap(-1);
     if (member_ids != null) {
 
-    	if (tournament.getTournamentType().getUseGroups() && tournament.getNumberInTournamentGroup() > 0) {
+    	if (tournament.getTournamentType().getUseGroups() && tournament.getNumberInTournamentGroup() > 1) {
     		int numInGroup = tournament.getNumberInTournamentGroup();
     		String[] corrections = modinfo.getParameterValues("handicap_correction");
     		String[] memberNames = modinfo.getParameterValues("member_name");
