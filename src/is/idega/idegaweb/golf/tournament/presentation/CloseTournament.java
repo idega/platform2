@@ -360,6 +360,8 @@ public class CloseTournament extends TournamentBlock {
 					int tournamentType_ = tournament.getTournamentTypeId();
 //					ResultDataHandler handler = new ResultDataHandler(tournamentId_, tournamentType_, tournamentGroupId_, tournamentRounds_, gender_);
 					for (int i = 0; i < groups.length; i++) {
+						map = new HashMap();
+						scores = new HashMap();
 						Object tournamentGroupID = groups[i].getPrimaryKey();
 						ResultDataHandler handler = new ResultDataHandler(tournamentId_, sorter, groups[i].getID(), null, null);
 						Vector result = handler.getTournamentMembers();
