@@ -14,7 +14,7 @@ public class IWMarathonConstants {
   
   public final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.marathon";
 	public static final String PROPERTY_MERCHANT_PK = "merchant_pk";
-
+	public static final String PROPERTY_STAFF_GROUP_ID = "staff_group_id";
   
   public static final String GROUP_TYPE_RUN = "iwma_run";
 /*  public static final String GROUP_TYPE_RUN_MARATHON = "iwma_run_marathon";

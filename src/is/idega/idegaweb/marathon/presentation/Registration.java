@@ -1,5 +1,5 @@
 /*
- * $Id: Registration.java,v 1.25.4.2 2006/06/08 11:22:55 laddi Exp $
+ * $Id: Registration.java,v 1.25.4.3 2006/06/19 13:46:54 laddi Exp $
  * Created on May 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -57,10 +57,10 @@ import com.idega.util.LocaleUtil;
 
 
 /**
- * Last modified: $Date: 2006/06/08 11:22:55 $ by $Author: laddi $
+ * Last modified: $Date: 2006/06/19 13:46:54 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.25.4.2 $
+ * @version $Revision: 1.25.4.3 $
  */
 public class Registration extends RunBlock {
 	
@@ -154,7 +154,7 @@ public class Registration extends RunBlock {
 				stepSix(iwc);
 				break;
 			case ACTION_SAVE:
-				save(iwc);
+				save(iwc, true);
 				break;
 			case ACTION_CANCEL:
 				cancel(iwc);
@@ -853,7 +853,7 @@ public class Registration extends RunBlock {
 			float runPrice = getRunBusiness(iwc).getPriceForRunner(runner, iwc.getCurrentLocale(), chipDiscount, 0);
 			totalAmount += runPrice;
 			runnerTable.add(getText(formatAmount(iwc.getCurrentLocale(), runPrice)), 4, runRow++);
-			if (numberOfChildren > 1 && childNumber > 1) {
+			if (numberOfChildren > 1 && childNumber > 1 && runPrice > 0) {
 				runPrice -= childDiscount;
 			}
 			if (runner.isBuyChip()) {
@@ -867,6 +867,11 @@ public class Registration extends RunBlock {
 				runnerTable.add(new HiddenInput(PARAMETER_REFERENCE_NUMBER, runner.getPersonalID().replaceAll("-", "")));
 				first = false;
 			}
+		}
+		
+		if (totalAmount == 0) {
+			save(iwc, false);
+			return;
 		}
 		
 		if (isIcelandic) {
@@ -1029,29 +1034,47 @@ public class Registration extends RunBlock {
 		return NumberFormat.getInstance(locale).format(amount) + " " + (isIcelandic ? "ISK" : "EUR");
 	}
 	
-	private void save(IWContext iwc) throws RemoteException {
+	private void save(IWContext iwc, boolean doPayment) throws RemoteException {
 		try {
-			String nameOnCard = iwc.getParameter(PARAMETER_NAME_ON_CARD);
-			String cardNumber = "";
-			for (int i = 1; i <= 4; i++) {
-				cardNumber += iwc.getParameter(PARAMETER_CARD_NUMBER + "_" + i);
-			}
-			String hiddenCardNumber = "XXXX-XXXX-XXXX-" + iwc.getParameter(PARAMETER_CARD_NUMBER + "_" + 4);
-			String expiresMonth = iwc.getParameter(PARAMETER_EXPIRES_MONTH);
-			String expiresYear = iwc.getParameter(PARAMETER_EXPIRES_YEAR);
-			String ccVerifyNumber = iwc.getParameter(PARAMETER_CCV);
-			String email = iwc.getParameter(PARAMETER_CARD_HOLDER_EMAIL);
-			double amount = Double.parseDouble(iwc.getParameter(PARAMETER_AMOUNT));
-			String referenceNumber = iwc.getParameter(PARAMETER_REFERENCE_NUMBER);
-			IWTimestamp paymentStamp = new IWTimestamp();
-			
 			Collection runners = ((Map) iwc.getSessionAttribute(SESSION_ATTRIBUTE_RUNNER_MAP)).values();
-			String properties = getRunBusiness(iwc).authorizePayment(nameOnCard, cardNumber, expiresMonth, expiresYear, ccVerifyNumber, amount, isIcelandic ? "ISK" : "EUR", referenceNumber);
+
+			String nameOnCard = null;
+			String cardNumber = null;
+			String hiddenCardNumber = "XXXX-XXXX-XXXX-XXXX";
+			String email = ((Runner) runners.iterator().next()).getEmail();
+			String expiresMonth = null;
+			String expiresYear = null;
+			String ccVerifyNumber = null;
+			String referenceNumber = null;
+			double amount = 0;
+			IWTimestamp paymentStamp = new IWTimestamp();
+
+			if (doPayment) {
+				nameOnCard = iwc.getParameter(PARAMETER_NAME_ON_CARD);
+				cardNumber = "";
+				for (int i = 1; i <= 4; i++) {
+					cardNumber += iwc.getParameter(PARAMETER_CARD_NUMBER + "_" + i);
+				}
+				hiddenCardNumber = "XXXX-XXXX-XXXX-" + iwc.getParameter(PARAMETER_CARD_NUMBER + "_" + 4);
+				expiresMonth = iwc.getParameter(PARAMETER_EXPIRES_MONTH);
+				expiresYear = iwc.getParameter(PARAMETER_EXPIRES_YEAR);
+				ccVerifyNumber = iwc.getParameter(PARAMETER_CCV);
+				email = iwc.getParameter(PARAMETER_CARD_HOLDER_EMAIL);
+				amount = Double.parseDouble(iwc.getParameter(PARAMETER_AMOUNT));
+				referenceNumber = iwc.getParameter(PARAMETER_REFERENCE_NUMBER);
+			}
+			
+			String properties = null;
+			if (doPayment) {
+				properties = getRunBusiness(iwc).authorizePayment(nameOnCard, cardNumber, expiresMonth, expiresYear, ccVerifyNumber, amount, isIcelandic ? "ISK" : "EUR", referenceNumber);
+			}
 			Collection participants = getRunBusiness(iwc).saveParticipants(runners, email, hiddenCardNumber, amount, paymentStamp, iwc.getCurrentLocale());
-			getRunBusiness(iwc).finishPayment(properties);
+			if (doPayment) {
+				getRunBusiness(iwc).finishPayment(properties);
+			}
 			iwc.removeSessionAttribute(SESSION_ATTRIBUTE_RUNNER_MAP);
 			
-			showReceipt(iwc, participants, amount, hiddenCardNumber, paymentStamp);
+			showReceipt(iwc, participants, amount, hiddenCardNumber, paymentStamp, doPayment);
 		}
 		catch (IDOCreateException ice) {
 			getParentPage().setAlertOnLoad(localize("run_reg.save_failed", "There was an error when trying to finish registration.  Please contact the marathon.is office."));
@@ -1066,7 +1089,7 @@ public class Registration extends RunBlock {
 		}
 	}
 	
-	private void showReceipt(IWContext iwc, Collection runners, double amount, String cardNumber, IWTimestamp paymentStamp) {
+	private void showReceipt(IWContext iwc, Collection runners, double amount, String cardNumber, IWTimestamp paymentStamp, boolean doPayment) {
 		Table table = new Table();
 		table.setCellpadding(0);
 		table.setCellspacing(0);
@@ -1109,15 +1132,17 @@ public class Registration extends RunBlock {
 			runnerTable.add(getText(localize("shirt_size." + participant.getTShirtSize(), participant.getTShirtSize())), 5, runRow++);
 		}
 		
-		Table creditCardTable = new Table(2, 3);
-		creditCardTable.add(getHeader(localize("run_reg.payment_received_timestamp", "Payment received") + ":"), 1, 1);
-		creditCardTable.add(getText(paymentStamp.getLocaleDateAndTime(iwc.getCurrentLocale(), IWTimestamp.SHORT, IWTimestamp.SHORT)), 2, 1);
-		creditCardTable.add(getHeader(localize("run_reg.card_number", "Card number") + ":"), 1, 2);
-		creditCardTable.add(getText(cardNumber), 2, 2);
-		creditCardTable.add(getHeader(localize("run_reg.amount", "Amount") + ":"), 1, 3);
-		creditCardTable.add(getText(formatAmount(iwc.getCurrentLocale(), (float) amount)), 2, 3);
-		table.setHeight(row++, 16);
-		table.add(creditCardTable, 1, row++);
+		if (doPayment) {
+			Table creditCardTable = new Table(2, 3);
+			creditCardTable.add(getHeader(localize("run_reg.payment_received_timestamp", "Payment received") + ":"), 1, 1);
+			creditCardTable.add(getText(paymentStamp.getLocaleDateAndTime(iwc.getCurrentLocale(), IWTimestamp.SHORT, IWTimestamp.SHORT)), 2, 1);
+			creditCardTable.add(getHeader(localize("run_reg.card_number", "Card number") + ":"), 1, 2);
+			creditCardTable.add(getText(cardNumber), 2, 2);
+			creditCardTable.add(getHeader(localize("run_reg.amount", "Amount") + ":"), 1, 3);
+			creditCardTable.add(getText(formatAmount(iwc.getCurrentLocale(), (float) amount)), 2, 3);
+			table.setHeight(row++, 16);
+			table.add(creditCardTable, 1, row++);
+		}
 		
 		table.setHeight(row++, 16);
 		table.add(getHeader(localize("run_reg.delivery_of_race_material_headline", "Race material and T-shirt/sweatshirt")), 1, row++);

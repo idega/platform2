@@ -614,6 +614,25 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 	public float getPriceForRunner(Runner runner, Locale locale, float chipDiscount, float chipPrice) {
 		Age age = null;
 		if (runner.getUser() != null) {
+			int groupID = Integer.parseInt(getIWApplicationContext().getIWMainApplication().getBundle(this.IW_BUNDLE_IDENTIFIER).getProperty(IWMarathonConstants.PROPERTY_STAFF_GROUP_ID, "-1"));
+			if (groupID != -1) {
+				try {
+					Group group = getUserBiz().getGroupBusiness().getGroupByGroupID(groupID);
+					if (runner.getUser().hasRelationTo(group)) {
+						return 0;
+					}
+				}
+				catch (IBOLookupException e) {
+					e.printStackTrace();
+				}
+				catch (RemoteException e) {
+					e.printStackTrace();
+				}
+				catch (FinderException e) {
+					e.printStackTrace();
+				}
+			}
+			
 			age = new Age(runner.getUser().getDateOfBirth());
 		}
 		else {
