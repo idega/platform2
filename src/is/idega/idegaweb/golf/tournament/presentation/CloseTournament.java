@@ -344,16 +344,6 @@ public class CloseTournament extends TournamentBlock {
 					Object tournamentID = tournament.getPrimaryKey();
 					Object tournamentTourID = tour.getPrimaryKey();
 					
-					// TODO divide points between same score...
-					/*
-					 * First score = 20
-					 * 		set to member : 300pts
-					 * 2nd score = 18
-					 * 		set to member : 200pts
-					 * 3rd score = 18
-					 * 		
-					 */
-					
 					HashMap map = new HashMap();
 					HashMap scores = new HashMap();
 					
@@ -370,10 +360,14 @@ public class CloseTournament extends TournamentBlock {
 						Collections.sort(result, comparator);
 						Iterator mIter = result.iterator();
 						int counter = 0;
+						boolean cont = true;
 						int length = points.length;
-						while (mIter.hasNext() && counter < length) {
+						while (mIter.hasNext() && cont) {
 							ResultsCollector r = (ResultsCollector) mIter.next();
-							float score = (float) totalPoints * (points[counter] / (float) 100);
+							float score = 0;
+							if (counter < length) {
+								score = (float) totalPoints * (points[counter] / (float) 100);
+							}
 							System.out.println("[CloseTournament : Member "+r.getName()+" receives the score : "+score);
 							Object memberID = new Integer(r.getMemberId());
 							TournamentTourMemberPK mPK = new TournamentTourMemberPK(tournamentID, tournamentTourID, tournamentGroupID, memberID);
@@ -389,10 +383,15 @@ public class CloseTournament extends TournamentBlock {
 							Collection coll = (Collection) map.get(new Integer(r.getTotalStrokes()));							
 							if (coll == null) {
 								// FIRST PLAYER WITH WITH SCORE.
-								coll = new Vector();
-								coll.add(ttMember);
-								scores.put(new Integer(r.getTotalStrokes()), new Float(score));
-								map.put(new Integer(r.getTotalStrokes()), coll);
+								if (counter < length) {
+									coll = new Vector();
+									coll.add(ttMember);
+									scores.put(new Integer(r.getTotalStrokes()), new Float(score));
+									map.put(new Integer(r.getTotalStrokes()), coll);
+								} else {
+									ttMember.remove();
+									cont = false;
+								}
 							} else {
 								// OTHER PLAYER WITH SAME SCORE...
 								coll.add(ttMember);
