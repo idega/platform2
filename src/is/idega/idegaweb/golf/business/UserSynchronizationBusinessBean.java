@@ -635,7 +635,7 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 					}
 				}
 				catch (FinderException e) {
-					e.printStackTrace();
+					System.out.println("UserSync: User with ssn = " + pin + " was not found and will be created");
 				}
 				if (user == null) {
 					user = getUserBusiness().createUserByPersonalIDIfDoesNotExist(name, pin, null, null);
