@@ -619,14 +619,14 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 			String dateOfBirth = iwc.getParameter(GolfConstants.MEMBER_DATE_OF_BIRTH);
 			if (uuid != null && pin != null) {
 				init();
-				System.out.println("UserSync: trying to sync : pin:" + pin + " uuid:" + uuid + " name:" + name
+				System.out.println("UserSync: pin:" + pin + " uuid:" + uuid + " name:" + name
 						+ " mainclub:" + main + " subclubs:" + subs);
 				User user = null;
 				try {
 					user = getUserBusiness().getUserByUniqueId(uuid);
 				}
 				catch (FinderException e) {
-					e.printStackTrace();
+					System.out.println("UserSync: User with uuid:" + uuid + " was not found");
 				}
 				try {
 					if (user == null) {
@@ -635,7 +635,7 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 					}
 				}
 				catch (FinderException e) {
-					System.out.println("UserSync: User with ssn = " + pin + " was not found and will be created");
+					System.out.println("UserSync: User with pin:" + pin + " was not found and will be created");
 				}
 				if (user == null) {
 					user = getUserBusiness().createUserByPersonalIDIfDoesNotExist(name, pin, null, null);
