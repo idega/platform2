@@ -368,6 +368,10 @@ public class CloseTournament extends TournamentBlock {
 							if (counter < length) {
 								score = (float) totalPoints * (points[counter] / (float) 100);
 							}
+							if (r.getDismissal() > 0) {
+								System.out.println("[CloseTournament : Member "+r.getName()+" has a dismissal");
+								continue;
+							}
 							System.out.println("[CloseTournament : Member "+r.getName()+" receives the score : "+score);
 							Object memberID = new Integer(r.getMemberId());
 							TournamentTourMemberPK mPK = new TournamentTourMemberPK(tournamentID, tournamentTourID, tournamentGroupID, memberID);
