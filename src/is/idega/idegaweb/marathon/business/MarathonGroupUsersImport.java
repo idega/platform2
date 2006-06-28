@@ -5,9 +5,10 @@ import com.idega.user.data.Group;
 import com.idega.business.IBOService;
 import java.util.List;
 import java.rmi.RemoteException;
+import com.idega.block.importer.business.ImportFileHandler;
 import com.idega.block.importer.data.ImportFile;
 
-public interface MarathonGroupUsersImport extends IBOService {
+public interface MarathonGroupUsersImport extends IBOService, ImportFileHandler {
 
 	/**
 	 * @see is.idega.idegaweb.marathon.business.MarathonGroupUsersImportBean#handleRecords
