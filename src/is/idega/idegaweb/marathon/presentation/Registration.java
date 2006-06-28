@@ -1,5 +1,5 @@
 /*
- * $Id: Registration.java,v 1.25.4.3 2006/06/19 13:46:54 laddi Exp $
+ * $Id: Registration.java,v 1.25.4.4 2006/06/28 14:56:31 laddi Exp $
  * Created on May 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -57,10 +57,10 @@ import com.idega.util.LocaleUtil;
 
 
 /**
- * Last modified: $Date: 2006/06/19 13:46:54 $ by $Author: laddi $
+ * Last modified: $Date: 2006/06/28 14:56:31 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.25.4.3 $
+ * @version $Revision: 1.25.4.4 $
  */
 public class Registration extends RunBlock {
 	
@@ -362,7 +362,7 @@ public class Registration extends RunBlock {
 
 		DropdownMenu genderField = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_GENDER));
 		Collection genders = getGenderBusiness(iwc).getAllGenders();
-		genderField.addMenuElement("", localize("run_reg.select_gender","Select gender..."));
+		genderField.addMenuElement("-1", localize("run_reg.select_gender","Select gender..."));
 		if(genders != null) {
 			Iterator iter = genders.iterator();
 			while (iter.hasNext()) {
