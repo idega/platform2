@@ -17,10 +17,10 @@ import com.idega.presentation.ui.DropDownMenuInputHandler;
  * <p>
  * DropDownMenu so it users can have a range of JasperReportLayouts to select from.
  * </p>
- *  Last modified: $Date: 2005/11/26 17:10:18 $ by $Author: sigtryggur $
+ *  Last modified: $Date: 2006/06/30 17:42:18 $ by $Author: sigtryggur $
  * 
  * @author <a href="mailto:sigtryggur@idega.com">sigtryggur</a>
- * @version $Revision: 1.1.2.1 $
+ * @version $Revision: 1.1.2.2 $
  */
 public class DynamicLayoutDropDownMenu extends DropDownMenuInputHandler {
 
@@ -46,6 +46,9 @@ public class DynamicLayoutDropDownMenu extends DropDownMenuInputHandler {
 					ICFile file = (ICFile) iterator.next();
 					if (!file.isFolder()) {
 						String display = file.getName();
+						if (display != null && display.lastIndexOf('.') != -1 ) {
+							display = display.substring(0, display.lastIndexOf('.'));
+						}
 						int fileID = file.getNodeID();
 						String fileIDValue = Integer.toString(fileID);
 						this.addMenuElement(fileIDValue, display);
@@ -82,6 +85,13 @@ public class DynamicLayoutDropDownMenu extends DropDownMenuInputHandler {
 			}
 			catch (FinderException findEx) {	
 	    		layoutFolder = createAndReturnLayoutFolder(LAYOUT_FOLDER_NAME);
+	    		try {
+	    			ICFile rootFolder = getFileHome().findRootFolder();
+	    			rootFolder.addChild(layoutFolder);
+	    		}
+	    		catch (FinderException findEx2) {
+	    			logError("[DynamicLayoutDropDownMenu] Could not find Root-folder");
+	    		}
 	    	}
 			if (userDefinedLayoutFolderName != null && !userDefinedLayoutFolderName.equals("")) {
 				ICFile userDefinedLayoutFolder = null;
@@ -97,11 +107,11 @@ public class DynamicLayoutDropDownMenu extends DropDownMenuInputHandler {
 			return layoutFolder;
 		}
 		catch (CreateException createEx) {
-			logError("[ReportQueryOverview] Could create file");
+			logError("[DynamicLayoutDropDownMenu] Could create file");
 			log(createEx);
 		}
 		catch (SQLException sqlEx) {
-			logError("[ReportQueryOverview] Could create child file");
+			logError("[DynamicLayoutDropDownMenu] Could create child file");
 			log(sqlEx);
 		}
     	return null;
@@ -121,7 +131,7 @@ public class DynamicLayoutDropDownMenu extends DropDownMenuInputHandler {
 	    		fileHome = (ICFileHome)IDOLookup.getHome(ICFile.class);
 	    	}
 		    catch (IDOLookupException lookupEx) {
-		    	logError("[ReportQueryOverview] Could not look up home of ICFile");
+		    	logError("[DynamicLayoutDropDownMenu] Could not look up home of ICFile");
 		    	log(lookupEx);
 		    }
 	    }
