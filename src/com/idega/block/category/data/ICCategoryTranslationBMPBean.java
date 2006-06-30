@@ -43,14 +43,14 @@ public class ICCategoryTranslationBMPBean extends CategoryEntityBMPBean implemen
   	}
   	
   	public Object ejbFindByCategoryAndLocale(int categoryID,int localeID) throws FinderException{
-  		StringBuffer sql = new StringBuffer("select * from ").append(TABLENAME);
+  		StringBuffer sql = new StringBuffer("select ic_cat_transl_id from ").append(TABLENAME);
   		sql.append(" where ").append(getColumnCategoryId()).append(" = ").append(categoryID);
   		sql.append(" and ").append(LOCALE).append(" = ").append(localeID);
   		return idoFindOnePKBySQL(sql.toString());
   	}
   	
   	public Collection ejbFindAllByCategory(int categoryID) throws FinderException{
-  		StringBuffer sql = new StringBuffer("select * from ").append(TABLENAME);
+  		StringBuffer sql = new StringBuffer("select ic_cat_transl_id from ").append(TABLENAME);
   		sql.append(" where ").append(getColumnCategoryId()).append(" = ").append(categoryID);
   		return idoFindPKsBySQL(sql.toString());
   	}
