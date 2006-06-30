@@ -1374,6 +1374,50 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		return runs;
 		
 	}
+	
+	public Group getRunGroupOfTypeForGroup(Group group, String type) {
+		
+		String[] types = {type};
+		Collection r = null;
+		Group run = null;
+
+		try {
+			r = getGroupBiz().getParentGroupsRecursive(group,types,true);
+		}
+		catch (RemoteException e1) {
+			e1.printStackTrace();
+		}
+		if(r != null) {
+			Iterator rIter = r.iterator();
+			if(rIter.hasNext()) {
+				 run = (Group) rIter.next();
+			}
+		}
+		return run;
+	}
+
+	/**
+	 * gets all the "gender/age" groups for the user
+	 * e.g. "female_14", "male_14", "female_14_17", "male_14_17", "female_18_39", "male_18_39" ...
+	 * 
+	 * @return a Collection of the "iwma_run_group" types
+	 */
+	public Collection getRunGroupsForUser(User user) {
+		Collection groups = null;
+		String[] typeGroup = { IWMarathonConstants.GROUP_TYPE_RUN_GROUP };
+		try {
+			groups = getUserBiz().getUserGroups(user, typeGroup, true);
+		}
+		catch (IBOLookupException e) {
+			e.printStackTrace();
+			groups = null;
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+			groups = null;
+		}
+		return groups;
+	}
 
 	/**
 	 * Gets all the years that exist for a specific run. The years are groups

@@ -29,10 +29,9 @@ import com.idega.user.presentation.UserTab;
  */
 public class UserRunTab extends UserTab{
 	
-	private Text yearText;
 	private Text runText;
 	
-	private Collection runs = null;
+	private Collection runGroups = null;
 
 	
 	
@@ -78,7 +77,6 @@ public class UserRunTab extends UserTab{
 	public void initializeTexts() {
 		IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
-		yearText = new Text(iwrb.getLocalizedString("run_tab.year", "Year"));
 		runText = new Text(iwrb.getLocalizedString("run_tab.run", "Run"));
 	}
 	/* (non-Javadoc)
@@ -104,7 +102,7 @@ public class UserRunTab extends UserTab{
 		}
 		
 		try {
-			runs = runBiz.getRunsForUser(user);
+			runGroups = runBiz.getRunGroupsForUser(user);
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
@@ -116,17 +114,29 @@ public class UserRunTab extends UserTab{
 		t.setCellpadding(0);
 		t.setCellspacing(0);
 		t.add(runText,1,row++);
-		if(runs != null) {
-			Iterator i = runs.iterator();
+		if(runGroups != null) {
+			Iterator i = runGroups.iterator();
 			while(i.hasNext()) {
-				Group run = (Group) i.next();
-				Link l = new Link(iwrb.getLocalizedString(run.getName(), run.getName()));
+				Group runGroup = (Group) i.next();
+				Group run = null;
+				try {
+					run = runBiz.getRunGroupOfTypeForGroup(runGroup, IWMarathonConstants.GROUP_TYPE_RUN);
+				}
+				catch (RemoteException e) {
+					e.printStackTrace();
+				}
+				Group year = null;
+				try {
+					year = runBiz.getRunGroupOfTypeForGroup(runGroup, IWMarathonConstants.GROUP_TYPE_RUN_YEAR);
+				}
+				catch (RemoteException e) {
+					e.printStackTrace();
+				}
+				Link l = new Link(iwrb.getLocalizedString(run.getName())+ " " + iwrb.getLocalizedString(year.getName()), iwrb.getLocalizedString(run.getName())+ " " + iwrb.getLocalizedString(year.getName()));
 				l.setStyleClass("styledLink");
 				l.addParameter(IWMarathonConstants.GROUP_TYPE_RUN,run.getPrimaryKey().toString());
 				l.addParameter("ic_user_id",Integer.parseInt(userID));
-				if (selectedGroupID != null) {
-					l.addParameter("selected_ic_group_id",Integer.parseInt(selectedGroupID));
-				}
+				l.addParameter("selected_ic_group_id",runGroup.getPrimaryKey().toString());
 				l.setWindowToOpen(UpdateRunInfoWindow.class);
 				if(l != null) {
 					t.add(l,1,row++);

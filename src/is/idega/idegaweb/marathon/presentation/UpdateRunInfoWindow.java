@@ -38,7 +38,6 @@ public class UpdateRunInfoWindow extends StyledIWAdminWindow {
 	
 	//texts
 	private Text userNameText;
-	private Text yearText;
 	private Text runText;
 	private Text distanceText;
 	private Text groupText;
@@ -46,18 +45,14 @@ public class UpdateRunInfoWindow extends StyledIWAdminWindow {
 	private Text chipNumberText;
 	private Text runTimeText;
 	private Text chipTimeText;
-	private Text bestTimeText;
-	private Text goalTimeText;
 	private Text tshirtText;
 	private Text payMethodText;
 	private Text payedAmountText;
-	private Text nationalityText;
 	private Text teamNameText;
 
 	//fields
 	private Text userNameField;
 	private Text runField;
-	private Text yearField;
 	private Text distanceField;
 	private Text groupField;
 	private SubmitButton submitButton;
@@ -65,12 +60,8 @@ public class UpdateRunInfoWindow extends StyledIWAdminWindow {
 	private TextInput chipNumberField;
 	private TextInput runTimeField;
 	private TextInput chipTimeField;
-	private TextInput bestTimeField;
-	private TextInput goalTimeField;
-	private DropdownMenu nationalityField;
 
 	private DropdownMenu tShirtField;
-	private SelectOption selectAdult;
 	private SelectOption small;
 	private SelectOption medium;
 	private SelectOption large;
@@ -103,7 +94,6 @@ public class UpdateRunInfoWindow extends StyledIWAdminWindow {
 		IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		userNameText = new Text(iwrb.getLocalizedString("run_tab.user_name", "User Name"));
-		yearText = new Text(iwrb.getLocalizedString("run_tab.year", "Year"));
 		runText = new Text(iwrb.getLocalizedString("run_tab.run", "Run"));
 		distanceText = new Text(iwrb.getLocalizedString("run_tab.distance", "Distance"));
 		groupText = new Text(iwrb.getLocalizedString("run_tab.group", "Group"));
@@ -111,19 +101,15 @@ public class UpdateRunInfoWindow extends StyledIWAdminWindow {
 		chipNumberText = new Text(iwrb.getLocalizedString("run_tab.chip_nr", "Chip number"));
 		runTimeText = new Text(iwrb.getLocalizedString("run_tab.run_time", "Run time"));
 		chipTimeText = new Text(iwrb.getLocalizedString("run_tab.chip_time", "Chip time"));
-		bestTimeText = new Text(iwrb.getLocalizedString("run_tab.best_time", "Best time"));
-		goalTimeText = new Text(iwrb.getLocalizedString("run_tab.goal_time", "Goal time"));
 		tshirtText = new Text(iwrb.getLocalizedString("run_tab.tshirt", "Tshirt size"));
 		payMethodText = new Text(iwrb.getLocalizedString("run_tab.pay_method", "Pay method"));
 		payedAmountText = new Text(iwrb.getLocalizedString("run_tab.payed_amount", "Payed amount"));
-		nationalityText = new Text(iwrb.getLocalizedString("run_tab.nationality", "Nationality"));
 		teamNameText = new Text(iwrb.getLocalizedString("run_tab.team_name", "Team name"));
 	}
 	
 	public void initializeFields() {
 		IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
-		RunBusiness runBiz = getRunBiz(iwc);
 		String userID = iwc.getParameter("ic_user_id");
 		String selectedGroupID = iwc.getParameter("selected_ic_group_id");
 		String runGroupID = iwc.getParameter(IWMarathonConstants.GROUP_TYPE_RUN);
@@ -166,11 +152,11 @@ public class UpdateRunInfoWindow extends StyledIWAdminWindow {
 		if(userID != null && selectedGroupID != null) {
 			try {
 				run = getRunBiz(iwc).getRunObjByUserAndGroup(Integer.parseInt(userID),Integer.parseInt(selectedGroupID));
-				Group dis = getRunBiz(iwc).getDistanceByUserID(Integer.parseInt(userID));
-				f.addParameter(IWMarathonConstants.GROUP_TYPE_RUN_DISTANCE,dis.getPrimaryKey().toString());
-				if(userID != null && runGroupID != null) {
-					run = getRunBiz(iwc).getRunObjByUserIDandDistanceID(Integer.parseInt(userID),Integer.parseInt(dis.getPrimaryKey().toString()));
-				}
+//				Group dis = getRunBiz(iwc).getDistanceByUserID(Integer.parseInt(userID));
+//				f.addParameter(IWMarathonConstants.GROUP_TYPE_RUN_DISTANCE,dis.getPrimaryKey().toString());
+//				if(userID != null && runGroupID != null) {
+//					run = getRunBiz(iwc).getRunObjByUserIDandDistanceID(Integer.parseInt(userID),Integer.parseInt(dis.getPrimaryKey().toString()));
+//				}
 			}
 			catch (Exception re) {
 				log(re);
