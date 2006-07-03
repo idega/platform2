@@ -156,7 +156,12 @@ public class GolfLoginBusiness extends LoginBusinessBean implements IWPageEventL
 			}
 		}
 		catch (Exception ex) {
-			ex.printStackTrace(System.err);
+			String errorString = "GolfLoginBusinessBean: " +ex.getMessage();
+			if (modinfo != null) {
+				errorString = errorString + " Username = " + modinfo.getParameter("login");
+			}
+			System.out.println(errorString);
+			//ex.printStackTrace(System.err);
 			//throw (IdegaWebException)ex.fillInStackTrace();
 			return false;
 		}

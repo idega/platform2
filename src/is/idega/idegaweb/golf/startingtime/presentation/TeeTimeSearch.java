@@ -162,7 +162,8 @@ public class TeeTimeSearch extends GolfBlock {
 								}
 															
 							} catch (Exception E) {
-								E.printStackTrace();
+								System.out.println("TeeTimeSearch: " + E.getMessage());
+								//E.printStackTrace();
 								if (E.getMessage().equals("Error1")) {
 									Table Error1 = new Table(1, 1);
 									Error1.setWidth(_blockWidth);
