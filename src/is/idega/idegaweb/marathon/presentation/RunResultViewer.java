@@ -60,16 +60,11 @@ public class RunResultViewer extends Block {
 	private static final String DEFAULT_HEADER_ROW_STYLE = "font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;padding:2px;";
 	private static final String DEFAULT_LIST_ROW_STYLE = "font-family:Arial,Helvetica,sans-serif;font-size:10px;padding:2px;";
 	
-	private static final String HEADLINE_BACKGROUND_COLOR = "#ACACAC";
-	private static final String HEADLINE_COLOR = "FFFFFF";
 	private static final String DARK_COLOR = "#E9E9E9";
 	private static final String LIGHT_COLOR = "#FFFFFF";
 
 	private int COLUMN_COUNT = 13;
-	private static final int HEADLINE_SIZE = 12;
 
-	private static String _groupYear;
-	private static String _groupDistance;
 
 	private Distance distance;
 	private Year year;
@@ -504,7 +499,7 @@ public class RunResultViewer extends Block {
 	private int insertRunGroupIntoTable(Table table, int row, String groupName) {
 		table.mergeCells(1, row, COLUMN_COUNT, row);
 		table.setStyleClass(1, row, getStyleName(STYLENAME_GROUP_ROW));
-		table.add(getRunnerRowText(iwrb.getLocalizedString(groupName, groupName)), 1, row++);
+		table.add(getRunnerRowText(groupName), 1, row++);
 		table.setHeight(row, 2);
 		return ++row;
 	}
