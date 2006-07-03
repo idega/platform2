@@ -1157,7 +1157,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 				for (int i = 0; i < members.size(); i++) {
 					member = (Member) members.get(i);
 
-					memberString += " member_id = " + member.getID();
+					memberString += " mi.member_id = " + member.getID();
 					if (i < (members.size() - 1)) {
 						memberString += " OR";
 					}
