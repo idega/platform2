@@ -79,6 +79,7 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 	private static final String LOCALIZED_USER_STATUS = "UserStatsBusiness.user_status";
 	private static final String LOCALIZED_STREET_ADDRESS = "UserStatsBusiness.street_address";
 	private static final String LOCALIZED_POSTAL_ADDRESS = "UserStatsBusiness.postal_address";
+	private static final String LOCALIZED_POST_BOX = "UserStatsBusiness.post_box";
 	private static final String LOCALIZED_COUNTRY = "UserStatsBusiness.country";
 	private static final String LOCALIZED_PHONE = "UserStatsBusiness.phone";
 	private static final String LOCALIZED_EMAIL = "UserStatsBusiness.email";
@@ -92,6 +93,7 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 	private static final String FIELD_NAME_USER_STATUS = "user_status";
 	private static final String FIELD_NAME_STREET_ADDRESS = "street_address";
 	private static final String FIELD_NAME_POSTAL_ADDRESS = "postal_address";
+	private static final String FIELD_NAME_POST_BOX = "post_box";
 	private static final String FIELD_NAME_COUNTRY = "country";
 	private static final String FIELD_NAME_PHONE = "phone";
 	private static final String FIELD_NAME_EMAIL = "email";
@@ -364,7 +366,11 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 		 ReportableField postalAddressField = new ReportableField(FIELD_NAME_POSTAL_ADDRESS, String.class);
 		 postalAddressField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_POSTAL_ADDRESS, "Postal Address"), currentLocale);
 		 reportCollection.addField(postalAddressField); 
-		 
+
+		 ReportableField pBoxField = new ReportableField(FIELD_NAME_POST_BOX, String.class);
+		 pBoxField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_POST_BOX, "Postbox"), currentLocale);
+		 reportCollection.addField(pBoxField);
+
 		 ReportableField phoneField = new ReportableField(FIELD_NAME_PHONE, String.class);
 		 phoneField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PHONE, "Phone"), currentLocale);
 		 reportCollection.addField(phoneField);
@@ -434,10 +440,12 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 			    Address address = null;
 			    String streetAddressString = null;
 			    String postalAddressString = null;
+			    String postBoxString = null;
 			   	if (addresses != null && !addresses.isEmpty()) {
 			   	    address = (Address)addresses.iterator().next();
 			   	    streetAddressString = address.getStreetAddress();
 			   	    postalAddressString = address.getPostalAddress();
+			   	    postBoxString = address.getPOBox();
 			   	}
 			   	while (parIt.hasNext()) {				     
 			        Group parentGroup = (Group)parIt.next();
@@ -451,6 +459,7 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 				    data.addData(emailField, emailString);
 				    data.addData(streetAddressField, streetAddressString);
 				    data.addData(postalAddressField, postalAddressString);
+				    data.addData(pBoxField, postBoxString);
 				    data.addData(phoneField, getPhoneNumber(group));
 				    List statsForGroup = (List) usersByGroups.get(group.getPrimaryKey());
 					if (statsForGroup == null)
