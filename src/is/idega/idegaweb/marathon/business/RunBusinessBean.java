@@ -286,13 +286,6 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		try {
 			user = getUserBiz().getUser(userID);
 			int age = getUserAge(user);
-			Group runGroup = null;
-			try {
-				runGroup = getGroupBiz().getGroupByGroupID(Integer.parseInt(run));
-			}
-			catch (FinderException fe) {
-				fe.printStackTrace();
-			}
 			if (distance != null && !distance.equals("")) {
 				int disGroupID = Integer.parseInt(distance);
 				
@@ -340,9 +333,9 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 			}
 			if (distanceType != null) {
 				try {
-					int participantNumber = runHome.getNextAvailableParticipantNumber(distance, getMinParticipantNumber(distanceType, runGroup.getName()), getMaxParticipantNumber(distanceType, runGroup.getName()));
+					int participantNumber = runHome.getNextAvailableParticipantNumber(distance, getMinParticipantNumber(distanceType, groupRun.getName()), getMaxParticipantNumber(distanceType, groupRun.getName()));
 					if (participantNumber == 0) {
-						participantNumber = getMinParticipantNumber(distanceType, runGroup.getName());
+						participantNumber = getMinParticipantNumber(distanceType, groupRun.getName());
 					}
 					else {
 						participantNumber++;
@@ -358,7 +351,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 			Email email = getUserBiz().getUserMail(user);
 			if (groupRun != null && user != null && email != null && email.getEmailAddress() != null) {
 				IWResourceBundle iwrb = getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getResourceBundle(locale);
-				Object[] args = { user.getName(), groupRun.getName(), iwrb.getLocalizedString(disGroup.getName(),disGroup.getName()), iwrb.getLocalizedString(tshirt, tshirt) };
+				Object[] args = { user.getName(), iwrb.getLocalizedString(groupRun.getName(),groupRun.getName()), iwrb.getLocalizedString(disGroup.getName(),disGroup.getName()), iwrb.getLocalizedString(tshirt, tshirt) };
 				String subject = iwrb.getLocalizedString("registration_received_subject_mail", "Your registration has been received.");
 				String body = MessageFormat.format(iwrb.getLocalizedString("registration_received_body_mail", "Your registration has been received."), args);
 				sendMessage(email.getEmailAddress(), subject, body);
@@ -614,7 +607,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 	public float getPriceForRunner(Runner runner, Locale locale, float chipDiscount, float chipPrice) {
 		Age age = null;
 		if (runner.getUser() != null) {
-			int groupID = Integer.parseInt(getIWApplicationContext().getIWMainApplication().getBundle(this.IW_BUNDLE_IDENTIFIER).getProperty(IWMarathonConstants.PROPERTY_STAFF_GROUP_ID, "-1"));
+			int groupID = Integer.parseInt(getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(IWMarathonConstants.PROPERTY_STAFF_GROUP_ID, "-1"));
 			if (groupID != -1) {
 				try {
 					Group group = getUserBiz().getGroupBusiness().getGroupByGroupID(groupID);
@@ -1060,7 +1053,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 	public void sendMessage(String email, String subject, String body) {
 
 		boolean sendEmail = true;
-		String sSendEmail = this.getIWMainApplication().getBundle(this.IW_BUNDLE_IDENTIFIER).getProperty(IWMarathonConstants.PROPERTY_SEND_EMAILS);
+		String sSendEmail = this.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(IWMarathonConstants.PROPERTY_SEND_EMAILS);
 		if ("no".equalsIgnoreCase(sSendEmail)) {
 			sendEmail = false;
 		}
@@ -1432,7 +1425,6 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 	}
 	
 	public Collection getYears(Group run, String yearFilter) {
-		IWContext iwc = IWContext.getInstance();
 		Collection years = null;
 		Collection type = new ArrayList();
 		type.add(IWMarathonConstants.GROUP_TYPE_RUN_YEAR);
@@ -1486,8 +1478,6 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 	 * @return Collection of all distances for a specific run on a specific year
 	 */
 	public List getDistancesMap(Group run, String year) {
-		IWContext iwc = IWContext.getInstance();
-		Map disMap = new LinkedHashMap();
 		List distances = null;
 		Collection type = new ArrayList();
 		type.add(IWMarathonConstants.GROUP_TYPE_RUN_DISTANCE);
