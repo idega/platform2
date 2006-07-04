@@ -89,7 +89,7 @@ public class ResultsViewer extends GolfBlock {
 				add(getResult(modinfo));
 			}
 			else {
-				log("[ResultViewer] No tournament in session");
+				System.out.println("ResultViewer: No tournament in session");
 			}
 		}
 		catch (Exception e) {

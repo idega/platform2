@@ -842,9 +842,14 @@ public class RegisterTime extends GolfBlock {
 				} catch (NumberFormatException e1) {
 				}
 		    }
-		
-		
-		    currentMember = Integer.toString(AccessControl.getMember(modinfo).getID());
+		    
+		    try {
+		    	currentMember = Integer.toString(AccessControl.getMember(modinfo).getID());
+		    } catch (NullPointerException e) {
+		    	System.out.println("RegisterTime: Unable to load currentMember, NullPointerException: " + e.getMessage());
+		    	keepOn = false;
+			    this.noPermission();
+		    }
 		    currentDay = new IWTimestamp(date);
 		  }catch(Exception e){
 		  	e.printStackTrace();

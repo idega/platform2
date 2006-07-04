@@ -856,7 +856,7 @@ public class RegistrationForMembers extends GolfBlock {
 
 			add(form);
 		} else {
-			logError("Tournament not found in session, or in parameter");
+			System.out.println("RegistrationForMembers: Tournament not found in session, or in parameter");
 			
 		}
 	}

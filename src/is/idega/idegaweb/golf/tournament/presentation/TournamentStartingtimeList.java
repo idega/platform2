@@ -545,7 +545,7 @@ public class TournamentStartingtimeList extends GolfBlock {
 
 			add(form);
 		} else {
-			logError("Tournament not found in session, or in parameter");
+			System.out.println("TournamentStartingTimeList: Tournament not found in session, or in parameter");
 
 		}
 	}
