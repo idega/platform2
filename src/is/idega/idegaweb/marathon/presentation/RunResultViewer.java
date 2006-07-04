@@ -359,6 +359,8 @@ public class RunResultViewer extends Block {
 		table.setStyleClass(column, row, getStyleName(STYLENAME_LIST_ROW));
 		table.setAlignment(column++, row, Table.HORIZONTAL_ALIGN_CENTER);
 
+		column++;
+		
 		if (distance != null && distance.getNumberOfSplits() >= 1) {
 			String splitTime = run.getSplitTime1() != -1 ? getTimeStringFromRunTime(run.getSplitTime1()) : "-";
 			table.add(getRunnerRowText(splitTime), column, row);
