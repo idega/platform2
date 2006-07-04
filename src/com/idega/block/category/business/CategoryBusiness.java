@@ -254,7 +254,8 @@ public class CategoryBusiness {
 				
 				//added by Eiki, a fix for databases that do not have the TREE_ORDER COLUMN!
 				//We must find a better way!
-				createPossiblyMissingTreeOrderColumnInICCategoryICObjectInstanceMiddleTable(Cat);
+				//4.7.2006 Sigtryggur: commented out the following line. It was causing SQLExcepion because the column was already there in all system
+				//createPossiblyMissingTreeOrderColumnInICCategoryICObjectInstanceMiddleTable(Cat);
 				////
 				
 				
