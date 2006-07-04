@@ -323,6 +323,9 @@ public class TournamentBusinessBean extends IBOServiceBean implements Tournament
 	}
 
 	public List getMembersInTournamentList(Tournament tournament) throws SQLException {
+		if (tournament == null) {
+			return null;
+		}
 		List members = null;
 		try {
 			members = EntityFinder.findReverseRelated(tournament, (Member) IDOLookup.instanciateEntity(Member.class));
