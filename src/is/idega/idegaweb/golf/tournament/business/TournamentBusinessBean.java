@@ -580,7 +580,7 @@ public class TournamentBusinessBean extends IBOServiceBean implements Tournament
 				for (int i = 0; i < startingTimes.size(); i++) {
 					sTime = (Startingtime) startingTimes.get(i);
 					sTime.removeFrom(tourRound);
-					sTime.removeFrom((Tournament) IDOLookup.instanciateEntity(Tournament.class));
+					//sTime.removeFrom((Tournament) IDOLookup.instanciateEntity(Tournament.class)); //Removed 4.7.2006 because this is no longer necessary and caused SQLException 
 					sTime.delete();
 				}
 			}
