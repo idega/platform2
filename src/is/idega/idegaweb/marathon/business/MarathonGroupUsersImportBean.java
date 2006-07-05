@@ -3,33 +3,27 @@
  */
 package is.idega.idegaweb.marathon.business;
 
-import is.idega.idegaweb.marathon.data.Participant;
 import is.idega.idegaweb.marathon.util.IWMarathonConstants;
+
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Vector;
+
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+
 import com.idega.block.importer.data.ImportFile;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.business.IBOServiceBean;
-import com.idega.core.localisation.business.LocaleSwitcher;
-import com.idega.core.location.data.Country;
 import com.idega.idegaweb.IWApplicationContext;
-import com.idega.user.business.GenderBusiness;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
-import com.idega.user.data.Gender;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
-import com.idega.util.IWTimestamp;
-import com.idega.util.LocaleUtil;
 import com.idega.util.text.Name;
 
 
