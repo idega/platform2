@@ -610,18 +610,11 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 			int groupID = Integer.parseInt(getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(IWMarathonConstants.PROPERTY_STAFF_GROUP_ID, "-1"));
 			if (groupID != -1) {
 				try {
-					Group group = getUserBiz().getGroupBusiness().getGroupByGroupID(groupID);
-					if (runner.getUser().hasRelationTo(group)) {
+					if (getUserBiz().isMemberOfGroup(groupID, runner.getUser())) {
 						return 0;
 					}
 				}
-				catch (IBOLookupException e) {
-					e.printStackTrace();
-				}
 				catch (RemoteException e) {
-					e.printStackTrace();
-				}
-				catch (FinderException e) {
 					e.printStackTrace();
 				}
 			}
