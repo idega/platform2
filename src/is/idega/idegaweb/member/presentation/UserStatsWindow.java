@@ -16,6 +16,7 @@ public class UserStatsWindow extends GenericStatsWindow {
         super();
 		setHeight(400);
 		setWidth(400);
+		setScrollbar(true);
     }
 
     public void main(IWContext iwc) throws Exception {
