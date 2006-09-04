@@ -122,7 +122,7 @@ public class TournamentTourResults extends GolfBlock {
 						ids.add(prevID);
 
 						IWTimestamp stamp = new IWTimestamp(tournament.getStartTime());
-						tournaments.addMenuElement(tournament.getPrimaryKey().toString(), tournament.getName()+" - "+stamp.getLocaleDate(locale));
+						tournaments.addMenuElement(tournament.getPrimaryKey().toString(), tournament.getName()+" - "+stamp.getLocaleDate(locale, IWTimestamp.MEDIUM));
 					}
 
 					iter = names.iterator();
