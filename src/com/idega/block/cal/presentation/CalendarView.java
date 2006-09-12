@@ -903,7 +903,6 @@ public class CalendarView extends Block{
 		//only get the correct ledger right away!
 		GroupBusiness groupBiz;
 		try {
-			groupBiz = getUserBusiness(iwc).getGroupBusiness();
 			boolean isRoot = iwc.isSuperAdmin();
 
 			Iterator ledgerIter = getCalBusiness(iwc).getAllLedgers().iterator();
@@ -911,10 +910,8 @@ public class CalendarView extends Block{
 				CalendarLedger ledger = (CalendarLedger) ledgerIter.next();
 
 				if(user != null) {
-					Group coachGroup = groupBiz.getGroupByGroupID(ledger.getCoachGroupID());
-					
 
-					if( isRoot || ((Integer) user.getPrimaryKey()).intValue() == ledger.getCoachID() || user.hasRelationTo(coachGroup)) {						
+					if( isRoot || ((Integer) user.getPrimaryKey()).intValue() == ledger.getCoachID() || user.hasRelationTo(ledger.getCoachGroupID())) {						
 						//dont know why the hell this is here after Birna...
 						ledgerTable.add(" &bull; ",1,row);
 						
@@ -933,9 +930,7 @@ public class CalendarView extends Block{
 
 		} catch (RemoteException e) {
 			e.printStackTrace();
-		} catch (FinderException e) {
-			e.printStackTrace();
-		}
+		
 		
 		Layer layer = new Layer(Layer.DIV);
 		layer.setOverflow("auto");
