@@ -259,7 +259,7 @@ public class PIDChecker {
 	public int getRandomIntDecimal() {
 		int theReturn = (int)Math.round(10 * Math.random() - 1);
 		while (theReturn > 9 || theReturn < 0) {
-			theReturn = theReturn = (int)Math.round(10 * Math.random() - 1);
+			theReturn = (int)Math.round(10 * Math.random() - 1);
 		}
 		return theReturn;
 	}
@@ -309,7 +309,7 @@ public class PIDChecker {
 	public int getRandomMonthDay() {
 		int theReturn = (int)Math.round(28 * Math.random()) + 1;
 		while (theReturn > 28) {
-			theReturn = theReturn = (int)Math.round(28 * Math.random()) + 1;
+			theReturn = (int)Math.round(28 * Math.random()) + 1;
 		}
 		return theReturn;
 	}

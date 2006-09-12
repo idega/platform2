@@ -238,7 +238,7 @@ public abstract class BillingThread extends Thread{
 				//float vatPercent = postingDetail.getVATPercent();
 				//float vatPercentage = vatPercent/100;
 				//float newTotalAmount = AccountingUtil.roundAmount(amount*months);
-				float newTotalVATAmount = newTotalVATAmount = AccountingUtil.roundAmount(postingDetail.getVATAmount()*months);
+				float newTotalVATAmount = AccountingUtil.roundAmount(postingDetail.getVATAmount()*months);
 				
 				try {
 					//regSpecType = this.getRegulationSpecTypeHome().findByRegulationSpecType(ruleSpecType);
