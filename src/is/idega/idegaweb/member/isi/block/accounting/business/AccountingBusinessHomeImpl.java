@@ -1,25 +1,15 @@
-/**
- * 
- */
 package is.idega.idegaweb.member.isi.block.accounting.business;
 
 
-
-
+import javax.ejb.CreateException;
 import com.idega.business.IBOHomeImpl;
 
-/**
- * @author bluebottle
- *
- */
-public class AccountingBusinessHomeImpl extends IBOHomeImpl implements
-		AccountingBusinessHome {
-	protected Class getBeanInterfaceClass() {
+public class AccountingBusinessHomeImpl extends IBOHomeImpl implements AccountingBusinessHome {
+	public Class getBeanInterfaceClass() {
 		return AccountingBusiness.class;
 	}
 
-	public AccountingBusiness create() throws javax.ejb.CreateException {
+	public AccountingBusiness create() throws CreateException {
 		return (AccountingBusiness) super.createIBO();
 	}
-
 }

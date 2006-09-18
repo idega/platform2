@@ -398,7 +398,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 	}
 
 	public boolean insertCreditCardContract(Group club, String division, String group, String contractNumber,
-			String type) {
+			String type, String ssn, String companyNumber) {
 		Group div = null;
 		Group grp = null;
 		if (division != null && !division.equals("-1")) {
@@ -440,11 +440,11 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 			}
 		}
 
-		return insertCreditCardContract(club, div, grp, contractNumber, cType);
+		return insertCreditCardContract(club, div, grp, contractNumber, cType, ssn, companyNumber);
 	}
 
 	public boolean insertCreditCardContract(Group club, Group division, Group group, String contractNumber,
-			CreditCardType type) {
+			CreditCardType type, String ssn, String companyNumber) {
 		try {
 			CreditCardContract eCont = null;
 			Collection contracts = getCreditCardContractHome().findAllByClubDivisionGroupAndType(club, division, group,
@@ -462,6 +462,8 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 			eCont.setGroup(group);
 			eCont.setContractNumber(contractNumber);
 			eCont.setCardType(type);
+			eCont.setPersonalId(ssn);
+			eCont.setCompanyNumber(companyNumber);
 
 			eCont.store();
 

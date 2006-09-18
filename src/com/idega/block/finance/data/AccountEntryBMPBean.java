@@ -240,10 +240,10 @@ public class AccountEntryBMPBean extends com.idega.data.GenericEntity implements
   public void setInvoiceNumber(Integer invoiceNumber) {
   		setColumn(getColumnNameInvoiceNumber(), invoiceNumber);
   }
-  public Date getFinalDueDate() {
-		return getDateColumnValue(getColumnNameFinalDueDate());
+  public Timestamp getFinalDueDate() {
+		return getTimestampColumnValue(getColumnNameFinalDueDate());
   }
-  public void setFinalDueDate(Date finalDueDate) {
+  public void setFinalDueDate(Timestamp finalDueDate) {
   		setColumn(getColumnNameFinalDueDate(), finalDueDate);
   }
   public int getUserId() {

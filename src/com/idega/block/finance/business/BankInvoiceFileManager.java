@@ -16,12 +16,15 @@ import com.idega.block.finance.data.AccountEntry;
 import com.idega.block.finance.data.AccountEntryHome;
 import com.idega.block.finance.data.BankInfo;
 import com.idega.block.finance.data.BankInfoHome;
+import com.idega.block.finance.data.Batch;
+import com.idega.block.finance.data.BatchHome;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
+import com.idega.util.IWTimestamp;
 
 /**
  * @author birna
@@ -345,7 +348,8 @@ public class BankInvoiceFileManager implements BankFileManager {
 		Calendar cal = Calendar.getInstance();
 		AccountEntry ae = getAccountEntry(invoiceNumber);
 		if (ae != null) {
-			Date date = ae.getFinalDueDate();
+			IWTimestamp t = new IWTimestamp(ae.getFinalDueDate());
+			Date date = t.getDate();
 			if (date != null)
 				cal.setTime(date);
 			return cal;
@@ -686,5 +690,19 @@ public class BankInvoiceFileManager implements BankFileManager {
 			}
 		}
 		return g;
+	}
+	
+	public Batch getBatch(int batchNumber) {
+		Batch b = null;
+		
+		try {
+			b = (Batch)((BatchHome) IDOLookup.getHome(Batch.class)).findByPrimaryKey(new Integer(batchNumber));
+		} catch (IDOLookupException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+		
+		return b;
 	}
 }

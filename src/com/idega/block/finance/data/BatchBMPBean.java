@@ -27,6 +27,8 @@ public class BatchBMPBean extends GenericEntity implements Batch {
     protected final static String COLUMN_CREATED = "created";
 
     protected final static String COLUMN_SENT = "sent";
+    
+    protected final static String COLUMN_EXTERNAL_BATCH_NUMBER = "ext_batch_number";
 
     /*
      * (non-Javadoc)
@@ -47,6 +49,7 @@ public class BatchBMPBean extends GenericEntity implements Batch {
         addAttribute(COLUMN_BATCH_NUMBER, "Batch number", true, true, String.class, 255);
         addAttribute(COLUMN_CREATED, "Created", true, true, Timestamp.class);
         addAttribute(COLUMN_SENT, "Sent", true, true, Timestamp.class);
+        addAttribute(COLUMN_EXTERNAL_BATCH_NUMBER, "External batch number", true, true, String.class, 255);
     }
 
     //Setters
@@ -62,6 +65,10 @@ public class BatchBMPBean extends GenericEntity implements Batch {
         setColumn(COLUMN_SENT, sent);
     }
     
+    public void setExternalBatchNumber(String number) {
+    	setColumn(COLUMN_EXTERNAL_BATCH_NUMBER, number);
+    }
+    
     //Getters
     public String getBatchNumber() {
         return getStringColumnValue(COLUMN_BATCH_NUMBER);
@@ -73,6 +80,10 @@ public class BatchBMPBean extends GenericEntity implements Batch {
     
     public Timestamp getSent() {
         return getTimestampColumnValue(COLUMN_SENT);
+    }
+    
+    public String getExternalBatchNumber() {
+    	return getStringColumnValue(COLUMN_EXTERNAL_BATCH_NUMBER);
     }
     
 	public Collection ejbFindAll() throws FinderException {

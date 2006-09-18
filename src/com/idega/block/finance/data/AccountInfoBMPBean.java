@@ -6,6 +6,8 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
+import com.idega.user.data.User;
+
 /**
  * Title:
  * Description:
@@ -68,13 +70,15 @@ ac.account_type
     addAttribute(getIDColumnName());
     addAttribute(getColumnAccountId(),"Accountid",true,true,Integer.class);
     addAttribute(getColumnCategoryId(),"Category",true,true,Integer.class);
-    addAttribute(getColumnUserId(),"UserId",true,true,Integer.class);
+    //addAttribute(getColumnUserId(),"UserId",true,true,Integer.class);
    // addAttribute(getColumnCashierId(),"Cashier",true,true,Integer.class);
     addAttribute(getColumnName(),"Name",true,true,String.class);
     addAttribute(getColumnLastUpdated(),"LastUpdated",true,true,Timestamp.class);
     addAttribute(getColumnBalance(),"Balance",true,true,Float.class);
     addAttribute(getColumnType(),"Type",true,true,String.class);
     setAsPrimaryKey(getIDColumnName(),true);
+    
+    addManyToOneRelationship(getColumnUserId(), User.class);
   }
   
   public String getIDColumnName(){
@@ -94,6 +98,12 @@ ac.account_type
    public int getUserId(){
     return getIntColumnValue( getColumnUserId() );
   }
+
+   public User getUser(){
+	    return (User) getColumnValue( getColumnUserId() );
+	  }
+
+   
    public int getCashierId(){
     return getIntColumnValue( getColumnCashierId() );
   }

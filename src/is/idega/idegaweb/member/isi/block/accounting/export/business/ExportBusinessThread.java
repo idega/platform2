@@ -315,7 +315,8 @@ public class ExportBusinessThread extends Thread {
 				// accEntry.setAccountBook(entry.geta);
 				accEntry.setDueDate(entry.getDueDate());
 				accEntry.setTotal((float) entry.getAmount());
-				accEntry.setFinalDueDate(entry.getFinalDueDate());
+				IWTimestamp fdd = new IWTimestamp(entry.getFinalDueDate());
+				accEntry.setFinalDueDate(fdd.getTimestamp());
 				accEntry.setUserId(entry.getPayedByUserID());
 				accEntry.setBatchNumber(((Integer) finBatch.getPrimaryKey())
 						.intValue());

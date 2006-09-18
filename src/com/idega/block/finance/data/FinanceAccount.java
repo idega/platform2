@@ -1,5 +1,7 @@
 package com.idega.block.finance.data;
 
+import com.idega.user.data.User;
+
 /**
  *  Title: Description: Copyright: Copyright (c) 2001 Company:
  *
@@ -26,6 +28,13 @@ public interface FinanceAccount {
      * @return    The user id value
      */
     public int getUserId()throws java.rmi.RemoteException;
+
+    /**
+     *  Gets the userId of the FinanceAccount object
+     *
+     * @return    The user value
+     */
+    public User getUser()throws java.rmi.RemoteException;
 
 
     /**

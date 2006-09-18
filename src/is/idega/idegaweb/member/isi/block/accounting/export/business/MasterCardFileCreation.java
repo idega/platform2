@@ -77,7 +77,7 @@ public class MasterCardFileCreation implements CreditCardFileCreation {
 		bWriter.write("7256001"); //Number for Getspa. Move to a parameter later.
 		//@Todo check for multiple entries pr. day pr. contract
 		bWriter.write("001");
-		bWriter.write("TEST"); //bWriter.write("PROD");
+		bWriter.write("PROD"); //bWriter.write("PROD");
 		bWriter.write(empty.substring(0, 1));
 		bWriter.write(empty.substring(0, 20));
 		bWriter.write(empty.substring(0, 100));

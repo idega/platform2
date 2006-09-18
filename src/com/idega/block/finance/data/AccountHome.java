@@ -1,17 +1,67 @@
+/**
+ * 
+ */
 package com.idega.block.finance.data;
 
+import java.util.Collection;
 
-public interface AccountHome extends com.idega.data.IDOHome
-{
- public Account create() throws javax.ejb.CreateException;
- public Account findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
- public java.util.Collection findAllByUserId(int p0)throws javax.ejb.FinderException;
- public java.util.Collection findAllByUserIdAndType(int p0,java.lang.String p1)throws javax.ejb.FinderException;
- public java.util.Collection findByAssessmentRound(int p0)throws javax.ejb.FinderException;
- public java.util.Collection findByAssessmentRound(java.lang.Integer p0,int p1,int p2)throws javax.ejb.FinderException;
- public java.util.Collection findBySQL(java.lang.String p0)throws javax.ejb.FinderException;
- public java.util.Collection findBySearch(java.lang.String p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,int p5)throws javax.ejb.FinderException;
- public int countByAssessmentRound(java.lang.Integer p0)throws com.idega.data.IDOException;
- public int countByTypeAndCategory(java.lang.String p0,java.lang.Integer p1)throws com.idega.data.IDOException;
+import javax.ejb.FinderException;
+
+import com.idega.data.IDOException;
+import com.idega.data.IDOHome;
+
+/**
+ * @author bluebottle
+ *
+ */
+public interface AccountHome extends IDOHome {
+	public Account create() throws javax.ejb.CreateException;
+
+	public Account findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
+
+	/**
+	 * @see com.idega.block.finance.data.AccountBMPBean#ejbFindAllByUserId
+	 */
+	public Collection findAllByUserId(int userId)
+			throws javax.ejb.FinderException;
+
+	/**
+	 * @see com.idega.block.finance.data.AccountBMPBean#ejbFindAllByUserIdAndType
+	 */
+	public Collection findAllByUserIdAndType(int userId, String type)
+			throws javax.ejb.FinderException;
+
+	/**
+	 * @see com.idega.block.finance.data.AccountBMPBean#ejbFindBySearch
+	 */
+	public Collection findBySearch(String id, String name, String pid,
+			String type, int iCategoryId) throws javax.ejb.FinderException;
+
+	/**
+	 * @see com.idega.block.finance.data.AccountBMPBean#ejbFindByAssessmentRound
+	 */
+	public Collection findByAssessmentRound(int roundid) throws FinderException;
+
+	/**
+	 * @see com.idega.block.finance.data.AccountBMPBean#ejbFindBySQL
+	 */
+	public Collection findBySQL(String sql) throws javax.ejb.FinderException;
+
+	/**
+	 * @see com.idega.block.finance.data.AccountBMPBean#ejbHomeCountByTypeAndCategory
+	 */
+	public int countByTypeAndCategory(String type, Integer categoryID)
+			throws IDOException;
+
+	/**
+	 * @see com.idega.block.finance.data.AccountBMPBean#ejbHomeCountByAssessmentRound
+	 */
+	public int countByAssessmentRound(Integer roundID) throws IDOException;
+
+	/**
+	 * @see com.idega.block.finance.data.AccountBMPBean#ejbFindByAssessmentRound
+	 */
+	public Collection findByAssessmentRound(Integer roundID, int resultSize,
+			int startindex) throws FinderException;
 
 }

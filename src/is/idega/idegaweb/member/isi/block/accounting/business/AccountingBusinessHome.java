@@ -1,19 +1,10 @@
-/**
- * 
- */
 package is.idega.idegaweb.member.isi.block.accounting.business;
 
 
-
-
+import javax.ejb.CreateException;
 import com.idega.business.IBOHome;
+import java.rmi.RemoteException;
 
-/**
- * @author bluebottle
- *
- */
 public interface AccountingBusinessHome extends IBOHome {
-	public AccountingBusiness create() throws javax.ejb.CreateException,
-			java.rmi.RemoteException;
-
+	public AccountingBusiness create() throws CreateException, RemoteException;
 }

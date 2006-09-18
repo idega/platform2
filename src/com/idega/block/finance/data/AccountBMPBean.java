@@ -9,6 +9,7 @@ import javax.ejb.FinderException;
 import com.idega.block.category.data.CategoryEntityBMPBean;
 import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
+import com.idega.user.data.User;
 import com.idega.util.text.Name;
 
 /**
@@ -76,6 +77,9 @@ public class AccountBMPBean extends CategoryEntityBMPBean implements Account,Fin
   public int getUserId(){
     return getIntColumnValue(getUserIdColumnName());
   }
+  public User getUser(){
+	    return (User) getColumnValue(getUserIdColumnName());
+	  }
   public void setUserId(Integer user_id){
     setColumn(getUserIdColumnName(), user_id);
   }

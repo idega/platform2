@@ -54,9 +54,9 @@ public class BankPlugin extends CashierSubWindowTemplate implements
 
     private static final String LABEL_CARD_VERIFICATION_CODE = "isi_acc_ccp_cvc";
 
-    private static final String LABEL_NUMBER_OF_PAYMENTS = "isi_acc_ccp_number_of_payments";
+    //private static final String LABEL_NUMBER_OF_PAYMENTS = "isi_acc_ccp_number_of_payments";
 
-    private static final String LABEL_DATE_OF_FIRST_PAYMENT = "isi_acc_ccp_first_payment";
+    //private static final String LABEL_DATE_OF_FIRST_PAYMENT = "isi_acc_ccp_first_payment";
 
     private static final String LABEL_AMOUNT = "isi_acc_ccp_amount";
 

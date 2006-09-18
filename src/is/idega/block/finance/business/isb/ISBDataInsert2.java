@@ -29,6 +29,7 @@ import com.idega.block.finance.business.BankInvoiceFileManager;
 import com.idega.block.finance.business.InvoiceDataInsert;
 import com.idega.block.finance.data.BankInfo;
 import com.idega.block.finance.data.BankInfoHome;
+import com.idega.block.finance.data.Batch;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWMainApplication;
@@ -136,7 +137,6 @@ public class ISBDataInsert2 implements InvoiceDataInsert, CallbackHandler {
 			krafa.setAthugasemdalina2("");
 			krafa.setHreyfingar(null);
 			krofur[i] = krafa;
-
 		}
 
 		try {
@@ -162,8 +162,11 @@ public class ISBDataInsert2 implements InvoiceDataInsert, CallbackHandler {
 					.getClass().getName());
 
 			BigDecimal batchNr = port.stofnaKrofubunka(krofur);
-			
-			System.out.println("batchNr = " + batchNr);
+			Batch b = bfm.getBatch(batchNumber);
+			if (b != null) {
+				b.setExternalBatchNumber(batchNr.toString());
+				b.store();
+			}
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		} catch (MalformedURLException e) {

@@ -538,6 +538,10 @@ public class CashierWindow extends StyledIWAdminWindow {
 	}
 
 	protected boolean getHasPermissionToViewWindow(IWContext iwc) {
+		if (isCashierAdministrator(iwc)) {
+			return true;
+		}
+		
 		if (eClub == null) {
 			if (eGroup == null) {
 				Text errorText = new Text(iwrb.getLocalizedString(
@@ -567,10 +571,6 @@ public class CashierWindow extends StyledIWAdminWindow {
 					return false;
 				}
 			}
-		}
-
-		if (isCashierAdministrator(iwc)) {
-			return true;
 		}
 
 		if (iwc.isSuperAdmin()) {
