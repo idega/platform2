@@ -1,5 +1,5 @@
 /*
- * $Id: AdminAdultEducationStudentPlacings.java,v 1.1.2.4 2006/02/08 16:37:06 dainis Exp $
+ * $Id: AdminAdultEducationStudentPlacings.java,v 1.1.2.5 2006/09/18 11:32:21 palli Exp $
  * Created on Oct 19, 2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -10,6 +10,7 @@
 package se.idega.idegaweb.commune.adulteducation.presentation;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -29,6 +30,7 @@ import com.idega.business.IBORuntimeException;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
@@ -49,19 +51,25 @@ public class AdminAdultEducationStudentPlacings extends AdultEducationBlock {
 
 	private final static int ACTION_SAVE = 3;
 
-	private final static String PARAM_DELETE_ID = "adultadmin.delete";
+	private final static String PARAM_DELETE_ID = "adultadmin_delete";
 
-	private final static String PARAM_EDIT_ID = "adultadmin.edit";
+	private final static String PARAM_EDIT_ID = "adultadmin_edit";
 
-	private final static String PARAM_SAVE_ID = "adultadmin.save";
+	private final static String PARAM_SAVE_ID = "adultadmin_save";
 
-	private final static String PARAM_DATE_FROM = "adultadmin.date_from";
+	private final static String PARAM_DATE_FROM = "adultadmin_date_from";
 
-	private final static String PARAM_DATE_TO = "adultadmin.date_to";
+	private final static String PARAM_DATE_TO = "adultadmin_date_to";
 
-	private final static String PARAM_COURSE_CODE = "adultadmin.course_code";
+	private final static String PARAM_COURSE_CODE = "adultadmin_course_code";
 
-	private final static String PARAM_GROUP = "adultadmin.group";
+	private final static String PARAM_GROUP = "adultadmin_group";
+
+	private final static String PARAM_REMOVE_DATE_TO = "adultadmin_remove_date_to";
+
+	private final static String ERROR_INVALID_START_DATE = "admin_adult_invalid_start_date";
+
+	private final static String ERROR_INVALID_END_DATE = "admin_adult_invalid_end_date";
 
 	/*
 	 * (non-Javadoc)
@@ -116,22 +124,27 @@ public class AdminAdultEducationStudentPlacings extends AdultEducationBlock {
 		String groupId = iwc.getParameter(PARAM_GROUP);
 		String dateFromString = iwc.getParameter(PARAM_DATE_FROM);
 		String dateToString = iwc.getParameter(PARAM_DATE_TO);
+		boolean removeDateTo = iwc.isParameterSet(PARAM_REMOVE_DATE_TO);
 		try {
-			SchoolClassMember member = getBusiness().getSchoolBusiness().getSchoolClassMemberHome().findByPrimaryKey(
-					new Integer(saveClassMemberId));
+			SchoolClassMember member = getBusiness().getSchoolBusiness()
+					.getSchoolClassMemberHome().findByPrimaryKey(
+							new Integer(saveClassMemberId));
 			member.setSchoolClassId(new Integer(groupId).intValue());
 			IWTimestamp dateFrom = new IWTimestamp(dateFromString);
 			member.setRegisterDate(dateFrom.getTimestamp());
-			if (dateToString == null || "".equals(dateToString)) {
+			if (removeDateTo) {
 				member.setRemovedDate(null);
-			} 
-			else {
-				IWTimestamp dateTo = new IWTimestamp(dateToString);
-				member.setRemovedDate(dateTo.getTimestamp());
+			} else {
+				if (dateToString == null || "".equals(dateToString)) {
+					member.setRemovedDate(null);
+				} else {
+					IWTimestamp dateTo = new IWTimestamp(dateToString);
+					member.setRemovedDate(dateTo.getTimestamp());
+				}
 			}
-			
+
 			member.store();
-			
+
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
 		} catch (RemoteException e) {
@@ -175,7 +188,7 @@ public class AdminAdultEducationStudentPlacings extends AdultEducationBlock {
 				"Edit placement within adult education")), 1, row++);
 		table.setRowHeight(row++, "3");
 		try {
-			table.add(getEditTable(placementId), 1, row++);
+			table.add(getEditTable(placementId, iwc), 1, row++);
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
 		} catch (RemoteException e) {
@@ -191,7 +204,7 @@ public class AdminAdultEducationStudentPlacings extends AdultEducationBlock {
 		add(f);
 	}
 
-	protected Table getEditTable(String placementId)
+	protected Table getEditTable(String placementId, IWContext iwc)
 			throws NumberFormatException, RemoteException, FinderException {
 		Table table = new Table();
 		table.setWidth(getWidth());
@@ -242,33 +255,36 @@ public class AdminAdultEducationStudentPlacings extends AdultEducationBlock {
 		table.add(getLocalizedSmallHeader("adultadmin.code_and_group",
 				"Course code / group"), 1, row);
 
-		SelectDropdownDouble codeInput = new SelectDropdownDouble(
-				PARAM_COURSE_CODE, PARAM_GROUP);
+		SelectDropdownDouble codeInput = (SelectDropdownDouble) getStyledInterface(new SelectDropdownDouble(
+				PARAM_COURSE_CODE, PARAM_GROUP));
 		Collection classes = getBusiness().getSchoolBusiness()
 				.getSchoolClassHome().findBySchoolAndSeason(
 						group.getSchoolId(), group.getSchoolSeasonId());
+		ArrayList inList = new ArrayList();
 		if (!classes.isEmpty()) {
 			Iterator it = classes.iterator();
 			while (it.hasNext()) {
 				SchoolClass sClass = (SchoolClass) it.next();
 				if (sClass.getCode() != null && !"".equals(sClass.getCode())) {
-					try {
-						SchoolStudyPath sClassStudyPath = getBusiness()
-								.getCourse(season.getPrimaryKey(),
-										sClass.getCode()).getStudyPath();
+					if (!inList.contains(sClass.getCode())) {
+						try {
+							SchoolStudyPath sClassStudyPath = getBusiness()
+									.getCourse(season.getPrimaryKey(),
+											sClass.getCode()).getStudyPath();
 
-						if (path != null && sClassStudyPath != null
-								&& path.equals(sClassStudyPath)) {
-							Map map = new LinkedHashMap();
-							map.put(sClass.getPrimaryKey().toString(), sClass
-									.getName());
-							codeInput.addMenuElement(sClass.getPrimaryKey()
-									.toString(), sClass.getCode(), map);
+							if (path != null && sClassStudyPath != null
+									&& path.equals(sClassStudyPath)) {
+								inList.add(sClass.getCode());
+								Map map = new LinkedHashMap();
+								map.put(sClass.getPrimaryKey().toString(),
+										sClass.getName());
+								codeInput.addMenuElement(sClass.getPrimaryKey()
+										.toString(), sClass.getCode(), map);
+							}
+						} catch (RemoteException e) {
+							e.printStackTrace();
+						} catch (FinderException e) {
 						}
-					} catch (RemoteException e) {
-						e.printStackTrace();
-					} catch (FinderException e) {
-						e.printStackTrace();
 					}
 				}
 			}
@@ -293,11 +309,20 @@ public class AdminAdultEducationStudentPlacings extends AdultEducationBlock {
 		table.add(
 				getLocalizedSmallHeader("adultadmin.start_date", "Start date"),
 				1, row);
-		/*
-		 * table.add(getSmallText(validFrom.getLocaleDate(iwc.getCurrentLocale(),
-		 * IWTimestamp.SHORT)), 2, row++);
-		 */
-		DateInput dateFrom = new DateInput(PARAM_DATE_FROM);
+		DateInput dateFrom = (DateInput) getStyledInterface(new DateInput(
+				PARAM_DATE_FROM));
+		dateFrom.setStyleClass(getSmallTextFontStyle());
+		getBusiness().getCourse(season.getPrimaryKey(), group.getCode())
+				.getStartDate();
+
+		dateFrom
+				.setEarliestPossibleDate(
+						getBusiness().getCourse(season.getPrimaryKey(),
+								group.getCode()).getStartDate(),
+						getLocalizedString(
+								ERROR_INVALID_START_DATE,
+								"It is not possible to set a start date earlier then the course start date",
+								iwc));
 		dateFrom.setDate(validFrom.getDate());
 		dateFrom.setYearRange(validFrom.getYear() - 2, validFrom.getYear() + 5);
 		table.add(dateFrom, 2, row++);
@@ -311,7 +336,17 @@ public class AdminAdultEducationStudentPlacings extends AdultEducationBlock {
 		 * .getCurrentLocale(), IWTimestamp.SHORT)), 2, row++); } else {
 		 * table.add(getSmallText("-"), 2, row++); }
 		 */
-		DateInput dateTo = new DateInput(PARAM_DATE_TO);
+		DateInput dateTo = (DateInput) getStyledInterface(new DateInput(
+				PARAM_DATE_TO));
+		dateTo.setStyleClass(getSmallTextFontStyle());
+		dateTo
+				.setEarliestPossibleDate(
+						validFrom.getDate(),
+						getLocalizedString(
+								ERROR_INVALID_END_DATE,
+								"It is not possible to set an end date earlier then the chosen start date",
+								iwc));
+		dateTo.setYearRange(validFrom.getYear(), validFrom.getYear() + 5);
 		if (terminated != null) {
 			dateTo.setDate(terminated.getDate());
 			dateTo.setYearRange(terminated.getYear() -2, terminated.getYear() + 5);
@@ -319,11 +354,21 @@ public class AdminAdultEducationStudentPlacings extends AdultEducationBlock {
 			IWTimestamp now = new IWTimestamp();
 			dateTo.setYearRange(now.getYear() - 2, now.getYear() + 5);
 		}
-		table.add(dateTo, 2, row++);
+		table.add(dateTo, 2, row);
+
+		if (grade != null && grade.getGrade() != null
+				&& grade.getGrade().getGrade() != null) {
+			CheckBox removeDateTo = new CheckBox(PARAM_REMOVE_DATE_TO,
+					"remove_date_to");
+			table.add(removeDateTo, 3, row);
+			table.add(getLocalizedSmallHeader("adultadmin.remove_date_TO",
+					"Remove date to"), 3, row++);
+		} else {
+			row++;
+		}
 
 		// Grade
-		table.add(getLocalizedSmallHeader("adultadmin.grade", "Grade"), 1,
-				row);
+		table.add(getLocalizedSmallHeader("adultadmin.grade", "Grade"), 1, row);
 		if (grade != null && grade.getGrade() != null
 				&& grade.getGrade().getGrade() != null) {
 			table.add(getSmallText(grade.getGrade().getGrade()), 2, row++);
@@ -331,8 +376,9 @@ public class AdminAdultEducationStudentPlacings extends AdultEducationBlock {
 			table.add(getSmallText("-"), 2, row++);
 		}
 
-		SubmitButton save = new SubmitButton(localize(
-				"adultadmin.save", "Save"), PARAM_SAVE_ID, member.getPrimaryKey().toString());
+		SubmitButton save = new SubmitButton(
+				localize("adultadmin.save", "Save"), PARAM_SAVE_ID, member
+						.getPrimaryKey().toString());
 		save.setDescription(localize("adultadmin.save_tooltip",
 				"Click here to save placement"));
 		table.add(save, 3, row);
@@ -522,11 +568,13 @@ public class AdminAdultEducationStudentPlacings extends AdultEducationBlock {
 				row++;
 			} else {
 				SubmitButton delete = new SubmitButton(getDeleteIcon(localize(
-						"adultadmin.delete", "Delete")));
+						"adultadmin.delete", "Delete")), PARAM_DELETE_ID,
+						member.getPrimaryKey().toString());
 				delete.setDescription(localize("adultadmin.delete_tooltip",
 						"Click here to delete placement"));
-				delete.setValueOnClick(PARAM_DELETE_ID, member.getPrimaryKey()
-						.toString());
+				// delete.setValueOnClick(PARAM_DELETE_ID,
+				// member.getPrimaryKey()
+				// .toString());
 				delete.setSubmitConfirm(localize(
 						"adultadmin.delete_confirmation",
 						"Are you sure you want to delete this placement?"));

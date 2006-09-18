@@ -1,5 +1,5 @@
 /*
- * $Id: CourseEditor.java,v 1.9.2.1 2006/02/08 17:04:14 dainis Exp $ Created on
+ * $Id: CourseEditor.java,v 1.9.2.2 2006/09/18 11:32:21 palli Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -44,10 +44,10 @@ import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
 /**
- * Last modified: $Date: 2006/02/08 17:04:14 $ by $Author: dainis $
+ * Last modified: $Date: 2006/09/18 11:32:21 $ by $Author: palli $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.9.2.1 $
+ * @version $Revision: 1.9.2.2 $
  */
 public class CourseEditor extends AdultEducationBlock {
 
@@ -483,14 +483,15 @@ public class CourseEditor extends AdultEducationBlock {
 			alert.append(localize("code_input", "Code"));
 			validated = false;
 		}
-		if (startDate == null) {
+		
+		/*if (startDate == null) {
 			if (!validated) {
 				alert.append(", ");
 			}
 			alert.append(localize("start_date_input", "Start date"));
 			validated = false;
 		}
-		else {
+		else {*/
 			if (iSchoolSeason != null) {
 				IWTimestamp start = new IWTimestamp(startDate);
 				IWTimestamp seasonStart = new IWTimestamp(iSchoolSeason.getSchoolSeasonStart());
@@ -502,14 +503,14 @@ public class CourseEditor extends AdultEducationBlock {
 					validated = false;					
 				}
 			}
-		}
+		/*}
 		if (endDate == null) {
 			if (!validated) {
 				alert.append(", ");
 			}
 			alert.append(localize("end_date_input", "End date"));
 			validated = false;
-		}
+		}*/
 		if (lengthString == null) {
 			if (!validated) {
 				alert.append(", ");
