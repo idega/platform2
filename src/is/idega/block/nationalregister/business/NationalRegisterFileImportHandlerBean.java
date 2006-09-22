@@ -31,11 +31,13 @@ import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.location.business.CommuneBusiness;
+import com.idega.core.location.data.Address;
 import com.idega.core.location.data.Commune;
 import com.idega.core.location.data.PostalCode;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDORelationshipException;
 import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
@@ -43,6 +45,7 @@ import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
 import com.idega.util.Age;
 import com.idega.util.IWTimestamp;
+import com.idega.util.LocaleUtil;
 import com.idega.util.Timer;
 
 /**
@@ -165,6 +168,10 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
 	private UserBusiness uBiz;
 
 	private CommuneBusiness cBiz;
+
+	private String deceasedAddressString = null;
+	
+	public final static String IW_BUNDLE_IDENTIFIER = "is.idega.block.nationalregister";
 
 	/**
 	 * @see com.idega.block.importer.business.ImportFileHandler#handleRecords()
@@ -831,11 +838,35 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
 					e.printStackTrace();
 					return false;
 				}
-				user.setDeleted(true);
-				user.setDeletedBy(((Integer) performer.getPrimaryKey())
-						.intValue());
-				user.setDeletedWhen(IWTimestamp.getTimestampRightNow());
-				user.store();
+				//user.setDeleted(true);
+				//user.setDeletedBy(((Integer) performer.getPrimaryKey()).intValue());
+				//user.setDeletedWhen(IWTimestamp.getTimestampRightNow());
+				//user.store();
+				if (deceasedAddressString == null) {
+					try {
+						IWBundle iwb = this.getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+						IWResourceBundle iwrb = iwb.getResourceBundle(LocaleUtil.getIcelandicLocale());
+						deceasedAddressString = iwrb.getLocalizedString("national_register.deceased", "Deceased");
+					}
+					catch (Exception e) {
+						deceasedAddressString = "";
+						System.out.println("Unable to initialize deceasedAddressString");
+					}
+				}
+				Collection addresses = user.getAddresses();
+				Iterator addrIt = addresses.iterator();
+				Address addr = null;
+				while (addrIt.hasNext()) {
+					addr = (Address)addrIt.next();
+					addr.setStreetName(deceasedAddressString);
+					addr.setStreetNumber(null);
+					addr.setPostalCode(null);
+					addr.setCity(null);
+					addr.setCommune(null);
+					addr.setCountry(null);
+					addr.store();
+				}
+
 				FamilyLogic familyService = getMemberFamilyLogic();
 				IWTimestamp dom = new IWTimestamp();
 				if (dateOfModification != null
