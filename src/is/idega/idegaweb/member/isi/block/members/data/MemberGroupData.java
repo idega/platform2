@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupRelation;
@@ -48,63 +49,23 @@ public class MemberGroupData {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		Collection statuses = Collections.EMPTY_LIST;
-		try {
-			statuses = (Collection) ((UserStatusHome) com.idega.data.IDOLookup.getHome(UserStatus.class)).findAllByUserId(userId);
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-		System.out.println("Got " + history.size() + " group relations and " + statuses.size() + " statuses");
-		
-		Set statusGroupIdSet = new HashSet();
-		Iterator statusIter = statuses.iterator();
-		while(statusIter.hasNext()) {
-			UserStatus status = (UserStatus) statusIter.next();
-			if (status.getGroupId() != -1) {
-				statusGroupIdSet.add(status.getGroup().getPrimaryKey());
-				processStatus(status);
-			}
-		}
-		
+		System.out.println("Got " + history.size() + " group relations");
+
 		Iterator iter = history.iterator();
 		StringBuffer buf = new StringBuffer();
 		while(iter.hasNext()) {
 			GroupRelation groupRel = (GroupRelation) iter.next();
-			boolean isInStatusList = statusGroupIdSet.contains(groupRel.getGroup().getPrimaryKey());
-			if(!isInStatusList) {
-				// only add group to list if it wasn't added by statuses
-				processGroupRelation(groupRel);
-			} else {
-				System.out.println("Skipping group " + groupRel.getGroup().getName() + " since it was handled in a UserStatus");
-			}
+			processGroupRelation(groupRel);
 		}
 	}
-	
-	/**
-	 * Gets info on users registration status for a group and inserts it into <code>_groupInfoList</code>
-	 * @param status The UserStatus to add
-	 */
-	private void processStatus(UserStatus status) {
-		Group group = status.getGroup();
-		String groupTypeName = getGroupTypeLocalizedName(group.getGroupType());
-		String statusKey = status.getStatus().getStatusKey();
-		String statusName = getStatusLocalizedName(statusKey);
-		_buf.setLength(0);
-		processGroup(group, _buf, true);
-		String groupLongName = _buf.toString();
-		if(_buf.length()>0) {
-			IWTimestamp begin = new IWTimestamp(status.getDateFrom());
-			IWTimestamp end = status.getDateTo()==null?null:(new IWTimestamp(status.getDateTo()));
-			addGroupInfo(_buf.toString(), groupTypeName, statusName, begin, end);
-		}
-		System.out.println("Processesed status for group " + group.getName() + "(" + _buf.toString() +  "), status is " + statusName + "(" + statusKey + ")");
-	}
-	
+
 	/**
 	 * Gets info on users registration for a group and inserts it into <code>_groupInfoList</code>
 	 * @param groupRel The GroupRelation to add
 	 */
 	private void processGroupRelation(GroupRelation groupRel) {
+		boolean isActive = groupRel.getStatus().equals(GroupRelation.STATUS_ACTIVE);
+		Group user = groupRel.getRelatedGroup();
 		Group group = groupRel.getGroup();
 		String groupTypeName = getGroupTypeLocalizedName(group.getGroupType());
 		if(groupTypeName==null || groupTypeName.equals("Unknown")) {
@@ -113,11 +74,23 @@ public class MemberGroupData {
 			return;
 		}
 		_buf.setLength(0);
-		processGroup(group, _buf, true);
+		processGroup(group, _buf, true, isActive);
 		if(_buf.length()>0) {
 			IWTimestamp begin = new IWTimestamp(groupRel.getInitiationDate());
 			IWTimestamp end = groupRel.getTerminationDate()==null?null:(new IWTimestamp(groupRel.getTerminationDate()));
-			addGroupInfo(_buf.toString(), groupTypeName, "", begin, end);
+			List userStatuses = null;
+			try {
+				userStatuses = (List) ((UserStatusHome)IDOLookup.getHome(UserStatus.class)).findAllActiveByUserIdAndGroupId(Integer.parseInt(user.getPrimaryKey().toString()),Integer.parseInt(group.getPrimaryKey().toString()));
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
+			String statusName = "";
+			if (!userStatuses.isEmpty()) {
+				UserStatus userStatus =(UserStatus)userStatuses.iterator().next();
+				String statusKey = userStatus.getStatus().getStatusKey();
+				statusName = getStatusLocalizedName(statusKey);
+			}
+			addGroupInfo(_buf.toString(), groupTypeName, statusName, begin, end);
 		}
 	}
 	
@@ -128,14 +101,14 @@ public class MemberGroupData {
 	 * @param buf a StringBuffer to collect the member group info into
 	 * @param isFirstGroup if the group is an imediate parent of the member
 	 */
-	private void processGroup(Group group, StringBuffer buf, boolean isFirstGroup) {
+	private void processGroup(Group group, StringBuffer buf, boolean isFirstGroup, boolean isActive) {
 		
 		String type = group.getGroupType();
 		String name = group.getName();
 		
 		boolean isFlock = IWMemberConstants.GROUP_TYPE_CLUB_PLAYER.equals(type);
 		boolean isClub = IWMemberConstants.GROUP_TYPE_CLUB.equals(type);
-		if(isClub && !_clubList.contains(group)) {
+		if(isClub && !_clubList.contains(group) && isActive) {
 			_clubList.add(group);
 		}
 		boolean isFinalGroup = IWMemberConstants.GROUP_TYPE_CLUB.equals(type) ||
@@ -158,7 +131,7 @@ public class MemberGroupData {
 			if(groups!=null && groups.size()>0) {
 				Iterator iter = groups.iterator();
 				while(iter.hasNext()) {
-					processGroup((Group) iter.next(), buf, false);
+					processGroup((Group) iter.next(), buf, false, isActive);
 				}
 			}
 		} else {

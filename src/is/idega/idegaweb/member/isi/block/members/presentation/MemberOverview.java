@@ -428,7 +428,9 @@ public class MemberOverview extends Block {
 			if (end.length() > 0) {
 				// only showing current registration and user has unregisterd
 				// from this group
-				continue;
+				if (!showHistory) {
+					continue;
+				}
 			}
 			if (categoryName == null) {
 				categoryName = "";
