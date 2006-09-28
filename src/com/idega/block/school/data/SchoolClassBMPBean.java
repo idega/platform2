@@ -645,6 +645,11 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass {
 		return (Integer) super.idoFindOnePKBySQL("select * from " + this.getEntityName() + " where " + COLUMN_CODE + " = '"
 				+ code + "' and (" + COLUMN_VALID + " = '" + VALID + "' or " + COLUMN_VALID + " is null)");
 	}
+	
+	public Integer ejbFindOneByCodeAndSeason(String code, SchoolSeason season) throws FinderException {
+		return (Integer) super.idoFindOnePKBySQL("select * from " + this.getEntityName() + " where " + COLUMN_CODE + " = '"
+				+ code + "' and (" + COLUMN_VALID + " = '" + VALID + "' or " + COLUMN_VALID + " is null) and " + SEASON + " = " + ((Integer) season.getPrimaryKey()).intValue());
+	}
 
 	public Collection getSubGroupPlacements() throws IDORelationshipException {
 		if (getIsSubGroup()) {

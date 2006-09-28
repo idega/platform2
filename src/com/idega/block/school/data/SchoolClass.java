@@ -1,34 +1,15 @@
-/*
- * $Id: SchoolClass.java,v 1.30 2005/10/27 11:03:12 palli Exp $
- * Created on Oct 26, 2005
- *
- * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
- */
 package com.idega.block.school.data;
-
-import java.sql.Timestamp;
-import java.util.Collection;
 
 
 import com.idega.data.IDOAddRelationshipException;
-import com.idega.data.IDOEntity;
 import com.idega.data.IDORelationshipException;
-import com.idega.data.IDORemoveRelationshipException;
+import java.util.Collection;
 import com.idega.user.data.User;
+import com.idega.data.IDORemoveRelationshipException;
+import java.sql.Timestamp;
+import com.idega.data.IDOEntity;
 
-
-/**
- * 
- *  Last modified: $Date: 2005/10/27 11:03:12 $ by $Author: palli $
- * 
- * @author <a href="mailto:bluebottle@idega.com">bluebottle</a>
- * @version $Revision: 1.30 $
- */
 public interface SchoolClass extends IDOEntity {
-
 	/**
 	 * @see com.idega.block.school.data.SchoolClassBMPBean#getName
 	 */
@@ -197,12 +178,12 @@ public interface SchoolClass extends IDOEntity {
 	/**
 	 * @see com.idega.block.school.data.SchoolClassBMPBean#findRelatedUsers
 	 */
-	public Collection findRelatedUsers() throws com.idega.data.IDORelationshipException;
+	public Collection findRelatedUsers() throws IDORelationshipException;
 
 	/**
 	 * @see com.idega.block.school.data.SchoolClassBMPBean#findRelatedSchoolYears
 	 */
-	public Collection findRelatedSchoolYears() throws com.idega.data.IDORelationshipException;
+	public Collection findRelatedSchoolYears() throws IDORelationshipException;
 
 	/**
 	 * @see com.idega.block.school.data.SchoolClassBMPBean#addSchoolYear
@@ -227,7 +208,7 @@ public interface SchoolClass extends IDOEntity {
 	/**
 	 * @see com.idega.block.school.data.SchoolClassBMPBean#findRelatedStudyPaths
 	 */
-	public Collection findRelatedStudyPaths() throws com.idega.data.IDORelationshipException;
+	public Collection findRelatedStudyPaths() throws IDORelationshipException;
 
 	/**
 	 * @see com.idega.block.school.data.SchoolClassBMPBean#addStudyPath
@@ -258,5 +239,4 @@ public interface SchoolClass extends IDOEntity {
 	 * @see com.idega.block.school.data.SchoolClassBMPBean#getSubGroupPlacements
 	 */
 	public Collection getSubGroupPlacements() throws IDORelationshipException;
-
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.49.2.4 2006/04/05 15:20:35 dainis Exp $
+ * $Id: AdultEducationBusinessBean.java,v 1.49.2.5 2006/09/28 13:33:34 palli Exp $
  * Created on 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -87,10 +87,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2006/04/05 15:20:35 $ by $Author: dainis $
+ * Last modified: $Date: 2006/09/28 13:33:34 $ by $Author: palli $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.49.2.4 $
+ * @version $Revision: 1.49.2.5 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements CaseBusiness, AdultEducationBusiness {
 
@@ -463,9 +463,26 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Case
 		return getNumberOfPlacementsForCourse(courseCode) > 0;
 	}
 	
+	public boolean hasPlacement(String courseCode, SchoolSeason season) {
+		return getNumberOfPlacementsForCourseAndSeason(courseCode, season) > 0;
+	}
+	
 	public int getNumberOfPlacementsForCourse(String courseCode) {
 		try {
 			SchoolClass schoolClass = getSchoolClassHome().findOneByCode(courseCode);
+			return getSchoolClassMemberHome().getNumberOfPlacingsByClass(schoolClass);
+		}
+		catch (FinderException e) {
+		}
+		catch (IDOException e) {
+		}
+		
+		return 0;
+	}
+	
+	public int getNumberOfPlacementsForCourseAndSeason(String courseCode, SchoolSeason season) {
+		try {
+			SchoolClass schoolClass = getSchoolClassHome().findOneByCodeAndSeason(courseCode, season);
 			return getSchoolClassMemberHome().getNumberOfPlacingsByClass(schoolClass);
 		}
 		catch (FinderException e) {

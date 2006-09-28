@@ -1,21 +1,10 @@
-/**
- * 
- */
 package se.idega.idegaweb.commune.adulteducation.business;
 
+
+import javax.ejb.CreateException;
 import com.idega.business.IBOHome;
+import java.rmi.RemoteException;
 
-
-/**
- * <p>
- * TODO Dainis Describe Type AdultEducationBusinessHome
- * </p>
- *  Last modified: $Date: 2006/04/05 15:20:35 $ by $Author: dainis $
- * 
- * @author <a href="mailto:Dainis@idega.com">Dainis</a>
- * @version $Revision: 1.30.2.4 $
- */
 public interface AdultEducationBusinessHome extends IBOHome {
-
-	public AdultEducationBusiness create() throws javax.ejb.CreateException, java.rmi.RemoteException;
+	public AdultEducationBusiness create() throws CreateException, RemoteException;
 }

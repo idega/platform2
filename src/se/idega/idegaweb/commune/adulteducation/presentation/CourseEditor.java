@@ -1,5 +1,5 @@
 /*
- * $Id: CourseEditor.java,v 1.9.2.2 2006/09/18 11:32:21 palli Exp $ Created on
+ * $Id: CourseEditor.java,v 1.9.2.3 2006/09/28 13:33:34 palli Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -44,10 +44,10 @@ import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
 /**
- * Last modified: $Date: 2006/09/18 11:32:21 $ by $Author: palli $
+ * Last modified: $Date: 2006/09/28 13:33:34 $ by $Author: palli $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.9.2.2 $
+ * @version $Revision: 1.9.2.3 $
  */
 public class CourseEditor extends AdultEducationBlock {
 
@@ -236,7 +236,7 @@ public class CourseEditor extends AdultEducationBlock {
 		TextInput code = (TextInput) getStyledInterface(new TextInput(PARAMETER_CODE));
 		if (iCourse != null) {
 			code.setContent(iCourse.getCode());
-			if (hasCoursePlacements(iCourse.getCode())) {
+			if (hasCoursePlacements(iCourse.getCode(), iCourse.getSchoolSeason())) {
 				code.setDisabled(true);
 			}
 		}
@@ -346,9 +346,9 @@ public class CourseEditor extends AdultEducationBlock {
 		return table;
 	}
 	
-	private boolean hasCoursePlacements(String courseCode) {
+	private boolean hasCoursePlacements(String courseCode, SchoolSeason season) {
 		try {
-			return getBusiness().hasPlacement(courseCode);
+			return getBusiness().hasPlacement(courseCode, season);
 		}
 		catch (RemoteException e) {
 		}
@@ -425,7 +425,7 @@ public class CourseEditor extends AdultEducationBlock {
 					table.add(getSmallText(String.valueOf(course.getLength())), 4, row);
 					table.add(edit, 5, row);
 					table.add(copy, 6, row);
-					if (hasCoursePlacements(course.getCode())) {
+					if (hasCoursePlacements(course.getCode(), course.getSchoolSeason())) {
 						row++;
 					}
 					else {
