@@ -636,7 +636,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 	}
 
 	public boolean insertPayment(String type, String amount, User currentUser, Map basket, IWUserContext iwuc,
-			String payedBy) {
+			String payedBy, String dueDate, String finalDueDate) {
 		PaymentType eType = null;
 		if (type != null) {
 			try {
@@ -669,16 +669,31 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 			catch (Exception e) {
 			}
 		}
+		
+		IWTimestamp dueDateStamp = null;
+		if (dueDate != null && !"".equals(dueDate)) {
+			dueDateStamp = new IWTimestamp(dueDateStamp);
+		} else {
+			dueDateStamp = new IWTimestamp();
+		}
 
-		return insertPayment(eType, am, currentUser, basket, iwuc, payedByUser);
+		
+		IWTimestamp finalDueDateStamp = null;
+		if (finalDueDate != null && !"".equals(finalDueDate)) {
+			finalDueDateStamp = new IWTimestamp(finalDueDateStamp);
+		} else {
+			finalDueDateStamp = new IWTimestamp();
+		}
+
+		return insertPayment(eType, am, currentUser, basket, iwuc, payedByUser, dueDateStamp, finalDueDateStamp);
 	}
 
 	public boolean insertPayment(PaymentType type, int amount, User currentUser, Map basket, IWUserContext iwuc) {
-		return insertPayment(type, amount, currentUser, basket, iwuc, null);
+		return insertPayment(type, amount, currentUser, basket, iwuc, null, null, null);
 	}
 
 	public boolean insertPayment(PaymentType type, int amount, User currentUser, Map basket, IWUserContext iwuc,
-			User payedBy) {
+			User payedBy, IWTimestamp dueDate, IWTimestamp finalDueDate) {
 		UserTransaction trans = null;
 		try {
 			trans = getSessionContext().getUserTransaction();
@@ -708,6 +723,12 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 					entry.setInsertedByUser(currentUser);
 					if (payedBy != null) {
 						entry.setPayedByUser(payedBy);
+					}
+					if (dueDate != null) {
+						entry.setDueDate(dueDate.getDate());
+					}
+					if (finalDueDate != null) {
+						entry.setFinalDueDate(finalDueDate.getDate());
 					}
 					entry.store();
 				}

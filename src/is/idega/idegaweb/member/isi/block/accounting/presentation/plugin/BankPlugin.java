@@ -30,6 +30,7 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DatePicker;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
@@ -46,21 +47,7 @@ public class BankPlugin extends CashierSubWindowTemplate implements
 
     private static final String LABEL_SSN = "isi_acc_ccp_ssn";
 
-    private static final String LABEL_CARD_TYPE = "isi_acc_ccp_card_type";
-
-    private static final String LABEL_CARD_NUMBER = "isi_acc_ccp_card_number";
-
-    private static final String LABEL_CARD_EXPIRES = "isi_acc_ccp_card_expires";
-
-    private static final String LABEL_CARD_VERIFICATION_CODE = "isi_acc_ccp_cvc";
-
-    //private static final String LABEL_NUMBER_OF_PAYMENTS = "isi_acc_ccp_number_of_payments";
-
-    //private static final String LABEL_DATE_OF_FIRST_PAYMENT = "isi_acc_ccp_first_payment";
-
     private static final String LABEL_AMOUNT = "isi_acc_ccp_amount";
-
-    private static final String LABEL_RESULT = "isi_acc_ccp_result";
 
     protected static final String LABEL_RECEIPT = "isi_acc_ccp_receipt";
 
@@ -96,6 +83,8 @@ public class BankPlugin extends CashierSubWindowTemplate implements
         if (isContractDone) {
             errorList = new ArrayList();
             String paramSSN = iwc.getParameter(LABEL_SSN);
+            String paramDueDate = iwc.getParameter(LABEL_DUE_DATE);
+            String paramFinalDueDate = iwc.getParameter(LABEL_FINAL_DUE_DATE);
 
             if (paramSSN == null || "".equals(paramSSN)) {
                 errorList.add(ERROR_NO_SSN_ENTERED);
@@ -106,7 +95,7 @@ public class BankPlugin extends CashierSubWindowTemplate implements
             try {
             		Map basket = getBasketBusiness(iwc).getBasket();
             		getAccountingBusiness(iwc).insertPayment(type, amount,
-					iwc.getCurrentUser(), basket, iwc, paramSSN);
+					iwc.getCurrentUser(), basket, iwc, paramSSN, paramDueDate, paramFinalDueDate);
 
 
                 return true;
@@ -174,8 +163,14 @@ public class BankPlugin extends CashierSubWindowTemplate implements
         int row = 1;
         Text labelSSN = new Text(iwrb.getLocalizedString(LABEL_SSN, "SSN"));
         labelSSN.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+        Text labelDueDate = new Text(iwrb.getLocalizedString(LABEL_DUE_DATE, "Due date"));
+        labelDueDate.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+        Text labelFinalDueDate = new Text(iwrb.getLocalizedString(LABEL_FINAL_DUE_DATE, "Final due date"));
+        labelFinalDueDate.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 
         inputTable.add(labelSSN, 1, row);
+        inputTable.add(labelDueDate, 2, row);
+        inputTable.add(labelFinalDueDate, 3, row++);
 
         TextInput ssn = new TextInput(LABEL_SSN);
         if (paramSSN != null) {
@@ -183,6 +178,12 @@ public class BankPlugin extends CashierSubWindowTemplate implements
         }
         inputTable.add(ssn, 1, row);
 
+        DatePicker dueDateInput = new DatePicker(LABEL_DUE_DATE, iwc.getCurrentLocale());
+        DatePicker finalDueDateInput = new DatePicker(LABEL_FINAL_DUE_DATE, iwc.getCurrentLocale());
+        
+        inputTable.add(dueDateInput, 2, row);
+        inputTable.add(finalDueDateInput, 3, row);
+        
         row += 2;
 
         SubmitButton submitContract = new SubmitButton(iwrb.getLocalizedString(

@@ -142,7 +142,7 @@ public interface AccountingBusiness extends IBOService, UserGroupPlugInBusiness 
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.business.AccountingBusinessBean#insertPayment
 	 */
-	public boolean insertPayment(String type, String amount, User currentUser, Map basket, IWUserContext iwuc, String payedBy) throws RemoteException;
+	public boolean insertPayment(String type, String amount, User currentUser, Map basket, IWUserContext iwuc, String payedBy, String dueDate, String finalDueDate) throws RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.business.AccountingBusinessBean#insertPayment
@@ -152,7 +152,7 @@ public interface AccountingBusiness extends IBOService, UserGroupPlugInBusiness 
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.business.AccountingBusinessBean#insertPayment
 	 */
-	public boolean insertPayment(PaymentType type, int amount, User currentUser, Map basket, IWUserContext iwuc, User payedBy) throws RemoteException;
+	public boolean insertPayment(PaymentType type, int amount, User currentUser, Map basket, IWUserContext iwuc, User payedBy, IWTimestamp dueDate, IWTimestamp finalDueDate) throws RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.business.AccountingBusinessBean#insertPayment
