@@ -184,7 +184,7 @@ public class MasterCardFileCreation implements CreditCardFileCreation {
 		bWriter.write(contract.getContractNumber());
 		//@Todo check for multiple entries pr. day pr. contract
 		bWriter.write("001");
-		bWriter.write("TEST"); //bWriter.write("PROD");
+		bWriter.write("PROD"); //bWriter.write("PROD");
 		bWriter.write(format.format(countKredit));
 		bWriter.write(format.format(countDebit));
 		bWriter.write(format4.format(amountKredit * 100));
