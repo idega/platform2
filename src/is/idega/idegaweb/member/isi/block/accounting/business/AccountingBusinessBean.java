@@ -672,7 +672,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		
 		IWTimestamp dueDateStamp = null;
 		if (dueDate != null && !"".equals(dueDate)) {
-			dueDateStamp = new IWTimestamp(dueDateStamp);
+			dueDateStamp = new IWTimestamp(dueDate);
 		} else {
 			dueDateStamp = new IWTimestamp();
 		}
@@ -680,7 +680,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		
 		IWTimestamp finalDueDateStamp = null;
 		if (finalDueDate != null && !"".equals(finalDueDate)) {
-			finalDueDateStamp = new IWTimestamp(finalDueDateStamp);
+			finalDueDateStamp = new IWTimestamp(finalDueDate);
 		} else {
 			finalDueDateStamp = new IWTimestamp();
 		}
