@@ -391,8 +391,8 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 			        groups = getGroupBusiness().getChildGroupsRecursiveResultFiltered(topGroup, groupTypesFilter, true, true, false);
 				} else {
 				    groups = new ArrayList();
+				    groups.add(topGroup);
 				}
-			    groups.add(topGroup);
 			}
 		} catch (FinderException e) {
 		    e.printStackTrace();
