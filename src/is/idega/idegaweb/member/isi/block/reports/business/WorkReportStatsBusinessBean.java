@@ -4631,7 +4631,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					String cType = report.getType();
 					
 					int members = getWorkReportBusiness().getCountOfMembersByWorkReport(report);
-					int players = getWorkReportBusiness().getCountOfPlayersByWorkReport(report);
+					int players = getWorkReportBusiness().getCountOfPlayersByWorkReportAndWorkReportGroup(report, league);
 					
 					if(IWMemberConstants.META_DATA_CLUB_STATUS_MULTI_DIVISION_CLUB.equals(cType)) {
 						regData = addToIntegerCount(multiDivisionMembers, regData, members);
