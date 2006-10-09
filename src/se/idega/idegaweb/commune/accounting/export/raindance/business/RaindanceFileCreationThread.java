@@ -520,6 +520,14 @@ public class RaindanceFileCreationThread extends Thread {
 						ownPostingString = provider.getOwnPosting();
 					}
 
+					if (giroString == null) {
+						giroString = "";
+					}
+					
+					if (ownPostingString == null) {
+						ownPostingString = "";
+					}
+					
 					bWriter.write("H");
 					if (isBKBankgiro) { 
 						bWriter.write(empty.substring(0, 11));
@@ -530,9 +538,22 @@ public class RaindanceFileCreationThread extends Thread {
 						bWriter.write(giroString.substring(0, 9));
 					}
 					
-					bWriter.write(getStringByLengthLeftJustified(header.getSchool().getOrganizationNumber().toUpperCase(), 10));
-					bWriter.write(getStringByLengthLeftJustified(header.getSchool().getName().toUpperCase(), 35));
-					bWriter.write(getStringByLengthLeftJustified(header.getSchool().getSchoolAddress().toUpperCase(), 35));
+					if (header.getSchool().getOrganizationNumber() != null) {
+						bWriter.write(getStringByLengthLeftJustified(header.getSchool().getOrganizationNumber().toUpperCase(), 10));
+					} else {
+						bWriter.write(getStringByLengthLeftJustified("", 10));						
+					}
+					
+					if (header.getSchool().getName() != null) {
+						bWriter.write(getStringByLengthLeftJustified(header.getSchool().getName().toUpperCase(), 35));
+					} else {
+						bWriter.write(getStringByLengthLeftJustified("", 35));						
+					}
+					if (header.getSchool().getSchoolAddress() != null) {
+						bWriter.write(getStringByLengthLeftJustified(header.getSchool().getSchoolAddress().toUpperCase(), 35));
+					} else {
+						bWriter.write(getStringByLengthLeftJustified("", 35));												
+					}
 
 					StringBuffer zip = new StringBuffer(header.getSchool().getSchoolZipCode());
 					zip.append(" ");
@@ -540,6 +561,9 @@ public class RaindanceFileCreationThread extends Thread {
 					bWriter.write(getStringByLengthLeftJustified(zip.toString().toUpperCase(), 35));
 										
 					String postingString = pb.findFieldInStringByName(ownPostingString, "Motpart");
+					if (postingString == null) {
+						postingString = "";
+					}
 					bWriter.write(getStringByLengthLeftJustified(postingString.toUpperCase(), 3));
 					bWriter.write(executionDate.getDateString("yyyyMM01"));
 					bWriter.write(paymentDate.getDateString("yyyyMMdd"));
@@ -775,8 +799,12 @@ public class RaindanceFileCreationThread extends Thread {
 						name.append(" ");
 						name.append(custodian.getFirstName());
 						bWriter.write(getStringByLengthLeftJustified(name.toString().toUpperCase(), 72));
-						bWriter.write(getStringByLengthLeftJustified(mainAddress.getStreetAddress().toUpperCase(), 36));
-
+						if (mainAddress.getStreetAddress() != null) {
+							bWriter.write(getStringByLengthLeftJustified(mainAddress.getStreetAddress().toUpperCase(), 36));
+						} else {
+							bWriter.write(getStringByLengthLeftJustified("", 36));							
+						}
+							
 						StringBuffer po = new StringBuffer(poCode.getPostalCode());
 						po.append(" ");
 						po.append(poCode.getName());
