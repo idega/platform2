@@ -173,12 +173,9 @@ public class UserHistoryTab extends UserTab {
 		while(statusIter.hasNext()) {
 			UserStatus status = (UserStatus) statusIter.next();
 			boolean ok = false;
-			try {
-				ok = userBusiness.isGroupUnderUsersTopGroupNode(iwc, status.getGroup(), user);
-			} catch (RemoteException e) {
-				System.out.println("Could not check if group in user status is a descendant of a users top group, status for group not shown");
-				e.printStackTrace();
-			}
+
+			ok = iwc.getAccessController().hasViewPermissionFor(status.getGroup(), iwc);
+
 			if(ok) {
 				result.add(status);
 			} else {
@@ -204,13 +201,9 @@ public class UserHistoryTab extends UserTab {
 		while(groupRelationIter.hasNext()) {
 			GroupRelation rel = (GroupRelation) groupRelationIter.next();
 			boolean ok = false;
-			try {
-				ok = userBusiness.isGroupUnderUsersTopGroupNode(iwc, rel.getGroup(), user) &&
-				     userBusiness.isGroupUnderUsersTopGroupNode(iwc, rel.getRelatedGroup(), user);
-			} catch (RemoteException e) {
-				System.out.println("Could not check if groups in relation were descendants of a users top group, group relation not shown");
-				e.printStackTrace();
-			}
+
+			ok = iwc.getAccessController().hasViewPermissionFor(rel.getGroup(), iwc);
+
 			if(ok) {
 				result.add(rel);
 			} else {
