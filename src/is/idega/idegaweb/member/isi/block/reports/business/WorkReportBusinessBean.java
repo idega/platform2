@@ -2154,7 +2154,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			// note: league can be null
 			if (memberLeagues != null && (memberLeagues.contains(league))) {
 				// nothing to do
-				return true;
+				continue;
 			}
 			try {
 				// create WorkReportBoardMember
