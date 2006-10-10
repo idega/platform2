@@ -1,5 +1,8 @@
 package is.idega.idegaweb.member.isi.block.accounting.business;
 
+import is.idega.block.family.business.FamilyLogic;
+import is.idega.block.nationalregister.business.NationalRegisterBusiness;
+import is.idega.block.nationalregister.data.NationalRegister;
 import is.idega.idegaweb.member.isi.block.accounting.data.AssessmentRound;
 import is.idega.idegaweb.member.isi.block.accounting.data.ClubTariffType;
 import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntry;
@@ -30,9 +33,11 @@ import com.idega.business.IBOLookup;
 import com.idega.business.IBOSessionBean;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.contact.data.PhoneType;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.user.business.GroupBusiness;
+import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
@@ -49,6 +54,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 	private static final String LOCALIZED_GROUP_NAME = "AccountingStatsBusiness.group_name";
 	private static final String LOCALIZED_NAME = "AccountingStatsBusiness.name";
 	private static final String LOCALIZED_PERSONAL_ID = "AccountingStatsBusiness.personal_id";
+	private static final String LOCALIZED_CUSTODIAN_NAME = "AccountingStatsBusiness.custodian_name";
+	private static final String LOCALIZED_CUSTODIAN_PERSONAL_ID = "AccountingStatsBusiness.custodian_personal_id";
 	private static final String LOCALIZED_PHONE = "AccountingStatsBusiness.phone";
 	private static final String LOCALIZED_AMOUNT = "AccountingStatsBusiness.amount";
 	private static final String LOCALIZED_DATE_OF_ENTRY = "AccountingStatsBusiness.date_of_entry";
@@ -63,6 +70,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 	private static final String FIELD_NAME_GROUP_NAME = "group_name";
 	private static final String FIELD_NAME_NAME = "name";
 	private static final String FIELD_NAME_PERSONAL_ID = "personal_id";
+	private static final String FIELD_NAME_CUSTODIAN_NAME = "custodian_name";
+	private static final String FIELD_NAME_CUSTODIAN_PERSONAL_ID = "custodian_personal_id";
 	private static final String FIELD_NAME_PHONE = "phone";
 	private static final String FIELD_NAME_AMOUNT = "amount";
 	private static final String FIELD_NAME_DATE_OF_ENTRY = "date_of_entry";
@@ -75,6 +84,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 	
 	private AccountingBusiness accountingBiz = null;
 	private GroupBusiness groupBiz = null;
+	private UserBusiness userBiz = null;
+	private NationalRegisterBusiness nationalRegisterBiz = null;
 	private IWBundle _iwb = null;
 	private IWResourceBundle _iwrb = null;
 	private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi.block.accounting";
@@ -91,6 +102,20 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			groupBiz = (GroupBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), GroupBusiness.class);
 		}	
 		return groupBiz;
+	}
+
+	private UserBusiness getUserBusiness() throws RemoteException {
+		if (userBiz == null) {
+			userBiz = (UserBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), UserBusiness.class);
+		}	
+		return userBiz;
+	}
+
+	private NationalRegisterBusiness getNationalRegisterBusiness() throws RemoteException {
+		if (nationalRegisterBiz == null) {
+			nationalRegisterBiz = (NationalRegisterBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), NationalRegisterBusiness.class);
+		}	
+		return nationalRegisterBiz;
 	}
 	
 	private void initializeBundlesIfNeeded() {
@@ -308,6 +333,14 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		personalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PERSONAL_ID, "Personal ID"),currentLocale);
 		reportCollection.addField(personalIDField);
 		
+		ReportableField custodianNameField = new ReportableField(FIELD_NAME_CUSTODIAN_NAME, String.class);
+		custodianNameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_NAME, "Custodian name"), currentLocale);
+		reportCollection.addField(custodianNameField);
+		
+		ReportableField custodianPersonalIDField = new ReportableField(FIELD_NAME_CUSTODIAN_PERSONAL_ID, String.class);
+		custodianPersonalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_PERSONAL_ID, "Custodian personal ID"),currentLocale);
+		reportCollection.addField(custodianPersonalIDField);
+		
 		ReportableField amountField = new ReportableField(FIELD_NAME_AMOUNT, Double.class);
 		amountField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT, "Amount"), currentLocale);
 		reportCollection.addField(amountField);
@@ -344,6 +377,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			String groupString = null;
 			String userString = null;
 			String personalID = null;
+			String custodianString = null;
+			String custodianPersonalID = null;
 			String paymentTypeString = null;
 
 			division = financeEntry.getDivision();
@@ -356,6 +391,20 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			if (user != null) {
 				userString = user.getName();
 				personalID = user.getPersonalID();
+				//Collection custodians = null; 
+				try {
+					NationalRegister userRegister = getNationalRegisterBusiness().getEntryBySSN(user.getPersonalID());
+					if (!personalID.equals(userRegister.getFamilyId())) {
+						custodianPersonalID = userRegister.getFamilyId();
+						User custodian = getUserBusiness().getUser(custodianPersonalID);
+						custodianString = custodian.getName();
+					} else {
+						custodianPersonalID = personalID;
+					}
+					//custodians = getMemberFamilyLogic(getIWApplicationContext()).getCustodiansFor(user);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				if (personalID != null && personalID.length() == 10) {
 					personalID = personalID.substring(0,6)+"-"+personalID.substring(6,10);
 				}
@@ -371,6 +420,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			data.addData(groupField, groupString );
 			data.addData(nameField, userString );
 			data.addData(personalIDField, personalID );
+			data.addData(custodianNameField, custodianString );
+			data.addData(custodianPersonalIDField, custodianPersonalID );
 			data.addData(amountField, new Double(financeEntry.getAmount()) );
 			data.addData(entryDateField, new IWTimestamp(financeEntry.getDateOfEntry()).getDateString("dd.MM.yy") );
 			data.addData(paymentTypeField, paymentTypeString );
@@ -1110,6 +1161,19 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			}
 		}
 		return phoneNumber;
+	}
+	
+	public FamilyLogic getMemberFamilyLogic(IWApplicationContext iwc) {
+		FamilyLogic familyLogic = null;
+		if (familyLogic == null) {
+			try {
+				familyLogic = (FamilyLogic) com.idega.business.IBOLookup.getServiceInstance(iwc, FamilyLogic.class);
+			}
+			catch (java.rmi.RemoteException rme) {
+				throw new RuntimeException(rme.getMessage());
+			}
+		}
+		return familyLogic;
 	}
 	
 	class DateComparator implements Comparator {
