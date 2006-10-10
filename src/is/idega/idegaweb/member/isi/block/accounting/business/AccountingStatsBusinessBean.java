@@ -178,6 +178,15 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		 personalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PERSONAL_ID, "Personal ID"),currentLocale);
 		 reportCollection.addField(personalIDField);
 		 
+		 ReportableField custodianNameField = new ReportableField(FIELD_NAME_CUSTODIAN_NAME, String.class);
+		 custodianNameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_NAME, "Custodian name"), currentLocale);
+		 reportCollection.addField(custodianNameField);
+
+		 ReportableField custodianPersonalIDField = new ReportableField(FIELD_NAME_CUSTODIAN_PERSONAL_ID, String.class);
+		 custodianPersonalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_PERSONAL_ID, "Custodian personal ID"),currentLocale);
+		 reportCollection.addField(custodianPersonalIDField);
+			
+
 		 ReportableField amountField = new ReportableField(FIELD_NAME_AMOUNT, Double.class);
 		 amountField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT, "Amount"), currentLocale);
 		 reportCollection.addField(amountField);
@@ -219,6 +228,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			 String groupString = null;
 			 String userString = null;
 			 String personalID = null;
+			 String custodianString = null;
+			 String custodianPersonalID = null;
 			 String tariffTypeString = null;
 
 			 division = financeEntry.getDivision();
@@ -231,6 +242,20 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			 if (user != null) {
 			 	userString = user.getName();
 			 	personalID = user.getPersonalID();
+//			 	Collection custodians = null; 
+				try {
+					NationalRegister userRegister = getNationalRegisterBusiness().getEntryBySSN(user.getPersonalID());
+					if (!personalID.equals(userRegister.getFamilyId())) {
+						custodianPersonalID = userRegister.getFamilyId();
+						User custodian = getUserBusiness().getUser(custodianPersonalID);
+						custodianString = custodian.getName();
+					} else {
+						custodianPersonalID = personalID;
+					}
+					//custodians = getMemberFamilyLogic(getIWApplicationContext()).getCustodiansFor(user);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			 	if (personalID != null && personalID.length() == 10) {
 			 		personalID = personalID.substring(0,6)+"-"+personalID.substring(6,10);
 			 	}
@@ -246,6 +271,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		 		data.addData(groupField, groupString );
 		 		data.addData(nameField, userString );
 		 		data.addData(personalIDField, personalID );
+		 		data.addData(custodianNameField, custodianString );
+		 		data.addData(custodianPersonalIDField, custodianPersonalID );
 		 		data.addData(amountField, new Double(financeEntry.getAmount()) );
 		 		data.addData(entryDateField, new IWTimestamp(financeEntry.getDateOfEntry()).getDateString("dd.MM.yy") );
 		 		data.addData(itemPriceField, financeEntry.getItemPrice());
