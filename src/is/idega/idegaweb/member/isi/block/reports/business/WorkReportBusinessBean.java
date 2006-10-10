@@ -2421,7 +2421,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		report.store();
 		String subject = iwrb.getLocalizedString("work_report_send.email_subject",
 				"IWMember workreport sent announcement");
-		String body = report.getGroupName() + "\n";
+		String body = report.getGroupName() + " ";
 		body += iwrb.getLocalizedString("work_report_send.email_body", "has just sent a workreport.\n\n");
 		body += iwrb.getLocalizedString("work_report_send.email_body_comments", "Comments: \n");
 		body += reportText;
