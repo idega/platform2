@@ -1,6 +1,5 @@
 package is.idega.idegaweb.member.presentation;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
