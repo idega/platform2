@@ -249,9 +249,13 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 						custodianPersonalID = userRegister.getFamilyId();
 						User custodian = getUserBusiness().getUser(custodianPersonalID);
 						custodianString = custodian.getName();
+						
 					} else {
 						custodianPersonalID = personalID;
 					}
+					if (custodianPersonalID != null && custodianPersonalID.length() == 10) {
+						custodianPersonalID = custodianPersonalID.substring(0,6)+"-"+custodianPersonalID.substring(6,10);
+				 	}
 					//custodians = getMemberFamilyLogic(getIWApplicationContext()).getCustodiansFor(user);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -428,6 +432,9 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 					} else {
 						custodianPersonalID = personalID;
 					}
+					if (custodianPersonalID != null && custodianPersonalID.length() == 10) {
+						custodianPersonalID = custodianPersonalID.substring(0,6)+"-"+custodianPersonalID.substring(6,10);
+				 	}
 					//custodians = getMemberFamilyLogic(getIWApplicationContext()).getCustodiansFor(user);
 				} catch (Exception e) {
 					e.printStackTrace();
