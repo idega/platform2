@@ -215,7 +215,7 @@ public class MemberOverview extends Block {
 		table.setCellpadding(3);
 		table.setCellspacing(0);
 		table.setBorder(0);
-		table.setWidth(2, 10);
+		table.setWidth(2, 40);
 		int row = 1;
 
 		table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_TOP);
@@ -240,7 +240,7 @@ public class MemberOverview extends Block {
 
 		table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_TOP);
 		table.add(clubsLabel, 1, row);
-		table.add(clubs, 1, row++);
+		table.add(clubs, 3, row++);
 		
 		Table frameTable = new Table(2, 1);
 		frameTable.setCellpadding(15);
@@ -563,6 +563,16 @@ public class MemberOverview extends Block {
 			Group club = (Group) clubListIter.next();
 			String name = club.getName();
 			buffer.append(name);
+			Email clubEmail = null;
+			Collection clubEmails = club.getEmails();
+			if (clubEmails != null && !clubEmails.isEmpty()) {
+				clubEmail = (Email)clubEmails.iterator().next();
+			}
+			if (clubEmail != null && clubEmail.getEmailAddress() != null && !clubEmail.getEmailAddress().equals("")) {
+				buffer.append(" (");
+				buffer.append(clubEmail.getEmailAddressMailtoFormatted());
+				buffer.append(")");
+			}
 			if (clubListIter.hasNext()) {
 				buffer.append(Text.BREAK);
 			}
