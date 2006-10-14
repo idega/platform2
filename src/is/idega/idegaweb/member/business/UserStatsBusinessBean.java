@@ -71,6 +71,9 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 
 	private static final String LOCALIZED_CURRENT_DATE = "UserStatsBusiness.current_date";
 	private static final String LOCALIZED_NAME = "UserStatsBusiness.name";
+	private static final String LOCALIZED_SHORT_NAME = "UserStatsBusiness.short_name";
+	private static final String LOCALIZED_ABBREVATION = "UserStatsBusiness.abbrevation";
+	private static final String LOCALIZED_DISPLAY_NAME = "UserStatsBusiness.display_name";
     private static final String LOCALIZED_USER_ID = "UserStatsBusiness.user_id";
 	private static final String LOCALIZED_PERSONAL_ID = "UserStatsBusiness.personal_id";
 	private static final String LOCALIZED_GROUP_TYPE = "UserStatsBusiness.group_type";
@@ -85,6 +88,9 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 	private static final String LOCALIZED_EMAIL = "UserStatsBusiness.email";
 
 	private static final String FIELD_NAME_NAME = "name";
+	private static final String FIELD_NAME_SHORT_NAME = "short_name";
+	private static final String FIELD_NAME_ABBREVATION = "abbrevation";
+	private static final String FIELD_NAME_DISPLAY_NAME = "display_name";
 	private static final String FIELD_NAME_USER_ID = "user_id";
 	private static final String FIELD_NAME_PERSONAL_ID = "personal_id";
 	private static final String FIELD_NAME_GROUP_TYPE = "group_type";
@@ -351,6 +357,18 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 		 nameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_NAME, "Name"), currentLocale);
 		 reportCollection.addField(nameField);
 
+		 ReportableField shortNameField = new ReportableField(FIELD_NAME_SHORT_NAME, String.class);
+		 shortNameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_SHORT_NAME, "Short Name"), currentLocale);
+		 reportCollection.addField(shortNameField);
+
+		 ReportableField abbrevationField = new ReportableField(FIELD_NAME_ABBREVATION, String.class);
+		 abbrevationField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ABBREVATION, "Abbrevation"), currentLocale);
+		 reportCollection.addField(abbrevationField);
+
+		 ReportableField displayNameField = new ReportableField(FIELD_NAME_DISPLAY_NAME, String.class);
+		 displayNameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DISPLAY_NAME, "Display Name"), currentLocale);
+		 reportCollection.addField(displayNameField);
+
 		 ReportableField groupTypeField = new ReportableField(FIELD_NAME_GROUP_TYPE, String.class);
 		 groupTypeField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_GROUP_TYPE, "Group Type"),currentLocale);
 		 reportCollection.addField(groupTypeField);
@@ -417,6 +435,16 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 			     }
 			     Iterator parIt = parentGroupCollection.iterator();
 
+			    String nameString = group.getName();
+			    String shortNameString = group.getShortName();
+			    String abbrevation = group.getAbbrevation();
+			    String displayNameString = null;
+			    
+			    if (abbrevation!=null && !abbrevation.equals("")) {
+			    	displayNameString = abbrevation;
+			    } else {
+			    	displayNameString = nameString;
+			    }
 			    String groupTypeString = _userIwrb.getLocalizedString(group.getGroupType(), group.getGroupType());
 			   	Collection emails =  group.getEmails();
 			   	Email email = null;
@@ -453,7 +481,10 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 				    // create a new ReportData for each row	    
 			        ReportableData data = new ReportableData();
 			        //	add the data to the correct fields/columns
-				    data.addData(nameField, group.getName() );
+				    data.addData(nameField, nameString );
+				    data.addData(shortNameField, shortNameString );
+				    data.addData(abbrevationField, abbrevation );
+   				    data.addData(displayNameField, displayNameString );
 				    data.addData(groupTypeField, groupTypeString);
 				    data.addData(groupPathField, parentGroupPath);
 				    data.addData(emailField, emailString);
