@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBlock.java,v 1.8 2005/07/07 08:41:42 laddi Exp $
+ * $Id: AdultEducationBlock.java,v 1.8.2.1 2006/10/16 13:41:58 palli Exp $
  * Created on 27.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -14,6 +14,7 @@ import se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusiness;
 import se.idega.idegaweb.commune.adulteducation.business.AdultEducationSession;
 import se.idega.idegaweb.commune.adulteducation.business.GroupFileWriter;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
+
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
@@ -27,42 +28,48 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.Window;
 
 /**
- * Last modified: $Date: 2005/07/07 08:41:42 $ by $Author: laddi $
+ * Last modified: $Date: 2006/10/16 13:41:58 $ by $Author: palli $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.8.2.1 $
  */
 public abstract class AdultEducationBlock extends CommuneBlock {
 
 	public static final String PARAMETER_CHOICE = "ae_choice";
+
 	public static final String PARAMETER_SCHOOL_SEASON = "ae_school_season";
+
 	public static final String PARAMETER_STUDY_PATH = "ae_study_path";
+
 	public static final String PARAMETER_STUDENT = "ae_student";
+
 	public static final String PARAMETER_COURSE_PACKAGE = "ae_course_package";
 
 	private static final String PROPERTY_RED_COLOR = "red_color";
-	
+
 	protected static String RED_COLOR = "#FFE0E0";
 
 	private AdultEducationBusiness business;
+
 	private AdultEducationSession session;
-	
+
 	public void main(IWContext iwc) throws Exception {
 		setBundle(getBundle(iwc));
 		setResourceBundle(getResourceBundle(iwc));
 		business = getBusiness(iwc);
 		session = getSession(iwc);
-		
+
 		RED_COLOR = getBundle(iwc).getProperty(PROPERTY_RED_COLOR, "#FFE0E0");
-		
+
 		present(iwc);
 	}
-	
+
 	protected Link getPDFLink(Class classToUse, Image image) {
 		Link link = new Link(image);
 		link.setWindow(getFileWindow(localize("pdf", "PDF")));
 		link.addParameter(GroupFileWriter.prmPrintType, GroupFileWriter.PDF);
-		link.addParameter(MediaWritable.PRM_WRITABLE_CLASS, IWMainApplication.getEncryptedClassName(classToUse));
+		link.addParameter(MediaWritable.PRM_WRITABLE_CLASS, IWMainApplication
+				.getEncryptedClassName(classToUse));
 		return link;
 	}
 
@@ -70,19 +77,20 @@ public abstract class AdultEducationBlock extends CommuneBlock {
 		Link link = new Link(image);
 		link.setWindow(getFileWindow(localize("xls", "Excel")));
 		link.addParameter(GroupFileWriter.prmPrintType, GroupFileWriter.XLS);
-		link.addParameter(MediaWritable.PRM_WRITABLE_CLASS, IWMainApplication.getEncryptedClassName(classToUse));
+		link.addParameter(MediaWritable.PRM_WRITABLE_CLASS, IWMainApplication
+				.getEncryptedClassName(classToUse));
 		return link;
 	}
 
 	protected AdultEducationBusiness getBusiness() {
 		return business;
 	}
-	
+
 	private AdultEducationBusiness getBusiness(IWApplicationContext iwac) {
 		try {
-			return (AdultEducationBusiness) IBOLookup.getServiceInstance(iwac, AdultEducationBusiness.class);
-		}
-		catch (IBOLookupException ile) {
+			return (AdultEducationBusiness) IBOLookup.getServiceInstance(iwac,
+					AdultEducationBusiness.class);
+		} catch (IBOLookupException ile) {
 			throw new IBORuntimeException(ile);
 		}
 	}
@@ -90,28 +98,29 @@ public abstract class AdultEducationBlock extends CommuneBlock {
 	protected AdultEducationSession getSession() {
 		return session;
 	}
-	
+
 	protected AdultEducationSession getSession(IWUserContext iwuc) {
 		try {
-			return (AdultEducationSession) IBOLookup.getSessionInstance(iwuc, AdultEducationSession.class);
-		}
-		catch (IBOLookupException ile) {
+			return (AdultEducationSession) IBOLookup.getSessionInstance(iwuc,
+					AdultEducationSession.class);
+		} catch (IBOLookupException ile) {
 			throw new IBORuntimeException(ile);
 		}
 	}
 
 	protected Window getFileWindow(String title) {
-		Window w = new Window(title, getIWApplicationContext().getIWMainApplication().getMediaServletURI());
+		Window w = new Window(title, getIWApplicationContext()
+				.getIWMainApplication().getMediaServletURI());
 		w.setResizable(true);
 		w.setMenubar(true);
 		w.setHeight(400);
 		w.setWidth(500);
 		return w;
 	}
-	
+
 	public String getBundleIdentifier() {
 		return AdultEducationConstants.IW_BUNDLE_IDENTIFIER;
 	}
-	
+
 	public abstract void present(IWContext iwc);
 }
