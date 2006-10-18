@@ -268,7 +268,7 @@ public class ApartmentTypeBMPBean
 		catch (IDORelationshipException e) {
 			throw new FinderException(e.getMessage());
 		}
-		query.addCriteria(new MatchCriteria(new Column(building,BuildingBMPBean.BU_COMPLEX_ID),MatchCriteria.EQUALS,complexID.intValue() ));
+		query.addCriteria(new MatchCriteria(new Column(building,BuildingBMPBean.COLUMN_COMPLEX),MatchCriteria.EQUALS,complexID.intValue() ));
 		return idoFindPKsBySQL(query.toString());
 		
 	}

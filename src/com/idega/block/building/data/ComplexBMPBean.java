@@ -25,6 +25,8 @@ public class ComplexBMPBean extends TextEntityBMPBean implements Complex {
 	protected static final String COLUMN_IMAGE = "ic_image_id";
 
 	protected static final String COLUMN_FLASH_PAGE = "flash_page_id";
+	
+	protected static final String COLUMN_LOCKED = "locked";
 
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
@@ -32,6 +34,7 @@ public class ComplexBMPBean extends TextEntityBMPBean implements Complex {
 		addAttribute(COLUMN_INFO, "Info", String.class, 4000);
 		addAttribute(COLUMN_IMAGE, "Map", Integer.class);
 		addManyToOneRelationship(COLUMN_FLASH_PAGE, ICPage.class);
+		addAttribute(COLUMN_LOCKED, "Locked", Boolean.class);
 	}
 
 	public String getEntityName() {
@@ -59,6 +62,10 @@ public class ComplexBMPBean extends TextEntityBMPBean implements Complex {
 		return (ICPage) getColumnValue(COLUMN_FLASH_PAGE);
 	}
 	
+	public boolean getLocked() {
+		return getBooleanColumnValue(COLUMN_LOCKED, false);
+	}
+	
 	// setters
 	public void setName(String name) {
 		setColumn(COLUMN_NAME, name);
@@ -83,16 +90,33 @@ public class ComplexBMPBean extends TextEntityBMPBean implements Complex {
 	public void setFlashPage(ICPage page) {
 		setColumn(COLUMN_FLASH_PAGE, page);
 	}
+	
+	public void setLocked(boolean locked) {
+		setColumn(COLUMN_LOCKED, locked);
+	}
 
 	// ejb
 	public Collection ejbFindAll() throws FinderException {
 		IDOQuery query = idoQuery();
 		query.appendSelectAllFrom(this);
+		query.appendWhere();
+		query.appendLeftParenthesis();
+		query.append(COLUMN_LOCKED);
+		query.append(" is null");
+		query.appendOr();
+		query.appendEquals(COLUMN_LOCKED, false);
+		query.appendRightParenthesis();
 		query.appendOrderBy(COLUMN_NAME);
-
-		System.out.println("query = " + query.toString());
 		
 		return this.idoFindPKsByQuery(query);
+	}
+	
+	public Collection ejbFindAllIncludingLocked() throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this);
+		query.appendOrderBy(COLUMN_NAME);
+		
+		return this.idoFindPKsByQuery(query);		
 	}
 
 	public Collection getBuildings() {

@@ -4,6 +4,7 @@
  */
 package is.idega.idegaweb.campus.block.finance.business;
 
+import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.data.ApartmentAccountEntry;
 import is.idega.idegaweb.campus.data.ApartmentAccountEntryBMPBean;
 import is.idega.idegaweb.campus.data.ApartmentAccountEntryHome;
@@ -29,6 +30,7 @@ import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
 import com.idega.block.finance.business.AssessmentBusinessBean;
+import com.idega.block.finance.business.FinanceService;
 import com.idega.block.finance.data.Account;
 import com.idega.block.finance.data.AccountEntry;
 import com.idega.block.finance.data.AccountEntryBMPBean;
@@ -39,6 +41,7 @@ import com.idega.block.finance.data.AccountKeyHome;
 import com.idega.block.finance.data.AssessmentRound;
 import com.idega.block.finance.data.AssessmentRoundHome;
 import com.idega.block.finance.data.EntryGroup;
+import com.idega.block.finance.data.FinanceAccount;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.file.data.ICFileHome;
 import com.idega.data.IDOLookup;
@@ -182,7 +185,11 @@ public class CampusAssessmentBusinessBean extends AssessmentBusinessBean impleme
 							header.addContent(CUSTOMER_ADDRESS_1,
 									contract.getApartment().getFloor().getBuilding().getName());
 							header.addContent(CUSTOMER_ADDRESS_2, contract.getApartment().getName());
-							header.addContent(CUSTOMER_ZIP_CODE, "101");
+							String zipCode = contract.getApartment().getFloor().getBuilding().getPostalCode();
+							if (zipCode == null || "".equals(zipCode.trim())) {
+								zipCode = "101";
+							}
+							header.addContent(CUSTOMER_ZIP_CODE, zipCode);
 							header.addContent(CUSTOMER_SOCIAL_SECURITY_NUMBER, user.getPersonalID());
 
 							rootElement.addContent(header);
@@ -322,15 +329,32 @@ public class CampusAssessmentBusinessBean extends AssessmentBusinessBean impleme
 		aprtEntry.store();
 		return aprtEntry;
 	}
+
 	/* (non-Javadoc)
 	 * @see com.idega.block.finance.business.AssessmentBusiness#createAccountEntry(java.lang.Integer, java.lang.Integer, java.lang.Integer, java.lang.Integer, float, float, float, java.util.Date, java.lang.String, java.lang.String, java.lang.String, java.lang.Integer)
 	 */
 	public AccountEntry createAccountEntry(Integer accountID, Integer accountKeyID, Integer cashierID, Integer roundID,
 			float netto, float VAT, float total, Date paydate, String Name, String Info, String status,
 			Integer externalID) throws RemoteException, CreateException {
-		// TODO Auto-generated method stub
+
+		String division = "";
+		if (externalID != null && externalID.intValue() > 0) {
+			
+		}
+		else if (accountID != null && accountID.intValue() > 0) {
+			try {
+				FinanceAccount account = (FinanceAccount)getFinanceService().getAccountHome().findByPrimaryKey(accountID);
+				Contract contract = this.findContractForUser(account.getUser());
+				division = contract.getApartment().getFloor().getBuilding().getDivision();
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			} catch (FinderException e) {
+				e.printStackTrace();
+			}
+		}
+
 		AccountEntry entry =  super.createAccountEntry(accountID, accountKeyID, cashierID, roundID, netto, VAT, total, paydate, Name,
-				Info, status, externalID);
+				Info, status, externalID, division);
 		createApartmentAccountEntry((Integer)entry.getPrimaryKey(),externalID);
 		return entry;
 	}
@@ -392,5 +416,9 @@ public class CampusAssessmentBusinessBean extends AssessmentBusinessBean impleme
             }
 		}
 		return false;
+	}
+	
+	public FinanceService getFinanceService() throws RemoteException {
+		return (FinanceService) getServiceInstance(FinanceService.class);
 	}
 }

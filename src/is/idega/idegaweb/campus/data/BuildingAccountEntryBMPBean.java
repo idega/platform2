@@ -1,9 +1,9 @@
 /*
 <<<<<<< BuildingAccountEntryBMPBean.java
- * $Id: BuildingAccountEntryBMPBean.java,v 1.5 2004/06/05 07:35:17 aron Exp $
+ * $Id: BuildingAccountEntryBMPBean.java,v 1.5.4.1 2006/10/18 13:54:05 palli Exp $
  * 
 =======
- * $Id: BuildingAccountEntryBMPBean.java,v 1.5 2004/06/05 07:35:17 aron Exp $
+ * $Id: BuildingAccountEntryBMPBean.java,v 1.5.4.1 2006/10/18 13:54:05 palli Exp $
  *
 >>>>>>> 1.4
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
@@ -25,10 +25,10 @@ import java.sql.SQLException;
 public class BuildingAccountEntryBMPBean extends com.idega.data.GenericView implements BuildingAccountEntry {
 	/*
 	 * create view V_BUILDING_ACCOUNT_ENTRY( BUILDING_ID, BUILDING_NAME,
-	 * Key_ID, KEY_NAME, KEY_INFO, TOTAL, NUMBER ) as select b.bu_building_id
+	 * Key_ID, KEY_NAME, KEY_INFO, TOTAL, NUMBER_ ) as select b.bu_building_id
 	 * building_id, b.name building_name, k.fin_acc_key_id key_id, k.name
 	 * key_name, k.info key_info, sum(e.total) total, count(acc.fin_account_id)
-	 * number
+	 * number_
 	 * 
 	 * from bu_apartment a,bu_building b,bu_floor f, cam_contract c,fin_account
 	 * acc,fin_acc_entry e,fin_acc_key k where b.bu_building_id =
@@ -59,7 +59,7 @@ public class BuildingAccountEntryBMPBean extends com.idega.data.GenericView impl
 		return "TOTAL";
 	}
 	public static String getColumnNumber() {
-		return "NUMBER";
+		return "NUMBER_";
 	}
 	public void initializeAttributes() {
 		addAttribute(getColumnBuildingId(), "Building id", true, true, Integer.class);
@@ -112,7 +112,7 @@ public class BuildingAccountEntryBMPBean extends com.idega.data.GenericView impl
 		sql.append("	KEY_NAME, ");
 		sql.append("	KEY_INFO, ");
 		sql.append("	TOTAL, ");
-		sql.append("	NUMBER ");
+		sql.append("	NUMBER_ ");
 		sql.append("	) ");
 		sql.append("	as ");
 		sql.append("	select ");
@@ -122,7 +122,7 @@ public class BuildingAccountEntryBMPBean extends com.idega.data.GenericView impl
 		sql.append("	k.name key_name, ");
 		sql.append("	k.info key_info, ");
 		sql.append("	sum(e.total) total, ");
-		sql.append("	count(acc.fin_account_id) number ");
+		sql.append("	count(acc.fin_account_id) number_ ");
 		sql.append("	from ");
 		sql.append("	bu_apartment a,bu_building b,bu_floor f, ");
 		sql.append("	cam_contract c,fin_account acc,fin_acc_entry e,fin_acc_key k ");

@@ -105,6 +105,14 @@ and apa.bu_floor_id = fl.bu_floor_id
 and fl.bu_building_id = bu.bu_building_id
 and bu.bu_complex_id = c.bu_complex_id;
 //
+create view v_cam_aprt_type_complex (bu_aprt_cat_id, bu_aprt_type_id,aprt_type_name,bu_complex_id,complex_name) as
+SELECT DISTINCT a.bu_aprt_cat_id, a.bu_aprt_type_id, a.name, c.bu_complex_id, c.name
+FROM bu_aprt_type a, bu_complex c, bu_building bu, bu_floor fl, bu_apartment apa
+WHERE a.bu_aprt_type_id = apa.bu_aprt_type_id
+and apa.bu_floor_id = fl.bu_floor_id
+and fl.bu_building_id = bu.bu_building_id
+and bu.bu_complex_id = c.bu_complex_id
+//
 create view v_available_aprt (bu_complex_id, bu_aprt_type_id, total_aprt) as 
 select c.bu_complex_id, t.bu_aprt_type_id, count(*) from bu_apartment a,bu_floor f,bu_building b,bu_complex c,bu_aprt_type t 
 where a.bu_aprt_type_id = t.bu_aprt_type_id 

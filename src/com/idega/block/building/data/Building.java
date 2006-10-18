@@ -121,6 +121,16 @@ public interface Building extends BuildingEntity {
 	public void setPostalAddress(String postalAddress);
 
 	/**
+	 * @see com.idega.block.building.data.BuildingBMPBean#getLocked
+	 */
+	public boolean getLocked();
+
+	/**
+	 * @see com.idega.block.building.data.BuildingBMPBean#setLocked
+	 */
+	public void setLocked(boolean locked);
+
+	/**
 	 * @see com.idega.block.building.data.BuildingBMPBean#getFloors
 	 */
 	public Collection getFloors();

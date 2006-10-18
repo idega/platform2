@@ -1,16 +1,10 @@
-/**
- * 
- */
 package com.idega.block.building.data;
+
 
 import java.util.Collection;
 
 import com.idega.core.builder.data.ICPage;
 
-/**
- * @author bluebottle
- *
- */
 public interface Complex extends BuildingEntity {
 	/**
 	 * @see com.idega.block.building.data.ComplexBMPBean#getName
@@ -36,6 +30,11 @@ public interface Complex extends BuildingEntity {
 	 * @see com.idega.block.building.data.ComplexBMPBean#getFlashPage
 	 */
 	public ICPage getFlashPage();
+
+	/**
+	 * @see com.idega.block.building.data.ComplexBMPBean#getLocked
+	 */
+	public boolean getLocked();
 
 	/**
 	 * @see com.idega.block.building.data.ComplexBMPBean#setName
@@ -68,8 +67,12 @@ public interface Complex extends BuildingEntity {
 	public void setFlashPage(ICPage page);
 
 	/**
+	 * @see com.idega.block.building.data.ComplexBMPBean#setLocked
+	 */
+	public void setLocked(boolean locked);
+
+	/**
 	 * @see com.idega.block.building.data.ComplexBMPBean#getBuildings
 	 */
 	public Collection getBuildings();
-
 }

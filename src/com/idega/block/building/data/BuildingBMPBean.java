@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.text.data.TextEntityBMPBean;
 import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOQuery;
 import com.idega.data.IDORelationshipException;
@@ -18,146 +19,158 @@ import com.idega.data.query.WildCardColumn;
  * @author <a href="mailto:aron@idega.is">Aron Birkir</a>
  * @version 1.0
  */
-public class BuildingBMPBean extends com.idega.block.text.data.TextEntityBMPBean implements Building{
+public class BuildingBMPBean extends TextEntityBMPBean implements Building{
 
-	protected static final String SERIE = "serie";
-
-	protected static final String STREET_NUMBER = "street_number";
-
-	protected static final String STREET = "street";
-
-	protected static final String IC_IMAGE_ID = "ic_image_id";
-
-	protected static final String BU_COMPLEX_ID = "bu_complex_id";
-
-	protected static final String INFO = "info";
-
-	protected static final String NAME = "name";
-
-	protected static final String BU_BUILDING = "bu_building";
+	protected final static String ENTITY_NAME = "bu_building";
 	
-	protected static final String DIVISION = "division";
+	protected static final String COLUMN_SERIE = "serie";
+
+	protected static final String COLUMN_STREET_NUMBER = "street_number";
+
+	protected static final String COLUMN_STREET = "street";
+
+	protected static final String COLUMN_IMAGE = "ic_image_id";
+
+	protected static final String COLUMN_COMPLEX = "bu_complex_id";
+
+	protected static final String COLUMN_INFO = "info";
+
+	protected static final String COLUMN_NAME = "name";
+
+	protected static final String COLUMN_DIVISION = "division";
 	
-	protected static final String POSTAL_CODE = "postal_code";
+	protected static final String COLUMN_POSTAL_CODE = "postal_code";
 	
-	protected static final String POSTAL_ADDRESS = "postal_address";
+	protected static final String COLUMN_POSTAL_ADDRESS = "postal_address";
+	
+	protected static final String COLUMN_LOCKED = "locked";
 
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		addAttribute(NAME, "Name", true, true, java.lang.String.class);
-		addAttribute(INFO, "Info", true, true, java.lang.String.class);
-		addAttribute(IC_IMAGE_ID, "Photo", true, true, java.lang.Integer.class, MANY_TO_ONE, ICFile.class);
-		addAttribute(BU_COMPLEX_ID, "Complex", true, true, java.lang.Integer.class, MANY_TO_ONE, Complex.class);
-		addAttribute(STREET, "Street", true, true, java.lang.String.class);
-		addAttribute(STREET_NUMBER, "Streetnumber", true, true, java.lang.Integer.class);
-		addAttribute(SERIE, "Serie", true, true, java.lang.String.class, 2);
-		addAttribute(DIVISION, "Division", true, true, String.class, 2);
-		addAttribute(POSTAL_CODE, "Postal code", true, true, String.class);
-		addAttribute(POSTAL_ADDRESS, "Postal address", true, true, String.class);
-		super.setMaxLength(INFO, 4000);
+		addAttribute(COLUMN_NAME, "Name", String.class);
+		addAttribute(COLUMN_INFO, "Info", String.class);
+		setMaxLength(COLUMN_INFO, 4000);
+		addAttribute(COLUMN_STREET, "Street", String.class);
+		addAttribute(COLUMN_STREET_NUMBER, "Streetnumber", Integer.class);
+		addAttribute(COLUMN_SERIE, "Serie", String.class, 2);
+		addAttribute(COLUMN_DIVISION, "Division", String.class, 2);
+		addAttribute(COLUMN_POSTAL_CODE, "Postal code", String.class);
+		addAttribute(COLUMN_POSTAL_ADDRESS, "Postal address", String.class);
+		addAttribute(COLUMN_LOCKED, "Locked", Boolean.class);
+		
+		addManyToOneRelationship(COLUMN_IMAGE, ICFile.class);
+		addManyToOneRelationship(COLUMN_COMPLEX, Complex.class);
 	}
 
 	public String getEntityName() {
-		return BU_BUILDING;
+		return ENTITY_NAME;
 	}
 
 	public String getName() {
-		return getStringColumnValue(NAME);
+		return getStringColumnValue(COLUMN_NAME);
 	}
 
 	public void setName(String name) {
-		setColumn(NAME, name);
+		setColumn(COLUMN_NAME, name);
 	}
 
 	public String getInfo() {
-		return getStringColumnValue(INFO);
+		return getStringColumnValue(COLUMN_INFO);
 	}
 
 	public void setInfo(String info) {
-		setColumn(INFO, info);
+		setColumn(COLUMN_INFO, info);
 	}
 
 	public int getComplexId() {
-		return getIntColumnValue(BU_COMPLEX_ID);
+		return getIntColumnValue(COLUMN_COMPLEX);
 	}
 
 	public Complex getComplex() {
-		return (Complex) getColumnValue(BU_COMPLEX_ID);
+		return (Complex) getColumnValue(COLUMN_COMPLEX);
 	}
 
 	public void setComplexId(int complex_id) {
-		setColumn(BU_COMPLEX_ID, complex_id);
+		setColumn(COLUMN_COMPLEX, complex_id);
 	}
 
 	public int getImageId() {
-		return getIntColumnValue(IC_IMAGE_ID);
+		return getIntColumnValue(COLUMN_IMAGE);
 	}
 
 	public void setImageId(int image_id) {
-		setColumn(IC_IMAGE_ID, image_id);
+		setColumn(COLUMN_IMAGE, image_id);
 	}
 
 	public void setImageId(Integer image_id) {
-		setColumn(IC_IMAGE_ID, image_id);
+		setColumn(COLUMN_IMAGE, image_id);
 	}
 
 	public String getStreet() {
-		return getStringColumnValue(STREET);
+		return getStringColumnValue(COLUMN_STREET);
 	}
 
 	public void setStreet(String street) {
-		setColumn(STREET, street);
+		setColumn(COLUMN_STREET, street);
 	}
 
 	public String getStreetNumber() {
-		return getStringColumnValue(STREET_NUMBER);
+		return getStringColumnValue(COLUMN_STREET_NUMBER);
 	}
 
 	public void setStreetNumber(String street_number) {
-		setColumn(STREET_NUMBER, street_number);
+		setColumn(COLUMN_STREET_NUMBER, street_number);
 	}
 
 	public String getSerie() {
-		return getStringColumnValue(SERIE);
+		return getStringColumnValue(COLUMN_SERIE);
 	}
 
 	public void setSerie(String serie) {
-		setColumn(SERIE, serie);
+		setColumn(COLUMN_SERIE, serie);
 	}
 
 	public String getDivision() {
-		return getStringColumnValue(DIVISION);
+		return getStringColumnValue(COLUMN_DIVISION);
 	}
 	
 	public void setDivision(String division) {
-		setColumn(DIVISION, division);
+		setColumn(COLUMN_DIVISION, division);
 	}
 	
 	public String getPostalCode() {
-		return getStringColumnValue(POSTAL_CODE);
+		return getStringColumnValue(COLUMN_POSTAL_CODE);
 	}
 	
 	public void setPostalCode(String postalCode) {
-		setColumn(POSTAL_CODE, postalCode);
+		setColumn(COLUMN_POSTAL_CODE, postalCode);
 	}
 	
 	public String getPostalAddress() {
-		return getStringColumnValue(POSTAL_ADDRESS);
+		return getStringColumnValue(COLUMN_POSTAL_ADDRESS);
 	}
 	
 	public void setPostalAddress(String postalAddress) {
-		setColumn(POSTAL_ADDRESS, postalAddress);
+		setColumn(COLUMN_POSTAL_ADDRESS, postalAddress);
+	}
+	
+	public boolean getLocked() {
+		return getBooleanColumnValue(COLUMN_LOCKED, false);
+	}
+	
+	public void setLocked(boolean locked) {
+		setColumn(COLUMN_LOCKED, locked);
 	}
 	
 	public Collection ejbFindAll() throws FinderException {
-		return idoFindPKsByQuery(idoQueryGetSelect().appendOrderBy(NAME));
+		return idoFindPKsByQuery(idoQueryGetSelect().appendOrderBy(COLUMN_NAME));
 	}
 
 	public Collection ejbFindByComplex(Integer complexID) throws FinderException {
 		IDOQuery query = idoQuery();
 		query.appendSelectAllFrom(this);
-		query.appendWhereEquals(BU_COMPLEX_ID, complexID);
-		query.appendOrderBy(NAME);
+		query.appendWhereEquals(COLUMN_COMPLEX, complexID);
+		query.appendOrderBy(COLUMN_NAME);
 		
 		return idoFindPKsByQuery(query);
 	}
@@ -169,7 +182,7 @@ public class BuildingBMPBean extends com.idega.block.text.data.TextEntityBMPBean
 			SelectQuery query = new SelectQuery(file);
 			query.addColumn(new WildCardColumn(file));
 			query.addJoin(building, file);
-			query.addCriteria(new MatchCriteria(building, BU_COMPLEX_ID, MatchCriteria.EQUALS, complexID.intValue()));
+			query.addCriteria(new MatchCriteria(building, COLUMN_COMPLEX, MatchCriteria.EQUALS, complexID.intValue()));
 			return idoGetRelatedEntitiesBySQL(ICFile.class, query.toString());
 		}
 		catch (IDORelationshipException e) {

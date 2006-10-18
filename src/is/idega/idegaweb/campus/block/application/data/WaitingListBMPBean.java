@@ -1,5 +1,5 @@
 /*
- * $Id: WaitingListBMPBean.java,v 1.14 2004/07/20 10:53:08 aron Exp $
+ * $Id: WaitingListBMPBean.java,v 1.14.4.1 2006/10/18 13:54:05 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,397 +9,432 @@
  */
 package is.idega.idegaweb.campus.block.application.data;
 
-
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.application.data.Applicant;
+import com.idega.block.building.data.ApartmentType;
+import com.idega.block.building.data.Complex;
 import com.idega.data.GenericEntity;
+import com.idega.data.query.InCriteria;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.Table;
+import com.idega.data.query.WildCardColumn;
 
 /**
- *
+ * 
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
 public class WaitingListBMPBean extends GenericEntity implements WaitingList {
-  private static final String ENTITY_NAME = "cam_waiting_list";
-  private static final String COMPLEX_ID = "bu_complex_id";
-  private static final String APARTMENT_TYPE_ID = "bu_apartment_type_id";
-  private static final String APPLICANT_ID = "app_applicant_id";
-  private static final String ORDER = "ordered";
-  private static final String TYPE = "list_type";
-  private static final String CHOICE_NUMBER = "choice_number";
-  private static final String LAST_CONFIRMATION = "last_confirmation";
-  private static final String NUMBER_OF_REJECTIONS = "number_of_rejections";
-  private static final String REJECT_FLAG = "reject_flag";
-  private static final String REMOVED_FROM_LIST = "removed_from_list";
-  private static final String PRIORITY_LEVEL = "priority_level";
-  private static final String ACCEPTED_DATE = "accepted_date";
+	private static final String ENTITY_NAME = "cam_waiting_list";
 
-  public static final String YES = "Y";
-  public static final String NO = "N";
+	private static final String COLUMN_COMPLEX = "bu_complex_id";
 
-  private final String PRIORITY_A = "A";
-  private final String PRIORITY_B = "B";
-  private final String PRIORITY_C = "C";
-  private final String PRIORITY_D = "D";
-  private final String PRIORITY_E = "E";
+	private static final String COLUMN_APARTMENT_TYPE = "bu_apartment_type_id";
 
+	private static final String COLUMN_APPLICANT = "app_applicant_id";
 
-  public static final String TYPE_APPLICATION = "A";
-  public static final String TYPE_TRANSFER = "T";
+	private static final String COLUMN_ORDER = "ordered";
 
-  public WaitingListBMPBean() {
-    super();
-  }
+	private static final String COLUMN_LIST_TYPE = "list_type";
 
-  public WaitingListBMPBean(int id) throws SQLException {
-    super(id);
-  }
+	private static final String COLUMN_CHOICE_NUMBER = "choice_number";
 
-  public void initializeAttributes() {
-    addAttribute(getIDColumnName());
-    addAttribute(COMPLEX_ID,"Complex",true,true,"java.lang.Integer","one-to-many","com.idega.block.building.data.Complex");
-    addAttribute(APARTMENT_TYPE_ID,"Apartment type",true,true,"java.lang.Integer","one-to-many","com.idega.block.building.data.ApartmentType");
-    addAttribute(APPLICANT_ID,"Applicant",true,true,"java.lang.Integer","one-to-many","com.idega.block.application.data.Applicant");
-    addAttribute(ORDER,"Order",true,true,"java.lang.Integer");
-    addAttribute(TYPE,"Waiting list type",true,true,"java.lang.String");
-    addAttribute(CHOICE_NUMBER,"Choice number",true,true,"java.lang.Integer");
-    addAttribute(LAST_CONFIRMATION,"Last confirmation date",true,true,"java.sql.Timestamp");
-    addAttribute(NUMBER_OF_REJECTIONS,"Number of rejections",true,true,"java.lang.Integer");
-	addAttribute(REJECT_FLAG,"Reject flag",true,true,Boolean.class);
-    addAttribute(REMOVED_FROM_LIST,"Removed from list",true,true,"java.lang.String");
-    addAttribute(PRIORITY_LEVEL,"Priority level",true,true,String.class);
-	addAttribute(ACCEPTED_DATE,"Accepted date",true,true,java.sql.Timestamp.class);
-	
-    setMaxLength(TYPE,1);
-    setMaxLength(REMOVED_FROM_LIST,1);
-    setMaxLength(PRIORITY_LEVEL,1);
-  }
+	private static final String COLUMN_LAST_CONFIRMATION = "last_confirmation";
 
-  public String getEntityName() {
-    return ENTITY_NAME;
-  }
+	private static final String COLUMN_NUMBER_OF_REJECTIONS = "number_of_rejections";
 
-  public static String getEntityTableName(){
-    return ENTITY_NAME;
-  }
+	private static final String COLUMN_REJECT_FLAG = "reject_flag";
 
-  public static String getComplexIdColumnName() {
-    return COMPLEX_ID;
-  }
+	private static final String COLUMN_REMOVED_FROM_LIST = "removed_from_list";
 
-  public static String getApartmentTypeIdColumnName() {
-    return APARTMENT_TYPE_ID;
-  }
+	private static final String COLUMN_PRIORITY_LEVEL = "priority_level";
 
-  public static String getApplicantIdColumnName() {
-    return APPLICANT_ID;
-  }
+	private static final String COLUMN_ACCEPTED_DATE = "accepted_date";
 
-  public static String getTypeColumnName() {
-    return TYPE;
-  }
+	public static final String YES = "Y";
 
-  public static String getOrderColumnName() {
-    return ORDER;
-  }
+	public static final String NO = "N";
 
-  public static String getChoiceNumberColumnName() {
-    return CHOICE_NUMBER;
-  }
+	private final String PRIORITY_A = "A";
 
-  public static String getLastConfirmationColumnName() {
-    return LAST_CONFIRMATION;
-  }
+	private final String PRIORITY_B = "B";
 
-  public static String getNumberOfRejectionsColumnName() {
-    return NUMBER_OF_REJECTIONS;
-  }
+	private final String PRIORITY_C = "C";
 
-  public static String getRemovedFromListColumnName() {
-    return REMOVED_FROM_LIST;
-  }
+	private final String PRIORITY_D = "D";
 
-  public void setComplexId(int id) {
-    setColumn(COMPLEX_ID,id);
-  }
+	private final String PRIORITY_E = "E";
 
-  public Integer getComplexId() {
-    return getIntegerColumnValue(COMPLEX_ID);
-  }
+	public static final String TYPE_APPLICATION = "A";
 
-  public void setApartmentTypeId(int id) {
-    setColumn(APARTMENT_TYPE_ID,id);
-  }
+	public static final String TYPE_TRANSFER = "T";
 
-  public void setApartmentTypeId(Integer id) {
-    setColumn(APARTMENT_TYPE_ID,id);
-  }
+	public WaitingListBMPBean() {
+		super();
+	}
 
-  public Integer getApartmentTypeId() {
-    return getIntegerColumnValue(APARTMENT_TYPE_ID);
-  }
+	public WaitingListBMPBean(int id) throws SQLException {
+		super(id);
+	}
 
-  public void setApplicantId(int id) {
-    setColumn(APPLICANT_ID,id);
-  }
+	public void initializeAttributes() {
+		addAttribute(getIDColumnName());
+		addManyToOneRelationship(COLUMN_COMPLEX, Complex.class);
+		addManyToOneRelationship(COLUMN_APARTMENT_TYPE, ApartmentType.class);
+		addManyToOneRelationship(COLUMN_APPLICANT, Applicant.class);
+		addAttribute(COLUMN_ORDER, "Order", Integer.class);
+		addAttribute(COLUMN_LIST_TYPE, "Waiting list type", String.class);
+		addAttribute(COLUMN_CHOICE_NUMBER, "Choice number", Integer.class);
+		addAttribute(COLUMN_LAST_CONFIRMATION, "Last confirmation date", Timestamp.class);
+		addAttribute(COLUMN_NUMBER_OF_REJECTIONS, "Number of rejections", Integer.class);
+		addAttribute(COLUMN_REJECT_FLAG, "Reject flag", Boolean.class);
+		addAttribute(COLUMN_REMOVED_FROM_LIST, "Removed from list", Boolean.class);
+		addAttribute(COLUMN_PRIORITY_LEVEL, "Priority level", String.class);
+		addAttribute(COLUMN_ACCEPTED_DATE, "Accepted date", Timestamp.class);
 
-  public void setApplicantId(Integer id) {
-    setColumn(APPLICANT_ID,id);
-  }
+		setMaxLength(COLUMN_LIST_TYPE, 1);
+		setMaxLength(COLUMN_REMOVED_FROM_LIST, 1);
+		setMaxLength(COLUMN_PRIORITY_LEVEL, 1);
+	}
 
-  public Integer getApplicantId() {
-    return getIntegerColumnValue(APPLICANT_ID);
-  }
+	public String getEntityName() {
+		return ENTITY_NAME;
+	}
 
-  private void setType(String type) {
-    setColumn(TYPE,type);
-  }
+	public static String getEntityTableName() {
+		return ENTITY_NAME;
+	}
 
-  public void setTypeApplication() {
-    setType(TYPE_APPLICATION);
-  }
+	public static String getComplexIdColumnName() {
+		return COLUMN_COMPLEX;
+	}
 
-  public void setTypeTransfer() {
-    setType(TYPE_TRANSFER);
-  }
+	public static String getApartmentTypeIdColumnName() {
+		return COLUMN_APARTMENT_TYPE;
+	}
 
-  public String getType() {
-    return getStringColumnValue(TYPE);
-  }
+	public static String getApplicantIdColumnName() {
+		return COLUMN_APPLICANT;
+	}
 
-  public void setOrder(int order) {
-    setColumn(ORDER,order);
-  }
+/*	public static String getTypeColumnName() {
+		return COLUMN_LIST_TYPE;
+	}*/
 
-  public void setOrder(Integer order) {
-    setColumn(ORDER,order);
-  }
+	public static String getOrderColumnName() {
+		return COLUMN_ORDER;
+	}
 
-  public Integer getOrder() {
-    return getIntegerColumnValue(ORDER);
-  }
+/*	public static String getChoiceNumberColumnName() {
+		return COLUMN_CHOICE_NUMBER;
+	}*/
 
-  public void setLastConfirmationDate(Timestamp date) {
-    setColumn(LAST_CONFIRMATION,date);
-  }
+/*	public static String getLastConfirmationColumnName() {
+		return COLUMN_LAST_CONFIRMATION;
+	}*/
 
-  public Timestamp getLastConfirmationDate() {
-    return (Timestamp)getColumnValue(LAST_CONFIRMATION);
-  }
-  
-  public void setAcceptedDate(Timestamp date) {
-	  setColumn(ACCEPTED_DATE,date);
+/*	public static String getNumberOfRejectionsColumnName() {
+		return COLUMN_NUMBER_OF_REJECTIONS;
+	}*/
+
+/*	public static String getRemovedFromListColumnName() {
+		return COLUMN_REMOVED_FROM_LIST;
+	}*/
+
+	public static String getPriorityColumnName() {
+		return COLUMN_PRIORITY_LEVEL;
+	}
+
+	public void setComplexId(int id) {
+		setColumn(COLUMN_COMPLEX, id);
+	}
+
+	public Integer getComplexId() {
+		return getIntegerColumnValue(COLUMN_COMPLEX);
+	}
+
+	public void setApartmentTypeId(int id) {
+		setColumn(COLUMN_APARTMENT_TYPE, id);
+	}
+
+	public void setApartmentTypeId(Integer id) {
+		setColumn(COLUMN_APARTMENT_TYPE, id);
+	}
+
+	public Integer getApartmentTypeId() {
+		return getIntegerColumnValue(COLUMN_APARTMENT_TYPE);
+	}
+
+	public void setApplicantId(int id) {
+		setColumn(COLUMN_APPLICANT, id);
+	}
+
+	public void setApplicantId(Integer id) {
+		setColumn(COLUMN_APPLICANT, id);
+	}
+
+	public Integer getApplicantId() {
+		return getIntegerColumnValue(COLUMN_APPLICANT);
+	}
+
+	private void setType(String type) {
+		setColumn(COLUMN_LIST_TYPE, type);
+	}
+
+	public void setTypeApplication() {
+		setType(TYPE_APPLICATION);
+	}
+
+	public void setTypeTransfer() {
+		setType(TYPE_TRANSFER);
+	}
+
+	public String getType() {
+		return getStringColumnValue(COLUMN_LIST_TYPE);
+	}
+
+	public void setOrder(int order) {
+		setColumn(COLUMN_ORDER, order);
+	}
+
+	public void setOrder(Integer order) {
+		setColumn(COLUMN_ORDER, order);
+	}
+
+	public Integer getOrder() {
+		return getIntegerColumnValue(COLUMN_ORDER);
+	}
+
+	public void setLastConfirmationDate(Timestamp date) {
+		setColumn(COLUMN_LAST_CONFIRMATION, date);
+	}
+
+	public Timestamp getLastConfirmationDate() {
+		return (Timestamp) getColumnValue(COLUMN_LAST_CONFIRMATION);
+	}
+
+	public void setAcceptedDate(Timestamp date) {
+		setColumn(COLUMN_ACCEPTED_DATE, date);
 	}
 
 	public Timestamp getAcceptedDate() {
-	  return (Timestamp)getColumnValue(ACCEPTED_DATE);
+		return (Timestamp) getColumnValue(COLUMN_ACCEPTED_DATE);
 	}
 
-  public void setNumberOfRejections(int count) {
-    setColumn(NUMBER_OF_REJECTIONS,count);
-  }
+	public void setNumberOfRejections(int count) {
+		setColumn(COLUMN_NUMBER_OF_REJECTIONS, count);
+	}
 
-  public void setNumberOfRejections(Integer count) {
-    setColumn(NUMBER_OF_REJECTIONS,count);
-  }
-  
-  public void incrementRejections(boolean flagAsRejected){
-  	int count = getNumberOfRejections();
-  	if(count <0 )
-  		count = 0;
-  	count++;
-  	setNumberOfRejections(count);
-  	setRejectFlag(flagAsRejected);
-  }
+	public void setNumberOfRejections(Integer count) {
+		setColumn(COLUMN_NUMBER_OF_REJECTIONS, count);
+	}
 
-  public int getNumberOfRejections() {
-    return getIntColumnValue(NUMBER_OF_REJECTIONS);
-  }
-  
-  public boolean getRejectFlag(){
-  	return getBooleanColumnValue(REJECT_FLAG);
-  }
-  
-  public void setRejectFlag(boolean flag){
-  	setColumn(REJECT_FLAG,flag);
-  }
+	public void incrementRejections(boolean flagAsRejected) {
+		int count = getNumberOfRejections();
+		if (count < 0)
+			count = 0;
+		count++;
+		setNumberOfRejections(count);
+		setRejectFlag(flagAsRejected);
+	}
 
-  public void setChoiceNumber(int choice) {
-    setColumn(CHOICE_NUMBER,choice);
-  }
+	public int getNumberOfRejections() {
+		return getIntColumnValue(COLUMN_NUMBER_OF_REJECTIONS);
+	}
 
-  public void setChoiceNumber(Integer choice) {
-    setColumn(CHOICE_NUMBER,choice);
-  }
+	public boolean getRejectFlag() {
+		return getBooleanColumnValue(COLUMN_REJECT_FLAG);
+	}
 
-  public Integer getChoiceNumber() {
-    return getIntegerColumnValue(CHOICE_NUMBER);
-  }
+	public void setRejectFlag(boolean flag) {
+		setColumn(COLUMN_REJECT_FLAG, flag);
+	}
 
-  public boolean getRemovedFromList() {
-    String removed = getStringColumnValue(REMOVED_FROM_LIST);
-    if ((removed == null) || (removed.equals(NO))) {
-      return false;
-    }
-    else if (removed.equals(YES)) {
-      return true;
-    }
-    else {
-      return false;
-    }
-  }
+	public void setChoiceNumber(int choice) {
+		setColumn(COLUMN_CHOICE_NUMBER, choice);
+	}
 
-  public void setRemovedFromList(String removed) {
-    if ((removed != null) && (removed.equalsIgnoreCase(YES))) {
-      setColumn(REMOVED_FROM_LIST,YES);
-    }
-    else {
-      setColumn(REMOVED_FROM_LIST,NO);
-    }
-  }
+	public void setChoiceNumber(Integer choice) {
+		setColumn(COLUMN_CHOICE_NUMBER, choice);
+	}
 
-  public String getPriorityLevel() {
-    return getStringColumnValue(PRIORITY_LEVEL);
-  }
+	public Integer getChoiceNumber() {
+		return getIntegerColumnValue(COLUMN_CHOICE_NUMBER);
+	}
 
-  private void setPriorityLevel(String level) {
-    setColumn(PRIORITY_LEVEL,level);
-  }
+	public boolean getRemovedFromList() {
+		String removed = getStringColumnValue(COLUMN_REMOVED_FROM_LIST);
+		if ((removed == null) || (removed.equals(NO))) {
+			return false;
+		} else if (removed.equals(YES)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
-  public void setPriorityLevelA() {
-    setPriorityLevel(PRIORITY_A);
-  }
+	public void setRemovedFromList(String removed) {
+		if ((removed != null) && (removed.equalsIgnoreCase(YES))) {
+			setColumn(COLUMN_REMOVED_FROM_LIST, YES);
+		} else {
+			setColumn(COLUMN_REMOVED_FROM_LIST, NO);
+		}
+	}
 
-  public void setPriorityLevelB() {
-    setPriorityLevel(PRIORITY_B);
-  }
+	public String getPriorityLevel() {
+		return getStringColumnValue(COLUMN_PRIORITY_LEVEL);
+	}
 
-  public void setPriorityLevelC() {
-    setPriorityLevel(PRIORITY_C);
-  }
+	private void setPriorityLevel(String level) {
+		setColumn(COLUMN_PRIORITY_LEVEL, level);
+	}
 
-  public void setPriorityLevelD() {
-    setPriorityLevel(PRIORITY_D);
-  }
+	public void setPriorityLevelA() {
+		setPriorityLevel(PRIORITY_A);
+	}
 
-  public void setPriorityLevelE() {
-    setPriorityLevel(PRIORITY_E);
-  }
-  
-  public void setSamePriority(WaitingList listEntry){
-  	setPriorityLevel(listEntry.getPriorityLevel());
-  }
+	public void setPriorityLevelB() {
+		setPriorityLevel(PRIORITY_B);
+	}
 
-  public static String getPriorityColumnName() {
-    return PRIORITY_LEVEL;
-  }
+	public void setPriorityLevelC() {
+		setPriorityLevel(PRIORITY_C);
+	}
 
-  public Collection ejbFindByApartmentTypeAndComplexForApplicationType(int aprtId, int complexId) throws FinderException {
-    StringBuffer sql = new StringBuffer("select * from ");
-    sql.append(getTableName());
-    sql.append(" where ");
-    sql.append(getApartmentTypeIdColumnName());
-    sql.append(" = ");
-    sql.append(aprtId);
-    sql.append(" and ");
-    sql.append(getComplexIdColumnName());
-    sql.append(" = ");
-    sql.append(complexId);
-    sql.append(" and ");
-    sql.append(getTypeColumnName());
-    sql.append(" = ");
-    sql.append(TYPE_APPLICATION);
-    sql.append(" order by ");
-    sql.append(getPriorityColumnName());
-    sql.append(", ");
-    sql.append(getOrderColumnName());
+	public void setPriorityLevelD() {
+		setPriorityLevel(PRIORITY_D);
+	}
 
-    return super.idoFindPKsBySQL(sql.toString());
-  }
+	public void setPriorityLevelE() {
+		setPriorityLevel(PRIORITY_E);
+	}
 
-  public Collection ejbFindByApartmentTypeAndComplexForTransferType(int aprtId, int complexId) throws FinderException {
-    StringBuffer sql = new StringBuffer("select * from ");
-    sql.append(getTableName());
-    sql.append(" where ");
-    sql.append(getApartmentTypeIdColumnName());
-    sql.append(" = ");
-    sql.append(aprtId);
-    sql.append(" and ");
-    sql.append(getComplexIdColumnName());
-    sql.append(" = ");
-    sql.append(complexId);
-    sql.append(" and ");
-    sql.append(getTypeColumnName());
-    sql.append(" = ");
-    sql.append(TYPE_TRANSFER);
-    sql.append(" order by ");
-    sql.append(getPriorityColumnName());
-    sql.append(", ");
-    sql.append(getOrderColumnName());
+	public void setSamePriority(WaitingList listEntry) {
+		setPriorityLevel(listEntry.getPriorityLevel());
+	}
 
-    return super.idoFindPKsBySQL(sql.toString());
-  }
-
-  public Collection ejbFindByApartmentTypeAndComplex(int aprtId, int complexId) throws FinderException {
-    StringBuffer sql = new StringBuffer("select * from ");
-    sql.append(getTableName());
-    sql.append(" where ");
-    sql.append(getApartmentTypeIdColumnName());
-    sql.append(" = ");
-    sql.append(aprtId);
-    sql.append(" and ");
-    sql.append(getComplexIdColumnName());
-    sql.append(" = ");
-    sql.append(complexId);
-    sql.append(" order by ");
-    sql.append(getPriorityColumnName());
-    sql.append(", ");
-    sql.append(getOrderColumnName());
-
-    return super.idoFindPKsBySQL(sql.toString());
-  }
-  
-	public Collection ejbFindNextForTransferByApartmentTypeAndComplex(int aprtId, int complexId, int orderedFrom) throws FinderException {
+	public Collection ejbFindByApartmentTypeAndComplexForApplicationType(
+			int aprtId, int complexId) throws FinderException {
 		StringBuffer sql = new StringBuffer("select * from ");
 		sql.append(getTableName());
 		sql.append(" where ");
-		sql.append(getApartmentTypeIdColumnName());
+		sql.append(COLUMN_APARTMENT_TYPE);
 		sql.append(" = ");
 		sql.append(aprtId);
 		sql.append(" and ");
-		sql.append(getComplexIdColumnName());
+		sql.append(COLUMN_COMPLEX);
 		sql.append(" = ");
 		sql.append(complexId);
 		sql.append(" and ");
-		sql.append(getPriorityColumnName());
+		sql.append(COLUMN_LIST_TYPE);
+		sql.append(" = ");
+		sql.append(TYPE_APPLICATION);
+		sql.append(" order by ");
+		sql.append(COLUMN_PRIORITY_LEVEL);
+		sql.append(", ");
+		sql.append(COLUMN_ORDER);
+
+		return super.idoFindPKsBySQL(sql.toString());
+	}
+
+	public Collection ejbFindByApartmentTypeAndComplexForTransferType(
+			int aprtId, int complexId) throws FinderException {
+		StringBuffer sql = new StringBuffer("select * from ");
+		sql.append(getTableName());
+		sql.append(" where ");
+		sql.append(COLUMN_APARTMENT_TYPE);
+		sql.append(" = ");
+		sql.append(aprtId);
+		sql.append(" and ");
+		sql.append(COLUMN_COMPLEX);
+		sql.append(" = ");
+		sql.append(complexId);
+		sql.append(" and ");
+		sql.append(COLUMN_LIST_TYPE);
+		sql.append(" = ");
+		sql.append(TYPE_TRANSFER);
+		sql.append(" order by ");
+		sql.append(COLUMN_PRIORITY_LEVEL);
+		sql.append(", ");
+		sql.append(COLUMN_ORDER);
+
+		return super.idoFindPKsBySQL(sql.toString());
+	}
+
+	public Collection ejbFindByApartmentTypeAndComplex(int aprtId, int complexId)
+			throws FinderException {
+		StringBuffer sql = new StringBuffer("select * from ");
+		sql.append(getTableName());
+		sql.append(" where ");
+		sql.append(COLUMN_APARTMENT_TYPE);
+		sql.append(" = ");
+		sql.append(aprtId);
+		sql.append(" and ");
+		sql.append(COLUMN_COMPLEX);
+		sql.append(" = ");
+		sql.append(complexId);
+		sql.append(" order by ");
+		sql.append(COLUMN_PRIORITY_LEVEL);
+		sql.append(", ");
+		sql.append(COLUMN_ORDER);
+
+		return super.idoFindPKsBySQL(sql.toString());
+	}
+
+	public Collection ejbFindNextForTransferByApartmentTypeAndComplex(
+			int aprtId, int complexId, int orderedFrom) throws FinderException {
+		StringBuffer sql = new StringBuffer("select * from ");
+		sql.append(getTableName());
+		sql.append(" where ");
+		sql.append(COLUMN_APARTMENT_TYPE);
+		sql.append(" = ");
+		sql.append(aprtId);
+		sql.append(" and ");
+		sql.append(COLUMN_COMPLEX);
+		sql.append(" = ");
+		sql.append(complexId);
+		sql.append(" and ");
+		sql.append(COLUMN_PRIORITY_LEVEL);
 		sql.append(" = 'C' and ");
-		sql.append(getOrderColumnName());
+		sql.append(COLUMN_ORDER);
 		sql.append(" > ");
 		sql.append(orderedFrom);
 		sql.append(" order by ");
-		sql.append(getOrderColumnName());
+		sql.append(COLUMN_ORDER);
 
 		return super.idoFindPKsBySQL(sql.toString());
-	}  
-	
-	public Collection ejbFindByApplicantID(Integer ID)throws FinderException{
-		String[] orderby = {getPriorityColumnName(),getOrderColumnName()		};
-		return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getApplicantIdColumnName(),ID.intValue()).appendOrderBy(orderby));
 	}
-	
-	public Collection ejbFindBySQL(String sql)throws FinderException{
+
+	public Collection ejbFindByApartmentType(int[] aprtId) throws FinderException {
+		Table laddiJoli = new Table(this);
+		
+		SelectQuery q2 = new SelectQuery(laddiJoli);
+		q2.addColumn(new WildCardColumn(laddiJoli));
+		q2.addCriteria(new InCriteria(laddiJoli, COLUMN_APARTMENT_TYPE, aprtId));
+
+		return idoFindPKsByQuery(q2);
+	}
+
+	public Collection ejbFindByApplicantID(Integer ID) throws FinderException {
+		String[] orderby = { COLUMN_PRIORITY_LEVEL, COLUMN_ORDER };
+		return super.idoFindPKsByQuery(super.idoQueryGetSelect()
+				.appendWhereEquals(COLUMN_APPLICANT, ID.intValue())
+				.appendOrderBy(orderby));
+	}
+
+	public Collection ejbFindBySQL(String sql) throws FinderException {
 		return super.idoFindPKsBySQL(sql);
 	}
-	
-	public int getCountOfRecords(String sql) throws FinderException{
+
+	public int getCountOfRecords(String sql) throws FinderException {
 		try {
 			return super.getIntTableValue(sql);
-		}
-		catch (SQLException e) {
+		} catch (SQLException e) {
 			throw new FinderException(e.getMessage());
 		}
 	}

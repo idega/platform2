@@ -1,20 +1,34 @@
 package com.idega.block.building.data;
 
 
-public interface ApartmentHome extends com.idega.data.IDOHome
-{
- public Apartment create() throws javax.ejb.CreateException;
- public Apartment findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
- public java.util.Collection findAll()throws javax.ejb.FinderException;
- public java.util.Collection findByFloor(java.lang.Integer p0)throws javax.ejb.FinderException;
- public java.util.Collection findByName(java.lang.String p0)throws javax.ejb.FinderException;
- public java.util.Collection findBySQL(java.lang.String p0)throws javax.ejb.FinderException;
- public java.util.Collection findBySearch(java.lang.Integer p0,java.lang.Integer p1,java.lang.Integer p2,java.lang.Integer p3,java.lang.Integer p4,boolean p5)throws javax.ejb.FinderException;
- public java.util.Collection findByType(java.lang.Integer p0)throws javax.ejb.FinderException;
- public java.util.Collection findeByTypeAndComplex(java.lang.Integer p0,java.lang.Integer p1)throws javax.ejb.FinderException;
- public int getRentableCount()throws com.idega.data.IDOException;
- public int getTypeAndComplexCount(java.lang.Integer p0,java.lang.Integer p1)throws com.idega.data.IDOException;
- public java.util.Collection findByFloor(com.idega.block.building.data.Floor p0)throws javax.ejb.FinderException;
+import com.idega.data.IDOException;
+import java.util.Collection;
+import javax.ejb.CreateException;
+import com.idega.data.IDOHome;
+import javax.ejb.FinderException;
 
+public interface ApartmentHome extends IDOHome {
+	public Apartment create() throws CreateException;
 
+	public Apartment findByPrimaryKey(Object pk) throws FinderException;
+
+	public Collection findBySQL(String sql) throws FinderException;
+
+	public Collection findByType(Integer typeID) throws FinderException;
+
+	public Collection findeByTypeAndComplex(Integer typeID, Integer complexID) throws FinderException;
+
+	public Collection findByName(String name) throws FinderException;
+
+	public int getRentableCount() throws IDOException;
+
+	public int getTypeAndComplexCount(Integer typeID, Integer complexID) throws IDOException;
+
+	public Collection findBySearch(Integer complexID, Integer buildingID, Integer floorID, Integer typeID, Integer categoryID, boolean order) throws FinderException;
+
+	public Collection findByFloor(Integer floorID) throws FinderException;
+
+	public Collection findAll() throws FinderException;
+
+	public Collection findByFloor(Floor floor) throws FinderException;
 }

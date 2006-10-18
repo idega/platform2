@@ -574,6 +574,7 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 		Applicant applicant = null;
 		Contract contract = null;
 		Vector wl = null;
+		
 		if (a != null) {
 			try {
 				resultSet = getCampusApplicationHome().findAllByApplicationId(((Integer) a.getPrimaryKey()).intValue());

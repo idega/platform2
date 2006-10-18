@@ -48,6 +48,12 @@ import com.idega.presentation.ui.Window;
 
 public class BuildingEditor extends com.idega.presentation.Block {
 
+	private static final String APARTMENT_SERIAL_NUMBER = "ap_snr";
+	
+	private static final String BUILDING_LOCKED = "bu_locked";
+	
+	private static final String COMPLEX_LOCKED = "cp_locked";
+
 	private static final String FLASH_PAGE = "flash_page";
 
 	protected boolean isAdmin = false;
@@ -303,6 +309,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		String sImageId = iwc.getParameter("mapid");
 		String sId = iwc.getParameter("dr_id");
 		String sPageId = iwc.getParameter(FLASH_PAGE);
+		Boolean locked = Boolean.valueOf(iwc.getParameter(COMPLEX_LOCKED));
 
 		Integer imageid = null;
 		Integer id = null;
@@ -317,7 +324,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 			id = null;
 		}
 
-		service.storeComplex(id, sName, sInfo, imageid, textId, sPageId);
+		service.storeComplex(id, sName, sInfo, imageid, textId, sPageId, locked);
 
 	}
 
@@ -329,6 +336,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		String sComplexId = iwc.getParameter("dr_complex");
 		String sId = iwc.getParameter("dr_id");
 		// String sSerie = iwc.getParameter("bm_serie");
+		Boolean locked = Boolean.valueOf(iwc.getParameter(BUILDING_LOCKED));
 		Integer imageid = null;
 		Integer id = null;
 		Integer complexid = null;
@@ -349,7 +357,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		}
 
 		service.storeBuilding(id, sName, sAddress, sInfo, imageid, complexid,
-				textId);
+				textId, locked);
 	}
 
 	private void storeFloor(IWContext iwc) throws RemoteException {
@@ -483,16 +491,8 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		String sFloorId = iwc.getParameter("bm_floor");
 		String sRentable = iwc.getParameter("bm_rentable");
 		String sImageId = iwc.getParameter("photoid");
+		String apSnr = iwc.getParameter(APARTMENT_SERIAL_NUMBER);
 		Boolean bRentable = sRentable != null ? Boolean.TRUE : Boolean.FALSE;
-
-		System.out.println("sName = " + sName);
-		System.out.println("sInfo = " + sInfo);
-		System.out.println("sId = " + sId);
-		System.out.println("sType = " + sType);
-		System.out.println("sFloorId = " + sFloorId);
-		System.out.println("sRentable = " + sRentable);
-		System.out.println("sImageId = " + sImageId);
-		System.out.println("bRentable = " + bRentable);
 
 		Integer id = null;
 		Integer floorid = null;
@@ -520,7 +520,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		}
 
 		service.storeApartment(id, sName, sInfo, floorid, typeid, bRentable,
-				imageid, textId);
+				imageid, textId, apSnr);
 	}
 
 	public PresentationObject getLinkTable(IWContext iwc) {
@@ -743,6 +743,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		int iMapId = e ? eComplex.getImageId() : 1;
 		int iTextId = e ? eComplex.getTextId() : -1;
 		int iFlashPage = e ? eComplex.getFlashPageID() : -1;
+		boolean locked = e ? eComplex.getLocked() : false;
 
 		Form form = new Form();
 		Table Frame = new Table(2, 1);
@@ -1217,6 +1218,8 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		String sType = e ? String.valueOf(eApartment.getApartmentTypeId()) : "";
 		String sId = e ? String.valueOf(eApartment.getID()) : "";
 		String sSerie = e ? eApartment.getSerie() : "";
+		String serialNumber = e ? eApartment.getSerialNumber() : "";
+		
 		int iTextId = e ? eApartment.getTextId() : -1;
 		boolean bRentable = e ? eApartment.getRentable() : false;
 		Form form = new Form();
@@ -1229,7 +1232,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		Frame.setWidth("100%");
 		Frame.setWidth(1, 1, "100%");
 		Frame.setHeight("100%");
-		Table T = new Table(2, 11);
+		Table T = new Table(2, 12);
 		T.setCellpadding(2);
 		T.setWidth("100%");
 		Table T2 = new Table(1, 2);
@@ -1247,6 +1250,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 
 		TextInput name = new TextInput("bm_name", sName);
 		TextInput serie = new TextInput("bm_serie", sSerie);
+		TextInput serial = new TextInput(APARTMENT_SERIAL_NUMBER, serialNumber);
 
 		DropdownMenu apartments = drpLodgings(service.getApartmentHome()
 				.findAll(), "dr_id", "Apartment", sId);
@@ -1288,19 +1292,23 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		T.add(makeTextInput(iTextId), 2, 2);
 		T.add(formatText("&nbsp;&nbsp;"), 1, 2);
 		T.add(chooser, 1, 2);
-		T.add(formatText(iwrb.getLocalizedString("floor", "Floor")), 1, 4);
-		T.add(floors, 1, 5);
-		T.add(formatText(iwrb.getLocalizedString("type", "Type")), 1, 6);
-		T.add(types, 1, 7);
+
+		T.add(formatText(iwrb.getLocalizedString("serial", "Serial number")), 1, 3);
+		T.add(serial, 1, 4);
+		
+		T.add(formatText(iwrb.getLocalizedString("floor", "Floor")), 1, 5);
+		T.add(floors, 1, 6);
+		T.add(formatText(iwrb.getLocalizedString("type", "Type")), 1, 7);
+		T.add(types, 1, 8);
 		// T.add(formatText(iwrb.getLocalizedString("serie","Serie")+" "),1,8);
 		// T.add(serie,1,4);
 		T.add(
 				formatText(iwrb.getLocalizedString("rentable", "Rentable")
-						+ " "), 1, 8);
-		T.add(rentable, 1, 9);
-		T.add(formatText(iwrb.getLocalizedString("info", "Info")), 1, 10);
-		T.add(makeTextArea(sInfo), 1, 11);
-		T.mergeCells(1, 11, 2, 11);
+						+ " "), 1, 9);
+		T.add(rentable, 1, 10);
+		T.add(formatText(iwrb.getLocalizedString("info", "Info")), 1, 11);
+		T.add(makeTextArea(sInfo), 1, 12);
+		T.mergeCells(1, 12, 2, 12);
 		T2.add(formatText(iwrb.getLocalizedString("photo", "Photo:")), 1, 1);
 		T2.add(this.makeImageInput(1, "photoid"), 1, 1);
 		form.add(HI);

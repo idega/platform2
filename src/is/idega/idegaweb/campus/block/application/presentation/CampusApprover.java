@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.65.4.1 2005/11/29 16:55:17 palli Exp $
+ * $Id: CampusApprover.java,v 1.65.4.2 2006/10/18 13:54:05 palli Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -90,7 +90,7 @@ public class CampusApprover extends CampusBlock {
 
 	private static final String ACT_TRASH_APPLICATION = "cam_app_trash";
 
-	private int iSubjectId = -1, iGlobalSize = 50, applicationIndex = 0;
+	private int iSubjectId = -1, iGlobalSize = -1, applicationIndex = 0;
 
 	private String sGlobalStatus = "S", sGlobalOrder = null;
 
@@ -152,6 +152,7 @@ public class CampusApprover extends CampusBlock {
 					bEdit = true;
 				}
 				if (iwc.isParameterSet(ACT_SAVE)) {
+					this.setValuesForPreviousAndNextApplication(iwc);
 					if (bEdit)
 						updateWholeApplication(iwc);
 					if (iwc.isParameterSet(PRM_PRIORITY)) {
@@ -271,8 +272,9 @@ public class CampusApprover extends CampusBlock {
 		applicationService.storePriorityLevel(applicationID, level);
 	}
 
-	private void trashApplication(int id) {
+	private void trashApplication(int id) throws RemoteException {
 		// int id = Integer.parseInt(iwc.getParameter("application_id"));
+		applicationService.storeApplicationStatus(new Integer(id), Status.GARBAGE.toString());
 	}
 
 	private void updateWholeApplication(IWContext iwc) {
@@ -495,8 +497,7 @@ public class CampusApprover extends CampusBlock {
 					Middle.add(getViewApartmentExtra(eCampusApplication, iwc), 1, 3);
 					Middle.add(getOtherInfo(eCampusApplication, iwc, false), 1, 3);
 					Table Right = new Table(1, 3);
-					// Right.add(getRemoteControl(iwrb),1,1);
-					Right.add(getSubjectControl(eApplication), 1, 1);
+					Right.add(getSubject(eApplication), 1, 1);
 					Right.add(getKnobs(), 1, 2);
 					Right.add(getButtons(eApplication, eApplication.getStatus(), eCampusApplication.getPriorityLevel(),
 							bEdit), 1, 3);
@@ -716,8 +717,7 @@ public class CampusApprover extends CampusBlock {
 			Middle.add(getFieldsApartmentExtra(eCampusApplication, iwc), 1, 3);
 			Middle.add(getOtherInfo(eCampusApplication, iwc, true), 1, 4);
 			Table Right = new Table(1, 3);
-			// Right.add(getRemoteControl(iwrb),1,1);
-			Right.add(getSubjectControl(eApplication), 1, 1);
+			Right.add(getSubject(eApplication), 1, 1);
 			Right.add(getKnobs(), 1, 2);
 			String status = eApplication != null ? eApplication.getStatus() : "";
 			String pStatus = eCampusApplication != null ? eCampusApplication.getPriorityLevel() : "";
@@ -750,6 +750,7 @@ public class CampusApprover extends CampusBlock {
 		T.add(getHeader(localize("phone", "Residence phone")), col, row++);
 		T.add(getHeader(localize("mobile_phone", "Mobile phone")), col, row++);
 		T.add(getHeader(localize("email", "Email")), col, row++);
+		T.add(getHeader(localize("school", "School")), col, row++);
 		T.add(getHeader(localize("faculty", "Faculty")), col, row++);
 		T.add(getHeader(localize("studytrack", "Study Track")), col, row++);
 		T.add(getHeader(localize("study_begins", "Study begins")), col, row++);
@@ -780,9 +781,18 @@ public class CampusApprover extends CampusBlock {
 			noEmailText.setBold();
 			T.add(noEmailText, col, row++);
 		}
+		if (eCampusApplication.getSchool() != null) {
+			T.add(getText(eCampusApplication.getSchool().getName()), col, row++);			
+		} else {
+			row++;
+		}
+		
 		if (eCampusApplication.getFaculty() != null) {
 			T.add(getText(eCampusApplication.getFaculty()), col, row++);
+		} else {
+			row++;
 		}
+			
 		T.add(getText(eCampusApplication.getStudyTrack()), col, row++);
 		String beginMonth = (eCampusApplication.getStudyBeginMonth().toString());
 		String endMonth = (eCampusApplication.getStudyEndMonth().toString());
@@ -808,6 +818,7 @@ public class CampusApprover extends CampusBlock {
 		T.add(getHeader(localize("phone", "Residence phone")), col, row++);
 		T.add(getHeader(localize("mobile_phone", "Mobile phone")), col, row++);
 		T.add(getHeader(localize("email", "Email")), col, row++);
+		T.add(getHeader(localize("school", "School")), col, row++);
 		T.add(getHeader(localize("faculty", "Faculty")), col, row++);
 		T.add(getHeader(localize("studytrack", "Study Track")), col, row++);
 		T.add(getHeader(localize("study_begins", "Study begins")), col, row++);
@@ -872,6 +883,11 @@ public class CampusApprover extends CampusBlock {
 		T.add(tiResPho, col, row++);
 		T.add(tiMobPho, col, row++);
 		T.add(tiEmail, col, row++);
+		if (eCampusApplication.getSchool() != null) {
+			T.add(getText(eCampusApplication.getSchool().getName()), col, row++);			
+		} else {
+			row++;
+		}		
 		T.add(tiFac, col, row++);
 		T.add(tiTrack, col, row++);
 		DropdownMenu drBM = intDrop("dr_bm", beginMonth, 1, 12);
@@ -1303,7 +1319,7 @@ public class CampusApprover extends CampusBlock {
 		return T;
 	}
 
-	private PresentationObject getRemoteControl() {
+/*	private PresentationObject getRemoteControl() {
 		DataTable T = getDataTable();
 		T.setWidth(Table.HUNDRED_PERCENT);
 		T.addTitle(localize("extra", "Extra"));
@@ -1329,7 +1345,7 @@ public class CampusApprover extends CampusBlock {
 		T.add(choice2, col, row++);
 		T.add(choice3, col, row++);
 		return T;
-	}
+	}*/
 
 	private PresentationObject getSubjectControl(Application app) {
 		DataTable T = getDataTable();
@@ -1347,6 +1363,20 @@ public class CampusApprover extends CampusBlock {
 		drp.setName(APP_SUBJECT_ID);
 		T.add(drp, col, row);
 		return T;
+	}
+
+	private PresentationObject getSubject(Application app) {
+		DataTable subjectTable = getDataTable();
+		subjectTable.setWidth(Table.HUNDRED_PERCENT);
+		subjectTable.addTitle(localize("subject", "Subject"));
+		int col = 1;
+		int row = 1;
+		subjectTable.add(getHeader(localize("current_subject", "Current Subject")), col, row++);
+		col++;
+		row = 1;
+		subjectTable.add(new Text(app.getSubject().getName()), col, row);
+
+		return subjectTable;
 	}
 
 	private PresentationObject getButtons(Application eApplication, String sStatus, String sPriority, boolean bEdit)

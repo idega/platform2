@@ -46,7 +46,7 @@ public class BuildingServiceBean extends IBOServiceBean implements
 		BuildingService {
 
 	public Complex storeComplex(Integer complexID, String name, String info,
-			Integer imageID, Integer textID, String flashPageID) {
+			Integer imageID, Integer textID, String flashPageID, Boolean locked) {
 
 		try {
 			Complex complex = null;
@@ -64,6 +64,8 @@ public class BuildingServiceBean extends IBOServiceBean implements
 			if (flashPageID != null && !"".equals(flashPageID)) {
 				complex.setFlashPageID(Integer.valueOf(flashPageID).intValue());
 			}
+			
+			complex.setLocked(locked.booleanValue());
 			complex.store();
 		} catch (IDOStoreException e) {
 			e.printStackTrace();
@@ -82,7 +84,7 @@ public class BuildingServiceBean extends IBOServiceBean implements
 
 	public Building storeBuilding(Integer buildingID, String name,
 			String address, String info, Integer imageID, Integer complexID,
-			Integer textID) {
+			Integer textID, Boolean locked) {
 		try {
 			Building building = null;
 
@@ -102,6 +104,9 @@ public class BuildingServiceBean extends IBOServiceBean implements
 			if (textID != null && textID.intValue() > 0)
 				building.setTextId(textID.intValue());
 			building.store();
+			
+			building.setLocked(locked.booleanValue());
+			
 			return building;
 		} catch (IDOStoreException e) {
 			e.printStackTrace();
@@ -231,7 +236,7 @@ public class BuildingServiceBean extends IBOServiceBean implements
 
 	public Apartment storeApartment(Integer apartmentID, String name,
 			String info, Integer floorID, Integer typeID, Boolean rentable,
-			Integer imageID, Integer textID) {
+			Integer imageID, Integer textID, String apartmentSerialNumber) {
 
 		try {
 			Apartment apartment = null;
@@ -251,6 +256,8 @@ public class BuildingServiceBean extends IBOServiceBean implements
 			if (textID != null && textID.intValue() > 0)
 				apartment.setTextId(textID.intValue());
 
+			apartment.setSerialNumber(apartmentSerialNumber);
+			
 			apartment.store();
 			return apartment;
 		} catch (IDOStoreException e) {

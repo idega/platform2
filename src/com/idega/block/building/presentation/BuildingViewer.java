@@ -255,6 +255,9 @@ public class BuildingViewer extends Block {
 
 			String typeName = formatText(type.getName() + " " + type.getArea() + "m2");
 			String typeText = type.getInfo();
+			if (typeText == null) {
+				typeText = "";
+			}
 			// String typeText = types[a].getExtraInfo();
 			typeText = TextSoap.findAndReplace(typeText, "\n", "<br>");
 

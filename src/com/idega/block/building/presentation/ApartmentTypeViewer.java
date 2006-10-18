@@ -171,9 +171,11 @@ public class ApartmentTypeViewer extends Block {
 			roomTable.add(floorPlan, 1, 1);
 
 			String roomText = room.getInfo();
-			if (roomText != null) {
-				roomText = TextSoap.findAndReplace(roomText, "\n", "<br>");
+			if (roomText == null) {
+				roomText = "";
 			}
+			
+			roomText = TextSoap.findAndReplace(roomText, "\n", "<br>");
 			if (roomText.length() == 0) {
 				roomText = iwrb_.getLocalizedString("no_information",
 						"No information available");

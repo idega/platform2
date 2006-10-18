@@ -33,77 +33,85 @@ import com.idega.presentation.ui.RadioButton;
 
 /**
  * CampusAccountTariffer
- * @author aron 
+ * 
+ * @author aron
  * @version 1.0
  */
 public class CampusAccountTariffer extends AccountTariffer {
+	private static final String EXTERNAL_ID_PARAMETER = "ca_aprt_id";
 	
-	
-	
-	/* (non-Javadoc)
-	 * @see com.idega.block.finance.presentation.AccountTariffer#getAssessmentService()
-	 */
-	protected AssessmentBusiness getAssessmentService(IWApplicationContext iwac) throws RemoteException {
-		return (CampusAssessmentBusiness) IBOLookup.getServiceInstance(iwac,CampusAssessmentBusiness.class);
+	private static final String LOC_APARTMENT_KEY = "apartment";
+
+	private static final String LOC_APARTMENT_VALUE = "Apartment";
+
+	protected AssessmentBusiness getAssessmentService(IWApplicationContext iwac)
+			throws RemoteException {
+		return (CampusAssessmentBusiness) IBOLookup.getServiceInstance(iwac,
+				CampusAssessmentBusiness.class);
 	}
-	/* (non-Javadoc)
-	 * @see com.idega.block.finance.presentation.AccountTariffer#getExternalIDParameter()
-	 */
+
 	protected String getExternalIDParameter() {
-		return "ca_aprt_id";
+		return CampusAccountTariffer.EXTERNAL_ID_PARAMETER;
 	}
-	/* (non-Javadoc)
-	 * @see com.idega.block.finance.presentation.AccountTariffer#getExternalInfo(com.idega.presentation.IWContext)
-	 */
+
 	protected PresentationObject getExternalInfo(IWContext iwc) {
 		DataTable T = getDataTable();
 		T.setUseBottom(false);
 		T.setWidth(Table.HUNDRED_PERCENT);
 		T.setTitlesVertical(false);
-		if(getAccountId()!=null){
-		try {
-			int row = 1;
-			T.add(getHeader(localize("apartment","Apartment")),1,row);
-			T.add(getHeader(localize("contract_period","Contract period")),2,row);
-			row++;
-			Collection caas =getContractAccountApartmentHome().findByAccount(getAccountId());
-			for (Iterator iter = caas.iterator(); iter.hasNext();) {
-				ContractAccountApartment caa = (ContractAccountApartment) iter.next();
-				
-				Apartment apartment = getApartmentHome().findByPrimaryKey(new Integer(caa.getApartmentId()));
-				Building building = getBuildingHome().findByPrimaryKey(new Integer(caa.getBuildingId()));
-				T.add(getText(apartment.getName()+" ,"+building.getName()),1,row);
-				
-				DateFormat df = getShortDateFormat(iwc.getCurrentLocale());
-				T.add(getText(df.format(caa.getValidFrom())+" - "+df.format(caa.getValidTo())),2,row);
-				RadioButton rb = new RadioButton(getExternalIDParameter(),String.valueOf(caa.getApartmentId()));
-				rb.setSelected(caa.getIsRented());
-				T.add(rb,3,row++);
+		if (getAccountId() != null) {
+			try {
+				int row = 1;
+				T.add(getHeader(localize(LOC_APARTMENT_KEY, LOC_APARTMENT_VALUE)), 1, row);
+				T
+						.add(getHeader(localize("contract_period",
+								"Contract period")), 2, row);
+				row++;
+				Collection caas = getContractAccountApartmentHome()
+						.findByAccount(getAccountId());
+				for (Iterator iter = caas.iterator(); iter.hasNext();) {
+					ContractAccountApartment caa = (ContractAccountApartment) iter
+							.next();
+
+					Apartment apartment = getApartmentHome().findByPrimaryKey(
+							new Integer(caa.getApartmentId()));
+					Building building = getBuildingHome().findByPrimaryKey(
+							new Integer(caa.getBuildingId()));
+					T.add(getText(apartment.getName() + " ,"
+							+ building.getName()), 1, row);
+
+					DateFormat df = getShortDateFormat(iwc.getCurrentLocale());
+					T.add(getText(df.format(caa.getValidFrom()) + " - "
+							+ df.format(caa.getValidTo())), 2, row);
+					RadioButton rb = new RadioButton(getExternalIDParameter(),
+							String.valueOf(caa.getApartmentId()));
+					rb.setSelected(caa.getIsRented());
+					T.add(rb, 3, row++);
+				}
+
+			} catch (IDOLookupException e) {
+				e.printStackTrace();
+			} catch (FinderException e) {
+				e.printStackTrace();
+			} catch (RemoteException e) {
+				e.printStackTrace();
 			}
-			
-		} catch (IDOLookupException e) {
-			e.printStackTrace();
-		} catch (FinderException e) {
-			e.printStackTrace();
-		} catch (RemoteException e) {
-		e.printStackTrace();
-		}
 		}
 
-		
-		
 		return T;
 	}
-	
-	public ApartmentHome getApartmentHome()throws RemoteException{
-		return (ApartmentHome)IDOLookup.getHome(Apartment.class);
+
+	public ApartmentHome getApartmentHome() throws RemoteException {
+		return (ApartmentHome) IDOLookup.getHome(Apartment.class);
 	}
-	
-	public ContractAccountApartmentHome getContractAccountApartmentHome()throws RemoteException{
-		return (ContractAccountApartmentHome)IDOLookup.getHome(ContractAccountApartment.class);
+
+	public ContractAccountApartmentHome getContractAccountApartmentHome()
+			throws RemoteException {
+		return (ContractAccountApartmentHome) IDOLookup
+				.getHome(ContractAccountApartment.class);
 	}
-	
-	public BuildingHome getBuildingHome()throws RemoteException{
-		return (BuildingHome)IDOLookup.getHome(Building.class);
+
+	public BuildingHome getBuildingHome() throws RemoteException {
+		return (BuildingHome) IDOLookup.getHome(Building.class);
 	}
 }

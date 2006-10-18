@@ -1,52 +1,202 @@
+/**
+ * 
+ */
 package is.idega.idegaweb.campus.block.application.data;
-
 
 import java.sql.Timestamp;
 
+import javax.ejb.FinderException;
 
-public interface WaitingList extends com.idega.data.IDOLegacyEntity
+import com.idega.data.IDOEntity;
 
-{
- public java.lang.Integer getApartmentTypeId();
- public java.lang.Integer getApplicantId();
- public java.lang.Integer getChoiceNumber();
- public java.lang.Integer getComplexId();
- public int getCountOfRecords(java.lang.String p0)throws javax.ejb.FinderException;
- public java.sql.Timestamp getLastConfirmationDate();
- public int getNumberOfRejections();
- public java.lang.Integer getOrder();
- public java.lang.String getPriorityLevel();
- public boolean getRemovedFromList();
- public java.lang.String getType();
- public void initializeAttributes();
- public void setApartmentTypeId(int p0);
- public void setApartmentTypeId(java.lang.Integer p0);
- public void setApplicantId(int p0);
- public void setApplicantId(java.lang.Integer p0);
- public void setChoiceNumber(int p0);
- public void setChoiceNumber(java.lang.Integer p0);
- public void setComplexId(int p0);
- public void setLastConfirmationDate(java.sql.Timestamp p0);
- public void setNumberOfRejections(int p0);
- public void setNumberOfRejections(java.lang.Integer p0);
- public void setOrder(int p0);
- public void setOrder(java.lang.Integer p0);
- public void setPriorityLevelA();
- public void setPriorityLevelB();
- public void setPriorityLevelC();
- public void setPriorityLevelD();
- public void setPriorityLevelE();
- public void setRemovedFromList(java.lang.String p0);
- public void setTypeApplication();
- public void setTypeTransfer();
+/**
+ * @author bluebottle
+ *
+ */
+public interface WaitingList extends IDOEntity {
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setComplexId
+	 */
+	public void setComplexId(int id);
 
- 
- public void setRejectFlag(boolean flag);
- public boolean getRejectFlag();
- public void incrementRejections(boolean flagAsRejected);
- public void setAcceptedDate(Timestamp stamp);
- public Timestamp getAcceptedDate();
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#getComplexId
+	 */
+	public Integer getComplexId();
 
- public void setSamePriority(WaitingList listEntry);
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setApartmentTypeId
+	 */
+	public void setApartmentTypeId(int id);
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setApartmentTypeId
+	 */
+	public void setApartmentTypeId(Integer id);
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#getApartmentTypeId
+	 */
+	public Integer getApartmentTypeId();
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setApplicantId
+	 */
+	public void setApplicantId(int id);
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setApplicantId
+	 */
+	public void setApplicantId(Integer id);
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#getApplicantId
+	 */
+	public Integer getApplicantId();
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setTypeApplication
+	 */
+	public void setTypeApplication();
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setTypeTransfer
+	 */
+	public void setTypeTransfer();
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#getType
+	 */
+	public String getType();
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setOrder
+	 */
+	public void setOrder(int order);
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setOrder
+	 */
+	public void setOrder(Integer order);
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#getOrder
+	 */
+	public Integer getOrder();
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setLastConfirmationDate
+	 */
+	public void setLastConfirmationDate(Timestamp date);
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#getLastConfirmationDate
+	 */
+	public Timestamp getLastConfirmationDate();
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setAcceptedDate
+	 */
+	public void setAcceptedDate(Timestamp date);
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#getAcceptedDate
+	 */
+	public Timestamp getAcceptedDate();
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setNumberOfRejections
+	 */
+	public void setNumberOfRejections(int count);
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setNumberOfRejections
+	 */
+	public void setNumberOfRejections(Integer count);
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#incrementRejections
+	 */
+	public void incrementRejections(boolean flagAsRejected);
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#getNumberOfRejections
+	 */
+	public int getNumberOfRejections();
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#getRejectFlag
+	 */
+	public boolean getRejectFlag();
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setRejectFlag
+	 */
+	public void setRejectFlag(boolean flag);
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setChoiceNumber
+	 */
+	public void setChoiceNumber(int choice);
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setChoiceNumber
+	 */
+	public void setChoiceNumber(Integer choice);
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#getChoiceNumber
+	 */
+	public Integer getChoiceNumber();
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#getRemovedFromList
+	 */
+	public boolean getRemovedFromList();
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setRemovedFromList
+	 */
+	public void setRemovedFromList(String removed);
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#getPriorityLevel
+	 */
+	public String getPriorityLevel();
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setPriorityLevelA
+	 */
+	public void setPriorityLevelA();
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setPriorityLevelB
+	 */
+	public void setPriorityLevelB();
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setPriorityLevelC
+	 */
+	public void setPriorityLevelC();
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setPriorityLevelD
+	 */
+	public void setPriorityLevelD();
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setPriorityLevelE
+	 */
+	public void setPriorityLevelE();
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setSamePriority
+	 */
+	public void setSamePriority(WaitingList listEntry);
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#getCountOfRecords
+	 */
+	public int getCountOfRecords(String sql) throws FinderException;
 
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationSubjectInfoBMPBean.java,v 1.4 2004/06/09 17:07:36 aron Exp $
+ * $Id: ApplicationSubjectInfoBMPBean.java,v 1.4.4.1 2006/10/18 13:54:05 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -39,14 +39,14 @@ CREATE VIEW V_APP_SUBJECT_INFO(
     SUBJECT_ID,
     NAME,
     STATUS,
-    NUMBER,
+    NUMBER_,
     LAST_SUBMISSION,
     FIRST_SUBMISSION,
     LAST_CHANGE,
     FIRST_CHANGE)
 AS
 select app1.app_subject_id subject_id, sub.description name, app1.status,
-count(app1.status) number,
+count(app1.status) number_,
 max(app1.submitted) last_submission,
 min(app1.submitted) first_submission,
 max(app1.status_changed )last_change,
@@ -61,7 +61,7 @@ group by app1.app_subject_id, sub.description,app1.status;
   public static String SUBJECTID = "SUBJECT_ID";
   public static String NAME =  "NAME";
   public static String STATUS =  "STATUS";
-  public static String NUMBER =   "NUMBER";
+  public static String NUMBER =   "NUMBER_";
   public static String LASTSUBMISSION = "LAST_SUBMISSION";
   public static String FIRSTSUBMISSION =  "FIRST_SUBMISSION";
   public static String LASTCHANGE =  "LAST_CHANGE";
@@ -163,7 +163,7 @@ group by app1.app_subject_id, sub.description,app1.status;
 		sql.append(FIRSTCHANGE).append(" ) ");
 		sql.append(" AS ");
 		sql.append(" select app1.app_subject_id subject_id, sub.description name, app1.status, ");
-		sql.append(" count(app1.status) number, ");
+		sql.append(" count(app1.status) number_, ");
 		sql.append(" max(app1.submitted) last_submission, ");
 		sql.append(" min(app1.submitted) first_submission, ");
 		sql.append(" max(app1.status_changed ) last_change, ");

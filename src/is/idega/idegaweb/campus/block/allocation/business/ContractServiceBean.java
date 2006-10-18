@@ -1,5 +1,5 @@
 /*
- * $Id: ContractServiceBean.java,v 1.24.4.2 2005/12/05 17:12:08 palli Exp $
+ * $Id: ContractServiceBean.java,v 1.24.4.3 2006/10/18 13:54:05 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -1059,6 +1059,10 @@ public class ContractServiceBean extends IBOServiceBean implements
 		return getApplicantContractsByStatus(ContractBMPBean.STATUS_CREATED);
 	}
 
+	public Map getPrintedContracts() throws RemoteException, FinderException {
+		return getApplicantContractsByStatus(ContractBMPBean.STATUS_PRINTED);
+	}
+	
 	public CampusUserService getUserService() throws RemoteException {
 		return (CampusUserService) getServiceInstance(CampusUserService.class);
 	}

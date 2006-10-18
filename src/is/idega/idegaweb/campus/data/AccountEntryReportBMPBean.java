@@ -13,6 +13,7 @@ import javax.ejb.EJBHome;
 import javax.ejb.EJBLocalHome;
 import javax.ejb.EntityContext;
 
+import com.idega.util.IWTimestamp;
 import com.idega.util.database.ConnectionBroker;
 
 /**
@@ -216,12 +217,14 @@ public class AccountEntryReportBMPBean implements AccountEntryReport{
     }
     if(from!=null){
       sql.append(" and e.payment_date >= '");
-      sql.append(from.toString());
+      IWTimestamp stamp = new IWTimestamp(from);
+      sql.append(stamp.getDateString("yyyy-MM-dd"));
       sql.append("'");
     }
     if(to!=null){
       sql.append(" and e.payment_date <= '");
-      sql.append(to.toString());
+      IWTimestamp stamp = new IWTimestamp(to);
+      sql.append(stamp.getDateString("yyyy-MM-dd"));
       sql.append("'");
     }
 

@@ -137,7 +137,7 @@ public class AprtTypeRentSetter extends CampusBlock {
 
 						if (theRent.getValidTo() != null)
 
-							T.add(getHeader(df.format(theRent.getValidFrom())), 3, row);
+							T.add(getHeader(df.format(theRent.getValidTo())), 3, row);
 
 						rb = new RadioButton(prmATRid, theRent.getPrimaryKey().toString());
 						if(theRent.getPrimaryKey().toString().equals(ATRid))

@@ -1,5 +1,5 @@
 /*
- * $Id: ApartmentCategoryBMPBean.java,v 1.8 2004/06/14 15:54:10 aron Exp $
+ * $Id: ApartmentCategoryBMPBean.java,v 1.8.2.1 2006/10/18 13:53:58 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -95,7 +95,7 @@ public class ApartmentCategoryBMPBean
 		catch (IDORelationshipException e) {
 			throw new FinderException(e.getMessage());
 		}
-		query.addCriteria(new MatchCriteria(new Column(building,BuildingBMPBean.BU_COMPLEX_ID),MatchCriteria.EQUALS,complexID.intValue() ));
+		query.addCriteria(new MatchCriteria(new Column(building,BuildingBMPBean.COLUMN_COMPLEX),MatchCriteria.EQUALS,complexID.intValue() ));
 		query.addOrder(category,this.getIDColumnName(),true);
 		return idoFindPKsBySQL(query.toString());
 	}

@@ -45,8 +45,8 @@ import com.idega.user.business.UserBusiness;
  */
 public abstract class CampusBlock extends Block {
 	
-	private IWResourceBundle iwrb = null;
-	private IWBundle iwb = null;
+	protected IWResourceBundle iwrb = null;
+	protected IWBundle iwb = null;
 	
 	private String _width = "600";
 	

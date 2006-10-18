@@ -284,7 +284,11 @@ public class ReportWriter implements MediaWritable {
 			PdfWriter writer = PdfWriter.getInstance(document, mos);
 			document.addTitle(report.getName());
 			document.addAuthor("Idega Reports");
-			document.addSubject(report.getInfo());
+			if (report.getInfo() != null) {
+				document.addSubject(report.getInfo());
+			} else {
+				document.addSubject("");
+			}
 			document.open();
 			Conn = com.idega.util.database.ConnectionBroker.getConnection();
 			stmt = Conn.createStatement();

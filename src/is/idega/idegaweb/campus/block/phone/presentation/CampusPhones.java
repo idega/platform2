@@ -40,333 +40,363 @@ import com.idega.presentation.ui.TextInput;
 import com.idega.util.IWTimestamp;
 
 /**
- * Title:
- * Description:
- * Copyright:    Copyright (c) 2000-2001 idega.is All Rights Reserved
- * Company:      idega
-  *@author <a href="mailto:aron@idega.is">Aron Birkir</a>
+ * Title: Description: Copyright: Copyright (c) 2000-2001 idega.is All Rights
+ * Reserved Company: idega
+ * 
+ * @author <a href="mailto:aron@idega.is">Aron Birkir</a>
  * @version 1.1
  */
 
-public class CampusPhones extends CampusBlock implements IWPageEventListener{
+public class CampusPhones extends CampusBlock implements IWPageEventListener {
 
-  protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
- 
-  private String  sCLBU="-1",sCLFL="-1",sCLCX="-1",sCLTP="-1",sCLCT="-1",sORDER = "-1";
-  private final String prmCx = "cl_clx",prmBu = "cl_bu",prmFl = "cl_fl",prmCt="cl_ct",prmTp="cl_tp",prmOrder="ct_or";
-  private final String sessCx = "s_clx",sessBu = "s_bu",sessFl = "s_fl",sessCt="s_ct",sessTp="s_tp",sessOrder="s_or";
-  private String[] prmArray = { prmCx ,prmBu ,prmFl,prmCt,prmTp,prmOrder};
-  private String[] sessArray = {sessCx ,sessBu ,sessFl,sessCt,sessTp,sessOrder};
-  private Integer[] iValues = {Integer.valueOf(sCLBU),Integer.valueOf(sCLFL),Integer.valueOf(sCLCX),Integer.valueOf(sCLCT),Integer.valueOf(sCLTP),Integer.valueOf(sORDER)};
-  protected boolean isAdmin = false;
-  private boolean fetch = false;
+	protected final int ACT1 = 1, ACT2 = 2, ACT3 = 3, ACT4 = 4, ACT5 = 5;
 
+	private String sCLBU = "-1", sCLFL = "-1", sCLCX = "-1", sCLTP = "-1",
+			sCLCT = "-1", sORDER = "-1";
 
-  public CampusPhones() {
-    super();
-  }
+	private final String prmCx = "cl_clx", prmBu = "cl_bu", prmFl = "cl_fl",
+			prmCt = "cl_ct", prmTp = "cl_tp", prmOrder = "ct_or";
 
-  public String getLocalizedNameKey(){
-    return "campus_phones";
-  }
+	private final String sessCx = "s_clx2", sessBu = "s_bu2", sessFl = "s_fl2",
+			sessCt = "s_ct2", sessTp = "s_tp2", sessOrder = "s_or2";
 
-  public String getLocalizedNameValue(){
-    return "Phones";
-  }
+	private String[] prmArray = { prmCx, prmBu, prmFl, prmCt, prmTp, prmOrder };
 
-  protected void control(IWContext iwc){
+	private String[] sessArray = { sessCx, sessBu, sessFl, sessCt, sessTp,
+			sessOrder };
 
-    fetch = false;
-    for (int i = 0; i < prmArray.length; i++) {
-      if(iwc.getParameter(prmArray[i])!=null){
-        iValues[i] = Integer.valueOf((iwc.getParameter(prmArray[i])));
-        iwc.setSessionAttribute(sessArray[i],iValues[i]);
-        fetch = true;
-      }
-      else if(iwc.getSessionAttribute(sessArray[i])!=null){
-        iValues[i] = ((Integer)iwc.getSessionAttribute(sessArray[i]));
-        fetch = true;
-      }
-    }
+	private Integer[] iValues = { Integer.valueOf(sCLBU),
+			Integer.valueOf(sCLFL), Integer.valueOf(sCLCX),
+			Integer.valueOf(sCLCT), Integer.valueOf(sCLTP),
+			Integer.valueOf(sORDER) };
 
-    if(isAdmin){
-        try {
-			add(statusForm());
+	protected boolean isAdmin = false;
+
+	private boolean fetch = false;
+
+	public CampusPhones() {
+		super();
+	}
+
+	public String getLocalizedNameKey() {
+		return "campus_phones";
+	}
+
+	public String getLocalizedNameValue() {
+		return "Phones";
+	}
+
+	protected void control(IWContext iwc) {
+
+		fetch = false;
+		for (int i = 0; i < prmArray.length; i++) {
+			if (iwc.getParameter(prmArray[i]) != null) {
+				iValues[i] = Integer.valueOf((iwc.getParameter(prmArray[i])));
+				iwc.setSessionAttribute(sessArray[i], iValues[i]);
+				fetch = true;
+			} else if (iwc.getSessionAttribute(sessArray[i]) != null) {
+				iValues[i] = ((Integer) iwc.getSessionAttribute(sessArray[i]));
+				fetch = true;
+			}
 		}
-		catch (RemoteException e) {
-			e.printStackTrace();
-		}
-		catch (FinderException e) {
-			e.printStackTrace();
-		}
-        if(fetch)
+
+		if (isAdmin) {
 			try {
-				add(getPhoneTable(iwc));
+				add(statusForm());
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			} catch (FinderException e) {
+				e.printStackTrace();
 			}
-			catch (RemoteException e1) {
-				e1.printStackTrace();
+			if (fetch)
+				try {
+					add(getPhoneTable(iwc));
+				} catch (RemoteException e1) {
+					e1.printStackTrace();
+				} catch (FinderException e1) {
+					e1.printStackTrace();
+				}
+		} else
+			add(getNoAccessObject(iwc));
+		// add(String.valueOf(iSubjectId));
+	}
+
+	public PresentationObject makeLinkTable(int menuNr) {
+		Table LinkTable = new Table(6, 1);
+
+		return LinkTable;
+	}
+
+	private Form statusForm() throws RemoteException, FinderException {
+		Form myForm = new Form();
+
+		DropdownMenu complex = drpLodgings(((ComplexHome) IDOLookup
+				.getHome(Complex.class)).findAll(), prmCx, "--", this.sCLCX
+				.toString());
+		DropdownMenu building = drpLodgings(((BuildingHome) IDOLookup
+				.getHome(Building.class)).findAll(), prmBu, "--", this.sCLBU
+				.toString());
+		DropdownMenu floor = drpFloors(prmFl, "--", this.sCLFL.toString(), true);
+		DropdownMenu cat = drpLodgings(((ApartmentCategoryHome) IDOLookup
+				.getHome(ApartmentCategory.class)).findAll(), prmCt, "--",
+				this.sCLCT.toString());
+		DropdownMenu type = drpLodgings(((ApartmentTypeHome) IDOLookup
+				.getHome(ApartmentType.class)).findAll(), prmTp, "--",
+				this.sCLTP.toString());
+		DropdownMenu order = orderDrop(prmOrder, "--", this.sORDER.toString());
+
+		// Edit.setStyle(status);
+
+		Table T = new Table();
+		T.add(getHeader(localize("complex", "Complex")), 1, 1);
+		T.add(getHeader(localize("building", "Building")), 2, 1);
+		T.add(getHeader(localize("floor", "Floor")), 3, 1);
+		T.add(getHeader(localize("category", "Category")), 4, 1);
+		T.add(getHeader(localize("type", "Type")), 5, 1);
+		// T.add(getHeader(localize("order","Order")),2,1);
+		// T.add(status,1,2);
+		T.add(complex, 1, 2);
+		T.add(building, 2, 2);
+		T.add(floor, 3, 2);
+		T.add(cat, 4, 2);
+		T.add(type, 5, 2);
+		// T.add(order,2,2);
+		SubmitButton get = (SubmitButton) getSubmitButton("conget", null,
+				"Get", "get");
+
+		T.add(get, 1, 3);
+		T.setCellpadding(1);
+		T.setCellspacing(0);
+
+		myForm.add(T);
+		return myForm;
+	}
+
+	private DropdownMenu drpLodgings(Collection buildingEntities, String name,
+			String display, String selected) {
+
+		DropdownMenu drp = new DropdownMenu(name);
+		if (!"".equals(display))
+			drp.addDisabledMenuElement("-1", display);
+		if (buildingEntities != null) {
+			for (Iterator iter = buildingEntities.iterator(); iter.hasNext();) {
+				BuildingEntity element = (BuildingEntity) iter.next();
+
+				drp.addMenuElement(element.getPrimaryKey().toString(), element
+						.getName());
 			}
-			catch (FinderException e1) {
-				e1.printStackTrace();
+			if (!"".equalsIgnoreCase(selected)) {
+				drp.setSelectedElement(selected);
 			}
-    }
-    else
-      add(getNoAccessObject(iwc));
-    //add(String.valueOf(iSubjectId));
-  }
+		}
 
-  public PresentationObject makeLinkTable(int menuNr){
-    Table LinkTable = new Table(6,1);
+		return drp;
+	}
 
-    return LinkTable;
-  }
+	private DropdownMenu drpFloors(String name, String display,
+			String selected, boolean withBuildingName) throws RemoteException,
+			FinderException {
+		Collection floors = ((FloorHome) IDOLookup.getHome(Floor.class))
+				.findAll();
+		BuildingHome bh = (BuildingHome) IDOLookup.getHome(Building.class);
+		DropdownMenu drp = new DropdownMenu(name);
+		if (!"".equals(display))
+			drp.addDisabledMenuElement("-1", display);
+		for (Iterator iter = floors.iterator(); iter.hasNext();) {
+			Floor floor = (Floor) iter.next();
 
-  private Form statusForm()throws RemoteException,FinderException{
-    Form myForm = new Form();
+			if (withBuildingName) {
+				try {
+					drp.addMenuElement(floor.getPrimaryKey().toString(), floor
+							.getName()
+							+ " "
+							+ (bh.findByPrimaryKey(new Integer(floor
+									.getBuildingId())).getName()));
+				} catch (Exception e) {
+				}
+			} else
+				drp.addMenuElement(floor.getPrimaryKey().toString(), floor
+						.getName());
+		}
 
-    DropdownMenu complex = drpLodgings(((ComplexHome)IDOLookup.getHome(Complex.class)).findAll(),prmCx,"--",this.sCLCX.toString());
-    DropdownMenu building = drpLodgings(((BuildingHome)IDOLookup.getHome(Building.class)).findAll(),prmBu,"--",this.sCLBU.toString());
-    DropdownMenu floor = drpFloors(prmFl,"--",this.sCLFL.toString(),true);
-    DropdownMenu cat = drpLodgings(((ApartmentCategoryHome)IDOLookup.getHome(ApartmentCategory.class)).findAll(),prmCt,"--",this.sCLCT.toString());
-    DropdownMenu type = drpLodgings(((ApartmentTypeHome)IDOLookup.getHome(ApartmentType.class)).findAll(),prmTp,"--",this.sCLTP.toString());
-    DropdownMenu order = orderDrop(prmOrder,"--",this.sORDER.toString());
+		if (!"".equalsIgnoreCase(selected)) {
+			drp.setSelectedElement(selected);
+		}
+		return drp;
+	}
 
-    //Edit.setStyle(status);
-    
-    Table T = new Table();
-      T.add(getHeader(localize("complex","Complex")),1,1);
-      T.add(getHeader(localize("building","Building")),2,1);
-      T.add(getHeader(localize("floor","Floor")),3,1);
-      T.add(getHeader(localize("category","Category")),4,1);
-      T.add(getHeader(localize("type","Type")),5,1);
-     // T.add(getHeader(localize("order","Order")),2,1);
-     // T.add(status,1,2);
-      T.add(complex,1,2);
-      T.add(building,2,2);
-      T.add(floor,3,2);
-      T.add(cat,4,2);
-      T.add(type,5,2);
-      //T.add(order,2,2);
-      SubmitButton get = (SubmitButton) getSubmitButton("conget",null,"Get","get");
-   
-      T.add(get,1,3);
-    T.setCellpadding(1);
-    T.setCellspacing(0);
+	private DropdownMenu orderDrop(String name, String display, String selected) {
+		DropdownMenu drp = new DropdownMenu(name);
+		if (!"".equals(display)) {
+			drp.addDisabledMenuElement("-1", display);
+		}
 
-    myForm.add(T);
-    return myForm;
-  }
+		if (!"".equals(selected))
+			drp.setSelectedElement(selected);
+		return drp;
+	}
 
+	private PresentationObject getPhoneTable(IWContext iwc)
+			throws RemoteException, FinderException {
+		Form form = new Form();
+		// int order = Integer.parseInt(iValues[5]);
+		Collection apartments = ((ApartmentHome) IDOLookup
+				.getHome(Apartment.class)).findBySearch(iValues[0], iValues[1],
+				iValues[2], iValues[3], iValues[4], true);
+		// List L =
+		// BuildingFinder.listOfApartments(sValues[0],sValues[1],sValues[2],sValues[3],sValues[4],order);
+		// Map M =
+		// PhoneFinder.mapOfPhonesByApartmentId(PhoneFinder.listOfPhones(sValues[0],sValues[1],sValues[2],sValues[3],sValues[4],order));
+		Map M = PhoneFinder
+				.mapOfPhonesByApartmentId(PhoneFinder.listOfPhones());
+		CampusPhone P = null;
+		Apartment A = null;
+		Building B = null;
+		Floor F = null;
+		Complex CX = null;
+		Table T = new Table();
+		T.setCellspacing(1);
+		T.setCellpadding(2);
+		if (apartments != null) {
 
-  private DropdownMenu drpLodgings(Collection buildingEntities,String name,String display,String selected) {
-   
+			int len = apartments.size();
+			int row = 2;
+			int col = 1;
+			int i = 0;
+			ApartmentViewHome avh = (ApartmentViewHome) IDOLookup
+					.getHome(ApartmentView.class);
+			for (Iterator iter = apartments.iterator(); iter.hasNext();) {
+				A = (Apartment) iter.next();
+				try {
+					// ApartmentView aview
+					// =avh.findByPrimaryKey(A.getPrimaryKey());
+					col = 1;
 
-    DropdownMenu drp = new DropdownMenu(name);
-    if(!"".equals(display))
-      drp.addDisabledMenuElement("-1",display);
-    if(buildingEntities != null){
-    	for (Iterator iter = buildingEntities.iterator(); iter.hasNext();) {
-    		BuildingEntity element = (BuildingEntity) iter.next();
-       
-          drp.addMenuElement(element.getPrimaryKey().toString(),element.getName());
-        }
-        if(!"".equalsIgnoreCase(selected)){
-          drp.setSelectedElement(selected);
-        }
-      }
-    
-    return drp;
-  }
+					Integer ID = (Integer) (A.getPrimaryKey());
+					TextInput ti = new TextInput("ti_" + i);
+					T.add(new HiddenInput("apid" + i, ID.toString()));
 
-  private DropdownMenu drpFloors(String name,String display,String selected,boolean withBuildingName)throws RemoteException,FinderException {
-   Collection floors = ((FloorHome)IDOLookup.getHome(Floor.class)).findAll();
-   BuildingHome bh =(BuildingHome) IDOLookup.getHome(Building.class);
-    DropdownMenu drp = new DropdownMenu(name);
-    if(!"".equals(display))
-      drp.addDisabledMenuElement("-1",display);
-    for (Iterator iter = floors.iterator(); iter.hasNext();) {
-		Floor floor = (Floor) iter.next();
+					T.add(getText(String.valueOf(i + 1)), 1, row);
+					T.add((getApartmentTable(A)), 2, row);
 
-        if(withBuildingName){
-          try{
-          drp.addMenuElement(floor.getPrimaryKey().toString() ,floor.getName()+" "+(bh.findByPrimaryKey(new Integer(floor.getBuildingId())).getName()));
-          }
-          catch(Exception e){}}
-        else
-          drp.addMenuElement(floor.getPrimaryKey().toString() ,floor.getName());
-      }
-    
-    if(!"".equalsIgnoreCase(selected)){
-      drp.setSelectedElement(selected);
-    }
-    return drp;
-  }
+					ti.setLength(10);
 
-  private DropdownMenu orderDrop(String name,String display ,String selected){
-    DropdownMenu drp = new DropdownMenu(name);
-    if(!"".equals(display)){
-      drp.addDisabledMenuElement("-1",display);
-    }
+					T.add(ti, 3, row);
+					if (M != null && M.containsKey(ID)) {
+						P = (CampusPhone) M.get(ID);
+						ti.setContent(P.getPhoneNumber());
+						T
+								.add(getText(new IWTimestamp(P
+										.getDateInstalled()).getLocaleDate(iwc
+										.getCurrentLocale())), 4, row);
+						T.add(new HiddenInput("phoneid" + i, P.getPrimaryKey()
+								.toString()), 1, row);
+					}
+					row++;
+					i++;
+					col = 1;
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+			form.add(new HiddenInput("ap_count", String.valueOf(len)));
+			T.add(getHeader(localize("apartment", "Apartment")), 2, 1);
+			T.add(getHeader(localize("number", "Number")), 3, 1);
+			T.add(getHeader(localize("installed", "Installed")), 4, 1);
 
-    if(!"".equals(selected))
-      drp.setSelectedElement(selected);
-    return drp;
-  }
+			T.setHorizontalZebraColored(getZebraColor1(), getZebraColor2());
+			T.setRowColor(1, getHeaderColor());
 
+			T.mergeCells(1, row, 8, row);
+			T.setWidth(1, "15");
+			T.add(getText(" "), 1, row);
+			T.setColumnAlignment(1, "left");
 
-  private PresentationObject getPhoneTable(IWContext iwc)throws RemoteException,FinderException{
-    Form form = new Form();
-    //int order = Integer.parseInt(iValues[5]);
-    Collection apartments = ((ApartmentHome)IDOLookup.getHome(Apartment.class)).findBySearch(iValues[0],iValues[1],iValues[2],iValues[3],iValues[4],true);
-    //List L = BuildingFinder.listOfApartments(sValues[0],sValues[1],sValues[2],sValues[3],sValues[4],order);
-    //Map M = PhoneFinder.mapOfPhonesByApartmentId(PhoneFinder.listOfPhones(sValues[0],sValues[1],sValues[2],sValues[3],sValues[4],order));
-    Map M = PhoneFinder.mapOfPhonesByApartmentId(PhoneFinder.listOfPhones());
-    CampusPhone P = null;
-    Apartment A = null;
-    Building B = null;
-    Floor F = null;
-    Complex CX = null;
-    Table T = new Table();
-    T.setCellspacing(1);
-    T.setCellpadding(2);
-    if(apartments!=null){
+			// T.setWidth("100%");
+		} else
+			add(getText(localize("no_apartments", "No Apartments")));
+		form.add(T);
+		form.add(new SubmitButton("save", localize("save", "Save")));
+		form.setEventListener(this.getClassName());
 
-      int len = apartments.size();
-      int row = 2;
-      int col = 1;
-      int i =0;
-      ApartmentViewHome avh =(ApartmentViewHome)IDOLookup.getHome(ApartmentView.class);
-    for (Iterator iter = apartments.iterator(); iter.hasNext();) {
-		 A = (Apartment) iter.next();
-		 try {
-		 //ApartmentView aview =avh.findByPrimaryKey(A.getPrimaryKey());
-        col = 1;
-       
+		return form;
 
-        
-          Integer ID = (Integer)(A.getPrimaryKey());
-          TextInput ti = new TextInput("ti_"+i);
-          T.add(new HiddenInput("apid"+i,ID.toString()));
+	}
 
-          T.add(getText(String.valueOf(i+1)),1,row);
-          T.add((getApartmentTable(A)),2,row);
+	private void update(IWContext iwc) {
+		String sCount = iwc.getParameter("ap_count");
+		Map M = PhoneFinder.mapOfPhones(PhoneFinder.listOfPhones());
+		if (sCount != null) {
+			int iCount = Integer.parseInt(sCount);
+			if (iCount > 0) {
+				String sAPId, sPHId, sNumber;
+				Integer iPHId, iAPId;
 
-          ti.setLength(10);
-          
-          T.add(ti,3,row);
-          if(M != null && M.containsKey(ID)){
-            P = (CampusPhone)M.get(ID);
-            ti.setContent(P.getPhoneNumber());
-            T.add(getText(new IWTimestamp(P.getDateInstalled()).getLocaleDate(iwc.getCurrentLocale())),4,row);
-            T.add(new HiddenInput("phoneid"+i,P.getPrimaryKey().toString()),1,row);
-          }
-          row++;
-          i++;
-          col = 1;
-        }
-        catch (Exception ex) {  ex.printStackTrace(); }
-        }
-        form.add(new HiddenInput("ap_count",String.valueOf(len)));
-        T.add(getHeader(localize("apartment","Apartment")),2,1);
-        T.add(getHeader(localize("number","Number")),3,1);
-        T.add(getHeader(localize("installed","Installed")),4,1);
+				for (int i = 0; i < iCount; i++) {
+					try {
+						sAPId = iwc.getParameter("apid" + i);
+						sPHId = iwc.getParameter("phoneid" + i);
+						sNumber = iwc.getParameter("ti_" + i);
 
+						iPHId = new Integer(sPHId != null ? sPHId : "-1");
 
-        T.setHorizontalZebraColored(getZebraColor1(),getZebraColor2());
-        T.setRowColor(1,getHeaderColor());
-       
-        T.mergeCells(1,row,8,row);
-        T.setWidth(1,"15");
-        T.add(getText(" "),1,row);
-        T.setColumnAlignment(1,"left");
-        
-        //T.setWidth("100%");
-    }
-    else
-      add(getText(localize("no_apartments","No Apartments")));
-    form.add(T);
-    form.add(new SubmitButton("save",localize("save","Save")));
-    form.setEventListener(this.getClassName());
+						if (sAPId != null && sNumber != null
+								&& sNumber.length() > 0) {
+							iAPId = new Integer(sAPId);
+							// if updating entity
+							if (M != null && M.containsKey(iPHId)) {
+								CampusPhone P = (CampusPhone) M.get(iPHId);
+								if (!P.getPhoneNumber().equals(sNumber)) {
+									P.setPhoneNumber(sNumber);
+									P.setDateInstalled(IWTimestamp.RightNow()
+											.getDate());
+									P.store();
+								}
+							}
+							// if new entity
+							else {
+								CampusPhone P = ((is.idega.idegaweb.campus.block.phone.data.CampusPhoneHome) com.idega.data.IDOLookup
+										.getHome(CampusPhone.class)).create();
+								P.setPhoneNumber(sNumber);
+								P.setApartmentId(iAPId.intValue());
+								P.setDateInstalled(IWTimestamp.RightNow()
+										.getDate());
+								P.store();
+							}
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+	}
 
-    return form;
+	private PresentationObject getApartmentTable(Apartment A) {
+		Table T = new Table();
 
+		Floor F = A.getFloor();
+		Building B = F.getBuilding();
+		Complex C = B.getComplex();
+		T.add(getText(A.getName()), 1, 1);
+		T.add(getText(F.getName()), 2, 1);
+		T.add(getText(B.getName()), 3, 1);
+		T.add(getText(C.getName()), 4, 1);
 
-  }
+		return T;
 
-  private void update(IWContext iwc){
-    String sCount = iwc.getParameter("ap_count");
-    Map M = PhoneFinder.mapOfPhones(PhoneFinder.listOfPhones());
-    if(sCount != null){
-      int iCount = Integer.parseInt(sCount);
-      if(iCount > 0){
-        String sAPId,sPHId,sNumber;
-        Integer iPHId,iAPId;
+	}
 
-        for (int i = 0; i < iCount; i++) {
-          try{
-            sAPId = iwc.getParameter("apid"+i);
-            sPHId = iwc.getParameter("phoneid"+i);
-            sNumber = iwc.getParameter("ti_"+i);
+	public void main(IWContext iwc) {
+		// isStaff = com.idega.core.accesscontrol.business.AccessControl
+		isAdmin = iwc.hasEditPermission(this);
+		control(iwc);
+		// System.err.println("test is main");
+	}
 
-            iPHId = new Integer(sPHId!=null?sPHId:"-1");
-
-            if(sAPId != null && sNumber != null && sNumber.length() > 0){
-              iAPId = new Integer(sAPId);
-              // if updating entity
-              if(M!=null && M.containsKey(iPHId)){
-                CampusPhone P = (CampusPhone)M.get(iPHId);
-                if(!P.getPhoneNumber().equals(sNumber)){
-                  P.setPhoneNumber(sNumber);
-                  P.setDateInstalled(IWTimestamp.RightNow().getDate());
-                  P.store();
-                }
-              }
-              // if new entity
-              else{
-                CampusPhone P = ((is.idega.idegaweb.campus.block.phone.data.CampusPhoneHome)com.idega.data.IDOLookup.getHome(CampusPhone.class)).create();
-                P.setPhoneNumber(sNumber);
-                P.setApartmentId(iAPId.intValue());
-                P.setDateInstalled(IWTimestamp.RightNow().getDate());
-                P.store();
-              }
-            }
-          }
-          catch(Exception e){
-            e.printStackTrace();
-          }
-        }
-      }
-    }
-  }
-
-  private PresentationObject getApartmentTable(Apartment A){
-    Table T = new Table();
-
-   
-   
-    Floor F = A.getFloor();
-    Building B = F.getBuilding();
-    Complex C = B.getComplex();
-    T.add(getText(A.getName()),1,1);
-    T.add(getText(F.getName()),2,1);
-    T.add(getText(B.getName()),3,1);
-    T.add(getText(C.getName()),4,1);
-
-    return T;
-
-  }
-
-  public void main(IWContext iwc){
-    //isStaff = com.idega.core.accesscontrol.business.AccessControl
-    isAdmin = iwc.hasEditPermission(this);
-    control(iwc);
-    //System.err.println("test is main");
-  }
-
-
-  public boolean actionPerformed(IWContext iwc)throws IWException{
-    //System.err.println("test is actionPerformed");
-    update(iwc);
-    return true;
-  }
+	public boolean actionPerformed(IWContext iwc) throws IWException {
+		// System.err.println("test is actionPerformed");
+		update(iwc);
+		return true;
+	}
 }

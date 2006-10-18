@@ -14,6 +14,7 @@ import javax.ejb.EJBHome;
 import javax.ejb.EJBLocalHome;
 import javax.ejb.EntityContext;
 
+import com.idega.util.IWTimestamp;
 import com.idega.util.database.ConnectionBroker;
 
 /**
@@ -35,7 +36,7 @@ public class EntryReportBMPBean implements EntryReport{
   public static String getColumnKeyName(){return "KEY_NAME";}
   public static String getColumnKeyInfo(){return "KEY_INFO";}
   public static String getColumnTotal(){return "TOTAL";}
-  public static String getColumnNumber(){return "NUMBER";}
+  public static String getColumnNumber(){return "NUMBER2";}
 
   private Integer BuildingId;
   private String BuildingName;
@@ -187,7 +188,7 @@ public class EntryReportBMPBean implements EntryReport{
     sql.append(" k.name key_name, ");
     sql.append(" k.info key_info, ");
     sql.append(" sum(e.total) total, ");
-    sql.append(" count(acc.fin_account_id) number ");
+    sql.append(" count(acc.fin_account_id) number2 ");
     sql.append(" from ");
     sql.append(" bu_apartment a,bu_building b,bu_floor f, ic_user u ,  ");
     sql.append(" fin_account acc,fin_acc_entry e,fin_acc_key k,cam_aprt_acc_entry ce");
@@ -223,12 +224,14 @@ public class EntryReportBMPBean implements EntryReport{
     }
     if(from!=null){
       sql.append(" and e.payment_date >= '");
-      sql.append(from.toString());
+      IWTimestamp stamp = new IWTimestamp(from);
+      sql.append(stamp.getDateString("yyyy-MM-dd"));
       sql.append("'");
     }
     if(to!=null){
       sql.append(" and e.payment_date <= '");
-      sql.append(to.toString());
+      IWTimestamp stamp = new IWTimestamp(to);
+      sql.append(stamp.getDateString("yyyy-MM-dd"));
       sql.append("'");
     }
 

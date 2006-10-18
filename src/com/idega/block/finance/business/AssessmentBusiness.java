@@ -73,6 +73,15 @@ public interface AssessmentBusiness extends IBOService {
 			throws java.rmi.RemoteException, javax.ejb.CreateException;
 
 	/**
+	 * @see com.idega.block.finance.business.AssessmentBusinessBean#createAccountEntry
+	 */
+	public AccountEntry createAccountEntry(Integer accountID,
+			Integer accountKeyID, Integer cashierID, Integer roundID,
+			float netto, float VAT, float total, Date paydate, String Name,
+			String Info, String status, Integer externalID, String division)
+			throws java.rmi.RemoteException, javax.ejb.CreateException;
+
+	/**
 	 * @see com.idega.block.finance.business.AssessmentBusinessBean#rollBackAssessment
 	 */
 	public boolean rollBackAssessment(Integer assessmentRoundId)

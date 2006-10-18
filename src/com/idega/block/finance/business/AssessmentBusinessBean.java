@@ -352,6 +352,12 @@ public class AssessmentBusinessBean extends IBOServiceBean implements Assessment
 	public AccountEntry createAccountEntry(Integer accountID, Integer accountKeyID, Integer cashierID, Integer roundID,
 			float netto, float VAT, float total, Date paydate, String Name, String Info, String status,
 			Integer externalID) throws java.rmi.RemoteException, javax.ejb.CreateException {
+		return createAccountEntry(accountID, accountKeyID, cashierID, roundID, netto, VAT, total, paydate, Name, Info, status, externalID, "");
+	}
+
+	public AccountEntry createAccountEntry(Integer accountID, Integer accountKeyID, Integer cashierID, Integer roundID,
+			float netto, float VAT, float total, Date paydate, String Name, String Info, String status,
+			Integer externalID, String division) throws java.rmi.RemoteException, javax.ejb.CreateException {
 		AccountEntry AE = ((AccountEntryHome) IDOLookup.getHome(AccountEntry.class)).create();
 		AE.setAccountId(accountID.intValue());
 		AE.setAccountKeyId(accountKeyID.intValue());
@@ -365,8 +371,8 @@ public class AssessmentBusinessBean extends IBOServiceBean implements Assessment
 		AE.setName(Name);
 		AE.setInfo(Info);
 		AE.setStatus(status);
-		// System.out.println( "AE(account: " + iAccountId+ " ,key: "+
-		// iAccountKeyId+ " ,cashier: " +iCashierId+ ",round:" + iRoundId+ ")");
+		AE.setDivisionForAccounting(division);
+
 		AE.store();
 		return AE;
 	}

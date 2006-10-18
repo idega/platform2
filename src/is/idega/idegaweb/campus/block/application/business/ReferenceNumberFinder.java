@@ -14,6 +14,8 @@ import com.idega.util.CypherText;
 
 public class ReferenceNumberFinder {
 
+	public static final int LENGTH = 7;
+	
   private static ReferenceNumberFinder finder;
 
   private String key = "";
@@ -23,7 +25,7 @@ public class ReferenceNumberFinder {
   private ReferenceNumberFinder(IWApplicationContext iwac){
     //System.err.println("Creating Finder");
     refHandler = new ReferenceNumberHandler();
-    cypherText = new CypherText();
+    cypherText = new CypherText(iwac);
     key = refHandler.getCypherKey(iwac);
   }
 
@@ -36,7 +38,8 @@ public class ReferenceNumberFinder {
 
   public String lookup(int applicationId){
     String id = Integer.toString(applicationId);
-    while(id.length() < 6)
+//    while(id.length() < 6)
+  while(id.length() < LENGTH)
       id = "0"+id;
     String refNum = cypherText.doCyper(id,key);
     //System.err.println("Referencenumber lookup : ID = "+id+" REFNUM = "+refNum);

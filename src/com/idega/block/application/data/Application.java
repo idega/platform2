@@ -1,24 +1,106 @@
+/**
+ * 
+ */
 package com.idega.block.application.data;
 
+import java.sql.Timestamp;
 
-public interface Application extends com.idega.data.IDOEntity
-{
- public int getApplicantId();
- public Applicant getApplicant();
- public java.lang.String getStatus();
- public java.sql.Timestamp getStatusChanged();
- public int getSubjectId();
- public java.sql.Timestamp getSubmitted();
- public void initializeAttributes();
- public void setApplicantId(int p0);
- public void setApplicantId(java.lang.Integer p0);
- public void setStatus(java.lang.String p0)throws java.lang.IllegalStateException;
- public void setStatusApproved();
- public void setStatusChanged(java.sql.Timestamp p0);
- public void setStatusRejected();
- public void setStatusSigned();
- public void setStatusSubmitted();
- public void setSubjectId(int p0);
- public void setSubjectId(java.lang.Integer p0);
- public void setSubmitted(java.sql.Timestamp p0);
+
+import com.idega.data.IDOEntity;
+
+/**
+ * @author bluebottle
+ *
+ */
+public interface Application extends IDOEntity {
+	/**
+	 * @see com.idega.block.application.data.ApplicationBMPBean#setSubjectId
+	 */
+	public void setSubjectId(int id);
+
+	/**
+	 * @see com.idega.block.application.data.ApplicationBMPBean#setSubjectId
+	 */
+	public void setSubjectId(Integer id);
+
+	/**
+	 * @see com.idega.block.application.data.ApplicationBMPBean#getSubjectId
+	 */
+	public int getSubjectId();
+
+	/**
+	 * @see com.idega.block.application.data.ApplicationBMPBean#getSubject
+	 */
+	public ApplicationSubject getSubject();
+
+	/**
+	 * @see com.idega.block.application.data.ApplicationBMPBean#setApplicantId
+	 */
+	public void setApplicantId(int id);
+
+	/**
+	 * @see com.idega.block.application.data.ApplicationBMPBean#setApplicantId
+	 */
+	public void setApplicantId(Integer id);
+
+	/**
+	 * @see com.idega.block.application.data.ApplicationBMPBean#getApplicantId
+	 */
+	public int getApplicantId();
+
+	/**
+	 * @see com.idega.block.application.data.ApplicationBMPBean#getApplicant
+	 */
+	public Applicant getApplicant();
+
+	/**
+	 * @see com.idega.block.application.data.ApplicationBMPBean#setSubmitted
+	 */
+	public void setSubmitted(Timestamp submitted);
+
+	/**
+	 * @see com.idega.block.application.data.ApplicationBMPBean#getSubmitted
+	 */
+	public Timestamp getSubmitted();
+
+	/**
+	 * @see com.idega.block.application.data.ApplicationBMPBean#setStatus
+	 */
+	public void setStatus(String status) throws IllegalStateException;
+
+	/**
+	 * @see com.idega.block.application.data.ApplicationBMPBean#setStatusSubmitted
+	 */
+	public void setStatusSubmitted();
+
+	/**
+	 * @see com.idega.block.application.data.ApplicationBMPBean#setStatusApproved
+	 */
+	public void setStatusApproved();
+
+	/**
+	 * @see com.idega.block.application.data.ApplicationBMPBean#setStatusRejected
+	 */
+	public void setStatusRejected();
+
+	/**
+	 * @see com.idega.block.application.data.ApplicationBMPBean#setStatusSigned
+	 */
+	public void setStatusSigned();
+
+	/**
+	 * @see com.idega.block.application.data.ApplicationBMPBean#getStatus
+	 */
+	public String getStatus();
+
+	/**
+	 * @see com.idega.block.application.data.ApplicationBMPBean#setStatusChanged
+	 */
+	public void setStatusChanged(Timestamp statusChanged);
+
+	/**
+	 * @see com.idega.block.application.data.ApplicationBMPBean#getStatusChanged
+	 */
+	public Timestamp getStatusChanged();
+
 }

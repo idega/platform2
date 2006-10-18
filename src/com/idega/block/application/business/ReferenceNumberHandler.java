@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberHandler.java,v 1.12 2004/02/20 16:37:44 tryggvil Exp $
+ * $Id: ReferenceNumberHandler.java,v 1.12.2.1 2006/10/18 13:53:58 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -18,71 +18,74 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.util.CypherText;
 
 /**
- *
+ * 
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
 public class ReferenceNumberHandler implements IWPageEventListener {
-  private static final String referenceNumber_ = "referenceNumber";
-  private static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.application";
+	private static final String REFERENCE_NUMBER = "referenceNumber";
 
-  /**
-   *
-   */
-  public ReferenceNumberHandler() {
-  }
+	private static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.application";
 
-  /**
-   *
-   */
-  public boolean actionPerformed(IWContext iwc) throws IWException {
-    String ref = iwc.getParameter(ReferenceNumber.CAM_REF_NUMBER);
-    if (ref.length() != 10) {
-      System.out.println("Setting upp decyphered reference number :"+ref);
-      CypherText cyph = new CypherText();
-      String cypherKey = getCypherKey(iwc);
+	/**
+	 * 
+	 */
+	public ReferenceNumberHandler() {
+	}
 
-      ref = cyph.doDeCypher(ref,cypherKey);
-      iwc.setSessionAttribute(referenceNumber_,ref);
-      iwc.removeSessionAttribute("DUMMY_LOGIN");
-    }
-    else {
-      System.out.println("Saving ssn to session");
-      iwc.setSessionAttribute(referenceNumber_,ref);
-      iwc.setSessionAttribute("DUMMY_LOGIN","true");
-    }
-    return true;
-  }
+	/**
+	 * 
+	 */
+	public boolean actionPerformed(IWContext iwc) throws IWException {
+		String ref = iwc.getParameter(ReferenceNumber.CAM_REF_NUMBER);
+		if (ref.length() != 10) {
+			System.out.println("Setting upp decyphered reference number :"
+					+ ref);
+			CypherText cyph = new CypherText(iwc);
+			String cypherKey = getCypherKey(iwc);
 
-  /**
-   *
-   */
-  public static String getCypherKey(IWApplicationContext iwc) {
-    IWBundle iwb = iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
-    CypherText cyph = new CypherText();
+			ref = cyph.doDeCypher(ref, cypherKey);
+			iwc.setSessionAttribute(REFERENCE_NUMBER, ref);
+			iwc.removeSessionAttribute("DUMMY_LOGIN");
+		} else {
+			System.out.println("Saving ssn to session");
+			iwc.setSessionAttribute(REFERENCE_NUMBER, ref);
+			iwc.setSessionAttribute("DUMMY_LOGIN", "true");
+		}
+		return true;
+	}
 
-    String cypherKey = iwb.getProperty("cypherKey");
-    if ((cypherKey == null) || (cypherKey.equalsIgnoreCase(""))) {
-      cypherKey = cyph.getKey(100);
-      iwb.setProperty("cypherKey",cypherKey);
-    }
+	/**
+	 * 
+	 */
+	public static String getCypherKey(IWApplicationContext iwc) {
+		IWBundle iwb = iwc.getIWMainApplication().getBundle(
+				IW_BUNDLE_IDENTIFIER);
+		CypherText cyph = new CypherText(iwc);
 
-    return(cypherKey);
-  }
+		String cypherKey = iwb.getProperty("cypherKey");
+		if ((cypherKey == null) || (cypherKey.equalsIgnoreCase(""))) {
+			cypherKey = cyph.getKey(100);
+			iwb.setProperty("cypherKey", cypherKey);
+		}
 
-  public String getBundleIdentifier() {
-    return(IW_BUNDLE_IDENTIFIER);
-  }
+		return (cypherKey);
+	}
 
-  /**
-   * Gets the decyphered reference number from the IWContext.
-   *
-   * @param iwc The IWContext for the session
-   * @return
-   */
-  public static String getReferenceNumber(IWContext iwc) {
-    String ref = (String)iwc.getSessionAttribute(referenceNumber_);
-//    iwc.removeSessionAttribute(referenceNumber_);
-    return(ref);
-  }
+	public String getBundleIdentifier() {
+		return (IW_BUNDLE_IDENTIFIER);
+	}
+
+	/**
+	 * Gets the decyphered reference number from the IWContext.
+	 * 
+	 * @param iwc
+	 *            The IWContext for the session
+	 * @return
+	 */
+	public static String getReferenceNumber(IWContext iwc) {
+		String ref = (String) iwc.getSessionAttribute(REFERENCE_NUMBER);
+		// iwc.removeSessionAttribute(referenceNumber_);
+		return (ref);
+	}
 }

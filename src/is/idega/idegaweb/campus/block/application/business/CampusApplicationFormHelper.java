@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFormHelper.java,v 1.23.4.1 2005/11/29 16:55:20 palli Exp $
+ * $Id: CampusApplicationFormHelper.java,v 1.23.4.2 2006/10/18 13:54:05 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -16,11 +16,15 @@ import is.idega.idegaweb.campus.block.application.data.CampusApplicationHome;
 import is.idega.idegaweb.campus.block.mailinglist.business.EntityHolder;
 import is.idega.idegaweb.campus.block.mailinglist.business.LetterParser;
 import is.idega.idegaweb.campus.block.mailinglist.business.MailingListService;
+import is.idega.idegaweb.campus.business.CampusService;
+import is.idega.idegaweb.campus.business.CampusSettings;
+import is.idega.idegaweb.campus.presentation.CampusBlock;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.Vector;
 
 import javax.ejb.CreateException;
@@ -37,6 +41,7 @@ import com.idega.block.building.data.ApartmentTypeHome;
 import com.idega.business.IBOLookup;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.util.IWTimestamp;
 import com.idega.util.SendMail;
@@ -321,7 +326,7 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 		application.setStudyEndMonth(studyEndMo);
 		application.setStudyEndYear(studyEndYr);
 		if (faculty != null) {
-			application.setFaculty(faculty);			
+			application.setFaculty(faculty);
 		}
 		if (school != null) {
 			application.setSchoolID(schoolID);
@@ -451,63 +456,64 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 	}
 
 	public static void sendApplicationConfirmationReminderEmail(IWContext iwc) {
-		// select app.app_application_id, email from cam_application cam,
-		// app_application app where cam.app_application_id =
-		// app.app_application_id and app.status = 'A'
 		Map map = CampusApplicationFinder
 				.getEmailAndApplicationIdForApprovedApplications();
 
 		Set keys = map.keySet();
 		Iterator it = keys.iterator();
 
+		IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(
+				CampusBlock.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
+
+		String subject = iwrb.getLocalizedString("REMINDER_MAIL_SUBJECT",
+				"Reminder mail subject");
+		String body = iwrb.getLocalizedString("REMINDER_MAIL_BODY",
+				"Reminder mail body [ref_num]");
+
 		ReferenceNumberFinder instance = ReferenceNumberFinder.getInstance(iwc);
-		StringBuffer body1 = new StringBuffer("English version follows\n\n");
 
-		body1.append("Ágæti viðtakandi\n\n");
-		body1
-				.append("Þú átt inni umsókn um vist á Stúdentagörðum á skrifstofu okkar. Með því að nota tilvísunarnúmer getur þú fylgst með því hvar þú ert á biðlistanum. Farið er inná heimasíðuna okkar sem er: www.studentagardar.is og tilvísunarnúmerið slegið inn í viðeigandi reit og ýtt á get. Þá kemur upp staða þín á biðlistanum. Þar er þér einnig gefinn kostur á því að stafðfesta veru þína á biðlistanum með því að ýta á confirm. Staðfesta þarf á milli 1. og 5. hvers mánaðar, ef því er ekki sinnt dettur þú útaf biðlistanum.\n\n");
-		body1.append("Tilvísunarnúmerið þitt er: ");
-
-		StringBuffer tail1 = new StringBuffer("Skrifstofa Stúdentagarða\n");
-		// tail1.append("Vilborg Sverrisdóttir\n\n");
-		tail1
-				.append("Þér er einnig bent á að setja inn netfang á þessari síðu og sjá til þess að það sem og símanúmerið sé alltaf rétt. Þetta er mjög mikilvægt svo hægt sé að ná sambandi við þig þegar þörf krefur.\n");
-
-		StringBuffer body2 = new StringBuffer("To Whom It May Concern:\n\n");
-		body2
-				.append("You have an application at Student Housing, by using your reference number you can monitor where you are on the waiting list. To do that you go on our website: www.studenthousing.is and write your reference number in tilv?sunarnr. and push get. There you can see your status on the waiting list and there you also have to confirm that you want to stay on the waiting list, you have to do that between the 1st and the 5th of each month. If that is not done you will loose your place on the waiting list. At this site you can also update your phone number and e-mail address. It is very important that you keep these information always updated.\n\n");
-		body2.append("Your reference number is: ");
-
-		StringBuffer tail2 = new StringBuffer("Best regards,\n");
-		tail2.append("Student Housing,\n");
-		tail2.append("Tel: 5 700 800\n");
-		tail2.append("E-mail: studentagardar@fs.is");
-
-		while (it.hasNext()) {
-			Integer id = (Integer) it.next();
-			String email = (String) map.get(id);
-
-			String cypher = instance.lookup(id.intValue());
-
-			StringBuffer totalText = new StringBuffer(body1.toString());
-			totalText.append(cypher);
-			totalText.append("\n\n");
-			totalText.append(tail1.toString());
-			totalText.append("\n\n");
-			totalText.append(body2.toString());
-			totalText.append(cypher);
-			totalText.append("\n\n");
-			totalText.append(tail2.toString());
-
-			try {
-				SendMail.send("postmaster@studenthousing.is", email, null,
-						"palli@idega.is", "mail.idega.is", "?minning/Reminder",
-						totalText.toString());
-			} catch (MessagingException e) {
-				e.printStackTrace();
-			}
-
+		CampusSettings settings = null;
+		try {
+			settings = getCampusService(iwc).getCampusSettings();
+		} catch (RemoteException e1) {
+			e1.printStackTrace();
 		}
 
+		if (settings != null && settings.getSendEventMail()) {
+			while (it.hasNext()) {
+				Integer id = (Integer) it.next();
+				String email = (String) map.get(id);
+
+				String cypher = instance.lookup(id.intValue());
+
+				StringBuffer finalText = new StringBuffer();
+				StringTokenizer st = new StringTokenizer(body, "[]");
+				while (st.hasMoreTokens()) {
+					String token = st.nextToken();
+					if (token.equals("ref_num")) {
+						finalText.append(cypher);
+					} else {
+						finalText.append(token);
+					}
+				}
+
+				try {
+					SendMail.send(settings.getAdminEmail(), email, null,
+							"palli@idega.is", settings.getSmtpServer(),
+							subject, finalText.toString());
+//					SendMail.send(settings.getAdminEmail(), "palli@idega.is", null,
+//							"palli@idega.is", settings.getSmtpServer(),
+//							subject, finalText.toString());
+				} catch (MessagingException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	public static CampusService getCampusService(IWContext iwc)
+			throws RemoteException {
+		return (CampusService) IBOLookup.getServiceInstance(iwc,
+				CampusService.class);
 	}
 }

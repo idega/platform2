@@ -1,15 +1,61 @@
+/**
+ * 
+ */
 package is.idega.idegaweb.campus.block.application.data;
 
+import java.util.Collection;
 
-public interface WaitingListHome extends com.idega.data.IDOHome
-{
- public WaitingList create() throws javax.ejb.CreateException;
- public WaitingList findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
- public java.util.Collection findByApartmentTypeAndComplex(int p0,int p1)throws javax.ejb.FinderException;
- public java.util.Collection findByApartmentTypeAndComplexForApplicationType(int p0,int p1)throws javax.ejb.FinderException;
- public java.util.Collection findByApartmentTypeAndComplexForTransferType(int p0,int p1)throws javax.ejb.FinderException;
- public java.util.Collection findByApplicantID(java.lang.Integer p0)throws javax.ejb.FinderException;
- public java.util.Collection findBySQL(java.lang.String p0)throws javax.ejb.FinderException;
- public java.util.Collection findNextForTransferByApartmentTypeAndComplex(int p0,int p1,int p2)throws javax.ejb.FinderException;
+import javax.ejb.FinderException;
+
+import com.idega.data.IDOHome;
+
+/**
+ * @author bluebottle
+ *
+ */
+public interface WaitingListHome extends IDOHome {
+	public WaitingList create() throws javax.ejb.CreateException;
+
+	public WaitingList findByPrimaryKey(Object pk)
+			throws javax.ejb.FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#ejbFindByApartmentTypeAndComplexForApplicationType
+	 */
+	public Collection findByApartmentTypeAndComplexForApplicationType(
+			int aprtId, int complexId) throws FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#ejbFindByApartmentTypeAndComplexForTransferType
+	 */
+	public Collection findByApartmentTypeAndComplexForTransferType(int aprtId,
+			int complexId) throws FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#ejbFindByApartmentTypeAndComplex
+	 */
+	public Collection findByApartmentTypeAndComplex(int aprtId, int complexId)
+			throws FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#ejbFindNextForTransferByApartmentTypeAndComplex
+	 */
+	public Collection findNextForTransferByApartmentTypeAndComplex(int aprtId,
+			int complexId, int orderedFrom) throws FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#ejbFindByApartmentType
+	 */
+	public Collection findByApartmentType(int[] aprtId) throws FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#ejbFindByApplicantID
+	 */
+	public Collection findByApplicantID(Integer ID) throws FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#ejbFindBySQL
+	 */
+	public Collection findBySQL(String sql) throws FinderException;
 
 }

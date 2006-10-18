@@ -123,6 +123,9 @@ public class CampusContractWriter {
 
 	public final static String current_rent_typeD = "current_rent_typeD";
 
+	// new 10.8.2006
+	public final static String APARTMENT_SERIAL_NUMBER = "apartment_serial_number";
+
 	public static String[] TAGS = { renter_name, renter_address, renter_id,
 			tenant_name, tenant_address, tenant_id, apartment_name,
 			apartment_floor, apartment_address, apartment_campus,
@@ -130,7 +133,7 @@ public class CampusContractWriter {
 			apartment_rent, apartment_category, contract_starts, contract_ends,
 			renting_index, today, current_renting_index, current_rent,
 			cohabitant, postal_address, current_rent_typeA, current_rent_typeB,
-			current_rent_typeC, current_rent_typeD };
+			current_rent_typeC, current_rent_typeD, APARTMENT_SERIAL_NUMBER };
 
 	public final static String IS = "IS";
 
@@ -396,12 +399,12 @@ public class CampusContractWriter {
 						.getHome(Tariff.class)).findAllByColumn(TariffBMPBean
 						.getColumnAttribute(), attribute);
 				double cRent = 0.0d;
-				
+
 				double rentA = 0.0d;
 				double rentB = 0.0d;
 				double rentC = 0.0d;
 				double rentD = 0.0d;
-				
+
 				Iterator it = tariff.iterator();
 				while (it.hasNext()) {
 					Tariff t = (Tariff) it.next();
@@ -416,7 +419,7 @@ public class CampusContractWriter {
 							rentC += t.getPrice();
 						} else if ("D".equals(type)) {
 							rentD += t.getPrice();
-						} 
+						}
 					}
 				}
 
@@ -424,12 +427,12 @@ public class CampusContractWriter {
 				if (postalAddress == null) {
 					postalAddress = "";
 				}
-				
+
 				NumberFormat format = NumberFormat.getInstance();
 				format.setMaximumFractionDigits(0);
 				format.setMinimumFractionDigits(0);
 				format.setGroupingUsed(true);
-				
+
 				// end new stuff 24.1.2006
 
 				Hashtable H = new Hashtable(TAGS.length);
@@ -491,33 +494,42 @@ public class CampusContractWriter {
 							nameFont));
 				else
 					H.put(apartment_category, new Chunk("", nameFont));
-				
+
 				H.put(renting_index, new Chunk(iwb.getProperty(
 						"contract_campus_index", "100"), tagFont));
-				
-				//new 29.1.2006
+
+				// new 29.1.2006
 				if (coHabitant != null) {
 					H.put(cohabitant, new Chunk(coHabitant.getFullName(),
 							nameFont));
 				} else {
 					H.put(cohabitant, new Chunk("", nameFont));
 				}
-				
-				StringBuffer indexString = new StringBuffer(Float.toString(index.getIndex()));
-				indexString.append(", ");
-				indexString.append(new IWTimestamp(index.getDate()).getDateString("dd.MM.yyyy"));
-				
-				H.put(current_renting_index, new Chunk(indexString.toString(), nameFont));
-				H
-						.put(current_rent, new Chunk(format.format(cRent),
-								nameFont));
-				H.put(postal_address, new Chunk(postalAddress, nameFont));
-				H.put(current_rent_typeA, new Chunk(format.format(rentA), nameFont));
-				H.put(current_rent_typeB, new Chunk(format.format(rentB), nameFont));
-				H.put(current_rent_typeC, new Chunk(format.format(rentC), nameFont));
-				H.put(current_rent_typeD, new Chunk(format.format(rentD), nameFont));
 
-				//end new 29.1.2006
+				StringBuffer indexString = new StringBuffer(Float
+						.toString(index.getIndex()));
+				indexString.append(", ");
+				indexString.append(new IWTimestamp(index.getDate())
+						.getDateString("dd.MM.yyyy"));
+
+				H.put(current_renting_index, new Chunk(indexString.toString(),
+						nameFont));
+				H.put(current_rent, new Chunk(format.format(cRent), nameFont));
+				H.put(postal_address, new Chunk(postalAddress, nameFont));
+				H.put(current_rent_typeA, new Chunk(format.format(rentA),
+						nameFont));
+				H.put(current_rent_typeB, new Chunk(format.format(rentB),
+						nameFont));
+				H.put(current_rent_typeC, new Chunk(format.format(rentC),
+						nameFont));
+				H.put(current_rent_typeD, new Chunk(format.format(rentD),
+						nameFont));
+
+				// end new 29.1.2006
+				// new 10.8.2006
+				H.put(APARTMENT_SERIAL_NUMBER, new Chunk(eApartment
+						.getSerialNumber(), nameFont));
+				// end new 10.8.2006
 				return H;
 			}
 

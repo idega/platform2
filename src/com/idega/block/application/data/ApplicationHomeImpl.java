@@ -1,64 +1,80 @@
+/**
+ * 
+ */
 package com.idega.block.application.data;
 
+import java.util.Collection;
 
-public class ApplicationHomeImpl extends com.idega.data.IDOFactory implements ApplicationHome
-{
- protected Class getEntityInterfaceClass(){
-  return Application.class;
- }
+import javax.ejb.FinderException;
 
+import com.idega.data.IDOFactory;
 
- public Application create() throws javax.ejb.CreateException{
-  return (Application) super.createIDO();
- }
+/**
+ * @author bluebottle
+ *
+ */
+public class ApplicationHomeImpl extends IDOFactory implements ApplicationHome {
+	protected Class getEntityInterfaceClass() {
+		return Application.class;
+	}
 
+	public Application create() throws javax.ejb.CreateException {
+		return (Application) super.createIDO();
+	}
 
-public java.util.Collection findByApplicantAndStatus(java.lang.Integer p0,java.lang.String p1)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((ApplicationBMPBean)entity).ejbFindByApplicantAndStatus(p0,p1);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public Application findByPrimaryKey(Object pk)
+			throws javax.ejb.FinderException {
+		return (Application) super.findByPrimaryKeyIDO(pk);
+	}
 
-public java.util.Collection findByApplicantID(java.lang.Integer p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((ApplicationBMPBean)entity).ejbFindByApplicantID(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public Collection findByApplicantID(Integer ID) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ApplicationBMPBean) entity)
+				.ejbFindByApplicantID(ID);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public java.util.Collection findBySQL(java.lang.String p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((ApplicationBMPBean)entity).ejbFindBySQL(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public Collection findByApplicantAndStatus(Integer ID, String status)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ApplicationBMPBean) entity)
+				.ejbFindByApplicantAndStatus(ID, status);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public java.util.Collection findByStatus(java.lang.String p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((ApplicationBMPBean)entity).ejbFindByStatus(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public Collection findBySubjectAndStatus(Integer subjectID, String status)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ApplicationBMPBean) entity)
+				.ejbFindBySubjectAndStatus(subjectID, status);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public java.util.Collection findBySubject(java.lang.Integer p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((ApplicationBMPBean)entity).ejbFindBySubject(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public Collection findByStatus(String status) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ApplicationBMPBean) entity)
+				.ejbFindByStatus(status);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public java.util.Collection findBySubjectAndStatus(java.lang.Integer p0,java.lang.String p1)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((ApplicationBMPBean)entity).ejbFindBySubjectAndStatus(p0,p1);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public Collection findBySubject(Integer subjectID) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ApplicationBMPBean) entity)
+				.ejbFindBySubject(subjectID);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
- public Application findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (Application) super.findByPrimaryKeyIDO(pk);
- }
-
-
+	public Collection findBySQL(String sql) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ApplicationBMPBean) entity)
+				.ejbFindBySQL(sql);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
 }
