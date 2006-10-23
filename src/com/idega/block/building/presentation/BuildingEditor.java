@@ -754,7 +754,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		Frame.setWidth("100%");
 		Frame.setWidth(2, 1, "160");
 		Frame.setHeight("100%");
-		Table T = new Table(2, 7);
+		Table T = new Table(2, 9);
 		T.setCellpadding(2);
 		T.setWidth("100%");
 		Table T2 = new Table(1, 2);
@@ -786,6 +786,8 @@ public class BuildingEditor extends com.idega.presentation.Block {
 				pageChooser.setSelectedPage(iFlashPage, flashPage.getName());
 			}
 		}
+		CheckBox complexLocked = new CheckBox(COMPLEX_LOCKED, "true");
+		complexLocked.setChecked(locked);
 
 		T.add(HI);
 		T.add(HA);
@@ -796,9 +798,11 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		T.add(makeTextInput(iTextId), 2, 3);
 		T.add(formatText(iwrb.getLocalizedString("flash", "Flash page")), 1, 4);
 		T.add(pageChooser, 1, 5);
-		T.add(formatText(iwrb.getLocalizedString("info", "Info")), 1, 6);
-		T.mergeCells(1, 7, 2, 7);
-		T.add(makeTextArea(sInfo), 1, 7);
+		T.add(formatText(iwrb.getLocalizedString("complex_locked", "Complex locked")), 1, 6);
+		T.add(complexLocked, 1, 7);
+		T.add(formatText(iwrb.getLocalizedString("info", "Info")), 1, 8);
+		T.mergeCells(1, 9, 2, 9);
+		T.add(makeTextArea(sInfo), 1, 9);
 
 		T2.add(formatText(iwrb.getLocalizedString("map", "Map")), 1, 1);
 		T2.add(Text.getBreak(), 1, 1);
@@ -820,6 +824,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		String sSerie = e ? eBuilding.getSerie() : "";
 		int iPhotoId = e ? eBuilding.getImageId() : 1;
 		int iTextId = e ? eBuilding.getTextId() : -1;
+		boolean locked = e ? eBuilding.getLocked() : false;
 
 		Form form = new Form();
 		Table Frame = new Table(2, 1);
@@ -850,10 +855,12 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		TextInput serie = new TextInput("bm_serie", sSerie);
 		HiddenInput HI = new HiddenInput("bm_choice", String.valueOf(BUILDING));
 
-		DropdownMenu complex = drpLodgings(service.getComplexHome().findAll(),
+		DropdownMenu complex = drpLodgings(service.getComplexHome().findAllIncludingLocked(),
 				"dr_complex", "Complex", sComplexId);
 		DropdownMenu houses = drpLodgings(service.getBuildingHome().findAll(),
 				"dr_id", "Building", sId);
+		CheckBox buildingLocked = new CheckBox(BUILDING_LOCKED, "true");
+		buildingLocked.setChecked(locked);
 
 		houses.setToSubmit();
 		setStyle(houses);
@@ -879,10 +886,13 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		T.add(complex, 1, 7);
 		// T.add(formatText(iwrb.getLocalizedString("serie","Serie")+" "),1,5);
 		// T.add(serie,1,5);
-		T.add(formatText(iwrb.getLocalizedString("info", "Info")), 1, 8);
+		T.add(formatText(iwrb.getLocalizedString("building_locked", "Building locked")), 1, 8);
+		T.add(buildingLocked, 1, 9);
 
-		T.add(makeTextArea(sInfo), 1, 9);
-		T.mergeCells(1, 9, 2, 9);
+		T.add(formatText(iwrb.getLocalizedString("info", "Info")), 1, 10);
+
+		T.add(makeTextArea(sInfo), 1, 11);
+		T.mergeCells(1, 11, 2, 11);
 
 		T2.add(formatText(iwrb.getLocalizedString("photo", "Photo")), 1, 1);
 		T2.add(Text.getBreak(), 1, 1);

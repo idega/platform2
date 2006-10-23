@@ -1,14 +1,8 @@
-/**
- * 
- */
 package com.idega.block.building.data;
+
 
 import java.util.Collection;
 
-/**
- * @author bluebottle
- *
- */
 public interface Building extends BuildingEntity {
 	/**
 	 * @see com.idega.block.building.data.BuildingBMPBean#getName
@@ -134,5 +128,4 @@ public interface Building extends BuildingEntity {
 	 * @see com.idega.block.building.data.BuildingBMPBean#getFloors
 	 */
 	public Collection getFloors();
-
 }

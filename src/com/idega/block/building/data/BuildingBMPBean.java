@@ -19,10 +19,10 @@ import com.idega.data.query.WildCardColumn;
  * @author <a href="mailto:aron@idega.is">Aron Birkir</a>
  * @version 1.0
  */
-public class BuildingBMPBean extends TextEntityBMPBean implements Building{
+public class BuildingBMPBean extends TextEntityBMPBean implements Building {
 
 	protected final static String ENTITY_NAME = "bu_building";
-	
+
 	protected static final String COLUMN_SERIE = "serie";
 
 	protected static final String COLUMN_STREET_NUMBER = "street_number";
@@ -38,11 +38,11 @@ public class BuildingBMPBean extends TextEntityBMPBean implements Building{
 	protected static final String COLUMN_NAME = "name";
 
 	protected static final String COLUMN_DIVISION = "division";
-	
+
 	protected static final String COLUMN_POSTAL_CODE = "postal_code";
-	
+
 	protected static final String COLUMN_POSTAL_ADDRESS = "postal_address";
-	
+
 	protected static final String COLUMN_LOCKED = "locked";
 
 	public void initializeAttributes() {
@@ -57,7 +57,7 @@ public class BuildingBMPBean extends TextEntityBMPBean implements Building{
 		addAttribute(COLUMN_POSTAL_CODE, "Postal code", String.class);
 		addAttribute(COLUMN_POSTAL_ADDRESS, "Postal address", String.class);
 		addAttribute(COLUMN_LOCKED, "Locked", Boolean.class);
-		
+
 		addManyToOneRelationship(COLUMN_IMAGE, ICFile.class);
 		addManyToOneRelationship(COLUMN_COMPLEX, Complex.class);
 	}
@@ -133,59 +133,76 @@ public class BuildingBMPBean extends TextEntityBMPBean implements Building{
 	public String getDivision() {
 		return getStringColumnValue(COLUMN_DIVISION);
 	}
-	
+
 	public void setDivision(String division) {
 		setColumn(COLUMN_DIVISION, division);
 	}
-	
+
 	public String getPostalCode() {
 		return getStringColumnValue(COLUMN_POSTAL_CODE);
 	}
-	
+
 	public void setPostalCode(String postalCode) {
 		setColumn(COLUMN_POSTAL_CODE, postalCode);
 	}
-	
+
 	public String getPostalAddress() {
 		return getStringColumnValue(COLUMN_POSTAL_ADDRESS);
 	}
-	
+
 	public void setPostalAddress(String postalAddress) {
 		setColumn(COLUMN_POSTAL_ADDRESS, postalAddress);
 	}
-	
+
 	public boolean getLocked() {
 		return getBooleanColumnValue(COLUMN_LOCKED, false);
 	}
-	
+
 	public void setLocked(boolean locked) {
 		setColumn(COLUMN_LOCKED, locked);
 	}
-	
+
 	public Collection ejbFindAll() throws FinderException {
 		return idoFindPKsByQuery(idoQueryGetSelect().appendOrderBy(COLUMN_NAME));
 	}
 
-	public Collection ejbFindByComplex(Integer complexID) throws FinderException {
+	public Collection ejbFindAllIncludingLocked() throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this);
+		query.appendWhere();
+		query.appendLeftParenthesis();
+		query.append(COLUMN_LOCKED);
+		query.append(" is null");
+		query.appendOr();
+		query.appendEquals(COLUMN_LOCKED, false);
+		query.appendRightParenthesis();
+		query.appendOrderBy(COLUMN_NAME);
+
+		return this.idoFindPKsByQuery(query);
+	}
+
+	public Collection ejbFindByComplex(Integer complexID)
+			throws FinderException {
 		IDOQuery query = idoQuery();
 		query.appendSelectAllFrom(this);
 		query.appendWhereEquals(COLUMN_COMPLEX, complexID);
 		query.appendOrderBy(COLUMN_NAME);
-		
+
 		return idoFindPKsByQuery(query);
 	}
 
-	public Collection ejbHomeGetImageFilesByComplex(Integer complexID) throws FinderException {
+	public Collection ejbHomeGetImageFilesByComplex(Integer complexID)
+			throws FinderException {
 		try {
 			Table building = new Table(this);
 			Table file = new Table(ICFile.class);
 			SelectQuery query = new SelectQuery(file);
 			query.addColumn(new WildCardColumn(file));
 			query.addJoin(building, file);
-			query.addCriteria(new MatchCriteria(building, COLUMN_COMPLEX, MatchCriteria.EQUALS, complexID.intValue()));
+			query.addCriteria(new MatchCriteria(building, COLUMN_COMPLEX,
+					MatchCriteria.EQUALS, complexID.intValue()));
 			return idoGetRelatedEntitiesBySQL(ICFile.class, query.toString());
-		}
-		catch (IDORelationshipException e) {
+		} catch (IDORelationshipException e) {
 			throw new FinderException(e.getMessage());
 		}
 	}
@@ -193,10 +210,10 @@ public class BuildingBMPBean extends TextEntityBMPBean implements Building{
 	public Collection getFloors() {
 		try {
 			return super.idoGetRelatedEntities(Floor.class);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
-			throw new RuntimeException("Error in getFloors() : " + e.getMessage());
+			throw new RuntimeException("Error in getFloors() : "
+					+ e.getMessage());
 		}
 	}
 
