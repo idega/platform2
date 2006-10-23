@@ -76,6 +76,7 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 	private static final String LOCALIZED_DISPLAY_NAME = "UserStatsBusiness.display_name";
     private static final String LOCALIZED_USER_ID = "UserStatsBusiness.user_id";
 	private static final String LOCALIZED_PERSONAL_ID = "UserStatsBusiness.personal_id";
+	private static final String LOCALIZED_DATE_OF_BIRTH = "UserStatsBusiness.date_of_birth";
 	private static final String LOCALIZED_GROUP_TYPE = "UserStatsBusiness.group_type";
 	private static final String LOCALIZED_PARENT_GROUP = "UserStatsBusiness.parent_group";
 	private static final String LOCALIZED_GROUP_PATH = "UserStatsBusiness.group_path";
@@ -93,6 +94,7 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 	private static final String FIELD_NAME_DISPLAY_NAME = "display_name";
 	private static final String FIELD_NAME_USER_ID = "user_id";
 	private static final String FIELD_NAME_PERSONAL_ID = "personal_id";
+	private static final String FIELD_NAME_DATE_OF_BIRTH = "date_of_birth";
 	private static final String FIELD_NAME_GROUP_TYPE = "group_type";
 	private static final String FIELD_NAME_PARENT_GROUP = "parent_group";
 	private static final String FIELD_NAME_GROUP_PATH = "group_path";
@@ -143,6 +145,10 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 		 ReportableField personalIDField = new ReportableField(FIELD_NAME_PERSONAL_ID, String.class);
 		 personalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PERSONAL_ID, "Personal ID"),currentLocale);
 		 reportCollection.addField(personalIDField);
+
+		 ReportableField dateOfBirthField = new ReportableField(FIELD_NAME_DATE_OF_BIRTH, String.class);
+		 dateOfBirthField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DATE_OF_BIRTH, "Date of birth"),currentLocale);
+		 reportCollection.addField(dateOfBirthField);
 
 		 ReportableField parentGroupField = new ReportableField(FIELD_NAME_PARENT_GROUP, String.class);
 		 parentGroupField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PARENT_GROUP, "Parent group"), currentLocale);
@@ -285,8 +291,8 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 			         ReportableData data = new ReportableData();
 				     //	add the data to the correct fields/columns
 			         data.addData(nameField, user.getName() );
-			         data.addData(userIDField, user.getPrimaryKey() );
 				     data.addData(personalIDField, personalID);
+				     data.addData(dateOfBirthField, user.getDateOfBirth());
 				     data.addData(parentGroupField, parentGroup.getName());
 				     data.addData(groupPathField, parentGroupPath);
 				     data.addData(userStatusField, userStatusString);
