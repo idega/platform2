@@ -549,10 +549,10 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 			// ("+user.getID()+") ");
 			Member member = getMemberFromUser(user);
 			// try {
-			correctDateOfBirth(member);
+			correctSocialSecurityNumber(user, member);
+			correctDateOfBirth(user, member);
 			correctName(user, member);
 			correctGender(user, member);
-			correctSocialSecurityNumber(user, member);
 			member.store();
 			synchronizeAddresses(user, member);
 			synchronizePhones(user, member);
@@ -594,12 +594,17 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 		user.store();
 	}
 
-	private void correctDateOfBirth(Member member) {
-		if (member.getDateOfBirth() == null && member.getSocialSecurityNumber() != null) {
+	private void correctDateOfBirth(User user, Member member) {
+		if (user != null && user.getDateOfBirth() != null) {
+			member.setDateOfBirth(user.getDateOfBirth());
+		}
+		else if (member.getDateOfBirth() == null && member.getSocialSecurityNumber() != null) {
 			try {
 				Date date = SocialSecurityNumber.getDateFromSocialSecurityNumber(member.getSocialSecurityNumber(),
 						false);
-				member.setDateOfBirth(date);
+				if (date != null) {
+					member.setDateOfBirth(date);
+				}
 			}
 			catch (Exception e) {
 				System.out.println("Cannot create DateOfBirth from ssn = " + member.getSocialSecurityNumber()
