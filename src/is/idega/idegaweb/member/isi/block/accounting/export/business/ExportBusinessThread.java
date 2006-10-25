@@ -188,17 +188,17 @@ public class ExportBusinessThread extends Thread {
 		try {
 			ret = (CreditCardContract) cHome.findByGroupAndType(entry
 					.getGroup(), entry.getPaymentContract().getCardType());
-		} catch (FinderException e) {
+		} catch (Exception e) {
 			try {
 				ret = (CreditCardContract) cHome.findByDivisionAndType(entry
 						.getDivision(), entry.getPaymentContract()
 						.getCardType());
-			} catch (FinderException e1) {
+			} catch (Exception e1) {
 				try {
 					ret = (CreditCardContract) cHome.findByClubAndType(entry
 							.getClub(), entry.getPaymentContract()
 							.getCardType());
-				} catch (FinderException e2) {
+				} catch (Exception e2) {
 					createLogEntry(e.getMessage(), true);
 					ret = null;
 				}
