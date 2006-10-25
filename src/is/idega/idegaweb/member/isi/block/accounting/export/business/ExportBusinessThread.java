@@ -235,13 +235,13 @@ public class ExportBusinessThread extends Thread {
 		BankInfoHome bHome = (BankInfoHome) IDOLookup.getHome(BankInfo.class);
 		try {
 			ret = (BankInfo) bHome.findByGroup(entry.getGroup());
-		} catch (FinderException e) {
+		} catch (Exception e) {
 			try {
 				ret = (BankInfo) bHome.findByDivision(entry.getDivision());
-			} catch (FinderException e1) {
+			} catch (Exception e1) {
 				try {
 					ret = (BankInfo) bHome.findByClub(entry.getClub());
-				} catch (FinderException e2) {
+				} catch (Exception e2) {
 					// Add to some kind of log?
 					ret = null;
 				}
