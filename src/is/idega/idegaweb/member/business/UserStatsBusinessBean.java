@@ -8,7 +8,9 @@ import is.idega.block.nationalregister.data.NationalRegister;
 import is.idega.idegaweb.member.presentation.GroupStatsWindowPlugin;
 import is.idega.idegaweb.member.presentation.UserStatsWindowPlugin;
 import is.idega.idegaweb.member.util.IWMemberConstants;
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -71,6 +73,7 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 	private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member";
 	private final static String USER_IW_BUNDLE_IDENTIFIER = "com.idega.user";
 	private static final String USR_STAT_PREFIX = "usr_stat_";
+	private static final double SECONDS_IN_YEAR = 31557600000.0;
 
 	private static final String LOCALIZED_CURRENT_DATE = "UserStatsBusiness.current_date";
 	private static final String LOCALIZED_NAME = "UserStatsBusiness.name";
@@ -82,6 +85,7 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 	private static final String LOCALIZED_CUSTODIAN_PERSONAL_ID = "UserStatsBusiness.custodian_personal_id";
 	private static final String LOCALIZED_CUSTODIAN_PHONE = "UserStatsBusiness.custodian_phone";
 	private static final String LOCALIZED_DATE_OF_BIRTH = "UserStatsBusiness.date_of_birth";
+	private static final String LOCALIZED_AGE = "UserStatsBusiness.age";
 	private static final String LOCALIZED_GROUP_TYPE = "UserStatsBusiness.group_type";
 	private static final String LOCALIZED_PARENT_GROUP = "UserStatsBusiness.parent_group";
 	private static final String LOCALIZED_GROUP_PATH = "UserStatsBusiness.group_path";
@@ -102,6 +106,7 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 	private static final String FIELD_NAME_CUSTODIAN_PERSONAL_ID = "custodian_personal_id";
 	private static final String FIELD_NAME_CUSTODIAN_PHONE = "custodian_phone";
 	private static final String FIELD_NAME_DATE_OF_BIRTH = "date_of_birth";
+	private static final String FIELD_NAME_AGE = "age";
 	private static final String FIELD_NAME_GROUP_TYPE = "group_type";
 	private static final String FIELD_NAME_PARENT_GROUP = "parent_group";
 	private static final String FIELD_NAME_GROUP_PATH = "group_path";
@@ -152,6 +157,10 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 		 ReportableField dateOfBirthField = new ReportableField(FIELD_NAME_DATE_OF_BIRTH, String.class);
 		 dateOfBirthField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DATE_OF_BIRTH, "Date of birth"),currentLocale);
 		 reportCollection.addField(dateOfBirthField);
+
+		 ReportableField ageField = new ReportableField(FIELD_NAME_AGE, String.class);
+		 ageField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AGE, "Age"),currentLocale);
+		 reportCollection.addField(ageField);
 
 		 ReportableField parentGroupField = new ReportableField(FIELD_NAME_PARENT_GROUP, String.class);
 		 parentGroupField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PARENT_GROUP, "Parent group"), currentLocale);
@@ -239,24 +248,33 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 			     Iterator parIt = parentGroupCollection.iterator();
 			   
 			   	String personalID = user.getPersonalID();
+			   	String dateOfBirthString = null;
+			   	String ageString = null;
 			   	String custodianString = null;
 				String custodianPersonalID = null;
 				String custodianPhoneString = null;
 //			 	Collection custodians = null; 
 				try {
-					NationalRegister userRegister = getNationalRegisterBusiness().getEntryBySSN(user.getPersonalID());
-					if (!personalID.equals(userRegister.getFamilyId())) {
-						custodianPersonalID = userRegister.getFamilyId();
-						User custodian = getUserBusiness().getUser(custodianPersonalID);
-						custodianString = custodian.getName();
-						custodianPhoneString = getPhoneNumber(custodian);
-						
-					} else {
-						custodianPersonalID = personalID;
+					Date date_of_birth = user.getDateOfBirth();
+					if (date_of_birth != null) {
+						dateOfBirthString = new IWTimestamp(date_of_birth).getDateString("dd.MM.yyyy");
+						long ageInMillisecs = IWTimestamp.getMilliSecondsBetween(new IWTimestamp(date_of_birth),new IWTimestamp());
+						BigDecimal age = new BigDecimal(ageInMillisecs/SECONDS_IN_YEAR);
+						ageString = String.valueOf(age.intValue());
+						if (age.doubleValue() < 18) {
+							NationalRegister userRegister = getNationalRegisterBusiness().getEntryBySSN(user.getPersonalID());
+							custodianPersonalID = userRegister.getFamilyId();
+							User custodian = getUserBusiness().getUser(custodianPersonalID);
+							custodianString = custodian.getName();
+							custodianPhoneString = getPhoneNumber(custodian);
+							
+						} else {
+							custodianPersonalID = personalID;
+						}
+						if (custodianPersonalID != null && custodianPersonalID.length() == 10) {
+							custodianPersonalID = custodianPersonalID.substring(0,6)+"-"+custodianPersonalID.substring(6,10);
+					 	}
 					}
-					if (custodianPersonalID != null && custodianPersonalID.length() == 10) {
-						custodianPersonalID = custodianPersonalID.substring(0,6)+"-"+custodianPersonalID.substring(6,10);
-				 	}
 					//custodians = getMemberFamilyLogic(getIWApplicationContext()).getCustodiansFor(user);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -334,7 +352,8 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 				     //	add the data to the correct fields/columns
 			         data.addData(nameField, user.getName() );
 				     data.addData(personalIDField, personalID);
-				     data.addData(dateOfBirthField, new IWTimestamp(user.getDateOfBirth()).getDateString("dd.MM.yyyy"));
+				     data.addData(dateOfBirthField, dateOfBirthString);
+				     data.addData(ageField, ageString);
 				     data.addData(parentGroupField, parentGroup.getName());
 				     data.addData(groupPathField, parentGroupPath);
 				     data.addData(userStatusField, userStatusString);
