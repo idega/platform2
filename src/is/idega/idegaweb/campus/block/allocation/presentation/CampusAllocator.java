@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.76.4.1 2006/10/18 13:54:06 palli Exp $
+ * $Id: CampusAllocator.java,v 1.76.4.2 2006/10/31 17:22:56 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -573,45 +573,62 @@ public class CampusAllocator extends CampusBlock implements Campus {
 						for (int j = 0; j < lLen; j++) {
 
 							AllocationView view = (AllocationView) L.get(j);
-							type = view.getTypeId();
-							cmpx = view.getComplexId();
-							listCount = view.getTotalNumberOfApartments();
-							freeCount = view.getNumberOfFreeApartments();
-							appCnt1 = view.getNumberOfChoice1();
-							appCnt2 = view.getNumberOfChoice2();
-							appCnt3 = view.getNumberOfChoice3();
-							appliedCount = appCnt1 + appCnt2 + appCnt3;
-							totalCount += listCount;
-							catlist += listCount;
-							// freeCount = listCount - contractCount;
-							totalFree += freeCount;
-							catfree += freeCount;
-							totalApplied += appliedCount;
-							catapp += appliedCount;
-							totApp1 += appCnt1;
-							totApp2 += appCnt2;
-							totApp3 += appCnt3;
-							catcnt1 += appCnt1;
-							catcnt2 += appCnt2;
-							catcnt3 += appCnt3;
-							StringBuffer name = new StringBuffer(view
-									.getTypeName());
-							name.append(" (");
-							name.append(view.getComplexName());
-							name.append(")");
-							T.add(getPDFLink(iwc, printImage, type, cmpx), 1,
-									row);
-							T.add(getListLink(name.toString(), type, cmpx), 2,
-									row);
-							T.add(getText(String.valueOf(listCount)), 3, row);
-							T.add(getText(String.valueOf(freeCount)), 4, row);
-							T
-									.add(getText(String.valueOf(appliedCount)),
-											5, row);
-							T.add(getText(String.valueOf(appCnt1)), 6, row);
-							T.add(getText(String.valueOf(appCnt2)), 7, row);
-							T.add(getText(String.valueOf(appCnt3)), 8, row);
-							row++;
+							boolean showEntry = true;
+
+							if (view.getComplex() != null) {
+								if (view.getComplex().getLocked()) {
+									showEntry = false;
+								}
+							}
+
+							if (view.getApartmentType() != null) {
+								if (view.getApartmentType().getLocked()) {
+									showEntry = false;
+								}
+							}
+
+							if (showEntry) {
+								type = view.getTypeId();
+								cmpx = view.getComplexId();
+								listCount = view.getTotalNumberOfApartments();
+								freeCount = view.getNumberOfFreeApartments();
+								appCnt1 = view.getNumberOfChoice1();
+								appCnt2 = view.getNumberOfChoice2();
+								appCnt3 = view.getNumberOfChoice3();
+								appliedCount = appCnt1 + appCnt2 + appCnt3;
+								totalCount += listCount;
+								catlist += listCount;
+								// freeCount = listCount - contractCount;
+								totalFree += freeCount;
+								catfree += freeCount;
+								totalApplied += appliedCount;
+								catapp += appliedCount;
+								totApp1 += appCnt1;
+								totApp2 += appCnt2;
+								totApp3 += appCnt3;
+								catcnt1 += appCnt1;
+								catcnt2 += appCnt2;
+								catcnt3 += appCnt3;
+								StringBuffer name = new StringBuffer(view
+										.getTypeName());
+								name.append(" (");
+								name.append(view.getComplexName());
+								name.append(")");
+								T.add(getPDFLink(iwc, printImage, type, cmpx),
+										1, row);
+								T.add(getListLink(name.toString(), type, cmpx),
+										2, row);
+								T.add(getText(String.valueOf(listCount)), 3,
+										row);
+								T.add(getText(String.valueOf(freeCount)), 4,
+										row);
+								T.add(getText(String.valueOf(appliedCount)), 5,
+										row);
+								T.add(getText(String.valueOf(appCnt1)), 6, row);
+								T.add(getText(String.valueOf(appCnt2)), 7, row);
+								T.add(getText(String.valueOf(appCnt3)), 8, row);
+								row++;
+							}
 						}
 						T.add(getHeader(catlist), 3, row);
 						T.add(getHeader(catfree), 4, row);
@@ -657,18 +674,37 @@ public class CampusAllocator extends CampusBlock implements Campus {
 							.hasNext();) {
 						ComplexTypeView complexType = (ComplexTypeView) iterator
 								.next();
-						StringBuffer name = new StringBuffer(complexType
-								.getApartmentTypeName());
-						name.append(" (");
-						name.append(complexType.getComplexName());
-						name.append(")");
-						T.add(getPDFLink(iwc, printImage, complexType
-								.getApartmentTypeID().intValue(), complexType
-								.getComplexID().intValue()), 1, row);
-						T.add(getListLink(name.toString(), complexType
-								.getApartmentTypeID().intValue(), complexType
-								.getComplexID().intValue()), 2, row);
-						row++;
+
+						boolean showEntry = true;
+
+						if (complexType.getComplex() != null) {
+							if (complexType.getComplex().getLocked()) {
+								showEntry = false;
+							}
+						}
+
+						if (complexType.getApartmentType() != null) {
+							if (complexType.getApartmentType().getLocked()) {
+								showEntry = false;
+							}
+						}
+
+						if (showEntry) {
+							StringBuffer name = new StringBuffer(complexType
+									.getApartmentTypeName());
+							name.append(" (");
+							name.append(complexType.getComplexName());
+							name.append(")");
+							T.add(getPDFLink(iwc, printImage, complexType
+									.getApartmentTypeID().intValue(),
+									complexType.getComplexID().intValue()), 1,
+									row);
+							T.add(getListLink(name.toString(), complexType
+									.getApartmentTypeID().intValue(),
+									complexType.getComplexID().intValue()), 2,
+									row);
+							row++;
+						}
 					}
 					row++;
 
@@ -1337,7 +1373,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		if (printedContracts != null) {
 			pContracts = true;
 		}
-		
+
 		if (waitingLists != null && !waitingLists.isEmpty()) {
 			int listSize = waitingLists.size();
 			try {
@@ -1360,7 +1396,8 @@ public class CampusAllocator extends CampusBlock implements Campus {
 
 				ReferenceNumberHandler h = new ReferenceNumberHandler();
 				String key = ReferenceNumberHandler.getCypherKey(iwc);
-				com.idega.util.CypherText ct = new com.idega.util.CypherText(iwc);
+				com.idega.util.CypherText ct = new com.idega.util.CypherText(
+						iwc);
 
 				Map colorMap = new HashMap();
 

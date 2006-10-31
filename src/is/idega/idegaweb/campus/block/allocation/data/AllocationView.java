@@ -9,6 +9,15 @@
  */
 package is.idega.idegaweb.campus.block.allocation.data;
 
+import javax.ejb.FinderException;
+
+import com.idega.block.building.data.ApartmentType;
+import com.idega.block.building.data.ApartmentTypeHome;
+import com.idega.block.building.data.Complex;
+import com.idega.block.building.data.ComplexHome;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
+
 /**
  * A wrapper class for the resultSet for select * from v_allocation_view
  * 
@@ -94,6 +103,41 @@ public class AllocationView {
 	public int getNumberOfChoice3() {
 		return _choice3;
 	}
+	
+	public Complex getComplex() {
+		if (_complexId > 0) {
+			try {
+				ComplexHome home =  (ComplexHome) IDOLookup.getHome(Complex.class);
+				Complex complex = home.findByPrimaryKey(new Integer(_complexId));
+				
+				return complex;
+			} catch (IDOLookupException e) {
+				e.printStackTrace();
+			} catch (FinderException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return null;
+	}
+	
+	public ApartmentType getApartmentType() {
+		if (_typeId > 0) {
+			try {
+				ApartmentTypeHome home =  (ApartmentTypeHome) IDOLookup.getHome(ApartmentType.class);
+				ApartmentType type = home.findByPrimaryKey(new Integer(_typeId));
+				
+				return type;
+			} catch (IDOLookupException e) {
+				e.printStackTrace();
+			} catch (FinderException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return null;
+	}
+	
 }
 
 /*
