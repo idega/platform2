@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.65.4.2 2006/10/18 13:54:05 palli Exp $
+ * $Id: CampusApprover.java,v 1.65.4.3 2006/10/31 16:24:59 palli Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -14,7 +14,6 @@ import is.idega.idegaweb.campus.block.application.business.ApplicantInfo;
 import is.idega.idegaweb.campus.block.application.business.ApplicationService;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationWriter;
 import is.idega.idegaweb.campus.block.application.business.ChildInfo;
-import is.idega.idegaweb.campus.block.application.business.ReferenceNumberFinder;
 import is.idega.idegaweb.campus.block.application.business.SpouseInfo;
 import is.idega.idegaweb.campus.block.application.data.Applied;
 import is.idega.idegaweb.campus.block.application.data.CampusApplication;
@@ -24,6 +23,7 @@ import is.idega.idegaweb.campus.data.ApplicationSubjectInfo;
 import is.idega.idegaweb.campus.data.ApplicationSubjectInfoHome;
 import is.idega.idegaweb.campus.presentation.CampusBlock;
 import is.idega.idegaweb.campus.presentation.Edit;
+
 import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.util.Collection;
@@ -33,9 +33,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Vector;
+
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
+
+import com.idega.block.application.business.ReferenceNumberHandler;
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.Application;
 import com.idega.block.application.data.ApplicationSubject;
@@ -347,8 +350,18 @@ public class CampusApprover extends CampusBlock {
 					Application a = campusApplication.getApplication();// AH.getApplication();
 					Applicant A = a.getApplicant();
 					String cypher = null;
-					if (a != null && ((Integer) a.getPrimaryKey()).intValue() != -1)
-						cypher = ReferenceNumberFinder.getInstance(iwc).lookup(((Integer) a.getPrimaryKey()).intValue());
+					if (a != null && ((Integer) a.getPrimaryKey()).intValue() != -1) {
+						ReferenceNumberHandler h = new ReferenceNumberHandler();
+						String key = ReferenceNumberHandler.getCypherKey(iwc);
+						com.idega.util.CypherText ct = new com.idega.util.CypherText(iwc);
+						
+						String id = a.getPrimaryKey().toString();
+						// @TOD Put the length in a parameter
+						while (id.length() < 7)
+							id = "0" + id;
+						cypher = ct.doCyper(id, key);
+					}
+
 					T.add(getText(String.valueOf(i + 1)), col++, row);
 					if (campusApplication.getPriorityLevel() != null)
 						T.add(getText(campusApplication.getPriorityLevel()), col++, row);

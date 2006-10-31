@@ -835,6 +835,8 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 			ApartmentTypeComplexHelper appHelp = new ApartmentTypeComplexHelper();
 			appHelp.setKey(entity.getApartmentTypeID().intValue(), entity.getComplexID().intValue());
 			appHelp.setName(entity.getApartmentTypeName() + " (" + entity.getComplexName() + ")");
+			appHelp.setComplex(entity.getComplex());
+			appHelp.setApartmentType(entity.getApartmentType());
 			list.add(appHelp);
 		}
 		return list;

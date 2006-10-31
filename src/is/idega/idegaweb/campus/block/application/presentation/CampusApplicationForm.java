@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.30.4.1 2005/11/29 16:55:16 palli Exp $
+ * $Id: CampusApplicationForm.java,v 1.30.4.2 2006/10/31 16:24:59 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -215,12 +215,27 @@ public class CampusApplicationForm extends ApplicationForm {
 			for (Iterator iter = typeHelpers.iterator(); iter.hasNext();) {
 				ApartmentTypeComplexHelper eAprtType = (ApartmentTypeComplexHelper) iter
 						.next();
-				aprtType
-						.addMenuElement(eAprtType.getKey(), eAprtType.getName());
-				aprtType2.addMenuElement(eAprtType.getKey(), eAprtType
-						.getName());
-				aprtType3.addMenuElement(eAprtType.getKey(), eAprtType
-						.getName());
+				boolean isLocked = false;
+				if (eAprtType.getApartmentType() != null) {
+					if (eAprtType.getApartmentType().getLocked()) {
+						isLocked = true;
+					}
+				}
+
+				if (eAprtType.getComplex() != null) {
+					if (eAprtType.getComplex().getLocked()) {
+						isLocked = true;
+					}
+				}
+
+				if (!isLocked) {
+					aprtType.addMenuElement(eAprtType.getKey(), eAprtType
+							.getName());
+					aprtType2.addMenuElement(eAprtType.getKey(), eAprtType
+							.getName());
+					aprtType3.addMenuElement(eAprtType.getKey(), eAprtType
+							.getName());
+				}
 			}
 
 			Form form = new Form();
@@ -242,7 +257,7 @@ public class CampusApplicationForm extends ApplicationForm {
 			// Integer.toString(_statusAppliedFor));
 			SubmitButton ok = new SubmitButton(_iwrb.getImage("next.gif", _iwrb
 					.getLocalizedString("ok", "Next")));// , APP_STATUS,
-														// Integer.toString(_statusAppliedFor));
+			// Integer.toString(_statusAppliedFor));
 
 			form.add(t);
 
@@ -349,6 +364,7 @@ public class CampusApplicationForm extends ApplicationForm {
 			add(form);
 
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
 	}

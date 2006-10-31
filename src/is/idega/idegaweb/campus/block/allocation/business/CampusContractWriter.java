@@ -527,8 +527,12 @@ public class CampusContractWriter {
 
 				// end new 29.1.2006
 				// new 10.8.2006
-				H.put(APARTMENT_SERIAL_NUMBER, new Chunk(eApartment
-						.getSerialNumber(), nameFont));
+				if (eApartment.getSerialNumber() != null) {
+					H.put(APARTMENT_SERIAL_NUMBER, new Chunk(eApartment
+							.getSerialNumber(), nameFont));					
+				} else {
+					H.put(APARTMENT_SERIAL_NUMBER, new Chunk("", nameFont));
+				}
 				// end new 10.8.2006
 				return H;
 			}

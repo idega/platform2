@@ -1,58 +1,58 @@
 package com.idega.block.building.data;
 
 
-public class ComplexTypeViewHomeImpl extends com.idega.data.IDOFactory implements ComplexTypeViewHome
-{
- protected Class getEntityInterfaceClass(){
-  return ComplexTypeView.class;
- }
+import java.util.Collection;
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+import com.idega.data.IDOCreateException;
+import com.idega.data.IDOEntity;
+import com.idega.data.IDOFactory;
 
+public class ComplexTypeViewHomeImpl extends IDOFactory implements ComplexTypeViewHome {
+	public Class getEntityInterfaceClass() {
+		return ComplexTypeView.class;
+	}
 
-public ComplexTypeView create(com.idega.block.building.data.ComplexTypeViewKey p0)throws javax.ejb.CreateException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((ComplexTypeViewBMPBean)entity).ejbCreate(p0);
-	this.idoCheckInPooledEntity(entity);
-	try{
+	public ComplexTypeView create() throws CreateException {
+		return (ComplexTypeView) super.createIDO();
+	}
+
+	public ComplexTypeView findByPrimaryKey(Object pk) throws FinderException {
+		return (ComplexTypeView) super.findByPrimaryKeyIDO(pk);
+	}
+
+	public ComplexTypeView findByPrimaryKey(ComplexTypeViewKey primaryKey) throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((ComplexTypeViewBMPBean) entity).ejbFindByPrimaryKey(primaryKey);
+		this.idoCheckInPooledEntity(entity);
 		return this.findByPrimaryKey(pk);
 	}
-	catch(javax.ejb.FinderException fe){
-		throw new com.idega.data.IDOCreateException(fe);
+
+	public ComplexTypeView create(ComplexTypeViewKey primaryKey) throws CreateException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((ComplexTypeViewBMPBean) entity).ejbCreate(primaryKey);
+		((ComplexTypeViewBMPBean) entity).ejbPostCreate();
+		this.idoCheckInPooledEntity(entity);
+		try {
+			return findByPrimaryKey(pk);
+		} catch (FinderException fe) {
+			throw new IDOCreateException(fe);
+		} catch (Exception e) {
+			throw new IDOCreateException(e);
+		}
 	}
-	catch(Exception e){
-		throw new com.idega.data.IDOCreateException(e);
+
+	public Collection findAll() throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((ComplexTypeViewBMPBean) entity).ejbFindAll();
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
-}
 
- public ComplexTypeView create() throws javax.ejb.CreateException{
-  return (ComplexTypeView) super.createIDO();
- }
-
-
-public java.util.Collection findAll()throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((ComplexTypeViewBMPBean)entity).ejbFindAll();
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
-public java.util.Collection findByCategory(java.lang.Integer p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((ComplexTypeViewBMPBean)entity).ejbFindByCategory(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
-public ComplexTypeView findByPrimaryKey(com.idega.block.building.data.ComplexTypeViewKey p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((ComplexTypeViewBMPBean)entity).ejbFindByPrimaryKey(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.findByPrimaryKey(pk);
-}
-
- public ComplexTypeView findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (ComplexTypeView) super.findByPrimaryKeyIDO(pk);
- }
-
-
-
+	public Collection findByCategory(Integer categoryID) throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((ComplexTypeViewBMPBean) entity).ejbFindByCategory(categoryID);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 }

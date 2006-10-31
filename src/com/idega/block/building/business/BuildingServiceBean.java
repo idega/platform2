@@ -103,9 +103,9 @@ public class BuildingServiceBean extends IBOServiceBean implements
 
 			if (textID != null && textID.intValue() > 0)
 				building.setTextId(textID.intValue());
-			building.store();
 			
 			building.setLocked(locked.booleanValue());
+			building.store();
 			
 			return building;
 		} catch (IDOStoreException e) {
@@ -186,7 +186,7 @@ public class BuildingServiceBean extends IBOServiceBean implements
 			Integer imageID, Integer categoryID, Integer textID, Float area,
 			Integer roomcount, Integer rent, Boolean balcony, Boolean bath,
 			Boolean kitchen, Boolean storage, Boolean study, Boolean furniture,
-			Boolean loft) {
+			Boolean loft, Boolean locked) {
 
 		try {
 			ApartmentType type = null;
@@ -218,6 +218,7 @@ public class BuildingServiceBean extends IBOServiceBean implements
 			type.setStorage(storage.booleanValue());
 			type.setStudy(study.booleanValue());
 			type.setFurniture(furniture.booleanValue());
+			type.setLocked(locked.booleanValue());
 
 			type.store();
 			return type;

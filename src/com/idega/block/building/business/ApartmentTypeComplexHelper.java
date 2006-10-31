@@ -1,5 +1,5 @@
 /*
- * $Id: ApartmentTypeComplexHelper.java,v 1.5 2002/04/06 18:52:26 tryggvil Exp $
+ * $Id: ApartmentTypeComplexHelper.java,v 1.5.6.1 2006/10/31 16:24:53 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,74 +11,98 @@ package com.idega.block.building.business;
 
 import java.util.StringTokenizer;
 
+import com.idega.block.building.data.ApartmentType;
+import com.idega.block.building.data.Complex;
+
 /**
- *
+ * 
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
 public class ApartmentTypeComplexHelper {
-  private int iKey_1,iKey_2;
-  private String key_ = null;
-  private String name_ = null;
+	private int iKey_1, iKey_2;
 
-  public ApartmentTypeComplexHelper() {
-  }
+	private String key = null;
 
-  public ApartmentTypeComplexHelper(int key1, int key2){
-    setKey(key1,key2);
-  }
+	private String name = null;
 
-  public void setKey(int key1, int key2) {
-    iKey_1 = key1;
-    iKey_2 = key2;
-    key_ = Integer.toString(key1) + "-" + Integer.toString(key2);
-  }
+	private Complex complex = null;
 
-  public int getKeyOne(){
-    return iKey_1;
-  }
+	private ApartmentType type = null;
 
-  public int getKeyTwo(){
-    return iKey_2;
-  }
+	public ApartmentTypeComplexHelper() {
+	}
 
-  public void setKey(String key) {
-    key_ = key;
-  }
+	public ApartmentTypeComplexHelper(int key1, int key2) {
+		setKey(key1, key2);
+	}
 
-  public String getKey() {
-    return(key_);
-  }
+	public void setKey(int key1, int key2) {
+		iKey_1 = key1;
+		iKey_2 = key2;
+		key = Integer.toString(key1) + "-" + Integer.toString(key2);
+	}
 
-  public void setName(String name) {
-    name_ = name;
-  }
+	public int getKeyOne() {
+		return iKey_1;
+	}
 
-  public String getName() {
-    return(name_);
-  }
+	public int getKeyTwo() {
+		return iKey_2;
+	}
 
-  public static int getPartKey(String key, int index) {
-    StringTokenizer t = new StringTokenizer(key,"-");
-    int not = t.countTokens();
-    if (index > not)
-      return(-1);
+	public void setKey(String key) {
+		this.key = key;
+	}
 
-    int i = 0;
-    while (t.hasMoreElements()) {
-      i++;
-      String txt = (String)t.nextElement();
-      if (index == i) {
-        int ret = -1;
-        try {
-          ret = Integer.parseInt(txt);
-        }
-        catch(java.lang.NumberFormatException e) {}
+	public String getKey() {
+		return key;
+	}
 
-        return(ret);
-      }
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    return(-1);
-  }
+	public String getName() {
+		return name;
+	}
+	
+	public void setComplex(Complex complex) {
+		this.complex = complex;
+	}
+	
+	public Complex getComplex() {
+		return complex;
+	}
+	
+	public void setApartmentType(ApartmentType type) {
+		this.type = type;;
+	}
+
+	public ApartmentType getApartmentType() {
+		return type;
+	}
+	public static int getPartKey(String key, int index) {
+		StringTokenizer t = new StringTokenizer(key, "-");
+		int not = t.countTokens();
+		if (index > not)
+			return -1;
+
+		int i = 0;
+		while (t.hasMoreElements()) {
+			i++;
+			String txt = (String) t.nextElement();
+			if (index == i) {
+				int ret = -1;
+				try {
+					ret = Integer.parseInt(txt);
+				} catch (java.lang.NumberFormatException e) {
+				}
+
+				return ret;
+			}
+		}
+
+		return -1;
+	}
 }

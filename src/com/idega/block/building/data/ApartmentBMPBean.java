@@ -285,8 +285,8 @@ public class ApartmentBMPBean extends
 				FloorBMPBean.BU_BUILDING_ID);
 		query.addJoin(apartment, BU_FLOOR_ID, floor, BU_FLOOR_ID);
 		query.addJoin(apartment, BU_APRT_TYPE_ID, type, BU_APRT_TYPE_ID);
-		query.addJoin(type, ApartmentTypeBMPBean.BU_APRT_CAT_ID, category,
-				ApartmentTypeBMPBean.BU_APRT_CAT_ID);
+		query.addJoin(type, ApartmentTypeBMPBean.COLUMN_APARTMENT_CATEGORY, category,
+				ApartmentTypeBMPBean.COLUMN_APARTMENT_CATEGORY);
 
 		if (complexID != null && complexID.intValue() > 0) {
 			query.addCriteria(new MatchCriteria(building,
@@ -315,11 +315,11 @@ public class ApartmentBMPBean extends
 					ApartmentBMPBean.BU_APRT_TYPE_ID, MatchCriteria.EQUALS,
 					typeID.intValue()));
 			if (order)
-				query.addOrder(type, ApartmentTypeBMPBean.NAME, true);
+				query.addOrder(type, ApartmentTypeBMPBean.COLUMN_NAME, true);
 		}
 		if (categoryID != null && categoryID.intValue() > 0) {
 			query.addCriteria(new MatchCriteria(type,
-					ApartmentTypeBMPBean.BU_APRT_CAT_ID, MatchCriteria.EQUALS,
+					ApartmentTypeBMPBean.COLUMN_APARTMENT_CATEGORY, MatchCriteria.EQUALS,
 					categoryID.intValue()));
 			if (order)
 				query.addOrder(category, ApartmentCategoryBMPBean.NAME, true);

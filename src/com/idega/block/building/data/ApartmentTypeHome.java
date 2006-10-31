@@ -1,14 +1,25 @@
 package com.idega.block.building.data;
 
 
-public interface ApartmentTypeHome extends com.idega.data.IDOHome
-{
- public ApartmentType create() throws javax.ejb.CreateException;
- public ApartmentType findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
- public java.util.Collection findAll()throws javax.ejb.FinderException;
- public java.util.Collection findByBuilding(java.lang.Integer p0)throws javax.ejb.FinderException;
- public java.util.Collection findByCategory(java.lang.Integer p0)throws javax.ejb.FinderException;
- public java.util.Collection findByComplex(java.lang.Integer p0)throws javax.ejb.FinderException;
- public java.util.Collection findFromSameComplex(com.idega.block.building.data.ApartmentType p0)throws javax.ejb.FinderException;
+import java.util.Collection;
+import javax.ejb.CreateException;
+import com.idega.data.IDOHome;
+import javax.ejb.FinderException;
 
+public interface ApartmentTypeHome extends IDOHome {
+	public ApartmentType create() throws CreateException;
+
+	public ApartmentType findByPrimaryKey(Object pk) throws FinderException;
+
+	public Collection findAll() throws FinderException;
+
+	public Collection findAllIncludingLocked() throws FinderException;
+
+	public Collection findByBuilding(Integer buildingID) throws FinderException;
+
+	public Collection findByCategory(Integer categoryID) throws FinderException;
+
+	public Collection findByComplex(Integer complexID) throws FinderException;
+
+	public Collection findFromSameComplex(ApartmentType thetype) throws FinderException;
 }

@@ -48,13 +48,15 @@ import com.idega.presentation.ui.Window;
 
 public class BuildingEditor extends com.idega.presentation.Block {
 
-	private static final String APARTMENT_SERIAL_NUMBER = "ap_snr";
+	private static final String PARAMETER_APARTMENT_SERIAL_NUMBER = "ap_snr";
 	
-	private static final String BUILDING_LOCKED = "bu_locked";
+	private static final String PARAMETER_BUILDING_LOCKED = "bu_locked";
 	
-	private static final String COMPLEX_LOCKED = "cp_locked";
+	private static final String PARAMETER_COMPLEX_LOCKED = "cp_locked";
+	
+	private static final String PARAMETER_TYPE_LOCKED = "tp_locked";
 
-	private static final String FLASH_PAGE = "flash_page";
+	private static final String PARAMETER_FLASH_PAGE = "flash_page";
 
 	protected boolean isAdmin = false;
 
@@ -308,8 +310,8 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		String sInfo = iwc.getParameter("bm_info").trim();
 		String sImageId = iwc.getParameter("mapid");
 		String sId = iwc.getParameter("dr_id");
-		String sPageId = iwc.getParameter(FLASH_PAGE);
-		Boolean locked = Boolean.valueOf(iwc.getParameter(COMPLEX_LOCKED));
+		String sPageId = iwc.getParameter(PARAMETER_FLASH_PAGE);
+		Boolean locked = Boolean.valueOf(iwc.getParameter(PARAMETER_COMPLEX_LOCKED));
 
 		Integer imageid = null;
 		Integer id = null;
@@ -336,7 +338,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		String sComplexId = iwc.getParameter("dr_complex");
 		String sId = iwc.getParameter("dr_id");
 		// String sSerie = iwc.getParameter("bm_serie");
-		Boolean locked = Boolean.valueOf(iwc.getParameter(BUILDING_LOCKED));
+		Boolean locked = Boolean.valueOf(iwc.getParameter(PARAMETER_BUILDING_LOCKED));
 		Integer imageid = null;
 		Integer id = null;
 		Integer complexid = null;
@@ -432,7 +434,8 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		Boolean furniture = Boolean.valueOf(iwc.isParameterSet("bm_furni"));
 
 		String sRent = iwc.getParameter("bm_rent");
-
+		Boolean locked = Boolean.valueOf(iwc.getParameter(PARAMETER_TYPE_LOCKED));
+		
 		Integer planid = null;
 		Integer imageid = null;
 		Integer id = null;
@@ -478,7 +481,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 
 		service.storeApartmentType(id, sName, sInfo, abbrev, sExtraInfo,
 				planid, imageid, categoryid, textId, area, count, rent,
-				balcony, bath, kitchen, storage, study, furniture, loft);
+				balcony, bath, kitchen, storage, study, furniture, loft, locked);
 
 	}
 
@@ -491,7 +494,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		String sFloorId = iwc.getParameter("bm_floor");
 		String sRentable = iwc.getParameter("bm_rentable");
 		String sImageId = iwc.getParameter("photoid");
-		String apSnr = iwc.getParameter(APARTMENT_SERIAL_NUMBER);
+		String apSnr = iwc.getParameter(PARAMETER_APARTMENT_SERIAL_NUMBER);
 		Boolean bRentable = sRentable != null ? Boolean.TRUE : Boolean.FALSE;
 
 		Integer id = null;
@@ -771,14 +774,14 @@ public class BuildingEditor extends com.idega.presentation.Block {
 
 		TextInput name = new TextInput("bm_name", sName);
 		DropdownMenu categories = drpLodgings(service.getComplexHome()
-				.findAll(), "dr_id", "Complex", sId);
+				.findAllIncludingLocked(), "dr_id", "Complex", sId);
 		HiddenInput HI = new HiddenInput("bm_choice", String.valueOf(COMPLEX));
 		HiddenInput HA = new HiddenInput(sAction, String.valueOf(COMPLEX));
 		setStyle(name);
 		setStyle(categories);
 		categories.setToSubmit();
 		name.setLength(30);
-		IBPageChooser pageChooser = new IBPageChooser(FLASH_PAGE);
+		IBPageChooser pageChooser = new IBPageChooser(PARAMETER_FLASH_PAGE);
 		setStyle(pageChooser, styleAttribute);
 		if (iFlashPage > 0) {
 			ICPage flashPage = service.getPage(iFlashPage);
@@ -786,7 +789,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 				pageChooser.setSelectedPage(iFlashPage, flashPage.getName());
 			}
 		}
-		CheckBox complexLocked = new CheckBox(COMPLEX_LOCKED, "true");
+		CheckBox complexLocked = new CheckBox(PARAMETER_COMPLEX_LOCKED, "true");
 		complexLocked.setChecked(locked);
 
 		T.add(HI);
@@ -857,9 +860,9 @@ public class BuildingEditor extends com.idega.presentation.Block {
 
 		DropdownMenu complex = drpLodgings(service.getComplexHome().findAllIncludingLocked(),
 				"dr_complex", "Complex", sComplexId);
-		DropdownMenu houses = drpLodgings(service.getBuildingHome().findAll(),
+		DropdownMenu houses = drpLodgings(service.getBuildingHome().findAllIncludingLocked(),
 				"dr_id", "Building", sId);
-		CheckBox buildingLocked = new CheckBox(BUILDING_LOCKED, "true");
+		CheckBox buildingLocked = new CheckBox(PARAMETER_BUILDING_LOCKED, "true");
 		buildingLocked.setChecked(locked);
 
 		houses.setToSubmit();
@@ -941,7 +944,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		floors.setToSubmit();
 
 		DropdownMenu buildings = this.drpLodgings(service.getBuildingHome()
-				.findAll(), "dr_building", "Building", sHouse);
+				.findAllIncludingLocked(), "dr_building", "Building", sHouse);
 		HiddenInput HI = new HiddenInput("bm_choice", String.valueOf(FLOOR));
 		HiddenInput HA = new HiddenInput(sAction, String.valueOf(FLOOR));
 		setStyle(name);
@@ -1054,6 +1057,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		String sId = e ? String.valueOf(eApartmentType.getID()) : "";
 		String sExtraInfo = e ? eApartmentType.getExtraInfo() : "";
 		String sRent = e ? String.valueOf(eApartmentType.getRent()) : "0";
+		boolean locked= e ? eApartmentType.getLocked() : false;
 
 		boolean bKitch = e ? eApartmentType.getKitchen() : false;
 		boolean bBath = e ? eApartmentType.getBathRoom() : false;
@@ -1120,9 +1124,12 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		CheckBox furni = new CheckBox("bm_furni", "true");
 		if (bFurniture)
 			furni.setChecked(true);
+		
+		CheckBox typeLocked = new CheckBox(PARAMETER_TYPE_LOCKED, "true");
+		typeLocked.setChecked(locked);
 
 		DropdownMenu apartmenttypes = drpLodgings(service
-				.getApartmentTypeHome().findAll(), "dr_id", "Type", sId);
+				.getApartmentTypeHome().findAllIncludingLocked(), "dr_id", "Type", sId);
 		apartmenttypes.setToSubmit();
 
 		DropdownMenu categories = drpLodgings(service
@@ -1197,15 +1204,19 @@ public class BuildingEditor extends com.idega.presentation.Block {
 				6);
 		InnerTable.add(rent, 2, 6);
 		T.add(InnerTable, 1, 8);
-		T.add(formatText(iwrb.getLocalizedString("info", "Info")), 1, 9);
+		
+		T.add(formatText(iwrb.getLocalizedString("locked", "Locked")), 1, 9);
+		T.add(typeLocked, 1, 10);
+		
+		T.add(formatText(iwrb.getLocalizedString("info", "Info")), 1, 11);
 
-		T.add(makeTextArea(sInfo), 1, 10);
+		T.add(makeTextArea(sInfo), 1, 12);
 		T.add(formatText(iwrb.getLocalizedString("extra_info", "ExtraInfo")),
-				1, 11);
+				1, 13);
 
-		T.add(makeTextArea("extra_info", sExtraInfo), 1, 12);
-		T.mergeCells(1, 10, 2, 10);
+		T.add(makeTextArea("extra_info", sExtraInfo), 1, 14);
 		T.mergeCells(1, 12, 2, 12);
+		T.mergeCells(1, 14, 2, 14);
 		T2.add(formatText(iwrb.getLocalizedString("photo", "Photo")), 1, 1);
 		T2.add(this.makeImageInput(iImageId, "tphotoid"), 1, 1);
 		T2.add(formatText(iwrb.getLocalizedString("plan", "Plan")), 1, 2);
@@ -1260,7 +1271,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 
 		TextInput name = new TextInput("bm_name", sName);
 		TextInput serie = new TextInput("bm_serie", sSerie);
-		TextInput serial = new TextInput(APARTMENT_SERIAL_NUMBER, serialNumber);
+		TextInput serial = new TextInput(PARAMETER_APARTMENT_SERIAL_NUMBER, serialNumber);
 
 		DropdownMenu apartments = drpLodgings(service.getApartmentHome()
 				.findAll(), "dr_id", "Apartment", sId);

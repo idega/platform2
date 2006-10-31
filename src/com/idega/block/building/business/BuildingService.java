@@ -45,7 +45,7 @@ public interface BuildingService extends IBOService {
 	/**
 	 * @see com.idega.block.building.business.BuildingServiceBean#storeApartmentType
 	 */
-	public ApartmentType storeApartmentType(Integer typeID, String name, String info, String abbrev, String extraInfo, Integer planID, Integer imageID, Integer categoryID, Integer textID, Float area, Integer roomcount, Integer rent, Boolean balcony, Boolean bath, Boolean kitchen, Boolean storage, Boolean study, Boolean furniture, Boolean loft) throws RemoteException;
+	public ApartmentType storeApartmentType(Integer typeID, String name, String info, String abbrev, String extraInfo, Integer planID, Integer imageID, Integer categoryID, Integer textID, Float area, Integer roomcount, Integer rent, Boolean balcony, Boolean bath, Boolean kitchen, Boolean storage, Boolean study, Boolean furniture, Boolean loft, Boolean locked) throws RemoteException;
 
 	/**
 	 * @see com.idega.block.building.business.BuildingServiceBean#storeApartment
