@@ -8,6 +8,7 @@ import com.idega.data.IDOQuery;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.query.Column;
 import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.OR;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;
 import com.idega.data.query.WildCardColumn;
@@ -158,7 +159,7 @@ public class ApartmentTypeBMPBean extends
 	public boolean getFurniture() {
 		return getBooleanColumnValue(COLUMN_FURNITURE);
 	}
-	
+
 	public Collection getApartments() {
 		try {
 			return super.idoGetRelatedEntities(Apartment.class);
@@ -172,7 +173,7 @@ public class ApartmentTypeBMPBean extends
 	public boolean getLocked() {
 		return getBooleanColumnValue(COLUMN_LOCKED, false);
 	}
-	
+
 	// setters
 	public void setName(String name) {
 		setColumn(COLUMN_NAME, name);
@@ -265,7 +266,7 @@ public class ApartmentTypeBMPBean extends
 	public void setFurniture(boolean furniture) {
 		setColumn(COLUMN_FURNITURE, furniture);
 	}
-	
+
 	public void setLocked(boolean locked) {
 		setColumn(COLUMN_LOCKED, locked);
 	}
@@ -287,7 +288,7 @@ public class ApartmentTypeBMPBean extends
 	}
 
 	public Collection ejbFindAllIncludingLocked() throws FinderException {
-		return super.idoFindAllIDsBySQL();	
+		return super.idoFindAllIDsBySQL();
 	}
 
 	public Collection ejbFindByBuilding(Integer buildingID)
@@ -304,9 +305,13 @@ public class ApartmentTypeBMPBean extends
 			query.addCriteria(new MatchCriteria(new Column(floor,
 					FloorBMPBean.BU_BUILDING_ID), MatchCriteria.EQUALS,
 					buildingID.intValue()));
-			query.addCriteria(new MatchCriteria(new Column(type,
-					COLUMN_LOCKED), MatchCriteria.NOTEQUALS,
-					true));
+			// query.addCriteria(new MatchCriteria(new Column(type,
+			// COLUMN_LOCKED), MatchCriteria.NOTEQUALS,
+			// true));
+			query.addCriteria(new OR(new MatchCriteria(new Column(type,
+					COLUMN_LOCKED), MatchCriteria.EQUALS, false),
+					new MatchCriteria(type.getColumn(COLUMN_LOCKED))));
+
 			return idoFindPKsBySQL(query.toString());
 		} catch (IDORelationshipException e) {
 			throw new FinderException(e.getMessage());
@@ -320,9 +325,13 @@ public class ApartmentTypeBMPBean extends
 		query.addColumn(new WildCardColumn(type));
 		query.addCriteria(new MatchCriteria(type, COLUMN_APARTMENT_CATEGORY,
 				MatchCriteria.EQUALS, categoryID.intValue()));
-		query.addCriteria(new MatchCriteria(new Column(type,
-				COLUMN_LOCKED), MatchCriteria.NOTEQUALS,
-				true));
+		// query.addCriteria(new MatchCriteria(new Column(type,
+		// COLUMN_LOCKED), MatchCriteria.NOTEQUALS,
+		// true));
+		query.addCriteria(new OR(new MatchCriteria(new Column(type,
+				COLUMN_LOCKED), MatchCriteria.EQUALS, false),
+				new MatchCriteria(type.getColumn(COLUMN_LOCKED))));
+
 		return idoFindPKsBySQL(query.toString());
 	}
 
@@ -345,11 +354,16 @@ public class ApartmentTypeBMPBean extends
 		query.addCriteria(new MatchCriteria(new Column(building,
 				BuildingBMPBean.COLUMN_COMPLEX), MatchCriteria.EQUALS,
 				complexID.intValue()));
-		query.addCriteria(new MatchCriteria(new Column(type,
-				COLUMN_LOCKED), MatchCriteria.NOTEQUALS,
-				true));
-		return idoFindPKsBySQL(query.toString());
+		// query.addCriteria(new MatchCriteria(new Column(type,
+		// COLUMN_LOCKED), MatchCriteria.NOTEQUALS,
+		// true));
+		query.addCriteria(new OR(new MatchCriteria(new Column(type,
+				COLUMN_LOCKED), MatchCriteria.EQUALS, false),
+				new MatchCriteria(type.getColumn(COLUMN_LOCKED))));
 
+		System.out.println("sql = " + query.toString());
+
+		return idoFindPKsBySQL(query.toString());
 	}
 
 	public Collection ejbFindFromSameComplex(ApartmentType thetype)
@@ -363,9 +377,13 @@ public class ApartmentTypeBMPBean extends
 		query.addCriteria(new MatchCriteria(type, getIDColumnName(),
 				MatchCriteria.EQUALS, ((Integer) thetype.getPrimaryKey())
 						.intValue()));
-		query.addCriteria(new MatchCriteria(new Column(type,
-				COLUMN_LOCKED), MatchCriteria.NOTEQUALS,
-				true));
+		// query.addCriteria(new MatchCriteria(new Column(type,
+		// COLUMN_LOCKED), MatchCriteria.NOTEQUALS,
+		// true));
+		query.addCriteria(new OR(new MatchCriteria(new Column(type,
+				COLUMN_LOCKED), MatchCriteria.EQUALS, false),
+				new MatchCriteria(type.getColumn(COLUMN_LOCKED))));
+
 		return idoFindPKsBySQL(query.toString());
 	}
 }
