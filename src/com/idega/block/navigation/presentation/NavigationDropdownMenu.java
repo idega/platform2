@@ -4,7 +4,6 @@ import java.util.Iterator;
 
 import com.idega.builder.business.PageTreeNode;
 import com.idega.core.builder.business.BuilderService;
-import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -27,14 +26,11 @@ public class NavigationDropdownMenu extends Block {
 
 	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.navigation";
 
-	private IWBundle iwb;
 	private IWResourceBundle iwrb;
 
 	private String prmDropdown = "nav__drp__mnu_";
 
 	private int rootNode = -1;
-	private int currentPageId = -1;
-	private int parentPageId = -1;
 	private int spaceBetween = 0;
 
 	private boolean useSubmitButton = false;
@@ -46,6 +42,8 @@ public class NavigationDropdownMenu extends Block {
 	private String iLinkStyleClass;
 	private String iInputStyleClass;
 	private String iButtonStyleClass;
+	private String iDropDownMenuWidth;
+	private String iFirstMenuElementText;
 	
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
@@ -66,6 +64,9 @@ public class NavigationDropdownMenu extends Block {
 		DropdownMenu dropDown = new DropdownMenu(name);
 		if (iInputStyleClass != null) {
 			dropDown.setStyleClass(iInputStyleClass);
+		}
+		if (iDropDownMenuWidth != null) {
+			dropDown.setWidth(iDropDownMenuWidth);
 		}
 
 		PageTreeNode node = new PageTreeNode(rootNode, iwc);
@@ -128,7 +129,11 @@ public class NavigationDropdownMenu extends Block {
 			}
 		}
 		else {
-			dropDown.addMenuElementFirst("", "");
+			if (iFirstMenuElementText != null) {
+				dropDown.addMenuElementFirst("", iFirstMenuElementText);
+			} else {
+				dropDown.addMenuElementFirst("", "");
+			}
 			dropDown.setOnChange(getScriptCaller(name));
 		}
 
@@ -171,6 +176,19 @@ public class NavigationDropdownMenu extends Block {
 	 */
 	public void setLinkStyleClass(String linkStyleClass) {
 		iLinkStyleClass = linkStyleClass;
+	}
+	/**
+	 * @param dropDownMenuWidth The dropDownMenuWidth to set.
+	 */
+	public void setDropDownMenuWidth(String dropDownMenuWidth) {
+		iDropDownMenuWidth = dropDownMenuWidth;
+	}
+	/**
+	/**
+	 * @param firstMenuElementText The firstMenuElementText to set.
+	 */
+	public void setFirstMenuElementText(String firstMenuElementText) {
+		iFirstMenuElementText = firstMenuElementText;
 	}
 	/**
 	 * @param spaceBetween The spaceBetween to set.
