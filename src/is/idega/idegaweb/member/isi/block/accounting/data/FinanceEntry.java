@@ -1,25 +1,16 @@
-/**
- * 
- */
 package is.idega.idegaweb.member.isi.block.accounting.data;
 
-import is.idega.idegaweb.member.isi.block.accounting.export.data.Batch;
 
-import java.sql.Date;
-import java.sql.Timestamp;
-
-
-import com.idega.block.basket.data.BasketItem;
 import com.idega.block.finance.data.AccountEntry;
-import com.idega.data.IDOEntity;
-import com.idega.data.IDOPrimaryKey;
 import com.idega.user.data.Group;
+import is.idega.idegaweb.member.isi.block.accounting.export.data.Batch;
+import com.idega.block.basket.data.BasketItem;
+import com.idega.data.IDOPrimaryKey;
+import java.sql.Date;
 import com.idega.user.data.User;
+import java.sql.Timestamp;
+import com.idega.data.IDOEntity;
 
-/**
- * @author bluebottle
- *
- */
 public interface FinanceEntry extends IDOEntity, BasketItem {
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean#setStatusCreated
@@ -452,6 +443,16 @@ public interface FinanceEntry extends IDOEntity, BasketItem {
 	public void setAccountEntry(AccountEntry entry);
 
 	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean#getInvoiceReceiver
+	 */
+	public InvoiceReceiver getInvoiceReceiver();
+
+	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean#setInvoiceReceiver
+	 */
+	public void setInvoiceReceiver(InvoiceReceiver receiver);
+
+	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean#getItemDescription
 	 */
 	public String getItemDescription();
@@ -470,5 +471,4 @@ public interface FinanceEntry extends IDOEntity, BasketItem {
 	 * @see is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean#getItemName
 	 */
 	public String getItemName();
-
 }

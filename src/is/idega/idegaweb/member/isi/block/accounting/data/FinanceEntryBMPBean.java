@@ -89,6 +89,8 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 	protected final static String COLUMN_PAYED_BY_SSN = "payed_by_ssn";
 	
 	protected final static String COLUMN_ACCOUNT_ENTRY = "account_entry_id";
+	
+	protected final static String COLUMN_INVOICE_RECEIVER = "invoice_receiver";
 
 	protected final static String STATUS_CREATED = "C";
 
@@ -161,6 +163,8 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 		addAttribute(COLUMN_FINAL_DUE_DATE, "Due date", true, true, Date.class);
 		addAttribute(COLUMN_PAYED_BY_SSN, "Payed by ssn", true, true, String.class);
 		addOneToOneRelationship(COLUMN_ACCOUNT_ENTRY, AccountEntry.class);
+		
+		addManyToOneRelationship(COLUMN_INVOICE_RECEIVER, InvoiceReceiver.class);
 
 		setNullable(COLUMN_USER_ID, false);
 		setNullable(COLUMN_ASSESSMENT_ROUND_ID, true);
@@ -534,6 +538,14 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 		setColumn(COLUMN_ACCOUNT_ENTRY, entry);		
 	}
 
+	public InvoiceReceiver getInvoiceReceiver() {
+		return (InvoiceReceiver) getColumnValue(COLUMN_INVOICE_RECEIVER);
+	}
+	
+	public void setInvoiceReceiver(InvoiceReceiver receiver) {
+		setColumn(COLUMN_INVOICE_RECEIVER, receiver);
+	}
+	
 	public Collection ejbFindAllByAssessmentRound(AssessmentRound round) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
@@ -830,6 +842,16 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 		return idoFindPKsByQuery(sql);
 	}
 
+	public Collection ejbFindAllByClubId(int id) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhereEquals(COLUMN_CLUB_ID, id);
+
+		System.out.println("sql = " + sql.toString());
+		
+		return idoFindPKsByQuery(sql);
+	}
+	
 	public Collection ejbFindAllByBatchID(int batchID) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);

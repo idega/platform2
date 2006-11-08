@@ -1,0 +1,42 @@
+<!-- Use this file to deploy some handlers/chains and services      -->
+<!-- Two ways to do this:                                           -->
+<!--   java org.apache.axis.client.AdminClient deploy.wsdd          -->
+<!--      after the axis server is running                          -->
+<!-- or                                                             -->
+<!--   java org.apache.axis.utils.Admin client|server deploy.wsdd   -->
+<!--      from the same directory that the Axis engine runs         -->
+
+<deployment
+    xmlns="http://xml.apache.org/axis/wsdd/"
+    xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+
+  <!-- Services from NetbokhaldServiceService WSDL service -->
+
+  <service name="NetbokhaldService" provider="java:RPC" style="rpc" use="encoded">
+      <parameter name="wsdlTargetNamespace" value="urn:netbokhald"/>
+      <parameter name="wsdlServiceElement" value="NetbokhaldServiceService"/>
+      <parameter name="schemaUnqualified" value="urn:netbokhald"/>
+      <parameter name="wsdlServicePort" value="NetbokhaldService"/>
+      <parameter name="className" value="is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.server.NetbokhaldServiceSoapBindingSkeleton"/>
+      <parameter name="wsdlPortType" value="NetbokhaldService"/>
+      <parameter name="typeMappingVersion" value="1.2"/>
+      <parameter name="allowedMethods" value="*"/>
+      <parameter name="scope" value="Session"/>
+
+      <arrayMapping
+        xmlns:ns="urn:netbokhald"
+        qname="ns:ArrayOfNetbokhaldEntry"
+        type="java:is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.server.NetbokhaldEntry[]"
+        innerType="cmp-ns:NetbokhaldEntry" xmlns:cmp-ns="urn:netbokhald"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:netbokhald"
+        qname="ns:NetbokhaldEntry"
+        type="java:is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.server.NetbokhaldEntry"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+  </service>
+</deployment>
