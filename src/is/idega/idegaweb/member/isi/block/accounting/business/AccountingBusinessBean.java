@@ -7,6 +7,7 @@
  */
 package is.idega.idegaweb.member.isi.block.accounting.business;
 
+import is.idega.block.family.business.FamilyLogic;
 import is.idega.block.nationalregister.business.NationalRegisterBusiness;
 import is.idega.block.nationalregister.data.NationalRegister;
 import is.idega.idegaweb.member.isi.block.accounting.data.AssessmentRound;
@@ -29,6 +30,7 @@ import is.idega.idegaweb.member.isi.block.accounting.presentation.plugin.Cashier
 import is.idega.idegaweb.member.isi.block.accounting.presentation.plugin.CreditCardExtraInfo;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -55,8 +57,10 @@ import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.PresentationObject;
+import com.idega.user.business.UserBusiness;
 import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
@@ -98,6 +102,10 @@ public class AccountingBusinessBean extends IBOServiceBean implements
 	 * @param paymentDate
 	 *            The last payment date to be put in the FinanceEntry.
 	 */
+
+	private static final double MILLISECONDS_IN_YEAR = 31557600000d;
+	private UserBusiness userBiz = null;
+
 	public boolean doAssessment(String name, Group club, Group division,
 			String groupId, User user, boolean includeChildren, String tariff,
 			Timestamp paymentDate, Date tariffValidFrom, Date tariffValidTo,
@@ -644,8 +652,8 @@ public class AccountingBusinessBean extends IBOServiceBean implements
 		User payedByUser = null;
 		if (payedBy != null && !"".equals(payedBy.trim())) {
 			try {
-				payedByUser = (User) (((UserHome) IDOLookup.getHome(User.class))
-						.findByPersonalID(payedBy));
+				payedByUser = ((UserHome) IDOLookup.getHome(User.class))
+						.findByPersonalID(payedBy);
 			} catch (Exception e) {
 			}
 		}
@@ -1011,6 +1019,26 @@ public class AccountingBusinessBean extends IBOServiceBean implements
 		}
 	}
 
+	private UserBusiness getUserBusiness() throws RemoteException {
+		if (userBiz == null) {
+			userBiz = (UserBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), UserBusiness.class);
+		}	
+		return userBiz;
+	}
+
+	public FamilyLogic getMemberFamilyLogic(IWApplicationContext iwc) {
+		FamilyLogic familyLogic = null;
+		if (familyLogic == null) {
+			try {
+				familyLogic = (FamilyLogic) com.idega.business.IBOLookup.getServiceInstance(iwc, FamilyLogic.class);
+			}
+			catch (java.rmi.RemoteException rme) {
+				throw new RuntimeException(rme.getMessage());
+			}
+		}
+		return familyLogic;
+	}
+
 	public boolean insertManualAssessment(Group club, Group div, User user,
 			String groupId, String tariffId, String amount, String info,
 			User currentUser, Timestamp paymentDate) {
@@ -1272,29 +1300,43 @@ public class AccountingBusinessBean extends IBOServiceBean implements
 	 */
 	public User getInvoiceReceiver(User invoicedUser, Group group) {
 		//If older than 18 then return the user
-		
-		//If InvoiceReceiver entry for the invoicedUser for group/division/club then return the user in it
-		
-		//If younger then 16 then return the older custodian
-		
-		//Get the custodian from the national register by the family id
-		// Collection custodians = null;
-		/*try {
-			NationalRegister userRegister = getNationalRegisterBusiness()
-					.getEntryBySSN(user.getPersonalID());
-			if (!personalID.equals(userRegister.getFamilyId())) {
-				custodianPersonalID = userRegister.getFamilyId();
-				User custodian = getUserBusiness().getUser(custodianPersonalID);
-				custodianString = custodian.getName();
+		//If InvoiceReceiver entry for the invoicedUser for group/division/club then return the user in it		
+		//If younger then 18 then return the older custodian
+		User custodian = null;
 
-			} else {
-				custodianPersonalID = personalID;
+		try {
+			Date date_of_birth = invoicedUser.getDateOfBirth();
+			if (date_of_birth != null) {
+				long ageInMillisecs = IWTimestamp.getMilliSecondsBetween(new IWTimestamp(date_of_birth),new IWTimestamp());
+				BigDecimal age = new BigDecimal(ageInMillisecs/MILLISECONDS_IN_YEAR);
+				if (age.doubleValue() < 18) {
+					//Custodian looked up in National Register
+					NationalRegister userRegister = getNationalRegisterBusiness().getEntryBySSN(invoicedUser.getPersonalID());
+					if (userRegister != null) {
+						String custodianPersonalID = userRegister.getFamilyId();
+						custodian = getUserBusiness().getUser(custodianPersonalID);
+					}
+					if (custodian == null) {
+						//User younger than 18, but no custodians found in National Register. Trying idegaweb family relation table
+						Collection custodians = getMemberFamilyLogic(getIWApplicationContext()).getCustodiansFor(invoicedUser);
+						if (custodians != null && !custodians.isEmpty()) {
+							Iterator custIt = custodians.iterator();
+							if (custIt.hasNext()) {
+								custodian = (User)custIt.next();
+							}
+						}
+					}
+				}
 			}
-		} catch (Exception e) {
+			if (custodian == null) {
+				//No custodians found or user not younger than 18, returning the user himself
+				custodian = invoicedUser;
+			}
+		}
+		catch (Exception e) {
 			e.printStackTrace();
-		}*/
-
-		return null;
+		}
+		return custodian;
 	}
 
 	private NationalRegisterBusiness getNationalRegisterBusiness() throws RemoteException {

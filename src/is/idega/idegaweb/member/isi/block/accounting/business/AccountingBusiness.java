@@ -273,4 +273,9 @@ public interface AccountingBusiness extends IBOService, UserGroupPlugInBusiness 
 	 * @see is.idega.idegaweb.member.isi.block.accounting.business.AccountingBusinessBean#canCreateSubGroup
 	 */
 	public String canCreateSubGroup(Group group, String groupTypeOfSubGroup) throws RemoteException, RemoteException;
+	
+	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.business.AccountingBusinessBean#getInvoiceReceiver
+	 */
+	public User getInvoiceReceiver(User invoicedUser, Group group) throws RemoteException;
 }
