@@ -1,8 +1,6 @@
 package is.idega.idegaweb.member.isi.block.accounting.business;
 
 import is.idega.block.family.business.FamilyLogic;
-import is.idega.block.nationalregister.business.NationalRegisterBusiness;
-import is.idega.block.nationalregister.data.NationalRegister;
 import is.idega.idegaweb.member.isi.block.accounting.data.AssessmentRound;
 import is.idega.idegaweb.member.isi.block.accounting.data.ClubTariffType;
 import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntry;
@@ -37,7 +35,6 @@ import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.user.business.GroupBusiness;
-import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
@@ -84,8 +81,6 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 	
 	private AccountingBusiness accountingBiz = null;
 	private GroupBusiness groupBiz = null;
-	private UserBusiness userBiz = null;
-	private NationalRegisterBusiness nationalRegisterBiz = null;
 	private IWBundle _iwb = null;
 	private IWResourceBundle _iwrb = null;
 	private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi.block.accounting";
@@ -102,20 +97,6 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			groupBiz = (GroupBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), GroupBusiness.class);
 		}	
 		return groupBiz;
-	}
-
-	private UserBusiness getUserBusiness() throws RemoteException {
-		if (userBiz == null) {
-			userBiz = (UserBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), UserBusiness.class);
-		}	
-		return userBiz;
-	}
-
-	private NationalRegisterBusiness getNationalRegisterBusiness() throws RemoteException {
-		if (nationalRegisterBiz == null) {
-			nationalRegisterBiz = (NationalRegisterBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), NationalRegisterBusiness.class);
-		}	
-		return nationalRegisterBiz;
 	}
 	
 	private void initializeBundlesIfNeeded() {
@@ -228,8 +209,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			 String groupString = null;
 			 String userString = null;
 			 String personalID = null;
-			 String custodianString = null;
-			 String custodianPersonalID = null;
+			 StringBuffer custodianString = new StringBuffer();
+			 StringBuffer custodianPersonalID = new StringBuffer();
 			 String tariffTypeString = null;
 
 			 division = financeEntry.getDivision();
@@ -242,24 +223,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			 if (user != null) {
 			 	userString = user.getName();
 			 	personalID = user.getPersonalID();
-//			 	Collection custodians = null; 
-				try {
-					NationalRegister userRegister = getNationalRegisterBusiness().getEntryBySSN(user.getPersonalID());
-					if (!personalID.equals(userRegister.getFamilyId())) {
-						custodianPersonalID = userRegister.getFamilyId();
-						User custodian = getUserBusiness().getUser(custodianPersonalID);
-						custodianString = custodian.getName();
-						
-					} else {
-						custodianPersonalID = personalID;
-					}
-					if (custodianPersonalID != null && custodianPersonalID.length() == 10) {
-						custodianPersonalID = custodianPersonalID.substring(0,6)+"-"+custodianPersonalID.substring(6,10);
-				 	}
-					//custodians = getMemberFamilyLogic(getIWApplicationContext()).getCustodiansFor(user);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+			 	loadCustodianInfo(user, custodianString, custodianPersonalID);
 			 	if (personalID != null && personalID.length() == 10) {
 			 		personalID = personalID.substring(0,6)+"-"+personalID.substring(6,10);
 			 	}
@@ -408,8 +372,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			String groupString = null;
 			String userString = null;
 			String personalID = null;
-			String custodianString = null;
-			String custodianPersonalID = null;
+			StringBuffer custodianString = new StringBuffer();
+			StringBuffer custodianPersonalID = new StringBuffer();
 			String paymentTypeString = null;
 
 			division = financeEntry.getDivision();
@@ -422,23 +386,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			if (user != null) {
 				userString = user.getName();
 				personalID = user.getPersonalID();
-				//Collection custodians = null; 
-				try {
-					NationalRegister userRegister = getNationalRegisterBusiness().getEntryBySSN(user.getPersonalID());
-					if (!personalID.equals(userRegister.getFamilyId())) {
-						custodianPersonalID = userRegister.getFamilyId();
-						User custodian = getUserBusiness().getUser(custodianPersonalID);
-						custodianString = custodian.getName();
-					} else {
-						custodianPersonalID = personalID;
-					}
-					if (custodianPersonalID != null && custodianPersonalID.length() == 10) {
-						custodianPersonalID = custodianPersonalID.substring(0,6)+"-"+custodianPersonalID.substring(6,10);
-				 	}
-					//custodians = getMemberFamilyLogic(getIWApplicationContext()).getCustodiansFor(user);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				loadCustodianInfo(user, custodianString, custodianPersonalID);
 				if (personalID != null && personalID.length() == 10) {
 					personalID = personalID.substring(0,6)+"-"+personalID.substring(6,10);
 				}
@@ -542,6 +490,14 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		personalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PERSONAL_ID, "Personal ID"),currentLocale);
 		reportCollection.addField(personalIDField);
 		
+		ReportableField custodianNameField = new ReportableField(FIELD_NAME_CUSTODIAN_NAME, String.class);
+		custodianNameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_NAME, "Custodian name"), currentLocale);
+		reportCollection.addField(custodianNameField);
+
+		ReportableField custodianPersonalIDField = new ReportableField(FIELD_NAME_CUSTODIAN_PERSONAL_ID, String.class);
+		custodianPersonalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_PERSONAL_ID, "Custodian personal ID"),currentLocale);
+		reportCollection.addField(custodianPersonalIDField);
+
 		ReportableField phoneField = new ReportableField(FIELD_NAME_PHONE, Double.class);
 		phoneField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PHONE, "Phone"), currentLocale);
 		reportCollection.addField(phoneField);
@@ -587,6 +543,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			String groupString = null;
 			String userString = null;
 			String personalID = null;
+			StringBuffer custodianString = new StringBuffer();
+			StringBuffer custodianPersonalID = new StringBuffer();
 			String phoneNumber = null;
 			String tariffTypeString = null;
 
@@ -600,6 +558,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			if (user != null) {
 				userString = user.getName();
 				personalID = user.getPersonalID();
+				loadCustodianInfo(user, custodianString, custodianPersonalID);
 				if (personalID != null && personalID.length() == 10) {
 					personalID = personalID.substring(0,6)+"-"+personalID.substring(6,10);
 				}
@@ -616,6 +575,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			data.addData(groupField, groupString );
 			data.addData(nameField, userString );
 			data.addData(personalIDField, personalID );
+			data.addData(custodianNameField, custodianString );
+	 		data.addData(custodianPersonalIDField, custodianPersonalID );
 			data.addData(phoneField, phoneNumber );
 			data.addData(amountField, financeEntry.getItemPrice() );
 			data.addData(entryDateField, new IWTimestamp(financeEntry.getDateOfEntry()).getDateString("dd.MM.yy")  );
@@ -700,6 +661,14 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		ReportableField personalIDField = new ReportableField(FIELD_NAME_PERSONAL_ID, String.class);
 		personalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PERSONAL_ID, "Personal ID"),currentLocale);
 		reportCollection.addField(personalIDField);
+
+		ReportableField custodianNameField = new ReportableField(FIELD_NAME_CUSTODIAN_NAME, String.class);
+		custodianNameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_NAME, "Custodian name"), currentLocale);
+		reportCollection.addField(custodianNameField);
+
+		ReportableField custodianPersonalIDField = new ReportableField(FIELD_NAME_CUSTODIAN_PERSONAL_ID, String.class);
+		custodianPersonalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_PERSONAL_ID, "Custodian personal ID"),currentLocale);
+		reportCollection.addField(custodianPersonalIDField);
 		
 		ReportableField phoneField = new ReportableField(FIELD_NAME_PHONE, Double.class);
 		phoneField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PHONE, "Phone"), currentLocale);
@@ -742,6 +711,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			String groupString = null;
 			String userString = null;
 			String personalID = null;
+			StringBuffer custodianString = new StringBuffer();
+			StringBuffer custodianPersonalID = new StringBuffer();
 			String phoneNumber = null;
 			String tariffTypeString = null;
 
@@ -755,6 +726,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			if (user != null) {
 				userString = user.getName();
 				personalID = user.getPersonalID();
+				loadCustodianInfo(user, custodianString, custodianPersonalID);
 				if (personalID != null && personalID.length() == 10) {
 					personalID = personalID.substring(0,6)+"-"+personalID.substring(6,10);
 				}
@@ -778,6 +750,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			data.addData(groupField, groupString );
 			data.addData(nameField, userString );
 			data.addData(personalIDField, personalID );
+			data.addData(custodianNameField, custodianString );
+	 		data.addData(custodianPersonalIDField, custodianPersonalID );
 			data.addData(phoneField, phoneNumber );
 			data.addData(amountField, amount );
 			data.addData(entryDateField, new IWTimestamp(financeEntry.getDateOfEntry()).getDateString("dd.MM.yy")  );			
@@ -862,6 +836,14 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		ReportableField personalIDField = new ReportableField(FIELD_NAME_PERSONAL_ID, String.class);
 		personalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PERSONAL_ID, "Personal ID"),currentLocale);
 		reportCollection.addField(personalIDField);
+
+		ReportableField custodianNameField = new ReportableField(FIELD_NAME_CUSTODIAN_NAME, String.class);
+		custodianNameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_NAME, "Custodian name"), currentLocale);
+		reportCollection.addField(custodianNameField);
+
+		ReportableField custodianPersonalIDField = new ReportableField(FIELD_NAME_CUSTODIAN_PERSONAL_ID, String.class);
+		custodianPersonalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_PERSONAL_ID, "Custodian personal ID"),currentLocale);
+		reportCollection.addField(custodianPersonalIDField);
 		
 		ReportableField phoneField = new ReportableField(FIELD_NAME_PHONE, Double.class);
 		phoneField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PHONE, "Phone"), currentLocale);
@@ -906,6 +888,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			String groupString = null;
 			String userString = null;
 			String personalID = null;
+			StringBuffer custodianString = new StringBuffer();
+			StringBuffer custodianPersonalID = new StringBuffer();
 			String phoneNumber = null;
 			String tariffTypeString = null;
 
@@ -919,6 +903,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			if (user != null) {
 				userString = user.getName();
 				personalID = user.getPersonalID();
+				loadCustodianInfo(user, custodianString, custodianPersonalID);
 				if (personalID != null && personalID.length() == 10) {
 					personalID = personalID.substring(0,6)+"-"+personalID.substring(6,10);
 				}
@@ -936,6 +921,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			data.addData(groupField, groupString );
 			data.addData(nameField, userString );
 			data.addData(personalIDField, personalID );
+			data.addData(custodianNameField, custodianString );
+	 		data.addData(custodianPersonalIDField, custodianPersonalID );
 			data.addData(phoneField, phoneNumber );
 			data.addData(amountField, new Double(financeEntry.getAmount()) );
 			data.addData(paymentDateField, new IWTimestamp(assmRnd.getPaymentDate()).getDateString("dd.MM.yy") );  			
@@ -1036,6 +1023,14 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		personalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PERSONAL_ID, "Personal ID"),currentLocale);
 		reportCollection.addField(personalIDField);
 		
+		ReportableField custodianNameField = new ReportableField(FIELD_NAME_CUSTODIAN_NAME, String.class);
+		custodianNameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_NAME, "Custodian name"), currentLocale);
+		reportCollection.addField(custodianNameField);
+
+		ReportableField custodianPersonalIDField = new ReportableField(FIELD_NAME_CUSTODIAN_PERSONAL_ID, String.class);
+		custodianPersonalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_PERSONAL_ID, "Custodian personal ID"),currentLocale);
+		reportCollection.addField(custodianPersonalIDField);
+
 		ReportableField amountField = new ReportableField(FIELD_NAME_AMOUNT, Double.class);
 		amountField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT, "Amount"), currentLocale);
 		reportCollection.addField(amountField);
@@ -1078,6 +1073,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			String groupString = null;
 			String userString = null;
 			String personalID = null;
+			StringBuffer custodianString = new StringBuffer();
+			StringBuffer custodianPersonalID = new StringBuffer();
 			String paymentTypeString = null;
 			String tariffTypeString = null;
 			//String dateOfEntryString = new IWTimestamp(financeEntry.getDateOfEntry()).getDateString("dd.MM.yy");
@@ -1092,6 +1089,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			if (user != null) {
 				userString = user.getName();
 				personalID = user.getPersonalID();
+				loadCustodianInfo(user, custodianString, custodianPersonalID);
 				if (personalID != null && personalID.length() == 10) {
 					personalID = personalID.substring(0,6)+"-"+personalID.substring(6,10);
 				}
@@ -1110,6 +1108,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			data.addData(groupField, groupString );
 			data.addData(nameField, userString );
 			data.addData(personalIDField, personalID );
+			data.addData(custodianNameField, custodianString );
+	 		data.addData(custodianPersonalIDField, custodianPersonalID );
 			data.addData(amountField, new Double(financeEntry.getAmount()) );
 			data.addData(paymentTypeField, paymentTypeString );
 			data.addData(infoField, financeEntry.getInfo() );
@@ -1210,6 +1210,23 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		return familyLogic;
 	}
 	
+	private void loadCustodianInfo(User user, StringBuffer custodianName, StringBuffer custodianPersonalID) {
+		try {
+			User custodian = getAccountingBusiness().getInvoiceReceiver(user,null);
+			if (custodian != null) {
+				custodianPersonalID.append(custodian.getPersonalID());
+				if (!user.getPersonalID().equals(custodian.getPersonalID())) {
+					custodianName.append(custodian.getName());
+				}
+			}
+			if (custodianPersonalID != null && custodianPersonalID.length() == 10) {
+				custodianPersonalID.insert(6,"-");
+		 	}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	class DateComparator implements Comparator {
 
 		public int compare(Object arg0, Object arg1) {
