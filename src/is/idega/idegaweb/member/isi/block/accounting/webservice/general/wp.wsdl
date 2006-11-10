@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="urn:accounting" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="urn:accounting" xmlns:intf="urn:accounting" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.3
+Built on Oct 05, 2005 (05:23:37 EDT)-->
+ <wsdl:types>
+  <schema targetNamespace="urn:accounting" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
+   <complexType name="AddressInfo">
+    <sequence>
+     <element name="city" nillable="true" type="soapenc:string"/>
+     <element name="country" nillable="true" type="soapenc:string"/>
+     <element name="postalcode" nillable="true" type="soapenc:string"/>
+     <element name="streetName" nillable="true" type="soapenc:string"/>
+     <element name="streetNumber" nillable="true" type="soapenc:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="UserInfo">
+    <sequence>
+     <element name="address" nillable="true" type="impl:AddressInfo"/>
+     <element name="error" nillable="true" type="soapenc:string"/>
+     <element name="firstName" nillable="true" type="soapenc:string"/>
+     <element name="lastName" nillable="true" type="soapenc:string"/>
+     <element name="middleName" nillable="true" type="soapenc:string"/>
+     <element name="socialsecurity" nillable="true" type="soapenc:string"/>
+     <element name="valid" type="xsd:boolean"/>
+    </sequence>
+   </complexType>
+  </schema>
+ </wsdl:types>
+
+   <wsdl:message name="getUserRequest">
+
+      <wsdl:part name="in0" type="soapenc:string"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getUserResponse">
+
+      <wsdl:part name="getUserReturn" type="impl:UserInfo"/>
+
+   </wsdl:message>
+
+   <wsdl:portType name="AccountingService">
+
+      <wsdl:operation name="getUser" parameterOrder="in0">
+
+         <wsdl:input message="impl:getUserRequest" name="getUserRequest"/>
+
+         <wsdl:output message="impl:getUserResponse" name="getUserResponse"/>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="AccountingServiceSoapBinding" type="impl:AccountingService">
+
+      <wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="getUser">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getUserRequest">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:accounting" use="encoded"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getUserResponse">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:accounting" use="encoded"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="AccountingServiceService">
+
+      <wsdl:port binding="impl:AccountingServiceSoapBinding" name="AccountingService">
+
+         <wsdlsoap:address location="http://www.felix.is/services/AccountingService"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>

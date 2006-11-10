@@ -1,0 +1,43 @@
+<!-- Use this file to deploy some handlers/chains and services      -->
+<!-- Two ways to do this:                                           -->
+<!--   java org.apache.axis.client.AdminClient deploy.wsdd          -->
+<!--      after the axis server is running                          -->
+<!-- or                                                             -->
+<!--   java org.apache.axis.utils.Admin client|server deploy.wsdd   -->
+<!--      from the same directory that the Axis engine runs         -->
+
+<deployment
+    xmlns="http://xml.apache.org/axis/wsdd/"
+    xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+
+  <!-- Services from AccountingServiceService WSDL service -->
+
+  <service name="AccountingService" provider="java:RPC" style="rpc" use="encoded">
+      <parameter name="wsdlTargetNamespace" value="urn:accounting"/>
+      <parameter name="wsdlServiceElement" value="AccountingServiceService"/>
+      <parameter name="schemaUnqualified" value="urn:accounting"/>
+      <parameter name="wsdlServicePort" value="AccountingService"/>
+      <parameter name="className" value="is.idega.idegaweb.member.isi.block.accounting.webservice.general.server.AccountingServiceSoapBindingSkeleton"/>
+      <parameter name="wsdlPortType" value="AccountingService"/>
+      <parameter name="typeMappingVersion" value="1.2"/>
+      <parameter name="allowedMethods" value="*"/>
+      <parameter name="scope" value="Session"/>
+
+      <typeMapping
+        xmlns:ns="urn:accounting"
+        qname="ns:UserInfo"
+        type="java:is.idega.idegaweb.member.isi.block.accounting.webservice.general.server.UserInfo"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:accounting"
+        qname="ns:AddressInfo"
+        type="java:is.idega.idegaweb.member.isi.block.accounting.webservice.general.server.AddressInfo"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+  </service>
+</deployment>
