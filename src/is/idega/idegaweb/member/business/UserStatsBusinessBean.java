@@ -73,7 +73,7 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 	private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member";
 	private final static String USER_IW_BUNDLE_IDENTIFIER = "com.idega.user";
 	private static final String USR_STAT_PREFIX = "usr_stat_";
-	private static final double SECONDS_IN_YEAR = 31557600000.0;
+	private static final double MILLISECONDS_IN_YEAR = 31557600000d;
 
 	private static final String LOCALIZED_CURRENT_DATE = "UserStatsBusiness.current_date";
 	private static final String LOCALIZED_NAME = "UserStatsBusiness.name";
@@ -259,7 +259,7 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 					if (date_of_birth != null) {
 						dateOfBirthString = new IWTimestamp(date_of_birth).getDateString("dd.MM.yyyy");
 						long ageInMillisecs = IWTimestamp.getMilliSecondsBetween(new IWTimestamp(date_of_birth),new IWTimestamp());
-						BigDecimal age = new BigDecimal(ageInMillisecs/SECONDS_IN_YEAR);
+						BigDecimal age = new BigDecimal(ageInMillisecs/MILLISECONDS_IN_YEAR);
 						ageString = String.valueOf(age.intValue());
 						if (age.doubleValue() < 18) {
 							NationalRegister userRegister = getNationalRegisterBusiness().getEntryBySSN(user.getPersonalID());
