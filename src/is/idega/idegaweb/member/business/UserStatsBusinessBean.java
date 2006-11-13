@@ -40,6 +40,7 @@ import com.idega.core.location.data.Address;
 import com.idega.core.location.data.AddressType;
 import com.idega.core.location.data.AddressTypeHome;
 import com.idega.core.location.data.Country;
+import com.idega.core.location.data.PostalCode;
 import com.idega.data.IDOCompositePrimaryKeyException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -130,7 +131,7 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 	}
 
     
-    public ReportableCollection getStatisticsForUsers(String groupIDFilter, String groupsRecursiveFilter, Collection groupTypesFilter, Collection userStatusesFilter, Integer yearOfBirthFromFilter, Integer yearOfBirthToFilter, String genderFilter, String dynamicLayout, String orderBy) throws RemoteException {        
+    public ReportableCollection getStatisticsForUsers(String groupIDFilter, String groupsRecursiveFilter, Collection groupTypesFilter, Collection userStatusesFilter, Integer yearOfBirthFromFilter, Integer yearOfBirthToFilter, String genderFilter, Collection postalCodeFilter, String dynamicLayout, String orderBy) throws RemoteException {        
 
         initializeBundlesIfNeeded();
 		ReportableCollection reportCollection = new ReportableCollection();
@@ -308,6 +309,13 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 			    String countryString = null;
 			   	if (addresses != null && !addresses.isEmpty()) {
 			   	    address = (Address)addresses.iterator().next();
+			   	    PostalCode postalCode = address.getPostalCode();
+			   	    if (postalCode != null) {
+			   	    	String postalCodeString = postalCode.getPostalCode();
+			   	    	if (!postalCodeFilter.contains(postalCodeString)) {
+			   	    		continue;
+			   	    	}
+			   	    }
 			   	    streetAddressString = address.getStreetAddress();
 			   	    postalAddressString = address.getPostalAddress();
 			   	    Country country = address.getCountry();
@@ -319,6 +327,8 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 	                    	countryString = localizedCountryName;
 	                    }
 			   	    }
+			   	} else if (!postalCodeFilter.isEmpty()) {
+			   		continue;
 			   	}
 			     while (parIt.hasNext()) {
 			         Group parentGroup = (Group)parIt.next();
