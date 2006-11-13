@@ -38,13 +38,14 @@ public class MasterCardSendFile implements CreditCardSendFile {
 
 			// switch to SSL on control channel
 			//log.info("Switching to FTPS (explicit mode)");
-			ftp.auth(SSLFTPClient.AUTH_TLS);
+			ftp.auth(SSLFTPClient.AUTH_SSL);
 			// ftp.auth(SSLFTPClient.AUTH_TLS_C);
 
 			// log in
 			//log.info("Logging in with username=" + username + " and password="
 			//		+ password);
 			ftp.login(configuration.getSendFTPUser(), configuration.getSendFTPPassword());
+			ftp.ccc();
 
 			// set up passive ASCII transfers
 			//log.info("Setting up passive, ASCII transfers");
@@ -53,29 +54,9 @@ public class MasterCardSendFile implements CreditCardSendFile {
 			ftp.setType(FTPTransferType.ASCII);
 			ftp.prot(SSLFTPClient.PROT_PRIVATE);
 
-			// get directory and display it
-			// log.info("Directory before put:");
-			// String[] files = ftp.dir(".", true);
-			// showFiles(log, files);
-
 			// copy file to server
 			//log.info("Putting " + filename + " to server");
 			ftp.put(batch.getCreditCardFile().getFileValue(), batch.getCreditCardFileName());
-
-			// get directory and print it to console
-			// log.info("Directory after put:");
-			// files = ftp.dir(".", true);
-			// showFiles(log, files);
-
-			// copy file from server
-			/*
-			 * log.info( "Getting " + filename + " from server and saving as " +
-			 * filename + ".copy"); ftp.get(filename + ".copy", filename); //
-			 * delete file from server log.info("Deleting " + filename);
-			 * ftp.delete(filename); // get directory and print it to console
-			 * log.info("Directory after delete:"); files = ftp.dir("", true);
-			 * showFiles(log, files);
-			 */
 
 			// Shut down client
 			//log.info("Quitting client");

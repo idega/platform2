@@ -30,7 +30,7 @@ public class MasterCardFileCreation implements CreditCardFileCreation {
 		FileWriter writer = new FileWriter(tempfile);
 		BufferedWriter bWriter = new BufferedWriter(writer);
 		
-		System.out.println("MasterCardFileCreation: file name = " + tempfile.getPath() + tempfile.getName());
+		//System.out.println("MasterCardFileCreation: file name = " + tempfile.getPath() + tempfile.getName());
 		
 		StringBuffer empty = new StringBuffer("");
 		for (int i = 0; i < 60; i++) {
@@ -92,7 +92,7 @@ public class MasterCardFileCreation implements CreditCardFileCreation {
 		bWriter.write(contract.getContractNumber());
 		String batchNumber = getBatchNumber(contract);
 		bWriter.write(batchNumber);
-		bWriter.write(empty.substring(0, 8));
+		bWriter.write(now.getDateString("yyyyMMdd"));
 		bWriter.write(empty.substring(0, 4));
 		bWriter.write(empty.substring(0, 4));
 		bWriter.write(empty.substring(0, 5));
@@ -115,12 +115,12 @@ public class MasterCardFileCreation implements CreditCardFileCreation {
 			bWriter.write(format.format(entryCounter));
 			bWriter.write(contract.getContractNumber());
 			bWriter.write(batchNumber);
-			bWriter.write(empty.substring(0, 8));
+			bWriter.write(now.getDateString("yyyyMMdd"));
 			String cardNumber = entry.getPaymentContract().getCardNumber();
 			if (cardNumber.length() < 19) {
 				StringBuffer p = new StringBuffer(cardNumber);
 				while (p.length() < 19)
-					p.insert(0, '0');
+					p.append(" ");
 				cardNumber = p.toString();
 			} else if (cardNumber.length() > 19) {
 				cardNumber = cardNumber.substring(0, 19);
@@ -154,7 +154,19 @@ public class MasterCardFileCreation implements CreditCardFileCreation {
 			bWriter.write(empty.substring(0, 1));
 			bWriter.write(empty.substring(0, 1));
 			bWriter.write(empty.substring(0, 6));
-			bWriter.write(empty.substring(0, 7));
+			//Use the primary key as a reference number
+//			bWriter.write(empty.substring(0, 7));
+			String referenceNumber = entry.getPrimaryKey().toString();
+			if (referenceNumber.length() < 7) {
+				StringBuffer p = new StringBuffer(referenceNumber);
+				while (p.length() < 7)
+					p.insert(0, "0");
+				referenceNumber = p.toString();
+				
+			} else if (referenceNumber.length() > 7) {
+				referenceNumber = referenceNumber.substring(0, 7);
+			}
+			bWriter.write(referenceNumber);
 			entryCounter++;
 			bWriter.newLine();			
 		}
@@ -181,7 +193,8 @@ public class MasterCardFileCreation implements CreditCardFileCreation {
 		bWriter.write(format.format(entryCounter));
 		bWriter.write(now.getDateString("yyyyMMdd"));
 		bWriter.write(now.getDateString("hhmmss"));
-		bWriter.write(contract.getContractNumber());
+//		bWriter.write(contract.getContractNumber());
+		bWriter.write("7256001");
 		//@Todo check for multiple entries pr. day pr. contract
 		bWriter.write("001");
 		bWriter.write("PROD"); //bWriter.write("PROD");

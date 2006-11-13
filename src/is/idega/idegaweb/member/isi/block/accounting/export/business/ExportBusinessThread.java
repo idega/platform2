@@ -199,7 +199,7 @@ public class ExportBusinessThread extends Thread {
 							.getClub(), entry.getPaymentContract()
 							.getCardType());
 				} catch (Exception e2) {
-					createLogEntry(e.getMessage(), true);
+					createLogEntry(e2.getMessage(), true);
 					ret = null;
 				}
 			}
@@ -242,7 +242,7 @@ public class ExportBusinessThread extends Thread {
 				try {
 					ret = (BankInfo) bHome.findByClub(entry.getClub());
 				} catch (Exception e2) {
-					// Add to some kind of log?
+					createLogEntry(e2.getMessage(), true);
 					ret = null;
 				}
 			}
@@ -440,6 +440,23 @@ public class ExportBusinessThread extends Thread {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	public static void main(String args[]) {
+		String str = "4453313732313134";
+		if (str != null) {
+			char[] pass = new char[str.length() / 2];
+			try {
+				for (int i = 0; i < pass.length; i++) {
+					pass[i] = (char) Integer.decode(
+							"0x" + str.charAt(i * 2) + str.charAt((i * 2) + 1))
+							.intValue();
+				}
+				System.out.println(String.valueOf(pass));
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 		}
 	}
 }
