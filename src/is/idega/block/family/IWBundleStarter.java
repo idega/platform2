@@ -1,12 +1,15 @@
 package is.idega.block.family;
 
+import is.idega.block.family.business.LinkToFamilyLogicImpl;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
+import com.idega.repository.data.ImplementorRepository;
 import com.idega.user.data.GroupRelationType;
 import com.idega.user.data.GroupRelationTypeHome;
+import com.idega.user.presentation.LinkToFamilyLogic;
 
 /**
  * <p>Title: idegaWeb</p>
@@ -21,6 +24,8 @@ public class IWBundleStarter implements IWBundleStartable {
 
 	public void start(IWBundle starterBundle) {
 		insertStartData();
+		ImplementorRepository repository = ImplementorRepository.getInstance();
+		repository.addImplementor(LinkToFamilyLogic.class, LinkToFamilyLogicImpl.class);
 	}
 	
 	public void stop(IWBundle starterBundle) {
