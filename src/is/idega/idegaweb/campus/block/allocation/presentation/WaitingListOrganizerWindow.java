@@ -81,9 +81,9 @@ public class WaitingListOrganizerWindow extends CampusWindow {
 				close();
 			} else if (iwc.isParameterSet(ACTION_CANCEL)) {
 				close();
+			} else {
+				add(getRenumberTable(iwc));
 			}
-
-			add(getRenumberTable(iwc));
 		} else
 			add(getHeader(localize("access_denied", "Access denied")));
 	}
@@ -100,57 +100,56 @@ public class WaitingListOrganizerWindow extends CampusWindow {
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
 		}
-		
+
 		if (moveTo > 0) {
 			try {
 				Collection L = getContractService(iwc).getWaitingListHome()
 						.findByApartmentTypeAndComplex(aprtTypeId, complexId);
-				
-				WaitingList[] waitingList = (WaitingList[]) L.toArray();
-				WaitingList item = ((WaitingListHome) IDOLookup.getHome(WaitingList.class))
-				.findByPrimaryKey(new Integer(id));
+
+				WaitingList[] waitingList = (WaitingList[]) L
+						.toArray(new WaitingList[0]);
+				WaitingList item = ((WaitingListHome) IDOLookup
+						.getHome(WaitingList.class))
+						.findByPrimaryKey(new Integer(id));
 
 				if (L.size() > moveTo) {
 					WaitingList beforeEntry = waitingList[moveTo - 1];
 					item.setSamePriority(beforeEntry);
 					item.setOrder(beforeEntry.getOrder().intValue() - 1);
 					item.store();
-				}
-				else {
+				} else {
 					WaitingList beforeEntry = waitingList[L.size() - 1];
 					item.setSamePriority(beforeEntry);
 					item.setOrder(beforeEntry.getOrder().intValue() + 1);
 					item.store();
 				}
 			} catch (Exception e) {
-			}			
-		}
-		else if (priority != null) {
+				e.printStackTrace();
+			}
+		} else if (priority != null) {
 			try {
-				WaitingList item = ((WaitingListHome) IDOLookup.getHome(WaitingList.class))
+				WaitingList item = ((WaitingListHome) IDOLookup
+						.getHome(WaitingList.class))
 						.findByPrimaryKey(new Integer(id));
 
 				if ("A".equals(priority)) {
 					item.setPriorityLevelA();
-				} 
-				else if ("B".equals(priority)) {
+				} else if ("B".equals(priority)) {
 					item.setPriorityLevelB();
-				} 
-				else if ("C".equals(priority)) {
+				} else if ("C".equals(priority)) {
 					item.setPriorityLevelC();
-				} 
-				else if ("D".equals(priority)) {
+				} else if ("D".equals(priority)) {
 					item.setPriorityLevelD();
-				} 
-				else if ("E".equals(priority)) {
+				} else if ("E".equals(priority)) {
 					item.setPriorityLevelE();
 				}
-				
+
 				item.store();
 			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -210,9 +209,10 @@ public class WaitingListOrganizerWindow extends CampusWindow {
 		table.addTitle(localize("move_person_on_waitinglist",
 				"Move person on waitinglist"));
 
-		SubmitButton ok = new SubmitButton(ACTION_MOVE, localize(ACTION_MOVE, "Move"));
-		SubmitButton cancel = new SubmitButton(ACTION_CANCEL, localize(ACTION_CANCEL,
-				"Cancel"));
+		SubmitButton ok = new SubmitButton(ACTION_MOVE, localize(ACTION_MOVE,
+				"Move"));
+		SubmitButton cancel = new SubmitButton(ACTION_CANCEL, localize(
+				ACTION_CANCEL, "Cancel"));
 		table.addButton(ok);
 		table.addButton(cancel);
 
