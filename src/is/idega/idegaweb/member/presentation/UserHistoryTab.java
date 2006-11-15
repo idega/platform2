@@ -173,12 +173,18 @@ public class UserHistoryTab extends UserTab {
 			UserStatus status = (UserStatus) statusIter.next();
 			boolean ok = false;
 
-			ok = iwc.getAccessController().hasViewPermissionFor(status.getGroup(), iwc);
+			if (status.getGroupId() !=  -1) {
+				ok = iwc.getAccessController().hasViewPermissionFor(status.getGroup(), iwc);
+			}
 
 			if(ok) {
 				result.add(status);
 			} else {
-				System.out.println("User status in group " + status.getGroup().getName() + " not shown");
+				if (status.getGroupId() !=  -1) {
+					System.out.println("User status in group " + status.getGroup().getName() + " is filtered out");
+				} else {
+					System.out.println("User status: "+status.getStatus().getStatusKey()+" that was set: "+status.getDateFrom() + " is filtered out");
+				}
 			}
 		}
 		
