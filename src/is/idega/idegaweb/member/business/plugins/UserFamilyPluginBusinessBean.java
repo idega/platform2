@@ -1,5 +1,5 @@
 /*
- * $Id: UserFamilyPluginBusinessBean.java,v 1.6 2005/07/14 01:02:25 eiki Exp $
+ * $Id: UserFamilyPluginBusinessBean.java,v 1.6.4.1 2006/11/15 15:25:17 idegaweb Exp $
  * Created on Aug 31, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -16,6 +16,8 @@ import java.util.List;
 import javax.ejb.CreateException;
 import javax.ejb.RemoveException;
 import com.idega.business.IBOServiceBean;
+import com.idega.idegaweb.IWMainApplicationSettings;
+import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.user.data.Group;
@@ -24,12 +26,14 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2005/07/14 01:02:25 $ by $Author: eiki $
+ *  Last modified: $Date: 2006/11/15 15:25:17 $ by $Author: idegaweb $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.6.4.1 $
  */
 public class UserFamilyPluginBusinessBean extends IBOServiceBean implements UserFamilyPluginBusiness, UserGroupPlugInBusiness {
+
+	public static final String ROLE_KEY_CASHIER = "Gjaldkeri";
 
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#beforeUserRemove(com.idega.user.data.User)
@@ -84,7 +88,18 @@ public class UserFamilyPluginBusinessBean extends IBOServiceBean implements User
 	 */
 	public List getUserPropertiesTabs(User user) throws RemoteException {
 		List list = new ArrayList(1);
-	    list.add(new UserFamilyTab());  
+		IWContext iwc = IWContext.getInstance();
+		IWMainApplicationSettings settings = iwc.getApplicationSettings();
+		if (settings.getProperty("temp_show_is_related_stuff") != null) {
+			if (iwc != null) {
+				if (iwc.isSuperAdmin() || iwc.getAccessController().hasRole(ROLE_KEY_CASHIER, iwc)) {
+					list.add(new UserFamilyTab());
+				}
+			}
+		}
+		else {
+			list.add(new UserFamilyTab());
+		}
 		return list;
 	}
 
