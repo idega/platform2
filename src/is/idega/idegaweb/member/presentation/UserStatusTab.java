@@ -28,10 +28,13 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.SelectDropdown;
 import com.idega.presentation.ui.SelectOption;
+import com.idega.presentation.ui.TextInput;
+import com.idega.user.business.UserInfoColumnsBusiness;
 import com.idega.user.business.UserStatusBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.Status;
 import com.idega.user.data.StatusHome;
+import com.idega.user.data.User;
 import com.idega.user.presentation.UserTab;
 
 /**
@@ -48,6 +51,7 @@ public class UserStatusTab extends UserTab {
 	
 	private static final String MEMBER_HELP_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 	private static final String HELP_TEXT_KEY = "user_status_tab";
+	private static final String PARTICIPATING_STATUS_META_DATA_KEY = "participating_status";
 
 //	private CheckBox _inactiveField; Eiki: removed this because it has no meaning
 	private Text _groupField;
@@ -55,6 +59,7 @@ public class UserStatusTab extends UserTab {
 //	private CheckBox _parent1StatusField;
 //  private CheckBox _parent2StatusField;
 	private CheckBox _parent3StatusField;
+	private TextInput _userInfoField;
 
 //	private Text _inactiveText;
 	private Text _groupText;
@@ -62,6 +67,7 @@ public class UserStatusTab extends UserTab {
 //	private Text _parent1StatusText;
 //	private Text _parent2StatusText;
 	private Text _parent3StatusText;
+	private Text _userInfoText;
 
 //	private String _inactiveFieldName;
 	private String _groupFieldName;
@@ -69,6 +75,7 @@ public class UserStatusTab extends UserTab {
 //	private String _parent1StatusFieldName;
 //	private String _parent2StatusFieldName;
 	private String _parent3StatusFieldName;
+	private String _userInfoFieldName;
 
 	public UserStatusTab() {
 		super();
@@ -92,6 +99,7 @@ public class UserStatusTab extends UserTab {
 //		_parent1StatusFieldName = "usr_stat_parent1_status";
 //		_parent2StatusFieldName = "usr_stat_parent2_status";
 		_parent3StatusFieldName = "usr_stat_parent3_status";
+		_userInfoFieldName = "usr_info_field";
 	}
 
 	/* (non-Javadoc)
@@ -105,6 +113,7 @@ public class UserStatusTab extends UserTab {
 //		fieldValues.put(_parent1StatusFieldName, Boolean.FALSE);
 //		fieldValues.put(_parent2StatusFieldName, Boolean.FALSE);
 		fieldValues.put(_parent3StatusFieldName, Boolean.FALSE);
+		fieldValues.put(_userInfoFieldName, "");
 	}
 
 	/* (non-Javadoc)
@@ -127,6 +136,7 @@ public class UserStatusTab extends UserTab {
 //		_parent1StatusField.setChecked(((Boolean) fieldValues.get(_parent1StatusFieldName)).booleanValue());
 //		_parent2StatusField.setChecked(((Boolean) fieldValues.get(_parent2StatusFieldName)).booleanValue());
 		_parent3StatusField.setChecked(((Boolean) fieldValues.get(_parent3StatusFieldName)).booleanValue());
+		_userInfoField.setValue((String) fieldValues.get(_userInfoFieldName));
 	}
 
 	/* (non-Javadoc)
@@ -144,6 +154,7 @@ public class UserStatusTab extends UserTab {
 		_parent3StatusField.setHeight("10");
 
 		_statusField = new SelectDropdown(_statusFieldName);
+		_userInfoField = new TextInput(_userInfoFieldName);
 
 		IWContext iwc = IWContext.getInstance();
 		List status = null;
@@ -203,6 +214,8 @@ public class UserStatusTab extends UserTab {
 //		_parent2StatusText = new Text(iwrb.getLocalizedString(_parent2StatusFieldName, "Parent status2") + ":");
 		_parent3StatusText = new Text(iwrb.getLocalizedString(_parent3StatusFieldName, "Parent status3"));
 		_parent3StatusText.setBold();
+		_userInfoText = new Text(iwrb.getLocalizedString(_userInfoFieldName, "User info"));
+		_userInfoText.setBold();
 	}
 
 	/* (non-Javadoc)
@@ -211,7 +224,7 @@ public class UserStatusTab extends UserTab {
 	public void lineUpFields() {
 		empty();
 
-		Table t = new Table(2, 4);
+		Table t = new Table(2, 5);
 		t.setCellpadding(5);
 		t.setCellspacing(0);
 		t.add(_groupText, 1, 1);
@@ -228,6 +241,9 @@ public class UserStatusTab extends UserTab {
 	//	t.mergeCells(1, 5, 2, 5);
 		t.add(_parent3StatusField, 1, 4);
 		t.add(_parent3StatusText, 1, 4);
+		t.setCellpaddingTop(5,50);
+		t.add(_userInfoText, 1, 5);
+		t.add(_userInfoField, 2, 5);
 		add(t);
 	}
 
@@ -261,6 +277,13 @@ public class UserStatusTab extends UserTab {
 //			fieldValues.put(_parent1StatusFieldName, new Boolean(parent1Status != null));
 //			fieldValues.put(_parent2StatusFieldName, new Boolean(parent2Status != null));
 			fieldValues.put(_parent3StatusFieldName, new Boolean(parent3Status != null));
+			String userInfo = iwc.getParameter(_userInfoFieldName);
+			if (userInfo != null) {
+				fieldValues.put(_userInfoFieldName, userInfo);
+			}
+			else {
+				fieldValues.put(_userInfoFieldName, "");
+			}
 		//	fieldValues.put(_inactiveFieldName, new Boolean(inactive != null));
 
 			updateFieldsDisplayStatus();
@@ -283,6 +306,13 @@ public class UserStatusTab extends UserTab {
 				
 				getUserStatusBusiness(iwc).setUserGroupStatus(user_id,group_id,status_id,iwc.getCurrentUserId()); 	
 			}
+			Boolean participatingStatus = (Boolean)fieldValues.get(_parent3StatusFieldName);
+			User user = getUser();
+			user.setMetaData(PARTICIPATING_STATUS_META_DATA_KEY, participatingStatus.toString());
+			user.store();
+
+			String userInfo = (String)fieldValues.get(_userInfoFieldName);
+			getUserInfoColumnsBusiness(iwc).setUserInfo(this.getUserId(),this.getGroupID(),userInfo);
 		}
 		catch(Exception e) {
 			e.printStackTrace();
@@ -315,7 +345,22 @@ public class UserStatusTab extends UserTab {
 			fieldValues.put(_statusFieldName, "");
 //		fieldValues.put(_parent1StatusFieldName, Boolean.FALSE);
 //		fieldValues.put(_parent2StatusFieldName, Boolean.FALSE);
-		fieldValues.put(_parent3StatusFieldName, Boolean.FALSE);
+		
+		User user = getUser();
+		String participatingStatus = user.getMetaData(PARTICIPATING_STATUS_META_DATA_KEY);
+		fieldValues.put(_parent3StatusFieldName, Boolean.valueOf(participatingStatus));
+		String userInfo = "";
+		try {
+			userInfo = getUserInfoColumnsBusiness(iwc).getUserInfo(getUserId(),getGroupID());
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		if (userInfo != null) {
+			fieldValues.put(_userInfoFieldName, userInfo);
+		} else {
+			fieldValues.put(_userInfoFieldName, "");
+		}
 
 		updateFieldsDisplayStatus();
 	}
@@ -344,4 +389,16 @@ public class UserStatusTab extends UserTab {
 		return business;
 	}
 	
+	public UserInfoColumnsBusiness getUserInfoColumnsBusiness(IWApplicationContext iwc){
+		UserInfoColumnsBusiness business = null;
+		if(business == null){
+			try{
+				business = (UserInfoColumnsBusiness)com.idega.business.IBOLookup.getServiceInstance(iwc,UserInfoColumnsBusiness.class);
+			}
+			catch(java.rmi.RemoteException rme){
+				throw new RuntimeException(rme.getMessage());
+			}
+		}
+		return business;
+	}
 }
