@@ -796,7 +796,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		entityBrowser.addEntity(Phone.class.getName());
 		
 		String confirmDeleting = resourceBundle.getLocalizedString("delete_selected_users", "Delete selected users");
-		confirmDeleting += " ?";
+		confirmDeleting += "?";
 		SubmitButton deleteButton =
 			new SubmitButton(
 					resourceBundle.getLocalizedString("Delete selection", "Delete selection"),
