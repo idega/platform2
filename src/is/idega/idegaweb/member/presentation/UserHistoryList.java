@@ -107,11 +107,15 @@ public class UserHistoryList extends Page {
 							}
 							doneBy = stat.getCreatedBy();
 							
+							String groupNameString = "";
+							if (stat.getGroupId() != -1) {
+								groupNameString = getGroupName(stat.getGroup());
+							}
 							//this doubles the entry, one for active and then for inactive
-							eventList.addEvent(new EventListEntry(from.getDate(),typeAddedStatus,getGroupName(stat.getGroup()),doneBy!=null?doneBy.getName():"",comUserBundle.getLocalizedString(stat.getStatus().getStatusKey(),stat.getStatus().getStatusKey())));
+							eventList.addEvent(new EventListEntry(from.getDate(),typeAddedStatus,groupNameString,doneBy!=null?doneBy.getName():"",comUserBundle.getLocalizedString(stat.getStatus().getStatusKey(),stat.getStatus().getStatusKey())));
 							
 							if(to!=null){
-							    eventList.addEvent(new EventListEntry(to.getDate(),typeRemovedStatus,getGroupName(stat.getGroup()),doneBy!=null?doneBy.getName():"",comUserBundle.getLocalizedString(stat.getStatus().getStatusKey(),stat.getStatus().getStatusKey())));
+							    eventList.addEvent(new EventListEntry(to.getDate(),typeRemovedStatus,groupNameString,doneBy!=null?doneBy.getName():"",comUserBundle.getLocalizedString(stat.getStatus().getStatusKey(),stat.getStatus().getStatusKey())));
 							}
 							
 							/*
