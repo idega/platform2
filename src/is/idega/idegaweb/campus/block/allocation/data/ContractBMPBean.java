@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.22 2005/10/13 08:06:51 palli Exp $
+ * $Id: ContractBMPBean.java,v 1.22.4.1 2006/11/17 16:31:58 palli Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -544,23 +544,23 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements Con
 			sql.append("' ");
 		}
 		if (complexId != null && complexId.intValue() > 0) {
-			sql.append(" and bu_complex_id  = ");
+			sql.append(" and c.bu_complex_id  = ");
 			sql.append(complexId);
 		}
 		if (buildingId != null && buildingId.intValue() > 0) {
-			sql.append(" and bu_building_id = ");
+			sql.append(" and b.bu_building_id = ");
 			sql.append(buildingId);
 		}
 		if (floorId != null && floorId.intValue() > 0) {
-			sql.append(" and bu_floor_id = ");
+			sql.append(" and f.bu_floor_id = ");
 			sql.append(floorId);
 		}
 		if (typeId != null && typeId.intValue() > 0) {
-			sql.append(" and bu_aprt_type_id = ");
+			sql.append(" and t.bu_aprt_type_id = ");
 			sql.append(typeId);
 		}
 		if (categoryId != null && categoryId.intValue() > 0) {
-			sql.append(" and bu_aprt_cat_id = ");
+			sql.append(" and y.bu_aprt_cat_id = ");
 			sql.append(categoryId);
 		}
 		if (!count && order >= 0) {
