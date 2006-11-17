@@ -312,7 +312,7 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 			   	    PostalCode postalCode = address.getPostalCode();
 			   	    if (postalCode != null) {
 			   	    	String postalCodeString = postalCode.getPostalCode();
-			   	    	if (!postalCodeFilter.contains(postalCodeString)) {
+			   	    	if (!postalCodeFilter.isEmpty() && !postalCodeFilter.contains(postalCodeString)) {
 			   	    		continue;
 			   	    	}
 			   	    }
