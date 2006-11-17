@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.65.4.3 2006/10/31 16:24:59 palli Exp $
+ * $Id: CampusApprover.java,v 1.65.4.4 2006/11/17 10:43:37 palli Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -356,8 +356,10 @@ public class CampusApprover extends CampusBlock {
 						com.idega.util.CypherText ct = new com.idega.util.CypherText(iwc);
 						
 						String id = a.getPrimaryKey().toString();
-						// @TOD Put the length in a parameter
-						while (id.length() < 7)
+						String refLen = iwc.getApplicationSettings().getProperty("CAMPUS_REFERENCE_LENGTH", "7");
+						int iRefLen = new Integer(refLen).intValue();
+						
+						while (id.length() < iRefLen)
 							id = "0" + id;
 						cypher = ct.doCyper(id, key);
 					}

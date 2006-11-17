@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.76.4.2 2006/10/31 17:22:56 palli Exp $
+ * $Id: CampusAllocator.java,v 1.76.4.3 2006/11/17 10:43:37 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -1451,8 +1451,10 @@ public class CampusAllocator extends CampusBlock implements Campus {
 						if (application != null && applicationID.intValue() > 0) {
 
 							String id = application.getPrimaryKey().toString();
-							// @TOD Put the length in a parameter
-							while (id.length() < 7)
+							String refLen = iwc.getApplicationSettings().getProperty("CAMPUS_REFERENCE_LENGTH", "7");
+							int iRefLen = new Integer(refLen).intValue();
+
+							while (id.length() < iRefLen)
 								id = "0" + id;
 							cypher = ct.doCyper(id, key);
 						}
