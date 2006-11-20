@@ -194,6 +194,9 @@ public class CampusContractWriter {
 							phrase = detagParagraph(map, sText);
 
 						} else {
+							if (sText == null) {
+								sText = "";
+							}
 							phrase = new Phrase(sText, textFont);
 						}
 						P2 = new Paragraph(phrase);
