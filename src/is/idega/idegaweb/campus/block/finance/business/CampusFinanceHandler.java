@@ -307,8 +307,8 @@ public class CampusFinanceHandler implements FinanceHandler {
 		 * ret.divide(new BigDecimal(del),4,BigDecimal.ROUND_UP); //ret = (diff) /
 		 * del; } else ret=new BigDecimal(0);
 		 */
-		BigDecimal ret = new BigDecimal(validDays);
-		ret = ret.divide(new BigDecimal(periodDays), precision, BigDecimal.ROUND_HALF_EVEN);
+		BigDecimal ret = new BigDecimal((double)validDays);
+		ret = ret.divide(new BigDecimal((double)periodDays), precision, BigDecimal.ROUND_HALF_EVEN);
 		return ret.doubleValue();
 	}
 

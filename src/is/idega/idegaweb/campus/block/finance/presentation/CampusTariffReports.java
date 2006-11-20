@@ -453,17 +453,17 @@ public class CampusTariffReports extends Finance {
 		public BigDecimal getRowTotal(int row) {
 			if (grid[rowTotalCol][row] != null)
 				return grid[rowTotalCol][row];
-			return new BigDecimal(0);
+			return new BigDecimal(0.0d);
 		}
 
 		public BigDecimal getColumnTotal(int column) {
 			if (grid[column][colTotalRow] != null)
 				return grid[column][colTotalRow];
-			return new BigDecimal(0);
+			return new BigDecimal(0.0d);
 		}
 
 		public BigDecimal getTotal() {
-			BigDecimal total = new BigDecimal(0);
+			BigDecimal total = new BigDecimal(0.0d);
 			for (int i = 0; i < grid.length - 1; i++) {
 				for (int j = 0; j < grid[i].length - 1; j++) {
 					if (grid[i][j] != null)

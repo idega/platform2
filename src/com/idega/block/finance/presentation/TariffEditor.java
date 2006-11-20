@@ -299,7 +299,7 @@ public class TariffEditor extends Finance {
 						Map.Entry entry = (Map.Entry) iter.next();
 						String tatt = (String) entry.getKey();
 						String val = "";
-						BigDecimal attTotal = new BigDecimal(0);
+						BigDecimal attTotal = new BigDecimal((double)0);
 
 						List tariffsInMap = (List) entry.getValue();
 						for (Iterator iterator = tariffsInMap.iterator(); iterator.hasNext();) {
