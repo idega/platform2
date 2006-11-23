@@ -101,7 +101,7 @@ public class VisaFileCreation implements CreditCardFileCreation {
 			bWriter.write(getEntryNumber(contract, now, counter));
 			bWriter.write(new IWTimestamp(entry.getDateOfEntry()).getDateString("ddMM"));
 			bWriter.write(empty.substring(0, 5));
-			bWriter.write(empty.substring(0, 28));
+			bWriter.write(empty.substring(0, 29));
 			bWriter.newLine();
 		}
 		
