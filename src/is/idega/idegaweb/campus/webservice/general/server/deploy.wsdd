@@ -1,0 +1,42 @@
+<!-- Use this file to deploy some handlers/chains and services      -->
+<!-- Two ways to do this:                                           -->
+<!--   java org.apache.axis.client.AdminClient deploy.wsdd          -->
+<!--      after the axis server is running                          -->
+<!-- or                                                             -->
+<!--   java org.apache.axis.utils.Admin client|server deploy.wsdd   -->
+<!--      from the same directory that the Axis engine runs         -->
+
+<deployment
+    xmlns="http://xml.apache.org/axis/wsdd/"
+    xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+
+  <!-- Services from CampusServiceService WSDL service -->
+
+  <service name="CampusService" provider="java:RPC" style="rpc" use="encoded">
+      <parameter name="wsdlTargetNamespace" value="urn:campus"/>
+      <parameter name="wsdlServiceElement" value="CampusServiceService"/>
+      <parameter name="schemaUnqualified" value="urn:campus"/>
+      <parameter name="wsdlServicePort" value="CampusService"/>
+      <parameter name="className" value="is.idega.idegaweb.campus.webservice.general.server.CampusServiceSoapBindingSkeleton"/>
+      <parameter name="wsdlPortType" value="CampusService"/>
+      <parameter name="typeMappingVersion" value="1.2"/>
+      <parameter name="allowedMethods" value="*"/>
+      <parameter name="scope" value="Session"/>
+
+      <typeMapping
+        xmlns:ns="urn:campus"
+        qname="ns:TenantInfo"
+        type="java:is.idega.idegaweb.campus.webservice.general.server.TenantInfo"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <arrayMapping
+        xmlns:ns="urn:campus"
+        qname="ns:ArrayOfTenantInfo"
+        type="java:is.idega.idegaweb.campus.webservice.general.server.TenantInfo[]"
+        innerType="cmp-ns:TenantInfo" xmlns:cmp-ns="urn:campus"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+  </service>
+</deployment>

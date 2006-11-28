@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="urn:campus" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="urn:campus" xmlns:intf="urn:campus" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.3
+Built on Oct 05, 2005 (05:23:37 EDT)-->
+ <wsdl:types>
+  <schema targetNamespace="urn:campus" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
+   <complexType name="TenantInfo">
+    <sequence>
+     <element name="apartmentNumber" nillable="true" type="soapenc:string"/>
+     <element name="buildingName" nillable="true" type="soapenc:string"/>
+     <element name="movedInDate" nillable="true" type="xsd:dateTime"/>
+     <element name="personalID" nillable="true" type="soapenc:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="ArrayOfTenantInfo">
+    <complexContent>
+     <restriction base="soapenc:Array">
+      <attribute ref="soapenc:arrayType" wsdl:arrayType="impl:TenantInfo[]"/>
+     </restriction>
+    </complexContent>
+   </complexType>
+  </schema>
+ </wsdl:types>
+
+   <wsdl:message name="getTenantInfoRequest">
+
+      <wsdl:part name="in0" type="xsd:int"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getTenantInfoResponse">
+
+      <wsdl:part name="getTenantInfoReturn" type="impl:ArrayOfTenantInfo"/>
+
+   </wsdl:message>
+
+   <wsdl:portType name="CampusService">
+
+      <wsdl:operation name="getTenantInfo" parameterOrder="in0">
+
+         <wsdl:input message="impl:getTenantInfoRequest" name="getTenantInfoRequest"/>
+
+         <wsdl:output message="impl:getTenantInfoResponse" name="getTenantInfoResponse"/>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="CampusServiceSoapBinding" type="impl:CampusService">
+
+      <wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="getTenantInfo">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getTenantInfoRequest">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:campus" use="encoded"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getTenantInfoResponse">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:campus" use="encoded"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="CampusServiceService">
+
+      <wsdl:port binding="impl:CampusServiceSoapBinding" name="CampusService">
+
+         <wsdlsoap:address location="http://www.studentagardar.is/services/CampusService"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>

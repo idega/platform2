@@ -1,34 +1,14 @@
-/*
- * $Id: Contract.java,v 1.17 2005/10/13 08:06:51 palli Exp $
- * Created on Aug 10, 2005
- *
- * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
- */
 package is.idega.idegaweb.campus.block.allocation.data;
 
 
-import java.sql.Date;
-import java.sql.Timestamp;
-
-
-import com.idega.block.application.data.Applicant;
 import com.idega.block.building.data.Apartment;
-import com.idega.data.IDOEntity;
+import com.idega.block.application.data.Applicant;
+import java.sql.Date;
 import com.idega.user.data.User;
+import java.sql.Timestamp;
+import com.idega.data.IDOEntity;
 
-
-/**
- * 
- *  Last modified: $Date: 2005/10/13 08:06:51 $ by $Author: palli $
- * 
- * @author <a href="mailto:bluebottle@idega.com">bluebottle</a>
- * @version $Revision: 1.17 $
- */
 public interface Contract extends IDOEntity {
-
 	/**
 	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean#setUserId
 	 */
@@ -283,5 +263,4 @@ public interface Contract extends IDOEntity {
 	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean#setStatusFinalized
 	 */
 	public void setStatusFinalized();
-
 }

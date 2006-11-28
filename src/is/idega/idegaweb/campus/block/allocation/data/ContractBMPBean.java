@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.22.4.1 2006/11/17 16:31:58 palli Exp $
+ * $Id: ContractBMPBean.java,v 1.22.4.2 2006/11/28 17:02:15 palli Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -587,6 +587,25 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements Con
 		return super.idoFindPKsBySQL(sql.toString());
 	}
 
+	public Collection ejbFindByComplexAndRented(Integer complexID, boolean rented) throws FinderException {
+		StringBuffer sql = new StringBuffer("select con.* ");
+		sql.append(" from bu_apartment a, bu_floor f, bu_building b, cam_contract con ");
+		sql.append(" where a.bu_floor_id = f.bu_floor_id ");
+		sql.append(" and f.bu_building_id = b.bu_building_id ");
+		sql.append(" and a.bu_apartment_id = con.bu_apartment_id");
+		sql.append(" and b.bu_complex_id  = ");
+		sql.append(complexID);
+		if (rented) {
+			sql.append(" and con.rented = 'Y'");			
+		} else {
+			sql.append(" and (con.rented is null or con.rented = 'N')");
+		}
+		
+		System.out.println("sql =  " + sql.toString());
+		
+		return super.idoFindPKsBySQL(sql.toString());
+	}
+	
 	public Collection ejbFindByPersonalID(String ID) throws FinderException {
 		StringBuffer sql = new StringBuffer("select c.* ");
 		sql.append(" from cam_contract c, app_applicant a where ");
