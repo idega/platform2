@@ -1,5 +1,5 @@
 /*
- * $Id: UserFamilyPluginBusinessBean.java,v 1.6.4.1 2006/11/15 15:25:17 idegaweb Exp $
+ * $Id: UserFamilyPluginBusinessBean.java,v 1.6.4.2 2006/12/04 14:37:42 idegaweb Exp $
  * Created on Aug 31, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -26,14 +26,15 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2006/11/15 15:25:17 $ by $Author: idegaweb $
+ *  Last modified: $Date: 2006/12/04 14:37:42 $ by $Author: idegaweb $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.6.4.1 $
+ * @version $Revision: 1.6.4.2 $
  */
 public class UserFamilyPluginBusinessBean extends IBOServiceBean implements UserFamilyPluginBusiness, UserGroupPlugInBusiness {
 
 	public static final String ROLE_KEY_CASHIER = "Gjaldkeri";
+	public static final String ROLE_KEY_LOCAL_ADMIN = "Kerfisstjóri";
 
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#beforeUserRemove(com.idega.user.data.User)
@@ -92,7 +93,7 @@ public class UserFamilyPluginBusinessBean extends IBOServiceBean implements User
 		IWMainApplicationSettings settings = iwc.getApplicationSettings();
 		if (settings.getProperty("temp_show_is_related_stuff") != null) {
 			if (iwc != null) {
-				if (iwc.isSuperAdmin() || iwc.getAccessController().hasRole(ROLE_KEY_CASHIER, iwc)) {
+				if (iwc.isSuperAdmin() || iwc.getAccessController().hasRole(ROLE_KEY_CASHIER, iwc) || iwc.getAccessController().hasRole(ROLE_KEY_LOCAL_ADMIN, iwc)) {
 					list.add(new UserFamilyTab());
 				}
 			}
