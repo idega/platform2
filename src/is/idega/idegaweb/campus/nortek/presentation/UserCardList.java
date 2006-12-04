@@ -6,8 +6,11 @@ import com.idega.presentation.IWContext;
 
 public class UserCardList extends CampusBlock {
 
+	protected void control(IWContext iwc) {
+		
+	}
+	
 	public void main(IWContext iwc) throws Exception {
-		// TODO Auto-generated method stub
-		super.main(iwc);
+		control(iwc);
 	}
 }

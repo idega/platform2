@@ -1,18 +1,27 @@
 package is.idega.idegaweb.campus.nortek.business;
 
+import is.idega.idegaweb.campus.block.allocation.data.Contract;
+import is.idega.idegaweb.campus.block.finance.business.CampusAssessmentBusiness;
 import is.idega.idegaweb.campus.nortek.data.Card;
 import is.idega.idegaweb.campus.nortek.data.CardHome;
 import is.idega.idegaweb.campus.nortek.data.CardTransactionLog;
 import is.idega.idegaweb.campus.nortek.data.CardTransactionLogHome;
+import is.idega.idegaweb.campus.nortek.data.NortekSetup;
+import is.idega.idegaweb.campus.nortek.data.NortekSetupHome;
 
+import java.rmi.RemoteException;
 import java.util.Date;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
+import com.idega.block.finance.data.Account;
+import com.idega.block.finance.data.AccountBMPBean;
+import com.idega.block.finance.data.AccountHome;
 import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
 public class NortekBusinessBean extends IBOServiceBean implements
@@ -29,9 +38,11 @@ public class NortekBusinessBean extends IBOServiceBean implements
 		
 		try {
 			card = getCardHome().findByPrimaryKey(serialNumber);
+			addLogEntry(card, IWTimestamp.RightNow(), null, ACTION_VERIFY, Boolean.toString(card.getIsValid()), null, false, null, serialNumber);
 		} catch (FinderException e) {
+			addLogEntry(card, IWTimestamp.RightNow(), null, ACTION_VERIFY, Boolean.toString(false), null, true, e.getMessage(), serialNumber);
 			return false;
-		}
+		} 
 		
 		return card.getIsValid();
 	}
@@ -41,11 +52,15 @@ public class NortekBusinessBean extends IBOServiceBean implements
 		
 		try {
 			card = getCardHome().findByPrimaryKey(serialNumber);
+			addLogEntry(card, IWTimestamp.RightNow(), null, ACTION_BAN, Boolean.toString(ban), null, false, null, serialNumber);
 		} catch (FinderException e) {
 			try {
 				card = getCardHome().create();
 				card.setCardSerialNumber(serialNumber);
+				card.store();
+				addLogEntry(card, IWTimestamp.RightNow(), null, ACTION_BAN, Boolean.toString(ban), null, false, null, serialNumber);
 			} catch (CreateException e1) {
+				addLogEntry(card, IWTimestamp.RightNow(), null, ACTION_BAN, Boolean.toString(ban), null, true, e1.getMessage(), serialNumber);
 				return false;
 			}
 		}
@@ -56,31 +71,70 @@ public class NortekBusinessBean extends IBOServiceBean implements
 	}
 	
 	public boolean addAmountToCardUser(String serialNumber, Date timestamp, double amount, String terminalNumber) {
+		Card card = null;
+		
+		try {
+			card = getCardHome().findByPrimaryKey(serialNumber);
+			User user = card.getUser();
+			Account account = getAccountHome().findByUserAndType(user, AccountBMPBean.typeFinancial);
+			
+			NortekSetup setup = getNortekSetupHome().findEntry();
+			Contract contract = getCampusAssessmentBusiness().findContractForUser(user);
+			Integer division = new Integer(contract.getApartment().getFloor().getBuilding().getDivision());
+			String name = setup.getAccountKey().getName();
+			String info = setup.getAccountKey().getInfo();
+			
+			getCampusAssessmentBusiness().assessTariffsToAccount((float)amount, name, info, (Integer) account.getPrimaryKey(), (Integer) setup.getAccountKey().getPrimaryKey(), timestamp, (Integer) setup.getTariffGroup().getPrimaryKey(), (Integer) setup.getFinanceCategory().getPrimaryKey(), division, false, null); 
+			
+			addLogEntry(card, IWTimestamp.RightNow(), new IWTimestamp(timestamp), ACTION_ADD, Double.toString(amount), terminalNumber, false, null, serialNumber);
+		} catch (Exception e) {
+			addLogEntry(card, IWTimestamp.RightNow(), new IWTimestamp(timestamp), ACTION_ADD, Double.toString(amount), terminalNumber, true, e.getMessage(), serialNumber);
+			return false;
+		}
+		
 		return true;
 	}
 	
-	private void addLogEntry(Card card, IWTimestamp stamp, IWTimestamp externalStamp, String action, String value, String terminal, boolean isError, String errorMessage) throws CreateException {
-		CardTransactionLog log = getCardTransactionLogHome().create();
-		log.setCard(card);
-		if (stamp != null) {
-			log.setEntryDate(stamp.getTimestamp());
-		} else {
-			log.setEntryDate(IWTimestamp.getTimestampRightNow());
+	private void addLogEntry(Card card, IWTimestamp stamp, IWTimestamp externalStamp, String action, String value, String terminal, boolean isError, String errorMessage, String serialNumber) {
+		CardTransactionLog log;
+		try {
+			log = getCardTransactionLogHome().create();
+			if (card != null) {
+				log.setCard(card);
+			}
+			if (stamp != null) {
+				log.setEntryDate(stamp.getTimestamp());
+			} else {
+				log.setEntryDate(IWTimestamp.getTimestampRightNow());
+			}
+			if (externalStamp != null) {
+				log.setExternalEntryDate(externalStamp.getTimestamp());
+			}
+			log.setAction(action);
+			log.setValue(value);
+			log.setTerminal(terminal);
+			log.setIsError(isError);
+			log.setErrorMessage(errorMessage);
+			log.setSerialNumber(serialNumber);
+			log.store();
+		} catch (CreateException e) {
+			e.printStackTrace();
 		}
-		if (externalStamp != null) {
-			log.setExternalEntryDate(externalStamp.getTimestamp());
-		}
-		log.setAction(action);
-		log.setValue(value);
-		log.setTerminal(terminal);
-		log.setIsError(isError);
-		log.setErrorMessage(errorMessage);
-		log.store();
 	}
 	
 	private CardHome getCardHome() {
 		try {
 			return (CardHome) IDOLookup.getHome(Card.class);
+		} catch (IDOLookupException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	private NortekSetupHome getNortekSetupHome() {
+		try {
+			return (NortekSetupHome) IDOLookup.getHome(NortekSetup.class);
 		} catch (IDOLookupException e) {
 			e.printStackTrace();
 		}
@@ -96,5 +150,19 @@ public class NortekBusinessBean extends IBOServiceBean implements
 		}
 		
 		return null;
+	}
+	
+	private AccountHome getAccountHome() {
+		try {
+			return (AccountHome) IDOLookup.getHome(Account.class);
+		} catch (IDOLookupException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	public CampusAssessmentBusiness getCampusAssessmentBusiness() throws RemoteException {
+		return (CampusAssessmentBusiness) getServiceInstance(CampusAssessmentBusiness.class);
 	}
 }

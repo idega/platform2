@@ -1,16 +1,10 @@
-/**
- * 
- */
 package com.idega.block.finance.data;
+
 
 import java.sql.Timestamp;
 
 import com.idega.user.data.User;
 
-/**
- * @author bluebottle
- *
- */
 public interface Account extends com.idega.block.category.data.CategoryEntity, FinanceAccount {
 	/**
 	 * @see com.idega.block.finance.data.AccountBMPBean#getUserId
@@ -186,5 +180,4 @@ public interface Account extends com.idega.block.category.data.CategoryEntity, F
 	 * @see com.idega.block.finance.data.AccountBMPBean#getAccountId
 	 */
 	public Integer getAccountId();
-
 }

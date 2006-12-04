@@ -18,7 +18,7 @@ public class TestClient {
 		// Now use the service to get a stub which implements the SDI.
 		// CaseService port = service.getCaseService(new URL(endpoint)); //
 		try {
-			NortekService port = service.getNortekService(new URL("http://campusdemo.idega.is/services/NortekService"));
+			NortekService port = service.getNortekService(new URL("http://campusnew.idega.is/services/NortekService"));
 
 			System.out.println("port.banCard(1234) = " + port.banCard("1234"));
 			//System.out.println("port.isCardValid(1234) = " + port.isCardValid("1234"));

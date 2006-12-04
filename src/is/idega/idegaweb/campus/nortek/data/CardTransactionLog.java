@@ -11,6 +11,11 @@ public interface CardTransactionLog extends IDOEntity {
 	public Card getCard();
 
 	/**
+	 * @see is.idega.idegaweb.campus.nortek.data.CardTransactionLogBMPBean#getSerialNumber
+	 */
+	public String getSerialNumber();
+
+	/**
 	 * @see is.idega.idegaweb.campus.nortek.data.CardTransactionLogBMPBean#getEntryDate
 	 */
 	public Timestamp getEntryDate();
@@ -49,6 +54,11 @@ public interface CardTransactionLog extends IDOEntity {
 	 * @see is.idega.idegaweb.campus.nortek.data.CardTransactionLogBMPBean#setCard
 	 */
 	public void setCard(Card card);
+
+	/**
+	 * @see is.idega.idegaweb.campus.nortek.data.CardTransactionLogBMPBean#setSerialNumber
+	 */
+	public void setSerialNumber(String serialNumber);
 
 	/**
 	 * @see is.idega.idegaweb.campus.nortek.data.CardTransactionLogBMPBean#setEntryDate

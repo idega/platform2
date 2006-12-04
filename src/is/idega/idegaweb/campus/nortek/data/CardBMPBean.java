@@ -1,6 +1,11 @@
 package is.idega.idegaweb.campus.nortek.data;
 
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOQuery;
 import com.idega.user.data.User;
 
 public class CardBMPBean extends GenericEntity implements Card {
@@ -8,7 +13,7 @@ public class CardBMPBean extends GenericEntity implements Card {
 
 	private static final String COLUMN_CARD = "card_serial_number";
 
-	private static final String COLUMN_USER = "user";
+	private static final String COLUMN_USER = "card_user";
 
 	private static final String COLUMN_VALID = "valid";
 
@@ -66,4 +71,10 @@ public class CardBMPBean extends GenericEntity implements Card {
 	}
 	
 	//ejb
+	public Collection ejbFindAll() throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this);
+
+		return idoFindPKsByQuery(query);
+	}
 }

@@ -257,7 +257,7 @@ public class CampusAssessmentBusinessBean extends AssessmentBusinessBean impleme
 
 	}
 	
-	private is.idega.idegaweb.campus.block.allocation.data.Contract findContractForUser(User user) {
+	public is.idega.idegaweb.campus.block.allocation.data.Contract findContractForUser(User user) {
 		String statuses[] = { "S", "T", "E", "U" };
 
 		is.idega.idegaweb.campus.block.allocation.data.Contract contract = null;

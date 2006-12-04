@@ -6,10 +6,12 @@ import javax.ejb.CreateException;
 import com.idega.data.IDOHome;
 import javax.ejb.FinderException;
 
-public interface CardHome extends IDOHome {
-	public Card create() throws CreateException;
+public interface NortekSetupHome extends IDOHome {
+	public NortekSetup create() throws CreateException;
 
-	public Card findByPrimaryKey(Object pk) throws FinderException;
+	public NortekSetup findByPrimaryKey(Object pk) throws FinderException;
 
 	public Collection findAll() throws FinderException;
+
+	public NortekSetup findEntry() throws FinderException;
 }
