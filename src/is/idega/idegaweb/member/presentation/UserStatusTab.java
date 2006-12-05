@@ -28,6 +28,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.SelectDropdown;
 import com.idega.presentation.ui.SelectOption;
+import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.UserInfoColumnsBusiness;
 import com.idega.user.business.UserStatusBusiness;
@@ -59,7 +60,10 @@ public class UserStatusTab extends UserTab {
 //	private CheckBox _parent1StatusField;
 //  private CheckBox _parent2StatusField;
 	private CheckBox _parent3StatusField;
-	private TextInput _userInfoField;
+	private TextInput _userInfoField1;
+	private TextInput _userInfoField2;
+	private TextArea _userInfoField3;
+	private Table t;
 
 //	private Text _inactiveText;
 	private Text _groupText;
@@ -68,6 +72,9 @@ public class UserStatusTab extends UserTab {
 //	private Text _parent2StatusText;
 	private Text _parent3StatusText;
 	private Text _userInfoText;
+	private Text _userInfoText1;
+	private Text _userInfoText2;
+	private Text _userInfoText3;
 
 //	private String _inactiveFieldName;
 	private String _groupFieldName;
@@ -76,6 +83,9 @@ public class UserStatusTab extends UserTab {
 //	private String _parent2StatusFieldName;
 	private String _parent3StatusFieldName;
 	private String _userInfoFieldName;
+	private String _userInfoFieldName1;
+	private String _userInfoFieldName2;
+	private String _userInfoFieldName3;
 
 	public UserStatusTab() {
 		super();
@@ -100,6 +110,9 @@ public class UserStatusTab extends UserTab {
 //		_parent2StatusFieldName = "usr_stat_parent2_status";
 		_parent3StatusFieldName = "usr_stat_parent3_status";
 		_userInfoFieldName = "usr_info_field";
+		_userInfoFieldName1 = "usr_info_field1";
+		_userInfoFieldName2 = "usr_info_field2";
+		_userInfoFieldName3 = "usr_info_field3";
 	}
 
 	/* (non-Javadoc)
@@ -113,7 +126,9 @@ public class UserStatusTab extends UserTab {
 //		fieldValues.put(_parent1StatusFieldName, Boolean.FALSE);
 //		fieldValues.put(_parent2StatusFieldName, Boolean.FALSE);
 		fieldValues.put(_parent3StatusFieldName, Boolean.FALSE);
-		fieldValues.put(_userInfoFieldName, "");
+		fieldValues.put(_userInfoFieldName1, "");
+		fieldValues.put(_userInfoFieldName2, "");
+		fieldValues.put(_userInfoFieldName3, "");
 	}
 
 	/* (non-Javadoc)
@@ -127,16 +142,20 @@ public class UserStatusTab extends UserTab {
 				_groupField.setText(selectedGroup.getName());
 			}
 		}
+		
 		else {
 			IWContext iwc = IWContext.getInstance();
 			IWResourceBundle iwrb = getResourceBundle(iwc);
 			_groupField.setText(iwrb.getLocalizedString("user_status_bar.no_group_selected","No group selected"));
 		}
+		
 		_statusField.setSelectedOption((String) fieldValues.get(_statusFieldName));
 //		_parent1StatusField.setChecked(((Boolean) fieldValues.get(_parent1StatusFieldName)).booleanValue());
 //		_parent2StatusField.setChecked(((Boolean) fieldValues.get(_parent2StatusFieldName)).booleanValue());
 		_parent3StatusField.setChecked(((Boolean) fieldValues.get(_parent3StatusFieldName)).booleanValue());
-		_userInfoField.setValue((String) fieldValues.get(_userInfoFieldName));
+		_userInfoField1.setValue((String) fieldValues.get(_userInfoFieldName1));
+		_userInfoField2.setValue((String) fieldValues.get(_userInfoFieldName2));
+		_userInfoField3.setValue((String) fieldValues.get(_userInfoFieldName3));
 	}
 
 	/* (non-Javadoc)
@@ -154,7 +173,11 @@ public class UserStatusTab extends UserTab {
 		_parent3StatusField.setHeight("10");
 
 		_statusField = new SelectDropdown(_statusFieldName);
-		_userInfoField = new TextInput(_userInfoFieldName);
+		_userInfoField1 = new TextInput(_userInfoFieldName1);
+		_userInfoField1.setSize(50);
+		_userInfoField2 = new TextInput(_userInfoFieldName2);
+		_userInfoField2.setSize(50);
+		_userInfoField3 = new TextArea(_userInfoFieldName3, 50, 16);
 
 		IWContext iwc = IWContext.getInstance();
 		List status = null;
@@ -214,8 +237,14 @@ public class UserStatusTab extends UserTab {
 //		_parent2StatusText = new Text(iwrb.getLocalizedString(_parent2StatusFieldName, "Parent status2") + ":");
 		_parent3StatusText = new Text(iwrb.getLocalizedString(_parent3StatusFieldName, "Parent status3"));
 		_parent3StatusText.setBold();
-		_userInfoText = new Text(iwrb.getLocalizedString(_userInfoFieldName, "User info"));
+		_userInfoText = new Text(iwrb.getLocalizedString(_userInfoFieldName, "Info about group membership")+":");
 		_userInfoText.setBold();
+		_userInfoText1 = new Text(iwrb.getLocalizedString(_userInfoFieldName1, "User info 1"));
+		_userInfoText1.setBold();
+		_userInfoText2 = new Text(iwrb.getLocalizedString(_userInfoFieldName2, "User info 2"));
+		_userInfoText2.setBold();
+		_userInfoText3 = new Text(iwrb.getLocalizedString(_userInfoFieldName3, "User info 3"));
+		_userInfoText3.setBold();
 	}
 
 	/* (non-Javadoc)
@@ -223,8 +252,8 @@ public class UserStatusTab extends UserTab {
 	 */
 	public void lineUpFields() {
 		empty();
-
-		Table t = new Table(2, 5);
+		
+		t = new Table(2, 8);
 		t.setCellpadding(5);
 		t.setCellspacing(0);
 		t.add(_groupText, 1, 1);
@@ -241,9 +270,6 @@ public class UserStatusTab extends UserTab {
 	//	t.mergeCells(1, 5, 2, 5);
 		t.add(_parent3StatusField, 1, 4);
 		t.add(_parent3StatusText, 1, 4);
-		t.setCellpaddingTop(5,50);
-		t.add(_userInfoText, 1, 5);
-		t.add(_userInfoField, 2, 5);
 		add(t);
 	}
 
@@ -261,8 +287,6 @@ public class UserStatusTab extends UserTab {
 	//		String inactive = iwc.getParameter(_inactiveFieldName);
 			String status = iwc.getParameter(_statusFieldName);
 			
-		System.out.println("Collect: status = " + status);
-		
 //			String parent1Status = iwc.getParameter(_parent1StatusFieldName);
 //			String parent2Status = iwc.getParameter(_parent2StatusFieldName);
 			String parent3Status = iwc.getParameter(_parent3StatusFieldName);
@@ -277,12 +301,26 @@ public class UserStatusTab extends UserTab {
 //			fieldValues.put(_parent1StatusFieldName, new Boolean(parent1Status != null));
 //			fieldValues.put(_parent2StatusFieldName, new Boolean(parent2Status != null));
 			fieldValues.put(_parent3StatusFieldName, new Boolean(parent3Status != null));
-			String userInfo = iwc.getParameter(_userInfoFieldName);
-			if (userInfo != null) {
-				fieldValues.put(_userInfoFieldName, userInfo);
+			String userInfo1 = iwc.getParameter(_userInfoFieldName1);
+			if (userInfo1 != null) {
+				fieldValues.put(_userInfoFieldName1, userInfo1);
 			}
 			else {
-				fieldValues.put(_userInfoFieldName, "");
+				fieldValues.put(_userInfoFieldName1, "");
+			}
+			String userInfo2 = iwc.getParameter(_userInfoFieldName2);
+			if (userInfo2 != null) {
+				fieldValues.put(_userInfoFieldName2, userInfo2);
+			}
+			else {
+				fieldValues.put(_userInfoFieldName2, "");
+			}
+			String userInfo3 = iwc.getParameter(_userInfoFieldName3);
+			if (userInfo3 != null) {
+				fieldValues.put(_userInfoFieldName3, userInfo3);
+			}
+			else {
+				fieldValues.put(_userInfoFieldName3, "");
 			}
 		//	fieldValues.put(_inactiveFieldName, new Boolean(inactive != null));
 
@@ -298,7 +336,6 @@ public class UserStatusTab extends UserTab {
 	public boolean store(IWContext iwc) {
 		try {
 			String status = (String)fieldValues.get(_statusFieldName);
-			System.out.println("Store: status = " + status);
 			if (status != null && !"".equals(status)) {
 				int user_id = this.getUserId();
 				int group_id = this.getGroupID();
@@ -311,8 +348,12 @@ public class UserStatusTab extends UserTab {
 			user.setMetaData(PARTICIPATING_STATUS_META_DATA_KEY, participatingStatus.toString());
 			user.store();
 
-			String userInfo = (String)fieldValues.get(_userInfoFieldName);
-			getUserInfoColumnsBusiness(iwc).setUserInfo(this.getUserId(),this.getGroupID(),userInfo);
+			String userInfo1 = (String)fieldValues.get(_userInfoFieldName1);
+			String userInfo2 = (String)fieldValues.get(_userInfoFieldName2);
+			String userInfo3 = (String)fieldValues.get(_userInfoFieldName3);
+			if (this.getGroupID() != -1) {
+				getUserInfoColumnsBusiness(iwc).setUserInfo(this.getUserId(),this.getGroupID(),userInfo1,userInfo2,userInfo3);
+			}
 		}
 		catch(Exception e) {
 			e.printStackTrace();
@@ -329,6 +370,20 @@ public class UserStatusTab extends UserTab {
 		fieldValues = new Hashtable();
 //		fieldValues.put(_inactiveFieldName, Boolean.FALSE);
 		
+		if (getGroupID() != -1) {
+			t.setCellpaddingTop(5,40);
+			t.mergeCells(1, 5, 2, 5);
+			t.add(_userInfoText, 1, 5);
+			t.setCellpaddingBottom(5,10);
+			t.add(_userInfoText1, 1, 6);
+			t.add(_userInfoField1, 2, 6);
+			t.add(_userInfoText2, 1, 7);
+			t.add(_userInfoField2, 2, 7);
+			t.add(_userInfoText3, 1, 8);
+			t.add(_userInfoField3, 2, 8);
+			t.setCellpaddingBottom(8,10);
+		}
+
 		int status_id = -1;
 		try {
 			int user_id = getUserId();
@@ -349,17 +404,41 @@ public class UserStatusTab extends UserTab {
 		User user = getUser();
 		String participatingStatus = user.getMetaData(PARTICIPATING_STATUS_META_DATA_KEY);
 		fieldValues.put(_parent3StatusFieldName, Boolean.valueOf(participatingStatus));
-		String userInfo = "";
+		String userInfo1 = "";
 		try {
-			userInfo = getUserInfoColumnsBusiness(iwc).getUserInfo(getUserId(),getGroupID());
+			userInfo1 = getUserInfoColumnsBusiness(iwc).getUserInfo1(getUserId(),getGroupID());
 		}
 		catch(Exception e) {
 			e.printStackTrace();
 		}
-		if (userInfo != null) {
-			fieldValues.put(_userInfoFieldName, userInfo);
+		if (userInfo1 != null) {
+			fieldValues.put(_userInfoFieldName1, userInfo1);
 		} else {
-			fieldValues.put(_userInfoFieldName, "");
+			fieldValues.put(_userInfoFieldName1, "");
+		}
+		String userInfo2 = "";
+		try {
+			userInfo2 = getUserInfoColumnsBusiness(iwc).getUserInfo2(getUserId(),getGroupID());
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		if (userInfo2 != null) {
+			fieldValues.put(_userInfoFieldName2, userInfo2);
+		} else {
+			fieldValues.put(_userInfoFieldName2, "");
+		}
+		String userInfo3 = "";
+		try {
+			userInfo3 = getUserInfoColumnsBusiness(iwc).getUserInfo3(getUserId(),getGroupID());
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		if (userInfo3 != null) {
+			fieldValues.put(_userInfoFieldName3, userInfo3);
+		} else {
+			fieldValues.put(_userInfoFieldName3, "");
 		}
 
 		updateFieldsDisplayStatus();
