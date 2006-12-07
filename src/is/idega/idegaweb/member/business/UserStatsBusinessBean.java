@@ -77,6 +77,8 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 	private static final double MILLISECONDS_IN_YEAR = 31557600000d;
 
 	private static final String LOCALIZED_CURRENT_DATE = "UserStatsBusiness.current_date";
+	private static final String LOCALIZED_USER_ID = "UserStatsBusiness.user_id";
+	private static final String LOCALIZED_GROUP_ID = "UserStatsBusiness.group_id";
 	private static final String LOCALIZED_NAME = "UserStatsBusiness.name";
 	private static final String LOCALIZED_SHORT_NAME = "UserStatsBusiness.short_name";
 	private static final String LOCALIZED_ABBREVATION = "UserStatsBusiness.abbrevation";
@@ -98,6 +100,8 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 	private static final String LOCALIZED_PHONE = "UserStatsBusiness.phone";
 	private static final String LOCALIZED_EMAIL = "UserStatsBusiness.email";
 
+	private static final String FIELD_NAME_USER_ID = "ic_user_id";
+	private static final String FIELD_NAME_GROUP_ID = "ic_group_id";
 	private static final String FIELD_NAME_NAME = "name";
 	private static final String FIELD_NAME_SHORT_NAME = "short_name";
 	private static final String FIELD_NAME_ABBREVATION = "abbrevation";
@@ -136,7 +140,7 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
         initializeBundlesIfNeeded();
 		ReportableCollection reportCollection = new ReportableCollection();
 		Locale currentLocale = this.getUserContext().getCurrentLocale();
-		
+		boolean isSuperAdmin = isSuperAdmin();
 		//PARAMETES
 		//Add extra...because the inputhandlers supply the basic header texts
 		
@@ -147,6 +151,12 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 		//PARAMETERS that are also FIELDS
 		 //data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
 		 //The name you give the field/parameter must not contain spaces or special characters		 
+		ReportableField userIDField = null;
+		if (isSuperAdmin) {
+			userIDField = new ReportableField(FIELD_NAME_USER_ID, String.class);
+			userIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_USER_ID, "User ID"), currentLocale);
+			reportCollection.addField(userIDField);
+		}
 		 ReportableField nameField = new ReportableField(FIELD_NAME_NAME, String.class);
 		 nameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_NAME, "Name"), currentLocale);
 		 reportCollection.addField(nameField);
@@ -360,6 +370,9 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 				     // create a new ReportData for each row	    
 			         ReportableData data = new ReportableData();
 				     //	add the data to the correct fields/columns
+			         if (isSuperAdmin) {
+			        	 data.addData(userIDField, user.getPrimaryKey().toString() );
+			         }
 			         data.addData(nameField, user.getName() );
 				     data.addData(personalIDField, personalID);
 				     data.addData(dateOfBirthField, dateOfBirthString);
@@ -422,7 +435,7 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 	    initializeBundlesIfNeeded();
 		ReportableCollection reportCollection = new ReportableCollection();
 		Locale currentLocale = this.getUserContext().getCurrentLocale();
-		
+		boolean isSuperAdmin = isSuperAdmin();
 		//PARAMETES
 		//Add extra...because the inputhandlers supply the basic header texts
 		
@@ -433,6 +446,12 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 		//PARAMETERS that are also FIELDS
 		 //data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
 		 //The name you give the field/parameter must not contain spaces or special characters		
+		ReportableField groupIDField = null;
+		if (isSuperAdmin) {
+			groupIDField = new ReportableField(FIELD_NAME_GROUP_ID, String.class);
+			groupIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_GROUP_ID, "Group ID"), currentLocale);
+			reportCollection.addField(groupIDField);
+		}
 		 ReportableField nameField = new ReportableField(FIELD_NAME_NAME, String.class);
 		 nameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_NAME, "Name"), currentLocale);
 		 reportCollection.addField(nameField);
@@ -561,6 +580,9 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 				    // create a new ReportData for each row	    
 			        ReportableData data = new ReportableData();
 			        //	add the data to the correct fields/columns
+			        if (isSuperAdmin) {
+			        	 data.addData(groupIDField, group.getPrimaryKey().toString() );
+			        }
 				    data.addData(nameField, nameString );
 				    data.addData(shortNameField, shortNameString );
 				    data.addData(abbrevationField, abbrevation );
@@ -785,5 +807,17 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 	public String isUserSuitedForGroup(User user, Group targetGroup) throws RemoteException {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public boolean isSuperAdmin() {
+		boolean isSuperAdmin = false;
+		try {
+	         if (this.getCurrentUser().equals(this.getAccessController().getAdministratorUser())) {
+	        	 isSuperAdmin = true;
+	         }
+        } catch (Exception e) {
+        	e.printStackTrace();
+        }
+        return isSuperAdmin;
 	}
 }
