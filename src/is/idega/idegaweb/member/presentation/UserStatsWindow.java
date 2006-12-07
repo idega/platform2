@@ -14,7 +14,7 @@ public class UserStatsWindow extends GenericStatsWindow {
     
     public UserStatsWindow() {
         super();
-		setHeight(400);
+		setHeight(480);
 		setWidth(400);
 		setScrollbar(true);
     }
