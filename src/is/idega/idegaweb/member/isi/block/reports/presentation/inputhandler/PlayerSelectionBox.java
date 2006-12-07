@@ -27,10 +27,10 @@ import com.idega.user.data.Group;
  */
 public class PlayerSelectionBox extends GroupSelectionBox  {
 
-    private static String CACHE_PARENTS_APPLICATION_ATTRIBUTE = "CACHE_PARENTS";
-	private static String CACHE_GROUPS_APPLICATION_ATTRIBUTE = "CACHE_GROUPS";
-	private Map applicationCachedGroups = null;
-	private Map applicationCachedParents = null;
+	public static String CACHE_PARENTS_APPLICATION_ATTRIBUTE = "CACHE_PARENTS";
+	public static String CACHE_GROUPS_APPLICATION_ATTRIBUTE = "CACHE_GROUPS";
+	public Map applicationCachedGroups = null;
+	public Map applicationCachedParents = null;
 	private Map cachedGroups = new HashMap();
 	private boolean showParentGroupNameInGroupName = true;
 
@@ -68,15 +68,11 @@ public class PlayerSelectionBox extends GroupSelectionBox  {
 				e.printStackTrace();
 			}
 		}
+		List players = new ArrayList();
 		if(club!=null && (WorkReportConstants.WR_USER_TYPE_CLUB.equals(getUserType()) || WorkReportConstants.WR_USER_TYPE_DIVISION.equals(getUserType()))){
-			
-			List players = new ArrayList();
 			getClubPlayers(players, club);
-			return players;
 		}
-		else{
-			return super.getGroups(iwc);
-		}	
+		return players;		
 	}
 	
 	protected String getNameForGroup(Group group) {
@@ -139,7 +135,7 @@ public class PlayerSelectionBox extends GroupSelectionBox  {
                      applicationCachedGroups.put(key, cachedParentGroup);
                  }
                  else {
-                     parent = (Group) groupBiz.getGroupByGroupID(parentId.intValue());
+                     parent = groupBiz.getGroupByGroupID(parentId.intValue());
 	                 cachedParentGroup = new CachedGroup(parent);
 	                 cachedGroups.put(key,parent);
 	                 applicationCachedGroups.put(key, cachedParentGroup);
