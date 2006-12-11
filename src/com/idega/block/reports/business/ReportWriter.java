@@ -13,6 +13,13 @@ import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+
 import com.idega.block.reports.data.Report;
 import com.idega.block.reports.data.ReportInfo;
 import com.idega.io.MediaWritable;
@@ -157,7 +164,7 @@ public class ReportWriter implements MediaWritable {
 	}
 
 	public static MemoryFileBuffer writeXLS(Report report) {
-		return writeTabDelimited(report, XLS);
+		return writeExcel(report);
 	}
 
 	public static MemoryFileBuffer writeTXT(Report report) {
@@ -242,6 +249,94 @@ public class ReportWriter implements MediaWritable {
 			buffer.setMimeType("application/x-msexcel");
 		else
 			buffer.setMimeType("text/plain");
+		return buffer;
+	}
+
+	public static MemoryFileBuffer writeExcel(Report report) {
+		Connection Conn = null;
+		MemoryFileBuffer buffer = new MemoryFileBuffer();
+		MemoryOutputStream mos = new MemoryOutputStream(buffer);
+		Statement stmt = null;
+		ResultSet RS = null;
+		try {
+			String[] headers = report.getHeaders();
+			String sql = report.getSQL();
+			String info = report.getColInfo();
+			String columnWidths = null;
+			String[] sizes = null;
+
+			HSSFWorkbook wb = new HSSFWorkbook();
+			HSSFSheet sheet = wb.createSheet(report.getName().substring(0, 31));
+			if (info != null) {
+				info = info.replaceAll("#", "");
+				sizes = info.split("\\;");
+				for (short i = 0; i < sizes.length; i++) {
+					sheet.setColumnWidth(i, (short) (Integer.valueOf(sizes[i])
+							.intValue() * 256));
+				}
+			}
+			short rowNumber = 0;
+			HSSFRow row = sheet.createRow(rowNumber++);
+			HSSFCell cell = row.createCell((short) 0);
+			cell.setCellStyle(getStyleBold(wb));
+			cell.setCellType(HSSFCell.CELL_TYPE_STRING);
+			cell.setCellValue(report.getName());
+			rowNumber++;
+			
+			row = sheet.createRow(rowNumber++);
+			for (short i = 0; i < headers.length; i++) {
+				cell = row.createCell(i);
+				cell.setCellValue(headers[i]);
+				cell.setCellStyle(getStyleBold(wb));
+			}
+
+			Conn = com.idega.util.database.ConnectionBroker.getConnection();
+			stmt = Conn.createStatement();
+			RS = stmt.executeQuery(sql);
+			String temp = null;
+			while (RS.next()) {
+				row = sheet.createRow(rowNumber++);
+				for (int i = 1; i <= headers.length; i++) {
+					temp = RS.getString(i);
+					temp = temp != null ? temp : "";
+					cell = row.createCell((short) (i - 1));
+					cell.setCellType(HSSFCell.CELL_TYPE_STRING);
+					cell.setCellValue(temp);
+				}
+			}
+
+			wb.write(mos);
+			mos.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
+		finally {
+			// do not hide an existing exception
+			try {
+				if (RS != null) {
+					RS.close();
+				}
+			} catch (SQLException resultCloseEx) {
+				System.err
+						.println("[ReportWriter] result set could not be closed");
+				resultCloseEx.printStackTrace(System.err);
+			}
+			// do not hide an existing exception
+			try {
+				if (stmt != null) {
+					stmt.close();
+					if (Conn != null) {
+						ConnectionBroker.freeConnection(Conn);
+					}
+				}
+			} catch (SQLException statementCloseEx) {
+				System.err
+						.println("[ReportWriter] statement could not be closed");
+				statementCloseEx.printStackTrace(System.err);
+			}
+		}
+		buffer.setMimeType("application/x-msexcel");
 		return buffer;
 	}
 
@@ -366,5 +461,14 @@ public class ReportWriter implements MediaWritable {
 		datatable.setDefaultCellBorder(Rectangle.NO_BORDER);
 		datatable.setDefaultRowspan(1);
 		return datatable;
+	}
+
+	private static HSSFCellStyle getStyleBold(HSSFWorkbook wb) {
+		HSSFFont font = wb.createFont();
+		font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+		HSSFCellStyle styleBold = wb.createCellStyle();
+		styleBold.setFont(font);
+
+		return styleBold;
 	}
 }
