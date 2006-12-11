@@ -1,5 +1,5 @@
 /*
- * $Id: NationalRegisterDeceasedFileImportHandlerBean.java,v 1.1.2.1 2006/11/21 23:35:25 idegaweb Exp $
+ * $Id: NationalRegisterDeceasedFileImportHandlerBean.java,v 1.1.2.2 2006/12/11 09:10:16 idegaweb Exp $
  * Created on Nov 21, 2006
  *
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -13,6 +13,8 @@ import is.idega.block.family.business.FamilyLogic;
 import is.idega.block.nationalregister.data.NationalRegister;
 import is.idega.block.nationalregister.data.NationalRegisterFate;
 import is.idega.block.nationalregister.data.NationalRegisterFateHome;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -41,6 +43,7 @@ import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
 import com.idega.util.IWTimestamp;
 import com.idega.util.LocaleUtil;
+import com.idega.util.Timer;
 
 
 public class NationalRegisterDeceasedFileImportHandlerBean extends IBOServiceBean 
@@ -70,6 +73,12 @@ public class NationalRegisterDeceasedFileImportHandlerBean extends IBOServiceBea
 
 	public final static int COLUMN_SPOUSE_SSN = 8;
 
+	private final static int BYTES_PER_RECORD_H1 = 95;
+
+	private final static int BYTES_PER_RECORD_H2 = 107;
+
+	private final static String AUTO_CREATE_NON_EXISTING_USERS_IN_DECEASED_IMPORT = "AUTO_CREATE_NON_EXISTING_USERS_IN_DECEASED_IMPORT";
+
 	private FamilyLogic famLog = null;
 
 	private NationalRegisterBusiness natRegBiz;
@@ -90,6 +99,8 @@ public class NationalRegisterDeceasedFileImportHandlerBean extends IBOServiceBea
 
 	private NumberFormat twoDigits = NumberFormat.getNumberInstance();
 	
+	private NumberFormat precentNF = NumberFormat.getPercentInstance();
+
 	public final static String IW_BUNDLE_IDENTIFIER = "is.idega.block.nationalregister";
 
 	public List getFailedRecords() throws RemoteException {
@@ -119,6 +130,8 @@ public class NationalRegisterDeceasedFileImportHandlerBean extends IBOServiceBea
 	public boolean handleRecords() throws RemoteException {
 		int count = 0;
 		String item;
+		Timer clock = new Timer();
+		clock.start();
 		try {
 			natRegBiz = (NationalRegisterBusiness) getServiceInstance(NationalRegisterBusiness.class);
 			deceasedBiz = (NationalRegisterDeceasedBusiness) getServiceInstance(NationalRegisterDeceasedBusiness.class);
@@ -127,7 +140,7 @@ public class NationalRegisterDeceasedFileImportHandlerBean extends IBOServiceBea
 			try {
 				performer = IWContext.getInstance().getCurrentUser();
 			} catch (NullPointerException n) {
-				System.out.println("NationalRegisterImporter iwcontext instance not found");
+				System.out.println("NationalRegisterDeceasedImporter iwcontext instance not found");
 				performer = null;
 			}
 
@@ -151,15 +164,70 @@ public class NationalRegisterDeceasedFileImportHandlerBean extends IBOServiceBea
 				}
 			}
 			
+			long totalBytes = file.getFile().length();
+			String deceasedImportType = getDeceasedImportType();
+			long totalRecords = 0;
+			if (deceasedImportType.equalsIgnoreCase("H1")) {
+				totalRecords = totalBytes / BYTES_PER_RECORD_H1;
+			} else {
+				totalRecords = totalBytes / BYTES_PER_RECORD_H2;
+			}
+
+			twoDigits.setMinimumIntegerDigits(2);
+
+			long beginTime = System.currentTimeMillis();
+			long lastTimeCheck = beginTime;
+			long averageTimePerUser1000 = 0;
+			long timeLeft1000 = 0;
+			long estimatedTimeFinished100 = beginTime;
+
+			IWTimestamp stamp;
+			double progress = 0;
+			int intervalBetweenOutput = 1000;
+
+			System.out.println("NationalRegisterDeceasedImport processing RECORD [0] time: "
+					+ IWTimestamp.getTimestampRightNow().toString());
 			while (!(item = (String) file.getNextRecord()).equals("")) {
 				count++;
 				if (!processRecord(item)) {
 					failedRecordList.add(item);
 				}
+				if ((count % intervalBetweenOutput) == 0) {
+					averageTimePerUser1000 = (System.currentTimeMillis() - lastTimeCheck)
+							/ intervalBetweenOutput;
+					lastTimeCheck = System.currentTimeMillis();
+					timeLeft1000 = averageTimePerUser1000
+							* (totalRecords - count);
+					estimatedTimeFinished100 = System.currentTimeMillis()
+							+ timeLeft1000;
+
+					progress = ((double) count) / ((double) totalRecords);
+
+					System.out.print("NatRegDeceasedImport "
+							+ IWTimestamp.getTimestampRightNow().toString()
+							+ ", processing RECORD [" + count + " / "
+							+ totalRecords + "]");
+
+					stamp = new IWTimestamp(estimatedTimeFinished100);
+					System.out.println(" | " + precentNF.format(progress)
+							+ " done, guestimated time left of PHASE : "
+							+ getTimeString(timeLeft1000) + "  finish at "
+							+ stamp.getTime().toString());
+				}
 	
 				item = null;
 			}
 			file.close();
+			System.out.println("NationalRegisterDeceasedImport processed RECORD [" + count
+					+ "] time: "
+					+ IWTimestamp.getTimestampRightNow().toString());
+			clock.stop();
+			long msTime = clock.getTime();
+			long secTime = msTime / 1000;
+
+			System.out.println("Time to handleRecords: " + msTime + " ms  OR "
+					+ secTime + " s, averaging " + (msTime / count)
+					+ "ms per record");
 			printFailedRecords();
 	
 			return true;
@@ -169,6 +237,17 @@ public class NationalRegisterDeceasedFileImportHandlerBean extends IBOServiceBea
 
 			return false;
 		}
+	}
+
+	private String getDeceasedImportType() throws FileNotFoundException, IOException {
+		java.io.FileReader fRead = new java.io.FileReader(file.getFile());
+		StringBuffer buff = new StringBuffer();
+		for (int i=0;i<2;i++) {
+		  int c = fRead.read();
+		  buff.append((char)c);
+		}
+		fRead.close();
+		return buff.toString();
 	}
 
 	public void printFailedRecords() {
@@ -245,65 +324,76 @@ public class NationalRegisterDeceasedFileImportHandlerBean extends IBOServiceBea
 			catch (FinderException e) {
 				System.out.println(e.getMessage());
 			}
-			User user = uBiz.createUserByPersonalIDIfDoesNotExist(name,ssn,userGender,null);
-			
-			try {	
-				NationalRegister natRegEntry = natRegBiz.getEntryBySSN(ssn);
-				if (natRegEntry != null && fate != null) {
-					natRegEntry.setFate(fate.getFateString());
-					natRegEntry.store();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
+			IWBundle bundle = getIWMainApplication().getBundle(NationalRegisterDeceasedFileImportHandlerBean.IW_BUNDLE_IDENTIFIER);
+			String autoCreateUsersNonExistingUsersString = bundle.getProperty(AUTO_CREATE_NON_EXISTING_USERS_IN_DECEASED_IMPORT, "false");
+			User user = null;
+			try {
+				user = uBiz.getUser(ssn);
+			} catch (FinderException e) {
+				//User not found in the member system and ignored, if AUTO_CREATE_NON_EXISTING_USERS property is not set then 
 			}
-			
-			Collection addresses = user.getAddresses();
-			if (!addresses.isEmpty()) {
-				Iterator addrIt = addresses.iterator();
-				Address addr = null;
-				while (addrIt.hasNext()) {
-					addr = (Address)addrIt.next();
-					addr.setStreetName(deceasedAddressString);
-					addr.setStreetNumber(null);
-					addr.setPostalCode(null);
-					addr.setCity(null);
-					addr.setCommune(null);
-					addr.setCountry(null);
-					addr.store();
-				}
-			} else {
-				AddressTypeHome addressHome = (AddressTypeHome) IDOLookup.getHome(AddressType.class);
-				AddressType at1 = null;
-				AddressType at2 = null;
-				try {
-				    at1 = addressHome.findAddressType1();
-				    Address address1 = (Address) IDOLookup.instanciateEntity(Address.class);
-					address1.setAddressType(at1);
-					address1.setStreetName(deceasedAddressString);
-					address1.store();
-					
-					at2 = addressHome.findAddressType2();
-					Address address2 = (Address) IDOLookup.instanciateEntity(Address.class);
-					address2.setAddressType(at2);
-					address2.setStreetName(deceasedAddressString);	
-					address2.store();
-					
-					user.addAddress(address1);
-					user.addAddress(address2);
-					
-				} catch (FinderException e) {
-				    e.printStackTrace();
-				} catch (IDOAddRelationshipException e) {
-					e.printStackTrace();
+			if (user == null && autoCreateUsersNonExistingUsersString.equalsIgnoreCase("true")) {
+		
+				uBiz.createUserByPersonalIDIfDoesNotExist(name,ssn,userGender,null);
+			}
+			if (user != null) {
+				try {	
+					NationalRegister natRegEntry = natRegBiz.getEntryBySSN(ssn);
+					if (natRegEntry != null && fate != null) {
+						natRegEntry.setFate(fate.getFateString());
+						natRegEntry.store();
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+				
+				Collection addresses = user.getAddresses();
+				if (!addresses.isEmpty()) {
+					Iterator addrIt = addresses.iterator();
+					Address addr = null;
+					while (addrIt.hasNext()) {
+						addr = (Address)addrIt.next();
+						addr.setStreetName(deceasedAddressString);
+						addr.setStreetNumber(null);
+						addr.setPostalCode(null);
+						addr.setCity(null);
+						addr.setCommune(null);
+						addr.setCountry(null);
+						addr.store();
+					}
+				} else {
+					AddressTypeHome addressHome = (AddressTypeHome) IDOLookup.getHome(AddressType.class);
+					AddressType at1 = null;
+					AddressType at2 = null;
+					try {
+					    at1 = addressHome.findAddressType1();
+					    Address address1 = (Address) IDOLookup.instanciateEntity(Address.class);
+						address1.setAddressType(at1);
+						address1.setStreetName(deceasedAddressString);
+						address1.store();
+						
+						at2 = addressHome.findAddressType2();
+						Address address2 = (Address) IDOLookup.instanciateEntity(Address.class);
+						address2.setAddressType(at2);
+						address2.setStreetName(deceasedAddressString);	
+						address2.store();
+						
+						user.addAddress(address1);
+						user.addAddress(address2);
+						
+					} catch (FinderException e) {
+					    e.printStackTrace();
+					} catch (IDOAddRelationshipException e) {
+						e.printStackTrace();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				
+				FamilyLogic familyService = getMemberFamilyLogic();
+				IWTimestamp dom = IWTimestamp.RightNow();
+				familyService.registerAsDeceased(user, dom.getDate(), performer);
 			}
-			
-			FamilyLogic familyService = getMemberFamilyLogic();
-			IWTimestamp dom = IWTimestamp.RightNow();
-			familyService.registerAsDeceased(user, dom.getDate(), performer);
-			
 		return success;
 	}
 	
