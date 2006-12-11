@@ -125,6 +125,9 @@ public class CampusContractWriter {
 
 	// new 10.8.2006
 	public final static String APARTMENT_SERIAL_NUMBER = "apartment_serial_number";
+	
+	//new 7.12.2006
+	public final static String APARTMENT_TYPE = "apartment_type";
 
 	public static String[] TAGS = { renter_name, renter_address, renter_id,
 			tenant_name, tenant_address, tenant_id, apartment_name,
@@ -133,7 +136,7 @@ public class CampusContractWriter {
 			apartment_rent, apartment_category, contract_starts, contract_ends,
 			renting_index, today, current_renting_index, current_rent,
 			cohabitant, postal_address, current_rent_typeA, current_rent_typeB,
-			current_rent_typeC, current_rent_typeD, APARTMENT_SERIAL_NUMBER };
+			current_rent_typeC, current_rent_typeD, APARTMENT_SERIAL_NUMBER, APARTMENT_TYPE };
 
 	public final static String IS = "IS";
 
@@ -537,6 +540,18 @@ public class CampusContractWriter {
 					H.put(APARTMENT_SERIAL_NUMBER, new Chunk("", nameFont));
 				}
 				// end new 10.8.2006
+				
+				//new 7.12.2006
+				if (eApartment.getApartmentType() != null) {
+					if (eApartment.getApartmentType().getName() != null) {
+						H.put(APARTMENT_TYPE, new Chunk(eApartment.getApartmentType().getName(), nameFont));
+					} else {
+						H.put(APARTMENT_TYPE, new Chunk("", nameFont));
+					}
+				} else {
+					H.put(APARTMENT_TYPE, new Chunk("", nameFont));
+				}
+				//end new 7.12.2006
 				return H;
 			}
 
