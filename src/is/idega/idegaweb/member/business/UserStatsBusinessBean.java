@@ -52,6 +52,8 @@ import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.user.business.UserInfoColumnsBusiness;
+import com.idega.user.business.UserStatusBusiness;
+import com.idega.user.business.UserStatusBusinessBean;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
 import com.idega.user.data.User;
@@ -71,6 +73,7 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
     private GroupBusiness groupBiz = null;
     private NationalRegisterBusiness nationalRegisterBiz = null;
     private UserInfoColumnsBusiness userInfoColumnsBiz = null;
+    private UserStatusBusiness userStatusBiz = null;
 	private IWBundle _iwb = null;
 	private IWResourceBundle _iwrb = null;
 	private IWResourceBundle _userIwrb = null;
@@ -366,6 +369,12 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 			         String userStatusString = null;
 			         try {
 			             userStatuses = (List) ((UserStatusHome)IDOLookup.getHome(UserStatus.class)).findAllActiveByUserIdAndGroupId(Integer.parseInt(user.getPrimaryKey().toString()),Integer.parseInt(parentGroup.getPrimaryKey().toString()));
+			             if (userStatuses != null && userStatuses.isEmpty() && userStatusesFilter.contains(UserStatusBusinessBean.STATUS_DECEASED)) {
+			            	 UserStatus userStatus = getUserStatusBusiness().getDeceasedUserStatus((Integer)user.getPrimaryKey());
+			            	 if (userStatus != null) {
+			            		 userStatuses.add(userStatus);
+			            	 }
+			             }
 			         } catch (FinderException e) {
 			             System.out.println(e.getMessage());
 			         }
@@ -777,6 +786,13 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 			userInfoColumnsBiz = (UserInfoColumnsBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), UserInfoColumnsBusiness.class);
 		}	
 		return userInfoColumnsBiz;
+	}
+
+	private UserStatusBusiness getUserStatusBusiness() throws RemoteException {
+		if (userStatusBiz == null) {
+			userStatusBiz = (UserStatusBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), UserStatusBusiness.class);
+		}	
+		return userStatusBiz;
 	}
 
 	/*
