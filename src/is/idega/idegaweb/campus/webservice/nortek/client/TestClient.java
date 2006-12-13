@@ -3,7 +3,6 @@ package is.idega.idegaweb.campus.webservice.nortek.client;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
-import java.util.GregorianCalendar;
 
 import javax.xml.rpc.ServiceException;
 
