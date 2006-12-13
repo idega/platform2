@@ -1,13 +1,13 @@
 /*
 <<<<<<< ContractAccountsBMPBean.java
  * 
- * $Id: ContractAccountsBMPBean.java,v 1.5 2004/11/08 16:23:34 aron Exp $
+ * $Id: ContractAccountsBMPBean.java,v 1.5.4.1 2006/12/13 15:07:28 palli Exp $
  * 
  * 
  * 
 =======
 
- * $Id: ContractAccountsBMPBean.java,v 1.5 2004/11/08 16:23:34 aron Exp $
+ * $Id: ContractAccountsBMPBean.java,v 1.5.4.1 2006/12/13 15:07:28 palli Exp $
 
  *
 
@@ -273,7 +273,7 @@ public class ContractAccountsBMPBean
 		sql.append(" CREATE VIEW V_CONTRACT_ACCOUNTS ( ");
 		sql.append(" CAM_CONTRACT_ID, ");
 		sql.append(" IC_USER_ID, ");
-		sql.append(" BU_APARTMENT_ID ");
+		sql.append(" BU_APARTMENT_ID, ");
 		sql.append(" FIN_ACCOUNT_ID, ");
 		sql.append(" PHONE_ACCOUNT_ID, ");
 		sql.append(" FIN_BALANCE, ");
