@@ -853,19 +853,8 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
 						System.out.println("Unable to initialize deceasedAddressString");
 					}
 				}
-				Collection addresses = user.getAddresses();
-				Iterator addrIt = addresses.iterator();
-				Address addr = null;
-				while (addrIt.hasNext()) {
-					addr = (Address)addrIt.next();
-					addr.setStreetName(deceasedAddressString);
-					addr.setStreetNumber(null);
-					addr.setPostalCode(null);
-					addr.setCity(null);
-					addr.setCommune(null);
-					addr.setCountry(null);
-					addr.store();
-				}
+				uBiz.updateUsersMainAddressOrCreateIfDoesNotExist(user, deceasedAddressString, null, null, null, null, null, null);
+				uBiz.updateUsersCoAddressOrCreateIfDoesNotExist(user, deceasedAddressString, null, null, null, null, null, null);
 
 				FamilyLogic familyService = getMemberFamilyLogic();
 				IWTimestamp dom = new IWTimestamp();
