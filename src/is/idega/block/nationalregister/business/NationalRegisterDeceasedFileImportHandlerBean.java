@@ -1,5 +1,5 @@
 /*
- * $Id: NationalRegisterDeceasedFileImportHandlerBean.java,v 1.1.2.2 2006/12/11 09:10:16 idegaweb Exp $
+ * $Id: NationalRegisterDeceasedFileImportHandlerBean.java,v 1.1.2.3 2006/12/17 11:51:00 idegaweb Exp $
  * Created on Nov 21, 2006
  *
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import javax.ejb.CreateException;
@@ -27,10 +26,6 @@ import com.idega.block.importer.business.ImportFileHandler;
 import com.idega.block.importer.data.ImportFile;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOServiceBean;
-import com.idega.core.location.data.Address;
-import com.idega.core.location.data.AddressType;
-import com.idega.core.location.data.AddressTypeHome;
-import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -78,6 +73,8 @@ public class NationalRegisterDeceasedFileImportHandlerBean extends IBOServiceBea
 	private final static int BYTES_PER_RECORD_H2 = 107;
 
 	private final static String AUTO_CREATE_NON_EXISTING_USERS_IN_DECEASED_IMPORT = "AUTO_CREATE_NON_EXISTING_USERS_IN_DECEASED_IMPORT";
+
+	private static final String DATE_OF_DEATH_META_DATA_KEY = "date_of_death";
 
 	private FamilyLogic famLog = null;
 
@@ -311,90 +308,84 @@ public class NationalRegisterDeceasedFileImportHandlerBean extends IBOServiceBea
 
 		boolean success = true;
 
-		if (ssn == null || ssn.equals(""))
+		if (ssn == null || ssn.equals("")) {
 			return false;
+		}
 
-			success = deceasedBiz.updateEntry(symbol, ssn, dateOfDeath, name,
-					street, commune, gender, maritialStatus, spouseSSN);
-		
-			Gender userGender = null;
-			try {
-				userGender = getGender(gender);
-			}
-			catch (FinderException e) {
-				System.out.println(e.getMessage());
-			}
-			IWBundle bundle = getIWMainApplication().getBundle(NationalRegisterDeceasedFileImportHandlerBean.IW_BUNDLE_IDENTIFIER);
-			String autoCreateUsersNonExistingUsersString = bundle.getProperty(AUTO_CREATE_NON_EXISTING_USERS_IN_DECEASED_IMPORT, "false");
-			User user = null;
-			try {
-				user = uBiz.getUser(ssn);
-			} catch (FinderException e) {
-				//User not found in the member system and ignored, if AUTO_CREATE_NON_EXISTING_USERS property is not set then 
-			}
-			if (user == null && autoCreateUsersNonExistingUsersString.equalsIgnoreCase("true")) {
-		
-				uBiz.createUserByPersonalIDIfDoesNotExist(name,ssn,userGender,null);
-			}
-			if (user != null) {
-				try {	
-					NationalRegister natRegEntry = natRegBiz.getEntryBySSN(ssn);
-					if (natRegEntry != null && fate != null) {
-						natRegEntry.setFate(fate.getFateString());
-						natRegEntry.store();
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
+		success = deceasedBiz.updateEntry(symbol, ssn, dateOfDeath, name,
+				street, commune, gender, maritialStatus, spouseSSN);
+	
+		Gender userGender = null;
+		try {
+			userGender = getGender(gender);
+		}
+		catch (FinderException e) {
+			System.out.println(e.getMessage());
+		}
+		IWBundle bundle = getIWMainApplication().getBundle(NationalRegisterDeceasedFileImportHandlerBean.IW_BUNDLE_IDENTIFIER);
+		String autoCreateUsersNonExistingUsersString = bundle.getProperty(AUTO_CREATE_NON_EXISTING_USERS_IN_DECEASED_IMPORT, "false");
+		User user = null;
+		try {
+			user = uBiz.getUser(ssn);
+		} catch (FinderException e) {
+			//User not found in the member system and ignored, if AUTO_CREATE_NON_EXISTING_USERS property is not set then 
+		}
+		if (user == null && autoCreateUsersNonExistingUsersString.equalsIgnoreCase("true")) {
+			IWTimestamp dateOfBirth = getDateOfBirthFromSSN(ssn);
+			uBiz.createUserByPersonalIDIfDoesNotExist(name,ssn,userGender,dateOfBirth);
+		}
+		if (user != null) {
+			try {	
+				NationalRegister natRegEntry = natRegBiz.getEntryBySSN(ssn);
+				if (natRegEntry != null && fate != null) {
+					natRegEntry.setFate(fate.getFateString());
+					natRegEntry.store();
 				}
-				
-				Collection addresses = user.getAddresses();
-				if (!addresses.isEmpty()) {
-					Iterator addrIt = addresses.iterator();
-					Address addr = null;
-					while (addrIt.hasNext()) {
-						addr = (Address)addrIt.next();
-						addr.setStreetName(deceasedAddressString);
-						addr.setStreetNumber(null);
-						addr.setPostalCode(null);
-						addr.setCity(null);
-						addr.setCommune(null);
-						addr.setCountry(null);
-						addr.store();
-					}
-				} else {
-					AddressTypeHome addressHome = (AddressTypeHome) IDOLookup.getHome(AddressType.class);
-					AddressType at1 = null;
-					AddressType at2 = null;
-					try {
-					    at1 = addressHome.findAddressType1();
-					    Address address1 = (Address) IDOLookup.instanciateEntity(Address.class);
-						address1.setAddressType(at1);
-						address1.setStreetName(deceasedAddressString);
-						address1.store();
-						
-						at2 = addressHome.findAddressType2();
-						Address address2 = (Address) IDOLookup.instanciateEntity(Address.class);
-						address2.setAddressType(at2);
-						address2.setStreetName(deceasedAddressString);	
-						address2.store();
-						
-						user.addAddress(address1);
-						user.addAddress(address2);
-						
-					} catch (FinderException e) {
-					    e.printStackTrace();
-					} catch (IDOAddRelationshipException e) {
-						e.printStackTrace();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-				
-				FamilyLogic familyService = getMemberFamilyLogic();
-				IWTimestamp dom = IWTimestamp.RightNow();
-				familyService.registerAsDeceased(user, dom.getDate(), performer);
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
+			
+			uBiz.updateUsersMainAddressOrCreateIfDoesNotExist(user, deceasedAddressString, null, null, null, null, null, null);
+			uBiz.updateUsersCoAddressOrCreateIfDoesNotExist(user, deceasedAddressString, null, null, null, null, null, null);
+			
+			user.setMetaData(DATE_OF_DEATH_META_DATA_KEY, dateOfDeath);
+			user.store();
+
+			FamilyLogic familyService = getMemberFamilyLogic();
+			IWTimestamp dom = IWTimestamp.RightNow();
+			familyService.registerAsDeceased(user, dom.getDate(), performer);
+		}
 		return success;
+	}
+
+	private IWTimestamp getDateOfBirthFromSSN(String ssn) {
+		IWTimestamp dateOfBirth = null;
+		try {
+			String day = ssn.substring(0,2);
+			String month = ssn.substring(2,4);
+			String year = ssn.substring(4,6);
+			
+			int iDay = Integer.parseInt(day);
+			int iMonth = Integer.parseInt(month);
+			int iYear = Integer.parseInt(year);
+			if (ssn.substring(9).equals("9"))
+				iYear += 1900;
+			else if (ssn.substring(9).equals("0"))
+				iYear += 2000;
+			else if (ssn.substring(9).equals("8"))
+				iYear += 1800;
+			dateOfBirth = new IWTimestamp();
+			dateOfBirth.setHour(0);
+			dateOfBirth.setMinute(0);
+			dateOfBirth.setSecond(0);
+			dateOfBirth.setMilliSecond(0);
+			dateOfBirth.setDay(iDay);
+			dateOfBirth.setMonth(iMonth);
+			dateOfBirth.setYear(iYear);
+		} catch (Exception e) {
+			System.out.println("Error creating dateOfBirth timestamp from SSN = " + ssn + "Error was = " + e.getMessage());
+		}
+		return dateOfBirth;
 	}
 	
 	private Gender getGender(String gender) throws RemoteException, FinderException {
