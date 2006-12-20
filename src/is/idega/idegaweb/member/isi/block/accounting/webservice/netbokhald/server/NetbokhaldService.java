@@ -9,4 +9,5 @@ package is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.serv
 
 public interface NetbokhaldService extends java.rmi.Remote {
     public is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.server.NetbokhaldEntry[] getEntries(java.lang.String in0, java.util.Calendar in1) throws java.rmi.RemoteException;
+    public is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.server.NetbokhaldEntry[] getEntries(java.lang.String in0, java.lang.String in1) throws java.rmi.RemoteException;
 }

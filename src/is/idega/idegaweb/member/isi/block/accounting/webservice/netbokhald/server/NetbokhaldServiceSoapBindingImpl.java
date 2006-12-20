@@ -31,14 +31,28 @@ public class NetbokhaldServiceSoapBindingImpl
 						NetbokhaldBusiness.class);
 		Collection col = bus1.getFinanceEntries(in0, in1.getTime());
 		
+    	return returnEntriesFromCollection(col);
+	}
+	
+    public is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.server.NetbokhaldEntry[] getEntries(java.lang.String in0, java.lang.String in1) throws java.rmi.RemoteException {
+    	NetbokhaldBusiness bus1 = (NetbokhaldBusiness) IBOLookup
+		.getServiceInstance(IWMainApplication
+				.getDefaultIWApplicationContext(),
+				NetbokhaldBusiness.class);
+    	Collection col = bus1.getFinanceEntries(in0, in1);
+
+    	return returnEntriesFromCollection(col);
+    }
+    
+    private is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.server.NetbokhaldEntry[] returnEntriesFromCollection(Collection col) {
 		if (col != null) {
-			NetbokhaldEntry entries[] = new NetbokhaldEntry[col.size()];
+			NetbokhaldEntry entries[] = new NetbokhaldEntry[col.size() * 2];
 			int i = 0;
 			Iterator it = col.iterator();
 			while (it.hasNext()) {
 				FinanceEntry entry = (FinanceEntry) it.next();
 				entries[i] = new NetbokhaldEntry();
-				entries[i].setAccountingKey("1234");
+				entries[i].setAccountingKey("22100");
 				if (entry.getType().equals(FinanceEntryBMPBean.TYPE_PAYMENT)) {
 					entries[i].setAmount(-entry.getAmount());
 				} else {
@@ -52,18 +66,50 @@ public class NetbokhaldServiceSoapBindingImpl
 				entries[i].setDateOfEntry(cal);
 				if (entry.getInvoiceReceiver() != null) {
 					entries[i].setInvoiceReceiver(entry.getInvoiceReceiver().getInvoiceReceiver().getPersonalID());
-					entries[i].setReference(entry.getInvoiceReceiver().getInvoiceReceiver().getPersonalID());
+				} else {
+					entries[i].setInvoiceReceiver(entry.getUser().getPersonalID());					
+				}
+				entries[i].setIsVAT(false);
+				entries[i].setVATAmount(0.0d);
+				entries[i].setVATKey("");
+				entries[i].setSerialNumber(entry.getPrimaryKey().toString());
+				StringBuffer text = new StringBuffer();
+				if (entry.getInfo() != null) {
+					if (entry.getInfo().length() > 40) {
+						text.append(entry.getInfo().substring(0, 40));
+					} else {
+						text.append(entry.getInfo());
+					}
+				}
+				text.append(entry.getUser().getPersonalID());
+				entries[i].setText(text.toString());
+				i++;
+				entries[i] = new NetbokhaldEntry();
+				entries[i].setAccountingKey("87190");
+				if (entry.getType().equals(FinanceEntryBMPBean.TYPE_PAYMENT)) {
+					entries[i].setAmount(entry.getAmount());
+				} else {
+					entries[i].setAmount(-entry.getAmount());					
+				}
+				entries[i].setCustomer(entry.getUser().getPersonalID());
+				entries[i].setCustomerNumber(-1);
+				entries[i].setDateOfEntry(cal);
+				if (entry.getInvoiceReceiver() != null) {
+					entries[i].setInvoiceReceiver(entry.getInvoiceReceiver().getInvoiceReceiver().getPersonalID());
+				} else {
+					entries[i].setInvoiceReceiver(entry.getUser().getPersonalID());					
 				}
 				entries[i].setIsVAT(false);
 				entries[i].setText(entry.getInfo());
 				entries[i].setVATAmount(0.0d);
 				entries[i].setVATKey("");
+				entries[i].setSerialNumber(entry.getPrimaryKey().toString());
 				i++;
 			}
 			
 			return entries;
 		}
 		
-		return null;
-	}
+		return null;    	
+    }
 }

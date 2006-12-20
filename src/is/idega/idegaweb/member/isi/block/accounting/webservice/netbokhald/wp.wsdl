@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<wsdl:definitions targetNamespace="urn:netbokhald" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="urn:netbokhald" xmlns:intf="urn:netbokhald" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<wsdl:definitions targetNamespace="urn:netbokhald" xmlns:impl="urn:netbokhald" xmlns:intf="urn:netbokhald" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
 <!--WSDL created by Apache Axis version: 1.3
 Built on Oct 05, 2005 (05:23:37 EDT)-->
  <wsdl:types>
-  <schema targetNamespace="urn:netbokhald" xmlns="http://www.w3.org/2001/XMLSchema">
+  <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:netbokhald">
    <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
    <complexType name="NetbokhaldEntry">
     <sequence>
@@ -17,6 +17,7 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
      <element name="invoiceReceiver" nillable="true" type="soapenc:string"/>
      <element name="isVAT" type="xsd:boolean"/>
      <element name="reference" nillable="true" type="soapenc:string"/>
+     <element name="serialNumber" nillable="true" type="soapenc:string"/>
      <element name="text" nillable="true" type="soapenc:string"/>
     </sequence>
    </complexType>
@@ -38,6 +39,20 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
 
    </wsdl:message>
 
+   <wsdl:message name="getEntriesRequest1">
+
+      <wsdl:part name="in0" type="soapenc:string"/>
+
+      <wsdl:part name="in1" type="soapenc:string"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getEntriesResponse1">
+
+      <wsdl:part name="getEntriesReturn" type="impl:ArrayOfNetbokhaldEntry"/>
+
+   </wsdl:message>
+
    <wsdl:message name="getEntriesResponse">
 
       <wsdl:part name="getEntriesReturn" type="impl:ArrayOfNetbokhaldEntry"/>
@@ -48,9 +63,17 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
 
       <wsdl:operation name="getEntries" parameterOrder="in0 in1">
 
-         <wsdl:input message="impl:getEntriesRequest" name="getEntriesRequest"/>
+         <wsdl:input name="getEntriesRequest" message="impl:getEntriesRequest"/>
 
-         <wsdl:output message="impl:getEntriesResponse" name="getEntriesResponse"/>
+         <wsdl:output name="getEntriesResponse" message="impl:getEntriesResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getEntries" parameterOrder="in0 in1">
+
+         <wsdl:input name="getEntriesRequest1" message="impl:getEntriesRequest1"/>
+
+         <wsdl:output name="getEntriesResponse1" message="impl:getEntriesResponse1"/>
 
       </wsdl:operation>
 
@@ -66,13 +89,31 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
 
          <wsdl:input name="getEntriesRequest">
 
-            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:netbokhald" use="encoded"/>
+            <wsdlsoap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:netbokhald"/>
 
          </wsdl:input>
 
          <wsdl:output name="getEntriesResponse">
 
-            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:netbokhald" use="encoded"/>
+            <wsdlsoap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:netbokhald"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getEntries">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getEntriesRequest1">
+
+            <wsdlsoap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:netbokhald"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getEntriesResponse1">
+
+            <wsdlsoap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:netbokhald"/>
 
          </wsdl:output>
 
@@ -82,7 +123,7 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
 
    <wsdl:service name="NetbokhaldServiceService">
 
-      <wsdl:port binding="impl:NetbokhaldServiceSoapBinding" name="NetbokhaldService">
+      <wsdl:port name="NetbokhaldService" binding="impl:NetbokhaldServiceSoapBinding">
 
          <wsdlsoap:address location="http://www.felix.is/services/NetbokhaldService"/>
 

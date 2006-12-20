@@ -52,7 +52,7 @@ public class NetbokhaldServiceServiceLocator extends org.apache.axis.client.Serv
 
     public is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.client.NetbokhaldService getNetbokhaldService(java.net.URL portAddress) throws javax.xml.rpc.ServiceException {
         try {
-        	is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.client.NetbokhaldServiceSoapBindingStub _stub = new is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.client.NetbokhaldServiceSoapBindingStub(portAddress, this);
+            is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.client.NetbokhaldServiceSoapBindingStub _stub = new is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.client.NetbokhaldServiceSoapBindingStub(portAddress, this);
             _stub.setPortName(getNetbokhaldServiceWSDDServiceName());
             return _stub;
         }
@@ -73,7 +73,7 @@ public class NetbokhaldServiceServiceLocator extends org.apache.axis.client.Serv
     public java.rmi.Remote getPort(Class serviceEndpointInterface) throws javax.xml.rpc.ServiceException {
         try {
             if (is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.client.NetbokhaldService.class.isAssignableFrom(serviceEndpointInterface)) {
-            	is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.client.NetbokhaldServiceSoapBindingStub _stub = new is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.client.NetbokhaldServiceSoapBindingStub(new java.net.URL(NetbokhaldService_address), this);
+                is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.client.NetbokhaldServiceSoapBindingStub _stub = new is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.client.NetbokhaldServiceSoapBindingStub(new java.net.URL(NetbokhaldService_address), this);
                 _stub.setPortName(getNetbokhaldServiceWSDDServiceName());
                 return _stub;
             }

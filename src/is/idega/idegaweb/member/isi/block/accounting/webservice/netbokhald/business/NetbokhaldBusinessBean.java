@@ -25,7 +25,20 @@ public class NetbokhaldBusinessBean extends IBOServiceBean implements Netbokhald
 				
 		return col;
 	}
-	
+
+	public Collection getFinanceEntries(String companyNumber, String fromSerialNumber) {
+		Collection col = null;
+		try {
+			col = getFinanceEntryHome().findAllByClubId(330185);
+		} catch (IDOLookupException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+				
+		return col;
+	}
+
 	private FinanceEntryHome getFinanceEntryHome() throws IDOLookupException {
 		return (FinanceEntryHome) IDOLookup.getHome(FinanceEntry.class);
 	}

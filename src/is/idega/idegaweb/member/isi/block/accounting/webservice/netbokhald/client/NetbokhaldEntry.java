@@ -28,6 +28,8 @@ public class NetbokhaldEntry  implements java.io.Serializable {
 
     private java.lang.String reference;
 
+    private java.lang.String serialNumber;
+
     private java.lang.String text;
 
     public NetbokhaldEntry() {
@@ -44,6 +46,7 @@ public class NetbokhaldEntry  implements java.io.Serializable {
            java.lang.String invoiceReceiver,
            boolean isVAT,
            java.lang.String reference,
+           java.lang.String serialNumber,
            java.lang.String text) {
            this.VATAmount = VATAmount;
            this.VATKey = VATKey;
@@ -55,6 +58,7 @@ public class NetbokhaldEntry  implements java.io.Serializable {
            this.invoiceReceiver = invoiceReceiver;
            this.isVAT = isVAT;
            this.reference = reference;
+           this.serialNumber = serialNumber;
            this.text = text;
     }
 
@@ -260,6 +264,26 @@ public class NetbokhaldEntry  implements java.io.Serializable {
 
 
     /**
+     * Gets the serialNumber value for this NetbokhaldEntry.
+     * 
+     * @return serialNumber
+     */
+    public java.lang.String getSerialNumber() {
+        return serialNumber;
+    }
+
+
+    /**
+     * Sets the serialNumber value for this NetbokhaldEntry.
+     * 
+     * @param serialNumber
+     */
+    public void setSerialNumber(java.lang.String serialNumber) {
+        this.serialNumber = serialNumber;
+    }
+
+
+    /**
      * Gets the text value for this NetbokhaldEntry.
      * 
      * @return text
@@ -312,6 +336,9 @@ public class NetbokhaldEntry  implements java.io.Serializable {
             ((this.reference==null && other.getReference()==null) || 
              (this.reference!=null &&
               this.reference.equals(other.getReference()))) &&
+            ((this.serialNumber==null && other.getSerialNumber()==null) || 
+             (this.serialNumber!=null &&
+              this.serialNumber.equals(other.getSerialNumber()))) &&
             ((this.text==null && other.getText()==null) || 
              (this.text!=null &&
               this.text.equals(other.getText())));
@@ -347,6 +374,9 @@ public class NetbokhaldEntry  implements java.io.Serializable {
         _hashCode += (isIsVAT() ? Boolean.TRUE : Boolean.FALSE).hashCode();
         if (getReference() != null) {
             _hashCode += getReference().hashCode();
+        }
+        if (getSerialNumber() != null) {
+            _hashCode += getSerialNumber().hashCode();
         }
         if (getText() != null) {
             _hashCode += getText().hashCode();
@@ -418,6 +448,12 @@ public class NetbokhaldEntry  implements java.io.Serializable {
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("reference");
         elemField.setXmlName(new javax.xml.namespace.QName("", "reference"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"));
+        elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("serialNumber");
+        elemField.setXmlName(new javax.xml.namespace.QName("", "serialNumber"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"));
         elemField.setNillable(true);
         typeDesc.addFieldDesc(elemField);

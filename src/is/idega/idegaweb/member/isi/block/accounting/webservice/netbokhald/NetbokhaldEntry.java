@@ -25,6 +25,8 @@ public class NetbokhaldEntry {
 	
 	private int customerNumber = -1;
 	
+	private String serialNumber = "";
+	
 	public NetbokhaldEntry() {
 		
 	}
@@ -115,5 +117,13 @@ public class NetbokhaldEntry {
 	
 	public int getCustomerNumber() {
 		return customerNumber; 
+	}
+	
+	public void setSerialNumber(String serialNumber) {
+		this.serialNumber = serialNumber;
+	}
+	
+	public String getSerialNumber() {
+		return serialNumber;
 	}
 }

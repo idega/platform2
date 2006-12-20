@@ -43,6 +43,19 @@ public class NetbokhaldServiceSoapBindingSkeleton implements is.idega.idegaweb.m
             _myOperations.put("getEntries", new java.util.ArrayList());
         }
         ((java.util.List)_myOperations.get("getEntries")).add(_oper);
+        _params = new org.apache.axis.description.ParameterDesc [] {
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "in0"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"), java.lang.String.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "in1"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"), java.lang.String.class, false, false), 
+        };
+        _oper = new org.apache.axis.description.OperationDesc("getEntries", _params, new javax.xml.namespace.QName("", "getEntriesReturn"));
+        _oper.setReturnType(new javax.xml.namespace.QName("urn:netbokhald", "ArrayOfNetbokhaldEntry"));
+        _oper.setElementQName(new javax.xml.namespace.QName("urn:netbokhald", "getEntries"));
+        _oper.setSoapAction("");
+        _myOperationsList.add(_oper);
+        if (_myOperations.get("getEntries") == null) {
+            _myOperations.put("getEntries", new java.util.ArrayList());
+        }
+        ((java.util.List)_myOperations.get("getEntries")).add(_oper);
     }
 
     public NetbokhaldServiceSoapBindingSkeleton() {
@@ -53,6 +66,12 @@ public class NetbokhaldServiceSoapBindingSkeleton implements is.idega.idegaweb.m
         this.impl = impl;
     }
     public is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.server.NetbokhaldEntry[] getEntries(java.lang.String in0, java.util.Calendar in1) throws java.rmi.RemoteException
+    {
+        is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.server.NetbokhaldEntry[] ret = impl.getEntries(in0, in1);
+        return ret;
+    }
+
+    public is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.server.NetbokhaldEntry[] getEntries(java.lang.String in0, java.lang.String in1) throws java.rmi.RemoteException
     {
         is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.server.NetbokhaldEntry[] ret = impl.getEntries(in0, in1);
         return ret;
