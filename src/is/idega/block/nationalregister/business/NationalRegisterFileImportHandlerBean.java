@@ -7,7 +7,6 @@ import is.idega.block.family.data.FamilyMemberHome;
 import is.idega.block.nationalregister.data.NationalRegister;
 import is.idega.block.nationalregister.data.NationalRegisterFate;
 import is.idega.block.nationalregister.data.NationalRegisterFateHome;
-
 import java.rmi.RemoteException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -18,12 +17,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
-
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
-
 import com.idega.block.importer.business.ImportFileHandler;
 import com.idega.block.importer.data.ImportFile;
 import com.idega.block.importer.presentation.Importer;
@@ -54,8 +51,9 @@ import com.idega.util.Timer;
  * Window>Preferences>Java>Templates. To enable and disable the creation of type
  * comments go to Window>Preferences>Java>Code Generation.
  */
-public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
-		implements NationalRegisterFileImportHandler, ImportFileHandler {
+public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implements NationalRegisterFileImportHandler,
+		ImportFileHandler {
+
 	private ImportFile file;
 
 	private ArrayList failedRecordList = new ArrayList();
@@ -169,7 +167,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
 	private CommuneBusiness cBiz;
 
 	private String deceasedAddressString = null;
-	
+
 	public final static String IW_BUNDLE_IDENTIFIER = "is.idega.block.nationalregister";
 
 	/**
@@ -178,174 +176,116 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
 	public boolean handleRecords() throws RemoteException {
 		// UserTransaction transaction =
 		// getSessionContext().getUserTransaction();
-
 		Timer clock = new Timer();
 		clock.start();
-
 		try {
 			this.natBiz = (NationalRegisterBusiness) getServiceInstance(NationalRegisterBusiness.class);
 			this.uBiz = (UserBusiness) getServiceInstance(UserBusiness.class);
 			this.cBiz = (CommuneBusiness) getServiceInstance(CommuneBusiness.class);
-
-			if (FATE_DECEASED == null || FATE_CHANGE_PERSONAL_ID == null
-					|| FATE_REMOVED == null) {
-				NationalRegisterFate fate = ((NationalRegisterFateHome) IDOLookup
-						.getHome(NationalRegisterFate.class))
-						.findByFateCode(NationalRegisterConstants.FATE_DECEASED);
-				if (fate == null || fate.getFateString() == null
-						|| "".equals(fate.getFateString())) {
-					System.out
-							.println("Missing DECEASED fate string in table reg_nat_is_fate");
-
+			if (FATE_DECEASED == null || FATE_CHANGE_PERSONAL_ID == null || FATE_REMOVED == null) {
+				NationalRegisterFate fate = ((NationalRegisterFateHome) IDOLookup.getHome(NationalRegisterFate.class)).findByFateCode(NationalRegisterConstants.FATE_DECEASED);
+				if (fate == null || fate.getFateString() == null || "".equals(fate.getFateString())) {
+					System.out.println("Missing DECEASED fate string in table reg_nat_is_fate");
 					return false;
 				}
 				FATE_DECEASED = fate.getFateString();
-
-				fate = ((NationalRegisterFateHome) IDOLookup
-						.getHome(NationalRegisterFate.class))
-						.findByFateCode(NationalRegisterConstants.FATE_CHANGE_PERSONAL_ID);
-				if (fate == null || fate.getFateString() == null
-						|| "".equals(fate.getFateString())) {
-					System.out
-							.println("Missing CHANGE PERSONAL ID fate string in table reg_nat_is_fate");
-
+				fate = ((NationalRegisterFateHome) IDOLookup.getHome(NationalRegisterFate.class)).findByFateCode(NationalRegisterConstants.FATE_CHANGE_PERSONAL_ID);
+				if (fate == null || fate.getFateString() == null || "".equals(fate.getFateString())) {
+					System.out.println("Missing CHANGE PERSONAL ID fate string in table reg_nat_is_fate");
 					return false;
 				}
 				FATE_CHANGE_PERSONAL_ID = fate.getFateString();
-
-				fate = ((NationalRegisterFateHome) IDOLookup
-						.getHome(NationalRegisterFate.class))
-						.findByFateCode(NationalRegisterConstants.FATE_REMOVED);
-				if (fate == null || fate.getFateString() == null
-						|| "".equals(fate.getFateString())) {
-					System.out
-							.println("Missing REMOVED fate string in table reg_nat_is_fate");
-
+				fate = ((NationalRegisterFateHome) IDOLookup.getHome(NationalRegisterFate.class)).findByFateCode(NationalRegisterConstants.FATE_REMOVED);
+				if (fate == null || fate.getFateString() == null || "".equals(fate.getFateString())) {
+					System.out.println("Missing REMOVED fate string in table reg_nat_is_fate");
 					return false;
 				}
 				FATE_REMOVED = fate.getFateString();
 			}
-
 			try {
 				this.performer = IWContext.getInstance().getCurrentUser();
-			} catch (NullPointerException n) {
-				System.out
-						.println("NationalRegisterImporter iwcontext instance not found");
+			}
+			catch (NullPointerException n) {
+				System.out.println("NationalRegisterImporter iwcontext instance not found");
 				this.performer = null;
 			}
-
 			if (this.performer == null) {
-				com.idega.core.user.data.User admUser = this
-						.getIWMainApplication().getAccessController()
-						.getAdministratorUser();
-				this.performer = ((UserHome) IDOLookup.getHome(User.class))
-						.findByPrimaryKey(admUser.getPrimaryKey());
+				com.idega.core.user.data.User admUser = this.getIWMainApplication().getAccessController().getAdministratorUser();
+				this.performer = ((UserHome) IDOLookup.getHome(User.class)).findByPrimaryKey(admUser.getPrimaryKey());
 			}
 			// iterate through the records and process them
 			String item;
-			IWBundle bundle = getIWMainApplication().getBundle(
-					Importer.IW_BUNDLE_IDENTIFIER);
-			String sRelationOnly = bundle
-					.getProperty(PROPERTY_NAME_RELATION_ONLY);
+			IWBundle bundle = getIWMainApplication().getBundle(Importer.IW_BUNDLE_IDENTIFIER);
+			String sRelationOnly = bundle.getProperty(PROPERTY_NAME_RELATION_ONLY);
 			String sPostal = bundle.getProperty(PROPERTY_NAME_POSTAL_CODE_FIX);
 			String sGroup = bundle.getProperty(PROPERTY_NAME_GROUP_FIX);
 			this.affectedFamilies = new HashSet();
 			this.postalCodeFix = (sPostal != null && sPostal.equalsIgnoreCase("yes"));
-			this.relationsOnly = (sRelationOnly != null && sRelationOnly
-					.equalsIgnoreCase("yes"));
+			this.relationsOnly = (sRelationOnly != null && sRelationOnly.equalsIgnoreCase("yes"));
 			this.citizenGroupFix = (sGroup != null && sGroup.equalsIgnoreCase("yes"));
-
 			int count = 0;
 			if (this.postalCodeFix) {
-				System.out
-						.println("NationalRegisterHandler postalCodeFix variable set to TRUE");
+				System.out.println("NationalRegisterHandler postalCodeFix variable set to TRUE");
 			}
 			if (this.relationsOnly) {
-				System.out
-						.println("NationalRegisterHandler relationsOnly variable set to TRUE");
+				System.out.println("NationalRegisterHandler relationsOnly variable set to TRUE");
 			}
 			if (this.citizenGroupFix) {
-				System.out
-						.println("NationalRegisterHandler citizenGroupFix variable set to TRUE");
+				System.out.println("NationalRegisterHandler citizenGroupFix variable set to TRUE");
 			}
-
 			long totalBytes = this.file.getFile().length();
 			long totalRecords = totalBytes / BYTES_PER_RECORD;
-
 			this.twoDigits.setMinimumIntegerDigits(2);
-
 			long beginTime = System.currentTimeMillis();
 			long lastTimeCheck = beginTime;
 			long averageTimePerUser100 = 0;
 			long timeLeft100 = 0;
 			long estimatedTimeFinished100 = beginTime;
-
 			IWTimestamp stamp;
 			double progress = 0;
 			int intervalBetweenOutput = 100;
-
 			System.out.println("NatRegImport processing RECORD [0] time: "
 					+ IWTimestamp.getTimestampRightNow().toString());
 			while (!(item = (String) this.file.getNextRecord()).equals("")) {
 				count++;
-
 				if (!processRecord(item)) {
 					this.failedRecordList.add(item);
 				}
-
 				if ((count % intervalBetweenOutput) == 0) {
-					averageTimePerUser100 = (System.currentTimeMillis() - lastTimeCheck)
-							/ intervalBetweenOutput;
+					averageTimePerUser100 = (System.currentTimeMillis() - lastTimeCheck) / intervalBetweenOutput;
 					lastTimeCheck = System.currentTimeMillis();
-					timeLeft100 = averageTimePerUser100
-							* (totalRecords - count);
-					estimatedTimeFinished100 = System.currentTimeMillis()
-							+ timeLeft100;
-
+					timeLeft100 = averageTimePerUser100 * (totalRecords - count);
+					estimatedTimeFinished100 = System.currentTimeMillis() + timeLeft100;
 					progress = ((double) count) / ((double) totalRecords);
-
-					System.out.print("NatRegImport "
-							+ IWTimestamp.getTimestampRightNow().toString()
-							+ ", processing RECORD [" + count + " / "
-							+ totalRecords + "]");
-
+					System.out.print("NatRegImport " + IWTimestamp.getTimestampRightNow().toString()
+							+ ", processing RECORD [" + count + " / " + totalRecords + "]");
 					stamp = new IWTimestamp(estimatedTimeFinished100);
 					System.out.println(" | " + this.precentNF.format(progress)
-							+ " done, guestimated time left of PHASE 1 : "
-							+ getTimeString(timeLeft100) + "  finish at "
-							+ stamp.getTime().toString());
+							+ " done, guestimated time left of PHASE 1 : " + getTimeString(timeLeft100)
+							+ "  finish at " + stamp.getTime().toString());
 				}
-
 				item = null;
 			}
 			this.file.close();
-			System.out.println("NatRegImport processed RECORD [" + count
-					+ "] time: "
+			System.out.println("NatRegImport processed RECORD [" + count + "] time: "
 					+ IWTimestamp.getTimestampRightNow().toString());
 			clock.stop();
 			long msTime = clock.getTime();
 			long secTime = msTime / 1000;
-
-			System.out.println("Time to handleRecords: " + msTime + " ms  OR "
-					+ secTime + " s, averaging " + (msTime / count)
-					+ "ms per record");
+			System.out.println("Time to handleRecords: " + msTime + " ms  OR " + secTime + " s, averaging "
+					+ (msTime / count) + "ms per record");
 			clock.start();
 			handleFamilyRelation();
-
 			clock.stop();
 			msTime = clock.getTime();
 			secTime = msTime / 1000;
-			System.out.println("Time to handleFamilyRelation: "
-					+ clock.getTime() + " ms  OR "
-					+ ((int) (clock.getTime() / 1000)) + " s, averaging "
-					+ (msTime / count) + "ms per record");
-
+			System.out.println("Time to handleFamilyRelation: " + clock.getTime() + " ms  OR "
+					+ ((int) (clock.getTime() / 1000)) + " s, averaging " + (msTime / count) + "ms per record");
 			printFailedRecords();
-
 			return true;
-		} catch (Exception ex) {
+		}
+		catch (Exception ex) {
 			ex.printStackTrace();
-
 			return false;
 		}
 	}
@@ -358,8 +298,8 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
 		t = (t - second) / 60;
 		int minut = (int) (t) % 60;
 		int hour = (int) ((t - minut) / 60);
-		return this.twoDigits.format(hour) + ":" + this.twoDigits.format(minut) + ":"
-				+ this.twoDigits.format(second) + "." + milli;
+		return this.twoDigits.format(hour) + ":" + this.twoDigits.format(minut) + ":" + this.twoDigits.format(second)
+				+ "." + milli;
 	}
 
 	/**
@@ -377,14 +317,12 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
 			natReg = (NationalRegisterBusiness) getServiceInstance(NationalRegisterBusiness.class);
 			UserBusiness userBusiness = (UserBusiness) getServiceInstance(UserBusiness.class);
 			userHome = userBusiness.getUserHome();
-		} catch (IBOLookupException e) {
+		}
+		catch (IBOLookupException e) {
 			e.printStackTrace();
 		}
-
 		if (this.affectedFamilies != null && userHome != null && natReg != null) {
-
 			long totalRecords = this.affectedFamilies.size();
-
 			long beginTime = System.currentTimeMillis();
 			// long lastTimeCheck = beginTime;
 			long averageTimePerUser = 0;
@@ -393,32 +331,26 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
 			// long timeLeft100 = 0;
 			long estimatedTimeFinished = beginTime;
 			// long estimatedTimeFinished100 = beginTime;
-
 			IWTimestamp stamp;
 			double progress = 0;
 			int intervalBetweenOutput = 100;
-
 			Iterator keysIter = this.affectedFamilies.iterator();
 			String key;
 			int counter = 0;
 			Collection familyColl;
-			System.out.println("NatRegImport Total families to handle = "
-					+ totalRecords);
-			System.out
-					.println("NatRegImport processing family relations RECORD [0] time: "
-							+ IWTimestamp.getTimestampRightNow().toString());
+			System.out.println("NatRegImport Total families to handle = " + totalRecords);
+			System.out.println("NatRegImport processing family relations RECORD [0] time: "
+					+ IWTimestamp.getTimestampRightNow().toString());
 			// Loop through all households/families
 			while (keysIter.hasNext()) {
 				++counter;
 				key = (String) keysIter.next();
-
 				try {
 					familyColl = getFamilyMemberHome().findAllByFamilyNR(key);
 					handleFamilyCollection(natReg, userHome, familyColl);
-				} catch (Exception e) {
-					System.out
-							.println("NatRegImport ERROR, familyRelation failed for family : "
-									+ key);
+				}
+				catch (Exception e) {
+					System.out.println("NatRegImport ERROR, familyRelation failed for family : " + key);
 					e.printStackTrace();
 				}
 				if ((counter % intervalBetweenOutput) == 0) {
@@ -430,22 +362,15 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
 					 * estimatedTimeFinished100 = System.currentTimeMillis() +
 					 * timeLeft100;
 					 */
-
-					averageTimePerUser = (System.currentTimeMillis() - beginTime)
-							/ counter;
+					averageTimePerUser = (System.currentTimeMillis() - beginTime) / counter;
 					progress = ((double) counter) / ((double) totalRecords);
 					timeLeft = averageTimePerUser * (totalRecords - counter);
-					estimatedTimeFinished = timeLeft
-							+ System.currentTimeMillis();
-
-					System.out.print("NatRegImport "
-							+ IWTimestamp.getTimestampRightNow().toString()
-							+ ", processing family RECORD [" + counter + " / "
-							+ totalRecords + "]");
+					estimatedTimeFinished = timeLeft + System.currentTimeMillis();
+					System.out.print("NatRegImport " + IWTimestamp.getTimestampRightNow().toString()
+							+ ", processing family RECORD [" + counter + " / " + totalRecords + "]");
 					stamp = new IWTimestamp(estimatedTimeFinished);
 					System.out.println(" | " + this.precentNF.format(progress)
-							+ " done, guestimated time left of PHASE 2 : "
-							+ getTimeString(timeLeft) + "  finish at "
+							+ " done, guestimated time left of PHASE 2 : " + getTimeString(timeLeft) + "  finish at "
 							+ stamp.getTime().toString());
 					// stamp = new IWTimestamp(estimatedTimeFinished100);
 					// System.out.println(" "+precentNF.format(progress)+" done,
@@ -457,12 +382,9 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
 					// IWTimestamp.getTimestampRightNow().toString());
 				}
 			}
-			System.out
-					.println("NatRegImport processed family relations RECORD ["
-							+ counter + "] time: "
-							+ IWTimestamp.getTimestampRightNow().toString());
+			System.out.println("NatRegImport processed family relations RECORD [" + counter + "] time: "
+					+ IWTimestamp.getTimestampRightNow().toString());
 		}
-
 		return true;
 	}
 
@@ -477,12 +399,10 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
 	 * @throws RemoveException
 	 * @throws RemoteException
 	 */
-	private boolean handleFamilyCollection(NationalRegisterBusiness natRegBus,
-			UserHome uHome, Collection coll) throws RemoteException,
-			RemoveException {
+	private boolean handleFamilyCollection(NationalRegisterBusiness natRegBus, UserHome uHome, Collection coll)
+			throws RemoteException, RemoveException {
 		if (coll != null) {
 			FamilyLogicBean memFamLog = (FamilyLogicBean) getServiceInstance(FamilyLogicBean.class);
-
 			NationalRegister natReg;
 			Iterator iter = coll.iterator();
 			Collection coll2 = new Vector(coll);
@@ -495,7 +415,6 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
 			String spouseSSN;
 			User oldestPerson = null;
 			FamilyMember member;
-
 			// This iteration sets the spouse, parent, custodian, child and
 			// sibling relations.
 			// The relations variables hold the relations that yet not have been
@@ -505,21 +424,17 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
 			// They have to be removed
 			Relations oldRelations1 = new Relations(getMemberFamilyLogic());
 			Relations newRelations1 = new Relations(getMemberFamilyLogic());
-
 			Relations oldRelations2 = new Relations(getMemberFamilyLogic());
 			Relations newRelations2 = new Relations(getMemberFamilyLogic());
-
 			HashMap oldrelations = new HashMap();
 			HashMap newrelations = new HashMap();
-
 			// Loop through all family members to figure out what the relations
 			// are
 			while (iter.hasNext()) {
 				member = (FamilyMember) iter.next();
 				user = member.getUser();
 				if (user == null) {
-					System.out.println(" user == null : "
-							+ member.getPrimaryKey());
+					System.out.println(" user == null : " + member.getPrimaryKey());
 				}
 				if (user.getDateOfBirth() != null) {
 					age = new Age(user.getDateOfBirth());
@@ -536,28 +451,24 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
 					parents.add(user);
 					try {
 						User spouse = uHome.findByPersonalID(spouseSSN);
-
 						newRelations1 = new Relations(getMemberFamilyLogic());
 						newRelations1.setUser(user);
 						newRelations1.setSpouse(spouse);
 						oldRelations1 = new Relations(getMemberFamilyLogic());
 						oldRelations1.setForUser(user);
-
 						newrelations.put(user, newRelations1);
 						oldrelations.put(user, oldRelations1);
-
 						newRelations2 = new Relations(getMemberFamilyLogic());
 						newRelations2.setUser(spouse);
 						newRelations2.setSpouse(user);
 						oldRelations2 = new Relations(getMemberFamilyLogic());
 						oldRelations2.setForUser(spouse);
-
 						newrelations.put(spouse, newRelations2);
 						oldrelations.put(spouse, oldRelations2);
-
 						parents.add(spouse);
 						break;
-					} catch (FinderException e) {
+					}
+					catch (FinderException e) {
 						// System.out.println("NationalRegisterHandler processed
 						// family relations RECORD [" + counter + "] time: " +
 						// IWTimestamp.getTimestampRightNow().toString());
@@ -568,7 +479,6 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
 			if (parents.isEmpty() && oldestPerson != null) {
 				parents.add(oldestPerson);
 			}
-
 			iter = coll.iterator();
 			FamilyMember member2;
 			while (iter.hasNext()) {
@@ -583,10 +493,10 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
 					newRelations1 = new Relations(getMemberFamilyLogic());
 					newRelations1.setUser(user);
 					newrelations.put(user, newRelations1);
-				} else {
+				}
+				else {
 					newRelations1 = ((Relations) newrelations.get(user));
 				}
-
 				coll2.remove(member);
 				iter2 = coll2.iterator();
 				while (iter2.hasNext()) {
@@ -601,39 +511,40 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
 						newRelations2 = new Relations(getMemberFamilyLogic());
 						newRelations2.setUser(user2);
 						newrelations.put(user2, newRelations2);
-					} else {
+					}
+					else {
 						newRelations2 = ((Relations) newrelations.get(user2));
 					}
-
 					if (parents.contains(user)) {
 						if (parents.contains(user2)) {
 							newRelations1.setSpouse(user2);
 							newRelations2.setSpouse(user);
-						} else {
+						}
+						else {
 							newRelations1.addChild(user2);
 							newRelations1.addIsCustodianFor(user2);
 							newRelations2.addParent(user);
 							newRelations2.addHasCustodian(user);
 						}
-					} else {
+					}
+					else {
 						if (parents.contains(user2)) {
 							newRelations1.addParent(user2);
 							newRelations1.addHasCustodian(user2);
 							newRelations2.addChild(user);
 							newRelations2.addIsCustodianFor(user);
-						} else {
+						}
+						else {
 							newRelations1.addSibling(user2);
 							newRelations2.addSibling(user);
 						}
 					}
 				}
 			}
-
 			Set set = newrelations.keySet();
 			Iterator newSetIt = set.iterator();
 			while (newSetIt.hasNext()) {
 				User tmpuser = (User) newSetIt.next();
-
 				Relations newR = (Relations) newrelations.get(tmpuser);
 				Relations oldR = (Relations) oldrelations.get(tmpuser);
 				/*
@@ -641,21 +552,17 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
 				 * System.out.println("OLD"); oldR.dumpInfo();
 				 */
 				try {
-					Relations newToAdd = Relations.inANotB(newR, oldR,
-							getMemberFamilyLogic());
+					Relations newToAdd = Relations.inANotB(newR, oldR, getMemberFamilyLogic());
 					addNewRelations(memFamLog, tmpuser, newToAdd);
-				} catch (CreateException e) {
+				}
+				catch (CreateException e) {
 					e.printStackTrace();
 				}
-
-				Relations oldToRemove = Relations.inANotB(oldR, newR,
-						getMemberFamilyLogic());
+				Relations oldToRemove = Relations.inANotB(oldR, newR, getMemberFamilyLogic());
 				removeTerminatedRelations(memFamLog, tmpuser, oldToRemove);
-
 			}
 			return true;
 		}
-
 		return false;
 	}
 
@@ -668,8 +575,8 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
 	 * @throws RemoveException
 	 * @throws RemoteException
 	 */
-	private void removeTerminatedRelations(FamilyLogicBean memFamLog,
-			User user, Relations rel) throws RemoteException, RemoveException {
+	private void removeTerminatedRelations(FamilyLogicBean memFamLog, User user, Relations rel) throws RemoteException,
+			RemoveException {
 		// NationalRegisterBusiness natRegBus;
 		// remove spouse
 		// System.out.println("REMOVING");
@@ -683,25 +590,21 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
 			User child = (User) iter.next();
 			memFamLog.removeAsChildFor(child, user, this.performer);
 		}
-
 		iter = rel.getIsCustodianFor().iterator();
 		while (iter.hasNext()) {
 			User child = (User) iter.next();
 			memFamLog.removeAsCustodianFor(user, child, this.performer);
 		}
-
 		iter = rel.getHasCustodians().iterator();
 		while (iter.hasNext()) {
 			User custodian = (User) iter.next();
 			memFamLog.removeAsCustodianFor(custodian, user, this.performer);
 		}
-
 		iter = rel.getParents().iterator();
 		while (iter.hasNext()) {
 			User parent = (User) iter.next();
 			memFamLog.removeAsParentFor(parent, user, this.performer);
 		}
-
 		iter = rel.getSiblings().iterator();
 		while (iter.hasNext()) {
 			User sibling = (User) iter.next();
@@ -709,9 +612,8 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
 		}
 	}
 
-	private void addNewRelations(FamilyLogicBean memFamLog, User user,
-			Relations rel) throws RemoveException, RemoteException,
-			CreateException {
+	private void addNewRelations(FamilyLogicBean memFamLog, User user, Relations rel) throws RemoveException,
+			RemoteException, CreateException {
 		// NationalRegisterBusiness natRegBus;
 		// remove spouse
 		// System.out.println("ADDING");
@@ -725,25 +627,21 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
 			User child = (User) iter.next();
 			memFamLog.setAsChildFor(child, user);
 		}
-
 		iter = rel.getIsCustodianFor().iterator();
 		while (iter.hasNext()) {
 			User child = (User) iter.next();
 			memFamLog.setAsCustodianFor(user, child);
 		}
-
 		iter = rel.getHasCustodians().iterator();
 		while (iter.hasNext()) {
 			User custodian = (User) iter.next();
 			memFamLog.setAsCustodianFor(custodian, user);
 		}
-
 		iter = rel.getParents().iterator();
 		while (iter.hasNext()) {
 			User parent = (User) iter.next();
 			memFamLog.setAsParentFor(parent, user);
 		}
-
 		iter = rel.getSiblings().iterator();
 		while (iter.hasNext()) {
 			User sibling = (User) iter.next();
@@ -751,29 +649,22 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
 		}
 	}
 
-	private boolean processRecord(String record) throws RemoteException,
-			CreateException {
+	private boolean processRecord(String record) throws RemoteException, CreateException {
 		this.valueList = this.file.getValuesFromRecordString(record);
-
 		boolean success = storeNationRegisterEntry();
-
 		this.valueList = null;
-
 		return success;
 	}
 
 	public void printFailedRecords() {
-		System.out
-				.println("Import failed for these records, please fix and import again:");
-
+		System.out.println("Import failed for these records, please fix and import again:");
 		Iterator iter = this.failedRecordList.iterator();
 		while (iter.hasNext()) {
 			System.out.println((String) iter.next());
 		}
 	}
 
-	protected boolean storeNationRegisterEntry() throws RemoteException,
-			CreateException {
+	protected boolean storeNationRegisterEntry() throws RemoteException, CreateException {
 		// variables
 		String symbol = getProperty(COLUMN_SYMBOL);
 		String oldId = getProperty(COLUMN_OLD_ID);
@@ -795,7 +686,6 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
 		String parish = getProperty(COLUMN_PARISH);
 		String po = getProperty(COLUMN_PO);
 		String address = getProperty(COLUMN_ADDRESS);
-
 		String addressCode = getProperty(COLUMN_ADDRESS_CODE);
 		String dateOfModification = getProperty(COLUMN_DATE_OF_MODIFICATION);
 		String placementCode = getProperty(COLUMN_PLACEMENT_CODE);
@@ -807,34 +697,25 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
 		String dateOfDeletion = getProperty(COLUMN_DATE_OF_DELETION);
 		String newSsnOrName = getProperty(COLUMN_NEW_SSN_OR_NAME);
 		String dateOfBirth = getProperty(COLUMN_DATE_OF_BIRTH);
-
 		Group group;
-
 		// System.out.println("ssn = " + ssn);
 		boolean success = true;
-
 		if (ssn == null || ssn.equals("")) {
 			return false;
 		}
-
 		group = getGroupForPostalCode(po);
-
 		if (!this.relationsOnly) {
 			// initialize business beans and data homes
-
-			success = this.natBiz.updateEntry(symbol, oldId, ssn, familyId, name,
-					commune, street, building, floor, sex, maritialStatus,
-					empty, prohibitMarking, nationality, placeOfBirth,
-					spouseSSN, fate, parish, po, address, addressCode,
-					dateOfModification, placementCode, dateOfCreation,
-					lastDomesticAddress, agentSsn, sNew, addressName,
-					dateOfDeletion, newSsnOrName, dateOfBirth, group);
-
+			success = this.natBiz.updateEntry(symbol, oldId, ssn, familyId, name, commune, street, building, floor,
+					sex, maritialStatus, empty, prohibitMarking, nationality, placeOfBirth, spouseSSN, fate, parish,
+					po, address, addressCode, dateOfModification, placementCode, dateOfCreation, lastDomesticAddress,
+					agentSsn, sNew, addressName, dateOfDeletion, newSsnOrName, dateOfBirth, group);
 			if (FATE_DECEASED.equalsIgnoreCase(fate)) {
 				User user;
 				try {
 					user = this.uBiz.getUser(ssn);
-				} catch (FinderException e) {
+				}
+				catch (FinderException e) {
 					e.printStackTrace();
 					return false;
 				}
@@ -844,7 +725,8 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
 				//user.store();
 				if (this.deceasedAddressString == null) {
 					try {
-						IWBundle iwb = this.getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+						IWBundle iwb = this.getIWApplicationContext().getIWMainApplication().getBundle(
+								IW_BUNDLE_IDENTIFIER);
 						IWResourceBundle iwrb = iwb.getResourceBundle(LocaleUtil.getIcelandicLocale());
 						this.deceasedAddressString = iwrb.getLocalizedString("national_register.deceased", "Deceased");
 					}
@@ -853,45 +735,45 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
 						System.out.println("Unable to initialize deceasedAddressString");
 					}
 				}
-				this.uBiz.updateUsersMainAddressOrCreateIfDoesNotExist(user, this.deceasedAddressString, null, null, null, null, null, null);
-				this.uBiz.updateUsersCoAddressOrCreateIfDoesNotExist(user, this.deceasedAddressString, null, null, null, null, null, null);
-
+				this.uBiz.updateUsersMainAddressOrCreateIfDoesNotExist(user, this.deceasedAddressString, null, null,
+						null, null, null, null);
+				this.uBiz.updateUsersCoAddressOrCreateIfDoesNotExist(user, this.deceasedAddressString, null, null,
+						null, null, null, null);
 				FamilyLogic familyService = getMemberFamilyLogic();
 				IWTimestamp dom = new IWTimestamp();
-				if (dateOfModification != null
-						&& !"".equals(dateOfModification.trim())) {
+				if (dateOfModification != null && !"".equals(dateOfModification.trim())) {
 					try {
 						dom = new IWTimestamp(dateOfModification);
-					} catch (IllegalArgumentException e) {
-						System.out.println("Could not parse the date '"
-								+ dateOfModification + "'");
+					}
+					catch (IllegalArgumentException e) {
+						System.out.println("Could not parse the date '" + dateOfModification + "'");
 						e.printStackTrace();
 						dom = IWTimestamp.RightNow();
 					}
-				} else {
+				}
+				else {
 					dom = IWTimestamp.RightNow();
 				}
-				familyService
-						.registerAsDeceased(user, dom.getDate(), this.performer);
+				familyService.registerAsDeceased(user, dom.getDate(), this.performer);
 			}
-
 			if (FATE_CHANGE_PERSONAL_ID.equalsIgnoreCase(fate)) {
 				try {
 					User user = this.uBiz.getUser(ssn);
 					if (user != null) {
 						user.setPersonalID(newSsnOrName);
 					}
-				} catch (FinderException e1) {
+				}
+				catch (FinderException e1) {
 					e1.printStackTrace();
 				}
 				return true;
 			}
-
 			if (FATE_REMOVED.equalsIgnoreCase(fate)) {
 				try {
 					User user = this.uBiz.getUser(ssn);
 					this.uBiz.deleteUser(user, this.performer);
-				} catch (Exception e) {
+				}
+				catch (Exception e) {
 					e.printStackTrace();
 					return false;
 				}
@@ -901,20 +783,20 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
 			 * if(FATE_CHANGE_OLD_ID.equalsIgnoreCase(fate)){
 			 * natBiz.updateUserOldID(oldId,ssn); return true; }
 			 */
-
 			if (this.postalCodeFix) {
 				try {
 					// User user = uBiz.getUser(ssn);
 					if (this.postalCodeFix) {
-						this.natBiz.updateUserAddress(this.uBiz.getUser(ssn), this.uBiz,
-								address, po,null,null,null);
+						this.natBiz.updateUserAddress(this.uBiz.getUser(ssn), this.uBiz, address, po, null, null, null);
 					}
 					return true;
-				} catch (Exception e) {
+				}
+				catch (Exception e) {
 					return false;
 				}
 			}
-		} else { // Handling thing otherwise not handled in relationsship
+		}
+		else { // Handling thing otherwise not handled in relationsship
 			// only mode
 			if (this.citizenGroupFix) {
 				User user;
@@ -922,7 +804,8 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
 					user = this.uBiz.getUser(ssn);
 					user.setPrimaryGroup(group);
 					user.store();
-				} catch (FinderException e) {
+				}
+				catch (FinderException e) {
 					e.printStackTrace();
 					return false;
 				}
@@ -933,14 +816,14 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
 		try {
 			// Users previous family is marked as affected, and needs to be
 			// updated
-			this.affectedFamilies.add(getFamilyMemberHome().findBySSN(ssn)
-					.getFamilyNr());
-		} catch (IDORelationshipException e) {
+			this.affectedFamilies.add(getFamilyMemberHome().findBySSN(ssn).getFamilyNr());
+		}
+		catch (IDORelationshipException e) {
 			e.printStackTrace();
-		} catch (FinderException e) {
+		}
+		catch (FinderException e) {
 			// FinderExxception is ignored, since not all users have a family
 		}
-
 		return success;
 	}
 
@@ -950,15 +833,13 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
 	 * @throws CreateException
 	 * @throws RemoteException
 	 */
-	private Group getGroupForPostalCode(String po) throws RemoteException,
-			CreateException {
+	private Group getGroupForPostalCode(String po) throws RemoteException, CreateException {
 		// First see if it already has been fetched and stored in map. If so
 		// just return it
 		Group group = (Group) this.postalToGroupMap.get(po);
 		if (null != group) {
 			return group;
 		}
-
 		// Group not found, so finding it
 		PostalCode postalCode = this.natBiz.getPostalCode(po);
 		if (postalCode != null) {
@@ -967,19 +848,18 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
 				group = commune.getGroup();
 				this.postalToGroupMap.put(po, group);
 			}
-		} else {
+		}
+		else {
 			try {
 				group = this.cBiz.getOtherCommuneCreateIfNotExist().getGroup();
 				if (null != group) {
-					System.out
-							.println("NationalRegisterImport : connecting po:'"
-									+ po + "' to group:'" + group.getName()
-									+ "'");
+					System.out.println("NationalRegisterImport : connecting po:'" + po + "' to group:'"
+							+ group.getName() + "'");
 				}
 				this.postalToGroupMap.put(po, group);
-			} catch (FinderException e) {
-				System.out
-						.println("NationalRegisterImport : 'Other' group not found, throwing RuntimeException. \n\nMake sure the PostalCodeBundleStarter is run at least once.");
+			}
+			catch (FinderException e) {
+				System.out.println("NationalRegisterImport : 'Other' group not found, throwing RuntimeException. \n\nMake sure the PostalCodeBundleStarter is run at least once.");
 				throw new RuntimeException(e);
 			}
 		}
@@ -988,12 +868,11 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
 
 	private String getProperty(int columnIndex) {
 		String value = null;
-
 		if (this.valueList != null) {
-
 			try {
 				value = (String) this.valueList.get(columnIndex);
-			} catch (RuntimeException e) {
+			}
+			catch (RuntimeException e) {
 				return null;
 			}
 			if (this.file.getEmptyValueString().equals(value)) {
@@ -1030,8 +909,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
 
 	public FamilyLogic getMemberFamilyLogic() throws RemoteException {
 		if (this.famLog == null) {
-			this.famLog = (FamilyLogic) IBOLookup.getServiceInstance(
-					getIWApplicationContext(), FamilyLogic.class);
+			this.famLog = (FamilyLogic) IBOLookup.getServiceInstance(getIWApplicationContext(), FamilyLogic.class);
 		}
 		return this.famLog;
 	}
@@ -1039,11 +917,10 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean
 	protected FamilyMemberHome getFamilyMemberHome() {
 		try {
 			return (FamilyMemberHome) this.getIDOHome(FamilyMember.class);
-		} catch (RemoteException e) {
+		}
+		catch (RemoteException e) {
 			throw new EJBException(e.getMessage());
 		}
 	}
-
 	// TODO add fix for specific groupIDs for certain people
-
 }
