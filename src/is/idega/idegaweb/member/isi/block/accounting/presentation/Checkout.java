@@ -171,8 +171,6 @@ public class Checkout extends CashierSubWindowTemplate {
 			entries = getBasketBusiness(iwc).getBasket();
 			if (entries != null && !entries.isEmpty()) {
 				Iterator it = entries.keySet().iterator();
-				int i = 0;
-
 				while (it.hasNext()) {
 					FinanceEntry entry = (FinanceEntry) ((BasketEntry) entries
 							.get(it.next())).getItem();

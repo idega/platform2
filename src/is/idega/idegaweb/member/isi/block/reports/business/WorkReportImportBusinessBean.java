@@ -207,7 +207,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 			}
 			//Get the revenue part
 			for (currRow = 3; currRow < 11; currRow++) {
-				HSSFRow row = (HSSFRow) accEntries.getRow(currRow);
+				HSSFRow row = accEntries.getRow(currRow);
 				HSSFCell cell = row.getCell((short) 1);
 				if (cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC) {
 					accKey = Integer.toString((int) cell.getNumericCellValue());

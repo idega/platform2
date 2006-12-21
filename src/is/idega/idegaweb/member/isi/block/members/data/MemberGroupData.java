@@ -116,8 +116,6 @@ public class MemberGroupData {
 		                       IWMemberConstants.GROUP_TYPE_FEDERATION.equals(type);
 		boolean isDivision = IWMemberConstants.GROUP_TYPE_CLUB_DIVISION.equals(type);
 		
-		boolean ok = true; // assume final group will be found
-		
 		if(isFirstGroup) {
 			buf.append(name);
 		} else if(isDivision) {

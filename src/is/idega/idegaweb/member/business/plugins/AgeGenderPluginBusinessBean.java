@@ -330,7 +330,7 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
 	  }
 	  // is gender okay?
 	  if (! genderOkay) {
-		  return iwrb.getLocalizedString("age_gender_wrong_gender_of_user", "The users gender is not allowed for the group");
+		  return iwrb.getLocalizedString("age_gender_wrong_gender_of_user", "The user's gender is not allowed for the group");
 	  }
 	  // gender is okay.....
 	  

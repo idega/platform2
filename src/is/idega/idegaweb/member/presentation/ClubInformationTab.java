@@ -12,7 +12,6 @@ import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.rmi.RemoteException;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;

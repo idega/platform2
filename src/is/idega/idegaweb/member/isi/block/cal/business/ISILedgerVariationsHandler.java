@@ -90,7 +90,6 @@ public class ISILedgerVariationsHandler extends PresentationObject implements Le
 					while(playersGroupIter.hasNext()) {
 						Group group = (Group) playersGroupIter.next();
 						Collection parentDiv = null;
-						Group parentDivision = null;
 						try{
 							parentDiv = grBiz.getParentGroupsRecursive(group,groupTypeDivision,true);
 						}catch(RemoteException re) {
@@ -136,7 +135,6 @@ public class ISILedgerVariationsHandler extends PresentationObject implements Le
 	}
 	
 	private String getDivisionAbbrevation(Group childGroup, GroupBusiness grBiz, String[] groupTypeDivision) {
-		String abbrevation = null;
 		Collection parentDiv = null;
 		Group parentDivision = null;
 		try{
@@ -158,7 +156,6 @@ public class ISILedgerVariationsHandler extends PresentationObject implements Le
 	}
 	
 	public Collection getParentGroupRelation(IWContext iwc, User user) {
-		GroupRelation groupRelation = null;
 		Collection parents =null;
 		try {
 			parents = getMemberFamilyLogic(iwc).getParentsFor(user);

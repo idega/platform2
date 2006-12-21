@@ -82,7 +82,6 @@ public class GroupApplicationOverView extends Page implements IWBrowserView {
     String denied = gABiz.getDeniedStatusString();
   
     
-    int userCount = 0;
     if(selectedGroup  != null){
     	Collection applications = gABiz.getGroupApplicationsByStatusAndApplicationGroup(pending,selectedGroup);
     	

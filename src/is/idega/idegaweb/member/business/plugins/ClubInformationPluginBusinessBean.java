@@ -24,7 +24,6 @@ import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
-import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.accesscontrol.business.AccessController;
 import com.idega.core.accesscontrol.data.ICRole;
 import com.idega.presentation.IWContext;
