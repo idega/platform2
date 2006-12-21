@@ -12,7 +12,6 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.TextArea;
 import com.idega.user.business.GroupBusiness;
-import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.user.presentation.GroupSelectionDoubleBox;
@@ -37,7 +36,6 @@ public class GroupApplicationTab extends UserTab {
 	private Table frameTable;
 	private GroupSelectionDoubleBox groupSelection;
 	
-	private UserBusiness userBiz;
 	private GroupBusiness groupBiz;
 	private GroupApplicationBusiness appBiz;
 	private static final String SELECTED_GROUPS_PARAM = GroupSelectionDoubleBox.selectedGroupsParameterDefaultValue;
@@ -57,16 +55,32 @@ public class GroupApplicationTab extends UserTab {
     this.user = user;
   }
 
-  public void init(){}
-  public void updateFieldsDisplayStatus() {}
-  public void initializeFields() {}
-  public void initializeFieldNames() {}
-  public void initializeFieldValues() {}
-  public void initializeTexts() {}
-  public void lineUpFields() {}
+	public void init() {
+	}
   
+	public void updateFieldsDisplayStatus() {
+	}
   
-  public boolean collect(IWContext iwc) { initFieldContents(); return true; }
+	public void initializeFields() {
+	}
+
+	public void initializeFieldNames() {
+	}
+
+	public void initializeFieldValues() {
+	}
+
+	public void initializeTexts() {
+	}
+
+	public void lineUpFields() {
+	}
+
+	public boolean collect(IWContext iwc) {
+		initFieldContents();
+		return true;
+	}
+
   public boolean store(IWContext iwc) { 
   		
   	String adminComment = iwc.getParameter(ADMIN_COMMENT_PARAM);
@@ -80,7 +94,7 @@ public class GroupApplicationTab extends UserTab {
 			e.printStackTrace();
 			return false;
 		}
-	  	}
+	}
   	
   	return true;
   }
@@ -89,8 +103,6 @@ public class GroupApplicationTab extends UserTab {
   	this.empty();
   	
   	try{
-   
-	  	this.userBiz = getUserBusiness();
 	  	this.groupBiz = getGroupBusiness();
 	  	this.appBiz = getGroupApplicationBusiness();
 	  	this.groupSelection = new GroupSelectionDoubleBox();
@@ -216,10 +228,6 @@ public class GroupApplicationTab extends UserTab {
 		return (GroupBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), GroupBusiness.class);	
 	}
 
-	private UserBusiness getUserBusiness() throws RemoteException {
-		return (UserBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), UserBusiness.class);	
-	}
-		
 	/**
 	 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()
 	 */

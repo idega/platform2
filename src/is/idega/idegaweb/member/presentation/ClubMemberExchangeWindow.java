@@ -54,11 +54,6 @@ public class ClubMemberExchangeWindow extends StyledIWAdminWindow { //changed fr
 	private String ACTION_SAVE ="iwme_club_ex_act_sv";
 
 	private IWResourceBundle iwrb;
-	private List failedInserts;
-	
-//	private String mainStyleClass = "main";
-
-
 	public ClubMemberExchangeWindow() {
 		setHeight(300);
 		setWidth(700);	

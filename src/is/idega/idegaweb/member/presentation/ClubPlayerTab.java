@@ -120,7 +120,7 @@ public class ClubPlayerTab extends UserGroupTab {
 					e.printStackTrace();
 				}
 				
-				Group group = (home.findByPrimaryKey(new Integer(groupId)));
+				Group group = home.findByPrimaryKey(new Integer(groupId));
 				this._coachesField.setSelectedGroup(groupId,group.getName());
 			}
 

@@ -26,6 +26,7 @@ import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.accesscontrol.business.AccessController;
 import com.idega.core.accesscontrol.data.ICRole;
+import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.user.business.GroupBusiness;
@@ -169,10 +170,10 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 		}
 		try {
 			// Get the group that is connecting to the league.
-			Group parentGroup = (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(
+			Group parentGroup = (((GroupHome) IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(
 					parentGroupId)));
 			// Get the league
-			Group specialGroup = (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(
+			Group specialGroup = (((GroupHome) IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(
 					connection)));
 			/*
 			 * Going through the child groups of the league group (specialGroup)

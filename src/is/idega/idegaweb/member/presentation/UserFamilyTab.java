@@ -44,7 +44,6 @@ public class UserFamilyTab extends UserTab {
 	private Text siblingsText;
 
 	private User user;
-	private Table frameTable;
 	private Table custodianTable;
 	private Table spouseTable;
 	private Table childrenTable;
