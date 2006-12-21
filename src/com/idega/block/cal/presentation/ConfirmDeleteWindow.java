@@ -99,20 +99,20 @@ public class ConfirmDeleteWindow extends StyledIWAdminWindow{
 
   public Form getConfirmBox(IWContext iwc,String typeOfObject){
     Table t = new Table();
-    t.setStyleClass(borderAllWhite);
-    f = new Form();
+    t.setStyleClass(this.borderAllWhite);
+    this.f = new Form();
 
     IWBundle iwb = this.getBundle(iwc);
     IWResourceBundle iwrb = iwb.getResourceBundle(iwc);
     
-    f.maintainParameter(PRM_DELETE);
-    f.maintainParameter(PRM_DELETE_ID);
-    f.maintainParameter(PRM_ENTRY_OR_LEDGER);
-    f.maintainParameter(CalendarEntryCreator.modifyOneOrManyRadioButtonParameterName);
-    f.maintainParameter(LedgerWindow.LEDGER);
+    this.f.maintainParameter(PRM_DELETE);
+    this.f.maintainParameter(PRM_DELETE_ID);
+    this.f.maintainParameter(PRM_ENTRY_OR_LEDGER);
+    this.f.maintainParameter(CalendarEntryCreator.modifyOneOrManyRadioButtonParameterName);
+    this.f.maintainParameter(LedgerWindow.LEDGER);
     
     
-    f.add(t);
+    this.f.add(t);
     t.setWidth("100%");
     t.setAlignment(1,1,IWConstants.CENTER_ALIGNMENT);
     t.setVerticalAlignment(1,1,IWConstants.MIDDLE_ALIGNMENT);
@@ -159,22 +159,22 @@ public class ConfirmDeleteWindow extends StyledIWAdminWindow{
     
     
 
-    return f;
+    return this.f;
   }
   public String getBundleIdentifier() {
   	return IW_BUNDLE_IDENTIFIER;
   }
   
   public CalBusiness getCalendarBusiness(IWApplicationContext iwc) {
-  	if (calBiz == null) {
+  	if (this.calBiz == null) {
   		try {
-  			calBiz = (CalBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, CalBusiness.class);
+  			this.calBiz = (CalBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, CalBusiness.class);
   		}
   		catch (java.rmi.RemoteException rme) {
   			throw new RuntimeException(rme.getMessage());
   		}
   	}
-  	return calBiz;
+  	return this.calBiz;
   }
 
 }

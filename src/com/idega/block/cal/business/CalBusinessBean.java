@@ -1013,11 +1013,12 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness,UserG
 		if (type != null) {
 			try {
 				CalendarEntry[] entries = (CalendarEntry[]) com.idega.block.calendar.data.CalendarEntryBMPBean.getStaticInstance().findAllByColumn(com.idega.block.calendar.data.CalendarEntryBMPBean.getColumnNameEntryTypeID(), typeID);
-				if (entries != null)
+				if (entries != null) {
 					for (int a = 0; a < entries.length; a++) {
 //						entries[a].removeFrom(com.idega.block.text.data.LocalizedTextBMPBean.getStaticInstance(LocalizedText.class));
 						entries[a].remove();
 					}
+				}
 //				type.removeFrom(com.idega.block.text.data.LocalizedTextBMPBean.getStaticInstance(LocalizedText.class));
 				type.remove();
 			} catch (Exception e) {

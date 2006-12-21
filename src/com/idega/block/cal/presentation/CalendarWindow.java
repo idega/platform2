@@ -39,15 +39,15 @@ public class CalendarWindow extends StyledIWAdminWindow{
 	}
 	
 	public void initializeWindow(IWContext iwc) {
-		calendar = new CalendarView();
-		table = new Table();
-		table.setWidth("100%");
-		table.setHeight(1,1,"100%");
-		table.setAlignment("center");
-		table.setCellspacing(5);
-		table.add(calendar,1,1);
-		table.add(getHelp(this.HELP_TEXT_KEY), 1, 3);
-		add(table,iwc);
+		this.calendar = new CalendarView();
+		this.table = new Table();
+		this.table.setWidth("100%");
+		this.table.setHeight(1,1,"100%");
+		this.table.setAlignment("center");
+		this.table.setCellspacing(5);
+		this.table.add(this.calendar,1,1);
+		this.table.add(getHelp(CalendarWindow.HELP_TEXT_KEY), 1, 3);
+		add(this.table,iwc);
 	}
 	
 	public void main(IWContext iwc) throws Exception {
@@ -63,15 +63,15 @@ public class CalendarWindow extends StyledIWAdminWindow{
 	
 	
 	public CalBusiness getCalBusiness(IWApplicationContext iwc) {
-		if (calBiz == null) {
+		if (this.calBiz == null) {
 			try {
-				calBiz = (CalBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, CalBusiness.class);
+				this.calBiz = (CalBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, CalBusiness.class);
 			}
 			catch (java.rmi.RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());
 			}
 		}
-		return calBiz;
+		return this.calBiz;
 	}
 
 

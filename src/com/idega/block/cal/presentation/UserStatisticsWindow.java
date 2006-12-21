@@ -93,18 +93,18 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 		IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		
-		userText = new Text(iwrb.getLocalizedString(userFieldParameterName,"User"));
-		userText.setStyleClass(bold);
-		otherCoachesText = new Text(iwrb.getLocalizedString(otherCoachesFieldParameterName,"Other coaches"));
-		otherCoachesText.setStyleClass(bold);
-		clubText = new Text(iwrb.getLocalizedString(clubFieldParameterName,"Club"));
-		clubText.setStyleClass(bold);
-		divisionText = new Text(iwrb.getLocalizedString(divisionFieldParameterName,"Division"));
-		divisionText.setStyleClass(bold);
-		groupText = new Text(iwrb.getLocalizedString(groupFieldParameterName,"Group"));
-		groupText.setStyleClass(bold);
-		dateText = new Text(iwrb.getLocalizedString(dateFieldParameterName,"Date"));
-		dateText.setStyleClass(bold);
+		this.userText = new Text(iwrb.getLocalizedString(userFieldParameterName,"User"));
+		this.userText.setStyleClass(this.bold);
+		this.otherCoachesText = new Text(iwrb.getLocalizedString(otherCoachesFieldParameterName,"Other coaches"));
+		this.otherCoachesText.setStyleClass(this.bold);
+		this.clubText = new Text(iwrb.getLocalizedString(clubFieldParameterName,"Club"));
+		this.clubText.setStyleClass(this.bold);
+		this.divisionText = new Text(iwrb.getLocalizedString(divisionFieldParameterName,"Division"));
+		this.divisionText.setStyleClass(this.bold);
+		this.groupText = new Text(iwrb.getLocalizedString(groupFieldParameterName,"Group"));
+		this.groupText.setStyleClass(this.bold);
+		this.dateText = new Text(iwrb.getLocalizedString(dateFieldParameterName,"Date"));
+		this.dateText.setStyleClass(this.bold);
 	}
 	protected void initializeFields() {
 		IWContext iwc = IWContext.getInstance();
@@ -140,7 +140,7 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 				
 		if(iwc.isLoggedOn()) {
 			User user =iwc.getCurrentUser();
-			userField = new Text(user.getName());
+			this.userField = new Text(user.getName());
 		}
 		
 		int coachGroupID = ledger.getCoachGroupID();
@@ -163,11 +163,11 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 				buff.append(trainer.getName());
 				buff.append("<br>");
 			}
-			otherCoachesNameField = buff.toString();
+			this.otherCoachesNameField = buff.toString();
 			
 		}
 		else {
-			otherCoachesNameField = "";
+			this.otherCoachesNameField = "";
 		}
 		
 		
@@ -182,39 +182,39 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 			e.printStackTrace();
 		}
 		if(parentGroups != null) {
-			clubField = ledgerVariationsHandler.getParentOfParentGroupName(parentGroups);
-			divisionField = ledgerVariationsHandler.getParentGroupName(parentGroups);
+			this.clubField = ledgerVariationsHandler.getParentOfParentGroupName(parentGroups);
+			this.divisionField = ledgerVariationsHandler.getParentGroupName(parentGroups);
 		}
 		else {
-			clubField = iwrb.getLocalizedString("user_stats_window.no_club_text","No club");
-			divisionField = iwrb.getLocalizedString("usr_stats_window.no_division_text","No division");
+			this.clubField = iwrb.getLocalizedString("user_stats_window.no_club_text","No club");
+			this.divisionField = iwrb.getLocalizedString("usr_stats_window.no_division_text","No division");
 		}
 		
 		 
 		
-		groupField = getCalendarBusiness(iwc).getLedger(lID.intValue()).getName();
+		this.groupField = getCalendarBusiness(iwc).getLedger(lID.intValue()).getName();
 		
-		dateField = new IWTimestamp(getCalendarBusiness(iwc).getLedger(lID.intValue()).getDate()).getDateString("dd. MMMMMMMM yyyy");
+		this.dateField = new IWTimestamp(getCalendarBusiness(iwc).getLedger(lID.intValue()).getDate()).getDateString("dd. MMMMMMMM yyyy");
 		
-		printButton = new PrintButton(iwb.getImage("print.gif"));
+		this.printButton = new PrintButton(iwb.getImage("print.gif"));
 		
-		closeButton = new CloseButton(iwrb.getLocalizedString("user_stats_window.close", "Close"));
+		this.closeButton = new CloseButton(iwrb.getLocalizedString("user_stats_window.close", "Close"));
 	}
 	public void lineUp(IWContext iwc, int ledID, Collection users) {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		
 		CalBusiness calBiz = getCalendarBusiness(iwc);
 		
-		table = new Table();
-		table.setCellpadding(0);
-		table.setCellspacing(0);
+		this.table = new Table();
+		this.table.setCellpadding(0);
+		this.table.setCellspacing(0);
 		
-		table.add(getHeaderTable(iwc),1,1);
+		this.table.add(getHeaderTable(iwc),1,1);
 		Table underTable = new Table();
 		underTable.setCellpadding(0);
 		underTable.setCellspacing(1);
 		underTable.setWidth(Table.HUNDRED_PERCENT);
-		underTable.setStyleClass(grayBackground);
+		underTable.setStyleClass(this.grayBackground);
 		Collection marks = calBiz.getAllMarks();
 		Collection practices = calBiz.getPracticesByLedgerID(ledID);
 		
@@ -287,15 +287,15 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 		buttonTable.setWidth(Table.HUNDRED_PERCENT);
 		buttonTable.setCellpadding(0);
 		buttonTable.setCellspacing(12);
-		buttonTable.setStyleClass(borderAllWhite);
-		buttonTable.add(getHelp(this.HELP_TEXT_KEY),1,1);
+		buttonTable.setStyleClass(this.borderAllWhite);
+		buttonTable.add(getHelp(UserStatisticsWindow.HELP_TEXT_KEY),1,1);
 		buttonTable.setAlignment(2,1,Table.HORIZONTAL_ALIGN_RIGHT);
-		buttonTable.add(closeButton,2,1);
+		buttonTable.add(this.closeButton,2,1);
 		
-		table.setHeight(2,5);
-		table.add(underTable,1,3);
-		table.setHeight(4,5);
-		table.add(buttonTable,1,5);
+		this.table.setHeight(2,5);
+		this.table.add(underTable,1,3);
+		this.table.setHeight(4,5);
+		this.table.add(buttonTable,1,5);
 		
 	}
 	/**
@@ -324,7 +324,7 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 			t.add("0",1,1);
 		}
 		
-		t.setStyleClass(1,1,borderRight);
+		t.setStyleClass(1,1,this.borderRight);
 		t.setHeight(1,1,Table.HUNDRED_PERCENT);
 		t.add(nfi.format(i),2,1);
 				
@@ -340,24 +340,24 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 		headerTable.setCellspacing(12);
 		headerTable.setWidth(Table.HUNDRED_PERCENT);
 		headerTable.setHeight(Table.HUNDRED_PERCENT);
-		headerTable.setStyleClass(borderAllWhite);
-		headerTable.add(userText,1,1);
-		headerTable.add(userField,2,1);
-		headerTable.add(clubText,1,2);
-		headerTable.add(clubField,2,2);
-		headerTable.add(otherCoachesText,1,3);
-		headerTable.add(otherCoachesNameField,2,3);
-		headerTable.add(divisionText,1,4);
-		headerTable.add(divisionField,2,4);
-		headerTable.add(groupText,1,5);
-		headerTable.add(groupField,2,5);
-		headerTable.add(dateText,1,6);
-		headerTable.add(dateField,2,6);
+		headerTable.setStyleClass(this.borderAllWhite);
+		headerTable.add(this.userText,1,1);
+		headerTable.add(this.userField,2,1);
+		headerTable.add(this.clubText,1,2);
+		headerTable.add(this.clubField,2,2);
+		headerTable.add(this.otherCoachesText,1,3);
+		headerTable.add(this.otherCoachesNameField,2,3);
+		headerTable.add(this.divisionText,1,4);
+		headerTable.add(this.divisionField,2,4);
+		headerTable.add(this.groupText,1,5);
+		headerTable.add(this.groupField,2,5);
+		headerTable.add(this.dateText,1,6);
+		headerTable.add(this.dateField,2,6);
 		
 		headerTable.setVerticalAlignment(3,1,"top");
 		headerTable.setVerticalAlignment(4,1,"top");
 		Text t = new Text(iwrb.getLocalizedString("ledgerwindow.allowed_marks", "Allowed marks"));
-		t.setStyleClass(bold);
+		t.setStyleClass(this.bold);
 		headerTable.add(t ,3,1);
 		headerTable.mergeCells(4,1,4,4);
 		Collection marks = getCalendarBusiness(iwc).getAllMarks(); 
@@ -370,7 +370,7 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 		}
 		headerTable.setVerticalAlignment(5,6,Table.VERTICAL_ALIGN_BOTTOM);
 		headerTable.setAlignment(5,6,Table.HORIZONTAL_ALIGN_RIGHT);
-		headerTable.add(printButton,5,6);
+		headerTable.add(this.printButton,5,6);
 		return headerTable;
 	}
 	
@@ -382,10 +382,10 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 		initializeTexts();
 		initializeFields();
 		
-		ledgerString = iwc.getParameter(LedgerWindow.LEDGER);
-		ledgerID =new Integer(ledgerString);
+		this.ledgerString = iwc.getParameter(LedgerWindow.LEDGER);
+		this.ledgerID =new Integer(this.ledgerString);
 //		CalendarLedger ledger = getCalendarBusiness(iwc).getLedger(ledgerID.intValue());
-		List usersInLedger = (List) getCalendarBusiness(iwc).getUsersInLedger(ledgerID.intValue());
+		List usersInLedger = (List) getCalendarBusiness(iwc).getUsersInLedger(this.ledgerID.intValue());
 		
 		final Collator collator = Collator.getInstance(iwc.getLocale());
 		if(usersInLedger != null) {
@@ -396,8 +396,8 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 			});
 		}
 		
-		lineUp(iwc,ledgerID.intValue(),usersInLedger);
-		add(table,iwc);
+		lineUp(iwc,this.ledgerID.intValue(),usersInLedger);
+		add(this.table,iwc);
 	}
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;

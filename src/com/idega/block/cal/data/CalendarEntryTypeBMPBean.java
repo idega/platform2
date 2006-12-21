@@ -14,6 +14,7 @@ import java.util.List;
 import javax.ejb.FinderException;
 
 import com.idega.block.text.data.LocalizedText;
+import com.idega.data.GenericEntity;
 import com.idega.data.IDOQuery;
 
 
@@ -104,7 +105,7 @@ public class CalendarEntryTypeBMPBean extends com.idega.data.GenericEntity imple
 
   //DELETE
 	public void delete() throws SQLException{
-    removeFrom(com.idega.block.text.data.LocalizedTextBMPBean.getStaticInstance(LocalizedText.class));
+    removeFrom(GenericEntity.getStaticInstance(LocalizedText.class));
 		super.delete();
 	}
 

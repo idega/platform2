@@ -236,12 +236,12 @@ public class CalendarEntryBMPBean extends GenericEntity implements com.idega.blo
 
   //DELETE
 	public void delete() throws SQLException{
-    removeFrom(com.idega.block.text.data.LocalizedTextBMPBean.getStaticInstance(LocalizedText.class));
+    removeFrom(GenericEntity.getStaticInstance(LocalizedText.class));
 		super.delete();
 	}
 
   public static CalendarEntry getStaticInstance() {
-    return (CalendarEntry) com.idega.block.calendar.data.CalendarEntryBMPBean.getStaticInstance(CalendarEntry.class);
+    return (CalendarEntry) GenericEntity.getStaticInstance(CalendarEntry.class);
   }
 
 }

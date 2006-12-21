@@ -99,11 +99,11 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 		IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 
-		coachText = new Text(iwrb.getLocalizedString(creatorFieldParameterName,"Coach"));
-		otherCoachesText = new Text(iwrb.getLocalizedString(otherCoachesFieldParameterName,"Other coaches"));
-		groupText = new Text(iwrb.getLocalizedString(groupFieldParameterName,"Group"));
-		dateText = new Text(iwrb.getLocalizedString(dateFieldParameterName,"Start Date"));
-		nameText = new Text(iwrb.getLocalizedString(nameFieldParameterName,"Name"));
+		this.coachText = new Text(iwrb.getLocalizedString(creatorFieldParameterName,"Coach"));
+		this.otherCoachesText = new Text(iwrb.getLocalizedString(otherCoachesFieldParameterName,"Other coaches"));
+		this.groupText = new Text(iwrb.getLocalizedString(groupFieldParameterName,"Group"));
+		this.dateText = new Text(iwrb.getLocalizedString(dateFieldParameterName,"Start Date"));
+		this.nameText = new Text(iwrb.getLocalizedString(nameFieldParameterName,"Name"));
 	}
 	/**
 	 * initializes the fields in the form of the window
@@ -113,24 +113,24 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 		IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		
-		nameField = new TextInput(nameFieldParameterName);
+		this.nameField = new TextInput(nameFieldParameterName);
 		
 		//The user logged in is set as the main coach for the ledger
 		if(iwc.isLoggedOn()) {
 			User user =iwc.getCurrentUser();
-			coachNameField = new Text(user.getName());
+			this.coachNameField = new Text(user.getName());
 		}
 
-		otherCoachesNameField = new GroupChooser(otherCoachesFieldParameterName);
-		groupNameField = new GroupChooser(groupFieldParameterName);
+		this.otherCoachesNameField = new GroupChooser(otherCoachesFieldParameterName);
+		this.groupNameField = new GroupChooser(groupFieldParameterName);
 
 		//fromDate is the start date of the ledger
-		fromDatePickerField =new DatePicker(dateFieldParameterName);
+		this.fromDatePickerField =new DatePicker(dateFieldParameterName);
 		//when save button is pushed the new ledger is created
-		saveButton = new SubmitButton(iwrb.getLocalizedString("save","Save"),saveButtonParameterName,saveButtonParameterValue);
+		this.saveButton = new SubmitButton(iwrb.getLocalizedString("save","Save"),saveButtonParameterName,saveButtonParameterValue);
 
 		//closes the window
-		closeButton = new CloseButton(iwrb.getLocalizedString("close","Close"));
+		this.closeButton = new CloseButton(iwrb.getLocalizedString("close","Close"));
 		
 	}
 	/**
@@ -139,34 +139,34 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 	 */
 	public void lineUp(IWContext iwc) {
 		
-		mainTable = new Table();
-		mainTable.setWidth(Table.HUNDRED_PERCENT);
-		mainTable.setCellspacing(0);
-		mainTable.setCellpadding(5);
-		mainTable.setStyleClass(mainTableStyle);
-		mainTable.add(nameText,1,1);
-		mainTable.add(nameField,2,1);
-		mainTable.add(coachText,1,2);
-		mainTable.add(coachNameField,2,2);
-		mainTable.add(otherCoachesText,1,3);
+		this.mainTable = new Table();
+		this.mainTable.setWidth(Table.HUNDRED_PERCENT);
+		this.mainTable.setCellspacing(0);
+		this.mainTable.setCellpadding(5);
+		this.mainTable.setStyleClass(this.mainTableStyle);
+		this.mainTable.add(this.nameText,1,1);
+		this.mainTable.add(this.nameField,2,1);
+		this.mainTable.add(this.coachText,1,2);
+		this.mainTable.add(this.coachNameField,2,2);
+		this.mainTable.add(this.otherCoachesText,1,3);
 		// AttendantChooser is a PresentationObject
-		mainTable.add((PresentationObject) otherCoachesNameField,2,3);
-		mainTable.add(groupText,1,4);
+		this.mainTable.add(this.otherCoachesNameField,2,3);
+		this.mainTable.add(this.groupText,1,4);
 		// AttendantChooser is a PresentationObject
-		mainTable.add((PresentationObject)  groupNameField,2,4);
-		mainTable.add(dateText,1,5);
-		mainTable.add(fromDatePickerField,1,5);
+		this.mainTable.add(this.groupNameField,2,4);
+		this.mainTable.add(this.dateText,1,5);
+		this.mainTable.add(this.fromDatePickerField,1,5);
 		
 		Table buttonTable = new Table();
 		buttonTable.setWidth(Table.HUNDRED_PERCENT);
 		buttonTable.setCellspacing(0);
 		buttonTable.setCellpadding(5);
-		buttonTable.setStyleClass(mainTableStyle);
+		buttonTable.setStyleClass(this.mainTableStyle);
 		buttonTable.add(getHelp(HELP_TEXT_KEY),1,1);
 		buttonTable.setAlignment(2,1,Table.HORIZONTAL_ALIGN_RIGHT);
-		buttonTable.add(saveButton,2,1);
+		buttonTable.add(this.saveButton,2,1);
 		buttonTable.add(Text.NON_BREAKING_SPACE,2,1);
-		buttonTable.add(closeButton,2,1);
+		buttonTable.add(this.closeButton,2,1);
 		
 		Table table = new Table();
 		table.setCellspacing(0);
@@ -175,10 +175,10 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 		table.setVerticalAlignment(1,1,Table.VERTICAL_ALIGN_TOP);
 		table.setVerticalAlignment(1,3,Table.VERTICAL_ALIGN_TOP);
 		table.setHeight(2, 5);
-		table.add(mainTable,1,1);
+		table.add(this.mainTable,1,1);
 		table.add(buttonTable,1,3);
 		
-		form.add(table);
+		this.form.add(table);
 	}
 	/**
 	 * Saves the ledger which is created by the name of the group and the groupID 
@@ -218,22 +218,24 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 		setTitle(iwrb.getLocalizedString("createLedgerWindow.create_ledger","Create Ledger"));
 		addTitle(iwrb.getLocalizedString("createLedgerWindow.create_ledger","Create Ledger"),TITLE_STYLECLASS);
 		
-		form = new Form();
+		this.form = new Form();
 		initializeTexts();
 		initializeFields();
 		
 		Integer groupID =null;
-		groupString =iwc.getParameter(groupFieldParameterName);
-		if(groupString == null || groupString.equals(""))
-			groupString = "";
+		this.groupString =iwc.getParameter(groupFieldParameterName);
+		if(this.groupString == null || this.groupString.equals("")) {
+			this.groupString = "";
+		}
 		else {
-			groupString = groupString.substring(groupString.lastIndexOf("_")+1);
-			groupID = new Integer(groupString);
+			this.groupString = this.groupString.substring(this.groupString.lastIndexOf("_")+1);
+			groupID = new Integer(this.groupString);
 		}
 		String coachGroupIDString = iwc.getParameter(otherCoachesFieldParameterName);
 		Integer coachGroupID =null;
-		if(coachGroupIDString == null || coachGroupIDString.equals(""))
+		if(coachGroupIDString == null || coachGroupIDString.equals("")) {
 			coachGroupIDString = "-1";
+		}
 		else {
 			coachGroupIDString = coachGroupIDString.substring(coachGroupIDString.lastIndexOf("_")+1);
 			
@@ -244,7 +246,7 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 		String name = iwc.getParameter(nameFieldParameterName);
 		
 		lineUp(iwc);
-		add(form,iwc);
+		add(this.form,iwc);
 		Page parentPage = getParentPage();
 		String save = iwc.getParameter("submit");
 		if(save != null && !save.equals("")) {
@@ -261,15 +263,15 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 	
 	
 	public CalBusiness getCalBusiness(IWApplicationContext iwc) {
-		if (calBiz == null) {
+		if (this.calBiz == null) {
 			try {
-				calBiz = (CalBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, CalBusiness.class);
+				this.calBiz = (CalBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, CalBusiness.class);
 			}
 			catch (java.rmi.RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());
 			}
 		}
-		return calBiz;
+		return this.calBiz;
 	}
 	
 	public GroupBusiness getGroupBusiness(IWApplicationContext iwc) {

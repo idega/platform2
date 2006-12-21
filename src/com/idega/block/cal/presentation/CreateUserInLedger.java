@@ -67,21 +67,21 @@ public class CreateUserInLedger extends StyledIWAdminWindow{
 		IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		
-		nameText = new Text(iwrb.getLocalizedString(nameFieldParameterName,"Name") + ":");
-		nameText.setBold();
-		ssnText = new Text(iwrb.getLocalizedString(ssnFieldParameterName,"SSN") + ":");
-		ssnText.setBold();
+		this.nameText = new Text(iwrb.getLocalizedString(nameFieldParameterName,"Name") + ":");
+		this.nameText.setBold();
+		this.ssnText = new Text(iwrb.getLocalizedString(ssnFieldParameterName,"SSN") + ":");
+		this.ssnText.setBold();
 	}
 	public void initializeFields() {
 		IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		
-		nameField = new TextInput(nameFieldParameterName);		
-		ssnField = new TextInput(ssnFieldParameterName);
+		this.nameField = new TextInput(nameFieldParameterName);		
+		this.ssnField = new TextInput(ssnFieldParameterName);
 		
-		submitButton = new SubmitButton(iwrb.getLocalizedString("save","Save"),submitButtonParameterName,submitButtonParameterValue);
+		this.submitButton = new SubmitButton(iwrb.getLocalizedString("save","Save"),submitButtonParameterName,submitButtonParameterValue);
 		//closes the window
-		closeButton = new CloseButton(iwrb.getLocalizedString("close","Close"));
+		this.closeButton = new CloseButton(iwrb.getLocalizedString("close","Close"));
 	}
 	public void lineUp() {
 		Table mainTable = new Table();
@@ -96,37 +96,37 @@ public class CreateUserInLedger extends StyledIWAdminWindow{
 		table.setCellspacing(12);
 		table.setCellpadding(0);
 		table.setWidth(Table.HUNDRED_PERCENT);
-		table.setStyleClass(borderAllWhite);
-		table.add(nameText,1,1);
+		table.setStyleClass(this.borderAllWhite);
+		table.add(this.nameText,1,1);
 		table.add(Text.getBreak(),1,1);
-		table.add(nameField,1,1);
-		table.add(ssnText,1,2);
+		table.add(this.nameField,1,1);
+		table.add(this.ssnText,1,2);
 		table.add(Text.getBreak(),1,2);
-		table.add(ssnField,1,2);
+		table.add(this.ssnField,1,2);
 		
 		Table bottomTable = new Table();
 		bottomTable.setCellspacing(12);
 		bottomTable.setCellpadding(0);
 		bottomTable.setWidth(Table.HUNDRED_PERCENT);
-		bottomTable.setStyleClass(borderAllWhite);
+		bottomTable.setStyleClass(this.borderAllWhite);
 		bottomTable.add(getHelp(HELP_TEXT_KEY), 1, 1);
 		bottomTable.setAlignment(2,1,Table.HORIZONTAL_ALIGN_RIGHT);
-		bottomTable.add(submitButton,2,1);
+		bottomTable.add(this.submitButton,2,1);
 		bottomTable.add(Text.NON_BREAKING_SPACE,2,1);
-		bottomTable.add(closeButton,2,1);
+		bottomTable.add(this.closeButton,2,1);
 		
 		
 		mainTable.add(table,1,1);
 		mainTable.add(bottomTable,1,3);
 		
-		form.add(mainTable);
+		this.form.add(mainTable);
 	}
 	public void main(IWContext iwc) throws Exception {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		setTitle(iwrb.getLocalizedString("createUILWindow.create_user","Create user in ledger"));
 		addTitle(iwrb.getLocalizedString("createUILWindow.create_user","Create user in ledger"),TITLE_STYLECLASS);
 		
-		form = new Form();
+		this.form = new Form();
 		initializeTexts();
 		initializeFields();
 		lineUp();
@@ -134,7 +134,7 @@ public class CreateUserInLedger extends StyledIWAdminWindow{
 
 		String ledgerString = iwc.getParameter(LedgerWindow.LEDGER);
 		Integer ledgerID = new Integer(ledgerString);
-		form.maintainParameter(LedgerWindow.LEDGER);
+		this.form.maintainParameter(LedgerWindow.LEDGER);
 				
 		CalendarLedger ledger = null;
 		
@@ -223,7 +223,7 @@ public class CreateUserInLedger extends StyledIWAdminWindow{
 			close();
 		}
 		
-		add(form,iwc);
+		add(this.form,iwc);
 	}
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;

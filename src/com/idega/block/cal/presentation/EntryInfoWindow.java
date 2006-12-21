@@ -84,22 +84,22 @@ public class EntryInfoWindow extends StyledIWAdminWindow{
 	public void initializeTexts(IWContext iwc) {
 
 		IWResourceBundle iwrb = getResourceBundle(iwc);
-		headlineText = new Text(iwrb.getLocalizedString(headlineFieldParameterName,"Name"));
-		headlineText.setStyleClass(boldText);
-		typeText = new Text(iwrb.getLocalizedString(typeFieldParameterName,"Type"));
-		typeText.setStyleClass(boldText);
-		dayFromText = new Text(iwrb.getLocalizedString(dayFromFieldParameterName,"From day"));
-		dayFromText.setStyleClass(boldText);
-		dayToText = new Text(iwrb.getLocalizedString(dayToFieldParameterName,"To Day"));
-		dayToText.setStyleClass(boldText);
-		timeFromText = new Text(iwrb.getLocalizedString(timeFromFieldParameterName, "From time"));
-		timeFromText.setStyleClass(boldText);
-		timeToText = new Text(iwrb.getLocalizedString(timeToFieldParameterName, "To time"));
-		timeToText.setStyleClass(boldText);
-		descriptionText = new Text(iwrb.getLocalizedString(descriptionFieldParameterName,"Description"));
-		descriptionText.setStyleClass(boldText);
-		locationText = new Text(iwrb.getLocalizedString(locationFieldParameterName, "Location"));
-		locationText.setStyleClass(boldText);		
+		this.headlineText = new Text(iwrb.getLocalizedString(headlineFieldParameterName,"Name"));
+		this.headlineText.setStyleClass(this.boldText);
+		this.typeText = new Text(iwrb.getLocalizedString(typeFieldParameterName,"Type"));
+		this.typeText.setStyleClass(this.boldText);
+		this.dayFromText = new Text(iwrb.getLocalizedString(dayFromFieldParameterName,"From day"));
+		this.dayFromText.setStyleClass(this.boldText);
+		this.dayToText = new Text(iwrb.getLocalizedString(dayToFieldParameterName,"To Day"));
+		this.dayToText.setStyleClass(this.boldText);
+		this.timeFromText = new Text(iwrb.getLocalizedString(timeFromFieldParameterName, "From time"));
+		this.timeFromText.setStyleClass(this.boldText);
+		this.timeToText = new Text(iwrb.getLocalizedString(timeToFieldParameterName, "To time"));
+		this.timeToText.setStyleClass(this.boldText);
+		this.descriptionText = new Text(iwrb.getLocalizedString(descriptionFieldParameterName,"Description"));
+		this.descriptionText.setStyleClass(this.boldText);
+		this.locationText = new Text(iwrb.getLocalizedString(locationFieldParameterName, "Location"));
+		this.locationText.setStyleClass(this.boldText);		
 	}
 	public void initializeFields(IWContext iwc) {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
@@ -118,35 +118,35 @@ public class EntryInfoWindow extends StyledIWAdminWindow{
 				groupID = getCalBusiness(iwc).getLedger(ledgerID).getGroupID();
 			}
 			if(groupID != -1) {
-				groupNameField = new Text(getGroupBusiness(iwc).getGroupByGroupID(groupID).getName());
+				this.groupNameField = new Text(getGroupBusiness(iwc).getGroupByGroupID(groupID).getName());
 				parentGroups = new ArrayList(getGroupBusiness(iwc).getParentGroupsRecursive(getGroupBusiness(iwc).getGroupByGroupID(groupID)));				
 			}
 			else if(ledgerID != -1) {
 				CalendarLedger ledger = getCalBusiness(iwc).getLedger(ledgerID);
 				Group g = getGroupBusiness(iwc).getGroupByGroupID(ledger.getGroupID());
-				groupNameField = new Text(g.getName());
-				groupNameField.setStyleClass(boldText);
+				this.groupNameField = new Text(g.getName());
+				this.groupNameField.setStyleClass(this.boldText);
 			}
 			else {
-				groupNameField = new Text(iwrb.getLocalizedString("entryinfowindow.no_group_text","No group"));
-				groupNameField.setStyleClass(boldText);
+				this.groupNameField = new Text(iwrb.getLocalizedString("entryinfowindow.no_group_text","No group"));
+				this.groupNameField.setStyleClass(this.boldText);
 			}
 			
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
 		if(parentGroups != null) {
-			clubNameField = ledgerVariationsHandler.getParentOfParentGroupName(parentGroups);
+			this.clubNameField = ledgerVariationsHandler.getParentOfParentGroupName(parentGroups);
 
 		}
 		
-		headlineField = entry.getName();
-		typeField = iwrb.getLocalizedString("calendarEntry."+entry.getEntryTypeName(),entry.getEntryTypeName());
-		dayFromField = new IWTimestamp(entry.getDate()).getDateString("dd MMM yyyy - HH.mm");
-		dayToField = new IWTimestamp(entry.getEndDate()).getDateString("dd MMM yyyy - HH.mm");
+		this.headlineField = entry.getName();
+		this.typeField = iwrb.getLocalizedString("calendarEntry."+entry.getEntryTypeName(),entry.getEntryTypeName());
+		this.dayFromField = new IWTimestamp(entry.getDate()).getDateString("dd MMM yyyy - HH.mm");
+		this.dayToField = new IWTimestamp(entry.getEndDate()).getDateString("dd MMM yyyy - HH.mm");
 		
-		locationField = entry.getLocation();
-		descriptionField = entry.getDescription();
+		this.locationField = entry.getLocation();
+		this.descriptionField = entry.getDescription();
 		
 		//stamp is needed to get the current day/week/month of the CalendarView 
 		//the parameters are then set to the change link (see below)
@@ -167,27 +167,27 @@ public class EntryInfoWindow extends StyledIWAdminWindow{
 		}		
 	}
 	public void lineUp() {
-		table = new Table();
-		table.setCellspacing(0);
-		table.setCellpadding(2);
-		table.setStyleClass(borderAllWhiteStyle);
-		table.add(clubNameField,1,1);
-		table.add(" - ",1,1);
-		table.add(groupNameField,1,1);
-		table.add(headlineText,1,2);
-		table.add(headlineField,2,2);
-		table.add(typeText,1,3);
-		table.add(typeField,2,3);
-		table.add(dayFromText,1,4);
-		table.add(dayFromField,2,4);
-		table.add(dayToText,1,5);
-		table.add(dayToField,2,5);
-		table.add(locationText,1,6);
-		table.add(locationField,2,6);
-		table.add(descriptionText,1,7);
-		table.add(descriptionField,2,7);
+		this.table = new Table();
+		this.table.setCellspacing(0);
+		this.table.setCellpadding(2);
+		this.table.setStyleClass(this.borderAllWhiteStyle);
+		this.table.add(this.clubNameField,1,1);
+		this.table.add(" - ",1,1);
+		this.table.add(this.groupNameField,1,1);
+		this.table.add(this.headlineText,1,2);
+		this.table.add(this.headlineField,2,2);
+		this.table.add(this.typeText,1,3);
+		this.table.add(this.typeField,2,3);
+		this.table.add(this.dayFromText,1,4);
+		this.table.add(this.dayFromField,2,4);
+		this.table.add(this.dayToText,1,5);
+		this.table.add(this.dayToField,2,5);
+		this.table.add(this.locationText,1,6);
+		this.table.add(this.locationField,2,6);
+		this.table.add(this.descriptionText,1,7);
+		this.table.add(this.descriptionField,2,7);
 		
-		table.add(getHelp(HELP_TEXT_KEY), 1, 8);
+		this.table.add(getHelp(HELP_TEXT_KEY), 1, 8);
 	}
 	public void main(IWContext iwc) throws Exception {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
@@ -197,7 +197,7 @@ public class EntryInfoWindow extends StyledIWAdminWindow{
 		initializeTexts(iwc);
 		initializeFields(iwc);
 		lineUp();
-		add(table,iwc);
+		add(this.table,iwc);
 		
 	}
 	public String getBundleIdentifier() {

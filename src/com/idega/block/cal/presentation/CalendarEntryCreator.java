@@ -173,54 +173,54 @@ public class CalendarEntryCreator extends Form{
 	 */
 	private void initializeTexts(IWContext iwc) {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
-		headlineText = new Text(iwrb.getLocalizedString(headlineFieldParameterName,"Name"));
-		headlineText.setStyleClass(boldText);
-		typeText = new Text(iwrb.getLocalizedString(typeFieldParameterName,"Type"));
-		typeText.setStyleClass(boldText);
-		repeatText =new Text(iwrb.getLocalizedString(repeatFieldParameterName,"Repeat"));
-		repeatText.setStyleClass(boldText);
-		noRepeatText = new Text(iwrb.getLocalizedString(noRepeatFieldParameterName,"No Repeat"));
-		noRepeatText.setStyleClass(boldText);
-		dailyText = new Text(iwrb.getLocalizedString(dailyFieldParameterName,"Daily"));
-		dailyText.setStyleClass(boldText);
-		weeklyText = new Text(iwrb.getLocalizedString(weeklyFieldParameterName,"Weekly"));
-		weeklyText.setStyleClass(boldText);
-		monthlyText = new Text(iwrb.getLocalizedString(monthlyFieldParameterName,"Monthly"));
-		monthlyText.setStyleClass(boldText);
-		yearlyText = new Text(iwrb.getLocalizedString(yearlyFieldParameterName,"Yearly"));
-		yearlyText.setStyleClass(boldText);
-		dayFromText = new Text(iwrb.getLocalizedString(dayFromFieldParameterName,"From day"));
-		dayFromText.setStyleClass(boldText);
-		dayToText = new Text(iwrb.getLocalizedString(dayToFieldParameterName,"To Day"));
-		dayToText.setStyleClass(boldText);
-		timeFromText = new Text(iwrb.getLocalizedString(timeFromFieldParameterName, "From time"));
-		timeFromText.setStyleClass(boldText);
-		timeToText = new Text(iwrb.getLocalizedString(timeToFieldParameterName, "To time"));
-		timeToText.setStyleClass(boldText);
-		attendeesText = new Text(iwrb.getLocalizedString(chooseGroupParameterName,"Choose group"));
-		attendeesText.setStyleClass(boldText);
-		descriptionText = new Text(iwrb.getLocalizedString(descriptionFieldParameterName,"Description"));
-		descriptionText.setStyleClass(boldText);
-		generalText = new Text(iwrb.getLocalizedString(generalFieldParameterName,"General"));
-		generalText.setStyleClass(boldText);
-		practiceText = new Text(iwrb.getLocalizedString(practiceFieldParameterName, "Practice"));
-		practiceText.setStyleClass(boldText);
-		ledgerText = new Text(iwrb.getLocalizedString(ledgerFieldParameterName, "Ledger"));
-		ledgerText.setStyleClass(boldText);
-		locationText = new Text(iwrb.getLocalizedString(locationFieldParameterName, "Location"));
-		locationText.setStyleClass(boldText);
-		createNewText = new Text(iwrb.getLocalizedString(createNewEntryParameterName, "Create new entry"));
-		createNewText.setStyleClass(headlineFont);
-		createNewText.setBold();
-		changeEntryText = new Text(iwrb.getLocalizedString(changeEntryParameterName, "Change entry"));
-		changeEntryText.setStyleClass(headlineFont);
-		changeEntryText.setBold();
-		modifyOneText = new Text(iwrb.getLocalizedString(modifyOneRadioButtonParameterName, "Change a single entry"));
-		modifyOneText.setStyleClass(boldText);
-		modifyManyText = new Text(iwrb.getLocalizedString(modifyManyRadioButtonParameterName, "Change group of entries"));
-		modifyManyText.setStyleClass(boldText);
-		groupOrLedgerText = new Text(iwrb.getLocalizedString(groupOrLedger,"Save entry for group or ledger?"));
-		groupOrLedgerText.setStyleClass(boldText);
+		this.headlineText = new Text(iwrb.getLocalizedString(headlineFieldParameterName,"Name"));
+		this.headlineText.setStyleClass(this.boldText);
+		this.typeText = new Text(iwrb.getLocalizedString(typeFieldParameterName,"Type"));
+		this.typeText.setStyleClass(this.boldText);
+		this.repeatText =new Text(iwrb.getLocalizedString(repeatFieldParameterName,"Repeat"));
+		this.repeatText.setStyleClass(this.boldText);
+		this.noRepeatText = new Text(iwrb.getLocalizedString(noRepeatFieldParameterName,"No Repeat"));
+		this.noRepeatText.setStyleClass(this.boldText);
+		this.dailyText = new Text(iwrb.getLocalizedString(dailyFieldParameterName,"Daily"));
+		this.dailyText.setStyleClass(this.boldText);
+		this.weeklyText = new Text(iwrb.getLocalizedString(weeklyFieldParameterName,"Weekly"));
+		this.weeklyText.setStyleClass(this.boldText);
+		this.monthlyText = new Text(iwrb.getLocalizedString(monthlyFieldParameterName,"Monthly"));
+		this.monthlyText.setStyleClass(this.boldText);
+		this.yearlyText = new Text(iwrb.getLocalizedString(yearlyFieldParameterName,"Yearly"));
+		this.yearlyText.setStyleClass(this.boldText);
+		this.dayFromText = new Text(iwrb.getLocalizedString(dayFromFieldParameterName,"From day"));
+		this.dayFromText.setStyleClass(this.boldText);
+		this.dayToText = new Text(iwrb.getLocalizedString(dayToFieldParameterName,"To Day"));
+		this.dayToText.setStyleClass(this.boldText);
+		this.timeFromText = new Text(iwrb.getLocalizedString(timeFromFieldParameterName, "From time"));
+		this.timeFromText.setStyleClass(this.boldText);
+		this.timeToText = new Text(iwrb.getLocalizedString(timeToFieldParameterName, "To time"));
+		this.timeToText.setStyleClass(this.boldText);
+		this.attendeesText = new Text(iwrb.getLocalizedString(chooseGroupParameterName,"Choose group"));
+		this.attendeesText.setStyleClass(this.boldText);
+		this.descriptionText = new Text(iwrb.getLocalizedString(descriptionFieldParameterName,"Description"));
+		this.descriptionText.setStyleClass(this.boldText);
+		this.generalText = new Text(iwrb.getLocalizedString(generalFieldParameterName,"General"));
+		this.generalText.setStyleClass(this.boldText);
+		this.practiceText = new Text(iwrb.getLocalizedString(practiceFieldParameterName, "Practice"));
+		this.practiceText.setStyleClass(this.boldText);
+		this.ledgerText = new Text(iwrb.getLocalizedString(ledgerFieldParameterName, "Ledger"));
+		this.ledgerText.setStyleClass(this.boldText);
+		this.locationText = new Text(iwrb.getLocalizedString(locationFieldParameterName, "Location"));
+		this.locationText.setStyleClass(this.boldText);
+		this.createNewText = new Text(iwrb.getLocalizedString(createNewEntryParameterName, "Create new entry"));
+		this.createNewText.setStyleClass(this.headlineFont);
+		this.createNewText.setBold();
+		this.changeEntryText = new Text(iwrb.getLocalizedString(changeEntryParameterName, "Change entry"));
+		this.changeEntryText.setStyleClass(this.headlineFont);
+		this.changeEntryText.setBold();
+		this.modifyOneText = new Text(iwrb.getLocalizedString(modifyOneRadioButtonParameterName, "Change a single entry"));
+		this.modifyOneText.setStyleClass(this.boldText);
+		this.modifyManyText = new Text(iwrb.getLocalizedString(modifyManyRadioButtonParameterName, "Change group of entries"));
+		this.modifyManyText.setStyleClass(this.boldText);
+		this.groupOrLedgerText = new Text(iwrb.getLocalizedString(groupOrLedger,"Save entry for group or ledger?"));
+		this.groupOrLedgerText.setStyleClass(this.boldText);
 	}
 	/**
 	 * initialized fields
@@ -230,13 +230,13 @@ public class CalendarEntryCreator extends Form{
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		CalBusiness calBusiness = getCalBusiness(iwc);
 				
-		headlineField = new TextInput(headlineFieldParameterName);
+		this.headlineField = new TextInput(headlineFieldParameterName);
 		
-		practiceField =new SelectOption(practiceText.toString(),generalFieldParameterName);
-		generalField =new SelectOption(generalText.toString(),practiceFieldParameterName);
+		this.practiceField =new SelectOption(this.practiceText.toString(),generalFieldParameterName);
+		this.generalField =new SelectOption(this.generalText.toString(),practiceFieldParameterName);
 		
 		
-		typeField = new DropdownMenu(typeFieldParameterName);
+		this.typeField = new DropdownMenu(typeFieldParameterName);
 		
 		
 		//if the general and practice types have not been added -> they are added!
@@ -252,20 +252,20 @@ public class CalendarEntryCreator extends Form{
 		Iterator typeIter = calBiz.getAllEntryTypes().iterator();
 		while(typeIter.hasNext()) {
 			CalendarEntryType type = (CalendarEntryType) typeIter.next();
-			if(!insertPracticeOnly) {
-				typeField.addMenuElement(type.getName(),iwrb.getLocalizedString("calendarEntry."+type.getName(),type.getName()));
+			if(!this.insertPracticeOnly) {
+				this.typeField.addMenuElement(type.getName(),iwrb.getLocalizedString("calendarEntry."+type.getName(),type.getName()));
 			}
 			else {
 				if(type.getName().equals(practiceFieldParameterName)) {
-					typeField.addMenuElement(type.getName(),type.getName());
+					this.typeField.addMenuElement(type.getName(),type.getName());
 				}
 			}
 			
 		}
-		typeField.setSelectedElement(practiceFieldParameterName);
+		this.typeField.setSelectedElement(practiceFieldParameterName);
 		
-		ledgerField = new DropdownMenu(ledgerFieldParameterName);
-		ledgerField.addMenuElement(-1,iwrb.getLocalizedString(noLedgerFieldParameterName,"No ledger"));
+		this.ledgerField = new DropdownMenu(ledgerFieldParameterName);
+		this.ledgerField.addMenuElement(-1,iwrb.getLocalizedString(noLedgerFieldParameterName,"No ledger"));
 		
 		User user = iwc.getCurrentUser();
 		Integer userID = (Integer) user.getPrimaryKey();
@@ -275,24 +275,24 @@ public class CalendarEntryCreator extends Form{
 		while(ledgerIter.hasNext()) {
 			CalendarLedger ledger = (CalendarLedger) ledgerIter.next();
 			if(userID.intValue() == ledger.getCoachID() || userGroupID == ledger.getCoachGroupID()) {
-				ledgerField.addMenuElement(ledger.getLedgerID(),ledger.getName());
+				this.ledgerField.addMenuElement(ledger.getLedgerID(),ledger.getName());
 			}
 			
 		}
-		locationField = new TextInput(locationFieldParameterName);
+		this.locationField = new TextInput(locationFieldParameterName);
 		
-		noRepeatField = new SelectOption(noRepeatText.toString(),noRepeatFieldParameterName);
-		dailyField = new SelectOption(dailyText.toString(),dailyFieldParameterName);
-		weeklyField =new SelectOption(weeklyText.toString(),weeklyFieldParameterName);
-		monthlyField = new SelectOption(monthlyText.toString(),monthlyFieldParameterName);
-		yearlyField = new SelectOption(yearlyText.toString(),yearlyFieldParameterName);
+		this.noRepeatField = new SelectOption(this.noRepeatText.toString(),noRepeatFieldParameterName);
+		this.dailyField = new SelectOption(this.dailyText.toString(),dailyFieldParameterName);
+		this.weeklyField =new SelectOption(this.weeklyText.toString(),weeklyFieldParameterName);
+		this.monthlyField = new SelectOption(this.monthlyText.toString(),monthlyFieldParameterName);
+		this.yearlyField = new SelectOption(this.yearlyText.toString(),yearlyFieldParameterName);
 		
-		repeatField = new DropdownMenu(repeatFieldParameterName);
-		repeatField.addOption(noRepeatField);
-		repeatField.addOption(dailyField);
-		repeatField.addOption(weeklyField);
-		repeatField.addOption(monthlyField);
-		repeatField.addOption(yearlyField);
+		this.repeatField = new DropdownMenu(repeatFieldParameterName);
+		this.repeatField.addOption(this.noRepeatField);
+		this.repeatField.addOption(this.dailyField);
+		this.repeatField.addOption(this.weeklyField);
+		this.repeatField.addOption(this.monthlyField);
+		this.repeatField.addOption(this.yearlyField);
 		
 		IWTimestamp stamp = new IWTimestamp();
 		
@@ -304,49 +304,49 @@ public class CalendarEntryCreator extends Form{
 		if(view != null && !view.equals("")) {
 			v = Integer.parseInt(view);
 		}
-		dayFromField = new DatePicker(dayFromFieldParameterName);	
-		dayToField = new DatePicker(dayToFieldParameterName);		
+		this.dayFromField = new DatePicker(dayFromFieldParameterName);	
+		this.dayToField = new DatePicker(dayToFieldParameterName);		
 		if(day != null && month != null && year != null && 
 				v == CalendarParameters.DAY) {
 			//month is month - 1 -> January == 0!!
 			Date date = new Date(Integer.parseInt(year),Integer.parseInt(month)-1,Integer.parseInt(day));
-			dayFromField.setDate(date);
-			dayToField.setDate(date);
+			this.dayFromField.setDate(date);
+			this.dayToField.setDate(date);
 		}
 		else {
-			dayFromField.setDate(stamp.getDate());
-			dayToField.setDate(stamp.getDate());
+			this.dayFromField.setDate(stamp.getDate());
+			this.dayToField.setDate(stamp.getDate());
 		}
-		timeFromField = new TimeInput(timeFromFieldParameterName);
+		this.timeFromField = new TimeInput(timeFromFieldParameterName);
 		//the default from time is set to the current time
-		timeFromField.setHour(stamp.getHour());
-		timeFromField.setMinute(0);
-		timeToField = new TimeInput(timeToFieldParameterName);
+		this.timeFromField.setHour(stamp.getHour());
+		this.timeFromField.setMinute(0);
+		this.timeToField = new TimeInput(timeToFieldParameterName);
 		//the default to time is set one hour later than the current time
 		if(stamp.getHour() == 23) {
-			timeToField.setHour(0);
+			this.timeToField.setHour(0);
 		}
 		else {
-			timeToField.setHour(stamp.getHour() + 1);
+			this.timeToField.setHour(stamp.getHour() + 1);
 		}		
-		timeToField.setMinute(0);
+		this.timeToField.setMinute(0);
 	
-		attendeesField = new GroupChooser(attendeesFieldParameterName);
+		this.attendeesField = new GroupChooser(attendeesFieldParameterName);
 
-		descriptionField = new TextArea(descriptionFieldParameterName);
-		descriptionField.setRows(5);
+		this.descriptionField = new TextArea(descriptionFieldParameterName);
+		this.descriptionField.setRows(5);
 		
 		
-		save = new StyledButton(new SubmitButton(iwrb.getLocalizedString("save", "Save"),saveButtonParameterName,saveButtonParameterValue));
+		this.save = new StyledButton(new SubmitButton(iwrb.getLocalizedString("save", "Save"),saveButtonParameterName,saveButtonParameterValue));
 //		save.setAsImageButton(true);
-		reset = new StyledButton(new ResetButton(iwrb.getLocalizedString("reset", "Reset")));
+		this.reset = new StyledButton(new ResetButton(iwrb.getLocalizedString("reset", "Reset")));
 //		reset.setAsImageButton(true);
 		
-		hiddenEntryID = new HiddenInput(entryIDParameterName,iwc.getParameter(entryIDParameterName));
-		hiddenView = new HiddenInput(CalendarParameters.PARAMETER_VIEW,view);
-		hiddenYear =new HiddenInput(CalendarParameters.PARAMETER_YEAR,new Integer(stamp.getYear()).toString());
-		hiddenMonth = new HiddenInput(CalendarParameters.PARAMETER_MONTH,new Integer(stamp.getMonth()).toString());
-		hiddenDay = new HiddenInput(CalendarParameters.PARAMETER_DAY,new Integer(stamp.getDay()).toString());
+		this.hiddenEntryID = new HiddenInput(entryIDParameterName,iwc.getParameter(entryIDParameterName));
+		this.hiddenView = new HiddenInput(CalendarParameters.PARAMETER_VIEW,view);
+		this.hiddenYear =new HiddenInput(CalendarParameters.PARAMETER_YEAR,new Integer(stamp.getYear()).toString());
+		this.hiddenMonth = new HiddenInput(CalendarParameters.PARAMETER_MONTH,new Integer(stamp.getMonth()).toString());
+		this.hiddenDay = new HiddenInput(CalendarParameters.PARAMETER_DAY,new Integer(stamp.getDay()).toString());
 				
 		//if some entry is selected, data is printed in the fields
 //		if(entryIDString != null && !entryIDString.equals("")) {
@@ -354,33 +354,33 @@ public class CalendarEntryCreator extends Form{
 		if(entry != null) {
 			
 //			isEntrySet = true;
-			modifyOneRadioButton = new RadioButton(modifyOneOrManyRadioButtonParameterName,oneValue);
-			modifyOneRadioButton.setSelected();
-			modifyManyRadioButton = new RadioButton(modifyOneOrManyRadioButtonParameterName,manyValue);
+			this.modifyOneRadioButton = new RadioButton(modifyOneOrManyRadioButtonParameterName,oneValue);
+			this.modifyOneRadioButton.setSelected();
+			this.modifyManyRadioButton = new RadioButton(modifyOneOrManyRadioButtonParameterName,manyValue);
 			
-			newEntryLink = new Link(iwrb.getLocalizedString("new_entry","New Entry"));
-			newEntryLink.addParameter(entryIDParameterName,"");
-			newEntryLink.addParameter(CalendarParameters.PARAMETER_VIEW,view);
+			this.newEntryLink = new Link(iwrb.getLocalizedString("new_entry","New Entry"));
+			this.newEntryLink.addParameter(entryIDParameterName,"");
+			this.newEntryLink.addParameter(CalendarParameters.PARAMETER_VIEW,view);
 //			newEntryLink.setStyleClass(styledLink);
-			newEntryLink.setAsImageButton(true,true);
+			this.newEntryLink.setAsImageButton(true,true);
 			
-			deleteLink = new Link(iwrb.getLocalizedString("delete","Delete"));
-			deleteLink.setWindowToOpen(ConfirmDeleteWindow.class);
-			deleteLink.addParameter(ConfirmDeleteWindow.PRM_DELETE_ID, entryIDString);
-			deleteLink.addParameter(ConfirmDeleteWindow.PRM_DELETE, CalendarParameters.PARAMETER_TRUE);
-			deleteLink.addParameter(ConfirmDeleteWindow.PRM_ENTRY_OR_LEDGER,ENTRY);
-			deleteLink.addParameter(CalendarView.ACTION,"");
-			deleteLink.setAsImageButton(true,true);
+			this.deleteLink = new Link(iwrb.getLocalizedString("delete","Delete"));
+			this.deleteLink.setWindowToOpen(ConfirmDeleteWindow.class);
+			this.deleteLink.addParameter(ConfirmDeleteWindow.PRM_DELETE_ID, this.entryIDString);
+			this.deleteLink.addParameter(ConfirmDeleteWindow.PRM_DELETE, CalendarParameters.PARAMETER_TRUE);
+			this.deleteLink.addParameter(ConfirmDeleteWindow.PRM_ENTRY_OR_LEDGER,ENTRY);
+			this.deleteLink.addParameter(CalendarView.ACTION,"");
+			this.deleteLink.setAsImageButton(true,true);
 			
-			headlineField.setContent(entry.getName());
-			typeField.setSelectedElement(entry.getEntryTypeName());
-			repeatField.setSelectedElement(entry.getRepeat());
-			ledgerField.setSelectedElement(entry.getLedgerID());
+			this.headlineField.setContent(entry.getName());
+			this.typeField.setSelectedElement(entry.getEntryTypeName());
+			this.repeatField.setSelectedElement(entry.getRepeat());
+			this.ledgerField.setSelectedElement(entry.getLedgerID());
 			
 			Integer groupID = new Integer(entry.getGroupID());
 			try {
 				if(groupID.intValue() != -1) {
-					attendeesField.setChooserValue(getGroupBusiness(iwc).getGroupByGroupID(groupID.intValue()).getName(),groupID.toString());
+					this.attendeesField.setChooserValue(getGroupBusiness(iwc).getGroupByGroupID(groupID.intValue()).getName(),groupID.toString());
 					// prior version:  attendeesField.setSelectedGroup(groupID.toString(),getGroupBusiness(iwc).getGroupByGroupID(groupID.intValue()).getName());
 				}
 			}catch (Exception e){
@@ -390,30 +390,31 @@ public class CalendarEntryCreator extends Form{
 			
 			IWTimestamp iwFrom = new IWTimestamp(entry.getDate());
 			Date dateF = iwFrom.getDate();
-			dayFromField.setDate(dateF);
+			this.dayFromField.setDate(dateF);
 			
 			IWTimestamp iwTo = new IWTimestamp(entry.getEndDate());
 			Date dateT = iwTo.getDate();
-			dayToField.setDate(dateT);
+			this.dayToField.setDate(dateT);
 			
-			timeFromField.setHour(entry.getDate().getHours());
-			timeFromField.setMinute(entry.getDate().getMinutes());
+			this.timeFromField.setHour(entry.getDate().getHours());
+			this.timeFromField.setMinute(entry.getDate().getMinutes());
 			
-			timeToField.setHour(entry.getEndDate().getHours());
-			timeToField.setMinute(entry.getEndDate().getMinutes());	
+			this.timeToField.setHour(entry.getEndDate().getHours());
+			this.timeToField.setMinute(entry.getEndDate().getMinutes());	
 			
-			locationField.setContent(entry.getLocation());
+			this.locationField.setContent(entry.getLocation());
 			
-			descriptionField.setContent(entry.getDescription());
+			this.descriptionField.setContent(entry.getDescription());
 			
 		}
 			
 			
 //		}		
-		else if(displayingTimeConflict) {
+		else if(this.displayingTimeConflict) {
 			String entryAttendees = iwc.getParameter(attendeesFieldParameterName);
-			if(entryAttendees == null || entryAttendees.equals(""))
+			if(entryAttendees == null || entryAttendees.equals("")) {
 				entryAttendees = "";
+			}
 			else {
 				entryAttendees = entryAttendees.substring(entryAttendees.lastIndexOf("_")+1);
 			}
@@ -421,18 +422,18 @@ public class CalendarEntryCreator extends Form{
 			if(entryAttendees != null && !entryAttendees.equals("")) {
 				Integer groupID = new Integer(entryAttendees);
 				try {
-					attendeesField.setChooserValue(getGroupBusiness(iwc).getGroupByGroupID(groupID.intValue()).getName(),groupID.toString());
+					this.attendeesField.setChooserValue(getGroupBusiness(iwc).getGroupByGroupID(groupID.intValue()).getName(),groupID.toString());
 					// prior version: attendeesField.setSelectedGroup(groupID.toString(),getGroupBusiness(iwc).getGroupByGroupID(groupID.intValue()).getName());
 				}catch (Exception e){
 					e.printStackTrace();
 				}
 			}
-			headlineField.setContent(iwc.getParameter(headlineFieldParameterName));
-			typeField.setSelectedElement(iwc.getParameter(typeFieldParameterName));
-			repeatField.setSelectedElement(iwc.getParameter(repeatFieldParameterName));
-			ledgerField.setSelectedElement(iwc.getParameter(ledgerFieldParameterName));
-			locationField.setContent(iwc.getParameter(locationFieldParameterName));
-			descriptionField.setContent(iwc.getParameter(descriptionFieldParameterName));
+			this.headlineField.setContent(iwc.getParameter(headlineFieldParameterName));
+			this.typeField.setSelectedElement(iwc.getParameter(typeFieldParameterName));
+			this.repeatField.setSelectedElement(iwc.getParameter(repeatFieldParameterName));
+			this.ledgerField.setSelectedElement(iwc.getParameter(ledgerFieldParameterName));
+			this.locationField.setContent(iwc.getParameter(locationFieldParameterName));
+			this.descriptionField.setContent(iwc.getParameter(descriptionFieldParameterName));
 		}
 	}
 	
@@ -452,19 +453,19 @@ public class CalendarEntryCreator extends Form{
 		if(entry != null) {
 			Table radioButtonTable = new Table();
 			radioButtonTable.setWidth(Table.HUNDRED_PERCENT);
-			radioButtonTable.add(modifyOneRadioButton,1,1);
+			radioButtonTable.add(this.modifyOneRadioButton,1,1);
 			radioButtonTable.add(Text.NON_BREAKING_SPACE,1,1);
-			radioButtonTable.add(modifyOneText,1,1);
-			radioButtonTable.add(modifyManyRadioButton,1,2);
+			radioButtonTable.add(this.modifyOneText,1,1);
+			radioButtonTable.add(this.modifyManyRadioButton,1,2);
 			radioButtonTable.add(Text.NON_BREAKING_SPACE,1,2);
-			radioButtonTable.add(modifyManyText,1,2);
+			radioButtonTable.add(this.modifyManyText,1,2);
 			
 			table.add(radioButtonTable,1,1);
 			
 			Table buttonTableTop = new Table();
 			buttonTableTop.setWidth(Table.HUNDRED_PERCENT);
-			buttonTableTop.add(newEntryLink,1,1);
-			buttonTableTop.add(deleteLink,2,1);
+			buttonTableTop.add(this.newEntryLink,1,1);
+			buttonTableTop.add(this.deleteLink,2,1);
 			
 			table.setVerticalAlignment(2,1,Table.VERTICAL_ALIGN_TOP);
 
@@ -475,8 +476,8 @@ public class CalendarEntryCreator extends Form{
 		headlineTable.setCellpadding(2);
 		headlineTable.setCellspacing(0);
 		headlineTable.setWidth(Table.HUNDRED_PERCENT);
-		headlineTable.add(headlineText,1,1);
-		headlineTable.add(headlineField,1,2);
+		headlineTable.add(this.headlineText,1,1);
+		headlineTable.add(this.headlineField,1,2);
 		
 		table.add(headlineTable,1,2);
 		
@@ -484,8 +485,8 @@ public class CalendarEntryCreator extends Form{
 		typeTable.setCellpadding(2);
 		typeTable.setCellspacing(0);
 		typeTable.setWidth(Table.HUNDRED_PERCENT);
-		typeTable.add(typeText,1,1);
-		typeTable.add(typeField,1,2);
+		typeTable.add(this.typeText,1,1);
+		typeTable.add(this.typeField,1,2);
 		
 		table.add(typeTable,2,2);
 		
@@ -493,8 +494,8 @@ public class CalendarEntryCreator extends Form{
 		locationTable.setCellpadding(2);
 		locationTable.setCellspacing(0);	
 		locationTable.setWidth(Table.HUNDRED_PERCENT);
-		locationTable.add(locationText,1,1);
-		locationTable.add(locationField,1,2);
+		locationTable.add(this.locationText,1,1);
+		locationTable.add(this.locationField,1,2);
 		
 		table.add(locationTable,1,3);
 
@@ -503,8 +504,8 @@ public class CalendarEntryCreator extends Form{
 		repeatTable.setCellpadding(2);
 		repeatTable.setCellspacing(0);
 		repeatTable.setWidth(Table.HUNDRED_PERCENT);
-		repeatTable.add(repeatText,1,1);
-		repeatTable.add(repeatField,1,2);
+		repeatTable.add(this.repeatText,1,1);
+		repeatTable.add(this.repeatField,1,2);
 		
 		table.add(repeatTable,2,3);
 		
@@ -512,45 +513,45 @@ public class CalendarEntryCreator extends Form{
 		dayFromTable.setCellpadding(2);
 		dayFromTable.setCellspacing(0);
 		dayFromTable.setWidth(Table.HUNDRED_PERCENT);
-		dayFromTable.add(dayFromText,1,1);
-		dayFromTable.add(dayFromField,1,2);
+		dayFromTable.add(this.dayFromText,1,1);
+		dayFromTable.add(this.dayFromField,1,2);
 		
 		table.add(dayFromTable,1,4);
 		
 		Table dayToTable = new Table();
 		dayToTable.setCellpadding(2);
 		dayToTable.setCellspacing(0);
-		dayToTable.add(dayToText,1,1);
-		dayToTable.add(dayToField,1,2);
+		dayToTable.add(this.dayToText,1,1);
+		dayToTable.add(this.dayToField,1,2);
 		
 		table.add(dayToTable,2,4);
 		
 		Table timeFromTable = new Table();
 		timeFromTable.setWidth(Table.HUNDRED_PERCENT);
-		timeFromTable.add(timeFromText,1,1);
-		timeFromTable.add(timeFromField,1,2);
+		timeFromTable.add(this.timeFromText,1,1);
+		timeFromTable.add(this.timeFromField,1,2);
 		
 		table.add(timeFromTable,1,5);
 		
 		Table timeToTable = new Table();
 		timeToTable.setWidth(Table.HUNDRED_PERCENT);
-		timeToTable.add(timeToText,1,1);
-		timeToTable.add(timeToField,1,2);
+		timeToTable.add(this.timeToText,1,1);
+		timeToTable.add(this.timeToField,1,2);
 		
 		table.add(timeToTable,2,5);
 				
 		Table ledgerTable = new Table();
 		ledgerTable.setWidth(Table.HUNDRED_PERCENT);
-		ledgerTable.add(groupOrLedgerText,1,1);
-		ledgerTable.add(ledgerField,1,2);
+		ledgerTable.add(this.groupOrLedgerText,1,1);
+		ledgerTable.add(this.ledgerField,1,2);
 		
 		table.add(ledgerTable,1,6);
 		
 		Table groupTable = new Table();
 		groupTable.setWidth(Table.HUNDRED_PERCENT);
-		groupTable.add(attendeesText,1,1);
+		groupTable.add(this.attendeesText,1,1);
 		// AttentantChooser is a PresentationObject
-		groupTable.add((PresentationObject) attendeesField,1,2);
+		groupTable.add((PresentationObject) this.attendeesField,1,2);
 		
 		table.add(groupTable,1,7);
 		
@@ -558,8 +559,8 @@ public class CalendarEntryCreator extends Form{
 		descTable.setCellpadding(2);
 		descTable.setCellspacing(0);
 		descTable.setWidth(Table.HUNDRED_PERCENT);
-		descTable.add(descriptionText,1,1);
-		descTable.add(descriptionField,1,2);
+		descTable.add(this.descriptionText,1,1);
+		descTable.add(this.descriptionField,1,2);
 		
 		table.setVerticalAlignment(2,6,Table.VERTICAL_ALIGN_TOP);
 		table.mergeCells(2,6,2,7);
@@ -569,8 +570,8 @@ public class CalendarEntryCreator extends Form{
 		buttonTable.setCellpadding(2);
 		buttonTable.setCellspacing(0);
 //		buttonTable.add(help);
-		buttonTable.add(save,1,1);
-		buttonTable.add(reset,2,1);
+		buttonTable.add(this.save,1,1);
+		buttonTable.add(this.reset,2,1);
 		
 		table.setAlignment(2,8,Table.HORIZONTAL_ALIGN_RIGHT);
 		table.add(buttonTable,2,8);
@@ -604,8 +605,9 @@ public class CalendarEntryCreator extends Form{
 			
 		User user = iwc.getCurrentUser();
 		
-		if(entryAttendees == null || entryAttendees.equals(""))
+		if(entryAttendees == null || entryAttendees.equals("")) {
 			entryAttendees = "";
+		}
 		else {
 			entryAttendees = entryAttendees.substring(entryAttendees.lastIndexOf("_")+1);
 		}
@@ -633,17 +635,17 @@ public class CalendarEntryCreator extends Form{
 
 		if(from.getHours() > to.getHours() || (from.getHours() == to.getHours() && from.getMinutes() > to.getMinutes())) {
 			parentPage.setAlertOnLoad(iwrb.getLocalizedString("calEntryCreator.to_time_before_from_time_message","The from time is later than the to time!"));
-			displayingTimeConflict = true;
+			this.displayingTimeConflict = true;
 		}
 					
 		else if(from.compareTo(to)>0) {
 			parentPage.setAlertOnLoad(iwrb.getLocalizedString("calEntryCreator.to_date_before_from_date_message","The from day is later than the to day!"));
-			displayingTimeConflict = true;
+			this.displayingTimeConflict = true;
 		}
 		
 		else if(from.getTime()<ledStartTime.getTime()) {
 			parentPage.setAlertOnLoad(iwrb.getLocalizedString("calEntryCreator.from_date_before_led_start_date_message","The from day is before the ledgers start day!"));
-			displayingTimeConflict = true;
+			this.displayingTimeConflict = true;
 		}
 		else {
 			if(entryID != null && !entryID.equals("")) {
@@ -683,31 +685,31 @@ public class CalendarEntryCreator extends Form{
 		setName("form");
 		CalendarEntry entry = null;
 
-		entryIDString = iwc.getParameter(entryIDParameterName);
-		if(entryIDString == null || entryIDString.equals("")) {
-			entryIDString = "";
+		this.entryIDString = iwc.getParameter(entryIDParameterName);
+		if(this.entryIDString == null || this.entryIDString.equals("")) {
+			this.entryIDString = "";
 		}
 		else {
 			try {
-				entry = getCalBusiness(iwc).getEntry(Integer.parseInt(entryIDString));
+				entry = getCalBusiness(iwc).getEntry(Integer.parseInt(this.entryIDString));
 			}catch(Exception e) {
 				entry = null;
 			}
 			
 		}
 		String s = iwc.getParameter(saveButtonParameterName);
-		if(s != null && !displayingTimeConflict) {
+		if(s != null && !this.displayingTimeConflict) {
 			entry = null;
 		}
 		
 		initializeTexts(iwc);
 		initializeFields(iwc, entry);
 				
-		add(hiddenView);
-		add(hiddenYear);
-		add(hiddenMonth);
-		add(hiddenDay);
-		add(hiddenEntryID);
+		add(this.hiddenView);
+		add(this.hiddenYear);
+		add(this.hiddenMonth);
+		add(this.hiddenDay);
+		add(this.hiddenEntryID);
 
 		add(lineUpEdit(iwc,entry));
 	}
@@ -717,15 +719,15 @@ public class CalendarEntryCreator extends Form{
 	}
 
 	public CalBusiness getCalBusiness(IWApplicationContext iwc) {
-		if (calBiz == null) {
+		if (this.calBiz == null) {
 			try {
-				calBiz = (CalBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, CalBusiness.class);
+				this.calBiz = (CalBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, CalBusiness.class);
 			}
 			catch (java.rmi.RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());
 			}
 		}
-		return calBiz;
+		return this.calBiz;
 	}
 	
 	protected UserBusiness getUserBusiness(IWApplicationContext iwc) {

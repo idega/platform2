@@ -80,18 +80,18 @@ public class PrintableLedgerWindow extends Window{
 	private void initializeTexts(IWContext iwc) {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		
-		creatorText = new Text(iwrb.getLocalizedString(LedgerWindow.creatorFieldParameterName,"User"));
-		creatorText.setStyleClass(bold);
-		otherCoachesText = new Text(iwrb.getLocalizedString(LedgerWindow.otherCoachesFieldParameterName,"Other coaches"));
-		otherCoachesText.setStyleClass(bold);
-		clubText = new Text(iwrb.getLocalizedString(LedgerWindow.clubFieldParameterName,"Club"));
-		clubText.setStyleClass(bold);
-		divisionText = new Text(iwrb.getLocalizedString(LedgerWindow.divisionFieldParameterName,"Division"));
-		divisionText.setStyleClass(bold);
-		groupText = new Text(iwrb.getLocalizedString(LedgerWindow.groupFieldParameterName,"Group"));
-		groupText.setStyleClass(bold);
-		dateText = new Text(iwrb.getLocalizedString(LedgerWindow.dateFieldParameterName,"Date"));
-		dateText.setStyleClass(bold);		
+		this.creatorText = new Text(iwrb.getLocalizedString(LedgerWindow.creatorFieldParameterName,"User"));
+		this.creatorText.setStyleClass(bold);
+		this.otherCoachesText = new Text(iwrb.getLocalizedString(LedgerWindow.otherCoachesFieldParameterName,"Other coaches"));
+		this.otherCoachesText.setStyleClass(bold);
+		this.clubText = new Text(iwrb.getLocalizedString(LedgerWindow.clubFieldParameterName,"Club"));
+		this.clubText.setStyleClass(bold);
+		this.divisionText = new Text(iwrb.getLocalizedString(LedgerWindow.divisionFieldParameterName,"Division"));
+		this.divisionText.setStyleClass(bold);
+		this.groupText = new Text(iwrb.getLocalizedString(LedgerWindow.groupFieldParameterName,"Group"));
+		this.groupText.setStyleClass(bold);
+		this.dateText = new Text(iwrb.getLocalizedString(LedgerWindow.dateFieldParameterName,"Date"));
+		this.dateText.setStyleClass(bold);		
 	}
 	private void initializeFields(IWContext iwc) {
 
@@ -112,7 +112,7 @@ public class PrintableLedgerWindow extends Window{
 			e.printStackTrace();
 		}		
 		if(creator != null) {
-			creatorNameField = creator.getName();
+			this.creatorNameField = creator.getName();
 		}
 		
 		int coachGroupID = ledger.getCoachGroupID();
@@ -135,16 +135,16 @@ public class PrintableLedgerWindow extends Window{
 				buff.append(trainer.getName());
 				buff.append("<br>");
 			}
-			otherCoachesNameField = buff.toString();
+			this.otherCoachesNameField = buff.toString();
 			
 		}
 		else {
-			otherCoachesNameField = "";
+			this.otherCoachesNameField = "";
 		}
 		Collection parentGroups = null;
 		int groupID = getCalendarBusiness(iwc).getLedger(lID.intValue()).getGroupID();
 		try {
-			groupNameField = getGroupBusiness(iwc).getGroupByGroupID(groupID).getName();
+			this.groupNameField = getGroupBusiness(iwc).getGroupByGroupID(groupID).getName();
 			Collection c = getGroupBusiness(iwc).getParentGroupsRecursive(getGroupBusiness(iwc).getGroupByGroupID(groupID));
 			if(c != null) {		
 				parentGroups = new ArrayList(c);
@@ -153,63 +153,63 @@ public class PrintableLedgerWindow extends Window{
 			e.printStackTrace();
 		}
 		if(parentGroups != null) {
-			divisionNameField = ledgerVariationsHandler.getParentGroupName(parentGroups);
-			clubNameField = ledgerVariationsHandler.getParentOfParentGroupName(parentGroups);
+			this.divisionNameField = ledgerVariationsHandler.getParentGroupName(parentGroups);
+			this.clubNameField = ledgerVariationsHandler.getParentOfParentGroupName(parentGroups);
 		}
-		if(divisionNameField ==  null) {
-			divisionNameField = iwrb.getLocalizedString("ledgerwindow.no_division_text","No division");
+		if(this.divisionNameField ==  null) {
+			this.divisionNameField = iwrb.getLocalizedString("ledgerwindow.no_division_text","No division");
 		}
-		if(clubNameField == null) {
-			clubNameField = iwrb.getLocalizedString("ledgerwindow.no_club_text","No club");
+		if(this.clubNameField == null) {
+			this.clubNameField = iwrb.getLocalizedString("ledgerwindow.no_club_text","No club");
 		}
 		
 		Timestamp fromD = getCalendarBusiness(iwc).getLedger(lID.intValue()).getDate();
 		IWTimestamp iwFromD = new IWTimestamp(fromD);
 		//fromDate is the start date of the ledger
-		fromDateField = iwFromD.getDateString("dd. MMMMMMMM yyyy", iwc.getCurrentLocale());
+		this.fromDateField = iwFromD.getDateString("dd. MMMMMMMM yyyy", iwc.getCurrentLocale());
 		
-		allowedMarksField = new Table();
+		this.allowedMarksField = new Table();
 		List marks = getCalendarBusiness(iwc).getAllMarks();
 		if(marks!= null) {
 			Iterator markIter = marks.iterator();	
 			while(markIter.hasNext()) {
 				AttendanceMark mark = (AttendanceMark) markIter.next();
-				allowedMarksField.add(mark.getMark(),4,1);
-				allowedMarksField.add(": "+mark.getMarkDescription(),4,1);
-				allowedMarksField.add("<br>",4,1);
+				this.allowedMarksField.add(mark.getMark(),4,1);
+				this.allowedMarksField.add(": "+mark.getMarkDescription(),4,1);
+				this.allowedMarksField.add("<br>",4,1);
 			}
 		}
 		Image print = iwb.getImage("printer2.gif");
 		print.setAlt(iwrb.getLocalizedString("ledger_window.print","Print"));
-		printButton = new PrintButton(print);
+		this.printButton = new PrintButton(print);
 		
 	}
 	private void lineUp(IWContext iwc) {
-		table = new Table();
+		this.table = new Table();
 		
 		Table headerTable = new Table();
 		headerTable.setCellspacing(0);
 		headerTable.setCellpadding(0);
 		headerTable.setWidth(300);
 		
-		headerTable.add(creatorText,1,1);
-		headerTable.add(creatorNameField,2,1);
-		headerTable.add(otherCoachesText,1,2);
-		headerTable.add(otherCoachesNameField,2,2);
-		headerTable.add(clubText,1,3);
-		headerTable.add(clubNameField,2,3);
-		headerTable.add(divisionText,1,4);
-		headerTable.add(divisionNameField,2,4);
-		headerTable.add(groupText,1,5);
-		headerTable.add(groupNameField,2,5);
-		headerTable.add(dateText,1,6);
-		headerTable.add(fromDateField,2,6);
+		headerTable.add(this.creatorText,1,1);
+		headerTable.add(this.creatorNameField,2,1);
+		headerTable.add(this.otherCoachesText,1,2);
+		headerTable.add(this.otherCoachesNameField,2,2);
+		headerTable.add(this.clubText,1,3);
+		headerTable.add(this.clubNameField,2,3);
+		headerTable.add(this.divisionText,1,4);
+		headerTable.add(this.divisionNameField,2,4);
+		headerTable.add(this.groupText,1,5);
+		headerTable.add(this.groupNameField,2,5);
+		headerTable.add(this.dateText,1,6);
+		headerTable.add(this.fromDateField,2,6);
 		
-		table.add(headerTable,1,1);
+		this.table.add(headerTable,1,1);
 
-		table.add(getAttendanceList(iwc),1,2);
+		this.table.add(getAttendanceList(iwc),1,2);
 		
-		table.add(printButton,1,3);
+		this.table.add(this.printButton,1,3);
 		
 	}
 	public Table getAttendanceList(IWContext iwc) {
@@ -265,7 +265,7 @@ public class PrintableLedgerWindow extends Window{
 		underTable.setCellpadding(0);
 		underTable.setCellspacing(1);
 		underTable.setWidth(800);
-		underTable.setStyleClass(grayBackground);
+		underTable.setStyleClass(this.grayBackground);
 		underTable.setColor(1,1,"#ffffff");
 		
 		int c = 2;
@@ -275,7 +275,7 @@ public class PrintableLedgerWindow extends Window{
 			topTable.setColor("#ffffff");
 			topTable.setCellpadding(1);
 			topTable.setCellspacing(0);
-			topTable.setStyleClass(borderAllWhite);
+			topTable.setStyleClass(this.borderAllWhite);
 			topTable.setWidth(Table.HUNDRED_PERCENT);
 			topTable.setHeight(Table.HUNDRED_PERCENT);
 			CalendarEntry entry = (CalendarEntry) eIter.next();
@@ -291,7 +291,7 @@ public class PrintableLedgerWindow extends Window{
 			nameTable.setColor("#ffffff");
 			nameTable.setCellpadding(1);
 			nameTable.setCellspacing(0);
-			nameTable.setStyleClass(borderAllWhite);
+			nameTable.setStyleClass(this.borderAllWhite);
 //			nameTable.setWidth(Table.HUNDRED_PERCENT);
 			nameTable.setHeight(Table.HUNDRED_PERCENT);
 			int column = 2;
@@ -307,7 +307,7 @@ public class PrintableLedgerWindow extends Window{
 				markTable.setColor("#ffffff");
 				markTable.setCellpadding(1);
 				markTable.setCellspacing(0);
-				markTable.setStyleClass(borderAllWhite);
+				markTable.setStyleClass(this.borderAllWhite);
 				markTable.setWidth(Table.HUNDRED_PERCENT);
 				markTable.setHeight(Table.HUNDRED_PERCENT);
 				markTable.setAlignment(1,1,Table.HORIZONTAL_ALIGN_CENTER);
@@ -346,7 +346,7 @@ public class PrintableLedgerWindow extends Window{
 		initializeTexts(iwc);
 		initializeFields(iwc);
 		lineUp(iwc);
-		add(table);
+		add(this.table);
 		
 	}
 	public String getBundleIdentifier() {
