@@ -38,10 +38,12 @@ public class NationalRegisterImportFileE36		extends	GenericImportFile implements
 		ArrayList values = new ArrayList();
 		for (int i = 0; i < 27; i++) {
 			String value = getValueAtIndexFromRecordString(i,recordString);
-			if (value != null)
+			if (value != null) {
 				values.add(value);
-			else
+			}
+			else {
 				values.add("");
+			}
 		}
 		
 		return values;

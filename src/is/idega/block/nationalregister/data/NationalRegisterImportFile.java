@@ -40,10 +40,12 @@ public class NationalRegisterImportFile extends GenericImportFile implements Imp
 		ArrayList values = new ArrayList();
 		for (int i = 0; i < 20; i++) {
 			String value = getValueAtIndexFromRecordString(i,recordString);
-			if (value != null)
+			if (value != null) {
 				values.add(value);
-			else
+			}
+			else {
 				values.add("");
+			}
 		}
 		
 		return values;

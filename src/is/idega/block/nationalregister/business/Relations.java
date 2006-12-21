@@ -28,7 +28,7 @@ public class Relations{
 	private FamilyLogic memFamLog = null;
 	
 	public Relations(FamilyLogic famLog) {
-		memFamLog = famLog;
+		this.memFamLog = famLog;
 	}
 	
 	public void setUser(User user) {
@@ -70,7 +70,7 @@ public class Relations{
 	}		
 
 	public User getSpouse() {
-		return spouse;
+		return this.spouse;
 	}
 	
 	public Collection getHasCustodians() {
@@ -94,31 +94,31 @@ public class Relations{
 	}
 	
 	public void dumpInfo(){
-		System.out.println("Relations for user "+user.getName()+" - "+user.getPersonalID());
-		if(null!=spouse){
-			System.out.println("spouse: "+spouse+" - "+spouse.getPersonalID());
+		System.out.println("Relations for user "+this.user.getName()+" - "+this.user.getPersonalID());
+		if(null!=this.spouse){
+			System.out.println("spouse: "+this.spouse+" - "+this.spouse.getPersonalID());
 		}
-		Iterator iter = child.iterator();
+		Iterator iter = this.child.iterator();
 		while(iter.hasNext()){
 			User user = (User)iter.next();
 			System.out.println("child: "+user.getName()+" - "+user.getPersonalID());
 		}
-		iter = parent.iterator();
+		iter = this.parent.iterator();
 		while(iter.hasNext()){
 			User user = (User)iter.next();
 			System.out.println("parent: "+user.getName()+" - "+user.getPersonalID());
 		}
-		iter = isCustodianFor.iterator();
+		iter = this.isCustodianFor.iterator();
 		while(iter.hasNext()){
 			User user = (User)iter.next();
 			System.out.println("is custodian for: "+user.getName()+" - "+user.getPersonalID());
 		}
-		iter = hasCustodian.iterator();
+		iter = this.hasCustodian.iterator();
 		while(iter.hasNext()){
 			User user = (User)iter.next();
 			System.out.println("has custodian: "+user.getName()+" - "+user.getPersonalID());
 		}
-		iter = sibling.iterator();
+		iter = this.sibling.iterator();
 		while(iter.hasNext()){
 			User user = (User)iter.next();
 			System.out.println("sibling: "+user.getName()+" - "+user.getPersonalID());
@@ -128,38 +128,38 @@ public class Relations{
 	public void setForUser(User user) throws IBOLookupException, RemoteException{
 		this.user = user;
 		try {
-			spouse = memFamLog.getSpouseFor(user);
+			this.spouse = this.memFamLog.getSpouseFor(user);
 		}
 		catch (NoSpouseFound e) {
-			spouse = null;
+			this.spouse = null;
 		}
 
 		try {
-			child = memFamLog.getChildrenFor(user);
+			this.child = this.memFamLog.getChildrenFor(user);
 		}
 		catch (NoChildrenFound e1) {
 		}
 
 		try {
-			parent = memFamLog.getParentsFor(user);
+			this.parent = this.memFamLog.getParentsFor(user);
 		}
 		catch (NoParentFound e) {
 		}
 		
 		try {
-			isCustodianFor = memFamLog.getChildrenInCustodyOf(user);
+			this.isCustodianFor = this.memFamLog.getChildrenInCustodyOf(user);
 		}
 		catch (NoChildrenFound e) {
 		}
 		
 		try {
-			hasCustodian = memFamLog.getCustodiansFor(user);
+			this.hasCustodian = this.memFamLog.getCustodiansFor(user);
 		}
 		catch (NoCustodianFound e) {
 		}
 
 		try {
-			sibling = memFamLog.getSiblingsFor(user);
+			this.sibling = this.memFamLog.getSiblingsFor(user);
 		}
 		catch (NoSiblingFound e) {
 		}
@@ -186,23 +186,23 @@ public class Relations{
 		
 		Iterator iter = b.child.iterator();
 		while (iter.hasNext()) {
-			c.child.remove((User) iter.next());
+			c.child.remove(iter.next());
 		}
 		iter = b.hasCustodian.iterator();
 		while (iter.hasNext()) {
-			c.hasCustodian.remove((User) iter.next());
+			c.hasCustodian.remove(iter.next());
 		}
 		iter = b.isCustodianFor.iterator();
 		while (iter.hasNext()) {
-			c.isCustodianFor.remove((User) iter.next());
+			c.isCustodianFor.remove(iter.next());
 		}
 		iter = b.parent.iterator();
 		while (iter.hasNext()) {
-			c.parent.remove((User) iter.next());
+			c.parent.remove(iter.next());
 		}
 		iter = b.sibling.iterator();
 		while (iter.hasNext()) {
-			c.sibling.remove((User) iter.next());
+			c.sibling.remove(iter.next());
 		}
 		
 		return c;

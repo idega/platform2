@@ -151,12 +151,15 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 			int iDay = Integer.parseInt(day);
 			int iMonth = Integer.parseInt(month);
 			int iYear = Integer.parseInt(year);
-			if (ssn.substring(9).equals("9"))
+			if (ssn.substring(9).equals("9")) {
 				iYear += 1900;
-			else if (ssn.substring(9).equals("0"))
+			}
+			else if (ssn.substring(9).equals("0")) {
 				iYear += 2000;
-			else if (ssn.substring(9).equals("8"))
+			}
+			else if (ssn.substring(9).equals("8")) {
 				iYear += 1800;
+			}
 			t.setHour(0);
 			t.setMinute(0);
 			t.setSecond(0);
@@ -503,8 +506,9 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 			cityNames = new HashMap();
 		}
 
-		if (postalCodeIdentifier == null || postalCodeIdentifier.equals("   "))
+		if (postalCodeIdentifier == null || postalCodeIdentifier.equals("   ")) {
 			return null;
+		}
 
 		if (cityNames.containsKey(postalCodeIdentifier)) {
 			return (String) cityNames.get(postalCodeIdentifier);

@@ -1,5 +1,5 @@
 /*
- * $Id: NationalRegisterImportFileDeceased.java,v 1.1.2.1 2006/11/21 23:35:25 idegaweb Exp $
+ * $Id: NationalRegisterImportFileDeceased.java,v 1.1.2.2 2006/12/21 13:26:11 idegaweb Exp $
  * Created on Nov 20, 2006
  *
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -24,10 +24,12 @@ public class NationalRegisterImportFileDeceased extends GenericImportFile implem
 		ArrayList values = new ArrayList();
 		for (int i = 0; i < 9; i++) {
 			String value = getValueAtIndexFromRecordString(i,recordString);
-			if (value != null)
+			if (value != null) {
 				values.add(value);
-			else
+			}
+			else {
 				values.add("");
+			}
 		}
 		
 		return values;
