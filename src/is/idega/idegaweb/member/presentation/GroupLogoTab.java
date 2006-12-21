@@ -67,32 +67,32 @@ public class GroupLogoTab extends UserGroupTab {
 	}
 
 	public void initializeFieldNames() {
-		imageFieldName = "grp_imag_userSystemImageId";
-		removeImageFieldName = "grp_imag_removeImageFieldName";
+		this.imageFieldName = "grp_imag_userSystemImageId";
+		this.removeImageFieldName = "grp_imag_removeImageFieldName";
 	}
 
 	public void initializeFields() {
-		imageField = new ImageInserter(imageFieldName + getGroupId());
-		imageField.setHasUseBox(false);
-		removeImageField = new CheckBox(removeImageFieldName);
-		removeImageField.setWidth("10");
-		removeImageField.setHeight("10");
+		this.imageField = new ImageInserter(this.imageFieldName + getGroupId());
+		this.imageField.setHasUseBox(false);
+		this.removeImageField = new CheckBox(this.removeImageFieldName);
+		this.removeImageField.setWidth("10");
+		this.removeImageField.setHeight("10");
 	}
 
 	public void initializeTexts() {
 		IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 
-		imageText = new Text(iwrb.getLocalizedString(imageFieldName, "Image"));
-		imageText.setBold();
+		this.imageText = new Text(iwrb.getLocalizedString(this.imageFieldName, "Image"));
+		this.imageText.setBold();
     
-		removeImageText = new Text(iwrb.getLocalizedString(removeImageFieldName, "do not show an image"));
-		removeImageText.setBold();
+		this.removeImageText = new Text(iwrb.getLocalizedString(this.removeImageFieldName, "do not show an image"));
+		this.removeImageText.setBold();
 	}
 
 	public void initializeFieldValues() {
-		systemImageId = -1;
-		fieldValues.put(removeImageFieldName, new Boolean(false));
+		this.systemImageId = -1;
+		this.fieldValues.put(this.removeImageFieldName, new Boolean(false));
 	}
 
 	public void lineUpFields() {
@@ -103,12 +103,12 @@ public class GroupLogoTab extends UserGroupTab {
 		imageTable.setCellpadding(5);
 		imageTable.setCellspacing(0);
 
-		imageTable.add(imageText, 1, 1);
+		imageTable.add(this.imageText, 1, 1);
 		imageTable.add(Text.getBreak(), 1, 1);
-		imageTable.add(imageField, 1, 1);
+		imageTable.add(this.imageField, 1, 1);
 
-		imageTable.add(removeImageField, 1, 2);
-		imageTable.add(removeImageText, 1, 2);
+		imageTable.add(this.removeImageField, 1, 2);
+		imageTable.add(this.removeImageText, 1, 2);
 
 		this.add(imageTable, 1, 1);
 	}
@@ -118,17 +118,17 @@ public class GroupLogoTab extends UserGroupTab {
 	}
 
 	public void updateFieldsDisplayStatus() {
-		imageField.setImageId(systemImageId);
-		removeImageField.setChecked(((Boolean)fieldValues.get(removeImageFieldName)).booleanValue());
+		this.imageField.setImageId(this.systemImageId);
+		this.removeImageField.setChecked(((Boolean)this.fieldValues.get(this.removeImageFieldName)).booleanValue());
 	}
 
 	public boolean collect(IWContext iwc) {
-		String imageID = iwc.getParameter(imageFieldName + getGroupId());
+		String imageID = iwc.getParameter(this.imageFieldName + getGroupId());
 		if (imageID != null) {
-			fieldValues.put(imageFieldName, imageID);
+			this.fieldValues.put(this.imageFieldName, imageID);
 		}
     
-		fieldValues.put(removeImageFieldName, new Boolean(iwc.isParameterSet(removeImageFieldName)));
+		this.fieldValues.put(this.removeImageFieldName, new Boolean(iwc.isParameterSet(this.removeImageFieldName)));
 
 		return true;
 	}
@@ -136,28 +136,28 @@ public class GroupLogoTab extends UserGroupTab {
 	public boolean store(IWContext iwc) {
 		try {
 			if (getGroupId() > -1) {
-				Group group = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(getGroupId())));
+				Group group = (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(getGroupId())));
 
-				String image = (String)fieldValues.get(imageFieldName);
+				String image = (String)this.fieldValues.get(this.imageFieldName);
 
 				if ((image != null) && (!image.equals("-1")) && (!image.equals(""))) {
 					int tempId;
-					if (((Boolean) fieldValues.get(removeImageFieldName)).booleanValue())  {
+					if (((Boolean) this.fieldValues.get(this.removeImageFieldName)).booleanValue())  {
 						group.setMetaData("group_image","-1");
 						// set variables to default values
-						systemImageId = -1;
-						fieldValues.put(imageFieldName, "-1");
+						this.systemImageId = -1;
+						this.fieldValues.put(this.imageFieldName, "-1");
 						group.store();
 						updateFieldsDisplayStatus();
 					}
-					else if ((tempId = Integer.parseInt(image)) != systemImageId) {
-						systemImageId = tempId;
-						group.setMetaData("group_image",Integer.toString(systemImageId));
+					else if ((tempId = Integer.parseInt(image)) != this.systemImageId) {
+						this.systemImageId = tempId;
+						group.setMetaData("group_image",Integer.toString(this.systemImageId));
 						group.store();
 						updateFieldsDisplayStatus();
 					}
 
-					iwc.removeSessionAttribute(imageFieldName + getGroupId());
+					iwc.removeSessionAttribute(this.imageFieldName + getGroupId());
 
 				}
 
@@ -172,27 +172,27 @@ public class GroupLogoTab extends UserGroupTab {
 
 	public void initFieldContents() {
 		try {
-			imageField.setImSessionImageName(imageFieldName + getGroupId());
+			this.imageField.setImSessionImageName(this.imageFieldName + getGroupId());
 
-			Group group = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(getGroupId())));
+			Group group = (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(getGroupId())));
 
 			try {
-				systemImageId = Integer.parseInt(group.getMetaData("group_image"));
+				this.systemImageId = Integer.parseInt(group.getMetaData("group_image"));
 			} catch (NumberFormatException n) {
-				systemImageId = -1;
+				this.systemImageId = -1;
 			}
 
-			if (systemImageId != -1) {
-				fieldValues.put(imageFieldName, Integer.toString(systemImageId));
+			if (this.systemImageId != -1) {
+				this.fieldValues.put(this.imageFieldName, Integer.toString(this.systemImageId));
 			}
       
-			fieldValues.put(removeImageFieldName, new Boolean(false));
+			this.fieldValues.put(this.removeImageFieldName, new Boolean(false));
     
 			updateFieldsDisplayStatus();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-			systemImageId = -1;
+			this.systemImageId = -1;
 			System.err.println(
 				"GroupLogoTab error initFieldContents, groupId : " + getGroupId());
 		}

@@ -67,13 +67,13 @@ public class NetbokhaldServiceSoapBindingSkeleton implements is.idega.idegaweb.m
     }
     public is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.server.NetbokhaldEntry[] getEntries(java.lang.String in0, java.util.Calendar in1) throws java.rmi.RemoteException
     {
-        is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.server.NetbokhaldEntry[] ret = impl.getEntries(in0, in1);
+        is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.server.NetbokhaldEntry[] ret = this.impl.getEntries(in0, in1);
         return ret;
     }
 
     public is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.server.NetbokhaldEntry[] getEntries(java.lang.String in0, java.lang.String in1) throws java.rmi.RemoteException
     {
-        is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.server.NetbokhaldEntry[] ret = impl.getEntries(in0, in1);
+        is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.server.NetbokhaldEntry[] ret = this.impl.getEntries(in0, in1);
         return ret;
     }
 

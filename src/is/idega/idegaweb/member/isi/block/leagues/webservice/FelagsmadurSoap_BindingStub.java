@@ -81,11 +81,11 @@ public class FelagsmadurSoap_BindingStub extends org.apache.axis.client.Stub imp
             java.lang.Class simplelistsf = org.apache.axis.encoding.ser.SimpleListSerializerFactory.class;
             java.lang.Class simplelistdf = org.apache.axis.encoding.ser.SimpleListDeserializerFactory.class;
             qName = new javax.xml.namespace.QName("http://tempuri.org/", "tVilla");
-            cachedSerQNames.add(qName);
+            this.cachedSerQNames.add(qName);
             cls = is.idega.idegaweb.member.isi.block.leagues.webservice.TVilla.class;
-            cachedSerClasses.add(cls);
-            cachedSerFactories.add(beansf);
-            cachedDeserFactories.add(beandf);
+            this.cachedSerClasses.add(cls);
+            this.cachedSerFactories.add(beansf);
+            this.cachedDeserFactories.add(beandf);
 
     }
 
@@ -124,23 +124,23 @@ public class FelagsmadurSoap_BindingStub extends org.apache.axis.client.Stub imp
                 if (firstCall()) {
                     // must set encoding style before registering serializers
                     _call.setEncodingStyle(null);
-                    for (int i = 0; i < cachedSerFactories.size(); ++i) {
-                        java.lang.Class cls = (java.lang.Class) cachedSerClasses.get(i);
+                    for (int i = 0; i < this.cachedSerFactories.size(); ++i) {
+                        java.lang.Class cls = (java.lang.Class) this.cachedSerClasses.get(i);
                         javax.xml.namespace.QName qName =
-                                (javax.xml.namespace.QName) cachedSerQNames.get(i);
-                        java.lang.Object x = cachedSerFactories.get(i);
+                                (javax.xml.namespace.QName) this.cachedSerQNames.get(i);
+                        java.lang.Object x = this.cachedSerFactories.get(i);
                         if (x instanceof Class) {
                             java.lang.Class sf = (java.lang.Class)
-                                 cachedSerFactories.get(i);
+                                 this.cachedSerFactories.get(i);
                             java.lang.Class df = (java.lang.Class)
-                                 cachedDeserFactories.get(i);
+                                 this.cachedDeserFactories.get(i);
                             _call.registerTypeMapping(cls, qName, sf, df, false);
                         }
                         else if (x instanceof javax.xml.rpc.encoding.SerializerFactory) {
                             org.apache.axis.encoding.SerializerFactory sf = (org.apache.axis.encoding.SerializerFactory)
-                                 cachedSerFactories.get(i);
+                                 this.cachedSerFactories.get(i);
                             org.apache.axis.encoding.DeserializerFactory df = (org.apache.axis.encoding.DeserializerFactory)
-                                 cachedDeserFactories.get(i);
+                                 this.cachedDeserFactories.get(i);
                             _call.registerTypeMapping(cls, qName, sf, df, false);
                         }
                     }

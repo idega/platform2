@@ -300,7 +300,7 @@ public class BatchBMPBean extends GenericEntity implements Batch {
 	public Collection ejbFindAllByContractNewestFirst(Collection contracts) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
-		sql.appendWhere(this.COLUMN_CC_CONTRACT);
+		sql.appendWhere(BatchBMPBean.COLUMN_CC_CONTRACT);
 		sql.appendInCollection(contracts);
 		sql.appendOrderByDescending(getIDColumnName());
 

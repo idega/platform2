@@ -66,11 +66,11 @@ public class UserHistoryTab extends UserTab {
 	}
 
 	public void initializeFields() {
-		memberofFrame = new IFrame("ic_user_history", UserHistoryList.class);
-		memberofFrame.setHeight(280);
-		memberofFrame.setWidth("100%");
-		memberofFrame.setStyleAttribute("border", "1px #bbbbbb solid;");
-		memberofFrame.setScrolling(IFrame.SCROLLING_YES);
+		this.memberofFrame = new IFrame("ic_user_history", UserHistoryList.class);
+		this.memberofFrame.setHeight(280);
+		this.memberofFrame.setWidth("100%");
+		this.memberofFrame.setStyleAttribute("border", "1px #bbbbbb solid;");
+		this.memberofFrame.setScrolling(IFrame.SCROLLING_YES);
 	}
 
 	public void actionPerformed(IWLinkEvent e) {
@@ -82,8 +82,8 @@ public class UserHistoryTab extends UserTab {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 
 //		memberof = this.getTextObject();
-		memberof = new Text(iwrb.getLocalizedString("usr_history","History"));
-		memberof.setBold();
+		this.memberof = new Text(iwrb.getLocalizedString("usr_history","History"));
+		this.memberof.setBold();
 	}
 
 	public boolean store(IWContext iwc) {
@@ -95,9 +95,9 @@ public class UserHistoryTab extends UserTab {
 		setCellpadding(5);
 		setCellspacing(0);
 
-		this.add(memberof, 1, 1);
+		this.add(this.memberof, 1, 1);
 		add(Text.getBreak(), 1, 1);
-		this.add(memberofFrame, 1, 1);
+		this.add(this.memberofFrame, 1, 1);
 	}
 
 	public boolean collect(IWContext iwc) {

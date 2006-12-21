@@ -17,10 +17,10 @@ import com.idega.presentation.ui.DropDownMenuInputHandler;
  * <p>
  * DropDownMenu so it users can have a range of JasperReportLayouts to select from.
  * </p>
- *  Last modified: $Date: 2006/06/30 17:42:18 $ by $Author: sigtryggur $
+ *  Last modified: $Date: 2006/12/21 12:11:19 $ by $Author: idegaweb $
  * 
  * @author <a href="mailto:sigtryggur@idega.com">sigtryggur</a>
- * @version $Revision: 1.1.2.2 $
+ * @version $Revision: 1.1.2.3 $
  */
 public class DynamicLayoutDropDownMenu extends DropDownMenuInputHandler {
 
@@ -126,16 +126,16 @@ public class DynamicLayoutDropDownMenu extends DropDownMenuInputHandler {
 	}
 
 	private ICFileHome getFileHome(){
-	    if (fileHome==null) {
+	    if (this.fileHome==null) {
 	    	try{
-	    		fileHome = (ICFileHome)IDOLookup.getHome(ICFile.class);
+	    		this.fileHome = (ICFileHome)IDOLookup.getHome(ICFile.class);
 	    	}
 		    catch (IDOLookupException lookupEx) {
 		    	logError("[DynamicLayoutDropDownMenu] Could not look up home of ICFile");
 		    	log(lookupEx);
 		    }
 	    }
-	    return fileHome;
+	    return this.fileHome;
 	  }
 
 	public String getBundleIdentifier() {

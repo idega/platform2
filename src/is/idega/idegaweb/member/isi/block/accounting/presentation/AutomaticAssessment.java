@@ -86,7 +86,7 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
 	}
 
 	private boolean executeAssessment(IWContext iwc) {
-		errorList = new ArrayList();
+		this.errorList = new ArrayList();
 		String name = iwc.getParameter(LABEL_NAME);
 		String group = iwc.getParameter(LABEL_GROUP);
 		String tariff = iwc.getParameter(LABEL_TARIFF_TYPE);
@@ -135,22 +135,22 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
 		}
 
 		if (name == null || "".equals(name)) {
-			errorList.add(ERROR_NO_NAME_ENTERED);
+			this.errorList.add(ERROR_NO_NAME_ENTERED);
 		}
 
 		if (group == null || "".equals(group)) {
-			errorList.add(ERROR_NO_GROUP_SELECTED);
+			this.errorList.add(ERROR_NO_GROUP_SELECTED);
 		}
 
 		if (tariff == null || "".equals(tariff)) {
-			errorList.add(ERROR_NO_TARIFFS_SELECTED);
+			this.errorList.add(ERROR_NO_TARIFFS_SELECTED);
 		}
 
 		if (paymentDateTimestamp == null) {
-			errorList.add(ERROR_NO_PAYMENT_DATE_SELECTED);
+			this.errorList.add(ERROR_NO_PAYMENT_DATE_SELECTED);
 		}
 
-		if (!errorList.isEmpty()) {
+		if (!this.errorList.isEmpty()) {
 			return false;
 		}
 
@@ -193,8 +193,8 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
 
 				int r = 1;
 				error.add(labelError, 1, r++);
-				if (errorList != null && !errorList.isEmpty()) {
-					Iterator it = errorList.iterator();
+				if (this.errorList != null && !this.errorList.isEmpty()) {
+					Iterator it = this.errorList.iterator();
 					while (it.hasNext()) {
 						String loc = (String) it.next();
 						Text errorText = new Text(iwrb.getLocalizedString(loc, ""));
@@ -332,20 +332,23 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
 				}
 				else {
 					Link nameLink = new Link(round.getName());
-					nameLink.setParameter(this.ASSESSMENT_ID, round.getPrimaryKey().toString());
+					nameLink.setParameter(AutomaticAssessment.ASSESSMENT_ID, round.getPrimaryKey().toString());
 					nameLink.setWindowToOpen(AssessmentListWindow.class);
 					t.add(nameLink, 2, row);
 				}
-				if (round.getDivision() != null)
+				if (round.getDivision() != null) {
 					t.add(round.getDivision().getName(), 3, row);
-				if (round.getGroup() != null)
+				}
+				if (round.getGroup() != null) {
 					t.add(round.getGroup().getName(), 4, row);
+				}
 				IWTimestamp startTime = new IWTimestamp(round.getStartTime());
 				t.add(startTime.getDateString("dd.MM.yyyy HH:mm:ss"), 5, row);
 				t.add(round.getExecutedBy().getName(), 6, row);
 				CheckBox children = (CheckBox) show.clone();
-				if (round.getIncludeChildren())
+				if (round.getIncludeChildren()) {
 					children.setChecked(true);
+				}
 				t.add(children, 7, row);
 				t.add(nf.format(round.getAmount()), 8, row);
 				if (round.getPeriodFrom() != null) {

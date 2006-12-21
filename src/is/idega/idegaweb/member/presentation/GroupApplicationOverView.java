@@ -51,17 +51,17 @@ public class GroupApplicationOverView extends Page implements IWBrowserView {
 
 
   public void setControlEventModel(IWPresentationEvent model){
-    _controlEvent = model;
+    this._controlEvent = model;
   }
 
   public void setControlTarget(String controlTarget){
-    _controlTarget = controlTarget;
+    this._controlTarget = controlTarget;
   }
 
 
   public Table getApplications(IWContext iwc, String status) throws Exception{
     this.empty();
-    iwrb = this.getResourceBundle(iwc);
+    this.iwrb = this.getResourceBundle(iwc);
     
     Table returnTable = new Table(1,1);
 	    returnTable.setCellpaddingAndCellspacing(0);
@@ -71,7 +71,7 @@ public class GroupApplicationOverView extends Page implements IWBrowserView {
 
     //the event model is not being used in this class when used as a plugin!
     //GroupApplicationOverViewPS ps = (GroupApplicationOverViewPS)this.getPresentationState(iwc);
-    Group selectedGroup = applicationGroup;
+    Group selectedGroup = this.applicationGroup;
     /*if( selectedGroup == null ){
     	 selectedGroup= ps.getSelectedGroup();
     }*/
@@ -119,27 +119,27 @@ public class GroupApplicationOverView extends Page implements IWBrowserView {
 	      
 	    //columns start
 	
-	    Text name = new Text("&nbsp;"+iwrb.getLocalizedString("name","Name"));
+	    Text name = new Text("&nbsp;"+this.iwrb.getLocalizedString("name","Name"));
 	 	  name.setFontFace(Text.FONT_FACE_VERDANA);
 	 	  name.setFontSize(Text.FONT_SIZE_7_HTML_1);
 	 	  userTable.add(name,1,1);
 	
-	 	  Text pin = new Text("&nbsp;"+iwrb.getLocalizedString("personal.id.number","Pin"));
+	 	  Text pin = new Text("&nbsp;"+this.iwrb.getLocalizedString("personal.id.number","Pin"));
 	 	  pin.setFontFace(Text.FONT_FACE_VERDANA);
 	 	  pin.setFontSize(Text.FONT_SIZE_7_HTML_1);
 	 	  userTable.add(pin,2,1);
 	
-	 	  Text email = new Text("&nbsp;"+iwrb.getLocalizedString("email","Email"));
+	 	  Text email = new Text("&nbsp;"+this.iwrb.getLocalizedString("email","Email"));
 	 	  email.setFontFace(Text.FONT_FACE_VERDANA);
 	 	  email.setFontSize(Text.FONT_SIZE_7_HTML_1);
 	 	  userTable.add(email,3,1);
 	 	  
-	 	  Text phone = new Text("&nbsp;"+iwrb.getLocalizedString("phone","Phone"));
+	 	  Text phone = new Text("&nbsp;"+this.iwrb.getLocalizedString("phone","Phone"));
 	 	  phone.setFontFace(Text.FONT_FACE_VERDANA);
 	 	  phone.setFontSize(Text.FONT_SIZE_7_HTML_1);
 	 	  userTable.add(phone,4,1);
 	
-	 	  Text groups = new Text("&nbsp;"+iwrb.getLocalizedString("groups","Groups"));
+	 	  Text groups = new Text("&nbsp;"+this.iwrb.getLocalizedString("groups","Groups"));
 	 	  groups.setFontFace(Text.FONT_FACE_VERDANA);
 	 	  groups.setFontSize(Text.FONT_SIZE_7_HTML_1);
 	 	  userTable.add(groups,5,1);

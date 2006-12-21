@@ -50,10 +50,12 @@ public class UserHistoryList extends Page {
 			Iterator iter = null;
 			if (history != null || status != null) {
 				int size = 0;
-				if (history != null)
+				if (history != null) {
 					size += history.size();
-				if (status != null)
+				}
+				if (status != null) {
 					size += status.size();
+				}
 				//table = new Table(4, size + 1);
 				//table.setBorder(1);
 				//table.setWidth(Table.HUNDRED_PERCENT);
@@ -196,35 +198,35 @@ public class UserHistoryList extends Page {
          * @see com.idega.presentation.ui.util.EventEntry#getDate()
          */
         public Date getDate() {
-           return date;
+           return this.date;
         }
 
         /* (non-Javadoc)
          * @see com.idega.presentation.ui.util.EventEntry#getType()
          */
         public String getType() {
-           return type;
+           return this.type;
         }
 
         /* (non-Javadoc)
          * @see com.idega.presentation.ui.util.EventEntry#getSource()
          */
         public String getSource() {
-            return source;
+            return this.source;
         }
 
         /* (non-Javadoc)
          * @see com.idega.presentation.ui.util.EventEntry#getUser()
          */
         public String getUser() {
-            return user;
+            return this.user;
         }
 
         /* (non-Javadoc)
          * @see com.idega.presentation.ui.util.EventEntry#getEvent()
          */
         public String getEvent() {
-            return event;
+            return this.event;
         }
 		
 		public boolean equals(Object obj){

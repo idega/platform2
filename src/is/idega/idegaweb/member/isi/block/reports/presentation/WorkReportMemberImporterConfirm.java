@@ -32,10 +32,10 @@ public class WorkReportMemberImporterConfirm extends WorkReportMemberImporter {
 			setAsCurrentStepByStepLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
 		
 			if (iwc.isParameterSet("MEMBER_IMPORT_CONFIRM")) {
-				add(iwrb.getLocalizedString("WorkReportMemberImporter.import_successful","Importing members completed successfully."));
+				add(this.iwrb.getLocalizedString("WorkReportMemberImporter.import_successful","Importing members completed successfully."));
 			}
 			else if  (iwc.isParameterSet("MEMBER_IMPORT_REJECT")) {
-				add(iwrb.getLocalizedString("WorkReportMemberImporter.import_failed","Importing members failed!"));
+				add(this.iwrb.getLocalizedString("WorkReportMemberImporter.import_failed","Importing members failed!"));
 			}
 /*			try {
 				String mainBoardName = getBundle(iwc).getProperty(WorkReportConstants.WR_MAIN_BOARD_NAME);

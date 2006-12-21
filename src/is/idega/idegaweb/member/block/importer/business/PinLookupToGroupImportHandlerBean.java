@@ -48,37 +48,38 @@ public class PinLookupToGroupImportHandlerBean extends IBOSessionBean implements
 	public PinLookupToGroupImportHandlerBean() {
 	}
 	public boolean handleRecords() throws RemoteException {
-		transaction = this.getSessionContext().getUserTransaction();
+		this.transaction = this.getSessionContext().getUserTransaction();
 		Timer clock = new Timer();
 		clock.start();
 		try {
 			//initialize business beans and data homes
-			userBiz = (UserBusiness) this.getServiceInstance(UserBusiness.class);
-			statusHome = (StatusHome) this.getIDOHome(Status.class);
-			userStatusHome = (UserStatusHome) this.getIDOHome(UserStatus.class);
+			this.userBiz = (UserBusiness) this.getServiceInstance(UserBusiness.class);
+			this.statusHome = (StatusHome) this.getIDOHome(Status.class);
+			this.userStatusHome = (UserStatusHome) this.getIDOHome(UserStatus.class);
 			//addressBiz = (AddressBusiness) this.getServiceInstance(AddressBusiness.class);
-			failedRecords = new ArrayList();
+			this.failedRecords = new ArrayList();
 			//if the transaction failes all the users and their relations are removed
-			transaction.begin();
+			this.transaction.begin();
 			//iterate through the records and process them
 			String item;
 			int count = 0;
-			while (!(item = (String) file.getNextRecord()).equals("")) {
+			while (!(item = (String) this.file.getNextRecord()).equals("")) {
 				count++;
-				if (!processRecord(item))
-					failedRecords.add(item);
+				if (!processRecord(item)) {
+					this.failedRecords.add(item);
+				}
 			}
 			clock.stop();
 			System.out.println("Time to handleRecords: " + clock.getTime() + " ms  OR " + ((int) (clock.getTime() / 1000)) + " s.");
 			// System.gc();
 			//success commit changes
-			transaction.commit();
+			this.transaction.commit();
 			return true;
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
 			try {
-				transaction.rollback();
+				this.transaction.rollback();
 			}
 			catch (SystemException e) {
 				e.printStackTrace();
@@ -98,7 +99,7 @@ public class PinLookupToGroupImportHandlerBean extends IBOSessionBean implements
 	    	return false;
 	    }
 
-		userProperties = file.getValuesFromRecordString(record);
+		this.userProperties = this.file.getValuesFromRecordString(record);
 		User user = null;
 		//variables
 		String statusId = null;
@@ -106,7 +107,7 @@ public class PinLookupToGroupImportHandlerBean extends IBOSessionBean implements
 		String PIN = null;
 		
 		try{
-			PIN = (String) userProperties.get(PIN_COLUMN);
+			PIN = (String) this.userProperties.get(PIN_COLUMN);
 		}
 		catch (IndexOutOfBoundsException e4) {
 			return false;
@@ -124,15 +125,15 @@ public class PinLookupToGroupImportHandlerBean extends IBOSessionBean implements
 //		}
 		
 //		try {
-		if(userProperties.size() > STATUS_COLUMN) {
-			statusId = (String) userProperties.get(STATUS_COLUMN);
+		if(this.userProperties.size() > STATUS_COLUMN) {
+			statusId = (String) this.userProperties.get(STATUS_COLUMN);
 		}
 //		catch (IndexOutOfBoundsException e4) {
 //			e4.printStackTrace();
 //		}
 
 		try {
-			user = userBiz.getUser(PIN);
+			user = this.userBiz.getUser(PIN);
 		}
 		catch (Exception e) {
 			System.out.println(e.getMessage()+", failed personalID was = "+PIN);
@@ -141,12 +142,12 @@ public class PinLookupToGroupImportHandlerBean extends IBOSessionBean implements
 		}
 		
 		
-		if (!IWMemberConstants.GROUP_TYPE_CLUB.equals(rootGroup.getGroupType())) {
-			rootGroup.addGroup(user);
+		if (!IWMemberConstants.GROUP_TYPE_CLUB.equals(this.rootGroup.getGroupType())) {
+			this.rootGroup.addGroup(user);
 		}
 		else { //if a club then 
 			String[] tempType = { IWMemberConstants.GROUP_TYPE_TEMPORARY };
-			Collection groups = rootGroup.getChildGroups(tempType, true);
+			Collection groups = this.rootGroup.getChildGroups(tempType, true);
 			if (groups != null && !groups.isEmpty()) {
 				((Group) groups.iterator().next()).addGroup(user);
 			}
@@ -160,9 +161,9 @@ public class PinLookupToGroupImportHandlerBean extends IBOSessionBean implements
 		if (statusId != null) {
 			int statusNumber = Integer.parseInt(statusId);
 			try {
-				Status status = statusHome.findByPrimaryKey(new Integer(statusNumber));
+				Status status = this.statusHome.findByPrimaryKey(new Integer(statusNumber));
 				try {
-					Collection statuses = userStatusHome.findAllByUserIDAndStatusID(((Integer) user.getPrimaryKey()), ((Integer) status.getPrimaryKey()));
+					Collection statuses = this.userStatusHome.findAllByUserIDAndStatusID(((Integer) user.getPrimaryKey()), ((Integer) status.getPrimaryKey()));
 					Iterator iter = statuses.iterator();
 					while (iter.hasNext()) {
 						UserStatus stat = (UserStatus) iter.next();
@@ -170,7 +171,7 @@ public class PinLookupToGroupImportHandlerBean extends IBOSessionBean implements
 							//no valid userstatus (by date)
 							UserStatus userStatus;
 							try {
-								userStatus = userStatusHome.create();
+								userStatus = this.userStatusHome.create();
 								userStatus.setUser(user);
 								userStatus.setStatus(status);
 								userStatus.setDateFrom(IWTimestamp.getTimestampRightNow());
@@ -187,7 +188,7 @@ public class PinLookupToGroupImportHandlerBean extends IBOSessionBean implements
 					//no userstatus found add it
 					UserStatus userStatus;
 					try {
-						userStatus = userStatusHome.create();
+						userStatus = this.userStatusHome.create();
 						userStatus.setUser(user);
 						userStatus.setStatus(status);
 						userStatus.setDateFrom(IWTimestamp.getTimestampRightNow());
@@ -215,13 +216,13 @@ public class PinLookupToGroupImportHandlerBean extends IBOSessionBean implements
 	 * @see com.idega.block.importer.business.ImportFileHandler#setRootGroup(Group)
 	 */
 	public void setRootGroup(Group group) {
-		rootGroup = group;
+		this.rootGroup = group;
 	}
 	/**
 	* @see com.idega.block.importer.business.ImportFileHandler#getFailedRecords()
 	*/
 	public List getFailedRecords() {
-		return failedRecords;
+		return this.failedRecords;
 	}
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#beforeUserRemove(com.idega.user.data.User)

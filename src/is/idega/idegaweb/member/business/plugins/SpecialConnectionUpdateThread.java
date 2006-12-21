@@ -1,5 +1,5 @@
 /*
- * $Id: SpecialConnectionUpdateThread.java,v 1.5.4.1 2005/12/13 13:46:32 palli Exp $
+ * $Id: SpecialConnectionUpdateThread.java,v 1.5.4.2 2006/12/21 12:11:20 idegaweb Exp $
  * Created on Jan 4, 2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -32,10 +32,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- * Last modified: $Date: 2005/12/13 13:46:32 $ by $Author: palli $
+ * Last modified: $Date: 2006/12/21 12:11:20 $ by $Author: idegaweb $
  * 
  * @author <a href="mailto:palli@idega.com">palli </a>
- * @version $Revision: 1.5.4.1 $
+ * @version $Revision: 1.5.4.2 $
  */
 public class SpecialConnectionUpdateThread extends Thread {
 
@@ -62,11 +62,11 @@ public class SpecialConnectionUpdateThread extends Thread {
 				+ IWTimestamp.getTimestampRightNow());
 		Group league = null;
 		Group template = null;
-		if (special.getGroupType().equals(IWMemberConstants.GROUP_TYPE_LEAGUE)) {
-			league = special;
+		if (this.special.getGroupType().equals(IWMemberConstants.GROUP_TYPE_LEAGUE)) {
+			league = this.special;
 			Group child = null;
 			boolean foundIt = false;
-			List children = special.getChildGroups();
+			List children = this.special.getChildGroups();
 			Iterator it = children.iterator();
 			while (it.hasNext()) {
 				child = (Group) it.next();
@@ -79,9 +79,9 @@ public class SpecialConnectionUpdateThread extends Thread {
 			if (foundIt && child != null) {
 				template = child;
 			}
-		} else if (special.getGroupType().equals(
+		} else if (this.special.getGroupType().equals(
 				IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_TEMPLATE)) {
-			template = special;
+			template = this.special;
 			league = findLeagueForTemplate(template);
 		}
 
@@ -457,7 +457,7 @@ public class SpecialConnectionUpdateThread extends Thread {
 	private GroupBusiness getGroupBusiness() {
 		GroupBusiness business = null;
 		try {
-			business = (GroupBusiness) IBOLookup.getServiceInstance(iwac,
+			business = (GroupBusiness) IBOLookup.getServiceInstance(this.iwac,
 					GroupBusiness.class);
 		} catch (IBOLookupException e) {
 			e.printStackTrace();

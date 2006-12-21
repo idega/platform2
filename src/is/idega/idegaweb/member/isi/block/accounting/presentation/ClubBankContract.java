@@ -1,5 +1,5 @@
 /*
- * $Id: ClubBankContract.java,v 1.3.2.2 2006/04/21 11:22:58 palli Exp $ Created on
+ * $Id: ClubBankContract.java,v 1.3.2.3 2006/12/21 12:11:13 idegaweb Exp $ Created on
  * Feb 17, 2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -42,10 +42,10 @@ import com.idega.user.data.Group;
 
 /**
  * 
- * Last modified: $Date: 2006/04/21 11:22:58 $ by $Author: palli $
+ * Last modified: $Date: 2006/12/21 12:11:13 $ by $Author: idegaweb $
  * 
  * @author <a href="mailto:birna@idega.com">birna</a>
- * @version $Revision: 1.3.2.2 $
+ * @version $Revision: 1.3.2.3 $
  */
 public class ClubBankContract extends CashierSubWindowTemplate {
 
@@ -130,8 +130,8 @@ public class ClubBankContract extends CashierSubWindowTemplate {
 
 				int r = 1;
 				error.add(labelError, 1, r++);
-				if (errorList != null && !errorList.isEmpty()) {
-					Iterator it = errorList.iterator();
+				if (this.errorList != null && !this.errorList.isEmpty()) {
+					Iterator it = this.errorList.iterator();
 					while (it.hasNext()) {
 						String loc = (String) it.next();
 						Text errorText = new Text(iwrb.getLocalizedString(loc,
@@ -382,7 +382,7 @@ public class ClubBankContract extends CashierSubWindowTemplate {
 	}
 
 	private boolean saveContract(IWContext iwc) {
-		errorList = new ArrayList();
+		this.errorList = new ArrayList();
 
 		String div = iwc.getParameter(LABEL_DIVISION);
 		String group = iwc.getParameter(LABEL_GROUP);
@@ -396,51 +396,51 @@ public class ClubBankContract extends CashierSubWindowTemplate {
 		System.out.println("[ClubBankContract] password = " + password);
 		
 		if (div == null || "".equals(div)) {
-			errorList.add(ERROR_NO_DIVISION_SELECTED);
+			this.errorList.add(ERROR_NO_DIVISION_SELECTED);
 		}
 		if (group == null || "".equals(group)) {
-			errorList.add(ERROR_NO_GROUP_SELECTED);
+			this.errorList.add(ERROR_NO_GROUP_SELECTED);
 		}
 		if (branch == null || "".equals(branch)) {
-			errorList.add(ERROR_NO_BANK_BRANCH_ENTERED);
+			this.errorList.add(ERROR_NO_BANK_BRANCH_ENTERED);
 		}
 		if (accountId == null || "".equals(accountId)) {
-			errorList.add(ERROR_NO_ACCOUNT_ID_ENTERED);
+			this.errorList.add(ERROR_NO_ACCOUNT_ID_ENTERED);
 		}
 		if (ssn == null || "".equals(ssn)) {
-			errorList.add(ERROR_NO_CLAIMANTS_SSN_ENTERED);
+			this.errorList.add(ERROR_NO_CLAIMANTS_SSN_ENTERED);
 		}
 		if (name == null || "".equals(name)) {
-			errorList.add(ERROR_NO_CLAIMANTS_NAME_ENTERED);
+			this.errorList.add(ERROR_NO_CLAIMANTS_NAME_ENTERED);
 		}
 		if (username == null || "".equals(username)) {
-			errorList.add(ERROR_NO_USERNAME_ENTERED);
+			this.errorList.add(ERROR_NO_USERNAME_ENTERED);
 		}
 		if (password == null || "".equals(password)) {
-			errorList.add(ERROR_NO_PSW_ENTERED);
+			this.errorList.add(ERROR_NO_PSW_ENTERED);
 		}
 
 		if (accountId != null && accountId.length() != 3) {
-			errorList.add(ERROR_ACCOUNT_ID_NOT_VALID);
+			this.errorList.add(ERROR_ACCOUNT_ID_NOT_VALID);
 		}
 		if (ssn != null && ssn.length() != 10 && !validateAsNumber(ssn)) {
-			errorList.add(ERROR_CLAIMANTS_SSN_NOT_VALID);
+			this.errorList.add(ERROR_CLAIMANTS_SSN_NOT_VALID);
 		}
 		if (name != null
 				&& !validateAsNonEmptySpaceAndNonIllegalCharacters(name)) {
-			errorList.add(ERROR_CLAIMANTS_NAME_NOT_VALID);
+			this.errorList.add(ERROR_CLAIMANTS_NAME_NOT_VALID);
 		}
 		if (username != null
 				&& !validateAsNonEmptySpaceAndNonIllegalCharacters(username)) {
-			errorList.add(ERROR_USERNAME_NOT_VALID);
+			this.errorList.add(ERROR_USERNAME_NOT_VALID);
 		}
 		if (password != null
 				&& !validateAsNonEmptySpaceAndNonIllegalCharacters(password)) {
-			errorList.add(ERROR_PSW_NOT_VALID);
+			this.errorList.add(ERROR_PSW_NOT_VALID);
 		}
 
 		if (branch != null) {
-			errorList.add(ERROR_BB_NR_NOT_VALID);
+			this.errorList.add(ERROR_BB_NR_NOT_VALID);
 		}
 
 		Integer branchId = null;

@@ -59,7 +59,7 @@ public class ClubSelector extends Block {
 	 * @return
 	 */
 	public List getParametersToMaintain() {
-		return paramsToMaintain;
+		return this.paramsToMaintain;
 	}
 
 	/**
@@ -70,9 +70,11 @@ public class ClubSelector extends Block {
 	}
 	
 	public void addToParametersToMaintainList(String param){
-		if(paramsToMaintain==null) paramsToMaintain = new ArrayList();
+		if(this.paramsToMaintain==null) {
+			this.paramsToMaintain = new ArrayList();
+		}
 		
-		paramsToMaintain.add(param);
+		this.paramsToMaintain.add(param);
 		
 	}
 
@@ -90,7 +92,7 @@ public class ClubSelector extends Block {
 	 * @return The group id of the selected club.
 	 */
 	public int getClubId() {
-		return clubId;
+		return this.clubId;
 	}
 
 	/**
@@ -104,7 +106,7 @@ public class ClubSelector extends Block {
 	 * @return The group id of the selected regional union.
 	 */
 	public int getRegionalUnionId() {
-		return regionalUnionId;
+		return this.regionalUnionId;
 	}
 
 	/**
@@ -118,8 +120,8 @@ public class ClubSelector extends Block {
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
 	 */
 	public void main(IWContext iwc) throws Exception {
-		reportBiz = getWorkReportBusiness(iwc);
-		iwrb = getResourceBundle(iwc);
+		this.reportBiz = getWorkReportBusiness(iwc);
+		this.iwrb = getResourceBundle(iwc);
 		
 		//add breadcrumbs
 		addStepsTable(iwc);
@@ -142,28 +144,28 @@ public class ClubSelector extends Block {
   
 	
 	protected void addStepsTable(IWContext iwc){
-		if(steps!=null && !steps.isEmpty()){
-			stepTable = new Table();
-			stepTable.setWidth(Table.HUNDRED_PERCENT);
-			stepTable.setColor("#dfdfdf");//setHorizontalZebraColored("#dfdfdf","#efefef");   
-			stepTable.setCellspacing(0);
+		if(this.steps!=null && !this.steps.isEmpty()){
+			this.stepTable = new Table();
+			this.stepTable.setWidth(Table.HUNDRED_PERCENT);
+			this.stepTable.setColor("#dfdfdf");//setHorizontalZebraColored("#dfdfdf","#efefef");   
+			this.stepTable.setCellspacing(0);
 			
-			Iterator iter = steps.iterator();
+			Iterator iter = this.steps.iterator();
 			int column = 1;
 			
 			while (iter.hasNext()) {
 				String key = (String) iter.next();
-				Text text = new Text(column+". "+iwrb.getLocalizedString(key,key));
+				Text text = new Text(column+". "+this.iwrb.getLocalizedString(key,key));
 				
-				localizedStepKeyOrder.put(key,new Integer(column));//for later lookup
+				this.localizedStepKeyOrder.put(key,new Integer(column));//for later lookup
 				
-				localizedStepTexts.put(key,text);
-				stepTable.add(text,column,1);		
-				stepTable.setWidth(column,200);
+				this.localizedStepTexts.put(key,text);
+				this.stepTable.add(text,column,1);		
+				this.stepTable.setWidth(column,200);
 				column++;
 			}
 			
-			add(stepTable);
+			add(this.stepTable);
 		}
 		
 		
@@ -182,7 +184,7 @@ public class ClubSelector extends Block {
 		
 		addContentToTable(table, iwc);
 		
-		SubmitButton submit = new SubmitButton(iwrb.getLocalizedString("clubselector.continue","continue"));
+		SubmitButton submit = new SubmitButton(this.iwrb.getLocalizedString("clubselector.continue","continue"));
 		submit.setAsImageButton(true);
 		
 		table.add(submit,1,4);
@@ -193,27 +195,27 @@ public class ClubSelector extends Block {
 	}
 
 	protected WorkReportBusiness getWorkReportBusiness(IWApplicationContext iwc) {
-		if (reportBiz == null) {
+		if (this.reportBiz == null) {
 			try {
-				reportBiz = (WorkReportBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, WorkReportBusiness.class);
+				this.reportBiz = (WorkReportBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, WorkReportBusiness.class);
 			}
 			catch (java.rmi.RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());
 			}
 		}
-		return reportBiz;
+		return this.reportBiz;
 	}
 	
 	protected WorkReportImportBusiness getWorkReportImportBusiness(IWApplicationContext iwc) {
-		if (reportImportBiz == null) {
+		if (this.reportImportBiz == null) {
 			try {
-				reportImportBiz = (WorkReportImportBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, WorkReportImportBusiness.class);
+				this.reportImportBiz = (WorkReportImportBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, WorkReportImportBusiness.class);
 			}
 			catch (java.rmi.RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());
 			}
 		}
-		return reportImportBiz;
+		return this.reportImportBiz;
 	}
 		
 	public String getBundleIdentifier(){
@@ -221,33 +223,33 @@ public class ClubSelector extends Block {
 	}
 	
 	protected void setStepNameLocalizableKey(String stepInWizardNameLocalizedKey){
-		if(steps==null){
-			steps = new Vector();//to keep the order
+		if(this.steps==null){
+			this.steps = new Vector();//to keep the order
 		}
 
 		
-		steps.add(stepCounter++,stepInWizardNameLocalizedKey);
+		this.steps.add(this.stepCounter++,stepInWizardNameLocalizedKey);
 	}
 	
 	protected void addToStepsExtraInfo(String stepLocalizableKey, PresentationObject obj){
-		Integer column = (Integer)localizedStepKeyOrder.get(stepLocalizableKey);
-		stepTable.add(obj,column.intValue(),2);
-		stepTable.setColor(column.intValue(),2,"#efefef");
-		stepTable.setColor(column.intValue()+1,2,"#efefef");
-		stepTable.setColor(column.intValue()+2,2,"#efefef");
-		stepTable.setColor(column.intValue()+3,2,"#efefef");
+		Integer column = (Integer)this.localizedStepKeyOrder.get(stepLocalizableKey);
+		this.stepTable.add(obj,column.intValue(),2);
+		this.stepTable.setColor(column.intValue(),2,"#efefef");
+		this.stepTable.setColor(column.intValue()+1,2,"#efefef");
+		this.stepTable.setColor(column.intValue()+2,2,"#efefef");
+		this.stepTable.setColor(column.intValue()+3,2,"#efefef");
 	}
 	
 	protected List getSteps(){
-		return steps;
+		return this.steps;
 	}
 	
 
 	protected void setAsCurrentStepByStepLocalizableKey(String key){
-		Iterator iter = localizedStepTexts.keySet().iterator();
+		Iterator iter = this.localizedStepTexts.keySet().iterator();
 		while (iter.hasNext()) {
 			String localizedKey = (String) iter.next();
-			Text text = (Text) localizedStepTexts.get(localizedKey);
+			Text text = (Text) this.localizedStepTexts.get(localizedKey);
 			if(localizedKey.equals(key)){
 				text.setBold();
 			}
@@ -289,36 +291,38 @@ public class ClubSelector extends Block {
 		String paramClubId = getParameterFromSessionOrRequest(iwc,WorkReportConstants.WR_SESSION_PARAM_CLUB_ID);
 		
 		if( paramClubId!=null || getClubId()!=-1 ){
-			if( clubId == -1 ) clubId = Integer.parseInt(paramClubId);
+			if( this.clubId == -1 ) {
+				this.clubId = Integer.parseInt(paramClubId);
+			}
 			iwc.setSessionAttribute(WorkReportConstants.WR_SESSION_PARAM_CLUB_ID,paramClubId);
 			
 			if( paramRegionalUnionId != null && !paramRegionalUnionId.equals("") ){
-				regionalUnionId = Integer.parseInt(paramRegionalUnionId);
+				this.regionalUnionId = Integer.parseInt(paramRegionalUnionId);
 				iwc.setSessionAttribute(WorkReportConstants.WR_SESSION_PARAM_REGIONAL_UNION_ID,paramRegionalUnionId);
 			}
 			
-			if(regionalUnionId!=-1 && clubId!=regionalUnionId){
-				Text regionalUnionText = new Text(this.getWorkReportBusiness(iwc).getGroupBusiness().getGroupByGroupID(regionalUnionId).getName(),true,true,false);
+			if(this.regionalUnionId!=-1 && this.clubId!=this.regionalUnionId){
+				Text regionalUnionText = new Text(this.getWorkReportBusiness(iwc).getGroupBusiness().getGroupByGroupID(this.regionalUnionId).getName(),true,true,false);
 				addToStepsExtraInfo(STEP_NAME_LOCALIZATION_KEY,regionalUnionText);
 				//add(" / ");
 			}
 
-			if(clubId!=-1 && regionalUnionId!=-1 && clubId!=regionalUnionId){
+			if(this.clubId!=-1 && this.regionalUnionId!=-1 && this.clubId!=this.regionalUnionId){
 				addToStepsExtraInfo(STEP_NAME_LOCALIZATION_KEY,new Text(" / "));
 			}
 
-			if(clubId!=-1 && clubId!=regionalUnionId){
-				Text clubText = new Text(this.getWorkReportBusiness(iwc).getGroupBusiness().getGroupByGroupID(clubId).getName(),true,true,false);
+			if(this.clubId!=-1 && this.clubId!=this.regionalUnionId){
+				Text clubText = new Text(this.getWorkReportBusiness(iwc).getGroupBusiness().getGroupByGroupID(this.clubId).getName(),true,true,false);
 				addToStepsExtraInfo(STEP_NAME_LOCALIZATION_KEY,clubText);
 			}
 			parametersInitialized = true;
 		}
 		else{
 			if(paramRegionalUnionId!=null){
-				regionalUnionId = Integer.parseInt(paramRegionalUnionId);
+				this.regionalUnionId = Integer.parseInt(paramRegionalUnionId);
 				iwc.setSessionAttribute(WorkReportConstants.WR_SESSION_PARAM_REGIONAL_UNION_ID,paramRegionalUnionId);
-				if(regionalUnionId!=-1 && clubId!=regionalUnionId){
-					Text regionalUnionText = new Text(this.getWorkReportBusiness(iwc).getGroupBusiness().getGroupByGroupID(regionalUnionId).getName(),true,true,false);
+				if(this.regionalUnionId!=-1 && this.clubId!=this.regionalUnionId){
+					Text regionalUnionText = new Text(this.getWorkReportBusiness(iwc).getGroupBusiness().getGroupByGroupID(this.regionalUnionId).getName(),true,true,false);
 					addToStepsExtraInfo(STEP_NAME_LOCALIZATION_KEY,regionalUnionText);
 				}
 				
@@ -338,26 +342,26 @@ public class ClubSelector extends Block {
 		if( getRegionalUnionId() !=-1 ){
 			try {
 				regionalUnions = new ArrayList();
-				regionalUnions.add(reportBiz.getGroupBusiness().getGroupByGroupID(getRegionalUnionId()));
+				regionalUnions.add(this.reportBiz.getGroupBusiness().getGroupByGroupID(getRegionalUnionId()));
 				regMenu = new DropdownMenu(regionalUnions,WorkReportConstants.WR_SESSION_PARAM_REGIONAL_UNION_ID);
 				//regMenu.setDisabled(true);
-				clubs = reportBiz.getClubGroupsForRegionUnionGroup(reportBiz.getGroupBusiness().getGroupByGroupID(getRegionalUnionId()));
+				clubs = this.reportBiz.getClubGroupsForRegionUnionGroup(this.reportBiz.getGroupBusiness().getGroupByGroupID(getRegionalUnionId()));
 				clubMenu = new DropdownMenu(clubs,WorkReportConstants.WR_SESSION_PARAM_CLUB_ID);
 			}
 			catch (FinderException e) {
 				e.printStackTrace();
 			}
 		}else{
-			regionalUnions = reportBiz.getAllRegionalUnionGroups();
+			regionalUnions = this.reportBiz.getAllRegionalUnionGroups();
 			regMenu = new DropdownMenu(regionalUnions,WorkReportConstants.WR_SESSION_PARAM_REGIONAL_UNION_ID);
 		}
 		
-		table.add(iwrb.getLocalizedString("clubselector.select_regional_union_and_club","Select the desired group."),1,1);
-		table.add(iwrb.getLocalizedString("clubselector.regional_union","Regional union"),1,2);
+		table.add(this.iwrb.getLocalizedString("clubselector.select_regional_union_and_club","Select the desired group."),1,1);
+		table.add(this.iwrb.getLocalizedString("clubselector.regional_union","Regional union"),1,2);
 		table.add(regMenu,2,2);		
 
 		if( clubMenu!=null ){
-			table.add(iwrb.getLocalizedString("clubselector.club","Club"),1,3);
+			table.add(this.iwrb.getLocalizedString("clubselector.club","Club"),1,3);
 			table.add(clubMenu,2,3);
 		}
 	}

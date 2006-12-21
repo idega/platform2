@@ -85,8 +85,9 @@ public class ReportGeneratorGenderDropDownMenu extends SelectionBox implements I
 			}
 			return displayName;
 		}
-		else
+		else {
 			return iwrb.getLocalizedString("GenderDropdownmenu.both", "Both");
+		}
 	}
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()

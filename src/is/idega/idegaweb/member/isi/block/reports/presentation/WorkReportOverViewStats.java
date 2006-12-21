@@ -23,7 +23,7 @@ public class WorkReportOverViewStats extends Block {
 	private int year = -1;
 	
 	public String getBundleIdentifier(){
-		return this.IW_BUNDLE_IDENTIFIER;
+		return WorkReportOverViewStats.IW_BUNDLE_IDENTIFIER;
 	}
 	
 	public WorkReportOverViewStats() {
@@ -31,8 +31,8 @@ public class WorkReportOverViewStats extends Block {
 	}
 
 	public void main(IWContext iwc) throws Exception {
-		if(year==-1) {
-			year = (new IWTimestamp(IWTimestamp.getTimestampRightNow()).getYear());
+		if(this.year==-1) {
+			this.year = (new IWTimestamp(IWTimestamp.getTimestampRightNow()).getYear());
 		}
 		
 		
@@ -104,19 +104,19 @@ public class WorkReportOverViewStats extends Block {
 	}
 
 	protected WorkReportBusiness getWorkReportBusiness(IWApplicationContext iwc) {
-		if (reportBiz == null) {
+		if (this.reportBiz == null) {
 			try {
-				reportBiz = (WorkReportBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, WorkReportBusiness.class);
+				this.reportBiz = (WorkReportBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, WorkReportBusiness.class);
 			}
 			catch (java.rmi.RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());
 			}
 		}
-		return reportBiz;
+		return this.reportBiz;
 	}
 
 	protected int getYear() {
-		return year;
+		return this.year;
 	}
 
 	/**

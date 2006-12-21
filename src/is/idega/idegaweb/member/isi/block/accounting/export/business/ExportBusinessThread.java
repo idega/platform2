@@ -61,8 +61,8 @@ public class ExportBusinessThread extends Thread {
 
 	public ExportBusinessThread(String dateFrom, String dateTo,
 			boolean isExport, String userName) {
-		dateFromString = dateFrom;
-		dateToString = dateTo;
+		this.dateFromString = dateFrom;
+		this.dateToString = dateTo;
 		this.isExport = isExport;
 		this.userName = userName;
 	}
@@ -73,21 +73,21 @@ public class ExportBusinessThread extends Thread {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		if (isExport) {
+		if (this.isExport) {
 			IWTimestamp dateFrom = null;
 			IWTimestamp dateTo = null;
 
 			try {
-				if (dateFromString != null) {
-					dateFrom = new IWTimestamp(dateFromString);
+				if (this.dateFromString != null) {
+					dateFrom = new IWTimestamp(this.dateFromString);
 				}
 			} catch (Exception e) {
 				dateFrom = null;
 			}
 
 			try {
-				if (dateToString != null) {
-					dateTo = new IWTimestamp(dateToString);
+				if (this.dateToString != null) {
+					dateTo = new IWTimestamp(this.dateToString);
 					dateTo.addDays(1);
 				}
 			} catch (Exception e) {
@@ -111,10 +111,10 @@ public class ExportBusinessThread extends Thread {
 
 	private void createLog() throws IDOLookupException, CreateException {
 		RunLogHome rHome = (RunLogHome) IDOLookup.getHome(RunLog.class);
-		log = rHome.create();
-		log.setCreatedBy(userName);
-		log.setCreatedDate(IWTimestamp.getTimestampRightNow());
-		log.store();
+		this.log = rHome.create();
+		this.log.setCreatedBy(this.userName);
+		this.log.setCreatedDate(IWTimestamp.getTimestampRightNow());
+		this.log.store();
 	}
 
 	private void createLogEntry(String entryText, boolean isError) {
@@ -125,7 +125,7 @@ public class ExportBusinessThread extends Thread {
 			entry.setDateOfEntry(IWTimestamp.getTimestampRightNow());
 			entry.setEntry(entryText);
 			entry.setIsError(isError);
-			entry.setRunLog(log);
+			entry.setRunLog(this.log);
 			entry.store();
 		} catch (IDOLookupException e) {
 			e.printStackTrace();
@@ -186,16 +186,16 @@ public class ExportBusinessThread extends Thread {
 		CreditCardContractHome cHome = (CreditCardContractHome) IDOLookup
 				.getHome(CreditCardContract.class);
 		try {
-			ret = (CreditCardContract) cHome.findByGroupAndType(entry
+			ret = cHome.findByGroupAndType(entry
 					.getGroup(), entry.getPaymentContract().getCardType());
 		} catch (Exception e) {
 			try {
-				ret = (CreditCardContract) cHome.findByDivisionAndType(entry
+				ret = cHome.findByDivisionAndType(entry
 						.getDivision(), entry.getPaymentContract()
 						.getCardType());
 			} catch (Exception e1) {
 				try {
-					ret = (CreditCardContract) cHome.findByClubAndType(entry
+					ret = cHome.findByClubAndType(entry
 							.getClub(), entry.getPaymentContract()
 							.getCardType());
 				} catch (Exception e2) {
@@ -234,13 +234,13 @@ public class ExportBusinessThread extends Thread {
 
 		BankInfoHome bHome = (BankInfoHome) IDOLookup.getHome(BankInfo.class);
 		try {
-			ret = (BankInfo) bHome.findByGroup(entry.getGroup());
+			ret = bHome.findByGroup(entry.getGroup());
 		} catch (Exception e) {
 			try {
-				ret = (BankInfo) bHome.findByDivision(entry.getDivision());
+				ret = bHome.findByDivision(entry.getDivision());
 			} catch (Exception e1) {
 				try {
-					ret = (BankInfo) bHome.findByClub(entry.getClub());
+					ret = bHome.findByClub(entry.getClub());
 				} catch (Exception e2) {
 					createLogEntry(e2.getMessage(), true);
 					ret = null;

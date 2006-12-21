@@ -145,8 +145,8 @@ public class Setup extends CashierSubWindowTemplate {
 
                 int r = 1;
                 error.add(labelError, 1, r++);
-                if (errorList != null && !errorList.isEmpty()) {
-                    Iterator it = errorList.iterator();
+                if (this.errorList != null && !this.errorList.isEmpty()) {
+                    Iterator it = this.errorList.iterator();
                     while (it.hasNext()) {
                         String loc = (String) it.next();
                         Text errorText = new Text(iwrb.getLocalizedString(loc,

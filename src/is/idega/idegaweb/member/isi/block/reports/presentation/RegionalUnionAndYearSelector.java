@@ -56,7 +56,7 @@ public class RegionalUnionAndYearSelector extends Block {
 	 * @return
 	 */
 	public List getParametersToMaintain() {
-		return paramsToMaintain;
+		return this.paramsToMaintain;
 	}
 
 	/**
@@ -67,9 +67,11 @@ public class RegionalUnionAndYearSelector extends Block {
 	}
 	
 	public void addToParametersToMaintainList(String param){
-		if(paramsToMaintain==null) paramsToMaintain = new ArrayList();
+		if(this.paramsToMaintain==null) {
+			this.paramsToMaintain = new ArrayList();
+		}
 		
-		paramsToMaintain.add(param);
+		this.paramsToMaintain.add(param);
 		
 	}
 
@@ -86,7 +88,7 @@ public class RegionalUnionAndYearSelector extends Block {
 	 * @return The group id of the selected regional union.
 	 */
 	public int getRegionalUnionId() {
-		return regionalUnionId;
+		return this.regionalUnionId;
 	}
 
 	/**
@@ -100,7 +102,7 @@ public class RegionalUnionAndYearSelector extends Block {
 	 * @return the year of the report
 	 */
 	public int getYear() {
-		return year;
+		return this.year;
 	}
 
 	/**
@@ -114,8 +116,8 @@ public class RegionalUnionAndYearSelector extends Block {
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
 	 */
 	public void main(IWContext iwc) throws Exception {
-		reportBiz = getWorkReportBusiness(iwc);
-		iwrb = getResourceBundle(iwc);
+		this.reportBiz = getWorkReportBusiness(iwc);
+		this.iwrb = getResourceBundle(iwc);
 		//add breadcrumbs
 		addStepsTable(iwc);
 		addBreak();
@@ -124,10 +126,10 @@ public class RegionalUnionAndYearSelector extends Block {
 		setAsCurrentStepByStepLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
 		
 			if(iwc.isParameterSet(PARAM_REGION_UNION_ID)){
-				regionalUnionId = Integer.parseInt(iwc.getParameter(PARAM_REGION_UNION_ID));
+				this.regionalUnionId = Integer.parseInt(iwc.getParameter(PARAM_REGION_UNION_ID));
 			}
 		if( iwc.isParameterSet(PARAM_REGION_UNION_YEAR) ){
-			year = Integer.parseInt(iwc.getParameter(PARAM_REGION_UNION_YEAR));
+			this.year = Integer.parseInt(iwc.getParameter(PARAM_REGION_UNION_YEAR));
 		}
 			
 						
@@ -135,16 +137,16 @@ public class RegionalUnionAndYearSelector extends Block {
 	}
 	
 	protected void addStepsTable(IWContext iwc){
-		if(steps!=null && !steps.isEmpty()){
+		if(this.steps!=null && !this.steps.isEmpty()){
 			Table stepTable = new Table();
 			
-			Iterator iter = steps.iterator();
+			Iterator iter = this.steps.iterator();
 			int column = 1;
 			
 			while (iter.hasNext()) {
 				String key = (String) iter.next();
-				Text text = new Text(column+". "+iwrb.getLocalizedString(key,key));
-				localizedStepTexts.put(key,text);
+				Text text = new Text(column+". "+this.iwrb.getLocalizedString(key,key));
+				this.localizedStepTexts.put(key,text);
 				stepTable.add(text,column++,1);		
 			}
 			
@@ -170,8 +172,8 @@ public class RegionalUnionAndYearSelector extends Block {
 			dateSelector.addMenuElement(i,Integer.toString(i));
 		}
 		
-		if(year>0){
-			dateSelector.setSelectedElement(year);
+		if(this.year>0){
+			dateSelector.setSelectedElement(this.year);
 		}
 		
 		Table table = new Table(2,4);
@@ -179,21 +181,21 @@ public class RegionalUnionAndYearSelector extends Block {
 		table.mergeCells(1,4,2,4);
 		table.setAlignment(1,4,Table.HORIZONTAL_ALIGN_RIGHT);
 		
-			regionalUnions = reportBiz.getAllRegionalUnionGroups();
+			regionalUnions = this.reportBiz.getAllRegionalUnionGroups();
 			regMenu = new DropdownMenu(regionalUnions,PARAM_REGION_UNION_ID);
 			
-			if(regionalUnionId>0){
-				regMenu.setSelectedElement(regionalUnionId);
+			if(this.regionalUnionId>0){
+				regMenu.setSelectedElement(this.regionalUnionId);
 			}
 		
-		table.add(iwrb.getLocalizedString("regselector.select_regional_union","Select the desired union."),1,1);
-		table.add(iwrb.getLocalizedString("regselector.regional_union","Regional union"),1,2);
+		table.add(this.iwrb.getLocalizedString("regselector.select_regional_union","Select the desired union."),1,1);
+		table.add(this.iwrb.getLocalizedString("regselector.regional_union","Regional union"),1,2);
 		table.add(regMenu,2,2);		
 
-		table.add(iwrb.getLocalizedString("regselector.year","Year"),1,3);
+		table.add(this.iwrb.getLocalizedString("regselector.year","Year"),1,3);
 		table.add(dateSelector,2,3);		
 		
-		SubmitButton submit = new SubmitButton(iwrb.getLocalizedString("regselector.continue","continue"));
+		SubmitButton submit = new SubmitButton(this.iwrb.getLocalizedString("regselector.continue","continue"));
 		submit.setAsImageButton(true);
 		
 		table.add(submit,1,4);
@@ -204,51 +206,51 @@ public class RegionalUnionAndYearSelector extends Block {
 	}
 	
 	protected WorkReportImportBusiness getWorkReportImportBusiness(IWApplicationContext iwc) {
-	if (reportImportBiz == null) {
+	if (this.reportImportBiz == null) {
 		try {
-			reportImportBiz = (WorkReportImportBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, WorkReportImportBusiness.class);
+			this.reportImportBiz = (WorkReportImportBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, WorkReportImportBusiness.class);
 		}
 		catch (java.rmi.RemoteException rme) {
 			throw new RuntimeException(rme.getMessage());
 		}
 	}
-	return reportImportBiz;
+	return this.reportImportBiz;
 }
 
 
 	protected WorkReportBusiness getWorkReportBusiness(IWApplicationContext iwc) {
-		if (reportBiz == null) {
+		if (this.reportBiz == null) {
 			try {
-				reportBiz = (WorkReportBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, WorkReportBusiness.class);
+				this.reportBiz = (WorkReportBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, WorkReportBusiness.class);
 			}
 			catch (java.rmi.RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());
 			}
 		}
-		return reportBiz;
+		return this.reportBiz;
 	}
 	
 	public String getBundleIdentifier(){
-		return this.IW_BUNDLE_IDENTIFIER;
+		return RegionalUnionAndYearSelector.IW_BUNDLE_IDENTIFIER;
 	}
 	
 	protected void setStepNameLocalizableKey(String stepInWizardNameLocalizedKey){
-		if(steps==null){
-			steps = new Vector();//to keep the order
+		if(this.steps==null){
+			this.steps = new Vector();//to keep the order
 		}
 		
-		steps.add(stepInWizardNameLocalizedKey);
+		this.steps.add(stepInWizardNameLocalizedKey);
 	}
 	
 	protected List getSteps(){
-		return steps;
+		return this.steps;
 	}
 	
 	protected void setAsCurrentStepByStepLocalizableKey(String key){
-		Iterator iter = localizedStepTexts.keySet().iterator();
+		Iterator iter = this.localizedStepTexts.keySet().iterator();
 		while (iter.hasNext()) {
 			String localizedKey = (String) iter.next();
-			Text text = (Text) localizedStepTexts.get(localizedKey);
+			Text text = (Text) this.localizedStepTexts.get(localizedKey);
 			if(localizedKey.equals(key)){
 				text.setBold();
 			}

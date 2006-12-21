@@ -41,7 +41,7 @@ public class TestEncryption {
 			char[] pass = str.toCharArray();
 			String encrypted = new String("");
 			for (int i = 0; i < pass.length; i++) {
-				String hex = Integer.toHexString((int) pass[i]);
+				String hex = Integer.toHexString(pass[i]);
 				while (hex.length() < 2) {
 					String s = "0";
 					s += hex;

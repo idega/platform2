@@ -20,10 +20,10 @@ public class GroupStatsWindow extends GenericStatsWindow {
     }
 
     public void main(IWContext iwc) throws Exception {
-    	iwrb = getResourceBundle(iwc);
-    	windowTitle = iwrb.getLocalizedString("groupstatswindow.groupstats", "Group Report");
-    	invocationFileName = "Invocation-GroupStats.xml";
-    	layoutFileName = "Layout-GroupStats.xml";
+    	this.iwrb = getResourceBundle(iwc);
+    	this.windowTitle = this.iwrb.getLocalizedString("groupstatswindow.groupstats", "Group Report");
+    	this.invocationFileName = "Invocation-GroupStats.xml";
+    	this.layoutFileName = "Layout-GroupStats.xml";
 	    super.main(iwc);
     }
 }

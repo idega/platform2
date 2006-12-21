@@ -88,8 +88,9 @@ public class VisaFileCreation implements CreditCardFileCreation {
 			String cardNumber = entry.getPaymentContract().getCardNumber();
 			if (cardNumber.length() < 16) {
 				StringBuffer p = new StringBuffer(cardNumber);
-				while (p.length() < 16)
+				while (p.length() < 16) {
 					p.insert(0, '0');
+				}
 				cardNumber = p.toString();
 			} else if (cardNumber.length() > 16) {
 				cardNumber = cardNumber.substring(0, 16);

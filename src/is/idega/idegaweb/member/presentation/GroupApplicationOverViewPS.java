@@ -27,7 +27,7 @@ public class GroupApplicationOverViewPS extends IWPresentationStateImpl implemen
  
   public void reset(){
     super.reset();
-    _selectedGroup = null;
+    this._selectedGroup = null;
   }
 
   public void actionPerformed(IWPresentationEvent e)throws IWException{
@@ -38,7 +38,7 @@ public class GroupApplicationOverViewPS extends IWPresentationStateImpl implemen
     }
     
     if(e instanceof SelectGroupEvent){
-      _selectedGroup = ((SelectGroupEvent)e).getSelectedGroup();
+      this._selectedGroup = ((SelectGroupEvent)e).getSelectedGroup();
        this.fireStateChanged();
     }
 
@@ -57,6 +57,6 @@ public class GroupApplicationOverViewPS extends IWPresentationStateImpl implemen
   }
 
   public Group getSelectedGroup(){
-    return _selectedGroup;
+    return this._selectedGroup;
   }
 }

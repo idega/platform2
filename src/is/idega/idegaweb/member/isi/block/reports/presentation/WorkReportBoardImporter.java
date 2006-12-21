@@ -38,28 +38,28 @@ public class WorkReportBoardImporter extends WorkReportImporter {
 			try {
 				boolean success = getWorkReportImportBusiness(iwc).importBoardPart(getWorkReportFileId(), getWorkReportId());
 				if (success) {
-					add(iwrb.getLocalizedString("WorkReportBoardImporter.import_successful", "Importing board info completed successfully."));
+					add(this.iwrb.getLocalizedString("WorkReportBoardImporter.import_successful", "Importing board info completed successfully."));
 				}
 				else {
-					add(iwrb.getLocalizedString("WorkReportBoardImporter.import_failed", "Importing board account failed!"));
+					add(this.iwrb.getLocalizedString("WorkReportBoardImporter.import_failed", "Importing board account failed!"));
 				}
 			}
 			catch (RemoteException e) {
 				e.printStackTrace();
 			}
 			catch (WorkReportImportException e) {
-				add(iwrb.getLocalizedString(e.getMessage(), e.getMessage()));
+				add(this.iwrb.getLocalizedString(e.getMessage(), e.getMessage()));
 				if (e.getRowForError() != null) {
 					addBreak();
-					add(iwrb.getLocalizedString(ROW_LABEL,"Row") + " : " + e.getRowForError());
+					add(this.iwrb.getLocalizedString(ROW_LABEL,"Row") + " : " + e.getRowForError());
 				}
 				if (e.getColumnForError() != null)  { 
 					addBreak();
-					add(iwrb.getLocalizedString(COL_LABEL,"Col") + " : " + e.getColumnForError());
+					add(this.iwrb.getLocalizedString(COL_LABEL,"Col") + " : " + e.getColumnForError());
 				}
 				if (e.getDetail() != null) { 
 					addBreak();
-					add(iwrb.getLocalizedString(DESC_LABEL,"Desc") + " : " + e.getDetail());
+					add(this.iwrb.getLocalizedString(DESC_LABEL,"Desc") + " : " + e.getDetail());
 				}					
 			}
 		}

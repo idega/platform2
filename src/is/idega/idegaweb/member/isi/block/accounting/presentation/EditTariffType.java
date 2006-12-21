@@ -49,15 +49,15 @@ public class EditTariffType extends CashierSubWindowTemplate {
     }
 
     private boolean saveTariffType(IWContext iwc) {
-		errorList = new ArrayList();
+		this.errorList = new ArrayList();
 
         String name = iwc.getParameter(LABEL_NAME);
 
         if (name == null || "".equals(name)) {
-            errorList.add(ERROR_NO_NAME_ENTERED);
+            this.errorList.add(ERROR_NO_NAME_ENTERED);
         }
 
-        if (!errorList.isEmpty()) { return false; }
+        if (!this.errorList.isEmpty()) { return false; }
 
         boolean insert = false;
         try {
@@ -96,8 +96,8 @@ public class EditTariffType extends CashierSubWindowTemplate {
 
                 int r = 1;
                 error.add(labelError, 1, r++);
-                if (errorList != null && !errorList.isEmpty()) {
-                    Iterator it = errorList.iterator();
+                if (this.errorList != null && !this.errorList.isEmpty()) {
+                    Iterator it = this.errorList.iterator();
                     while (it.hasNext()) {
                         String loc = (String) it.next();
                         Text errorText = new Text(iwrb.getLocalizedString(loc,

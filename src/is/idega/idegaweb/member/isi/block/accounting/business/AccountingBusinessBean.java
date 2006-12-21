@@ -1020,10 +1020,10 @@ public class AccountingBusinessBean extends IBOServiceBean implements
 	}
 
 	private UserBusiness getUserBusiness() throws RemoteException {
-		if (userBiz == null) {
-			userBiz = (UserBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), UserBusiness.class);
+		if (this.userBiz == null) {
+			this.userBiz = (UserBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), UserBusiness.class);
 		}	
-		return userBiz;
+		return this.userBiz;
 	}
 
 	public FamilyLogic getMemberFamilyLogic(IWApplicationContext iwc) {

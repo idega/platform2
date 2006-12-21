@@ -100,12 +100,12 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 	}
 
 	private void initialize(IWContext iwc) {
-		if (isInitialized) {
+		if (this.isInitialized) {
 			return;
 		}
-		isInitialized = true;
+		this.isInitialized = true;
 		try {
-			groupBiz = getGroupBusiness(iwc);
+			this.groupBiz = getGroupBusiness(iwc);
 
 			Collection groupCollection = getGroups(iwc);
 		
@@ -116,15 +116,15 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 				List groups = ListUtil.convertCollectionToList(groupCollection);
 				sortList(iwc, groups);
 				
-				if (addAllOptionToList) {
-					if (addAllOptionToListDisplayKey == null || addAllOptionToListDisplayKey.equals("")) {
-						addAllOptionToListDisplayKey = DEFAULT_ADD_ALL_DISPLAY_KEY;
+				if (this.addAllOptionToList) {
+					if (this.addAllOptionToListDisplayKey == null || this.addAllOptionToListDisplayKey.equals("")) {
+						this.addAllOptionToListDisplayKey = DEFAULT_ADD_ALL_DISPLAY_KEY;
 					}
 					
-					if (addAllOptionToListDisplayValue == null || addAllOptionToListDisplayValue.equals("")) {
-						addAllOptionToListDisplayValue = DEFAULT_ADD_ALL_DISPLAY_VALUE;
+					if (this.addAllOptionToListDisplayValue == null || this.addAllOptionToListDisplayValue.equals("")) {
+						this.addAllOptionToListDisplayValue = DEFAULT_ADD_ALL_DISPLAY_VALUE;
 					}
-					addMenuElement(-1, getResourceBundle(iwc).getLocalizedString(addAllOptionToListDisplayKey, addAllOptionToListDisplayValue));
+					addMenuElement(-1, getResourceBundle(iwc).getLocalizedString(this.addAllOptionToListDisplayKey, this.addAllOptionToListDisplayValue));
 				}
 				
 				Iterator iter = groups.iterator();
@@ -135,13 +135,13 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 					name = getNameForGroup(group);
 
 					boolean showGroup = true;
-					if(metaDataMap!=null && !metaDataMap.isEmpty()) {
-						showGroup = checkMetaData(group, metaDataMap);
+					if(this.metaDataMap!=null && !this.metaDataMap.isEmpty()) {
+						showGroup = checkMetaData(group, this.metaDataMap);
 					}
 					if(showGroup) {
 						String id = group.getPrimaryKey().toString();
 						addMenuElement(id, name);
-						if(size==1 && autoSelectIfOnlyOneGroup){//might this cause problems? add as an option to the interface if it does.
+						if(size==1 && this.autoSelectIfOnlyOneGroup){//might this cause problems? add as an option to the interface if it does.
 							setSelectedElement(id);
 						//	setDisabled(true);//cannot change it
 							
@@ -153,7 +153,7 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 			}
 		}
 		catch (RemoteException e) {
-			isInitialized = false;
+			this.isInitialized = false;
 			e.printStackTrace();
 		}
 	}
@@ -167,17 +167,17 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 	protected Collection getGroups(IWContext iwc) throws RemoteException {
 		Collection groups = null;
 
-		if (groupType != null) {
-			String[] type = { groupType };
+		if (this.groupType != null) {
+			String[] type = { this.groupType };
 			try {
-				groups = groupBiz.getGroups(type, true);
+				groups = this.groupBiz.getGroups(type, true);
 			}
 			catch (Exception e1) {
 				e1.printStackTrace();
 			}
 		}
 		else {
-			groups = groupBiz.getAllGroups();
+			groups = this.groupBiz.getAllGroups();
 		}
 		
 		return groups;
@@ -231,8 +231,9 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 	public PresentationObject getHandlerObject(String name, String value, IWContext iwc) {
 		initialize(iwc);
 		this.setName(name);
-		if (selectAllOnSubmitIfNoneSelected)
+		if (this.selectAllOnSubmitIfNoneSelected) {
 			this.selectAllOnSubmitIfNoneSelected();
+		}
 		if (value != null) {
 			this.setSelectedElement(value);
 		}
@@ -240,7 +241,7 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 	}
 	
 	public void setResultAsString() {
-		_stringResults = true;
+		this._stringResults = true;
 	}
 	
 	/**
@@ -250,7 +251,7 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 	public Object getResultingObject(String[] values, IWContext iwc) throws Exception {
 		Collection groups = null;
 		
-		if(_stringResults) {
+		if(this._stringResults) {
 			System.out.println("[GroupSelectionBox] returning Strings");
 			if (values != null && values.length > 0) {
 				groups = new ArrayList();
@@ -314,7 +315,7 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 				names.append(getNameForGroup(group));
 				counter++;
 				if (counter < numberOfGroups) {
-					names.append(displayNameSeperator);
+					names.append(this.displayNameSeperator);
 				}
 			}
 
@@ -327,7 +328,7 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 	 * @return the set group type
 	 */
 	protected String getGroupType() {
-		return groupType;
+		return this.groupType;
 	}
 
 	/**
@@ -341,7 +342,7 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 	 * @return
 	 */
 	protected String getDisplayNameSeperator() {
-		return displayNameSeperator;
+		return this.displayNameSeperator;
 	}
 
 	/**
@@ -367,36 +368,36 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 			
 			List federation = getWorkReportBusiness(iwc).getFederationListForUserFromTopNodes(user, iwc); //should only be one
 			if (!federation.isEmpty()) {
-				userType = WorkReportConstants.WR_USER_TYPE_FEDERATION;
+				this.userType = WorkReportConstants.WR_USER_TYPE_FEDERATION;
 				return null;
 			}
 			
 			List union = getWorkReportBusiness(iwc).getUnionListForUserFromTopNodes(user, iwc); //should only be one
 			if (!union.isEmpty()) {
-				userType = WorkReportConstants.WR_USER_TYPE_UNION;
+				this.userType = WorkReportConstants.WR_USER_TYPE_UNION;
 				return ((Integer) ((Group)union.iterator().next()).getPrimaryKey());	
 			}
 
 			List regional = getWorkReportBusiness(iwc).getRegionalUnionListForUserFromTopNodes(user, iwc); //should only be one
 			if (!regional.isEmpty()) {
-				userType = WorkReportConstants.WR_USER_TYPE_REGIONAL_UNION;
+				this.userType = WorkReportConstants.WR_USER_TYPE_REGIONAL_UNION;
 				return ((Integer) ((Group)regional.iterator().next()).getPrimaryKey());
 			}
 
 			List leagues = getWorkReportBusiness(iwc).getLeaguesListForUserFromTopNodes(user, iwc); //should only be one
 			if (!leagues.isEmpty()) {
-				userType = WorkReportConstants.WR_USER_TYPE_LEAGUE;
+				this.userType = WorkReportConstants.WR_USER_TYPE_LEAGUE;
 				return ((Integer) ((Group)leagues.iterator().next()).getPrimaryKey());
 			}
 			
 			List club = getWorkReportBusiness(iwc).getClubListForUserFromTopNodes(user, iwc); //should only be one
 			if (!club.isEmpty()) {
-				userType = WorkReportConstants.WR_USER_TYPE_CLUB;
+				this.userType = WorkReportConstants.WR_USER_TYPE_CLUB;
 				return ((Integer) ((Group)club.iterator().next()).getPrimaryKey());
 			}
 			List division = getWorkReportBusiness(iwc).getDivisionListForUserFromTopNodes(user, iwc); //should only be one
 			if (!division.isEmpty()) {
-				userType = WorkReportConstants.WR_USER_TYPE_DIVISION;
+				this.userType = WorkReportConstants.WR_USER_TYPE_DIVISION;
 				return ((Integer) ((Group)division.iterator().next()).getPrimaryKey());
 			}
 
@@ -410,19 +411,19 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 	}
 	
 	protected String getUserType() {
-		return userType;
+		return this.userType;
 	}
 	
 	protected WorkReportBusiness getWorkReportBusiness(IWApplicationContext iwc) {
-		if (workBiz == null) {
+		if (this.workBiz == null) {
 			try {
-				workBiz = (WorkReportBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, WorkReportBusiness.class);
+				this.workBiz = (WorkReportBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, WorkReportBusiness.class);
 			}
 			catch (java.rmi.RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());
 			}
 		}
-		return workBiz;
+		return this.workBiz;
 	}
 
 	public PresentationObject getHandlerObject(String name, Collection values, IWContext iwc) {
@@ -437,14 +438,14 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 	}
 
 	public void setAddAllOptionToList(boolean addOption) {
-		addAllOptionToList = addOption;
+		this.addAllOptionToList = addOption;
 	}
 	
 	public void setAddAllOptionToListDisplayKey(String key) {
-		addAllOptionToListDisplayKey = key;
+		this.addAllOptionToListDisplayKey = key;
 	}
 	
 	public void setAddAllOptionToListDisplayValue(String value) {
-		addAllOptionToListDisplayValue = value;
+		this.addAllOptionToListDisplayValue = value;
 	}
 }

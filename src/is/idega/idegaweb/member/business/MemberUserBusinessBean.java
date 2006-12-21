@@ -496,7 +496,9 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 			//if no club is found we throw the exception
 			throw new NoClubFoundException(user.getName());
 		}
-		else return list;
+		else {
+			return list;
+		}
 	}
 	
 	
@@ -520,7 +522,9 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 			//if no division is found we throw the exception
 			throw new NoDivisionFoundException(user.getName());
 		}
-		else return list;
+		else {
+			return list;
+		}
 	}
 	
 	

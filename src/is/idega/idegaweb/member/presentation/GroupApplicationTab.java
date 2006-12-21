@@ -72,10 +72,10 @@ public class GroupApplicationTab extends UserTab {
   	String adminComment = iwc.getParameter(ADMIN_COMMENT_PARAM);
   	
   	String[] groupIds = iwc.getParameterValues(SELECTED_GROUPS_PARAM);
-  	if( app!=null ){
+  	if( this.app!=null ){
   	
 	  	try {
-			return getGroupApplicationBusiness().changeGroupApplicationAdminCommentAndGroups(app,adminComment,groupIds) ;
+			return getGroupApplicationBusiness().changeGroupApplicationAdminCommentAndGroups(this.app,adminComment,groupIds) ;
 		} catch (RemoteException e) {
 			e.printStackTrace();
 			return false;
@@ -90,15 +90,17 @@ public class GroupApplicationTab extends UserTab {
   	
   	try{
    
-	  	userBiz = getUserBusiness();
-	  	groupBiz = getGroupBusiness();
-	  	appBiz = getGroupApplicationBusiness();
-	  	groupSelection = new GroupSelectionDoubleBox();
-	  	if( user == null ) user = getUser();
+	  	this.userBiz = getUserBusiness();
+	  	this.groupBiz = getGroupBusiness();
+	  	this.appBiz = getGroupApplicationBusiness();
+	  	this.groupSelection = new GroupSelectionDoubleBox();
+	  	if( this.user == null ) {
+			this.user = getUser();
+		}
 	  	
 	  	
 	
-		Collection apps = appBiz.getGroupApplicationsByStatusAndUserOrderedByCreationDate(appBiz.getPendingStatusString(),user);
+		Collection apps = this.appBiz.getGroupApplicationsByStatusAndUserOrderedByCreationDate(this.appBiz.getPendingStatusString(),this.user);
 		
 		if( apps!=null && !apps.isEmpty()){
 			Iterator iter = apps.iterator();
@@ -109,8 +111,8 @@ public class GroupApplicationTab extends UserTab {
 					add("User has more applications pending. Only one can be viewed at a time.");	
 					break;
 				}
-				app = (GroupApplication) iter.next();
-				add("Status. "+app.getStatus());
+				this.app = (GroupApplication) iter.next();
+				add("Status. "+this.app.getStatus());
 				addBreak();
 				
 				Timer time1 = new Timer();
@@ -119,7 +121,7 @@ public class GroupApplicationTab extends UserTab {
 				
 				
 				time1.start();
-				Group parent = (Group)(groupBiz.getGroupByGroupID(app.getApplicationGroupId()).getParentNode());
+				Group parent = (Group)(this.groupBiz.getGroupByGroupID(this.app.getApplicationGroupId()).getParentNode());
 				time1.stop();
 				
 				System.out.println("GroupApplicationTab: time to complete getParentNode() : "+time1.getTime()/1000+"s");
@@ -128,7 +130,7 @@ public class GroupApplicationTab extends UserTab {
 					add("parent : "+parent.getName());
 					
 					time2.start();
-					Collection allGroups = groupBiz.getChildGroupsRecursive( parent  );
+					Collection allGroups = this.groupBiz.getChildGroupsRecursive( parent  );
 					
 					time2.stop();
 					System.out.println("GroupApplicationTab: time to complete getChildGroupsRecursive( parent  ) : "+time1.getTime()/1000+"s");
@@ -137,27 +139,27 @@ public class GroupApplicationTab extends UserTab {
 					Iterator aGroups = allGroups.iterator();
 					while (aGroups.hasNext()) {
 						Group group = (Group) aGroups.next();
-						groupSelection.addToAvailableBox(((Integer)group.getPrimaryKey()).toString(), group.getName());
+						this.groupSelection.addToAvailableBox(((Integer)group.getPrimaryKey()).toString(), group.getName());
 					}
 					
-					Collection selectedGroups = app.getGroups();
+					Collection selectedGroups = this.app.getGroups();
 					Iterator sGroups = selectedGroups.iterator();
 					while (sGroups.hasNext()) {
 						Group sGroup = (Group) sGroups.next();
-						groupSelection.addToSelectedBox(((Integer)sGroup.getPrimaryKey()).toString(), sGroup.getName());	
+						this.groupSelection.addToSelectedBox(((Integer)sGroup.getPrimaryKey()).toString(), sGroup.getName());	
 					}
 					
-					add( groupSelection );	
+					add( this.groupSelection );	
 				}
 				
 				
 				//add(new HiddenInput(
-				String userComment = app.getUserComment();
+				String userComment = this.app.getUserComment();
 				if( userComment!=null ){ 
 					add( "User comment: "+userComment); 
 				}
 				addBreak();
-				String adminComment = app.getAdminComment();
+				String adminComment = this.app.getAdminComment();
 				
 				TextArea comment = new TextArea(ADMIN_COMMENT_PARAM);
 				comment.setColumns(32);
@@ -188,9 +190,9 @@ public class GroupApplicationTab extends UserTab {
 	  	
 	   
 	    
-	    frameTable = new Table(1,1);
-	    frameTable.setCellpadding(0);
-	    frameTable.setCellspacing(0);
+	    this.frameTable = new Table(1,1);
+	    this.frameTable.setCellpadding(0);
+	    this.frameTable.setCellspacing(0);
 	    
 	   // getGroupApplicationBusiness(this.getIWApplicationContext()).
 	    

@@ -64,7 +64,7 @@ public class WorkReportExporter extends RegionalUnionAndYearSelector {
 				}
 			}
 			else {
-				add(iwrb.getLocalizedString(ERROR_LOCALIZATION_KEY, "Unable to export file"));
+				add(this.iwrb.getLocalizedString(ERROR_LOCALIZATION_KEY, "Unable to export file"));
 			}
 		}		
 	}

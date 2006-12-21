@@ -61,7 +61,7 @@ public class KRClubImportFileHandlerBean extends IBOServiceBean implements KRClu
   private ArrayList failedRecords = new ArrayList();
 
 //ID;FEL-NR;NAFN;KT;HEIMILI;POSTNR;SV-FEL;GR-MATI;
-//klubbsflokkur;BYRJAÐI;H-SIMI;V-SIMI;F-SIMI;NETFANG
+//klubbsflokkur;BYRJAï¿½I;H-SIMI;V-SIMI;F-SIMI;NETFANG
 
   private final int COLUMN_NAME = 2;  
   private final int COLUMN_PERSONAL_ID = 3;
@@ -98,15 +98,15 @@ public class KRClubImportFileHandlerBean extends IBOServiceBean implements KRClu
 
     try {
       //initialize business beans and data homes
-      biz = (UserBusiness) this.getServiceInstance(UserBusiness.class);
-      home = biz.getUserHome();
-      addressBiz = (AddressBusiness) this.getServiceInstance(AddressBusiness.class);
-      phoneHome = biz.getPhoneHome();
-      eHome = biz.getEmailHome();
+      this.biz = (UserBusiness) this.getServiceInstance(UserBusiness.class);
+      this.home = this.biz.getUserHome();
+      this.addressBiz = (AddressBusiness) this.getServiceInstance(AddressBusiness.class);
+      this.phoneHome = this.biz.getPhoneHome();
+      this.eHome = this.biz.getEmailHome();
       
-      A = biz.getGroupBusiness().getGroupByGroupID(466);//hacks
-      B = biz.getGroupBusiness().getGroupByGroupID(467);
-      C = biz.getGroupBusiness().getGroupByGroupID(468);
+      this.A = this.biz.getGroupBusiness().getGroupByGroupID(466);//hacks
+      this.B = this.biz.getGroupBusiness().getGroupByGroupID(467);
+      this.C = this.biz.getGroupBusiness().getGroupByGroupID(468);
 
       //if the transaction failes all the users and their relations are removed
       //transaction.begin();
@@ -115,11 +115,13 @@ public class KRClubImportFileHandlerBean extends IBOServiceBean implements KRClu
       String item;
 
       int count = 0;
-      while ( !(item=(String)file.getNextRecord()).equals("") ) {
+      while ( !(item=(String)this.file.getNextRecord()).equals("") ) {
         count++;
 
 		
-        if( ! processRecord(item) ) failedRecords.add(item);
+        if( ! processRecord(item) ) {
+			this.failedRecords.add(item);
+		}
 
         if( (count % 100) == 0 ){
           System.out.println("KRClubFileHandler processing RECORD ["+count+"] time: "+IWTimestamp.getTimestampRightNow().toString());
@@ -161,11 +163,11 @@ public class KRClubImportFileHandlerBean extends IBOServiceBean implements KRClu
   }
 
   private boolean processRecord(String record) throws RemoteException{
-    userValues = file.getValuesFromRecordString(record);
+    this.userValues = this.file.getValuesFromRecordString(record);
     
 	boolean success = storeUserInfo();
 
-    userValues = null;
+    this.userValues = null;
 
     return success;
   }
@@ -173,7 +175,7 @@ public class KRClubImportFileHandlerBean extends IBOServiceBean implements KRClu
   public void printFailedRecords(){
   	System.out.println("Import failed for these records, please fix and import again:");
   
-  	Iterator iter = failedRecords.iterator();
+  	Iterator iter = this.failedRecords.iterator();
   	while (iter.hasNext()) {
 		System.out.println((String) iter.next());
 	}
@@ -189,15 +191,21 @@ public class KRClubImportFileHandlerBean extends IBOServiceBean implements KRClu
     
     String PIN = getUserProperty(this.COLUMN_PERSONAL_ID);
     
-    if(PIN==null) return false;
-    else{
+    if(PIN==null) {
+		return false;
+	}
+	else{
     	PIN = TextSoap.findAndCut(PIN,"-");
-    	if( PIN.length()!=10 ) return false;
+    	if( PIN.length()!=10 ) {
+			return false;
+		}
     }
     
     
     String name = getUserProperty(this.COLUMN_NAME);
-    if(name == null ) return false;
+    if(name == null ) {
+		return false;
+	}
 
     Gender gender = guessGenderFromName(name);
     IWTimestamp dateOfBirth = getBirthDateFromPin(PIN);
@@ -207,7 +215,7 @@ public class KRClubImportFileHandlerBean extends IBOServiceBean implements KRClu
     */
     try{
       //System.err.println(firstName);
-      user = biz.createUserByPersonalIDIfDoesNotExist(name,PIN, gender, dateOfBirth);
+      user = this.biz.createUserByPersonalIDIfDoesNotExist(name,PIN, gender, dateOfBirth);
     }
     catch(Exception e){
       e.printStackTrace();
@@ -225,28 +233,28 @@ try{
       if( (addressLine!=null) ){
    
 
-        String streetName = addressBiz.getStreetNameFromAddressString(addressLine);
-        String streetNumber = addressBiz.getStreetNumberFromAddressString(addressLine);
+        String streetName = this.addressBiz.getStreetNameFromAddressString(addressLine);
+        String streetNumber = this.addressBiz.getStreetNumberFromAddressString(addressLine);
         
         
-        String postalCode = getUserProperty(COLUMN_POSTAL_CODE);
-        String postalName = getUserProperty(COLUMN_POSTAL_CODE_NAME);
+        String postalCode = getUserProperty(this.COLUMN_POSTAL_CODE);
+        String postalName = getUserProperty(this.COLUMN_POSTAL_CODE_NAME);
 
-        Address address = biz.getUsersMainAddress(user);
+        Address address = this.biz.getUsersMainAddress(user);
         Country iceland = ((CountryHome)getIDOHome(Country.class)).findByIsoAbbreviation("IS");
         
         PostalCode code = null;
         try{
-        	code = addressBiz.getPostalCodeHome().findByPostalCodeAndCountryId(postalCode,((Integer)iceland.getPrimaryKey()).intValue());
+        	code = this.addressBiz.getPostalCodeHome().findByPostalCodeAndCountryId(postalCode,((Integer)iceland.getPrimaryKey()).intValue());
         }
         catch(FinderException ex){
-        	code = addressBiz.getPostalCodeAndCreateIfDoesNotExist(postalCode,postalName,iceland);
+        	code = this.addressBiz.getPostalCodeAndCreateIfDoesNotExist(postalCode,postalName,iceland);
         }
         
         boolean addAddress = false;/**@todo is this necessary?**/
 
         if( address == null ){
-          AddressHome addressHome = addressBiz.getAddressHome();
+          AddressHome addressHome = this.addressBiz.getAddressHome();
           address = addressHome.create();
           AddressType mainAddressType = addressHome.getAddressType1();
           address.setAddressType(mainAddressType);
@@ -254,11 +262,15 @@ try{
         }
 
         address.setCountry(iceland);
-        if(code!=null) address.setPostalCode(code);
+        if(code!=null) {
+			address.setPostalCode(code);
+		}
         
         //address.setCity("Reykjavik");
         address.setStreetName(streetName);
-        if( streetNumber!=null ) address.setStreetNumber(streetNumber);
+        if( streetNumber!=null ) {
+			address.setStreetNumber(streetNumber);
+		}
 
         address.store();
 
@@ -274,9 +286,9 @@ try{
         
         //phone
 		//@todo look for the phone first to avoid duplicated
-		String phone = getUserProperty(COLUMN_HOME_PHONE_NUMBER);
-		String work = getUserProperty(COLUMN_WORK_PHONE_NUMBER);
-		String mobile = getUserProperty(COLUMN_MOBILE_PHONE_NUMBER);
+		String phone = getUserProperty(this.COLUMN_HOME_PHONE_NUMBER);
+		String work = getUserProperty(this.COLUMN_WORK_PHONE_NUMBER);
+		String mobile = getUserProperty(this.COLUMN_MOBILE_PHONE_NUMBER);
 		
 		
 		if( phone!=null || work!=null || mobile!=null){
@@ -292,16 +304,22 @@ try{
 				Phone tempPhone = (Phone) iter.next();
 				String temp = tempPhone.getNumber();
 				
-				if( temp.equals(phone) ) addPhone1 = false;	
+				if( temp.equals(phone) ) {
+					addPhone1 = false;
+				}	
 						
-				if( temp.equals(work) ) addPhone2 = false;	
+				if( temp.equals(work) ) {
+					addPhone2 = false;
+				}	
 				
-				if( temp.equals(mobile) ) addPhone3 = false;
+				if( temp.equals(mobile) ) {
+					addPhone3 = false;
+				}
 				
 			}
   
 			if( addPhone1 && phone != null){
-				Phone uPhone = phoneHome.create();
+				Phone uPhone = this.phoneHome.create();
 				uPhone.setNumber(phone);
 				uPhone.setPhoneTypeId(1);//weeeeee...svindl
 				uPhone.store();
@@ -309,7 +327,7 @@ try{
 			}
 			
 			if( addPhone2 && work != null){
-				Phone uPhone = phoneHome.create();
+				Phone uPhone = this.phoneHome.create();
 				uPhone.setNumber(work);
 				uPhone.setPhoneTypeId(2);//weeeeee...svindl
 				uPhone.store();
@@ -317,7 +335,7 @@ try{
 			}
 			
 			if( addPhone3 && mobile != null){
-				Phone uPhone = phoneHome.create();
+				Phone uPhone = this.phoneHome.create();
 				uPhone.setNumber(mobile);
 				uPhone.setPhoneTypeId(3);//weeeeee...svindl
 				uPhone.store();
@@ -332,7 +350,7 @@ try{
         
         
         //email
-        String email = getUserProperty(COLUMN_EMAIL);
+        String email = getUserProperty(this.COLUMN_EMAIL);
         
 		//both this and phones is very much a stupid hack in my part. I should have used findMethods etc. or make a useful getOrCreateIfNonExisting...bleh! -Eiki
 		if( email!=null){
@@ -346,13 +364,15 @@ try{
 				Email mail = (Email) iter.next();
 				String tempAddress = mail.getEmailAddress();
 				
-				if( tempAddress.equals(email) ) addEmail1 = false;	
+				if( tempAddress.equals(email) ) {
+					addEmail1 = false;
+				}	
 					
 				
 			}
 			
 			if( addEmail1 && email != null){
-				Email uEmail = eHome.create();
+				Email uEmail = this.eHome.create();
 				uEmail.setEmailAddress(email);
 				uEmail.store();
 				user.addEmail(uEmail);
@@ -363,13 +383,13 @@ try{
 		}
         
         //adda i rettan flokk herna
-        String type = getUserProperty(COLUMN_MEMBER_TYPE);
+        String type = getUserProperty(this.COLUMN_MEMBER_TYPE);
         if( type!=null ){//A and AC goto A
         	if("A".equals(type) || "AC".equals(type) ){
-        		A.addGroup(user);
+        		this.A.addGroup(user);
         	}
         	else {//B membership
-        		B.addGroup(user);
+        		this.B.addGroup(user);
         	}	
         	
         	
@@ -401,17 +421,17 @@ try{
     try {
       GenderHome home = (GenderHome) this.getIDOHome(Gender.class);
       if( name.indexOf("son",name.length()-4)!=-1 ){//check if this name ends with the "son" string
-        if( male == null ){
-          male = home.getMaleGender();
+        if( this.male == null ){
+          this.male = home.getMaleGender();
         }
-        return male;
+        return this.male;
         
       }
       else{
-		if( female == null ){
-          female = home.getFemaleGender();
+		if( this.female == null ){
+          this.female = home.getFemaleGender();
         }
-        return female;
+        return this.female;
       }
     }
     catch (Exception ex) {
@@ -426,8 +446,12 @@ try{
     int mm = Integer.parseInt(pin.substring(2,4));
     int yyyy = Integer.parseInt(pin.substring(4,6));
     
-    if(pin.endsWith("9")) yyyy += 1900;
-    else yyyy += 2000;
+    if(pin.endsWith("9")) {
+		yyyy += 1900;
+	}
+	else {
+		yyyy += 2000;
+	}
     
     IWTimestamp dob = new IWTimestamp(dd,mm,yyyy);
     return dob;
@@ -436,18 +460,24 @@ try{
 	private String getUserProperty(int columnIndex){
 		String value = null;
 		
-		if( userValues!=null ){
+		if( this.userValues!=null ){
 		
 			try {
-				value = (String)userValues.get(columnIndex);
+				value = (String)this.userValues.get(columnIndex);
 			} catch (RuntimeException e) {
 				return null;
 			}
 	 			//System.out.println("Index: "+columnIndex+" Value: "+value);
-	 		if( file.getEmptyValueString().equals( value ) ) return null;
-		 	else return value;
+	 		if( this.file.getEmptyValueString().equals( value ) ) {
+				return null;
+			}
+			else {
+				return value;
+			}
   		}
-  		else return null;
+		else {
+			return null;
+		}
   }
 
 /**
@@ -455,7 +485,7 @@ try{
  * @return Group
  */
 public Group getRootGroup() {
-	return rootGroup;
+	return this.rootGroup;
 }
 
 /**
@@ -470,7 +500,7 @@ public void setRootGroup(Group rootGroup) {
  * @see com.idega.block.importer.business.ImportFileHandler#getFailedRecords()
  */
 public List getFailedRecords(){
-	return failedRecords;	
+	return this.failedRecords;	
 }
 
   }

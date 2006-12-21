@@ -81,38 +81,38 @@ public class ClubDivisionHandlerTab extends UserGroupTab {
 	 * @see com.idega.user.presentation.UserGroupTab#initializeFieldNames()
 	 */
 	public void initializeFieldNames() {
-		_numberFieldName = "cdivh_number";
-		_nameFieldName = "cdivh_name";
-		_divFieldName = "cdivh_div";
-		_contactFieldName = "cdivh_contact";
+		this._numberFieldName = "cdivh_number";
+		this._nameFieldName = "cdivh_name";
+		this._divFieldName = "cdivh_div";
+		this._contactFieldName = "cdivh_contact";
 	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.user.presentation.UserGroupTab#initializeFieldValues()
 	 */
 	public void initializeFieldValues() {
-		fieldValues = new Hashtable();
-		fieldValues.put(_numberFieldName, "");
-		fieldValues.put(_nameFieldName, "");
-		fieldValues.put(_divFieldName, "");
-		fieldValues.put(_contactFieldName, "");
+		this.fieldValues = new Hashtable();
+		this.fieldValues.put(this._numberFieldName, "");
+		this.fieldValues.put(this._nameFieldName, "");
+		this.fieldValues.put(this._divFieldName, "");
+		this.fieldValues.put(this._contactFieldName, "");
 	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.user.presentation.UserGroupTab#updateFieldsDisplayStatus()
 	 */
 	public void updateFieldsDisplayStatus() {
-		_numberField.setContent((String) fieldValues.get(_numberFieldName));
-		_nameField.setContent((String) fieldValues.get(_nameFieldName));
-		_divField.setContent((String) fieldValues.get(_divFieldName));
+		this._numberField.setContent((String) this.fieldValues.get(this._numberFieldName));
+		this._nameField.setContent((String) this.fieldValues.get(this._nameFieldName));
+		this._divField.setContent((String) this.fieldValues.get(this._divFieldName));
 		
 		try {
 			UserHome home = (UserHome) com.idega.data.IDOLookup.getHome(User.class);
-			String userId = (String) fieldValues.get(_contactFieldName);
+			String userId = (String) this.fieldValues.get(this._contactFieldName);
 
 			if (userId != null && !userId.equals("")) {
-				User user = (User) (home.findByPrimaryKey(new Integer(userId)));
-				_contactField.setSelectedUser(userId,user.getName());
+				User user = (home.findByPrimaryKey(new Integer(userId)));
+				this._contactField.setSelectedUser(userId,user.getName());
 			}
 
 		}
@@ -125,11 +125,11 @@ public class ClubDivisionHandlerTab extends UserGroupTab {
 	 * @see com.idega.user.presentation.UserGroupTab#initializeFields()
 	 */
 	public void initializeFields() {
-		_numberField = new TextInput(_numberFieldName);
-		_nameField = new TextInput(_nameFieldName);
+		this._numberField = new TextInput(this._numberFieldName);
+		this._nameField = new TextInput(this._nameFieldName);
 //		_ssnField.setAsIcelandicSSNumber("Vart�lupr�fun stemmir ekki");
-		_divField = new TextInput(_divFieldName);
-		_contactField = new UserChooserBrowser(_contactFieldName);
+		this._divField = new TextInput(this._divFieldName);
+		this._contactField = new UserChooserBrowser(this._contactFieldName);
 	}
 
 	/* (non-Javadoc)
@@ -140,17 +140,17 @@ public class ClubDivisionHandlerTab extends UserGroupTab {
 	IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 
-		_numberText = new Text(iwrb.getLocalizedString(_numberFieldName, "Short name"));
-		_numberText.setBold();
+		this._numberText = new Text(iwrb.getLocalizedString(this._numberFieldName, "Short name"));
+		this._numberText.setBold();
 		
-		_nameText = new Text(iwrb.getLocalizedString(_nameFieldName, "Description"));
-		_nameText.setBold();
+		this._nameText = new Text(iwrb.getLocalizedString(this._nameFieldName, "Description"));
+		this._nameText.setBold();
 		
-		_divText = new Text(iwrb.getLocalizedString(_divFieldName, "Division"));
-		_divText.setBold();
+		this._divText = new Text(iwrb.getLocalizedString(this._divFieldName, "Division"));
+		this._divText.setBold();
 		
-		_contactText = new Text(iwrb.getLocalizedString(_contactFieldName, "Contact"));
-		_contactText.setBold();
+		this._contactText = new Text(iwrb.getLocalizedString(this._contactFieldName, "Contact"));
+		this._contactText.setBold();
 	}
 
 	/* (non-Javadoc)
@@ -162,21 +162,21 @@ public class ClubDivisionHandlerTab extends UserGroupTab {
 		t.setCellpadding(5);
 		t.setCellspacing(0);
 		
-		t.add(_numberText, 1, 1);
+		t.add(this._numberText, 1, 1);
 		t.add(Text.getBreak(), 1, 1);
-		t.add(_numberField, 1, 1);
+		t.add(this._numberField, 1, 1);
 		
-		t.add(_nameText, 2, 1);
+		t.add(this._nameText, 2, 1);
 		t.add(Text.getBreak(), 2, 1);
-		t.add(_nameField, 2, 1);
+		t.add(this._nameField, 2, 1);
 		
-		t.add(_divText, 1, 2);
+		t.add(this._divText, 1, 2);
 		t.add(Text.getBreak(), 1, 2);
-		t.add(_divField, 1, 2);
+		t.add(this._divField, 1, 2);
 		
-		t.add(_contactText, 2, 2);
+		t.add(this._contactText, 2, 2);
 		t.add(Text.getBreak(), 2, 2);
-		t.add(_contactField, 2, 2);
+		t.add(this._contactField, 2, 2);
 
 		add(t);
 	}
@@ -190,27 +190,35 @@ public class ClubDivisionHandlerTab extends UserGroupTab {
 	 */
 	public boolean collect(IWContext iwc) {
 		if (iwc != null) {
-			String number = iwc.getParameter(_numberFieldName);
-			String name = iwc.getParameter(_nameFieldName);
-			String div = iwc.getParameter(_divFieldName);
-			String contact = iwc.getParameter(_contactFieldName);
+			String number = iwc.getParameter(this._numberFieldName);
+			String name = iwc.getParameter(this._nameFieldName);
+			String div = iwc.getParameter(this._divFieldName);
+			String contact = iwc.getParameter(this._contactFieldName);
 
-			if (number != null)
-				fieldValues.put(_numberFieldName, number);
-			else
-				fieldValues.put(_numberFieldName, "");
-			if (name != null)
-				fieldValues.put(_nameFieldName, name);
-			else
-				fieldValues.put(_nameFieldName, "");
-			if (div != null)
-				fieldValues.put(_divFieldName, div);
-			else
-				fieldValues.put(_divFieldName, "");
-			if (contact != null)
-				fieldValues.put(_contactFieldName, contact);
-			else
-				fieldValues.put(_contactFieldName, "");
+			if (number != null) {
+				this.fieldValues.put(this._numberFieldName, number);
+			}
+			else {
+				this.fieldValues.put(this._numberFieldName, "");
+			}
+			if (name != null) {
+				this.fieldValues.put(this._nameFieldName, name);
+			}
+			else {
+				this.fieldValues.put(this._nameFieldName, "");
+			}
+			if (div != null) {
+				this.fieldValues.put(this._divFieldName, div);
+			}
+			else {
+				this.fieldValues.put(this._divFieldName, "");
+			}
+			if (contact != null) {
+				this.fieldValues.put(this._contactFieldName, contact);
+			}
+			else {
+				this.fieldValues.put(this._contactFieldName, "");
+			}
 
 			updateFieldsDisplayStatus();
 		}
@@ -224,14 +232,14 @@ public class ClubDivisionHandlerTab extends UserGroupTab {
 	public boolean store(IWContext iwc) {
 		Group group;
 		try {
-			group = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(getGroupId())));
+			group = (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(getGroupId())));
 			// get corressponding service bean
 			ClubInformationPluginBusiness ageGenderPluginBusiness = getClubInformationPluginBusiness(iwc);
 
-			String number = (String) fieldValues.get(_numberFieldName);
-			String name = (String) fieldValues.get(_nameFieldName);
-			String div = (String) fieldValues.get(_divFieldName);
-			String contact = (String) fieldValues.get(_contactFieldName);
+			String number = (String) this.fieldValues.get(this._numberFieldName);
+			String name = (String) this.fieldValues.get(this._nameFieldName);
+			String div = (String) this.fieldValues.get(this._divFieldName);
+			String contact = (String) this.fieldValues.get(this._contactFieldName);
 
 			group.setMetaData("CLUBDIVH_NUMBER", number);
 			group.setMetaData("CLUBDIVH_NAME", name);
@@ -257,21 +265,25 @@ public class ClubDivisionHandlerTab extends UserGroupTab {
 	public void initFieldContents() {
 		Group group;
 		try {
-			group = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(getGroupId())));
+			group = (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(getGroupId())));
 
 			String number = group.getMetaData("CLUBDIVH_NUMBER");
 			String name = group.getMetaData("CLUBDIVH_NAME");
 			String div = group.getMetaData("CLUBDIVH_DIV");
 			String contact = group.getMetaData("CLUBDIVH_CONTACT");
 
-			if (number != null)
-				fieldValues.put(_numberFieldName, number);
-			if (name != null)
-				fieldValues.put(_nameFieldName, name);
-			if (div != null)
-				fieldValues.put(_divFieldName, div);
-			if (contact != null)
-				fieldValues.put(_contactFieldName, contact);
+			if (number != null) {
+				this.fieldValues.put(this._numberFieldName, number);
+			}
+			if (name != null) {
+				this.fieldValues.put(this._nameFieldName, name);
+			}
+			if (div != null) {
+				this.fieldValues.put(this._divFieldName, div);
+			}
+			if (contact != null) {
+				this.fieldValues.put(this._contactFieldName, contact);
+			}
 			
 			updateFieldsDisplayStatus();
 		}

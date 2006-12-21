@@ -43,7 +43,7 @@ public class PlayerSelectionBox extends GroupSelectionBox  {
 	}
 
 	public String getDisplayForResultingObject(Object value, IWContext iwc) {
-	    showParentGroupNameInGroupName = false;
+	    this.showParentGroupNameInGroupName = false;
 		if (value == null) {
 			return this.getResourceBundle(iwc).getLocalizedString("PlayerSelectionBox.all_or_none_selected","All");
 		}
@@ -51,8 +51,8 @@ public class PlayerSelectionBox extends GroupSelectionBox  {
 	}
 
 	public PresentationObject getHandlerObject(String name, String value, IWContext iwc) {
-	    selectAllOnSubmitIfNoneSelected = false;
-	    autoSelectIfOnlyOneGroup = false;
+	    this.selectAllOnSubmitIfNoneSelected = false;
+	    this.autoSelectIfOnlyOneGroup = false;
 	    return super.getHandlerObject(name, value, iwc);
 	}
 	
@@ -76,10 +76,12 @@ public class PlayerSelectionBox extends GroupSelectionBox  {
 	}
 	
 	protected String getNameForGroup(Group group) {
-	    if (group == null) return null;
+	    if (group == null) {
+			return null;
+		}
 	    
 	    String groupName = group.getName();
-		if (showParentGroupNameInGroupName) {
+		if (this.showParentGroupNameInGroupName) {
 	    	String parentName = null;
 		    try {
 		        parentName = getParentName(group); 
@@ -94,8 +96,9 @@ public class PlayerSelectionBox extends GroupSelectionBox  {
 	}
 	
 	private void getClubPlayers(Collection divisions, Group group) {
-		if (divisions == null)
+		if (divisions == null) {
 			divisions = new ArrayList();
+		}
 		
 		if (group.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER) ||
 			group.getGroupType().equals(IWMemberConstants.GROUP_TYPE_GENERAL) ||
@@ -118,32 +121,32 @@ public class PlayerSelectionBox extends GroupSelectionBox  {
 	    CachedGroup cachedParentGroup = null;
 	    Group parent = null;
 		Integer groupId = (Integer)group.getPrimaryKey();
-		if (applicationCachedParents.containsKey((groupId))) {
-            Collection col = (Collection)applicationCachedParents.get(groupId);
+		if (this.applicationCachedParents.containsKey((groupId))) {
+            Collection col = (Collection)this.applicationCachedParents.get(groupId);
             Iterator it = col.iterator();
             Integer parentId = null;
             
             if (it.hasNext()) {
                  parentId = (Integer)it.next();
                  String key = parentId.toString();
-                 if (applicationCachedGroups.containsKey(key)) {
-                     cachedParentGroup = (CachedGroup)applicationCachedGroups.get(key); 
+                 if (this.applicationCachedGroups.containsKey(key)) {
+                     cachedParentGroup = (CachedGroup)this.applicationCachedGroups.get(key); 
                  }
-                 else if (cachedGroups.containsKey(key)) {
-                     parent = (Group)cachedGroups.get(key);
+                 else if (this.cachedGroups.containsKey(key)) {
+                     parent = (Group)this.cachedGroups.get(key);
                      cachedParentGroup = new CachedGroup(parent);
-                     applicationCachedGroups.put(key, cachedParentGroup);
+                     this.applicationCachedGroups.put(key, cachedParentGroup);
                  }
                  else {
-                     parent = groupBiz.getGroupByGroupID(parentId.intValue());
+                     parent = this.groupBiz.getGroupByGroupID(parentId.intValue());
 	                 cachedParentGroup = new CachedGroup(parent);
-	                 cachedGroups.put(key,parent);
-	                 applicationCachedGroups.put(key, cachedParentGroup);
+	                 this.cachedGroups.put(key,parent);
+	                 this.applicationCachedGroups.put(key, cachedParentGroup);
                  }
             }       
         }
         else {
-            Collection parents = group.getParentGroups(applicationCachedParents, cachedGroups);        
+            Collection parents = group.getParentGroups(this.applicationCachedParents, this.cachedGroups);        
             Iterator parIt = parents.iterator();
 	        if (parIt.hasNext()) {
 	            parent = (Group)parIt.next();
@@ -169,17 +172,17 @@ public class PlayerSelectionBox extends GroupSelectionBox  {
     	private IWContext iwc;
 		
 		public PlayerComparator(IWContext _iwc) {
-			iwc = _iwc;
-		    locale = iwc.getLocale();
-			applicationCachedGroups = (Map)iwc.getApplicationContext().getApplicationAttribute(CACHE_GROUPS_APPLICATION_ATTRIBUTE);
-		    if(applicationCachedGroups == null){
-		        applicationCachedGroups = new HashMap();
-		        iwc.getApplicationContext().setApplicationAttribute(CACHE_GROUPS_APPLICATION_ATTRIBUTE, applicationCachedGroups);
+			this.iwc = _iwc;
+		    this.locale = this.iwc.getLocale();
+			PlayerSelectionBox.this.applicationCachedGroups = (Map)this.iwc.getApplicationContext().getApplicationAttribute(CACHE_GROUPS_APPLICATION_ATTRIBUTE);
+		    if(PlayerSelectionBox.this.applicationCachedGroups == null){
+		        PlayerSelectionBox.this.applicationCachedGroups = new HashMap();
+		        this.iwc.getApplicationContext().setApplicationAttribute(CACHE_GROUPS_APPLICATION_ATTRIBUTE, PlayerSelectionBox.this.applicationCachedGroups);
 		    }
-			applicationCachedParents= (Map)iwc.getApplicationContext().getApplicationAttribute(CACHE_PARENTS_APPLICATION_ATTRIBUTE);
-				if(applicationCachedParents == null){
-				    applicationCachedParents = new HashMap();
-				    iwc.getApplicationContext().setApplicationAttribute(CACHE_PARENTS_APPLICATION_ATTRIBUTE, applicationCachedParents);
+			PlayerSelectionBox.this.applicationCachedParents= (Map)this.iwc.getApplicationContext().getApplicationAttribute(CACHE_PARENTS_APPLICATION_ATTRIBUTE);
+				if(PlayerSelectionBox.this.applicationCachedParents == null){
+				    PlayerSelectionBox.this.applicationCachedParents = new HashMap();
+				    this.iwc.getApplicationContext().setApplicationAttribute(CACHE_PARENTS_APPLICATION_ATTRIBUTE, PlayerSelectionBox.this.applicationCachedParents);
 				}
 	
 		}
@@ -187,7 +190,7 @@ public class PlayerSelectionBox extends GroupSelectionBox  {
 		public int compare(Object arg0, Object arg1) {
 			int comp = 0;
 			try {
-				Collator collator = Collator.getInstance(locale);
+				Collator collator = Collator.getInstance(this.locale);
 				Group group0 = (Group) arg0;
 				Group group1 = (Group) arg1;
 				String parentNode0 = getParentName(group0);

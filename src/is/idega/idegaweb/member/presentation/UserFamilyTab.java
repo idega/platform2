@@ -79,7 +79,7 @@ public class UserFamilyTab extends UserTab {
 		resize(1, 1);
 		setCellpadding(5);
 		setCellspacing(0);
-		user = getUser();
+		this.user = getUser();
 
 		empty();
 
@@ -95,34 +95,34 @@ public class UserFamilyTab extends UserTab {
 		add(Text.getBreak(), 1, 1);
 		add(Text.getBreak(), 1, 1);
 
-		if (user != null) {
+		if (this.user != null) {
 			try {
-				custodianTable = getCustodianTable();
-				spouseTable = getSpouseTable();
-				childrenTable = getChildrenTable();
-				siblingsTable = getSiblingTable();
+				this.custodianTable = getCustodianTable();
+				this.spouseTable = getSpouseTable();
+				this.childrenTable = getChildrenTable();
+				this.siblingsTable = getSiblingTable();
 			}
 			catch (RemoteException re) {
-				custodianTable = null;
-				spouseTable = null;
-				childrenTable = null;
-				siblingsTable = null;
+				this.custodianTable = null;
+				this.spouseTable = null;
+				this.childrenTable = null;
+				this.siblingsTable = null;
 			}
 
-			if (custodianTable != null) {
-				add(custodianTable, 1, 1);
+			if (this.custodianTable != null) {
+				add(this.custodianTable, 1, 1);
 				add(Text.getBreak(), 1, 1);
 			}
-			if (spouseTable != null) {
-				add(spouseTable, 1, 1);
+			if (this.spouseTable != null) {
+				add(this.spouseTable, 1, 1);
 				add(Text.getBreak(), 1, 1);
 			}
-			if (childrenTable != null) {
-				add(childrenTable, 1, 1);
+			if (this.childrenTable != null) {
+				add(this.childrenTable, 1, 1);
 				add(Text.getBreak(), 1, 1);
 			}
-			if (siblingsTable != null) {
-				add(siblingsTable, 1, 1);
+			if (this.siblingsTable != null) {
+				add(this.siblingsTable, 1, 1);
 				add(Text.getBreak(), 1, 1);
 			}
 		}
@@ -141,17 +141,17 @@ public class UserFamilyTab extends UserTab {
 		IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		
-		spouseText = new Text(iwrb.getLocalizedString("usr_fam_spouse","Spouse") + ":");
-		spouseText.setBold();
+		this.spouseText = new Text(iwrb.getLocalizedString("usr_fam_spouse","Spouse") + ":");
+		this.spouseText.setBold();
 		
-		custodiansText = new Text(iwrb.getLocalizedString("usr_fam_custodians","Custodians") + ":");
-		custodiansText.setBold();
+		this.custodiansText = new Text(iwrb.getLocalizedString("usr_fam_custodians","Custodians") + ":");
+		this.custodiansText.setBold();
 		
-		childrenText = new Text(iwrb.getLocalizedString("usr_fam_children","Children") + ":");
-		childrenText.setBold();
+		this.childrenText = new Text(iwrb.getLocalizedString("usr_fam_children","Children") + ":");
+		this.childrenText.setBold();
 		
-		siblingsText = new Text(iwrb.getLocalizedString("usr_fam_siblings","Siblings") + ":");
-		siblingsText.setBold();
+		this.siblingsText = new Text(iwrb.getLocalizedString("usr_fam_siblings","Siblings") + ":");
+		this.siblingsText.setBold();
 	}
 	
 	public Help getHelpButton() {
@@ -174,14 +174,14 @@ public class UserFamilyTab extends UserTab {
 
 		User spouse = null;
 		try {
-			spouse = getMemberFamilyLogic(getIWApplicationContext()).getSpouseFor(user);
+			spouse = getMemberFamilyLogic(getIWApplicationContext()).getSpouseFor(this.user);
 		}
 		catch (NoSpouseFound nsf) {
 			spouse = null;
 		}
 
 		if (spouse != null) {
-			table.add(spouseText, 1, 1);
+			table.add(this.spouseText, 1, 1);
 			table.mergeCells(1, 1, 2, 1);
 			table.add(getFamilyLink(spouse, getMemberFamilyLogic(getIWApplicationContext()).getSpouseRelationType()), 1, 2);
 			table.add(getUserPropertyLink(spouse), 2, 2);
@@ -197,14 +197,14 @@ public class UserFamilyTab extends UserTab {
 
 		Collection custodians = null;
 		try {
-			custodians = getMemberFamilyLogic(getIWApplicationContext()).getCustodiansFor(user);
+			custodians = getMemberFamilyLogic(getIWApplicationContext()).getCustodiansFor(this.user);
 		}
 		catch (NoCustodianFound nsf) {
 			custodians = null;
 		}
 
 		if (custodians != null && custodians.size() > 0) {
-			table.add(custodiansText, 1, 1);
+			table.add(this.custodiansText, 1, 1);
 			table.mergeCells(1, 1, 2, 1);
 			int row = 2;
 
@@ -226,14 +226,14 @@ public class UserFamilyTab extends UserTab {
 
 		Collection children = null;
 		try {
-			children = getMemberFamilyLogic(getIWApplicationContext()).getChildrenFor(user);
+			children = getMemberFamilyLogic(getIWApplicationContext()).getChildrenFor(this.user);
 		}
 		catch (NoChildrenFound nsf) {
 			children = null;
 		}
 
 		if (children != null && children.size() > 0) {
-			table.add(childrenText, 1, 1);
+			table.add(this.childrenText, 1, 1);
 			table.mergeCells(1, 1, 2, 1);
 			int row = 2;
 
@@ -255,7 +255,7 @@ public class UserFamilyTab extends UserTab {
 
 		Collection siblings = null;
 		try {
-			siblings = getMemberFamilyLogic(getIWApplicationContext()).getSiblingsFor(user);
+			siblings = getMemberFamilyLogic(getIWApplicationContext()).getSiblingsFor(this.user);
 		}
 		catch (NoSiblingFound nsf) {
 			System.err.println(nsf.getMessage());
@@ -264,7 +264,7 @@ public class UserFamilyTab extends UserTab {
 		}
 
 		if (siblings != null && siblings.size() > 0) {
-			table.add(siblingsText, 1, 1);
+			table.add(this.siblingsText, 1, 1);
 			table.mergeCells(1, 1, 2, 1);
 			int row = 2;
 

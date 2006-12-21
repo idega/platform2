@@ -49,7 +49,7 @@ public class UserInfo  implements java.io.Serializable {
      * @return address
      */
     public is.idega.idegaweb.member.isi.block.accounting.webservice.general.client.AddressInfo getAddress() {
-        return address;
+        return this.address;
     }
 
 
@@ -69,7 +69,7 @@ public class UserInfo  implements java.io.Serializable {
      * @return error
      */
     public java.lang.String getError() {
-        return error;
+        return this.error;
     }
 
 
@@ -89,7 +89,7 @@ public class UserInfo  implements java.io.Serializable {
      * @return firstName
      */
     public java.lang.String getFirstName() {
-        return firstName;
+        return this.firstName;
     }
 
 
@@ -109,7 +109,7 @@ public class UserInfo  implements java.io.Serializable {
      * @return lastName
      */
     public java.lang.String getLastName() {
-        return lastName;
+        return this.lastName;
     }
 
 
@@ -129,7 +129,7 @@ public class UserInfo  implements java.io.Serializable {
      * @return middleName
      */
     public java.lang.String getMiddleName() {
-        return middleName;
+        return this.middleName;
     }
 
 
@@ -149,7 +149,7 @@ public class UserInfo  implements java.io.Serializable {
      * @return socialsecurity
      */
     public java.lang.String getSocialsecurity() {
-        return socialsecurity;
+        return this.socialsecurity;
     }
 
 
@@ -169,7 +169,7 @@ public class UserInfo  implements java.io.Serializable {
      * @return valid
      */
     public boolean isValid() {
-        return valid;
+        return this.valid;
     }
 
 
@@ -184,14 +184,20 @@ public class UserInfo  implements java.io.Serializable {
 
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
-        if (!(obj instanceof UserInfo)) return false;
+        if (!(obj instanceof UserInfo)) {
+			return false;
+		}
         UserInfo other = (UserInfo) obj;
-        if (obj == null) return false;
-        if (this == obj) return true;
-        if (__equalsCalc != null) {
-            return (__equalsCalc == obj);
+        if (obj == null) {
+			return false;
+		}
+        if (this == obj) {
+			return true;
+		}
+        if (this.__equalsCalc != null) {
+            return (this.__equalsCalc == obj);
         }
-        __equalsCalc = obj;
+        this.__equalsCalc = obj;
         boolean _equals;
         _equals = true && 
             ((this.address==null && other.getAddress()==null) || 
@@ -213,16 +219,16 @@ public class UserInfo  implements java.io.Serializable {
              (this.socialsecurity!=null &&
               this.socialsecurity.equals(other.getSocialsecurity()))) &&
             this.valid == other.isValid();
-        __equalsCalc = null;
+        this.__equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
     public synchronized int hashCode() {
-        if (__hashCodeCalc) {
+        if (this.__hashCodeCalc) {
             return 0;
         }
-        __hashCodeCalc = true;
+        this.__hashCodeCalc = true;
         int _hashCode = 1;
         if (getAddress() != null) {
             _hashCode += getAddress().hashCode();
@@ -243,7 +249,7 @@ public class UserInfo  implements java.io.Serializable {
             _hashCode += getSocialsecurity().hashCode();
         }
         _hashCode += (isValid() ? Boolean.TRUE : Boolean.FALSE).hashCode();
-        __hashCodeCalc = false;
+        this.__hashCodeCalc = false;
         return _hashCode;
     }
 

@@ -50,50 +50,50 @@ public class WorkReportMemberImporter extends WorkReportImporter {
 					showReport();
 				}
 				else {
-					add(iwrb.getLocalizedString("WorkReportMemberImporter.import_failed", "Importing members failed!"));
+					add(this.iwrb.getLocalizedString("WorkReportMemberImporter.import_failed", "Importing members failed!"));
 				}
 			}
 			catch (RemoteException e) {
 				e.printStackTrace();
 			}
 			catch (WorkReportImportException e) {
-				add(iwrb.getLocalizedString(e.getMessage(), e.getMessage()));
+				add(this.iwrb.getLocalizedString(e.getMessage(), e.getMessage()));
 				if (e.getRowForError() != null) {
 					addBreak();
-					add(iwrb.getLocalizedString(ROW_LABEL,"Row") + " : " + e.getRowForError());
+					add(this.iwrb.getLocalizedString(ROW_LABEL,"Row") + " : " + e.getRowForError());
 				}
 				if (e.getColumnForError() != null)  { 
 					addBreak();
-					add(iwrb.getLocalizedString(COL_LABEL,"Col") + " : " + e.getColumnForError());
+					add(this.iwrb.getLocalizedString(COL_LABEL,"Col") + " : " + e.getColumnForError());
 				}
 				if (e.getDetail() != null) { 
 					addBreak();
-					add(iwrb.getLocalizedString(DESC_LABEL,"Desc") + " : " + e.getDetail());
+					add(this.iwrb.getLocalizedString(DESC_LABEL,"Desc") + " : " + e.getDetail());
 				}					
 			}
 		}
 	}
 
 	protected WorkReportImportReport getWorkReportMemberImportReport() {
-		return _report;
+		return this._report;
 	}
 
 	protected void setWorkReportMemberImportReport(WorkReportImportReport report) {
-		_report = report;
+		this._report = report;
 	}
 
 	protected void showReport() {
 		Form f = new Form();
 		f.maintainParameters(getParametersToMaintain());
 		Table t = new Table();
-		t.add(iwrb.getLocalizedString("workreportmemberimport.import_statistics"), 1, 1);
-		t.add(iwrb.getLocalizedString("workreportmemberimport.number_of_members"), 1, 3);
+		t.add(this.iwrb.getLocalizedString("workreportmemberimport.import_statistics"), 1, 1);
+		t.add(this.iwrb.getLocalizedString("workreportmemberimport.number_of_members"), 1, 3);
 		t.add(Integer.toString(getWorkReportMemberImportReport().numberOfMembers), 2, 3);
-		t.add(iwrb.getLocalizedString("workreportmemberimport.number_of_players"), 1, 5);
+		t.add(this.iwrb.getLocalizedString("workreportmemberimport.number_of_players"), 1, 5);
 		t.add(Integer.toString(getWorkReportMemberImportReport().numberOfPlayers), 2, 5);
-		t.add(iwrb.getLocalizedString("workreportmemberimport.number_of_divisions"), 1, 7);
+		t.add(this.iwrb.getLocalizedString("workreportmemberimport.number_of_divisions"), 1, 7);
 		t.add(Integer.toString(getWorkReportMemberImportReport().leaguesMap.size()), 2, 7);
-		t.add(iwrb.getLocalizedString("workreportmemberimport.not_imported"), 1, 9);
+		t.add(this.iwrb.getLocalizedString("workreportmemberimport.not_imported"), 1, 9);
 		int i = 9;
 		if (getWorkReportMemberImportReport().notRead != null) {
 			Iterator it = getWorkReportMemberImportReport().notRead.iterator();
@@ -103,11 +103,11 @@ public class WorkReportMemberImporter extends WorkReportImporter {
 		}
 
 		i++;
-		SubmitButton submit = new SubmitButton(iwrb.getLocalizedString("workreportimporter.start", "start"));
+		SubmitButton submit = new SubmitButton(this.iwrb.getLocalizedString("workreportimporter.start", "start"));
 		submit.setAsImageButton(true);
 
-		SubmitButton confirm = new SubmitButton("MEMBER_IMPORT_CONFIRM",iwrb.getLocalizedString("workreportimporter.confirm", "confirm"));
-		SubmitButton reject = new SubmitButton("MEMBER_IMPORT_REJECT",iwrb.getLocalizedString("workreportimporter.reject", "reject"));
+		SubmitButton confirm = new SubmitButton("MEMBER_IMPORT_CONFIRM",this.iwrb.getLocalizedString("workreportimporter.confirm", "confirm"));
+		SubmitButton reject = new SubmitButton("MEMBER_IMPORT_REJECT",this.iwrb.getLocalizedString("workreportimporter.reject", "reject"));
 		t.add(confirm,2,i);
 		t.add(reject,2,i);
 			

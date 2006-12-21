@@ -115,42 +115,42 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     NumberFormat currencyNumberFormat = null;
 
     {
-        specialFieldList = new ArrayList();
+        this.specialFieldList = new ArrayList();
 
-        specialFieldList.add(LEAGUE_NAME);
-        specialFieldList.add(WorkReportConstants.INCOME_SUM_KEY);
-        specialFieldList.add(WorkReportConstants.EXPENSES_SUM_KEY);
-        specialFieldList.add(WorkReportConstants.INCOME_EXPENSES_SUB_SUM_KEY);
-        specialFieldList.add(WorkReportConstants.INCOME_EXPENSES_SUM_KEY);
-        specialFieldList.add(WorkReportConstants.ASSET_SUM_KEY);
-        specialFieldList.add(WorkReportConstants.DEBT_SUM_KEY);
+        this.specialFieldList.add(LEAGUE_NAME);
+        this.specialFieldList.add(WorkReportConstants.INCOME_SUM_KEY);
+        this.specialFieldList.add(WorkReportConstants.EXPENSES_SUM_KEY);
+        this.specialFieldList.add(WorkReportConstants.INCOME_EXPENSES_SUB_SUM_KEY);
+        this.specialFieldList.add(WorkReportConstants.INCOME_EXPENSES_SUM_KEY);
+        this.specialFieldList.add(WorkReportConstants.ASSET_SUM_KEY);
+        this.specialFieldList.add(WorkReportConstants.DEBT_SUM_KEY);
         for (int i = 0; i < WorkReportConstants.NOT_EDITABLE_FIN_NAMES.length; i++) {
-            specialFieldList.add(WorkReportConstants.NOT_EDITABLE_FIN_NAMES[i]);
+            this.specialFieldList.add(WorkReportConstants.NOT_EDITABLE_FIN_NAMES[i]);
         }
     }
 
     {
-        specialFieldColorMap = new HashMap();
+        this.specialFieldColorMap = new HashMap();
         // green
-        specialFieldColorMap.put(WorkReportConstants.INCOME_SUM_KEY, "#8AE588");
-        specialFieldColorMap.put(WorkReportConstants.ASSET_SUM_KEY, "#8AE588");
+        this.specialFieldColorMap.put(WorkReportConstants.INCOME_SUM_KEY, "#8AE588");
+        this.specialFieldColorMap.put(WorkReportConstants.ASSET_SUM_KEY, "#8AE588");
         // red
-        specialFieldColorMap.put(WorkReportConstants.EXPENSES_SUM_KEY,
+        this.specialFieldColorMap.put(WorkReportConstants.EXPENSES_SUM_KEY,
                 "#F89A8D");
-        specialFieldColorMap.put(WorkReportConstants.DEBT_SUM_KEY, "#F89A8D");
+        this.specialFieldColorMap.put(WorkReportConstants.DEBT_SUM_KEY, "#F89A8D");
         // blue
         for (int i = 0; i < WorkReportConstants.NOT_EDITABLE_FIN_NAMES.length; i++) {
-            specialFieldColorMap.put(
+            this.specialFieldColorMap.put(
                     WorkReportConstants.NOT_EDITABLE_FIN_NAMES[i], "#A1C2FA");
         }
         // yellow
-        specialFieldColorMap.put(WorkReportConstants.INCOME_EXPENSES_SUM_KEY,
+        this.specialFieldColorMap.put(WorkReportConstants.INCOME_EXPENSES_SUM_KEY,
                 "#FAFA46");
-        specialFieldColorMap.put(WorkReportConstants.INCOME_EXPENSES_SUB_SUM_KEY,
+        this.specialFieldColorMap.put(WorkReportConstants.INCOME_EXPENSES_SUB_SUM_KEY,
         "#FAFA46");
         // black
-        specialFieldColorMap.put(EMPTY_COLUMN, "#0000");
-        specialFieldColorMap.put(OKAY_BUTTON, "#0000");
+        this.specialFieldColorMap.put(EMPTY_COLUMN, "#0000");
+        this.specialFieldColorMap.put(OKAY_BUTTON, "#0000");
     }
 
     private List fieldList = new ArrayList();
@@ -198,8 +198,8 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         String action = "";
         // does the user want to close the report?
         if (iwc.isParameterSet(SUBMIT_FINISH_KEY)) {
-            leaguesWhereTheAccountIsOutOfBalance = getLeaguesWhereTheAccountIsOutOfBalance();
-            if (leaguesWhereTheAccountIsOutOfBalance.isEmpty()) {
+            this.leaguesWhereTheAccountIsOutOfBalance = getLeaguesWhereTheAccountIsOutOfBalance();
+            if (this.leaguesWhereTheAccountIsOutOfBalance.isEmpty()) {
                 setWorkReportAsFinished(true, iwc);
             }
             return action;
@@ -230,7 +230,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
                                 + ex.getMessage());
                 ex.printStackTrace(System.err);
             }
-            Iterator iterator = fieldList.iterator();
+            Iterator iterator = this.fieldList.iterator();
             while (iterator.hasNext()) {
                 String field = (String) iterator.next();
                 EntityPathValueContainer entityPathValueContainerFromTextEditor = TextEditorConverter
@@ -274,7 +274,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         }
         try {
             workReportClubAccountRecords = workReportClubAccountRecordHome
-                    .findAllRecordsByWorkReportId(workReportId);
+                    .findAllRecordsByWorkReportId(this.workReportId);
         } catch (FinderException ex) {
             String message = "[WorkReportBoardAccountEditor]: Can't find WorkReportClubAccountRecordHome";
             System.err.println(message + " Message is: " + ex.getMessage());
@@ -289,19 +289,19 @@ public class WorkReportAccountEditor extends WorkReportSelector {
                     .next();
             Integer groupId = new Integer(record.getWorkReportGroupId());
             Integer accountKey = new Integer(record.getAccountKeyId());
-            leagueKeyMatrix.put(groupId, accountKey, record);
+            this.leagueKeyMatrix.put(groupId, accountKey, record);
         }
         // validate parent child relations among the records
-        Iterator leagueIterator = leagueKeyMatrix.firstKeySet().iterator();
+        Iterator leagueIterator = this.leagueKeyMatrix.firstKeySet().iterator();
         while (leagueIterator.hasNext()) {
             Map parentKeySum = new HashMap();
             Integer groupId = (Integer) leagueIterator.next();
-            Map accountKeyRecordMap = leagueKeyMatrix.get(groupId);
+            Map accountKeyRecordMap = this.leagueKeyMatrix.get(groupId);
             Iterator entryIterator = accountKeyRecordMap.entrySet().iterator();
             while (entryIterator.hasNext()) {
                 Map.Entry entry = (Map.Entry) entryIterator.next();
                 Integer accountKeyId = (Integer) entry.getKey();
-                WorkReportAccountKey accountKey = (WorkReportAccountKey) accountKeyPrimaryKeyAccountKeyMap
+                WorkReportAccountKey accountKey = (WorkReportAccountKey) this.accountKeyPrimaryKeyAccountKeyMap
                         .get(accountKeyId);
                 String parentKeyNumber = accountKey.getParentKeyNumber();
                 // look up the parent account key
@@ -325,7 +325,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
                 Map.Entry entry = (Map.Entry) parentSumIterator.next();
                 String parentKeyNumber = (String) entry.getKey();
                 BigDecimal result = (BigDecimal) entry.getValue();
-                WorkReportAccountKey parent = (WorkReportAccountKey) accountKeyNumberAccountKeyMap
+                WorkReportAccountKey parent = (WorkReportAccountKey) this.accountKeyNumberAccountKeyMap
                         .get(parentKeyNumber);
                 Integer primaryKeyOfParent = (Integer) parent.getPrimaryKey();
                 createOrUpdateRecord(workReportBusiness, groupId,
@@ -419,20 +419,20 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         Collections.sort(assetKeys, keyComparator);
         Collections.sort(debtKeys, keyComparator);
         // add sorted keys to the fields
-        fieldList.add(LEAGUE_NAME);
+        this.fieldList.add(LEAGUE_NAME);
         addKeys(incomeKeys, INCOME);
-        fieldList.add(WorkReportConstants.INCOME_SUM_KEY);
-        fieldList.add(EMPTY_COLUMN);
+        this.fieldList.add(WorkReportConstants.INCOME_SUM_KEY);
+        this.fieldList.add(EMPTY_COLUMN);
         addKeys(expensesKeys, EXPENSES);
-        fieldList.add(WorkReportConstants.EXPENSES_SUM_KEY);
-        fieldList.add(EMPTY_COLUMN);
-        fieldList.add(WorkReportConstants.INCOME_EXPENSES_SUM_KEY);
-        fieldList.add(EMPTY_COLUMN);
+        this.fieldList.add(WorkReportConstants.EXPENSES_SUM_KEY);
+        this.fieldList.add(EMPTY_COLUMN);
+        this.fieldList.add(WorkReportConstants.INCOME_EXPENSES_SUM_KEY);
+        this.fieldList.add(EMPTY_COLUMN);
         addKeys(assetKeys, ASSET);
-        fieldList.add(WorkReportConstants.ASSET_SUM_KEY);
-        fieldList.add(EMPTY_COLUMN);
+        this.fieldList.add(WorkReportConstants.ASSET_SUM_KEY);
+        this.fieldList.add(EMPTY_COLUMN);
         addKeys(debtKeys, DEBT);
-        fieldList.add(WorkReportConstants.DEBT_SUM_KEY);
+        this.fieldList.add(WorkReportConstants.DEBT_SUM_KEY);
 
     }
 
@@ -444,8 +444,8 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         // get work report
         try {
             workReport = workReportBusiness.getWorkReportById(workReportIdTemp);
-            isReadOnly = workReportBusiness.isWorkReportReadOnly(workReportIdTemp);
-            editable = !(isReadOnly || workReport.isAccountPartDone());
+            this.isReadOnly = workReportBusiness.isWorkReportReadOnly(workReportIdTemp);
+            this.editable = !(this.isReadOnly || workReport.isAccountPartDone());
         } catch (RemoteException ex) {
             String message = "[WorkReportAccountEditor]: Can't retrieve WorkReportBusiness.";
             System.err.println(message + " Message is: " + ex.getMessage());
@@ -495,8 +495,8 @@ public class WorkReportAccountEditor extends WorkReportSelector {
             WorkReportGroup group = (WorkReportGroup) leagueIterator.next();
             String groupName = group.getShortName();
             Integer groupId = (Integer) group.getPrimaryKey();
-            if (leaguesWhereTheAccountIsOutOfBalance != null
-                    && leaguesWhereTheAccountIsOutOfBalance.contains(groupId)) {
+            if (this.leaguesWhereTheAccountIsOutOfBalance != null
+                    && this.leaguesWhereTheAccountIsOutOfBalance.contains(groupId)) {
                 leagueNamesWhereTheAccountIsOutOfBalance.add(groupName);
             }
             WorkReportAccountGroupHelper helper = new WorkReportAccountGroupHelper(
@@ -531,12 +531,12 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         EntityBrowser browser = getEntityBrowser(workReportAccountGroupHelpers,
                 resourceBundle, form);
         // put browser into a table
-        if (!isReadOnly) {
+        if (!this.isReadOnly) {
             Table mainTable = new Table(1, 2);
             mainTable.setCellspacing(0);
             mainTable.setCellpadding(0);
             mainTable.add(browser, 1, 1);
-            if (editable) {
+            if (this.editable) {
                 mainTable.add(getFinishButton(resourceBundle), 1, 2);
             } else {
                 //        Text text = new
@@ -548,7 +548,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
             return mainTable;
         }
         //if the report is read only, then it is printed out:
-        else if (isReadOnly) {
+        else if (this.isReadOnly) {
             Table mainTable = new Table(1, 2);
             mainTable.add(browser, 1, 1);
             mainTable.setCellspacing(0);
@@ -572,7 +572,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         errorMessageTable.setWidth(Table.HUNDRED_PERCENT);
         // errorMessageTable.setAlignment("center");
         errorMessageTable.setAlignment(1, 1, "center");
-        errorMessageTable.setStyleClass(1, 1, errorMessageStyle);
+        errorMessageTable.setStyleClass(1, 1, this.errorMessageStyle);
 
         return errorMessageTable;
     }
@@ -585,16 +585,16 @@ public class WorkReportAccountEditor extends WorkReportSelector {
             String name = key.getKeyName();
             String keyNumber = key.getKeyNumber();
             Integer primaryKey = (Integer) key.getPrimaryKey();
-            fieldList.add(name);
-            accountKeyNameAccountKeyMap.put(name, key);
-            accountKeyNumberAccountKeyMap.put(keyNumber, key);
-            accountKeyPrimaryKeyAccountKeyMap.put(primaryKey, key);
+            this.fieldList.add(name);
+            this.accountKeyNameAccountKeyMap.put(name, key);
+            this.accountKeyNumberAccountKeyMap.put(keyNumber, key);
+            this.accountKeyPrimaryKeyAccountKeyMap.put(primaryKey, key);
             // do not add the values of the children
             if (key.getParentKeyNumber() == null) {
                 plus.add(primaryKey);
             }
         }
-        specialFieldAccountKeyIdsPlus.put(accountArea, plus);
+        this.specialFieldAccountKeyIdsPlus.put(accountArea, plus);
     }
 
     private PresentationObject getFinishButton(IWResourceBundle resourceBundle) {
@@ -636,11 +636,11 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         okayConverter.maintainParameters(this.getParametersToMaintain());
 
         // define if converters should be editable
-        textEditorConverter.setEditable(editable);
+        textEditorConverter.setEditable(this.editable);
         // textConverter does not offer any input fields
         // define path short keys and map corresponding converters
         int i = 1;
-        Iterator fieldListIterator = fieldList.iterator();
+        Iterator fieldListIterator = this.fieldList.iterator();
         while (fieldListIterator.hasNext()) {
             String fieldName = fieldListIterator.next().toString();
             browser.setMandatoryColumn(i++, fieldName);
@@ -649,7 +649,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
             EntityToPresentationObjectConverter converter;
             if (EMPTY_COLUMN.equals(fieldName)) {
                 converter = emptyConverter;
-            } else if (specialFieldList.contains(fieldName)) {
+            } else if (this.specialFieldList.contains(fieldName)) {
                 converter = textConverter;
             } else {
                 converter = textEditorConverter;
@@ -664,7 +664,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         browser.setColorForEvenRows("#EFEFEF");
         browser.setColorForOddRows("#FFFFFF");
         browser.setColorForHeader("#DFDFDF");
-        browser.setColorForColumns(specialFieldColorMap);
+        browser.setColorForColumns(this.specialFieldColorMap);
         return browser;
     }
 
@@ -684,7 +684,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
             // give up
             return;
         }
-        WorkReportAccountKey accountKey = (WorkReportAccountKey) accountKeyNameAccountKeyMap
+        WorkReportAccountKey accountKey = (WorkReportAccountKey) this.accountKeyNameAccountKeyMap
                 .get(pathShortKey);
         if (accountKey == null) {
             String message = "[WorkReportAccountEditor]: Can't find corresponding account key to pathShortKey.";
@@ -710,7 +710,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         String parentKeyNumber = accountKey.getParentKeyNumber();
         // look up the parent account key
         if (parentKeyNumber != null) {
-            WorkReportAccountKey parentAccountKey = (WorkReportAccountKey) accountKeyNumberAccountKeyMap
+            WorkReportAccountKey parentAccountKey = (WorkReportAccountKey) this.accountKeyNumberAccountKeyMap
                     .get(parentKeyNumber);
             if (parentAccountKey == null) {
                 String message = "[WorkReportAccountEditor]: Can't find corresponding account key to pathShortKey.";
@@ -721,7 +721,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
             // get amount of the parent
             Integer parentAccountKeyId = (Integer) parentAccountKey
                     .getPrimaryKey();
-            WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) leagueKeyMatrix
+            WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) this.leagueKeyMatrix
                     .get(groupId, parentAccountKeyId);
             // calculate new parent value
             BigDecimal parentAmount = (record == null) ? new BigDecimal("0")
@@ -759,7 +759,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
 
     private void createOrUpdateRecord(WorkReportBusiness workReportBusiness,
             Integer groupId, Integer accountKeyId, BigDecimal amount) {
-        WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) leagueKeyMatrix
+        WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) this.leagueKeyMatrix
                 .get(groupId, accountKeyId);
         if (record == null) {
             // okay, first create a record
@@ -778,7 +778,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
                 record.setAccountKeyId(accountKeyId.intValue());
                 record.setWorkReportGroupId(groupId.intValue());
                 // add this new record to the matrix
-                leagueKeyMatrix.put(groupId, accountKeyId, record);
+                this.leagueKeyMatrix.put(groupId, accountKeyId, record);
             } catch (CreateException ex) {
                 String message = "[WorkReportAccountEditor]: Can't create WorkreportClubAccountRecord.";
                 System.err.println(message + " Message is: " + ex.getMessage());
@@ -810,13 +810,13 @@ public class WorkReportAccountEditor extends WorkReportSelector {
 
     private List getLeaguesWhereTheAccountIsOutOfBalance() {
         // assertion: league key matrix must be initialized
-        List assetIds = (List) specialFieldAccountKeyIdsPlus.get(ASSET);
-        List debtIds = (List) specialFieldAccountKeyIdsPlus.get(DEBT);
+        List assetIds = (List) this.specialFieldAccountKeyIdsPlus.get(ASSET);
+        List debtIds = (List) this.specialFieldAccountKeyIdsPlus.get(DEBT);
         List workReportGroupIdsOutOfBalance = new ArrayList();
-        Iterator iterator = leagueKeyMatrix.firstKeySet().iterator();
+        Iterator iterator = this.leagueKeyMatrix.firstKeySet().iterator();
         while (iterator.hasNext()) {
             Integer workReportGroupId = (Integer) iterator.next();
-            Map keyRecordMap = leagueKeyMatrix.get(workReportGroupId);
+            Map keyRecordMap = this.leagueKeyMatrix.get(workReportGroupId);
             Iterator keyRecordIterator = keyRecordMap.entrySet().iterator();
             BigDecimal result = new BigDecimal("0");
             while (keyRecordIterator.hasNext()) {
@@ -840,18 +840,18 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     }
 
     protected NumberFormat getCurrencyNumberFormat(IWContext iwc) {
-        if (currencyNumberFormat == null) {
+        if (this.currencyNumberFormat == null) {
             Locale locale = iwc.getCurrentLocale();
             // special case: If we are in Iceland do not show the currency
-            currencyNumberFormat = (locale.getCountry().equals("IS")) ? NumberFormat
+            this.currencyNumberFormat = (locale.getCountry().equals("IS")) ? NumberFormat
                     .getNumberInstance(locale)
                     : NumberFormat.getCurrencyInstance(locale);
             // !!!!!!
             // do not show any digits after the decimal point
             // !!!!!!
-            currencyNumberFormat.setMaximumFractionDigits(0);
+            this.currencyNumberFormat.setMaximumFractionDigits(0);
         }
-        return currencyNumberFormat;
+        return this.currencyNumberFormat;
     }
 
     /**
@@ -875,12 +875,12 @@ public class WorkReportAccountEditor extends WorkReportSelector {
 
         // returns either instance of String or instance of BigDecimal
         public Object getEntry(String accountKeyName) {
-            WorkReportAccountKey accountKey = (WorkReportAccountKey) accountKeyNameAccountKeyMap
+            WorkReportAccountKey accountKey = (WorkReportAccountKey) WorkReportAccountEditor.this.accountKeyNameAccountKeyMap
                     .get(accountKeyName);
             if (accountKey == null) { return getSpecialValues(accountKeyName); }
             Integer id = (Integer) accountKey.getPrimaryKey();
-            WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) leagueKeyMatrix
-                    .get(groupId, id);
+            WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) WorkReportAccountEditor.this.leagueKeyMatrix
+                    .get(this.groupId, id);
             // sometimes the record does not exist yet
             if (record == null) { return new BigDecimal("0"); }
             double amount = record.getAmount();
@@ -888,7 +888,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         }
 
         public int getGroupId() {
-            return groupId.intValue();
+            return this.groupId.intValue();
         }
 
         public Object getColumnValue(String columnName) {
@@ -901,7 +901,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
 
         private Object getSpecialValues(String accountKeyName) {
             if (accountKeyName.equals(LEAGUE_NAME)) {
-                return groupName;
+                return this.groupName;
             } else if (accountKeyName
                     .equals(WorkReportConstants.INCOME_SUM_KEY)) {
                 BigDecimal result = calculateAccountArea(INCOME);
@@ -929,7 +929,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         }
 
         private BigDecimal calculateAccountArea(String accountArea) {
-            List plusIds = (List) specialFieldAccountKeyIdsPlus
+            List plusIds = (List) WorkReportAccountEditor.this.specialFieldAccountKeyIdsPlus
                     .get(accountArea);
             BigDecimal plus = addRecords(plusIds);
             return plus;
@@ -940,8 +940,8 @@ public class WorkReportAccountEditor extends WorkReportSelector {
             Iterator iterator = accountKeyIds.iterator();
             while (iterator.hasNext()) {
                 Integer primaryKey = (Integer) iterator.next();
-                WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) leagueKeyMatrix
-                        .get(groupId, primaryKey);
+                WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) WorkReportAccountEditor.this.leagueKeyMatrix
+                        .get(this.groupId, primaryKey);
                 if (record != null) {
                     BigDecimal amount = new BigDecimal(Double.toString(record
                             .getAmount()));

@@ -24,7 +24,7 @@ public class AgeDropDownMenu extends DropDownMenuInputHandler {
 
 	public void main(IWContext iwc) throws Exception {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
-		if (default_age==-1) {
+		if (this.default_age==-1) {
 			addMenuElement(" ",iwrb.getLocalizedString("AgeDropdownmenu.all_ages", "All ages"));
 		}
 		for (int i = youngest; i <= oldest; i++) {
@@ -32,10 +32,10 @@ public class AgeDropDownMenu extends DropDownMenuInputHandler {
 		}
 		String selectedElement = getSelectedElementValue();
 		if (selectedElement == null || selectedElement.length() == 0) {
-			if(default_age==-1) {
+			if(this.default_age==-1) {
 				setSelectedElement(" ");
 			} else {
-				setSelectedElement(default_age);
+				setSelectedElement(this.default_age);
 			}
 		}
 	}
@@ -51,11 +51,13 @@ public class AgeDropDownMenu extends DropDownMenuInputHandler {
 			if (" ".equals(age)) {
 				return null;
 			}
-			else
+			else {
 				return new Integer(age);
+			}
 		}
-		else
+		else {
 			return null;
+		}
 	}
 
 	/*
@@ -68,10 +70,10 @@ public class AgeDropDownMenu extends DropDownMenuInputHandler {
 		if (value != null) {
 			return value.toString();
 		} else {
-			if(default_age==-1) {
+			if(this.default_age==-1) {
 				return iwrb.getLocalizedString("AgeDropdownmenu.all_ages", "All ages");
 			} else {
-				return "" + default_age;
+				return "" + this.default_age;
 			}
 		}
 	}

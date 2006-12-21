@@ -81,16 +81,16 @@ public class BankPlugin extends CashierSubWindowTemplate implements
         boolean isContractDone = iwc.isParameterSet(ACTION_CONTRACT_SETUP);
 
         if (isContractDone) {
-            errorList = new ArrayList();
+            this.errorList = new ArrayList();
             String paramSSN = iwc.getParameter(LABEL_SSN);
             String paramDueDate = iwc.getParameter(LABEL_DUE_DATE);
             String paramFinalDueDate = iwc.getParameter(LABEL_FINAL_DUE_DATE);
 
             if (paramSSN == null || "".equals(paramSSN)) {
-                errorList.add(ERROR_NO_SSN_ENTERED);
+                this.errorList.add(ERROR_NO_SSN_ENTERED);
             } 
 
-            if (!errorList.isEmpty()) { return false; }
+            if (!this.errorList.isEmpty()) { return false; }
 
             try {
             		Map basket = getBasketBusiness(iwc).getBasket();
@@ -116,7 +116,7 @@ public class BankPlugin extends CashierSubWindowTemplate implements
     public PresentationObject showPlugin(IWContext iwc, String type,
             String amount) {
         boolean isContractDone = iwc.isParameterSet(ACTION_CONTRACT_SETUP);
-        if (errorList != null && !errorList.isEmpty()) {
+        if (this.errorList != null && !this.errorList.isEmpty()) {
             isContractDone = false;
         }
 
@@ -134,7 +134,7 @@ public class BankPlugin extends CashierSubWindowTemplate implements
         Table inputTable = new Table();
         inputTable.setCellpadding(5);
 
-        if (errorList != null) {
+        if (this.errorList != null) {
             Table error = new Table();
             Text labelError = new Text(iwrb.getLocalizedString(
                     ERROR_COULD_NOT_SAVE, "Could not save")
@@ -143,8 +143,8 @@ public class BankPlugin extends CashierSubWindowTemplate implements
 
             int r = 1;
             error.add(labelError, 1, r++);
-            if (errorList != null && !errorList.isEmpty()) {
-                Iterator it = errorList.iterator();
+            if (this.errorList != null && !this.errorList.isEmpty()) {
+                Iterator it = this.errorList.iterator();
                 while (it.hasNext()) {
                     String loc = (String) it.next();
                     Text errorText = new Text(iwrb.getLocalizedString(loc, ""));

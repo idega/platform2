@@ -50,8 +50,9 @@ public class PlayersOrMembersDropDownMenu extends DropDownMenuInputHandler  {
 
 			return displayName;
 		}
-		else
+		else {
 			return "";
+		}
 	}
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()

@@ -225,7 +225,7 @@ public class CashierLedgerWindow extends CashierSubWindowTemplate {
 					aLink.setWindowToOpen(UserPropertyWindow.class);
 					aLink.addParameter(UserPropertyWindow.PARAMETERSTRING_USER_ID, user.getPrimaryKey().toString());
 					Text displayText = new Text(displayString);
-					displayText.setStyleClass(bold);
+					displayText.setStyleClass(CashierLedgerWindow.this.bold);
 					Table te = new Table();
 					te.add(aLink, 1, 1);
 					te.add(displayText, 2, 1);
@@ -247,7 +247,7 @@ public class CashierLedgerWindow extends CashierSubWindowTemplate {
 			e.printStackTrace();
 		}
 		Collection u = new ArrayList();
-		Iterator usersIter = (Iterator) users.iterator();
+		Iterator usersIter = users.iterator();
 		while (usersIter.hasNext()) {
 			User us = (User) usersIter.next();
 			if (us.getMetaData(NEW_USER_IN_LEDGER) != null && !us.getMetaData(NEW_USER_IN_LEDGER).equals("-1")) {

@@ -119,8 +119,9 @@ public class MasterCardFileCreation implements CreditCardFileCreation {
 			String cardNumber = entry.getPaymentContract().getCardNumber();
 			if (cardNumber.length() < 19) {
 				StringBuffer p = new StringBuffer(cardNumber);
-				while (p.length() < 19)
+				while (p.length() < 19) {
 					p.append(" ");
+				}
 				cardNumber = p.toString();
 			} else if (cardNumber.length() > 19) {
 				cardNumber = cardNumber.substring(0, 19);
@@ -159,8 +160,9 @@ public class MasterCardFileCreation implements CreditCardFileCreation {
 			String referenceNumber = entry.getPrimaryKey().toString();
 			if (referenceNumber.length() < 7) {
 				StringBuffer p = new StringBuffer(referenceNumber);
-				while (p.length() < 7)
+				while (p.length() < 7) {
 					p.insert(0, "0");
+				}
 				referenceNumber = p.toString();
 				
 			} else if (referenceNumber.length() > 7) {

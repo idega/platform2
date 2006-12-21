@@ -15,6 +15,6 @@ package is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler;
 public class OneAgeDropDownMenu extends AgeDropDownMenu {
 	public OneAgeDropDownMenu() {
 		super();
-		default_age = 16;
+		this.default_age = 16;
 	}
 }

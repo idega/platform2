@@ -170,10 +170,10 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 		}
 		try {
 			// Get the group that is connecting to the league.
-			Group parentGroup = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(
+			Group parentGroup = (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(
 					parentGroupId)));
 			// Get the league
-			Group specialGroup = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(
+			Group specialGroup = (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(
 					connection)));
 			/*
 			 * Going through the child groups of the league group (specialGroup)
@@ -595,8 +595,8 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 		Group clubColl = null;
 		try {
 			clubColl = getMemberUserBusiness().getClubCollectionGroupForLeague(league);
-			if (!clubColl.getName().equalsIgnoreCase("Aðildarfélög")) {
-				clubColl.setName("Aðildarfélög");
+			if (!clubColl.getName().equalsIgnoreCase("Aï¿½ildarfï¿½lï¿½g")) {
+				clubColl.setName("Aï¿½ildarfï¿½lï¿½g");
 				clubColl.store();
 			}
 			return clubColl;
@@ -604,7 +604,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 		catch (NoLeagueClubCollectionGroup e) {
 			log("No club collection group for league: " + league.getName() + ", creating one...");
 			// TODO change sloppy none localized group name
-			clubColl = getGroupBusiness().createGroupUnder("Aðildarfélög", null,
+			clubColl = getGroupBusiness().createGroupUnder("Aï¿½ildarfï¿½lï¿½g", null,
 					IWMemberConstants.GROUP_TYPE_LEAGUE_CLUB_COLLECTION, league);
 			Collection leagueOwners = getGroupBusiness().getOwnerUsersForGroup(league);
 			for (Iterator owners = leagueOwners.iterator(); owners.hasNext();) {
@@ -690,8 +690,8 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 	 * @param clubId
 	 */
 	protected void addRoleAccessToGroup(AccessController access, String roleKey, Integer groupId) {
-		access.addRoleToGroup(roleKey, AccessControl.PERMISSION_KEY_VIEW, groupId, this.getIWApplicationContext());
-		access.addRoleToGroup(roleKey, AccessControl.PERMISSION_KEY_EDIT, groupId, this.getIWApplicationContext());
+		access.addRoleToGroup(roleKey, AccessController.PERMISSION_KEY_VIEW, groupId, this.getIWApplicationContext());
+		access.addRoleToGroup(roleKey, AccessController.PERMISSION_KEY_EDIT, groupId, this.getIWApplicationContext());
 	}
 
 	/**
@@ -713,7 +713,8 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 				return access.createRoleWithRoleKey(role);
 			}
 		}
-		else
+		else {
 			throw new NoAbbreviationException(league.getName());
+		}
 	}
 }

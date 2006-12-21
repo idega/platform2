@@ -23,7 +23,7 @@ import com.idega.util.text.TextSoap;
  * To highlight that your step is happening call setAsCurrentStepByStepLocalizableKey(STEP_NAME_LOCALIZATION_KEY) with your key in the main method.
  * Copyright: Idega Software 2003 <br>
  * Company: Idega Software <br>
- * @author <a href="mailto:sigtryggur@idega.is">Sigtryggur Símonarson</a>
+ * @author <a href="mailto:sigtryggur@idega.is">Sigtryggur Sï¿½monarson</a>
  */
 public class WorkReportGroupSelector extends WorkReportSelector {
 	
@@ -34,7 +34,7 @@ public class WorkReportGroupSelector extends WorkReportSelector {
 	}
 
 	public int getGroupId() {
-		return groupId;
+		return this.groupId;
 	}
 
 	public void setGroupId(int groupId) {
@@ -42,7 +42,7 @@ public class WorkReportGroupSelector extends WorkReportSelector {
 	}
 	
 	public int getClubId() {
-		return groupId;
+		return this.groupId;
 	}
 
 	public void setClubId(int groupId) {
@@ -58,11 +58,11 @@ public class WorkReportGroupSelector extends WorkReportSelector {
 		iwc.setSessionAttribute(WorkReportConstants.WR_SESSION_PARAM_REGIONAL_UNION_ID, null);
 		String paramGroupId = getParameterFromSessionOrRequest(iwc,WorkReportConstants.WR_SESSION_PARAM_CLUB_ID);
 		if (paramGroupId != null || getGroupId()!=-1 ){
-			if( groupId == -1 ) {
-			    groupId = Integer.parseInt(paramGroupId);
+			if( this.groupId == -1 ) {
+			    this.groupId = Integer.parseInt(paramGroupId);
 			}
 			iwc.setSessionAttribute(WorkReportConstants.WR_SESSION_PARAM_CLUB_ID,paramGroupId);
-			Text groupText = new Text(this.getWorkReportBusiness(iwc).getGroupBusiness().getGroupByGroupID(groupId).getName(),true,true,false);
+			Text groupText = new Text(this.getWorkReportBusiness(iwc).getGroupBusiness().getGroupByGroupID(this.groupId).getName(),true,true,false);
 			addToStepsExtraInfo(ClubSelector.STEP_NAME_LOCALIZATION_KEY,groupText);
 			clubSelectionFormInitialized = true;
 		}
@@ -76,11 +76,11 @@ public class WorkReportGroupSelector extends WorkReportSelector {
 		String paramGroupType = null;
 		if( getGroupId() ==-1 ){
 			paramGroupType = getParameterFromSessionOrRequest(iwc,WorkReportConstants.WR_SESSION_PARAM_GROUP_TYPE);
-			groups = reportBiz.getAllGroupsByGroupType(paramGroupType);
+			groups = this.reportBiz.getAllGroupsByGroupType(paramGroupType);
 			groupMenu = new DropdownMenu(groups,WorkReportConstants.WR_SESSION_PARAM_CLUB_ID);
 		}
 		
-		String groupTypeString = iwrb.getLocalizedString(paramGroupType,paramGroupType);
+		String groupTypeString = this.iwrb.getLocalizedString(paramGroupType,paramGroupType);
 		
 		String modifiedGroupTypeString = paramGroupType.toLowerCase();
 		if (modifiedGroupTypeString.substring(0,5).equals("iwme_")) {
@@ -88,7 +88,7 @@ public class WorkReportGroupSelector extends WorkReportSelector {
 		}
 		modifiedGroupTypeString = TextSoap.findAndReplace(modifiedGroupTypeString,'_',' ');
 		
-		table.add(iwrb.getLocalizedString("workreportgroupselector.select_"+paramGroupType,"Select the desired " + modifiedGroupTypeString),1,1);
+		table.add(this.iwrb.getLocalizedString("workreportgroupselector.select_"+paramGroupType,"Select the desired " + modifiedGroupTypeString),1,1);
 
 		if( groupMenu!=null ){
 			table.add(groupTypeString,1,3);

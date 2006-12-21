@@ -195,7 +195,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
           buffer.append(ssnMessage);
           buffer.append(": ");
           buffer.append(ssn);
-          newMemberMessage = buffer.toString();
+          this.newMemberMessage = buffer.toString();
         }
       }
     }  
@@ -239,8 +239,8 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       // create data from the database
       int workReportId = getWorkReportId();
       WorkReport workReport = workReportBusiness.getWorkReportById(workReportId);
-      isReadOnly = workReportBusiness.isWorkReportReadOnly(workReportId);
-      editable = ! (isReadOnly || workReport.isBoardPartDone());
+      this.isReadOnly = workReportBusiness.isWorkReportReadOnly(workReportId);
+      this.editable = ! (this.isReadOnly || workReport.isBoardPartDone());
     } catch (RemoteException ex) {
       System.err.println(
         "[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness. Message is: "
@@ -320,8 +320,8 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     };
 		Table errorMessageTable = getErrorMessageTable();
     // get new entry message
-    if (newMemberMessage != null) {
-      Text text = new Text(newMemberMessage);
+    if (this.newMemberMessage != null) {
+      Text text = new Text(this.newMemberMessage);
 //      text.setBold();
 //      text.setFontColor("#FF0000");
       errorMessageTable.add(text);
@@ -329,7 +329,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     }
     // get error message
     
-    if (personalIdnotCorrect) {
+    if (this.personalIdnotCorrect) {
       String message = resourceBundle.getLocalizedString("wr_editor_ssn_not_valid", "The input of the social security number is not valid");
       Text text = new Text(message);
 //      text.setBold();
@@ -343,7 +343,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     EntityBrowser browser = getEntityBrowser(list, resourceBundle, form);
     // put browser into a table
     // add buttons
-    if (editable) {
+    if (this.editable) {
       Table mainTable = new Table(1,2);
       mainTable.setCellspacing(0);
       mainTable.setCellpadding(0);
@@ -364,7 +364,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       return mainTable;
     }
 		//if the report is read only, then it is printed out:
-		else if(isReadOnly){
+		else if(this.isReadOnly){
 			Table mainTable = new Table(1,2);
 			mainTable.add(browser, 1,1);
 			mainTable.setCellspacing(0);
@@ -386,7 +386,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
 		errorMessageTable.setWidth(Table.HUNDRED_PERCENT);
 		errorMessageTable.setAlignment("center");
 		errorMessageTable.setAlignment(1,1,"center");
-		errorMessageTable.setStyleClass(1,1,errorMessageStyle);
+		errorMessageTable.setStyleClass(1,1,this.errorMessageStyle);
   	
 		return errorMessageTable;
 	}
@@ -490,12 +490,12 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     DropDownMenuConverter leagueDropDownMenuConverter = getConverterForLeague(resourceBundle, form);
     DropDownMenuConverter dropDownPostalCodeConverter = getConverterForPostalCode(form);
     // define if the editors should be editable
-    checkBoxConverter.setEditable(editable);
-    textEditorConverter.setEditable(editable);
+    checkBoxConverter.setEditable(this.editable);
+    textEditorConverter.setEditable(this.editable);
 //    socialSecurityNumberEditorConverter.setEditable(editable);
-    statusDropDownMenuConverter.setEditable(editable);
-    leagueDropDownMenuConverter.setEditable(editable);
-    dropDownPostalCodeConverter.setEditable(editable);
+    statusDropDownMenuConverter.setEditable(this.editable);
+    leagueDropDownMenuConverter.setEditable(this.editable);
+    dropDownPostalCodeConverter.setEditable(this.editable);
     // define path short keys and map corresponding converters
     Object[] columns = {
       "okay",okayConverter,
@@ -543,17 +543,17 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       Map optionMap = null;
       
       public Map getOptions(Object entity, EntityPath path, EntityBrowser browser, IWContext iwc) {
-        if (optionMap == null)  {
-          optionMap = new TreeMap();
+        if (this.optionMap == null)  {
+          this.optionMap = new TreeMap();
           Iterator iterator = STATUS_OPTIONS.iterator();
           while (iterator.hasNext())  {
             String status = (String) iterator.next();
             String display = resourceBundle.getLocalizedString(status, status);
-            optionMap.put(status,display);
+            this.optionMap.put(status,display);
           }
         }
-        optionMap = new SortedByValueMap(optionMap);
-        return optionMap;
+        this.optionMap = new SortedByValueMap(this.optionMap);
+        return this.optionMap;
       }
     };     
     converter.setOptionProvider(optionProvider); 
@@ -581,8 +581,8 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     Map optionMap = null;
       
     public Map getOptions(Object entity, EntityPath path, EntityBrowser browser, IWContext iwc) {
-      if (optionMap == null)  {
-        optionMap = new TreeMap();
+      if (this.optionMap == null)  {
+        this.optionMap = new TreeMap();
         WorkReportBusiness business = getWorkReportBusiness(iwc);
         Collection coll = null;
         try {
@@ -610,10 +610,10 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
           String name = (String) shortNameId.getKey();
           String display = resourceBundle.getLocalizedString(name, name);
           String id = (String) shortNameId.getValue();
-          optionMap.put(id, display);
+          this.optionMap.put(id, display);
           }
         }
-        return optionMap;
+        return this.optionMap;
       }
     };     
     converter.setOptionProvider(optionProvider); 
@@ -666,7 +666,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       WorkReportGroup workReportGroup = workReportBusiness.getWorkReportGroupHome().findByPrimaryKey(workReportGroupId);
       workReportBoardMember = workReportBusiness.createWorkReportBoardMember(getWorkReportId(), personalId, workReportGroup);
       if (workReportBoardMember == null) {
-        personalIdnotCorrect = true;
+        this.personalIdnotCorrect = true;
       }
       return workReportBoardMember;
  
@@ -854,13 +854,13 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     
     public Object getColumnValue(String columnName) {
       if (LEAGUE.equals(columnName))  {
-        return league;
+        return this.league;
       }
-      return ((EntityRepresentation) member).getColumnValue(columnName);
+      return ((EntityRepresentation) this.member).getColumnValue(columnName);
     }  
     
     public Object getPrimaryKey() {
-      return ((EntityRepresentation) member).getPrimaryKey();
+      return ((EntityRepresentation) this.member).getPrimaryKey();
     }
   }
 

@@ -71,10 +71,10 @@ public class FamilyConnector extends StyledIWAdminWindow {
 	}
 
 	public void main(IWContext iwc) throws Exception {
-		method = parseMethod(iwc);
-		user = getUser(iwc);
+		this.method = parseMethod(iwc);
+		this.user = getUser(iwc);
 
-		if (user != null) {
+		if (this.user != null) {
 			switch (parseAction(iwc)) {
 				case _ACTION_ATTACH :
 					getAttachForm(iwc);
@@ -94,7 +94,7 @@ public class FamilyConnector extends StyledIWAdminWindow {
 
 	private void getAttachForm(IWContext iwc) throws Exception {
 		Form form = new Form();
-		form.add(new HiddenInput(_PARAM_USER_ID, user.getPrimaryKey().toString()));
+		form.add(new HiddenInput(_PARAM_USER_ID, this.user.getPrimaryKey().toString()));
 		form.add(new HiddenInput(_PARAM_METHOD, String.valueOf(_METHOD_ATTACH)));
 		form.add(new HiddenInput(_PARAM_ACTION, String.valueOf(_ACTION_SAVE)));
 		
@@ -106,7 +106,7 @@ public class FamilyConnector extends StyledIWAdminWindow {
 
 		Table frameTable = new Table();
 		frameTable.setWidth(Table.HUNDRED_PERCENT);
-		frameTable.setStyleClass(mainStyleClass);
+		frameTable.setStyleClass(this.mainStyleClass);
 		frameTable.setCellpadding(5);
 		frameTable.setCellspacing(0);
 
@@ -121,7 +121,7 @@ public class FamilyConnector extends StyledIWAdminWindow {
 		frameTable.add(getRelationMenu(iwc), 1, 2);
 		
 		Table bottomTable = new Table();
-		bottomTable.setStyleClass(mainStyleClass);
+		bottomTable.setStyleClass(this.mainStyleClass);
 		bottomTable.setAlignment(1,1,Table.HORIZONTAL_ALIGN_LEFT);
 		bottomTable.setAlignment(2,1,Table.HORIZONTAL_ALIGN_RIGHT);
 		bottomTable.setWidth("100%");
@@ -147,7 +147,7 @@ public class FamilyConnector extends StyledIWAdminWindow {
 	private void getConfirmation(IWContext iwc) throws Exception {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		Form form = new Form();
-		form.add(new HiddenInput(_PARAM_USER_ID, user.getPrimaryKey().toString()));
+		form.add(new HiddenInput(_PARAM_USER_ID, this.user.getPrimaryKey().toString()));
 		form.add(new HiddenInput(_PARAM_RELATED_USER_ID, iwc.getParameter(_PARAM_RELATED_USER_ID)));
 		form.add(new HiddenInput(_PARAM_TYPE, iwc.getParameter(_PARAM_TYPE)));
 		form.add(new HiddenInput(_PARAM_METHOD, String.valueOf(_METHOD_DETACH)));
@@ -158,7 +158,7 @@ public class FamilyConnector extends StyledIWAdminWindow {
 		table.setCellspacing(0);
 		
 		Table frameTable = new Table();
-		frameTable.setStyleClass(mainStyleClass);
+		frameTable.setStyleClass(this.mainStyleClass);
 		frameTable.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_LEFT);
 		frameTable.setAlignment(1, 2, Table.HORIZONTAL_ALIGN_LEFT);
 		frameTable.setAlignment(2,2, Table.HORIZONTAL_ALIGN_RIGHT);
@@ -168,7 +168,7 @@ public class FamilyConnector extends StyledIWAdminWindow {
 		Table bottomTable = new Table();
 		bottomTable.setCellpadding(0);
 		bottomTable.setCellspacing(0);
-		bottomTable.setStyleClass(mainStyleClass);
+		bottomTable.setStyleClass(this.mainStyleClass);
 		bottomTable.setWidth("100%");
 		
 		
@@ -194,30 +194,30 @@ public class FamilyConnector extends StyledIWAdminWindow {
 		String relationType = iwc.getParameter(_PARAM_TYPE);
 		String relatedPerson = iwc.getParameter(_PARAM_RELATED_USER_ID);
 		if (relatedPerson != null) {
-			switch (method) {
+			switch (this.method) {
 				case _METHOD_ATTACH :
 					try {
 						User relatedUser = getUserBusiness(iwc).getUserHome().findByPersonalID(relatedPerson);
 						
-						if(!user.getPrimaryKey().equals(relatedUser.getPrimaryKey())) {
+						if(!this.user.getPrimaryKey().equals(relatedUser.getPrimaryKey())) {
 							if (relationType.equals(logic.getChildRelationType())) {
-								logic.setAsChildFor(relatedUser, user);
+								logic.setAsChildFor(relatedUser, this.user);
 							}
 							else if (relationType.equals(logic.getParentRelationType())) {
-								logic.setAsParentFor(relatedUser, user);
+								logic.setAsParentFor(relatedUser, this.user);
 							}
 							else if (relationType.equals(logic.getSpouseRelationType())) {
-								logic.setAsSpouseFor(relatedUser, user);
+								logic.setAsSpouseFor(relatedUser, this.user);
 							}
 							else if (relationType.equals(logic.getSiblingRelationType())) {
-								logic.setAsSiblingFor(relatedUser, user);
+								logic.setAsSiblingFor(relatedUser, this.user);
 							}
 							else if (relationType.equals(logic.getCustodianRelationType())) {
-								logic.setAsCustodianFor(relatedUser, user);
+								logic.setAsCustodianFor(relatedUser, this.user);
 							}
 							else if( relationType.equals(FAMILY_RELATION_CUSTODIAN_AND_PARENT)){
-								logic.setAsParentFor(relatedUser, user);
-								logic.setAsCustodianFor(relatedUser, user);
+								logic.setAsParentFor(relatedUser, this.user);
+								logic.setAsCustodianFor(relatedUser, this.user);
 							}
 							close();
 
@@ -249,23 +249,23 @@ public class FamilyConnector extends StyledIWAdminWindow {
 						User relatedUser = getUserBusiness(iwc).getUser(Integer.parseInt(relatedPerson));
 
 						if (relationType.equals(logic.getChildRelationType())) {
-							logic.removeAsChildFor(relatedUser, user);
+							logic.removeAsChildFor(relatedUser, this.user);
 						}
 						else if (relationType.equals(logic.getParentRelationType())) {
-							logic.removeAsParentFor(relatedUser, user);
+							logic.removeAsParentFor(relatedUser, this.user);
 						}
 						else if (relationType.equals(logic.getSpouseRelationType())) {
-							logic.removeAsSpouseFor(relatedUser, user);
+							logic.removeAsSpouseFor(relatedUser, this.user);
 						}
 						else if (relationType.equals(logic.getSiblingRelationType())) {
-							logic.removeAsSiblingFor(relatedUser, user);
+							logic.removeAsSiblingFor(relatedUser, this.user);
 						}
 						else if (relationType.equals(logic.getCustodianRelationType())) {
-							logic.removeAsCustodianFor(relatedUser, user);
+							logic.removeAsCustodianFor(relatedUser, this.user);
 						}
 						else if( relationType.equals(FAMILY_RELATION_CUSTODIAN_AND_PARENT)){
-							logic.removeAsParentFor(relatedUser, user);
-							logic.removeAsCustodianFor(relatedUser, user);
+							logic.removeAsParentFor(relatedUser, this.user);
+							logic.removeAsCustodianFor(relatedUser, this.user);
 						}
 						close();
 					}

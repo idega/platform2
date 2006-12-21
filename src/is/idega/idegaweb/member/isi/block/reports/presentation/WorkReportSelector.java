@@ -35,7 +35,7 @@ public class WorkReportSelector extends ClubSelector {
 	 * @return the work reports id. -1 if no report selected
 	 */
 	public int getWorkReportId() {
-		return workReportId;
+		return this.workReportId;
 	}
 
 	/**
@@ -49,7 +49,7 @@ public class WorkReportSelector extends ClubSelector {
 	 * @return
 	 */
 	public String getUserType() {
-		return userType;
+		return this.userType;
 	}
 
 	/**
@@ -63,7 +63,7 @@ public class WorkReportSelector extends ClubSelector {
 	 * @return the year of the report
 	 */
 	public int getYear() {
-		return year;
+		return this.year;
 	}
 
 	/**
@@ -94,18 +94,18 @@ public class WorkReportSelector extends ClubSelector {
 			if(  paramWorkReportYear!=null  ){
 				//regionalUnionId = Integer.parseInt(PARAM_REGION_UNION_ID);
 				iwc.setSessionAttribute(WorkReportConstants.WR_SESSION_PARAM_WORK_REPORT_YEAR,paramWorkReportYear);
-				year = Integer.parseInt(paramWorkReportYear);
+				this.year = Integer.parseInt(paramWorkReportYear);
 				
 				
 				if(paramWorkReportId==null){	
-					workReportId = reportBiz.getOrCreateWorkReportIdForGroupIdByYear(getClubId(),year, true);
-					iwc.setSessionAttribute(WorkReportConstants.WR_SESSION_PARAM_WORK_REPORT_ID,Integer.toString(workReportId));
+					this.workReportId = this.reportBiz.getOrCreateWorkReportIdForGroupIdByYear(getClubId(),this.year, true);
+					iwc.setSessionAttribute(WorkReportConstants.WR_SESSION_PARAM_WORK_REPORT_ID,Integer.toString(this.workReportId));
 				}
 				else{
-					workReportId = Integer.parseInt(paramWorkReportId);
+					this.workReportId = Integer.parseInt(paramWorkReportId);
 				}
 				
-				Text yearText = new Text(getWorkReportBusiness(iwc).getWorkReportById(workReportId).getYearOfReport().toString(),true,true,false);
+				Text yearText = new Text(getWorkReportBusiness(iwc).getWorkReportById(this.workReportId).getYearOfReport().toString(),true,true,false);
 				addToStepsExtraInfo(STEP_NAME_LOCALIZATION_KEY,yearText);
 				
 				iwc.removeSessionAttribute(WorkReportConstants.WR_SESSION_CLEAR);
@@ -136,12 +136,12 @@ public class WorkReportSelector extends ClubSelector {
 		table.setAlignment(1,3,Table.HORIZONTAL_ALIGN_RIGHT);
 		
 		
-		table.add(iwrb.getLocalizedString("workreportselector.select_year_of_report","Select work report year."),1,1);
-		table.add(iwrb.getLocalizedString("workreportselector.year","Year"),1,2);
+		table.add(this.iwrb.getLocalizedString("workreportselector.select_year_of_report","Select work report year."),1,1);
+		table.add(this.iwrb.getLocalizedString("workreportselector.year","Year"),1,2);
 		table.add(dateSelector,2,2);		
 		table.add(new HiddenInput(WorkReportConstants.WR_SESSION_PARAM_CLUB_ID,Integer.toString(getClubId())),2,2);	
 		
-		SubmitButton submit = new SubmitButton(iwrb.getLocalizedString("clubselector.continue","continue"));
+		SubmitButton submit = new SubmitButton(this.iwrb.getLocalizedString("clubselector.continue","continue"));
 		submit.setAsImageButton(true);
 		
 		table.add(submit,1,3);

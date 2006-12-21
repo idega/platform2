@@ -185,7 +185,7 @@ public class Checkout extends CashierSubWindowTemplate {
 					if (disc != null && !"".equals(disc)) {
 						int perc = Integer.parseInt(disc);
 						double discAmount = Math.round(entry.getAmount()
-								* (double) perc / 100.0);
+								* perc / 100.0);
 
 						StringBuffer info = new StringBuffer(
 								LABEL_DISCOUNT_INFO);

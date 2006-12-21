@@ -94,8 +94,8 @@ public class WorkReportMultiEditor extends Block {
   public void main(IWContext iwc) throws Exception {
    
     IWResourceBundle iwrb = getResourceBundle(iwc);
-    if(year==-1) {
-    	year = (new IWTimestamp(IWTimestamp.getTimestampRightNow()).getYear());
+    if(this.year==-1) {
+    	this.year = (new IWTimestamp(IWTimestamp.getTimestampRightNow()).getYear());
     }
     
     String action = parseAction(iwc);
@@ -183,12 +183,12 @@ public class WorkReportMultiEditor extends Block {
 		GroupMetaDataConverter metaConverter = new GroupMetaDataConverter();
  
     // define if the converters should be editable or not
-    textEditorConverter.setEditable(editable);
-		reportStatusDropDownMenuConverter.setEditable(editable);
+    textEditorConverter.setEditable(this.editable);
+		reportStatusDropDownMenuConverter.setEditable(this.editable);
 		
 		InActiveCheckBoxConverter inActiveConverter = new InActiveCheckBoxConverter();
 		inActiveConverter.maintainParameters(params);
-        inActiveConverter.setEditable(editable);
+        inActiveConverter.setEditable(this.editable);
 		EditOkayButtonConverter okCancelButton = new EditOkayButtonConverter();
 		
 		okCancelButton.maintainParameters(params);
@@ -215,7 +215,7 @@ public class WorkReportMultiEditor extends Block {
       
       
     EntityBrowser browser = EntityBrowser.getInstanceUsingEventSystemAndExternalForm();
-    browser.setWidth(EntityBrowser.HUNDRED_PERCENT);
+    browser.setWidth(Table.HUNDRED_PERCENT);
     browser.setCellpadding(3);
     browser.setRowHeight(1,"15");
     browser.setLeadingEntity(WorkReport.class);
@@ -259,21 +259,21 @@ public class WorkReportMultiEditor extends Block {
 		Map optionMap = null;
       
 		public Map getOptions(Object entity, EntityPath path, EntityBrowser browser, IWContext iwc) {
-			if (optionMap == null)  {
-				optionMap = new TreeMap();
+			if (this.optionMap == null)  {
+				this.optionMap = new TreeMap();
  			
-				optionMap.put(WorkReportConstants.WR_STATUS_NOT_DONE, resourceBundle.getLocalizedString(WorkReportConstants.WR_STATUS_NOT_DONE, WorkReportConstants.WR_STATUS_NOT_DONE));
-				optionMap.put(WorkReportConstants.WR_STATUS_SOME_DONE, resourceBundle.getLocalizedString(WorkReportConstants.WR_STATUS_SOME_DONE, WorkReportConstants.WR_STATUS_SOME_DONE));
-				optionMap.put(WorkReportConstants.WR_STATUS_CONTINUANCE, resourceBundle.getLocalizedString(WorkReportConstants.WR_STATUS_CONTINUANCE, WorkReportConstants.WR_STATUS_CONTINUANCE));
-				optionMap.put(WorkReportConstants.WR_STATUS_AT_REGIONAL_UNION, resourceBundle.getLocalizedString(WorkReportConstants.WR_STATUS_AT_REGIONAL_UNION, WorkReportConstants.WR_STATUS_AT_REGIONAL_UNION));
-				optionMap.put(WorkReportConstants.WR_STATUS_INVESTIGATE, resourceBundle.getLocalizedString(WorkReportConstants.WR_STATUS_INVESTIGATE, WorkReportConstants.WR_STATUS_INVESTIGATE));
-				optionMap.put(WorkReportConstants.WR_STATUS_COMPETITION_BAN, resourceBundle.getLocalizedString(WorkReportConstants.WR_STATUS_COMPETITION_BAN, WorkReportConstants.WR_STATUS_COMPETITION_BAN));
-				optionMap.put(WorkReportConstants.WR_STATUS_SHOULD_BE_BANNED, resourceBundle.getLocalizedString(WorkReportConstants.WR_STATUS_SHOULD_BE_BANNED, WorkReportConstants.WR_STATUS_SHOULD_BE_BANNED));
-				optionMap.put(WorkReportConstants.WR_STATUS_NO_REPORT, resourceBundle.getLocalizedString(WorkReportConstants.WR_STATUS_NO_REPORT, WorkReportConstants.WR_STATUS_NO_REPORT));	 
-				optionMap.put(WorkReportConstants.WR_STATUS_DONE, resourceBundle.getLocalizedString(WorkReportConstants.WR_STATUS_DONE, WorkReportConstants.WR_STATUS_DONE));
+				this.optionMap.put(WorkReportConstants.WR_STATUS_NOT_DONE, resourceBundle.getLocalizedString(WorkReportConstants.WR_STATUS_NOT_DONE, WorkReportConstants.WR_STATUS_NOT_DONE));
+				this.optionMap.put(WorkReportConstants.WR_STATUS_SOME_DONE, resourceBundle.getLocalizedString(WorkReportConstants.WR_STATUS_SOME_DONE, WorkReportConstants.WR_STATUS_SOME_DONE));
+				this.optionMap.put(WorkReportConstants.WR_STATUS_CONTINUANCE, resourceBundle.getLocalizedString(WorkReportConstants.WR_STATUS_CONTINUANCE, WorkReportConstants.WR_STATUS_CONTINUANCE));
+				this.optionMap.put(WorkReportConstants.WR_STATUS_AT_REGIONAL_UNION, resourceBundle.getLocalizedString(WorkReportConstants.WR_STATUS_AT_REGIONAL_UNION, WorkReportConstants.WR_STATUS_AT_REGIONAL_UNION));
+				this.optionMap.put(WorkReportConstants.WR_STATUS_INVESTIGATE, resourceBundle.getLocalizedString(WorkReportConstants.WR_STATUS_INVESTIGATE, WorkReportConstants.WR_STATUS_INVESTIGATE));
+				this.optionMap.put(WorkReportConstants.WR_STATUS_COMPETITION_BAN, resourceBundle.getLocalizedString(WorkReportConstants.WR_STATUS_COMPETITION_BAN, WorkReportConstants.WR_STATUS_COMPETITION_BAN));
+				this.optionMap.put(WorkReportConstants.WR_STATUS_SHOULD_BE_BANNED, resourceBundle.getLocalizedString(WorkReportConstants.WR_STATUS_SHOULD_BE_BANNED, WorkReportConstants.WR_STATUS_SHOULD_BE_BANNED));
+				this.optionMap.put(WorkReportConstants.WR_STATUS_NO_REPORT, resourceBundle.getLocalizedString(WorkReportConstants.WR_STATUS_NO_REPORT, WorkReportConstants.WR_STATUS_NO_REPORT));	 
+				this.optionMap.put(WorkReportConstants.WR_STATUS_DONE, resourceBundle.getLocalizedString(WorkReportConstants.WR_STATUS_DONE, WorkReportConstants.WR_STATUS_DONE));
 				
 			}
-				return optionMap;
+				return this.optionMap;
 			}
 		};     
 		converter.setOptionProvider(optionProvider); 
@@ -286,20 +286,20 @@ public class WorkReportMultiEditor extends Block {
   
 
 	protected WorkReportBusiness getWorkReportBusiness(IWApplicationContext iwc) {
-		if (reportBiz == null) {
+		if (this.reportBiz == null) {
 			try {
-				reportBiz = (WorkReportBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, WorkReportBusiness.class);
+				this.reportBiz = (WorkReportBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, WorkReportBusiness.class);
 			}
 			catch (java.rmi.RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());
 			}
 		}
-		return reportBiz;
+		return this.reportBiz;
 	}
 	
 	//TODO Make the year choosable
 	public int getYear(){
-		return year;
+		return this.year;
 	}
 	
 
@@ -406,7 +406,7 @@ public class WorkReportMultiEditor extends Block {
 			else {
 				// show link
 				text = (text.length() == 0) ? "_" : text;  
-				if (! editable) {
+				if (! WorkReportMultiEditor.this.editable) {
 					return new Text(text);
 				}
 				Link link = new Link(text);
@@ -475,7 +475,7 @@ public class WorkReportMultiEditor extends Block {
 			public PresentationObject getPresentationObject(Object value, EntityPath path, EntityBrowser browser, IWContext iwc){
 			
 				WorkReport report = (WorkReport)value;
-				Link moreLink = new Link(iwrb.getLocalizedString("workreportmultieditor.more_button","more"));
+				Link moreLink = new Link(this.iwrb.getLocalizedString("workreportmultieditor.more_button","more"));
 				moreLink.setAsImageButton(true);
 				moreLink.addParameter(WorkReportWindow.ACTION,WorkReportWindow.ACTION_REPORT_OVERVIEW_CLOSE_VIEW);
 				moreLink.addParameter(WorkReportOverViewCloseView.CLOSE_VIEW_WORK_REPORT_ID,report.getPrimaryKey().toString());

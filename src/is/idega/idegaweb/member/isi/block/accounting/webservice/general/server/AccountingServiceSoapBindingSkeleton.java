@@ -53,7 +53,7 @@ public class AccountingServiceSoapBindingSkeleton implements is.idega.idegaweb.m
     }
     public is.idega.idegaweb.member.isi.block.accounting.webservice.general.server.UserInfo getUser(java.lang.String in0) throws java.rmi.RemoteException
     {
-        is.idega.idegaweb.member.isi.block.accounting.webservice.general.server.UserInfo ret = impl.getUser(in0);
+        is.idega.idegaweb.member.isi.block.accounting.webservice.general.server.UserInfo ret = this.impl.getUser(in0);
         return ret;
     }
 

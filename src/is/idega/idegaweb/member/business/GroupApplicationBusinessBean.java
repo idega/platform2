@@ -78,9 +78,13 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 				Email mail = (Email) iter.next();
 				String tempAddress = mail.getEmailAddress();
 				
-				if( tempAddress.equals(email) ) addEmail1 = false;	
+				if( tempAddress.equals(email) ) {
+					addEmail1 = false;
+				}	
 						
-				if( tempAddress.equals(email2) ) addEmail2 = false;	
+				if( tempAddress.equals(email2) ) {
+					addEmail2 = false;
+				}	
 				
 			}
 			
@@ -121,10 +125,14 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 			uAddress.setStreetName(addressBiz.getStreetNameFromAddressString(address));
 			uAddress.setStreetNumber(addressBiz.getStreetNumberFromAddressString(address));
 			
-			if( postal!=null ) uAddress.setPostalCodeID(Integer.parseInt(postal));
+			if( postal!=null ) {
+				uAddress.setPostalCodeID(Integer.parseInt(postal));
+			}
 			
 			uAddress.store();
-			if ( add ) user.addAddress(uAddress);
+			if ( add ) {
+				user.addAddress(uAddress);
+			}
 		}
 		
 		// phone
@@ -141,9 +149,13 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 				Phone tempPhone = (Phone) iter.next();
 				String temp = tempPhone.getNumber();
 				
-				if( temp.equals(phone) ) addPhone1 = false;	
+				if( temp.equals(phone) ) {
+					addPhone1 = false;
+				}	
 						
-				if( temp.equals(phone2) ) addPhone2 = false;	
+				if( temp.equals(phone2) ) {
+					addPhone2 = false;
+				}	
 				
 			}
   
@@ -352,10 +364,12 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 	    try {
 	      GenderHome home = (GenderHome) getIDOHome(Gender.class);
       
-	        if( gender.equals(this.GENDER_MALE) ){
+	        if( gender.equals(GroupApplicationBusinessBean.GENDER_MALE) ){
 	          return home.getMaleGender();
 	        }
-	        else return home.getFemaleGender();
+			else {
+				return home.getFemaleGender();
+			}
 
 	    }
 	    catch (Exception ex) {
@@ -372,8 +386,12 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 		int mm = Integer.parseInt(pin.substring(2,4));
 		int yyyy = Integer.parseInt(pin.substring(4,6));
 	
-		if(pin.endsWith("9")) yyyy += 1900;
-	    else yyyy += 2000;
+		if(pin.endsWith("9")) {
+			yyyy += 1900;
+		}
+		else {
+			yyyy += 2000;
+		}
 	    
 	    IWTimestamp dob = new IWTimestamp(dd,mm,yyyy);
 	    return dob;

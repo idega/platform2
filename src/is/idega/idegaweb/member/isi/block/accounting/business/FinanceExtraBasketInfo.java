@@ -31,20 +31,20 @@ public class FinanceExtraBasketInfo {
     private IDOPrimaryKey key = null;
     
     public FinanceExtraBasketInfo(FinanceEntry entry, double amountPaid) {
-        club = entry.getClub();
-        division = entry.getDivision();
-        group = entry.getGroup();
-        user = entry.getUser();
-        info = entry.getInfo();
-        amount = entry.getItemPrice();
+        this.club = entry.getClub();
+        this.division = entry.getDivision();
+        this.group = entry.getGroup();
+        this.user = entry.getUser();
+        this.info = entry.getInfo();
+        this.amount = entry.getItemPrice();
         this.amountPaid = amountPaid;
-        key = entry.getItemID();
+        this.key = entry.getItemID();
     }
     /**
      * @return Returns the amount.
      */
     public Double getAmount() {
-        return amount;
+        return this.amount;
     }
     /**
      * @param amount The amount to set.
@@ -56,7 +56,7 @@ public class FinanceExtraBasketInfo {
      * @return Returns the amountPaid.
      */
     public double getAmountPaid() {
-        return amountPaid;
+        return this.amountPaid;
     }
     /**
      * @param amountPaid The amountPaid to set.
@@ -68,7 +68,7 @@ public class FinanceExtraBasketInfo {
      * @return Returns the club.
      */
     public Group getClub() {
-        return club;
+        return this.club;
     }
     /**
      * @param club The club to set.
@@ -80,7 +80,7 @@ public class FinanceExtraBasketInfo {
      * @return Returns the division.
      */
     public Group getDivision() {
-        return division;
+        return this.division;
     }
     /**
      * @param division The division to set.
@@ -92,7 +92,7 @@ public class FinanceExtraBasketInfo {
      * @return Returns the group.
      */
     public Group getGroup() {
-        return group;
+        return this.group;
     }
     /**
      * @param group The group to set.
@@ -104,7 +104,7 @@ public class FinanceExtraBasketInfo {
      * @return Returns the info.
      */
     public String getInfo() {
-        return info;
+        return this.info;
     }
     /**
      * @param info The info to set.
@@ -116,7 +116,7 @@ public class FinanceExtraBasketInfo {
      * @return Returns the key.
      */
     public IDOPrimaryKey getKey() {
-        return key;
+        return this.key;
     }
     /**
      * @param key The key to set.
@@ -128,7 +128,7 @@ public class FinanceExtraBasketInfo {
      * @return Returns the user.
      */
     public User getUser() {
-        return user;
+        return this.user;
     }
     /**
      * @param user The user to set.

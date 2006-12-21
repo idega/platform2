@@ -86,24 +86,24 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 	private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi.block.accounting";
 	
 	private AccountingBusiness getAccountingBusiness() throws RemoteException {
-		if (accountingBiz == null) {
-			accountingBiz = (AccountingBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), AccountingBusiness.class);
+		if (this.accountingBiz == null) {
+			this.accountingBiz = (AccountingBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), AccountingBusiness.class);
 		}	
-		return accountingBiz;
+		return this.accountingBiz;
 	}
 	
 	private GroupBusiness getGroupBusiness() throws RemoteException {
-		if (groupBiz == null) {
-			groupBiz = (GroupBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), GroupBusiness.class);
+		if (this.groupBiz == null) {
+			this.groupBiz = (GroupBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), GroupBusiness.class);
 		}	
-		return groupBiz;
+		return this.groupBiz;
 	}
 	
 	private void initializeBundlesIfNeeded() {
-		if (_iwb == null) {
-			_iwb = this.getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+		if (this._iwb == null) {
+			this._iwb = this.getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
 		}
-		_iwrb = _iwb.getResourceBundle(this.getUserContext().getCurrentLocale());
+		this._iwrb = this._iwb.getResourceBundle(this.getUserContext().getCurrentLocale());
 	}
 	
 	/*
@@ -131,61 +131,62 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		
 		//PARAMETES
 		//Add extra...because the inputhandlers supply the basic header texts
-		if (club != null)
+		if (club != null) {
 			reportCollection.addExtraHeaderParameter(
-				"label_club_name", _iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"),
+				"label_club_name", this._iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"),
 				"club_name", club.getName());
+		}
 
 		reportCollection.addExtraHeaderParameter(
-				"label_current_date", _iwrb.getLocalizedString(LOCALIZED_CURRENT_DATE, "Current date"),
+				"label_current_date", this._iwrb.getLocalizedString(LOCALIZED_CURRENT_DATE, "Current date"),
 				"current_date", TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale, IWTimestamp.LONG,IWTimestamp.SHORT),"GMT"));
 		
 		 //PARAMETERS that are also FIELDS
 		 //data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
 		 //The name you give the field/parameter must not contain spaces or special characters		
 		 ReportableField divisionField = new ReportableField(FIELD_NAME_DIVISION_NAME, String.class);
-		 divisionField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DIVISION_NAME, "Division"), currentLocale);
+		 divisionField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_DIVISION_NAME, "Division"), currentLocale);
 		 reportCollection.addField(divisionField);
 		 
 		 ReportableField groupField = new ReportableField(FIELD_NAME_GROUP_NAME, String.class);
-		 groupField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_GROUP_NAME, "Group"), currentLocale);
+		 groupField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_GROUP_NAME, "Group"), currentLocale);
 		 reportCollection.addField(groupField);
 		 
 		 ReportableField nameField = new ReportableField(FIELD_NAME_NAME, String.class);
-		 nameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_NAME, "Name"), currentLocale);
+		 nameField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_NAME, "Name"), currentLocale);
 		 reportCollection.addField(nameField);
 		 
 		 ReportableField personalIDField = new ReportableField(FIELD_NAME_PERSONAL_ID, String.class);
-		 personalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PERSONAL_ID, "Personal ID"),currentLocale);
+		 personalIDField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_PERSONAL_ID, "Personal ID"),currentLocale);
 		 reportCollection.addField(personalIDField);
 		 
 		 ReportableField custodianNameField = new ReportableField(FIELD_NAME_CUSTODIAN_NAME, String.class);
-		 custodianNameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_NAME, "Custodian name"), currentLocale);
+		 custodianNameField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_NAME, "Custodian name"), currentLocale);
 		 reportCollection.addField(custodianNameField);
 
 		 ReportableField custodianPersonalIDField = new ReportableField(FIELD_NAME_CUSTODIAN_PERSONAL_ID, String.class);
-		 custodianPersonalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_PERSONAL_ID, "Custodian personal ID"),currentLocale);
+		 custodianPersonalIDField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_PERSONAL_ID, "Custodian personal ID"),currentLocale);
 		 reportCollection.addField(custodianPersonalIDField);
 			
 
 		 ReportableField amountField = new ReportableField(FIELD_NAME_AMOUNT, Double.class);
-		 amountField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT, "Amount"), currentLocale);
+		 amountField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_AMOUNT, "Amount"), currentLocale);
 		 reportCollection.addField(amountField);
 		 
 		 ReportableField entryDateField = new ReportableField(FIELD_NAME_DATE_OF_ENTRY, String.class);
-		 entryDateField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DATE_OF_ENTRY, "Date of entry"), currentLocale);
+		 entryDateField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_DATE_OF_ENTRY, "Date of entry"), currentLocale);
 		 reportCollection.addField(entryDateField);
 		 
 		 ReportableField itemPriceField = new ReportableField(FIELD_NAME_ITEM_PRICE, Double.class);
-		 itemPriceField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ITEM_PRICE, "Item price"), currentLocale);
+		 itemPriceField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_ITEM_PRICE, "Item price"), currentLocale);
 		 reportCollection.addField(itemPriceField);
 		 
 		 ReportableField tariffTypeField = new ReportableField(FIELD_NAME_TARIFF_TYPE, String.class);
-		 tariffTypeField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_TARIFF_TYPE, "Tariff type"), currentLocale);
+		 tariffTypeField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_TARIFF_TYPE, "Tariff type"), currentLocale);
 		 reportCollection.addField(tariffTypeField);
 		 
 		 ReportableField infoField = new ReportableField(FIELD_NAME_INFO, String.class);
-		 infoField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_INFO, "Info"), currentLocale);
+		 infoField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_INFO, "Info"), currentLocale);
 		 reportCollection.addField(infoField);
 		 
 		 //Gathering data	 
@@ -214,11 +215,13 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			 String tariffTypeString = null;
 
 			 division = financeEntry.getDivision();
-			 if (division != null)
-			 	divisionString = division.getName();
+			 if (division != null) {
+				divisionString = division.getName();
+			}
 			 group = financeEntry.getGroup();
-			 if (group != null)
-			 	groupString = group.getName();
+			 if (group != null) {
+				groupString = group.getName();
+			}
 			 user = financeEntry.getUser();
 			 if (user != null) {
 			 	userString = user.getName();
@@ -229,8 +232,9 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			 	}
 			 }
 			 tariffType = financeEntry.getTariffType();
-			 if (tariffType != null)
-			 	tariffTypeString = tariffType.getName();
+			 if (tariffType != null) {
+				tariffTypeString = tariffType.getName();
+			}
 			 
 		 		//create a new ReportData for each row
 		 		ReportableData data = new ReportableData();
@@ -248,11 +252,13 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		 		data.addData(tariffTypeField, tariffTypeString );		
 			 		
 		 		Integer divisionKey = new Integer(-1);
-		 		if (division != null)
-		 		    divisionKey = (Integer)division.getPrimaryKey();
+		 		if (division != null) {
+					divisionKey = (Integer)division.getPrimaryKey();
+				}
 		 		List statsForDivision = (List) financeEntriesByDivisions.get(divisionKey);
-		 		if (statsForDivision == null)
-		 			statsForDivision = new Vector();
+		 		if (statsForDivision == null) {
+					statsForDivision = new Vector();
+				}
 		 		statsForDivision.add(data);
 		 		financeEntriesByDivisions.put(divisionKey, statsForDivision);
 		 } 
@@ -300,56 +306,57 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		
 		//PARAMETES
 		//Add extra...because the inputhandlers supply the basic header texts
-		if (club != null)
-		reportCollection.addExtraHeaderParameter(
-				"label_club_name", _iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"),
-				"club_name", club.getName());
+		if (club != null) {
+			reportCollection.addExtraHeaderParameter(
+					"label_club_name", this._iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"),
+					"club_name", club.getName());
+		}
 
 		reportCollection.addExtraHeaderParameter(
-				"label_current_date", _iwrb.getLocalizedString(LOCALIZED_CURRENT_DATE, "Current date"),
+				"label_current_date", this._iwrb.getLocalizedString(LOCALIZED_CURRENT_DATE, "Current date"),
 				"current_date", TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale, IWTimestamp.LONG,IWTimestamp.SHORT),"GMT"));
 		
 		//PARAMETERS that are also FIELDS
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
 		//The name you give the field/parameter must not contain spaces or special characters		
 		ReportableField divisionField = new ReportableField(FIELD_NAME_DIVISION_NAME, String.class);
-		divisionField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DIVISION_NAME, "Division"), currentLocale);
+		divisionField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_DIVISION_NAME, "Division"), currentLocale);
 		reportCollection.addField(divisionField);
 		
 		ReportableField groupField = new ReportableField(FIELD_NAME_GROUP_NAME, String.class);
-		groupField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_GROUP_NAME, "Group"), currentLocale);
+		groupField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_GROUP_NAME, "Group"), currentLocale);
 		reportCollection.addField(groupField);
 		
 		ReportableField nameField = new ReportableField(FIELD_NAME_NAME, String.class);
-		nameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_NAME, "Name"), currentLocale);
+		nameField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_NAME, "Name"), currentLocale);
 		reportCollection.addField(nameField);
 		
 		ReportableField personalIDField = new ReportableField(FIELD_NAME_PERSONAL_ID, String.class);
-		personalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PERSONAL_ID, "Personal ID"),currentLocale);
+		personalIDField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_PERSONAL_ID, "Personal ID"),currentLocale);
 		reportCollection.addField(personalIDField);
 		
 		ReportableField custodianNameField = new ReportableField(FIELD_NAME_CUSTODIAN_NAME, String.class);
-		custodianNameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_NAME, "Custodian name"), currentLocale);
+		custodianNameField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_NAME, "Custodian name"), currentLocale);
 		reportCollection.addField(custodianNameField);
 		
 		ReportableField custodianPersonalIDField = new ReportableField(FIELD_NAME_CUSTODIAN_PERSONAL_ID, String.class);
-		custodianPersonalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_PERSONAL_ID, "Custodian personal ID"),currentLocale);
+		custodianPersonalIDField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_PERSONAL_ID, "Custodian personal ID"),currentLocale);
 		reportCollection.addField(custodianPersonalIDField);
 		
 		ReportableField amountField = new ReportableField(FIELD_NAME_AMOUNT, Double.class);
-		amountField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT, "Amount"), currentLocale);
+		amountField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_AMOUNT, "Amount"), currentLocale);
 		reportCollection.addField(amountField);
 		
 		ReportableField entryDateField = new ReportableField(FIELD_NAME_DATE_OF_ENTRY, String.class);
-		entryDateField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DATE_OF_ENTRY, "Date of entry"), currentLocale);
+		entryDateField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_DATE_OF_ENTRY, "Date of entry"), currentLocale);
 		reportCollection.addField(entryDateField);
 		
 		ReportableField paymentTypeField = new ReportableField(FIELD_NAME_PAYMENT_TYPE, String.class);
-		paymentTypeField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PAYMENT_TYPE, "Payment type"), currentLocale);
+		paymentTypeField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_PAYMENT_TYPE, "Payment type"), currentLocale);
 		reportCollection.addField(paymentTypeField);
 		
 		ReportableField sentField = new ReportableField(FIELD_NAME_SENT, String.class);
-		sentField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_SENT, "Sent"), currentLocale);
+		sentField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_SENT, "Sent"), currentLocale);
 		reportCollection.addField(sentField);
 		
 		//Gathering data	 
@@ -377,11 +384,13 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			String paymentTypeString = null;
 
 			division = financeEntry.getDivision();
-			if (division != null)
+			if (division != null) {
 				divisionString = division.getName();
+			}
 			group = financeEntry.getGroup();
-			if (group != null)
+			if (group != null) {
 				groupString = group.getName();
+			}
 			user = financeEntry.getUser();
 			if (user != null) {
 				userString = user.getName();
@@ -392,8 +401,9 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 				}
 			}
 			paymentType = financeEntry.getPaymentType();
-			if (paymentType != null)
-				paymentTypeString = _iwrb.getLocalizedString(paymentType.getLocalizationKey(), paymentType.getName());
+			if (paymentType != null) {
+				paymentTypeString = this._iwrb.getLocalizedString(paymentType.getLocalizationKey(), paymentType.getName());
+			}
 			
 			//create a new ReportData for each row
 			ReportableData data = new ReportableData();
@@ -407,14 +417,16 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			data.addData(amountField, new Double(financeEntry.getAmount()) );
 			data.addData(entryDateField, new IWTimestamp(financeEntry.getDateOfEntry()).getDateString("dd.MM.yy") );
 			data.addData(paymentTypeField, paymentTypeString );
-			data.addData(sentField, financeEntry.getSent()?"Já":"Nei" );
+			data.addData(sentField, financeEntry.getSent()?"Jï¿½":"Nei" );
 			
 			Integer divisionKey = new Integer(-1);
-	 		if (division != null)
-	 		    divisionKey = (Integer)division.getPrimaryKey();
+	 		if (division != null) {
+				divisionKey = (Integer)division.getPrimaryKey();
+			}
 	 		List statsForDivision = (List) financeEntriesByDivisions.get(divisionKey);
-			if (statsForDivision == null)
+			if (statsForDivision == null) {
 				statsForDivision = new Vector();
+			}
 			statsForDivision.add(data);
 	 		financeEntriesByDivisions.put(divisionKey, statsForDivision);
 		} 
@@ -462,64 +474,65 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		
 		//PARAMETES
 		//Add extra...because the inputhandlers supply the basic header texts
-		if (club != null)
-		reportCollection.addExtraHeaderParameter(
-				"label_club_name", _iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"),
-				"club_name", club.getName());
+		if (club != null) {
+			reportCollection.addExtraHeaderParameter(
+					"label_club_name", this._iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"),
+					"club_name", club.getName());
+		}
 
 		reportCollection.addExtraHeaderParameter(
-				"label_current_date", _iwrb.getLocalizedString(LOCALIZED_CURRENT_DATE, "Current date"),
+				"label_current_date", this._iwrb.getLocalizedString(LOCALIZED_CURRENT_DATE, "Current date"),
 				"current_date", TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale, IWTimestamp.LONG,IWTimestamp.SHORT),"GMT"));
 		
 		//PARAMETERS that are also FIELDS
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
 		//The name you give the field/parameter must not contain spaces or special characters		
 		ReportableField divisionField = new ReportableField(FIELD_NAME_DIVISION_NAME, String.class);
-		divisionField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DIVISION_NAME, "Division"), currentLocale);
+		divisionField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_DIVISION_NAME, "Division"), currentLocale);
 		reportCollection.addField(divisionField);
 		
 		ReportableField groupField = new ReportableField(FIELD_NAME_GROUP_NAME, String.class);
-		groupField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_GROUP_NAME, "Group"), currentLocale);
+		groupField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_GROUP_NAME, "Group"), currentLocale);
 		reportCollection.addField(groupField);
 		
 		ReportableField nameField = new ReportableField(FIELD_NAME_NAME, String.class);
-		nameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_NAME, "Name"), currentLocale);
+		nameField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_NAME, "Name"), currentLocale);
 		reportCollection.addField(nameField);
 		
 		ReportableField personalIDField = new ReportableField(FIELD_NAME_PERSONAL_ID, String.class);
-		personalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PERSONAL_ID, "Personal ID"),currentLocale);
+		personalIDField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_PERSONAL_ID, "Personal ID"),currentLocale);
 		reportCollection.addField(personalIDField);
 		
 		ReportableField custodianNameField = new ReportableField(FIELD_NAME_CUSTODIAN_NAME, String.class);
-		custodianNameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_NAME, "Custodian name"), currentLocale);
+		custodianNameField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_NAME, "Custodian name"), currentLocale);
 		reportCollection.addField(custodianNameField);
 
 		ReportableField custodianPersonalIDField = new ReportableField(FIELD_NAME_CUSTODIAN_PERSONAL_ID, String.class);
-		custodianPersonalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_PERSONAL_ID, "Custodian personal ID"),currentLocale);
+		custodianPersonalIDField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_PERSONAL_ID, "Custodian personal ID"),currentLocale);
 		reportCollection.addField(custodianPersonalIDField);
 
 		ReportableField phoneField = new ReportableField(FIELD_NAME_PHONE, Double.class);
-		phoneField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PHONE, "Phone"), currentLocale);
+		phoneField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_PHONE, "Phone"), currentLocale);
 		reportCollection.addField(phoneField);
 		
 		ReportableField amountField = new ReportableField(FIELD_NAME_AMOUNT, Double.class);
-		amountField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT, "Amount"), currentLocale);
+		amountField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_AMOUNT, "Amount"), currentLocale);
 		reportCollection.addField(amountField);
 		
 		ReportableField entryDateField = new ReportableField(FIELD_NAME_DATE_OF_ENTRY, String.class);
-		entryDateField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DATE_OF_ENTRY, "Date of entry"), currentLocale);
+		entryDateField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_DATE_OF_ENTRY, "Date of entry"), currentLocale);
 		reportCollection.addField(entryDateField);
 		
 		ReportableField itemPriceField = new ReportableField(FIELD_NAME_ITEM_PRICE, Double.class);
-		itemPriceField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ITEM_PRICE, "Item price"), currentLocale);
+		itemPriceField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_ITEM_PRICE, "Item price"), currentLocale);
 		reportCollection.addField(itemPriceField);
 		
 		ReportableField tariffTypeField = new ReportableField(FIELD_NAME_TARIFF_TYPE, String.class);
-		tariffTypeField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_TARIFF_TYPE, "Tariff type"), currentLocale);
+		tariffTypeField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_TARIFF_TYPE, "Tariff type"), currentLocale);
 		reportCollection.addField(tariffTypeField);
 		
 		ReportableField infoField = new ReportableField(FIELD_NAME_INFO, String.class);
-		infoField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_INFO, "Info"), currentLocale);
+		infoField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_INFO, "Info"), currentLocale);
 		reportCollection.addField(infoField);
 		
 		//Gathering data	 
@@ -549,11 +562,13 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			String tariffTypeString = null;
 
 			division = financeEntry.getDivision();
-			if (division != null)
+			if (division != null) {
 				divisionString = division.getName();
+			}
 			group = financeEntry.getGroup();
-			if (group != null)
+			if (group != null) {
 				groupString = group.getName();
+			}
 			user = financeEntry.getUser();
 			if (user != null) {
 				userString = user.getName();
@@ -565,8 +580,9 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 				phoneNumber = getPhoneNumber(user);
 			}
 			tariffType = financeEntry.getTariffType();
-			if (tariffType != null)
+			if (tariffType != null) {
 				tariffTypeString = tariffType.getName();
+			}
 
 			//create a new ReportData for each row
 			ReportableData data = new ReportableData();
@@ -585,8 +601,9 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			data.addData(tariffTypeField, tariffTypeString );		
 			
 			List statsForPersons = (List) financeEntriesByPersons.get(personalID);
-			if (statsForPersons == null)
+			if (statsForPersons == null) {
 				statsForPersons = new Vector();
+			}
 			statsForPersons.add(data);
 			financeEntriesByPersons.put(personalID, statsForPersons);
 		} 
@@ -635,59 +652,59 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		//Add extra...because the inputhandlers supply the basic header texts
 		if (club != null) {
 			reportCollection.addExtraHeaderParameter(
-				"label_club_name", _iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"),
+				"label_club_name", this._iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"),
 				"club_name", club.getName());
 		}
 
 		reportCollection.addExtraHeaderParameter(
-				"label_current_date", _iwrb.getLocalizedString(LOCALIZED_CURRENT_DATE, "Current date"),
+				"label_current_date", this._iwrb.getLocalizedString(LOCALIZED_CURRENT_DATE, "Current date"),
 				"current_date", TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale, IWTimestamp.LONG,IWTimestamp.SHORT),"GMT"));
 		
 		//PARAMETERS that are also FIELDS
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
 		//The name you give the field/parameter must not contain spaces or special characters		
 		ReportableField divisionField = new ReportableField(FIELD_NAME_DIVISION_NAME, String.class);
-		divisionField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DIVISION_NAME, "Division"), currentLocale);
+		divisionField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_DIVISION_NAME, "Division"), currentLocale);
 		reportCollection.addField(divisionField);
 		
 		ReportableField groupField = new ReportableField(FIELD_NAME_GROUP_NAME, String.class);
-		groupField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_GROUP_NAME, "Group"), currentLocale);
+		groupField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_GROUP_NAME, "Group"), currentLocale);
 		reportCollection.addField(groupField);
 		
 		ReportableField nameField = new ReportableField(FIELD_NAME_NAME, String.class);
-		nameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_NAME, "Name"), currentLocale);
+		nameField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_NAME, "Name"), currentLocale);
 		reportCollection.addField(nameField);
 		
 		ReportableField personalIDField = new ReportableField(FIELD_NAME_PERSONAL_ID, String.class);
-		personalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PERSONAL_ID, "Personal ID"),currentLocale);
+		personalIDField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_PERSONAL_ID, "Personal ID"),currentLocale);
 		reportCollection.addField(personalIDField);
 
 		ReportableField custodianNameField = new ReportableField(FIELD_NAME_CUSTODIAN_NAME, String.class);
-		custodianNameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_NAME, "Custodian name"), currentLocale);
+		custodianNameField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_NAME, "Custodian name"), currentLocale);
 		reportCollection.addField(custodianNameField);
 
 		ReportableField custodianPersonalIDField = new ReportableField(FIELD_NAME_CUSTODIAN_PERSONAL_ID, String.class);
-		custodianPersonalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_PERSONAL_ID, "Custodian personal ID"),currentLocale);
+		custodianPersonalIDField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_PERSONAL_ID, "Custodian personal ID"),currentLocale);
 		reportCollection.addField(custodianPersonalIDField);
 		
 		ReportableField phoneField = new ReportableField(FIELD_NAME_PHONE, Double.class);
-		phoneField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PHONE, "Phone"), currentLocale);
+		phoneField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_PHONE, "Phone"), currentLocale);
 		reportCollection.addField(phoneField);
 		
 		ReportableField amountField = new ReportableField(FIELD_NAME_AMOUNT, Double.class);
-		amountField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT, "Amount"), currentLocale);
+		amountField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_AMOUNT, "Amount"), currentLocale);
 		reportCollection.addField(amountField);
 		
 		ReportableField entryDateField = new ReportableField(FIELD_NAME_DATE_OF_ENTRY, String.class);
-		entryDateField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DATE_OF_ENTRY, "Date of entry"), currentLocale);
+		entryDateField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_DATE_OF_ENTRY, "Date of entry"), currentLocale);
 		reportCollection.addField(entryDateField);
 		
 		ReportableField tariffTypeField = new ReportableField(FIELD_NAME_TARIFF_TYPE, String.class);
-		tariffTypeField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_TARIFF_TYPE, "Tariff type"), currentLocale);
+		tariffTypeField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_TARIFF_TYPE, "Tariff type"), currentLocale);
 		reportCollection.addField(tariffTypeField);
 		
 		ReportableField infoField = new ReportableField(FIELD_NAME_INFO, String.class);
-		infoField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_INFO, "Info"), currentLocale);
+		infoField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_INFO, "Info"), currentLocale);
 		reportCollection.addField(infoField);
 		
 		//Gathering data	 
@@ -717,11 +734,13 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			String tariffTypeString = null;
 
 			division = financeEntry.getDivision();
-			if (division != null)
+			if (division != null) {
 				divisionString = division.getName();
+			}
 			group = financeEntry.getGroup();
-			if (group != null)
+			if (group != null) {
 				groupString = group.getName();
+			}
 			user = financeEntry.getUser();
 			if (user != null) {
 				userString = user.getName();
@@ -740,8 +759,9 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			    amount = new Double(financeEntry.getAmount()-financeEntry.getDiscountAmount());
 			}
 			tariffType = financeEntry.getTariffType();
-			if (tariffType != null)
+			if (tariffType != null) {
 				tariffTypeString = tariffType.getName();
+			}
 			
 			//create a new ReportData for each row
 			ReportableData data = new ReportableData();
@@ -759,11 +779,13 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			data.addData(tariffTypeField, tariffTypeString );		
 			
 			Integer divisionKey = new Integer(-1);
-	 		if (division != null)
-	 		    divisionKey = (Integer)division.getPrimaryKey();
+	 		if (division != null) {
+				divisionKey = (Integer)division.getPrimaryKey();
+			}
 	 		List statsForDivision = (List) financeEntriesByDivisions.get(divisionKey);
-			if (statsForDivision == null)
+			if (statsForDivision == null) {
 				statsForDivision = new Vector();
+			}
 			statsForDivision.add(data);
 	 		financeEntriesByDivisions.put(divisionKey, statsForDivision);
 		} 
@@ -809,60 +831,61 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		
 		//PARAMETES
 		//Add extra...because the inputhandlers supply the basic header texts
-		if (club != null)
-		reportCollection.addExtraHeaderParameter(
-				"label_club_name", _iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"),
-				"club_name", club.getName());
+		if (club != null) {
+			reportCollection.addExtraHeaderParameter(
+					"label_club_name", this._iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"),
+					"club_name", club.getName());
+		}
 
 		reportCollection.addExtraHeaderParameter(
-				"label_current_date", _iwrb.getLocalizedString(LOCALIZED_CURRENT_DATE, "Current date"),
+				"label_current_date", this._iwrb.getLocalizedString(LOCALIZED_CURRENT_DATE, "Current date"),
 				"current_date", TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale, IWTimestamp.LONG,IWTimestamp.SHORT),"GMT"));
 		
 		//PARAMETERS that are also FIELDS
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
 		//The name you give the field/parameter must not contain spaces or special characters		
 		ReportableField divisionField = new ReportableField(FIELD_NAME_DIVISION_NAME, String.class);
-		divisionField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DIVISION_NAME, "Division"), currentLocale);
+		divisionField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_DIVISION_NAME, "Division"), currentLocale);
 		reportCollection.addField(divisionField);
 		
 		ReportableField groupField = new ReportableField(FIELD_NAME_GROUP_NAME, String.class);
-		groupField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_GROUP_NAME, "Group"), currentLocale);
+		groupField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_GROUP_NAME, "Group"), currentLocale);
 		reportCollection.addField(groupField);
 		
 		ReportableField nameField = new ReportableField(FIELD_NAME_NAME, String.class);
-		nameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_NAME, "Name"), currentLocale);
+		nameField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_NAME, "Name"), currentLocale);
 		reportCollection.addField(nameField);
 		
 		ReportableField personalIDField = new ReportableField(FIELD_NAME_PERSONAL_ID, String.class);
-		personalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PERSONAL_ID, "Personal ID"),currentLocale);
+		personalIDField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_PERSONAL_ID, "Personal ID"),currentLocale);
 		reportCollection.addField(personalIDField);
 
 		ReportableField custodianNameField = new ReportableField(FIELD_NAME_CUSTODIAN_NAME, String.class);
-		custodianNameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_NAME, "Custodian name"), currentLocale);
+		custodianNameField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_NAME, "Custodian name"), currentLocale);
 		reportCollection.addField(custodianNameField);
 
 		ReportableField custodianPersonalIDField = new ReportableField(FIELD_NAME_CUSTODIAN_PERSONAL_ID, String.class);
-		custodianPersonalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_PERSONAL_ID, "Custodian personal ID"),currentLocale);
+		custodianPersonalIDField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_PERSONAL_ID, "Custodian personal ID"),currentLocale);
 		reportCollection.addField(custodianPersonalIDField);
 		
 		ReportableField phoneField = new ReportableField(FIELD_NAME_PHONE, Double.class);
-		phoneField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PHONE, "Phone"), currentLocale);
+		phoneField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_PHONE, "Phone"), currentLocale);
 		reportCollection.addField(phoneField);
 		
 		ReportableField amountField = new ReportableField(FIELD_NAME_AMOUNT, Double.class);
-		amountField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT, "Amount"), currentLocale);
+		amountField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_AMOUNT, "Amount"), currentLocale);
 		reportCollection.addField(amountField);
 		
 		ReportableField paymentDateField = new ReportableField(FIELD_NAME_PAYMENT_DATE, String.class);
-		paymentDateField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PAYMENT_DATE, "Payment date"), currentLocale);
+		paymentDateField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_PAYMENT_DATE, "Payment date"), currentLocale);
 		reportCollection.addField(paymentDateField);
 		
 		ReportableField tariffTypeField = new ReportableField(FIELD_NAME_TARIFF_TYPE, String.class);
-		tariffTypeField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_TARIFF_TYPE, "Tariff type"), currentLocale);
+		tariffTypeField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_TARIFF_TYPE, "Tariff type"), currentLocale);
 		reportCollection.addField(tariffTypeField);
 		
 		ReportableField infoField = new ReportableField(FIELD_NAME_INFO, String.class);
-		infoField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_INFO, "Info"), currentLocale);
+		infoField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_INFO, "Info"), currentLocale);
 		reportCollection.addField(infoField);
 		
 		//Gathering data	 
@@ -894,11 +917,13 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			String tariffTypeString = null;
 
 			division = financeEntry.getDivision();
-			if (division != null)
+			if (division != null) {
 				divisionString = division.getName();
+			}
 			group = financeEntry.getGroup();
-			if (group != null)
+			if (group != null) {
 				groupString = group.getName();
+			}
 			user = financeEntry.getUser();
 			if (user != null) {
 				userString = user.getName();
@@ -911,8 +936,9 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			}
 			assmRnd = financeEntry.getAssessmentRound();
 			tariffType = financeEntry.getTariffType();
-			if (tariffType != null)
+			if (tariffType != null) {
 				tariffTypeString = tariffType.getName();
+			}
 
 			//create a new ReportData for each row
 			ReportableData data = new ReportableData();
@@ -930,11 +956,13 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			data.addData(tariffTypeField, tariffTypeString );		
 			
 			Integer divisionKey = new Integer(-1);
-	 		if (division != null)
-	 		    divisionKey = (Integer)division.getPrimaryKey();
+	 		if (division != null) {
+				divisionKey = (Integer)division.getPrimaryKey();
+			}
 	 		List statsForDivision = (List) financeEntriesByDivisions.get(divisionKey);
-			if (statsForDivision == null)
+			if (statsForDivision == null) {
 				statsForDivision = new Vector();
+			}
 			statsForDivision.add(data);
 	 		financeEntriesByDivisions.put(divisionKey, statsForDivision);
 		} 
@@ -995,60 +1023,61 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		
 		//PARAMETES
 		//Add extra...because the inputhandlers supply the basic header texts
-		if (club != null)
-		reportCollection.addExtraHeaderParameter(
-				"label_club_name", _iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"),
-				"club_name", club.getName());
+		if (club != null) {
+			reportCollection.addExtraHeaderParameter(
+					"label_club_name", this._iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"),
+					"club_name", club.getName());
+		}
 
 		reportCollection.addExtraHeaderParameter(
-				"label_current_date", _iwrb.getLocalizedString(LOCALIZED_CURRENT_DATE, "Current date"),
+				"label_current_date", this._iwrb.getLocalizedString(LOCALIZED_CURRENT_DATE, "Current date"),
 				"current_date", TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale, IWTimestamp.LONG,IWTimestamp.SHORT),"GMT"));
 		
 		//PARAMETERS that are also FIELDS
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
 		//The name you give the field/parameter must not contain spaces or special characters		
 		ReportableField divisionField = new ReportableField(FIELD_NAME_DIVISION_NAME, String.class);
-		divisionField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DIVISION_NAME, "Division"), currentLocale);
+		divisionField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_DIVISION_NAME, "Division"), currentLocale);
 		reportCollection.addField(divisionField);
 		
 		ReportableField groupField = new ReportableField(FIELD_NAME_GROUP_NAME, String.class);
-		groupField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_GROUP_NAME, "Group"), currentLocale);
+		groupField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_GROUP_NAME, "Group"), currentLocale);
 		reportCollection.addField(groupField);
 		
 		ReportableField nameField = new ReportableField(FIELD_NAME_NAME, String.class);
-		nameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_NAME, "Name"), currentLocale);
+		nameField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_NAME, "Name"), currentLocale);
 		reportCollection.addField(nameField);
 		
 		ReportableField personalIDField = new ReportableField(FIELD_NAME_PERSONAL_ID, String.class);
-		personalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PERSONAL_ID, "Personal ID"),currentLocale);
+		personalIDField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_PERSONAL_ID, "Personal ID"),currentLocale);
 		reportCollection.addField(personalIDField);
 		
 		ReportableField custodianNameField = new ReportableField(FIELD_NAME_CUSTODIAN_NAME, String.class);
-		custodianNameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_NAME, "Custodian name"), currentLocale);
+		custodianNameField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_NAME, "Custodian name"), currentLocale);
 		reportCollection.addField(custodianNameField);
 
 		ReportableField custodianPersonalIDField = new ReportableField(FIELD_NAME_CUSTODIAN_PERSONAL_ID, String.class);
-		custodianPersonalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_PERSONAL_ID, "Custodian personal ID"),currentLocale);
+		custodianPersonalIDField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_PERSONAL_ID, "Custodian personal ID"),currentLocale);
 		reportCollection.addField(custodianPersonalIDField);
 
 		ReportableField amountField = new ReportableField(FIELD_NAME_AMOUNT, Double.class);
-		amountField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT, "Amount"), currentLocale);
+		amountField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_AMOUNT, "Amount"), currentLocale);
 		reportCollection.addField(amountField);
 		
 		ReportableField entryDateField = new ReportableField(FIELD_NAME_DATE_OF_ENTRY, String.class);
-		entryDateField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DATE_OF_ENTRY, "Date of entry"), currentLocale);
+		entryDateField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_DATE_OF_ENTRY, "Date of entry"), currentLocale);
 		reportCollection.addField(entryDateField);
 		
 		ReportableField paymentTypeField = new ReportableField(FIELD_NAME_PAYMENT_TYPE, String.class);
-		paymentTypeField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PAYMENT_TYPE, "Payment type"), currentLocale);
+		paymentTypeField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_PAYMENT_TYPE, "Payment type"), currentLocale);
 		reportCollection.addField(paymentTypeField);
 		
 		ReportableField tariffTypeField = new ReportableField(FIELD_NAME_TARIFF_TYPE, String.class);
-		tariffTypeField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_TARIFF_TYPE, "Tariff type"), currentLocale);
+		tariffTypeField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_TARIFF_TYPE, "Tariff type"), currentLocale);
 		reportCollection.addField(tariffTypeField);
 		
 		ReportableField infoField = new ReportableField(FIELD_NAME_INFO, String.class);
-		infoField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_INFO, "Info"), currentLocale);
+		infoField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_INFO, "Info"), currentLocale);
 		reportCollection.addField(infoField);
 		
 		//Gathering data	 
@@ -1080,11 +1109,13 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			//String dateOfEntryString = new IWTimestamp(financeEntry.getDateOfEntry()).getDateString("dd.MM.yy");
 			String dateOfEntryString = TextSoap.findAndCut((new IWTimestamp(financeEntry.getDateOfEntry())).getLocaleDate(currentLocale, IWTimestamp.LONG),"GMT");
 			division = financeEntry.getDivision();
-			if (division != null)
+			if (division != null) {
 				divisionString = division.getName();
+			}
 			group = financeEntry.getGroup();
-			if (group != null)
+			if (group != null) {
 				groupString = group.getName();
+			}
 			user = financeEntry.getUser();
 			if (user != null) {
 				userString = user.getName();
@@ -1095,11 +1126,13 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 				}
 			}
 			paymentType = financeEntry.getPaymentType();
-			if (paymentType != null)
-				paymentTypeString = _iwrb.getLocalizedString(paymentType.getLocalizationKey(), paymentType.getName());
+			if (paymentType != null) {
+				paymentTypeString = this._iwrb.getLocalizedString(paymentType.getLocalizationKey(), paymentType.getName());
+			}
 			tariffType = financeEntry.getTariffType();
-			if (tariffType != null)
+			if (tariffType != null) {
 				tariffTypeString = tariffType.getName();
+			}
 			
 			//create a new ReportData for each row
 			ReportableData data = new ReportableData();
@@ -1117,8 +1150,9 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			data.addData(entryDateField, dateOfEntryString );
 			
 			List statsForDay = (List) financeEntriesByDate.get(dateOfEntryString);
-			if (statsForDay == null)
+			if (statsForDay == null) {
 				statsForDay = new Vector();
+			}
 			statsForDay.add(data);
 			financeEntriesByDate.put(dateOfEntryString, statsForDay);
 		} 
@@ -1240,8 +1274,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 					String year1 = sta1[2];
 					comp = year1.compareTo(year0);
 					if(comp == 0) {
-						int month0 = monthList.indexOf(sta0[1].substring(0, 3));
-						int month1 = monthList.indexOf(sta1[1].substring(0, 3));
+						int month0 = this.monthList.indexOf(sta0[1].substring(0, 3));
+						int month1 = this.monthList.indexOf(sta1[1].substring(0, 3));
 						comp = month1 - month0;
 					}
 					if(comp == 0) {

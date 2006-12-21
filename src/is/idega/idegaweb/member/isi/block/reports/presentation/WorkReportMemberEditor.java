@@ -130,7 +130,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     try {
       leagues = workReportBusiness.getLeaguesOfWorkReportById(getWorkReportId(), iwc);
       WorkReportGroup workReportGroup = workReportBusiness.getMainBoardWorkReportGroup(getYear());
-      mainBoardId = (Integer) workReportGroup.getPrimaryKey();
+      this.mainBoardId = (Integer) workReportGroup.getPrimaryKey();
     }
     catch (RemoteException ex) {
       System.err.println(
@@ -151,24 +151,24 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       //idEx.printStackTrace(System.err);
       leagues = new ArrayList();
     }
-    fieldList = new ArrayList();
-    fieldList.add(NAME);
-    fieldList.add(PERSONAL_ID);
-    fieldList.add(STREET_NAME);
-    fieldList.add(POSTAL_CODE_ID);
+    this.fieldList = new ArrayList();
+    this.fieldList.add(NAME);
+    this.fieldList.add(PERSONAL_ID);
+    this.fieldList.add(STREET_NAME);
+    this.fieldList.add(POSTAL_CODE_ID);
     Iterator iterator = leagues.iterator();
-    leagueCountMap = new HashMap();
-    leagueNameId = new TreeMap();
+    this.leagueCountMap = new HashMap();
+    this.leagueNameId = new TreeMap();
     while (iterator.hasNext())  {
       WorkReportGroup group = (WorkReportGroup) iterator.next();
       // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       // special case: REMOVE the league that represents the main board
       // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       Integer primaryKey = (Integer) group.getPrimaryKey();
-      if (! mainBoardId.equals(primaryKey))  {
-        leagueCountMap.put( primaryKey, new Integer(0));
+      if (! this.mainBoardId.equals(primaryKey))  {
+        this.leagueCountMap.put( primaryKey, new Integer(0));
         String shortName = group.getShortName();
-        leagueNameId.put(shortName, primaryKey);
+        this.leagueNameId.put(shortName, primaryKey);
       }
     }
   }
@@ -200,7 +200,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
         // !! do nothing else !!
         // do not modify entry
         // do not create an entry
-        updateWorkReportData = true;
+        this.updateWorkReportData = true;
         return action;
       }
     }
@@ -223,8 +223,8 @@ public class WorkReportMemberEditor extends WorkReportSelector {
           buffer.append(ssnMessage);
           buffer.append(": ");
           buffer.append(ssn);
-          newMemberMessage = buffer.toString();
-          updateWorkReportData = true;
+          this.newMemberMessage = buffer.toString();
+          this.updateWorkReportData = true;
         }
       }
     }  
@@ -242,7 +242,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
         ex.printStackTrace(System.err);
       }
       WorkReportMember member = findWorkReportMember(primaryKey, iwc);
-      Iterator iterator = fieldList.iterator();
+      Iterator iterator = this.fieldList.iterator();
       while (iterator.hasNext())  {
         String field = (String) iterator.next();
         EntityPathValueContainer entityPathValueContainerFromTextEditor = 
@@ -268,7 +268,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
         ex.printStackTrace(System.err);
         return action;
       }  
-      Iterator leagueIterator = leagueCountMap.keySet().iterator();
+      Iterator leagueIterator = this.leagueCountMap.keySet().iterator();
       while (leagueIterator.hasNext())  {
         Integer key = (Integer) leagueIterator.next();
         boolean isChecked = CheckBoxConverter.isEntityChecked(iwc, key.toString(), primaryKey);
@@ -283,7 +283,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
         }
       }
       member.store();
-      updateWorkReportData = true;
+      this.updateWorkReportData = true;
       return action;
     }
     return action;
@@ -296,8 +296,8 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       // create data from the database
       int workReportId = getWorkReportId();
       workReport = workReportBusiness.getWorkReportById(getWorkReportId()); 
-      isReadOnly = workReportBusiness.isWorkReportReadOnly(workReportId);   
-      editable = ! (isReadOnly || workReport.isMembersPartDone());
+      this.isReadOnly = workReportBusiness.isWorkReportReadOnly(workReportId);   
+      this.editable = ! (this.isReadOnly || workReport.isMembersPartDone());
     } 
     catch (RemoteException ex) {
       System.err.println(
@@ -317,9 +317,9 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       members = new ArrayList();
     }
     // create map: member as key, leagues as value 
-    memberLeaguesIdMap = new HashMap();
-    playersCount = 0;
-    membersTotalSum = members.size();
+    this.memberLeaguesIdMap = new HashMap();
+    this.playersCount = 0;
+    this.membersTotalSum = members.size();
     Iterator membersIterator = members.iterator();
     while (membersIterator.hasNext())  {
       WorkReportMember member = (WorkReportMember) membersIterator.next();
@@ -328,22 +328,22 @@ public class WorkReportMemberEditor extends WorkReportSelector {
         List leaguesList = new ArrayList();
         // if there is at least one league the member is a player
         if (leagueIDs.hasNext())  {
-          playersCount++;
+          this.playersCount++;
         }
         while (leagueIDs.hasNext()) {
           Integer leagueId = (Integer) leagueIDs.next();
-          if ( mainBoardId != null && (! mainBoardId.equals(leagueId) ) ) {
+          if ( this.mainBoardId != null && (! this.mainBoardId.equals(leagueId) ) ) {
             leaguesList.add(leagueId);
-            Integer count = (Integer) leagueCountMap.get(leagueId);
+            Integer count = (Integer) this.leagueCountMap.get(leagueId);
             // if count is equal to null something is wrong: connection between work report and work report group is
             // missing. So usually count is equal to null should never occur.
             // Also: REMOVE the league that represents the main board
             count = (count == null) ? new Integer(1) : new Integer( (count.intValue()) + 1 );
-            leagueCountMap.put(leagueId, count);
+            this.leagueCountMap.put(leagueId, count);
           }
         }
         Integer memberId = (Integer) member.getPrimaryKey();
-        memberLeaguesIdMap.put(memberId, leaguesList);
+        this.memberLeaguesIdMap.put(memberId, leaguesList);
       }
       catch (IDOException ex) {
         System.err.println("[WorkReportMemberEditor] Can't get leagues. Message is: " + 
@@ -351,7 +351,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
         ex.printStackTrace(System.err);
       }
     }
-    if (updateWorkReportData) {
+    if (this.updateWorkReportData) {
       try {
         updateWorkReportDataAndBoardData(iwc);
       }
@@ -367,15 +367,15 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     EntityBrowser browser = getEntityBrowser(members, resourceBundle, form, iwc);
 		Table errorMessageTable = getErrorMessageTable();
     // get new entry message 
-    if (newMemberMessage != null) {
-      Text text = new Text(newMemberMessage);
+    if (this.newMemberMessage != null) {
+      Text text = new Text(this.newMemberMessage);
       text.setBold();
       errorMessageTable.add(text);
       add(errorMessageTable);
     }
     // get error message
 		
-    if (personalIdnotCorrect) {
+    if (this.personalIdnotCorrect) {
       String message = resourceBundle.getLocalizedString("wr_editor_ssn_not_valid", "The input of the social security number is not valid");
       Text text = new Text(message);
 //      text.setBold();
@@ -383,7 +383,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
 			errorMessageTable.add(text);
 			add(errorMessageTable);
     }
-    if (memberAlreadyExist) {
+    if (this.memberAlreadyExist) {
       String message = resourceBundle.getLocalizedString("wr_account_member_member_with_ssn_already_exist", "The member with the specified social security number does already exist");
       Text text = new Text(message);
 //      text.setBold();
@@ -394,13 +394,13 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     
     // put browser into a table
 
-    if (! isReadOnly) {
+    if (! this.isReadOnly) {
       Table mainTable = new Table(1,2);
       mainTable.add(browser, 1,1);
       mainTable.setCellspacing(0);
       mainTable.setCellpadding(0);
       Table buttonTable = new Table(4,1);
-      if (editable) {
+      if (this.editable) {
         PresentationObject inputField = getPersonalIdInputField(resourceBundle);
         PresentationObject newEntryButton = getCreateNewEntityButton(resourceBundle);
         PresentationObject deleteEntriesButton = getDeleteEntriesButton(resourceBundle);
@@ -419,7 +419,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       return mainTable;
     }
     //if the report is read only, then it is printed out:
-    else if(isReadOnly){
+    else if(this.isReadOnly){
 			Table mainTable = new Table(1,2);
 			mainTable.add(browser, 1,1);
 			mainTable.setCellspacing(0);
@@ -441,7 +441,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
   	errorMessageTable.setWidth(Table.HUNDRED_PERCENT);
   	errorMessageTable.setAlignment("center");
   	errorMessageTable.setAlignment(1,1,"center");
-  	errorMessageTable.setStyleClass(1,1,errorMessageStyle);
+  	errorMessageTable.setStyleClass(1,1,this.errorMessageStyle);
   	
   	return errorMessageTable;
   }
@@ -496,9 +496,9 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     textEditorConverter.maintainParameters(this.getParametersToMaintain());
     DropDownMenuConverter dropDownPostalCodeConverter = getConverterForPostalCode(form);
     // define if the converters should be editable
-    checkBoxConverter.setEditable(editable);
-    textEditorConverter.setEditable(editable);
-    dropDownPostalCodeConverter.setEditable(editable);    
+    checkBoxConverter.setEditable(this.editable);
+    textEditorConverter.setEditable(this.editable);
+    dropDownPostalCodeConverter.setEditable(this.editable);    
     // define path short keys and map corresponding converters
     // if a converter is "null" the default converter of the entity browser is used
     Object[] columns = {
@@ -532,14 +532,14 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       browser.setEntityToPresentationConverter(column, converter);
     }
     // add more columns
-    Iterator iterator = leagueNameId.entrySet().iterator();
+    Iterator iterator = this.leagueNameId.entrySet().iterator();
     int i = 100;
     while (iterator.hasNext())  {
      Map.Entry entry = (Map.Entry) iterator.next();
      String leagueName = (String) entry.getKey();
      Integer primaryKey = (Integer) entry.getValue();
      WorkReportCheckBoxConverter converter = new WorkReportCheckBoxConverter(primaryKey, leagueName);
-     converter.setEditable(editable);
+     converter.setEditable(this.editable);
      converter.maintainParameters(getParametersToMaintain());
      browser.setMandatoryColumn(i++, leagueName);
      browser.setEntityToPresentationConverter(leagueName, converter);
@@ -623,13 +623,13 @@ public class WorkReportMemberEditor extends WorkReportSelector {
   private WorkReportMember createWorkReportMember(String personalId, IWApplicationContext iwac)  {
     WorkReportMember member = findWorkReportMember(personalId, iwac);
     if (member != null) {
-      memberAlreadyExist = true;
+      this.memberAlreadyExist = true;
       return null;
     }
     try {
       member = getWorkReportBusiness(iwac).createWorkReportMember(getWorkReportId(), personalId);
       if (member == null) {
-        personalIdnotCorrect = true;
+        this.personalIdnotCorrect = true;
       }
       return member;
     } 
@@ -851,8 +851,8 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     
     protected boolean shouldEntityBeChecked(Object entity, Integer primaryKey) { 
 
-      Collection leagues = (Collection) memberLeaguesIdMap.get(primaryKey);
-      return (leagues != null && leagues.contains(leagueId));
+      Collection leagues = (Collection) WorkReportMemberEditor.this.memberLeaguesIdMap.get(primaryKey);
+      return (leagues != null && leagues.contains(this.leagueId));
     }
 
     
@@ -861,9 +861,9 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       EntityBrowser browser,
       IWContext iwc) {
        
-      StringBuffer buffer = new StringBuffer(leagueName);
+      StringBuffer buffer = new StringBuffer(this.leagueName);
       buffer.append(": ");
-      buffer.append(leagueCountMap.get(leagueId));
+      buffer.append(WorkReportMemberEditor.this.leagueCountMap.get(this.leagueId));
       Text text = new Text(buffer.toString());
       text.setBold();
       return text;

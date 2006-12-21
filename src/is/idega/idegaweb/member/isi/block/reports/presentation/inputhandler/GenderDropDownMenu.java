@@ -41,11 +41,13 @@ public class GenderDropDownMenu extends DropDownMenuInputHandler {
 			if (BOTH.equals(gender)) {
 				return null;
 			}
-			else
+			else {
 				return gender;
+			}
 		}
-		else
+		else {
 			return null;
+		}
 	}
 
 	/*
@@ -70,8 +72,9 @@ public class GenderDropDownMenu extends DropDownMenuInputHandler {
 
 			return displayName;
 		}
-		else
+		else {
 			return iwrb.getLocalizedString("GenderDropdownmenu.both", "Both");
+		}
 	}
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()

@@ -43,8 +43,8 @@ public class ClubPageIncluder extends PageIncluder {
 	public void main(IWContext iwc) throws Exception {
 		super.main(iwc);
 		
-		parentPage = this.getParentPage();
-		parentPage.addStyleSheetURL(iwc.getIWMainApplication().getCoreBundle().getVirtualPathWithFileNameString(menuStyleSrc));
+		this.parentPage = this.getParentPage();
+		this.parentPage.addStyleSheetURL(iwc.getIWMainApplication().getCoreBundle().getVirtualPathWithFileNameString(this.menuStyleSrc));
 	}
 	
 	protected String finalizeLocationString(String location, IWContext iwc) {
@@ -72,16 +72,16 @@ public class ClubPageIncluder extends PageIncluder {
 			//add the extra parameters
 			//the division id
 			finalUrl.append(PARAM_ROOT_CLUB_ID).append("=").append(groupId);
-			if(rootClubParamName!=null) {
-				finalUrl.append("&").append(rootClubParamName).append("=").append(groupId);
+			if(this.rootClubParamName!=null) {
+				finalUrl.append("&").append(this.rootClubParamName).append("=").append(groupId);
 			}
 			
-			if(page!=null) {
-				finalUrl.append("&").append(PARAM_CALLING_PAGE_ID).append("=").append( page.getPrimaryKey().toString());
+			if(this.page!=null) {
+				finalUrl.append("&").append(PARAM_CALLING_PAGE_ID).append("=").append( this.page.getPrimaryKey().toString());
 			}
 			
-			if(_callingDomain!=null) {
-				finalUrl.append("&").append(PARAM_CALLING_DOMAIN).append("=").append( _callingDomain );
+			if(this._callingDomain!=null) {
+				finalUrl.append("&").append(PARAM_CALLING_DOMAIN).append("=").append( this._callingDomain );
 			}
 			
 			if(_divisionInfoPageId!=null) {
@@ -108,7 +108,7 @@ public class ClubPageIncluder extends PageIncluder {
 	}
 	
 	public void setRootClubParamName(String value) {
-		rootClubParamName = value;
+		this.rootClubParamName = value;
 	}
 	
 	public void setCallingPage(ICPage page) {
@@ -116,7 +116,7 @@ public class ClubPageIncluder extends PageIncluder {
 	}
 	
 	public void setCallingDomain(String callingDomain) {
-		_callingDomain = callingDomain;
+		this._callingDomain = callingDomain;
 	}
 	
 	public void setDivisionInfoPageId(ICPage page) {

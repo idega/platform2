@@ -31,7 +31,7 @@ public class WorkReportImporter extends WorkReportSelector {
 	 * @return the ic_file id
 	 */
 	public int getWorkReportFileId() {
-		return workReportFileId;
+		return this.workReportFileId;
 	}
 
 	/**
@@ -62,7 +62,7 @@ public class WorkReportImporter extends WorkReportSelector {
 
 			if (iwc.isParameterSet(PARAM_FILE_ID)) {
 				System.out.println("PARAM_FILE_ID set.");
-				workReportFileId = Integer.parseInt(iwc.getParameter(PARAM_FILE_ID));
+				this.workReportFileId = Integer.parseInt(iwc.getParameter(PARAM_FILE_ID));
 			}
 			else {
 				System.out.println("PARAM_FILE_ID not set.");
@@ -84,7 +84,7 @@ public class WorkReportImporter extends WorkReportSelector {
 			uploadForm.addParameter(PARAM_UPLOADING, "TRUE");
 		}
 		else {
-			String filename = iwrb.getLocalizedString("workreportimporter.no_file", "No file selected");
+			String filename = this.iwrb.getLocalizedString("workreportimporter.no_file", "No file selected");
 			try {
 				filename = iwc.getUploadedFile().getFileName();
 			}
@@ -97,13 +97,13 @@ public class WorkReportImporter extends WorkReportSelector {
 			t.setCellpadding(0);
 			t.setCellspacing(0);
 
-			SubmitButton submit = new SubmitButton(iwrb.getLocalizedString("workreportimporter.start", "start"));
+			SubmitButton submit = new SubmitButton(this.iwrb.getLocalizedString("workreportimporter.start", "start"));
 			//Do I need this??
 			submit.setOnClick("this.form.submit()");			
 			BusyBar busy = new BusyBar("readingfiles");
 			busy.addDisabledObject(submit);
 			busy.addBusyObject(submit);
-			t.add(iwrb.getLocalizedString("workreportimporter.click.start", "Click start to import the data. It may take a while."), 1, 1);
+			t.add(this.iwrb.getLocalizedString("workreportimporter.click.start", "Click start to import the data. It may take a while."), 1, 1);
 			t.add(submit, 1, 2);
 			t.add(busy, 1, 3);
 			uploadForm.add(t);

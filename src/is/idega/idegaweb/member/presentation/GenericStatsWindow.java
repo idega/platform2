@@ -38,13 +38,13 @@ public class GenericStatsWindow extends StyledIWAdminWindow {
 
     public void main(IWContext iwc) throws Exception {
         super.main(iwc);
-        if (iwrb == null) {
-        	iwrb = getResourceBundle(iwc);
+        if (this.iwrb == null) {
+        	this.iwrb = getResourceBundle(iwc);
         }
-        iwb = getBundle(iwc);     
+        this.iwb = getBundle(iwc);     
         
-        setTitle(windowTitle);
-        addTitle(windowTitle, TITLE_STYLECLASS);
+        setTitle(this.windowTitle);
+        addTitle(this.windowTitle, TITLE_STYLECLASS);
         Table table = new Table(2, 1);
         table.setWidthAndHeightToHundredPercent();
         table.setColumnWidth(1, "200");
@@ -54,20 +54,20 @@ public class GenericStatsWindow extends StyledIWAdminWindow {
         table.mergeCells(1, 1, 1, 2);
 
 		ReportGenerator repGen = new ReportGenerator();	
-	    repGen.setMethodInvocationBundleAndFileName(iwb, invocationFileName);
+	    repGen.setMethodInvocationBundleAndFileName(this.iwb, this.invocationFileName);
 		String layoutFileID = iwc.getParameter(STATS_DYNAMIC_LAYOUT_FILE_ID);
 		if (layoutFileID != null) {
-			if (layoutFileName != null && layoutFileID.equals("-1")) {
-		    	repGen.setLayoutBundleAndFileName(iwb, layoutFileName);
+			if (this.layoutFileName != null && layoutFileID.equals("-1")) {
+		    	repGen.setLayoutBundleAndFileName(this.iwb, this.layoutFileName);
 		    }
 		    else if (layoutFileID != null) {
 		    	repGen.setLayoutICFileID(new Integer(layoutFileID));
 		    }
-		} else if (layoutFileName != null) {
-			repGen.setLayoutBundleAndFileName(iwb, layoutFileName);
+		} else if (this.layoutFileName != null) {
+			repGen.setLayoutBundleAndFileName(this.iwb, this.layoutFileName);
 		}
-	    repGen.setReportName(windowTitle);
-	    table.add(formatHeadline(windowTitle), 1, 1); //not a selector
+	    repGen.setReportName(this.windowTitle);
+	    table.add(formatHeadline(this.windowTitle), 1, 1); //not a selector
 	    table.addBreak(1, 1);
 		table.add(repGen, 1, 1); //not a selector
 		add(table, iwc);

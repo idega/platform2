@@ -74,7 +74,7 @@ public class MemberOverview extends Block {
 
 	public void main(IWContext iwc) {
 		IWResourceBundle comUserBundle = iwc.getIWMainApplication().getBundle("com.idega.user").getResourceBundle(iwc);
-		_collator = Collator.getInstance(iwc.getLocale());
+		this._collator = Collator.getInstance(iwc.getLocale());
 		
 		String status = iwc.getParameter(PARAM_NAME_SHOW_STATUS);
 		boolean showStatus = status==null || "true".equals(status);
@@ -88,11 +88,11 @@ public class MemberOverview extends Block {
 		mainTable.setWidth(Table.HUNDRED_PERCENT);
 
 		User user = iwc.getCurrentUser();
-		_iwb = getBundle(iwc);
-		_iwrb = getResourceBundle(iwc);
-		_data = new MemberGroupData(user, _iwrb, comUserBundle);
+		this._iwb = getBundle(iwc);
+		this._iwrb = getResourceBundle(iwc);
+		this._data = new MemberGroupData(user, this._iwrb, comUserBundle);
 		try {
-			_financeData = (Collection) ((FinanceEntryHome) com.idega.data.IDOLookup.getHome(FinanceEntry.class)).findAllByUser(user);
+			this._financeData = (Collection) ((FinanceEntryHome) com.idega.data.IDOLookup.getHome(FinanceEntry.class)).findAllByUser(user);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -110,8 +110,8 @@ public class MemberOverview extends Block {
 		table.setColumns(4);
 		int row = 1;
 		
-		Image minusImg = _iwb.getImage("minus.gif");
-		Image plusImg = _iwb.getImage("plus.gif");
+		Image minusImg = this._iwb.getImage("minus.gif");
+		Image plusImg = this._iwb.getImage("plus.gif");
 
 		Link statusLink = new Link(showStatus?minusImg:plusImg);
 		statusLink.setBold();
@@ -119,8 +119,8 @@ public class MemberOverview extends Block {
 		statusLink.addParameter(PARAM_NAME_SHOW_STATUS, showStatus?"false":"true");
 		statusLink.addParameter(PARAM_NAME_SHOW_HISTORY, showHistory?"true":"false");
 		statusLink.addParameter(PARAM_NAME_SHOW_FINANCE_OVERVIEW, showFinanceOverview?"true":"false");
-		String statusHeader = _iwrb.getLocalizedString("member_overview_registration", "Membership status");
-		String statusText = _iwrb.getLocalizedString("member_overview_status", "Status");
+		String statusHeader = this._iwrb.getLocalizedString("member_overview_registration", "Membership status");
+		String statusText = this._iwrb.getLocalizedString("member_overview_status", "Status");
 		row = insertSectionHeaderIntoTable(table, row, new String[] { statusHeader, statusText }, statusLink);
 		if(showStatus) {
 			row = insertRegistrationInfoIntoTable(table, row, false);
@@ -132,9 +132,9 @@ public class MemberOverview extends Block {
 		historyLink.addParameter(PARAM_NAME_SHOW_STATUS, showStatus?"true":"false");
 		historyLink.addParameter(PARAM_NAME_SHOW_HISTORY, showHistory?"false":"true");
 		historyLink.addParameter(PARAM_NAME_SHOW_FINANCE_OVERVIEW, showFinanceOverview?"true":"false");
-		String historyHeader = _iwrb.getLocalizedString("member_overview_history", "Membership history");
-		String beginText = _iwrb.getLocalizedString("member_overview_begin_date", "Started");
-		String endText = _iwrb.getLocalizedString("member_overview_end_date", "Quit");
+		String historyHeader = this._iwrb.getLocalizedString("member_overview_history", "Membership history");
+		String beginText = this._iwrb.getLocalizedString("member_overview_begin_date", "Started");
+		String endText = this._iwrb.getLocalizedString("member_overview_end_date", "Quit");
 		String[] historyHeaders = new String[] { historyHeader, statusText, beginText, endText };
 		row = insertSectionHeaderIntoTable(table, row, historyHeaders, historyLink);
 		if(showHistory) {
@@ -151,10 +151,10 @@ public class MemberOverview extends Block {
 				financeOverviewLink.addParameter(PARAM_NAME_SHOW_STATUS, showStatus?"true":"false");
 				financeOverviewLink.addParameter(PARAM_NAME_SHOW_HISTORY, showHistory?"true":"false");
 				financeOverviewLink.addParameter(PARAM_NAME_SHOW_FINANCE_OVERVIEW, showFinanceOverview?"false":"true");
-				String financeOverviewHeader = _iwrb.getLocalizedString("member_finance_overview", "Finance entry");
-				String entryDateText = _iwrb.getLocalizedString("member_overview_entry_date", "Entry date");
-				String amountText = _iwrb.getLocalizedString("member_overview_amount", "Amount");
-				String infoText = _iwrb.getLocalizedString("member_overview_info", "Info");
+				String financeOverviewHeader = this._iwrb.getLocalizedString("member_finance_overview", "Finance entry");
+				String entryDateText = this._iwrb.getLocalizedString("member_overview_entry_date", "Entry date");
+				String amountText = this._iwrb.getLocalizedString("member_overview_amount", "Amount");
+				String infoText = this._iwrb.getLocalizedString("member_overview_info", "Info");
 				String[] financeOverviewHeaders = new String[] { financeOverviewHeader, entryDateText, amountText };
 				String[] financeOverviewHeaderAlignments = { null, null, "right" };
 				row = insertSectionHeaderIntoTable(table, row, financeOverviewHeaders, financeOverviewLink);
@@ -169,43 +169,43 @@ public class MemberOverview extends Block {
 
 	private PresentationObject getMemberInfo(User user) {
 		Text name = getStyleText(emptyIfNull(user.getName()), STYLENAME_TEXT);
-		Text nameLabel = getStyleText(_iwrb.getLocalizedString("member_overview_name", "Name"), STYLENAME_HEADING);
+		Text nameLabel = getStyleText(this._iwrb.getLocalizedString("member_overview_name", "Name"), STYLENAME_HEADING);
 
 		Text pNum = getStyleText(emptyIfNull(user.getPersonalID()), STYLENAME_TEXT);
-		Text pNumLabel = getStyleText(_iwrb.getLocalizedString("member_overview_pn", "Person number"), STYLENAME_HEADING);
+		Text pNumLabel = getStyleText(this._iwrb.getLocalizedString("member_overview_pn", "Person number"), STYLENAME_HEADING);
 		
 		String addressString = getInfoFromCollection(user.getAddresses(), 1);
 		if (addressString == null) {
-			addressString = _iwrb.getLocalizedString("member_overview_no_info", "N/A");
+			addressString = this._iwrb.getLocalizedString("member_overview_no_info", "N/A");
 		}
 		Text address = getStyleText(addressString, STYLENAME_TEXT);
-		Text addressLabel = getStyleText(_iwrb.getLocalizedString("member_overview_address", "Address"), STYLENAME_HEADING);
+		Text addressLabel = getStyleText(this._iwrb.getLocalizedString("member_overview_address", "Address"), STYLENAME_HEADING);
 		
 		String phoneString = getInfoFromCollection(user.getPhones(), -1);
 		if (phoneString == null) {
-			phoneString = _iwrb.getLocalizedString("member_overview_no_info", "N/A");
+			phoneString = this._iwrb.getLocalizedString("member_overview_no_info", "N/A");
 		}
 		Text phone = getStyleText(phoneString, STYLENAME_TEXT);
-		Text phoneLabel = getStyleText(_iwrb.getLocalizedString("member_overview_phone", "Phone"), STYLENAME_HEADING);
+		Text phoneLabel = getStyleText(this._iwrb.getLocalizedString("member_overview_phone", "Phone"), STYLENAME_HEADING);
 
 		Text clubs = getStyleText(getClubs(), STYLENAME_TEXT);
-		Text clubsLabel = getStyleText(_iwrb.getLocalizedString("member_overview_clubs", "Clubs"), STYLENAME_HEADING);
+		Text clubsLabel = getStyleText(this._iwrb.getLocalizedString("member_overview_clubs", "Clubs"), STYLENAME_HEADING);
 
 		Text emails = getStyleText(getEmail(user), STYLENAME_TEXT);
-		Text emailLabel = getStyleText(_iwrb.getLocalizedString("member_overview_email", "Email"), STYLENAME_HEADING);
+		Text emailLabel = getStyleText(this._iwrb.getLocalizedString("member_overview_email", "Email"), STYLENAME_HEADING);
 
 		int imageId = user.getSystemImageID();
 		Image image = null;
 		if (imageId != -1) {
 			try {
-				image = new Image(imageId, _iwrb.getLocalizedString("member_overview_imag_text", "User picture"));
+				image = new Image(imageId, this._iwrb.getLocalizedString("member_overview_imag_text", "User picture"));
 			}
 			catch (SQLException e) {
-				image = _iwb.getImage("nouser.jpg");
+				image = this._iwb.getImage("nouser.jpg");
 			}
 		}
 		else {
-			image = _iwb.getImage("nouser.jpg");
+			image = this._iwb.getImage("nouser.jpg");
 		}
 		if (image != null) {
 			image.setMaxImageWidth(107);
@@ -401,15 +401,15 @@ public class MemberOverview extends Block {
 	 * @return Index of next empty row in <code>table</code>
 	 */
 	private int insertRegistrationInfoIntoTable(Table table, int row, boolean showHistory) {
-		List regInfoList = _data.getGroupInfoList();
+		List regInfoList = this._data.getGroupInfoList();
 		Collections.sort(regInfoList, new Comparator() {
 
 			public int compare(Object arg0, Object arg1) {
 				String[] sa0 = (String[]) arg0;
 				String[] sa1 = (String[]) arg1;
-				int result = _collator.compare(sa0[1], sa1[1]);
+				int result = MemberOverview.this._collator.compare(sa0[1], sa1[1]);
 				if (result == 0) {
-					result = _collator.compare(sa0[0], sa1[0]);
+					result = MemberOverview.this._collator.compare(sa0[0], sa1[0]);
 				}
 				return result;
 			}
@@ -466,7 +466,7 @@ public class MemberOverview extends Block {
 	}
 
 	private int insertFinanceInfoIntoTable(Table table, int row, boolean showHistory, IWContext iwc) {
-		ArrayList finEntryList = new ArrayList(_financeData);
+		ArrayList finEntryList = new ArrayList(this._financeData);
 		Collections.sort(finEntryList, new Comparator() {
 
 			public int compare(Object arg0, Object arg1) {
@@ -474,12 +474,12 @@ public class MemberOverview extends Block {
 				FinanceEntryBMPBean fin1 = (FinanceEntryBMPBean) arg1;
 				Timestamp stamp0 = fin0.getDateOfEntry();
 				Timestamp stamp1 = fin1.getDateOfEntry();
-				return _collator.compare(stamp1.toString(), stamp0.toString());
+				return MemberOverview.this._collator.compare(stamp1.toString(), stamp0.toString());
 			}
 
 		});
 		Iterator finIter = finEntryList.iterator();
-		NumberFormat format = NumberFormat.getInstance(_iwrb.getLocale());
+		NumberFormat format = NumberFormat.getInstance(this._iwrb.getLocale());
 		format.setMaximumFractionDigits(0);
 		format.setMinimumIntegerDigits(1);
 		IWBundle iwb = getBundle(iwc);
@@ -558,7 +558,7 @@ public class MemberOverview extends Block {
 		return table;*/
 		
 		StringBuffer buffer = new StringBuffer();
-		Iterator clubListIter = _data.getClubList().iterator();
+		Iterator clubListIter = this._data.getClubList().iterator();
 		while (clubListIter.hasNext()) {
 			Group club = (Group) clubListIter.next();
 			String name = club.getName();

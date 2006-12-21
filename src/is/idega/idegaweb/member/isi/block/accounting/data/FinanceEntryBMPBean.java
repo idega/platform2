@@ -688,28 +688,35 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 		final String[] tableAliases = { "f", "u" };
 
 		sql.appendSelect().append(F_).appendStar().appendFrom(tableNames, tableAliases);
-		sql.appendWhereEquals(F_ + COLUMN_USER_ID, U_ + UserBMPBean.FIELD_USER_ID);
+		sql.appendWhereEquals(F_ + COLUMN_USER_ID, U_ + User.FIELD_USER_ID);
 		sql.appendAnd().appendWithinStamps(COLUMN_DATE_OF_ENTRY, stampFrom.getTimestamp(), stampTo.getTimestamp());
-		if (types != null && !containsTypePayment(types))
+		if (types != null && !containsTypePayment(types)) {
 			sql.appendAndEqualsQuoted(COLUMN_OPEN, ENTRY_OPEN_YES);
-		if (types != null && types.length > 0)
+		}
+		if (types != null && types.length > 0) {
 			sql.appendAnd().append(COLUMN_TYPE).appendIn(util.convertArrayToCommaseparatedString(types, true));
-		if (club != null)
+		}
+		if (club != null) {
 			sql.appendAndEquals(COLUMN_CLUB_ID, club.getPrimaryKey());
-		if (divisions != null && divisions.size() > 0)
+		}
+		if (divisions != null && divisions.size() > 0) {
 			sql.appendAnd().append(COLUMN_DIVISION_ID).appendIn(util.convertListToCommaseparatedString(divisions));
-		if (groups != null && groups.size() > 0)
+		}
+		if (groups != null && groups.size() > 0) {
 			sql.appendAnd().append(COLUMN_GROUP_ID).appendIn(util.convertListToCommaseparatedString(groups));
-		if (personalID != null && !personalID.equals(""))
-			sql.appendAnd().append(U_ + UserBMPBean.FIELD_PERSONAL_ID).appendLike().append("\'" + personalID + "%'");
+		}
+		if (personalID != null && !personalID.equals("")) {
+			sql.appendAnd().append(U_ + User.FIELD_PERSONAL_ID).appendLike().append("\'" + personalID + "%'");
+		}
 		return idoFindIDsBySQL(sql.toString());
 	}
 
 	private boolean containsTypePayment(String[] types) {
 		boolean containsTypePayment = false;
 		for (int i = 0; i < types.length; i++) {
-			if (types[i].equals(TYPE_PAYMENT))
+			if (types[i].equals(TYPE_PAYMENT)) {
 				containsTypePayment = true;
+			}
 		}
 		return containsTypePayment;
 	}
@@ -737,20 +744,25 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 
 		sql.appendSelect().append(F_).appendStar().appendFrom(tableNames, tableAliases);
 		sql.appendWhereEquals(F_ + COLUMN_ASSESSMENT_ROUND_ID, A_ + "ISI_ASS_ROUND_ID");
-		sql.appendAndEquals(F_ + COLUMN_USER_ID, U_ + UserBMPBean.FIELD_USER_ID);
+		sql.appendAndEquals(F_ + COLUMN_USER_ID, U_ + User.FIELD_USER_ID);
 		sql.appendAnd().append(A_ + AssessmentRoundBMPBean.COLUMN_PAYMENT_DATE).appendLessThanSign().append(
 				now.getDate());
 		sql.appendAndEqualsQuoted(COLUMN_OPEN, ENTRY_OPEN_YES);
-		if (types != null && types.length > 0)
+		if (types != null && types.length > 0) {
 			sql.appendAnd().append(F_ + COLUMN_TYPE).appendIn(util.convertArrayToCommaseparatedString(types, true));
-		if (club != null)
+		}
+		if (club != null) {
 			sql.appendAndEquals(F_ + COLUMN_CLUB_ID, club.getPrimaryKey());
-		if (divisions != null && divisions.size() > 0)
+		}
+		if (divisions != null && divisions.size() > 0) {
 			sql.appendAnd().append(F_ + COLUMN_DIVISION_ID).appendIn(util.convertListToCommaseparatedString(divisions));
-		if (groups != null && groups.size() > 0)
+		}
+		if (groups != null && groups.size() > 0) {
 			sql.appendAnd().append(F_ + COLUMN_GROUP_ID).appendIn(util.convertListToCommaseparatedString(groups));
-		if (personalID != null && !personalID.equals(""))
-			sql.appendAnd().append(U_ + UserBMPBean.FIELD_PERSONAL_ID).appendLike().append("\'" + personalID + "%'");
+		}
+		if (personalID != null && !personalID.equals("")) {
+			sql.appendAnd().append(U_ + User.FIELD_PERSONAL_ID).appendLike().append("\'" + personalID + "%'");
+		}
 		return idoFindIDsBySQL(sql.toString());
 	}
 

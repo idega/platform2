@@ -47,11 +47,13 @@ public class BirthYearDropDownMenu extends DropDownMenuInputHandler {
 			if (" ".equals(birthYear)) {
 				return null;
 			}
-			else
+			else {
 				return new Integer(birthYear);
+			}
 		}
-		else
+		else {
 			return null;
+		}
 	}
 
 	/*
@@ -64,8 +66,9 @@ public class BirthYearDropDownMenu extends DropDownMenuInputHandler {
 		if (value != null) {
 			return value.toString();
 		}
-		else
+		else {
 			return iwrb.getLocalizedString("BirthYearDropdownmenu.all_ages", "All birthYears");
+		}
 	}
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()

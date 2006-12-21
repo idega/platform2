@@ -112,7 +112,7 @@ public class CreditCardPlugin extends CashierSubWindowTemplate implements
         boolean isContractDone = iwc.isParameterSet(ACTION_CONTRACT_SETUP);
 
         if (isContractDone) {
-            errorList = new ArrayList();
+            this.errorList = new ArrayList();
             String paramSSN = iwc.getParameter(LABEL_SSN);
             String paramCardType = iwc.getParameter(LABEL_CARD_TYPE);
             String paramCardNumber = iwc.getParameter(LABEL_CARD_NUMBER);
@@ -125,7 +125,7 @@ public class CreditCardPlugin extends CashierSubWindowTemplate implements
             User ssnUser = null;
 
             if (paramSSN == null || "".equals(paramSSN)) {
-                errorList.add(ERROR_NO_SSN_ENTERED);
+                this.errorList.add(ERROR_NO_SSN_ENTERED);
             } else {
                 ssnUser = null;
                 try {
@@ -139,16 +139,16 @@ public class CreditCardPlugin extends CashierSubWindowTemplate implements
 				}
 
                 if (ssnUser == null) {
-                    errorList.add(ERROR_SSN_NOT_FOUND);
+                    this.errorList.add(ERROR_SSN_NOT_FOUND);
                 }
             }
 
             if (paramCardType == null || "".equals(paramCardType)) {
-                errorList.add(ERROR_NO_CARD_TYPE_SELECTED);
+                this.errorList.add(ERROR_NO_CARD_TYPE_SELECTED);
             }
 
             if (paramCardNumber == null || "".equals(paramCardNumber)) {
-                errorList.add(ERROR_NO_CARD_NUMBER_ENTERED);
+                this.errorList.add(ERROR_NO_CARD_NUMBER_ENTERED);
             }
 
             IWTimestamp expires = null;
@@ -161,12 +161,12 @@ public class CreditCardPlugin extends CashierSubWindowTemplate implements
             }
 
             if (expires == null) {
-                errorList.add(ERROR_NO_EXP_ENTERED);
+                this.errorList.add(ERROR_NO_EXP_ENTERED);
             }
 
             if (paramNumberOfPayments == null
                     || "".equals(paramNumberOfPayments)) {
-                errorList.add(ERROR_NO_NOP_SELECTED);
+                this.errorList.add(ERROR_NO_NOP_SELECTED);
             }
 
             try {
@@ -180,10 +180,10 @@ public class CreditCardPlugin extends CashierSubWindowTemplate implements
             }
 
             if (dofp == null) {
-                errorList.add(ERROR_NO_DOFP_ENTERED);
+                this.errorList.add(ERROR_NO_DOFP_ENTERED);
             }
 
-            if (!errorList.isEmpty()) { return false; }
+            if (!this.errorList.isEmpty()) { return false; }
 
             try {
                 int nop = Integer.parseInt(paramNumberOfPayments);
@@ -217,7 +217,7 @@ public class CreditCardPlugin extends CashierSubWindowTemplate implements
     public PresentationObject showPlugin(IWContext iwc, String type,
             String amount) {
         boolean isContractDone = iwc.isParameterSet(ACTION_CONTRACT_SETUP);
-        if (errorList != null && !errorList.isEmpty()) {
+        if (this.errorList != null && !this.errorList.isEmpty()) {
             isContractDone = false;
         }
 
@@ -237,7 +237,7 @@ public class CreditCardPlugin extends CashierSubWindowTemplate implements
         Table amountTable = new Table();
         amountTable.setCellpadding(5);
 
-        if (errorList != null) {
+        if (this.errorList != null) {
             Table error = new Table();
             Text labelError = new Text(iwrb.getLocalizedString(
                     ERROR_COULD_NOT_SAVE, "Could not save")
@@ -246,8 +246,8 @@ public class CreditCardPlugin extends CashierSubWindowTemplate implements
 
             int r = 1;
             error.add(labelError, 1, r++);
-            if (errorList != null && !errorList.isEmpty()) {
-                Iterator it = errorList.iterator();
+            if (this.errorList != null && !this.errorList.isEmpty()) {
+                Iterator it = this.errorList.iterator();
                 while (it.hasNext()) {
                     String loc = (String) it.next();
                     Text errorText = new Text(iwrb.getLocalizedString(loc, ""));

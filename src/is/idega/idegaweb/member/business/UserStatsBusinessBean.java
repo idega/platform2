@@ -138,11 +138,11 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 	private Map cachedParents = new HashMap();
 	
 	private void initializeBundlesIfNeeded() {
-		if (_iwb == null) {
-			_iwb = this.getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+		if (this._iwb == null) {
+			this._iwb = this.getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
 		}
-		_iwrb = _iwb.getResourceBundle(this.getUserContext().getCurrentLocale());
-		_userIwrb = this.getIWApplicationContext().getIWMainApplication().getBundle(USER_IW_BUNDLE_IDENTIFIER).getResourceBundle(this.getUserContext().getCurrentLocale());
+		this._iwrb = this._iwb.getResourceBundle(this.getUserContext().getCurrentLocale());
+		this._userIwrb = this.getIWApplicationContext().getIWMainApplication().getBundle(USER_IW_BUNDLE_IDENTIFIER).getResourceBundle(this.getUserContext().getCurrentLocale());
 	}
 
     
@@ -156,7 +156,7 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 		//Add extra...because the inputhandlers supply the basic header texts
 		
 		reportCollection.addExtraHeaderParameter(
-				"label_current_date", _iwrb.getLocalizedString(LOCALIZED_CURRENT_DATE, "Current date"),
+				"label_current_date", this._iwrb.getLocalizedString(LOCALIZED_CURRENT_DATE, "Current date"),
 				"current_date", TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale, IWTimestamp.LONG,IWTimestamp.SHORT),"GMT"));
  	
 		//PARAMETERS that are also FIELDS
@@ -165,79 +165,79 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 		ReportableField userIDField = null;
 		if (isSuperAdmin) {
 			userIDField = new ReportableField(FIELD_NAME_USER_ID, String.class);
-			userIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_USER_ID, "User ID"), currentLocale);
+			userIDField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_USER_ID, "User ID"), currentLocale);
 			reportCollection.addField(userIDField);
 		}
 		 ReportableField nameField = new ReportableField(FIELD_NAME_NAME, String.class);
-		 nameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_NAME, "Name"), currentLocale);
+		 nameField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_NAME, "Name"), currentLocale);
 		 reportCollection.addField(nameField);
 
 		 ReportableField personalIDField = new ReportableField(FIELD_NAME_PERSONAL_ID, String.class);
-		 personalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PERSONAL_ID, "Personal ID"),currentLocale);
+		 personalIDField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_PERSONAL_ID, "Personal ID"),currentLocale);
 		 reportCollection.addField(personalIDField);
 
 		 ReportableField dateOfBirthField = new ReportableField(FIELD_NAME_DATE_OF_BIRTH, String.class);
-		 dateOfBirthField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DATE_OF_BIRTH, "Date of birth"),currentLocale);
+		 dateOfBirthField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_DATE_OF_BIRTH, "Date of birth"),currentLocale);
 		 reportCollection.addField(dateOfBirthField);
 
 		 ReportableField ageField = new ReportableField(FIELD_NAME_AGE, String.class);
-		 ageField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AGE, "Age"),currentLocale);
+		 ageField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_AGE, "Age"),currentLocale);
 		 reportCollection.addField(ageField);
 
 		 ReportableField parentGroupField = new ReportableField(FIELD_NAME_PARENT_GROUP, String.class);
-		 parentGroupField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PARENT_GROUP, "Parent group"), currentLocale);
+		 parentGroupField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_PARENT_GROUP, "Parent group"), currentLocale);
 		 reportCollection.addField(parentGroupField);
 
 		 ReportableField groupPathField = new ReportableField(FIELD_NAME_GROUP_PATH, String.class);
-		 groupPathField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_GROUP_PATH, "Group Path"), currentLocale);
+		 groupPathField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_GROUP_PATH, "Group Path"), currentLocale);
 		 reportCollection.addField(groupPathField);
 		 
 		 ReportableField userStatusField = new ReportableField(FIELD_NAME_USER_STATUS, String.class);
-		 userStatusField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_USER_STATUS, "User Status"), currentLocale);
+		 userStatusField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_USER_STATUS, "User Status"), currentLocale);
 		 reportCollection.addField(userStatusField);
 		 
 		 ReportableField streetAddressField = new ReportableField(FIELD_NAME_STREET_ADDRESS, String.class);
-		 streetAddressField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_STREET_ADDRESS, "Street Address"), currentLocale);
+		 streetAddressField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_STREET_ADDRESS, "Street Address"), currentLocale);
 		 reportCollection.addField(streetAddressField);
 		 
 		 ReportableField postalAddressField = new ReportableField(FIELD_NAME_POSTAL_ADDRESS, String.class);
-		 postalAddressField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_POSTAL_ADDRESS, "Postal Address"), currentLocale);
+		 postalAddressField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_POSTAL_ADDRESS, "Postal Address"), currentLocale);
 		 reportCollection.addField(postalAddressField); 
 
 		 ReportableField countryField = new ReportableField(FIELD_NAME_COUNTRY, String.class);
-		 countryField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_COUNTRY, "Country"), currentLocale);
+		 countryField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_COUNTRY, "Country"), currentLocale);
 		 reportCollection.addField(countryField);
 		 
 		 ReportableField phoneField = new ReportableField(FIELD_NAME_PHONE, String.class);
-		 phoneField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PHONE, "Phone"), currentLocale);
+		 phoneField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_PHONE, "Phone"), currentLocale);
 		 reportCollection.addField(phoneField);
 		 
 		 ReportableField emailField = new ReportableField(FIELD_NAME_EMAIL, String.class);
-		 emailField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_EMAIL, "Email"), currentLocale);
+		 emailField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_EMAIL, "Email"), currentLocale);
 		 reportCollection.addField(emailField);
 
 		 ReportableField userInfo1Field = new ReportableField(FIELD_NAME_USER_INFO_1, String.class);
-		 userInfo1Field.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_USER_INFO_1, "User info 1"), currentLocale);
+		 userInfo1Field.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_USER_INFO_1, "User info 1"), currentLocale);
 		 reportCollection.addField(userInfo1Field);
 
 		 ReportableField userInfo2Field = new ReportableField(FIELD_NAME_USER_INFO_2, String.class);
-		 userInfo2Field.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_USER_INFO_2, "User info 2"), currentLocale);
+		 userInfo2Field.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_USER_INFO_2, "User info 2"), currentLocale);
 		 reportCollection.addField(userInfo2Field);
 
 		 ReportableField userInfo3Field = new ReportableField(FIELD_NAME_USER_INFO_3, String.class);
-		 userInfo3Field.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_USER_INFO_3, "User info 3"), currentLocale);
+		 userInfo3Field.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_USER_INFO_3, "User info 3"), currentLocale);
 		 reportCollection.addField(userInfo3Field);
 
 		 ReportableField custodianNameField = new ReportableField(FIELD_NAME_CUSTODIAN_NAME, String.class);
-		 custodianNameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_NAME, "Custodian name"), currentLocale);
+		 custodianNameField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_NAME, "Custodian name"), currentLocale);
 		 reportCollection.addField(custodianNameField);
 
 		 ReportableField custodianPersonalIDField = new ReportableField(FIELD_NAME_CUSTODIAN_PERSONAL_ID, String.class);
-		 custodianPersonalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_PERSONAL_ID, "Custodian personal ID"),currentLocale);
+		 custodianPersonalIDField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_PERSONAL_ID, "Custodian personal ID"),currentLocale);
 		 reportCollection.addField(custodianPersonalIDField);
 
 		 ReportableField custodianPhoneField = new ReportableField(FIELD_NAME_CUSTODIAN_PHONE, String.class);
-		 custodianPhoneField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_PHONE, "Custodian phone"), currentLocale);
+		 custodianPhoneField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_CUSTODIAN_PHONE, "Custodian phone"), currentLocale);
 		 reportCollection.addField(custodianPhoneField);
 		
 		Group group = null;
@@ -390,7 +390,7 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 			                 continue;
 			             }
 			             else {
-			                 userStatusString = _iwrb.getLocalizedString(USR_STAT_PREFIX+userStatusKey, userStatusKey);
+			                 userStatusString = this._iwrb.getLocalizedString(USR_STAT_PREFIX+userStatusKey, userStatusKey);
 			             }
 			             
 			         }
@@ -429,8 +429,9 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 				 	 data.addData(custodianPersonalIDField, custodianPersonalID );
 				     data.addData(custodianPhoneField, custodianPhoneString );
 				     List statsForGroup = (List) usersByGroups.get(parentGroup.getPrimaryKey());
-						if (statsForGroup == null)
+						if (statsForGroup == null) {
 							statsForGroup = new Vector();
+						}
 						statsForGroup.add(data);
 						usersByGroups.put(parentGroup.getPrimaryKey(), statsForGroup);
 				}
@@ -480,7 +481,7 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 		//Add extra...because the inputhandlers supply the basic header texts
 		
 		reportCollection.addExtraHeaderParameter(
-				"label_current_date", _iwrb.getLocalizedString(LOCALIZED_CURRENT_DATE, "Current date"),
+				"label_current_date", this._iwrb.getLocalizedString(LOCALIZED_CURRENT_DATE, "Current date"),
 				"current_date", TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale, IWTimestamp.LONG,IWTimestamp.SHORT),"GMT"));
  	
 		//PARAMETERS that are also FIELDS
@@ -489,51 +490,51 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 		ReportableField groupIDField = null;
 		if (isSuperAdmin) {
 			groupIDField = new ReportableField(FIELD_NAME_GROUP_ID, String.class);
-			groupIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_GROUP_ID, "Group ID"), currentLocale);
+			groupIDField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_GROUP_ID, "Group ID"), currentLocale);
 			reportCollection.addField(groupIDField);
 		}
 		 ReportableField nameField = new ReportableField(FIELD_NAME_NAME, String.class);
-		 nameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_NAME, "Name"), currentLocale);
+		 nameField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_NAME, "Name"), currentLocale);
 		 reportCollection.addField(nameField);
 
 		 ReportableField shortNameField = new ReportableField(FIELD_NAME_SHORT_NAME, String.class);
-		 shortNameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_SHORT_NAME, "Short Name"), currentLocale);
+		 shortNameField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_SHORT_NAME, "Short Name"), currentLocale);
 		 reportCollection.addField(shortNameField);
 
 		 ReportableField abbrevationField = new ReportableField(FIELD_NAME_ABBREVATION, String.class);
-		 abbrevationField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ABBREVATION, "Abbrevation"), currentLocale);
+		 abbrevationField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_ABBREVATION, "Abbrevation"), currentLocale);
 		 reportCollection.addField(abbrevationField);
 
 		 ReportableField displayNameField = new ReportableField(FIELD_NAME_DISPLAY_NAME, String.class);
-		 displayNameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DISPLAY_NAME, "Display Name"), currentLocale);
+		 displayNameField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_DISPLAY_NAME, "Display Name"), currentLocale);
 		 reportCollection.addField(displayNameField);
 
 		 ReportableField groupTypeField = new ReportableField(FIELD_NAME_GROUP_TYPE, String.class);
-		 groupTypeField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_GROUP_TYPE, "Group Type"),currentLocale);
+		 groupTypeField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_GROUP_TYPE, "Group Type"),currentLocale);
 		 reportCollection.addField(groupTypeField);
 
 		 ReportableField groupPathField = new ReportableField(FIELD_NAME_GROUP_PATH, String.class);
-		 groupPathField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_GROUP_PATH, "Group Path"), currentLocale);
+		 groupPathField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_GROUP_PATH, "Group Path"), currentLocale);
 		 reportCollection.addField(groupPathField);
 		 
 		 ReportableField streetAddressField = new ReportableField(FIELD_NAME_STREET_ADDRESS, String.class);
-		 streetAddressField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_STREET_ADDRESS, "Street Address"), currentLocale);
+		 streetAddressField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_STREET_ADDRESS, "Street Address"), currentLocale);
 		 reportCollection.addField(streetAddressField);
 		 
 		 ReportableField postalAddressField = new ReportableField(FIELD_NAME_POSTAL_ADDRESS, String.class);
-		 postalAddressField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_POSTAL_ADDRESS, "Postal Address"), currentLocale);
+		 postalAddressField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_POSTAL_ADDRESS, "Postal Address"), currentLocale);
 		 reportCollection.addField(postalAddressField); 
 
 		 ReportableField pBoxField = new ReportableField(FIELD_NAME_POST_BOX, String.class);
-		 pBoxField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_POST_BOX, "Postbox"), currentLocale);
+		 pBoxField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_POST_BOX, "Postbox"), currentLocale);
 		 reportCollection.addField(pBoxField);
 
 		 ReportableField phoneField = new ReportableField(FIELD_NAME_PHONE, String.class);
-		 phoneField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PHONE, "Phone"), currentLocale);
+		 phoneField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_PHONE, "Phone"), currentLocale);
 		 reportCollection.addField(phoneField);
 		 
 		 ReportableField emailField = new ReportableField(FIELD_NAME_EMAIL, String.class);
-		 emailField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_EMAIL, "Email"), currentLocale);
+		 emailField.setLocalizedName(this._iwrb.getLocalizedString(LOCALIZED_EMAIL, "Email"), currentLocale);
 		 reportCollection.addField(emailField);
 		
 		Group topGroup = null;
@@ -584,7 +585,7 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 			    } else {
 			    	displayNameString = nameString;
 			    }
-			    String groupTypeString = _userIwrb.getLocalizedString(group.getGroupType(), group.getGroupType());
+			    String groupTypeString = this._userIwrb.getLocalizedString(group.getGroupType(), group.getGroupType());
 			   	Collection emails =  group.getEmails();
 			   	Email email = null;
 			   	String emailString = null;
@@ -635,8 +636,9 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 				    data.addData(pBoxField, postBoxString);
 				    data.addData(phoneField, getPhoneNumber(group));
 				    List statsForGroup = (List) usersByGroups.get(group.getPrimaryKey());
-					if (statsForGroup == null)
+					if (statsForGroup == null) {
 						statsForGroup = new Vector();
+					}
 					statsForGroup.add(data);
 					usersByGroups.put(group.getPrimaryKey(), statsForGroup);
 				}
@@ -715,20 +717,20 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 	    
 	    while (parentGroup != null && !topNodes.contains(parentGroup)) {
 	        String parentKey = parentGroup.getPrimaryKey().toString();
-	        if (cachedParents.containsKey((parentKey))) {
-		        Collection col = (Collection)cachedParents.get(parentKey);
+	        if (this.cachedParents.containsKey((parentKey))) {
+		        Collection col = (Collection)this.cachedParents.get(parentKey);
 		        Iterator it = col.iterator();
 		        Integer parentID = null;
 		        if (it.hasNext()) {
 	                 parentID = (Integer)it.next();
 	                 String groupKey = parentID.toString();
-	                 if (cachedGroups.containsKey(groupKey)) {
-	                     parentGroup = (Group)cachedGroups.get(groupKey); 
+	                 if (this.cachedGroups.containsKey(groupKey)) {
+	                     parentGroup = (Group)this.cachedGroups.get(groupKey); 
 	                 }
 	                 else {
 	                     try {
-		                     parentGroup = groupBiz.getGroupByGroupID(parentID.intValue());
-			                 cachedGroups.put(groupKey, parentGroup);
+		                     parentGroup = this.groupBiz.getGroupByGroupID(parentID.intValue());
+			                 this.cachedGroups.put(groupKey, parentGroup);
 	                     } catch (Exception e) {
 	                         break;
 	                     }
@@ -738,7 +740,7 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 		        	break;
 		        }
 			} else {
-			         parentGroupCollection = parentGroup.getParentGroups(cachedParents, cachedGroups);
+			         parentGroupCollection = parentGroup.getParentGroups(this.cachedParents, this.cachedGroups);
 			         
 			     if (!parentGroupCollection.isEmpty()) {
 			         parentGroup = (Group)parentGroupCollection.iterator().next();
@@ -761,38 +763,38 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
     }
 
     private GroupBusiness getGroupBusiness() throws RemoteException {
-		if (groupBiz == null) {
-			groupBiz = (GroupBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), GroupBusiness.class);
+		if (this.groupBiz == null) {
+			this.groupBiz = (GroupBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), GroupBusiness.class);
 		}	
-		return groupBiz;
+		return this.groupBiz;
 	}
 
 	private UserBusiness getUserBusiness() throws RemoteException {
-		if (userBiz == null) {
-			userBiz = (UserBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), UserBusiness.class);
+		if (this.userBiz == null) {
+			this.userBiz = (UserBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), UserBusiness.class);
 		}	
-		return userBiz;
+		return this.userBiz;
 	}
 
 	private NationalRegisterBusiness getNationalRegisterBusiness() throws RemoteException {
-		if (nationalRegisterBiz == null) {
-			nationalRegisterBiz = (NationalRegisterBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), NationalRegisterBusiness.class);
+		if (this.nationalRegisterBiz == null) {
+			this.nationalRegisterBiz = (NationalRegisterBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), NationalRegisterBusiness.class);
 		}	
-		return nationalRegisterBiz;
+		return this.nationalRegisterBiz;
 	}
 
 	private UserInfoColumnsBusiness getUserInfoColumnsBusiness() throws RemoteException {
-		if (userInfoColumnsBiz == null) {
-			userInfoColumnsBiz = (UserInfoColumnsBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), UserInfoColumnsBusiness.class);
+		if (this.userInfoColumnsBiz == null) {
+			this.userInfoColumnsBiz = (UserInfoColumnsBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), UserInfoColumnsBusiness.class);
 		}	
-		return userInfoColumnsBiz;
+		return this.userInfoColumnsBiz;
 	}
 
 	private UserStatusBusiness getUserStatusBusiness() throws RemoteException {
-		if (userStatusBiz == null) {
-			userStatusBiz = (UserStatusBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), UserStatusBusiness.class);
+		if (this.userStatusBiz == null) {
+			this.userStatusBiz = (UserStatusBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), UserStatusBusiness.class);
 		}	
-		return userStatusBiz;
+		return this.userStatusBiz;
 	}
 
 	/*

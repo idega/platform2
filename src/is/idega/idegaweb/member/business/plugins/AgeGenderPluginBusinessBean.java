@@ -102,10 +102,11 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
   
   private int getGender(Group group) throws RemoteException, FinderException {
     String genderIdString = group.getMetaData(GENDER_META_DATA_KEY);
-    if (genderIdString == null || NULL.equals(genderIdString))
-      // meta data was not set
-      // return NEUTRAL
-      return NEUTRAL;
+    if (genderIdString == null || NULL.equals(genderIdString)) {
+		// meta data was not set
+		  // return NEUTRAL
+		  return NEUTRAL;
+	}
     Integer genderId = new Integer(genderIdString);
     return getMyGenderIdForGenderId(genderId);
   }
@@ -113,15 +114,16 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
     
   private int getMyGenderIdForGenderId(Integer genderId) throws RemoteException, FinderException {  
     
-  	if(malePrimaryKeyFromDatastore == null){
+  	if(this.malePrimaryKeyFromDatastore == null){
   		GenderHome home = (GenderHome) this.getIDOHome(Gender.class);
-  	    malePrimaryKeyFromDatastore = home.getMaleGender().getPrimaryKey();
-  	    femalePrimaryKeyFromDatastore = home.getFemaleGender().getPrimaryKey(); 
+  	    this.malePrimaryKeyFromDatastore = home.getMaleGender().getPrimaryKey();
+  	    this.femalePrimaryKeyFromDatastore = home.getFemaleGender().getPrimaryKey(); 
   	}
   	
-    if (genderId.equals(malePrimaryKeyFromDatastore))
-      return MALE;
-    else if (genderId.equals(femalePrimaryKeyFromDatastore)){
+    if (genderId.equals(this.malePrimaryKeyFromDatastore)) {
+		return MALE;
+	}
+	else if (genderId.equals(this.femalePrimaryKeyFromDatastore)){
       return FEMALE;
     }
     throw new FinderException("Id of gender was not found"); 
@@ -140,11 +142,13 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
   }
   
   public void setAgeLimitIsStringentCondition(Group group, boolean ageLimitIsStringentCondition) {
-    if (ageLimitIsStringentCondition)
-      group.setMetaData( AGE_LIMIT_IS_STRINGENT_CONDITION_META_DATA_KEY, new Boolean(true).toString());
-    else
-      // remove meta data does not work, set false
-      group.setMetaData( AGE_LIMIT_IS_STRINGENT_CONDITION_META_DATA_KEY, new Boolean(false).toString());
+    if (ageLimitIsStringentCondition) {
+		group.setMetaData( AGE_LIMIT_IS_STRINGENT_CONDITION_META_DATA_KEY, new Boolean(true).toString());
+	}
+	else {
+		// remove meta data does not work, set false
+		  group.setMetaData( AGE_LIMIT_IS_STRINGENT_CONDITION_META_DATA_KEY, new Boolean(false).toString());
+	}
   }
   
   public boolean isAgeLimitStringentCondition(Group group) {
@@ -155,36 +159,44 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
   }
     
   public void setLowerAgeLimit(Group group, int lowerAgeLimit)  {
-    if (lowerAgeLimit == LOWER_AGE_LIMIT_DEFAULT)
-      // remove meta data does not work
-      // ((GenericEntity) group).removeMetaData(LOWER_AGE_LIMIT_META_DATA_KEY);
-      group.setMetaData(LOWER_AGE_LIMIT_META_DATA_KEY, NULL);
-    else
-      group.setMetaData(LOWER_AGE_LIMIT_META_DATA_KEY, Integer.toString(lowerAgeLimit));   
+    if (lowerAgeLimit == LOWER_AGE_LIMIT_DEFAULT) {
+		// remove meta data does not work
+		  // ((GenericEntity) group).removeMetaData(LOWER_AGE_LIMIT_META_DATA_KEY);
+		  group.setMetaData(LOWER_AGE_LIMIT_META_DATA_KEY, NULL);
+	}
+	else {
+		group.setMetaData(LOWER_AGE_LIMIT_META_DATA_KEY, Integer.toString(lowerAgeLimit));
+	}   
   }
   
   public int getLowerAgeLimit(Group group)  {
     String lowerAgeLimitString = group.getMetaData(LOWER_AGE_LIMIT_META_DATA_KEY);
-    if (lowerAgeLimitString == null || NULL.equals(lowerAgeLimitString))
-      return LOWER_AGE_LIMIT_DEFAULT;
-    else
-      return Integer.parseInt(lowerAgeLimitString); 
+    if (lowerAgeLimitString == null || NULL.equals(lowerAgeLimitString)) {
+		return LOWER_AGE_LIMIT_DEFAULT;
+	}
+	else {
+		return Integer.parseInt(lowerAgeLimitString);
+	} 
   }
   
   public void setUpperAgeLimit(Group group, int upperAgeLimit)  {
-    if (upperAgeLimit == UPPER_AGE_LIMIT_DEFAULT)
-      // remove meta data does not work
-      group.setMetaData(UPPER_AGE_LIMIT_META_DATA_KEY, NULL);
-    else
-      group.setMetaData(UPPER_AGE_LIMIT_META_DATA_KEY, Integer.toString(upperAgeLimit));
+    if (upperAgeLimit == UPPER_AGE_LIMIT_DEFAULT) {
+		// remove meta data does not work
+		  group.setMetaData(UPPER_AGE_LIMIT_META_DATA_KEY, NULL);
+	}
+	else {
+		group.setMetaData(UPPER_AGE_LIMIT_META_DATA_KEY, Integer.toString(upperAgeLimit));
+	}
   }
  
   public int getUpperAgeLimit(Group group)  {
     String upperAgeLimitString = group.getMetaData(UPPER_AGE_LIMIT_META_DATA_KEY);
-    if (upperAgeLimitString == null || NULL.equals(upperAgeLimitString))
-      return UPPER_AGE_LIMIT_DEFAULT;
-    else
-      return Integer.parseInt(upperAgeLimitString); 
+    if (upperAgeLimitString == null || NULL.equals(upperAgeLimitString)) {
+		return UPPER_AGE_LIMIT_DEFAULT;
+	}
+	else {
+		return Integer.parseInt(upperAgeLimitString);
+	} 
   }
   
   public int getLowerAgeLimitDefault()  {
@@ -196,20 +208,24 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
   }
   
   public void setKeyDateForAge(Group group, String keyDateForAge)  {
-    if (keyDateForAge == null || keyDateForAge.length() == 0)
-      // remove does not work
-      group.setMetaData(KEY_DATE_FOR_AGE_META_DATA_KEY, NULL);
-    else 
-      // stored in this way <month>-<day> e.g. "04-02" (second of april)
-      group.setMetaData(KEY_DATE_FOR_AGE_META_DATA_KEY, keyDateForAge);   
+    if (keyDateForAge == null || keyDateForAge.length() == 0) {
+		// remove does not work
+		  group.setMetaData(KEY_DATE_FOR_AGE_META_DATA_KEY, NULL);
+	}
+	else {
+		// stored in this way <month>-<day> e.g. "04-02" (second of april)
+		  group.setMetaData(KEY_DATE_FOR_AGE_META_DATA_KEY, keyDateForAge);
+	}   
   }
   
   public String getKeyDateForAge(Group group)  {
     String keyDateForAgeString = group.getMetaData(KEY_DATE_FOR_AGE_META_DATA_KEY);
-    if (keyDateForAgeString == null || NULL.equals(keyDateForAgeString))
-      return DEFAULT_KEY_DATE;
-    else
-      return keyDateForAgeString; 
+    if (keyDateForAgeString == null || NULL.equals(keyDateForAgeString)) {
+		return DEFAULT_KEY_DATE;
+	}
+	else {
+		return keyDateForAgeString;
+	} 
   }  
   
 	/**

@@ -103,11 +103,11 @@ public class ClubDivisionTab extends UserGroupTab{
      * @see com.idega.user.presentation.UserGroupTab#initializeFieldNames()
      */
     public void initializeFieldNames() {
-        numberFieldName = "cdiv_number";
-        ssnFieldName = "cdiv_ssn";
-        foundedFieldName = "cdiv_founded";
-        connectionToSpecialFieldName = "cdiv_special";
-        boardGroupFieldName = "cdiv_board";
+        this.numberFieldName = "cdiv_number";
+        this.ssnFieldName = "cdiv_ssn";
+        this.foundedFieldName = "cdiv_founded";
+        this.connectionToSpecialFieldName = "cdiv_special";
+        this.boardGroupFieldName = "cdiv_board";
     }
 
     /*
@@ -116,13 +116,13 @@ public class ClubDivisionTab extends UserGroupTab{
      * @see com.idega.user.presentation.UserGroupTab#initializeFieldValues()
      */
     public void initializeFieldValues() {
-        fieldValues = new Hashtable();
-        fieldValues.put(numberFieldName, "");
-        fieldValues.put(ssnFieldName, "");
-        fieldValues.put(foundedFieldName, new IWTimestamp().getDate()
+        this.fieldValues = new Hashtable();
+        this.fieldValues.put(this.numberFieldName, "");
+        this.fieldValues.put(this.ssnFieldName, "");
+        this.fieldValues.put(this.foundedFieldName, new IWTimestamp().getDate()
                 .toString());
-        fieldValues.put(connectionToSpecialFieldName, "");
-        fieldValues.put(boardGroupFieldName, "");
+        this.fieldValues.put(this.connectionToSpecialFieldName, "");
+        this.fieldValues.put(this.boardGroupFieldName, "");
     }
 
     /*
@@ -131,22 +131,23 @@ public class ClubDivisionTab extends UserGroupTab{
      * @see com.idega.user.presentation.UserGroupTab#updateFieldsDisplayStatus()
      */
     public void updateFieldsDisplayStatus() {
-    			String number = (String) fieldValues.get(numberFieldName);
-        numberField.setContent(number);
+    			String number = (String) this.fieldValues.get(this.numberFieldName);
+        this.numberField.setContent(number);
         if(number != null && !number.equals("")) {
-        		numberField.setDisabled(true);
+        		this.numberField.setDisabled(true);
         }
-        ssnField.setContent((String) fieldValues.get(ssnFieldName));
-        foundedField.setContent((String) fieldValues.get(foundedFieldName));
-        String connection = (String) fieldValues
-                .get(connectionToSpecialFieldName);
-        connectionToSpecialField.setSelectedElement(connection);
-        if (connection != null && !connection.equals(""))
-                connectionToSpecialField.setDisabled(true);
+        this.ssnField.setContent((String) this.fieldValues.get(this.ssnFieldName));
+        this.foundedField.setContent((String) this.fieldValues.get(this.foundedFieldName));
+        String connection = (String) this.fieldValues
+                .get(this.connectionToSpecialFieldName);
+        this.connectionToSpecialField.setSelectedElement(connection);
+        if (connection != null && !connection.equals("")) {
+			this.connectionToSpecialField.setDisabled(true);
+		}
         try {
             GroupHome home = (GroupHome) com.idega.data.IDOLookup
                     .getHome(Group.class);
-            String groupId = (String) fieldValues.get(boardGroupFieldName);
+            String groupId = (String) this.fieldValues.get(this.boardGroupFieldName);
 
             if (groupId != null && !groupId.equals("")) {
                 try {
@@ -158,7 +159,7 @@ public class ClubDivisionTab extends UserGroupTab{
 
                 Group group = home.findByPrimaryKey(new Integer(
                         groupId));
-                boardGroupField.setSelectedGroup(groupId, group.getName());
+                this.boardGroupField.setSelectedGroup(groupId, group.getName());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -173,12 +174,12 @@ public class ClubDivisionTab extends UserGroupTab{
     public void initializeFields() {
 		    	IWContext iwc = IWContext.getInstance();
 		  		IWResourceBundle iwrb = getResourceBundle(iwc);
-        numberField = new TextInput(numberFieldName);
-        ssnField = new TextInput(ssnFieldName);
+        this.numberField = new TextInput(this.numberFieldName);
+        this.ssnField = new TextInput(this.ssnFieldName);
         //		_ssnField.setAsIcelandicSSNumber("Vart�lupr�fun stemmir ekki");
-        foundedField = new DateInput(foundedFieldName);
-        connectionToSpecialField = new DropdownMenu(
-                connectionToSpecialFieldName);
+        this.foundedField = new DateInput(this.foundedFieldName);
+        this.connectionToSpecialField = new DropdownMenu(
+                this.connectionToSpecialFieldName);
 
         List special = null;
         try {
@@ -195,17 +196,17 @@ public class ClubDivisionTab extends UserGroupTab{
     					return collator.compare(((Group) arg0).getName(), ((Group) arg1).getName());
     				}				
     			});
-    			connectionToSpecialField.addMenuElement("-1",iwrb.getLocalizedString("clubinformationtab.choose_reg_un","Choose a regional union..."));
+    			this.connectionToSpecialField.addMenuElement("-1",iwrb.getLocalizedString("clubinformationtab.choose_reg_un","Choose a regional union..."));
     		
             Iterator it = special.iterator();
             while (it.hasNext()) {
                 Group spec = (Group) it.next();
-                connectionToSpecialField.addMenuElement(((Integer) spec
+                this.connectionToSpecialField.addMenuElement(((Integer) spec
                         .getPrimaryKey()).intValue(), spec.getName());
             }
         }
 
-        boardGroupField = new GroupChooser(boardGroupFieldName);
+        this.boardGroupField = new GroupChooser(this.boardGroupFieldName);
     }
 
     /*
@@ -217,20 +218,20 @@ public class ClubDivisionTab extends UserGroupTab{
     		IWContext iwc = IWContext.getInstance();
     		IWResourceBundle iwrb = getResourceBundle(iwc);
 
-    		numberText = new Text(iwrb.getLocalizedString(numberFieldName, "Number"));
-    		numberText.setBold();
+    		this.numberText = new Text(iwrb.getLocalizedString(this.numberFieldName, "Number"));
+    		this.numberText.setBold();
     		
-    		ssnText = new Text(iwrb.getLocalizedString(ssnFieldName, "SSN") + ":");
-    		ssnText.setBold();
+    		this.ssnText = new Text(iwrb.getLocalizedString(this.ssnFieldName, "SSN") + ":");
+    		this.ssnText.setBold();
     		
-    		foundedText = new Text(iwrb.getLocalizedString(foundedFieldName, "Founded") + ":");
-    		foundedText.setBold();
+    		this.foundedText = new Text(iwrb.getLocalizedString(this.foundedFieldName, "Founded") + ":");
+    		this.foundedText.setBold();
     		
-    		connectionToSpecialText = new Text(iwrb.getLocalizedString(connectionToSpecialFieldName, "Connection to special") + ":");
-    		connectionToSpecialText.setBold();
+    		this.connectionToSpecialText = new Text(iwrb.getLocalizedString(this.connectionToSpecialFieldName, "Connection to special") + ":");
+    		this.connectionToSpecialText.setBold();
     		
-    		boardGroupText = new Text(iwrb.getLocalizedString(boardGroupFieldName, "Board") + ":");
-    		boardGroupText.setBold();
+    		this.boardGroupText = new Text(iwrb.getLocalizedString(this.boardGroupFieldName, "Board") + ":");
+    		this.boardGroupText.setBold();
     }
 
     /*
@@ -244,25 +245,25 @@ public class ClubDivisionTab extends UserGroupTab{
   		t.setCellspacing(0);
   		t.setWidth(Table.HUNDRED_PERCENT);
   		
-  		t.add(numberText, 1, 1);
+  		t.add(this.numberText, 1, 1);
   		t.add(Text.getBreak(), 1, 1);
-  		t.add(numberField, 1, 1);
+  		t.add(this.numberField, 1, 1);
   		
-  		t.add(ssnText, 2, 1);
+  		t.add(this.ssnText, 2, 1);
   		t.add(Text.getBreak(), 2, 1);
-  		t.add(ssnField, 2, 1);
+  		t.add(this.ssnField, 2, 1);
   		
-  		t.add(foundedText, 1, 2);
+  		t.add(this.foundedText, 1, 2);
   		t.add(Text.getBreak(), 1, 2);
-  		t.add(foundedField, 1, 2);
+  		t.add(this.foundedField, 1, 2);
   		
-  		t.add(connectionToSpecialText, 2, 2);
+  		t.add(this.connectionToSpecialText, 2, 2);
   		t.add(Text.getBreak(), 2, 2);
-  		t.add(connectionToSpecialField, 2, 2);
+  		t.add(this.connectionToSpecialField, 2, 2);
   		
-  		t.add(boardGroupText, 1, 3);
+  		t.add(this.boardGroupText, 1, 3);
   		t.add(Text.getBreak(), 1, 3);
-  		t.add(boardGroupField, 1, 3);
+  		t.add(this.boardGroupField, 1, 3);
   		
   		add(t);
     }
@@ -278,34 +279,43 @@ public class ClubDivisionTab extends UserGroupTab{
      */
     public boolean collect(IWContext iwc) {
         if (iwc != null) {
-            String number = iwc.getParameter(numberFieldName);
-            String ssn = iwc.getParameter(ssnFieldName);
-            String founded = iwc.getParameter(foundedFieldName);
-            String connection = iwc.getParameter(connectionToSpecialFieldName);
-            String boardGroup = iwc.getParameter(boardGroupFieldName);
+            String number = iwc.getParameter(this.numberFieldName);
+            String ssn = iwc.getParameter(this.ssnFieldName);
+            String founded = iwc.getParameter(this.foundedFieldName);
+            String connection = iwc.getParameter(this.connectionToSpecialFieldName);
+            String boardGroup = iwc.getParameter(this.boardGroupFieldName);
 
-            if (number != null)
-                fieldValues.put(numberFieldName, number);
-            else
-                fieldValues.put(numberFieldName, "");
-            if (ssn != null)
-                fieldValues.put(ssnFieldName, ssn);
-            else
-                fieldValues.put(ssnFieldName, "");
-            if (founded != null)
-                fieldValues.put(foundedFieldName, founded);
-            else
-                fieldValues.put(foundedFieldName, "");
-            if (connection != null)
-                fieldValues.put(connectionToSpecialFieldName, connection);
-            else
-                fieldValues.put(connectionToSpecialFieldName, "");
+            if (number != null) {
+				this.fieldValues.put(this.numberFieldName, number);
+			}
+			else {
+				this.fieldValues.put(this.numberFieldName, "");
+			}
+            if (ssn != null) {
+				this.fieldValues.put(this.ssnFieldName, ssn);
+			}
+			else {
+				this.fieldValues.put(this.ssnFieldName, "");
+			}
+            if (founded != null) {
+				this.fieldValues.put(this.foundedFieldName, founded);
+			}
+			else {
+				this.fieldValues.put(this.foundedFieldName, "");
+			}
+            if (connection != null) {
+				this.fieldValues.put(this.connectionToSpecialFieldName, connection);
+			}
+			else {
+				this.fieldValues.put(this.connectionToSpecialFieldName, "");
+			}
             if (boardGroup != null) {
             	boardGroup = boardGroup.substring(boardGroup.lastIndexOf("_") + 1);
-                fieldValues.put(boardGroupFieldName, boardGroup);
+                this.fieldValues.put(this.boardGroupFieldName, boardGroup);
             }
-            else
-                fieldValues.put(boardGroupFieldName, "");
+			else {
+				this.fieldValues.put(this.boardGroupFieldName, "");
+			}
 
             updateFieldsDisplayStatus();
         }
@@ -325,12 +335,12 @@ public class ClubDivisionTab extends UserGroupTab{
                     .getHome(Group.class)).findByPrimaryKey(new Integer(
                     getGroupId()));
 
-            String number = (String) fieldValues.get(numberFieldName);
-            String ssn = (String) fieldValues.get(ssnFieldName);
-            String founded = (String) fieldValues.get(foundedFieldName);
-            String connection = (String) fieldValues
-                    .get(connectionToSpecialFieldName);
-            String board = (String) fieldValues.get(boardGroupFieldName);
+            String number = (String) this.fieldValues.get(this.numberFieldName);
+            String ssn = (String) this.fieldValues.get(this.ssnFieldName);
+            String founded = (String) this.fieldValues.get(this.foundedFieldName);
+            String connection = (String) this.fieldValues
+                    .get(this.connectionToSpecialFieldName);
+            String board = (String) this.fieldValues.get(this.boardGroupFieldName);
 
             group.setMetaData(IWMemberConstants.META_DATA_DIVISION_NUMBER, number);
             group.setMetaData(IWMemberConstants.META_DATA_DIVISION_SSN, ssn);
@@ -381,19 +391,19 @@ public class ClubDivisionTab extends UserGroupTab{
             String board = group.getMetaData(IWMemberConstants.META_DATA_DIVISION_BOARD);
 
             if (number != null) {
-                fieldValues.put(numberFieldName, number);
+                this.fieldValues.put(this.numberFieldName, number);
             }
             if (ssn != null) {
-                fieldValues.put(ssnFieldName, ssn);
+                this.fieldValues.put(this.ssnFieldName, ssn);
             }
             if (founded != null) {
-                fieldValues.put(foundedFieldName, founded);
+                this.fieldValues.put(this.foundedFieldName, founded);
             }
             if (connection != null) {
-                fieldValues.put(connectionToSpecialFieldName, connection);
+                this.fieldValues.put(this.connectionToSpecialFieldName, connection);
             }
             if (board != null) {
-                fieldValues.put(boardGroupFieldName, board);
+                this.fieldValues.put(this.boardGroupFieldName, board);
             }
 
             updateFieldsDisplayStatus();

@@ -137,11 +137,13 @@ public class EditTariffList extends CashierSubWindowTemplate {
 						.getPrimaryKey().toString());
 				t.add(deleteCheck, 1, row);
 
-				if (tariff.getDivision() != null)
+				if (tariff.getDivision() != null) {
 					t.add(tariff.getDivision().getName(), 2, row);
+				}
 				Group group = tariff.getGroup();
-				if (group != null)
+				if (group != null) {
 					t.add(group.getName(), 3, row);
+				}
 
 				ClubTariffType type = tariff.getTariffType();
 				t.add(type.getName(), 4, row);

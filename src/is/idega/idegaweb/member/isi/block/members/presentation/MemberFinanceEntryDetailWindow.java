@@ -77,21 +77,21 @@ public class MemberFinanceEntryDetailWindow extends StyledIWAdminWindow {
     private void showList(String id, IWContext iwc) {
         IWResourceBundle iwrb = getResourceBundle(iwc);
         Table backTable = new Table(3, 3);
-        backTable.setStyleClass(backTableStyle);
+        backTable.setStyleClass(this.backTableStyle);
         backTable.setWidth(Table.HUNDRED_PERCENT);
         backTable.setHeight(1, 1, "6");
         backTable.setWidth(1, 2, "6");
         backTable.setWidth(3, 2, "6");
         Table heading = new Table();
         heading.setColor("#ffffff");
-        heading.setStyleClass(borderTableStyle);
+        heading.setStyleClass(this.borderTableStyle);
         heading.setWidth(Table.HUNDRED_PERCENT);
         Table detail = new Table();
         heading.setCellpadding(5);
         detail.setWidth(Table.HUNDRED_PERCENT);
         detail.setCellpadding(5);
         detail.setColor("#ffffff");
-        detail.setStyleClass(borderTableStyle);
+        detail.setStyleClass(this.borderTableStyle);
 
         int row = 1;
         Text labelName = new Text(iwrb.getLocalizedString(LABEL_NAME, "Name"));
@@ -139,20 +139,26 @@ public class MemberFinanceEntryDetailWindow extends StyledIWAdminWindow {
             heading.add(labelPersonalID, 2, headingRow++);
             heading.add(entry.getUser().getName(), 1, headingRow);
             heading.add(entry.getUser().getPersonalID(), 2, headingRow);
-            if (entry.getClub() != null)
-                detail.add(entry.getClub().getName(), 1, row);
-            if (entry.getDivision() != null)
-                detail.add(entry.getDivision().getName(), 2, row);
-            if (entry.getGroup() != null)
-                detail.add(entry.getGroup().getName(), 3, row);
+            if (entry.getClub() != null) {
+				detail.add(entry.getClub().getName(), 1, row);
+			}
+            if (entry.getDivision() != null) {
+				detail.add(entry.getDivision().getName(), 2, row);
+			}
+            if (entry.getGroup() != null) {
+				detail.add(entry.getGroup().getName(), 3, row);
+			}
             detail.add(nf.format(entry.getAmount()), 4, row);
-            if (entry.getDateOfEntry() != null)
-                detail.add(new IWTimestamp(entry.getDateOfEntry())
+            if (entry.getDateOfEntry() != null) {
+				detail.add(new IWTimestamp(entry.getDateOfEntry())
                         .getDateString("dd.MM.yyyy"), 5, row);
-            if (entry.getTariffType() != null)
-                detail.add(entry.getTariffType().getName(), 6, row);
-            if (entry.getInfo() != null)
-                detail.add(entry.getInfo(), 7, row);
+			}
+            if (entry.getTariffType() != null) {
+				detail.add(entry.getTariffType().getName(), 6, row);
+			}
+            if (entry.getInfo() != null) {
+				detail.add(entry.getInfo(), 7, row);
+			}
             detail.setAlignment(4, row, "RIGHT");
             row++;
         } catch (NumberFormatException e) {

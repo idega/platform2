@@ -217,7 +217,9 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 	 * @return
 	 */
 	private IWTimestamp getYearlyAgeBorderIWTimestamp(int age, int year){
-		if(age<0) return null;
+		if(age<0) {
+			return null;
+		}
 		IWTimestamp stamp = new IWTimestamp(31,12,year-1);//work reports are for the year before
 		stamp.addYears(-age);
 		

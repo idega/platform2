@@ -51,7 +51,7 @@ public class AssessmentRoundThread extends Thread {
 
 	public AssessmentRoundThread(AssessmentRound assessmentRound,
 			IWApplicationContext iwac, String tariff, String skip) {
-		round = assessmentRound;
+		this.round = assessmentRound;
 		this.iwac = iwac;
 		if (tariff != null) {
 			this.tariff = tariff;
@@ -66,9 +66,9 @@ public class AssessmentRoundThread extends Thread {
 	}
 
 	public void run() {
-		Group top = round.getGroup();
+		Group top = this.round.getGroup();
 		Collection skip = new ArrayList();
-		StringTokenizer tok = new StringTokenizer(skipList, ";");
+		StringTokenizer tok = new StringTokenizer(this.skipList, ";");
 		while (tok.hasMoreElements()) {
 			String str = (String) tok.nextElement();
 			skip.add(str);
@@ -77,9 +77,9 @@ public class AssessmentRoundThread extends Thread {
 		try {
 			ClubTariffType tariffType = ((ClubTariffTypeHome) IDOLookup
 					.getHome(ClubTariffType.class))
-					.findByPrimaryKey(new Integer(tariff));
-			round.addTariffType(tariffType);
-			assessGroup(top, round.getIncludeChildren(), tariffType, skip);
+					.findByPrimaryKey(new Integer(this.tariff));
+			this.round.addTariffType(tariffType);
+			assessGroup(top, this.round.getIncludeChildren(), tariffType, skip);
 		} catch (IDOLookupException e) {
 			e.printStackTrace();
 		} catch (NumberFormatException e) {
@@ -91,8 +91,8 @@ public class AssessmentRoundThread extends Thread {
 		}
 
 		IWTimestamp now = IWTimestamp.RightNow();
-		round.setEndTime(now.getTimestamp());
-		round.store();
+		this.round.setEndTime(now.getTimestamp());
+		this.round.store();
 	}
 
 	private void assessGroup(Group group, boolean includeChildren,
@@ -100,7 +100,7 @@ public class AssessmentRoundThread extends Thread {
 		if (!skip.contains(group.getGroupType())) {
 			try {
 				ClubTariff tariff = createTariffForGroup(group, tariffType);
-				if (round.getAmount() != 0.0f) {
+				if (this.round.getAmount() != 0.0f) {
 					Collection users = getUserBusiness().getUsersInGroup(group);
 					if (users != null && !users.isEmpty()) {
 						Iterator userIt = users.iterator();
@@ -109,16 +109,16 @@ public class AssessmentRoundThread extends Thread {
 
 							FinanceEntry entry = getFinanceEntryHome().create();
 							entry.setUser(user);
-							entry.setAssessment(round);
-							entry.setClub(round.getClub());
-							Group division = round.getDivision();
+							entry.setAssessment(this.round);
+							entry.setClub(this.round.getClub());
+							Group division = this.round.getDivision();
 							if (division == null) {
 								division = getAccountingBusiness()
 										.findDivisionForGroup(group);
 							}
 							entry.setDivision(division);
 							entry.setGroup(group);
-							entry.setAmount(round.getAmount());
+							entry.setAmount(this.round.getAmount());
 							entry.setDateOfEntry(IWTimestamp
 									.getTimestampRightNow());
 							entry.setInfo(tariff.getText());
@@ -128,7 +128,7 @@ public class AssessmentRoundThread extends Thread {
 							entry.setStatusCreated();
 							entry.setTypeAssessment();
 							entry.setEntryOpen(true);
-							entry.setInsertedByUser(round.getExecutedBy());
+							entry.setInsertedByUser(this.round.getExecutedBy());
 							entry.store();
 						}
 					}
@@ -157,11 +157,11 @@ public class AssessmentRoundThread extends Thread {
 		try {
 			StringBuffer name = new StringBuffer(type.getName());
 			name.append(" - ");
-			name.append(round.getName());
-			return getAccountingBusiness().insertTariff(round.getClub(),
-					round.getDivision(), group, type, name.toString(),
-					round.getAmount(), round.getPeriodFrom(),
-					round.getPeriodTo());
+			name.append(this.round.getName());
+			return getAccountingBusiness().insertTariff(this.round.getClub(),
+					this.round.getDivision(), group, type, name.toString(),
+					this.round.getAmount(), this.round.getPeriodFrom(),
+					this.round.getPeriodTo());
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
@@ -170,7 +170,7 @@ public class AssessmentRoundThread extends Thread {
 
 	private UserBusiness getUserBusiness() {
 		try {
-			return (UserBusiness) IBOLookup.getServiceInstance(iwac,
+			return (UserBusiness) IBOLookup.getServiceInstance(this.iwac,
 					UserBusiness.class);
 		} catch (RemoteException e) {
 			throw new IBORuntimeException(e.getMessage());
@@ -179,7 +179,7 @@ public class AssessmentRoundThread extends Thread {
 
 	private AccountingBusiness getAccountingBusiness() {
 		try {
-			return (AccountingBusiness) IBOLookup.getServiceInstance(iwac,
+			return (AccountingBusiness) IBOLookup.getServiceInstance(this.iwac,
 					AccountingBusiness.class);
 		} catch (RemoteException e) {
 			throw new IBORuntimeException(e.getMessage());

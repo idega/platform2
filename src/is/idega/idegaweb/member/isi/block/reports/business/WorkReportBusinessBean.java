@@ -567,51 +567,51 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	}
 
 	public WorkReportHome getWorkReportHome() {
-		if (workReportHome == null) {
+		if (this.workReportHome == null) {
 			try {
-				workReportHome = (WorkReportHome) IDOLookup.getHome(WorkReport.class);
+				this.workReportHome = (WorkReportHome) IDOLookup.getHome(WorkReport.class);
 			}
 			catch (RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());
 			}
 		}
-		return workReportHome;
+		return this.workReportHome;
 	}
 
 	public WorkReportMemberHome getWorkReportMemberHome() {
-		if (workReportMemberHome == null) {
+		if (this.workReportMemberHome == null) {
 			try {
-				workReportMemberHome = (WorkReportMemberHome) IDOLookup.getHome(WorkReportMember.class);
+				this.workReportMemberHome = (WorkReportMemberHome) IDOLookup.getHome(WorkReportMember.class);
 			}
 			catch (RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());
 			}
 		}
-		return workReportMemberHome;
+		return this.workReportMemberHome;
 	}
 
 	public WorkReportGroupHome getWorkReportGroupHome() {
-		if (workReportGroupHome == null) {
+		if (this.workReportGroupHome == null) {
 			try {
-				workReportGroupHome = (WorkReportGroupHome) IDOLookup.getHome(WorkReportGroup.class);
+				this.workReportGroupHome = (WorkReportGroupHome) IDOLookup.getHome(WorkReportGroup.class);
 			}
 			catch (RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());
 			}
 		}
-		return workReportGroupHome;
+		return this.workReportGroupHome;
 	}
 
 	public WorkReportAccountKeyHome getWorkReportAccountKeyHome() {
-		if (workReportAccountKeyHome == null) {
+		if (this.workReportAccountKeyHome == null) {
 			try {
-				workReportAccountKeyHome = (WorkReportAccountKeyHome) IDOLookup.getHome(WorkReportAccountKey.class);
+				this.workReportAccountKeyHome = (WorkReportAccountKeyHome) IDOLookup.getHome(WorkReportAccountKey.class);
 			}
 			catch (RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());
 			}
 		}
-		return workReportAccountKeyHome;
+		return this.workReportAccountKeyHome;
 	}
 
 	/**
@@ -665,8 +665,9 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	public WorkReportMember createWorkReportMember(int reportID, User user) throws CreateException {
 		Age age = null;
 		WorkReportMember member = getWorkReportMemberHome().create();
-		if (user.getDateOfBirth() != null)
+		if (user.getDateOfBirth() != null) {
 			age = new Age(user.getDateOfBirth());
+		}
 		member.setReportId(reportID);
 		member.setName(user.getName());
 		member.setPersonalId(user.getPersonalID());
@@ -877,16 +878,19 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			throws CreateException {
 		Date dob = user.getDateOfBirth();
 		Age age = null;
-		if (dob != null)
+		if (dob != null) {
 			age = new Age(user.getDateOfBirth());
+		}
 		WorkReportBoardMember member = getWorkReportBoardMemberHome().create();
 		member.setReportId(reportID);
 		member.setName(user.getName());
 		member.setPersonalId(user.getPersonalID());
-		if (age != null)
+		if (age != null) {
 			member.setAge(age.getYears());
-		if (dob != null)
+		}
+		if (dob != null) {
 			member.setDateOfBirth((new IWTimestamp(user.getDateOfBirth())).getTimestamp());
+		}
 		member.setUserId(((Integer) user.getPrimaryKey()).intValue());
 		// league
 		if (workReportGroup != null) {
@@ -2234,8 +2238,9 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 						//sometimes saving the member failes, most likely do to a
 						// too long personal id (can only be 10 digits as in
 						// Iceland)
-						if (existingMember == null)
+						if (existingMember == null) {
 							continue;
+						}
 						// add ADA league to member
 						addWorkReportGroupToEntity(workReportId, mainBoardGroup, existingMember, cachedMemberIDCollections);
 						idExistingMember.put(userPrimaryKey, existingMember);
@@ -2699,39 +2704,39 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     }
 
 	public WorkReportDivisionBoardHome getWorkReportDivisionBoardHome() {
-		if (workReportDivisionBoardHome == null) {
+		if (this.workReportDivisionBoardHome == null) {
 			try {
-				workReportDivisionBoardHome = (WorkReportDivisionBoardHome) IDOLookup.getHome(WorkReportDivisionBoard.class);
+				this.workReportDivisionBoardHome = (WorkReportDivisionBoardHome) IDOLookup.getHome(WorkReportDivisionBoard.class);
 			}
 			catch (RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());
 			}
 		}
-		return workReportDivisionBoardHome;
+		return this.workReportDivisionBoardHome;
 	}
 
 	public WorkReportBoardMemberHome getWorkReportBoardMemberHome() {
-		if (workReportBoardMemberHome == null) {
+		if (this.workReportBoardMemberHome == null) {
 			try {
-				workReportBoardMemberHome = (WorkReportBoardMemberHome) IDOLookup.getHome(WorkReportBoardMember.class);
+				this.workReportBoardMemberHome = (WorkReportBoardMemberHome) IDOLookup.getHome(WorkReportBoardMember.class);
 			}
 			catch (RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());
 			}
 		}
-		return workReportBoardMemberHome;
+		return this.workReportBoardMemberHome;
 	}
 
 	public WorkReportClubAccountRecordHome getWorkReportClubAccountRecordHome() {
-		if (workReportClubAccountRecordHome == null) {
+		if (this.workReportClubAccountRecordHome == null) {
 			try {
-				workReportClubAccountRecordHome = (WorkReportClubAccountRecordHome) IDOLookup.getHome(WorkReportClubAccountRecord.class);
+				this.workReportClubAccountRecordHome = (WorkReportClubAccountRecordHome) IDOLookup.getHome(WorkReportClubAccountRecord.class);
 			}
 			catch (RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());
 			}
 		}
-		return workReportClubAccountRecordHome;
+		return this.workReportClubAccountRecordHome;
 	}
 
 	public Collection getWorkReportsByYearRegionalUnionsAndClubs(int year, Collection regionalUnionsFilter,

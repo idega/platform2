@@ -25,24 +25,24 @@ public class AccountingServiceServiceLocator extends org.apache.axis.client.Serv
     private java.lang.String AccountingService_address = "http://www.felix.is/services/AccountingService";
 
     public java.lang.String getAccountingServiceAddress() {
-        return AccountingService_address;
+        return this.AccountingService_address;
     }
 
     // The WSDD service name defaults to the port name.
     private java.lang.String AccountingServiceWSDDServiceName = "AccountingService";
 
     public java.lang.String getAccountingServiceWSDDServiceName() {
-        return AccountingServiceWSDDServiceName;
+        return this.AccountingServiceWSDDServiceName;
     }
 
     public void setAccountingServiceWSDDServiceName(java.lang.String name) {
-        AccountingServiceWSDDServiceName = name;
+        this.AccountingServiceWSDDServiceName = name;
     }
 
     public is.idega.idegaweb.member.isi.block.accounting.webservice.general.server.AccountingService getAccountingService() throws javax.xml.rpc.ServiceException {
        java.net.URL endpoint;
         try {
-            endpoint = new java.net.URL(AccountingService_address);
+            endpoint = new java.net.URL(this.AccountingService_address);
         }
         catch (java.net.MalformedURLException e) {
             throw new javax.xml.rpc.ServiceException(e);
@@ -62,7 +62,7 @@ public class AccountingServiceServiceLocator extends org.apache.axis.client.Serv
     }
 
     public void setAccountingServiceEndpointAddress(java.lang.String address) {
-        AccountingService_address = address;
+        this.AccountingService_address = address;
     }
 
     /**
@@ -73,7 +73,7 @@ public class AccountingServiceServiceLocator extends org.apache.axis.client.Serv
     public java.rmi.Remote getPort(Class serviceEndpointInterface) throws javax.xml.rpc.ServiceException {
         try {
             if (is.idega.idegaweb.member.isi.block.accounting.webservice.general.server.AccountingService.class.isAssignableFrom(serviceEndpointInterface)) {
-                is.idega.idegaweb.member.isi.block.accounting.webservice.general.server.AccountingServiceSoapBindingStub _stub = new is.idega.idegaweb.member.isi.block.accounting.webservice.general.server.AccountingServiceSoapBindingStub(new java.net.URL(AccountingService_address), this);
+                is.idega.idegaweb.member.isi.block.accounting.webservice.general.server.AccountingServiceSoapBindingStub _stub = new is.idega.idegaweb.member.isi.block.accounting.webservice.general.server.AccountingServiceSoapBindingStub(new java.net.URL(this.AccountingService_address), this);
                 _stub.setPortName(getAccountingServiceWSDDServiceName());
                 return _stub;
             }
@@ -111,11 +111,11 @@ public class AccountingServiceServiceLocator extends org.apache.axis.client.Serv
     private java.util.HashSet ports = null;
 
     public java.util.Iterator getPorts() {
-        if (ports == null) {
-            ports = new java.util.HashSet();
-            ports.add(new javax.xml.namespace.QName("urn:accounting", "AccountingService"));
+        if (this.ports == null) {
+            this.ports = new java.util.HashSet();
+            this.ports.add(new javax.xml.namespace.QName("urn:accounting", "AccountingService"));
         }
-        return ports.iterator();
+        return this.ports.iterator();
     }
 
     /**

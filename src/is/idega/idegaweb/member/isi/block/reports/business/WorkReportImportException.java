@@ -29,9 +29,9 @@ public class WorkReportImportException extends Exception {
 
 	public WorkReportImportException(String message, String row, String col, String detail) {
 		super(message);
-		_col = col;
-		_row = row;
-		_detail = detail;
+		this._col = col;
+		this._row = row;
+		this._detail = detail;
 	}
 
 	public WorkReportImportException(String message, int row, int col, String detail) {
@@ -39,26 +39,26 @@ public class WorkReportImportException extends Exception {
 	}
 	
 	public String getColumnForError() {
-		return _col;
+		return this._col;
 	}
 	
 	public void setColumnForError(String col) {
-		_col = col;
+		this._col = col;
 	}
 	
 	public String getRowForError() {
-		return _row;
+		return this._row;
 	}
 	
 	public void setRowForError(String row) {
-		_row = row;
+		this._row = row;
 	}
 	
 	public String getDetail() {
-		return _detail;
+		return this._detail;
 	}
 	
 	public void setDetail(String detail) {
-		_detail = detail;
+		this._detail = detail;
 	}
 }

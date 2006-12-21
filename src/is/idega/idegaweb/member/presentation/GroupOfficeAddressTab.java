@@ -75,83 +75,89 @@ public class GroupOfficeAddressTab extends UserGroupTab {
 	}
 
 	public void initializeFieldValues() {
-		if (fieldValues == null)
-			fieldValues = new Hashtable();
+		if (this.fieldValues == null) {
+			this.fieldValues = new Hashtable();
+		}
 	}
 
 	public void updateFieldsDisplayStatus() {
-		String street = (String) fieldValues.get(streetFieldName);
-		String city = (String) fieldValues.get(cityFieldName);
-		String province = (String) fieldValues.get(provinceFieldName);
-		String postalId = (String) fieldValues.get(postalCodeFieldName);
-		String countryId = (String) fieldValues.get(countryFieldName);
-		String poBox = (String) fieldValues.get(poBoxFieldName);
+		String street = (String) this.fieldValues.get(streetFieldName);
+		String city = (String) this.fieldValues.get(cityFieldName);
+		String province = (String) this.fieldValues.get(provinceFieldName);
+		String postalId = (String) this.fieldValues.get(postalCodeFieldName);
+		String countryId = (String) this.fieldValues.get(countryFieldName);
+		String poBox = (String) this.fieldValues.get(poBoxFieldName);
 
-		if (street != null)
-			streetField.setContent(street);
-		if (city != null)
-			cityField.setContent(city);
-		if (province != null)
-			provinceField.setContent(province);
+		if (street != null) {
+			this.streetField.setContent(street);
+		}
+		if (city != null) {
+			this.cityField.setContent(city);
+		}
+		if (province != null) {
+			this.provinceField.setContent(province);
+		}
 
-		if (postalId != null && !postalId.equals(""))
-			postalCodeField.setSelectedElement(Integer.parseInt(postalId));
+		if (postalId != null && !postalId.equals("")) {
+			this.postalCodeField.setSelectedElement(Integer.parseInt(postalId));
+		}
 
 		if(countryId!=null && !countryId.equals("") ){
-			countryField.setSelectedElement(countryId);	
+			this.countryField.setSelectedElement(countryId);	
 		}
 			
 			
 			
-		if (poBox != null)
-			poBoxField.setContent(poBox);
+		if (poBox != null) {
+			this.poBoxField.setContent(poBox);
+		}
 	}
 
 	public void initializeFields() {
-		streetField = new TextInput(streetFieldName);
-		streetField.setLength(20);
+		this.streetField = new TextInput(streetFieldName);
+		this.streetField.setLength(20);
 
-		cityField = new TextInput(cityFieldName);
-		cityField.setLength(20);
+		this.cityField = new TextInput(cityFieldName);
+		this.cityField.setLength(20);
 
-		provinceField = new TextInput(provinceFieldName);
-		provinceField.setLength(20);
+		this.provinceField = new TextInput(provinceFieldName);
+		this.provinceField.setLength(20);
 
 		//only works for Iceland
-		if (postalCodeField == null) {
-			postalCodeField = new PostalCodeDropdownMenu();
-			postalCodeField.setCountry("Iceland"); //hack
+		if (this.postalCodeField == null) {
+			this.postalCodeField = new PostalCodeDropdownMenu();
+			this.postalCodeField.setCountry("Iceland"); //hack
 		}
 
-		countryField = new CountryDropdownMenu(countryFieldName);
-		countryField.setDisabled(true);
-		countryField.setSelectedCountry("Iceland"); //TODO remove hack
+		this.countryField = new CountryDropdownMenu(countryFieldName);
+		this.countryField.setDisabled(true);
+		this.countryField.setSelectedCountry("Iceland"); //TODO remove hack
 
-		poBoxField = new TextInput(poBoxFieldName);
-		poBoxField.setLength(10);
+		this.poBoxField = new TextInput(poBoxFieldName);
+		this.poBoxField.setLength(10);
 	}
 
 	public void initializeTexts() {
 		IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		
-		streetText = new Text(iwrb.getLocalizedString(streetFieldName,"Street"));
-		streetText.setBold();
+		this.streetText = new Text(iwrb.getLocalizedString(streetFieldName,"Street"));
+		this.streetText.setBold();
 
-		cityText = new Text(iwrb.getLocalizedString(cityFieldName,"City"));
-		cityText.setBold();
+		this.cityText = new Text(iwrb.getLocalizedString(cityFieldName,"City"));
+		this.cityText.setBold();
 
-		provinceText = new Text(iwrb.getLocalizedString(provinceFieldName,"Province"));
-		provinceText.setBold();
+		this.provinceText = new Text(iwrb.getLocalizedString(provinceFieldName,"Province"));
+		this.provinceText.setBold();
 
-		postalCodeText = new Text(iwrb.getLocalizedString(postalCodeFieldName,"Postal"));
-		postalCodeText.setBold();
+		this.postalCodeText = new Text(iwrb.getLocalizedString(postalCodeFieldName,"Postal"));
+		this.postalCodeText.setBold();
 
-		countryText = new Text(iwrb.getLocalizedString(countryFieldName,"Country"));
-		countryText.setBold();
+		this.countryText = new Text(iwrb.getLocalizedString(countryFieldName,"Country"));
+		this.countryText.setBold();
 
-		poBoxText = new Text(iwrb.getLocalizedString(poBoxFieldName,"P.O.Box"));
-		poBoxText.setBold();
+		this.poBoxText = new Text(iwrb.getLocalizedString(poBoxFieldName,"P.O.Box"));
+		this.poBoxText.setBold();
 	}
 
 	public void lineUpFields() {
@@ -165,28 +171,28 @@ public class GroupOfficeAddressTab extends UserGroupTab {
 		table.setCellpadding(5);
 		table.setCellspacing(0);
 
-		table.add(streetText, 1, 1);
+		table.add(this.streetText, 1, 1);
 		table.add(Text.getBreak(), 1, 1);
-		table.add(streetField, 1, 1);
+		table.add(this.streetField, 1, 1);
 		
-		table.add(cityText, 2, 1);
+		table.add(this.cityText, 2, 1);
 		table.add(Text.getBreak(), 2, 1);
-		table.add(cityField, 2, 1);
+		table.add(this.cityField, 2, 1);
 
-		table.add(provinceText, 1, 2);
+		table.add(this.provinceText, 1, 2);
 		table.add(Text.getBreak(), 1, 2);
-		table.add(provinceField, 1, 2);
+		table.add(this.provinceField, 1, 2);
 
-		table.add(countryText, 2, 2);
+		table.add(this.countryText, 2, 2);
 		table.add(Text.getBreak(), 2, 2);
-		table.add(countryField, 2, 2);
+		table.add(this.countryField, 2, 2);
 
 		//    fpane.add(addressTable);
-		table.add(postalCodeText, 1, 3);
+		table.add(this.postalCodeText, 1, 3);
 		table.add(Text.getBreak(), 1, 3);
 		Table postalTable = new Table();
 		postalTable.setCellpaddingAndCellspacing(0);
-		postalTable.add(postalCodeField,1,1);
+		postalTable.add(this.postalCodeField,1,1);
 		table.add(postalTable, 1, 3);
 		GenericButton addPostal = new GenericButton("add_postal", iwrb.getLocalizedString("GroupOfficeAddressTab.postalcodewindow.add","Add"));
 		addPostal.setWindowToOpen(PostalCodeEditorWindow.class);
@@ -194,9 +200,9 @@ public class GroupOfficeAddressTab extends UserGroupTab {
 		postalTable.setWidth(2, 3);
 		postalTable.add(button, 3, 1);
 				
-		table.add(poBoxText, 2, 3);
+		table.add(this.poBoxText, 2, 3);
 		table.add(Text.getBreak(), 2, 3);
-		table.add(poBoxField, 2, 3);
+		table.add(this.poBoxField, 2, 3);
 
 		add(table);
 	}
@@ -216,22 +222,22 @@ public class GroupOfficeAddressTab extends UserGroupTab {
 			String poBox = iwc.getParameter(poBoxFieldName);
 
 			if (street != null) {
-				fieldValues.put(streetFieldName, street);
+				this.fieldValues.put(streetFieldName, street);
 			}
 			if (city != null) {
-				fieldValues.put(cityFieldName, city);
+				this.fieldValues.put(cityFieldName, city);
 			}
 			if (province != null) {
-				fieldValues.put(provinceFieldName, province);
+				this.fieldValues.put(provinceFieldName, province);
 			}
 			if (postal != null) {
-				fieldValues.put(postalCodeFieldName, postal);
+				this.fieldValues.put(postalCodeFieldName, postal);
 			}
 			if (country != null) {
-				fieldValues.put(countryFieldName, country);
+				this.fieldValues.put(countryFieldName, country);
 			}
 			if (poBox != null) {
-				fieldValues.put(poBoxFieldName, poBox);
+				this.fieldValues.put(poBoxFieldName, poBox);
 			}
 
 			updateFieldsDisplayStatus();
@@ -250,8 +256,9 @@ public class GroupOfficeAddressTab extends UserGroupTab {
 			try {
 				Integer postalCodeId = null;
 				String postal = iwc.getParameter(postalCodeFieldName);
-				if (postal != null)
+				if (postal != null) {
 					postalCodeId = new Integer(postal);
+				}
 				String country = iwc.getParameter(countryFieldName);
 				String city = iwc.getParameter(cityFieldName);
 				String province = iwc.getParameter(provinceFieldName);
@@ -287,24 +294,31 @@ public class GroupOfficeAddressTab extends UserGroupTab {
 				int code = addr.getPostalCodeID();
 				Country country = addr.getCountry();
 				String countryName = null;
-				if (country != null)
+				if (country != null) {
 					countryName = country.getName();
+				}
 				String city = addr.getCity();
 				String province = addr.getProvince();
 				String poBox = addr.getPOBox();
 
-				if (street != null)
-					fieldValues.put(streetFieldName, street);
-				if (city != null)
-					fieldValues.put(cityFieldName, city);
-				if (province != null)
-					fieldValues.put(provinceFieldName, province);
-				if (code != -1)
-					fieldValues.put(postalCodeFieldName, String.valueOf(code));
-				if (countryName != null)
-					fieldValues.put(countryFieldName, countryName);
-				if (poBox != null)
-					fieldValues.put(poBoxFieldName, poBox);
+				if (street != null) {
+					this.fieldValues.put(streetFieldName, street);
+				}
+				if (city != null) {
+					this.fieldValues.put(cityFieldName, city);
+				}
+				if (province != null) {
+					this.fieldValues.put(provinceFieldName, province);
+				}
+				if (code != -1) {
+					this.fieldValues.put(postalCodeFieldName, String.valueOf(code));
+				}
+				if (countryName != null) {
+					this.fieldValues.put(countryFieldName, countryName);
+				}
+				if (poBox != null) {
+					this.fieldValues.put(poBoxFieldName, poBox);
+				}
 			}
 
 			updateFieldsDisplayStatus();

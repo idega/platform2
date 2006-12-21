@@ -100,21 +100,21 @@ public class CreditCardPluginReceiptWindow extends StyledIWAdminWindow {
 	private void showList(IWContext iwc) {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		Table backTable = new Table(3, 3);
-		backTable.setStyleClass(backTableStyle);
+		backTable.setStyleClass(this.backTableStyle);
 		backTable.setWidth(Table.HUNDRED_PERCENT);
 		backTable.setHeight(1, 1, "6");
 		backTable.setWidth(1, 2, "6");
 		backTable.setWidth(3, 2, "6");
 		Table heading = new Table();
 		heading.setColor("#ffffff");
-		heading.setStyleClass(borderTableStyle);
+		heading.setStyleClass(this.borderTableStyle);
 		heading.setWidth(Table.HUNDRED_PERCENT);
 		Table t = new Table();
 		heading.setCellpadding(5);
 		t.setWidth(Table.HUNDRED_PERCENT);
 		t.setCellpadding(5);
 		t.setColor("#ffffff");
-		t.setStyleClass(borderTableStyle);
+		t.setStyleClass(this.borderTableStyle);
 
 		int row = 1;
 		Text labelClub = new Text(iwrb.getLocalizedString(LABEL_CLUB, "Club"));
@@ -163,11 +163,11 @@ public class CreditCardPluginReceiptWindow extends StyledIWAdminWindow {
 			heading.add(labelCashier, 2, headingRow);
 			heading.add(labelDate, 3, headingRow);
 			heading.add(labelPhone, 4, headingRow++);
-			// heading.add("Klœbbur", 1, headingRow);
+			// heading.add("Klï¿½bbur", 1, headingRow);
 			heading.add(iwc.getCurrentUser().getName(), 2, headingRow);
 			IWTimestamp ex = new IWTimestamp();
 			heading.add(ex.getDateString("dd.MM.yyyy"), 3, headingRow);
-			// heading.add("S’mi", 4, headingRow);
+			// heading.add("Sï¿½mi", 4, headingRow);
 
 			List paid = null;
 			try {

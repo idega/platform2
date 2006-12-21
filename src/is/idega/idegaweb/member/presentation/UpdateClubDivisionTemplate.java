@@ -86,13 +86,13 @@ public class UpdateClubDivisionTemplate extends StyledIWAdminWindow {
 		topTable.setWidth(Table.HUNDRED_PERCENT);
 		topTable.setHeight(160);
 		
-		topTable.add(iwrb.getLocalizedString(UPDATE_INFO, "Press Update to update all clubs linked to this league."),
+		topTable.add(this.iwrb.getLocalizedString(UPDATE_INFO, "Press Update to update all clubs linked to this league."),
 				1, 1);
 		
-		CloseButton close = new CloseButton(iwrb.getLocalizedImageButton("updateclubdivisiontemplate.close", "Close"));
-		SubmitButton start = new SubmitButton(iwrb.getLocalizedImageButton("updateclubdivisiontemplate.update",
+		CloseButton close = new CloseButton(this.iwrb.getLocalizedImageButton("updateclubdivisiontemplate.close", "Close"));
+		SubmitButton start = new SubmitButton(this.iwrb.getLocalizedImageButton("updateclubdivisiontemplate.update",
 				"Update"), ACTION, ACTION_UPDATE);
-		start.setSubmitConfirm(iwrb.getLocalizedString(
+		start.setSubmitConfirm(this.iwrb.getLocalizedString(
 				"updateclubdivisiontemplate.confirm_message",
 				"Are you sure you want to start the update process? The process will start in the background and once it is running you can not stop it nor start a new one."));
 		Help help = getHelp(HELP_TEXT_KEY);
@@ -133,10 +133,10 @@ public class UpdateClubDivisionTemplate extends StyledIWAdminWindow {
 		topTable.setWidth(Table.HUNDRED_PERCENT);
 		topTable.setHeight(160);
 		
-		topTable.add(iwrb.getLocalizedString(UPDATE_RUNNING, "The update process is now running in the background. You cannot start another one while this one is running."),
+		topTable.add(this.iwrb.getLocalizedString(UPDATE_RUNNING, "The update process is now running in the background. You cannot start another one while this one is running."),
 				1, 1);
 		
-		CloseButton close = new CloseButton(iwrb.getLocalizedImageButton("updateclubdivisiontemplate.close", "Close"));
+		CloseButton close = new CloseButton(this.iwrb.getLocalizedImageButton("updateclubdivisiontemplate.close", "Close"));
 		Help help = getHelp(HELP_TEXT_KEY);
 
 		Table bottomTable = new Table();
@@ -162,7 +162,7 @@ public class UpdateClubDivisionTemplate extends StyledIWAdminWindow {
 		if (sGroupId != null) {
 			try {
 				GroupHome gHome = (GroupHome) IDOLookup.getHome(Group.class);
-				group = gHome.findByPrimaryKey(new Integer(sGroupId));
+				this.group = gHome.findByPrimaryKey(new Integer(sGroupId));
 			}
 			catch (IDOLookupException e) {
 				e.printStackTrace(System.err);
@@ -174,12 +174,12 @@ public class UpdateClubDivisionTemplate extends StyledIWAdminWindow {
 				e.printStackTrace(System.err);
 			}
 		}
-		iwrb = getResourceBundle(iwc);
+		this.iwrb = getResourceBundle(iwc);
 	}
 
 	private boolean updateChildren(IWContext iwc) {
 		try {
-			return getClubInformationPluginBusiness(iwc).updateConnectedToSpecial(group, iwc);
+			return getClubInformationPluginBusiness(iwc).updateConnectedToSpecial(this.group, iwc);
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
@@ -190,11 +190,11 @@ public class UpdateClubDivisionTemplate extends StyledIWAdminWindow {
 	public void main(IWContext iwc) throws Exception {
 		super.main(iwc);
 		init(iwc);
-		setTitle(iwrb.getLocalizedString(WINDOW_NAME, "Update League Template Window"));
-		addTitle(iwrb.getLocalizedString(WINDOW_NAME, "Update League Template Window"), TITLE_STYLECLASS);
-		if (group != null) {
-			if (group.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_TEMPLATE)
-					|| group.getGroupType().equals(IWMemberConstants.GROUP_TYPE_LEAGUE)) {
+		setTitle(this.iwrb.getLocalizedString(WINDOW_NAME, "Update League Template Window"));
+		addTitle(this.iwrb.getLocalizedString(WINDOW_NAME, "Update League Template Window"), TITLE_STYLECLASS);
+		if (this.group != null) {
+			if (this.group.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_TEMPLATE)
+					|| this.group.getGroupType().equals(IWMemberConstants.GROUP_TYPE_LEAGUE)) {
 				String action = iwc.getParameter(ACTION);
 				if (action == null) {
 					addForm(iwc);
@@ -208,12 +208,12 @@ public class UpdateClubDivisionTemplate extends StyledIWAdminWindow {
 				}
 			}
 			else {
-				add(iwrb.getLocalizedString(WRONG_GROUP_TYPE,
+				add(this.iwrb.getLocalizedString(WRONG_GROUP_TYPE,
 						"Please select either a league, or a division template under a league."));
 			}
 		}
 		else {
-			add(iwrb.getLocalizedString(WRONG_GROUP_TYPE,
+			add(this.iwrb.getLocalizedString(WRONG_GROUP_TYPE,
 					"Please select either a league, or a division template under a league."));
 		}
 	}

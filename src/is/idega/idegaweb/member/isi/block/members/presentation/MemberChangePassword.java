@@ -51,9 +51,9 @@ public class MemberChangePassword extends Block {
 	
 	private void init(IWContext iwc) {
 		try {
-			currentUser = iwc.getCurrentUser();
+			this.currentUser = iwc.getCurrentUser();
 		} catch (NotLoggedOnException ignore) {}
-		iwrb = getResourceBundle(iwc);
+		this.iwrb = getResourceBundle(iwc);
 	}
 
 	public String getBundleIdentifier() {
@@ -62,9 +62,9 @@ public class MemberChangePassword extends Block {
 	
 	private int addHeader(Table outerTable, int row) {
 		Table table = getTable();
-		table.add(getText(iwrb.getLocalizedString("member_logged_in_as", "Logged in as")+":"), 1, 1);
-		if (currentUser != null) {
-			table.add(getBigText(currentUser.getName()), 1, 2);
+		table.add(getText(this.iwrb.getLocalizedString("member_logged_in_as", "Logged in as")+":"), 1, 1);
+		if (this.currentUser != null) {
+			table.add(getBigText(this.currentUser.getName()), 1, 2);
 		} else {
 			table.add(getBigText("Not logged on"), 1, 2);
 		}
@@ -79,7 +79,7 @@ public class MemberChangePassword extends Block {
 		Form form = new Form();
 		Table table = getTable();
 		
-		if ( currentUser != null) {
+		if ( this.currentUser != null) {
 			int row = 1;
 			
 			if (message != null && !"".equals(message)) {
@@ -91,11 +91,11 @@ public class MemberChangePassword extends Block {
 			
 			PasswordInput pass1 = (PasswordInput) getStyleObject(new PasswordInput(PARAMETER_PASS_1), STYLENAME_INTERFACE_OBJECT);
 			PasswordInput pass2 = (PasswordInput) getStyleObject(new PasswordInput(PARAMETER_PASS_2), STYLENAME_INTERFACE_OBJECT);
-			StyledButton save = new StyledButton(new SubmitButton(iwrb.getLocalizedString("member_save", "Save")));
+			StyledButton save = new StyledButton(new SubmitButton(this.iwrb.getLocalizedString("member_save", "Save")));
 			
-			table.add(getText(iwrb.getLocalizedString("member_password_at_least_six_character_long", "Password (at least 6 characters long)")), 1, row++);
+			table.add(getText(this.iwrb.getLocalizedString("member_password_at_least_six_character_long", "Password (at least 6 characters long)")), 1, row++);
 			table.add(pass1, 1, row++);
-			table.add(getText(iwrb.getLocalizedString("member_password_confirm", "Confirm password")), 1, row++);
+			table.add(getText(this.iwrb.getLocalizedString("member_password_confirm", "Confirm password")), 1, row++);
 			table.add(pass2, 1, row++);
 			table.add(save, 1, row++);
 		}
@@ -116,17 +116,17 @@ public class MemberChangePassword extends Block {
 			if ("".equals(p1) && "".equals(p2) ) {
 				return null;
 			} else if (!p1.equals(p2)) {
-				return iwrb.getLocalizedString("member_passwords_must_be_the_same", "Passwords must be the same");
+				return this.iwrb.getLocalizedString("member_passwords_must_be_the_same", "Passwords must be the same");
 			} else if ( p1.length() < 6 ) {
-				return iwrb.getLocalizedString("member_passwords_must_be_at_least_6_characters", "Passwords must be at least 6 characters");
+				return this.iwrb.getLocalizedString("member_passwords_must_be_at_least_6_characters", "Passwords must be at least 6 characters");
 			} else {
 				try {
-					LoginBusinessBean.changeUserPassword(currentUser, p1);
-					return iwrb.getLocalizedString("member_password_change_success", "Password changed");
+					LoginBusinessBean.changeUserPassword(this.currentUser, p1);
+					return this.iwrb.getLocalizedString("member_password_change_success", "Password changed");
 				}
 				catch (Exception e) {
 					e.printStackTrace();
-					return iwrb.getLocalizedString("member_password_change_failed", "Could not change password");
+					return this.iwrb.getLocalizedString("member_password_change_failed", "Could not change password");
 				}
 			}
 		}

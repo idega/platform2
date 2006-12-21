@@ -47,7 +47,7 @@ public class WorkReportYearDropDownMenu extends Block implements InputHandler {
 		this.setName(name);
 		DropdownMenu yearInput=null;
 		try {
-			yearInput = getWorkReportBusiness(iwc).getYearDropdownMenu(year);
+			yearInput = getWorkReportBusiness(iwc).getYearDropdownMenu(this.year);
 			
 			yearInput.setName(name);
 			if(value!=null){
@@ -69,7 +69,9 @@ public class WorkReportYearDropDownMenu extends Block implements InputHandler {
 		if(values!=null && values.length>0){
 			return new Integer(values[0]);
 		}
-		else return null;
+		else {
+			return null;
+		}
 	}
 
 	/*
@@ -82,15 +84,17 @@ public class WorkReportYearDropDownMenu extends Block implements InputHandler {
 		if(value!=null){
 			return value.toString();
 		}
-		else return "";
+		else {
+			return "";
+		}
 	}
 	
 	private WorkReportBusiness getWorkReportBusiness(IWApplicationContext iwac) throws RemoteException {
-		if (workBiz == null) {
-			workBiz = (WorkReportBusiness) IBOLookup.getServiceInstance(iwac, WorkReportBusiness.class);
+		if (this.workBiz == null) {
+			this.workBiz = (WorkReportBusiness) IBOLookup.getServiceInstance(iwac, WorkReportBusiness.class);
 		}
 
-		return workBiz;
+		return this.workBiz;
 	}
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()

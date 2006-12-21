@@ -49,7 +49,7 @@ public class GroupMemberList extends Block {
 	private IWResourceBundle _iwrb = null;
 	
 	public void main(IWContext iwc) {
-		_iwrb = getResourceBundle(iwc);
+		this._iwrb = getResourceBundle(iwc);
 		Group group = getGroupToShowMembersFor(iwc);
 		Group division = getDivision(iwc);
 		boolean showClubMainCommitee = "true".equals(iwc.getParameter(PARAM_NAME_SHOW_CLUB_COMMITEE_MAIN));
@@ -79,11 +79,11 @@ public class GroupMemberList extends Block {
 		
 		Table table = new Table();
 		table.setNoWrap();
-		if(_cellSpacing!=null) {
-			table.setCellspacing(_cellSpacing);
+		if(this._cellSpacing!=null) {
+			table.setCellspacing(this._cellSpacing);
 		}
-		if(_cellPadding!=null) {
-			table.setCellpadding(_cellPadding);
+		if(this._cellPadding!=null) {
+			table.setCellpadding(this._cellPadding);
 		}
 		Iterator userIter; //group.getChildren();
 		try {
@@ -117,7 +117,7 @@ public class GroupMemberList extends Block {
 					}
 					if(statusKey!=null) {
 						String key = "usr_stat_" + statusKey;
-						String status = _iwrb.getLocalizedString(key, statusKey);
+						String status = this._iwrb.getLocalizedString(key, statusKey);
 						table.setCellpaddingLeft(column, row, 3);
 						table.add(status, column++, row);
 					}
@@ -146,7 +146,7 @@ public class GroupMemberList extends Block {
 				row++;
 			}
 		}
-		table.setHorizontalZebraColored(_color1, _color2);
+		table.setHorizontalZebraColored(this._color1, this._color2);
 		
 		return table;
 	}
@@ -191,7 +191,7 @@ public class GroupMemberList extends Block {
 					container.add(", ");
 				}
 				Email email = (Email) emailIter.next();
-				String address = (String) email.getEmailAddress();
+				String address = email.getEmailAddress();
 				Link link = new Link(address);
 				link.setURL("mailto:" + address);
 				link.setSessionId(false);
@@ -330,15 +330,15 @@ public class GroupMemberList extends Block {
 	}
 	
 	private GroupBusiness getGroupBusiness(IWContext iwc) {
-		if(_groupBiz == null) {
+		if(this._groupBiz == null) {
 			try {
-				_groupBiz = (GroupBusiness) IBOLookup.getServiceInstance(iwc.getApplicationContext(), GroupBusiness.class);
+				this._groupBiz = (GroupBusiness) IBOLookup.getServiceInstance(iwc.getApplicationContext(), GroupBusiness.class);
 			} catch (IBOLookupException e) {
 				e.printStackTrace();
 			}
 		}
 		
-		return _groupBiz;
+		return this._groupBiz;
 	}
 	
 	private UserStatusBusiness getUserStatusBusiness(IWApplicationContext iwc){
@@ -359,11 +359,11 @@ public class GroupMemberList extends Block {
 	}
 	
 	public void setCellPadding(String value) {
-		_cellPadding = value;
+		this._cellPadding = value;
 	}
 	
 	public void setCellSpacing(String value) {
-		_cellSpacing = value;
+		this._cellSpacing = value;
 	}
 	
 	private String _currentColor = null;

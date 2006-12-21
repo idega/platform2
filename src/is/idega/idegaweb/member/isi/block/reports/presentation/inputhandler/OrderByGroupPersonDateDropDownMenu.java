@@ -49,8 +49,9 @@ public class OrderByGroupPersonDateDropDownMenu extends DropDownMenuInputHandler
 			}
 			return displayName;
 		}
-		else
+		else {
 			return "";
+		}
 	}
 
 	public String getBundleIdentifier() {

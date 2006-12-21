@@ -26,24 +26,24 @@ public class FelagsmadurLocator extends org.apache.axis.client.Service implement
     private java.lang.String FelagsmadurSoap_address = "http://ksi2.skyrr.is/ssl/vefthjon_felix/felagsmadur.asmx";
 
     public java.lang.String getFelagsmadurSoapAddress() {
-        return FelagsmadurSoap_address;
+        return this.FelagsmadurSoap_address;
     }
 
     // The WSDD service name defaults to the port name.
     private java.lang.String FelagsmadurSoapWSDDServiceName = "FelagsmadurSoap";
 
     public java.lang.String getFelagsmadurSoapWSDDServiceName() {
-        return FelagsmadurSoapWSDDServiceName;
+        return this.FelagsmadurSoapWSDDServiceName;
     }
 
     public void setFelagsmadurSoapWSDDServiceName(java.lang.String name) {
-        FelagsmadurSoapWSDDServiceName = name;
+        this.FelagsmadurSoapWSDDServiceName = name;
     }
 
     public is.idega.idegaweb.member.isi.block.leagues.webservice.FelagsmadurSoap_PortType getFelagsmadurSoap() throws javax.xml.rpc.ServiceException {
        java.net.URL endpoint;
         try {
-            endpoint = new java.net.URL(FelagsmadurSoap_address);
+            endpoint = new java.net.URL(this.FelagsmadurSoap_address);
         }
         catch (java.net.MalformedURLException e) {
             throw new javax.xml.rpc.ServiceException(e);
@@ -63,7 +63,7 @@ public class FelagsmadurLocator extends org.apache.axis.client.Service implement
     }
 
     public void setFelagsmadurSoapEndpointAddress(java.lang.String address) {
-        FelagsmadurSoap_address = address;
+        this.FelagsmadurSoap_address = address;
     }
 
     /**
@@ -74,7 +74,7 @@ public class FelagsmadurLocator extends org.apache.axis.client.Service implement
     public java.rmi.Remote getPort(Class serviceEndpointInterface) throws javax.xml.rpc.ServiceException {
         try {
             if (is.idega.idegaweb.member.isi.block.leagues.webservice.FelagsmadurSoap_PortType.class.isAssignableFrom(serviceEndpointInterface)) {
-                is.idega.idegaweb.member.isi.block.leagues.webservice.FelagsmadurSoap_BindingStub _stub = new is.idega.idegaweb.member.isi.block.leagues.webservice.FelagsmadurSoap_BindingStub(new java.net.URL(FelagsmadurSoap_address), this);
+                is.idega.idegaweb.member.isi.block.leagues.webservice.FelagsmadurSoap_BindingStub _stub = new is.idega.idegaweb.member.isi.block.leagues.webservice.FelagsmadurSoap_BindingStub(new java.net.URL(this.FelagsmadurSoap_address), this);
                 _stub.setPortName(getFelagsmadurSoapWSDDServiceName());
                 return _stub;
             }
@@ -112,11 +112,11 @@ public class FelagsmadurLocator extends org.apache.axis.client.Service implement
     private java.util.HashSet ports = null;
 
     public java.util.Iterator getPorts() {
-        if (ports == null) {
-            ports = new java.util.HashSet();
-            ports.add(new javax.xml.namespace.QName("http://tempuri.org/", "FelagsmadurSoap"));
+        if (this.ports == null) {
+            this.ports = new java.util.HashSet();
+            this.ports.add(new javax.xml.namespace.QName("http://tempuri.org/", "FelagsmadurSoap"));
         }
-        return ports.iterator();
+        return this.ports.iterator();
     }
 
     /**

@@ -68,15 +68,15 @@ public class CashierSubWindowTemplate extends Block {
     }
 
     public Group getClub() {
-        return club;
+        return this.club;
     }
 
     public Group getDivision() {
-        return division;
+        return this.division;
     }
 
     public User getUser() {
-        return user;
+        return this.user;
     }
 
     /*
@@ -100,7 +100,9 @@ public class CashierSubWindowTemplate extends Block {
     }
 
     protected void getClubDivisions(Collection divisions, Group group) {
-        if (divisions == null) divisions = new ArrayList();
+        if (divisions == null) {
+			divisions = new ArrayList();
+		}
 
         if (group.getGroupType().equals(
                 IWMemberConstants.GROUP_TYPE_CLUB_DIVISION)) {

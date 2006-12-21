@@ -39,8 +39,8 @@ public class DivisionSelectionBox extends GroupSelectionBox  {
 	}
 
 	public PresentationObject getHandlerObject(String name, String value, IWContext iwc) {
-	    selectAllOnSubmitIfNoneSelected = false;
-	    autoSelectIfOnlyOneGroup = false;
+	    this.selectAllOnSubmitIfNoneSelected = false;
+	    this.autoSelectIfOnlyOneGroup = false;
 	    return super.getHandlerObject(name, value, iwc);
 	}
 
@@ -64,8 +64,9 @@ public class DivisionSelectionBox extends GroupSelectionBox  {
 	}
 	
 	private void getClubDivisions(Collection divisions, Group group) {
-		if (divisions == null)
+		if (divisions == null) {
 			divisions = new ArrayList();
+		}
 		
 		if (group.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION)) {
 			divisions.add(group);

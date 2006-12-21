@@ -228,8 +228,9 @@ public class ClubTariffBMPBean extends GenericEntity implements ClubTariff {
 	}
 	
 	public Collection ejbFindByGroupAndTariffType(Group group, ClubTariffType type, IWTimestamp date) throws FinderException {
-		if (date == null)
+		if (date == null) {
 			date = IWTimestamp.RightNow();
+		}
 
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);

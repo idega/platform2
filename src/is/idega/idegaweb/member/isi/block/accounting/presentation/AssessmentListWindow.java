@@ -72,21 +72,21 @@ public class AssessmentListWindow extends StyledIWAdminWindow {
 	private void showList(String id, IWContext iwc) {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		Table backTable = new Table(3,3);
-		backTable.setStyleClass(backTableStyle);
+		backTable.setStyleClass(this.backTableStyle);
 		backTable.setWidth(Table.HUNDRED_PERCENT);
 		backTable.setHeight(1,1,"6");
 		backTable.setWidth(1,2,"6");
 		backTable.setWidth(3,2,"6");
 		Table heading = new Table();
 		heading.setColor("#ffffff");
-		heading.setStyleClass(borderTableStyle);
+		heading.setStyleClass(this.borderTableStyle);
 		heading.setWidth(Table.HUNDRED_PERCENT);
 		Table t = new Table();
 		heading .setCellpadding(5);
 		t.setWidth(Table.HUNDRED_PERCENT);
 		t.setCellpadding(5);
 		t.setColor("#ffffff");
-		t.setStyleClass(borderTableStyle);
+		t.setStyleClass(this.borderTableStyle);
 		
 		int row = 1;
 		Text labelDiv = new Text(iwrb.getLocalizedString(LABEL_DIVISION, "Division"));
@@ -140,13 +140,15 @@ public class AssessmentListWindow extends StyledIWAdminWindow {
 				double sum = 0;
 				while (it.hasNext()) {
 					FinanceEntry entry = (FinanceEntry) it.next();
-					if (entry.getDivision() != null)
+					if (entry.getDivision() != null) {
 						t.add(entry.getDivision().getName(), 1, row);
+					}
 					t.add(entry.getGroup().getName(), 2, row);
 					t.add(entry.getUser().getName(), 3, row);
 					t.add(entry.getUser().getPersonalID(), 4, row);
-					if (entry.getInfo() != null)
+					if (entry.getInfo() != null) {
 						t.add(entry.getInfo(), 5, row);
+					}
 					t.add(nf.format(entry.getAmount()), 6, row);
 					t.setAlignment(6, row, "RIGHT");
 					sum += entry.getAmount();

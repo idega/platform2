@@ -102,71 +102,71 @@ public class GroupAgeGenderTab extends UserGroupTab {
 	 * @see com.idega.user.presentation.UserGroupTab#initializeFieldNames()
 	 */
 	public void initializeFieldNames() {
-		maleFieldName = "age_male";
-		femaleFieldName = "age_female";
-		lowerAgeLimitFieldName = "age_lowerAgeLimitField";
-		upperAgeLimitFieldName = "age_upperAgeLimitField";
-		ageLimitIsStringentConditionFieldName = "age_ageLimitIsStringentConditionFieldName";
-		keyDateForAgeFieldName = "age_keyDateForAgeFieldName";
-		lowerAgeTooSmallFieldName = "age_lowerAgeTooSmallField";
-		upperAgeTooLargeFieldName = "age_upperAgeTooLargeField";
-		lowerAgeGreaterThanUpperAgeFieldName = "age_lowerAgeGreaterThanUpperAgeField";
+		this.maleFieldName = "age_male";
+		this.femaleFieldName = "age_female";
+		this.lowerAgeLimitFieldName = "age_lowerAgeLimitField";
+		this.upperAgeLimitFieldName = "age_upperAgeLimitField";
+		this.ageLimitIsStringentConditionFieldName = "age_ageLimitIsStringentConditionFieldName";
+		this.keyDateForAgeFieldName = "age_keyDateForAgeFieldName";
+		this.lowerAgeTooSmallFieldName = "age_lowerAgeTooSmallField";
+		this.upperAgeTooLargeFieldName = "age_upperAgeTooLargeField";
+		this.lowerAgeGreaterThanUpperAgeFieldName = "age_lowerAgeGreaterThanUpperAgeField";
 		//EXTRA ISI STUFF
-		nationalityDependentFieldName = "nationalityDependent";
-		clubMemberExchangeDependentFieldName = "clubMemberExchangeDependent";
+		this.nationalityDependentFieldName = "nationalityDependent";
+		this.clubMemberExchangeDependentFieldName = "clubMemberExchangeDependent";
 	}
 
 	/**
 	 * @see com.idega.user.presentation.UserGroupTab#initializeFieldValues()
 	 */
 	public void initializeFieldValues() {
-		fieldValues = new Hashtable();
-		fieldValues.put(maleFieldName, new Boolean(false));
-		fieldValues.put(femaleFieldName, new Boolean(false));
-		fieldValues.put(lowerAgeLimitFieldName, new Integer(0));
-		fieldValues.put(upperAgeLimitFieldName, new Integer(0));
-		fieldValues.put(ageLimitIsStringentConditionFieldName, new Boolean(false));
-		fieldValues.put(keyDateForAgeFieldName, "");
+		this.fieldValues = new Hashtable();
+		this.fieldValues.put(this.maleFieldName, new Boolean(false));
+		this.fieldValues.put(this.femaleFieldName, new Boolean(false));
+		this.fieldValues.put(this.lowerAgeLimitFieldName, new Integer(0));
+		this.fieldValues.put(this.upperAgeLimitFieldName, new Integer(0));
+		this.fieldValues.put(this.ageLimitIsStringentConditionFieldName, new Boolean(false));
+		this.fieldValues.put(this.keyDateForAgeFieldName, "");
 		// error fields
-		fieldValues.put(lowerAgeTooSmallFieldName, "");
-		fieldValues.put(upperAgeTooLargeFieldName, "");
-		fieldValues.put(lowerAgeGreaterThanUpperAgeFieldName, "");
+		this.fieldValues.put(this.lowerAgeTooSmallFieldName, "");
+		this.fieldValues.put(this.upperAgeTooLargeFieldName, "");
+		this.fieldValues.put(this.lowerAgeGreaterThanUpperAgeFieldName, "");
 		
 		//EXTRA ISI STUFF
-		fieldValues.put(nationalityDependentFieldName, new Boolean(false));
-		fieldValues.put(clubMemberExchangeDependentFieldName, new Boolean(false));
+		this.fieldValues.put(this.nationalityDependentFieldName, new Boolean(false));
+		this.fieldValues.put(this.clubMemberExchangeDependentFieldName, new Boolean(false));
 	}
 
 	/**
 	 * @see com.idega.user.presentation.UserGroupTab#updateFieldsDisplayStatus()
 	 */
 	public void updateFieldsDisplayStatus() {
-		femaleField.setChecked(((Boolean) fieldValues.get(femaleFieldName)).booleanValue());
-		maleField.setChecked(((Boolean) fieldValues.get(maleFieldName)).booleanValue());
-		lowerAgeLimitField.setContent(((Integer) fieldValues.get(lowerAgeLimitFieldName)).toString());
-		upperAgeLimitField.setContent(((Integer) fieldValues.get(upperAgeLimitFieldName)).toString());
-		ageLimitIsStringentConditionField.setChecked(((Boolean) fieldValues.get(ageLimitIsStringentConditionFieldName)).booleanValue());
-		StringTokenizer keyDate = new StringTokenizer((String) fieldValues.get(keyDateForAgeFieldName), " -");
+		this.femaleField.setChecked(((Boolean) this.fieldValues.get(this.femaleFieldName)).booleanValue());
+		this.maleField.setChecked(((Boolean) this.fieldValues.get(this.maleFieldName)).booleanValue());
+		this.lowerAgeLimitField.setContent(((Integer) this.fieldValues.get(this.lowerAgeLimitFieldName)).toString());
+		this.upperAgeLimitField.setContent(((Integer) this.fieldValues.get(this.upperAgeLimitFieldName)).toString());
+		this.ageLimitIsStringentConditionField.setChecked(((Boolean) this.fieldValues.get(this.ageLimitIsStringentConditionFieldName)).booleanValue());
+		StringTokenizer keyDate = new StringTokenizer((String) this.fieldValues.get(this.keyDateForAgeFieldName), " -");
 		if (keyDate.hasMoreTokens()) {
-			keyDateForAgeField.setMonth(keyDate.nextToken());
+			this.keyDateForAgeField.setMonth(keyDate.nextToken());
 		}
 		else {
-			keyDateForAgeField.setMonth(-1);
+			this.keyDateForAgeField.setMonth(-1);
 		}
 		if (keyDate.hasMoreTokens()) {
-			keyDateForAgeField.setDay(keyDate.nextToken());
+			this.keyDateForAgeField.setDay(keyDate.nextToken());
 		}
 		else {
-			keyDateForAgeField.setDay(-1);
+			this.keyDateForAgeField.setDay(-1);
 		}
 		// error fields
-		lowerAgeTooSmallField.setText((String) fieldValues.get(lowerAgeTooSmallFieldName));
-		upperAgeTooLargeField.setText((String) fieldValues.get(upperAgeTooLargeFieldName));
-		lowerAgeGreaterThanUpperAgeField.setText((String) fieldValues.get(lowerAgeGreaterThanUpperAgeFieldName));
+		this.lowerAgeTooSmallField.setText((String) this.fieldValues.get(this.lowerAgeTooSmallFieldName));
+		this.upperAgeTooLargeField.setText((String) this.fieldValues.get(this.upperAgeTooLargeFieldName));
+		this.lowerAgeGreaterThanUpperAgeField.setText((String) this.fieldValues.get(this.lowerAgeGreaterThanUpperAgeFieldName));
 		
 		//EXTRA ISI STUFF
-		nationalityDependentField.setChecked(((Boolean) fieldValues.get(nationalityDependentFieldName)).booleanValue());
-		clubMemberExchangeDependentField.setChecked(((Boolean) fieldValues.get(clubMemberExchangeDependentFieldName)).booleanValue());
+		this.nationalityDependentField.setChecked(((Boolean) this.fieldValues.get(this.nationalityDependentFieldName)).booleanValue());
+		this.clubMemberExchangeDependentField.setChecked(((Boolean) this.fieldValues.get(this.clubMemberExchangeDependentFieldName)).booleanValue());
 	
 	}
 
@@ -174,46 +174,46 @@ public class GroupAgeGenderTab extends UserGroupTab {
 	 * @see com.idega.user.presentation.UserGroupTab#initializeFields()
 	 */
 	public void initializeFields() {
-		femaleField = new CheckBox(femaleFieldName);
-		femaleField.setWidth("10");
-		femaleField.setHeight("10");
-		maleField = new CheckBox(maleFieldName);
-		maleField.setWidth("10");
-		maleField.setHeight("10");
+		this.femaleField = new CheckBox(this.femaleFieldName);
+		this.femaleField.setWidth("10");
+		this.femaleField.setHeight("10");
+		this.maleField = new CheckBox(this.maleFieldName);
+		this.maleField.setWidth("10");
+		this.maleField.setHeight("10");
 		IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		String integerErrorWarning = iwrb.getLocalizedString("age_intError", "The input must be greater or equal zero");
 		String notEmpty = iwrb.getLocalizedString("age_notEmpty", "Please fill in every field");
-		lowerAgeLimitField = new IntegerInput(lowerAgeLimitFieldName, integerErrorWarning);
-		upperAgeLimitField = new IntegerInput(upperAgeLimitFieldName, integerErrorWarning);
-		lowerAgeLimitField.setSize(3);
-		upperAgeLimitField.setSize(3);
-		lowerAgeLimitField.setMaxlength(3);
-		upperAgeLimitField.setMaxlength(3);
-		lowerAgeLimitField.setAsNotEmpty(notEmpty);
-		upperAgeLimitField.setAsNotEmpty(notEmpty);
-		ageLimitIsStringentConditionField = new CheckBox(ageLimitIsStringentConditionFieldName);
-		ageLimitIsStringentConditionField.setWidth("10");
-		ageLimitIsStringentConditionField.setHeight("10");
-		keyDateForAgeField = new DateInput(keyDateForAgeFieldName, false, false);
+		this.lowerAgeLimitField = new IntegerInput(this.lowerAgeLimitFieldName, integerErrorWarning);
+		this.upperAgeLimitField = new IntegerInput(this.upperAgeLimitFieldName, integerErrorWarning);
+		this.lowerAgeLimitField.setSize(3);
+		this.upperAgeLimitField.setSize(3);
+		this.lowerAgeLimitField.setMaxlength(3);
+		this.upperAgeLimitField.setMaxlength(3);
+		this.lowerAgeLimitField.setAsNotEmpty(notEmpty);
+		this.upperAgeLimitField.setAsNotEmpty(notEmpty);
+		this.ageLimitIsStringentConditionField = new CheckBox(this.ageLimitIsStringentConditionFieldName);
+		this.ageLimitIsStringentConditionField.setWidth("10");
+		this.ageLimitIsStringentConditionField.setHeight("10");
+		this.keyDateForAgeField = new DateInput(this.keyDateForAgeFieldName, false, false);
 		// do not show the year
-		keyDateForAgeField.setToShowYear(false);
+		this.keyDateForAgeField.setToShowYear(false);
 		// error fields
-		lowerAgeTooSmallField = new Text();
-		lowerAgeTooSmallField.setFontColor("#FF0000");
-		upperAgeTooLargeField = new Text();
-		upperAgeTooLargeField.setFontColor("#FF0000");
-		lowerAgeGreaterThanUpperAgeField = new Text();
-		lowerAgeGreaterThanUpperAgeField.setFontColor("#FF0000");
+		this.lowerAgeTooSmallField = new Text();
+		this.lowerAgeTooSmallField.setFontColor("#FF0000");
+		this.upperAgeTooLargeField = new Text();
+		this.upperAgeTooLargeField.setFontColor("#FF0000");
+		this.lowerAgeGreaterThanUpperAgeField = new Text();
+		this.lowerAgeGreaterThanUpperAgeField.setFontColor("#FF0000");
 		
 		//EXTRA ISI STUFF
-		nationalityDependentField = new CheckBox(nationalityDependentFieldName);
-		nationalityDependentField.setWidth("10");
-		nationalityDependentField.setHeight("10");
+		this.nationalityDependentField = new CheckBox(this.nationalityDependentFieldName);
+		this.nationalityDependentField.setWidth("10");
+		this.nationalityDependentField.setHeight("10");
 		
-		clubMemberExchangeDependentField = new CheckBox(clubMemberExchangeDependentFieldName);
-		clubMemberExchangeDependentField.setWidth("10");
-		clubMemberExchangeDependentField.setHeight("10");
+		this.clubMemberExchangeDependentField = new CheckBox(this.clubMemberExchangeDependentFieldName);
+		this.clubMemberExchangeDependentField.setWidth("10");
+		this.clubMemberExchangeDependentField.setHeight("10");
 		
 	}
 
@@ -223,29 +223,29 @@ public class GroupAgeGenderTab extends UserGroupTab {
 	public void initializeTexts() {
 		IWContext iwc = IWContext.getInstance();
 		IWResourceBundle bundle = getResourceBundle(iwc);
-		femaleText = new Text(bundle.getLocalizedString(femaleFieldName, "female members"));
-		femaleText.setBold();
-		maleText = new Text(bundle.getLocalizedString(maleFieldName, "male members"));
-		maleText.setBold();
-		lowerAgeLimitText = new Text(bundle.getLocalizedString(lowerAgeLimitFieldName, "Lower age limit"));
-		lowerAgeLimitText.setBold();
-		upperAgeLimitText = new Text(bundle.getLocalizedString(upperAgeLimitFieldName, "Upper age limit"));
-		upperAgeLimitText.setBold();
-		ageLimitIsStringentConditionText = new Text(bundle.getLocalizedString(ageLimitIsStringentConditionFieldName,
+		this.femaleText = new Text(bundle.getLocalizedString(this.femaleFieldName, "female members"));
+		this.femaleText.setBold();
+		this.maleText = new Text(bundle.getLocalizedString(this.maleFieldName, "male members"));
+		this.maleText.setBold();
+		this.lowerAgeLimitText = new Text(bundle.getLocalizedString(this.lowerAgeLimitFieldName, "Lower age limit"));
+		this.lowerAgeLimitText.setBold();
+		this.upperAgeLimitText = new Text(bundle.getLocalizedString(this.upperAgeLimitFieldName, "Upper age limit"));
+		this.upperAgeLimitText.setBold();
+		this.ageLimitIsStringentConditionText = new Text(bundle.getLocalizedString(this.ageLimitIsStringentConditionFieldName,
 				"Age limits are stringent conditions"));
-		ageLimitIsStringentConditionText.setBold();
-		keyDateForAgeText = new Text(bundle.getLocalizedString(keyDateForAgeFieldName, "Key date for age"));
-		keyDateForAgeText.setBold();
-		lowerAgeTooSmallError = bundle.getLocalizedString(lowerAgeTooSmallFieldName, "Lower age limit is too small");
-		upperAgeTooLargeError = bundle.getLocalizedString(upperAgeTooLargeFieldName, "Upper age limit is too large");
-		lowerAgeGreaterThanUpperAgeError = bundle.getLocalizedString(lowerAgeGreaterThanUpperAgeFieldName,
+		this.ageLimitIsStringentConditionText.setBold();
+		this.keyDateForAgeText = new Text(bundle.getLocalizedString(this.keyDateForAgeFieldName, "Key date for age"));
+		this.keyDateForAgeText.setBold();
+		this.lowerAgeTooSmallError = bundle.getLocalizedString(this.lowerAgeTooSmallFieldName, "Lower age limit is too small");
+		this.upperAgeTooLargeError = bundle.getLocalizedString(this.upperAgeTooLargeFieldName, "Upper age limit is too large");
+		this.lowerAgeGreaterThanUpperAgeError = bundle.getLocalizedString(this.lowerAgeGreaterThanUpperAgeFieldName,
 				"Lower age is greater than upper age");
 		
 		//EXTRA ISI STUFF
-		nationalityDependentText = new Text(bundle.getLocalizedString(nationalityDependentFieldName, "Nationality dependent"));
-		nationalityDependentText.setBold();
-		clubMemberExchangeDependentText = new Text(bundle.getLocalizedString(clubMemberExchangeDependentFieldName, "Club exchange dependent"));
-		clubMemberExchangeDependentText.setBold();
+		this.nationalityDependentText = new Text(bundle.getLocalizedString(this.nationalityDependentFieldName, "Nationality dependent"));
+		this.nationalityDependentText.setBold();
+		this.clubMemberExchangeDependentText = new Text(bundle.getLocalizedString(this.clubMemberExchangeDependentFieldName, "Club exchange dependent"));
+		this.clubMemberExchangeDependentText.setBold();
 	}
 
 	/**
@@ -256,37 +256,37 @@ public class GroupAgeGenderTab extends UserGroupTab {
 		table.setWidth(300);
 		table.setCellpadding(5);
 		table.setCellspacing(0);
-		table.add(lowerAgeLimitText, 1, 1);
+		table.add(this.lowerAgeLimitText, 1, 1);
 		table.add(Text.getBreak(), 1, 1);
-		table.add(lowerAgeLimitField, 1, 1);
-		table.add(upperAgeLimitText, 2, 1);
+		table.add(this.lowerAgeLimitField, 1, 1);
+		table.add(this.upperAgeLimitText, 2, 1);
 		table.add(Text.getBreak(), 2, 1);
-		table.add(upperAgeLimitField, 2, 1);
-		table.add(keyDateForAgeText, 1, 2);
+		table.add(this.upperAgeLimitField, 2, 1);
+		table.add(this.keyDateForAgeText, 1, 2);
 		table.add(Text.getBreak(), 1, 2);
-		table.add(keyDateForAgeField, 1, 2);
+		table.add(this.keyDateForAgeField, 1, 2);
 		
 		//table.mergeCells(1, 3, 2, 3);
-		table.add(femaleText, 1, 3);
-		table.add(femaleField, 1, 3);
+		table.add(this.femaleText, 1, 3);
+		table.add(this.femaleField, 1, 3);
 		//table.mergeCells(1, 4, 2, 4);
-		table.add(maleText, 1, 4);
-		table.add(maleField, 1, 4);
+		table.add(this.maleText, 1, 4);
+		table.add(this.maleField, 1, 4);
 		//table.mergeCells(1, 5, 2, 5);
-		table.add(ageLimitIsStringentConditionText, 1, 5);
-		table.add(ageLimitIsStringentConditionField, 1, 5);
+		table.add(this.ageLimitIsStringentConditionText, 1, 5);
+		table.add(this.ageLimitIsStringentConditionField, 1, 5);
 		// error fields
-		table.add(lowerAgeTooSmallField, 1, 6);
-		table.add(upperAgeTooLargeField, 1, 6);
-		table.add(lowerAgeGreaterThanUpperAgeField, 1, 6);
+		table.add(this.lowerAgeTooSmallField, 1, 6);
+		table.add(this.upperAgeTooLargeField, 1, 6);
+		table.add(this.lowerAgeGreaterThanUpperAgeField, 1, 6);
 		
 		
 		//EXTRA ISI STUFF
-		table.add(nationalityDependentText, 2, 3);
-		table.add(nationalityDependentField, 2, 3);
+		table.add(this.nationalityDependentText, 2, 3);
+		table.add(this.nationalityDependentField, 2, 3);
 		
-		table.add(clubMemberExchangeDependentText, 2, 4);
-		table.add(clubMemberExchangeDependentField, 2, 4);
+		table.add(this.clubMemberExchangeDependentText, 2, 4);
+		table.add(this.clubMemberExchangeDependentField, 2, 4);
 		
 		add(table);
 	}
@@ -302,19 +302,19 @@ public class GroupAgeGenderTab extends UserGroupTab {
 		if (iwc != null) {
 			Group group;
 			try {
-				group = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(
+				group = (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(
 						getGroupId())));
 				// special case because the age and gender stuff should be
 				// controlled by the club member template group
 				// for other group types it is never read only
 				boolean readOnly = IWMemberConstants.GROUP_TYPE_CLUB_PLAYER.equals(group.getGroupType());
 				if (!readOnly) {
-					String female = iwc.getParameter(femaleFieldName);
-					String male = iwc.getParameter(maleFieldName);
-					String lowerAgeLimit = iwc.getParameter(lowerAgeLimitFieldName);
-					String upperAgeLimit = iwc.getParameter(upperAgeLimitFieldName);
-					String ageLimitIsStringentCondition = iwc.getParameter(ageLimitIsStringentConditionFieldName);
-					String keyDate = iwc.getParameter(keyDateForAgeFieldName);
+					String female = iwc.getParameter(this.femaleFieldName);
+					String male = iwc.getParameter(this.maleFieldName);
+					String lowerAgeLimit = iwc.getParameter(this.lowerAgeLimitFieldName);
+					String upperAgeLimit = iwc.getParameter(this.upperAgeLimitFieldName);
+					String ageLimitIsStringentCondition = iwc.getParameter(this.ageLimitIsStringentConditionFieldName);
+					String keyDate = iwc.getParameter(this.keyDateForAgeFieldName);
 					// only modify key date if month and day is set by the user.
 					// not selected is indicated by -1.
 					// key date = "year-month-day"
@@ -333,37 +333,37 @@ public class GroupAgeGenderTab extends UserGroupTab {
 					else {
 						keyDate = "";
 					}
-					fieldValues.put(keyDateForAgeFieldName, keyDate);
-					fieldValues.put(ageLimitIsStringentConditionFieldName, new Boolean(
+					this.fieldValues.put(this.keyDateForAgeFieldName, keyDate);
+					this.fieldValues.put(this.ageLimitIsStringentConditionFieldName, new Boolean(
 							ageLimitIsStringentCondition != null));
-					fieldValues.put(femaleFieldName, new Boolean(female != null));
-					fieldValues.put(maleFieldName, new Boolean(male != null));
+					this.fieldValues.put(this.femaleFieldName, new Boolean(female != null));
+					this.fieldValues.put(this.maleFieldName, new Boolean(male != null));
 					if (lowerAgeLimit != null) {
-						fieldValues.put(lowerAgeLimitFieldName, new Integer(lowerAgeLimit));
+						this.fieldValues.put(this.lowerAgeLimitFieldName, new Integer(lowerAgeLimit));
 					}
 					if (upperAgeLimit != null) {
-						fieldValues.put(upperAgeLimitFieldName, new Integer(upperAgeLimit));
+						this.fieldValues.put(this.upperAgeLimitFieldName, new Integer(upperAgeLimit));
 					}
 					// get corressponding service bean
 					AgeGenderPluginBusiness ageGenderPluginBusiness = getAgeGenderPluginBusiness(iwc);
 					// validate upper and lower age limit
-					int lowerAge = ((Integer) fieldValues.get(lowerAgeLimitFieldName)).intValue();
-					int upperAge = ((Integer) fieldValues.get(upperAgeLimitFieldName)).intValue();
-					lowerAgeTooSmall = (lowerAge < ageGenderPluginBusiness.getLowerAgeLimitDefault());
-					upperAgeTooLarge = (upperAge > ageGenderPluginBusiness.getUpperAgeLimitDefault());
-					lowerAgeGreaterThanUpperAge = (lowerAge > upperAge);
+					int lowerAge = ((Integer) this.fieldValues.get(this.lowerAgeLimitFieldName)).intValue();
+					int upperAge = ((Integer) this.fieldValues.get(this.upperAgeLimitFieldName)).intValue();
+					this.lowerAgeTooSmall = (lowerAge < ageGenderPluginBusiness.getLowerAgeLimitDefault());
+					this.upperAgeTooLarge = (upperAge > ageGenderPluginBusiness.getUpperAgeLimitDefault());
+					this.lowerAgeGreaterThanUpperAge = (lowerAge > upperAge);
 					// set error text if necessary
-					fieldValues.put(lowerAgeTooSmallFieldName, ((lowerAgeTooSmall) ? lowerAgeTooSmallError : ""));
-					fieldValues.put(upperAgeTooLargeFieldName, ((upperAgeTooLarge) ? upperAgeTooLargeError : ""));
-					fieldValues.put(lowerAgeGreaterThanUpperAgeFieldName,
-							((lowerAgeGreaterThanUpperAge) ? lowerAgeGreaterThanUpperAgeError : ""));
+					this.fieldValues.put(this.lowerAgeTooSmallFieldName, ((this.lowerAgeTooSmall) ? this.lowerAgeTooSmallError : ""));
+					this.fieldValues.put(this.upperAgeTooLargeFieldName, ((this.upperAgeTooLarge) ? this.upperAgeTooLargeError : ""));
+					this.fieldValues.put(this.lowerAgeGreaterThanUpperAgeFieldName,
+							((this.lowerAgeGreaterThanUpperAge) ? this.lowerAgeGreaterThanUpperAgeError : ""));
 					
 					
 					//EXTRA ISI STUFF
-					String nationalityDep = iwc.getParameter(nationalityDependentFieldName);
-					String clubExchangeDep = iwc.getParameter(clubMemberExchangeDependentFieldName);
-					fieldValues.put(nationalityDependentFieldName, new Boolean(nationalityDep != null));
-					fieldValues.put(clubMemberExchangeDependentFieldName, new Boolean(clubExchangeDep != null));
+					String nationalityDep = iwc.getParameter(this.nationalityDependentFieldName);
+					String clubExchangeDep = iwc.getParameter(this.clubMemberExchangeDependentFieldName);
+					this.fieldValues.put(this.nationalityDependentFieldName, new Boolean(nationalityDep != null));
+					this.fieldValues.put(this.clubMemberExchangeDependentFieldName, new Boolean(clubExchangeDep != null));
 					
 					this.updateFieldsDisplayStatus();
 				}
@@ -387,7 +387,7 @@ public class GroupAgeGenderTab extends UserGroupTab {
 	 */
 	public boolean store(IWContext iwc) {
 		try {
-			Group group = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(
+			Group group = (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(
 					getGroupId())));
 			// special case because the age and gender stuff should be
 			// controlled by the club member template group
@@ -397,19 +397,19 @@ public class GroupAgeGenderTab extends UserGroupTab {
 				// get corressponding service bean
 				AgeGenderPluginBusiness ageGenderPluginBusiness = getAgeGenderPluginBusiness(iwc);
 				// validate upper and lower age limit
-				int lowerAge = ((Integer) fieldValues.get(lowerAgeLimitFieldName)).intValue();
-				int upperAge = ((Integer) fieldValues.get(upperAgeLimitFieldName)).intValue();
-				lowerAgeTooSmall = (lowerAge < ageGenderPluginBusiness.getLowerAgeLimitDefault());
-				upperAgeTooLarge = (upperAge > ageGenderPluginBusiness.getUpperAgeLimitDefault());
-				lowerAgeGreaterThanUpperAge = (lowerAge > upperAge);
-				if (lowerAgeTooSmall || upperAgeTooLarge || lowerAgeGreaterThanUpperAge) {
+				int lowerAge = ((Integer) this.fieldValues.get(this.lowerAgeLimitFieldName)).intValue();
+				int upperAge = ((Integer) this.fieldValues.get(this.upperAgeLimitFieldName)).intValue();
+				this.lowerAgeTooSmall = (lowerAge < ageGenderPluginBusiness.getLowerAgeLimitDefault());
+				this.upperAgeTooLarge = (upperAge > ageGenderPluginBusiness.getUpperAgeLimitDefault());
+				this.lowerAgeGreaterThanUpperAge = (lowerAge > upperAge);
+				if (this.lowerAgeTooSmall || this.upperAgeTooLarge || this.lowerAgeGreaterThanUpperAge) {
 					return false;
 				}
 				ageGenderPluginBusiness.setLowerAgeLimit(group, lowerAge);
 				ageGenderPluginBusiness.setUpperAgeLimit(group, upperAge);
 				// set gender
-				boolean isFemale = ((Boolean) fieldValues.get(femaleFieldName)).booleanValue();
-				boolean isMale = ((Boolean) fieldValues.get(maleFieldName)).booleanValue();
+				boolean isFemale = ((Boolean) this.fieldValues.get(this.femaleFieldName)).booleanValue();
+				boolean isMale = ((Boolean) this.fieldValues.get(this.maleFieldName)).booleanValue();
 				if (isMale && !isFemale) {
 					ageGenderPluginBusiness.setMale(group);
 				}
@@ -420,16 +420,16 @@ public class GroupAgeGenderTab extends UserGroupTab {
 					// male and female are either both true or both false
 					ageGenderPluginBusiness.setNeutral(group);
 				}
-				boolean ageLimitIsStringentCondition = ((Boolean) fieldValues.get(ageLimitIsStringentConditionFieldName)).booleanValue();
+				boolean ageLimitIsStringentCondition = ((Boolean) this.fieldValues.get(this.ageLimitIsStringentConditionFieldName)).booleanValue();
 				ageGenderPluginBusiness.setAgeLimitIsStringentCondition(group, ageLimitIsStringentCondition);
-				String keyDateForAge = (String) fieldValues.get(keyDateForAgeFieldName);
+				String keyDateForAge = (String) this.fieldValues.get(this.keyDateForAgeFieldName);
 				ageGenderPluginBusiness.setKeyDateForAge(group, keyDateForAge);
 				
 				//EXTRA ISI STUFF 
 				//TODO move to ksi plugin
-				boolean isNationalityDependent = ((Boolean) fieldValues.get(nationalityDependentFieldName)).booleanValue();
+				boolean isNationalityDependent = ((Boolean) this.fieldValues.get(this.nationalityDependentFieldName)).booleanValue();
 				ageGenderPluginBusiness.setNationalityDependent(group,isNationalityDependent);
-				boolean isClubExchangeDependent = ((Boolean) fieldValues.get(clubMemberExchangeDependentFieldName)).booleanValue();
+				boolean isClubExchangeDependent = ((Boolean) this.fieldValues.get(this.clubMemberExchangeDependentFieldName)).booleanValue();
 				ageGenderPluginBusiness.setClubMemberExchangeDependent(group,isClubExchangeDependent);
 				
 				group.store();
@@ -457,19 +457,19 @@ public class GroupAgeGenderTab extends UserGroupTab {
 		if (groupId > 0) {
 			Group group;
 			try {
-				group = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(
+				group = (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(
 						getGroupId())));
 				// special case because the age and gender stuff should be
 				// controlled by the club member template group
 				// for other group types it is never read only
 				boolean readOnly = IWMemberConstants.GROUP_TYPE_CLUB_PLAYER.equals(group.getGroupType());
 				if (readOnly) {
-					femaleField.setDisabled(true);
-					maleField.setDisabled(true);
-					lowerAgeLimitField.setDisabled(true);
-					upperAgeLimitField.setDisabled(true);
-					ageLimitIsStringentConditionField.setDisabled(true);
-					keyDateForAgeField.setDisabled(true);
+					this.femaleField.setDisabled(true);
+					this.maleField.setDisabled(true);
+					this.lowerAgeLimitField.setDisabled(true);
+					this.upperAgeLimitField.setDisabled(true);
+					this.ageLimitIsStringentConditionField.setDisabled(true);
+					this.keyDateForAgeField.setDisabled(true);
 				}
 				// get corressponding service bean
 				AgeGenderPluginBusiness ageGenderPluginBusiness = getAgeGenderPluginBusiness(this.getEventIWContext());
@@ -484,24 +484,24 @@ public class GroupAgeGenderTab extends UserGroupTab {
 					isFemale = true;
 					isMale = true;
 				}
-				fieldValues.put(femaleFieldName, new Boolean(isFemale));
-				fieldValues.put(maleFieldName, new Boolean(isMale));
+				this.fieldValues.put(this.femaleFieldName, new Boolean(isFemale));
+				this.fieldValues.put(this.maleFieldName, new Boolean(isMale));
 				// get lower age limit
 				int lowerAgeLimit = ageGenderPluginBusiness.getLowerAgeLimit(group);
-				fieldValues.put(lowerAgeLimitFieldName, new Integer(lowerAgeLimit));
+				this.fieldValues.put(this.lowerAgeLimitFieldName, new Integer(lowerAgeLimit));
 				// get upper age limit
 				int upperAgeLimit = ageGenderPluginBusiness.getUpperAgeLimit(group);
-				fieldValues.put(upperAgeLimitFieldName, new Integer(upperAgeLimit));
+				this.fieldValues.put(this.upperAgeLimitFieldName, new Integer(upperAgeLimit));
 				boolean ageLimitIsStringentCondition = ageGenderPluginBusiness.isAgeLimitStringentCondition(group);
-				fieldValues.put(ageLimitIsStringentConditionFieldName, new Boolean(ageLimitIsStringentCondition));
+				this.fieldValues.put(this.ageLimitIsStringentConditionFieldName, new Boolean(ageLimitIsStringentCondition));
 				String keyDateForAge = ageGenderPluginBusiness.getKeyDateForAge(group);
-				fieldValues.put(keyDateForAgeFieldName, keyDateForAge);
+				this.fieldValues.put(this.keyDateForAgeFieldName, keyDateForAge);
 				
 				//EXTRA ISI STUFF
 				boolean isNationalityDep = ageGenderPluginBusiness.isNationalityDependent(group);
 				boolean clubExchangeDep = ageGenderPluginBusiness.isClubMemberExchangeDependent(group);
-				fieldValues.put(nationalityDependentFieldName, new Boolean(isNationalityDep));
-				fieldValues.put(clubMemberExchangeDependentFieldName, new Boolean(clubExchangeDep));
+				this.fieldValues.put(this.nationalityDependentFieldName, new Boolean(isNationalityDep));
+				this.fieldValues.put(this.clubMemberExchangeDependentFieldName, new Boolean(clubExchangeDep));
 			
 			}
 			catch (RemoteException e) {

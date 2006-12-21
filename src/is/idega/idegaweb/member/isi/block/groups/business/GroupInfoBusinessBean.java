@@ -116,14 +116,14 @@ public class GroupInfoBusinessBean extends IBOServiceBean implements GroupInfoBu
 	}
 	
 	private GroupBusiness getGroupBusiness(IWContext iwc) {
-		if(_groupBiz == null) {
+		if(this._groupBiz == null) {
 			try {
-				_groupBiz = (GroupBusiness) IBOLookup.getServiceInstance(iwc.getApplicationContext(), GroupBusiness.class);
+				this._groupBiz = (GroupBusiness) IBOLookup.getServiceInstance(iwc.getApplicationContext(), GroupBusiness.class);
 			} catch (IBOLookupException e) {
 				e.printStackTrace();
 			}
 		}
 		
-		return _groupBiz;
+		return this._groupBiz;
 	}
 }

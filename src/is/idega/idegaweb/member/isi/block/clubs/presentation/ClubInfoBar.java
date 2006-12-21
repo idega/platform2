@@ -43,9 +43,9 @@ public class ClubInfoBar extends Block {
 	private String _callingDomain = null;
 	
 	public void main(IWContext iwc) {
-	    divisionInfoPageId = iwc.getParameter(ClubPageIncluder.PARAM_DIVISION_INFO_PAGE_ID);
-		pageId = iwc.getParameter(ClubPageIncluder.PARAM_CALLING_PAGE_ID);
-		_callingDomain = iwc.getParameter(ClubPageIncluder.PARAM_CALLING_DOMAIN);
+	    this.divisionInfoPageId = iwc.getParameter(ClubPageIncluder.PARAM_DIVISION_INFO_PAGE_ID);
+		this.pageId = iwc.getParameter(ClubPageIncluder.PARAM_CALLING_PAGE_ID);
+		this._callingDomain = iwc.getParameter(ClubPageIncluder.PARAM_CALLING_DOMAIN);
 		
 		_collator = Collator.getInstance(iwc.getLocale());
 		Group club = getClub(iwc);
@@ -56,8 +56,8 @@ public class ClubInfoBar extends Block {
 		
 		Group mainBoard = getMainBoard(club);
 		
-		_biz = getBusiness(iwc);
-		Collection divisions = _biz.getDivisionsForClub(club);
+		this._biz = getBusiness(iwc);
+		Collection divisions = this._biz.getDivisionsForClub(club);
 		Iterator divIter = divisions.iterator();
 		CSSMultiLevelMenu menuBar = new CSSMultiLevelMenu();
 		
@@ -105,7 +105,7 @@ public class ClubInfoBar extends Block {
 		});
 		
 		CSSMenu topLevelMenu;
-		if(divisionInfoPageId!=null) {
+		if(this.divisionInfoPageId!=null) {
 		    String divName = division.getShortName();
 		    if (divName == null || divName.equals("")) {
 			    divName = division.getName();
@@ -117,9 +117,9 @@ public class ClubInfoBar extends Block {
 		    		link.setURL(divisionHomepageURL);
 		    }
 		    else{
-		    		link.setPage(Integer.parseInt(divisionInfoPageId));
-				if(_callingDomain!=null && _callingDomain.length()>0) {
-					link.setHostname(_callingDomain);
+		    		link.setPage(Integer.parseInt(this.divisionInfoPageId));
+				if(this._callingDomain!=null && this._callingDomain.length()>0) {
+					link.setHostname(this._callingDomain);
 				}
 		    }
 			topLevelMenu = menuBar.createCSSMenu(division.getName(), link);
@@ -142,12 +142,12 @@ public class ClubInfoBar extends Block {
 			}
 			if(showGroup(playerGroup)) {
 				Link link = new Link(playerGroup.getName());
-				if(_callingDomain!=null && _callingDomain.length()>0) {
-					link.setHostname(_callingDomain);
+				if(this._callingDomain!=null && this._callingDomain.length()>0) {
+					link.setHostname(this._callingDomain);
 				}
 				link.addParameter(PARAM_NAME_GROUP_ID, playerGroup.getPrimaryKey().toString());
-				if(pageId!=null) {
-				  link.setPage(Integer.parseInt(pageId));
+				if(this.pageId!=null) {
+				  link.setPage(Integer.parseInt(this.pageId));
 				}
 			
 				link.addParameter(IWMemberConstants.REQUEST_PARAMETER_SELECTED_GROUP_ID,playerGroup.getPrimaryKey().toString());

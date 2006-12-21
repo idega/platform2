@@ -182,7 +182,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 				throw new WorkReportImportException("workreportimportexception.wrong_number_lines");
 			}
 			//get the top row to get a list of leagues to use.
-			HSSFRow headerRow = (HSSFRow) accEntries.getRow(currRow);
+			HSSFRow headerRow = accEntries.getRow(currRow);
 			Map leaguesMap = getLeaguesMapFromRow(headerRow, year, leaguesStartColumn);
 			int numberOfLeagues = 1;
 			if (leaguesMap != null) {
@@ -752,8 +752,9 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 		//		System.out.println("Starting board and division importing from excel
 		// file...");
 		//Check to see if the work report is read only
-		if (getWorkReportBusiness().isWorkReportReadOnly(workReportId))
+		if (getWorkReportBusiness().isWorkReportReadOnly(workReportId)) {
 			throw new WorkReportImportException("workreportimportexception.is_read_only");
+		}
 		getWorkReportBusiness().deleteWorkReportBoardMembersForReport(workReportId);
 		WorkReportBoardMemberHome membHome = getWorkReportBusiness().getWorkReportBoardMemberHome();
 		WorkReport report = getWorkReportBusiness().getWorkReportById(workReportId);
@@ -1056,10 +1057,12 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 				board.setEmail(email);
 				board.setWorkReportGroupID(((Integer) group.getPrimaryKey()).intValue());
 				board.setReportId(workReportId);
-				if (champ != null && !"".equals(champ.trim()))
+				if (champ != null && !"".equals(champ.trim())) {
 					board.setHasNationalLeague(true);
-				else
+				}
+				else {
 					board.setHasNationalLeague(false);
+				}
 				board.store();
 			}
 			i++;
@@ -1076,8 +1079,9 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 		//		System.out.println("Starting member importing from excel file for
 		// workreportid: " + workReportId);
 		//Check to see if the work report is read only
-		if (getWorkReportBusiness().isWorkReportReadOnly(workReportId))
+		if (getWorkReportBusiness().isWorkReportReadOnly(workReportId)) {
 			throw new WorkReportImportException("workreportimportexception.is_read_only");
+		}
 		//clear the table first
 		getWorkReportBusiness().deleteWorkReportMembersForReport(workReportId);
 		WorkReportMemberHome membHome = getWorkReportBusiness().getWorkReportMemberHome();
@@ -1278,10 +1282,12 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 										}
 										playerCount++;
 										Integer count = (Integer) divPlayerCount.get(new Integer(j));
-										if (count == null)
+										if (count == null) {
 											count = new Integer(1);
-										else
+										}
+										else {
 											count = new Integer(count.intValue() + 1);
+										}
 										divPlayerCount.put(new Integer(j), count);
 								}
 							}
@@ -1341,10 +1347,12 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 			}
 			board.setReportId(workReportId);
 			board.setWorkReportGroupID(wrGroupId.intValue());
-			if (val != null)
+			if (val != null) {
 				board.setNumberOfPlayers(val.intValue());
-			else
+			}
+			else {
 				board.setNumberOfPlayers(0);
+			}
 			board.store();
 		}
 		WorkReportImportReport ret = new WorkReportImportReport();
@@ -1357,63 +1365,63 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 	}
 
 	public WorkReportImportClubAccountRecordHome getWorkReportImportClubAccountRecordHome() {
-		if (workReportImportClubAccountRecordHome == null) {
+		if (this.workReportImportClubAccountRecordHome == null) {
 			try {
-				workReportImportClubAccountRecordHome = (WorkReportImportClubAccountRecordHome) IDOLookup.getHome(WorkReportImportClubAccountRecord.class);
+				this.workReportImportClubAccountRecordHome = (WorkReportImportClubAccountRecordHome) IDOLookup.getHome(WorkReportImportClubAccountRecord.class);
 			}
 			catch (RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());
 			}
 		}
-		return workReportImportClubAccountRecordHome;
+		return this.workReportImportClubAccountRecordHome;
 	}
 
 	public WorkReportExportFileHome getWorkReportExportFileHome() {
-		if (workReportExportFileHome == null) {
+		if (this.workReportExportFileHome == null) {
 			try {
-				workReportExportFileHome = (WorkReportExportFileHome) IDOLookup.getHome(WorkReportExportFile.class);
+				this.workReportExportFileHome = (WorkReportExportFileHome) IDOLookup.getHome(WorkReportExportFile.class);
 			}
 			catch (RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());
 			}
 		}
-		return workReportExportFileHome;
+		return this.workReportExportFileHome;
 	}
 
 	public WorkReportImportMemberHome getWorkReportImportMemberHome() {
-		if (workReportImportMemberHome == null) {
+		if (this.workReportImportMemberHome == null) {
 			try {
-				workReportImportMemberHome = (WorkReportImportMemberHome) IDOLookup.getHome(WorkReportImportMember.class);
+				this.workReportImportMemberHome = (WorkReportImportMemberHome) IDOLookup.getHome(WorkReportImportMember.class);
 			}
 			catch (RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());
 			}
 		}
-		return workReportImportMemberHome;
+		return this.workReportImportMemberHome;
 	}
 
 	public WorkReportImportBoardMemberHome getWorkReportImportBoardMemberHome() {
-		if (workReportImportBoardMemberHome == null) {
+		if (this.workReportImportBoardMemberHome == null) {
 			try {
-				workReportImportBoardMemberHome = (WorkReportImportBoardMemberHome) IDOLookup.getHome(WorkReportImportBoardMember.class);
+				this.workReportImportBoardMemberHome = (WorkReportImportBoardMemberHome) IDOLookup.getHome(WorkReportImportBoardMember.class);
 			}
 			catch (RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());
 			}
 		}
-		return workReportImportBoardMemberHome;
+		return this.workReportImportBoardMemberHome;
 	}
 
 	public WorkReportImportDivisionBoardHome getWorkReportImportDivisionBoardHome() {
-		if (workReportImportDivisionBoardHome == null) {
+		if (this.workReportImportDivisionBoardHome == null) {
 			try {
-				workReportImportDivisionBoardHome = (WorkReportImportDivisionBoardHome) IDOLookup.getHome(WorkReportImportDivisionBoard.class);
+				this.workReportImportDivisionBoardHome = (WorkReportImportDivisionBoardHome) IDOLookup.getHome(WorkReportImportDivisionBoard.class);
 			}
 			catch (RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());
 			}
 		}
-		return workReportImportDivisionBoardHome;
+		return this.workReportImportDivisionBoardHome;
 	}
 
 	/**
@@ -1437,8 +1445,9 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 			}
 			else {
 				double d = myCell.getNumericCellValue();
-				if (((long) d) != 0)
+				if (((long) d) != 0) {
 					cell = Long.toString((long) d);
+				}
 				cell = TextSoap.findAndCut(cell, "-");
 				cell = TextSoap.findAndCut(cell, ".");
 				int index = cell.indexOf("E");

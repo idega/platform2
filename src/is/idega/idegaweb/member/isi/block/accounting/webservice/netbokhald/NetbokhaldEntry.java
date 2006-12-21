@@ -32,11 +32,11 @@ public class NetbokhaldEntry {
 	}
 	
 	public void setCustomer(String ssn) {
-		customer = ssn;
+		this.customer = ssn;
 	}
 	
 	public String getCustomer() {
-		return customer;
+		return this.customer;
 	}
 	
 	public void setInvoiceReceiver(String invoiceReceiver) {
@@ -44,7 +44,7 @@ public class NetbokhaldEntry {
 	}
 	
 	public String getInvoiceReceiver() {
-		return invoiceReceiver;
+		return this.invoiceReceiver;
 	}
 	
 	public void setDateOfEntry(Date dateOfEntry) {
@@ -52,7 +52,7 @@ public class NetbokhaldEntry {
 	}
 	
 	public Date getDateOfEntry() {
-		return dateOfEntry;
+		return this.dateOfEntry;
 	}
 	
 	public void setText(String text) {
@@ -60,7 +60,7 @@ public class NetbokhaldEntry {
 	}
 	
 	public String getText() {
-		return text;
+		return this.text;
 	}
 	
 	public void setReference(String reference) {
@@ -68,7 +68,7 @@ public class NetbokhaldEntry {
 	}
 	
 	public String getReference() {
-		return reference;
+		return this.reference;
 	}
 	
 	public void setAccountingKey(String accountingKey) {
@@ -76,7 +76,7 @@ public class NetbokhaldEntry {
 	}
 	
 	public String getAccountingKey() {
-		return accountingKey;
+		return this.accountingKey;
 	}
 	
 	public void setVATKey(String key) {
@@ -84,7 +84,7 @@ public class NetbokhaldEntry {
 	}
 	
 	public String getVATKey() {
-		return vatKey;
+		return this.vatKey;
 	}
 	
 	public void setAmount(double amount) {
@@ -92,7 +92,7 @@ public class NetbokhaldEntry {
 	}
 	
 	public double getAmount() {
-		return amount;
+		return this.amount;
 	}
 	
 	public void setVATAmount(double amount) {
@@ -100,7 +100,7 @@ public class NetbokhaldEntry {
 	}
 	
 	public double getVATAmount() {
-		return vatAmount;
+		return this.vatAmount;
 	}
 	
 	public void setIsVAT(boolean isVAT) {
@@ -108,7 +108,7 @@ public class NetbokhaldEntry {
 	}
 	
 	public boolean getIsVAT() {
-		return isVat;
+		return this.isVat;
 	}
 	
 	public void setCustomerNumber(int customerNumber) {
@@ -116,7 +116,7 @@ public class NetbokhaldEntry {
 	}
 	
 	public int getCustomerNumber() {
-		return customerNumber; 
+		return this.customerNumber; 
 	}
 	
 	public void setSerialNumber(String serialNumber) {
@@ -124,6 +124,6 @@ public class NetbokhaldEntry {
 	}
 	
 	public String getSerialNumber() {
-		return serialNumber;
+		return this.serialNumber;
 	}
 }

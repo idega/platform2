@@ -44,10 +44,14 @@ public class PostalCodeBox extends SelectionBox implements InputHandler {
 					PostalCode element = (PostalCode) iter.next();
 					String id = element.getPostalCode();
 					String code = element.getPostalAddress();
-					if( code!=null ) addMenuElement(id,code);						
+					if( code!=null ) {
+						addMenuElement(id,code);
+					}						
 				}
 			}
-			else addMenuElement("-1", "No country selected");
+			else {
+				addMenuElement("-1", "No country selected");
+			}
 		}
 		catch (RemoteException re) {
 			re.printStackTrace();

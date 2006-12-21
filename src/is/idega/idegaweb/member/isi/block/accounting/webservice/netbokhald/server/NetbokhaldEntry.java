@@ -69,7 +69,7 @@ public class NetbokhaldEntry  implements java.io.Serializable {
      * @return VATAmount
      */
     public double getVATAmount() {
-        return VATAmount;
+        return this.VATAmount;
     }
 
 
@@ -89,7 +89,7 @@ public class NetbokhaldEntry  implements java.io.Serializable {
      * @return VATKey
      */
     public java.lang.String getVATKey() {
-        return VATKey;
+        return this.VATKey;
     }
 
 
@@ -109,7 +109,7 @@ public class NetbokhaldEntry  implements java.io.Serializable {
      * @return accountingKey
      */
     public java.lang.String getAccountingKey() {
-        return accountingKey;
+        return this.accountingKey;
     }
 
 
@@ -129,7 +129,7 @@ public class NetbokhaldEntry  implements java.io.Serializable {
      * @return amount
      */
     public double getAmount() {
-        return amount;
+        return this.amount;
     }
 
 
@@ -149,7 +149,7 @@ public class NetbokhaldEntry  implements java.io.Serializable {
      * @return customer
      */
     public java.lang.String getCustomer() {
-        return customer;
+        return this.customer;
     }
 
 
@@ -169,7 +169,7 @@ public class NetbokhaldEntry  implements java.io.Serializable {
      * @return customerNumber
      */
     public int getCustomerNumber() {
-        return customerNumber;
+        return this.customerNumber;
     }
 
 
@@ -189,7 +189,7 @@ public class NetbokhaldEntry  implements java.io.Serializable {
      * @return dateOfEntry
      */
     public java.util.Calendar getDateOfEntry() {
-        return dateOfEntry;
+        return this.dateOfEntry;
     }
 
 
@@ -209,7 +209,7 @@ public class NetbokhaldEntry  implements java.io.Serializable {
      * @return invoiceReceiver
      */
     public java.lang.String getInvoiceReceiver() {
-        return invoiceReceiver;
+        return this.invoiceReceiver;
     }
 
 
@@ -229,7 +229,7 @@ public class NetbokhaldEntry  implements java.io.Serializable {
      * @return isVAT
      */
     public boolean isIsVAT() {
-        return isVAT;
+        return this.isVAT;
     }
 
 
@@ -249,7 +249,7 @@ public class NetbokhaldEntry  implements java.io.Serializable {
      * @return reference
      */
     public java.lang.String getReference() {
-        return reference;
+        return this.reference;
     }
 
 
@@ -269,7 +269,7 @@ public class NetbokhaldEntry  implements java.io.Serializable {
      * @return serialNumber
      */
     public java.lang.String getSerialNumber() {
-        return serialNumber;
+        return this.serialNumber;
     }
 
 
@@ -289,7 +289,7 @@ public class NetbokhaldEntry  implements java.io.Serializable {
      * @return text
      */
     public java.lang.String getText() {
-        return text;
+        return this.text;
     }
 
 
@@ -304,14 +304,20 @@ public class NetbokhaldEntry  implements java.io.Serializable {
 
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
-        if (!(obj instanceof NetbokhaldEntry)) return false;
+        if (!(obj instanceof NetbokhaldEntry)) {
+			return false;
+		}
         NetbokhaldEntry other = (NetbokhaldEntry) obj;
-        if (obj == null) return false;
-        if (this == obj) return true;
-        if (__equalsCalc != null) {
-            return (__equalsCalc == obj);
+        if (obj == null) {
+			return false;
+		}
+        if (this == obj) {
+			return true;
+		}
+        if (this.__equalsCalc != null) {
+            return (this.__equalsCalc == obj);
         }
-        __equalsCalc = obj;
+        this.__equalsCalc = obj;
         boolean _equals;
         _equals = true && 
             this.VATAmount == other.getVATAmount() &&
@@ -342,16 +348,16 @@ public class NetbokhaldEntry  implements java.io.Serializable {
             ((this.text==null && other.getText()==null) || 
              (this.text!=null &&
               this.text.equals(other.getText())));
-        __equalsCalc = null;
+        this.__equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
     public synchronized int hashCode() {
-        if (__hashCodeCalc) {
+        if (this.__hashCodeCalc) {
             return 0;
         }
-        __hashCodeCalc = true;
+        this.__hashCodeCalc = true;
         int _hashCode = 1;
         _hashCode += new Double(getVATAmount()).hashCode();
         if (getVATKey() != null) {
@@ -381,7 +387,7 @@ public class NetbokhaldEntry  implements java.io.Serializable {
         if (getText() != null) {
             _hashCode += getText().hashCode();
         }
-        __hashCodeCalc = false;
+        this.__hashCodeCalc = false;
         return _hashCode;
     }
 

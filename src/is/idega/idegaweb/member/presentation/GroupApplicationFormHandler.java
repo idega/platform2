@@ -49,7 +49,7 @@ public class GroupApplicationFormHandler extends Block {
 	 */
 	public void main(IWContext iwc) throws Exception {
 	
-		if( applicationGroup!=null ){
+		if( this.applicationGroup!=null ){
 			if( iwc.isParameterSet(USER_NAME_PARAM) && iwc.isParameterSet(PIN_PARAM) ){
 				
 				GroupApplicationBusiness biz = this.getGroupApplicationBusiness(iwc);
@@ -90,23 +90,23 @@ public class GroupApplicationFormHandler extends Block {
 					}
 					
 					if( credit && cardNumber!=null ){
-						adminComment = "Vill borga með kredit korti:\n"
-										+"Kortanúmer : "+cardNumber+"\n"
+						adminComment = "Vill borga meï¿½ kredit korti:\n"
+										+"Kortanï¿½mer : "+cardNumber+"\n"
 										+"Gildir til : "+validMonth+"/"+validYear+"\n"
 										+"Korthafi : "+nameOnCard+"\n"
 										+"Kennitala korthafa : "+pinOnCard+"\n";						
 					}
 					else if( !credit ){
-						adminComment = "Vill stadgreiða\n";
+						adminComment = "Vill stadgreiï¿½a\n";
 					}
 					else {
-						adminComment = "Vill borga med korti en kortanúmerið vantar!\n";	
+						adminComment = "Vill borga med korti en kortanï¿½meriï¿½ vantar!\n";	
 					}
 					
 					if( caretakerName!=null ){
-						adminComment += "Forráðamaður : "+caretakerName+"\n"
-									+"Kennitala forráðamanns : "+caretakerPin+"\n"
-									+"Netfang forráðamanns : "+caretakerEmail+"\n";
+						adminComment += "Forrï¿½ï¿½amaï¿½ur : "+caretakerName+"\n"
+									+"Kennitala forrï¿½ï¿½amanns : "+caretakerPin+"\n"
+									+"Netfang forrï¿½ï¿½amanns : "+caretakerEmail+"\n";
 					}
 					
 					
@@ -114,11 +114,13 @@ public class GroupApplicationFormHandler extends Block {
 
 				
 				String[] groups = iwc.getParameterValues(GROUPS_PARAM);
-				if( groups == null ) System.err.println("GROUPS are Null!");
+				if( groups == null ) {
+					System.err.println("GROUPS are Null!");
+				}
 				
 				
 				try {
-					biz.createGroupApplication(applicationGroup,name,pin,gender,email,email2,address,postal,phone,phone2,comment,adminComment,groups);
+					biz.createGroupApplication(this.applicationGroup,name,pin,gender,email,email2,address,postal,phone,phone2,comment,adminComment,groups);
 				
 				} catch (Exception e) {
 					add("Error : Application creation failed!");
@@ -128,7 +130,9 @@ public class GroupApplicationFormHandler extends Block {
 
 			
 			}
-			else add("Error : No name and PIN!");
+			else {
+				add("Error : No name and PIN!");
+			}
 			
 					
 		}

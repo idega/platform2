@@ -48,14 +48,14 @@ public class GroupInfo extends Block {
 
 	
 	public void main(IWContext iwc) {
-		_iwrb = getResourceBundle(iwc);
-		_biz = GroupInfoBusinessBean.getGroupInfoBusiness(iwc);
+		this._iwrb = getResourceBundle(iwc);
+		this._biz = GroupInfoBusinessBean.getGroupInfoBusiness(iwc);
 		
 		String groupId = iwc.getParameter(PARAM_NAME_GROUP_ID);
 		Group group = null;
 		if(groupId!=null && groupId.length()>0) {
 			try {
-				group = _biz.getGroup(iwc, groupId);
+				group = this._biz.getGroup(iwc, groupId);
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
@@ -70,7 +70,7 @@ public class GroupInfo extends Block {
 	private PresentationObject getGroupInfo(IWContext iwc, Group group) {
 		String phone = "";
 		String fax = "";
-		if(_showPhone || _showFax) {
+		if(this._showPhone || this._showFax) {
 			Collection phones = group.getPhones();
 			if(phones!=null) {
 				Iterator phoneIter = phones.iterator();
@@ -88,23 +88,23 @@ public class GroupInfo extends Block {
 		Table table = new Table();
 		int row = 1;
 		
-		if(_showName) {
+		if(this._showName) {
 			String name = group.getName();
-			String nameLabel = _iwrb.getLocalizedString("name", "Name: ");
+			String nameLabel = this._iwrb.getLocalizedString("name", "Name: ");
 			table.add(nameLabel, 2, row);
 			table.add(name, 3, row++);
 		}
-		if(_showShortName) {
+		if(this._showShortName) {
 			String shortName = emptyIfNull(group.getShortName());
-			if(_showEmptyFields || (shortName!=null && shortName.length()>0)) {
-				String shortNameLabel = _iwrb.getLocalizedString("shor_name", "Short name: ");
+			if(this._showEmptyFields || (shortName!=null && shortName.length()>0)) {
+				String shortNameLabel = this._iwrb.getLocalizedString("shor_name", "Short name: ");
 				addTextToTable(table, row++, shortNameLabel, shortName);
 			}
 		}
-		if(_showAddress) {
+		if(this._showAddress) {
 			String address = "";
 			try {
-				Address addr = _biz.getGroupAddress(iwc, group);
+				Address addr = this._biz.getGroupAddress(iwc, group);
 				if(addr!=null) {
 					address = addr.getStreetAddress() + ", " + addr.getPostalCode().getPostalCode() + " " + addr.getCity();
 				}
@@ -112,55 +112,55 @@ public class GroupInfo extends Block {
 				e.printStackTrace();
 			}
 			
-			if(_showEmptyFields || (address!=null && address.length()>0)) {
-				String addressLabel = _iwrb.getLocalizedString("address", "Address: ");
+			if(this._showEmptyFields || (address!=null && address.length()>0)) {
+				String addressLabel = this._iwrb.getLocalizedString("address", "Address: ");
 				addTextToTable(table, row++, addressLabel, address);
 			}
 		}
-		if(_showPhone) {
-			if(_showEmptyFields || (phone!=null && phone.length()>0)) {
-				String phoneLabel = _iwrb.getLocalizedString("phone", "Phone: ");
+		if(this._showPhone) {
+			if(this._showEmptyFields || (phone!=null && phone.length()>0)) {
+				String phoneLabel = this._iwrb.getLocalizedString("phone", "Phone: ");
 				addTextToTable(table, row++, phoneLabel, phone);
 			}
 		}
-		if(_showFax) {
-			if(_showEmptyFields || (fax!=null && fax.length()>0)) {
-				String faxLabel = _iwrb.getLocalizedString("fax", "Fax: ");
+		if(this._showFax) {
+			if(this._showEmptyFields || (fax!=null && fax.length()>0)) {
+				String faxLabel = this._iwrb.getLocalizedString("fax", "Fax: ");
 				addTextToTable(table, row++, faxLabel, fax);
 			}
 		}
-		if(_showHomePage) {
+		if(this._showHomePage) {
 			String homePageURL = emptyIfNull(group.getHomePageURL());
-			if(_showEmptyFields || (homePageURL!=null && homePageURL.length()>0)) {
-				String homePageLabel = _iwrb.getLocalizedString("homepage", "Homepage: ");
+			if(this._showEmptyFields || (homePageURL!=null && homePageURL.length()>0)) {
+				String homePageLabel = this._iwrb.getLocalizedString("homepage", "Homepage: ");
 				Link link = new Link();
 				link.setText(homePageURL);
 				link.setURL(homePageURL);
 				addPOToTable(table, row++, homePageLabel, link);
 			}
 		}
-		if(_showEmails) {
+		if(this._showEmails) {
 			PresentationObject emails = getEmailLinkList(group);
-			if(_showEmptyFields || (emails!=null)) {
-				Text emailsLabel = new Text(_iwrb.getLocalizedString("email", "Email: "));
-				emailsLabel.setStyle(_textLabelStyle);
+			if(this._showEmptyFields || (emails!=null)) {
+				Text emailsLabel = new Text(this._iwrb.getLocalizedString("email", "Email: "));
+				emailsLabel.setStyle(this._textLabelStyle);
 				table.add(emailsLabel, 2, row);
 				if(emails!=null) {
 					table.add(emails, 3, row++);
 				}
 			}
 		}
-		if(_showDescription) {
+		if(this._showDescription) {
 			String description = emptyIfNull(group.getDescription());
-			if(_showEmptyFields || (description!=null && description.length()>0)) {
-				String descriptionLabel = _iwrb.getLocalizedString("description", "Description: ");
+			if(this._showEmptyFields || (description!=null && description.length()>0)) {
+				String descriptionLabel = this._iwrb.getLocalizedString("description", "Description: ");
 				addTextToTable(table, row++, descriptionLabel, description);
 			}
 		}
-		if(_showExtraInfo) {
+		if(this._showExtraInfo) {
 			String extraInfo = emptyIfNull(group.getExtraInfo());
-			if(_showEmptyFields || (extraInfo!=null && extraInfo.length()>0)) {
-				String extraInfoLabel = _iwrb.getLocalizedString("extra_info", "Info: ");
+			if(this._showEmptyFields || (extraInfo!=null && extraInfo.length()>0)) {
+				String extraInfoLabel = this._iwrb.getLocalizedString("extra_info", "Info: ");
 				addTextToTable(table, row++, extraInfoLabel, extraInfo);
 			}
 		}
@@ -177,9 +177,9 @@ public class GroupInfo extends Block {
 	 */
 	private void addTextToTable(Table table, int row, String strLabel, String strText) {
 		Text text = new Text(strText);
-		text.setStyle(_textInfoStyle);
+		text.setStyle(this._textInfoStyle);
 		Text label = new Text(strLabel);
-		label.setStyle(_textLabelStyle);
+		label.setStyle(this._textLabelStyle);
 		table.add(label, 2, row);
 		table.add(text, 3, row);
 	}
@@ -193,7 +193,7 @@ public class GroupInfo extends Block {
 	 */
 	private void addPOToTable(Table table, int row, String strLabel, PresentationObject po) {
 		Text label = new Text(strLabel);
-		label.setStyle(_textLabelStyle);
+		label.setStyle(this._textLabelStyle);
 		table.add(label, 2, row);
 		table.add(po, 3, row);
 	}
@@ -244,50 +244,50 @@ public class GroupInfo extends Block {
 	}
 	
 	public void setShowName(boolean value) {
-		_showName = value;
+		this._showName = value;
 	}
 	
 	public void setShowHomePage(boolean value) {
-		_showHomePage = value;
+		this._showHomePage = value;
 	}
 	
 	public void setShowDescription(boolean value) {
-		_showDescription = value;
+		this._showDescription = value;
 	}
 	
 	public void setShowExtraInfo(boolean value) {
-		_showExtraInfo = value;
+		this._showExtraInfo = value;
 	}
 	
 	public void setShowShortName(boolean value) {
-		_showShortName = value;
+		this._showShortName = value;
 	}
 	
 	public void setShowPhone(boolean value) {
-		_showPhone = value;
+		this._showPhone = value;
 	}
 	
 	public void setShowFax(boolean value) {
-		_showFax = value;
+		this._showFax = value;
 	}
 	
 	public void setShowEmails(boolean value) {
-		_showEmails = value;
+		this._showEmails = value;
 	}
 	
 	public void setShowAddress(boolean value) {
-		_showAddress = value;
+		this._showAddress = value;
 	}
 	
 	public void setTextInfoStyle(String style) {
-		_textInfoStyle = style;
+		this._textInfoStyle = style;
 	}
 
 	public void setTextLabelStyle(String style) {
-		_textLabelStyle = style;
+		this._textLabelStyle = style;
 	}
 	
 	public void setShowEmptyFields(boolean value) {
-		_showEmptyFields = value;
+		this._showEmptyFields = value;
 	}
 }

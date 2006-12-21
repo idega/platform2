@@ -39,7 +39,7 @@ class PaymentInfo {
      * @return Returns the amount.
      */
     public int getAmount() {
-        return amount;
+        return this.amount;
     }
     /**
      * @param amount The amount to set.
@@ -51,7 +51,7 @@ class PaymentInfo {
      * @return Returns the club.
      */
     public Group getClub() {
-        return club;
+        return this.club;
     }
     /**
      * @param club The club to set.
@@ -63,7 +63,7 @@ class PaymentInfo {
      * @return Returns the division.
      */
     public Group getDivision() {
-        return division;
+        return this.division;
     }
     /**
      * @param division The division to set.
@@ -75,7 +75,7 @@ class PaymentInfo {
      * @return Returns the user.
      */
     public User getUser() {
-        return user;
+        return this.user;
     }
     /**
      * @param user The user to set.
@@ -87,7 +87,7 @@ class PaymentInfo {
      * @return Returns the group.
      */
     public Group getGroup() {
-        return group;
+        return this.group;
     }
     /**
      * @param group The group to set.
@@ -99,7 +99,7 @@ class PaymentInfo {
      * @return Returns the info.
      */
     public String getInfo() {
-        return info;
+        return this.info;
     }
     /**
      * @param info The info to set.

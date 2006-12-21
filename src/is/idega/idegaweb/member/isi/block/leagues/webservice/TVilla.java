@@ -28,7 +28,7 @@ public class TVilla  implements java.io.Serializable {
      * @return iVilla
      */
     public int getIVilla() {
-        return iVilla;
+        return this.iVilla;
     }
 
 
@@ -48,7 +48,7 @@ public class TVilla  implements java.io.Serializable {
      * @return sVilla_texti
      */
     public java.lang.String getSVilla_texti() {
-        return sVilla_texti;
+        return this.sVilla_texti;
     }
 
 
@@ -63,36 +63,42 @@ public class TVilla  implements java.io.Serializable {
 
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
-        if (!(obj instanceof TVilla)) return false;
+        if (!(obj instanceof TVilla)) {
+			return false;
+		}
         TVilla other = (TVilla) obj;
-        if (obj == null) return false;
-        if (this == obj) return true;
-        if (__equalsCalc != null) {
-            return (__equalsCalc == obj);
+        if (obj == null) {
+			return false;
+		}
+        if (this == obj) {
+			return true;
+		}
+        if (this.__equalsCalc != null) {
+            return (this.__equalsCalc == obj);
         }
-        __equalsCalc = obj;
+        this.__equalsCalc = obj;
         boolean _equals;
         _equals = true && 
             this.iVilla == other.getIVilla() &&
             ((this.sVilla_texti==null && other.getSVilla_texti()==null) || 
              (this.sVilla_texti!=null &&
               this.sVilla_texti.equals(other.getSVilla_texti())));
-        __equalsCalc = null;
+        this.__equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
     public synchronized int hashCode() {
-        if (__hashCodeCalc) {
+        if (this.__hashCodeCalc) {
             return 0;
         }
-        __hashCodeCalc = true;
+        this.__hashCodeCalc = true;
         int _hashCode = 1;
         _hashCode += getIVilla();
         if (getSVilla_texti() != null) {
             _hashCode += getSVilla_texti().hashCode();
         }
-        __hashCodeCalc = false;
+        this.__hashCodeCalc = false;
         return _hashCode;
     }
 

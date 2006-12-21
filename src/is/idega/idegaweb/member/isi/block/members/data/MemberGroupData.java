@@ -37,13 +37,13 @@ public class MemberGroupData {
 	 * @param iwrb
 	 */
 	public MemberGroupData(User user, IWResourceBundle iwrb, IWResourceBundle comUserBundle) {
-		_comUserBundle = comUserBundle;
-		_iwrb = iwrb;
-		_user = user;
+		this._comUserBundle = comUserBundle;
+		this._iwrb = iwrb;
+		this._user = user;
 		int userId = user.getID();
 		Collection history = Collections.EMPTY_LIST;
 		try {
-			history = (Collection) ((GroupRelationHome) com.idega.data.IDOLookup.getHome(GroupRelation.class)).findAllGroupsRelationshipsByRelatedGroupOrderedByInitiationDate(userId,"GROUP_PARENT");
+			history = ((GroupRelationHome) com.idega.data.IDOLookup.getHome(GroupRelation.class)).findAllGroupsRelationshipsByRelatedGroupOrderedByInitiationDate(userId,"GROUP_PARENT");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -71,9 +71,9 @@ public class MemberGroupData {
 			System.out.println("Name for group type not defined, skipping group (key=\"" + LOCALIZE_KEY_PREFIX_GROUP_CATEGORY + group.getGroupType() + "\")");
 			return;
 		}
-		_buf.setLength(0);
-		processGroup(group, _buf, true, isActive);
-		if(_buf.length()>0) {
+		this._buf.setLength(0);
+		processGroup(group, this._buf, true, isActive);
+		if(this._buf.length()>0) {
 			IWTimestamp begin = new IWTimestamp(groupRel.getInitiationDate());
 			IWTimestamp end = groupRel.getTerminationDate()==null?null:(new IWTimestamp(groupRel.getTerminationDate()));
 			List userStatuses = null;
@@ -88,7 +88,7 @@ public class MemberGroupData {
 				String statusKey = userStatus.getStatus().getStatusKey();
 				statusName = getStatusLocalizedName(statusKey);
 			}
-			addGroupInfo(_buf.toString(), groupTypeName, statusName, begin, end);
+			addGroupInfo(this._buf.toString(), groupTypeName, statusName, begin, end);
 		}
 	}
 	
@@ -106,8 +106,8 @@ public class MemberGroupData {
 		
 		boolean isFlock = IWMemberConstants.GROUP_TYPE_CLUB_PLAYER.equals(type);
 		boolean isClub = IWMemberConstants.GROUP_TYPE_CLUB.equals(type);
-		if(isClub && !_clubList.contains(group) && isActive) {
-			_clubList.add(group);
+		if(isClub && !this._clubList.contains(group) && isActive) {
+			this._clubList.add(group);
 		}
 		boolean isFinalGroup = IWMemberConstants.GROUP_TYPE_CLUB.equals(type) ||
 		                       IWMemberConstants.GROUP_TYPE_LEAGUE.equals(type) ||
@@ -144,7 +144,7 @@ public class MemberGroupData {
 	 * @return the user
 	 */
 	public User getUser() {
-		return _user;
+		return this._user;
 	}
 	
 	/**
@@ -159,7 +159,7 @@ public class MemberGroupData {
 	 * @return list of membeship info entries
 	 */
 	public List getGroupInfoList() {
-		return _groupInfoList;
+		return this._groupInfoList;
 	}
 	
 	/**
@@ -167,7 +167,7 @@ public class MemberGroupData {
 	 * @return list of the clubs the user is inb
 	 */
 	public List getClubList() {
-		return _clubList;
+		return this._clubList;
 	}
 	
 	/**
@@ -180,7 +180,7 @@ public class MemberGroupData {
 	 */
 	private void addGroupInfo(String name, String type, String status, IWTimestamp begin, IWTimestamp end) {
 		String[] result = new String[5];
-		result[0] = _buf.toString();
+		result[0] = this._buf.toString();
 		result[1] = type;
 		result[2] = status;
 		result[3] = begin.getDateString("dd.MM.yyyy");
@@ -189,16 +189,16 @@ public class MemberGroupData {
 		} else {
 			result[4] = "";
 		}
-		_groupInfoList.add(result);
+		this._groupInfoList.add(result);
 	}
 	
 	private String getStatusLocalizedName(String statusKey) {
-		String value = _comUserBundle.getLocalizedString(statusKey, statusKey);
+		String value = this._comUserBundle.getLocalizedString(statusKey, statusKey);
 		return value;
 	}
 	
 	private String getGroupTypeLocalizedName(String groupTypeKey) {
-		String value = _iwrb.getLocalizedString(LOCALIZE_KEY_PREFIX_GROUP_CATEGORY + groupTypeKey, LOCALIZE_KEY_PREFIX_GROUP_CATEGORY + groupTypeKey);
+		String value = this._iwrb.getLocalizedString(LOCALIZE_KEY_PREFIX_GROUP_CATEGORY + groupTypeKey, LOCALIZE_KEY_PREFIX_GROUP_CATEGORY + groupTypeKey);
 		return value;
 	}
 	

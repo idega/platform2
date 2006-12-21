@@ -19,7 +19,7 @@ public class WorkReportOverView extends Block {
 	int year = -1;
 
 	public String getBundleIdentifier(){
-		return this.IW_BUNDLE_IDENTIFIER;
+		return WorkReportOverView.IW_BUNDLE_IDENTIFIER;
 	}
 	
 	public WorkReportOverView() {
@@ -28,11 +28,11 @@ public class WorkReportOverView extends Block {
 
 	public void main(IWContext iwc) throws Exception {
 		Table table = new Table(2, 1);
-		if(year==-1) {
-			year = (new IWTimestamp(IWTimestamp.getTimestampRightNow()).getYear());
+		if(this.year==-1) {
+			this.year = (new IWTimestamp(IWTimestamp.getTimestampRightNow()).getYear());
 		}
 		WorkReportMultiEditor editor = new WorkReportMultiEditor();
-		editor.setYear(year);
+		editor.setYear(this.year);
 		
 		table.add(editor, 1, 1);//this order so multieditor logic is done before the overview
 	//	table.add(new WorkReportOverViewStats(),2,1);
@@ -47,20 +47,20 @@ public class WorkReportOverView extends Block {
 	}
 
 	protected WorkReportBusiness getWorkReportBusiness(IWApplicationContext iwc) {
-		if (reportBiz == null) {
+		if (this.reportBiz == null) {
 			try {
-				reportBiz = (WorkReportBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, WorkReportBusiness.class);
+				this.reportBiz = (WorkReportBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, WorkReportBusiness.class);
 			}
 			catch (java.rmi.RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());
 			}
 		}
-		return reportBiz;
+		return this.reportBiz;
 	}
 
 	//TODO Make the year choosable
 	public int getYear() {
-		return year;
+		return this.year;
 	}
 	
 	public void setYear(int year) {

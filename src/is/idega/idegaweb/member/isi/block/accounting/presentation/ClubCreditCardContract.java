@@ -73,7 +73,7 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 	}
 
 	private boolean saveContract(IWContext iwc) {
-		errorList = new ArrayList();
+		this.errorList = new ArrayList();
 
 		String div = iwc.getParameter(LABEL_DIVISION);
 		String grp = iwc.getParameter(LABEL_GROUP);
@@ -85,22 +85,22 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 		String company = iwc.getParameter(LABEL_COMPANY_NUMBER);
 
 		if (div == null || "".equals(div)) {
-			errorList.add(ERROR_NO_DIVISION_SELECTED);
+			this.errorList.add(ERROR_NO_DIVISION_SELECTED);
 		}
 
 		if (grp == null || "".equals(grp)) {
-			errorList.add(ERROR_NO_GROUP_SELECTED);
+			this.errorList.add(ERROR_NO_GROUP_SELECTED);
 		}
 
 		if (number == null || "".equals(number)) {
-			errorList.add(ERROR_NO_NUMBER_ENTERED);
+			this.errorList.add(ERROR_NO_NUMBER_ENTERED);
 		}
 
 		if (type == null || "".equals(type)) {
-			errorList.add(ERROR_NO_TYPE_SELECTED);
+			this.errorList.add(ERROR_NO_TYPE_SELECTED);
 		}
 
-		if (!errorList.isEmpty()) {
+		if (!this.errorList.isEmpty()) {
 			return false;
 		}
 
@@ -142,8 +142,8 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 
 				int r = 1;
 				error.add(labelError, 1, r++);
-				if (errorList != null && !errorList.isEmpty()) {
-					Iterator it = errorList.iterator();
+				if (this.errorList != null && !this.errorList.isEmpty()) {
+					Iterator it = this.errorList.iterator();
 					while (it.hasNext()) {
 						String loc = (String) it.next();
 						Text errorText = new Text(iwrb.getLocalizedString(loc,

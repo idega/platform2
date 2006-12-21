@@ -109,46 +109,47 @@ private static final String MAIN_CLUB_TYPE = "main";
 	}
 
 	public boolean handleRecords() throws RemoteException {
-		transaction = this.getSessionContext().getUserTransaction();
+		this.transaction = this.getSessionContext().getUserTransaction();
 		Timer clock = new Timer();
 		clock.start();
 		try {
 			//initialize business beans and data homes
-			userBiz = (UserBusiness) this.getServiceInstance(UserBusiness.class);
-			groupBiz = (GroupBusiness) this.getServiceInstance(GroupBusiness.class);
-			clubsMap = new HashMap();
-			clubsTempGroupMap = new HashMap();
-			currentUser = getUserContext().getCurrentUser();
+			this.userBiz = (UserBusiness) this.getServiceInstance(UserBusiness.class);
+			this.groupBiz = (GroupBusiness) this.getServiceInstance(GroupBusiness.class);
+			this.clubsMap = new HashMap();
+			this.clubsTempGroupMap = new HashMap();
+			this.currentUser = getUserContext().getCurrentUser();
 			//addressBiz = (AddressBusiness)
 			// this.getServiceInstance(AddressBusiness.class);
-			failedRecords = new ArrayList();
+			this.failedRecords = new ArrayList();
 			//if the transaction failes all the users and their relations are
 			// removed
-			transaction.begin();
+			this.transaction.begin();
 			//iterate through the records and process them
 			String item;
 			int count = 0;
-			while ( (item = (String) file.getNextRecord())!=null && !"".equals(item)) {
+			while ( (item = (String) this.file.getNextRecord())!=null && !"".equals(item)) {
 				count++;
-				if (!processRecord(item))
-					failedRecords.add(item);
+				if (!processRecord(item)) {
+					this.failedRecords.add(item);
+				}
 				
 				if(count%100 == 0){
-					System.out.println("GolfImporter: "+count+" records done in : " + clock.getTime() + " ms  OR "+ ((int) (clock.getTime() / 1000)) + " s, "+failedRecords.size()+" failed records.");
+					System.out.println("GolfImporter: "+count+" records done in : " + clock.getTime() + " ms  OR "+ ((int) (clock.getTime() / 1000)) + " s, "+this.failedRecords.size()+" failed records.");
 				}
 			}
 			clock.stop();
 			System.out.println("Time to handleRecords: " + clock.getTime() + " ms  OR "
-					+ ((int) (clock.getTime() / 1000)) + " s, "+failedRecords.size()+" failed records.");
+					+ ((int) (clock.getTime() / 1000)) + " s, "+this.failedRecords.size()+" failed records.");
 			// System.gc();
 			//success commit changes
-			transaction.commit();
+			this.transaction.commit();
 			return true;
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
 			try {
-				transaction.rollback();
+				this.transaction.rollback();
 			}
 			catch (SystemException e) {
 				e.printStackTrace();
@@ -168,21 +169,21 @@ private static final String MAIN_CLUB_TYPE = "main";
 		//6.add the golf info as metadata
 		record = TextSoap.findAndCut(record, "\"");
 		
-		userProperties = file.getValuesFromRecordString(record);
+		this.userProperties = this.file.getValuesFromRecordString(record);
 		User user = null;
 		//variables
 		try {
-			String PIN = (String) userProperties.get(PIN_COLUMN);
+			String PIN = (String) this.userProperties.get(PIN_COLUMN);
 			if(PIN.length()==9){
 				PIN = "0"+PIN;
 			}
-			String name = ((String) userProperties.get(NAME_COLUMN)).trim();
+			String name = ((String) this.userProperties.get(NAME_COLUMN)).trim();
 			//String handicap = ((String) userProperties.get(HANDICAP_COLUMN)).trim();
-			String clubAbbr = ((String) userProperties.get(CLUB_ABBR_COLUMN)).trim();
-			String status = ((String) userProperties.get(STATUS_COLUMN)).trim();
-			String membershipStatus = ((String) userProperties.get(MEMBERSHIP_STATUS_COLUMN)).trim();
-			String email = ((String) userProperties.get(EMAIL_COLUMN)).trim();
-			String phone = ((String) userProperties.get(PHONE_COLUMN)).trim();
+			String clubAbbr = ((String) this.userProperties.get(CLUB_ABBR_COLUMN)).trim();
+			String status = ((String) this.userProperties.get(STATUS_COLUMN)).trim();
+			String membershipStatus = ((String) this.userProperties.get(MEMBERSHIP_STATUS_COLUMN)).trim();
+			String email = ((String) this.userProperties.get(EMAIL_COLUMN)).trim();
+			String phone = ((String) this.userProperties.get(PHONE_COLUMN)).trim();
 			
 			//only import active members
 			if (NO_CLUB.equals(clubAbbr) || "I".equals(status)) {
@@ -194,14 +195,14 @@ private static final String MAIN_CLUB_TYPE = "main";
 				Group club = getClubGroup(clubAbbr);
 				//continue and get the temporary group or create it
 				if (club != null) {
-					Group importGroup = (Group) clubsTempGroupMap.get(clubAbbr);
+					Group importGroup = (Group) this.clubsTempGroupMap.get(clubAbbr);
 					if (importGroup == null) {
 						importGroup = getOrCreateImportGroup(clubAbbr, club);
 					}
 					
 					if (importGroup != null) {
 						
-						user = userBiz.getUser(PIN);
+						user = this.userBiz.getUser(PIN);
 						
 						//ONLY TEMP SHOULD NOT CREATE!
 						//user = userBiz.createUserByPersonalIDIfDoesNotExist(name, PIN, null, null);
@@ -217,15 +218,15 @@ private static final String MAIN_CLUB_TYPE = "main";
 						user.store();
 
 						if(!NO_VALUE.equals(email)){
-							userBiz.updateUserMail(user, email);
+							this.userBiz.updateUserMail(user, email);
 						}
 							
 						if(!NO_VALUE.equals(phone)){
 							if(phone.startsWith("6") || phone.startsWith("8")){
-								userBiz.updateUserMobilePhone(user, phone);
+								this.userBiz.updateUserMobilePhone(user, phone);
 							}
 							else{
-								userBiz.updateUserHomePhone(user, phone);
+								this.userBiz.updateUserHomePhone(user, phone);
 							}
 						}
 						
@@ -299,7 +300,7 @@ private static final String MAIN_CLUB_TYPE = "main";
 			}
 		}
 		if (importGroup != null) {
-			clubsTempGroupMap.put(clubAbbr, importGroup);
+			this.clubsTempGroupMap.put(clubAbbr, importGroup);
 		}
 		return importGroup;
 	}
@@ -311,19 +312,19 @@ private static final String MAIN_CLUB_TYPE = "main";
 	 * @throws RemoteException
 	 */
 	private Group createImportGroup(Group tSuper) throws RemoteException, CreateException {
-		Collection owners = groupBiz.getOwnerUsersForGroup(tSuper);
+		Collection owners = this.groupBiz.getOwnerUsersForGroup(tSuper);
 		
-		Group importGroup = groupBiz.createGroupUnder(TEMPORARY_GROUP_NAME, "import from golf.is",IWMemberConstants.GROUP_TYPE_TEMPORARY, tSuper);
+		Group importGroup = this.groupBiz.createGroupUnder(TEMPORARY_GROUP_NAME, "import from golf.is",IWMemberConstants.GROUP_TYPE_TEMPORARY, tSuper);
 		if (owners != null && !owners.isEmpty()) {
 			Iterator ownerIter = owners.iterator();
 			while (ownerIter.hasNext()) {
 				User owner = (User) ownerIter.next();
-				groupBiz.applyOwnerAndAllGroupPermissionsToNewlyCreatedGroupForUserAndHisPrimaryGroup(importGroup, owner);
+				this.groupBiz.applyOwnerAndAllGroupPermissionsToNewlyCreatedGroupForUserAndHisPrimaryGroup(importGroup, owner);
 			}
 		}
 			
 	      //set current user as owner of group
-	      groupBiz.applyUserAsGroupsOwner(importGroup, currentUser);
+	      this.groupBiz.applyUserAsGroupsOwner(importGroup, this.currentUser);
 		
       return importGroup;
 		
@@ -345,12 +346,12 @@ private static final String MAIN_CLUB_TYPE = "main";
 	}
 
 	private Group getClubGroup(String clubAbbr) throws RemoteException {
-		Group club = (Group) clubsMap.get(clubAbbr);
+		Group club = (Group) this.clubsMap.get(clubAbbr);
 		if (club == null) {
-			Collection clubs = groupBiz.getGroupsByAbbreviation(clubAbbr);
+			Collection clubs = this.groupBiz.getGroupsByAbbreviation(clubAbbr);
 			if (!clubs.isEmpty() && clubs.size() == 1) {
 				club = (Group) clubs.iterator().next();
-				clubsMap.put(clubAbbr, club);
+				this.clubsMap.put(clubAbbr, club);
 			}
 		}
 		return club;
@@ -364,14 +365,14 @@ private static final String MAIN_CLUB_TYPE = "main";
 	 * @see com.idega.block.importer.business.ImportFileHandler#setRootGroup(Group)
 	 */
 	public void setRootGroup(Group group) {
-		rootGroup = group;
+		this.rootGroup = group;
 	}
 
 	/**
 	 * @see com.idega.block.importer.business.ImportFileHandler#getFailedRecords()
 	 */
 	public List getFailedRecords() {
-		return failedRecords;
+		return this.failedRecords;
 	}
 
 	/*

@@ -20,10 +20,10 @@ public class UserStatsWindow extends GenericStatsWindow {
     }
 
     public void main(IWContext iwc) throws Exception {
-    	iwrb = getResourceBundle(iwc);
-    	windowTitle = iwrb.getLocalizedString("userstatswindow.userstats", "User Report");
-		invocationFileName = "Invocation-UserStats.xml";
-		layoutFileName = "Layout-UserStats.xml";
+    	this.iwrb = getResourceBundle(iwc);
+    	this.windowTitle = this.iwrb.getLocalizedString("userstatswindow.userstats", "User Report");
+		this.invocationFileName = "Invocation-UserStats.xml";
+		this.layoutFileName = "Layout-UserStats.xml";
     	super.main(iwc);		
     }
 }

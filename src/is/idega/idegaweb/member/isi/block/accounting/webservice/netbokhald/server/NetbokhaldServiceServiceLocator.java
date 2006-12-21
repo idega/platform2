@@ -25,24 +25,24 @@ public class NetbokhaldServiceServiceLocator extends org.apache.axis.client.Serv
     private java.lang.String NetbokhaldService_address = "http://www.felix.is/services/NetbokhaldService";
 
     public java.lang.String getNetbokhaldServiceAddress() {
-        return NetbokhaldService_address;
+        return this.NetbokhaldService_address;
     }
 
     // The WSDD service name defaults to the port name.
     private java.lang.String NetbokhaldServiceWSDDServiceName = "NetbokhaldService";
 
     public java.lang.String getNetbokhaldServiceWSDDServiceName() {
-        return NetbokhaldServiceWSDDServiceName;
+        return this.NetbokhaldServiceWSDDServiceName;
     }
 
     public void setNetbokhaldServiceWSDDServiceName(java.lang.String name) {
-        NetbokhaldServiceWSDDServiceName = name;
+        this.NetbokhaldServiceWSDDServiceName = name;
     }
 
     public is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.server.NetbokhaldService getNetbokhaldService() throws javax.xml.rpc.ServiceException {
        java.net.URL endpoint;
         try {
-            endpoint = new java.net.URL(NetbokhaldService_address);
+            endpoint = new java.net.URL(this.NetbokhaldService_address);
         }
         catch (java.net.MalformedURLException e) {
             throw new javax.xml.rpc.ServiceException(e);
@@ -62,7 +62,7 @@ public class NetbokhaldServiceServiceLocator extends org.apache.axis.client.Serv
     }
 
     public void setNetbokhaldServiceEndpointAddress(java.lang.String address) {
-        NetbokhaldService_address = address;
+        this.NetbokhaldService_address = address;
     }
 
     /**
@@ -73,7 +73,7 @@ public class NetbokhaldServiceServiceLocator extends org.apache.axis.client.Serv
     public java.rmi.Remote getPort(Class serviceEndpointInterface) throws javax.xml.rpc.ServiceException {
         try {
             if (is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.server.NetbokhaldService.class.isAssignableFrom(serviceEndpointInterface)) {
-                is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.server.NetbokhaldServiceSoapBindingStub _stub = new is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.server.NetbokhaldServiceSoapBindingStub(new java.net.URL(NetbokhaldService_address), this);
+                is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.server.NetbokhaldServiceSoapBindingStub _stub = new is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.server.NetbokhaldServiceSoapBindingStub(new java.net.URL(this.NetbokhaldService_address), this);
                 _stub.setPortName(getNetbokhaldServiceWSDDServiceName());
                 return _stub;
             }
@@ -111,11 +111,11 @@ public class NetbokhaldServiceServiceLocator extends org.apache.axis.client.Serv
     private java.util.HashSet ports = null;
 
     public java.util.Iterator getPorts() {
-        if (ports == null) {
-            ports = new java.util.HashSet();
-            ports.add(new javax.xml.namespace.QName("urn:netbokhald", "NetbokhaldService"));
+        if (this.ports == null) {
+            this.ports = new java.util.HashSet();
+            this.ports.add(new javax.xml.namespace.QName("urn:netbokhald", "NetbokhaldService"));
         }
-        return ports.iterator();
+        return this.ports.iterator();
     }
 
     /**

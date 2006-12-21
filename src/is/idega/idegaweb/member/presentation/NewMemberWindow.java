@@ -80,16 +80,16 @@ public class NewMemberWindow extends IWAdminWindow {
 
 		int row = 1;
 		if (verifyForm) {
-			table.add(formatText(iwrb.getLocalizedString("save", "Save")), 1, row);
-			table.add(formatText(iwrb.getLocalizedString("user.user_name", "User name")), 3, row);
+			table.add(formatText(this.iwrb.getLocalizedString("save", "Save")), 1, row);
+			table.add(formatText(this.iwrb.getLocalizedString("user.user_name", "User name")), 3, row);
 		}
 		else {
-			table.add(formatText(iwrb.getLocalizedString("personal.id.number", "Personal ID number")), 1, row);
-			table.add(formatText(iwrb.getLocalizedString("user.user_name", "User name")), 3, row);
+			table.add(formatText(this.iwrb.getLocalizedString("personal.id.number", "Personal ID number")), 1, row);
+			table.add(formatText(this.iwrb.getLocalizedString("user.user_name", "User name")), 3, row);
 		}
 		table.setWidth(2, "10");
 		table.setWidth(4, "10");
-		table.add(formatText(iwrb.getLocalizedString("user.status", "Status")), 5, row);
+		table.add(formatText(this.iwrb.getLocalizedString("user.status", "Status")), 5, row);
 
 		TextInput pid = new TextInput();
 		TextInput name = new TextInput();
@@ -99,50 +99,50 @@ public class NewMemberWindow extends IWAdminWindow {
 		String sStat;
 		User user;
 		Status stat;
-		for (int i = 1; i <= numberOfRows; i++) {
+		for (int i = 1; i <= this.numberOfRows; i++) {
 			/** Listing valid PersonalIDs */
 			if (verifyForm) {
-				sPid = iwc.getParameter(PARAMETER_PID + "_" + i);
-				sStat = iwc.getParameter(PARAMETER_STATUS + "_" + i);
+				sPid = iwc.getParameter(this.PARAMETER_PID + "_" + i);
+				sStat = iwc.getParameter(this.PARAMETER_STATUS + "_" + i);
 				if (sPid != null && !sPid.equals("")) {
 					try {
 						++row;
-						user = uHome.findByPersonalID(sPid);
+						user = this.uHome.findByPersonalID(sPid);
 						if (UserStatusDropdown.NO_STATUS_KEY.equals(sStat)) {
 							stat = null;
 						}
 						else {
-							stat = sHome.findByPrimaryKey(new Integer(sStat));
+							stat = this.sHome.findByPrimaryKey(new Integer(sStat));
 						}
-						check = new CheckBox(PARAMETER_SAVE + "_" + i);
+						check = new CheckBox(this.PARAMETER_SAVE + "_" + i);
 						check.setStyleAttribute(STYLE_2);
 						check.setChecked(true);
 
 						table.add(check, 1, row);
 						table.add(formatText(user.getName()), 3, row);
 						if (stat != null) {
-							table.add(formatText(iwrb.getLocalizedString(stat.getStatusKey(), stat.getStatusKey())), 5, row);
+							table.add(formatText(this.iwrb.getLocalizedString(stat.getStatusKey(), stat.getStatusKey())), 5, row);
 						}
-						form.maintainParameter(PARAMETER_PID + "_" + i);
-						form.maintainParameter(PARAMETER_STATUS + "_" + i);
+						form.maintainParameter(this.PARAMETER_PID + "_" + i);
+						form.maintainParameter(this.PARAMETER_STATUS + "_" + i);
 						foundUser = true;
 					}
 					catch (FinderException e) {
 						//e.printStackTrace(System.err);
-						table.add(formatText(iwrb.getLocalizedString("user.user_not_found", "User not found") + " (" + sPid + ")"), 3, row);
+						table.add(formatText(this.iwrb.getLocalizedString("user.user_not_found", "User not found") + " (" + sPid + ")"), 3, row);
 					}
 				}
 			}
 			/** Creating and adding inputs to form */
 			else {
 				++row;
-				status = new UserStatusDropdown(PARAMETER_STATUS + "_" + i);
+				status = new UserStatusDropdown(this.PARAMETER_STATUS + "_" + i);
 				status.setStyleAttribute(STYLE_2);
-				pid = new TextInput(PARAMETER_PID + "_" + i);
-				pid.setAsIcelandicSSNumber(iwrb.getLocalizedString("user.pid_incorrect_in_row", "Personal ID not correct for user in row") + " " + i);
+				pid = new TextInput(this.PARAMETER_PID + "_" + i);
+				pid.setAsIcelandicSSNumber(this.iwrb.getLocalizedString("user.pid_incorrect_in_row", "Personal ID not correct for user in row") + " " + i);
 				pid.setStyleAttribute(STYLE_2);
 				pid.setMaxlength(10);
-				name = new TextInput(PARAMETER_NAME + "_" + i);
+				name = new TextInput(this.PARAMETER_NAME + "_" + i);
 //				table.add(formatText(Integer.toString(i)), 1, row);
 				table.add(pid, 1, row);
 				table.add(name, 3, row);
@@ -155,16 +155,16 @@ public class NewMemberWindow extends IWAdminWindow {
 		table.setAlignment(5, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		if (verifyForm) {
 			table.mergeCells(1, row, 2, row);
-			table.add(new BackButton(iwrb.getLocalizedImageButton("back", "Back")), 1, row);
+			table.add(new BackButton(this.iwrb.getLocalizedImageButton("back", "Back")), 1, row);
 			if (foundUser) {
-				table.add(new SubmitButton(iwrb.getLocalizedImageButton("save", "Save"), ACTION, ACTION_SAVE), 5, row);
+				table.add(new SubmitButton(this.iwrb.getLocalizedImageButton("save", "Save"), this.ACTION, this.ACTION_SAVE), 5, row);
 			}
 		}
 		else {
-			table.add(new SubmitButton(iwrb.getLocalizedImageButton("next", "Next"), ACTION, ACTION_NEXT), 5, row);
+			table.add(new SubmitButton(this.iwrb.getLocalizedImageButton("next", "Next"), this.ACTION, this.ACTION_NEXT), 5, row);
 		}
 		// add close button
-		table.add(new SubmitButton(iwrb.getLocalizedImageButton("cancel", "Cancel"), ACTION, ACTION_CANCEL), 4, row);
+		table.add(new SubmitButton(this.iwrb.getLocalizedImageButton("cancel", "Cancel"), this.ACTION, this.ACTION_CANCEL), 4, row);
 		form.add(table);
 		add(form);
 	}
@@ -179,8 +179,8 @@ public class NewMemberWindow extends IWAdminWindow {
 
 		int row = 1;
 
-		table.add(formatText(iwrb.getLocalizedString("save_failed_for_users", "Save failed for the following user/s:")), 1, row);
-		Iterator iter = failedInserts.iterator();
+		table.add(formatText(this.iwrb.getLocalizedString("save_failed_for_users", "Save failed for the following user/s:")), 1, row);
+		Iterator iter = this.failedInserts.iterator();
 		User user;
 		while (iter.hasNext()) {
 			++row;
@@ -190,7 +190,7 @@ public class NewMemberWindow extends IWAdminWindow {
 
 		++row;
 		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
-		table.add(new SubmitButton(iwrb.getLocalizedImageButton("back", "Back")), 1, row);
+		table.add(new SubmitButton(this.iwrb.getLocalizedImageButton("back", "Back")), 1, row);
 
 		form.add(table);
 		add(form);
@@ -202,29 +202,29 @@ public class NewMemberWindow extends IWAdminWindow {
 		User user;
 		Status stat;
 		UserStatusBusiness usb = (UserStatusBusiness) IBOLookup.getServiceInstance(iwc, UserStatusBusiness.class);
-		failedInserts = new Vector();
+		this.failedInserts = new Vector();
 		boolean errorFree = true;
 
-		for (int i = 1; i <= numberOfRows; i++) {
-			if (iwc.isParameterSet(PARAMETER_SAVE + "_" + i)) {
+		for (int i = 1; i <= this.numberOfRows; i++) {
+			if (iwc.isParameterSet(this.PARAMETER_SAVE + "_" + i)) {
 				try {
-					sPid = iwc.getParameter(PARAMETER_PID + "_" + i);
-					sStat = iwc.getParameter(PARAMETER_STATUS + "_" + i);
-					user = uHome.findByPersonalID(sPid);
+					sPid = iwc.getParameter(this.PARAMETER_PID + "_" + i);
+					sStat = iwc.getParameter(this.PARAMETER_STATUS + "_" + i);
+					user = this.uHome.findByPersonalID(sPid);
 					if (UserStatusDropdown.NO_STATUS_KEY.equals(sStat)) {
 						stat = null;
 					}
 					else {
-						stat = sHome.findByPrimaryKey(new Integer(sStat));
+						stat = this.sHome.findByPrimaryKey(new Integer(sStat));
 					}
-					group.addGroup(user);
-					if (stat != null && (!usb.setUserGroupStatus(((Integer)user.getPrimaryKey()).intValue(), ((Integer) group.getPrimaryKey()).intValue(), ((Integer) stat.getPrimaryKey()).intValue(),iwc.getCurrentUserId()))) {
-						failedInserts.add(user);
+					this.group.addGroup(user);
+					if (stat != null && (!usb.setUserGroupStatus(((Integer)user.getPrimaryKey()).intValue(), ((Integer) this.group.getPrimaryKey()).intValue(), ((Integer) stat.getPrimaryKey()).intValue(),iwc.getCurrentUserId()))) {
+						this.failedInserts.add(user);
 						errorFree = false;
 					}
 					// Added this.... Is this OK?
 					if (user.getPrimaryGroup() == null) {
-						user.setPrimaryGroup(group);
+						user.setPrimaryGroup(this.group);
 						user.store();
 					}
 				}
@@ -241,10 +241,10 @@ public class NewMemberWindow extends IWAdminWindow {
 		String sGroupId = iwc.getParameter(PARAMETER_GROUP_ID);
 		if (sGroupId != null) {
 			try {
-				uHome = (UserHome) IDOLookup.getHome(User.class);
-				sHome = (StatusHome) IDOLookup.getHome(Status.class);
+				this.uHome = (UserHome) IDOLookup.getHome(User.class);
+				this.sHome = (StatusHome) IDOLookup.getHome(Status.class);
 				GroupHome gHome = (GroupHome) IDOLookup.getHome(Group.class);
-				group = gHome.findByPrimaryKey(new Integer(sGroupId));
+				this.group = gHome.findByPrimaryKey(new Integer(sGroupId));
 			}
 			catch (IDOLookupException e) {
 				e.printStackTrace(System.err);
@@ -256,7 +256,7 @@ public class NewMemberWindow extends IWAdminWindow {
 				e.printStackTrace(System.err);
 			}
 		}
-		iwrb = getResourceBundle(iwc);
+		this.iwrb = getResourceBundle(iwc);
 	}
 
 	public void main(IWContext iwc) throws Exception {
@@ -264,20 +264,20 @@ public class NewMemberWindow extends IWAdminWindow {
 		setTitle("New Member Window");
 
 		init(iwc);
-		if (group != null) {
+		if (this.group != null) {
 
-			String action = iwc.getParameter(ACTION);
+			String action = iwc.getParameter(this.ACTION);
 
 			if (action == null) {
 				addForm(iwc, false);
 			}
-			else if (action.equals(ACTION_CANCEL)) {
+			else if (action.equals(this.ACTION_CANCEL)) {
 				close();
 			}
-			else if (action.equals(ACTION_NEXT)) {
+			else if (action.equals(this.ACTION_NEXT)) {
 				addForm(iwc, true);
 			}
-			else if (action.equals(ACTION_SAVE)) {
+			else if (action.equals(this.ACTION_SAVE)) {
 				if (handleInsert(iwc)) {
 					addForm(iwc, false);
 				}

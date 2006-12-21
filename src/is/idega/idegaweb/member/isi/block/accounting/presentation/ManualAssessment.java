@@ -74,7 +74,7 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 	}
 
 	private boolean saveAssessment(IWContext iwc) {
-		errorList = new ArrayList();
+		this.errorList = new ArrayList();
 		String group = iwc.getParameter(LABEL_USERS_GROUPS);
 		String tariff = iwc.getParameter(LABEL_TARIFF);
 		String amount = iwc.getParameter(LABEL_AMOUNT);
@@ -82,18 +82,18 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 		String paymentDate = iwc.getParameter(LABEL_PAYMENT_DATE);
 
 		if (group == null || "".equals(group)) {
-			errorList.add(ERROR_NO_GROUP_SELECTED);
+			this.errorList.add(ERROR_NO_GROUP_SELECTED);
 		}
 		
 		if (tariff == null || "".equals(tariff)) {
-			errorList.add(ERROR_NO_TARIFF_SELECTED);
+			this.errorList.add(ERROR_NO_TARIFF_SELECTED);
 		}
 		
 		if (amount == null || "".equals(amount)) {
-			errorList.add(ERROR_NO_AMOUNT_ENTERED);
+			this.errorList.add(ERROR_NO_AMOUNT_ENTERED);
 		}
 		
-		if (!errorList.isEmpty()) {
+		if (!this.errorList.isEmpty()) {
 			return false;
 		}
 		
@@ -142,8 +142,8 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 				
 				int r = 1;
 				error.add(labelError, 1, r++);
-				if (errorList != null && !errorList.isEmpty()) {
-					Iterator it = errorList.iterator();
+				if (this.errorList != null && !this.errorList.isEmpty()) {
+					Iterator it = this.errorList.iterator();
 					while (it.hasNext()) {
 						String loc = (String) it.next();
 						Text errorText = new Text(iwrb.getLocalizedString(loc, ""));
@@ -396,11 +396,13 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 	}
 	
 	private boolean isGroupInClubAndDivision(Group group, Group parent) {
-		if (group == null)
+		if (group == null) {
 			return false;
+		}
 		
-		if (group.equals(parent))
+		if (group.equals(parent)) {
 			return true;
+		}
 		
 		List parentGroups = group.getParentGroups();
 		Iterator it = parentGroups.iterator();

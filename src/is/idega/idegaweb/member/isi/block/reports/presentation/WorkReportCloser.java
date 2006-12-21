@@ -40,7 +40,7 @@ public class WorkReportCloser extends Block {
 	
 
 	public String getBundleIdentifier(){
-		return this.IW_BUNDLE_IDENTIFIER;
+		return WorkReportCloser.IW_BUNDLE_IDENTIFIER;
 	}
 	
 
@@ -60,7 +60,7 @@ public class WorkReportCloser extends Block {
 	public void main(IWContext iwc) throws Exception {
 		super.main(iwc);
 		
-		iwrb = this.getResourceBundle(iwc);
+		this.iwrb = this.getResourceBundle(iwc);
 	
 			//reopen
 			if(iwc.isParameterSet(PARAM_TEMP_CLOSE)){
@@ -120,16 +120,16 @@ public class WorkReportCloser extends Block {
 			toDate.setDate(tDate);
 		}		
 		
-		SubmitButton save = new SubmitButton(PARAM_SAVE,iwrb.getLocalizedString("workreportscloser.save_button","save"));
+		SubmitButton save = new SubmitButton(PARAM_SAVE,this.iwrb.getLocalizedString("workreportscloser.save_button","save"));
 		StyledButton styledSave = new StyledButton(save);
 		
 
 
 	
 		
-		table.add(iwrb.getLocalizedString("workreportscloser.close_report_text","Here you set or change the timespan of the current work reports availability or temporarely make all reports read only for editing."),1,1);
-		table.add(new Text(iwrb.getLocalizedString("workreportscloser.from_date","Start"),true,false,false) ,1,2);
-		table.add(new Text(iwrb.getLocalizedString("workreportscloser.to_date","End"),true,false,false),2,2);
+		table.add(this.iwrb.getLocalizedString("workreportscloser.close_report_text","Here you set or change the timespan of the current work reports availability or temporarely make all reports read only for editing."),1,1);
+		table.add(new Text(this.iwrb.getLocalizedString("workreportscloser.from_date","Start"),true,false,false) ,1,2);
+		table.add(new Text(this.iwrb.getLocalizedString("workreportscloser.to_date","End"),true,false,false),2,2);
 		table.add(fromDate,1,3);
 		table.add(toDate,2,3);
 		
@@ -142,12 +142,12 @@ public class WorkReportCloser extends Block {
 		boolean isTempClosed = getWorkReportBusiness(iwc).areAllWorkReportsTemporarelyReadOnly();
 		
 		if(!isTempClosed) {
-			SubmitButton tempCloseAll = new SubmitButton(PARAM_TEMP_CLOSE,iwrb.getLocalizedString("workreportscloser.temp_close_button","temporarely close all"));
+			SubmitButton tempCloseAll = new SubmitButton(PARAM_TEMP_CLOSE,this.iwrb.getLocalizedString("workreportscloser.temp_close_button","temporarely close all"));
 			StyledButton styledTempCloseAll = new StyledButton(tempCloseAll);
 			buttonTable.add(styledTempCloseAll,1,1);
 		}
 		else {
-			SubmitButton cancelTempClose = new SubmitButton(PARAM_OPEN,iwrb.getLocalizedString("workreportscloser.temp_open_button","cancel temporarely closing"));
+			SubmitButton cancelTempClose = new SubmitButton(PARAM_OPEN,this.iwrb.getLocalizedString("workreportscloser.temp_open_button","cancel temporarely closing"));
 			StyledButton styledCancelTempClose = new StyledButton(cancelTempClose);
 			buttonTable.add(styledCancelTempClose,1,1);	
 		}
@@ -166,14 +166,14 @@ public class WorkReportCloser extends Block {
 
 
 	protected WorkReportBusiness getWorkReportBusiness(IWApplicationContext iwc) {
-		if (reportBiz == null) {
+		if (this.reportBiz == null) {
 			try {
-				reportBiz = (WorkReportBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, WorkReportBusiness.class);
+				this.reportBiz = (WorkReportBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, WorkReportBusiness.class);
 			}
 			catch (java.rmi.RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());
 			}
 		}
-		return reportBiz;
+		return this.reportBiz;
 	}
 }

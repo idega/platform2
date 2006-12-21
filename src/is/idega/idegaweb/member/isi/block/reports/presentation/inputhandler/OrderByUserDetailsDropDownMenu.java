@@ -10,10 +10,10 @@ import com.idega.presentation.ui.DropDownMenuInputHandler;
  * <p>
  * TODO sigtryggur Describe Type OrderByUserDetailsDropDownMenu
  * </p>
- *  Last modified: $Date: 2005/11/27 00:35:02 $ by $Author: sigtryggur $
+ *  Last modified: $Date: 2006/12/21 12:11:19 $ by $Author: idegaweb $
  * 
  * @author <a href="mailto:sigtryggur@idega.com">sigtryggur</a>
- * @version $Revision: 1.1.2.2 $
+ * @version $Revision: 1.1.2.3 $
  */
 public class OrderByUserDetailsDropDownMenu extends DropDownMenuInputHandler {
 
@@ -42,8 +42,9 @@ public class OrderByUserDetailsDropDownMenu extends DropDownMenuInputHandler {
 			IWResourceBundle iwrb = getResourceBundle(iwc);
 			return iwrb.getLocalizedString(CLASS_NAME_PREFIX + value);
 		}
-		else
+		else {
 			return "";
+		}
 	}
 
 	public String getBundleIdentifier() {

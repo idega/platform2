@@ -89,13 +89,13 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements KRImportF
 
     try {
       //initialize business beans and data homes
-      biz = (UserBusiness) this.getServiceInstance(UserBusiness.class);
-      relationBiz = (FamilyLogic) this.getServiceInstance(FamilyLogic.class);
-      home = biz.getUserHome();
-      addressBiz = (AddressBusiness) this.getServiceInstance(AddressBusiness.class);
-      groupBiz = biz.getGroupBusiness();
-      phoneHome = biz.getPhoneHome();
-      eHome = biz.getEmailHome();
+      this.biz = (UserBusiness) this.getServiceInstance(UserBusiness.class);
+      this.relationBiz = (FamilyLogic) this.getServiceInstance(FamilyLogic.class);
+      this.home = this.biz.getUserHome();
+      this.addressBiz = (AddressBusiness) this.getServiceInstance(AddressBusiness.class);
+      this.groupBiz = this.biz.getGroupBusiness();
+      this.phoneHome = this.biz.getPhoneHome();
+      this.eHome = this.biz.getEmailHome();
       
 
       //if the transaction failes all the users and their relations are removed
@@ -105,11 +105,13 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements KRImportF
       String item;
 
       int count = 0;
-      while ( !(item=(String)file.getNextRecord()).equals("") ) {
+      while ( !(item=(String)this.file.getNextRecord()).equals("") ) {
         count++;
 
 		
-           if( ! processRecord(item) ) failedRecords.add(item);
+           if( ! processRecord(item) ) {
+			this.failedRecords.add(item);
+		}
 
         if( (count % 500) == 0 ){
           System.out.println("KRFileHandler processing RECORD ["+count+"] time: "+IWTimestamp.getTimestampRightNow().toString());
@@ -151,7 +153,7 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements KRImportF
   }
 
   private boolean processRecord(String record) throws RemoteException{
-    userValues = file.getValuesFromRecordString(record);
+    this.userValues = this.file.getValuesFromRecordString(record);
     
 
 	boolean success = storeUserInfo();
@@ -160,7 +162,7 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements KRImportF
     */
 //    if( importRelations ) addRelations();
 
-    userValues = null;
+    this.userValues = null;
 
     return success;
   }
@@ -168,7 +170,7 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements KRImportF
   public void printFailedRecords(){
   	System.out.println("Import failed for these records, please fix and import again:");
   
-  	Iterator iter = failedRecords.iterator();
+  	Iterator iter = this.failedRecords.iterator();
   	while (iter.hasNext()) {
 		System.out.println((String) iter.next());
 	}
@@ -191,14 +193,22 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements KRImportF
     String addressLine =  getUserProperty(this.COLUMN_ADDRESS);
     String postalCode =  getUserProperty(this.COLUMN_POSTAL_CODE);
           
-    if(PIN==null) return false;
-    else{
+    if(PIN==null) {
+		return false;
+	}
+	else{
     	PIN = TextSoap.findAndCut(PIN,"-");
-    	if( PIN.length()!=10 ) return false;
+    	if( PIN.length()!=10 ) {
+			return false;
+		}
     }
        
-    if(name == null ) return false;
-	if(groupId==null && rootGroup==null) return false;
+    if(name == null ) {
+		return false;
+	}
+	if(groupId==null && this.rootGroup==null) {
+		return false;
+	}
     
     Gender gender = guessGenderFromName(name);
     IWTimestamp dateOfBirth = getBirthDateFromPin(PIN);
@@ -208,7 +218,7 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements KRImportF
     */
     try{
       //System.err.println(firstName);
-      user = biz.createUserByPersonalIDIfDoesNotExist(name,PIN, gender, dateOfBirth);
+      user = this.biz.createUserByPersonalIDIfDoesNotExist(name,PIN, gender, dateOfBirth);
     }
     catch(Exception e){
       e.printStackTrace();
@@ -222,18 +232,18 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements KRImportF
       if( (addressLine!=null) ){
         try{
 
-	        String streetName = addressBiz.getStreetNameFromAddressString(addressLine);
-	        String streetNumber = addressBiz.getStreetNumberFromAddressString(addressLine);
+	        String streetName = this.addressBiz.getStreetNameFromAddressString(addressLine);
+	        String streetNumber = this.addressBiz.getStreetNumberFromAddressString(addressLine);
 	        
 	       
-	        Address address = biz.getUsersMainAddress(user);
+	        Address address = this.biz.getUsersMainAddress(user);
 	        Country iceland = ((CountryHome)getIDOHome(Country.class)).findByIsoAbbreviation("IS");
-	        PostalCode code = addressBiz.getPostalCodeHome().findByPostalCodeAndCountryId(postalCode,((Integer)iceland.getPrimaryKey()).intValue());
+	        PostalCode code = this.addressBiz.getPostalCodeHome().findByPostalCodeAndCountryId(postalCode,((Integer)iceland.getPrimaryKey()).intValue());
 	
 	        boolean addAddress = false;/**@todo is this necessary?**/
 	
 	        if( address == null ){
-	          AddressHome addressHome = addressBiz.getAddressHome();
+	          AddressHome addressHome = this.addressBiz.getAddressHome();
 	          address = addressHome.create();
 	          AddressType mainAddressType = addressHome.getAddressType1();
 	          address.setAddressType(mainAddressType);
@@ -274,12 +284,14 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements KRImportF
 					Phone tempPhone = (Phone) iter.next();
 					String temp = tempPhone.getNumber();
 					
-					if( temp.equals(phone) ) addPhone1 = false;	
+					if( temp.equals(phone) ) {
+						addPhone1 = false;
+					}	
 			
 				}
 			
 				if( addPhone1 && phone != null){
-					Phone uPhone = phoneHome.create();
+					Phone uPhone = this.phoneHome.create();
 					uPhone.setNumber(phone);
 					uPhone.setPhoneTypeId(1);//weeeeee...svindl
 					uPhone.store();
@@ -308,13 +320,15 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements KRImportF
 					Email mail = (Email) iter.next();
 					String tempAddress = mail.getEmailAddress();
 					
-					if( tempAddress.equals(email) ) addEmail1 = false;	
+					if( tempAddress.equals(email) ) {
+						addEmail1 = false;
+					}	
 						
 					
 				}
 				
 				if( addEmail1 && email != null){
-					Email uEmail = eHome.create();
+					Email uEmail = this.eHome.create();
 					uEmail.setEmailAddress(email);
 					uEmail.store();
 					user.addEmail(uEmail);
@@ -341,8 +355,8 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements KRImportF
      * com.idega.block.finance.business.AccountManager
     public static Account makeNewFinanceAccount(int iUserId, String sName,String sExtra, int iCashierId,int iCategoryId)throws Exception{       
     */
-    if( rootGroup!=null){ 
-    	rootGroup.addGroup(user);
+    if( this.rootGroup!=null){ 
+    	this.rootGroup.addGroup(user);
     }
     
     if( groupId!=null ){
@@ -350,7 +364,7 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements KRImportF
 	
 	    Group memberGroup;
 		try {
-			memberGroup = groupBiz.getGroupByGroupID(group);
+			memberGroup = this.groupBiz.getGroupByGroupID(group);
 			memberGroup.addGroup(user);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -368,7 +382,7 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements KRImportF
     Group memberGroup;
      
     try {
-			memberGroup = groupBiz.getGroupByGroupID(29);//idkenndur group idid
+			memberGroup = this.groupBiz.getGroupByGroupID(29);//idkenndur group idid
 			memberGroup.addGroup(user);
 			
 		} catch (Exception e) {
@@ -392,17 +406,17 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements KRImportF
     try {
       GenderHome home = (GenderHome) this.getIDOHome(Gender.class);
       if( name.indexOf("son",name.length()-4)!=-1 ){//check if this name ends with the "son" string
-        if( male == null ){
-          male = home.getMaleGender();
+        if( this.male == null ){
+          this.male = home.getMaleGender();
         }
-        return male;
+        return this.male;
         
       }
       else{
-		if( female == null ){
-          female = home.getFemaleGender();
+		if( this.female == null ){
+          this.female = home.getFemaleGender();
         }
-        return female;
+        return this.female;
       }
     }
     catch (Exception ex) {
@@ -417,8 +431,12 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements KRImportF
     int mm = Integer.parseInt(pin.substring(2,4));
     int yyyy = Integer.parseInt(pin.substring(4,6));
     
-    if(pin.endsWith("9")) yyyy += 1900;
-    else yyyy += 2000;
+    if(pin.endsWith("9")) {
+		yyyy += 1900;
+	}
+	else {
+		yyyy += 2000;
+	}
     
     IWTimestamp dob = new IWTimestamp(dd,mm,yyyy);
     return dob;
@@ -427,18 +445,24 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements KRImportF
 	private String getUserProperty(int columnIndex){
 		String value = null;
 		
-		if( userValues!=null ){
+		if( this.userValues!=null ){
 		
 			try {
-				value = (String)userValues.get(columnIndex);
+				value = (String)this.userValues.get(columnIndex);
 			} catch (RuntimeException e) {
 				return null;
 			}
 	 			//System.out.println("Index: "+columnIndex+" Value: "+value);
-	 		if( file.getEmptyValueString().equals( value ) ) return null;
-		 	else return value;
+	 		if( this.file.getEmptyValueString().equals( value ) ) {
+				return null;
+			}
+			else {
+				return value;
+			}
   		}
-  		else return null;
+		else {
+			return null;
+		}
   }
 
 /**
@@ -446,7 +470,7 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements KRImportF
  * @return Group
  */
 public Group getRootGroup() {
-	return rootGroup;
+	return this.rootGroup;
 }
 
 /**
@@ -461,7 +485,7 @@ public void setRootGroup(Group rootGroup) {
  * @see com.idega.block.importer.business.ImportFileHandler#getFailedRecords()
  */
 public List getFailedRecords(){
-	return failedRecords;	
+	return this.failedRecords;	
 }
 
 

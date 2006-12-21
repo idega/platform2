@@ -232,8 +232,8 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
       int workReportId = getWorkReportId();
       workReport = workReportBusiness.getWorkReportById(workReportId); 
       // should the data be editable?
-      isReadOnly = workReportBusiness.isWorkReportReadOnly(workReportId);
-      editable = !( isReadOnly || workReport.isBoardPartDone());
+      this.isReadOnly = workReportBusiness.isWorkReportReadOnly(workReportId);
+      this.editable = !( this.isReadOnly || workReport.isBoardPartDone());
     }
     catch (RemoteException ex) {
       String message =
@@ -339,12 +339,12 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     EntityBrowser browser = getEntityBrowser(list, resourceBundle, form);
     // put browser into a table
     // do not show the buttons if not editable
-    if (! isReadOnly) {
+    if (! this.isReadOnly) {
       Table mainTable = new Table(1,2);
       mainTable.add(browser, 1,1);
       mainTable.setCellspacing(0);
       mainTable.setCellpadding(0);
-      if (editable) {
+      if (this.editable) {
         mainTable.add(getFinishButton(resourceBundle), 1, 2);
       }
       else {
@@ -355,7 +355,7 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
       return mainTable;
     }
 		//if the report is read only, then it is printed out:
-		else if(isReadOnly){
+		else if(this.isReadOnly){
 			Table mainTable = new Table(1,2);
 			mainTable.add(browser, 1,1);
 			mainTable.setCellspacing(0);
@@ -400,9 +400,9 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     
     // define if the converters should be editable or not
 //    checkBoxConverter.setEditable(editable);
-    textEditorConverter.setEditable(editable);
-    dropDownPostalCodeConverter.setEditable(editable);
-    nationalLeagueConverter.setEditable(editable);
+    textEditorConverter.setEditable(this.editable);
+    dropDownPostalCodeConverter.setEditable(this.editable);
+    nationalLeagueConverter.setEditable(this.editable);
     // WorkReportTextConverter is not an editor 
     // define path short keys and map corresponding converters
     Object[] columns = {
@@ -663,7 +663,7 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     errorMessageTable.setCellpaddingAndCellspacing(0);
     errorMessageTable.setWidth(Table.HUNDRED_PERCENT);
     errorMessageTable.setAlignment(1, 1, "center");
-    errorMessageTable.setStyleClass(1, 1, errorMessageStyle);
+    errorMessageTable.setStyleClass(1, 1, this.errorMessageStyle);
     return errorMessageTable;
   }
 
@@ -726,17 +726,17 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     
     public Object getColumnValue(String columnName) {
       if (LEAGUE.equals(columnName))  {
-        return league;
+        return this.league;
       }
-      return ((EntityRepresentation) board).getColumnValue(columnName);
+      return ((EntityRepresentation) this.board).getColumnValue(columnName);
     }  
     
     public Object getPrimaryKey() {
-      return ((EntityRepresentation) board).getPrimaryKey();
+      return ((EntityRepresentation) this.board).getPrimaryKey();
     }
     
     public boolean hasNationalLeague()  {
-      return ((WorkReportDivisionBoard) board).hasNationalLeague();
+      return ((WorkReportDivisionBoard) this.board).hasNationalLeague();
     }
   }
 }
