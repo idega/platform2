@@ -63,22 +63,22 @@ public class BasketBusinessBean extends IBOSessionBean
 			return;
 		}
 
-		if (isCookieBased) {
+		if (this.isCookieBased) {
 			//@TODO implement :)
 		} else {
-			if (basket == null) {
-				basket = new LinkedHashMap();
+			if (this.basket == null) {
+				this.basket = new LinkedHashMap();
 			}
 
 			BasketEntry entry = null;
-			if (basket.containsKey(item.getItemID())) {
-				entry = (BasketEntry) basket.get(item.getItemID());
+			if (this.basket.containsKey(item.getItemID())) {
+				entry = (BasketEntry) this.basket.get(item.getItemID());
 				entry.setQuantity(entry.getQuantity() + quantity);
 			} else {
 				entry = new BasketEntry(item, quantity);
 			}
 			this.quantity += quantity;
-			basket.put(item.getItemID(), entry);
+			this.basket.put(item.getItemID(), entry);
 		}
 	}
 
@@ -88,14 +88,14 @@ public class BasketBusinessBean extends IBOSessionBean
 	 * @param The
 	 */
 	public void removeItem(BasketItem item) {
-		if (item == null || basket == null) {
+		if (item == null || this.basket == null) {
 			return;
 		}
 
-		if (basket.containsKey(item.getItemID())) {
-			BasketEntry entry = (BasketEntry) basket.get(item.getItemID());
+		if (this.basket.containsKey(item.getItemID())) {
+			BasketEntry entry = (BasketEntry) this.basket.get(item.getItemID());
 			this.quantity -= entry.getQuantity();
-			basket.remove(item.getItemID());
+			this.basket.remove(item.getItemID());
 		}
 	}
 
@@ -115,11 +115,11 @@ public class BasketBusinessBean extends IBOSessionBean
 
 		this.quantity += quantity;
 
-		if (basket == null) {
+		if (this.basket == null) {
 			addItem(item, quantity);
 		} else {
-			if (basket.containsKey(item.getItemID())) {
-				BasketEntry entry = (BasketEntry) basket.get(item.getItemID());
+			if (this.basket.containsKey(item.getItemID())) {
+				BasketEntry entry = (BasketEntry) this.basket.get(item.getItemID());
 				this.quantity -= entry.getQuantity();
 				entry.setQuantity(quantity);
 			} else {
@@ -136,7 +136,7 @@ public class BasketBusinessBean extends IBOSessionBean
 	 * @param checkoutBusiness
 	 */
 	public void checkout(BasketCheckoutBusiness checkoutBusiness) {
-		checkoutBusiness.checkout(basket);
+		checkoutBusiness.checkout(this.basket);
 	}
 
 	/**
@@ -147,10 +147,10 @@ public class BasketBusinessBean extends IBOSessionBean
 	 * @uml.property name="basket"
 	 */
 	public Map getBasket() {
-		if (basket == null) {
-			basket = new LinkedHashMap();
+		if (this.basket == null) {
+			this.basket = new LinkedHashMap();
 		}
-		return basket;
+		return this.basket;
 	}
 
 	/**
@@ -163,11 +163,11 @@ public class BasketBusinessBean extends IBOSessionBean
 	 *         in the basket. False otherwise.
 	 */
 	public boolean checkForItemInBasket(BasketItem item) {
-		if (basket == null || basket.isEmpty()) {
+		if (this.basket == null || this.basket.isEmpty()) {
 			return false;
 		}
 
-		if (basket.containsKey(item.getItemID())) {
+		if (this.basket.containsKey(item.getItemID())) {
 			return true;
 		} else {
 			return false;
@@ -178,57 +178,57 @@ public class BasketBusinessBean extends IBOSessionBean
 	 * Clears all the data from the basket.
 	 */
 	public void emptyBasket() {
-		if (basket != null && !basket.isEmpty()) {
-			basket.clear();
+		if (this.basket != null && !this.basket.isEmpty()) {
+			this.basket.clear();
 		}
 		
-		if (extraData != null && !extraData.isEmpty()) {
-			extraData.clear();
+		if (this.extraData != null && !this.extraData.isEmpty()) {
+			this.extraData.clear();
 		}
 
-		basket = null;
-		extraData = null;
-		quantity = 0;
+		this.basket = null;
+		this.extraData = null;
+		this.quantity = 0;
 	}
 	
 	/**
 	 * 
 	 */
 	public List getExtraInfo() {
-		return extraData;
+		return this.extraData;
 	}
 	
 	/**
 	 * 
 	 */
 	public void emptyExtraInfo() {
-		if (extraData != null && !extraData.isEmpty()) {
-			extraData.clear();
+		if (this.extraData != null && !this.extraData.isEmpty()) {
+			this.extraData.clear();
 		}
 
-		extraData = null;		
+		this.extraData = null;		
 	}
 	
 	/**
 	 * 
 	 */
 	public void addExtraInfo(Object info) {
-		if (extraData == null) {
-			extraData = new ArrayList();
+		if (this.extraData == null) {
+			this.extraData = new ArrayList();
 		}
 		
-		extraData.add(info);
+		this.extraData.add(info);
 	}
 	
 	/**
 	 * 
 	 */
 	public void removeExtraInfo(Object info) {
-		if (extraData == null || extraData.isEmpty()) {
+		if (this.extraData == null || this.extraData.isEmpty()) {
 			return;
 		}
 		
-		extraData.remove(info);
+		this.extraData.remove(info);
 	}
 	
 	/**
@@ -236,6 +236,6 @@ public class BasketBusinessBean extends IBOSessionBean
 	 * @return
 	 */
 	public int getQuantity() {
-		return quantity;
+		return this.quantity;
 	}
 }

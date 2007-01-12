@@ -62,7 +62,7 @@ public class Banner extends Block implements Builderaware {
 
 		this();
 
-		_bannerID = bannerID;
+		this._bannerID = bannerID;
 
 	}
 
@@ -70,7 +70,7 @@ public class Banner extends Block implements Builderaware {
 
 		this();
 
-		_attribute = attribute;
+		this._attribute = attribute;
 
 	}
 
@@ -79,45 +79,44 @@ public class Banner extends Block implements Builderaware {
 	}
 	
 	protected String getCacheState(IWContext iwc, String cacheStatePrefix) {
-    return  cacheStatePrefix+_attribute+_bannerID;
+    return  cacheStatePrefix+this._attribute+this._bannerID;
 	}
 	public void main(IWContext iwc) throws Exception {
 
-		_iwrb = getResourceBundle(iwc);
+		this._iwrb = getResourceBundle(iwc);
 
-		_iwb = getBundle(iwc);
+		this._iwb = getBundle(iwc);
 
-		_isAdmin = iwc.hasEditPermission(this);
+		this._isAdmin = iwc.hasEditPermission(this);
 
-		_iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
+		this._iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
 
 		BannerEntity banner = null;
 
-		_myTable = new Table(1, 2);
+		this._myTable = new Table(1, 2);
 
-		_myTable.setCellpadding(0);
+		this._myTable.setCellpadding(0);
 
-		_myTable.setCellspacing(0);
+		this._myTable.setCellspacing(0);
 
-		_myTable.setBorder(0);
+		this._myTable.setBorder(0);
 
-		if (_bannerID <= 0) {
+		if (this._bannerID <= 0) {
 
 			String sBannerID = iwc.getParameter(BannerBusiness.PARAMETER_BANNER_ID);
 
-			if (sBannerID != null)
-
-				_bannerID = Integer.parseInt(sBannerID);
-
+			if (sBannerID != null) {
+				this._bannerID = Integer.parseInt(sBannerID);
+			}
 			else if (getICObjectInstanceID() > 0) {
 
-				_bannerID = BannerFinder.getRelatedEntityId(getICObjectInstance());
+				this._bannerID = BannerFinder.getRelatedEntityId(getICObjectInstance());
 
-				if (_bannerID <= 0) {
+				if (this._bannerID <= 0) {
 
-					BannerBusiness.saveBanner(_bannerID, getICObjectInstanceID(), null);
+					BannerBusiness.saveBanner(this._bannerID, getICObjectInstanceID(), null);
 
-					_newObjInst = true;
+					this._newObjInst = true;
 
 				}
 
@@ -125,49 +124,49 @@ public class Banner extends Block implements Builderaware {
 
 		}
 
-		if (_newObjInst) {
+		if (this._newObjInst) {
 
-			_bannerID = BannerFinder.getRelatedEntityId(((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(getICObjectInstanceID()));
-
-		}
-
-		if (_bannerID > 0) {
-
-			banner = BannerFinder.getBanner(_bannerID);
+			this._bannerID = BannerFinder.getRelatedEntityId(((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(getICObjectInstanceID()));
 
 		}
 
-		else if (_attribute != null) {
+		if (this._bannerID > 0) {
 
-			banner = BannerFinder.getBanner(_attribute);
+			banner = BannerFinder.getBanner(this._bannerID);
+
+		}
+
+		else if (this._attribute != null) {
+
+			banner = BannerFinder.getBanner(this._attribute);
 
 			if (banner != null) {
 
-				_bannerID = banner.getID();
+				this._bannerID = banner.getID();
 
 			}
 
 			else {
 
-				BannerBusiness.saveBanner(-1, -1, _attribute);
+				BannerBusiness.saveBanner(-1, -1, this._attribute);
 
 			}
 
-			_newWithAttribute = true;
+			this._newWithAttribute = true;
 
 		}
 
-		if (_newWithAttribute) {
+		if (this._newWithAttribute) {
 
-			_bannerID = BannerFinder.getBanner(_attribute).getID();
+			this._bannerID = BannerFinder.getBanner(this._attribute).getID();
 
 		}
 
 		int row = 1;
 
-		if (_isAdmin) {
+		if (this._isAdmin) {
 
-			_myTable.add(getAdminPart(iwc), 1, row);
+			this._myTable.add(getAdminPart(iwc), 1, row);
 
 			row++;
 
@@ -175,11 +174,11 @@ public class Banner extends Block implements Builderaware {
 
 		Link link = getBanner(iwc, banner);
 
-		if (link != null)
+		if (link != null) {
+			this._myTable.add(link, 1, row);
+		}
 
-		_myTable.add(link, 1, row);
-
-		add(_myTable);
+		add(this._myTable);
 
 	}
 
@@ -209,16 +208,16 @@ public class Banner extends Block implements Builderaware {
 
 			if (image != null) {
 				
-				if(_maxWidth>0) {
-					image.setMaxImageWidth(_maxWidth);
+				if(this._maxWidth>0) {
+					image.setMaxImageWidth(this._maxWidth);
 				}
 
 
 				bannerLink = new Link(getStyleObject(image, IMAGE_STYLE));
 
-				if (_target != null) {
+				if (this._target != null) {
 
-					bannerLink.setTarget(_target);
+					bannerLink.setTarget(this._target);
 
 				}
 
@@ -240,9 +239,9 @@ public class Banner extends Block implements Builderaware {
 
 		}
 
-		if (bannerLink != null)
-
-		return bannerLink;
+		if (bannerLink != null) {
+			return bannerLink;
+		}
 
 		return null;
 
@@ -256,7 +255,7 @@ public class Banner extends Block implements Builderaware {
 
 		createLink.setWindowToOpen(BannerEditorWindow.class);
 
-		createLink.addParameter(BannerBusiness.PARAMETER_BANNER_ID, _bannerID);
+		createLink.addParameter(BannerBusiness.PARAMETER_BANNER_ID, this._bannerID);
 
 		return createLink;
 
@@ -278,7 +277,7 @@ public class Banner extends Block implements Builderaware {
 
 	public void setTarget(String target) {
 
-		_target = target;
+		this._target = target;
 
 	}
 
@@ -328,7 +327,7 @@ public class Banner extends Block implements Builderaware {
 	 * @param width The _fixedWidth to set.
 	 */
 	public void setMaxWidth(int width) {
-		_maxWidth = width;
+		this._maxWidth = width;
 	}
 
 }

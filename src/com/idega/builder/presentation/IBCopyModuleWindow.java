@@ -1,5 +1,5 @@
 /*
- * $Id: IBCopyModuleWindow.java,v 1.9 2005/08/31 02:13:21 eiki Exp $
+ * $Id: IBCopyModuleWindow.java,v 1.9.2.1 2007/01/12 19:32:22 idegaweb Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -46,11 +46,13 @@ public class IBCopyModuleWindow extends IBAdminWindow {
     String ib_page_id = iwc.getParameter(IB_PAGE_PARAMETER);
 
 
-    if (control == null)
-      close();
+    if (control == null) {
+		close();
+	}
 
-    if (iwc.getSessionAttribute(BuilderLogic.CLIPBOARD) == null)
-      setParentToReload();
+    if (iwc.getSessionAttribute(BuilderLogic.CLIPBOARD) == null) {
+		setParentToReload();
+	}
 
     if (control.equals(ACTION_COPY)) {
       copyObject(iwc,ib_page_id,ic_object_id);

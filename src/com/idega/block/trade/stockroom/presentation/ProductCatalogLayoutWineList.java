@@ -38,9 +38,10 @@ public class ProductCatalogLayoutWineList extends AbstractProductCatalogLayout {
 	public PresentationObject getCatalog(ProductCatalog productCatalog, IWContext iwc, List productCategories) throws RemoteException, FinderException {
 		parse(iwc);
 
-		if (productCategory != null) {
-			if (productCategory.getChildCount() <= 0) 
-				return getProductOverview(productCatalog, iwc, productCategory);
+		if (this.productCategory != null) {
+			if (this.productCategory.getChildCount() <= 0) {
+				return getProductOverview(productCatalog, iwc, this.productCategory);
+			}
 		}
 
 		Table table = new Table();
@@ -54,39 +55,48 @@ public class ProductCatalogLayoutWineList extends AbstractProductCatalogLayout {
 		boolean hasParameterSet = false;
 
 		Iterator iter = null;
-		if (productCategory != null) {
-			iter = productCategory.getChildrenIterator();
+		if (this.productCategory != null) {
+			iter = this.productCategory.getChildrenIterator();
 			hasParameterSet = true;
-			Text categoryText = productCatalog.getCategoryText(productCategory.getName());
-			if (productCatalog._headerFontStyle != null)
+			Text categoryText = productCatalog.getCategoryText(this.productCategory.getName());
+			if (productCatalog._headerFontStyle != null) {
 				categoryText.setStyleAttribute(productCatalog._headerFontStyle);
-			if (productCatalog._hasEditPermission)
-				table.add(productCatalog.getProductCategoryEditorLink(productCategory), 1, row);
+			}
+			if (productCatalog._hasEditPermission) {
+				table.add(productCatalog.getProductCategoryEditorLink(this.productCategory), 1, row);
+			}
 			table.add(categoryText, 1, row++);
-			if (productCatalog._spaceBetween > 0)
+			if (productCatalog._spaceBetween > 0) {
 				table.setHeight(row++ , productCatalog._spaceBetween);
+			}
 		}
-		else
+		else {
 			iter = productCategories.iterator();
+		}
 			
 		while (iter.hasNext()) {
 			pCat = (ICCategory) iter.next();
-			if (!hasParameterSet && productCategories.contains((ICCategory)pCat.getParentNode()))
+			if (!hasParameterSet && productCategories.contains(pCat.getParentNode())) {
 				showCategory = false;
-			else
+			}
+			else {
 				showCategory = true;
+			}
 			
 			if (showCategory) {
 				Link link = new Link(productCatalog.getCategoryText(pCat.getName()));
 				link.addParameter(ProductCatalog.CATEGORY_ID, pCat.getPrimaryKey().toString());
-				if (productCatalog._catFontStyle != null)
+				if (productCatalog._catFontStyle != null) {
 					link.setStyleAttribute(productCatalog._catFontStyle);
+				}
 				//link.addParameter(productCatalog.prmClrCache, "true");
-				if (productCatalog._hasEditPermission)
+				if (productCatalog._hasEditPermission) {
 					table.add(productCatalog.getProductCategoryEditorLink(pCat), 1, row);
+				}
 				table.add(link, 1, row++);
-				if (iter.hasNext() && productCatalog._spaceBetweenEntries > 0)
+				if (iter.hasNext() && productCatalog._spaceBetweenEntries > 0) {
 					table.setHeight(row++ , productCatalog._spaceBetweenEntries);
+				}
 			}
 		}
 		
@@ -113,14 +123,17 @@ public class ProductCatalogLayoutWineList extends AbstractProductCatalogLayout {
 		table.setWidth(Table.HUNDRED_PERCENT);
 		int row = 1;
 
-		Text categoryText = productCatalog.getCategoryText(productCategory.getName());
-		if (productCatalog._headerFontStyle != null)
+		Text categoryText = productCatalog.getCategoryText(this.productCategory.getName());
+		if (productCatalog._headerFontStyle != null) {
 			categoryText.setStyleAttribute(productCatalog._headerFontStyle);
-		if (productCatalog._hasEditPermission)
-			table.add(productCatalog.getProductCategoryEditorLink(productCategory), 1, row);
+		}
+		if (productCatalog._hasEditPermission) {
+			table.add(productCatalog.getProductCategoryEditorLink(this.productCategory), 1, row);
+		}
 		table.add(categoryText, 1, row++);
-		if (productCatalog._spaceBetween > 0)
+		if (productCatalog._spaceBetween > 0) {
 			table.setHeight(row++ , productCatalog._spaceBetween);
+		}
 
 		Table productTable = new Table();
 		productTable.setColumns(4);
@@ -142,24 +155,30 @@ public class ProductCatalogLayoutWineList extends AbstractProductCatalogLayout {
 			price.setShowCurrency(true);
 			price.setShowLocalized(true);
 			Map metadata = product.getMetaDataAttributes();
-			if (metadata == null)
+			if (metadata == null) {
 				metadata = new Hashtable();
+			}
 			
-			if (productCatalog._topColor != null)
+			if (productCatalog._topColor != null) {
 				productTable.setRowColor(pRow, productCatalog._topColor);
-			else
+			}
+			else {
 				productTable.setRowColor(pRow, "#E0E0E0");
+			}
 			
-			if (productCatalog._hasEditPermission)
+			if (productCatalog._hasEditPermission) {
 				productTable.add(productCatalog.getProductEditorLink(product), 1, pRow);
+			}
 			productTable.add(productCatalog.getNamePresentationObject(product), 1, pRow);
-			if (metadata.containsKey(METADATA + "amount"))
+			if (metadata.containsKey(METADATA + "amount")) {
 				productTable.add((String) metadata.get(METADATA + "amount") + " ml", 2, pRow);
+			}
 			productTable.setNoWrap(2, pRow);
 			productTable.setAlignment(2, pRow, Table.HORIZONTAL_ALIGN_CENTER);
 			
-			if (metadata.containsKey(METADATA + "strength"))
+			if (metadata.containsKey(METADATA + "strength")) {
 				productTable.add((String) metadata.get(METADATA + "strength") + "%", 3, pRow);
+			}
 			productTable.setNoWrap(3, pRow);
 			productTable.setAlignment(3, pRow, Table.HORIZONTAL_ALIGN_CENTER);
 
@@ -190,8 +209,9 @@ public class ProductCatalogLayoutWineList extends AbstractProductCatalogLayout {
 			}
 			pRow++;
 
-			if (iter.hasNext() && productCatalog._spaceBetweenEntries > 0)
+			if (iter.hasNext() && productCatalog._spaceBetweenEntries > 0) {
 				productTable.setHeight(pRow++, productCatalog._spaceBetweenEntries);
+			}
 		}
 
 		return table;
@@ -200,11 +220,11 @@ public class ProductCatalogLayoutWineList extends AbstractProductCatalogLayout {
 	private void parse(IWContext iwc) {
 		try {
 			if (iwc.isParameterSet(ProductCatalog.CATEGORY_ID)) {
-				productCategory = getProductBusiness(iwc).getProductCategory(Integer.parseInt(iwc.getParameter(ProductCatalog.CATEGORY_ID)));
+				this.productCategory = getProductBusiness(iwc).getProductCategory(Integer.parseInt(iwc.getParameter(ProductCatalog.CATEGORY_ID)));
 			}
 		}
 		catch (RemoteException e) {
-			productCategory = null;
+			this.productCategory = null;
 		}
 	}
 }

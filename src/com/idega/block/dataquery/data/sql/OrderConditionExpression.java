@@ -30,15 +30,15 @@ public class OrderConditionExpression implements Expression {
   
   protected void initialize(QueryOrderConditionPart orderConditionPart, SQLQuery sqlQuery)	{
   	String field = orderConditionPart.getField();
-  	path = orderConditionPart.getPath();
-  	isAscendant = orderConditionPart.isAscendant();
-  	valueField = sqlQuery.getUniqueNameForField(path,field);
+  	this.path = orderConditionPart.getPath();
+  	this.isAscendant = orderConditionPart.isAscendant();
+  	this.valueField = sqlQuery.getUniqueNameForField(this.path,field);
   }
   
    	
   public String toSQLString() {
-  	StringBuffer buffer = new StringBuffer(valueField);
-  	if (! isAscendant) {
+  	StringBuffer buffer = new StringBuffer(this.valueField);
+  	if (! this.isAscendant) {
   		buffer.append(WHITE_SPACE);
   		buffer.append(DESCENDENT);
   	}
@@ -54,6 +54,6 @@ public class OrderConditionExpression implements Expression {
 	}
 
 	public String getPath()	{
-		return path;
+		return this.path;
 	}
 }

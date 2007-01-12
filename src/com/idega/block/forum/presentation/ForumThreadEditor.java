@@ -50,17 +50,19 @@ public class ForumThreadEditor extends IWAdminWindow {
 		/**
 		 * @todo permission
 		 */
-		_isAdmin = true; //AccessControl.hasEditPermission(this,iwc);
-		_iwb = iwc.getIWMainApplication().getBundle(Builderaware.IW_CORE_BUNDLE_IDENTIFIER);
-		_iwrb = getResourceBundle(iwc);
-		_localeID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
-		_isLoggedOn = iwc.isLoggedOn();
-		if (_isLoggedOn) _userID = iwc.getUserId();
+		this._isAdmin = true; //AccessControl.hasEditPermission(this,iwc);
+		this._iwb = iwc.getIWMainApplication().getBundle(Builderaware.IW_CORE_BUNDLE_IDENTIFIER);
+		this._iwrb = getResourceBundle(iwc);
+		this._localeID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
+		this._isLoggedOn = iwc.isLoggedOn();
+		if (this._isLoggedOn) {
+			this._userID = iwc.getUserId();
+		}
 
-		addTitle(_iwrb.getLocalizedString("thread_editor", "Write new thread"));
-		forumBusiness = new ForumBusiness();
+		addTitle(this._iwrb.getLocalizedString("thread_editor", "Write new thread"));
+		this.forumBusiness = new ForumBusiness();
 
-		if (_isAdmin) {
+		if (this._isAdmin) {
 			processForm(iwc);
 		}
 		else {
@@ -69,32 +71,32 @@ public class ForumThreadEditor extends IWAdminWindow {
 	}
 
 	private void processForm(IWContext iwc) {
-		someErrorMessage = null;
-		errorDetail = null;
+		this.someErrorMessage = null;
+		this.errorDetail = null;
 		if (iwc.getParameter(ForumBusiness.PARAMETER_TOPIC_ID) != null) {
 			try {
-				_topicID = Integer.parseInt(iwc.getParameter(ForumBusiness.PARAMETER_TOPIC_ID));
+				this._topicID = Integer.parseInt(iwc.getParameter(ForumBusiness.PARAMETER_TOPIC_ID));
 			}
 			catch (NumberFormatException e) {
-				_topicID = -1;
+				this._topicID = -1;
 			}
 		}
 
 		if (iwc.getParameter(ForumBusiness.PARAMETER_PARENT_THREAD_ID) != null) {
 			try {
-				_parentThreadID = Integer.parseInt(iwc.getParameter(ForumBusiness.PARAMETER_PARENT_THREAD_ID));
+				this._parentThreadID = Integer.parseInt(iwc.getParameter(ForumBusiness.PARAMETER_PARENT_THREAD_ID));
 			}
 			catch (NumberFormatException e) {
-				_threadID = -1;
+				this._threadID = -1;
 			}
 		}
 
 		if (iwc.getParameter(ForumBusiness.PARAMETER_THREAD_ID) != null) {
 			try {
-				_threadID = Integer.parseInt(iwc.getParameter(ForumBusiness.PARAMETER_THREAD_ID));
+				this._threadID = Integer.parseInt(iwc.getParameter(ForumBusiness.PARAMETER_THREAD_ID));
 			}
 			catch (NumberFormatException e) {
-				_threadID = -1;
+				this._threadID = -1;
 			}
 		}
 
@@ -107,21 +109,21 @@ public class ForumThreadEditor extends IWAdminWindow {
 			}
 		}
 
-		if (_threadID != -1) {
+		if (this._threadID != -1) {
 			if (iwc.getParameter(ForumBusiness.PARAMETER_MODE) != null) {
 				if (iwc.getParameter(ForumBusiness.PARAMETER_MODE).equalsIgnoreCase(ForumBusiness.PARAMETER_DELETE)) {
 					delete();
 				}
 			}
 			else {
-				_update = true;
+				this._update = true;
 			}
 		}
 		
-		if (_update && _parentThreadID == -1) {
-			_parentThreadID = _threadID;
-			_threadID = -1;
-			_update = false;
+		if (this._update && this._parentThreadID == -1) {
+			this._parentThreadID = this._threadID;
+			this._threadID = -1;
+			this._update = false;
 		}
 
 		initializeFields();
@@ -130,60 +132,76 @@ public class ForumThreadEditor extends IWAdminWindow {
 	private void initializeFields() {
 		ForumData thread = null;
 		ForumData parentThread = null;
-		if (_threadID != -1) {
-			thread = forumBusiness.getForumData(_threadID);
-			if (thread != null) _update = true;
+		if (this._threadID != -1) {
+			thread = this.forumBusiness.getForumData(this._threadID);
+			if (thread != null) {
+				this._update = true;
+			}
 		}
 
-		if (_parentThreadID != -1) parentThread = forumBusiness.getForumData(_parentThreadID);
+		if (this._parentThreadID != -1) {
+			parentThread = this.forumBusiness.getForumData(this._parentThreadID);
+		}
 		
-		if(someErrorMessage!=null){
-			addRight(someErrorMessage);
-			if(errorDetail!=null){
-				addRight(errorDetail);
+		if(this.someErrorMessage!=null){
+			addRight(this.someErrorMessage);
+			if(this.errorDetail!=null){
+				addRight(this.errorDetail);
 			}
 		}
 		
 
 		TextInput subject = new TextInput(ForumBusiness.PARAMETER_THREAD_HEADLINE);
 		subject.setLength(24);
-		if (_update && thread.getThreadSubject() != null) subject.setContent(thread.getThreadSubject());
+		if (this._update && thread.getThreadSubject() != null) {
+			subject.setContent(thread.getThreadSubject());
+		}
 		if (parentThread != null && parentThread.getThreadSubject() != null) {
 			String subjectString = parentThread.getThreadSubject();
-			if (subjectString.indexOf("RE:") == -1) subjectString = "RE: " + subjectString;
+			if (subjectString.indexOf("RE:") == -1) {
+				subjectString = "RE: " + subjectString;
+			}
 			subject.setContent(subjectString);
 		}
 
 		TextArea body = new TextArea(ForumBusiness.PARAMETER_THREAD_BODY);
 		body.setHeight(4);
-		if (_update && thread.getThreadBody() != null) body.setContent(thread.getThreadBody());
-		if (_isLoggedOn) body.setHeight(10);
+		if (this._update && thread.getThreadBody() != null) {
+			body.setContent(thread.getThreadBody());
+		}
+		if (this._isLoggedOn) {
+			body.setHeight(10);
+		}
 		body.setWidth(Table.HUNDRED_PERCENT);
 
-		addLeft(_iwrb.getLocalizedString("thread_subject", "Title") + ":", subject, true);
-		addLeft(_iwrb.getLocalizedString("thread_body", "Body") + ":", body, true);
+		addLeft(this._iwrb.getLocalizedString("thread_subject", "Title") + ":", subject, true);
+		addLeft(this._iwrb.getLocalizedString("thread_body", "Body") + ":", body, true);
 
-		if (!_isLoggedOn) {
+		if (!this._isLoggedOn) {
 			TextInput userName = new TextInput(ForumBusiness.PARAMETER_USER_NAME);
-			if (_update && thread.getUserName() != null) userName.setContent(thread.getUserName());
+			if (this._update && thread.getUserName() != null) {
+				userName.setContent(thread.getUserName());
+			}
 
 			TextInput userEmail = new TextInput(ForumBusiness.PARAMETER_USER_EMAIL);
-			if (_update && thread.getUserEMail() != null) userEmail.setContent(thread.getUserEMail());
+			if (this._update && thread.getUserEMail() != null) {
+				userEmail.setContent(thread.getUserEMail());
+			}
 
-			addLeft(_iwrb.getLocalizedString("thread_username", "Name") + ":", userName, true);
-			addLeft(_iwrb.getLocalizedString("thread_email", "E-mail") + ":", userEmail, true);
+			addLeft(this._iwrb.getLocalizedString("thread_username", "Name") + ":", userName, true);
+			addLeft(this._iwrb.getLocalizedString("thread_email", "E-mail") + ":", userEmail, true);
 		}
 
-		addHiddenInput(new HiddenInput(ForumBusiness.PARAMETER_TOPIC_ID, Integer.toString(_topicID)));
-		addHiddenInput(new HiddenInput(ForumBusiness.PARAMETER_PARENT_THREAD_ID, Integer.toString(_parentThreadID)));
-		addHiddenInput(new HiddenInput(ForumBusiness.PARAMETER_THREAD_ID, Integer.toString(_threadID)));
+		addHiddenInput(new HiddenInput(ForumBusiness.PARAMETER_TOPIC_ID, Integer.toString(this._topicID)));
+		addHiddenInput(new HiddenInput(ForumBusiness.PARAMETER_PARENT_THREAD_ID, Integer.toString(this._parentThreadID)));
+		addHiddenInput(new HiddenInput(ForumBusiness.PARAMETER_THREAD_ID, Integer.toString(this._threadID)));
 
-		addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("close", "CLOSE"), ForumBusiness.PARAMETER_MODE, ForumBusiness.PARAMETER_CLOSE));
-		addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("save", "SAVE"), ForumBusiness.PARAMETER_MODE, ForumBusiness.PARAMETER_SAVE));
+		addSubmitButton(new SubmitButton(this._iwrb.getLocalizedImageButton("close", "CLOSE"), ForumBusiness.PARAMETER_MODE, ForumBusiness.PARAMETER_CLOSE));
+		addSubmitButton(new SubmitButton(this._iwrb.getLocalizedImageButton("save", "SAVE"), ForumBusiness.PARAMETER_MODE, ForumBusiness.PARAMETER_SAVE));
 	}
 
 	private void delete() {
-		forumBusiness.deleteThread(_threadID);
+		this.forumBusiness.deleteThread(this._threadID);
 		setParentToReload();
 		close();
 	}
@@ -195,13 +213,13 @@ public class ForumThreadEditor extends IWAdminWindow {
 		String email = iwc.getParameter(ForumBusiness.PARAMETER_USER_EMAIL);
 		
 		if(headline == null || "".equals(headline)) {
-			someErrorMessage = _iwrb.getLocalizedString("cannot_save", "Cannot save");
-			errorDetail = _iwrb.getLocalizedString("headline_is_empty", "Threads headline is empty");
+			this.someErrorMessage = this._iwrb.getLocalizedString("cannot_save", "Cannot save");
+			this.errorDetail = this._iwrb.getLocalizedString("headline_is_empty", "Threads headline is empty");
 		} else if ( body == null || "".equals(body)) {
-			someErrorMessage = _iwrb.getLocalizedString("cannot_save", "Cannot save");
-			errorDetail = _iwrb.getLocalizedString("body_is_empty", "Threads body is empty");
+			this.someErrorMessage = this._iwrb.getLocalizedString("cannot_save", "Cannot save");
+			this.errorDetail = this._iwrb.getLocalizedString("body_is_empty", "Threads body is empty");
 		} else {
-			forumBusiness.saveThread(_topicID, _threadID, _parentThreadID, _userID, name, email, headline, body);
+			this.forumBusiness.saveThread(this._topicID, this._threadID, this._parentThreadID, this._userID, name, email, headline, body);
 			setParentToReload();
 			close();
 			

@@ -4,13 +4,15 @@ import java.sql.Date;
 import java.sql.SQLException;
 
 import com.idega.core.file.data.ICFile;
+import com.idega.data.GenericEntity;
+import com.idega.user.data.UserBMPBean;
 
 
 /**
  * Title:        User
  * Copyright:    Copyright (c) 2001
  * Company:      idega.is
- * @author 2000 - idega team - <a href="mailto:gummi@idega.is">Guðmundur Ágúst Sæmundsson</a>
+ * @author 2000 - idega team - <a href="mailto:gummi@idega.is">Guï¿½mundur ï¿½gï¿½st Sï¿½mundsson</a>
  * @version 1.0
  */
 
@@ -35,9 +37,9 @@ public class StaffInfoBMPBean extends com.idega.data.GenericEntity implements co
       addOneToOneRelationship(getColumnNameUserID(),"Employee",com.idega.core.user.data.User.class);
       addAttribute(getColumnNameTitle(),"Titill",true,true,"java.lang.String");
       addAttribute(getColumnNameEducation(),"Menntun",true,true,"java.lang.String");
-      addAttribute(getColumnNameSchool(),"Skólaganga",true,true,"java.lang.String");
-      addAttribute(getColumnNameArea(),"Starfssvið",true,true,"java.lang.String");
-      addAttribute(getColumnNameBeganWork(),"Hóf störf",true,true,"java.sql.Date");
+      addAttribute(getColumnNameSchool(),"Skï¿½laganga",true,true,"java.lang.String");
+      addAttribute(getColumnNameArea(),"Starfssviï¿½",true,true,"java.lang.String");
+      addAttribute(getColumnNameBeganWork(),"Hï¿½f stï¿½rf",true,true,"java.sql.Date");
       addManyToOneRelationship(getColumnNameImageID(),"Image",ICFile.class);
       setNullable(getColumnNameUserID(),false);
       setNullable(getColumnNameImageID(),true);
@@ -52,13 +54,13 @@ public class StaffInfoBMPBean extends com.idega.data.GenericEntity implements co
     }
 
     public static StaffInfo getStaticInstance(){
-      return (StaffInfo)com.idega.block.staff.data.StaffInfoBMPBean.getStaticInstance(sClassName);
+      return (StaffInfo)GenericEntity.getStaticInstance(sClassName);
     }
 
 
     /*  ColumNames begin   */
 
-    public static String getColumnNameUserID(){return com.idega.core.user.data.UserBMPBean.getColumnNameUserID();}
+    public static String getColumnNameUserID(){return UserBMPBean.getColumnNameUserID();}
     public static String getColumnNameTitle(){return "title";}
     public static String getColumnNameEducation(){return "education";}
     public static String getColumnNameSchool(){return "school";}

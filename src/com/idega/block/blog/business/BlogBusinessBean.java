@@ -40,14 +40,17 @@ public class BlogBusinessBean extends FolderBlockBusinessBean implements BlogBus
 		Content eContent = ContentBusiness.saveContent(eBlogEntity.getContentId(), iLocalizedTextId, iLocaleId, iUserId, tsPubFrom, tsPubTo, sHeadline, sBody, sTitle, listOfFiles, blogDate);
 		if (eContent != null) {
 
-			if (eContent.getID() > 0)
+			if (eContent.getID() > 0) {
 				eBlogEntity.setContentId(eContent.getID());
+			}
 
-			if (sAuthor != null)
+			if (sAuthor != null) {
 				eBlogEntity.setAuthor(sAuthor);
+			}
 
-			if (sSource != null)
+			if (sSource != null) {
 				eBlogEntity.setSource(sSource);
+			}
 
 			eBlogEntity.setBlogFolderId(iWorkFolderId);
 			

@@ -66,21 +66,22 @@ public class MethodInvocationDocument extends XMLDocument {
 		if(iter != null){
 			while (iter.hasNext()) {
 				XMLElement element = (XMLElement)iter.next();
-				_methodDescriptions.add(new MethodDescription(element));
+				this._methodDescriptions.add(new MethodDescription(element));
 			}
 		}
 	}
 
 	
 	public XMLElement getRootElement() {
-		if (_rootElement == null)
-			_rootElement = super.getRootElement();
+		if (this._rootElement == null) {
+			this._rootElement = super.getRootElement();
+		}
 
-		return _rootElement;
+		return this._rootElement;
 	}
 	
 	public void setRootElement(XMLElement element) {
-		_rootElement = element;
+		this._rootElement = element;
 		super.setRootElement(element);
 	}
 	
@@ -88,7 +89,7 @@ public class MethodInvocationDocument extends XMLDocument {
 	 * Use this method to close the document before writing it to file
 	 */
 	public void close(){
-		Iterator iter = _methodDescriptions.iterator();
+		Iterator iter = this._methodDescriptions.iterator();
 		while (iter.hasNext()) {
 			MethodDescription element = (MethodDescription)iter.next();
 			element.close();
@@ -97,7 +98,7 @@ public class MethodInvocationDocument extends XMLDocument {
 	}
 	
 	public List getMethodDescriptions(){
-		return _methodDescriptions;
+		return this._methodDescriptions;
 	}
 
 }

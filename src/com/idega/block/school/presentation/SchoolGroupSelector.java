@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolGroupSelector.java,v 1.2 2004/11/26 14:37:51 aron Exp $
+ * $Id: SchoolGroupSelector.java,v 1.2.2.1 2007/01/12 19:31:45 idegaweb Exp $
  * Created on 25.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -34,10 +34,10 @@ import com.idega.presentation.ui.util.SelectorUtility;
 
 /**
  * 
- *  Last modified: $Date: 2004/11/26 14:37:51 $ by $Author: aron $
+ *  Last modified: $Date: 2007/01/12 19:31:45 $ by $Author: idegaweb $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.2.2.1 $
  */
 public class SchoolGroupSelector extends InterfaceObject {
     
@@ -68,130 +68,130 @@ public class SchoolGroupSelector extends InterfaceObject {
 	}
 	
 	public SchoolGroupSelector(String typeParameterName, String schoolParameterName, String groupParameterName) {
-		parTypeID = typeParameterName;
-		parSchoolID = schoolParameterName;
-		parGroupID = groupParameterName;
+		this.parTypeID = typeParameterName;
+		this.parSchoolID = schoolParameterName;
+		this.parGroupID = groupParameterName;
 		
-		iframeName = parTypeID + "_" + parSchoolID + "_" + parGroupID;
+		this.iframeName = this.parTypeID + "_" + this.parSchoolID + "_" + this.parGroupID;
 		
-		setName(iframeName);
+		setName(this.iframeName);
 		
-		typeDrop = new DropdownMenu(parTypeID);
-		schoolDrop = new DropdownMenu(parSchoolID);
-		groupDrop = new DropdownMenu(parGroupID);
+		this.typeDrop = new DropdownMenu(this.parTypeID);
+		this.schoolDrop = new DropdownMenu(this.parSchoolID);
+		this.groupDrop = new DropdownMenu(this.parGroupID);
 	}
 	
 	public Object clone() {
 	    SchoolGroupSelector inp = (SchoolGroupSelector) super.clone();
-		if (typeDrop != null) {
-			inp.typeDrop = (DropdownMenu) typeDrop.clone();
+		if (this.typeDrop != null) {
+			inp.typeDrop = (DropdownMenu) this.typeDrop.clone();
 		}
-		if (schoolDrop != null) {
-			inp.schoolDrop = (DropdownMenu) schoolDrop.clone();
+		if (this.schoolDrop != null) {
+			inp.schoolDrop = (DropdownMenu) this.schoolDrop.clone();
 		}
-		if (groupDrop != null) {
-			inp.groupDrop = (DropdownMenu) groupDrop.clone();
+		if (this.groupDrop != null) {
+			inp.groupDrop = (DropdownMenu) this.groupDrop.clone();
 		}
-		if (category != null) {
-			inp.category = category;
+		if (this.category != null) {
+			inp.category = this.category;
 		}
-		if(types!=null){
-		    inp.types = types;
+		if(this.types!=null){
+		    inp.types = this.types;
 		}
 		return inp;
 	}
 	
 	public DropdownMenu getTypeDropdown() {
-		return typeDrop;
+		return this.typeDrop;
 	}
 	
 	public DropdownMenu getSchoolDropdown() {
-		return schoolDrop;
+		return this.schoolDrop;
 	}
 	
 	public DropdownMenu getGroupDropdown() {
-		return groupDrop;
+		return this.groupDrop;
 	}
 	
 	public void main(IWContext iwc) throws Exception {
 
-		String usedTypeID = iwc.getParameter(parTypeID);
-		String usedSchoolID = iwc.getParameter(parSchoolID);
-		String usedGroupID = iwc.getParameter(parGroupID);
+		String usedTypeID = iwc.getParameter(this.parTypeID);
+		String usedSchoolID = iwc.getParameter(this.parSchoolID);
+		String usedGroupID = iwc.getParameter(this.parGroupID);
 		
-		if (specifiedTypeID != null) {
-		    usedTypeID = specifiedTypeID;
+		if (this.specifiedTypeID != null) {
+		    usedTypeID = this.specifiedTypeID;
 		}
-		if (specifiedSchoolID != null) {
-		    usedSchoolID = specifiedSchoolID;
+		if (this.specifiedSchoolID != null) {
+		    usedSchoolID = this.specifiedSchoolID;
 		}
-		if (specifiedGroupID != null) {
-			usedGroupID = specifiedGroupID;
+		if (this.specifiedGroupID != null) {
+			usedGroupID = this.specifiedGroupID;
 		}
 
 		SchoolTypeHome typeHome = (SchoolTypeHome) IDOLookup.getHome(SchoolType.class);
 		SchoolHome schoolHome = (SchoolHome)IDOLookup.getHome(School.class);
 		SchoolClassHome groupHome = (SchoolClassHome) IDOLookup.getHome(SchoolClass.class);
-		if ( types==null && category != null ) {
-			types = typeHome.findAllByCategory((String)category.getPrimaryKey());
+		if ( this.types==null && this.category != null ) {
+			this.types = typeHome.findAllByCategory((String)this.category.getPrimaryKey());
 		}		
 		Collection schools = null;
 		Collection groups = null;
 
 		SelectorUtility su = new SelectorUtility();
 		
-		typeDrop.addMenuElement("-1", "Select a type");
-		typeDrop.addMenuElements(types);
+		this.typeDrop.addMenuElement("-1", "Select a type");
+		this.typeDrop.addMenuElements(this.types);
 		if (usedTypeID != null) {
 		    schools = schoolHome.findAllBySchoolType(Integer.valueOf(usedTypeID).intValue());
-			typeDrop.setSelectedElement(usedTypeID);
+			this.typeDrop.setSelectedElement(usedTypeID);
 		}
 		
 		if (schools != null) {
 			Iterator iter = schools.iterator();
 			while (iter.hasNext()) {
 				School school = (School) iter.next();
-				schoolDrop.addMenuElement(school.getPrimaryKey().toString(), school.getName());
+				this.schoolDrop.addMenuElement(school.getPrimaryKey().toString(), school.getName());
 			}
 		}
 		if (schools == null) {
-			schoolDrop.addFirstOption(new SelectOption("Select a school", "-1"));
+			this.schoolDrop.addFirstOption(new SelectOption("Select a school", "-1"));
 		} 
 		
 		if (usedSchoolID != null) {
-			groups = groupHome.findBySchoolAndCategory(Integer.valueOf(usedSchoolID).intValue(),category.getName());
-			schoolDrop.setSelectedElement(usedSchoolID);
+			groups = groupHome.findBySchoolAndCategory(Integer.valueOf(usedSchoolID).intValue(),this.category.getName());
+			this.schoolDrop.setSelectedElement(usedSchoolID);
 		}
 
-		groupDrop = (DropdownMenu) su.getSelectorFromIDOEntities(groupDrop, groups, "getName");
+		this.groupDrop = (DropdownMenu) su.getSelectorFromIDOEntities(this.groupDrop, groups, "getName");
 		if (schools == null) {
-			groupDrop.addFirstOption(new SelectOption("Select a group", "-1"));
+			this.groupDrop.addFirstOption(new SelectOption("Select a group", "-1"));
 		}
 		if (usedGroupID != null) {
-		    groupDrop.setSelectedElement(usedGroupID);
+		    this.groupDrop.setSelectedElement(usedGroupID);
 		}
 				
 		
-		if (typeDrop.getParent() == null) {
-			add(typeDrop);
+		if (this.typeDrop.getParent() == null) {
+			add(this.typeDrop);
 		}
-		if (schoolDrop.getParent() == null) {
-			add(schoolDrop);
+		if (this.schoolDrop.getParent() == null) {
+			add(this.schoolDrop);
 		}
-		if (groupDrop.getParent() == null) {
-			add(groupDrop);
+		if (this.groupDrop.getParent() == null) {
+			add(this.groupDrop);
 		}
 
-		RemoteScriptHandler rsh = new RemoteScriptHandler(typeDrop, schoolDrop);
+		RemoteScriptHandler rsh = new RemoteScriptHandler(this.typeDrop, this.schoolDrop);
 		rsh.setRemoteScriptCollectionClass(SchoolGroupSelectorCollectionHandler.class);
 		rsh.addParameter(PARAMETER_ACTION, ACTION_UPDATE_SCHOOLS);
-		rsh.setToClear(groupDrop, "Select a group");
+		rsh.setToClear(this.groupDrop, "Select a group");
 		add(rsh);
 			
-		RemoteScriptHandler rsh2 = new RemoteScriptHandler(schoolDrop, groupDrop);
+		RemoteScriptHandler rsh2 = new RemoteScriptHandler(this.schoolDrop, this.groupDrop);
 		rsh2.setRemoteScriptCollectionClass(SchoolGroupSelectorCollectionHandler.class);
 		rsh2.addParameter(PARAMETER_ACTION, ACTION_UPDATE_GROUPS);
-		rsh2.addParameter(PARAMETER_TYPE_ID, parTypeID);
+		rsh2.addParameter(PARAMETER_TYPE_ID, this.parTypeID);
 		add(rsh2);
 		
 	}
@@ -200,8 +200,8 @@ public class SchoolGroupSelector extends InterfaceObject {
 	    try {
             SchoolHome schoolHome = (SchoolHome) IDOLookup.getHome(School.class);
             School school = schoolHome.findByPrimaryKey(schoolPK);
-            specifiedSchoolID = school.getPrimaryKey().toString();
-            types = school.getSchoolTypes();
+            this.specifiedSchoolID = school.getPrimaryKey().toString();
+            this.types = school.getSchoolTypes();
         } catch (IDOLookupException e) {
             
         } catch (EJBException e) {
@@ -229,9 +229,9 @@ public class SchoolGroupSelector extends InterfaceObject {
 	}*/
 
 	public void setStyleClass(String styleClass) {
-		typeDrop.setStyleClass(styleClass);
-		schoolDrop.setStyleClass(styleClass);
-		groupDrop.setStyleClass(styleClass);
+		this.typeDrop.setStyleClass(styleClass);
+		this.schoolDrop.setStyleClass(styleClass);
+		this.groupDrop.setStyleClass(styleClass);
 	}
 	
 	public void setSchoolCategory(SchoolCategory category){

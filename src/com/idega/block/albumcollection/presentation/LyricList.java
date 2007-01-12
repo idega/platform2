@@ -17,7 +17,7 @@ import com.idega.presentation.text.Text;
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:      idega
- * @author <a href="gummi@idega.is">Guðmundur Ágúst Sæmundsson</a>
+ * @author <a href="gummi@idega.is">Guï¿½mundur ï¿½gï¿½st Sï¿½mundsson</a>
  * @version 1.0
  */
 
@@ -30,16 +30,16 @@ public class LyricList extends Block {
   private Link deleteLyricLinkTemplate;
 
   public LyricList() {
-    lyricViewerLinkTemplate = AlbumCollectionBusiness.getMainLinkClone();
-    lyricViewerLinkTemplate.addParameter(AlbumCollection._PRM_STATE,AlbumCollection._STATE_LYRIC);
+    this.lyricViewerLinkTemplate = AlbumCollectionBusiness.getMainLinkClone();
+    this.lyricViewerLinkTemplate.addParameter(AlbumCollection._PRM_STATE,AlbumCollection._STATE_LYRIC);
 
-    updateLyricLinkTemplate = AlbumCollectionBusiness.getMainLinkClone("U");
-    updateLyricLinkTemplate.setWindowToOpen(InsertLyric.class);
-    updateLyricLinkTemplate.addParameter(AlbumCollectionBusiness._PRM_UPDATE,"true");
+    this.updateLyricLinkTemplate = AlbumCollectionBusiness.getMainLinkClone("U");
+    this.updateLyricLinkTemplate.setWindowToOpen(InsertLyric.class);
+    this.updateLyricLinkTemplate.addParameter(AlbumCollectionBusiness._PRM_UPDATE,"true");
 
-    deleteLyricLinkTemplate = AlbumCollectionBusiness.getMainLinkClone("D");
-    deleteLyricLinkTemplate.setWindowToOpen(DeleteConfirmWindow.class);
-    deleteLyricLinkTemplate.addParameter(AlbumCollectionBusiness._PRM_DELETE,AlbumCollectionBusiness._CONST_LYRIC);
+    this.deleteLyricLinkTemplate = AlbumCollectionBusiness.getMainLinkClone("D");
+    this.deleteLyricLinkTemplate.setWindowToOpen(DeleteConfirmWindow.class);
+    this.deleteLyricLinkTemplate.addParameter(AlbumCollectionBusiness._PRM_DELETE,AlbumCollectionBusiness._CONST_LYRIC);
 
   }
 
@@ -111,8 +111,8 @@ public class LyricList extends Block {
       Table info = (Table)lyricInfo.clone();
       //info.add(AlbumCollectionBusiness.getMainTextClone("nr."),1,1);
       info.add(AlbumCollectionBusiness.getMainTextClone("heiti"),2,1);
-      //info.add(AlbumCollectionBusiness.getMainTextClone("höfundar"),3,1);
-      //info.add(AlbumCollectionBusiness.getMainTextClone("flutt á"),4,1);
+      //info.add(AlbumCollectionBusiness.getMainTextClone("hï¿½fundar"),3,1);
+      //info.add(AlbumCollectionBusiness.getMainTextClone("flutt ï¿½"),4,1);
       lyricTable.add(info,1,index);
       index++;
       Iterator iter = lyrics.iterator();
@@ -124,7 +124,7 @@ public class LyricList extends Block {
         info = (Table)lyricInfo.clone();
 
 
-        Link link = (Link)lyricViewerLinkTemplate.clone();
+        Link link = (Link)this.lyricViewerLinkTemplate.clone();
         link.setText(item.getName());
         link.addParameter(AlbumCollectionBusiness._PRM_LYRIC_ID,item.getID());
         link.setBold();
@@ -154,12 +154,12 @@ public class LyricList extends Block {
 
 
         if(hasEditPermission()){
-          Link update = (Link)updateLyricLinkTemplate.clone();
+          Link update = (Link)this.updateLyricLinkTemplate.clone();
           update.setObject(core.getSharedImage("edit.gif","edit lyric"));
           update.addParameter(AlbumCollectionBusiness._PRM_LYRIC_ID,item.getID());
           info.add(update,6,1);
 
-          Link delete = (Link)deleteLyricLinkTemplate.clone();
+          Link delete = (Link)this.deleteLyricLinkTemplate.clone();
           delete.setObject(core.getSharedImage("delete.gif","delete lyric"));
           delete.addParameter(DeleteConfirmWindow._PRM_ID,item.getID());
           info.add(delete,7,1);

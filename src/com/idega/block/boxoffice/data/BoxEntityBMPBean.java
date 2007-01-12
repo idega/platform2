@@ -9,6 +9,7 @@ package com.idega.block.boxoffice.data;
 import java.sql.SQLException;
 
 import com.idega.core.component.data.ICObjectInstance;
+import com.idega.data.GenericEntity;
 
 
 
@@ -88,7 +89,7 @@ public class BoxEntityBMPBean extends com.idega.data.GenericEntity implements co
 
   public void delete() throws SQLException {
 
-    BoxLink[] link = (BoxLink[]) com.idega.block.boxoffice.data.BoxLinkBMPBean.getStaticInstance(BoxLink.class).findAllByColumn(getColumnNameBoxID(),Integer.toString(getID()),"=");
+    BoxLink[] link = (BoxLink[]) GenericEntity.getStaticInstance(BoxLink.class).findAllByColumn(getColumnNameBoxID(),Integer.toString(getID()),"=");
 
     if ( link != null ) {
 
@@ -100,9 +101,9 @@ public class BoxEntityBMPBean extends com.idega.data.GenericEntity implements co
 
     }
 
-    removeFrom(com.idega.core.component.data.ICObjectInstanceBMPBean.getStaticInstance(ICObjectInstance.class));
+    removeFrom(GenericEntity.getStaticInstance(ICObjectInstance.class));
 
-    removeFrom(com.idega.block.boxoffice.data.BoxCategoryBMPBean.getStaticInstance(BoxCategory.class));
+    removeFrom(GenericEntity.getStaticInstance(BoxCategory.class));
 
     super.delete();
 

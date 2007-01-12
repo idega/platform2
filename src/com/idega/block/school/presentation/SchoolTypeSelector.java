@@ -42,7 +42,7 @@ public class SchoolTypeSelector extends Block {
 	private void init(IWContext iwc) {
 		if (iwc.isParameterSet(PARAMETER_SCHOOL_TYPE_ID)) {
 			try {
-				_schoolTypeId = Integer.parseInt(iwc.getParameter(PARAMETER_SCHOOL_TYPE_ID));
+				this._schoolTypeId = Integer.parseInt(iwc.getParameter(PARAMETER_SCHOOL_TYPE_ID));
 			}
 			catch (NumberFormatException n) {
 				n.printStackTrace(System.err);
@@ -56,18 +56,20 @@ public class SchoolTypeSelector extends Block {
 	private void drawList(IWContext iwc) throws RemoteException {
 		SchoolBusiness stb = (SchoolBusiness) IBOLookup.getServiceInstance(iwc, SchoolBusiness.class);
 		Collection coll;
-		if (_category != null) {
-			coll = stb.findAllSchoolTypesInCategory(_category);
+		if (this._category != null) {
+			coll = stb.findAllSchoolTypesInCategory(this._category);
 			
 		}
 		else {
 			coll = stb.findAllSchoolTypes();
 		}
 
-		if (_showOnlyFreetime)
-			coll = stb.findAllSchoolTypesInCategoryFreeTime(_category);
-		else if (_showOnlyNonFreetime)
-			coll = stb.findAllSchoolTypesInCategory(_category, false);
+		if (this._showOnlyFreetime) {
+			coll = stb.findAllSchoolTypesInCategoryFreeTime(this._category);
+		}
+		else if (this._showOnlyNonFreetime) {
+			coll = stb.findAllSchoolTypesInCategory(this._category, false);
+		}
 		
 		if (coll != null) {
 			SchoolType sType;
@@ -83,23 +85,23 @@ public class SchoolTypeSelector extends Block {
 				sTypeId = ((Integer) sType.getPrimaryKey()).intValue();
 				
 				
-				if (sTypeId == _schoolTypeId) {
+				if (sTypeId == this._schoolTypeId) {
 					table.add(getText(sType.getName(), true), col, row);
 				}
 				else {
 					table.add(getLink(sType.getName(), sType.getPrimaryKey().toString()), col, row);
 				}
 				
-				if (_spaceBetween > 0 && iter.hasNext()) {
-					if (_horizontal) {
-						table.setWidth(++col, row, String.valueOf(_spaceBetween));
+				if (this._spaceBetween > 0 && iter.hasNext()) {
+					if (this._horizontal) {
+						table.setWidth(++col, row, String.valueOf(this._spaceBetween));
 					}
 					else {
-						table.setHeight(col, ++row, String.valueOf(_spaceBetween));	
+						table.setHeight(col, ++row, String.valueOf(this._spaceBetween));	
 					}
 				}
 
-				if (_horizontal) {
+				if (this._horizontal) {
 					col++;		
 				}
 				else {
@@ -123,19 +125,19 @@ public class SchoolTypeSelector extends Block {
 	private Text getText(String content, boolean selected) {
 		Text text = new Text(content);
 		if (selected) {
-			if (_selColor != null) {
-				text.setFontColor(_selColor);
+			if (this._selColor != null) {
+				text.setFontColor(this._selColor);
 			}
-			if (_selStyle != null) {
-				text.setFontStyle(_selStyle);
+			if (this._selStyle != null) {
+				text.setFontStyle(this._selStyle);
 			}
 		}
 		else {
-			if (_fontColor != null) {
-				text.setFontColor(_fontColor);
+			if (this._fontColor != null) {
+				text.setFontColor(this._fontColor);
 			}
-			if (_fontStyle != null) {
-				text.setFontStyle(_fontStyle);
+			if (this._fontStyle != null) {
+				text.setFontStyle(this._fontStyle);
 			}
 		}
 		return text;
@@ -144,42 +146,42 @@ public class SchoolTypeSelector extends Block {
 	/** Setters */
 
 	public void setHorizontalView(boolean horizontal) {
-		_horizontal = horizontal;
+		this._horizontal = horizontal;
 	}
 
 	public void setVerticalView(boolean vertical) {
-		_horizontal = !vertical;
+		this._horizontal = !vertical;
 	}
 
 	public void setSpaceBetween(int spaceBetween) {
-		_spaceBetween = spaceBetween;
+		this._spaceBetween = spaceBetween;
 	}
 
 	public void setFontStyle(String style) {
-		_fontStyle = style;
+		this._fontStyle = style;
 	}
 
 	public void setFontColor(String color) {
-		_fontColor = color;
+		this._fontColor = color;
 	}
 
 	public void setSelectedFontStyle(String style) {
-		_selStyle = style;
+		this._selStyle = style;
 	}
 
 	public void setSelectedFontColor(String color) {
-		_selColor = color;
+		this._selColor = color;
 	}
 
 	public void setSchoolCategory(String category) {
-		_category = category;
+		this._category = category;
 	}
 	
 	public void setShowOnlyFreetimeType(boolean showOnlyFreetime) {
-		_showOnlyFreetime = showOnlyFreetime;
+		this._showOnlyFreetime = showOnlyFreetime;
 	}
 	
 	public void setShowOnlyNonFreetimeType(boolean showOnlyNonFreetime) {
-		_showOnlyNonFreetime = showOnlyNonFreetime;
+		this._showOnlyNonFreetime = showOnlyNonFreetime;
 	}
 }

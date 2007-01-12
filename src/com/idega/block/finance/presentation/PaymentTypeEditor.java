@@ -49,41 +49,43 @@ public class PaymentTypeEditor extends Finance {
 		return "Paymenttype";
 	}
 	protected void control(IWContext iwc) {
-		if (isAdmin) {
+		if (this.isAdmin) {
 			try {
 				UIComponent MO = new Text();
-				if (iwc.getParameter(strAction) == null) {
-					MO = getMain(iwc, iCategoryId);
+				if (iwc.getParameter(this.strAction) == null) {
+					MO = getMain(iwc, this.iCategoryId);
 				}
-				if (iwc.getParameter(strAction) != null) {
-					String sAct = iwc.getParameter(strAction);
+				if (iwc.getParameter(this.strAction) != null) {
+					String sAct = iwc.getParameter(this.strAction);
 					int iAct = Integer.parseInt(sAct);
 					switch (iAct) {
 						case ACT1 :
-							MO = getMain(iwc, iCategoryId);
+							MO = getMain(iwc, this.iCategoryId);
 							break;
 						case ACT2 :
-							MO = getChange(iwc, iCategoryId);
+							MO = getChange(iwc, this.iCategoryId);
 							break;
 						case ACT3 :
-							MO = doUpdate(iwc, iCategoryId);
+							MO = doUpdate(iwc, this.iCategoryId);
 							break;
 						default :
-							MO = getMain(iwc, iCategoryId);
+							MO = getMain(iwc, this.iCategoryId);
 							break;
 					}
 				}
 				Table T = new Table(1, 3);
-				T.add(Edit.headerText(iwrb.getLocalizedString("payment_type_editor", "Payment type editor"), 3), 1, 1);
-				T.add(makeLinkTable(1, iCategoryId));
+				T.add(Edit.headerText(this.iwrb.getLocalizedString("payment_type_editor", "Payment type editor"), 3), 1, 1);
+				T.add(makeLinkTable(1, this.iCategoryId));
 				T.add(MO);
 				T.setWidth("100%");
 				add(T);
 			} catch (Exception S) {
 				S.printStackTrace();
 			}
-		} else
-			add(iwrb.getLocalizedString("access_denied", "Access denies"));
+		}
+		else {
+			add(this.iwrb.getLocalizedString("access_denied", "Access denies"));
+		}
 	}
 	protected PresentationObject makeLinkTable(int menuNr, int iCategoryId) {
 		Table LinkTable = new Table(3, 1);
@@ -93,15 +95,15 @@ public class PaymentTypeEditor extends Finance {
 		LinkTable.setCellspacing(1);
 		LinkTable.setColor(Edit.colorDark);
 		LinkTable.setWidth(last, "100%");
-		Link Link1 = new Link(iwrb.getLocalizedString("view", "View"));
+		Link Link1 = new Link(this.iwrb.getLocalizedString("view", "View"));
 		Link1.setFontColor(Edit.colorLight);
 		Link1.addParameter(this.strAction, String.valueOf(this.ACT1));
 		Link1.addParameter(Finance.getCategoryParameter(iCategoryId));
-		Link Link2 = new Link(iwrb.getLocalizedString("change", "Change"));
+		Link Link2 = new Link(this.iwrb.getLocalizedString("change", "Change"));
 		Link2.setFontColor(Edit.colorLight);
 		Link2.addParameter(this.strAction, String.valueOf(this.ACT2));
 		Link2.addParameter(Finance.getCategoryParameter(iCategoryId));
-		if (isAdmin) {
+		if (this.isAdmin) {
 			LinkTable.add(Link1, 1, 1);
 			LinkTable.add(Link2, 2, 1);
 		}
@@ -124,9 +126,9 @@ protected PresentationObject getMain(IWContext iwc,int iCategoryId){
 	}
 	int count = 0;
 
-    if(types !=null)
-
-      count = types.size();
+    if(types !=null) {
+		count = types.size();
+	}
 
     keyTable = new Table(6,count+1);
 
@@ -144,17 +146,17 @@ protected PresentationObject getMain(IWContext iwc,int iCategoryId){
 
     keyTable.add(Edit.formatText("Nr"),1,1);
 
-    keyTable.add(Edit.formatText(iwrb.getLocalizedString("name","Name")),2,1);
+    keyTable.add(Edit.formatText(this.iwrb.getLocalizedString("name","Name")),2,1);
 
-    keyTable.add(Edit.formatText(iwrb.getLocalizedString("info","Info")),3,1);
+    keyTable.add(Edit.formatText(this.iwrb.getLocalizedString("info","Info")),3,1);
 
-    keyTable.add(Edit.formatText(iwrb.getLocalizedString("payments","Payments")),4,1);
+    keyTable.add(Edit.formatText(this.iwrb.getLocalizedString("payments","Payments")),4,1);
 
-    keyTable.add(Edit.formatText(iwrb.getLocalizedString("amount_cost","Amount cost")),5,1);
+    keyTable.add(Edit.formatText(this.iwrb.getLocalizedString("amount_cost","Amount cost")),5,1);
 
-    keyTable.add(Edit.formatText(iwrb.getLocalizedString("percent_cost","Percent cost")),6,1);
+    keyTable.add(Edit.formatText(this.iwrb.getLocalizedString("percent_cost","Percent cost")),6,1);
 
-    if(isAdmin){
+    if(this.isAdmin){
 
       if(count > 0){
 
@@ -201,8 +203,9 @@ protected PresentationObject getMain(IWContext iwc,int iCategoryId){
 			e.printStackTrace();
 		}
 		int count = 0;
-		if (types != null)
+		if (types != null) {
 			count = types.size();
+		}
 		int inputcount = count + 5;
 		Table inputTable = new Table(7, inputcount + 1);
 		inputTable.setWidth("100%");
@@ -212,12 +215,12 @@ protected PresentationObject getMain(IWContext iwc,int iCategoryId){
 		inputTable.setHorizontalZebraColored(Edit.colorLight, Edit.colorWhite);
 		inputTable.setRowColor(1, Edit.colorMiddle);
 		inputTable.add(Edit.formatText("Nr"), 1, 1);
-		inputTable.add(Edit.formatText(iwrb.getLocalizedString("name", "Name")), 2, 1);
-		inputTable.add(Edit.formatText(iwrb.getLocalizedString("info", "Info")), 3, 1);
-		inputTable.add(Edit.formatText(iwrb.getLocalizedString("payments", "Payments")), 4, 1);
-		inputTable.add(Edit.formatText(iwrb.getLocalizedString("amount_cost", "Amount cost")), 5, 1);
-		inputTable.add(Edit.formatText(iwrb.getLocalizedString("percent_cost", "Percent cost")), 6, 1);
-		inputTable.add(Edit.formatText(iwrb.getLocalizedString("delete", "Delete")), 7, 1);
+		inputTable.add(Edit.formatText(this.iwrb.getLocalizedString("name", "Name")), 2, 1);
+		inputTable.add(Edit.formatText(this.iwrb.getLocalizedString("info", "Info")), 3, 1);
+		inputTable.add(Edit.formatText(this.iwrb.getLocalizedString("payments", "Payments")), 4, 1);
+		inputTable.add(Edit.formatText(this.iwrb.getLocalizedString("amount_cost", "Amount cost")), 5, 1);
+		inputTable.add(Edit.formatText(this.iwrb.getLocalizedString("percent_cost", "Percent cost")), 6, 1);
+		inputTable.add(Edit.formatText(this.iwrb.getLocalizedString("delete", "Delete")), 7, 1);
 		PaymentType key;
 		TextInput nameInput, infoInput, cost;
 		HiddenInput idInput;
@@ -262,7 +265,7 @@ protected PresentationObject getMain(IWContext iwc,int iCategoryId){
 		myForm.add(new HiddenInput("tke_count", String.valueOf(inputcount)));
 		myForm.add(new HiddenInput(this.strAction, String.valueOf(this.ACT3)));
 		myForm.add(inputTable);
-		SubmitButton save = new SubmitButton(iwrb.getLocalizedString("save", "Save"));
+		SubmitButton save = new SubmitButton(this.iwrb.getLocalizedString("save", "Save"));
 		Edit.setStyle(save);
 		myForm.add(save);
 		return (myForm);
@@ -310,9 +313,9 @@ protected PresentationObject getMain(IWContext iwc,int iCategoryId){
 		return IW_BUNDLE_IDENTIFIER;
 	}
 	public void main(IWContext iwc) {
-		iwrb = getResourceBundle(iwc);
-		iwb = getBundle(iwc);
-		isAdmin = iwc.hasEditPermission(this);
+		this.iwrb = getResourceBundle(iwc);
+		this.iwb = getBundle(iwc);
+		this.isAdmin = iwc.hasEditPermission(this);
 		control(iwc);
 	}
 }// class TariffKeyEditor

@@ -37,13 +37,13 @@ public class DirectSQLStatement implements DynamicExpression {
   private Set keys;
   
   public DirectSQLStatement(QuerySQLPart sqlPart, Object identifier, String uniqueIdentifier, SQLQuery sqlQuery)	{
-  	sqlStatement = sqlPart.getStatement();
+  	this.sqlStatement = sqlPart.getStatement();
   	Map variableValueMap = sqlPart.getVariableValueMap();
-  	identifierValueMap.putAll(variableValueMap);
-  	identifierInputDescriptionMap.putAll(sqlPart.getInputDescriptionValueMap());
-  	keys = variableValueMap.keySet();
+  	this.identifierValueMap.putAll(variableValueMap);
+  	this.identifierInputDescriptionMap.putAll(sqlPart.getInputDescriptionValueMap());
+  	this.keys = variableValueMap.keySet();
   	this.uniqueIdentifier = StringHandler.shortenToLength(uniqueIdentifier, UNIQUE_IDENTIFIER_MAX_LENGTH);
-  	postStatement = sqlPart.getPostStatement();
+  	this.postStatement = sqlPart.getPostStatement();
   }
 
 	public void setSQLStatement(String sqlStatement) 	{
@@ -54,21 +54,21 @@ public class DirectSQLStatement implements DynamicExpression {
 	 * @see com.idega.block.dataquery.data.sql.DynamicExpression#isDynamic()
 	 */
 	public boolean isDynamic() {
-		return ! keys.isEmpty();
+		return ! this.keys.isEmpty();
 	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.block.dataquery.data.sql.DynamicExpression#getIdentifierValueMap()
 	 */
 	public Map getIdentifierValueMap() {
-		return identifierValueMap;
+		return this.identifierValueMap;
 	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.block.dataquery.data.sql.DynamicExpression#getIdentifierDescriptionMap()
 	 */
 	public Map getIdentifierInputDescriptionMap() {
-		return identifierInputDescriptionMap;
+		return this.identifierInputDescriptionMap;
 	}
 
 	/* (non-Javadoc)
@@ -82,12 +82,12 @@ public class DirectSQLStatement implements DynamicExpression {
 	 * @see com.idega.block.dataquery.data.sql.Expression#toSQLString()
 	 */
 	public String toSQLString() {
-		Iterator iterator = identifierValueMap.entrySet().iterator();
-		String result = StringHandler.replace(sqlStatement, UNIQUE_IDENTIFIER, uniqueIdentifier);
+		Iterator iterator = this.identifierValueMap.entrySet().iterator();
+		String result = StringHandler.replace(this.sqlStatement, UNIQUE_IDENTIFIER, this.uniqueIdentifier);
 		while (iterator.hasNext())	{
 			Map.Entry entry = (Map.Entry) iterator.next();
 			String key = (String) entry.getKey();
-			if (keys.contains(key)) {
+			if (this.keys.contains(key)) {
 				String value = (String) entry.getValue();
 				result = StringHandler.replace(result, key, value);
 			}
@@ -96,7 +96,7 @@ public class DirectSQLStatement implements DynamicExpression {
 	}
 	
 	public String getPostStatement() {
-		return (postStatement == null) ? null : StringHandler.replace(postStatement, UNIQUE_IDENTIFIER, uniqueIdentifier);
+		return (this.postStatement == null) ? null : StringHandler.replace(this.postStatement, UNIQUE_IDENTIFIER, this.uniqueIdentifier);
 	}
 		
 	/* (non-Javadoc)

@@ -21,9 +21,9 @@ public class EmailProgramStartScreen extends Block {
   }
 
   public void main(IWContext modinfo){
-    startTable.add("Start Program:)",1,1);
-    startTable.add("Bite my shiny metal ass",1,2);
-    add(startTable);
+    this.startTable.add("Start Program:)",1,1);
+    this.startTable.add("Bite my shiny metal ass",1,2);
+    add(this.startTable);
   }
 
 }

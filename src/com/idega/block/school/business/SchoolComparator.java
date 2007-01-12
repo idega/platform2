@@ -18,14 +18,14 @@ public class SchoolComparator implements Comparator {
 	 * Constructor for SchoolComparator.
 	 */
 	public SchoolComparator(Locale locale) {
-		_locale = locale;
+		this._locale = locale;
 	}
 
 	/**
 	 * @see java.util.Comparator#compare(Object, Object)
 	 */
 	public int compare(Object o1, Object o2) {
-		Collator collator = Collator.getInstance(_locale);
+		Collator collator = Collator.getInstance(this._locale);
 		
 		School school1;
 		try {

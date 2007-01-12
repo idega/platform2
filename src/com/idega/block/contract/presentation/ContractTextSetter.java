@@ -50,12 +50,13 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
 		return IW_BUNDLE_IDENTIFIER;
 	}
 	protected void control(IWContext iwc)throws Exception {
-		iwb = getBundle(iwc);
-		iwrb = getResourceBundle(iwc);
+		this.iwb = getBundle(iwc);
+		this.iwrb = getResourceBundle(iwc);
 		int iCategoryId = -1;
-		if (isAdmin) {
-			if (iwc.isParameterSet(prmCategoryId))
+		if (this.isAdmin) {
+			if (iwc.isParameterSet(prmCategoryId)) {
 				iCategoryId = Integer.parseInt(iwc.getParameter(prmCategoryId));
+			}
 			//add(getPDFLink(iwb.getImage("print.gif")));
 			if (iwc.getParameter("savetitle") != null) {
 				updateTitleForm(iwc, iCategoryId);
@@ -85,8 +86,9 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
 				add(getMainTable(iCategoryId));
 			}
 		}
-		else
-			add(iwrb.getLocalizedString("access_denied", "Access_denied"));
+		else {
+			add(this.iwrb.getLocalizedString("access_denied", "Access_denied"));
+		}
 	}
 	private PresentationObject getMainTable(int iCategoryId) {
 		Table T = new Table();
@@ -101,21 +103,21 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
 			newTitleLink.addParameter("title_id", iCategoryId);
 		}
 		else {
-			sTitle = iwrb.getLocalizedString("new_title", "New Title");
+			sTitle = this.iwrb.getLocalizedString("new_title", "New Title");
 			newTitleLink.addParameter("new_title", "new_title");
 		}
 		newTitleLink.setText(sTitle);
 		newTitleLink.addParameter(prmCategoryId, iCategoryId);
 		int row = 1;
-		T.add(getPDFLink(iwb.getImage("print.gif"), iCategoryId), 1, row);
+		T.add(getPDFLink(this.iwb.getImage("print.gif"), iCategoryId), 1, row);
 		T.add(getNewLink(iCategoryId), 2, row);
 		row++;
-		T.add(Edit.titleText(iwrb.getLocalizedString("header", "Header")), 1, row);
+		T.add(Edit.titleText(this.iwrb.getLocalizedString("header", "Header")), 1, row);
 		row++;
 		T.add(newTitleLink, 2, row);
 		row++;
-		T.add(Edit.titleText(iwrb.getLocalizedString("order", "Order")), 1, row);
-		T.add(Edit.titleText(iwrb.getLocalizedString("title", "Title")), 2, row);
+		T.add(Edit.titleText(this.iwrb.getLocalizedString("order", "Order")), 1, row);
+		T.add(Edit.titleText(this.iwrb.getLocalizedString("title", "Title")), 2, row);
 		row++;
 		if (L != null) {
 			int len = L.size();
@@ -139,10 +141,10 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
 			T.mergeCells(1, 2, 2, 2);
 			T.mergeCells(1, row, 8, row);
 			T.add(Edit.formatText(" "), 1, row);
-			T.setHeight(row, bottomThickness);
+			T.setHeight(row, this.bottomThickness);
 		}
 		else {
-			T.add(Edit.formatText(iwrb.getLocalizedString("no_texts", "No text in database")), 1, 2);
+			T.add(Edit.formatText(this.iwrb.getLocalizedString("no_texts", "No text in database")), 1, 2);
 		}
 		T.setAlignment(1, 2, "right");
 		return T;
@@ -166,7 +168,7 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
 		text.setLength(80);
 		T.add(new HiddenInput(prmCategoryId, String.valueOf(iCategoryId)));
 		T.add(getUpLink(iCategoryId), 1, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("text", "Text")), 1, row++);
+		T.add(Edit.formatText(this.iwrb.getLocalizedString("text", "Text")), 1, row++);
 		T.add(text, 1, row++);
 		T.add(save, 1, row);
 		F.add(T);
@@ -205,9 +207,9 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
 		DropdownMenu tagDrop = getTagDrop("tags", iCategoryId);
 		tagDrop.setOnChange("this.form.texti.value += this.options[this.selectedIndex].value;");
 		name.setLength(80);
-		T.add(Edit.formatText(iwrb.getLocalizedString("title", "Title")), 1, row++);
+		T.add(Edit.formatText(this.iwrb.getLocalizedString("title", "Title")), 1, row++);
 		T.add(name, 1, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("text", "Text")), 1, row++);
+		T.add(Edit.formatText(this.iwrb.getLocalizedString("text", "Text")), 1, row++);
 		T.add(text, 1, row++);
 		Table bottomTable = new Table();
 		bottomTable.setWidth("100%");
@@ -229,12 +231,13 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
 		Form F = new Form();
 		Table T = new Table(3, 2);
 		T.mergeCells(1, 1, 3, 1);
-		if (sTextId != null)
+		if (sTextId != null) {
 			T.add(new HiddenInput("text_id", sTextId));
-		SubmitButton del = new SubmitButton("conf_delete", iwrb.getLocalizedString("ok", "OK"));
-		BackButton back = new BackButton(iwrb.getLocalizedString("cancel", "Cancel"));
+		}
+		SubmitButton del = new SubmitButton("conf_delete", this.iwrb.getLocalizedString("ok", "OK"));
+		BackButton back = new BackButton(this.iwrb.getLocalizedString("cancel", "Cancel"));
 		back.setHistoryMove(2);
-		T.add(Edit.formatText(iwrb.getLocalizedString("sure_to_delete", "Do really want to delete")), 1, 1);
+		T.add(Edit.formatText(this.iwrb.getLocalizedString("sure_to_delete", "Do really want to delete")), 1, 1);
 		T.add(del, 1, 2);
 		T.add(back, 3, 2);
 		F.add(T);
@@ -276,12 +279,12 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
 		return ContractFinder.getContractCategory(iCategoryId).getDescription();
 	}
 	private Link getUpLink(int iCategoryId) {
-		Link L = new Link(iwb.getImage("list.gif"));
+		Link L = new Link(this.iwb.getImage("list.gif"));
 		L.addParameter(prmCategoryId, iCategoryId);
 		return L;
 	}
 	private Link getNewLink(int iCategoryId) {
-		Link newLink = new Link(iwb.getImage("new.gif"));
+		Link newLink = new Link(this.iwb.getImage("new.gif"));
 		newLink.addParameter(prmCategoryId, iCategoryId);
 		newLink.addParameter("new_text", "new");
 		return newLink;
@@ -296,7 +299,7 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
 	private DropdownMenu getTagDrop(String name, int iCategoryId) {
 		List L = ContractFinder.listOfContractTagsInUse(iCategoryId);
 		DropdownMenu drp = new DropdownMenu(name);
-		drp.addMenuElementFirst("tag", iwrb.getLocalizedString("tags", "Tags"));
+		drp.addMenuElementFirst("tag", this.iwrb.getLocalizedString("tags", "Tags"));
 		if (L != null) {
 			java.util.Iterator I = L.iterator();
 			while (I.hasNext()) {
@@ -325,7 +328,7 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
 	}
 	public void main(IWContext iwc)throws Exception {
 		//isStaff = com.idega.core.accesscontrol.business.AccessControl
-		isAdmin = iwc.hasEditPermission(this);
+		this.isAdmin = iwc.hasEditPermission(this);
 		control(iwc);
 	}
 }

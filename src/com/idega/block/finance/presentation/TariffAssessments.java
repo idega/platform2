@@ -85,7 +85,7 @@ public class TariffAssessments extends Finance {
 		return "Assessment";
 	}
 	protected void control(IWContext iwc) {
-		if (isAdmin) {
+		if (this.isAdmin) {
 			initAccounts(iwc);
 			initDates(iwc);
 			initGroups(iwc);
@@ -155,7 +155,7 @@ public class TariffAssessments extends Finance {
 				}
 				
 				//T.add(getGroupLinks(iwc), 1, 2);
-				if (group != null) {
+				if (this.group != null) {
 					//T.add(makeLinkTable(1), 1, 3);
 				}
 				setLocalizedTitle("assessments","Assessments");
@@ -166,7 +166,7 @@ public class TariffAssessments extends Finance {
 			}
 			
 			setTabPanel(getGroupLinks(iwc));
-			setNavigationPanel(collectionNavigator);
+			setNavigationPanel(this.collectionNavigator);
 			Link showAllLink = new Link(getText(localize("showall","Show all")));
 			showAllLink.addParameter(PRM_SHOW_ALL,"true");
 			showAllLink.maintainParameter(PRM_ROUND_ID,iwc);
@@ -174,27 +174,31 @@ public class TariffAssessments extends Finance {
 			showAllLink.maintainParameter(PRM_ACTION,iwc);
 			setNavigationPanel(showAllLink);
 			setSearchPanel(getActionButtonsTable(iwc));
-		} else
+		}
+		else {
 			add(localize("access_denied", "Access denies"));
+		}
 	}
 	
 	private void initAccounts(IWContext iwc){
 		String id = iwc.getParameter(PRM_ROUND_ID);
 		String acc_id = iwc.getParameter(PRM_ACCOUNT_ID);
-		if(id!=null)
-			roundID = Integer.valueOf(id);
-		if(acc_id !=null)
-			accountID = Integer.valueOf(acc_id);
+		if(id!=null) {
+			this.roundID = Integer.valueOf(id);
+		}
+		if(acc_id !=null) {
+			this.accountID = Integer.valueOf(acc_id);
+		}
 			
 	}
 	
 	private void initCollections(IWContext iwc){
-		if(groupID!=null){
+		if(this.groupID!=null){
 			// assessment list
-			if(roundID==null && accountID==null){
+			if(this.roundID==null && this.accountID==null){
 				
 				try {
-					int assessmentCount = getFinanceService().getAssessmentRoundHome().getCountByCategoryAndTariffGroup(getFinanceCategoryId(),groupID,this.fromDate,this.toDate,null);
+					int assessmentCount = getFinanceService().getAssessmentRoundHome().getCountByCategoryAndTariffGroup(getFinanceCategoryId(),this.groupID,this.fromDate,this.toDate,null);
 					setCollectionSize(assessmentCount);
 				} catch (RemoteException e1) {
 					e1.printStackTrace();
@@ -203,11 +207,11 @@ public class TariffAssessments extends Finance {
 				}
 				
 				this.collectionNavigator = getCollectionNavigator(iwc);
-				collectionNavigator.addMaintainParameter(PRM_GROUP_ID);
-				collectionNavigator.addMaintainParameter(PRM_ACTION);
+				this.collectionNavigator.addMaintainParameter(PRM_GROUP_ID);
+				this.collectionNavigator.addMaintainParameter(PRM_ACTION);
 				
 				try {
-					assessments = getFinanceService().getAssessmentRoundHome().findByCategoryAndTariffGroup(getFinanceCategoryId(),groupID,this.fromDate,this.toDate,null,getCollectionViewSize(),getCollectionIndex());
+					this.assessments = getFinanceService().getAssessmentRoundHome().findByCategoryAndTariffGroup(getFinanceCategoryId(),this.groupID,this.fromDate,this.toDate,null,getCollectionViewSize(),getCollectionIndex());
 					
 				} catch (RemoteException e) {
 					e.printStackTrace();
@@ -218,9 +222,9 @@ public class TariffAssessments extends Finance {
 				
 			}
 			// account viewing
-			if(roundID!=null){
+			if(this.roundID!=null){
 				 try {
-					int accountCount = getFinanceService().getAccountHome().countByAssessmentRound(roundID);
+					int accountCount = getFinanceService().getAccountHome().countByAssessmentRound(this.roundID);
 					 setCollectionSize(accountCount);
 				} catch (RemoteException e1) {
 					e1.printStackTrace();
@@ -228,19 +232,20 @@ public class TariffAssessments extends Finance {
 					e1.printStackTrace();
 				}
 				
-				if(accountID!=null || iwc.isParameterSet("accpg"))
+				if(this.accountID!=null || iwc.isParameterSet("accpg")) {
 					setCollectionViewSize( 1);
+				}
 					
 				this.collectionNavigator = getCollectionNavigator(iwc);
-				collectionNavigator.addMaintainParameter(PRM_GROUP_ID);
-				collectionNavigator.addMaintainParameter(PRM_ROUND_ID);
-				collectionNavigator.addMaintainParameter(PRM_ACTION);
+				this.collectionNavigator.addMaintainParameter(PRM_GROUP_ID);
+				this.collectionNavigator.addMaintainParameter(PRM_ROUND_ID);
+				this.collectionNavigator.addMaintainParameter(PRM_ACTION);
 				
 				
-				if(accountID!=null ){
-					collectionNavigator.addMaintainParameter("accpg");
+				if(this.accountID!=null ){
+					this.collectionNavigator.addMaintainParameter("accpg");
 					try {
-						accountEntries = getFinanceService().getAccountEntryHome().findByAccountAndAssessmentRound(accountID, roundID);
+						this.accountEntries = getFinanceService().getAccountEntryHome().findByAccountAndAssessmentRound(this.accountID, this.roundID);
 						//setCollectionSize(accountEntries.size());
 					} catch (RemoteException e) {
 						e.printStackTrace();
@@ -254,13 +259,13 @@ public class TariffAssessments extends Finance {
 				
 				else {
 					
-					 if(iwc.isParameterSet(collectionNavigator.getParameterName())){
+					 if(iwc.isParameterSet(this.collectionNavigator.getParameterName())){
 						try {
-							Collection accs = getFinanceService().getAccountHome().findByAssessmentRound(roundID, 1,getCollectionIndex());
+							Collection accs = getFinanceService().getAccountHome().findByAssessmentRound(this.roundID, 1,getCollectionIndex());
 							if(accs!=null && !accs.isEmpty()){
 								Account account = (Account)accs.iterator().next();
-								accountEntries = getFinanceService().getAccountEntryHome().findByAccountAndAssessmentRound((Integer)account.getPrimaryKey(), roundID);
-								accountID = (Integer)account.getPrimaryKey();
+								this.accountEntries = getFinanceService().getAccountEntryHome().findByAccountAndAssessmentRound((Integer)account.getPrimaryKey(), this.roundID);
+								this.accountID = (Integer)account.getPrimaryKey();
 							}
 						} catch (RemoteException e) {
 							e.printStackTrace();
@@ -274,10 +279,12 @@ public class TariffAssessments extends Finance {
 					}	
 				
 						try {
-							if(iwc.isParameterSet(PRM_SHOW_ALL))
-								accounts = getFinanceService().getAccountHome().findByAssessmentRound(roundID,-1,-1);
-							else
-								accounts = getFinanceService().getAccountHome().findByAssessmentRound(roundID, getCollectionViewSize(),getCollectionIndex());
+							if(iwc.isParameterSet(PRM_SHOW_ALL)) {
+								this.accounts = getFinanceService().getAccountHome().findByAssessmentRound(this.roundID,-1,-1);
+							}
+							else {
+								this.accounts = getFinanceService().getAccountHome().findByAssessmentRound(this.roundID, getCollectionViewSize(),getCollectionIndex());
+							}
 						} catch (RemoteException e) {
 							e.printStackTrace();
 						} catch (FinderException e) {
@@ -298,46 +305,47 @@ public class TariffAssessments extends Finance {
 	
 		IWTimestamp from = IWTimestamp.RightNow();
 		from.addMonths(-6);
-		fromDate = from.getDate();
+		this.fromDate = from.getDate();
 		IWTimestamp to = new IWTimestamp(1,Today.getMonth(),Today.getYear() );
 		to.addMonths(1);
-		toDate = to.getDate();
+		this.toDate = to.getDate();
 	}
 	
 	private void initGroups(IWContext iwc) {
-		groupID = new Integer(-1);
+		this.groupID = new Integer(-1);
 		try {
-			groups = getFinanceService().getTariffGroupHome().findByCategory(getFinanceCategoryId());
+			this.groups = getFinanceService().getTariffGroupHome().findByCategory(getFinanceCategoryId());
 		} catch (RemoteException e1) {
 			e1.printStackTrace();
 		} catch (FinderException e1) {
 			e1.printStackTrace();
 		}
-		group = null;
-		if (iwc.isParameterSet(PRM_GROUP_ID))
-			groupID = Integer.valueOf(iwc.getParameter(PRM_GROUP_ID));
+		this.group = null;
+		if (iwc.isParameterSet(PRM_GROUP_ID)) {
+			this.groupID = Integer.valueOf(iwc.getParameter(PRM_GROUP_ID));
+		}
 		//add("group "+iGroupId);
-		if (groupID != null && groupID.intValue() > 0) {
+		if (this.groupID != null && this.groupID.intValue() > 0) {
 			try {
 				//group =
 				// FinanceFinder.getInstance().getTariffGroup(iGroupId);
-				group = getFinanceService().getTariffGroupHome().findByPrimaryKey(groupID);
+				this.group = getFinanceService().getTariffGroupHome().findByPrimaryKey(this.groupID);
 			} catch (RemoteException e2) {
 				e2.printStackTrace();
 			} catch (FinderException e2) {
 				e2.printStackTrace();
 			}
-		} else if (groups != null && !groups.isEmpty()) {
-			group = (TariffGroup) groups.iterator().next();
-			groupID = ((Integer) group.getPrimaryKey());
+		} else if (this.groups != null && !this.groups.isEmpty()) {
+			this.group = (TariffGroup) this.groups.iterator().next();
+			this.groupID = ((Integer) this.group.getPrimaryKey());
 		}
-		if (group != null) {
-			groupID = ((Integer) group.getPrimaryKey());
-			if (group.getHandlerId() > 0) {
+		if (this.group != null) {
+			this.groupID = ((Integer) this.group.getPrimaryKey());
+			if (this.group.getHandlerId() > 0) {
 				try {
 					//handler =
 					// FinanceFinder.getInstance().getFinanceHandler(group.getHandlerId());
-					handler = getFinanceService().getFinanceHandler(new Integer(group.getHandlerId()));
+					this.handler = getFinanceService().getFinanceHandler(new Integer(this.group.getHandlerId()));
 				} catch (RemoteException e2) {
 				}
 			}
@@ -349,14 +357,14 @@ public class TariffAssessments extends Finance {
 		T.setCellspacing(0);
 		T.setWidth("100%");
 		int col = 1;
-		if (groups != null) {
-			java.util.Iterator I = groups.iterator();
+		if (this.groups != null) {
+			java.util.Iterator I = this.groups.iterator();
 			TariffGroup group;
 			Link tab;
 			while (I.hasNext()) {
 				group = (TariffGroup) I.next();
-				tab = new Link(iwb.getImageTab(group.getName(), false));
-				tab.addParameter(Finance.getCategoryParameter(iCategoryId));
+				tab = new Link(this.iwb.getImageTab(group.getName(), false));
+				tab.addParameter(Finance.getCategoryParameter(this.iCategoryId));
 				tab.addParameter(PRM_GROUP_ID, group.getPrimaryKey().toString());
 				T.add(tab, col++, 1);
 			}
@@ -372,8 +380,8 @@ public class TariffAssessments extends Finance {
 			Integer roundId = Integer.valueOf(sRoundId);
 			try {
 				//boolean rb = false;
-				if (handler != null) {
-					handler.rollbackAssessment(iwc,roundId);
+				if (this.handler != null) {
+					this.handler.rollbackAssessment(iwc,roundId);
 				} else {
 					AssessmentBusiness assBuiz = (AssessmentBusiness) com.idega.business.IBOLookup.getServiceInstance(
 							iwc, AssessmentBusiness.class);
@@ -397,8 +405,8 @@ public class TariffAssessments extends Finance {
 			Integer roundId = Integer.valueOf(sRoundId);
 			try {
 				//boolean rb = false;
-				if (handler != null) {
-					handler.publishAssessment(iwc,roundId);
+				if (this.handler != null) {
+					this.handler.publishAssessment(iwc,roundId);
 				} else {
 					AssessmentBusiness assBuiz = (AssessmentBusiness) com.idega.business.IBOLookup.getServiceInstance(
 							iwc, AssessmentBusiness.class);
@@ -437,7 +445,7 @@ public class TariffAssessments extends Finance {
 					enddate.setTime(23,59,59);
 					//add(paydate.getISLDate());
 					debug("Starting Execution " + IWTimestamp.RightNow().toString());
-					handler.executeAssessment(iwc,getFinanceCategoryId(), groupID, roundName,new Integer( 1),
+					this.handler.executeAssessment(iwc,getFinanceCategoryId(), this.groupID, roundName,new Integer( 1),
 							accKeyId, paydate, startdate, enddate,excessRoundID);
 					debug("Ending Execution " + IWTimestamp.RightNow().toString());
 					/*if (assessed) {
@@ -453,13 +461,15 @@ public class TariffAssessments extends Finance {
 			} else {
 				//MO = doMainTable(iwc);
 			}
-		} else
+		}
+		else {
 			System.err.println("did not have pay_date");
 		//return MO;
+		}
 	}
 	protected PresentationObject getActionButtonsTable(IWContext iwc) {
 		Table LinkTable = new Table(4, 1);
-		if (isAdmin) {
+		if (this.isAdmin) {
 			//int last = 4;
 			LinkTable.setWidth("100%");
 			LinkTable.setWidth(4,"100%");
@@ -470,17 +480,17 @@ public class TariffAssessments extends Finance {
 			Link Link1 =new Link(getHeader(localize("view", "View")));
 			
 			Link1.addParameter(this.PRM_ACTION, String.valueOf(this.ACT1));
-			Link1.addParameter(PRM_GROUP_ID, groupID.toString());
+			Link1.addParameter(PRM_GROUP_ID, this.groupID.toString());
 			
 			Link Link2 = new Link(getHeader(localize("new", "New")));
 			
 			Link2.addParameter(this.PRM_ACTION, String.valueOf(this.ACT2));
-			Link2.addParameter(PRM_GROUP_ID, groupID.toString());
+			Link2.addParameter(PRM_GROUP_ID, this.groupID.toString());
 			
 			Link Link3 = new Link(getHeader(localize("preview", "Preview")));
 			
 			Link3.addParameter(this.PRM_ACTION, String.valueOf(this.ACT6));
-			Link3.addParameter(PRM_GROUP_ID, groupID.toString());
+			Link3.addParameter(PRM_GROUP_ID, this.groupID.toString());
 		
 		
 			//status.setMessageCaller(Link1, localize("view_assessments", "View assessments"));
@@ -499,7 +509,7 @@ public class TariffAssessments extends Finance {
 		//List L =
 		// FinanceFinder.getInstance().listOfAssessmentInfo(iCategoryId,iGroupId);
 		
-		if (assessments != null && !assessments.isEmpty()) {
+		if (this.assessments != null && !this.assessments.isEmpty()) {
 			BusyBar busy = new BusyBar("busyguy");
 			String sRollBack = localize("rollback", "Rollback");
 			T.add(getHeader(localize("assessment_name", "Assessment name")), 1, 1);
@@ -515,10 +525,10 @@ public class TariffAssessments extends Finance {
 			java.text.DateFormat df = getDateTimeFormat(iwc.getCurrentLocale());
 			float total = 0;
 			Integer rndID;
-			for (Iterator iter = assessments.iterator(); iter.hasNext();) {
+			for (Iterator iter = this.assessments.iterator(); iter.hasNext();) {
 				AR = (AssessmentRound) iter.next();
 				rndID = (Integer )AR.getPrimaryKey();
-				T.add(getRoundLink(AR.getName(),rndID, groupID), 1, row);
+				T.add(getRoundLink(AR.getName(),rndID, this.groupID), 1, row);
 				T.add(getText(df.format(AR.getRoundStamp())), 2, row);
 			
 				try {
@@ -551,29 +561,31 @@ public class TariffAssessments extends Finance {
 			T.setColumnAlignment(3, Table.HORIZONTAL_ALIGN_RIGHT);
 			T.setColumnAlignment(4, Table.HORIZONTAL_ALIGN_CENTER);
 			row++;
-		} else
+		}
+		else {
 			T.add(localize("no_assessments", "No assessments"), 1, row);
+		}
 		return T;
 	}
 	private Link getRollbackLink(AssessmentRound AR) {
-		Link R = new Link(iwb.getImage("rollback.gif","roll"));
+		Link R = new Link(this.iwb.getImage("rollback.gif","roll"));
 		R.addParameter("rollback", AR.getPrimaryKey().toString());
 		R.addParameter(PRM_ACTION, ACT5);
-		R.addParameter(PRM_GROUP_ID, groupID.toString());
+		R.addParameter(PRM_GROUP_ID, this.groupID.toString());
 		return R;
 	}
 	private Link getPublishLink(AssessmentRound AR) {
-		Link R = new Link(iwb.getImage("publish.gif","publish"));
+		Link R = new Link(this.iwb.getImage("publish.gif","publish"));
 		R.addParameter("publish", AR.getPrimaryKey().toString());
 		R.addParameter(PRM_ACTION, ACT8);
-		R.addParameter(PRM_GROUP_ID, groupID.toString());
+		R.addParameter(PRM_GROUP_ID, this.groupID.toString());
 		return R;
 	}
 	private PresentationObject getPreviewTable(IWContext iwc) throws java.rmi.RemoteException {
 		Table T = new Table();
 		T.setWidth(Table.HUNDRED_PERCENT);
-		if (handler != null && group != null) {
-			Collection L = handler.listOfAssessmentTariffPreviews(iwc,((Integer) group.getPrimaryKey()), new IWTimestamp(fromDate),new IWTimestamp(toDate));
+		if (this.handler != null && this.group != null) {
+			Collection L = this.handler.listOfAssessmentTariffPreviews(iwc,((Integer) this.group.getPrimaryKey()), new IWTimestamp(this.fromDate),new IWTimestamp(this.toDate));
 			if (L != null) {
 				int row = 1;
 				float totals = 0;
@@ -625,12 +637,12 @@ public class TariffAssessments extends Finance {
 	private PresentationObject getTableOfAssessmentAccounts(IWContext iwc) throws RemoteException {
 		Table T = new Table();
 		
-		if (roundID != null) {
+		if (this.roundID != null) {
 			
 		
 				//List L = null
 				// ;//CampusAccountFinder.listOfContractAccountApartmentsInAssessment(Integer.parseInt(id));
-				if (accounts != null) {
+				if (this.accounts != null) {
 					//Map users = mapOfAccountUsers(ID);
 					T.add(getHeader(localize("account_name", "Account name")), 1, 1);
 					T.add(getHeader(localize("user_name", "User name")), 2, 1);
@@ -649,10 +661,10 @@ public class TariffAssessments extends Finance {
 					AccountEntryHome eHome = getFinanceService().getAccountEntryHome();
 					int count = 0;
 					Integer accID;
-					for (Iterator iter = accounts.iterator(); iter.hasNext();) {
+					for (Iterator iter = this.accounts.iterator(); iter.hasNext();) {
 						A = (Account) iter.next();
 						accID = (A.getAccountId());
-						T.add(getAccountEntryLink(A.getAccountName(), roundID, accID,count++), 1, row);
+						T.add(getAccountEntryLink(A.getAccountName(), this.roundID, accID,count++), 1, row);
 						try {
 							User user = uHome.findByPrimaryKey(new Integer(A.getUserId()));
 							T.add(getText(user.getName()), 2, row);
@@ -663,7 +675,7 @@ public class TariffAssessments extends Finance {
 						
 						//T.add(getText(new IWTimestamp(A.getLastUpdated()).getLocaleDate(iwc)), 4, row);
 						try {
-							double balance = eHome.getTotalSumByAccountAndAssessmentRound(accID,roundID);
+							double balance = eHome.getTotalSumByAccountAndAssessmentRound(accID,this.roundID);
 							T.add(getAmountText(balance), 4, row);
 							total += balance;
 						} catch (SQLException e1) {
@@ -680,8 +692,10 @@ public class TariffAssessments extends Finance {
 					T.setRowColor(1,getHeaderColor());
 					T.setColumnAlignment(4, Table.HORIZONTAL_ALIGN_RIGHT);
 					row++;
-				} else
+				}
+				else {
 					add(localize("no_accounts_found","No accounts found !"));
+				}
 		
 		}
 		return T;
@@ -690,7 +704,7 @@ public class TariffAssessments extends Finance {
 		Link li = getLink(label);
 		li.addParameter(PRM_ROUND_ID, roundID.toString());
 		li.addParameter(PRM_ACCOUNT_ID, accountID.toString());
-		li.addParameter(PRM_GROUP_ID,groupID.toString());
+		li.addParameter(PRM_GROUP_ID,this.groupID.toString());
 		li.addParameter(PRM_ACTION, ACT7);
 		li.addParameter("accpg","on");
 		li.addParameter(CollectionNavigator.getParameterName(),getCollectionIndex()*getCollectionViewSize()+number);
@@ -702,10 +716,10 @@ public class TariffAssessments extends Finance {
 		T.setWidth(Table.HUNDRED_PERCENT);
 		T.setCellspacing(getCellspacing());
 		T.setCellpadding(getCellpadding());
-		if(roundID!=null){
+		if(this.roundID!=null){
 			AssessmentRound assessment = null;
 			try {
-				 assessment = getFinanceService().getAssessmentRoundHome().findByPrimaryKey(roundID);
+				 assessment = getFinanceService().getAssessmentRoundHome().findByPrimaryKey(this.roundID);
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			} catch (FinderException e) {
@@ -718,7 +732,7 @@ public class TariffAssessments extends Finance {
 				T.add(getText(getDateTimeFormat(iwc.getCurrentLocale()).format(assessment.getRoundStamp())),2,2);
 				T.add(getHeader(localize("assessment_total","Assessment total")),4,1);
 				try {
-					double roundtotal  = getFinanceService().getAccountEntryHome().getTotalSumByAssessmentRound(roundID);
+					double roundtotal  = getFinanceService().getAccountEntryHome().getTotalSumByAssessmentRound(this.roundID);
 					T.add(getAmountText(roundtotal), 5, 1);
 					
 				} catch (Exception e) {
@@ -748,7 +762,7 @@ public class TariffAssessments extends Finance {
 		accountInfoTable.setCellpadding(getCellpadding());
 		accountInfoTable.setCellspacing(getCellspacing());
 		
-		if (roundID != null && accountID!=null) {
+		if (this.roundID != null && this.accountID!=null) {
 			
 		AccountUser accountOwner = null;
 		AccountInfo account = null;
@@ -756,7 +770,7 @@ public class TariffAssessments extends Finance {
 		// FinanceFinder.getInstance().listOfAssessmentAccountEntries(iAccountId,Integer.parseInt(id));
 		
 		try {
-			account = getFinanceService().getAccountInfoHome().findByPrimaryKey(accountID);
+			account = getFinanceService().getAccountInfoHome().findByPrimaryKey(this.accountID);
 			accountOwner = getFinanceService().getAccountUserHome().findByPrimaryKey(new Integer(account.getUserId()));
 			
 		} catch (RemoteException e) {
@@ -770,8 +784,9 @@ public class TariffAssessments extends Finance {
 		if (accountOwner != null) {
 			accountInfoTable.add(getText(accountOwner.getName()), 2, 1);
 			String pid = accountOwner.getPersonalID();
-			if (pid == null)
+			if (pid == null) {
 				pid = localize("missing.personal_id", "Personal ID missing");
+			}
 			accountInfoTable.add(getText(pid), 2,2);
 		}
 		accountInfoTable.add(getHeader(localize("account_balance", "Balance")), 4, 1);
@@ -798,7 +813,7 @@ public class TariffAssessments extends Finance {
 	private PresentationObject getTableOfAssessmentAccountEntries(IWContext iwc) {
 		Table T = new Table();
 			
-			if (accountEntries != null) {
+			if (this.accountEntries != null) {
 				
 				int row = 1;
 				T.add(getHeader(localize("entry_name", "Entry name")), 1, row);
@@ -811,12 +826,13 @@ public class TariffAssessments extends Finance {
 				row++;
 				AccountEntry A;
 				float total = 0;
-				for (Iterator iter = accountEntries.iterator(); iter.hasNext();) {
+				for (Iterator iter = this.accountEntries.iterator(); iter.hasNext();) {
 					A = (AccountEntry) iter.next();
 					
 					T.add(getText(A.getName()), 1, row);
-					if (A.getInfo() != null)
+					if (A.getInfo() != null) {
 						T.add(getText(A.getInfo()), 2, row);
+					}
 					
 					T.add(getText(new IWTimestamp(A.getPaymentDate()).getLocaleDate(iwc)), 3, row);
 					T.add(getText(new IWTimestamp(A.getLastUpdated()).getLocaleDate(iwc)), 4, row);
@@ -841,9 +857,9 @@ public class TariffAssessments extends Finance {
 		DataTable T = getDataTable();
 		T.setUseBottom(false);
 		int iAccountCount = 0;
-		if (handler != null) {
+		if (this.handler != null) {
 			try {
-				iAccountCount = getFinanceService().getAccountHome().countByTypeAndCategory(handler.getAccountType(),
+				iAccountCount = getFinanceService().getAccountHome().countByTypeAndCategory(this.handler.getAccountType(),
 						getFinanceCategoryId());
 			} catch (RemoteException e) {
 				e.printStackTrace();
@@ -909,7 +925,7 @@ public class TariffAssessments extends Finance {
 		try {
 			T.add(getHeader(localize("excess_round","Excess round")),1,row);
 			DropdownMenu excessRounds = new DropdownMenu("excess_round_id");
-			Collection rounds = getFinanceService().getAssessmentRoundHome().findByCategoryAndTariffGroup(getFinanceCategoryId(),groupID,this.fromDate,this.toDate,null,-1,-1);
+			Collection rounds = getFinanceService().getAssessmentRoundHome().findByCategoryAndTariffGroup(getFinanceCategoryId(),this.groupID,this.fromDate,this.toDate,null,-1,-1);
 			excessRounds.addMenuElement(-1,localize("old_batches","Old batches"));
 			DateFormat df = getShortDateFormat(iwc.getCurrentLocale());
 			for (Iterator iter = rounds.iterator(); iter.hasNext();) {
@@ -917,8 +933,9 @@ public class TariffAssessments extends Finance {
 				Date from = round.getPeriodFromDate();
 				Date to = round.getPeriodToDate();
 				String period = "";
-				if(from!=null && to!=null)
+				if(from!=null && to!=null) {
 					period = " ( "+df.format(round.getPeriodFromDate())+" - "+df.format(round.getPeriodToDate())+")";
+				}
 				excessRounds.addMenuElement(round.getPrimaryKey().toString(),round.getName()+period);
 			}
 			T.add(excessRounds,2,row++);
@@ -941,7 +958,7 @@ public class TariffAssessments extends Finance {
 		
 		T.setWidth("100%");
 		T.add(new HiddenInput(this.PRM_ACTION, String.valueOf(this.ACT3)));
-		T.add(new HiddenInput(PRM_GROUP_ID, String.valueOf(groupID)));
+		T.add(new HiddenInput(PRM_GROUP_ID, String.valueOf(this.groupID)));
 		return T;
 	}
 
@@ -973,7 +990,7 @@ public class TariffAssessments extends Finance {
 				.setStyle("color: #ff0000;  font-style: normal; font-family: verdana; font-weight: normal; font-size:14px;");
 				*/
 		//isStaff = com.idega.core.accesscontrol.business.AccessControl
-		isAdmin = iwc.hasEditPermission(this);
+		this.isAdmin = iwc.hasEditPermission(this);
 		control(iwc);
 	}
 	public Object clone() {

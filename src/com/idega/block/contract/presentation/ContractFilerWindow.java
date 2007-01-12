@@ -40,8 +40,8 @@ public class ContractFilerWindow extends IWAdminWindow
 	}
 	public void main(IWContext iwc)
 	{
-		iwrb = getResourceBundle(iwc);
-		iwb = getBundle(iwc);
+		this.iwrb = getResourceBundle(iwc);
+		this.iwb = getBundle(iwc);
 		addTitle("Contract Filer");
 		int iCategoryId = -1, iContractId = -1;
 		if (iwc.isParameterSet(prmCategoryId) && iwc.isParameterSet(prmContractId))
@@ -66,21 +66,23 @@ public class ContractFilerWindow extends IWAdminWindow
 				
 				*/
 			}
-			else
+			else {
 				add("failed");
+			}
 		}
-		else
+		else {
 			add(printForm(iCategoryId, iContractId));
+		}
 	}
 	private Form printForm(int iCategoryId, int iContractId)
 	{
 		Table T = new Table(5, 7);
-		T.add(iwrb.getLocalizedString("titlefont", "Title font"), 1, 2);
-		T.add(iwrb.getLocalizedString("paragraphfont", "Paragraph font"), 1, 3);
-		T.add(iwrb.getLocalizedString("namefont", "Name font"), 1, 4);
-		T.add(iwrb.getLocalizedString("tagfont", "Tag font"), 1, 5);
-		T.add(iwrb.getLocalizedString("textfont", "Text font"), 1, 6);
-		T.add(iwrb.getLocalizedString("filename", "Filename"), 1, 6);
+		T.add(this.iwrb.getLocalizedString("titlefont", "Title font"), 1, 2);
+		T.add(this.iwrb.getLocalizedString("paragraphfont", "Paragraph font"), 1, 3);
+		T.add(this.iwrb.getLocalizedString("namefont", "Name font"), 1, 4);
+		T.add(this.iwrb.getLocalizedString("tagfont", "Tag font"), 1, 5);
+		T.add(this.iwrb.getLocalizedString("textfont", "Text font"), 1, 6);
+		T.add(this.iwrb.getLocalizedString("filename", "Filename"), 1, 6);
 		DropdownMenu drpTitleFont = FontDrop("titlefont", Font.HELVETICA);
 		DropdownMenu drpParagraphFont = FontDrop("paragraphfont", Font.HELVETICA);
 		DropdownMenu drpNameFont = FontDrop("namefont", Font.HELVETICA);

@@ -36,50 +36,53 @@ public class FinanceIndex extends Finance {
   }
 
   public void main(IWContext iwc){
-    iwrb = getResourceBundle(iwc);
-    iwb = getBundle(iwc);
-    if(iCategoryId <= 0){
-      iCategoryId = Finance.parseCategoryId(iwc);
+    this.iwrb = getResourceBundle(iwc);
+    this.iwb = getBundle(iwc);
+    if(this.iCategoryId <= 0){
+      this.iCategoryId = Finance.parseCategoryId(iwc);
     }
 
     BlockMenu menu = new BlockMenu();
     menu.setClassParameterName("fin_clss");
     addStandardObjects();
-    menu.addAll(FinanceObjects);
-    menu.addParameterToMaintain(Finance.getCategoryParameter(iCategoryId));
+    menu.addAll(this.FinanceObjects);
+    menu.addParameterToMaintain(Finance.getCategoryParameter(this.iCategoryId));
     add(menu);
   }
 
   public void addStandardObjects(){
-    if(FinanceObjects == null)
-      FinanceObjects = new Vector();
-    FinanceObjects.add(0,new Accounts());
-    FinanceObjects.add(0,new EntryGroups());
-    FinanceObjects.add(0,new TariffAssessments());
-    FinanceObjects.add(0,new TariffEditor());
-    FinanceObjects.add(0,new TariffIndexEditor());
-    FinanceObjects.add(0,new TariffKeyEditor());
-    FinanceObjects.add(0,new AccountKeyEditor());
-    FinanceObjects.add(0,new PaymentTypeEditor());
+    if(this.FinanceObjects == null) {
+		this.FinanceObjects = new Vector();
+	}
+    this.FinanceObjects.add(0,new Accounts());
+    this.FinanceObjects.add(0,new EntryGroups());
+    this.FinanceObjects.add(0,new TariffAssessments());
+    this.FinanceObjects.add(0,new TariffEditor());
+    this.FinanceObjects.add(0,new TariffIndexEditor());
+    this.FinanceObjects.add(0,new TariffKeyEditor());
+    this.FinanceObjects.add(0,new AccountKeyEditor());
+    this.FinanceObjects.add(0,new PaymentTypeEditor());
   }
 
   public void addFinanceObject(Block obj){
-    if(FinanceObjects == null)
-      FinanceObjects = new Vector();
-    FinanceObjects.add(obj);
+    if(this.FinanceObjects == null) {
+		this.FinanceObjects = new Vector();
+	}
+    this.FinanceObjects.add(obj);
   }
 
   public void addFinanceObjectAll(java.util.Collection coll){
-    if(FinanceObjects == null)
-      FinanceObjects = new Vector();
-    FinanceObjects.addAll(coll);
+    if(this.FinanceObjects == null) {
+		this.FinanceObjects = new Vector();
+	}
+    this.FinanceObjects.addAll(coll);
   }
 
   public synchronized Object clone() {
     FinanceIndex obj = null;
     try {
       obj = (FinanceIndex)super.clone();
-      obj.FinanceObjects  = FinanceObjects;
+      obj.FinanceObjects  = this.FinanceObjects;
 
     }
     catch(Exception ex) {

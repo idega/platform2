@@ -65,13 +65,15 @@ public class ProductItemImages extends ProductItem {
 	private void drawObject() throws RemoteException {
 		List images = null;
 		try {
-			if (_product != null) {
-				Collection coll = _product.getICFile();
-				if (coll != null)
+			if (this._product != null) {
+				Collection coll = this._product.getICFile();
+				if (coll != null) {
 					images = new Vector(coll);
-				else
+				}
+				else {
 					images = new Vector();
 				//	images = new Vector(EntityFinder.getInstance().findRelated(_product, ICFile.class));
+				}
 			}
 			else {
 				images = new Vector();
@@ -82,15 +84,16 @@ public class ProductItemImages extends ProductItem {
 			images = new Vector();
 		}
 
-		if (!_horizontalView && !_verticalView) {
+		if (!this._horizontalView && !this._verticalView) {
 			setVerticalView(true);
 		}
 
 		Table table = new Table();
 		table.setCellpadding(0);
-		table.setCellspacing(_cellspacing);
-		if (_tableWidth != null)
-			table.setWidth(_tableWidth);
+		table.setCellspacing(this._cellspacing);
+		if (this._tableWidth != null) {
+			table.setWidth(this._tableWidth);
+		}
 		int row = 1;
 		int column = 1;
 		Image image;
@@ -104,23 +107,25 @@ public class ProductItemImages extends ProductItem {
 
 				if (att != null) {
 					image.addMarkupAttributes(getAttributeMap(att));
-					if (!getAttributeMap(att).containsKey("align"))
+					if (!getAttributeMap(att).containsKey("align")) {
 						image.setAlignment(Table.HORIZONTAL_ALIGN_RIGHT);
+					}
 				}
-				else
+				else {
 					image.setAlignment(Table.HORIZONTAL_ALIGN_RIGHT);
-
-				if (_width > 0) {
-					image.setWidth(_width);
-				}
-				if (_height > 0) {
-					image.setHeight(_height);
-				}
-				if (_alignment != null) {
-					table.setAlignment(column, row, _alignment);
 				}
 
-				if (_zoom) {
+				if (this._width > 0) {
+					image.setWidth(this._width);
+				}
+				if (this._height > 0) {
+					image.setHeight(this._height);
+				}
+				if (this._alignment != null) {
+					table.setAlignment(column, row, this._alignment);
+				}
+
+				if (this._zoom) {
 					Link link = new Link(image);
 					link.setTarget("_blank");
 					link.setURL(image.getMediaURL());
@@ -131,7 +136,7 @@ public class ProductItemImages extends ProductItem {
 				}
 
 				if (this._horizontalView) {
-					if (column == _numberOfImages) {
+					if (column == this._numberOfImages) {
 						column = 1;
 						row++;
 					}
@@ -140,7 +145,7 @@ public class ProductItemImages extends ProductItem {
 					}
 				}
 				else {
-					if (row == _numberOfImages) {
+					if (row == this._numberOfImages) {
 						row = 1;
 						column++;
 					}
@@ -165,11 +170,11 @@ public class ProductItemImages extends ProductItem {
 	 *@param  width  The new width value
 	 */
 	public void setWidth(int width) {
-		_width = width;
+		this._width = width;
 	}
 
 	public void setTableWidth(String width) {
-		_tableWidth = width;
+		this._tableWidth = width;
 	}
 
 	/**
@@ -178,7 +183,7 @@ public class ProductItemImages extends ProductItem {
 	 *@param  height  The new height value
 	 */
 	public void setHeight(int height) {
-		_height = height;
+		this._height = height;
 	}
 
 	/**
@@ -196,30 +201,30 @@ public class ProductItemImages extends ProductItem {
 	}
 
 	public void setVerticalView(boolean verticalView) {
-		_verticalView = verticalView;
-		_horizontalView = !verticalView;
+		this._verticalView = verticalView;
+		this._horizontalView = !verticalView;
 
 	}
 
 	public void setHorizontalView(boolean horizontalView) {
-		_horizontalView = horizontalView;
-		_verticalView = !horizontalView;
+		this._horizontalView = horizontalView;
+		this._verticalView = !horizontalView;
 	}
 
 	public void setImageAlignment(String alignment) {
-		_alignment = alignment;
+		this._alignment = alignment;
 	}
 
 	public void setSpaceBetweenImages(int pixels) {
-		_cellspacing = pixels;
+		this._cellspacing = pixels;
 	}
 
 	public void setImagesToZoom(boolean zoom) {
-		_zoom = zoom;
+		this._zoom = zoom;
 	}
 
 	public void setNumberOfImagesInLine(int numberOfImages) {
-		_numberOfImages = numberOfImages;
+		this._numberOfImages = numberOfImages;
 	}
 
 }

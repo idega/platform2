@@ -153,10 +153,12 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass {
 	}
 
 	public void setValid(boolean valid) {
-		if (valid)
+		if (valid) {
 			setColumn(COLUMN_VALID, VALID);
-		else
+		}
+		else {
 			setColumn(COLUMN_VALID, INVALID);
+		}
 	}
 
 	public boolean getReady() {
@@ -165,10 +167,12 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass {
 	}
 
 	public void setReady(boolean valid) {
-		if (valid)
+		if (valid) {
 			setColumn(COLUMN_READY, VALID);
-		else
+		}
+		else {
 			setColumn(COLUMN_READY, INVALID);
+		}
 	}
 
 	public boolean getLocked() {
@@ -177,10 +181,12 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass {
 	}
 
 	public void setLocked(boolean valid) {
-		if (valid)
+		if (valid) {
 			setColumn(COLUMN_LOCKED, VALID);
-		else
+		}
+		else {
 			setColumn(COLUMN_LOCKED, INVALID);
+		}
 	}
 
 	public void setReadyDate(Timestamp timestamp) {
@@ -218,8 +224,9 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass {
 	public boolean hasRelationToSchoolYear(SchoolYear schoolYear) {
 		try {
 			Collection relations = super.idoGetRelatedEntities(schoolYear);
-			if (relations != null && !relations.isEmpty())
+			if (relations != null && !relations.isEmpty()) {
 				return true;
+			}
 			return false;
 		}
 		catch (IDORelationshipException e) {
@@ -230,8 +237,9 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass {
 	public boolean hasRelationToTeacher(User teacher) {
 		try {
 			Collection relations = super.idoGetRelatedEntities(teacher);
-			if (relations != null && !relations.isEmpty())
+			if (relations != null && !relations.isEmpty()) {
 				return true;
+			}
 			return false;
 		}
 		catch (IDORelationshipException e) {
@@ -432,8 +440,9 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass {
 		}
 		else if (seasonID > 0) {
 			query.appendAndEquals(SEASON, seasonID);
-			if (showSubGroups != null && !showSubGroups.booleanValue())
+			if (showSubGroups != null && !showSubGroups.booleanValue()) {
 				query.appendAndEquals(COLUMN_SUB_GROUP, false);
+			}
 		}
 		query.appendAnd().appendLeftParenthesis().appendEquals(COLUMN_VALID, true).appendOr().append(COLUMN_VALID).appendIsNull().appendRightParenthesis();
 		

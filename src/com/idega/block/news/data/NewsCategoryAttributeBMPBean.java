@@ -82,7 +82,7 @@ public class NewsCategoryAttributeBMPBean extends com.idega.data.GenericEntity i
 
   public String getAttributeName() {
 
-    return (String) getStringColumnValue(getAttributeNameColumnName());
+    return getStringColumnValue(getAttributeNameColumnName());
 
   }
 

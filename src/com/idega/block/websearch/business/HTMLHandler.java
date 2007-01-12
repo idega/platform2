@@ -59,18 +59,18 @@ public final class HTMLHandler extends ParserCallback implements ContentHandler{
      */
     public HTMLHandler() {
         
-        contents = new StringBuffer();
-        links = new ArrayList();
-        published = -1;
+        this.contents = new StringBuffer();
+        this.links = new ArrayList();
+        this.published = -1;
         
         // 1996.07.10 15:08:56 PST
-        dateFormatter = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss z");
+        this.dateFormatter = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss z");
     }
     /**
      * Parse Content. [24] 320:1
      */
     public String getAuthor() {
-        return author;
+        return this.author;
     }
     /**
      * Return categories (from META tags)
@@ -106,7 +106,7 @@ public final class HTMLHandler extends ParserCallback implements ContentHandler{
      * Return links
      */
     public List getLinks() {
-        return links;
+        return this.links;
     }
     /**
      *	Return published date (from META tag)
@@ -138,29 +138,31 @@ public final class HTMLHandler extends ParserCallback implements ContentHandler{
     public void handleAnchor(MutableAttributeSet attribs) {
         String href = new String();
         href = (String) attribs.getAttribute(HTML.Attribute.HREF);
-        if (href == null)
-            return;
-        links.add(href);
-        state = HREF;
+        if (href == null) {
+			return;
+		}
+        this.links.add(href);
+        this.state = HREF;
     }
     /**
      *		Closing tag
      */
     public void handleEndTag(Tag tag, int pos) {
-        if (state == NONE)
-            return;
+        if (this.state == NONE) {
+			return;
+		}
         // In order of precedence == > && > ||
-        if (state == TITLE && tag.equals(HTML.Tag.TITLE)) {
-            state = NONE;
+        if (this.state == TITLE && tag.equals(HTML.Tag.TITLE)) {
+            this.state = NONE;
             return;
         }
-        if (state == HREF && tag.equals(HTML.Tag.A)) {
+        if (this.state == HREF && tag.equals(HTML.Tag.A)) {
             //links.add(linktext);
-            state = NONE;
+            this.state = NONE;
             return;
         }
-        if (state == SCRIPT && tag.equals(HTML.Tag.SCRIPT)) {
-            state = NONE;
+        if (this.state == SCRIPT && tag.equals(HTML.Tag.SCRIPT)) {
+            this.state = NONE;
             return;
         } 
     }
@@ -172,41 +174,46 @@ public final class HTMLHandler extends ParserCallback implements ContentHandler{
         String content = new String();
         name = (String) attribs.getAttribute(HTML.Attribute.NAME);
         content = (String) attribs.getAttribute(HTML.Attribute.CONTENT);
-        if (name == null || content == null)
-            return;
+        if (name == null || content == null) {
+			return;
+		}
         name = name.toUpperCase();
         if (name.equals("DESCRIPTION")) {
-            description = content;
+            this.description = content;
             return;
         }
         if (name.equals("KEYWORDS")) {
-            keywords = content;
+            this.keywords = content;
             return;
         }
         if (name.equals("CATEGORIES")) {
-            categories = content;
+            this.categories = content;
             return;
         }
         if (name.equals("PUBLISHED")) {
             try {
-                published = dateFormatter.parse(content).getTime();
+                this.published = this.dateFormatter.parse(content).getTime();
             } catch(ParseException e) {e.printStackTrace();}
             return;
         }
         if (name.equals("HREF")) {
-            href = content;
+            this.href = content;
             return;
         }
         if (name.equals("AUTHOR")) {
-            author = content;
+            this.author = content;
             return;
         }
         if (name.equals("ROBOTS")) {
             
-            if (content.indexOf("noindex") != -1) robotIndex = false;
-            if (content.indexOf("nofollow") != -1) robotFollow = false;
+            if (content.indexOf("noindex") != -1) {
+				this.robotIndex = false;
+			}
+            if (content.indexOf("nofollow") != -1) {
+				this.robotFollow = false;
+			}
             
-            author = content;
+            this.author = content;
             return;
         }
     }
@@ -223,28 +230,28 @@ public final class HTMLHandler extends ParserCallback implements ContentHandler{
      */
     public void handleStartTag(Tag tag, MutableAttributeSet attribs, int pos) {
         if (tag.equals(HTML.Tag.TITLE)) {
-            state = TITLE;
+            this.state = TITLE;
         } else if (tag.equals(HTML.Tag.A)) {
             handleAnchor(attribs);
         } else if (tag.equals(HTML.Tag.SCRIPT)) {
-            state = SCRIPT;
+            this.state = SCRIPT;
         }
     }
     /**
      *		Handle page text
      */
     public void handleText(char[] text, int pos) {
-        switch (state) {
+        switch (this.state) {
             case NONE :
-                contents.append(text);
-                contents.append(space);
+                this.contents.append(text);
+                this.contents.append(space);
                 break;
             case TITLE :
-                title = new String(text);
+                this.title = new String(text);
                 break;
             case HREF :
-                contents.append(text);
-                contents.append(space);
+                this.contents.append(text);
+                this.contents.append(space);
                 //linktext = new String(text);
                 break;
         }
@@ -273,22 +280,22 @@ public final class HTMLHandler extends ParserCallback implements ContentHandler{
      *	Return contents
      */
     private void reset() {
-        title = null;
-        description = null;
-        keywords = null;
-        categories = null;
-        href = null;
-        author = null;
+        this.title = null;
+        this.description = null;
+        this.keywords = null;
+        this.categories = null;
+        this.href = null;
+        this.author = null;
         
-        contents.setLength(0);
-        links = new ArrayList();
-        published = -1;
+        this.contents.setLength(0);
+        this.links = new ArrayList();
+        this.published = -1;
         
         // Robot Instructions
-        robotIndex = true;
-        robotFollow = true;
+        this.robotIndex = true;
+        this.robotFollow = true;
         
-        state = NONE;
+        this.state = NONE;
         
     }
 }

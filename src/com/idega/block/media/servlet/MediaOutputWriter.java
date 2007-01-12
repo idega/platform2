@@ -54,7 +54,9 @@ public class MediaOutputWriter {
        }
        else{
         mediaId = request.getParameter("file_id");
-        if(mediaId!=null) sql = "select file_value,content_type from file_ where file_id=";
+        if(mediaId!=null) {
+			sql = "select file_value,content_type from file_ where file_id=";
+		}
        }
     }
     else if( usesOldTables ){//special case for the Image object
@@ -77,8 +79,9 @@ public class MediaOutputWriter {
         if(myInputStream!=null){
 
           if (!RS.wasNull()){
-            if(contentType!=null)
-              response.setContentType(contentType);
+            if(contentType!=null) {
+				response.setContentType(contentType);
+			}
             DataOutputStream output = new DataOutputStream(response.getOutputStream() );
             byte buffer[]= new byte[1024];
             int	noRead	= 0;
@@ -92,9 +95,13 @@ public class MediaOutputWriter {
             output.close();
             myInputStream.close();
           }
-          else System.err.println("MediaServlet: Was null");
+		else {
+			System.err.println("MediaServlet: Was null");
+		}
         }
-        else System.err.println("InputStream is null");
+		else {
+			System.err.println("InputStream is null");
+		}
       }
     }
   }

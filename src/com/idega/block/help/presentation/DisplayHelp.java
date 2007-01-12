@@ -72,10 +72,10 @@ public class DisplayHelp extends PresentationObjectContainer {
 		String key = iwc.getParameter(HELP_KEY);
 		String bundle = iwc.getParameter(HELP_BUNDLE);
 		
-		_titleStyleAttribute = iwc.getParameter(TITLE_STYLE);
-		_titleStyleClass = iwc.getParameter(TITLE_CLASS);
-		_bodyStyleAttribute = iwc.getParameter(BODY_STYLE);
-		_bodyStyleClass = iwc.getParameter(BODY_CLASS);
+		this._titleStyleAttribute = iwc.getParameter(TITLE_STYLE);
+		this._titleStyleClass = iwc.getParameter(TITLE_CLASS);
+		this._bodyStyleAttribute = iwc.getParameter(BODY_STYLE);
+		this._bodyStyleClass = iwc.getParameter(BODY_CLASS);
 		
 		Table t = null;
 		int row = 1;
@@ -97,78 +97,91 @@ public class DisplayHelp extends PresentationObjectContainer {
 		}
 
 		Text title = null;
-		if (_localizedTitle != null) {
-			title = new Text(_localizedTitle);
+		if (this._localizedTitle != null) {
+			title = new Text(this._localizedTitle);
 			
-      if (_titleStyleAttribute != null)
-				title.setStyleAttribute(_titleStyleAttribute);						
-			else if (_titleStyleClass != null)
-				title.setStyleClass(_titleStyleClass);
+      if (this._titleStyleAttribute != null) {
+		title.setStyleAttribute(this._titleStyleAttribute);
+	}
+	else if (this._titleStyleClass != null) {
+				title.setStyleClass(this._titleStyleClass);
+			}
   		t.add(title, 1, row++);
 		}
 
 		row++;
 		
 		Text body = null;
-		if (_localizedHelpText != null) {
-			body = new Text(_localizedHelpText);
+		if (this._localizedHelpText != null) {
+			body = new Text(this._localizedHelpText);
 			
-			if (_bodyStyleAttribute != null)
-				body.setStyleAttribute(_bodyStyleAttribute);
-			else if (_bodyStyleClass != null)
-				body.setStyleClass(_bodyStyleClass);
+			if (this._bodyStyleAttribute != null) {
+				body.setStyleAttribute(this._bodyStyleAttribute);
+			}
+			else if (this._bodyStyleClass != null) {
+				body.setStyleClass(this._bodyStyleClass);
+			}
 
-			t.add(_localizedHelpText, 1, row);
+			t.add(this._localizedHelpText, 1, row);
 		}
 		
-		if (_localizedTitle != null || _localizedHelpText != null)				
-			add(t);	
+		if (this._localizedTitle != null || this._localizedHelpText != null) {
+			add(t);
+		}
 		else {			
 			add(getResourceBundle(iwc).getLocalizedString(HELP_NO_HELP_SELECTED,"Select help item from the tree"));
 		}
 	}
 	
 	private void getHelpText(IWContext iwc, String helpKey, String bundle, Locale loc) {
-		_localizedTitle = null;
-		_localizedHelpText = null;
+		this._localizedTitle = null;
+		this._localizedHelpText = null;
 
-		if (_doc == null) 
+		if (this._doc == null) {
 			loadHelpText(iwc,helpKey,bundle,loc);
+		}
 
-		XMLElement root = _doc.getRootElement();
-		if (root == null)
+		XMLElement root = this._doc.getRootElement();
+		if (root == null) {
 			return;
+		}
 			
 		XMLElement help = root.getChild(XML_HELP);
-		if (help == null)
+		if (help == null) {
 			return;
+		}
 			
 		XMLAttribute id = help.getAttribute(XML_ID);
-		if (id == null || !id.getValue().equals(helpKey))
+		if (id == null || !id.getValue().equals(helpKey)) {
 			return;
+		}
 
 		XMLElement title = help.getChild(XML_TITLE);
 		if (title != null) {
-			_localizedTitle = title.getTextTrim();
+			this._localizedTitle = title.getTextTrim();
 		}
 			
 		XMLCDATA cdata = help.getXMLCDATAContent();
-		if (cdata != null) 
-			_localizedHelpText = cdata.getText();		
+		if (cdata != null) {
+			this._localizedHelpText = cdata.getText();
+		}		
 	}	
 	
 	private void loadHelpText(IWContext iwc, String helpKey, String bundle, Locale loc) {
 		try {
 			IWBundle iwb = null;
-			if (bundle == null)
+			if (bundle == null) {
 				iwb = iwc.getIWMainApplication().getBundle(HELP_BUNDLE);
-			else
+			}
+			else {
 				iwb = iwc.getIWMainApplication().getBundle(bundle);
+			}
 				
 			XMLParser parser = new XMLParser(false);
 			StringBuffer fileName = new StringBuffer(iwb.getResourcesRealPath(loc));
-			if (!fileName.toString().endsWith(FileUtil.getFileSeparator()))
+			if (!fileName.toString().endsWith(FileUtil.getFileSeparator())) {
 				fileName.append(FileUtil.getFileSeparator());
+			}
 
 			fileName.append(XML_FOLDER);
 			File file = new File(fileName.toString());
@@ -182,43 +195,43 @@ public class DisplayHelp extends PresentationObjectContainer {
 			file = new File(fileName.toString());
 			file.createNewFile();
 
-			_doc = parser.parse(file);
+			this._doc = parser.parse(file);
 		}
 		catch (Exception e) {
-			_doc = new XMLDocument(new XMLElement(XML_ROOT));
+			this._doc = new XMLDocument(new XMLElement(XML_ROOT));
 		}
 	}	
 	
 	public void setTitleStyleAttribute(String styleAttribute) {
-		_titleStyleAttribute = styleAttribute;
+		this._titleStyleAttribute = styleAttribute;
 	}
 	
 	public void setTitleStyleClass(String styleClass) {
-		_titleStyleClass = styleClass;	
+		this._titleStyleClass = styleClass;	
 	}
 	
 	public void setBodyStyleAttribute(String styleAttribute) {
-		_bodyStyleAttribute = styleAttribute;		
+		this._bodyStyleAttribute = styleAttribute;		
 	}
 	
 	public void setBodyStyleClass(String styleClass) {
-		_bodyStyleClass = styleClass;			
+		this._bodyStyleClass = styleClass;			
 	}
 	
 	public void setLinkStyleAttribute(String styleAttribute) {
-		_linkStyleAttribute = styleAttribute;
+		this._linkStyleAttribute = styleAttribute;
 	}
 	
 	public void setLinkStyleClass(String styleClass) {
-		_linkStyleClass = styleClass;			
+		this._linkStyleClass = styleClass;			
 	}
 	
 	public void setSeeAlsoStyleAttribute(String styleAttribute) {
-		_seeAlsoStyleAttribute = styleAttribute;		
+		this._seeAlsoStyleAttribute = styleAttribute;		
 	}
 	
 	public void setSeeAlsoStyleClass(String styleClass) {
-		_seeAlsoStyleClass = styleClass;			
+		this._seeAlsoStyleClass = styleClass;			
 	}	
 	
 	public String getBundleIdentifier() {

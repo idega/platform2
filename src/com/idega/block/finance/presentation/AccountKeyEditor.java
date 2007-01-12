@@ -47,16 +47,16 @@ public class AccountKeyEditor extends Finance {
 
    protected void control(IWContext iwc){
 
-   if(isAdmin){
+   if(this.isAdmin){
 
       try{
         PresentationObject MO = new Text();
 
-        if(iwc.getParameter(strAction) == null){
+        if(iwc.getParameter(this.strAction) == null){
           MO = getMain(iwc);
         }
-        if(iwc.getParameter(strAction) != null){
-          String sAct = iwc.getParameter(strAction);
+        if(iwc.getParameter(this.strAction) != null){
+          String sAct = iwc.getParameter(this.strAction);
           int iAct = Integer.parseInt(sAct);
 
           switch (iAct) {
@@ -68,7 +68,7 @@ public class AccountKeyEditor extends Finance {
         }
        
         setLocalizedTitle("account_key_editor","Account key editor");
-        setSearchPanel(makeLinkTable(1,iCategoryId));
+        setSearchPanel(makeLinkTable(1,this.iCategoryId));
         setMainPanel(MO);
         
       }
@@ -76,8 +76,9 @@ public class AccountKeyEditor extends Finance {
         S.printStackTrace();
       }
     }
-    else
-      add(getErrorText(localize("access_denied","Access denies")));
+else {
+	add(getErrorText(localize("access_denied","Access denies")));
+}
   }
 
   protected PresentationObject makeLinkTable(int menuNr,int iCategoryId){
@@ -94,9 +95,9 @@ public class AccountKeyEditor extends Finance {
    // Link1.addParameter(Finance.getCategoryParameter(iCategoryId));
     Link Link2 = new Link(getHeader(localize("change","Change")));
     
-    Link2.addParameter(strAction,String.valueOf(this.ACT2));
+    Link2.addParameter(this.strAction,String.valueOf(this.ACT2));
     //Link2.addParameter(Finance.getCategoryParameter(iCategoryId));
-    if(isAdmin){
+    if(this.isAdmin){
       LinkTable.add(Link1,1,1);
       LinkTable.add(Link2,2,1);
     }
@@ -132,7 +133,7 @@ public class AccountKeyEditor extends Finance {
 
       //java.util.Map hk = FinanceFinder.getInstance().mapOfTariffKeys(iCategoryId);
      
-      if(isAdmin){
+      if(this.isAdmin){
         if(count > 0){
           AccountKey key;
           int row = 2;
@@ -143,10 +144,12 @@ public class AccountKeyEditor extends Finance {
             keyTable.add(getText(key.getName()),2,row);
             keyTable.add(getText(key.getInfo()),3,row);
             Integer tkid = new Integer(key.getTariffKeyId());
-            if(hk.containsKey(tkid))
-              keyTable.add( getText( ((TariffKey)hk.get( tkid)).getName() ),4,row);
-            if(key.getOrdinal()!=null)
-                keyTable.add(getText(key.getOrdinal().toString()),5,row);
+            if(hk.containsKey(tkid)) {
+				keyTable.add( getText( ((TariffKey)hk.get( tkid)).getName() ),4,row);
+			}
+            if(key.getOrdinal()!=null) {
+				keyTable.add(getText(key.getOrdinal().toString()),5,row);
+			}
             row++;
           }
         }
@@ -168,8 +171,9 @@ public class AccountKeyEditor extends Finance {
 		e.printStackTrace();
 	}
     int count = 0;
-    if(keys !=null && Tkeys!=null)
-       count = keys.size();
+    if(keys !=null && Tkeys!=null) {
+		count = keys.size();
+	}
     int inputcount = count+5;
     DataTable inputTable =  getDataTable();
     inputTable.setUseBottom(false);
@@ -227,7 +231,7 @@ public class AccountKeyEditor extends Finance {
     }
     inputTable.add(new HiddenInput("ake_count", String.valueOf(inputcount) ));
     inputTable.add(new HiddenInput(this.strAction,String.valueOf(this.ACT3 )));
-    inputTable.add(Finance.getCategoryParameter(iCategoryId));
+    inputTable.add(Finance.getCategoryParameter(this.iCategoryId));
    
     SubmitButton save = new SubmitButton(localize("save","Save"));
     save = (SubmitButton) setStyle(save,STYLENAME_INTERFACE_BUTTON);
@@ -279,8 +283,9 @@ public class AccountKeyEditor extends Finance {
   private DropdownMenu keyDrp(Collection TK){
     DropdownMenu drp = new DropdownMenu();
     drp.addMenuElement(0,"--");
-    if(TK != null)
-      drp.addMenuElements(TK);
+    if(TK != null) {
+		drp.addMenuElements(TK);
+	}
     return drp;
   }
 

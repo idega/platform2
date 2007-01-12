@@ -59,7 +59,7 @@ public class QueryEntityPart extends IWTreeNode implements QueryPart {
 					setPath(el.getTextTrim());
 				}
 				else if(el.getName().equals(QueryXMLConstants.LOCK)){
-					locked = true;
+					this.locked = true;
 				}
 			}
 			
@@ -67,7 +67,7 @@ public class QueryEntityPart extends IWTreeNode implements QueryPart {
 	}
 	
 	public String getBeanClassName(){
-		return beanClass;
+		return this.beanClass;
 	}
 	
 	public String getName(){
@@ -96,9 +96,10 @@ public class QueryEntityPart extends IWTreeNode implements QueryPart {
 		XMLElement el = new XMLElement(QueryXMLConstants.ENTITY);
 		el.addContent(getNameElement());
 		el.addContent(getBeanClassElement());
-		if(!"".equals(getPath()))
+		if(!"".equals(getPath())) {
 			el.addContent(getPathElement());
-		if(locked){
+		}
+		if(this.locked){
 			el.addContent(new XMLElement(QueryXMLConstants.LOCK));
 		}
 		return el;
@@ -141,7 +142,7 @@ public class QueryEntityPart extends IWTreeNode implements QueryPart {
 	 * @param string
 	 */
 	public void setBeanClass(String string) {
-		beanClass = string;
+		this.beanClass = string;
 	}
 
 
@@ -156,7 +157,7 @@ public class QueryEntityPart extends IWTreeNode implements QueryPart {
 	 * @see com.idega.block.dataquery.business.QueryPart#isLocked()
 	 */
 	public boolean isLocked() {
-		return locked;
+		return this.locked;
 	}
 
 	/* (non-Javadoc)

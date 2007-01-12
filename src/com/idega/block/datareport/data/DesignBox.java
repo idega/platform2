@@ -26,7 +26,7 @@ public class DesignBox {
 	 * @return Returns the design.
 	 */
 	public JasperDesign getDesign() {
-		return design;
+		return this.design;
 	}
 
 	/**
@@ -40,10 +40,10 @@ public class DesignBox {
 	 * @return Returns the parameterMap.
 	 */
 	public Map getParameterMap() {
-		if (parameterMap == null) {
-			parameterMap = new HashMap(0);
+		if (this.parameterMap == null) {
+			this.parameterMap = new HashMap(0);
 		}
-		return parameterMap;
+		return this.parameterMap;
 	}
 
 	/**

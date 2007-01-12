@@ -61,55 +61,55 @@ public class StaffUserTab extends UserTab {
 	}
 
 	public void initializeFieldNames() {
-		educationFieldName = "st_education";
-		titleFieldName = "st_title";
-		areaFieldName = "st_area";
-		beganWorkFieldName = "st_began_work";
+		this.educationFieldName = "st_education";
+		this.titleFieldName = "st_title";
+		this.areaFieldName = "st_area";
+		this.beganWorkFieldName = "st_began_work";
 	}
 
 	public void initializeFieldValues() {
-		fieldValues.put(educationFieldName, "");
-		fieldValues.put(titleFieldName, "");
-		fieldValues.put(areaFieldName, "");
-		fieldValues.put(beganWorkFieldName, null);
+		this.fieldValues.put(this.educationFieldName, "");
+		this.fieldValues.put(this.titleFieldName, "");
+		this.fieldValues.put(this.areaFieldName, "");
+		this.fieldValues.put(this.beganWorkFieldName, null);
 	}
 
 	public void updateFieldsDisplayStatus() {
-		educationArea.setContent((String) fieldValues.get(educationFieldName));
-		titleInput.setContent((String) fieldValues.get(titleFieldName));
-		areaArea.setContent((String) fieldValues.get(areaFieldName));
+		this.educationArea.setContent((String) this.fieldValues.get(this.educationFieldName));
+		this.titleInput.setContent((String) this.fieldValues.get(this.titleFieldName));
+		this.areaArea.setContent((String) this.fieldValues.get(this.areaFieldName));
 		
-		Date beganWork = (Date) fieldValues.get(beganWorkFieldName);
+		Date beganWork = (Date) this.fieldValues.get(this.beganWorkFieldName);
 		if (beganWork != null) {
-			beganWorkInput.setDate(beganWork);
+			this.beganWorkInput.setDate(beganWork);
 		}
 	}
 
 	public void initializeFields() {
-		educationArea = new TextArea(educationFieldName);
-		educationArea.setWidth(Table.HUNDRED_PERCENT);
-		educationArea.setHeight("100");
+		this.educationArea = new TextArea(this.educationFieldName);
+		this.educationArea.setWidth(Table.HUNDRED_PERCENT);
+		this.educationArea.setHeight("100");
 
-		areaArea = new TextArea(areaFieldName);
-		areaArea.setWidth(Table.HUNDRED_PERCENT);
-		areaArea.setHeight("100");
+		this.areaArea = new TextArea(this.areaFieldName);
+		this.areaArea.setWidth(Table.HUNDRED_PERCENT);
+		this.areaArea.setHeight("100");
 		
-		titleInput = new TextInput(titleFieldName);
-		titleInput.setLength(24);
+		this.titleInput = new TextInput(this.titleFieldName);
+		this.titleInput.setLength(24);
 		
 		IWTimestamp stamp = new IWTimestamp();
-		beganWorkInput = new DateInput(beganWorkFieldName);
-		beganWorkInput.setYearRange(stamp.getYear() + 1, stamp.getYear() - 75);
+		this.beganWorkInput = new DateInput(this.beganWorkFieldName);
+		this.beganWorkInput.setYearRange(stamp.getYear() + 1, stamp.getYear() - 75);
 	}
 
 	public void initializeTexts() {
 		IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		
-		educationText = new Text(iwrb.getLocalizedString("staff_tab.education", "Education") + ":");
-		titleText = new Text(iwrb.getLocalizedString("staff_tab.title", "Title") + ":");
-		areaText = new Text(iwrb.getLocalizedString("staff_tab.area", "Area") + ":");
-		beganWorkText = new Text(iwrb.getLocalizedString("staff_tab.began_work", "Began work") + ":");
+		this.educationText = new Text(iwrb.getLocalizedString("staff_tab.education", "Education") + ":");
+		this.titleText = new Text(iwrb.getLocalizedString("staff_tab.title", "Title") + ":");
+		this.areaText = new Text(iwrb.getLocalizedString("staff_tab.area", "Area") + ":");
+		this.beganWorkText = new Text(iwrb.getLocalizedString("staff_tab.began_work", "Began work") + ":");
 	}
 
 	public Help getHelpButton() {
@@ -135,21 +135,21 @@ public class StaffUserTab extends UserTab {
 		table.mergeCells(1, 3, 2, 3);
 		int row = 1;
 		
-		table.add(titleText, 1, row);
+		table.add(this.titleText, 1, row);
 		table.add(new Break(), 1, row);
-		table.add(titleInput, 1, row);
+		table.add(this.titleInput, 1, row);
 		
-		table.add(beganWorkText, 2, row);
+		table.add(this.beganWorkText, 2, row);
 		table.add(new Break(), 2, row);
-		table.add(beganWorkInput, 2, row++);
+		table.add(this.beganWorkInput, 2, row++);
 		
-		table.add(educationText, 1, row);
+		table.add(this.educationText, 1, row);
 		table.add(new Break(), 1, row);
-		table.add(educationArea, 1, row++);
+		table.add(this.educationArea, 1, row++);
 		
-		table.add(areaText, 1, row);
+		table.add(this.areaText, 1, row);
 		table.add(new Break(), 1, row);
-		table.add(areaArea, 1, row++);
+		table.add(this.areaArea, 1, row++);
 		
 		add(table);
 	}
@@ -160,23 +160,23 @@ public class StaffUserTab extends UserTab {
 
 	public boolean collect(IWContext iwc) {
 		if (iwc != null) {
-			String education = iwc.getParameter(educationFieldName);
-			String title = iwc.getParameter(titleFieldName);
-			String area = iwc.getParameter(areaFieldName);
-			String beganWork = iwc.getParameter(beganWorkFieldName);
+			String education = iwc.getParameter(this.educationFieldName);
+			String title = iwc.getParameter(this.titleFieldName);
+			String area = iwc.getParameter(this.areaFieldName);
+			String beganWork = iwc.getParameter(this.beganWorkFieldName);
 			
 			if (education != null) {
-				fieldValues.put(educationFieldName, education);
+				this.fieldValues.put(this.educationFieldName, education);
 			}
 			if (title != null) {
-				fieldValues.put(titleFieldName, title);
+				this.fieldValues.put(this.titleFieldName, title);
 			}
 			if (area != null) {
-				fieldValues.put(areaFieldName, area);
+				this.fieldValues.put(this.areaFieldName, area);
 			}
 			if (beganWork != null) {
 				IWTimestamp stamp = new IWTimestamp(beganWork);
-				fieldValues.put(beganWorkFieldName, stamp.getDate());
+				this.fieldValues.put(this.beganWorkFieldName, stamp.getDate());
 			}
 
 			this.updateFieldsDisplayStatus();
@@ -190,7 +190,7 @@ public class StaffUserTab extends UserTab {
 		try {
 			if (getUserId() > 0) {
 				User user = getUser();
-				getBusiness(iwc).storeStaffUser(user, (String) fieldValues.get(educationFieldName), (String) fieldValues.get(titleFieldName), (String) fieldValues.get(areaFieldName), (Date) fieldValues.get(beganWorkFieldName), iwc.getCurrentLocale());
+				getBusiness(iwc).storeStaffUser(user, (String) this.fieldValues.get(this.educationFieldName), (String) this.fieldValues.get(this.titleFieldName), (String) this.fieldValues.get(this.areaFieldName), (Date) this.fieldValues.get(this.beganWorkFieldName), iwc.getCurrentLocale());
 				return true;
 			}
 			return false;
@@ -212,10 +212,10 @@ public class StaffUserTab extends UserTab {
 			String area = getBusiness(iwc).getUserArea(user, locale);
 			Date beganWork = getBusiness(iwc).getBeganWork(user);
 
-			fieldValues.put(educationFieldName, (education != null) ? education : "");
-			fieldValues.put(titleFieldName, (title != null) ? title : "");
-			fieldValues.put(areaFieldName, (area != null) ? area : "");
-			fieldValues.put(beganWorkFieldName, beganWork);
+			this.fieldValues.put(this.educationFieldName, (education != null) ? education : "");
+			this.fieldValues.put(this.titleFieldName, (title != null) ? title : "");
+			this.fieldValues.put(this.areaFieldName, (area != null) ? area : "");
+			this.fieldValues.put(this.beganWorkFieldName, beganWork);
 			updateFieldsDisplayStatus();
 		}
 		catch (Exception e) {

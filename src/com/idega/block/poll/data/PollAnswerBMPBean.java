@@ -11,6 +11,7 @@ package com.idega.block.poll.data;
 import java.sql.SQLException;
 
 import com.idega.block.text.data.LocalizedText;
+import com.idega.data.GenericEntity;
 
 
 
@@ -112,7 +113,7 @@ public class PollAnswerBMPBean extends com.idega.data.GenericEntity implements c
 
 	public void delete() throws SQLException{
 
-    removeFrom(com.idega.block.text.data.LocalizedTextBMPBean.getStaticInstance(LocalizedText.class));
+    removeFrom(GenericEntity.getStaticInstance(LocalizedText.class));
 
 		super.delete();
 

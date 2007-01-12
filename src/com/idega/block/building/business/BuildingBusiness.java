@@ -17,8 +17,9 @@ public class BuildingBusiness {
 
 	public static BuildingBusiness getStaticInstance() {
 
-		if (bb == null)
+		if (bb == null) {
 			bb = new BuildingBusiness();
+		}
 		return bb;
 	}
 /*

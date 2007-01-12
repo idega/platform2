@@ -33,11 +33,11 @@ public class ReportableData implements IDOReportableEntity{
 	
 	
 	public void addData(IDOReportableField key, Object data){
-		_data.put(key.getName(),data);
+		this._data.put(key.getName(),data);
 	}
 
 	public Object getFieldValue(IDOReportableField arg0) {
-		return _data.get(arg0.getName());
+		return this._data.get(arg0.getName());
 	}
 	
 	

@@ -81,11 +81,11 @@ public class PDFHandler implements ContentHandler {
      * PdfParser constructor comment.
      */
     public PDFHandler() {
-        contents = new StringBuffer();
-        published = -1;
+        this.contents = new StringBuffer();
+        this.published = -1;
         
         // 19960710150856
-        dateFormatter = new SimpleDateFormat("yyyyMMddHHmmss");
+        this.dateFormatter = new SimpleDateFormat("yyyyMMddHHmmss");
     }
     /**
      * Look for tokens.  This is not effiecent.
@@ -109,7 +109,9 @@ public class PDFHandler implements ContentHandler {
         // look for matching tokens.
         while (true) {
             int b = read();
-            if (b == -1 ) break;
+            if (b == -1 ) {
+				break;
+			}
             char ch = (char)b;
             
             
@@ -141,7 +143,9 @@ public class PDFHandler implements ContentHandler {
                     }
                 }
             }
-            if (matchCount <= 0 ) break;
+            if (matchCount <= 0 ) {
+				break;
+			}
             
             charPosition++;
             
@@ -153,7 +157,7 @@ public class PDFHandler implements ContentHandler {
      * Parse Content. [24] 320:1
      */
     public String getAuthor() {
-        return author;
+        return this.author;
     }
     /**
      * Return categories (from META tags)
@@ -165,13 +169,13 @@ public class PDFHandler implements ContentHandler {
      * Parse Content. [24] 320:1
      */
     public String getContents() {
-        return contents.toString();
+        return this.contents.toString();
     }
     /**
      * Parse Content. [24] 320:1
      */
     public String getDescription() {
-        return description;
+        return this.description;
     }
     /**
      *	Return META HREF
@@ -183,7 +187,7 @@ public class PDFHandler implements ContentHandler {
      * Parse Content. [24] 320:1
      */
     public String getKeywords() {
-        return keywords;
+        return this.keywords;
     }
     /**
      * Return links
@@ -195,7 +199,7 @@ public class PDFHandler implements ContentHandler {
      * Parse Content. [24] 320:1
      */
     public long getPublished() {
-        return published;
+        return this.published;
     }
     /**
      * Return boolean true if links are to be followed
@@ -213,7 +217,7 @@ public class PDFHandler implements ContentHandler {
      * Parse Content. [24] 320:1
      */
     public String getTitle() {
-        return title;
+        return this.title;
     }
     /**
      * Check for new line chars
@@ -257,8 +261,12 @@ public class PDFHandler implements ContentHandler {
         //System.out.println("look for new line");
         while (true) {
             int b = read();
-            if (b == -1 ) return false;
-            if (isNewLineChar((char)b)) return true;
+            if (b == -1 ) {
+				return false;
+			}
+            if (isNewLineChar((char)b)) {
+				return true;
+			}
         }
         
     }
@@ -305,34 +313,34 @@ public class PDFHandler implements ContentHandler {
                 if (token != null) {
                     //System.out.println("found a token : " + token);
                     if (token == AUTHOR) {
-                        author = parseData();
+                        this.author = parseData();
                     } else if (token == CREATIONDATE) {
-                        published = parseDate();
+                        this.published = parseDate();
                     } else if (token == KEYWORDS) {
-                        keywords = parseData();
+                        this.keywords = parseData();
                     } else if (token == SUBJECT) {
-                        description = parseData();
+                        this.description = parseData();
                     } else if (token == TITLE) {
-                        title = parseData();
+                        this.title = parseData();
                     } else if (token == PARAMSTART) {
                         //System.out.println("param set mark");
-                        in.mark(10000);
+                        this.in.mark(10000);
                         //parseDataParams();
                     } else if (token == STREAM) {
-                        if (!streamHit) {
+                        if (!this.streamHit) {
                             //System.out.println("new stream hit");
                             // first time this stream has been hit
                             // go back and parseDataParams.
-                            in.reset();
-                            streamHit = true;
+                            this.in.reset();
+                            this.streamHit = true;
                             parseDataParams();
                         } else {
                             //System.out.println("second stream hit");
-                            if (parseNextStream) {
-                                contents.append(parseDataStream());
-                                parseNextStream = false;
+                            if (this.parseNextStream) {
+                                this.contents.append(parseDataStream());
+                                this.parseNextStream = false;
                             }
-                            streamHit = false;
+                            this.streamHit = false;
                         }
                     }
                 }
@@ -358,15 +366,23 @@ public class PDFHandler implements ContentHandler {
         // look for start '('
         while (true) {
             int b = read();
-            if (b == -1 ) break;
+            if (b == -1 ) {
+				break;
+			}
             char ch = (char)b;
-            if (ch == '(') break;
+            if (ch == '(') {
+				break;
+			}
         }
         while (true) {
             int b = read();
-            if (b == -1 ) break;
+            if (b == -1 ) {
+				break;
+			}
             char ch = (char)b;
-            if (ch == ')') break;
+            if (ch == ')') {
+				break;
+			}
             temp.write(b);
         }
         
@@ -395,7 +411,9 @@ public class PDFHandler implements ContentHandler {
             } else {
                 temp.write(b);
             }
-            if (end) break;
+            if (end) {
+				break;
+			}
             b = read();
         }
         String params = new String(temp.toByteArray());
@@ -404,9 +422,13 @@ public class PDFHandler implements ContentHandler {
         if (params.length() < 38
         && params.indexOf("0 R") != -1
         && params.indexOf("/Length ") != -1)  {
-            if (params.indexOf("/FlateDecode") != -1) compression = FLATE;
-            if (params.indexOf("/LZWDecode") != -1) compression = LZW;
-            parseNextStream = true;
+            if (params.indexOf("/FlateDecode") != -1) {
+				this.compression = FLATE;
+			}
+            if (params.indexOf("/LZWDecode") != -1) {
+				this.compression = LZW;
+			}
+            this.parseNextStream = true;
             //System.out.println();
             //System.out.println(params);
         }
@@ -441,18 +463,22 @@ public class PDFHandler implements ContentHandler {
                         break;
                     }
                 }
-                if (!notMatch) endstream = true;
+                if (!notMatch) {
+					endstream = true;
+				}
             } else {
                 // not new line append byte
                 temp.write(b);
                 b = read();
                 ch = (char)b;
             }
-            if (endstream) break; // endstream found
+            if (endstream) {
+				break; // endstream found
+			}
         }
         
         // Uncompress if flateDecode is used
-        if (compression == FLATE) {
+        if (this.compression == FLATE) {
             //System.out.println("FlateDecode = " +flateDecode);
             ByteArrayInputStream bis = new ByteArrayInputStream(temp.toByteArray());
             InflaterInputStream iin = new InflaterInputStream(bis);
@@ -474,21 +500,27 @@ public class PDFHandler implements ContentHandler {
         boolean end = false;
         while (true) {
             b = bis.read();
-            if (b == -1 ) break;
+            if (b == -1 ) {
+				break;
+			}
             if ((char)b == '(') {
                 while (true) {
                     b = bis.read();
                     if (b == -1 ) {end = true; break;}
                     // look for end ')'
-                    if ((char)b == ')') break;
+                    if ((char)b == ')') {
+						break;
+					}
                     tmp.write(b);
                 }
             }
-            if (end) break;
+            if (end) {
+				break;
+			}
         }
         
         // reset flateDecode flag
-        compression = NONE;
+        this.compression = NONE;
         //System.out.println(tmp.size());
         //System.out.println(new String(tmp.toByteArray()));
         return new String(tmp.toByteArray());
@@ -501,7 +533,7 @@ public class PDFHandler implements ContentHandler {
         
         try {
             String date = parseData();
-            return dateFormatter.parse(date.substring(2, date.length())).getTime();
+            return this.dateFormatter.parse(date.substring(2, date.length())).getTime();
         } catch(ParseException e) {
             e.printStackTrace();
             return -1;
@@ -509,8 +541,8 @@ public class PDFHandler implements ContentHandler {
     }
     private final int read() throws IOException {
         
-        ++currentPosition;
-        return in.read();
+        ++this.currentPosition;
+        return this.in.read();
         
         //return in.read();
     /*
@@ -538,8 +570,8 @@ public class PDFHandler implements ContentHandler {
     }
     private final char readCh() throws IOException {
         
-        ++currentPosition;
-        return (char)in.read();
+        ++this.currentPosition;
+        return (char)this.in.read();
     /*
     if (pos >= len) {
      
@@ -569,19 +601,19 @@ public class PDFHandler implements ContentHandler {
     private void reset() {
         
         // Content
-        title = null;
-        description = null;
-        keywords = null;
-        author = null;
+        this.title = null;
+        this.description = null;
+        this.keywords = null;
+        this.author = null;
         
-        contents.setLength(0);
-        published = -1;
+        this.contents.setLength(0);
+        this.published = -1;
         
         
         // Flags
-        streamHit = false;
-        parseNextStream = false;
-        compression = NONE;
+        this.streamHit = false;
+        this.parseNextStream = false;
+        this.compression = NONE;
         
         //buf[] = new byte[256];
         //pos = 0;

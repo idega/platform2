@@ -38,7 +38,7 @@ public class FavoriteQuickLink extends FavoriteBlock {
 	private User user;
 
 	public void present(IWContext iwc) {
-		user = iwc.getCurrentUser();
+		this.user = iwc.getCurrentUser();
 
 		add(getQuickLinks(iwc));
 	}
@@ -46,7 +46,7 @@ public class FavoriteQuickLink extends FavoriteBlock {
 	private Form getQuickLinks(IWContext iwc) {
 		Collection quickLinkList = null;
 		try {
-			quickLinkList = getBusiness(iwc).getQuickLinkFavorites(user);
+			quickLinkList = getBusiness(iwc).getQuickLinkFavorites(this.user);
 		}
 		catch (FinderException fe) {
 			log(fe);
@@ -61,14 +61,14 @@ public class FavoriteQuickLink extends FavoriteBlock {
     Table table = new Table();
 		table.setCellpadding(0);
 		table.setCellspacing(0);
-		table.setWidth(iWidth);
+		table.setWidth(this.iWidth);
 		form.add(table);
 		int column = 1;
 
 		DropdownMenu quickLinks = (DropdownMenu) getInput(new DropdownMenu(PARAMETER_QUICK_LINK));
 		Link go = null;
-		if (iButtonImage != null) {
-			go = new Link(iButtonImage);
+		if (this.iButtonImage != null) {
+			go = new Link(this.iButtonImage);
 		}
 		else {
 			go = getLink(getResourceBundle().getLocalizedString("go", "Go!"));
@@ -80,8 +80,8 @@ public class FavoriteQuickLink extends FavoriteBlock {
 			Favorite element = (Favorite) iter.next();
 			String URI = element.getURL();
 			String name = element.getName();
-			if (iMaxLength > 0 && name.length() > iMaxLength) {
-				name = name.substring(0, iMaxLength + 1) + "...";
+			if (this.iMaxLength > 0 && name.length() > this.iMaxLength) {
+				name = name.substring(0, this.iMaxLength + 1) + "...";
 			}
 			
 			if (URI != null) {
@@ -98,8 +98,8 @@ public class FavoriteQuickLink extends FavoriteBlock {
 		}
 
 		table.add(quickLinks, column++, 1);
-		if (iSpaceBetween > 0) {
-			table.setWidth(column++, iSpaceBetween);
+		if (this.iSpaceBetween > 0) {
+			table.setWidth(column++, this.iSpaceBetween);
 		}
 		table.setAlignment(column, 1, Table.HORIZONTAL_ALIGN_RIGHT);
 		table.add(go, column, 1);
@@ -129,7 +129,7 @@ public class FavoriteQuickLink extends FavoriteBlock {
 	 * @param spaceBetween The spaceBetween to set.
 	 */
 	public void setSpaceBetween(int spaceBetween) {
-		iSpaceBetween = spaceBetween;
+		this.iSpaceBetween = spaceBetween;
 	}
 
 	/**
@@ -137,14 +137,14 @@ public class FavoriteQuickLink extends FavoriteBlock {
 	 * @param maxLength The maximum length to set.
 	 */
 	public void setMaximumLength(int maxLength) {
-		iMaxLength = maxLength;
+		this.iMaxLength = maxLength;
 	}
 	
 	public void setButtonImage(Image buttonImage) {
-		iButtonImage = buttonImage;
+		this.iButtonImage = buttonImage;
 	}
 	
 	public void setWidth(String width) {
-		iWidth = width;
+		this.iWidth = width;
 	}
 }

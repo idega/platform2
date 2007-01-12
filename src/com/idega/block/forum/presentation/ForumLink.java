@@ -34,10 +34,10 @@ public abstract class ForumLink extends Block {
 	
 
 	public void main(IWContext iwc) throws Exception {
-		iwrb = getResourceBundle(iwc);
-		iwb = getBundle(iwc);
-		iHasAddPermission = hasAddPermission(iwc);
-		iHasReplyPermission = hasReplyPermission(iwc);
+		this.iwrb = getResourceBundle(iwc);
+		this.iwb = getBundle(iwc);
+		this.iHasAddPermission = hasAddPermission(iwc);
+		this.iHasReplyPermission = hasReplyPermission(iwc);
 
 		int topicID = -1;
 		try {
@@ -83,11 +83,11 @@ public abstract class ForumLink extends Block {
 	}
 	
 	protected boolean hasReplyPermission() {
-		return iHasReplyPermission;
+		return this.iHasReplyPermission;
 	}
 	
 	protected boolean hasAddPermission() {
-		return iHasAddPermission;
+		return this.iHasAddPermission;
 	}
 	
 	public String getBundleIdentifier() {
@@ -99,23 +99,23 @@ public abstract class ForumLink extends Block {
 	}
 	
 	protected IWBundle getBundle() {
-		return iwb;
+		return this.iwb;
 	}
 	
 	protected IWResourceBundle getResourceBundle() {
-		return iwrb;
+		return this.iwrb;
 	}
 	
 	protected int getImagePadding() {
-		return imagePadding;
+		return this.imagePadding;
 	}
 	
 	protected String getImageAlignment() {
-		return imageAlignment;
+		return this.imageAlignment;
 	}
 	
 	protected boolean showImage() {
-		return showImage;
+		return this.showImage;
 	}
 
 	public abstract void showLink(IWContext iwc, int topicID);

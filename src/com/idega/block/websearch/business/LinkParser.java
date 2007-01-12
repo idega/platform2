@@ -42,7 +42,9 @@ public final class LinkParser {
                     + relativePath.substring(1, relativePath.length());
         } else if (relativePath.startsWith("../")) {
             int back = 1;
-            while (relativePath.indexOf("../", back*3) != -1) back++;
+            while (relativePath.indexOf("../", back*3) != -1) {
+				back++;
+			}
             int pos = referencePath.length();
             int count = back + 1;
             while (count-- > 0) {

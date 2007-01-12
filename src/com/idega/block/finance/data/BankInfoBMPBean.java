@@ -193,7 +193,7 @@ public class BankInfoBMPBean extends GenericEntity implements BankInfo {
 			String str = "";
 			char[] pass = pwd.toCharArray();
 			for (int i = 0; i < pass.length; i++) {
-				String hex = Integer.toHexString((int) pass[i]);
+				String hex = Integer.toHexString(pass[i]);
 				while (hex.length() < 2) {
 					String s = "0";
 					s += hex;

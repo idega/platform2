@@ -16,7 +16,7 @@ import com.idega.presentation.text.Text;
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:      idega
- * @author <a href="gummi@idega.is">Guðmundur Ágúst Sæmundsson</a>
+ * @author <a href="gummi@idega.is">Guï¿½mundur ï¿½gï¿½st Sï¿½mundsson</a>
  * @version 1.0
  */
 
@@ -45,11 +45,11 @@ public class DeleteConfirmWindow extends IWAdminWindow {
     this.setWidth(300);
     this.setScrollbar(false);
     this.setAllMargins(0);
-    myForm = new Form();
+    this.myForm = new Form();
 
-    question = Text.getBreak();
-    confirm = new SubmitButton(_fieldNameConfirm,"   Yes   ");
-    close = new CloseButton("  Cancel ");
+    this.question = Text.getBreak();
+    this.confirm = new SubmitButton(_fieldNameConfirm,"   Yes   ");
+    this.close = new CloseButton("  Cancel ");
   }
 
   private void delete(IWContext iwc){
@@ -88,24 +88,24 @@ public class DeleteConfirmWindow extends IWAdminWindow {
   }
 
   public void main(IWContext iwc) throws Exception {
-    myForm.empty();
+    this.myForm.empty();
     initialze(iwc);
 
     String identifier = iwc.getParameter(_PRM_ID);
     String type = iwc.getParameter(AlbumCollectionBusiness._PRM_DELETE);
 
     if(identifier != null || type != null){
-      myForm.add(new HiddenInput(_fieldNameIndentifier,identifier));
-      myForm.add(new HiddenInput(_fieldNameType,type));
+      this.myForm.add(new HiddenInput(_fieldNameIndentifier,identifier));
+      this.myForm.add(new HiddenInput(_fieldNameType,type));
     }else{
-      myForm.maintainParameter(_fieldNameIndentifier);
-      myForm.maintainParameter(_fieldNameType);
+      this.myForm.maintainParameter(_fieldNameIndentifier);
+      this.myForm.maintainParameter(_fieldNameType);
     }
 
     if(iwc.getParameter(_fieldNameConfirm) == null){
-      this.add(myForm);
+      this.add(this.myForm);
       //updateFieldStatus(iwc);
-      myForm.add(getElementsOredered(iwc));
+      this.myForm.add(getElementsOredered(iwc));
     } else {
       this.delete(iwc);
       this.close();
@@ -114,39 +114,39 @@ public class DeleteConfirmWindow extends IWAdminWindow {
 
 
     public PresentationObject getElementsOredered(IWContext iwc){
-      myTable = new Table(2,2);
-      myTable.setWidth("100%");
-      myTable.setHeight("100%");
-      myTable.setCellpadding(5);
-      myTable.setCellspacing(5);
+      this.myTable = new Table(2,2);
+      this.myTable.setWidth("100%");
+      this.myTable.setHeight("100%");
+      this.myTable.setCellpadding(5);
+      this.myTable.setCellspacing(5);
       //myTable.setBorder(1);
 
 
-      myTable.mergeCells(1,1,2,1);
+      this.myTable.mergeCells(1,1,2,1);
 
-      myTable.add(question,1,1);
+      this.myTable.add(this.question,1,1);
 
-      myTable.add(confirm,1,2);
+      this.myTable.add(this.confirm,1,2);
 
-      myTable.add(close,2,2);
+      this.myTable.add(this.close,2,2);
 
-      myTable.setAlignment(1,1,"center");
+      this.myTable.setAlignment(1,1,"center");
 //      myTable.setAlignment(2,1,"center");
-      myTable.setAlignment(1,2,"right");
-      myTable.setAlignment(2,2,"left");
+      this.myTable.setAlignment(1,2,"right");
+      this.myTable.setAlignment(2,2,"left");
 
-      myTable.setVerticalAlignment(1,1,"middle");
-      myTable.setVerticalAlignment(1,2,"middle");
-      myTable.setVerticalAlignment(2,2,"middle");
+      this.myTable.setVerticalAlignment(1,1,"middle");
+      this.myTable.setVerticalAlignment(1,2,"middle");
+      this.myTable.setVerticalAlignment(2,2,"middle");
 
-      myTable.setHeight(2,"30%");
+      this.myTable.setHeight(2,"30%");
 
-      return myTable;
+      return this.myTable;
 
     }
 
     public void setQuestion(Text Question){
-      question = Question;
+      this.question = Question;
     }
 
 

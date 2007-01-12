@@ -1,5 +1,5 @@
 /*
- * $Id: BoxComparator.java,v 1.1 2005/01/19 14:16:21 laddi Exp $
+ * $Id: BoxComparator.java,v 1.1.2.1 2007/01/12 19:32:11 idegaweb Exp $
  * Created on 19.1.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -18,17 +18,17 @@ import com.idega.core.localisation.business.ICLocaleBusiness;
 
 
 /**
- * Last modified: $Date: 2005/01/19 14:16:21 $ by $Author: laddi $
+ * Last modified: $Date: 2007/01/12 19:32:11 $ by $Author: idegaweb $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.1.2.1 $
  */
 public class BoxComparator implements Comparator {
 
 	private Locale iLocale;
 	
 	public BoxComparator(Locale locale) {
-		iLocale = locale;
+		this.iLocale = locale;
 	}
 	
 	/* (non-Javadoc)
@@ -37,12 +37,12 @@ public class BoxComparator implements Comparator {
 	public int compare(Object arg0, Object arg1) {
 		BoxLink box1 = (BoxLink) arg0;
 		BoxLink box2 = (BoxLink) arg1;
-		int localeID = ICLocaleBusiness.getLocaleId(iLocale);
+		int localeID = ICLocaleBusiness.getLocaleId(this.iLocale);
 
 		String text1 = BoxBusiness.getLocalizedString(box1, localeID);
 		String text2 = BoxBusiness.getLocalizedString(box2, localeID);
 		
-		Collator collator = Collator.getInstance(iLocale);
+		Collator collator = Collator.getInstance(this.iLocale);
 		
 		if (text1 != null && text2 != null) {
 			return collator.compare(text1, text2);

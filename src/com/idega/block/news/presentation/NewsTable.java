@@ -65,7 +65,7 @@ public class NewsTable extends PresentationObjectContainer {
 
   public NewsTable(){
 
-    iLayout = NEWS_SITE_LAYOUT;
+    this.iLayout = NEWS_SITE_LAYOUT;
 
   }
 
@@ -83,7 +83,7 @@ public class NewsTable extends PresentationObjectContainer {
 
     this.iLayout = iLayout ;
 
-    iPlannedObjectCount = iNumberOfObjects;
+    this.iPlannedObjectCount = iNumberOfObjects;
 
   }
 
@@ -103,15 +103,15 @@ public class NewsTable extends PresentationObjectContainer {
 
 		if(firstColor != null ){
 
-			if(secondColor != null)
+			if(secondColor != null) {
+				this.zebracolored =true;
+			}
 
-			  zebracolored =true;
 
 
+			this.color = firstColor;
 
-			color = firstColor;
-
-			usecolor = true;
+			this.usecolor = true;
 
 		}
 
@@ -123,49 +123,49 @@ public class NewsTable extends PresentationObjectContainer {
 
   private void init(){
 
-    tableRows = 1;
+    this.tableRows = 1;
 
-    tableColumns = 1;
+    this.tableColumns = 1;
 
-    rowToAddIn = 1;
+    this.rowToAddIn = 1;
 
-    colToAddIn = 1;
+    this.colToAddIn = 1;
 
-    if(iLayout == NEWS_SITE_LAYOUT){
+    if(this.iLayout == NEWS_SITE_LAYOUT){
 
       int rows = 1;
 
       // calculate rows needed
 
-      if(iPlannedObjectCount > iDividedColumnCount ){
+      if(this.iPlannedObjectCount > this.iDividedColumnCount ){
 
-        int left = iPlannedObjectCount-iUndividedCount;
+        int left = this.iPlannedObjectCount-this.iUndividedCount;
 
-        rows = iUndividedCount + (left/iDividedColumnCount);
+        rows = this.iUndividedCount + (left/this.iDividedColumnCount);
 
-        if((left%iDividedColumnCount)>0)
-
-          rows++;
+        if((left%this.iDividedColumnCount)>0) {
+			rows++;
+		}
 
       }
 
-      table = new Table(iDividedColumnCount,rows);
+      this.table = new Table(this.iDividedColumnCount,rows);
 
     }
 
     else{
 
-      table = new Table(1,iPlannedObjectCount);
+      this.table = new Table(1,this.iPlannedObjectCount);
 
     }
 
-    table.setWidth("100%");
+    this.table.setWidth("100%");
 
-		table.setCellpadding(cellPadding);
+		this.table.setCellpadding(this.cellPadding);
 
-		table.setCellspacing(cellSpacing);
+		this.table.setCellspacing(this.cellSpacing);
 
-    table.setResizable(true);
+    this.table.setResizable(true);
 
     //table.setBorder(1);
 
@@ -173,19 +173,19 @@ public class NewsTable extends PresentationObjectContainer {
 
 
 
-  // Stilla töflu vegna óákveðinnar stærðar
+  // Stilla tï¿½flu vegna ï¿½ï¿½kveï¿½innar stï¿½rï¿½ar
 
   private void finite(){
 
-    if(table != null){
+    if(this.table != null){
 
-      for (int i = 1; i <= table.getColumns(); i++) {
+      for (int i = 1; i <= this.table.getColumns(); i++) {
 
-        int percent = 100/iDividedColumnCount ;
+        int percent = 100/this.iDividedColumnCount ;
 
-        table.setWidth(i,percent+"%");
+        this.table.setWidth(i,percent+"%");
 
-        table.setColumnVerticalAlignment(i,"top");
+        this.table.setColumnVerticalAlignment(i,"top");
 
       }
 
@@ -197,63 +197,63 @@ public class NewsTable extends PresentationObjectContainer {
 
   public void add(PresentationObject Mo,boolean useSetDivison,String sAlign){
 
-    if(table == null)
+    if(this.table == null) {
+		init();
+	}
 
-      init();
 
 
+    if(useSetDivison && this.iLayout == NEWS_SITE_LAYOUT){
 
-    if(useSetDivison && iLayout == NEWS_SITE_LAYOUT){
+      if(this.iObjectCount < this.iUndividedCount){
 
-      if(iObjectCount < iUndividedCount){
+        this.table.mergeCells(1,this.rowToAddIn ,2,this.rowToAddIn );
 
-        table.mergeCells(1,rowToAddIn ,2,rowToAddIn );
+        this.table.add(Mo,this.colToAddIn,this.rowToAddIn);
 
-        table.add(Mo,colToAddIn,rowToAddIn);
+        this.table.setVerticalAlignment(this.colToAddIn,this.rowToAddIn,"top");
 
-        table.setVerticalAlignment(colToAddIn,rowToAddIn,"top");
+				if(this.usecolor) {
+					this.table.setColor(this.colToAddIn,this.rowToAddIn,this.color);
+				}
 
-				if(usecolor)
+        this.iObjectCount++;
 
-				table.setColor(colToAddIn,rowToAddIn,color);
-
-        iObjectCount++;
-
-        rowToAddIn++;
+        this.rowToAddIn++;
 
       }
 
-      else if(colToAddIn < iDividedColumnCount){
+      else if(this.colToAddIn < this.iDividedColumnCount){
 
-        table.add(Mo,colToAddIn,rowToAddIn);
+        this.table.add(Mo,this.colToAddIn,this.rowToAddIn);
 
-        table.setVerticalAlignment(colToAddIn,rowToAddIn,"top");
+        this.table.setVerticalAlignment(this.colToAddIn,this.rowToAddIn,"top");
 
-				if(usecolor)
+				if(this.usecolor) {
+					this.table.setColor(this.colToAddIn,this.rowToAddIn,this.color);
+				}
 
-				table.setColor(colToAddIn,rowToAddIn,color);
+        this.colToAddIn++;
 
-        colToAddIn++;
-
-        iObjectCount++;
+        this.iObjectCount++;
 
       }
 
       else{
 
-        table.add(Mo,colToAddIn,rowToAddIn);
+        this.table.add(Mo,this.colToAddIn,this.rowToAddIn);
 
-        table.setVerticalAlignment(colToAddIn,rowToAddIn,"top");
+        this.table.setVerticalAlignment(this.colToAddIn,this.rowToAddIn,"top");
 
-				if(usecolor)
+				if(this.usecolor) {
+					this.table.setColor(this.colToAddIn,this.rowToAddIn,this.color);
+				}
 
-				table.setColor(colToAddIn,rowToAddIn,color);
+        this.colToAddIn--;
 
-        colToAddIn--;
+        this.rowToAddIn++;
 
-        rowToAddIn++;
-
-        iObjectCount++;
+        this.iObjectCount++;
 
       }
 
@@ -261,41 +261,40 @@ public class NewsTable extends PresentationObjectContainer {
 
     else{
 
-      if(colToAddIn <= iDividedColumnCount  && colToAddIn > iUndividedCount){
+      if(this.colToAddIn <= this.iDividedColumnCount  && this.colToAddIn > this.iUndividedCount){
 
-        rowToAddIn++;
+        this.rowToAddIn++;
 
       }
 
-      colToAddIn = 1;
+      this.colToAddIn = 1;
 
-      table.mergeCells(1,rowToAddIn ,2,rowToAddIn );
+      this.table.mergeCells(1,this.rowToAddIn ,2,this.rowToAddIn );
 
-      table.setAlignment(1,rowToAddIn,sAlign);
+      this.table.setAlignment(1,this.rowToAddIn,sAlign);
 
-			if(usecolor)
+			if(this.usecolor) {
+				this.table.setColor(this.colToAddIn,this.rowToAddIn,this.color);
+			}
 
-				table.setColor(colToAddIn,rowToAddIn,color);
+      this.table.add(Mo,1,this.rowToAddIn);
 
-      table.add(Mo,1,rowToAddIn);
+      this.rowToAddIn++;
 
-      rowToAddIn++;
-
-      iObjectCount++;
+      this.iObjectCount++;
 
     }
 
 
 
-		if(zebracolored){
+		if(this.zebracolored){
 
-		  if(color.equals(firstColor))
-
-				color = secondColor;
-
-			else
-
-				color = firstColor;
+		  if(this.color.equals(this.firstColor)) {
+			this.color = this.secondColor;
+		}
+		else {
+			this.color = this.firstColor;
+		}
 
 		}
 
@@ -307,7 +306,7 @@ public class NewsTable extends PresentationObjectContainer {
 
   public void add(PresentationObject Mo){
 
-   add(Mo,false,sAlign);
+   add(Mo,false,this.sAlign);
 
   }
 
@@ -325,7 +324,7 @@ public class NewsTable extends PresentationObjectContainer {
 
     finite();
 
-    super.add(table);
+    super.add(this.table);
 
   }
 

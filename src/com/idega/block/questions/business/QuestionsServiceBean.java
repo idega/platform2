@@ -32,11 +32,13 @@ public class QuestionsServiceBean extends IBOServiceBean implements QuestionsSer
 		try {
 			if(CategoryID >0){
 				Question quest = getQuestionHome().create();
-				if(entityID>0)
+				if(entityID>0) {
 					quest = getQuestionHome().findByPrimaryKey(new Integer(entityID));
+				}
 				quest.setQuestionID(QuestionID);
-				if(AnswerID>0)
+				if(AnswerID>0) {
 					quest.setAnswerID(AnswerID);
+				}
 				quest.setCategoryId(CategoryID);
 				quest.setValid(true);
 				
@@ -91,10 +93,12 @@ public class QuestionsServiceBean extends IBOServiceBean implements QuestionsSer
 				}
 				entity.setCategoryId(categoryID.intValue());
 				entity.setValid(true);
-				if(qtextID!=null)
+				if(qtextID!=null) {
 					entity.setQuestionID(qtextID.intValue());
-				if(atextID!=null)
+				}
+				if(atextID!=null) {
 					entity.setAnswerID(atextID.intValue());
+				}
 				entity.store();
 				if(freshentity){
 					entity.setSequence(((Integer)entity.getPrimaryKey()).intValue());

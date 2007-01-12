@@ -80,12 +80,14 @@ public class IBObjectChooserWindow extends AbstractChooserWindow {
 						//icoLink.setOnClick(getOnSelectionCode(  item.getPrimaryKey().toString(),item.getName()));
 						//icoLink.setOnClick(getOnSelectionCode( "'"+item.getName()+"'", item.getPrimaryKey().toString() ));
 						//icoLink.setOnClick(getOnSelectionCode(item.getPrimaryKey().toString()));
-						if(useClassValue)
+						if(useClassValue) {
 							icoLink.setOnClick(getOnSelectionCode("'"+item.getName()+"'","'"+item.getClassName()+"'"));
-						else
-						icoLink.setOnClick(getOnSelectionCode( "'"+item.getName()+"'", item.getPrimaryKey().toString() ));
+						}
+						else {
+							icoLink.setOnClick(getOnSelectionCode( "'"+item.getName()+"'", item.getPrimaryKey().toString() ));
+						}
 						
-						icoLink.setURL(icoLink.JAVASCRIPT);
+						icoLink.setURL(Link.JAVASCRIPT);
 						table.add(icoLink,col,row++);
 						//addComponentToTable(element,table,i+1,row++);
 					}

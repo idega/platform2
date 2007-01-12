@@ -37,8 +37,9 @@ public class ContentFinder {
       CH.setFiles(listOfContentFiles(iContentId, null));
       return CH;
     }
-    else
-      return null;
+	else {
+		return null;
+	}
   }
 
   public static ContentHelper getContentHelper(int iContentId,int iLocaleId){
@@ -99,8 +100,9 @@ public class ContentFinder {
       CH.setFiles(listOfContentFiles(iContentId, null));
       return CH;
     }
-    else
-      return null;
+	else {
+		return null;
+	}
   }
 
 
@@ -275,8 +277,9 @@ public class ContentFinder {
 
   public static Locale getLocale(int iLocaleId){
     Locale L = ICLocaleBusiness.getLocale(iLocaleId);
-    if(L==null)
-      L = new Locale("is","IS");
+    if(L==null) {
+		L = new Locale("is","IS");
+	}
     return L;
   }
 

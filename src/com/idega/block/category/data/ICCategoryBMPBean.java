@@ -198,7 +198,7 @@ private static final String IC_CATEGORY_IC_OBJECT_INSTANCE_MIDDLE_TABLE_NAME = "
 		StringBuffer sql = new StringBuffer();
 		sql.append("Select c.* from ").append(EntityControl.getManyToManyRelationShipTableName(ICCategory.class, ICObjectInstance.class)).append(" mt, ").append(ICCategoryBMPBean.getEntityTableName()).append(" c");
 		sql.append(" where mt.").append(IC_OBJECT_INSTANCE_COLUMN_NAME).append(" = ").append(obj.getID());
-		sql.append(" and mt.").append(IC_CATEGORY_COLUMN_NAME).append(" = c.").append(IC_CATEGORY_COLUMN_NAME);
+		sql.append(" and mt.").append(this.IC_CATEGORY_COLUMN_NAME).append(" = c.").append(this.IC_CATEGORY_COLUMN_NAME);
 		if (order) {
 			sql.append(" order by mt.").append(TREE_ORDER_COLUMN_NAME); //.append(" desc");
 		} 
@@ -254,7 +254,7 @@ private static final String IC_CATEGORY_IC_OBJECT_INSTANCE_MIDDLE_TABLE_NAME = "
 			String query = "SELECT TREE_ORDER FROM " + 
 			               EntityControl.getManyToManyRelationShipTableName(ICCategory.class, ICObjectInstance.class) + 
                            " WHERE " + IC_OBJECT_INSTANCE_COLUMN_NAME + " = " + objectInstanceId +  
-                           " AND " + IC_CATEGORY_COLUMN_NAME + " = " + category.getID();
+                           " AND " + this.IC_CATEGORY_COLUMN_NAME + " = " + category.getID();
             String[] res = SimpleQuerier.executeStringQuery(query);
 			if (res == null || res.length == 0 || res[0] == null) {
 				return 0;
@@ -271,7 +271,7 @@ private static final String IC_CATEGORY_IC_OBJECT_INSTANCE_MIDDLE_TABLE_NAME = "
 		//    if (orderNumber == 0) {
 		//      return this.idoExecuteTableUpdate("UPDATE "+EntityControl.getManyToManyRelationShipTableName(ICCategory.class, ICObjectInstance.class)+" SET "+TREE_ORDER_COLUMN_NAME+" AS null WHERE "+IC_OBJECT_INSTANCE_COLUMN_NAME+" = "+instance.getID()+" AND "+IC_CATEGORY_COLUMN_NAME+" = "+category.getID());
 		//    }else {
-		return this.idoExecuteTableUpdate("UPDATE " + EntityControl.getManyToManyRelationShipTableName(ICCategory.class, ICObjectInstance.class) + " SET " + TREE_ORDER_COLUMN_NAME + " = " + orderNumber + " WHERE " + IC_OBJECT_INSTANCE_COLUMN_NAME + " = " + instance.getID() + " AND " + IC_CATEGORY_COLUMN_NAME + " = " + category.getID());
+		return this.idoExecuteTableUpdate("UPDATE " + EntityControl.getManyToManyRelationShipTableName(ICCategory.class, ICObjectInstance.class) + " SET " + TREE_ORDER_COLUMN_NAME + " = " + orderNumber + " WHERE " + IC_OBJECT_INSTANCE_COLUMN_NAME + " = " + instance.getID() + " AND " + this.IC_CATEGORY_COLUMN_NAME + " = " + category.getID());
 		//    }
 	}
 	/**

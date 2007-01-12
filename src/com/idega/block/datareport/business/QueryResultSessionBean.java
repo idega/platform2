@@ -18,10 +18,10 @@ import com.idega.business.IBOSessionBean;
  * <p>
  * TODO thomas Describe Type QueryResultSessionBean
  * </p>
- *  Last modified: $Date: 2005/07/04 14:08:47 $ by $Author: thomas $
+ *  Last modified: $Date: 2007/01/12 19:31:31 $ by $Author: idegaweb $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.1.2.1 $
  */
 public class QueryResultSessionBean extends IBOSessionBean  implements QueryResultSession{
 	
@@ -36,30 +36,30 @@ public class QueryResultSessionBean extends IBOSessionBean  implements QueryResu
 	
 	public QueryResult getQueryResult(Map identifierValueMap) {
 		if (mapsAreEqual(identifierValueMap)) {
-			return queryResult;
+			return this.queryResult;
 		}
 		deleteQueryResult();
 		return null;
 	}
 	
 	public void deleteQueryResult() {
-		identifierValueMap = null;
-		queryResult = null;
+		this.identifierValueMap = null;
+		this.queryResult = null;
 	}
 	
 	
 	public void setValue(String identifier, Object value) {
-		if (identifierValueMap == null) {
-			identifierValueMap = new HashMap();
+		if (this.identifierValueMap == null) {
+			this.identifierValueMap = new HashMap();
 		}
-		identifierValueMap.put(identifier, value);
+		this.identifierValueMap.put(identifier, value);
 	}
 	
 	public Object getValue(String identifier) {
-		if (identifierValueMap == null) {
+		if (this.identifierValueMap == null) {
 			return null;
 		}
-		return identifierValueMap.get(identifier);
+		return this.identifierValueMap.get(identifier);
 	}
 	
 	private boolean mapsAreEqual(Map identifierValueMap) {

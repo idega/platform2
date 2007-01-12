@@ -37,20 +37,20 @@ public class Messenger extends Block implements InvisibleInBuilder {
     if(iwc.isLoggedOn() ){
 
       Applet messenger = new Applet();
-      iwb = getBundle(iwc);
+      this.iwb = getBundle(iwc);
       messenger.setCodeArchive(com.idega.block.messenger.servlet.ClientServer.MESSENGER_JAR_FILE);
       messenger.setAppletClass(com.idega.block.messenger.servlet.ClientServer.MESSENGER_APPLET_CLASS);
-      messenger.setCodebase(iwb.getResourcesVirtualPath()+"/");
+      messenger.setCodebase(this.iwb.getResourcesVirtualPath()+"/");
       messenger.setParam(SERVLET_URL,com.idega.block.messenger.servlet.ClientServer.SERVLET_URL);
       messenger.setParam(SERVER_ROOT_URL,"http://"+iwc.getServerName()+":"+iwc.getServerPort());
-      messenger.setParam(RESOURCE_URL,iwb.getResourcesVirtualPath()+"/");
+      messenger.setParam(RESOURCE_URL,this.iwb.getResourcesVirtualPath()+"/");
 
       //user specific
       messenger.setParam(SESSION_ID,iwc.getSession().getId());
       messenger.setParam(USER_ID,Integer.toString(iwc.getCurrentUserId()));
       messenger.setParam(USER_NAME,iwc.getCurrentUser().getName());
-      messenger.setWidth(width);
-      messenger.setHeight(height);
+      messenger.setWidth(this.width);
+      messenger.setHeight(this.height);
 
       add(messenger);
 

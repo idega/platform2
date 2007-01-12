@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicantBMPBean.java,v 1.5 2004/06/21 16:47:29 aron Exp $
+ * $Id: ApplicantBMPBean.java,v 1.5.2.1 2007/01/12 19:33:00 idegaweb Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -256,19 +256,24 @@ public class ApplicantBMPBean extends com.idega.data.TreeableEntityBMPBean imple
 
   public boolean getSendSMS() {
     String send = getStringColumnValue(getSendSMSColumnName());
-    if ((send == null) || (send.equalsIgnoreCase("n")))
-      return(false);
-    else if (send.equalsIgnoreCase("y"))
-      return(true);
-    else
-      return(false);
+    if ((send == null) || (send.equalsIgnoreCase("n"))) {
+		return(false);
+	}
+	else if (send.equalsIgnoreCase("y")) {
+		return(true);
+	}
+	else {
+		return(false);
+	}
   }
 
   public void setSendSMS(boolean send) {
-    if (send)
-      setColumn(getSendSMSColumnName(),"Y");
-    else
-      setColumn(getSendSMSColumnName(),"N");
+    if (send) {
+		setColumn(getSendSMSColumnName(),"Y");
+	}
+	else {
+		setColumn(getSendSMSColumnName(),"N");
+	}
   }
 
   public void setStatus(String status){

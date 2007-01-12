@@ -19,24 +19,24 @@ public class Style {
 	public static final String STYLE_SEPERATOR = ":";
 	
 	public Style() {
-		attributes = new ArrayList();
+		this.attributes = new ArrayList();
 	}
 	
 	public void add(StyleAttribute attribute) {
-		attributes.add(attribute);
+		this.attributes.add(attribute);
 	}
 	
 	public boolean contains(StyleAttribute attribute) {
-		return attributes.contains(attribute);
+		return this.attributes.contains(attribute);
 	}
 	
 	public Iterator iterator() {
-		return attributes.iterator();
+		return this.attributes.iterator();
 	}
 	
 	public StyleAttribute get(String attributeName) {
-		if (attributes != null) {
-			Iterator iter = attributes.iterator();
+		if (this.attributes != null) {
+			Iterator iter = this.attributes.iterator();
 			while (iter.hasNext()) {
 				StyleAttribute attribute = (StyleAttribute) iter.next();
 				if (attribute.getName().equals(attributeName)) {
@@ -48,8 +48,8 @@ public class Style {
 	}
 	
 	public boolean remove(StyleAttribute attribute) {
-		if (attributes != null) {
-			return attributes.remove(attribute);
+		if (this.attributes != null) {
+			return this.attributes.remove(attribute);
 		}
 		return false;
 	}
@@ -57,7 +57,7 @@ public class Style {
 	public String toString() {
 		StringBuffer buffer = new StringBuffer();
 		
-		Iterator iter = attributes.iterator();
+		Iterator iter = this.attributes.iterator();
 		while (iter.hasNext()) {
 			StyleAttribute attribute = (StyleAttribute) iter.next();
 			buffer.append(attribute.getName());

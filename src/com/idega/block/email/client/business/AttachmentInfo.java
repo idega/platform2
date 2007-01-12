@@ -17,20 +17,24 @@ public class AttachmentInfo {
      */
     public String getAttachmentType() throws MessagingException {
         String contentType;
-        if ((contentType = part.getContentType()) == null)
-            return "invalid part";
-        else
-	    return contentType;
+        if ((contentType = this.part.getContentType()) == null) {
+			return "invalid part";
+		}
+		else {
+			return contentType;
+		}
     }
 
     /**
      * Returns the attachment's content (if it is plain text).
      */
     public String getContent() throws java.io.IOException, MessagingException {
-        if (hasMimeType("text/plain"))
-            return (String)part.getContent();
-        else
-            return "";
+        if (hasMimeType("text/plain")) {
+			return (String)this.part.getContent();
+		}
+		else {
+			return "";
+		}
     }
 
     /**
@@ -38,10 +42,12 @@ public class AttachmentInfo {
      */
     public String getDescription() throws MessagingException {
         String description;
-        if ((description = part.getDescription()) != null)
-            return description;
-        else
-            return "";
+        if ((description = this.part.getDescription()) != null) {
+			return description;
+		}
+		else {
+			return "";
+		}
     }
 
     /**
@@ -49,48 +55,52 @@ public class AttachmentInfo {
      */
     public String getFilename() throws MessagingException {
         String filename;
-        if ((filename = part.getFileName()) != null)
-            return filename;
-        else
-            return "";
+        if ((filename = this.part.getFileName()) != null) {
+			return filename;
+		}
+		else {
+			return "";
+		}
     }
 
     /**
      * Returns the attachment number.
      */
     public String getNum() {
-        return (Integer.toString(num));
+        return (Integer.toString(this.num));
     }
 
     /**
      * Method for checking if the attachment has a description.
      */
     public boolean hasDescription() throws MessagingException {
-        return (part.getDescription() != null);
+        return (this.part.getDescription() != null);
     }
 
     /**
      * Method for checking if the attachment has a filename.
      */
     public boolean hasFilename() throws MessagingException {
-        return (part.getFileName() != null);
+        return (this.part.getFileName() != null);
     }
 
     /**
      * Method for checking if the attachment has the desired mime type.
      */
     public boolean hasMimeType(String mimeType) throws MessagingException {
-        return part.isMimeType(mimeType);
+        return this.part.isMimeType(mimeType);
     }
 
     /**
      * Method for checking the content disposition.
      */
     public boolean isInline() throws MessagingException {
-        if (part.getDisposition() != null)
-            return part.getDisposition().equals(Part.INLINE);
-        else
-            return true;
+        if (this.part.getDisposition() != null) {
+			return this.part.getDisposition().equals(Part.INLINE);
+		}
+		else {
+			return true;
+		}
     }
 
     /**

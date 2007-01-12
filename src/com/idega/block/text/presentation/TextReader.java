@@ -101,10 +101,10 @@ public class TextReader extends Block implements Builderaware {
 	}
 
 	public void main(IWContext iwc) throws Exception {
-		isAdmin = iwc.hasEditPermission(this);
-		iwb = getBundle(iwc);
-		iwcb = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
-		iwrb = getResourceBundle(iwc);
+		this.isAdmin = iwc.hasEditPermission(this);
+		this.iwb = getBundle(iwc);
+		this.iwcb = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+		this.iwrb = getResourceBundle(iwc);
 		Locale locale = iwc.getCurrentLocale();
 
 		TxText txText = null;
@@ -114,37 +114,39 @@ public class TextReader extends Block implements Builderaware {
 		T.setCellpadding(0);
 		T.setCellspacing(0);
 		T.setBorder(0);
-		T.setWidth(textWidth);
+		T.setWidth(this.textWidth);
 
-		if (iTextId < 0) {
+		if (this.iTextId < 0) {
 			String sTextId = iwc.getParameter(prmTextId);
-			if (sTextId != null)
-				iTextId = Integer.parseInt(sTextId);
+			if (sTextId != null) {
+				this.iTextId = Integer.parseInt(sTextId);
+			}
 			else if (getICObjectInstanceID() > 0) {
-				iTextId = TextFinder.getObjectInstanceTextId(getICObjectInstance());
-				if (iTextId <= 0) {
-					newobjinst = true;
+				this.iTextId = TextFinder.getObjectInstanceTextId(getICObjectInstance());
+				if (this.iTextId <= 0) {
+					this.newobjinst = true;
 				}
 			}
 		}
 		int iLocaleId = ICLocaleBusiness.getLocaleId(locale);
 
-		if (iTextId > 0) {
+		if (this.iTextId > 0) {
 			TxTextHome txHome = (TxTextHome) IDOLookup.getHome(TxText.class);
-			txText = txHome.findByPrimaryKey(new Integer(iTextId));
+			txText = txHome.findByPrimaryKey(new Integer(this.iTextId));
 		}
-		else if (sAttribute != null) {
-			txText = TextFinder.getText(sAttribute);
-			newWithAttribute = true;
+		else if (this.sAttribute != null) {
+			txText = TextFinder.getText(this.sAttribute);
+			this.newWithAttribute = true;
 		}
 
 		boolean hasId = false;
 
 		if (txText != null) {
-			iTextId = txText.getID();
+			this.iTextId = txText.getID();
 			ch = ContentFinder.getContentHelper(txText.getContentId(), iLocaleId);
-			if (ch != null)
+			if (ch != null) {
 				locText = ch.getLocalizedText();
+			}
 			hasId = true;
 		}
 
@@ -152,8 +154,8 @@ public class TextReader extends Block implements Builderaware {
 			T.add(getTextTable(txText, locText, ch), 1, 1);
 
 		}
-		if (isAdmin) {
-			T.add(getAdminPart(iTextId, enableDelete, newobjinst, newWithAttribute, hasId), 1, 2);
+		if (this.isAdmin) {
+			T.add(getAdminPart(this.iTextId, this.enableDelete, this.newobjinst, this.newWithAttribute, hasId), 1, 2);
 		}
 
 		T.setBorder(0);
@@ -170,37 +172,42 @@ public class TextReader extends Block implements Builderaware {
 		int bodyRow = 2;
 
 		T.setWidth("100%");
-		if(bgColor != null) 
-		  T.setColor(bgColor);
+		if(this.bgColor != null) {
+			T.setColor(this.bgColor);
+		}
 		String sHeadline = locText.getHeadline() != null ? locText.getHeadline() : "";
-		Text headline = getStyleText(sHeadline,headlineStyleName);
-		if(headlineStyleClassName != null)
-		  headline.setStyleClass(headlineStyleClassName);
-		if (headlineSize > -1)
-			headline.setFontSize(headlineSize);
-		if (headlineColor != null)
-			headline.setFontColor(headlineColor);
+		Text headline = getStyleText(sHeadline,this.headlineStyleName);
+		if(this.headlineStyleClassName != null) {
+			headline.setStyleClass(this.headlineStyleClassName);
+		}
+		if (this.headlineSize > -1) {
+			headline.setFontSize(this.headlineSize);
+		}
+		if (this.headlineColor != null) {
+			headline.setFontColor(this.headlineColor);
+		}
 		//headline.setBold();
 		//headline.setAttribute("class","headlinetext");
-		if (headlineStyle != null)
-			headline.setFontStyle(headlineStyle);
+		if (this.headlineStyle != null) {
+			headline.setFontStyle(this.headlineStyle);
+		}
 
 		String textBody = locText.getBody() != null ? locText.getBody() : "";
 
-		if (reverse) {
+		if (this.reverse) {
 			textBody = TextFormatter.textReverse(textBody);
 		}
-		if (crazy) {
+		if (this.crazy) {
 			textBody = TextFormatter.textCrazy(textBody);
 		}
 
 		textBody = TextSoap.formatText(textBody);
 
-		if (displayHeadline) {
+		if (this.displayHeadline) {
 			if (headline.getText() != null) {
 				T.add(headline, 1, headerRow);
-				if (spaceBetweenHeadlineAndBody != null) {
-					T.setHeight(2, spaceBetweenHeadlineAndBody);
+				if (this.spaceBetweenHeadlineAndBody != null) {
+					T.setHeight(2, this.spaceBetweenHeadlineAndBody);
 					bodyRow = 3;
 				}
 			}
@@ -209,16 +216,20 @@ public class TextReader extends Block implements Builderaware {
 			bodyRow = 1;
 		}
 
-		Text body = getStyleText(textBody,textStyleName);
-		if(textStyleClassName != null)
-		  body.setStyleClass(textStyleClassName);
-		if (textSize > -1)
-			body.setFontSize(textSize);
-		if (textColor != null)
-			body.setFontColor(textColor);
+		Text body = getStyleText(textBody,this.textStyleName);
+		if(this.textStyleClassName != null) {
+			body.setStyleClass(this.textStyleClassName);
+		}
+		if (this.textSize > -1) {
+			body.setFontSize(this.textSize);
+		}
+		if (this.textColor != null) {
+			body.setFontColor(this.textColor);
+		}
 		//body.setAttribute("class","bodytext");
-		if (textStyle != null)
-			body.setFontStyle(textStyle);
+		if (this.textStyle != null) {
+			body.setFontStyle(this.textStyle);
+		}
 
 		///////////////// Image /////////////////////
 		List files = contentHelper.getFiles();
@@ -232,8 +243,9 @@ public class TextReader extends Block implements Builderaware {
 				String att = imagefile.getMetaData(TextEditorWindow.imageAttributeKey);
 
 				Image textImage = new Image(imid);
-				if (att != null)
+				if (att != null) {
 					textImage.addMarkupAttributes(getAttributeMap(att));
+				}
 				T.add(textImage, 1, bodyRow);
 			}
 			catch (SQLException ex) {
@@ -244,12 +256,14 @@ public class TextReader extends Block implements Builderaware {
 		T.add(body, 1, bodyRow);
 
 		///////////////// Adding to tables /////////////////////
-		T.setAttribute(1, bodyRow, "style", "text-align:" + textAlignment);
+		T.setAttribute(1, bodyRow, "style", "text-align:" + this.textAlignment);
 
-		if (headlineBgColor != null)
-			T.setRowColor(headerRow, headlineBgColor);
-		if (textBgColor != null)
-			T.setRowColor(bodyRow, textBgColor);
+		if (this.headlineBgColor != null) {
+			T.setRowColor(headerRow, this.headlineBgColor);
+		}
+		if (this.textBgColor != null) {
+			T.setRowColor(bodyRow, this.textBgColor);
+		}
 
 		return T;
 	}
@@ -259,32 +273,34 @@ public class TextReader extends Block implements Builderaware {
 		T.setCellpadding(0);
 		T.setCellspacing(0);
 		T.setBorder(0);
-		if(bgColor != null) {
-		  T.setColor(bgColor);
+		if(this.bgColor != null) {
+		  T.setColor(this.bgColor);
 		}
 		int column = 1;
 
 		if (iTextId > 0) {
-			Link breyta = new Link(iwcb.getImage("/shared/edit.gif"));
+			Link breyta = new Link(this.iwcb.getImage("/shared/edit.gif"));
 			breyta.setWindowToOpen(TextEditorWindow.class);
 			breyta.addParameter(TextEditorWindow.prmTextId, iTextId);
 			breyta.addParameter(TextEditorWindow.prmObjInstId, getICObjectInstanceID());
 			T.add(breyta, column++, 1);
 
 			if (enableDelete) {
-				Link delete = new Link(iwcb.getImage("/shared/delete.gif"));
+				Link delete = new Link(this.iwcb.getImage("/shared/delete.gif"));
 				delete.setWindowToOpen(TextEditorWindow.class);
 				delete.addParameter(TextEditorWindow.prmDelete, iTextId);
 				T.add(delete, column++, 1);
 			}
 		}
-		if (createInstance && newObjInst && !hasId) {
-			Link newLink = new Link(iwcb.getImage("/shared/create.gif"));
+		if (this.createInstance && newObjInst && !hasId) {
+			Link newLink = new Link(this.iwcb.getImage("/shared/create.gif"));
 			newLink.setWindowToOpen(TextEditorWindow.class);
-			if (newObjInst)
+			if (newObjInst) {
 				newLink.addParameter(TextEditorWindow.prmObjInstId, getICObjectInstanceID());
-			else if (newWithAttribute)
-				newLink.addParameter(TextEditorWindow.prmAttribute, sAttribute);
+			}
+			else if (newWithAttribute) {
+				newLink.addParameter(TextEditorWindow.prmAttribute, this.sAttribute);
+			}
 
 			T.add(newLink, column++, 1);
 		}
@@ -348,7 +364,7 @@ public class TextReader extends Block implements Builderaware {
 	}
 
 	public void setTextAlignment(String alignment) {
-		textAlignment = alignment;
+		this.textAlignment = alignment;
 	}
 
 	public void setHeadlineStyle(String headlineStyle) {
@@ -383,7 +399,7 @@ public class TextReader extends Block implements Builderaware {
 	}
 
 	public void setSpaceAfterHeadline(String space) {
-		spaceBetweenHeadlineAndBody = space;
+		this.spaceBetweenHeadlineAndBody = space;
 	}
 
 	public void setReverse() {
@@ -447,7 +463,7 @@ public class TextReader extends Block implements Builderaware {
 	 */
 	public Map getStyleNames() {
 		HashMap map = new HashMap();
-		String[] styleNames = { headlineStyleName, textStyleName };
+		String[] styleNames = { this.headlineStyleName, this.textStyleName };
 		String[] styleValues = { "", "" };
 
 		for (int a = 0; a < styleNames.length; a++) {
@@ -458,10 +474,10 @@ public class TextReader extends Block implements Builderaware {
 	}
 	
 	public void setHeadlineStyleClass(String styleClass) {
-		headlineStyleClassName = styleClass;	
+		this.headlineStyleClassName = styleClass;	
 	}
 
 	public void setTextStyleClass(String styleClass) {
-		textStyleClassName = styleClass;	
+		this.textStyleClassName = styleClass;	
 	}
 }

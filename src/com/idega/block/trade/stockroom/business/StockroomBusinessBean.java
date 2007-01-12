@@ -143,10 +143,11 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
       List prices = EntityFinder.getInstance().findAll(ProductPrice.class, buffer.toString());
 //      List prices = EntityFinder.findAll(((com.idega.block.trade.stockroom.data.ProductPriceHome)com.idega.data.IDOLookup.getHomeLegacy(ProductPrice.class)).createLegacy(), buffer.toString());
 //      EntityFinder.debug = false;
-      if (prices != null)
-      if (prices.size() > 0) {
-        return ((ProductPrice)prices.get(0));
-      }
+      if (prices != null) {
+		if (prices.size() > 0) {
+		    return ((ProductPrice)prices.get(0));
+		  }
+	}
     }catch (IDOFinderException ido) {
       ido.printStackTrace(System.err);
     }

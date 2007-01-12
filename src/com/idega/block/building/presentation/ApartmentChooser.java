@@ -31,7 +31,7 @@ public class ApartmentChooser extends BuildingEditor{
   public void main(IWContext iwc)  {
   
     try{
-    	service =getBuildingService(iwc);
+    	this.service =getBuildingService(iwc);
       String apartment = iwc.getParameter("dr_id");
 
       if ( apartment != null ) {
@@ -58,7 +58,7 @@ public class ApartmentChooser extends BuildingEditor{
 
 
     //Complex[] C = (Complex[])(((com.idega.block.building.data.ComplexHome)com.idega.data.IDOLookup.getHomeLegacy(Complex.class)).createLegacy()).findAll();
-  	Collection complexes = service.getComplexHome().findAll();
+  	Collection complexes = this.service.getComplexHome().findAll();
     //int clen = C.length;
     int b = 1, f = 1;
 
@@ -74,7 +74,7 @@ public class ApartmentChooser extends BuildingEditor{
 		
 	
       T.add(getHeaderText( complex.getName()),i,1);
-      Collection buildings =service.getBuildingHome().findByComplex((Integer)complex.getPrimaryKey());
+      Collection buildings =this.service.getBuildingHome().findByComplex((Integer)complex.getPrimaryKey());
       //Building[] B = (Building[])(((com.idega.block.building.data.BuildingHome)com.idega.data.IDOLookup.getHomeLegacy(Building.class)).createLegacy()).findAllByColumnOrdered(com.idega.block.building.data.BuildingBMPBean.getComplexIdColumnName(),String.valueOf(C[i].getID()),com.idega.block.building.data.BuildingBMPBean.getNameColumnName());
       //int blen = B.length;
       Table BuildingTable = new Table();
@@ -89,7 +89,7 @@ public class ApartmentChooser extends BuildingEditor{
 		
 	
         BuildingTable.add(getHeaderText( building.getName()),1,b++);
-        Collection floors = service.getFloorHome().findByBuilding((Integer)building.getPrimaryKey());
+        Collection floors = this.service.getFloorHome().findByBuilding((Integer)building.getPrimaryKey());
         //Floor[] F = (Floor[])(((com.idega.block.building.data.FloorHome)com.idega.data.IDOLookup.getHomeLegacy(Floor.class)).createLegacy()).findAllByColumnOrdered(com.idega.block.building.data.FloorBMPBean.getBuildingIdColumnName(),String.valueOf(B[j].getID()),com.idega.block.building.data.FloorBMPBean.getNameColumnName());
        // int flen = F.length;
         Table FloorTable = new Table();
@@ -102,7 +102,7 @@ public class ApartmentChooser extends BuildingEditor{
 			Floor floor = (Floor) iter3.next();
           FloorTable.add(getHeaderText(floor.getName()),1,f++);
           //Apartment[] A = (Apartment[])(((com.idega.block.building.data.ApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(Apartment.class)).createLegacy()).findAllByColumnOrdered(com.idega.block.building.data.ApartmentBMPBean.getFloorIdColumnName(),String.valueOf(F[k].getID()),com.idega.block.building.data.ApartmentBMPBean.getNameColumnName());
-          Collection apartments =service.getApartmentHome().findByFloor((Integer)floor.getPrimaryKey());
+          Collection apartments =this.service.getApartmentHome().findByFloor((Integer)floor.getPrimaryKey());
           //int alen = A.length;
          // if(alen > 0){
           if(apartments!=null &&!apartments.isEmpty()){

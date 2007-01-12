@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBMPBean.java,v 1.5.2.1 2006/10/18 13:53:58 palli Exp $
+ * $Id: ApplicationBMPBean.java,v 1.5.2.2 2007/01/12 19:33:00 idegaweb Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -138,8 +138,10 @@ public class ApplicationBMPBean extends GenericEntity implements Application{
 				|| (status.equalsIgnoreCase(STATUS_GARBAGE))) {
 			setColumn(COLUMN_STATUS, status);
 			setStatusChanged(IWTimestamp.getTimestampRightNow());
-		} else
+		}
+		else {
 			throw new IllegalStateException("Undefined state : " + status);
+		}
 	}
 
 	public void setStatusSubmitted() {

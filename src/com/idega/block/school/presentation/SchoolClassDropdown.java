@@ -50,19 +50,22 @@ public class SchoolClassDropdown extends DropdownMenu {
 	 */
 	public SchoolClassDropdown(String name, int schoolID, int schoolSeasonID, int schoolYearID) {
 		super(name);
-		_schoolID = schoolID;
-		_schoolSeasonID = schoolSeasonID;
-		_schoolYearID = schoolYearID;
+		this._schoolID = schoolID;
+		this._schoolSeasonID = schoolSeasonID;
+		this._schoolYearID = schoolYearID;
 	}
 	
 	public void main(IWContext iwc) throws Exception {
 		Collection classes;
-		if (getSchoolSeasonID() == -1 && getSchoolYearID() == -1)
+		if (getSchoolSeasonID() == -1 && getSchoolYearID() == -1) {
 			classes = getSchoolBusiness(iwc).findSchoolClassesBySchool(getSchoolID());
-		else if (_schoolYearID == -1)
+		}
+		else if (this._schoolYearID == -1) {
 			classes = getSchoolBusiness(iwc).findSchoolClassesBySchoolAndSeason(getSchoolID(), getSchoolSeasonID());
-		else
+		}
+		else {
 			classes = getSchoolBusiness(iwc).findSchoolClassesBySchoolAndSeasonAndYear(getSchoolID(), getSchoolSeasonID(), getSchoolYearID());
+		}
 			
 		if (classes != null) {
 			Iterator iter = classes.iterator();
@@ -82,7 +85,7 @@ public class SchoolClassDropdown extends DropdownMenu {
 	 * @return int
 	 */
 	public int getSchoolID() {
-		return _schoolID;
+		return this._schoolID;
 	}
 
 	/**
@@ -90,7 +93,7 @@ public class SchoolClassDropdown extends DropdownMenu {
 	 * @return int
 	 */
 	public int getSchoolSeasonID() {
-		return _schoolSeasonID;
+		return this._schoolSeasonID;
 	}
 
 	/**
@@ -98,7 +101,7 @@ public class SchoolClassDropdown extends DropdownMenu {
 	 * @return int
 	 */
 	public int getSchoolYearID() {
-		return _schoolYearID;
+		return this._schoolYearID;
 	}
 
 	/**
@@ -106,7 +109,7 @@ public class SchoolClassDropdown extends DropdownMenu {
 	 * @param schoolID The schoolID to set
 	 */
 	public void setSchoolID(int schoolID) {
-		_schoolID = schoolID;
+		this._schoolID = schoolID;
 	}
 
 	/**
@@ -114,7 +117,7 @@ public class SchoolClassDropdown extends DropdownMenu {
 	 * @param schoolSeasonID The schoolSeasonID to set
 	 */
 	public void setSchoolSeasonID(int schoolSeasonID) {
-		_schoolSeasonID = schoolSeasonID;
+		this._schoolSeasonID = schoolSeasonID;
 	}
 
 	/**
@@ -122,7 +125,7 @@ public class SchoolClassDropdown extends DropdownMenu {
 	 * @param schoolYearID The schoolYearID to set
 	 */
 	public void setSchoolYearID(int schoolYearID) {
-		_schoolYearID = schoolYearID;
+		this._schoolYearID = schoolYearID;
 	}
 
 }

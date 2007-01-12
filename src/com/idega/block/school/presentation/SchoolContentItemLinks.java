@@ -6,6 +6,7 @@ import java.util.Iterator;
 import javax.ejb.FinderException;
 import com.idega.block.school.business.SchoolUserBusiness;
 import com.idega.block.school.data.SchoolManagementType;
+import com.idega.business.IBOLookup;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.data.IDOLookup;
@@ -55,21 +56,21 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 		
 		useBreak = true;
 		
-		String address = _school.getSchoolAddress();
-		String zipArea = _school.getSchoolZipArea();
-		String zipCode = _school.getSchoolZipCode();
-		String phone = _school.getSchoolPhone();
-		String fax = _school.getSchoolFax();
-		String mapUrl = _school.getMapUrl();
-		String activity = _school.getActivity();
-		String open_hours = _school.getOpenHours();
-		String email = _school.getSchoolEmail();
-		String visitaddress = _school.getSchoolVisitAddress();
+		String address = this._school.getSchoolAddress();
+		String zipArea = this._school.getSchoolZipArea();
+		String zipCode = this._school.getSchoolZipCode();
+		String phone = this._school.getSchoolPhone();
+		String fax = this._school.getSchoolFax();
+		String mapUrl = this._school.getMapUrl();
+		String activity = this._school.getActivity();
+		String open_hours = this._school.getOpenHours();
+		String email = this._school.getSchoolEmail();
+		String visitaddress = this._school.getSchoolVisitAddress();
 
 		if ((address != null || zipArea != null || zipCode != null || phone != null || fax != null)) {
 			if (useBreak) {
 				++row;
-				table.setHeight(row, _spaceBetween);
+				table.setHeight(row, this._spaceBetween);
 				++row;
 			}
 			/*
@@ -80,9 +81,9 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 			}*/
 			if (visitaddress != null && !visitaddress.equals(" ")) {
 				if (isAdultEducation()){
-					table.add(getHeader(_iwrb.getLocalizedString("school.educating_address","Educating address")+":"), 1, row);
+					table.add(getHeader(this._iwrb.getLocalizedString("school.educating_address","Educating address")+":"), 1, row);
 				}else{
-					table.add(getHeader(_iwrb.getLocalizedString("school.visiting_address","Visiting address")+":"), 1, row);	
+					table.add(getHeader(this._iwrb.getLocalizedString("school.visiting_address","Visiting address")+":"), 1, row);	
 				}
 				
 				++row;
@@ -90,12 +91,12 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 				++row;
 				if (useBreak) {
 					++row;
-					table.setHeight(row, _spaceBetween);
+					table.setHeight(row, this._spaceBetween);
 					++row;
 				}
 			}
 			
-			table.add(getHeader(_iwrb.getLocalizedString("school.postal_address","Postal address")+":"), 1, row);
+			table.add(getHeader(this._iwrb.getLocalizedString("school.postal_address","Postal address")+":"), 1, row);
 			if (address != null && !address.equals(" ")) {
 				++row;
 				table.add(getText(address), 1, row);
@@ -127,11 +128,11 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 			}
 			if (phone != null) {
 				++row;
-				table.add(getText(_iwrb.getLocalizedString("school.Tph","Tph")+": "+phone), 1, row);
+				table.add(getText(this._iwrb.getLocalizedString("school.Tph","Tph")+": "+phone), 1, row);
 			}
 			if (fax != null) {
 				++row;
-				table.add(getText(_iwrb.getLocalizedString("school.fax","Fax")+": "+fax), 1, row);
+				table.add(getText(this._iwrb.getLocalizedString("school.fax","Fax")+": "+fax), 1, row);
 			}
 			/*if (email != null && !email.equals(" ")) {
 				++row;
@@ -139,12 +140,12 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 			}*/
 			if (email != null && !email.equals(" ")) {
 				++row;
-				Link linkEmail = new Link(getText(_iwrb.getLocalizedString("school.email","Email")), "mailto:"+email);
+				Link linkEmail = new Link(getText(this._iwrb.getLocalizedString("school.email","Email")), "mailto:"+email);
 				table.add(linkEmail, 1, row);
 			}
 			if (mapUrl != null) {
 				++row;
-				Link link = new Link(getText(_iwrb.getLocalizedString("school.show_map","Show map")), mapUrl);
+				Link link = new Link(getText(this._iwrb.getLocalizedString("school.show_map","Show map")), mapUrl);
 				link.setTarget(Link.TARGET_NEW_WINDOW);
 				table.add(link, 1, row);
 			}
@@ -152,11 +153,11 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 		}
 
 
-		String webPage = _school.getSchoolWebPage();
+		String webPage = this._school.getSchoolWebPage();
 		if (webPage != null) {
 			if (useBreak) {
 				++row;
-				table.setHeight(row, _spaceBetween);
+				table.setHeight(row, this._spaceBetween);
 				++row;
 			}
 			/*Link link = new Link(getText(webPage), webPage);
@@ -167,7 +168,7 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 			useBreak = true;
 			*/
 //			Link link = new Link(getText(webPage), webPage);
-		  Link link = new Link(getText(_iwrb.getLocalizedString("school.school_home_page","Home page of the school")), webPage);
+		  Link link = new Link(getText(this._iwrb.getLocalizedString("school.school_home_page","Home page of the school")), webPage);
 		  //table.add(getHeader(_iwrb.getLocalizedString("school.web_page","Web Page")+":"), 1, row);
 		  link.setTarget(Link.TARGET_NEW_WINDOW);	
 		  ++row;
@@ -177,32 +178,33 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 
 		if (useBreak) {
 			++row;
-			table.setHeight(row, _spaceBetween);
+			table.setHeight(row, this._spaceBetween);
 			++row;
 		}
 
 		// Moved the management type here  (Kelly)
 		String manType = null;
-		if (_school != null) {
-			SchoolManagementType type = _school.getSchoolManagementType();
-			if (type != null)
-				manType = _iwrb.getLocalizedString(type.getLocalizedKey(), type.getName());
+		if (this._school != null) {
+			SchoolManagementType type = this._school.getSchoolManagementType();
+			if (type != null) {
+				manType = this._iwrb.getLocalizedString(type.getLocalizedKey(), type.getName());
+			}
 		}
 		
-		if (_showManagementType && manType != null) {
-			table.add(getHeader(_iwrb.getLocalizedString("school.management_type","Management Type")+":"), 1, row);
+		if (this._showManagementType && manType != null) {
+			table.add(getHeader(this._iwrb.getLocalizedString("school.management_type","Management Type")+":"), 1, row);
 			++row;
 			table.add(getText(manType), 1, row);
 		}
 		if (useBreak) {
 			++row;
-			table.setHeight(row, _spaceBetween);
+			table.setHeight(row, this._spaceBetween);
 			++row;
 		}
 
 		// Added the activity here  (Kelly)
 		if (activity != null) {
-			table.add(getHeader(_iwrb.getLocalizedString("school.activity", "Activity")+":"), 1, row);
+			table.add(getHeader(this._iwrb.getLocalizedString("school.activity", "Activity")+":"), 1, row);
 			++row;
 			table.add(getText(activity), 1, row);
 		}
@@ -210,19 +212,19 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 		boolean isAdultEducation = isAdultEducation();
 
 		try {
-			Collection hmUsers = getSchoolUserBusiness(_iwc).getHeadmasters(_school);
+			Collection hmUsers = getSchoolUserBusiness(this._iwc).getHeadmasters(this._school);
 			if (hmUsers != null && !hmUsers.isEmpty()) {
 //			int headmasterId = _school.getHeadmasterUserId();
 //			if (headmasterId > 0 ) {
 				if (useBreak) {
 					++row;
-					table.setHeight(row, _spaceBetween);
+					table.setHeight(row, this._spaceBetween);
 					++row;
 				}
 				if (isSchool) {
-					table.add(getHeader(_iwrb.getLocalizedString("school.headmaster","Headmaster")+":"), 1, row);
+					table.add(getHeader(this._iwrb.getLocalizedString("school.headmaster","Headmaster")+":"), 1, row);
 				} else {
-					table.add(getHeader(_iwrb.getLocalizedString("school.childcare_manager","Manager")+":"), 1, row);
+					table.add(getHeader(this._iwrb.getLocalizedString("school.childcare_manager","Manager")+":"), 1, row);
 				}
 				//UserHome uHome = (UserHome) IDOLookup.getHome(User.class);
 				Iterator iter = hmUsers.iterator();
@@ -242,7 +244,7 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 		
 		if (isAdultEducation) {
 			try {
-				Collection suTypes = getSchoolUserBusiness(_iwc).getSchoolUserTypes(_school);
+				Collection suTypes = getSchoolUserBusiness(this._iwc).getSchoolUserTypes(this._school);
 			
 				if (suTypes != null && !suTypes.isEmpty()) {
 				
@@ -252,12 +254,12 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 					userType = (String[]) iter.next();
 					++row;
 					
-					Collection users = getSchoolUserBusiness(_iwc).getUsers(_school, Integer.parseInt(userType[2]));
+					Collection users = getSchoolUserBusiness(this._iwc).getUsers(this._school, Integer.parseInt(userType[2]));
 						
 					if (users != null && users.size() > 0) {
 						if (useBreak) {
 							++row;
-							table.setHeight(row, _spaceBetween);
+							table.setHeight(row, this._spaceBetween);
 							++row;
 						}
 						
@@ -266,10 +268,10 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 						while (userIter.hasNext()) {
 							User hm = (User) userIter.next();
 							boolean show = false;
-							show = getSchoolUserBusiness(_iwc).getUserShowInContact(hm);
+							show = getSchoolUserBusiness(this._iwc).getUserShowInContact(hm);
 							if (show){
 								if (i <=1){
-									table.add(getHeader(_iwrb.getLocalizedString(userType[0], userType[1])), 1, row);
+									table.add(getHeader(this._iwrb.getLocalizedString(userType[0], userType[1])), 1, row);
 									i++;
 								}
 								row = insertUser(table, row, hm);
@@ -293,19 +295,19 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 		}
 		else {
 			try {
-				Collection hmUsers = getSchoolUserBusiness(_iwc).getAssistantHeadmasters(_school);
+				Collection hmUsers = getSchoolUserBusiness(this._iwc).getAssistantHeadmasters(this._school);
 				if (hmUsers != null && !hmUsers.isEmpty()) {
 	//			int headmasterId = _school.getHeadmasterUserId();
 	//			if (headmasterId > 0 ) {
 					if (useBreak) {
 						++row;
-						table.setHeight(row, _spaceBetween);
+						table.setHeight(row, this._spaceBetween);
 						++row;
 					}
 					if (isSchool) {
-						table.add(getHeader(_iwrb.getLocalizedString("school.assistant_headmaster","Assistant Headmaster")+":"), 1, row);
+						table.add(getHeader(this._iwrb.getLocalizedString("school.assistant_headmaster","Assistant Headmaster")+":"), 1, row);
 					} else {
-						table.add(getHeader(_iwrb.getLocalizedString("school.childcare_assistant_manager","Assistant Manager")+":"), 1, row);
+						table.add(getHeader(this._iwrb.getLocalizedString("school.childcare_assistant_manager","Assistant Manager")+":"), 1, row);
 					}
 					Iterator iter = hmUsers.iterator();
 					while (iter.hasNext()) {
@@ -320,11 +322,11 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 		}
 		if (useBreak) {
 			++row;
-			table.setHeight(row, _spaceBetween);
+			table.setHeight(row, this._spaceBetween);
 			++row;
 		}
 		if (open_hours != null) {
-			table.add(getHeader(_iwrb.getLocalizedString("school.open_hours", "Open hours")+":"), 1, row);
+			table.add(getHeader(this._iwrb.getLocalizedString("school.open_hours", "Open hours")+":"), 1, row);
 			++row;
 			table.add(getText(open_hours), 1, row);
 		}
@@ -390,10 +392,10 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 					//uPhone = pHome.findByPrimaryKey(pIter.next());	
 					++row;
 					if (phCounter == 1) {
-						table.add(getText(_iwrb.getLocalizedString("school.Tph","Tph")+": "+uPhone.getNumber()), 1, row);
+						table.add(getText(this._iwrb.getLocalizedString("school.Tph","Tph")+": "+uPhone.getNumber()), 1, row);
 					}
 					if (phCounter >= 2) {
-						table.add(getText(_iwrb.getLocalizedString("school.cell_phone","Mobil")+": "+uPhone.getNumber()), 1, row);
+						table.add(getText(this._iwrb.getLocalizedString("school.cell_phone","Mobil")+": "+uPhone.getNumber()), 1, row);
 					}
 					phCounter++;
 				//} catch (FinderException e) {
@@ -406,8 +408,8 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 
 	private boolean isElementarySchool() {
 		try {
-			String category = getSchoolUserBusiness(_iwc).getSchoolCategory(_school);
-			if (category.equalsIgnoreCase(getSchoolUserBusiness(_iwc).getSchoolBusiness().getElementarySchoolSchoolCategory())) {
+			String category = getSchoolUserBusiness(this._iwc).getSchoolCategory(this._school);
+			if (category.equalsIgnoreCase(getSchoolUserBusiness(this._iwc).getSchoolBusiness().getElementarySchoolSchoolCategory())) {
 				return true;
 			}
 		} catch (Exception e) {
@@ -418,8 +420,8 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 	
 	private boolean isAdultEducation() {
 		try {
-			String category = getSchoolUserBusiness(_iwc).getSchoolCategory(_school);
-			if (category.equalsIgnoreCase(getSchoolUserBusiness(_iwc).getSchoolBusiness().getCategoryAdultEducation().getCategory())) {
+			String category = getSchoolUserBusiness(this._iwc).getSchoolCategory(this._school);
+			if (category.equalsIgnoreCase(getSchoolUserBusiness(this._iwc).getSchoolBusiness().getCategoryAdultEducation().getCategory())) {
 				return true;
 			}
 		} catch (Exception e) {
@@ -431,34 +433,34 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 		
 	private Text getHeader(String content) {
 		Text text = new Text(content);
-		if (_headerStyle != null) {
-			text.setFontStyle(_headerStyle);
+		if (this._headerStyle != null) {
+			text.setFontStyle(this._headerStyle);
 		}	else {
 			text.setBold(true);	
 		}
-		if (_headerColor != null) {
-			text.setFontColor(_headerColor);	
+		if (this._headerColor != null) {
+			text.setFontColor(this._headerColor);	
 		}
-		if (_headerFontClass != null) {
-			text.setFontClass(_headerFontClass);	
+		if (this._headerFontClass != null) {
+			text.setFontClass(this._headerFontClass);	
 		}
 		return text;
 	}
 	
 	public void setHeaderStyle(String style) {
-		_headerStyle = style;	
+		this._headerStyle = style;	
 	}
 	
 	public void setHeaderFontClass(String fontClass) {
-		_headerFontClass = fontClass;	
+		this._headerFontClass = fontClass;	
 	}
 	
 	public void setHeaderColor(String color) {
-		_headerColor = color;	
+		this._headerColor = color;	
 	}
 	
 	public void setSpaceBetween(int spaceBetween) {
-		_spaceBetween = spaceBetween;
+		this._spaceBetween = spaceBetween;
 	}
 	
 	
@@ -469,12 +471,12 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 	*/
 	
 	private SchoolUserBusiness getSchoolUserBusiness(IWApplicationContext iwac) throws RemoteException {
-		return (SchoolUserBusiness) IDOLookup.getServiceInstance(iwac, SchoolUserBusiness.class);	
+		return (SchoolUserBusiness) IBOLookup.getServiceInstance(iwac, SchoolUserBusiness.class);	
 	}	
 	/**
 	 * @param managementType The _showManagementType to set.
 	 */
 	public void setShowManagementType(boolean managementType) {
-		_showManagementType = managementType;
+		this._showManagementType = managementType;
 	}
 }

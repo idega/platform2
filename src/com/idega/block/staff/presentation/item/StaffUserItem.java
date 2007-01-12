@@ -1,5 +1,5 @@
 /*
- * $Id: StaffUserItem.java,v 1.1 2005/02/01 13:40:20 laddi Exp $
+ * $Id: StaffUserItem.java,v 1.1.2.1 2007/01/12 19:32:48 idegaweb Exp $
  * Created on 22.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -31,7 +31,7 @@ import com.idega.user.data.User;
  * Last modified: 22.11.2004 13:34:38 by laddi
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.1.2.1 $
  */
 public abstract class StaffUserItem extends Block {
 
@@ -43,8 +43,8 @@ public abstract class StaffUserItem extends Block {
 	private String styleClass;
 	
 	public void main(IWContext iwc) {
-		iwb = getBundle(iwc);
-		iwrb = getResourceBundle(iwc);
+		this.iwb = getBundle(iwc);
+		this.iwrb = getResourceBundle(iwc);
 		try {
 			handleParameters(iwc);
 		}
@@ -69,8 +69,8 @@ public abstract class StaffUserItem extends Block {
 				log(re);
 			}
 			if (item != null) {
-				if (styleClass != null) {
-					item.setStyleClass(styleClass);
+				if (this.styleClass != null) {
+					item.setStyleClass(this.styleClass);
 				}
 				add(item);
 			}
@@ -123,11 +123,11 @@ public abstract class StaffUserItem extends Block {
 	protected abstract PresentationObject getItem(IWContext iwc) throws RemoteException;
 	
 	protected IWBundle getBundle() {
-		return iwb;
+		return this.iwb;
 	}
 	
 	protected IWResourceBundle getResourceBundle() {
-		return iwrb;
+		return this.iwrb;
 	}
 	
 	public String getBundleIdentifier() {

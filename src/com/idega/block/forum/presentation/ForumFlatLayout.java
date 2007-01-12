@@ -52,9 +52,9 @@ public class ForumFlatLayout extends Forum {
 		
 		//here the body is indented for every new answer
 		table.setRowStyleClass(row, getStyleName(BODY_ROW_STYLE));
-		table.setCellpaddingLeft(1, row, initialBodyIndent);
+		table.setCellpaddingLeft(1, row, this.initialBodyIndent);
 		if (depth > 0) {
-			table.setCellpaddingLeft(1, row, initialBodyIndent + (indent * depth));
+			table.setCellpaddingLeft(1, row, this.initialBodyIndent + (this.indent * depth));
 		}
 		row++;
 		
@@ -68,11 +68,11 @@ public class ForumFlatLayout extends Forum {
 		table.setCellpadding(0);
 		table.setCellspacing(0);
 
-		table.setCellpaddingLeft(1, 1, initialHeaderIndent);
-		table.setCellpaddingLeft(1, 2, initialHeaderIndent);
+		table.setCellpaddingLeft(1, 1, this.initialHeaderIndent);
+		table.setCellpaddingLeft(1, 2, this.initialHeaderIndent);
 		if (depth > 0) {
-			table.setCellpaddingLeft(1, 1, initialHeaderIndent + (indent * depth));
-			table.setCellpaddingLeft(1, 2, initialHeaderIndent + (indent * depth));
+			table.setCellpaddingLeft(1, 1, this.initialHeaderIndent + (this.indent * depth));
+			table.setCellpaddingLeft(1, 2, this.initialHeaderIndent + (this.indent * depth));
 		}
 
 		table.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
@@ -134,11 +134,11 @@ public class ForumFlatLayout extends Forum {
 			return table;
 		}
 		
-		Text author = formatText(_iwrb.getLocalizedString("author", "Author"), HEADER_STYLE);
-		Text replies = formatText(_iwrb.getLocalizedString("replies", "Replies"), HEADER_STYLE);
-		Text date = formatText(_iwrb.getLocalizedString("date", "Date"), HEADER_STYLE);
+		Text author = formatText(this._iwrb.getLocalizedString("author", "Author"), HEADER_STYLE);
+		Text replies = formatText(this._iwrb.getLocalizedString("replies", "Replies"), HEADER_STYLE);
+		Text date = formatText(this._iwrb.getLocalizedString("date", "Date"), HEADER_STYLE);
 
-		table.add(formatText(_iwrb.getLocalizedString("thread", "Thread"), HEADER_STYLE),1,row);
+		table.add(formatText(this._iwrb.getLocalizedString("thread", "Thread"), HEADER_STYLE),1,row);
 		table.add(author,2,row);
 		table.add(replies, 3,row);
 		table.add(date, 4,row);

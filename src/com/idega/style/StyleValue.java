@@ -40,15 +40,15 @@ public class StyleValue {
 	}
 	
 	protected void addOption(Object option) {
-		if (options == null) {
-			options = new ArrayList();
+		if (this.options == null) {
+			this.options = new ArrayList();
 		}
-		options.add(option);
+		this.options.add(option);
 	}
 	
 	public Iterator iterator() {
-		if (options != null) {
-			return options.iterator();
+		if (this.options != null) {
+			return this.options.iterator();
 		}
 		return null;
 	}
@@ -78,11 +78,11 @@ public class StyleValue {
 	}
 	
 	public String getName() {
-		return name;
+		return this.name;
 	}
 	
 	public String getValue() {
-		return value;
+		return this.value;
 	}
 	
 	public void setValue(String value) {
@@ -90,7 +90,7 @@ public class StyleValue {
 	}
 	
 	public StyleUnit getUnit() {
-		return unit;
+		return this.unit;
 	}
 	
 	public void setUnit(StyleUnit unit) {

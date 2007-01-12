@@ -77,11 +77,11 @@ public class SchoolEditor extends SchoolBlock {
 	String iSchoolCategory = null;
 	
 	public boolean getUseProviderStringId() {
-		return _useProviderStringId;
+		return this._useProviderStringId;
 	}
 
 	public void setUseProviderStringId(boolean b) {
-		_useProviderStringId = b;
+		this._useProviderStringId = b;
 	}
 
 	protected void init(IWContext iwc) throws Exception {
@@ -152,8 +152,12 @@ public class SchoolEditor extends SchoolBlock {
 
 		}
 		int areaId = -1, sid = -1;
-		if (pk != null) sid = Integer.parseInt(pk);
-		if (area != null) areaId = Integer.parseInt(area);
+		if (pk != null) {
+			sid = Integer.parseInt(pk);
+		}
+		if (area != null) {
+			areaId = Integer.parseInt(area);
+		}
 
 		Integer communePK = null;
 		if (commune != null) {
@@ -196,11 +200,11 @@ public class SchoolEditor extends SchoolBlock {
 		column.setWidth("12");
 
 		Collection schools = new java.util.Vector(0);
-		if (iSchoolCategory == null) {
+		if (this.iSchoolCategory == null) {
 			schools = getBusiness().findAllSchools();
 		}
 		else {
-			schools = getBusiness().findAllSchoolsByCategory(iSchoolCategory);
+			schools = getBusiness().findAllSchoolsByCategory(this.iSchoolCategory);
 		}
 
 		TableRowGroup group = table.createHeaderRowGroup();
@@ -281,7 +285,7 @@ public class SchoolEditor extends SchoolBlock {
 		form.add(table);
 		form.add(new Break());
 		
-		SubmitButton newLink = (SubmitButton) getButton(new SubmitButton(localize(iNewKey, "New school"), PARAMETER_ACTION, String.valueOf(ACTION_NEW)));
+		SubmitButton newLink = (SubmitButton) getButton(new SubmitButton(localize(this.iNewKey, "New school"), PARAMETER_ACTION, String.valueOf(ACTION_NEW)));
 		form.add(newLink);
 
 		add(form);
@@ -332,7 +336,7 @@ public class SchoolEditor extends SchoolBlock {
 				schoolyears = getSchoolRelatedSchoolYears(school);
 				commune = school.getCommune();
 
-				if (_useProviderStringId) {
+				if (this._useProviderStringId) {
 					inputProviderStringId.setContent(school.getProviderStringId());
 				}
 				inputName.setContent(school.getSchoolName());
@@ -371,7 +375,7 @@ public class SchoolEditor extends SchoolBlock {
 		
 		Layer layer;
 		Label label;
-		if (_useProviderStringId) {
+		if (this._useProviderStringId) {
 			layer = new Layer(Layer.DIV);
 			layer.setStyleClass(STYLENAME_FORM_ELEMENT);
 			label = new Label(localize("provider_id", "Provider ID"), inputProviderStringId);
@@ -538,8 +542,8 @@ public class SchoolEditor extends SchoolBlock {
 	}
 
 	private Collection getSchoolTypes() throws java.rmi.RemoteException {
-		if (iSchoolCategory != null) {
-			return getBusiness().findAllSchoolTypesInCategory(iSchoolCategory);
+		if (this.iSchoolCategory != null) {
+			return getBusiness().findAllSchoolTypesInCategory(this.iSchoolCategory);
 		}
 		else {
 			return getBusiness().findAllSchoolTypes();
@@ -555,7 +559,7 @@ public class SchoolEditor extends SchoolBlock {
 	}
 
 	public void setSchoolTypeCategory(String typeCategory) {
-		iSchoolCategory = typeCategory;
+		this.iSchoolCategory = typeCategory;
 	}
 
 	public CommuneBusiness getCommuneBusiness(IWApplicationContext iwac) throws RemoteException {
@@ -563,6 +567,6 @@ public class SchoolEditor extends SchoolBlock {
 	}
 	
 	public void setNewSchoolLocalizedKey(String newSchoolLocalizedKey) {
-		iNewKey = newSchoolLocalizedKey;
+		this.iNewKey = newSchoolLocalizedKey;
 	}
 }

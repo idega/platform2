@@ -138,27 +138,27 @@ public class ReportGenerator extends Block {
 	}
 
 	private void parseQuery(IWContext iwc) throws XMLException, Exception {
-		if (_queryParser == null) {
-			Query query = ((QueryHome)IDOLookup.getHome(Query.class)).findByPrimaryKey(_queryPK);
-			_queryParser = new QueryHelper(query, iwc);
+		if (this._queryParser == null) {
+			Query query = ((QueryHome)IDOLookup.getHome(Query.class)).findByPrimaryKey(this._queryPK);
+			this._queryParser = new QueryHelper(query, iwc);
 		}
 
-		List allFields = _queryParser.getListOfFields();
+		List allFields = this._queryParser.getListOfFields();
 		if (allFields != null) {
-			_reportDescription.addFields(allFields);
+			this._reportDescription.addFields(allFields);
 			//System.out.println("ReportGenerator#parseQuery() - _queryParser.getListOfFields().size() = " + allFields.size());
 		}
 		else {
 			//System.out.println("ReportGenerator#parseQuery() - _queryParser.getListOfFields() == null");
 		}
 
-		Collection conditionsCollection = _queryParser.getListOfConditions();
+		Collection conditionsCollection = this._queryParser.getListOfConditions();
 		if (conditionsCollection != null) {
 			Iterator iter = conditionsCollection.iterator();
 			while (iter.hasNext()) {
 				QueryConditionPart element = (QueryConditionPart) iter.next();
 				if (element.isDynamic()) {
-					_dynamicFields.add(new ReportableField(element.getIDOEntityField()));
+					this._dynamicFields.add(new ReportableField(element.getIDOEntityField()));
 				}
 			}
 		}
@@ -167,11 +167,11 @@ public class ReportGenerator extends Block {
 	}
 	
 	public void setParameterToMaintain(String param){
-		maintainParameterList.add(param);
+		this.maintainParameterList.add(param);
 	}
 	
 	public void setParametersToMaintain(List paramList){
-		maintainParameterList.addAll(paramList);
+		this.maintainParameterList.addAll(paramList);
 	}
 	
 	private int calculateTextFieldWidthForString(String str) {
@@ -181,21 +181,21 @@ public class ReportGenerator extends Block {
 
 	private void getLayoutFromICFileOrGenerate(IWContext iwc) throws IOException, JRException {
 		boolean isMethodInvocation = false;
-		String tmpName = iwc.getParameter(getParameterName(PRM_REPORT_NAME));
+		String tmpName = iwc.getParameter(getParameterName(this.PRM_REPORT_NAME));
 		if (tmpName != null) {
-			_reportName = tmpName;
+			this._reportName = tmpName;
 		}
-		if (_queryPK == null && (_methodInvocationPK!= null || _methodInvocationFileName!= null) ) {
+		if (this._queryPK == null && (this._methodInvocationPK!= null || this._methodInvocationFileName!= null) ) {
 			isMethodInvocation = true;
-			if (_dataSource != null && _dataSource instanceof ReportableCollection) {
-				_reportDescription = ((ReportableCollection) _dataSource).getReportDescription();
+			if (this._dataSource != null && this._dataSource instanceof ReportableCollection) {
+				this._reportDescription = ((ReportableCollection) this._dataSource).getReportDescription();
 			}
 		}
 
 		//Fetch or generate the layout
 
 		//fetch, only available for method invocation, TODO make available for other types
-		if ( ((_layoutFileName!=null) || (_layoutICFilePK != null)) && isMethodInvocation) {
+		if ( ((this._layoutFileName!=null) || (this._layoutICFilePK != null)) && isMethodInvocation) {
 			getLayoutAndAddParameters(iwc);
 		}
 		else { //generate
@@ -208,37 +208,37 @@ public class ReportGenerator extends Block {
 		int prmLableWidth = 95;
 		int prmValueWidth = 55;
 		
-		_reportDescription.setLocale(iwc.getCurrentLocale());
+		this._reportDescription.setLocale(iwc.getCurrentLocale());
 
-		if (_dynamicFields != null && _dynamicFields.size() > 0) {
-			if (_queryPK != null) {
-				Iterator iter = _dynamicFields.iterator();
+		if (this._dynamicFields != null && this._dynamicFields.size() > 0) {
+			if (this._queryPK != null) {
+				Iterator iter = this._dynamicFields.iterator();
 				while (iter.hasNext()) {
 					ReportableField element = (ReportableField) iter.next();
 					String prmName = element.getName();
-					String tmpPrmLabel = (String) _reportDescription.get(_prmLablePrefix + prmName);
-					String tmpPrmValue = (String) _reportDescription.get(prmName);
+					String tmpPrmLabel = (String) this._reportDescription.get(this._prmLablePrefix + prmName);
+					String tmpPrmValue = (String) this._reportDescription.get(prmName);
 					int tmpPrmLabelWidth = (tmpPrmLabel != null) ? calculateTextFieldWidthForString(tmpPrmLabel)
 							: prmLableWidth;
 					int tmpPrmValueWidth = (tmpPrmValue != null) ? calculateTextFieldWidthForString(tmpPrmValue)
 							: prmValueWidth;
-					_reportDescription.addHeaderParameter(_prmLablePrefix + prmName, tmpPrmLabelWidth, prmName,
+					this._reportDescription.addHeaderParameter(this._prmLablePrefix + prmName, tmpPrmLabelWidth, prmName,
 							String.class, tmpPrmValueWidth);
 				}
 			}
 			else {
-				Iterator iter = _dynamicFields.iterator();
+				Iterator iter = this._dynamicFields.iterator();
 				while (iter.hasNext()) {
 					ClassDescription element = (ClassDescription) iter.next();
 					String prmName = element.getName();
-					String tmpPrmLabel = (String) _reportDescription.get(_prmLablePrefix + prmName);
-					String tmpPrmValue = (String) _reportDescription.get(prmName);
+					String tmpPrmLabel = (String) this._reportDescription.get(this._prmLablePrefix + prmName);
+					String tmpPrmValue = (String) this._reportDescription.get(prmName);
 					if (tmpPrmLabel != null && tmpPrmValue != null) {
 						int tmpPrmLabelWidth = (tmpPrmLabel != null) ? calculateTextFieldWidthForString(tmpPrmLabel)
 								: prmLableWidth;
 						int tmpPrmValueWidth = (tmpPrmValue != null) ? calculateTextFieldWidthForString(tmpPrmValue)
 								: prmValueWidth;
-						_reportDescription.addHeaderParameter(_prmLablePrefix + prmName, tmpPrmLabelWidth, prmName,
+						this._reportDescription.addHeaderParameter(this._prmLablePrefix + prmName, tmpPrmLabelWidth, prmName,
 								String.class, tmpPrmValueWidth);
 					}
 				}
@@ -257,17 +257,17 @@ public class ReportGenerator extends Block {
 		DynamicReportDesign designTemplate = new DynamicReportDesign("GeneratedReport");
 		
 		
-		List keys = _reportDescription.getListOfHeaderParameterKeys();
-		List labels = _reportDescription.getListOfHeaderParameterLabelKeys();
+		List keys = this._reportDescription.getListOfHeaderParameterKeys();
+		List labels = this._reportDescription.getListOfHeaderParameterLabelKeys();
 		Iterator keyIter = keys.iterator();
 		Iterator labelIter = labels.iterator();
 		while (keyIter.hasNext() && labelIter.hasNext()) {
 			String key = (String) keyIter.next();
 			String label = (String) labelIter.next();
-			designTemplate.addHeaderParameter(label,_reportDescription.getWithOfParameterOrLabel(label),key,_reportDescription.getParameterClassType(key),_reportDescription.getWithOfParameterOrLabel(key));
+			designTemplate.addHeaderParameter(label,this._reportDescription.getWithOfParameterOrLabel(label),key,this._reportDescription.getParameterClassType(key),this._reportDescription.getWithOfParameterOrLabel(key));
 		}
 		
-		List allFields = _reportDescription.getListOfFields();
+		List allFields = this._reportDescription.getListOfFields();
 		if (allFields != null && allFields.size() > 0) {
 			////System.out.println("ReportGenerator.");
 			//TODO thi: solve problem with the width of columns avoiding
@@ -279,7 +279,7 @@ public class ReportGenerator extends Block {
 			// ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 			//TMP
 			//TODO get columnspacing (15) and it to columnsWidth;
-			int numberOfFields = _reportDescription.getNumberOfFields();
+			int numberOfFields = this._reportDescription.getNumberOfFields();
 			int columnsWidth = columnWidth * numberOfFields + 15 * (numberOfFields - 1);
 			//TMP
 			//TODO get page Margins (20) and add them to pageWidth;
@@ -324,21 +324,21 @@ public class ReportGenerator extends Block {
 			}
 		}
 		designTemplate.close();
-		_design = designTemplate.getJasperDesign(iwc);
+		this._design = designTemplate.getJasperDesign(iwc);
 	}
 
 	private void getLayoutAndAddParameters(IWContext iwc) throws RemoteException {
 		JasperReportBusiness reportBusiness = getReportBusiness();
-		if(_layoutICFilePK!=null){
-			int designId = _layoutICFilePK.intValue();
-			_design = reportBusiness.getDesignBox(designId).getDesign();	 
+		if(this._layoutICFilePK!=null){
+			int designId = this._layoutICFilePK.intValue();
+			this._design = reportBusiness.getDesignBox(designId).getDesign();	 
 		}
-		else if(_layoutFileName!=null){
-			if(_layoutIWBundle!=null){
-				_design = reportBusiness.getDesignFromBundle(_layoutIWBundle,_layoutFileName);
+		else if(this._layoutFileName!=null){
+			if(this._layoutIWBundle!=null){
+				this._design = reportBusiness.getDesignFromBundle(this._layoutIWBundle,this._layoutFileName);
 			}
 			else{
-				_design = reportBusiness.getDesignFromBundle(getBundle(iwc),_layoutFileName);
+				this._design = reportBusiness.getDesignFromBundle(getBundle(iwc),this._layoutFileName);
 			}
 		}
 		//add parameters and fields
@@ -346,13 +346,13 @@ public class ReportGenerator extends Block {
 
 	private void generateDataSource(IWContext iwc) throws XMLException, Exception {
 		Locale currentLocale = iwc.getCurrentLocale();
-		if(_queryPK != null) {
+		if(this._queryPK != null) {
 			QueryService service = (QueryService)(IBOLookup.getServiceInstance(iwc,QueryService.class));
-			_dataSource = service.generateQueryResult(_queryPK, iwc);
+			this._dataSource = service.generateQueryResult(this._queryPK, iwc);
 		}
-		else if (_methodInvokeDoc != null) {
+		else if (this._methodInvokeDoc != null) {
 				ReportDescription tmpReportDescriptionForCollectingData = new ReportDescription();
-				List mDescs = _methodInvokeDoc.getMethodDescriptions();
+				List mDescs = this._methodInvokeDoc.getMethodDescriptions();
 				if (mDescs != null) {
 					Iterator it = mDescs.iterator();
 					if (it.hasNext()) {
@@ -416,10 +416,10 @@ public class ReportGenerator extends Block {
 								}
 
 								if (!isHidden) {
-									tmpReportDescriptionForCollectingData.put(_prmLablePrefix + clDesc.getName(), clDesc.getLocalizedName(currentLocale) + ":");
+									tmpReportDescriptionForCollectingData.put(this._prmLablePrefix + clDesc.getName(), clDesc.getLocalizedName(currentLocale) + ":");
 								}
 								else {
-									tmpReportDescriptionForCollectingData.remove(_prmLablePrefix + clDesc.getName());
+									tmpReportDescriptionForCollectingData.remove(this._prmLablePrefix + clDesc.getName());
 								}
 
 								prmVal[index] = obj;
@@ -448,7 +448,7 @@ public class ReportGenerator extends Block {
 						Method method = mf.getMethodWithNameAndParameters(mainClass, methodName, paramTypes);
 
 						try {
-							_dataSource = (JRDataSource) method.invoke(forInvocationOfMethod, prmVal);
+							this._dataSource = (JRDataSource) method.invoke(forInvocationOfMethod, prmVal);
 						}
 						catch (InvocationTargetException e) {
 							Throwable someException = e.getTargetException();
@@ -461,13 +461,13 @@ public class ReportGenerator extends Block {
 
 						}
 
-						if (_dataSource != null && _dataSource instanceof ReportableCollection) {
-							_reportDescription = ((ReportableCollection) _dataSource).getReportDescription();
-							_reportDescription.merge(tmpReportDescriptionForCollectingData);
+						if (this._dataSource != null && this._dataSource instanceof ReportableCollection) {
+							this._reportDescription = ((ReportableCollection) this._dataSource).getReportDescription();
+							this._reportDescription.merge(tmpReportDescriptionForCollectingData);
 						} else {
-							_reportDescription = tmpReportDescriptionForCollectingData;
+							this._reportDescription = tmpReportDescriptionForCollectingData;
 						}
-						_reportDescription.setLocale(iwc.getCurrentLocale());
+						this._reportDescription.setLocale(iwc.getCurrentLocale());
 					}
 				}
 
@@ -477,34 +477,34 @@ public class ReportGenerator extends Block {
 
 	private void generateReport() throws RemoteException, JRException {
 		JasperReportBusiness business = getReportBusiness();
-		if(_dataSource != null){
-			if (doGenerateSomeJasperReport() && (_dataSource != null && _design != null)) {				
-				_reportDescription.put(DynamicReportDesign.PRM_REPORT_NAME, _reportName);
-				JasperPrint print = business.getReport(_dataSource, _reportDescription.getDisplayValueMap(), _design);
+		if(this._dataSource != null){
+			if (doGenerateSomeJasperReport() && (this._dataSource != null && this._design != null)) {				
+				this._reportDescription.put(DynamicReportDesign.PRM_REPORT_NAME, this._reportName);
+				JasperPrint print = business.getReport(this._dataSource, this._reportDescription.getDisplayValueMap(), this._design);
 	
-				if (_reportFilePathsMap == null) {
-					_reportFilePathsMap = new HashMap();
+				if (this._reportFilePathsMap == null) {
+					this._reportFilePathsMap = new HashMap();
 				}
 				
-				if(_generatePDFReport){
-					_reportFilePathsMap.put(PDF_FORMAT, business.getPdfReport(print, "report"));
+				if(this._generatePDFReport){
+					this._reportFilePathsMap.put(PDF_FORMAT, business.getPdfReport(print, "report"));
 				}
 				
-				if(_generateExcelReport){
-					_reportFilePathsMap.put(EXCEL_FORMAT, business.getExcelReport(print, "report"));
+				if(this._generateExcelReport){
+					this._reportFilePathsMap.put(EXCEL_FORMAT, business.getExcelReport(print, "report"));
 				}
 				
-				if(_generateHTMLReport){
-					_reportFilePathsMap.put(HTML_FORMAT, business.getHtmlReport(print, "report"));
+				if(this._generateHTMLReport){
+					this._reportFilePathsMap.put(HTML_FORMAT, business.getHtmlReport(print, "report"));
 				}
 	
 			}
 			
-			if(_generateSimpleExcelReport && (_dataSource instanceof ReportableCollection)){
-				if (_reportFilePathsMap == null) {
-					_reportFilePathsMap = new HashMap();
+			if(this._generateSimpleExcelReport && (this._dataSource instanceof ReportableCollection)){
+				if (this._reportFilePathsMap == null) {
+					this._reportFilePathsMap = new HashMap();
 				}
-				_reportFilePathsMap.put(SIMPLE_EXCEL_FORMAT, business.getSimpleExcelReport(((ReportableCollection) _dataSource).getJRDataSource(), _reportName,_reportDescription));
+				this._reportFilePathsMap.put(SIMPLE_EXCEL_FORMAT, business.getSimpleExcelReport(((ReportableCollection) this._dataSource).getJRDataSource(), this._reportName,this._reportDescription));
 			}
 		}
 	}
@@ -513,7 +513,7 @@ public class ReportGenerator extends Block {
 	 * @return
 	 */
 	private boolean doGenerateSomeJasperReport() {
-		return (_generateExcelReport || _generateHTMLReport || _generatePDFReport);
+		return (this._generateExcelReport || this._generateHTMLReport || this._generatePDFReport);
 	}
 
 	public JasperReportBusiness getReportBusiness() {
@@ -527,11 +527,11 @@ public class ReportGenerator extends Block {
 	}
 
 	public void setQuery(Integer queryPK) {
-		_queryPK = queryPK;
+		this._queryPK = queryPK;
 	}
 
 	public void setMethodInvocationICFileID(Integer methodInvocationPK) {
-		_methodInvocationPK = methodInvocationPK;
+		this._methodInvocationPK = methodInvocationPK;
 	}
 
 	public void setMethodInvocation(Integer methodInvocationPK) {
@@ -539,13 +539,14 @@ public class ReportGenerator extends Block {
 	}
 
 	public void setMethodInvocationICFile(ICFile file) {
-		if (file != null)
+		if (file != null) {
 			setMethodInvocationICFileID((Integer) file.getPrimaryKey());
+		}
 	}
 
 	public void setMethodInvocationBundleAndFileName(IWBundle bundle, String fileName){
-		_methodInvocationFileName = fileName;
-		_methodInvocationIWBundle = bundle;
+		this._methodInvocationFileName = fileName;
+		this._methodInvocationIWBundle = bundle;
 	}
 	
 	public void setMethodInvocationFileNameAndUseDefaultBundle(String fileName){
@@ -553,13 +554,14 @@ public class ReportGenerator extends Block {
 	}
 	
 	public void setLayoutICFile(ICFile file) {
-		if (file != null)
-			_layoutICFilePK = (Integer) file.getPrimaryKey();
+		if (file != null) {
+			this._layoutICFilePK = (Integer) file.getPrimaryKey();
+		}
 	}
 	
 	public void setLayoutBundleAndFileName(IWBundle bundle, String fileName){
-		_layoutFileName = fileName;
-		_layoutIWBundle = bundle;
+		this._layoutFileName = fileName;
+		this._layoutIWBundle = bundle;
 	}
 	
 	public void setLayoutFileNameAndUseDefaultBundle(String fileName){
@@ -567,24 +569,24 @@ public class ReportGenerator extends Block {
 	}
 	
 	public void setLayoutICFileID(Integer layoutICFilePK) {
-		_layoutICFilePK = layoutICFilePK;
+		this._layoutICFilePK = layoutICFilePK;
 	}
 
 	public void main(IWContext iwc) throws Exception {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
-		if (!iwc.isParameterSet(PRM_REPORT_NAME)) {
-			_reportName = iwrb.getLocalizedString(PRM_REPORT_NAME, _reportName);
+		if (!iwc.isParameterSet(this.PRM_REPORT_NAME)) {
+			this._reportName = iwrb.getLocalizedString(this.PRM_REPORT_NAME, this._reportName);
 		}
 		
 		try {
-			if (_queryPK != null) {
+			if (this._queryPK != null) {
 				String genState = iwc.getParameter(PRM_STATE);
 				if (genState == null || "".equals(genState)) {
 					parseQuery(iwc);
 					lineUpElements(iwrb, iwc);
 					Form submForm = new Form();
-					submForm.maintainParameters(maintainParameterList);
-					submForm.add(_fieldTable);
+					submForm.maintainParameters(this.maintainParameterList);
+					submForm.add(this._fieldTable);
 					this.add(submForm);
 				}
 				else {
@@ -596,14 +598,14 @@ public class ReportGenerator extends Block {
 				}
 			}
 			else
-				if ((_methodInvocationPK != null) || (_methodInvocationFileName != null)) {
+				if ((this._methodInvocationPK != null) || (this._methodInvocationFileName != null)) {
 					String genState = iwc.getParameter(PRM_STATE);
 					if (genState == null || "".equals(genState)) {
 						parseMethodInvocationXML(iwc,iwrb);
 						lineUpElements(iwrb, iwc);
 						Form submForm = new Form();
-						submForm.maintainParameters(maintainParameterList);
-						submForm.add(_fieldTable);
+						submForm.maintainParameters(this.maintainParameterList);
+						submForm.add(this._fieldTable);
 						this.add(submForm);
 					}
 					else {
@@ -703,11 +705,11 @@ public class ReportGenerator extends Block {
 		MethodInvocationXMLFile file = null;
 		InputStream fileStream = null;
 			
-		if(_methodInvocationPK!=null){
+		if(this._methodInvocationPK!=null){
 			try {
 				file =
 					(MethodInvocationXMLFile) ((MethodInvocationXMLFileHome) IDOLookup.getHome(MethodInvocationXMLFile.class)).findByPrimaryKey(
-						_methodInvocationPK);
+						this._methodInvocationPK);
 				
 				fileStream = file.getFileValue();
 			}
@@ -718,13 +720,13 @@ public class ReportGenerator extends Block {
 				//e.printStackTrace();
 			}
 		}
-		else if(_methodInvocationFileName!=null){
-			if( _methodInvocationIWBundle==null){
-				_methodInvocationIWBundle = getBundle(iwc);
+		else if(this._methodInvocationFileName!=null){
+			if( this._methodInvocationIWBundle==null){
+				this._methodInvocationIWBundle = getBundle(iwc);
 			}
 			
 			try {
-				fileStream = new FileInputStream(_methodInvocationIWBundle.getRealPathWithFileNameString(_methodInvocationFileName));
+				fileStream = new FileInputStream(this._methodInvocationIWBundle.getRealPathWithFileNameString(this._methodInvocationFileName));
 			}
 			catch (FileNotFoundException e) {
 				e.printStackTrace();
@@ -734,7 +736,7 @@ public class ReportGenerator extends Block {
 		
 		if (fileStream != null) {
 			try {
-				_methodInvokeDoc = (MethodInvocationDocument) new MethodInvocationParser().parse(fileStream);
+				this._methodInvokeDoc = (MethodInvocationDocument) new MethodInvocationParser().parse(fileStream);
 			}
 			catch (XMLException e1) {
 				throw new ReportGeneratorException(
@@ -746,8 +748,8 @@ public class ReportGenerator extends Block {
 		}
 		
 
-		if (_methodInvokeDoc != null) {
-			List methods = _methodInvokeDoc.getMethodDescriptions();
+		if (this._methodInvokeDoc != null) {
+			List methods = this._methodInvokeDoc.getMethodDescriptions();
 			if (methods != null) {
 				Iterator iter = methods.iterator();
 				if (iter.hasNext()) {
@@ -755,7 +757,7 @@ public class ReportGenerator extends Block {
 
 					MethodInput mInput = mDesc.getInput();
 					if (mInput != null) {
-						_dynamicFields.addAll(mInput.getClassDescriptions());
+						this._dynamicFields.addAll(mInput.getClassDescriptions());
 						//						List classDesc = mInput.getClassDescriptions();
 						//						if(classDesc!= null){
 						//							Iterator iterator = classDesc.iterator();
@@ -793,10 +795,10 @@ public class ReportGenerator extends Block {
 		
 		int j = 1;
 		for (int i = 0; i < formats.length; i++) {
-			String relativeFilePath = (String) _reportFilePathsMap.get(formats[i]);
+			String relativeFilePath = (String) this._reportFilePathsMap.get(formats[i]);
 			if(relativeFilePath != null){
 				j++;
-				Link link = new Link(_reportName, relativeFilePath);
+				Link link = new Link(this._reportName, relativeFilePath);
 				link.setTarget(Link.TARGET_NEW_WINDOW);
 //				DownloadLink link = new DownloadLink(_reportName);
 //				link.setRelativeFilePath(relativeFilePath);
@@ -815,49 +817,49 @@ public class ReportGenerator extends Block {
 		//IWMainApplication iwma = iwc.getApplicationContext().getIWMainApplication();
 		//IWBundle coreBundle = iwma.getBundle(IW_CORE_BUNDLE_IDENTIFIER);
 
-		_fieldTable = new Table();
+		this._fieldTable = new Table();
 		//_fieldTable.setBorder(1);
 
 		int row = 0;
 
-		if (_canChangeReportName || (!_canChangeReportName && _showReportNameInputIfCannotChangeIt)) {
+		if (this._canChangeReportName || (!this._canChangeReportName && this._showReportNameInputIfCannotChangeIt)) {
 			row++;
-			_fieldTable.add(getFieldLabel(iwrb.getLocalizedString("choose_report_name", "Report name")) + ":", 1, row);
-			InterfaceObject nameInput = getFieldInputObject(PRM_REPORT_NAME); //null, String.class);
-			nameInput.setDisabled(!_canChangeReportName);
-			nameInput.setValue(_reportName);
-			_fieldTable.add(nameInput, 2, row);
+			this._fieldTable.add(getFieldLabel(iwrb.getLocalizedString("choose_report_name", "Report name")) + ":", 1, row);
+			InterfaceObject nameInput = getFieldInputObject(this.PRM_REPORT_NAME); //null, String.class);
+			nameInput.setDisabled(!this._canChangeReportName);
+			nameInput.setValue(this._reportName);
+			this._fieldTable.add(nameInput, 2, row);
 		}
 
 		//TODO Let Reportable field and ClassDescription impliment the same
 		// interface (IDODynamicReportableField) to decrease code duplications
-		if (_queryPK != null) {
-			if (_dynamicFields.size() > 0) {
+		if (this._queryPK != null) {
+			if (this._dynamicFields.size() > 0) {
 
-				Iterator iterator = _dynamicFields.iterator();
+				Iterator iterator = this._dynamicFields.iterator();
 
 				while (iterator.hasNext()) {
 					ReportableField element = (ReportableField) iterator.next();
 					row++;
-					_fieldTable.add(getFieldLabel(element.getLocalizedName(iwc.getCurrentLocale())) + ":", 1, row);
+					this._fieldTable.add(getFieldLabel(element.getLocalizedName(iwc.getCurrentLocale())) + ":", 1, row);
 					InterfaceObject input = getFieldInputObject(element.getName()); //null, element.getValueClass());
 					//_busy.addDisabledObject(input);
-					_fieldTable.add(input, 2, row);
+					this._fieldTable.add(input, 2, row);
 				}
 
 			}
 		}
 		else {
 
-			if (_dynamicFields.size() > 0) {
+			if (this._dynamicFields.size() > 0) {
 
-				Iterator iterator = _dynamicFields.iterator();
+				Iterator iterator = this._dynamicFields.iterator();
 				while (iterator.hasNext()) {
 					try {
 						ClassDescription element = (ClassDescription) iterator.next();
 
 						row++;
-						_fieldTable.add(getFieldLabel(element.getLocalizedName(iwc.getCurrentLocale())) + ":", 1, row);
+						this._fieldTable.add(getFieldLabel(element.getLocalizedName(iwc.getCurrentLocale())) + ":", 1, row);
 
 						ClassHandler cHandler = element.getClassHandler();
 						PresentationObject input = null;
@@ -870,7 +872,7 @@ public class ReportGenerator extends Block {
 							input = getFieldInputObject(element.getName()); //null, element.getClassObject());
 							//_busy.addDisabledObject(input);
 						}
-						_fieldTable.add(input, 2, row);
+						this._fieldTable.add(input, 2, row);
 
 					}
 					catch (InstantiationException e) {
@@ -886,15 +888,15 @@ public class ReportGenerator extends Block {
 		}
 
 		InterfaceObject generateButton = (InterfaceObject) getSubmitButton(iwrb.getLocalizedString("generate_report", " Generate "));
-		_fieldTable.add(generateButton, 1, ++row);
-		_fieldTable.add(new HiddenInput(PRM_STATE, VALUE_STATE_GENERATE_REPORT), 1, row);
-		if (_fieldTable.getRows() > 1) {
-			_fieldTable.mergeCells(1, row, 2, row);
+		this._fieldTable.add(generateButton, 1, ++row);
+		this._fieldTable.add(new HiddenInput(PRM_STATE, VALUE_STATE_GENERATE_REPORT), 1, row);
+		if (this._fieldTable.getRows() > 1) {
+			this._fieldTable.mergeCells(1, row, 2, row);
 		}
-		_fieldTable.setColumnAlignment(1, Table.HORIZONTAL_ALIGN_RIGHT);
+		this._fieldTable.setColumnAlignment(1, Table.HORIZONTAL_ALIGN_RIGHT);
 
-		_fieldTable.mergeCells(1, row, 2, row);
-		_fieldTable.setColumnAlignment(1, Table.HORIZONTAL_ALIGN_RIGHT);
+		this._fieldTable.mergeCells(1, row, 2, row);
+		this._fieldTable.setColumnAlignment(1, Table.HORIZONTAL_ALIGN_RIGHT);
 
 	}
 
@@ -1049,26 +1051,26 @@ public class ReportGenerator extends Block {
 
 	public void setReportName(String name) {
 		if (name != null && !"".equals(name)) {
-			_canChangeReportName = false;
-			_reportName = name;
+			this._canChangeReportName = false;
+			this._reportName = name;
 		}
 	}
 	
 	
 	public void setGenerateExcelReport(boolean value){
-		_generateExcelReport = value;
+		this._generateExcelReport = value;
 	}
 	
 	public void setGenerateHTMLReport(boolean value){
-		_generateHTMLReport = value;
+		this._generateHTMLReport = value;
 	}
 	
 	public void setGeneratePDFReport(boolean value){
-		_generatePDFReport = value;
+		this._generatePDFReport = value;
 	}
 	
 	public void setGenerateSimpleExcelReport(boolean value){
-		_generateSimpleExcelReport = value;
+		this._generateSimpleExcelReport = value;
 	}
 	
 	
@@ -1085,7 +1087,7 @@ public class ReportGenerator extends Block {
 
 		public ReportGeneratorException(String tecnicalMessage, Throwable cause, String localizedMessage) {
 			this(tecnicalMessage, cause);
-			_localizedMessage = localizedMessage;
+			this._localizedMessage = localizedMessage;
 			//			_localizedKey = localizedKey;
 			//			_defaultUserFriendlyMessage = defaultUserFriendlyMessage;
 		}
@@ -1096,9 +1098,9 @@ public class ReportGenerator extends Block {
 		 */
 		public ReportGeneratorException(String message, Throwable cause) {
 			super(message);
-			_localizedMessage = message;
+			this._localizedMessage = message;
 			// jdk 1.3 - 1.4 fix
-			_cause = cause;
+			this._cause = cause;
 		}
 
 		/**
@@ -1120,13 +1122,13 @@ public class ReportGenerator extends Block {
 		private ReportGeneratorException(Throwable cause) {
 			super();
 			// jdk 1.3 - 1.4 fix
-			_cause = cause;
+			this._cause = cause;
 
 		}
 
 		//	jdk 1.3 - 1.4 fix
 		public Throwable getCause() {
-			return _cause;
+			return this._cause;
 		}
 
 		//		public String getLocalizedMessageKey(){
@@ -1138,7 +1140,7 @@ public class ReportGenerator extends Block {
 		//		}
 
 		public String getLocalizedMessage() {
-			return _localizedMessage;
+			return this._localizedMessage;
 		}
 
 	}

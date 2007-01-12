@@ -9,6 +9,7 @@ import com.idega.block.boxoffice.data.BoxLink;
 import com.idega.block.text.business.TextFinder;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.core.component.data.ICObjectInstance;
+import com.idega.data.GenericEntity;
 import com.idega.data.IDOLegacyEntity;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.util.IWTimestamp;
@@ -270,7 +271,7 @@ public static final int PAGE = 3;
 
     if ( !update ) {
       try {
-        link.setCreationDate(new IWTimestamp().getTimestampRightNow());
+        link.setCreationDate(IWTimestamp.getTimestampRightNow());
         link.setBoxID(boxID);
         link.setUserID(userID);
         link.insert();
@@ -322,7 +323,7 @@ public static final int PAGE = 3;
   public static void deleteLink(BoxLink link) {
     try {
       if ( link != null ) {
-        link.removeFrom(com.idega.block.text.data.LocalizedTextBMPBean.getStaticInstance(LocalizedText.class));
+        link.removeFrom(GenericEntity.getStaticInstance(LocalizedText.class));
         link.delete();
       }
     }

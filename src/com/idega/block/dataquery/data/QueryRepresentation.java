@@ -34,26 +34,26 @@ public class QueryRepresentation implements EntityRepresentation {
 	
 	public Object getColumnValue(String columnName) {
 		if (NAME_KEY.equals(columnName))	{
-			return name;
+			return this.name;
 		}
 		else if (GROUP_NAME_KEY.equals(columnName))	{
-			return groupName;
+			return this.groupName;
 		} 
 		else if (IS_PRIVATE_KEY.equals(columnName)) {
-			return isPrivate ? "X" : "";
+			return this.isPrivate ? "X" : "";
 		}
 		else if (DESIGN_LAYOUT_KEY.equals(columnName)) {
 			//no preselection!
 			return null;
 		}
-		return name;
+		return this.name;
 	}
 
 	public Object getPrimaryKey() {
-		return new Integer(id);
+		return new Integer(this.id);
 	}
 	
 	public boolean belongsToUser() {
-		return belongsToUser;
+		return this.belongsToUser;
 	}
 }

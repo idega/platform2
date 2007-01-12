@@ -11,6 +11,7 @@ import com.idega.presentation.Image;
 import com.idega.util.IWTimestamp;
 import com.idega.block.albumcollection.data.Performer;
 import com.idega.data.EntityFinder;
+import com.idega.data.GenericEntity;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
 
@@ -23,7 +24,7 @@ import java.util.Iterator;
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:      idega
- * @author <a href="gummi@idega.is">Guðmundur Ágúst Sæmundsson</a>
+ * @author <a href="gummi@idega.is">Guï¿½mundur ï¿½gï¿½st Sï¿½mundsson</a>
  * @version 1.0
  */
 
@@ -38,16 +39,16 @@ public class AlbumList extends Block {
 
 
   public AlbumList() {
-    layout = new AlbumList.DefaultLayout();
-    albumLinkTemplate = AlbumCollectionBusiness.getMainLinkClone();
+    this.layout = new AlbumList.DefaultLayout();
+    this.albumLinkTemplate = AlbumCollectionBusiness.getMainLinkClone();
     //albumLinkTemplate.setFontColor("#FFFFFF");
-    updateAlbumLinkTemplate = AlbumCollectionBusiness.getMainLinkClone("Breyta");
-    updateAlbumLinkTemplate.setWindowToOpen(com.idega.block.albumcollection.presentation.CreateAlbum.class);
-    updateAlbumLinkTemplate.addParameter(AlbumCollectionBusiness._PRM_UPDATE,"true");
+    this.updateAlbumLinkTemplate = AlbumCollectionBusiness.getMainLinkClone("Breyta");
+    this.updateAlbumLinkTemplate.setWindowToOpen(com.idega.block.albumcollection.presentation.CreateAlbum.class);
+    this.updateAlbumLinkTemplate.addParameter(AlbumCollectionBusiness._PRM_UPDATE,"true");
 
-    deleteAlbumLinkTemplate = AlbumCollectionBusiness.getMainLinkClone("Eyða");
-    deleteAlbumLinkTemplate.setWindowToOpen(DeleteConfirmWindow.class);
-    deleteAlbumLinkTemplate.addParameter(AlbumCollectionBusiness._PRM_DELETE,AlbumCollectionBusiness._CONST_ALBUM);
+    this.deleteAlbumLinkTemplate = AlbumCollectionBusiness.getMainLinkClone("Eyï¿½a");
+    this.deleteAlbumLinkTemplate.setWindowToOpen(DeleteConfirmWindow.class);
+    this.deleteAlbumLinkTemplate.addParameter(AlbumCollectionBusiness._PRM_DELETE,AlbumCollectionBusiness._CONST_ALBUM);
   }
 
 
@@ -73,19 +74,19 @@ public class AlbumList extends Block {
       Iterator iter = albumList.iterator();
       while (iter.hasNext()) {
         Album item = (Album)iter.next();
-        Link link = (Link)albumLinkTemplate.clone();
-        //link.setText("Nánar");
+        Link link = (Link)this.albumLinkTemplate.clone();
+        //link.setText("Nï¿½nar");
         link.setObject(iwrb.getImage("more.gif"));
         link.addParameter(AlbumCollectionBusiness._PRM_ALBUM_ID,item.getID());
         link.addParameter(AlbumCollection._PRM_STATE,AlbumCollection._STATE_ALBUMINFO);
-        AlbumList.DefaultLayout myLayout = (AlbumList.DefaultLayout)layout.clone();
+        AlbumList.DefaultLayout myLayout = (AlbumList.DefaultLayout)this.layout.clone();
 
         myLayout.setMoreLink(link);
         myLayout.setAlbumName(item.getName());
         if(item.getFrontCoverFileId() > 0){
           myLayout.setAlbumImage(new Image(item.getFrontCoverFileId()));
         }
-        List performers = EntityFinder.findRelated(item,com.idega.block.albumcollection.data.PerformerBMPBean.getStaticInstance(Performer.class));
+        List performers = EntityFinder.findRelated(item,GenericEntity.getStaticInstance(Performer.class));
         if(performers != null){
           Iterator iter2 = performers.iterator();
           boolean f = false;
@@ -112,13 +113,13 @@ public class AlbumList extends Block {
         }
 
         if(hasEditPermission()){
-          Link update = (Link)updateAlbumLinkTemplate.clone();
+          Link update = (Link)this.updateAlbumLinkTemplate.clone();
           update.setObject(core.getSharedImage("edit.gif","edit album"));
           update.addParameter(AlbumCollectionBusiness._PRM_ALBUM_ID,item.getID());
           myLayout.setEditLink(update);
           //contentTable.add(update,2,index);
 
-          Link delete = (Link)deleteAlbumLinkTemplate.clone();
+          Link delete = (Link)this.deleteAlbumLinkTemplate.clone();
           delete.setObject(core.getSharedImage("delete.gif","delete album"));
           delete.addParameter(DeleteConfirmWindow._PRM_ID,item.getID());
           myLayout.setDeleteLink(delete);
@@ -189,60 +190,60 @@ public class AlbumList extends Block {
       this.setWidth(550);
       this.setHeight(110);
 
-      tb = new Table(2,1);
-      tb.setAlignment(1,1,"right");
-      tb.setVerticalAlignment(1,1,"middle");
+      this.tb = new Table(2,1);
+      this.tb.setAlignment(1,1,"right");
+      this.tb.setVerticalAlignment(1,1,"middle");
       //tb.setAlignment(2,1,"center");
-      tb.setVerticalAlignment(2,1,"bottom");
-      tb.setHeight(110);
-      tb.setWidth(1,1,"450");
-      tb.setWidth(2,1,"100");
+      this.tb.setVerticalAlignment(2,1,"bottom");
+      this.tb.setHeight(110);
+      this.tb.setWidth(1,1,"450");
+      this.tb.setWidth(2,1,"100");
 
 
-      tb2 = new Table(2,1);
-      tb2.setCellpadding(0);
-      tb2.setCellspacing(0);
-      tb2.setHeight(90);
-      tb2.setWidth(1,1,"90");
-      tb2.setWidth(2,1,"340");
-      tb2.setColor(1,1,AlbumCollection._COLOR_BRIGHTEST);
+      this.tb2 = new Table(2,1);
+      this.tb2.setCellpadding(0);
+      this.tb2.setCellspacing(0);
+      this.tb2.setHeight(90);
+      this.tb2.setWidth(1,1,"90");
+      this.tb2.setWidth(2,1,"340");
+      this.tb2.setColor(1,1,AlbumCollection._COLOR_BRIGHTEST);
 
 
-      tb3 = new Table(2,4);
-      tb3.setCellpadding(0);
-      tb3.setCellspacing(3);
-      tb3.setWidth(340);
-      tb3.setWidth(1,1,"100");
-      tb3.setWidth(2,1,"240");
-      tb3.setHeight(90);
-      tb3.setColumnAlignment(1,"right");
-      tb3.setColumnAlignment(2,"left");
-      tb3.setColumnColor(2,AlbumCollection._COLOR_DARK);
+      this.tb3 = new Table(2,4);
+      this.tb3.setCellpadding(0);
+      this.tb3.setCellspacing(3);
+      this.tb3.setWidth(340);
+      this.tb3.setWidth(1,1,"100");
+      this.tb3.setWidth(2,1,"240");
+      this.tb3.setHeight(90);
+      this.tb3.setColumnAlignment(1,"right");
+      this.tb3.setColumnAlignment(2,"left");
+      this.tb3.setColumnColor(2,AlbumCollection._COLOR_DARK);
 
-      tb4 = new Table(1,8);
+      this.tb4 = new Table(1,8);
       //tb4.setHeight(110);
-      tb4.setHeight(8,"6");
-      tb4.setHeight(6,"6");
-      tb4.setHeight(4,"6");
-      tb4.setHeight(2,"4");
-      tb4.setWidth(100);
-      tb4.setColumnAlignment(1,"center");
+      this.tb4.setHeight(8,"6");
+      this.tb4.setHeight(6,"6");
+      this.tb4.setHeight(4,"6");
+      this.tb4.setHeight(2,"4");
+      this.tb4.setWidth(100);
+      this.tb4.setColumnAlignment(1,"center");
 
       initTexts();
 
     }
 
     private void initTexts(){
-      tb3.add(AlbumCollectionBusiness.getMainTextClone("titill:"),1,1);
-      tb3.add(AlbumCollectionBusiness.getMainTextClone("flytjendur:"),1,2);
-      tb3.add(AlbumCollectionBusiness.getMainTextClone("útgáfuár:"),1,3);
-      tb3.add(AlbumCollectionBusiness.getMainTextClone("tegund:"),1,4);
+      this.tb3.add(AlbumCollectionBusiness.getMainTextClone("titill:"),1,1);
+      this.tb3.add(AlbumCollectionBusiness.getMainTextClone("flytjendur:"),1,2);
+      this.tb3.add(AlbumCollectionBusiness.getMainTextClone("ï¿½tgï¿½fuï¿½r:"),1,3);
+      this.tb3.add(AlbumCollectionBusiness.getMainTextClone("tegund:"),1,4);
 
       for (int i = 0; i < 1; i++) {
-        tb3.add(Text.getNonBrakingSpace(),2,1);
-        tb3.add(Text.getNonBrakingSpace(),2,2);
-        tb3.add(Text.getNonBrakingSpace(),2,3);
-        tb3.add(Text.getNonBrakingSpace(),2,4);
+        this.tb3.add(Text.getNonBrakingSpace(),2,1);
+        this.tb3.add(Text.getNonBrakingSpace(),2,2);
+        this.tb3.add(Text.getNonBrakingSpace(),2,3);
+        this.tb3.add(Text.getNonBrakingSpace(),2,4);
       }
 
     }
@@ -252,35 +253,35 @@ public class AlbumList extends Block {
       image.setHeight(82);
       image.setBorder(4);
       image.setBorderColor("#FFFFFF");
-      tb2.add(image,1,1);
+      this.tb2.add(image,1,1);
     }
 
     public void setAlbumName(String name){
-      tb3.add(AlbumCollectionBusiness.getMainTextBoldClone(name),2,1);
+      this.tb3.add(AlbumCollectionBusiness.getMainTextBoldClone(name),2,1);
     }
 
     public void setAlbumPerformers(String performers){
-      tb3.add(AlbumCollectionBusiness.getMainTextBoldClone(performers),2,2);
+      this.tb3.add(AlbumCollectionBusiness.getMainTextBoldClone(performers),2,2);
     }
 
     public void setAlbumPublishingDay(String publishingDay){
-      tb3.add(AlbumCollectionBusiness.getMainTextBoldClone(publishingDay),2,3);
+      this.tb3.add(AlbumCollectionBusiness.getMainTextBoldClone(publishingDay),2,3);
     }
 
     public void setAlbumType(String type){
-      tb3.add(AlbumCollectionBusiness.getMainTextBoldClone(type),2,4);
+      this.tb3.add(AlbumCollectionBusiness.getMainTextBoldClone(type),2,4);
     }
 
     public void setMoreLink(Link link){
-      tb4.add(link,1,7);
+      this.tb4.add(link,1,7);
     }
 
     public void setEditLink(Link link){
-      tb4.add(link,1,5);
+      this.tb4.add(link,1,5);
     }
 
     public void setDeleteLink(Link link){
-      tb4.add(link,1,5);
+      this.tb4.add(link,1,5);
     }
 
 
@@ -296,13 +297,13 @@ public class AlbumList extends Block {
 
     public void main(IWContext iwc) throws Exception {
       this.empty();
-      this.add(tb,1,1);
-      tb.emptyCell(1,1);
-      tb.add(tb2,1,1);
-      tb2.emptyCell(2,1);
-      tb2.add(tb3,2,1);
-      tb.emptyCell(2,1);
-      tb.add(tb4,2,1);
+      this.add(this.tb,1,1);
+      this.tb.emptyCell(1,1);
+      this.tb.add(this.tb2,1,1);
+      this.tb2.emptyCell(2,1);
+      this.tb2.add(this.tb3,2,1);
+      this.tb.emptyCell(2,1);
+      this.tb.add(this.tb4,2,1);
     }
 
   } // innerclass ends

@@ -95,70 +95,71 @@ public class QueryConditionPart implements QueryPart {
 
 	
 	public QueryConditionPart(XMLElement xml){
-		id = xml.getAttribute(QueryXMLConstants.ID).getValue();
-		entity = xml.getAttribute(QueryXMLConstants.ENTITY).getValue();
-		path = xml.getAttribute(QueryXMLConstants.PATH).getValue();
-		field = xml.getAttribute(QueryXMLConstants.FIELD).getValue();
-		type = xml.getAttribute(QueryXMLConstants.TYPE).getValue();
-		patternField = xml.getTextTrim(QueryXMLConstants.FIELD_AS_PATTERN_FIELD);
-		patternPath = xml.getTextTrim(QueryXMLConstants.FIELD_AS_PATTERN_PATH);
+		this.id = xml.getAttribute(QueryXMLConstants.ID).getValue();
+		this.entity = xml.getAttribute(QueryXMLConstants.ENTITY).getValue();
+		this.path = xml.getAttribute(QueryXMLConstants.PATH).getValue();
+		this.field = xml.getAttribute(QueryXMLConstants.FIELD).getValue();
+		this.type = xml.getAttribute(QueryXMLConstants.TYPE).getValue();
+		this.patternField = xml.getTextTrim(QueryXMLConstants.FIELD_AS_PATTERN_FIELD);
+		this.patternPath = xml.getTextTrim(QueryXMLConstants.FIELD_AS_PATTERN_PATH);
 		if(xml.hasChildren()){
 			List xmlPatterns = xml.getChildren(QueryXMLConstants.PATTERN);
 			Iterator iterator = xmlPatterns.iterator();
 			if (xmlPatterns.size() == 1) {
-				pattern = ((XMLElement) iterator.next()).getTextTrim();
+				this.pattern = ((XMLElement) iterator.next()).getTextTrim();
 			}
 			else {
-				patterns = new ArrayList();
+				this.patterns = new ArrayList();
 				while (iterator.hasNext()) {
-					patterns.add(((XMLElement) iterator.next()).getTextTrim());
+					this.patterns.add(((XMLElement) iterator.next()).getTextTrim());
 				}
 			}
 			XMLElement xmlLock = xml.getChild(QueryXMLConstants.LOCK);
-			lock = xmlLock!=null;
+			this.lock = xmlLock!=null;
 			XMLElement xmlDyna = xml.getChild(QueryXMLConstants.DYNAMIC);
-			dynamic = xmlDyna!=null;
-			description = xml.getTextTrim(QueryXMLConstants.DESCRIPTION);
+			this.dynamic = xmlDyna!=null;
+			this.description = xml.getTextTrim(QueryXMLConstants.DESCRIPTION);
 		}
 	}
 	
 	public XMLElement getQueryElement() {
 		XMLElement el = new XMLElement(QueryXMLConstants.CONDITION);
-		el.setAttribute(QueryXMLConstants.ID, id);
-		el.setAttribute(QueryXMLConstants.ENTITY,entity);
-		el.setAttribute(QueryXMLConstants.PATH, path);
-		el.setAttribute(QueryXMLConstants.FIELD,field);
-		el.setAttribute(QueryXMLConstants.TYPE,type);
-		if (patterns != null) {
-			Iterator iterator = patterns.iterator();
+		el.setAttribute(QueryXMLConstants.ID, this.id);
+		el.setAttribute(QueryXMLConstants.ENTITY,this.entity);
+		el.setAttribute(QueryXMLConstants.PATH, this.path);
+		el.setAttribute(QueryXMLConstants.FIELD,this.field);
+		el.setAttribute(QueryXMLConstants.TYPE,this.type);
+		if (this.patterns != null) {
+			Iterator iterator = this.patterns.iterator();
 			while (iterator.hasNext()) {
 				String singlePattern = (String) iterator.next();
 				addPattern(singlePattern, el);
 			}
 		}
 		else {
-			addPattern(pattern, el);
+			addPattern(this.pattern, el);
 		}
-		if (description != null) 	{
+		if (this.description != null) 	{
 			XMLElement descriptionElement = new XMLElement(QueryXMLConstants.DESCRIPTION);
-			descriptionElement.addContent(description);
+			descriptionElement.addContent(this.description);
 			el.addContent(descriptionElement);
 		}
-		if (patternField != null) {
+		if (this.patternField != null) {
 			XMLElement patternFieldElement = new XMLElement(QueryXMLConstants.FIELD_AS_PATTERN_FIELD);
-			patternFieldElement.addContent(patternField);
+			patternFieldElement.addContent(this.patternField);
 			el.addContent(patternFieldElement);
 		}
-		if (patternPath != null) {
+		if (this.patternPath != null) {
 			XMLElement patternPathElement = new XMLElement(QueryXMLConstants.FIELD_AS_PATTERN_PATH);
-			patternPathElement.addContent(patternPath);
+			patternPathElement.addContent(this.patternPath);
 			el.addContent(patternPathElement);
 		}
-		if(lock){
+		if(this.lock){
 			el.addContent(new XMLElement(QueryXMLConstants.LOCK));
 		}
-		if(dynamic)
+		if(this.dynamic) {
 			el.addContent(new XMLElement(QueryXMLConstants.DYNAMIC));
+		}
 		return el;
 	}
 	
@@ -174,11 +175,11 @@ public class QueryConditionPart implements QueryPart {
 	 * @return
 	 */
 	private String getEntityClassName() {
-		return entity;
+		return this.entity;
 	}
 	
 	public String getPath()	{
-		return path;
+		return this.path;
 	}
 	
 	/**
@@ -189,30 +190,30 @@ public class QueryConditionPart implements QueryPart {
 	}
 
 	private IDOEntityDefinition getIDOEntityDefinition() throws IDOLookupException, ClassNotFoundException{
-		if(entityDef==null){
-			entityDef = IDOLookup.getEntityDefinitionForClass(RefactorClassRegistry.forName(getEntityClassName()));
+		if(this.entityDef==null){
+			this.entityDef = IDOLookup.getEntityDefinitionForClass(RefactorClassRegistry.forName(getEntityClassName()));
 		}
-		return entityDef;
+		return this.entityDef;
 	}
 	
 	public IDOEntityField getIDOEntityField() throws IDOLookupException, ClassNotFoundException{
-		if(idoField==null){
+		if(this.idoField==null){
 			IDOEntityDefinition def = getIDOEntityDefinition();
 			if(def != null){
 				IDOEntityField[] fields = def.getFields();
 				for (int i = 0; i < fields.length; i++) {
-					if(fields[i].getUniqueFieldName().equals(field)){
-						idoField = fields[i];
-						return idoField;
+					if(fields[i].getUniqueFieldName().equals(this.field)){
+						this.idoField = fields[i];
+						return this.idoField;
 					}
 				}
 			}
 		}
-		return idoField;
+		return this.idoField;
 	}
 
 	public String getId()	{
-		return id;
+		return this.id;
 	}
 	
 	public void setIdUsingPrefix(int id) {
@@ -221,18 +222,18 @@ public class QueryConditionPart implements QueryPart {
 		
 	
 	public int getIdNumber()	{
-		return Integer.parseInt(id.substring(QueryConditionPart.PREFIX.length()));
+		return Integer.parseInt(this.id.substring(QueryConditionPart.PREFIX.length()));
 	}
 	
 	/**
 	 * @return
 	 */
 	public String getField() {
-		return field;
+		return this.field;
 	}
 
 	public Collection getPatterns() {
-		return patterns;
+		return this.patterns;
 	}
 	
 	
@@ -240,18 +241,18 @@ public class QueryConditionPart implements QueryPart {
 	 * @return
 	 */
 	public String getPattern() {
-		return pattern;
+		return this.pattern;
 	}
 
 	public String getDescription()	{
-		return description;
+		return this.description;
 	} 
 
 	/**
 	 * @return
 	 */
 	public String getType() {
-		return type;
+		return this.type;
 	}
 
 
@@ -259,24 +260,24 @@ public class QueryConditionPart implements QueryPart {
 	* @param string
 	*/
 	public void setEntity(String string) {
-	  entity = string;
+	  this.entity = string;
 	}
 	
 	/**
 	 * @param string
 	 */
 	public void setField(String string) {
-		field = string;
+		this.field = string;
 	}
 
 	/**
 	 * @param string
 	 */
 	public void setPattern(String string) {
-		pattern = string;
-		patterns = null;
-		patternField = null;
-		patternPath =null;
+		this.pattern = string;
+		this.patterns = null;
+		this.patternField = null;
+		this.patternPath =null;
 	}
 	
 	/**
@@ -284,9 +285,9 @@ public class QueryConditionPart implements QueryPart {
 	 */
 	public void setPatterns(Collection patterns) {
 		this.patterns = patterns;
-		pattern = null;
-		patternField = null;
-		patternPath = null;
+		this.pattern = null;
+		this.patternField = null;
+		this.patternPath = null;
 	}
 
 	public void setDescription(String description)	{
@@ -297,27 +298,27 @@ public class QueryConditionPart implements QueryPart {
 	 * @param string
 	 */
 	public void setType(String string) {
-		type = string;
+		this.type = string;
 	}
 	
 	public String encode(){
 		StringBuffer buffer = new StringBuffer();
-		buffer.append(id).append(';');
-		buffer.append(entity).append(';');
-		buffer.append(path).append(';');
-		buffer.append(field).append(';');
-		buffer.append(type).append(';');
-		if (patterns != null) {
-			Iterator iterator = patterns.iterator();
+		buffer.append(this.id).append(';');
+		buffer.append(this.entity).append(';');
+		buffer.append(this.path).append(';');
+		buffer.append(this.field).append(';');
+		buffer.append(this.type).append(';');
+		if (this.patterns != null) {
+			Iterator iterator = this.patterns.iterator();
 			while (iterator.hasNext()) {
 				String singlePattern = (String) iterator.next();
 				buffer.append(singlePattern).append(';');
 			}
 		}
 		else {
-			buffer.append(pattern).append(';');
+			buffer.append(this.pattern).append(';');
 		}
-		buffer.append(description);
+		buffer.append(this.description);
 		return buffer.toString();
 	}
 	
@@ -351,7 +352,7 @@ public class QueryConditionPart implements QueryPart {
 	* @see com.idega.block.dataquery.business.QueryPart#isLocked()
 	*/
 	public boolean isLocked() {
-		return lock;
+		return this.lock;
 	}
 
 	/* (non-Javadoc)
@@ -362,28 +363,28 @@ public class QueryConditionPart implements QueryPart {
 	}
 
 	public boolean hasMoreThanOnePattern() {
-		return patterns !=  null;
+		return this.patterns !=  null;
 	}
 
 	/**
 	 * @return
 	 */
 	public boolean isDynamic() {
-		return dynamic;
+		return this.dynamic;
 	}
 
 	/**
 	 * @param b
 	 */
 	public void setDynamic(boolean b) {
-		dynamic = b;
+		this.dynamic = b;
 	}
 
 	/**
 	 * @return Returns the patternField.
 	 */
 	public String getPatternField() {
-		return patternField;
+		return this.patternField;
 	}
 
 	/**
@@ -391,15 +392,15 @@ public class QueryConditionPart implements QueryPart {
 	 */
 	public void setPatternField(String patternField) {
 		this.patternField = patternField;
-		pattern = null;
-		patterns = null;
+		this.pattern = null;
+		this.patterns = null;
 	}
 
 	/**
 	 * @return Returns the patternPath.
 	 */
 	public String getPatternPath() {
-		return patternPath;
+		return this.patternPath;
 	}
 
 	/**
@@ -407,8 +408,8 @@ public class QueryConditionPart implements QueryPart {
 	 */
 	public void setPatternPath(String patternPath) {
 		this.patternPath = patternPath;
-		pattern = null;
-		patterns = null;
+		this.pattern = null;
+		this.patterns = null;
 	}
 
 }

@@ -5,6 +5,7 @@ package com.idega.block.image.data;
 import java.sql.SQLException;
 
 import com.idega.data.IDOLegacyEntity;
+import com.idega.util.IWTimestamp;
 
 //import com.idega.data.BlobWrapper;
 
@@ -46,7 +47,7 @@ public class ImageEntityBMPBean extends com.idega.core.file.data.ICFileBMPBean i
 
   public void setDefaultValues() {
 
-    super.setCreationDate(new com.idega.util.IWTimestamp().getTimestampRightNow());
+    super.setCreationDate(IWTimestamp.getTimestampRightNow());
 
   }
 
@@ -54,7 +55,7 @@ public class ImageEntityBMPBean extends com.idega.core.file.data.ICFileBMPBean i
 
   public String getImageLink(){
 
-    return (String) this.getMetaData("image_link");
+    return this.getMetaData("image_link");
 
   }
 
@@ -78,7 +79,7 @@ public class ImageEntityBMPBean extends com.idega.core.file.data.ICFileBMPBean i
 
   public String getWidth(){
 
-    return (String) this.getMetaData("width");
+    return this.getMetaData("width");
 
   }
 
@@ -86,7 +87,7 @@ public class ImageEntityBMPBean extends com.idega.core.file.data.ICFileBMPBean i
 
   public String getHeight(){
 
-    return (String) this.getMetaData("height");
+    return this.getMetaData("height");
 
   }
 
@@ -110,7 +111,7 @@ public class ImageEntityBMPBean extends com.idega.core.file.data.ICFileBMPBean i
 
   public String getImageLinkOwner(){
 
-    return (String) this.getMetaData("image_link_owner");
+    return this.getMetaData("image_link_owner");
 
   }
 
@@ -134,9 +135,12 @@ public class ImageEntityBMPBean extends com.idega.core.file.data.ICFileBMPBean i
 
     ImageEntity parent = (ImageEntity) this.getParentNode();
 
-    if( parent == null ) return -1;
-
-    else return parent.getNodeID();
+    if( parent == null ) {
+		return -1;
+	}
+	else {
+		return parent.getNodeID();
+	}
 
   }
 

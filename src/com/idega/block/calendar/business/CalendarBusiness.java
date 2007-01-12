@@ -23,6 +23,7 @@ import com.idega.block.category.data.ICCategory;
 import com.idega.block.text.business.TextFinder;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.data.EntityFinder;
+import com.idega.data.GenericEntity;
 import com.idega.idegaweb.presentation.CalendarParameters;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DropdownMenu;
@@ -72,7 +73,7 @@ public class CalendarBusiness {
 
 		List list = null;
 		try {
-			list = EntityFinder.findAll(com.idega.block.calendar.data.CalendarEntryTypeBMPBean.getStaticInstance(CalendarEntryType.class));
+			list = EntityFinder.findAll(GenericEntity.getStaticInstance(CalendarEntryType.class));
 		} catch (SQLException e) {
 			list = null;
 		}
@@ -128,8 +129,9 @@ public class CalendarBusiness {
 		entry.setUserID(userID);
 		entry.setGroupID(groupID);
 		entry.setDate(new IWTimestamp(entryDate).getTimestamp());
-		if (entryEndDate != null && entryEndDate.length() > 0)
+		if (entryEndDate != null && entryEndDate.length() > 0) {
 			entry.setEndDate(new IWTimestamp(entryEndDate).getTimestamp());
+		}
 
 		if (!update) {
 			try {
@@ -180,7 +182,7 @@ public class CalendarBusiness {
 		CalendarEntry cal = CalendarFinder.getInstance().getEntry(entryID);
 		if (cal != null) {
 			try {
-				cal.removeFrom(com.idega.block.text.data.LocalizedTextBMPBean.getStaticInstance(LocalizedText.class));
+				cal.removeFrom(GenericEntity.getStaticInstance(LocalizedText.class));
 				cal.delete();
 			} catch (Exception e) {
 				e.printStackTrace(System.err);
@@ -213,8 +215,9 @@ public class CalendarBusiness {
 			imageID = -1;
 		}
 
-		if (imageID != -1)
+		if (imageID != -1) {
 			type.setImageID(imageID);
+		}
 
 		if (!update) {
 			try {
@@ -265,12 +268,13 @@ public class CalendarBusiness {
 		if (type != null) {
 			try {
 				CalendarEntry[] entries = (CalendarEntry[]) com.idega.block.calendar.data.CalendarEntryBMPBean.getStaticInstance().findAllByColumn(com.idega.block.calendar.data.CalendarEntryBMPBean.getColumnNameEntryTypeID(), typeID);
-				if (entries != null)
+				if (entries != null) {
 					for (int a = 0; a < entries.length; a++) {
-						entries[a].removeFrom(com.idega.block.text.data.LocalizedTextBMPBean.getStaticInstance(LocalizedText.class));
+						entries[a].removeFrom(GenericEntity.getStaticInstance(LocalizedText.class));
 						entries[a].delete();
 					}
-				type.removeFrom(com.idega.block.text.data.LocalizedTextBMPBean.getStaticInstance(LocalizedText.class));
+				}
+				type.removeFrom(GenericEntity.getStaticInstance(LocalizedText.class));
 				type.delete();
 			} catch (Exception e) {
 				e.printStackTrace(System.err);

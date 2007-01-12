@@ -1,5 +1,6 @@
 package com.idega.block.trade.stockroom.data;
 
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.GregorianCalendar;
 import javax.ejb.CreateException;
@@ -17,13 +18,13 @@ import com.idega.data.query.WildCardColumn;
  */
 public class SupplyPoolDayBMPBean extends GenericEntity  implements SupplyPoolDay{
 
-  public static final int SUNDAY = GregorianCalendar.SUNDAY;
-  public static final int MONDAY = GregorianCalendar.MONDAY;
-  public static final int TUESDAY = GregorianCalendar.TUESDAY;
-  public static final int WEDNESDAY = GregorianCalendar.WEDNESDAY;
-  public static final int THURSDAY = GregorianCalendar.THURSDAY;
-  public static final int FRIDAY = GregorianCalendar.FRIDAY;
-  public static final int SATURDAY = GregorianCalendar.SATURDAY;
+  public static final int SUNDAY = Calendar.SUNDAY;
+  public static final int MONDAY = Calendar.MONDAY;
+  public static final int TUESDAY = Calendar.TUESDAY;
+  public static final int WEDNESDAY = Calendar.WEDNESDAY;
+  public static final int THURSDAY = Calendar.THURSDAY;
+  public static final int FRIDAY = Calendar.FRIDAY;
+  public static final int SATURDAY = Calendar.SATURDAY;
 	
 	
 	private static final String TABLENAME = "SR_SUPPLY_POOL_DAY";

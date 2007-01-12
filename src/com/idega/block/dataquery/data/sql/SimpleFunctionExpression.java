@@ -34,18 +34,18 @@ public class SimpleFunctionExpression extends FunctionExpression {
   }
 
   protected void initialize(SQLQuery sqlQuery) {
-    String function = queryField.getFunction();
-    sqlFunctionName = (String) FUNCTION_SQL.get(function);
-    fieldValue = sqlQuery.getUniqueNameForField(queryField);
+    String function = this.queryField.getFunction();
+    this.sqlFunctionName = (String) FUNCTION_SQL.get(function);
+    this.fieldValue = sqlQuery.getUniqueNameForField(this.queryField);
   }
     
   
   public String toSQLString() {
-  	return StringHandler.replace(sqlFunctionName, FIELD_VALUE, fieldValue);
+  	return StringHandler.replace(this.sqlFunctionName, FIELD_VALUE, this.fieldValue);
   }
     
   public boolean isValid() {
-    return ( StringHandler.isNotEmpty(sqlFunctionName) && StringHandler.isNotEmpty(fieldValue));
+    return ( StringHandler.isNotEmpty(this.sqlFunctionName) && StringHandler.isNotEmpty(this.fieldValue));
   }
 
 

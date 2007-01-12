@@ -31,7 +31,7 @@ public class OwnerGroupInformationText extends Text {
 	private String textBefore = "";
 	private String textAfter = "";
 	
-	private int informationToShow = SHOW_NAME;
+	private int informationToShow = this.SHOW_NAME;
 	
 	
 	/**
@@ -62,7 +62,7 @@ public class OwnerGroupInformationText extends Text {
 	}
 	
 	public void setInformationToShow(int showConstant) {
-		informationToShow = showConstant;
+		this.informationToShow = showConstant;
 	}
 	
 	public void main(IWContext iwc) throws Exception {
@@ -74,18 +74,18 @@ public class OwnerGroupInformationText extends Text {
 				try {
 					Group gr = ((GroupHome)IDOLookup.getHome(Group.class)).findByHomePageID(rootPageID);
 					
-					switch (informationToShow) {
+					switch (this.informationToShow) {
 						case SHOW_NAME:
-							this.setText(textBefore+" "+gr.getName()+" "+textAfter);
+							this.setText(this.textBefore+" "+gr.getName()+" "+this.textAfter);
 							break;
 						case SHOW_SHROT_NAME:
-							this.setText(textBefore+" "+gr.getShortName()+" "+textAfter);
+							this.setText(this.textBefore+" "+gr.getShortName()+" "+this.textAfter);
 							break;
 						case SHOW_ABBREVATION:
-							this.setText(textBefore+" "+gr.getAbbrevation()+" "+textAfter);
+							this.setText(this.textBefore+" "+gr.getAbbrevation()+" "+this.textAfter);
 							break;
 						default:
-							this.setText(textBefore+" "+gr.getName()+" "+textAfter);
+							this.setText(this.textBefore+" "+gr.getName()+" "+this.textAfter);
 							break;
 					}
 					
@@ -94,7 +94,7 @@ public class OwnerGroupInformationText extends Text {
 					System.out.println("["+this.getClassName()+"]: no Group has this page("+rootPageID+") as homepage");
 				}
 			} else {
-				this.setText(textBefore+"-"+textAfter);
+				this.setText(this.textBefore+"-"+this.textAfter);
 			}
 		}
 		

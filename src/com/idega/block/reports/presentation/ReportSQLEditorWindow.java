@@ -78,26 +78,28 @@ public class ReportSQLEditorWindow extends IWAdminWindow implements Reports{
     T.setCellspacing(0);
     try{
       if(true){
-        if(iCategoryId <= 0 && iwc.isParameterSet(prmCategoryId)){
-          iCategoryId = Integer.parseInt(iwc.getParameter(prmCategoryId ));
+        if(this.iCategoryId <= 0 && iwc.isParameterSet(prmCategoryId)){
+          this.iCategoryId = Integer.parseInt(iwc.getParameter(prmCategoryId ));
         }
         String sActPrm = "0";
-        if(iwc.getParameter(sAction) != null)
-          sActPrm = iwc.getParameter(sAction);
-        else if(iwc.isParameterSet(prmReportId)){
-          iReportId = Integer.parseInt(iwc.getParameter(prmReportId));
+        if(iwc.getParameter(this.sAction) != null) {
+			sActPrm = iwc.getParameter(this.sAction);
+		}
+		else if(iwc.isParameterSet(prmReportId)){
+          this.iReportId = Integer.parseInt(iwc.getParameter(prmReportId));
           sActPrm = "2";
         }
-        else if(useCheckBoxes ){
+        else if(this.useCheckBoxes ){
           sActPrm = "7";
         }
-        else
-          sActPrm = "0";
+		else {
+			sActPrm = "0";
+		}
         try{
           int iAction = Integer.parseInt(sActPrm);
           switch(iAction){
             case ACT1: doSaveEdit(iwc);   break;
-            case ACT2: T.add(getEditTable(iwc,iReportId),1,2);  break;
+            case ACT2: T.add(getEditTable(iwc,this.iReportId),1,2);  break;
             case ACT3: doChange(iwc); break;
             case ACT4: doUpdate(iwc); break;
             case ACT5: doCloseNoAction(); break;
@@ -110,8 +112,9 @@ public class ReportSQLEditorWindow extends IWAdminWindow implements Reports{
           e.printStackTrace();
         }
       }
-      else
-        add(formatText(iwrb.getLocalizedString("access_denied","Access denied")));
+	else {
+		add(formatText(this.iwrb.getLocalizedString("access_denied","Access denied")));
+	}
     }
     catch(Exception S){
       S.printStackTrace();
@@ -123,10 +126,10 @@ public class ReportSQLEditorWindow extends IWAdminWindow implements Reports{
 
   private PresentationObject getMakeTable(IWContext iwc){
     Table T = new Table(3,5);
-    if(iCategoryId > 0){
-      List L = ReportEntityHandler.listOfReportConditions(iCategoryId );
+    if(this.iCategoryId > 0){
+      List L = ReportEntityHandler.listOfReportConditions(this.iCategoryId );
 			if(L != null && L.size() > 0){
-        iwc.setSessionAttribute(prefix+"force",L);
+        iwc.setSessionAttribute(this.prefix+"force",L);
 
         T.setWidth("100%");
         T.setCellpadding(1);
@@ -171,13 +174,14 @@ public class ReportSQLEditorWindow extends IWAdminWindow implements Reports{
         ML.setColor(ReportPresentation.MiddleColor);
         ML.setCellpadding(0);
         ML.setCellspacing(0);
-        if(sManual != null)
-          T.add(this.formatText(sManual),1,5);
+        if(this.sManual != null) {
+			T.add(this.formatText(this.sManual),1,5);
+		}
 
-        Text nameText = ReportPresentation.formatText(iwrb.getLocalizedString("name","Name"));
-        Text infoText = ReportPresentation.formatText(iwrb.getLocalizedString("info","Info"));
-        TextInput nameInput = new TextInput(prefix+"name");
-        TextInput infoInput = new TextInput(prefix+"info");
+        Text nameText = ReportPresentation.formatText(this.iwrb.getLocalizedString("name","Name"));
+        Text infoText = ReportPresentation.formatText(this.iwrb.getLocalizedString("info","Info"));
+        TextInput nameInput = new TextInput(this.prefix+"name");
+        TextInput infoInput = new TextInput(this.prefix+"info");
         ReportPresentation.setStyle(nameInput);
         ReportPresentation.setStyle(infoInput);
         nameInput.setLength(80);
@@ -198,7 +202,7 @@ public class ReportSQLEditorWindow extends IWAdminWindow implements Reports{
         for (int i = 0; i < len; i++) {
           ReportCondition RC = (ReportCondition) L.get(i);
           box1.addMenuElement(i,RC.getDisplay());
-          InterfaceObject mo = ReportObjectHandler.getInput(RC,prefix+"in"+i,"");
+          InterfaceObject mo = ReportObjectHandler.getInput(RC,this.prefix+"in"+i,"");
           ReportPresentation.setStyle(mo);
           ML.add(RC.getDisplay(),3,++a);
           ML.add(mo,4,a);
@@ -214,23 +218,24 @@ public class ReportSQLEditorWindow extends IWAdminWindow implements Reports{
         T.add(new CloseButton("cancel"),3,4);
         T.add(new SubmitButton("save"),3,4);
         T.setAlignment(3,4,"right");
-        T.add(new HiddenInput(sAction, String.valueOf(ACT4)),1,4);
-        T.add(new HiddenInput(prmCategoryId,String.valueOf(iCategoryId)),1,4);
+        T.add(new HiddenInput(this.sAction, String.valueOf(ACT4)),1,4);
+        T.add(new HiddenInput(prmCategoryId,String.valueOf(this.iCategoryId)),1,4);
         return T;
       }
     }
-    else
-      T.add(ReportPresentation.formatText(iwrb.getLocalizedString("nothing","Nothing to show")));
+	else {
+		T.add(ReportPresentation.formatText(this.iwrb.getLocalizedString("nothing","Nothing to show")));
+	}
 
     return T;
   }
 
    private PresentationObject getSetupTable(IWContext iwc){
     Table T = new Table(3,5);
-    if(iCategoryId > 0){
-      List L = ReportEntityHandler.listOfReportConditions(iCategoryId );
+    if(this.iCategoryId > 0){
+      List L = ReportEntityHandler.listOfReportConditions(this.iCategoryId );
       if(L != null && L.size() > 0){
-        iwc.setSessionAttribute(prefix+"force",L);
+        iwc.setSessionAttribute(this.prefix+"force",L);
 
         T.setWidth("100%");
         T.setCellpadding(1);
@@ -245,13 +250,14 @@ public class ReportSQLEditorWindow extends IWAdminWindow implements Reports{
         ML.setColor(ReportPresentation.MiddleColor);
         ML.setCellpadding(0);
         ML.setCellspacing(1);
-        if(sManual != null)
-          T.add(this.formatText(sManual),1,7);
+        if(this.sManual != null) {
+			T.add(this.formatText(this.sManual),1,7);
+		}
 
-        Text nameText = ReportPresentation.formatText(iwrb.getLocalizedString("name","Name"));
-        Text infoText = ReportPresentation.formatText(iwrb.getLocalizedString("info","Info"));
-        TextInput nameInput = new TextInput(prefix+"name");
-        TextInput infoInput = new TextInput(prefix+"info");
+        Text nameText = ReportPresentation.formatText(this.iwrb.getLocalizedString("name","Name"));
+        Text infoText = ReportPresentation.formatText(this.iwrb.getLocalizedString("info","Info"));
+        TextInput nameInput = new TextInput(this.prefix+"name");
+        TextInput infoInput = new TextInput(this.prefix+"info");
         ReportPresentation.setStyle(nameInput);
         ReportPresentation.setStyle(infoInput);
         nameInput.setLength(80);
@@ -262,14 +268,14 @@ public class ReportSQLEditorWindow extends IWAdminWindow implements Reports{
         T.add(infoInput,2,2);
 
         T.add(ML,1,3);
-        ML.add(ReportPresentation.formatText(iwrb.getLocalizedString("fields","Fields")),1,1);
-        ML.add(ReportPresentation.formatText(iwrb.getLocalizedString("select","Select")),2,1);
-        ML.add(ReportPresentation.formatText(iwrb.getLocalizedString("function","Function")),3,1);
-        ML.add(ReportPresentation.formatText(iwrb.getLocalizedString("condition","Condition")),4,1);
-        ML.add(ReportPresentation.formatText(iwrb.getLocalizedString("operator","Operator")),5,1);
-        ML.add(ReportPresentation.formatText(iwrb.getLocalizedString("condition","Condition")),6,1);
-        ML.add(ReportPresentation.formatText(iwrb.getLocalizedString("colorder","Col order")),7,1);
-        ML.add(ReportPresentation.formatText(iwrb.getLocalizedString("orderby","Order by")),8,1);
+        ML.add(ReportPresentation.formatText(this.iwrb.getLocalizedString("fields","Fields")),1,1);
+        ML.add(ReportPresentation.formatText(this.iwrb.getLocalizedString("select","Select")),2,1);
+        ML.add(ReportPresentation.formatText(this.iwrb.getLocalizedString("function","Function")),3,1);
+        ML.add(ReportPresentation.formatText(this.iwrb.getLocalizedString("condition","Condition")),4,1);
+        ML.add(ReportPresentation.formatText(this.iwrb.getLocalizedString("operator","Operator")),5,1);
+        ML.add(ReportPresentation.formatText(this.iwrb.getLocalizedString("condition","Condition")),6,1);
+        ML.add(ReportPresentation.formatText(this.iwrb.getLocalizedString("colorder","Col order")),7,1);
+        ML.add(ReportPresentation.formatText(this.iwrb.getLocalizedString("orderby","Order by")),8,1);
         TextInput ti,ti2;
         DropdownMenu op,func ;
         InterfaceObject mo,mo2;
@@ -278,17 +284,17 @@ public class ReportSQLEditorWindow extends IWAdminWindow implements Reports{
         int len = L.size();
         for (int i = 0; i < len; i++) {
           ReportCondition RC = (ReportCondition) L.get(i);
-          chk = new CheckBox(prefix+"chk"+i);
-          mo = ReportObjectHandler.getInput(RC,prefix+"in"+i,"");
-          op = ReportObjectHandler.drpOperators(prefix+"op"+i,RC.getOperator());
-          mo2 = ReportObjectHandler.getInput(RC,prefix+"inn"+i,"");
-          func = ReportObjectHandler.drpFunctions(prefix+"func"+i,"");
+          chk = new CheckBox(this.prefix+"chk"+i);
+          mo = ReportObjectHandler.getInput(RC,this.prefix+"in"+i,"");
+          op = ReportObjectHandler.drpOperators(this.prefix+"op"+i,RC.getOperator());
+          mo2 = ReportObjectHandler.getInput(RC,this.prefix+"inn"+i,"");
+          func = ReportObjectHandler.drpFunctions(this.prefix+"func"+i,"");
 
-          ti = new TextInput(prefix+"ord"+i);
+          ti = new TextInput(this.prefix+"ord"+i);
           ti.setAsIntegers();
           ti.setLength(2);
 
-          ti2 = new TextInput(prefix+"col"+i);
+          ti2 = new TextInput(this.prefix+"col"+i);
           ti2.setAsIntegers();
           ti2.setLength(2);
 
@@ -320,15 +326,17 @@ public class ReportSQLEditorWindow extends IWAdminWindow implements Reports{
         T.add(cancel,3,4);
         T.add(save,3,4);
         T.setAlignment(3,4,"right");
-        T.add(new HiddenInput(sAction, String.valueOf(ACT6)),1,4);
-        T.add(new HiddenInput(prmCategoryId,String.valueOf(iCategoryId)),1,4);
+        T.add(new HiddenInput(this.sAction, String.valueOf(ACT6)),1,4);
+        T.add(new HiddenInput(prmCategoryId,String.valueOf(this.iCategoryId)),1,4);
         return T;
       }
-      else
-        return getEditTable(iwc,-1);
+	else {
+		return getEditTable(iwc,-1);
+	}
     }
-    else
-      T.add(ReportPresentation.formatText(iwrb.getLocalizedString("nothing","Nothing to show")));
+	else {
+		T.add(ReportPresentation.formatText(this.iwrb.getLocalizedString("nothing","Nothing to show")));
+	}
 
     return T;
   }
@@ -336,7 +344,7 @@ public class ReportSQLEditorWindow extends IWAdminWindow implements Reports{
 
   protected void doUpdate(IWContext iwc){
     String[] s = iwc.getParameterValues("box");
-    Vector RC = (Vector)iwc.getSessionAttribute(prefix+"force");
+    Vector RC = (Vector)iwc.getSessionAttribute(this.prefix+"force");
     Vector vRC = new Vector();
     int slen = s.length;
     String[] headers = new String[slen];
@@ -349,7 +357,7 @@ public class ReportSQLEditorWindow extends IWAdminWindow implements Reports{
     String temp;
     int rlen = RC.size();
     for (int i = 0; i < rlen; i++) {
-      temp = iwc.getParameter(prefix+"in"+i);
+      temp = iwc.getParameter(this.prefix+"in"+i);
       if(!"".equalsIgnoreCase(temp) && !"0".equals(temp)){
         //add(" check "+i);
         ReportCondition rc = (ReportCondition) RC.get(i);
@@ -358,10 +366,10 @@ public class ReportSQLEditorWindow extends IWAdminWindow implements Reports{
 
       }
     }
-    iwc.removeSessionAttribute(prefix+"force");
+    iwc.removeSessionAttribute(this.prefix+"force");
 
-    String name = iwc.getParameter(prefix+"name");
-    String info = iwc.getParameter(prefix+"info");
+    String name = iwc.getParameter(this.prefix+"name");
+    String info = iwc.getParameter(this.prefix+"info");
 
     name = name != null?name: "";
     info = info != null?info: "";
@@ -369,21 +377,21 @@ public class ReportSQLEditorWindow extends IWAdminWindow implements Reports{
     ReportMaker rm = new ReportMaker();
 
     String sql = rm.makeSQL(vRC);
-    if(iCategoryId > 0){
-      Report saved = ReportEntityHandler.saveReport(name,info,headers,sql,iCategoryId);
+    if(this.iCategoryId > 0){
+      Report saved = ReportEntityHandler.saveReport(name,info,headers,sql,this.iCategoryId);
 
 			if(saved.getID() > 0){
         setParentToReload();
         close();
       }
       else{
-        add(ReportPresentation.formatText(iwrb.getLocalizedString("report_not_saved","Report was not saved")));
+        add(ReportPresentation.formatText(this.iwrb.getLocalizedString("report_not_saved","Report was not saved")));
       }
     }
   }
 
   protected void doUpdateSetup(IWContext iwc){
-    Vector RC = (Vector)iwc.getSessionAttribute(prefix+"force");
+    Vector RC = (Vector)iwc.getSessionAttribute(this.prefix+"force");
     Vector vRC = new Vector();
     TreeMap orderMap = new TreeMap();
     TreeMap headerMap = new TreeMap();
@@ -393,13 +401,13 @@ public class ReportSQLEditorWindow extends IWAdminWindow implements Reports{
     boolean use = false,colorder = false;
     for (int i = 0; i < rlen; i++) {
       ReportCondition rc = (ReportCondition) RC.get(i);
-      chk = iwc.getParameter(prefix+"chk"+i);
-      in = iwc.getParameter(prefix+"in"+i);
-      in2 = iwc.getParameter(prefix+"inn"+i);
-      op = iwc.getParameter(prefix+"op"+i);
-      ord = iwc.getParameter(prefix+"ord"+i);
-      col = iwc.getParameter(prefix+"col"+i);
-      func = iwc.getParameter(prefix+"func"+i);
+      chk = iwc.getParameter(this.prefix+"chk"+i);
+      in = iwc.getParameter(this.prefix+"in"+i);
+      in2 = iwc.getParameter(this.prefix+"inn"+i);
+      op = iwc.getParameter(this.prefix+"op"+i);
+      ord = iwc.getParameter(this.prefix+"ord"+i);
+      col = iwc.getParameter(this.prefix+"col"+i);
+      func = iwc.getParameter(this.prefix+"func"+i);
 
       if(!"".equalsIgnoreCase(in)){
         rc.setVariableOne(in);
@@ -429,30 +437,34 @@ public class ReportSQLEditorWindow extends IWAdminWindow implements Reports{
       if(chk!= null){
         rc.setIsSelect();
         use = true;
-        if(colorder)
-          headerMap.put(new Integer(col),rc.getDisplay());
-        else
-          headers.add( rc.getDisplay() );
+        if(colorder) {
+			headerMap.put(new Integer(col),rc.getDisplay());
+		}
+		else {
+			headers.add( rc.getDisplay() );
+		}
       }
       if(use){
         //System.err.println(rc.getItem().getMainTable());
-        if(colorder )
-          orderMap.put(new Integer(col),rc);
-        else
-          vRC.add(rc);
+        if(colorder ) {
+			orderMap.put(new Integer(col),rc);
+		}
+		else {
+			vRC.add(rc);
+		}
       }
       use = false;
       colorder = false;
     }
-    iwc.removeSessionAttribute(prefix+"force");
+    iwc.removeSessionAttribute(this.prefix+"force");
     headers.addAll(0,headerMap.values());
     String[] heads = new String[headers.size()];
     for (int i = 0; i < headers.size(); i++) {
       heads[i] = (String) headers.get(i);
     }
 
-    String name = iwc.getParameter(prefix+"name");
-    String info = iwc.getParameter(prefix+"info");
+    String name = iwc.getParameter(this.prefix+"name");
+    String info = iwc.getParameter(this.prefix+"info");
 
     name = name != null?name: "";
     info = info != null?info: "";
@@ -465,14 +477,14 @@ public class ReportSQLEditorWindow extends IWAdminWindow implements Reports{
     String sql = rm.makeSQL(vConds);
     //add(sql);
 
-    if(iCategoryId > 0){
-      Report saved = ReportEntityHandler.saveReport(name,info,heads,sql,iCategoryId);
+    if(this.iCategoryId > 0){
+      Report saved = ReportEntityHandler.saveReport(name,info,heads,sql,this.iCategoryId);
       if(saved.getID() >0){
         setParentToReload();
         close();
       }
       else{
-        add(ReportPresentation.formatText(iwrb.getLocalizedString("report_not_saved","Report was not saved")));
+        add(ReportPresentation.formatText(this.iwrb.getLocalizedString("report_not_saved","Report was not saved")));
       }
     }
   }
@@ -482,8 +494,8 @@ public class ReportSQLEditorWindow extends IWAdminWindow implements Reports{
   }
 
   private PresentationObject getCloseLink(){
-    Link back =  new Link(iwrb.getImage("/pics/close.gif"));
-    back.addParameter(sAction,ACT5);
+    Link back =  new Link(this.iwrb.getImage("/pics/close.gif"));
+    back.addParameter(this.sAction,ACT5);
     return back;
   }
 
@@ -507,14 +519,14 @@ public class ReportSQLEditorWindow extends IWAdminWindow implements Reports{
 
     Table T = new Table();
 
-    Text nameText = ReportPresentation.formatText(iwrb.getLocalizedString("name","Name"));
-    Text infoText = ReportPresentation.formatText(iwrb.getLocalizedString("info","Info"));
-    Text headersText = ReportPresentation.formatText(iwrb.getLocalizedString("headers","Headers"));
-    Text sqlText = ReportPresentation.formatText(iwrb.getLocalizedString("sql","SQL"));
-    TextInput nameInput = new TextInput(prefix+"name");
-    TextInput infoInput = new TextInput(prefix+"info");
-    TextInput headersInput = new TextInput(prefix+"headers");
-    TextArea sqlInput = new TextArea(prefix+"sql");
+    Text nameText = ReportPresentation.formatText(this.iwrb.getLocalizedString("name","Name"));
+    Text infoText = ReportPresentation.formatText(this.iwrb.getLocalizedString("info","Info"));
+    Text headersText = ReportPresentation.formatText(this.iwrb.getLocalizedString("headers","Headers"));
+    Text sqlText = ReportPresentation.formatText(this.iwrb.getLocalizedString("sql","SQL"));
+    TextInput nameInput = new TextInput(this.prefix+"name");
+    TextInput infoInput = new TextInput(this.prefix+"info");
+    TextInput headersInput = new TextInput(this.prefix+"headers");
+    TextArea sqlInput = new TextArea(this.prefix+"sql");
 
     nameInput.setLength(80);
     infoInput.setLength(80);
@@ -528,8 +540,8 @@ public class ReportSQLEditorWindow extends IWAdminWindow implements Reports{
     ReportPresentation.setStyle(sqlInput);
 
     if(b){
-      T.add(new HiddenInput(prefix+"repid",String.valueOf(R.getID())));
-      T.add(new HiddenInput(prefix+"repcatid",String.valueOf(R.getCategoryId())));
+      T.add(new HiddenInput(this.prefix+"repid",String.valueOf(R.getID())));
+      T.add(new HiddenInput(this.prefix+"repcatid",String.valueOf(R.getCategoryId())));
       nameInput.setContent(R.getName());
       infoInput.setContent(R.getInfo());
       headersInput.setContent(R.getHeader());
@@ -546,20 +558,20 @@ public class ReportSQLEditorWindow extends IWAdminWindow implements Reports{
     T.add(sqlInput,1,8);
 
     T.add(new SubmitButton("Ok"),1,9);
-    T.add(new HiddenInput(sAction, String.valueOf(ACT1)),1,9);
-    T.add(new HiddenInput(prmCategoryId,String.valueOf(iCategoryId)));
+    T.add(new HiddenInput(this.sAction, String.valueOf(ACT1)),1,9);
+    T.add(new HiddenInput(prmCategoryId,String.valueOf(this.iCategoryId)));
     return T;
   }
 
   private void doSaveEdit(IWContext iwc){
     String msg = "";
-    String sName = iwc.getParameter(prefix+"name").trim();
-    String sInfo = iwc.getParameter(prefix+"info").trim();
-    String sHeaders = iwc.getParameter(prefix+"headers").trim();
+    String sName = iwc.getParameter(this.prefix+"name").trim();
+    String sInfo = iwc.getParameter(this.prefix+"info").trim();
+    String sHeaders = iwc.getParameter(this.prefix+"headers").trim();
 
-    String sSql = iwc.getParameter(prefix+"sql").trim();
-    String sReportId = iwc.getParameter(prefix+"repid");
-    String sReportCatId = iwc.getParameter(prefix+"repcatid");
+    String sSql = iwc.getParameter(this.prefix+"sql").trim();
+    String sReportId = iwc.getParameter(this.prefix+"repid");
+    String sReportCatId = iwc.getParameter(this.prefix+"repcatid");
     int catid = sReportCatId != null?Integer.parseInt(sReportCatId):-1;
     int id = sReportId!=null? Integer.parseInt(sReportId ):-1;
 
@@ -567,30 +579,39 @@ public class ReportSQLEditorWindow extends IWAdminWindow implements Reports{
     if(sName != null && sName.length() > 1 ){
       if(sSql != null && sHeaders!= null){
         String[] he = str2array(sHeaders,",:;");
-        if(iCategoryId > 0){
-          int iSaveCat = iCategoryId;
+        if(this.iCategoryId > 0){
+          int iSaveCat = this.iCategoryId;
           if(id < 1 && catid != iSaveCat ){
             saved = ReportEntityHandler.saveReport(sName ,sInfo ,he,sSql,iSaveCat);
-            if(saved.getID() >0)
-              msg = iwrb.getLocalizedString("report_saved","Report was saved");
-            else
-              msg = iwrb.getLocalizedString("report_not_saved","Report was not saved");
+            if(saved.getID() >0) {
+				msg = this.iwrb.getLocalizedString("report_saved","Report was saved");
+			}
+			else {
+				msg = this.iwrb.getLocalizedString("report_not_saved","Report was not saved");
+			}
           }
           else{
             saved = ReportEntityHandler.updateReport(id,sName ,sInfo ,he,sSql,iSaveCat);
-            if(saved.getID()>0)
-              msg = iwrb.getLocalizedString("report_updated","Report was updated");
-            else
-              msg = iwrb.getLocalizedString("report_not_updated","Report was not updated");
+            if(saved.getID()>0) {
+				msg = this.iwrb.getLocalizedString("report_updated","Report was updated");
+			}
+			else {
+				msg = this.iwrb.getLocalizedString("report_not_updated","Report was not updated");
+			}
           }
 
         }
-        else msg = iwrb.getLocalizedString("no_savecategories","No save categories");
+		else {
+			msg = this.iwrb.getLocalizedString("no_savecategories","No save categories");
+		}
       }
-      else msg = iwrb.getLocalizedString("no_headers","No headers entered");
+	else {
+		msg = this.iwrb.getLocalizedString("no_headers","No headers entered");
+	}
     }
-    else
-      msg = iwrb.getLocalizedString("no_name","No name entered");
+	else {
+		msg = this.iwrb.getLocalizedString("no_name","No name entered");
+	}
 
     if(saved.getID()>0){
       setParentToReload();
@@ -630,16 +651,16 @@ public class ReportSQLEditorWindow extends IWAdminWindow implements Reports{
 
   public void main(IWContext iwc) throws Exception{
     super.main(iwc);
-    iwb = getBundle(iwc);
-    iwrb = getResourceBundle(iwc);
-    String title = iwrb.getLocalizedString("report_sql_editor","Report SQL Editor");
+    this.iwb = getBundle(iwc);
+    this.iwrb = getResourceBundle(iwc);
+    String title = this.iwrb.getLocalizedString("report_sql_editor","Report SQL Editor");
     setTitle(title);
     addTitle(title);
 
-    isAdmin = iwc.hasEditPermission(this);
+    this.isAdmin = iwc.hasEditPermission(this);
 
     control(iwc);
-    sManual = iwrb.getLocalizedString("manual","");
+    this.sManual = this.iwrb.getLocalizedString("manual","");
   }
 
 }

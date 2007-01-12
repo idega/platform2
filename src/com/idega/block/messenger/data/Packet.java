@@ -74,13 +74,13 @@ public class Packet implements Serializable{
 
   public void addMessage(Message message){
 
-   if( messages == null ){
+   if( this.messages == null ){
 
-    messages = new Vector();
+    this.messages = new Vector();
 
    }
 
-    messages.addElement(message);
+    this.messages.addElement(message);
 
   }
 
@@ -122,13 +122,13 @@ public class Packet implements Serializable{
 
   public void addProperty(Property property){
 
-   if( properties == null ){
+   if( this.properties == null ){
 
-    properties = new Vector();
+    this.properties = new Vector();
 
    }
 
-    properties.addElement(property);
+    this.properties.addElement(property);
 
   }
 
@@ -160,11 +160,11 @@ public class Packet implements Serializable{
 
   public void clearAll(){
 
-    messages=null;
+    this.messages=null;
 
-    properties=null;
+    this.properties=null;
 
-    clientId=null;
+    this.clientId=null;
 
   }
 
@@ -172,7 +172,7 @@ public class Packet implements Serializable{
 
   public void clearMessages(){
 
-    messages=null;
+    this.messages=null;
 
   }
 
@@ -180,7 +180,7 @@ public class Packet implements Serializable{
 
   public void clearProperties(){
 
-    properties=null;
+    this.properties=null;
 
   }
 

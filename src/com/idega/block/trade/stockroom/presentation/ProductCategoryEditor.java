@@ -18,6 +18,7 @@ import com.idega.data.EntityFinder;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.text.Text;
@@ -63,7 +64,7 @@ public class ProductCategoryEditor extends CategoryWindow {
 	}
 	public void main(IWContext iwc) throws Exception {
 		init(iwc);
-		if (_selectedCategory != -1) {
+		if (this._selectedCategory != -1) {
 			String action = iwc.getParameter(_action);
 			if (action == null || "".equals(action)) {
 				viewCategory(iwc);
@@ -78,24 +79,24 @@ public class ProductCategoryEditor extends CategoryWindow {
 		}
 	}
 	private void init(IWContext iwc) {
-		bundle = getBundle(iwc);
-		iwrb = bundle.getResourceBundle(iwc);
-		localeId = iwc.getCurrentLocaleId();
+		this.bundle = getBundle(iwc);
+		this.iwrb = this.bundle.getResourceBundle(iwc);
+		this.localeId = iwc.getCurrentLocaleId();
 		try {
 			String sSelCat = iwc.getParameter(SELECTED_CATEGORY);
 			if (sSelCat != null) {
-				_selectedCategory = Integer.parseInt(sSelCat);
-				_productCategory =
+				this._selectedCategory = Integer.parseInt(sSelCat);
+				this._productCategory =
 					(
 						(com.idega.block.trade.stockroom.data.ProductCategoryHome) com.idega.data.IDOLookup.getHomeLegacy(
 							ProductCategory.class)).findByPrimaryKeyLegacy(
-						_selectedCategory);
+						this._selectedCategory);
 			}
-			_categories = getProductBusiness(iwc).getProductCategories();
+			this._categories = getProductBusiness(iwc).getProductCategories();
 		}
 		catch (Exception e) {
 			e.printStackTrace(System.err);
-			_categories = new Vector();
+			this._categories = new Vector();
 		}
 	}
 	public String getBundleIdentifier() {
@@ -103,12 +104,13 @@ public class ProductCategoryEditor extends CategoryWindow {
 	}
 	private void viewCategory(IWContext iwc) throws RemoteException {
 		try {
-			String sFilter = iwc.getParameter(this._parameterProductFilter);
-			String sLocale = iwc.getParameter(this._parameterLocale);
+			String sFilter = iwc.getParameter(ProductCategoryEditor._parameterProductFilter);
+			String sLocale = iwc.getParameter(ProductCategoryEditor._parameterLocale);
 			int iFilter = -1;
 			int iLocale = -1;
-			if (sFilter != null)
+			if (sFilter != null) {
 				iFilter = Integer.parseInt(sFilter);
+			}
 			if (sLocale != null) {
 				if (sLocale.equals("-1")) {
 					iLocale = -1;
@@ -123,20 +125,20 @@ public class ProductCategoryEditor extends CategoryWindow {
 			}
 			int defaultLocaleID = ICLocaleBusiness.getLocaleId(iwc.getIWMainApplication().getSettings().getDefaultLocale());
 
-			List products = getProductBusiness(iwc).getProducts(_productCategory);
+			List products = getProductBusiness(iwc).getProducts(this._productCategory);
 			Collection allProducts = ((ProductHome) IDOLookup.getHome(Product.class)).findProducts(-1, -1, null, null, null, iLocale, iFilter);
 
 			allProducts.removeAll(products);
-			SelectionDoubleBox sdb = new SelectionDoubleBox(this._parameterProductOut, this._parameterProductIn);
+			SelectionDoubleBox sdb = new SelectionDoubleBox(ProductCategoryEditor._parameterProductOut, ProductCategoryEditor._parameterProductIn);
 			/** @todo Sortera productin */
 			Product product;
 			Iterator iter = allProducts.iterator();
 			String productName;
 			while (iter.hasNext()) {
 				product = (Product) iter.next();
-				productName = product.getProductName(localeId, defaultLocaleID, null);
+				productName = product.getProductName(this.localeId, defaultLocaleID, null);
 				if (productName == null) {
-					productName = iwrb.getLocalizedString("trade.not_localized", "Not localized");
+					productName = this.iwrb.getLocalizedString("trade.not_localized", "Not localized");
 				}
 				//        product = (Product) iter.next();
 				sdb.getLeftBox().addMenuElement(((Integer) product.getPrimaryKey()).intValue(), productName);
@@ -145,49 +147,49 @@ public class ProductCategoryEditor extends CategoryWindow {
 			while (iter.hasNext()) {
 				//        product = getProductHome().findByPrimaryKey(iter.next());
 				product = (Product) iter.next();
-				productName = product.getProductName(localeId, null);
+				productName = product.getProductName(this.localeId, null);
 				if (productName == null) {
-					productName = iwrb.getLocalizedString("trade.not_localized", "Not localized");
+					productName = this.iwrb.getLocalizedString("trade.not_localized", "Not localized");
 				}
 				sdb.getRightBox().addMenuElement(((Integer) product.getPrimaryKey()).intValue(), productName);
 			}
 			sdb.getRightBox().selectAllOnSubmit();
-			sdb.getLeftBox().setHeight(height);
-			sdb.getRightBox().setHeight(height);
+			sdb.getLeftBox().setHeight(this.height);
+			sdb.getRightBox().setHeight(this.height);
 			sdb.getLeftBox().setWidth("130");
 			sdb.getRightBox().setWidth("130");
 			//sdb.getLeftBox().setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE + "width:130px");
 			//sdb.getRightBox().setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE + "width:130px");
-			SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("save", "Save"), this._action, this._parameterSaveCategory);
-			SubmitButton close = new SubmitButton(iwrb.getLocalizedImageButton("close", "Close"), this._action, this._parameterClose);
-			DropdownMenu filter = new DropdownMenu(this._parameterProductFilter);
-			filter.addMenuElement(-1, iwrb.getLocalizedString("trade.all_products", "All products"));
+			SubmitButton save = new SubmitButton(this.iwrb.getLocalizedImageButton("save", "Save"), ProductCategoryEditor._action, ProductCategoryEditor._parameterSaveCategory);
+			SubmitButton close = new SubmitButton(this.iwrb.getLocalizedImageButton("close", "Close"), ProductCategoryEditor._action, ProductCategoryEditor._parameterClose);
+			DropdownMenu filter = new DropdownMenu(ProductCategoryEditor._parameterProductFilter);
+			filter.addMenuElement(-1, this.iwrb.getLocalizedString("trade.all_products", "All products"));
 			filter.addMenuElement(
 				getProductHome().getProductFilterNotConnectedToAnyProductCategory(),
-				iwrb.getLocalizedString("trade.unused_products_only", "Unused products only"));
+				this.iwrb.getLocalizedString("trade.unused_products_only", "Unused products only"));
 			if (sFilter != null) {
 				filter.setSelectedElement(sFilter);
 			}
 			DropdownMenu loc = LocalePresentationUtil.getAvailableLocalesDropdown(iwc.getIWMainApplication(), _parameterLocale);
-			loc.addMenuElementFirst("-1", iwrb.getLocalizedString("all_locales", "All locales"));
+			loc.addMenuElementFirst("-1", this.iwrb.getLocalizedString("all_locales", "All locales"));
 			loc.setToSubmit();
 			loc.setSelectedElement(sLocale);
 			//      super.addRight(iwrb.getLocalizedString("trade.product_filter","Product filter"), filter, false, true);
-			super.addRight(iwrb.getLocalizedString("only_show_products_localized_in", "Only show products localized in")+" :", loc, true, true);
-			this.addHiddenInput(new HiddenInput(this.SELECTED_CATEGORY, Integer.toString(this._selectedCategory)));
+			super.addRight(this.iwrb.getLocalizedString("only_show_products_localized_in", "Only show products localized in")+" :", loc, true, true);
+			this.addHiddenInput(new HiddenInput(ProductCategoryEditor.SELECTED_CATEGORY, Integer.toString(this._selectedCategory)));
 			super.maintainClearCacheKeyInForm(iwc);
 			sdb.addToScripts(this.getParentPage().getAssociatedScript());
 			GenericButton add = sdb.getRightButton();
 			add.setOnClick("move( this.form." + sdb.getLeftBox().getName() + ", this.form." + sdb.getRightBox().getName() + " )");
 			GenericButton remove = sdb.getLeftButton();
 			remove.setOnClick("move( this.form." + sdb.getRightBox().getName() + ", this.form." + sdb.getLeftBox().getName() + " )");
-			super.addLeft(iwrb.getLocalizedString("available_products", "Available products"), sdb.getLeftBox(), true);
-			super.addLeft(iwrb.getLocalizedString("add_selected", "Add selected") + Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE, add, false);
+			super.addLeft(this.iwrb.getLocalizedString("available_products", "Available products"), sdb.getLeftBox(), true);
+			super.addLeft(this.iwrb.getLocalizedString("add_selected", "Add selected") + Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE, add, false);
 			super.addLeft(
-				iwrb.getLocalizedString("remove_selected", "Remove selected") + Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE,
+				this.iwrb.getLocalizedString("remove_selected", "Remove selected") + Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE,
 				remove,
 				false);
-			super.addLeft(iwrb.getLocalizedString("selected_products", "Selected products"), sdb.getRightBox(), true);
+			super.addLeft(this.iwrb.getLocalizedString("selected_products", "Selected products"), sdb.getRightBox(), true);
 			super.addSubmitButton(close);
 			super.addSubmitButton(save);
 		}
@@ -196,19 +198,19 @@ public class ProductCategoryEditor extends CategoryWindow {
 		}
 	}
 	private void saveAssignment(IWContext iwc) throws RemoteException {
-		String[] in = iwc.getParameterValues(this._parameterProductIn);
+		String[] in = iwc.getParameterValues(ProductCategoryEditor._parameterProductIn);
 		TransactionManager tm = IdegaTransactionManager.getInstance();
 		try {
 			tm.begin();
-			List products = EntityFinder.getInstance().findRelated(_productCategory, Product.class);
-			_productCategory.removeProducts(products);
+			List products = EntityFinder.getInstance().findRelated(this._productCategory, Product.class);
+			this._productCategory.removeProducts(products);
 			if (in != null) {
 				for (int i = 0; i < in.length; i++) {
-					_productCategory.addTo(Product.class, Integer.parseInt(in[i]));
+					this._productCategory.addTo(Product.class, Integer.parseInt(in[i]));
 				}
 			}
 			tm.commit();
-			iwc.getIWMainApplication().getIWCacheManager().invalidateCache(ProductCatalog.CACHE_KEY);
+			IWMainApplication.getIWCacheManager().invalidateCache(ProductCatalog.CACHE_KEY);
 		}
 		catch (Exception e) {
 			e.printStackTrace(System.err);

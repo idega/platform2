@@ -18,8 +18,8 @@ public class IndexReaderCache {
 		long modified; // reader's mod. date
 		
 		CachedIndex(String name) throws IOException {
-			modified = IndexReader.lastModified(name); // get mod. date
-			reader = IndexReader.open(name); // open reader
+			this.modified = IndexReader.lastModified(name); // get mod. date
+			this.reader = IndexReader.open(name); // open reader
 		}
 		
 	}
@@ -29,8 +29,9 @@ public class IndexReaderCache {
 //		 look in cache
 			CachedIndex index = (CachedIndex) indexCache.get(name);
 		if (index != null && // check up-to-date
-		 (index.modified == IndexReader.lastModified(name)))
+		 (index.modified == IndexReader.lastModified(name))) {
 			return index.reader; // cache hit
+		}
 		else {
 			System.out.println("create new");
 			index = new CachedIndex(name); // cache miss

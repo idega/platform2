@@ -29,20 +29,20 @@ public class CriteriaExpression implements DynamicExpression {
 	private Map idCriterionMap = new LinkedHashMap(0);
 	
 	public CriteriaExpression(QueryBooleanExpressionPart booleanExpressionPart) {
-		booleanExpression = booleanExpressionPart.getBooleanExpression();
+		this.booleanExpression = booleanExpressionPart.getBooleanExpression();
 	}
 	
 	public void add(CriterionExpression criterion)	{
 		// criteria is dynamic if it contains at least one dynamic criterion
-		isDynamic = isDynamic || criterion.isDynamic();
-		idCriterionMap.put(criterion.getId(), criterion);
+		this.isDynamic = this.isDynamic || criterion.isDynamic();
+		this.idCriterionMap.put(criterion.getId(), criterion);
 	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.block.dataquery.data.sql.DynamicExpression#isDynamic()
 	 */
 	public boolean isDynamic() {
-		return isDynamic;
+		return this.isDynamic;
 	}
 
 	/* (non-Javadoc)
@@ -54,7 +54,7 @@ public class CriteriaExpression implements DynamicExpression {
 	 */
 	public Map getIdentifierInputDescriptionMap() {
 		Map resultMap = new LinkedHashMap();
-		Iterator iterator = idCriterionMap.values().iterator();
+		Iterator iterator = this.idCriterionMap.values().iterator();
 		while(iterator.hasNext())	{
 			CriterionExpression expression = (CriterionExpression) iterator.next();
 			if (expression.isDynamic())	{
@@ -66,7 +66,7 @@ public class CriteriaExpression implements DynamicExpression {
 
 	public Map getIdentifierValueMap() {
 		Map resultMap = new LinkedHashMap();
-		Iterator iterator = idCriterionMap.values().iterator();
+		Iterator iterator = this.idCriterionMap.values().iterator();
 		while(iterator.hasNext())	{
 			CriterionExpression expression = (CriterionExpression) iterator.next();
 			if (expression.isDynamic())	{
@@ -79,7 +79,7 @@ public class CriteriaExpression implements DynamicExpression {
 	
 	
 	public void setIdentifierValueMap(Map identifierValueMap) {
-		Iterator iterator = idCriterionMap.values().iterator();
+		Iterator iterator = this.idCriterionMap.values().iterator();
 		while(iterator.hasNext())	{
 			CriterionExpression expression = (CriterionExpression) iterator.next();
 			if (expression.isDynamic())	{
@@ -93,7 +93,7 @@ public class CriteriaExpression implements DynamicExpression {
 	 */
 	public String toSQLString() {
 		Map replaceMap = new HashMap();
-		Iterator iterator = idCriterionMap.entrySet().iterator();
+		Iterator iterator = this.idCriterionMap.entrySet().iterator();
 		while (iterator.hasNext())	{
 			Map.Entry entry = (Map.Entry) iterator.next();
 			String key = (String) entry.getKey();
@@ -101,12 +101,12 @@ public class CriteriaExpression implements DynamicExpression {
 			String value = criterion.toSQLString();
 			StringBuffer buffer = new StringBuffer(LEFT_BRACKET);
 			buffer.append(value).append(RIGHT_BRACKET);
-			replaceMap.putAll(StringHandler.getReplaceMapIgnoreCase(booleanExpression, key, buffer.toString())); 
+			replaceMap.putAll(StringHandler.getReplaceMapIgnoreCase(this.booleanExpression, key, buffer.toString())); 
 		}
 		// replace the booleanExpression
 		int index = 0;
 		StringBuffer buffer = new StringBuffer();
-		while (index < booleanExpression.length()) {
+		while (index < this.booleanExpression.length()) {
 			Integer indexInt = new Integer(index);
 			String replace = null;
 			if (replaceMap.containsKey(indexInt)) {
@@ -114,7 +114,7 @@ public class CriteriaExpression implements DynamicExpression {
 				index++;
 			}
 			else {
-				replace = booleanExpression.substring(index, ++index);
+				replace = this.booleanExpression.substring(index, ++index);
 			}
 			if (replace != null) {
 				buffer.append(replace);

@@ -191,8 +191,9 @@ public class BSHEngineBean extends IBOServiceBean implements BSHEngine{
 
 
 	public String getBshVersion() {
-		if (bshVersion != null)
-			return bshVersion;
+		if (this.bshVersion != null) {
+			return this.bshVersion;
+		}
 
 		/*
 		 * We have included a getVersion() command to detect the version of bsh. If bsh is packaged in the WAR file it could access it directly as a
@@ -203,13 +204,13 @@ public class BSHEngineBean extends IBOServiceBean implements BSHEngine{
 		Interpreter bsh = new Interpreter();
 		try {
 			bsh.eval(new InputStreamReader(BshServlet.class.getResource("getVersion.bsh").openStream()));
-			bshVersion = (String) bsh.eval("getVersion()");
+			this.bshVersion = (String) bsh.eval("getVersion()");
 		}
 		catch (Exception e) {
-			bshVersion = "BeanShell: unknown version";
+			this.bshVersion = "BeanShell: unknown version";
 		}
 
-		return bshVersion;
+		return this.bshVersion;
 	}
 
 	/*

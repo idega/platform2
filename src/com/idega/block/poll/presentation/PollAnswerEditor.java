@@ -67,13 +67,13 @@ public PollAnswerEditor(){
 
      */
 
-    isAdmin = true; //AccessControl.hasEditPermission(this,iwc);
+    this.isAdmin = true; //AccessControl.hasEditPermission(this,iwc);
 
-    iwb = getBundle(iwc);
+    this.iwb = getBundle(iwc);
 
-    iwrb = getResourceBundle(iwc);
+    this.iwrb = getResourceBundle(iwc);
 
-    addTitle(iwrb.getLocalizedString("poll_answer_editor","Poll Answer Editor"));
+    addTitle(this.iwrb.getLocalizedString("poll_answer_editor","Poll Answer Editor"));
 
     Locale currentLocale = iwc.getCurrentLocale();
     Locale chosenLocale;
@@ -103,7 +103,7 @@ public PollAnswerEditor(){
 
 
 
-    if ( isAdmin ) {
+    if ( this.isAdmin ) {
 
       processForm(iwc, iLocaleId, sLocaleId);
 
@@ -125,15 +125,15 @@ public PollAnswerEditor(){
 
       try {
 
-        pollQuestionID = Integer.parseInt(iwc.getParameter(PollBusiness._PARAMETER_POLL_QUESTION));
+        this.pollQuestionID = Integer.parseInt(iwc.getParameter(PollBusiness._PARAMETER_POLL_QUESTION));
 
-        iwc.setSessionAttribute(PollBusiness._PARAMETER_POLL_QUESTION,Integer.toString(pollQuestionID));
+        iwc.setSessionAttribute(PollBusiness._PARAMETER_POLL_QUESTION,Integer.toString(this.pollQuestionID));
 
       }
 
       catch (NumberFormatException e) {
 
-        pollQuestionID = -1;
+        this.pollQuestionID = -1;
 
       }
 
@@ -143,13 +143,13 @@ public PollAnswerEditor(){
 
       try {
 
-        pollQuestionID = Integer.parseInt((String) iwc.getSessionAttribute(PollBusiness._PARAMETER_POLL_QUESTION));
+        this.pollQuestionID = Integer.parseInt((String) iwc.getSessionAttribute(PollBusiness._PARAMETER_POLL_QUESTION));
 
       }
 
       catch (NumberFormatException e) {
 
-        pollQuestionID = -1;
+        this.pollQuestionID = -1;
 
       }
 
@@ -161,15 +161,15 @@ public PollAnswerEditor(){
 
       try {
 
-        pollAnswerID = Integer.parseInt(iwc.getParameter(PollBusiness._PARAMETER_POLL_ANSWER));
+        this.pollAnswerID = Integer.parseInt(iwc.getParameter(PollBusiness._PARAMETER_POLL_ANSWER));
 
-        iwc.setSessionAttribute(PollBusiness._PARAMETER_POLL_ANSWER,Integer.toString(pollAnswerID));
+        iwc.setSessionAttribute(PollBusiness._PARAMETER_POLL_ANSWER,Integer.toString(this.pollAnswerID));
 
       }
 
       catch (NumberFormatException e) {
 
-        pollAnswerID = -1;
+        this.pollAnswerID = -1;
 
       }
 
@@ -189,13 +189,13 @@ public PollAnswerEditor(){
 
       try {
 
-        pollAnswerID = Integer.parseInt((String) iwc.getSessionAttribute(PollBusiness._PARAMETER_POLL_ANSWER));
+        this.pollAnswerID = Integer.parseInt((String) iwc.getSessionAttribute(PollBusiness._PARAMETER_POLL_ANSWER));
 
       }
 
       catch (NumberFormatException e) {
 
-        pollAnswerID = -1;
+        this.pollAnswerID = -1;
 
       }
 
@@ -221,7 +221,7 @@ public PollAnswerEditor(){
 
 
 
-    if ( pollAnswerID != -1 ) {
+    if ( this.pollAnswerID != -1 ) {
 
       if ( iwc.getParameter(PollBusiness._PARAMETER_DELETE) != null ) {
 
@@ -231,7 +231,7 @@ public PollAnswerEditor(){
 
       else {
 
-        update = true;
+        this.update = true;
 
       }
 
@@ -247,7 +247,7 @@ public PollAnswerEditor(){
 
   private void initializeFields(int iLocaleID) {
 
-    String pollAnswer = PollBusiness.getLocalizedAnswer(pollAnswerID,iLocaleID);
+    String pollAnswer = PollBusiness.getLocalizedAnswer(this.pollAnswerID,iLocaleID);
 
 
 
@@ -257,7 +257,7 @@ public PollAnswerEditor(){
 
       localeDrop.setSelectedElement(Integer.toString(iLocaleID));
 
-    addLeft(iwrb.getLocalizedString("locale","Locale")+": ",localeDrop,false);
+    addLeft(this.iwrb.getLocalizedString("locale","Locale")+": ",localeDrop,false);
 
 
 
@@ -265,7 +265,7 @@ public PollAnswerEditor(){
 
       questionInput.setLength(40);
 
-      if ( update && pollAnswer != null ) {
+      if ( this.update && pollAnswer != null ) {
 
         questionInput.setContent(pollAnswer);
 
@@ -273,19 +273,19 @@ public PollAnswerEditor(){
 
 
 
-    addLeft(iwrb.getLocalizedString("answer","Answer")+":",questionInput,true);
+    addLeft(this.iwrb.getLocalizedString("answer","Answer")+":",questionInput,true);
 
-    addHiddenInput(new HiddenInput(PollBusiness._PARAMETER_POLL_QUESTION,Integer.toString(pollQuestionID)));
+    addHiddenInput(new HiddenInput(PollBusiness._PARAMETER_POLL_QUESTION,Integer.toString(this.pollQuestionID)));
 
-    addHiddenInput(new HiddenInput(PollBusiness._PARAMETER_POLL_ANSWER,Integer.toString(pollAnswerID)));
+    addHiddenInput(new HiddenInput(PollBusiness._PARAMETER_POLL_ANSWER,Integer.toString(this.pollAnswerID)));
 
     addHiddenInput(new HiddenInput("iLocaleID",Integer.toString(iLocaleID)));
 
 
 
-    addSubmitButton(new SubmitButton(iwrb.getLocalizedImageButton("close","CLOSE"),PollBusiness._PARAMETER_MODE,PollBusiness._PARAMETER_CLOSE));
+    addSubmitButton(new SubmitButton(this.iwrb.getLocalizedImageButton("close","CLOSE"),PollBusiness._PARAMETER_MODE,PollBusiness._PARAMETER_CLOSE));
 
-    addSubmitButton(new SubmitButton(iwrb.getLocalizedImageButton("save","SAVE"),PollBusiness._PARAMETER_MODE,PollBusiness._PARAMETER_SAVE));
+    addSubmitButton(new SubmitButton(this.iwrb.getLocalizedImageButton("save","SAVE"),PollBusiness._PARAMETER_MODE,PollBusiness._PARAMETER_SAVE));
 
   }
 
@@ -305,7 +305,7 @@ public PollAnswerEditor(){
 
   private void savePollAnswer(IWContext iwc,int iLocaleID) {
 
-    String pollAnswerString = iwc.getParameter(this.prmAnswerParameter);
+    String pollAnswerString = iwc.getParameter(PollAnswerEditor.prmAnswerParameter);
 
     String localeString = iwc.getParameter("iLocaleID");
 
@@ -313,7 +313,7 @@ public PollAnswerEditor(){
 
     if ( pollAnswerString == null || pollAnswerString.length() == 0 ) {
 
-      pollAnswerString = iwrb.getLocalizedString("no_text","No answer entered");
+      pollAnswerString = this.iwrb.getLocalizedString("no_text","No answer entered");
 
     }
 
@@ -321,13 +321,13 @@ public PollAnswerEditor(){
 
     if ( localeString != null ) {
 
-      pollAnswerID = PollBusiness.savePollAnswer(pollQuestionID,pollAnswerID,pollAnswerString,Integer.parseInt(localeString));
+      this.pollAnswerID = PollBusiness.savePollAnswer(this.pollQuestionID,this.pollAnswerID,pollAnswerString,Integer.parseInt(localeString));
 
     }
 
 
 
-    iwc.setSessionAttribute(PollBusiness._PARAMETER_POLL_ANSWER,Integer.toString(pollAnswerID));
+    iwc.setSessionAttribute(PollBusiness._PARAMETER_POLL_ANSWER,Integer.toString(this.pollAnswerID));
 
   }
 
@@ -335,7 +335,7 @@ public PollAnswerEditor(){
 
   private void deletePollQuestion() {
 
-    PollBusiness.deletePollAnswer(pollAnswerID);
+    PollBusiness.deletePollAnswer(this.pollAnswerID);
 
     setParentToReload();
 

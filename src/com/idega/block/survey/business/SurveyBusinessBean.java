@@ -61,12 +61,12 @@ public class SurveyBusinessBean extends IBOServiceBean implements SurveyBusiness
 	}
 	
 	private void initializeHomes() throws IDOLookupException{
-		surveyHome = (SurveyEntityHome)IDOLookup.getHome(SurveyEntity.class);
-		answerHome = (SurveyAnswerHome)IDOLookup.getHome(SurveyAnswer.class);
-		questionHome = (SurveyQuestionHome)IDOLookup.getHome(SurveyQuestion.class);
-		surveyReplyHome = (SurveyReplyHome)IDOLookup.getHome(SurveyReply.class);		
-		surveyParticipantHome = (SurveyParticipantHome)IDOLookup.getHome(SurveyParticipant.class);		
-		statHome = (SurveyStatusHome) IDOLookup.getHome(SurveyStatus.class);
+		this.surveyHome = (SurveyEntityHome)IDOLookup.getHome(SurveyEntity.class);
+		this.answerHome = (SurveyAnswerHome)IDOLookup.getHome(SurveyAnswer.class);
+		this.questionHome = (SurveyQuestionHome)IDOLookup.getHome(SurveyQuestion.class);
+		this.surveyReplyHome = (SurveyReplyHome)IDOLookup.getHome(SurveyReply.class);		
+		this.surveyParticipantHome = (SurveyParticipantHome)IDOLookup.getHome(SurveyParticipant.class);		
+		this.statHome = (SurveyStatusHome) IDOLookup.getHome(SurveyStatus.class);
 	}
 	
 	public SurveyEntity createSurvey(InformationFolder folder, String name, String description, IWTimestamp startTime, IWTimestamp endTime) throws IDOLookupException, CreateException{
@@ -211,57 +211,57 @@ public class SurveyBusinessBean extends IBOServiceBean implements SurveyBusiness
 	 * @return
 	 */
 	public SurveyAnswerHome getAnswerHome() throws IDOLookupException {
-		if(answerHome==null){
+		if(this.answerHome==null){
 			initializeHomes();
 		}
-		return answerHome;
+		return this.answerHome;
 	}
 
 	/**
 	 * @return
 	 */
 	public SurveyEntityHome getSurveyHome() throws IDOLookupException {
-		if(surveyHome==null){
+		if(this.surveyHome==null){
 			initializeHomes();
 		}
-		return surveyHome;
+		return this.surveyHome;
 	}
 
 	/**
 	 * @return
 	 */
 	public SurveyQuestionHome getQuestionHome() throws IDOLookupException {
-		if(questionHome==null){
+		if(this.questionHome==null){
 			initializeHomes();
 		}
-		return questionHome;
+		return this.questionHome;
 	}
 
 	/**
 	 * @return
 	 */
 	public SurveyReplyHome getSurveyReplyHome() throws IDOLookupException {
-		if(surveyReplyHome==null){
+		if(this.surveyReplyHome==null){
 			initializeHomes();
 		}
-		return surveyReplyHome;
+		return this.surveyReplyHome;
 	}
 	
 	/**
 	 * @return
 	 */
 	public SurveyParticipantHome getSurveyParticipantHome() throws IDOLookupException {
-		if(surveyParticipantHome==null){
+		if(this.surveyParticipantHome==null){
 			initializeHomes();
 		}
-		return surveyParticipantHome;
+		return this.surveyParticipantHome;
 	}
 	
 	public SurveyStatusHome getSurveyStatusHome() throws IDOLookupException {
-		if(statHome==null){
+		if(this.statHome==null){
 			initializeHomes();
 		}
-		return statHome;
+		return this.statHome;
 	}
 	/* (non-Javadoc)
 	 * @see com.idega.block.survey.business.SurveyBusiness#reportParticipation(com.idega.block.survey.data.SurveyEntity, java.lang.String)
@@ -276,10 +276,10 @@ public class SurveyBusinessBean extends IBOServiceBean implements SurveyBusiness
 	
 	public SurveyStatus getSurveyStatus(SurveyEntity survey) {
 		try {
-			return statHome.findBySurvey(survey);
+			return this.statHome.findBySurvey(survey);
 		} catch (FinderException e) {
 			try {
-				SurveyStatus status = statHome.create();
+				SurveyStatus status = this.statHome.create();
 				status.setSurvey(survey);
 				status.setIsModified(true);
 				status.store();

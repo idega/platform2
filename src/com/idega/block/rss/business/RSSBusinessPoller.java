@@ -150,8 +150,8 @@ public class RSSBusinessPoller implements IWBundleStartable {
 			int numItems = items.size();
 			for(int i=0; i<numItems; i++) {
 				Element item = (Element) items.get(i);
-				Element eTitle = (Element) item.getChild("title", item.getNamespace());
-				Element eLink = (Element) item.getChild("link", item.getNamespace());
+				Element eTitle = item.getChild("title", item.getNamespace());
+				Element eLink = item.getChild("link", item.getNamespace());
 				if(eTitle==null || eLink==null) {
 					continue;
 				}
@@ -207,7 +207,7 @@ public class RSSBusinessPoller implements IWBundleStartable {
 			}
 		}
 		_instance = this;
-		bundle_ = starterBundle;
+		this.bundle_ = starterBundle;
 		if (tManager==null) {
 			tManager = new TimerManager();
 		}
@@ -242,15 +242,15 @@ public class RSSBusinessPoller implements IWBundleStartable {
 	 * @return An instance of RSSBusiness
 	 */
 	private RSSBusiness getBusiness() {
-		if(_business==null) {
+		if(this._business==null) {
 			try {
 				RSSBusinessHome businessHome = new RSSBusinessHomeImpl();
-				_business = businessHome.create();
+				this._business = businessHome.create();
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
 		}
-		return _business;
+		return this._business;
 	}
 	
 	private RSSBusiness _business = null;

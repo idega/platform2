@@ -1,5 +1,5 @@
 /*
- * $Id: CaseBMPBean.java,v 1.52 2005/10/13 18:20:38 laddi Exp $
+ * $Id: CaseBMPBean.java,v 1.52.2.1 2007/01/12 19:32:38 idegaweb Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -185,7 +185,7 @@ public final class CaseBMPBean extends com.idega.data.GenericEntity implements C
 	}
 	public void setCode(String caseCode)
 	{
-		setColumn(this.COLUMN_CASE_CODE, caseCode);
+		setColumn(CaseBMPBean.COLUMN_CASE_CODE, caseCode);
 	}
 	public String getCode()
 	{
@@ -193,7 +193,7 @@ public final class CaseBMPBean extends com.idega.data.GenericEntity implements C
 	}
 	public void setCaseCode(CaseCode caseCode)
 	{
-		setColumn(this.COLUMN_CASE_CODE, caseCode);
+		setColumn(CaseBMPBean.COLUMN_CASE_CODE, caseCode);
 	}
 	public CaseCode getCaseCode()
 	{
@@ -201,7 +201,7 @@ public final class CaseBMPBean extends com.idega.data.GenericEntity implements C
 	}
 	public void setCaseStatus(CaseStatus status)
 	{
-		setColumn(this.COLUMN_CASE_STATUS, status);
+		setColumn(CaseBMPBean.COLUMN_CASE_STATUS, status);
 	}
 	public CaseStatus getCaseStatus()
 	{
@@ -209,7 +209,7 @@ public final class CaseBMPBean extends com.idega.data.GenericEntity implements C
 	}
 	public void setStatus(String status)
 	{
-		setColumn(this.COLUMN_CASE_STATUS, status);
+		setColumn(CaseBMPBean.COLUMN_CASE_STATUS, status);
 	}
 	public String getStatus()
 	{
@@ -217,7 +217,7 @@ public final class CaseBMPBean extends com.idega.data.GenericEntity implements C
 	}
 	public void setCreated(Timestamp statusChanged)
 	{
-		setColumn(this.COLUMN_CREATED, statusChanged);
+		setColumn(CaseBMPBean.COLUMN_CREATED, statusChanged);
 	}
 	public Timestamp getCreated()
 	{
@@ -226,12 +226,12 @@ public final class CaseBMPBean extends com.idega.data.GenericEntity implements C
 	public void setParentCase(Case theCase)
 	{
 		//throw new java.lang.UnsupportedOperationException("setParentCase() not implemented yet");
-		this.setColumn(this.COLUMN_PARENT_CASE, theCase);
+		this.setColumn(CaseBMPBean.COLUMN_PARENT_CASE, theCase);
 	}
 	public Case getParentCase()
 	{
 		//return (Case)super.getParentNode();
-		return (Case) getColumnValue(this.COLUMN_PARENT_CASE);
+		return (Case) getColumnValue(CaseBMPBean.COLUMN_PARENT_CASE);
 	}
 	public void setOwner(User owner)
 	{
@@ -239,11 +239,11 @@ public final class CaseBMPBean extends com.idega.data.GenericEntity implements C
 	}
 	public Group getHandler()
 	{
-		return (Group) this.getColumnValue(this.COLUMN_HANDLER);
+		return (Group) this.getColumnValue(CaseBMPBean.COLUMN_HANDLER);
 	}
 	public int getHandlerId()
 	{
-		return this.getIntColumnValue(this.COLUMN_HANDLER);
+		return this.getIntColumnValue(CaseBMPBean.COLUMN_HANDLER);
 	}
 	
 	public void setHandler(Group handler)
@@ -256,7 +256,7 @@ public final class CaseBMPBean extends com.idega.data.GenericEntity implements C
 	}
 	public User getOwner()
 	{
-		return (User) this.getColumnValue(this.COLUMN_USER);
+		return (User) this.getColumnValue(CaseBMPBean.COLUMN_USER);
 	}
 	
 	
@@ -490,7 +490,7 @@ public final class CaseBMPBean extends com.idega.data.GenericEntity implements C
 	
 	public Collection ejbFindSubCasesUnder(Case theCase) throws FinderException
 	{
-		return (Collection) super.idoFindPKsByQuery(idoQueryGetSubCasesUnder(theCase));
+		return super.idoFindPKsByQuery(idoQueryGetSubCasesUnder(theCase));
 	}
 	
 	protected IDOQuery idoQueryGetCountSubCasesUnder(Case theCase)

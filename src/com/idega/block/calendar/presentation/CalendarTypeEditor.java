@@ -75,13 +75,13 @@ public CalendarTypeEditor(){
 
      */
 
-    _isAdmin = true; //AccessControl.hasEditPermission(this,iwc);
+    this._isAdmin = true; //AccessControl.hasEditPermission(this,iwc);
 
-    _iwb = iwc.getIWMainApplication().getBundle(Builderaware.IW_CORE_BUNDLE_IDENTIFIER);
+    this._iwb = iwc.getIWMainApplication().getBundle(Builderaware.IW_CORE_BUNDLE_IDENTIFIER);
 
-    _iwrb = getResourceBundle(iwc);
+    this._iwrb = getResourceBundle(iwc);
 
-    addTitle(_iwrb.getLocalizedString("calendar_type_editor","Calendar Type Editor"));
+    addTitle(this._iwrb.getLocalizedString("calendar_type_editor","Calendar Type Editor"));
 
     Locale currentLocale = iwc.getCurrentLocale();
     Locale chosenLocale;
@@ -111,7 +111,7 @@ public CalendarTypeEditor(){
 
 
 
-    if ( _isAdmin ) {
+    if ( this._isAdmin ) {
 
       processForm(iwc, iLocaleId);
 
@@ -133,13 +133,13 @@ public CalendarTypeEditor(){
 
       try {
 
-        _typeID = Integer.parseInt(iwc.getParameter(CalendarParameters.PARAMETER_TYPE_ID));
+        this._typeID = Integer.parseInt(iwc.getParameter(CalendarParameters.PARAMETER_TYPE_ID));
 
       }
 
       catch (NumberFormatException e) {
 
-        _typeID = -1;
+        this._typeID = -1;
 
       }
 
@@ -165,17 +165,17 @@ public CalendarTypeEditor(){
 
 
 
-    if ( _typeID == -1 && iwc.getSessionAttribute(CalendarParameters.PARAMETER_TYPE_ID) != null ) {
+    if ( this._typeID == -1 && iwc.getSessionAttribute(CalendarParameters.PARAMETER_TYPE_ID) != null ) {
 
       try {
 
-        _typeID = Integer.parseInt((String)iwc.getSessionAttribute(CalendarParameters.PARAMETER_TYPE_ID));
+        this._typeID = Integer.parseInt((String)iwc.getSessionAttribute(CalendarParameters.PARAMETER_TYPE_ID));
 
       }
 
       catch (NumberFormatException e) {
 
-        _typeID = -1;
+        this._typeID = -1;
 
       }
 
@@ -185,7 +185,7 @@ public CalendarTypeEditor(){
 
 
 
-    if ( _typeID != -1 ) {
+    if ( this._typeID != -1 ) {
 
       if ( iwc.getParameter(CalendarParameters.PARAMETER_MODE_DELETE) != null ) {
 
@@ -195,7 +195,7 @@ public CalendarTypeEditor(){
 
       else {
 
-        _update = true;
+        this._update = true;
 
       }
 
@@ -213,17 +213,17 @@ public CalendarTypeEditor(){
 
     CalendarEntryType type = null;
 
-    if ( _update )
-
-      type = CalendarFinder.getInstance().getEntryType(_typeID);
+    if ( this._update ) {
+		type = CalendarFinder.getInstance().getEntryType(this._typeID);
+	}
 
 
 
     String[] locStrings = null;
 
-    if ( type != null )
-
-      locStrings = TextFinder.getLocalizedString(type,iLocaleID);
+    if ( type != null ) {
+		locStrings = TextFinder.getLocalizedString(type,iLocaleID);
+	}
 
 
 
@@ -233,7 +233,7 @@ public CalendarTypeEditor(){
 
       localeDrop.setSelectedElement(Integer.toString(iLocaleID));
 
-    addLeft(_iwrb.getLocalizedString("locale","Locale")+": ",localeDrop,false);
+    addLeft(this._iwrb.getLocalizedString("locale","Locale")+": ",localeDrop,false);
 
 
 
@@ -253,9 +253,9 @@ public CalendarTypeEditor(){
 
       entryTypes.setMarkupAttribute("style",STYLE);
 
-      if ( _typeID != -1 )
-
-        entryTypes.setSelectedElement(Integer.toString(_typeID));
+      if ( this._typeID != -1 ) {
+		entryTypes.setSelectedElement(Integer.toString(this._typeID));
+	}
 
     typesTable.add(entryTypes,1,1);
 
@@ -263,7 +263,7 @@ public CalendarTypeEditor(){
 
 
 
-    Image newImage = _iwb.getImage("shared/create.gif",_iwrb.getLocalizedString("new_type","New type"));
+    Image newImage = this._iwb.getImage("shared/create.gif",this._iwrb.getLocalizedString("new_type","New type"));
 
     Link newLink = new Link(newImage);
 
@@ -271,19 +271,19 @@ public CalendarTypeEditor(){
 
 
 
-    Image deleteImage = _iwb.getImage("shared/delete.gif",_iwrb.getLocalizedString("delete_type","Delete type"));
+    Image deleteImage = this._iwb.getImage("shared/delete.gif",this._iwrb.getLocalizedString("delete_type","Delete type"));
 
     Link deleteLink = new Link(deleteImage);
 
       deleteLink.addParameter(CalendarParameters.PARAMETER_MODE_DELETE,CalendarParameters.PARAMETER_TRUE);
 
-      deleteLink.addParameter(CalendarParameters.PARAMETER_TYPE_ID,_typeID);
+      deleteLink.addParameter(CalendarParameters.PARAMETER_TYPE_ID,this._typeID);
 
     typesTable.add(deleteLink,3,1);
 
 
 
-    addLeft(_iwrb.getLocalizedString("type","Type")+":",typesTable,true,false);
+    addLeft(this._iwrb.getLocalizedString("type","Type")+":",typesTable,true,false);
 
 
 
@@ -291,11 +291,11 @@ public CalendarTypeEditor(){
 
       nameInput.setLength(24);
 
-      if ( locStrings != null && locStrings[0] != null )
+      if ( locStrings != null && locStrings[0] != null ) {
+		nameInput.setContent(locStrings[0]);
+	}
 
-        nameInput.setContent(locStrings[0]);
-
-    addLeft(_iwrb.getLocalizedString("name","Name")+":",nameInput,true);
+    addLeft(this._iwrb.getLocalizedString("name","Name")+":",nameInput,true);
 
 
 
@@ -303,19 +303,19 @@ public CalendarTypeEditor(){
 
       image.setHasUseBox(false);
 
-      if ( type != null && type.getImageID() != -1 )
+      if ( type != null && type.getImageID() != -1 ) {
+		image.setImageId(type.getImageID());
+	}
 
-        image.setImageId(type.getImageID());
-
-    addRight(_iwrb.getLocalizedString("new_image","New image")+":",image,true,false);
+    addRight(this._iwrb.getLocalizedString("new_image","New image")+":",image,true,false);
 
 
 
-    addHiddenInput(new HiddenInput(CalendarParameters.PARAMETER_TYPE_ID,Integer.toString(_typeID)));
+    addHiddenInput(new HiddenInput(CalendarParameters.PARAMETER_TYPE_ID,Integer.toString(this._typeID)));
 
-    addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("close","CLOSE"),CalendarParameters.PARAMETER_MODE,CalendarParameters.PARAMETER_MODE_CLOSE));
+    addSubmitButton(new SubmitButton(this._iwrb.getLocalizedImageButton("close","CLOSE"),CalendarParameters.PARAMETER_MODE,CalendarParameters.PARAMETER_MODE_CLOSE));
 
-    addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("save","SAVE"),CalendarParameters.PARAMETER_MODE,CalendarParameters.PARAMETER_MODE_SAVE));
+    addSubmitButton(new SubmitButton(this._iwrb.getLocalizedImageButton("save","SAVE"),CalendarParameters.PARAMETER_MODE,CalendarParameters.PARAMETER_MODE_SAVE));
 
   }
 
@@ -323,9 +323,9 @@ public CalendarTypeEditor(){
 
   private void deleteType(IWContext iwc) {
 
-    CalendarBusiness.deleteEntryType(_typeID);
+    CalendarBusiness.deleteEntryType(this._typeID);
 
-    _typeID = -1;
+    this._typeID = -1;
 
   }
 
@@ -339,7 +339,7 @@ public CalendarTypeEditor(){
 
 
 
-    int typeID = CalendarBusiness.saveEntryType(_typeID,iLocaleID,typeHeadline,fileID);
+    int typeID = CalendarBusiness.saveEntryType(this._typeID,iLocaleID,typeHeadline,fileID);
 
     iwc.setSessionAttribute(CalendarParameters.PARAMETER_TYPE_ID,Integer.toString(typeID));
 

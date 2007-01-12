@@ -78,7 +78,7 @@ public class BankBranchBMPBean extends GenericEntity implements BankBranch {
 	public Collection ejbFindByBank(Bank bank) throws FinderException {
 		IDOQuery query = idoQuery();
 		query.appendSelectAllFrom(this);
-		query.appendWhereEquals(this.getColumnNameBankId(), bank);
+		query.appendWhereEquals(BankBranchBMPBean.getColumnNameBankId(), bank);
 		return super.idoFindPKsByQuery(query);
 	}
 }

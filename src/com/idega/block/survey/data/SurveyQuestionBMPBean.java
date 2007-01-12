@@ -114,7 +114,7 @@ public class SurveyQuestionBMPBean extends com.idega.data.GenericEntity implemen
 		
 		qTR.setQuestion(question);
 		
-		storeMap.put(locale,qTR);
+		this.storeMap.put(locale,qTR);
 	}
 	
 	public void setCreationLocale(ICLocale locale){
@@ -128,7 +128,7 @@ public class SurveyQuestionBMPBean extends com.idega.data.GenericEntity implemen
 	
 	public void store(){
 		super.store();
-		Collection translations = storeMap.values();
+		Collection translations = this.storeMap.values();
 		for (Iterator iter = translations.iterator(); iter.hasNext();) {
 			SurveyQuestionTranslation element = (SurveyQuestionTranslation)iter.next();
 			element.setTransletedEntity(this);

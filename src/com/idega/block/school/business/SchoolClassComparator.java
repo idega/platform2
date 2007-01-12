@@ -21,19 +21,23 @@ public class SchoolClassComparator implements Comparator {
 		
 		returner = compareSubGroups(schoolClass1.getIsSubGroup(), schoolClass2.getIsSubGroup());
 		
-		if (returner == 0)
+		if (returner == 0) {
 			returner = Collator.getInstance().compare(schoolClass1.getSchoolClassName(), schoolClass2.getSchoolClassName());
+		}
 
 		return returner;
 	}
 	
 	public int compareSubGroups(boolean subGroup1, boolean subGroup2) {
-		if (!subGroup1 && subGroup2)
+		if (!subGroup1 && subGroup2) {
 			return -1;
-		else if (subGroup1 && !subGroup2)
+		}
+		else if (subGroup1 && !subGroup2) {
 			return 1;
-		else
+		}
+		else {
 			return 0;
+		}
 	}
 
 }

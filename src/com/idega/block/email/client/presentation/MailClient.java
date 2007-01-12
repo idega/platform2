@@ -44,23 +44,25 @@ public class MailClient extends Block {
   }
 
   public String getBundleIdentifier(){
-    return EMAILBUNDLE_IDENTIFIER;
+    return this.EMAILBUNDLE_IDENTIFIER;
   }
 
   public void main(IWContext iwc) throws Exception{
     debugParameters(iwc);
-    iwb = getBundle(iwc);
-    iwrb = getResourceBundle(iwc);
+    this.iwb = getBundle(iwc);
+    this.iwrb = getResourceBundle(iwc);
     // process forms
     processForm(iwc);
     // initialize accounts
     initAccount(iwc);
     Table T = new Table();
-    if(mailuser!=null){
-      if(iwc.isParameterSet(prmMsgNum))
-        T.add(getMessage(iwc));
-      else
-        T.add(getListMessages(iwc));
+    if(this.mailuser!=null){
+      if(iwc.isParameterSet(prmMsgNum)) {
+		T.add(getMessage(iwc));
+	}
+	else {
+		T.add(getListMessages(iwc));
+	}
     }
     else{
       T.add(getLogin(iwc));
@@ -72,34 +74,34 @@ public class MailClient extends Block {
 
   public void initAccount(IWContext iwc) throws Exception{
     if(iwc.getSessionAttribute(prmSessionUser)!=null){
-      mailuser = ( MailUserBean ) iwc.getSessionAttribute(prmSessionUser);
-      messagesMap = (Map) iwc.getSessionAttribute(prmSessionUserMsgs);
+      this.mailuser = ( MailUserBean ) iwc.getSessionAttribute(prmSessionUser);
+      this.messagesMap = (Map) iwc.getSessionAttribute(prmSessionUserMsgs);
     }
     else {
-      if(mailaccount!=null){
-        mailuser = new MailUserBean();
-        mailuser.setHostname(mailaccount.getHost());
-        mailuser.setPassword(mailaccount.getPassword());
-        mailuser.setProtocol(mailaccount.getProtocolName());
-        mailuser.setUsername(mailaccount.getUser());
+      if(this.mailaccount!=null){
+        this.mailuser = new MailUserBean();
+        this.mailuser.setHostname(this.mailaccount.getHost());
+        this.mailuser.setPassword(this.mailaccount.getPassword());
+        this.mailuser.setProtocol(this.mailaccount.getProtocolName());
+        this.mailuser.setUsername(this.mailaccount.getUser());
       }
       else if("login".equals(iwc.getParameter(prmAction))){
-        mailuser = new MailUserBean();
+        this.mailuser = new MailUserBean();
         String user = iwc.getParameter("user");
         String pass = iwc.getParameter("pass");
         String host = iwc.getParameter("host");
         String prot = iwc.getParameter("prot");
-        mailuser.setHostname(host);
-        mailuser.setPassword(pass);
-        mailuser.setProtocol(prot);
-        mailuser.setUsername(user);
+        this.mailuser.setHostname(host);
+        this.mailuser.setPassword(pass);
+        this.mailuser.setProtocol(prot);
+        this.mailuser.setUsername(user);
       }
 
-      if(mailuser!=null){
-        mailuser.login();
-        messagesMap = MessageFinder.getMappedMessagesInfo(mailuser);
-        iwc.setSessionAttribute(prmSessionUser,mailuser);
-        iwc.setSessionAttribute(prmSessionUserMsgs,messagesMap);
+      if(this.mailuser!=null){
+        this.mailuser.login();
+        this.messagesMap = MessageFinder.getMappedMessagesInfo(this.mailuser);
+        iwc.setSessionAttribute(prmSessionUser,this.mailuser);
+        iwc.setSessionAttribute(prmSessionUserMsgs,this.messagesMap);
       }
 
     }
@@ -112,30 +114,30 @@ public class MailClient extends Block {
   public PresentationObject getLogin(IWContext iwc){
     Table T = new Table();
 
-    T.add(iwrb.getLocalizedString("client.user","User"),1,1);
+    T.add(this.iwrb.getLocalizedString("client.user","User"),1,1);
     T.add(new TextInput("user"),2,1);
-    T.add(iwrb.getLocalizedString("client.password","Password"),1,2);
+    T.add(this.iwrb.getLocalizedString("client.password","Password"),1,2);
     T.add(new TextInput("pass"),2,2);
-    T.add(iwrb.getLocalizedString("client.host","Host"),1,3);
+    T.add(this.iwrb.getLocalizedString("client.host","Host"),1,3);
     T.add(new TextInput("host"),2,3);
-    T.add(iwrb.getLocalizedString("client.protocol","Protocol"),1,4);
+    T.add(this.iwrb.getLocalizedString("client.protocol","Protocol"),1,4);
     T.add(new TextInput("prot","pop3"),2,4);
 
 
-    T.add(new SubmitButton(iwrb.getLocalizedImageButton("client.login","Login"),prmAction,"login"),2,5);
+    T.add(new SubmitButton(this.iwrb.getLocalizedImageButton("client.login","Login"),prmAction,"login"),2,5);
     return T;
   }
 
   public PresentationObject getListMessages(IWContext iwc){
     Table T = new Table();
     int row = 1;
-    T.add(iwrb.getLocalizedString("client.from","From") ,1,row);
-    T.add(iwrb.getLocalizedString("client.subject","Subject"),2,row);
-    T.add(iwrb.getLocalizedString("client.date","date"),3,row);
+    T.add(this.iwrb.getLocalizedString("client.from","From") ,1,row);
+    T.add(this.iwrb.getLocalizedString("client.subject","Subject"),2,row);
+    T.add(this.iwrb.getLocalizedString("client.date","date"),3,row);
     row++;
     try {
-      if(messagesMap!=null && messagesMap.size() >0){
-        Iterator iter = messagesMap.values().iterator();
+      if(this.messagesMap!=null && this.messagesMap.size() >0){
+        Iterator iter = this.messagesMap.values().iterator();
         MessageInfo m;
         while(iter.hasNext()){
           m = (MessageInfo) iter.next();
@@ -160,15 +162,15 @@ public class MailClient extends Block {
     Table T = new Table(2,5);
     String num = iwc.getParameter(prmMsgNum);
     if(num!=null){
-      MessageInfo m = (MessageInfo) messagesMap.get(new Integer(num));
+      MessageInfo m = (MessageInfo) this.messagesMap.get(new Integer(num));
       if(m!=null){
-        T.add(iwrb.getLocalizedString("client.from","From"),1,1);
+        T.add(this.iwrb.getLocalizedString("client.from","From"),1,1);
         T.add(m.getFrom(),2,1);
-        T.add(iwrb.getLocalizedString("client.date","Date"),1,2);
+        T.add(this.iwrb.getLocalizedString("client.date","Date"),1,2);
         T.add(m.getDate(),2,2);
-        T.add(iwrb.getLocalizedString("client.to","To"),1,3);
+        T.add(this.iwrb.getLocalizedString("client.to","To"),1,3);
         T.add(m.getTo(),2,3);
-        T.add(iwrb.getLocalizedString("client.subject","Subject"),1,4);
+        T.add(this.iwrb.getLocalizedString("client.subject","Subject"),1,4);
         T.add(m.getSubject(),2,4);
         T.mergeCells(1,5,2,5);
         T.add(m.getBody(),1,5);

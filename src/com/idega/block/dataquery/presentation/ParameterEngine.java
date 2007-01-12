@@ -36,7 +36,7 @@ public class ParameterEngine {
 	}
 
 	public void parse(IWContext iwc) throws InvalidClassException{
-		Iterator iter = parameters.values().iterator();
+		Iterator iter = this.parameters.values().iterator();
 		Parameter prm;
 		String key;
 		while (iter.hasNext()) {
@@ -72,25 +72,26 @@ public class ParameterEngine {
 		else if(className.equals(Double.class.getName())){
 			prm.setValue(new Double(value));
 		}
-		else
+		else {
 			throw new InvalidClassException(className);
+		}
 
 	}
 
 	public Object getParameterValue(String key) {
-		if (parameters.containsKey(key)) {
-			return ((Parameter) parameters.get(key)).getValue();
+		if (this.parameters.containsKey(key)) {
+			return ((Parameter) this.parameters.get(key)).getValue();
 		}
 		return null;
 	}
 
 	private String getPrefixedKeyName(String key) {
-		return identifier + "_" + key;
+		return this.identifier + "_" + key;
 	}
 	
 	public Parameter createParameter(String name, Class type,Object defaultValue){
 		Parameter prm =new Parameter(name,null,defaultValue,type);
-		parameters.put(name,prm);
+		this.parameters.put(name,prm);
 		return prm;
 	}
 	

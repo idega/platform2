@@ -55,7 +55,7 @@ public class ProductItemMetaData extends ProductItem {
 	 */
 	private void drawObject(IWContext iwc) {
 		try {
-			List categories = getProductBusiness(iwc).getProductCategories(_product);
+			List categories = getProductBusiness(iwc).getProductCategories(this._product);
 
 			Table table = new Table();
 			table.setCellpaddingAndCellspacing(0);
@@ -85,10 +85,12 @@ public class ProductItemMetaData extends ProductItem {
 				String type = (String) metaDataTypes.get(key);
 				
 				String meta = null;
-				if (type.equalsIgnoreCase(IWMetaDataConstants.METADATA_TYPE_STRING))
-					meta = _product.getMetaData(METADATA + key + "_" + _productLocale.toString());
-				else
-					meta = _product.getMetaData(METADATA + key);
+				if (type.equalsIgnoreCase(IWMetaDataConstants.METADATA_TYPE_STRING)) {
+					meta = this._product.getMetaData(METADATA + key + "_" + this._productLocale.toString());
+				}
+				else {
+					meta = this._product.getMetaData(METADATA + key);
+				}
 					
 				if (meta != null) {
 					if (type.equals(IWMetaDataConstants.METADATA_TYPE_MULTIVALUED)) {
@@ -98,24 +100,26 @@ public class ProductItemMetaData extends ProductItem {
 						StringTokenizer tokens = new StringTokenizer(meta, ",");
 						while (tokens.hasMoreTokens()) {
 							String token = tokens.nextToken();
-							Image image = _iwb.getImage("shared/"+token+".gif");
-							image.setAlt(_productIWRB.getLocalizedString(METADATA + "multi_" + token, token));
+							Image image = this._iwb.getImage("shared/"+token+".gif");
+							image.setAlt(this._productIWRB.getLocalizedString(METADATA + "multi_" + token, token));
 							multiTable.add(image, 1, 2);
 						}
-						multiTable.add(getHeaderText(_productIWRB.getLocalizedString(METADATA + key, key)), 1, 1);
+						multiTable.add(getHeaderText(this._productIWRB.getLocalizedString(METADATA + key, key)), 1, 1);
 					}
 					else if (type.equals(IWMetaDataConstants.METADATA_TYPE_LINK)) {
-						metaTable.add(getHeaderText(_productIWRB.getLocalizedString(METADATA + key, key) + ":"), 1, row);
+						metaTable.add(getHeaderText(this._productIWRB.getLocalizedString(METADATA + key, key) + ":"), 1, row);
 						metaTable.add(getLink(meta, meta), 3, row++);
 						metaTable.setHeight(row++, 1);
 					}
 					else {
-						metaTable.add(getHeaderText(_productIWRB.getLocalizedString(METADATA + key, key) + ":"), 1, row);
-						if (type.equals(IWMetaDataConstants.METADATA_TYPE_MULTIVALUED_SINGLE_SELECT))
-							meta = _productIWRB.getLocalizedString(METADATA + "multi_" + meta, meta);
+						metaTable.add(getHeaderText(this._productIWRB.getLocalizedString(METADATA + key, key) + ":"), 1, row);
+						if (type.equals(IWMetaDataConstants.METADATA_TYPE_MULTIVALUED_SINGLE_SELECT)) {
+							meta = this._productIWRB.getLocalizedString(METADATA + "multi_" + meta, meta);
+						}
 						else if (type.equals(IWMetaDataConstants.METADATA_TYPE_INTEGER) || type.equals(IWMetaDataConstants.METADATA_TYPE_FLOAT)) {
-							if (value.length() > 0)
+							if (value.length() > 0) {
 								meta = meta + " " + value;
+							}
 						}
 						metaTable.add(getText(meta), 3, row++);
 						metaTable.setHeight(row++, 1);
@@ -129,8 +133,9 @@ public class ProductItemMetaData extends ProductItem {
 				table.add(metaTable, 1, 3);
 				add(table);
 			}
-			else
+			else {
 				add(metaTable);
+			}
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();

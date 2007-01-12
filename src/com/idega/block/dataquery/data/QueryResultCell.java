@@ -71,22 +71,22 @@ public class QueryResultCell {
 
   public XMLElement convertToXML()  {
     XMLElement cellElement = new XMLElement(CELL);
-    addElement(cellElement, FIELD_ID, fieldId.toString());
-    addElement(cellElement, ID, id.toString());
-    addElement(cellElement, VALUE, value);
+    addElement(cellElement, FIELD_ID, this.fieldId.toString());
+    addElement(cellElement, ID, this.id.toString());
+    addElement(cellElement, VALUE, this.value);
     return cellElement;
   }
 
   public Object getFieldId()  {
-    return fieldId;
+    return this.fieldId;
   }
 
   public Object getId() {
-    return id;
+    return this.id;
   }
 
   public Object getValue() {
-    return value;
+    return this.value;
   }
 
   private void addElement(XMLElement parent, String name, Object value)  {

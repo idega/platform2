@@ -22,13 +22,13 @@ public class SchoolContentItemImage extends SchoolContentItem {
 	 */
 	protected PresentationObject getObject() {
 		try {
-			Collection images = _school.getImages();
+			Collection images = this._school.getImages();
 			if (images != null && images.size() > 0) {
 				Table table = new Table(1, images.size());
 				table.setCellpadding(0);
-				table.setCellspacing(_cellSpacing);
-				if (_horizontalAlignment != null) {
-					table.setHorizontalAlignment(_horizontalAlignment);
+				table.setCellspacing(this._cellSpacing);
+				if (this._horizontalAlignment != null) {
+					table.setHorizontalAlignment(this._horizontalAlignment);
 				}
 				Image image;
 				
@@ -58,20 +58,20 @@ public class SchoolContentItemImage extends SchoolContentItem {
 	}
 	
 	private void setupImage(Image image) {
-		if (_maxImageWidth > 0 ) {
-			image.setMaxImageWidth(_maxImageWidth);
+		if (this._maxImageWidth > 0 ) {
+			image.setMaxImageWidth(this._maxImageWidth);
 		}
 	}
 	
 	public void setMaxImageWidth(int maxImageWidth) {
-		_maxImageWidth = maxImageWidth;	
+		this._maxImageWidth = maxImageWidth;	
 	}
 	
 	public void setSpaceBetweenImage(int spaceBetweenImages) {
-		_cellSpacing = spaceBetweenImages;	
+		this._cellSpacing = spaceBetweenImages;	
 	}
 
 	public void setHorizontalAlignment(String alignment) {
-		_horizontalAlignment = alignment;	
+		this._horizontalAlignment = alignment;	
 	}
 }

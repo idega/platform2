@@ -76,10 +76,10 @@ public class SchoolAreaSelector extends Block {
 	private IWResourceBundle iwrb = null;
 
 	public void main(IWContext iwc) throws RemoteException {
-		iwrb = getResourceBundle(iwc);
+		this.iwrb = getResourceBundle(iwc);
 		init(iwc);
 
-		if (!_displayWithoutTypeId && _schoolTypeId == -1) {
+		if (!this._displayWithoutTypeId && this._schoolTypeId == -1) {
 			/** Does Nothing */
 		} else {
 			if (!getShowSchoolArea()) {
@@ -91,30 +91,30 @@ public class SchoolAreaSelector extends Block {
 	}
 
 	private void init(IWContext iwc) throws RemoteException {
-		PARAMETER_SCHOOL_ID = ((SchoolContentBusiness) IBOLookup
+		this.PARAMETER_SCHOOL_ID = ((SchoolContentBusiness) IBOLookup
 				.getSessionInstance(iwc, SchoolContentBusiness.class))
 				.getParameterSchoolId();
 		if (iwc.isParameterSet(PARAMETER_SCHOOL_AREA_ID)) {
 			try {
-				_schoolAreaId = Integer.parseInt(iwc
+				this._schoolAreaId = Integer.parseInt(iwc
 						.getParameter(PARAMETER_SCHOOL_AREA_ID));
 			} catch (NumberFormatException n) {
 				n.printStackTrace(System.err);
 			}
 		}
 
-		if (iwc.isParameterSet(PARAMETER_SCHOOL_TYPE_ID)) {
+		if (iwc.isParameterSet(this.PARAMETER_SCHOOL_TYPE_ID)) {
 			try {
-				_schoolTypeId = Integer.parseInt(iwc
-						.getParameter(PARAMETER_SCHOOL_TYPE_ID));
+				this._schoolTypeId = Integer.parseInt(iwc
+						.getParameter(this.PARAMETER_SCHOOL_TYPE_ID));
 			} catch (NumberFormatException n) {
 				n.printStackTrace(System.err);
 			}
 		}
-		if (iwc.isParameterSet(PARAMETER_SCHOOL_ID)) {
+		if (iwc.isParameterSet(this.PARAMETER_SCHOOL_ID)) {
 			try {
-				_schoolId = Integer.parseInt(iwc
-						.getParameter(PARAMETER_SCHOOL_ID));
+				this._schoolId = Integer.parseInt(iwc
+						.getParameter(this.PARAMETER_SCHOOL_ID));
 			} catch (NumberFormatException n) {
 				n.printStackTrace(System.err);
 			}
@@ -136,14 +136,14 @@ public class SchoolAreaSelector extends Block {
 		SchoolCategory elementarySchoolCategory = sb
 				.getCategoryElementarySchool();
 
-		if (_isHighSchool) {
+		if (this._isHighSchool) {
 			coll = sb
 					.findAllSchoolsByCategory(highSchoolCategory.getCategory());
-		} else if (_schoolTypeId == -1) {
+		} else if (this._schoolTypeId == -1) {
 			coll = sb.findAllSchoolsByCategory(elementarySchoolCategory
 					.getCategory());
 		} else {
-			coll = sb.findAllSchoolsByType(_schoolTypeId);
+			coll = sb.findAllSchoolsByType(this._schoolTypeId);
 		}
 
 		School school;
@@ -156,17 +156,19 @@ public class SchoolAreaSelector extends Block {
 		int col = 1;
 		Collection collSchools = null;
 
-		if (_communeSchools)
+		if (this._communeSchools) {
 			collSchools = sb.getHomeCommuneSchools(coll);
-		else
+		}
+		else {
 			collSchools = coll;
+		}
 		Iterator iter = collSchools.iterator(); //collSchools = collection with
 												// all schools for a specific
 												// category and the home commune
 		Hashtable hash = new Hashtable();
 		while (iter.hasNext()) {
 			++row;
-			table.setWidth(col, row, _spaceBetween);
+			table.setWidth(col, row, this._spaceBetween);
 
 			++row;
 
@@ -193,8 +195,8 @@ public class SchoolAreaSelector extends Block {
 				SchoolBusiness.class);
 
 		Collection coll = null;
-		if (_schoolTypeId != -1) {
-			coll = sb.findAllSchoolAreasByType(_schoolTypeId);
+		if (this._schoolTypeId != -1) {
+			coll = sb.findAllSchoolAreasByType(this._schoolTypeId);
 		} else {
 			coll = sb.findAllSchoolAreas();
 		}
@@ -215,21 +217,21 @@ public class SchoolAreaSelector extends Block {
 			Iterator iter = coll.iterator();
 			while (iter.hasNext()) {
 				++row;
-				table.setWidth(col, row, _spaceBetween);
+				table.setWidth(col, row, this._spaceBetween);
 				++row;
 
 				sArea = (SchoolArea) iter.next();
 				iAreaId = ((Integer) sArea.getPrimaryKey()).intValue();
-				if (iAreaId != _outsideSchoolAreaID){
-				if (iAreaId == _schoolAreaId) {
+				if (iAreaId != this._outsideSchoolAreaID){
+				if (iAreaId == this._schoolAreaId) {
 					table.add(getText(sArea.getName(), true), col, row);
-					if (_expandSchools && _schoolTypeId != -1) {
+					if (this._expandSchools && this._schoolTypeId != -1) {
 						Collection schools = sb.findAllSchoolsByAreaAndType(
-								_schoolAreaId, _schoolTypeId);
+								this._schoolAreaId, this._schoolTypeId);
 						schools = sb.getHomeCommuneSchools(schools);
 						if (schools != null) {
 							String indent = "";
-							for (int i = 0; i < _spaceBeforeExpanded; i++) {
+							for (int i = 0; i < this._spaceBeforeExpanded; i++) {
 								indent = indent + Text.NON_BREAKING_SPACE;
 							}
 
@@ -247,7 +249,7 @@ public class SchoolAreaSelector extends Block {
 										.getInvisibleForCitizen();
 								if (!hash.containsKey(pk)
 										&& !invisibleForCitizen) {
-									if (iSchoolId == _schoolId) {
+									if (iSchoolId == this._schoolId) {
 										table.add(getExpandedText(indent
 												+ school.getName(), true), col,
 												row);
@@ -271,9 +273,9 @@ public class SchoolAreaSelector extends Block {
 								// col, row);
 							}
 						}
-					} else if (_expandSchools && _schoolTypeId == -1) {
+					} else if (this._expandSchools && this._schoolTypeId == -1) {
 						++row;
-						table.add(getText(iwrb.getLocalizedString(
+						table.add(getText(this.iwrb.getLocalizedString(
 								"school.school_type_not_defined",
 								"Choose school type."), false), col, row);
 					}
@@ -295,11 +297,11 @@ public class SchoolAreaSelector extends Block {
 	private Link getLink(String content, String primaryKey) {
 		Link link = new Link(getText(content, false));
 		link.addParameter(PARAMETER_SCHOOL_AREA_ID, primaryKey);
-		if (_maintainSchoolTypeId) {
-			link.addParameter(PARAMETER_SCHOOL_TYPE_ID, _schoolTypeId);
+		if (this._maintainSchoolTypeId) {
+			link.addParameter(this.PARAMETER_SCHOOL_TYPE_ID, this._schoolTypeId);
 		}
-		if (_schoolId != -1) {
-			link.addParameter(PARAMETER_SCHOOL_ID, _schoolId);
+		if (this._schoolId != -1) {
+			link.addParameter(this.PARAMETER_SCHOOL_ID, this._schoolId);
 		}
 		return link;
 	}
@@ -308,31 +310,31 @@ public class SchoolAreaSelector extends Block {
 			String schoolId) {
 		Link link = new Link(getExpandedText(content, false));
 		link.addParameter(PARAMETER_SCHOOL_AREA_ID, schoolAreaId);
-		if (_maintainSchoolTypeId) {
-			link.addParameter(PARAMETER_SCHOOL_TYPE_ID, _schoolTypeId);
+		if (this._maintainSchoolTypeId) {
+			link.addParameter(this.PARAMETER_SCHOOL_TYPE_ID, this._schoolTypeId);
 		}
-		if (_page != null) {
-			link.setPage(_page);
+		if (this._page != null) {
+			link.setPage(this._page);
 		}
-		link.addParameter(PARAMETER_SCHOOL_ID, schoolId);
+		link.addParameter(this.PARAMETER_SCHOOL_ID, schoolId);
 		return link;
 	}
 
 	private Text getExpandedText(String content, boolean selected) {
 		Text text = new Text(content);
 		if (selected) {
-			if (_expandedSelColor != null) {
-				text.setFontColor(_expandedSelColor);
+			if (this._expandedSelColor != null) {
+				text.setFontColor(this._expandedSelColor);
 			}
-			if (_expandedSelStyle != null) {
-				text.setFontStyle(_expandedSelStyle);
+			if (this._expandedSelStyle != null) {
+				text.setFontStyle(this._expandedSelStyle);
 			}
 		} else {
-			if (_expandedFontColor != null) {
-				text.setFontColor(_expandedFontColor);
+			if (this._expandedFontColor != null) {
+				text.setFontColor(this._expandedFontColor);
 			}
-			if (_expandedFontStyle != null) {
-				text.setFontStyle(_expandedFontStyle);
+			if (this._expandedFontStyle != null) {
+				text.setFontStyle(this._expandedFontStyle);
 			}
 		}
 		return text;
@@ -341,18 +343,18 @@ public class SchoolAreaSelector extends Block {
 	private Text getText(String content, boolean selected) {
 		Text text = new Text(content);
 		if (selected) {
-			if (_selColor != null) {
-				text.setFontColor(_selColor);
+			if (this._selColor != null) {
+				text.setFontColor(this._selColor);
 			}
-			if (_selStyle != null) {
-				text.setFontStyle(_selStyle);
+			if (this._selStyle != null) {
+				text.setFontStyle(this._selStyle);
 			}
 		} else {
-			if (_fontColor != null) {
-				text.setFontColor(_fontColor);
+			if (this._fontColor != null) {
+				text.setFontColor(this._fontColor);
 			}
-			if (_fontStyle != null) {
-				text.setFontStyle(_fontStyle);
+			if (this._fontStyle != null) {
+				text.setFontStyle(this._fontStyle);
 			}
 		}
 		return text;
@@ -368,82 +370,82 @@ public class SchoolAreaSelector extends Block {
 	 */
 
 	public void setSchoolsToExpand(boolean expandSchools) {
-		_expandSchools = expandSchools;
+		this._expandSchools = expandSchools;
 	}
 
 	public void setUseSchoolTypeIdParameter(boolean maintain) {
-		_maintainSchoolTypeId = maintain;
+		this._maintainSchoolTypeId = maintain;
 	}
 
 	public void setSpaceBetween(int spaceBetween) {
-		_spaceBetween = Integer.toString(spaceBetween);
+		this._spaceBetween = Integer.toString(spaceBetween);
 	}
 
 	public void setFontStyle(String style) {
-		_fontStyle = style;
+		this._fontStyle = style;
 	}
 
 	public void setFontColor(String color) {
-		_fontColor = color;
+		this._fontColor = color;
 	}
 
 	public void setSelectedFontStyle(String style) {
-		_selStyle = style;
+		this._selStyle = style;
 	}
 
 	public void setSelectedFontColor(String color) {
-		_selColor = color;
+		this._selColor = color;
 	}
 
 	public void setExpandedFontStyle(String style) {
-		_expandedFontStyle = style;
+		this._expandedFontStyle = style;
 	}
 
 	public void setExpandedFontColor(String color) {
-		_expandedFontColor = color;
+		this._expandedFontColor = color;
 	}
 
 	public void setExpandedSelectedFontStyle(String style) {
-		_expandedSelStyle = style;
+		this._expandedSelStyle = style;
 	}
 
 	public void setExpandedSelectedFontColor(String color) {
-		_expandedSelColor = color;
+		this._expandedSelColor = color;
 	}
 
 	public void setDisplayWithoutSchoolTypeId(boolean display) {
-		_displayWithoutTypeId = display;
+		this._displayWithoutTypeId = display;
 	}
 
 	public void setSpaceBeforeExpanded(int numberOfSpaces) {
-		_spaceBeforeExpanded = numberOfSpaces;
+		this._spaceBeforeExpanded = numberOfSpaces;
 	}
 
 	public void setPage(ICPage page) {
-		_page = page;
+		this._page = page;
 	}
 
 	public void setIsHighSchool(boolean isHighSchool) {
-		_isHighSchool = isHighSchool;
+		this._isHighSchool = isHighSchool;
 	}
 
 	public boolean getIsHighSchool() {
-		return _isHighSchool;
+		return this._isHighSchool;
 	}
 
 	public void setShowSchoolArea(boolean showSchoolArea) {
-		_showSchoolArea = showSchoolArea;
+		this._showSchoolArea = showSchoolArea;
 	}
 
 	public boolean getShowSchoolArea() {
-		return _showSchoolArea;
+		return this._showSchoolArea;
 	}
 
 	public void setShowOnlyCommuneSchools(boolean communeSchools) {
-		_communeSchools = communeSchools;
+		this._communeSchools = communeSchools;
 	}
 
 	public void setOutsideSchoolAreaId(int outsideSchoolAreaID) {
-		_outsideSchoolAreaID = outsideSchoolAreaID;
+		this._outsideSchoolAreaID = outsideSchoolAreaID;
 	}
 }

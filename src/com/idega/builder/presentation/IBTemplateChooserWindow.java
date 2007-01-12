@@ -1,5 +1,5 @@
 /*
- * $Id: IBTemplateChooserWindow.java,v 1.15 2005/04/14 08:27:51 gimmi Exp $
+ * $Id: IBTemplateChooserWindow.java,v 1.15.2.1 2007/01/12 19:32:22 idegaweb Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -32,7 +32,7 @@ public class IBTemplateChooserWindow extends AbstractChooserWindow {
    */
   public IBTemplateChooserWindow() {
     /**
-     * @todo Setja inn IWResourceBundle hérna í staðinn fyrir þessa texta.
+     * @todo Setja inn IWResourceBundle hï¿½rna ï¿½ staï¿½inn fyrir ï¿½essa texta.
      */
     setTitle("Template chooser");
     setWidth(_width);
@@ -69,7 +69,7 @@ public class IBTemplateChooserWindow extends AbstractChooserWindow {
       viewer.setTreeStyle(_linkStyle);
       viewer.setToUseOnClick();
       //sets the hidden input and textinput of the choosing page
-      viewer.setOnClick(SELECT_FUNCTION_NAME+"("+viewer.ONCLICK_DEFAULT_NODE_NAME_PARAMETER_NAME+","+viewer.ONCLICK_DEFAULT_NODE_ID_PARAMETER_NAME+")");
+      viewer.setOnClick(SELECT_FUNCTION_NAME+"("+TreeViewer.ONCLICK_DEFAULT_NODE_NAME_PARAMETER_NAME+","+TreeViewer.ONCLICK_DEFAULT_NODE_ID_PARAMETER_NAME+")");
 
     }
     catch(Exception e){

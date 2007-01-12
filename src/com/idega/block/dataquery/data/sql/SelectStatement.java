@@ -52,15 +52,15 @@ public class SelectStatement implements DynamicExpression {
   	
 
   public void addInnerJoin(Expression join) {
-    innerClauses.add(join);
+    this.innerClauses.add(join);
   }
   
   public void addOuterJoin(Expression join)	{
-  	outerClauses.add(join);
+  	this.outerClauses.add(join);
   }
   
   public void addSelectClause(Expression clause) {
-    selectClauses.add(clause);
+    this.selectClauses.add(clause);
   }
 
   public void addWhereClause(DynamicExpression criterion) {
@@ -70,23 +70,23 @@ public class SelectStatement implements DynamicExpression {
   		this.identifierValueMap.putAll(identifierValueMap);
   		this.identifierInputDescriptionMap.putAll(identifierInputDescriptionMap);
   	}
-    whereClauses.add(criterion);
+    this.whereClauses.add(criterion);
   }
   
   public void addOrderByClause(Expression criterion)	{
-  	orderByClauses.add(criterion);
+  	this.orderByClauses.add(criterion);
   }
   
   public boolean isDynamic() {
-  	return ! identifierValueMap.isEmpty();
+  	return ! this.identifierValueMap.isEmpty();
   }
   
   public Map getIdentifierValueMap()	{
-  	return identifierValueMap;
+  	return this.identifierValueMap;
   }
   
   public Map getIdentifierInputDescriptionMap() {
-  	return identifierInputDescriptionMap;
+  	return this.identifierInputDescriptionMap;
   }
   
   public void setIdentifierValueMap(Map identifierValueMap)	{
@@ -101,48 +101,48 @@ public class SelectStatement implements DynamicExpression {
     StringBuffer expression =  new StringBuffer();
     
     StringBuffer whiteSpaceCommaWhiteSpace =
-      new StringBuffer(WHITE_SPACE).append(COMMA).append(WHITE_SPACE);
+      new StringBuffer(this.WHITE_SPACE).append(this.COMMA).append(this.WHITE_SPACE);
     
-    StringBuffer spacing = new StringBuffer(SELECT).append(WHITE_SPACE);
-    if (selectDistinct) {
-    	spacing.append(DISTINCT).append(WHITE_SPACE);
+    StringBuffer spacing = new StringBuffer(this.SELECT).append(this.WHITE_SPACE);
+    if (this.selectDistinct) {
+    	spacing.append(this.DISTINCT).append(this.WHITE_SPACE);
     }
-    Iterator select = selectClauses.iterator();
+    Iterator select = this.selectClauses.iterator();
     while (select.hasNext())  {
       Expression clause = (Expression) select.next();
       expression.append(spacing).append(clause.toSQLString());
       spacing = whiteSpaceCommaWhiteSpace;
     }
 
-    spacing = new StringBuffer().append(WHITE_SPACE).append(FROM).append(WHITE_SPACE);
-    Iterator inner= innerClauses.iterator();
+    spacing = new StringBuffer().append(this.WHITE_SPACE).append(this.FROM).append(this.WHITE_SPACE);
+    Iterator inner= this.innerClauses.iterator();
     while (inner.hasNext())  {
       Expression clause = (Expression) inner.next();
       expression.append(spacing).append(clause.toSQLString());
       spacing = whiteSpaceCommaWhiteSpace;
     }
     
-    Iterator outer= outerClauses.iterator();
+    Iterator outer= this.outerClauses.iterator();
     while (outer.hasNext())  {
       Expression clause = (Expression) outer.next();
       expression.append(clause.toSQLString());
     }
     // where
-    spacing = new StringBuffer().append(WHITE_SPACE).append(WHERE).append(WHITE_SPACE);
-    StringBuffer and = new StringBuffer().append(WHITE_SPACE).append(AND).append(WHITE_SPACE);
-    Iterator where = whereClauses.iterator();
+    spacing = new StringBuffer().append(this.WHITE_SPACE).append(this.WHERE).append(this.WHITE_SPACE);
+    StringBuffer and = new StringBuffer().append(this.WHITE_SPACE).append(this.AND).append(this.WHITE_SPACE);
+    Iterator where = this.whereClauses.iterator();
     while (where.hasNext()) {
       DynamicExpression clause = (DynamicExpression) where.next();
       if (clause.isDynamic()) {
-      	clause.setIdentifierValueMap(identifierValueMap);
+      	clause.setIdentifierValueMap(this.identifierValueMap);
       }
       expression.append(spacing).append(clause.toSQLString());
       spacing = and;
     }
     // order by
-    spacing = new StringBuffer().append(WHITE_SPACE).append(ORDER_BY).append(WHITE_SPACE);
-    StringBuffer comma = new StringBuffer().append(WHITE_SPACE).append(COMMA).append(WHITE_SPACE);
-    Iterator orderBy = orderByClauses.iterator();
+    spacing = new StringBuffer().append(this.WHITE_SPACE).append(this.ORDER_BY).append(this.WHITE_SPACE);
+    StringBuffer comma = new StringBuffer().append(this.WHITE_SPACE).append(this.COMMA).append(this.WHITE_SPACE);
+    Iterator orderBy = this.orderByClauses.iterator();
     while (orderBy.hasNext()) {
       Expression criterion = (Expression) orderBy.next();
       expression.append(spacing).append(criterion.toSQLString());
@@ -155,7 +155,7 @@ public class SelectStatement implements DynamicExpression {
 	 * @return Returns the selectDistinct.
 	 */
 	public boolean isSelectDistinct() {
-		return selectDistinct;
+		return this.selectDistinct;
 	}
 
 	/**

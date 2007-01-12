@@ -115,9 +115,9 @@ public class QueryUploader extends Block {
 		PresentationObject downloadQueryList = getDropDownOfQueriesForDownloading(iwc);
 		downloadTable.add(downloadQueryList, 1, row);
 		downloadTable.add(getDownloadButton(resourceBundle), 2, row++);
-		if (downloadUrl != null) {
+		if (this.downloadUrl != null) {
   		String downloadText = resourceBundle.getLocalizedString("query_uploader_download_query", "Download");
-  		downloadTable.add(new Link(downloadText, downloadUrl), 1, row++);
+  		downloadTable.add(new Link(downloadText, this.downloadUrl), 1, row++);
 		}
 		downloadTable.add(getGoBackButton(resourceBundle), 1 ,row);
 		downloadForm.add(downloadTable);
@@ -125,12 +125,12 @@ public class QueryUploader extends Block {
 	}
 	
 	private void addMaintainParametersToForm(Form form) {
-			form.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID, layoutFolderId);
+			form.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID, this.layoutFolderId);
 	}
 	
 	private void parseAction(IWContext iwc) throws NumberFormatException, IDOStoreException, IOException, RemoteException, FinderException {
 		if (iwc.isParameterSet(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID)) {
-			layoutFolderId = iwc.getParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID);
+			this.layoutFolderId = iwc.getParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID);
 		}
 		else {
 			return;
@@ -150,7 +150,7 @@ public class QueryUploader extends Block {
 			boolean isPrivate = PRIVATE.equals(permission);
 			QueryService queryService = (QueryService) IBOLookup.getServiceInstance(iwc, QueryService.class);
 			UserQuery userQuery = queryService.storeQuery(name, icFile, isPrivate, queryToBeReplacedId, iwc);
-			userQueryId = ((Integer) userQuery.getPrimaryKey()).intValue();
+			this.userQueryId = ((Integer) userQuery.getPrimaryKey()).intValue();
 		}
 		else if (iwc.isParameterSet(KEY_QUERY_DOWNLOAD_IS_SUBMITTED)) {
 			Object queryToBeDownloadedId = iwc.getParameter(KEY_CHOSEN_QUERY_FOR_DOWNLOADING);
@@ -160,7 +160,7 @@ public class QueryUploader extends Block {
 				UserQuery userQuery = userQueryHome.findByPrimaryKey(queryToBeDownloaded);
 				ICFile realQuery = userQuery.getSource();
 				FileBusiness fileBusiness = (FileBusiness) IBOLookup.getServiceInstance(iwc, FileBusiness.class);
-				downloadUrl = fileBusiness.getURLForOfferingDownload((Storable) realQuery, iwc);
+				this.downloadUrl = fileBusiness.getURLForOfferingDownload(realQuery, iwc);
 			}
 		}
 	}
@@ -178,7 +178,7 @@ public class QueryUploader extends Block {
 	private PresentationObject getGoBackButton(IWResourceBundle resourceBundle)	{
   	String goBackText = resourceBundle.getLocalizedString("ro_back_to_list", "Back to list");
   	Link goBack = new Link(goBackText);
-  	goBack.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID, layoutFolderId);
+  	goBack.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID, this.layoutFolderId);
   	goBack.setAsImageButton(true);
   	return goBack;
 	}	
@@ -236,7 +236,7 @@ public class QueryUploader extends Block {
 	 * @return Returns the userQueryId.
 	 */
 	public int getUserQueryId() {
-		return userQueryId;
+		return this.userQueryId;
 	}
 	
 	 private QueryService getQueryService(IWContext iwc) {

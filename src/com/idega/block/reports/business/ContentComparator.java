@@ -38,19 +38,19 @@ public class ContentComparator implements Comparator {
 
   public ContentComparator() {
 
-      sortBy = 0;
+      this.sortBy = 0;
 
   }
 
   public ContentComparator(int toSortBy) {
 
-      sortBy = toSortBy;
+      this.sortBy = toSortBy;
 
   }
 
   public void sortBy(int toSortBy) {
 
-      sortBy = toSortBy;
+      this.sortBy = toSortBy;
 
   }
 

@@ -9,6 +9,7 @@ import com.idega.block.albumcollection.data.Performer;
 import com.idega.block.albumcollection.data.Track;
 import com.idega.block.media.presentation.FileChooser;
 import com.idega.core.file.data.ICFile;
+import com.idega.data.GenericEntity;
 import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
@@ -31,7 +32,7 @@ import com.idega.presentation.ui.TextInput;
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:      idega.is
- * @author <a href="mailto:gummi@idega.is">Guðmundur Ágúst Sæmundsson</a>
+ * @author <a href="mailto:gummi@idega.is">Guï¿½mundur ï¿½gï¿½st Sï¿½mundsson</a>
  * @version 1.0
  */
 
@@ -71,7 +72,7 @@ public class AddTrack extends IWAdminWindow {
     this.setHeight(460);
     this.setScrollbar(false);
 
-    myForm = new Form();
+    this.myForm = new Form();
   }
 
 
@@ -82,38 +83,38 @@ public class AddTrack extends IWAdminWindow {
     if(trId != null){
       //update
       if(trId != null && !trId.equals("")){
-        _fieldTrackId = new HiddenInput(_fieldNameTrackId,trId);
+        this._fieldTrackId = new HiddenInput(_fieldNameTrackId,trId);
         if(iwc.getParameter(AlbumCollectionBusiness._PRM_UPDATE) != null){
           track = ((com.idega.block.albumcollection.data.TrackHome)com.idega.data.IDOLookup.getHomeLegacy(Track.class)).findByPrimaryKeyLegacy(Integer.parseInt(trId));
         }
       }
-      _fieldTrackId.keepStatusOnAction();
-      myForm.add(_fieldTrackId);
+      this._fieldTrackId.keepStatusOnAction();
+      this.myForm.add(this._fieldTrackId);
     }
 
     String albumId = iwc.getParameter(_fieldNameAlbumId);
     if(albumId != null && !albumId.equals("")){
-      _fieldAlbumId = new HiddenInput(_fieldNameAlbumId,albumId);
+      this._fieldAlbumId = new HiddenInput(_fieldNameAlbumId,albumId);
     }else{
-      _fieldAlbumId = new HiddenInput(_fieldNameAlbumId);
-      _fieldAlbumId.setContent("");
+      this._fieldAlbumId = new HiddenInput(_fieldNameAlbumId);
+      this._fieldAlbumId.setContent("");
     }
-    _fieldAlbumId.keepStatusOnAction();
+    this._fieldAlbumId.keepStatusOnAction();
 
 
-    _fieldTrackName = new TextInput(_fieldNameTrackName);
-	_fieldTrackName.setWidth("275");
-	_fieldTrackName.setInFocusOnPageLoad(true);
+    this._fieldTrackName = new TextInput(_fieldNameTrackName);
+	this._fieldTrackName.setWidth("275");
+	this._fieldTrackName.setInFocusOnPageLoad(true);
     if(track != null){
-      _fieldTrackName.setContent(track.getName());
+      this._fieldTrackName.setContent(track.getName());
     }
-    _fieldTrackName.keepStatusOnAction();
+    this._fieldTrackName.keepStatusOnAction();
 
-    _fieldTrackNumber = new IntegerInput(_fieldNameTrackNumber);
-    _fieldTrackNumber.setLength(2);
-    _fieldTrackNumber.setMaxlength(2);
+    this._fieldTrackNumber = new IntegerInput(_fieldNameTrackNumber);
+    this._fieldTrackNumber.setLength(2);
+    this._fieldTrackNumber.setMaxlength(2);
     if(track != null){
-      _fieldTrackNumber.setContent(Integer.toString(track.getNumber()));
+      this._fieldTrackNumber.setContent(Integer.toString(track.getNumber()));
     }
 
 	
@@ -122,45 +123,45 @@ public class AddTrack extends IWAdminWindow {
 	  lengthMin = track.getLength();
 		lengthMin=((lengthMin<0)?0:lengthMin);
     }
-	_fieldTrackLengthMin = new IntegerInput(_fieldNameTrackLengthMin);
-	_fieldTrackLengthMin.setLength(2);
-	_fieldTrackLengthMin.setMaxlength(2);
-    _fieldTrackLengthMin.setContent(Integer.toString(lengthMin/60));
+	this._fieldTrackLengthMin = new IntegerInput(_fieldNameTrackLengthMin);
+	this._fieldTrackLengthMin.setLength(2);
+	this._fieldTrackLengthMin.setMaxlength(2);
+    this._fieldTrackLengthMin.setContent(Integer.toString(lengthMin/60));
     
 
-    _fieldTrackLengthSek = new IntegerInput(_fieldNameTrackLengthSek);
-    _fieldTrackLengthSek.setLength(2);
-    _fieldTrackLengthSek.setMaxlength(2);
-    _fieldTrackLengthSek.setContent(Integer.toString(lengthMin%60));
+    this._fieldTrackLengthSek = new IntegerInput(_fieldNameTrackLengthSek);
+    this._fieldTrackLengthSek.setLength(2);
+    this._fieldTrackLengthSek.setMaxlength(2);
+    this._fieldTrackLengthSek.setContent(Integer.toString(lengthMin%60));
 
 
 
-	_fieldAudioID = new FileChooser(_fieldNameAudioID);
+	this._fieldAudioID = new FileChooser(_fieldNameAudioID);
 	if(track != null){
 	ICFile audioTrack = track.getTrack();
 		if(audioTrack != null){
-			_fieldAudioID.setSelectedFile(audioTrack);
+			this._fieldAudioID.setSelectedFile(audioTrack);
 		}
 	}
 	
 	
-	_fieldAudioIsHidden = new CheckBox(_fieldNameAudioIsHidden,"hide");
+	this._fieldAudioIsHidden = new CheckBox(_fieldNameAudioIsHidden,"hide");
 	if(track != null){
-		_fieldAudioIsHidden.setChecked(track.isAudoTrackHidden());
+		this._fieldAudioIsHidden.setChecked(track.isAudoTrackHidden());
 	}
 
-    _fieldDescription = new TextArea(_fieldNameDescription);
-    _fieldDescription.setHeight(6);
-    _fieldDescription.setWidth(42);
+    this._fieldDescription = new TextArea(_fieldNameDescription);
+    this._fieldDescription.setHeight(6);
+    this._fieldDescription.setWidth(42);
     if(track != null){
-      _fieldDescription.setContent(track.getDescription());
+      this._fieldDescription.setContent(track.getDescription());
     }
-    _fieldDescription.keepStatusOnAction();
+    this._fieldDescription.keepStatusOnAction();
 
 
 
-    _fieldAuthors = new SelectionBox(_fieldNameAuthors);
-    _fieldAuthors.setHeight(6);
+    this._fieldAuthors = new SelectionBox(_fieldNameAuthors);
+    this._fieldAuthors.setHeight(6);
     List authorList = AlbumCollectionBusiness.getAuthors();
     if(authorList != null){
       Iterator iter = authorList.iterator();
@@ -170,15 +171,15 @@ public class AddTrack extends IWAdminWindow {
       }
     }
     if(track != null){
-      int[] IDs = track.findRelatedIDs(com.idega.block.albumcollection.data.AuthorBMPBean.getStaticInstance(Author.class));
+      int[] IDs = track.findRelatedIDs(GenericEntity.getStaticInstance(Author.class));
       for (int i = 0; i < IDs.length; i++) {
-        _fieldAuthors.setSelectedElement(Integer.toString(IDs[i]));
+        this._fieldAuthors.setSelectedElement(Integer.toString(IDs[i]));
       }
     }
-    _fieldAuthors.keepStatusOnAction();
+    this._fieldAuthors.keepStatusOnAction();
 
-    _fieldPerformers = new SelectionBox(_fieldNamePerformers);
-    _fieldPerformers.setHeight(6);
+    this._fieldPerformers = new SelectionBox(_fieldNamePerformers);
+    this._fieldPerformers.setHeight(6);
     List perfomerList = AlbumCollectionBusiness.getPerformers();
     if(perfomerList != null){
       Iterator iter = perfomerList.iterator();
@@ -188,12 +189,12 @@ public class AddTrack extends IWAdminWindow {
       }
     }
     if(track != null){
-      int[] IDs = track.findRelatedIDs(com.idega.block.albumcollection.data.PerformerBMPBean.getStaticInstance(Performer.class));
+      int[] IDs = track.findRelatedIDs(GenericEntity.getStaticInstance(Performer.class));
       for (int i = 0; i < IDs.length; i++) {
-        _fieldPerformers.setSelectedElement(Integer.toString(IDs[i]));
+        this._fieldPerformers.setSelectedElement(Integer.toString(IDs[i]));
       }
     }
-    _fieldPerformers.keepStatusOnAction();
+    this._fieldPerformers.keepStatusOnAction();
 
     //_fieldCategories = new SelectionBox(_fieldNameCategories);
   }
@@ -218,7 +219,7 @@ public class AddTrack extends IWAdminWindow {
     nameTable.add(new Text("Nafn:"),1,1);
     nameTable.add(this._fieldTrackName,2,1);
     nameTable.add(this._fieldAlbumId,2,1);
-    nameTable.add(new Text("Númer lags:"),1,2);
+    nameTable.add(new Text("Nï¿½mer lags:"),1,2);
     nameTable.add(this._fieldTrackNumber,2,2);
     nameTable.add(new Text("Lengd:"),3,2);
     
@@ -231,13 +232,13 @@ public class AddTrack extends IWAdminWindow {
 	    lTable.add(this._fieldTrackLengthSek,2,1);
     nameTable.add(lTable,4,2);
 	
-	nameTable.add(new Text("Lagið:"),1,3);
+	nameTable.add(new Text("Lagiï¿½:"),1,3);
 	
-	nameTable.add(_fieldAudioID,2,3);
+	nameTable.add(this._fieldAudioID,2,3);
 
-	nameTable.add(new Text("Fela hljóðskrá:"),1,4);
+	nameTable.add(new Text("Fela hljï¿½ï¿½skrï¿½:"),1,4);
 	
-	nameTable.add(_fieldAudioIsHidden,2,4);
+	nameTable.add(this._fieldAudioIsHidden,2,4);
 
     contentTable.add(nameTable,1,1);
 	contentTable.setRowAlignment(1,Table.HORIZONTAL_ALIGN_CENTER);
@@ -245,7 +246,7 @@ public class AddTrack extends IWAdminWindow {
     
     Table t2 = new Table(2,3);
     t2.setWidth("100%");
-    t2.add(new Text("Höfundar:"),1,1);
+    t2.add(new Text("Hï¿½fundar:"),1,1);
     t2.add(this._fieldAuthors,1,2);
     t2.add(new Text("Flytjendur:"),2,1);
     t2.add(this._fieldPerformers,2,2);
@@ -266,7 +267,7 @@ public class AddTrack extends IWAdminWindow {
 	//descriptionTable.setCellpadding(0);
 	//descriptionTable.setCellspacing(0);
 	//descriptionTable.setHeight(1,"32");
-	descriptionTable.add(new Text("Um lagið"),1,1);
+	descriptionTable.add(new Text("Um lagiï¿½"),1,1);
 	descriptionTable.add(this._fieldDescription,1,2);
 	
 	contentTable.add(descriptionTable,1,3);
@@ -387,11 +388,11 @@ public class AddTrack extends IWAdminWindow {
   public void main(IWContext iwc) throws Exception {
 
     if(iwc.getParameter("save") == null){
-      myForm.empty();
+      this.myForm.empty();
       initFields(iwc);
-      this.add(myForm);
+      this.add(this.myForm);
       //updateFieldStatus(iwc);
-      myForm.add(getElementsOredered(iwc));
+      this.myForm.add(getElementsOredered(iwc));
     } else {
       this.saveTrack(iwc);
       this.close();

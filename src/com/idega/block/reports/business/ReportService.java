@@ -39,13 +39,12 @@ public class ReportService {
 
   public static boolean isSessionReport(IWContext iwc){
 
-    if(iwc.getSessionAttribute(getPrmName())!=null)
-
-      return true;
-
-    else
-
-      return false;
+    if(iwc.getSessionAttribute(getPrmName())!=null) {
+		return true;
+	}
+	else {
+		return false;
+	}
 
   }
 
@@ -59,21 +58,20 @@ public class ReportService {
 
   public static Report getSessionReport(IWContext iwc){
 
-    if(iwc.getSessionAttribute(getPrmName()) != null)
-
-      return (Report) iwc.getSessionAttribute(getPrmName());
-
-    else
-
-      return null;
+    if(iwc.getSessionAttribute(getPrmName()) != null) {
+		return (Report) iwc.getSessionAttribute(getPrmName());
+	}
+	else {
+		return null;
+	}
 
   }
 
   public static void removeSessionReport(IWContext iwc){
 
-    if(iwc.getSessionAttribute(getPrmName()) != null)
-
-      iwc.removeSessionAttribute(getPrmName());
+    if(iwc.getSessionAttribute(getPrmName()) != null) {
+		iwc.removeSessionAttribute(getPrmName());
+	}
 
   }
 
@@ -87,13 +85,12 @@ public class ReportService {
 
   public static boolean isSessionCategory(IWContext iwc){
 
-    if(iwc.getSessionAttribute(categoryPrm())!=null)
-
-      return true;
-
-    else
-
-      return false;
+    if(iwc.getSessionAttribute(categoryPrm())!=null) {
+		return true;
+	}
+	else {
+		return false;
+	}
 
   }
 
@@ -103,9 +100,9 @@ public class ReportService {
 
     int r = 0;
 
-    if(iwc.getSessionAttribute( categoryPrm())!= null)
-
-      r = ((Integer)iwc.getSessionAttribute( categoryPrm())).intValue();
+    if(iwc.getSessionAttribute( categoryPrm())!= null) {
+		r = ((Integer)iwc.getSessionAttribute( categoryPrm())).intValue();
+	}
 
     return r;
 
@@ -119,9 +116,9 @@ public class ReportService {
 
   public static void removeSessionCategory(IWContext iwc){
 
-    if(iwc.getSessionAttribute( categoryPrm()) != null)
-
-      iwc.removeSessionAttribute( categoryPrm());
+    if(iwc.getSessionAttribute( categoryPrm()) != null) {
+		iwc.removeSessionAttribute( categoryPrm());
+	}
 
   }
 

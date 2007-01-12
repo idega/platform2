@@ -28,7 +28,7 @@ import com.idega.util.text.TextSoap;
 
 public class ProductItemThumbnail extends ProductItem {
 
-  private Image defaultImage = _defaultImage;
+  private Image defaultImage = this._defaultImage;
   private int _width = 0;
   private int _height = 0;
   private boolean _clickableThumbnail = true;
@@ -60,10 +60,10 @@ public class ProductItemThumbnail extends ProductItem {
    */
   private void drawObject() throws RemoteException {
     ICFile file = null;
-    Image image = defaultImage;
-    if ( _product != null ) {
-      file = _product.getFile();
-      int fileId = _product.getFileId();
+    Image image = this.defaultImage;
+    if ( this._product != null ) {
+      file = this._product.getFile();
+      int fileId = this._product.getFileId();
       if ( fileId != -1 ) {
         image = getImage( fileId );
       }
@@ -74,31 +74,36 @@ public class ProductItemThumbnail extends ProductItem {
 	
 			if (att != null) {
 				image.addMarkupAttributes(getAttributeMap(att));
-				if (!getAttributeMap(att).containsKey("align"))
+				if (!getAttributeMap(att).containsKey("align")) {
 					image.setAlignment(Table.HORIZONTAL_ALIGN_RIGHT);
+				}
 			}
-			else
+			else {
 				image.setAlignment(Table.HORIZONTAL_ALIGN_RIGHT);
+			}
 
-      if ( _width > 0 ) {
-        image.setWidth( _width );
+      if ( this._width > 0 ) {
+        image.setWidth( this._width );
       }
-      if ( _height > 0 ) {
-        image.setWidth( _height );
+      if ( this._height > 0 ) {
+        image.setWidth( this._height );
       }
-      if (_addBorder)
-      	image.setBorder(1);
+      if (this._addBorder) {
+		image.setBorder(1);
+	}
       
-		  if (_clickableThumbnail) {
+		  if (this._clickableThumbnail) {
 				List images = null;
 				try {
-					if (_product != null) {
-						Collection coll = _product.getICFile();
-						if (coll != null)
+					if (this._product != null) {
+						Collection coll = this._product.getICFile();
+						if (coll != null) {
 							images = new Vector(coll);
-						else
+						}
+						else {
 							images = new Vector();
 						//	images = new Vector(EntityFinder.getInstance().findRelated(_product, ICFile.class));
+						}
 					}
 					else {
 						images = new Vector();
@@ -113,14 +118,16 @@ public class ProductItemThumbnail extends ProductItem {
 					Link imageLink = new Link(image);
 					imageLink.setWindowToOpen(ImageWindow.class);
 					imageLink.addParameter(ImageWindow.prmImageId, ((ICFile) images.get(0)).getPrimaryKey().toString());
-					imageLink.addParameter(ImageWindow.prmInfo, TextSoap.convertSpecialCharacters(_product.getProductName(this._localeId)));
+					imageLink.addParameter(ImageWindow.prmInfo, TextSoap.convertSpecialCharacters(this._product.getProductName(this._localeId)));
 					add(imageLink);
 				}
-				else
+				else {
 					add(image);
+				}
 			}
-		  else
-      	add( image );
+		else {
+			add( image );
+		}
     }
   }
 
@@ -130,7 +137,7 @@ public class ProductItemThumbnail extends ProductItem {
    *@param  width  The new width value
    */
   public void setWidth( int width ) {
-    _width = width;
+    this._width = width;
   }
 
   /**
@@ -139,17 +146,17 @@ public class ProductItemThumbnail extends ProductItem {
    *@param  height  The new height value
    */
   public void setHeight( int height ) {
-    _height = height;
+    this._height = height;
   }
 
 	public void setClickableThumbnail(boolean clickableThumbnail) {
-		_clickableThumbnail = clickableThumbnail;
+		this._clickableThumbnail = clickableThumbnail;
 	}
 
 	/**
 	 * @param border
 	 */
 	public void setAddBorder(boolean border) {
-		_addBorder = border;
+		this._addBorder = border;
 	}
 }

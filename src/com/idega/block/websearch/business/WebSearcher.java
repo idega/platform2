@@ -50,9 +50,9 @@ public final class WebSearcher {
 	}
 
 	public void close() {
-		if (searcher != null) {
+		if (this.searcher != null) {
 			try {
-				searcher.close();
+				this.searcher.close();
 			}
 			catch (Exception e) {
 				e.printStackTrace();
@@ -62,14 +62,14 @@ public final class WebSearcher {
 
 	public WebSearchHitIterator search(String input) throws IOException, ParseException {
 		//try {
-		String indexPath = index.getIndexPath();
+		String indexPath = this.index.getIndexPath();
 		Hits hits;
 		WebSearchHitIterator searchHits = null;
 		IndexReaderCache reader = new IndexReaderCache();//can't this be
 														 // static?
-		searcher = new IndexSearcher(reader.getReader(indexPath));
+		this.searcher = new IndexSearcher(reader.getReader(indexPath));
 		Analyzer analyzer = new StopAnalyzer();
-		if (phraseSearch) {
+		if (this.phraseSearch) {
 			input = "\"" + input + "\"";
 		}
 		BooleanQuery query = new BooleanQuery();
@@ -78,26 +78,26 @@ public final class WebSearcher {
 			fQuery.add(QueryParser.parse(input, fields[i], analyzer), false, false);
 		}
 		query.add(fQuery, true, false);
-		if (categories != null) {
-			query.add(QueryParser.parse(categories, "categories", analyzer), true, false);
+		if (this.categories != null) {
+			query.add(QueryParser.parse(this.categories, "categories", analyzer), true, false);
 		}
-		if (from != 0) {
-			if (to != 0) {
-				dateFilter = new DateFilter("published", from, to);
+		if (this.from != 0) {
+			if (this.to != 0) {
+				this.dateFilter = new DateFilter("published", this.from, this.to);
 			}
 			else {
-				dateFilter = DateFilter.After("published", from);
+				this.dateFilter = DateFilter.After("published", this.from);
 			}
 		}
-		else if (to != 0) {
-			dateFilter = DateFilter.Before("published", to);
+		else if (this.to != 0) {
+			this.dateFilter = DateFilter.Before("published", this.to);
 		}
 		//System.out.println("Searching for: " + query.toString());
-		if (dateFilter == null) {
-			hits = searcher.search(query);
+		if (this.dateFilter == null) {
+			hits = this.searcher.search(query);
 		}
 		else {
-			hits = searcher.search(query, dateFilter);
+			hits = this.searcher.search(query, this.dateFilter);
 		}
 		searchHits = new WebSearchHitIterator(input, hits, (this.hitsPerSet != 0) ? this.hitsPerSet : 30);
 		return searchHits;
@@ -110,28 +110,28 @@ public final class WebSearcher {
 	}
 
 	public void setCategories(String cat) {
-		categories = cat;
+		this.categories = cat;
 	}
 
 	public void setFrom(long time) {
-		from = time;
+		this.from = time;
 	}
 
 	public void setFromDays(int days) {
 		//System.out.println(new Date(System.currentTimeMillis() -
 		// (long)1000*60*60*24*days));
-		from = System.currentTimeMillis() - (long) 1000 * 60 * 60 * 24 * days;
+		this.from = System.currentTimeMillis() - (long) 1000 * 60 * 60 * 24 * days;
 	}
 
 	public void setHitsPerSet(int hps) {
-		hitsPerSet = hps;
+		this.hitsPerSet = hps;
 	}
 
 	public void setPhraseSearch(boolean f) {
-		phraseSearch = f;
+		this.phraseSearch = f;
 	}
 
 	public void setTo(long time) {
-		to = time;
+		this.to = time;
 	}
 }

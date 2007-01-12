@@ -36,24 +36,26 @@ public AuthorEditor(){
 }
 
   public void main(IWContext iwc) throws Exception {
-    _iwb = getBundle(iwc);
-    _iwrb = getResourceBundle(iwc);
-    addTitle(_iwrb.getLocalizedString("add_author","Add author"));
+    this._iwb = getBundle(iwc);
+    this._iwrb = getResourceBundle(iwc);
+    addTitle(this._iwrb.getLocalizedString("add_author","Add author"));
 
     try {
-      _authorID = Integer.parseInt(iwc.getParameter(BookBusiness.PARAMETER_AUTHOR_ID));
+      this._authorID = Integer.parseInt(iwc.getParameter(BookBusiness.PARAMETER_AUTHOR_ID));
     }
     catch (NumberFormatException e) {
-      _authorID = -1;
+      this._authorID = -1;
     }
 
     String mode = iwc.getParameter(BookBusiness.PARAMETER_MODE);
 
     if ( mode.equalsIgnoreCase(BookBusiness.PARAMETER_EDIT) ) {
-      if ( _authorID != -1 ) {
-	_update = true;
-	_author = getBookBusiness().getAuthor(_authorID);
-	if ( _author == null ) _update = false;
+      if ( this._authorID != -1 ) {
+	this._update = true;
+	this._author = getBookBusiness().getAuthor(this._authorID);
+	if ( this._author == null ) {
+		this._update = false;
+	}
       }
       processForm();
     }
@@ -76,25 +78,25 @@ public AuthorEditor(){
       imageInsert.setMaxImageWidth(130);
       imageInsert.setHasUseBox(false);
 
-    if ( _update ) {
-      if ( _author.getName() != null ) {
-	authorName.setContent(_author.getName());
+    if ( this._update ) {
+      if ( this._author.getName() != null ) {
+	authorName.setContent(this._author.getName());
       }
-      if ( _author.getDescription() != null ) {
-	authorDescription.setContent(_author.getDescription());
+      if ( this._author.getDescription() != null ) {
+	authorDescription.setContent(this._author.getDescription());
       }
-      if ( _author.getImage() != -1 ) {
-	imageInsert.setImageId(_author.getImage());
+      if ( this._author.getImage() != -1 ) {
+	imageInsert.setImageId(this._author.getImage());
       }
     }
-    addLeft(_iwrb.getLocalizedString("author_name","Author name")+":",authorName,true);
-    addLeft(_iwrb.getLocalizedString("book_description","Description")+":",authorDescription,true);
-    addRight(_iwrb.getLocalizedString("image","Image")+":",imageInsert,true,false);
+    addLeft(this._iwrb.getLocalizedString("author_name","Author name")+":",authorName,true);
+    addLeft(this._iwrb.getLocalizedString("book_description","Description")+":",authorDescription,true);
+    addRight(this._iwrb.getLocalizedString("image","Image")+":",imageInsert,true,false);
 
-    addHiddenInput(new HiddenInput(BookBusiness.PARAMETER_AUTHOR_ID,Integer.toString(_authorID)));
+    addHiddenInput(new HiddenInput(BookBusiness.PARAMETER_AUTHOR_ID,Integer.toString(this._authorID)));
 
-    addSubmitButton(new CloseButton(_iwrb.getLocalizedImageButton("close","CLOSE")));
-    addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("save","SAVE"),BookBusiness.PARAMETER_MODE,BookBusiness.PARAMETER_SAVE));
+    addSubmitButton(new CloseButton(this._iwrb.getLocalizedImageButton("close","CLOSE")));
+    addSubmitButton(new SubmitButton(this._iwrb.getLocalizedImageButton("save","SAVE"),BookBusiness.PARAMETER_MODE,BookBusiness.PARAMETER_SAVE));
   }
 
   private void saveAuthor(IWContext iwc) {
@@ -102,14 +104,14 @@ public AuthorEditor(){
     String description = iwc.getParameter(BookBusiness.PARAMETER_DESCRIPTION);
     String imageID = iwc.getParameter(BookBusiness.PARAMETER_IMAGE_ID);
 
-    getBookBusiness().saveAuthor(_authorID,name,description,imageID);
+    getBookBusiness().saveAuthor(this._authorID,name,description,imageID);
 
     setParentToReload();
     close();
   }
 
   private void deleteAuthor() {
-    getBookBusiness().deleteAuthor(_authorID);
+    getBookBusiness().deleteAuthor(this._authorID);
     setParentToReload();
     close();
   }

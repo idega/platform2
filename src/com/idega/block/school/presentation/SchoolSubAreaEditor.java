@@ -59,8 +59,9 @@ public class SchoolSubAreaEditor extends SchoolBlock {
 		else if (iwc.isParameterSet("sch_new_subarea")) {
 			F.add(getInput(iwc, -1));
 		}
-		else
+		else {
 			F.add(getListTable(iwc, null));
+		}
 
 		add(F);
 

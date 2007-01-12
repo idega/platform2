@@ -15,16 +15,16 @@ public class EmptyFunctionExpression extends FunctionExpression {
   private String fieldValue = null;
   
   protected void initialize(SQLQuery sqlQuery) {
-    fieldValue = sqlQuery.getUniqueNameForField(queryField);
+    this.fieldValue = sqlQuery.getUniqueNameForField(this.queryField);
   }
     
   
   public String toSQLString() {
-  	return fieldValue;
+  	return this.fieldValue;
   }
     
   public boolean isValid() {
-    return (fieldValue != null && fieldValue.length() != 0);
+    return (this.fieldValue != null && this.fieldValue.length() != 0);
   } 
   
 

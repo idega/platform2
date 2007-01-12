@@ -68,6 +68,6 @@ public class SimpleContractCreator extends Block {
 	}
 
 	public String getBundleIdentifier(){
-		return this.IW_BUNDLE_IDENTIFIER;
+		return SimpleContractCreator.IW_BUNDLE_IDENTIFIER;
 	}
 }

@@ -73,28 +73,28 @@ public class QueryResult implements JRDataSource {
  
   public void addField(QueryResultField field) {
     String id = field.getId();
-    fields.put(id, field);
+    this.fields.put(id, field);
     // store the order of the fields
-    if (fieldOrder.contains(id))  {
-      fieldOrder.remove(id);
+    if (this.fieldOrder.contains(id))  {
+      this.fieldOrder.remove(id);
     }
-    fieldOrder.add(id);
+    this.fieldOrder.add(id);
   }
   
   public void addCell(Object id, Object fieldId, Object cellValue) {
-  	cells.put(id,fieldId, cellValue);
+  	this.cells.put(id,fieldId, cellValue);
   }
  
   public QueryResultField getField(String id) {
-    return (QueryResultField) fields.get(id);
+    return (QueryResultField) this.fields.get(id);
   }
   
   public QueryResultField getFieldByOrderNumber(int orderNumber) {
     orderNumber--;
-    if (orderNumber < 0 || orderNumber >= fieldOrder.size()) {
+    if (orderNumber < 0 || orderNumber >= this.fieldOrder.size()) {
       return null;
     }
-    String id = (String) fieldOrder.get(orderNumber);
+    String id = (String) this.fieldOrder.get(orderNumber);
     return getField(id);
   }
   
@@ -107,19 +107,19 @@ public class QueryResult implements JRDataSource {
     XMLElement definition = new XMLElement(DEFINITION);
     XMLElement content = new XMLElement(CONTENT);
     
-    Iterator fieldsIterator = fieldOrder.iterator();
+    Iterator fieldsIterator = this.fieldOrder.iterator();
     while (fieldsIterator.hasNext())  {
       // store the order of the fields
       String id = (String) fieldsIterator.next();
-      QueryResultField field = (QueryResultField) fields.get(id);
+      QueryResultField field = (QueryResultField) this.fields.get(id);
       XMLElement fieldElement = field.convertToXML();
       definition.addContent(fieldElement);
     }
     
-    Iterator xKeyIterator = cells.firstKeySet().iterator();
+    Iterator xKeyIterator = this.cells.firstKeySet().iterator();
     while (xKeyIterator.hasNext()) {
     	Object xKey = xKeyIterator.next();
-    	Map yDimension = cells.get(xKey);
+    	Map yDimension = this.cells.get(xKey);
     	Iterator yKeyIterator = yDimension.keySet().iterator();
     	while (yKeyIterator.hasNext()) {
     		Object yKey = yKeyIterator.next();
@@ -138,10 +138,10 @@ public class QueryResult implements JRDataSource {
   
   
   public void mapDesignIdToFieldId(String designId, String fieldId)  {
-    if (designIdFieldIdMapping == null)   {
-      designIdFieldIdMapping = new HashMap();
+    if (this.designIdFieldIdMapping == null)   {
+      this.designIdFieldIdMapping = new HashMap();
     }
-    designIdFieldIdMapping.put(designId, fieldId);
+    this.designIdFieldIdMapping.put(designId, fieldId);
   }
   
   /** Returns true if there aren't any results stored.
@@ -151,12 +151,12 @@ public class QueryResult implements JRDataSource {
    * @return true if there aren't any results stored.
    */
   public boolean isEmpty()  {
-    return cells.isEmpty();
+    return this.cells.isEmpty();
   }
   
   public int getNumberOfRows() {
-  	int realNumber = cells.sizeOfFirstKeySet();
-  	return  (realNumber < desiredNumberOfRows || desiredNumberOfRows == -1) ? realNumber : desiredNumberOfRows;
+  	int realNumber = this.cells.sizeOfFirstKeySet();
+  	return  (realNumber < this.desiredNumberOfRows || this.desiredNumberOfRows == -1) ? realNumber : this.desiredNumberOfRows;
   }
  
   /** @see net.sf.jasperreports.engine.JRDataSource#next()
@@ -165,17 +165,17 @@ public class QueryResult implements JRDataSource {
   public boolean next() throws JRException  {
   	
     // the very first time we have to initialize the iterator  
-    if (cellIterator == null) {
-    	currentRowNumber = 0;
-    	cellIterator = cells.firstKeySet().iterator();
+    if (this.cellIterator == null) {
+    	this.currentRowNumber = 0;
+    	this.cellIterator = this.cells.firstKeySet().iterator();
     }
     
     // now ask the iterator
-    if (cellIterator.hasNext()) {
+    if (this.cellIterator.hasNext()) {
     	// compare with the behaviour of a result set...
-    	currentCellId = (String) cellIterator.next();
-    	currentRowNumber++;
-      	if (currentRowNumber <= desiredNumberOfRows || desiredNumberOfRows == -1) {
+    	this.currentCellId = (String) this.cellIterator.next();
+    	this.currentRowNumber++;
+      	if (this.currentRowNumber <= this.desiredNumberOfRows || this.desiredNumberOfRows == -1) {
       		return true;
       	}
     }
@@ -183,9 +183,9 @@ public class QueryResult implements JRDataSource {
   }
       
   public void resetDataSource() {
-    cellIterator = null;
-    currentCellId = null;
-    currentRowNumber = 0;
+    this.cellIterator = null;
+    this.currentCellId = null;
+    this.currentRowNumber = 0;
    }
 
   /**
@@ -196,15 +196,15 @@ public class QueryResult implements JRDataSource {
     String fieldId = jrField.getName();
 	
     // if mapping is required use the map
-    if (designIdFieldIdMapping != null) {
+    if (this.designIdFieldIdMapping != null) {
       // if there is an entry use this one
-      String id = (String) designIdFieldIdMapping.get(fieldId);
+      String id = (String) this.designIdFieldIdMapping.get(fieldId);
       if (id != null) {
         fieldId = id;
       }
     }
     // fetch the cellValue
-    Object cellValue = cells.get(currentCellId, fieldId);
+    Object cellValue = this.cells.get(this.currentCellId, fieldId);
     // return the value of the cell
      return (cellValue == null ) ? "" : cellValue.toString();
     }

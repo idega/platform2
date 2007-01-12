@@ -35,33 +35,33 @@ public class ApartmentHolder {
   }
   
   public Apartment getApartment(){
-    return apartment;
+    return this.apartment;
   }
 
   public Floor getFloor(){
-    return floor;
+    return this.floor;
   }
 
   public Building getBuilding(){
-    return building;
+    return this.building;
   }
 
   public Complex getComplex(){
-    return complex;
+    return this.complex;
   }
 
   public ApartmentType getApartmentType(){
-    return type;
+    return this.type;
   }
 
   public ApartmentCategory getApartmentCategory(){
-    return category;
+    return this.category;
   }
 /**
  * @return Returns the category.
  */
 public ApartmentCategory getCategory() {
-	return category;
+	return this.category;
 }
 
 /**
@@ -75,7 +75,7 @@ public void setCategory(ApartmentCategory category) {
  * @return Returns the type.
  */
 public ApartmentType getType() {
-	return type;
+	return this.type;
 }
 
 /**

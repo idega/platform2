@@ -13,6 +13,7 @@ import com.idega.block.staff.data.StaffInfo;
 import com.idega.block.staff.data.StaffLocalized;
 import com.idega.block.staff.data.StaffMeta;
 import com.idega.block.staff.data.StaffMetaData;
+import com.idega.block.staff.data.StaffMetaDataBMPBean;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.data.GenericGroup;
@@ -21,8 +22,10 @@ import com.idega.core.user.business.UserBusiness;
 import com.idega.core.user.business.UserGroupBusiness;
 import com.idega.core.user.data.User;
 import com.idega.data.EntityFinder;
+import com.idega.data.GenericEntity;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.Group;
+import com.idega.user.data.UserBMPBean;
 import com.idega.util.IWTimestamp;
 
 
@@ -33,7 +36,7 @@ import com.idega.util.IWTimestamp;
 
  * Copyright:    Copyright (c) 2000 idega.is All Rights Reserved
 
- * Company:      idega margmiðlun
+ * Company:      idega margmiï¿½lun
 
  * @author
 
@@ -123,7 +126,7 @@ public class StaffFinder {
 
     try {
 
-      return (StaffMeta[]) com.idega.block.staff.data.StaffMetaBMPBean.getStaticInstance(StaffMeta.class).findAllByColumn(com.idega.block.staff.data.StaffMetaBMPBean.getColumnNameUserID(),Integer.toString(userID),'=',com.idega.block.staff.data.StaffMetaBMPBean.getColumnNameLocaleId(),Integer.toString(localeID),'=');
+      return (StaffMeta[]) GenericEntity.getStaticInstance(StaffMeta.class).findAllByColumn(StaffMetaDataBMPBean.getColumnNameUserID(),Integer.toString(userID),'=',com.idega.block.staff.data.StaffMetaBMPBean.getColumnNameLocaleId(),Integer.toString(localeID),'=');
 
     }
 
@@ -155,7 +158,7 @@ public class StaffFinder {
 
     try {
 
-      List allUsers = EntityFinder.findAll(com.idega.core.user.data.UserBMPBean.getStaticInstance());
+      List allUsers = EntityFinder.findAll(UserBMPBean.getStaticInstance());
 
       /*if ( allUsers != null ) {
 
@@ -209,9 +212,9 @@ public class StaffFinder {
 
     List users = UserBusiness.getUsersInPrimaryGroup(group);
 
-    if ( users != null )
-
-      return users;
+    if ( users != null ) {
+		return users;
+	}
 
     return null;
 
@@ -223,7 +226,7 @@ public class StaffFinder {
 
     try {
 
-      List allUsers = EntityFinder.findAllByColumn(com.idega.core.user.data.UserBMPBean.getStaticInstance(),com.idega.core.user.data.UserBMPBean.getColumnNameFirstName(),letter+"%");
+      List allUsers = EntityFinder.findAllByColumn(UserBMPBean.getStaticInstance(),UserBMPBean.getColumnNameFirstName(),letter+"%");
 
       if ( allUsers != null ) {
 
@@ -288,7 +291,7 @@ public class StaffFinder {
 
       try {
 
-        list = EntityFinder.findRelated(entity,com.idega.block.staff.data.StaffLocalizedBMPBean.getStaticInstance(StaffLocalized.class));
+        list = EntityFinder.findRelated(entity,GenericEntity.getStaticInstance(StaffLocalized.class));
 
       }
 
@@ -392,9 +395,9 @@ public class StaffFinder {
 
      IWTimestamp stamp = null;
 
-     if ( user.getDateOfBirth() != null )
-
-        stamp = new IWTimestamp(user.getDateOfBirth());
+     if ( user.getDateOfBirth() != null ) {
+		stamp = new IWTimestamp(user.getDateOfBirth());
+	}
 
       IWTimestamp dateToday = new IWTimestamp();
 
@@ -402,9 +405,9 @@ public class StaffFinder {
 
       int userAge = 0;
 
-      if ( stamp != null )
-
-        userAge = (new IWTimestamp().getDaysBetween(stamp,dateToday))/365;
+      if ( stamp != null ) {
+		userAge = (new IWTimestamp().getDaysBetween(stamp,dateToday))/365;
+	}
 
 /*
 
@@ -424,9 +427,9 @@ public class StaffFinder {
 
     if ( staff != null ) {
 
-      if ( staff.getBeganWork() != null )
-
-        holder.setBeganWork(new IWTimestamp(staff.getBeganWork()));
+      if ( staff.getBeganWork() != null ) {
+		holder.setBeganWork(new IWTimestamp(staff.getBeganWork()));
+	}
 
       holder.setImageID(staff.getImageID());
 

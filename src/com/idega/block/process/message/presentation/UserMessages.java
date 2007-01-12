@@ -1,5 +1,5 @@
 /*
- * $Id: UserMessages.java,v 1.4 2005/10/24 19:22:45 laddi Exp $
+ * $Id: UserMessages.java,v 1.4.2.1 2007/01/12 19:32:21 idegaweb Exp $
  * Created on Oct 13, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -38,10 +38,10 @@ import com.idega.util.text.Name;
 
 
 /**
- * Last modified: $Date: 2005/10/24 19:22:45 $ by $Author: laddi $
+ * Last modified: $Date: 2007/01/12 19:32:21 $ by $Author: idegaweb $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.4.2.1 $
  */
 public class UserMessages extends MessageBlock implements IWPageEventListener {
 	
@@ -213,7 +213,7 @@ public class UserMessages extends MessageBlock implements IWPageEventListener {
 
 	protected Collection getMessages(IWContext iwc, int startingEntry, int numberOfEntries) {
 		try {
-			return getMessageBusiness().findMessages(messageType, iwc.getCurrentUser(), numberOfEntries, startingEntry);
+			return getMessageBusiness().findMessages(this.messageType, iwc.getCurrentUser(), numberOfEntries, startingEntry);
 		}
 		catch (FinderException fe) {
 			log(fe);
@@ -227,7 +227,7 @@ public class UserMessages extends MessageBlock implements IWPageEventListener {
 	
 	protected int getMessageCount(IWContext iwc) {
 		try {
-			return getMessageBusiness().getNumberOfMessages(messageType, iwc.getCurrentUser());
+			return getMessageBusiness().getNumberOfMessages(this.messageType, iwc.getCurrentUser());
 		}
 		catch (IDOException ie) {
 			ie.printStackTrace();
@@ -240,7 +240,7 @@ public class UserMessages extends MessageBlock implements IWPageEventListener {
 	}
 	
 	public void setViewerPage(ICPage page) {
-		iViewerPage = page;
+		this.iViewerPage = page;
 	}
 
 	public boolean actionPerformed(IWContext iwc) throws IWException {
@@ -263,25 +263,25 @@ public class UserMessages extends MessageBlock implements IWPageEventListener {
 	}
 
 	public void setMessageType(String type) {
-		messageType = type;
+		this.messageType = type;
 	}
 	
 	public void setMaximumNumberOfEntries(int maxNumberOfEntries) {
-		iMaxNumberOfEntries = maxNumberOfEntries;
+		this.iMaxNumberOfEntries = maxNumberOfEntries;
 	}
 
 	
 	protected int getMaxNumberOfEntries() {
-		return iMaxNumberOfEntries;
+		return this.iMaxNumberOfEntries;
 	}
 
 	
 	protected ICPage getViewerPage() {
-		return iViewerPage;
+		return this.iViewerPage;
 	}
 
 	
 	protected String getMessageType() {
-		return messageType;
+		return this.messageType;
 	}
 }

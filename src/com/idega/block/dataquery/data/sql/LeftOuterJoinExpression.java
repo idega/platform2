@@ -23,7 +23,7 @@ public class LeftOuterJoinExpression implements Expression {
 	private String targetTableName;
 	
   public LeftOuterJoinExpression(IDOEntityDefinition sourceDefinition, String sourcePath, IDOEntityDefinition targetDefinition, String targetPath, SQLQuery sqlQuery) throws IDOCompositePrimaryKeyException {
-    sourceKey = sourceDefinition.getPrimaryKeyDefinition().getField().getSQLFieldName();
+    this.sourceKey = sourceDefinition.getPrimaryKeyDefinition().getField().getSQLFieldName();
     initialize(sourceDefinition, sourcePath, targetDefinition, targetPath, sqlQuery);
   }
   
@@ -42,15 +42,15 @@ public class LeftOuterJoinExpression implements Expression {
   	
   
   private void initialize(IDOEntityDefinition sourceDefinition, String sourcePath, IDOEntityDefinition targetDefinition, String targetPath, SQLQuery sqlQuery) throws IDOCompositePrimaryKeyException	{
-  	targetKey = targetDefinition.getPrimaryKeyDefinition().getField().getSQLFieldName();
+  	this.targetKey = targetDefinition.getPrimaryKeyDefinition().getField().getSQLFieldName();
  	 	String sourceTableName = sourceDefinition.getSQLTableName();
-		targetTableName = targetDefinition.getSQLTableName();
+		this.targetTableName = targetDefinition.getSQLTableName();
   	initialize(sourceTableName, sourcePath, targetPath, sqlQuery);
   } 
   	
   private void initialize(String sourceTableName, String sourcePath, String targetPath, SQLQuery sqlQuery)	{
-  	sourceAlias = sqlQuery.getUniqueNameForEntityByTableName(sourceTableName, sourcePath);
-  	targetAlias = sqlQuery.getUniqueNameForEntityByTableName(targetTableName, targetPath);
+  	this.sourceAlias = sqlQuery.getUniqueNameForEntityByTableName(sourceTableName, sourcePath);
+  	this.targetAlias = sqlQuery.getUniqueNameForEntityByTableName(this.targetTableName, targetPath);
   }
 
 	/* (non-Javadoc)
@@ -58,11 +58,11 @@ public class LeftOuterJoinExpression implements Expression {
 	 */
 	public String toSQLString() {
 		StringBuffer buffer = new StringBuffer(" LEFT JOIN ");
-		buffer.append(targetTableName).append(" ").append(targetAlias);
+		buffer.append(this.targetTableName).append(" ").append(this.targetAlias);
 		buffer.append(" ON (");
-		buffer.append(sourceAlias).append(".").append(sourceKey);
+		buffer.append(this.sourceAlias).append(".").append(this.sourceKey);
 		buffer.append("=");
-		buffer.append(targetAlias).append(".").append(targetKey);
+		buffer.append(this.targetAlias).append(".").append(this.targetKey);
 		buffer.append(") ");		
 		return buffer.toString();
 	}
@@ -72,15 +72,15 @@ public class LeftOuterJoinExpression implements Expression {
 	 */
 	public boolean isValid() {
 		return 
-			StringHandler.isNotEmpty(sourceAlias) &&
-			StringHandler.isNotEmpty(targetAlias) &&
-			StringHandler.isNotEmpty(sourceKey) &&
-			StringHandler.isNotEmpty(targetKey)	&&
-			StringHandler.isNotEmpty(targetTableName) ;
+			StringHandler.isNotEmpty(this.sourceAlias) &&
+			StringHandler.isNotEmpty(this.targetAlias) &&
+			StringHandler.isNotEmpty(this.sourceKey) &&
+			StringHandler.isNotEmpty(this.targetKey)	&&
+			StringHandler.isNotEmpty(this.targetTableName) ;
 	}
 	
 	public String getTable()	{
-		return targetTableName;
+		return this.targetTableName;
 	} 
 
 }

@@ -19,7 +19,7 @@ public class SchoolContentItemInformation extends SchoolContentItem {
 	protected PresentationObject getObject(){
 		LocalizedText lText = null;
 		try {
-			lText = _school.getLocalizedText(_iwc.getCurrentLocaleId());
+			lText = this._school.getLocalizedText(this._iwc.getCurrentLocaleId());
 		} catch (IDORelationshipException e) {
 			debug("LocalizedText not found for School");
 		}

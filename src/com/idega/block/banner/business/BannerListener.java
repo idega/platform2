@@ -8,7 +8,7 @@ import com.idega.event.IWPageEventListener;
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:      idega.is
- * @author 2001 - idega team - <a href="mailto:laddi@idega.is">Þórhallur Helgason</a>
+ * @author 2001 - idega team - <a href="mailto:laddi@idega.is">ï¿½ï¿½rhallur Helgason</a>
  * @version 1.0
  */
 
@@ -19,8 +19,9 @@ public class BannerListener implements IWPageEventListener{
 
   public boolean actionPerformed(IWContext iwc){
     String mode = iwc.getParameter(BannerBusiness.PARAMETER_MODE);
-    if ( mode == null )
-      mode = "";
+    if ( mode == null ) {
+		mode = "";
+	}
 
     if ( mode.equalsIgnoreCase(BannerBusiness.PARAMETER_CLICKED) ) {
       String adID = iwc.getParameter(BannerBusiness.PARAMETER_AD_ID);

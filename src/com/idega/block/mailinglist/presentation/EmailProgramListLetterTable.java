@@ -54,8 +54,12 @@ public class EmailProgramListLetterTable extends Block {
     int unSentLettersCurrentID;
     Content content;
     int numberOfLetters;
-    if (unSentLetters == null) numberOfLetters = 0;
-    else numberOfLetters = unSentLetters.length;
+    if (unSentLetters == null) {
+		numberOfLetters = 0;
+	}
+	else {
+		numberOfLetters = unSentLetters.length;
+	}
     for (int i = 0; i < numberOfLetters; i++) {
       unSentLettersCurrentID = unSentLetters[i].getID();
       contents = new Object[6];
@@ -98,12 +102,12 @@ public class EmailProgramListLetterTable extends Block {
       ex.printStackTrace(System.err);
     }
 
-    letterListTable = new Table(1,3);
-    letterListTable.add("DRAFTS",1,1);
-    letterListTable.add(contentViewer,1,2);
-    letterListTable.setAlignment(1,1,"center");
-    letterListTable.setAlignment(1,3,"right");
-    letterListTable.add(deleteButton,1,3);
+    this.letterListTable = new Table(1,3);
+    this.letterListTable.add("DRAFTS",1,1);
+    this.letterListTable.add(contentViewer,1,2);
+    this.letterListTable.setAlignment(1,1,"center");
+    this.letterListTable.setAlignment(1,3,"right");
+    this.letterListTable.add(this.deleteButton,1,3);
   }
 
   private Vector getSentContentVector() throws SQLException{
@@ -118,8 +122,12 @@ public class EmailProgramListLetterTable extends Block {
     int sentLettersCurrentID;
     Content sentContent;
     int numberOfLetters;
-    if (sentLetters == null) numberOfLetters = 0;
-    else numberOfLetters = sentLetters.length;
+    if (sentLetters == null) {
+		numberOfLetters = 0;
+	}
+	else {
+		numberOfLetters = sentLetters.length;
+	}
     for (int i = 0; i < numberOfLetters; i++) {
       sentLettersCurrentID = sentLetters[i].getID();
       sentContents = new Object[6];
@@ -162,13 +170,13 @@ public class EmailProgramListLetterTable extends Block {
       ex.printStackTrace(System.err);
     }
 
-    letterListTable = new Table(1,3);
-    letterListTable.add("SENT LETTERS",1,1);
-    letterListTable.add(sentContentViewer,1,2);
-    letterListTable.add(sentContentViewer,1,2);
-    letterListTable.setAlignment(1,1,"center");
-    letterListTable.setAlignment(1,3,"right");
-    letterListTable.add(deleteButton,1,3);
+    this.letterListTable = new Table(1,3);
+    this.letterListTable.add("SENT LETTERS",1,1);
+    this.letterListTable.add(sentContentViewer,1,2);
+    this.letterListTable.add(sentContentViewer,1,2);
+    this.letterListTable.setAlignment(1,1,"center");
+    this.letterListTable.setAlignment(1,3,"right");
+    this.letterListTable.add(this.deleteButton,1,3);
   }
 
   private Vector getInboxLettersContentVector(IWContext iwc) throws MessagingException{
@@ -183,8 +191,12 @@ public class EmailProgramListLetterTable extends Block {
     int inboxLettersCurrentID;
     Content inboxContent;
     int numberOfLetters;
-    if (inboxLetters == null) numberOfLetters = 0;
-    else numberOfLetters = inboxLetters.length;
+    if (inboxLetters == null) {
+		numberOfLetters = 0;
+	}
+	else {
+		numberOfLetters = inboxLetters.length;
+	}
     for (int i = 0; i < numberOfLetters; i++) {
       if (!inboxLetters[i].isSet(Flags.Flag.DELETED)){
         inboxLettersCurrentID = inboxLetters[i].getMessageNumber();
@@ -229,12 +241,12 @@ public class EmailProgramListLetterTable extends Block {
       ex.printStackTrace(System.err);
     }
 
-    letterListTable = new Table(1,3);
-    letterListTable.add("SENT LETTERS",1,1);
-    letterListTable.add(sentContentViewer,1,2);
-    letterListTable.setAlignment(1,1,"center");
-    letterListTable.setAlignment(1,3,"right");
-    letterListTable.add(deleteButton,1,3);
+    this.letterListTable = new Table(1,3);
+    this.letterListTable.add("SENT LETTERS",1,1);
+    this.letterListTable.add(sentContentViewer,1,2);
+    this.letterListTable.setAlignment(1,1,"center");
+    this.letterListTable.setAlignment(1,3,"right");
+    this.letterListTable.add(this.deleteButton,1,3);
 
   }
 
@@ -243,6 +255,6 @@ public class EmailProgramListLetterTable extends Block {
     letterListTable.add("subject",2,1);
     letterListTable.add("attachments",5,1);*/
 
-    add(letterListTable);
+    add(this.letterListTable);
   }
 }

@@ -19,23 +19,23 @@ public class ProductItemImageSlideshow extends ProductItem {
 	}
 	
 	private void drawObject() throws Exception {
-		if (_product != null) {
+		if (this._product != null) {
 			Collection coll = super._product.getICFile();
 			if (coll != null && !coll.isEmpty()) {
 				ImageSlideShow iss = new ImageSlideShow();
 				iss.setFiles(new Vector(coll));
 
-				if (heigth > 0) {
-					iss.setHeight(heigth);
+				if (this.heigth > 0) {
+					iss.setHeight(this.heigth);
 				}
-				if (width > 0) {
-					iss.setWidth(width);
+				if (this.width > 0) {
+					iss.setWidth(this.width);
 				}
 							
 				add(iss);
 			}
 		} else {
-			add(_iwrb.getLocalizedString("product.image_slideshow","Image Slideshow"));
+			add(this._iwrb.getLocalizedString("product.image_slideshow","Image Slideshow"));
 		}
 	}
 	

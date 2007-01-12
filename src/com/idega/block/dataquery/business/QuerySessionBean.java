@@ -34,32 +34,32 @@ public class QuerySessionBean extends IBOSessionBean implements QuerySession   {
 		return (QueryService) getServiceInstance(QueryService.class);
 	}
 	public void createNewQuery() throws RemoteException {
-		helper = getQueryService().getQueryHelper();
+		this.helper = getQueryService().getQueryHelper();
 	}
 	public void createQuery(int userQueryID, IWContext iwc) throws NumberFormatException, RemoteException, FinderException, IOException {
-		helper = getQueryService().getQueryHelper(userQueryID, iwc);
+		this.helper = getQueryService().getQueryHelper(userQueryID, iwc);
 		this.userQueryID = userQueryID;
 	}
 	public QueryHelper getQueryHelper(IWContext iwc) throws NumberFormatException, RemoteException, FinderException, IOException {
-		if (helper == null) {
-			if (userQueryID > 0) {
-				createQuery(userQueryID, iwc);
+		if (this.helper == null) {
+			if (this.userQueryID > 0) {
+				createQuery(this.userQueryID, iwc);
 			}
 			else {
 				createNewQuery();
 			}
 		}
-		return helper;
+		return this.helper;
 	}
 	/**
 	 * @param i
 	 */
 	public void setUserQueryID(int i){
-		userQueryID = i;
+		this.userQueryID = i;
 	}
 	
 	public UserQuery storeQuery(String name,boolean isPrivate, boolean overwriteQuery)  throws IDOStoreException, RemoteException, IOException, CreateException, SQLException, FinderException {
-		return getQueryService().storeOrUpdateQuery(name, helper, isPrivate, overwriteQuery,  getUserContext());
+		return getQueryService().storeOrUpdateQuery(name, this.helper, isPrivate, overwriteQuery,  getUserContext());
 	}
 	
 	

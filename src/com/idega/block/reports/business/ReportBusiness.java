@@ -2,6 +2,7 @@ package com.idega.block.reports.business;
 
 import com.idega.block.reports.data.*;
 import com.idega.core.component.data.ICObjectInstance;
+import com.idega.data.GenericEntity;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -82,10 +83,12 @@ public class ReportBusiness {
                   cat.setName(Name);
                   cat.setDescription(info);
 
-                  if(update)
-                    cat.update();
-                  else
-                    cat.insert();
+                  if(update) {
+					cat.update();
+				}
+				else {
+					cat.insert();
+				}
                           // Binding category to instanceId
                   if(iObjectInstanceId > 0){
                           ICObjectInstance objIns = ((com.idega.core.component.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(iObjectInstanceId);
@@ -127,8 +130,9 @@ public class ReportBusiness {
       }
       return true;
     }
-    else
-      return false;
+	else {
+		return false;
+	}
 
   }
 
@@ -174,10 +178,12 @@ public class ReportBusiness {
 
   public static boolean saveReportColumnInfo(ReportColumnInfo info){
     try{
-      if(info.getID() > 0)
-        info.update();
-      else
-        info.insert();
+      if(info.getID() > 0) {
+		info.update();
+	}
+	else {
+		info.insert();
+	}
         return true;
       }
     catch(SQLException ex){
@@ -188,10 +194,12 @@ public class ReportBusiness {
 
   public static boolean saveReportInfo(ReportInfo info){
     try{
-      if(info.getID() > 0)
-        info.update();
-      else
-        info.insert();
+      if(info.getID() > 0) {
+		info.update();
+	}
+	else {
+		info.insert();
+	}
         return true;
       }
     catch(SQLException ex){
@@ -202,9 +210,9 @@ public class ReportBusiness {
 
   public static void saveRelatedReportInfo(int iReportId,int[] ReportInfoIds){
     try {
-      com.idega.block.reports.data.ReportBMPBean.getEntityInstance(Report.class,iReportId).removeFrom(ReportInfo.class);
+      GenericEntity.getEntityInstance(Report.class,iReportId).removeFrom(ReportInfo.class);
       for (int i = 0; i < ReportInfoIds.length; i++) {
-        com.idega.block.reports.data.ReportBMPBean.getEntityInstance(Report.class,iReportId).addTo(ReportInfo.class,ReportInfoIds[i]);
+        GenericEntity.getEntityInstance(Report.class,iReportId).addTo(ReportInfo.class,ReportInfoIds[i]);
       }
     }
     catch (Exception ex) {

@@ -41,13 +41,13 @@ public class ProductEditor extends Block {
   }
 
   private void init(IWContext iwc) throws RemoteException {
-    bundle = getBundle(iwc);
-    iwrb = bundle.getResourceBundle(iwc);
+    this.bundle = getBundle(iwc);
+    this.iwrb = this.bundle.getResourceBundle(iwc);
 
     try {
-      String sProductId = iwc.getParameter(this.PRODUCT_ID);
-      _productId = Integer.parseInt(sProductId);
-      _product = getProductBusiness(iwc).getProduct(_productId);
+      String sProductId = iwc.getParameter(ProductEditor.PRODUCT_ID);
+      this._productId = Integer.parseInt(sProductId);
+      this._product = getProductBusiness(iwc).getProduct(this._productId);
     }catch (Exception e) {
       e.printStackTrace(System.err);
     }

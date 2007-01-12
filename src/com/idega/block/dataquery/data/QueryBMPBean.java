@@ -15,7 +15,7 @@ import com.idega.core.file.data.ICFileBMPBean;
 public class QueryBMPBean extends ICFileBMPBean implements Query,ICFile{
 	
 	public int getXMLSchemaId() {
-	   return Integer.parseInt((String) getMetaData("xml_schema_id"));
+	   return Integer.parseInt(getMetaData("xml_schema_id"));
 	 }
   
 	 public void setXMLSchemaId(int xmlSchemaId) {

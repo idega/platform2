@@ -36,13 +36,13 @@ public class TextHelper{
 
   public TxText getTxText(){
 
-    return eText;
+    return this.eText;
 
   }
 
   public void setTxText(TxText text){
 
-    eText = text;
+    this.eText = text;
 
   }
 
@@ -56,7 +56,7 @@ public class TextHelper{
 
   public ContentHelper getContentHelper(){
 
-    return eContentHelper ;
+    return this.eContentHelper ;
 
   }
 

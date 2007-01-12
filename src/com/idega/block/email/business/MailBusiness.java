@@ -16,6 +16,7 @@ import com.idega.block.email.data.MailListHome;
 import com.idega.block.email.data.MailTopic;
 import com.idega.block.email.data.MailTopicHome;
 import com.idega.core.contact.data.Email;
+import com.idega.data.GenericEntity;
 import com.idega.data.IDOLookup;
 import com.idega.util.IWTimestamp;
 /**
@@ -174,7 +175,7 @@ public class MailBusiness {
    */
   public MailAccount saveAccount(int id, String name, String host, String user, String pass, int protocol, int entityId, Class entityClass) {
     try {
-      MailAccount account = (MailAccount) com.idega.block.email.data.MailAccountBMPBean.getEntityInstance(MailAccount.class);
+      MailAccount account = (MailAccount) GenericEntity.getEntityInstance(MailAccount.class);
       boolean update = false;
       if (id > 0) {
         account.findByPrimaryKey(id);
@@ -193,8 +194,9 @@ public class MailBusiness {
         account.insert();
       }
 
-      if(entityClass!=null && entityId > 0)
-      account.addTo(entityClass, entityId);
+      if(entityClass!=null && entityId > 0) {
+		account.addTo(entityClass, entityId);
+	}
 
       return account;
     } catch (Exception ex) {
@@ -211,7 +213,7 @@ public class MailBusiness {
    */
   private void deleteAccount(int id, Class entityClass) {
     try {
-      MailAccount a = (MailAccount) com.idega.block.email.data.MailAccountBMPBean.getEntityInstance(MailAccount.class, id);
+      MailAccount a = (MailAccount) GenericEntity.getEntityInstance(MailAccount.class, id);
       a.removeFrom(entityClass);
       a.delete();
     } catch (Exception ex) {
@@ -377,7 +379,7 @@ public class MailBusiness {
    */
   public MailLetter saveMailLetter(int id, String fromName, String fromAddress, String subject, String body, int type, int entityId, Class entityClass) {
     try {
-      MailLetter letter = (MailLetter) com.idega.block.email.data.MailLetterBMPBean.getEntityInstance(MailLetter.class);
+      MailLetter letter = (MailLetter) GenericEntity.getEntityInstance(MailLetter.class);
       boolean update = false;
       if (id > 0) {
         letter.findByPrimaryKey(id);

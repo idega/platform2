@@ -17,7 +17,7 @@ import java.sql.Timestamp;
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:      idega.is
- * @author <a href="mailto:laddi@idega.is">Þórhallur Helgason</a>
+ * @author <a href="mailto:laddi@idega.is">ï¿½ï¿½rhallur Helgason</a>
  * @version 1.0
  */
 
@@ -112,8 +112,9 @@ public class BookBMPBean extends GenericEntity implements Book {
     sql.append(" and bc.IC_CATEGORY_ID");
     sql.append(" in (");
     for ( int a = 0; a < categories.length; a++ ) {
-      if ( a > 0 )
-	sql.append(",");
+      if ( a > 0 ) {
+		sql.append(",");
+	}
       sql.append(categories[a]);
     }
     sql.append(") group by b.bo_book_id,b.bo_publisher_id,b.book_name,b.review,b.ic_file_id,b.date_added,b.published order by ");
@@ -123,11 +124,11 @@ public class BookBMPBean extends GenericEntity implements Book {
   }
 
   public Collection ejbFindAllBooksByPublisher(int publisherID)throws FinderException{
-    return super.idoFindIDsBySQL("select * from "+this.getEntityTableName()+" where "+getColumnPublisherID()+" = "+String.valueOf(publisherID)+" order by "+getColumnPublished());
+    return super.idoFindIDsBySQL("select * from "+BookBMPBean.getEntityTableName()+" where "+getColumnPublisherID()+" = "+String.valueOf(publisherID)+" order by "+getColumnPublished());
   }
 
   public Collection ejbFindAllBooksByYear(int year)throws FinderException{
-    return super.idoFindIDsBySQL("select * from "+this.getEntityTableName()+" where "+getColumnPublished()+" = "+String.valueOf(year));
+    return super.idoFindIDsBySQL("select * from "+BookBMPBean.getEntityTableName()+" where "+getColumnPublished()+" = "+String.valueOf(year));
   }
 
   public Collection ejbFindAllBooksByAuthor(int authorID) throws FinderException {
@@ -143,7 +144,7 @@ public class BookBMPBean extends GenericEntity implements Book {
   }
 
   public Collection ejbFindAllBooksContaining(String name) throws FinderException {
-    return super.idoFindIDsBySQL("select * from "+this.getEntityTableName()+" where "+getColumnName()+" like '%"+name+"%'");
+    return super.idoFindIDsBySQL("select * from "+BookBMPBean.getEntityTableName()+" where "+getColumnName()+" like '%"+name+"%'");
   }
 
   public int ejbHomeGetNumberOfBooks(int categoryID) throws javax.ejb.EJBException,IDOException {

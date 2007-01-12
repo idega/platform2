@@ -41,60 +41,60 @@ private int currencyID_ = -1;
 
   /* Setters */
   public void setCurrencyID(int id) {
-    currencyID_ = id;
+    this.currencyID_ = id;
   }
 
   public void setCurrencyName(String name) {
-    currencyName_ = name;
+    this.currencyName_ = name;
   }
 
   public void setBuyValue(float value) {
-    buyValue_ = value;
+    this.buyValue_ = value;
   }
 
   public void setSellValue(float value) {
-    sellValue_ = value;
+    this.sellValue_ = value;
   }
 
   public void setMiddleValue(float value) {
-    middleValue_ = value;
+    this.middleValue_ = value;
   }
 
   public void setTimestamp(IWTimestamp timestamp) {
-    timestamp_ = timestamp;
+    this.timestamp_ = timestamp;
   }
 
   public void setCurrencyAbbreviation(String abbreviation) {
-    currencyAbbreviation_ = abbreviation;
+    this.currencyAbbreviation_ = abbreviation;
   }
 
   /* Getters */
   public int getCurrencyID() {
-    return currencyID_;
+    return this.currencyID_;
   }
 
   public String getCurrencyName() {
-    return currencyName_;
+    return this.currencyName_;
   }
 
   public float getBuyValue() {
-    return buyValue_;
+    return this.buyValue_;
   }
 
   public float getSellValue() {
-    return sellValue_;
+    return this.sellValue_;
   }
 
   public float getMiddleValue() {
-    return middleValue_;
+    return this.middleValue_;
   }
 
   public IWTimestamp getTimestamp() {
-    return timestamp_;
+    return this.timestamp_;
   }
 
   public String getCurrencyAbbreviation() {
-    return currencyAbbreviation_;
+    return this.currencyAbbreviation_;
   }
 
 }

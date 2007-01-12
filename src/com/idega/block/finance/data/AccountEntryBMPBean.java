@@ -326,8 +326,9 @@ public class AccountEntryBMPBean extends com.idega.data.GenericEntity implements
       setColumn(getColumnNameStatus(),status);
       setLastUpdated(com.idega.util.IWTimestamp.getTimestampRightNow());
     }
-    else
-      throw new IllegalStateException("Undefined state : " + status);
+	else {
+		throw new IllegalStateException("Undefined state : " + status);
+	}
   }
 
   // interface specific:
@@ -407,11 +408,13 @@ public class AccountEntryBMPBean extends com.idega.data.GenericEntity implements
 			Table roundTable = new Table(AssessmentRound.class);
 			SelectQuery query = new SelectQuery(entryTable);
 			query.addColumn(new WildCardColumn(entryTable));
-			if(assessmentStatus!=null)
+			if(assessmentStatus!=null) {
 				query.addJoin(entryTable,roundTable);
+			}
 			query.addCriteria(new MatchCriteria(entryTable,getFieldNameAccountId(),MatchCriteria.EQUALS,accountID));
-			if(status!=null)
+			if(status!=null) {
 				query.addCriteria(new MatchCriteria(entryTable.getColumn(getColumnNameStatus()),MatchCriteria.EQUALS,status,true));
+			}
 			
 			if(fromDate!=null && toDate!=null){
 				IWTimestamp from = new IWTimestamp(fromDate);
@@ -420,8 +423,9 @@ public class AccountEntryBMPBean extends com.idega.data.GenericEntity implements
 				query.addCriteria(new MatchCriteria(entryTable,getFieldNameLastUpdated(),MatchCriteria.GREATEREQUAL,from.getTimestamp()));
 				query.addCriteria(new MatchCriteria(entryTable,getFieldNameLastUpdated(),MatchCriteria.LESSEQUAL,to.getTimestamp()));
 			}
-			if(assessmentStatus!=null)
+			if(assessmentStatus!=null) {
 				query.addCriteria(new MatchCriteria(roundTable.getColumn(AssessmentRoundBMPBean.getStatusColumnName()),MatchCriteria.EQUALS,assessmentStatus,true));
+			}
 			return super.idoFindPKsBySQL(query.toString());
 		} catch (IDORelationshipException e) {
 			throw new FinderException(e.getMessage());

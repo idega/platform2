@@ -36,7 +36,7 @@ private IWApplicationContext iwac;
   }
 
   public void start(IWBundle bundle) {
-		iwac = bundle.getApplication().getIWApplicationContext();
+		this.iwac = bundle.getApplication().getIWApplicationContext();
 		File postalCodeFolder = new File(bundle.getResourcesRealPath() + FileUtil.getFileSeparator() + "postalcode");
 		if (postalCodeFolder.isDirectory()) {
 			File[] files = postalCodeFolder.listFiles();
@@ -93,7 +93,7 @@ private IWApplicationContext iwac;
 	}
 
 	private AddressBusiness getAddressBusiness() throws RemoteException{
-		return (AddressBusiness) IBOLookup.getServiceInstance(iwac,AddressBusiness.class);
+		return (AddressBusiness) IBOLookup.getServiceInstance(this.iwac,AddressBusiness.class);
 	}
 	
 	/**

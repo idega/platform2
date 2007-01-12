@@ -56,37 +56,37 @@ public class Dictionary extends CategoryBlock implements Builderaware {
 	}
 
 	public void main(IWContext iwc) throws Exception {
-		_iwrb = getResourceBundle(iwc);
-		_iwb = getBundle(iwc);
-		_iwcb = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+		this._iwrb = getResourceBundle(iwc);
+		this._iwb = getBundle(iwc);
+		this._iwcb = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
 
-		_objectID = getICObjectInstanceID();
-		_isAdmin = iwc.hasEditPermission(this);
-		_dicBusiness = DictionaryBusiness.getDictionaryBusinessInstace();
-		_divider = _iwb.getImage("shared/dotted.gif");
+		this._objectID = getICObjectInstanceID();
+		this._isAdmin = iwc.hasEditPermission(this);
+		this._dicBusiness = DictionaryBusiness.getDictionaryBusinessInstace();
+		this._divider = this._iwb.getImage("shared/dotted.gif");
 		getParameters(iwc);
 
-		_myTable = new Table();
-		_myTable.setCellpadding(0);
-		_myTable.setCellspacing(0);
-		_myTable.setBorder(0);
-		_myTable.setWidth(_width);
+		this._myTable = new Table();
+		this._myTable.setCellpadding(0);
+		this._myTable.setCellspacing(0);
+		this._myTable.setBorder(0);
+		this._myTable.setWidth(this._width);
 
 		int row = 1;
-		if (_isAdmin) {
-			_myTable.add(getAdminPart(iwc), 1, row);
+		if (this._isAdmin) {
+			this._myTable.add(getAdminPart(iwc), 1, row);
 			row++;
 		}
 
-		_myTable.add(getDictionaryViewer(iwc), 1, row);
-		add(_myTable);
+		this._myTable.add(getDictionaryViewer(iwc), 1, row);
+		add(this._myTable);
 	}
 
 	private Table getDictionaryViewer(IWContext iwc) throws FinderException, RemoteException, IDOException {
 		Table table = null;
 		setStyles();
 
-		switch (_state) {
+		switch (this._state) {
 			case DictionaryBusiness.WORD_VIEW :
 				table = getWordView(iwc);
 				break;
@@ -114,30 +114,32 @@ public class Dictionary extends CategoryBlock implements Builderaware {
 			Iterator iter = collection.iterator();
 			while (iter.hasNext()) {
 				ICCategory category = (ICCategory) iter.next();
-				if (_showCategoryName) {
+				if (this._showCategoryName) {
 					table.setHeight(row, "16");
-					table.add(formatText(category.getName(), _headerStyle), 1, row++);
-					table.setBackgroundImage(1, row++, _divider);
+					table.add(formatText(category.getName(), this._headerStyle), 1, row++);
+					table.setBackgroundImage(1, row++, this._divider);
 				}
 
-				List words = new Vector(_dicBusiness.getWordHome().findAllWordsByCategory(((Integer) category.getPrimaryKey()).intValue()));
+				List words = new Vector(this._dicBusiness.getWordHome().findAllWordsByCategory(((Integer) category.getPrimaryKey()).intValue()));
 				if (words != null && words.size() > 0) {
 					Collections.sort(words, new DictionaryComparator(DictionaryComparator.WORD_NAME));
 					wordTable = new Table();
-					wordTable.setColumns(_numberOfColumns);
+					wordTable.setColumns(this._numberOfColumns);
 					wordTable.setWidth(Table.HUNDRED_PERCENT);
-					for (int a = 1; a <= _numberOfColumns; a++) {
-						wordTable.setWidth(a, String.valueOf(100 / _numberOfColumns) + "%");
+					for (int a = 1; a <= this._numberOfColumns; a++) {
+						wordTable.setWidth(a, String.valueOf(100 / this._numberOfColumns) + "%");
 					}
 
 					int wordRow = 1;
 					int wordColumn = 1;
 					int size = words.size();
-					int switchColumn = size / _numberOfColumns;
-					if (size % _numberOfColumns > 0)
+					int switchColumn = size / this._numberOfColumns;
+					if (size % this._numberOfColumns > 0) {
 						switchColumn++;
-					if (size <= _numberOfColumns)
+					}
+					if (size <= this._numberOfColumns) {
 						switchColumn = 1;
+					}
 
 					Iterator iter2 = words.iterator();
 					while (iter2.hasNext()) {
@@ -167,55 +169,59 @@ public class Dictionary extends CategoryBlock implements Builderaware {
 		Table table = new Table();
 		table.setWidth(Table.HUNDRED_PERCENT);
 
-		if (_wordID != -1) {
+		if (this._wordID != -1) {
 			int row = 1;
-			Word word = _dicBusiness.getWord(_wordID);
+			Word word = this._dicBusiness.getWord(this._wordID);
 			if (word != null) {
-				table.add(formatText(word.getWord(), _headerStyle), 1, row++);
+				table.add(formatText(word.getWord(), this._headerStyle), 1, row++);
 				if (word.getImageID() != -1) {
-					Image image = _dicBusiness.getImage(word.getImageID());
+					Image image = this._dicBusiness.getImage(word.getImageID());
 					image.setHorizontalSpacing(8);
 					image.setVerticalSpacing(4);
 					image.setAlignment(Image.ALIGNMENT_RIGHT);
 					table.add(image, 1, row);
 				}
 				table.add(formatText(TextSoap.formatText(word.getDescription())), 1, row++);
-				if (_state != DictionaryBusiness.RANDOM_WORD)
+				if (this._state != DictionaryBusiness.RANDOM_WORD) {
 					table.add(getBackLink(), 1, row++);
+				}
 
-				if (_isAdmin)
-					table.add(getAdminButtons(_wordID), 1, row);
+				if (this._isAdmin) {
+					table.add(getAdminButtons(this._wordID), 1, row);
+				}
 			}
-			else
+			else {
 				return getCategoryCollection(iwc);
+			}
 		}
 		return table;
 	}
 
 	private Table getRandomWord(IWContext iwc) throws FinderException, RemoteException {
 		int[] categories = getCategoryIds();
-		Word word = _dicBusiness.getRandomWord(categories);
+		Word word = this._dicBusiness.getRandomWord(categories);
 		if (word != null) {
-			_wordID = ((Integer) word.getPrimaryKey()).intValue();
+			this._wordID = ((Integer) word.getPrimaryKey()).intValue();
 			return getWordView(iwc);
 		}
-		else
+		else {
 			return new Table();
+		}
 	}
 
 	private Table getAdminButtons(int wordID) {
 		Table table = new Table(2, 1);
 		table.setCellpaddingAndCellspacing(0);
 
-		Image editImage = _iwcb.getImage("shared/edit.gif");
-		editImage.setAlt(_iwrb.getLocalizedString("edit", "Edit"));
+		Image editImage = this._iwcb.getImage("shared/edit.gif");
+		editImage.setAlt(this._iwrb.getLocalizedString("edit", "Edit"));
 		Link editLink = new Link(editImage);
 		editLink.setWindowToOpen(WordEditor.class);
 		editLink.addParameter(DictionaryBusiness.PARAMETER_MODE, DictionaryBusiness.PARAMETER_EDIT);
 		editLink.addParameter(DictionaryBusiness.PARAMETER_WORD_ID, wordID);
-		Image deleteImage = _iwcb.getImage("shared/delete.gif");
-		deleteImage.setAlt(_iwrb.getLocalizedString("delete", "Delete"));
-		Link deleteLink = new Link(_iwcb.getImage("shared/delete.gif"));
+		Image deleteImage = this._iwcb.getImage("shared/delete.gif");
+		deleteImage.setAlt(this._iwrb.getLocalizedString("delete", "Delete"));
+		Link deleteLink = new Link(this._iwcb.getImage("shared/delete.gif"));
 		deleteLink.setWindowToOpen(WordEditor.class);
 		deleteLink.addParameter(DictionaryBusiness.PARAMETER_MODE, DictionaryBusiness.PARAMETER_DELETE);
 		deleteLink.addParameter(DictionaryBusiness.PARAMETER_WORD_ID, wordID);
@@ -230,8 +236,9 @@ public class Dictionary extends CategoryBlock implements Builderaware {
 			Link link = new Link(word.getWord());
 			link.addParameter(DictionaryBusiness.PARAMETER_STATE, DictionaryBusiness.WORD_VIEW);
 			link.addParameter(DictionaryBusiness.PARAMETER_WORD_ID, ((Integer) word.getPrimaryKey()).intValue());
-			if (_styles)
-				link.setStyle(_linkName);
+			if (this._styles) {
+				link.setStyle(this._linkName);
+			}
 			return link;
 		}
 		catch (RemoteException e) {
@@ -240,21 +247,21 @@ public class Dictionary extends CategoryBlock implements Builderaware {
 	}
 
 	private void setStyles() {
-		if (_linkName == null) {
-			_linkName = "dicLink_" + _objectID;
+		if (this._linkName == null) {
+			this._linkName = "dicLink_" + this._objectID;
 		}
 
 		if (getParentPage() != null) {
-			getParentPage().setStyleDefinition("A." + _linkName, _linkStyle);
-			getParentPage().setStyleDefinition("A." + _linkName + ":hover", _linkHoverStyle);
+			getParentPage().setStyleDefinition("A." + this._linkName, this._linkStyle);
+			getParentPage().setStyleDefinition("A." + this._linkName + ":hover", this._linkHoverStyle);
 		}
 		else {
-			_styles = false;
+			this._styles = false;
 		}
 	}
 
 	private Text formatText(String textString) {
-		return formatText(textString, _textStyle);
+		return formatText(textString, this._textStyle);
 	}
 
 	private Text formatText(String textString, String style) {
@@ -267,15 +274,15 @@ public class Dictionary extends CategoryBlock implements Builderaware {
 		Table table = new Table(2, 1);
 		table.setCellpaddingAndCellspacing(0);
 
-		Image addImage = _iwcb.getImage("shared/create.gif");
-		addImage.setAlt(_iwrb.getLocalizedString("add_book", "Add book"));
+		Image addImage = this._iwcb.getImage("shared/create.gif");
+		addImage.setAlt(this._iwrb.getLocalizedString("add_book", "Add book"));
 		Link addLink = new Link(addImage);
 		addLink.addParameter(DictionaryBusiness.PARAMETER_MODE, DictionaryBusiness.PARAMETER_NEW);
 		addLink.setWindowToOpen(WordEditor.class);
 		table.add(addLink, 1, 1);
 
-		Image categoryImage = _iwcb.getImage("shared/edit.gif");
-		categoryImage.setAlt(_iwrb.getLocalizedString("categories", "Categories"));
+		Image categoryImage = this._iwcb.getImage("shared/edit.gif");
+		categoryImage.setAlt(this._iwrb.getLocalizedString("categories", "Categories"));
 		Link categoryLink = this.getCategoryLink();
 		categoryLink.setPresentationObject(categoryImage);
 		table.add(categoryLink, 2, 1);
@@ -284,67 +291,67 @@ public class Dictionary extends CategoryBlock implements Builderaware {
 	}
 
 	private Link getBackLink() {
-		Link link = new Link(_iwrb.getLocalizedString("back", "Back"));
+		Link link = new Link(this._iwrb.getLocalizedString("back", "Back"));
 		link.setAsBackLink();
-		link.setStyle(_linkName);
+		link.setStyle(this._linkName);
 		return link;
 	}
 
 	private void getParameters(IWContext iwc) {
-		if (!_stateSet) {
+		if (!this._stateSet) {
 			try {
-				_state = Integer.parseInt(iwc.getParameter(DictionaryBusiness.PARAMETER_STATE));
+				this._state = Integer.parseInt(iwc.getParameter(DictionaryBusiness.PARAMETER_STATE));
 			}
 			catch (NumberFormatException e) {
-				_state = DictionaryBusiness.CATEGORY_COLLECTION;
+				this._state = DictionaryBusiness.CATEGORY_COLLECTION;
 			}
 		}
 
 		try {
-			_wordID = Integer.parseInt(iwc.getParameter(DictionaryBusiness.PARAMETER_WORD_ID));
+			this._wordID = Integer.parseInt(iwc.getParameter(DictionaryBusiness.PARAMETER_WORD_ID));
 		}
 		catch (NumberFormatException e) {
-			_wordID = -1;
+			this._wordID = -1;
 		}
 	}
 
 	public void setNumberOfColumns(int columns) {
-		_numberOfColumns = columns;
+		this._numberOfColumns = columns;
 	}
 
 	public void setLayout(int layout) {
-		_state = layout;
-		_stateSet = true;
+		this._state = layout;
+		this._stateSet = true;
 	}
 
 	public void setTextStyle(String style) {
-		_textStyle = style;
+		this._textStyle = style;
 	}
 
 	public void setHeaderStyle(String style) {
-		_headerStyle = style;
+		this._headerStyle = style;
 	}
 
 	public void setLinkStyle(String style, String hoverStyle) {
-		_linkStyle = style;
-		_linkHoverStyle = hoverStyle;
+		this._linkStyle = style;
+		this._linkHoverStyle = hoverStyle;
 	}
 
 	public void setWidth(String width) {
-		_width = width;
+		this._width = width;
 	}
 
 	public void setShowCategoryName(boolean showName) {
-		_showCategoryName = showName;
+		this._showCategoryName = showName;
 	}
 
 	private void setDefaultValues() {
-		_width = Table.HUNDRED_PERCENT;
+		this._width = Table.HUNDRED_PERCENT;
 
-		_textStyle = "font-family: Arial,Helvetica,sans-serif; font-size: 11px;";
-		_headerStyle = "font-family: Verdana,Arial,Helvetica,sans-serif; font-size: 11px; font-weight: bold;";
-		_linkStyle = "font-family: Arial,Helvetica,sans-serif; font-size: 11px; text-decoration: underline; color: #000000;";
-		_linkHoverStyle = "font-family: Arial,Helvetica,sans-serif; font-size: 11px; text-decoration: underline; color: #000000;";
+		this._textStyle = "font-family: Arial,Helvetica,sans-serif; font-size: 11px;";
+		this._headerStyle = "font-family: Verdana,Arial,Helvetica,sans-serif; font-size: 11px; font-weight: bold;";
+		this._linkStyle = "font-family: Arial,Helvetica,sans-serif; font-size: 11px; text-decoration: underline; color: #000000;";
+		this._linkHoverStyle = "font-family: Arial,Helvetica,sans-serif; font-size: 11px; text-decoration: underline; color: #000000;";
 	}
 
 	public synchronized Object clone() {

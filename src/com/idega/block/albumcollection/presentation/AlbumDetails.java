@@ -11,6 +11,7 @@ import com.idega.block.albumcollection.data.Lyric;
 import com.idega.block.albumcollection.data.Performer;
 import com.idega.block.albumcollection.data.Track;
 import com.idega.data.EntityFinder;
+import com.idega.data.GenericEntity;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
@@ -28,7 +29,7 @@ import com.idega.util.text.TextSoap;
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:      idega
- * @author <a href="gummi@idega.is">Guðmundur Ágúst Sæmundsson</a>
+ * @author <a href="gummi@idega.is">Guï¿½mundur ï¿½gï¿½st Sï¿½mundsson</a>
  * @version 1.0
  */
 
@@ -45,22 +46,22 @@ public class AlbumDetails extends Block {
 	private Link deleteTrackLinkTemplate;
 
 	public AlbumDetails() {
-		trackNameTemplate = AlbumCollectionBusiness.getMainTextClone();
-		trackNumberTemplate = AlbumCollectionBusiness.getMainTextClone();
+		this.trackNameTemplate = AlbumCollectionBusiness.getMainTextClone();
+		this.trackNumberTemplate = AlbumCollectionBusiness.getMainTextClone();
 
-		setLyricLinkTemplate = AlbumCollectionBusiness.getMainLinkClone();
-		setLyricLinkTemplate.setWindowToOpen(InsertLyric.class);
+		this.setLyricLinkTemplate = AlbumCollectionBusiness.getMainLinkClone();
+		this.setLyricLinkTemplate.setWindowToOpen(InsertLyric.class);
 
-		lyricViewerLinkTemplate = AlbumCollectionBusiness.getMainLinkClone();
-		lyricViewerLinkTemplate.addParameter(AlbumCollection._PRM_STATE, AlbumCollection._STATE_LYRIC);
+		this.lyricViewerLinkTemplate = AlbumCollectionBusiness.getMainLinkClone();
+		this.lyricViewerLinkTemplate.addParameter(AlbumCollection._PRM_STATE, AlbumCollection._STATE_LYRIC);
 
-		updateTrackLinkTemplate = AlbumCollectionBusiness.getMainLinkClone("U");
-		updateTrackLinkTemplate.setWindowToOpen(AddTrack.class);
-		updateTrackLinkTemplate.addParameter(AlbumCollectionBusiness._PRM_UPDATE, "true");
+		this.updateTrackLinkTemplate = AlbumCollectionBusiness.getMainLinkClone("U");
+		this.updateTrackLinkTemplate.setWindowToOpen(AddTrack.class);
+		this.updateTrackLinkTemplate.addParameter(AlbumCollectionBusiness._PRM_UPDATE, "true");
 
-		deleteTrackLinkTemplate = AlbumCollectionBusiness.getMainLinkClone("D");
-		deleteTrackLinkTemplate.setWindowToOpen(DeleteConfirmWindow.class);
-		deleteTrackLinkTemplate.addParameter(AlbumCollectionBusiness._PRM_DELETE, AlbumCollectionBusiness._CONST_TRACK);
+		this.deleteTrackLinkTemplate = AlbumCollectionBusiness.getMainLinkClone("D");
+		this.deleteTrackLinkTemplate.setWindowToOpen(DeleteConfirmWindow.class);
+		this.deleteTrackLinkTemplate.addParameter(AlbumCollectionBusiness._PRM_DELETE, AlbumCollectionBusiness._CONST_TRACK);
 
 	}
 
@@ -126,7 +127,7 @@ public class AlbumDetails extends Block {
 
 				albumInfoTable.add(AlbumCollectionBusiness.getMainTextClone("titill:"), 1, 1);
 				albumInfoTable.add(AlbumCollectionBusiness.getMainTextClone("flytjendur:"), 1, 2);
-				albumInfoTable.add(AlbumCollectionBusiness.getMainTextClone("útgáfuár:"), 1, 3);
+				albumInfoTable.add(AlbumCollectionBusiness.getMainTextClone("ï¿½tgï¿½fuï¿½r:"), 1, 3);
 				albumInfoTable.add(AlbumCollectionBusiness.getMainTextClone("tegund:"), 1, 4);
 
 				for (int i = 0; i < 1; i++) {
@@ -138,7 +139,7 @@ public class AlbumDetails extends Block {
 
 				albumInfoTable.add(AlbumCollectionBusiness.getMainTextBoldClone(album.getName()), 2, 1);
 
-				List performers = EntityFinder.findRelated(album, com.idega.block.albumcollection.data.PerformerBMPBean.getStaticInstance(Performer.class));
+				List performers = EntityFinder.findRelated(album, GenericEntity.getStaticInstance(Performer.class));
 				if (performers != null) {
 					Iterator iter2 = performers.iterator();
 					boolean f = false;
@@ -309,7 +310,7 @@ public class AlbumDetails extends Block {
 					trackTable.setRowVerticalAlignment(row, "top");
 
 					if (item.getNumber() > 0) {
-						Text trackNumber = (Text)trackNumberTemplate.clone();
+						Text trackNumber = (Text)this.trackNumberTemplate.clone();
 						trackNumber.setText(Integer.toString(item.getNumber()));
 						trackTable.add(trackNumber, 1, row);
 					}
@@ -331,7 +332,7 @@ public class AlbumDetails extends Block {
 						trackTable.add(audioLink, 7, row);
 					}
 
-					List authors = EntityFinder.findRelated(item, com.idega.block.albumcollection.data.AuthorBMPBean.getStaticInstance(Author.class));
+					List authors = EntityFinder.findRelated(item, GenericEntity.getStaticInstance(Author.class));
 					if (authors != null) {
 						Iterator iter2 = authors.iterator();
 						boolean f = false;
@@ -351,13 +352,13 @@ public class AlbumDetails extends Block {
 
 					if (item.getLyricId() < 0) {
 
-						Text trackName = (Text)trackNameTemplate.clone();
+						Text trackName = (Text)this.trackNameTemplate.clone();
 						trackName.setText(item.getName());
 						trackTable.add(trackName, 2, row);
 
 						if (hasEditPermission()) {
 
-							Link setLyric = (Link)setLyricLinkTemplate.clone();
+							Link setLyric = (Link)this.setLyricLinkTemplate.clone();
 							Image setLyricIcon = iwb.getSharedImage("write.gif", iwrb.getLocalizedString("set_lyrics","add lyrics"));
 							//setLyric.setText("A");
 							setLyric.setImage(setLyricIcon);
@@ -367,13 +368,13 @@ public class AlbumDetails extends Block {
 						}
 					} else {
 
-						Link trackName = (Link)lyricViewerLinkTemplate.clone();
+						Link trackName = (Link)this.lyricViewerLinkTemplate.clone();
 						trackName.setText(item.getName());
 						trackName.addParameter(AlbumCollectionBusiness._PRM_LYRIC_ID, item.getLyricId());
 						trackName.addParameter(AlbumCollectionBusiness._PRM_TRACK_ID, item.getID());
 						trackTable.add(trackName, 2, row);
 
-						Link setLyric = (Link)lyricViewerLinkTemplate.clone();
+						Link setLyric = (Link)this.lyricViewerLinkTemplate.clone();
 						Image textIcon = iwb.getSharedImage("lyrics.gif", iwrb.getLocalizedString("lyrics","lyrics"));
 						//setLyric.setText("T");
 						setLyric.setImage(textIcon);
@@ -381,7 +382,7 @@ public class AlbumDetails extends Block {
 						setLyric.addParameter(AlbumCollectionBusiness._PRM_TRACK_ID, item.getID());
 						trackTable.add(setLyric, 6, row);
 
-						List T_authors = EntityFinder.findRelated(((com.idega.block.albumcollection.data.LyricHome)com.idega.data.IDOLookup.getHomeLegacy(Lyric.class)).findByPrimaryKeyLegacy(item.getLyricId()), com.idega.block.albumcollection.data.AuthorBMPBean.getStaticInstance(Author.class));
+						List T_authors = EntityFinder.findRelated(((com.idega.block.albumcollection.data.LyricHome)com.idega.data.IDOLookup.getHomeLegacy(Lyric.class)).findByPrimaryKeyLegacy(item.getLyricId()), GenericEntity.getStaticInstance(Author.class));
 						if (T_authors != null) {
 							Iterator iter2 = T_authors.iterator();
 							boolean f = false;
@@ -402,12 +403,12 @@ public class AlbumDetails extends Block {
 						//row++;
 						
 						//info.resize(info.getColumns(),2);
-						Link update = (Link)updateTrackLinkTemplate.clone();
+						Link update = (Link)this.updateTrackLinkTemplate.clone();
 						update.setObject(core.getSharedImage("edit.gif", "edit track"));
 						update.addParameter(AlbumCollectionBusiness._PRM_TRACK_ID, item.getID());
 						trackTable.add(update, trackTableColumns+1, row);
 	
-						Link delete = (Link)deleteTrackLinkTemplate.clone();
+						Link delete = (Link)this.deleteTrackLinkTemplate.clone();
 						delete.setObject(core.getSharedImage("delete.gif", "delete track"));
 						delete.addParameter(DeleteConfirmWindow._PRM_ID, item.getID());
 						trackTable.add(delete, trackTableColumns+2, row);

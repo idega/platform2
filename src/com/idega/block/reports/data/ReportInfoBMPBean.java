@@ -109,9 +109,11 @@ public class ReportInfoBMPBean extends com.idega.block.category.data.CategoryEnt
     return getBooleanColumnValue(getColumnLandscape());
   }
   public String getDescription(){
-    if(getType().equals("sticker"))
-      return getWidth()+" x "+getHeight()+" "+getPagesize();
-    else
-      return getColumnColumns()+" "+getPagesize();
+    if(getType().equals("sticker")) {
+		return getWidth()+" x "+getHeight()+" "+getPagesize();
+	}
+	else {
+		return getColumnColumns()+" "+getPagesize();
+	}
   }
 }

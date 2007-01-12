@@ -46,8 +46,9 @@ public class StickerWriter
       //System.err.println("Paper width :"+paperSize.width()+" cell width :"+width+" cols :"+pageColumns);
 
       int totalWidth = (int) (pageColumns*stickerWidth);
-      if(pageColumns == 0)
-          pageColumns = 1;
+      if(pageColumns == 0) {
+		pageColumns = 1;
+	}
 
       PdfPTable table = getPdfPTable(stickers,pageColumns,totalWidth);
       Paragraph p;
@@ -60,8 +61,9 @@ public class StickerWriter
           document.newPage();
           table = getPdfPTable(stickers,pageColumns,totalWidth);
         }
-        if(i == size-1)
-          table.writeSelectedRows(0, -1, stickers.margin(), paperSize.height()-stickers.margin(), writer.getDirectContent());
+        if(i == size-1) {
+			table.writeSelectedRows(0, -1, stickers.margin(), paperSize.height()-stickers.margin(), writer.getDirectContent());
+		}
         table.addCell(p);
       }
 

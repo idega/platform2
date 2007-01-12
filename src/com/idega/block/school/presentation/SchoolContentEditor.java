@@ -88,19 +88,20 @@ private boolean _isAdultEducation = false;
 
 	public void main( IWContext iwc ) throws RemoteException {
 		init(iwc);
-		if (_school != null) {
+		if (this._school != null) {
 	try {
-			Collection coll = _school.getSchoolTypes();
+			Collection coll = this._school.getSchoolTypes();
 			Iterator iterCollection = coll.iterator();	
 				
 			while (iterCollection.hasNext()) {									
 				SchoolType schoolType = (SchoolType) iterCollection.next();
 				String schoolCategory =  schoolType.getSchoolCategory();
 				if (schoolCategory.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getHighSchoolSchoolCategory())) {
-					_highSchoolCategory = true;
+					this._highSchoolCategory = true;
 				}
-				else if (schoolCategory.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getCategoryAdultEducation().getCategory()))
-					_isAdultEducation = true;
+				else if (schoolCategory.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getCategoryAdultEducation().getCategory())) {
+					this._isAdultEducation = true;
+				}
 				
 			}
 										
@@ -108,58 +109,58 @@ private boolean _isAdultEducation = false;
 				catch (Exception e){
 			}
 
-			String action = iwc.getParameter(PARAMETER_ACTION);
+			String action = iwc.getParameter(this.PARAMETER_ACTION);
 			if (action == null || action.equals("")) {
-				if (_highSchoolCategory) {
+				if (this._highSchoolCategory) {
 					mainFormHighSchool(iwc);
 				} else {
 					mainForm(iwc);	
 				}
-			}else if (action.equals( ACTION_UPDATE)) {
+			}else if (action.equals( this.ACTION_UPDATE)) {
 				boolean success = updateSchool(iwc);
 				if (success) {
-					addLeft(_iwrb.getLocalizedString("school.update_successful", "Update successful"));
+					addLeft(this._iwrb.getLocalizedString("school.update_successful", "Update successful"));
 				}else {
-					addLeft(_iwrb.getLocalizedString("school.update_failed", "Update failed"));
+					addLeft(this._iwrb.getLocalizedString("school.update_failed", "Update failed"));
 				}
-				if (_highSchoolCategory) {
+				if (this._highSchoolCategory) {
 					mainFormHighSchool(iwc);
 				} else {
 					mainForm(iwc);	
 				}
 			}else {
-				add(_iwrb.getLocalizedString("school.general_error", "General error"));	
+				add(this._iwrb.getLocalizedString("school.general_error", "General error"));	
 			}
 			
 		}else {
-			add(_iwrb.getLocalizedString("school.no_school_selected", "No school selected"));	
+			add(this._iwrb.getLocalizedString("school.no_school_selected", "No school selected"));	
 		}
 	}
 
 	private void init(IWContext iwc) throws RemoteException {
-		_iwrb = getResourceBundle(iwc);	
+		this._iwrb = getResourceBundle(iwc);	
 		
 		String schoolId = iwc.getParameter(PARAMETER_SCHOOL_ID);
 		if (schoolId != null) {
 			try {
-				_school = getSchoolBusiness(iwc).getSchoolHome().findByPrimaryKey(new Integer(schoolId));	
+				this._school = getSchoolBusiness(iwc).getSchoolHome().findByPrimaryKey(new Integer(schoolId));	
 			} catch (FinderException e) {}
 		}
 		
-		sue = getSchoolUserEditor(iwc);
+		this.sue = getSchoolUserEditor(iwc);
 		//GIMMI FIX THIS
 		//sue.addParameter(PARAMETER_SCHOOL_ID, schoolId);
 		
 
 		Text testText = new Text("test");
 		this.formatText(testText, false);
-		sue.setTextStyleNormal( testText );
+		this.sue.setTextStyleNormal( testText );
 
 		Text testText2 = new Text("test");
 		this.formatText(testText2, true);
-		sue.setTextStyleTitle( testText2 );
+		this.sue.setTextStyleTitle( testText2 );
 
-		sue.setInputStyle(STYLE);
+		this.sue.setInputStyle(STYLE);
 	}
 
 	public String getBundleIdentifier(){
@@ -183,18 +184,18 @@ private boolean _isAdultEducation = false;
 		information.setHeight("300");
 
 		ImageInserter imageInserter = new ImageInserter(this.PARAMETER_IMAGE_ID);
-		imageInserter.setUseBoxParameterName(PARAMETER_USE_IMAGE);
+		imageInserter.setUseBoxParameterName(this.PARAMETER_USE_IMAGE);
 		imageInserter.setSelected( true );
 		
 		TextInput schoolName = new TextInput(this.PARAMETER_SCHOOL_NAME);
-		TextInput streetName = new TextInput(PARAMETER_SCHOOL_ADDRESS_STREET);
-		TextInput areaCode = new TextInput(PARAMETER_SCHOOL_ADDRESS_POSTAL_CODE);
-		TextInput zipArea = new TextInput(PARAMETER_SCHOOL_ZIP_AREA);
-		TextInput mapUrl = new TextInput(PARAMETER_SCHOOL_MAP_URL);
-		TextInput activity = new TextInput(PARAMETER_SCHOOL_ACTIVITY);
-		TextInput openHours = new TextInput(PARAMETER_SCHOOL_OPEN_HOURS);
+		TextInput streetName = new TextInput(this.PARAMETER_SCHOOL_ADDRESS_STREET);
+		TextInput areaCode = new TextInput(this.PARAMETER_SCHOOL_ADDRESS_POSTAL_CODE);
+		TextInput zipArea = new TextInput(this.PARAMETER_SCHOOL_ZIP_AREA);
+		TextInput mapUrl = new TextInput(this.PARAMETER_SCHOOL_MAP_URL);
+		TextInput activity = new TextInput(this.PARAMETER_SCHOOL_ACTIVITY);
+		TextInput openHours = new TextInput(this.PARAMETER_SCHOOL_OPEN_HOURS);
 		
-		TextInput visitAddress = new TextInput(PARAMETER_SCHOOL_VISIT_ADDRESS);
+		TextInput visitAddress = new TextInput(this.PARAMETER_SCHOOL_VISIT_ADDRESS);
 		
 		schoolName.setSize(40);
 //		streetName.setSize(40);
@@ -202,12 +203,12 @@ private boolean _isAdultEducation = false;
 //		zipArea.setSize(20);
 		
 		SelectorUtility util = new SelectorUtility();
-		DropdownMenu manType = (DropdownMenu) util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_SCHOOL_MANAGEMENT_TYPE), getSchoolBusiness(iwc).getSchoolManagementTypes(), "getLocalizedKey", _iwrb);
+		DropdownMenu manType = (DropdownMenu) util.getSelectorFromIDOEntities(new DropdownMenu(this.PARAMETER_SCHOOL_MANAGEMENT_TYPE), getSchoolBusiness(iwc).getSchoolManagementTypes(), "getLocalizedKey", this._iwrb);
 		
-		TextInput phone = new TextInput(PARAMETER_SCHOOL_PHONE);
-		TextInput fax = new TextInput(PARAMETER_SCHOOL_FAX);
-		TextInput email = new TextInput(PARAMETER_SCHOOL_EMAIL);
-		TextInput webPage = new TextInput(PARAMETER_SCHOOL_WEBPAGE);
+		TextInput phone = new TextInput(this.PARAMETER_SCHOOL_PHONE);
+		TextInput fax = new TextInput(this.PARAMETER_SCHOOL_FAX);
+		TextInput email = new TextInput(this.PARAMETER_SCHOOL_EMAIL);
+		TextInput webPage = new TextInput(this.PARAMETER_SCHOOL_WEBPAGE);
 		
 		Box box = new Box("Repps");
 		box.setBorderColor("RED");
@@ -217,53 +218,53 @@ private boolean _isAdultEducation = false;
 		doc.setBorderColor("BLUE");
 
 		try {
-	    LocalizedText text = _school.getLocalizedText( iwc.getCurrentLocaleId());
+	    LocalizedText text = this._school.getLocalizedText( iwc.getCurrentLocaleId());
 			if (text != null) {
 				String body = text.getBody();
 				if (body != null) {
 					information.setContent(body);	
 				}
-				this.addHiddenInput(new HiddenInput(PARAMETER_LOCALIZED_TEXT_ID, text.getPrimaryKey().toString()));
+				this.addHiddenInput(new HiddenInput(this.PARAMETER_LOCALIZED_TEXT_ID, text.getPrimaryKey().toString()));
 			}
 			
-			if ( _school.getName() != null) {
-				schoolName.setContent(_school.getName());
+			if ( this._school.getName() != null) {
+				schoolName.setContent(this._school.getName());
 			}
-			if (_school.getSchoolAddress() != null) {
-				streetName.setContent(_school.getSchoolAddress());
+			if (this._school.getSchoolAddress() != null) {
+				streetName.setContent(this._school.getSchoolAddress());
 			}
-			if ( _school.getSchoolZipCode() != null) {
-				areaCode.setContent(_school.getSchoolZipCode());
+			if ( this._school.getSchoolZipCode() != null) {
+				areaCode.setContent(this._school.getSchoolZipCode());
 			}
-			if (_school.getSchoolZipArea() != null) {
-				zipArea.setContent(_school.getSchoolZipArea());
+			if (this._school.getSchoolZipArea() != null) {
+				zipArea.setContent(this._school.getSchoolZipArea());
 			}
-			if ( _school.getSchoolPhone() != null) {
-				phone.setContent(_school.getSchoolPhone());
+			if ( this._school.getSchoolPhone() != null) {
+				phone.setContent(this._school.getSchoolPhone());
 			}
-			if ( _school.getSchoolWebPage() != null) {
-				webPage.setContent(_school.getSchoolWebPage());
+			if ( this._school.getSchoolWebPage() != null) {
+				webPage.setContent(this._school.getSchoolWebPage());
 			}
-			if ( _school.getSchoolFax() != null) {
-				fax.setContent(_school.getSchoolFax());
+			if ( this._school.getSchoolFax() != null) {
+				fax.setContent(this._school.getSchoolFax());
 			}
-			if ( _school.getSchoolEmail() != null) {
-				email.setContent(_school.getSchoolEmail());
+			if ( this._school.getSchoolEmail() != null) {
+				email.setContent(this._school.getSchoolEmail());
 			}
-			if ( _school.getSchoolVisitAddress() != null) {
-				visitAddress.setContent(_school.getSchoolVisitAddress());
+			if ( this._school.getSchoolVisitAddress() != null) {
+				visitAddress.setContent(this._school.getSchoolVisitAddress());
 			}
-			if ( _school.getSchoolManagementType() != null) {
-				manType.setSelectedElement(_school.getSchoolManagementTypeString());
+			if ( this._school.getSchoolManagementType() != null) {
+				manType.setSelectedElement(this._school.getSchoolManagementTypeString());
 			}
-			if ( _school.getMapUrl() != null ) {
-				mapUrl.setContent(_school.getMapUrl());	
+			if ( this._school.getMapUrl() != null ) {
+				mapUrl.setContent(this._school.getMapUrl());	
 			}
-			if ( _school.getActivity() != null ) {
-				activity.setContent(_school.getActivity());	
+			if ( this._school.getActivity() != null ) {
+				activity.setContent(this._school.getActivity());	
 			}
-			if ( _school.getOpenHours() != null ) {
-				openHours.setContent(_school.getOpenHours());	
+			if ( this._school.getOpenHours() != null ) {
+				openHours.setContent(this._school.getOpenHours());	
 			}
 			
 		} catch (IDORelationshipException e) {
@@ -272,7 +273,7 @@ private boolean _isAdultEducation = false;
 
 
 		try {
-				Collection files = _school.getImages();
+				Collection files = this._school.getImages();
 				if (files != null && files.size() > 0) {
 					Iterator iter = files.iterator();
 					/**  Only using one image ... altough School supports more. */
@@ -283,28 +284,30 @@ private boolean _isAdultEducation = false;
 			e.printStackTrace(System.err);
 		}
 
-		addLeft(formatHeadline(_iwrb.getLocalizedString("school.school_info_editor", "Edit school information")), false);
+		addLeft(formatHeadline(this._iwrb.getLocalizedString("school.school_info_editor", "Edit school information")), false);
 //		this.addLeft(_school.getName(), "School Information Editor");
 //		this.addBreak();
 
-		this.addLeft(_iwrb.getLocalizedString("school.name", "Name"), schoolName, true);
+		this.addLeft(this._iwrb.getLocalizedString("school.name", "Name"), schoolName, true);
 
 		Table addressTable = new Table(3, 6);
 		addressTable.setCellpaddingAndCellspacing(0);
-		Text sNameText = new Text(_iwrb.getLocalizedString("school.address", "Address"));
-		Text sNumberText = new Text(_iwrb.getLocalizedString("school.number", "Number"));
-		Text sAreaCodeText = new Text(_iwrb.getLocalizedString("school.area_code", "Area code"));
-		Text sZipAreaText = new Text(_iwrb.getLocalizedString("school.zip_area","Zip area"));
-		Text sPhoneText = new Text(_iwrb.getLocalizedString("school.phone","Phone"));
-		Text sFaxText = new Text(_iwrb.getLocalizedString("school.fax","Fax"));
-		Text sEmailText = new Text(_iwrb.getLocalizedString("school.email","Email"));
-		Text sActivityText = new Text(_iwrb.getLocalizedString("school.activity","Activity"));
-		Text sOpenHoursText = new Text(_iwrb.getLocalizedString("school.open_hours","Open hours"));
+		Text sNameText = new Text(this._iwrb.getLocalizedString("school.address", "Address"));
+		Text sNumberText = new Text(this._iwrb.getLocalizedString("school.number", "Number"));
+		Text sAreaCodeText = new Text(this._iwrb.getLocalizedString("school.area_code", "Area code"));
+		Text sZipAreaText = new Text(this._iwrb.getLocalizedString("school.zip_area","Zip area"));
+		Text sPhoneText = new Text(this._iwrb.getLocalizedString("school.phone","Phone"));
+		Text sFaxText = new Text(this._iwrb.getLocalizedString("school.fax","Fax"));
+		Text sEmailText = new Text(this._iwrb.getLocalizedString("school.email","Email"));
+		Text sActivityText = new Text(this._iwrb.getLocalizedString("school.activity","Activity"));
+		Text sOpenHoursText = new Text(this._iwrb.getLocalizedString("school.open_hours","Open hours"));
 		Text sVisitAddress = null;
-		if (_isAdultEducation)
-			sVisitAddress = new Text(_iwrb.getLocalizedString("school.educating_address","Educating address"));
-		else
-			sVisitAddress = new Text(_iwrb.getLocalizedString("school.visiting_address","Visiting address"));
+		if (this._isAdultEducation) {
+			sVisitAddress = new Text(this._iwrb.getLocalizedString("school.educating_address","Educating address"));
+		}
+		else {
+			sVisitAddress = new Text(this._iwrb.getLocalizedString("school.visiting_address","Visiting address"));
+		}
 		formatText(sNameText, true);
 		formatText(sNumberText, true);
 		formatText(sAreaCodeText, true);
@@ -348,34 +351,36 @@ private boolean _isAdultEducation = false;
 //		this.addLeft(addressTable, false);
 		
 		setStyle(information);
-		this.addLeft(_iwrb.getLocalizedString("school.information","Information"), information, true);
+		this.addLeft(this._iwrb.getLocalizedString("school.information","Information"), information, true);
 
-		this.addLeft(sue.getSchoolUsersTable(iwc, this._school, false), false);
+		this.addLeft(this.sue.getSchoolUsersTable(iwc, this._school, false), false);
 
 
-		this.addRight(_iwrb.getLocalizedString("school.image","Image"), imageInserter, true);
-		if (_isAdultEducation)
-			this.addRight(_iwrb.getLocalizedString("school.educating_address","Educating address"), visitAddress, true);
-		else
-			this.addRight(_iwrb.getLocalizedString("school.visiting_address","Visiting address"), visitAddress, true);
-		this.addRight(_iwrb.getLocalizedString("school.address", "Address"), streetName, true);
-		this.addRight(_iwrb.getLocalizedString("school.area_code", "Area code"), areaCode, true);
-		this.addRight(_iwrb.getLocalizedString("school.zip_area", "Zip"), zipArea, true);
-		this.addRight(_iwrb.getLocalizedString("school.phone", "Phone"), phone, true);
-		this.addRight(_iwrb.getLocalizedString("school.fax", "Fax"), fax, true);
-		this.addRight(_iwrb.getLocalizedString("school.email", "Email"), email, true);
-		this.addRight(_iwrb.getLocalizedString("school.management_type", "Management type"), manType, true);
-		this.addRight(_iwrb.getLocalizedString("school.web_page", "Web page"), webPage, true);
-		this.addRight(_iwrb.getLocalizedString("school.map_url", "Map URL"), mapUrl, true);
-		this.addRight(_iwrb.getLocalizedString("school.activity", "Activity"), activity, true);
-		this.addRight(_iwrb.getLocalizedString("school.open_hours", "Open hours"), openHours, true);
+		this.addRight(this._iwrb.getLocalizedString("school.image","Image"), imageInserter, true);
+		if (this._isAdultEducation) {
+			this.addRight(this._iwrb.getLocalizedString("school.educating_address","Educating address"), visitAddress, true);
+		}
+		else {
+			this.addRight(this._iwrb.getLocalizedString("school.visiting_address","Visiting address"), visitAddress, true);
+		}
+		this.addRight(this._iwrb.getLocalizedString("school.address", "Address"), streetName, true);
+		this.addRight(this._iwrb.getLocalizedString("school.area_code", "Area code"), areaCode, true);
+		this.addRight(this._iwrb.getLocalizedString("school.zip_area", "Zip"), zipArea, true);
+		this.addRight(this._iwrb.getLocalizedString("school.phone", "Phone"), phone, true);
+		this.addRight(this._iwrb.getLocalizedString("school.fax", "Fax"), fax, true);
+		this.addRight(this._iwrb.getLocalizedString("school.email", "Email"), email, true);
+		this.addRight(this._iwrb.getLocalizedString("school.management_type", "Management type"), manType, true);
+		this.addRight(this._iwrb.getLocalizedString("school.web_page", "Web page"), webPage, true);
+		this.addRight(this._iwrb.getLocalizedString("school.map_url", "Map URL"), mapUrl, true);
+		this.addRight(this._iwrb.getLocalizedString("school.activity", "Activity"), activity, true);
+		this.addRight(this._iwrb.getLocalizedString("school.open_hours", "Open hours"), openHours, true);
 		
 //		this.addRight("Doc", doc, true);
 //		this.addRight("Box", box, true);
 		
-		this.addHiddenInput( new HiddenInput(PARAMETER_SCHOOL_ID, _school.getPrimaryKey().toString() ));
+		this.addHiddenInput( new HiddenInput(PARAMETER_SCHOOL_ID, this._school.getPrimaryKey().toString() ));
 		this.addRight("");
-		this.addSubmitButton(new SubmitButton(_iwrb.getLocalizedString("school.save", "Save"), PARAMETER_ACTION, ACTION_UPDATE));
+		this.addSubmitButton(new SubmitButton(this._iwrb.getLocalizedString("school.save", "Save"), this.PARAMETER_ACTION, this.ACTION_UPDATE));
 	}
 
 	private void mainFormHighSchool(IWContext iwc) throws RemoteException{
@@ -387,17 +392,17 @@ private boolean _isAdultEducation = false;
 			information.setHeight("300");
 
 			ImageInserter imageInserter = new ImageInserter(this.PARAMETER_IMAGE_ID);
-			imageInserter.setUseBoxParameterName(PARAMETER_USE_IMAGE);
+			imageInserter.setUseBoxParameterName(this.PARAMETER_USE_IMAGE);
 			imageInserter.setSelected( true );
 		
 			TextInput schoolName = new TextInput(this.PARAMETER_SCHOOL_NAME);
-			TextInput streetName = new TextInput(PARAMETER_SCHOOL_ADDRESS_STREET);
-			TextInput areaCode = new TextInput(PARAMETER_SCHOOL_ADDRESS_POSTAL_CODE);
-			TextInput zipArea = new TextInput(PARAMETER_SCHOOL_ZIP_AREA);
-			TextInput mapUrl = new TextInput(PARAMETER_SCHOOL_MAP_URL);
-			TextInput activity = new TextInput(PARAMETER_SCHOOL_ACTIVITY);
-			TextInput openHours = new TextInput(PARAMETER_SCHOOL_OPEN_HOURS);
-			TextInput visitAddress = new TextInput(PARAMETER_SCHOOL_VISIT_ADDRESS);
+			TextInput streetName = new TextInput(this.PARAMETER_SCHOOL_ADDRESS_STREET);
+			TextInput areaCode = new TextInput(this.PARAMETER_SCHOOL_ADDRESS_POSTAL_CODE);
+			TextInput zipArea = new TextInput(this.PARAMETER_SCHOOL_ZIP_AREA);
+			TextInput mapUrl = new TextInput(this.PARAMETER_SCHOOL_MAP_URL);
+			TextInput activity = new TextInput(this.PARAMETER_SCHOOL_ACTIVITY);
+			TextInput openHours = new TextInput(this.PARAMETER_SCHOOL_OPEN_HOURS);
+			TextInput visitAddress = new TextInput(this.PARAMETER_SCHOOL_VISIT_ADDRESS);
 			
 		
 			schoolName.setSize(40);
@@ -406,12 +411,12 @@ private boolean _isAdultEducation = false;
 //			zipArea.setSize(20);
 		
 			SelectorUtility util = new SelectorUtility();
-			DropdownMenu manType = (DropdownMenu) util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_SCHOOL_MANAGEMENT_TYPE), getSchoolBusiness(iwc).getSchoolManagementTypes(), "getLocalizedString", _iwrb);
+			DropdownMenu manType = (DropdownMenu) util.getSelectorFromIDOEntities(new DropdownMenu(this.PARAMETER_SCHOOL_MANAGEMENT_TYPE), getSchoolBusiness(iwc).getSchoolManagementTypes(), "getLocalizedString", this._iwrb);
 
-			TextInput phone = new TextInput(PARAMETER_SCHOOL_PHONE);
-			TextInput fax = new TextInput(PARAMETER_SCHOOL_FAX);
-			TextInput email = new TextInput(PARAMETER_SCHOOL_EMAIL);
-			TextInput webPage = new TextInput(PARAMETER_SCHOOL_WEBPAGE);
+			TextInput phone = new TextInput(this.PARAMETER_SCHOOL_PHONE);
+			TextInput fax = new TextInput(this.PARAMETER_SCHOOL_FAX);
+			TextInput email = new TextInput(this.PARAMETER_SCHOOL_EMAIL);
+			TextInput webPage = new TextInput(this.PARAMETER_SCHOOL_WEBPAGE);
 		
 			Box box = new Box("Repps");
 			box.setBorderColor("RED");
@@ -421,53 +426,53 @@ private boolean _isAdultEducation = false;
 			doc.setBorderColor("BLUE");
 
 			try {
-			LocalizedText text = _school.getLocalizedText( iwc.getCurrentLocaleId());
+			LocalizedText text = this._school.getLocalizedText( iwc.getCurrentLocaleId());
 				if (text != null) {
 					String body = text.getBody();
 					if (body != null) {
 						information.setContent(body);	
 					}
-					this.addHiddenInput(new HiddenInput(PARAMETER_LOCALIZED_TEXT_ID, text.getPrimaryKey().toString()));
+					this.addHiddenInput(new HiddenInput(this.PARAMETER_LOCALIZED_TEXT_ID, text.getPrimaryKey().toString()));
 				}
 			
-				if ( _school.getName() != null) {
-					schoolName.setContent(_school.getName());
+				if ( this._school.getName() != null) {
+					schoolName.setContent(this._school.getName());
 				}
-				if (_school.getSchoolAddress() != null) {
-					streetName.setContent(_school.getSchoolAddress());
+				if (this._school.getSchoolAddress() != null) {
+					streetName.setContent(this._school.getSchoolAddress());
 				}
-				if ( _school.getSchoolZipCode() != null) {
-					areaCode.setContent(_school.getSchoolZipCode());
+				if ( this._school.getSchoolZipCode() != null) {
+					areaCode.setContent(this._school.getSchoolZipCode());
 				}
-				if (_school.getSchoolZipArea() != null) {
-					zipArea.setContent(_school.getSchoolZipArea());
+				if (this._school.getSchoolZipArea() != null) {
+					zipArea.setContent(this._school.getSchoolZipArea());
 				}
-				if ( _school.getSchoolPhone() != null) {
-					phone.setContent(_school.getSchoolPhone());
+				if ( this._school.getSchoolPhone() != null) {
+					phone.setContent(this._school.getSchoolPhone());
 				}
-				if ( _school.getSchoolEmail() != null) {
-					email.setContent(_school.getSchoolEmail());
+				if ( this._school.getSchoolEmail() != null) {
+					email.setContent(this._school.getSchoolEmail());
 				}
-				if ( _school.getSchoolVisitAddress() != null) {
-					visitAddress.setContent(_school.getSchoolVisitAddress());
+				if ( this._school.getSchoolVisitAddress() != null) {
+					visitAddress.setContent(this._school.getSchoolVisitAddress());
 				}
-				if ( _school.getSchoolWebPage() != null) {
-					webPage.setContent(_school.getSchoolWebPage());
+				if ( this._school.getSchoolWebPage() != null) {
+					webPage.setContent(this._school.getSchoolWebPage());
 				}
-				if ( _school.getSchoolFax() != null) {
-					fax.setContent(_school.getSchoolFax());
+				if ( this._school.getSchoolFax() != null) {
+					fax.setContent(this._school.getSchoolFax());
 				}
-				if ( _school.getSchoolManagementType() != null) {
-					manType.setSelectedElement(_school.getSchoolManagementTypeString());
+				if ( this._school.getSchoolManagementType() != null) {
+					manType.setSelectedElement(this._school.getSchoolManagementTypeString());
 				}
-				if ( _school.getMapUrl() != null ) {
-					mapUrl.setContent(_school.getMapUrl());	
+				if ( this._school.getMapUrl() != null ) {
+					mapUrl.setContent(this._school.getMapUrl());	
 				}
-				if ( _school.getActivity() != null ) {
-					activity.setContent(_school.getActivity());	
+				if ( this._school.getActivity() != null ) {
+					activity.setContent(this._school.getActivity());	
 				}
-				if ( _school.getOpenHours() != null ) {
-					openHours.setContent(_school.getOpenHours());	
+				if ( this._school.getOpenHours() != null ) {
+					openHours.setContent(this._school.getOpenHours());	
 				}
 			
 			} catch (IDORelationshipException e) {
@@ -476,7 +481,7 @@ private boolean _isAdultEducation = false;
 
 
 			try {
-					Collection files = _school.getImages();
+					Collection files = this._school.getImages();
 					if (files != null && files.size() > 0) {
 						Iterator iter = files.iterator();
 						/**  Only using one image ... altough School supports more. */
@@ -487,24 +492,24 @@ private boolean _isAdultEducation = false;
 				e.printStackTrace(System.err);
 			}
 
-			addLeft(formatHeadline(_iwrb.getLocalizedString("school.school_info_editor", "Edit school information")), false);
+			addLeft(formatHeadline(this._iwrb.getLocalizedString("school.school_info_editor", "Edit school information")), false);
 //			this.addLeft(_school.getName(), "School Information Editor");
 //			this.addBreak();
 
-			this.addLeft(_iwrb.getLocalizedString("school.name", "Name"), schoolName, true);
+			this.addLeft(this._iwrb.getLocalizedString("school.name", "Name"), schoolName, true);
 
 			Table addressTable = new Table(3, 8);
 			addressTable.setCellpaddingAndCellspacing(0);
-			Text sNameText = new Text(_iwrb.getLocalizedString("school.address", "Address"));
+			Text sNameText = new Text(this._iwrb.getLocalizedString("school.address", "Address"));
 			//Text sNumberText = new Text(_iwrb.getLocalizedString("school.number", "Number"));
-			Text sAreaCodeText = new Text(_iwrb.getLocalizedString("school.area_code", "Area code"));
-			Text sZipAreaText = new Text(_iwrb.getLocalizedString("school.zip_area","Zip area"));
-			Text sPhoneText = new Text(_iwrb.getLocalizedString("school.phone","Phone"));
-			Text sFaxText = new Text(_iwrb.getLocalizedString("school.fax","Fax"));
-			Text sEmailText = new Text(_iwrb.getLocalizedString("school.email","Email"));
-			Text sActivityText = new Text(_iwrb.getLocalizedString("school.activity","Activity"));
-			Text sOpenHoursText = new Text(_iwrb.getLocalizedString("school.open_hours","Open hours"));
-			Text sVisitAddress = new Text(_iwrb.getLocalizedString("school.visiting_address","Visiting address"));
+			Text sAreaCodeText = new Text(this._iwrb.getLocalizedString("school.area_code", "Area code"));
+			Text sZipAreaText = new Text(this._iwrb.getLocalizedString("school.zip_area","Zip area"));
+			Text sPhoneText = new Text(this._iwrb.getLocalizedString("school.phone","Phone"));
+			Text sFaxText = new Text(this._iwrb.getLocalizedString("school.fax","Fax"));
+			Text sEmailText = new Text(this._iwrb.getLocalizedString("school.email","Email"));
+			Text sActivityText = new Text(this._iwrb.getLocalizedString("school.activity","Activity"));
+			Text sOpenHoursText = new Text(this._iwrb.getLocalizedString("school.open_hours","Open hours"));
+			Text sVisitAddress = new Text(this._iwrb.getLocalizedString("school.visiting_address","Visiting address"));
 			
 			formatText(sNameText, true);
 		
@@ -550,65 +555,65 @@ private boolean _isAdultEducation = false;
 //			this.addLeft(addressTable, false);
 		
 			setStyle(information);
-			this.addLeft(_iwrb.getLocalizedString("school.information","Information"), information, true);
+			this.addLeft(this._iwrb.getLocalizedString("school.information","Information"), information, true);
 
 			//this.addLeft(sue.getSchoolUsersTable(iwc, this._school, false), false);
 			try {
-				this.addLeft(sue.getHighSchoolUsersTable(iwc, this._school, false), false);
+				this.addLeft(this.sue.getHighSchoolUsersTable(iwc, this._school, false), false);
 			}catch (Exception e) {
 			}
 
-			this.addRight(_iwrb.getLocalizedString("school.image","Image"), imageInserter, true);
-			this.addRight(_iwrb.getLocalizedString("school.visiting_address","Visiting address"), visitAddress, true);
-			this.addRight(_iwrb.getLocalizedString("school.address", "Address"), streetName, true);
-			this.addRight(_iwrb.getLocalizedString("school.area_code", "Area code"), areaCode, true);
-			this.addRight(_iwrb.getLocalizedString("school.zip_area", "Zip"), zipArea, true);
-			this.addRight(_iwrb.getLocalizedString("school.phone", "Phone"), phone, true);
-			this.addRight(_iwrb.getLocalizedString("school.fax", "Fax"), fax, true);
-			this.addRight(_iwrb.getLocalizedString("school.email", "Email"), email, true);
-			this.addRight(_iwrb.getLocalizedString("school.management_type", "Management type"), manType, true);
-			this.addRight(_iwrb.getLocalizedString("school.web_page", "Web page"), webPage, true);
-			this.addRight(_iwrb.getLocalizedString("school.map_url", "Map URL"), mapUrl, true);
-			this.addRight(_iwrb.getLocalizedString("school.activity", "Activity"), activity, true);
-			this.addRight(_iwrb.getLocalizedString("school.open_hours", "Open hours"), openHours, true);
+			this.addRight(this._iwrb.getLocalizedString("school.image","Image"), imageInserter, true);
+			this.addRight(this._iwrb.getLocalizedString("school.visiting_address","Visiting address"), visitAddress, true);
+			this.addRight(this._iwrb.getLocalizedString("school.address", "Address"), streetName, true);
+			this.addRight(this._iwrb.getLocalizedString("school.area_code", "Area code"), areaCode, true);
+			this.addRight(this._iwrb.getLocalizedString("school.zip_area", "Zip"), zipArea, true);
+			this.addRight(this._iwrb.getLocalizedString("school.phone", "Phone"), phone, true);
+			this.addRight(this._iwrb.getLocalizedString("school.fax", "Fax"), fax, true);
+			this.addRight(this._iwrb.getLocalizedString("school.email", "Email"), email, true);
+			this.addRight(this._iwrb.getLocalizedString("school.management_type", "Management type"), manType, true);
+			this.addRight(this._iwrb.getLocalizedString("school.web_page", "Web page"), webPage, true);
+			this.addRight(this._iwrb.getLocalizedString("school.map_url", "Map URL"), mapUrl, true);
+			this.addRight(this._iwrb.getLocalizedString("school.activity", "Activity"), activity, true);
+			this.addRight(this._iwrb.getLocalizedString("school.open_hours", "Open hours"), openHours, true);
 		
 			//this.addRight("Doc", doc, true);
 			//this.addRight("Box", box, true);
 		
-			this.addHiddenInput( new HiddenInput(PARAMETER_SCHOOL_ID, _school.getPrimaryKey().toString() ));
+			this.addHiddenInput( new HiddenInput(PARAMETER_SCHOOL_ID, this._school.getPrimaryKey().toString() ));
 			this.addRight("");
-			this.addSubmitButton(new SubmitButton(_iwrb.getLocalizedString("school.save", "Save"), PARAMETER_ACTION, ACTION_UPDATE));
+			this.addSubmitButton(new SubmitButton(this._iwrb.getLocalizedString("school.save", "Save"), this.PARAMETER_ACTION, this.ACTION_UPDATE));
 		}
 
 	private boolean updateSchool(IWContext iwc) throws RemoteException {
 		String id = iwc.getParameter( PARAMETER_SCHOOL_ID );
 		if (id != null) {
-			String information = iwc.getParameter( PARAMETER_INFORMATION );
-			String imageId = iwc.getParameter( PARAMETER_IMAGE_ID );	
-			String useImage = iwc.getParameter( PARAMETER_USE_IMAGE );
-			String school_name = iwc.getParameter( PARAMETER_SCHOOL_NAME );
-			String street = iwc.getParameter( PARAMETER_SCHOOL_ADDRESS_STREET );
-			String postalCode = iwc.getParameter( PARAMETER_SCHOOL_ADDRESS_POSTAL_CODE );
-			String zipArea = iwc.getParameter( PARAMETER_SCHOOL_ZIP_AREA);
-			String phone = iwc.getParameter( PARAMETER_SCHOOL_PHONE );
-			String fax = iwc.getParameter( PARAMETER_SCHOOL_FAX );
-			String email = iwc.getParameter( PARAMETER_SCHOOL_EMAIL );
-			String manType = iwc.getParameter( PARAMETER_SCHOOL_MANAGEMENT_TYPE);
-			String webPage = iwc.getParameter( PARAMETER_SCHOOL_WEBPAGE );
-			String mapUrl = iwc.getParameter( PARAMETER_SCHOOL_MAP_URL );
-			String activity = iwc.getParameter( PARAMETER_SCHOOL_ACTIVITY );
-			String openHours = iwc.getParameter( PARAMETER_SCHOOL_OPEN_HOURS );
-			String visitAddress = iwc.getParameter( PARAMETER_SCHOOL_VISIT_ADDRESS);
+			String information = iwc.getParameter( this.PARAMETER_INFORMATION );
+			String imageId = iwc.getParameter( this.PARAMETER_IMAGE_ID );	
+			String useImage = iwc.getParameter( this.PARAMETER_USE_IMAGE );
+			String school_name = iwc.getParameter( this.PARAMETER_SCHOOL_NAME );
+			String street = iwc.getParameter( this.PARAMETER_SCHOOL_ADDRESS_STREET );
+			String postalCode = iwc.getParameter( this.PARAMETER_SCHOOL_ADDRESS_POSTAL_CODE );
+			String zipArea = iwc.getParameter( this.PARAMETER_SCHOOL_ZIP_AREA);
+			String phone = iwc.getParameter( this.PARAMETER_SCHOOL_PHONE );
+			String fax = iwc.getParameter( this.PARAMETER_SCHOOL_FAX );
+			String email = iwc.getParameter( this.PARAMETER_SCHOOL_EMAIL );
+			String manType = iwc.getParameter( this.PARAMETER_SCHOOL_MANAGEMENT_TYPE);
+			String webPage = iwc.getParameter( this.PARAMETER_SCHOOL_WEBPAGE );
+			String mapUrl = iwc.getParameter( this.PARAMETER_SCHOOL_MAP_URL );
+			String activity = iwc.getParameter( this.PARAMETER_SCHOOL_ACTIVITY );
+			String openHours = iwc.getParameter( this.PARAMETER_SCHOOL_OPEN_HOURS );
+			String visitAddress = iwc.getParameter( this.PARAMETER_SCHOOL_VISIT_ADDRESS);
 			
 			try {
 				if (useImage == null) {
 					/** Removes all images */
-					_school.removeImages();
-					iwc.removeSessionAttribute( PARAMETER_IMAGE_ID );
+					this._school.removeImages();
+					iwc.removeSessionAttribute( this.PARAMETER_IMAGE_ID );
 				}else {
 					if (imageId != null && !imageId.equals("-1")) {
 						ICFile file = ((ICFileHome) IDOLookup.getHome(ICFile.class)).findByPrimaryKey(new Integer(imageId));
-						_school.setImage( file );
+						this._school.setImage( file );
 					}
 				}
 				/*
@@ -632,59 +637,59 @@ private boolean _isAdultEducation = false;
 				*/
 				
 				//User currentUser = iwc.getCurrentUser();
-				_school.setLocalizedText( information, iwc.getCurrentLocaleId() );
+				this._school.setLocalizedText( information, iwc.getCurrentLocaleId() );
 				
 				//if (!school_name.equals("")) { 
 				// changed all if cases below so that it saves the changes if the user emptied the field
 				if (school_name != null) {
-					_school.setSchoolName(school_name);	
+					this._school.setSchoolName(school_name);	
 				}
 				if (street != null) {
-					_school.setSchoolAddress(street);	
+					this._school.setSchoolAddress(street);	
 				}
 				if (visitAddress != null) {
-					_school.setSchoolVisitAddress(visitAddress);	
+					this._school.setSchoolVisitAddress(visitAddress);	
 				}				
 				if (postalCode != null) {
-					_school.setSchoolZipCode(postalCode);
+					this._school.setSchoolZipCode(postalCode);
 				}
 				if (zipArea != null) {
-					_school.setSchoolZipArea(zipArea);	
+					this._school.setSchoolZipArea(zipArea);	
 				}
 				if (phone != null) {
-					_school.setSchoolPhone(phone);
+					this._school.setSchoolPhone(phone);
 				}
 				if (fax != null) {
-					_school.setSchoolFax(fax);
+					this._school.setSchoolFax(fax);
 				}
 				if (email != null) {
-					_school.setSchoolEmail(email);
+					this._school.setSchoolEmail(email);
 				}
 				if (webPage != null) {
-					_school.setSchoolWebPage(webPage);	
+					this._school.setSchoolWebPage(webPage);	
 				}
 				if (activity != null) {
-					_school.setActivity(activity);	
+					this._school.setActivity(activity);	
 				}
 				if (openHours != null) {
-					_school.setOpenHours(openHours);	
+					this._school.setOpenHours(openHours);	
 				}
 				if (manType != null && !manType.equals("-1")) {
 					try {
-						_school.setSchoolManagementType(manType);
+						this._school.setSchoolManagementType(manType);
 					}catch (NumberFormatException e){
 						e.printStackTrace(System.err);
 					}
 				}
 						
 				if (mapUrl != null) {
-					_school.setMapUrl(mapUrl);	
+					this._school.setMapUrl(mapUrl);	
 				}
 				
-				_school.store();
+				this._school.store();
 				
-				sue.updateDepartment(iwc);
-				sue.updateUsers(iwc, _school);
+				this.sue.updateDepartment(iwc);
+				this.sue.updateUsers(iwc, this._school);
 	
 				return true;
 			} catch (IDORelationshipException e) {

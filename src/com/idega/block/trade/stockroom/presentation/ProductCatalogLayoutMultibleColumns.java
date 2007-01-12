@@ -60,8 +60,9 @@ public class ProductCatalogLayoutMultibleColumns extends AbstractProductCatalogL
 	productCatalog.sortList(catProducts);
 
 	int numberOfRows = ( catProducts.size() / productCatalog._numberOfColumns ) + firstRow;
-	if ( (catProducts.size() % productCatalog._numberOfColumns) > 0 )
-	  numberOfRows++;
+	if ( (catProducts.size() % productCatalog._numberOfColumns) > 0 ) {
+		numberOfRows++;
+	}
 
 	for (int j = 0; j < catProducts.size(); j++) {
 	  try {

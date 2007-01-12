@@ -38,14 +38,16 @@ public class LocaleSetter extends PresentationObjectContainer {
 
 	public void main(IWContext iwc) {
 		add(IWDeveloper.getTitleTable(this.getClass()));
-		if (!iwc.isIE())
+		if (!iwc.isIE()) {
 			getParentPage().setBackgroundColor("#FFFFFF");
+		}
 
-		iwrb = getResourceBundle(iwc);
-		_coreLocale = iwc.getIWMainApplication().getCoreLocale();
+		this.iwrb = getResourceBundle(iwc);
+		this._coreLocale = iwc.getIWMainApplication().getCoreLocale();
 
-		if (iwc.getParameter("save") != null)
+		if (iwc.getParameter("save") != null) {
 			save(iwc);
+		}
 
 		Locale defLocale = iwc.getApplicationSettings().getDefaultLocale();
 		ICLocale icDefLocale = ICLocaleBusiness.getICLocale(defLocale);
@@ -60,14 +62,14 @@ public class LocaleSetter extends PresentationObjectContainer {
 		T.add(IWDeveloper.getText("Region"), 4, 1);
 		T.add(IWDeveloper.getText("Default"), 5, 1);
 
-		count = 1;
+		this.count = 1;
 		addToTable(T, ICLocaleBusiness.listOfLocales(true), icDefLocale);
 		SubmitButton save = new SubmitButton("save", "Save");
-		count++;
-		T.add(save, 1, count);
-		count++;
+		this.count++;
+		T.add(save, 1, this.count);
+		this.count++;
 		addToTable(T, ICLocaleBusiness.listOfLocales(false), null);
-		T.add(new HiddenInput("loc_count", String.valueOf(count)));
+		T.add(new HiddenInput("loc_count", String.valueOf(this.count)));
 		T.setCellpadding(2);
 		//T.setBorder(1);
 		form.add(T);
@@ -82,24 +84,25 @@ public class LocaleSetter extends PresentationObjectContainer {
 			Locale javaLocale;
 			Iterator I = listOfLocales.iterator();
 			while (I.hasNext()) {
-				count++;
+				this.count++;
 				icLocale = (ICLocale) I.next();
 				javaLocale = ICLocaleBusiness.getLocaleFromLocaleString(icLocale.getLocale());
-				chk = new CheckBox("loc_chk" + count, String.valueOf(icLocale.getLocaleID()));
+				chk = new CheckBox("loc_chk" + this.count, String.valueOf(icLocale.getLocaleID()));
 				chk.setChecked(icLocale.getInUse());
-				if (javaLocale.equals(_coreLocale)) {
+				if (javaLocale.equals(this._coreLocale)) {
 					chk.setDisabled(true);
-					T.add(new HiddenInput("loc_chk" + count, String.valueOf(icLocale.getLocaleID())), 1, count);
+					T.add(new HiddenInput("loc_chk" + this.count, String.valueOf(icLocale.getLocaleID())), 1, this.count);
 				}
-				T.add(chk, 1, count);
-				T.add(IWDeveloper.getText(javaLocale.getDisplayCountry()), 2, count);
-				T.add(IWDeveloper.getText(javaLocale.getDisplayLanguage()), 3, count);
-				T.add(IWDeveloper.getText(javaLocale.getDisplayVariant()), 4, count);
+				T.add(chk, 1, this.count);
+				T.add(IWDeveloper.getText(javaLocale.getDisplayCountry()), 2, this.count);
+				T.add(IWDeveloper.getText(javaLocale.getDisplayLanguage()), 3, this.count);
+				T.add(IWDeveloper.getText(javaLocale.getDisplayVariant()), 4, this.count);
 				if (defLocale != null && icLocale.getInUse()) {
 					rb = new RadioButton("default_locale", icLocale.getName());
-					T.add(rb, 5, count);
-					if (defLocale.getLocaleID() == icLocale.getLocaleID())
+					T.add(rb, 5, this.count);
+					if (defLocale.getLocaleID() == icLocale.getLocaleID()) {
 						rb.setSelected();
+					}
 				}
 			}
 		}
@@ -121,8 +124,9 @@ public class LocaleSetter extends PresentationObjectContainer {
 			ICLocaleBusiness.makeLocalesInUse(V);
 
 			String sDefLocale = iwc.getParameter("default_locale");
-			if (sDefLocale != null)
+			if (sDefLocale != null) {
 				iwc.getApplicationSettings().setDefaultLocale(ICLocaleBusiness.getLocaleFromLocaleString(sDefLocale));
+			}
 		}
 	}
 

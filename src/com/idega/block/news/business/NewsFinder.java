@@ -13,6 +13,7 @@ import com.idega.block.text.business.ContentFinder;
 import com.idega.block.text.business.ContentHelper;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.localisation.business.ICLocaleBusiness;
+import com.idega.data.GenericEntity;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDORelationshipException;
 import com.idega.util.IWTimestamp;
@@ -255,8 +256,9 @@ public class NewsFinder {
       for (int i = 0; i < len && i < maxNumberOfNews; i++) {
         NwNews news = (NwNews) L.get(i);
         NewsHelper nh = getNewsHelper(news);
-        if(nh != null)
-          V.add(nh);
+        if(nh != null) {
+			V.add(nh);
+		}
       }
      return V;
     }
@@ -285,8 +287,9 @@ public class NewsFinder {
       for (int i = 0; i < len && i < maxNumberOfNews; i++) {
         NwNews news = (NwNews) L.get(i);
         NewsHelper nh = getNewsHelper(news,iLocaleId );
-        if(nh != null)
-          V.add(nh);
+        if(nh != null) {
+			V.add(nh);
+		}
       }
      return V;
     }
@@ -302,8 +305,9 @@ public class NewsFinder {
       NH.setContentHelper(ch);
       return NH;
     }
-    else
-      return null;
+	else {
+		return null;
+	}
   }
 
   public static NewsHelper getNewsHelper(NwNews news,int iLocaleId){
@@ -315,8 +319,9 @@ public class NewsFinder {
       NH.setContentHelper(ch);
       return NH;
     }
-    else
-      return null;
+	else {
+		return null;
+	}
   }
 
   public static NewsHelper getNewsHelper(int iNwNewsId){
@@ -339,8 +344,9 @@ public class NewsFinder {
       NH.setContentHelper(ch);
       return NH;
     }
-    else
-      return null;
+	else {
+		return null;
+	}
   }
 
   public static List listOfNewsFiles(int id){
@@ -394,7 +400,7 @@ public class NewsFinder {
 
     public static int	countNewsInCategory(int iCategoryId){
       try {
-              NwNews news = (NwNews)com.idega.block.news.data.NwNewsBMPBean.getStaticInstance(NwNews.class);
+              NwNews news = (NwNews)GenericEntity.getStaticInstance(NwNews.class);
               return news.getNumberOfRecords(com.idega.block.news.data.NwNewsBMPBean.getColumnNameNewsCategoryId(),iCategoryId);
       }
       catch (SQLException ex) {
@@ -446,7 +452,7 @@ public class NewsFinder {
         break;
       }
     }
-    NwNews ge = (NwNews)com.idega.block.news.data.NwNewsBMPBean.getStaticInstance(NwNews.class);
+    NwNews ge = (NwNews)GenericEntity.getStaticInstance(NwNews.class);
     try {
       //System.err.println(sql.toString());
       return ge.getIntTableValue(sql.toString());
@@ -467,8 +473,9 @@ public class NewsFinder {
 
   public static Locale getLocale(int iLocaleId){
     Locale L = ICLocaleBusiness.getLocale(iLocaleId);
-    if(L==null)
-      L = new Locale("is","IS");
+    if(L==null) {
+		L = new Locale("is","IS");
+	}
     return L;
   }
 

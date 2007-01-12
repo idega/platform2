@@ -25,6 +25,7 @@ import com.idega.core.location.data.Address;
 import com.idega.core.user.business.UserGroupBusiness;
 import com.idega.data.EntityControl;
 import com.idega.data.EntityFinder;
+import com.idega.data.GenericEntity;
 import com.idega.data.IDOLookup;
 import com.idega.data.SimpleQuerier;
 import com.idega.transaction.IdegaTransactionManager;
@@ -106,9 +107,13 @@ public class ResellerManagerBean extends IBOServiceBean  implements ResellerMana
 
   private Reseller createReseller(int resellerId, Reseller parentReseller, String name, String userName, String password, String description, int[] addressIds, int[] phoneIds, int[] emailIds, String organizationID) throws Exception {
     boolean isUpdate = false;
-    if (resellerId != -1) isUpdate = true;
+    if (resellerId != -1) {
+		isUpdate = true;
+	}
 
-    if (description == null) description = "";
+    if (description == null) {
+		description = "";
+	}
 
 
     if (isUpdate) {
@@ -120,17 +125,17 @@ public class ResellerManagerBean extends IBOServiceBean  implements ResellerMana
         }
       res.update();
 
-      res.removeFrom(com.idega.core.location.data.AddressBMPBean.getStaticInstance(Address.class));
+      res.removeFrom(GenericEntity.getStaticInstance(Address.class));
       for (int i = 0; i < addressIds.length; i++) {
         res.addTo(Address.class, addressIds[i]);
       }
 
-      res.removeFrom(com.idega.core.contact.data.PhoneBMPBean.getStaticInstance(Phone.class));
+      res.removeFrom(GenericEntity.getStaticInstance(Phone.class));
       for (int i = 0; i < phoneIds.length; i++) {
         res.addTo(Phone.class, phoneIds[i]);
       }
 
-      res.removeFrom(com.idega.core.contact.data.EmailBMPBean.getStaticInstance(Email.class));
+      res.removeFrom(GenericEntity.getStaticInstance(Email.class));
       for (int i = 0; i < emailIds.length; i++) {
         res.addTo(Email.class, emailIds[i]);
       }
@@ -260,8 +265,8 @@ public class ResellerManagerBean extends IBOServiceBean  implements ResellerMana
   public Supplier[] getSuppliers(int resellerId, String orderBy) {
     Supplier[] suppliers = {};
     try {
-        Reseller reseller = (Reseller) com.idega.block.trade.stockroom.data.ResellerBMPBean.getStaticInstance(Reseller.class);
-        Supplier supplier = (Supplier) com.idega.block.trade.stockroom.data.SupplierBMPBean.getStaticInstance(Supplier.class);
+        Reseller reseller = (Reseller) GenericEntity.getStaticInstance(Reseller.class);
+        Supplier supplier = (Supplier) GenericEntity.getStaticInstance(Supplier.class);
 
         StringBuffer sql = new StringBuffer();
           sql.append("Select s.* from "+com.idega.block.trade.stockroom.data.ResellerBMPBean.getResellerTableName()+" r, "+com.idega.block.trade.stockroom.data.SupplierBMPBean.getSupplierTableName()+" s, ");
@@ -331,8 +336,9 @@ public class ResellerManagerBean extends IBOServiceBean  implements ResellerMana
           buff.append(" AND ");
           buff.append(reseller.getIDColumnName()+" not in (");
           for (int i = 0; i < exclude.length; i++) {
-            if (i != 0)
-              buff.append(", ");
+            if (i != 0) {
+				buff.append(", ");
+			}
             buff.append(exclude[i]);
           }
           buff.append(") ");
@@ -353,7 +359,7 @@ public class ResellerManagerBean extends IBOServiceBean  implements ResellerMana
   public Iterator getResellers(Supplier supplier, String orderBy) {
     Iterator iter = null;
     try {
-        Reseller reseller = (Reseller) com.idega.block.trade.stockroom.data.ResellerBMPBean.getStaticInstance(Reseller.class);
+        Reseller reseller = (Reseller) GenericEntity.getStaticInstance(Reseller.class);
 //        Supplier supplier = (Supplier) com.idega.block.trade.stockroom.data.SupplierBMPBean.getStaticInstance(Supplier.class);
         int supplierId = supplier.getID();
 
@@ -372,7 +378,7 @@ public class ResellerManagerBean extends IBOServiceBean  implements ResellerMana
             sql.append(" ORDER BY r."+orderBy);
           }
 
-        List list = EntityFinder.findAll(com.idega.block.trade.stockroom.data.ResellerBMPBean.getStaticInstance(Reseller.class), sql.toString());
+        List list = EntityFinder.findAll(GenericEntity.getStaticInstance(Reseller.class), sql.toString());
 //        resellers = (Reseller[]) (com.idega.block.trade.stockroom.data.ResellerBMPBean.getStaticInstance(Reseller.class)).findAll(sql.toString());
         if (list != null) {
           iter = list.iterator();
@@ -476,8 +482,9 @@ public class ResellerManagerBean extends IBOServiceBean  implements ResellerMana
   public void addUser(Reseller reseller, User user, boolean addToPermissionGroup) throws RemoteException, FinderException {
     Group pGroup = getPermissionGroup(reseller);
     ResellerStaffGroup sGroup = getResellerStaffGroup(reseller);
-    if (addToPermissionGroup)
-      pGroup.addGroup(user);
+    if (addToPermissionGroup) {
+		pGroup.addGroup(user);
+	}
     sGroup.addGroup(user);
   }
 
@@ -506,7 +513,7 @@ public class ResellerManagerBean extends IBOServiceBean  implements ResellerMana
 
   public List getUsers(Reseller reseller) throws RemoteException, FinderException {
 	  ResellerStaffGroup sGroup = getResellerStaffGroup(reseller);
-	  Collection coll = getUserBusiness().getUsersInGroup((Group) sGroup);
+	  Collection coll = getUserBusiness().getUsersInGroup(sGroup);
 	  List users = new Vector(coll);
 	  //List users = UserBusiness.getUsersInGroup(sGroup);
 	  if (users != null) {

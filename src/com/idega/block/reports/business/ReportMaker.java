@@ -202,9 +202,9 @@ public class ReportMaker {
 
             String join = ST.nextToken();
 
-            if(!vJoin.contains(join))
-
-              vJoin.add(join);
+            if(!vJoin.contains(join)) {
+				vJoin.add(join);
+			}
 
           }
 
@@ -214,13 +214,12 @@ public class ReportMaker {
 
         if(hascondition ){
 
-          if(!cond.isFunction() && !vWhere.contains(c))
-
-            vWhere.add(c);
-
-          else if(!vHaving.contains(c))
-
-            vHaving.add(c);
+          if(!cond.isFunction() && !vWhere.contains(c)) {
+			vWhere.add(c);
+		}
+		else if(!vHaving.contains(c)) {
+			vHaving.add(c);
+		}
 
         }
 
@@ -280,9 +279,9 @@ public class ReportMaker {
 
       sql.append(Select.get(i));
 
-      if(i < len-1)
-
-        sql.append(",");
+      if(i < len-1) {
+		sql.append(",");
+	}
 
     }
 
@@ -306,9 +305,9 @@ public class ReportMaker {
 
         sql.append(From.get(i));
 
-        if(i < flen-1)
-
-          sql.append(",");
+        if(i < flen-1) {
+			sql.append(",");
+		}
 
       }
 
@@ -344,9 +343,9 @@ public class ReportMaker {
 
         sql.append(Join.get(i));
 
-        if(i < len-1)
-
-          sql.append(" AND ");
+        if(i < len-1) {
+			sql.append(" AND ");
+		}
 
       }
 
@@ -364,21 +363,20 @@ public class ReportMaker {
 
     if(len > 0 ){
 
-      if(ifwhere)
-
-        sql.append(" AND ");
-
-      else
-
-        sql.append(" WHERE ");
+      if(ifwhere) {
+		sql.append(" AND ");
+	}
+	else {
+		sql.append(" WHERE ");
+	}
 
       for(int i = 0; i < len ; i++){
 
         sql.append(Where.get(i));
 
-        if( i < len-1)
-
-          sql.append(" AND ");
+        if( i < len-1) {
+			sql.append(" AND ");
+		}
 
       }
 
@@ -404,9 +402,9 @@ public class ReportMaker {
 
           sql.append(GroupBy.get(i));
 
-          if(i < len-1)
-
-            sql.append(",");
+          if(i < len-1) {
+			sql.append(",");
+		}
 
         }
 
@@ -434,9 +432,9 @@ public class ReportMaker {
 
           sql.append(Having.get(i));
 
-          if(i < len-1)
-
-            sql.append(" AND ");
+          if(i < len-1) {
+			sql.append(" AND ");
+		}
 
         }
 
@@ -464,9 +462,9 @@ public class ReportMaker {
 
           sql.append(Order.get(i));
 
-          if(i < len-1)
-
-            sql.append(",");
+          if(i < len-1) {
+			sql.append(",");
+		}
 
         }
 

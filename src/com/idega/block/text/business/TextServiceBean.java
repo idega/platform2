@@ -61,8 +61,9 @@ public class TextServiceBean extends IBOServiceBean implements TextService{
 				ctUpdate = false;
 				locUpdate = false;
 				eContent = ((ContentHome) getIDOHome(Content.class)).create();
-				if (dateOfContent == null)
+				if (dateOfContent == null) {
 					eContent.setCreated(IWTimestamp.getTimestampRightNow());
+				}
 				locText = ((LocalizedTextHome) getIDOHome(LocalizedText.class)).create();
 			}
 
@@ -72,13 +73,16 @@ public class TextServiceBean extends IBOServiceBean implements TextService{
 			locText.setTitle(sTitle);
 			locText.setUpdated(IWTimestamp.getTimestampRightNow());
 
-			if (tsPublishFrom != null)
+			if (tsPublishFrom != null) {
 				eContent.setPublishFrom(tsPublishFrom);
-			if (tsPublishTo != null)
+			}
+			if (tsPublishTo != null) {
 				eContent.setPublishTo(tsPublishTo);
+			}
 			
-			if (dateOfContent == null)
+			if (dateOfContent == null) {
 				eContent.setLastUpdated(IWTimestamp.getTimestampRightNow());
+			}
 			else {
 				eContent.setLastUpdated(dateOfContent);
 				eContent.setCreated(dateOfContent);
@@ -96,8 +100,9 @@ public class TextServiceBean extends IBOServiceBean implements TextService{
 			}
 			else if (!ctUpdate) {
 				eContent.setCreated(IWTimestamp.getTimestampRightNow());
-				if (userId!=null && userId.intValue() > 0)
+				if (userId!=null && userId.intValue() > 0) {
 					eContent.setUserId(userId);
+				}
 				eContent.store();
 				locText.setCreated(IWTimestamp.getTimestampRightNow());
 				locText.store();
@@ -209,7 +214,7 @@ public class TextServiceBean extends IBOServiceBean implements TextService{
 		
 			try {
 				Content content = ((ContentHome) getIDOHome(Content.class)).findByPrimaryKey(contentId);
-				content.addFileToContent((ICFile)((ICFileHome)getIDOHome(ICFile.class)).findByPrimaryKey( (fileId)));
+				content.addFileToContent(((ICFileHome)getIDOHome(ICFile.class)).findByPrimaryKey( (fileId)));
 				return true;
 			}
 			catch (IDOAddRelationshipException e) {
@@ -256,12 +261,15 @@ public class TextServiceBean extends IBOServiceBean implements TextService{
 				if(sAttribute != null){
 					eTxText.setAttribute(sAttribute);
 				}
-				if(eContent.getID() > 0)
+				if(eContent.getID() > 0) {
 					eTxText.setContentId(eContent.getID());
-				if(update)
+				}
+				if(update) {
 					eTxText.update();
-				else
+				}
+				else {
 					eTxText.insert();
+				}
 				if(instanceId!=null && instanceId.intValue() > 0 && !update){
 					//System.err.println("instance er til");
 					ICObjectInstance objIns = ((ICObjectInstanceHome)getIDOHome(ICObjectInstance.class)).findByPrimaryKey(instanceId);

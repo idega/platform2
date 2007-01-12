@@ -15,7 +15,7 @@ import com.idega.data.SimpleQuerier;
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:      idega.is
- * @author <a href="mailto:laddi@idega.is">Þórhallur Helgason</a>
+ * @author <a href="mailto:laddi@idega.is">ï¿½ï¿½rhallur Helgason</a>
  * @version 1.0
  */
 
@@ -66,7 +66,7 @@ public class PublisherBMPBean extends GenericEntity implements Publisher {
   }
 
   public Collection ejbFindAllPublishers() throws FinderException {
-    return super.idoFindIDsBySQL("select * from "+this.getEntityTableName());
+    return super.idoFindIDsBySQL("select * from "+PublisherBMPBean.getEntityTableName());
   }
 
   public void remove() throws IDORemoveException,RemoveException {

@@ -101,7 +101,7 @@ public class SurveyAnswerBMPBean extends com.idega.data.GenericEntity implements
 		
 		qTR.setAnswer(question);
 		
-		storeMap.put(locale,qTR);
+		this.storeMap.put(locale,qTR);
 	}
 	
 	public Collection ejbFindQuestionsAnswer(SurveyQuestion question) throws FinderException{
@@ -144,7 +144,7 @@ public class SurveyAnswerBMPBean extends com.idega.data.GenericEntity implements
 	
 	public void store(){
 		super.store();
-		Collection translations = storeMap.values();
+		Collection translations = this.storeMap.values();
 		for (Iterator iter = translations.iterator(); iter.hasNext();) {
 			IDOTranslationEntity element = (IDOTranslationEntity)iter.next();
 			element.setTransletedEntity(this);

@@ -18,14 +18,14 @@ public class SchoolAreaComparator implements Comparator {
 	 * Constructor for SchoolComparator.
 	 */
 	public SchoolAreaComparator(Locale locale) {
-		_locale = locale;
+		this._locale = locale;
 	}
 
 	/**
 	 * @see java.util.Comparator#compare(Object, Object)
 	 */
 	public int compare(Object o1, Object o2) {
-		Collator collator = Collator.getInstance(_locale);
+		Collator collator = Collator.getInstance(this._locale);
 		
 		SchoolArea schoolArea1 = (SchoolArea) o1;
 		SchoolArea schoolArea2 = (SchoolArea) o2;

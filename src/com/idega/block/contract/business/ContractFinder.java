@@ -1,5 +1,5 @@
 /*
- * $Id: ContractFinder.java,v 1.10 2003/10/03 01:41:59 tryggvil Exp $
+ * $Id: ContractFinder.java,v 1.10.4.1 2007/01/12 19:32:12 idegaweb Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -108,8 +108,9 @@ public abstract class ContractFinder
 			{
 				return ((Integer)((ContractCategory) categories.iterator().next()).getPrimaryKey()).intValue();
 			}
-			else
+			else {
 				return -1;
+			}
 		}
 		catch (Exception ex)
 		{
@@ -141,8 +142,9 @@ public abstract class ContractFinder
 			{
 				return ((Integer)((ICObjectInstance) instances.iterator().next()).getPrimaryKey()).intValue();
 			}
-			else
+			else {
 				return -1;
+			}
 		}
 		catch (Exception ex)
 		{
@@ -279,12 +281,13 @@ public abstract class ContractFinder
 				while(iter.hasNext())
 				{
 					Contract C = (Contract) iter.next();
-					H.put( (Integer)C.getPrimaryKey(), C);
+					H.put( C.getPrimaryKey(), C);
 				}
 				return H;
 			}
-			else
+			else {
 				return null;
+			}
 		}
 		catch (IDOLookupException e) {
 			e.printStackTrace();

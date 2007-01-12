@@ -13,7 +13,7 @@ import com.idega.data.GenericEntity;
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:      idega.is
- * @author <a href="mailto:laddi@idega.is">Þórhallur Helgason</a>
+ * @author <a href="mailto:laddi@idega.is">ï¿½ï¿½rhallur Helgason</a>
  * @version 1.0
  */
 
@@ -82,8 +82,9 @@ public class WordBMPBean extends GenericEntity implements Word {
     sql.append(getColumnCategoryID());
     sql.append(" in (");
     for ( int a = 0; a < categories.length; a++ ) {
-      if ( a > 0 )
-	sql.append(",");
+      if ( a > 0 ) {
+		sql.append(",");
+	}
       sql.append(categories[a]);
     }
     sql.append(")");
@@ -95,7 +96,7 @@ public class WordBMPBean extends GenericEntity implements Word {
   }
 
   public Collection ejbFindAllWordsContaining(String word) throws FinderException {
-    return super.idoFindIDsBySQL("select * from "+this.getEntityTableName()+" where "+getColumnWord()+" like '%"+word+"%'");
+    return super.idoFindIDsBySQL("select * from "+WordBMPBean.getEntityTableName()+" where "+getColumnWord()+" like '%"+word+"%'");
   }
 
 }

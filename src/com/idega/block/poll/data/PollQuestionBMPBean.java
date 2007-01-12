@@ -12,6 +12,8 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 
 import com.idega.block.text.data.LocalizedText;
+import com.idega.data.GenericEntity;
+import com.idega.user.data.UserBMPBean;
 
 
 
@@ -53,7 +55,7 @@ public class PollQuestionBMPBean extends com.idega.data.GenericEntity implements
 
   public static String getColumnNameID(){ return "PO_POLL_QUESTION_ID";}
 
-  public static String getColumnNameUserID(){ return com.idega.core.user.data.UserBMPBean.getColumnNameUserID();}
+  public static String getColumnNameUserID(){ return UserBMPBean.getColumnNameUserID();}
 
   public static String getColumnNameStartTime(){ return "START_TIME";}
 
@@ -125,9 +127,9 @@ public class PollQuestionBMPBean extends com.idega.data.GenericEntity implements
 
 	public void delete() throws SQLException{
 
-    removeFrom(com.idega.block.text.data.LocalizedTextBMPBean.getStaticInstance(LocalizedText.class));
+    removeFrom(GenericEntity.getStaticInstance(LocalizedText.class));
 
-    com.idega.block.poll.data.PollAnswerBMPBean.getStaticInstance(PollAnswer.class).deleteMultiple(getColumnNameID(),Integer.toString(this.getID()));
+    GenericEntity.getStaticInstance(PollAnswer.class).deleteMultiple(getColumnNameID(),Integer.toString(this.getID()));
 
 		super.delete();
 

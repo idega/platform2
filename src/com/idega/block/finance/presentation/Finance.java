@@ -161,7 +161,7 @@ public class Finance extends CategoryBlock implements Builderaware {
 			obj = (Finance) super.clone();
 			obj.form = this.form;
 			obj.table = this.table;
-			obj.FinanceObjects = FinanceObjects;
+			obj.FinanceObjects = this.FinanceObjects;
 		} catch (Exception ex) {
 			ex.printStackTrace(System.err);
 		}
@@ -175,15 +175,15 @@ public class Finance extends CategoryBlock implements Builderaware {
 	 * @param defaultText the default localized text for the title
 	 */
 	public void setLocalizedTitle(String textKey, String defaultText) {
-		table.add(getHeader(localize(textKey, defaultText)), 1, 2);
-		table.setRowColor(2, getHeaderColor());
-		table.setAlignment(1, 2, Table.HORIZONTAL_ALIGN_CENTER);
+		this.table.add(getHeader(localize(textKey, defaultText)), 1, 2);
+		this.table.setRowColor(2, getHeaderColor());
+		this.table.setAlignment(1, 2, Table.HORIZONTAL_ALIGN_CENTER);
 	}
 	
 	public void setTitle(String text) {
-		table.add(getHeader(text), 1, 2);
-		table.setRowColor(2, getHeaderColor());
-		table.setAlignment(1, 2, Table.HORIZONTAL_ALIGN_CENTER);
+		this.table.add(getHeader(text), 1, 2);
+		this.table.setRowColor(2, getHeaderColor());
+		this.table.setAlignment(1, 2, Table.HORIZONTAL_ALIGN_CENTER);
 	}
 	
 	/**
@@ -192,7 +192,7 @@ public class Finance extends CategoryBlock implements Builderaware {
 	 * @param infoPanel the table containing the search panel
 	 */
 	public void setInfoPanel(PresentationObject searchPanel) {
-		table.add(searchPanel, 1, 3);
+		this.table.add(searchPanel, 1, 3);
 	}
 
 	/**
@@ -201,11 +201,11 @@ public class Finance extends CategoryBlock implements Builderaware {
 	 * @param searchPanel the table containing the search panel
 	 */
 	public void setSearchPanel(PresentationObject searchPanel) {
-		table.add(searchPanel, 1, 4);
+		this.table.add(searchPanel, 1, 4);
 	}
 	
 	public void setTabPanel(PresentationObject tabPanel) {
-		table.add(tabPanel, 1, 1);
+		this.table.add(tabPanel, 1, 1);
 	}
 
 	/**
@@ -214,7 +214,7 @@ public class Finance extends CategoryBlock implements Builderaware {
 	 * @param mainPanel the presentation object containing the main panel
 	 */
 	public void setMainPanel(PresentationObject mainPanel) {
-		table.add(mainPanel, 1, 5);
+		this.table.add(mainPanel, 1, 5);
 	}
 
 	/**
@@ -224,11 +224,11 @@ public class Finance extends CategoryBlock implements Builderaware {
 	 * @see ButtonPanel
 	 */
 	public void setButtonPanel(PresentationObject buttonPanel) {
-		table.add(buttonPanel, 1, 7);
+		this.table.add(buttonPanel, 1, 7);
 	}
 	
 	public void setNavigationPanel(PresentationObject navPanel) {
-		table.add(navPanel, 1, 6);
+		this.table.add(navPanel, 1, 6);
 	}
 	
 	/**
@@ -237,7 +237,7 @@ public class Finance extends CategoryBlock implements Builderaware {
 	 * @param value the hidden input parameter va?ue
 	 */
 	public void addHiddenInput(String parameter, String value) {
-		table.add(new HiddenInput(parameter, value), 1, 4);
+		this.table.add(new HiddenInput(parameter, value), 1, 4);
 	}
 	
 	/**
@@ -245,8 +245,9 @@ public class Finance extends CategoryBlock implements Builderaware {
 	 * @param parameterName
 	 */
 	public void maintainParameter(String parameterName){
-		if(this.form!=null)
+		if(this.form!=null) {
 			this.form.maintainParameter(parameterName);
+		}
 	}
 	public boolean getMultible() {
 		return false;
@@ -255,44 +256,44 @@ public class Finance extends CategoryBlock implements Builderaware {
 		return CATEGORY_TYPE;
 	}
 	public String getBackgroundColor() {
-		return backgroundColor;
+		return this.backgroundColor;
 	}
 	public String getTextFontStyle() {
-		return textFontStyle;
+		return this.textFontStyle;
 	}
 	
 	public String getAmountNegativeFontStyle() {
-		return amountNegativeFontStyle;
+		return this.amountNegativeFontStyle;
 	}
 	public String getAmountPositiveFontStyle() {
-		return amountPositiveFontStyle;
+		return this.amountPositiveFontStyle;
 	}
 	public String getSmallTextFontStyle() {
-		return smallTextFontStyle;
+		return this.smallTextFontStyle;
 	}
 	public String getLinkFontStyle() {
-		return linkFontStyle;
+		return this.linkFontStyle;
 	}
 	public String getHeaderFontStyle() {
-		return headerFontStyle;
+		return this.headerFontStyle;
 	}
 	public String getSmallHeaderFontStyle() {
-		return smallHeaderFontStyle;
+		return this.smallHeaderFontStyle;
 	}
 	public String getListHeaderFontStyle() {
-		return listHeaderFontStyle;
+		return this.listHeaderFontStyle;
 	}
 	public String getListFontStyle() {
-		return listFontStyle;
+		return this.listFontStyle;
 	}
 	public String getListLinkFontStyle() {
-		return listLinkFontStyle;
+		return this.listLinkFontStyle;
 	}
 	public String getErrorTextFontStyle() {
-		return errorTextFontStyle;
+		return this.errorTextFontStyle;
 	}
 	public String getSmallErrorTextFontStyle() {
-		return smallErrorTextFontStyle;
+		return this.smallErrorTextFontStyle;
 	}
 	public void setBackroundColor(String color) {
 		this.backgroundColor = color;
@@ -334,10 +335,10 @@ public class Finance extends CategoryBlock implements Builderaware {
 		this.smallErrorTextFontStyle = fontStyle;
 	}
 	public String localize(String textKey, String defaultText) {
-		if (iwrb == null) {
+		if (this.iwrb == null) {
 			return defaultText;
 		}
-		return iwrb.getLocalizedString(textKey, defaultText);
+		return this.iwrb.getLocalizedString(textKey, defaultText);
 	}
 	public Text getText(String s) {
 		return getStyleText(s, STYLENAME_TEXT);
@@ -406,8 +407,9 @@ public class Finance extends CategoryBlock implements Builderaware {
 		IWPropertyList property = getIWApplicationContext().getSystemProperties().getProperties("layout_settings");
 		if (property != null) {
 			String propertyValue = property.getProperty(propertyName);
-			if (propertyValue != null)
+			if (propertyValue != null) {
 				return propertyValue;
+			}
 		}
 		return nullValue;
 	}
@@ -494,7 +496,7 @@ public class Finance extends CategoryBlock implements Builderaware {
 		return button;
 	}
 	protected Image getEditIcon(String toolTip) {
-		Image editImage = iwb.getImage("shared/edit.gif", 12, 12);
+		Image editImage = this.iwb.getImage("shared/edit.gif", 12, 12);
 		editImage.setToolTip(toolTip);
 		return editImage;
 	}
@@ -506,7 +508,7 @@ public class Finance extends CategoryBlock implements Builderaware {
 	 * @return Image The delete icon.
 	 */
 	protected Image getDeleteIcon(String toolTip) {
-		Image deleteImage = iwb.getImage("shared/delete.gif", 12, 12);
+		Image deleteImage = this.iwb.getImage("shared/delete.gif", 12, 12);
 		deleteImage.setToolTip(toolTip);
 		return deleteImage;
 	}
@@ -518,7 +520,7 @@ public class Finance extends CategoryBlock implements Builderaware {
 	 * @return Image The PDF icon.
 	 */
 	protected Image getPDFIcon(String toolTip) {
-		Image pdfImage = iwb.getImage("shared/pdf-small.gif", 12, 12);
+		Image pdfImage = this.iwb.getImage("shared/pdf-small.gif", 12, 12);
 		pdfImage.setToolTip(toolTip);
 		return pdfImage;
 	}
@@ -530,7 +532,7 @@ public class Finance extends CategoryBlock implements Builderaware {
 	 * @return Image The copy icon.
 	 */
 	protected Image getCopyIcon(String toolTip) {
-		Image copyImage = iwb.getImage("shared/copy.gif", 12, 12);
+		Image copyImage = this.iwb.getImage("shared/copy.gif", 12, 12);
 		copyImage.setToolTip(toolTip);
 		return copyImage;
 	}
@@ -542,7 +544,7 @@ public class Finance extends CategoryBlock implements Builderaware {
 	 * @return Image The question icon.
 	 */
 	protected Image getQuestionIcon(String toolTip) {
-		Image questionImage = iwb.getImage("shared/question.gif", 12, 12);
+		Image questionImage = this.iwb.getImage("shared/question.gif", 12, 12);
 		questionImage.setToolTip(toolTip);
 		return questionImage;
 	}
@@ -554,7 +556,7 @@ public class Finance extends CategoryBlock implements Builderaware {
 	 * @return Image The information icon.
 	 */
 	protected Image getInformationIcon(String toolTip) {
-		Image informationImage = iwb.getImage("shared/info.gif", 12, 12);
+		Image informationImage = this.iwb.getImage("shared/info.gif", 12, 12);
 		informationImage.setToolTip(toolTip);
 		return informationImage;
 	}
@@ -774,22 +776,22 @@ public class Finance extends CategoryBlock implements Builderaware {
 	public void initializeInMain(IWContext iwc) {
 		super.initializeInMain(iwc);
 		init(iwc);
-		if (isAdmin && administrative && getICObjectInstanceID() > 0) {
-			add(getAdminPart(getCategoryId(), false, newobjinst, false, iwc));
+		if (this.isAdmin && this.administrative && getICObjectInstanceID() > 0) {
+			add(getAdminPart(getCategoryId(), false, this.newobjinst, false, iwc));
 		}
-		form = new Form();
-		table = new Table(1, 7);
-		table.setWidth(getWidth());
-		table.setCellpadding(getCellpadding());
-		table.setCellspacing(getCellspacing());
-		form.add(table);
+		this.form = new Form();
+		this.table = new Table(1, 7);
+		this.table.setWidth(getWidth());
+		this.table.setCellpadding(getCellpadding());
+		this.table.setCellspacing(getCellspacing());
+		this.form.add(this.table);
 		add(this.form);
 	}
 	public void init(IWContext iwc) {
-		iwrb = getResourceBundle(iwc);
-		iwb = getBundle(iwc);
-		core = iwc.getIWMainApplication().getCoreBundle();
-		isAdmin = this.hasEditPermission();
+		this.iwrb = getResourceBundle(iwc);
+		this.iwb = getBundle(iwc);
+		this.core = iwc.getIWMainApplication().getCoreBundle();
+		this.isAdmin = this.hasEditPermission();
 		
 		initCategoryId(iwc);
 		try {
@@ -805,8 +807,9 @@ public class Finance extends CategoryBlock implements Builderaware {
 		T.setCellpadding(0);
 		T.setCellspacing(0);
 		FinanceIndex index = new FinanceIndex(getCategoryId());
-		if (FinanceObjects != null)
-			index.addFinanceObjectAll(FinanceObjects);
+		if (this.FinanceObjects != null) {
+			index.addFinanceObjectAll(this.FinanceObjects);
+		}
 		T.add(index, 1, 2);
 		super.add(T);
 	}
@@ -842,24 +845,28 @@ public class Finance extends CategoryBlock implements Builderaware {
 		return new Parameter(prmCategoryId, iCategoryId.toString());
 	}
 	public static int parseCategoryId(IWContext iwc) {
-		if (iwc.isParameterSet(prmCategoryId))
+		if (iwc.isParameterSet(prmCategoryId)) {
 			return Integer.parseInt(iwc.getParameter(prmCategoryId));
-		else if (iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(CATEGORY_PROPERTY) != null)
+		}
+		else if (iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(CATEGORY_PROPERTY) != null) {
 			return Integer.parseInt(iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(
 					CATEGORY_PROPERTY));
-		else
+		}
+		else {
 			return -1;
+		}
 	}
 	private void initCategoryId(IWContext iwc) {
-		iCategoryId = getCategoryId();
-		if (iCategoryId <= 0) {
-			if (iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(CATEGORY_PROPERTY) != null)
-				iCategoryId = Integer.parseInt(iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(
+		this.iCategoryId = getCategoryId();
+		if (this.iCategoryId <= 0) {
+			if (iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(CATEGORY_PROPERTY) != null) {
+				this.iCategoryId = Integer.parseInt(iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(
 						CATEGORY_PROPERTY));
+			}
 		}
 	}
 	public Integer getFinanceCategoryId() {
-		return new Integer(iCategoryId);
+		return new Integer(this.iCategoryId);
 	}
 	public Link getLink(Class cl, String name) {
 		Link L = getLink(name);
@@ -873,9 +880,10 @@ public class Finance extends CategoryBlock implements Builderaware {
 		return new Parameter(prmFinanceClass, financeClass.getName());
 	}
 	public void addFinanceObject(Block obj) {
-		if (FinanceObjects == null)
-			FinanceObjects = new java.util.Vector();
-		FinanceObjects.add(obj);
+		if (this.FinanceObjects == null) {
+			this.FinanceObjects = new java.util.Vector();
+		}
+		this.FinanceObjects.add(obj);
 	}
 	/*
 	 * public void main(IWContext iwc){ isAdmin = iwc.hasEditPermission(this);
@@ -890,9 +898,10 @@ public class Finance extends CategoryBlock implements Builderaware {
 		return this.financeService;
 	}
 	public FinanceService getFinanceService(IWApplicationContext iwac) throws RemoteException {
-		if (financeService == null)
-			financeService = (FinanceService) IBOLookup.getServiceInstance(iwac, FinanceService.class);
-		return financeService;
+		if (this.financeService == null) {
+			this.financeService = (FinanceService) IBOLookup.getServiceInstance(iwac, FinanceService.class);
+		}
+		return this.financeService;
 	}
 	public CollectionNavigator getCollectionNavigator(IWContext iwc) {
 		CollectionNavigator navigator = new CollectionNavigator(getCollectionSize());
@@ -907,7 +916,7 @@ public class Finance extends CategoryBlock implements Builderaware {
 	 * @return Returns the collectionIndex.
 	 */
 	public int getCollectionIndex() {
-		return collectionIndex;
+		return this.collectionIndex;
 	}
 	/**
 	 * @param collectionIndex
@@ -920,7 +929,7 @@ public class Finance extends CategoryBlock implements Builderaware {
 	 * @return Returns the collectionSize.
 	 */
 	public int getCollectionSize() {
-		return collectionSize;
+		return this.collectionSize;
 	}
 	/**
 	 * @param collectionSize
@@ -933,7 +942,7 @@ public class Finance extends CategoryBlock implements Builderaware {
 	 * @return Returns the collectionViewSize.
 	 */
 	public int getCollectionViewSize() {
-		return collectionViewSize;
+		return this.collectionViewSize;
 	}
 	/**
 	 * @param collectionViewSize

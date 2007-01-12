@@ -22,20 +22,20 @@ public class InnerJoinExpression implements Expression {
   public InnerJoinExpression(QueryEntityPart queryEntityPart, SQLQuery sqlQuery) {
     String entity = queryEntityPart.getBeanClassName();
     String path = queryEntityPart.getPath();
-    alias = sqlQuery.getUniqueNameForEntity(entity,path);
-	tableName = sqlQuery.getTableName(entity, path);
+    this.alias = sqlQuery.getUniqueNameForEntity(entity,path);
+	this.tableName = sqlQuery.getTableName(entity, path);
   }
   
   public InnerJoinExpression(String tableName, String path, SQLQuery sqlQuery)	{
   	this.tableName = tableName;
-  	alias = sqlQuery.getUniqueNameForEntityByTableName(tableName, path);
+  	this.alias = sqlQuery.getUniqueNameForEntityByTableName(tableName, path);
   }
   
 	/* (non-Javadoc)
 	 * @see com.idega.block.dataquery.data.sql.Expression#toSQLString()
 	 */
 	public String toSQLString() {
-		StringBuffer buffer = new StringBuffer(" ").append(tableName).append(" ").append(alias).append(" ");
+		StringBuffer buffer = new StringBuffer(" ").append(this.tableName).append(" ").append(this.alias).append(" ");
 		return buffer.toString();
 	}
 
@@ -43,10 +43,10 @@ public class InnerJoinExpression implements Expression {
 	 * @see com.idega.block.dataquery.data.sql.Expression#isValid()
 	 */
 	public boolean isValid() {
-		return StringHandler.isNotEmpty(alias) && StringHandler.isNotEmpty(tableName);
+		return StringHandler.isNotEmpty(this.alias) && StringHandler.isNotEmpty(this.tableName);
 	}
 
 	public String getTable()	{
-		return tableName;
+		return this.tableName;
 	}
 }

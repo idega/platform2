@@ -98,7 +98,7 @@ public class QuestionsAndAnswers extends CategoryBlock {
 	}
 	
 	public String getBundleIdentifier(){
-		return IW_BUNDLE_IDENTIFIER;
+		return this.IW_BUNDLE_IDENTIFIER;
 	}
 	
 	/**
@@ -117,17 +117,17 @@ public class QuestionsAndAnswers extends CategoryBlock {
 	
 	public void main(IWContext iwc)throws RemoteException{
 		//debugParameters(iwc);
-		iwb = getBundle(iwc);
-		iwrb = getResourceBundle(iwc);
-		core = iwc.getIWMainApplication().getCoreBundle();
-		isAdmin = iwc.hasEditPermission(this);
+		this.iwb = getBundle(iwc);
+		this.iwrb = getResourceBundle(iwc);
+		this.core = iwc.getIWMainApplication().getCoreBundle();
+		this.isAdmin = iwc.hasEditPermission(this);
 		
-		questionsService = (QuestionsService)IBOLookup.getServiceInstance(iwc,QuestionsService.class);
-		currentLocale = iwc.getCurrentLocale();
+		this.questionsService = (QuestionsService)IBOLookup.getServiceInstance(iwc,QuestionsService.class);
+		this.currentLocale = iwc.getCurrentLocale();
 		
 		
-		if(layout==QAndALayoutHandler.SINGLE_RANDOM_LAYOUT){
-		    if(isAdmin){
+		if(this.layout==QAndALayoutHandler.SINGLE_RANDOM_LAYOUT){
+		    if(this.isAdmin){
 		        
 	      		add(getAdminPart(iwc));
 	      		add(Text.getBreak());
@@ -136,20 +136,21 @@ public class QuestionsAndAnswers extends CategoryBlock {
 		    
 		}
 		else{
-			valViewCategory = iwc.getParameter(prmViewCategory);
+			this.valViewCategory = iwc.getParameter(this.prmViewCategory);
 			// form processing
 			processForm(iwc);
 		
 			Table T = new Table();
 			int row = 1;
-			if(isAdmin){
+			if(this.isAdmin){
 	      		T.add(getAdminPart(iwc),1,row++);
 			}
 			Table QandATable = new Table();
 			Table QATable =(Table) getQATable(iwc,QandATable);
 			T.add(QATable,1,row++);
-			if(showAll)
+			if(this.showAll) {
 				T.add(QandATable,1,row++);
+			}
 			
 			add(T);
 		}
@@ -161,9 +162,9 @@ public class QuestionsAndAnswers extends CategoryBlock {
 	    T.setCellpadding(0);
 	    T.setWidth("100%");
 	    T.setWidth(2,"100%");
-	    T.add(getCategoryLink(core.getImage("/shared/detach.gif")), 1, 1);
-	    String helpTitle = iwrb.getLocalizedString("help_title","Q & A");
-	    String helpText = iwrb.getLocalizedString("help_text","If the blank page icon appears you have to save changes with the save button, else changes are saved in the editor window ( when the open icon appears)");
+	    T.add(getCategoryLink(this.core.getImage("/shared/detach.gif")), 1, 1);
+	    String helpTitle = this.iwrb.getLocalizedString("help_title","Q & A");
+	    String helpText = this.iwrb.getLocalizedString("help_text","If the blank page icon appears you have to save changes with the save button, else changes are saved in the editor window ( when the open icon appears)");
 	    HelpButton help = new HelpButton(helpTitle,helpText);
 	    T.add(help,3,1);
 		return T;	
@@ -177,7 +178,7 @@ public class QuestionsAndAnswers extends CategoryBlock {
 
 	public PresentationObject getRandomQAndA(IWContext iwc)throws RemoteException{
 	    Table T = new Table(),QandATable = new Table();
-	    Question randomQuestion = questionsService.getRandomQuestion(this.getCategoryIds());
+	    Question randomQuestion = this.questionsService.getRandomQuestion(this.getCategoryIds());
 	    if(randomQuestion!=null){
 	        createQuestionInfo(iwc,randomQuestion,null,null,-1,1,T,QandATable,null);
 	    }
@@ -188,9 +189,9 @@ public class QuestionsAndAnswers extends CategoryBlock {
 		Table QTable = new Table();
 		Collection categories = null;
 		
-		if(!showAllCategories && valViewCategory!=null){
+		if(!this.showAllCategories && this.valViewCategory!=null){
 			try {
-				ICCategory viewCat = getCategoryHome().findByPrimaryKey(new Integer(valViewCategory));
+				ICCategory viewCat = getCategoryHome().findByPrimaryKey(new Integer(this.valViewCategory));
 				categories = new Vector(1);
 				categories.add(viewCat);
 			}
@@ -205,7 +206,7 @@ public class QuestionsAndAnswers extends CategoryBlock {
 			fillQuestionTree(iwc,iter,QTable,QandATable);
 		}
 		else{
-			QTable.add(iwrb.getLocalizedString("no_category","Please create a category"),1,row);
+			QTable.add(this.iwrb.getLocalizedString("no_category","Please create a category"),1,this.row);
 		}
 		return QTable;
 	}
@@ -216,21 +217,22 @@ public class QuestionsAndAnswers extends CategoryBlock {
 			ICCategory cat = (ICCategory) iter.next();
 			Integer catID = (Integer)cat.getPrimaryKey();
 			boolean headerAdded = false;
-			int headerRow = row;
-			row++;
+			int headerRow = this.row;
+			this.row++;
 			if(cat.isLeaf()){
-				if(showAllCategories || (!showAllCategories && catID.toString().equals(valViewCategory))){
+				if(this.showAllCategories || (!this.showAllCategories && catID.toString().equals(this.valViewCategory))){
 					Table questionsTable =(Table) getCategoryQuestions(iwc,cat,QandATable);
-					if(showQuestionList)
-						T.add(questionsTable,2,row++);
-					if(isAdmin){
+					if(this.showQuestionList) {
+						T.add(questionsTable,2,this.row++);
+					}
+					if(this.isAdmin){
 						Question nullQuestion=null;
-						T.add(getQuestionForm(iwc,catID,nullQuestion,(Question)null,(Question)null),2,row++);
+						T.add(getQuestionForm(iwc,catID,nullQuestion,(Question)null,(Question)null),2,this.row++);
 					}
 				}
-				if(!showAllCategories){
-					Link headerLink = new Link(getStyleText( cat.getName(currentLocale),STYLENAME_C_TITLE));
-					headerLink.addParameter(prmViewCategory,catID.toString());
+				if(!this.showAllCategories){
+					Link headerLink = new Link(getStyleText( cat.getName(this.currentLocale),STYLENAME_C_TITLE));
+					headerLink.addParameter(this.prmViewCategory,catID.toString());
 					T.add(headerLink,1,headerRow);
 					headerAdded = true;
 				}
@@ -241,11 +243,11 @@ public class QuestionsAndAnswers extends CategoryBlock {
 			}
 			
 			if(!headerAdded){
-				AnchorLink anc = new AnchorLink(getStyleText(cat.getName(currentLocale),STYLENAME_C_TITLE),"Cat"+catID.toString());
+				AnchorLink anc = new AnchorLink(getStyleText(cat.getName(this.currentLocale),STYLENAME_C_TITLE),"Cat"+catID.toString());
 				T.add(anc,1,headerRow);
 				T.add(new Anchor("bc"+catID.toString()),1,headerRow);
 			}
-			row++;
+			this.row++;
 		}
 	}
 	
@@ -264,41 +266,42 @@ public class QuestionsAndAnswers extends CategoryBlock {
 		if(question!=null){
 			entID = (Integer)question.getPrimaryKey();
 		}
-		else
-				isForOneQuestion = false;
+		else {
+			isForOneQuestion = false;
+		}
 		
 		if(entID!=null && entID.intValue()>0){
-			QandAEditorLink.setImage(iwb.getImage("open.gif",iwrb.getLocalizedString("button_edit_question","Edit question")));
+			QandAEditorLink.setImage(this.iwb.getImage("open.gif",this.iwrb.getLocalizedString("button_edit_question","Edit question")));
 			QandAEditorLink.addParameter(QandAEditorWindow.PRM_QA_ID,entID.toString());
 		}
 		else{
-			QandAEditorLink.setImage(iwb.getImage("new.gif",iwrb.getLocalizedString("button_create_question","Create question")));
+			QandAEditorLink.setImage(this.iwb.getImage("new.gif",this.iwrb.getLocalizedString("button_create_question","Create question")));
 			
 		}
 		
 		table.add(QandAEditorLink,2,1);
 		
-		if(entID!=null && showDeleteButton){
-			Link trash = new Link(iwb.getImage("trashcan_empty.gif",iwrb.getLocalizedString("button_invalidate","Trashcan")));
+		if(entID!=null && this.showDeleteButton){
+			Link trash = new Link(this.iwb.getImage("trashcan_empty.gif",this.iwrb.getLocalizedString("button_invalidate","Trashcan")));
 			trash.addParameter("ent_id",entID.toString());
 			trash.addParameter("trash_quest","true");
-			Link delete = new Link(iwb.getImage("delete.gif",iwrb.getLocalizedString("button_remove","Remove from list")));
+			Link delete = new Link(this.iwb.getImage("delete.gif",this.iwrb.getLocalizedString("button_remove","Remove from list")));
 			delete.addParameter("ent_id",entID.toString());
 			delete.addParameter("delete_quest","true");
 			table.add(trash,5,1);
 			table.add(delete,5,1);
 		}
 		
-		if(showMoveButtons){
+		if(this.showMoveButtons){
 			if(previous!=null){
-				Link up = new Link(iwb.getImage("up.gif",iwrb.getLocalizedString("button_up","Move up")));
+				Link up = new Link(this.iwb.getImage("up.gif",this.iwrb.getLocalizedString("button_up","Move up")));
 				up.addParameter("move_up","true");
 				up.addParameter("ent_id",entID.toString());
 				up.addParameter("swap_up_quest_id"+entID,previous.getPrimaryKey().toString());
 				table.add(up,5,1);
 			}
 			if(latter!=null){
-				Link down = new Link(iwb.getImage("down.gif",iwrb.getLocalizedString("button_down","Move down")));
+				Link down = new Link(this.iwb.getImage("down.gif",this.iwrb.getLocalizedString("button_down","Move down")));
 				down.addParameter("move_down","true");
 				down.addParameter("swap_down_quest_id"+entID,latter.getPrimaryKey().toString());
 				down.addParameter("ent_id",entID.toString());
@@ -306,13 +309,14 @@ public class QuestionsAndAnswers extends CategoryBlock {
 				
 			}
 		}
-		if(!isForOneQuestion && isAdmin && showDeletedQuestions){
+		if(!isForOneQuestion && this.isAdmin && this.showDeletedQuestions){
 			table.add(getInvalidQuestions("inv_quest"+categoryID.toString(),categoryID.intValue()),5,1);
 			
-			table.add(new SubmitButton(iwb.getImage("validate.gif",iwrb.getLocalizedString("button_validate","Validate  selected")),"validate_quest"),6,1);
+			table.add(new SubmitButton(this.iwb.getImage("validate.gif",this.iwrb.getLocalizedString("button_validate","Validate  selected")),"validate_quest"),6,1);
 		}
-		if(!showAllCategories && valViewCategory!=null)
-			table.add(new HiddenInput(prmViewCategory,valViewCategory));
+		if(!this.showAllCategories && this.valViewCategory!=null) {
+			table.add(new HiddenInput(this.prmViewCategory,this.valViewCategory));
+		}
 		
 		form.add(table);
 		return form;
@@ -323,17 +327,18 @@ public class QuestionsAndAnswers extends CategoryBlock {
 		
 	private DropdownMenu getInvalidQuestions(String  name,int categoryId)throws RemoteException{
 		DropdownMenu drop = new DropdownMenu(name);
-		drop.addMenuElementFirst("-1",iwrb.getLocalizedString("deleted_questions","Deleted questions"));
+		drop.addMenuElementFirst("-1",this.iwrb.getLocalizedString("deleted_questions","Deleted questions"));
 		try{
-		Collection questions = questionsService.getQuestionHome().findAllInvalidByCategory(categoryId);
+		Collection questions = this.questionsService.getQuestionHome().findAllInvalidByCategory(categoryId);
 		Iterator iter = questions.iterator();
 			while(iter.hasNext()){
 				Question quest = (Question)iter.next();
-				ContentHelper helper = TextFinder.getContentHelper(quest.getQuestionID(),currentLocale);
+				ContentHelper helper = TextFinder.getContentHelper(quest.getQuestionID(),this.currentLocale);
 				if(helper.getLocalizedText()!=null){
 					String headline = helper.getLocalizedText().getHeadline();
-					if(headline.length()>20)
+					if(headline.length()>20) {
 						headline = headline.substring(0,20)+"...";
+					}
 					drop.addMenuElement(quest.getPrimaryKey().toString(),headline);
 				}
 			}
@@ -347,8 +352,9 @@ public class QuestionsAndAnswers extends CategoryBlock {
 	private void processForm(IWContext iwc)throws RemoteException{
 		
 			 int cat_id = -1;
-			if(iwc.isParameterSet("save_cat"))
+			if(iwc.isParameterSet("save_cat")) {
 				cat_id = Integer.parseInt(iwc.getParameter("save_cat"));
+			}
 			//String questionId = iwc.getParameter("quest"+cat_id);
 			//String answerId = iwc.getParameter("ans"+cat_id);
 			String entityId = iwc.getParameter("ent_id");
@@ -365,8 +371,9 @@ public class QuestionsAndAnswers extends CategoryBlock {
 			}catch (Exception e) {}
 			*/
 			try {
-				if(entityId!=null)
-				ent_id = Integer.parseInt(entityId);	
+				if(entityId!=null) {
+					ent_id = Integer.parseInt(entityId);
+				}	
 			}catch (Exception e) {}
 			
 			
@@ -375,25 +382,28 @@ public class QuestionsAndAnswers extends CategoryBlock {
 			}
 			else*/ 
 			if(ent_id>0 && iwc.isParameterSet("trash_quest")){// && iwc.getParameter("delete_quest").equals("true")){
-				questionsService.invalidateQuestion(ent_id);
+				this.questionsService.invalidateQuestion(ent_id);
 			}
 			else if(ent_id>0 && iwc.isParameterSet("delete_quest")){// && iwc.getParameter("delete_quest").equals("true")){
-				questionsService.removeQuestion(ent_id);
+				this.questionsService.removeQuestion(ent_id);
 			}
 			else if(iwc.isParameterSet("validate_quest")){// && iwc.getParameter("validate_quest").equals("true")){
 				int inv_quest_id = Integer.parseInt(iwc.getParameter("inv_quest"+cat_id));
-				if(inv_quest_id>0)
-				questionsService.validateQuestion(inv_quest_id);
+				if(inv_quest_id>0) {
+					this.questionsService.validateQuestion(inv_quest_id);
+				}
 			}
 			else if(ent_id>0 && iwc.isParameterSet("move_up") ){//&& iwc.getParameter("move_up").equals("true")){
 				int swap_quest_id = Integer.parseInt(iwc.getParameter("swap_up_quest_id"+entityId));
-				if(swap_quest_id >0)
-					questionsService.swapSequences(ent_id,swap_quest_id);
+				if(swap_quest_id >0) {
+					this.questionsService.swapSequences(ent_id,swap_quest_id);
+				}
 			}
 			else if(ent_id>0 && iwc.isParameterSet("move_down") ){//&& iwc.getParameter("move_down").equals("true")){
 				int swap_quest_id = Integer.parseInt(iwc.getParameter("swap_down_quest_id"+entityId));
-				if(swap_quest_id >0)
-					questionsService.swapSequences(ent_id,swap_quest_id);
+				if(swap_quest_id >0) {
+					this.questionsService.swapSequences(ent_id,swap_quest_id);
+				}
 			}
 		//}
 	}
@@ -404,23 +414,26 @@ public class QuestionsAndAnswers extends CategoryBlock {
 		Collection questions = new Vector();
 		Integer catID = (Integer)cat.getPrimaryKey();
 		try{
-			questions = questionsService.getQuestionHome().findAllByCategory(catID.intValue());
+			questions = this.questionsService.getQuestionHome().findAllByCategory(catID.intValue());
 		}catch(FinderException ex){}
 		Question quest,previous = null,latter= null;
 		int QuestCount = 1;
-		if(showAll && showAllCategories){
+		if(this.showAll && this.showAllCategories){
 			createCategoryTitle(cat,QandATable);
 		}
 		ArrayList list = new ArrayList(questions);
 		int size = list.size();
 		for (int i = 0; i < list.size(); i++) {
 			quest = (Question) list.get(i);
-			if(i >0)
+			if(i >0) {
 				previous = (Question) list.get(i-1);
-			if(i < (size-1))
+			}
+			if(i < (size-1)) {
 				latter = (Question) list.get(i+1);
-			if(i == size-1)
+			}
+			if(i == size-1) {
 				latter = null;
+			}
 			createQuestionInfo(iwc,quest,previous,latter,QuestCount,row,T,QandATable,catID);
 			QuestCount++;
 			row++;
@@ -431,22 +444,25 @@ public class QuestionsAndAnswers extends CategoryBlock {
 	
 	private void createQuestionInfo(IWContext iwc,Question quest,Question previous,Question latter, int QuestCount,int row,Table T,Table QandATable,Integer cat)throws RemoteException{
 		if(quest.getQuestionID() > 0){
-			ContentHelper helper = TextFinder.getContentHelper(quest.getQuestionID(),currentLocale);
+			ContentHelper helper = TextFinder.getContentHelper(quest.getQuestionID(),this.currentLocale);
 			String headline = helper.getLocalizedText()!=null? helper.getLocalizedText().getHeadline():"";
-				if(showQuestionListCount)
-				T.add(getStyleText((QuestCount)+".",STYLENAME_Q_COUNT),1,row);
-				if(showAll){
+				if(this.showQuestionListCount) {
+					T.add(getStyleText((QuestCount)+".",STYLENAME_Q_COUNT),1,row);
+				}
+				if(this.showAll){
 					AnchorLink anc = new AnchorLink(getStyleText(headline,STYLENAME_Q_TITLE),"Q"+quest.getPrimaryKey().toString());
-					if(!showAllCategories && valViewCategory!=null)
-						anc.addParameter(prmViewCategory,valViewCategory);
+					if(!this.showAllCategories && this.valViewCategory!=null) {
+						anc.addParameter(this.prmViewCategory,this.valViewCategory);
+					}
 					T.add(anc,2,row);
 					createQuestionsAndAnswers(iwc,helper,quest,cat,QandATable);
 				}
 				else{
 					T.add(getStyleText(headline,STYLENAME_Q_TITLE),2,row);
 				}
-				if(isAdmin)
+				if(this.isAdmin) {
 					T.add(getQuestionForm(iwc,cat,quest,previous,latter),3,row);
+				}
 			
 		}
 	}
@@ -456,41 +472,49 @@ public class QuestionsAndAnswers extends CategoryBlock {
 		int row = 1;
 		Anchor anc = new Anchor("Q"+question.getPrimaryKey().toString());
 		T.add(anc,1,1);
-		if(questionPrefixImage==null)
-			T.add(getStyleText(questionPrefixText,STYLENAME_Q_PREFIX),1,row);
-		else
-			T.add(questionPrefixImage,1,row);
+		if(this.questionPrefixImage==null) {
+			T.add(getStyleText(this.questionPrefixText,STYLENAME_Q_PREFIX),1,row);
+		}
+		else {
+			T.add(this.questionPrefixImage,1,row);
+		}
 			
 		String headline = quest.getLocalizedText()!=null?quest.getLocalizedText().getHeadline():"";
 		String body = quest.getLocalizedText()!=null?quest.getLocalizedText().getBody():"";
 		
-		if(showQuestionTitle && headline!=null && headline.length()>0)
+		if(this.showQuestionTitle && headline!=null && headline.length()>0) {
 			T.add(getStyleText(headline,STYLENAME_Q_TITLE),2,row++);
-		if(showQuestionBody && body!=null && body.length()>0){
+		}
+		if(this.showQuestionBody && body!=null && body.length()>0){
 			T.add(getStyleText(body,STYLENAME_Q_BODY),2,row);
 		}
 		row++;
-		if(answerPrefixImage==null)
-			T.add(getStyleText(answerPrefixText,STYLENAME_A_PREFIX),1,row);
-		else
-			T.add(answerPrefixImage,1,row);
+		if(this.answerPrefixImage==null) {
+			T.add(getStyleText(this.answerPrefixText,STYLENAME_A_PREFIX),1,row);
+		}
+		else {
+			T.add(this.answerPrefixImage,1,row);
+		}
 		if(question.getAnswerID()>0){
-			ContentHelper ans = TextFinder.getContentHelper(question.getAnswerID(),currentLocale);
+			ContentHelper ans = TextFinder.getContentHelper(question.getAnswerID(),this.currentLocale);
 			String aheadline = ans.getLocalizedText()!=null?ans.getLocalizedText().getHeadline():"";
 			String abody = ans.getLocalizedText()!=null?ans.getLocalizedText().getBody():"";
-			if(showAnswerTitle && aheadline!=null && aheadline.length()>0)
+			if(this.showAnswerTitle && aheadline!=null && aheadline.length()>0) {
 				T.add(getStyleText(aheadline,STYLENAME_A_TITLE),2,row++);
-			if(showAnswerBody && abody!=null && abody.length()>0){
+			}
+			if(this.showAnswerBody && abody!=null && abody.length()>0){
 				T.add(getStyleText(abody,STYLENAME_A_BODY),2,row++);
-				if(cat!=null && showHomeButton && showAllCategories)
-				    T.add(new AnchorLink(iwb.getImage("home.gif"),"bc"+cat.toString()),1,row);
+				if(cat!=null && this.showHomeButton && this.showAllCategories) {
+					T.add(new AnchorLink(this.iwb.getImage("home.gif"),"bc"+cat.toString()),1,row);
+				}
 			}
 			
 		}
 		T.setColumnVerticalAlignment(1,Table.VERTICAL_ALIGN_TOP);
-		QandATable.add(T,1,qaRow++);
-		if(isAdmin && !showQuestionList)
-			QandATable.add(getQuestionForm(iwc,cat,question,(Question)null,(Question)null),1,qaRow++);
+		QandATable.add(T,1,this.qaRow++);
+		if(this.isAdmin && !this.showQuestionList) {
+			QandATable.add(getQuestionForm(iwc,cat,question,(Question)null,(Question)null),1,this.qaRow++);
+		}
 	}
 	
 	public Map getStyleNames() {
@@ -527,8 +551,8 @@ public class QuestionsAndAnswers extends CategoryBlock {
 
 	
 	private void createCategoryTitle(ICCategory cat,Table QandATable)throws RemoteException{
-		Anchor anc = new Anchor(getStyleText(cat.getName(currentLocale),STYLENAME_C_TITLE),"Cat"+cat.getPrimaryKey().toString());
-		QandATable.add(anc,1,qaRow++);
+		Anchor anc = new Anchor(getStyleText(cat.getName(this.currentLocale),STYLENAME_C_TITLE),"Cat"+cat.getPrimaryKey().toString());
+		QandATable.add(anc,1,this.qaRow++);
 	}
 	
 	public void setShowAll(boolean showAll){

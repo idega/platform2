@@ -118,35 +118,35 @@ public class DocEditorWindow extends IWAdminWindow {
 	 *@exception  Exception  Description of the Exception
 	 */
 	public void main(IWContext iwc) throws Exception {
-		business = (FolderBlockBusiness) IBOLookup.getServiceInstance(iwc,FolderBlockBusiness.class);
-		_hasEditpermission = true;
+		this.business = (FolderBlockBusiness) IBOLookup.getServiceInstance(iwc,FolderBlockBusiness.class);
+		this._hasEditpermission = true;
 		//AccessControl.hasEditPermission(this,iwc);
-		_iwb = iwc.getIWMainApplication().getBundle(Builderaware.IW_CORE_BUNDLE_IDENTIFIER);
-		_iwrb = getResourceBundle(iwc);
-		addTitle(_iwrb.getLocalizedString("doc_admin", "Doc Admin"));
+		this._iwb = iwc.getIWMainApplication().getBundle(Builderaware.IW_CORE_BUNDLE_IDENTIFIER);
+		this._iwrb = getResourceBundle(iwc);
+		addTitle(this._iwrb.getLocalizedString("doc_admin", "Doc Admin"));
 		Locale currentLocale = iwc.getCurrentLocale();
 		try {
-			_userID = LoginBusinessBean.getUser(iwc).getID();
+			this._userID = LoginBusinessBean.getUser(iwc).getID();
 		} catch (Exception e) {
-			_userID = -1;
+			this._userID = -1;
 		}
-		_editImage = _iwb.getImage("shared/edit.gif");
-		_createImage = _iwb.getImage("shared/create.gif");
-		_deleteImage = _iwb.getImage("shared/delete.gif");
+		this._editImage = this._iwb.getImage("shared/edit.gif");
+		this._createImage = this._iwb.getImage("shared/create.gif");
+		this._deleteImage = this._iwb.getImage("shared/delete.gif");
 		String sLocaleId = iwc.getParameter(DocBusiness.PARAMETER_LOCALE_DROP);
 		if (sLocaleId != null) {
-			_localeID = Integer.parseInt(sLocaleId);
+			this._localeID = Integer.parseInt(sLocaleId);
 		} else {
-			_localeID = ICLocaleBusiness.getLocaleId(currentLocale);
+			this._localeID = ICLocaleBusiness.getLocaleId(currentLocale);
 		}
 		setActionAndMode(iwc);
 		processParameters(iwc);
 		setDefultValues();
 		this.debugParameters(iwc);
-		if (_hasEditpermission) {
-			switch (_action) {
+		if (this._hasEditpermission) {
+			switch (this._action) {
 				case _ACTION_OPENWINDOW :
-					switch (_mode) {
+					switch (this._mode) {
 						case _MODE_NEWDOC :
 						case _MODE_EDITDOC :
 							lineUpElements();
@@ -155,8 +155,8 @@ public class DocEditorWindow extends IWAdminWindow {
 							confirmLineup();
 							break;
 						default :
-							addLeft("MODE: " + _mode + ", not yet supported");
-							addSubmitButton(new CloseButton(_iwrb.getImage("close.gif")));
+							addLeft("MODE: " + this._mode + ", not yet supported");
+							addSubmitButton(new CloseButton(this._iwrb.getImage("close.gif")));
 							break;
 					}
 					break;
@@ -166,7 +166,7 @@ public class DocEditorWindow extends IWAdminWindow {
 					lineUpElements();
 					break;
 				case _ACTION_SAVEDOC :
-					switch (_type) {
+					switch (this._type) {
 						case DocBusiness.LINK :
 						case DocBusiness.FILE :
 						case DocBusiness.PAGE :
@@ -175,8 +175,8 @@ public class DocEditorWindow extends IWAdminWindow {
 							break;
 						default :
 							//addLeft(_iwrb.getLocalizedString("error_type_not_supported","Type: "+ _type + ", not supported"));
-							addLeft("Type: " + _type + ", not supported");
-							addSubmitButton(new CloseButton(_iwrb.getImage("close.gif")));
+							addLeft("Type: " + this._type + ", not supported");
+							addSubmitButton(new CloseButton(this._iwrb.getImage("close.gif")));
 							break;
 					}
 					break;
@@ -188,12 +188,12 @@ public class DocEditorWindow extends IWAdminWindow {
 					closeEditor(iwc);
 					break;
 				default :
-					addLeft("ACTION: " + _action + ", not yet supported");
-					addSubmitButton(new CloseButton(_iwrb.getImage("close.gif")));
+					addLeft("ACTION: " + this._action + ", not yet supported");
+					addSubmitButton(new CloseButton(this._iwrb.getImage("close.gif")));
 					break;
 			}
 		} else {
-			if (_action == _ACTION_CLOSEWITHOUTSAVING) {
+			if (this._action == _ACTION_CLOSEWITHOUTSAVING) {
 				closeEditor(iwc);
 			} else {
 				noAccess();
@@ -204,11 +204,11 @@ public class DocEditorWindow extends IWAdminWindow {
 	 *  Sets the defultValues attribute of the DocEditorWindow object
 	 */
 	private void setDefultValues() {
-		if (_type == -1) {
-			_type = _DEFAULT_TYPE;
+		if (this._type == -1) {
+			this._type = _DEFAULT_TYPE;
 		}
-		if (_target == null) {
-			_target = _DEFAULT_TARGET;
+		if (this._target == null) {
+			this._target = _DEFAULT_TARGET;
 		}
 	}
 
@@ -218,22 +218,22 @@ public class DocEditorWindow extends IWAdminWindow {
 		String mode = iwc.getParameter(_PRM_MODE);
 		if (newMode != null) {
 			try {
-				_mode = Integer.parseInt(newMode);
+				this._mode = Integer.parseInt(newMode);
 			} catch (Exception ex) {
 				try {
-					_mode = Integer.parseInt(mode);
+					this._mode = Integer.parseInt(mode);
 				} catch (Exception e) {
-					_mode = _MODE_NEWDOC;
+					this._mode = _MODE_NEWDOC;
 				}
 			}
 		} else {
 			try {
-				_mode = Integer.parseInt(mode);
+				this._mode = Integer.parseInt(mode);
 			} catch (Exception ex) {
-				_mode = _MODE_NEWDOC;
+				this._mode = _MODE_NEWDOC;
 			}
 		}
-		this.addHiddenInput(new HiddenInput(_PRM_MODE, Integer.toString(_mode)));
+		this.addHiddenInput(new HiddenInput(_PRM_MODE, Integer.toString(this._mode)));
 		// action
 		String type = iwc.getParameter(_PRM_TYPE);
 		String typeOld = iwc.getParameter(_PRM_TYPE_OLD_VALUE);
@@ -244,18 +244,18 @@ public class DocEditorWindow extends IWAdminWindow {
 		if (lastAction != null) {
 			String action = iwc.getParameter(_PRM_ACTION);
 			if (action != null && !"".equals(action)) {
-				_action = Integer.parseInt(action);
+				this._action = Integer.parseInt(action);
 			} else if (file != null || (type != null && type.equals(typeOld) && Integer.toString(DocBusiness.FILE).equals(type))) {
-				_action = _ACTION_UPLOADFILE;
+				this._action = _ACTION_UPLOADFILE;
 			} else if (type != null && !type.equals(typeOld)) {
-				_action = _ACTION_CHANGETYPE;
+				this._action = _ACTION_CHANGETYPE;
 			} else if (locale != null && !locale.equals(localeOld)) {
-				_action = _ACTION_CHANGELOCALE;
+				this._action = _ACTION_CHANGELOCALE;
 			}
 		} else {
-			_action = _ACTION_OPENWINDOW;
+			this._action = _ACTION_OPENWINDOW;
 		}
-		this.addHiddenInput(new HiddenInput(_PRM_LASTACTION, Integer.toString(_action)));
+		this.addHiddenInput(new HiddenInput(_PRM_LASTACTION, Integer.toString(this._action)));
 		if (type != null) {
 			this.addHiddenInput(new HiddenInput(_PRM_TYPE_OLD_VALUE, type));
 		}
@@ -267,13 +267,13 @@ public class DocEditorWindow extends IWAdminWindow {
 		com.idega.block.documents.data.DocLink editLink = null;
 		if (iwc.getParameter(_PRM_DOC_ID) != null) {
 			try {
-				_linkID = Integer.parseInt(iwc.getParameter(_PRM_DOC_ID));
+				this._linkID = Integer.parseInt(iwc.getParameter(_PRM_DOC_ID));
 				this.getUnderlyingForm().maintainParameter(_PRM_DOC_ID);
 			} catch (NumberFormatException e) {
-				_linkID = -1;
+				this._linkID = -1;
 			}
-			if (_linkID != -1 && _mode == _MODE_EDITDOC && _action == _ACTION_OPENWINDOW) {
-				editLink = DocBusiness.getLink(_linkID);
+			if (this._linkID != -1 && this._mode == _MODE_EDITDOC && this._action == _ACTION_OPENWINDOW) {
+				editLink = DocBusiness.getLink(this._linkID);
 				//              if(editLink == null){
 				//                // ERROR
 				//              }
@@ -283,111 +283,111 @@ public class DocEditorWindow extends IWAdminWindow {
 		String sLocale = iwc.getParameter(_PRM_CONTENT_LOCALE_IDENTIFIER);
 		if (sLocale != null) {
 			try {
-				_contentLocaleId = Integer.parseInt(sLocale);
-				this.addHiddenInput(new HiddenInput(_PRM_CONTENT_LOCALE_IDENTIFIER, Integer.toString(_contentLocaleId)));
+				this._contentLocaleId = Integer.parseInt(sLocale);
+				this.addHiddenInput(new HiddenInput(_PRM_CONTENT_LOCALE_IDENTIFIER, Integer.toString(this._contentLocaleId)));
 			} catch (NumberFormatException e) {
 				ICLocale locale = ICLocaleBusiness.getICLocale(sLocale);
 				if (locale != null) {
-					_contentLocaleId = locale.getLocaleID();
-					this.addHiddenInput(new HiddenInput(_PRM_CONTENT_LOCALE_IDENTIFIER, Integer.toString(_contentLocaleId)));
+					this._contentLocaleId = locale.getLocaleID();
+					this.addHiddenInput(new HiddenInput(_PRM_CONTENT_LOCALE_IDENTIFIER, Integer.toString(this._contentLocaleId)));
 				} else {
-					_contentLocaleId = -1;
+					this._contentLocaleId = -1;
 				}
 			}
 		}
 
 		if (iwc.getParameter(DocBusiness.PARAMETER_OBJECT_ID) != null) {
 			try {
-				_iObjId = Integer.parseInt(iwc.getParameter(DocBusiness.PARAMETER_OBJECT_ID));
+				this._iObjId = Integer.parseInt(iwc.getParameter(DocBusiness.PARAMETER_OBJECT_ID));
 			} catch (NumberFormatException e) {
-				_iObjId = -1;
+				this._iObjId = -1;
 			}
 		}
 		String objId = iwc.getParameter(_PRM_OBJECT_ID);
 		if (objId != null) {
 			try {
-				_iObjId = Integer.parseInt(objId);
+				this._iObjId = Integer.parseInt(objId);
 			} catch (NumberFormatException e) {
-				_iObjId = -1;
+				this._iObjId = -1;
 			}
 		}
 		String instanceId = iwc.getParameter(_PRM_OBJECT_INSTANCE_ID);
 		if (instanceId != null) {
 			try {
-				_iObjInsId = Integer.parseInt(instanceId);
+				this._iObjInsId = Integer.parseInt(instanceId);
 			} catch (NumberFormatException e) {
-				_iObjInsId = -1;
+				this._iObjInsId = -1;
 			}
 		}
 		String folderID = iwc.getParameter(_PRM_FOLDER_ID);
 		if (folderID != null) {
 			try {
-				_folderID = Integer.parseInt(folderID);
+				this._folderID = Integer.parseInt(folderID);
 			} catch (NumberFormatException e) {
-				_folderID = -1;
+				this._folderID = -1;
 			}
 		}
 		if (editLink != null) { // if _mode = _MODE_EDITDOC
-			_target = editLink.getTarget();
-			_linkUrl = editLink.getURL();
-			_docLinkName = editLink.getName();
-			_infoCatID = editLink.getCategoryID();
-			_fileID = editLink.getFileID();
-			_pageID = editLink.getPageID();
-			if (_linkUrl != null) {
-				_type = DocBusiness.LINK;
-			} else if (_pageID != -1) {
-				_type = DocBusiness.PAGE;
-			} else if (_fileID != -1) {
-				_type = DocBusiness.FILE;
+			this._target = editLink.getTarget();
+			this._linkUrl = editLink.getURL();
+			this._docLinkName = editLink.getName();
+			this._infoCatID = editLink.getCategoryID();
+			this._fileID = editLink.getFileID();
+			this._pageID = editLink.getPageID();
+			if (this._linkUrl != null) {
+				this._type = DocBusiness.LINK;
+			} else if (this._pageID != -1) {
+				this._type = DocBusiness.PAGE;
+			} else if (this._fileID != -1) {
+				this._type = DocBusiness.FILE;
 			}
 		} else {
 			if (iwc.getParameter(_PRM_TYPE) != null) {
 				try {
-					_type = Integer.parseInt(iwc.getParameter(_PRM_TYPE));
+					this._type = Integer.parseInt(iwc.getParameter(_PRM_TYPE));
 				} catch (NumberFormatException e) {
-					_type = -1;
+					this._type = -1;
 				}
 			} else {
 				if (iwc.getParameter(_PRM_TYPE_OLD_VALUE) != null) {
 					try {
-						_type = Integer.parseInt(iwc.getParameter(_PRM_TYPE_OLD_VALUE));
+						this._type = Integer.parseInt(iwc.getParameter(_PRM_TYPE_OLD_VALUE));
 					} catch (NumberFormatException e) {
-						_type = -1;
+						this._type = -1;
 					}
 				}
 			}
 			if (iwc.getParameter(DocBusiness.PARAMETER_TARGET) != null) {
-				_target = iwc.getParameter(DocBusiness.PARAMETER_TARGET);
+				this._target = iwc.getParameter(DocBusiness.PARAMETER_TARGET);
 			} else {
-				_target = null;
+				this._target = null;
 			}
 			if (iwc.getParameter(_PRM_LINK_NAME) != null) {
-				_docLinkName = iwc.getParameter(_PRM_LINK_NAME);
+				this._docLinkName = iwc.getParameter(_PRM_LINK_NAME);
 			} else {
-				_docLinkName = null;
+				this._docLinkName = null;
 			}
 			if (iwc.getParameter(DocBusiness.PARAMETER_CATEGORY_ID) != null) {
 				try {
-					_infoCatID = Integer.parseInt(iwc.getParameter(DocBusiness.PARAMETER_CATEGORY_ID));
+					this._infoCatID = Integer.parseInt(iwc.getParameter(DocBusiness.PARAMETER_CATEGORY_ID));
 				} catch (NumberFormatException e) {
-					_infoCatID = -1;
+					this._infoCatID = -1;
 				}
 			}
 			if (iwc.getParameter(_PRM_FILE_ID) != null) {
 				try {
-					_fileID = Integer.parseInt(iwc.getParameter(_PRM_FILE_ID));
+					this._fileID = Integer.parseInt(iwc.getParameter(_PRM_FILE_ID));
 				} catch (NumberFormatException e) {
-					_fileID = -1;
+					this._fileID = -1;
 				}
 				this.addHiddenInput(new HiddenInput(_PRM_LAST_UPLOADED_FILE, iwc.getParameter(_PRM_FILE_ID)));
 			} else if (iwc.getParameter(_PRM_LAST_UPLOADED_FILE) != null) {
 				try {
-					_fileID = Integer.parseInt(iwc.getParameter(_PRM_LAST_UPLOADED_FILE));
+					this._fileID = Integer.parseInt(iwc.getParameter(_PRM_LAST_UPLOADED_FILE));
 				} catch (NumberFormatException e) {
-					_fileID = -1;
+					this._fileID = -1;
 				}
-				switch (_action) {
+				switch (this._action) {
 					case _ACTION_UPLOADFILE :
 						break;
 					default :
@@ -397,42 +397,42 @@ public class DocEditorWindow extends IWAdminWindow {
 			}
 			if (iwc.getParameter(_PRM_PAGE_ID) != null) {
 				try {
-					_pageID = Integer.parseInt(iwc.getParameter(_PRM_PAGE_ID));
+					this._pageID = Integer.parseInt(iwc.getParameter(_PRM_PAGE_ID));
 				} catch (NumberFormatException e) {
-					_pageID = -1;
+					this._pageID = -1;
 				}
 				this.addHiddenInput(new HiddenInput(_PRM_LAST_SELECTED_PAGE, iwc.getParameter(_PRM_PAGE_ID)));
 			} else if (iwc.getParameter(_PRM_LAST_SELECTED_PAGE) != null) {
 				try {
-					_pageID = Integer.parseInt(iwc.getParameter(_PRM_LAST_SELECTED_PAGE));
+					this._pageID = Integer.parseInt(iwc.getParameter(_PRM_LAST_SELECTED_PAGE));
 				} catch (NumberFormatException e) {
-					_pageID = -1;
+					this._pageID = -1;
 				}
 				this.addHiddenInput(new HiddenInput(_PRM_LAST_SELECTED_PAGE, iwc.getParameter(_PRM_LAST_SELECTED_PAGE)));
 			}
 			if (iwc.getParameter(_PRM_LINK_URL) != null) {
-				_linkUrl = iwc.getParameter(_PRM_LINK_URL);
-				if (_linkUrl.equals("")) {
-					_linkUrl = null;
+				this._linkUrl = iwc.getParameter(_PRM_LINK_URL);
+				if (this._linkUrl.equals("")) {
+					this._linkUrl = null;
 				}
-				if (_linkUrl != null) {
-					this.addHiddenInput(new HiddenInput(_PRM_LAST_LINK_URL, _linkUrl));
+				if (this._linkUrl != null) {
+					this.addHiddenInput(new HiddenInput(_PRM_LAST_LINK_URL, this._linkUrl));
 				}
 			} else if (iwc.getParameter(_PRM_LAST_LINK_URL) != null) {
-				_linkUrl = iwc.getParameter(_PRM_LAST_LINK_URL);
-				if (_linkUrl.equals("")) {
-					_linkUrl = null;
+				this._linkUrl = iwc.getParameter(_PRM_LAST_LINK_URL);
+				if (this._linkUrl.equals("")) {
+					this._linkUrl = null;
 				}
-				if (_linkUrl != null) {
-					this.addHiddenInput(new HiddenInput(_PRM_LAST_LINK_URL, _linkUrl));
+				if (this._linkUrl != null) {
+					this.addHiddenInput(new HiddenInput(_PRM_LAST_LINK_URL, this._linkUrl));
 				}
 			}
 		}
 	}
 	private void confirmLineup() {
 		addLeft("Are you sure you want to delete this document?");
-		addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("yes", "YES"), _PRM_ACTION, Integer.toString(_ACTION_DELETEDOCLINK)));
-		addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("cancel", "CANCEL"), _PRM_ACTION, Integer.toString(_ACTION_CLOSEWITHOUTSAVING)));
+		addSubmitButton(new SubmitButton(this._iwrb.getLocalizedImageButton("yes", "YES"), _PRM_ACTION, Integer.toString(_ACTION_DELETEDOCLINK)));
+		addSubmitButton(new SubmitButton(this._iwrb.getLocalizedImageButton("cancel", "CANCEL"), _PRM_ACTION, Integer.toString(_ACTION_CLOSEWITHOUTSAVING)));
 	}
 
 	/**
@@ -451,18 +451,18 @@ public class DocEditorWindow extends IWAdminWindow {
 		this.getUnderlyingForm().maintainParameter(_PRM_OBJECT_ID);
 		this.getUnderlyingForm().maintainParameter(_PRM_OBJECT_INSTANCE_ID);
 		this.getUnderlyingForm().maintainParameter(_PRM_FOLDER_ID);
-		if (_contentLocaleId != -1) {
-			this.addHiddenInput(new HiddenInput(DocBusiness.PARAMETER_LOCALE_DROP, Integer.toString(_contentLocaleId)));
+		if (this._contentLocaleId != -1) {
+			this.addHiddenInput(new HiddenInput(DocBusiness.PARAMETER_LOCALE_DROP, Integer.toString(this._contentLocaleId)));
 		} else {
 			DropdownMenu localeDrop = ICLocalePresentation.getLocaleDropdownIdKeyed(DocBusiness.PARAMETER_LOCALE_DROP);
 			localeDrop.setToSubmit();
-			localeDrop.setSelectedElement(Integer.toString(_localeID));
-			addLeft(_iwrb.getLocalizedString("locale", "Locale") + ": ", localeDrop, false);
+			localeDrop.setSelectedElement(Integer.toString(this._localeID));
+			addLeft(this._iwrb.getLocalizedString("locale", "Locale") + ": ", localeDrop, false);
 		}
 		DropdownMenu categoryDrop = new DropdownMenu(DocBusiness.PARAMETER_CATEGORY_ID);
 		List list = null;
-		if (_iObjInsId != -1) {
-			list = business.getInstanceCategories(_iObjInsId);
+		if (this._iObjInsId != -1) {
+			list = this.business.getInstanceCategories(this._iObjInsId);
 		}
 		if (list != null) {
 			for (int a = 0; a < list.size(); a++) {
@@ -474,63 +474,63 @@ public class DocEditorWindow extends IWAdminWindow {
 				//        }
 				categoryDrop.addMenuElement(((InformationCategory)list.get(a)).getID(), catName);
 			}
-			categoryDrop.setSelectedElement(Integer.toString(_infoCatID));
+			categoryDrop.setSelectedElement(Integer.toString(this._infoCatID));
 		}
 		TextInput linkName = new TextInput(_PRM_LINK_NAME);
 		linkName.setLength(36);
-		if (_docLinkName != null) {
-			linkName.setContent(_docLinkName);
+		if (this._docLinkName != null) {
+			linkName.setContent(this._docLinkName);
 		}
 		DropdownMenu typeDrop = new DropdownMenu(_PRM_TYPE);
-		typeDrop.addMenuElement(DocBusiness.LINK, _iwrb.getLocalizedString("link", "Link"));
-		typeDrop.addMenuElement(DocBusiness.FILE, _iwrb.getLocalizedString("file", "File"));
-		typeDrop.addMenuElement(DocBusiness.PAGE, _iwrb.getLocalizedString("page", "Page"));
-		typeDrop.setSelectedElement(Integer.toString(_type));
+		typeDrop.addMenuElement(DocBusiness.LINK, this._iwrb.getLocalizedString("link", "Link"));
+		typeDrop.addMenuElement(DocBusiness.FILE, this._iwrb.getLocalizedString("file", "File"));
+		typeDrop.addMenuElement(DocBusiness.PAGE, this._iwrb.getLocalizedString("page", "Page"));
+		typeDrop.setSelectedElement(Integer.toString(this._type));
 		typeDrop.setToSubmit();
 		DropdownMenu targetDrop = new DropdownMenu(DocBusiness.PARAMETER_TARGET);
-		targetDrop.addMenuElement(Link.TARGET_BLANK_WINDOW, _iwrb.getLocalizedString("_blank", "New Window"));
-		targetDrop.addMenuElement(Link.TARGET_SELF_WINDOW, _iwrb.getLocalizedString("_self", "Same Window"));
-		targetDrop.addMenuElement(Link.TARGET_PARENT_WINDOW, _iwrb.getLocalizedString("_parent", "Parent frame"));
-		targetDrop.addMenuElement(Link.TARGET_TOP_WINDOW, _iwrb.getLocalizedString("_top", "Top frame"));
-		if (_target != null) {
-			targetDrop.setSelectedElement(_target);
+		targetDrop.addMenuElement(Link.TARGET_BLANK_WINDOW, this._iwrb.getLocalizedString("_blank", "New Window"));
+		targetDrop.addMenuElement(Link.TARGET_SELF_WINDOW, this._iwrb.getLocalizedString("_self", "Same Window"));
+		targetDrop.addMenuElement(Link.TARGET_PARENT_WINDOW, this._iwrb.getLocalizedString("_parent", "Parent frame"));
+		targetDrop.addMenuElement(Link.TARGET_TOP_WINDOW, this._iwrb.getLocalizedString("_top", "Top frame"));
+		if (this._target != null) {
+			targetDrop.setSelectedElement(this._target);
 		}
-		addLeft(_iwrb.getLocalizedString("category", "Category") + ":", categoryDrop, true);
-		addLeft(_iwrb.getLocalizedString("link_name", "Name") + ":", linkName, true);
-		addLeft(_iwrb.getLocalizedString("type", "Type") + ":", typeDrop, true);
-		switch (_type) {
+		addLeft(this._iwrb.getLocalizedString("category", "Category") + ":", categoryDrop, true);
+		addLeft(this._iwrb.getLocalizedString("link_name", "Name") + ":", linkName, true);
+		addLeft(this._iwrb.getLocalizedString("type", "Type") + ":", typeDrop, true);
+		switch (this._type) {
 			case DocBusiness.LINK :
 				TextInput linkURL = new TextInput(_PRM_LINK_URL);
 				linkURL.setLength(30);
-				if (_linkUrl != null) {
-					linkURL.setContent(_linkUrl);
+				if (this._linkUrl != null) {
+					linkURL.setContent(this._linkUrl);
 				} else {
 					linkURL.setContent("http://");
 				}
-				addLeft(_iwrb.getLocalizedString("link", "Link") + ":", linkURL, true);
+				addLeft(this._iwrb.getLocalizedString("link", "Link") + ":", linkURL, true);
 				break;
 			case DocBusiness.FILE :
 				SimpleFileChooser fileChooser = new SimpleFileChooser(this.getUnderlyingForm(), _PRM_FILE_ID);
 				this.setStyle(fileChooser);
-				if (_fileID != -1 && (_action == _ACTION_CHANGETYPE || (_mode == _MODE_EDITDOC && _action == _ACTION_OPENWINDOW))) {
-					fileChooser.setSelectedFile(_fileID);
+				if (this._fileID != -1 && (this._action == _ACTION_CHANGETYPE || (this._mode == _MODE_EDITDOC && this._action == _ACTION_OPENWINDOW))) {
+					fileChooser.setSelectedFile(this._fileID);
 				}
-				addLeft(_iwrb.getLocalizedString("file", "File") + ":", fileChooser, true);
+				addLeft(this._iwrb.getLocalizedString("file", "File") + ":", fileChooser, true);
 				break;
 			case DocBusiness.PAGE :
 				IBPageChooser pageChooser = new IBPageChooser(_PRM_PAGE_ID, STYLE);
-				if (_pageID != -1) {
-					ICPage page = DocBusiness.getPage(_pageID);
+				if (this._pageID != -1) {
+					ICPage page = DocBusiness.getPage(this._pageID);
 					if (page != null) {
-						pageChooser.setSelectedPage(_pageID, page.getName());
+						pageChooser.setSelectedPage(this._pageID, page.getName());
 					}
 				}
-				addLeft(_iwrb.getLocalizedString("page", "Page") + ":", pageChooser, true);
+				addLeft(this._iwrb.getLocalizedString("page", "Page") + ":", pageChooser, true);
 				break;
 		}
-		addLeft(_iwrb.getLocalizedString("target", "Target") + ":", targetDrop, true);
-		addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("save", "SAVE"), _PRM_ACTION, Integer.toString(_ACTION_SAVEDOC)));
-		addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("close", "CLOSE"), _PRM_ACTION, Integer.toString(_ACTION_CLOSEWITHOUTSAVING)));
+		addLeft(this._iwrb.getLocalizedString("target", "Target") + ":", targetDrop, true);
+		addSubmitButton(new SubmitButton(this._iwrb.getLocalizedImageButton("save", "SAVE"), _PRM_ACTION, Integer.toString(_ACTION_SAVEDOC)));
+		addSubmitButton(new SubmitButton(this._iwrb.getLocalizedImageButton("close", "CLOSE"), _PRM_ACTION, Integer.toString(_ACTION_CLOSEWITHOUTSAVING)));
 	}
 	
 	/**
@@ -545,47 +545,47 @@ public class DocEditorWindow extends IWAdminWindow {
 		String linkUrl = null;
 		String docLinkName = "Untitled";
 		int folderID = -1;
-		int localeID = _contentLocaleId;
-		if (_contentLocaleId == -1 && _localeID == -1) {
+		int localeID = this._contentLocaleId;
+		if (this._contentLocaleId == -1 && this._localeID == -1) {
 			localeID = iwc.getCurrentLocaleId();
-		} else if (_contentLocaleId != -1) {
-			localeID = _contentLocaleId;
+		} else if (this._contentLocaleId != -1) {
+			localeID = this._contentLocaleId;
 		} else {
-			localeID = _localeID;
+			localeID = this._localeID;
 		}
 
-		switch (_type) {
+		switch (this._type) {
 			case DocBusiness.LINK :
-				if (_linkUrl != null && !(_linkUrl.equalsIgnoreCase("http://") && _linkUrl.length() > 0)) {
-					linkUrl = _linkUrl;
+				if (this._linkUrl != null && !(this._linkUrl.equalsIgnoreCase("http://") && this._linkUrl.length() > 0)) {
+					linkUrl = this._linkUrl;
 				}
 				break;
 			case DocBusiness.FILE :
-				fileID = _fileID;
+				fileID = this._fileID;
 				break;
 			case DocBusiness.PAGE :
-				pageID = _pageID;
+				pageID = this._pageID;
 				break;
 			default :
 				return false;
 		}
 
-		if (_docLinkName != null && _docLinkName.length() > 0) {
-			docLinkName = _docLinkName;
+		if (this._docLinkName != null && this._docLinkName.length() > 0) {
+			docLinkName = this._docLinkName;
 		}
 
-		if (docLinkName != null && _iObjInsId != -1) {
-			if (_folderID == -1) {
-				InformationFolder folder = business.getInstanceWorkeFolder(_iObjInsId, _iObjId, localeID, true);
+		if (docLinkName != null && this._iObjInsId != -1) {
+			if (this._folderID == -1) {
+				InformationFolder folder = this.business.getInstanceWorkeFolder(this._iObjInsId, this._iObjId, localeID, true);
 				if (folder != null) {
 					folderID = folder.getID();
 				}
 			} else {
-				folderID = _folderID;
+				folderID = this._folderID;
 			}
 			try {
-				_linkID = DocBusiness.saveLink(_userID, _infoCatID, folderID, _linkID, docLinkName, fileID, pageID, linkUrl, _target, localeID);
-				this.addHiddenInput(new HiddenInput(_PRM_DOC_ID, Integer.toString(_linkID)));
+				this._linkID = DocBusiness.saveLink(this._userID, this._infoCatID, folderID, this._linkID, docLinkName, fileID, pageID, linkUrl, this._target, localeID);
+				this.addHiddenInput(new HiddenInput(_PRM_DOC_ID, Integer.toString(this._linkID)));
 				return true;
 			} catch (Exception e) {
 				e.printStackTrace(System.err);
@@ -600,7 +600,7 @@ public class DocEditorWindow extends IWAdminWindow {
 	 *@param  iwc  Description of the Parameter
 	 */
 	private void deleteDocLink(IWContext iwc) {
-		DocBusiness.deleteLink(_linkID);
+		DocBusiness.deleteLink(this._linkID);
 	}
 
 	/**
@@ -619,8 +619,8 @@ public class DocEditorWindow extends IWAdminWindow {
 	 *@exception  Exception  Description of the Exception
 	 */
 	private void noAccess() throws Exception {
-		addLeft(_iwrb.getLocalizedString("no_access", "Login first!"));
-		addSubmitButton(new CloseButton(_iwrb.getImage("close.gif")));
+		addLeft(this._iwrb.getLocalizedString("no_access", "Login first!"));
+		addSubmitButton(new CloseButton(this._iwrb.getImage("close.gif")));
 	}
 
 	/**

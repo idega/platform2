@@ -30,10 +30,10 @@ public class QueryResultField {
   private Map nameValue = new HashMap();
   
   // set default values
-  { nameValue.put(ENTITY,"");
-    nameValue.put(COLUMN,"");
-    nameValue.put(TYPE,"");
-    nameValue.put(DISPLAY,"");
+  { this.nameValue.put(ENTITY,"");
+    this.nameValue.put(COLUMN,"");
+    this.nameValue.put(TYPE,"");
+    this.nameValue.put(DISPLAY,"");
   }
 
   private String id;
@@ -71,21 +71,21 @@ public class QueryResultField {
   }    
   
   public void setValue(String name, String value) {
-    nameValue.put(name, value);
+    this.nameValue.put(name, value);
   }
   
   public String getValue(String name) {
-    return (String) nameValue.get(name);
+    return (String) this.nameValue.get(name);
   }
   
   public String getId() {
-    return id;
+    return this.id;
   }
 
   public XMLElement convertToXML()  {
     XMLElement fieldElement = new XMLElement(FIELD);
-    addElement(fieldElement, ID, id.toString());
-    Iterator iterator = nameValue.entrySet().iterator();
+    addElement(fieldElement, ID, this.id.toString());
+    Iterator iterator = this.nameValue.entrySet().iterator();
     while (iterator.hasNext())  {
       Map.Entry entry = (Map.Entry) iterator.next(); 
       addElement(fieldElement, (String) entry.getKey(), (String) entry.getValue());

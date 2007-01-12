@@ -39,7 +39,7 @@ public class BlogEntry extends PresentableData {
 	}
 	
 	public void load(BlogEntity entry){
-		blogPrimaryKey = entry.getPrimaryKey().toString();
+		this.blogPrimaryKey = entry.getPrimaryKey().toString();
 		
 		setAuthor(entry.getAuthor());
 		setSource(entry.getSource());
@@ -61,8 +61,8 @@ public class BlogEntry extends PresentableData {
 	 * @see com.idega.block.blog.business.DataEntryWrapper#getPrimaryKey()
 	 */
 	public Object getPrimaryKey() {
-		if(blogPrimaryKey != null){
-			return blogPrimaryKey;
+		if(this.blogPrimaryKey != null){
+			return this.blogPrimaryKey;
 		} else {
 			return null;
 		}

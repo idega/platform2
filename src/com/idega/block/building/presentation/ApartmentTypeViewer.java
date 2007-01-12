@@ -62,32 +62,32 @@ public class ApartmentTypeViewer extends Block {
 	}
 
 	public void setSpecialAttributes(String name, List attributes) {
-		specialAttributesName = name;
-		specialAttributes = attributes;
+		this.specialAttributesName = name;
+		this.specialAttributes = attributes;
 	}
 
 	public void main(IWContext iwc) throws Exception {
-		if (iwrb_ == null) {
-			iwrb_ = getResourceBundle(iwc);
+		if (this.iwrb_ == null) {
+			this.iwrb_ = getResourceBundle(iwc);
 		}
 
-		if (iwb_ == null) {
-			iwb_ = getBundle(iwc);
+		if (this.iwb_ == null) {
+			this.iwb_ = getBundle(iwc);
 		}
-		service = (BuildingService) IBOLookup.getServiceInstance(iwc,
+		this.service = (BuildingService) IBOLookup.getServiceInstance(iwc,
 				BuildingService.class);
 		if (iwc.getParameter(PARAMETER_STRING) != null) {
 			try {
-				apartmenttypeid = Integer.parseInt(iwc
+				this.apartmenttypeid = Integer.parseInt(iwc
 						.getParameter(PARAMETER_STRING));
 			} catch (NumberFormatException e) {
-				apartmenttypeid = 0;
+				this.apartmenttypeid = 0;
 			}
 		}
 		this.getParentPage().setTitle("Apartment Viewer");
 		this.getParentPage().setAllMargins(0);
 
-		if (iwrb_ != null && iwb_ != null) {
+		if (this.iwrb_ != null && this.iwb_ != null) {
 			getApartmentType(iwc);
 		} else {
 			add(getBoldText("No bundle available"));
@@ -102,8 +102,8 @@ public class ApartmentTypeViewer extends Block {
 	private void getApartmentType(IWContext iwc) throws RemoteException,
 			FinderException {
 
-		ApartmentType room = service.getApartmentTypeHome().findByPrimaryKey(
-				new Integer(apartmenttypeid));
+		ApartmentType room = this.service.getApartmentTypeHome().findByPrimaryKey(
+				new Integer(this.apartmenttypeid));
 
 		Table roomTable = new Table(1, 6);
 		roomTable.setWidth("400");
@@ -125,24 +125,24 @@ public class ApartmentTypeViewer extends Block {
 		topTable.setCellspacing(0);
 
 		Text roomName = new Text("&nbsp;:: " + room.getName());
-		if (style != null) {
-			roomName.setFontStyle(style);
+		if (this.style != null) {
+			roomName.setFontStyle(this.style);
 		} else {
 			roomName.setBold();
 			roomName.setFontSize(3);
 		}
 
 		topTable.add(roomName, 1, 1);
-		topTable.add(iwrb_.getImage("/room/topright.gif", "", 153, 40), 2, 1);
+		topTable.add(this.iwrb_.getImage("/room/topright.gif", "", 153, 40), 2, 1);
 
 		roomTable.add(topTable, 1, 1);
 		roomTable.add(getApartmentTable(room, iwc), 1, 3);
 		roomTable.add(getBuildingApartmentTypes(room), 1, 4);
 		roomTable.add(getCategoryApartmentTypes(room), 1, 4);
-		if (!"false".equals(iwb_.getProperty(
+		if (!"false".equals(this.iwb_.getProperty(
 				"apartment_type_viewer.show_bottom", "false"))) {
 			roomTable
-					.add(iwrb_.getImage("/room/bottom.gif", "", 400, 66), 1, 5);
+					.add(this.iwrb_.getImage("/room/bottom.gif", "", 400, 66), 1, 5);
 		}
 
 		add(roomTable);
@@ -163,9 +163,10 @@ public class ApartmentTypeViewer extends Block {
 
 		try {
 			int pid = room.getFloorPlanId();
-			Image floorPlan = iwb_.getImage("/shared/room/nopic.gif");
-			if (pid > 0)
+			Image floorPlan = this.iwb_.getImage("/shared/room/nopic.gif");
+			if (pid > 0) {
 				floorPlan = new Image(pid);
+			}
 			floorPlan.setMaxImageWidth(200);
 			floorPlan.setHorizontalSpacing(6);
 			roomTable.add(floorPlan, 1, 1);
@@ -177,10 +178,10 @@ public class ApartmentTypeViewer extends Block {
 			
 			roomText = TextSoap.findAndReplace(roomText, "\n", "<br>");
 			if (roomText.length() == 0) {
-				roomText = iwrb_.getLocalizedString("no_information",
+				roomText = this.iwrb_.getLocalizedString("no_information",
 						"No information available");
 			} else {
-				roomTable.add(getBoldText(iwrb_.getLocalizedString(
+				roomTable.add(getBoldText(this.iwrb_.getLocalizedString(
 						"information", "Information")), 2, 1);
 				roomTable.add(Text.getBreak(), 2, 1);
 			}
@@ -188,7 +189,7 @@ public class ApartmentTypeViewer extends Block {
 			roomTable.add(Text.getBreak(), 2, 1);
 			roomTable.add(Text.getBreak(), 2, 1);
 
-			roomTable.add(getBoldText(iwrb_.getLocalizedString("size",
+			roomTable.add(getBoldText(this.iwrb_.getLocalizedString("size",
 					"Size (sqm)")
 					+ ": "), 2, 1);
 			String areaString = TextSoap.singleDecimalFormat((double) room
@@ -201,7 +202,7 @@ public class ApartmentTypeViewer extends Block {
 			roomTable.add(getInfoText(areaString), 2, 1);
 			roomTable.add(Text.getBreak(), 2, 1);
 
-			roomTable.add(getBoldText(iwrb_.getLocalizedString(
+			roomTable.add(getBoldText(this.iwrb_.getLocalizedString(
 					"number_of_rooms", "Number of rooms")
 					+ ": "), 2, 1);
 			roomTable.add(getInfoText("" + room.getRoomCount()), 2, 1);
@@ -214,12 +215,12 @@ public class ApartmentTypeViewer extends Block {
 			Inventory.setWidth(1, "50%");
 			Inventory.setWidth(2, "50%");
 
-			Image included = iwb_.getImage("/shared/room/x.gif", iwrb_
+			Image included = this.iwb_.getImage("/shared/room/x.gif", this.iwrb_
 					.getLocalizedString("in_apartment",
 							"Available in apartment"), 9, 9);
 			included.setAlignment("middle");
 			included.setHorizontalSpacing(4);
-			Image notIncluded = iwb_.getImage("/shared/room/x1.gif", iwrb_
+			Image notIncluded = this.iwb_.getImage("/shared/room/x1.gif", this.iwrb_
 					.getLocalizedString("not_in_apartment",
 							"Not available in apartment"), 9, 9);
 			notIncluded.setAlignment("middle");
@@ -228,32 +229,32 @@ public class ApartmentTypeViewer extends Block {
 			int a = 1;
 
 			Inventory.add(room.getKitchen() ? included : notIncluded, 1, a);
-			Inventory.add(getBoldText(iwrb_.getLocalizedString("kitchen",
+			Inventory.add(getBoldText(this.iwrb_.getLocalizedString("kitchen",
 					"Kitchen")), 1, a);
 
 			Inventory.add(room.getStorage() ? included : notIncluded, 2, a);
-			Inventory.add(getBoldText(iwrb_.getLocalizedString("storage",
+			Inventory.add(getBoldText(this.iwrb_.getLocalizedString("storage",
 					"Storage")), 2, a++);
 
 			Inventory.add(room.getBathRoom() ? included : notIncluded, 1, a);
-			Inventory.add(getBoldText(iwrb_.getLocalizedString("bathroom",
+			Inventory.add(getBoldText(this.iwrb_.getLocalizedString("bathroom",
 					"Bathroom")), 1, a);
 
 			Inventory.add(room.getBalcony() ? included : notIncluded, 2, a);
-			Inventory.add(getBoldText(iwrb_.getLocalizedString("balcony",
+			Inventory.add(getBoldText(this.iwrb_.getLocalizedString("balcony",
 					"Balcony")), 2, a++);
 
 			Inventory.add(room.getStudy() ? included : notIncluded, 1, a);
-			Inventory.add(getBoldText(iwrb_
+			Inventory.add(getBoldText(this.iwrb_
 					.getLocalizedString("study", "Study")), 1, a);
 
 			Inventory.add(room.getLoft() ? included : notIncluded, 2, a);
 			Inventory.add(
-					getBoldText(iwrb_.getLocalizedString("loft", "Loft")), 2,
+					getBoldText(this.iwrb_.getLocalizedString("loft", "Loft")), 2,
 					a++);
 
 			Inventory.add(room.getFurniture() ? included : notIncluded, 1, a);
-			Inventory.add(getBoldText(iwrb_.getLocalizedString("furniture",
+			Inventory.add(getBoldText(this.iwrb_.getLocalizedString("furniture",
 					"Furniture")), 1, a++);
 
 			roomTable.add(Inventory, 2, 1);
@@ -268,15 +269,15 @@ public class ApartmentTypeViewer extends Block {
 			 * String rentString = format.format((long)room.getRent());
 			 * roomTable.add(getInfoText(rentString),2,1); }
 			 */
-			if (specialAttributes != null) {
+			if (this.specialAttributes != null) {
 				Table T = new Table();
 				T.setCellpadding(0);
 				T.setCellspacing(0);
 				int row = 1;
-				if (specialAttributesName != null) {
-					T.add(getBoldText(specialAttributesName), 1, row++);
+				if (this.specialAttributesName != null) {
+					T.add(getBoldText(this.specialAttributesName), 1, row++);
 				}
-				Iterator iter = specialAttributes.iterator();
+				Iterator iter = this.specialAttributes.iterator();
 				while (iter.hasNext()) {
 					Property me = (Property) iter.next();
 					T.add(getBoldText(me.getKey()), 1, row);
@@ -299,15 +300,15 @@ public class ApartmentTypeViewer extends Block {
 			linksTable.addText("", 1, 3);
 			linksTable.setHeight(1, "3");
 			linksTable.setHeight(3, "3");
-			linksTable.setBackgroundImage(1, 1, iwb_
+			linksTable.setBackgroundImage(1, 1, this.iwb_
 					.getImage("/shared/room/line.gif"));
-			linksTable.setBackgroundImage(1, 3, iwb_
+			linksTable.setBackgroundImage(1, 3, this.iwb_
 					.getImage("/shared/room/line.gif"));
 
 			// Link applyLink = new Link(iwrb_.getImage("/room/apply.gif"));
-			PrintButton print = new PrintButton(iwrb_
+			PrintButton print = new PrintButton(this.iwrb_
 					.getImage("/room/print.gif"));
-			CloseButton close = new CloseButton(iwrb_
+			CloseButton close = new CloseButton(this.iwrb_
 					.getImage("/room/close.gif"));
 
 			// linksTable.add(applyLink,1,2);
@@ -323,25 +324,25 @@ public class ApartmentTypeViewer extends Block {
 
 	private Text getInfoText(String text) {
 		Text T = new Text(text);
-		T.setFontStyle(infoStyle);
+		T.setFontStyle(this.infoStyle);
 		return T;
 	}
 
 	private Text getBoldText(String text) {
 		Text T = new Text(text);
-		T.setFontStyle(infoStyle + "font-weight: bold;");
+		T.setFontStyle(this.infoStyle + "font-weight: bold;");
 		return T;
 	}
 
 	private Form getBuildingApartmentTypes(ApartmentType thetype)
 			throws RemoteException, FinderException {
 
-		Collection types = service.getApartmentTypeHome().findFromSameComplex(
+		Collection types = this.service.getApartmentTypeHome().findFromSameComplex(
 				thetype);
 
 		Form roomForm = new Form();
 
-		Text appartmentText = getBoldText(iwrb_.getLocalizedString(
+		Text appartmentText = getBoldText(this.iwrb_.getLocalizedString(
 				"other_apartments", "Other apartments in building")
 				+ ": ");
 
@@ -381,11 +382,11 @@ public class ApartmentTypeViewer extends Block {
 	private Form getCategoryApartmentTypes(ApartmentType thetype)
 			throws RemoteException, FinderException {
 
-		Collection types = service.getApartmentTypeHome().findByCategory(
+		Collection types = this.service.getApartmentTypeHome().findByCategory(
 				new Integer(thetype.getApartmentCategoryId()));
 		Form roomForm = new Form();
 
-		Text appartmentText = getBoldText(iwrb_.getLocalizedString(
+		Text appartmentText = getBoldText(this.iwrb_.getLocalizedString(
 				"category_apartments", "Other apartments in category")
 				+ ": ");
 

@@ -20,28 +20,28 @@ import javax.mail.MessagingException;
 
 public class InboxManager implements HttpSessionBindingListener{
 
-  //hvers konar session er ég með??
+  //hvers konar session er ï¿½g meï¿½??
   static private Session session = Session.getDefaultInstance(System.getProperties(),null);
   private Store store;
   private Folder inbox;
 
   public InboxManager(URLName url) throws NoSuchProviderException, MessagingException{
-    store = session.getStore(url);
-    store.connect();
-    inbox = store.getFolder("INBOX");
-    inbox.open(Folder.READ_WRITE);
+    this.store = session.getStore(url);
+    this.store.connect();
+    this.inbox = this.store.getFolder("INBOX");
+    this.inbox.open(Folder.READ_WRITE);
   }
 
   public Folder getInbox(){
-    return inbox;
+    return this.inbox;
   }
 
   public void valueBound(HttpSessionBindingEvent event){}
 
   public void valueUnbound(HttpSessionBindingEvent event){
     try{
-      inbox.close(true);
-      store.close();
+      this.inbox.close(true);
+      this.store.close();
     }
     catch(MessagingException e){}
   }

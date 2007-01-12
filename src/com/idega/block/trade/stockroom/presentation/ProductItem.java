@@ -68,33 +68,33 @@ public class ProductItem extends Block {
 
   private void initialize(IWContext iwc) throws RemoteException{
     String sProductId = iwc.getParameter(getProductBusiness(iwc).getProductIdParameter());
-    if (sProductId != null && _product == null) {
+    if (sProductId != null && this._product == null) {
       if (!sProductId.equals("-1")) {
         try {
-          _productId = Integer.parseInt(sProductId);
-          _product = getProductBusiness(iwc).getProduct(_productId);
+          this._productId = Integer.parseInt(sProductId);
+          this._product = getProductBusiness(iwc).getProduct(this._productId);
         }catch (FinderException sql) {
           sql.printStackTrace(System.err);
         }
       }
     }
     this._locale = iwc.getCurrentLocale();
-    this._localeId = ICLocaleBusiness.getLocaleId(_locale);
-    _iwb = getBundle(iwc);
-    this._iwrb = _iwb.getResourceBundle(iwc);
+    this._localeId = ICLocaleBusiness.getLocaleId(this._locale);
+    this._iwb = getBundle(iwc);
+    this._iwrb = this._iwb.getResourceBundle(iwc);
 
     String IMAGE_BUNDLE_IDENTIFIER="com.idega.block.media";
-    _defaultImage = iwc.getIWMainApplication().getBundle(IMAGE_BUNDLE_IDENTIFIER).getLocalizedImage("picture.gif", _locale);
+    this._defaultImage = iwc.getIWMainApplication().getBundle(IMAGE_BUNDLE_IDENTIFIER).getLocalizedImage("picture.gif", this._locale);
 
-    if (_product != null) {
-	    if ( null == _product.getProductName(_localeId, null)) {
-		  		_productLocale = iwc.getIWMainApplication().getSettings().getDefaultLocale();
-		  		_productLocaleId = ICLocaleBusiness.getLocaleId(_productLocale);
-		  		_productIWRB = _iwb.getResourceBundle(_productLocale);
+    if (this._product != null) {
+	    if ( null == this._product.getProductName(this._localeId, null)) {
+		  		this._productLocale = iwc.getIWMainApplication().getSettings().getDefaultLocale();
+		  		this._productLocaleId = ICLocaleBusiness.getLocaleId(this._productLocale);
+		  		this._productIWRB = this._iwb.getResourceBundle(this._productLocale);
 	    } else {
-	    		_productLocale = _locale;
-	    		_productLocaleId = _localeId;
-		  		_productIWRB = _iwrb;
+	    		this._productLocale = this._locale;
+	    		this._productLocaleId = this._localeId;
+		  		this._productIWRB = this._iwrb;
 	    }
     }
     
@@ -134,13 +134,13 @@ public class ProductItem extends Block {
   }
 
   protected void setProduct(Product product) throws RemoteException{
-    _product = product;
-    _productId = _product.getID();
+    this._product = product;
+    this._productId = this._product.getID();
   }
 
   protected void setProduct(int productId) throws FinderException, RemoteException {
-    _productId = productId;
-    _product = ((ProductHome) IDOLookup.getHomeLegacy(Product.class)).findByPrimaryKey(new Integer(_productId));
+    this._productId = productId;
+    this._product = ((ProductHome) IDOLookup.getHomeLegacy(Product.class)).findByPrimaryKey(new Integer(this._productId));
 //    _product = getProductBusiness.getProduct(_productId);
   }
 

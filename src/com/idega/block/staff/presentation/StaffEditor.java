@@ -49,10 +49,10 @@ public StaffEditor(){
     /**
      * @todo permission
      */
-    _isAdmin = true;
-    _iwb = getBundle(iwc);
-    _iwrb = getResourceBundle(iwc);
-    addTitle(_iwrb.getLocalizedString("staff_admin","Staff admin"));
+    this._isAdmin = true;
+    this._iwb = getBundle(iwc);
+    this._iwrb = getResourceBundle(iwc);
+    addTitle(this._iwrb.getLocalizedString("staff_admin","Staff admin"));
     Locale currentLocale = iwc.getCurrentLocale();
     Locale chosenLocale;
 
@@ -68,7 +68,7 @@ public StaffEditor(){
       iLocaleId = ICLocaleBusiness.getLocaleId(chosenLocale);
     }
 
-    if ( _isAdmin ) {
+    if ( this._isAdmin ) {
       processForm(iwc,iLocaleId);
     }
     else {
@@ -79,10 +79,10 @@ public StaffEditor(){
   private void processForm(IWContext iwc, int iLocaleId) {
     if ( iwc.getParameter(StaffBusiness.PARAMETER_USER_ID) != null ) {
       try {
-        _userID = Integer.parseInt(iwc.getParameter(StaffBusiness.PARAMETER_USER_ID));
+        this._userID = Integer.parseInt(iwc.getParameter(StaffBusiness.PARAMETER_USER_ID));
       }
       catch (NumberFormatException e) {
-        _userID = -1;
+        this._userID = -1;
       }
     }
 
@@ -101,88 +101,94 @@ public StaffEditor(){
     DropdownMenu localeDrop = ICLocalePresentation.getLocaleDropdownIdKeyed(StaffBusiness.PARAMETER_LOCALE_DROP);
       localeDrop.setToSubmit();
       localeDrop.setSelectedElement(Integer.toString(iLocaleId));
-    addLeft(_iwrb.getLocalizedString("locale","Locale")+": ",localeDrop,false);
-    addHiddenInput(new HiddenInput(StaffBusiness.PARAMETER_USER_ID,Integer.toString(_userID)));
+    addLeft(this._iwrb.getLocalizedString("locale","Locale")+": ",localeDrop,false);
+    addHiddenInput(new HiddenInput(StaffBusiness.PARAMETER_USER_ID,Integer.toString(this._userID)));
 
     initializeFields(iLocaleId);
   }
 
   private void initializeFields(int iLocaleId) {
-    StaffEntity entity = StaffFinder.getStaff(_userID);
-    StaffMeta[] meta = StaffFinder.getMeta(_userID,iLocaleId);
-    if ( entity == null )
-      _update = false;
+    StaffEntity entity = StaffFinder.getStaff(this._userID);
+    StaffMeta[] meta = StaffFinder.getMeta(this._userID,iLocaleId);
+    if ( entity == null ) {
+		this._update = false;
+	}
 
     StaffLocalized locTexts = null;
-    if ( _update )
-      locTexts = StaffFinder.getLocalizedStaff(entity,iLocaleId);
-    if ( _update && entity.getBeganWork() != null )
-      _stamp = new IWTimestamp(entity.getBeganWork());
+    if ( this._update ) {
+		locTexts = StaffFinder.getLocalizedStaff(entity,iLocaleId);
+	}
+    if ( this._update && entity.getBeganWork() != null ) {
+		this._stamp = new IWTimestamp(entity.getBeganWork());
+	}
 
     TextInput title = new TextInput(StaffBusiness.PARAMETER_TITLE);
       title.setLength(24);
       if ( locTexts != null && locTexts.getTitle() != null ) {
         title.setContent(locTexts.getTitle());
       }
-    addLeft(_iwrb.getLocalizedString("user_title","Title")+":",title,true);
+    addLeft(this._iwrb.getLocalizedString("user_title","Title")+":",title,true);
 
     TextArea education = new TextArea(StaffBusiness.PARAMETER_EDUCATION,55,3);
       if ( locTexts != null && locTexts.getEducation() != null) {
         education.setContent(locTexts.getEducation());
       }
-    addLeft(_iwrb.getLocalizedString("user_education","Education")+":",education,true);
+    addLeft(this._iwrb.getLocalizedString("user_education","Education")+":",education,true);
 
     TextArea area = new TextArea(StaffBusiness.PARAMETER_AREA,55,3);
       if ( locTexts != null && locTexts.getArea() != null ) {
         area.setContent(locTexts.getArea());
       }
-    addLeft(_iwrb.getLocalizedString("user_area","Area")+":",area,true);
+    addLeft(this._iwrb.getLocalizedString("user_area","Area")+":",area,true);
 
     DateInput beganWork = new DateInput(StaffBusiness.PARAMETER_BEGAN_WORK);
       beganWork.setYearRange(new IWTimestamp().getYear()-60,new IWTimestamp().getYear());
-      if ( _stamp != null ) {
-        beganWork.setDate(_stamp.getDate());
+      if ( this._stamp != null ) {
+        beganWork.setDate(this._stamp.getDate());
       }
       beganWork.setStyleAttribute("style",STYLE);
-    addLeft(_iwrb.getLocalizedString("user_began_work","Began work")+":",beganWork,true);
+    addLeft(this._iwrb.getLocalizedString("user_began_work","Began work")+":",beganWork,true);
 
     Table metaTable = new Table(2,6);
       metaTable.setColumnVerticalAlignment(1,"top");
     for ( int a = 0; a < 6; a++ ) {
       TextInput attribute = new TextInput(StaffBusiness.PARAMETER_META_ATTRIBUTE);
-        if ( meta != null && meta.length >= a )
-          try {
-            attribute.setContent(meta[a].getAttribute());
-          }
-          catch (Exception e) {
-            attribute.setContent("");
-          }
+        if ( meta != null && meta.length >= a ) {
+			try {
+			    attribute.setContent(meta[a].getAttribute());
+			  }
+			  catch (Exception e) {
+			    attribute.setContent("");
+			  }
+		}
         attribute.setMarkupAttribute("style",STYLE);
         attribute.setLength(20);
       metaTable.add(attribute,1,a+1);
 
       TextArea value = new TextArea(StaffBusiness.PARAMETER_META_VALUE,40,2);
-        if ( meta != null && meta.length >= a )
-          try {
-            value.setContent(meta[a].getValue());
-          }
-          catch (Exception e) {
-            value.setContent("");
-          }
+        if ( meta != null && meta.length >= a ) {
+			try {
+			    value.setContent(meta[a].getValue());
+			  }
+			  catch (Exception e) {
+			    value.setContent("");
+			  }
+		}
         value.setMarkupAttribute("style",STYLE);
       metaTable.add(value,2,a+1);
     }
-    addLeft(_iwrb.getLocalizedString("extra_info","Extra info")+":",metaTable,true,false);
+    addLeft(this._iwrb.getLocalizedString("extra_info","Extra info")+":",metaTable,true,false);
 
     ImageInserter image = new ImageInserter(StaffBusiness.PARAMETER_IMAGE_ID);
       image.setWindowClassToOpen(com.idega.block.media.presentation.MediaChooserWindow.class);
       image.setHasUseBox(false);
-      if ( entity != null && entity.getImageID() != -1 )
-        image.setImageId(entity.getImageID());
-    addRight(_iwrb.getLocalizedString("image","Image")+":",image,true,false);
+      if ( entity != null && entity.getImageID() != -1 ) {
+		image.setImageId(entity.getImageID());
+	}
+    addRight(this._iwrb.getLocalizedString("image","Image")+":",image,true,false);
 
-    addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("close","CLOSE"),StaffBusiness.PARAMETER_MODE,StaffBusiness.PARAMETER_CLOSE));
-    addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("save","SAVE"),StaffBusiness.PARAMETER_MODE,StaffBusiness.PARAMETER_SAVE));
+    addSubmitButton(new SubmitButton(this._iwrb.getLocalizedImageButton("close","CLOSE"),StaffBusiness.PARAMETER_MODE,StaffBusiness.PARAMETER_CLOSE));
+    addSubmitButton(new SubmitButton(this._iwrb.getLocalizedImageButton("save","SAVE"),StaffBusiness.PARAMETER_MODE,StaffBusiness.PARAMETER_SAVE));
   }
 
   private void saveEntry(IWContext iwc, int localeID) {
@@ -190,24 +196,25 @@ public StaffEditor(){
     String education = iwc.getParameter(StaffBusiness.PARAMETER_EDUCATION);
     String area = iwc.getParameter(StaffBusiness.PARAMETER_AREA);
     String beganwork = iwc.getParameter(StaffBusiness.PARAMETER_BEGAN_WORK);
-    if ( beganwork != null )
-      try {
-        _stamp = new IWTimestamp(beganwork);
-      }
-      catch (Exception e) {
-        _stamp = null;
-      }
+    if ( beganwork != null ) {
+		try {
+		    this._stamp = new IWTimestamp(beganwork);
+		  }
+		  catch (Exception e) {
+		    this._stamp = null;
+		  }
+	}
     String imageID = iwc.getParameter(StaffBusiness.PARAMETER_IMAGE_ID);
 
     String[] values = iwc.getParameterValues(StaffBusiness.PARAMETER_META_VALUE);
     String[] attributes = iwc.getParameterValues(StaffBusiness.PARAMETER_META_ATTRIBUTE);
 
-    StaffBusiness.saveStaff(localeID,_userID,title,education,area,_stamp,imageID);
-    StaffBusiness.saveMetaData(localeID,_userID,attributes,values);
+    StaffBusiness.saveStaff(localeID,this._userID,title,education,area,this._stamp,imageID);
+    StaffBusiness.saveMetaData(localeID,this._userID,attributes,values);
   }
 
   private void deleteEntry(IWContext iwc) {
-    StaffBusiness.delete(_userID);
+    StaffBusiness.delete(this._userID);
     closeEditor(iwc);
   }
 
@@ -217,8 +224,8 @@ public StaffEditor(){
   }
 
   private void noAccess() throws IOException,SQLException {
-    addLeft(_iwrb.getLocalizedString("no_access","Login first!"));
-    addSubmitButton(new CloseButton(_iwrb.getImage("close.gif")));
+    addLeft(this._iwrb.getLocalizedString("no_access","Login first!"));
+    addSubmitButton(new CloseButton(this._iwrb.getImage("close.gif")));
   }
 
   public String getBundleIdentifier(){

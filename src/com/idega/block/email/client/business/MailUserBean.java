@@ -23,21 +23,21 @@ public class MailUserBean {
      * Returns the javax.mail.Folder object.
      */
     public Folder getFolder() {
-        return folder;
+        return this.folder;
     }
 
     /**
      * Returns the number of messages in the folder.
      */
     public int getMessageCount() throws MessagingException {
-        return folder.getMessageCount();
+        return this.folder.getMessageCount();
     }
 
     /**
      * hostname getter method.
      */
     public String getHostname() {
-        return hostname;
+        return this.hostname;
     }
 
     /**
@@ -51,7 +51,7 @@ public class MailUserBean {
      * username getter method.
      */
     public String getUsername() {
-        return username;
+        return this.username;
     }
 
     /**
@@ -65,7 +65,7 @@ public class MailUserBean {
      * password getter method.
      */
     public String getPassword() {
-        return password;
+        return this.password;
     }
 
     /**
@@ -79,7 +79,7 @@ public class MailUserBean {
      * password getter method.
      */
     public String getProtocol() {
-        return protocol;
+        return this.protocol;
     }
 
     /**
@@ -94,7 +94,7 @@ public class MailUserBean {
      * session getter method.
      */
     public Session getSession() {
-        return session;
+        return this.session;
     }
 
     /**
@@ -108,7 +108,7 @@ public class MailUserBean {
      * store getter method.
      */
     public Store getStore() {
-        return store;
+        return this.store;
     }
 
     /**
@@ -122,29 +122,29 @@ public class MailUserBean {
      * url getter method.
      */
     public URLName getUrl() {
-        return url;
+        return this.url;
     }
 
     /**
      * Method for checking if the user is logged in.
      */
     public boolean isLoggedIn() {
-        return store.isConnected();
+        return this.store.isConnected();
     }
 
     /**
      * Method used to login to the mail host.
      */
     public void login() throws Exception {
-        url = new URLName(protocol, getHostname(), -1, mbox,
+        this.url = new URLName(this.protocol, getHostname(), -1, this.mbox,
                           getUsername(), getPassword());
         Properties props = System.getProperties();
-        session = Session.getInstance(props, null);
-        store = session.getStore(url);
-        store.connect();
-        folder = session.getFolder(url);
+        this.session = Session.getInstance(props, null);
+        this.store = this.session.getStore(this.url);
+        this.store.connect();
+        this.folder = this.session.getFolder(this.url);
 
-        folder.open(Folder.READ_WRITE);
+        this.folder.open(Folder.READ_WRITE);
     }
 
     /**
@@ -165,10 +165,10 @@ public class MailUserBean {
      * Method used to logout from the mail host.
      */
     public void logout() throws MessagingException {
-        folder.close(false);
-        store.close();
-        store = null;
-        session = null;
+        this.folder.close(false);
+        this.store.close();
+        this.store = null;
+        this.session = null;
     }
 }
 

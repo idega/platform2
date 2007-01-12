@@ -26,7 +26,7 @@ public class ReportCategoryAttributeMaker extends Block{
 
   private String prefix = "rcam_";
 
-  private String sAction = prefix+"action";
+  private String sAction = this.prefix+"action";
 
   private String sActPrm = "0";
 
@@ -40,15 +40,15 @@ public class ReportCategoryAttributeMaker extends Block{
 
   public ReportCategoryAttributeMaker(){
 
-    sIndex = "0";
+    this.sIndex = "0";
 
-    sId = "0";
+    this.sId = "0";
 
-    sName = "";
+    this.sName = "";
 
-    sInfo = "";
+    this.sInfo = "";
 
-    sAttId = "0";
+    this.sAttId = "0";
 
   }
 
@@ -64,15 +64,15 @@ public class ReportCategoryAttributeMaker extends Block{
 
 
 
-        if(iwc.getParameter(sAction) != null){
+        if(iwc.getParameter(this.sAction) != null){
 
-          sActPrm = iwc.getParameter(sAction);
+          this.sActPrm = iwc.getParameter(this.sAction);
 
           try{
 
-            iAction = Integer.parseInt(sActPrm);
+            this.iAction = Integer.parseInt(this.sActPrm);
 
-            switch(iAction){
+            switch(this.iAction){
 
               case ACT0: doSome(iwc); break;
 
@@ -114,7 +114,7 @@ public class ReportCategoryAttributeMaker extends Block{
 
     int id = 0;
 
-    String sIndex = iwc.getParameter(prefix+"drp");
+    String sIndex = iwc.getParameter(this.prefix+"drp");
 
     if(sIndex != null){
 
@@ -126,11 +126,11 @@ public class ReportCategoryAttributeMaker extends Block{
 
           ReportCategoryAttribute RC = ((com.idega.block.reports.data.ReportCategoryAttributeHome)com.idega.data.IDOLookup.getHomeLegacy(ReportCategoryAttribute.class)).findByPrimaryKeyLegacy(id);
 
-          sName = RC.getName();
+          this.sName = RC.getName();
 
-          sAttId = String.valueOf(RC.getAttributeId());
+          this.sAttId = String.valueOf(RC.getAttributeId());
 
-          sId = String.valueOf(RC.getReportCategoryId());
+          this.sId = String.valueOf(RC.getReportCategoryId());
 
         }
 
@@ -148,31 +148,31 @@ public class ReportCategoryAttributeMaker extends Block{
 
   private void doMain(IWContext iwc){
 
-    String sIndex = iwc.getParameter(prefix+"drp");
+    String sIndex = iwc.getParameter(this.prefix+"drp");
 
-    String sId = iwc.getParameter(prefix+"drp2");
+    String sId = iwc.getParameter(this.prefix+"drp2");
 
     Table T = new Table();
 
     Form myForm = new Form();
 
-    if(sIndex == null)
+    if(sIndex == null) {
+		sIndex = "0";
+	}
 
-      sIndex = "0";
+     if(sId == null) {
+		sId = "0";
+	}
 
-     if(sId == null)// || sIndex == "0")
+    DropdownMenu drp2 = this.drpCategories(this.prefix+"drp2",sId);
 
-      sId = "0";
-
-    DropdownMenu drp2 = this.drpCategories(prefix+"drp2",sId);
-
-    DropdownMenu drp = this.drpAttributes(prefix+"drp",sIndex);
+    DropdownMenu drp = this.drpAttributes(this.prefix+"drp",sIndex);
 
     drp.setToSubmit();
 
-    TextInput tiName = new TextInput(prefix+"name",sName);
+    TextInput tiName = new TextInput(this.prefix+"name",this.sName);
 
-    TextInput tiId = new TextInput(prefix+"attid",sAttId);
+    TextInput tiId = new TextInput(this.prefix+"attid",this.sAttId);
 
     SubmitButton submit= new SubmitButton("Save",this.sAction,String.valueOf(this.ACT1));
 
@@ -216,35 +216,34 @@ public class ReportCategoryAttributeMaker extends Block{
 
     int id = -1;
 
-    String sIndex = iwc.getParameter(prefix+"drp");
+    String sIndex = iwc.getParameter(this.prefix+"drp");
 
-    if(sIndex != null)
+    if(sIndex != null) {
+		id = Integer.parseInt(sIndex);
+	}
 
-       id = Integer.parseInt(sIndex);
+    this.sId = iwc.getParameter(this.prefix+"drp2");
 
-    sId = iwc.getParameter(prefix+"drp2");
+    this.sName = iwc.getParameter(this.prefix+"name");
 
-    sName = iwc.getParameter(prefix+"name");
+    this.sAttId = iwc.getParameter(this.prefix+"attid");
 
-    sAttId = iwc.getParameter(prefix+"attid");
+    add(" cat: "+ this.sId );
 
-    add(" cat: "+ sId );
+    add(" att: "+ this.sName );
 
-    add(" att: "+ sName );
-
-    add(" attid: "+ sAttId );
-
-
+    add(" attid: "+ this.sAttId );
 
 
 
-    if(id == 0)
 
-      this.saveAttribute(sName,sAttId,sId);
 
-    else
-
-      this.updateAttribute(id,sName,sAttId,sId);
+    if(id == 0) {
+		this.saveAttribute(this.sName,this.sAttId,this.sId);
+	}
+	else {
+		this.updateAttribute(id,this.sName,this.sAttId,this.sId);
+	}
 
 
 
@@ -256,19 +255,19 @@ public class ReportCategoryAttributeMaker extends Block{
 
     int id = 0;
 
-    String sIndex = iwc.getParameter(prefix+"drp");
+    String sIndex = iwc.getParameter(this.prefix+"drp");
 
-    if(sIndex != null)
+    if(sIndex != null) {
+		id = Integer.parseInt(sIndex);
+	}
 
-       id = Integer.parseInt(sIndex);
+    if(id != 0) {
+		this.deleteAttribute(id);
+	}
 
-    if(id != 0)
+    this.sName = "";
 
-      this.deleteAttribute(id);
-
-    sName = "";
-
-    sInfo = "";
+    this.sInfo = "";
 
   }
 
@@ -297,10 +296,9 @@ public class ReportCategoryAttributeMaker extends Block{
         return true;
 
       }
-
-      else
-
-        return false;
+	else {
+		return false;
+	}
 
     }
 
@@ -335,10 +333,9 @@ public class ReportCategoryAttributeMaker extends Block{
       return true;
 
       }
-
-      else
-
-        return false;
+	else {
+		return false;
+	}
 
     }
 
@@ -394,9 +391,9 @@ public class ReportCategoryAttributeMaker extends Block{
 
     }
 
-    if(!selected.equalsIgnoreCase(""))
-
-      drp.setSelectedElement(selected);
+    if(!selected.equalsIgnoreCase("")) {
+		drp.setSelectedElement(selected);
+	}
 
     return drp;
 
@@ -428,9 +425,9 @@ public class ReportCategoryAttributeMaker extends Block{
 
     }
 
-    if(!selected.equalsIgnoreCase(""))
-
-      drp.setSelectedElement(selected);
+    if(!selected.equalsIgnoreCase("")) {
+		drp.setSelectedElement(selected);
+	}
 
     return drp;
 
@@ -454,7 +451,7 @@ public class ReportCategoryAttributeMaker extends Block{
 
     */
 
-    isAdmin = true;
+    this.isAdmin = true;
 
     control(iwc);
 

@@ -149,14 +149,17 @@ public class Timesheet extends Block {
 		try {
 			obj = (Timesheet) super.clone();
 			//      obj.FunctColl = this.FunctColl.clone();
-			if (this.myDags != null)
+			if (this.myDags != null) {
 				obj.myDags = (Text) this.myDags.clone();
-			if (this.header_color != null)
+			}
+			if (this.header_color != null) {
 				obj.header_color = this.header_color;
-			if (this.header_text_color != null)
+			}
+			if (this.header_text_color != null) {
 				obj.header_text_color = this.header_text_color;
 			//      if (this.stamp != null)
 			//        obj.stamp = (IWTimestamp)stamp.clone();
+			}
 		}
 		catch (Exception ex) {
 			ex.printStackTrace(System.err);
@@ -191,57 +194,57 @@ public class Timesheet extends Block {
 		this.isAdmin = isAdmin;
 	}
 	private void setDefaultValues() {
-		daysShown = 6;
-		extraLines = 1;
-		table_width = "20";
-		cellspacing = 0;
-		cellpadding = 3;
-		color_1 = "#DDDDDD";
-		color_2 = "#444444";
-		header_color = "#000000";
-		header_text_color = "#FFFFFF";
-		border = 0;
-		language = "IS";
-		correct = false;
+		this.daysShown = 6;
+		this.extraLines = 1;
+		this.table_width = "20";
+		this.cellspacing = 0;
+		this.cellpadding = 3;
+		this.color_1 = "#DDDDDD";
+		this.color_2 = "#444444";
+		this.header_color = "#000000";
+		this.header_text_color = "#FFFFFF";
+		this.border = 0;
+		this.language = "IS";
+		this.correct = false;
 	}
 	private void setImageUrls(IWContext iwc) {
-		hour_report_image_url = iwrb.getImageURI("");
-		delete_image_url = iwrb.getImageURI("delete.gif");
-		report_image_url = iwrb.getImageURI("reports.gif");
-		next_image_url = iwrb.getImageURI("next.gif");
-		previous_image_url = iwrb.getImageURI("prev.gif");
-		today_image_url = iwrb.getImageURI("today.gif");
-		correction_image_url = iwrb.getImageURI("correction.gif");
-		back_image_url = iwrb.getImageURI("back.gif");
-		save_image_url = iwrb.getImageURI("save.gif");
-		employee_report_image_url = iwrb.getImageURI("employee.gif");
-		book_image_url = iwrb.getImageURI("");
-		booked_image_url = iwrb.getImageURI("");
-		register_image_url = iwrb.getImageURI("");
+		this.hour_report_image_url = this.iwrb.getImageURI("");
+		this.delete_image_url = this.iwrb.getImageURI("delete.gif");
+		this.report_image_url = this.iwrb.getImageURI("reports.gif");
+		this.next_image_url = this.iwrb.getImageURI("next.gif");
+		this.previous_image_url = this.iwrb.getImageURI("prev.gif");
+		this.today_image_url = this.iwrb.getImageURI("today.gif");
+		this.correction_image_url = this.iwrb.getImageURI("correction.gif");
+		this.back_image_url = this.iwrb.getImageURI("back.gif");
+		this.save_image_url = this.iwrb.getImageURI("save.gif");
+		this.employee_report_image_url = this.iwrb.getImageURI("employee.gif");
+		this.book_image_url = this.iwrb.getImageURI("");
+		this.booked_image_url = this.iwrb.getImageURI("");
+		this.register_image_url = this.iwrb.getImageURI("");
 	}
 	private void setStrings(IWContext iwc) {
-		report_string = iwrb.getLocalizedString("reports", "Reports");
-		day_string = iwrb.getLocalizedString("date", "Date");
-		resource_string = iwrb.getLocalizedString("resource", "Resource");
-		project_string = iwrb.getLocalizedString("project", "Project");
-		quantity_string = iwrb.getLocalizedString("quantity", "Qty.");
-		description_string = iwrb.getLocalizedString("description", "Description");
-		delete_string = iwrb.getLocalizedString("delete", "Delete");
-		total_hours_string = iwrb.getLocalizedString("total_hours", "Total hours");
-		previous_week_string = iwrb.getLocalizedString("prev_week", "Previous week");
-		next_week_string = iwrb.getLocalizedString("next_week", "Next week");
-		correct_string = iwrb.getLocalizedString("correction", "Correction");
-		back_string = iwrb.getLocalizedString("back", "Back");
-		today_string = iwrb.getLocalizedString("today", "Today");
-		save_string = iwrb.getLocalizedString("save", "Save");
-		total_string = iwrb.getLocalizedString("total", "Total");
-		previous_month_string = iwrb.getLocalizedString("prev_month", "Previous month");
-		next_month_string = iwrb.getLocalizedString("next_month", "Next month");
-		employee_report_string = iwrb.getLocalizedString("employee_report", "Employee report");
-		project_id_string = iwrb.getLocalizedString("project_id", "Project #");
-		hours_string = iwrb.getLocalizedString("hours", "Hours");
-		project_name_string = iwrb.getLocalizedString("nafn", "Name");
-		must_login = iwrb.getLocalizedString("warning.not_logged_on", "You have to log on first");
+		this.report_string = this.iwrb.getLocalizedString("reports", "Reports");
+		this.day_string = this.iwrb.getLocalizedString("date", "Date");
+		this.resource_string = this.iwrb.getLocalizedString("resource", "Resource");
+		this.project_string = this.iwrb.getLocalizedString("project", "Project");
+		this.quantity_string = this.iwrb.getLocalizedString("quantity", "Qty.");
+		this.description_string = this.iwrb.getLocalizedString("description", "Description");
+		this.delete_string = this.iwrb.getLocalizedString("delete", "Delete");
+		this.total_hours_string = this.iwrb.getLocalizedString("total_hours", "Total hours");
+		this.previous_week_string = this.iwrb.getLocalizedString("prev_week", "Previous week");
+		this.next_week_string = this.iwrb.getLocalizedString("next_week", "Next week");
+		this.correct_string = this.iwrb.getLocalizedString("correction", "Correction");
+		this.back_string = this.iwrb.getLocalizedString("back", "Back");
+		this.today_string = this.iwrb.getLocalizedString("today", "Today");
+		this.save_string = this.iwrb.getLocalizedString("save", "Save");
+		this.total_string = this.iwrb.getLocalizedString("total", "Total");
+		this.previous_month_string = this.iwrb.getLocalizedString("prev_month", "Previous month");
+		this.next_month_string = this.iwrb.getLocalizedString("next_month", "Next month");
+		this.employee_report_string = this.iwrb.getLocalizedString("employee_report", "Employee report");
+		this.project_id_string = this.iwrb.getLocalizedString("project_id", "Project #");
+		this.hours_string = this.iwrb.getLocalizedString("hours", "Hours");
+		this.project_name_string = this.iwrb.getLocalizedString("nafn", "Name");
+		this.must_login = this.iwrb.getLocalizedString("warning.not_logged_on", "You have to log on first");
 	}
 	/*
 	 * public void setLanguage(String language) { this.language = language }
@@ -298,16 +301,16 @@ public class Timesheet extends Block {
 		this.hour_report_image_url = url;
 	}
 	public void setDaysShown(int number_of_days_shown) {
-		daysShown = number_of_days_shown;
+		this.daysShown = number_of_days_shown;
 	}
 	public void setExtraLines(int number_if_extra_lines) {
-		extraLines = number_if_extra_lines;
+		this.extraLines = number_if_extra_lines;
 	}
 	public void setWidth(String width) {
-		table_width = width;
+		this.table_width = width;
 	}
 	public void setHeight(int height) {
-		table_height = Integer.toString(height);
+		this.table_height = Integer.toString(height);
 	}
 	public void setCellpadding(int cellpadding) {
 		this.cellpadding = cellpadding;
@@ -316,12 +319,12 @@ public class Timesheet extends Block {
 		this.cellspacing = cellspacing;
 	}
 	public void setColor(String color) {
-		color_1 = color;
-		color_2 = color;
+		this.color_1 = color;
+		this.color_2 = color;
 	}
 	public void setZebraColors(String color1, String color2) {
-		color_1 = color1;
-		color_2 = color2;
+		this.color_1 = color1;
+		this.color_2 = color2;
 	}
 	public void setHeaderColor(String header_color) {
 		this.header_color = header_color;
@@ -335,9 +338,9 @@ public class Timesheet extends Block {
 	private void initialize(IWContext iwc) throws Exception {
 		this.timesheetSession = (TimesheetSession) IBOLookup.getSessionInstance(iwc, TimesheetSession.class);
 		this.isAdmin = iwc.hasEditPermission(this);
-		iwb = getBundle(iwc);
-		iwrb = getResourceBundle(iwc);
-		this.save_image_url = iwrb.getImage("save.gif").getURL();
+		this.iwb = getBundle(iwc);
+		this.iwrb = getResourceBundle(iwc);
+		this.save_image_url = this.iwrb.getImage("save.gif").getURL();
 		initDays(iwc);
 		calculate(iwc);
 		setStrings(iwc);
@@ -348,162 +351,163 @@ public class Timesheet extends Block {
 	}
 	public void main(IWContext iwc) throws SQLException, IOException, Exception {
 		initialize(iwc);
-		if (isAdmin) {
-			Link prodMan = new Link(iwrb.getLocalizedString("project_manager", "Project manager"));
+		if (this.isAdmin) {
+			Link prodMan = new Link(this.iwrb.getLocalizedString("project_manager", "Project manager"));
 			//prodMan.setWindowToOpen(com.idega.block.projectmanager.presentation.ProjectAdminWindow.class);
 			add(prodMan);
 			add(Text.getBreak());
 		}
 		String sIsPrintable = iwc.getParameter(PRM_PRINTABLE);
 		this.isPrintable = (sIsPrintable != null && sIsPrintable.equalsIgnoreCase("true"));
-		if (iwc.isParameterSet(PRM_PROJECT_ID))
-			projectID = Integer.valueOf(iwc.getParameter(PRM_PROJECT_ID));
+		if (iwc.isParameterSet(PRM_PROJECT_ID)) {
+			this.projectID = Integer.valueOf(iwc.getParameter(PRM_PROJECT_ID));
+		}
 		/*
 		 * if (sIsPrintable != null &&) { if
 		 * (sIsPrintable.equalsIgnoreCase("true")) { this.isPrintable = true; }
 		 */
-		timesheet_project_id = iwc.getParameter(PRM_PROJECT_ID);
-		if (edit == null) {
-			edit = iwc.getParameter(PRM_ACTION);
+		this.timesheet_project_id = iwc.getParameter(PRM_PROJECT_ID);
+		if (this.edit == null) {
+			this.edit = iwc.getParameter(PRM_ACTION);
 		}
-		if (edit == null) {
-			edit = "";
+		if (this.edit == null) {
+			this.edit = "";
 		}
 		if (iwc.isLoggedOn()) {
-			user = iwc.getCurrentUser();
-			this.userID = (Integer) user.getPrimaryKey();
+			this.user = iwc.getCurrentUser();
+			this.userID = (Integer) this.user.getPrimaryKey();
 			String temp_member_id = iwc.getParameter("i_timesheet_member_id");
 			if (temp_member_id != null) {
 				try {
-					if (isAdmin) {
-						user =
-							((UserHome) IDOLookup.getHome(User.class)).findByPrimaryKey(Integer.valueOf(temp_user_id));
-						this.userID = (Integer) user.getPrimaryKey();
+					if (this.isAdmin) {
+						this.user =
+							((UserHome) IDOLookup.getHome(User.class)).findByPrimaryKey(Integer.valueOf(this.temp_user_id));
+						this.userID = (Integer) this.user.getPrimaryKey();
 					}
 				}
 				catch (Exception e) {
 				}
 			}
-			if (edit.equals(PRM_CORRECTION)) {
+			if (this.edit.equals(PRM_CORRECTION)) {
 				this.correct = true;
 			}
-			if (edit.equals(ACT_REMOVE)) {
+			if (this.edit.equals(ACT_REMOVE)) {
 				processEntryRemoval(iwc);
 				presentateToday(iwc);
 			}
-			else if (edit.equals(save_string)) {
+			else if (this.edit.equals(this.save_string)) {
 				processEntrySave(iwc);
 				presentateToday(iwc);
 			}
-			else if (edit.equals(ACT_SUBREPORT)) {
+			else if (this.edit.equals(ACT_SUBREPORT)) {
 				presentateSubreport(iwc);
-				if (!isPrintable) {
+				if (!this.isPrintable) {
 					//add(getPrintableLink("undirskyrsla"));
 				}
 				else {
 					add(getPrintButton());
 				}
 			}
-			else if (edit.equals(ACT_EMPLOYEE_ENTRIES)) {
+			else if (this.edit.equals(ACT_EMPLOYEE_ENTRIES)) {
 				presentateEmployeeEntries(iwc);
-				if (!isPrintable) {
+				if (!this.isPrintable) {
 					//add(getPrintableLink("hreyfingStarfsmann"));
 				}
 				else {
 					add(getPrintButton());
 				}
 			}
-			else if (edit.equals(ACT_PROJECT_ENTRIES)) {
+			else if (this.edit.equals(ACT_PROJECT_ENTRIES)) {
 				presentateProjectEntries(iwc);
-				if (!isPrintable) {
+				if (!this.isPrintable) {
 					//add(getPrintableLink("hreyfingVerk"));
 				}
 				else {
 					add(getPrintButton());
 				}
 			}
-			else if (edit.equals(ACT_PROJECT_ENTRIES_ALL)) {
+			else if (this.edit.equals(ACT_PROJECT_ENTRIES_ALL)) {
 				presentateAllProjectEntries(iwc);
-				if (!isPrintable) {
+				if (!this.isPrintable) {
 					// add(getPrintableLink("hreyfingVerkAll"));
 				}
 				else {
 					add(getPrintButton());
 				}
 			}
-			else if (edit.equals(ACT_EMLOYEE_HOURS)) {
+			else if (this.edit.equals(ACT_EMLOYEE_HOURS)) {
 				presentateEmployeeHours(iwc);
-				if (!isPrintable) {
+				if (!this.isPrintable) {
 					//add(getPrintableLink("hour_pr_employee"));
 				}
 				else {
 					add(getPrintButton());
 				}
 			}
-			else if (edit.equals(ACT_PROJECT_HOURS)) {
+			else if (this.edit.equals(ACT_PROJECT_HOURS)) {
 				presentateProjectHours(iwc);
-				if (!isPrintable) {
+				if (!this.isPrintable) {
 					// add(getPrintableLink("hour_pr_project"));
 				}
 				else {
 					add(getPrintButton());
 				}
 			}
-			else if (edit.equals(ACT_PROJECT_HOURS_ALL)) {
+			else if (this.edit.equals(ACT_PROJECT_HOURS_ALL)) {
 				presentateAllProjectHours(iwc);
-				if (!isPrintable) {
+				if (!this.isPrintable) {
 					//add(getPrintableLink("hour_pr_project_all"));
 				}
 				else {
 					add(getPrintButton());
 				}
 			}
-			else if (edit.equals(ACT_UNBOOKED)) {
+			else if (this.edit.equals(ACT_UNBOOKED)) {
 				presentateUnbookedEntries(iwc, false);
-				if (!isPrintable) {
+				if (!this.isPrintable) {
 					// add(getPrintableLink("unbooked"));
 				}
 				else {
 					add(getPrintButton());
 				}
 			}
-			else if (edit.equals(ACT_BOOKED)) {
+			else if (this.edit.equals(ACT_BOOKED)) {
 				presentateBookedEntries(iwc);
-				if (!isPrintable) {
+				if (!this.isPrintable) {
 					// add(getPrintableLink("booked"));
 				}
 				else {
 					add(getPrintButton());
 				}
 			}
-			else if (edit.equals("save_booked")) {
+			else if (this.edit.equals("save_booked")) {
 				processBooking(iwc);
 				presentateBookedEntries(iwc);
 			}
-			else if (edit.equals("save_registered")) {
+			else if (this.edit.equals("save_registered")) {
 				processRegistration(iwc);
 				presentateUserProjects(iwc);
 			}
-			else if (edit.equals(ACT_USER_PROJECTS)) {
+			else if (this.edit.equals(ACT_USER_PROJECTS)) {
 				presentateUserProjects(iwc);
 			}
-			else if (edit.equals(ACT_PROJECTS_MOVE)) {
+			else if (this.edit.equals(ACT_PROJECTS_MOVE)) {
 				processProjectMove(iwc);
 				presentateUserProjects(iwc);
 			}
-			else if (edit.equals(ACT_PAST_ENTRY_CHECK)) {
+			else if (this.edit.equals(ACT_PAST_ENTRY_CHECK)) {
 				presentateUnbookedEntries(iwc, true);
-				if (!isPrintable) {
+				if (!this.isPrintable) {
 					//add(getPrintableLink("checkPreviousEntries"));
 				}
 				else {
 					add(getPrintButton());
 				}
 			}
-			else if (edit.equals(ACT_CREATE_PROJECT)) {
+			else if (this.edit.equals(ACT_CREATE_PROJECT)) {
 				presentateProjectForm(iwc);
 			}
-			else if (edit.equals(ACT_SAVE_PROJECT)) {
+			else if (this.edit.equals(ACT_SAVE_PROJECT)) {
 				processProjectSave(iwc);
 				presentateUserProjects(iwc);
 			}
@@ -513,13 +517,13 @@ public class Timesheet extends Block {
 			add(getMyProjectsLink());
 		}
 		else {
-			add(must_login);
+			add(this.must_login);
 		}
 	}
 	private void setDate() {
-		month = FunctColl.getMonth();
-		year = FunctColl.getYear();
-		day = FunctColl.getDay();
+		this.month = this.FunctColl.getMonth();
+		this.year = this.FunctColl.getYear();
+		this.day = this.FunctColl.getDay();
 	}
 	private void initDays(IWContext iwc) {
 		try {
@@ -527,50 +531,50 @@ public class Timesheet extends Block {
 			String temp_manudur = iwc.getParameter(PRM_MONTH);
 			String temp_ar = iwc.getParameter(PRM_YEAR);
 			if (temp_manudur != null) {
-				month = Integer.parseInt(temp_manudur);
+				this.month = Integer.parseInt(temp_manudur);
 			}
 			if (temp_dagur != null) {
-				day = Integer.parseInt(temp_dagur);
+				this.day = Integer.parseInt(temp_dagur);
 			}
 			if (temp_ar != null) {
-				year = Integer.parseInt(temp_ar);
+				this.year = Integer.parseInt(temp_ar);
 			}
 		}
 		catch (NumberFormatException n) {
 		}
-		if (day > FunctColl.getLengthOfMonth(month, year)) {
-			day = day - FunctColl.getLengthOfMonth(month, year);
-			++month;
-			if (month == 13) {
-				month = 1;
-				++year;
+		if (this.day > this.FunctColl.getLengthOfMonth(this.month, this.year)) {
+			this.day = this.day - this.FunctColl.getLengthOfMonth(this.month, this.year);
+			++this.month;
+			if (this.month == 13) {
+				this.month = 1;
+				++this.year;
 			}
 		}
-		if ((day) < 1) {
-			--month;
-			if (month == 0) {
-				month = 12;
-				--year;
+		if ((this.day) < 1) {
+			--this.month;
+			if (this.month == 0) {
+				this.month = 12;
+				--this.year;
 			}
-			day = FunctColl.getLengthOfMonth(month, year) + day;
+			this.day = this.FunctColl.getLengthOfMonth(this.month, this.year) + this.day;
 		}
-		if (month == 13) {
-			month = 1;
-			++year;
+		if (this.month == 13) {
+			this.month = 1;
+			++this.year;
 		}
-		else if (month == 0) {
-			month = 12;
-			--year;
+		else if (this.month == 0) {
+			this.month = 12;
+			--this.year;
 		}
-		daysInMonth = FunctColl.getLengthOfMonth(month, year);
-		fromDate = new IWTimestamp(1, month, year).getDate();
-		toDate = new IWTimestamp(daysInMonth, month, year).getDate();
+		this.daysInMonth = this.FunctColl.getLengthOfMonth(this.month, this.year);
+		this.fromDate = new IWTimestamp(1, this.month, this.year).getDate();
+		this.toDate = new IWTimestamp(this.daysInMonth, this.month, this.year).getDate();
 	}
 	private void calculate(IWContext iwc) {
 		String temp_daysShown = iwc.getParameter(PRM_DAYCOUNT);
 		if (temp_daysShown != null) {
 			try {
-				daysShown = Integer.parseInt(temp_daysShown);
+				this.daysShown = Integer.parseInt(temp_daysShown);
 			}
 			catch (NumberFormatException n) {
 			}
@@ -578,31 +582,32 @@ public class Timesheet extends Block {
 		String temp_extraLines = iwc.getParameter(PRM_LINECOUNT);
 		if (temp_extraLines != null) {
 			try {
-				extraLines = Integer.parseInt(temp_extraLines);
+				this.extraLines = Integer.parseInt(temp_extraLines);
 			}
 			catch (NumberFormatException n) {
 			}
 		}
-		days = FunctColl.getLengthOfMonth(month, year);
-		monthName = FunctColl.getMonthName(month);
+		this.days = this.FunctColl.getLengthOfMonth(this.month, this.year);
+		this.monthName = this.FunctColl.getMonthName(this.month);
 		//		String plus_lina = request.getParameter("nylina");
-		days = FunctColl.getLengthOfMonth(month, year);
-		nameOfMonth = (FunctColl.getMonthName(month));
-		myDags = new Text();
-		myDags.setFontColor(this.header_text_color);
-		myDags.setFontSize(3);
-		myDags.setBold();
-		if ((day - daysShown) < 1) {
-			int mon = month - 1;
-			if (mon == 0)
+		this.days = this.FunctColl.getLengthOfMonth(this.month, this.year);
+		this.nameOfMonth = (this.FunctColl.getMonthName(this.month));
+		this.myDags = new Text();
+		this.myDags.setFontColor(this.header_text_color);
+		this.myDags.setFontSize(3);
+		this.myDags.setBold();
+		if ((this.day - this.daysShown) < 1) {
+			int mon = this.month - 1;
+			if (mon == 0) {
 				mon = 12;
-			myDags.addToText(FunctColl.getMonthName(mon, iwc.getCurrentLocale(), IWCalendar.LONG) + "/");
+			}
+			this.myDags.addToText(this.FunctColl.getMonthName(mon, iwc.getCurrentLocale(), IWCalendar.LONG) + "/");
 		}
-		myDags.addToText(FunctColl.getMonthName(month, iwc.getCurrentLocale(), IWCalendar.LONG) + " " + year);
+		this.myDags.addToText(this.FunctColl.getMonthName(this.month, iwc.getCurrentLocale(), IWCalendar.LONG) + " " + this.year);
 	}
 	private void presentateToday(IWContext iwc) throws Exception {
 		boolean fridagur;
-		String eining = iwrb.getLocalizedString("hour", "hr");
+		String eining = this.iwrb.getLocalizedString("hour", "hr");
 		boolean skrifaDags = true;
 		int current_row = 1;
 		int vikuDagurNr;
@@ -612,8 +617,8 @@ public class Timesheet extends Block {
 		/////////////////
 		DropdownMenu resources = new DropdownMenu();
 		resources.setName("resource");
-		resources.addMenuElement(-1, user.getName());
-		Collection res = timesheetSession.getResources();
+		resources.addMenuElement(-1, this.user.getName());
+		Collection res = this.timesheetSession.getResources();
 		if (res != null && !res.isEmpty()) {
 			String the_name;
 			for (Iterator iter = res.iterator(); iter.hasNext();) {
@@ -628,9 +633,9 @@ public class Timesheet extends Block {
 			}
 		}
 		DropdownMenu projectSelect = new DropdownMenu();
-		if (userDefinedProjectId == -1) {
+		if (this.userDefinedProjectId == -1) {
 			projectSelect.setName("projects");
-			Collection projects = getTimesheetProjectHome().findUserRelated(user);
+			Collection projects = getTimesheetProjectHome().findUserRelated(this.user);
 			if (projects != null && !projects.isEmpty()) {
 				String the_name;
 				for (Iterator iter = projects.iterator(); iter.hasNext();) {
@@ -651,47 +656,51 @@ public class Timesheet extends Block {
 		myDropdownTimar.addMenuElement("null", "&nbsp;");
 		if (this.correct) {
 			for (int i = 0; i <= 24; i++) {
-				if (i != 0)
+				if (i != 0) {
 					myDropdownTimar.addMenuElement("-" + i + ".0", "-" + i + ".0");
-				if (i != 24)
+				}
+				if (i != 24) {
 					myDropdownTimar.addMenuElement("-" + i + ".5", "-" + i + ".5");
+				}
 			}
 		}
 		else {
 			for (int i = 0; i <= 24; i++) {
-				if (i != 0)
+				if (i != 0) {
 					myDropdownTimar.addMenuElement(i + ".0", i + ".0");
-				if (i != 24)
+				}
+				if (i != 24) {
 					myDropdownTimar.addMenuElement(i + ".5", i + ".5");
+				}
 			}
 		}
 		/////////////////////////
-		User user = ((UserHome) IDOLookup.getHome(User.class)).findByPrimaryKey(userID);
+		User user = ((UserHome) IDOLookup.getHome(User.class)).findByPrimaryKey(this.userID);
 		Form myForm = new Form();
 		Table headerTable = this.getHeaderTable();
-		headerTable.add(myDags, 2, 1);
+		headerTable.add(this.myDags, 2, 1);
 		myForm.add(headerTable);
 		//                add(myDags);
 		Table myTable = new Table();
 		myForm.add(myTable);
-		myTable.setWidth(table_width);
-		if (table_height != null) {
-			myTable.setHeight(table_height);
+		myTable.setWidth(this.table_width);
+		if (this.table_height != null) {
+			myTable.setHeight(this.table_height);
 		}
-		myTable.setCellspacing(cellspacing);
-		myTable.setCellpadding(cellpadding);
-		myTable.setColor(color_1);
-		myTable.setBorder(border);
-		Text dagur_text = new Text(day_string + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-		dagur_text.setFontColor(header_text_color);
-		Text fordi_text = new Text(resource_string);
-		fordi_text.setFontColor(header_text_color);
-		Text verk_text = new Text(project_string);
-		verk_text.setFontColor(header_text_color);
-		Text eining_text = new Text(quantity_string);
-		eining_text.setFontColor(header_text_color);
-		Text lysing_text = new Text(description_string);
-		lysing_text.setFontColor(header_text_color);
+		myTable.setCellspacing(this.cellspacing);
+		myTable.setCellpadding(this.cellpadding);
+		myTable.setColor(this.color_1);
+		myTable.setBorder(this.border);
+		Text dagur_text = new Text(this.day_string + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+		dagur_text.setFontColor(this.header_text_color);
+		Text fordi_text = new Text(this.resource_string);
+		fordi_text.setFontColor(this.header_text_color);
+		Text verk_text = new Text(this.project_string);
+		verk_text.setFontColor(this.header_text_color);
+		Text eining_text = new Text(this.quantity_string);
+		eining_text.setFontColor(this.header_text_color);
+		Text lysing_text = new Text(this.description_string);
+		lysing_text.setFontColor(this.header_text_color);
 		myTable.add(dagur_text, 1, 1);
 		myTable.add(fordi_text, 2, 1);
 		myTable.add(verk_text, 3, 1);
@@ -700,34 +709,34 @@ public class Timesheet extends Block {
 		myTable.setColumnAlignment(6, "center");
 		TimesheetProject project;
 		Resource resource;
-		for (int u = 0; u <= daysShown; u++) {
+		for (int u = 0; u <= this.daysShown; u++) {
 			skrifaDags = true;
-			fridagur = FunctColl.isHoliday(year, month, (day - u));
-			if ((day - u) < 1) {
-				--month;
-				if (month == 0) {
-					month = 12;
-					--year;
+			fridagur = this.FunctColl.isHoliday(this.year, this.month, (this.day - u));
+			if ((this.day - u) < 1) {
+				--this.month;
+				if (this.month == 0) {
+					this.month = 12;
+					--this.year;
 				}
-				day = FunctColl.getLengthOfMonth(month, year) + day;
+				this.day = this.FunctColl.getLengthOfMonth(this.month, this.year) + this.day;
 			}
-			vikuDagurNr = FunctColl.getDayOfWeek(year, month, (day) - u);
-			dags = (year + "-" + month + "-" + (day - u));
-			IWTimestamp date = new IWTimestamp(day - u, month, year);
-			if ((month < 10) && (day - u < 10)) {
-				dags = (year + "-0" + month + "-0" + (day - u));
+			vikuDagurNr = this.FunctColl.getDayOfWeek(this.year, this.month, (this.day) - u);
+			dags = (this.year + "-" + this.month + "-" + (this.day - u));
+			IWTimestamp date = new IWTimestamp(this.day - u, this.month, this.year);
+			if ((this.month < 10) && (this.day - u < 10)) {
+				dags = (this.year + "-0" + this.month + "-0" + (this.day - u));
 			}
-			else if ((month >= 10) && (day - u < 10)) {
-				dags = (year + "-" + month + "-0" + (day - u));
+			else if ((this.month >= 10) && (this.day - u < 10)) {
+				dags = (this.year + "-" + this.month + "-0" + (this.day - u));
 			}
-			else if ((month < 10) && (day - u >= 10)) {
-				dags = (year + "-0" + month + "-" + (day - u));
+			else if ((this.month < 10) && (this.day - u >= 10)) {
+				dags = (this.year + "-0" + this.month + "-" + (this.day - u));
 			}
 			java.util.Collection entries =
 				((TimesheetEntryHome) IDOLookup.getHome(TimesheetEntry.class)).findByDateAndUser(
 					date.getDate(),
-					(userID));
-			if (entries != null && !entries.isEmpty())
+					(this.userID));
+			if (entries != null && !entries.isEmpty()) {
 				for (Iterator iter = entries.iterator(); iter.hasNext();) {
 					TimesheetEntry timesheetEntry = (TimesheetEntry) iter.next();
 					project = timesheetEntry.getProject();
@@ -744,11 +753,11 @@ public class Timesheet extends Block {
 							else {
 							}
 							myText1.addToText(
-								FunctColl.getDayName(vikuDagurNr, iwc.getCurrentLocale(), IWCalendar.LONG).substring(
+								this.FunctColl.getDayName(vikuDagurNr, iwc.getCurrentLocale(), IWCalendar.LONG).substring(
 									0,
 									3)
 									+ " "
-									+ (day - u)
+									+ (this.day - u)
 									+ ".");
 							myTable.add(myText1, 1, current_row);
 						}
@@ -768,7 +777,7 @@ public class Timesheet extends Block {
 						else {
 							myTable.addText(project.getName(), 3, current_row);
 						}
-						if (!resource_id_null)
+						if (!resource_id_null) {
 							if ((resource_id != -1) && (resource_id != 0)) {
 								resource = getResourceHome().findByPrimaryKey(new Integer(resource_id));
 								myTable.add(resource.getName(), 2, current_row);
@@ -779,6 +788,7 @@ public class Timesheet extends Block {
 							else {
 								myTable.add(user.getName(), 2, current_row);
 							}
+						}
 						myTable.addText(timesheetEntry.getQuantity() + " " + eining, 4, current_row);
 						if (eining.equalsIgnoreCase("klst")) {
 							heildartimar += timesheetEntry.getQuantity();
@@ -791,8 +801,8 @@ public class Timesheet extends Block {
 							myTable.addText(timesheetEntry.getDescription(), 5, current_row);
 						}
 						if (!(timesheetEntry.isBooked())) {
-							if (delete_image_url != null) {
-								Image myTunna = new Image(delete_image_url, "Henda færslu");
+							if (this.delete_image_url != null) {
+								Image myTunna = new Image(this.delete_image_url, "Henda fï¿½rslu");
 								Link hlekkur = new Link(myTunna);
 								setLink(hlekkur, ACT_REMOVE, 0, 0, 0);
 								hlekkur.addParameter("idega_timesheet_entry_resource_id", resource_id);
@@ -800,7 +810,7 @@ public class Timesheet extends Block {
 								myTable.add(hlekkur, 6, current_row);
 							}
 							else {
-								Link hlekkur = new Link(delete_string);
+								Link hlekkur = new Link(this.delete_string);
 								setLink(hlekkur, ACT_REMOVE, 0, 0, 0);
 								hlekkur.addParameter("idega_timesheet_entry_resource_id", resource_id);
 								hlekkur.addParameter(ENTRY_ID, timesheetEntry.getPrimaryKey().toString());
@@ -811,10 +821,11 @@ public class Timesheet extends Block {
 						}
 					}
 				}
+			}
 			/*
 			 * if (u == fjLinuIToflu) { 2; myTable.resize(6,fjLinuIToflu); } }
 			 */
-			for (int y = 1; y <= extraLines; y++) {
+			for (int y = 1; y <= this.extraLines; y++) {
 				++current_row;
 				if (skrifaDags) {
 					Text myTextAuka1 = new Text();
@@ -825,22 +836,22 @@ public class Timesheet extends Block {
 					else {
 					}
 					myTextAuka1.addToText(
-						FunctColl.getDayName(vikuDagurNr, iwc.getCurrentLocale(), IWCalendar.LONG).substring(0, 3)
+						this.FunctColl.getDayName(vikuDagurNr, iwc.getCurrentLocale(), IWCalendar.LONG).substring(0, 3)
 							+ " "
-							+ (day - u)
+							+ (this.day - u)
 							+ ".");
 					myTable.add(myTextAuka1, 1, current_row);
 				}
 				skrifaDags = false;
 				myTable.add(resources, 2, current_row);
-				if (userDefinedProjectId == -1) {
+				if (this.userDefinedProjectId == -1) {
 					myTable.add(projectSelect, 3, current_row);
 				}
 				else {
 					TimesheetProject userProject =
-						getTimesheetProjectHome().findByPrimaryKey(new Integer(userDefinedProjectId));
+						getTimesheetProjectHome().findByPrimaryKey(new Integer(this.userDefinedProjectId));
 					myTable.add(userProject.getName(), 3, current_row);
-					myTable.add(new HiddenInput("projects", "" + userDefinedProjectId), 3, current_row);
+					myTable.add(new HiddenInput("projects", "" + this.userDefinedProjectId), 3, current_row);
 				}
 				myTable.add(myDropdownTimar, 4, current_row);
 				TextInput myTextInputComment = new TextInput("description");
@@ -852,99 +863,103 @@ public class Timesheet extends Block {
 			}
 			++current_row;
 			for (int j = 1; j <= 6; j++) {
-				myTable.setColor(j, current_row, color_2);
+				myTable.setColor(j, current_row, this.color_2);
 			}
 			myTable.addText(Double.toString(timaridag), 4, current_row);
 			timaridag = 0;
 		} //u endar;
 		++current_row;
-		myTable.addText(total_hours_string, 3, current_row);
+		myTable.addText(this.total_hours_string, 3, current_row);
 		myTable.addText(Double.toString(heildartimar), 4, current_row);
-		myTable.add(new HiddenInput(PRM_YEAR, Integer.toString(year)), 6, current_row);
-		myTable.add(new HiddenInput(PRM_DAY, Integer.toString(day)), 6, current_row);
-		myTable.add(new HiddenInput(PRM_MONTH, Integer.toString(month)), 6, current_row);
-		myTable.add(new HiddenInput(PRM_DAYCOUNT, "" + daysShown), 6, current_row);
-		myTable.add(new HiddenInput(PRM_LINECOUNT, "" + extraLines), 6, current_row);
+		myTable.add(new HiddenInput(PRM_YEAR, Integer.toString(this.year)), 6, current_row);
+		myTable.add(new HiddenInput(PRM_DAY, Integer.toString(this.day)), 6, current_row);
+		myTable.add(new HiddenInput(PRM_MONTH, Integer.toString(this.month)), 6, current_row);
+		myTable.add(new HiddenInput(PRM_DAYCOUNT, "" + this.daysShown), 6, current_row);
+		myTable.add(new HiddenInput(PRM_LINECOUNT, "" + this.extraLines), 6, current_row);
 		++current_row;
-		if (previous_image_url != null) {
-			Image prev = new Image(previous_image_url, previous_week_string);
+		if (this.previous_image_url != null) {
+			Image prev = new Image(this.previous_image_url, this.previous_week_string);
 			Link back = new Link(prev);
-			setLink(back, "", 0, 0, -daysShown - 1);
+			setLink(back, "", 0, 0, -this.daysShown - 1);
 			myTable.add(back, 2, current_row);
 		}
 		else {
-			Text previous_week_text = new Text(previous_week_string);
-			if (this.header_text_color != null)
-				previous_week_text.setFontColor(header_text_color);
+			Text previous_week_text = new Text(this.previous_week_string);
+			if (this.header_text_color != null) {
+				previous_week_text.setFontColor(this.header_text_color);
+			}
 			Link back = new Link(previous_week_text);
-			setLink(back, "", 0, 0, -daysShown - 1);
+			setLink(back, "", 0, 0, -this.daysShown - 1);
 			myTable.add(back, 2, current_row);
 		}
 		myTable.add("&nbsp;&nbsp;", 2, current_row);
-		if (today_image_url != null) {
-			Image todayImg = new Image(today_image_url, today_string);
+		if (this.today_image_url != null) {
+			Image todayImg = new Image(this.today_image_url, this.today_string);
 			myTable.add(new Link(todayImg), 2, current_row);
 		}
 		else {
-			Text today_text = new Text(today_string);
-			if (this.header_text_color != null)
-				today_text.setFontColor(header_text_color);
+			Text today_text = new Text(this.today_string);
+			if (this.header_text_color != null) {
+				today_text.setFontColor(this.header_text_color);
+			}
 			myTable.add(new Link(today_text), 2, current_row);
 		}
 		myTable.add("&nbsp;&nbsp;", 2, current_row);
-		if (next_image_url != null) {
-			Image nextImage = new Image(next_image_url, next_week_string);
+		if (this.next_image_url != null) {
+			Image nextImage = new Image(this.next_image_url, this.next_week_string);
 			Link forward = new Link(nextImage);
-			setLink(forward, "", 0, 0, daysShown + 1);
+			setLink(forward, "", 0, 0, this.daysShown + 1);
 			myTable.add(forward, 2, current_row);
 		}
 		else {
-			Text next_week_text = new Text(next_week_string);
-			if (this.header_text_color != null)
-				next_week_text.setFontColor(header_text_color);
+			Text next_week_text = new Text(this.next_week_string);
+			if (this.header_text_color != null) {
+				next_week_text.setFontColor(this.header_text_color);
+			}
 			Link forward = new Link(next_week_text);
-			setLink(forward, "", 0, 0, daysShown + 1);
+			setLink(forward, "", 0, 0, this.daysShown + 1);
 			myTable.add(forward, 2, current_row);
 		}
 		if (this.displayReportButton) {
-			if (report_image_url == null) {
-				Text report_text = new Text(report_string);
-				if (this.header_text_color != null)
-					report_text.setFontColor(header_text_color);
+			if (this.report_image_url == null) {
+				Text report_text = new Text(this.report_string);
+				if (this.header_text_color != null) {
+					report_text.setFontColor(this.header_text_color);
+				}
 				Link reports = new Link(report_text);
 				setLink(reports, ACT_SUBREPORT, 0, 0, 0);
 				myTable.add(reports, 5, current_row);
 			}
 			else {
-				Link reports = new Link(new Image(report_image_url, report_string));
+				Link reports = new Link(new Image(this.report_image_url, this.report_string));
 				setLink(reports, ACT_SUBREPORT, 0, 0, 0);
 				myTable.add(reports, 5, current_row);
 			}
 		}
-		if (allowCorrection) {
+		if (this.allowCorrection) {
 			if (this.correction_image_url == null) {
-				Link correct = new Link(iwrb.getLocalizedString("correct", "Correct"));
+				Link correct = new Link(this.iwrb.getLocalizedString("correct", "Correct"));
 				this.setLink(correct, PRM_CORRECTION, 0, 0, 0);
 				myTable.add(correct, 3, current_row);
 			}
 			else {
-				Link correct = new Link(new Image(correction_image_url));
+				Link correct = new Link(new Image(this.correction_image_url));
 				this.setLink(correct, PRM_CORRECTION, 0, 0, 0);
 				myTable.add(correct, 3, current_row);
 			}
 		}
-		if (save_image_url != null) {
-			Image saveImg = new Image(save_image_url, save_string);
-			myTable.add(new SubmitButton(saveImg, PRM_ACTION, save_string), 5, current_row);
-			myTable.add(new HiddenInput(PRM_ACTION, save_string), 6, current_row);
+		if (this.save_image_url != null) {
+			Image saveImg = new Image(this.save_image_url, this.save_string);
+			myTable.add(new SubmitButton(saveImg, PRM_ACTION, this.save_string), 5, current_row);
+			myTable.add(new HiddenInput(PRM_ACTION, this.save_string), 6, current_row);
 		}
 		else {
-			myTable.add(new SubmitButton(PRM_ACTION, save_string), 5, current_row);
-			myTable.add(new HiddenInput(PRM_ACTION, save_string), 6, current_row);
+			myTable.add(new SubmitButton(PRM_ACTION, this.save_string), 5, current_row);
+			myTable.add(new HiddenInput(PRM_ACTION, this.save_string), 6, current_row);
 		}
 		myTable.setAlignment(5, current_row, "right");
-		if (header_color != null) {
-			myTable.setRowColor(1, header_color);
+		if (this.header_color != null) {
+			myTable.setRowColor(1, this.header_color);
 			myTable.setRowColor(current_row, this.color_2);
 		}
 		add(myForm);
@@ -955,8 +970,8 @@ public class Timesheet extends Block {
 		int resource_id;
 		double timarverk = 0;
 		double samtals = 0;
-		double[] timardag = new double[daysInMonth];
-		Collection userProjects = getTimesheetProjectHome().findEntryRelatedByUserWithinPeriod(userID, fromDate, toDate);
+		double[] timardag = new double[this.daysInMonth];
+		Collection userProjects = getTimesheetProjectHome().findEntryRelatedByUserWithinPeriod(this.userID, this.fromDate, this.toDate);
 		int rows = 0;
 		Form myForm = new Form();
 		add(myForm);
@@ -975,19 +990,19 @@ public class Timesheet extends Block {
 		headerTable.setAlignment(2, 1, "center");
 		headerTable.setAlignment(3, 1, "right");
 		//headerTable.setAlignment("center");
-		headerTable.add(iwb.getImage("shared/leftcorner.gif"), 1, 1);
-		headerTable.add(iwb.getImage("shared/rightcorner.gif", ""), 3, 1);
+		headerTable.add(this.iwb.getImage("shared/leftcorner.gif"), 1, 1);
+		headerTable.add(this.iwb.getImage("shared/rightcorner.gif", ""), 3, 1);
 		//                Text header = new Text(FunctColl.getNameOfMonth(manudur, iwc) + " "
 		// +ar);
 		//                  header.setFontSize(5);
 		//                add(header);
 		Text nafnPaMoned =
 			new Text(
-				"Unnir tímar í " + FunctColl.getMonthName(month, iwc.getCurrentLocale(), IWCalendar.LONG) + " " + year);
+				"Unnir tï¿½mar ï¿½ " + this.FunctColl.getMonthName(this.month, iwc.getCurrentLocale(), IWCalendar.LONG) + " " + this.year);
 		nafnPaMoned.setFontSize(3);
 		nafnPaMoned.setBold();
 		nafnPaMoned.setFontColor(this.header_text_color);
-		Text memberName = new Text(user.getName());
+		Text memberName = new Text(this.user.getName());
 		memberName.setFontSize(3);
 		memberName.setBold();
 		memberName.setFontColor(this.header_text_color);
@@ -996,37 +1011,38 @@ public class Timesheet extends Block {
 		headerTable.add(nafnPaMoned, 2, 1);
 		headerTable.setNoWrap();
 		myForm.add(headerTable);
-		Table myTable = new Table(daysInMonth + 4, rows + 3);
+		Table myTable = new Table(this.daysInMonth + 4, rows + 3);
 		myForm.add(myTable);
-		myTable.setBorder(border);
+		myTable.setBorder(this.border);
 		//                myTable.setBorder(1);
-		myTable.setWidth(table_width);
-		myTable.setColor(color_1);
+		myTable.setWidth(this.table_width);
+		myTable.setColor(this.color_1);
 		//                myTable.setHorizontalZebraColored(color_1,color_2);
 		myTable.setCellpadding(2);
 		myTable.setCellspacing(0);
 		myTable.setNoWrap();
-		Text project_id_text = new Text(project_string);
-		project_id_text.setFontColor(header_text_color);
+		Text project_id_text = new Text(this.project_string);
+		project_id_text.setFontColor(this.header_text_color);
 		Text project_name_text =
-			new Text(project_name_string + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-		project_name_text.setFontColor(header_text_color);
+			new Text(this.project_name_string + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+		project_name_text.setFontColor(this.header_text_color);
 		//		myTable.add(project_id_text,1,1);
 		myTable.add(project_name_text, 2, 1);
-		myTable.setColumnAttribute(daysInMonth + 3, "align", "center");
-		for (int j = 1; j <= daysInMonth; j++) {
+		myTable.setColumnAttribute(this.daysInMonth + 3, "align", "center");
+		for (int j = 1; j <= this.daysInMonth; j++) {
 			myText = new Text(Integer.toString(j));
 			//                        myText.setFontSize(1);
-			myText.setFontColor(header_text_color);
+			myText.setFontColor(this.header_text_color);
 			myTable.setWidth(2 + j, "17");
-			if (FunctColl.isHoliday(year, month, j))
+			if (this.FunctColl.isHoliday(this.year, this.month, j)) {
 				myText.setFontColor("red");
+			}
 			myTable.add(myText, 2 + j, 1);
 			timardag[j - 1] = 0;
 		}
-		Text samtals_text1 = new Text(total_string);
-		samtals_text1.setFontColor(header_text_color);
-		myTable.add(samtals_text1, daysInMonth + 3, 1);
+		Text samtals_text1 = new Text(this.total_string);
+		samtals_text1.setFontColor(this.header_text_color);
+		myTable.add(samtals_text1, this.daysInMonth + 3, 1);
 		int currentrow = 1;
 		Collection insideEntries = null;
 		TimesheetEntryHome entryHome = getTimesheetEntryHome();
@@ -1038,10 +1054,11 @@ public class Timesheet extends Block {
 			project = (TimesheetProject) iter.next();
 			timarverk = 0;
 			String project_name = project.getName();
-			if (project_name != null)
+			if (project_name != null) {
 				if (project_name.length() > 15) {
 					project_name = project_name.substring(0, 15) + "...";
 				}
+			}
 			myName = new Text(project_name);
 			myName.setFontSize(1);
 			Link myLinkName = new Link(myName);
@@ -1049,10 +1066,10 @@ public class Timesheet extends Block {
 			myLinkName.addParameter(PRM_PROJECT_ID, project.getPrimaryKey().toString());
 			currentrow++;
 			myTable.add(myLinkName, 2, currentrow);
-			for (int j = 1; j <= daysInMonth; j++) {
-				todayStamp = new IWTimestamp(j, month, year);
+			for (int j = 1; j <= this.daysInMonth; j++) {
+				todayStamp = new IWTimestamp(j, this.month, this.year);
 				myTable.setColumnAttribute(j + 2, "align", "center");
-				insideEntries = entryHome.findByDateAndUser(todayStamp.getDate(), userID);
+				insideEntries = entryHome.findByDateAndUser(todayStamp.getDate(), this.userID);
 				myTable.setVerticalAlignment(2 + j, currentrow, "top");
 				//if (inside_entry != null) {
 				if (insideEntries != null && !insideEntries.isEmpty()) {
@@ -1084,15 +1101,15 @@ public class Timesheet extends Block {
 			myText = new Text(Double.toString(timarverk));
 			myText.setBold();
 			myText.setFontSize("1");
-			myTable.setVerticalAlignment(daysInMonth + 3, currentrow, "top");
-			myTable.add(myText, daysInMonth + 3, currentrow);
+			myTable.setVerticalAlignment(this.daysInMonth + 3, currentrow, "top");
+			myTable.add(myText, this.daysInMonth + 3, currentrow);
 			samtals += timarverk;
 		}
-		Text samtals_text = new Text(total_string);
+		Text samtals_text = new Text(this.total_string);
 		samtals_text.setFontSize(1);
 		myTable.add(samtals_text, 2, rows + 2);
 		myTable.setAttribute(2, rows + 2, "align", "right");
-		for (int k = 1; k <= daysInMonth; k++) {
+		for (int k = 1; k <= this.daysInMonth; k++) {
 			if (timardag[k - 1] != 0) {
 				myText = new Text(Double.toString(timardag[k - 1]));
 				myText.setFontSize("1");
@@ -1110,49 +1127,49 @@ public class Timesheet extends Block {
 		myText = new Text(Double.toString(samtals));
 		myText.setFontSize(1);
 		myText.setBold();
-		myTable.setAlignment(daysInMonth + 3, rows + 2, "center");
-		myTable.add(myText, daysInMonth + 3, rows + 2);
+		myTable.setAlignment(this.daysInMonth + 3, rows + 2, "center");
+		myTable.add(myText, this.daysInMonth + 3, rows + 2);
 		myTable.mergeCells(1, rows + 3, 25, rows + 3);
-		myTable.mergeCells(26, rows + 3, daysInMonth + 3, rows + 3);
+		myTable.mergeCells(26, rows + 3, this.daysInMonth + 3, rows + 3);
 		myTable.add("&nbsp;&nbsp;&nbsp;", 1, rows + 3);
-		if (!isPrintable) {
+		if (!this.isPrintable) {
 			Link bakka = this.getPreviousMonthLink(ACT_SUBREPORT);
 			Link afram = this.getNextMonthLink(ACT_SUBREPORT);
 			myTable.add(bakka, 1, rows + 3);
 			myTable.add(afram, 1, rows + 3);
-			if (employee_report_image_url != null) {
-				Image staffRep = new Image(employee_report_image_url, employee_report_string);
+			if (this.employee_report_image_url != null) {
+				Image staffRep = new Image(this.employee_report_image_url, this.employee_report_string);
 				Link starfsmanns = new Link(staffRep);
 				setLink(starfsmanns, ACT_EMPLOYEE_ENTRIES, 0, 0, 0);
 				myTable.add(starfsmanns, 26, rows + 3);
 			}
 			else {
-				Link starfsmanns = new Link(employee_report_string);
+				Link starfsmanns = new Link(this.employee_report_string);
 				setLink(starfsmanns, ACT_EMPLOYEE_ENTRIES, 0, 0, 0);
 				myTable.add(starfsmanns, 26, rows + 3);
 			}
 		}
 		myForm.add(new HiddenInput("edit", "valinskyrsla"));
-		myForm.add(new HiddenInput("manudur", month + ""));
-		myForm.add(new HiddenInput("ar", year + ""));
-		myTable.setHorizontalZebraColored(color_1, color_2);
-		myTable.setRowColor(1, header_color);
-		myTable.setRowColor(rows + 3, header_color);
+		myForm.add(new HiddenInput("manudur", this.month + ""));
+		myForm.add(new HiddenInput("ar", this.year + ""));
+		myTable.setHorizontalZebraColored(this.color_1, this.color_2);
+		myTable.setRowColor(1, this.header_color);
+		myTable.setRowColor(rows + 3, this.header_color);
 	}
 	private void presentateProjectEntries(IWContext iwc) throws Exception {
 		String project_id = iwc.getParameter(PRM_PROJECT_ID);
 		if (project_id != null) {
 			Collection entries =
-				getTimesheetEntryHome().findByUserAndProjectWithinPeriod(userID, projectID, fromDate, toDate);
-			presentateProjectEntries(iwc, entries, projectID, false);
+				getTimesheetEntryHome().findByUserAndProjectWithinPeriod(this.userID, this.projectID, this.fromDate, this.toDate);
+			presentateProjectEntries(iwc, entries, this.projectID, false);
 		}
 	}
 	private void presentateAllProjectEntries(IWContext iwc) throws Exception {
 		String project_id = iwc.getParameter(PRM_PROJECT_ID);
-		if (isAdmin) {
+		if (this.isAdmin) {
 			if (project_id != null) {
 				Integer projectID = Integer.valueOf(project_id);
-				Collection entries = getTimesheetEntryHome().findByProjectWithinPeriod(projectID, fromDate, toDate);
+				Collection entries = getTimesheetEntryHome().findByProjectWithinPeriod(projectID, this.fromDate, this.toDate);
 				presentateProjectEntries(iwc, entries, projectID, true);
 			}
 		}
@@ -1178,11 +1195,11 @@ public class Timesheet extends Block {
 		Table headerTable = this.getHeaderTable();
 		Text nafnPaMoned =
 			new Text(
-				iwrb.getLocalizedString("work_report", "Workreport")
+				this.iwrb.getLocalizedString("work_report", "Workreport")
 					+ "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
-					+ FunctColl.getMonthName(month, iwc.getCurrentLocale(), IWCalendar.LONG)
+					+ this.FunctColl.getMonthName(this.month, iwc.getCurrentLocale(), IWCalendar.LONG)
 					+ " "
-					+ year);
+					+ this.year);
 		nafnPaMoned.setFontSize(3);
 		nafnPaMoned.setBold();
 		nafnPaMoned.setFontColor(this.header_text_color);
@@ -1199,13 +1216,13 @@ public class Timesheet extends Block {
 		add(myTable);
 		myTable.setCellspacing(0);
 		myTable.setCellpadding(0);
-		myTable.setBorder(border);
-		Text dags = new Text(iwrb.getLocalizedString("date", "Date"));
-		Text the_member = new Text(iwrb.getLocalizedString("employee", "Employee"));
-		Text the_resource = new Text(iwrb.getLocalizedString("supply", "Supply")); //"Forði");
-		Text horas = new Text(iwrb.getLocalizedString("hours", "Hours"));
-		Text miles = new Text(iwrb.getLocalizedString("driving", "Driving"));
-		Text other = new Text(iwrb.getLocalizedString("equipment_usage", "Equipment usage"));
+		myTable.setBorder(this.border);
+		Text dags = new Text(this.iwrb.getLocalizedString("date", "Date"));
+		Text the_member = new Text(this.iwrb.getLocalizedString("employee", "Employee"));
+		Text the_resource = new Text(this.iwrb.getLocalizedString("supply", "Supply")); //"Forï¿½i");
+		Text horas = new Text(this.iwrb.getLocalizedString("hours", "Hours"));
+		Text miles = new Text(this.iwrb.getLocalizedString("driving", "Driving"));
+		Text other = new Text(this.iwrb.getLocalizedString("equipment_usage", "Equipment usage"));
 		dags.setFontColor(this.header_text_color);
 		the_member.setFontColor(this.header_text_color);
 		the_resource.setFontColor(this.header_text_color);
@@ -1294,22 +1311,24 @@ public class Timesheet extends Block {
 		myTable.setHeight(row, "34");
 		myTable.setVerticalAlignment(2, row, "middle");
 		Link bakka = this.getPreviousMonthLink(edit_string);
-		if (bakka != null)
+		if (bakka != null) {
 			bakka.addParameter(PRM_PROJECT_ID, projectID.toString());
+		}
 		Link afram = this.getNextMonthLink(edit_string);
-		if (afram != null)
+		if (afram != null) {
 			afram.addParameter(PRM_PROJECT_ID, projectID.toString());
+		}
 		myTable.add(bakka, 2, row);
 		myTable.add(afram, 2, row);
 		if (this.hour_report_image_url != null) {
-			Image repImg = new Image(hour_report_image_url);
+			Image repImg = new Image(this.hour_report_image_url);
 			Link hour_report = new Link(repImg);
 			setLink(hour_report, hour_report_string, 0, 0, 0);
 			hour_report.addParameter(PRM_PROJECT_ID, projectID.toString());
 			myTable.add(hour_report, 7, rows + 3);
 		}
 		else {
-			Link hour_report = new Link(iwrb.getLocalizedString("time_report", "Time report"));
+			Link hour_report = new Link(this.iwrb.getLocalizedString("time_report", "Time report"));
 			setLink(hour_report, hour_report_string, 0, 0, 0);
 			hour_report.addParameter(PRM_PROJECT_ID, projectID.toString());
 			myTable.add(hour_report, 7, rows + 3);
@@ -1321,7 +1340,7 @@ public class Timesheet extends Block {
 	private void presentateEmployeeEntries(IWContext iwc) throws Exception {
 		double vinnaSamtals = 0;
 		double aksturSamtals = 0;
-		Collection entries = getTimesheetEntryHome().findByUserWithinPeriod(userID, fromDate, toDate);
+		Collection entries = getTimesheetEntryHome().findByUserWithinPeriod(this.userID, this.fromDate, this.toDate);
 		TimesheetProjectHome projectHome = getTimesheetProjectHome();
 		ResourceHome resHome = getResourceHome();
 		TimesheetProject project;
@@ -1331,13 +1350,13 @@ public class Timesheet extends Block {
 		}
 		Table headerTable = this.getHeaderTable();
 		Text nafnPaMoned =
-			new Text(FunctColl.getMonthName(month, iwc.getCurrentLocale(), IWCalendar.LONG) + " " + year);
+			new Text(this.FunctColl.getMonthName(this.month, iwc.getCurrentLocale(), IWCalendar.LONG) + " " + this.year);
 		nafnPaMoned.setFontSize(3);
 		nafnPaMoned.setBold();
 		nafnPaMoned.setFontColor(this.header_text_color);
 		Text memberName =
 			new Text(
-				iwrb.getLocalizedString("employee_report", "Employee report")
+				this.iwrb.getLocalizedString("employee_report", "Employee report")
 					+ "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
 					+ this.user.getName());
 		memberName.setFontSize(3);
@@ -1353,14 +1372,14 @@ public class Timesheet extends Block {
 		add(myTable);
 		myTable.setCellspacing(0);
 		myTable.setCellpadding(0);
-		myTable.setBorder(border);
+		myTable.setBorder(this.border);
 		myTable.setNoWrap();
-		Text dags = new Text(iwrb.getLocalizedString("date", "Date"));
-		Text the_member = new Text(iwrb.getLocalizedString("project", "Project"));
-		Text the_resource = new Text("Forði");
-		Text horas = new Text(iwrb.getLocalizedString("hours", "Hours"));
-		Text miles = new Text(iwrb.getLocalizedString("driving", "Driving"));
-		Text other = new Text(iwrb.getLocalizedString("equipment_usage", "Equipment usage"));
+		Text dags = new Text(this.iwrb.getLocalizedString("date", "Date"));
+		Text the_member = new Text(this.iwrb.getLocalizedString("project", "Project"));
+		Text the_resource = new Text("Forï¿½i");
+		Text horas = new Text(this.iwrb.getLocalizedString("hours", "Hours"));
+		Text miles = new Text(this.iwrb.getLocalizedString("driving", "Driving"));
+		Text other = new Text(this.iwrb.getLocalizedString("equipment_usage", "Equipment usage"));
 		dags.setFontColor(this.header_text_color);
 		the_member.setFontColor(this.header_text_color);
 		the_resource.setFontColor(this.header_text_color);
@@ -1440,15 +1459,15 @@ public class Timesheet extends Block {
 		myTable.add(totalWork, 5, row);
 		myTable.add(totalMiles, 6, row);
 		row++;
-		if (!isPrintable) {
+		if (!this.isPrintable) {
 			if (this.hour_report_image_url != null) {
-				Image repImg = new Image(hour_report_image_url);
+				Image repImg = new Image(this.hour_report_image_url);
 				Link hour_report = new Link(repImg);
 				setLink(hour_report, ACT_EMLOYEE_HOURS, 0, 0, 0);
 				myTable.add(hour_report, 7, rows + 3);
 			}
 			else {
-				Link hour_report = new Link("Tímaskýrsla");
+				Link hour_report = new Link("Tï¿½maskï¿½rsla");
 				setLink(hour_report, ACT_EMLOYEE_HOURS, 0, 0, 0);
 				myTable.add(hour_report, 7, rows + 3);
 			}
@@ -1457,9 +1476,9 @@ public class Timesheet extends Block {
 		Link afram = this.getNextMonthLink(ACT_EMPLOYEE_ENTRIES);
 		myTable.add(bakka, 2, rows + 3);
 		myTable.add(afram, 2, rows + 3);
-		myTable.setHorizontalZebraColored(color_1, color_2);
-		myTable.setRowColor(1, header_color);
-		myTable.setRowColor(rows + 3, header_color);
+		myTable.setHorizontalZebraColored(this.color_1, this.color_2);
+		myTable.setRowColor(1, this.header_color);
+		myTable.setRowColor(rows + 3, this.header_color);
 	}
 	public void processEntryRemoval(IWContext iwc) throws Exception {
 		String entry_id = iwc.getParameter(ENTRY_ID);
@@ -1493,20 +1512,21 @@ public class Timesheet extends Block {
 							TimesheetEntry entry = getTimesheetEntryHome().create();
 							stamp = new IWTimestamp(date[telja]);
 							entry.setDate(stamp.getTimestamp());
-							entry.setUserId(userID.intValue());
-							if (resource_id != null)
+							entry.setUserId(this.userID.intValue());
+							if (resource_id != null) {
 								if (!resource_id[telja].equals("-1")) {
 									if (!resource_id[telja].equals("0")) {
 										entry.setResourceId(Integer.parseInt(resource_id[telja]));
 									}
 								}
+							}
 							entry.setProjectId(Integer.parseInt(project_id[telja]));
 							timarString = timar[telja];
 							entry.setQuantity(Double.parseDouble(timarString));
 							entry.setDescription(description[telja]);
 							if ((Double.parseDouble(timarString) < 0) && (description[telja].equalsIgnoreCase(""))) {
 								entry.setDescription(
-									iwrb.getLocalizedString("corrected_by", "Corrected by ") + user.getName());
+									this.iwrb.getLocalizedString("corrected_by", "Corrected by ") + this.user.getName());
 							}
 							entry.setBooked(false);
 							entry.setRegistered(false);
@@ -1539,7 +1559,7 @@ public class Timesheet extends Block {
 		}
 	}
 	private void presentateEmployeeHours(IWContext iwc) throws Exception {
-		int dagariman = FunctColl.getLengthOfMonth(month, year);
+		int dagariman = this.FunctColl.getLengthOfMonth(this.month, this.year);
 		IWCalendar cal = new IWCalendar();
 		/*
 		 * Days[] days = (Days[])(new Days()).findAllOrdered("days_id");
@@ -1556,7 +1576,7 @@ public class Timesheet extends Block {
 		double totalOverhour = 0;
 		String tableWidth = "0";
 		try {
-			tableWidth = Integer.toString(2 * (Integer.parseInt(table_width) / 3));
+			tableWidth = Integer.toString(2 * (Integer.parseInt(this.table_width) / 3));
 		}
 		catch (NumberFormatException n) {
 			tableWidth = "70%";
@@ -1565,15 +1585,15 @@ public class Timesheet extends Block {
 		headerTable.setWidth(tableWidth);
 		Text nafnPaMoned =
 			new Text(
-				iwrb.getLocalizedString("time_report", "Timereport")
+				this.iwrb.getLocalizedString("time_report", "Timereport")
 					+ "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
-					+ FunctColl.getMonthName(month, iwc.getCurrentLocale(), IWCalendar.LONG)
+					+ this.FunctColl.getMonthName(this.month, iwc.getCurrentLocale(), IWCalendar.LONG)
 					+ " "
-					+ year);
+					+ this.year);
 		nafnPaMoned.setFontSize(3);
 		nafnPaMoned.setBold();
 		nafnPaMoned.setFontColor(this.header_text_color);
-		Text memberName = new Text(user.getName());
+		Text memberName = new Text(this.user.getName());
 		memberName.setFontSize(3);
 		memberName.setBold();
 		memberName.setFontColor(this.header_text_color);
@@ -1587,16 +1607,16 @@ public class Timesheet extends Block {
 		table.setCellspacing(0);
 		add(table);
 		int row = 1;
-		Text dayTxt = new Text(iwrb.getLocalizedString("date", "Date"));
-		Text hoursTxt = new Text(iwrb.getLocalizedString("hours", "Hours"));
-		Text dayhourTxt = new Text(iwrb.getLocalizedString("daytime", "Daytime"));
-		Text overhourTxt = new Text(iwrb.getLocalizedString("overtime", "Overtime"));
-		Text differenceTxt = new Text(iwrb.getLocalizedString("difference", "Difference"));
-		dayTxt.setFontColor(header_text_color);
-		hoursTxt.setFontColor(header_text_color);
-		dayhourTxt.setFontColor(header_text_color);
-		overhourTxt.setFontColor(header_text_color);
-		differenceTxt.setFontColor(header_text_color);
+		Text dayTxt = new Text(this.iwrb.getLocalizedString("date", "Date"));
+		Text hoursTxt = new Text(this.iwrb.getLocalizedString("hours", "Hours"));
+		Text dayhourTxt = new Text(this.iwrb.getLocalizedString("daytime", "Daytime"));
+		Text overhourTxt = new Text(this.iwrb.getLocalizedString("overtime", "Overtime"));
+		Text differenceTxt = new Text(this.iwrb.getLocalizedString("difference", "Difference"));
+		dayTxt.setFontColor(this.header_text_color);
+		hoursTxt.setFontColor(this.header_text_color);
+		dayhourTxt.setFontColor(this.header_text_color);
+		overhourTxt.setFontColor(this.header_text_color);
+		differenceTxt.setFontColor(this.header_text_color);
 		table.add(dayTxt, 2, row);
 		table.add(hoursTxt, 3, row);
 		table.add(dayhourTxt, 4, row);
@@ -1615,9 +1635,9 @@ public class Timesheet extends Block {
 		double over_time;
 		for (int i = 1; i < dagariman + 1; i++) {
 			++row;
-			entries = getTimesheetEntryHome().findByDateAndUser(new IWTimestamp(i, month, year).getDate(), userID);
-			day_of_week = cal.getDayOfWeek(year, month, i);
-			dayTxt_reusable = new Text(year + "-" + TextSoap.addZero(month) + "-" + TextSoap.addZero(i));
+			entries = getTimesheetEntryHome().findByDateAndUser(new IWTimestamp(i, this.month, this.year).getDate(), this.userID);
+			day_of_week = cal.getDayOfWeek(this.year, this.month, i);
+			dayTxt_reusable = new Text(this.year + "-" + TextSoap.addZero(this.month) + "-" + TextSoap.addZero(i));
 			dayTxt_reusable.setFontSize(1);
 			table.add(dayTxt_reusable, 2, row);
 			total_hour = 0;
@@ -1629,7 +1649,7 @@ public class Timesheet extends Block {
 				//total_hour += entry[j].getQuantity();
 				total_hour += entry.getQuantity();
 			}
-			if (cal.isHoliday(year, month, i)) {
+			if (cal.isHoliday(this.year, this.month, i)) {
 				dayTxt_reusable.setFontColor("red");
 				over_hour = total_hour;
 				over_time = total_hour;
@@ -1708,7 +1728,7 @@ public class Timesheet extends Block {
 		Link afram = this.getNextMonthLink(ACT_EMLOYEE_HOURS);
 		table.add(bakka, 2, row);
 		table.add(afram, 2, row);
-		table.setHorizontalZebraColored(color_1, color_2);
+		table.setHorizontalZebraColored(this.color_1, this.color_2);
 		table.setRowColor(1, this.header_color);
 		table.setRowColor(row, this.header_color);
 		/*
@@ -1726,7 +1746,7 @@ public class Timesheet extends Block {
 		 * < days.length; i++) { hoursPerDay[days[i].getID()] = days[i].getWorkHours(); }
 		 * 
 		 * Table headerTable = this.getHeaderTable(); Text nafnPaMoned = new
-		 * Text("Tímaskýrsla&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+		 * Text("Tï¿½maskï¿½rsla&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
 		 * FunctColl.getNameOfMonth(manudur, iwc) + " " +ar);
 		 * nafnPaMoned.setFontSize(3); nafnPaMoned.setBold();
 		 * nafnPaMoned.setFontColor(this.header_text_color);
@@ -1749,7 +1769,7 @@ public class Timesheet extends Block {
 		 * table.setCellspacing(0); add(table);
 		 * 
 		 * Text dayTxt = new Text("dags"); Text projectTxt = new Text("verk");
-		 * Text hoursTxt = new Text("tímar"); Text dayhourTxt = new
+		 * Text hoursTxt = new Text("tï¿½mar"); Text dayhourTxt = new
 		 * Text("dagvinna"); Text overhourTxt = new Text("yfirvinna");
 		 * dayTxt.setFontColor("#FFFFFF"); projectTxt.setFontColor("#FFFFFF");
 		 * hoursTxt.setFontColor("#FFFFFF");
@@ -1827,13 +1847,13 @@ public class Timesheet extends Block {
 	}
 	private void presentateProjectHours(IWContext iwc) throws Exception {
 		Collection entries =
-			getTimesheetEntryHome().findByUserAndProjectWithinPeriod(userID, projectID, fromDate, toDate);
-		presentateHours(iwc, entries, projectID, false);
+			getTimesheetEntryHome().findByUserAndProjectWithinPeriod(this.userID, this.projectID, this.fromDate, this.toDate);
+		presentateHours(iwc, entries, this.projectID, false);
 	}
 	private void presentateAllProjectHours(IWContext iwc) throws Exception {
-		if (isAdmin) {
-			Collection entries = getTimesheetEntryHome().findByProjectWithinPeriod(projectID, fromDate, toDate);
-			presentateHours(iwc, entries, projectID, true);
+		if (this.isAdmin) {
+			Collection entries = getTimesheetEntryHome().findByProjectWithinPeriod(this.projectID, this.fromDate, this.toDate);
+			presentateHours(iwc, entries, this.projectID, true);
 		}
 		else {
 			presentateProjectHours(iwc);
@@ -1859,10 +1879,10 @@ public class Timesheet extends Block {
 		Table headerTable = this.getHeaderTable();
 		Text nafnPaMoned =
 			new Text(
-				"Tímaskýrsla&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
-					+ FunctColl.getMonthName(month, iwc.getCurrentLocale(), IWCalendar.LONG)
+				"Tï¿½maskï¿½rsla&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+					+ this.FunctColl.getMonthName(this.month, iwc.getCurrentLocale(), IWCalendar.LONG)
 					+ " "
-					+ year);
+					+ this.year);
 		nafnPaMoned.setFontSize(3);
 		nafnPaMoned.setBold();
 		nafnPaMoned.setFontColor(this.header_text_color);
@@ -1888,11 +1908,11 @@ public class Timesheet extends Block {
 		table.setCellpadding(0);
 		table.setCellspacing(0);
 		add(table);
-		Text dayTxt = new Text(iwrb.getLocalizedString("date", "Date"));
-		Text projectTxt = new Text(iwrb.getLocalizedString("employee", "Employee"));
-		Text hoursTxt = new Text(iwrb.getLocalizedString("hours", "Hours"));
-		Text dayhourTxt = new Text(iwrb.getLocalizedString("daytime", "Daytime"));
-		Text overhourTxt = new Text(iwrb.getLocalizedString("overtime", "Overtime"));
+		Text dayTxt = new Text(this.iwrb.getLocalizedString("date", "Date"));
+		Text projectTxt = new Text(this.iwrb.getLocalizedString("employee", "Employee"));
+		Text hoursTxt = new Text(this.iwrb.getLocalizedString("hours", "Hours"));
+		Text dayhourTxt = new Text(this.iwrb.getLocalizedString("daytime", "Daytime"));
+		Text overhourTxt = new Text(this.iwrb.getLocalizedString("overtime", "Overtime"));
 		dayTxt.setFontColor("#FFFFFF");
 		projectTxt.setFontColor("#FFFFFF");
 		hoursTxt.setFontColor("#FFFFFF");
@@ -1966,14 +1986,16 @@ public class Timesheet extends Block {
 		table.add(finalOver, 6, row);
 		++row;
 		Link bakka = this.getPreviousMonthLink(edit_string);
-		if (bakka != null)
+		if (bakka != null) {
 			bakka.addParameter(PRM_PROJECT_ID, projectID.toString());
+		}
 		Link afram = this.getNextMonthLink(edit_string);
-		if (afram != null)
+		if (afram != null) {
 			afram.addParameter(PRM_PROJECT_ID, projectID.toString());
+		}
 		table.add(bakka, 2, row);
 		table.add(afram, 2, row);
-		table.setHorizontalZebraColored(color_1, color_2);
+		table.setHorizontalZebraColored(this.color_1, this.color_2);
 		table.setRowColor(1, this.header_color);
 		table.setRowColor(row, this.header_color);
 	}
@@ -1985,26 +2007,26 @@ public class Timesheet extends Block {
 		Collection entries = null;
 		if (viewPrevious) {
 			entries =
-				getTimesheetEntryHome().findUnbookedByUserBeforeDate(userID, new IWTimestamp(1, month, year).getDate());
+				getTimesheetEntryHome().findUnbookedByUserBeforeDate(this.userID, new IWTimestamp(1, this.month, this.year).getDate());
 		}
 		else {
-			entries = getTimesheetEntryHome().findUnbookedByUserWithinPeriod(userID, fromDate, toDate);
+			entries = getTimesheetEntryHome().findUnbookedByUserWithinPeriod(this.userID, this.fromDate, this.toDate);
 			arePreviousEntries =
-				getTimesheetEntryHome().countByUserBeforeDate(userID, new IWTimestamp(1, month, year).getDate()) > 0;
+				getTimesheetEntryHome().countByUserBeforeDate(this.userID, new IWTimestamp(1, this.month, this.year).getDate()) > 0;
 		}
 		TimesheetProject project;
 		Form form = new Form();
 		Table headerTable = this.getHeaderTable();
-		Text unBooked = new Text(iwrb.getLocalizedString("unbooked_entries", "Unbooked entries"));
+		Text unBooked = new Text(this.iwrb.getLocalizedString("unbooked_entries", "Unbooked entries"));
 		unBooked.setFontSize(3);
 		unBooked.setBold();
 		unBooked.setFontColor(this.header_text_color);
-		Text memName = new Text(user.getName());
+		Text memName = new Text(this.user.getName());
 		memName.setFontSize(3);
 		memName.setBold();
 		memName.setFontColor(this.header_text_color);
 		Text monthName =
-			new Text(FunctColl.getMonthName(month, iwc.getCurrentLocale(), IWCalendar.LONG) + " " + this.year);
+			new Text(this.FunctColl.getMonthName(this.month, iwc.getCurrentLocale(), IWCalendar.LONG) + " " + this.year);
 		if (viewPrevious) {
 			monthName.setText("fyrir " + monthName.getText());
 			add(monthName.getText());
@@ -2031,15 +2053,15 @@ public class Timesheet extends Block {
 		form.add(myTable);
 		myTable.setCellspacing(0);
 		myTable.setCellpadding(0);
-		myTable.setBorder(border);
-		Text dags = new Text(iwrb.getLocalizedString("date", "Date"));
-		Text the_number = new Text(iwrb.getLocalizedString("project_number", "Project nr."));
-		Text the_member = new Text(iwrb.getLocalizedString("project", "Project"));
-		Text the_resource = new Text("Forði");
-		Text horas = new Text(iwrb.getLocalizedString("hours", "Hours"));
-		Text miles = new Text(iwrb.getLocalizedString("driving", "Driving"));
-		Text other = new Text(iwrb.getLocalizedString("equipment_usage", "Equipment usage"));
-		Text booked = new Text(iwrb.getLocalizedString("book", "Book"));
+		myTable.setBorder(this.border);
+		Text dags = new Text(this.iwrb.getLocalizedString("date", "Date"));
+		Text the_number = new Text(this.iwrb.getLocalizedString("project_number", "Project nr."));
+		Text the_member = new Text(this.iwrb.getLocalizedString("project", "Project"));
+		Text the_resource = new Text("Forï¿½i");
+		Text horas = new Text(this.iwrb.getLocalizedString("hours", "Hours"));
+		Text miles = new Text(this.iwrb.getLocalizedString("driving", "Driving"));
+		Text other = new Text(this.iwrb.getLocalizedString("equipment_usage", "Equipment usage"));
+		Text booked = new Text(this.iwrb.getLocalizedString("book", "Book"));
 		dags.setFontColor(this.header_text_color);
 		the_number.setFontColor(this.header_text_color);
 		the_member.setFontColor(this.header_text_color);
@@ -2054,7 +2076,7 @@ public class Timesheet extends Block {
 		myTable.add(horas, 6, row);
 		myTable.add(miles, 7, row);
 		myTable.add(other, 8, row);
-		if (!bookAllAtOnce) {
+		if (!this.bookAllAtOnce) {
 			booked.setFontColor(this.header_text_color);
 			myTable.add(booked, 9, row);
 		}
@@ -2136,7 +2158,7 @@ public class Timesheet extends Block {
 				vinnaSamtals += entry.getQuantity();
 			}
 			myTable.add(new HiddenInput("idega_timesheet_entry_id", entry.getPrimaryKey().toString() + ""), 9, row);
-			if (!bookAllAtOnce) {
+			if (!this.bookAllAtOnce) {
 				myTable.add(new CheckBox("idega_timesheet_Book" + entry.getPrimaryKey().toString()), 9, row);
 			}
 		}
@@ -2155,15 +2177,15 @@ public class Timesheet extends Block {
 			myTable.add(theBooked, 8, row);
 		}
 		else {
-			Link theBooked = new Link(iwrb.getLocalizedString("booked_hours", "Booked hours"));
+			Link theBooked = new Link(this.iwrb.getLocalizedString("booked_hours", "Booked hours"));
 			setLink(theBooked, ACT_BOOKED, 0, 0, 0);
 			myTable.add(theBooked, 8, row);
 		}
 		if (this.book_image_url != null) {
-			myTable.add(new SubmitButton(new Image(book_image_url)), 9, row);
+			myTable.add(new SubmitButton(new Image(this.book_image_url)), 9, row);
 		}
 		else {
-			myTable.add(new SubmitButton("action", "Bóka"), 9, row);
+			myTable.add(new SubmitButton("action", "Bï¿½ka"), 9, row);
 		}
 		Link prev = this.getPreviousMonthLink(ACT_UNBOOKED);
 		Link next = this.getNextMonthLink(ACT_UNBOOKED);
@@ -2173,11 +2195,11 @@ public class Timesheet extends Block {
 		myTable.setWidth(3, "90");
 		myTable.setWidth(8, "140");
 		myTable.setWidth(9, "80");
-		myTable.setHorizontalZebraColored(color_1, color_2);
+		myTable.setHorizontalZebraColored(this.color_1, this.color_2);
 		myTable.setRowColor(1, this.header_color);
 		myTable.setRowColor(row, this.header_color);
 		if (arePreviousEntries) {
-			add("þú átt óbókaðar færslur í fyrri mánuðum - ");
+			add("ï¿½ï¿½ ï¿½tt ï¿½bï¿½kaï¿½ar fï¿½rslur ï¿½ fyrri mï¿½nuï¿½um - ");
 			Link checkPrevious = new Link("listi");
 			this.setLink(checkPrevious, ACT_PAST_ENTRY_CHECK, 0, 0, 0);
 			add(checkPrevious);
@@ -2186,20 +2208,20 @@ public class Timesheet extends Block {
 	private void presentateBookedEntries(IWContext iwc) throws Exception {
 		double vinnaSamtals = 0;
 		double aksturSamtals = 0;
-		Collection entries = getTimesheetEntryHome().findBookedByUserWithinPeriod(userID, fromDate, toDate);
+		Collection entries = getTimesheetEntryHome().findBookedByUserWithinPeriod(this.userID, this.fromDate, this.toDate);
 		TimesheetProject project;
 		Form form = new Form();
 		Table headerTable = this.getHeaderTable();
-		Text unBooked = new Text(iwrb.getLocalizedString("booked_entries", "Booked entries"));
+		Text unBooked = new Text(this.iwrb.getLocalizedString("booked_entries", "Booked entries"));
 		unBooked.setFontSize(3);
 		unBooked.setBold();
 		unBooked.setFontColor(this.header_text_color);
-		Text memName = new Text(user.getName());
+		Text memName = new Text(this.user.getName());
 		memName.setFontSize(3);
 		memName.setBold();
 		memName.setFontColor(this.header_text_color);
 		Text monthName =
-			new Text(FunctColl.getMonthName(month, iwc.getCurrentLocale(), IWCalendar.LONG) + " " + this.year);
+			new Text(this.FunctColl.getMonthName(this.month, iwc.getCurrentLocale(), IWCalendar.LONG) + " " + this.year);
 		monthName.setFontSize(3);
 		monthName.setBold();
 		monthName.setFontColor(this.header_text_color);
@@ -2222,15 +2244,15 @@ public class Timesheet extends Block {
 		form.add(myTable);
 		myTable.setCellspacing(0);
 		myTable.setCellpadding(0);
-		myTable.setBorder(border);
-		Text dags = new Text(iwrb.getLocalizedString("date", "Date"));
-		Text the_number = new Text(iwrb.getLocalizedString("project_number", "Project nr."));
-		Text the_member = new Text(iwrb.getLocalizedString("project", "Project"));
-		Text the_resource = new Text("Forði");
-		Text horas = new Text(iwrb.getLocalizedString("hours", "Hours"));
-		Text miles = new Text(iwrb.getLocalizedString("driving", "Driving"));
-		Text other = new Text(iwrb.getLocalizedString("equipment_usage", "Equipment usage"));
-		Text booked = new Text(iwrb.getLocalizedString("book", "Book"));
+		myTable.setBorder(this.border);
+		Text dags = new Text(this.iwrb.getLocalizedString("date", "Date"));
+		Text the_number = new Text(this.iwrb.getLocalizedString("project_number", "Project nr."));
+		Text the_member = new Text(this.iwrb.getLocalizedString("project", "Project"));
+		Text the_resource = new Text("Forï¿½i");
+		Text horas = new Text(this.iwrb.getLocalizedString("hours", "Hours"));
+		Text miles = new Text(this.iwrb.getLocalizedString("driving", "Driving"));
+		Text other = new Text(this.iwrb.getLocalizedString("equipment_usage", "Equipment usage"));
+		Text booked = new Text(this.iwrb.getLocalizedString("book", "Book"));
 		dags.setFontColor(this.header_text_color);
 		the_number.setFontColor(this.header_text_color);
 		the_member.setFontColor(this.header_text_color);
@@ -2326,7 +2348,7 @@ public class Timesheet extends Block {
 		/*
 		 * if (this.register_image_url != null) { myTable.add(new
 		 * SubmitButton(new Image(register_image_url)),8,row); } else {
-		 * myTable.add(new SubmitButton("action","Skrásetja"),8,row); }
+		 * myTable.add(new SubmitButton("action","Skrï¿½setja"),8,row); }
 		 */
 		Text totalWork = new Text("" + vinnaSamtals);
 		totalWork.setFontSize(fontSize);
@@ -2339,7 +2361,7 @@ public class Timesheet extends Block {
 		Link next = this.getNextMonthLink(ACT_BOOKED);
 		myTable.add(prev, 2, row);
 		myTable.add(next, 2, row);
-		myTable.setHorizontalZebraColored(color_1, color_2);
+		myTable.setHorizontalZebraColored(this.color_1, this.color_2);
 		myTable.setRowColor(1, this.header_color);
 		myTable.setRowColor(row, this.header_color);
 		myTable.setWidth(2, "100");
@@ -2401,13 +2423,13 @@ public class Timesheet extends Block {
 				if (where_to.equals("<=")) {
 					for (int i = 0; i < project_id.length; i++) {
 						project = projectHome.findByPrimaryKey(Integer.valueOf(project_id[i]));
-						project.addUser(user);
+						project.addUser(this.user);
 					}
 				}
 				else if (where_to.equals("=>")) {
 					for (int i = 0; i < project_id.length; i++) {
 						project = projectHome.findByPrimaryKey(Integer.valueOf(project_id[i]));
-						project.removeUser(user);
+						project.removeUser(this.user);
 					}
 				}
 			}
@@ -2418,7 +2440,7 @@ public class Timesheet extends Block {
 	private void presentateUserProjects(IWContext iwc) throws Exception {
 		TimesheetProjectHome projectHome = getTimesheetProjectHome();
 		Collection projectsAll = projectHome.findAllOrderByNumber();
-		Collection projectsUsers = projectHome.findUserRelated(user);
+		Collection projectsUsers = projectHome.findUserRelated(this.user);
 		Vector projects_left = new Vector();
 		if (!projectsAll.isEmpty()) {
 			for (Iterator iter = projectsAll.iterator(); iter.hasNext();) {
@@ -2486,10 +2508,10 @@ public class Timesheet extends Block {
 		Table headerTable = new Table(3, 1);
 		headerTable.setCellpadding(0);
 		headerTable.setCellspacing(0);
-		headerTable.setColor(header_color);
+		headerTable.setColor(this.header_color);
 		headerTable.setWidth(1, "17");
 		headerTable.setWidth(3, "17");
-		headerTable.setWidth(table_width);
+		headerTable.setWidth(this.table_width);
 		headerTable.setHeight("36");
 		headerTable.setVerticalAlignment(1, 1, "top");
 		headerTable.setVerticalAlignment(2, 1, "middle");
@@ -2497,9 +2519,9 @@ public class Timesheet extends Block {
 		headerTable.setAlignment(1, 1, "left");
 		headerTable.setAlignment(2, 1, "center");
 		headerTable.setAlignment(3, 1, "right");
-		headerTable.add(iwb.getImage("shared/leftcorner.gif", ""), 1, 1);
-		headerTable.add(iwb.getImage("shared/rightcorner.gif", ""), 3, 1);
-		Text nafnPaMoned = new Text(iwrb.getLocalizedString(ACT_USER_PROJECTS, "My projects"));
+		headerTable.add(this.iwb.getImage("shared/leftcorner.gif", ""), 1, 1);
+		headerTable.add(this.iwb.getImage("shared/rightcorner.gif", ""), 3, 1);
+		Text nafnPaMoned = new Text(this.iwrb.getLocalizedString(ACT_USER_PROJECTS, "My projects"));
 		nafnPaMoned.setFontSize(3);
 		nafnPaMoned.setBold();
 		nafnPaMoned.setFontColor(this.header_text_color);
@@ -2509,14 +2531,14 @@ public class Timesheet extends Block {
 		form.add(table);
 		table.setCellspacing(0);
 		table.setBorder(0);
-		table.setWidth(table_width);
+		table.setWidth(this.table_width);
 		table.setAlignment(1, 1, "right");
 		table.setAlignment(1, 2, "right");
 		int row = 1;
-		Text myProjects = new Text(iwrb.getLocalizedString(ACT_USER_PROJECTS, "My projects"));
-		myProjects.setFontColor(header_text_color);
-		Text otherProjects = new Text(iwrb.getLocalizedString("other_projects", "Other projects"));
-		otherProjects.setFontColor(header_text_color);
+		Text myProjects = new Text(this.iwrb.getLocalizedString(ACT_USER_PROJECTS, "My projects"));
+		myProjects.setFontColor(this.header_text_color);
+		Text otherProjects = new Text(this.iwrb.getLocalizedString("other_projects", "Other projects"));
+		otherProjects.setFontColor(this.header_text_color);
 		table.add(myProjects, 1, row);
 		table.add(otherProjects, 3, row);
 		row++;
@@ -2527,23 +2549,23 @@ public class Timesheet extends Block {
 		table.add(new SubmitButton("direction", "=>"), 2, row);
 		table.add(new HiddenInput(PRM_ACTION, ACT_PROJECTS_MOVE));
 		++row;
-		Link createProjectLink = new Link(iwrb.getLocalizedString("create_project", "Create project"));
+		Link createProjectLink = new Link(this.iwrb.getLocalizedString("create_project", "Create project"));
 		createProjectLink.addParameter(PRM_ACTION, ACT_CREATE_PROJECT);
 		table.add(createProjectLink, 3, row++);
 		table.setColor(this.color_1);
-		table.setRowColor(1, header_color);
-		table.setRowColor(row, header_color);
+		table.setRowColor(1, this.header_color);
+		table.setRowColor(row, this.header_color);
 		add(form);
 	}
 	private void presentateProjectForm(IWContext iwc) {
 		Table table = new Table();
 		TextInput nameInput = new TextInput("pr_name");
 		TextInput numberInput = new TextInput("pr_number");
-		table.add(getHeaderText(iwrb.getLocalizedString("name", "Name")), 1, 2);
-		table.add(getHeaderText(iwrb.getLocalizedString("number", "Number")), 1, 3);
+		table.add(getHeaderText(this.iwrb.getLocalizedString("name", "Name")), 1, 2);
+		table.add(getHeaderText(this.iwrb.getLocalizedString("number", "Number")), 1, 3);
 		table.add(nameInput, 2, 2);
 		table.add(numberInput, 2, 3);
-		SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("save", "Save"));
+		SubmitButton save = new SubmitButton(this.iwrb.getLocalizedImageButton("save", "Save"));
 		table.add(new HiddenInput(PRM_ACTION, ACT_SAVE_PROJECT));
 		table.add(save, 2, 5);
 		Form form = new Form();
@@ -2568,23 +2590,24 @@ public class Timesheet extends Block {
 		headerTable.setAlignment(1, 1, "left");
 		headerTable.setAlignment(2, 1, "center");
 		headerTable.setAlignment(3, 1, "right");
-		Image leftcorner = iwb.getImage("shared/leftcorner.gif");
+		Image leftcorner = this.iwb.getImage("shared/leftcorner.gif");
 		headerTable.add(leftcorner, 1, 1);
-		Image rightcorner = iwb.getImage("shared/rightcorner.gif");
+		Image rightcorner = this.iwb.getImage("shared/rightcorner.gif");
 		headerTable.add(rightcorner, 3, 1);
 		headerTable.setNoWrap();
 		return headerTable;
 	}
 	private Link getPreviousMonthLink(String edit) {
 		Link link = null;
-		if (!isPrintable) {
+		if (!this.isPrintable) {
 			if (this.previous_image_url != null) {
-				link = new Link(new Image(previous_image_url, previous_month_string));
+				link = new Link(new Image(this.previous_image_url, this.previous_month_string));
 			}
 			else {
-				Text textinn = new Text(previous_month_string);
-				if (this.header_text_color != null)
-					textinn.setFontColor(header_text_color);
+				Text textinn = new Text(this.previous_month_string);
+				if (this.header_text_color != null) {
+					textinn.setFontColor(this.header_text_color);
+				}
 				link = new Link(textinn);
 			}
 			this.day = 1;
@@ -2594,14 +2617,15 @@ public class Timesheet extends Block {
 	}
 	private Link getNextMonthLink(String edit) {
 		Link link = null;
-		if (!isPrintable) {
+		if (!this.isPrintable) {
 			if (this.next_image_url != null) {
-				link = new Link(new Image(next_image_url, next_month_string));
+				link = new Link(new Image(this.next_image_url, this.next_month_string));
 			}
 			else {
-				Text textinn = new Text(next_month_string);
-				if (this.header_text_color != null)
-					textinn.setFontColor(header_text_color);
+				Text textinn = new Text(this.next_month_string);
+				if (this.header_text_color != null) {
+					textinn.setFontColor(this.header_text_color);
+				}
 				link = new Link(textinn);
 			}
 			this.day = 1;
@@ -2611,35 +2635,35 @@ public class Timesheet extends Block {
 	}
 	private void setLink(Link link, String edit, int year_adjustment, int month_adjustment, int day_adjustment) {
 		link.addParameter(PRM_ACTION, edit);
-		link.addParameter(PRM_MONTH, (month + month_adjustment));
-		link.addParameter(PRM_YEAR, year + year_adjustment);
-		link.addParameter(PRM_DAY, day + day_adjustment);
-		link.addParameter(PRM_DAYCOUNT, daysShown);
-		link.addParameter(PRM_LINECOUNT, extraLines);
+		link.addParameter(PRM_MONTH, (this.month + month_adjustment));
+		link.addParameter(PRM_YEAR, this.year + year_adjustment);
+		link.addParameter(PRM_DAY, this.day + day_adjustment);
+		link.addParameter(PRM_DAYCOUNT, this.daysShown);
+		link.addParameter(PRM_LINECOUNT, this.extraLines);
 		link.addParameter("i_timesheet_member_id", this.userID.intValue());
 	}
 	private Link getPrintableLink(String edit) {
-		Window gluggi = new Window(iwrb.getLocalizedString("printable", "Printable"));
+		Window gluggi = new Window(this.iwrb.getLocalizedString("printable", "Printable"));
 		gluggi.setResizable(true);
 		Link link = new Link(gluggi);
 		setLink(link, edit, 0, 0, 0);
 		link.addParameter(PRM_PRINTABLE, "true");
-		if (timesheet_project_id != null) {
-			link.addParameter(PRM_PROJECT_ID, timesheet_project_id);
+		if (this.timesheet_project_id != null) {
+			link.addParameter(PRM_PROJECT_ID, this.timesheet_project_id);
 		}
 		return link;
 	}
 	public Link getMyProjectsLink() {
-		Link link = new Link(iwrb.getLocalizedString(ACT_USER_PROJECTS, "My projects"));
+		Link link = new Link(this.iwrb.getLocalizedString(ACT_USER_PROJECTS, "My projects"));
 		link.addParameter(PRM_ACTION, ACT_USER_PROJECTS);
 		return link;
 	}
 	public PrintButton getPrintButton() {
-		return new PrintButton(iwrb.getLocalizedImageButton("print", "Print"));
+		return new PrintButton(this.iwrb.getLocalizedImageButton("print", "Print"));
 	}
 	private Text getHeaderText(String caption) {
 		Text text = new Text(caption);
-		text.setFontColor(header_text_color);
+		text.setFontColor(this.header_text_color);
 		return text;
 	}
 	private TimesheetEntryHome getTimesheetEntryHome() throws RemoteException {

@@ -9,6 +9,7 @@ import com.idega.block.albumcollection.data.AlbumType;
 import com.idega.block.albumcollection.data.Author;
 import com.idega.block.albumcollection.data.Performer;
 import com.idega.block.media.presentation.ImageInserter;
+import com.idega.data.GenericEntity;
 import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
@@ -31,7 +32,7 @@ import com.idega.util.IWTimestamp;
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:      idega.is
- * @author <a href="mailto:gummi@idega.is">Guðmundur Ágúst Sæmundsson</a>
+ * @author <a href="mailto:gummi@idega.is">Guï¿½mundur ï¿½gï¿½st Sï¿½mundsson</a>
  * @version 1.0
  */
 
@@ -67,7 +68,7 @@ public class CreateAlbum extends IWAdminWindow {
     this.setHeight(445);
     this.setScrollbar(false);
 
-    myForm = new Form();
+    this.myForm = new Form();
   }
 
 
@@ -77,15 +78,15 @@ public class CreateAlbum extends IWAdminWindow {
     if(str != null){
       //update
       if(str != null && !str.equals("")){
-        _fieldAlbumId = new HiddenInput(this._fieldNameAlbumId,str);
+        this._fieldAlbumId = new HiddenInput(CreateAlbum._fieldNameAlbumId,str);
         if(iwc.getParameter(AlbumCollectionBusiness._PRM_UPDATE) != null){
           album = ((com.idega.block.albumcollection.data.AlbumHome)com.idega.data.IDOLookup.getHomeLegacy(Album.class)).findByPrimaryKeyLegacy(Integer.parseInt(str));
         }
       }
-      _fieldAlbumId.keepStatusOnAction();
+      this._fieldAlbumId.keepStatusOnAction();
     }
 
-    _fieldAlbumType = new DropdownMenu(_fieldNameAlbumType);
+    this._fieldAlbumType = new DropdownMenu(_fieldNameAlbumType);
     List albumTypeList = AlbumCollectionBusiness.getAlbumTypes();
     if(albumTypeList != null){
       Iterator iter = albumTypeList.iterator();
@@ -95,57 +96,57 @@ public class CreateAlbum extends IWAdminWindow {
       }
     }
     if(album != null){
-      _fieldAlbumType.setSelectedElement(Integer.toString(album.getAlbumTypeId()));
+      this._fieldAlbumType.setSelectedElement(Integer.toString(album.getAlbumTypeId()));
     }
-    _fieldAlbumType.keepStatusOnAction();
+    this._fieldAlbumType.keepStatusOnAction();
 
-    _fieldAlbumName = new TextInput(_fieldNameAlbumName);
-    _fieldAlbumName.keepStatusOnAction();
+    this._fieldAlbumName = new TextInput(_fieldNameAlbumName);
+    this._fieldAlbumName.keepStatusOnAction();
     if(album != null){
       String sName = album.getName();
       if(sName != null){
-        _fieldAlbumName.setContent(sName);
+        this._fieldAlbumName.setContent(sName);
       }
     }
-    _fieldPublishingDay  = new DateInput(_fieldNamePublishingDay);
+    this._fieldPublishingDay  = new DateInput(_fieldNamePublishingDay);
     IWTimestamp time = IWTimestamp.RightNow();
-    _fieldPublishingDay.setYearRange(time.getYear(),time.getYear()-100);
+    this._fieldPublishingDay.setYearRange(time.getYear(),time.getYear()-100);
     if(album != null){
       if(album.getPublishingDay() != null){
-        _fieldPublishingDay.setDate(album.getPublishingDay());
+        this._fieldPublishingDay.setDate(album.getPublishingDay());
       }
     }
-    _fieldPublishingDay.keepStatusOnAction();
+    this._fieldPublishingDay.keepStatusOnAction();
 
     String imageId = iwc.getParameter(_fieldNameFrontCoverId);
     if(imageId != null){
-      _imageInsert = new ImageInserter(Integer.parseInt(imageId));
+      this._imageInsert = new ImageInserter(Integer.parseInt(imageId));
     } else {
       if(album != null && album.getFrontCoverFileId() > 0){
-        _imageInsert = new ImageInserter(album.getFrontCoverFileId());
+        this._imageInsert = new ImageInserter(album.getFrontCoverFileId());
       } else {
-        _imageInsert = new ImageInserter();
+        this._imageInsert = new ImageInserter();
       }
     }
-    _imageInsert.setImSessionImageName(_fieldNameFrontCoverId);
-    _imageInsert.setImageHeight(100);
-    _imageInsert.setHasUseBox(false);
+    this._imageInsert.setImSessionImageName(_fieldNameFrontCoverId);
+    this._imageInsert.setImageHeight(100);
+    this._imageInsert.setHasUseBox(false);
 
 
-    _fieldDescription = new TextArea(this._fieldNameDescription);
-    _fieldDescription.setHeight(6);
-    _fieldDescription.setWidth(22);
+    this._fieldDescription = new TextArea(CreateAlbum._fieldNameDescription);
+    this._fieldDescription.setHeight(6);
+    this._fieldDescription.setWidth(22);
     if(album != null){
       String sDescription = album.getDescription();
       if(sDescription != null){
-        _fieldDescription.setContent(sDescription);
+        this._fieldDescription.setContent(sDescription);
       }
     }
-    _fieldDescription.keepStatusOnAction();
+    this._fieldDescription.keepStatusOnAction();
 
 
-    _fieldAuthors = new SelectionBox(_fieldNameAuthors);
-    _fieldAuthors.setHeight(6);
+    this._fieldAuthors = new SelectionBox(_fieldNameAuthors);
+    this._fieldAuthors.setHeight(6);
     List authorList = AlbumCollectionBusiness.getAuthors();
     if(authorList != null){
       Iterator iter = authorList.iterator();
@@ -155,15 +156,15 @@ public class CreateAlbum extends IWAdminWindow {
       }
     }
     if(album != null){
-      int[] IDs = album.findRelatedIDs(com.idega.block.albumcollection.data.AuthorBMPBean.getStaticInstance(Author.class));
+      int[] IDs = album.findRelatedIDs(GenericEntity.getStaticInstance(Author.class));
       for (int i = 0; i < IDs.length; i++) {
-        _fieldAuthors.setSelectedElement(Integer.toString(IDs[i]));
+        this._fieldAuthors.setSelectedElement(Integer.toString(IDs[i]));
       }
     }
-    _fieldAuthors.keepStatusOnAction();
+    this._fieldAuthors.keepStatusOnAction();
 
-    _fieldPerformers = new SelectionBox(_fieldNamePerformers);
-    _fieldPerformers.setHeight(6);
+    this._fieldPerformers = new SelectionBox(_fieldNamePerformers);
+    this._fieldPerformers.setHeight(6);
     List perfomerList = AlbumCollectionBusiness.getPerformers();
     if(perfomerList != null){
       Iterator iter = perfomerList.iterator();
@@ -173,12 +174,12 @@ public class CreateAlbum extends IWAdminWindow {
       }
     }
     if(album != null){
-      int[] IDs = album.findRelatedIDs(com.idega.block.albumcollection.data.PerformerBMPBean.getStaticInstance(Performer.class));
+      int[] IDs = album.findRelatedIDs(GenericEntity.getStaticInstance(Performer.class));
       for (int i = 0; i < IDs.length; i++) {
-        _fieldPerformers.setSelectedElement(Integer.toString(IDs[i]));
+        this._fieldPerformers.setSelectedElement(Integer.toString(IDs[i]));
       }
     }
-    _fieldPerformers.keepStatusOnAction();
+    this._fieldPerformers.keepStatusOnAction();
 
     //_fieldCategories = new SelectionBox(_fieldNameCategories);
   }
@@ -191,12 +192,12 @@ public class CreateAlbum extends IWAdminWindow {
     Table nameTable = new Table(2,3);
     nameTable.add(new Text("Nafn:"),1,1);
     nameTable.add(this._fieldAlbumName,2,1);
-    nameTable.add(new Text("Gerð:"),1,2);
+    nameTable.add(new Text("Gerï¿½:"),1,2);
     nameTable.add(this._fieldAlbumType,2,2);
-    nameTable.add(_fieldAlbumId,2,2);
+    nameTable.add(this._fieldAlbumId,2,2);
     //nameTable.add(this._imageInsert,3,1);
     //nameTable.mergeCells(3,1,3,2);
-    nameTable.add(new Text("Útgáfudagur:"),1,3);
+    nameTable.add(new Text("ï¿½tgï¿½fudagur:"),1,3);
     nameTable.add(this._fieldPublishingDay,2,3);
     //nameTable.mergeCells(2,3,3,3);
 
@@ -209,7 +210,7 @@ public class CreateAlbum extends IWAdminWindow {
     //descriptionTable.setCellpadding(0);
     //descriptionTable.setCellspacing(0);
     //descriptionTable.setHeight(1,"32");
-    descriptionTable.add(new Text("Um plötuna"),1,1);
+    descriptionTable.add(new Text("Um plï¿½tuna"),1,1);
     descriptionTable.add(this._fieldDescription,1,2);
     descriptionTable.add(new Text("Mynd"),2,1);
     descriptionTable.add(this._imageInsert,2,2);
@@ -219,7 +220,7 @@ public class CreateAlbum extends IWAdminWindow {
 
     Table t2 = new Table(2,3);
     t2.setWidth("100%");
-    t2.add(new Text("Höfundar:"),1,1);
+    t2.add(new Text("Hï¿½fundar:"),1,1);
     t2.add(this._fieldAuthors,1,2);
     t2.add(new Text("Flytjendur:"),2,1);
     t2.add(this._fieldPerformers,2,2);
@@ -256,7 +257,7 @@ public class CreateAlbum extends IWAdminWindow {
     String acType = iwc.getParameter(_fieldNameAlbumType);
     String acName = iwc.getParameter(_fieldNameAlbumName);
 
-    String acDescription = iwc.getParameter(this._fieldNameDescription);
+    String acDescription = iwc.getParameter(CreateAlbum._fieldNameDescription);
 
     String acPublishDay = iwc.getParameter(_fieldNamePublishingDay);
     String acFrontCoverId = iwc.getParameter(_fieldNameFrontCoverId);
@@ -264,7 +265,7 @@ public class CreateAlbum extends IWAdminWindow {
     String[] acAuthors = iwc.getParameterValues(_fieldNameAuthors);
     String[] acPerformers = iwc.getParameterValues(_fieldNamePerformers);
 
-    System.out.println("front_cover: "+iwc.getParameter(this._fieldNameFrontCoverId));
+    System.out.println("front_cover: "+iwc.getParameter(CreateAlbum._fieldNameFrontCoverId));
 
 
     IWTimestamp publishingDay = null;
@@ -313,10 +314,10 @@ public class CreateAlbum extends IWAdminWindow {
 
     if(iwc.getParameter("save") == null){
       initFields(iwc);
-      this.add(myForm);
-      myForm.empty();
+      this.add(this.myForm);
+      this.myForm.empty();
       //updateFieldStatus(iwc);
-      myForm.add(getElementsOredered(iwc));
+      this.myForm.add(getElementsOredered(iwc));
     } else {
       this.saveNewAlbum(iwc);
       this.close();

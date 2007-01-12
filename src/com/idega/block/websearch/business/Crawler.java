@@ -81,17 +81,17 @@ public final class Crawler {
             this.seedURL = index.getSeed();
             this.scopeURL = index.getScope();
             this.indexPath = index.getIndexPath();
-            this.rootURL = seedURL[0].substring(0, seedURL[0].indexOf("/", 8));
+            this.rootURL = this.seedURL[0].substring(0, this.seedURL[0].indexOf("/", 8));
             
             this.created = false;
             
             this.reporting = reporting;
             
-            linkQueue = new java.util.Stack();
-            links = new java.util.TreeSet();
-            for (int i = 0; i < seedURL.length; i++) {
-                links.add(seedURL[i].toLowerCase());
-                linkQueue.push(seedURL[i]);
+            this.linkQueue = new java.util.Stack();
+            this.links = new java.util.TreeSet();
+            for (int i = 0; i < this.seedURL.length; i++) {
+                this.links.add(this.seedURL[i].toLowerCase());
+                this.linkQueue.push(this.seedURL[i]);
             }
             
             
@@ -101,25 +101,29 @@ public final class Crawler {
     }
     
     public void addIgnoreParameters(Collection parameters) {
-    	ignoreParameters = parameters;
+    	this.ignoreParameters = parameters;
     }
     
     public void crawl() {
         try {
             
-            if (reporting > 0) System.out.println("Websearch: START CRAWLING");
+            if (this.reporting > 0) {
+				System.out.println("Websearch: START CRAWLING");
+			}
  
-            File file =  new File(indexPath);
+            File file =  new File(this.indexPath);
             
             if (!file.exists()) {
 				//create directory structure                
                 System.out.println("Websearch: creating index folders...");
-                System.out.println("Websearch: "+indexPath);
-             	FileUtil.createFileAndFolder(indexPath,"segments");
+                System.out.println("Websearch: "+this.indexPath);
+             	FileUtil.createFileAndFolder(this.indexPath,"segments");
              
-                if (reporting > 0) System.out.println("create new index");
-                //IndexWriter writer = new IndexWriter(indexPath, new StopAnalyzer(), true);
-                //writer.close();
+                if (this.reporting > 0) {
+					System.out.println("create new index");
+					//IndexWriter writer = new IndexWriter(indexPath, new StopAnalyzer(), true);
+					//writer.close();
+				}
             }
             /*else {
                 // delete all files for now and build new index.
@@ -147,22 +151,24 @@ public final class Crawler {
             
             
             // create new IndexWriter
-            writer = new IndexWriter(indexPath, new StopAnalyzer(), true);
+            this.writer = new IndexWriter(this.indexPath, new StopAnalyzer(), true);
             
             String url;
             //System.out.println(linkQueue.toString());
-            if(linkQueue==null) System.out.println("WebSearch crawler: linkQueue is null! check that a trailing / is in the seed url");
+            if(this.linkQueue==null) {
+				System.out.println("WebSearch crawler: linkQueue is null! check that a trailing / is in the seed url");
+			}
             
-            while (linkQueue!=null && !linkQueue.empty()) {
-                url = (String)linkQueue.pop();
+            while (this.linkQueue!=null && !this.linkQueue.empty()) {
+                url = (String)this.linkQueue.pop();
 
-                if (!url.startsWith(rootURL)) {
+                if (!url.startsWith(this.rootURL)) {
                     // root has changed.  
                     // example http://www.12a.com to https://secure.i2a.com/
                     this.rootURL = url.substring(0, url.indexOf("/", 8));
                 }
                 
-                if (reporting > 1) {
+                if (this.reporting > 1) {
                 		 System.out.println();
                     System.out.print("SCANNING : " + url);
                 }
@@ -170,39 +176,43 @@ public final class Crawler {
                 String result = scanPage(url);
 
                 if (result.equals("good")) {
-                    if (reporting > 1) System.out.print(" status: " + result);
-                    if (reporting > 2) {
-                        System.out.println(" lastModified : " + lastModified);
-                        System.out.println(" contentType : " + contentType);
-                        System.out.println(" robot rules: index=" + handler.getRobotIndex()
-                        + "  follow=" + handler.getRobotFollow());
-                        System.out.println(" HREF : " +handler.getHREF());
-                        System.out.println(" title : " +handler.getTitle());
-                        System.out.println(" author : " +handler.getAuthor());
-                        System.out.println(" published : " +handler.getPublished());
-                        System.out.println(" description : " +handler.getDescription());
-                        System.out.println(" keywords : " +handler.getKeywords());
-                        System.out.println(" links : " + handler.getLinks());
-                        if (reporting > 3) {
-                            System.out.println(" contents : " +handler.getContents());
+                    if (this.reporting > 1) {
+						System.out.print(" status: " + result);
+					}
+                    if (this.reporting > 2) {
+                        System.out.println(" lastModified : " + this.lastModified);
+                        System.out.println(" contentType : " + this.contentType);
+                        System.out.println(" robot rules: index=" + this.handler.getRobotIndex()
+                        + "  follow=" + this.handler.getRobotFollow());
+                        System.out.println(" HREF : " +this.handler.getHREF());
+                        System.out.println(" title : " +this.handler.getTitle());
+                        System.out.println(" author : " +this.handler.getAuthor());
+                        System.out.println(" published : " +this.handler.getPublished());
+                        System.out.println(" description : " +this.handler.getDescription());
+                        System.out.println(" keywords : " +this.handler.getKeywords());
+                        System.out.println(" links : " + this.handler.getLinks());
+                        if (this.reporting > 3) {
+                            System.out.println(" contents : " +this.handler.getContents());
                         }
                     }
                     
                 } else {
-                    if (reporting == 1) {
+                    if (this.reporting == 1) {
                         System.out.println();
                         System.out.println("SCANNED : " + url);
                     }
-                    if (reporting > 0) System.out.println(" *status: " + result);
+                    if (this.reporting > 0) {
+						System.out.println(" *status: " + result);
+					}
                 }
                 
             }
-            if (reporting > 0) {
+            if (this.reporting > 0) {
                 System.out.println();
                 System.out.println();
                 System.out.println("DONE CRAWLING");
                 System.out.println("links crawled");
-                java.util.Iterator it = links.iterator();
+                java.util.Iterator it = this.links.iterator();
                 while (it.hasNext()) {
                     System.out.println(it.next());
                 }
@@ -210,9 +220,9 @@ public final class Crawler {
             }
             
             //optinmize the search speed
-            writer.optimize();
+            this.writer.optimize();
             
-            writer.close();
+            this.writer.close();
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -220,18 +230,20 @@ public final class Crawler {
     }
     public final void handleHTML(HttpURLConnection httpCon) throws Exception {
         
-        handler = htmlHandler;
-        handler.parse(httpCon.getInputStream());
+        this.handler = this.htmlHandler;
+        this.handler.parse(httpCon.getInputStream());
         
-        if (handler.getRobotFollow()) {
-            java.util.List links = handler.getLinks();
+        if (this.handler.getRobotFollow()) {
+            java.util.List links = this.handler.getLinks();
             //System.out.println("link count : " + links.size());
             for (int i = 0; i < links.size(); i++) {
                 handleLink((String)links.get(i));
             }
         }
         
-        if (handler.getRobotIndex()) indexLucene();
+        if (this.handler.getRobotIndex()) {
+			indexLucene();
+		}
         
     }
     
@@ -251,9 +263,9 @@ public final class Crawler {
 	    	
 	    	if (normalizedURL != null && inScope(normalizedURL)) {
 	    		// is full URL and in scope.
-	    		if (!links.contains(lowerCaseURL)) {
-	    			links.add(lowerCaseURL);
-	    			linkQueue.push(normalizedURL);
+	    		if (!this.links.contains(lowerCaseURL)) {
+	    			this.links.add(lowerCaseURL);
+	    			this.linkQueue.push(normalizedURL);
 	    		}
 	    	}
     	
@@ -279,8 +291,8 @@ public final class Crawler {
 	
 	public final void handlePDF(HttpURLConnection httpCon) throws Exception {
         
-        handler = pdfHandler;
-        handler.parse(httpCon.getInputStream());
+        this.handler = this.pdfHandler;
+        this.handler.parse(httpCon.getInputStream());
         
         indexLucene();
         
@@ -300,60 +312,60 @@ public final class Crawler {
             //writer = new IndexWriter(this.indexPath, new StopAnalyzer(), false);
             //}
             Document mydoc = new Document();
-            mydoc.add(new Field("uid", currentURL.toString().toLowerCase(), false, true, false));
-            mydoc.add(Field.Text("url", currentURL.toString()));
-            mydoc.add(Field.Text("contentType", contentType));
-            mydoc.add(Field.Keyword("lastModified",DateField.timeToString(lastModified)));
-            String contents = handler.getContents();
+            mydoc.add(new Field("uid", this.currentURL.toString().toLowerCase(), false, true, false));
+            mydoc.add(Field.Text("url", this.currentURL.toString()));
+            mydoc.add(Field.Text("contentType", this.contentType));
+            mydoc.add(Field.Keyword("lastModified",DateField.timeToString(this.lastModified)));
+            String contents = this.handler.getContents();
                       
             
             if( contents!=null ){
             	//clean more!
             	contents = TextSoap.findAndCut(contents,">");
             	contents = TextSoap.findAndCut(contents,"<");
-            	contents = TextSoap.findAndCut(contents,"•?");
+            	contents = TextSoap.findAndCut(contents,"ï¿½?");
             	
             	 mydoc.add(Field.Text("contents", contents));
             }
             
-            if (handler.getTitle() != null) {
-                mydoc.add(Field.Text("title", handler.getTitle()));
+            if (this.handler.getTitle() != null) {
+                mydoc.add(Field.Text("title", this.handler.getTitle()));
             }
-            if (handler.getKeywords() != null) {
-                mydoc.add(Field.Text("keywords", handler.getKeywords()));
+            if (this.handler.getKeywords() != null) {
+                mydoc.add(Field.Text("keywords", this.handler.getKeywords()));
             }
-            if (handler.getDescription() != null) {
-                mydoc.add(Field.Text("description", handler.getDescription()));
+            if (this.handler.getDescription() != null) {
+                mydoc.add(Field.Text("description", this.handler.getDescription()));
             }
-            if (handler.getCategories() != null) {
-                mydoc.add(Field.Text("categories", handler.getCategories()));
+            if (this.handler.getCategories() != null) {
+                mydoc.add(Field.Text("categories", this.handler.getCategories()));
             }
-            if (handler.getPublished() != -1) {
+            if (this.handler.getPublished() != -1) {
                 // use meta tag
                 mydoc.add(Field.Keyword("published",
-                DateField.timeToString(handler.getPublished())));
+                DateField.timeToString(this.handler.getPublished())));
             } else {
                 // use lastmodified from http header.
                 mydoc.add(Field.Keyword("published",
-                DateField.timeToString(lastModified)));
+                DateField.timeToString(this.lastModified)));
             }
-            if (handler.getPublished() != -1) {
+            if (this.handler.getPublished() != -1) {
                 // use meta tag
                 mydoc.add(Field.Keyword("published",
-                DateField.timeToString(handler.getPublished())));
+                DateField.timeToString(this.handler.getPublished())));
             } else {
                 // use lastmodified from http header.
                 
             }
-            if (handler.getHREF() != null) {
+            if (this.handler.getHREF() != null) {
                 // Replace $link with url.
-                String href = handler.getHREF();
+                String href = this.handler.getHREF();
                 int pos = href.indexOf("$link");
-                href = href.substring(0, pos) + currentURL.toString()
+                href = href.substring(0, pos) + this.currentURL.toString()
                 + href.substring(pos + 5, href.length());
                 mydoc.add(Field.UnIndexed("href", href));
             }
-            writer.addDocument(mydoc);
+            this.writer.addDocument(mydoc);
                     
             //writer.close();
         } catch (Exception e) {
@@ -366,8 +378,8 @@ public final class Crawler {
         	return false;
         }
     	
-        for (int i = 0; i < scopeURL.length; i++) {
-            if (url.startsWith(scopeURL[i])) {
+        for (int i = 0; i < this.scopeURL.length; i++) {
+            if (url.startsWith(this.scopeURL[i])) {
                 // in scope
                 return true;
             }
@@ -378,8 +390,8 @@ public final class Crawler {
     }
     
     public boolean containsIgnoreParameter(String url) {
-    		if (ignoreParameters != null) {
-    			Iterator iter = ignoreParameters.iterator();
+    		if (this.ignoreParameters != null) {
+    			Iterator iter = this.ignoreParameters.iterator();
 				while (iter.hasNext()) {
 					String parameter = (String) iter.next();
 					if (url.indexOf(parameter) != -1) {
@@ -394,18 +406,20 @@ public final class Crawler {
         
         // Looks for incomplete URL and completes them
         if (urlLowCase.startsWith("/")) {
-            url = rootURL + url;
+            url = this.rootURL + url;
         } else if (urlLowCase.startsWith("./")) {
-            url = currentURLPath + url.substring(1, url.length());
+            url = this.currentURLPath + url.substring(1, url.length());
         } else if (urlLowCase.startsWith("../")) {
             int back = 1;
-            while (urlLowCase.indexOf("../", back*3) != -1) back++;
-            int pos = currentURLPath.length();
+            while (urlLowCase.indexOf("../", back*3) != -1) {
+				back++;
+			}
+            int pos = this.currentURLPath.length();
             int count = back;
             while (count-- > 0) {
-                pos = currentURLPath.lastIndexOf("/", pos) - 1;
+                pos = this.currentURLPath.lastIndexOf("/", pos) - 1;
             }
-            url = currentURLPath.substring(0, pos+2) + url.substring(3*back, url.length());
+            url = this.currentURLPath.substring(0, pos+2) + url.substring(3*back, url.length());
         } else if (urlLowCase.startsWith("javascript:")) {
             // ignore javascript:...
             url = null;
@@ -416,7 +430,7 @@ public final class Crawler {
             // handle mailto:...
             url = null;
         } else {
-            url = currentURLPath + "/" + url;
+            url = this.currentURLPath + "/" + url;
         }
         
         // strip anchor if exists otherwise crawler may index content multiple times
@@ -437,33 +451,35 @@ public final class Crawler {
         
         String status = "good";
         try {
-            currentURL = new java.net.URL(urlString);
-            currentURLPath = urlString.substring(0, urlString.lastIndexOf("/"));
-            HttpURLConnection httpCon = (HttpURLConnection)currentURL.openConnection();
+            this.currentURL = new java.net.URL(urlString);
+            this.currentURLPath = urlString.substring(0, urlString.lastIndexOf("/"));
+            HttpURLConnection httpCon = (HttpURLConnection)this.currentURL.openConnection();
             
             httpCon.setRequestProperty("User-Agent", "idegaWeb Web Search Engine Crawler http://www.idega.com");
             
-            if (cookie != null) {
+            if (this.cookie != null) {
                 httpCon.setRequestProperty("Cookie", this.cookie);
             }
             httpCon.connect();
             
             
-            lastModified = httpCon.getLastModified();
+            this.lastModified = httpCon.getLastModified();
             
             if (httpCon.getHeaderField("Set-Cookie") != null) {
-                cookie = stripCookie(httpCon.getHeaderField("Set-Cookie"));
-                if (reporting > 1) System.out.print(" got cookie : " + cookie);
+                this.cookie = stripCookie(httpCon.getHeaderField("Set-Cookie"));
+                if (this.reporting > 1) {
+					System.out.print(" got cookie : " + this.cookie);
+				}
             }
             
             if (httpCon.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                contentType = httpCon.getContentType();
-                if (contentType.indexOf("text/html") != -1) {
+                this.contentType = httpCon.getContentType();
+                if (this.contentType.indexOf("text/html") != -1) {
                     handleHTML(httpCon);
-                } else if (contentType.indexOf("application/pdf") != -1) {
+                } else if (this.contentType.indexOf("application/pdf") != -1) {
                     handlePDF(httpCon);
                 } else {
-                    status = "Not an excepted content type : " + contentType;
+                    status = "Not an excepted content type : " + this.contentType;
                 }
             } else {
                 status = "bad";

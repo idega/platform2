@@ -37,27 +37,27 @@ public class ProductViewerLayoutStandard extends AbstractProductViewerLayout {
 	}
 
 	public PresentationObject getViewer(ProductViewer productViewer, Product product, IWContext iwc) throws RemoteException {
-		_name = product.getProductName(productViewer._localeId);
-		_description = TextSoap.formatText(product.getProductDescription(productViewer._localeId));
-		_teaser = TextSoap.formatText(product.getProductTeaser(productViewer._localeId));
+		this._name = product.getProductName(productViewer._localeId);
+		this._description = TextSoap.formatText(product.getProductDescription(productViewer._localeId));
+		this._teaser = TextSoap.formatText(product.getProductTeaser(productViewer._localeId));
 		
-		_product = product;
-		_price = new ProductItemPrice(product);
-		_metadata = new ProductItemMetaData(product);
+		this._product = product;
+		this._price = new ProductItemPrice(product);
+		this._metadata = new ProductItemMetaData(product);
 		if (productViewer._fontStyle != null) {
 			TextStyler styler = new TextStyler(productViewer._fontStyle);
-			_metadata.setFontStyle(styler.getStyleString());
+			this._metadata.setFontStyle(styler.getStyleString());
 			
 			styler.setStyleValue("font-weight", "bold");
-			_style = styler.getStyleString();
-			_metadata.setHeaderFontStyle(_style);
+			this._style = styler.getStyleString();
+			this._metadata.setHeaderFontStyle(this._style);
 		}
 
 		if (productViewer._priceFontStyle != null) {
-			_price.setFontStyle(productViewer._priceFontStyle);
+			this._price.setFontStyle(productViewer._priceFontStyle);
 		}
-		_price.setShowCurrency(productViewer._showCurrency);
-		_price.setShowLocalized(true);
+		this._price.setShowCurrency(productViewer._showCurrency);
+		this._price.setShowLocalized(true);
 
 		return printViewer(productViewer, iwc);
 	}
@@ -69,8 +69,9 @@ public class ProductViewerLayoutStandard extends AbstractProductViewerLayout {
 		table.setCellspacing(0);
 		table.mergeCells(1, 1, 3, 1);
 		table.setWidth(2, 12);
-		if (productViewer._imageWidth != null)
+		if (productViewer._imageWidth != null) {
 			table.setWidth(1, 3, Integer.parseInt(productViewer._imageWidth));
+		}
 		table.setRowVerticalAlignment(3, Table.VERTICAL_ALIGN_TOP);
 
 		Table contentTable = new Table();
@@ -88,7 +89,7 @@ public class ProductViewerLayoutStandard extends AbstractProductViewerLayout {
 		table.add(header, 1, row++);
 		table.setHeight(row++, "12");
 
-		ProductItemThumbnail thumb = new ProductItemThumbnail(_product);
+		ProductItemThumbnail thumb = new ProductItemThumbnail(this._product);
 		if (productViewer._imageWidth != null) {
 			try {
 				thumb.setWidth(Integer.parseInt(productViewer._imageWidth));
@@ -102,18 +103,21 @@ public class ProductViewerLayoutStandard extends AbstractProductViewerLayout {
 		
 		contentTable.add(description, 1, contentRow++);
 
-		if (productViewer._showMetaData && _product != null) {
-			if (productViewer._spaceBetween > 0)
+		if (productViewer._showMetaData && this._product != null) {
+			if (productViewer._spaceBetween > 0) {
 				contentTable.setHeight(1, contentRow++, String.valueOf(productViewer._spaceBetween));
-			contentTable.add(_metadata, 1, contentRow++);
+			}
+			contentTable.add(this._metadata, 1, contentRow++);
 		}
 
-		if (productViewer._spaceBetween > 0)
+		if (productViewer._spaceBetween > 0) {
 			contentTable.setHeight(1, contentRow++, String.valueOf(productViewer._spaceBetween));
-		contentTable.add(_price, 1, contentRow++);
+		}
+		contentTable.add(this._price, 1, contentRow++);
 		
-		if (productViewer._spaceBetween > 0)
+		if (productViewer._spaceBetween > 0) {
 			contentTable.setHeight(1, contentRow++, String.valueOf(productViewer._spaceBetween));
+		}
 		contentTable.add(teaser, 1, contentRow++);
 		
 		return table;

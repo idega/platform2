@@ -16,15 +16,15 @@ public class CreditCardTransaction {
 	}
 	
 	public String getAuthorizationNumber() {
-		return authNumber;
+		return this.authNumber;
 	}
 	
 	public String getAuthorizationString() {
-		return authString;
+		return this.authString;
 	}
 	
 	public Object getAuthorizationObject() {
-		return authObject;
+		return this.authObject;
 	}
 	
 }

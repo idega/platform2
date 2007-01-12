@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationFinder.java,v 1.22.2.1 2006/06/21 16:08:51 palli Exp $
+ * $Id: ApplicationFinder.java,v 1.22.2.2 2007/01/12 19:32:37 idegaweb Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -56,10 +56,12 @@ public class ApplicationFinder {
     try {
     	
 		ApplicationHome aHome = (ApplicationHome) IDOLookup.getHome(Application.class);
-		if (subjectId != -99)	
+		if (subjectId != -99) {
 			return aHome.findBySubjectAndStatus(new Integer(subjectId),status);
-		else
+		}
+		else {
 			return aHome.findByStatus(status);
+		}
     }
     catch(Exception e){
       return(null);

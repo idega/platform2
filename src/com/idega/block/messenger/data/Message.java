@@ -30,9 +30,9 @@ public class Message implements Serializable{
 
     this();
 
-    theSender = senderId;
+    this.theSender = senderId;
 
-    theMessage = message;
+    this.theMessage = message;
 
   }
 
@@ -42,7 +42,7 @@ public class Message implements Serializable{
 
     this(message, senderId);
 
-    theRecipient = recipientId;
+    this.theRecipient = recipientId;
 
 
 
@@ -152,7 +152,7 @@ public class Message implements Serializable{
 
   public int getId(){
 
-    return hashId;
+    return this.hashId;
 
   }
 

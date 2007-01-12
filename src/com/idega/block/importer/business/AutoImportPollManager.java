@@ -33,8 +33,8 @@ public class AutoImportPollManager extends BasePollManager {
 	private ImportFileHandler handler;
 
 	public AutoImportPollManager(String importerClass, String fc) throws IBOLookupException, ClassNotFoundException {
-		fileClass = fc;
-		handler = getImportFileHandler(importerClass);
+		this.fileClass = fc;
+		this.handler = getImportFileHandler(importerClass);
 	}
 	
 	/**
@@ -64,12 +64,12 @@ public class AutoImportPollManager extends BasePollManager {
 	 */
 	private void processFile(File filePath) {
 		try {
-			ImportFile file = (ImportFile) RefactorClassRegistry.forName(fileClass).newInstance();
+			ImportFile file = (ImportFile) RefactorClassRegistry.forName(this.fileClass).newInstance();
 			file.setFile(filePath);
-			handler.setImportFile(file);
+			this.handler.setImportFile(file);
 
-			handler.handleRecords();
-			createReport(handler, filePath);
+			this.handler.handleRecords();
+			createReport(this.handler, filePath);
 			filePath.delete();
 		} catch (RemoteException e) {
 			System.out.println("Warning Automatic import of " + filePath + " did not succeed");

@@ -1,5 +1,5 @@
 /*
- * $Id: AddressCoordinateImportHandlerBean.java,v 1.1 2005/07/15 17:35:03 thomas Exp $
+ * $Id: AddressCoordinateImportHandlerBean.java,v 1.1.2.1 2007/01/12 19:31:59 idegaweb Exp $
  * Created on 3.2.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -28,10 +28,10 @@ import com.idega.user.data.Group;
 
 /**
  * 
- *  Last modified: $Date: 2005/07/15 17:35:03 $ by $Author: thomas $
+ *  Last modified: $Date: 2007/01/12 19:31:59 $ by $Author: idegaweb $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.1.2.1 $
  */
 public class AddressCoordinateImportHandlerBean extends IBOServiceBean implements AddressCoordinateImportHandler{
 	
@@ -49,11 +49,11 @@ public class AddressCoordinateImportHandlerBean extends IBOServiceBean implement
 	public boolean handleRecords() throws RemoteException {
 		
 		try {
-			communeMap = new HashMap();
-			coordMap = new HashMap();
+			this.communeMap = new HashMap();
+			this.coordMap = new HashMap();
 			try {
-				commHome = (CommuneHome) IDOLookup.getHome(Commune.class);
-				coordHome = (AddressCoordinateHome) IDOLookup.getHome(AddressCoordinate.class);
+				this.commHome = (CommuneHome) IDOLookup.getHome(Commune.class);
+				this.coordHome = (AddressCoordinateHome) IDOLookup.getHome(AddressCoordinate.class);
 			}
 			catch (IDOLookupException e1) {
 				e1.printStackTrace();
@@ -61,9 +61,9 @@ public class AddressCoordinateImportHandlerBean extends IBOServiceBean implement
 			
 			int counter = 0; 
 			String record;
-			while (!(record = (String) importFile.getNextRecord()).equals("")) {
+			while (!(record = (String) this.importFile.getNextRecord()).equals("")) {
 				counter++;
-				ArrayList values = importFile.getValuesFromRecordString(record);
+				ArrayList values = this.importFile.getValuesFromRecordString(record);
 				createCoordinateIfDoesNotExist((String) values.get(0), (String) values.get(1),
 						(String) values.get(2), (String) values.get(3), (String) values.get(4), (String) values.get(5));
 				if (counter % 50 == 0) {
@@ -107,30 +107,30 @@ public class AddressCoordinateImportHandlerBean extends IBOServiceBean implement
 	
 	// If created, then NOT stored
 	private AddressCoordinate getCoordinate(String coordinate) {
-		AddressCoordinate coord = (AddressCoordinate) coordMap.get(coordinate);
+		AddressCoordinate coord = (AddressCoordinate) this.coordMap.get(coordinate);
 		if (coord == null) {
 			try {
-				coord = coordHome.findByCoordinate(coordinate);
+				coord = this.coordHome.findByCoordinate(coordinate);
 			} catch (FinderException e) {
 				try {
-					coord = coordHome.create();
+					coord = this.coordHome.create();
 					coord.setCoordinate(coordinate);
 				}
 				catch (CreateException e1) {
 					e1.printStackTrace();
 				}
 			}
-			coordMap.put(coordinate, coord);
+			this.coordMap.put(coordinate, coord);
 		}
 		return coord;
 	}
 	
 	private Commune getCommune(String communeCode) {
-		Commune comm = (Commune) communeMap.get(communeCode);
+		Commune comm = (Commune) this.communeMap.get(communeCode);
 		if (comm == null) {
 			try {
-				comm = commHome.findByCommuneCode(communeCode);
-				communeMap.put(communeCode, comm);
+				comm = this.commHome.findByCommuneCode(communeCode);
+				this.communeMap.put(communeCode, comm);
 			} catch (FinderException e) {
 				//e.printStackTrace();
 			}

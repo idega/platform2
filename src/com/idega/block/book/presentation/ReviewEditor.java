@@ -38,31 +38,33 @@ public ReviewEditor(){
 }
 
   public void main(IWContext iwc) throws Exception {
-    _iwb = getBundle(iwc);
-    _iwrb = getResourceBundle(iwc);
-    addTitle(_iwrb.getLocalizedString("add_review","Add publisher"));
+    this._iwb = getBundle(iwc);
+    this._iwrb = getResourceBundle(iwc);
+    addTitle(this._iwrb.getLocalizedString("add_review","Add publisher"));
 
     try {
-      _reviewID = Integer.parseInt(iwc.getParameter(BookBusiness.PARAMETER_REVIEW_ID));
+      this._reviewID = Integer.parseInt(iwc.getParameter(BookBusiness.PARAMETER_REVIEW_ID));
     }
     catch (NumberFormatException e) {
-      _reviewID = -1;
+      this._reviewID = -1;
     }
 
     try {
-      _bookID = Integer.parseInt(iwc.getParameter(BookBusiness.PARAMETER_BOOK_ID));
+      this._bookID = Integer.parseInt(iwc.getParameter(BookBusiness.PARAMETER_BOOK_ID));
     }
     catch (NumberFormatException e) {
-      _bookID = -1;
+      this._bookID = -1;
     }
 
     String mode = iwc.getParameter(BookBusiness.PARAMETER_MODE);
 
     if ( mode.equalsIgnoreCase(BookBusiness.PARAMETER_EDIT) ) {
-      if ( _reviewID != -1 ) {
-	_update = true;
-	_review = getBookBusiness().getReview(_reviewID);
-	if ( _review == null ) _update = false;
+      if ( this._reviewID != -1 ) {
+	this._update = true;
+	this._review = getBookBusiness().getReview(this._reviewID);
+	if ( this._review == null ) {
+		this._update = false;
+	}
       }
       processForm();
     }
@@ -84,30 +86,31 @@ public ReviewEditor(){
     DropdownMenu menu = new DropdownMenu(BookBusiness.PARAMETER_RATING);
     for ( int a = 1; a <= 10; a++ ) {
       menu.addMenuElement(a,String.valueOf(a));
-      if ( a == 5 )
-	menu.setSelectedElement(String.valueOf(a));
+      if ( a == 5 ) {
+		menu.setSelectedElement(String.valueOf(a));
+	}
     }
 
-    if ( _update ) {
-      if ( _review.getName() != null ) {
-	reviewerName.setContent(_review.getName());
+    if ( this._update ) {
+      if ( this._review.getName() != null ) {
+	reviewerName.setContent(this._review.getName());
       }
-      if ( _review.getReview() != null ) {
-	bookReview.setContent(_review.getReview());
+      if ( this._review.getReview() != null ) {
+	bookReview.setContent(this._review.getReview());
       }
-      if ( _review.getRating() != -1 ) {
-	menu.setSelectedElement(String.valueOf(_review.getRating()));
+      if ( this._review.getRating() != -1 ) {
+	menu.setSelectedElement(String.valueOf(this._review.getRating()));
       }
     }
-    addLeft(_iwrb.getLocalizedString("reviewer_name","Name")+":",reviewerName,true);
-    addLeft(_iwrb.getLocalizedString("review","Review")+":",bookReview,true);
-    addLeft(_iwrb.getLocalizedString("rating","Rating")+":"+Text.NON_BREAKING_SPACE,menu,false);
+    addLeft(this._iwrb.getLocalizedString("reviewer_name","Name")+":",reviewerName,true);
+    addLeft(this._iwrb.getLocalizedString("review","Review")+":",bookReview,true);
+    addLeft(this._iwrb.getLocalizedString("rating","Rating")+":"+Text.NON_BREAKING_SPACE,menu,false);
 
-    addHiddenInput(new HiddenInput(BookBusiness.PARAMETER_REVIEW_ID,Integer.toString(_reviewID)));
-    addHiddenInput(new HiddenInput(BookBusiness.PARAMETER_BOOK_ID,Integer.toString(_bookID)));
+    addHiddenInput(new HiddenInput(BookBusiness.PARAMETER_REVIEW_ID,Integer.toString(this._reviewID)));
+    addHiddenInput(new HiddenInput(BookBusiness.PARAMETER_BOOK_ID,Integer.toString(this._bookID)));
 
-    addSubmitButton(new CloseButton(_iwrb.getLocalizedImageButton("close","CLOSE")));
-    addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("save","SAVE"),BookBusiness.PARAMETER_MODE,BookBusiness.PARAMETER_SAVE));
+    addSubmitButton(new CloseButton(this._iwrb.getLocalizedImageButton("close","CLOSE")));
+    addSubmitButton(new SubmitButton(this._iwrb.getLocalizedImageButton("save","SAVE"),BookBusiness.PARAMETER_MODE,BookBusiness.PARAMETER_SAVE));
   }
 
   private void saveReview(IWContext iwc) {
@@ -115,14 +118,14 @@ public ReviewEditor(){
     String description = iwc.getParameter(BookBusiness.PARAMETER_DESCRIPTION);
     String rating = iwc.getParameter(BookBusiness.PARAMETER_RATING);
 
-    getBookBusiness().saveReview(_reviewID,_bookID,name,description,rating);
+    getBookBusiness().saveReview(this._reviewID,this._bookID,name,description,rating);
 
     setParentToReload();
     close();
   }
 
   private void deleteReview() {
-    getBookBusiness().deleteReview(_reviewID);
+    getBookBusiness().deleteReview(this._reviewID);
     setParentToReload();
     close();
   }

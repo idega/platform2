@@ -51,28 +51,31 @@ public class SchoolYearPlacesEditor extends Block {
     initBeans(iwc);
     Form F = new Form();
 
-    if(iwc.isParameterSet(prmSchoolId))
-      schoolId = Integer.parseInt(iwc.getParameter(prmSchoolId));
+    if(iwc.isParameterSet(this.prmSchoolId)) {
+		this.schoolId = Integer.parseInt(iwc.getParameter(this.prmSchoolId));
+	}
 
-    if(schoolId > 0)
-      school = schBean.getSchool(new Integer(schoolId));
+    if(this.schoolId > 0) {
+		this.school = this.schBean.getSchool(new Integer(this.schoolId));
+	}
 
     if(iwc.isParameterSet("sch_save_school_places")){
       savePlaces(iwc);
-      F.add(getListTable(school,false));
+      F.add(getListTable(this.school,false));
     }
     else if(iwc.isParameterSet("sch_new_school_places")){
-      F.add(getListTable(school,true));
+      F.add(getListTable(this.school,true));
     }
-    else
-      F.add(getListTable(school,true));
+	else {
+		F.add(getListTable(this.school,true));
+	}
 
      add(F);
 
   }
 
   private void initBeans(IWContext iwc) throws java.rmi.RemoteException{
-    schBean = (SchoolBusiness) IBOLookup.getServiceInstance(iwc,SchoolBusiness.class);
+    this.schBean = (SchoolBusiness) IBOLookup.getServiceInstance(iwc,SchoolBusiness.class);
   }
 
 /*
@@ -93,7 +96,7 @@ public class SchoolYearPlacesEditor extends Block {
           int places = 0;
           if(!"".equals(sPlaces)){
             places = Integer.parseInt(sPlaces);
-            schBean.storeSchoolYearPlaces(id,schoolId,year,places);
+            this.schBean.storeSchoolYearPlaces(id,this.schoolId,year,places);
           }
         }
       }
@@ -110,18 +113,19 @@ public class SchoolYearPlacesEditor extends Block {
 
     try{
       if(ent!=null){
-      Collection places = schBean.findAllSchoolYearPlaces(((Integer)ent.getPrimaryKey()).intValue());
+      Collection places = this.schBean.findAllSchoolYearPlaces(((Integer)ent.getPrimaryKey()).intValue());
       schoolsYearPlaces = getMapOfYears(places);
       //schoolYears schoolYears = schBean.getSchoolRelatedSchoolYears(ent);
       schoolYears = getSchoolYears(ent);
       System.err.println("places +"+schoolsYearPlaces.size());
       System.err.println("years +"+schoolsYearPlaces.size());
       }
-      else
-        add("school is null");
-      drpSchools = new DropdownMenu(schBean.findAllSchools(),prmSchoolId);
-      drpSchools.setSelectedElement(String.valueOf(schoolId));
-      drpSchools.addMenuElementFirst("-1",iwrb.getLocalizedString("school","School"));
+	else {
+		add("school is null");
+	}
+      drpSchools = new DropdownMenu(this.schBean.findAllSchools(),this.prmSchoolId);
+      drpSchools.setSelectedElement(String.valueOf(this.schoolId));
+      drpSchools.addMenuElementFirst("-1",this.iwrb.getLocalizedString("school","School"));
     }
     catch(java.rmi.RemoteException rex){
       rex.printStackTrace();
@@ -138,8 +142,8 @@ public class SchoolYearPlacesEditor extends Block {
 
     T.add(drpSchools,col++,row);
     drpSchools.setToSubmit();
-    T.add(tFormat.format(iwrb.getLocalizedString("year","Year")),col++,row);
-    T.add(tFormat.format(iwrb.getLocalizedString("places","Places")),col++,row);
+    T.add(this.tFormat.format(this.iwrb.getLocalizedString("year","Year")),col++,row);
+    T.add(this.tFormat.format(this.iwrb.getLocalizedString("places","Places")),col++,row);
 
     row++;
 
@@ -158,7 +162,7 @@ public class SchoolYearPlacesEditor extends Block {
         schoolPlaces = null;
         try{
           yearId = (Integer) year.getPrimaryKey();
-          T.add(tFormat.format(year.getSchoolYearName()),col++,row);
+          T.add(this.tFormat.format(year.getSchoolYearName()),col++,row);
           if(schoolsYearPlaces.containsKey(yearId)){
 
             schoolPlaces = (SchoolYearPlaces) schoolsYearPlaces.get(yearId);
@@ -168,8 +172,9 @@ public class SchoolYearPlacesEditor extends Block {
           if(edit){
             TextInput places = new TextInput("sch_places_"+i);
             places.setLength(4);
-            if(schoolPlaces!=null)
-              places.setContent(String.valueOf(schoolPlaces.getPlaces()));
+            if(schoolPlaces!=null) {
+				places.setContent(String.valueOf(schoolPlaces.getPlaces()));
+			}
             HiddenInput hyear = new HiddenInput("sch_year_"+i,String.valueOf(yearId));
             HiddenInput hplaces = new HiddenInput("sch_year_places_id_"+i,placesId.toString());
 
@@ -180,7 +185,7 @@ public class SchoolYearPlacesEditor extends Block {
 
           }
           else if(schoolPlaces!=null){
-            T.add(tFormat.format(schoolPlaces.getPlaces()),col++,row);
+            T.add(this.tFormat.format(schoolPlaces.getPlaces()),col++,row);
           }
         }
         catch(Exception ex){ex.printStackTrace();}
@@ -189,7 +194,7 @@ public class SchoolYearPlacesEditor extends Block {
       }
       if(edit){
         T.add(new HiddenInput("pl_count",String.valueOf(i)));
-        T.add(new SubmitButton(iwrb.getLocalizedImageButton("save","Save"), "sch_save_school_places","true"),col,row);
+        T.add(new SubmitButton(this.iwrb.getLocalizedImageButton("save","Save"), "sch_save_school_places","true"),col,row);
       }
     }
     return T;
@@ -230,9 +235,9 @@ public class SchoolYearPlacesEditor extends Block {
   }
 
   public void main(IWContext iwc)throws Exception{
-    iwb = getBundle(iwc);
-    iwrb = getResourceBundle(iwc);
-    tFormat = tFormat.getInstance();
+    this.iwb = getBundle(iwc);
+    this.iwrb = getResourceBundle(iwc);
+    this.tFormat = TextFormat.getInstance();
     control(iwc);
   }
 }

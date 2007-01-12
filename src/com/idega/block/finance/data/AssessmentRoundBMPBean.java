@@ -129,10 +129,12 @@ public class AssessmentRoundBMPBean extends com.idega.block.category.data.Catego
     if ((status.equalsIgnoreCase(AssessmentStatus.ASSESSED)) ||
         (status.equalsIgnoreCase(AssessmentStatus.PUBLISHED)) ||
         (status.equalsIgnoreCase(AssessmentStatus.SENT))||
-		(status.equalsIgnoreCase(AssessmentStatus.RECEIVED)))
-      setColumn(getStatusColumnName(),status);
-    else
-      throw new IllegalStateException("Undefined state : " + status);
+		(status.equalsIgnoreCase(AssessmentStatus.RECEIVED))) {
+		setColumn(getStatusColumnName(),status);
+	}
+	else {
+		throw new IllegalStateException("Undefined state : " + status);
+	}
   }
   public String getStatus() {
     return((String)getColumnValue(getStatusColumnName()));
@@ -194,24 +196,30 @@ public class AssessmentRoundBMPBean extends com.idega.block.category.data.Catego
   
   public Collection ejbFindByCategoryAndTariffGroup(Integer categoryID,Integer groupID,Date fromDate,Date toDate,String status,int resultSetSize,int startIndex )throws FinderException{
   		IDOQuery query = super.idoQueryGetSelect().appendWhereEquals(getColumnCategoryId(),categoryID);
-  		if(groupID!=null)
-  		query.appendAndEquals(getColumnTariffGroupId(),groupID);
-  		if(fromDate!=null && toDate!=null)
-  			query.appendAnd().appendWithinDates(getRoundStampColumnName(),fromDate,toDate);
-  		if(status!=null)
-  			query.appendAndEqualsQuoted(getStatusColumnName(),status);
+  		if(groupID!=null) {
+			query.appendAndEquals(getColumnTariffGroupId(),groupID);
+		}
+  		if(fromDate!=null && toDate!=null) {
+			query.appendAnd().appendWithinDates(getRoundStampColumnName(),fromDate,toDate);
+		}
+  		if(status!=null) {
+			query.appendAndEqualsQuoted(getStatusColumnName(),status);
+		}
   		query.appendOrderByDescending(getRoundStampColumnName());
   		return super.idoFindPKsByQuery(query,resultSetSize,startIndex);
   }
   
   public int ejbHomeGetCountByCategoryAndTariffGroup(Integer categoryID,Integer groupID,Date fromDate,Date toDate,String status)throws IDOException{
   		IDOQuery query = super.idoQueryGetSelectCount().appendWhereEquals(getColumnCategoryId(),categoryID);
-  		if(groupID!=null)
-		query.appendAndEquals(getColumnTariffGroupId(),groupID);
-		if(toDate!=null && fromDate!=null)
+  		if(groupID!=null) {
+			query.appendAndEquals(getColumnTariffGroupId(),groupID);
+		}
+		if(toDate!=null && fromDate!=null) {
 			query.appendAnd().appendWithinDates(getRoundStampColumnName(),fromDate,toDate);
-		if(status!=null)
+		}
+		if(status!=null) {
 			query.appendAndEqualsQuoted(getStatusColumnName(),status);
+		}
 		return super.idoGetNumberOfRecords(query);
   }
   

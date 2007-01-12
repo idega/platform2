@@ -47,18 +47,21 @@ public class SchoolDropdown extends DropdownMenu {
 	 */
 	public SchoolDropdown(String name, int schoolTypeID, int schoolAreaID) {
 		super(name);
-		_schoolTypeID = schoolTypeID;
-		_schoolAreaID = schoolAreaID;
+		this._schoolTypeID = schoolTypeID;
+		this._schoolAreaID = schoolAreaID;
 	}
 	
 	public void main(IWContext iwc) throws Exception {
 		List schools;
-		if (getSchoolTypeID() == -1 && getSchoolAreaID() == -1)
+		if (getSchoolTypeID() == -1 && getSchoolAreaID() == -1) {
 			schools = new Vector(getSchoolBusiness(iwc).findAllSchools());
-		else if (getSchoolAreaID() == -1)
+		}
+		else if (getSchoolAreaID() == -1) {
 			schools = new Vector(getSchoolBusiness(iwc).findAllSchoolsByType(getSchoolTypeID()));
-		else
+		}
+		else {
 			schools = new Vector(getSchoolBusiness(iwc).findAllSchoolsByAreaAndType(getSchoolAreaID(), getSchoolTypeID()));
+		}
 			
 		if (schools != null) {
 			Collections.sort(schools, new SchoolComparator(iwc.getCurrentLocale()));
@@ -79,7 +82,7 @@ public class SchoolDropdown extends DropdownMenu {
 	 * @return int
 	 */
 	public int getSchoolTypeID() {
-		return _schoolTypeID;
+		return this._schoolTypeID;
 	}
 
 	/**
@@ -87,7 +90,7 @@ public class SchoolDropdown extends DropdownMenu {
 	 * @param schoolTypeID The schoolTypeID to set
 	 */
 	public void setSchoolTypeID(int schoolTypeID) {
-		_schoolTypeID = schoolTypeID;
+		this._schoolTypeID = schoolTypeID;
 	}
 
 	/**
@@ -95,7 +98,7 @@ public class SchoolDropdown extends DropdownMenu {
 	 * @return int
 	 */
 	public int getSchoolAreaID() {
-		return _schoolAreaID;
+		return this._schoolAreaID;
 	}
 
 	/**
@@ -103,7 +106,7 @@ public class SchoolDropdown extends DropdownMenu {
 	 * @param schoolAreaID The schoolAreaID to set
 	 */
 	public void setSchoolAreaID(int schoolAreaID) {
-		_schoolAreaID = schoolAreaID;
+		this._schoolAreaID = schoolAreaID;
 	}
 
 }

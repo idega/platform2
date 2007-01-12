@@ -1,5 +1,5 @@
 /*
- * $Id: ApartmentTypeComplexHelper.java,v 1.5.6.1 2006/10/31 16:24:53 palli Exp $
+ * $Id: ApartmentTypeComplexHelper.java,v 1.5.6.2 2007/01/12 19:31:17 idegaweb Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -38,17 +38,17 @@ public class ApartmentTypeComplexHelper {
 	}
 
 	public void setKey(int key1, int key2) {
-		iKey_1 = key1;
-		iKey_2 = key2;
-		key = Integer.toString(key1) + "-" + Integer.toString(key2);
+		this.iKey_1 = key1;
+		this.iKey_2 = key2;
+		this.key = Integer.toString(key1) + "-" + Integer.toString(key2);
 	}
 
 	public int getKeyOne() {
-		return iKey_1;
+		return this.iKey_1;
 	}
 
 	public int getKeyTwo() {
-		return iKey_2;
+		return this.iKey_2;
 	}
 
 	public void setKey(String key) {
@@ -56,7 +56,7 @@ public class ApartmentTypeComplexHelper {
 	}
 
 	public String getKey() {
-		return key;
+		return this.key;
 	}
 
 	public void setName(String name) {
@@ -64,7 +64,7 @@ public class ApartmentTypeComplexHelper {
 	}
 
 	public String getName() {
-		return name;
+		return this.name;
 	}
 	
 	public void setComplex(Complex complex) {
@@ -72,7 +72,7 @@ public class ApartmentTypeComplexHelper {
 	}
 	
 	public Complex getComplex() {
-		return complex;
+		return this.complex;
 	}
 	
 	public void setApartmentType(ApartmentType type) {
@@ -80,13 +80,14 @@ public class ApartmentTypeComplexHelper {
 	}
 
 	public ApartmentType getApartmentType() {
-		return type;
+		return this.type;
 	}
 	public static int getPartKey(String key, int index) {
 		StringTokenizer t = new StringTokenizer(key, "-");
 		int not = t.countTokens();
-		if (index > not)
+		if (index > not) {
 			return -1;
+		}
 
 		int i = 0;
 		while (t.hasMoreElements()) {

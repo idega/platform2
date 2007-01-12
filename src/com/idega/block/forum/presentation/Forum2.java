@@ -142,11 +142,11 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 	 * returning stateClass for the ForumTree Object
 	 */
 	public Class getPresentationStateClass() {
-		return stateHandler.getPresentationStateClass();
+		return this.stateHandler.getPresentationStateClass();
 	}
 
 	public IWPresentationState getPresentationState(IWUserContext iwuc) {
-		return stateHandler.getPresentationState(this, iwuc);
+		return this.stateHandler.getPresentationState(this, iwuc);
 	}
 
 	public boolean hasDeletePermission(IWContext iwc) {
@@ -162,24 +162,24 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 	}
 	
 	public void main(IWContext iwc) throws Exception {
-		_iwrb = getResourceBundle(iwc);
-		_iwb = getBundle(iwc);
-		_iwcb = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+		this._iwrb = getResourceBundle(iwc);
+		this._iwb = getBundle(iwc);
+		this._iwcb = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
 
-		_isAdmin = iwc.hasEditPermission(this);
-		_iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
-		_objectID = getICObjectInstanceID();
+		this._isAdmin = iwc.hasEditPermission(this);
+		this._iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
+		this._objectID = getICObjectInstanceID();
 
 		getParameters(iwc);
-		_hasDeletePermission = hasDeletePermission(iwc);
-		_hasAddPermission = hasAddPermission(iwc);
-		_hasReplyPermission = hasReplyPermission(iwc);
+		this._hasDeletePermission = hasDeletePermission(iwc);
+		this._hasAddPermission = hasAddPermission(iwc);
+		this._hasReplyPermission = hasReplyPermission(iwc);
 
-		forumBusiness = new ForumBusiness();
+		this.forumBusiness = new ForumBusiness();
 
         Layer layer = createLayerWithStyleClass(this.getMainStyleClass());        
         
-        if (_isAdmin) {
+        if (this._isAdmin) {
             layer.getChildren().add(getAdminPart(iwc));
         }
         
@@ -211,7 +211,7 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 
         PresentationObject po = null;
         
-		switch (_state) {
+		switch (this._state) {
 			case ForumBusiness.FORUM_TOPICS :
 				//getForumTopics(iwc, table);
                 po = getForumTopics(iwc);                
@@ -235,12 +235,12 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 	}
 
 	protected void getForumTopics(IWContext iwc, Table table) {
-		iwc.removeSessionAttribute(ForumBusiness.PARAMETER_FIRST_THREAD + "_" + _objectID);
-		iwc.removeSessionAttribute(ForumBusiness.PARAMETER_LAST_THREAD + "_" + _objectID);
+		iwc.removeSessionAttribute(ForumBusiness.PARAMETER_FIRST_THREAD + "_" + this._objectID);
+		iwc.removeSessionAttribute(ForumBusiness.PARAMETER_LAST_THREAD + "_" + this._objectID);
 
-		Text topicText = getStyleText(_iwrb.getLocalizedString("topics", "Topics"), HEADER_STYLE);
-		Text threadsText = getStyleText(_iwrb.getLocalizedString("threads", "Threads"), HEADER_STYLE);
-		Text updatedText = getStyleText(_iwrb.getLocalizedString("last_updated", "Last updated"), HEADER_STYLE);
+		Text topicText = getStyleText(this._iwrb.getLocalizedString("topics", "Topics"), HEADER_STYLE);
+		Text threadsText = getStyleText(this._iwrb.getLocalizedString("threads", "Threads"), HEADER_STYLE);
+		Text updatedText = getStyleText(this._iwrb.getLocalizedString("last_updated", "Last updated"), HEADER_STYLE);
 
 		table.setWidth(2, getThreadTopicWidth());
 		table.setWidth(3, getUpdatedTopicWidth());
@@ -248,8 +248,8 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 		table.add(topicText, 1, 1);
 		table.add(threadsText, 2, 1);
 		table.add(updatedText, 3, 1);
-		if (_headingColor != null) {
-			table.setRowColor(1, _headingColor);
+		if (this._headingColor != null) {
+			table.setRowColor(1, this._headingColor);
 		}
 		table.setRowStyleClass(1, getStyleName(HEADER_ROW_STYLE));
         
@@ -270,27 +270,29 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 					topicLink = getStyleLink(topic.getName(), TOPIC_LINK_STYLE);
 					topicLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, topic.getID());
 					topicLink.addParameter(ForumBusiness.PARAMETER_STATE, ForumBusiness.FORUM_THREADS);
-					topicLink.addParameter(ForumBusiness.PARAMETER_OBJECT_INSTANCE_ID, _objectID);
-					if (_page != null) {
-						topicLink.setPage(_page);
+					topicLink.addParameter(ForumBusiness.PARAMETER_OBJECT_INSTANCE_ID, this._objectID);
+					if (this._page != null) {
+						topicLink.setPage(this._page);
 					}
 
-					int numberOfThreads = forumBusiness.getNumberOfThreads(topic);
+					int numberOfThreads = this.forumBusiness.getNumberOfThreads(topic);
 					numberOfThreadsText = formatText(String.valueOf(numberOfThreads), TABLE_TEXT_STYLE);
 
-					ForumData newestThread = forumBusiness.getNewestThreads(topic);
+					ForumData newestThread = this.forumBusiness.getNewestThreads(topic);
 					if (newestThread != null) {
 						lastUpdatedText = getThreadDate(iwc, newestThread, TABLE_TEXT_STYLE);
 					}
-					else
+					else {
 						lastUpdatedText = null;
+					}
 
 					table.add(getThreadImage(),1,row);
 					table.add(formatText(Text.NON_BREAKING_SPACE), 1, row);
 					table.add(topicLink, 1, row);
 					table.add(numberOfThreadsText, 2, row);
-					if (lastUpdatedText != null)
+					if (lastUpdatedText != null) {
 						table.add(lastUpdatedText, 3, row);
+					}
 					
 					if (row % 2 == 0) {
 						table.setRowStyleClass(row, getStyleName(LIGHT_ROW_STYLE));
@@ -311,12 +313,12 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 	}
     
     private Table2 getForumTopics(IWContext iwc){
-        iwc.removeSessionAttribute(ForumBusiness.PARAMETER_FIRST_THREAD + "_" + _objectID);
-        iwc.removeSessionAttribute(ForumBusiness.PARAMETER_LAST_THREAD + "_" + _objectID);
+        iwc.removeSessionAttribute(ForumBusiness.PARAMETER_FIRST_THREAD + "_" + this._objectID);
+        iwc.removeSessionAttribute(ForumBusiness.PARAMETER_LAST_THREAD + "_" + this._objectID);
 
-        Text topicText = new Text(_iwrb.getLocalizedString("topics", "Topics"));
-        Text threadsText = new Text(_iwrb.getLocalizedString("threads", "Threads"));
-        Text updatedText = new Text(_iwrb.getLocalizedString("last_updated", "Last updated"));
+        Text topicText = new Text(this._iwrb.getLocalizedString("topics", "Topics"));
+        Text threadsText = new Text(this._iwrb.getLocalizedString("threads", "Threads"));
+        Text updatedText = new Text(this._iwrb.getLocalizedString("last_updated", "Last updated"));
 
         Table2 table = new Table2();
         table.setStyleClass("forum_table");
@@ -356,20 +358,21 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
                     topicLink = getStyleLink(topic.getName(), TOPIC_LINK_STYLE);
                     topicLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, topic.getID());
                     topicLink.addParameter(ForumBusiness.PARAMETER_STATE, ForumBusiness.FORUM_THREADS);
-                    topicLink.addParameter(ForumBusiness.PARAMETER_OBJECT_INSTANCE_ID, _objectID);
-                    if (_page != null) {
-                        topicLink.setPage(_page);
+                    topicLink.addParameter(ForumBusiness.PARAMETER_OBJECT_INSTANCE_ID, this._objectID);
+                    if (this._page != null) {
+                        topicLink.setPage(this._page);
                     }
 
-                    int numberOfThreads = forumBusiness.getNumberOfThreads(topic);
+                    int numberOfThreads = this.forumBusiness.getNumberOfThreads(topic);
                     numberOfThreadsText = new Text(String.valueOf(numberOfThreads));
 
-                    ForumData newestThread = forumBusiness.getNewestThreads(topic);
+                    ForumData newestThread = this.forumBusiness.getNewestThreads(topic);
                     if (newestThread != null) {
                         lastUpdatedText = getThreadDate(iwc, newestThread, TABLE_TEXT_STYLE);
                     }
-                    else
-                        lastUpdatedText = null;
+					else {
+						lastUpdatedText = null;
+					}
 
                     row = table.createRow();
                     TableCell2 cell = row.createCell();
@@ -384,8 +387,9 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
                     
                     cell = row.createCell();
                     cell.setStyleClass("last_updated");
-                    if (lastUpdatedText != null)
-                        cell.add(lastUpdatedText);
+                    if (lastUpdatedText != null) {
+						cell.add(lastUpdatedText);
+					}
                     
                     if (rownum % 2 == 0) {
                         row.setStyleClass("even_row");
@@ -410,22 +414,23 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 		int row = 1;
 
 		ICCategory topic = null;
-		if (_topicID != -1)
-			topic = CategoryFinder.getInstance().getCategory(_topicID);
+		if (this._topicID != -1) {
+			topic = CategoryFinder.getInstance().getCategory(this._topicID);
+		}
 
 		ForumData thread = null;
 		try {
-			thread = forumBusiness.getForumData(Integer.parseInt(iwc.getParameter(ForumBusiness.PARAMETER_THREAD_ID)));
-			_threadID = Integer.parseInt(iwc.getParameter(ForumBusiness.PARAMETER_THREAD_ID));
+			thread = this.forumBusiness.getForumData(Integer.parseInt(iwc.getParameter(ForumBusiness.PARAMETER_THREAD_ID)));
+			this._threadID = Integer.parseInt(iwc.getParameter(ForumBusiness.PARAMETER_THREAD_ID));
 		}
 		catch (NumberFormatException e) {
 			thread = null;
 		}
 
 		if (topic != null) {
-			if (_showTopicName) {
+			if (this._showTopicName) {
 				Text topicText = formatText(topic.getName(), HEADER_STYLE);
-				table.setRowColor(row, _headingColor);
+				table.setRowColor(row, this._headingColor);
 				table.setRowPadding(row, 2);
 				table.add(topicText, 1, row++);
 				//table.setBackgroundImage(1, row++, _iwb.getImage("shared/dotted.gif"));
@@ -445,15 +450,16 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 
 			updateThreadCount(iwc);
 
-			ForumData[] threads = forumBusiness.getThreads(topic);
-			ForumData[] someThreads = forumBusiness.getThreads(threads, _firstThread, _lastThread);
-			boolean hasNextThreads = forumBusiness.hasNextThreads(threads, _lastThread);
-			boolean hasPreviousThreads = forumBusiness.hasPreviousThreads(_firstThread);
+			ForumData[] threads = this.forumBusiness.getThreads(topic);
+			ForumData[] someThreads = this.forumBusiness.getThreads(threads, this._firstThread, this._lastThread);
+			boolean hasNextThreads = this.forumBusiness.hasNextThreads(threads, this._lastThread);
+			boolean hasPreviousThreads = this.forumBusiness.hasPreviousThreads(this._firstThread);
 
 			table.add(getForumTree(iwc, someThreads), 1, row);
 
-			if (hasNextThreads || hasPreviousThreads)
+			if (hasNextThreads || hasPreviousThreads) {
 				table.add(getNextPreviousTable(hasNextThreads, hasPreviousThreads), 1, ++row);
+			}
 		}
 	}
     
@@ -462,20 +468,21 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
         Layer layer = createLayerWithStyleClass("get_forum_threads_2");
         
         ICCategory topic = null;
-        if (_topicID != -1)
-            topic = CategoryFinder.getInstance().getCategory(_topicID);
+        if (this._topicID != -1) {
+			topic = CategoryFinder.getInstance().getCategory(this._topicID);
+		}
 
         ForumData thread = null;
         try {
-            thread = forumBusiness.getForumData(Integer.parseInt(iwc.getParameter(ForumBusiness.PARAMETER_THREAD_ID)));
-            _threadID = Integer.parseInt(iwc.getParameter(ForumBusiness.PARAMETER_THREAD_ID));
+            thread = this.forumBusiness.getForumData(Integer.parseInt(iwc.getParameter(ForumBusiness.PARAMETER_THREAD_ID)));
+            this._threadID = Integer.parseInt(iwc.getParameter(ForumBusiness.PARAMETER_THREAD_ID));
         }
         catch (NumberFormatException e) {
             thread = null;
         }
 
         if (topic != null) {
-            if (_showTopicName) {
+            if (this._showTopicName) {
                 Text topicText = formatText(topic.getName(), HEADER_STYLE);
                 Paragraph p = new Paragraph();
                 p.setStyleClass("topic_name");
@@ -497,15 +504,16 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 
             updateThreadCount(iwc);
 
-            ForumData[] threads = forumBusiness.getThreads(topic);
-            ForumData[] someThreads = forumBusiness.getThreads(threads, _firstThread, _lastThread);
-            boolean hasNextThreads = forumBusiness.hasNextThreads(threads, _lastThread);
-            boolean hasPreviousThreads = forumBusiness.hasPreviousThreads(_firstThread);
+            ForumData[] threads = this.forumBusiness.getThreads(topic);
+            ForumData[] someThreads = this.forumBusiness.getThreads(threads, this._firstThread, this._lastThread);
+            boolean hasNextThreads = this.forumBusiness.hasNextThreads(threads, this._lastThread);
+            boolean hasPreviousThreads = this.forumBusiness.hasPreviousThreads(this._firstThread);
 
             layer.getChildren().add(getForumTree(iwc, someThreads));
 
-            if (hasNextThreads || hasPreviousThreads)
-                layer.getChildren().add(getNextPreviousTable(hasNextThreads, hasPreviousThreads));
+            if (hasNextThreads || hasPreviousThreads) {
+				layer.getChildren().add(getNextPreviousTable(hasNextThreads, hasPreviousThreads));
+			}
         }        
         
         
@@ -519,8 +527,8 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 		table.setHeight(row++, 3);
 		//table.setBackgroundImage(1, row++, _iwb.getImage("shared/dotted.gif"));
 		table.add(getThreadBody(thread), 1, row);
-		table.setCellpaddingLeft(1, row, _bodyIndent);
-		table.setCellpaddingRight(1, row++, _bodyIndent);
+		table.setCellpaddingLeft(1, row, this._bodyIndent);
+		table.setCellpaddingRight(1, row++, this._bodyIndent);
 		table.setHeight(row++, 3);
 		table.add(getThreadLinks(iwc, thread), 1, row++);
 		return row;
@@ -542,16 +550,16 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 
 		Collection categories = this.getCategories();
 		if (categories != null && categories.size() == 1) {
-			_topicID = ((ICCategory) new Vector(categories).get(0)).getID();
+			this._topicID = ((ICCategory) new Vector(categories).get(0)).getID();
 		}
 
-		List list = forumBusiness.getThreadsInCategories(categories, _numberOfThreads);
+		List list = this.forumBusiness.getThreadsInCategories(categories, this._numberOfThreads);
 		if (list != null) {
 			Iterator iter = list.iterator();
 			while (iter.hasNext()) {
 				ForumData thread = (ForumData) iter.next();
 
-				if (iShowTopicInCollection) {
+				if (this.iShowTopicInCollection) {
 					ICCategory topic = thread.getTopic();
 					table.add(getTopicLink(topic), 1, row);
 					table.add(Text.getBreak(), 1, row);
@@ -563,18 +571,18 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 				table.add(getThreadImage(), 1, row);
 				table.add(Text.getNonBrakingSpace(), 1, row);
 				table.add(getThreadLink(thread, TOPIC_LINK_STYLE), 1, row);
-				if (_showResponses) {
+				if (this._showResponses) {
 					table.add(formatText(Text.NON_BREAKING_SPACE), 1, row);
 					table.add(getThreadResponses(thread), 1, row++);
 				}
 				else {
 					row++;
 				}
-				table.setHeight(1, row++, _spaceBetween);
+				table.setHeight(1, row++, this._spaceBetween);
 			}
 		}
 
-		if (iShowForumLinks) {
+		if (this.iShowForumLinks) {
 			table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
 			table.add(getForumLinks2(), 1, row);
 		}
@@ -594,7 +602,7 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 				table.add(Text.getNonBrakingSpace(), 1, row);
 				table.add(getTopicThreadsText(category), 1, row);
 
-				List threads = forumBusiness.getThreads(category, _numberOfThreads);
+				List threads = this.forumBusiness.getThreads(category, this._numberOfThreads);
 				if (threads != null) {
 					threadTable = new Table();
 					threadTable.setCellpaddingAndCellspacing(0);
@@ -604,10 +612,10 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 					Iterator iter2 = threads.iterator();
 					while (iter2.hasNext()) {
 						ForumData thread = (ForumData) iter2.next();
-						if (_threadImage != null) {
-							_threadImage.setAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
-							_threadImage.setHorizontalSpacing(2);
-							threadTable.add(_threadImage, 1, threadRow);
+						if (this._threadImage != null) {
+							this._threadImage.setAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
+							this._threadImage.setHorizontalSpacing(2);
+							threadTable.add(this._threadImage, 1, threadRow);
 						}
 						threadTable.add(getThreadLink(thread, THREAD_LINK_STYLE), 1, threadRow);
 						threadTable.add(formatText(Text.NON_BREAKING_SPACE), 1, threadRow);
@@ -615,7 +623,7 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 					}
 
 					table.add(threadTable, 1, row++);
-					table.setHeight(1, row++, _spaceBetween);
+					table.setHeight(1, row++, this._spaceBetween);
 				}
 			}
 		}
@@ -623,28 +631,31 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 
 	private Link getTopicLink(ICCategory category) {
 		Link link = getStyleLink(category.getName(), TOPIC_LINK_STYLE);
-		if (_page != null)
-			link.setPage(_page);
+		if (this._page != null) {
+			link.setPage(this._page);
+		}
 		link.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, category.getID());
 		link.addParameter(ForumBusiness.PARAMETER_STATE, ForumBusiness.FORUM_THREADS);
-		link.addParameter(ForumBusiness.PARAMETER_OBJECT_INSTANCE_ID, _objectID);
+		link.addParameter(ForumBusiness.PARAMETER_OBJECT_INSTANCE_ID, this._objectID);
 
 		return link;
 	}
 
 	private Text getTopicThreadsText(ICCategory topic) {
-		int numberOfThreads = forumBusiness.getNumberOfThreads(topic);
-		return formatText("(" + String.valueOf(numberOfThreads) + Text.NON_BREAKING_SPACE + _iwrb.getLocalizedString("threads_lc", "threads") + ")", INFORMATION_STYLE);
+		int numberOfThreads = this.forumBusiness.getNumberOfThreads(topic);
+		return formatText("(" + String.valueOf(numberOfThreads) + Text.NON_BREAKING_SPACE + this._iwrb.getLocalizedString("threads_lc", "threads") + ")", INFORMATION_STYLE);
 	}
 
 	private Link getThreadLink(ForumData thread, String styleName) {
 		String headline = thread.getThreadSubject();
-		if (headline == null)
+		if (headline == null) {
 			headline = "";
+		}
 
 		Link link = getStyleLink(headline, styleName);
-		if (_page != null)
-			link.setPage(_page);
+		if (this._page != null) {
+			link.setPage(this._page);
+		}
 		link.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, thread.getTopicID());
 		link.addParameter(ForumBusiness.PARAMETER_STATE, ForumBusiness.FORUM_THREADS);
 		link.addParameter(ForumBusiness.PARAMETER_THREAD_ID, String.valueOf(thread.getPrimaryKey()));
@@ -654,18 +665,19 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 	}
 
 	private Text getThreadResponses(ForumData thread) {
-		return formatText("(" + String.valueOf(thread.getNumberOfSubThreads()) + Text.NON_BREAKING_SPACE + _iwrb.getLocalizedString("replies_lc", "replies") + ")", INFORMATION_STYLE);
+		return formatText("(" + String.valueOf(thread.getNumberOfSubThreads()) + Text.NON_BREAKING_SPACE + this._iwrb.getLocalizedString("replies_lc", "replies") + ")", INFORMATION_STYLE);
 	}
 
 	protected PresentationObject getUser(ForumData thread) {
-		Text text = formatText(_iwrb.getLocalizedString("unknown", "Unknown"));
+		Text text = formatText(this._iwrb.getLocalizedString("unknown", "Unknown"));
 		if (thread.getUserID() != -1) {
 			User user = UserBusiness.getUser(thread.getUserID());
 			Email mail = UserBusiness.getUserMail(thread.getUserID());
 			if (user != null && mail != null) {
 				String name = user.getName();
-				if (user.getDisplayName() != null && user.getDisplayName().length() > 0)
+				if (user.getDisplayName() != null && user.getDisplayName().length() > 0) {
 					name = user.getDisplayName();
+				}
 				Link link = getStyleLink(name, LINK_STYLE);
 				link.setURL("mailto:" + mail.getEmailAddress());
 				return link;
@@ -677,8 +689,9 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 		}
 		else if (thread.getUserName() != null && thread.getUserEMail() != null) {
 			Link link = getStyleLink(thread.getUserName(), THREAD_LINK_STYLE);
-			if (thread.getUserEMail() != null)
+			if (thread.getUserEMail() != null) {
 				link.setURL("mailto:" + thread.getUserEMail());
+			}
 			return link;
 		}
 		else if (thread.getUserName() != null) {
@@ -707,33 +720,33 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 		tree.setICObjectInstanceID(this.getICObjectInstanceID());
 		System.out.println("Forum: tree.setICObjectInstanceID(" + this.getICObjectInstanceID() + ");");
 
-		tree.setHeadingColor(_headingColor);
-		tree.setExtraHeadingColor(1, _headingColor);
-		tree.setExtraHeadingColor(2, _headingColor);
-		tree.setExtraHeadingColor(3, _headingColor);
+		tree.setHeadingColor(this._headingColor);
+		tree.setExtraHeadingColor(1, this._headingColor);
+		tree.setExtraHeadingColor(2, this._headingColor);
+		tree.setExtraHeadingColor(3, this._headingColor);
 		tree.setColumns(2);
 		tree.setParallelExtraColumns(3);
 		tree.setFirstLevelNodes(threads);
-		tree.setNestLevelAtOpen(_openLevel);
+		tree.setNestLevelAtOpen(this._openLevel);
 		tree.setToShowTreeIcons(false);
 		tree.setWidth("100%");
-		tree.setExtraColumnWidth(1, _authorWidth);
-		tree.setExtraColumnWidth(2, _replyWidth);
-		tree.setExtraColumnWidth(3, _dateWidth);
+		tree.setExtraColumnWidth(1, this._authorWidth);
+		tree.setExtraColumnWidth(2, this._replyWidth);
+		tree.setExtraColumnWidth(3, this._dateWidth);
 		tree.setIconDimensions("15", "12");
-		tree.setTreeHeading(1, formatText(_iwrb.getLocalizedString("thread", "Thread"), HEADER_STYLE));
-		tree.setExtraColumnHeading(1, formatText(_iwrb.getLocalizedString("author", "Author"), HEADER_STYLE));
-		tree.setExtraColumnHeading(2, formatText(_iwrb.getLocalizedString("replies", "Replies"), HEADER_STYLE));
-		tree.setExtraColumnHeading(3, formatText(_iwrb.getLocalizedString("date", "Date"), HEADER_STYLE));
+		tree.setTreeHeading(1, formatText(this._iwrb.getLocalizedString("thread", "Thread"), HEADER_STYLE));
+		tree.setExtraColumnHeading(1, formatText(this._iwrb.getLocalizedString("author", "Author"), HEADER_STYLE));
+		tree.setExtraColumnHeading(2, formatText(this._iwrb.getLocalizedString("replies", "Replies"), HEADER_STYLE));
+		tree.setExtraColumnHeading(3, formatText(this._iwrb.getLocalizedString("date", "Date"), HEADER_STYLE));
 		tree.setExtraColumnHorizontalAlignment(2, "center");
 		tree.setToShowHeaderRow(true);
 		tree.setTreePadding(2);
 		tree.setTextStyleName(getStyleName(TABLE_TEXT_STYLE));
 		tree.setLinkStyleName(getStyleName(THREAD_LINK_STYLE));
 		tree.setLinkPage(getThreadPage());
-		tree.setObjectInstanceID(_objectID);
-		tree.setThreadImage(_threadImage);
-		tree.setResourceBundle(_iwrb);
+		tree.setObjectInstanceID(this._objectID);
+		tree.setThreadImage(this._threadImage);
+		tree.setResourceBundle(this._iwrb);
 		tree.setLightRowStyle(getStyleName(LIGHT_ROW_STYLE));
 		tree.setDarkRowStyle(getStyleName(DARK_ROW_STYLE));
 		return tree;
@@ -757,8 +770,9 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 	
 	protected Text getThreadSubject(ForumData thread) {
 		String headlineString = thread.getThreadSubject();
-		if (headlineString == null)
+		if (headlineString == null) {
 			headlineString = "";
+		}
 		Text headline = formatText(headlineString, HEADING_STYLE);
 		return headline;
 	}
@@ -766,8 +780,9 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 	//changed from private to protected because of ForumFlatLayout - ac
 	protected Text getThreadBody(ForumData thread) {
 		String bodyString = thread.getThreadBody();
-		if (bodyString == null)
+		if (bodyString == null) {
 			bodyString = "";
+		}
 		Text body = formatText(TextSoap.formatText(bodyString));
 
 		return body;
@@ -775,11 +790,11 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 	
 	protected Image getThreadImage() {
 		Image image;
-		if (_threadImage == null) {
-			image = _iwb.getImage("shared/thread.gif");
+		if (this._threadImage == null) {
+			image = this._iwb.getImage("shared/thread.gif");
 		}
 		else {
-			image = (Image) _threadImage.clone();
+			image = (Image) this._threadImage.clone();
 		}
 		image.setAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
 		//image.setPaddingRight(2);
@@ -795,29 +810,29 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 		
 		if (hasPrevious) {
 			Image image = null;
-			if (iPreviousImage != null) {
-				image = iPreviousImage;
+			if (this.iPreviousImage != null) {
+				image = this.iPreviousImage;
 			}
 			else {
-				image = _iwb.getImage("shared/previous.gif", "Previous");
+				image = this._iwb.getImage("shared/previous.gif", "Previous");
 			}
 			image.setAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
 			
 			Link previous = new Link(image);
-			previous.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, _topicID);
+			previous.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, this._topicID);
 			previous.addParameter(ForumBusiness.PARAMETER_STATE, ForumBusiness.FORUM_THREADS);
-			previous.addParameter(ForumBusiness.PARAMETER_FIRST_THREAD, (_firstThread - _numberOfThreads));
-			previous.addParameter(ForumBusiness.PARAMETER_LAST_THREAD, (_lastThread - _numberOfThreads));
-			previous.addParameter(ForumBusiness.PARAMETER_THREAD_ID, _threadID);
-			previous.addParameter(ForumBusiness.PARAMETER_OBJECT_INSTANCE_ID, _objectID);
+			previous.addParameter(ForumBusiness.PARAMETER_FIRST_THREAD, (this._firstThread - this._numberOfThreads));
+			previous.addParameter(ForumBusiness.PARAMETER_LAST_THREAD, (this._lastThread - this._numberOfThreads));
+			previous.addParameter(ForumBusiness.PARAMETER_THREAD_ID, this._threadID);
+			previous.addParameter(ForumBusiness.PARAMETER_OBJECT_INSTANCE_ID, this._objectID);
 
-			Link previousLink = new Link(_iwrb.getLocalizedString("previous_threads", "Previous"));
-			previousLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, _topicID);
+			Link previousLink = new Link(this._iwrb.getLocalizedString("previous_threads", "Previous"));
+			previousLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, this._topicID);
 			previousLink.addParameter(ForumBusiness.PARAMETER_STATE, ForumBusiness.FORUM_THREADS);
-			previousLink.addParameter(ForumBusiness.PARAMETER_FIRST_THREAD, (_firstThread - _numberOfThreads));
-			previousLink.addParameter(ForumBusiness.PARAMETER_LAST_THREAD, (_lastThread - _numberOfThreads));
-			previousLink.addParameter(ForumBusiness.PARAMETER_THREAD_ID, _threadID);
-			previousLink.addParameter(ForumBusiness.PARAMETER_OBJECT_INSTANCE_ID, _objectID);
+			previousLink.addParameter(ForumBusiness.PARAMETER_FIRST_THREAD, (this._firstThread - this._numberOfThreads));
+			previousLink.addParameter(ForumBusiness.PARAMETER_LAST_THREAD, (this._lastThread - this._numberOfThreads));
+			previousLink.addParameter(ForumBusiness.PARAMETER_THREAD_ID, this._threadID);
+			previousLink.addParameter(ForumBusiness.PARAMETER_OBJECT_INSTANCE_ID, this._objectID);
 			previousLink.setStyleClass(getStyleName(LINK_STYLE));
 
 			table.add(previous, 1, 1);
@@ -826,29 +841,29 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 		}
 		if (hasNext) {
 			Image image = null;
-			if (iNextImage != null) {
-				image = iNextImage;
+			if (this.iNextImage != null) {
+				image = this.iNextImage;
 			}
 			else {
-				image = _iwb.getImage("shared/next.gif", "Next");
+				image = this._iwb.getImage("shared/next.gif", "Next");
 			}
 			image.setAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
 			
 			Link next = new Link(image);
-			next.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, _topicID);
+			next.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, this._topicID);
 			next.addParameter(ForumBusiness.PARAMETER_STATE, ForumBusiness.FORUM_THREADS);
-			next.addParameter(ForumBusiness.PARAMETER_FIRST_THREAD, (_firstThread + _numberOfThreads));
-			next.addParameter(ForumBusiness.PARAMETER_LAST_THREAD, (_lastThread + _numberOfThreads));
-			next.addParameter(ForumBusiness.PARAMETER_THREAD_ID, _threadID);
-			next.addParameter(ForumBusiness.PARAMETER_OBJECT_INSTANCE_ID, _objectID);
+			next.addParameter(ForumBusiness.PARAMETER_FIRST_THREAD, (this._firstThread + this._numberOfThreads));
+			next.addParameter(ForumBusiness.PARAMETER_LAST_THREAD, (this._lastThread + this._numberOfThreads));
+			next.addParameter(ForumBusiness.PARAMETER_THREAD_ID, this._threadID);
+			next.addParameter(ForumBusiness.PARAMETER_OBJECT_INSTANCE_ID, this._objectID);
 
-			Link nextLink = new Link(_iwrb.getLocalizedString("next_threads", "Next"));
-			nextLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, _topicID);
+			Link nextLink = new Link(this._iwrb.getLocalizedString("next_threads", "Next"));
+			nextLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, this._topicID);
 			nextLink.addParameter(ForumBusiness.PARAMETER_STATE, ForumBusiness.FORUM_THREADS);
-			nextLink.addParameter(ForumBusiness.PARAMETER_FIRST_THREAD, (_firstThread + _numberOfThreads));
-			nextLink.addParameter(ForumBusiness.PARAMETER_LAST_THREAD, (_lastThread + _numberOfThreads));
-			nextLink.addParameter(ForumBusiness.PARAMETER_THREAD_ID, _threadID);
-			nextLink.addParameter(ForumBusiness.PARAMETER_OBJECT_INSTANCE_ID, _objectID);
+			nextLink.addParameter(ForumBusiness.PARAMETER_FIRST_THREAD, (this._firstThread + this._numberOfThreads));
+			nextLink.addParameter(ForumBusiness.PARAMETER_LAST_THREAD, (this._lastThread + this._numberOfThreads));
+			nextLink.addParameter(ForumBusiness.PARAMETER_THREAD_ID, this._threadID);
+			nextLink.addParameter(ForumBusiness.PARAMETER_OBJECT_INSTANCE_ID, this._objectID);
 			nextLink.setStyleClass(getStyleName(LINK_STYLE));
 			
 			table.add(nextLink, 2, 1);
@@ -866,7 +881,7 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 		table.setCellpadding(2);
 		int column = 1;
 
-		if (_hasReplyPermission) {
+		if (this._hasReplyPermission) {
 			ThreadReplyLink replyLink = new ThreadReplyLink(thread);
 			replyLink.setImagePadding(2);
 			replyLink.setImageAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
@@ -882,7 +897,7 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 			table.add(editLink, column++, 1);
 		}
 
-		if (_hasDeletePermission) {
+		if (this._hasDeletePermission) {
 			ThreadDeleteLink deleteLink = new ThreadDeleteLink(thread);
 			deleteLink.setImageAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
 			deleteLink.setImagePadding(2);
@@ -899,19 +914,19 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 		table.setCellpadding(2);
 		int column = 1;
 
-		if (_topicID != -1) {
+		if (this._topicID != -1) {
 			ThreadNewLink newLink = new ThreadNewLink();
 			newLink.setImagePadding(2);
 			newLink.setImageAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
 			table.add(newLink, column++, 1);
 		}
 
-		if (_showOverviewLink) {
+		if (this._showOverviewLink) {
 			TopicOverviewLink overview = new TopicOverviewLink();
 			overview.setImagePadding(2);
 			overview.setImageAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
-			if (_page != null) {
-				overview.setPage(_page);
+			if (this._page != null) {
+				overview.setPage(this._page);
 			}
 			
 			table.add(overview, column, 1);
@@ -924,15 +939,15 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
     private Layer getForumLinks2(){
         Layer layer = createLayerWithStyleClass("forum_links");
         
-        if (_topicID != -1) {
+        if (this._topicID != -1) {
             ThreadNewLink newLink = new ThreadNewLink();
             layer.getChildren().add(newLink);
         }
 
-        if (_showOverviewLink) {
+        if (this._showOverviewLink) {
             TopicOverviewLink overview = new TopicOverviewLink();
-            if (_page != null) {
-                overview.setPage(_page);
+            if (this._page != null) {
+                overview.setPage(this._page);
             }
             layer.getChildren().add(overview);
         }
@@ -944,7 +959,7 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 	protected PresentationObject getAdminPart(IWContext iwc) {
        
         Link categoryLink = this.getCategoryLink();
-        categoryLink.setPresentationObject(_iwcb.getImage("shared/edit.gif"));
+        categoryLink.setPresentationObject(this._iwcb.getImage("shared/edit.gif"));
         
         Layer layer = createLayerWithStyleClass("admin_part");
         layer.getChildren().add(categoryLink);
@@ -954,57 +969,58 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 	//protected because ForumFlatLayout uses it!
 	protected void updateThreadCount(IWContext iwc) {
 		try {
-			_firstThread = Integer.parseInt(iwc.getParameter(ForumBusiness.PARAMETER_FIRST_THREAD));
+			this._firstThread = Integer.parseInt(iwc.getParameter(ForumBusiness.PARAMETER_FIRST_THREAD));
 		}
 		catch (Exception e) {
 			try {
-				_firstThread = Integer.parseInt((String) iwc.getSessionAttribute(ForumBusiness.PARAMETER_FIRST_THREAD + "_" + _objectID));
+				this._firstThread = Integer.parseInt((String) iwc.getSessionAttribute(ForumBusiness.PARAMETER_FIRST_THREAD + "_" + this._objectID));
 			}
 			catch (Exception ex) {
-				_firstThread = 1;
+				this._firstThread = 1;
 			}
 		}
-		iwc.setSessionAttribute(ForumBusiness.PARAMETER_FIRST_THREAD + "_" + _objectID, Integer.toString(_firstThread));
+		iwc.setSessionAttribute(ForumBusiness.PARAMETER_FIRST_THREAD + "_" + this._objectID, Integer.toString(this._firstThread));
 
 		try {
-			_lastThread = Integer.parseInt(iwc.getParameter(ForumBusiness.PARAMETER_LAST_THREAD));
+			this._lastThread = Integer.parseInt(iwc.getParameter(ForumBusiness.PARAMETER_LAST_THREAD));
 		}
 		catch (Exception e) {
 			try {
-				_lastThread = Integer.parseInt((String) iwc.getSessionAttribute(ForumBusiness.PARAMETER_LAST_THREAD + "_" + _objectID));
+				this._lastThread = Integer.parseInt((String) iwc.getSessionAttribute(ForumBusiness.PARAMETER_LAST_THREAD + "_" + this._objectID));
 			}
 			catch (Exception ex) {
-				_lastThread = _numberOfThreads;
+				this._lastThread = this._numberOfThreads;
 			}
 		}
-		iwc.setSessionAttribute(ForumBusiness.PARAMETER_LAST_THREAD + "_" + _objectID, Integer.toString(_lastThread));
+		iwc.setSessionAttribute(ForumBusiness.PARAMETER_LAST_THREAD + "_" + this._objectID, Integer.toString(this._lastThread));
 	}
 
 	private void getParameters(IWContext iwc) {
 		try {
-			_selectedObjectID = Integer.parseInt(iwc.getParameter(ForumBusiness.PARAMETER_OBJECT_INSTANCE_ID));
+			this._selectedObjectID = Integer.parseInt(iwc.getParameter(ForumBusiness.PARAMETER_OBJECT_INSTANCE_ID));
 		}
 		catch (NumberFormatException e) {
-			_selectedObjectID = -1;
+			this._selectedObjectID = -1;
 		}
 
-		if (_state != ForumBusiness.FORUM_COLLECTION) {
+		if (this._state != ForumBusiness.FORUM_COLLECTION) {
 			try {
-				_state = Integer.parseInt(iwc.getParameter(ForumBusiness.PARAMETER_STATE));
+				this._state = Integer.parseInt(iwc.getParameter(ForumBusiness.PARAMETER_STATE));
 			}
 			catch (NumberFormatException e) {
 			}
 		}
 		
 		try {
-			_topicID = Integer.parseInt(iwc.getParameter(ForumBusiness.PARAMETER_TOPIC_ID));
+			this._topicID = Integer.parseInt(iwc.getParameter(ForumBusiness.PARAMETER_TOPIC_ID));
 		}
 		catch (NumberFormatException e) {
-			_topicID = -1;
+			this._topicID = -1;
 		}
 
-		if (_selectedObjectID != -1 && _selectedObjectID != _objectID && !ignoreObjectID)
-			_state = _initialState;
+		if (this._selectedObjectID != -1 && this._selectedObjectID != this._objectID && !this.ignoreObjectID) {
+			this._state = this._initialState;
+		}
 	}
 
 	protected Text formatText(String textString) {
@@ -1017,7 +1033,7 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 	}
 
 	public void setDefaultValues() {
-		_width = Table.HUNDRED_PERCENT;
+		this._width = Table.HUNDRED_PERCENT;
 		// _headingColor = "#eeeeee"; //XXX remove altogether                
 	}
 	
@@ -1046,40 +1062,40 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 	}
 
 	public void setNumberOfDisplayedThreads(int numberOfThreads) {
-		_numberOfThreads = numberOfThreads;
+		this._numberOfThreads = numberOfThreads;
 	}
 
 	public void setWidth(String width) {
-		_width = width;
+		this._width = width;
 	}
 
 	public void setPage(ICPage page) {
-		_page = page;
+		this._page = page;
 	}
 
 	public void setSpaceBetween(int spaceBetween) {
-		_spaceBetween = String.valueOf(spaceBetween);
+		this._spaceBetween = String.valueOf(spaceBetween);
 	}
 
 	public void setShowOverviewLink(boolean showOverview) {
-		_showOverviewLink = showOverview;
+		this._showOverviewLink = showOverview;
 	}
 
 	public void setShowTopicName(boolean showTopic) {
-		_showTopicName = showTopic;
+		this._showTopicName = showTopic;
 	}
 
 	public void setShowResponses(boolean showResponses) {
-		_showResponses = showResponses;
+		this._showResponses = showResponses;
 	}
 
 	public void setLayout(int layout) {
-		_state = layout;
-		_initialState = layout;
+		this._state = layout;
+		this._initialState = layout;
 	}
 
 	public void setThreadImage(Image image) {
-		_threadImage = image;
+		this._threadImage = image;
 	}
 
 	public void setHeaderStyle(String style) {
@@ -1095,7 +1111,7 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 	}
 
 	public void setDefaultOpenLevel(int openLevel) {
-		_openLevel = openLevel;
+		this._openLevel = openLevel;
 	}
 
 	public void setLinkStyles(String style, String hoverStyle) {
@@ -1108,7 +1124,7 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 	}
 
 	public void setHeadingColor(String color) {
-		_headingColor = color;
+		this._headingColor = color;
 	}
 
 	public boolean deleteBlock(int ICObjectInstanceID) {
@@ -1137,7 +1153,7 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 	 * @param authorWidth The authorWidth to set
 	 */
 	public void setAuthorWidth(String authorWidth) {
-		_authorWidth = authorWidth;
+		this._authorWidth = authorWidth;
 	}
 
 	/**
@@ -1145,7 +1161,7 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 	 * @param dateWidth The dateWidth to set
 	 */
 	public void setDateWidth(String dateWidth) {
-		_dateWidth = dateWidth;
+		this._dateWidth = dateWidth;
 	}
 
 	/**
@@ -1153,42 +1169,42 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 	 * @param replyWidth The replyWidth to set
 	 */
 	public void setReplyWidth(String replyWidth) {
-		_replyWidth = replyWidth;
+		this._replyWidth = replyWidth;
 	}
 
 	/**
 	 * @return
 	 */
 	public ICPage getPage() {
-		return _page;
+		return this._page;
 	}
 
 	/**
 	 * @return
 	 */
 	public ICPage getThreadPage() {
-		return _threadPage;
+		return this._threadPage;
 	}
 
 	/**
 	 * @param page
 	 */
 	public void setThreadPage(ICPage page) {
-		_threadPage = page;
+		this._threadPage = page;
 	}
 
 	/**
 	 * @return
 	 */
 	public int getTopicID() {
-		return _topicID;
+		return this._topicID;
 	}
 
 	public Object clone() {
 		Forum2 obj = null;
 		try {
 			obj = (Forum2) super.clone();
-			obj.stateHandler = stateHandler;
+			obj.stateHandler = this.stateHandler;
 		}
 		catch (Exception ex) {
 			ex.printStackTrace(System.err);
@@ -1211,52 +1227,52 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 	}
 	
 	protected String getAuthorWidth() {
-		return _authorWidth;
+		return this._authorWidth;
 	}
 	
 	protected String getDateWidth() {
-		return _dateWidth;
+		return this._dateWidth;
 	}
 	
 	protected String getReplyWidth() {
-		return _replyWidth;
+		return this._replyWidth;
 	}
 	protected boolean hasDeletePermission() {
-		return _hasDeletePermission;
+		return this._hasDeletePermission;
 	}
 	protected boolean hasReplyPermission() {
-		return _hasReplyPermission;
+		return this._hasReplyPermission;
 	}
 	public void setThreadTopicWidth(String threadTopicWidth) {
-		iThreadTopicWidth = threadTopicWidth;
+		this.iThreadTopicWidth = threadTopicWidth;
 	}
 	public void setUpdatedTopicWidth(String updatedTopicWidth) {
-		iUpdatedTopicWidth = updatedTopicWidth;
+		this.iUpdatedTopicWidth = updatedTopicWidth;
 	}
 	protected String getThreadTopicWidth() {
-		return iThreadTopicWidth;
+		return this.iThreadTopicWidth;
 	}
 	protected String getUpdatedTopicWidth() {
-		return iUpdatedTopicWidth;
+		return this.iUpdatedTopicWidth;
 	}
 	public void setNextImage(Image nextImage) {
-		iNextImage = nextImage;
+		this.iNextImage = nextImage;
 	}
 	public void setPreviousImage(Image previousImage) {
-		iPreviousImage = previousImage;
+		this.iPreviousImage = previousImage;
 	}
 	public void setShowForumLinks(boolean showForumLinks) {
-		iShowForumLinks = showForumLinks;
+		this.iShowForumLinks = showForumLinks;
 	}
 	
 	public void setShowTopicInCollection(boolean showTopicInCollection) {
-		iShowTopicInCollection = showTopicInCollection;
+		this.iShowTopicInCollection = showTopicInCollection;
 	}
 	/**
 	 * @return Returns the userCanEditHisOwnThreads.
 	 */
 	public boolean getUserCanEditHisOwnThreads() {
-		return userCanEditHisOwnThreads;
+		return this.userCanEditHisOwnThreads;
 	}
 	/**
 	 * @param userCanEditHisOwnThreads The userCanEditHisOwnThreads to set.
@@ -1269,7 +1285,7 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 	 * @return Returns the showForumLinksOnTopOfThreadList.
 	 */
 	public boolean doShowForumLinksOnTopOfThreadList() {
-		return showForumLinksOnTopOfThreadList;
+		return this.showForumLinksOnTopOfThreadList;
 	}
 	/**
 	 * @param showForumLinksOnTopOfThreadList The showForumLinksOnTopOfThreadList to set.
@@ -1279,7 +1295,7 @@ public class Forum2 extends CategoryBlock implements Builderaware, StatefullPres
 	}
 
     public String getMainStyleClass() {
-        return mainStyleClass;
+        return this.mainStyleClass;
     }
 
     public void setMainStyleClass(String mainStyleClass) {

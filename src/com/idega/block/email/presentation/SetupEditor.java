@@ -106,54 +106,59 @@ public class SetupEditor extends Block {
    */
   public void main(IWContext iwc) {
     //debugParameters(iwc);
-    iwb = getBundle(iwc);
-    iwrb = getResourceBundle(iwc);
-    core = iwc.getIWMainApplication().getCoreBundle();
+    this.iwb = getBundle(iwc);
+    this.iwrb = getResourceBundle(iwc);
+    this.core = iwc.getIWMainApplication().getCoreBundle();
 
-    deleteImage = core.getImage("/shared/delete.gif");
-    editImage = core.getImage("/shared/edit.gif");
+    this.deleteImage = this.core.getImage("/shared/delete.gif");
+    this.editImage = this.core.getImage("/shared/edit.gif");
 
     if (iwc.isParameterSet(prmInstanceId)) {
-      instance = Integer.parseInt(iwc.getParameter(prmInstanceId));
+      this.instance = Integer.parseInt(iwc.getParameter(prmInstanceId));
     }
     /*
     if (iwc.isParameterSet(prmGroupId)) {
       group = Integer.parseInt(iwc.getParameter(prmGroupId));
     }*/
     if (iwc.isParameterSet(prmTopicId)) {
-      topic = Integer.parseInt(iwc.getParameter(prmTopicId));
+      this.topic = Integer.parseInt(iwc.getParameter(prmTopicId));
     }
     if (iwc.isParameterSet(prmAccountId)) {
-      account = Integer.parseInt(iwc.getParameter(prmAccountId));
+      this.account = Integer.parseInt(iwc.getParameter(prmAccountId));
     }
     
-    if(iwc.isParameterSet(prmWelcome))
-    	letterID = Integer.parseInt(iwc.getParameter(prmWelcome));
+    if(iwc.isParameterSet(prmWelcome)) {
+		this.letterID = Integer.parseInt(iwc.getParameter(prmWelcome));
+	}
 
 
     // Heavy work :
     processForms(iwc);
     
-    categories = CategoryFinder.getInstance().getMapOfCategoriesById(instance);
-    topics = MailFinder.getInstance().mapOfTopics(instance);
+    this.categories = CategoryFinder.getInstance().getMapOfCategoriesById(this.instance);
+    this.topics = MailFinder.getInstance().mapOfTopics(this.instance);
 
-    tf = TextFormat.getInstance();
+    this.tf = TextFormat.getInstance();
     Table T = new Table(1, 3);
     T.add(getTopicsOverView(iwc), 1, 1);
 
-  	if(iwc.isParameterSet(prmEmails))
-  		T.add(getSubscribers(iwc),1,2);
-  	else if(iwc.isParameterSet(prmWelcome))
-  		T.add(getLetterForm(iwc),1,2);
-  	else if(iwc.isParameterSet(prmEditTopic))
-  		T.add(getTopicForm(iwc),1,2);
-  	else if(iwc.isParameterSet(prmAccountId))
-  		T.add(getAccountForm(iwc),1,2);
+  	if(iwc.isParameterSet(prmEmails)) {
+		T.add(getSubscribers(iwc),1,2);
+	}
+	else if(iwc.isParameterSet(prmWelcome)) {
+		T.add(getLetterForm(iwc),1,2);
+	}
+	else if(iwc.isParameterSet(prmEditTopic)) {
+		T.add(getTopicForm(iwc),1,2);
+	}
+	else if(iwc.isParameterSet(prmAccountId)) {
+		T.add(getAccountForm(iwc),1,2);
+	}
   		
     Form F = new Form();
-    F.add(new HiddenInput(prmInstanceId, String.valueOf(instance)));
+    F.add(new HiddenInput(prmInstanceId, String.valueOf(this.instance)));
     //F.add(new HiddenInput(prmGroupId, String.valueOf(group)));
-    F.add(new HiddenInput(prmTopicId, String.valueOf(topic)));
+    F.add(new HiddenInput(prmTopicId, String.valueOf(this.topic)));
     F.add(T);
     add(F);
   }
@@ -186,10 +191,10 @@ public class SetupEditor extends Block {
       */
       if (delObject.equals("topic")) {
         deleteTopic();
-        topic = -1;
+        this.topic = -1;
       } else if (delObject.equals("account")) {
         deleteAccount();
-        account = -1;
+        this.account = -1;
       }
     }
   }
@@ -206,12 +211,13 @@ public class SetupEditor extends Block {
 
     String styp = "";
     Collection accounts = null;
-    if (topic > 0) {
-      accounts = MailFinder.getInstance().getTopicAccounts(topic);
-      styp = iwrb.getLocalizedString("list.topic", "topic");
-      EmailTopic tpc = (EmailTopic) topics.get(String.valueOf(topic));
-      if(tpc !=null)
-      styp += " " + tpc.getName();
+    if (this.topic > 0) {
+      accounts = MailFinder.getInstance().getTopicAccounts(this.topic);
+      styp = this.iwrb.getLocalizedString("list.topic", "topic");
+      EmailTopic tpc = (EmailTopic) this.topics.get(String.valueOf(this.topic));
+      if(tpc !=null) {
+		styp += " " + tpc.getName();
+	}
     } /*else if (group > 0) {
       accounts = MailFinder.getInstance().getGroupAccounts(group);
       styp = iwrb.getLocalizedString("list.group", "group");
@@ -220,18 +226,18 @@ public class SetupEditor extends Block {
       styp += " " + grp.getName();
     }*/
 
-    String title = iwrb.getLocalizedString("list.accounts", "Accounts");
-    title += " " + iwrb.getLocalizedString("list.in", "in") + " " + styp + " ";
+    String title = this.iwrb.getLocalizedString("list.accounts", "Accounts");
+    title += " " + this.iwrb.getLocalizedString("list.in", "in") + " " + styp + " ";
 
     T.addTitle(title);
     T.setTitlesHorizontal(true);
 
     int row = 1;
-    Text tName = tf.format(iwrb.getLocalizedString("name", "Name"));
-    Text tHost = tf.format(iwrb.getLocalizedString("host", "Host"));
-    Text tUser = tf.format(iwrb.getLocalizedString("user", "User"));
-    Text tPass = tf.format(iwrb.getLocalizedString("pass", "Passwd"));
-    Text tProto = tf.format(iwrb.getLocalizedString("protocol", "Protocol"));
+    Text tName = this.tf.format(this.iwrb.getLocalizedString("name", "Name"));
+    Text tHost = this.tf.format(this.iwrb.getLocalizedString("host", "Host"));
+    Text tUser = this.tf.format(this.iwrb.getLocalizedString("user", "User"));
+    Text tPass = this.tf.format(this.iwrb.getLocalizedString("pass", "Passwd"));
+    Text tProto = this.tf.format(this.iwrb.getLocalizedString("protocol", "Protocol"));
     row++;
     TextInput name = new TextInput("name");
     TextInput host = new TextInput("host");
@@ -249,7 +255,7 @@ public class SetupEditor extends Block {
       while (iter.hasNext()) {
         acc = (EmailAccount) iter.next();
         id = acc.getIdentifier().intValue();
-        if (id == account && EditObject.equals("account")) {
+        if (id == this.account && this.EditObject.equals("account")) {
           name.setContent(acc.getName());
           host.setContent(acc.getHost());
           user.setContent(acc.getUser());
@@ -267,45 +273,45 @@ public class SetupEditor extends Block {
           T.add(proto, 2, row++);
 
           T.add(new HiddenInput(prmAccountId, String.valueOf(id)));
-          formAdded = true;
+          this.formAdded = true;
         } else {
-          accountLink = new Link(tf.format(acc.getName()));
-          accountLink.addParameter(prmInstanceId, String.valueOf(instance));
+          accountLink = new Link(this.tf.format(acc.getName()));
+          accountLink.addParameter(prmInstanceId, String.valueOf(this.instance));
           accountLink.addParameter(prmAccountId, id);
           //accountLink.addParameter(prmGroupId, group);
-          accountLink.addParameter(prmTopicId, topic);
+          accountLink.addParameter(prmTopicId, this.topic);
 
-          editLink = new Link((Image) editImage.clone());
-          editLink.addParameter(prmInstanceId, String.valueOf(instance));
+          editLink = new Link((Image) this.editImage.clone());
+          editLink.addParameter(prmInstanceId, String.valueOf(this.instance));
           editLink.addParameter(prmAccountId, id);
           editLink.addParameter(prmEdit, "account");
           //editLink.addParameter(prmGroupId, group);
-          editLink.addParameter(prmTopicId, topic);
+          editLink.addParameter(prmTopicId, this.topic);
 
-          deleteLink = new Link((Image) deleteImage.clone());
-          deleteLink.addParameter(prmInstanceId, String.valueOf(instance));
+          deleteLink = new Link((Image) this.deleteImage.clone());
+          deleteLink.addParameter(prmInstanceId, String.valueOf(this.instance));
           deleteLink.addParameter(prmAccountId, id);
           deleteLink.addParameter(prmDel, "account");
           //deleteLink.addParameter(prmGroupId, group);
-          deleteLink.addParameter(prmTopicId, topic);
+          deleteLink.addParameter(prmTopicId, this.topic);
 
           T.add(accountLink, 1, row);
           T.add(editLink, 2, row);
           T.add(deleteLink, 2, row);
           row++;
           T.add(tHost, 1, row);
-          T.add(tf.format(acc.getHost()), 2, row++);
+          T.add(this.tf.format(acc.getHost()), 2, row++);
           T.add(tUser, 1, row);
-          T.add(tf.format(acc.getUser()), 2, row++);
+          T.add(this.tf.format(acc.getUser()), 2, row++);
           T.add(tPass, 1, row);
-          T.add(tf.format(acc.getPassword()), 2, row++);
+          T.add(this.tf.format(acc.getPassword()), 2, row++);
           T.add(tProto, 1, row);
-          T.add(tf.format(getProtocolName(acc.getProtocol())), 2, row++);
+          T.add(this.tf.format(getProtocolName(acc.getProtocol())), 2, row++);
         }
         row++;
       }
     }
-    if (!formAdded && NewObject.equals("account")) {
+    if (!this.formAdded && this.NewObject.equals("account")) {
       T.add(tName, 1, row);
       T.add(name, 2, row++);
       T.add(tHost, 1, row);
@@ -316,17 +322,17 @@ public class SetupEditor extends Block {
       T.add(pass, 2, row++);
       T.add(tProto, 1, row);
       T.add(proto, 2, row++);
-      formAdded = true;
+      this.formAdded = true;
     } else {
-      Link li = new Link(iwrb.getLocalizedImageButton("new", "New"));
-      li.addParameter(prmInstanceId, String.valueOf(instance));
+      Link li = new Link(this.iwrb.getLocalizedImageButton("new", "New"));
+      li.addParameter(prmInstanceId, String.valueOf(this.instance));
       //li.addParameter(prmGroupId, group);
-      li.addParameter(prmTopicId, topic);
+      li.addParameter(prmTopicId, this.topic);
       li.addParameter(prmNew, "account");
       T.addButton(li);
     }
-    if (formAdded) {
-      T.addButton(new SubmitButton(iwrb.getLocalizedImageButton("save", "Save"), "save", "account"));
+    if (this.formAdded) {
+      T.addButton(new SubmitButton(this.iwrb.getLocalizedImageButton("save", "Save"), "save", "account"));
     }
     return T;
   }
@@ -341,8 +347,8 @@ public class SetupEditor extends Block {
    */
   public DropdownMenu getCategoryDropdown(String name, String selected) {
     DropdownMenu drp = new DropdownMenu(name);
-    if (categories != null) {
-      Collection coll = categories.values();
+    if (this.categories != null) {
+      Collection coll = this.categories.values();
       if (coll != null && coll.size() > 0) {
         drp.addMenuElements(coll);
       }
@@ -418,7 +424,7 @@ public class SetupEditor extends Block {
     String senderName = iwc.getParameter("snd_name");
     String senderEmail = iwc.getParameter("snd_email");
     int catId = Integer.parseInt(iwc.getParameter("cat"));
-    MailBusiness.getInstance().saveTopic(topic, name, info, catId,senderName,senderEmail);
+    MailBusiness.getInstance().saveTopic(this.topic, name, info, catId,senderName,senderEmail);
 
   }
 
@@ -434,10 +440,11 @@ public class SetupEditor extends Block {
     String pass = iwc.getParameter("pass");
     int proto = Integer.parseInt(iwc.getParameter("proto"));
     int ent = -1;
-    if (topic >= 0) {
-      if(account <0)
-        ent = topic;
-      MailBusiness.getInstance().saveTopicAccount(account, name, host, user, pass, proto, ent);
+    if (this.topic >= 0) {
+      if(this.account <0) {
+		ent = this.topic;
+	}
+      MailBusiness.getInstance().saveTopicAccount(this.account, name, host, user, pass, proto, ent);
     }
     /*
     else if (group > 0) {
@@ -465,7 +472,7 @@ public class SetupEditor extends Block {
    * @todo    Description of the Method
    */
   public void deleteTopic() {
-    MailBusiness.getInstance().deleteTopic(topic);
+    MailBusiness.getInstance().deleteTopic(this.topic);
   }
 
 
@@ -473,8 +480,8 @@ public class SetupEditor extends Block {
    * @todo    Description of the Method
    */
   public void deleteAccount() {
-    if (topic > 0) {
-      MailBusiness.getInstance().deleteTopicAccount(account);
+    if (this.topic > 0) {
+      MailBusiness.getInstance().deleteTopicAccount(this.account);
     }
   }
 
@@ -500,16 +507,16 @@ public class SetupEditor extends Block {
   public PresentationObject getTopicsOverView(IWContext iwc){
   	Table T = new Table();
   	int row = 1;
- 	T.add(getTopicLink(-1,iwrb.getLocalizedString("new_topic","New topic")),1,row);
+ 	T.add(getTopicLink(-1,this.iwrb.getLocalizedString("new_topic","New topic")),1,row);
  	row++;
-  	T.add(tf.format(iwrb.getLocalizedString("name","Name"),tf.HEADER),1,row);
-  	T.add(tf.format(iwrb.getLocalizedString("category","Category"),tf.HEADER),2,row);
-  	T.add(tf.format(iwrb.getLocalizedString("mail_server","Mail server"),tf.HEADER),3,row);
-  	T.add(tf.format(iwrb.getLocalizedString("subscribers","Subscribers"),tf.HEADER),4,row);
-  	T.add(tf.format(iwrb.getLocalizedString("welcome","Welcome"),tf.HEADER),5,row);
+  	T.add(this.tf.format(this.iwrb.getLocalizedString("name","Name"),this.tf.HEADER),1,row);
+  	T.add(this.tf.format(this.iwrb.getLocalizedString("category","Category"),this.tf.HEADER),2,row);
+  	T.add(this.tf.format(this.iwrb.getLocalizedString("mail_server","Mail server"),this.tf.HEADER),3,row);
+  	T.add(this.tf.format(this.iwrb.getLocalizedString("subscribers","Subscribers"),this.tf.HEADER),4,row);
+  	T.add(this.tf.format(this.iwrb.getLocalizedString("welcome","Welcome"),this.tf.HEADER),5,row);
   	row++;
-  	if(!topics.isEmpty()){
-  		Iterator iter = topics.values().iterator();
+  	if(!this.topics.isEmpty()){
+  		Iterator iter = this.topics.values().iterator();
   		EmailTopic topic;
   		ICCategory category;
   		EmailAccount account;
@@ -523,8 +530,8 @@ public class SetupEditor extends Block {
   			topicID = topic.getIdentifier().intValue();
   			T.add(getTopicLink(topicID,topic.getName()),1,row);
   			
-  			category = (ICCategory) categories.get(Integer.toString(topic.getCategoryId()));
-  			T.add(tf.format(category.getName()),2,row);
+  			category = (ICCategory) this.categories.get(Integer.toString(topic.getCategoryId()));
+  			T.add(this.tf.format(category.getName()),2,row);
   			accounts = MailFinder.getInstance().getTopicAccounts(topicID,MailProtocol.SMTP);
   			if(accounts!=null && !accounts.isEmpty()){
   				account = (EmailAccount) accounts.iterator().next();
@@ -551,32 +558,32 @@ public class SetupEditor extends Block {
   }
   
   public Link getSubscribersLink(int topicID,String text){
-  	Link L = new Link(tf.format(text));
+  	Link L = new Link(this.tf.format(text));
   	L.addParameter(prmEmails,"true");
-  	L.addParameter(prmInstanceId, String.valueOf(instance));
+  	L.addParameter(prmInstanceId, String.valueOf(this.instance));
     L.addParameter(prmTopicId, topicID);
   	return L;
   }
   
   public Link getWelcomeLetterLink(int letterId,int topicID,String text){
-  	Link L = new Link(tf.format(text));
-  	L.addParameter(prmInstanceId, String.valueOf(instance));
+  	Link L = new Link(this.tf.format(text));
+  	L.addParameter(prmInstanceId, String.valueOf(this.instance));
   	L.addParameter(prmWelcome,String.valueOf(letterId));
     L.addParameter(prmTopicId, topicID);
   	return L;
   }
   
    public Link getTopicLink(int topicID,String text){
-  	Link L = new Link(tf.format(text));
-  	L.addParameter(prmInstanceId, String.valueOf(instance));
+  	Link L = new Link(this.tf.format(text));
+  	L.addParameter(prmInstanceId, String.valueOf(this.instance));
     L.addParameter(prmEditTopic,"true");
     L.addParameter(prmTopicId, topicID);
   	return L;
   }
   
   public Link getAccountLink(int topicID,int accountID,String text){
-  	Link L = new Link(tf.format(text));
-  	L.addParameter(prmInstanceId, String.valueOf(instance));
+  	Link L = new Link(this.tf.format(text));
+  	L.addParameter(prmInstanceId, String.valueOf(this.instance));
     L.addParameter(prmAccountId,String.valueOf(accountID));
     L.addParameter(prmTopicId, topicID);
   	return L;
@@ -586,14 +593,14 @@ public class SetupEditor extends Block {
   public PresentationObject getSubscribers(IWContext iwc){
   	Table T = new Table();
   	int row= 1;
-  	T.add(tf.format(iwrb.getLocalizedString("subscribing_emails","Subscribing emails"),tf.HEADER),1,row++);
+  	T.add(this.tf.format(this.iwrb.getLocalizedString("subscribing_emails","Subscribing emails"),this.tf.HEADER),1,row++);
   	
-  	if (topic > 0) {
-      Collection emails = MailFinder.getInstance().getListEmails(topic);
+  	if (this.topic > 0) {
+      Collection emails = MailFinder.getInstance().getListEmails(this.topic);
       if (emails != null) {
         Iterator iter = emails.iterator();
         while (iter.hasNext()) {
-          T.add(tf.format(((EmailDataView) iter.next()).getEmailAddress()), 1, row++);
+          T.add(this.tf.format(((EmailDataView) iter.next()).getEmailAddress()), 1, row++);
         }
       }
   	}
@@ -609,10 +616,10 @@ public class SetupEditor extends Block {
     TextInput subject = new TextInput("subject");
     subject.setLength(80);
     TextArea body = new TextArea("body",70,20);
-    if(letterID >0){
+    if(this.letterID >0){
     	EmailLetter letter = null;
     	try {
-			letter = ((MailLetterHome)IDOLookup.getHome(MailLetter.class)).findByPrimaryKey(new Integer(letterID));
+			letter = ((MailLetterHome)IDOLookup.getHome(MailLetter.class)).findByPrimaryKey(new Integer(this.letterID));
 			fromAddress.setContent(letter.getFromAddress());
 			fromName.setContent(letter.getFromName());
 			subject.setContent(letter.getSubject());
@@ -620,22 +627,22 @@ public class SetupEditor extends Block {
 		}
 		catch (Exception e) {
 		}
-    	T.add(new HiddenInput(prmWelcome,String.valueOf(letterID)));	
+    	T.add(new HiddenInput(prmWelcome,String.valueOf(this.letterID)));	
     }
     
     int row = 1;
 
-    T.add(tf.format(iwrb.getLocalizedString("letter.from_name","Sender name"),tf.HEADER),1,row);
+    T.add(this.tf.format(this.iwrb.getLocalizedString("letter.from_name","Sender name"),this.tf.HEADER),1,row);
     T.add(fromName,2,row++);
-    T.add(tf.format(iwrb.getLocalizedString("letter.from_address","Sender address"),tf.HEADER),1,row);
+    T.add(this.tf.format(this.iwrb.getLocalizedString("letter.from_address","Sender address"),this.tf.HEADER),1,row);
     T.add(fromAddress,2,row++);
-    T.add(tf.format(iwrb.getLocalizedString("letter.subject","Subject"),tf.HEADER),1,row);
+    T.add(this.tf.format(this.iwrb.getLocalizedString("letter.subject","Subject"),this.tf.HEADER),1,row);
     T.add(subject,2,row++);
-    T.add(tf.format(iwrb.getLocalizedString("letter.body","Body"),tf.HEADER),1,row);
+    T.add(this.tf.format(this.iwrb.getLocalizedString("letter.body","Body"),this.tf.HEADER),1,row);
     T.add(body,2,row++);
 
-    SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"save_letter");
-    SubmitButton delete = new SubmitButton(iwrb.getLocalizedImageButton("delete","Delete"),"remove_letter");
+    SubmitButton save = new SubmitButton(this.iwrb.getLocalizedImageButton("save","Save"),"save_letter");
+    SubmitButton delete = new SubmitButton(this.iwrb.getLocalizedImageButton("delete","Delete"),"remove_letter");
     //SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"save");
 
 	//CheckBox save = new CheckBox("save","true");
@@ -653,22 +660,22 @@ public class SetupEditor extends Block {
   
   public void processForms(IWContext iwc){
   	
-    if(iwc.isParameterSet("save_letter.x") && topic>0){
+    if(iwc.isParameterSet("save_letter.x") && this.topic>0){
 		this.saveLetter(iwc);
     }
     else if(iwc.isParameterSet("save_topic.x")){
     	this.saveTopic(iwc);
     }
-    else if(letterID>0 && iwc.isParameterSet("remove_letter.x")){
-    	MailBusiness.getInstance().deleteLetter(letterID);
+    else if(this.letterID>0 && iwc.isParameterSet("remove_letter.x")){
+    	MailBusiness.getInstance().deleteLetter(this.letterID);
     }
     else if(iwc.isParameterSet("save_account.x")){
     	this.saveAccount(iwc);
     }
-    else if(account>0 && iwc.isParameterSet("remove_account.x") ){
+    else if(this.account>0 && iwc.isParameterSet("remove_account.x") ){
     	this.deleteAccount();
     }
-    else if(topic>0 && iwc.isParameterSet("remove_topic.x") ){
+    else if(this.topic>0 && iwc.isParameterSet("remove_topic.x") ){
     	this.deleteTopic();
     }
   }
@@ -679,18 +686,18 @@ public class SetupEditor extends Block {
 	String fromaddress = iwc.getParameter("from_address");
 	String subject = iwc.getParameter("subject");
 	String body = iwc.getParameter("body");
-    MailBusiness.getInstance().saveTopicLetter(letterID,fromname,fromaddress,subject,body,EmailLetter.TYPE_SUBSCRIPTION,topic);
+    MailBusiness.getInstance().saveTopicLetter(this.letterID,fromname,fromaddress,subject,body,EmailLetter.TYPE_SUBSCRIPTION,this.topic);
   }
   
   public PresentationObject getTopicForm(IWContext iwc){
   	Table T = new Table();
   	int row = 1;
 
-  	T.add(tf.format(iwrb.getLocalizedString("name", "Name"),tf.HEADER), 1, row++);
-    T.add(tf.format(iwrb.getLocalizedString("description", "Description"),tf.HEADER), 1, row++);
-	T.add(tf.format(iwrb.getLocalizedString("sender_name", "Sender name"),tf.HEADER), 1, row++);
-	T.add(tf.format(iwrb.getLocalizedString("sender_email", "Sender email"),tf.HEADER), 1, row++);
-    T.add(tf.format(iwrb.getLocalizedString("category", "Category"),tf.HEADER), 1, row++);
+  	T.add(this.tf.format(this.iwrb.getLocalizedString("name", "Name"),this.tf.HEADER), 1, row++);
+    T.add(this.tf.format(this.iwrb.getLocalizedString("description", "Description"),this.tf.HEADER), 1, row++);
+	T.add(this.tf.format(this.iwrb.getLocalizedString("sender_name", "Sender name"),this.tf.HEADER), 1, row++);
+	T.add(this.tf.format(this.iwrb.getLocalizedString("sender_email", "Sender email"),this.tf.HEADER), 1, row++);
+    T.add(this.tf.format(this.iwrb.getLocalizedString("category", "Category"),this.tf.HEADER), 1, row++);
     row=1;
     TextInput name = new TextInput("name");
     TextInput info = new TextInput("info");
@@ -698,8 +705,8 @@ public class SetupEditor extends Block {
 	TextInput snd_email = new TextInput("snd_email");
     //DropdownMenu grps = getGroupDropdown("grp", String.valueOf(group));
     DropdownMenu cats = getCategoryDropdown("cat","");
-    if(topic>0){
-    	EmailTopic top = (EmailTopic) topics.get(String.valueOf(topic));
+    if(this.topic>0){
+    	EmailTopic top = (EmailTopic) this.topics.get(String.valueOf(this.topic));
     	if(top!=null){
     		name.setContent(top.getName());
     		info.setContent(top.getDescription());
@@ -713,8 +720,8 @@ public class SetupEditor extends Block {
 	T.add(snd_name,2,row++);
 	T.add(snd_email,2,row++);
     T.add(cats,2,row++);
-    T.add(new SubmitButton(iwrb.getLocalizedImageButton("save", "Save"), "save_topic"),2,row);
-     T.add(new SubmitButton(iwrb.getLocalizedImageButton("delete","Delete"),"remove_topic"),2,row);
+    T.add(new SubmitButton(this.iwrb.getLocalizedImageButton("save", "Save"), "save_topic"),2,row);
+     T.add(new SubmitButton(this.iwrb.getLocalizedImageButton("delete","Delete"),"remove_topic"),2,row);
     return T;
   }
   
@@ -725,14 +732,14 @@ public class SetupEditor extends Block {
     TextInput host = new TextInput("host");
     TextInput user = new TextInput("user");
     TextInput pass = new TextInput("pass");
-    T.add(tf.format(iwrb.getLocalizedString("name","Name"),tf.HEADER),1,row++);
-    T.add(tf.format(iwrb.getLocalizedString("host","Host"),tf.HEADER),1,row++);
-    T.add(tf.format(iwrb.getLocalizedString("user","User"),tf.HEADER),1,row++);
-    T.add(tf.format(iwrb.getLocalizedString("pass","Passwd"),tf.HEADER),1,row++);
+    T.add(this.tf.format(this.iwrb.getLocalizedString("name","Name"),this.tf.HEADER),1,row++);
+    T.add(this.tf.format(this.iwrb.getLocalizedString("host","Host"),this.tf.HEADER),1,row++);
+    T.add(this.tf.format(this.iwrb.getLocalizedString("user","User"),this.tf.HEADER),1,row++);
+    T.add(this.tf.format(this.iwrb.getLocalizedString("pass","Passwd"),this.tf.HEADER),1,row++);
     T.add(new HiddenInput("proto",String.valueOf(MailProtocol.SMTP)));
-    if(account > 0){
+    if(this.account > 0){
     	try {
-			MailAccount acc =((MailAccountHome) IDOLookup.getHome(MailAccount.class)).findByPrimaryKey(new Integer(account));
+			MailAccount acc =((MailAccountHome) IDOLookup.getHome(MailAccount.class)).findByPrimaryKey(new Integer(this.account));
 			name.setContent(acc.getName());
 			host.setContent(acc.getHost());
 			user.setContent(acc.getUser());
@@ -747,8 +754,8 @@ public class SetupEditor extends Block {
    	T.add(host,2,row++);
    	T.add(user,2,row++);
    	T.add(pass,2,row++);
-   	T.add(new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"save_account"),2,row);;
-    T.add(new SubmitButton(iwrb.getLocalizedImageButton("delete","Delete"),"remove_account"),2,row);;
+   	T.add(new SubmitButton(this.iwrb.getLocalizedImageButton("save","Save"),"save_account"),2,row);;
+    T.add(new SubmitButton(this.iwrb.getLocalizedImageButton("delete","Delete"),"remove_account"),2,row);;
     return T;
   }
   

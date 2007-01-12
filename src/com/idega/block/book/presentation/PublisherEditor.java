@@ -36,24 +36,26 @@ public PublisherEditor(){
 }
 
   public void main(IWContext iwc) throws Exception {
-    _iwb = getBundle(iwc);
-    _iwrb = getResourceBundle(iwc);
-    addTitle(_iwrb.getLocalizedString("add_publisher","Add publisher"));
+    this._iwb = getBundle(iwc);
+    this._iwrb = getResourceBundle(iwc);
+    addTitle(this._iwrb.getLocalizedString("add_publisher","Add publisher"));
 
     try {
-      _publisherID = Integer.parseInt(iwc.getParameter(BookBusiness.PARAMETER_PUBLISHER_ID));
+      this._publisherID = Integer.parseInt(iwc.getParameter(BookBusiness.PARAMETER_PUBLISHER_ID));
     }
     catch (NumberFormatException e) {
-      _publisherID = -1;
+      this._publisherID = -1;
     }
 
     String mode = iwc.getParameter(BookBusiness.PARAMETER_MODE);
 
     if ( mode.equalsIgnoreCase(BookBusiness.PARAMETER_EDIT) ) {
-      if ( _publisherID != -1 ) {
-	_update = true;
-	_publisher = getBookBusiness().getPublisher(_publisherID);
-	if ( _publisher == null ) _update = false;
+      if ( this._publisherID != -1 ) {
+	this._update = true;
+	this._publisher = getBookBusiness().getPublisher(this._publisherID);
+	if ( this._publisher == null ) {
+		this._update = false;
+	}
       }
       processForm();
     }
@@ -76,25 +78,25 @@ public PublisherEditor(){
       imageInsert.setMaxImageWidth(130);
       imageInsert.setHasUseBox(false);
 
-    if ( _update ) {
-      if ( _publisher.getName() != null ) {
-	publisherName.setContent(_publisher.getName());
+    if ( this._update ) {
+      if ( this._publisher.getName() != null ) {
+	publisherName.setContent(this._publisher.getName());
       }
-      if ( _publisher.getDescription() != null ) {
-	publisherDescription.setContent(_publisher.getDescription());
+      if ( this._publisher.getDescription() != null ) {
+	publisherDescription.setContent(this._publisher.getDescription());
       }
-      if ( _publisher.getImage() != -1 ) {
-	imageInsert.setImageId(_publisher.getImage());
+      if ( this._publisher.getImage() != -1 ) {
+	imageInsert.setImageId(this._publisher.getImage());
       }
     }
-    addLeft(_iwrb.getLocalizedString("publisher_name","Publisher name")+":",publisherName,true);
-    addLeft(_iwrb.getLocalizedString("book_description","Description")+":",publisherDescription,true);
-    addRight(_iwrb.getLocalizedString("image","Image")+":",imageInsert,true,false);
+    addLeft(this._iwrb.getLocalizedString("publisher_name","Publisher name")+":",publisherName,true);
+    addLeft(this._iwrb.getLocalizedString("book_description","Description")+":",publisherDescription,true);
+    addRight(this._iwrb.getLocalizedString("image","Image")+":",imageInsert,true,false);
 
-    addHiddenInput(new HiddenInput(BookBusiness.PARAMETER_PUBLISHER_ID,Integer.toString(_publisherID)));
+    addHiddenInput(new HiddenInput(BookBusiness.PARAMETER_PUBLISHER_ID,Integer.toString(this._publisherID)));
 
-    addSubmitButton(new CloseButton(_iwrb.getLocalizedImageButton("close","CLOSE")));
-    addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("save","SAVE"),BookBusiness.PARAMETER_MODE,BookBusiness.PARAMETER_SAVE));
+    addSubmitButton(new CloseButton(this._iwrb.getLocalizedImageButton("close","CLOSE")));
+    addSubmitButton(new SubmitButton(this._iwrb.getLocalizedImageButton("save","SAVE"),BookBusiness.PARAMETER_MODE,BookBusiness.PARAMETER_SAVE));
   }
 
   private void savePublisher(IWContext iwc) {
@@ -102,14 +104,14 @@ public PublisherEditor(){
     String description = iwc.getParameter(BookBusiness.PARAMETER_DESCRIPTION);
     String imageID = iwc.getParameter(BookBusiness.PARAMETER_IMAGE_ID);
 
-    getBookBusiness().savePublisher(_publisherID,name,description,imageID);
+    getBookBusiness().savePublisher(this._publisherID,name,description,imageID);
 
     setParentToReload();
     close();
   }
 
   private void deletePublisher() {
-    getBookBusiness().deletePublisher(_publisherID);
+    getBookBusiness().deletePublisher(this._publisherID);
     setParentToReload();
     close();
   }

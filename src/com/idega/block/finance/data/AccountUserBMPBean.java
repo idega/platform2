@@ -42,32 +42,36 @@ public class AccountUserBMPBean extends UserBMPBean implements AccountUser{
 	    if(first != null || middle !=null || last !=null || pid!=null){
 	      sql.append(" where ");
 	      if(first!=null &&  !"".equals(first)){
-	        if(!isfirst)
-	          sql.append(" and ");
+	        if(!isfirst) {
+				sql.append(" and ");
+			}
 	        sql.append(" u.first_name like '%");
 	        sql.append(first);
 	        sql.append("%' ");
 	        isfirst = false;
 	      }
 	      if(middle!=null &&  !"".equals(middle)){
-	        if(!isfirst)
-	          sql.append(" and ");
+	        if(!isfirst) {
+				sql.append(" and ");
+			}
 	        sql.append(" u.middle_name like '%");
 	        sql.append(middle);
 	        sql.append("%' ");
 	        isfirst = false;
 	      }
 	      if(last!=null && !"".equals(last )){
-	        if(!isfirst)
-	          sql.append(" and ");
+	        if(!isfirst) {
+				sql.append(" and ");
+			}
 	        sql.append(" u.last_name like '%");
 	        sql.append(last);
 	        sql.append("%' ");
 	        isfirst = false;
 	      }
 	      if(pid!=null && !"".equals(pid )){
-	        if(!isfirst)
-	          sql.append(" and ");
+	        if(!isfirst) {
+				sql.append(" and ");
+			}
 	        sql.append(" u.personal_id like '%");
 	        sql.append(pid);
 	        sql.append("%' ");

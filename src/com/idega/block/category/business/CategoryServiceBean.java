@@ -21,6 +21,7 @@ import com.idega.business.IBOServiceBean;
 import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.component.data.ICObjectInstanceHome;
+import com.idega.data.GenericEntity;
 import com.idega.data.IDOLookup;
 import com.idega.util.IWTimestamp;
 
@@ -42,8 +43,9 @@ public class CategoryServiceBean extends  IBOServiceBean implements CategoryServ
 				}
 				return true;
 			}
-			else
+			else {
 				return false;
+			}
 		
 	}
 	public boolean disconnectCategory(ICCategory Cat, int iObjectInstanceId) {
@@ -95,15 +97,16 @@ public class CategoryServiceBean extends  IBOServiceBean implements CategoryServ
 			}
 			return true;
 		}
-		else
-			return false;
+			else {
+				return false;
+			}
 	}
 	public void removeCategory(int iCategoryId) throws Exception {
 		removeCategory(iCategoryId, CategoryFinder.getInstance().getObjectInstanceIdFromCategoryId(iCategoryId));
 	}
 	public void removeCategory(int iCategoryId, int iObjectInstanceId) throws RemoteException {
 		try {
-			ICCategory nc = (ICCategory) CategoryFinder.getInstance().getCategory(iCategoryId);
+			ICCategory nc = CategoryFinder.getInstance().getCategory(iCategoryId);
 			if (iObjectInstanceId > 0) {
 				ICObjectInstance obj =
 					(
@@ -187,8 +190,9 @@ public class CategoryServiceBean extends  IBOServiceBean implements CategoryServ
 		try {
 			
 			ICCategory Cat = getCategoryHome().create();
-			if (iCategoryId > 0)
+			if (iCategoryId > 0) {
 				Cat = getCategoryHome().findByPrimaryKey(new Integer(iCategoryId));
+			}
 			Cat.setName(sName);
 			Cat.setDescription(sDesc);
 			Cat.setType(type);
@@ -266,9 +270,10 @@ public class CategoryServiceBean extends  IBOServiceBean implements CategoryServ
 						iObjectInstanceId);
 
 				// Allows only one category per instanceId
-				if (!allowMultible)
+				if (!allowMultible) {
 					objIns.removeFrom(
-						(ICCategory) com.idega.block.category.data.ICCategoryBMPBean.getEntityInstance(ICCategory.class));
+						(ICCategory) GenericEntity.getEntityInstance(ICCategory.class));
+				}
 				Cat.addTo(objIns, "TREE_ORDER", String.valueOf(orderNumber));
 			}
 			
@@ -315,14 +320,16 @@ public class CategoryServiceBean extends  IBOServiceBean implements CategoryServ
 	}
 	
 	public java.util.Map getInheritedMetaData(java.util.Map table, ICCategory category) {
-		if (table == null)
+		if (table == null) {
 			table = new Hashtable();
+		}
 			
 		ICCategory parent = (ICCategory) category.getParentNode();
 		if (parent != null) {
 			Map attributes = parent.getMetaDataAttributes();
-			if (attributes != null)
+			if (attributes != null) {
 				table.putAll(attributes);
+			}
 			return getInheritedMetaData(table, parent);
 		}
 			
@@ -334,14 +341,16 @@ public class CategoryServiceBean extends  IBOServiceBean implements CategoryServ
 	}
 	
 	public java.util.Map getInheritedMetaDataTypes(java.util.Map metadata, ICCategory category) {
-		if (metadata == null)
+		if (metadata == null) {
 			metadata = new Hashtable();
+		}
 			
 		ICCategory parent = (ICCategory) category.getParentNode();
 		if (parent != null) {
 			Map attributes = parent.getMetaDataTypes();
-			if (attributes != null)
+			if (attributes != null) {
 				metadata.putAll(attributes);
+			}
 			return getInheritedMetaDataTypes(metadata, parent);
 		}
 			

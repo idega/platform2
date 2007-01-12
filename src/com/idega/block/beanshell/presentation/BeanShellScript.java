@@ -74,11 +74,11 @@ public class BeanShellScript extends Block {
 		try {
 			engine = (BSHEngine) IBOLookup.getServiceInstance(iwc,BSHEngine.class);
 		
-			if(scriptString==null && iwc.isSuperAdmin()){
-				scriptString = iwc.getParameter(PARAM_SCRIPT_STRING);
+			if(this.scriptString==null && iwc.isSuperAdmin()){
+				this.scriptString = iwc.getParameter(PARAM_SCRIPT_STRING);
 			}
 			
-			if(showEditor){
+			if(this.showEditor){
 				addEditorAndRunScript(iwc,engine);
 			}
 			else{
@@ -104,25 +104,25 @@ public class BeanShellScript extends Block {
 		Object obj = null;
 		
 		try{
-			if(scriptString!=null){
+			if(this.scriptString!=null){
 				//run script from scriptstring
-				obj = engine.runScript(scriptString,iwc);
+				obj = engine.runScript(this.scriptString,iwc);
 			}
-			else if(scriptInBundleFileName!=null){
+			else if(this.scriptInBundleFileName!=null){
 				//run from a file within a bundle
-				if(bundle==null){
-					bundle = this.getBundle(iwc);
+				if(this.bundle==null){
+					this.bundle = this.getBundle(iwc);
 				}
 				
-				obj = engine.runScriptFromBundle(bundle,scriptInBundleFileName,iwc);
+				obj = engine.runScriptFromBundle(this.bundle,this.scriptInBundleFileName,iwc);
 			}
-			else if(icFileScript!=null){
+			else if(this.icFileScript!=null){
 				//run from a script file in the db
-				obj = engine.runScriptFromICFile(icFileScript,iwc);
+				obj = engine.runScriptFromICFile(this.icFileScript,iwc);
 			}
-			else if(fileNameWithPath!=null){
+			else if(this.fileNameWithPath!=null){
 				//run from a script file from anywhere on the server
-				obj = engine.runScriptFromFileWithPath(fileNameWithPath);
+				obj = engine.runScriptFromFileWithPath(this.fileNameWithPath);
 			}
 		}
 		catch (TargetError e) {
@@ -138,11 +138,11 @@ public class BeanShellScript extends Block {
 		catch (FileNotFoundException e) {
 			e.printStackTrace();
 			
-			if(scriptInBundleFileName!=null){
-				obj = new Text("Script file was not found: "+bundle.getRealPathWithFileNameString(scriptInBundleFileName));
+			if(this.scriptInBundleFileName!=null){
+				obj = new Text("Script file was not found: "+this.bundle.getRealPathWithFileNameString(this.scriptInBundleFileName));
 			}
-			else if(fileNameWithPath!=null){
-				obj = new Text("Script file was not found: "+fileNameWithPath);
+			else if(this.fileNameWithPath!=null){
+				obj = new Text("Script file was not found: "+this.fileNameWithPath);
 			}
 		}
 		
@@ -153,13 +153,13 @@ public class BeanShellScript extends Block {
 	private void addEditorAndRunScript(IWContext iwc, BSHEngine engine) throws RemoteException {
 		Form editorForm = new Form();
 		
-		if(parametersToMaintain!=null && !parametersToMaintain.isEmpty()){
-			editorForm.maintainParameters(parametersToMaintain);
+		if(this.parametersToMaintain!=null && !this.parametersToMaintain.isEmpty()){
+			editorForm.maintainParameters(this.parametersToMaintain);
 		}
 		
 		Table table = new Table(1,3);
 		
-		TextArea scriptArea = new TextArea(PARAM_SCRIPT_STRING,( (scriptString!=null)? scriptString : ""));
+		TextArea scriptArea = new TextArea(PARAM_SCRIPT_STRING,( (this.scriptString!=null)? this.scriptString : ""));
 		scriptArea.setWidth("640");
 		scriptArea.setHeight("480");
 		
@@ -190,7 +190,7 @@ public class BeanShellScript extends Block {
 	}
 	
 	public boolean isScriptEditorVisible(){
-		return showEditor;
+		return this.showEditor;
 	}
 	
 	public void setScriptString(String scriptString){
@@ -198,7 +198,7 @@ public class BeanShellScript extends Block {
 	}
 	
 	public String getScriptString(){
-		return scriptString;
+		return this.scriptString;
 	}
 	
 	public void setScriptFromICFile(ICFile script){
@@ -210,7 +210,7 @@ public class BeanShellScript extends Block {
 	}
 	
 	public void setBundleAndScriptFileName(IWBundle bundle, String fileName){
-		scriptInBundleFileName = fileName;
+		this.scriptInBundleFileName = fileName;
 		this.bundle = bundle;
 	}
 	
@@ -224,10 +224,10 @@ public class BeanShellScript extends Block {
 	 * @param parameter
 	 */
 	public void addParameterToMaintain(String parameter) {
-		if(parametersToMaintain==null){
-			parametersToMaintain = new ArrayList();
+		if(this.parametersToMaintain==null){
+			this.parametersToMaintain = new ArrayList();
 		}
-		parametersToMaintain.add(parameter);
+		this.parametersToMaintain.add(parameter);
 	}
 	
 	

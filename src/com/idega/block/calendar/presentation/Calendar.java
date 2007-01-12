@@ -139,12 +139,12 @@ public class Calendar extends CategoryBlock implements Builderaware {
 	}
 
 	public Calendar(IWTimestamp timestamp) {
-		_stamp = timestamp;
+		this._stamp = timestamp;
 	}
 
 	public void registerPermissionKeys() {
-		registerPermissionKey(AddPermission);
-		registerPermissionKey(PrePermission);
+		registerPermissionKey(this.AddPermission);
+		registerPermissionKey(this.PrePermission);
 	}
 
 	public String getCategoryType() {
@@ -161,45 +161,45 @@ public class Calendar extends CategoryBlock implements Builderaware {
 
 	public void main(IWContext iwc) throws Exception {
 		super.main(iwc);
-		_iwrb = getResourceBundle(iwc);
-		_iwb = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
-		_iwbCalendar = getBundle(iwc);
+		this._iwrb = getResourceBundle(iwc);
+		this._iwb = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+		this._iwbCalendar = getBundle(iwc);
 
-		if (headlineStyleName == null) {
-			headlineStyleName = getStyleName(HEADLINE_STYLE_NAME);
+		if (this.headlineStyleName == null) {
+			this.headlineStyleName = getStyleName(HEADLINE_STYLE_NAME);
 		}
-		if (bodyStyleName == null) {
-			bodyStyleName = getStyleName(BODY_STYLE_NAME);
+		if (this.bodyStyleName == null) {
+			this.bodyStyleName = getStyleName(BODY_STYLE_NAME);
 		}
-		if (dateStyleName == null) {
-			dateStyleName = getStyleName(DATE_STYLE_NAME);
+		if (this.dateStyleName == null) {
+			this.dateStyleName = getStyleName(DATE_STYLE_NAME);
 		}
-		if (categoryStyleName == null) {
-			categoryStyleName = getStyleName(CATEGORY_STYLE_NAME);
+		if (this.categoryStyleName == null) {
+			this.categoryStyleName = getStyleName(this.CATEGORY_STYLE_NAME);
 		}
 
-		iUserId = iwc.getUserId();
+		this.iUserId = iwc.getUserId();
 
-		hasEdit = iwc.hasEditPermission(this);
-		hasAdd = iwc.hasPermission(AddPermission, this);
-		hasPref = iwc.hasPermission(PrePermission, this);
+		this.hasEdit = iwc.hasEditPermission(this);
+		this.hasAdd = iwc.hasPermission(this.AddPermission, this);
+		this.hasPref = iwc.hasPermission(this.PrePermission, this);
 
-		_iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
+		this._iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
 
 		if (iwc.getParameter(CalendarParameters.PARAMETER_VIEW) != null) {
-			_view = Integer.parseInt(iwc.getParameter(CalendarParameters.PARAMETER_VIEW));
+			this._view = Integer.parseInt(iwc.getParameter(CalendarParameters.PARAMETER_VIEW));
 		}
 
-		if (_stamp == null) {
+		if (this._stamp == null) {
 			String day = iwc.getParameter(CalendarParameters.PARAMETER_DAY);
 			String month = iwc.getParameter(CalendarParameters.PARAMETER_MONTH);
 			String year = iwc.getParameter(CalendarParameters.PARAMETER_YEAR);
-			_stamp = CalendarBusiness.getTimestamp(day, month, year);
+			this._stamp = CalendarBusiness.getTimestamp(day, month, year);
 		}
 
-		_isSelectedDay = CalendarBusiness.getIsSelectedDay(iwc);
+		this._isSelectedDay = CalendarBusiness.getIsSelectedDay(iwc);
 
-		switch (_view) {
+		switch (this._view) {
 			case CalendarParameters.DAY:
 				drawDay(iwc);
 				break;
@@ -218,16 +218,17 @@ public class Calendar extends CategoryBlock implements Builderaware {
 	private void getParameter(IWContext iwc) {
 		String string = iwc.getParameter(CalendarParameters.PARAMETER_SHOW_CALENDAR);
 		if (string != null && string.equalsIgnoreCase(CalendarParameters.PARAMETER_TRUE)) {
-			_showMonth = true;
+			this._showMonth = true;
 			iwc.setSessionAttribute(CalendarParameters.PARAMETER_SHOW_CALENDAR, CalendarParameters.PARAMETER_TRUE);
 		}
 		else if (string != null && string.equalsIgnoreCase(CalendarParameters.PARAMETER_FALSE)) {
-			_showMonth = false;
+			this._showMonth = false;
 			iwc.removeSessionAttribute(CalendarParameters.PARAMETER_SHOW_CALENDAR);
 		}
 		else if (string == null) {
-			if (iwc.getSessionAttribute(CalendarParameters.PARAMETER_SHOW_CALENDAR) != null)
-				_showMonth = true;
+			if (iwc.getSessionAttribute(CalendarParameters.PARAMETER_SHOW_CALENDAR) != null) {
+				this._showMonth = true;
+			}
 		}
 	}
 
@@ -236,8 +237,9 @@ public class Calendar extends CategoryBlock implements Builderaware {
 
 		Table outerTable = new Table();
 		outerTable.setCellpaddingAndCellspacing(0);
-		if (_width != null)
-			outerTable.setWidth(_width);
+		if (this._width != null) {
+			outerTable.setWidth(this._width);
+		}
 		outerTable.setWidth(1, Table.HUNDRED_PERCENT);
 
 		Table entriesTable = new Table();
@@ -255,41 +257,47 @@ public class Calendar extends CategoryBlock implements Builderaware {
 
 		// /// Permisson Area ////////////
 		boolean buttonsAdded = false;
-		if (hasAdd || hasEdit) {
+		if (this.hasAdd || this.hasEdit) {
 			entriesTable.add(getAddIcon(), 1, ypos);
 			buttonsAdded = true;
 		}
-		if (hasPref || hasEdit) {
+		if (this.hasPref || this.hasEdit) {
 			entriesTable.add(getPropertiesIcon(), 1, ypos);
 			buttonsAdded = true;
 		}
-		if (hasEdit) {
+		if (this.hasEdit) {
 			entriesTable.add(getCategoryIcon(), 1, ypos);
 			buttonsAdded = true;
 		}
-		if (buttonsAdded)
+		if (buttonsAdded) {
 			ypos++;
 		// ///////////////////////////////
+		}
 
 		int numberOfShown = 0;
 
 		List entries = null;
-		if (_isSelectedDay) {
+		if (this._isSelectedDay) {
 
-			entries = CalendarFinder.getInstance().listOfEntries(_stamp, getCategoryIds());
-			if (entries != null)
+			entries = CalendarFinder.getInstance().listOfEntries(this._stamp, getCategoryIds());
+			if (entries != null) {
 				numberOfShown = entries.size();
+			}
 		}
 		else {
-			if (_daysAhead != null || _daysBack != null)
-				entries = CalendarFinder.getInstance().listOfWeekEntries(_stamp, _daysAhead.intValue(), _daysBack.intValue(), getCategoryIds());
-			else
+			if (this._daysAhead != null || this._daysBack != null) {
+				entries = CalendarFinder.getInstance().listOfWeekEntries(this._stamp, this._daysAhead.intValue(), this._daysBack.intValue(), getCategoryIds());
+			}
+			else {
 				entries = CalendarFinder.getInstance().listOfNextEntries(getCategoryIds());
+			}
 			if (entries != null) {
-				if (entries.size() > _numberOfShown)
-					numberOfShown = _numberOfShown;
-				else
+				if (entries.size() > this._numberOfShown) {
+					numberOfShown = this._numberOfShown;
+				}
+				else {
 					numberOfShown = entries.size();
+				}
 			}
 		}
 
@@ -298,7 +306,7 @@ public class Calendar extends CategoryBlock implements Builderaware {
 			for (int a = 0; a < numberOfShown; a++) {
 				Image typeImage = null;
 				entry = (CalendarEntry) entries.get(a);
-				localeStrings = CalendarFinder.getInstance().getEntryStrings(entry, _iLocaleID);
+				localeStrings = CalendarFinder.getInstance().getEntryStrings(entry, this._iLocaleID);
 				imageID = CalendarFinder.getInstance().getImageID(entry.getEntryTypeID());
 
 				if (imageID != -1) {
@@ -311,33 +319,37 @@ public class Calendar extends CategoryBlock implements Builderaware {
 					}
 				}
 				if (typeImage == null) {
-					typeImage = _iwbCalendar.getImage("shared/day_dot.gif");
+					typeImage = this._iwbCalendar.getImage("shared/day_dot.gif");
 				}
 
 				if (localeStrings != null) {
-					if (localeStrings[0] != null)
+					if (localeStrings[0] != null) {
 						headlineText = new Text(localeStrings[0]);
-					else
+					}
+					else {
 						headlineText = null;
+					}
 
-					if (localeStrings[1] != null)
+					if (localeStrings[1] != null) {
 						bodyText = new Text(localeStrings[1]);
-					else
+					}
+					else {
 						bodyText = null;
+					}
 				}
 
 				int xpos = 1;
 
 				if (headlineText != null) {
 					if (typeImage != null) {
-						typeImage.setName(CalendarFinder.getInstance().getEntryTypeName(entry.getEntryTypeID(), _iLocaleID));
+						typeImage.setName(CalendarFinder.getInstance().getEntryTypeName(entry.getEntryTypeID(), this._iLocaleID));
 						entriesTable.add(typeImage, xpos, ypos);
 						entriesTable.setWidth(xpos, ypos, "1");
 						hasImage = true;
 						xpos++;
 					}
 
-					headlineText.setFontStyle("font-family: Arial,Helvetica,sans-serif; font-size: 11px; font-weight: bold; color: " + _headlineColor + ";");
+					headlineText.setFontStyle("font-family: Arial,Helvetica,sans-serif; font-size: 11px; font-weight: bold; color: " + this._headlineColor + ";");
 					entriesTable.add(headlineText, xpos, ypos);
 
 					startDate = new IWTimestamp(entry.getDate());
@@ -348,7 +360,7 @@ public class Calendar extends CategoryBlock implements Builderaware {
 					
 					Text fromDateText = new Text(format.format(fromDate));
 					
-					fromDateText.setFontStyle("font-family: Arial,Helvetica,sans-serif; font-size: 10px; color: " + _dateColor + ";");
+					fromDateText.setFontStyle("font-family: Arial,Helvetica,sans-serif; font-size: 10px; color: " + this._dateColor + ";");
 					
 					
 					xpos++;
@@ -359,7 +371,7 @@ public class Calendar extends CategoryBlock implements Builderaware {
 						endDate = new IWTimestamp(entry.getEndDate());
 						Date toDate = new Date(endDate.getTimestamp().getTime());
 						Text toDateText = new Text(format.format(toDate));
-						toDateText.setFontStyle("font-family: Arial,Helvetica,sans-serif; font-size: 10px; color: " + _dateColor + ";");
+						toDateText.setFontStyle("font-family: Arial,Helvetica,sans-serif; font-size: 10px; color: " + this._dateColor + ";");
 						
 						xpos++;
 						entriesTable.setAlignment(xpos, ypos, "right");
@@ -367,14 +379,14 @@ public class Calendar extends CategoryBlock implements Builderaware {
 					}
 
 					// Checking permissions
-					if (hasEdit || hasPref || this.iUserId == entry.getUserID()) {
+					if (this.hasEdit || this.hasPref || this.iUserId == entry.getUserID()) {
 						xpos++;
 						entriesTable.add(getEditButtons(entry.getID()), xpos, ypos);
 					}
 
 					if (bodyText != null && bodyText.getText().length() > 0) {
 						ypos++;
-						bodyText.setFontStyle("font-family: Arial,Helvetica,sans-serif; font-size: 11px; color: " + _bodyColor + ";");
+						bodyText.setFontStyle("font-family: Arial,Helvetica,sans-serif; font-size: 11px; color: " + this._bodyColor + ";");
 						if (hasImage) {
 							entriesTable.mergeCells(2, ypos, entriesTable.getColumns(), ypos);
 							entriesTable.add(bodyText, 2, ypos);
@@ -391,8 +403,8 @@ public class Calendar extends CategoryBlock implements Builderaware {
 			}
 		}
 		else {
-			headlineText = new Text(_iwrb.getLocalizedString("no_entries", "No entries in calendar"));
-			headlineText.setFontStyle("font-family: Verdana,Arial,Helvetica,sans-serif; font-size: 11px; font-weight: bold; color: " + _headlineColor + ";");
+			headlineText = new Text(this._iwrb.getLocalizedString("no_entries", "No entries in calendar"));
+			headlineText.setFontStyle("font-family: Verdana,Arial,Helvetica,sans-serif; font-size: 11px; font-weight: bold; color: " + this._headlineColor + ";");
 			entriesTable.add(headlineText, 1, 2);
 			ypos++;
 		}
@@ -400,8 +412,8 @@ public class Calendar extends CategoryBlock implements Builderaware {
 			entriesTable.mergeCells(1, 1, entriesTable.getColumns(), 1);
 		}
 
-		if (_showMonth) {
-			SmallCalendar cal = getCalendar(_stamp);
+		if (this._showMonth) {
+			SmallCalendar cal = getCalendar(this._stamp);
 			cal.setICObjectInstanceID(this.getICObjectInstanceID());
 			cal.setWidth(100);
 			outerTable.setWidth(2, 1, "6");
@@ -409,16 +421,16 @@ public class Calendar extends CategoryBlock implements Builderaware {
 			outerTable.add(cal, 3, 1);
 		}
 
-		if (_showMonthButton) {
+		if (this._showMonthButton) {
 			outerTable.mergeCells(1, 2, outerTable.getColumns(), 2);
 			outerTable.setAlignment(1, 2, Table.HORIZONTAL_ALIGN_RIGHT);
-			if (_showMonth) {
-				Link link = new Link(_iwrb.getLocalizedImageButton("hide_month", "Hide month"));
+			if (this._showMonth) {
+				Link link = new Link(this._iwrb.getLocalizedImageButton("hide_month", "Hide month"));
 				link.addParameter(CalendarParameters.PARAMETER_SHOW_CALENDAR, CalendarParameters.PARAMETER_FALSE);
 				outerTable.add(link, 1, 2);
 			}
 			else {
-				Link link = new Link(_iwrb.getLocalizedImageButton("show_month", "Show month"));
+				Link link = new Link(this._iwrb.getLocalizedImageButton("show_month", "Show month"));
 				link.addParameter(CalendarParameters.PARAMETER_SHOW_CALENDAR, CalendarParameters.PARAMETER_TRUE);
 				outerTable.add(link, 1, 2);
 			}
@@ -431,8 +443,9 @@ public class Calendar extends CategoryBlock implements Builderaware {
 	private void drawAheadView(IWContext iwc) {
 		Table outerTable = new Table();
 		outerTable.setCellpaddingAndCellspacing(0);
-		if (_width != null)
-			outerTable.setWidth(_width);
+		if (this._width != null) {
+			outerTable.setWidth(this._width);
+		}
 		outerTable.setWidth(1, Table.HUNDRED_PERCENT);
 
 		Table dateTable;
@@ -447,15 +460,15 @@ public class Calendar extends CategoryBlock implements Builderaware {
 
 		// /// Permisson Area ////////////
 		boolean buttonsAdded = false;
-		if (hasAdd || hasEdit) {
+		if (this.hasAdd || this.hasEdit) {
 			outerTable.add(getAddIcon(), 1, ypos);
 			buttonsAdded = true;
 		}
-		if (hasPref || hasEdit) {
+		if (this.hasPref || this.hasEdit) {
 			outerTable.add(getPropertiesIcon(), 1, ypos);
 			buttonsAdded = true;
 		}
-		if (hasEdit) {
+		if (this.hasEdit) {
 			outerTable.add(getCategoryIcon(), 1, ypos);
 			buttonsAdded = true;
 		}
@@ -470,10 +483,12 @@ public class Calendar extends CategoryBlock implements Builderaware {
 		List entries = CalendarFinder.getInstance().listOfNextEntries(getCategoryIds());
 
 		if (entries != null) {
-			if (entries.size() > _numberOfShown)
-				numberOfShown = _numberOfShown;
-			else
+			if (entries.size() > this._numberOfShown) {
+				numberOfShown = this._numberOfShown;
+			}
+			else {
 				numberOfShown = entries.size();
+			}
 
 			CalendarEntry entry;
 			for (int a = 0; a < numberOfShown; a++) {
@@ -487,45 +502,48 @@ public class Calendar extends CategoryBlock implements Builderaware {
 				dateTable.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
 				dateTable.setCellpaddingAndCellspacing(0);
 
-				if ((a + 1) < numberOfShown && _spaceBetween > 0) {
-					outerTable.setHeight(ypos++, _spaceBetween);
+				if ((a + 1) < numberOfShown && this._spaceBetween > 0) {
+					outerTable.setHeight(ypos++, this._spaceBetween);
 				}
 
 				entry = (CalendarEntry) entries.get(a);
-				localeStrings = CalendarFinder.getInstance().getEntryStrings(entry, _iLocaleID);
+				localeStrings = CalendarFinder.getInstance().getEntryStrings(entry, this._iLocaleID);
 
 				if (localeStrings != null) {
 					if (localeStrings[0] != null) {
 						headlineText = new Text(localeStrings[0]);
-						headlineText.setStyle(headlineStyleName);
+						headlineText.setStyle(this.headlineStyleName);
 					}
-					else
+					else {
 						headlineText = null;
+					}
 
 					if (localeStrings[1] != null) {
 						bodyText = new Text(localeStrings[1]);
-						bodyText.setStyle(bodyStyleName);
+						bodyText.setStyle(this.bodyStyleName);
 					}
-					else
+					else {
 						bodyText = null;
+					}
 				}
 				int row = 1;
 				if (headlineText != null) {
 					stamp = new IWTimestamp(entry.getDate());
-					Text dateText = new Text(stamp.getLocaleDateAndTime(iwc.getCurrentLocale(), _dateStyle, _timeStyle));
-					dateText.setStyle(dateStyleName);
+					Text dateText = new Text(stamp.getLocaleDateAndTime(iwc.getCurrentLocale(), this._dateStyle, this._timeStyle));
+					dateText.setStyle(this.dateStyleName);
 					Text category = new Text(CategoryFinder.getInstance().getCategory(entry.getCategoryId()).getName(iwc.getCurrentLocale()));
-					category.setStyle(categoryStyleName);
+					category.setStyle(this.categoryStyleName);
 					dateTable.add(dateText, 1, 1);
-					if (_showCategory)
+					if (this._showCategory) {
 						dateTable.add(category, 2, 1);
+					}
 					entriesTable.add(dateTable, 1, row++);
 					entriesTable.add(headlineText, 1, row++);
 
-					if (bodyText != null && bodyText.getText().length() > 0 && showBodyText) {
+					if (bodyText != null && bodyText.getText().length() > 0 && this.showBodyText) {
 						entriesTable.add(bodyText, 1, row++);
 					}
-					if (hasEdit || hasPref || this.iUserId == entry.getUserID()) {
+					if (this.hasEdit || this.hasPref || this.iUserId == entry.getUserID()) {
 						entriesTable.setHeight(row++, 3);
 						entriesTable.add(getEditButtons(entry.getID()), 1, row);
 					}
@@ -533,8 +551,8 @@ public class Calendar extends CategoryBlock implements Builderaware {
 			}
 		}
 		else {
-			headlineText = new Text(_iwrb.getLocalizedString("no_entries", "No entries in calendar"));
-			headlineText.setFontStyle("font-family: Verdana,Arial,Helvetica,sans-serif; font-size: 11px; font-weight: bold; color: " + _headlineColor + ";");
+			headlineText = new Text(this._iwrb.getLocalizedString("no_entries", "No entries in calendar"));
+			headlineText.setFontStyle("font-family: Verdana,Arial,Helvetica,sans-serif; font-size: 11px; font-weight: bold; color: " + this._headlineColor + ";");
 			outerTable.add(headlineText, 1, ypos);
 		}
 
@@ -542,13 +560,13 @@ public class Calendar extends CategoryBlock implements Builderaware {
 	}
 
 	private void drawMonth(IWContext iwc) {
-		SmallCalendar cal = getCalendar(_stamp);
-		cal.setAsLineView(_asLineView);
+		SmallCalendar cal = getCalendar(this._stamp);
+		cal.setAsLineView(this._asLineView);
 		cal.setICObjectInstanceID(this.getICObjectInstanceID());
 
-		if (_width != null) {
+		if (this._width != null) {
 			try {
-				cal.setWidth(Integer.parseInt(_width));
+				cal.setWidth(Integer.parseInt(this._width));
 			}
 			catch (NumberFormatException e) {
 				cal.setWidth(110);
@@ -562,21 +580,22 @@ public class Calendar extends CategoryBlock implements Builderaware {
 
 		// /// Permisson Area ////////////
 		boolean buttonsAdded = false;
-		if (hasAdd || hasEdit) {
+		if (this.hasAdd || this.hasEdit) {
 			monthTable.add(getAddIcon(), 1, ypos);
 			buttonsAdded = true;
 		}
-		if (hasPref || hasEdit) {
+		if (this.hasPref || this.hasEdit) {
 			monthTable.add(getPropertiesIcon(), 1, ypos);
 			buttonsAdded = true;
 		}
-		if (hasEdit) {
+		if (this.hasEdit) {
 			monthTable.add(getCategoryIcon(), 1, ypos);
 			buttonsAdded = true;
 		}
-		if (buttonsAdded)
+		if (buttonsAdded) {
 			ypos++;
 		// ///////////////////////////////
+		}
 
 		monthTable.add(cal, 1, ypos);
 		add(monthTable);
@@ -587,30 +606,30 @@ public class Calendar extends CategoryBlock implements Builderaware {
 
 		SmallCalendar calendar = new SmallCalendar(stamp);
 		calendar.setDaysAsLink(true);
-		calendar.setNextImage(iNextImage);
-		calendar.setPreviousImage(iPreviousImage);
-		if (_page != null) {
-			calendar.setPage(_page);
+		calendar.setNextImage(this.iNextImage);
+		calendar.setPreviousImage(this.iPreviousImage);
+		if (this._page != null) {
+			calendar.setPage(this._page);
 		}
-		if (iInactiveDayStyleClass != null) {
-			calendar.setInactiveTextStyleClass(iInactiveDayStyleClass);
+		if (this.iInactiveDayStyleClass != null) {
+			calendar.setInactiveTextStyleClass(this.iInactiveDayStyleClass);
 		}
-		if (iHeaderTextStyleClass != null) {
-			calendar.setHeaderFontStyleName(iHeaderTextStyleClass);
+		if (this.iHeaderTextStyleClass != null) {
+			calendar.setHeaderFontStyleName(this.iHeaderTextStyleClass);
 		}
-		calendar.setCellpadding(iCellpadding);
-		if (iMonthTextStyleClass != null) {
-			calendar.setMonthTextStyleClass(iMonthTextStyleClass);
+		calendar.setCellpadding(this.iCellpadding);
+		if (this.iMonthTextStyleClass != null) {
+			calendar.setMonthTextStyleClass(this.iMonthTextStyleClass);
 		}
 
 		if (list != null) {
 			Iterator iter = list.iterator();
 			while (iter.hasNext()) {
 				CalendarEntry entry = (CalendarEntry) iter.next();
-				if (iActiveDayStyleClass != null) {
-					calendar.setDayFontStyleClass(new IWTimestamp(entry.getDate()), iActiveDayStyleClass);
+				if (this.iActiveDayStyleClass != null) {
+					calendar.setDayFontStyleClass(new IWTimestamp(entry.getDate()), this.iActiveDayStyleClass);
 				}
-				calendar.setDayColor(new IWTimestamp(entry.getDate()), _actionDay);
+				calendar.setDayColor(new IWTimestamp(entry.getDate()), this._actionDay);
 			}
 		}
 
@@ -626,37 +645,39 @@ public class Calendar extends CategoryBlock implements Builderaware {
 
 		// /// Permisson Area ////////////
 		boolean buttonsAdded = false;
-		if (hasEdit || hasAdd) {
+		if (this.hasEdit || this.hasAdd) {
 			yearTable.add(getAddIcon(), 1, ypos);
 			buttonsAdded = true;
 		}
-		if (hasEdit || hasPref) {
+		if (this.hasEdit || this.hasPref) {
 			yearTable.add(getPropertiesIcon(), 1, ypos);
 			buttonsAdded = true;
 		}
-		if (hasEdit) {
+		if (this.hasEdit) {
 			yearTable.add(getCategoryIcon(), 1, ypos);
 			buttonsAdded = true;
 		}
-		if (buttonsAdded)
+		if (buttonsAdded) {
 			ypos++;
 		// ///////////////////////////////
+		}
 
 		for (int a = 1; a <= 12; a++) {
-			yearStamp = new IWTimestamp(_stamp.getDay(), a, _stamp.getYear());
+			yearStamp = new IWTimestamp(this._stamp.getDay(), a, this._stamp.getYear());
 			calendar = getCalendar(yearStamp);
 			calendar.setICObjectInstanceID(this.getICObjectInstanceID());
 			calendar.setOnlySelectedHighlighted(true);
 			calendar.useNextAndPreviousLinks(false);
-			calendar.setAsLineView(_asLineView);
+			calendar.setAsLineView(this._asLineView);
 
 			yearTable.add(calendar, xpos, ypos);
 			yearTable.setRowVerticalAlignment(ypos, "top");
 
-			if (!_asLineView) {
+			if (!this._asLineView) {
 				xpos = xpos % 3 + 1;
-				if (xpos == 1)
+				if (xpos == 1) {
 					ypos++;
+				}
 			}
 			else {
 				ypos++;
@@ -667,25 +688,26 @@ public class Calendar extends CategoryBlock implements Builderaware {
 	}
 
 	private Link getAddIcon() {
-		Image image = _iwb.getImage("shared/create.gif");
+		Image image = this._iwb.getImage("shared/create.gif");
 		Link link = new Link(image);
 		link.setWindowToOpen(CalendarEditor.class);
 		link.addParameter(CalendarParameters.PARAMETER_IC_CAT, getCategoryId());
 		link.addParameter(CalendarParameters.PARAMETER_INSTANCE_ID, getICObjectInstanceID());
-		if (this._isSelectedDay)
-			link.addParameter(CalendarParameters.PARAMETER_ENTRY_DATE, _stamp.toSQLString());
+		if (this._isSelectedDay) {
+			link.addParameter(CalendarParameters.PARAMETER_ENTRY_DATE, this._stamp.toSQLString());
+		}
 		return link;
 	}
 
 	private Link getPropertiesIcon() {
-		Image image = _iwb.getImage("shared/edit.gif", "Types");
+		Image image = this._iwb.getImage("shared/edit.gif", "Types");
 		Link link = new Link(image);
 		link.setWindowToOpen(CalendarTypeEditor.class);
 		return link;
 	}
 
 	private Link getCategoryIcon() {
-		Image image = _iwb.getImage("shared/edit.gif", "Categories");
+		Image image = this._iwb.getImage("shared/edit.gif", "Categories");
 		Link link = getCategoryLink(((com.idega.block.calendar.data.CalendarCategoryHome) com.idega.data.IDOLookup.getHomeLegacy(CalendarCategory.class)).createLegacy().getCategoryType());
 		link.setImage(image);
 		// link.setWindowToOpen(CalendarTypeEditor.class);
@@ -697,8 +719,8 @@ public class Calendar extends CategoryBlock implements Builderaware {
 		table.setCellpadding(0);
 		table.setCellspacing(0);
 
-		Image editImage = _iwb.getImage("shared/edit.gif");
-		Image deleteImage = _iwb.getImage("shared/delete.gif");
+		Image editImage = this._iwb.getImage("shared/edit.gif");
+		Image deleteImage = this._iwb.getImage("shared/delete.gif");
 
 		Link editLink = new Link(editImage);
 		editLink.setWindowToOpen(CalendarEditor.class);
@@ -717,70 +739,70 @@ public class Calendar extends CategoryBlock implements Builderaware {
 	}
 
 	public void setView(int view) {
-		_view = view;
+		this._view = view;
 	}
 
 	public void setWidth(int width) {
-		_width = Integer.toString(width);
+		this._width = Integer.toString(width);
 	}
 
 	public void setWidth(String width) {
-		_width = width;
+		this._width = width;
 	}
 
 	public void setNumberOfShown(int numberOfShown) {
-		_numberOfShown = numberOfShown;
+		this._numberOfShown = numberOfShown;
 	}
 
 	public void setDaysAhead(int daysAhead) {
-		_daysAhead = new Integer(daysAhead);
+		this._daysAhead = new Integer(daysAhead);
 	}
 
 	public void setDaysBack(int daysBack) {
-		_daysBack = new Integer(daysBack);
+		this._daysBack = new Integer(daysBack);
 	}
 
 	public void setHeadlineColor(String headlineColor) {
-		_headlineColor = headlineColor;
+		this._headlineColor = headlineColor;
 	}
 
 	public void setBodyColor(String bodyColor) {
-		_bodyColor = bodyColor;
+		this._bodyColor = bodyColor;
 	}
 
 	public void setDateColor(String dateColor) {
-		_dateColor = dateColor;
+		this._dateColor = dateColor;
 	}
 
 	public void setInActiveDayColor(String color) {
-		_noActionDay = color;
+		this._noActionDay = color;
 	}
 
 	public void setActiveDayColor(String color) {
-		_actionDay = color;
+		this._actionDay = color;
 	}
 
 	public void setAsLineView(boolean line) {
-		_asLineView = line;
+		this._asLineView = line;
 	}
 
 	public void setDate(int year, int month, int day) {
-		if (_stamp == null) {
-			_stamp = new IWTimestamp(day, month, year);
+		if (this._stamp == null) {
+			this._stamp = new IWTimestamp(day, month, year);
 		}
 		else {
-			_stamp.setDay(day);
-			_stamp.setMonth(month);
-			_stamp.setYear(year);
+			this._stamp.setDay(day);
+			this._stamp.setMonth(month);
+			this._stamp.setYear(year);
 		}
 	}
 
 	public void setPage(ICPage page) {
-		_page = page;
+		this._page = page;
 	}
 
 	public void setShowMonthButton(boolean showButton) {
-		_showMonthButton = showButton;
+		this._showMonthButton = showButton;
 	}
 
 	public String getBundleIdentifier() {
@@ -796,8 +818,8 @@ public class Calendar extends CategoryBlock implements Builderaware {
 	 */
 	public Map getStyleNames() {
 		HashMap map = new HashMap();
-		String[] styleNames = { HEADLINE_STYLE_NAME, BODY_STYLE_NAME, DATE_STYLE_NAME, CATEGORY_STYLE_NAME };
-		String[] styleValues = { HEADLINE_STYLE, BODY_STYLE, DATE_STYLE, CATEGORY_STYLE };
+		String[] styleNames = { HEADLINE_STYLE_NAME, BODY_STYLE_NAME, DATE_STYLE_NAME, this.CATEGORY_STYLE_NAME };
+		String[] styleValues = { this.HEADLINE_STYLE, this.BODY_STYLE, this.DATE_STYLE, this.CATEGORY_STYLE };
 
 		for (int a = 0; a < styleNames.length; a++) {
 			map.put(styleNames[a], styleValues[a]);
@@ -813,7 +835,7 @@ public class Calendar extends CategoryBlock implements Builderaware {
 	 *          The spaceBetween to set
 	 */
 	public void setSpaceBetween(int spaceBetween) {
-		_spaceBetween = spaceBetween;
+		this._spaceBetween = spaceBetween;
 	}
 
 	/**
@@ -823,7 +845,7 @@ public class Calendar extends CategoryBlock implements Builderaware {
 	 *          The showCategory to set
 	 */
 	public void setShowCategory(boolean showCategory) {
-		_showCategory = showCategory;
+		this._showCategory = showCategory;
 	}
 
 	/**
@@ -833,7 +855,7 @@ public class Calendar extends CategoryBlock implements Builderaware {
 	 *          The dateStyle to set
 	 */
 	public void setDateStyle(int dateStyle) {
-		_dateStyle = dateStyle;
+		this._dateStyle = dateStyle;
 	}
 
 	/**
@@ -843,7 +865,7 @@ public class Calendar extends CategoryBlock implements Builderaware {
 	 *          The timeStyle to set
 	 */
 	public void setTimeStyle(int timeStyle) {
-		_timeStyle = timeStyle;
+		this._timeStyle = timeStyle;
 	}
 
 	/**
@@ -887,29 +909,29 @@ public class Calendar extends CategoryBlock implements Builderaware {
 	}
 
 	public void setNextImage(Image nextImage) {
-		iNextImage = nextImage;
+		this.iNextImage = nextImage;
 	}
 
 	public void setPreviousImage(Image previousImage) {
-		iPreviousImage = previousImage;
+		this.iPreviousImage = previousImage;
 	}
 
 	public void setActiveDayStyleClass(String activeDayStyleClass) {
-		iActiveDayStyleClass = activeDayStyleClass;
+		this.iActiveDayStyleClass = activeDayStyleClass;
 	}
 
 	public void setInactiveDayStyleClass(String inactiveDayStyleClass) {
-		iInactiveDayStyleClass = inactiveDayStyleClass;
+		this.iInactiveDayStyleClass = inactiveDayStyleClass;
 	}
 
 	public void setHeaderTextStyleClass(String headerTextStyleClass) {
-		iHeaderTextStyleClass = headerTextStyleClass;
+		this.iHeaderTextStyleClass = headerTextStyleClass;
 	}
 
 	public void setCellpadding(int cellpadding) {
-		iCellpadding = cellpadding;
+		this.iCellpadding = cellpadding;
 	}
 	public void setMonthTextStyleClass(String monthTextStyleClass) {
-		iMonthTextStyleClass = monthTextStyleClass;
+		this.iMonthTextStyleClass = monthTextStyleClass;
 	}
 }

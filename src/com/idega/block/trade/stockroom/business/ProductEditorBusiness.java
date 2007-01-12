@@ -178,8 +178,9 @@ public class ProductEditorBusiness extends IBOServiceBean {
 
 		if (cats != null) {
 			catSel.addMenuElements(cats);
-			if (product != null)
+			if (product != null) {
 				catSel.setAllSelected(true);
+			}
 		}
 
 		return catSel;
@@ -194,8 +195,9 @@ public class ProductEditorBusiness extends IBOServiceBean {
 			try {
 				Collection coll = product.getICFile();
 				//	List list = EntityFinder.getInstance().findRelated(product, ICFile.class);
-				if (coll != null)
+				if (coll != null) {
 					files = new Vector(coll);
+				}
 			}
 			catch (IDORelationshipException ido) {
 				ido.printStackTrace(System.err);
@@ -292,8 +294,9 @@ public class ProductEditorBusiness extends IBOServiceBean {
 		}
 		else {
 			CurrencyHolder holder = CurrencyBusiness.getCurrencyHolder(defaultCurrency);
-			if (holder != null)
+			if (holder != null) {
 				_currencies.addMenuElement(holder.getCurrencyID(), holder.getCurrencyName());
+			}
 		}
 		return _currencies;
 	}

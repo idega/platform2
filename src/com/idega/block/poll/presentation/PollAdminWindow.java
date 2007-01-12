@@ -61,24 +61,24 @@ public PollAdminWindow(){
     /**
      * @todo permission
      */
-    isAdmin = iwc.hasEditPermission(this);
-    superAdmin = iwc.isSuperAdmin();
-    iwb = iwc.getIWMainApplication().getBundle(Builderaware.IW_CORE_BUNDLE_IDENTIFIER);
-    iwrb = getResourceBundle(iwc);
-    addTitle(iwrb.getLocalizedString("poll_admin","Poll Admin"));
+    this.isAdmin = iwc.hasEditPermission(this);
+    this.superAdmin = iwc.isSuperAdmin();
+    this.iwb = iwc.getIWMainApplication().getBundle(Builderaware.IW_CORE_BUNDLE_IDENTIFIER);
+    this.iwrb = getResourceBundle(iwc);
+    addTitle(this.iwrb.getLocalizedString("poll_admin","Poll Admin"));
     Locale currentLocale = iwc.getCurrentLocale();
     Locale chosenLocale;
 
     try {
-      _userID = LoginBusinessBean.getUser(iwc).getID();
+      this._userID = LoginBusinessBean.getUser(iwc).getID();
     }
     catch (Exception e) {
-      _userID = -1;
+      this._userID = -1;
     }
 
-    editImage = iwb.getImage("shared/edit.gif");
-    createImage = iwb.getImage("shared/create.gif");
-    deleteImage = iwb.getImage("shared/delete.gif");
+    this.editImage = this.iwb.getImage("shared/edit.gif");
+    this.createImage = this.iwb.getImage("shared/create.gif");
+    this.deleteImage = this.iwb.getImage("shared/delete.gif");
 
     String sLocaleId = iwc.getParameter(prmLocale);
 
@@ -92,7 +92,7 @@ public PollAdminWindow(){
       iLocaleId = ICLocaleBusiness.getLocaleId(chosenLocale);
     }
 
-    if ( isAdmin ) {
+    if ( this.isAdmin ) {
       processForm(iwc, iLocaleId);
     }
     else {
@@ -103,64 +103,64 @@ public PollAdminWindow(){
   private void processForm(IWContext iwc, int iLocaleId) {
     if ( iwc.getParameter(prmID) != null ) {
       try {
-        _pollID = Integer.parseInt(iwc.getParameter(prmID));
-        iwc.setSessionAttribute(prmID,Integer.toString(_pollID));
+        this._pollID = Integer.parseInt(iwc.getParameter(prmID));
+        iwc.setSessionAttribute(prmID,Integer.toString(this._pollID));
       }
       catch (NumberFormatException e) {
-        _pollID = -1;
+        this._pollID = -1;
       }
     }
     else if ( (String) iwc.getSessionAttribute(prmID) != null ) {
       try {
-        _pollID = Integer.parseInt((String) iwc.getSessionAttribute(prmID));
+        this._pollID = Integer.parseInt((String) iwc.getSessionAttribute(prmID));
       }
       catch (NumberFormatException e) {
-        _pollID = -1;
+        this._pollID = -1;
       }
     }
 
     if ( iwc.getParameter(prmObjInstId) != null ) {
       try {
-        _newObjInst = Integer.parseInt(iwc.getParameter(prmObjInstId));
-        iwc.setSessionAttribute(prmObjInstId,new Integer(_newObjInst));
+        this._newObjInst = Integer.parseInt(iwc.getParameter(prmObjInstId));
+        iwc.setSessionAttribute(prmObjInstId,new Integer(this._newObjInst));
       }
       catch (NumberFormatException e) {
-        _newObjInst = -1;
+        this._newObjInst = -1;
       }
     }
     else if ( (Integer) iwc.getSessionAttribute(prmObjInstId) != null ) {
       try {
-        _newObjInst = ((Integer) iwc.getSessionAttribute(prmObjInstId)).intValue();
+        this._newObjInst = ((Integer) iwc.getSessionAttribute(prmObjInstId)).intValue();
       }
       catch (NumberFormatException e) {
-        _newObjInst = -1;
+        this._newObjInst = -1;
       }
     }
 
     if ( iwc.getParameter(prmAttribute) != null ) {
-      _newWithAttribute = iwc.getParameter(prmAttribute);
-      iwc.setSessionAttribute(prmAttribute,_newWithAttribute);
+      this._newWithAttribute = iwc.getParameter(prmAttribute);
+      iwc.setSessionAttribute(prmAttribute,this._newWithAttribute);
     }
     else if ( (String) iwc.getSessionAttribute(prmAttribute) != null ) {
-      _newWithAttribute = (String) iwc.getSessionAttribute(prmAttribute);
+      this._newWithAttribute = (String) iwc.getSessionAttribute(prmAttribute);
     }
 
     DropdownMenu localeDrop = ICLocalePresentation.getLocaleDropdownIdKeyed(PollAdminWindow.prmLocale);
       localeDrop.setToSubmit();
       localeDrop.setSelectedElement(Integer.toString(iLocaleId));
-    addLeft(iwrb.getLocalizedString("locale","Locale")+": ",localeDrop,false);
+    addLeft(this.iwrb.getLocalizedString("locale","Locale")+": ",localeDrop,false);
 
     Table pollTable = new Table(3,1);
       pollTable.setCellpadding(0);
       pollTable.setCellspacing(0);
 
-    Text choosePollText = formatText(iwrb.getLocalizedString("choose_poll_question","Choose Question")+":&nbsp;",true);
-    Link choosePollLink = new Link(editImage);
+    Text choosePollText = formatText(this.iwrb.getLocalizedString("choose_poll_question","Choose Question")+":&nbsp;",true);
+    Link choosePollLink = new Link(this.editImage);
       choosePollLink.setWindowToOpen(PollQuestionChooser.class);
-      choosePollLink.addParameter(Poll._prmPollID,_pollID);
-    Link createPollLink = new Link(createImage);
+      choosePollLink.addParameter(Poll._prmPollID,this._pollID);
+    Link createPollLink = new Link(this.createImage);
       createPollLink.setWindowToOpen(PollQuestionEditor.class);
-      createPollLink.addParameter(Poll._prmPollID,_pollID);
+      createPollLink.addParameter(Poll._prmPollID,this._pollID);
       pollTable.add(choosePollText,1,1);
       pollTable.setWidth(2,1,"5");
       pollTable.add(createPollLink,3,1);
@@ -172,10 +172,10 @@ public PollAdminWindow(){
     if ( pollQuestionID != null ) {
       //iwc.removeApplicationAttribute(PollQuestionChooser.prmQuestions);
       try {
-        _pollQuestionID = Integer.parseInt(pollQuestionID);
+        this._pollQuestionID = Integer.parseInt(pollQuestionID);
       }
       catch (NumberFormatException e) {
-        _pollQuestionID = -1;
+        this._pollQuestionID = -1;
       }
     }
 
@@ -188,54 +188,54 @@ public PollAdminWindow(){
       }
     }
 
-    if ( _pollQuestionID == -1 ) {
-      PollQuestion pollQuestion = PollBusiness.getQuestion(_pollID);
+    if ( this._pollQuestionID == -1 ) {
+      PollQuestion pollQuestion = PollBusiness.getQuestion(this._pollID);
       if ( pollQuestion != null ) {
         try {
-          _pollQuestionID = pollQuestion.getID();
+          this._pollQuestionID = pollQuestion.getID();
         }
         catch (NumberFormatException e) {
-          _pollQuestionID = -1;
+          this._pollQuestionID = -1;
         }
       }
       else {
-        if ( _newWithAttribute != null ) {
-          PollEntity poll = PollFinder.getPoll(_newWithAttribute);
+        if ( this._newWithAttribute != null ) {
+          PollEntity poll = PollFinder.getPoll(this._newWithAttribute);
           if ( poll != null ) {
-            _pollID = poll.getID();
-            iwc.setSessionAttribute(prmID,Integer.toString(_pollID));
+            this._pollID = poll.getID();
+            iwc.setSessionAttribute(prmID,Integer.toString(this._pollID));
             try {
-              _pollQuestionID = poll.getPollQuestionID();
+              this._pollQuestionID = poll.getPollQuestionID();
             }
             catch (NumberFormatException e) {
-              _pollQuestionID = -1;
+              this._pollQuestionID = -1;
             }
           }
         }
       }
     }
     else {
-      PollQuestion pollQuestion = PollBusiness.getPollQuestion(_pollQuestionID);
+      PollQuestion pollQuestion = PollBusiness.getPollQuestion(this._pollQuestionID);
       if ( pollQuestion == null ) {
-        _pollQuestionID = -1;
+        this._pollQuestionID = -1;
       }
     }
 
-    if ( _pollQuestionID == 0 ) {
-      _pollQuestionID = -1;
+    if ( this._pollQuestionID == 0 ) {
+      this._pollQuestionID = -1;
     }
 
-    getPoll(_pollQuestionID,iLocaleId);
+    getPoll(this._pollQuestionID,iLocaleId);
   }
 
   private void getPoll(int pollQuestionID, int iLocaleID) {
     PollQuestion _pollQuestion = null;
     String pollQuestion = PollBusiness.getLocalizedQuestion(pollQuestionID,iLocaleID);
     if ( pollQuestion == null ) {
-      pollQuestion = iwrb.getLocalizedString("no_text_in_language","No text in this language");
+      pollQuestion = this.iwrb.getLocalizedString("no_text_in_language","No text in this language");
     }
     if ( pollQuestionID == -1 ) {
-      pollQuestion = iwrb.getLocalizedString("no_question","No question selected");
+      pollQuestion = this.iwrb.getLocalizedString("no_question","No question selected");
     }
     else {
       _pollQuestion = PollBusiness.getPollQuestion(pollQuestionID);
@@ -250,11 +250,11 @@ public PollAdminWindow(){
       questionText.setBold();
       questionText.setFontSize(Text.FONT_SIZE_10_HTML_2);
 
-    Link questionEditLink = new Link(editImage);
+    Link questionEditLink = new Link(this.editImage);
       questionEditLink.setWindowToOpen(PollQuestionEditor.class);
       questionEditLink.addParameter(PollBusiness._PARAMETER_POLL_QUESTION,pollQuestionID);
-      questionEditLink.addParameter(Poll._prmPollID,_pollID);
-    Link questionDeleteLink = new Link(deleteImage);
+      questionEditLink.addParameter(Poll._prmPollID,this._pollID);
+    Link questionDeleteLink = new Link(this.deleteImage);
       questionDeleteLink.setWindowToOpen(PollQuestionEditor.class);
       questionDeleteLink.addParameter(PollBusiness._PARAMETER_POLL_QUESTION,pollQuestionID);
       questionDeleteLink.addParameter(PollBusiness._PARAMETER_DELETE,PollBusiness._PARAMETER_TRUE);
@@ -264,14 +264,14 @@ public PollAdminWindow(){
       questionTable.setCellspacing(0);
       questionTable.add(questionText,1,1);
       if ( pollQuestionID != -1 && _pollQuestion != null ) {
-        if ( _userID == _pollQuestion.getUserID() || superAdmin ) {
+        if ( this._userID == _pollQuestion.getUserID() || this.superAdmin ) {
           questionTable.setWidth(2,1,"5");
           questionTable.add(questionEditLink,3,1);
           questionTable.add(questionDeleteLink,3,1);
         }
       }
 
-    addLeft(iwrb.getLocalizedString("question","Question")+":",questionTable,true,false);
+    addLeft(this.iwrb.getLocalizedString("question","Question")+":",questionTable,true,false);
 
     if ( pollQuestionID != -1 ) {
       Table answerTable = new Table();
@@ -279,18 +279,18 @@ public PollAdminWindow(){
 
       if ( pollAnswers != null && pollAnswersIDs != null ) {
         for ( int a = 0; a < pollAnswers.length; a++ ) {
-          Link editAnswerLink = new Link(editImage);
+          Link editAnswerLink = new Link(this.editImage);
             editAnswerLink.setWindowToOpen(PollAnswerEditor.class);
             editAnswerLink.addParameter(PollBusiness._PARAMETER_POLL_ANSWER,pollAnswersIDs[a]);
 
-          Link deleteAnswerLink = new Link(deleteImage);
+          Link deleteAnswerLink = new Link(this.deleteImage);
             deleteAnswerLink.setWindowToOpen(PollAnswerEditor.class);
             deleteAnswerLink.addParameter(PollBusiness._PARAMETER_POLL_ANSWER,pollAnswersIDs[a]);
             deleteAnswerLink.addParameter(PollBusiness._PARAMETER_DELETE,PollBusiness._PARAMETER_TRUE);
 
           answerTable.add("<li>",1,row);
           answerTable.add(formatText(pollAnswers[a],true),1,row);
-          if ( _userID == _pollQuestion.getUserID() || superAdmin ) {
+          if ( this._userID == _pollQuestion.getUserID() || this.superAdmin ) {
             answerTable.setWidth(2,row,"5");
             answerTable.add(editAnswerLink,3,row);
             answerTable.add(deleteAnswerLink,3,row);
@@ -299,19 +299,19 @@ public PollAdminWindow(){
         }
       }
 
-      Link createAnswerLink = new Link(createImage);
+      Link createAnswerLink = new Link(this.createImage);
         createAnswerLink.setWindowToOpen(PollAnswerEditor.class);
         createAnswerLink.addParameter(PollBusiness._PARAMETER_POLL_QUESTION,pollQuestionID);
-        if ( _userID == _pollQuestion.getUserID() || superAdmin ) {
+        if ( this._userID == _pollQuestion.getUserID() || this.superAdmin ) {
           answerTable.add(createAnswerLink,1,row);
         }
 
-      addLeft(iwrb.getLocalizedString("answers","Answers")+":",answerTable,true,false);
+      addLeft(this.iwrb.getLocalizedString("answers","Answers")+":",answerTable,true,false);
       addHiddenInput(new HiddenInput(PollBusiness._PARAMETER_POLL_QUESTION,Integer.toString(pollQuestionID)));
     }
 
-    addSubmitButton(new SubmitButton(iwrb.getLocalizedImageButton("close","CLOSE"),PollBusiness._PARAMETER_MODE,PollBusiness._PARAMETER_CLOSE));
-    addSubmitButton(new SubmitButton(iwrb.getLocalizedImageButton("save","SAVE"),PollBusiness._PARAMETER_MODE,PollBusiness._PARAMETER_SAVE));
+    addSubmitButton(new SubmitButton(this.iwrb.getLocalizedImageButton("close","CLOSE"),PollBusiness._PARAMETER_MODE,PollBusiness._PARAMETER_CLOSE));
+    addSubmitButton(new SubmitButton(this.iwrb.getLocalizedImageButton("save","SAVE"),PollBusiness._PARAMETER_MODE,PollBusiness._PARAMETER_SAVE));
 
   }
 
@@ -319,7 +319,7 @@ public PollAdminWindow(){
     iwc.removeSessionAttribute(PollBusiness._PARAMETER_POLL_QUESTION);
     iwc.removeSessionAttribute(prmID);
     iwc.removeSessionAttribute(PollQuestionChooser.prmQuestions);
-    PollBusiness.savePoll(_pollID,_pollQuestionID,_newObjInst,_newWithAttribute);
+    PollBusiness.savePoll(this._pollID,this._pollQuestionID,this._newObjInst,this._newWithAttribute);
     setParentToReload();
     close();
   }
@@ -332,7 +332,7 @@ public PollAdminWindow(){
   }
 
   private void noAccess() throws IOException,SQLException {
-    addLeft(iwrb.getLocalizedString("no_access","Login first!"));
+    addLeft(this.iwrb.getLocalizedString("no_access","Login first!"));
     addSubmitButton(new CloseButton());
   }
 

@@ -423,8 +423,8 @@ public class ICInformationCategoryBMPBean extends TreeableEntityBMPBean implemen
 
 			List list = EntityFinder.findAll(this, buffer.toString());
 			if (list != null) {
-				if (_sortLeafs) {
-					ICTreeNodeLeafComparator c = new ICTreeNodeLeafComparator(_leafsFirst);
+				if (this._sortLeafs) {
+					ICTreeNodeLeafComparator c = new ICTreeNodeLeafComparator(this._leafsFirst);
 					Collections.sort(list, c);
 				}
 				return list;

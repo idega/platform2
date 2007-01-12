@@ -8,7 +8,7 @@ import com.idega.presentation.IWContext;
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:      idega
- * @author <a href="gummi@idega.is">Guðmundur Ágúst Sæmundsson</a>
+ * @author <a href="gummi@idega.is">Guï¿½mundur ï¿½gï¿½st Sï¿½mundsson</a>
  * @version 1.0
  */
 
@@ -43,7 +43,7 @@ public class AlbumCollection extends Block {
   }
 
   public void setInitialState(int state){
-    initialState = state;
+    this.initialState = state;
   }
 
   public void lineUpAlbumListState(IWContext iwc) throws Exception{
@@ -81,7 +81,7 @@ public class AlbumCollection extends Block {
     if(state != null){
       nextState = Integer.parseInt(state);
     } else {
-      nextState = initialState;
+      nextState = this.initialState;
     }
 
     switch (nextState) {

@@ -36,8 +36,9 @@ public class TextFinder {
     if(T!=null){
       return ContentFinder.getContentHelper(T.getContentId());
     }
-    else
-      return null;
+	else {
+		return null;
+	}
   }
 
    public static ContentHelper getContentHelper(int iTxTextId,int iLocaleId){
@@ -61,8 +62,9 @@ public class TextFinder {
     if(T!=null){
        return ContentFinder.getContentHelper(T.getContentId(),locale  );
     }
-    else
-      return null;
+	else {
+		return null;
+	}
   }
 
   public static ContentHelper getContentHelper(String sAttribute,int iLocaleId){
@@ -217,8 +219,9 @@ public class TextFinder {
       if(L!= null){
         return ((TxText) L.get(0)).getID();
       }
-      else
-        return -1;
+	else {
+		return -1;
+	}
     }
     catch (SQLException ex) {
       ex.printStackTrace();
@@ -234,8 +237,9 @@ public class TextFinder {
       if(L!= null){
         return ((ICObjectInstance) L.get(0)).getID();
       }
-      else
-        return -1;
+	else {
+		return -1;
+	}
     }
     catch (SQLException ex) {
       ex.printStackTrace();
@@ -286,8 +290,9 @@ public class TextFinder {
     TxText th = null;
     try {
       List L = EntityFinder.findAllByColumn(((com.idega.block.text.data.TxTextHome)com.idega.data.IDOLookup.getHomeLegacy(TxText.class)).createLegacy(),com.idega.block.text.data.TxTextBMPBean.getColumnNameAttribute(),sAttribute);
-      if(L!= null)
-        th =  (TxText) L.get(0);
+      if(L!= null) {
+		th =  (TxText) L.get(0);
+	}
     }
     catch (SQLException ex) {
       ex.printStackTrace();

@@ -56,7 +56,7 @@ public class ImageGallery extends Block {
 	// number of new images that is shown per step
 	private int numberOfImagesPerStep = 0;
 
-	// flag to show if the image should keep it´s proportion
+	// flag to show if the image should keep itï¿½s proportion
 	private boolean scaleProportional = true;
 
 	// border of all images
@@ -118,7 +118,7 @@ public class ImageGallery extends Block {
 	}
 
 	public String getBundleIdentifier() {
-		return this.IW_BUNDLE_IDENTIFIER;
+		return ImageGallery.IW_BUNDLE_IDENTIFIER;
 	}
 
 	public void setFilesFolder(ICFile imageFileFolder) {
@@ -146,13 +146,15 @@ public class ImageGallery extends Block {
 	}
 
 	public void setRows(int rows) {
-		if (rows > 0)
+		if (rows > 0) {
 			this.rows = rows;
+		}
 	}
 
 	public void setColumns(int columns) {
-		if (columns > 0)
+		if (columns > 0) {
 			this.columns = columns;
+		}
 	}
 
 	public void setShowNameOfImage(boolean showNameOfImage) {
@@ -202,15 +204,15 @@ public class ImageGallery extends Block {
 	public void main(IWContext iwc) throws Exception {
 		Table mainTable = new Table(1, 2);
 		//mainTable.setBorder(1);
-		if (heightOfGallery != null) {
-			mainTable.setHeight(heightOfGallery);
+		if (this.heightOfGallery != null) {
+			mainTable.setHeight(this.heightOfGallery);
 		}
-		if (widthOfGallery != null) {
-			mainTable.setWidth(widthOfGallery);
+		if (this.widthOfGallery != null) {
+			mainTable.setWidth(this.widthOfGallery);
 		}
 		int bottonRow;
 		int contentRow;
-		switch (_posButton) {
+		switch (this._posButton) {
 			case BUTTON_POSITON_TOP:
 				contentRow = 2;
 				bottonRow = 1;
@@ -225,23 +227,23 @@ public class ImageGallery extends Block {
 		mainTable.add(getImageTable(iwc), 1, contentRow);
 		mainTable.add(getButtonTable(iwc), 1, bottonRow);
 
-		if (colorGallery != null) {
-			if (galleryBorder > 0) {
+		if (this.colorGallery != null) {
+			if (this.galleryBorder > 0) {
 				Table borderTable = new Table(1, 1);
-				if (heightOfGallery != null) {
-					borderTable.setHeight(heightOfGallery);
+				if (this.heightOfGallery != null) {
+					borderTable.setHeight(this.heightOfGallery);
 				}
-				if (widthOfGallery != null) {
-					borderTable.setWidth(widthOfGallery);
+				if (this.widthOfGallery != null) {
+					borderTable.setWidth(this.widthOfGallery);
 				}
-				borderTable.setCellspacing(galleryBorder);
-				borderTable.setColor(colorGalleryBorder);
-				borderTable.setColor(1, 1, colorGallery);
+				borderTable.setCellspacing(this.galleryBorder);
+				borderTable.setColor(this.colorGalleryBorder);
+				borderTable.setColor(1, 1, this.colorGallery);
 				borderTable.add(mainTable);
 				add(borderTable);
 			}
 			else {
-				mainTable.setColor(colorGallery);
+				mainTable.setColor(this.colorGallery);
 				add(mainTable);
 			}
 		}
@@ -254,21 +256,25 @@ public class ImageGallery extends Block {
 	private Table getImageTable(IWContext iwc) throws Exception {
 		ArrayList images = getImages(iwc);
 		// insert rows if names should be shown
-		int rowsOfTable = (showNameOfImage) ? (rows * 2) : (rows);
-		Table galleryTable = new Table(columns, rowsOfTable);
+		int rowsOfTable = (this.showNameOfImage) ? (this.rows * 2) : (this.rows);
+		Table galleryTable = new Table(this.columns, rowsOfTable);
 		//galleryTable.setBorder(1);
 		galleryTable.setWidth(Table.HUNDRED_PERCENT);
 		for (int i = 1; i <= rowsOfTable; i++) {
 			galleryTable.setRowAlignment(i, Table.HORIZONTAL_ALIGN_CENTER);
 		}
-		if (cellPaddingTable > 0 && cellBorder < 1)
-			galleryTable.setCellpadding(cellPaddingTable);
-		if (cellSpacingTable > 0)
-			galleryTable.setCellspacing(cellSpacingTable);
-		if (cellBorderTable > 0)
-			galleryTable.setBorder(cellBorderTable);
-		if (colorCellBorderTable != null)
-			galleryTable.setBorderColor(colorCellBorderTable);
+		if (this.cellPaddingTable > 0 && this.cellBorder < 1) {
+			galleryTable.setCellpadding(this.cellPaddingTable);
+		}
+		if (this.cellSpacingTable > 0) {
+			galleryTable.setCellspacing(this.cellSpacingTable);
+		}
+		if (this.cellBorderTable > 0) {
+			galleryTable.setBorder(this.cellBorderTable);
+		}
+		if (this.colorCellBorderTable != null) {
+			galleryTable.setBorderColor(this.colorCellBorderTable);
+		}
 		AdvancedImage image;
 		int count = -1;
 		Iterator iterator = images.iterator();
@@ -281,52 +287,55 @@ public class ImageGallery extends Block {
 			 * left corner, fill the first row, then go to the second row and so
 			 * on
 			 */
-			if (widthOfImages > 0)
-				image.setHeight(heightOfImages);
-			if (heightOfImages > 0)
-				image.setWidth(widthOfImages);
+			if (this.widthOfImages > 0) {
+				image.setHeight(this.heightOfImages);
+			}
+			if (this.heightOfImages > 0) {
+				image.setWidth(this.widthOfImages);
+			}
 			// set properties of advanced image
-			image.setEnlargeProperty(enlargeImage);
-			image.setScaleProportional(scaleProportional);
-			if (borderOfImage > 0)
-				image.setBorder(borderOfImage);
-			if (colorBorderImage != null) {
-				image.setBorderColor(colorBorderImage);
+			image.setEnlargeProperty(this.enlargeImage);
+			image.setScaleProportional(this.scaleProportional);
+			if (this.borderOfImage > 0) {
+				image.setBorder(this.borderOfImage);
+			}
+			if (this.colorBorderImage != null) {
+				image.setBorderColor(this.colorBorderImage);
 			}
 
 			PresentationObject pres = null;
 			// check if a link to a viewer page should be added
-			if (viewerPage != null) {
+			if (this.viewerPage != null) {
 				Link link;
 				link = new Link(image);
-				link.setPage(viewerPage);
+				link.setPage(this.viewerPage);
 				link.addParameter(com.idega.block.media.servlet.MediaServlet.PARAMETER_NAME, image.getImageID(iwc));
-				pres = (PresentationObject) link;
+				pres = link;
 			}
 			// check if a link to a popup window should be added
-			else if (popUpOriginalImageOnClick) {
+			else if (this.popUpOriginalImageOnClick) {
 				image.setLinkToDisplayWindow(iwc, imageNumber);
-				pres = (PresentationObject) image;
+				pres = image;
 			}
 			// show only the image without a link
 			else {
-				pres = (PresentationObject) image;
+				pres = image;
 			}
 
-			int xPositionImage = ((count % columns) + 1);
+			int xPositionImage = ((count % this.columns) + 1);
 			int yPositionImage;
-			if (showNameOfImage) {
-				yPositionImage = ((count / columns) * 2) + 1;
+			if (this.showNameOfImage) {
+				yPositionImage = ((count / this.columns) * 2) + 1;
 				PresentationObject name = null;
-				if (colorCell != null) {
-					if (cellBorder > 0) {
+				if (this.colorCell != null) {
+					if (this.cellBorder > 0) {
 						Table borderTable = new Table(1, 1);
-						if (cellPaddingTable > 0) {
-							borderTable.setCellpadding(cellPaddingTable);
+						if (this.cellPaddingTable > 0) {
+							borderTable.setCellpadding(this.cellPaddingTable);
 						}
-						borderTable.setColor(1, 1, colorCell);
-						borderTable.setColor(colorCellBorder);
-						borderTable.setCellspacing(cellBorder);
+						borderTable.setColor(1, 1, this.colorCell);
+						borderTable.setColor(this.colorCellBorder);
+						borderTable.setCellspacing(this.cellBorder);
 						borderTable.setWidth("100%");
 						//borderTable.setHeight("100%");
 						//borderTable.setRowHeight(1,"100%");
@@ -334,7 +343,7 @@ public class ImageGallery extends Block {
 						name = borderTable;
 					}
 					else {
-						galleryTable.setColor(xPositionImage, yPositionImage + 1, colorCell);
+						galleryTable.setColor(xPositionImage, yPositionImage + 1, this.colorCell);
 						//name = new Text(image.getName());
 						name = new Text(image.getName());
 					}
@@ -346,18 +355,18 @@ public class ImageGallery extends Block {
 				galleryTable.add(name, xPositionImage, yPositionImage + 1);
 			}
 			else {
-				yPositionImage = ((count / columns) + 1);
+				yPositionImage = ((count / this.columns) + 1);
 			}
 
-			if (colorCell != null) {
-				if (cellBorder > 0) {
+			if (this.colorCell != null) {
+				if (this.cellBorder > 0) {
 					Table borderTable = new Table(1, 1);
-					if (cellPaddingTable > 0) {
-						borderTable.setCellpadding(cellPaddingTable);
+					if (this.cellPaddingTable > 0) {
+						borderTable.setCellpadding(this.cellPaddingTable);
 					}
-					borderTable.setColor(1, 1, colorCell);
-					borderTable.setColor(colorCellBorder);
-					borderTable.setCellspacing(cellBorder);
+					borderTable.setColor(1, 1, this.colorCell);
+					borderTable.setColor(this.colorCellBorder);
+					borderTable.setCellspacing(this.cellBorder);
 					borderTable.setWidth("100%");
 					//borderTable.setHeight("100%");
 					//borderTable.setRowHeight(1,"100%");
@@ -366,16 +375,18 @@ public class ImageGallery extends Block {
 					pres = borderTable;
 				}
 				else {
-					galleryTable.setColor(xPositionImage, yPositionImage, colorCell);
+					galleryTable.setColor(xPositionImage, yPositionImage, this.colorCell);
 				}
 			}
 			galleryTable.setVerticalAlignment(xPositionImage, yPositionImage, Table.VERTICAL_ALIGN_BOTTOM);
 
 			// set size of the cell that shows the image
-			if (heightOfImages > 0)
-				galleryTable.setHeight(xPositionImage, yPositionImage, Integer.toString(heightOfImages));
-			if (widthOfImages > 0)
-				galleryTable.setWidth(xPositionImage, yPositionImage, Integer.toString(widthOfImages));
+			if (this.heightOfImages > 0) {
+				galleryTable.setHeight(xPositionImage, yPositionImage, Integer.toString(this.heightOfImages));
+			}
+			if (this.widthOfImages > 0) {
+				galleryTable.setWidth(xPositionImage, yPositionImage, Integer.toString(this.widthOfImages));
+			}
 			galleryTable.add(pres, xPositionImage, yPositionImage);
 			imageNumber++;
 		}
@@ -391,11 +402,12 @@ public class ImageGallery extends Block {
 	private Table getButtonTable(IWContext iwc) throws Exception {
 		SubmitButton backButton = createButton(STRING_BACK_BUTTON);
 		SubmitButton forwardButton = createButton(STRING_FORWARD_BUTTON);
-		int limit = getImageProvider(iwc).getImageCount(imageFileFolder);
+		int limit = getImageProvider(iwc).getImageCount(this.imageFileFolder);
 		int startPosition = restoreNumberOfFirstImage(iwc);
 		int endPosition;
-		if ((endPosition = startPosition + getNumberOfImagePlaces() - 1) >= limit)
+		if ((endPosition = startPosition + getNumberOfImagePlaces() - 1) >= limit) {
 			endPosition = limit;
+		}
 		// special case: If there are not any imgages do not show start position
 		// one but zero
 		int displayedStartPosition = (limit == 0) ? 0 : startPosition;
@@ -413,10 +425,12 @@ public class ImageGallery extends Block {
 		infoText.append(endPosition).append(" ").append(this.getResourceBundle(iwc).getLocalizedString("of", "of")).append(
 				" ").append(limit);
 		// possibly disable buttons
-		if (startPosition == 1)
+		if (startPosition == 1) {
 			backButton.setDisabled(true);
-		if (endPosition == limit)
+		}
+		if (endPosition == limit) {
 			forwardButton.setDisabled(true);
+		}
 		// arrange table
 		// three columns and one row
 		Table buttonTable = new Table(3, 1);
@@ -435,21 +449,25 @@ public class ImageGallery extends Block {
 		int startPosition = restoreNumberOfFirstImage(iwc);
 		int newStartPosition;
 		String parameterValue = getParameter(iwc);
-		if (STRING_FORWARD_BUTTON.equals(parameterValue))
+		if (STRING_FORWARD_BUTTON.equals(parameterValue)) {
 			newStartPosition = startPosition + step;
-		else if (STRING_BACK_BUTTON.equals(parameterValue))
+		}
+		else if (STRING_BACK_BUTTON.equals(parameterValue)) {
 			newStartPosition = startPosition - step;
-		else
+		}
+		else {
 			newStartPosition = startPosition;
-		if (newStartPosition > 0 && newStartPosition <= getImageProvider(iwc).getImageCount(imageFileFolder))
+		}
+		if (newStartPosition > 0 && newStartPosition <= getImageProvider(iwc).getImageCount(this.imageFileFolder)) {
 			startPosition = newStartPosition;
+		}
 		storeNumberOfFirstImage(iwc, startPosition);
 		return getImagesFromTo(iwc, startPosition, startPosition + getNumberOfImagePlaces() - 1);
 	}
 
 	private ArrayList getImagesFromTo(IWContext iwc, int startPosition, int endPosition) throws RemoteException,
 			java.sql.SQLException {
-		return getImageProvider(iwc).getImagesFromTo(imageFileFolder, startPosition, endPosition);
+		return getImageProvider(iwc).getImagesFromTo(this.imageFileFolder, startPosition, endPosition);
 	}
 
 	private void storeNumberOfFirstImage(IWContext iwc, int firstImageNumber) {
@@ -458,8 +476,9 @@ public class ImageGallery extends Block {
 
 	private int restoreNumberOfFirstImage(IWContext iwc) {
 		Integer i = (Integer) iwc.getSessionAttribute(getObjectInstanceIdentifierString());
-		if (i == null)
+		if (i == null) {
 			return 1;
+		}
 		return i.intValue();
 	}
 
@@ -473,48 +492,48 @@ public class ImageGallery extends Block {
 
 	private int getStep() {
 		int totalSumOfImagesInTable = getNumberOfImagePlaces();
-		return (numberOfImagesPerStep > 0 && numberOfImagesPerStep < totalSumOfImagesInTable) ? numberOfImagesPerStep
+		return (this.numberOfImagesPerStep > 0 && this.numberOfImagesPerStep < totalSumOfImagesInTable) ? this.numberOfImagesPerStep
 				: totalSumOfImagesInTable;
 	}
 
 	private int getNumberOfImagePlaces() {
 		// how many images can I show in the current table?
-		return rows * columns;
+		return this.rows * this.columns;
 	}
 
 	/**
 	 * @return
 	 */
 	public String getGalleryColor() {
-		return colorGallery;
+		return this.colorGallery;
 	}
 
 	/**
 	 * @return
 	 */
 	public String getCellColor() {
-		return colorCell;
+		return this.colorCell;
 	}
 
 	/**
 	 * @param color
 	 */
 	public void setGalleryColor(String color) {
-		colorGallery = color;
+		this.colorGallery = color;
 	}
 
 	/**
 	 * @param color
 	 */
 	public void setCellColor(String color) {
-		colorCell = color;
+		this.colorCell = color;
 	}
 
 	/**
 	 * @return
 	 */
 	public int getButtonPosition() {
-		return _posButton;
+		return this._posButton;
 	}
 
 	/**
@@ -522,63 +541,63 @@ public class ImageGallery extends Block {
 	 *            one of the BOTTON_POSITION_... constants
 	 */
 	public void setButtonPosition(int posConst) {
-		_posButton = posConst;
+		this._posButton = posConst;
 	}
 
 	/**
 	 * @return
 	 */
 	public String getColorGalleryBorder() {
-		return colorGalleryBorder;
+		return this.colorGalleryBorder;
 	}
 
 	/**
 	 * @return
 	 */
 	public int getGalleryBorder() {
-		return galleryBorder;
+		return this.galleryBorder;
 	}
 
 	/**
 	 * @return
 	 */
 	public String getHeightOfGallery() {
-		return heightOfGallery;
+		return this.heightOfGallery;
 	}
 
 	/**
 	 * @return
 	 */
 	public String getWidthOfGallery() {
-		return widthOfGallery;
+		return this.widthOfGallery;
 	}
 
 	/**
 	 * @param color
 	 */
 	public void setGalleryBorderColor(String color) {
-		colorGalleryBorder = color;
+		this.colorGalleryBorder = color;
 	}
 
 	/**
 	 * @param width
 	 */
 	public void setGalleryBorderWith(int width) {
-		galleryBorder = width;
+		this.galleryBorder = width;
 	}
 
 	/**
 	 * @param height
 	 */
 	public void setHeightOfGallery(String height) {
-		heightOfGallery = height;
+		this.heightOfGallery = height;
 	}
 
 	/**
 	 * @param width
 	 */
 	public void setWidthOfGallery(String width) {
-		widthOfGallery = width;
+		this.widthOfGallery = width;
 	}
 
 }

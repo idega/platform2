@@ -105,14 +105,14 @@ public class QueryResultViewer extends Block {
 			return;
 		}
 		List executedSQLStatements = new ArrayList();
-		if (query.isDynamic()) {
+		if (this.query.isDynamic()) {
 				showInputFieldsOrExecuteQuery(executedSQLStatements, resourceBundle, iwc);
 		}
 		else {
-			errorMessage = executeQueries(query, numberOfRowsLimit, bridge, executedSQLStatements, resourceBundle, iwc);
+			errorMessage = executeQueries(this.query, this.numberOfRowsLimit, this.bridge, executedSQLStatements, resourceBundle, iwc);
 			if (errorMessage != null) {
 				addErrorMessage(errorMessage);
-				if (resultNumberOfRows != -1) {
+				if (this.resultNumberOfRows != -1) {
 					showInputFieldsOrExecuteQuery(executedSQLStatements, resourceBundle, iwc);
 				}
 			}
@@ -122,11 +122,11 @@ public class QueryResultViewer extends Block {
 	private String initializeByParsing(IWContext iwc, IWResourceBundle resourceBundle) throws NumberFormatException, RemoteException, FinderException, IOException {
 		// request from self
 		if (iwc.isParameterSet(QUERY_ID_KEY)) {
-			queryId = Integer.parseInt(iwc.getParameter(QUERY_ID_KEY));
-			designId = Integer.parseInt(iwc.getParameter(DESIGN_ID_KEY));
-			outputFormat = iwc.getParameter(OUTPUT_FORMAT_KEY);
+			this.queryId = Integer.parseInt(iwc.getParameter(QUERY_ID_KEY));
+			this.designId = Integer.parseInt(iwc.getParameter(DESIGN_ID_KEY));
+			this.outputFormat = iwc.getParameter(OUTPUT_FORMAT_KEY);
 			if (iwc.isParameterSet(NUMBER_OF_ROWS_KEY)) {
-				numberOfRowsLimit = Integer.parseInt(iwc.getParameter(NUMBER_OF_ROWS_KEY));
+				this.numberOfRowsLimit = Integer.parseInt(iwc.getParameter(NUMBER_OF_ROWS_KEY));
 			}
 		}
 		else {
@@ -134,16 +134,16 @@ public class QueryResultViewer extends Block {
 			EntityPathValueContainer executeContainer = ButtonConverter.getResultByParsing(iwc);
 			if (executeContainer.isValid())	{
 				// get the chosen output format
-				outputFormat = executeContainer.getEntityPathShortKey();
+				this.outputFormat = executeContainer.getEntityPathShortKey();
 				// get the chosen query 
 				Integer queryIdInteger = executeContainer.getEntityIdConvertToInteger(); 
-				queryId = queryIdInteger.intValue();
+				this.queryId = queryIdInteger.intValue();
 				//get the chosen layout
 				EntityPathValueContainer layoutContainer = 
 					DropDownMenuConverter.getResultByEntityIdAndEntityPathShortKey(queryIdInteger, DESIGN_CHOOSER_KEY, iwc); 
 				if (layoutContainer.isValid()){
 					try {
-						designId = Integer.parseInt(layoutContainer.getValue().toString());
+						this.designId = Integer.parseInt(layoutContainer.getValue().toString());
 					}
 					catch (NumberFormatException ex) {
 						logError("[QueryResultViewer]: Can't retrieve id of layout");
@@ -160,11 +160,11 @@ public class QueryResultViewer extends Block {
 			}
 		}
 		QueryService queryService = getQueryService();
-    QueryHelper queryHelper = queryService.getQueryHelper(queryId, iwc);
-    bridge = getQueryToSQLBridge(); 
-    query = null;
+    QueryHelper queryHelper = queryService.getQueryHelper(this.queryId, iwc);
+    this.bridge = getQueryToSQLBridge(); 
+    this.query = null;
     try {
-    	query = bridge.createQuerySQL(queryHelper, iwc);
+    	this.query = this.bridge.createQuerySQL(queryHelper, iwc);
     }
     catch (QueryGenerationException ex) {
     	logError("[QueryResultViewer] Can't create query");
@@ -195,15 +195,15 @@ public class QueryResultViewer extends Block {
   }
 
   private void showInputFieldsOrExecuteQuery(List executedSQLStatements, IWResourceBundle resourceBundle, IWContext iwc) throws RemoteException {
-  	Map identifierValueMap = query.getIdentifierValueMap();
+  	Map identifierValueMap = this.query.getIdentifierValueMap();
 	  boolean calculateAccess = calculateAccess(identifierValueMap);
 	  boolean containsOnlyAccessVariable = containsOnlyAccessVariables(identifierValueMap);
 	  if ((! containsOnlyAccessVariable && ! iwc.isParameterSet(EXECUTE_QUERY_KEY)) || 
-	  		resultNumberOfRows != -1) {
+	  		this.resultNumberOfRows != -1) {
 	  	// Case: there are input fields and the user hasn't filled those fields yet or
 	  	// the result contains a large number of rows.
-	  	Map identifierInputDescriptionMap = query.getIdentifierInputDescriptionMap();
-	  	showInputFields(query, identifierValueMap,  identifierInputDescriptionMap, resourceBundle, iwc);
+	  	Map identifierInputDescriptionMap = this.query.getIdentifierInputDescriptionMap();
+	  	showInputFields(this.query, identifierValueMap,  identifierInputDescriptionMap, resourceBundle, iwc);
 	  }
 	  else {
 	  	// Case:
@@ -215,17 +215,17 @@ public class QueryResultViewer extends Block {
 	    if (calculateAccess) {
 	    	setAccessCondition(modifiedValues, iwc);
 	    }
-	    query.setIdentifierValueMap(modifiedValues);
-	  	String errorMessage = executeQueries(query, numberOfRowsLimit, bridge, executedSQLStatements, resourceBundle, iwc);
+	    this.query.setIdentifierValueMap(modifiedValues);
+	  	String errorMessage = executeQueries(this.query, this.numberOfRowsLimit, this.bridge, executedSQLStatements, resourceBundle, iwc);
 	  	if (errorMessage != null) {
 	  		if("true".equals(getBundle(iwc).getProperty(ADD_QUERY_SQL_FOR_DEBUG,"false"))){
 	  			addExecutedSQLQueries(executedSQLStatements);
 	  		}
 	  		addErrorMessage(errorMessage);
-	  		if (! containsOnlyAccessVariable || resultNumberOfRows != -1) {
-			  	Map identifierInputDescriptionMap = query.getIdentifierInputDescriptionMap();
-			  	identifierValueMap = query.getIdentifierValueMap();
-			  	showInputFields(query, identifierValueMap,  identifierInputDescriptionMap, resourceBundle, iwc);
+	  		if (! containsOnlyAccessVariable || this.resultNumberOfRows != -1) {
+			  	Map identifierInputDescriptionMap = this.query.getIdentifierInputDescriptionMap();
+			  	identifierValueMap = this.query.getIdentifierValueMap();
+			  	showInputFields(this.query, identifierValueMap,  identifierInputDescriptionMap, resourceBundle, iwc);
 	  		}
 	  	}
 	  }
@@ -270,9 +270,9 @@ public class QueryResultViewer extends Block {
   	String description = sqlQuery.getQueryDescription();
   	PresentationObject presentationObject = getInputFields(name, description, identifierValueMap, identifierInputDescriptionMap, resourceBundle, iwc);
   	Form form = new Form();
-  	form.addParameter(QUERY_ID_KEY, Integer.toString(queryId));
-  	form.addParameter(DESIGN_ID_KEY, Integer.toString(designId));
-  	form.addParameter(OUTPUT_FORMAT_KEY, outputFormat);
+  	form.addParameter(QUERY_ID_KEY, Integer.toString(this.queryId));
+  	form.addParameter(DESIGN_ID_KEY, Integer.toString(this.designId));
+  	form.addParameter(OUTPUT_FORMAT_KEY, this.outputFormat);
   	form.add(presentationObject);
   	add(form);
 	}
@@ -306,12 +306,12 @@ public class QueryResultViewer extends Block {
   	Table table = null;
   	int i = 1;
   	// special case: ask for the desired number of rows
-  	if (resultNumberOfRows != -1) {
+  	if (this.resultNumberOfRows != -1) {
 	  	table = new Table (2, identifierValueMap.size() + 2);
 	  	
 	  	Text desiredNumberOfRowsText = new Text(resourceBundle.getLocalizedString("ro_set_number_of_max_rows", "Set number of  max rows"));
 	  	table.add(desiredNumberOfRowsText, 1, i );
-	  	TextInput numberOfRowsInput = new TextInput(NUMBER_OF_ROWS_KEY, Integer.toString(resultNumberOfRows));
+	  	TextInput numberOfRowsInput = new TextInput(NUMBER_OF_ROWS_KEY, Integer.toString(this.resultNumberOfRows));
 	  	table.add(numberOfRowsInput, 2, i );
 	  	i++;
   	}
@@ -416,14 +416,14 @@ public class QueryResultViewer extends Block {
 			// nothing to do, result is empty, that is not an error
 			return resourceBundle.getLocalizedString("ro_result_of_query_is_empty", "Result of query is empty");
 		}
-		resultNumberOfRows = queryResult.getNumberOfRows();
+		this.resultNumberOfRows = queryResult.getNumberOfRows();
 		// that means: if the user has set number of rows to 12 000 and the result contains 11 000 rows
 		// nothing happens even if MAX_NUMBER_OF_ROWS_IN_RESULT is only set to 500 
-		if (resultNumberOfRows > numberOfRows && resultNumberOfRows > QueryConstants.MAX_NUMBER_OF_ROWS_IN_RESULT)  {
+		if (this.resultNumberOfRows > numberOfRows && this.resultNumberOfRows > QueryConstants.MAX_NUMBER_OF_ROWS_IN_RESULT)  {
 			String error = resourceBundle.getLocalizedString("ro_number_of_rows_in result _might_be_too_large", "Number of rows might be too large");
 			String rows = resourceBundle.getLocalizedString("ro_rows","rows");
 			StringBuffer buffer = new StringBuffer(error);
-			buffer.append(": ").append(resultNumberOfRows).append(" ").append(rows);
+			buffer.append(": ").append(this.resultNumberOfRows).append(" ").append(rows);
 			// store the already calculated result in the session
 			// the user is now asked how many rows he wants to see and he can also change the values of the variables
 			// therefore store the result and the used values for the inputfields. 
@@ -434,7 +434,7 @@ public class QueryResultViewer extends Block {
 		}
 		// destroy stored query result in session bean (if it was stored)
 		sessionBean.deleteQueryResult();
-		resultNumberOfRows = -1;
+		this.resultNumberOfRows = -1;
 
 			
 		// get design
@@ -447,7 +447,7 @@ public class QueryResultViewer extends Block {
 	    // synchronize design and result
 
 	    String uri = null;
-	    if (EXCEL_KEY.equals(outputFormat)) {
+	    if (EXCEL_KEY.equals(this.outputFormat)) {
 	    	uri = reportBusiness.getSynchronizedSimpleExcelReport(queryResult, designBox, "report");
 	    }
 	    // or pdf or html
@@ -456,7 +456,7 @@ public class QueryResultViewer extends Block {
 	    	if (print == null) {
 	    		return resourceBundle.getLocalizedString("ro_could_not_use_layout", "Layout can't be used");
 	    	}
-	    	if (PDF_KEY.equals(outputFormat)) {
+	    	if (PDF_KEY.equals(this.outputFormat)) {
 	    		uri = reportBusiness.getPdfReport(print, "report");
 	    	}
 //  the method below uses JasperReport for generating an excel file.
@@ -492,8 +492,8 @@ public class QueryResultViewer extends Block {
 	private DesignBox getDesignBox(SQLQuery sqlQuery, JasperReportBusiness reportBusiness, IWResourceBundle resourceBundle, IWContext iwc) {
     DesignBox design = null;
     try {
-    	if (designId > 0) {  
-    		design = reportBusiness.getDesignBox(designId);
+    	if (this.designId > 0) {  
+    		design = reportBusiness.getDesignBox(this.designId);
     	}
     	else {
     		design = reportBusiness.getDynamicDesignBox(sqlQuery, resourceBundle, iwc);

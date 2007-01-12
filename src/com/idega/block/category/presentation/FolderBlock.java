@@ -49,7 +49,7 @@ public class FolderBlock extends Block {
 	}
 	
 	public void useLocalizedFolders(boolean use){
-		_useLocalizedFolders = use;
+		this._useLocalizedFolders = use;
 	}
 	
 
@@ -60,7 +60,7 @@ public class FolderBlock extends Block {
 	 *@deprecated rather use getWorkFolder()
 	 */
 	public int getWorkFolderID() {
-		return _workFolder.getID();
+		return this._workFolder.getID();
 	}
 
 	/**
@@ -69,7 +69,7 @@ public class FolderBlock extends Block {
 	 *@return    The workingFolder value
 	 */
 	public InformationFolder getWorkFolder() {
-		return _workFolder;
+		return this._workFolder;
 	}
 
 	/*
@@ -84,7 +84,7 @@ public class FolderBlock extends Block {
 	 *@return    The categoriesToView value
 	 */
 	public InformationCategory[] getCategoriesToView() {
-		return _categoriesForInstance;
+		return this._categoriesForInstance;
 	}
 
 	/**
@@ -93,7 +93,7 @@ public class FolderBlock extends Block {
 	 *@param  folder  The new work folder value
 	 */
 	public void setWorkFolder(InformationFolder folder) {
-		_workFolder = folder;
+		this._workFolder = folder;
 	}
 
 	/**
@@ -102,7 +102,7 @@ public class FolderBlock extends Block {
 	 *@param  autocreate  The new autoCreate value
 	 */
 	public void setAutoCreate(boolean autocreate) {
-		_autocreate = autocreate;
+		this._autocreate = autocreate;
 	}
 
 	/**
@@ -111,7 +111,7 @@ public class FolderBlock extends Block {
 	 *@param  identifier  The new contentLocaleIdentifier value
 	 */
 	public void setContentLocaleIdentifier(String identifier) {
-		_contentLocaleIdentifier = identifier;
+		this._contentLocaleIdentifier = identifier;
 	}
 
 	/**
@@ -120,22 +120,22 @@ public class FolderBlock extends Block {
 	 *@return    The contentLocaleIdentifier value
 	 */
 	public String getContentLocaleIdentifier() {
-		return _contentLocaleIdentifier;
+		return this._contentLocaleIdentifier;
 	}
 
 	/**
 	 *  Sets the contentLocaleDependent attribute of the FolderBlock object
 	 */
 	public void setContentLocaleDependent() {
-		_contentLocaleIdentifier = null;
+		this._contentLocaleIdentifier = null;
 	}
 
 	
 	public FolderBlockBusiness getBlockBusinessInstance(IWApplicationContext iwac) throws IBOLookupException{
-		if(_business == null){
-			_business = (FolderBlockBusiness) IBOLookup.getServiceInstance(iwac,getBlockBusinessClass());
+		if(this._business == null){
+			this._business = (FolderBlockBusiness) IBOLookup.getServiceInstance(iwac,getBlockBusinessClass());
 		}
-		return _business;
+		return this._business;
 	}
 	
 	public Class getBlockBusinessClass(){
@@ -162,9 +162,9 @@ public class FolderBlock extends Block {
 			if (localeId == -1) {
 				localeId = iwc.getCurrentLocaleId();
 			}
-			InformationFolder folder = business.getInstanceWorkeFolder(getBlockInstanceID(), getBlockObjectID(), localeId, _autocreate);
+			InformationFolder folder = business.getInstanceWorkeFolder(getBlockInstanceID(), getBlockObjectID(), localeId, this._autocreate);
 			if (folder != null) {
-				if(_useLocalizedFolders){
+				if(this._useLocalizedFolders){
 					setWorkFolder(folder);
 				} else {
 					setWorkFolder(folder.getParent());
@@ -173,19 +173,19 @@ public class FolderBlock extends Block {
 			}
 			List infoCategories = business.getInstanceCategories(getBlockInstanceID());
 			if (infoCategories != null && infoCategories.size() > 0) {
-				_categoriesForInstance = new InformationCategory[infoCategories.size()];
+				this._categoriesForInstance = new InformationCategory[infoCategories.size()];
 				int pos = 0;
 				Iterator iter = infoCategories.iterator();
 				while (iter.hasNext()) {
 					InformationCategory item = (InformationCategory)iter.next();
-					_categoriesForInstance[pos] = item;
+					this._categoriesForInstance[pos] = item;
 					pos++;
 				}
 			} else {
 				if(utilisesCategories() && !business.hasAvailableCategory(this.getBlockObjectID())){
 					createDefaultCategories(iwc);
 				}				
-				_categoriesForInstance = new InformationCategory[0];
+				this._categoriesForInstance = new InformationCategory[0];
 			}
 		}
 		super._main(iwc);
@@ -263,31 +263,31 @@ public class FolderBlock extends Block {
 	}
 	
 	public int getBlockInstanceID(){
-		if(_blockInstanceID == -1){
-			_blockInstanceID = this.getICObjectInstanceID();
+		if(this._blockInstanceID == -1){
+			this._blockInstanceID = this.getICObjectInstanceID();
 		}
-		return _blockInstanceID;
+		return this._blockInstanceID;
 	}
 	
 	public int getBlockObjectID(){
-		if(_blockObjectID == -1){
-			_blockObjectID = this.getICObjectID();
+		if(this._blockObjectID == -1){
+			this._blockObjectID = this.getICObjectID();
 		}
-		return _blockObjectID;
+		return this._blockObjectID;
 	}
 	
 	public void setBlockInstanceID(int id){
-		_blockInstanceID = id;
+		this._blockInstanceID = id;
 	}
 
 	public void setBlockObjectID(int id){
-		_blockObjectID = id;
+		this._blockObjectID = id;
 	}
 	
 	
 	
 	public boolean utilisesCategories() {
-		return _utilisesCategories;
+		return this._utilisesCategories;
 	}
 
 	public void utiliseCategories(boolean value) {

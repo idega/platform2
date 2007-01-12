@@ -45,8 +45,9 @@ public class BundleComponentManager extends Block {
 
 	public void main(IWContext iwc) {
 		add(IWDeveloper.getTitleTable(this.getClass()));
-		if (!iwc.isIE())
+		if (!iwc.isIE()) {
 			getParentPage().setBackgroundColor("#FFFFFF");
+		}
 
 		IWMainApplication iwma = iwc.getIWMainApplication();
 		DropdownMenu bundles = BundlePropertySetter.getRegisteredBundlesDropdown(iwma, BUNDLE_PARAMETER);
@@ -85,7 +86,7 @@ public class BundleComponentManager extends Block {
 				e.printStackTrace();
 			}
 
-			DropdownMenu typesDrop = new DropdownMenu(this.TYPE_INPUT_NAME);
+			DropdownMenu typesDrop = new DropdownMenu(BundleComponentManager.TYPE_INPUT_NAME);
 			List componentTypes = com.idega.core.component.data.ICObjectBMPBean.getAvailableComponentTypes();
 			Collections.sort(componentTypes);
 			Iterator iter = componentTypes.iterator();
@@ -135,17 +136,17 @@ public class BundleComponentManager extends Block {
 		String save = iwc.getParameter("Save");
 
 		if ((iwb != null) && (save != null)) {
-			String newComponentClass = iwc.getParameter(this.CLASS_INPUT_NAME);
+			String newComponentClass = iwc.getParameter(BundleComponentManager.CLASS_INPUT_NAME);
 			if (newComponentClass == null) {
 				newComponentClass = StringHandler.EMPTY_STRING;
 			}
 
-			String newComponentType = iwc.getParameter(this.TYPE_INPUT_NAME);
+			String newComponentType = iwc.getParameter(BundleComponentManager.TYPE_INPUT_NAME);
 			if (newComponentType == null) {
 				newComponentType = StringHandler.EMPTY_STRING;
 			}
 
-			String[] deletes = iwc.getParameterValues(this.DELETE_CHECKBOX_NAME);
+			String[] deletes = iwc.getParameterValues(BundleComponentManager.DELETE_CHECKBOX_NAME);
 			if (deletes != null) {
 				for (int i = 0; i < deletes.length; i++) {
 					iwb.removeComponent(deletes[i]);
@@ -161,8 +162,9 @@ public class BundleComponentManager extends Block {
 					BundleComponent comp = BundleComponentFactory.getInstance().getBundleComponent(newComponentType);
 					boolean valid = comp.validateInterfaces(cls);
 					valid &= comp.validateSuperClasses(cls);
-					if(!valid)
+					if(!valid) {
 						throw new Exception("Component needs to implement required interfaces ");
+					}
 				// 
 				iwb.addComponent(newComponentClass, newComponentType);
 				iwb.storeState();

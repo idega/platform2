@@ -35,9 +35,9 @@ public class ProductItemNumber extends ProductItem {
   }
 
   private void drawObject() throws RemoteException{
-    Text text = getText(defaultText);
-    if ( _product != null ) {
-      text.setText(_product.getNumber());
+    Text text = getText(this.defaultText);
+    if ( this._product != null ) {
+      text.setText(this._product.getNumber());
     }
     add(text);
   }

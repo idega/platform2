@@ -102,7 +102,7 @@ public class ReportCategoryAttributeBMPBean extends com.idega.data.GenericEntity
 
   public String getAttributeName() {
 
-    return (String) getStringColumnValue(getColumnNameAttributeName());
+    return getStringColumnValue(getColumnNameAttributeName());
 
   }
 

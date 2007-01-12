@@ -99,80 +99,84 @@ public class Poll extends Block implements Builderaware {
 
 	public Poll(String sAttribute) {
 		this();
-		_pollID = -1;
-		_sAttribute = sAttribute;
+		this._pollID = -1;
+		this._sAttribute = sAttribute;
 	}
 
 	public Poll(int pollID) {
 		this();
-		_pollID = pollID;
+		this._pollID = pollID;
 	}
 
 	public void main(IWContext iwc) throws Exception {
-		_iwrb = getResourceBundle(iwc);
-		_iwb = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
-		_iwbPoll = getBundle(iwc);
+		this._iwrb = getResourceBundle(iwc);
+		this._iwb = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+		this._iwbPoll = getBundle(iwc);
 
-		_isAdmin = iwc.hasEditPermission(this);
-		_iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
-		_parameterString = iwc.getParameter(PollBusiness._PARAMETER_POLL_VOTER);
-		_date = new IWTimestamp();
+		this._isAdmin = iwc.hasEditPermission(this);
+		this._iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
+		this._parameterString = iwc.getParameter(PollBusiness._PARAMETER_POLL_VOTER);
+		this._date = new IWTimestamp();
 
 		PollEntity poll = null;
 
-		_myTable = new Table(1, 2);
-		_myTable.setCellpadding(0);
-		_myTable.setCellspacing(0);
-		_myTable.setBorder(0);
-		_myTable.setWidth(_pollWidth);
+		this._myTable = new Table(1, 2);
+		this._myTable.setCellpadding(0);
+		this._myTable.setCellspacing(0);
+		this._myTable.setBorder(0);
+		this._myTable.setWidth(this._pollWidth);
 
-		if (_pollID <= 0) {
+		if (this._pollID <= 0) {
 			String sPollID = iwc.getParameter(_prmPollID);
-			if (sPollID != null)
-				_pollID = Integer.parseInt(sPollID);
+			if (sPollID != null) {
+				this._pollID = Integer.parseInt(sPollID);
+			}
 			else if (getICObjectInstanceID() > 0) {
-				_pollID = PollFinder.getRelatedEntityId(getICObjectInstance());
-				if (_pollID <= 0) {
-					_newObjInst = true;
-					PollBusiness.savePoll(_pollID, -1, getICObjectInstanceID(), null);
+				this._pollID = PollFinder.getRelatedEntityId(getICObjectInstance());
+				if (this._pollID <= 0) {
+					this._newObjInst = true;
+					PollBusiness.savePoll(this._pollID, -1, getICObjectInstanceID(), null);
 				}
 			}
 		}
 
-		if (_newObjInst) {
-			_pollID = PollFinder.getRelatedEntityId(((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(getICObjectInstanceID()));
+		if (this._newObjInst) {
+			this._pollID = PollFinder.getRelatedEntityId(((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(getICObjectInstanceID()));
 		}
 
-		if (_pollID > 0) {
-			poll = ((com.idega.block.poll.data.PollEntityHome) com.idega.data.IDOLookup.getHomeLegacy(PollEntity.class)).findByPrimaryKeyLegacy(_pollID);
+		if (this._pollID > 0) {
+			poll = ((com.idega.block.poll.data.PollEntityHome) com.idega.data.IDOLookup.getHomeLegacy(PollEntity.class)).findByPrimaryKeyLegacy(this._pollID);
 		}
-		else if (_sAttribute != null) {
-			poll = PollFinder.getPoll(_sAttribute);
+		else if (this._sAttribute != null) {
+			poll = PollFinder.getPoll(this._sAttribute);
 			if (poll != null) {
-				_pollID = poll.getID();
+				this._pollID = poll.getID();
 			}
-			_newWithAttribute = true;
+			this._newWithAttribute = true;
 		}
 
 		int row = 1;
-		if (_isAdmin) {
-			_myTable.add(getAdminPart(_pollID, _newObjInst, _newWithAttribute), 1, row);
+		if (this._isAdmin) {
+			this._myTable.add(getAdminPart(this._pollID, this._newObjInst, this._newWithAttribute), 1, row);
 			row++;
 		}
 
-		_myTable.add(getPoll(iwc, poll), 1, row);
-		add(_myTable);
+		this._myTable.add(getPoll(iwc, poll), 1, row);
+		add(this._myTable);
 	}
 
 	private Link getAdminPart(int pollID, boolean newObjInst, boolean newWithAttribute) {
-		Image editImage = _iwb.getImage("shared/edit.gif");
+		Image editImage = this._iwb.getImage("shared/edit.gif");
 		//Link adminLink = new Link(_iwb.getImage("shared/edit.gif"));
 		Link adminLink = new Link(editImage);
 		adminLink.setWindowToOpen(PollAdminWindow.class, this.getICObjectInstanceID());
 		adminLink.addParameter(PollAdminWindow.prmID, pollID);
-		if (newObjInst)
+		if (newObjInst) {
 			adminLink.addParameter(PollAdminWindow.prmObjInstId, getICObjectInstanceID());
-		else if (newWithAttribute) adminLink.addParameter(PollAdminWindow.prmAttribute, _sAttribute);
+		}
+		else if (newWithAttribute) {
+			adminLink.addParameter(PollAdminWindow.prmAttribute, this._sAttribute);
+		}
 
 		return adminLink;
 	}
@@ -186,19 +190,19 @@ public class Poll extends Block implements Builderaware {
 		if (pollQuestion != null) {
 			if (pollQuestion.getEndTime() != null) {
 				after = new IWTimestamp(pollQuestion.getEndTime());
-				if (_date.isLaterThan(after)) {
-					pollQuestion = PollBusiness.getPollByDate(poll, _date);
+				if (this._date.isLaterThan(after)) {
+					pollQuestion = PollBusiness.getPollByDate(poll, this._date);
 					pollByDate = true;
 				}
 			}
 		}
 		else {
-			pollQuestion = PollBusiness.getPollByDate(poll, _date);
+			pollQuestion = PollBusiness.getPollByDate(poll, this._date);
 			pollByDate = true;
 		}
 
 		if (pollQuestion != null) {
-			locText = TextFinder.getLocalizedText(pollQuestion, _iLocaleID);
+			locText = TextFinder.getLocalizedText(pollQuestion, this._iLocaleID);
 			if (pollByDate) {
 				PollBusiness.setPollQuestion(poll, pollQuestion);
 			}
@@ -207,7 +211,7 @@ public class Poll extends Block implements Builderaware {
 		PresentationObject obj = null;
 
 		if (locText != null) {
-			switch (_layout) {
+			switch (this._layout) {
 				case RADIO_BUTTON_VIEW:
 					obj = getRadioButtonView(locText, pollQuestion);
 					break;
@@ -236,8 +240,8 @@ public class Poll extends Block implements Builderaware {
 		pollTable.setCellspacing(0);
 		pollTable.mergeCells(1, 1, 2, 1);
 		pollTable.mergeCells(1, 2, 2, 2);
-		pollTable.setWidth(_pollWidth);
-		pollTable.setAlignment(1, 1, _questionAlignment);
+		pollTable.setWidth(this._pollWidth);
+		pollTable.setAlignment(1, 1, this._questionAlignment);
 		pollTable.setAlignment(2, 3, "right");
 		form.add(pollTable);
 
@@ -254,7 +258,7 @@ public class Poll extends Block implements Builderaware {
 		int row = 1;
 		if (answers != null) {
 			for (int a = 0; a < answers.length; a++) {
-				LocalizedText locAnswerText = TextFinder.getLocalizedText(answers[a], _iLocaleID);
+				LocalizedText locAnswerText = TextFinder.getLocalizedText(answers[a], this._iLocaleID);
 				if (locAnswerText != null) {
 					hasAnswers = true;
 					radioTable.add(getStyleObject(new RadioButton(PollBusiness._PARAMETER_POLL_ANSWER, String.valueOf(answers[a].getID())), ANSWER_STYLE), 1, row);
@@ -268,25 +272,25 @@ public class Poll extends Block implements Builderaware {
 			pollTable.add(radioTable, 1, 2);
 		}
 
-		GenericButton collectionLink = (GenericButton) getStyleObject(new GenericButton("", _iwrb.getLocalizedString("older_polls", "Older polls")), BUTTON_STYLE);
+		GenericButton collectionLink = (GenericButton) getStyleObject(new GenericButton("", this._iwrb.getLocalizedString("older_polls", "Older polls")), BUTTON_STYLE);
 		collectionLink.setWindowToOpen(PollResult.class);
-		collectionLink.addParameterToWindow(Poll._prmPollID, _pollID);
+		collectionLink.addParameterToWindow(Poll._prmPollID, this._pollID);
 		collectionLink.addParameterToWindow(Poll._prmPollCollection, PollBusiness._PARAMETER_TRUE);
-		collectionLink.addParameterToWindow(Poll._prmNumberOfPolls, _numberOfShownPolls);
-		if (_showVotes) {
+		collectionLink.addParameterToWindow(Poll._prmNumberOfPolls, this._numberOfShownPolls);
+		if (this._showVotes) {
 			collectionLink.addParameterToWindow(Poll._prmShowVotes, PollBusiness._PARAMETER_TRUE);
 		}
 		else {
 			collectionLink.addParameterToWindow(Poll._prmShowVotes, PollBusiness._PARAMETER_FALSE);
 		}
 
-		if (_showCollection) {
+		if (this._showCollection) {
 			pollTable.add(collectionLink, 1, 3);
 		}
-		pollTable.add(getStyleObject(new SubmitButton(_iwrb.getLocalizedString("vote", "Vote")), BUTTON_STYLE), 2, 3);
+		pollTable.add(getStyleObject(new SubmitButton(this._iwrb.getLocalizedString("vote", "Vote")), BUTTON_STYLE), 2, 3);
 		pollTable.add(new Parameter(PollBusiness._PARAMETER_POLL_VOTER, PollBusiness._PARAMETER_TRUE));
 		pollTable.add(new Parameter(PollBusiness._PARAMETER_POLL_QUESTION, Integer.toString(pollQuestion.getID())));
-		if (_showVotes) {
+		if (this._showVotes) {
 			pollTable.add(new Parameter(Poll._prmShowVotes, PollBusiness._PARAMETER_TRUE));
 		}
 		else {
@@ -303,23 +307,23 @@ public class Poll extends Block implements Builderaware {
 		Table pollTable = new Table();
 		pollTable.setCellpadding(3);
 		pollTable.setCellspacing(0);
-		pollTable.setWidth(_pollWidth);
-		pollTable.setAlignment(1, 1, _questionAlignment);
+		pollTable.setWidth(this._pollWidth);
+		pollTable.setAlignment(1, 1, this._questionAlignment);
 		int pollRow = 1;
 
 		Text question = getStyleText(locText.getHeadline(), QUESTION_STYLE);
 
-		if (_questionImage != null) {
+		if (this._questionImage != null) {
 			Table questionTable = new Table(3, 1);
 			questionTable.setCellpadding(0);
 			questionTable.setCellspacing(0);
 			questionTable.setVerticalAlignment(1, 1, "top");
-			_questionImage.setVerticalSpacing(2);
-			questionTable.add(_questionImage, 1, 1);
+			this._questionImage.setVerticalSpacing(2);
+			questionTable.add(this._questionImage, 1, 1);
 			questionTable.setWidth(2, 1, "4");
 			questionTable.add(question, 3, 1);
 
-			pollTable.setAlignment(1, pollRow, _questionAlignment);
+			pollTable.setAlignment(1, pollRow, this._questionAlignment);
 			pollTable.add(questionTable, 1, pollRow);
 		}
 		else {
@@ -334,8 +338,12 @@ public class Poll extends Block implements Builderaware {
 		PollAnswer[] answers = PollBusiness.getAnswers(pollQuestion.getID());
 
 		boolean canVote = true;
-		if (iwc.getParameter(PollBusiness._PARAMETER_POLL_VOTER) != null) canVote = false;
-		if (canVote) canVote = PollBusiness.canVote(iwc, pollQuestion.getID());
+		if (iwc.getParameter(PollBusiness._PARAMETER_POLL_VOTER) != null) {
+			canVote = false;
+		}
+		if (canVote) {
+			canVote = PollBusiness.canVote(iwc, pollQuestion.getID());
+		}
 
 		if (canVote) {
 			boolean hasAnswers = false;
@@ -344,7 +352,7 @@ public class Poll extends Block implements Builderaware {
 				int row = 1;
 
 				for (int a = 0; a < answers.length; a++) {
-					LocalizedText locAnswerText = TextFinder.getLocalizedText(answers[a], _iLocaleID);
+					LocalizedText locAnswerText = TextFinder.getLocalizedText(answers[a], this._iLocaleID);
 					if (locAnswerText != null) {
 						hasAnswers = true;
 
@@ -354,20 +362,22 @@ public class Poll extends Block implements Builderaware {
 						answerLink.addParameter(PollBusiness._PARAMETER_POLL_VOTER, PollBusiness._PARAMETER_TRUE);
 						answerLink.addParameter(PollBusiness._PARAMETER_CLOSE, PollBusiness._PARAMETER_TRUE);
 						answerLink.setEventListener(PollListener.class);
-						if (_name != null) answerLink.setStyle(_name);
+						if (this._name != null) {
+							answerLink.setStyle(this._name);
+						}
 
-						if (_linkImage != null) {
+						if (this._linkImage != null) {
 							Table imageTable = new Table(3, 1);
 							imageTable.setCellspacing(0);
 							imageTable.setCellpadding(0);
 
-							Image image = new Image(_linkImage.getMediaURL(iwc));
+							Image image = new Image(this._linkImage.getMediaURL(iwc));
 
 							image.setVerticalSpacing(3);
-							if (_linkOverImage != null) {
-								image.setOverImage(_linkOverImage);
-								_linkOverImage.setVerticalSpacing(3);
-								answerLink.setMarkupAttribute("onMouseOver", "swapImage('" + image.getName() + "','','" + _linkOverImage.getMediaURL(iwc) + "',1)");
+							if (this._linkOverImage != null) {
+								image.setOverImage(this._linkOverImage);
+								this._linkOverImage.setVerticalSpacing(3);
+								answerLink.setMarkupAttribute("onMouseOver", "swapImage('" + image.getName() + "','','" + this._linkOverImage.getMediaURL(iwc) + "',1)");
 								answerLink.setMarkupAttribute("onMouseOut", "swapImgRestore()");
 							}
 
@@ -402,15 +412,17 @@ public class Poll extends Block implements Builderaware {
 						total += answers[i].getHits();
 					}
 					for (int i = 0; i < answers.length; i++) {
-						LocalizedText answerLocText = TextFinder.getLocalizedText(answers[i], _iLocaleID);
+						LocalizedText answerLocText = TextFinder.getLocalizedText(answers[i], this._iLocaleID);
 						if (answerLocText != null) {
 							++row;
 
 							float percent = 0;
-							if (answers[i].getHits() > 0) percent = ((float) answers[i].getHits() / (float) total) * 100;
+							if (answers[i].getHits() > 0) {
+								percent = ((float) answers[i].getHits() / (float) total) * 100;
+							}
 
 							Text answerText = getStyleText(answerLocText.getHeadline(), ANSWER_STYLE);
-							if (_showVotes || _isAdmin) {
+							if (this._showVotes || this._isAdmin) {
 								answerText.addToText(" (" + Integer.toString(answers[i].getHits()) + ")");
 							}
 							Text percentText = getStyleText(Text.NON_BREAKING_SPACE + com.idega.util.text.TextSoap.decimalFormat(percent, 1) + "%", TEXT_STYLE);
@@ -425,24 +437,24 @@ public class Poll extends Block implements Builderaware {
 							table.setWidth("100%");
 							table.setColor("#000000");
 
-							Image transImage = answerTable.getTransparentCell(iwc);
+							Image transImage = Table.getTransparentCell(iwc);
 							transImage.setHeight(10);
 							transImage.setWidth("100%");
-							Image transImage2 = answerTable.getTransparentCell(iwc);
+							Image transImage2 = Table.getTransparentCell(iwc);
 							transImage2.setHeight(10);
 							transImage2.setWidth("100%");
 							if (percent > 0) {
-								table.setColor(1, 1, _votedColor);
+								table.setColor(1, 1, this._votedColor);
 								table.add(transImage, 1, 1);
 								table.setWidth(1, 1, Integer.toString((int) percent) + "%");
 								if (percent < 100) {
-									table.setColor(2, 1, _whiteColor);
+									table.setColor(2, 1, this._whiteColor);
 									table.add(transImage2, 2, 1);
 									table.setWidth(2, 1, Integer.toString(100 - (int) percent) + "%");
 								}
 							}
 							else if (percent <= 0) {
-								table.setColor(1, 1, _whiteColor);
+								table.setColor(1, 1, this._whiteColor);
 								table.setWidth(1, 1, "100%");
 								table.add(transImage2, 1, 1);
 							}
@@ -460,8 +472,8 @@ public class Poll extends Block implements Builderaware {
 				pollTable.add(answerTable, 1, pollRow);
 				pollRow++;
 
-				String information = PollBusiness.getLocalizedInformation(pollQuestion.getID(), _iLocaleID);
-				if (information != null && _showInformation) {
+				String information = PollBusiness.getLocalizedInformation(pollQuestion.getID(), this._iLocaleID);
+				if (information != null && this._showInformation) {
 					Text informationText = getStyleText(information, TEXT_STYLE);
 					pollTable.add(informationText, 1, pollRow);
 					pollRow++;
@@ -469,19 +481,19 @@ public class Poll extends Block implements Builderaware {
 			}
 		}
 
-		GenericButton collectionLink = (GenericButton) getStyleObject(new GenericButton("", _iwrb.getLocalizedString("older_polls", "Older polls")), BUTTON_STYLE);
+		GenericButton collectionLink = (GenericButton) getStyleObject(new GenericButton("", this._iwrb.getLocalizedString("older_polls", "Older polls")), BUTTON_STYLE);
 		collectionLink.setWindowToOpen(PollResult.class);
-		collectionLink.addParameterToWindow(Poll._prmPollID, _pollID);
+		collectionLink.addParameterToWindow(Poll._prmPollID, this._pollID);
 		collectionLink.addParameterToWindow(Poll._prmPollCollection, PollBusiness._PARAMETER_TRUE);
-		collectionLink.addParameterToWindow(Poll._prmNumberOfPolls, _numberOfShownPolls);
-		if (_showVotes) {
+		collectionLink.addParameterToWindow(Poll._prmNumberOfPolls, this._numberOfShownPolls);
+		if (this._showVotes) {
 			collectionLink.addParameterToWindow(Poll._prmShowVotes, PollBusiness._PARAMETER_TRUE);
 		}
 		else {
 			collectionLink.addParameterToWindow(Poll._prmShowVotes, PollBusiness._PARAMETER_FALSE);
 		}
 
-		if (_showCollection) {
+		if (this._showCollection) {
 			pollTable.add(collectionLink, 1, pollRow);
 		}
 
@@ -489,14 +501,14 @@ public class Poll extends Block implements Builderaware {
 	}
 
 	private void setDefaultValues() {
-		_pollWidth = "100%";
-		_numberOfShownPolls = 3;
-		_showVotes = true;
-		_showCollection = true;
-		_questionAlignment = "left";
-		_pollID = -1;
-		_votedColor = "#104584";
-		_whiteColor = "#FFFFFF";
+		this._pollWidth = "100%";
+		this._numberOfShownPolls = 3;
+		this._showVotes = true;
+		this._showCollection = true;
+		this._questionAlignment = "left";
+		this._pollID = -1;
+		this._votedColor = "#104584";
+		this._whiteColor = "#FFFFFF";
 	}
 
 	public boolean deleteBlock(int ICObjectInstanceId) {
@@ -509,67 +521,67 @@ public class Poll extends Block implements Builderaware {
 	}
 
 	public void setWidth(int pollWidth) {
-		_pollWidth = Integer.toString(pollWidth);
+		this._pollWidth = Integer.toString(pollWidth);
 	}
 
 	public void setWidth(String pollWidth) {
-		_pollWidth = pollWidth;
+		this._pollWidth = pollWidth;
 	}
 
 	public void setStyle(String style) {
-		_styleAttribute = style;
+		this._styleAttribute = style;
 	}
 
 	public void setHoverStyle(String hoverStyle) {
-		_hoverStyle = hoverStyle;
+		this._hoverStyle = hoverStyle;
 	}
 
 	public void setQuestionStyle(String style) {
-		_questionStyleAttribute = style;
+		this._questionStyleAttribute = style;
 	}
 
 	public void setNumberOfShownPolls(int numberOfShownPolls) {
-		_numberOfShownPolls = numberOfShownPolls;
+		this._numberOfShownPolls = numberOfShownPolls;
 	}
 
 	public void showVotes(boolean showVotes) {
-		_showVotes = showVotes;
+		this._showVotes = showVotes;
 	}
 
 	public void showCollection(boolean collection) {
-		_showCollection = collection;
+		this._showCollection = collection;
 	}
 
 	public void setQuestionImage(Image image) {
-		_questionImage = image;
+		this._questionImage = image;
 	}
 
 	public void setLinkImage(Image image) {
-		_linkImage = image;
+		this._linkImage = image;
 	}
 
 	public void setLinkOverImage(Image image) {
-		_linkOverImage = image;
+		this._linkOverImage = image;
 	}
 
 	public void setLayout(int layout) {
-		_layout = layout;
+		this._layout = layout;
 	}
 
 	public void setShowInformation(boolean showInformation) {
-		_showInformation = showInformation;
+		this._showInformation = showInformation;
 	}
 
 	public void setQuestionAlignment(String alignment) {
-		_questionAlignment = alignment;
+		this._questionAlignment = alignment;
 	}
 
 	public void setVotedColor(String color) {
-		_votedColor = color;
+		this._votedColor = color;
 	}
 
 	public void setWhiteColor(String color) {
-		_whiteColor = color;
+		this._whiteColor = color;
 	}
 
 	public Object clone() {
@@ -599,8 +611,9 @@ public class Poll extends Block implements Builderaware {
 	protected String getCacheState(IWContext iwc, String cacheStatePrefix) {
 		String returnString = iwc.getParameter(PollBusiness._PARAMETER_POLL_VOTER);
 
-		if (returnString == null)
+		if (returnString == null) {
 			returnString = "";
+		}
 		else {
 			returnString = "";//minimise the number of states cached
 			setCacheable(false);//do this when you want to be sure to go through
@@ -610,14 +623,16 @@ public class Poll extends Block implements Builderaware {
 		}
 
 		try {
-			_pollID = PollFinder.getRelatedEntityId(getICObjectInstance());
+			this._pollID = PollFinder.getRelatedEntityId(getICObjectInstance());
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
 		}
 
-		String canVote = String.valueOf(PollBusiness.canVote(iwc, _pollID));
-		if (canVote.equals("false")) returnString = "";
+		String canVote = String.valueOf(PollBusiness.canVote(iwc, this._pollID));
+		if (canVote.equals("false")) {
+			returnString = "";
+		}
 
 		return cacheStatePrefix + canVote + returnString;
 	}

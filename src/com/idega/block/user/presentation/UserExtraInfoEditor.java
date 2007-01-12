@@ -53,10 +53,10 @@ public class UserExtraInfoEditor extends IWAdminWindow {
 	private IWResourceBundle _iwrb = null;
 
 	public void main(IWContext iwc) {
-		_iwrb = getResourceBundle(iwc);
-		_biz = UserInfoBusinessBean.getUserInfoBusiness(iwc);
+		this._iwrb = getResourceBundle(iwc);
+		this._biz = UserInfoBusinessBean.getUserInfoBusiness(iwc);
 		
-		addTitle(_iwrb.getLocalizedString("staff_admin", "Staff admin"));
+		addTitle(this._iwrb.getLocalizedString("staff_admin", "Staff admin"));
 		Locale currentLocale = iwc.getCurrentLocale(), chosenLocale;
 
 		String sLocaleId = iwc.getParameter(PARAM_NAME_LOCALE_ID);
@@ -78,8 +78,8 @@ public class UserExtraInfoEditor extends IWAdminWindow {
 		UserExtraInfo extraInfo = null;
 		if (userId != null) {
 			try {
-				User user = _biz.getUser(iwc, userId);
-				extraInfo = _biz.getInfo(user);
+				User user = this._biz.getUser(iwc, userId);
+				extraInfo = this._biz.getInfo(user);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -101,7 +101,7 @@ public class UserExtraInfoEditor extends IWAdminWindow {
 		DropdownMenu localeDrop = ICLocalePresentation.getLocaleDropdownIdKeyed(PARAM_NAME_LOCALE_ID);
 		localeDrop.setToSubmit();
 		localeDrop.setSelectedElement(Integer.toString(iLocaleId));
-		addLeft(_iwrb.getLocalizedString("locale", "Locale") + ": ", localeDrop, false);
+		addLeft(this._iwrb.getLocalizedString("locale", "Locale") + ": ", localeDrop, false);
 		addHiddenInput(new HiddenInput(PARAM_NAME_USER_ID, iwc.getParameter(PARAM_NAME_USER_ID)));
 
 		initializeFields(iwc, iLocaleId, extraInfo);
@@ -126,19 +126,19 @@ public class UserExtraInfoEditor extends IWAdminWindow {
 		if (strTitle!=null) {
 			title.setContent(strTitle);
 		}
-		addLeft(_iwrb.getLocalizedString("user_title", "Title") + ":", title, true);
+		addLeft(this._iwrb.getLocalizedString("user_title", "Title") + ":", title, true);
 
 		TextArea education = new TextArea(PARAM_NAME_EDUCATION, 55, 3);
 		if (strEducation != null) {
 			education.setContent(strEducation);
 		}
-		addLeft(_iwrb.getLocalizedString("user_education", "Education") + ":", education, true);
+		addLeft(this._iwrb.getLocalizedString("user_education", "Education") + ":", education, true);
 
 		TextArea area = new TextArea(PARAM_NAME_AREA, 55, 3);
 		if (strArea != null) {
 			area.setContent(strArea);
 		}
-		addLeft(_iwrb.getLocalizedString("user_area", "Area") + ":", area, true);
+		addLeft(this._iwrb.getLocalizedString("user_area", "Area") + ":", area, true);
 
 		DateInput beganWork = new DateInput(PARAM_NAME_BEGAN_WORK);
 		beganWork.setYearRange(new IWTimestamp().getYear() - 60, new IWTimestamp().getYear());
@@ -146,7 +146,7 @@ public class UserExtraInfoEditor extends IWAdminWindow {
 			beganWork.setDate(stamp.getDate());
 		}
 		beganWork.setStyleAttribute("style", STYLE);
-		addLeft(_iwrb.getLocalizedString("user_began_work", "Began work") + ":", beganWork, true);
+		addLeft(this._iwrb.getLocalizedString("user_began_work", "Began work") + ":", beganWork, true);
 
 		/*Table metaTable = new Table(2, 6);
 		metaTable.setColumnVerticalAlignment(1, "top");
@@ -193,8 +193,8 @@ public class UserExtraInfoEditor extends IWAdminWindow {
 			true,
 			false);
 */
-		addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("close", "CLOSE"), PARAM_NAME_ACTION, ACTION_CLOSE));
-		addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("save", "SAVE"), PARAM_NAME_ACTION, ACTION_SAVE));
+		addSubmitButton(new SubmitButton(this._iwrb.getLocalizedImageButton("close", "CLOSE"), PARAM_NAME_ACTION, ACTION_CLOSE));
+		addSubmitButton(new SubmitButton(this._iwrb.getLocalizedImageButton("save", "SAVE"), PARAM_NAME_ACTION, ACTION_SAVE));
 	}
 	
 	private void saveEntry(IWContext iwc, int localeID, UserExtraInfo extraInfo) {
@@ -252,8 +252,8 @@ public class UserExtraInfoEditor extends IWAdminWindow {
 
 	private void noAccess() {
 		try {
-			addLeft(_iwrb.getLocalizedString("no_access", "Login first!"));
-			addSubmitButton(new CloseButton(_iwrb.getImage("close.gif")));
+			addLeft(this._iwrb.getLocalizedString("no_access", "Login first!"));
+			addSubmitButton(new CloseButton(this._iwrb.getImage("close.gif")));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

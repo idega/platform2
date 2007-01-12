@@ -56,14 +56,14 @@ public class CriterionExpression implements DynamicExpression {
   private IWContext iwc = null;
   
   { 
-    typeSQL = new HashMap();
-    typeSQL.put(QueryConditionPart.TYPE_LIKE, "LIKE");
-    typeSQL.put(QueryConditionPart.TYPE_EQ, "=");
-    typeSQL.put(QueryConditionPart.TYPE_NEQ, "<>");
-    typeSQL.put(QueryConditionPart.TYPE_LT, "<");
-    typeSQL.put(QueryConditionPart.TYPE_GT, ">");    
-    typeSQL.put(QueryConditionPart.TYPE_GEQ, ">=");
-    typeSQL.put(QueryConditionPart.TYPE_LEQ, "<=");
+    this.typeSQL = new HashMap();
+    this.typeSQL.put(QueryConditionPart.TYPE_LIKE, "LIKE");
+    this.typeSQL.put(QueryConditionPart.TYPE_EQ, "=");
+    this.typeSQL.put(QueryConditionPart.TYPE_NEQ, "<>");
+    this.typeSQL.put(QueryConditionPart.TYPE_LT, "<");
+    this.typeSQL.put(QueryConditionPart.TYPE_GT, ">");    
+    this.typeSQL.put(QueryConditionPart.TYPE_GEQ, ">=");
+    this.typeSQL.put(QueryConditionPart.TYPE_LEQ, "<=");
   }
      
 	public CriterionExpression(QueryConditionPart condition, Object identifier, SQLQuery sqlQuery, IWContext iwc)	{
@@ -78,14 +78,14 @@ public class CriterionExpression implements DynamicExpression {
   	String path = condition.getPath();
  
   	// set Handler 
-  	inputHandlerDescription = sqlQuery.getHandlerDescriptionForField(path, field); 
-  	inputHandlerClass = sqlQuery.getInputHandlerForField(path, field);
-  	firstColumnClass = sqlQuery.getTypeClassForField(path, field);
-  	valueField =  sqlQuery.getUniqueNameForField(path,field);
+  	this.inputHandlerDescription = sqlQuery.getHandlerDescriptionForField(path, field); 
+  	this.inputHandlerClass = sqlQuery.getInputHandlerForField(path, field);
+  	this.firstColumnClass = sqlQuery.getTypeClassForField(path, field);
+  	this.valueField =  sqlQuery.getUniqueNameForField(path,field);
     String type = condition.getType();
-    comparison = (String) typeSQL.get(type);
+    this.comparison = (String) this.typeSQL.get(type);
     // set pattern
-    identifierValueMap = new LinkedHashMap();
+    this.identifierValueMap = new LinkedHashMap();
     String patternFieldName = condition.getPatternField();
   	String patternPath = condition.getPatternPath();
   	if (patternFieldName == null && patternPath == null) {
@@ -96,12 +96,12 @@ public class CriterionExpression implements DynamicExpression {
 		  else {
 		  	pattern = condition.getPattern();
 		  }
-		 	identifierValueMap.put(identifier, pattern);
+		 	this.identifierValueMap.put(this.identifier, pattern);
   	}
   	else {
-  		patternField = sqlQuery.getUniqueNameForField(patternPath,patternFieldName);
+  		this.patternField = sqlQuery.getUniqueNameForField(patternPath,patternFieldName);
    	}
-   	identifierInputDescriptionMap = new LinkedHashMap();
+   	this.identifierInputDescriptionMap = new LinkedHashMap();
    	String description = condition.getDescription();
    	if (description == null || description.length() == 0)	{
    	IWResourceBundle iwrb = getResourceBundle(iwc);
@@ -111,8 +111,8 @@ public class CriterionExpression implements DynamicExpression {
   		StringBuffer buffer = new StringBuffer(localizedField).append(" ").append(localizedType);
   		description =  buffer.toString();
    	}
-		identifierInputDescriptionMap.put(identifier, new InputDescription(description, inputHandlerClass, inputHandlerDescription));
-		isDynamic = condition.isDynamic();
+		this.identifierInputDescriptionMap.put(this.identifier, new InputDescription(description, this.inputHandlerClass, this.inputHandlerDescription));
+		this.isDynamic = condition.isDynamic();
   }
   
   private IWResourceBundle getResourceBundle(IWContext iwc) {
@@ -124,9 +124,9 @@ public class CriterionExpression implements DynamicExpression {
 
   public String toSQLString() {
     StringBuffer expression = 
-      new StringBuffer(valueField).append(WHITE_SPACE);
-    expression.append(comparison);
-    Object pattern = identifierValueMap.get(identifier);
+      new StringBuffer(this.valueField).append(WHITE_SPACE);
+    expression.append(this.comparison);
+    Object pattern = this.identifierValueMap.get(this.identifier);
     InputHandler inputHandler = getInputHandler();
     // if the pattern is a collection use OR operator
     if (pattern != null) {
@@ -141,7 +141,7 @@ public class CriterionExpression implements DynamicExpression {
     			patternAsArray = new String[] { (String) pattern };
     		}
 	    	try {
-	    		pattern = inputHandler.getResultingObject(patternAsArray, iwc);
+	    		pattern = inputHandler.getResultingObject(patternAsArray, this.iwc);
 	    	}
 	    		catch (Exception ex) {
 	    	}
@@ -174,8 +174,8 @@ public class CriterionExpression implements DynamicExpression {
     		return getSingleCondition(pattern).toString();
     	}
   	}
-    else if (patternField != null) {
-    	expression.append(WHITE_SPACE).append(patternField);
+    else if (this.patternField != null) {
+    	expression.append(WHITE_SPACE).append(this.patternField);
     	// bye bye
     	return expression.toString();
     }
@@ -185,16 +185,16 @@ public class CriterionExpression implements DynamicExpression {
   
   private StringBuffer getSingleCondition(Object patternObject) {
   	// change pattern to the corresponding string for the given type
-  	if (inputHandlerClass != null && patternObject != null) {
+  	if (this.inputHandlerClass != null && patternObject != null) {
   		InputHandler inputHandler = getInputHandler();
-  		patternObject = inputHandler.convertSingleResultingObjectToType(patternObject, firstColumnClass).toString();
+  		patternObject = inputHandler.convertSingleResultingObjectToType(patternObject, this.firstColumnClass).toString();
   	}
-    StringBuffer expression = new StringBuffer(valueField).append(WHITE_SPACE);
-    expression.append(comparison);
+    StringBuffer expression = new StringBuffer(this.valueField).append(WHITE_SPACE);
+    expression.append(this.comparison);
     if (patternObject != null)  {
       expression.append(WHITE_SPACE);
       // if it is an integer do not use apostrophe: age = 22
-      if (INTEGER.equals(firstColumnClass)) {
+      if (INTEGER.equals(this.firstColumnClass)) {
         expression.append(patternObject);
       }
       // else use apostrophe: name = 'Thomas'
@@ -206,19 +206,19 @@ public class CriterionExpression implements DynamicExpression {
   }
     	
   public boolean isDynamic() {
-  	return isDynamic;
+  	return this.isDynamic;
   }
   
   public String getId()	{
-  	return id;
+  	return this.id;
   }
   
   public Map getIdentifierValueMap() {
-  	return identifierValueMap;
+  	return this.identifierValueMap;
   }
   
   public Map getIdentifierInputDescriptionMap()	{
-  	return identifierInputDescriptionMap;
+  	return this.identifierInputDescriptionMap;
   }
   
   public void setIdentifierValueMap(Map identifierValueMap)	{
@@ -226,17 +226,17 @@ public class CriterionExpression implements DynamicExpression {
   }
   
   public String getInputHandlerDescription() {
-  	return inputHandlerDescription;
+  	return this.inputHandlerDescription;
   }
   
   public InputHandler getInputHandler() {
   	// sometimes there isn't an inputhandler 
-  	if (inputHandlerClass == null) {
+  	if (this.inputHandlerClass == null) {
   		return null;
   	}
   	InputHandler inputHandler = null;
   	try {
-  		inputHandler = (InputHandler) RefactorClassRegistry.forName(inputHandlerClass).newInstance();
+  		inputHandler = (InputHandler) RefactorClassRegistry.forName(this.inputHandlerClass).newInstance();
   	}
 		catch (ClassNotFoundException ex) {
 			//TODO: thi implement log 

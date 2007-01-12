@@ -89,9 +89,9 @@ public class QueryHelper {
 
 	// used by report generator
 	public QueryHelper(InputStream stream, IWContext iwc) throws XMLException, Exception {
-		doc = new XMLParser().parse(stream);
+		this.doc = new XMLParser().parse(stream);
 		this.userQuery = null;
-		init(doc.getRootElement(), iwc);
+		init(this.doc.getRootElement(), iwc);
 	}
 
 	public QueryHelper(XMLData data,  IWContext iwc) throws NumberFormatException, RemoteException, FinderException, IOException {
@@ -99,9 +99,9 @@ public class QueryHelper {
 	}
 	
 	public QueryHelper(XMLData data, UserQuery userQuery, IWContext iwc) throws NumberFormatException, RemoteException, FinderException, IOException  {
-		doc = data.getDocument();
+		this.doc = data.getDocument();
 		this.userQuery = userQuery;
-		init(doc.getRootElement(), iwc);
+		init(this.doc.getRootElement(), iwc);
 	}
 	
 	public QueryHelper(XMLElement root, QueryHelper nextQuery, IWContext iwc) throws NumberFormatException, RemoteException, FinderException, IOException	{
@@ -112,19 +112,19 @@ public class QueryHelper {
 	private void init(XMLElement rootElement, IWContext iwc) throws NumberFormatException, RemoteException, FinderException, IOException {
 		this.root = rootElement; 
 		if (rootElement != null) {
-			name = rootElement.getAttribute(QueryXMLConstants.NAME).getValue();
+			this.name = rootElement.getAttribute(QueryXMLConstants.NAME).getValue();
 			// the query itself doesn't know the path - set the path equal to name
 			// see comment below
 			// comment-label: "prequerypath"
 			// search for "prequerypath"
-			path = name;
+			this.path = this.name;
 			// check for an existing next query
 			List copiedPreQueries = rootElement.getChildren(QueryXMLConstants.ROOT);
 			Iterator copiedPreQueriesIterator = copiedPreQueries.iterator();
 			while (copiedPreQueriesIterator.hasNext()) {
 				XMLElement previousQueryElement = (XMLElement) copiedPreQueriesIterator.next();
 				QueryHelper previousQuery = new QueryHelper(previousQueryElement, this, iwc);
-				previousQueries.add(previousQuery);
+				this.previousQueries.add(previousQuery);
 			}
 			XMLElement previousQueryElements = rootElement.getChild(QueryXMLConstants.SOURCE_QUERY);
 			if (previousQueryElements != null)	{
@@ -137,7 +137,7 @@ public class QueryHelper {
 					QueryService queryService = getQueryService(iwc);
 					QueryHelper previousQuery = queryService.getQueryHelperByNameAndPathToQuerySequence(preQueryName, preQueryPath, iwc);		
 					previousQuery.setNextQuery(this);
-					previousQueries.add(previousQuery);
+					this.previousQueries.add(previousQuery);
 					// set the path of the prequery
 					// comment-label: "prequerypath"
 					// search for "prequerypath"
@@ -145,26 +145,26 @@ public class QueryHelper {
 				}
 			}
 			XMLAttribute template = rootElement.getAttribute(QueryXMLConstants.TEMPLATE);
-			isTemplate = (template != null && Boolean.getBoolean(template.getValue()));
+			this.isTemplate = (template != null && Boolean.getBoolean(template.getValue()));
 			// check for direct sql
 			XMLElement sqlElement = rootElement.getChild(QueryXMLConstants.SQL);
 			if (sqlElement != null)	{
-				sqlPart = new QuerySQLPart(sqlElement);
-				List fields = sqlPart.getFields( name);
+				this.sqlPart = new QuerySQLPart(sqlElement);
+				List fields = this.sqlPart.getFields( this.name);
 				addFields(fields);
 			}
 			// description
-			description = rootElement.getTextTrim(QueryXMLConstants.DESCRIPTION);
+			this.description = rootElement.getTextTrim(QueryXMLConstants.DESCRIPTION);
 			// distinct
 			String distinct = rootElement.getTextTrim(QueryXMLConstants.DISTINCT);
-			selectDistinct = Boolean.valueOf(distinct).booleanValue();
+			this.selectDistinct = Boolean.valueOf(distinct).booleanValue();
 			//source 
 			XMLElement source = rootElement.getChild(QueryXMLConstants.SOURCE_ENTITY);
 			if (source != null) {
 				// SOURCE ENTITY PART (STEP 1)
 				XMLElement entity = source.getChild(QueryXMLConstants.ENTITY);
 				if (entity != null) {
-					sourceEntity = new QueryEntityPart(entity);
+					this.sourceEntity = new QueryEntityPart(entity);
 				}
 			}
 			// RELATED PART ( STEP 2)
@@ -172,23 +172,24 @@ public class QueryHelper {
 			XMLElement related = rootElement.getChild(QueryXMLConstants.RELATED_ENTITIES);
 			if (related != null) {
 				XMLAttribute entLock = related.getAttribute(QueryXMLConstants.LOCK);
-				entitiesLock = (entLock != null && Boolean.getBoolean(entLock.getValue()));
+				this.entitiesLock = (entLock != null && Boolean.getBoolean(entLock.getValue()));
 			}
 			if (related != null && related.hasChildren()) {
-				listOfRelatedEntities = new ArrayList();
+				this.listOfRelatedEntities = new ArrayList();
 				Iterator entities = related.getChildren().iterator();
 				while (entities.hasNext()) {
 					XMLElement xmlEntity = (XMLElement) entities.next();
-					listOfRelatedEntities.add(new QueryEntityPart(xmlEntity));
+					this.listOfRelatedEntities.add(new QueryEntityPart(xmlEntity));
 				}
 			}
 			// FIELD PART (STEP 3)
 			XMLElement fields = rootElement.getChild(QueryXMLConstants.FIELDS);
 
 			XMLAttribute fieldLock = null;
-			if (related != null)
+			if (related != null) {
 				related.getAttribute(QueryXMLConstants.LOCK);
-			fieldsLock = (fieldLock != null && Boolean.getBoolean(fieldLock.getValue()));
+			}
+			this.fieldsLock = (fieldLock != null && Boolean.getBoolean(fieldLock.getValue()));
 			if (fields != null && fields.hasChildren()) {
 				Iterator iter = fields.getChildren().iterator();
 				while (iter.hasNext()) {
@@ -204,21 +205,21 @@ public class QueryHelper {
 				// CONDITION PART (STEP 4)
 				XMLElement conditions = rootElement.getChild(QueryXMLConstants.CONDITIONS);
 				if (conditions != null && conditions.hasChildren()) {
-					listOfConditions = new ArrayList();
+					this.listOfConditions = new ArrayList();
 					Iterator conds = conditions.getChildren().iterator();
 					while (conds.hasNext()) {
 						XMLElement xmlCondition = (XMLElement) conds.next();
-						listOfConditions.add(new QueryConditionPart(xmlCondition));
+						this.listOfConditions.add(new QueryConditionPart(xmlCondition));
 					}
 				}
 				
 				XMLElement xmlOrderConditions = rootElement.getChild(QueryXMLConstants.ORDER_CONDITIONS);
 				if (xmlOrderConditions != null && xmlOrderConditions.hasChildren())	{
-					orderConditions = new ArrayList();
+					this.orderConditions = new ArrayList();
 					Iterator orderConds = xmlOrderConditions.getChildren().iterator();
 					while (orderConds.hasNext())	{
 						XMLElement xmlOrderCondition = (XMLElement) orderConds.next();
-						orderConditions.add(new QueryOrderConditionPart(xmlOrderCondition));
+						this.orderConditions.add(new QueryOrderConditionPart(xmlOrderCondition));
 					}
 				}
 			}
@@ -242,109 +243,110 @@ public class QueryHelper {
 
 	public XMLDocument createDocument() {
 		//if (doc == null)  {
-			doc = new XMLDocument(getUpdatedRootElement());
+			this.doc = new XMLDocument(getUpdatedRootElement());
 		//}
 		//else {
 			//getUpdatedRootElement();
 			//initializeRootElement();
 		//}
-		return doc;
+		return this.doc;
 	}
 			
 	protected XMLElement getUpdatedRootElement()	{
-		root = new XMLElement(QueryXMLConstants.ROOT);
+		this.root = new XMLElement(QueryXMLConstants.ROOT);
 		initializeRootElement();
-		return root;
+		return this.root;
 	}
 		
 	private void initializeRootElement() {
 		if (hasPreviousQuery())	{
 			XMLElement preQuery = new XMLElement(QueryXMLConstants.SOURCE_QUERY);
-			Iterator iterator = previousQueries.iterator();
+			Iterator iterator = this.previousQueries.iterator();
 			while (iterator.hasNext()) {
 				QueryHelper previousQuery = (QueryHelper) iterator.next();
 				XMLElement preQueryElement = getPreQueryElement(previousQuery);
 				preQuery.addContent(preQueryElement);
 			}
-			root.addContent(preQuery);
+			this.root.addContent(preQuery);
 		}
 		if (isTemplate()) {
-			root.setAttribute(QueryXMLConstants.TEMPLATE, String.valueOf(isTemplate()));
+			this.root.setAttribute(QueryXMLConstants.TEMPLATE, String.valueOf(isTemplate()));
 		}
-		root.setAttribute(QueryXMLConstants.NAME, name);
+		this.root.setAttribute(QueryXMLConstants.NAME, this.name);
 		// check for direct sql
-		if (sqlPart != null)	{
-			root.addContent(sqlPart.getQueryElement());
+		if (this.sqlPart != null)	{
+			this.root.addContent(this.sqlPart.getQueryElement());
 		}
 		// add description 
-		if (description != null && description.length() > 0) {
+		if (this.description != null && this.description.length() > 0) {
 			XMLElement xmlDescription = new XMLElement(QueryXMLConstants.DESCRIPTION);
-			xmlDescription.addContent(description);
-			root.addContent(xmlDescription);
+			xmlDescription.addContent(this.description);
+			this.root.addContent(xmlDescription);
 		}
 		// add distinct
 		XMLElement distinct = new XMLElement(QueryXMLConstants.DISTINCT);
-		distinct.addContent(Boolean.toString(selectDistinct));
-		root.addContent(distinct);
+		distinct.addContent(Boolean.toString(this.selectDistinct));
+		this.root.addContent(distinct);
 		//	SOURCE ENTITY PART (STEP 1)
-		if (sourceEntity != null) {
+		if (this.sourceEntity != null) {
 			XMLElement sourceElement = getSourceEntityElement();
-			sourceElement.addContent(sourceEntity.getQueryElement());
-			root.addContent(sourceElement);
+			sourceElement.addContent(this.sourceEntity.getQueryElement());
+			this.root.addContent(sourceElement);
 		}
 		//	RELATED PART ( STEP 2)
-		if (listOfRelatedEntities != null && !listOfRelatedEntities.isEmpty()) {
-			Iterator iter = listOfRelatedEntities.iterator();
+		if (this.listOfRelatedEntities != null && !this.listOfRelatedEntities.isEmpty()) {
+			Iterator iter = this.listOfRelatedEntities.iterator();
 			XMLElement related = new XMLElement(QueryXMLConstants.RELATED_ENTITIES);
-			if (entitiesLock)
-				related.setAttribute(QueryXMLConstants.LOCK, String.valueOf(entitiesLock));
+			if (this.entitiesLock) {
+				related.setAttribute(QueryXMLConstants.LOCK, String.valueOf(this.entitiesLock));
+			}
 			while (iter.hasNext()) {
 				related.addContent(((QueryPart) iter.next()).getQueryElement());
 			}
-			root.addContent(related);
+			this.root.addContent(related);
 		}
 
 		//	FIELD PART (STEP 3)
-		if (listOfFields != null && !listOfFields.isEmpty() && sqlPart == null) {
+		if (this.listOfFields != null && !this.listOfFields.isEmpty() && this.sqlPart == null) {
 			XMLElement fields = new XMLElement(QueryXMLConstants.FIELDS);
-			if (fieldsLock) {
-				fields.setAttribute(QueryXMLConstants.LOCK, String.valueOf(entitiesLock));
+			if (this.fieldsLock) {
+				fields.setAttribute(QueryXMLConstants.LOCK, String.valueOf(this.entitiesLock));
 			}
-			Iterator iter = listOfFields.iterator();
+			Iterator iter = this.listOfFields.iterator();
 			while (iter.hasNext()) {
 				// set inputhandler 
 				QueryFieldPart fieldPart = (QueryFieldPart) iter.next();
-				String inputHandler = (String) entityFieldHandler.get(fieldPart.getPath(),fieldPart.getName());
+				String inputHandler = (String) this.entityFieldHandler.get(fieldPart.getPath(),fieldPart.getName());
 				if (inputHandler != null) {
 					fieldPart.setHandlerClass(inputHandler);
 				}
 				fields.addContent(fieldPart.getQueryElement());
 			}
-			root.addContent(fields);
+			this.root.addContent(fields);
 			
 			// boolean expression for conditions
-			if (booleanExpression != null)	{
-				root.addContent(booleanExpression.getQueryElement());
+			if (this.booleanExpression != null)	{
+				this.root.addContent(this.booleanExpression.getQueryElement());
 			}
 
 			//	CONDITION PART (STEP 4)
-			if (listOfConditions != null && !listOfConditions.isEmpty()) {
-				iter = listOfConditions.iterator();
+			if (this.listOfConditions != null && !this.listOfConditions.isEmpty()) {
+				iter = this.listOfConditions.iterator();
 				XMLElement conditions = new XMLElement(QueryXMLConstants.CONDITIONS);
 				while (iter.hasNext()) {
 					conditions.addContent(((QueryPart) iter.next()).getQueryElement());
 				}
-				root.addContent(conditions);
+				this.root.addContent(conditions);
 			}
 			
 			// order conditions
-			if (orderConditions != null && !orderConditions.isEmpty())	{
-				iter = orderConditions.iterator();
+			if (this.orderConditions != null && !this.orderConditions.isEmpty())	{
+				iter = this.orderConditions.iterator();
 				XMLElement orderConditionsElement = new XMLElement(QueryXMLConstants.ORDER_CONDITIONS);
 				while (iter.hasNext())	{
 					orderConditionsElement.addContent(((QueryPart) iter.next()).getQueryElement());
 				}
-				root.addContent(orderConditionsElement);
+				this.root.addContent(orderConditionsElement);
 			}				
 		}
 	}
@@ -353,23 +355,23 @@ public class QueryHelper {
 	 * @return <CODE>true</CODE> if the query has a source entity
 	 */
 	public boolean hasSourceEntity() {
-		return sourceEntity != null;
+		return this.sourceEntity != null;
 	}
 	/**
 	 * @return <CODE>true</CODE> if the query has related entities
 	 */
 	public boolean hasRelatedEntities() {
-		return listOfRelatedEntities != null && !listOfRelatedEntities.isEmpty();
+		return this.listOfRelatedEntities != null && !this.listOfRelatedEntities.isEmpty();
 	}
 	/**
 	 * @return <CODE>true</CODE> if the query has fields
 	 */
 	public boolean hasFields() {	
-		return listOfFields != null && ! getListOfVisibleFields().isEmpty();
+		return this.listOfFields != null && ! getListOfVisibleFields().isEmpty();
 	}
 	
 	public boolean hasOrderConditions()	{
-		return orderConditions != null && ! orderConditions.isEmpty();
+		return this.orderConditions != null && ! this.orderConditions.isEmpty();
 	}
 	
 	/**
@@ -377,7 +379,7 @@ public class QueryHelper {
 	 * @return <CODE>true</CODE> if the query has conditions
 	 */
 	public boolean hasConditions() {
-		return listOfConditions != null && !listOfConditions.isEmpty();
+		return this.listOfConditions != null && !this.listOfConditions.isEmpty();
 	}
 
 	/**
@@ -385,7 +387,7 @@ public class QueryHelper {
 	 * @return the document element
 	 */
 	public XMLDocument getDoc() {
-		return doc;
+		return this.doc;
 	}
 
 	/**
@@ -393,16 +395,16 @@ public class QueryHelper {
 	 * @return the list of conditions
 	 */
 	public List getListOfConditions() {
-		return listOfConditions;
+		return this.listOfConditions;
 	}
 	
 	public int getNextIdForCondition() {
-		if (listOfConditions == null) {
+		if (this.listOfConditions == null) {
 			return 1;
 		}
 		int maxNumber = 0;
 		int idNumber;
-		Iterator iterator = listOfConditions.iterator();
+		Iterator iterator = this.listOfConditions.iterator();
 		while (iterator.hasNext()) {
 			QueryConditionPart part = (QueryConditionPart) iterator.next();
 			if ((idNumber = part.getIdNumber()) > maxNumber) {
@@ -413,7 +415,7 @@ public class QueryHelper {
 	}
 	
 	public QueryBooleanExpressionPart getBooleanExpressionForConditions()	{
-		return booleanExpression;
+		return this.booleanExpression;
 	}
 
 	/**
@@ -421,19 +423,19 @@ public class QueryHelper {
 	 * @return the list of fields or null
 	 */
 	public List getListOfFields() {
-		return listOfFields;
+		return this.listOfFields;
 	}
 	
 	// its very unlikely that there aren't any visible fields
 	// therefore we return always a list, even if the list might be empty
 	// the caller doesn't need to check if the return value is null
 	public List getListOfVisibleFields()	{
-		if (listOfFields == null) {
+		if (this.listOfFields == null) {
 			return new ArrayList(0);
 		}
 		// in most cases the numbers of  fields and the number of visible fields are the same 
-		List visibleFields = new ArrayList(listOfFields.size());
-		Iterator fieldIterator = listOfFields.iterator();
+		List visibleFields = new ArrayList(this.listOfFields.size());
+		Iterator fieldIterator = this.listOfFields.iterator();
 		while (fieldIterator.hasNext()) {
 			QueryFieldPart fieldPart = (QueryFieldPart) fieldIterator.next();
 			if (! fieldPart.isHidden())	{
@@ -448,7 +450,7 @@ public class QueryHelper {
 	 * @return the list of related entities
 	 */
 	public List getListOfRelatedEntities() {
-		return listOfRelatedEntities;
+		return this.listOfRelatedEntities;
 	}
 
 	/**
@@ -456,11 +458,11 @@ public class QueryHelper {
 	 * @return the root element
 	 */
 	public XMLElement getRoot() {
-		return root;
+		return this.root;
 	}
 
 	public QuerySQLPart getSQL()	{
-		return sqlPart;
+		return this.sqlPart;
 	}
 
 	/**
@@ -468,7 +470,7 @@ public class QueryHelper {
 	 * @return the source entity part
 	 */
 	public QueryEntityPart getSourceEntity() {
-		return sourceEntity;
+		return this.sourceEntity;
 	}
 
 	/**
@@ -476,7 +478,7 @@ public class QueryHelper {
 	 * @param document
 	 */
 	public void setDoc(XMLDocument document) {
-		doc = document;
+		this.doc = document;
 	}
 
 	/**
@@ -484,7 +486,7 @@ public class QueryHelper {
 	 * @param list
 	 */
 	public void setListOfConditions(List list) {
-		listOfConditions = list;
+		this.listOfConditions = list;
 		checkStep();
 	}
 
@@ -493,7 +495,7 @@ public class QueryHelper {
 	 * @param list
 	 */
 	public void setListOfRelatedEntities(List list) {
-		listOfRelatedEntities = list;
+		this.listOfRelatedEntities = list;
 		checkStep();
 	}
 
@@ -502,7 +504,7 @@ public class QueryHelper {
 	 * @param element
 	 */
 	public void setRoot(XMLElement element) {
-		root = element;
+		this.root = element;
 	}
 
 	/**
@@ -510,8 +512,8 @@ public class QueryHelper {
 	 * @param the  entity
 	 */
 	public void setSourceEntity(QueryEntityPart part) {
-		QueryEntityPart oldPart = sourceEntity;
-		sourceEntity = part;
+		QueryEntityPart oldPart = this.sourceEntity;
+		this.sourceEntity = part;
 		if (oldPart != null && !part.encode().equals(oldPart.encode())) {
 //			clearRelatedEntities();
 //			clearFields();
@@ -523,7 +525,7 @@ public class QueryHelper {
 	public void addQuery(QueryHelper queryHelper)	{
 		UserQuery newUserQuery = queryHelper.getUserQuery();
 		String newUserQueryPrimaryKey = newUserQuery.getPrimaryKey().toString();
-		Iterator iterator = previousQueries.iterator();
+		Iterator iterator = this.previousQueries.iterator();
 		while (iterator.hasNext()) {
 			QueryHelper tempQueryHelper = (QueryHelper) iterator.next();
 			UserQuery tempUserQuery = tempQueryHelper.getUserQuery();
@@ -536,7 +538,7 @@ public class QueryHelper {
 		// comment-label: "prequerypath"
 		String prequeryPath = queryHelper.getPathToMyQuerySequence();
 		queryHelper.setPath(prequeryPath);
-		previousQueries.add(queryHelper);
+		this.previousQueries.add(queryHelper);
 //		clearFields();
 //		clearOrderConditions();
 //		clearConditions();
@@ -544,8 +546,9 @@ public class QueryHelper {
 	
 		private QueryEntityPart getQueryEntityPart(Class entityClass) {
 		GenericEntity entity = getEntity(entityClass);
-		if (entity != null)
+		if (entity != null) {
 			return new QueryEntityPart(entity.getEntityName(), entityClass.getName());
+		}
 		return null;
 	}
 
@@ -555,8 +558,9 @@ public class QueryHelper {
 	 */
 	public void addRelatedEntity(Class entityClass) {
 		QueryEntityPart entityPart = getQueryEntityPart(entityClass);
-		if (entityPart != null)
+		if (entityPart != null) {
 			addRelatedEntity(entityPart);
+		}
 	}
 
 	/**
@@ -564,11 +568,11 @@ public class QueryHelper {
 	 * @param the new entity
 	 */
 	public void addRelatedEntity(QueryEntityPart entity) {
-		if (listOfRelatedEntities == null) {
-			listOfRelatedEntities = new ArrayList();
+		if (this.listOfRelatedEntities == null) {
+			this.listOfRelatedEntities = new ArrayList();
 		}
 		if(!hasRelatedEntity(entity)){
-			listOfRelatedEntities.add(entity);
+			this.listOfRelatedEntities.add(entity);
 			checkStep();
 		}
 	}
@@ -578,8 +582,8 @@ public class QueryHelper {
 	 * @param the new field
 	 */
 	public void addField(QueryFieldPart field) {
-		if (listOfFields == null) {
-			listOfFields = new ArrayList();
+		if (this.listOfFields == null) {
+			this.listOfFields = new ArrayList();
 		}
 		if (addFieldWithoutChecks(field)) {
 			checkStep();
@@ -587,8 +591,8 @@ public class QueryHelper {
 	}
 	
 	public void addFields(List listOfNewFields) {
-		if (listOfFields == null) {
-			listOfFields = new ArrayList(listOfNewFields.size());
+		if (this.listOfFields == null) {
+			this.listOfFields = new ArrayList(listOfNewFields.size());
 		}
 		boolean atLeastOneFieldWasAdded = false;
 		Iterator iterator = listOfNewFields.iterator();
@@ -604,7 +608,7 @@ public class QueryHelper {
 	private boolean addFieldWithoutChecks(QueryFieldPart field) {
 		if(!hasFieldPart(field)){
 			createAliasNameIfNecessary(field);
-			listOfFields.add(field);
+			this.listOfFields.add(field);
 			return true;
 		}
 		return false;
@@ -614,8 +618,8 @@ public class QueryHelper {
 		if (!hasFields()) {
 			return;
 		}
-		Collection names = new ArrayList(listOfFields.size());
-		Iterator iter = listOfFields.iterator(); 
+		Collection names = new ArrayList(this.listOfFields.size());
+		Iterator iter = this.listOfFields.iterator(); 
 		while (iter.hasNext()) {
 			QueryFieldPart element = (QueryFieldPart) iter.next();
 			names.add(element.getName());
@@ -643,10 +647,10 @@ public class QueryHelper {
 		
 		
 	public List getOrderConditions() {
-		if (orderConditions == null)	{
-			orderConditions = new ArrayList(1);
+		if (this.orderConditions == null)	{
+			this.orderConditions = new ArrayList(1);
 		}
-		return orderConditions;
+		return this.orderConditions;
 	}
 	
 	public void setBooleanExpressionForConditions(QueryBooleanExpressionPart booleanExpression)	{
@@ -659,11 +663,11 @@ public class QueryHelper {
 	 * @param the new condition
 	 */
 	public void addCondition(QueryConditionPart condition) {
-		if (listOfConditions == null) {
-			listOfConditions = new ArrayList();
+		if (this.listOfConditions == null) {
+			this.listOfConditions = new ArrayList();
 		}
 		if(!hasCondition(condition)){
-			listOfConditions.add(condition);
+			this.listOfConditions.add(condition);
 			checkStep();
 		}
 	}
@@ -683,7 +687,7 @@ public class QueryHelper {
 	 * 	and updates the current step.
 	 */
 	public void clearSourceEntity() {
-		sourceEntity = null;
+		this.sourceEntity = null;
 		checkStep();
 	}
 
@@ -692,7 +696,7 @@ public class QueryHelper {
 	 * and updates the current step.
 	 */
 	public void clearRelatedEntities() {
-		listOfRelatedEntities = null;
+		this.listOfRelatedEntities = null;
 		checkStep();
 	}
 
@@ -700,13 +704,13 @@ public class QueryHelper {
 	 *  Clears the field part of the query and updates the current step
 	 */
 	public void clearFields() {
-		if (listOfFields == null) {
+		if (this.listOfFields == null) {
 			return;
 		}
 		// prepare a matrix that stores all used fields
 		HashMatrix usedFields = new HashMatrix();
-		if (listOfConditions != null) {
-			Iterator listOfConditionsIterator = listOfConditions.iterator();
+		if (this.listOfConditions != null) {
+			Iterator listOfConditionsIterator = this.listOfConditions.iterator();
 			while (listOfConditionsIterator.hasNext()) {
 				QueryConditionPart condition = (QueryConditionPart) listOfConditionsIterator.next();
 				String condPath = condition.getPath();
@@ -721,8 +725,8 @@ public class QueryHelper {
 				}
 			}
 		}
-		if (orderConditions != null) {
-			Iterator orderConditionsIterator = orderConditions.iterator();
+		if (this.orderConditions != null) {
+			Iterator orderConditionsIterator = this.orderConditions.iterator();
 			while (orderConditionsIterator.hasNext()) {
 				QueryOrderConditionPart orderCondition = (QueryOrderConditionPart) orderConditionsIterator.next();
 				String orderPath = orderCondition.getPath();
@@ -733,7 +737,7 @@ public class QueryHelper {
 			}
 		}
 		List invisibleFields = new ArrayList();
-		Iterator fieldIterator = listOfFields.iterator();
+		Iterator fieldIterator = this.listOfFields.iterator();
 		while (fieldIterator.hasNext()) {
 			QueryFieldPart fieldPart = (QueryFieldPart) fieldIterator.next();
 			String fieldPath = fieldPart.getPath();
@@ -744,12 +748,12 @@ public class QueryHelper {
 				invisibleFields.add(fieldPart);
 			}
 		}
-		listOfFields = invisibleFields;
+		this.listOfFields = invisibleFields;
 		checkStep();
 	}
 
 	public void clearOrderConditions()	{
-		orderConditions = null;
+		this.orderConditions = null;
 		checkStep();
 	}
 	
@@ -758,7 +762,7 @@ public class QueryHelper {
 	 * and updates the current step.
 	 */
 	public void clearConditions() {
-		listOfConditions = null;
+		this.listOfConditions = null;
 		checkStep();
 	}
 
@@ -767,23 +771,29 @@ public class QueryHelper {
 	 * @return the current step 
 	 */
 	public int getStep() {
-		return step;
+		return this.step;
 	}
 
 	private void checkStep() {
-		if (hasConditions())
-			step = 5;
-		else if (hasOrderConditions())
-			step = 4;
-		else if (hasFields())
-			step = 3;
-		else if (hasRelatedEntities())
-			step = 2;
-		else if (hasSourceEntity() || hasPreviousQuery())
-			step = 1;
-		else
-			step = 0;
+		if (hasConditions()) {
+			this.step = 5;
+		}
+		else if (hasOrderConditions()) {
+			this.step = 4;
+		}
+		else if (hasFields()) {
+			this.step = 3;
+		}
+		else if (hasRelatedEntities()) {
+			this.step = 2;
+		}
+		else if (hasSourceEntity() || hasPreviousQuery()) {
+			this.step = 1;
+		}
+		else {
+			this.step = 0;
 		//System.out.println("checkstep : step is now "+step);
+		}
 	}
 
 	private GenericEntity getEntity(Class entityClass) {
@@ -794,7 +804,7 @@ public class QueryHelper {
 	 * @return <CODE>true</CODE> if the query is a template
 	 */
 	public boolean isTemplate() {
-		return isTemplate;
+		return this.isTemplate;
 	}
 
 	/**
@@ -802,35 +812,35 @@ public class QueryHelper {
 	 *
 	 */
 	public void setTemplate(boolean b) {
-		isTemplate = b;
+		this.isTemplate = b;
 	}
 
 	/**
 	 * @return
 	 */
 	public boolean isEntitiesLock() {
-		return entitiesLock;
+		return this.entitiesLock;
 	}
 
 	/**
 	 * @return
 	 */
 	public boolean isFieldsLock() {
-		return fieldsLock;
+		return this.fieldsLock;
 	}
 
 	/**
 	 * @param b
 	 */
 	public void setEntitiesLock(boolean b) {
-		entitiesLock = b;
+		this.entitiesLock = b;
 	}
 
 	/**
 	 * @param b
 	 */
 	public void setFieldsLock(boolean b) {
-		fieldsLock = b;
+		this.fieldsLock = b;
 	}
 
 	/**
@@ -846,8 +856,9 @@ public class QueryHelper {
 			Iterator iter = getListOfRelatedEntities().iterator();
 			while (iter.hasNext()) {
 				QueryEntityPart part = (QueryEntityPart) iter.next();
-				if (part.getName().equals(entityName))
+				if (part.getName().equals(entityName)) {
 					return part;
+				}
 			}
 		}
 		return null;
@@ -857,7 +868,7 @@ public class QueryHelper {
 		if (!hasFields()) {
 			return false;
 		}
-		Iterator iter = listOfFields.iterator();
+		Iterator iter = this.listOfFields.iterator();
 		while (iter.hasNext()) {
 			QueryFieldPart element = (QueryFieldPart) iter.next();
 			if (element.encode().equals(field.encode())) {
@@ -871,7 +882,7 @@ public class QueryHelper {
 		if (!hasConditions()) {
 			return false;
 		}
-		for (Iterator iter = listOfConditions.iterator(); iter.hasNext();) {
+		for (Iterator iter = this.listOfConditions.iterator(); iter.hasNext();) {
 			QueryConditionPart element = (QueryConditionPart) iter.next();
 			if (element.encode().equals(condition.encode())) {
 				return true;
@@ -884,7 +895,7 @@ public class QueryHelper {
 		if (!hasRelatedEntities()) {
 			return false;
 		}
-		for (Iterator iter = listOfRelatedEntities.iterator(); iter.hasNext();) {
+		for (Iterator iter = this.listOfRelatedEntities.iterator(); iter.hasNext();) {
 			QueryEntityPart element = (QueryEntityPart) iter.next();
 			if (element.encode().equals(entity.encode())) {
 				return true;
@@ -894,7 +905,7 @@ public class QueryHelper {
 	}
 	
 	public String getName()	{
-		return name;
+		return this.name;
 	}
 	
 	public void setName(String name)	{
@@ -906,27 +917,27 @@ public class QueryHelper {
 	}
 	
 	public boolean hasPreviousQuery()	{
-		return ! previousQueries.isEmpty();
+		return ! this.previousQueries.isEmpty();
 	}
 	
 	public List previousQueries()	{
-		return previousQueries;
+		return this.previousQueries;
 	}
 
 	public QueryHelper nextQuery()	{
-		return nextQuery;
+		return this.nextQuery;
 	}
 	
 	public void setInputHandler(String entityPath, String field, String handlerClass) {
-		entityFieldHandler.put(entityPath, field, handlerClass);
+		this.entityFieldHandler.put(entityPath, field, handlerClass);
 	}
 	
 	public String getInputHandler(String entityPath, String field) {
-		return (String) entityFieldHandler.get(entityPath, field);
+		return (String) this.entityFieldHandler.get(entityPath, field);
 	}
 	
 	public boolean isSelectDistinct() {
-		return selectDistinct;
+		return this.selectDistinct;
 	}
 	
 	/**
@@ -940,7 +951,7 @@ public class QueryHelper {
 	 * @return Returns the description.
 	 */
 	public String getDescription() {
-		return description;
+		return this.description;
 	}
 
 	/**
@@ -954,7 +965,7 @@ public class QueryHelper {
 	 * @return Returns the userQuery.
 	 */
 	public UserQuery getUserQuery() {
-		return userQuery;
+		return this.userQuery;
 	}
 
 	/**
@@ -996,7 +1007,7 @@ public class QueryHelper {
 	 * @return Returns the path.
 	 */
 	public String getPath() {
-		return path;
+		return this.path;
 	}
 
 	/**

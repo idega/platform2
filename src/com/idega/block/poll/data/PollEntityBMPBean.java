@@ -11,6 +11,7 @@ package com.idega.block.poll.data;
 import java.sql.SQLException;
 
 import com.idega.core.component.data.ICObjectInstance;
+import com.idega.data.GenericEntity;
 
 
 
@@ -108,9 +109,9 @@ public class PollEntityBMPBean extends com.idega.data.GenericEntity implements c
 
   public void delete() throws SQLException {
 
-    removeFrom(com.idega.core.component.data.ICObjectInstanceBMPBean.getStaticInstance(ICObjectInstance.class));
+    removeFrom(GenericEntity.getStaticInstance(ICObjectInstance.class));
 
-    removeFrom(com.idega.block.poll.data.PollQuestionBMPBean.getStaticInstance(PollQuestion.class));
+    removeFrom(GenericEntity.getStaticInstance(PollQuestion.class));
 
     super.delete();
 

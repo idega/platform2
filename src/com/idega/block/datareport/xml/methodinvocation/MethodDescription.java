@@ -52,17 +52,17 @@ public class MethodDescription extends XMLElement {
 	private void initialize(XMLElement element) throws XMLException {
 		XMLElement clDesc = element.getChild(ClassDescription.NAME);
 		if(clDesc != null){
-			_classDescription = new ClassDescription(clDesc);	
+			this._classDescription = new ClassDescription(clDesc);	
 		}
 		
 		XMLElement input = element.getChild(MethodInput.NAME);
 		if(clDesc != null){
-			_input = new MethodInput(input);	
+			this._input = new MethodInput(input);	
 		}
 		
 		XMLElement output = element.getChild(MethodOutput.NAME);
 		if(clDesc != null){
-			_output = new MethodOutput(output);	
+			this._output = new MethodOutput(output);	
 		}
 	}
 
@@ -70,16 +70,16 @@ public class MethodDescription extends XMLElement {
 	 * 
 	 */
 	public void close() {
-		if(_classDescription!=null){
-			this.addContent(_classDescription);
+		if(this._classDescription!=null){
+			this.addContent(this._classDescription);
 		}
 		
-		if(_input!=null){
-			this.addContent(_input);
+		if(this._input!=null){
+			this.addContent(this._input);
 		}
 		
-		if(_output!=null){
-			this.addContent(_output);
+		if(this._output!=null){
+			this.addContent(this._output);
 		}
 	}
 	
@@ -97,14 +97,14 @@ public class MethodDescription extends XMLElement {
 	}
 	
 	public ClassDescription getClassDescription(){
-		return _classDescription;
+		return this._classDescription;
 	}
 	
 	public MethodInput getInput(){
-		return _input;
+		return this._input;
 	}
 
 	public MethodOutput getOutput(){
-		return _output;
+		return this._output;
 	}
 }

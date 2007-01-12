@@ -92,25 +92,25 @@ public class SurveyResultEditor extends Block {
 	
 	public void initializeInMain(IWContext iwc) throws Exception {
 		super.initializeInMain(iwc);
-		_sBusiness = (SurveyBusiness) IBOLookup.getServiceInstance(iwc,SurveyBusiness.class);
-		_iwrb = getResourceBundle(iwc);
-		_iwb = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
-		_iwbSurvey = getBundle(iwc);
-		_locale = iwc.getCurrentLocale();
-		_icLocale = ICLocaleBusiness.getICLocale(_locale);
-		nf.setMinimumFractionDigits(2);
+		this._sBusiness = (SurveyBusiness) IBOLookup.getServiceInstance(iwc,SurveyBusiness.class);
+		this._iwrb = getResourceBundle(iwc);
+		this._iwb = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+		this._iwbSurvey = getBundle(iwc);
+		this._locale = iwc.getCurrentLocale();
+		this._icLocale = ICLocaleBusiness.getICLocale(this._locale);
+		this.nf.setMinimumFractionDigits(2);
 		
 		String surveyID = iwc.getParameter(PARAMETER_SURVEY_ID);
 		if (surveyID != null) {
 			try {
-				_survey = _sBusiness.getSurveyHome().findByPrimaryKey(new Integer(surveyID));
-				_questions = _survey.getSurveyQuestions();
+				this._survey = this._sBusiness.getSurveyHome().findByPrimaryKey(new Integer(surveyID));
+				this._questions = this._survey.getSurveyQuestions();
 				if (iwc.isParameterSet(PARAMETER_STATUS_ID)) {
-					_status = _sBusiness.getSurveyStatusHome().findByPrimaryKey(new Integer(iwc.getParameter(PARAMETER_STATUS_ID)));
+					this._status = this._sBusiness.getSurveyStatusHome().findByPrimaryKey(new Integer(iwc.getParameter(PARAMETER_STATUS_ID)));
 				} else {
-					_status = _sBusiness.getSurveyStatus(_survey);
+					this._status = this._sBusiness.getSurveyStatus(this._survey);
 				}
-				_allStatuses = _sBusiness.getSurveyStatusHome().findAllBySurvey(_survey);
+				this._allStatuses = this._sBusiness.getSurveyStatusHome().findAllBySurvey(this._survey);
 			} catch (Exception e) {
 				e.printStackTrace(System.err);
 			}
@@ -119,8 +119,8 @@ public class SurveyResultEditor extends Block {
 
 	public void main(IWContext iwc) throws RemoteException {
 		
-		if ( _survey != null ) {
-			Legend legend = new Legend(_survey.getName()+" - "+_iwrb.getLocalizedString("history", "History"));
+		if ( this._survey != null ) {
+			Legend legend = new Legend(this._survey.getName()+" - "+this._iwrb.getLocalizedString("history", "History"));
 			FieldSet fs = new FieldSet(legend);
 			//fs.setWidth("450");
 			if (iwc.isParameterSet(PARAMETER_STATUS_ID)) {
@@ -136,7 +136,7 @@ public class SurveyResultEditor extends Block {
 			add(fs);
 			
 			Form myForm = new Form();
-			Legend legend2 = new Legend(_survey.getName()+" - "+_iwrb.getLocalizedString("random_participants", "Random participants:"));
+			Legend legend2 = new Legend(this._survey.getName()+" - "+this._iwrb.getLocalizedString("random_participants", "Random participants:"));
 			FieldSet fs2 = new FieldSet(legend2);
 			fs2.setWidth("450");
 			fs2.add(displayParticipants(iwc));
@@ -145,7 +145,7 @@ public class SurveyResultEditor extends Block {
 			
 			
 		} else {
-			add(getText(_iwrb.getLocalizedString("no_survey_defined","No survey defined")));
+			add(getText(this._iwrb.getLocalizedString("no_survey_defined","No survey defined")));
 		}
 		add(Text.BREAK);
 		BackButton link = new BackButton("Back");
@@ -164,14 +164,14 @@ public class SurveyResultEditor extends Block {
 		IntegerInput numberOfParticipantsInput = new IntegerInput(prmNumberOfParticipants);
 		numberOfParticipantsInput.setValue(1);
 		
-		SubmitButton submit = new SubmitButton(prmSubmit,_iwrb.getLocalizedString("submit","  Submit  "));
-		submit.setStyleAttribute(style_submitbutton);
+		SubmitButton submit = new SubmitButton(prmSubmit,this._iwrb.getLocalizedString("submit","  Submit  "));
+		submit.setStyleAttribute(this.style_submitbutton);
 		
-		table.add(getText(_iwrb.getLocalizedString("number_of_participants","Number of participants")),1,1);
+		table.add(getText(this._iwrb.getLocalizedString("number_of_participants","Number of participants")),1,1);
 		table.add(numberOfParticipantsInput,1,1);
 		table.add(submit,1,1);
 		
-		table.add(new Parameter(PARAMETER_SURVEY_ID, _survey.getPrimaryKey().toString()));
+		table.add(new Parameter(PARAMETER_SURVEY_ID, this._survey.getPrimaryKey().toString()));
 		table.add(new Parameter(Survey.PRM_SWITCHTO_MODE,Survey.MODE_RESULTS));
 		
 		try {
@@ -179,7 +179,7 @@ public class SurveyResultEditor extends Block {
 			if(prm != null){
 				Table pTable = new Table();
 				int numberOfParticipants = Integer.parseInt(prm);
-				Collection participants = _sBusiness.getSurveyParticipantHome().findRandomParticipants(_survey,numberOfParticipants,true);
+				Collection participants = this._sBusiness.getSurveyParticipantHome().findRandomParticipants(this._survey,numberOfParticipants,true);
 				
 				int row = 1;
 				for (Iterator iter = participants.iterator();iter.hasNext();row++) {
@@ -206,13 +206,13 @@ public class SurveyResultEditor extends Block {
 
 	private void newStatus(IWContext iwc) throws RemoteException{
 		try {
-			SurveyStatus status = _sBusiness.getSurveyStatusHome().create();
-			status.setSurvey(_survey);
+			SurveyStatus status = this._sBusiness.getSurveyStatusHome().create();
+			status.setSurvey(this._survey);
 			status.setIsModified(false);
 			status.store();
 			
-			_status = _sBusiness.getSurveyStatus(_survey);
-			_allStatuses = _sBusiness.getSurveyStatusHome().findAllBySurvey(_survey);
+			this._status = this._sBusiness.getSurveyStatus(this._survey);
+			this._allStatuses = this._sBusiness.getSurveyStatusHome().findAllBySurvey(this._survey);
 		} catch (IDOLookupException e) {
 			e.printStackTrace();
 		} catch (FinderException e) {
@@ -227,8 +227,8 @@ public class SurveyResultEditor extends Block {
 		Table table = new Table();
 		table.setBorder(0);
 		int row = 1;
-		if (_allStatuses != null && !_allStatuses.isEmpty()) {
-			Iterator iter = _allStatuses.iterator();
+		if (this._allStatuses != null && !this._allStatuses.isEmpty()) {
+			Iterator iter = this._allStatuses.iterator();
 			SurveyStatus status;
 			IWTimestamp stamp;
 			boolean modified;
@@ -236,12 +236,12 @@ public class SurveyResultEditor extends Block {
 			boolean isLatest = false;
 			Link link;
 			ICFile reportFile;
-			String YES = _iwrb.getLocalizedString("yes", "Yes");
-			String NO = _iwrb.getLocalizedString("no", "No");
+			String YES = this._iwrb.getLocalizedString("yes", "Yes");
+			String NO = this._iwrb.getLocalizedString("no", "No");
 			
-			table.add(getHeader(_iwrb.getLocalizedString("last_saved_modification", "Last saved modification")), 1, row);
-			table.add(getHeader(_iwrb.getLocalizedString("modified_since", "Modified since")), 2, row);
-			table.add(getHeader(_iwrb.getLocalizedString("report", "Report")), 3, row);
+			table.add(getHeader(this._iwrb.getLocalizedString("last_saved_modification", "Last saved modification")), 1, row);
+			table.add(getHeader(this._iwrb.getLocalizedString("modified_since", "Modified since")), 2, row);
+			table.add(getHeader(this._iwrb.getLocalizedString("report", "Report")), 3, row);
 			table.mergeCells(3, row, 4, row);
 			
 			while (iter.hasNext()) {
@@ -249,8 +249,8 @@ public class SurveyResultEditor extends Block {
 				++row;
 				stamp = new IWTimestamp(status.getTimeOfStatus());
 				modified = status.getIsModified();
-				isLatest = status.getPrimaryKey().equals(_status.getPrimaryKey());
-				table.add(getText(stamp.getLocaleDateAndTime(_locale)), 1, row);
+				isLatest = status.getPrimaryKey().equals(this._status.getPrimaryKey());
+				table.add(getText(stamp.getLocaleDateAndTime(this._locale)), 1, row);
 				table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_CENTER);
 				if (modified) {
 					table.add(getText(YES), 2, row);
@@ -260,7 +260,7 @@ public class SurveyResultEditor extends Block {
 				
 				if (isLatest) {
 					link = new Link("HTML");
-					link.addParameter(PARAMETER_SURVEY_ID, _survey.getPrimaryKey().toString());
+					link.addParameter(PARAMETER_SURVEY_ID, this._survey.getPrimaryKey().toString());
 					link.addParameter(PARAMETER_STATUS_ID, status.getPrimaryKey().toString());
 					link.addParameter(Survey.PRM_SWITCHTO_MODE,Survey.MODE_RESULTS);
 					table.add(link, 3, row);
@@ -269,7 +269,7 @@ public class SurveyResultEditor extends Block {
 				
 				reportFile = status.getReportFile();
 				if (reportFile != null) {
-					link = new Link(getText(_iwrb.getLocalizedString("excel","Excel")));
+					link = new Link(getText(this._iwrb.getLocalizedString("excel","Excel")));
 					link.setFile(reportFile);
 					table.add(link, 4, row);
 					if (modified) {
@@ -280,11 +280,11 @@ public class SurveyResultEditor extends Block {
 				if (isLatest) {
 					link = new Link();
 					if (reportFile != null) {
-						link = new Link(getText(_iwrb.getLocalizedString("recreate","Re-create")));
+						link = new Link(getText(this._iwrb.getLocalizedString("recreate","Re-create")));
 					} else {
-						link = new Link(getText(_iwrb.getLocalizedString("create","Create")));
+						link = new Link(getText(this._iwrb.getLocalizedString("create","Create")));
 					}
-					link.addParameter(PARAMETER_SURVEY_ID, _survey.getPrimaryKey().toString());
+					link.addParameter(PARAMETER_SURVEY_ID, this._survey.getPrimaryKey().toString());
 					link.addParameter(PARAMETER_CREATE_EXCEL, "true");
 					link.addParameter(Survey.PRM_SWITCHTO_MODE,Survey.MODE_RESULTS);
 					table.add(getText(Text.NON_BREAKING_SPACE), 4, row);
@@ -294,8 +294,8 @@ public class SurveyResultEditor extends Block {
 			++row;
 			table.mergeCells(1,row, 4, row);
 			table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
-			Link newStatus = new Link(getText(_iwrb.getLocalizedString("new_status","New status")));
-			newStatus.addParameter(PARAMETER_SURVEY_ID, _survey.getPrimaryKey().toString());
+			Link newStatus = new Link(getText(this._iwrb.getLocalizedString("new_status","New status")));
+			newStatus.addParameter(PARAMETER_SURVEY_ID, this._survey.getPrimaryKey().toString());
 			newStatus.addParameter(Survey.PRM_SWITCHTO_MODE,Survey.MODE_RESULTS);
 			newStatus.addParameter(PARAMETER_NEW_STATUS, "true");
 			table.add(newStatus, 1, row);
@@ -304,10 +304,10 @@ public class SurveyResultEditor extends Block {
 				++row;
 				table.mergeCells(1,row, 4, row);
 				table.add(getText("*"), 1, row);
-				table.add(getText(_iwrb.getLocalizedString("excel_contains_old_data", "Excel contains old data")), 1, row);
+				table.add(getText(this._iwrb.getLocalizedString("excel_contains_old_data", "Excel contains old data")), 1, row);
 			}
 		} else {
-			add(getText(_iwrb.getLocalizedString("no_status","No status")));
+			add(getText(this._iwrb.getLocalizedString("no_status","No status")));
 		}
 		return table;
 	}
@@ -316,22 +316,22 @@ public class SurveyResultEditor extends Block {
 		Table table = new Table();
 		int row = 1;
 		
-		if (_questions != null && !_questions.isEmpty()) {
+		if (this._questions != null && !this._questions.isEmpty()) {
 			try {
-				startMilli = System.currentTimeMillis();
+				this.startMilli = System.currentTimeMillis();
 				
-				Iterator iter = _questions.iterator();
+				Iterator iter = this._questions.iterator();
 				SurveyQuestion question;
 				while (iter.hasNext()) {
 					question = (SurveyQuestion) iter.next();
 					row = displayQuestion(question, table, row);
 				}
-				log("[SurveyResultEditor] Total Time : "+((System.currentTimeMillis() - startMilli) / 1000)+"s");
+				log("[SurveyResultEditor] Total Time : "+((System.currentTimeMillis() - this.startMilli) / 1000)+"s");
 			} catch (IDOLookupException e) {
 				e.printStackTrace();
 			} 
 		} else {
-			add(getText(_iwrb.getLocalizedString("no_questions_defined","No questions defined")));
+			add(getText(this._iwrb.getLocalizedString("no_questions_defined","No questions defined")));
 		}
 		
 		return table;
@@ -343,23 +343,23 @@ public class SurveyResultEditor extends Block {
 		ICFile icFile = POIUtility.createICFileFromTable(table, "SurveyResults.xls", "SurveyResults");
 		
 		if (icFile != null) {
-			_status.setReportFile(icFile);
-			_status.store();
+			this._status.setReportFile(icFile);
+			this._status.store();
 			try {
-				_status = _sBusiness.getSurveyStatus(_survey);
-				_allStatuses = _sBusiness.getSurveyStatusHome().findAllBySurvey(_survey);
+				this._status = this._sBusiness.getSurveyStatus(this._survey);
+				this._allStatuses = this._sBusiness.getSurveyStatusHome().findAllBySurvey(this._survey);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		} else {
-			add(getText(_iwrb.getLocalizedString("file_creation_failed","File creation failed")));
+			add(getText(this._iwrb.getLocalizedString("file_creation_failed","File creation failed")));
 		}
 	}
 	
 	private int displayQuestion(SurveyQuestion question, Table table, int row) throws RemoteException {
 		try {
 			Collection answers = getAnswerHome().findQuestionsAnswer(question);
-			String questionName = question.getQuestion(_icLocale);
+			String questionName = question.getQuestion(this._icLocale);
 			
 			int column = 1;
 			int[] totals;
@@ -370,7 +370,7 @@ public class SurveyResultEditor extends Block {
 			if (answers != null) {
 				
 				if (choiceAnswer) {
-					table.add(getText(_iwrb.getLocalizedString("total", "Total")+":"), column, (row+1));
+					table.add(getText(this._iwrb.getLocalizedString("total", "Total")+":"), column, (row+1));
 				}
 				
 				Iterator iter = answers.iterator();
@@ -381,12 +381,12 @@ public class SurveyResultEditor extends Block {
 				while (iter.hasNext()) {
 					answer = (SurveyAnswer) iter.next();
 					answersIds[++column] = answer.getPrimaryKey();
-					table.add(answer.getAnswer(_icLocale), column, row);
+					table.add(answer.getAnswer(this._icLocale), column, row);
 					if (choiceAnswer) {
 						count = getReplyHome().getCountByQuestionAndAnswer(question, answer);
 						table.add(getText(Integer.toString(count)), column, (row+1));
 						if (totalCount > 0) {
-							table.add(getText(nf.format((double) count / (double) totalCount)), column, (row+2));
+							table.add(getText(this.nf.format((double) count / (double) totalCount)), column, (row+2));
 						}
 					}
 				}
@@ -468,37 +468,37 @@ public class SurveyResultEditor extends Block {
 	private PresentationObject getMessageTextObject(String message, boolean highlight) {
 		Text text = new Text(message);
 		if(!highlight){
-			if(messageTextStyle != null){
-				text.setStyleAttribute(messageTextStyle);
+			if(this.messageTextStyle != null){
+				text.setStyleAttribute(this.messageTextStyle);
 			}
 		} else {
-			if(messageTextHighlightStyle != null){
-				text.setStyleAttribute(messageTextHighlightStyle);
+			if(this.messageTextHighlightStyle != null){
+				text.setStyleAttribute(this.messageTextHighlightStyle);
 			}
 		}
 		return text;
 	}
 	
 	public void setMessageTextStyle(String style) {
-		messageTextStyle = style;
+		this.messageTextStyle = style;
 	}
 
 
 	public void setMessageTextHighlightStyle(String style) {
-		messageTextHighlightStyle = style;
+		this.messageTextHighlightStyle = style;
 	}
 
 	protected SurveyReplyHome getReplyHome() throws IDOLookupException {
-		if (_repHome == null) {
-			_repHome = (SurveyReplyHome) IDOLookup.getHome(SurveyReply.class);
+		if (this._repHome == null) {
+			this._repHome = (SurveyReplyHome) IDOLookup.getHome(SurveyReply.class);
 		}
-		return _repHome;
+		return this._repHome;
 	}
 	
 	protected SurveyAnswerHome getAnswerHome() throws IDOLookupException {
-		if (_ansHome == null) {
-			_ansHome = (SurveyAnswerHome) IDOLookup.getHome(SurveyAnswer.class);
+		if (this._ansHome == null) {
+			this._ansHome = (SurveyAnswerHome) IDOLookup.getHome(SurveyAnswer.class);
 		}
-		return _ansHome;
+		return this._ansHome;
 	}
 }

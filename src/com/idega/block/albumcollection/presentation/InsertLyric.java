@@ -7,6 +7,7 @@ import com.idega.block.albumcollection.business.AlbumCollectionBusiness;
 import com.idega.block.albumcollection.data.Author;
 import com.idega.block.albumcollection.data.Lyric;
 import com.idega.block.albumcollection.data.Track;
+import com.idega.data.GenericEntity;
 import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
@@ -26,7 +27,7 @@ import com.idega.presentation.ui.TextInput;
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:      idega.is
- * @author <a href="mailto:gummi@idega.is">Guðmundur Ágúst Sæmundsson</a>
+ * @author <a href="mailto:gummi@idega.is">Guï¿½mundur ï¿½gï¿½st Sï¿½mundsson</a>
  * @version 1.0
  */
 
@@ -56,7 +57,7 @@ public class InsertLyric extends IWAdminWindow {
     this.setHeight(450);
     this.setScrollbar(false);
 
-    myForm = new Form();
+    this.myForm = new Form();
   }
 
   public void initFields(IWContext iwc) throws Exception{
@@ -66,58 +67,58 @@ public class InsertLyric extends IWAdminWindow {
     if(lyrId != null){
       //update
       if(lyrId != null && !lyrId.equals("")){
-        _fieldLyricId = new HiddenInput(_fieldNameLyricId,lyrId);
+        this._fieldLyricId = new HiddenInput(_fieldNameLyricId,lyrId);
         if(iwc.getParameter(AlbumCollectionBusiness._PRM_UPDATE) != null){
           lyric = ((com.idega.block.albumcollection.data.LyricHome)com.idega.data.IDOLookup.getHomeLegacy(Lyric.class)).findByPrimaryKeyLegacy(Integer.parseInt(lyrId));
         }
       }
-      myForm.add(_fieldLyricId);
-      _fieldLyricId.keepStatusOnAction();
+      this.myForm.add(this._fieldLyricId);
+      this._fieldLyricId.keepStatusOnAction();
     }
 
     String str = iwc.getParameter(_fieldNameTrackId);
     if(str != null && !str.equals("")){
-      _fieldTrackId = new HiddenInput(this._fieldNameTrackId,str);
+      this._fieldTrackId = new HiddenInput(InsertLyric._fieldNameTrackId,str);
     }else{
-      _fieldTrackId = new HiddenInput(this._fieldNameTrackId);
-      _fieldTrackId.setContent("");
+      this._fieldTrackId = new HiddenInput(InsertLyric._fieldNameTrackId);
+      this._fieldTrackId.setContent("");
     }
-    _fieldTrackId.keepStatusOnAction();
+    this._fieldTrackId.keepStatusOnAction();
 
 
-    _fieldLyricName = new TextInput(_fieldNameLyricName);
+    this._fieldLyricName = new TextInput(_fieldNameLyricName);
     if(lyric != null){
-      _fieldLyricName.setContent(lyric.getName());
+      this._fieldLyricName.setContent(lyric.getName());
     } else if(iwc.getParameter(_fieldNameLyricName)==null){
       try {
-        _fieldLyricName.setContent(((com.idega.block.albumcollection.data.TrackHome)com.idega.data.IDOLookup.getHomeLegacy(Track.class)).findByPrimaryKeyLegacy(Integer.parseInt(iwc.getParameter(_fieldNameTrackId))).getName());
+        this._fieldLyricName.setContent(((com.idega.block.albumcollection.data.TrackHome)com.idega.data.IDOLookup.getHomeLegacy(Track.class)).findByPrimaryKeyLegacy(Integer.parseInt(iwc.getParameter(_fieldNameTrackId))).getName());
       }
       catch (Exception ex) {
         // do nothing, can be normal if lyric does not link to any track
       }
     }
-    _fieldLyricName.keepStatusOnAction();
+    this._fieldLyricName.keepStatusOnAction();
 
 
-    _fieldLyric = new TextArea(this._fieldNameLyric);
-    _fieldLyric.setHeight(10);
-    _fieldLyric.setWidth(42);
-    _fieldLyric.setWrap(false);
+    this._fieldLyric = new TextArea(InsertLyric._fieldNameLyric);
+    this._fieldLyric.setHeight(10);
+    this._fieldLyric.setWidth(42);
+    this._fieldLyric.setWrap(false);
     if(lyric != null){
-      _fieldLyric.setContent(lyric.getLyric());
+      this._fieldLyric.setContent(lyric.getLyric());
     }
-    _fieldLyric.keepStatusOnAction();
+    this._fieldLyric.keepStatusOnAction();
 
-    _fieldDescription = new TextArea(this._fieldNameDescription);
-    _fieldDescription.setHeight(6);
-    _fieldDescription.setWidth(26);
+    this._fieldDescription = new TextArea(InsertLyric._fieldNameDescription);
+    this._fieldDescription.setHeight(6);
+    this._fieldDescription.setWidth(26);
     if(lyric != null){
-      _fieldDescription.setContent(lyric.getDescription());
+      this._fieldDescription.setContent(lyric.getDescription());
     }
-    _fieldDescription.keepStatusOnAction();
+    this._fieldDescription.keepStatusOnAction();
 
-    _fieldAuthors = new SelectionBox(_fieldNameAuthors);
-    _fieldAuthors.setHeight(6);
+    this._fieldAuthors = new SelectionBox(_fieldNameAuthors);
+    this._fieldAuthors.setHeight(6);
     List authorList = AlbumCollectionBusiness.getAuthors();
     if(authorList != null){
       Iterator iter = authorList.iterator();
@@ -127,12 +128,12 @@ public class InsertLyric extends IWAdminWindow {
       }
     }
     if(lyric != null){
-      int[] IDs = lyric.findRelatedIDs(com.idega.block.albumcollection.data.AuthorBMPBean.getStaticInstance(Author.class));
+      int[] IDs = lyric.findRelatedIDs(GenericEntity.getStaticInstance(Author.class));
       for (int i = 0; i < IDs.length; i++) {
-        _fieldAuthors.setSelectedElement(Integer.toString(IDs[i]));
+        this._fieldAuthors.setSelectedElement(Integer.toString(IDs[i]));
       }
     }
-    _fieldAuthors.keepStatusOnAction();
+    this._fieldAuthors.keepStatusOnAction();
 
   }
 
@@ -163,7 +164,7 @@ public class InsertLyric extends IWAdminWindow {
 
     Table t2 = new Table(2,2);
     t2.setWidth("100%");
-    t2.add(new Text("Höfundar:"),1,1);
+    t2.add(new Text("Hï¿½fundar:"),1,1);
     t2.add(this._fieldAuthors,1,2);
     t2.add(new Text("Um textann:"),2,1);
     t2.add(this._fieldDescription,2,2);
@@ -226,11 +227,11 @@ public class InsertLyric extends IWAdminWindow {
   public void main(IWContext iwc) throws Exception {
 
     if(iwc.getParameter("save") == null){
-      myForm.empty();
+      this.myForm.empty();
       initFields(iwc);
-      this.add(myForm);
+      this.add(this.myForm);
       //updateFieldStatus(iwc);
-      myForm.add(getElementsOredered(iwc));
+      this.myForm.add(getElementsOredered(iwc));
     } else {
       this.saveLyric(iwc);
       this.close();

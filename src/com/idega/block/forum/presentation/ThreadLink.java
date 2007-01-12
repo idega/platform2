@@ -22,7 +22,7 @@ public abstract class ThreadLink extends ForumLink {
 	private ForumData thread;
 	
 	public ThreadLink(ForumData data) {
-		thread = data;
+		this.thread = data;
 	}
 
 	public void showLink(IWContext iwc, int topicID) {
@@ -34,10 +34,10 @@ public abstract class ThreadLink extends ForumLink {
 			Link imageLink = new Link(image);
 			imageLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, topicID);
 			if (addThreadIDToLink()) {
-				imageLink.addParameter(ForumBusiness.PARAMETER_THREAD_ID, String.valueOf(thread.getPrimaryKey()));
+				imageLink.addParameter(ForumBusiness.PARAMETER_THREAD_ID, String.valueOf(this.thread.getPrimaryKey()));
 			}
 			if (addParentThreadIDToLink()) {
-				imageLink.addParameter(ForumBusiness.PARAMETER_PARENT_THREAD_ID, thread.getParentThreadID());
+				imageLink.addParameter(ForumBusiness.PARAMETER_PARENT_THREAD_ID, this.thread.getParentThreadID());
 			}
 			if (getMode() != null) {
 				imageLink.addParameter(ForumBusiness.PARAMETER_MODE, getMode());
@@ -49,10 +49,10 @@ public abstract class ThreadLink extends ForumLink {
 		Link link = getStyleLink(getLinkName(getResourceBundle()), Forum.LINK_STYLE);
 		link.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, topicID);
 		if (addThreadIDToLink()) {
-			link.addParameter(ForumBusiness.PARAMETER_THREAD_ID, String.valueOf(thread.getPrimaryKey()));
+			link.addParameter(ForumBusiness.PARAMETER_THREAD_ID, String.valueOf(this.thread.getPrimaryKey()));
 		}
 		if (addParentThreadIDToLink()) {
-			link.addParameter(ForumBusiness.PARAMETER_PARENT_THREAD_ID, thread.getParentThreadID());
+			link.addParameter(ForumBusiness.PARAMETER_PARENT_THREAD_ID, this.thread.getParentThreadID());
 		}
 		if (getMode() != null) {
 			link.addParameter(ForumBusiness.PARAMETER_MODE, getMode());

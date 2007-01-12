@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.49 2005/08/31 02:13:21 eiki Exp $
+ * $Id: IBPropertyHandler.java,v 1.49.2.1 2007/01/12 19:31:48 idegaweb Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -118,7 +118,7 @@ public class IBPropertyHandler implements Singleton{
 		//Hardcoded -1 for the top page
 		if ("-1".equals(instanceId) ) {
 			componentKey = "com.idega.presentation.Page";
-			iwb = iwma.getBundle(com.idega.presentation.Page.IW_BUNDLE_IDENTIFIER);
+			iwb = iwma.getBundle(PresentationObject.IW_BUNDLE_IDENTIFIER);
 		}
 		else {
 			ICObjectInstance icoi = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(Integer.parseInt(instanceId));
@@ -212,8 +212,9 @@ public class IBPropertyHandler implements Singleton{
 				}
 			}
 		}
-		if (availableValues.size() > 0)
+		if (availableValues.size() > 0) {
 			return (String[]) availableValues.get(0);
+		}
 		if (returnSelectedValueIfNothingFound) {
 			return selectedValues;
 		}
@@ -308,8 +309,9 @@ public class IBPropertyHandler implements Singleton{
           menuElements = new ArrayList();
         }
       Iterator iterator = menuElements.iterator();
-      while (iterator.hasNext())
-        ((DropdownMenu) handlerPresentation).addMenuElement((String) iterator.next());
+      while (iterator.hasNext()) {
+		((DropdownMenu) handlerPresentation).addMenuElement((String) iterator.next());
+	}
       }
     }
     
@@ -333,7 +335,7 @@ public class IBPropertyHandler implements Singleton{
 			int numberOfParametersForMethod = MethodFinder.getInstance().getArgumentClasses(methodIdentifier).length;
 			String[] theReturn = new String[numberOfParametersForMethod];
 			for (int i = 0; i < theReturn.length; i++) {
-				theReturn[i] = getMethodParameterProperty(iwc, instanceId, methodIdentifier, i, this.METHOD_PARAMETER_PROPERTY_DESCRIPTION);
+				theReturn[i] = getMethodParameterProperty(iwc, instanceId, methodIdentifier, i, IBPropertyHandler.METHOD_PARAMETER_PROPERTY_DESCRIPTION);
 			}
 			return theReturn;
 		}
@@ -624,10 +626,10 @@ public class IBPropertyHandler implements Singleton{
 	
 	 */
 	private Map getPropertyHandlersMap() {
-		if (propertyHandlers == null) {
-			propertyHandlers = new HashMap();
+		if (this.propertyHandlers == null) {
+			this.propertyHandlers = new HashMap();
 		}
-		return (propertyHandlers);
+		return (this.propertyHandlers);
 	}
 
 	public ICPropertyHandler getPropertyHandler(String handlerClassName) {
@@ -652,7 +654,7 @@ public class IBPropertyHandler implements Singleton{
 		//IWPropertyList complist = iwb.getComponentList();
 		//IWPropertyList component = complist.getIWPropertyList(componentIdentifier);
 		IWPropertyList component = iwb.getComponentPropertyList(componentIdentifier);
-		IWPropertyList methodList = component.getIWPropertyList(this.METHODS_KEY);
+		IWPropertyList methodList = component.getIWPropertyList(IBPropertyHandler.METHODS_KEY);
 		IWPropertyList method = methodList.getIWPropertyList(methodIdentifier);
 		if (method == null) {
 			method = methodList.getNewPropertyList(methodIdentifier);
@@ -682,10 +684,10 @@ public class IBPropertyHandler implements Singleton{
 	}
 	
 	private IBClassesFactory getBuilderClassesFactory() {
-		if (builderClassesFactory == null) {
-			builderClassesFactory = new IBClassesFactory();
+		if (this.builderClassesFactory == null) {
+			this.builderClassesFactory = new IBClassesFactory();
 		}
-		return builderClassesFactory;
+		return this.builderClassesFactory;
 	}
 	
 }

@@ -40,13 +40,13 @@ public class MethodOutput extends XMLElement {
 	private void initialize(XMLElement element) throws XMLException {
 		XMLElement childElement = element.getChild(ClassDescription.NAME);
 		if(childElement != null){
-			_returningObject = new ClassDescription(childElement);
+			this._returningObject = new ClassDescription(childElement);
 		}
 	}
 	
 	public void close(){
-		if(_returningObject != null){
-			this.addContent(_returningObject);
+		if(this._returningObject != null){
+			this.addContent(this._returningObject);
 		}
 	}
 

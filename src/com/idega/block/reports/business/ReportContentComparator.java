@@ -40,19 +40,19 @@ public class ReportContentComparator implements Comparator {
 
   public ReportContentComparator() {
 
-      sortBy = 0;
+      this.sortBy = 0;
 
   }
 
   public ReportContentComparator(int toSortBy) {
 
-      sortBy = toSortBy;
+      this.sortBy = toSortBy;
 
   }
 
   public void sortBy(int toSortBy) {
 
-      sortBy = toSortBy;
+      this.sortBy = toSortBy;
 
   }
 
@@ -62,7 +62,7 @@ public class ReportContentComparator implements Comparator {
 
     ReportContent p2 = (ReportContent) o2;
 
-    int result = IsCollator.getIsCollator().compare(p1.getContent(sortBy),p2.getContent(sortBy));
+    int result = IsCollator.getIsCollator().compare(p1.getContent(this.sortBy),p2.getContent(this.sortBy));
 
     return result;
 

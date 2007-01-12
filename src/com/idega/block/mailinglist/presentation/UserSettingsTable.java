@@ -30,11 +30,11 @@ public class UserSettingsTable extends AccountSettingsTable {
   }
 
   public void setInputs(MailAccount mailAccount){
-    super.setAccount((Account) mailAccount);
-    nameInput.setValue(mailAccount.getUserName());
+    super.setAccount(mailAccount);
+    this.nameInput.setValue(mailAccount.getUserName());
   }
 
   public void main(IWContext iwc){
-    add(settingsTable);
+    add(this.settingsTable);
   }
 }

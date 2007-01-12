@@ -50,33 +50,33 @@ public class MailinglistPresentation extends Block {
 
     if ((choice % 2) == 0){
       if ((choice % 5) == 0 ){
-        stringReply = "Netfanginu þínu hefur verið bætt við póstlistan(a)";
+        stringReply = "Netfanginu ï¿½ï¿½nu hefur veriï¿½ bï¿½tt viï¿½ pï¿½stlistan(a)";
       }
       else{
-        stringReply = "Nýtt netfang hefur verið skráð og bætt við póstlistan(a)";
+        stringReply = "Nï¿½tt netfang hefur veriï¿½ skrï¿½ï¿½ og bï¿½tt viï¿½ pï¿½stlistan(a)";
       }
     }
     else if ((choice % 3) == 0){
       if ((choice % 5) == 0){
-        stringReply = "Ekki tókst að skrá netfangið á póstlistann";
+        stringReply = "Ekki tï¿½kst aï¿½ skrï¿½ netfangiï¿½ ï¿½ pï¿½stlistann";
       }
       else{
-        stringReply = "Netfang skráð, en það mistókst að skrá það á póstlistan(a)";
+        stringReply = "Netfang skrï¿½ï¿½, en ï¿½aï¿½ mistï¿½kst aï¿½ skrï¿½ ï¿½aï¿½ ï¿½ pï¿½stlistan(a)";
       }
     }
     else if ((choice % 11) == 0){
       if ((choice % 17) == 0){
-        stringReply = "Þú hefur verið skráður úr öllum póstlistum";
+        stringReply = "ï¿½ï¿½ hefur veriï¿½ skrï¿½ï¿½ur ï¿½r ï¿½llum pï¿½stlistum";
       }
       else{
-        stringReply = "Þú varst srkáður úr póstlistunum";
+        stringReply = "ï¿½ï¿½ varst srkï¿½ï¿½ur ï¿½r pï¿½stlistunum";
       }
     }
     else if ((choice % 13) == 0) {
-      stringReply = "Þú ert ekki skráður á neinn af póstlistunum";
+      stringReply = "ï¿½ï¿½ ert ekki skrï¿½ï¿½ur ï¿½ neinn af pï¿½stlistunum";
     }
     else{
-      stringReply = "Eitthvað er mis hér";
+      stringReply = "Eitthvaï¿½ er mis hï¿½r";
     }
 
     return stringReply;
@@ -88,17 +88,17 @@ public class MailinglistPresentation extends Block {
     String inputEmail;
     String[] selectionBoxChoices;
     int reply=0;
-    String stringReply = "Tjón dauðans";
+    String stringReply = "Tjï¿½n dauï¿½ans";
     Table table = new Table(2,4);
     Mailinglist mailinglist = ((com.idega.block.mailinglist.data.MailinglistHome)com.idega.data.IDOLookup.getHomeLegacy(Mailinglist.class)).createLegacy();
 
-    SubmitButton submitButton = new SubmitButton("Skrá Mig",submitAndRemoveParameter,addParameterValue);
-    SubmitButton removeButton = new SubmitButton("Afskrá Mig",submitAndRemoveParameter,removeParameterValue);
+    SubmitButton submitButton = new SubmitButton("Skrï¿½ Mig",this.submitAndRemoveParameter,this.addParameterValue);
+    SubmitButton removeButton = new SubmitButton("Afskrï¿½ Mig",this.submitAndRemoveParameter,this.removeParameterValue);
 
     Form form = new Form();
     form.maintainAllParameters();
     SelectionBox selctionBox = new SelectionBox(mailinglist.findAllOrdered(com.idega.block.mailinglist.data.MailinglistBMPBean.MAILINGLIST_NAME));
-    TextInput textInput = new TextInput(textInputName);
+    TextInput textInput = new TextInput(this.textInputName);
 
     textInput.setSize(10);
     textInput.keepStatusOnAction();
@@ -118,26 +118,26 @@ public class MailinglistPresentation extends Block {
     add(form);
     form.add(layoutTable);
     layoutTable.add(table, 1, 1);
-    table.add("Póstlistar", 1, 1);
+    table.add("Pï¿½stlistar", 1, 1);
     table.add("Email", 1, 2);
     table.add(selctionBox, 2, 1);
     table.add(textInput, 2, 2);
     table.add(submitButton, 2, 3);
     table.add(removeButton, 1, 3);
 
-    selectionBoxChoices = (String[]) modinfo.getParameterValues(com.idega.block.mailinglist.data.MailinglistBMPBean.MAILINGLIST_NAME);
+    selectionBoxChoices = modinfo.getParameterValues(com.idega.block.mailinglist.data.MailinglistBMPBean.MAILINGLIST_NAME);
     if (selectionBoxChoices != null ) {
       System.out.println("ARRRGG     selectionBoxChoices.length = "+selectionBoxChoices.length);
-      boolean hasSubmitted = modinfo.isParameterSet(textInputName);
+      boolean hasSubmitted = modinfo.isParameterSet(this.textInputName);
       if(hasSubmitted){
-        if (modinfo.isParameterSet(submitAndRemoveParameter)){
-          String action = modinfo.getParameter(submitAndRemoveParameter);
+        if (modinfo.isParameterSet(this.submitAndRemoveParameter)){
+          String action = modinfo.getParameter(this.submitAndRemoveParameter);
           if(action!=null){
-            inputEmail = modinfo.getParameter(textInputName);
-            if(action.equals(addParameterValue)){
+            inputEmail = modinfo.getParameter(this.textInputName);
+            if(action.equals(this.addParameterValue)){
             reply = MailingListBusiness.addEmailBusiness(modinfo, selectionBoxChoices, inputEmail);
             }
-            if(action.equals(removeParameterValue)){
+            if(action.equals(this.removeParameterValue)){
 
               reply = MailingListBusiness.removeEmailBusiness(modinfo, selectionBoxChoices, inputEmail);
             }
@@ -147,7 +147,7 @@ public class MailinglistPresentation extends Block {
       }
     }
     else{
-        System.out.println("Ekkert valið !!!???");
+        System.out.println("Ekkert valiï¿½ !!!???");
     }
     table.add(stringReply, 1, 4);
    // add(Text.getBreak());

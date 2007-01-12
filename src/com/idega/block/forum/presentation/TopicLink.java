@@ -38,8 +38,8 @@ public abstract class TopicLink extends ForumLink {
 			if (getState() != null) {
 				imageLink.addParameter(ForumBusiness.PARAMETER_STATE, getState());
 			}
-			if (page != null) {
-				imageLink.setPage(page);
+			if (this.page != null) {
+				imageLink.setPage(this.page);
 			}
 			
 			Link link = getStyleLink(getLinkName(getResourceBundle()), Forum.LINK_STYLE);
@@ -52,8 +52,8 @@ public abstract class TopicLink extends ForumLink {
 			if (getState() != null) {
 				link.addParameter(ForumBusiness.PARAMETER_STATE, getState());
 			}
-			if (page != null) {
-				link.setPage(page);
+			if (this.page != null) {
+				link.setPage(this.page);
 			}
 
 			if (showImage()) {

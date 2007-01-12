@@ -54,11 +54,11 @@ public class SchoolTypeEditor extends SchoolBlock {
 	private String iSchoolCategory;
 	
 	public boolean getUseTypeStringId() {
-		return _useTypeStringId;
+		return this._useTypeStringId;
 	}
 	
 	public void setUseTypeStringId(boolean b) {
-		_useTypeStringId = b;
+		this._useTypeStringId = b;
 	}
 	
 	protected void init(IWContext iwc) throws Exception {
@@ -101,8 +101,8 @@ public class SchoolTypeEditor extends SchoolBlock {
 		String name = iwc.getParameter(PARAMETER_NAME);
 		String info = iwc.getParameter(PARAMETER_INFO);
 		String cat = null;
-		if (iSchoolCategory != null) {
-			cat = iSchoolCategory;
+		if (this.iSchoolCategory != null) {
+			cat = this.iSchoolCategory;
 		}
 		else {
 			cat = iwc.getParameter(PARAMETER_CATEGORY);
@@ -118,8 +118,9 @@ public class SchoolTypeEditor extends SchoolBlock {
 			}
 		}
 		int aid = -1;
-		if (id != null)
+		if (id != null) {
 			aid = Integer.parseInt(id);
+		}
 		boolean isFreetimeType = BooleanInput.getBooleanReturnValue(iwc.getParameter(PARAMETER_IS_FREETIME_TYPE));
 		boolean isFamilyFreetimeType = BooleanInput.getBooleanReturnValue(iwc.getParameter(PARAMETER_IS_FAMILY_FREETIME_TYPE));
 
@@ -155,8 +156,8 @@ public class SchoolTypeEditor extends SchoolBlock {
 
 		Collection schoolTypes = null;
 		try {
-			if (iSchoolCategory != null) {
-				schoolTypes = getBusiness().findAllSchoolTypesInCategory(iSchoolCategory);
+			if (this.iSchoolCategory != null) {
+				schoolTypes = getBusiness().findAllSchoolTypesInCategory(this.iSchoolCategory);
 			}
 			else {
 				schoolTypes = getBusiness().findAllSchoolTypes();
@@ -258,7 +259,7 @@ public class SchoolTypeEditor extends SchoolBlock {
 				SchoolType type = getBusiness().getSchoolType(typePK);
 				form.add(new HiddenInput(PARAMETER_SCHOOL_TYPE_PK, String.valueOf(typePK)));
 				
-				if (_useTypeStringId) {
+				if (this._useTypeStringId) {
 					inputTypeStringId.setContent(type.getTypeStringId());
 				}
 				inputName.setContent(type.getSchoolTypeName());
@@ -288,7 +289,7 @@ public class SchoolTypeEditor extends SchoolBlock {
 		layer.add(inputName);
 		form.add(layer);
 
-		if (iSchoolCategory == null) {
+		if (this.iSchoolCategory == null) {
 			layer = new Layer(Layer.DIV);
 			layer.setStyleClass(STYLENAME_FORM_ELEMENT);
 			label = new Label(localize("category", "Category"), drpCategory);
@@ -297,7 +298,7 @@ public class SchoolTypeEditor extends SchoolBlock {
 			form.add(layer);
 		}
 		
-		if (_useTypeStringId) {
+		if (this._useTypeStringId) {
 			layer = new Layer(Layer.DIV);
 			layer.setStyleClass(STYLENAME_FORM_ELEMENT);
 			label = new Label(localize("school_type_string_id", "Type ID"), inputTypeStringId);

@@ -37,7 +37,7 @@ public class RSSViewer extends Block {
 	public void main(IWContext iwc) throws Exception {
 		IWResourceBundle iwrb = this.getResourceBundle(iwc);
 		//if no selected rss source display an error message
-		if(sourceId == -1) {
+		if(this.sourceId == -1) {
 			Text msg = new Text(iwrb.getLocalizedString("no.rss.source.selected","No RSS source selected, please select one in the property window."));
 			msg.setBold();
 			add(msg);
@@ -47,12 +47,12 @@ public class RSSViewer extends Block {
 			try {
 				//get the data with the business bean
 				RSSBusiness business = getRSSBusiness(iwc);
-				RSSSource rssSource = business.getRSSSourceBySourceId(sourceId);
+				RSSSource rssSource = business.getRSSSourceBySourceId(this.sourceId);
 				Collection headlines = business.getRSSHeadlinesByRSSSource(rssSource);
 				
 				//add stuff to the block
-				if (description!=null && description.length()>0) {
-					Text text = new Text(description);
+				if (this.description!=null && this.description.length()>0) {
+					Text text = new Text(this.description);
 					add(text);
 				}
 				
@@ -61,7 +61,7 @@ public class RSSViewer extends Block {
 				add(table);
 				
 				int row = 1;
-				int maxLinksTmp = maxLinks;
+				int maxLinksTmp = this.maxLinks;
 				if(maxLinksTmp<1)  {
 					// if maxLinks is zero (or negative), no limit
 					maxLinksTmp = 10000;
@@ -70,10 +70,10 @@ public class RSSViewer extends Block {
 					RSSHeadline rssHeadline = (RSSHeadline) loop.next();
 					String headLine = rssHeadline.getHeadline();
 					Link link = new Link(headLine, rssHeadline.getLink());
-					if(style!=null) {
-						link.setFontStyle(style);
+					if(this.style!=null) {
+						link.setFontStyle(this.style);
 					}
-					link.setTarget(linkTargetType);
+					link.setTarget(this.linkTargetType);
 					table.add(link, 1, row++);
 				}
 			} catch (RemoteException e) {
@@ -93,7 +93,7 @@ public class RSSViewer extends Block {
 	 * @return
 	 */
 	public int getSourceId() {
-		return sourceId;
+		return this.sourceId;
 	}
 
 	/**
@@ -102,7 +102,7 @@ public class RSSViewer extends Block {
 	public void setSourceId(String id) {
 		//System.out.println("setting rss source id to " + id);
 		try {
-			sourceId = Integer.parseInt(id);
+			this.sourceId = Integer.parseInt(id);
 		} catch(Exception e) {
 			System.err.println("Couldn't save new source id value");
 			e.printStackTrace();
@@ -113,7 +113,7 @@ public class RSSViewer extends Block {
 	 * @return
 	 */
 	public String getMaxLinks() {
-		return Integer.toString(maxLinks);
+		return Integer.toString(this.maxLinks);
 	}
 
 	/**
@@ -121,7 +121,7 @@ public class RSSViewer extends Block {
 	 */
 	public void setMaxLinks(String string) {
 		try {
-			maxLinks = Integer.parseInt(string);
+			this.maxLinks = Integer.parseInt(string);
 		} catch(Exception e) {
 			System.err.println("Couldn't save new max link value");
 			e.printStackTrace();
@@ -129,31 +129,31 @@ public class RSSViewer extends Block {
 	}
 	
 	public String getDescription() {
-		return description;
+		return this.description;
 	}
 	
 	public void setDescription(String str) {
-		description = str;
+		this.description = str;
 	}
 	
 	public boolean getOpenInNewWindow() {
-		return linkTargetType==Link.TARGET_NEW_WINDOW;
+		return this.linkTargetType==Link.TARGET_NEW_WINDOW;
 	}
 	
 	public void setLinkStyle(String str) {
 		//System.out.println("Setting link style to " + str);
-		style = str;
+		this.style = str;
 	}
 	
 	public String getLinkStyle() {
-		return style;
+		return this.style;
 	}
 	
 	public void setOpenInNewWindow(boolean b) {
 		if(b) {
-			linkTargetType = Link.TARGET_NEW_WINDOW;
+			this.linkTargetType = Link.TARGET_NEW_WINDOW;
 		} else {
-			linkTargetType = Link.TARGET_SELF_WINDOW;
+			this.linkTargetType = Link.TARGET_SELF_WINDOW;
 		}
 	}
 	

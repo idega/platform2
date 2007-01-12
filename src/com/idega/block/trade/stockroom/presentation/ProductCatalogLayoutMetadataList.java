@@ -39,10 +39,10 @@ public class ProductCatalogLayoutMetadataList extends AbstractProductCatalogLayo
 	private int localeID = -1;
 	
 	public PresentationObject getCatalog(ProductCatalog productCatalog, IWContext iwc, List productCategories) throws RemoteException, FinderException {
-		localeID = iwc.getCurrentLocaleId();
-		locale = iwc.getCurrentLocale();
-		defaultLocale = iwc.getIWMainApplication().getSettings().getDefaultLocale();
-		defaultLocaleID = ICLocaleBusiness.getLocaleId(defaultLocale);
+		this.localeID = iwc.getCurrentLocaleId();
+		this.locale = iwc.getCurrentLocale();
+		this.defaultLocale = iwc.getIWMainApplication().getSettings().getDefaultLocale();
+		this.defaultLocaleID = ICLocaleBusiness.getLocaleId(this.defaultLocale);
 		
 
 		Table table = new Table();
@@ -97,12 +97,12 @@ public class ProductCatalogLayoutMetadataList extends AbstractProductCatalogLayo
 			product = (Product) iter.next();
 			
 			
-			if (null == product.getProductName(localeID, null)) {
-				localeInUse = defaultLocale;
-				localeIDinUse = defaultLocaleID;
+			if (null == product.getProductName(this.localeID, null)) {
+				localeInUse = this.defaultLocale;
+				localeIDinUse = this.defaultLocaleID;
 			} else {
-				localeInUse = locale;
-				localeIDinUse = localeID;
+				localeInUse = this.locale;
+				localeIDinUse = this.localeID;
 			}
 			
 			if (productCatalog.hasEditPermission()) {

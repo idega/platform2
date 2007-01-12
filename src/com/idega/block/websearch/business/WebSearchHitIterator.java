@@ -41,55 +41,55 @@ public final class WebSearchHitIterator {
      */
     public WebSearchHitIterator(String q, Hits h, int hps) {
         
-        query = q;
-        hits = h;
-        hitsPerSet = hps;
-        setLimit = hps;
+        this.query = q;
+        this.hits = h;
+        this.hitsPerSet = hps;
+        this.setLimit = hps;
         
         
     }
     public int getHitsPerSet() {
-        return hitsPerSet;
+        return this.hitsPerSet;
     }
     public int getPosition() {
-        return position;
+        return this.position;
     }
     public String getQuery() {
-        return query;
+        return this.query;
     }
     public int getSetEndPosition() {
-        return setLimit < hits.length() ? setLimit: hits.length();
+        return this.setLimit < this.hits.length() ? this.setLimit: this.hits.length();
     }
     public int getSetStartPosition() {
-        return setLimit - hitsPerSet;
+        return this.setLimit - this.hitsPerSet;
     }
     public int getTotalHits() {
-        return hits.length();
+        return this.hits.length();
     }
     public boolean hasNext() {
         
-        return position < hits.length();
+        return this.position < this.hits.length();
         
     }
     public boolean hasNextInSet() {
         
-        return position < setLimit && position < hits.length();
+        return this.position < this.setLimit && this.position < this.hits.length();
         
     }
     public boolean hasNextSet() {
         
-        return setLimit < hits.length();
+        return this.setLimit < this.hits.length();
         
     }
     public boolean hasPreviousSet() {
         
-        return setLimit - hitsPerSet >= hitsPerSet;
+        return this.setLimit - this.hitsPerSet >= this.hitsPerSet;
         
     }
     public int length() {
         
         try {
-            return hits.length();
+            return this.hits.length();
         } catch (Exception e) {
             e.printStackTrace();
             return 0;
@@ -102,8 +102,8 @@ public final class WebSearchHitIterator {
         
         if (hasNext()) {
             try {
-                position++;
-                hit = new WebSearchHit(hits.doc(position - 1), position, hits.score(position - 1));
+                this.position++;
+                hit = new WebSearchHit(this.hits.doc(this.position - 1), this.position, this.hits.score(this.position - 1));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -132,17 +132,17 @@ public final class WebSearchHitIterator {
  */
     public void nextSet() {
         
-        if (setLimit < hits.length() + 1) {
-            setLimit = setLimit + hitsPerSet;
-            position = setLimit - hitsPerSet;
+        if (this.setLimit < this.hits.length() + 1) {
+            this.setLimit = this.setLimit + this.hitsPerSet;
+            this.position = this.setLimit - this.hitsPerSet;
         }
         
     }
     public void previousSet() {
         
-        if (setLimit - hitsPerSet >= hitsPerSet) {
-            setLimit = setLimit - hitsPerSet;
-            position = setLimit - hitsPerSet;
+        if (this.setLimit - this.hitsPerSet >= this.hitsPerSet) {
+            this.setLimit = this.setLimit - this.hitsPerSet;
+            this.position = this.setLimit - this.hitsPerSet;
         }
         
     }

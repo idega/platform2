@@ -70,21 +70,22 @@ public class QueryFieldPart implements QueryPart {
 	}
 	
 	public QueryFieldPart(XMLElement xml) {
-		name = xml.getAttribute(QueryXMLConstants.NAME).getValue();
-		entity = xml.getAttribute(QueryXMLConstants.ENTITY).getValue();
-		path = xml.getAttribute(QueryXMLConstants.PATH).getValue();
-		columns = xml.getAttribute(QueryXMLConstants.PROPERTIES).getValue();
+		this.name = xml.getAttribute(QueryXMLConstants.NAME).getValue();
+		this.entity = xml.getAttribute(QueryXMLConstants.ENTITY).getValue();
+		this.path = xml.getAttribute(QueryXMLConstants.PATH).getValue();
+		this.columns = xml.getAttribute(QueryXMLConstants.PROPERTIES).getValue();
 		XMLAttribute func =  xml.getAttribute(QueryXMLConstants.FUNCTION);
-		if(func!=null)
-			function = func.getValue();
-		typeClass = xml.getAttribute(QueryXMLConstants.TYPE).getValue();
+		if(func!=null) {
+			this.function = func.getValue();
+		}
+		this.typeClass = xml.getAttribute(QueryXMLConstants.TYPE).getValue();
 		if(xml.hasChildren()) {
-			aliasName = xml.getTextTrim(QueryXMLConstants.ALIAS_NAME);
-			handlerClass = xml.getTextTrim(QueryXMLConstants.HANDLER);
-			handlerDescription = xml.getTextTrim(QueryXMLConstants.HANDLER_DESCRIPTION);
-			display = xml.getTextTrim(QueryXMLConstants.DISPLAY);
+			this.aliasName = xml.getTextTrim(QueryXMLConstants.ALIAS_NAME);
+			this.handlerClass = xml.getTextTrim(QueryXMLConstants.HANDLER);
+			this.handlerDescription = xml.getTextTrim(QueryXMLConstants.HANDLER_DESCRIPTION);
+			this.display = xml.getTextTrim(QueryXMLConstants.DISPLAY);
 			XMLElement xmlLock = xml.getChild(QueryXMLConstants.LOCK);
-			locked = (xmlLock!=null);
+			this.locked = (xmlLock!=null);
 			XMLElement hidden = xml.getChild(QueryXMLConstants.HIDDEN);
 			this.hidden = (hidden!= null);
 		}
@@ -96,38 +97,40 @@ public class QueryFieldPart implements QueryPart {
 	 */
 	public XMLElement getQueryElement() {
 		XMLElement el = new XMLElement(QueryXMLConstants.FIELD);
-		el.setAttribute(QueryXMLConstants.NAME,name);
-		el.setAttribute(QueryXMLConstants.ENTITY,entity);
-		el.setAttribute(QueryXMLConstants.PATH, path);
+		el.setAttribute(QueryXMLConstants.NAME,this.name);
+		el.setAttribute(QueryXMLConstants.ENTITY,this.entity);
+		el.setAttribute(QueryXMLConstants.PATH, this.path);
 		el.setAttribute(QueryXMLConstants.PROPERTIES,this.columns);
-		if(this.function!=null && !this.function.equalsIgnoreCase("null"))
-  		el.setAttribute(QueryXMLConstants.FUNCTION,function);
-  	if(this.typeClass!=null && !this.typeClass.equalsIgnoreCase("null"))
-  		el.setAttribute(QueryXMLConstants.TYPE,typeClass);
-	  if (aliasName != null && !aliasName.equalsIgnoreCase("null")) {
+		if(this.function!=null && !this.function.equalsIgnoreCase("null")) {
+			el.setAttribute(QueryXMLConstants.FUNCTION,this.function);
+		}
+  	if(this.typeClass!=null && !this.typeClass.equalsIgnoreCase("null")) {
+		el.setAttribute(QueryXMLConstants.TYPE,this.typeClass);
+	}
+	  if (this.aliasName != null && !this.aliasName.equalsIgnoreCase("null")) {
 	  		XMLElement xmlAliasName = new XMLElement(QueryXMLConstants.ALIAS_NAME);
-	  		xmlAliasName.addContent(aliasName);
+	  		xmlAliasName.addContent(this.aliasName);
 	  		el.addContent(xmlAliasName);
 	  }
-	  if (display != null && !display.equalsIgnoreCase("null")) {
+	  if (this.display != null && !this.display.equalsIgnoreCase("null")) {
 	  	XMLElement xmlDisplay = new XMLElement(QueryXMLConstants.DISPLAY);
 	  	xmlDisplay.addContent(this.display);
 	  	el.addContent(xmlDisplay);
 	  }
-  	if (handlerClass != null && !handlerClass.equalsIgnoreCase("null"))	{
+  	if (this.handlerClass != null && !this.handlerClass.equalsIgnoreCase("null"))	{
   		XMLElement xmlHandlerClass = new XMLElement(QueryXMLConstants.HANDLER);
-  		xmlHandlerClass.addContent(handlerClass);
+  		xmlHandlerClass.addContent(this.handlerClass);
   		el.addContent(xmlHandlerClass);
   	}
-  	if (handlerDescription != null && !handlerDescription.equalsIgnoreCase("null")) {
+  	if (this.handlerDescription != null && !this.handlerDescription.equalsIgnoreCase("null")) {
   		XMLElement xmlHandlerDescription = new XMLElement(QueryXMLConstants.HANDLER_DESCRIPTION);
-  		xmlHandlerDescription.addContent(handlerDescription);
+  		xmlHandlerDescription.addContent(this.handlerDescription);
   		el.addContent(xmlHandlerDescription);
   	}
-  	if(locked) {
+  	if(this.locked) {
 			el.addContent(new XMLElement(QueryXMLConstants.LOCK));
   	}
-		if (hidden) {
+		if (this.hidden) {
 			el.addContent(new XMLElement(QueryXMLConstants.HIDDEN));
 		}
 		return el;
@@ -137,64 +140,64 @@ public class QueryFieldPart implements QueryPart {
 	 * @return
 	 */
 	public String getDisplay() {
-		return display;
+		return this.display;
 	}
 
 	/**
 	 * @return
 	 */
 	public String getEntity() {
-		return entity;
+		return this.entity;
 	}
 	
 	public String getPath() {
-		return path;
+		return this.path;
 	}
 
 	/**
 	 * @return
 	 */
 	public String getFunction() {
-		return function;
+		return this.function;
 	}
 
 	/**
 	 * @return
 	 */
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 	public String getAliasName() {
-		return (aliasName == null) ? name : aliasName;
+		return (this.aliasName == null) ? this.name : this.aliasName;
 	}
 	
 	/**
 	 * @return
 	 */
 	public String[] getColumns() {
-		return commaListToArray(columns);
+		return commaListToArray(this.columns);
 	}
 
 	/**
 	 * @param string
 	 */
 	public void setDisplay(String string) {
-		display = string;
+		this.display = string;
 	}
 
 	/**
 	 * @param string
 	 */
 	public void setEntity(String string) {
-		entity = string;
+		this.entity = string;
 	}
 
 	/**
 	 * @param string
 	 */
 	public void setFunction(String string) {
-		function = string;
+		this.function = string;
 	}
 
 	/**
@@ -217,26 +220,27 @@ public class QueryFieldPart implements QueryPart {
 	}
 	
 	public String getHandlerClass()  {
-		return handlerClass;
+		return this.handlerClass;
 	}
 	
 	public String getHandlerDescription() {
-		return handlerDescription;
+		return this.handlerDescription;
 	}
 	
 	/**
 	 * @param strings
 	 */
 	public void setColumns(String[] columnStrings) {
-		columns = stringArrayToCommaList(columnStrings);
+		this.columns = stringArrayToCommaList(columnStrings);
 	}
 	
 	public void addColumn(String column){
 		if(getColumns()!=null && getColumns().length>0){
 			this.columns+=","+column;
 		}
-		else
+		else {
 			this.columns = column;
+		}
 	}
 	
 	public void addColumn(String[] columns){
@@ -248,8 +252,9 @@ public class QueryFieldPart implements QueryPart {
 	public String stringArrayToCommaList(String[] array){
 		StringBuffer buf = new StringBuffer();
 		for (int i = 0; i < array.length; i++) {
-			if(i>0)
+			if(i>0) {
 				buf.append(",");
+			}
 			buf.append(array[i]);				
 		}
 		return buf.toString();
@@ -266,16 +271,16 @@ public class QueryFieldPart implements QueryPart {
 	
 	public String encode(){
 		StringBuffer buffer = new StringBuffer();
-		buffer.append(name).append(';');   // 1
+		buffer.append(this.name).append(';');   // 1
 		buffer.append("null").append(';');  // 2
-		buffer.append(entity).append(';'); // 3
-		buffer.append(path).append(';'); // 4
-		buffer.append(columns).append(';');  // 5
-		buffer.append(function).append(';'); // 6
-		buffer.append(display).append(';'); // 7 
-		buffer.append(typeClass).append(';'); // 8 
-		buffer.append(handlerClass).append(';'); // 9
-		buffer.append(handlerDescription); // 10
+		buffer.append(this.entity).append(';'); // 3
+		buffer.append(this.path).append(';'); // 4
+		buffer.append(this.columns).append(';');  // 5
+		buffer.append(this.function).append(';'); // 6
+		buffer.append(this.display).append(';'); // 7 
+		buffer.append(this.typeClass).append(';'); // 8 
+		buffer.append(this.handlerClass).append(';'); // 9
+		buffer.append(this.handlerDescription); // 10
 		// the property hidden is always set explicitly
 		// do not add hidden (encode/decode is used for comparision) 
 //		buffer.append(hidden);		
@@ -305,25 +310,25 @@ public class QueryFieldPart implements QueryPart {
 	 * @return
 	 */
 	public String getTypeClass() {
-		return typeClass;
+		return this.typeClass;
 	}
 
 	/**
 	 * @param string
 	 */
 	public void setTypeClass(String string) {
-		typeClass = string;
+		this.typeClass = string;
 	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.block.dataquery.business.QueryPart#isLocked()
 	 */
 	public boolean isLocked() {
-		return locked;
+		return this.locked;
 	}
 
 	public boolean isHidden()	{
-		return hidden;
+		return this.hidden;
 	}
 	
 	public void setHidden(boolean hidden)	{
@@ -339,26 +344,26 @@ public class QueryFieldPart implements QueryPart {
 	}
 	
 	private IDOEntityDefinition getIDOEntityDefinition() throws IDOLookupException, ClassNotFoundException{
-		if(entityDef==null){
-			entityDef = IDOLookup.getEntityDefinitionForClass(RefactorClassRegistry.forName(entity));
+		if(this.entityDef==null){
+			this.entityDef = IDOLookup.getEntityDefinitionForClass(RefactorClassRegistry.forName(this.entity));
 		}
-		return entityDef;
+		return this.entityDef;
 	}
 
 	public IDOEntityField getIDOEntityField() throws IDOLookupException, ClassNotFoundException{
-		if(idoField==null){
+		if(this.idoField==null){
 			IDOEntityDefinition def = getIDOEntityDefinition();
 			if(def != null){
 				IDOEntityField[] fields = def.getFields();
 				for (int i = 0; i < fields.length; i++) {
-					if(fields[i].getUniqueFieldName().equals(name)){
-						idoField = fields[i];
-						return idoField;
+					if(fields[i].getUniqueFieldName().equals(this.name)){
+						this.idoField = fields[i];
+						return this.idoField;
 					}
 				}
 			}
 		}
-		return idoField;
+		return this.idoField;
 	}
 
 	private String convertNullStringToRealNull(String string)	{

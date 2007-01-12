@@ -4,13 +4,15 @@ import java.sql.Date;
 import java.sql.SQLException;
 
 import com.idega.core.file.data.ICFile;
+import com.idega.data.GenericEntity;
+import com.idega.user.data.UserBMPBean;
 
 
 /**
  * Title:        User
  * Copyright:    Copyright (c) 2001
  * Company:      idega.is
- * @author 2000 - idega team - <a href="mailto:gummi@idega.is">Guðmundur Ágúst Sæmundsson</a>
+ * @author 2000 - idega team - <a href="mailto:gummi@idega.is">Guï¿½mundur ï¿½gï¿½st Sï¿½mundsson</a>
  * @version 1.0
  */
 
@@ -48,11 +50,11 @@ public class StaffEntityBMPBean extends com.idega.data.GenericEntity implements 
     }
 
     public static StaffInfo getStaticInstance(){
-      return (StaffInfo)com.idega.block.staff.data.StaffInfoBMPBean.getStaticInstance(sClassName);
+      return (StaffInfo)GenericEntity.getStaticInstance(sClassName);
     }
 
     /*  ColumNames begin   */
-    public static String getColumnNameUserID(){return com.idega.core.user.data.UserBMPBean.getColumnNameUserID();}
+    public static String getColumnNameUserID(){return UserBMPBean.getColumnNameUserID();}
     public static String getColumnNameBeganWork(){return "began_work";}
     public static String getColumnNameImageID(){return "ic_file_id";}
 
@@ -76,8 +78,8 @@ public class StaffEntityBMPBean extends com.idega.data.GenericEntity implements 
 
     /*  Delete   */
     public void delete() throws SQLException{
-      removeFrom(com.idega.block.staff.data.StaffLocalizedBMPBean.getStaticInstance(StaffLocalized.class));
-      com.idega.block.staff.data.StaffMetaBMPBean.getStaticInstance(StaffMeta.class).deleteMultiple(com.idega.block.staff.data.StaffMetaBMPBean.getColumnNameUserID(),Integer.toString(this.getID()));
+      removeFrom(GenericEntity.getStaticInstance(StaffLocalized.class));
+      GenericEntity.getStaticInstance(StaffMeta.class).deleteMultiple(StaffMetaDataBMPBean.getColumnNameUserID(),Integer.toString(this.getID()));
       super.delete();
     }
 }

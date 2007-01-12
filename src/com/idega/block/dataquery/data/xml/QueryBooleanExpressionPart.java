@@ -62,7 +62,7 @@ public class QueryBooleanExpressionPart implements QueryPart {
 	public QueryBooleanExpressionPart(String encoded) {
 		StringTokenizer tokenizer = new StringTokenizer(encoded);
 		while (tokenizer.hasMoreTokens()) {
-			expressionElements.add(tokenizer.nextToken());
+			this.expressionElements.add(tokenizer.nextToken());
 		}
 	}
 	
@@ -107,66 +107,66 @@ public class QueryBooleanExpressionPart implements QueryPart {
 			conditionParts = new ArrayList(0);
 		}
 		// move all valid ids to the list of invalid ids
-		invalidIds.addAll(validIds);
-		validIds.clear();
+		this.invalidIds.addAll(this.validIds);
+		this.validIds.clear();
 		Iterator iteratorConditions = conditionParts.iterator();
 		while (iteratorConditions.hasNext()) {
 			QueryConditionPart conditionPart = (QueryConditionPart) iteratorConditions.next();
 			String id = conditionPart.getId().toUpperCase();
-			validIds.add(id);
-			invalidIds.remove(id);
+			this.validIds.add(id);
+			this.invalidIds.remove(id);
 		}
 		// prepare list of allowed elements
 		List allowedElements = new ArrayList();
 		allowedElements.addAll(QueryBooleanExpressionPart.booleanOperators);
-		allowedElements.addAll(validIds);
-		allowedElements.addAll(invalidIds);
-		Iterator invalidElements = invalidIds.iterator();
+		allowedElements.addAll(this.validIds);
+		allowedElements.addAll(this.invalidIds);
+		Iterator invalidElements = this.invalidIds.iterator();
 		while (invalidElements.hasNext())	{
 			StringBuffer buffer = new StringBuffer(QueryBooleanExpressionPart.INVALID_ID_PREFIX).append((String)invalidElements.next());
 			buffer.append(QueryBooleanExpressionPart.INVALID_ID_SUFFIX);
 			allowedElements.add(buffer.toString());
 		}
-		expressionElements = StringHandler.getElementsIgnoreCase(newBooleanExpression, allowedElements);
+		this.expressionElements = StringHandler.getElementsIgnoreCase(newBooleanExpression, allowedElements);
 		// represents the newBooleanExpression a valid expression?
-		if (expressionElements == null) {
+		if (this.expressionElements == null) {
 			// store the invalid boolean expression
-			badSyntaxBooleanExpression = newBooleanExpression;
+			this.badSyntaxBooleanExpression = newBooleanExpression;
 			// clear expressionElements
-			expressionElements = new ArrayList();
+			this.expressionElements = new ArrayList();
 			// set invalid
-			booleanExpressionIsValid = false;
+			this.booleanExpressionIsValid = false;
 			return null;
 		}
 		else {
-			badSyntaxBooleanExpression = null;
-			booleanExpressionIsValid = true;
+			this.badSyntaxBooleanExpression = null;
+			this.booleanExpressionIsValid = true;
 		}
-		int size = expressionElements.size();
+		int size = this.expressionElements.size();
 		// change invalid elements
 		for (int i = 0; i < size; i++) {
-			String element = (String) expressionElements.get(i);
-			if (invalidIds.contains(element)) {
+			String element = (String) this.expressionElements.get(i);
+			if (this.invalidIds.contains(element)) {
 				// okay: syntax is okay but it contains invalid ids
-				booleanExpressionIsValid = false;
+				this.booleanExpressionIsValid = false;
 				StringBuffer buffer = new StringBuffer(QueryBooleanExpressionPart.INVALID_ID_PREFIX).append(element);
 				buffer.append(QueryBooleanExpressionPart.INVALID_ID_SUFFIX);
-				expressionElements.set(i, buffer.toString());
+				this.expressionElements.set(i, buffer.toString());
 			}
 			// there are already invalid elements
 			else if (element.startsWith(INVALID_ID_PREFIX)) {
-				booleanExpressionIsValid = false;
+				this.booleanExpressionIsValid = false;
 			}
 		}
 		// add new valids elements
-		Iterator iterator = validIds.iterator();
+		Iterator iterator = this.validIds.iterator();
 		while (iterator.hasNext()) {
 			String element = (String) iterator.next();
-			if (! expressionElements.contains(element)) {
-				if (! expressionElements.isEmpty()) {
-					expressionElements.add(QueryBooleanExpressionPart.AND);
+			if (! this.expressionElements.contains(element)) {
+				if (! this.expressionElements.isEmpty()) {
+					this.expressionElements.add(QueryBooleanExpressionPart.AND);
 				}
-				expressionElements.add(element);
+				this.expressionElements.add(element);
 			}
 		}
 		// return the new boolean expression
@@ -174,13 +174,13 @@ public class QueryBooleanExpressionPart implements QueryPart {
 	}	
 				
 	public String getBadSyntaxBooleanExpression() {
-		return badSyntaxBooleanExpression;
+		return this.badSyntaxBooleanExpression;
 	}
 		
 					
 	public String getBooleanExpression() {
 		StringBuffer buffer = new StringBuffer();
-		Iterator iterator = expressionElements.iterator();
+		Iterator iterator = this.expressionElements.iterator();
 		String whiteSpace = "";
 		while (iterator.hasNext()) {
 			buffer.append(whiteSpace).append((String) iterator.next());
@@ -190,11 +190,11 @@ public class QueryBooleanExpressionPart implements QueryPart {
 	}
 			
 	public boolean isBooleanExpressionValid()	{
-		return booleanExpressionIsValid; 
+		return this.booleanExpressionIsValid; 
 	}
 	
 	public boolean isSyntaxOfBooleanExpressionOkay()	{
-		return badSyntaxBooleanExpression == null;
+		return this.badSyntaxBooleanExpression == null;
 	}
 	
 				

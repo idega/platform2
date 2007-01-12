@@ -44,7 +44,7 @@ public class ContentHelper{
 
   public Content getContent(){
 
-    return eContent;
+    return this.eContent;
 
   }
 
@@ -52,27 +52,26 @@ public class ContentHelper{
 
     LocalizedText LT= null,lt = null;
 
-    if(lLocalizedText!=null){
+    if(this.lLocalizedText!=null){
 
-      int len = lLocalizedText.size();
+      int len = this.lLocalizedText.size();
 
       for (int i = 0; i < len; i++) {
 
-        LT = (LocalizedText) lLocalizedText.get(i);
+        LT = (LocalizedText) this.lLocalizedText.get(i);
 
-        if(LT.getLocaleId() == TextFinder.getLocaleId(locale))
-
-          lt = LT;
+        if(LT.getLocaleId() == TextFinder.getLocaleId(locale)) {
+			lt = LT;
+		}
 
       }
 
       return lt;
 
     }
-
-    else
-
-      return null;
+	else {
+		return null;
+	}
 
   }
 
@@ -82,17 +81,16 @@ public class ContentHelper{
 
     LocalizedText LT= null;
 
-    if(lLocalizedText!=null){
+    if(this.lLocalizedText!=null){
 
-      LT = (LocalizedText) lLocalizedText.get(0);
+      LT = (LocalizedText) this.lLocalizedText.get(0);
 
       return  LT;
 
     }
-
-    else
-
-      return null;
+	else {
+		return null;
+	}
 
   }
 
@@ -100,7 +98,7 @@ public class ContentHelper{
 
   public List getLocalizedTexts(){
 
-    return lLocalizedText;
+    return this.lLocalizedText;
 
   }
 
@@ -108,15 +106,14 @@ public class ContentHelper{
 
     if(text != null){
 
-      if(lLocalizedText!=null )
+      if(this.lLocalizedText!=null ) {
+		this.lLocalizedText.add(text);
+	}
+	else{
 
-        lLocalizedText.add(text);
+        this.lLocalizedText = new Vector();
 
-      else{
-
-        lLocalizedText = new Vector();
-
-        lLocalizedText.add(text);
+        this.lLocalizedText.add(text);
 
       }
 
@@ -130,7 +127,7 @@ public class ContentHelper{
 
     if(text != null){
 
-      lLocalizedText = text;
+      this.lLocalizedText = text;
 
     }
 
@@ -138,7 +135,7 @@ public class ContentHelper{
 
   public void setContent(Content content){
 
-    eContent = content;
+    this.eContent = content;
 
   }
 
@@ -150,7 +147,7 @@ public class ContentHelper{
 
   public void setFiles(List listOfFiles){
 
-    icFiles = listOfFiles ;
+    this.icFiles = listOfFiles ;
 
   }
 
@@ -164,12 +161,12 @@ public class ContentHelper{
 
   public List getFiles(){
 
-    return icFiles ;
+    return this.icFiles ;
 
   }
 
   public boolean hasFiles() {
-	  return icFiles != null && !icFiles.isEmpty();
+	  return this.icFiles != null && !this.icFiles.isEmpty();
   }
 
 

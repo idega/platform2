@@ -59,11 +59,11 @@ public class TimesheetProjectBMPBean extends ProjectBMPBean implements Timesheet
   
   public Collection ejbFindEntryRelatedByUserWithinPeriod(Integer userID,java.sql.Date fromDate,java.sql.Date toDate) throws FinderException{
   	IDOQuery query = super.idoQuery().appendSelect().appendDistinct().append(" P.* ");
-  	String[] tables ={TimesheetEntryBMPBean.TIMESHEET_ENTRY,TimesheetProjectBMPBean.PROJECT};
+  	String[] tables ={TimesheetEntryBMPBean.TIMESHEET_ENTRY,ProjectBMPBean.PROJECT};
   	String[] prm ={"E","P"};
   	query.appendFrom(tables,prm);
   	query.appendWhereEquals(TimesheetEntryBMPBean.USER_ID,userID.intValue());
-  	query.appendAnd().append(" E.").append(TimesheetEntryBMPBean.PROJECT_ID).append("=").append(" P.").append(TimesheetProjectBMPBean.PROJECT_ID);
+  	query.appendAnd().append(" E.").append(TimesheetEntryBMPBean.PROJECT_ID).append("=").append(" P.").append(ProjectBMPBean.PROJECT_ID);
   	query.appendAnd().appendWithinDates(TimesheetEntryBMPBean.ENTRY_DATE,fromDate,toDate);
   	System.out.println(query.toString());
   	return super.idoFindPKsByQuery(query);

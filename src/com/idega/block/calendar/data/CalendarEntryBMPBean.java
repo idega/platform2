@@ -7,6 +7,8 @@ import java.sql.Timestamp;
 
 import com.idega.block.calendar.business.CalendarBusiness;
 import com.idega.block.text.data.LocalizedText;
+import com.idega.data.GenericEntity;
+import com.idega.user.data.UserBMPBean;
 
 public class CalendarEntryBMPBean extends com.idega.block.category.data.CategoryEntityBMPBean implements com.idega.block.calendar.data.CalendarEntry {
 
@@ -40,7 +42,7 @@ public class CalendarEntryBMPBean extends com.idega.block.category.data.Category
 	public static String getColumnNameEntryTypeID() { return com.idega.block.calendar.data.CalendarEntryTypeBMPBean.getColumnNameCalendarTypeID(); }
 	public static String getColumnNameEntryDate() { return "ENTRY_DATE"; }
 	public static String getColumnNameEntryEndDate() { return "ENTRY_END_DATE"; }
-  public static String getColumnNameUserID(){ return com.idega.core.user.data.UserBMPBean.getColumnNameUserID();}
+  public static String getColumnNameUserID(){ return UserBMPBean.getColumnNameUserID();}
 	public static String getColumnNameGroupID() { return com.idega.core.data.GenericGroupBMPBean.getColumnNameGroupID(); }
 
   public String getIDColumnName(){
@@ -97,11 +99,11 @@ public class CalendarEntryBMPBean extends com.idega.block.category.data.Category
 
   //DELETE
 	public void delete() throws SQLException{
-    removeFrom(com.idega.block.text.data.LocalizedTextBMPBean.getStaticInstance(LocalizedText.class));
+    removeFrom(GenericEntity.getStaticInstance(LocalizedText.class));
 		super.delete();
 	}
 
   public static CalendarEntry getStaticInstance() {
-    return (CalendarEntry) com.idega.block.calendar.data.CalendarEntryBMPBean.getStaticInstance(CalendarEntry.class);
+    return (CalendarEntry) GenericEntity.getStaticInstance(CalendarEntry.class);
   }
 }

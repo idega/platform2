@@ -71,11 +71,11 @@ public class TariffEditor extends Finance {
 	}
 
 	public void setRoundAmounts(boolean round) {
-		bRoundAmounts = round;
+		this.bRoundAmounts = round;
 	}
 
 	public void setNumberOfDecimals(int decimals) {
-		iNumberOfDecimals = decimals;
+		this.iNumberOfDecimals = decimals;
 	}
 
 	protected void control(IWContext iwc) {
@@ -93,12 +93,13 @@ public class TariffEditor extends Finance {
 		// List groups =
 		// FinanceFinder.getInstance().listOfTariffGroups(iCategoryId);
 		TariffGroup group = null;
-		if (iwc.isParameterSet(prmGroup))
-			groupId = Integer.valueOf(iwc.getParameter(prmGroup));
-		if (groupId != null && groupId.intValue() > 0) {
+		if (iwc.isParameterSet(prmGroup)) {
+			this.groupId = Integer.valueOf(iwc.getParameter(prmGroup));
+		}
+		if (this.groupId != null && this.groupId.intValue() > 0) {
 			try {
 				// group = FinanceFinder.getInstance().getTariffGroup(iGroupId);
-				group = getFinanceService().getTariffGroupHome().findByPrimaryKey(groupId);
+				group = getFinanceService().getTariffGroupHome().findByPrimaryKey(this.groupId);
 			}
 			catch (RemoteException e) {
 				e.printStackTrace();
@@ -112,7 +113,7 @@ public class TariffEditor extends Finance {
 			// iGroupId = group.getID();
 		}
 
-		if (isAdmin) {
+		if (this.isAdmin) {
 			try {
 				PresentationObject MO = new Text();
 
@@ -122,8 +123,8 @@ public class TariffEditor extends Finance {
 				else if (iwc.getParameter("savetariffs") != null) {
 					MO = doUpdate(iwc, group);
 				}
-				else if (iwc.getParameter(strAction) != null) {
-					String sAct = iwc.getParameter(strAction);
+				else if (iwc.getParameter(this.strAction) != null) {
+					String sAct = iwc.getParameter(this.strAction);
 					int iAct = Integer.parseInt(sAct);
 					switch (iAct) {
 						case ACT1:
@@ -158,8 +159,9 @@ public class TariffEditor extends Finance {
 				S.printStackTrace();
 			}
 		}
-		else
+		else {
 			add(localize("access_denied", "Access denies"));
+		}
 	}
 
 	protected PresentationObject makeLinkTable(int menuNr, TariffGroup group) {
@@ -175,19 +177,19 @@ public class TariffEditor extends Finance {
 			Link Link1 = new Link(getHeader(localize("view", "View")));
 			// Link1.setFontColor(Edit.colorLight);
 			Link1.addParameter(this.strAction, String.valueOf(this.ACT1));
-			Link1.addParameter(Finance.getCategoryParameter(iCategoryId));
+			Link1.addParameter(Finance.getCategoryParameter(this.iCategoryId));
 			Link1.addParameter(prmGroup, group.getPrimaryKey().toString());
 			Link Link2 = new Link(getHeader(localize("change", "Change")));
 			// Link2.setFontColor(Edit.colorLight);
 			Link2.addParameter(this.strAction, String.valueOf(this.ACT2));
-			Link2.addParameter(Finance.getCategoryParameter(iCategoryId));
+			Link2.addParameter(Finance.getCategoryParameter(this.iCategoryId));
 			Link2.addParameter(prmGroup, group.getPrimaryKey().toString());
 			/*
 			 * Link Link3 = new Link(localize("new","New"));
 			 * Link3.setFontColor(Edit.colorLight);
 			 * Link3.addParameter(this.strAction,String.valueOf(this.ACT4));
 			 */
-			if (isAdmin) {
+			if (this.isAdmin) {
 				LinkTable.add(Link1, 1, 1);
 				LinkTable.add(Link2, 2, 1);
 				// LinkTable.add(Link3,3,1);
@@ -207,15 +209,15 @@ public class TariffEditor extends Finance {
 			Link tab;
 			while (I.hasNext()) {
 				group = (TariffGroup) I.next();
-				tab = new Link(iwb.getImageTab(group.getName(), false));
-				tab.addParameter(Finance.getCategoryParameter(iCategoryId));
+				tab = new Link(this.iwb.getImageTab(group.getName(), false));
+				tab.addParameter(Finance.getCategoryParameter(this.iCategoryId));
 				tab.addParameter(prmGroup, group.getPrimaryKey().toString());
 				T.add(tab, col++, 1);
 			}
 		}
-		Link edit = new Link(iwrb.getLocalizedImageTab("edit", "Edit", false));
+		Link edit = new Link(this.iwrb.getLocalizedImageTab("edit", "Edit", false));
 		edit.setWindowToOpen(TariffGroupWindow.class);
-		edit.addParameter(Finance.getCategoryParameter(iCategoryId));
+		edit.addParameter(Finance.getCategoryParameter(this.iCategoryId));
 		T.add(edit, col, 1);
 		return T;
 	}
@@ -226,7 +228,7 @@ public class TariffEditor extends Finance {
 		boolean ifAttributes = false;
 		int attcount = 0;
 		if (group != null) {
-			groupId = (Integer) group.getPrimaryKey();
+			this.groupId = (Integer) group.getPrimaryKey();
 			if (group.getHandlerId() > 0) {
 				// handler =
 				// FinanceFinder.getInstance().getFinanceHandler(group.getHandlerId());
@@ -242,9 +244,9 @@ public class TariffEditor extends Finance {
 		Collection tariffs = null;
 		Map tariffMap = null;
 		Map hAK = null;
-		if (groupId != null) {
+		if (this.groupId != null) {
 			try {
-				tariffs = getFinanceService().getTariffHome().findByTariffGroup(groupId);
+				tariffs = getFinanceService().getTariffHome().findByTariffGroup(this.groupId);
 				// FinanceFinder.getInstance().listOfTariffs(iGroupId);
 				tariffMap = sortTariffsIntoMapOfLists(tariffs);
 				attcount = tariffMap.size();
@@ -261,8 +263,9 @@ public class TariffEditor extends Finance {
 			}
 		}
 		int count = 0;
-		if (tariffs != null)
+		if (tariffs != null) {
 			count = tariffs.size();
+		}
 		Table outerTable = new Table(1, 2);
 		outerTable.setCellpadding(0);
 		outerTable.setCellspacing(0);
@@ -285,7 +288,7 @@ public class TariffEditor extends Finance {
 		// T.add(getHeader(localize("info","Info")),5,1);
 		innerTable.add(getHeader(localize("account_key", "Account key")), col++, 1);
 
-		if (isAdmin) {
+		if (this.isAdmin) {
 			if (count != 0) {
 				if (ifAttributes) {
 					Tariff tariff;
@@ -308,8 +311,9 @@ public class TariffEditor extends Finance {
 
 							innerTable.add(getText(String.valueOf(i + 1)), 1, row);
 
-							if (tatt != null && attributeMap.containsKey(tatt))
+							if (tatt != null && attributeMap.containsKey(tatt)) {
 								val = (String) attributeMap.get(tatt);
+							}
 							innerTable.add(getText(val), 2, row);
 							attTotal = attTotal.add(new BigDecimal(tariff.getPrice()));
 
@@ -317,8 +321,9 @@ public class TariffEditor extends Finance {
 							innerTable.add(getAmountText((tariff.getPrice())), 4, row);
 
 							Integer I = new Integer(tariff.getAccountKeyId());
-							if (hAK.containsKey(I))
+							if (hAK.containsKey(I)) {
 								innerTable.add(getText((String) hAK.get(I)), 5, row);
+							}
 							row++;
 							i++;
 						}
@@ -353,8 +358,9 @@ public class TariffEditor extends Finance {
 						if (ifAttributes) {
 							String tatt = tariff.getTariffAttribute();
 							String val = "";
-							if (tatt != null && attributeMap.containsKey(tatt))
+							if (tatt != null && attributeMap.containsKey(tatt)) {
 								val = (String) attributeMap.get(tatt);
+							}
 							innerTable.add(getText(val), col++, row);
 						}
 
@@ -363,8 +369,9 @@ public class TariffEditor extends Finance {
 						innerTable.add(getAmountText((tariff.getPrice())), col++, row);
 						// T.add(getText(tariffs[i].getInfo()),col++,i+2);
 						Integer I = new Integer(tariff.getAccountKeyId());
-						if (hAK.containsKey(I))
+						if (hAK.containsKey(I)) {
 							innerTable.add(getText((String) hAK.get(I)), col++, row);
+						}
 						row++;
 						i++;
 					}
@@ -406,7 +413,7 @@ public class TariffEditor extends Finance {
 		 * @todo
 		 * 
 		 */
-		hasUpdatedIndices = true;
+		this.hasUpdatedIndices = true;
 		return getSingleLineChange(iwc, false, true, group);
 	}
 
@@ -414,8 +421,9 @@ public class TariffEditor extends Finance {
 			throws java.rmi.RemoteException {
 		int iEditID = -1;
 		String sEditID = iwc.getParameter("the_edit_id");
-		if (sEditID != null)
+		if (sEditID != null) {
 			iEditID = Integer.parseInt(sEditID);
+		}
 
 		boolean updateIndex = factor;
 		Collection listOfTariffs = null;
@@ -543,13 +551,14 @@ public class TariffEditor extends Finance {
 								iPrice = iPrice * getAddFactor(ti.getNewValue(), ti.getOldValue());
 							}
 						}
-						else
+						else {
 							iPrice = iPrice * getAddFactor(ti.getNewValue(), ti.getOldValue());
+						}
 					}
 				}
-				iPrice = new Float(TextSoap.decimalFormat((double) iPrice, iNumberOfDecimals)).floatValue();
-				oldPrice = new Float(TextSoap.decimalFormat((double) oldPrice, iNumberOfDecimals)).floatValue();
-				if (bRoundAmounts) {
+				iPrice = new Float(TextSoap.decimalFormat((double) iPrice, this.iNumberOfDecimals)).floatValue();
+				oldPrice = new Float(TextSoap.decimalFormat((double) oldPrice, this.iNumberOfDecimals)).floatValue();
+				if (this.bRoundAmounts) {
 					iPrice = Math.round((double) iPrice);
 					oldPrice = Math.round((double) oldPrice);
 				}
@@ -576,8 +585,9 @@ public class TariffEditor extends Finance {
 					}
 
 					nameInput.setContent(tariff.getName());
-					if (tariff.getInfo() != null)
+					if (tariff.getInfo() != null) {
 						infoInput.setContent(tariff.getInfo());
+					}
 
 					// drpAtt.setSelectedElement(tariff.getTariffAttribute());
 					drpAK.setSelectedElement(String.valueOf(tariff.getAccountKeyId()));
@@ -597,10 +607,12 @@ public class TariffEditor extends Finance {
 						drpIx.setSelectedElement(ixType);
 
 						T.add(drpIx, col++, row);
-						if (ixdate != null)
+						if (ixdate != null) {
 							T.add(getText(ixdate.toString()), col++, row);
-						else
+						}
+						else {
 							T.add(getText(""), col++, row);
+						}
 					}
 
 				}
@@ -609,14 +621,15 @@ public class TariffEditor extends Finance {
 					if (ifAttributes) {
 						String tatt = tariff.getTariffAttribute();
 						String val = "";
-						if (tatt != null && attributeMap.containsKey(tatt))
+						if (tatt != null && attributeMap.containsKey(tatt)) {
 							val = (String) attributeMap.get(tatt);
+						}
 						T.add(getText(val), col++, row);
 					}
 					Link lineChangeLink = new Link(getText(tariff.getName()));
 					lineChangeLink.addParameter("the_edit_id", tariffID.intValue());
 					lineChangeLink.addParameter(this.strAction, String.valueOf(this.ACT2));
-					lineChangeLink.addParameter(Finance.getCategoryParameter(iCategoryId));
+					lineChangeLink.addParameter(Finance.getCategoryParameter(this.iCategoryId));
 					lineChangeLink.addParameter(prmGroup, group.getPrimaryKey().toString());
 
 					T.add(lineChangeLink, col++, row);
@@ -624,14 +637,16 @@ public class TariffEditor extends Finance {
 					// T.add(getText(String.valueOf(iPrice)), col++, row);
 
 					Integer I = new Integer(tariff.getAccountKeyId());
-					if (mapOfAccountKeys.containsKey(I))
+					if (mapOfAccountKeys.containsKey(I)) {
 						T.add(getText((String) mapOfAccountKeys.get(I)), col++, row);
+					}
 
 					if (ifIndices) {
 						if (tariff.getIndexType() != null && !"".equals(tariff.getIndexType())) {
-							if (mapOfIndices.containsKey(tariff.getIndexType()))
+							if (mapOfIndices.containsKey(tariff.getIndexType())) {
 								T.add(getText(((TariffIndex) mapOfIndices.get(tariff.getIndexType())).getName()),
 										col++, row);
+							}
 							else {
 								T.add(getText(""), col++, row);
 							}
@@ -640,10 +655,12 @@ public class TariffEditor extends Finance {
 							T.add(getText(""), col++, row);
 						}
 
-						if (ixdate != null)
+						if (ixdate != null) {
 							T.add(getText(ixdate.toString()), col++, row);
-						else
+						}
+						else {
 							T.add(getText(""), col++, row);
+						}
 					}
 
 					T.add(new HiddenInput("te_ixdrp" + i, ixType), 1, row);
@@ -698,7 +715,7 @@ public class TariffEditor extends Finance {
 			SubmitButton update = new SubmitButton("updateindex", localize("update_indexes", "Update indexes"));
 			// Edit.setStyle(update);
 			T3.add(update, 8, 1);
-			if (hasUpdatedIndices) {
+			if (this.hasUpdatedIndices) {
 				T3.add(getErrorText(localize("unsaved_data", "You have unsaved data !!")), 6, 1);
 
 				T3.add(save, 7, 1);
@@ -714,7 +731,7 @@ public class TariffEditor extends Finance {
 
 		T4.add(new HiddenInput(prmGroup, group.getPrimaryKey().toString()));
 		T4.add(new HiddenInput("te_count", String.valueOf(i)));
-		T4.add(Finance.getCategoryParameter(iCategoryId));
+		T4.add(Finance.getCategoryParameter(this.iCategoryId));
 
 		return (T4);
 	}
@@ -765,8 +782,9 @@ public class TariffEditor extends Finance {
 		}
 
 		int count = 0;
-		if (tariffs != null)
+		if (tariffs != null) {
 			count = tariffs.size();
+		}
 		int inputcount = count + 5;
 		Table BorderTable = new Table();
 		BorderTable.setCellpadding(1);
@@ -812,8 +830,9 @@ public class TariffEditor extends Finance {
 			CheckBox delCheck;
 
 			drpAK = drpAccountKeys(AK, ("te_akdrp" + i));
-			if (ifIndices)
+			if (ifIndices) {
 				drpIx = drpIndicesByType(M.values(), "te_ixdrp" + i);
+			}
 
 			if (ifAttributes) {
 				drpAtt = (DropdownMenu) attDrp.clone();
@@ -833,8 +852,9 @@ public class TariffEditor extends Finance {
 				tariff = (Tariff) iter.next();
 				float iPrice = tariff.getPrice();
 
-				if (ifAttributes)
+				if (ifAttributes) {
 					drpAtt.setSelectedElement(tariff.getTariffAttribute());
+				}
 
 				if (ifIndices) {
 					String ixType = tariff.getIndexType();
@@ -859,19 +879,22 @@ public class TariffEditor extends Finance {
 							// System.err.println(stamp.toString() +"
 							// "+ixdate.toString());
 						}
-						else
+						else {
 							iPrice = iPrice * getAddFactor(ti.getNewValue(), ti.getOldValue());
+						}
 					}
 					drpIx.setSelectedElement(ixType);
 				}
-				iPrice = new Float(TextSoap.decimalFormat((double) iPrice, iNumberOfDecimals)).floatValue();
+				iPrice = new Float(TextSoap.decimalFormat((double) iPrice, this.iNumberOfDecimals)).floatValue();
 
-				if (bRoundAmounts)
+				if (this.bRoundAmounts) {
 					iPrice = Math.round((double) iPrice);
+				}
 
 				nameInput.setContent(tariff.getName());
-				if (tariff.getInfo() != null)
+				if (tariff.getInfo() != null) {
 					infoInput.setContent(tariff.getInfo());
+				}
 
 				priceInput.setContent(String.valueOf(iPrice));
 
@@ -935,7 +958,7 @@ public class TariffEditor extends Finance {
 		// myForm.add(new HiddenInput(this.strAction,String.valueOf(this.ACT3
 		// )));
 		BorderTable.add(BorderTable);
-		BorderTable.add(Finance.getCategoryParameter(iCategoryId));
+		BorderTable.add(Finance.getCategoryParameter(this.iCategoryId));
 		// myForm.maintainAllParameters();
 		return (BorderTable);
 	}
@@ -1064,8 +1087,9 @@ public class TariffEditor extends Finance {
 			String me;
 			while (I.hasNext()) {
 				me = (String) I.next();
-				if (map.containsKey(me))
+				if (map.containsKey(me)) {
 					drp.addMenuElement(me, (String) map.get(me));
+				}
 			}
 			drp.setSelectedElement(selected);
 		}
@@ -1115,8 +1139,9 @@ public class TariffEditor extends Finance {
 
 	private float findLastTariffIndex(TariffIndex[] ti) {
 		float f = 1;
-		if (ti.length > 0)
+		if (ti.length > 0) {
 			f = ti[0].getIndex();
+		}
 		return f;
 	}
 

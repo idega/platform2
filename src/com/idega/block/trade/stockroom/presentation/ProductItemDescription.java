@@ -34,9 +34,9 @@ public class ProductItemDescription extends ProductItem {
   }
 
   private void drawObject(IWContext iwc) throws RemoteException{
-    Text text = getText(defaultText);
-    if ( _product != null ) {
-      String textString = TextSoap.formatText(_product.getProductDescription(_productLocaleId));
+    Text text = getText(this.defaultText);
+    if ( this._product != null ) {
+      String textString = TextSoap.formatText(this._product.getProductDescription(this._productLocaleId));
       text.setText(textString);
     }
     add(text);

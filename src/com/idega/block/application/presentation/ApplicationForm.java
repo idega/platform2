@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationForm.java,v 1.25.2.1 2005/11/29 16:54:27 palli Exp $
+ * $Id: ApplicationForm.java,v 1.25.2.2 2007/01/12 19:31:19 idegaweb Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -70,20 +70,20 @@ public class ApplicationForm extends PresentationObjectContainer {
 		String statusString = iwc.getParameter(APP_STATUS);
 		int status = 0;
 		if (statusString == null) {
-			status = _statusEnteringPage;
+			status = this._statusEnteringPage;
 		}
 		else {
 			try {
 				status = Integer.parseInt(statusString);
 			}
 			catch (NumberFormatException e) {
-				status = _statusEnteringPage;
+				status = this._statusEnteringPage;
 			}
 		}
-		if (status == _statusEnteringPage) {
+		if (status == this._statusEnteringPage) {
 			doSelectSubject();
 		}
-		else if (status == _statusSubject) {
+		else if (status == this._statusSubject) {
 			try {
 				ApplicationFormHelper.saveSubject(iwc);
 			}
@@ -95,7 +95,7 @@ public class ApplicationForm extends PresentationObjectContainer {
 			}
 			doGeneralInformation();
 		}
-		else if (status == _statusGeneralInfo) {
+		else if (status == this._statusGeneralInfo) {
 			try {
 				ApplicationFormHelper.saveApplicantInformation(iwc);
 			}
@@ -105,10 +105,12 @@ public class ApplicationForm extends PresentationObjectContainer {
 			catch (CreateException e) {
 				e.printStackTrace();
 			}
-			if (ApplicationFormHelper.saveDataToDB(iwc) != null)
+			if (ApplicationFormHelper.saveDataToDB(iwc) != null) {
 				doDone();
-			else
+			}
+			else {
 				doError();
+			}
 		}
 	}
 	public String getBundleIdentifier() {
@@ -133,29 +135,29 @@ public class ApplicationForm extends PresentationObjectContainer {
 		t.setWidth(2, "50%");
 		Text heading = (Text) textTemplate.clone();
 		heading.setStyle("headlinetext");
-		heading.setText(_iwrb.getLocalizedString("applicationSubjectTitle", "Veldu tegund ums?knar"));
+		heading.setText(this._iwrb.getLocalizedString("applicationSubjectTitle", "Veldu tegund ums?knar"));
 		Text text1 = (Text) textTemplate.clone();
 		text1.setStyle("bodytext");
-		text1.setText(_iwrb.getLocalizedString("applicationSubject", "Ums?kn um"));
+		text1.setText(this._iwrb.getLocalizedString("applicationSubject", "Ums?kn um"));
 		text1.setBold();
 		DropdownMenu subject = new DropdownMenu(subjects, "subject");
 		subject.setStyleClass("formstyle");
-		BackButton back = new BackButton(_iwrb.getImage("back.gif"));
-		SubmitButton ok = new SubmitButton(_iwrb.getImage("next.gif", _iwrb.getLocalizedString("ok", "?fram")));
+		BackButton back = new BackButton(this._iwrb.getImage("back.gif"));
+		SubmitButton ok = new SubmitButton(this._iwrb.getImage("next.gif", this._iwrb.getLocalizedString("ok", "?fram")));
 		form.add(heading);
 		form.add(Text.getBreak());
 		form.add(Text.getBreak());
 		form.add(t);
 		t.add(text1, 1, 1);
-		t.add(_required, 1, 1);
+		t.add(this._required, 1, 1);
 		t.add(subject, 2, 1);
 		t.add(back, 2, 3);
 		t.add(ok, 2, 3);
 		form.add(Text.getBreak());
 		form.add(Text.getBreak());
 		form.add(Text.getBreak());
-		form.add(_info);
-		form.add(new HiddenInput(APP_STATUS, Integer.toString(_statusSubject)));
+		form.add(this._info);
+		form.add(new HiddenInput(APP_STATUS, Integer.toString(this._statusSubject)));
 		add(form);
 	}
 	protected void doGeneralInformation() {
@@ -163,40 +165,40 @@ public class ApplicationForm extends PresentationObjectContainer {
 		TextInput textInputTemplate = new TextInput();
 		Form form = new Form();
 		DataTable t = new DataTable();
-		SubmitButton ok = new SubmitButton(_iwrb.getImage("next.gif", _iwrb.getLocalizedString("ok", "?fram")));
+		SubmitButton ok = new SubmitButton(this._iwrb.getImage("next.gif", this._iwrb.getLocalizedString("ok", "?fram")));
 		Text heading = (Text) textTemplate.clone();
 		heading.setStyle("headlinetext");
-		heading.setText(_iwrb.getLocalizedString("generalInfo", "Almennar uppl?singar um ums?kjanda"));
+		heading.setText(this._iwrb.getLocalizedString("generalInfo", "Almennar uppl?singar um ums?kjanda"));
 		Text text1 = (Text) textTemplate.clone();
 		text1.setStyle("bodytext");
-		text1.setText(_iwrb.getLocalizedString("firstName", "Fornafn"));
+		text1.setText(this._iwrb.getLocalizedString("firstName", "Fornafn"));
 		text1.setBold();
 		Text text2 = (Text) textTemplate.clone();
 		text2.setStyle("bodytext");
-		text2.setText(_iwrb.getLocalizedString("middleName", "Millinafn"));
+		text2.setText(this._iwrb.getLocalizedString("middleName", "Millinafn"));
 		Text text3 = (Text) textTemplate.clone();
 		text3.setStyle("bodytext");
-		text3.setText(_iwrb.getLocalizedString("lastName", "Eftirnafn"));
+		text3.setText(this._iwrb.getLocalizedString("lastName", "Eftirnafn"));
 		text3.setBold();
 		Text text4 = (Text) textTemplate.clone();
 		text4.setStyle("bodytext");
-		text4.setText(_iwrb.getLocalizedString("ssn", "Kennitala"));
+		text4.setText(this._iwrb.getLocalizedString("ssn", "Kennitala"));
 		text4.setBold();
 		Text text5 = (Text) textTemplate.clone();
 		text5.setStyle("bodytext");
-		text5.setText(_iwrb.getLocalizedString("legalResidence", "L?gheimili"));
+		text5.setText(this._iwrb.getLocalizedString("legalResidence", "L?gheimili"));
 		text5.setBold();
 		Text text6 = (Text) textTemplate.clone();
 		text6.setStyle("bodytext");
-		text6.setText(_iwrb.getLocalizedString("residence", "Dvalarsta?ur"));
+		text6.setText(this._iwrb.getLocalizedString("residence", "Dvalarsta?ur"));
 		text6.setBold();
 		Text text7 = (Text) textTemplate.clone();
 		text7.setStyle("bodytext");
-		text7.setText(_iwrb.getLocalizedString("residencePhone", "S?man?mer ? dvalarsta?"));
+		text7.setText(this._iwrb.getLocalizedString("residencePhone", "S?man?mer ? dvalarsta?"));
 		text7.setBold();
 		Text text8 = (Text) textTemplate.clone();
 		text8.setStyle("bodytext");
-		text8.setText(_iwrb.getLocalizedString("po", "P?stn?mer"));
+		text8.setText(this._iwrb.getLocalizedString("po", "P?stn?mer"));
 		text8.setBold();
 		TextInput input1 = (TextInput) textInputTemplate.clone();
 		input1.setName("firstName");
@@ -232,66 +234,66 @@ public class ApplicationForm extends PresentationObjectContainer {
 		input8.setStyleClass("formstyle");
 		t.addTitle(heading);
 		t.add(text1, 1, 1);
-		t.add(_required, 1, 1);
+		t.add(this._required, 1, 1);
 		t.add(input1, 2, 1);
 		t.add(text2, 1, 2);
 		t.add(input2, 2, 2);
 		t.add(text3, 1, 3);
-		t.add(_required, 1, 3);
+		t.add(this._required, 1, 3);
 		t.add(input3, 2, 3);
 		t.add(text4, 1, 4);
-		t.add(_required, 1, 4);
+		t.add(this._required, 1, 4);
 		t.add(input4, 2, 4);
 		t.add(text5, 1, 5);
-		t.add(_required, 1, 5);
+		t.add(this._required, 1, 5);
 		t.add(input5, 2, 5);
 		t.add(text6, 1, 6);
-		t.add(_required, 1, 6);
+		t.add(this._required, 1, 6);
 		t.add(input6, 2, 6);
 		t.add(text7, 1, 7);
-		t.add(_required, 1, 7);
+		t.add(this._required, 1, 7);
 		t.add(input7, 2, 7);
 		t.add(text8, 1, 8);
-		t.add(_required, 1, 8);
+		t.add(this._required, 1, 8);
 		t.add(input8, 2, 8);
 		t.addButton(ok);
 		form.add(t);
 		form.add(Text.getBreak());
 		form.add(Text.getBreak());
 		form.add(Text.getBreak());
-		form.add(_info);
-		form.add(new HiddenInput(APP_STATUS, Integer.toString(_statusGeneralInfo)));
+		form.add(this._info);
+		form.add(new HiddenInput(APP_STATUS, Integer.toString(this._statusGeneralInfo)));
 		add(form);
 	}
 	protected void doDone() {
-		add(_iwrb.getLocalizedString("applicationRegistered", "Ums?kn skr??"));
+		add(this._iwrb.getLocalizedString("applicationRegistered", "Ums?kn skr??"));
 	}
 	protected void doDone(String cypher) {
 		Text cypherText = new Text(cypher);
 		cypherText.setBold();
 		add(
-			_iwrb.getLocalizedString("applicationRegistered", "Ums?kn skr??")
+			this._iwrb.getLocalizedString("applicationRegistered", "Ums?kn skr??")
 				+ ". "
-				+ _iwrb.getLocalizedString("applicationReferenceNumber", "Tilv?sunarn?mer ?itt er")
+				+ this._iwrb.getLocalizedString("applicationReferenceNumber", "Tilv?sunarn?mer ?itt er")
 				+ ": ");
 		add(cypherText);
 		add(Text.getBreak());
 		add(Text.getBreak());
 		add(
-			_iwrb.getLocalizedString(
+			this._iwrb.getLocalizedString(
 				"applicationFollowUp",
 				"?? getur nota? tilv?sunarn?meri? til a? fylgjast me? st??u ums?knar ?innar")
 				+ ".");
 	}
 	protected void doError() {
-		add(_iwrb.getLocalizedString("applicationDBError", "Gagnagrunnsvilla vi? skr?ningu ums?knar"));
+		add(this._iwrb.getLocalizedString("applicationDBError", "Gagnagrunnsvilla vi? skr?ningu ums?knar"));
 	}
 	public void main(IWContext iwc) {
-		_iwrb = getResourceBundle(iwc);
-		_info = new Text(_iwrb.getLocalizedString(APP_MUST_FILL_OUT, "* Stj?rnumerkt sv??i ver?ur a? fylla ?t"));
+		this._iwrb = getResourceBundle(iwc);
+		this._info = new Text(this._iwrb.getLocalizedString(APP_MUST_FILL_OUT, "* Stj?rnumerkt sv??i ver?ur a? fylla ?t"));
 		control(iwc);
 	}
 	protected void doSubjectError() {
-		add(_iwrb.getLocalizedString("applicationSubjectError", "Nothing to apply for"));
+		add(this._iwrb.getLocalizedString("applicationSubjectError", "Nothing to apply for"));
 	}
 }

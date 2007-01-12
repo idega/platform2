@@ -1,5 +1,5 @@
 /*
- * $Id: FavoritesSessionBean.java,v 1.1 2004/11/05 13:26:10 laddi Exp $
+ * $Id: FavoritesSessionBean.java,v 1.1.2.1 2007/01/12 19:33:01 idegaweb Exp $
  * Created on 4.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -21,7 +21,7 @@ import com.idega.business.IBOSessionBean;
  * Last modified: 4.11.2004 15:49:17 by laddi
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.1.2.1 $
  */
 public class FavoritesSessionBean extends IBOSessionBean implements FavoritesSession {
 
@@ -40,21 +40,21 @@ public class FavoritesSessionBean extends IBOSessionBean implements FavoritesSes
 	 * @return Returns the favoriteType.
 	 */
 	public String getFavoriteType() {
-		if (iFavoriteType == null) {
+		if (this.iFavoriteType == null) {
 			try {
-				iFavoriteType = getBusiness().getFavoriteTypeIntranet();
+				this.iFavoriteType = getBusiness().getFavoriteTypeIntranet();
 			}
 			catch (RemoteException re) {
 				log(re);
 			}
 		}
-		return iFavoriteType;
+		return this.iFavoriteType;
 	}
 	
 	/**
 	 * @param favoriteType The favoriteType to set.
 	 */
 	public void setFavoriteType(String favoriteType) {
-		iFavoriteType = favoriteType;
+		this.iFavoriteType = favoriteType;
 	}
 }

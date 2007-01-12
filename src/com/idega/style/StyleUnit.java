@@ -43,15 +43,15 @@ public class StyleUnit {
 	}
 
 	public String getPrefix() {
-		if (prefix != null) {
-			return prefix;
+		if (this.prefix != null) {
+			return this.prefix;
 		}
 		return "";
 	}
 
 	public String getPostfix() {
-		if (postfix != null) {
-			return postfix;
+		if (this.postfix != null) {
+			return this.postfix;
 		}
 		return "";
 	}

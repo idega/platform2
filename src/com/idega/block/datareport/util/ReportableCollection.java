@@ -76,10 +76,10 @@ public class ReportableCollection extends Vector implements JRDataSource {
 	
 	
 	public void addField(ReportableField field){
-		if(_description == null){
-			_description = new ReportDescription();
+		if(this._description == null){
+			this._description = new ReportDescription();
 		}
-		_description.addField(field);
+		this._description.addField(field);
 	}
 	
 	public void addField(IDOReportableField field){
@@ -93,17 +93,17 @@ public class ReportableCollection extends Vector implements JRDataSource {
 	
 	//TODO Gummi generate keys!
 	public void addExtraHeaderParameter(String labelKey, String LabelValue, String valueKey, String valueValue){
-		if(_description == null){
-			_description = new ReportDescription();
+		if(this._description == null){
+			this._description = new ReportDescription();
 		}
-		_description.addHeaderParameter(labelKey,LabelValue,valueKey,valueValue);
+		this._description.addHeaderParameter(labelKey,LabelValue,valueKey,valueValue);
 	}
 	
 	public void addExtraHeaderParameterAtBeginning(String labelKey, String LabelValue, String valueKey, String valueValue){
-		if(_description == null){
-			_description = new ReportDescription();
+		if(this._description == null){
+			this._description = new ReportDescription();
 		}
-		_description.addHeaderParameterAtBeginning(labelKey,LabelValue,valueKey,valueValue);
+		this._description.addHeaderParameterAtBeginning(labelKey,LabelValue,valueKey,valueValue);
 	}
 
 
@@ -111,17 +111,17 @@ public class ReportableCollection extends Vector implements JRDataSource {
 	 * @param prm
 	 */
 	public void addExtraHeaderParameter(Map prm) {
-		if(_description == null){
-			_description = new ReportDescription();
+		if(this._description == null){
+			this._description = new ReportDescription();
 		}
-		_extraHeaderParameters.putAll(prm);
+		this._extraHeaderParameters.putAll(prm);
 	}
 
 	/**
 	 * @return Returns the description.
 	 */
 	public ReportDescription getReportDescription() {
-		return _description;
+		return this._description;
 	}
 	/**
 	 * @param description The description to set.
@@ -134,10 +134,10 @@ public class ReportableCollection extends Vector implements JRDataSource {
 	 * @see net.sf.jasperreports.engine.JRDataSource#next()
 	 */
 	public boolean next() throws JRException {
-		if(_source == null){
-			_source = (IWDataSource)getJRDataSource();
+		if(this._source == null){
+			this._source = (IWDataSource)getJRDataSource();
 		}
-		return _source.next();
+		return this._source.next();
 	}
 
 	/* (non-Javadoc)
@@ -148,19 +148,19 @@ public class ReportableCollection extends Vector implements JRDataSource {
 	}
 	
 	public Object getFieldValue(ReportableField field) throws JRException {
-		if(_source == null){
+		if(this._source == null){
 			next();
 		}
-		return _source.getFieldValue(field);
+		return this._source.getFieldValue(field);
 	}
 	
 	
 	/**
 	 * 
-	 *  Last modified: $Date: 2004/10/08 10:15:36 $ by $Author: gummi $
+	 *  Last modified: $Date: 2007/01/12 19:31:42 $ by $Author: idegaweb $
 	 * 
 	 * @author <a href="mailto:gummi@idega.com">Gudmundur Agust Saemundsson</a>
-	 * @version $Revision: 1.11 $
+	 * @version $Revision: 1.11.2.1 $
 	 */
 	private class IWDataSource implements JRDataSource {
 
@@ -172,27 +172,27 @@ public class ReportableCollection extends Vector implements JRDataSource {
 		 */
 		public IWDataSource(ReportableCollection coll) {
 			super();
-			_coll = coll;
+			this._coll = coll;
 		}
 
 		/* (non-Javadoc)
 		 * @see net.sf.jasperreports.engine.JRDataSource#next()
 		 */
 		public boolean next() throws JRException {
-			if(_reportIterator == null){
-				_reportIterator = _coll.iterator();
+			if(this._reportIterator == null){
+				this._reportIterator = this._coll.iterator();
 			}
 			
 			try {
-				if(_reportIterator.hasNext()){
-					_coll._currentJRDataSource = (IDOReportableEntity)_reportIterator.next();
+				if(this._reportIterator.hasNext()){
+					this._coll._currentJRDataSource = (IDOReportableEntity)this._reportIterator.next();
 					return true;
 				} else {
-					_coll._currentJRDataSource = null;
+					this._coll._currentJRDataSource = null;
 					return false;
 				} 
 			} catch (ClassCastException e) {
-				_coll._currentJRDataSource=null;
+				this._coll._currentJRDataSource=null;
 				e.printStackTrace();
 				throw new JRException(e);
 			}
@@ -206,12 +206,12 @@ public class ReportableCollection extends Vector implements JRDataSource {
 		}
 		
 		public Object getFieldValue(ReportableField field) throws JRException {
-			if(_reportIterator == null){
+			if(this._reportIterator == null){
 				next();
 			}
-			Object returner = _coll._currentJRDataSource.getFieldValue(field);
+			Object returner = this._coll._currentJRDataSource.getFieldValue(field);
 			if(returner == null){
-				return _coll._defaultFieldValue;
+				return this._coll._defaultFieldValue;
 			} else {
 				return returner;
 			}

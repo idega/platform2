@@ -94,11 +94,11 @@ public class SchoolSeasonEditor extends SchoolBlock {
 		String id = iwc.getParameter(PARAMETER_SCHOOL_SEASON_PK);
 		String name = iwc.getParameter(PARAMETER_NAME);
 		String category = null;
-		if (iSchoolCategory == null) {
+		if (this.iSchoolCategory == null) {
 			category = iwc.getParameter(PARAMETER_CATEGORY);
 		}
 		else {
-			category = iSchoolCategory;
+			category = this.iSchoolCategory;
 		}
 		Date startDate = iwc.isParameterSet(PARAMETER_SEASON_START) ? new IWTimestamp(iwc.getParameter(PARAMETER_SEASON_START)).getDate() : null;
 		Date endDate = iwc.isParameterSet(PARAMETER_SEASON_END) ? new IWTimestamp(iwc.getParameter(PARAMETER_SEASON_END)).getDate() : null;
@@ -131,8 +131,8 @@ public class SchoolSeasonEditor extends SchoolBlock {
 
 		Collection seasons = null;
 		try {
-			if (iSchoolCategory != null) {
-				seasons = getBusiness().findAllSchoolSeasons(iSchoolCategory);
+			if (this.iSchoolCategory != null) {
+				seasons = getBusiness().findAllSchoolSeasons(this.iSchoolCategory);
 			}
 			else {
 				seasons = getBusiness().findAllSchoolSeasons();
@@ -249,7 +249,7 @@ public class SchoolSeasonEditor extends SchoolBlock {
 		layer.add(inputName);
 		form.add(layer);
 
-		if (iSchoolCategory == null) {
+		if (this.iSchoolCategory == null) {
 			layer = new Layer(Layer.DIV);
 			layer.setStyleClass(STYLENAME_FORM_ELEMENT);
 			label = new Label(localize("school_category", "School category"), drpCategory);

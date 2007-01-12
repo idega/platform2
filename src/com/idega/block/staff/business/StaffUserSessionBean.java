@@ -1,5 +1,5 @@
 /*
- * $Id: StaffUserSessionBean.java,v 1.1 2005/02/01 13:40:20 laddi Exp $
+ * $Id: StaffUserSessionBean.java,v 1.1.2.1 2007/01/12 19:32:48 idegaweb Exp $
  * Created on 16.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -17,7 +17,7 @@ import com.idega.user.data.User;
  * Last modified: 16.11.2004 12:03:32 by laddi
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.1.2.1 $
  */
 public class StaffUserSessionBean extends IBOSessionBean implements StaffUserSession{
 
@@ -29,7 +29,7 @@ public class StaffUserSessionBean extends IBOSessionBean implements StaffUserSes
 	}
 	
 	public User getUser() {
-		return user;
+		return this.user;
 	}
 	
 	public void setUserID(int userID) {
@@ -37,6 +37,6 @@ public class StaffUserSessionBean extends IBOSessionBean implements StaffUserSes
 	}
 	
 	public int getUserID() {
-		return userID;
+		return this.userID;
 	}
 }

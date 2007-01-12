@@ -82,23 +82,25 @@ public class EmailProgramViewTable extends Block {
           mailList = ((com.idega.block.mailinglist.data.MailAccountHome)com.idega.data.IDOLookup.getHomeLegacy(MailAccount.class)).findByPrimaryKeyLegacy(Integer.parseInt(selectedIDStrings[selectedIDStringsLength - 1]));
           ccAdresses += mailList.getEmail();
       }
-      else ccAdresses = " ";
+	else {
+		ccAdresses = " ";
+	}
     }
-    addressInput.setValue(adress);
-    CCInput.setValue(ccAdresses);
+    this.addressInput.setValue(adress);
+    this.CCInput.setValue(ccAdresses);
   }
 
      //VIEW INBOX LETTERS
   public void setViewInboxLetter(Message viewMessage) throws MessagingException, IOException{
     SubmitButton forwardLetterButton = new SubmitButton(forwardLetterButtonName, "Forward");
     SubmitButton replyLetterButton = new SubmitButton(replyLetterButtonName, "Reply");
-    addressInput.setValue(EmailServiceHandler.getStringAddresses(viewMessage.getRecipients(Message.RecipientType.TO)));
-    subjectInput.setValue(viewMessage.getSubject());
-    CCInput.setValue(EmailServiceHandler.getStringAddresses(viewMessage.getRecipients(Message.RecipientType.CC)));
-    BCCInput.setValue(EmailServiceHandler.getStringAddresses(viewMessage.getRecipients(Message.RecipientType.BCC)));
-    letterTextArea.setContent(EmailServiceHandler.getStringBody(viewMessage));
-    writeLetterViewTable.add(forwardLetterButton,2,7);
-    writeLetterViewTable.add(replyLetterButton,3,7);
+    this.addressInput.setValue(EmailServiceHandler.getStringAddresses(viewMessage.getRecipients(Message.RecipientType.TO)));
+    this.subjectInput.setValue(viewMessage.getSubject());
+    this.CCInput.setValue(EmailServiceHandler.getStringAddresses(viewMessage.getRecipients(Message.RecipientType.CC)));
+    this.BCCInput.setValue(EmailServiceHandler.getStringAddresses(viewMessage.getRecipients(Message.RecipientType.BCC)));
+    this.letterTextArea.setContent(EmailServiceHandler.getStringBody(viewMessage));
+    this.writeLetterViewTable.add(forwardLetterButton,2,7);
+    this.writeLetterViewTable.add(replyLetterButton,3,7);
 
     //create attachments links to click????
 
@@ -108,11 +110,11 @@ public class EmailProgramViewTable extends Block {
   public void setViewDraftLetter(EmailLetterData letter){
    System.out.println("letter.getBody() = " +letter.getBody());
    // System.out.println("letter.getToEmail() = " +letter.getToEmail());
-    addressInput.setValue(letter.getToEmail());
-    subjectInput.setValue(letter.getSubject());
-    CCInput.setValue(letter.getCCEmail());
-    BCCInput.setValue(letter.getBCCEmail());
-    letterTextArea.setContent(letter.getBody());
+    this.addressInput.setValue(letter.getToEmail());
+    this.subjectInput.setValue(letter.getSubject());
+    this.CCInput.setValue(letter.getCCEmail());
+    this.BCCInput.setValue(letter.getBCCEmail());
+    this.letterTextArea.setContent(letter.getBody());
   }
 
   /** @todo FIX FORWARD A MESSAGE*/
@@ -139,24 +141,24 @@ public class EmailProgramViewTable extends Block {
 
   public void main(IWContext modinfo){
 
-    ccTable.add("Cc: ", 1,1);
-    ccTable.add(CCInput,2,1);
-    ccTable.add(" Bcc:",3,1);
-    ccTable.add(BCCInput,4,1);
-    writeLetterViewTable.mergeCells(2,2,3,2);
-    writeLetterViewTable.mergeCells(2,3,3,3);
-    writeLetterViewTable.mergeCells(1,4,3,4);
-    writeLetterViewTable.mergeCells(1,5,3,5);
-    writeLetterViewTable.add("Address: ",1,2);
-    writeLetterViewTable.add(addressInput,2,2);
-    writeLetterViewTable.add("Subject: ",1,3);
-    writeLetterViewTable.add(subjectInput,2,3);
-    writeLetterViewTable.add(ccTable,1,4);
-    writeLetterViewTable.add(letterTextArea,1,5);
-    writeLetterViewTable.add(sendLetterButton,1,6);
-    writeLetterViewTable.add(saveLetterButton,2,6);
-    writeLetterViewTable.add(editAttachmentsButton,3,6);
+    this.ccTable.add("Cc: ", 1,1);
+    this.ccTable.add(this.CCInput,2,1);
+    this.ccTable.add(" Bcc:",3,1);
+    this.ccTable.add(this.BCCInput,4,1);
+    this.writeLetterViewTable.mergeCells(2,2,3,2);
+    this.writeLetterViewTable.mergeCells(2,3,3,3);
+    this.writeLetterViewTable.mergeCells(1,4,3,4);
+    this.writeLetterViewTable.mergeCells(1,5,3,5);
+    this.writeLetterViewTable.add("Address: ",1,2);
+    this.writeLetterViewTable.add(this.addressInput,2,2);
+    this.writeLetterViewTable.add("Subject: ",1,3);
+    this.writeLetterViewTable.add(this.subjectInput,2,3);
+    this.writeLetterViewTable.add(this.ccTable,1,4);
+    this.writeLetterViewTable.add(this.letterTextArea,1,5);
+    this.writeLetterViewTable.add(this.sendLetterButton,1,6);
+    this.writeLetterViewTable.add(this.saveLetterButton,2,6);
+    this.writeLetterViewTable.add(this.editAttachmentsButton,3,6);
 
-    add(writeLetterViewTable);
+    add(this.writeLetterViewTable);
   }
 }

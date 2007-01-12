@@ -109,8 +109,9 @@ public class CurrencyBusiness {
 		CurrencyHolder holder = null;
 
 		if (rootElement != null) {
-			if (currencyMap == null)
+			if (currencyMap == null) {
 				currencyMap = new HashMap();
+			}
 
 			List currencies = rootElement.getChildren();
 			Iterator iter = currencies.iterator();
@@ -130,10 +131,12 @@ public class CurrencyBusiness {
 					}
 					else if (currencyValues.getName().equalsIgnoreCase(buy_value)) {
 						holder.setBuyValue(Float.parseFloat(TextSoap.findAndReplace(currencyValues.getText(),",", ".")));
-					} else if (currencyValues.getName().equalsIgnoreCase(sell_value))
+					} else if (currencyValues.getName().equalsIgnoreCase(sell_value)) {
 						holder.setSellValue(Float.parseFloat(TextSoap.findAndReplace(currencyValues.getText(),",", ".")));
-					else if (currencyValues.getName().equalsIgnoreCase(middle_value))
+					}
+					else if (currencyValues.getName().equalsIgnoreCase(middle_value)) {
 						holder.setMiddleValue(Float.parseFloat(TextSoap.findAndReplace(currencyValues.getText(),",", ".")));
+					}
 					a++;
 				}
 				holder.setTimestamp(stamp);
@@ -229,7 +232,7 @@ public class CurrencyBusiness {
 			Iterator iter = getCurrencyMap().keySet().iterator();
 			while (iter.hasNext()) {
 //				update = true;
-				holder = (CurrencyHolder) getCurrencyMap().get((String) iter.next());
+				holder = (CurrencyHolder) getCurrencyMap().get(iter.next());
 				currency = (Currency) currencies.get(holder.getCurrencyName());
 				if (currency != null) {
 					values = CurrencyFinder.getCurrencyValue(currency.getID(), currency.getDatasource());
@@ -377,7 +380,7 @@ public class CurrencyBusiness {
 		if (getCurrencyMap() != null) {
 			Iterator iter = getCurrencyMap().keySet().iterator();
 			while (iter.hasNext()) {
-				vector.add((CurrencyHolder) getCurrencyMap().get((String) iter.next()));
+				vector.add(getCurrencyMap().get(iter.next()));
 			}
 			Collections.sort(vector, new CurrencyComparator());
 

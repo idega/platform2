@@ -87,14 +87,14 @@ public class EntryGroups extends Finance {
 	}
 
 	protected void control(IWContext iwc) {
-		if (isAdmin) {
+		if (this.isAdmin) {
 			try {
 				PresentationObject MO = new Text();
-				if (iwc.getParameter(strAction) == null) {
+				if (iwc.getParameter(this.strAction) == null) {
 					MO = getTableOfGroups(iwc);
 				}
-				if (iwc.getParameter(strAction) != null) {
-					String sAct = iwc.getParameter(strAction);
+				if (iwc.getParameter(this.strAction) != null) {
+					String sAct = iwc.getParameter(this.strAction);
 					int iAct = Integer.parseInt(sAct);
 					switch (iAct) {
 						case ACT1:
@@ -124,8 +124,9 @@ public class EntryGroups extends Finance {
 				S.printStackTrace();
 			}
 		}
-		else
+		else {
 			add(getErrorText(localize(LOC_KEY_ACCESS_DENIED, "Access denies")));
+		}
 	}
 
 	protected PresentationObject doSomeThing(IWContext iwc) {
@@ -179,7 +180,7 @@ public class EntryGroups extends Finance {
 		Link Link2 = new Link(getHeader(localize(LOC_KEY_NEW, "New")));
 
 		Link2.addParameter(this.strAction, String.valueOf(this.ACT2));
-		if (isAdmin) {
+		if (this.isAdmin) {
 			LinkTable.add(Link1, 1, 1);
 			LinkTable.add(Link2, 2, 1);
 		}
@@ -240,8 +241,9 @@ public class EntryGroups extends Finance {
 			displayTable.setRowColor(1, getHeaderColor());
 			row++;
 		}
-		else
+		else {
 			displayTable.add(localize(LOC_KEY_NO_GROUPS, "No groups"), 1, row);
+		}
 		return displayTable;
 	}
 
@@ -285,8 +287,9 @@ public class EntryGroups extends Finance {
 				T.setRowColor(1, getHeaderColor());
 				row++;
 			}
-			else
+			else {
 				add(getErrorText(localize(LOC_KEY_IS_EMPTY, "is empty")));
+			}
 		}
 		return T;
 	}
@@ -317,14 +320,14 @@ public class EntryGroups extends Finance {
 		inputTable.setRowColor(1, getHeaderColor());
 		inputTable.mergeCells(1, 1, 2, 1);
 		inputTable.setWidth("100%");
-		inputTable.add(new HiddenInput(strAction, String.valueOf(ACT3)));
+		inputTable.add(new HiddenInput(this.strAction, String.valueOf(this.ACT3)));
 
 		return inputTable;
 	}
 
 	protected Link getGroupLink(String name, Integer id) {
 		Link L = new Link(getText(name));
-		L.addParameter(strAction, ACT4);
+		L.addParameter(this.strAction, this.ACT4);
 		L.addParameter(PARAM_ENTRY_GROUP_ID, id.toString());
 
 		return L;

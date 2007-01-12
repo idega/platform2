@@ -160,8 +160,9 @@ public class ReportItemBMPBean extends com.idega.block.category.data.CategoryEnt
     }
     return S;
     }
-    else
-      return null;
+	else {
+		return null;
+	}
   }
 
   public String[][] getData(){
@@ -176,18 +177,21 @@ public class ReportItemBMPBean extends com.idega.block.category.data.CategoryEnt
           sA[i] = ms(sB[i],",");
       }
     }
-    else
-       System.err.println("data is null");
+	else {
+		System.err.println("data is null");
+	}
     return sA;
   }
   public void setData(String[][] s){
     StringBuffer sb = new StringBuffer();
     for (int i = 0; i < s.length; i++) {
-      if(i!= 0)
-        sb.append(";");
+      if(i!= 0) {
+		sb.append(";");
+	}
       for (int j = 0; j < s[i].length; j++) {
-        if(j != 0)
-          sb.append(",");
+        if(j != 0) {
+			sb.append(",");
+		}
         sb.append(s[i][j]);
       }
     }
@@ -209,8 +213,9 @@ public class ReportItemBMPBean extends com.idega.block.category.data.CategoryEnt
   private String sm(String[] s,String delim){
     StringBuffer sb = new StringBuffer();
     for (int i = 0; i < s.length; i++) {
-      if(i != 0)
-        sb.append(delim);
+      if(i != 0) {
+		sb.append(delim);
+	}
       sb.append(s[i]);
 
     }

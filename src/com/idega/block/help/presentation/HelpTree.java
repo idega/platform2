@@ -69,14 +69,18 @@ public class HelpTree extends Block {
 		link.setURL("#");
 		link.setNoTextObject(true);
 		link.setClassToInstanciate(DisplayHelp.class);
-		if (_titleStyleAttribute != null)
-			link.addParameter(TITLE_STYLE,_titleStyleAttribute);
-		if (_titleStyleClass != null)
-			link.addParameter(TITLE_CLASS,_titleStyleClass);
-		if (_bodyStyleAttribute != null)
-			link.addParameter(BODY_STYLE,_bodyStyleAttribute);
-		if (_bodyStyleClass != null)
-			link.addParameter(BODY_CLASS,_bodyStyleClass);
+		if (this._titleStyleAttribute != null) {
+			link.addParameter(TITLE_STYLE,this._titleStyleAttribute);
+		}
+		if (this._titleStyleClass != null) {
+			link.addParameter(TITLE_CLASS,this._titleStyleClass);
+		}
+		if (this._bodyStyleAttribute != null) {
+			link.addParameter(BODY_STYLE,this._bodyStyleAttribute);
+		}
+		if (this._bodyStyleClass != null) {
+			link.addParameter(BODY_CLASS,this._bodyStyleClass);
+		}
 		tree.setLinkPrototype(link);
 		
 		tree.setTarget(HELP_FRAME);
@@ -167,25 +171,25 @@ public class HelpTree extends Block {
 			top.addChild(other);
 		}
 		else {
-			HelpNode citizenTop = new HelpNode(1,"se.idega.idegaweb.commune","Hjälp - Medborgare");
-			child1 = new HelpNode(2,"se.idega.idegaweb.commune","Ansökan om medborgarkonto");
-			child2 = new HelpNode(3,"se.idega.idegaweb.commune","Medborgarkonto - för dig som inte bor i Nacka");
+			HelpNode citizenTop = new HelpNode(1,"se.idega.idegaweb.commune","Hjï¿½lp - Medborgare");
+			child1 = new HelpNode(2,"se.idega.idegaweb.commune","Ansï¿½kan om medborgarkonto");
+			child2 = new HelpNode(3,"se.idega.idegaweb.commune","Medborgarkonto - fï¿½r dig som inte bor i Nacka");
 			child3 = new HelpNode(4,"se.idega.idegaweb.commune","Min sida");
-			child4 = new HelpNode(5,"se.idega.idegaweb.commune","Mina inställningar");
-			child5 = new HelpNode(6,"se.idega.idegaweb.commune","Skolval - att välja skola");
+			child4 = new HelpNode(5,"se.idega.idegaweb.commune","Mina instï¿½llningar");
+			child5 = new HelpNode(6,"se.idega.idegaweb.commune","Skolval - att vï¿½lja skola");
 			child6 = new HelpNode(7,"se.idega.idegaweb.commune","Byte av skola");
 			child7 = new HelpNode(8,"se.idega.idegaweb.commune","Val av skolbarnsomsorg med barnomsorgscheck");
-			child8 = new HelpNode(9,"se.idega.idegaweb.commune","Ansökan om barnomsorgscheck");
-			child9 = new HelpNode(10,"se.idega.idegaweb.commune","Lämna synpunkter");
+			child8 = new HelpNode(9,"se.idega.idegaweb.commune","Ansï¿½kan om barnomsorgscheck");
+			child9 = new HelpNode(10,"se.idega.idegaweb.commune","Lï¿½mna synpunkter");
 			child10 = new HelpNode(11,"se.idega.idegaweb.commune","Politiskt ansvar");
 			child11 = new HelpNode(12,"se.idega.idegaweb.commune","Ditt val");
-			child12 = new HelpNode(13,"se.idega.idegaweb.commune","Sök på Nacka24");
+			child12 = new HelpNode(13,"se.idega.idegaweb.commune","Sï¿½k pï¿½ Nacka24");
 			child13 = new HelpNode(14,"se.idega.idegaweb.commune","Till nacka.se");
 			child14 = new HelpNode(15,"se.idega.idegaweb.commune","Mina meddelanden");
-			child15 = new HelpNode(16,"se.idega.idegaweb.commune","Mina ärenden");
+			child15 = new HelpNode(16,"se.idega.idegaweb.commune","Mina ï¿½renden");
 			
-			child16 = new HelpNode(21,"se.idega.idegaweb.commune","Updatera dina köalternativ - för dig som står i barnomsorgskö");
-			child17 = new HelpNode(22,"se.idega.idegaweb.commune","Updatera dina köalternativ - för dig som har en barnomsorgsplats");
+			child16 = new HelpNode(21,"se.idega.idegaweb.commune","Updatera dina kï¿½alternativ - fï¿½r dig som stï¿½r i barnomsorgskï¿½");
+			child17 = new HelpNode(22,"se.idega.idegaweb.commune","Updatera dina kï¿½alternativ - fï¿½r dig som har en barnomsorgsplats");
 			child18 = new HelpNode(23,"se.idega.idegaweb.commune","Barnomsorg & Utbildning");
 
 			citizenTop.addChild(child1);
@@ -208,7 +212,7 @@ public class HelpTree extends Block {
 
 //			citizen = new HelpNode(17,"se.idega.idegaweb.commune","Medborgarkonto");
 //			schoolChoice = new HelpNode(18,"se.idega.idegaweb.commune","Skolval");
-//			other = new HelpNode(19,"se.idega.idegaweb.commune","Övrig");
+//			other = new HelpNode(19,"se.idega.idegaweb.commune","ï¿½vrig");
 
 //			citizen.addChild(child1);
 //			citizen.addChild(child2);
@@ -234,14 +238,14 @@ public class HelpTree extends Block {
 			
 			return citizenTop;
 			
-//			top = new HelpNode(20,"se.idega.idegaweb.commune","Hjälp");
+//			top = new HelpNode(20,"se.idega.idegaweb.commune","Hjï¿½lp");
 //			top.addChild(citizenTop);
 			
-//			HelpNode adminTop = new HelpNode(21,"se.idega.idegaweb.commune","Hjälp - Anordnare");
+//			HelpNode adminTop = new HelpNode(21,"se.idega.idegaweb.commune","Hjï¿½lp - Anordnare");
 //			HelpNode adminMyPage = new HelpNode(22,"se.idega.idegaweb.commune","Min sida");
 //			HelpNode adminSchoolGroup = new HelpNode(23,"se.idega.idegaweb.commune","Administrera skolgruppe");
 //			HelpNode adminSchoolChoice = new HelpNode(24,"se.idega.idegaweb.commune","Administrera skolval");
-//			HelpNode adminStudents = new HelpNode(25,"se.idega.idegaweb.commune","Elevöversikt");
+//			HelpNode adminStudents = new HelpNode(25,"se.idega.idegaweb.commune","Elevï¿½versikt");
 //			HelpNode adminLeasureTime = new HelpNode(26,"se.idega.idegaweb.commune","Fritidslista");
 //			
 //			adminTop.addChild(adminMyPage);
@@ -252,12 +256,12 @@ public class HelpTree extends Block {
 //			
 //			top.addChild(adminTop);
 //
-//			HelpNode bunTop = new HelpNode(27,"se.idega.idegaweb.commune","Hjälp - BUN-administratör");
+//			HelpNode bunTop = new HelpNode(27,"se.idega.idegaweb.commune","Hjï¿½lp - BUN-administratï¿½r");
 //			HelpNode bunMyPage = new HelpNode(28,"se.idega.idegaweb.commune","Min sida");
 //			HelpNode bunChecks = new HelpNode(29,"se.idega.idegaweb.commune","Checkhantering");
 //			HelpNode bunCitizen = new HelpNode(30,"se.idega.idegaweb.commune","Medborgarkonto");
 //			HelpNode bunStatistics = new HelpNode(31,"se.idega.idegaweb.commune","Statistik skolval");
-//			HelpNode bunReminder = new HelpNode(32,"se.idega.idegaweb.commune","Påminnelse skolval");
+//			HelpNode bunReminder = new HelpNode(32,"se.idega.idegaweb.commune","Pï¿½minnelse skolval");
 //			
 //			bunTop.addChild(bunMyPage);
 //			bunTop.addChild(bunChecks);
@@ -272,34 +276,34 @@ public class HelpTree extends Block {
 	}
 	
 	public void setTitleStyleAttribute(String styleAttribute) {
-		_titleStyleAttribute = styleAttribute;
+		this._titleStyleAttribute = styleAttribute;
 	}
 	
 	public void setTitleStyleClass(String styleClass) {
-		_titleStyleClass = styleClass;	
+		this._titleStyleClass = styleClass;	
 	}
 	
 	public void setBodyStyleAttribute(String styleAttribute) {
-		_bodyStyleAttribute = styleAttribute;		
+		this._bodyStyleAttribute = styleAttribute;		
 	}
 	
 	public void setBodyStyleClass(String styleClass) {
-		_bodyStyleClass = styleClass;			
+		this._bodyStyleClass = styleClass;			
 	}
 	
 	public void setLinkStyleAttribute(String styleAttribute) {
-		_linkStyleAttribute = styleAttribute;
+		this._linkStyleAttribute = styleAttribute;
 	}
 	
 	public void setLinkStyleClass(String styleClass) {
-		_linkStyleClass = styleClass;			
+		this._linkStyleClass = styleClass;			
 	}
 	
 	public void setSeeAlsoStyleAttribute(String styleAttribute) {
-		_seeAlsoStyleAttribute = styleAttribute;		
+		this._seeAlsoStyleAttribute = styleAttribute;		
 	}
 	
 	public void setSeeAlsoStyleClass(String styleClass) {
-		_seeAlsoStyleClass = styleClass;			
+		this._seeAlsoStyleClass = styleClass;			
 	}		
 }

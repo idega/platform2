@@ -1,6 +1,7 @@
 package com.idega.block.albumcollection.business;
 
 import com.idega.data.EntityFinder;
+import com.idega.data.GenericEntity;
 import com.idega.data.IDOLegacyEntityComparator;
 import com.idega.block.albumcollection.data.*;
 import com.idega.util.IWTimestamp;
@@ -20,7 +21,7 @@ import java.util.Collections;
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:      idega
- * @author <a href="gummi@idega.is">Guðmundur Ágúst Sæmundsson</a>
+ * @author <a href="gummi@idega.is">Guï¿½mundur ï¿½gï¿½st Sï¿½mundsson</a>
  * @version 1.0
  */
 
@@ -139,19 +140,19 @@ public class AlbumCollectionBusiness {
 
 
   public static List getAuthors() throws SQLException{
-    return EntityFinder.findAll(com.idega.block.albumcollection.data.AuthorBMPBean.getStaticInstance(Author.class));
+    return EntityFinder.findAll(GenericEntity.getStaticInstance(Author.class));
   }
 
   public static List getPerformers() throws SQLException{
-    return EntityFinder.findAll(com.idega.block.albumcollection.data.PerformerBMPBean.getStaticInstance(Performer.class));
+    return EntityFinder.findAll(GenericEntity.getStaticInstance(Performer.class));
   }
 
   public static List getCategories() throws SQLException{
-    return EntityFinder.findAll(com.idega.block.albumcollection.data.CategoryBMPBean.getStaticInstance(Category.class));
+    return EntityFinder.findAll(GenericEntity.getStaticInstance(Category.class));
   }
 
   public static List getAlbumTypes() throws SQLException{
-    return EntityFinder.findAll(com.idega.block.albumcollection.data.AlbumTypeBMPBean.getStaticInstance(AlbumType.class));
+    return EntityFinder.findAll(GenericEntity.getStaticInstance(AlbumType.class));
   }
 
   public static Map getAlbumTypeNames() throws SQLException {
@@ -170,7 +171,7 @@ public class AlbumCollectionBusiness {
   }
 
   public static List getAlbums() throws SQLException{
-    return EntityFinder.findAllDescendingOrdered(com.idega.block.albumcollection.data.AlbumBMPBean.getStaticInstance(Album.class),com.idega.block.albumcollection.data.AlbumBMPBean._COLUMNNAME_PUBLISHINGDAY);
+    return EntityFinder.findAllDescendingOrdered(GenericEntity.getStaticInstance(Album.class),com.idega.block.albumcollection.data.AlbumBMPBean._COLUMNNAME_PUBLISHINGDAY);
   }
 
   public static void createAlbum(String name, String description,Integer albumType, IWTimestamp publishingDay, int[] authors, int[] performers, int[] categories, Integer frontCoverId) throws SQLException {
@@ -245,7 +246,7 @@ public class AlbumCollectionBusiness {
 
     album.update();
 
-    album.removeFrom(com.idega.block.albumcollection.data.AuthorBMPBean.getStaticInstance(Author.class));
+    album.removeFrom(GenericEntity.getStaticInstance(Author.class));
 
     if( authors != null){
       for (int i = 0; i < authors.length; i++) {
@@ -253,14 +254,14 @@ public class AlbumCollectionBusiness {
       }
     }
 
-    album.removeFrom(com.idega.block.albumcollection.data.PerformerBMPBean.getStaticInstance(Performer.class));
+    album.removeFrom(GenericEntity.getStaticInstance(Performer.class));
     if( performers != null){
       for (int i = 0; i < performers.length; i++) {
         album.addTo(Performer.class,performers[i]);
       }
     }
 
-    album.removeFrom(com.idega.block.albumcollection.data.CategoryBMPBean.getStaticInstance(Category.class));
+    album.removeFrom(GenericEntity.getStaticInstance(Category.class));
     if( categories != null){
       for (int i = 0; i < categories.length; i++) {
         album.addTo(Category.class,categories[i]);
@@ -360,21 +361,21 @@ public class AlbumCollectionBusiness {
     track.update();
 
 
-    track.removeFrom(com.idega.block.albumcollection.data.AuthorBMPBean.getStaticInstance(Author.class));
+    track.removeFrom(GenericEntity.getStaticInstance(Author.class));
     if( authors != null){
       for (int i = 0; i < authors.length; i++) {
         track.addTo(Author.class,authors[i]);
       }
     }
 
-    track.removeFrom(com.idega.block.albumcollection.data.PerformerBMPBean.getStaticInstance(Performer.class));
+    track.removeFrom(GenericEntity.getStaticInstance(Performer.class));
     if( performers != null){
       for (int i = 0; i < performers.length; i++) {
         track.addTo(Performer.class,performers[i]);
       }
     }
 
-    track.removeFrom(com.idega.block.albumcollection.data.CategoryBMPBean.getStaticInstance(Category.class));
+    track.removeFrom(GenericEntity.getStaticInstance(Category.class));
     if( categories != null){
       for (int i = 0; i < categories.length; i++) {
         track.addTo(Category.class,categories[i]);
@@ -432,7 +433,7 @@ public class AlbumCollectionBusiness {
 
     acLyric.update();
 
-    acLyric.removeFrom(com.idega.block.albumcollection.data.AuthorBMPBean.getStaticInstance(Author.class));
+    acLyric.removeFrom(GenericEntity.getStaticInstance(Author.class));
     if( authors != null){
       for (int i = 0; i < authors.length; i++) {
         acLyric.addTo(Author.class,authors[i]);
@@ -485,11 +486,11 @@ public class AlbumCollectionBusiness {
   }
 
   public static List getTracks(int albumId) throws SQLException {
-    return EntityFinder.findAllByColumnOrdered(com.idega.block.albumcollection.data.TrackBMPBean.getStaticInstance(Track.class),com.idega.block.albumcollection.data.TrackBMPBean._COLUMNNAME_ALBUM_ID,Integer.toString(albumId), com.idega.block.albumcollection.data.TrackBMPBean._COLUMNNAME_NUMBER);
+    return EntityFinder.findAllByColumnOrdered(GenericEntity.getStaticInstance(Track.class),com.idega.block.albumcollection.data.TrackBMPBean._COLUMNNAME_ALBUM_ID,Integer.toString(albumId), com.idega.block.albumcollection.data.TrackBMPBean._COLUMNNAME_NUMBER);
   }
 
   public static List getLyrics() throws SQLException {
-    List l = EntityFinder.findAllOrdered(com.idega.block.albumcollection.data.LyricBMPBean.getStaticInstance(Lyric.class),com.idega.block.albumcollection.data.LyricBMPBean._COLUMNNAME_NAME);
+    List l = EntityFinder.findAllOrdered(GenericEntity.getStaticInstance(Lyric.class),com.idega.block.albumcollection.data.LyricBMPBean._COLUMNNAME_NAME);
     if(l != null){
       Collections.sort(l,new IDOLegacyEntityComparator(com.idega.block.albumcollection.data.LyricBMPBean._COLUMNNAME_NAME));
     }
@@ -516,7 +517,7 @@ public class AlbumCollectionBusiness {
 
   public static List getTracksRelatedToLyric(int lyricId){
     try {
-      return EntityFinder.findAllByColumn(com.idega.block.albumcollection.data.TrackBMPBean.getStaticInstance(Track.class),com.idega.block.albumcollection.data.TrackBMPBean._COLUMNNAME_LYRIC_ID,lyricId);
+      return EntityFinder.findAllByColumn(GenericEntity.getStaticInstance(Track.class),com.idega.block.albumcollection.data.TrackBMPBean._COLUMNNAME_LYRIC_ID,lyricId);
     }
     catch (SQLException ex) {
       return null;
@@ -527,9 +528,9 @@ public class AlbumCollectionBusiness {
     try {
       Album album = ((com.idega.block.albumcollection.data.AlbumHome)com.idega.data.IDOLookup.getHomeLegacy(Album.class)).findByPrimaryKeyLegacy(albumId);
 
-      album.removeFrom(com.idega.block.albumcollection.data.AuthorBMPBean.getStaticInstance(Author.class));
-      album.removeFrom(com.idega.block.albumcollection.data.PerformerBMPBean.getStaticInstance(Performer.class));
-      album.removeFrom(com.idega.block.albumcollection.data.CategoryBMPBean.getStaticInstance(Category.class));
+      album.removeFrom(GenericEntity.getStaticInstance(Author.class));
+      album.removeFrom(GenericEntity.getStaticInstance(Performer.class));
+      album.removeFrom(GenericEntity.getStaticInstance(Category.class));
 
       List tracks = getTracks(album.getID());
       if(tracks != null){
@@ -557,7 +558,7 @@ public class AlbumCollectionBusiness {
     try {
       Lyric lyric = ((com.idega.block.albumcollection.data.LyricHome)com.idega.data.IDOLookup.getHomeLegacy(Lyric.class)).findByPrimaryKeyLegacy(lyricId);
 
-      lyric.removeFrom(com.idega.block.albumcollection.data.AuthorBMPBean.getStaticInstance(Author.class));
+      lyric.removeFrom(GenericEntity.getStaticInstance(Author.class));
 
       List tracks = getTracksRelatedToLyric(lyric.getID());
       if(tracks != null){
@@ -588,9 +589,9 @@ public class AlbumCollectionBusiness {
   public static void deleteTrack(Track track) {
     try {
 
-      track.removeFrom(com.idega.block.albumcollection.data.AuthorBMPBean.getStaticInstance(Author.class));
-      track.removeFrom(com.idega.block.albumcollection.data.PerformerBMPBean.getStaticInstance(Performer.class));
-      track.removeFrom(com.idega.block.albumcollection.data.CategoryBMPBean.getStaticInstance(Category.class));
+      track.removeFrom(GenericEntity.getStaticInstance(Author.class));
+      track.removeFrom(GenericEntity.getStaticInstance(Performer.class));
+      track.removeFrom(GenericEntity.getStaticInstance(Category.class));
 
       track.delete();
     }

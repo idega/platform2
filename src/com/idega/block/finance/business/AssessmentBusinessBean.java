@@ -267,8 +267,9 @@ public class AssessmentBusinessBean extends IBOServiceBean implements Assessment
 			for (int i = 0; i < tariffIds.length; i++) {
 				tariff = home.findByPrimaryKey((tariffIds[i]));
 				tariffs.add(tariff);
-				if (useFactors)
+				if (useFactors) {
 					factors.add(multiplyFactors[i]);
+				}
 			}
 
 			assessTariffsToAccount(tariffs, factors, accountID, paydate, discount, tariffGroupID, financeCategoryID,
@@ -286,10 +287,12 @@ public class AssessmentBusinessBean extends IBOServiceBean implements Assessment
 		try {
 			transaction.begin();
 			AssessmentRound AR = null;
-			if (assessmentRound != null && assessmentRound.intValue() > 0)
+			if (assessmentRound != null && assessmentRound.intValue() > 0) {
 				AR = ((AssessmentRoundHome) IDOLookup.getHome(AssessmentRound.class)).create();
-			else
+			}
+			else {
 				AR = createAssessmentRound(accountID, tariffGroupID, financeCategoryID, (java.sql.Date) paydate);
+			}
 
 			Integer roundID = ((Integer) AR.getPrimaryKey());
 			createAccountEntries(tariffs, multiplyFactors, accountID, paydate, discount, roundID, externalID);
@@ -316,8 +319,9 @@ public class AssessmentBusinessBean extends IBOServiceBean implements Assessment
 			tariff = (Tariff) tariffs.get(i);
 			float price = tariff.getPrice();
 			String info = tariff.getInfo();
-			if (info == null)
+			if (info == null) {
 				info = "";
+			}
 			if (factors != null) {
 				factor = (Double) factors.get(i);
 				info += "[ " + factor + " x " + price + "] ";
@@ -330,9 +334,10 @@ public class AssessmentBusinessBean extends IBOServiceBean implements Assessment
 				// System.out.println(" whith discount "+discount+"% "+price);
 				info += "(" + discount + " %)";
 			}
-			if (price > 0)
+			if (price > 0) {
 				createAccountEntry(accountID, new Integer(tariff.getAccountKeyId()), new Integer(1), roundID, price, 0,
 						price, paydate, tariff.getName(), info, "C", externalID);
+			}
 		}
 	}
 

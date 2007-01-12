@@ -29,6 +29,7 @@ import com.idega.core.location.data.Address;
 import com.idega.core.location.data.AddressHome;
 import com.idega.core.location.data.AddressType;
 import com.idega.core.location.data.AddressTypeHome;
+import com.idega.data.GenericEntity;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWUserContext;
@@ -624,7 +625,9 @@ public class SupplierManagerBusinessBean extends IBOServiceBean  implements Supp
 	private Supplier createSupplier(int supplierId,String name, String userName, String password, String description, int[] addressIds, int[] phoneIds, int[] emailIds, String organizationID, int fileID) throws Exception {
 		try {
 			boolean isUpdate = false;
-			if (supplierId != -1) isUpdate = true;
+			if (supplierId != -1) {
+				isUpdate = true;
+			}
 			
 			if (isUpdate) {
 				Supplier supp = ((com.idega.block.trade.stockroom.data.SupplierHome)com.idega.data.IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(supplierId);
@@ -640,17 +643,17 @@ public class SupplierManagerBusinessBean extends IBOServiceBean  implements Supp
 				}
 				supp.store();
 				
-				supp.removeFrom(com.idega.core.location.data.AddressBMPBean.getStaticInstance(Address.class));
+				supp.removeFrom(GenericEntity.getStaticInstance(Address.class));
 				for (int i = 0; i < addressIds.length; i++) {
 					supp.addTo(Address.class, addressIds[i]);
 				}
 				
-				supp.removeFrom(com.idega.core.contact.data.PhoneBMPBean.getStaticInstance(Phone.class));
+				supp.removeFrom(GenericEntity.getStaticInstance(Phone.class));
 				for (int i = 0; i < phoneIds.length; i++) {
 					supp.addTo(Phone.class, phoneIds[i]);
 				}
 				
-				supp.removeFrom(com.idega.core.contact.data.EmailBMPBean.getStaticInstance(Email.class));
+				supp.removeFrom(GenericEntity.getStaticInstance(Email.class));
 				for (int i = 0; i < emailIds.length; i++) {
 					supp.addTo(Email.class, emailIds[i]);
 				}
@@ -838,8 +841,9 @@ public class SupplierManagerBusinessBean extends IBOServiceBean  implements Supp
 	public void addUser(Supplier supplier, User user, boolean addToPermissionGroup) throws FinderException, RemoteException{
 		Group pGroup = getPermissionGroup(supplier);
 		SupplierStaffGroup sGroup = getSupplierStaffGroup(supplier);
-		if (addToPermissionGroup)
+		if (addToPermissionGroup) {
 			pGroup.addGroup(user);
+		}
 //		pGroup.addUser(user);
 		((Group) sGroup).addGroup(user);
 	}
@@ -861,15 +865,16 @@ public class SupplierManagerBusinessBean extends IBOServiceBean  implements Supp
 		List allUsers = getUsers(supplier);
 		List permUsers = getUsersInPermissionGroup(supplier);
 		
-		if (permUsers != null)
+		if (permUsers != null) {
 			allUsers.removeAll(permUsers);
+		}
 		
 		return allUsers;
 	}
 	
 	public List getUsers(Supplier supplier) throws RemoteException, FinderException{
 		SupplierStaffGroup sGroup = getSupplierStaffGroup(supplier);
-		Collection coll = getUserBusiness().getUsersInGroup((Group) sGroup);
+		Collection coll = getUserBusiness().getUsersInGroup(sGroup);
 		List users = new Vector(coll);
 		if (users != null) {
 			java.util.Collections.sort(users, new com.idega.util.GenericUserComparator(com.idega.util.GenericUserComparator.NAME));
@@ -916,12 +921,15 @@ public class SupplierManagerBusinessBean extends IBOServiceBean  implements Supp
 	public List getUsersIncludingResellers(Supplier supplier, Object objBetweenResellers) throws RemoteException, FinderException {
 		List users = getUsers(supplier);
 		List temp;
-		if (users == null) users = com.idega.util.ListUtil.getEmptyList();
+		if (users == null) {
+			users = com.idega.util.ListUtil.getEmptyList();
+		}
 		Iterator resellers = getResellerManager().getResellers(supplier, com.idega.block.trade.stockroom.data.ResellerBMPBean.getColumnNameName());
 		while (resellers.hasNext()) {
 			temp = getResellerManager().getUsersIncludingSubResellers((Reseller)resellers.next(), objBetweenResellers);
-			if (temp != null)
+			if (temp != null) {
 				users.addAll(temp);
+			}
 		}
 		return users;
 	}
@@ -932,7 +940,9 @@ public class SupplierManagerBusinessBean extends IBOServiceBean  implements Supp
 			users = getUsers(supplier);
 		}
 		List temp;
-		if (users == null) users = com.idega.util.ListUtil.getEmptyList();
+		if (users == null) {
+			users = com.idega.util.ListUtil.getEmptyList();
+		}
 		Iterator resellers = getResellerManager().getResellers(supplier, com.idega.block.trade.stockroom.data.ResellerBMPBean.getColumnNameName());
 		while (resellers.hasNext()) {
 			temp = getResellerManager().getUsers((Reseller)resellers.next());

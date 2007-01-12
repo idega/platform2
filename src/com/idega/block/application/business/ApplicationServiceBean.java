@@ -62,8 +62,9 @@ public class ApplicationServiceBean extends IBOServiceBean implements Applicatio
 			}
 			subject.setExpires(expires);
 			subject.setDescription(sName);
-			if(extra!=null)
+			if(extra!=null) {
 				subject.setExtraAttribute(extra);
+			}
 			subject.store();
 
 			return subject;

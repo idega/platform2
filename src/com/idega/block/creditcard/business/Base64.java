@@ -82,13 +82,13 @@ public class Base64
       int outputLength = ((b.length + 2) / 3) * 4;
 
       // account for trailing newlines, on all but the very last line
-      if ( lineLength != 0 )
+      if ( this.lineLength != 0 )
          {
-         int lines =  ( outputLength + lineLength -1 ) / lineLength - 1;
+         int lines =  ( outputLength + this.lineLength -1 ) / this.lineLength - 1;
          if ( lines > 0 )
             {
 
-            outputLength += lines  * lineSeparator.length();
+            outputLength += lines  * this.lineSeparator.length();
             }
          }
 
@@ -107,11 +107,11 @@ public class Base64
          // We can't encapsulete the following code since the variable need to
          // be local to this incarnation of encode.
          linePos += 4;
-         if ( linePos > lineLength )
+         if ( linePos > this.lineLength )
             {
-            if ( lineLength != 0 )
+            if ( this.lineLength != 0 )
                {
-               sb.append(lineSeparator);
+               sb.append(this.lineSeparator);
                }
             linePos = 4;
             }
@@ -154,12 +154,12 @@ public class Base64
             // One leftover byte generates xx==
             // Start a new line if next 4 chars won't fit on the current line
             linePos += 4;
-            if ( linePos > lineLength )
+            if ( linePos > this.lineLength )
                {
 
-               if ( lineLength != 0 )
+               if ( this.lineLength != 0 )
                   {
-                  sb.append(lineSeparator);
+                  sb.append(this.lineSeparator);
                   }
                linePos = 4;
                }
@@ -175,11 +175,11 @@ public class Base64
             // Two leftover bytes generates xxx=
             // Start a new line if next 4 chars won't fit on the current line
             linePos += 4;
-            if ( linePos > lineLength )
+            if ( linePos > this.lineLength )
                {
-               if ( lineLength != 0 )
+               if ( this.lineLength != 0 )
                   {
-                  sb.append(lineSeparator);
+                  sb.append(this.lineSeparator);
                   }
                linePos = 4;
                }
@@ -341,14 +341,17 @@ public class Base64
    {
       // build translate valueToChar table only once.
       // 0..25 -> 'A'..'Z'
-      for ( int i=0; i<=25; i++ )
-         valueToChar[i] = (char)('A'+i);
+      for ( int i=0; i<=25; i++ ) {
+		valueToChar[i] = (char)('A'+i);
+	}
       // 26..51 -> 'a'..'z'
-      for ( int i=0; i<=25; i++ )
-         valueToChar[i+26] = (char)('a'+i);
+      for ( int i=0; i<=25; i++ ) {
+		valueToChar[i+26] = (char)('a'+i);
+	}
       // 52..61 -> '0'..'9'
-      for ( int i=0; i<=9; i++ )
-         valueToChar[i+52] = (char)('0'+i);
+      for ( int i=0; i<=9; i++ ) {
+		valueToChar[i+52] = (char)('0'+i);
+	}
       valueToChar[62] = '+';
       valueToChar[63] = '/';
 

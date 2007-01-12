@@ -145,11 +145,13 @@ public class AccountBusinessBean extends IBOServiceBean implements
 			Hashtable H = new Hashtable(len);
 			for (Iterator iter = L.iterator(); iter.hasNext();) {
 				AccountKey AK = (AccountKey) iter.next();
-				H.put((Integer) AK.getPrimaryKey(), AK);
+				H.put(AK.getPrimaryKey(), AK);
 			}
 			return H;
-		} else
+		}
+		else {
 			return null;
+		}
 	}
 
 	public Map getTariffKeyMap() {
@@ -159,11 +161,13 @@ public class AccountBusinessBean extends IBOServiceBean implements
 			Hashtable H = new Hashtable(len);
 			for (Iterator iter = L.iterator(); iter.hasNext();) {
 				TariffKey AK = (TariffKey) iter.next();
-				H.put((Integer) (AK.getPrimaryKey()), AK);
+				H.put((AK.getPrimaryKey()), AK);
 			}
 			return H;
-		} else
+		}
+		else {
 			return null;
+		}
 	}
 
 	public Collection getKeySortedAccountEntries(int iAccountId,
@@ -197,10 +201,14 @@ public class AccountBusinessBean extends IBOServiceBean implements
 				}
 				Vector V = new Vector(hash.values());
 				return V;
-			} else
+			}
+			else {
 				return null;
-		} else
+			}
+		}
+		else {
 			return null;
+		}
 	}
 
 	public Account createNewAccount(int iUserId, String sName, String sExtra,

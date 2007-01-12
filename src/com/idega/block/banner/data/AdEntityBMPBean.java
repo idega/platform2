@@ -11,7 +11,9 @@ import java.sql.Timestamp;
 import java.util.Collection;
 
 import com.idega.core.file.data.ICFile;
+import com.idega.data.GenericEntity;
 import com.idega.data.IDORelationshipException;
+import com.idega.user.data.UserBMPBean;
 
 
 
@@ -79,7 +81,7 @@ public class AdEntityBMPBean extends com.idega.data.GenericEntity implements com
 
 	public static String getColumnNameAdID() { return "BA_AD_ID"; }
 
-  public static String getColumnNameUserID(){ return com.idega.core.user.data.UserBMPBean.getColumnNameUserID();}
+  public static String getColumnNameUserID(){ return UserBMPBean.getColumnNameUserID();}
 
 	public static String getColumnNameAdName() { return "NAME"; }
 
@@ -271,9 +273,9 @@ public class AdEntityBMPBean extends com.idega.data.GenericEntity implements com
 
   public void delete() throws SQLException {
 
-    removeFrom(com.idega.core.file.data.ICFileBMPBean.getStaticInstance(ICFile.class));
+    removeFrom(GenericEntity.getStaticInstance(ICFile.class));
 
-    removeFrom(com.idega.block.banner.data.BannerEntityBMPBean.getStaticInstance(BannerEntity.class));
+    removeFrom(GenericEntity.getStaticInstance(BannerEntity.class));
 
     super.delete();
 

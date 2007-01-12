@@ -32,7 +32,7 @@ public class ReportDesign {
 	 */
 	public ReportDesign(ReportDesignFile design) throws JRException, IOException {
 		InputStream inputStream = design.getFileValue();
-		_design = JasperManager.loadXmlDesign(inputStream);
+		this._design = JasperManager.loadXmlDesign(inputStream);
 		inputStream.close();
 	}
 

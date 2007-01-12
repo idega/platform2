@@ -41,27 +41,27 @@ public class QueryOrderConditionPart implements QueryPart {
 		
 	
 	public QueryOrderConditionPart(XMLElement xml){
-		entity = xml.getAttribute(QueryXMLConstants.ENTITY).getValue();
-		path = xml.getAttribute(QueryXMLConstants.PATH).getValue();
-		field = xml.getAttribute(QueryXMLConstants.FIELD).getValue();
+		this.entity = xml.getAttribute(QueryXMLConstants.ENTITY).getValue();
+		this.path = xml.getAttribute(QueryXMLConstants.PATH).getValue();
+		this.field = xml.getAttribute(QueryXMLConstants.FIELD).getValue();
 		if(xml.hasChildren()){
 			XMLElement xmlOrderType = xml.getChild(QueryXMLConstants.ORDER_TYPE);
-			orderType = xmlOrderType.getTextTrim();
+			this.orderType = xmlOrderType.getTextTrim();
 			XMLElement xmlPattern = xml.getChild(QueryXMLConstants.ORDER_PRIORITY);
-			orderPriority =Integer.parseInt(xmlPattern.getTextTrim());
+			this.orderPriority =Integer.parseInt(xmlPattern.getTextTrim());
 		}
 	}
 
 	public XMLElement getQueryElement()	{
 		XMLElement el = new XMLElement(QueryXMLConstants.ORDER_CONDITION);
-		el.setAttribute(QueryXMLConstants.ENTITY,entity);
-		el.setAttribute(QueryXMLConstants.PATH, path);
-		el.setAttribute(QueryXMLConstants.FIELD,field);
+		el.setAttribute(QueryXMLConstants.ENTITY,this.entity);
+		el.setAttribute(QueryXMLConstants.PATH, this.path);
+		el.setAttribute(QueryXMLConstants.FIELD,this.field);
 		XMLElement xmlOrderType = new XMLElement(QueryXMLConstants.ORDER_TYPE);
-		xmlOrderType.addContent(orderType);
+		xmlOrderType.addContent(this.orderType);
 		el.addContent(xmlOrderType);
 		XMLElement xmlPriority = new XMLElement(QueryXMLConstants.ORDER_PRIORITY);
-		xmlPriority.addContent(Integer.toString(orderPriority));
+		xmlPriority.addContent(Integer.toString(this.orderPriority));
 		el.addContent(xmlPriority);
 		return el;
 	}
@@ -74,11 +74,11 @@ public class QueryOrderConditionPart implements QueryPart {
 	 */
 	public String encode(){
 		StringBuffer buffer = new StringBuffer();
-		buffer.append(entity).append(';');
-		buffer.append(path).append(';');
-		buffer.append(field).append(';');
-		buffer.append(orderType).append(';');
-		buffer.append(orderPriority);
+		buffer.append(this.entity).append(';');
+		buffer.append(this.path).append(';');
+		buffer.append(this.field).append(';');
+		buffer.append(this.orderType).append(';');
+		buffer.append(this.orderPriority);
 		return buffer.toString();
 	}
 
@@ -100,7 +100,7 @@ public class QueryOrderConditionPart implements QueryPart {
 	
 	/** Returns true, if the type is not set to descendant else false, that is ascendant is the default value */
 	public boolean isAscendant()	{
-		return ! QueryXMLConstants.TYPE_DESCENDANT.equalsIgnoreCase(orderType);
+		return ! QueryXMLConstants.TYPE_DESCENDANT.equalsIgnoreCase(this.orderType);
 	}
 	
 	public boolean isDescendant()	{
@@ -108,7 +108,7 @@ public class QueryOrderConditionPart implements QueryPart {
 	}
 	
 	public void setAscendant(boolean isAscendant)	{
-		orderType = (isAscendant) ? QueryXMLConstants.TYPE_ASCENDANT : QueryXMLConstants.TYPE_DESCENDANT;
+		this.orderType = (isAscendant) ? QueryXMLConstants.TYPE_ASCENDANT : QueryXMLConstants.TYPE_DESCENDANT;
 	}
 	
 	public void setDescendant(boolean isDescendant)	{
@@ -116,7 +116,7 @@ public class QueryOrderConditionPart implements QueryPart {
 	}
 	
 	public int getOrderPriority()	{
-		return orderPriority;
+		return this.orderPriority;
 	}
 	
 	public void setOrderPriority(int orderPriority)	{
@@ -124,7 +124,7 @@ public class QueryOrderConditionPart implements QueryPart {
 	}
 		
 	public String getEntity()	{
-		return entity;
+		return this.entity;
 	}
 	
 	
@@ -147,10 +147,10 @@ public class QueryOrderConditionPart implements QueryPart {
 	
  // for use in comparators
   public int compare(QueryOrderConditionPart part) {
-  	if (part.orderPriority < orderPriority) {
+  	if (part.orderPriority < this.orderPriority) {
   		return 1;
   	}
-  	else if (part.orderPriority > orderPriority) {
+  	else if (part.orderPriority > this.orderPriority) {
   		return -1;
   	}
   	return 0;

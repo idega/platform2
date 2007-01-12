@@ -40,9 +40,9 @@ private IWResourceBundle iwrb;
 
     public void main(IWContext iwc) throws Exception{
       super.main(iwc);
-      iwrb = getResourceBundle(iwc);
-      iwb = getBundle(iwc);
-      fileInSessionParameter = MediaBusiness.getMediaParameterNameInSession(iwc);
+      this.iwrb = getResourceBundle(iwc);
+      this.iwb = getBundle(iwc);
+      this.fileInSessionParameter = MediaBusiness.getMediaParameterNameInSession(iwc);
       handleEvents(iwc);
     }
 
@@ -66,8 +66,9 @@ private IWResourceBundle iwrb;
 			   String name = mediaProps.getName();
 			   java.net.FileNameMap fileNameMap = java.net.URLConnection.getFileNameMap();
 			   String mime = fileNameMap.getContentTypeFor(name);
-			   if(mime!=null)
-				   mediaProps.setMimeType(mime);
+			   if(mime!=null) {
+				mediaProps.setMimeType(mime);
+			}
 			}
             // added by aron, or else the missingmimeTypeException is never thrown otherwise than runtime exception
            
@@ -77,10 +78,10 @@ private IWResourceBundle iwrb;
           }
           catch (MissingMimeTypeException ex) {
               StringBuffer text = new StringBuffer();
-              text.append(iwrb.getLocalizedString("uploader.window.nomimetype.firsthalf","The mimetype"));
+              text.append(this.iwrb.getLocalizedString("uploader.window.nomimetype.firsthalf","The mimetype"));
               text.append(" ");
               text.append(mediaProps.getMimeType());
-              text.append(iwrb.getLocalizedString("uploader.window.nomimetype.secondhalf"," is not in the database."));
+              text.append(this.iwrb.getLocalizedString("uploader.window.nomimetype.secondhalf"," is not in the database."));
               add(text.toString());
               addBreak();
               add(new MimeTypeWindow(mediaProps.getMimeType()));
@@ -88,7 +89,7 @@ private IWResourceBundle iwrb;
         }
         //upload failed try again
         else{
-          add(iwrb.getLocalizedString("uploader.window.select","You must select something to upload first"));
+          add(this.iwrb.getLocalizedString("uploader.window.select","You must select something to upload first"));
           add(getMultiPartUploaderForm(iwc));
         }
 
@@ -108,7 +109,7 @@ private IWResourceBundle iwrb;
             if( MediaConstants.MEDIA_ACTION_SAVE.equals(action)  ){
               setOnLoad("parent.frames['"+MediaConstants.TARGET_MEDIA_TREE+"'].location.reload()");
               int pId = -1;
-              String parentId = iwc.getParameter(fileInSessionParameter);
+              String parentId = iwc.getParameter(this.fileInSessionParameter);
 
               if(parentId!=null){
                 pId = Integer.parseInt(parentId);
@@ -158,7 +159,7 @@ private IWResourceBundle iwrb;
     table.setVerticalAlignment(1,2,Table.VERTICAL_ALIGN_TOP);
     table.setVerticalAlignment(1,3,Table.VERTICAL_ALIGN_TOP);
 
-    Text select = new Text(iwrb.getLocalizedString("me.uploadtext","Select a file to upload."));
+    Text select = new Text(this.iwrb.getLocalizedString("me.uploadtext","Select a file to upload."));
     select.setFontFace(Text.FONT_FACE_ARIAL);
     select.setFontSize(Text.FONT_SIZE_10_HTML_2);
     select.setBold();
@@ -173,9 +174,11 @@ private IWResourceBundle iwrb;
     f.setClassToInstanciateAndSendTo(this.getClass(),iwc);
 	
 	table.add(new FileInput(),1,3);
-    table.add(new SubmitButton(iwrb.getLocalizedString("me.submit","Submit")),1,3);
-    String parentId = iwc.getParameter(fileInSessionParameter);
-    if( parentId!=null ) table.add(new HiddenInput(fileInSessionParameter,parentId),1,3);
+    table.add(new SubmitButton(this.iwrb.getLocalizedString("me.submit","Submit")),1,3);
+    String parentId = iwc.getParameter(this.fileInSessionParameter);
+    if( parentId!=null ) {
+		table.add(new HiddenInput(this.fileInSessionParameter,parentId),1,3);
+	}
  
     f.add(table);
 

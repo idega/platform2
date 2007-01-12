@@ -101,7 +101,7 @@ public class ReportFileWindow extends Window implements Reports{
 //  }
 
   private PresentationObject getLinkTable(){
-    Link L = new Link(iwrb.getLocalizedString("close","Close"));
+    Link L = new Link(this.iwrb.getLocalizedString("close","Close"));
     L.setFontStyle("text-decoration: none");
     L.setFontColor("#FFFFFF");
     L.setBold();

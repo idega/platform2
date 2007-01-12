@@ -79,11 +79,11 @@ public class WebSearchBundleStarter implements IWBundleStartable, ActionListener
 			}
 		}
 
-		timer = new EventTimer(EventTimer.THREAD_SLEEP_24_HOURS, IW_WEB_SEARCHER);
-		timer.addActionListener(this);
+		this.timer = new EventTimer(EventTimer.THREAD_SLEEP_24_HOURS, IW_WEB_SEARCHER);
+		this.timer.addActionListener(this);
 		//Starts the thread while waiting for 10 mins. before the idegaWebApp
 		// starts up.
-		timer.start(10 * 60 * 1000);
+		this.timer.start(10 * 60 * 1000);
 	}
 
 	public String getBundleIdentifier() {
@@ -110,9 +110,9 @@ public class WebSearchBundleStarter implements IWBundleStartable, ActionListener
 	 * @see com.idega.idegaweb.IWBundleStartable#stop(IWBundle)
 	 */
 	public void stop(IWBundle starterBundle) {
-		if (timer != null) {
-			timer.stop();
-			timer = null;
+		if (this.timer != null) {
+			this.timer.stop();
+			this.timer = null;
 		}
 	}
 }

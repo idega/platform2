@@ -40,7 +40,7 @@ public class EmailProgramWholePresentation extends Block {
 
   public void eventController(IWContext modinfo) throws SQLException{
 
-    //Maybe it´s better to do an for-loop here and use the numbers to do a switch instead of if-sentances
+    //Maybe itï¿½s better to do an for-loop here and use the numbers to do a switch instead of if-sentances
     //MailingListBusiness.addInboxData("rend mig i roven", "blablaablabal", "bjv@stones.com", "gimmi@mofo.com", "addsfaafCC");
 
     //Edit chosen mailinglist
@@ -69,15 +69,15 @@ public class EmailProgramWholePresentation extends Block {
       switch (currentOpenWindow) {
         //this mailinglist
         case 1:
-          MailingListBusiness.updateMailinglistBusiness(modinfo, modinfo.getParameter(MailinglistSettingsTable.nameInputName),
-                     modinfo.getParameter(MailinglistSettingsTable.emailInputName), modinfo.getParameter(MailinglistSettingsTable.pop3HostInputName));
+          MailingListBusiness.updateMailinglistBusiness(modinfo, modinfo.getParameter(AccountSettingsTable.nameInputName),
+                     modinfo.getParameter(AccountSettingsTable.emailInputName), modinfo.getParameter(AccountSettingsTable.pop3HostInputName));
           break;
         //this users settings
         case 2:
           break;
         //a new mailinglist
-        case 3:  MailingListBusiness.addMailinglistBusiness(modinfo, modinfo.getParameter(MailinglistSettingsTable.nameInputName),
-                     modinfo.getParameter(MailinglistSettingsTable.emailInputName), modinfo.getParameter(MailinglistSettingsTable.pop3HostInputName));
+        case 3:  MailingListBusiness.addMailinglistBusiness(modinfo, modinfo.getParameter(AccountSettingsTable.nameInputName),
+                     modinfo.getParameter(AccountSettingsTable.emailInputName), modinfo.getParameter(AccountSettingsTable.pop3HostInputName));
           break;
       }
     }
@@ -97,7 +97,7 @@ public class EmailProgramWholePresentation extends Block {
     //Delete Drafts/Inbox/Sent
     else if (modinfo.isParameterSet(EmailProgramListLetterTable.deleteButtonName)){
       String[] checkedBoxes;
-      checkedBoxes = (String[]) modinfo.getParameterValues(EmailProgramListLetterTable.checkBoxName);
+      checkedBoxes = modinfo.getParameterValues(EmailProgramListLetterTable.checkBoxName);
       if (currentOpenWindow == 6) {
         try {
           EmailServiceHandler.removeMessages(modinfo, checkedBoxes);
@@ -155,7 +155,9 @@ public class EmailProgramWholePresentation extends Block {
     else if (modinfo.isParameterSet(EmailProgramViewTable.saveLetterButtonName)){
       if (currentOpenLetterID != -1) {
         EmailLetterData letter = ((com.idega.block.mailinglist.data.EmailLetterDataHome)com.idega.data.IDOLookup.getHomeLegacy(EmailLetterData.class)).findByPrimaryKeyLegacy(currentOpenLetterID);
-        if (letter.getHasSent()) currentOpenLetterID = -1;
+        if (letter.getHasSent()) {
+			currentOpenLetterID = -1;
+		}
         System.out.println("!!!! SAVE letter.getHasSent() = " +letter.getHasSent()+" 1 STIG");
       }
       currentOpenLetterID = MailingListBusiness.addEmailLetterDataBusiness( modinfo.getParameter(EmailProgramViewTable.subjectInputName),
@@ -300,32 +302,32 @@ public class EmailProgramWholePresentation extends Block {
   }
 
   public void setProperty(String propertyName, String[] propertyValues){
-    usesProperties = true;
+    this.usesProperties = true;
     if (propertyName.equalsIgnoreCase("windowPart")) {
       if ((propertyValues.length == 1) && (propertyValues[0].equalsIgnoreCase("sideMenu"))) {
-        chosenProperty = 1;
+        this.chosenProperty = 1;
       }
       else if ((propertyValues.length == 1) && (propertyValues[0].equalsIgnoreCase("topMenu"))) {
-        chosenProperty = 2;
+        this.chosenProperty = 2;
       }
       else if ((propertyValues.length == 1) && (propertyValues[0].equalsIgnoreCase("viewWindow"))) {
-        chosenProperty = 3;
+        this.chosenProperty = 3;
       }
     }
   }
 
   public void setProperty(String propertyName, String propertyValue){
-    usesProperties = true;
+    this.usesProperties = true;
   //  System.err.println("!!! propertyName = "+propertyName);
     if (propertyName.equalsIgnoreCase("windowPart")) {
       if (propertyValue.equalsIgnoreCase("sideMenu")) {
-        chosenProperty = 1;
+        this.chosenProperty = 1;
       }
       else if (propertyValue.equalsIgnoreCase("topMenu")) {
-        chosenProperty = 2;
+        this.chosenProperty = 2;
       }
       else if (propertyValue.equalsIgnoreCase("viewWindow")) {
-        chosenProperty = 3;
+        this.chosenProperty = 3;
       }
     }
   }
@@ -347,14 +349,14 @@ public class EmailProgramWholePresentation extends Block {
   }
 
   public void main(IWContext modinfo) throws SQLException{
-    if (usesProperties) {
-      if (chosenProperty == 1) {
+    if (this.usesProperties) {
+      if (this.chosenProperty == 1) {
         setSideMenu(modinfo);
       }
-      else if (chosenProperty == 2) {
+      else if (this.chosenProperty == 2) {
         setTopMenu();
       }
-      else if (chosenProperty == 3) {
+      else if (this.chosenProperty == 3) {
         setViewWindow(modinfo);
       }
     }

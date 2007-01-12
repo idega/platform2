@@ -54,42 +54,42 @@ public class CreditCardAuthorizationException extends Exception {
 	 *
 	 */
 	public void setErrorMessage(String message) {
-		_errorMessage = message;
+		this._errorMessage = message;
 	}
 
 	/**
 	 *
 	 */
 	public String getErrorMessage() {
-		return(_errorMessage);
+		return(this._errorMessage);
 	}
 
 	/**
 	 *
 	 */
 	public void setErrorNumber(String number) {
-		_errorNumber = number;
+		this._errorNumber = number;
 	}
 
 	/**
 	 *
 	 */
 	public String getErrorNumber() {
-		return(_errorNumber);
+		return(this._errorNumber);
 	}
 
 	/**
 	 *
 	 */
 	public void setDisplayError(String message) {
-		_displayError = message;
+		this._displayError = message;
 	}
 
 	/**
 	 *
 	 */
 	public String getDisplayError() {
-		return(_displayError);
+		return(this._displayError);
 	}
 	
 	public void setParentException(Exception e) {

@@ -41,30 +41,30 @@ public class PathCriterionExpression implements DynamicExpression {
     	initialize();
     }
     catch (ExpressionException ex)	{
-    	criteriaList = null;
+    	this.criteriaList = null;
     } 
     catch (IDOCompositePrimaryKeyException e) {
-    	criteriaList = null;
+    	this.criteriaList = null;
 		}
   }
   
   protected void initialize() throws IDOCompositePrimaryKeyException, ExpressionException {
-  	List pathElements = queryEntityPart.getPathNames();
+  	List pathElements = this.queryEntityPart.getPathNames();
   	// Note: targetPath is either a class name or a query name
     String targetPath= (String) pathElements.get(0);
-    String tableName = sqlQuery.getTableName(targetPath, targetPath);
-	innerJoins.add(new InnerJoinExpression(tableName, targetPath, sqlQuery));			      
+    String tableName = this.sqlQuery.getTableName(targetPath, targetPath);
+	this.innerJoins.add(new InnerJoinExpression(tableName, targetPath, this.sqlQuery));			      
 
     if (pathElements.size() > 1) {
     	// at the moment path elements have only more than one element if the first element is not a query but an EJB
     	// that why we can try to get an instance
-    	criteriaList = new ArrayList();
+    	this.criteriaList = new ArrayList();
     	// start with the first element
     	IDOEntity entity = getInstance(targetPath);
     	IDOEntityDefinition definition = entity.getEntityDefinition();
 
 
-    	getConditions(definition, targetPath, pathElements, 1, criteriaList);
+    	getConditions(definition, targetPath, pathElements, 1, this.criteriaList);
     }
   }
     
@@ -101,8 +101,8 @@ public class PathCriterionExpression implements DynamicExpression {
 		String targetTableName = targetDefinition.getSQLTableName();
 		
 		// get aliases
-		String aliasSourceTableName = sqlQuery.getUniqueNameForEntityByTableName(sourceTableName, sourcePath);
-		String aliasTargetTableName = sqlQuery.getUniqueNameForEntityByTableName(targetTableName, targetPath);
+		String aliasSourceTableName = this.sqlQuery.getUniqueNameForEntityByTableName(sourceTableName, sourcePath);
+		String aliasTargetTableName = this.sqlQuery.getUniqueNameForEntityByTableName(targetTableName, targetPath);
 		
 		// retrieve name of middle table
 		Class sourceClass = sourceDefinition.getInterfaceClass();
@@ -110,7 +110,7 @@ public class PathCriterionExpression implements DynamicExpression {
 		String middleTable = EntityControl.getManyToManyRelationShipTableName(sourceClass, targetClass);
 		//String middleTable = StringHandler.concatAlphabetically(sourceTableName, targetTableName, "_");
 		// just a decision: middle table gets the source path
-		String aliasMiddleTable = sqlQuery.getUniqueNameForEntityByTableName(middleTable, sourcePath);
+		String aliasMiddleTable = this.sqlQuery.getUniqueNameForEntityByTableName(middleTable, sourcePath);
 		
 		// build the condition 
 		StringBuffer buffer = new StringBuffer(" (");
@@ -128,9 +128,9 @@ public class PathCriterionExpression implements DynamicExpression {
 		buffer.append(") ");
 		
 		// add the middle table to the query
-		innerJoins.add(new InnerJoinExpression(middleTable, sourcePath, sqlQuery));
+		this.innerJoins.add(new InnerJoinExpression(middleTable, sourcePath, this.sqlQuery));
 		// add the target table to the query
-		innerJoins.add(new InnerJoinExpression(targetTableName, targetPath, sqlQuery));
+		this.innerJoins.add(new InnerJoinExpression(targetTableName, targetPath, this.sqlQuery));
 		
 		criteria.add(buffer.toString());
 	}
@@ -141,8 +141,8 @@ public class PathCriterionExpression implements DynamicExpression {
 		String sourceTableName = sourceDefinition.getSQLTableName();
 		
 		// get aliases
-		String aliasSourceTableName = sqlQuery.getUniqueNameForEntityByTableName(sourceTableName, sourcePath);
-		String aliasTargetTableName = sqlQuery.getUniqueNameForEntityByTableName(targetTableName, targetPath);
+		String aliasSourceTableName = this.sqlQuery.getUniqueNameForEntityByTableName(sourceTableName, sourcePath);
+		String aliasTargetTableName = this.sqlQuery.getUniqueNameForEntityByTableName(targetTableName, targetPath);
 					
 		// build the condition
 		StringBuffer buffer = new StringBuffer(aliasSourceTableName);
@@ -152,7 +152,7 @@ public class PathCriterionExpression implements DynamicExpression {
 		buffer.append(targetPrimaryKeyColumnName);
 		
 		// add the target table to the query
-		innerJoins.add(new InnerJoinExpression(targetTableName, targetPath, sqlQuery));			
+		this.innerJoins.add(new InnerJoinExpression(targetTableName, targetPath, this.sqlQuery));			
 		
 		criteria.add(buffer.toString());
 	}
@@ -212,21 +212,21 @@ public class PathCriterionExpression implements DynamicExpression {
     
 	
 	public List getInnerJoins()	{
-		return innerJoins;
+		return this.innerJoins;
 	}
 	
 	public List getCriteria()	{
-		return criteriaList;
+		return this.criteriaList;
 	}
 	
 	public boolean hasCriteria()	{
-		return !(criteriaList == null || criteriaList.isEmpty());
+		return !(this.criteriaList == null || this.criteriaList.isEmpty());
 	}
 		    
   
   public String toSQLString()  {
   	StringBuffer buffer = new StringBuffer();
-  	Iterator criteriaListIterator = criteriaList.iterator();
+  	Iterator criteriaListIterator = this.criteriaList.iterator();
   	boolean addAnd = false;
   	while (criteriaListIterator.hasNext())	{
   		if (addAnd) {

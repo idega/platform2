@@ -44,8 +44,8 @@ import com.idega.user.data.Group;
  * Title: IW Trade Description: Copyright: Copyright (c) 2001 Company: idega.is
  * 
  * @author 2000 - idega team -<br>
- *             <a href="mailto:gummi@idega.is">Guðmundur Ágúst Sæmundsson </a> <br>
- *             <a href="mailto:gimmi@idega.is">Grímur Jónsson </a>
+ *             <a href="mailto:gummi@idega.is">Guï¿½mundur ï¿½gï¿½st Sï¿½mundsson </a> <br>
+ *             <a href="mailto:gimmi@idega.is">Grï¿½mur Jï¿½nsson </a>
  * @version 1.0
  */
 
@@ -69,13 +69,13 @@ public class SupplierBMPBean extends GenericEntity implements Supplier{
 		addAttribute(getIDColumnName());
 		addAttribute(getColumnNameName(), "Name", true, true, String.class);
 		addAttribute(COLUMN_NAME_NAME_ALL_CAPS, "nafn i storun", true, true, String.class);
-		addAttribute(getColumnNameDescription(), "Lýsing", true, true, String.class, 500);
-		addAttribute(getColumnNameGroupID(), "Hópur", true, true, Integer.class, "many_to_one", SupplierStaffGroup.class);
-		addAttribute(getColumnNameIsValid(), "Í notkun", true, true, Boolean.class);
+		addAttribute(getColumnNameDescription(), "Lï¿½sing", true, true, String.class, 500);
+		addAttribute(getColumnNameGroupID(), "Hï¿½pur", true, true, Integer.class, "many_to_one", SupplierStaffGroup.class);
+		addAttribute(getColumnNameIsValid(), "ï¿½ notkun", true, true, Boolean.class);
 		addAttribute(COLUMN_SUPPLIER_MANAGER_ID, "supplier manager", true, true, Integer.class, MANY_TO_ONE, Group.class);
 		addAttribute(COLUMN_ORGANIZATION_ID, "organization ID", true, true, String.class, 20);
 		/* can this be removed */
-		addAttribute(getColumnNameTPosMerchantID(), "ViÝskiptamannanumer", true, true, Integer.class);
+		addAttribute(getColumnNameTPosMerchantID(), "Viï¿½skiptamannanumer", true, true, Integer.class);
 
 		this.addManyToManyRelationShip(Address.class, "SR_SUPPLIER_IC_ADDRESS");
 		this.addManyToManyRelationShip(Phone.class, "SR_SUPPLIER_IC_PHONE");
@@ -132,7 +132,7 @@ public class SupplierBMPBean extends GenericEntity implements Supplier{
 	}
 	
 	public void setName(String name) {
-		newName = name;
+		this.newName = name;
 		setColumn(COLUMN_NAME_NAME_ALL_CAPS, name.toUpperCase());
 	}
 
@@ -186,11 +186,11 @@ public class SupplierBMPBean extends GenericEntity implements Supplier{
 	}
 
 	public List getAddresses() throws SQLException {
-		return EntityFinder.findRelated(this, com.idega.core.location.data.AddressBMPBean.getStaticInstance(Address.class));
+		return EntityFinder.findRelated(this, GenericEntity.getStaticInstance(Address.class));
 	}
 
 	public List getPhones() throws SQLException {
-		return EntityFinder.findRelated(this, com.idega.core.contact.data.PhoneBMPBean.getStaticInstance(Phone.class));
+		return EntityFinder.findRelated(this, GenericEntity.getStaticInstance(Phone.class));
 	}
 
 	public List getHomePhone() throws SQLException {
@@ -234,7 +234,7 @@ public class SupplierBMPBean extends GenericEntity implements Supplier{
 	}
 
 	public List getEmails() throws SQLException {
-		return EntityFinder.findRelated(this, com.idega.core.contact.data.EmailBMPBean.getStaticInstance(Email.class));
+		return EntityFinder.findRelated(this, GenericEntity.getStaticInstance(Email.class));
 	}
 
 	/**
@@ -246,12 +246,12 @@ public class SupplierBMPBean extends GenericEntity implements Supplier{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return (Supplier[]) com.idega.block.trade.stockroom.data.SupplierBMPBean.getStaticInstance(Supplier.class).findAllByColumnOrdered(com.idega.block.trade.stockroom.data.SupplierBMPBean.getColumnNameIsValid(), "Y", com.idega.block.trade.stockroom.data.SupplierBMPBean.getColumnNameName());
+		return (Supplier[]) GenericEntity.getStaticInstance(Supplier.class).findAllByColumnOrdered(com.idega.block.trade.stockroom.data.SupplierBMPBean.getColumnNameIsValid(), "Y", com.idega.block.trade.stockroom.data.SupplierBMPBean.getColumnNameName());
 	}
 	
 	public Collection ejbFindAll(Group supplierManager) throws FinderException {
 		Table table = new Table(this);
-		Column isValid = new Column(table, this.getColumnNameIsValid());
+		Column isValid = new Column(table, SupplierBMPBean.getColumnNameIsValid());
 		Column suppMan = new Column(table, COLUMN_SUPPLIER_MANAGER_ID);
 		Column name = new Column(table, getColumnNameName());
 		Order order = new Order(name, true);
@@ -268,18 +268,18 @@ public class SupplierBMPBean extends GenericEntity implements Supplier{
 	}
 
 	public void update() throws SQLException {
-		if (newName != null) {
+		if (this.newName != null) {
 			try {
 				SupplierManagerBusiness sm = (SupplierManagerBusiness) IBOLookup.getServiceInstance(IWContext.getInstance(), SupplierManagerBusiness.class);
 				Group pGroup = sm.getPermissionGroup(this);
-				pGroup.setName(newName + "_" + this.getID() + SupplierManagerBusinessBean.permissionGroupNameExtention);
+				pGroup.setName(this.newName + "_" + this.getID() + SupplierManagerBusinessBean.permissionGroupNameExtention);
 				pGroup.store();
 				SupplierStaffGroup sGroup = sm.getSupplierStaffGroup(this);
-				sGroup.setName(newName + "_" + this.getID());
+				sGroup.setName(this.newName + "_" + this.getID());
 				sGroup.store();
-				setColumn(getColumnNameName(), newName);
+				setColumn(getColumnNameName(), this.newName);
 				System.out.println("Supplier : setting updateName");
-				newName = null;
+				this.newName = null;
 			} catch (Exception e) {
 				e.printStackTrace();
 				throw new SQLException(e.getMessage());
@@ -289,8 +289,8 @@ public class SupplierBMPBean extends GenericEntity implements Supplier{
 	}
 
 	public void insert() throws SQLException {
-		if (newName != null) {
-			setColumn(getColumnNameName(), newName);
+		if (this.newName != null) {
+			setColumn(getColumnNameName(), this.newName);
 		}
 		super.insert();
 	}

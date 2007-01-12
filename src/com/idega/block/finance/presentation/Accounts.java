@@ -62,42 +62,44 @@ public class Accounts extends Finance {
 	}
 
 	public void setAccountViewerPage(int pageId) {
-		viewerPageId = pageId;
+		this.viewerPageId = pageId;
 	}
 
 	public void setAccountTarifferPage(int pageId) {
-		tarifferPageId = pageId;
+		this.tarifferPageId = pageId;
 	}
 
 	protected void control(IWContext iwc) throws java.rmi.RemoteException {
-		if (isAdmin) {
-			 df = getDateTimeFormat(iwc.getCurrentLocale());
+		if (this.isAdmin) {
+			 this.df = getDateTimeFormat(iwc.getCurrentLocale());
 			if (iwc.isParameterSet(prmNewAccount)) {
 				int iUserId = Integer.parseInt(iwc.getParameter(prmNewAccount));
-				setMainPanel(getNewAccountForm(iwc,iUserId, iCategoryId));
+				setMainPanel(getNewAccountForm(iwc,iUserId, this.iCategoryId));
 			}
 			if(iwc.isParameterSet("fin_create_account")){
 				createAccount(iwc);
-				setSearchPanel(getSearchForm(iwc, iCategoryId));
+				setSearchPanel(getSearchForm(iwc, this.iCategoryId));
 			}
 			else if (iwc.isParameterSet("sf_search")) {
-				performSearch(iwc, iCategoryId);
-				setSearchPanel(getSearchForm(iwc, iCategoryId));
+				performSearch(iwc, this.iCategoryId);
+				setSearchPanel(getSearchForm(iwc, this.iCategoryId));
 				//T.add(new HorizontalRule(),1,2);
-				Map MapOfUsers = getMapOfUsers(accountUsers);
-				setMainPanel(getAccountListTable(MapOfUsers, iCategoryId));
-				if (MapOfUsers != null && !MapOfUsers.isEmpty())
-					setMainPanel(getUsersWithoutAccounts(MapOfUsers, iCategoryId));
+				Map MapOfUsers = getMapOfUsers(this.accountUsers);
+				setMainPanel(getAccountListTable(MapOfUsers, this.iCategoryId));
+				if (MapOfUsers != null && !MapOfUsers.isEmpty()) {
+					setMainPanel(getUsersWithoutAccounts(MapOfUsers, this.iCategoryId));
+				}
 			}
 			else {
-				setSearchPanel(getSearchForm(iwc, iCategoryId));
+				setSearchPanel(getSearchForm(iwc, this.iCategoryId));
 				//T.add(new HorizontalRule(),1,2);
 			}
 			
 
 		}
-		else
+		else {
 			add(localize("access_denied", "Access denied"));
+		}
 	}
 	
 	/**
@@ -106,9 +108,9 @@ public class Accounts extends Finance {
 	private void createAccount(IWContext iwc){
 		String accountName = iwc.getParameter("account_name");
 		int userID = Integer.parseInt(iwc.getParameter("fin_usr_id"));
-		type = iwc.getParameter("fin_type");
+		this.type = iwc.getParameter("fin_type");
 		try {
-			getFinanceService().getAccountBusiness().createNewAccount(userID,accountName,"",1,type,getFinanceCategoryId().intValue());
+			getFinanceService().getAccountBusiness().createNewAccount(userID,accountName,"",1,this.type,getFinanceCategoryId().intValue());
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		} catch (CreateException e) {
@@ -146,8 +148,9 @@ public class Accounts extends Finance {
 		String drpsel = iwc.isParameterSet("sf_type") ? iwc.getParameter("sf_type") : "";
 		DropdownMenu drpTypes = getAccountTypes("sf_type", drpsel, null);
 
-		if (id != null)
+		if (id != null) {
 			accountid.setContent(id);
+		}
 		if(name!=null){
 			nameinput.setContent(name);
 		}
@@ -204,7 +207,7 @@ public class Accounts extends Finance {
 		T.setUseBottom(false);
 		T.addTitle(localize("create_new_account","Create new account"));
 		TextInput accountName = new TextInput("account_name");
-		type = iwc.getParameter("fin_type");
+		this.type = iwc.getParameter("fin_type");
 		
 		SubmitButton create = new SubmitButton(localize("create", "Create"), "fin_create_account", "true");
 		create = (SubmitButton) setStyle(create,STYLENAME_INTERFACE_BUTTON);
@@ -213,7 +216,7 @@ public class Accounts extends Finance {
 		T.add(getText(localize("persona_id","Personal ID")),1,2);
 		T.add(getHeader(localize("account_id","Account ID")),1,3);
 		try {
-			User user = (User)getFinanceService().getAccountUserHome().findByPrimaryKey(new Integer(iUserId));
+			User user = getFinanceService().getAccountUserHome().findByPrimaryKey(new Integer(iUserId));
 			T.add(getText(user.getName()),2,1);
 			T.add(getText(user.getPersonalID()),2,2);
 		} catch (RemoteException e) {
@@ -223,7 +226,7 @@ public class Accounts extends Finance {
 		}
 		T.add(accountName,2,3);
 		T.add(new Parameter("fin_usr_id",String.valueOf(iUserId)));
-		T.add(new Parameter("fin_type",type));
+		T.add(new Parameter("fin_type",this.type));
 		T.add(Finance.getCategoryParameter(iCategoryId));
 	
 
@@ -234,16 +237,18 @@ public class Accounts extends Finance {
 		String id = null;//, first = null, middle = null, last = null;
 		String pid = null, name = null;
 		// See if we have an account id
-		if (iwc.isParameterSet("sf_type"))
-			type = iwc.getParameter("sf_type");
+		if (iwc.isParameterSet("sf_type")) {
+			this.type = iwc.getParameter("sf_type");
+		}
 		boolean hasSomething = false;
-		if (iwc.isParameterSet("sf_id"))
+		if (iwc.isParameterSet("sf_id")) {
 			id = iwc.getParameter("sf_id");
+		}
 		if (id != null && !"".equals(id) && id.length() > 0) {
 			try {
 				//accounts = FinanceFinder.getInstance().searchAccounts(id, first, middle, last, type, iCategoryId);
 				
-				accounts = getFinanceService().getAccountHome().findBySearch(id,null,null,type,getFinanceCategoryId().intValue());
+				this.accounts = getFinanceService().getAccountHome().findBySearch(id,null,null,this.type,getFinanceCategoryId().intValue());
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			} catch (FinderException e) {
@@ -277,8 +282,8 @@ public class Accounts extends Finance {
 					//Name nm = new Name(name);
 					//accounts = getFinanceService().getAccountHome().findBySearch(id,first,middle,last,type,getFinanceCategoryId().intValue());
 					//accountUsers = getFinanceService().getAccountUserHome().findBySearch(first,middle,last);
-					accounts = getFinanceService().getAccountHome().findBySearch(id,name,pid,type,getFinanceCategoryId().intValue());
-					accountUsers = getFinanceService().getAccountUserHome().findBySearch(name,pid);
+					this.accounts = getFinanceService().getAccountHome().findBySearch(id,name,pid,this.type,getFinanceCategoryId().intValue());
+					this.accountUsers = getFinanceService().getAccountUserHome().findBySearch(name,pid);
 				} catch (RemoteException e) {
 					e.printStackTrace();
 				} catch (FinderException e) {
@@ -313,7 +318,7 @@ public class Accounts extends Finance {
 		int col = 1;
 		Map M = mapOfUsers;
 		User U = null;
-		if (accounts != null) {
+		if (this.accounts != null) {
 
 			T.addTitle(localize("users_with_accounts", "Users with accounts"));
 
@@ -326,7 +331,7 @@ public class Accounts extends Finance {
 			T.add(getHeader(localize("total_balance", "Total")), 6, row);
 			T.add(getHeader(localize("last_updated", "Last updated")), 7, row);
 			row++;
-			Iterator I = accounts.iterator();
+			Iterator I = this.accounts.iterator();
 			Account A;
 			Integer accountID;
 			FinanceService financeService = getFinanceService();
@@ -342,25 +347,25 @@ public class Accounts extends Finance {
 					M.remove(uid);
 				} else{
 					try {
-						U = (User)getFinanceService().getAccountUserHome().findByPrimaryKey(uid);
+						U = getFinanceService().getAccountUserHome().findByPrimaryKey(uid);
 					} catch (RemoteException e) {
 						e.printStackTrace();
 					} catch (FinderException e) {
 						e.printStackTrace();
 					}
 			}
-				if (tarifferPageId > 0) {
+				if (this.tarifferPageId > 0) {
 					tariffLink = getLink((A.getAccountId().toString()));
 					tariffLink.addParameter(prmAccountId, A.getAccountId().toString());
 					tariffLink.addParameter(getCategoryParameter(iCategoryId));
-					tariffLink.setPage(tarifferPageId);
+					tariffLink.setPage(this.tarifferPageId);
 					T.add(tariffLink, col, row);
 				}
 				col++;
-				if (viewerPageId > 0) {
+				if (this.viewerPageId > 0) {
 					accountLink = new Link(getText(A.getName()));
 					accountLink.addParameter(AccountViewer.prmAccountId, A.getAccountId().toString());
-					accountLink.setPage(viewerPageId);
+					accountLink.setPage(this.viewerPageId);
 					T.add(accountLink, col, row);
 				}
 				col++;
@@ -370,8 +375,9 @@ public class Accounts extends Finance {
 				T.add(getAmountText((financeService.getAccountBalancePublished(accountID))), col++, row);
 				T.add(getAmountText((financeService.getAccountBalance(accountID))), col++, row);
 				Date date = financeService.getAccountLastUpdate(accountID);
-				if(date!=null)
-				T.add(getText(df.format(date)), col++, row);
+				if(date!=null) {
+					T.add(getText(this.df.format(date)), col++, row);
+				}
 				row++;
 			}
 			T.getContentTable().setColumnAlignment(5,Table.HORIZONTAL_ALIGN_RIGHT);
@@ -393,13 +399,13 @@ public class Accounts extends Finance {
 		T.add(getHeader(localize("create_account", "Create account")), 3, row);
 		row++;
 		Iterator I2 = mapOfUsers.values().iterator();
-		Image newImage = core.getImage("/shared/create.gif");
+		Image newImage = this.core.getImage("/shared/create.gif");
 		User U;
 		while (I2.hasNext()) {
 			U = (User)I2.next();
 			T.add(getText(U.getName()), 1, row);
 			T.add(getText(U.getPersonalID()), 2, row);
-			T.add(getNewAccountLink(newImage, U.getID(), iCategoryId,type), 3, row);
+			T.add(getNewAccountLink(newImage, U.getID(), iCategoryId,this.type), 3, row);
 			row++;
 		}
 		return T;
@@ -408,8 +414,9 @@ public class Accounts extends Finance {
 
 	private DropdownMenu getAccountTypes(String name, String selected, String display) {
 		DropdownMenu drp = new DropdownMenu(name);
-		if (display != null)
+		if (display != null) {
 			drp.addMenuElementFirst("", display);
+		}
 		drp.addMenuElement(com.idega.block.finance.data.AccountBMPBean.typeFinancial);
 		drp.addMenuElement(com.idega.block.finance.data.AccountBMPBean.typePhone);
 		drp.setSelectedElement(selected);

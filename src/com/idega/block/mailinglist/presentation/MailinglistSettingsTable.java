@@ -22,8 +22,8 @@ public class MailinglistSettingsTable extends AccountSettingsTable {
   }
 
   public void setMailingListSettings(Mailinglist mailinglist){
-    super.setAccount((Account) mailinglist);
-    nameInput.setValue(mailinglist.getMailinglistName());
+    super.setAccount(mailinglist);
+    this.nameInput.setValue(mailinglist.getMailinglistName());
   }
 
   public void main(IWContext iwc){

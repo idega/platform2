@@ -23,27 +23,27 @@ public class TimesheetSessionBean extends IBOSessionBean implements TimesheetSes
 	Collection resources =null;
 	
 	public Collection getUserProjects(User user)throws RemoteException{
-		if(userProjects==null){
+		if(this.userProjects==null){
 			try{
-			userProjects = getTimesheetService().getTimesheetProjectHome().findUserRelated(user);
+			this.userProjects = getTimesheetService().getTimesheetProjectHome().findUserRelated(user);
 			}
 			catch(FinderException ex){
 				throw new RemoteException(ex.getMessage());
 			}
 		}
-		return userProjects;
+		return this.userProjects;
 	}
 	
 	public Collection getResources()throws RemoteException{
-		if(resources==null){
+		if(this.resources==null){
 			try{
-				resources = getTimesheetService().getResourceHome().findAllOpen();
+				this.resources = getTimesheetService().getResourceHome().findAllOpen();
 			}
 			catch(FinderException ex){
 				throw new RemoteException(ex.getMessage());
 			}
 		}
-		return resources;
+		return this.resources;
 	}
 	
 	public TimesheetService getTimesheetService()throws RemoteException{

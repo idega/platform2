@@ -35,11 +35,11 @@ public class TimesheetEntryBMPBean
 		addAttribute(ENTRY_DATE, "date", true, true, Timestamp.class);
 		addAttribute(USER_ID,USER_ID,true,true,Integer.class,"many-to-one",User.class);
 		addAttribute(RESOURCE_ID, RESOURCE_ID, true, true, Integer.class, "many-to-one", Resource.class);
-		addAttribute(PROJECT_ID, "númer verkefnis", true, true, Integer.class, "many-to-one", TimesheetProject.class);
+		addAttribute(PROJECT_ID, "nï¿½mer verkefnis", true, true, Integer.class, "many-to-one", TimesheetProject.class);
 		addAttribute(QUANTITY, "fjoldi", true, true, Double.class);
-		addAttribute(DESCRIPTION, "stutt lýsing", true, true, String.class);
-		addAttribute(BOOKED, "bókað", true, true, Boolean.class);
-		addAttribute(REGISTERED, "skráð", true, true, Boolean.class);
+		addAttribute(DESCRIPTION, "stutt lï¿½sing", true, true, String.class);
+		addAttribute(BOOKED, "bï¿½kaï¿½", true, true, Boolean.class);
+		addAttribute(REGISTERED, "skrï¿½ï¿½", true, true, Boolean.class);
 	}
 	public String getIDColumnName() {
 		return TIMESHEET_ENTRY_ID;
@@ -134,10 +134,12 @@ public class TimesheetEntryBMPBean
 	private IDOQuery queryByUserAndProjectWithinPeriod(Integer userID,Integer projectID,java.sql.Date dateFrom,java.sql.Date dateTo){
 		IDOQuery query = idoQueryGetSelect();
 		query.appendWhere().appendWithinDates(ENTRY_DATE,dateFrom,dateTo);
-		if(projectID!=null)
+		if(projectID!=null) {
 			query.appendAndEquals(PROJECT_ID,projectID);
-		if(userID!=null)
+		}
+		if(userID!=null) {
 			query.appendAndEquals(USER_ID,userID);
+		}
 		return query;
 	}
 	

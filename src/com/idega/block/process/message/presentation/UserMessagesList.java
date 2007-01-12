@@ -44,9 +44,9 @@ public class UserMessagesList extends UserMessages {
 		while (iter.hasNext()) {
 			Message message = (Message) iter.next();
 			String subject = message.getSubject() != null ? message.getSubject() : getResourceBundle().getLocalizedString("message.no_subject", "No subject");
-			if (iMaxNumberOfLetters > 0) {
-				if (subject.length() > iMaxNumberOfLetters) {
-					subject = subject.substring(0, iMaxNumberOfLetters) + "...";
+			if (this.iMaxNumberOfLetters > 0) {
+				if (subject.length() > this.iMaxNumberOfLetters) {
+					subject = subject.substring(0, this.iMaxNumberOfLetters) + "...";
 				}
 			}
 
@@ -71,6 +71,6 @@ public class UserMessagesList extends UserMessages {
 	}
 	
 	public void setMaximumNumberOfLetters(int maxNumberOfLetters) {
-		iMaxNumberOfLetters = maxNumberOfLetters;
+		this.iMaxNumberOfLetters = maxNumberOfLetters;
 	}
 }

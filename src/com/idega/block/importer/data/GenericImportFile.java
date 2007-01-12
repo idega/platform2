@@ -45,7 +45,7 @@ public class GenericImportFile implements ImportFile{
 	  * @return the String value of recordDilimiter.
 	  */
 	  public String getRecordDilimiter(){
-	        return recordDilimiter;
+	        return this.recordDilimiter;
 	  }
 	
 	  /**
@@ -53,7 +53,7 @@ public class GenericImportFile implements ImportFile{
 	  * @param aRecordDilimiter - the new value for recordDilimiter
 	  */
 	  public void setRecordDilimiter(String aRecordDilimiter){
-	        recordDilimiter = aRecordDilimiter;
+	        this.recordDilimiter = aRecordDilimiter;
 	  }
 	
 	
@@ -68,18 +68,20 @@ public class GenericImportFile implements ImportFile{
 	  StringBuffer buf = new StringBuffer();
 	
 	  try {
-	    if( fr == null ){
-	      fr = new FileReader(getFile());
-	      br = new BufferedReader(fr);
+	    if( this.fr == null ){
+	      this.fr = new FileReader(getFile());
+	      this.br = new BufferedReader(this.fr);
 	    }
 	
-		while ( ( (line=br.readLine()) != null ) && ( line.indexOf(getRecordDilimiter())== -1 ) ){
+		while ( ( (line=this.br.readLine()) != null ) && ( line.indexOf(getRecordDilimiter())== -1 ) ){
 	      buf.append(line);
-	      if( addNewLineAfterRecord ){
+	      if( this.addNewLineAfterRecord ){
 	      	buf.append('\n');
 	      }
 	      
-	      if( getRecordDilimiter().equals("\n") ) break;//need to check because readline strips this token away.
+	      if( getRecordDilimiter().equals("\n") ) {
+			break;//need to check because readline strips this token away.
+		}
 	      
 	    }
 	
@@ -106,12 +108,12 @@ public class GenericImportFile implements ImportFile{
 	
 	    try{
 	    		if (getEncoding() == null) {
-	    			fr = new FileReader(getFile());
+	    			this.fr = new FileReader(getFile());
 	    		}
 	    		else {
-	    			fr = new InputStreamReader(new FileInputStream(getFile()), getEncoding());
+	    			this.fr = new InputStreamReader(new FileInputStream(getFile()), getEncoding());
 	    		}
-	      br = new BufferedReader(fr);
+	      this.br = new BufferedReader(this.fr);
 	      String line;
 	      StringBuffer buf = new StringBuffer();
 	      ArrayList list = new ArrayList();
@@ -122,7 +124,7 @@ public class GenericImportFile implements ImportFile{
 	      Timer clock = new Timer();
 	      clock.start();
 	
-	      while ( (line=br.readLine()) != null){
+	      while ( (line=this.br.readLine()) != null){
 	        if( buf == null ){
 	          buf = new StringBuffer();
 	        }
@@ -130,7 +132,7 @@ public class GenericImportFile implements ImportFile{
 	        buf.append(line);
 	
 	        /**@todo this should be an option with a setMethod?**/
-	    if(addNewLineAfterRecord){
+	    if(this.addNewLineAfterRecord){
 	    	buf.append('\n');
 	    }
 	
@@ -150,14 +152,14 @@ public class GenericImportFile implements ImportFile{
 	  line = null;
 	  buf = null;
 	
-	  br.close();
-	  fr = null;
-	  br = null;
+	  this.br.close();
+	  this.fr = null;
+	  this.br = null;
 	
 	  clock.stop();
 	
 	  if( records == 0 ){
-	   throw new NoRecordsException("No records where found in the selected file"+file.getAbsolutePath());
+	   throw new NoRecordsException("No records where found in the selected file"+this.file.getAbsolutePath());
 	  }
 	
 	  //System.gc();
@@ -183,7 +185,7 @@ public class GenericImportFile implements ImportFile{
 	
 	
 	  public File getFile(){
-	    return file;
+	    return this.file;
 	  }
 
 	/**
@@ -191,7 +193,7 @@ public class GenericImportFile implements ImportFile{
 	 * @return boolean
 	 */
 	public boolean isAddNewLineAfterRecord() {
-		return addNewLineAfterRecord;
+		return this.addNewLineAfterRecord;
 	}
 	
 	/**
@@ -207,7 +209,7 @@ public class GenericImportFile implements ImportFile{
 	 * @return String
 	 */
 	public String getValueSeparator() {
-		return valueSeparator;
+		return this.valueSeparator;
 	}
 	
 	/**
@@ -235,9 +237,9 @@ public class GenericImportFile implements ImportFile{
 	 */
 	public String getValueAtIndexFromRecordString(int index , String recordString){		
 		int i = 1;
-		recordString = TextSoap.findAndReplace(recordString,valueSeparator+valueSeparator,valueSeparator+emptyValueString+valueSeparator);
-		recordString = TextSoap.findAndReplace(recordString,valueSeparator+valueSeparator,valueSeparator+emptyValueString+valueSeparator);
-		StringTokenizer tokens = new StringTokenizer(recordString,valueSeparator);
+		recordString = TextSoap.findAndReplace(recordString,this.valueSeparator+this.valueSeparator,this.valueSeparator+this.emptyValueString+this.valueSeparator);
+		recordString = TextSoap.findAndReplace(recordString,this.valueSeparator+this.valueSeparator,this.valueSeparator+this.emptyValueString+this.valueSeparator);
+		StringTokenizer tokens = new StringTokenizer(recordString,this.valueSeparator);
 		String value = null;
 		while( tokens.hasMoreTokens() && i<=index ){
 			value = tokens.nextToken();	
@@ -261,12 +263,14 @@ public class GenericImportFile implements ImportFile{
 	 */
 	public ArrayList getValuesFromRecordString(String recordString){	
 		ArrayList values = null;	
-		recordString = TextSoap.findAndReplace(recordString,valueSeparator+valueSeparator,valueSeparator+emptyValueString+valueSeparator);
-		recordString = TextSoap.findAndReplace(recordString,valueSeparator+valueSeparator,valueSeparator+emptyValueString+valueSeparator);
-		StringTokenizer tokens = new StringTokenizer(recordString,valueSeparator);
+		recordString = TextSoap.findAndReplace(recordString,this.valueSeparator+this.valueSeparator,this.valueSeparator+this.emptyValueString+this.valueSeparator);
+		recordString = TextSoap.findAndReplace(recordString,this.valueSeparator+this.valueSeparator,this.valueSeparator+this.emptyValueString+this.valueSeparator);
+		StringTokenizer tokens = new StringTokenizer(recordString,this.valueSeparator);
 		String value = null;
 		while( tokens.hasMoreTokens() ){
-			if(values==null) values = new ArrayList();
+			if(values==null) {
+				values = new ArrayList();
+			}
 			value = tokens.nextToken();
 			values.add(value);	
 			//System.out.println("GenericImportFile : value = "+value);
@@ -282,7 +286,7 @@ public class GenericImportFile implements ImportFile{
 	 * @return String
 	 */
 	public String getEmptyValueString() {
-		return emptyValueString;
+		return this.emptyValueString;
 	}
 
 	public void setEmptyValueString(String emptyValueString) {
@@ -294,16 +298,16 @@ public class GenericImportFile implements ImportFile{
 	 * @see com.idega.block.importer.data.ImportFile#close()
 	 */
 	public void close() {
-		if(null!=br){
+		if(null!=this.br){
 			try {
-				br.close();
+				this.br.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-		if(null!=fr){
+		if(null!=this.fr){
 			try {
-				fr.close();
+				this.fr.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

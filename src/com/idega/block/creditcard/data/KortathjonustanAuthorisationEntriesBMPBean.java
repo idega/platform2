@@ -213,7 +213,7 @@ public class KortathjonustanAuthorisationEntriesBMPBean extends GenericEntity im
 		
 		SelectQuery query = new SelectQuery(table);
 		query.addColumn(new WildCardColumn(table));
-		query.addCriteria(new MatchCriteria(code, MatchCriteria.EQUALS, this.AUTHORIZATION_TYPE_REFUND));
+		query.addCriteria(new MatchCriteria(code, MatchCriteria.EQUALS, KortathjonustanAuthorisationEntries.AUTHORIZATION_TYPE_REFUND));
 		query.addCriteria(new MatchCriteria(date, MatchCriteria.GREATEREQUAL, from.getDate().toString()));
 		query.addCriteria(new MatchCriteria(date, MatchCriteria.LESSEQUAL, to.getDate().toString()));
 

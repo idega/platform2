@@ -66,17 +66,17 @@ public class MailinglistPresentationAdministrator extends Block {
 
   public Form checkBoxForm () throws SQLException{
 
-    TextInput textInput = new TextInput(newMailinglistTextInputName);
+    TextInput textInput = new TextInput(this.newMailinglistTextInputName);
 
     Table checkBoxTable = new Table( 2, 3);
 
-    //SubmitButton addMailinglistButton = new SubmitButton( "Stofna Póstlista", addMailinglistParameterValue, "");
-    //SubmitButton removeMailinglistButton = new SubmitButton( "Fjarlægja Póstlista", removeMailinglistParameterValue, "");
+    //SubmitButton addMailinglistButton = new SubmitButton( "Stofna Pï¿½stlista", addMailinglistParameterValue, "");
+    //SubmitButton removeMailinglistButton = new SubmitButton( "Fjarlï¿½gja Pï¿½stlista", removeMailinglistParameterValue, "");
 
-    SubmitButton addMailinglistButton = new SubmitButton( addMailinglistParameterValue, "Stofna Póstlista");
-    SubmitButton removeMailinglistButton = new SubmitButton( removeMailinglistParameterValue, "Fjarlægja Póstlista");
+    SubmitButton addMailinglistButton = new SubmitButton( this.addMailinglistParameterValue, "Stofna Pï¿½stlista");
+    SubmitButton removeMailinglistButton = new SubmitButton( this.removeMailinglistParameterValue, "Fjarlï¿½gja Pï¿½stlista");
 
-    Parameter addAndRemovecontrol = new Parameter(addAndRemoveParameter,"submit");
+    Parameter addAndRemovecontrol = new Parameter(this.addAndRemoveParameter,"submit");
 
     CheckBox checkBoxes;
 
@@ -94,7 +94,7 @@ public class MailinglistPresentationAdministrator extends Block {
     if (postListArray != null){
       checkBoxTable = new Table(2, postListArray.length + 3);
       for (int i = 0; i < postListArray.length; i++) {
-        checkBoxes = new CheckBox(checkBoxName, String.valueOf(postListArray[i].getID()));
+        checkBoxes = new CheckBox(this.checkBoxName, String.valueOf(postListArray[i].getID()));
         checkBoxTable.add(checkBoxes, 2, i+1);
         checkBoxTable.add(postListArray[i].getStringColumnValue("Post_list")+" ", 1, i+1);
       }
@@ -102,15 +102,15 @@ public class MailinglistPresentationAdministrator extends Block {
     else{
       checkBoxTable = new Table( 2, 3);
     }
-    numberOfRows = checkBoxTable.getRows();
+    this.numberOfRows = checkBoxTable.getRows();
 
-    checkBoxTable.mergeCells( 1, numberOfRows - 2, 2, numberOfRows - 2);
-    checkBoxTable.mergeCells( 1, numberOfRows - 1, 2, numberOfRows - 1);
-    checkBoxTable.mergeCells( 1, numberOfRows, 2, numberOfRows);
+    checkBoxTable.mergeCells( 1, this.numberOfRows - 2, 2, this.numberOfRows - 2);
+    checkBoxTable.mergeCells( 1, this.numberOfRows - 1, 2, this.numberOfRows - 1);
+    checkBoxTable.mergeCells( 1, this.numberOfRows, 2, this.numberOfRows);
 
-    checkBoxTable.add(textInput, 1, numberOfRows - 2);
-    checkBoxTable.add(addMailinglistButton, 1, numberOfRows - 1);
-    checkBoxTable.add(removeMailinglistButton, 1, numberOfRows);
+    checkBoxTable.add(textInput, 1, this.numberOfRows - 2);
+    checkBoxTable.add(addMailinglistButton, 1, this.numberOfRows - 1);
+    checkBoxTable.add(removeMailinglistButton, 1, this.numberOfRows);
 
     checkBoxForm.add(checkBoxTable);
     return (checkBoxForm);
@@ -119,23 +119,23 @@ public class MailinglistPresentationAdministrator extends Block {
   private void preCheckBoxBusiness(IWContext modinfo) throws SQLException{
 
     String[] checkedBoxes;
-    checkedBoxes = (String[]) modinfo.getParameterValues(checkBoxName);
+    checkedBoxes = modinfo.getParameterValues(this.checkBoxName);
 
     //if ((checkedBoxes != null) || hasSubmittedText) {
-    if (modinfo.isParameterSet(addAndRemoveParameter)){
+    if (modinfo.isParameterSet(this.addAndRemoveParameter)){
       if (checkedBoxes != null){
-        if (modinfo.isParameterSet(removeMailinglistParameterValue)){
-          reply = MailingListBusiness.removeMailinglistBusiness(modinfo, checkedBoxes);
+        if (modinfo.isParameterSet(this.removeMailinglistParameterValue)){
+          this.reply = MailingListBusiness.removeMailinglistBusiness(modinfo, checkedBoxes);
           for (int i = 0; i < checkedBoxes.length; i++) {
             add(checkedBoxes[i]+" ");
           }
         }
       }
-      if(modinfo.isParameterSet(addMailinglistParameterValue)){
-        String postListRemoveName = modinfo.getParameter(newMailinglistTextInputName);
+      if(modinfo.isParameterSet(this.addMailinglistParameterValue)){
+        String postListRemoveName = modinfo.getParameter(this.newMailinglistTextInputName);
         if(!"".equalsIgnoreCase(postListRemoveName)){
-          reply = MailingListBusiness.addMailinglistBusiness(modinfo, postListRemoveName);
-          add("Bæta við");
+          this.reply = MailingListBusiness.addMailinglistBusiness(modinfo, postListRemoveName);
+          add("Bï¿½ta viï¿½");
         }
         else{
           add("nothin man");
@@ -154,16 +154,16 @@ public class MailinglistPresentationAdministrator extends Block {
     Form postListChooserForm = new Form();
     postListChooserForm.maintainAllParameters();
     Table mailinglistChooserTable = new Table(3,1);
-    DropdownMenu dropDownMenu = new DropdownMenu(dropdownMenuName);
+    DropdownMenu dropDownMenu = new DropdownMenu(this.dropdownMenuName);
     dropDownMenu.addSeparator();
     dropDownMenu.addMenuElements(EntityFinder.findAll(mailinglist));
     //dropDownMenu.addMenuElementFirst("makes no diff", "Bite My Shiny Metal Ass");
 
     dropDownMenu.setToSubmit();
     dropDownMenu.keepStatusOnAction();
-    chosen = modinfo.getParameter(dropdownMenuName);
+    chosen = modinfo.getParameter(this.dropdownMenuName);
     mailinglistChooserTable.add(dropDownMenu, 2, 1);
-    System.err.println("dropdownMenuName = "+modinfo.getParameter(dropdownMenuName));
+    System.err.println("dropdownMenuName = "+modinfo.getParameter(this.dropdownMenuName));
     if((chosen != null) && (!"".equals(chosen))){
       Mailinglist chosenMailinglist = ((com.idega.block.mailinglist.data.MailinglistHome)com.idega.data.IDOLookup.getHomeLegacy(Mailinglist.class)).findByPrimaryKeyLegacy( Integer.parseInt(chosen));
       mailinglistChooserTable.add( chosenMailinglist.getName(), 1, 1);
@@ -180,14 +180,14 @@ public class MailinglistPresentationAdministrator extends Block {
 
   public Form emailViewForm(IWContext modinfo) throws SQLException {
 
-    SubmitButton viewButton = new SubmitButton("Skoða Bréf", generalEmailHandleParameter, viewParameterValue);
+    SubmitButton viewButton = new SubmitButton("Skoï¿½a Brï¿½f", this.generalEmailHandleParameter, this.viewParameterValue);
     ViewWindow viewEmailWindow = new ViewWindow();
 
     Form emailViewForm = new Form(viewEmailWindow);
     //emailViewForm.maintainAllParameters();
     Link test = new Link(viewEmailWindow);
     emailViewForm.add(test);
-    TextArea emailLetterListTextArea = new TextArea(emailLetterListName, 40, 6);
+    TextArea emailLetterListTextArea = new TextArea(this.emailLetterListName, 40, 6);
     Table emailViewTable = new Table(1,2);
 
     emailViewTable.add(viewButton, 1, 2);
@@ -199,11 +199,11 @@ public class MailinglistPresentationAdministrator extends Block {
 
   public Form newEmailForm(IWContext modinfo) throws SQLException{
 
-    SubmitButton saveButton = new SubmitButton("Vista Bréf", newEmailHandleParameter, saveParameterValue);
-    SubmitButton saveAndSendButton = new SubmitButton("Vista og Senda Bréf", newEmailHandleParameter, saveAndSendParameterValue);
+    SubmitButton saveButton = new SubmitButton("Vista Brï¿½f", this.newEmailHandleParameter, this.saveParameterValue);
+    SubmitButton saveAndSendButton = new SubmitButton("Vista og Senda Brï¿½f", this.newEmailHandleParameter, this.saveAndSendParameterValue);
     Form newEmailForm = new Form();
     //newEmailForm.maintainAllParameters();
-    TextArea newEmailTextArea = new TextArea(newEmailAreaName, 40, 10);
+    TextArea newEmailTextArea = new TextArea(this.newEmailAreaName, 40, 10);
     Table newEmailTable = new Table( 3, 2);
     newEmailTable.mergeCells( 1, 1, 3, 1);
 
@@ -220,12 +220,12 @@ public class MailinglistPresentationAdministrator extends Block {
     SelectionBox emailSelectionBox = new SelectionBox();
     MailAccount emailList = ((com.idega.block.mailinglist.data.MailAccountHome)com.idega.data.IDOLookup.getHomeLegacy(MailAccount.class)).createLegacy();
     MailAccount[] emailListArray;
-    emailListArray = (MailAccount[]) emailList.findAllOrdered(com.idega.block.mailinglist.data.MailAccountBMPBean.EMAIL);
+    emailListArray = (MailAccount[]) emailList.findAllOrdered(AccountBMPBean.EMAIL);
     if (!((emailListArray == null) || (emailListArray.length == 0))) {
-      System.out.println("LENGD Á emailListArray = "+emailListArray.length);
+      System.out.println("LENGD ï¿½ emailListArray = "+emailListArray.length);
       emailListArray = (MailAccount[]) EntityFinder.findRelated(chosenMailinglist, emailList).toArray( new MailAccount[0]);
       if (!((emailListArray == null) || (emailListArray.length == 0))) {
-        emailSelectionBox.addMenuElements(emailListArray, com.idega.block.mailinglist.data.MailAccountBMPBean.EMAIL);
+        emailSelectionBox.addMenuElements(emailListArray, AccountBMPBean.EMAIL);
       }
     }
     emailSelectionBox.setHeight(3);

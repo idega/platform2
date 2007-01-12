@@ -34,26 +34,26 @@ public QuoteEditor(){
 }
 
   public void main(IWContext iwc) throws Exception {
-    _iwb = getBundle(iwc);
-    _iwrb = getResourceBundle(iwc);
-    addTitle(_iwrb.getLocalizedString("quote_admin","Quote Admin"));
-    _iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
+    this._iwb = getBundle(iwc);
+    this._iwrb = getResourceBundle(iwc);
+    addTitle(this._iwrb.getLocalizedString("quote_admin","Quote Admin"));
+    this._iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
 
     try {
-      _quoteID = Integer.parseInt(iwc.getParameter(QuoteBusiness.PARAMETER_QUOTE_ID));
-      _quote = getQuoteBusiness().getQuoteHolder(_quoteID);
+      this._quoteID = Integer.parseInt(iwc.getParameter(QuoteBusiness.PARAMETER_QUOTE_ID));
+      this._quote = getQuoteBusiness().getQuoteHolder(this._quoteID);
     }
     catch (NumberFormatException e) {
-      _quoteID = -1;
+      this._quoteID = -1;
     }
 
-    _objectID = Integer.parseInt(iwc.getParameter(QuoteBusiness.PARAMETER_OBJECT_INSTANCE_ID));
+    this._objectID = Integer.parseInt(iwc.getParameter(QuoteBusiness.PARAMETER_OBJECT_INSTANCE_ID));
 
     String mode = iwc.getParameter(QuoteBusiness.PARAMETER_MODE);
 
     if ( mode.equalsIgnoreCase(QuoteBusiness.PARAMETER_EDIT) ) {
-      if ( _quoteID != -1 ) {
-	    _update = true;
+      if ( this._quoteID != -1 ) {
+	    this._update = true;
       }
       processForm();
     }
@@ -75,26 +75,26 @@ public QuoteEditor(){
       quoteAuthor.setLength(24);
     TextArea quoteText = new TextArea(QuoteBusiness.PARAMETER_QUOTE_TEXT,40,6);
 
-    if ( _update && _quote != null ) {
-      if ( _quote.getOrigin() != null ) {
-	quoteOrigin.setContent(_quote.getOrigin());
+    if ( this._update && this._quote != null ) {
+      if ( this._quote.getOrigin() != null ) {
+	quoteOrigin.setContent(this._quote.getOrigin());
       }
-      if ( _quote.getText() != null ) {
-	quoteText.setContent(_quote.getText());
+      if ( this._quote.getText() != null ) {
+	quoteText.setContent(this._quote.getText());
       }
-      if ( _quote.getAuthor() != null ) {
-	quoteAuthor.setContent(_quote.getAuthor());
+      if ( this._quote.getAuthor() != null ) {
+	quoteAuthor.setContent(this._quote.getAuthor());
       }
     }
 
-    addLeft(_iwrb.getLocalizedString("origin","Origin")+":",quoteOrigin,true);
-    addLeft(_iwrb.getLocalizedString("quote","Quote")+":",quoteText,true);
-    addLeft(_iwrb.getLocalizedString("author","Author")+":",quoteAuthor,true);
-    addHiddenInput(new HiddenInput(QuoteBusiness.PARAMETER_QUOTE_ID,Integer.toString(_quoteID)));
-    addHiddenInput(new HiddenInput(QuoteBusiness.PARAMETER_OBJECT_INSTANCE_ID,Integer.toString(_objectID)));
+    addLeft(this._iwrb.getLocalizedString("origin","Origin")+":",quoteOrigin,true);
+    addLeft(this._iwrb.getLocalizedString("quote","Quote")+":",quoteText,true);
+    addLeft(this._iwrb.getLocalizedString("author","Author")+":",quoteAuthor,true);
+    addHiddenInput(new HiddenInput(QuoteBusiness.PARAMETER_QUOTE_ID,Integer.toString(this._quoteID)));
+    addHiddenInput(new HiddenInput(QuoteBusiness.PARAMETER_OBJECT_INSTANCE_ID,Integer.toString(this._objectID)));
 
     addSubmitButton(new CloseButton());
-    addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("save","SAVE"),QuoteBusiness.PARAMETER_MODE,QuoteBusiness.PARAMETER_SAVE));
+    addSubmitButton(new SubmitButton(this._iwrb.getLocalizedImageButton("save","SAVE"),QuoteBusiness.PARAMETER_MODE,QuoteBusiness.PARAMETER_SAVE));
   }
 
   private void saveQuote(IWContext iwc) {
@@ -102,14 +102,14 @@ public QuoteEditor(){
     String quoteText = iwc.getParameter(QuoteBusiness.PARAMETER_QUOTE_TEXT);
     String quoteAuthor = iwc.getParameter(QuoteBusiness.PARAMETER_QUOTE_AUTHOR);
 
-    getQuoteBusiness().saveQuote(iwc,_objectID,_quoteID,_iLocaleID,quoteOrigin,quoteText,quoteAuthor);
+    getQuoteBusiness().saveQuote(iwc,this._objectID,this._quoteID,this._iLocaleID,quoteOrigin,quoteText,quoteAuthor);
 
     setParentToReload();
     close();
   }
 
   private void deleteQuote(IWContext iwc) {
-    getQuoteBusiness().deleteQuote(iwc,_objectID,_quoteID,_iLocaleID);
+    getQuoteBusiness().deleteQuote(iwc,this._objectID,this._quoteID,this._iLocaleID);
     setParentToReload();
     close();
   }

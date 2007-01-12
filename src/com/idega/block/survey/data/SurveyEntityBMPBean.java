@@ -232,7 +232,7 @@ public class SurveyEntityBMPBean extends com.idega.data.GenericEntity implements
 	
 	public void store(){
 		super.store();
-		Collection translations = storeMap.values();
+		Collection translations = this.storeMap.values();
 		for (Iterator iter = translations.iterator(); iter.hasNext();) {
 			SurveyEntityTranslation element = (SurveyEntityTranslation)iter.next();
 			element.setTransletedEntity(this);

@@ -22,9 +22,9 @@ public class ReportCategoryMaker extends Block{
   private String sIndex;
 
   public ReportCategoryMaker(){
-    sIndex = "0";
-    sName = "";
-    sInfo = "";
+    this.sIndex = "0";
+    this.sName = "";
+    this.sInfo = "";
   }
 
   private void control(IWContext iwc){
@@ -32,11 +32,11 @@ public class ReportCategoryMaker extends Block{
     try{
         doSome(iwc);
 
-        if(iwc.getParameter(sAction) != null){
-          sActPrm = iwc.getParameter(sAction);
+        if(iwc.getParameter(this.sAction) != null){
+          this.sActPrm = iwc.getParameter(this.sAction);
           try{
-            iAction = Integer.parseInt(sActPrm);
-            switch(iAction){
+            this.iAction = Integer.parseInt(this.sActPrm);
+            switch(this.iAction){
               case ACT0: doSome(iwc); break;
               case ACT1: doAct1(iwc); break;
               case ACT2: doAct2(iwc); break;
@@ -63,8 +63,8 @@ public class ReportCategoryMaker extends Block{
       if(id != 0){
         try {
           ReportCategory RC = ((com.idega.block.reports.data.ReportCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ReportCategory.class)).findByPrimaryKeyLegacy(id);
-          sName = RC.getName();
-          sInfo = RC.getDescription();
+          this.sName = RC.getName();
+          this.sInfo = RC.getDescription();
         }
         catch (Exception ex) {
         }
@@ -76,12 +76,13 @@ public class ReportCategoryMaker extends Block{
     String sIndex = iwc.getParameter("rep_cat_drp");
     Table T = new Table();
     Form myForm = new Form();
-    if(sIndex == null)
-      sIndex = "0";
+    if(sIndex == null) {
+		sIndex = "0";
+	}
     DropdownMenu drp = this.drpCategories("rep_cat_drp",sIndex);
     drp.setToSubmit();
-    TextInput tiName = new TextInput("rep_cat_name",sName);
-    TextInput tiInfo = new TextInput("rep_cat_info",sInfo);
+    TextInput tiName = new TextInput("rep_cat_name",this.sName);
+    TextInput tiInfo = new TextInput("rep_cat_info",this.sInfo);
     SubmitButton submit= new SubmitButton("Save",this.sAction,String.valueOf(this.ACT1));
     SubmitButton delete= new SubmitButton("Del",this.sAction,String.valueOf(this.ACT2));
     Table T2 = new Table();
@@ -102,25 +103,30 @@ public class ReportCategoryMaker extends Block{
   private void doAct1(IWContext iwc){
     int id = -1;
     String sIndex = iwc.getParameter("rep_cat_drp");
-    if(sIndex != null)
-       id = Integer.parseInt(sIndex);
-    sName = iwc.getParameter("rep_cat_name");
-    sInfo = iwc.getParameter("rep_cat_info");
-    if(id == 0)
-      this.saveCategory(sName,sInfo);
-    else
-      this.updateCategory(id,sName,sInfo);
+    if(sIndex != null) {
+		id = Integer.parseInt(sIndex);
+	}
+    this.sName = iwc.getParameter("rep_cat_name");
+    this.sInfo = iwc.getParameter("rep_cat_info");
+    if(id == 0) {
+		this.saveCategory(this.sName,this.sInfo);
+	}
+	else {
+		this.updateCategory(id,this.sName,this.sInfo);
+	}
   }
 
   private void doAct2(IWContext iwc){
     int id = 0;
     String sIndex = iwc.getParameter("rep_cat_drp");
-    if(sIndex != null)
-       id = Integer.parseInt(sIndex);
-    if(id != 0)
-      this.deleteCategory(id);
-    sName = "";
-    sInfo = "";
+    if(sIndex != null) {
+		id = Integer.parseInt(sIndex);
+	}
+    if(id != 0) {
+		this.deleteCategory(id);
+	}
+    this.sName = "";
+    this.sInfo = "";
   }
 
   private boolean saveCategory(String name,String info){
@@ -144,8 +150,9 @@ public class ReportCategoryMaker extends Block{
       rc.update();
       return true;
       }
-      else
-        return false;
+	else {
+		return false;
+	}
     }
     catch (Exception ex) {
       return false;
@@ -173,8 +180,9 @@ public class ReportCategoryMaker extends Block{
     for (int i = 0; i < cat.length; i++) {
       drp.addMenuElement(cat[i].getID(),cat[i].getName());
     }
-    if(!selected.equalsIgnoreCase(""))
-      drp.setSelectedElement(selected);
+    if(!selected.equalsIgnoreCase("")) {
+		drp.setSelectedElement(selected);
+	}
     return drp;
   }
 
@@ -186,7 +194,7 @@ public class ReportCategoryMaker extends Block{
       isAdmin = false;
     }
     */
-    isAdmin = true;
+    this.isAdmin = true;
     control(iwc);
   }
 

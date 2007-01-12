@@ -73,28 +73,29 @@ public class NewsLetterArchive extends CategoryBlock {
 	}
 
 	public void main(IWContext iwc) {
-		iwb = getBundle(iwc);
-		core = iwc.getIWMainApplication().getCoreBundle();
-		iwrb = getResourceBundle(iwc);
+		this.iwb = getBundle(iwc);
+		this.core = iwc.getIWMainApplication().getCoreBundle();
+		this.iwrb = getResourceBundle(iwc);
 		Table T = new Table();
 		int row = 1;
-		df = DateFormat.getDateInstance(DateFormat.LONG, iwc.getCurrentLocale());
+		this.df = DateFormat.getDateInstance(DateFormat.LONG, iwc.getCurrentLocale());
 
-		if (iwc.isParameterSet(prmTopic)) {
-			topic = Integer.parseInt(iwc.getParameter(prmTopic));
+		if (iwc.isParameterSet(this.prmTopic)) {
+			this.topic = Integer.parseInt(iwc.getParameter(this.prmTopic));
 		}
-		if (iwc.isParameterSet(prmLetter)) {
-			letter = Integer.parseInt(iwc.getParameter(prmLetter));
+		if (iwc.isParameterSet(this.prmLetter)) {
+			this.letter = Integer.parseInt(iwc.getParameter(this.prmLetter));
 		}
 		
-		if(iwc.isParameterSet(prmLetterDelete) && letter >0){
-			MailBusiness.getInstance().deleteLetter(letter);
+		if(iwc.isParameterSet(this.prmLetterDelete) && this.letter >0){
+			MailBusiness.getInstance().deleteLetter(this.letter);
 		}
 
 		if (getCategoryId() > 0) {
-			topics = MailFinder.getInstance().getTopics(this.getICObjectInstanceID());
-			if (topic > 0)
-				letters = MailFinder.getInstance().getEmailLetters(topic);
+			this.topics = MailFinder.getInstance().getTopics(this.getICObjectInstanceID());
+			if (this.topic > 0) {
+				this.letters = MailFinder.getInstance().getEmailLetters(this.topic);
+			}
 
 		}
 		if (iwc.hasEditPermission(this)) {
@@ -103,17 +104,19 @@ public class NewsLetterArchive extends CategoryBlock {
 			T.mergeCells(1, row, 2, row);
 			row++;
 		}
-		if (topics != null && !topics.isEmpty()) {
+		if (this.topics != null && !this.topics.isEmpty()) {
 			T.add(getTopics(), 1, row++);
-			if (topic < 0)
-				topic =(((EmailTopic) topics.iterator().next()).getIdentifier().intValue());
+			if (this.topic < 0) {
+				this.topic =(((EmailTopic) this.topics.iterator().next()).getIdentifier().intValue());
+			}
 		}
 
-		if (theLetter != null)
+		if (this.theLetter != null) {
 			T.add(getLetter(iwc), 2, row);
+		}
 
-		T.setAlignment(1, 2, T.VERTICAL_ALIGN_TOP);
-		T.setAlignment(2, 2, T.VERTICAL_ALIGN_TOP);
+		T.setAlignment(1, 2, Table.VERTICAL_ALIGN_TOP);
+		T.setAlignment(2, 2, Table.VERTICAL_ALIGN_TOP);
 
 		Form F = new Form();
 		F.add(T);
@@ -124,7 +127,7 @@ public class NewsLetterArchive extends CategoryBlock {
 		Table T = new Table();
 		T.setCellpadding(0);
 		T.setCellpadding(0);
-		T.add(getCategoryLink(core.getImage("/shared/detach.gif")), 1, 1);
+		T.add(getCategoryLink(this.core.getImage("/shared/detach.gif")), 1, 1);
 
 		return T;
 	}
@@ -139,42 +142,43 @@ public class NewsLetterArchive extends CategoryBlock {
 		Table T = new Table();
 		//T.add(getStyleText(iwrb.getLocalizedString("topic","Topic"),SN_TITLE),1,1);
 		//T.add(getStyleText(iwrb.getLocalizedString("issue","Issue"),SN_TITLE),2,1);
-		if (topics != null && topics.size() > 0) {
-			Iterator iter = topics.iterator();
+		if (this.topics != null && this.topics.size() > 0) {
+			Iterator iter = this.topics.iterator();
 			EmailTopic tpc;
 			Link link;
 			int row = 2;
 			while (iter.hasNext()) {
 				tpc = (EmailTopic) iter.next();
 				int id = tpc.getIdentifier().intValue();
-				if (letter > 0) {
-					if (topic == id) {
+				if (this.letter > 0) {
+					if (this.topic == id) {
 						link = getStyleLink(tpc.getName(), SN_TOPIC);
-						link.addParameter(prmTopic, tpc.getIdentifier().toString());
+						link.addParameter(this.prmTopic, tpc.getIdentifier().toString());
 						T.add(link, 1, row++);
-						if (letters != null && letters.size() > 0) {
-							Iterator iter2 = letters.iterator();
+						if (this.letters != null && this.letters.size() > 0) {
+							Iterator iter2 = this.letters.iterator();
 							EmailLetter let;
 							//Link subject;
 							while (iter2.hasNext()) {
 								let = (EmailLetter) iter2.next();
 								int lid = let.getIdentifier().intValue();
-								if (lid == letter)
-									theLetter = let;
+								if (lid == this.letter) {
+									this.theLetter = let;
+								}
 							}
 						}
 					}
 				} else {
 
 					link = getStyleLink(tpc.getName(), SN_TOPIC);
-					link.addParameter(prmTopic,tpc.getIdentifier().toString());
+					link.addParameter(this.prmTopic,tpc.getIdentifier().toString());
 
 					T.add(link, 1, row++);
-					if (topic > 0 && topic == id) {
+					if (this.topic > 0 && this.topic == id) {
 
 						//T.add(getLettersHeads(),2,row++);
-						if (letters != null && letters.size() > 0) {
-							Iterator iter2 = letters.iterator();
+						if (this.letters != null && this.letters.size() > 0) {
+							Iterator iter2 = this.letters.iterator();
 							EmailLetter let;
 							//int row = 1;
 							//T.add(getStyleText(iwrb.getLocalizedString("from","From"),SN_TITLE),1,row);
@@ -184,11 +188,12 @@ public class NewsLetterArchive extends CategoryBlock {
 							while (iter2.hasNext()) {
 								let = (EmailLetter) iter2.next();
 								int lid = let.getIdentifier().intValue();
-								if (lid == letter)
-									theLetter = let;
+								if (lid == this.letter) {
+									this.theLetter = let;
+								}
 								subject = getStyleLink(let.getSubject(), SN_SUBJ);
-								subject.addParameter(prmTopic, String.valueOf(topic));
-								subject.addParameter(prmLetter, let.getIdentifier().toString());
+								subject.addParameter(this.prmTopic, String.valueOf(this.topic));
+								subject.addParameter(this.prmLetter, let.getIdentifier().toString());
 								T.add(subject, 2, row);
 								//T.add(getStyleText(let.getFromName(),SN_FROM),2,row);
 								row++;
@@ -203,29 +208,29 @@ public class NewsLetterArchive extends CategoryBlock {
 
 	public PresentationObject getLetter(IWContext iwc) {
 		Table T = new Table();
-		T.setWidth(T.HUNDRED_PERCENT);
+		T.setWidth(Table.HUNDRED_PERCENT);
 		int row = 1;
-		T.add(getStyleText(theLetter.getSubject(), SN_SUBJ), 1, row);
+		T.add(getStyleText(this.theLetter.getSubject(), SN_SUBJ), 1, row);
 		T.mergeCells(1, row, 2, row);
 		row++;
-		T.add(getStyleText(iwrb.getLocalizedString("from", "From") + ":", SN_TITLE), 1, row);
-		T.add(getStyleText(theLetter.getFromName() + "[ " + theLetter.getFromAddress() + " ]",	SN_FROM),2,row++);
-		T.add(getStyleText(iwrb.getLocalizedString("date", "Date") + ":", SN_TITLE), 1, row);
-		T.add(getStyleText(df.format(theLetter.getCreated()), SN_DATE), 2, row++);
+		T.add(getStyleText(this.iwrb.getLocalizedString("from", "From") + ":", SN_TITLE), 1, row);
+		T.add(getStyleText(this.theLetter.getFromName() + "[ " + this.theLetter.getFromAddress() + " ]",	SN_FROM),2,row++);
+		T.add(getStyleText(this.iwrb.getLocalizedString("date", "Date") + ":", SN_TITLE), 1, row);
+		T.add(getStyleText(this.df.format(this.theLetter.getCreated()), SN_DATE), 2, row++);
 				
 		T.add(Text.getBreak(), 1, row++);
 
-		String body = TextSoap.findAndReplace(theLetter.getBody(), "\n", "<br>");
+		String body = TextSoap.findAndReplace(this.theLetter.getBody(), "\n", "<br>");
 		T.add(getStyleText(body, SN_BODY), 1, row);
 		T.mergeCells(1, row, 2, row);
 		row++;
 		
 		if(iwc.hasEditPermission(this)) {
-			SubmitButton delete = new SubmitButton(iwrb.getLocalizedString("delete","Delete"));
-			delete.setSubmitConfirm(iwrb.getLocalizedString("delete_confirm","Are you sure you want to delete this letter ?"));
-			T.add(new HiddenInput(prmLetterDelete,"true"));
-			T.add(new HiddenInput(prmTopic,String.valueOf(topic)));
-			T.add(new HiddenInput(prmLetter,String.valueOf(letter)));
+			SubmitButton delete = new SubmitButton(this.iwrb.getLocalizedString("delete","Delete"));
+			delete.setSubmitConfirm(this.iwrb.getLocalizedString("delete_confirm","Are you sure you want to delete this letter ?"));
+			T.add(new HiddenInput(this.prmLetterDelete,"true"));
+			T.add(new HiddenInput(this.prmTopic,String.valueOf(this.topic)));
+			T.add(new HiddenInput(this.prmLetter,String.valueOf(this.letter)));
 			T.add(delete,1,row);
 		}
 		return T;
@@ -233,8 +238,8 @@ public class NewsLetterArchive extends CategoryBlock {
 
 	public PresentationObject getLettersHeads() {
 		Table T = new Table();
-		if (letters != null && letters.size() > 0) {
-			Iterator iter = letters.iterator();
+		if (this.letters != null && this.letters.size() > 0) {
+			Iterator iter = this.letters.iterator();
 			EmailLetter let;
 			int row = 1;
 			//T.add(getStyleText(iwrb.getLocalizedString("from","From"),SN_TITLE),1,row);
@@ -244,11 +249,12 @@ public class NewsLetterArchive extends CategoryBlock {
 			while (iter.hasNext()) {
 				let = (EmailLetter) iter.next();
 				int id = let.getIdentifier().intValue();
-				if (id == letter)
-					theLetter = let;
+				if (id == this.letter) {
+					this.theLetter = let;
+				}
 				link = getStyleLink(let.getSubject(), SN_SUBJ);
-				link.addParameter(prmTopic, String.valueOf(topic));
-				link.addParameter(prmLetter, String.valueOf(let.getIdentifier().toString()));
+				link.addParameter(this.prmTopic, String.valueOf(this.topic));
+				link.addParameter(this.prmLetter, String.valueOf(let.getIdentifier().toString()));
 				T.add(link, 1, row);
 				//T.add(getStyleText(let.getFromName(),SN_FROM),2,row);
 				row++;

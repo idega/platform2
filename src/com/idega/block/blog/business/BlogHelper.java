@@ -14,15 +14,15 @@ public class BlogHelper {
 	private BlogEntity eBlog;
 	private ContentHelper cHelper;
 	public BlogEntity getBlogEntity() {
-		return eBlog;
+		return this.eBlog;
 	}
 	public void setBlog(BlogEntity blog) {
-		eBlog = blog;
+		this.eBlog = blog;
 	}
 	public ContentHelper getContentHelper() {
-		return cHelper;
+		return this.cHelper;
 	}
 	public void setContentHelper(ContentHelper contentHelper) {
-		cHelper = contentHelper;
+		this.cHelper = contentHelper;
 	}
 }

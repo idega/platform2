@@ -29,23 +29,23 @@ private Integer complexID;
     setWidth(688);
     setHeight(500);
     setAllMargins(0);
-    complexID = null;
+    this.complexID = null;
     this.setResizable(false);
     this.setScrollbar(false);
   }
 
   public void main(IWContext iwc) {
-    iwrb_ = this.getResourceBundle(iwc);
-    setTitle(iwrb_.getLocalizedString("map","Map of the area"));
+    this.iwrb_ = this.getResourceBundle(iwc);
+    setTitle(this.iwrb_.getLocalizedString("map","Map of the area"));
 
     try {
-      complexID = Integer.valueOf(iwc.getParameter(BuildingViewer.PARAMETER_STRING));
+      this.complexID = Integer.valueOf(iwc.getParameter(BuildingViewer.PARAMETER_STRING));
     }
     catch (NumberFormatException e) {
-      complexID = null;
+      this.complexID = null;
     }
 
-    if ( complexID !=null) {
+    if ( this.complexID !=null) {
       getMap();
     }
     else {
@@ -56,14 +56,15 @@ private Integer complexID;
   public void getMap() {
     int imageID = -1;
 
-    Image location = iwrb_.getImage("/building/default.jpg");
-    Image closeImage = iwrb_.getImage("/room/close.gif");
+    Image location = this.iwrb_.getImage("/building/default.jpg");
+    Image closeImage = this.iwrb_.getImage("/room/close.gif");
 
     try {
 
-      imageID = ((ComplexHome)com.idega.data.IDOLookup.getHome(Complex.class)).findByPrimaryKey(complexID).getImageId();
-      if ( imageID != -1 )
-        location = new Image(imageID);
+      imageID = ((ComplexHome)com.idega.data.IDOLookup.getHome(Complex.class)).findByPrimaryKey(this.complexID).getImageId();
+      if ( imageID != -1 ) {
+		location = new Image(imageID);
+	}
     }
     catch (Exception e) {
       imageID = -1;

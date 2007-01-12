@@ -16,6 +16,7 @@ import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.file.data.ICFile;
 import com.idega.data.EntityFinder;
+import com.idega.data.GenericEntity;
 import com.idega.data.IDOLookupException;
 
 /**
@@ -61,7 +62,7 @@ public class BoxFinder {
 		try {
 			List L =
 				EntityFinder.findAllByColumn(
-					com.idega.block.boxoffice.data.BoxEntityBMPBean.getStaticInstance(BoxEntity.class),
+					GenericEntity.getStaticInstance(BoxEntity.class),
 					com.idega.block.boxoffice.data.BoxEntityBMPBean.getColumnNameAttribute(),
 					attribute);
 			if (L != null) {
@@ -106,18 +107,20 @@ public class BoxFinder {
 	public static List getCategoriesInBox(BoxEntity box, int userID) {
 		try {
 			List list = null;
-			if (box != null)
-				list = EntityFinder.findRelated(box, com.idega.block.boxoffice.data.BoxCategoryBMPBean.getStaticInstance(BoxCategory.class));
+			if (box != null) {
+				list = EntityFinder.findRelated(box, GenericEntity.getStaticInstance(BoxCategory.class));
+			}
 			List userList =
 				EntityFinder.findAllByColumn(
-					com.idega.block.boxoffice.data.BoxCategoryBMPBean.getStaticInstance(BoxCategory.class),
+					GenericEntity.getStaticInstance(BoxCategory.class),
 					com.idega.block.boxoffice.data.BoxCategoryBMPBean.getColumnNameUserID(),
 					userID);
 			if (userList != null) {
 				if (list != null) {
 					for (int a = 0; a < list.size(); a++) {
-						if (!userList.contains(list.get(a)))
+						if (!userList.contains(list.get(a))) {
 							userList.add(list.get(a));
+						}
 					}
 				}
 				return userList;
@@ -140,7 +143,7 @@ public class BoxFinder {
 			BoxEntity box = BoxFinder.getBox(boxID);
 			if (box != null) {
 				EntityFinder.debug = true;
-				List list = EntityFinder.findNonRelated(box, com.idega.block.boxoffice.data.BoxCategoryBMPBean.getStaticInstance(BoxCategory.class));
+				List list = EntityFinder.findNonRelated(box, GenericEntity.getStaticInstance(BoxCategory.class));
 				return list;
 			}
 			else {
@@ -156,7 +159,7 @@ public class BoxFinder {
 	public static List getAllCategories() {
 		try {
 			EntityFinder.debug = true;
-			List list = EntityFinder.findAll(com.idega.block.boxoffice.data.BoxCategoryBMPBean.getStaticInstance(BoxCategory.class));
+			List list = EntityFinder.findAll(GenericEntity.getStaticInstance(BoxCategory.class));
 			return list;
 		}
 		catch (Exception e) {
@@ -168,8 +171,9 @@ public class BoxFinder {
 	public static List getCategoriesInBox(int boxID) {
 		try {
 			BoxEntity box = BoxFinder.getBox(boxID);
-			if (box != null)
-				return EntityFinder.findRelated(box, com.idega.block.boxoffice.data.BoxCategoryBMPBean.getStaticInstance(BoxCategory.class));
+			if (box != null) {
+				return EntityFinder.findRelated(box, GenericEntity.getStaticInstance(BoxCategory.class));
+			}
 			return null;
 		}
 		catch (Exception e) {
@@ -179,7 +183,7 @@ public class BoxFinder {
 
 	public static BoxCategory[] getCategoriesInBox(BoxEntity box) {
 		try {
-			BoxCategory[] categories = (BoxCategory[]) box.findRelated(com.idega.block.boxoffice.data.BoxCategoryBMPBean.getStaticInstance(BoxCategory.class));
+			BoxCategory[] categories = (BoxCategory[]) box.findRelated(GenericEntity.getStaticInstance(BoxCategory.class));
 			if (categories != null) {
 				return categories;
 			}
@@ -193,7 +197,7 @@ public class BoxFinder {
 	public static BoxLink[] getLinksInBox(BoxEntity box, BoxCategory boxCategory) {
 		try {
 			BoxLink[] links =
-				(BoxLink[]) com.idega.block.boxoffice.data.BoxLinkBMPBean.getStaticInstance(BoxLink.class).findAllByColumnOrdered(
+				(BoxLink[]) GenericEntity.getStaticInstance(BoxLink.class).findAllByColumnOrdered(
 					com.idega.block.boxoffice.data.BoxEntityBMPBean.getColumnNameBoxID(),
 					Integer.toString(box.getID()),
 					com.idega.block.boxoffice.data.BoxCategoryBMPBean.getColumnNameBoxCategoryID(),
@@ -228,7 +232,7 @@ public class BoxFinder {
 		if (links != null) {
 			if (userId > 0) {
 				for (int i = 0; i < links.length; i++) {
-					BoxLink link = (BoxLink) links[i];
+					BoxLink link = links[i];
 					if (link.getUserID() == userId) {
 						ret.add(link);
 					}
@@ -256,7 +260,7 @@ public class BoxFinder {
 	public static BoxLink[] getLinksInCategory(BoxCategory boxCategory) {
 		try {
 			BoxLink[] links =
-				(BoxLink[]) com.idega.block.boxoffice.data.BoxLinkBMPBean.getStaticInstance(BoxLink.class).findAllByColumnOrdered(
+				(BoxLink[]) GenericEntity.getStaticInstance(BoxLink.class).findAllByColumnOrdered(
 					com.idega.block.boxoffice.data.BoxCategoryBMPBean.getColumnNameBoxCategoryID(),
 					Integer.toString(boxCategory.getID()),
 					com.idega.block.boxoffice.data.BoxLinkBMPBean.getColumnNameCreationDate() + " desc",
@@ -298,8 +302,9 @@ public class BoxFinder {
 			if (L != null) {
 				return ((ICObjectInstance) L.get(0)).getID();
 			}
-			else
+			else {
 				return -1;
+			}
 		}
 		catch (SQLException ex) {
 			ex.printStackTrace();

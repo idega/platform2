@@ -89,8 +89,8 @@ public class EmailServiceHandler /*implements ServiceInterface*/{
     Session session = Session.getDefaultInstance(properties, null);
 
     // Get the store
-    Store store = session.getStore(serverType);
-    store.connect(server, userName, password);
+    Store store = session.getStore(this.serverType);
+    store.connect(this.server, this.userName, this.password);
 
     // Get folder
     Folder folder = store.getFolder("INBOX");
@@ -139,7 +139,7 @@ public class EmailServiceHandler /*implements ServiceInterface*/{
 
       String bodyString = "";
       Multipart multiPart = (Multipart) message.getContent();
-//      letter.setBody(); KLÁRA!!!
+//      letter.setBody(); KLï¿½RA!!!
 
       for (int j=0, n=multiPart.getCount(); j<n; j++) {
 
@@ -278,7 +278,7 @@ public class EmailServiceHandler /*implements ServiceInterface*/{
         if (disposition == null) {
           // Handle plain and html
           if (part.isMimeType("text/plain") || part.isMimeType("text/html")) {
-            //Á að setja eitthvert bil á milli strengjanna??
+            //ï¿½ aï¿½ setja eitthvert bil ï¿½ milli strengjanna??
             bodyString = bodyString + (String) part.getContent();
           }
         }
@@ -295,7 +295,7 @@ public class EmailServiceHandler /*implements ServiceInterface*/{
     }
   }
 
-  /*Sets the flag of the messages which are to be deleted, but dosn´t expunge until the user
+  /*Sets the flag of the messages which are to be deleted, but dosnï¿½t expunge until the user
     is disconnected from the server.  That is when his session outdates (, or he logs out).*/
   public static void removeMessages(IWContext iwc, String[] checkedMessages) throws MessagingException{
     if (checkedMessages != null) {
@@ -327,7 +327,9 @@ public class EmailServiceHandler /*implements ServiceInterface*/{
     Message[] messages = getMessages(iwc);
     int count = 0;
     for (int i = 0; i < messages.length; i++) {
-      if (!messages[i].getFlags().contains(Flags.Flag.DELETED)) count++;
+      if (!messages[i].getFlags().contains(Flags.Flag.DELETED)) {
+		count++;
+	}
     }
     return count;
   }

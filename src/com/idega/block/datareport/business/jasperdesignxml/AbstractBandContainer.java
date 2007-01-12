@@ -30,33 +30,33 @@ abstract class AbstractBandContainer extends XMLElement {
 	 */
 	public AbstractBandContainer(String name) {
 		super(name);
-		_band = new Band();
-		super.addContent(_band);
+		this._band = new Band();
+		super.addContent(this._band);
 	}
 	
 	protected Band getBand(){
-		return _band;
+		return this._band;
 	}
 	
 	public void setHeight(int height){
-		_band.setAttribute(ATTRIBUTE_HEIGHT,Integer.toString(height));
+		this._band.setAttribute(ATTRIBUTE_HEIGHT,Integer.toString(height));
 	}
 	
 	public void setIsSplitAllowed(boolean value){
-		_band.setAttribute(ATTRIBUTE_IS_SPLIT_ALLOWED,String.valueOf(value));
+		this._band.setAttribute(ATTRIBUTE_IS_SPLIT_ALLOWED,String.valueOf(value));
 	}
 	
 	public XMLElement addContent(String text){
-		return _band.addContent(text);
+		return this._band.addContent(text);
 	}
 	
 	public XMLElement addContent(XMLCDATA data){
-		return _band.addContent(data);
+		return this._band.addContent(data);
 
 	}
 	
 	public XMLElement addContent(XMLElement element){
-		return _band.addContent(element);
+		return this._band.addContent(element);
 	}
 	
 	

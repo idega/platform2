@@ -36,56 +36,56 @@ public class Parameter {
 	 * @return
 	 */
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 	/**
 	 * @return
 	 */
 	public Class getType() {
-		return type;
+		return this.type;
 	}
 
 	/**
 	 * @return
 	 */
 	public Object getValue() {
-		return value;
+		return this.value;
 	}
 
 	/**
 	 * @param string
 	 */
 	public void setName(String string) {
-		name = string;
+		this.name = string;
 	}
 
 	/**
 	 * @param class1
 	 */
 	public void setType(Class class1) {
-		type = class1;
+		this.type = class1;
 	}
 
 	/**
 	 * @param object
 	 */
 	public void setValue(Object object) {
-		value = object;
+		this.value = object;
 	}
 
 	/**
 	 * @return
 	 */
 	public Object getDefaultValue() {
-		return defaultValue;
+		return this.defaultValue;
 	}
 
 	/**
 	 * @param object
 	 */
 	public void setDefaultValue(Object object) {
-		defaultValue = object;
+		this.defaultValue = object;
 	}
 	
 	public void setAsDefaultValue(){

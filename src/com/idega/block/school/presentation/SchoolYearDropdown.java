@@ -27,7 +27,7 @@ public class SchoolYearDropdown extends DropdownMenu {
 	 */
 	public SchoolYearDropdown(String name, int schoolID) {
 		super(name);
-		_schoolID = schoolID;
+		this._schoolID = schoolID;
 	}
 	
 	public void main(IWContext iwc) throws Exception {
@@ -52,7 +52,7 @@ public class SchoolYearDropdown extends DropdownMenu {
 	 * @return int
 	 */
 	public int getSchoolID() {
-		return _schoolID;
+		return this._schoolID;
 	}
 
 	/**
@@ -60,6 +60,6 @@ public class SchoolYearDropdown extends DropdownMenu {
 	 * @param schoolID The schoolID to set
 	 */
 	public void setSchoolID(int schoolID) {
-		_schoolID = schoolID;
+		this._schoolID = schoolID;
 	}
 }

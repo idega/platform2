@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.24 2004/02/13 13:56:08 gimmi Exp $
+ * $Id: ContractBMPBean.java,v 1.24.2.1 2007/01/12 19:32:16 idegaweb Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -178,8 +178,10 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements com
 		if ((status.equalsIgnoreCase(statusCreated)) || (status.equalsIgnoreCase(statusEnded)) || (status.equalsIgnoreCase(statusRejected)) || (status.equalsIgnoreCase(statusSigned)) || (status.equalsIgnoreCase(statusTerminated)) || (status.equalsIgnoreCase(statusResigned)) || (status.equalsIgnoreCase(statusPrinted))) {
 			setColumn(status_, status);
 			setStatusDate(IWTimestamp.RightNow().getSQLDate());
-		} else
+		}
+		else {
 			throw new IllegalStateException("Undefined state : " + status);
+		}
 	}
 	public String getStatus() {
 		return ((String)getColumnValue(status_));
@@ -260,7 +262,7 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements com
 	public static void main(String args[]){
 		Map map = new HashMap();
 		map.put("name", "Roar");
-		System.out.println(new ContractBMPBean().setUnsetFields(map, "Enter the name: <name/>. Age: <age/>."));
+		System.out.println(ContractBMPBean.setUnsetFields(map, "Enter the name: <name/>. Age: <age/>."));
 	}
 
 	/**
@@ -307,10 +309,12 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements com
 			Contract C = ((ContractHome)IDOLookup.getHome(Contract.class)).create();
 			C.setStatus(sStatus);
 			C.setValidFrom(ValFrom.getSQLDate());
-			if (userID != -1)
+			if (userID != -1) {
 				C.setUserId(userID);
-			if (ValTo != null)
+			}
+			if (ValTo != null) {
 				C.setValidTo(ValTo.getSQLDate());
+			}
 			C.setCategoryId(iCategoryId);
 			Iterator it = null;
 			if (map != null) {
@@ -344,8 +348,9 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements com
 			C.setText(text);
 			C.setValidFrom(ValFrom.getSQLDate());
 			C.setUserId(userId);
-			if (ValTo != null)
+			if (ValTo != null) {
 				C.setValidTo(ValTo.getSQLDate());
+			}
 			C.setCategoryId(iCategoryId);
 			C.store();
 			//				ContractWriter.writeText(C.getID(), iCategoryId);
@@ -364,14 +369,14 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements com
 		return null;
 	}
 	public Collection ejbFindAllByCategory(int iCategoryID) throws FinderException {
-		return super.idoFindPKsByQuery(idoQueryGetSelect().appendWhereEquals(this.getColumnNameCategoryId(), iCategoryID));
+		return super.idoFindPKsByQuery(idoQueryGetSelect().appendWhereEquals(ContractBMPBean.getColumnNameCategoryId(), iCategoryID));
 	}
 
 	public Collection ejbFindAllByUser(int userID) throws FinderException {
-		return super.idoFindPKsByQuery(idoQueryGetSelect().appendWhereEquals(this.getColumnNameUserId(), userID));
+		return super.idoFindPKsByQuery(idoQueryGetSelect().appendWhereEquals(ContractBMPBean.getColumnNameUserId(), userID));
 	}
 	public Collection ejbFindAllByCategoryAndStatus(int iCategoryID, String status) throws FinderException {
-		return super.idoFindPKsByQuery(idoQueryGetSelect().appendWhereEquals(this.getColumnNameCategoryId(), iCategoryID).appendAndEquals(getColumnNameStatus(), status));
+		return super.idoFindPKsByQuery(idoQueryGetSelect().appendWhereEquals(ContractBMPBean.getColumnNameCategoryId(), iCategoryID).appendAndEquals(getColumnNameStatus(), status));
 	}
 	public boolean ejbHomeSetStatus(int conID, String status) throws FinderException, IDOLookupException {
 		Contract C = ((ContractHome)IDOLookup.getHome(Contract.class)).findByPrimaryKey(new Integer(conID));

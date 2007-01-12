@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumber.java,v 1.27 2005/05/07 17:10:47 palli Exp $
+ * $Id: ReferenceNumber.java,v 1.27.2.1 2007/01/12 19:31:19 idegaweb Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -82,57 +82,58 @@ public class ReferenceNumber extends Block {
 	}
 
 	public void main(IWContext iwc) throws Exception {
-		iwb = getBundle(iwc);
-		iwrb = getResourceBundle(iwc);
+		this.iwb = getBundle(iwc);
+		this.iwrb = getResourceBundle(iwc);
 
-		submitButtonText = iwrb.getLocalizedString("get", "Get");
+		this.submitButtonText = this.iwrb.getLocalizedString("get", "Get");
 
-		referenceText = iwrb.getLocalizedString("referenceNumber", "Referencenumber");
+		this.referenceText = this.iwrb.getLocalizedString("referenceNumber", "Referencenumber");
 		setup();
 
-		outerTable.add(myForm);
-		add(outerTable);
+		this.outerTable.add(this.myForm);
+		add(this.outerTable);
 	}
 
 	private void setup() {
 		Table referenceTable = new Table(1, 2);
 		referenceTable.setBorder(0);
-		referenceTable.setWidth(referenceWidth);
-		referenceTable.setHeight(referenceHeight);
-		if (!colour.equals("")) {
-			referenceTable.setColor(colour);
+		referenceTable.setWidth(this.referenceWidth);
+		referenceTable.setHeight(this.referenceHeight);
+		if (!this.colour.equals("")) {
+			referenceTable.setColor(this.colour);
 		}
 		referenceTable.setCellpadding(0);
 		referenceTable.setCellspacing(0);
-		if (!"".equals(backgroundImageUrl))
-			referenceTable.setBackgroundImage(new Image(backgroundImageUrl));
-
-		HelpButton helpButton = new HelpButton(iwrb.getLocalizedString("help_headline", "Reference number"),
-				iwrb.getLocalizedString("help", "Help"));
-
-		Text referenceTexti = new Text(referenceText);
-		if (referenceTextSize != -1) {
-			referenceTexti.setFontSize(referenceTextSize);
+		if (!"".equals(this.backgroundImageUrl)) {
+			referenceTable.setBackgroundImage(new Image(this.backgroundImageUrl));
 		}
 
-		if (referenceTextColour != null) {
-			referenceTexti.setFontColor(referenceTextColour);
+		HelpButton helpButton = new HelpButton(this.iwrb.getLocalizedString("help_headline", "Reference number"),
+				this.iwrb.getLocalizedString("help", "Help"));
+
+		Text referenceTexti = new Text(this.referenceText);
+		if (this.referenceTextSize != -1) {
+			referenceTexti.setFontSize(this.referenceTextSize);
 		}
 
-		referenceTexti.setFontStyle(textStyles);
+		if (this.referenceTextColour != null) {
+			referenceTexti.setFontColor(this.referenceTextColour);
+		}
+
+		referenceTexti.setFontStyle(this.textStyles);
 
 		Table inputTable;
 
 		TextInput reference = new TextInput(CAM_REF_NUMBER);
-		reference.setMarkupAttribute("style", styleAttribute);
-		reference.setSize(inputLength);
+		reference.setMarkupAttribute("style", this.styleAttribute);
+		reference.setSize(this.inputLength);
 
-		switch (layout) {
+		switch (this.layout) {
 			case LAYOUT_HORIZONTAL:
 				inputTable = new Table(3, 2);
 				inputTable.setBorder(0);
-				if (!(colour.equals(""))) {
-					inputTable.setColor(colour);
+				if (!(this.colour.equals(""))) {
+					inputTable.setColor(this.colour);
 				}
 				inputTable.setCellpadding(0);
 				inputTable.setCellspacing(0);
@@ -151,8 +152,8 @@ public class ReferenceNumber extends Block {
 			case LAYOUT_VERTICAL:
 				inputTable = new Table(3, 3);
 				inputTable.setBorder(0);
-				if (!(colour.equals(""))) {
-					inputTable.setColor(colour);
+				if (!(this.colour.equals(""))) {
+					inputTable.setColor(this.colour);
 				}
 				inputTable.setCellpadding(0);
 				inputTable.setCellspacing(0);
@@ -175,8 +176,8 @@ public class ReferenceNumber extends Block {
 				inputTable.setCellspacing(0);
 				inputTable.addText("", 1, 2);
 				inputTable.setHeight(1, "2");
-				if (!(colour.equals(""))) {
-					inputTable.setColor(colour);
+				if (!(this.colour.equals(""))) {
+					inputTable.setColor(this.colour);
 				}
 				inputTable.setAlignment(1, 1, "left");
 				inputTable.setAlignment(1, 2, "left");
@@ -190,34 +191,34 @@ public class ReferenceNumber extends Block {
 		}
 
 		Table submitTable = new Table(1, 1);
-		if (hasHelpButton) {
+		if (this.hasHelpButton) {
 			submitTable = new Table(2, 1);
 		}
 		submitTable.setBorder(0);
-		if (!colour.equals("")) {
-			submitTable.setColor(colour);
+		if (!this.colour.equals("")) {
+			submitTable.setColor(this.colour);
 		}
 		submitTable.setRowVerticalAlignment(1, "middle");
-		if (!hasHelpButton) {
-			submitTable.setAlignment(1, 1, submitButtonAlignment);
+		if (!this.hasHelpButton) {
+			submitTable.setAlignment(1, 1, this.submitButtonAlignment);
 		}
 		else {
 			submitTable.setAlignment(2, 1, "right");
 		}
 		submitTable.setWidth("100%");
 
-		if (!hasHelpButton) {
-			submitTable.add(new SubmitButton(submitButtonText, "tengja"), 1, 1);
+		if (!this.hasHelpButton) {
+			submitTable.add(new SubmitButton(this.submitButtonText, "tengja"), 1, 1);
 		}
 		else {
-			submitTable.add(new SubmitButton(submitButtonText, "tengja"), 2, 1);
+			submitTable.add(new SubmitButton(this.submitButtonText, "tengja"), 2, 1);
 			submitTable.add(helpButton, 1, 1);
 		}
 
 		referenceTable.add(submitTable, 1, 2);
-		myForm.add(referenceTable);
-		if (pageId > 0) {
-			myForm.setPageToSubmitTo(pageId);
+		this.myForm.add(referenceTable);
+		if (this.pageId > 0) {
+			this.myForm.setPageToSubmitTo(this.pageId);
 		}
 	}
 
@@ -226,11 +227,11 @@ public class ReferenceNumber extends Block {
 	}
 
 	public void setHelpButton(boolean usehelp) {
-		hasHelpButton = usehelp;
+		this.hasHelpButton = usehelp;
 	}
 
 	public void addHelpButton() {
-		hasHelpButton = true;
+		this.hasHelpButton = true;
 	}
 
 	public void setLayout(int layout) {
@@ -238,30 +239,30 @@ public class ReferenceNumber extends Block {
 	}
 
 	private void setDefaultValues() {
-		referenceWidth = "148";
-		referenceHeight = "89";
-		submitButtonAlignment = "center";
-		layout = LAYOUT_VERTICAL;
+		this.referenceWidth = "148";
+		this.referenceHeight = "89";
+		this.submitButtonAlignment = "center";
+		this.layout = LAYOUT_VERTICAL;
 
-		outerTable = new Table();
-		outerTable.setCellpadding(0);
-		outerTable.setCellspacing(0);
+		this.outerTable = new Table();
+		this.outerTable.setCellpadding(0);
+		this.outerTable.setCellspacing(0);
 
-		myForm = new Form();
-		myForm.add(new HiddenInput("cam_fact_view", "50"));
-		myForm.setMethod("post");
+		this.myForm = new Form();
+		this.myForm.add(new HiddenInput("cam_fact_view", "50"));
+		this.myForm.setMethod("post");
 	}
 
 	public void setVertical() {
-		layout = LAYOUT_VERTICAL;
+		this.layout = LAYOUT_VERTICAL;
 	}
 
 	public void setHorizontal() {
-		layout = LAYOUT_HORIZONTAL;
+		this.layout = LAYOUT_HORIZONTAL;
 	}
 
 	public void setStacked() {
-		layout = LAYOUT_STACKED;
+		this.layout = LAYOUT_STACKED;
 	}
 
 	public void setStyle(String styleAttribute) {
@@ -273,49 +274,51 @@ public class ReferenceNumber extends Block {
 	}
 
 	public void setReferenceTextSize(int size) {
-		referenceTextSize = size;
+		this.referenceTextSize = size;
 	}
 
 	public void setReferenceTextColor(String color) {
-		referenceTextColour = color;
+		this.referenceTextColour = color;
 	}
 
 	public void setColor(String color) {
-		colour = color;
+		this.colour = color;
 	}
 
 	public void setHeight(String height) {
-		referenceHeight = height;
+		this.referenceHeight = height;
 	}
 
 	public void setWidth(String width) {
-		referenceWidth = width;
+		this.referenceWidth = width;
 	}
 
 	public void setBackgroundImageUrl(String url) {
-		backgroundImageUrl = url;
+		this.backgroundImageUrl = url;
 	}
 
 	public void setSubmitButtonAlignment(String alignment) {
-		submitButtonAlignment = alignment;
+		this.submitButtonAlignment = alignment;
 	}
 
 	public void setTextStyle(String styleAttribute) {
-		textStyles = styleAttribute;
+		this.textStyles = styleAttribute;
 	}
 
 	public void setPage(com.idega.core.builder.data.ICPage page) {
-		pageId = page.getID();
+		this.pageId = page.getID();
 	}
 
 	public synchronized Object clone() {
 		ReferenceNumber obj = null;
 		try {
 			obj = (ReferenceNumber) super.clone();
-			if (outerTable != null)
-				obj.outerTable = (Table) outerTable.clone();
-			if (myForm != null)
-				obj.myForm = (Form) myForm.clone();
+			if (this.outerTable != null) {
+				obj.outerTable = (Table) this.outerTable.clone();
+			}
+			if (this.myForm != null) {
+				obj.myForm = (Form) this.myForm.clone();
+			}
 		}
 		catch (Exception ex) {
 			ex.printStackTrace(System.err);

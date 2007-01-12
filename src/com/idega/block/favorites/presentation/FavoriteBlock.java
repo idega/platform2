@@ -1,5 +1,5 @@
 /*
- * $Id: FavoriteBlock.java,v 1.2 2004/11/26 08:41:56 laddi Exp $
+ * $Id: FavoriteBlock.java,v 1.2.2.1 2007/01/12 19:32:21 idegaweb Exp $
  * Created on 4.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -31,7 +31,7 @@ import com.idega.presentation.ui.RadioButton;
  * Last modified: 4.11.2004 15:53:08 by laddi
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.2.2.1 $
  */
 public abstract class FavoriteBlock extends Block {
 
@@ -62,8 +62,8 @@ public abstract class FavoriteBlock extends Block {
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
 	 */
 	public void main(IWContext iwc) throws Exception {
-		iwb = getBundle(iwc);
-		iwrb = getResourceBundle(iwc);
+		this.iwb = getBundle(iwc);
+		this.iwrb = getResourceBundle(iwc);
 		
 		present(iwc);
 	}
@@ -96,59 +96,59 @@ public abstract class FavoriteBlock extends Block {
 	 * @return Returns the iwb.
 	 */
 	protected IWBundle getBundle() {
-		return iwb;
+		return this.iwb;
 	}
 	
 	/**
 	 * @return Returns the iwrb.
 	 */
 	protected IWResourceBundle getResourceBundle() {
-		return iwrb;
+		return this.iwrb;
 	}
 	
 	protected Text getHeader(String string) {
 		Text text = new Text(string);
-		if (iHeaderStyleClass != null) {
-			text.setStyleClass(iHeaderStyleClass);
+		if (this.iHeaderStyleClass != null) {
+			text.setStyleClass(this.iHeaderStyleClass);
 		}
 		return text;
 	}
 	
 	protected Text getText(String string) {
 		Text text = new Text(string);
-		if (iTextStyleClass != null) {
-			text.setStyleClass(iTextStyleClass);
+		if (this.iTextStyleClass != null) {
+			text.setStyleClass(this.iTextStyleClass);
 		}
 		return text;
 	}
 	
 	protected Link getLink(String string) {
 		Link link = new Link(string);
-		if (iLinkStyleClass != null) {
-			link.setStyleClass(iLinkStyleClass);
+		if (this.iLinkStyleClass != null) {
+			link.setStyleClass(this.iLinkStyleClass);
 		}
 		return link;
 	}
 	
 	protected InterfaceObject getInput(InterfaceObject input) {
-		if (iInputStyleClass != null) {
-			input.setStyleClass(iInputStyleClass);
+		if (this.iInputStyleClass != null) {
+			input.setStyleClass(this.iInputStyleClass);
 		}
 		return input;
 	}
 	
 	protected RadioButton getRadioButton(String name, String value) {
 		RadioButton button = new RadioButton(name, value);
-		if (iRadioStyleClass != null) {
-			button.setStyleClass(iRadioStyleClass);
+		if (this.iRadioStyleClass != null) {
+			button.setStyleClass(this.iRadioStyleClass);
 		}
 		return button;
 	}
 	
 	protected CheckBox getCheckBox(String name, String value) {
 		CheckBox box = new CheckBox(name, value);
-		if (iRadioStyleClass != null) {
-			box.setStyleClass(iRadioStyleClass);
+		if (this.iRadioStyleClass != null) {
+			box.setStyleClass(this.iRadioStyleClass);
 		}
 		return box;
 	}
@@ -157,36 +157,36 @@ public abstract class FavoriteBlock extends Block {
 	 * @param headerStyleClass The headerStyleClass to set.
 	 */
 	public void setHeaderStyleClass(String headerStyleClass) {
-		iHeaderStyleClass = headerStyleClass;
+		this.iHeaderStyleClass = headerStyleClass;
 	}
 	/**
 	 * @param inputStyleClass The inputStyleClass to set.
 	 */
 	public void setInputStyleClass(String inputStyleClass) {
-		iInputStyleClass = inputStyleClass;
+		this.iInputStyleClass = inputStyleClass;
 	}
 	/**
 	 * @param linkStyleClass The linkStyleClass to set.
 	 */
 	public void setLinkStyleClass(String linkStyleClass) {
-		iLinkStyleClass = linkStyleClass;
+		this.iLinkStyleClass = linkStyleClass;
 	}
 	/**
 	 * @param radioStyleClass The radioStyleClass to set.
 	 */
 	public void setRadioStyleClass(String radioStyleClass) {
-		iRadioStyleClass = radioStyleClass;
+		this.iRadioStyleClass = radioStyleClass;
 	}
 	/**
 	 * @param radioStyleClass The checkStyleClass to set.
 	 */
 	public void setCheckStyleClass(String checkStyleClass) {
-		iRadioStyleClass = checkStyleClass;
+		this.iRadioStyleClass = checkStyleClass;
 	}
 	/**
 	 * @param textStyleClass The textStyleClass to set.
 	 */
 	public void setTextStyleClass(String textStyleClass) {
-		iTextStyleClass = textStyleClass;
+		this.iTextStyleClass = textStyleClass;
 	}
 }

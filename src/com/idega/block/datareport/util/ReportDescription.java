@@ -1,5 +1,5 @@
 /*
- * $Id: ReportDescription.java,v 1.1 2004/10/07 14:56:21 gummi Exp $
+ * $Id: ReportDescription.java,v 1.1.2.1 2007/01/12 19:31:42 idegaweb Exp $
  * Created on 22.9.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -20,10 +20,10 @@ import com.idega.util.datastructures.QueueMap;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/07 14:56:21 $ by $Author: gummi $
+ *  Last modified: $Date: 2007/01/12 19:31:42 $ by $Author: idegaweb $
  * 
  * @author <a href="mailto:gummi@idega.com">Gudmundur Agust Saemundsson</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.1.2.1 $
  */
 public class ReportDescription {
 
@@ -43,49 +43,49 @@ public class ReportDescription {
 	 */
 	public ReportDescription() {
 		super();
-		_valueMap = new QueueMap();
-		_labelKeys = new ArrayList();
-		_prmKeys = new ArrayList();
-		_prmTypeMap = new HashMap();
-		_withMap = new HashMap();
+		this._valueMap = new QueueMap();
+		this._labelKeys = new ArrayList();
+		this._prmKeys = new ArrayList();
+		this._prmTypeMap = new HashMap();
+		this._withMap = new HashMap();
 	}
 	
 
 
 	public void addHeaderParameter(String labelKey, int labelWidth, String prmKey, Class type, int prmWith) {
-		_labelKeys.add(labelKey);
-		_withMap.put(labelKey,new Integer(labelWidth));
-		_prmKeys.add(prmKey);
-		_prmTypeMap.put(prmKey,type);
-		_withMap.put(prmKey,new Integer(prmWith));
+		this._labelKeys.add(labelKey);
+		this._withMap.put(labelKey,new Integer(labelWidth));
+		this._prmKeys.add(prmKey);
+		this._prmTypeMap.put(prmKey,type);
+		this._withMap.put(prmKey,new Integer(prmWith));
 	}
 	
 	public void addHeaderParameterAtBeginning(String labelKey, int labelWidth, String prmKey, Class type, int prmWith) {
-		_labelKeys.add(0,labelKey);
-		_withMap.put(labelKey,new Integer(labelWidth));
-		_prmKeys.add(0,prmKey);
-		_prmTypeMap.put(prmKey,type);
-		_withMap.put(prmKey,new Integer(prmWith));
+		this._labelKeys.add(0,labelKey);
+		this._withMap.put(labelKey,new Integer(labelWidth));
+		this._prmKeys.add(0,prmKey);
+		this._prmTypeMap.put(prmKey,type);
+		this._withMap.put(prmKey,new Integer(prmWith));
 	}
 
 	public List getListOfHeaderParameterLabelKeys(){
-		return _labelKeys;
+		return this._labelKeys;
 	}
 	
 	public List getListOfHeaderParameterKeys(){
-		return _prmKeys;
+		return this._prmKeys;
 	}
 	
 	public String getParameterOrLabelName(String key){
-		return (String)_valueMap.get(key);
+		return (String)this._valueMap.get(key);
 	}
 	
 	public int getWithOfParameterOrLabel(String key){
-		return ((Integer)_withMap.get(key)).intValue();
+		return ((Integer)this._withMap.get(key)).intValue();
 	}
 	
 	public Class getParameterClassType(String key){
-		return (Class)_prmTypeMap.get(key);
+		return (Class)this._prmTypeMap.get(key);
 	}
 	
 	
@@ -94,14 +94,14 @@ public class ReportDescription {
 	 * @return
 	 */
 	public Object get(String key) {
-		return _valueMap.get(key);
+		return this._valueMap.get(key);
 	}
 
 	/**
 	 * @param headerParameters
 	 */
 	public void putAll(Map headerParameters) {
-		_valueMap.putAll(headerParameters);
+		this._valueMap.putAll(headerParameters);
 	}
 
 	/**
@@ -109,21 +109,21 @@ public class ReportDescription {
 	 * @param localizedName
 	 */
 	public void put(String name, String localizedName) {
-		_valueMap.put(name,localizedName);
+		this._valueMap.put(name,localizedName);
 	}
 
 	/**
 	 * @return
 	 */
 	public Map getDisplayValueMap() {
-		return _valueMap;
+		return this._valueMap;
 	}
 
 	/**
 	 * @param name
 	 */
 	public void remove(String name) {
-		_valueMap.remove(name);
+		this._valueMap.remove(name);
 	}
 
 
@@ -132,15 +132,15 @@ public class ReportDescription {
 	 * @return
 	 */
 	public String getColumnName(ReportableField field) {
-		return (String)_valueMap.get(field.getName());
+		return (String)this._valueMap.get(field.getName());
 	}
 	
 	public void setColumnName(ReportableField field, String name){
 		String key = field.getName();
-		if(_valueMap.containsKey(key)){
-			_valueMap.remove(key);
+		if(this._valueMap.containsKey(key)){
+			this._valueMap.remove(key);
 		}
-		_valueMap.put(key,name);
+		this._valueMap.put(key,name);
 	}
 
 	/**
@@ -148,7 +148,7 @@ public class ReportDescription {
 	 * @param valueValue
 	 */
 	public void putAtBeginning(String key, String value) {
-		_valueMap.putAtBeginning(key,value);
+		this._valueMap.putAtBeginning(key,value);
 	}
 
 
@@ -189,12 +189,12 @@ public class ReportDescription {
 	 * @param field
 	 */
 	public void addField(ReportableField field) {
-		_listOfFields.add(field);
-		setColumnName(field,field.getLocalizedName(_locale));
+		this._listOfFields.add(field);
+		setColumnName(field,field.getLocalizedName(this._locale));
 	}
 	
 	public List getListOfFields(){
-		return _listOfFields;
+		return this._listOfFields;
 	}
 
 
@@ -218,20 +218,20 @@ public class ReportDescription {
 	 * @return
 	 */
 	public int getNumberOfFields() {
-		return _listOfFields.size();
+		return this._listOfFields.size();
 	}
 
 	public void setLocale(Locale locale){
 		if(getNumberOfFields()>0){
-			if(_locale == null || !_locale.equals(locale) ){
-				_locale = locale;
-				for (Iterator iter = _listOfFields.iterator(); iter.hasNext();) {
+			if(this._locale == null || !this._locale.equals(locale) ){
+				this._locale = locale;
+				for (Iterator iter = this._listOfFields.iterator(); iter.hasNext();) {
 					ReportableField field = (ReportableField) iter.next();
 					setColumnName(field,field.getLocalizedName(locale));
 				}
 			}
 		} else {
-			_locale = locale;
+			this._locale = locale;
 		}
 		
 	}
@@ -243,38 +243,38 @@ public class ReportDescription {
 	 */
 	public void merge(ReportDescription desc) {
 		
-		if(_locale != null){
-			if(!_locale.equals(desc._locale)){
-				desc.setLocale(_locale);
+		if(this._locale != null){
+			if(!this._locale.equals(desc._locale)){
+				desc.setLocale(this._locale);
 			}
 		} else if(desc._locale != null){
 			setLocale(desc._locale);
 		}
 		
 		for (Iterator iter = desc._listOfFields.iterator(); iter.hasNext();) {
-			Object field = (Object) iter.next();
-			if(!_listOfFields.contains(field)){
-				_listOfFields.add(field);
+			Object field = iter.next();
+			if(!this._listOfFields.contains(field)){
+				this._listOfFields.add(field);
 			}
 		}
 		
 		for (Iterator iter = desc._labelKeys.iterator(); iter.hasNext();) {
-			Object field = (Object) iter.next();
-			if(!_labelKeys.contains(field)){
-				_labelKeys.add(field);
+			Object field = iter.next();
+			if(!this._labelKeys.contains(field)){
+				this._labelKeys.add(field);
 			}
 		}
 		
 		for (Iterator iter = desc._prmKeys.iterator(); iter.hasNext();) {
-			Object field = (Object) iter.next();
-			if(!_prmKeys.contains(field)){
-				_prmKeys.add(field);
+			Object field = iter.next();
+			if(!this._prmKeys.contains(field)){
+				this._prmKeys.add(field);
 			}
 		}
 		
-		_valueMap.putAll(desc._valueMap);
-		_prmTypeMap.putAll(desc._prmTypeMap);
-		_withMap.putAll(desc._withMap);
+		this._valueMap.putAll(desc._valueMap);
+		this._prmTypeMap.putAll(desc._prmTypeMap);
+		this._withMap.putAll(desc._withMap);
 		
 	}
 
@@ -284,12 +284,12 @@ public class ReportDescription {
 	 * @return
 	 */
 	public boolean doCreateNewLineForEachParameter() {
-		return doCreateNewLineForEachParameter;
+		return this.doCreateNewLineForEachParameter;
 	}
 	
 	
 	public void setToCreateNewLineForEachParameter(boolean value) {
-		doCreateNewLineForEachParameter = value;
+		this.doCreateNewLineForEachParameter = value;
 	}
 	
 	

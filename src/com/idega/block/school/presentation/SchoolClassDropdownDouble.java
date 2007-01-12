@@ -39,8 +39,8 @@ public class SchoolClassDropdownDouble extends SelectDropdownDouble {
 			SchoolClass schoolClass = (SchoolClass) value;
 			return schoolClass.getSchoolClassName();
 		}
-		else if(noClassListEntry!=null){
-			return noClassListEntry;
+		else if(this.noClassListEntry!=null){
+			return this.noClassListEntry;
 		}
 		else {
 			IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);

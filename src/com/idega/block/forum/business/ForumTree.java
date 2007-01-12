@@ -77,15 +77,17 @@ public class ForumTree extends AbstractTreeViewer {
 
 	private PresentationObject getThreadImage(IWContext iwc, ICTreeNode node, boolean isOpen) {
 		ForumData thread = (ForumData) node;
-		if (_threadImage == null) {
-			_threadImage = iwc.getIWMainApplication().getBundle(ForumBusiness.IW_BUNDLE_IDENTIFIER).getImage("shared/thread.gif");
+		if (this._threadImage == null) {
+			this._threadImage = iwc.getIWMainApplication().getBundle(ForumBusiness.IW_BUNDLE_IDENTIFIER).getImage("shared/thread.gif");
 		}
-		_threadImage.setPaddingRight(2);
-		Link link = new Link(_threadImage);
+		this._threadImage.setPaddingRight(2);
+		Link link = new Link(this._threadImage);
 		link.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, thread.getTopicID());
 		link.addParameter(ForumBusiness.PARAMETER_STATE, ForumBusiness.FORUM_THREADS);
-		link.addParameter(ForumBusiness.PARAMETER_OBJECT_INSTANCE_ID, _id);
-		if (_page != null) link.setPage(_page);
+		link.addParameter(ForumBusiness.PARAMETER_OBJECT_INSTANCE_ID, this._id);
+		if (this._page != null) {
+			link.setPage(this._page);
+		}
 		return setLinkToOpenOrCloseNode(link, node, isOpen);
 	}
 
@@ -95,20 +97,24 @@ public class ForumTree extends AbstractTreeViewer {
 		link.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, thread.getTopicID());
 		link.addParameter(ForumBusiness.PARAMETER_STATE, ForumBusiness.FORUM_THREADS);
 		link.addParameter(ForumBusiness.PARAMETER_THREAD_ID, String.valueOf(thread.getPrimaryKey()));
-		link.addParameter(ForumBusiness.PARAMETER_OBJECT_INSTANCE_ID, _id);
-		if (_page != null) link.setPage(_page);
+		link.addParameter(ForumBusiness.PARAMETER_OBJECT_INSTANCE_ID, this._id);
+		if (this._page != null) {
+			link.setPage(this._page);
+		}
 		return setLinkToOpenOrCloseNode(link, node, isOpen);
 	}
 
 	private PresentationObject getUserLink(IWContext iwc, ICTreeNode node) {
 		ForumData thread = (ForumData) node;
-		Text text = formatText(_iwrb.getLocalizedString("unknown", "Unknown"));
+		Text text = formatText(this._iwrb.getLocalizedString("unknown", "Unknown"));
 		if (thread.getUserID() != -1) {
 			User user = UserBusiness.getUser(thread.getUserID());
 			Email mail = UserBusiness.getUserMail(thread.getUserID());
 			if (user != null && mail != null) {
 				String name = user.getName();
-				if (user.getDisplayName() != null && user.getDisplayName().length() > 0) name = user.getDisplayName();
+				if (user.getDisplayName() != null && user.getDisplayName().length() > 0) {
+					name = user.getDisplayName();
+				}
 				Link link = formatLink(name);
 				link.setURL("mailto:" + mail.getEmailAddress());
 				return link;
@@ -120,7 +126,9 @@ public class ForumTree extends AbstractTreeViewer {
 		}
 		else if (thread.getUserName() != null && thread.getUserEMail() != null) {
 			Link link = formatLink(thread.getUserName());
-			if (thread.getUserEMail() != null) link.setURL("mailto:" + thread.getUserEMail());
+			if (thread.getUserEMail() != null) {
+				link.setURL("mailto:" + thread.getUserEMail());
+			}
 			return link;
 		}
 		else if (thread.getUserName() != null) {
@@ -147,46 +155,52 @@ public class ForumTree extends AbstractTreeViewer {
 
 	private Link formatLink(String string) {
 		Link link = new Link(string);
-		if (_name != null) link.setStyleClass(_name);
-		if (_page != null) link.setPage(_page);
+		if (this._name != null) {
+			link.setStyleClass(this._name);
+		}
+		if (this._page != null) {
+			link.setPage(this._page);
+		}
 		return link;
 	}
 
 	private Text formatText(String string) {
 		Text text = new Text(string);
-		if (_style != null) text.setStyleClass(_style);
+		if (this._style != null) {
+			text.setStyleClass(this._style);
+		}
 		return text;
 	}
 
 	public void setLinkStyleName(String name) {
-		_name = name;
+		this._name = name;
 	}
 
 	public void setTextStyleName(String style) {
-		_style = style;
+		this._style = style;
 	}
 
 	public void setLinkPage(ICPage page) {
-		_page = page;
+		this._page = page;
 	}
 
 	public void setObjectInstanceID(int id) {
-		_id = id;
+		this._id = id;
 	}
 
 	public void setThreadImage(Image image) {
-		_threadImage = image;
+		this._threadImage = image;
 	}
 
 	public void setResourceBundle(IWResourceBundle iwrb) {
-		_iwrb = iwrb;
+		this._iwrb = iwrb;
 	}
 
 	public void setLightRowStyle(String styleName) {
-		lightRowStyle = styleName;
+		this.lightRowStyle = styleName;
 	}
 
 	public void setDarkRowStyle(String styleName) {
-		darkRowStyle = styleName;
+		this.darkRowStyle = styleName;
 	}
 }

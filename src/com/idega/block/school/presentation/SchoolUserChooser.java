@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolUserChooser.java,v 1.3.2.1 2006/03/21 16:45:47 mariso Exp $ Created on 24.2.2005
+ * $Id: SchoolUserChooser.java,v 1.3.2.2 2007/01/12 19:31:45 idegaweb Exp $ Created on 24.2.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  * 
@@ -16,7 +16,7 @@ import com.idega.user.presentation.UserChooser;
  * Last modified: 24.2.2005 15:05:35 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna </a>
- * @version $Revision: 1.3.2.1 $
+ * @version $Revision: 1.3.2.2 $
  */
 public class SchoolUserChooser extends UserChooser {
 
@@ -30,7 +30,7 @@ public class SchoolUserChooser extends UserChooser {
 	}
 
 	protected void addParametersToLink(Link link) {
-		link.addParameter(PARAMETER_SCHOOL_ID, school==null ? "" : school.getPrimaryKey().toString());
+		link.addParameter(PARAMETER_SCHOOL_ID, this.school==null ? "" : this.school.getPrimaryKey().toString());
 	}
 
 	public Class getChooserWindowClass() {

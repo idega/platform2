@@ -78,7 +78,7 @@ public class QuestionBMPBean extends CategoryEntityBMPBean implements Question{
 	
 	public Collection ejbFindAllByCategory(int iCategory) throws FinderException{
 		StringBuffer sql = new StringBuffer("select * from ").append(TABLE_NAME);
-		sql.append(" where ").append(this.getColumnCategoryId()).append("=").append(iCategory);
+		sql.append(" where ").append(CategoryEntityBMPBean.getColumnCategoryId()).append("=").append(iCategory);
 		sql.append(" and ").append(VALID).append("='Y'");
 		sql.append(" order by ").append(SEQUENCE);
 		return this.idoFindPKsBySQL(sql.toString());
@@ -86,7 +86,7 @@ public class QuestionBMPBean extends CategoryEntityBMPBean implements Question{
 	
 	public Collection ejbFindAllInvalidByCategory(int iCategory) throws FinderException{
 		StringBuffer sql = new StringBuffer("select * from ").append(TABLE_NAME);
-		sql.append(" where ").append(this.getColumnCategoryId()).append("=").append(iCategory);
+		sql.append(" where ").append(CategoryEntityBMPBean.getColumnCategoryId()).append("=").append(iCategory);
 		sql.append(" and ").append(VALID).append("='N'");
 		sql.append(" order by ").append(SEQUENCE);
 		return this.idoFindPKsBySQL(sql.toString());

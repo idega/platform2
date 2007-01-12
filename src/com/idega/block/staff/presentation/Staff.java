@@ -131,34 +131,34 @@ public class Staff extends Block implements Builderaware {
 	}
 
 	public void main(IWContext iwc) throws Exception {
-		_iwb = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
-		_iwrb = getResourceBundle(iwc);
-		_isAdmin = iwc.hasEditPermission(this);
+		this._iwb = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+		this._iwrb = getResourceBundle(iwc);
+		this._isAdmin = iwc.hasEditPermission(this);
 
-		row = 1;
-		_myTable = new Table();
-		_myTable.setWidth(_width);
+		this.row = 1;
+		this._myTable = new Table();
+		this._myTable.setWidth(this._width);
 
-		if (_isAdmin) {
-			_myTable.add(getAdminButtons(), 1, row);
-			row++;
+		if (this._isAdmin) {
+			this._myTable.add(getAdminButtons(), 1, this.row);
+			this.row++;
 		}
 
 		handleParameters(iwc);
 		getStaff(iwc);
 
-		add(_myTable);
+		add(this._myTable);
 	}
 
 	private void getStaff(IWContext iwc) {
 		setStyles();
 
-		if (_addAlphabet && _layout == ALL_STAFF) {
-			_myTable.add(getAlphabetTable(), 1, row);
-			row++;
+		if (this._addAlphabet && this._layout == ALL_STAFF) {
+			this._myTable.add(getAlphabetTable(), 1, this.row);
+			this.row++;
 		}
 
-		switch (_layout) {
+		switch (this._layout) {
 			case ALL_STAFF:
 				getAllStaff(iwc);
 				break;
@@ -173,10 +173,12 @@ public class Staff extends Block implements Builderaware {
 
 	private void getAllStaff(IWContext iwc) {
 		List users = null;
-		if (_hasAlphabetLetter)
-			users = StaffFinder.getAllUsersByLetter(iwc, _alphabetLetter);
-		else
+		if (this._hasAlphabetLetter) {
+			users = StaffFinder.getAllUsersByLetter(iwc, this._alphabetLetter);
+		}
+		else {
 			users = StaffFinder.getAllUsers(iwc);
+		}
 
 		getStaffTable(iwc, users);
 	}
@@ -206,35 +208,44 @@ public class Staff extends Block implements Builderaware {
 				column = 1;
 				user = (User) users.get(a);
 				email = StaffFinder.getUserEmail(user);
-				if (_showListTitle)
+				if (this._showListTitle) {
 					staffInfo = StaffFinder.getStaffInfo(user.getID());
-				if (_showListWorkPhone)
+				}
+				if (this._showListWorkPhone) {
 					phone = UserBusiness.getUserPhone(user.getID(), com.idega.core.contact.data.PhoneTypeBMPBean.WORK_PHONE_ID);
+				}
 
 				userLink = getStaffLink(user);
 				emailLink = getEmailLink(email);
 
 				if (staffInfo != null && staffInfo.getTitle() != null) {
 					titleText = new Text(staffInfo.getTitle());
-				} else
+				}
+				else {
 					titleText = new Text("");
-				titleText.setFontStyle(_textStyle);
+				}
+				titleText.setFontStyle(this._textStyle);
 
 				if (phone != null) {
 					phoneText = new Text(phone.getNumber());
-				} else
+				}
+				else {
 					phoneText = new Text("");
-				phoneText.setFontStyle(_textStyle);
+				}
+				phoneText.setFontStyle(this._textStyle);
 
 				table.add(userLink, column++, staffRow);
-				if (_showListTitle)
+				if (this._showListTitle) {
 					table.add(titleText, column++, staffRow);
-				if (_showListWorkPhone)
+				}
+				if (this._showListWorkPhone) {
 					table.add(phoneText, column++, staffRow);
-				if (emailLink != null)
+				}
+				if (emailLink != null) {
 					table.add(emailLink, column++, staffRow);
+				}
 
-				if (_isAdmin) {
+				if (this._isAdmin) {
 					table.add(getEditLink(user), column++, staffRow);
 				}
 
@@ -242,11 +253,13 @@ public class Staff extends Block implements Builderaware {
 			}
 		}
 
-		if (_zebraColor1 != null && _zebraColor2 != null)
-			table.setHorizontalZebraColored(_zebraColor1, _zebraColor2);
-		for (int a = 2; a <= table.getColumns(); a++)
+		if (this._zebraColor1 != null && this._zebraColor2 != null) {
+			table.setHorizontalZebraColored(this._zebraColor1, this._zebraColor2);
+		}
+		for (int a = 2; a <= table.getColumns(); a++) {
 			table.setColumnAlignment(a, "center");
-		_myTable.add(table, 1, row);
+		}
+		this._myTable.add(table, 1, this.row);
 	}
 
 	private void getDivisionStaff(IWContext iwc) {
@@ -255,23 +268,23 @@ public class Staff extends Block implements Builderaware {
 			for (int a = 0; a < groups.size(); a++) {
 				List users = StaffFinder.getUsersInPrimaryGroup((GenericGroup) groups.get(a));
 				if (users != null && users.size() > 0) {
-					_myTable.add(((GenericGroup) groups.get(a)).getName(), 1, row);
-					row++;
+					this._myTable.add(((GenericGroup) groups.get(a)).getName(), 1, this.row);
+					this.row++;
 					getStaffTable(iwc, users);
-					row++;
-					_myTable.setHeight(1, row, "6");
-					row++;
+					this.row++;
+					this._myTable.setHeight(1, this.row, "6");
+					this.row++;
 				}
 			}
 		}
 	}
 
 	private void getUser(IWContext iwc) {
-		User user = StaffFinder.getUser(_userID);
-		StaffInfo staffInfo = StaffFinder.getStaffInfo(_userID);
-		StaffMetaData[] staffMeta = StaffFinder.getMetaData(_userID);
-		Phone workphone = UserBusiness.getUserPhone(_userID, com.idega.core.contact.data.PhoneTypeBMPBean.WORK_PHONE_ID);
-		Phone mobilephone = UserBusiness.getUserPhone(_userID, com.idega.core.contact.data.PhoneTypeBMPBean.MOBILE_PHONE_ID);
+		User user = StaffFinder.getUser(this._userID);
+		StaffInfo staffInfo = StaffFinder.getStaffInfo(this._userID);
+		StaffMetaData[] staffMeta = StaffFinder.getMetaData(this._userID);
+		Phone workphone = UserBusiness.getUserPhone(this._userID, com.idega.core.contact.data.PhoneTypeBMPBean.WORK_PHONE_ID);
+		Phone mobilephone = UserBusiness.getUserPhone(this._userID, com.idega.core.contact.data.PhoneTypeBMPBean.MOBILE_PHONE_ID);
 
 		Table userTable = new Table();
 		userTable.setWidth("100%");
@@ -289,10 +302,12 @@ public class Staff extends Block implements Builderaware {
 		if (staffInfo != null && staffInfo.getImageID() != -1) {
 			try {
 				image = new Image(staffInfo.getImageID());
-				if (_imageWidth != null)
-					image.setWidth(_imageWidth);
-				if (_imageHeight != null)
-					image.setHeight(_imageHeight);
+				if (this._imageWidth != null) {
+					image.setWidth(this._imageWidth);
+				}
+				if (this._imageHeight != null) {
+					image.setHeight(this._imageHeight);
+				}
 				image.setBorder(1);
 				image.setVerticalSpacing(3);
 				image.setHorizontalSpacing(10);
@@ -306,30 +321,32 @@ public class Staff extends Block implements Builderaware {
 		}
 
 		if (user != null) {
-			Text name = new Text(_iwrb.getLocalizedString("user_name", "Name") + ":");
-			name.setFontStyle(_headlineStyle);
+			Text name = new Text(this._iwrb.getLocalizedString("user_name", "Name") + ":");
+			name.setFontStyle(this._headlineStyle);
 			Text nameText = new Text(user.getName());
-			nameText.setFontStyle(_textStyle);
+			nameText.setFontStyle(this._textStyle);
 
 			textTable.add(name, column, tableRow);
 			textTable.add(nameText, column + 1, tableRow);
 			tableRow++;
 
 			IWTimestamp dateOfBirth = null;
-			if (user.getDateOfBirth() != null)
+			if (user.getDateOfBirth() != null) {
 				dateOfBirth = new IWTimestamp(user.getDateOfBirth());
+			}
 			IWTimestamp dateToday = new IWTimestamp();
 
 			int userAge = 0;
-			if (dateOfBirth != null)
+			if (dateOfBirth != null) {
 				userAge = (new IWTimestamp().getDaysBetween(dateOfBirth, dateToday)) / 365;
+			}
 
-			Text age = new Text(_iwrb.getLocalizedString("user_age", "Age") + ":");
-			age.setFontStyle(_headlineStyle);
+			Text age = new Text(this._iwrb.getLocalizedString("user_age", "Age") + ":");
+			age.setFontStyle(this._headlineStyle);
 			Text ageText = new Text(Integer.toString(userAge));
-			ageText.setFontStyle(_textStyle);
+			ageText.setFontStyle(this._textStyle);
 
-			if (_showAge && userAge > 0) {
+			if (this._showAge && userAge > 0) {
 				textTable.add(age, column, tableRow);
 				textTable.add(ageText, column + 1, tableRow);
 				tableRow++;
@@ -345,103 +362,110 @@ public class Staff extends Block implements Builderaware {
 			 * textTable.add(genderText,column+1,tableRow); tableRow++; }
 			 */
 
-			Text title = new Text(_iwrb.getLocalizedString("user_title", "Title") + ":");
-			title.setFontStyle(_headlineStyle);
+			Text title = new Text(this._iwrb.getLocalizedString("user_title", "Title") + ":");
+			title.setFontStyle(this._headlineStyle);
 			Text titleText = new Text("");
-			if (staffInfo != null)
+			if (staffInfo != null) {
 				titleText.setText(staffInfo.getTitle());
-			titleText.setFontStyle(_textStyle);
+			}
+			titleText.setFontStyle(this._textStyle);
 
-			if (_showTitle) {
+			if (this._showTitle) {
 				textTable.add(title, column, tableRow);
 				textTable.add(titleText, column + 1, tableRow);
 				tableRow++;
 			}
 
-			Text workPhone = new Text(_iwrb.getLocalizedString("work_phone", "Work phone") + ":");
-			workPhone.setFontStyle(_headlineStyle);
+			Text workPhone = new Text(this._iwrb.getLocalizedString("work_phone", "Work phone") + ":");
+			workPhone.setFontStyle(this._headlineStyle);
 			Text workPhoneText = new Text("");
-			if (workphone != null)
+			if (workphone != null) {
 				workPhoneText.setText(workphone.getNumber());
-			workPhoneText.setFontStyle(_textStyle);
+			}
+			workPhoneText.setFontStyle(this._textStyle);
 
-			if (_showWorkPhone) {
+			if (this._showWorkPhone) {
 				textTable.add(workPhone, column, tableRow);
 				textTable.add(workPhoneText, column + 1, tableRow);
 				tableRow++;
 			}
 
-			Text mobilePhone = new Text(_iwrb.getLocalizedString("Mobile_phone", "Mobile phone") + ":");
-			mobilePhone.setFontStyle(_headlineStyle);
+			Text mobilePhone = new Text(this._iwrb.getLocalizedString("Mobile_phone", "Mobile phone") + ":");
+			mobilePhone.setFontStyle(this._headlineStyle);
 			Text mobilePhoneText = new Text("");
-			if (mobilephone != null)
+			if (mobilephone != null) {
 				mobilePhoneText.setText(mobilephone.getNumber());
-			mobilePhoneText.setFontStyle(_textStyle);
+			}
+			mobilePhoneText.setFontStyle(this._textStyle);
 
-			if (_showMobilePhone) {
+			if (this._showMobilePhone) {
 				textTable.add(mobilePhone, column, tableRow);
 				textTable.add(mobilePhoneText, column + 1, tableRow);
 				tableRow++;
 			}
 
-			Text area = new Text(_iwrb.getLocalizedString("user_area", "Area") + ":");
-			area.setFontStyle(_headlineStyle);
+			Text area = new Text(this._iwrb.getLocalizedString("user_area", "Area") + ":");
+			area.setFontStyle(this._headlineStyle);
 			Text areaText = new Text("");
-			if (staffInfo != null)
+			if (staffInfo != null) {
 				areaText.setText(staffInfo.getArea());
-			areaText.setFontStyle(_textStyle);
+			}
+			areaText.setFontStyle(this._textStyle);
 
-			if (_showArea) {
+			if (this._showArea) {
 				textTable.add(area, column, tableRow);
 				textTable.add(areaText, column + 1, tableRow);
 				tableRow++;
 			}
 
-			Text beganWork = new Text(_iwrb.getLocalizedString("user_began_work", "Began work") + ":");
-			beganWork.setFontStyle(_headlineStyle);
+			Text beganWork = new Text(this._iwrb.getLocalizedString("user_began_work", "Began work") + ":");
+			beganWork.setFontStyle(this._headlineStyle);
 			Text beganWorkText = new Text("");
-			if (staffInfo != null && staffInfo.getBeganWork() != null)
+			if (staffInfo != null && staffInfo.getBeganWork() != null) {
 				beganWorkText.setText(new IWTimestamp(staffInfo.getBeganWork()).getLocaleDate(iwc));
-			beganWorkText.setFontStyle(_textStyle);
+			}
+			beganWorkText.setFontStyle(this._textStyle);
 
-			if (_showBeganWork) {
+			if (this._showBeganWork) {
 				textTable.add(beganWork, column, tableRow);
 				textTable.add(beganWorkText, column + 1, tableRow);
 				tableRow++;
 			}
 
-			Text education = new Text(_iwrb.getLocalizedString("user_education", "Education") + ":");
-			education.setFontStyle(_headlineStyle);
+			Text education = new Text(this._iwrb.getLocalizedString("user_education", "Education") + ":");
+			education.setFontStyle(this._headlineStyle);
 			Text educationText = new Text("");
-			if (staffInfo != null)
+			if (staffInfo != null) {
 				educationText.setText(staffInfo.getEducation());
-			educationText.setFontStyle(_textStyle);
+			}
+			educationText.setFontStyle(this._textStyle);
 
-			if (_showEducation) {
+			if (this._showEducation) {
 				textTable.add(education, column, tableRow);
 				textTable.add(educationText, column + 1, tableRow);
 				tableRow++;
 			}
 
-			Text school = new Text(_iwrb.getLocalizedString("user_school", "School") + ":");
-			school.setFontStyle(_headlineStyle);
+			Text school = new Text(this._iwrb.getLocalizedString("user_school", "School") + ":");
+			school.setFontStyle(this._headlineStyle);
 			Text schoolText = new Text("");
-			if (staffInfo != null)
+			if (staffInfo != null) {
 				schoolText.setText(staffInfo.getSchool());
-			schoolText.setFontStyle(_textStyle);
+			}
+			schoolText.setFontStyle(this._textStyle);
 
-			if (_showSchool) {
+			if (this._showSchool) {
 				textTable.add(school, column, tableRow);
 				textTable.add(schoolText, column + 1, tableRow);
 				tableRow++;
 			}
 
-			if (staffMeta != null && staffMeta.length > 0 && _showMetaData) {
+			if (staffMeta != null && staffMeta.length > 0 && this._showMetaData) {
 				for (int a = 0; a < staffMeta.length; a++) {
 					Text meta = new Text(staffMeta[a].getAttribute() + ":");
-					meta.setFontStyle(_headlineStyle);
+					meta.setFontStyle(this._headlineStyle);
 					Text metaText = new Text(staffMeta[a].getValue());
-					metaText.setFontStyle(_textStyle);
+					metaText.setFontStyle(this._textStyle);
 
 					textTable.add(meta, column, tableRow);
 					textTable.add(metaText, column + 1, tableRow);
@@ -468,11 +492,12 @@ public class Staff extends Block implements Builderaware {
 
 		Link nextLink = getNextUserLink(users, index);
 		Link previousLink = getPreviousUserLink(users, index);
-		Link backLink = new Link("< " + _iwrb.getLocalizedString("back", "Back") + " >");
-		backLink.setStyle(_name);
+		Link backLink = new Link("< " + this._iwrb.getLocalizedString("back", "Back") + " >");
+		backLink.setStyle(this._name);
 
-		if (previousLink != null)
+		if (previousLink != null) {
 			linkTable.add(previousLink, 1, 1);
+		}
 		linkTable.add(backLink, 2, 1);
 		if (nextLink != null) {
 			linkTable.add(nextLink, 3, 1);
@@ -495,33 +520,37 @@ public class Staff extends Block implements Builderaware {
 		userTable.setColumnVerticalAlignment(1, "top");
 		userTable.setColumnVerticalAlignment(2, "top");
 
-		_myTable.add(userTable, 1, row);
+		this._myTable.add(userTable, 1, this.row);
 
-		if (_isAdmin) {
-			_myTable.add(getEditLink(user), 1, row + 1);
+		if (this._isAdmin) {
+			this._myTable.add(getEditLink(user), 1, this.row + 1);
 		}
 	}
 
 	private Link getNextUserLink(List users, int index) {
-		Link link = new Link(_iwrb.getLocalizedString("next_user", "Next") + " >>");
-		link.setStyle(_name);
+		Link link = new Link(this._iwrb.getLocalizedString("next_user", "Next") + " >>");
+		link.setStyle(this._name);
 
-		if (users.size() > index + 1)
+		if (users.size() > index + 1) {
 			link.addParameter(StaffBusiness.PARAMETER_USER_ID, ((User) users.get(index + 1)).getID());
-		else
+		}
+		else {
 			link = null;
+		}
 
 		return link;
 	}
 
 	private Link getPreviousUserLink(List users, int index) {
-		Link link = new Link("<< " + _iwrb.getLocalizedString("previous_user", "Prev"));
-		link.setStyle(_name);
+		Link link = new Link("<< " + this._iwrb.getLocalizedString("previous_user", "Prev"));
+		link.setStyle(this._name);
 
-		if (index > 0)
+		if (index > 0) {
 			link.addParameter(StaffBusiness.PARAMETER_USER_ID, ((User) users.get(index - 1)).getID());
-		else
+		}
+		else {
 			link = null;
+		}
 
 		return link;
 	}
@@ -530,8 +559,9 @@ public class Staff extends Block implements Builderaware {
 		String name = user.getName();
 
 		Link link = new Link(name);
-		if (_styles)
-			link.setStyle(_name);
+		if (this._styles) {
+			link.setStyle(this._name);
+		}
 		link.addParameter(StaffBusiness.PARAMETER_USER_ID, user.getID());
 
 		return link;
@@ -542,8 +572,9 @@ public class Staff extends Block implements Builderaware {
 
 		if (email != null) {
 			link = new Link(email.getEmailAddress());
-			if (_styles)
-				link.setStyle(_name);
+			if (this._styles) {
+				link.setStyle(this._name);
+			}
 			link.setURL("mailto:" + email.getEmailAddress());
 		}
 
@@ -551,7 +582,7 @@ public class Staff extends Block implements Builderaware {
 	}
 
 	private Link getEditLink(User user) {
-		Image adminImage = _iwb.getImage("shared/edit.gif");
+		Image adminImage = this._iwb.getImage("shared/edit.gif");
 		Link adminLink = new Link(adminImage);
 		adminLink.setWindowToOpen(StaffPropertyWindow.class);
 		adminLink.addParameter(StaffPropertyWindow.PARAMETERSTRING_USER_ID, user.getID());
@@ -561,28 +592,29 @@ public class Staff extends Block implements Builderaware {
 
 	private Table getAlphabetTable() {
 		String[] alphabet = { "A", "�", "B", "C", "D", "E", "�", "F", "G", "H", "I", "�", "J", "K", "L", "M", "N", "O", "�", "P", "Q", "R", "S", "T",
-				"U", "�", "V", "W", "X", "Y", "�", "Z", "�", "�", "�", _iwrb.getLocalizedString("all", "Allir") };
+				"U", "�", "V", "W", "X", "Y", "�", "Z", "�", "�", "�", this._iwrb.getLocalizedString("all", "Allir") };
 		Table table = new Table();
 		int column = 1;
 
 		Link link = null;
 		Text divider = new Text(" - ");
-		divider.setFontStyle(_alphabetLinkStyle);
+		divider.setFontStyle(this._alphabetLinkStyle);
 
 		for (int a = 0; a < alphabet.length; a++) {
-			if (_alphabetLetter != null && _alphabetLetter.equalsIgnoreCase(alphabet[a])) {
+			if (this._alphabetLetter != null && this._alphabetLetter.equalsIgnoreCase(alphabet[a])) {
 				Text text = new Text(alphabet[a]);
-				if (_styles) {
-					TextStyler styler = new TextStyler(_alphabetLinkStyle);
-					styler.setStyleValue(StyleConstants.ATTRIBUTE_COLOR, _selectedLetterColor);
+				if (this._styles) {
+					TextStyler styler = new TextStyler(this._alphabetLinkStyle);
+					styler.setStyleValue(StyleConstants.ATTRIBUTE_COLOR, this._selectedLetterColor);
 					styler.setStyleValue(StyleConstants.ATTRIBUTE_FONT_WEIGHT, StyleConstants.FONT_WEIGHT_BOLD);
 					text.setFontStyle(styler.getStyleString());
 				}
 				table.add(text, column, 1);
 			} else {
 				link = new Link(alphabet[a]);
-				if (_styles)
-					link.setStyle(_alphabetName);
+				if (this._styles) {
+					link.setStyle(this._alphabetName);
+				}
 				link.addParameter(StaffBusiness.PARAMETER_LETTER, alphabet[a]);
 				table.add(link, column, 1);
 			}
@@ -593,7 +625,7 @@ public class Staff extends Block implements Builderaware {
 	}
 
 	private Link getAdminButtons() {
-		Image adminImage = _iwb.getImage("shared/edit.gif");
+		Image adminImage = this._iwb.getImage("shared/edit.gif");
 		Link adminLink = new Link(adminImage);
 		adminLink.setWindowToOpen(com.idega.core.user.presentation.UserModule.class);
 
@@ -602,178 +634,182 @@ public class Staff extends Block implements Builderaware {
 
 	private void handleParameters(IWContext iwc) {
 		if (iwc.getParameter(StaffBusiness.PARAMETER_LETTER) != null) {
-			_alphabetLetter = iwc.getParameter(StaffBusiness.PARAMETER_LETTER);
-			_hasAlphabetLetter = true;
-			if (_alphabetLetter != null && _alphabetLetter.equalsIgnoreCase(_iwrb.getLocalizedString("all", "Allir")))
-				_hasAlphabetLetter = false;
+			this._alphabetLetter = iwc.getParameter(StaffBusiness.PARAMETER_LETTER);
+			this._hasAlphabetLetter = true;
+			if (this._alphabetLetter != null && this._alphabetLetter.equalsIgnoreCase(this._iwrb.getLocalizedString("all", "Allir"))) {
+				this._hasAlphabetLetter = false;
+			}
 		} else {
-			_alphabetLetter = _iwrb.getLocalizedString("all", "Allir");
-			_hasAlphabetLetter = false;
+			this._alphabetLetter = this._iwrb.getLocalizedString("all", "Allir");
+			this._hasAlphabetLetter = false;
 		}
 
 		if (iwc.getParameter(StaffBusiness.PARAMETER_USER_ID) != null) {
 			try {
-				_userID = Integer.parseInt(iwc.getParameter(StaffBusiness.PARAMETER_USER_ID));
-				_layout = USER;
+				this._userID = Integer.parseInt(iwc.getParameter(StaffBusiness.PARAMETER_USER_ID));
+				this._layout = USER;
 			} catch (NumberFormatException e) {
-				_userID = -1;
-				_layout = ALL_STAFF;
+				this._userID = -1;
+				this._layout = ALL_STAFF;
 			}
 
 		}
 	}
 
 	private void setStyles() {
-		if (_name == null)
-			_name = this.getName();
-		if (_name == null) {
-			if (getICObjectInstanceID() != -1)
-				_name = "staff_" + Integer.toString(getICObjectInstanceID());
-			else
-				_name = "staff_" + Double.toString(Math.random());
+		if (this._name == null) {
+			this._name = this.getName();
 		}
-		_alphabetName = "alpha_" + _name;
+		if (this._name == null) {
+			if (getICObjectInstanceID() != -1) {
+				this._name = "staff_" + Integer.toString(getICObjectInstanceID());
+			}
+			else {
+				this._name = "staff_" + Double.toString(Math.random());
+			}
+		}
+		this._alphabetName = "alpha_" + this._name;
 
 		if (getParentPage() != null) {
-			getParentPage().setStyleDefinition("A." + _name + ":link", _linkStyle);
-			getParentPage().setStyleDefinition("A." + _name + ":visited", _visitedStyle);
-			getParentPage().setStyleDefinition("A." + _name + ":active", _activeStyle);
-			getParentPage().setStyleDefinition("A." + _name + ":hover", _hoverStyle);
-			getParentPage().setStyleDefinition("A." + _alphabetName + ":link", _alphabetLinkStyle);
-			getParentPage().setStyleDefinition("A." + _alphabetName + ":visited", _alphabetVisitedStyle);
-			getParentPage().setStyleDefinition("A." + _alphabetName + ":active", _alphabetActiveStyle);
-			getParentPage().setStyleDefinition("A." + _alphabetName + ":hover", _alphabetHoverStyle);
+			getParentPage().setStyleDefinition("A." + this._name + ":link", this._linkStyle);
+			getParentPage().setStyleDefinition("A." + this._name + ":visited", this._visitedStyle);
+			getParentPage().setStyleDefinition("A." + this._name + ":active", this._activeStyle);
+			getParentPage().setStyleDefinition("A." + this._name + ":hover", this._hoverStyle);
+			getParentPage().setStyleDefinition("A." + this._alphabetName + ":link", this._alphabetLinkStyle);
+			getParentPage().setStyleDefinition("A." + this._alphabetName + ":visited", this._alphabetVisitedStyle);
+			getParentPage().setStyleDefinition("A." + this._alphabetName + ":active", this._alphabetActiveStyle);
+			getParentPage().setStyleDefinition("A." + this._alphabetName + ":hover", this._alphabetHoverStyle);
 		} else {
-			_styles = false;
+			this._styles = false;
 		}
 	}
 
 	private void setDefaultValues() {
-		_width = "300";
-		_selectedLetterColor = "#0000CC";
-		_linkStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: none;";
-		_visitedStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: none;";
-		_activeStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: none;";
-		_hoverStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: underline;";
-		_alphabetLinkStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: none;";
-		_alphabetVisitedStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: none;";
-		_alphabetActiveStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: none;";
-		_alphabetHoverStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: underline;";
-		_textStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;";
-		_headlineStyle = "font-family: Arial, Helvetica,sans-serif;font-weight:bold;font-size: 8pt;color: #000000;";
+		this._width = "300";
+		this._selectedLetterColor = "#0000CC";
+		this._linkStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: none;";
+		this._visitedStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: none;";
+		this._activeStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: none;";
+		this._hoverStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: underline;";
+		this._alphabetLinkStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: none;";
+		this._alphabetVisitedStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: none;";
+		this._alphabetActiveStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: none;";
+		this._alphabetHoverStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: underline;";
+		this._textStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;";
+		this._headlineStyle = "font-family: Arial, Helvetica,sans-serif;font-weight:bold;font-size: 8pt;color: #000000;";
 
-		_showAge = true;
-		_showGender = true;
-		_showEducation = true;
-		_showTitle = true;
-		_showSchool = true;
-		_showBeganWork = true;
-		_showArea = true;
-		_showImage = true;
-		_showMetaData = true;
+		this._showAge = true;
+		this._showGender = true;
+		this._showEducation = true;
+		this._showTitle = true;
+		this._showSchool = true;
+		this._showBeganWork = true;
+		this._showArea = true;
+		this._showImage = true;
+		this._showMetaData = true;
 	}
 
 	public void setShowAlphabet(boolean showAlphabet) {
-		_addAlphabet = showAlphabet;
+		this._addAlphabet = showAlphabet;
 	}
 
 	public void setShowAge(boolean showAge) {
-		_showAge = showAge;
+		this._showAge = showAge;
 	}
 
 	public void setShowWorkPhone(boolean showWorkPhone) {
-		_showWorkPhone = showWorkPhone;
+		this._showWorkPhone = showWorkPhone;
 	}
 
 	public void setShowListWorkPhone(boolean showWorkPhone) {
-		_showListWorkPhone = showWorkPhone;
+		this._showListWorkPhone = showWorkPhone;
 	}
 
 	public void setShowMobilePhone(boolean showMobilePhone) {
-		_showMobilePhone = showMobilePhone;
+		this._showMobilePhone = showMobilePhone;
 	}
 
 	public void setShowGender(boolean showGender) {
-		_showGender = showGender;
+		this._showGender = showGender;
 	}
 
 	public void setShowEducation(boolean showEducation) {
-		_showEducation = showEducation;
+		this._showEducation = showEducation;
 	}
 
 	public void setShowTitle(boolean showTitle) {
-		_showTitle = showTitle;
+		this._showTitle = showTitle;
 	}
 
 	public void setShowListTitle(boolean showTitle) {
-		_showListTitle = showTitle;
+		this._showListTitle = showTitle;
 	}
 
 	public void setShowSchool(boolean showSchool) {
-		_showSchool = showSchool;
+		this._showSchool = showSchool;
 	}
 
 	public void setShowBeganWork(boolean showBeganWork) {
-		_showBeganWork = showBeganWork;
+		this._showBeganWork = showBeganWork;
 	}
 
 	public void setShowArea(boolean showArea) {
-		_showArea = showArea;
+		this._showArea = showArea;
 	}
 
 	public void setShowImage(boolean showImage) {
-		_showImage = showImage;
+		this._showImage = showImage;
 	}
 
 	public void setShowExtraInfo(boolean showExtraInfo) {
-		_showMetaData = showExtraInfo;
+		this._showMetaData = showExtraInfo;
 	}
 
 	public void setImageWidth(String width) {
-		_imageWidth = width;
+		this._imageWidth = width;
 	}
 
 	public void setImageHeight(String height) {
-		_imageHeight = height;
+		this._imageHeight = height;
 	}
 
 	public void setTextStyle(String style) {
-		_textStyle = style;
+		this._textStyle = style;
 	}
 
 	public void setHeadlineStyle(String style) {
-		_headlineStyle = style;
+		this._headlineStyle = style;
 	}
 
 	public void setLinkStyle(String style, String style2, String style3, String style4) {
-		_linkStyle = style;
-		_visitedStyle = style2;
-		_activeStyle = style3;
-		_hoverStyle = style4;
+		this._linkStyle = style;
+		this._visitedStyle = style2;
+		this._activeStyle = style3;
+		this._hoverStyle = style4;
 	}
 
 	public void setAlphabetLinkStyle(String style, String style2, String style3, String style4) {
-		_alphabetLinkStyle = style;
-		_alphabetVisitedStyle = style2;
-		_alphabetActiveStyle = style3;
-		_alphabetHoverStyle = style4;
+		this._alphabetLinkStyle = style;
+		this._alphabetVisitedStyle = style2;
+		this._alphabetActiveStyle = style3;
+		this._alphabetHoverStyle = style4;
 	}
 
 	public void setWidth(String width) {
-		_width = width;
+		this._width = width;
 	}
 
 	public void setSelectedLetterColor(String color) {
-		_selectedLetterColor = color;
+		this._selectedLetterColor = color;
 	}
 
 	public void setZebraColors(String color1, String color2) {
-		_zebraColor1 = color1;
-		_zebraColor2 = color2;
+		this._zebraColor1 = color1;
+		this._zebraColor2 = color2;
 	}
 
 	public void setLayout(int layout) {
-		_layout = layout;
+		this._layout = layout;
 	}
 
 	public boolean deleteBlock(int ICObjectInstanceId) {

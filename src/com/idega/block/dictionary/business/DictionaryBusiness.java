@@ -69,24 +69,27 @@ public class DictionaryBusiness {
   public void saveWord(int wordID,String categoryID,String wordName,String description,String imageID) {
     try {
       Word word = getWordHome().create();
-      if ( wordID != -1 )
-	word = getWordHome().findByPrimaryKey(new Integer(wordID));
+      if ( wordID != -1 ) {
+		word = getWordHome().findByPrimaryKey(new Integer(wordID));
+	}
 
       word.setWord(wordName);
       word.setDescription(description);
 
       try {
 	int category = Integer.parseInt(categoryID);
-	if ( category != -1 )
-	  word.setCategoryID(category);
+	if ( category != -1 ) {
+		word.setCategoryID(category);
+	}
       }
       catch (NumberFormatException e) {
       }
 
       try {
 	int image = Integer.parseInt(imageID);
-	if ( image != -1 )
-	  word.setImageID(image);
+	if ( image != -1 ) {
+		word.setImageID(image);
+	}
       }
       catch (NumberFormatException e) {
       }

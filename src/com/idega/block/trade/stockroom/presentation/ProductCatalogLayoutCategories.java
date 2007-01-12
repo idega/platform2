@@ -31,8 +31,8 @@ public class ProductCatalogLayoutCategories extends AbstractProductCatalogLayout
 	}
 	
 	public PresentationObject getCatalog(ProductCatalog productCatalog, IWContext iwc, List productCategories) {
-		catServ = getCategoryService(iwc);
-		localeID = iwc.getCurrentLocaleId();
+		this.catServ = getCategoryService(iwc);
+		this.localeID = iwc.getCurrentLocaleId();
 		Table table = new Table();
 		table.setWidth("100%");
 		table.setCellpaddingAndCellspacing(0);
@@ -72,7 +72,7 @@ public class ProductCatalogLayoutCategories extends AbstractProductCatalogLayout
 				table.setCellpaddingLeft(1, row, productCatalog.getIndent(level));
 				pCat = (ICCategory) productCategories.next();//get(i);
 				try{
-					ICCategoryTranslation trans = catServ.getCategoryTranslationHome().findByCategoryAndLocale(((Integer) pCat.getPrimaryKey()).intValue(),localeID);
+					ICCategoryTranslation trans = this.catServ.getCategoryTranslationHome().findByCategoryAndLocale(((Integer) pCat.getPrimaryKey()).intValue(),this.localeID);
 					catName = trans.getName();
 				}
 				catch(FinderException ex){

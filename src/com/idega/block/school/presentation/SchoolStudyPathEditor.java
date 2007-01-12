@@ -57,33 +57,33 @@ public class SchoolStudyPathEditor extends Block {
 	}
 	
 	private void init(IWContext iwc) throws RemoteException {
-		iwrb = getResourceBundle(iwc);
-		tFormat = tFormat.getInstance();
-		sBus = (SchoolBusiness) IBOLookup.getServiceInstance(iwc, SchoolBusiness.class);
-		String sSchoolId = iwc.getParameter(PARAMETER_SCHOOL_ID);
+		this.iwrb = getResourceBundle(iwc);
+		this.tFormat = TextFormat.getInstance();
+		this.sBus = (SchoolBusiness) IBOLookup.getServiceInstance(iwc, SchoolBusiness.class);
+		String sSchoolId = iwc.getParameter(this.PARAMETER_SCHOOL_ID);
 		if (sSchoolId != null) {
-			school = sBus.getSchool(new Integer(sSchoolId));
+			this.school = this.sBus.getSchool(new Integer(sSchoolId));
 		}
-		schoolTypeId = iwc.getParameter(PARAMETER_SCHOOL_TYPE_ID);
+		this.schoolTypeId = iwc.getParameter(this.PARAMETER_SCHOOL_TYPE_ID);
 	}
 	
 	public void main (IWContext iwc) throws RemoteException {
 		init(iwc);
 		
-		String action = iwc.getParameter(ACTION);
+		String action = iwc.getParameter(this.ACTION);
 		if (action == null) {
 			action = "";
 		}
-		if ( action.equals(ACTION_PARAMETER_NEW_COURSE) || action.equals(ACTION_PARAMETER_EDIT_COURSE) ) {
+		if ( action.equals(this.ACTION_PARAMETER_NEW_COURSE) || action.equals(this.ACTION_PARAMETER_EDIT_COURSE) ) {
 			createCourse(iwc);
-		} else if ( action.equals(ACTION_PARAMETER_SAVE_COURSE)) {
+		} else if ( action.equals(this.ACTION_PARAMETER_SAVE_COURSE)) {
 			if (!saveCourse(iwc)) {
-				add(tFormat.format(iwrb.getLocalizedString("school.could_not_save_course","Could not save course"), TextFormat.HEADER));
+				add(this.tFormat.format(this.iwrb.getLocalizedString("school.could_not_save_course","Could not save course"), TextFormat.HEADER));
 			} 
 			drawMenu(iwc);
-		} else if (action.equals(ACTION_PARAMETER_DELETE_COURSE)) {
+		} else if (action.equals(this.ACTION_PARAMETER_DELETE_COURSE)) {
 			if (deleteCourse(iwc)) {
-				add(tFormat.format(iwrb.getLocalizedString("school.could_not_delete_course","Could not delete course"), TextFormat.HEADER));
+				add(this.tFormat.format(this.iwrb.getLocalizedString("school.could_not_delete_course","Could not delete course"), TextFormat.HEADER));
 			} 
 			drawMenu(iwc);
 		} else {
@@ -96,34 +96,34 @@ public class SchoolStudyPathEditor extends Block {
 		Table table = new Table();
 		int row = 1;
 
-		form.maintainParameter(PARAMETER_SCHOOL_ID);
-		form.maintainParameter(PARAMETER_SCHOOL_TYPE_ID);
+		form.maintainParameter(this.PARAMETER_SCHOOL_ID);
+		form.maintainParameter(this.PARAMETER_SCHOOL_TYPE_ID);
 
-		Collection schoolColl = sBus.findAllSchools();
+		Collection schoolColl = this.sBus.findAllSchools();
 		if (schoolColl != null && !schoolColl.isEmpty()) {
-			DropdownMenu schools = new DropdownMenu(schoolColl, PARAMETER_SCHOOL_ID);
-			DropdownMenu schoolTypes = new DropdownMenu(PARAMETER_SCHOOL_TYPE_ID);
+			DropdownMenu schools = new DropdownMenu(schoolColl, this.PARAMETER_SCHOOL_ID);
+			DropdownMenu schoolTypes = new DropdownMenu(this.PARAMETER_SCHOOL_TYPE_ID);
 			schools.setToSubmit();
 			schoolTypes.setToSubmit();
-			if (school != null) {
-				schools.setSelectedElement(school.getPrimaryKey().toString());
-				Map schoolTypesMap = sBus.getSchoolRelatedSchoolTypes(school);
+			if (this.school != null) {
+				schools.setSelectedElement(this.school.getPrimaryKey().toString());
+				Map schoolTypesMap = this.sBus.getSchoolRelatedSchoolTypes(this.school);
 				if (schoolTypesMap != null) {
 					schoolTypes.addMenuElements(schoolTypesMap.values());
 				}
-				if (schoolTypeId != null) {
-					schoolTypes.setSelectedElement(schoolTypeId);
+				if (this.schoolTypeId != null) {
+					schoolTypes.setSelectedElement(this.schoolTypeId);
 				}
 			}
 				
 			table.add(schools, 1, row);
 			table.add(schoolTypes, 1, row);
-			table.add(new SubmitButton(iwrb.getLocalizedImageButton("school.submit","Submit")), 1, row);
+			table.add(new SubmitButton(this.iwrb.getLocalizedImageButton("school.submit","Submit")), 1, row);
 			table.mergeCells(1, row, 2, row);
 			
-			if (schoolTypeId != null) {
+			if (this.schoolTypeId != null) {
 				row = listCourses(iwc, table, row);
-				SubmitButton newCourse = new SubmitButton(iwrb.getLocalizedImageButton("school.new","New"), ACTION, ACTION_PARAMETER_NEW_COURSE);
+				SubmitButton newCourse = new SubmitButton(this.iwrb.getLocalizedImageButton("school.new","New"), this.ACTION, this.ACTION_PARAMETER_NEW_COURSE);
 				table.add(newCourse, 1, ++row);
 			}
 			
@@ -135,11 +135,11 @@ public class SchoolStudyPathEditor extends Block {
 	}
 	
 	private int listCourses(IWContext iwc, Table table, int row) throws RemoteException {
-		Map map = sBus.getSchoolAndSchoolTypeRelatedSchoolCourses(school, schoolTypeId);
+		Map map = this.sBus.getSchoolAndSchoolTypeRelatedSchoolCourses(this.school, this.schoolTypeId);
 
 		++row;
-		table.add(tFormat.format(iwrb.getLocalizedString("school.name","Name"), TextFormat.HEADER), 1, row);
-		table.add(tFormat.format(iwrb.getLocalizedString("school.description","Description"), TextFormat.HEADER), 2, row);
+		table.add(this.tFormat.format(this.iwrb.getLocalizedString("school.name","Name"), TextFormat.HEADER), 1, row);
+		table.add(this.tFormat.format(this.iwrb.getLocalizedString("school.description","Description"), TextFormat.HEADER), 2, row);
 		
 		if (map != null && !map.isEmpty()) {
 			Collection courses = map.values();
@@ -153,24 +153,24 @@ public class SchoolStudyPathEditor extends Block {
 				table.add(course.getCode(), 1, row);
 				table.add(course.getDescription(), 2, row);
 				
-				edit = new Link(iwrb.getLocalizedImageButton("school.edit","Edit"));
-				edit.maintainParameter(PARAMETER_SCHOOL_ID, iwc);
-				edit.maintainParameter(PARAMETER_SCHOOL_TYPE_ID, iwc);
-				edit.addParameter(ACTION, ACTION_PARAMETER_EDIT_COURSE);
-				edit.addParameter(PARAMETER_SCHOOL_COURSE_ID, course.getPrimaryKey().toString());
+				edit = new Link(this.iwrb.getLocalizedImageButton("school.edit","Edit"));
+				edit.maintainParameter(this.PARAMETER_SCHOOL_ID, iwc);
+				edit.maintainParameter(this.PARAMETER_SCHOOL_TYPE_ID, iwc);
+				edit.addParameter(this.ACTION, this.ACTION_PARAMETER_EDIT_COURSE);
+				edit.addParameter(this.PARAMETER_SCHOOL_COURSE_ID, course.getPrimaryKey().toString());
 				
-				delete = new Link(iwrb.getLocalizedImageButton("school.delete","Delete"));
-				delete.maintainParameter(PARAMETER_SCHOOL_ID, iwc);
-				delete.maintainParameter(PARAMETER_SCHOOL_TYPE_ID, iwc);
-				delete.addParameter(ACTION, ACTION_PARAMETER_DELETE_COURSE);
-				delete.addParameter(PARAMETER_SCHOOL_COURSE_ID, course.getPrimaryKey().toString());
+				delete = new Link(this.iwrb.getLocalizedImageButton("school.delete","Delete"));
+				delete.maintainParameter(this.PARAMETER_SCHOOL_ID, iwc);
+				delete.maintainParameter(this.PARAMETER_SCHOOL_TYPE_ID, iwc);
+				delete.addParameter(this.ACTION, this.ACTION_PARAMETER_DELETE_COURSE);
+				delete.addParameter(this.PARAMETER_SCHOOL_COURSE_ID, course.getPrimaryKey().toString());
 
 				table.add(edit, 3, row);
 				table.add(delete, 3, row);
 			}
 		} else {
 			++row;
-			table.add(tFormat.format(iwrb.getLocalizedString("school.no_courses_found","No courses found"), TextFormat.NORMAL), 1, row);
+			table.add(this.tFormat.format(this.iwrb.getLocalizedString("school.no_courses_found","No courses found"), TextFormat.NORMAL), 1, row);
 		}
 		return row;
 	}
@@ -179,18 +179,18 @@ public class SchoolStudyPathEditor extends Block {
 		Form form = new Form();
 		Table table = new Table();
 
-		form.maintainParameter(PARAMETER_SCHOOL_ID);
-		form.maintainParameter(PARAMETER_SCHOOL_TYPE_ID);
+		form.maintainParameter(this.PARAMETER_SCHOOL_ID);
+		form.maintainParameter(this.PARAMETER_SCHOOL_TYPE_ID);
 		
-		TextInput name = new TextInput(PARAMETER_COURSE_NAME);
-		TextArea description = new TextArea(PARAMETER_COURSE_DESCRIPTION);
+		TextInput name = new TextInput(this.PARAMETER_COURSE_NAME);
+		TextArea description = new TextArea(this.PARAMETER_COURSE_DESCRIPTION);
 		
-		String schoolCourseId = iwc.getParameter(PARAMETER_SCHOOL_COURSE_ID);
+		String schoolCourseId = iwc.getParameter(this.PARAMETER_SCHOOL_COURSE_ID);
 		if (schoolCourseId != null) {
 			try {
 				SchoolStudyPathHome scHome = (SchoolStudyPathHome) IDOLookup.getHome(SchoolStudyPath.class);
 				SchoolStudyPath course = scHome.findByPrimaryKey(new Integer(schoolCourseId));
-				form.maintainParameter(PARAMETER_SCHOOL_COURSE_ID);
+				form.maintainParameter(this.PARAMETER_SCHOOL_COURSE_ID);
 				name.setContent(course.getCode());
 				description.setContent(course.getDescription());
 			} catch (Exception e) {
@@ -200,16 +200,16 @@ public class SchoolStudyPathEditor extends Block {
 		}
 		
 		table.mergeCells(1, 1, 2, 1);
-		table.add(tFormat.format(iwrb.getLocalizedString("school.course","Course"), TextFormat.HEADER), 1, 1);
+		table.add(this.tFormat.format(this.iwrb.getLocalizedString("school.course","Course"), TextFormat.HEADER), 1, 1);
 		
-		table.add(tFormat.format(iwrb.getLocalizedString("school.name","Name"), TextFormat.NORMAL), 1, 2);
+		table.add(this.tFormat.format(this.iwrb.getLocalizedString("school.name","Name"), TextFormat.NORMAL), 1, 2);
 		table.add(name, 2, 2);
 		
-		table.add(tFormat.format(iwrb.getLocalizedString("school.description","Description"), TextFormat.NORMAL), 1, 3);
+		table.add(this.tFormat.format(this.iwrb.getLocalizedString("school.description","Description"), TextFormat.NORMAL), 1, 3);
 		table.add(description, 2, 3);
 		
-		SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("school.save","Save"), ACTION, ACTION_PARAMETER_SAVE_COURSE);
-		BackButton back = new BackButton(iwrb.getLocalizedImageButton("school.Cancel", "Cancel"));
+		SubmitButton save = new SubmitButton(this.iwrb.getLocalizedImageButton("school.save","Save"), this.ACTION, this.ACTION_PARAMETER_SAVE_COURSE);
+		BackButton back = new BackButton(this.iwrb.getLocalizedImageButton("school.Cancel", "Cancel"));
 		
 		table.add(save, 2, 4);
 		table.add(back, 2, 4);
@@ -219,11 +219,11 @@ public class SchoolStudyPathEditor extends Block {
 	}
 	
 	private boolean saveCourse(IWContext iwc) {
-		String name = iwc.getParameter(PARAMETER_COURSE_NAME);
-		String description = iwc.getParameter(PARAMETER_COURSE_DESCRIPTION);
-		String category = iwc.getParameter(PARAMETER_CATEGORY);
+		String name = iwc.getParameter(this.PARAMETER_COURSE_NAME);
+		String description = iwc.getParameter(this.PARAMETER_COURSE_DESCRIPTION);
+		String category = iwc.getParameter(this.PARAMETER_CATEGORY);
 		
-		String schoolCourseId = iwc.getParameter(PARAMETER_SCHOOL_COURSE_ID);
+		String schoolCourseId = iwc.getParameter(this.PARAMETER_SCHOOL_COURSE_ID);
 		if (name != null && !name.equals("") ) {
 			try {
 				SchoolStudyPathHome scHome = (SchoolStudyPathHome) IDOLookup.getHome(SchoolStudyPath.class);
@@ -236,7 +236,7 @@ public class SchoolStudyPathEditor extends Block {
 				course.setCode(name);
 				course.setDescription(description);
 //				course.setSchoolPk(school.getPrimaryKey());
-				course.setSchoolTypeId(new Integer(schoolTypeId));
+				course.setSchoolTypeId(new Integer(this.schoolTypeId));
 				course.setSchoolCategory(category);
 				course.store();
 				return true;
@@ -249,7 +249,7 @@ public class SchoolStudyPathEditor extends Block {
 	
 	private boolean deleteCourse (IWContext iwc) {
 		final String studyPathId
-                = iwc.getParameter(PARAMETER_SCHOOL_COURSE_ID);
+                = iwc.getParameter(this.PARAMETER_SCHOOL_COURSE_ID);
 		if (null != studyPathId) {
             try {
                 final SchoolStudyPathHome studyPathHome = (SchoolStudyPathHome)

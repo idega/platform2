@@ -1,13 +1,15 @@
 package com.idega.block.staff.data;
 
 import java.sql.SQLException;
+import com.idega.data.GenericEntity;
+import com.idega.user.data.UserBMPBean;
 
 
 /**
  * Title:        User
  * Copyright:    Copyright (c) 2001
  * Company:      idega.is
- * @author 2000 - idega team - <a href="mailto:gummi@idega.is">Guðmundur Ágúst Sæmundsson</a>
+ * @author 2000 - idega team - <a href="mailto:gummi@idega.is">Guï¿½mundur ï¿½gï¿½st Sï¿½mundsson</a>
  * @version 1.0
  */
 
@@ -36,13 +38,13 @@ public class StaffMetaDataBMPBean extends com.idega.data.GenericEntity implement
 
 
     public static StaffMetaData getStaticInstance(){
-      return (StaffMetaData)com.idega.block.staff.data.StaffMetaDataBMPBean.getStaticInstance(sClassName);
+      return (StaffMetaData)GenericEntity.getStaticInstance(sClassName);
     }
 
 
     /*  ColumnNames begin   */
 
-    public static String getColumnNameUserID(){return com.idega.core.user.data.UserBMPBean.getColumnNameUserID();}
+    public static String getColumnNameUserID(){return UserBMPBean.getColumnNameUserID();}
     public static String getColumnNameAttribute(){return "meta_attribute";}
     public static String getColumnNameValue(){return "meta_value";}
 

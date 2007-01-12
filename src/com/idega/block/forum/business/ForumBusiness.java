@@ -104,20 +104,25 @@ public class ForumBusiness {
 					thread.setTopParentID(top);
 				}
 			}
-			if (headline != null && headline.length() > 0)
+			if (headline != null && headline.length() > 0) {
 				thread.setThreadSubject(headline);
-			if (body != null && body.length() > 0)
+			}
+			if (body != null && body.length() > 0) {
 				thread.setThreadBody(body);
-			if (userID != -1)
+			}
+			if (userID != -1) {
 				thread.setUserID(userID);
+			}
 			else {
-				if (userName != null && userName.length() > 0)
+				if (userName != null && userName.length() > 0) {
 					thread.setUserName(userName);
-				if (email != null && email.length() > 0)
+				}
+				if (email != null && email.length() > 0) {
 					thread.setUserEMail(email);
+				}
 			}
 			thread.setValid(true);
-			thread.setThreadDate(new IWTimestamp().getTimestampRightNow());
+			thread.setThreadDate(IWTimestamp.getTimestampRightNow());
 
 			thread.store();
 
@@ -145,15 +150,17 @@ public class ForumBusiness {
 	}
 
 	public boolean hasPreviousThreads(int firstThread) {
-		if (firstThread > 1)
+		if (firstThread > 1) {
 			return true;
+		}
 		return false;
 	}
 
 	public boolean hasNextThreads(ForumData[] threads, int lastThread) {
 		if (threads != null) {
-			if (threads.length > lastThread)
+			if (threads.length > lastThread) {
 				return true;
+			}
 			return false;
 		}
 		return false;
@@ -229,8 +236,9 @@ public class ForumBusiness {
 			ForumData[] results = new ForumData[(toThread + 1) - fromThread];
 			int k = 0;
 			if (threads.length > 0) {
-				for (int i = fromThread - 1; i < toThread; i++)
+				for (int i = fromThread - 1; i < toThread; i++) {
 					results[k++] = threads[i];
+				}
 
 				return results;
 			}
@@ -261,8 +269,9 @@ public class ForumBusiness {
 	public ForumData getNewestThreads(ICCategory category) {
 		try {
 			Vector vector = new Vector(getForumHome().findNewestThread(category));
-			if (vector.size() > 0)
+			if (vector.size() > 0) {
 				return (ForumData) vector.get(0);
+			}
 			return null;
 		}
 		catch (FinderException e) {

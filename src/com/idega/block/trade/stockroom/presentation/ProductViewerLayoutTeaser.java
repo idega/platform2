@@ -39,22 +39,22 @@ public class ProductViewerLayoutTeaser extends AbstractProductViewerLayout {
 	}
 
 	public PresentationObject getViewer(ProductViewer productViewer, Product product, IWContext iwc) throws RemoteException {
-		_name = product.getProductName(productViewer._localeId);
-		_teaser = TextSoap.formatText(product.getProductTeaser(productViewer._localeId));
+		this._name = product.getProductName(productViewer._localeId);
+		this._teaser = TextSoap.formatText(product.getProductTeaser(productViewer._localeId));
 		
-		_product = product;
-		_price = new ProductItemPrice(product);
+		this._product = product;
+		this._price = new ProductItemPrice(product);
 		if (productViewer._priceFontStyle != null) {
-			_price.setFontStyle(productViewer._priceFontStyle);
+			this._price.setFontStyle(productViewer._priceFontStyle);
 		}
-		_price.setShowCurrency(productViewer._showCurrency);
-		_price.setShowLocalized(true);
+		this._price.setShowCurrency(productViewer._showCurrency);
+		this._price.setShowLocalized(true);
 
-		_thumb = new ProductItemThumbnail(_product);
-		_thumb.setAddBorder(productViewer._showBorder);
+		this._thumb = new ProductItemThumbnail(this._product);
+		this._thumb.setAddBorder(productViewer._showBorder);
 		if (productViewer._imageWidth != null) {
 			try {
-				_thumb.setWidth(Integer.parseInt(productViewer._imageWidth));
+				this._thumb.setWidth(Integer.parseInt(productViewer._imageWidth));
 			}
 			catch (NumberFormatException e) {
 			}
@@ -72,8 +72,9 @@ public class ProductViewerLayoutTeaser extends AbstractProductViewerLayout {
 		table.mergeCells(3, 3, 3, 4);
 		table.mergeCells(1, 6, 3, 6);
 		table.setWidth(2, 4);
-		if (productViewer._imageWidth != null)
+		if (productViewer._imageWidth != null) {
 			table.setWidth(3, 3, Integer.parseInt(productViewer._imageWidth));
+		}
 		table.setRowVerticalAlignment(3, Table.VERTICAL_ALIGN_TOP);
 		table.setRowVerticalAlignment(4, Table.VERTICAL_ALIGN_BOTTOM);
 
@@ -85,16 +86,18 @@ public class ProductViewerLayoutTeaser extends AbstractProductViewerLayout {
 		table.add(header, 1, row++);
 		table.setHeight(row++, "6");
 
-		table.add(_thumb, 3, row);
+		table.add(this._thumb, 3, row);
 		table.add(teaser, 1, row++);
-		table.add(_price, 1, row++);
+		table.add(this._price, 1, row++);
 		
 		Link link = new Link(productViewer.getLocalizedString("more", ">> more", iwc));
-		if (productViewer._productPage != null)
+		if (productViewer._productPage != null) {
 			link.setPage(productViewer._productPage);
-		link.addParameter(getProductBusiness(iwc).getProductIdParameter(), _product.getID());
-		if (productViewer._linkFontStyle != null)
+		}
+		link.addParameter(getProductBusiness(iwc).getProductIdParameter(), this._product.getID());
+		if (productViewer._linkFontStyle != null) {
 			link.setStyleAttribute(productViewer._linkFontStyle);
+		}
 
 		table.setHeight(row++, "6");
 		table.add(link, 1, row++);

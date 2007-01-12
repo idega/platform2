@@ -27,10 +27,12 @@ public class MessageListener implements Runnable{
   }
 
   public void run(){
-    while(runThread){
+    while(this.runThread){
       try {
-        if( listener!=null ) listener.actionPerformed(new ActionEvent(this,ActionEvent.ACTION_PERFORMED,"iw-cycle"));
-        t.sleep(threadSleep);
+        if( this.listener!=null ) {
+			this.listener.actionPerformed(new ActionEvent(this,ActionEvent.ACTION_PERFORMED,"iw-cycle"));
+		}
+        Thread.sleep(this.threadSleep);
       }
       catch (Exception e) {
         e.printStackTrace(System.out);
@@ -39,24 +41,24 @@ public class MessageListener implements Runnable{
   }
 
   public void start(){
-    runThread = true;
-    if( t == null ){
-      t = new Thread(this,"MessageListener thread");
-      t.setPriority(t.MIN_PRIORITY);
-      t.start();
+    this.runThread = true;
+    if( this.t == null ){
+      this.t = new Thread(this,"MessageListener thread");
+      this.t.setPriority(Thread.MIN_PRIORITY);
+      this.t.start();
     }
   }
 
   public void stop(){
-    if ( t != null ){
-      runThread = false;
+    if ( this.t != null ){
+      this.runThread = false;
     }
   }
 
    /**Destroy the thread*/
   public void destroy() {
     stop();
-    t = null;
+    this.t = null;
   }
 
   public void setInterval(long interval){
@@ -64,15 +66,15 @@ public class MessageListener implements Runnable{
   }
 
   public void addActionListener(ActionListener l) {
-    listener = AWTEventMulticaster.add(listener, l);
+    this.listener = AWTEventMulticaster.add(this.listener, l);
   }
 
   public void removeActionListener(ActionListener l) {
-    listener = AWTEventMulticaster.remove(listener, l);
+    this.listener = AWTEventMulticaster.remove(this.listener, l);
   }
 
   private ActionListener getActionListener(){
-    return listener;
+    return this.listener;
   }
 
 }

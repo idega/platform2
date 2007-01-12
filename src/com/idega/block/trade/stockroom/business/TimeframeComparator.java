@@ -31,15 +31,15 @@ public class TimeframeComparator implements Comparator {
   private int sortBy;
 
   public TimeframeComparator() {
-      sortBy = FROMDATE;
+      this.sortBy = FROMDATE;
   }
 
   public TimeframeComparator(int toSortBy) {
-      sortBy = toSortBy;
+      this.sortBy = toSortBy;
   }
 
   public void sortBy(int toSortBy) {
-      sortBy = toSortBy;
+      this.sortBy = toSortBy;
   }
 
   public int compare(Object o1, Object o2) {
@@ -94,7 +94,7 @@ public class TimeframeComparator implements Comparator {
   }
 
   public Iterator sort(Timeframe[] tFrames, int toSortBy) {
-      sortBy = toSortBy;
+      this.sortBy = toSortBy;
       List list = new LinkedList();
       for(int i = 0; i < tFrames.length; i++) {
           list.add(tFrames[i]);
@@ -113,7 +113,7 @@ public class TimeframeComparator implements Comparator {
   }
 
   public Timeframe[] sortedArray(Timeframe[] tFrames, int toSortBy) {
-      sortBy = toSortBy;
+      this.sortBy = toSortBy;
       List list = new LinkedList();
       for(int i = 0; i < tFrames.length; i++) {
           list.add(tFrames[i]);
@@ -146,7 +146,7 @@ public class TimeframeComparator implements Comparator {
   }
 
   public Timeframe[] reverseSortedArray(Timeframe[] tFrame, int toSortBy) {
-      sortBy = toSortBy;
+      this.sortBy = toSortBy;
       List list = new LinkedList();
       for(int i = 0; i < tFrame.length; i++) {
           list.add(tFrame[i]);

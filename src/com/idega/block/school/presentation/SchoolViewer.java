@@ -34,7 +34,7 @@ public class SchoolViewer extends Block {
 	}
 
 	private void init( IWContext iwc ) {
-		_iwrb = super.getResourceBundle( iwc );
+		this._iwrb = super.getResourceBundle( iwc );
 		//_iwb = super.getBundle( iwc );
 	}
 
@@ -55,7 +55,7 @@ public class SchoolViewer extends Block {
 				link.addParameter( getSchoolContentBusiness( iwc ).getParameterSchoolId() , school.getPrimaryKey().toString() );
 				table.add ( link, 1, row );
 				if (getSchoolBusiness(iwc).hasEditPermission(iwc.getCurrentUser(), school)) {
-					table.add( SchoolContentEditor.getLink(school, new Text(_iwrb.getLocalizedString("content_editor","Content Editor"))) , 2, row);
+					table.add( SchoolContentEditor.getLink(school, new Text(this._iwrb.getLocalizedString("content_editor","Content Editor"))) , 2, row);
 				}
 			}
 		}

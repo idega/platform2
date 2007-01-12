@@ -81,13 +81,15 @@ public class LDAPManager extends Block implements LDAPReplicationConstants,Embed
 	}
 	
 	public void main(IWContext iwc) throws Exception {
-		iwrb = getResourceBundle(iwc);
-		isServerStarted = getEmbeddedLDAPServerBusiness(iwc).isServerStarted();
+		this.iwrb = getResourceBundle(iwc);
+		this.isServerStarted = getEmbeddedLDAPServerBusiness(iwc).isServerStarted();
 		
 		handleActions(iwc);
 		
 		add(IWDeveloper.getTitleTable(this.getClass()));
-		if (!iwc.isIE()) getParentPage().setBackgroundColor("#FFFFFF");
+		if (!iwc.isIE()) {
+			getParentPage().setBackgroundColor("#FFFFFF");
+		}
 		
 		if (iwc.isLoggedOn()) {
 		// maintain this parameter IWDeveloper.PARAMETER_CLASS_NAME
@@ -112,7 +114,7 @@ public class LDAPManager extends Block implements LDAPReplicationConstants,Embed
 		addUniqueIdUtil(iwc);
 		}
 		else {
-			add(iwrb.getLocalizedString("not.logged.on","Not logged on"));
+			add(this.iwrb.getLocalizedString("not.logged.on","Not logged on"));
 		}
 	}
 	
@@ -152,27 +154,27 @@ public class LDAPManager extends Block implements LDAPReplicationConstants,Embed
 				if(param!=null){
 					if(param.equals(PARAM_VALUE_CREATE_ALL_UNIQUE_IDs)){
 						getUUIDBusiness(iwc).generateUUIDsForAllUsersAndGroups();
-						justCreatedUUIDs = true;
+						this.justCreatedUUIDs = true;
 					}
 					else if(param.equals(PARAM_VALUE_REMOVE_ALL_UNIQUE_IDs)){
 						getUUIDBusiness(iwc).removeUniqueIDsForUsersAndGroups();
-						justRemovedUUIDs = true;
+						this.justRemovedUUIDs = true;
 					}
 					else if(param.equals(PARAM_VALUE_CREATE_ALL_GROUP_UNIQUE_IDs)){
 						getUUIDBusiness(iwc).generateUUIDsForAllGroups();
-						justRemovedUUIDs = true;
+						this.justRemovedUUIDs = true;
 					}
 					else if(param.equals(PARAM_VALUE_CREATE_ALL_USER_UNIQUE_IDs)){
 						getUUIDBusiness(iwc).generateUUIDsForAllUsers();
-						justRemovedUUIDs = true;
+						this.justRemovedUUIDs = true;
 					}
 					else if(param.equals(PARAM_VALUE_REMOVE_ALL_GROUP_UNIQUE_IDs)){
 						getUUIDBusiness(iwc).removeUUIDsFromAllGroups();
-						justRemovedUUIDs = true;
+						this.justRemovedUUIDs = true;
 					}
 					else if(param.equals(PARAM_VALUE_REMOVE_ALL_USER_UNIQUE_IDs)){
 						getUUIDBusiness(iwc).removeUUIDsFromAllUsers();
-						justRemovedUUIDs = true;
+						this.justRemovedUUIDs = true;
 					}
 				}
 			}
@@ -187,13 +189,13 @@ public class LDAPManager extends Block implements LDAPReplicationConstants,Embed
 	 * @throws RemoteException
 	 */
 	private void startOrStopEmbeddedLDAPServer(IWContext iwc) throws RemoteException {
-		if(isServerStarted){
+		if(this.isServerStarted){
 			getEmbeddedLDAPServerBusiness(iwc).stopEmbeddedLDAPServer();
 		}
 		else{
 			getEmbeddedLDAPServerBusiness(iwc).startEmbeddedLDAPServer();
 		}
-		isServerStarted = getEmbeddedLDAPServerBusiness(iwc).isServerStarted();
+		this.isServerStarted = getEmbeddedLDAPServerBusiness(iwc).isServerStarted();
 	}
 
 	/**
@@ -310,7 +312,7 @@ public class LDAPManager extends Block implements LDAPReplicationConstants,Embed
 		List checkBoxes = new ArrayList();
 		checkBoxes.add(PROPS_JAVALDAP_AUTO_START);
 		
-		addSettings(iwc,PARAM_SAVE_LDAP_SETTINGS,getEmbeddedLDAPServerBusiness(iwc).getLDAPSettings(),iwrb.getLocalizedString("LDAPMANAGER.ldap.settings","LDAP Settings"),editable,null,checkBoxes,null,null,true);
+		addSettings(iwc,PARAM_SAVE_LDAP_SETTINGS,getEmbeddedLDAPServerBusiness(iwc).getLDAPSettings(),this.iwrb.getLocalizedString("LDAPMANAGER.ldap.settings","LDAP Settings"),editable,null,checkBoxes,null,null,true);
 	}
 	
 	/**
@@ -321,7 +323,7 @@ public class LDAPManager extends Block implements LDAPReplicationConstants,Embed
 		List editable = new ArrayList();
 		editable.add(PROPS_BACKEND_ZERO_ROOT);
 		
-		addSettings(iwc,PARAM_SAVE_BACKEND_SETTINGS, getEmbeddedLDAPServerBusiness(iwc).getBackendSettings(),iwrb.getLocalizedString("LDAPMANAGER.backend.settings","Backend Settings"),editable,null,null,null,null,false);
+		addSettings(iwc,PARAM_SAVE_BACKEND_SETTINGS, getEmbeddedLDAPServerBusiness(iwc).getBackendSettings(),this.iwrb.getLocalizedString("LDAPMANAGER.backend.settings","Backend Settings"),editable,null,null,null,null,false);
 	}
 	
 	/**
@@ -364,7 +366,7 @@ public class LDAPManager extends Block implements LDAPReplicationConstants,Embed
 		specialIOMap.put(PROPS_REPLICATOR_BASE_GROUP_ID, new GroupChooser(PROPS_REPLICATOR_BASE_GROUP_ID));
 		specialIOMap.put(PROPS_REPLICATOR_PARENT_GROUP_ID, new GroupChooser(PROPS_REPLICATOR_PARENT_GROUP_ID));
 		
-		Text headerText = new Text(iwrb.getLocalizedString("LDAPMANAGER.replication.settings","Replication Settings"));
+		Text headerText = new Text(this.iwrb.getLocalizedString("LDAPMANAGER.replication.settings","Replication Settings"));
 		headerText.setBold();
 		headerText.setFontSize(Text.FONT_SIZE_10_HTML_2);
 		add(headerText);
@@ -374,14 +376,14 @@ public class LDAPManager extends Block implements LDAPReplicationConstants,Embed
 		form.maintainParameter(IWDeveloper.PARAMETER_CLASS_NAME);
 		
 		Table buttons = new Table(4,1);
-		SubmitButton newRep = new SubmitButton(PARAM_NEW_REPLICATION_SETTINGS,iwrb.getLocalizedString("LDAPMANAGER.new.replication.settings","new replicator"));
-		SubmitButton startAll = new SubmitButton(PARAM_START_ALL_REPLICATORS,iwrb.getLocalizedString("LDAPMANAGER.start.all.replicators","start all active replicators"));
-		SubmitButton stopAll = new SubmitButton(PARAM_STOP_ALL_REPLICATORS,iwrb.getLocalizedString("LDAPMANAGER.stop.all.replicators","stop all replicators"));
+		SubmitButton newRep = new SubmitButton(PARAM_NEW_REPLICATION_SETTINGS,this.iwrb.getLocalizedString("LDAPMANAGER.new.replication.settings","new replicator"));
+		SubmitButton startAll = new SubmitButton(PARAM_START_ALL_REPLICATORS,this.iwrb.getLocalizedString("LDAPMANAGER.start.all.replicators","start all active replicators"));
+		SubmitButton stopAll = new SubmitButton(PARAM_STOP_ALL_REPLICATORS,this.iwrb.getLocalizedString("LDAPMANAGER.stop.all.replicators","stop all replicators"));
 		buttons.add(newRep,1,1);
 		buttons.add(startAll,3,1);
 		buttons.add(stopAll,4,1);
 		
-		Text text = new Text(iwrb.getLocalizedString("LDAPMANAGER.replication.scheduler.help.text","<b>Scheduler timer string format (-1 means every day/week/month/year...) :</b><br><i>\"minute (-1 or 0-59), hour (-1 or 0-23), day of month (-1 or 1-31), month (-1 or 0-11), day Of Week (-1 or 1-7) ,year (-1 or xxxx)\"</i>"));
+		Text text = new Text(this.iwrb.getLocalizedString("LDAPMANAGER.replication.scheduler.help.text","<b>Scheduler timer string format (-1 means every day/week/month/year...) :</b><br><i>\"minute (-1 or 0-59), hour (-1 or 0-23), day of month (-1 or 1-31), month (-1 or 0-11), day Of Week (-1 or 1-7) ,year (-1 or xxxx)\"</i>"));
 
 		form.add(buttons);
 		add(form);
@@ -406,7 +408,7 @@ public class LDAPManager extends Block implements LDAPReplicationConstants,Embed
 		
 		String rowColor = darkColor;
 		
-		SubmitButton save = new SubmitButton(saveParameterName,iwrb.getLocalizedString("LDAPMANAGER.save.changes","save changes"));
+		SubmitButton save = new SubmitButton(saveParameterName,this.iwrb.getLocalizedString("LDAPMANAGER.save.changes","save changes"));
 		
 		
 		if(header!=null){
@@ -527,7 +529,7 @@ public class LDAPManager extends Block implements LDAPReplicationConstants,Embed
 		Table settingsTable = new Table(2,7);
 		settingsTable.setCellspacing(0);
 		
-		Text headerText = new Text(iwrb.getLocalizedString("LDAPMANAGER.UUID.util.header","Universally Unique Identifier Utility"));
+		Text headerText = new Text(this.iwrb.getLocalizedString("LDAPMANAGER.UUID.util.header","Universally Unique Identifier Utility"));
 		headerText.setBold();
 		headerText.setFontSize(Text.FONT_SIZE_10_HTML_2);
 		add(headerText);
@@ -542,36 +544,36 @@ public class LDAPManager extends Block implements LDAPReplicationConstants,Embed
 		RadioButton createUser = new RadioButton(PARAM_UUID_PROCESS,PARAM_VALUE_CREATE_ALL_USER_UNIQUE_IDs);
 		RadioButton removeUser = new RadioButton(PARAM_UUID_PROCESS,PARAM_VALUE_REMOVE_ALL_USER_UNIQUE_IDs);
 		
-		SubmitButton save = new SubmitButton(PARAM_RUN_UUID_PROCESS,iwrb.getLocalizedString("LDAPMANAGER.run.process","run process"));
-		save.setSubmitConfirm(iwrb.getLocalizedString("LDAPMANAGER.run.process.confirm","Are you sure you want to run the process? It could affect all users and groups in the database."));
+		SubmitButton save = new SubmitButton(PARAM_RUN_UUID_PROCESS,this.iwrb.getLocalizedString("LDAPMANAGER.run.process","run process"));
+		save.setSubmitConfirm(this.iwrb.getLocalizedString("LDAPMANAGER.run.process.confirm","Are you sure you want to run the process? It could affect all users and groups in the database."));
 		
 
-		settingsTable.add(iwrb.getLocalizedString("LDAPMANAGER.run.process.create","Create UUID for all users and groups"),1,1);
+		settingsTable.add(this.iwrb.getLocalizedString("LDAPMANAGER.run.process.create","Create UUID for all users and groups"),1,1);
 		settingsTable.add(create,2,1);
-		settingsTable.add(iwrb.getLocalizedString("LDAPMANAGER.run.process.remove","Remove all UUID from all users and groups"),1,2);
+		settingsTable.add(this.iwrb.getLocalizedString("LDAPMANAGER.run.process.remove","Remove all UUID from all users and groups"),1,2);
 		settingsTable.add(remove,2,2);
 		
-		settingsTable.add(iwrb.getLocalizedString("LDAPMANAGER.run.process.createGroup","Create UUID for all groups"),1,3);
+		settingsTable.add(this.iwrb.getLocalizedString("LDAPMANAGER.run.process.createGroup","Create UUID for all groups"),1,3);
 		settingsTable.add(createGroup,2,3);
-		settingsTable.add(iwrb.getLocalizedString("LDAPMANAGER.run.process.removeGroup","Remove all UUID from all groups"),1,4);
+		settingsTable.add(this.iwrb.getLocalizedString("LDAPMANAGER.run.process.removeGroup","Remove all UUID from all groups"),1,4);
 		settingsTable.add(removeGroup,2,4);
 		
-		settingsTable.add(iwrb.getLocalizedString("LDAPMANAGER.run.process.createUser","Create UUID for all users"),1,5);
+		settingsTable.add(this.iwrb.getLocalizedString("LDAPMANAGER.run.process.createUser","Create UUID for all users"),1,5);
 		settingsTable.add(createUser,2,5);
-		settingsTable.add(iwrb.getLocalizedString("LDAPMANAGER.run.process.removeUser","Remove all UUID from all users"),1,6);
+		settingsTable.add(this.iwrb.getLocalizedString("LDAPMANAGER.run.process.removeUser","Remove all UUID from all users"),1,6);
 		settingsTable.add(removeUser,2,6);
 		settingsTable.add(save,2,7);
 		uuidForm.add(settingsTable);
 		add(uuidForm);
 		
-		if(justCreatedUUIDs){
+		if(this.justCreatedUUIDs){
 			addBreak();
-			Text message = new Text(iwrb.getLocalizedString("LDAPMANAGER.run.process.create.done","Done creating UUID for all users and groups!"));
+			Text message = new Text(this.iwrb.getLocalizedString("LDAPMANAGER.run.process.create.done","Done creating UUID for all users and groups!"));
 			message.setBold();
 			add(message);
 		}
-		else if(justRemovedUUIDs){
-			Text message = new Text(iwrb.getLocalizedString("LDAPMANAGER.run.process.remove.done","Done removing UUIDs from all users and groups!"));
+		else if(this.justRemovedUUIDs){
+			Text message = new Text(this.iwrb.getLocalizedString("LDAPMANAGER.run.process.remove.done","Done removing UUIDs from all users and groups!"));
 			message.setBold();
 			add(message);
 		}
@@ -592,7 +594,7 @@ public class LDAPManager extends Block implements LDAPReplicationConstants,Embed
 		//a little hack, only used for the replicator
 		try{
 			String num = getReplicatorNumber(key);
-			SubmitButton deleteRep = new SubmitButton(iwrb.getLocalizedString("LDAPMANAGER.delete.replicator","delete replicator and reorder"),PARAM_DELETE_REPLICATION_SETTINGS,num);
+			SubmitButton deleteRep = new SubmitButton(this.iwrb.getLocalizedString("LDAPMANAGER.delete.replicator","delete replicator and reorder"),PARAM_DELETE_REPLICATION_SETTINGS,num);
 			//settingsTable.mergeCells(3,1,3,row);
 			settingsTable.add(deleteRep,3,row);
 			
@@ -629,7 +631,9 @@ public class LDAPManager extends Block implements LDAPReplicationConstants,Embed
 			}
 			return false;
 		}
-		else return true;
+		else {
+			return true;
+		}
 	}
 	
 	
@@ -650,7 +654,9 @@ public class LDAPManager extends Block implements LDAPReplicationConstants,Embed
 			}
 			return false;
 		}
-		else return false;
+		else {
+			return false;
+		}
 	}
 	
 	/**
@@ -670,7 +676,9 @@ public class LDAPManager extends Block implements LDAPReplicationConstants,Embed
 			}
 			return false;
 		}
-		else return false;
+		else {
+			return false;
+		}
 	}
 
 	/**
@@ -690,7 +698,9 @@ public class LDAPManager extends Block implements LDAPReplicationConstants,Embed
 			}
 			return false;
 		}
-		else return false;
+		else {
+			return false;
+		}
 	}
 	
 	/**
@@ -710,7 +720,9 @@ public class LDAPManager extends Block implements LDAPReplicationConstants,Embed
 			}
 			return false;
 		}
-		else return false;
+		else {
+			return false;
+		}
 	}
 	
 	private void toggleBooleanProperty(Properties props, String key, IWContext iwc){
@@ -735,21 +747,21 @@ public class LDAPManager extends Block implements LDAPReplicationConstants,Embed
 		//TODO add auto start checkbox
 		Form serverStatusForm = new Form();
 		Table serverStarter = new Table(3,1);
-		Text text = new Text(iwrb.getLocalizedString("LDAPMANAGER.embedded.server.status","Embedded LDAP server status : "));
+		Text text = new Text(this.iwrb.getLocalizedString("LDAPMANAGER.embedded.server.status","Embedded LDAP server status : "));
 		text.setBold();
-		Text running = new Text(iwrb.getLocalizedString("LDAPMANAGER.embedded.server.status.running","Running"));
+		Text running = new Text(this.iwrb.getLocalizedString("LDAPMANAGER.embedded.server.status.running","Running"));
 		running.setFontColor("green");
 		running.setBold();
-		Text stopped = new Text(iwrb.getLocalizedString("LDAPMANAGER.embedded.server.status.stopped","Stopped"));
+		Text stopped = new Text(this.iwrb.getLocalizedString("LDAPMANAGER.embedded.server.status.stopped","Stopped"));
 		stopped.setFontColor("red");
 		stopped.setBold();
-		String start = iwrb.getLocalizedString("LDAPMANAGER.embedded.server.action.start","start");
-		String stop = iwrb.getLocalizedString("LDAPMANAGER.embedded.server.action.stop","stop");
+		String start = this.iwrb.getLocalizedString("LDAPMANAGER.embedded.server.action.start","start");
+		String stop = this.iwrb.getLocalizedString("LDAPMANAGER.embedded.server.action.stop","stop");
 		SubmitButton startStop = new SubmitButton();
 		startStop.setName(PARAM_TOGGLE_START_STOP);
 		
 		serverStarter.add(text,1,1);
-		if(isServerStarted){
+		if(this.isServerStarted){
 			serverStarter.add(running,2,1);
 			startStop.setValue(stop);
 		}
@@ -770,47 +782,47 @@ public class LDAPManager extends Block implements LDAPReplicationConstants,Embed
 	}
 	
 	public EmbeddedLDAPServerBusiness getEmbeddedLDAPServerBusiness(IWApplicationContext iwc) {
-		if (embeddedLDAPServerBiz == null) {
+		if (this.embeddedLDAPServerBiz == null) {
 			try {
-				embeddedLDAPServerBiz = (EmbeddedLDAPServerBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, EmbeddedLDAPServerBusiness.class);
+				this.embeddedLDAPServerBiz = (EmbeddedLDAPServerBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, EmbeddedLDAPServerBusiness.class);
 			} catch (java.rmi.RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());
 			}
 		}
-		return embeddedLDAPServerBiz;
+		return this.embeddedLDAPServerBiz;
 	}
 	
 	public LDAPReplicationBusiness getLDAPReplicationBusiness(IWApplicationContext iwc) {
-		if (ldapReplicationBiz == null) {
+		if (this.ldapReplicationBiz == null) {
 			try {
-				ldapReplicationBiz = (LDAPReplicationBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, LDAPReplicationBusiness.class);
+				this.ldapReplicationBiz = (LDAPReplicationBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, LDAPReplicationBusiness.class);
 			} catch (java.rmi.RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());
 			}
 		}
-		return ldapReplicationBiz;
+		return this.ldapReplicationBiz;
 	}
 	
 	public UUIDBusiness getUUIDBusiness(IWApplicationContext iwc) {
-		if (uuidBiz == null) {
+		if (this.uuidBiz == null) {
 			try {
-				uuidBiz = (UUIDBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, UUIDBusiness.class);
+				this.uuidBiz = (UUIDBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, UUIDBusiness.class);
 			} catch (java.rmi.RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());
 			}
 		}
-		return uuidBiz;
+		return this.uuidBiz;
 	}
 	
 	private GroupBusiness getGroupBusiness(IWApplicationContext iwc) {
-		if (groupBiz == null) {
+		if (this.groupBiz == null) {
 			try {
-				groupBiz = (GroupBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc,GroupBusiness.class);
+				this.groupBiz = (GroupBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc,GroupBusiness.class);
 			}
 			catch (java.rmi.RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());
 			}
 		}
-		return groupBiz;
+		return this.groupBiz;
 	}
 }

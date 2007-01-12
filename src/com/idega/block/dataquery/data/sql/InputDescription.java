@@ -22,15 +22,15 @@ public class InputDescription {
 	}
 	
 	public String getDescription() {
-		return description;
+		return this.description;
 	}
 	
 	public String getInputHandler() {
-		return inputHandler;
+		return this.inputHandler;
 	}
 
 	public String getHandlerDescription() {
-		return handlerDescription;
+		return this.handlerDescription;
 	}
 
 }

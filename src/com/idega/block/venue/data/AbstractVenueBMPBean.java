@@ -50,16 +50,16 @@ public abstract class AbstractVenueBMPBean extends GenericEntity implements Venu
 	}
 
 	private Venue getGeneralVenue() {
-		if (iVenue == null) {
+		if (this.iVenue == null) {
 			try {
-				iVenue = getVenueHome().findByPrimaryKey(this.getPrimaryKey());
+				this.iVenue = getVenueHome().findByPrimaryKey(this.getPrimaryKey());
 			}
 			catch (FinderException fe) {
 				fe.printStackTrace();
 				throw new EJBException(fe.getMessage());
 			}
 		}
-		return iVenue;
+		return this.iVenue;
 	}
 	
 	public void addGeneralVenueRelation() {
@@ -68,8 +68,8 @@ public abstract class AbstractVenueBMPBean extends GenericEntity implements Venu
 	}
 	
 	public Object ejbCreate() throws CreateException {
-		iVenue = this.getVenueHome().create();
-		this.setPrimaryKey(iVenue.getPrimaryKey());
+		this.iVenue = this.getVenueHome().create();
+		this.setPrimaryKey(this.iVenue.getPrimaryKey());
 		try {
 			VenueType type = getVenueTypeHome().findByPrimaryKey(getTypeName());
 			this.setVenueType(type);

@@ -84,7 +84,7 @@ public class ClassDescription extends XMLElement {
 		
 		XMLElement handler = element.getChild(ClassHandler.NAME);
 		if(handler != null){
-			_handler = new ClassHandler(handler);
+			this._handler = new ClassHandler(handler);
 		}
 		
 		List methodDescriptions = element.getChildren(LocalizedName.NAME);
@@ -92,7 +92,7 @@ public class ClassDescription extends XMLElement {
 		if(iter != null){
 			while (iter.hasNext()) {
 				XMLElement localizedName = (XMLElement)iter.next();
-				_localizedNames.add(new LocalizedName(localizedName));
+				this._localizedNames.add(new LocalizedName(localizedName));
 			}
 		}
 	}
@@ -149,8 +149,8 @@ public class ClassDescription extends XMLElement {
 	}
 	
 	public String getLocalizedName(Locale locale){
-		if(_localizedNames != null && locale != null){
-			Iterator iter = _localizedNames.iterator();
+		if(this._localizedNames != null && locale != null){
+			Iterator iter = this._localizedNames.iterator();
 			while (iter.hasNext()) {
 				LocalizedName lName = (LocalizedName)iter.next();
 				if(locale.equals(lName.getLocale())){
@@ -162,7 +162,7 @@ public class ClassDescription extends XMLElement {
 	}
 	
 	public ClassHandler getClassHandler(){
-		return _handler;
+		return this._handler;
 	}
 	
 }

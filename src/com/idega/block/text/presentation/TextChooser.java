@@ -39,8 +39,8 @@ public class TextChooser extends AbstractChooser {
 
   public void main(IWContext iwc){
     IWBundle iwb = iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
-    if (_chooseButtonImage != null) {
-      setChooseButtonImage(_chooseButtonImage);
+    if (this._chooseButtonImage != null) {
+      setChooseButtonImage(this._chooseButtonImage);
     }else {
       setChooseButtonImage(iwb.getImage("open.gif","Choose file"));
     }
@@ -64,7 +64,7 @@ public class TextChooser extends AbstractChooser {
   }
 
   public void setChooseImage(Image image) {
-    _chooseButtonImage = image;
+    this._chooseButtonImage = image;
   }
 
 }

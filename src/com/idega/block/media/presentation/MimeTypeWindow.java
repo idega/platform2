@@ -8,6 +8,7 @@ import com.idega.core.file.data.ICFileType;
 import com.idega.core.file.data.ICMimeType;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWCacheManager;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.presentation.IWContext;
@@ -47,11 +48,11 @@ private String mimeType = null;
   public void main(IWContext iwc){
     setBackgroundColor(MediaConstants.MEDIA_VIEWER_BACKGROUND_COLOR);
     setAllMargins(0);
-    iwrb = getResourceBundle(iwc);
-    iwb = getBundle(iwc);
+    this.iwrb = getResourceBundle(iwc);
+    this.iwb = getBundle(iwc);
     setBackgroundColor("white");
     /**@todo add localkey to bundle**/
-    setTitle(iwrb.getLocalizedString("mimetype.window.title","Add mimetype"));
+    setTitle(this.iwrb.getLocalizedString("mimetype.window.title","Add mimetype"));
 
     handleEvents(iwc);
   }
@@ -70,43 +71,45 @@ private String mimeType = null;
   }
 
   private void saveMimeType(IWContext iwc){
-    mimeType = iwc.getParameter(MediaConstants.MEDIA_MIME_TYPE_PARAMETER_NAME);
+    this.mimeType = iwc.getParameter(MediaConstants.MEDIA_MIME_TYPE_PARAMETER_NAME);
     String mimeDescription = iwc.getParameter(MediaConstants.MEDIA_MIME_TYPE_DESCRIPTION_PARAMETER_NAME);
     int fileTypeId = Integer.parseInt(iwc.getParameter(MediaConstants.MEDIA_FILE_TYPE_PARAMETER_NAME));
 
     try{
     	System.out.println("storing new mimetype");
       ICMimeType mime = ((com.idega.core.file.data.ICMimeTypeHome)com.idega.data.IDOLookup.getHomeLegacy(ICMimeType.class)).createLegacy();
-      mime.setMimeTypeAndDescription(mimeType,mimeDescription);
+      mime.setMimeTypeAndDescription(this.mimeType,mimeDescription);
       mime.setFileTypeId(fileTypeId);
       mime.insert();
     }
     catch( Exception ex ){
      ex.printStackTrace(System.out);
-     add(iwrb.getLocalizedString("mimetype.window.errorinsave","Try again, an error occured while saving."));
+     add(this.iwrb.getLocalizedString("mimetype.window.errorinsave","Try again, an error occured while saving."));
      add(new BackButton());
     }
   }
 
   private void addMimeTypeForm(IWContext iwc){
-    if(mimeType==null) mimeType = iwc.getParameter(MediaConstants.MEDIA_MIME_TYPE_PARAMETER_NAME);
+    if(this.mimeType==null) {
+		this.mimeType = iwc.getParameter(MediaConstants.MEDIA_MIME_TYPE_PARAMETER_NAME);
+	}
      //insert dropdowns and form
     Form form = new Form();
     Table table = new Table(3,4);
     DropdownMenu typemenu = new DropdownMenu(MediaConstants.MEDIA_FILE_TYPE_PARAMETER_NAME);
-    IWCacheManager cm = iwc.getIWMainApplication().getIWCacheManager();
+    IWCacheManager cm = IWMainApplication.getIWCacheManager();
     HashMap types =  (HashMap) cm.getCachedTableMap(ICFileType.class);
     Iterator iter = types.keySet().iterator();
     while (iter.hasNext()) {
-      ICFileType type = (ICFileType) types.get((String)iter.next());
+      ICFileType type = (ICFileType) types.get(iter.next());
       typemenu.addMenuElement(type.getID(),type.getDisplayName());
     }
 
-    HiddenInput mime = new HiddenInput(MediaConstants.MEDIA_MIME_TYPE_PARAMETER_NAME,mimeType);
+    HiddenInput mime = new HiddenInput(MediaConstants.MEDIA_MIME_TYPE_PARAMETER_NAME,this.mimeType);
     Text mimeText = new Text("Mimetype");
-    Text mimeTypeText = new Text(mimeType);
-    Text mimeDescription = new Text(iwrb.getLocalizedString("mimetype.window.description","Description"));
-    Text fileTypeText = new Text(iwrb.getLocalizedString("mimetype.window.filetype","File type"));
+    Text mimeTypeText = new Text(this.mimeType);
+    Text mimeDescription = new Text(this.iwrb.getLocalizedString("mimetype.window.description","Description"));
+    Text fileTypeText = new Text(this.iwrb.getLocalizedString("mimetype.window.filetype","File type"));
     TextInput descriptionInput = new TextInput(MediaConstants.MEDIA_MIME_TYPE_DESCRIPTION_PARAMETER_NAME);
 
     table.add(mime,1,1);
@@ -119,9 +122,9 @@ private String mimeType = null;
     table.add(typemenu,2,3);
 
 
-    SubmitButton save = new SubmitButton(iwb.getImageButton(iwrb.getLocalizedString("mimetype.window.save","SAVE")));
+    SubmitButton save = new SubmitButton(this.iwb.getImageButton(this.iwrb.getLocalizedString("mimetype.window.save","SAVE")));
 	table.add(new HiddenInput(MediaConstants.MEDIA_ACTION_PARAMETER_NAME,MediaConstants.MEDIA_ACTION_SAVE));
-    Link close = new Link(iwrb.getLocalizedString("mimetype.window.close","CLOSE"));
+    Link close = new Link(this.iwrb.getLocalizedString("mimetype.window.close","CLOSE"));
     close.setOnClick("window.close()");
     close.setAsImageButton(true);
 

@@ -40,13 +40,13 @@ public class FinanceException extends Exception {
 	 * Returns the error message text key.
 	 */
 	public String getTextKey() {
-		return textKey; 
+		return this.textKey; 
 	}
 	
 	/**
 	 * Returns the default error message text.
 	 */
 	public String getDefaultText() {
-		return defaultText; 
+		return this.defaultText; 
 	}
 }

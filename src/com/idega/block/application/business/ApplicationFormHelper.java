@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationFormHelper.java,v 1.10 2004/06/05 06:16:42 aron Exp $
+ * $Id: ApplicationFormHelper.java,v 1.10.2.1 2007/01/12 19:32:37 idegaweb Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -79,7 +79,7 @@ public class ApplicationFormHelper {
   }
 
   public static void saveSubject(IWContext iwc)throws RemoteException,CreateException {
-    String subject = (String)iwc.getParameter("subject");
+    String subject = iwc.getParameter("subject");
     Application application = getApplicationService(iwc).getApplicationHome().create();
     application.setSubjectId(Integer.parseInt(subject));
     application.setSubmitted(IWTimestamp.getTimestampRightNow());

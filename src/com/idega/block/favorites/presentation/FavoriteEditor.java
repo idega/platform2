@@ -75,8 +75,8 @@ public class FavoriteEditor extends FavoriteBlock implements IWPageEventListener
 				if (favorite != null) {
 					linkName.setContent(favorite.getName());
 				}
-				linkName.setLength(iInputLength);
-				linkName.setMaxlength(iMaximumLength);
+				linkName.setLength(this.iInputLength);
+				linkName.setMaxlength(this.iMaximumLength);
 				
 				TextInput URL = (TextInput) getInput(new TextInput(PARAMETER_URL));
 				if (favorite != null) {
@@ -86,7 +86,7 @@ public class FavoriteEditor extends FavoriteBlock implements IWPageEventListener
 					}
 				}
 				URL.setDisabled(!canEdit);
-				URL.setLength(iInputLength);
+				URL.setLength(this.iInputLength);
 				
 				CheckBox quickLink = getCheckBox(PARAMETER_QUICK_LINK, "true");
 				if (favorite != null) {
@@ -98,10 +98,10 @@ public class FavoriteEditor extends FavoriteBlock implements IWPageEventListener
 				save.setToolTip(getResourceBundle().getLocalizedString("favorite.save_tooltip", "Saves the current information."));
 		
 				Table editTable = new Table(4, 2);
-				editTable.setWidth(iWidth);
+				editTable.setWidth(this.iWidth);
 				editTable.setWidth(4, Table.HUNDRED_PERCENT);
 				editTable.setAlignment(4, 2, Table.HORIZONTAL_ALIGN_RIGHT);
-				editTable.setCellpadding(iCellpadding);
+				editTable.setCellpadding(this.iCellpadding);
 				editTable.setCellspacing(0);
 				int row = 1;
 		
@@ -136,7 +136,7 @@ public class FavoriteEditor extends FavoriteBlock implements IWPageEventListener
 	 * @param width The width to set.
 	 */
 	public void setWidth(String width) {
-		iWidth = width;
+		this.iWidth = width;
 	}
 	
 	/**
@@ -144,7 +144,7 @@ public class FavoriteEditor extends FavoriteBlock implements IWPageEventListener
 	 * @param cellpadding The cellpadding to set.
 	 */
 	public void setCellpadding(int cellpadding) {
-		iCellpadding = cellpadding;
+		this.iCellpadding = cellpadding;
 	}
 
 	/* (non-Javadoc)
@@ -175,12 +175,12 @@ public class FavoriteEditor extends FavoriteBlock implements IWPageEventListener
 	 * @param inputLength The inputLength to set.
 	 */
 	public void setInputLength(int inputLength) {
-		iInputLength = inputLength;
+		this.iInputLength = inputLength;
 	}
 	/**
 	 * @param maximumLength The maximumLength to set.
 	 */
 	public void setMaximumLength(int maximumLength) {
-		iMaximumLength = maximumLength;
+		this.iMaximumLength = maximumLength;
 	}
 }

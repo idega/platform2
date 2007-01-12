@@ -134,19 +134,19 @@ public class NewsLetter extends CategoryBlock {
 	 */
 	public void main(IWContext iwc) {
 		//debugParameters(iwc);
-		iwb = getBundle(iwc);
-		core = iwc.getIWMainApplication().getCoreBundle();
-		iwrb = getResourceBundle(iwc);
+		this.iwb = getBundle(iwc);
+		this.core = iwc.getIWMainApplication().getCoreBundle();
+		this.iwrb = getResourceBundle(iwc);
 		Table T = new Table();
 		T.setCellpaddingAndCellspacing(0);
-		T.setColor(_bgColor);
+		T.setColor(this._bgColor);
 		T.setWidth(Table.HUNDRED_PERCENT);
 		int row = 1;
 		int categoryID = getCategoryId();
 
 		if (categoryID > 0) {
 			processForm(iwc);
-			topics = MailFinder.getInstance().getInstanceTopics(getICObjectInstanceID());
+			this.topics = MailFinder.getInstance().getInstanceTopics(getICObjectInstanceID());
 		}
 
 		if (iwc.hasEditPermission(this)) {
@@ -156,11 +156,11 @@ public class NewsLetter extends CategoryBlock {
 
 		Form F = new Form();
 		if (categoryID > 0) {
-			if (topics != null && !topics.isEmpty()) {
+			if (this.topics != null && !this.topics.isEmpty()) {
 				T.add(getMailInputTable(F, iwc), 1, row++);
 				PresentationObject obj = null;
 
-				switch (viewType) {
+				switch (this.viewType) {
 					case DROP:
 						obj = getDropdownView(iwc);
 						break;
@@ -176,20 +176,20 @@ public class NewsLetter extends CategoryBlock {
 					T.setHeight(row++, 6);
 					T.add(obj, 1, row++);
 				}
-				if (_submitBelowTopics) {
-					if (_spaceBeforeButtons > 0) {
-						T.setHeight(row++, _spaceBeforeButtons);
+				if (this._submitBelowTopics) {
+					if (this._spaceBeforeButtons > 0) {
+						T.setHeight(row++, this._spaceBeforeButtons);
 					}
 					T.add(getButtonsBelowTable(F, iwc), 1, row);
 				}
 
 			}
 			else {
-				T.add(iwrb.getLocalizedString("no_topic", "Please create a topic"), 1, row);
+				T.add(this.iwrb.getLocalizedString("no_topic", "Please create a topic"), 1, row);
 			}
 		}
 		else {
-			T.add(iwrb.getLocalizedString("no_category", "Please create a category"), 1, row);
+			T.add(this.iwrb.getLocalizedString("no_category", "Please create a category"), 1, row);
 		}
 
 		F.add(T);
@@ -205,12 +205,12 @@ public class NewsLetter extends CategoryBlock {
 	 */
 	public PresentationObject getDropdownView(IWContext iwc) {
 		Table T = new Table();
-		T.setColor(_bgColor);
+		T.setColor(this._bgColor);
 
-		if (topics != null && topics.size() > 0) {
+		if (this.topics != null && this.topics.size() > 0) {
 			DropdownMenu drp = new DropdownMenu("nl_list");
-			Iterator iter = topics.iterator();
-			if (topics.size() > 1) {
+			Iterator iter = this.topics.iterator();
+			if (this.topics.size() > 1) {
 				while (iter.hasNext()) {
 					EmailTopic tpc = (EmailTopic) iter.next();
 					drp.addMenuElement(tpc.getListId(), tpc.getName());
@@ -221,105 +221,106 @@ public class NewsLetter extends CategoryBlock {
 				EmailTopic tpc = (EmailTopic) iter.next();
 				T.add(new HiddenInput("nl_list", String.valueOf(tpc.getListId())));
 			}
-			if (archivePage > 0) {
+			if (this.archivePage > 0) {
 
 				T.add(getArchiveLink(), 1, 2);
 			}
 			return T;
 		}
-		else
+		else {
 			return null;
+		}
 	}
 
 	private PresentationObject getMailInputTable(Form form, IWContext iwc) {
 		Table T = new Table();
 		T.setCellpaddingAndCellspacing(0);
-		T.setColor(_bgColor);
+		T.setColor(this._bgColor);
 		T.setWidth(Table.HUNDRED_PERCENT);
 		TextInput email = new TextInput("nl_email");
-		email.setStyleAttribute(_inputStyle);
-		if (_inputLength != 0) {
-			email.setLength(_inputLength);
+		email.setStyleAttribute(this._inputStyle);
+		if (this._inputLength != 0) {
+			email.setLength(this._inputLength);
 		}
-		if (_inputWidth != null) {
-			email.setWidth(_inputWidth);
+		if (this._inputWidth != null) {
+			email.setWidth(this._inputWidth);
 		}
-		email.setContent(iwrb.getLocalizedString("enter_email_here", "Enter e-mail here"));
+		email.setContent(this.iwrb.getLocalizedString("enter_email_here", "Enter e-mail here"));
 		email.setOnFocus("this.value=''");
 
 		Table submitTable = new Table(2, 1);
 		submitTable.setCellpaddingAndCellspacing(0);
 		submitTable.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
 
-		if (useButtons) {
+		if (this.useButtons) {
 			SubmitButton send, cancel;
-			if (submitImage != null) {
-				send = new SubmitButton(submitImage, "nl_send");
+			if (this.submitImage != null) {
+				send = new SubmitButton(this.submitImage, "nl_send");
 			}
 			else {
-				send = new SubmitButton(iwrb.getLocalizedImageButton("subscribe", "Subscribe"), "nl_send");
+				send = new SubmitButton(this.iwrb.getLocalizedImageButton("subscribe", "Subscribe"), "nl_send");
 			}
-			if (cancelImage != null) {
-				cancel = new SubmitButton(cancelImage, "nl_stop");
+			if (this.cancelImage != null) {
+				cancel = new SubmitButton(this.cancelImage, "nl_stop");
 			}
 			else {
-				cancel = new SubmitButton(iwrb.getLocalizedImageButton("unsubscribe", "Unsubscribe"), "nl_stop");
+				cancel = new SubmitButton(this.iwrb.getLocalizedImageButton("unsubscribe", "Unsubscribe"), "nl_stop");
 			}
 
 			submitTable.add(send, 1, 1);
-			if (_showCancelImage) {
+			if (this._showCancelImage) {
 				submitTable.add(cancel, 2, 1);
 			}
 		}
-		else if (useLinks) {
-			Link sendLink = new Link(iwrb.getLocalizedString("subscribe", "Subscribe"));
+		else if (this.useLinks) {
+			Link sendLink = new Link(this.iwrb.getLocalizedString("subscribe", "Subscribe"));
 			sendLink.addParameter("nl_send", "true");
 			sendLink.setToFormSubmit(form);
-			if (linkStyleClass != null) {
-				sendLink.setStyle(linkStyleClass);
+			if (this.linkStyleClass != null) {
+				sendLink.setStyle(this.linkStyleClass);
 			}
 			Link sendArrow = new Link("&gt;&gt;");
 			sendArrow.addParameter("nl_send", "true");
 			sendArrow.setToFormSubmit(form);
-			if (arrowStyleClass != null) {
-				sendArrow.setStyle(arrowStyleClass);
+			if (this.arrowStyleClass != null) {
+				sendArrow.setStyle(this.arrowStyleClass);
 			}
 
-			Link cancelLink = new Link(iwrb.getLocalizedString("unsubscribe", "Unsubscribe"));
+			Link cancelLink = new Link(this.iwrb.getLocalizedString("unsubscribe", "Unsubscribe"));
 			cancelLink.addParameter("nl_stop", "true");
 			cancelLink.setToFormSubmit(form);
-			if (linkStyleClass != null) {
-				cancelLink.setStyle(linkStyleClass);
+			if (this.linkStyleClass != null) {
+				cancelLink.setStyle(this.linkStyleClass);
 			}
 			Link cancelArrow = new Link("&gt;&gt;");
 			cancelArrow.addParameter("nl_stop", "true");
 			cancelArrow.setToFormSubmit(form);
-			if (arrowStyleClass != null) {
-				cancelArrow.setStyle(arrowStyleClass);
+			if (this.arrowStyleClass != null) {
+				cancelArrow.setStyle(this.arrowStyleClass);
 			}
 
 			submitTable.add(sendLink, 1, 1);
 			submitTable.add(Text.NON_BREAKING_SPACE, 1, 1);
 			submitTable.add(sendArrow, 1, 1);
-			if (_showCancelImage) {
+			if (this._showCancelImage) {
 				submitTable.add(cancelLink, 2, 1);
 				submitTable.add(Text.NON_BREAKING_SPACE, 2, 1);
 				submitTable.add(cancelArrow, 2, 1);
 			}
 		}
 
-		if (_submitBelow) {
+		if (this._submitBelow) {
 			T.add(email, 1, 1);
-			T.setHeight(1, 2, _spaceBetween);
-			if (!_submitBelowTopics) {
+			T.setHeight(1, 2, this._spaceBetween);
+			if (!this._submitBelowTopics) {
 				T.add(submitTable, 1, 3);
 			}
 
 		}
 		else {
 			T.add(email, 1, 1);
-			T.setWidth(2, 1, _spaceBetween);
-			if (!_submitBelowTopics) {
+			T.setWidth(2, 1, this._spaceBetween);
+			if (!this._submitBelowTopics) {
 				T.add(submitTable, 3, 1);
 			}
 		}
@@ -336,38 +337,40 @@ public class NewsLetter extends CategoryBlock {
 	public PresentationObject getCheckBoxView(IWContext iwc) {
 		Table T = new Table();
 		T.setCellpaddingAndCellspacing(0);
-		T.setColor(_bgColor);
-		if (topics != null && topics.size() > 0) {
+		T.setColor(this._bgColor);
+		if (this.topics != null && this.topics.size() > 0) {
 			CheckBox chk;
-			Iterator iter = topics.iterator();
+			Iterator iter = this.topics.iterator();
 			int row = 1;
-			if (topics.size() > 1)
+			if (this.topics.size() > 1) {
 				while (iter.hasNext()) {
 					EmailTopic tpc = (EmailTopic) iter.next();
 					chk = new CheckBox("nl_list", String.valueOf(tpc.getListId()));
-					chk.setStyleAttribute(_checkBoxStyle);
+					chk.setStyleAttribute(this._checkBoxStyle);
 					T.add(chk, 1, row);
 					T.setCellpaddingLeft(1, row, 3);
 					Text tpcName = new Text(tpc.getName());
-					tpcName.setFontStyle(_checkFontStyle);
+					tpcName.setFontStyle(this._checkFontStyle);
 					T.add(tpcName, 2, row);
 					row++;
 					if (iter.hasNext()) {
-						T.setHeight(row++, _spaceBetween);
+						T.setHeight(row++, this._spaceBetween);
 					}
 				}
+			}
 			else if (iter.hasNext()) {
 				EmailTopic tpc = (EmailTopic) iter.next();
 				T.add(new HiddenInput("nl_list", String.valueOf(tpc.getListId())));
 			}
-			if (archivePage > 0) {
+			if (this.archivePage > 0) {
 				T.mergeCells(1, row, 2, row);
 				T.add(getArchiveLink(), 1, row);
 			}
 			return T;
 		}
-		else
+		else {
 			return null;
+		}
 	}
 
 	/**
@@ -379,14 +382,14 @@ public class NewsLetter extends CategoryBlock {
 		Table T = new Table();
 		T.setCellpadding(0);
 		T.setCellpadding(0);
-		if (topics != null && topics.size() > 0) {
-			T.add(getAddLink(core.getImage("/shared/create.gif", "Send")), 1, 1);
+		if (this.topics != null && this.topics.size() > 0) {
+			T.add(getAddLink(this.core.getImage("/shared/create.gif", "Send")), 1, 1);
 		}
 		if (getCategoryIds().length > 0 && getICObjectInstanceID() > 0) {
-			T.add(getSetupLink(core.getImage("/shared/edit.gif", "Edit")), 1, 1);
+			T.add(getSetupLink(this.core.getImage("/shared/edit.gif", "Edit")), 1, 1);
 		}
 
-		T.add(getCategoryLink(core.getImage("/shared/detach.gif")), 1, 1);
+		T.add(getCategoryLink(this.core.getImage("/shared/detach.gif")), 1, 1);
 
 		return T;
 	}
@@ -397,61 +400,61 @@ public class NewsLetter extends CategoryBlock {
 		submitTable.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
 		submitTable.setWidth(Table.HUNDRED_PERCENT);
 
-		if (useButtons) {
+		if (this.useButtons) {
 			SubmitButton send, cancel;
-			if (submitImage != null) {
-				send = new SubmitButton(submitImage, "nl_send");
+			if (this.submitImage != null) {
+				send = new SubmitButton(this.submitImage, "nl_send");
 			}
 			else {
-				send = new SubmitButton(iwrb.getLocalizedImageButton("subscribe", "Subscribe"), "nl_send");
+				send = new SubmitButton(this.iwrb.getLocalizedImageButton("subscribe", "Subscribe"), "nl_send");
 			}
-			if (cancelImage != null) {
-				cancel = new SubmitButton(cancelImage, "nl_stop");
+			if (this.cancelImage != null) {
+				cancel = new SubmitButton(this.cancelImage, "nl_stop");
 			}
 			else {
-				cancel = new SubmitButton(iwrb.getLocalizedImageButton("unsubscribe", "Unsubscribe"), "nl_stop");
+				cancel = new SubmitButton(this.iwrb.getLocalizedImageButton("unsubscribe", "Unsubscribe"), "nl_stop");
 			}
 
 			submitTable.add(send, 1, 1);
-			if (_showCancelImage) {
+			if (this._showCancelImage) {
 				submitTable.add(cancel, 2, 1);
 			}
 		}
-		else if (useLinks) {
-			Link sendLink = new Link(iwrb.getLocalizedString("subscribe", "Subscribe"));
+		else if (this.useLinks) {
+			Link sendLink = new Link(this.iwrb.getLocalizedString("subscribe", "Subscribe"));
 			sendLink.addParameter("nl_send", "true");
 			sendLink.setToFormSubmit(form);
 			
 			//added 20.01.2005 - ac
 			sendLink.setToolTip("Please fill in your email, mark the desired newsletter and choose subscribe or unsubscribe.");
 			
-			if (linkStyleClass != null) {
-				sendLink.setStyle(linkStyleClass);
+			if (this.linkStyleClass != null) {
+				sendLink.setStyle(this.linkStyleClass);
 			}
 			Link sendArrow = new Link("&gt;&gt;");
 			sendArrow.addParameter("nl_send", "true");
 			sendArrow.setToFormSubmit(form);
-			if (arrowStyleClass != null) {
-				sendArrow.setStyle(arrowStyleClass);
+			if (this.arrowStyleClass != null) {
+				sendArrow.setStyle(this.arrowStyleClass);
 			}
 
-			Link cancelLink = new Link(iwrb.getLocalizedString("unsubscribe", "Unsubscribe"));
+			Link cancelLink = new Link(this.iwrb.getLocalizedString("unsubscribe", "Unsubscribe"));
 			cancelLink.addParameter("nl_stop", "true");
 			cancelLink.setToFormSubmit(form);
-			if (linkStyleClass != null) {
-				cancelLink.setStyle(linkStyleClass);
+			if (this.linkStyleClass != null) {
+				cancelLink.setStyle(this.linkStyleClass);
 			}
 			Link cancelArrow = new Link("&gt;&gt;");
 			cancelArrow.addParameter("nl_stop", "true");
 			cancelArrow.setToFormSubmit(form);
-			if (arrowStyleClass != null) {
-				cancelArrow.setStyle(arrowStyleClass);
+			if (this.arrowStyleClass != null) {
+				cancelArrow.setStyle(this.arrowStyleClass);
 			}
 
 			submitTable.add(sendLink, 1, 1);
 			submitTable.add(Text.NON_BREAKING_SPACE, 1, 1);
 			submitTable.add(sendArrow, 1, 1);
-			if (_showCancelImage) {
+			if (this._showCancelImage) {
 				submitTable.add(cancelLink, 2, 1);
 				submitTable.add(Text.NON_BREAKING_SPACE, 2, 1);
 				submitTable.add(cancelArrow, 2, 1);
@@ -462,9 +465,9 @@ public class NewsLetter extends CategoryBlock {
 	}
 
 	private Link getArchiveLink() {
-		Link L = new Link(iwrb.getLocalizedString("archive", "Archive"));
-		L.setPage(archivePage);
-		L.setTarget(archiveTarget);
+		Link L = new Link(this.iwrb.getLocalizedString("archive", "Archive"));
+		L.setPage(this.archivePage);
+		L.setTarget(this.archiveTarget);
 
 		return L;
 	}
@@ -546,7 +549,7 @@ public class NewsLetter extends CategoryBlock {
 	 *            the new value for _inputStyle
 	 */
 	public void setInputStyle(String inputStyle) {
-		_inputStyle = inputStyle;
+		this._inputStyle = inputStyle;
 	}
 
 	/**
@@ -555,7 +558,7 @@ public class NewsLetter extends CategoryBlock {
 	 * @param checkBoxStyle
 	 */
 	public void setCheckBoxStyle(String checkBoxStyle) {
-		_checkBoxStyle = checkBoxStyle;
+		this._checkBoxStyle = checkBoxStyle;
 	}
 
 	/**
@@ -565,7 +568,7 @@ public class NewsLetter extends CategoryBlock {
 	 *            the new value for _inputStyle
 	 */
 	public void setInputLength(int inputLength) {
-		_inputLength = inputLength;
+		this._inputLength = inputLength;
 	}
 
 	/**
@@ -595,7 +598,7 @@ public class NewsLetter extends CategoryBlock {
 	 *            The new _submitBelow value
 	 */
 	public void setSubmitBelowInput(boolean submitBelow) {
-		_submitBelow = submitBelow;
+		this._submitBelow = submitBelow;
 	}
 
 	/**
@@ -605,7 +608,7 @@ public class NewsLetter extends CategoryBlock {
 	 *            The new _spaceBetween value
 	 */
 	public void setSpaceBetween(String spaceBetween) {
-		_spaceBetween = spaceBetween;
+		this._spaceBetween = spaceBetween;
 	}
 
 	public void setArchivePage(ICPage page) {
@@ -633,7 +636,7 @@ public class NewsLetter extends CategoryBlock {
 	 * @param color
 	 */
 	public void setBgColor(String color) {
-		_bgColor = color;
+		this._bgColor = color;
 	}
 
 	/**
@@ -643,7 +646,7 @@ public class NewsLetter extends CategoryBlock {
 	 * @param submitBelowTopics
 	 */
 	public void setSubmitBelowTopics(boolean submitBelowTopics) {
-		_submitBelowTopics = submitBelowTopics;
+		this._submitBelowTopics = submitBelowTopics;
 	}
 
 	/**
@@ -652,7 +655,7 @@ public class NewsLetter extends CategoryBlock {
 	 * @param style
 	 */
 	public void setCheckBoxFont(String style) {
-		_checkFontStyle = style;
+		this._checkFontStyle = style;
 	}
 
 	/**
@@ -661,7 +664,7 @@ public class NewsLetter extends CategoryBlock {
 	 * @param width
 	 */
 	public void setInputWidth(String width) {
-		_inputWidth = width;
+		this._inputWidth = width;
 	}
 
 	/**
@@ -694,6 +697,6 @@ public class NewsLetter extends CategoryBlock {
 	 * @param space The spacing to set.
 	 */
 	public void setSaceBeforeButtons(int spacing) {
-		_spaceBeforeButtons = spacing;
+		this._spaceBeforeButtons = spacing;
 	}
 }

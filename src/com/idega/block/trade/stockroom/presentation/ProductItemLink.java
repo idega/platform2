@@ -32,7 +32,7 @@ public class ProductItemLink extends ProductItem {
 
   private void drawObject(IWContext iwc) throws RemoteException{
     Link link = new Link(new ProductItemName());
-      link.addParameter(getProductBusiness(iwc).getProductIdParameter(), _productId);
+      link.addParameter(getProductBusiness(iwc).getProductIdParameter(), this._productId);
     add(link);
   }
 

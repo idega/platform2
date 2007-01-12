@@ -37,24 +37,26 @@ public WordEditor(){
 }
 
   public void main(IWContext iwc) throws Exception {
-    _iwb = getBundle(iwc);
-    _iwrb = getResourceBundle(iwc);
-    addTitle(_iwrb.getLocalizedString("add_word","Add word"));
+    this._iwb = getBundle(iwc);
+    this._iwrb = getResourceBundle(iwc);
+    addTitle(this._iwrb.getLocalizedString("add_word","Add word"));
 
     try {
-      _wordID = Integer.parseInt(iwc.getParameter(DictionaryBusiness.PARAMETER_WORD_ID));
+      this._wordID = Integer.parseInt(iwc.getParameter(DictionaryBusiness.PARAMETER_WORD_ID));
     }
     catch (NumberFormatException e) {
-      _wordID = -1;
+      this._wordID = -1;
     }
 
     String mode = iwc.getParameter(DictionaryBusiness.PARAMETER_MODE);
 
     if ( mode.equalsIgnoreCase(DictionaryBusiness.PARAMETER_EDIT) ) {
-      if ( _wordID != -1 ) {
-	_update = true;
-	_word = getDictionaryBusiness().getWord(_wordID);
-	if ( _word == null ) _update = false;
+      if ( this._wordID != -1 ) {
+	this._update = true;
+	this._word = getDictionaryBusiness().getWord(this._wordID);
+	if ( this._word == null ) {
+		this._update = false;
+	}
       }
       processForm();
     }
@@ -78,29 +80,29 @@ public WordEditor(){
       imageInsert.setMaxImageWidth(130);
       imageInsert.setHasUseBox(false);
 
-    if ( _update ) {
-      if ( _word.getWord() != null ) {
-	word.setContent(_word.getWord());
+    if ( this._update ) {
+      if ( this._word.getWord() != null ) {
+	word.setContent(this._word.getWord());
       }
-      if ( _word.getDescription() != null ) {
-	description.setContent(_word.getDescription());
+      if ( this._word.getDescription() != null ) {
+	description.setContent(this._word.getDescription());
       }
-      if ( _word.getCategoryID() != -1 ) {
-	menu.setSelectedElement(String.valueOf(_word.getCategoryID()));
+      if ( this._word.getCategoryID() != -1 ) {
+	menu.setSelectedElement(String.valueOf(this._word.getCategoryID()));
       }
-      if ( _word.getImageID() != -1 ) {
-	imageInsert.setImageId(_word.getImageID());
+      if ( this._word.getImageID() != -1 ) {
+	imageInsert.setImageId(this._word.getImageID());
       }
     }
-    addLeft(_iwrb.getLocalizedString("word","Word")+":",word,true);
-    addLeft(_iwrb.getLocalizedString("description","Description")+":",description,true);
-    addLeft(_iwrb.getLocalizedString("category","Category")+":",menu,true);
-    addRight(_iwrb.getLocalizedString("image","Image")+":",imageInsert,true,false);
+    addLeft(this._iwrb.getLocalizedString("word","Word")+":",word,true);
+    addLeft(this._iwrb.getLocalizedString("description","Description")+":",description,true);
+    addLeft(this._iwrb.getLocalizedString("category","Category")+":",menu,true);
+    addRight(this._iwrb.getLocalizedString("image","Image")+":",imageInsert,true,false);
 
-    addHiddenInput(new HiddenInput(DictionaryBusiness.PARAMETER_WORD_ID,Integer.toString(_wordID)));
+    addHiddenInput(new HiddenInput(DictionaryBusiness.PARAMETER_WORD_ID,Integer.toString(this._wordID)));
 
-    addSubmitButton(new CloseButton(_iwrb.getLocalizedImageButton("close","CLOSE")));
-    addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("save","SAVE"),DictionaryBusiness.PARAMETER_MODE,DictionaryBusiness.PARAMETER_SAVE));
+    addSubmitButton(new CloseButton(this._iwrb.getLocalizedImageButton("close","CLOSE")));
+    addSubmitButton(new SubmitButton(this._iwrb.getLocalizedImageButton("save","SAVE"),DictionaryBusiness.PARAMETER_MODE,DictionaryBusiness.PARAMETER_SAVE));
   }
 
   private void saveWord(IWContext iwc) {
@@ -110,14 +112,14 @@ public WordEditor(){
     String categoryID = iwc.getParameter(DictionaryBusiness.PARAMETER_CATEGORY_ID);
     String imageID = iwc.getParameter(DictionaryBusiness.PARAMETER_IMAGE_ID);
 
-    getDictionaryBusiness().saveWord(_wordID,categoryID,name,description,imageID);
+    getDictionaryBusiness().saveWord(this._wordID,categoryID,name,description,imageID);
 
     setParentToReload();
     close();
   }
 
   private void deleteWord() {
-    getDictionaryBusiness().deleteWord(_wordID);
+    getDictionaryBusiness().deleteWord(this._wordID);
     setParentToReload();
     close();
   }

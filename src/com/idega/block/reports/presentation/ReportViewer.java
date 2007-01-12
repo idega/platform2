@@ -24,12 +24,14 @@ public class ReportViewer extends AbstractMenuBlock implements MenuBlock,Reports
   public static String prmClass = "rep_clss";
 
   public void main(IWContext iwc){
-    iwrb = getResourceBundle(iwc);
-    iwb = getBundle(iwc);
-    if(iwc.isParameterSet(PRM_CATEGORYID))
-      addParameterToMaintain(new Parameter(PRM_CATEGORYID,iwc.getParameter(PRM_CATEGORYID)));
-    if(iwc.isParameterSet(PRM_REPORTID))
-      addParameterToMaintain(new Parameter(PRM_REPORTID,iwc.getParameter(PRM_REPORTID)));
+    this.iwrb = getResourceBundle(iwc);
+    this.iwb = getBundle(iwc);
+    if(iwc.isParameterSet(PRM_CATEGORYID)) {
+		addParameterToMaintain(new Parameter(PRM_CATEGORYID,iwc.getParameter(PRM_CATEGORYID)));
+	}
+    if(iwc.isParameterSet(PRM_REPORTID)) {
+		addParameterToMaintain(new Parameter(PRM_REPORTID,iwc.getParameter(PRM_REPORTID)));
+	}
   }
 
   public void addStandardObjects(){

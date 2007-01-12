@@ -18,6 +18,7 @@ import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.component.data.ICObjectInstanceBMPBean;
 import com.idega.data.EntityControl;
 import com.idega.data.EntityFinder;
+import com.idega.data.GenericEntity;
 import com.idega.data.IDOException;
 import com.idega.data.IDOFinderException;
 import com.idega.data.IDOLegacyEntity;
@@ -60,7 +61,7 @@ public class CategoryFinder {
 	public List listOfCategories(String type) {
 		try {
 			return EntityFinder.findAllByColumn(
-				com.idega.block.category.data.ICCategoryBMPBean.getStaticInstance(ICCategory.class),
+				GenericEntity.getStaticInstance(ICCategory.class),
 				com.idega.block.category.data.ICCategoryBMPBean.getColumnType(),
 				type);
 		}
@@ -76,7 +77,7 @@ public class CategoryFinder {
 	public List listOfValidCategories() {
 		try {
 			return EntityFinder.findAllByColumn(
-				com.idega.block.category.data.ICCategoryBMPBean.getStaticInstance(ICCategory.class),
+				GenericEntity.getStaticInstance(ICCategory.class),
 				com.idega.block.category.data.ICCategoryBMPBean.getColumnValid(),
 				"Y");
 		}
@@ -93,7 +94,7 @@ public class CategoryFinder {
 	public List listOfValidCategories(String type) {
 		try {
 			return EntityFinder.findAllByColumn(
-				com.idega.block.category.data.ICCategoryBMPBean.getStaticInstance(ICCategory.class),
+				GenericEntity.getStaticInstance(ICCategory.class),
 				com.idega.block.category.data.ICCategoryBMPBean.getColumnValid(),
 				"Y",
 				com.idega.block.category.data.ICCategoryBMPBean.getColumnType(),
@@ -111,7 +112,7 @@ public class CategoryFinder {
 	public List listOfInValidCategories() {
 		try {
 			return EntityFinder.findAllByColumn(
-				com.idega.block.category.data.ICCategoryBMPBean.getStaticInstance(ICCategory.class),
+				GenericEntity.getStaticInstance(ICCategory.class),
 				com.idega.block.category.data.ICCategoryBMPBean.getColumnValid(),
 				"N");
 		}
@@ -128,7 +129,7 @@ public class CategoryFinder {
 	public List listOfInValidCategories(String type) {
 		try {
 			return EntityFinder.findAllByColumn(
-				com.idega.block.category.data.ICCategoryBMPBean.getStaticInstance(ICCategory.class),
+				GenericEntity.getStaticInstance(ICCategory.class),
 				com.idega.block.category.data.ICCategoryBMPBean.getColumnValid(),
 				"N",
 				com.idega.block.category.data.ICCategoryBMPBean.getColumnType(),
@@ -146,7 +147,7 @@ public class CategoryFinder {
 	 */
 	public int getObjectInstanceIdFromCategoryId(int iCategoryId) {
 		try {
-			ICCategory nw = (ICCategory) getCategory(iCategoryId);
+			ICCategory nw = getCategory(iCategoryId);
 			List L =
 				EntityFinder.findRelated(
 					nw,
@@ -184,8 +185,9 @@ public class CategoryFinder {
 					(com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(
 						ICObjectInstance.class)).findByPrimaryKeyLegacy(
 					iObjectInstanceId);
-			if (obj == null)
+			if (obj == null) {
 				System.err.println("ic_object is null " + iObjectInstanceId);
+			}
 			id = getObjectInstanceCategoryId(obj);
 			if (id <= 0 && CreateNew) {
 				id = CategoryBusiness.getInstance().createCategory(iObjectInstanceId, type);
@@ -250,7 +252,7 @@ public class CategoryFinder {
 			List L =
 				EntityFinder.findRelated(
 					eObjectInstance,
-					(IDOLegacyEntity) com.idega.block.category.data.ICCategoryBMPBean.getStaticInstance(ICCategory.class));
+					GenericEntity.getStaticInstance(ICCategory.class));
 			if (L != null) {
 				return ((IDOLegacyEntity) L.get(0)).getID();
 			}
@@ -272,9 +274,9 @@ public class CategoryFinder {
 	public int[] getObjectInstanceCategoryIds(int ICObjectInstanceId) {
 		//select ic_category_id from IC_CATEGORY_ic_object_instance where ic_object_instance_ID=51
 		StringBuffer sql = new StringBuffer("select ");
-		ICCategory cat = (ICCategory) com.idega.block.category.data.ICCategoryBMPBean.getStaticInstance(ICCategory.class);
+		ICCategory cat = (ICCategory) GenericEntity.getStaticInstance(ICCategory.class);
 		ICObjectInstance obj =
-			(ICObjectInstance) com.idega.core.component.data.ICObjectInstanceBMPBean.getStaticInstance(ICObjectInstance.class);
+			(ICObjectInstance) GenericEntity.getStaticInstance(ICObjectInstance.class);
 		sql.append(cat.getIDColumnName()).append(" from ");
 		sql.append(EntityControl.getManyToManyRelationShipTableName(ICCategory.class, ICObjectInstance.class));
 		sql.append(" where ").append(obj.getIDColumnName()).append(" = ").append(ICObjectInstanceId);
@@ -354,9 +356,9 @@ public class CategoryFinder {
 			//ICCategoryICObjectInstanceHome home = (ICCategoryICObjectInstanceHome) IDOLookup.getHome(ICCategoryICObjectInstance.class);
 			//return home.getListOfCategoryForObjectInstance(obj);
 			List L =
-				EntityFinder.getInstance().findRelated(
+				EntityFinder.findRelated(
 					obj,
-					(ICCategory) com.idega.block.category.data.ICCategoryBMPBean.getStaticInstance(ICCategory.class));
+					GenericEntity.getStaticInstance(ICCategory.class));
 			return L;
 		}
 		catch (Exception ex) {
@@ -400,14 +402,14 @@ public class CategoryFinder {
 			// Gamla d�ti�, fyrir Gr�m
 			StringBuffer sql = new StringBuffer("select ");
 			sql.append(
-				((ICCategory) com.idega.block.category.data.ICCategoryBMPBean.getStaticInstance(ICCategory.class))
+				((ICCategory) GenericEntity.getStaticInstance(ICCategory.class))
 					.getIDColumnName());
 			sql.append(" from ").append(
 				com.idega.data.EntityControl.getManyToManyRelationShipTableName(
 					ICCategory.class,
 					ICObjectInstance.class));
 			sql.append(" where ").append(
-				((ICObjectInstance) ICObjectInstanceBMPBean
+				((ICObjectInstance) GenericEntity
 					.getStaticInstance(ICObjectInstance.class))
 					.getIDColumnName());
 			sql.append(" = ").append(iObjectInstanceId);
@@ -435,11 +437,11 @@ public class CategoryFinder {
 		String middletable = EntityControl.getManyToManyRelationShipTableName(ICCategory.class, ICObjectInstance.class);
 		sql.append(middletable);
 		sql.append(" where ").append(
-			((ICObjectInstance) com.idega.core.component.data.ICObjectInstanceBMPBean.getStaticInstance(ICObjectInstance.class))
+			((ICObjectInstance) GenericEntity.getStaticInstance(ICObjectInstance.class))
 				.getIDColumnName());
 		sql.append(" = ").append(iObjectInstanceId);
 		String idname =
-			((ICCategory) com.idega.block.category.data.ICCategoryBMPBean.getStaticInstance(ICCategory.class)).getIDColumnName();
+			((ICCategory) GenericEntity.getStaticInstance(ICCategory.class)).getIDColumnName();
 		sql.append(" and ").append(middletable).append(".").append(idname);
 		sql.append(" = ").append(tablename).append(".").append(idname);
 		return sql.toString();
@@ -460,10 +462,10 @@ public class CategoryFinder {
 		int iObjectInstanceId) {
 		IDOLegacyEntity entity = com.idega.data.GenericEntity.getStaticInstance(EntityClass);
 		CategoryEntity catEntity =
-			(CategoryEntity) com.idega.block.category.data.CategoryEntityBMPBean.getStaticInstance(CategoryEntityClass);
+			(CategoryEntity) GenericEntity.getStaticInstance(CategoryEntityClass);
 		ICObjectInstance instanceEntity =
-			(ICObjectInstance) com.idega.core.component.data.ICObjectInstanceBMPBean.getStaticInstance(ICObjectInstance.class);
-		ICCategory icCat = ((ICCategory) com.idega.block.category.data.ICCategoryBMPBean.getStaticInstance(ICCategory.class));
+			(ICObjectInstance) GenericEntity.getStaticInstance(ICObjectInstance.class);
+		ICCategory icCat = ((ICCategory) GenericEntity.getStaticInstance(ICCategory.class));
 		String middletable = EntityControl.getManyToManyRelationShipTableName(ICCategory.class, ICObjectInstance.class);
 		StringBuffer sql = new StringBuffer("select ");
 		sql.append(entity.getEntityName()).append(".* from ").append(entity.getEntityName()).append(",");
@@ -488,7 +490,7 @@ public class CategoryFinder {
 	 */
 	public Collection getCategories(int[] ids, String type) {
 		StringBuffer sql = new StringBuffer("select * from ");
-		ICCategory cat = (ICCategory) com.idega.block.category.data.ICCategoryBMPBean.getStaticInstance(ICCategory.class);
+		ICCategory cat = (ICCategory) GenericEntity.getStaticInstance(ICCategory.class);
 		sql.append(com.idega.block.category.data.ICCategoryBMPBean.getEntityTableName());
 		sql.append(" where ").append(com.idega.block.category.data.ICCategoryBMPBean.getColumnType()).append(" = ").append(type);
 		sql.append(" and ").append(cat.getIDColumnName()).append(" in (");
@@ -633,7 +635,7 @@ public class CategoryFinder {
 	public Map getMapOfCategoriesById(int instanceId) {
 		return EntityFinder.getInstance().getMapOfEntity(
 			listOfCategoryForObjectInstanceId(instanceId),
-			com.idega.block.category.data.ICCategoryBMPBean.getStaticInstance(ICCategory.class).getIDColumnName());
+			GenericEntity.getStaticInstance(ICCategory.class).getIDColumnName());
 	}
 	public String getInstanceManyToManyRelationShipName() {
 		return EntityControl.getManyToManyRelationShipTableName(ICCategory.class, ICObjectInstance.class);

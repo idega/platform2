@@ -42,9 +42,9 @@ public class ReportObjectHandler extends Block{
 
     }
 
-    if(!"".equalsIgnoreCase(selected))
-
-      drp.setSelectedElement(selected);
+    if(!"".equalsIgnoreCase(selected)) {
+		drp.setSelectedElement(selected);
+	}
 
     return drp;
 
@@ -58,11 +58,10 @@ public class ReportObjectHandler extends Block{
 
     String Type = RC.getItem().getConditionType();
 
-    if(Type.equalsIgnoreCase("T"))
-
-      mo =  new TextInput(Name);
-
-    else if(Type.equalsIgnoreCase("I")){
+    if(Type.equalsIgnoreCase("T")) {
+		mo =  new TextInput(Name);
+	}
+	else if(Type.equalsIgnoreCase("I")){
 
 			TextInput ti = new TextInput(Name);
 
@@ -74,17 +73,15 @@ public class ReportObjectHandler extends Block{
 
     }
 
-    else if(Type.equalsIgnoreCase("S"))
-
-      mo =  drpEntity(Name,RC.getItem().getEntity(),RC.getItem().getField(),selected,false);
-
-    else if(Type.equalsIgnoreCase("C"))
-
-      mo = drpValues(RC,Name,selected,false);
-
-    else if(Type.equalsIgnoreCase("D"))
-
-    mo = drpValues(RC,Name,selected,true);
+    else if(Type.equalsIgnoreCase("S")) {
+		mo =  drpEntity(Name,RC.getItem().getEntity(),RC.getItem().getField(),selected,false);
+	}
+	else if(Type.equalsIgnoreCase("C")) {
+		mo = drpValues(RC,Name,selected,false);
+	}
+	else if(Type.equalsIgnoreCase("D")) {
+		mo = drpValues(RC,Name,selected,true);
+	}
 
     return mo;
 
@@ -106,9 +103,9 @@ public class ReportObjectHandler extends Block{
 
 		drp.addMenuElement("D","List without default");
 
-    if(!selected.equalsIgnoreCase(""))
-
-      drp.setSelectedElement(selected);
+    if(!selected.equalsIgnoreCase("")) {
+		drp.setSelectedElement(selected);
+	}
 
     return drp;
 
@@ -134,9 +131,9 @@ public class ReportObjectHandler extends Block{
 
 		drp.addMenuElement("UPPER","UPPER");
 
-    if(!selected.equalsIgnoreCase(""))
-
-      drp.setSelectedElement(selected);
+    if(!selected.equalsIgnoreCase("")) {
+		drp.setSelectedElement(selected);
+	}
 
     return drp;
 
@@ -166,9 +163,9 @@ public class ReportObjectHandler extends Block{
 
 		drp.addMenuElement("IN","IN");
 
-    if(!selected.equalsIgnoreCase(""))
-
-      drp.setSelectedElement(selected);
+    if(!selected.equalsIgnoreCase("")) {
+		drp.setSelectedElement(selected);
+	}
 
     return drp;
 
@@ -180,9 +177,9 @@ public class ReportObjectHandler extends Block{
 
     DropdownMenu drp = new DropdownMenu(Name);
 
-    if(disabledvalue )
-
-      drp.addMenuElement("0","--");
+    if(disabledvalue ) {
+		drp.addMenuElement("0","--");
+	}
 
 
 
@@ -214,9 +211,9 @@ public class ReportObjectHandler extends Block{
 
       }
 
-      if(!selected.equalsIgnoreCase(""))
-
-        drp.setSelectedElement(selected);
+      if(!selected.equalsIgnoreCase("")) {
+		drp.setSelectedElement(selected);
+	}
 
     }
 
@@ -236,9 +233,9 @@ public class ReportObjectHandler extends Block{
 
     }
 
-    if(!selected.equalsIgnoreCase(""))
-
-      drp.setSelectedElement(selected);
+    if(!selected.equalsIgnoreCase("")) {
+		drp.setSelectedElement(selected);
+	}
 
     return drp;
 
@@ -276,8 +273,9 @@ public class ReportObjectHandler extends Block{
       while(iter.hasNext()){
         com.idega.data.IDOLegacyEntity leg = (com.idega.data.IDOLegacyEntity) iter.next();
         String sField = leg.getStringColumnValue(field);
-        if(sField.length()>=20)
-          sField = sField.substring(0,20);
+        if(sField.length()>=20) {
+			sField = sField.substring(0,20);
+		}
         drp.addMenuElement(sField);
 
       }

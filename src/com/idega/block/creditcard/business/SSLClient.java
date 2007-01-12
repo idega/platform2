@@ -59,7 +59,7 @@ public class SSLClient
         // The production server uses well known certificates and therefore
         // uses the default "cacerts" file that is located in the 
         // Java Runtime folder /jre/lib/security
-        m_oSSLCtx = SSLContext.getInstance("SSL");
+        this.m_oSSLCtx = SSLContext.getInstance("SSL");
         oSSLKMF = KeyManagerFactory.getInstance("SunX509");
         oSSLKS = KeyStore.getInstance("JKS");
 
@@ -68,10 +68,12 @@ public class SSLClient
         oSSLKMF.init(oSSLKS, passphrase);
         // A trustall TrustStore will not check the validity of the server
         // certificates. Therefore it is not very safe....
-        if (_bTrustAll)
-          m_oSSLCtx.init(oSSLKMF.getKeyManagers(), getTrustManager(), new java.security.SecureRandom());
-        else
-          m_oSSLCtx.init(oSSLKMF.getKeyManagers(), null, new java.security.SecureRandom());
+        if (_bTrustAll) {
+			this.m_oSSLCtx.init(oSSLKMF.getKeyManagers(), getTrustManager(), new java.security.SecureRandom());
+		}
+		else {
+			this.m_oSSLCtx.init(oSSLKMF.getKeyManagers(), null, new java.security.SecureRandom());
+		}
       } 
       catch (Exception e) 
       {
@@ -109,7 +111,7 @@ public class SSLClient
       throws IOException, UnknownHostException 
     {
       // Create the socket
-      SSLSocket socket = (SSLSocket)m_oSSLCtx.getSocketFactory().createSocket(host, port);
+      SSLSocket socket = (SSLSocket)this.m_oSSLCtx.getSocketFactory().createSocket(host, port);
       // Do the SSL handshake
       socket.startHandshake();
       // Return a connected socket 
@@ -119,7 +121,7 @@ public class SSLClient
     public Socket createSocket(Socket socket, String host, int port, boolean flag) 
       throws IOException, UnknownHostException 
     {
-      SSLSocket socket2 = (SSLSocket)m_oSSLCtx.getSocketFactory().createSocket(host, port);
+      SSLSocket socket2 = (SSLSocket)this.m_oSSLCtx.getSocketFactory().createSocket(host, port);
       // Do the SSL handshake
       socket2.startHandshake();
       // Return a connected socket 
@@ -129,7 +131,7 @@ public class SSLClient
     public Socket createSocket(String host, int port, InetAddress clientHost, int clientPort) 
       throws IOException, UnknownHostException 
     {
-      SSLSocket socket = (SSLSocket)m_oSSLCtx.getSocketFactory().createSocket(host, port, clientHost, clientPort);
+      SSLSocket socket = (SSLSocket)this.m_oSSLCtx.getSocketFactory().createSocket(host, port, clientHost, clientPort);
       // Do the SSL handshake
       socket.startHandshake();
       // Return a connected socket 
@@ -144,11 +146,11 @@ public class SSLClient
   public SSLClient(String strHost, int iPort, String _strKeyStore, String _strKeyStorePass, String _strRealmUser, String _strRealmPwd) 
     throws IOException
   {
-    m_strHost = strHost;
-    m_iPort = iPort;
-    m_strRealmUser = _strRealmUser;
-    m_strRealmPwd = _strRealmPwd;
-    m_oSSLSocketFactory = new MySSLSocketFactory(_strKeyStorePass, _strKeyStore, false);
+    this.m_strHost = strHost;
+    this.m_iPort = iPort;
+    this.m_strRealmUser = _strRealmUser;
+    this.m_strRealmPwd = _strRealmPwd;
+    this.m_oSSLSocketFactory = new MySSLSocketFactory(_strKeyStorePass, _strKeyStore, false);
   }
   
   public String sendRequest(String _strProcedure, String _strData) 
@@ -166,12 +168,12 @@ public class SSLClient
     // Set Request timeout
     oClient.setTimeout(_iRequestTimeoutSec * 1000);
     // Set Basic-Authentication realm properties
-    oClient.getState().setCredentials(null, m_strHost,
-        new UsernamePasswordCredentials(m_strRealmUser, m_strRealmPwd));
+    oClient.getState().setCredentials(null, this.m_strHost,
+        new UsernamePasswordCredentials(this.m_strRealmUser, this.m_strRealmPwd));
     // Set the Socket Factory we will use to connect
-    Protocol.registerProtocol("https", new Protocol("https", m_oSSLSocketFactory, m_iPort));
+    Protocol.registerProtocol("https", new Protocol("https", this.m_oSSLSocketFactory, this.m_iPort));
     // Configure the URI
-    String strURI = "https://" + m_strHost + ":" + m_iPort + _strProcedure;
+    String strURI = "https://" + this.m_strHost + ":" + this.m_iPort + _strProcedure;
 //    System.out.println("[SSLClient] strURI  : "+strURI);
 //    System.out.println("[SSLClient] strData : "+_strData);
     // Finally prepare the parameters to post

@@ -42,20 +42,22 @@ public class ProductItemPrice extends ProductItem {
 	}
 
 	private void drawObject(IWContext iwc) throws RemoteException {
-		Text text = getText(defaultText);
-		if (_product != null) {
-			ProductPrice pPrice = getStockroomBusiness(iwc).getPrice(_product);
+		Text text = getText(this.defaultText);
+		if (this._product != null) {
+			ProductPrice pPrice = getStockroomBusiness(iwc).getPrice(this._product);
 			if (pPrice != null && pPrice.getPrice() > 0) {
 				NumberFormat format = NumberFormat.getInstance(iwc.getCurrentLocale());
-				text.setText(format.format((double) pPrice.getPrice()));
+				text.setText(format.format(pPrice.getPrice()));
 				if (this.showCurrency) {
 					try {
 						text.addToText(Text.NON_BREAKING_SPACE);
 						String abbreviation = ((com.idega.block.trade.data.CurrencyHome) com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(pPrice.getCurrencyId()).getCurrencyAbbreviation();
-						if (showLocalized)
-							text.addToText(_iwrb.getLocalizedString("currency."+abbreviation, abbreviation));
-						else
+						if (this.showLocalized) {
+							text.addToText(this._iwrb.getLocalizedString("currency."+abbreviation, abbreviation));
+						}
+						else {
 							text.addToText(abbreviation);
+						}
 					}
 					catch (SQLException sql) {
 					}

@@ -6,7 +6,9 @@ import java.util.Locale;
 import javax.transaction.TransactionManager;
 import com.idega.block.text.business.TextFinder;
 import com.idega.block.text.data.LocalizedText;
+import com.idega.data.GenericEntity;
 import com.idega.transaction.IdegaTransactionManager;
+import com.idega.user.data.UserBMPBean;
 
 public class BoxCategoryBMPBean extends com.idega.data.GenericEntity implements
 		com.idega.block.boxoffice.data.BoxCategory {
@@ -20,7 +22,7 @@ public class BoxCategoryBMPBean extends com.idega.data.GenericEntity implements
 	}
 
 	public void insertStartData() throws Exception {
-		String[] entries = { "Ýmislegt", "Tenglar", "Greinar", "Stýriskjöl", "Leiðbeiningar", "Misc", "Links",
+		String[] entries = { "ï¿½mislegt", "Tenglar", "Greinar", "Stï¿½riskjï¿½l", "Leiï¿½beiningar", "Misc", "Links",
 				"Articles", "Documents", "Instructions" };
 		TransactionManager t = IdegaTransactionManager.getInstance();
 		t.begin();
@@ -58,7 +60,7 @@ public class BoxCategoryBMPBean extends com.idega.data.GenericEntity implements
 	}
 
 	public static String getColumnNameUserID() {
-		return com.idega.core.user.data.UserBMPBean.getColumnNameUserID();
+		return UserBMPBean.getColumnNameUserID();
 	}
 
 	public static String getEntityTableName() {
@@ -82,15 +84,15 @@ public class BoxCategoryBMPBean extends com.idega.data.GenericEntity implements
 	}
 
 	public void delete() throws SQLException {
-		BoxLink[] link = (BoxLink[]) com.idega.block.boxoffice.data.BoxLinkBMPBean.getStaticInstance(BoxLink.class).findAllByColumn(
+		BoxLink[] link = (BoxLink[]) GenericEntity.getStaticInstance(BoxLink.class).findAllByColumn(
 				getColumnNameBoxCategoryID(), getID());
 		if (link != null) {
 			for (int a = 0; a < link.length; a++) {
 				link[a].delete();
 			}
 		}
-		removeFrom(com.idega.block.text.data.LocalizedTextBMPBean.getStaticInstance(LocalizedText.class));
-		removeFrom(com.idega.block.boxoffice.data.BoxEntityBMPBean.getStaticInstance(BoxEntity.class));
+		removeFrom(GenericEntity.getStaticInstance(LocalizedText.class));
+		removeFrom(GenericEntity.getStaticInstance(BoxEntity.class));
 		super.delete();
 	}
 }

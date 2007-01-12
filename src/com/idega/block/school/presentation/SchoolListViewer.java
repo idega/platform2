@@ -35,8 +35,8 @@ public class SchoolListViewer extends SchoolBlock {
 	 */
 	public void init(IWContext iwc) throws Exception {
 		List schools = null;
-		if (iSchoolCategory != null) {
-			schools = new ArrayList(getBusiness().findAllSchoolsByCategory(iSchoolCategory));
+		if (this.iSchoolCategory != null) {
+			schools = new ArrayList(getBusiness().findAllSchoolsByCategory(this.iSchoolCategory));
 		}
 		else {
 			schools = new ArrayList(getBusiness().findAllSchools());
@@ -49,9 +49,9 @@ public class SchoolListViewer extends SchoolBlock {
 		Iterator iter = schools.iterator();
 		while (iter.hasNext()) {
 			School school = (School) iter.next();
-			if (iResponsePage != null) {
+			if (this.iResponsePage != null) {
 				Link link = new Link(school.getSchoolName());
-				link.setPage(iResponsePage);
+				link.setPage(this.iResponsePage);
 				link.addParameter(getSchoolContentBusiness(iwc).getParameterSchoolId(), school.getPrimaryKey().toString());
 				list.add(link);
 			}
@@ -73,10 +73,10 @@ public class SchoolListViewer extends SchoolBlock {
 	}
 	
 	public void setSchoolCategory(String category) {
-		iSchoolCategory = category;
+		this.iSchoolCategory = category;
 	}
 
 	public void setResponsePage(ICPage page) {
-		iResponsePage = page;
+		this.iResponsePage = page;
 	}
 }

@@ -11,6 +11,7 @@ package com.idega.block.mailinglist.business;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
+import com.idega.block.mailinglist.data.AccountBMPBean;
 import com.idega.block.mailinglist.data.EmailLetterData;
 import com.idega.block.mailinglist.data.MailAccount;
 import com.idega.block.mailinglist.data.Mailinglist;
@@ -34,7 +35,7 @@ public class MailingListBusiness {
     MailAccount emaillist = null;
     MailAccount[] list = null;
 
-    list = (MailAccount[]) (com.idega.data.GenericEntity.getStaticInstance("com.idega.block.mailinglist.data.MailAccount").findAllByColumn(com.idega.block.mailinglist.data.MailAccountBMPBean.EMAIL, inputEmail));
+    list = (MailAccount[]) (com.idega.data.GenericEntity.getStaticInstance("com.idega.block.mailinglist.data.MailAccount").findAllByColumn(AccountBMPBean.EMAIL, inputEmail));
 
     if( list.length > 0 ){
       emaillist = list[0];
@@ -66,7 +67,7 @@ public class MailingListBusiness {
 
     int reply = 1;
     MailAccount[] list;
-    list = (MailAccount[]) (com.idega.data.GenericEntity.getStaticInstance("com.idega.block.mailinglist.data.MailAccount").findAllByColumn(com.idega.block.mailinglist.data.MailAccountBMPBean.EMAIL, removeEmail));
+    list = (MailAccount[]) (com.idega.data.GenericEntity.getStaticInstance("com.idega.block.mailinglist.data.MailAccount").findAllByColumn(AccountBMPBean.EMAIL, removeEmail));
 
     if(list.length > 0){
 
@@ -86,7 +87,7 @@ public class MailingListBusiness {
 
         if (allRelatedLeftoverMailinglist.length < 1 ) {
           MailAccount mailingList =  ((com.idega.block.mailinglist.data.MailAccountHome)com.idega.data.IDOLookup.getHomeLegacy(MailAccount.class)).createLegacy();
-          mailingList.deleteMultiple(com.idega.block.mailinglist.data.MailAccountBMPBean.EMAIL, removeEmail);
+          mailingList.deleteMultiple(AccountBMPBean.EMAIL, removeEmail);
           reply = 17;
         }
       }
@@ -243,8 +244,10 @@ public class MailingListBusiness {
 
     EmailLetterData letters;
     System.err.println("NOTICE !! MAILINGLIST BUSINESS letterID = "+letterID);
-    if (letterID == -1) letters = ((com.idega.block.mailinglist.data.EmailLetterDataHome)com.idega.data.IDOLookup.getHomeLegacy(EmailLetterData.class)).createLegacy();
-    else {letters = ((com.idega.block.mailinglist.data.EmailLetterDataHome)com.idega.data.IDOLookup.getHomeLegacy(EmailLetterData.class)).findByPrimaryKeyLegacy(letterID);}
+    if (letterID == -1) {
+		letters = ((com.idega.block.mailinglist.data.EmailLetterDataHome)com.idega.data.IDOLookup.getHomeLegacy(EmailLetterData.class)).createLegacy();
+	}
+	else {letters = ((com.idega.block.mailinglist.data.EmailLetterDataHome)com.idega.data.IDOLookup.getHomeLegacy(EmailLetterData.class)).findByPrimaryKeyLegacy(letterID);}
     letters.setBody(body);
     letters.setHasSent(sent);
     letters.setSubject(subject);

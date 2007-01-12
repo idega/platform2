@@ -168,10 +168,12 @@ public class ApartmentBMPBean extends
 
 	public void setStatus(String status) {
 		if (status.equalsIgnoreCase(FROZEN) || status.equalsIgnoreCase(RENTED)
-				|| status.equalsIgnoreCase(AVAILABLE))
+				|| status.equalsIgnoreCase(AVAILABLE)) {
 			setColumn(STATUS, status);
-		else
+		}
+		else {
 			System.err.println("Undefined status :" + status);
+		}
 	}
 
 	public void setStatusFrozen() {
@@ -292,37 +294,42 @@ public class ApartmentBMPBean extends
 			query.addCriteria(new MatchCriteria(building,
 					BuildingBMPBean.COLUMN_COMPLEX, MatchCriteria.EQUALS,
 					complexID.intValue()));
-			if (order)
+			if (order) {
 				query.addOrder(complex, ComplexBMPBean.COLUMN_NAME, true);
+			}
 
 		}
 		if (buildingID != null && buildingID.intValue() > 0) {
 			query.addCriteria(new MatchCriteria(floor,
 					FloorBMPBean.BU_BUILDING_ID, MatchCriteria.EQUALS,
 					buildingID.intValue()));
-			if (order)
+			if (order) {
 				query.addOrder(building, BuildingBMPBean.COLUMN_NAME, true);
+			}
 		}
 		if (floorID != null && floorID.intValue() > 0) {
 			query.addCriteria(new MatchCriteria(apartment,
 					ApartmentBMPBean.BU_FLOOR_ID, MatchCriteria.EQUALS, floorID
 							.intValue()));
-			if (order)
+			if (order) {
 				query.addOrder(floor, FloorBMPBean.NAME, true);
+			}
 		}
 		if (typeID != null && typeID.intValue() > 0) {
 			query.addCriteria(new MatchCriteria(apartment,
 					ApartmentBMPBean.BU_APRT_TYPE_ID, MatchCriteria.EQUALS,
 					typeID.intValue()));
-			if (order)
+			if (order) {
 				query.addOrder(type, ApartmentTypeBMPBean.COLUMN_NAME, true);
+			}
 		}
 		if (categoryID != null && categoryID.intValue() > 0) {
 			query.addCriteria(new MatchCriteria(type,
 					ApartmentTypeBMPBean.COLUMN_APARTMENT_CATEGORY, MatchCriteria.EQUALS,
 					categoryID.intValue()));
-			if (order)
+			if (order) {
 				query.addOrder(category, ApartmentCategoryBMPBean.NAME, true);
+			}
 		}
 		return idoFindPKsBySQL(query.toString());
 	}

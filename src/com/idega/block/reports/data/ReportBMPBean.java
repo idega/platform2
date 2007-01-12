@@ -91,8 +91,9 @@ public class ReportBMPBean extends com.idega.block.category.data.CategoryEntityB
   private String array2str(String[] array,String delim){
     StringBuffer s = new StringBuffer();
     for (int i = 0; i < array.length; i++) {
-      if(i != 0)
-        s.append(delim());
+      if(i != 0) {
+		s.append(delim());
+	}
       s.append(array[i]);
     }
     return s.toString();

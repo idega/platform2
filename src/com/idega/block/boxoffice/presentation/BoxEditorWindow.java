@@ -63,26 +63,26 @@ public BoxEditorWindow(){
     /**
      * @todo permission
      */
-    _isAdmin = true; //AccessControl.hasEditPermission(this,iwc);
-    _superAdmin = iwc.hasEditPermission(this);
-    _iwb = iwc.getIWMainApplication().getBundle(Builderaware.IW_CORE_BUNDLE_IDENTIFIER);
-    _iwrb = getResourceBundle(iwc);
-    addTitle(_iwrb.getLocalizedString("box_admin","Box Admin"));
+    this._isAdmin = true; //AccessControl.hasEditPermission(this,iwc);
+    this._superAdmin = iwc.hasEditPermission(this);
+    this._iwb = iwc.getIWMainApplication().getBundle(Builderaware.IW_CORE_BUNDLE_IDENTIFIER);
+    this._iwrb = getResourceBundle(iwc);
+    addTitle(this._iwrb.getLocalizedString("box_admin","Box Admin"));
     Locale currentLocale = iwc.getCurrentLocale();
     Locale chosenLocale;
     
     iwc.removeSessionAttribute(BoxBusiness.PARAMETER_CATEGORY_ID);
 
     try {
-      _userID = LoginBusinessBean.getUser(iwc).getID();
+      this._userID = LoginBusinessBean.getUser(iwc).getID();
     }
     catch (Exception e) {
-      _userID = -1;
+      this._userID = -1;
     }
 
-    _editImage = _iwb.getImage("shared/edit.gif");
-    _createImage = _iwb.getImage("shared/create.gif");
-    _deleteImage = _iwb.getImage("shared/delete.gif");
+    this._editImage = this._iwb.getImage("shared/edit.gif");
+    this._createImage = this._iwb.getImage("shared/create.gif");
+    this._deleteImage = this._iwb.getImage("shared/delete.gif");
 
     String sLocaleId = iwc.getParameter(BoxBusiness.PARAMETER_LOCALE_DROP);
 
@@ -96,7 +96,7 @@ public BoxEditorWindow(){
       iLocaleId = ICLocaleBusiness.getLocaleId(chosenLocale);
     }
 
-    if ( _isAdmin ) {
+    if ( this._isAdmin ) {
       processForm(iwc, iLocaleId,sLocaleId);
     }
     else {
@@ -107,37 +107,37 @@ public BoxEditorWindow(){
   private void processForm(IWContext iwc, int iLocaleId, String sLocaleID) {
     if ( iwc.getParameter(BoxBusiness.PARAMETER_TYPE) != null ) {
       try {
-        _type = Integer.parseInt(iwc.getParameter(BoxBusiness.PARAMETER_TYPE));
+        this._type = Integer.parseInt(iwc.getParameter(BoxBusiness.PARAMETER_TYPE));
       }
       catch (NumberFormatException e) {
-        _type = -1;
+        this._type = -1;
       }
     }
 
     if ( iwc.getParameter(BoxBusiness.PARAMETER_TARGET) != null ) {
-      _target = iwc.getParameter(BoxBusiness.PARAMETER_TARGET);
+      this._target = iwc.getParameter(BoxBusiness.PARAMETER_TARGET);
     }
 
     if ( iwc.getParameter(BoxBusiness.PARAMETER_BOX_ID) != null ) {
       try {
-        _boxID = Integer.parseInt(iwc.getParameter(BoxBusiness.PARAMETER_BOX_ID));
+        this._boxID = Integer.parseInt(iwc.getParameter(BoxBusiness.PARAMETER_BOX_ID));
       }
       catch (NumberFormatException e) {
-        _boxID = -1;
+        this._boxID = -1;
       }
     }
 
     if ( iwc.getParameter(BoxBusiness.PARAMETER_NEW_OBJECT_INSTANCE) != null ) {
-      _newObjInst = false;
+      this._newObjInst = false;
     }
 
     if ( iwc.getParameter(BoxBusiness.PARAMETER_LINK_ID) != null ) {
       try {
-        _linkID = Integer.parseInt(iwc.getParameter(BoxBusiness.PARAMETER_LINK_ID));
-        iwc.setSessionAttribute(BoxBusiness.PARAMETER_LINK_ID,new Integer(_linkID));
+        this._linkID = Integer.parseInt(iwc.getParameter(BoxBusiness.PARAMETER_LINK_ID));
+        iwc.setSessionAttribute(BoxBusiness.PARAMETER_LINK_ID,new Integer(this._linkID));
       }
       catch (NumberFormatException e) {
-        _linkID = -1;
+        this._linkID = -1;
       }
     }
 
@@ -147,45 +147,45 @@ public BoxEditorWindow(){
 
     if ( (Integer) iwc.getSessionAttribute(BoxBusiness.PARAMETER_LINK_ID) != null ) {
       try {
-        _linkID = ((Integer) iwc.getSessionAttribute(BoxBusiness.PARAMETER_LINK_ID)).intValue();
+        this._linkID = ((Integer) iwc.getSessionAttribute(BoxBusiness.PARAMETER_LINK_ID)).intValue();
       }
       catch (NumberFormatException e) {
-        _linkID = -1;
+        this._linkID = -1;
       }
     }
 
     if ( iwc.getParameter(BoxBusiness.PARAMETER_CATEGORY_ID) != null ) {
       try {
-        _boxCategoryID = Integer.parseInt(iwc.getParameter(BoxBusiness.PARAMETER_CATEGORY_ID));
+        this._boxCategoryID = Integer.parseInt(iwc.getParameter(BoxBusiness.PARAMETER_CATEGORY_ID));
       }
       catch (NumberFormatException e) {
-        _boxCategoryID = -1;
+        this._boxCategoryID = -1;
       }
     }
 
     if ( iwc.getParameter(BoxBusiness.PARAMETER_FILE_ID) != null ) {
       try {
-        _fileID = Integer.parseInt(iwc.getParameter(BoxBusiness.PARAMETER_FILE_ID));
+        this._fileID = Integer.parseInt(iwc.getParameter(BoxBusiness.PARAMETER_FILE_ID));
       }
       catch (NumberFormatException e) {
-        _fileID = -1;
+        this._fileID = -1;
       }
     }
 
     if ( iwc.getParameter(BoxBusiness.PARAMETER_PAGE_ID) != null ) {
       try {
-        _pageID = Integer.parseInt(iwc.getParameter(BoxBusiness.PARAMETER_PAGE_ID));
+        this._pageID = Integer.parseInt(iwc.getParameter(BoxBusiness.PARAMETER_PAGE_ID));
       }
       catch (NumberFormatException e) {
-        _pageID = -1;
+        this._pageID = -1;
       }
     }
 
     DropdownMenu localeDrop = ICLocalePresentation.getLocaleDropdownIdKeyed(BoxBusiness.PARAMETER_LOCALE_DROP);
       localeDrop.setToSubmit();
       localeDrop.setSelectedElement(Integer.toString(iLocaleId));
-    addLeft(_iwrb.getLocalizedString("locale","Locale")+": ",localeDrop,false);
-    addHiddenInput(new HiddenInput(BoxBusiness.PARAMETER_BOX_ID,Integer.toString(_boxID)));
+    addLeft(this._iwrb.getLocalizedString("locale","Locale")+": ",localeDrop,false);
+    addHiddenInput(new HiddenInput(BoxBusiness.PARAMETER_BOX_ID,Integer.toString(this._boxID)));
 
     if ( iwc.getParameter(BoxBusiness.PARAMETER_MODE) != null ) {
       if ( iwc.getParameter(BoxBusiness.PARAMETER_MODE).equalsIgnoreCase(BoxBusiness.PARAMETER_CLOSE) ) {
@@ -197,12 +197,12 @@ public BoxEditorWindow(){
       }
     }
 
-    if ( _linkID != -1 ) {
+    if ( this._linkID != -1 ) {
       if ( iwc.getParameter(BoxBusiness.PARAMETER_DELETE) != null ) {
         deleteBoxLink(iwc);
       }
       else {
-        _update = true;
+        this._update = true;
       }
     }
 
@@ -210,65 +210,68 @@ public BoxEditorWindow(){
   }
 
   private void initializeFields(int iLocaleID) {
-    BoxLink link = BoxFinder.getLink(_linkID);
+    BoxLink link = BoxFinder.getLink(this._linkID);
     String locString = BoxBusiness.getLocalizedString(link,iLocaleID);
 
     if ( link == null ) {
-      _update = false;
+      this._update = false;
     }
     else {
-      _update = true;
+      this._update = true;
     }
-    if ( _target == null && _update ) {
-      _target = link.getTarget();
-      if ( _target == null ) {
-        _target = Link.TARGET_BLANK_WINDOW;
+    if ( this._target == null && this._update ) {
+      this._target = link.getTarget();
+      if ( this._target == null ) {
+        this._target = Link.TARGET_BLANK_WINDOW;
       }
     }
-    if ( _type == -1 && _update ) {
-      if ( link.getPageID() != -1 )
-        _type = BoxBusiness.PAGE;
-      else if ( link.getFileID() != -1 )
-        _type = BoxBusiness.FILE;
-      else if ( link.getURL() != null )
-        _type = BoxBusiness.LINK;
+    if ( this._type == -1 && this._update ) {
+      if ( link.getPageID() != -1 ) {
+		this._type = BoxBusiness.PAGE;
+	}
+	else if ( link.getFileID() != -1 ) {
+		this._type = BoxBusiness.FILE;
+	}
+	else if ( link.getURL() != null ) {
+		this._type = BoxBusiness.LINK;
+	}
     }
-    if ( _type == -1 ) {
-      _type = BoxBusiness.LINK;
+    if ( this._type == -1 ) {
+      this._type = BoxBusiness.LINK;
     }
 
-    DropdownMenu categoryDrop = BoxBusiness.getCategories(BoxBusiness.PARAMETER_CATEGORY_ID,iLocaleID,BoxFinder.getBox(_boxID),_userID);
-      if ( _update ) {
+    DropdownMenu categoryDrop = BoxBusiness.getCategories(BoxBusiness.PARAMETER_CATEGORY_ID,iLocaleID,BoxFinder.getBox(this._boxID),this._userID);
+      if ( this._update ) {
         categoryDrop.setSelectedElement(Integer.toString(link.getBoxCategoryID()));
       }
-      else if ( _boxCategoryID != -1 ) {
-        categoryDrop.setSelectedElement(Integer.toString(_boxCategoryID));
+      else if ( this._boxCategoryID != -1 ) {
+        categoryDrop.setSelectedElement(Integer.toString(this._boxCategoryID));
       }
 
     TextInput linkName = new TextInput(BoxBusiness.PARAMETER_LINK_NAME);
       linkName.setLength(36);
-      if ( _update && locString != null ) {
+      if ( this._update && locString != null ) {
         linkName.setContent(locString);
         addHiddenInput(new HiddenInput(BoxBusiness.PARAMETER_NEW_OBJECT_INSTANCE,"false"));
       }
 
     DropdownMenu typeDrop = new DropdownMenu(BoxBusiness.PARAMETER_TYPE);
-      typeDrop.addMenuElement(BoxBusiness.LINK,_iwrb.getLocalizedString("link","Link"));
-      typeDrop.addMenuElement(BoxBusiness.FILE,_iwrb.getLocalizedString("file","File"));
-      typeDrop.addMenuElement(BoxBusiness.PAGE,_iwrb.getLocalizedString("page","Page"));
-      typeDrop.setSelectedElement(Integer.toString(_type));
+      typeDrop.addMenuElement(BoxBusiness.LINK,this._iwrb.getLocalizedString("link","Link"));
+      typeDrop.addMenuElement(BoxBusiness.FILE,this._iwrb.getLocalizedString("file","File"));
+      typeDrop.addMenuElement(BoxBusiness.PAGE,this._iwrb.getLocalizedString("page","Page"));
+      typeDrop.setSelectedElement(Integer.toString(this._type));
       typeDrop.setToSubmit();
 
     DropdownMenu targetDrop = new DropdownMenu(BoxBusiness.PARAMETER_TARGET);
-      targetDrop.addMenuElement(Link.TARGET_BLANK_WINDOW,_iwrb.getLocalizedString("_blank","New Window"));
-      targetDrop.addMenuElement(Link.TARGET_SELF_WINDOW,_iwrb.getLocalizedString("_self","Same Window"));
-      targetDrop.addMenuElement(Link.TARGET_PARENT_WINDOW,_iwrb.getLocalizedString("_parent","Parent frame"));
-      targetDrop.addMenuElement(Link.TARGET_TOP_WINDOW,_iwrb.getLocalizedString("_top","Top frame"));
-      targetDrop.setSelectedElement(_target);
+      targetDrop.addMenuElement(Link.TARGET_BLANK_WINDOW,this._iwrb.getLocalizedString("_blank","New Window"));
+      targetDrop.addMenuElement(Link.TARGET_SELF_WINDOW,this._iwrb.getLocalizedString("_self","Same Window"));
+      targetDrop.addMenuElement(Link.TARGET_PARENT_WINDOW,this._iwrb.getLocalizedString("_parent","Parent frame"));
+      targetDrop.addMenuElement(Link.TARGET_TOP_WINDOW,this._iwrb.getLocalizedString("_top","Top frame"));
+      targetDrop.setSelectedElement(this._target);
 
     TextInput linkURL = new TextInput(BoxBusiness.PARAMETER_LINK_URL);
       linkURL.setLength(30);
-      if ( _update && link.getURL() != null ) {
+      if ( this._update && link.getURL() != null ) {
         linkURL.setContent(link.getURL());
       }
       else {
@@ -280,34 +283,39 @@ public BoxEditorWindow(){
      */
 
     FileChooser fileChooser = new FileChooser(BoxBusiness.PARAMETER_FILE_ID,STYLE);
-    if ( link != null && _update ) {
-      if ( link.getFileID() != -1 )
-        fileChooser.setSelectedFile(BoxFinder.getFile(link.getFileID()));
+    if ( link != null && this._update ) {
+      if ( link.getFileID() != -1 ) {
+		fileChooser.setSelectedFile(BoxFinder.getFile(link.getFileID()));
+	}
     }
     IBPageChooser pageChooser = new IBPageChooser(BoxBusiness.PARAMETER_PAGE_ID,STYLE);
-    if ( link != null && _update ) {
-      if ( link.getPageID() != -1 )
-        pageChooser.setSelectedPage(BoxFinder.getPage(link.getPageID()));
+    if ( link != null && this._update ) {
+      if ( link.getPageID() != -1 ) {
+		pageChooser.setSelectedPage(BoxFinder.getPage(link.getPageID()));
+	}
     }
 
-    addLeft(_iwrb.getLocalizedString("category","Category")+":",categoryDrop,true);
-    addLeft(_iwrb.getLocalizedString("link_name","Name")+":",linkName,true);
-    addLeft(_iwrb.getLocalizedString("type","Type")+":",typeDrop,true);
+    addLeft(this._iwrb.getLocalizedString("category","Category")+":",categoryDrop,true);
+    addLeft(this._iwrb.getLocalizedString("link_name","Name")+":",linkName,true);
+    addLeft(this._iwrb.getLocalizedString("type","Type")+":",typeDrop,true);
 
-    if ( _type == BoxBusiness.LINK )
-      addLeft(_iwrb.getLocalizedString("link","Link")+":",linkURL,true);
-    else if ( _type == BoxBusiness.FILE )
-      addLeft(_iwrb.getLocalizedString("file","File")+":",fileChooser,true);
-    else if ( _type == BoxBusiness.PAGE )
-      addLeft(_iwrb.getLocalizedString("page","Page")+":",pageChooser,true);
+    if ( this._type == BoxBusiness.LINK ) {
+		addLeft(this._iwrb.getLocalizedString("link","Link")+":",linkURL,true);
+	}
+	else if ( this._type == BoxBusiness.FILE ) {
+		addLeft(this._iwrb.getLocalizedString("file","File")+":",fileChooser,true);
+	}
+	else if ( this._type == BoxBusiness.PAGE ) {
+		addLeft(this._iwrb.getLocalizedString("page","Page")+":",pageChooser,true);
+	}
 
-    addLeft(_iwrb.getLocalizedString("target","Target")+":",targetDrop,true);
+    addLeft(this._iwrb.getLocalizedString("target","Target")+":",targetDrop,true);
 
-    addHiddenInput(new HiddenInput(BoxBusiness.PARAMETER_LINK_ID,Integer.toString(_linkID)));
+    addHiddenInput(new HiddenInput(BoxBusiness.PARAMETER_LINK_ID,Integer.toString(this._linkID)));
     addHiddenInput(new HiddenInput(BoxBusiness.PARAMETER_LOCALE_ID,Integer.toString(iLocaleID)));
 
-    addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("close","CLOSE"),BoxBusiness.PARAMETER_MODE,BoxBusiness.PARAMETER_CLOSE));
-    addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("save","SAVE"),BoxBusiness.PARAMETER_MODE,BoxBusiness.PARAMETER_SAVE));
+    addSubmitButton(new SubmitButton(this._iwrb.getLocalizedImageButton("close","CLOSE"),BoxBusiness.PARAMETER_MODE,BoxBusiness.PARAMETER_CLOSE));
+    addSubmitButton(new SubmitButton(this._iwrb.getLocalizedImageButton("save","SAVE"),BoxBusiness.PARAMETER_MODE,BoxBusiness.PARAMETER_SAVE));
   }
 
   private void saveBoxLink(IWContext iwc,int iLocaleID,boolean setToClose) {
@@ -320,23 +328,23 @@ public BoxEditorWindow(){
 
     if ( categoryID != null ) {
       try {
-        _boxCategoryID = Integer.parseInt(categoryID);
+        this._boxCategoryID = Integer.parseInt(categoryID);
       }
       catch (NumberFormatException e) {
-        _boxCategoryID = -1;
+        this._boxCategoryID = -1;
       }
     }
 
-    if ( _type == BoxBusiness.LINK ) {
-      _fileID = -1;
-      _pageID = -1;
+    if ( this._type == BoxBusiness.LINK ) {
+      this._fileID = -1;
+      this._pageID = -1;
     }
-    else if ( _type == BoxBusiness.FILE ) {
-      _pageID = -1;
+    else if ( this._type == BoxBusiness.FILE ) {
+      this._pageID = -1;
       boxLinkURL = null;
     }
-    else if ( _type == BoxBusiness.PAGE ) {
-      _fileID = -1;
+    else if ( this._type == BoxBusiness.PAGE ) {
+      this._fileID = -1;
       boxLinkURL = null;
     }
 
@@ -349,7 +357,7 @@ public BoxEditorWindow(){
 
     if ( localeString != null && boxLinkName != null ) {
       try {
-        linkID = BoxBusiness.saveLink(_userID,_boxID,_boxCategoryID,_linkID,boxLinkName,_fileID,_pageID,boxLinkURL,_target,Integer.parseInt(localeString));
+        linkID = BoxBusiness.saveLink(this._userID,this._boxID,this._boxCategoryID,this._linkID,boxLinkName,this._fileID,this._pageID,boxLinkURL,this._target,Integer.parseInt(localeString));
       }
       catch (Exception e) {
         e.printStackTrace(System.err);
@@ -362,7 +370,7 @@ public BoxEditorWindow(){
   private void deleteBoxLink(IWContext iwc) {
     System.out.println("Deleting...");
     iwc.removeSessionAttribute(BoxBusiness.PARAMETER_LINK_ID);
-    BoxBusiness.deleteLink(_linkID);
+    BoxBusiness.deleteLink(this._linkID);
     setParentToReload();
     close();
   }
@@ -377,8 +385,8 @@ public BoxEditorWindow(){
   }
 
   private void noAccess() throws IOException,SQLException {
-    addLeft(_iwrb.getLocalizedString("no_access","Login first!"));
-    addSubmitButton(new CloseButton(_iwrb.getImage("close.gif")));
+    addLeft(this._iwrb.getLocalizedString("no_access","Login first!"));
+    addSubmitButton(new CloseButton(this._iwrb.getImage("close.gif")));
   }
 
   public String getBundleIdentifier(){

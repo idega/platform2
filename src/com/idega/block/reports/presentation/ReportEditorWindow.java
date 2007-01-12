@@ -7,6 +7,7 @@ import com.idega.block.reports.business.ReportBusiness;
 import com.idega.block.reports.business.ReportFinder;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -86,37 +87,39 @@ public class ReportEditorWindow extends IWAdminWindow {
 		System.err.println();
 		*/
 
-		if(iCategoryId <= 0 && iwc.isParameterSet(prmCategoryId)){
-			iCategoryId = Integer.parseInt(iwc.getParameter(prmCategoryId ));
+		if(this.iCategoryId <= 0 && iwc.isParameterSet(prmCategoryId)){
+			this.iCategoryId = Integer.parseInt(iwc.getParameter(prmCategoryId ));
 		}
 
 		if(iwc.isParameterSet(prmObjInstId)){
-			iObjInsId = Integer.parseInt(iwc.getParameter(prmObjInstId ) );
+			this.iObjInsId = Integer.parseInt(iwc.getParameter(prmObjInstId ) );
 		}
-    if(isAdmin){
+    if(this.isAdmin){
 			int saveInfo = getSaveInfo(iwc);
-      if(iObjInsId > 0 && saveInfo != SAVECATEGORY){
-				iCategoryId = ReportFinder.getObjectInstanceCategoryId(iObjInsId );
+      if(this.iObjInsId > 0 && saveInfo != this.SAVECATEGORY){
+				this.iCategoryId = ReportFinder.getObjectInstanceCategoryId(this.iObjInsId );
       }
 			// Form processing
-			if(saveInfo == SAVECATEGORY){
-        processCategoryForm(iwc,iCategoryId,iObjInsId);
+			if(saveInfo == this.SAVECATEGORY){
+        processCategoryForm(iwc,this.iCategoryId,this.iObjInsId);
       }
-      addCategoryFields(ReportFinder.getCategory(iCategoryId),iObjInsId  );
+      addCategoryFields(ReportFinder.getCategory(this.iCategoryId),this.iObjInsId  );
     }
     else{
-      add(formatText(iwrb.getLocalizedString("access_denied","Access denied")));
+      add(formatText(this.iwrb.getLocalizedString("access_denied","Access denied")));
     }
 
   }
 
 	private int getSaveInfo(IWContext iwc){
 	  if(iwc.getParameter(prmFormProcess)!=null){
-      if(iwc.getParameter(prmFormProcess).equals("Y"))
-        return SAVECONTENT;
-      else if(iwc.getParameter(prmFormProcess).equals("C"))
-        return SAVECATEGORY;
+      if(iwc.getParameter(prmFormProcess).equals("Y")) {
+		return this.SAVECONTENT;
+	}
+	else if(iwc.getParameter(prmFormProcess).equals("C")) {
+		return this.SAVECATEGORY;
         //doView = false;
+	}
     }
 		return 0;
 	}
@@ -143,13 +146,13 @@ public class ReportEditorWindow extends IWAdminWindow {
 
 	 private void addCategoryFields(ICCategory eCategory,int iObjInst){
 
-	  String sCategory= iwrb.getLocalizedString("category","Category");
-    String sName = iwrb.getLocalizedString("name","Name");
-    String sDesc = iwrb.getLocalizedString("description","Description");
+	  String sCategory= this.iwrb.getLocalizedString("category","Category");
+    String sName = this.iwrb.getLocalizedString("name","Name");
+    String sDesc = this.iwrb.getLocalizedString("description","Description");
 		//String sFields = iwrb.getLocalizedString("fields","Fields");
 		boolean hasCategory = eCategory !=null ? true:false;
 
-		Link newLink = new Link(core.getImage("/shared/create.gif"));
+		Link newLink = new Link(this.core.getImage("/shared/create.gif"));
 		newLink.addParameter(prmCategoryId,-1);
 		newLink.addParameter(prmObjInstId,iObjInst);
 		newLink.addParameter(prmFormProcess,"C");
@@ -181,15 +184,17 @@ public class ReportEditorWindow extends IWAdminWindow {
     if(hasCategory){
 			int id = eCategory.getID();
 			int iReportCount = ReportFinder.countReportsInCategory(id);
-			if(eCategory.getName()!=null)
+			if(eCategory.getName()!=null) {
 				tiName.setContent(eCategory.getName());
-			if(eCategory.getDescription()!=null)
+			}
+			if(eCategory.getDescription()!=null) {
 				taDesc.setContent(eCategory.getDescription());
+			}
 
 		  catDrop.setSelectedElement(String.valueOf(id));
 
 			if(iReportCount == 0){
-			Link deleteLink = new Link(core.getImage("/shared/delete.gif"));
+			Link deleteLink = new Link(this.core.getImage("/shared/delete.gif"));
 			deleteLink.addParameter(actDelete,"true");
 			deleteLink.addParameter(prmCategoryId,id);
 			deleteLink.addParameter(prmObjInstId,iObjInst);
@@ -197,8 +202,8 @@ public class ReportEditorWindow extends IWAdminWindow {
 			catTable.add(deleteLink,5,1);
 			}
 		}
-		SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),actSave);
-		SubmitButton close = new SubmitButton(iwrb.getLocalizedImageButton("close","Close"),actClose);
+		SubmitButton save = new SubmitButton(this.iwrb.getLocalizedImageButton("save","Save"),actSave);
+		SubmitButton close = new SubmitButton(this.iwrb.getLocalizedImageButton("close","Close"),actClose);
     addSubmitButton(save);
 		addSubmitButton(close);
     addHiddenInput( new HiddenInput (prmObjInstId,String.valueOf(iObjInst)));
@@ -212,17 +217,17 @@ public class ReportEditorWindow extends IWAdminWindow {
 
   public void main(IWContext iwc) throws Exception{
     super.main(iwc);
-    iwb = getBundle(iwc);
-    iwrb = getResourceBundle(iwc);
-		core = iwc.getIWMainApplication().getBundle(Reporter.IW_CORE_BUNDLE_IDENTIFIER);
-    String title = iwrb.getLocalizedString("report_editor","Report Editor");
+    this.iwb = getBundle(iwc);
+    this.iwrb = getResourceBundle(iwc);
+		this.core = iwc.getIWMainApplication().getBundle(Builderaware.IW_CORE_BUNDLE_IDENTIFIER);
+    String title = this.iwrb.getLocalizedString("report_editor","Report Editor");
     setTitle(title);
     addTitle(title);
 
-    isAdmin = iwc.hasEditPermission(this);
+    this.isAdmin = iwc.hasEditPermission(this);
 
     control(iwc);
-    sManual = iwrb.getLocalizedString("manual","");
+    this.sManual = this.iwrb.getLocalizedString("manual","");
   }
 
 }

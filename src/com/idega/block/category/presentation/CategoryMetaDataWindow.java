@@ -61,40 +61,41 @@ public class CategoryMetaDataWindow extends IWAdminWindow {
 	}
 
 	public void main(IWContext iwc) throws Exception {
-		iwrb = getResourceBundle(iwc);
+		this.iwrb = getResourceBundle(iwc);
     if(iwc.isParameterSet(PARAMETER_LOCALE_ID)){
-      localeID = Integer.parseInt(iwc.getParameter(PARAMETER_LOCALE_ID));
+      this.localeID = Integer.parseInt(iwc.getParameter(PARAMETER_LOCALE_ID));
     }
     else{
-      localeID = ICLocaleBusiness.getLocaleId( iwc.getCurrentLocale());
+      this.localeID = ICLocaleBusiness.getLocaleId( iwc.getCurrentLocale());
     }
     
-    categoryBlockResourceBundleIdentifier = iwc.getParameter(CategoryWindow.prmBundleIdentifier);
-    if (categoryBlockResourceBundleIdentifier != null) {
-    		categoryBlockResourceBundle = iwc.getApplicationContext().getIWMainApplication().getBundle(categoryBlockResourceBundleIdentifier).getResourceBundle(ICLocaleBusiness.getLocale(localeID));
+    this.categoryBlockResourceBundleIdentifier = iwc.getParameter(CategoryWindow.prmBundleIdentifier);
+    if (this.categoryBlockResourceBundleIdentifier != null) {
+    		this.categoryBlockResourceBundle = iwc.getApplicationContext().getIWMainApplication().getBundle(this.categoryBlockResourceBundleIdentifier).getResourceBundle(ICLocaleBusiness.getLocale(this.localeID));
 		}
     
 		try {
 			parseAction(iwc);
 		} catch (Exception e) {
 			e.printStackTrace();
-			add(iwrb.getLocalizedString("category.update_failed", "Update failed"));
+			add(this.iwrb.getLocalizedString("category.update_failed", "Update failed"));
 		}
 		
 		
-		String title = iwrb.getLocalizedString("ic_category_metadata_editor", "Category Metadata Editor");
+		String title = this.iwrb.getLocalizedString("ic_category_metadata_editor", "Category Metadata Editor");
 		setTitle(title);
 		addTitle(title);
 		
-		if (_category != null)
+		if (this._category != null) {
 			control(iwc);
+		}
 	}
 	
 	private void control(IWContext iwc) throws RemoteException {
-		Map superMetaData = getCategoryService(iwc).getInheritedMetaData(_category);
-		Map superMetaDataTypes = getCategoryService(iwc).getInheritedMetaDataTypes(_category);
-		Map metaData = _category.getMetaDataAttributes();
-		Map metaDataTypes = _category.getMetaDataTypes();
+		Map superMetaData = getCategoryService(iwc).getInheritedMetaData(this._category);
+		Map superMetaDataTypes = getCategoryService(iwc).getInheritedMetaDataTypes(this._category);
+		Map metaData = this._category.getMetaDataAttributes();
+		Map metaDataTypes = this._category.getMetaDataTypes();
 		
 		Table padder = new Table(1, 1);
 		padder.setCellpadding(0);
@@ -116,7 +117,7 @@ public class CategoryMetaDataWindow extends IWAdminWindow {
 		int row = 1;
 		DropdownMenu LocaleDrop = ICLocalePresentation.getLocaleDropdownIdKeyed(PARAMETER_LOCALE_ID);
     LocaleDrop.setToSubmit();
-    LocaleDrop.setSelectedElement(Integer.toString(localeID));
+    LocaleDrop.setSelectedElement(Integer.toString(this.localeID));
 
     table.add(LocaleDrop, 1, row);
     table.mergeCells(1, row, 4, row);
@@ -124,11 +125,11 @@ public class CategoryMetaDataWindow extends IWAdminWindow {
     ++row;
     
 		table.setAlignment(column, row, Table.HORIZONTAL_ALIGN_CENTER);
-		table.add(formatText(iwrb.getLocalizedString("delete", "Delete"), true), column++, row);
-		table.add(formatText(iwrb.getLocalizedString("name", "Name"), true), column++, row);
-		table.add(formatText(iwrb.getLocalizedString("value", "Value"), true), column++, row);
-		table.add(formatText(iwrb.getLocalizedString("localized_name", "Localized name"), true), column++, row);
-		table.add(formatText(iwrb.getLocalizedString("type", "Type"), true), column++, row++);
+		table.add(formatText(this.iwrb.getLocalizedString("delete", "Delete"), true), column++, row);
+		table.add(formatText(this.iwrb.getLocalizedString("name", "Name"), true), column++, row);
+		table.add(formatText(this.iwrb.getLocalizedString("value", "Value"), true), column++, row);
+		table.add(formatText(this.iwrb.getLocalizedString("localized_name", "Localized name"), true), column++, row);
+		table.add(formatText(this.iwrb.getLocalizedString("type", "Type"), true), column++, row++);
 		
 		CheckBox deleteMetadata;
 
@@ -155,15 +156,16 @@ public class CategoryMetaDataWindow extends IWAdminWindow {
 				column = 1;
 				String key = (String) iter.next();
 				String value = (String) superMetaData.get(key);
-				String locName = categoryBlockResourceBundle.getLocalizedString(METADATA + key);
+				String locName = this.categoryBlockResourceBundle.getLocalizedString(METADATA + key);
 				
 				table.setAlignment(column, row, Table.HORIZONTAL_ALIGN_CENTER);
 				table.add(deleteMetadata, column++, row);
 				table.add(formatText(key, false), column++, row);
 				table.add(formatText(value, false), column++, row);
 				table.add(formatText(locName, false), column++, row);
-				if (superMetaDataTypes.containsKey(key))
+				if (superMetaDataTypes.containsKey(key)) {
 					table.add(formatText((String) superMetaDataTypes.get(key), false), column, row);
+				}
 				row++;
 			}
 		}
@@ -174,10 +176,10 @@ public class CategoryMetaDataWindow extends IWAdminWindow {
 				column = 1;
 				String key = (String) iter.next();
 				String value = (String) metaData.get(key);
-				String locName = categoryBlockResourceBundle.getLocalizedString(METADATA + key);
+				String locName = this.categoryBlockResourceBundle.getLocalizedString(METADATA + key);
 				deleteMetadata = new CheckBox(PARAMETER_DELETE, key);
 				
-				if (_metaData != null && _metaData.equals(key)) {
+				if (this._metaData != null && this._metaData.equals(key)) {
 					column++;
 					metaDataKey.setContent(key);
 					metaDataValue.setContent(value);
@@ -186,7 +188,7 @@ public class CategoryMetaDataWindow extends IWAdminWindow {
 					}
 					metaDataLocalizedName.setContent(locName);
 
-					table.add(new HiddenInput(PARAMETER_METADATA_ID, _metaData), column, row);
+					table.add(new HiddenInput(PARAMETER_METADATA_ID, this._metaData), column, row);
 					table.add(metaDataKey, column++, row);
 					table.add(metaDataValue, column++, row);
 					table.add(metaDataLocalizedName, column++, row);
@@ -194,8 +196,8 @@ public class CategoryMetaDataWindow extends IWAdminWindow {
 				}
 				else {
 					Link link = new Link(formatText(key));
-					link.addParameter(PARAMETER_CATEGORY_ID, _category.getPrimaryKey().toString());
-					link.addParameter(CategoryWindow.prmBundleIdentifier, categoryBlockResourceBundleIdentifier);
+					link.addParameter(PARAMETER_CATEGORY_ID, this._category.getPrimaryKey().toString());
+					link.addParameter(CategoryWindow.prmBundleIdentifier, this.categoryBlockResourceBundleIdentifier);
 					link.addParameter(PARAMETER_LOCALE_ID, iwc.getParameter(PARAMETER_LOCALE_ID));
 					link.addParameter(PARAMETER_METADATA, key);
 					
@@ -204,14 +206,15 @@ public class CategoryMetaDataWindow extends IWAdminWindow {
 					table.add(link, column++, row);
 					table.add(formatText(value), column++, row);
 					table.add(formatText(locName), column++, row);
-					if (metaDataTypes.containsKey(key))
+					if (metaDataTypes.containsKey(key)) {
 						table.add(formatText((String) metaDataTypes.get(key)), column, row);
+					}
 				}
 				row++;
 			}
 		}
 		
-		if (_metaData == null) {
+		if (this._metaData == null) {
 			column = 2;
 			table.add(metaDataKey, column++, row);
 			table.add(metaDataValue, column++, row);
@@ -223,9 +226,9 @@ public class CategoryMetaDataWindow extends IWAdminWindow {
 		//table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_CENTER);
 		table.mergeCells(1, row, table.getColumns(), row);
 		
-		SubmitButton save = new SubmitButton(iwrb.getLocalizedString("save", "Save"), PARAMETER_SAVE, "true");
+		SubmitButton save = new SubmitButton(this.iwrb.getLocalizedString("save", "Save"), PARAMETER_SAVE, "true");
 		save.setAsImageButton(true);
-		CloseButton close = new CloseButton(iwrb.getLocalizedString("close", "Close"));
+		CloseButton close = new CloseButton(this.iwrb.getLocalizedString("close", "Close"));
 		close.setAsImageButton(true);
 		
 		table.add(save, 1, row);
@@ -241,7 +244,7 @@ public class CategoryMetaDataWindow extends IWAdminWindow {
 		String[] types = IWMetaDataConstants.getMetaDataTypes();
 		for (int i = 0; i < types.length; i++) {
 			String type = types[i];
-			menu.addMenuElement(type, iwrb.getLocalizedString("metadata_"+type, type));
+			menu.addMenuElement(type, this.iwrb.getLocalizedString("metadata_"+type, type));
 		}
 		
 		return menu;
@@ -250,7 +253,7 @@ public class CategoryMetaDataWindow extends IWAdminWindow {
 	private void parseAction(IWContext iwc) throws RemoteException {
 		if (iwc.isParameterSet(PARAMETER_CATEGORY_ID)) {
 			try {
-				_category = getCategoryService(iwc).getCategoryHome().findByPrimaryKey(iwc.getParameter(PARAMETER_CATEGORY_ID));
+				this._category = getCategoryService(iwc).getCategoryHome().findByPrimaryKey(iwc.getParameter(PARAMETER_CATEGORY_ID));
 			}
 			catch (FinderException e) {
 				getParentPage().close();
@@ -260,7 +263,7 @@ public class CategoryMetaDataWindow extends IWAdminWindow {
 		
 		String updateName = null;
 		if (iwc.isParameterSet(PARAMETER_METADATA)) {
-			_metaData = iwc.getParameter(PARAMETER_METADATA);
+			this._metaData = iwc.getParameter(PARAMETER_METADATA);
 		}
 		if (iwc.isParameterSet(PARAMETER_METADATA_ID)) {
 			updateName = iwc.getParameter(PARAMETER_METADATA_ID);
@@ -271,26 +274,26 @@ public class CategoryMetaDataWindow extends IWAdminWindow {
 			String key = iwc.getParameter(PARAMETER_NAME);
 			if (key != null && iwc.isParameterSet(PARAMETER_VALUE) && iwc.isParameterSet(PARAMETER_TYPE)) {
 				if (updateName != null) {
-					_category.renameMetaData(updateName, key, iwc.getParameter(PARAMETER_VALUE));
+					this._category.renameMetaData(updateName, key, iwc.getParameter(PARAMETER_VALUE));
 				} else {
-					_category.addMetaData(key, iwc.getParameter(PARAMETER_VALUE), iwc.getParameter(PARAMETER_TYPE));
+					this._category.addMetaData(key, iwc.getParameter(PARAMETER_VALUE), iwc.getParameter(PARAMETER_TYPE));
 				}
 			}
 			
 			if (key != null && iwc.isParameterSet(PARAMETER_LOCALIZED_NAME)) {
-				categoryBlockResourceBundle.setLocalizedString(METADATA + key, iwc.getParameter(PARAMETER_LOCALIZED_NAME));
+				this.categoryBlockResourceBundle.setLocalizedString(METADATA + key, iwc.getParameter(PARAMETER_LOCALIZED_NAME));
 				if (updateName != null && !updateName.equals(key)) {
-					categoryBlockResourceBundle.removeString( updateName );
+					this.categoryBlockResourceBundle.removeString( updateName );
 				}
 			}
 			
 			if (iwc.isParameterSet(PARAMETER_DELETE)) {
 				String[] toDelete = iwc.getParameterValues(PARAMETER_DELETE);
 				for (int i = 0; i < toDelete.length; i++) {
-					_category.removeMetaData(toDelete[i]);
+					this._category.removeMetaData(toDelete[i]);
 				}
 			}
-			_category.store();
+			this._category.store();
 		}
 	}
 	

@@ -53,22 +53,22 @@ public class CalendarEditor extends IWAdminWindow {
 		/**
 		 * @todo permission
 		 */
-		_isAdmin = true;
-		_superAdmin = iwc.hasEditPermission(this);
-		_iwb = getBundle(iwc);
-		_iwrb = getResourceBundle(iwc);
-		addTitle(_iwrb.getLocalizedString("calendar_admin", "Calendar Admin"));
+		this._isAdmin = true;
+		this._superAdmin = iwc.hasEditPermission(this);
+		this._iwb = getBundle(iwc);
+		this._iwrb = getResourceBundle(iwc);
+		addTitle(this._iwrb.getLocalizedString("calendar_admin", "Calendar Admin"));
 		Locale currentLocale = iwc.getCurrentLocale(), chosenLocale;
 
 		try {
-			_userID = LoginBusinessBean.getUser(iwc).getID();
+			this._userID = LoginBusinessBean.getUser(iwc).getID();
 		} catch (Exception e) {
-			_userID = -1;
+			this._userID = -1;
 		}
 		try {
-			_groupID = LoginBusinessBean.getUser(iwc).getPrimaryGroupID();
+			this._groupID = LoginBusinessBean.getUser(iwc).getPrimaryGroupID();
 		} catch (Exception e) {
-			_groupID = -1;
+			this._groupID = -1;
 		}
 
 		String sLocaleId = iwc.getParameter(CalendarParameters.PARAMETER_LOCALE_DROP);
@@ -83,7 +83,7 @@ public class CalendarEditor extends IWAdminWindow {
 			iLocaleId = ICLocaleBusiness.getLocaleId(chosenLocale);
 		}
 
-		if (_isAdmin) {
+		if (this._isAdmin) {
 			processForm(iwc, iLocaleId, iCategoryId);
 		} else {
 			noAccess();
@@ -93,41 +93,41 @@ public class CalendarEditor extends IWAdminWindow {
 	private void processForm(IWContext iwc, int iLocaleId, int iCategoryId) {
 		if (iwc.getParameter(CalendarParameters.PARAMETER_INSTANCE_ID) != null) {
 			try {
-				_instanceID = Integer.parseInt(iwc.getParameter(CalendarParameters.PARAMETER_INSTANCE_ID));
+				this._instanceID = Integer.parseInt(iwc.getParameter(CalendarParameters.PARAMETER_INSTANCE_ID));
 			} catch (NumberFormatException e) {
-				_instanceID = -1;
+				this._instanceID = -1;
 			}
 		}
 
 		if (iwc.getParameter(CalendarParameters.PARAMETER_ENTRY_ID) != null) {
 			try {
-				_entryID = Integer.parseInt(iwc.getParameter(CalendarParameters.PARAMETER_ENTRY_ID));
+				this._entryID = Integer.parseInt(iwc.getParameter(CalendarParameters.PARAMETER_ENTRY_ID));
 			} catch (NumberFormatException e) {
-				_entryID = -1;
+				this._entryID = -1;
 			}
 		}
 
 		if (iwc.getParameter(CalendarParameters.PARAMETER_TYPE_ID) != null) {
 			try {
-				_typeID = Integer.parseInt(iwc.getParameter(CalendarParameters.PARAMETER_TYPE_ID));
+				this._typeID = Integer.parseInt(iwc.getParameter(CalendarParameters.PARAMETER_TYPE_ID));
 			} catch (NumberFormatException e) {
-				_typeID = -1;
+				this._typeID = -1;
 			}
 		}
 
 		if (iwc.getParameter(CalendarParameters.PARAMETER_ENTRY_DATE) != null) {
 			try {
-				_stamp = new IWTimestamp(iwc.getParameter(CalendarParameters.PARAMETER_ENTRY_DATE));
+				this._stamp = new IWTimestamp(iwc.getParameter(CalendarParameters.PARAMETER_ENTRY_DATE));
 			} catch (Exception e) {
-				_stamp = new IWTimestamp();
+				this._stamp = new IWTimestamp();
 			}
 		} else {
-			_stamp = new IWTimestamp();
+			this._stamp = new IWTimestamp();
 		}
 
 		if (iwc.getParameter(CalendarParameters.PARAMETER_ENTRY_END_DATE) != null) {
 			try {
-				_endStamp = new IWTimestamp(iwc.getParameter(CalendarParameters.PARAMETER_ENTRY_END_DATE));
+				this._endStamp = new IWTimestamp(iwc.getParameter(CalendarParameters.PARAMETER_ENTRY_END_DATE));
 			} catch (Exception e) {
 			}
 		}
@@ -141,62 +141,67 @@ public class CalendarEditor extends IWAdminWindow {
 				}
 		}
 
-		if (_entryID == -1 && iwc.getSessionAttribute(CalendarParameters.PARAMETER_ENTRY_ID) != null) {
+		if (this._entryID == -1 && iwc.getSessionAttribute(CalendarParameters.PARAMETER_ENTRY_ID) != null) {
 			try {
-				_entryID = Integer.parseInt((String) iwc.getSessionAttribute(CalendarParameters.PARAMETER_ENTRY_ID));
+				this._entryID = Integer.parseInt((String) iwc.getSessionAttribute(CalendarParameters.PARAMETER_ENTRY_ID));
 			} catch (NumberFormatException e) {
-				_entryID = -1;
+				this._entryID = -1;
 			}
 			iwc.removeSessionAttribute(CalendarParameters.PARAMETER_ENTRY_ID);
 		}
 
-		if (_entryID != -1) {
+		if (this._entryID != -1) {
 			if (iwc.getParameter(CalendarParameters.PARAMETER_MODE_DELETE) != null) {
 				deleteEntry(iwc);
 			} else {
-				_update = true;
+				this._update = true;
 			}
 		}
 
 		DropdownMenu localeDrop = ICLocalePresentation.getLocaleDropdownIdKeyed(CalendarParameters.PARAMETER_LOCALE_DROP);
 		localeDrop.setToSubmit();
 		localeDrop.setSelectedElement(Integer.toString(iLocaleId));
-		addLeft(_iwrb.getLocalizedString("locale", "Locale") + ": ", localeDrop, false);
-		addHiddenInput(new HiddenInput(CalendarParameters.PARAMETER_ENTRY_ID, Integer.toString(_entryID)));
+		addLeft(this._iwrb.getLocalizedString("locale", "Locale") + ": ", localeDrop, false);
+		addHiddenInput(new HiddenInput(CalendarParameters.PARAMETER_ENTRY_ID, Integer.toString(this._entryID)));
 
 		initializeFields(iwc, iLocaleId, iCategoryId);
 	}
 
 	private void initializeFields(IWContext iwc, int iLocaleId, int iCategoryId) {
 		CalendarEntry entry = null;
-		if (_update)
-			entry = CalendarFinder.getInstance().getEntry(_entryID);
-
-		String[] locTexts = null;
-		if (entry != null)
-			locTexts = TextFinder.getLocalizedString(entry, iLocaleId);
-		if (entry != null) {
-			_stamp = new IWTimestamp(entry.getDate());
-			if (entry.getEndDate() != null)
-				_endStamp = new IWTimestamp(entry.getEndDate());
+		if (this._update) {
+			entry = CalendarFinder.getInstance().getEntry(this._entryID);
 		}
 
-		DropdownMenu categories = CalendarBusiness.getCategories(CalendarParameters.PARAMETER_IC_CAT, iwc.getCurrentLocale(), _instanceID);
-		if (entry != null)
+		String[] locTexts = null;
+		if (entry != null) {
+			locTexts = TextFinder.getLocalizedString(entry, iLocaleId);
+		}
+		if (entry != null) {
+			this._stamp = new IWTimestamp(entry.getDate());
+			if (entry.getEndDate() != null) {
+				this._endStamp = new IWTimestamp(entry.getEndDate());
+			}
+		}
+
+		DropdownMenu categories = CalendarBusiness.getCategories(CalendarParameters.PARAMETER_IC_CAT, iwc.getCurrentLocale(), this._instanceID);
+		if (entry != null) {
 			categories.setSelectedElement(Integer.toString(entry.getCategoryId()));
-		addLeft(_iwrb.getLocalizedString("category", "Category") + ":", categories, false);
+		}
+		addLeft(this._iwrb.getLocalizedString("category", "Category") + ":", categories, false);
 		
 		DropdownMenu entryTypes = CalendarBusiness.getEntryTypes(CalendarParameters.PARAMETER_TYPE_ID, iLocaleId);
-		if (entry != null)
+		if (entry != null) {
 			entryTypes.setSelectedElement(Integer.toString(entry.getEntryTypeID()));
-		addLeft(_iwrb.getLocalizedString("type", "Type") + ":", entryTypes, false);
+		}
+		addLeft(this._iwrb.getLocalizedString("type", "Type") + ":", entryTypes, false);
 
 		TextInput entryHeadline = new TextInput(CalendarParameters.PARAMETER_ENTRY_HEADLINE);
 		entryHeadline.setLength(24);
 		if (locTexts != null && locTexts[0] != null) {
 			entryHeadline.setContent(locTexts[0]);
 		}
-		addLeft(_iwrb.getLocalizedString("headline", "Headline") + ":", entryHeadline, true);
+		addLeft(this._iwrb.getLocalizedString("headline", "Headline") + ":", entryHeadline, true);
 
 		TextArea entryBody = new TextArea(CalendarParameters.PARAMETER_ENTRY_BODY);
 		if (locTexts != null && locTexts[1] != null) {
@@ -204,29 +209,30 @@ public class CalendarEditor extends IWAdminWindow {
 		}
 		entryBody.setWidth("100%");
 		entryBody.setRows(7);
-		addLeft(_iwrb.getLocalizedString("body", "Body") + ":", entryBody, true);
+		addLeft(this._iwrb.getLocalizedString("body", "Body") + ":", entryBody, true);
 
 		IWTimestamp stamp = new IWTimestamp();
 		TimestampInput entryDate = new TimestampInput(CalendarParameters.PARAMETER_ENTRY_DATE);
 		entryDate.setYearRange(stamp.getYear() - 5, stamp.getYear() + 10);
-		if (_stamp == null) {
-			_stamp = IWTimestamp.RightNow();
+		if (this._stamp == null) {
+			this._stamp = IWTimestamp.RightNow();
 		}
-		entryDate.setTimestamp(_stamp.getTimestamp());
+		entryDate.setTimestamp(this._stamp.getTimestamp());
 		entryDate.setStyleAttribute(STYLE);
 
 		TimestampInput entryEndDate = new TimestampInput(CalendarParameters.PARAMETER_ENTRY_END_DATE);
 		entryEndDate.setYearRange(stamp.getYear() - 5, stamp.getYear() + 10);
-		if (_endStamp != null)
-			entryEndDate.setTimestamp(_endStamp.getTimestamp());
+		if (this._endStamp != null) {
+			entryEndDate.setTimestamp(this._endStamp.getTimestamp());
+		}
 		entryEndDate.setStyleAttribute(STYLE);
 
-		addLeft(_iwrb.getLocalizedString("date_start", "Start date") + ":", entryDate, true);
-		addLeft(_iwrb.getLocalizedString("date_end", "End date") + ":", entryEndDate, true);
+		addLeft(this._iwrb.getLocalizedString("date_start", "Start date") + ":", entryDate, true);
+		addLeft(this._iwrb.getLocalizedString("date_end", "End date") + ":", entryEndDate, true);
 		addHiddenInput(new HiddenInput(CalendarParameters.PARAMETER_IC_CAT, String.valueOf(iCategoryId)));
-		addHiddenInput(new HiddenInput(CalendarParameters.PARAMETER_INSTANCE_ID, String.valueOf(_instanceID)));
-		addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("close", "CLOSE"), CalendarParameters.PARAMETER_MODE, CalendarParameters.PARAMETER_MODE_CLOSE));
-		addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("save", "SAVE"), CalendarParameters.PARAMETER_MODE, CalendarParameters.PARAMETER_MODE_SAVE));
+		addHiddenInput(new HiddenInput(CalendarParameters.PARAMETER_INSTANCE_ID, String.valueOf(this._instanceID)));
+		addSubmitButton(new SubmitButton(this._iwrb.getLocalizedImageButton("close", "CLOSE"), CalendarParameters.PARAMETER_MODE, CalendarParameters.PARAMETER_MODE_CLOSE));
+		addSubmitButton(new SubmitButton(this._iwrb.getLocalizedImageButton("save", "SAVE"), CalendarParameters.PARAMETER_MODE, CalendarParameters.PARAMETER_MODE_SAVE));
 	}
 
 	private void saveEntry(IWContext iwc, int localeID, int categoryId) {
@@ -236,12 +242,12 @@ public class CalendarEditor extends IWAdminWindow {
 		String entryEndDate = iwc.getParameter(CalendarParameters.PARAMETER_ENTRY_END_DATE);
 		String entryType = iwc.getParameter(CalendarParameters.PARAMETER_TYPE_ID);
 
-		int entryID = CalendarBusiness.saveEntry(_entryID, _userID, _groupID, localeID, categoryId, entryHeadline, entryBody, entryDate, entryEndDate, entryType);
+		int entryID = CalendarBusiness.saveEntry(this._entryID, this._userID, this._groupID, localeID, categoryId, entryHeadline, entryBody, entryDate, entryEndDate, entryType);
 		iwc.setSessionAttribute(CalendarParameters.PARAMETER_ENTRY_ID, Integer.toString(entryID));
 	}
 
 	private void deleteEntry(IWContext iwc) {
-		CalendarBusiness.deleteEntry(_entryID);
+		CalendarBusiness.deleteEntry(this._entryID);
 		closeEditor(iwc);
 	}
 
@@ -251,8 +257,8 @@ public class CalendarEditor extends IWAdminWindow {
 	}
 
 	private void noAccess() throws IOException, SQLException {
-		addLeft(_iwrb.getLocalizedString("no_access", "Login first!"));
-		addSubmitButton(new CloseButton(_iwrb.getImage("close.gif")));
+		addLeft(this._iwrb.getLocalizedString("no_access", "Login first!"));
+		addSubmitButton(new CloseButton(this._iwrb.getImage("close.gif")));
 	}
 
 	public String getBundleIdentifier() {

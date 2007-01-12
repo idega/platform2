@@ -11,6 +11,8 @@ import java.sql.Timestamp;
 
 import com.idega.block.text.data.LocalizedText;
 import com.idega.core.file.data.ICFile;
+import com.idega.data.GenericEntity;
+import com.idega.user.data.UserBMPBean;
 
 
 
@@ -76,7 +78,7 @@ public class BoxLinkBMPBean extends com.idega.data.GenericEntity implements com.
 
 	public static String getColumnNameCreationDate() { return "CREATION_DATE"; }
 
-  public static String getColumnNameUserID(){ return com.idega.core.user.data.UserBMPBean.getColumnNameUserID();}
+  public static String getColumnNameUserID(){ return UserBMPBean.getColumnNameUserID();}
 
 	public static String getEntityTableName() { return "BX_LINK"; }
 
@@ -234,7 +236,7 @@ public class BoxLinkBMPBean extends com.idega.data.GenericEntity implements com.
 
 	public void delete() throws SQLException{
 
-    removeFrom(com.idega.block.text.data.LocalizedTextBMPBean.getStaticInstance(LocalizedText.class));
+    removeFrom(GenericEntity.getStaticInstance(LocalizedText.class));
 
 		super.delete();
 

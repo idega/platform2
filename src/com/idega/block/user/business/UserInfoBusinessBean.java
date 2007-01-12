@@ -273,39 +273,39 @@ public class UserInfoBusinessBean extends IBOServiceBean implements UserInfoBusi
 	}
 	
 	private UserBusiness getUserBusiness(IWApplicationContext iwc){
-		if(_userBiz == null) {
+		if(this._userBiz == null) {
 			try{
-				_userBiz = (UserBusiness)com.idega.business.IBOLookup.getServiceInstance(iwc,UserBusiness.class);
+				this._userBiz = (UserBusiness)com.idega.business.IBOLookup.getServiceInstance(iwc,UserBusiness.class);
 			}
 			catch(java.rmi.RemoteException rme){
 				throw new RuntimeException(rme.getMessage());
 			}
 		}
-		return _userBiz;
+		return this._userBiz;
 	}
 	
 	private UserStatusBusiness getUserStatusBusiness(IWApplicationContext iwc){
-		if(_userStatBiz == null) {
+		if(this._userStatBiz == null) {
 			try{
-				_userStatBiz = (UserStatusBusiness)com.idega.business.IBOLookup.getServiceInstance(iwc,UserStatusBusiness.class);
+				this._userStatBiz = (UserStatusBusiness)com.idega.business.IBOLookup.getServiceInstance(iwc,UserStatusBusiness.class);
 			}
 			catch(java.rmi.RemoteException rme){
 				throw new RuntimeException(rme.getMessage());
 			}
 		}
-		return _userStatBiz;
+		return this._userStatBiz;
 	}
 	
 	private GroupBusiness getGroupBusiness(IWContext iwc) {
-		if(_groupBiz == null) {
+		if(this._groupBiz == null) {
 			try {
-				_groupBiz = (GroupBusiness) IBOLookup.getServiceInstance(iwc.getApplicationContext(), GroupBusiness.class);
+				this._groupBiz = (GroupBusiness) IBOLookup.getServiceInstance(iwc.getApplicationContext(), GroupBusiness.class);
 			} catch (IBOLookupException e) {
 				e.printStackTrace();
 			}
 		}
 		
-		return _groupBiz;
+		return this._groupBiz;
 	}
 	
 	private UserBusiness _userBiz = null;

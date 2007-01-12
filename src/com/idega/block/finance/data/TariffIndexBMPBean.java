@@ -114,8 +114,9 @@ public class TariffIndexBMPBean extends com.idega.block.category.data.CategoryEn
 				//e.printStackTrace();
 			}
 		}
-		if(!coll.isEmpty())
+		if(!coll.isEmpty()) {
 			return coll;
+		}
 		throw new FinderException();
   }
 

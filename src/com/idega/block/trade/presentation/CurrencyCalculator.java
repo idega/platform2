@@ -75,8 +75,8 @@ public class CurrencyCalculator extends PresentationObjectContainer {
 	
 	
 	private void init(IWContext iwc) {
-		bundle = getBundle(iwc);
-		iwrb = bundle.getResourceBundle(iwc);
+		this.bundle = getBundle(iwc);
+		this.iwrb = this.bundle.getResourceBundle(iwc);
 	}
 	
 	private void displayForm(IWContext iwc) {
@@ -86,8 +86,8 @@ public class CurrencyCalculator extends PresentationObjectContainer {
 		table.setCellspacing(0);
 		table.setBorder(0);
 		form.add(table);
-		if (extraParameters != null) {
-			Iterator iter = extraParameters.iterator();
+		if (this.extraParameters != null) {
+			Iterator iter = this.extraParameters.iterator();
 			while (iter.hasNext()) {
 				form.maintainParameter(iter.next().toString());
 			}
@@ -102,16 +102,16 @@ public class CurrencyCalculator extends PresentationObjectContainer {
 			from.addMenuElement(holder.getCurrencyName(), holder.getCurrencyName());
 			to.addMenuElement(holder.getCurrencyName(), holder.getCurrencyName());
 		}
-		if (defaultFrom != null) {
-			from.setSelectedElement(defaultFrom);
+		if (this.defaultFrom != null) {
+			from.setSelectedElement(this.defaultFrom);
 		} else {
 			from.setSelectedElement(CurrencyBusiness.defaultCurrency);
 		}
-		if (defaultTo != null) {
-			to.setSelectedElement(defaultTo);
+		if (this.defaultTo != null) {
+			to.setSelectedElement(this.defaultTo);
 		}
 		
-		if (!useRemoteScripting) {
+		if (!this.useRemoteScripting) {
 			to.addMenuElement(this.parameterAll,"ALL");
 		}
 		TextInput price = new TextInput(PARAMETER_PRICE);
@@ -121,13 +121,13 @@ public class CurrencyCalculator extends PresentationObjectContainer {
 		
 		Layer resultText = new Layer();
 		resultText.setID("resultText");
-		if (fontStyleClass != null) {
-			resultText.setStyleClass(fontStyleClass);
+		if (this.fontStyleClass != null) {
+			resultText.setStyleClass(this.fontStyleClass);
 		}
 		
 		RemoteScriptHandler rsh = null;
 		
-		if (useRemoteScripting) {
+		if (this.useRemoteScripting) {
 			rsh = new RemoteScriptHandler(price, resultText);
 			try {
 				rsh.setRemoteScriptCollectionClass(CurrencyCalculationCollectionHandler.class);
@@ -138,51 +138,58 @@ public class CurrencyCalculator extends PresentationObjectContainer {
 			add(rsh);
 		}
 		
-		String sFrom = iwc.getParameter(this.PARAMETER_FROM_CURRENCY);
-		String sTo = iwc.getParameter(this.PARAMETER_TO_CURRENCY);
-		String sPrice = iwc.getParameter(this.PARAMETER_PRICE);
-		if (sPrice != null)
+		String sFrom = iwc.getParameter(CurrencyCalculator.PARAMETER_FROM_CURRENCY);
+		String sTo = iwc.getParameter(CurrencyCalculator.PARAMETER_TO_CURRENCY);
+		String sPrice = iwc.getParameter(CurrencyCalculator.PARAMETER_PRICE);
+		if (sPrice != null) {
 			sPrice = TextSoap.findAndReplace(sPrice, ',', '.');
+		}
 		
 		if (sTo == null || !sTo.equals(this.parameterAll)) {
 			
 			price.setSize(10);
 			res.setSize(10);
-			if (sPrice != null) price.setContent(sPrice);
-			if (sTo != null) to.setSelectedElement(sTo);
-			if (sFrom != null) from.setSelectedElement(sFrom);
+			if (sPrice != null) {
+				price.setContent(sPrice);
+			}
+			if (sTo != null) {
+				to.setSelectedElement(sTo);
+			}
+			if (sFrom != null) {
+				from.setSelectedElement(sFrom);
+			}
 			
 			int row = 1;
-			table.add(getText(iwrb.getLocalizedString("currency", "Currency")), 1,row);
-			table.add(getText(iwrb.getLocalizedString("amount","Amount")), 2,row++);
+			table.add(getText(this.iwrb.getLocalizedString("currency", "Currency")), 1,row);
+			table.add(getText(this.iwrb.getLocalizedString("amount","Amount")), 2,row++);
 //			table.add(getText(iwrb.getLocalizedString("price","Price")), 2,1);
 //			table.add(getText(iwrb.getLocalizedString("new_price","New price")), 3,3);
 			table.add(from, 1,row);
 			table.add(price, 2,row++);
 			table.add(to, 1,row);
 			
-			if (ioStyleClass != null) {
-				from.setStyleClass(ioStyleClass);
-				to.setStyleClass(ioStyleClass);
-				price.setStyleClass(ioStyleClass);
-				res.setStyleClass(ioStyleClass);
+			if (this.ioStyleClass != null) {
+				from.setStyleClass(this.ioStyleClass);
+				to.setStyleClass(this.ioStyleClass);
+				price.setStyleClass(this.ioStyleClass);
+				res.setStyleClass(this.ioStyleClass);
 			}
 			
 			
-			if (!useRemoteScripting) {
+			if (!this.useRemoteScripting) {
 				table.add(getText(getNewPrice(iwc)), 2, row);
 			} else {
 				from.setOnChange(rsh.getSubmitEvent(iwc));
 				to.setOnChange  (rsh.getSubmitEvent(iwc));
-				if (calculateOnType) {
+				if (this.calculateOnType) {
 					price.setOnKeyUp(rsh.getSubmitEvent(iwc));
 				}
 				table.add(resultText, 2, row);
 			}
 			table.setAlignment(2, row++ ,"right");
 			
-			Link calc = getLink(iwrb.getLocalizedString("calculate", "Calculate"));
-			if (!useRemoteScripting) {
+			Link calc = getLink(this.iwrb.getLocalizedString("calculate", "Calculate"));
+			if (!this.useRemoteScripting) {
 				calc.setToFormSubmit(form);
 			} else {
 				calc.setOnClick(rsh.getSubmitEvent(iwc));
@@ -191,16 +198,16 @@ public class CurrencyCalculator extends PresentationObjectContainer {
 			table.add(calc, 2, row);
 			table.setAlignment(2, row++ ,"right");
 
-			if (objectSpacing > 0) {
-				table.setCellpaddingBottom(1, 1, objectSpacing);
-				table.setCellpaddingBottom(2, 1, objectSpacing);
-				table.setCellpaddingBottom(1, 2, objectSpacing);
-				table.setCellpaddingBottom(2, 2, objectSpacing);
-				table.setCellpaddingBottom(1, 3, objectSpacing);
-				table.setCellpaddingBottom(2, 3, objectSpacing);
+			if (this.objectSpacing > 0) {
+				table.setCellpaddingBottom(1, 1, this.objectSpacing);
+				table.setCellpaddingBottom(2, 1, this.objectSpacing);
+				table.setCellpaddingBottom(1, 2, this.objectSpacing);
+				table.setCellpaddingBottom(2, 2, this.objectSpacing);
+				table.setCellpaddingBottom(1, 3, this.objectSpacing);
+				table.setCellpaddingBottom(2, 3, this.objectSpacing);
 //				table.setCellpaddingBottom(3, 3, objectSpacing);
-				table.setCellpaddingBottom(1, 4, objectSpacing);
-				table.setCellpaddingBottom(2, 4, objectSpacing);
+				table.setCellpaddingBottom(1, 4, this.objectSpacing);
+				table.setCellpaddingBottom(2, 4, this.objectSpacing);
 			}
 			
 			add(form);
@@ -208,8 +215,8 @@ public class CurrencyCalculator extends PresentationObjectContainer {
 			List list = CurrencyBusiness.getCurrencyList();
 			if (list != null) {
 				int row = 1;
-				table.add(getText(iwrb.getLocalizedString("from", "From")), 1,1);
-				table.add(getText(iwrb.getLocalizedString("to","To")), 3,1);
+				table.add(getText(this.iwrb.getLocalizedString("from", "From")), 1,1);
+				table.add(getText(this.iwrb.getLocalizedString("to","To")), 3,1);
 				CurrencyHolder holder;
 				for (int i = 0; i < list.size(); i++) {
 					++row;
@@ -225,7 +232,7 @@ public class CurrencyCalculator extends PresentationObjectContainer {
 				++row;
 				table.mergeCells(1, row, 3 ,row);
 				table.setAlignment(1, row, "center");
-				table.add(new BackButton(iwrb.getLocalizedImageButton("back", "Back")), 1, row);
+				table.add(new BackButton(this.iwrb.getLocalizedImageButton("back", "Back")), 1, row);
 			}
 			add(table);
 		}
@@ -237,25 +244,25 @@ public class CurrencyCalculator extends PresentationObjectContainer {
 	private Table getDisclamer(IWContext iwc) {
 		Table table = new Table();
 		table.setAlignment(1,1,Table.HORIZONTAL_ALIGN_LEFT);
-		if (disclamer == null) {
+		if (this.disclamer == null) {
 			if (CurrencyBusiness.getCurrencyUrl() != null) {
-				table.add(getText(iwrb.getLocalizedString("uses_latest_rates", "Uses latest available rates")+ ". ("+CurrencyBusiness.getCurrencyUrl()+")"));
+				table.add(getText(this.iwrb.getLocalizedString("uses_latest_rates", "Uses latest available rates")+ ". ("+CurrencyBusiness.getCurrencyUrl()+")"));
 			} else {
-				table.add(getText(iwrb.getLocalizedString("displayed_without_guarantee","Displayed without guarantee")));
+				table.add(getText(this.iwrb.getLocalizedString("displayed_without_guarantee","Displayed without guarantee")));
 			}
 	
 			table.addBreak();
-			table.add(getText(iwrb.getLocalizedString("last_update_at", "Last update at")+ " : "));
+			table.add(getText(this.iwrb.getLocalizedString("last_update_at", "Last update at")+ " : "));
 			if (CurrencyBusiness.getLastUpdate() != null) {
 				table.add(getText(CurrencyBusiness.getLastUpdate().getLocaleDateAndTime(iwc.getLocale())));
 			} else {
-				table.add(getText(iwrb.getLocalizedString("unknown", "Unknown")));
+				table.add(getText(this.iwrb.getLocalizedString("unknown", "Unknown")));
 			}
 		} else {
-			if (disclamer.indexOf(DATE_PLACEHOLDER) > -1) {
-				disclamer = TextSoap.findAndReplace(disclamer, DATE_PLACEHOLDER, IWTimestamp.RightNow().getLocaleDate(iwc.getCurrentLocale()));
+			if (this.disclamer.indexOf(this.DATE_PLACEHOLDER) > -1) {
+				this.disclamer = TextSoap.findAndReplace(this.disclamer, this.DATE_PLACEHOLDER, IWTimestamp.RightNow().getLocaleDate(iwc.getCurrentLocale()));
 			}
-			table.add(getText(disclamer));
+			table.add(getText(this.disclamer));
 		}
 		return table;
 	}
@@ -264,9 +271,9 @@ public class CurrencyCalculator extends PresentationObjectContainer {
 		String price = "";
 		
 		try {
-			String sFrom = iwc.getParameter(this.PARAMETER_FROM_CURRENCY);
-			String sTo = iwc.getParameter(this.PARAMETER_TO_CURRENCY);
-			String sPrice = iwc.getParameter(this.PARAMETER_PRICE);
+			String sFrom = iwc.getParameter(CurrencyCalculator.PARAMETER_FROM_CURRENCY);
+			String sTo = iwc.getParameter(CurrencyCalculator.PARAMETER_TO_CURRENCY);
+			String sPrice = iwc.getParameter(CurrencyCalculator.PARAMETER_PRICE);
 			
 			if (sFrom != null && sTo != null && sPrice != null && !sPrice.equals("")) {
 				sPrice = TextSoap.findAndReplace(sPrice, ',', '.');
@@ -281,8 +288,8 @@ public class CurrencyCalculator extends PresentationObjectContainer {
 	
 	private Text getText(String content) {
 		Text text = new Text(content);
-		if (fontStyleClass != null) {
-			text.setStyleClass(fontStyleClass);
+		if (this.fontStyleClass != null) {
+			text.setStyleClass(this.fontStyleClass);
 		} else {
 			text.setBold(true);
 		}
@@ -291,8 +298,8 @@ public class CurrencyCalculator extends PresentationObjectContainer {
 	
 	public Link getLink(String content) {
 		Text text = new Text(content);
-		if (linkStyleClass != null) {
-			text.setStyleClass(linkStyleClass);
+		if (this.linkStyleClass != null) {
+			text.setStyleClass(this.linkStyleClass);
 		}
 		Link link = new Link(text);
 		return link;
@@ -315,10 +322,10 @@ public class CurrencyCalculator extends PresentationObjectContainer {
 	}
 	
 	public void maintainParameter(String name) {
-		if (extraParameters == null) {
-			extraParameters = new Vector();
+		if (this.extraParameters == null) {
+			this.extraParameters = new Vector();
 		}
-		extraParameters.add(name);
+		this.extraParameters.add(name);
 	}
 	
 	public void setUseRemoteScripting(boolean useRemoteScripting) {

@@ -113,16 +113,22 @@ public class SchoolYearEditor extends SchoolBlock {
 		String info = iwc.getParameter(PARAMETER_INFO);
 		String localizedKey = iwc.getParameter(PARAMETER_LOCALIZED_KEY);
 		String category;
-		if (iSchoolCategory != null) {
-			category = iSchoolCategory;
+		if (this.iSchoolCategory != null) {
+			category = this.iSchoolCategory;
 		}
 		else {
 			category = iwc.getParameter(PARAMETER_CATEGORY);
 		}
 		int iAge = -1, sid = -1, stid = -1;
-		if (id != null) sid = Integer.parseInt(id);
-		if (age != null && age.length() > 0) iAge = Integer.parseInt(age);
-		if (type != null) stid = Integer.parseInt(type);
+		if (id != null) {
+			sid = Integer.parseInt(id);
+		}
+		if (age != null && age.length() > 0) {
+			iAge = Integer.parseInt(age);
+		}
+		if (type != null) {
+			stid = Integer.parseInt(type);
+		}
 		getBusiness().storeSchoolYear(sid, name, stid, category, info, localizedKey, iAge);
 	}
 
@@ -145,8 +151,8 @@ public class SchoolYearEditor extends SchoolBlock {
 
 		List years = null;
 		try {
-			if (iSchoolCategory != null) {
-				years = new ArrayList(getBusiness().findSchoolYearsBySchoolCategory(iSchoolCategory));
+			if (this.iSchoolCategory != null) {
+				years = new ArrayList(getBusiness().findSchoolYearsBySchoolCategory(this.iSchoolCategory));
 			}
 			else {
 				years = new ArrayList(getBusiness().findAllSchoolYears());
@@ -286,7 +292,7 @@ public class SchoolYearEditor extends SchoolBlock {
 		layer.add(inputName);
 		form.add(layer);
 
-		if (iSchoolCategory == null) {
+		if (this.iSchoolCategory == null) {
 			layer = new Layer(Layer.DIV);
 			layer.setStyleClass(STYLENAME_FORM_ELEMENT);
 			label = new Label(localize("category", "Category"), inputCategory);

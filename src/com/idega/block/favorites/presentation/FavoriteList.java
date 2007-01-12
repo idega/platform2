@@ -1,5 +1,5 @@
 /*
- * $Id: FavoriteList.java,v 1.3 2004/11/26 08:41:56 laddi Exp $
+ * $Id: FavoriteList.java,v 1.3.2.1 2007/01/12 19:32:21 idegaweb Exp $
  * Created on 5.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -30,7 +30,7 @@ import com.idega.user.data.User;
  * Last modified: 5.11.2004 09:47:02 by laddi
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.3.2.1 $
  */
 public class FavoriteList extends FavoriteBlock implements IWPageEventListener {
 	
@@ -58,8 +58,8 @@ public class FavoriteList extends FavoriteBlock implements IWPageEventListener {
 			}
 	
 			Table table = new Table();
-			table.setWidth(iWidth);
-			table.setCellpadding(iCellpadding);
+			table.setWidth(this.iWidth);
+			table.setCellpadding(this.iCellpadding);
 			table.setCellspacing(0);
 			int row = 1;
 	
@@ -150,7 +150,7 @@ public class FavoriteList extends FavoriteBlock implements IWPageEventListener {
 	 * @param width The width to set.
 	 */
 	public void setWidth(String width) {
-		iWidth = width;
+		this.iWidth = width;
 	}
 	
 	/**
@@ -158,6 +158,6 @@ public class FavoriteList extends FavoriteBlock implements IWPageEventListener {
 	 * @param cellpadding The cellpadding to set.
 	 */
 	public void setCellpadding(int cellpadding) {
-		iCellpadding = cellpadding;
+		this.iCellpadding = cellpadding;
 	}
 }

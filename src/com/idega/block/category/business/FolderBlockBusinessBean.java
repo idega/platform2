@@ -22,6 +22,7 @@ import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.component.data.ICObjectInstanceHome;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.data.EntityFinder;
+import com.idega.data.GenericEntity;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -51,7 +52,7 @@ public class FolderBlockBusinessBean extends IBOServiceBean implements FolderBlo
 	public ICInformationFolder getInstanceWorkeFolder(int icObjectInstanceId, int icObjectId, int localeId, boolean autocreate) {
 		ICInformationFolder parentFolder = null;
 		try {
-			List l = EntityFinder.findRelated(((com.idega.core.component.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(icObjectInstanceId), com.idega.block.category.data.ICInformationFolderBMPBean.getStaticInstance(ICInformationFolder.class));
+			List l = EntityFinder.findRelated(((com.idega.core.component.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(icObjectInstanceId), GenericEntity.getStaticInstance(ICInformationFolder.class));
 			if (l != null && l.size() > 0) {
 				parentFolder = (ICInformationFolder)l.get(0);
 			} else if (autocreate) {
@@ -63,7 +64,7 @@ public class FolderBlockBusinessBean extends IBOServiceBean implements FolderBlo
 		}
 		if (parentFolder != null) {
 			try {
-				List l = EntityFinder.findAllByColumn(com.idega.block.category.data.ICInformationFolderBMPBean.getStaticInstance(ICInformationFolder.class), com.idega.block.category.data.ICInformationFolderBMPBean.getColumnParentFolderId(), parentFolder.getID(), com.idega.block.category.data.ICInformationFolderBMPBean.getColumnLocaleId(), localeId);
+				List l = EntityFinder.findAllByColumn(GenericEntity.getStaticInstance(ICInformationFolder.class), com.idega.block.category.data.ICInformationFolderBMPBean.getColumnParentFolderId(), parentFolder.getID(), com.idega.block.category.data.ICInformationFolderBMPBean.getColumnLocaleId(), localeId);
 				if (l != null && l.size() > 0) {
 					return (ICInformationFolder)l.get(0);
 				} else { // autocreates locleFolders
@@ -83,7 +84,7 @@ public class FolderBlockBusinessBean extends IBOServiceBean implements FolderBlo
 
 	public List getInstanceCategories(int icObjectInstanceId) {
 		try {
-			List l = EntityFinder.findRelated(((com.idega.core.component.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(icObjectInstanceId), com.idega.block.category.data.ICInformationCategoryBMPBean.getStaticInstance(ICInformationCategory.class));
+			List l = EntityFinder.findRelated(((com.idega.core.component.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(icObjectInstanceId), GenericEntity.getStaticInstance(ICInformationCategory.class));
 			return l;
 		} catch (SQLException ex) {
 			ex.printStackTrace();

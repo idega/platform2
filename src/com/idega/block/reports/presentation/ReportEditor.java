@@ -62,32 +62,34 @@ public class ReportEditor extends Block implements Reports{
   }
 
   public void setSQLEdit(boolean value){
-    sqlEditAdmin = value;
+    this.sqlEditAdmin = value;
   }
   public void setManual(String manual){
     this.sManual = manual;
   }
 
   protected void control(IWContext iwc){
-		iwrb = getResourceBundle(iwc);
-		iwb = getBundle(iwc);
+		this.iwrb = getResourceBundle(iwc);
+		this.iwb = getBundle(iwc);
     try{
-        if(isAdmin){
-          if(iSaveCategory != -1 && iwc.getParameter(prmSaveCategory)!=null){
-            iSaveCategory = Integer.parseInt(iwc.getParameter(prmSaveCategory));
+        if(this.isAdmin){
+          if(this.iSaveCategory != -1 && iwc.getParameter(prmSaveCategory)!=null){
+            this.iSaveCategory = Integer.parseInt(iwc.getParameter(prmSaveCategory));
           }
 
-          if(iwc.getParameter(sAction) != null)
-            sActPrm = iwc.getParameter(sAction);
-          else if(iwc.getParameter(prmReportId)!=null){
-            iReportId = Integer.parseInt(iwc.getParameter(prmReportId));
-            sActPrm = "2";
+          if(iwc.getParameter(this.sAction) != null) {
+			this.sActPrm = iwc.getParameter(this.sAction);
+		}
+		else if(iwc.getParameter(prmReportId)!=null){
+            this.iReportId = Integer.parseInt(iwc.getParameter(prmReportId));
+            this.sActPrm = "2";
           }
-          else
-            sActPrm = "0";
+		else {
+			this.sActPrm = "0";
+		}
           try{
-            iAction = Integer.parseInt(sActPrm);
-            switch(iAction){
+            this.iAction = Integer.parseInt(this.sActPrm);
+            switch(this.iAction){
               case ACT1: doSave(iwc);   break;
               case ACT2: doAdmin(iwc);  break;
               case ACT3: doChange(iwc); break;
@@ -99,8 +101,9 @@ public class ReportEditor extends Block implements Reports{
             e.printStackTrace();
           }
         }
-        else
-          add(Edit.formatText("Ekki réttindi"));
+		else {
+			add(Edit.formatText("Ekki rï¿½ttindi"));
+		}
     }
     catch(Exception S){
       S.printStackTrace();
@@ -109,13 +112,13 @@ public class ReportEditor extends Block implements Reports{
 
   private void doMain(IWContext iwc){
 
-    if(iCategory > 0){
-      ReportCondition[] RC = ReportEntityHandler.getConditions(iCategory);
-      iwc.setSessionAttribute(prefix+"force",RC);
+    if(this.iCategory > 0){
+      ReportCondition[] RC = ReportEntityHandler.getConditions(this.iCategory);
+      iwc.setSessionAttribute(this.prefix+"force",RC);
       //this.BORDER = 0;
       Table T = new Table();
       T.setWidth("100%");
-      T.setBorder(BORDER);
+      T.setBorder(this.BORDER);
       T.setCellpadding(0);
       T.setCellspacing(0);
       Form form = new Form();
@@ -127,25 +130,26 @@ public class ReportEditor extends Block implements Reports{
       Table ML = new Table();
       Table MLL = new Table();
       Table B = new Table();
-      U.setBorder(BORDER);
+      U.setBorder(this.BORDER);
       U.setCellpadding(0);
       U.setCellspacing(0);
-      M.setBorder(BORDER);
+      M.setBorder(this.BORDER);
       M.setColor(MiddleColor);
       M.setCellpadding(0);
       M.setCellspacing(0);
-      ML.setBorder(BORDER);
+      ML.setBorder(this.BORDER);
       ML.setColor(MiddleColor);
       ML.setCellpadding(0);
       ML.setCellspacing(0);
-      MLL.setBorder(BORDER);
+      MLL.setBorder(this.BORDER);
       MLL.setColor(MiddleColor);
       MLL.setCellpadding(0);
       MLL.setCellspacing(0);
-      if(this.sManual != null)
-        MLL.add(Edit.formatText(sManual));
+      if(this.sManual != null) {
+		MLL.add(Edit.formatText(this.sManual));
+	}
 
-      B.setBorder(BORDER);
+      B.setBorder(this.BORDER);
       B.setCellpadding(0);
       B.setCellspacing(0);
       M.setWidth("100%");
@@ -160,8 +164,8 @@ public class ReportEditor extends Block implements Reports{
 
       Text nameText = new Text("Name");
       Text infoText = new Text("Info");
-      TextInput nameInput = new TextInput(prefix+"name");
-      TextInput infoInput = new TextInput(prefix+"info");
+      TextInput nameInput = new TextInput(this.prefix+"name");
+      TextInput infoInput = new TextInput(this.prefix+"info");
       U.add(nameText,1,1);
       U.add(nameInput,1,2);
       U.add(infoText,2,1);
@@ -176,26 +180,27 @@ public class ReportEditor extends Block implements Reports{
       int a = 1;
       for (int i = 0; i < RC.length; i++) {
         box1.addMenuElement(i,RC[i].getDisplay());
-        PresentationObject mo = ReportObjectHandler.getInput(RC[i],prefix+"in"+i,"");
+        PresentationObject mo = ReportObjectHandler.getInput(RC[i],this.prefix+"in"+i,"");
         ML.add(RC[i].getDisplay(),1,a);
         ML.add(mo,2,a++);
       }
       box1.setHeight(20);
       box2.setHeight(20);
       box2.selectAllOnSubmit();
-      B.add(new SubmitButton(iwb.getImage("/shared/ok.gif")));//new Image("/reports/pics/ok.gif")));
-      B.add(new HiddenInput(sAction, String.valueOf(ACT4)));
-      form.add(new HiddenInput("reportcategory_id",String.valueOf(iSaveCategory)));
+      B.add(new SubmitButton(this.iwb.getImage("/shared/ok.gif")));//new Image("/reports/pics/ok.gif")));
+      B.add(new HiddenInput(this.sAction, String.valueOf(ACT4)));
+      form.add(new HiddenInput("reportcategory_id",String.valueOf(this.iSaveCategory)));
       add(form);
     }
-    else
-      add(new Text("Nothing to show"));
-    Link back =  new Link(iwb.getImage("/shared/newlist.gif"));//new Image("/reports/pics/newlist.gif"),"/reports/index.jsp");
+	else {
+		add(new Text("Nothing to show"));
+	}
+    Link back =  new Link(this.iwb.getImage("/shared/newlist.gif"));//new Image("/reports/pics/newlist.gif"),"/reports/index.jsp");
     add(back);
-    if(sqlEditAdmin){
-      Link admin = new Link(iwb.getImage("/shared/admin.gif"));//new Image("/reports/pics/admin.gif"),"/reports/reportedit.jsp");
-      admin.addParameter(sAction,String.valueOf(ACT2));
-      admin.addParameter("reportcategory_id",String.valueOf(iSaveCategory));
+    if(this.sqlEditAdmin){
+      Link admin = new Link(this.iwb.getImage("/shared/admin.gif"));//new Image("/reports/pics/admin.gif"),"/reports/reportedit.jsp");
+      admin.addParameter(this.sAction,String.valueOf(ACT2));
+      admin.addParameter("reportcategory_id",String.valueOf(this.iSaveCategory));
       add(admin);
     }
     add(Edit.formatText("Report Editor"));
@@ -208,9 +213,9 @@ public class ReportEditor extends Block implements Reports{
   protected void doAdmin(IWContext iwc) throws SQLException{
     Report R = null;
     boolean b = false;
-    if(iReportId >0 ){
+    if(this.iReportId >0 ){
       try {
-        R = ((com.idega.block.reports.data.ReportHome)com.idega.data.IDOLookup.getHomeLegacy(Report.class)).findByPrimaryKeyLegacy(iReportId);
+        R = ((com.idega.block.reports.data.ReportHome)com.idega.data.IDOLookup.getHomeLegacy(Report.class)).findByPrimaryKeyLegacy(this.iReportId);
         b = true;
       }
       catch (SQLException ex) {
@@ -224,13 +229,14 @@ public class ReportEditor extends Block implements Reports{
     Text infoText = Edit.formatText("Info");
     Text headersText = Edit.formatText("Headers");
     Text sqlText = Edit.formatText("SQL");
-    TextInput nameInput = new TextInput(prefix+"name",b?R.getName():"");
-    TextInput infoInput = new TextInput(prefix+"info",b?R.getInfo():"");
-    TextInput headersInput = new TextInput(prefix+"headers",b?R.getHeader():"");
-    if(b)
-      form.add(new HiddenInput("report_id",String.valueOf(R.getID())));
+    TextInput nameInput = new TextInput(this.prefix+"name",b?R.getName():"");
+    TextInput infoInput = new TextInput(this.prefix+"info",b?R.getInfo():"");
+    TextInput headersInput = new TextInput(this.prefix+"headers",b?R.getHeader():"");
+    if(b) {
+		form.add(new HiddenInput("report_id",String.valueOf(R.getID())));
+	}
     headersInput.setLength(80);
-    TextArea sqlInput = new TextArea(prefix+"sql",b?R.getSQL():"");
+    TextArea sqlInput = new TextArea(this.prefix+"sql",b?R.getSQL():"");
     sqlInput.setWidth(80);
     sqlInput.setHeight(8);
 
@@ -243,23 +249,23 @@ public class ReportEditor extends Block implements Reports{
     T.add(sqlText,1,7);
     T.add(sqlInput,1,8);
 
-    T.add(new SubmitButton(iwb.getImage("/shared/ok.gif")));//new Image("/reports/pics/ok.gif")),1,9);
-    T.add(new HiddenInput(sAction, String.valueOf(ACT1)),1,9);
+    T.add(new SubmitButton(this.iwb.getImage("/shared/ok.gif")));//new Image("/reports/pics/ok.gif")),1,9);
+    T.add(new HiddenInput(this.sAction, String.valueOf(ACT1)),1,9);
 
     form.add(T);
-    Link back =  new Link(iwb.getImage("/shared/newlist.gif"));//new Image("/reports/pics/newlist.gif"),"/reports/index.jsp");
+    Link back =  new Link(this.iwb.getImage("/shared/newlist.gif"));//new Image("/reports/pics/newlist.gif"),"/reports/index.jsp");
     this.add(back);
-    form.add(new HiddenInput("reportcategory_id",String.valueOf(iSaveCategory)));
+    form.add(new HiddenInput("reportcategory_id",String.valueOf(this.iSaveCategory)));
     add(form);
   }
 
   private void doSave(IWContext iwc){
     String msg = "";
-    String sName = iwc.getParameter(prefix+"name").trim();
-    String sInfo = iwc.getParameter(prefix+"info").trim();
-    String sHeaders = iwc.getParameter(prefix+"headers").trim();
+    String sName = iwc.getParameter(this.prefix+"name").trim();
+    String sInfo = iwc.getParameter(this.prefix+"info").trim();
+    String sHeaders = iwc.getParameter(this.prefix+"headers").trim();
     add(sHeaders);
-    String sSql = iwc.getParameter(prefix+"sql").trim();
+    String sSql = iwc.getParameter(this.prefix+"sql").trim();
     String sReportId = iwc.getParameter("report_id");
     if(sName != null && sName.length() > 1 ){
       if(sSql != null && sHeaders!= null){
@@ -267,7 +273,7 @@ public class ReportEditor extends Block implements Reports{
         try{
           if(sReportId==null){
             Report R = ((com.idega.block.reports.data.ReportHome)com.idega.data.IDOLookup.getHomeLegacy(Report.class)).createLegacy();
-            R.setCategoryId(iSaveCategory);
+            R.setCategoryId(this.iSaveCategory);
             R.setName(sName);
             R.setInfo(sInfo);
             R.setSQL(sSql);
@@ -296,9 +302,10 @@ public class ReportEditor extends Block implements Reports{
         }
       }
     }
-    else
-      msg = "Needs a name";
-    Link back =  new Link(iwb.getImage("/shared/newlist.gif"));//new Image("/reports/pics/newlist.gif"),"/reports/index.jsp");
+	else {
+		msg = "Needs a name";
+	}
+    Link back =  new Link(this.iwb.getImage("/shared/newlist.gif"));//new Image("/reports/pics/newlist.gif"),"/reports/index.jsp");
     this.add(back);
     add(Edit.formatText(msg));
   }
@@ -306,7 +313,7 @@ public class ReportEditor extends Block implements Reports{
 
   protected void doUpdate(IWContext iwc) throws SQLException{
     String[] s = iwc.getParameterValues("box");
-    ReportCondition[] RC = (ReportCondition[])iwc.getSessionAttribute(prefix+"force");
+    ReportCondition[] RC = (ReportCondition[])iwc.getSessionAttribute(this.prefix+"force");
     Vector vRC = new Vector();
     int len = s.length;
     String[] headers = new String[len];
@@ -318,7 +325,7 @@ public class ReportEditor extends Block implements Reports{
     }
     String temp;
     for (int i = 0; i < RC.length; i++) {
-      temp = iwc.getParameter(prefix+"in"+i);
+      temp = iwc.getParameter(this.prefix+"in"+i);
       if(!"".equalsIgnoreCase(temp) && !"0".equals(temp)){
         //add(" check "+i);
         ReportCondition rc = RC[i];
@@ -327,10 +334,10 @@ public class ReportEditor extends Block implements Reports{
 
       }
     }
-    iwc.removeSessionAttribute(prefix+"force");
+    iwc.removeSessionAttribute(this.prefix+"force");
 
-    String name = iwc.getParameter(prefix+"name");
-    String info = iwc.getParameter(prefix+"info");
+    String name = iwc.getParameter(this.prefix+"name");
+    String info = iwc.getParameter(this.prefix+"info");
 
     name = name != null?name: "";
     info = info != null?info: "";
@@ -359,7 +366,7 @@ public class ReportEditor extends Block implements Reports{
 
     String sql = rm.makeSQL(vRC);
     Report R = ((com.idega.block.reports.data.ReportHome)com.idega.data.IDOLookup.getHomeLegacy(Report.class)).createLegacy();
-    R.setCategoryId(iSaveCategory);
+    R.setCategoryId(this.iSaveCategory);
     R.setName(name);
     R.setInfo(info);
     R.setSQL(sql);
@@ -384,7 +391,7 @@ public class ReportEditor extends Block implements Reports{
     return array;
   }
    public void makeAnswer(Report R){
-    Link L = new Link(iwb.getImage("/shared/newlist.gif"));//new Image("/reports/pics/newlist.gif"),"/reports/reportview.jsp");
+    Link L = new Link(this.iwb.getImage("/shared/newlist.gif"));//new Image("/reports/pics/newlist.gif"),"/reports/reportview.jsp");
     L.addParameter("report",R.getID());
     add(L);
     add(Edit.formatText("View the results"));

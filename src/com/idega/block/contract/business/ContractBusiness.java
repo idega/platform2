@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.13 2003/10/03 01:41:59 tryggvil Exp $
+ * $Id: ContractBusiness.java,v 1.13.4.1 2007/01/12 19:32:12 idegaweb Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -230,8 +230,9 @@ public class ContractBusiness
 			}
 			return true;
 		}
-		else
+		else {
 			return false;
+		}
 	}
 	public static boolean disconnectCategory(ContractCategory Cat, int iObjectInstanceId)
 	{
@@ -371,10 +372,12 @@ public class ContractBusiness
 			CT.setUseTags(useTags);
 			try
 			{
-				if (bInsert)
+				if (bInsert) {
 					CT.insert();
-				else
+				}
+				else {
 					CT.update();
+				}
 			}
 			catch (SQLException ex)
 			{

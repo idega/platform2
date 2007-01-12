@@ -327,7 +327,9 @@ public class ImportBusinessBean extends IBOServiceBean implements ImportBusiness
 					}
 				}
 				finally {
-					if (output != null) output.close();
+					if (output != null) {
+						output.close();
+					}
 				}
 				return file;
 			} catch (IOException e) {

@@ -44,14 +44,14 @@ public class ReportContentViewer extends Block implements Reports,IWPageEventLis
 	private IWResourceBundle iwrb;
 
   public ReportContentViewer(){
-    listReportContent = null;
+    this.listReportContent = null;
   }
   public ReportContentViewer(Vector vRC){
-    listReportContent = vRC;
+    this.listReportContent = vRC;
   }
   public ReportContentViewer(String sql){
     ReportMaker rm = new ReportMaker();
-     listReportContent = rm.makeReport(sql);
+     this.listReportContent = rm.makeReport(sql);
   }
 
   public ReportContentViewer(Report R){
@@ -68,8 +68,8 @@ public class ReportContentViewer extends Block implements Reports,IWPageEventLis
     return "Content";
   }
   protected void control(IWContext iwc){
-		iwrb = getResourceBundle(iwc);
-		iwb = getBundle(iwc);
+		this.iwrb = getResourceBundle(iwc);
+		this.iwb = getBundle(iwc);
     Table  T = new Table();
     T.setWidth("100%");
     T.setCellpadding(0);
@@ -77,28 +77,29 @@ public class ReportContentViewer extends Block implements Reports,IWPageEventLis
     try{
 
       if(iwc.getParameter("start")!=null){
-        listStart = Integer.parseInt(iwc.getParameter("start"));
+        this.listStart = Integer.parseInt(iwc.getParameter("start"));
       }
-      iwc.setSessionAttribute(prmListStart,new Integer(listStart));
+      iwc.setSessionAttribute(prmListStart,new Integer(this.listStart));
 
       if(iwc.getParameter(PRM_REPORTID)!=null){
-        iReport = Integer.parseInt(iwc.getParameter(PRM_REPORTID));
-        if(iReport > 0){
-          eReport = ((com.idega.block.reports.data.ReportHome)com.idega.data.IDOLookup.getHomeLegacy(Report.class)).findByPrimaryKeyLegacy(iReport);
-          ReportService.setSessionReport(iwc,eReport);
+        this.iReport = Integer.parseInt(iwc.getParameter(PRM_REPORTID));
+        if(this.iReport > 0){
+          this.eReport = ((com.idega.block.reports.data.ReportHome)com.idega.data.IDOLookup.getHomeLegacy(Report.class)).findByPrimaryKeyLegacy(this.iReport);
+          ReportService.setSessionReport(iwc,this.eReport);
           T.add(doMain(iwc));
         }
         else{
-          if(ReportService.isSessionReport(iwc))
-            ReportService.removeSessionReport(iwc);
+          if(ReportService.isSessionReport(iwc)) {
+			ReportService.removeSessionReport(iwc);
+		}
           add("no report");
         }
       }
-      else if(iwc.getParameter(sAction) != null){
-        sActPrm = iwc.getParameter(sAction);
+      else if(iwc.getParameter(this.sAction) != null){
+        this.sActPrm = iwc.getParameter(this.sAction);
         try{
-          iAction = Integer.parseInt(sActPrm);
-          switch(iAction){
+          this.iAction = Integer.parseInt(this.sActPrm);
+          switch(this.iAction){
             case ACT1:    break;
             case ACT2: T.add(doTable(iwc));  break;
             case ACT3: doChange(iwc); break;
@@ -109,8 +110,9 @@ public class ReportContentViewer extends Block implements Reports,IWPageEventLis
           e.printStackTrace();
         }
       }
-      else
-        T.add(doMain(iwc));
+	else {
+		T.add(doMain(iwc));
+	}
     }
     catch(Exception S){
       S.printStackTrace();
@@ -124,14 +126,14 @@ public class ReportContentViewer extends Block implements Reports,IWPageEventLis
     LinkTable.setWidth("100%");
     LinkTable.setCellpadding(2);
     LinkTable.setCellspacing(1);
-    LinkTable.setColor(this.DarkColor);
+    LinkTable.setColor(Reports.DarkColor);
     LinkTable.setWidth(last,"100%");
     Link Link1 = new Link("Stilltur");
-    Link1.setFontColor(this.LightColor);
-    Link1.addParameter(this.sAction,String.valueOf(this.ACT1));
+    Link1.setFontColor(Reports.LightColor);
+    Link1.addParameter(this.sAction,String.valueOf(Reports.ACT1));
     Link Link2 = new Link("Spakur");
-    Link2.setFontColor(this.LightColor);
-    Link2.addParameter(this.sAction,String.valueOf(this.ACT2));
+    Link2.setFontColor(Reports.LightColor);
+    Link2.addParameter(this.sAction,String.valueOf(Reports.ACT2));
     if(true){
       LinkTable.add(Link1,1,1);
       LinkTable.add(Link2,2,1);
@@ -146,21 +148,22 @@ public class ReportContentViewer extends Block implements Reports,IWPageEventLis
     T.setCellspacing(0);
     T.setWidth("100%");
     if(iwc.getParameter(PRM_REPORTID) != null){
-      String sql = eReport.getSQL();
-      String[] headers = eReport.getHeaders();
+      String sql = this.eReport.getSQL();
+      String[] headers = this.eReport.getHeaders();
       List v = new ReportMaker().makeReport(sql);
       iwc.setSessionAttribute(prmContent,v);
       iwc.setSessionAttribute(prmHeaders,headers);
       if(v != null){
-        T.add(this.doHeader(iwc,eReport),1,1);
-        T.add(this.doFooter(listStart,v.size(),eReport.getID()),1,2);
-        T.add(this.doView(headers,v,listStart,eReport.getID()),1,3);
-        T.add(this.doFooter(listStart,v.size(),eReport.getID()),1,4);
+        T.add(this.doHeader(iwc,this.eReport),1,1);
+        T.add(this.doFooter(this.listStart,v.size(),this.eReport.getID()),1,2);
+        T.add(this.doView(headers,v,this.listStart,this.eReport.getID()),1,3);
+        T.add(this.doFooter(this.listStart,v.size(),this.eReport.getID()),1,4);
       }
-      else
-        T.add(new Text(" nothing to show"),1,1);
+	else {
+		T.add(new Text(" nothing to show"),1,1);
       //Link back =  new Link(new Image("/reports/pics/newlist.gif"),"/reports/index.jsp");
       //this.addToHeader(back);
+	}
     }
     else{
       return doTable(iwc);
@@ -181,42 +184,47 @@ public class ReportContentViewer extends Block implements Reports,IWPageEventLis
     T.setWidth("100%");
     if(iwc.getSession().getAttribute(prmContent)!=null){
       Vector v= (Vector) iwc.getSession().getAttribute(prmContent);
-      eReport = ReportService.getSessionReport(iwc);
-      listStart = ((Integer)iwc.getSessionAttribute(prmListStart)).intValue();
+      this.eReport = ReportService.getSessionReport(iwc);
+      this.listStart = ((Integer)iwc.getSessionAttribute(prmListStart)).intValue();
       String[] headers = null;
       if(iwc.getSessionAttribute(prmHeaders) != null){
         headers = (String[]) iwc.getSessionAttribute(prmHeaders);
       }
 
-      if(iwc.getSessionAttribute(prmLastOrder)!=null)
-        this.sLastOrder = (String) iwc.getSessionAttribute(prmLastOrder);
-      else
-        this.sLastOrder = "";
+      if(iwc.getSessionAttribute(prmLastOrder)!=null) {
+		this.sLastOrder = (String) iwc.getSessionAttribute(prmLastOrder);
+	}
+	else {
+		this.sLastOrder = "";
+	}
 
       String sOrder = "0";
       if(iwc.getParameter("order")!= null){
         sOrder = iwc.getParameter("order");
       }
       boolean reverse = false;
-      if(this.sLastOrder.equalsIgnoreCase(sOrder))
-        reverse = true;
+      if(this.sLastOrder.equalsIgnoreCase(sOrder)) {
+		reverse = true;
+	}
       int order = Integer.parseInt(sOrder);
 
-      if(!(iwc.getParameter("start")!= null))
-        OrderVector(v,order,reverse);
+      if(!(iwc.getParameter("start")!= null)) {
+		OrderVector(v,order,reverse);
+	}
 
       iwc.setSessionAttribute(prmLastOrder,sOrder);
 
       if(v != null){
-        T.add(this.doHeader(iwc,eReport),1,1);
-        T.add(this.doFooter(listStart,v.size(),eReport.getID()),1,2);
-        T.add(this.doView(headers,v,listStart,eReport.getID()),1,3);
-        T.add(this.doFooter(listStart,v.size(),eReport.getID()),1,4);
+        T.add(this.doHeader(iwc,this.eReport),1,1);
+        T.add(this.doFooter(this.listStart,v.size(),this.eReport.getID()),1,2);
+        T.add(this.doView(headers,v,this.listStart,this.eReport.getID()),1,3);
+        T.add(this.doFooter(this.listStart,v.size(),this.eReport.getID()),1,4);
       }
-      else
-        T.add(new Text(" nothing to show"),1,1);
+	else {
+		T.add(new Text(" nothing to show"),1,1);
       //Link back =  new Link(new Image("/reports/pics/newlist.gif"),"/reports/index.jsp");
       //this.addToHeader(back);
+	}
     }
     return T;
   }
@@ -234,9 +242,9 @@ public class ReportContentViewer extends Block implements Reports,IWPageEventLis
     T2.add(T,1,1);
     Table T3 = new Table(3,1);
 
-    Link XLS = Reporter.getXLSLink(iwac,iwb.getImage("/shared/xls.gif"),R.getID());
-    Link PDF = Reporter.getPDFLink(iwac,iwb.getImage("/shared/pdf.gif"),R.getID());
-    Link TXT = Reporter.getTXTLink(iwac,iwb.getImage("/shared/txt.gif"),R.getID());
+    Link XLS = Reporter.getXLSLink(iwac,this.iwb.getImage("/shared/xls.gif"),R.getID());
+    Link PDF = Reporter.getPDFLink(iwac,this.iwb.getImage("/shared/pdf.gif"),R.getID());
+    Link TXT = Reporter.getTXTLink(iwac,this.iwb.getImage("/shared/txt.gif"),R.getID());
 
     T3.add(XLS,1,1);
     T3.add(PDF,2,1);
@@ -246,24 +254,24 @@ public class ReportContentViewer extends Block implements Reports,IWPageEventLis
   }
   private PresentationObject doFooter(int start,int total,int reportId){
     Table T = new Table(5,1);
-    T.setColor(this.DarkColor);
+    T.setColor(Reports.DarkColor);
     T.setWidth("100%");
     T.setWidth(1,"25%");
     T.setWidth(5,"25%");
     T.setColumnAlignment(1,"left");
     T.setColumnAlignment(3,"center");
     T.setColumnAlignment(5,"right");
-    int left = total%displayNumber;
-    int nextstart = start+displayNumber;
-    int nextend = nextstart + displayNumber-1;
+    int left = total%this.displayNumber;
+    int nextstart = start+this.displayNumber;
+    int nextend = nextstart + this.displayNumber-1;
     if(start != -1){
       if(!(start == 1)){
         Link leftLink = new Link("<< ");
-        leftLink.addParameter("start",start-displayNumber);
+        leftLink.addParameter("start",start-this.displayNumber);
         leftLink.addParameter(PRM_REPORTID,reportId);
-        leftLink.setFontColor(this.LightColor);
+        leftLink.setFontColor(Reports.LightColor);
         T.add(leftLink,1,1);
-        T.add(getHeaderText((start-displayNumber)+"-"+(start-1)),1,1);
+        T.add(getHeaderText((start-this.displayNumber)+"-"+(start-1)),1,1);
       }
       if(nextstart <= total){
         String interval;
@@ -271,19 +279,21 @@ public class ReportContentViewer extends Block implements Reports,IWPageEventLis
           interval = nextstart + "-" +(nextstart+ left-1);
         }
         else{
-          interval = nextstart+"-"+(nextstart+displayNumber-1);
+          interval = nextstart+"-"+(nextstart+this.displayNumber-1);
         }
         T.add(getHeaderText(interval),5,1);
         Link rightLink = new Link(" >>");
-        rightLink.addParameter("start",start+displayNumber);
+        rightLink.addParameter("start",start+this.displayNumber);
         rightLink.addParameter(PRM_REPORTID,reportId);
-        rightLink.setFontColor(this.LightColor);
+        rightLink.setFontColor(Reports.LightColor);
         T.add(rightLink,5,1);
       }
-      if(!((nextstart-1) < total) )
-        T.add(getHeaderText(start+"-"+(start+left-1)+" of "+total),3,1);
-      else
-        T.add(getHeaderText(start+"-"+(start+displayNumber-1)+" of "+total),3,1);
+      if(!((nextstart-1) < total) ) {
+		T.add(getHeaderText(start+"-"+(start+left-1)+" of "+total),3,1);
+	}
+	else {
+		T.add(getHeaderText(start+"-"+(start+this.displayNumber-1)+" of "+total),3,1);
+	}
     }
     else{
 
@@ -292,14 +302,14 @@ public class ReportContentViewer extends Block implements Reports,IWPageEventLis
       Link PartLink = new Link("Partial");
       PartLink.addParameter("start",1);
       PartLink.addParameter(PRM_REPORTID,reportId);
-      PartLink.setFontColor(this.LightColor);
+      PartLink.setFontColor(Reports.LightColor);
       T.add(PartLink,2,1);
 
     }
     Link WholeLink = new Link("All");
     WholeLink.addParameter("start",-1);
     WholeLink.addParameter(PRM_REPORTID,reportId);
-    WholeLink.setFontColor(this.LightColor);
+    WholeLink.setFontColor(Reports.LightColor);
     T.add(WholeLink,4,1);
     return T;
   }
@@ -307,11 +317,13 @@ public class ReportContentViewer extends Block implements Reports,IWPageEventLis
   private PresentationObject doView(String[] headers,List content,int start,int reportId){
     int len = content.size();
     Table T;
-		int depth = (len < displayNumber ? len : displayNumber)+1;
-    if(start != -1)
-      T= new Table(headers.length+1 ,depth+1);
-    else
-      T= new Table(headers.length+1 ,len+1);
+		int depth = (len < this.displayNumber ? len : this.displayNumber)+1;
+    if(start != -1) {
+		T= new Table(headers.length+1 ,depth+1);
+	}
+	else {
+		T= new Table(headers.length+1 ,len+1);
+	}
 
     T.setWidth("100%");
     T.setWidth(1,"30");
@@ -322,7 +334,7 @@ public class ReportContentViewer extends Block implements Reports,IWPageEventLis
     for(int j = 0; j < headers.length ;j++){
       Link L = new Link(getHeaderText(headers[j]));
       L.addParameter(PRM_REPORTID,reportId);
-      L.addParameter(this.sAction,this.ACT2);
+      L.addParameter(this.sAction,Reports.ACT2);
       L.addParameter("order",String.valueOf(j));
       L.setFontColor(WhiteColor);
       T.add(L,j+2,1);
@@ -332,7 +344,7 @@ public class ReportContentViewer extends Block implements Reports,IWPageEventLis
     int cols = headers.length;
     if(start != -1){
       int index = start;
-      int end = start+displayNumber;
+      int end = start+this.displayNumber;
       for(int i =0; index < end && index <= len;i++){
         RC = (ReportContent)content.get((index)-1);
         for(int j = 0; j < cols;j++){
@@ -373,17 +385,19 @@ public class ReportContentViewer extends Block implements Reports,IWPageEventLis
 
   private void OrderVector(Vector mbs,int order,boolean reverse){
     ReportContentComparator RCC = new ReportContentComparator(order);
-    if(reverse)
-      Collections.reverse(mbs);
-    else
-      Collections.sort(mbs,RCC);
+    if(reverse) {
+		Collections.reverse(mbs);
+	}
+	else {
+		Collections.sort(mbs,RCC);
+	}
   }
 
   private Table makeTable(String[] header,String[][] content,int reportId){
     Table T= new Table();
     for(int j = 0; j < header.length ;j++){
       Link L = new Link(header[j]);
-      L.addParameter(this.sAction,this.ACT2);
+      L.addParameter(this.sAction,Reports.ACT2);
       L.addParameter(PRM_REPORTID,reportId);
       L.addParameter("order",String.valueOf(j));
       T.add(L,j+1,1);

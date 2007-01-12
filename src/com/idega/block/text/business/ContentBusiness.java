@@ -34,7 +34,7 @@ public class ContentBusiness {
 		try {
 			if (iContentId > 0 && iICFileId > 0) {
 				Content content = ((com.idega.block.text.data.ContentHome) com.idega.data.IDOLookup.getHomeLegacy(Content.class)).findByPrimaryKeyLegacy(iContentId);
-				content.addFileToContent((ICFile)((com.idega.core.file.data.ICFileHome) com.idega.data.IDOLookup.getHome(ICFile.class)).findByPrimaryKey( new Integer(iICFileId)));
+				content.addFileToContent(((com.idega.core.file.data.ICFileHome) com.idega.data.IDOLookup.getHome(ICFile.class)).findByPrimaryKey( new Integer(iICFileId)));
 				return true;
 			}
 			else {
@@ -141,8 +141,9 @@ public class ContentBusiness {
 				ctUpdate = false;
 				locUpdate = false;
 				eContent = ((com.idega.block.text.data.ContentHome) com.idega.data.IDOLookup.getHomeLegacy(Content.class)).createLegacy();
-				if (dateOfContent == null)
+				if (dateOfContent == null) {
 					eContent.setCreated(IWTimestamp.getTimestampRightNow());
+				}
 				locText = ((com.idega.block.text.data.LocalizedTextHome) com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
 			}
 
@@ -152,13 +153,16 @@ public class ContentBusiness {
 			locText.setTitle(sTitle);
 			locText.setUpdated(IWTimestamp.getTimestampRightNow());
 
-			if (tsPublishFrom != null)
+			if (tsPublishFrom != null) {
 				eContent.setPublishFrom(tsPublishFrom);
-			if (tsPublishTo != null)
+			}
+			if (tsPublishTo != null) {
 				eContent.setPublishTo(tsPublishTo);
+			}
 			
-			if (dateOfContent == null)
+			if (dateOfContent == null) {
 				eContent.setLastUpdated(IWTimestamp.getTimestampRightNow());
+			}
 			else {
 				eContent.setLastUpdated(dateOfContent);
 				eContent.setCreated(dateOfContent);
@@ -176,8 +180,9 @@ public class ContentBusiness {
 			}
 			else if (!ctUpdate) {
 				eContent.setCreated(IWTimestamp.getTimestampRightNow());
-				if (iUserId > 0)
+				if (iUserId > 0) {
 					eContent.setUserId(iUserId);
+				}
 				eContent.insert();
 				locText.setCreated(IWTimestamp.getTimestampRightNow());
 				locText.insert();

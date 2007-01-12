@@ -16,9 +16,9 @@ public class CategoryComparator implements Comparator {
 	boolean orderManually = false;
 	
 	public CategoryComparator(CategoryBlock block) {
-		orderManually = block.getOrderManually();
-		if(orderManually) {
-			blockId = Integer.toString(block.getICObjectInstanceID());
+		this.orderManually = block.getOrderManually();
+		if(this.orderManually) {
+			this.blockId = Integer.toString(block.getICObjectInstanceID());
 		}
 	}
 	
@@ -26,10 +26,10 @@ public class CategoryComparator implements Comparator {
 		ICCategory p1 = (ICCategory) o1;
 		ICCategory p2 = (ICCategory) o2;
 		
-		if(orderManually) {
+		if(this.orderManually) {
 			try {
-				int n1 = CategoryFinder.getInstance().getCategoryOrderNumber(p1, blockId);
-				int n2 = CategoryFinder.getInstance().getCategoryOrderNumber(p2, blockId);
+				int n1 = CategoryFinder.getInstance().getCategoryOrderNumber(p1, this.blockId);
+				int n2 = CategoryFinder.getInstance().getCategoryOrderNumber(p2, this.blockId);
 				if(n1!=n2) {
 					return n1-n2;
 				}

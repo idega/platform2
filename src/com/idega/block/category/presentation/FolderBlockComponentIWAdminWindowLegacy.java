@@ -70,23 +70,23 @@ public static String HEADER_COLOR = "#0E2456";
 //  }
 
   public Form getUnderlyingForm(){
-    return adminForm;
+    return this.adminForm;
   }
 
   public void _main(IWContext iwc)throws Exception{
-    iwb = getBundle(iwc);
-    iwrb = getResourceBundle(iwc);
-    iwbCore = iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
-    if( !displayEmpty ){
+    this.iwb = getBundle(iwc);
+    this.iwrb = getResourceBundle(iwc);
+    this.iwbCore = iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+    if( !this.displayEmpty ){
       makeTables();
       //setAllMargins(0);
-      HEADER_COLOR = iwbCore.getProperty("adminHeaderColor",HEADER_COLOR);
+      HEADER_COLOR = this.iwbCore.getProperty("adminHeaderColor",HEADER_COLOR);
 
-      if ( merged ){
-	super.add(adminTable);
+      if ( this.merged ){
+	super.add(this.adminTable);
       }
       else{
-	super.add(adminForm);
+	super.add(this.adminForm);
       }
     }
 
@@ -98,88 +98,90 @@ public static String HEADER_COLOR = "#0E2456";
   }
 
   private void makeTables() {
-    adminForm = new Form();
-      adminForm.setMethod(method);
+    this.adminForm = new Form();
+      this.adminForm.setMethod(this.method);
 
-    adminTable = new Table(2,2);
-      adminTable.mergeCells(1,1,2,1);
-      adminTable.setCellpadding(0);
-      adminTable.setCellspacing(0);
-      if(_windowWidth!=null){
-      	adminTable.setWidth(_windowWidth);
+    this.adminTable = new Table(2,2);
+      this.adminTable.mergeCells(1,1,2,1);
+      this.adminTable.setCellpadding(0);
+      this.adminTable.setCellspacing(0);
+      if(this._windowWidth!=null){
+      	this.adminTable.setWidth(this._windowWidth);
       } else {
-      	adminTable.setWidth("100%");
+      	this.adminTable.setWidth("100%");
       }
-      adminTable.setHeight("100%");
-      adminTable.setHeight(2,"100%");
-      adminTable.setColor(1,1,HEADER_COLOR);
-      adminTable.setColor(1,2,"#FFFFFF");
-      if ( !merged ) {
-	adminTable.setColor(2,2,MENU_COLOR);
-	adminTable.setWidth(2,2,rightWidth);
+      this.adminTable.setHeight("100%");
+      this.adminTable.setHeight(2,"100%");
+      this.adminTable.setColor(1,1,HEADER_COLOR);
+      this.adminTable.setColor(1,2,"#FFFFFF");
+      if ( !this.merged ) {
+	this.adminTable.setColor(2,2,MENU_COLOR);
+	this.adminTable.setWidth(2,2,this.rightWidth);
       }
       else {
-	adminTable.mergeCells(1,2,2,2);
+	this.adminTable.mergeCells(1,2,2,2);
       }
-      adminTable.setRowVerticalAlignment(2,"top");
-      adminForm.add(adminTable);
+      this.adminTable.setRowVerticalAlignment(2,"top");
+      this.adminForm.add(this.adminTable);
 
-    headerTable = new Table();
-      headerTable.setCellpadding(0);
-      headerTable.setCellspacing(0);
-      headerTable.setWidth("100%");
-      headerTable.setAlignment(2,1,"right");
-      Image idegaweb = iwbCore.getImage("/editorwindow/idegaweb.gif","idegaWeb");
-      headerTable.add(idegaweb,1,1);
-      adminTable.add(headerTable,1,1);
+    this.headerTable = new Table();
+      this.headerTable.setCellpadding(0);
+      this.headerTable.setCellspacing(0);
+      this.headerTable.setWidth("100%");
+      this.headerTable.setAlignment(2,1,"right");
+      Image idegaweb = this.iwbCore.getImage("/editorwindow/idegaweb.gif","idegaWeb");
+      this.headerTable.add(idegaweb,1,1);
+      this.adminTable.add(this.headerTable,1,1);
 
-    leftTable = new Table();
-      leftTable.setCellpadding(_cellPadding);
-      leftTable.setWidth("100%");
-      if ( merged ) {
-	leftTable.setHeight("100%");
-	leftTable.setCellspacing(0);
-	leftTable.setVerticalAlignment(1,1,"top");
+    this.leftTable = new Table();
+      this.leftTable.setCellpadding(this._cellPadding);
+      this.leftTable.setWidth("100%");
+      if ( this.merged ) {
+	this.leftTable.setHeight("100%");
+	this.leftTable.setCellspacing(0);
+	this.leftTable.setVerticalAlignment(1,1,"top");
       }
-      adminTable.setAlignment(1,2,"center");
-      adminTable.add(leftTable,1,2);
+      this.adminTable.setAlignment(1,2,"center");
+      this.adminTable.add(this.leftTable,1,2);
 
-    rightTable = new Table();
-      rightTable.setCellpadding(8);
-      rightTable.setWidth("100%");
-      if ( !merged ) {
-        adminTable.setAlignment(2,2,"center");
-	adminTable.add(rightTable,2,2);
+    this.rightTable = new Table();
+      this.rightTable.setCellpadding(8);
+      this.rightTable.setWidth("100%");
+      if ( !this.merged ) {
+        this.adminTable.setAlignment(2,2,"center");
+	this.adminTable.add(this.rightTable,2,2);
       }
   }
 
   public void addBottom(String text) {
-    adminTable.add(text,1,2);
+    this.adminTable.add(text,1,2);
   }
 
   public void add(PresentationObject obj) {
-    if( !displayEmpty ){
-      if(adminTable==null){
+    if( !this.displayEmpty ){
+      if(this.adminTable==null){
 	makeTables();
-	super.add(adminTable);
+	super.add(this.adminTable);
       }
-      leftTable.add(obj,1,1);
+      this.leftTable.add(obj,1,1);
     }
-    else super.add(obj);
+	else {
+		super.add(obj);
+	}
 
   }
 
   public void addBottom(PresentationObject obj) {
-    adminTable.add(obj,1,2);
+    this.adminTable.add(obj,1,2);
   }
 
   public void addLeft(String text) {
-    int rows = leftTable.getRows();
-    if ( !leftTable.isEmpty(1,rows) ) {
+    int rows = this.leftTable.getRows();
+    if ( !this.leftTable.isEmpty(1,rows) ) {
       rows++;
     }
 
-    leftTable.add(formatText(text),1,rows);
+    this.leftTable.add(formatText(text),1,rows);
   }
 
   public void addLeft(PresentationObject obj) {
@@ -187,8 +189,8 @@ public static String HEADER_COLOR = "#0E2456";
   }
 
   public void addLeft(PresentationObject obj,boolean useStyle) {
-    int rows = leftTable.getRows();
-    if ( !leftTable.isEmpty(1,rows) ) {
+    int rows = this.leftTable.getRows();
+    if ( !this.leftTable.isEmpty(1,rows) ) {
       rows++;
     }
 
@@ -196,7 +198,7 @@ public static String HEADER_COLOR = "#0E2456";
       setStyle(obj);
     }
 
-    leftTable.add(obj,1,rows);
+    this.leftTable.add(obj,1,rows);
   }
 
   public void addLeft(String text,PresentationObject obj,boolean hasBreak) {
@@ -204,8 +206,8 @@ public static String HEADER_COLOR = "#0E2456";
   }
 
   public void addLeft(String text,PresentationObject obj,boolean hasBreak,boolean useStyle) {
-    int rows = leftTable.getRows();
-    if ( !leftTable.isEmpty(1,rows) ) {
+    int rows = this.leftTable.getRows();
+    if ( !this.leftTable.isEmpty(1,rows) ) {
       rows++;
     }
 
@@ -213,32 +215,32 @@ public static String HEADER_COLOR = "#0E2456";
       setStyle(obj);
     }
 
-    leftTable.add(formatText(text),1,rows);
+    this.leftTable.add(formatText(text),1,rows);
     if ( hasBreak ) {
-      leftTable.add(Text.getBreak(),1,rows);
+      this.leftTable.add(Text.getBreak(),1,rows);
     }
-    leftTable.add(obj,1,rows);
+    this.leftTable.add(obj,1,rows);
   }
 
   public void addLeft(String headline, String text) {
-    int rows = leftTable.getRows();
-    if ( !leftTable.isEmpty(1,rows) ) {
+    int rows = this.leftTable.getRows();
+    if ( !this.leftTable.isEmpty(1,rows) ) {
       rows++;
     }
 
-    leftTable.add(formatHeadline(headline),1,rows);
-    leftTable.add(Text.getBreak(),1,rows);
-    leftTable.add(Text.getBreak(),1,rows);
-    leftTable.add(formatText(text,false),1,rows);
+    this.leftTable.add(formatHeadline(headline),1,rows);
+    this.leftTable.add(Text.getBreak(),1,rows);
+    this.leftTable.add(Text.getBreak(),1,rows);
+    this.leftTable.add(formatText(text,false),1,rows);
   }
 
   public void addRight(String text) {
-    int rows = rightTable.getRows();
-    if ( !rightTable.isEmpty(1,rows) ) {
+    int rows = this.rightTable.getRows();
+    if ( !this.rightTable.isEmpty(1,rows) ) {
       rows++;
     }
 
-    rightTable.add(formatText(text),1,rows);
+    this.rightTable.add(formatText(text),1,rows);
   }
 
   public void addRight(String text,PresentationObject obj,boolean hasBreak) {
@@ -246,8 +248,8 @@ public static String HEADER_COLOR = "#0E2456";
   }
 
   public void addRight(String text,PresentationObject obj,boolean hasBreak,boolean useStyle) {
-    int rows = rightTable.getRows();
-    if ( !rightTable.isEmpty(1,rows) ) {
+    int rows = this.rightTable.getRows();
+    if ( !this.rightTable.isEmpty(1,rows) ) {
       rows++;
     }
 
@@ -255,32 +257,32 @@ public static String HEADER_COLOR = "#0E2456";
       setStyle(obj);
     }
 
-    rightTable.add(formatText(text),1,rows);
+    this.rightTable.add(formatText(text),1,rows);
     if ( hasBreak ) {
-      rightTable.add(Text.getBreak(),1,rows);
+      this.rightTable.add(Text.getBreak(),1,rows);
     }
-    rightTable.add(obj,1,rows);
+    this.rightTable.add(obj,1,rows);
   }
 
   public void addSubmitButton(InterfaceObject obj) {
-    int rows = rightTable.getRows();
-    String height = rightTable.getHeight();
+    int rows = this.rightTable.getRows();
+    String height = this.rightTable.getHeight();
 
     if ( height != null ) {
-      rightTable.add(obj,1,rows);
+      this.rightTable.add(obj,1,rows);
     }
     else {
       rows++;
-      rightTable.setHeight("100%");
-      rightTable.setHeight(1,rows,"100%");
-      rightTable.setVerticalAlignment(1,rows,"bottom");
-      rightTable.setAlignment(1,rows,"center");
-      rightTable.add(obj,1,rows);
+      this.rightTable.setHeight("100%");
+      this.rightTable.setHeight(1,rows,"100%");
+      this.rightTable.setVerticalAlignment(1,rows,"bottom");
+      this.rightTable.setAlignment(1,rows,"center");
+      this.rightTable.add(obj,1,rows);
     }
   }
 
   public void addHiddenInput(HiddenInput obj) {
-    adminForm.add(obj);
+    this.adminForm.add(obj);
   }
 
   public void addTitle(String title) {
@@ -292,7 +294,7 @@ public static String HEADER_COLOR = "#0E2456";
 
     //super.setTitle(title);
 
-    headerTable.add(adminTitle,2,1);
+    this.headerTable.add(adminTitle,2,1);
   }
 
   public void addTitle(String title,String style) {
@@ -301,23 +303,24 @@ public static String HEADER_COLOR = "#0E2456";
 
     //super.setTitle(title);
 
-    headerTable.add(adminTitle,2,1);
+    this.headerTable.add(adminTitle,2,1);
   }
 
   public void addHeaderObject(PresentationObject obj) {
-    int rows = headerTable.getRows()+1;
-    headerTable.mergeCells(1,rows,2,rows);
-    headerTable.setAlignment(1,rows,"center");
+    int rows = this.headerTable.getRows()+1;
+    this.headerTable.mergeCells(1,rows,2,rows);
+    this.headerTable.setAlignment(1,rows,"center");
 
-    headerTable.add(obj,1,rows);
+    this.headerTable.add(obj,1,rows);
   }
 
   public Text formatText(String s, boolean bold){
     Text T= new Text();
     if ( s != null ) {
       T= new Text(s);
-      if ( bold )
-	T.setBold();
+      if ( bold ) {
+		T.setBold();
+	}
       T.setFontColor("#000000");
       T.setFontSize(Text.FONT_SIZE_7_HTML_1);
       T.setFontFace(Text.FONT_FACE_VERDANA);
@@ -326,8 +329,9 @@ public static String HEADER_COLOR = "#0E2456";
   }
 
   public void formatText(Text text, boolean bold){
-    if ( bold )
-      text.setBold();
+    if ( bold ) {
+		text.setBold();
+	}
     text.setFontColor("#000000");
     text.setFontSize(Text.FONT_SIZE_7_HTML_1);
     text.setFontFace(Text.FONT_FACE_VERDANA);
@@ -372,8 +376,8 @@ public static String HEADER_COLOR = "#0E2456";
   }
 
   public void setUnMerged() {
-    merged = false;
-    _cellPadding = 8;
+    this.merged = false;
+    this._cellPadding = 8;
   }
 
   public void setRightWidth(int rightWidth) {
@@ -389,7 +393,7 @@ public static String HEADER_COLOR = "#0E2456";
   }
 
   public void setCellpadding(int padding) {
-    _cellPadding = padding;
+    this._cellPadding = padding;
   }
 
   public String getBundleIdentifier(){
@@ -400,7 +404,7 @@ public static String HEADER_COLOR = "#0E2456";
    * @param i
    */
   public void setWidth(int i) {
-  	_windowWidth = String.valueOf(i);  	
+  	this._windowWidth = String.valueOf(i);  	
   }
 
 }

@@ -58,13 +58,15 @@ public class QuoteBusiness {
 		}
 		
 		
-		if (!fetchFromDatabase && date != null && holder != null && date.equalsIgnoreCase(dateNow))
+		if (!fetchFromDatabase && date != null && holder != null && date.equalsIgnoreCase(dateNow)) {
 			return holder;
+		}
 		else {
 			newHolder = getQuoteHolder(getRandomQuote(localeID));
 			if (holder != null && getNumberOfQuotes(localeID) > 1) {
-				while (holder.getQuoteID() == newHolder.getQuoteID())
+				while (holder.getQuoteID() == newHolder.getQuoteID()) {
 					newHolder = getQuoteHolder(getRandomQuote(localeID));
+				}
 			}
 			if (newHolder != null) {
 				if(!fetchFromDatabase){
@@ -197,15 +199,15 @@ public class QuoteBusiness {
 	}
 
 	protected QuoteEntityHome getQuoteHome() {
-		if (quoteHome == null) {
+		if (this.quoteHome == null) {
 			try {
-				quoteHome = (QuoteEntityHome) com.idega.data.IDOLookup.getHome(QuoteEntity.class);
+				this.quoteHome = (QuoteEntityHome) com.idega.data.IDOLookup.getHome(QuoteEntity.class);
 			}
 			catch (java.rmi.RemoteException rme) {
 				rme.printStackTrace();
 			}
 		}
-		return quoteHome;
+		return this.quoteHome;
 	}
 
 }

@@ -78,26 +78,26 @@ public BoxCategoryChooser(){
 
      */
 
-    _isAdmin = true; //AccessControl.hasEditPermission(this,iwc);
+    this._isAdmin = true; //AccessControl.hasEditPermission(this,iwc);
 
-    _iwb = iwc.getIWMainApplication().getBundle(Builderaware.IW_CORE_BUNDLE_IDENTIFIER);
+    this._iwb = iwc.getIWMainApplication().getBundle(Builderaware.IW_CORE_BUNDLE_IDENTIFIER);
 
-    _iwrb = getResourceBundle(iwc);
+    this._iwrb = getResourceBundle(iwc);
 
-    addTitle(_iwrb.getLocalizedString("box_category_choose","Category Chooser"));
+    addTitle(this._iwrb.getLocalizedString("box_category_choose","Category Chooser"));
 
     Locale currentLocale = iwc.getCurrentLocale();
     Locale chosenLocale;
 
     try {
 
-      _userID = LoginBusinessBean.getUser(iwc).getID();
+      this._userID = LoginBusinessBean.getUser(iwc).getID();
 
     }
 
     catch (Exception e) {
 
-      _userID = -1;
+      this._userID = -1;
 
     }
 
@@ -127,7 +127,7 @@ public BoxCategoryChooser(){
 
 
 
-    if ( _isAdmin ) {
+    if ( this._isAdmin ) {
 
       processForm(iwc, iLocaleId, sLocaleId);
 
@@ -149,13 +149,13 @@ public BoxCategoryChooser(){
 
       try {
 
-        _boxID = Integer.parseInt(iwc.getParameter(BoxBusiness.PARAMETER_BOX_ID));
+        this._boxID = Integer.parseInt(iwc.getParameter(BoxBusiness.PARAMETER_BOX_ID));
 
       }
 
       catch (NumberFormatException e) {
 
-        _boxID = -1;
+        this._boxID = -1;
 
       }
 
@@ -225,7 +225,7 @@ public BoxCategoryChooser(){
 
 
 
-    List categoriesInBox = BoxFinder.getCategoriesInBox(_boxID);
+    List categoriesInBox = BoxFinder.getCategoriesInBox(this._boxID);
 
     Iterator iter = null;
 
@@ -285,11 +285,11 @@ public BoxCategoryChooser(){
 
 
 
-    formTable.add(new SubmitButton(_iwrb.getLocalizedImageButton("close","CLOSE"),BoxBusiness.PARAMETER_MODE,BoxBusiness.PARAMETER_CLOSE),1,2);
+    formTable.add(new SubmitButton(this._iwrb.getLocalizedImageButton("close","CLOSE"),BoxBusiness.PARAMETER_MODE,BoxBusiness.PARAMETER_CLOSE),1,2);
 
-    formTable.add(new SubmitButton(_iwrb.getLocalizedImageButton("save","SAVE"),BoxBusiness.PARAMETER_MODE,BoxBusiness.PARAMETER_SAVE),1,2);
+    formTable.add(new SubmitButton(this._iwrb.getLocalizedImageButton("save","SAVE"),BoxBusiness.PARAMETER_MODE,BoxBusiness.PARAMETER_SAVE),1,2);
 
-    myForm.add(new HiddenInput(BoxBusiness.PARAMETER_BOX_ID,Integer.toString(_boxID)));
+    myForm.add(new HiddenInput(BoxBusiness.PARAMETER_BOX_ID,Integer.toString(this._boxID)));
 
 
 
@@ -305,7 +305,7 @@ public BoxCategoryChooser(){
 
   private void save(IWContext iwc) {
 
-    BoxEntity box = BoxFinder.getBox(_boxID);
+    BoxEntity box = BoxFinder.getBox(this._boxID);
 
 
 
@@ -315,7 +315,7 @@ public BoxCategoryChooser(){
 
       for ( int a = 0; a < detach.length; a++ ) {
 
-        BoxBusiness.detachCategory(_boxID,Integer.parseInt(detach[a]));
+        BoxBusiness.detachCategory(this._boxID,Integer.parseInt(detach[a]));
 
       }
 

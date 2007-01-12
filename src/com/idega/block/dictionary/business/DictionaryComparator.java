@@ -32,16 +32,16 @@ public class DictionaryComparator implements Comparator {
   }
 
   public DictionaryComparator(Locale locale, int toSortBy) {
-    sortBy = toSortBy;
-    _locale = locale;
+    this.sortBy = toSortBy;
+    this._locale = locale;
   }
 
   public DictionaryComparator(int toSortBy) {
-    sortBy = toSortBy;
+    this.sortBy = toSortBy;
   }
 
   public void sortBy(int toSortBy) {
-    sortBy = toSortBy;
+    this.sortBy = toSortBy;
   }
 
   public int compare(Object o1, Object o2) {
@@ -85,9 +85,12 @@ public class DictionaryComparator implements Comparator {
 
   private int categorySort(Object o1, Object o2) {
     Collator collator = null;
-    if (_locale != null)
-    	collator = Collator.getInstance(_locale);
-    else collator = IsCollator.getIsCollator();
+    if (this._locale != null) {
+		collator = Collator.getInstance(this._locale);
+	}
+	else {
+		collator = IsCollator.getIsCollator();
+	}
     
     ICCategory p1 = (ICCategory) o1;
     ICCategory p2 = (ICCategory) o2;

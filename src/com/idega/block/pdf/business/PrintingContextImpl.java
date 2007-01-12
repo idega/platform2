@@ -1,5 +1,5 @@
 /*
- * $Id: PrintingContextImpl.java,v 1.1 2004/11/04 20:32:46 aron Exp $
+ * $Id: PrintingContextImpl.java,v 1.1.2.1 2007/01/12 19:31:57 idegaweb Exp $
  * Created on 15.10.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -17,10 +17,10 @@ import java.util.Map;
 
 /**
  * 
- *  Last modified: $Date: 2004/11/04 20:32:46 $ by $Author: aron $
+ *  Last modified: $Date: 2007/01/12 19:31:57 $ by $Author: idegaweb $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.1.2.1 $
  */
 public class PrintingContextImpl implements PrintingContext {
     
@@ -33,17 +33,19 @@ public class PrintingContextImpl implements PrintingContext {
      * @see com.idega.block.pdf.business.PrintingContext#getDocumentProperties()
      */
     public Map getDocumentProperties() {
-        return properties;
+        return this.properties;
     }
 
     /* (non-Javadoc)
      * @see com.idega.block.pdf.business.PrintingContext#addDocumentProperties(java.util.Map)
      */
     public void addDocumentProperties(Map properties) {
-        if(this.properties==null)
-            this.properties = new HashMap(properties);
-        else
-            this.properties.putAll(properties);
+        if(this.properties==null) {
+			this.properties = new HashMap(properties);
+		}
+		else {
+			this.properties.putAll(properties);
+		}
     }
 
     /* (non-Javadoc)

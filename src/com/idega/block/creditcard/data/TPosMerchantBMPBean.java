@@ -39,16 +39,16 @@ public class TPosMerchantBMPBean extends GenericEntity implements TPosMerchant {
 
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute(this._ColumnNameName,"Merchant Name", true, true, String.class);
-    addAttribute(this._ColumnNameMerchantID,"Merchant ID", true, true, String.class);
-    addAttribute(this._ColumnNameLocationID,"Location ID", true, true, String.class);
-    addAttribute(this._ColumnNameUser,"User", true, true, String.class);
-    addAttribute(this._ColumnNamePassword,"Password", true, true, String.class);
-    addAttribute(this._ColumnNamePosID,"Pos ID", true, true, String.class);
-    addAttribute(this._ColumnNameKeyReceivedPassword,"KeyRcvPassw", true, true, String.class);
-    addAttribute(this._ColumnStartDate, "Start date", true, true, Timestamp.class);
-    addAttribute(this._ColumnModifiedDate, "Modification date", true, true, Timestamp.class);
-    addAttribute(this._ColumnEndDate, "End date", true, true, Timestamp.class);
+    addAttribute(TPosMerchantBMPBean._ColumnNameName,"Merchant Name", true, true, String.class);
+    addAttribute(TPosMerchantBMPBean._ColumnNameMerchantID,"Merchant ID", true, true, String.class);
+    addAttribute(TPosMerchantBMPBean._ColumnNameLocationID,"Location ID", true, true, String.class);
+    addAttribute(TPosMerchantBMPBean._ColumnNameUser,"User", true, true, String.class);
+    addAttribute(TPosMerchantBMPBean._ColumnNamePassword,"Password", true, true, String.class);
+    addAttribute(TPosMerchantBMPBean._ColumnNamePosID,"Pos ID", true, true, String.class);
+    addAttribute(TPosMerchantBMPBean._ColumnNameKeyReceivedPassword,"KeyRcvPassw", true, true, String.class);
+    addAttribute(TPosMerchantBMPBean._ColumnStartDate, "Start date", true, true, Timestamp.class);
+    addAttribute(TPosMerchantBMPBean._ColumnModifiedDate, "Modification date", true, true, Timestamp.class);
+    addAttribute(TPosMerchantBMPBean._ColumnEndDate, "End date", true, true, Timestamp.class);
     addAttribute(COLUMN_IS_DELETED, "Is delted", true, true, Boolean.class);
   }
 
@@ -63,31 +63,31 @@ public class TPosMerchantBMPBean extends GenericEntity implements TPosMerchant {
   }
 
   public void setMerchantName(String name) {
-    setColumn(this._ColumnNameName, name);
+    setColumn(TPosMerchantBMPBean._ColumnNameName, name);
   }
 
   public void setMerchantID(String id) {
-    setColumn(this._ColumnNameMerchantID, id);
+    setColumn(TPosMerchantBMPBean._ColumnNameMerchantID, id);
   }
 
   public void setLocationID(String id) {
-    setColumn(this._ColumnNameLocationID, id);
+    setColumn(TPosMerchantBMPBean._ColumnNameLocationID, id);
   }
 
   public void setUserID(String id) {
-    setColumn(this._ColumnNameUser, id);
+    setColumn(TPosMerchantBMPBean._ColumnNameUser, id);
   }
 
   public void setPassword(String password) {
-    setColumn(this._ColumnNamePassword, password);
+    setColumn(TPosMerchantBMPBean._ColumnNamePassword, password);
   }
 
   public void setPosID(String id) {
-    setColumn(this._ColumnNamePosID, id);
+    setColumn(TPosMerchantBMPBean._ColumnNamePosID, id);
   }
 
   public void setKeyReceivedPassword(String keyRcvPassw) {
-    setColumn(this._ColumnNameKeyReceivedPassword, keyRcvPassw);
+    setColumn(TPosMerchantBMPBean._ColumnNameKeyReceivedPassword, keyRcvPassw);
   }
 
   /** GETTERS */
@@ -96,31 +96,31 @@ public class TPosMerchantBMPBean extends GenericEntity implements TPosMerchant {
   }
 
   public String getMerchantName() {
-    return getStringColumnValue(this._ColumnNameName);
+    return getStringColumnValue(TPosMerchantBMPBean._ColumnNameName);
   }
 
   public String getMerchantID() {
-    return getStringColumnValue(this._ColumnNameMerchantID);
+    return getStringColumnValue(TPosMerchantBMPBean._ColumnNameMerchantID);
   }
 
   public String getLocationID() {
-    return getStringColumnValue(this._ColumnNameLocationID);
+    return getStringColumnValue(TPosMerchantBMPBean._ColumnNameLocationID);
   }
 
   public String getUserID() {
-    return getStringColumnValue(this._ColumnNameUser);
+    return getStringColumnValue(TPosMerchantBMPBean._ColumnNameUser);
   }
 
   public String getPassword() {
-    return getStringColumnValue(this._ColumnNamePassword);
+    return getStringColumnValue(TPosMerchantBMPBean._ColumnNamePassword);
   }
 
   public String getPosID() {
-    return getStringColumnValue(this._ColumnNamePosID);
+    return getStringColumnValue(TPosMerchantBMPBean._ColumnNamePosID);
   }
 
   public String getKeyReceivedPassword() {
-    return getStringColumnValue(this._ColumnNameKeyReceivedPassword);
+    return getStringColumnValue(TPosMerchantBMPBean._ColumnNameKeyReceivedPassword);
   }
 
 

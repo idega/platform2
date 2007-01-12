@@ -18,7 +18,7 @@ import com.idega.util.IWTimestamp;
  * Title:        User
  * Copyright:    Copyright (c) 2001
  * Company:      idega.is
- * @author 2000 - idega team - <a href="mailto:gummi@idega.is">Guðmundur Ágúst Sæmundsson</a>
+ * @author 2000 - idega team - <a href="mailto:gummi@idega.is">Guï¿½mundur ï¿½gï¿½st Sï¿½mundsson</a>
  * @version 1.0
  */
 
@@ -53,85 +53,85 @@ public class StaffInfoTab extends UserTab{
   }
 
   public void initializeFieldNames(){
-    titleFieldName = "STtitle";
-    educationFieldName = "STeducation";
-    schoolFieldName = "STschool";
-    areaFieldName = "STarea";
-    beganWorkFieldName = "STbwork";
+    this.titleFieldName = "STtitle";
+    this.educationFieldName = "STeducation";
+    this.schoolFieldName = "STschool";
+    this.areaFieldName = "STarea";
+    this.beganWorkFieldName = "STbwork";
   }
 
   public void initializeFieldValues(){
-    fieldValues.put(this.titleFieldName,"");
-    fieldValues.put(this.educationFieldName,"");
-    fieldValues.put(this.schoolFieldName,"");
-    fieldValues.put(this.areaFieldName,"");
-    fieldValues.put(this.beganWorkFieldName,"");
+    this.fieldValues.put(this.titleFieldName,"");
+    this.fieldValues.put(this.educationFieldName,"");
+    this.fieldValues.put(this.schoolFieldName,"");
+    this.fieldValues.put(this.areaFieldName,"");
+    this.fieldValues.put(this.beganWorkFieldName,"");
 
     this.updateFieldsDisplayStatus();
   }
 
   public void updateFieldsDisplayStatus(){
-    titleField.setContent((String)fieldValues.get(this.titleFieldName));
+    this.titleField.setContent((String)this.fieldValues.get(this.titleFieldName));
 
-    educationField.setContent((String)fieldValues.get(this.educationFieldName));
+    this.educationField.setContent((String)this.fieldValues.get(this.educationFieldName));
 
-    schoolField.setContent((String)fieldValues.get(this.schoolFieldName));
+    this.schoolField.setContent((String)this.fieldValues.get(this.schoolFieldName));
 
-    areaField.setContent((String)fieldValues.get(this.areaFieldName));
+    this.areaField.setContent((String)this.fieldValues.get(this.areaFieldName));
 
-    StringTokenizer date = new StringTokenizer((String)fieldValues.get(this.beganWorkFieldName)," -");
+    StringTokenizer date = new StringTokenizer((String)this.fieldValues.get(this.beganWorkFieldName)," -");
 
     if(date.hasMoreTokens()){
-      beganWorkField.setYear(date.nextToken());
+      this.beganWorkField.setYear(date.nextToken());
     }
     if(date.hasMoreTokens()){
-      beganWorkField.setMonth(date.nextToken());
+      this.beganWorkField.setMonth(date.nextToken());
     }
     if(date.hasMoreTokens()){
-      beganWorkField.setDay(date.nextToken());
+      this.beganWorkField.setDay(date.nextToken());
     }
   }
 
 
   public void initializeFields(){
-    titleField = new TextInput(titleFieldName);
-    titleField.setLength(24);
+    this.titleField = new TextInput(this.titleFieldName);
+    this.titleField.setLength(24);
 
-    educationField = new TextArea(educationFieldName);
-    educationField.setHeight(4);
-    educationField.setWidth(42);
-    educationField.setWrap(true);
+    this.educationField = new TextArea(this.educationFieldName);
+    this.educationField.setHeight(4);
+    this.educationField.setWidth(42);
+    this.educationField.setWrap(true);
 
-    schoolField = new TextArea(schoolFieldName);
-    schoolField.setHeight(4);
-    schoolField.setWidth(42);
-    schoolField.setWrap(true);
+    this.schoolField = new TextArea(this.schoolFieldName);
+    this.schoolField.setHeight(4);
+    this.schoolField.setWidth(42);
+    this.schoolField.setWrap(true);
 
-    areaField = new TextArea(areaFieldName);
-    areaField.setHeight(4);
-    areaField.setWidth(42);
-    areaField.setWrap(true);
+    this.areaField = new TextArea(this.areaFieldName);
+    this.areaField.setHeight(4);
+    this.areaField.setWidth(42);
+    this.areaField.setWrap(true);
 
-    beganWorkField = new DateInput(beganWorkFieldName);
+    this.beganWorkField = new DateInput(this.beganWorkFieldName);
     IWTimestamp time = IWTimestamp.RightNow();
-    beganWorkField.setYearRange(time.getYear(),time.getYear()-100);
+    this.beganWorkField.setYearRange(time.getYear(),time.getYear()-100);
   }
 
   public void initializeTexts(){
-    titleText = getTextObject();
-    titleText.setText("Title");
+    this.titleText = getTextObject();
+    this.titleText.setText("Title");
 
-    educationText = getTextObject();
-    educationText.setText("Education:");
+    this.educationText = getTextObject();
+    this.educationText.setText("Education:");
 
-    schoolText = getTextObject();
-    schoolText.setText("School:");
+    this.schoolText = getTextObject();
+    this.schoolText.setText("School:");
 
-    areaText = getTextObject();
-    areaText.setText("Area:");
+    this.areaText = getTextObject();
+    this.areaText.setText("Area:");
 
-    beganWorkText = getTextObject();
-    beganWorkText.setText("Began work: ");
+    this.beganWorkText = getTextObject();
+    this.beganWorkText.setText("Began work: ");
 
   }
 
@@ -139,7 +139,7 @@ public class StaffInfoTab extends UserTab{
   public void lineUpFields(){
     this.resize(1,1);
 
-    String rowHeight2 = Integer.toString(Integer.parseInt(rowHeight) + 67);
+    String rowHeight2 = Integer.toString(Integer.parseInt(this.rowHeight) + 67);
 
     Table staffTable = new Table(2,5);
     staffTable.setWidth("100%");
@@ -148,23 +148,23 @@ public class StaffInfoTab extends UserTab{
     staffTable.mergeCells(1,3,2,3);
     staffTable.mergeCells(1,4,2,4);
     staffTable.mergeCells(1,5,2,5);
-    staffTable.setHeight(1,rowHeight);
-    staffTable.setHeight(2,rowHeight);
+    staffTable.setHeight(1,this.rowHeight);
+    staffTable.setHeight(2,this.rowHeight);
     staffTable.setHeight(3,rowHeight2);
     staffTable.setHeight(4,rowHeight2);
     staffTable.setHeight(5,rowHeight2);
 
-    staffTable.add(titleText,1,1);
+    staffTable.add(this.titleText,1,1);
     staffTable.add(this.titleField,2,1);
-    staffTable.add(beganWorkText,1,2);
+    staffTable.add(this.beganWorkText,1,2);
     staffTable.add(this.beganWorkField,2,2);
-    staffTable.add(educationText,1,3);
+    staffTable.add(this.educationText,1,3);
     staffTable.add(Text.getBreak(),1,3);
     staffTable.add(this.educationField,1,3);
-    staffTable.add(schoolText,1,4);
+    staffTable.add(this.schoolText,1,4);
     staffTable.add(Text.getBreak(),1,4);
     staffTable.add(this.schoolField,1,4);
-    staffTable.add(areaText,1,5);
+    staffTable.add(this.areaText,1,5);
     staffTable.add(Text.getBreak(),1,5);
     staffTable.add(this.areaField,1,5);
     this.add(staffTable,1,1);
@@ -181,19 +181,19 @@ public class StaffInfoTab extends UserTab{
       String beganWork = iwc.getParameter(this.beganWorkFieldName);
 
       if(title != null){
-        fieldValues.put(this.titleFieldName,title);
+        this.fieldValues.put(this.titleFieldName,title);
       }
       if(education != null){
-        fieldValues.put(this.educationFieldName,education);
+        this.fieldValues.put(this.educationFieldName,education);
       }
       if(school != null){
-        fieldValues.put(this.schoolFieldName,school);
+        this.fieldValues.put(this.schoolFieldName,school);
       }
       if(area != null){
-        fieldValues.put(this.areaFieldName,area);
+        this.fieldValues.put(this.areaFieldName,area);
       }
       if(beganWork != null){
-        fieldValues.put(this.beganWorkFieldName,beganWork);
+        this.fieldValues.put(this.beganWorkFieldName,beganWork);
       }
 
       this.updateFieldsDisplayStatus();
@@ -207,13 +207,13 @@ public class StaffInfoTab extends UserTab{
     try{
       if(getUserId() > -1){
         IWTimestamp beganWorkTS = null;
-        String st = (String)fieldValues.get(this.beganWorkFieldName);
+        String st = (String)this.fieldValues.get(this.beganWorkFieldName);
         if( st != null && !st.equals("")){
           beganWorkTS = new IWTimestamp(st);
         }
-        StaffBusiness.updateStaff(getUserId(),(String)fieldValues.get(this.titleFieldName),
-                            (String)fieldValues.get(this.educationFieldName),(String)fieldValues.get(this.schoolFieldName),
-                            (String)fieldValues.get(this.areaFieldName),beganWorkTS);
+        StaffBusiness.updateStaff(getUserId(),(String)this.fieldValues.get(this.titleFieldName),
+                            (String)this.fieldValues.get(this.educationFieldName),(String)this.fieldValues.get(this.schoolFieldName),
+                            (String)this.fieldValues.get(this.areaFieldName),beganWorkTS);
       }
     }
     catch(Exception e){
@@ -229,11 +229,11 @@ public class StaffInfoTab extends UserTab{
     try{
       StaffInfo staffInfo = ((com.idega.block.staff.data.StaffInfoHome)com.idega.data.IDOLookup.getHomeLegacy(StaffInfo.class)).findByPrimaryKeyLegacy(getUserId());
 
-      fieldValues.put(this.titleFieldName,(staffInfo.getTitle() != null) ? staffInfo.getTitle():"" );
-      fieldValues.put(this.educationFieldName,(staffInfo.getEducation() != null) ? staffInfo.getEducation():"" );
-      fieldValues.put(this.schoolFieldName,(staffInfo.getSchool() != null) ? staffInfo.getSchool():"" );
-      fieldValues.put(this.areaFieldName,(staffInfo.getArea() != null) ? staffInfo.getArea():"" );
-      fieldValues.put(this.beganWorkFieldName,(staffInfo.getBeganWork() != null) ? new IWTimestamp(staffInfo.getBeganWork()).toSQLDateString() : "");
+      this.fieldValues.put(this.titleFieldName,(staffInfo.getTitle() != null) ? staffInfo.getTitle():"" );
+      this.fieldValues.put(this.educationFieldName,(staffInfo.getEducation() != null) ? staffInfo.getEducation():"" );
+      this.fieldValues.put(this.schoolFieldName,(staffInfo.getSchool() != null) ? staffInfo.getSchool():"" );
+      this.fieldValues.put(this.areaFieldName,(staffInfo.getArea() != null) ? staffInfo.getArea():"" );
+      this.fieldValues.put(this.beganWorkFieldName,(staffInfo.getBeganWork() != null) ? new IWTimestamp(staffInfo.getBeganWork()).toSQLDateString() : "");
       this.updateFieldsDisplayStatus();
 
     }

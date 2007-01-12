@@ -31,8 +31,8 @@ public class StaffUserViewer extends Block {
 	
 
 	public void main(IWContext iwc) throws Exception {
-		iwb = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
-		iwrb = getResourceBundle(iwc);
+		this.iwb = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+		this.iwrb = getResourceBundle(iwc);
 		
 	}
 

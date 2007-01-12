@@ -140,31 +140,31 @@ public class DynamicReportDesign {
 	 *
 	 */
 	private void initializeDocument(String name) {
-		_designDoc = new DesignDocument(name);
+		this._designDoc = new DesignDocument(name);
 	
 		// set A 4 paper size
-		_designDoc.setPageWidth(PAGE_WIDTH_PORTRAIT_A4);
-		_designDoc.setPageHeight(PAGE_HEIGHT_PORTRAIT_A4);
-		_designDoc.setColumnWidth(540);
-		_designDoc.setColumnSpacing(15);
-		_designDoc.setLeftMargin(PAGE_LEFT_MARGIN);
-		_designDoc.setRightMargin(PAGE_RIGHT_MARGIN);
-		_designDoc.setTopMargin(PAGE_TOP_MARGIN);
-		_designDoc.setBottomMargin(PAGE_BOTTOM_MARGIN);
-		_designDoc.setColumnCount(1);
-		_designDoc.setPrintOrderVertical();
-		_designDoc.setOrientationPortrait();
-		_designDoc.setWhenNoDataTypeAsAllSectionNoDetail();
-		_designDoc.setIsTitleNewPage(false);
-		_designDoc.setIsSummaryNewPage(false);
+		this._designDoc.setPageWidth(PAGE_WIDTH_PORTRAIT_A4);
+		this._designDoc.setPageHeight(PAGE_HEIGHT_PORTRAIT_A4);
+		this._designDoc.setColumnWidth(540);
+		this._designDoc.setColumnSpacing(15);
+		this._designDoc.setLeftMargin(PAGE_LEFT_MARGIN);
+		this._designDoc.setRightMargin(PAGE_RIGHT_MARGIN);
+		this._designDoc.setTopMargin(PAGE_TOP_MARGIN);
+		this._designDoc.setBottomMargin(PAGE_BOTTOM_MARGIN);
+		this._designDoc.setColumnCount(1);
+		this._designDoc.setPrintOrderVertical();
+		this._designDoc.setOrientationPortrait();
+		this._designDoc.setWhenNoDataTypeAsAllSectionNoDetail();
+		this._designDoc.setIsTitleNewPage(false);
+		this._designDoc.setIsSummaryNewPage(false);
 	
 	
-		_designDoc.addParameter(PRM_REPORT_NAME,String.class,true);
-		if (showDate) {
-			_designDoc.addParameter(PRM_DATE, String.class, true);
+		this._designDoc.addParameter(PRM_REPORT_NAME,String.class,true);
+		if (this.showDate) {
+			this._designDoc.addParameter(PRM_DATE, String.class, true);
 		}
-		if (showUser) {
-			_designDoc.addParameter(PRM_USER, String.class, true);
+		if (this.showUser) {
+			this._designDoc.addParameter(PRM_USER, String.class, true);
 		}
 	
 	}
@@ -174,14 +174,14 @@ public class DynamicReportDesign {
 	 */
 	private void createTitle() {
 		Title title = new Title();
-		title.setHeight(_reportTitleHeight);
+		title.setHeight(this._reportTitleHeight);
 		//title.setIsSplitAllowed(true);
 			TextField tField1 = new TextField();
 			tField1.setIsBlankWhenNull(true);
 			tField1.setIsStretchWithOverflow(true);
 			tField1.setEvaluationTimeAsNow();
 			tField1.setHyperlinkTypeAsNone();
-				ReportElement rElement = new ReportElement(0,0,500,_reportTitleHeight);
+				ReportElement rElement = new ReportElement(0,0,500,this._reportTitleHeight);
 				rElement.setPositionTypeAsFixRelativeToTop();
 				rElement.setIsPrintRepeatedValues(true);
 				rElement.setIsRemoveLineWhenBlank(false);
@@ -203,7 +203,7 @@ public class DynamicReportDesign {
 			tField1.addContent(tfExpression);
 		title.addContent(tField1);
 	
-		_designDoc.setTitle(title);
+		this._designDoc.setTitle(title);
 	}
 
 	/**
@@ -211,9 +211,9 @@ public class DynamicReportDesign {
 	 */
 	private void createPageHeader() {
 		PageHeader pHeader = new PageHeader();
-		pHeader.setHeight(_pageHeaderHeight);
+		pHeader.setHeight(this._pageHeaderHeight);
 		//pHeader.setIsSplitAllowed(true);
-		_designDoc.setPageHeader(pHeader);		
+		this._designDoc.setPageHeader(pHeader);		
 	}
 	
 	/**
@@ -221,9 +221,9 @@ public class DynamicReportDesign {
 	 */
 	private void createColumnHeader() {
 		ColumnHeader colHeader = new ColumnHeader();
-		colHeader.setHeight(_columnHeaderHeight);
+		colHeader.setHeight(this._columnHeaderHeight);
 		//colHeader.setIsSplitAllowed(true);
-		_designDoc.setColumnHeader(colHeader);
+		this._designDoc.setColumnHeader(colHeader);
 	}
 	
 	/**
@@ -231,9 +231,9 @@ public class DynamicReportDesign {
 	 */
 	private void createDetail() {
 		Detail detail = new Detail();
-		detail.setHeight(_detailHeight);
+		detail.setHeight(this._detailHeight);
 		//detail.setIsSplitAllowed(true);
-		_designDoc.setDetail(detail);
+		this._designDoc.setDetail(detail);
 	}
 	
 	/**
@@ -243,7 +243,7 @@ public class DynamicReportDesign {
 		ColumnFooter colFooter = new ColumnFooter();
 		colFooter.setHeight(0);
 		//colFooter.setIsSplitAllowed(true);
-		_designDoc.setColumnFooter(colFooter);	
+		this._designDoc.setColumnFooter(colFooter);	
 	}
 	
 	/**
@@ -305,7 +305,7 @@ public class DynamicReportDesign {
 			tField.addContent(tfExpression);
 		pFooter.addContent(tField);
 
-		if (showDate) {
+		if (this.showDate) {
 		
 		TextField eField = new TextField();
 			eField.setIsStretchWithOverflow(false);
@@ -331,7 +331,7 @@ public class DynamicReportDesign {
 		pFooter.addContent(eField);
 		}
 		
-		if (showUser) {
+		if (this.showUser) {
 		TextField eField = new TextField();
 			eField.setIsStretchWithOverflow(false);
 			eField.setEvaluationTimeAsNow();
@@ -357,7 +357,7 @@ public class DynamicReportDesign {
 		}
 
 		
-		_designDoc.setPageFooter(pFooter);
+		this._designDoc.setPageFooter(pFooter);
 	}
 	
 	/**
@@ -367,16 +367,16 @@ public class DynamicReportDesign {
 		Summary summary = new Summary();
 		summary.setHeight(0);
 		//summary.setIsSplitAllowed(true);
-		_designDoc.setSummary(summary);
+		this._designDoc.setSummary(summary);
 	}
 
 	public void addField(String fieldName, String displayParameterName, String className, int columnWidth) {
-		_designDoc.addField(fieldName, className);
+		this._designDoc.addField(fieldName, className);
 		addColumn(fieldName, displayParameterName, className, columnWidth);
 	}
 	
 	public void addField(String fieldName, String displayParameterName, Class classType, int columnWidth){
-		_designDoc.addField(fieldName,classType);
+		this._designDoc.addField(fieldName,classType);
 		addColumn(fieldName, displayParameterName, classType, columnWidth);
 	}
 	
@@ -392,12 +392,12 @@ public class DynamicReportDesign {
 
 	
 	public void addField(String fieldName, String className, int columnWidth) {
-		_designDoc.addField(fieldName, className);
+		this._designDoc.addField(fieldName, className);
 		addColumn(fieldName, className, columnWidth);
 	}
 	
 	public void addField(String fieldName, Class classType, int columnWidth){
-		_designDoc.addField(fieldName,classType);
+		this._designDoc.addField(fieldName,classType);
 		addColumn(fieldName, classType, columnWidth);
 	}
 	
@@ -412,15 +412,15 @@ public class DynamicReportDesign {
 	}
 	
 	private void addFieldToColumnHeader(String fieldName, Class classType, int columnWidth){
-		_designDoc.addParameter(fieldName,String.class);
+		this._designDoc.addParameter(fieldName,String.class);
 		
 		TextField tField = new TextField();
 		tField.setIsBlankWhenNull(true);
 		tField.setIsStretchWithOverflow(true);
 		tField.setEvaluationTimeAsNow();
 		tField.setHyperlinkTypeAsNone();
-			ReportElement rElement = new ReportElement(_columnsXCoordinateForColumnHeader,0,columnWidth,_columnHeaderHeight);
-			_columnsXCoordinateForColumnHeader += columnWidth;
+			ReportElement rElement = new ReportElement(this._columnsXCoordinateForColumnHeader,0,columnWidth,this._columnHeaderHeight);
+			this._columnsXCoordinateForColumnHeader += columnWidth;
 			rElement.setPositionTypeAsFloat();
 			rElement.setIsPrintRepeatedValues(true);
 			rElement.setIsRemoveLineWhenBlank(false);
@@ -442,7 +442,7 @@ public class DynamicReportDesign {
 		tField.addContent(tfExpression);
 		
 		
-		_designDoc.getColumnHeader().addContent(tField);
+		this._designDoc.getColumnHeader().addContent(tField);
 	}
 	
 	private void addToFieldDetail(String fieldName, String className, int columnWidth) {
@@ -466,8 +466,8 @@ public class DynamicReportDesign {
 		tField.setIsStretchWithOverflow(true);
 		tField.setEvaluationTimeAsNow();
 		tField.setHyperlinkTypeAsNone();
-			ReportElement rElement = new ReportElement(_columnsXCoordinateForDetail,0,columnWidth,_detailHeight);
-			_columnsXCoordinateForDetail += columnWidth;
+			ReportElement rElement = new ReportElement(this._columnsXCoordinateForDetail,0,columnWidth,this._detailHeight);
+			this._columnsXCoordinateForDetail += columnWidth;
 			rElement.setPositionTypeAsFloat();
 			rElement.setIsPrintRepeatedValues(true);
 			rElement.setIsRemoveLineWhenBlank(false);
@@ -483,35 +483,35 @@ public class DynamicReportDesign {
 			tElement.addContent(tElementFont);
 		tField.addContent(tElement);
 		tField.addContent(textFieldExpression);
-		_designDoc.getDetail().addContent(tField);
+		this._designDoc.getDetail().addContent(tField);
 	}
 	
 	private void checkHeaderBoundaries(int x1ToAdd, int x2ToAdd){
-		if(_headerParametersMaxXCoordinate >0){
-			int totalAfterThis = _headerParametersXCoordinate+x1ToAdd+x2ToAdd;
-			if(_headerParametersMaxXCoordinate < totalAfterThis){
-				_headerParametersXCoordinate=0;
-				_pageHeaderHeight += _headerParametersHeight;
-				_headerParametersYCoordinate += _headerParametersHeight;
-				_designDoc.getPageHeader().setHeight(_pageHeaderHeight);
+		if(this._headerParametersMaxXCoordinate >0){
+			int totalAfterThis = this._headerParametersXCoordinate+x1ToAdd+x2ToAdd;
+			if(this._headerParametersMaxXCoordinate < totalAfterThis){
+				this._headerParametersXCoordinate=0;
+				this._pageHeaderHeight += this._headerParametersHeight;
+				this._headerParametersYCoordinate += this._headerParametersHeight;
+				this._designDoc.getPageHeader().setHeight(this._pageHeaderHeight);
 			}
 		}
-		if(_headerParametersXCoordinate == 0 && _headerParametersYCoordinate==0){
-			_pageHeaderHeight += _headerParametersHeight;
-			_designDoc.getPageHeader().setHeight(_pageHeaderHeight);
+		if(this._headerParametersXCoordinate == 0 && this._headerParametersYCoordinate==0){
+			this._pageHeaderHeight += this._headerParametersHeight;
+			this._designDoc.getPageHeader().setHeight(this._pageHeaderHeight);
 		}
 	}
 	
 	private void addParameterToPageHeader(String prmName, int prmWidth, Class classType,boolean underline, boolean bold){
-		_designDoc.addParameter(prmName,String.class);
+		this._designDoc.addParameter(prmName,String.class);
 		
 		TextField tField = new TextField();
 		tField.setIsBlankWhenNull(false);
 		tField.setIsStretchWithOverflow(true);
 		tField.setEvaluationTimeAsNow();
 		tField.setHyperlinkTypeAsNone();
-			ReportElement rElement = new ReportElement(_headerParametersXCoordinate,_headerParametersYCoordinate,prmWidth,_headerParametersHeight);
-			_headerParametersXCoordinate += prmWidth;
+			ReportElement rElement = new ReportElement(this._headerParametersXCoordinate,this._headerParametersYCoordinate,prmWidth,this._headerParametersHeight);
+			this._headerParametersXCoordinate += prmWidth;
 			rElement.setPositionTypeAsFloat();
 			rElement.setIsPrintRepeatedValues(true);
 			rElement.setIsRemoveLineWhenBlank(false);
@@ -533,7 +533,7 @@ public class DynamicReportDesign {
 			tfExpression.addParameter(prmName);	
 		tField.addContent(tfExpression);
 
-		_designDoc.getPageHeader().addContent(tField);
+		this._designDoc.getPageHeader().addContent(tField);
 		
 		
 	}
@@ -543,7 +543,7 @@ public class DynamicReportDesign {
 		
 		addParameterToPageHeader(prmLableName,prmLableWidth, String.class,false, true);
 		addParameterToPageHeader(prmValueName,prmValueWidth, prmValueClass,false, false);
-		_headerParametersXCoordinate += _extraspaceBetweenParameterGroupsInHeader;
+		this._headerParametersXCoordinate += this._extraspaceBetweenParameterGroupsInHeader;
 	}
 	
 
@@ -555,15 +555,15 @@ public class DynamicReportDesign {
 	}
 	
 	private int getTempFileNumber(){
-		if(_tempFileNumber == -1){
-			_tempFileNumber = getNextTempFileNumber();
+		if(this._tempFileNumber == -1){
+			this._tempFileNumber = getNextTempFileNumber();
 		}
-		return _tempFileNumber;
+		return this._tempFileNumber;
 	}
 	
 	public JasperDesign getJasperDesign(IWApplicationContext iwc) throws IOException, JRException{
-		if(_designDoc != null){
-			InputStream inputStream = _designDoc.getInputstream(getRealPathToDesignFile(iwc,TEMP_DESIGN_NAME,XML_FILE_EXTENSION));
+		if(this._designDoc != null){
+			InputStream inputStream = this._designDoc.getInputstream(getRealPathToDesignFile(iwc,TEMP_DESIGN_NAME,XML_FILE_EXTENSION));
 			JasperDesign designToReturn = JasperManager.loadXmlDesign(inputStream);
 			inputStream.close();
 			return designToReturn;
@@ -622,48 +622,48 @@ public class DynamicReportDesign {
 	 * Use this method to close the document before writing it to file
 	 */
 	public void close(){
-		_designDoc.close();
+		this._designDoc.close();
 	}
 	
 	
 	public void setPageHeight(int height){
-		_designDoc.setPageHeight(height);
+		this._designDoc.setPageHeight(height);
 	}
 	
 	public void setPageWidth(int width){
-		_designDoc.setPageWidth(width);
+		this._designDoc.setPageWidth(width);
 	}
 	
 	public void setColumnWidth(int width){
-		_designDoc.setColumnWidth(width);
+		this._designDoc.setColumnWidth(width);
 	}
 	
 	public void setHeaderParametersHeight(int height){
-		_headerParametersHeight = height;
+		this._headerParametersHeight = height;
 	}
 	
 	public void setHeaderParametersMaxWidth(int width){
-		_headerParametersMaxXCoordinate = width;
+		this._headerParametersMaxXCoordinate = width;
 	}
 	
 	public void setColumnHeaderHeight(int heigth){
-		_columnHeaderHeight = heigth;
-		_designDoc.getColumnHeader().setHeight(heigth);
+		this._columnHeaderHeight = heigth;
+		this._designDoc.getColumnHeader().setHeight(heigth);
 	}
 	
 	public void setDetailHeight(int heigth){
-		_detailHeight = heigth;
-		_designDoc.getDetail().setHeight(heigth);
+		this._detailHeight = heigth;
+		this._designDoc.getDetail().setHeight(heigth);
 	}
 	
 	public void setPageHeaderHeight(int heigth){
-		_pageHeaderHeight = heigth;
-		_designDoc.getPageHeader().setHeight(heigth);
+		this._pageHeaderHeight = heigth;
+		this._designDoc.getPageHeader().setHeight(heigth);
 	}
 	
 	public void setTitleHeight(int heigth){
-		_reportTitleHeight = heigth;
-		_designDoc.getTitle().setHeight(heigth);
+		this._reportTitleHeight = heigth;
+		this._designDoc.getTitle().setHeight(heigth);
 	}
 	
 	public void setShowDate(boolean showDate) {
@@ -675,7 +675,7 @@ public class DynamicReportDesign {
 	}
 
 	public void setOrientationLandscape() {
-		_designDoc.setOrientationLandscape();
+		this._designDoc.setOrientationLandscape();
 	}
 	
 }

@@ -57,9 +57,9 @@ public abstract class SchoolBlock extends Block {
 	private SchoolBusiness business;
 	
 	public void main(IWContext iwc) throws Exception {
-		iwb = getBundle(iwc);
-		iwrb = getResourceBundle(iwc);
-		business = getSchoolBusiness(iwc);
+		this.iwb = getBundle(iwc);
+		this.iwrb = getResourceBundle(iwc);
+		this.business = getSchoolBusiness(iwc);
 		init(iwc);
 	}
 	
@@ -105,10 +105,10 @@ public abstract class SchoolBlock extends Block {
 	}
 	
 	public String localize(String textKey, String defaultText) {
-		if (iwrb == null) {
+		if (this.iwrb == null) {
 			return defaultText;
 		}
-		return iwrb.getLocalizedString(textKey, defaultText);
+		return this.iwrb.getLocalizedString(textKey, defaultText);
 	}
 	
 	protected String getHeaderRowClass() {
@@ -188,7 +188,7 @@ public abstract class SchoolBlock extends Block {
 	 * @return Image	The edit icon.
 	 */
 	protected Image getEditIcon(String toolTip) {
-		Image editImage = iwb.getImage("shared/edit.gif", 12, 12);
+		Image editImage = this.iwb.getImage("shared/edit.gif", 12, 12);
 		editImage.setToolTip(toolTip);
 		return editImage;
 	}
@@ -199,20 +199,20 @@ public abstract class SchoolBlock extends Block {
 	 * @return Image	The delete icon.
 	 */
 	protected Image getDeleteIcon(String toolTip) {
-		Image deleteImage = iwb.getImage("shared/delete.gif", 12, 12);
+		Image deleteImage = this.iwb.getImage("shared/delete.gif", 12, 12);
 		deleteImage.setToolTip(toolTip);
 		return deleteImage;
 	}
 
 	protected SchoolBusiness getBusiness() {
-		return business;
+		return this.business;
 	}
 	
 	protected IWBundle getBundle() {
-		return iwb;
+		return this.iwb;
 	}
 	
 	protected IWResourceBundle getResourceBundle() {
-		return iwrb;
+		return this.iwrb;
 	}
 }

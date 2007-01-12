@@ -12,8 +12,10 @@ import com.idega.block.staff.data.StaffInfo;
 import com.idega.block.staff.data.StaffLocalized;
 import com.idega.block.staff.data.StaffMeta;
 import com.idega.block.staff.data.StaffMetaData;
+import com.idega.block.staff.data.StaffMetaDataBMPBean;
 import com.idega.core.user.business.UserBusiness;
 import com.idega.core.user.business.UserGroupBusiness;
+import com.idega.data.GenericEntity;
 import com.idega.transaction.IdegaTransactionManager;
 import com.idega.util.IWTimestamp;
 
@@ -25,7 +27,7 @@ import com.idega.util.IWTimestamp;
 
  * Copyright:    Copyright (c) 2000 idega.is All Rights Reserved
 
- * Company:      idega margmiðlun
+ * Company:      idega margmiï¿½lun
 
  * @author
 
@@ -184,33 +186,32 @@ public static final String PARAMETER_META_ATTRIBUTE = "attribute";
 
 
 
-    if ( update )
+    if ( update ) {
+		try {
 
-      try {
+		    staffToAdd.update();
 
-        staffToAdd.update();
+		  }
 
-      }
+		  catch (SQLException e) {
 
-      catch (SQLException e) {
+		    e.printStackTrace(System.err);
 
-        e.printStackTrace(System.err);
+		  }
+	}
+	else {
+		try {
 
-      }
+		    staffToAdd.insert();
 
-    else
+		  }
 
-      try {
+		  catch (SQLException e) {
 
-        staffToAdd.insert();
+		    e.printStackTrace(System.err);
 
-      }
-
-      catch (SQLException e) {
-
-        e.printStackTrace(System.err);
-
-      }
+		  }
+	}
 
 
 
@@ -464,9 +465,9 @@ public static final String PARAMETER_META_ATTRIBUTE = "attribute";
 	
 	      meta.setAttribute(a1);
 	
-	      if ( v1 != null )
-	
-	        meta.setValue(v1);
+	      if ( v1 != null ) {
+			meta.setValue(v1);
+		}
 	      meta.insert();
 	
 	    }
@@ -481,9 +482,9 @@ public static final String PARAMETER_META_ATTRIBUTE = "attribute";
 	
 	      meta.setAttribute(a2);
 	
-	      if ( v2 != null )
-	
-	        meta.setValue(v2);
+	      if ( v2 != null ) {
+			meta.setValue(v2);
+		}
 	      	
 	      meta.insert();
 	
@@ -499,9 +500,9 @@ public static final String PARAMETER_META_ATTRIBUTE = "attribute";
 	
 	      meta.setAttribute(a3);
 	
-	      if ( v3 != null )
-	
-	        meta.setValue(v3);
+	      if ( v3 != null ) {
+			meta.setValue(v3);
+		}
 
 	      meta.insert();
 	
@@ -517,9 +518,9 @@ public static final String PARAMETER_META_ATTRIBUTE = "attribute";
 	
 	      meta.setAttribute(a4);
 	
-	      if ( v4 != null )
-	
-	        meta.setValue(v4);
+	      if ( v4 != null ) {
+			meta.setValue(v4);
+		}
 	
 	      meta.insert();
 	
@@ -535,9 +536,9 @@ public static final String PARAMETER_META_ATTRIBUTE = "attribute";
 	
 	      meta.setAttribute(a5);
 	
-	      if ( v5 != null )
-	
-	        meta.setValue(v5);
+	      if ( v5 != null ) {
+			meta.setValue(v5);
+		}
 	
 	      meta.insert();
 	
@@ -553,9 +554,9 @@ public static final String PARAMETER_META_ATTRIBUTE = "attribute";
 	
 	      meta.setAttribute(a6);
 	
-	      if ( v6 != null )
-	
-	        meta.setValue(v6);
+	      if ( v6 != null ) {
+			meta.setValue(v6);
+		}
 	
 	      meta.insert();
 	
@@ -582,7 +583,7 @@ public static final String PARAMETER_META_ATTRIBUTE = "attribute";
 
     try {
 
-      com.idega.block.staff.data.StaffMetaBMPBean.getStaticInstance(StaffMeta.class).deleteMultiple(com.idega.block.staff.data.StaffMetaBMPBean.getColumnNameUserID(),Integer.toString(userID),com.idega.block.staff.data.StaffMetaBMPBean.getColumnNameLocaleId(),Integer.toString(localeID));
+      GenericEntity.getStaticInstance(StaffMeta.class).deleteMultiple(StaffMetaDataBMPBean.getColumnNameUserID(),Integer.toString(userID),com.idega.block.staff.data.StaffMetaBMPBean.getColumnNameLocaleId(),Integer.toString(localeID));
 
     }
 
@@ -615,9 +616,9 @@ public static final String PARAMETER_META_ATTRIBUTE = "attribute";
 	
 	        meta.setAttribute(attributes[a]);
 	
-	        if ( values[a] != null )
-	
-	          meta.setValue(values[a]);
+	        if ( values[a] != null ) {
+				meta.setValue(values[a]);
+			}
 	
 	        meta.insert();
 	

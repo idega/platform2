@@ -47,7 +47,7 @@ public class MethodInput extends XMLElement {
 		if(iter != null){
 			while (iter.hasNext()) {
 				XMLElement localizedName = (XMLElement)iter.next();
-				_parameterClasses.add(new ClassDescription(localizedName));
+				this._parameterClasses.add(new ClassDescription(localizedName));
 			}
 		}
 	}
@@ -57,7 +57,7 @@ public class MethodInput extends XMLElement {
 	}
 	
 	public List getClassDescriptions(){
-		return _parameterClasses;
+		return this._parameterClasses;
 	}
 
 

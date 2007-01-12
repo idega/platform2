@@ -54,26 +54,26 @@ public class TariffIndexEditor extends Finance {
     return "Indices";
   }
   protected void control(IWContext iwc){
-    if(isAdmin){
+    if(this.isAdmin){
       try{
         PresentationObject MO = new Text("nothing");
         if(iwc.getParameter(strAction) == null){
-          MO = getMainTable(iwc,iCategoryId);
+          MO = getMainTable(iwc,this.iCategoryId);
         }
         if(iwc.getParameter(strAction) != null){
           String sAct = iwc.getParameter(strAction);
           int iAct = Integer.parseInt(sAct);
 
           switch (iAct) {
-            case ACT1 : MO =  getMainTable(iwc,iCategoryId);        break;
-            case ACT2 : MO = getChangeTable(iwc,iCategoryId);      break;
-            case ACT3 : MO = doUpdate(iwc,iCategoryId);      break;
-            default: MO = getMainTable(iwc,iCategoryId);           break;
+            case ACT1 : MO =  getMainTable(iwc,this.iCategoryId);        break;
+            case ACT2 : MO = getChangeTable(iwc,this.iCategoryId);      break;
+            case ACT3 : MO = doUpdate(iwc,this.iCategoryId);      break;
+            default: MO = getMainTable(iwc,this.iCategoryId);           break;
           }
         }
         
           setLocalizedTitle("tariff_index_editor","Tariff index editor");
-          setSearchPanel(makeLinkTable(1,iCategoryId));
+          setSearchPanel(makeLinkTable(1,this.iCategoryId));
           setMainPanel(MO);
           
       }
@@ -81,8 +81,9 @@ public class TariffIndexEditor extends Finance {
         S.printStackTrace();
       }
     }
-    else
-      add(iwrb.getLocalizedString("access_denied","Access denies"));
+	else {
+		add(this.iwrb.getLocalizedString("access_denied","Access denies"));
+	}
   }
 
   protected PresentationObject makeLinkTable(int menuNr,int iCategoryId){
@@ -93,15 +94,15 @@ public class TariffIndexEditor extends Finance {
     LinkTable.setCellspacing(1);
     
     LinkTable.setWidth(last,"100%");
-    Link Link1 = new Link(getHeader(iwrb.getLocalizedString("view","View")));
-    Link1.addParameter(this.strAction,String.valueOf(this.ACT1));
+    Link Link1 = new Link(getHeader(this.iwrb.getLocalizedString("view","View")));
+    Link1.addParameter(TariffIndexEditor.strAction,String.valueOf(this.ACT1));
     //Link1.addParameter(Finance.getCategoryParameter(iCategoryId));
-    Link Link2 = new Link(getHeader(iwrb.getLocalizedString("change","Change")));
+    Link Link2 = new Link(getHeader(this.iwrb.getLocalizedString("change","Change")));
    
    
-    Link2.addParameter(this.strAction,String.valueOf(this.ACT2));
+    Link2.addParameter(TariffIndexEditor.strAction,String.valueOf(this.ACT2));
     //Link2.addParameter(Finance.getCategoryParameter(iCategoryId));
-    if(isAdmin){
+    if(this.isAdmin){
       LinkTable.add(Link1,1,1);
       LinkTable.add(Link2,2,1);
     }
@@ -112,8 +113,9 @@ public class TariffIndexEditor extends Finance {
     DateFormat dfLong = DateFormat.getDateInstance(DateFormat.LONG,iwc.getCurrentLocale());
     Collection L = getIndices(iCategoryId);
     int count = 0;
-    if(L!= null)
-      count = L.size();
+    if(L!= null) {
+		count = L.size();
+	}
     Table keyTable = new Table(6,count+1);
     keyTable.setWidth("100%");
     keyTable.setHorizontalZebraColored(getZebraColor1(),getZebraColor2());
@@ -122,12 +124,12 @@ public class TariffIndexEditor extends Finance {
     keyTable.setCellspacing(1) ;
     //keyTable.setColumnAlignment(3, "right");
     keyTable.add(getHeader("Nr"),1,1);
-    keyTable.add(getHeader(iwrb.getLocalizedString("name","Name")),2,1);
-    keyTable.add(getHeader(iwrb.getLocalizedString("info","Info")),3,1);
-    keyTable.add(getHeader(iwrb.getLocalizedString("index","Index")),4,1);
-    keyTable.add(getHeader(iwrb.getLocalizedString("date","date")),5,1);
-    keyTable.add(getHeader(iwrb.getLocalizedString("type","Type")),6,1);
-    if(isAdmin){
+    keyTable.add(getHeader(this.iwrb.getLocalizedString("name","Name")),2,1);
+    keyTable.add(getHeader(this.iwrb.getLocalizedString("info","Info")),3,1);
+    keyTable.add(getHeader(this.iwrb.getLocalizedString("index","Index")),4,1);
+    keyTable.add(getHeader(this.iwrb.getLocalizedString("date","date")),5,1);
+    keyTable.add(getHeader(this.iwrb.getLocalizedString("type","Type")),6,1);
+    if(this.isAdmin){
       if(count > 0){
       	int row = 2;
       	int rowcount = 1;
@@ -152,8 +154,9 @@ public class TariffIndexEditor extends Finance {
     Collection L= getIndices(iCategoryId);
     String t = com.idega.block.finance.data.TariffIndexBMPBean.indexType;
     int count = 0;
-    if(L!= null)
-      count = L.size();
+    if(L!= null) {
+		count = L.size();
+	}
     int inputcount = count+5;
     DataTable inputTable =  getDataTable();
     inputTable.setUseBottom(false);
@@ -209,7 +212,7 @@ public class TariffIndexEditor extends Finance {
     }
    
     inputTable.add(new HiddenInput("ti_count", String.valueOf(inputcount) ));
-    inputTable.add(new HiddenInput(this.strAction,String.valueOf(this.ACT3 )));
+    inputTable.add(new HiddenInput(TariffIndexEditor.strAction,String.valueOf(this.ACT3 )));
     inputTable.add(Finance.getCategoryParameter(iCategoryId));
    
     inputTable.addButton(new SubmitButton("save","Save"));

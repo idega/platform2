@@ -109,12 +109,13 @@ public class FinanceServiceBean extends IBOServiceBean implements FinanceService
 	public FinanceHandler getFinanceHandler(Integer handlerInfoID) {
 		try {
 			FinanceHandlerInfo handlerInfo = getFinanceHandlerInfoHome().findByPrimaryKey(handlerInfoID);
-			if (handlerInfo.getClassName() != null)
+			if (handlerInfo.getClassName() != null) {
 				try {
 					return (FinanceHandler) Class.forName(handlerInfo.getClassName()).newInstance();
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
+			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -139,16 +140,18 @@ public class FinanceServiceBean extends IBOServiceBean implements FinanceService
 		key.setInfo(info);
 		key.setTariffKeyId(tariffKeyID.intValue());
 		key.setCategoryId(categoryID.intValue());
-		if(ordinal!=null)
-		    key.setOrdinal(ordinal);
+		if(ordinal!=null) {
+			key.setOrdinal(ordinal);
+		}
 		key.store();
 		return key;
 	}
 	public TariffKey createOrUpdateTariffKey(Integer ID, String name, String info, Integer categoryID)
 			throws FinderException, RemoteException, CreateException {
 		TariffKey key = getTariffKeyHome().create();
-		if (ID != null && ID.intValue() > 0)
+		if (ID != null && ID.intValue() > 0) {
 			key = getTariffKeyHome().findByPrimaryKey(ID);
+		}
 		key.setName(name);
 		key.setInfo(info);
 		key.setCategoryId(categoryID.intValue());
@@ -182,8 +185,9 @@ public class FinanceServiceBean extends IBOServiceBean implements FinanceService
 			FinderException {
 		Tariff tariff = getTariffHome().findByPrimaryKey(ID);
 		tariff.setPrice(Price.floatValue());
-		if (indexStamp != null)
+		if (indexStamp != null) {
 			tariff.setIndexUpdated(indexStamp);
+		}
 		tariff.store();
 		return tariff;
 	}
@@ -206,8 +210,10 @@ public class FinanceServiceBean extends IBOServiceBean implements FinanceService
 				T.put(ti.getType(), ti);
 			}
 			return T;
-		} else
+		}
+		else {
 			return null;
+		}
 	}
 	public TariffGroup createOrUpdateTariffGroup(Integer ID, String name, String info, Integer handlerId,
 			boolean useIndex, Integer categoryId) throws CreateException, FinderException, RemoteException {
@@ -219,8 +225,9 @@ public class FinanceServiceBean extends IBOServiceBean implements FinanceService
 		tariff.setInfo(info);
 		tariff.setCategoryId(categoryId.intValue());
 		tariff.setUseIndex(useIndex);
-		if (handlerId != null && handlerId.intValue() > 0)
+		if (handlerId != null && handlerId.intValue() > 0) {
 			tariff.setHandlerId(handlerId.intValue());
+		}
 		tariff.store();
 		return tariff;
 	}
@@ -300,11 +307,13 @@ public class FinanceServiceBean extends IBOServiceBean implements FinanceService
 			AccountKey ti;
 			for (Iterator iter = coll.iterator(); iter.hasNext();) {
 				ti = (AccountKey) iter.next();
-				T.put((Integer)ti.getPrimaryKey(), ti);
+				T.put(ti.getPrimaryKey(), ti);
 			}
 			return T;
-		} else
+		}
+		else {
 			return null;
+		}
 	}
 	  
 	  public Map mapOfTariffKeys() throws RemoteException, FinderException {
@@ -314,11 +323,13 @@ public class FinanceServiceBean extends IBOServiceBean implements FinanceService
 			TariffKey ti;
 			for (Iterator iter = coll.iterator(); iter.hasNext();) {
 				ti = (TariffKey) iter.next();
-				T.put((Integer) ti.getPrimaryKey(), ti);
+				T.put(ti.getPrimaryKey(), ti);
 			}
 			return T;
-		} else
+		}
+		else {
 			return null;
+		}
 	}
 	 
 	/**

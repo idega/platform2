@@ -5,10 +5,12 @@ import java.util.List;
 
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
+import com.idega.idegaweb.IWMainApplicationSettings;
 import com.idega.idegaweb.IWProperty;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
+import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
@@ -44,8 +46,9 @@ public class ApplicationPropertySetter extends Block {
 
 	public void main(IWContext iwc) {
 		add(IWDeveloper.getTitleTable(this.getClass()));
-		if (!iwc.isIE())
+		if (!iwc.isIE()) {
 			getParentPage().setBackgroundColor("#FFFFFF");
+		}
 
 		doBusiness(iwc);
 
@@ -63,8 +66,8 @@ public class ApplicationPropertySetter extends Block {
 		table.mergeCells(1, 12, 2, 12);
 		table.setAlignment(1, 12, "right");
 		form.add(table);
-		TextInput name = new TextInput(this.PROPERTY_KEY_NAME_PARAMETER);
-		TextInput value = new TextInput(this.PROPERTY_VALUE_PARAMETER);
+		TextInput name = new TextInput(ApplicationPropertySetter.PROPERTY_KEY_NAME_PARAMETER);
+		TextInput value = new TextInput(ApplicationPropertySetter.PROPERTY_VALUE_PARAMETER);
 
 		table.add(IWDeveloper.getText("Set ApplicationProperty"), 1, 1);
 
@@ -81,7 +84,7 @@ public class ApplicationPropertySetter extends Block {
 		table.add(box, 2, 4);
 
 		CheckBox box3 = new CheckBox(AUTOCREATE_STRINGS_PARAMETER);
-		if (iwma.getSettings().isAutoCreateStringsActive()) {
+		if (IWMainApplicationSettings.isAutoCreateStringsActive()) {
 			box3.setChecked(true);
 		}
 		table.add(IWDeveloper.getText("Autocreate Localized Strings:"), 1, 5);
@@ -122,11 +125,11 @@ public class ApplicationPropertySetter extends Block {
 		table.add(IWDeveloper.getText("Prepared statement:"), 1, 10);
 		table.add(box8, 2, 10);
 
-		DropdownMenu menu = new DropdownMenu(Page.MARKUP_LANGUAGE);
-		menu.addMenuElement(Page.HTML, "HTML 4.01");
-		menu.addMenuElement(Page.XHTML, "XHTML 1.0");
-		menu.addMenuElement(Page.XHTML1_1, "XHTML 1.1 (Experimental)");
-		menu.setSelectedElement(iwc.getApplicationSettings().getProperty(Page.MARKUP_LANGUAGE, Page.HTML));
+		DropdownMenu menu = new DropdownMenu(PresentationObject.MARKUP_LANGUAGE);
+		menu.addMenuElement(PresentationObject.HTML, "HTML 4.01");
+		menu.addMenuElement(PresentationObject.XHTML, "XHTML 1.0");
+		menu.addMenuElement(PresentationObject.XHTML1_1, "XHTML 1.1 (Experimental)");
+		menu.setSelectedElement(iwc.getApplicationSettings().getProperty(PresentationObject.MARKUP_LANGUAGE, PresentationObject.HTML));
 		table.add(IWDeveloper.getText("Markup Language:"), 1, 11);
 		table.add(menu, 2, 11);
 
@@ -148,47 +151,58 @@ public class ApplicationPropertySetter extends Block {
 			String entityAutoCreate = iwc.getParameter(ENTITY_AUTOCREATE_PARAMETER);
 			String autoCreateStrings = iwc.getParameter(AUTOCREATE_STRINGS_PARAMETER);
 			String autoCreateProperties = iwc.getParameter(AUTOCREATE_PROPERTIES_PARAMETER);
-			String entityBeanCache = iwc.getParameter(this.IDO_ENTITY_BEAN_CACHING_PARAMETER);
-			String entityQueryCache = iwc.getParameter(this.IDO_ENTITY_QUERY_CACHING_PARAMETER);
-			String usePreparedStatement = iwc.getParameter(this.IDO_USE_PREPARED_STATEMENT);
+			String entityBeanCache = iwc.getParameter(ApplicationPropertySetter.IDO_ENTITY_BEAN_CACHING_PARAMETER);
+			String entityQueryCache = iwc.getParameter(ApplicationPropertySetter.IDO_ENTITY_QUERY_CACHING_PARAMETER);
+			String usePreparedStatement = iwc.getParameter(ApplicationPropertySetter.IDO_USE_PREPARED_STATEMENT);
 			String debug = iwc.getParameter(DEBUG_PARAMETER);
-			String KeyName = iwc.getParameter(this.PROPERTY_KEY_NAME_PARAMETER);
-			String KeyValue = iwc.getParameter(this.PROPERTY_VALUE_PARAMETER);
-			String markup = iwc.getParameter(Page.MARKUP_LANGUAGE);
-			if (KeyName != null && KeyName.length() > 0)
+			String KeyName = iwc.getParameter(ApplicationPropertySetter.PROPERTY_KEY_NAME_PARAMETER);
+			String KeyValue = iwc.getParameter(ApplicationPropertySetter.PROPERTY_VALUE_PARAMETER);
+			String markup = iwc.getParameter(PresentationObject.MARKUP_LANGUAGE);
+			if (KeyName != null && KeyName.length() > 0) {
 				iwc.getIWMainApplication().getSettings().setProperty(KeyName, KeyValue);
+			}
 
-			if (entityAutoCreate != null)
+			if (entityAutoCreate != null) {
 				iwc.getIWMainApplication().getSettings().setEntityAutoCreation(true);
-			else
+			}
+			else {
 				iwc.getIWMainApplication().getSettings().setEntityAutoCreation(false);
+			}
 
-			if (entityBeanCache != null)
+			if (entityBeanCache != null) {
 				iwc.getIWMainApplication().getSettings().setEntityBeanCaching(true);
-			else
+			}
+			else {
 				iwc.getIWMainApplication().getSettings().setEntityBeanCaching(false);
+			}
 
-			if (entityQueryCache != null)
+			if (entityQueryCache != null) {
 				iwc.getIWMainApplication().getSettings().setEntityQueryCaching(true);
-			else
+			}
+			else {
 				iwc.getIWMainApplication().getSettings().setEntityQueryCaching(false);
+			}
 			
-			if (usePreparedStatement != null)
+			if (usePreparedStatement != null) {
 				iwc.getIWMainApplication().getSettings().setUsePreparedStatement(true);
-			else
+			}
+			else {
 				iwc.getIWMainApplication().getSettings().setUsePreparedStatement(false);
+			}
 
 			if (autoCreateStrings != null) {
 				iwc.getIWMainApplication().getSettings().setAutoCreateStrings(true);
 			}
-			else
+			else {
 				iwc.getIWMainApplication().getSettings().setAutoCreateStrings(false);
+			}
 
 			if (autoCreateProperties != null) {
 				iwc.getIWMainApplication().getSettings().setAutoCreateProperties(true);
 			}
-			else
+			else {
 				iwc.getIWMainApplication().getSettings().setAutoCreateProperties(false);
+			}
 
 			if (debug != null) {
 				iwc.getIWMainApplication().getSettings().setDebug(true);
@@ -200,7 +214,7 @@ public class ApplicationPropertySetter extends Block {
 			if (setterState.equalsIgnoreCase("store")) {
 				iwc.getIWMainApplication().storeStatus();
 			}
-			iwc.getApplicationSettings().setProperty(Page.MARKUP_LANGUAGE, markup);
+			iwc.getApplicationSettings().setProperty(PresentationObject.MARKUP_LANGUAGE, markup);
 
 			add(IWDeveloper.getText("Status: "));
 			add("Property set successfully");
@@ -222,8 +236,9 @@ public class ApplicationPropertySetter extends Block {
 			property = (IWProperty) iter.next();
 			table.add(new Text(property.getName(), true, false, false), 1, row);
 			value = property.getValue();
-			if (value != null)
+			if (value != null) {
 				table.add(new Text(value, true, false, false), 2, row);
+			}
 			table.add(new CheckBox("property", property.getName()), 3, row);
 			row++;
 		}

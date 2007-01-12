@@ -83,7 +83,7 @@ public class ProductViewer extends Block {
 	 * @param showFromParameter
 	 */
 	public void setShowFromParameter(boolean showFromParameter) {
-		_showFromParameter = showFromParameter;
+		this._showFromParameter = showFromParameter;
 	}
 
 	public ProductViewer() {
@@ -94,8 +94,8 @@ public class ProductViewer extends Block {
 		init(iwc);
 
 		if (hasEditPermission()) {
-			Link lEdit = ProductEditorWindow.getEditorLink(_productId);
-			lEdit.setImage(iEdit);
+			Link lEdit = ProductEditorWindow.getEditorLink(this._productId);
+			lEdit.setImage(this.iEdit);
 			add(lEdit);
 		}
 
@@ -108,34 +108,36 @@ public class ProductViewer extends Block {
 	}
 
 	private void init(IWContext iwc) throws RemoteException {
-		bundle = getBundle(iwc);
-		iwrb = bundle.getResourceBundle(iwc);
+		this.bundle = getBundle(iwc);
+		this.iwrb = this.bundle.getResourceBundle(iwc);
 
 		this._locale = iwc.getCurrentLocale();
-		this._localeId = ICLocaleBusiness.getLocaleId(_locale);
+		this._localeId = ICLocaleBusiness.getLocaleId(this._locale);
 
-		if (_showFromParameter) {
+		if (this._showFromParameter) {
 			try {
 				String sProductId = iwc.getParameter(getProductBusiness(iwc).getProductIdParameter());
 				if (sProductId != null) {
-					_productId = Integer.parseInt(sProductId);
-					_product = getProductBusiness(iwc).getProduct(_productId);
-					if (!_product.getIsValid()) {
-						_product = null;
+					this._productId = Integer.parseInt(sProductId);
+					this._product = getProductBusiness(iwc).getProduct(this._productId);
+					if (!this._product.getIsValid()) {
+						this._product = null;
 					}
 				}
 	
-				if (_product != null) {
-					List list = getProductBusiness(iwc).getProductCategories(_product);
-					if (list != null && categoryList != null) {
+				if (this._product != null) {
+					List list = getProductBusiness(iwc).getProductCategories(this._product);
+					if (list != null && this.categoryList != null) {
 						boolean showProduct = false;
 						Iterator iter = list.iterator();
 						while (iter.hasNext()) {
-							if (categoryList.contains(iter.next()))
+							if (this.categoryList.contains(iter.next())) {
 								showProduct = true;
+							}
 						}
-						if (!showProduct)
-							_product = null;
+						if (!showProduct) {
+							this._product = null;
+						}
 					}
 				}
 			}
@@ -144,29 +146,29 @@ public class ProductViewer extends Block {
 			}
 		}
 
-		if (categoryList == null) {
-			categoryList = getCategoriesFromParameter(iwc);
+		if (this.categoryList == null) {
+			this.categoryList = getCategoriesFromParameter(iwc);
 		}
 
-		if (_product == null) {
+		if (this._product == null) {
 			try {
-				if (_showRandom) {
-					if (categoryList != null) {
-						List products = getProductBusiness(iwc).getProducts(categoryList);
+				if (this._showRandom) {
+					if (this.categoryList != null) {
+						List products = getProductBusiness(iwc).getProducts(this.categoryList);
 						if (products != null && products.size() > 0) {
 							int random = (int) Math.round(Math.random() * (products.size() - 1));
 							this._product = (Product) products.get(random);
-							this._productId = ((Integer) _product.getPrimaryKey()).intValue();
+							this._productId = ((Integer) this._product.getPrimaryKey()).intValue();
 						}
 					}
 				}
-				if (_showNewest) {
-					if (categoryList != null) {
-						List products = getProductBusiness(iwc).getProducts(categoryList);
+				if (this._showNewest) {
+					if (this.categoryList != null) {
+						List products = getProductBusiness(iwc).getProducts(this.categoryList);
 						if (products != null && products.size() > 0) {
 							Collections.sort(products, new ProductComparator(ProductComparator.CREATION_DATE, iwc.getCurrentLocale()));
 							this._product = (Product) products.get(0);
-							this._productId = ((Integer) _product.getPrimaryKey()).intValue();
+							this._productId = ((Integer) this._product.getPrimaryKey()).intValue();
 						}
 					}
 				}
@@ -177,7 +179,7 @@ public class ProductViewer extends Block {
 		}
 
 		IWBundle coreBundle = iwc.getIWMainApplication().getCoreBundle();
-		iEdit = coreBundle.getImage("shared/edit.gif");
+		this.iEdit = coreBundle.getImage("shared/edit.gif");
 	}
 
 	private void getViewer(IWContext iwc) throws RemoteException {
@@ -189,15 +191,16 @@ public class ProductViewer extends Block {
 				po = layout.getDemo(this, iwc);
 			}
 			else {
-				po = layout.getViewer(this, _product, iwc);
+				po = layout.getViewer(this, this._product, iwc);
 			}
 
 			Table table = new Table(1, 1);
 			table.setCellpadding(0);
 			table.setCellspacing(0);
 
-			if (_width != null)
-				table.setWidth(_width);
+			if (this._width != null) {
+				table.setWidth(this._width);
+			}
 			table.add(po);
 
 			add(table);
@@ -216,24 +219,28 @@ public class ProductViewer extends Block {
 
 	Text getText(String content, boolean useAlignment) {
 		Text text = new Text(content);
-		if (this._fontStyle != null)
-			text.setFontStyle(_fontStyle);
-		if (useAlignment)
-			text.setHorizontalAlignment(_textAlignment);
+		if (this._fontStyle != null) {
+			text.setFontStyle(this._fontStyle);
+		}
+		if (useAlignment) {
+			text.setHorizontalAlignment(this._textAlignment);
+		}
 		return text;
 	}
 
 	Text getHeaderText(String content) {
 		Text text = new Text(content);
-		if (this._headerFontStyle != null)
-			text.setFontStyle(_headerFontStyle);
+		if (this._headerFontStyle != null) {
+			text.setFontStyle(this._headerFontStyle);
+		}
 		return text;
 	}
 
 	Text getPriceText(String content) {
 		Text text = new Text(content);
-		if (this._priceFontStyle != null)
-			text.setFontStyle(_priceFontStyle);
+		if (this._priceFontStyle != null) {
+			text.setFontStyle(this._priceFontStyle);
+		}
 		return text;
 	}
 
@@ -254,11 +261,11 @@ public class ProductViewer extends Block {
 	}
 
 	public void setDescriptionAlignment(String alignment) {
-		_textAlignment = alignment;
+		this._textAlignment = alignment;
 	}
 
 	public void setImageAlignment(String alignment) {
-		_imageAlignment = alignment;
+		this._imageAlignment = alignment;
 	}
 
 	public void setLayoutClassName(String className) {
@@ -279,74 +286,76 @@ public class ProductViewer extends Block {
 	}
 
 	public void setCategory(String name, String categoryID) throws RemoteException {
-		if (categoryList == null)
-			categoryList = new Vector();
+		if (this.categoryList == null) {
+			this.categoryList = new Vector();
+		}
 		/** @todo FIXA getInstanceCRAP ..... */
 		ProductCategory category = getProductBusiness(IWContext.getInstance()).getProductCategory(Integer.parseInt(categoryID));
-		if (category != null)
-			categoryList.add(category);
+		if (category != null) {
+			this.categoryList.add(category);
+		}
 	}
 
 	public void setShowRandomProduct(boolean showRandom) {
-		_showRandom = showRandom;
-		_showNewest = !showRandom;
+		this._showRandom = showRandom;
+		this._showNewest = !showRandom;
 	}
 
 	public void setProductPage(ICPage page) {
-		_productPage = page;
+		this._productPage = page;
 	}
 
 	public void setProductImage(Image image) {
-		_productImage = image;
+		this._productImage = image;
 	}
 
 	public void setShowProductLink(boolean showLink) {
-		_showProductLink = showLink;
+		this._showProductLink = showLink;
 	}
 
 	public void setShowTeaser(boolean showTeaser) {
-		_showTeaser = showTeaser;
+		this._showTeaser = showTeaser;
 	}
 
 	public void setShowThumbnail(boolean showThumbnail) {
-		_showThumbnail = showThumbnail;
+		this._showThumbnail = showThumbnail;
 	}
 
 	public void setShowMetaData(boolean showMetaData) {
-		_showMetaData = showMetaData;
+		this._showMetaData = showMetaData;
 	}
 
 	public void setSpaceBetweenTitleAndBody(String spaceBetween) {
-		_spaceBetween = Integer.parseInt(spaceBetween);
+		this._spaceBetween = Integer.parseInt(spaceBetween);
 	}
 
 	public void setShowNewestProduct(boolean showNewest) {
-		_showNewest = showNewest;
-		_showRandom = !showNewest;
+		this._showNewest = showNewest;
+		this._showRandom = !showNewest;
 	}
 
 	public void setShowImages(boolean showImages) {
-		_showImages = showImages;
+		this._showImages = showImages;
 	}
 
 	public void setAddCategoryID(boolean addID) {
-		_addCategoryID = addID;
+		this._addCategoryID = addID;
 	}
 
 	public void setShowPrice(boolean showPrice) {
-		_showPrice = showPrice;
+		this._showPrice = showPrice;
 	}
 
 	public void setShowCurrency(boolean showCurrency) {
-		_showCurrency = showCurrency;
+		this._showCurrency = showCurrency;
 	}
 
 	public void setPriceFontStyle(String style) {
-		_priceFontStyle = style;
+		this._priceFontStyle = style;
 	}
 
 	public void setLinkFontStyle(String style) {
-		_linkFontStyle = style;
+		this._linkFontStyle = style;
 	}
 
 	private List getCategoriesFromParameter(IWContext iwc) throws RemoteException {
@@ -355,8 +364,9 @@ public class ProductViewer extends Block {
 		if (categories != null) {
 			for (int a = 0; a < categories.length; a++) {
 				ProductCategory category = getProductBusiness(iwc).getProductCategory(Integer.parseInt(categories[a]));
-				if (category != null)
+				if (category != null) {
 					vector.add(category);
+				}
 			}
 		}
 		return vector;
@@ -369,7 +379,7 @@ public class ProductViewer extends Block {
 	 * @param showBorder
 	 */
 	public void setShowBorder(boolean showBorder) {
-		_showBorder = showBorder;
+		this._showBorder = showBorder;
 	}
 
 }

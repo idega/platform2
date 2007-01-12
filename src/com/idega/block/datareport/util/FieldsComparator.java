@@ -29,8 +29,8 @@ public class FieldsComparator implements Comparator {
 	 *        default comparison is used (same as if other constructor was used).
 	 */
 	public FieldsComparator(ReportableField[] reportableFields, Comparator[] comparators) {
-		_reportableFields = reportableFields;
-		_comparators = comparators;
+		this._reportableFields = reportableFields;
+		this._comparators = comparators;
 	}
 	
 	/**
@@ -38,8 +38,8 @@ public class FieldsComparator implements Comparator {
 	 * @param reportableFields The fields to use for comparing 
 	 */
 	public FieldsComparator(ReportableField[] reportableFields) {
-		_reportableFields = reportableFields;
-		_comparators = null;
+		this._reportableFields = reportableFields;
+		this._comparators = null;
 	}
 	
 	public int compare(Object o1, Object o2) {
@@ -53,9 +53,9 @@ public class FieldsComparator implements Comparator {
 		} else if (data2==null) {
 			return 1;
 		}
-		int count = _reportableFields.length;
+		int count = this._reportableFields.length;
 		for(int i=0; i<count; i++) {
-			ReportableField field = _reportableFields[i];
+			ReportableField field = this._reportableFields[i];
 			Object fieldValue1 = data1.getFieldValue(field);
 			Object fieldValue2 = data2.getFieldValue(field);
 			if(fieldValue1==fieldValue2) {
@@ -67,15 +67,15 @@ public class FieldsComparator implements Comparator {
 				return 1;
 			}
 			int comp;
-			if(_comparators == null || _comparators[i]==null) {
+			if(this._comparators == null || this._comparators[i]==null) {
 				if(fieldValue1 instanceof String) {
 					// the two fieldvalues are always of the same type
 					comp = defaultStringCompare((String) fieldValue1, (String) fieldValue2);
 				} else {
-					comp = _collator.compare(fieldValue1, fieldValue2);
+					comp = this._collator.compare(fieldValue1, fieldValue2);
 				}
 			} else {
-				comp = _comparators[i].compare(fieldValue1, fieldValue2);
+				comp = this._comparators[i].compare(fieldValue1, fieldValue2);
 			}
 			if(comp!=0) {
 				return comp;
@@ -91,10 +91,10 @@ public class FieldsComparator implements Comparator {
 		int i2 = getInt(str1);
 		if(i1!=-1 && i2!=-1) {
 			// found numbers to compare, use them
-			int dstr = _collator.compare(getStringAfterInt(str0), getStringAfterInt(str1));
+			int dstr = this._collator.compare(getStringAfterInt(str0), getStringAfterInt(str1));
 			comp = dstr==0?(i1-i2):dstr;
 		} else {
-			comp = _collator.compare(str0, str1);
+			comp = this._collator.compare(str0, str1);
 		}
 		return comp;
 	}

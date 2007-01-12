@@ -48,12 +48,12 @@ public class ProductItemProductInfoRequest extends ProductItem {
 	public void main(IWContext iwc) throws Exception {
 		super.main(iwc);
 		
-		if (_product != null) {
-			String action = iwc.getParameter(PARAMETER_ACTION);
+		if (this._product != null) {
+			String action = iwc.getParameter(this.PARAMETER_ACTION);
 			
 			if (action == null) {
 				drawObject(iwc);
-			}	else if (action.equals(PARAMETER_ACTION_SUBMIT)){
+			}	else if (action.equals(this.PARAMETER_ACTION_SUBMIT)){
 				if (send(iwc)) {
 					sendSuccess();	
 				}else {
@@ -66,13 +66,13 @@ public class ProductItemProductInfoRequest extends ProductItem {
 	}
 	
 	private boolean send(IWContext iwc) throws RemoteException {
-		if (useInput) {
-			fromaddress = iwc.getParameter(PARAMETER_EMAIL);	
+		if (this.useInput) {
+			this.fromaddress = iwc.getParameter(this.PARAMETER_EMAIL);	
 		}
-		String text = _iwrb.getLocalizedString(BODY_KEY, "Information is requested about the following product: "+getProductText(iwc));
+		String text = this._iwrb.getLocalizedString(this.BODY_KEY, "Information is requested about the following product: "+getProductText(iwc));
 		SendMail sm = new SendMail();
 		try {
-			sm.send(fromaddress, toaddress, null, null, mailserver, _iwrb.getLocalizedString(SUBJECT_KEY, "Product information request"), text);
+			SendMail.send(this.fromaddress, this.toaddress, null, null, this.mailserver, this._iwrb.getLocalizedString(this.SUBJECT_KEY, "Product information request"), text);
 			return true;
 		} catch (Exception e) {
 			return false;
@@ -80,11 +80,11 @@ public class ProductItemProductInfoRequest extends ProductItem {
 	}
 	
 	public void sendSuccess() {
-		add(super.getText(_iwrb.getLocalizedString("trade.send_successful","Request has been sent.")));	
+		add(super.getText(this._iwrb.getLocalizedString("trade.send_successful","Request has been sent.")));	
 	}
 	
 	public void sendFailed() {
-		add(super.getText(_iwrb.getLocalizedString("trade.send_failed","Request was not sent, try again later.")));	
+		add(super.getText(this._iwrb.getLocalizedString("trade.send_failed","Request was not sent, try again later.")));	
 	}
 
 
@@ -94,13 +94,13 @@ public class ProductItemProductInfoRequest extends ProductItem {
 		form.add(table);
 		form.maintainParameter(getProductBusiness(iwc).getProductIdParameter());
 		
-		TextInput email = new TextInput(PARAMETER_EMAIL);
-		SubmitButton submit = new SubmitButton(_iwrb.getLocalizedImageButton("trade.submit","Submit"), PARAMETER_ACTION, PARAMETER_ACTION_SUBMIT);
+		TextInput email = new TextInput(this.PARAMETER_EMAIL);
+		SubmitButton submit = new SubmitButton(this._iwrb.getLocalizedImageButton("trade.submit","Submit"), this.PARAMETER_ACTION, this.PARAMETER_ACTION_SUBMIT);
 		
 		
-		table.add(_iwrb.getLocalizedString("trade.request_more_info", "Request more information"), 1, 1);
+		table.add(this._iwrb.getLocalizedString("trade.request_more_info", "Request more information"), 1, 1);
 		table.mergeCells(1, 1, 2, 1);
-		table.add(_iwrb.getLocalizedString("trade.email","Email"), 1, 2);
+		table.add(this._iwrb.getLocalizedString("trade.email","Email"), 1, 2);
 		table.add(email, 2, 2);
 		table.add(submit, 2, 3);
 		table.setAlignment(2, 3, Table.HORIZONTAL_ALIGN_RIGHT);
@@ -109,10 +109,10 @@ public class ProductItemProductInfoRequest extends ProductItem {
 	}
 	
 	public String getProductText(IWContext iwc) throws RemoteException {
-		if (showProductNumber) {
-			return super.getProductBusiness(iwc).getProductNameWithNumber(_product);
+		if (this.showProductNumber) {
+			return super.getProductBusiness(iwc).getProductNameWithNumber(this._product);
 		}else {
-			return _product.getProductName(iwc.getCurrentLocaleId());
+			return this._product.getProductName(iwc.getCurrentLocaleId());
 		}	
 	}
 	

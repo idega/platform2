@@ -49,7 +49,7 @@ public class StaffHolder {
 
   public StaffHolder( User user) {
 
-    _user = user;
+    this._user = user;
 
   }
 
@@ -95,7 +95,7 @@ public class StaffHolder {
 
   public void setWorkPhone(String phone) {
 
-    workPhone_ = phone;
+    this.workPhone_ = phone;
 
   }
 
@@ -103,7 +103,7 @@ public class StaffHolder {
 
   public void setMobilePhone(String phone) {
 
-    mobilePhone_ = phone;
+    this.mobilePhone_ = phone;
 
   }
 
@@ -111,7 +111,7 @@ public class StaffHolder {
 
   public void setEmail(String email) {
 
-    email_ = email;
+    this.email_ = email;
 
   }
 
@@ -119,7 +119,7 @@ public class StaffHolder {
 
   public void setAge(int age) {
 
-    age_ = age;
+    this.age_ = age;
 
   }
 
@@ -127,7 +127,7 @@ public class StaffHolder {
 
   public void setArea(String area) {
 
-    area_ = area;
+    this.area_ = area;
 
   }
 
@@ -135,7 +135,7 @@ public class StaffHolder {
 
   public void setBeganWork(IWTimestamp beganWork) {
 
-    beganWork_ = beganWork;
+    this.beganWork_ = beganWork;
 
   }
 
@@ -143,7 +143,7 @@ public class StaffHolder {
 
   public void setEducation(String education) {
 
-    education_ = education;
+    this.education_ = education;
 
   }
 
@@ -151,7 +151,7 @@ public class StaffHolder {
 
   public void setImageID(int imageID) {
 
-    imageID_ = imageID;
+    this.imageID_ = imageID;
 
   }
 
@@ -159,7 +159,7 @@ public class StaffHolder {
 
   public void setTitle(String title) {
 
-    title_ = title;
+    this.title_ = title;
 
   }
 
@@ -167,7 +167,7 @@ public class StaffHolder {
 
   public void setMetaAttributes(String[] attributes) {
 
-    metaAttributes_ = attributes;
+    this.metaAttributes_ = attributes;
 
   }
 
@@ -175,7 +175,7 @@ public class StaffHolder {
 
   public void setMetaValues(String[] values) {
 
-    metaValues_ = values;
+    this.metaValues_ = values;
 
   }
 
@@ -189,7 +189,7 @@ public class StaffHolder {
 
     //return userID_;
 
-    return _user.getID();
+    return this._user.getID();
 
   }
 
@@ -219,7 +219,7 @@ public class StaffHolder {
 
 
 
-    return _user.getName();
+    return this._user.getName();
 
   }
 
@@ -227,7 +227,7 @@ public class StaffHolder {
 
   public String getFirstName() {
 
-    return _user.getFirstName();
+    return this._user.getFirstName();
 
     //return firstName_;
 
@@ -237,7 +237,7 @@ public class StaffHolder {
 
   public String getMiddleName() {
 
-    return _user.getMiddleName();
+    return this._user.getMiddleName();
 
     //return middleName_;
 
@@ -247,7 +247,7 @@ public class StaffHolder {
 
   public String getLastName() {
 
-    return _user.getLastName();
+    return this._user.getLastName();
 
     //return lastName_;
 
@@ -257,7 +257,7 @@ public class StaffHolder {
 
   public String getWorkPhone() {
 
-    return workPhone_;
+    return this.workPhone_;
 
   }
 
@@ -265,7 +265,7 @@ public class StaffHolder {
 
   public String getMobilePhone() {
 
-    return mobilePhone_;
+    return this.mobilePhone_;
 
   }
 
@@ -273,7 +273,7 @@ public class StaffHolder {
 
   public String getEmail() {
 
-    return email_;
+    return this.email_;
 
   }
 
@@ -281,7 +281,7 @@ public class StaffHolder {
 
   public int getAge() {
 
-    return age_;
+    return this.age_;
 
   }
 
@@ -289,7 +289,7 @@ public class StaffHolder {
 
   public String getArea() {
 
-    return area_;
+    return this.area_;
 
   }
 
@@ -297,7 +297,7 @@ public class StaffHolder {
 
   public IWTimestamp getBeganWork() {
 
-    return beganWork_;
+    return this.beganWork_;
 
   }
 
@@ -305,7 +305,7 @@ public class StaffHolder {
 
   public String getEducation() {
 
-    return education_;
+    return this.education_;
 
   }
 
@@ -313,7 +313,7 @@ public class StaffHolder {
 
   public int getImageID() {
 
-    return imageID_;
+    return this.imageID_;
 
   }
 
@@ -321,7 +321,7 @@ public class StaffHolder {
 
   public String getTitle() {
 
-    return title_;
+    return this.title_;
 
   }
 
@@ -329,7 +329,7 @@ public class StaffHolder {
 
   public String[] getMetaAttributes() {
 
-    return metaAttributes_;
+    return this.metaAttributes_;
 
   }
 
@@ -337,7 +337,7 @@ public class StaffHolder {
 
   public String[] getMetaValues() {
 
-    return metaValues_;
+    return this.metaValues_;
 
   }
 
@@ -345,7 +345,7 @@ public class StaffHolder {
 
   public int getGroupID(){
 
-    return _user.getGroupID();
+    return this._user.getGroupID();
 
   }
 

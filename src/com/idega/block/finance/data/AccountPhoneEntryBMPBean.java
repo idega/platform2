@@ -266,8 +266,9 @@ public class AccountPhoneEntryBMPBean extends com.idega.data.GenericEntity imple
 			setColumn(getColumnNameStatus(), status);
 			setLastUpdated(com.idega.util.IWTimestamp.getTimestampRightNow());
 		}
-		else
+		else {
 			throw new IllegalStateException("Undefined state : " + status);
+		}
 	}
 
 	// interface specific:
@@ -317,7 +318,7 @@ public class AccountPhoneEntryBMPBean extends com.idega.data.GenericEntity imple
 		IWTimestamp to = new IWTimestamp(toDate);
 		to.setTime(23, 59, 59);
 		query.appendAnd().appendWithinDates(getColumnNamePhonedStamp(), fromDate, to.getDate());
-		query.appendAnd().appendEqualsQuoted(this.getFieldNameStatus(), this.statusRead);
+		query.appendAnd().appendEqualsQuoted(this.getFieldNameStatus(), AccountPhoneEntryBMPBean.statusRead);
 		return super.idoFindPKsByQuery(query);
 	}
 

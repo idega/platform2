@@ -57,10 +57,12 @@ public class BuildingServiceBean extends IBOServiceBean implements
 			}
 			complex.setName(name);
 			complex.setInfo(info);
-			if (imageID != null && imageID.intValue() > 0)
+			if (imageID != null && imageID.intValue() > 0) {
 				complex.setImageId(imageID);
-			if (textID != null && textID.intValue() > 0)
+			}
+			if (textID != null && textID.intValue() > 0) {
 				complex.setTextId(textID.intValue());
+			}
 			if (flashPageID != null && !"".equals(flashPageID)) {
 				complex.setFlashPageID(Integer.valueOf(flashPageID).intValue());
 			}
@@ -96,13 +98,16 @@ public class BuildingServiceBean extends IBOServiceBean implements
 			building.setName(name);
 			building.setStreet(address);
 			building.setInfo(info);
-			if (imageID != null && imageID.intValue() > 0)
+			if (imageID != null && imageID.intValue() > 0) {
 				building.setImageId(imageID);
-			if (complexID != null && complexID.intValue() > 0)
+			}
+			if (complexID != null && complexID.intValue() > 0) {
 				building.setComplexId(complexID.intValue());
+			}
 
-			if (textID != null && textID.intValue() > 0)
+			if (textID != null && textID.intValue() > 0) {
 				building.setTextId(textID.intValue());
+			}
 			
 			building.setLocked(locked.booleanValue());
 			building.store();
@@ -133,10 +138,12 @@ public class BuildingServiceBean extends IBOServiceBean implements
 			floor.setName(name);
 			floor.setBuildingId(buildingID);
 			floor.setInfo(info);
-			if (imageID != null && imageID.intValue() > 0)
+			if (imageID != null && imageID.intValue() > 0) {
 				floor.setImageId(imageID);
-			if (textID != null && textID.intValue() > 0)
+			}
+			if (textID != null && textID.intValue() > 0) {
 				floor.setTextId(textID.intValue());
+			}
 			floor.store();
 			return floor;
 		} catch (IDOStoreException e) {
@@ -163,10 +170,12 @@ public class BuildingServiceBean extends IBOServiceBean implements
 			}
 			category.setName(name);
 			category.setInfo(info);
-			if (imageID != null && imageID.intValue() > 0)
+			if (imageID != null && imageID.intValue() > 0) {
 				category.setImageId(imageID);
-			if (textID != null && textID.intValue() > 0)
+			}
+			if (textID != null && textID.intValue() > 0) {
 				category.setTextId(textID.intValue());
+			}
 			category.store();
 			return category;
 		} catch (IDOStoreException e) {
@@ -200,12 +209,15 @@ public class BuildingServiceBean extends IBOServiceBean implements
 			type.setInfo(info);
 			type.setAbbreviation(abbrev);
 			type.setExtraInfo(extraInfo);
-			if (planID != null && planID.intValue() > 0)
+			if (planID != null && planID.intValue() > 0) {
 				type.setFloorPlanId(planID);
-			if (imageID != null && imageID.intValue() > 0)
+			}
+			if (imageID != null && imageID.intValue() > 0) {
 				type.setImageId(imageID);
-			if (textID != null && textID.intValue() > 0)
+			}
+			if (textID != null && textID.intValue() > 0) {
 				type.setTextId(textID.intValue());
+			}
 			type.setApartmentCategoryId(categoryID);
 			type.setArea(area);
 			type.setRoomCount(roomcount);
@@ -251,11 +263,13 @@ public class BuildingServiceBean extends IBOServiceBean implements
 			apartment.setApartmentTypeId(typeID);
 			apartment.setInfo(info);
 			apartment.setRentable(rentable.booleanValue());
-			if (imageID != null && imageID.intValue() > 0)
+			if (imageID != null && imageID.intValue() > 0) {
 				apartment.setImageId(imageID);
+			}
 
-			if (textID != null && textID.intValue() > 0)
+			if (textID != null && textID.intValue() > 0) {
 				apartment.setTextId(textID.intValue());
+			}
 
 			apartment.setSerialNumber(apartmentSerialNumber);
 			

@@ -44,10 +44,10 @@ public class StaffViewer extends Block implements Builderaware {
 	private ICPage iPage;
 
 	public void main(IWContext iwc) throws Exception {
-		iwb = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
-		iwrb = getResourceBundle(iwc);
+		this.iwb = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+		this.iwrb = getResourceBundle(iwc);
 		
-		if (iGroup != null) {
+		if (this.iGroup != null) {
 			add(getStaff(iwc));
 		}
 		else {
@@ -56,10 +56,10 @@ public class StaffViewer extends Block implements Builderaware {
 	}
 	
 	private Table getStaff(IWContext iwc) {
-		System.out.println("Parent group: " + iGroup.getName());
+		System.out.println("Parent group: " + this.iGroup.getName());
 		Collection groups = null;
 		try {
-			groups = getBusiness(iwc).getGroups(iGroup);
+			groups = getBusiness(iwc).getGroups(this.iGroup);
 		}
 		catch (RemoteException re) {
 			log(re);
@@ -119,10 +119,10 @@ public class StaffViewer extends Block implements Builderaware {
 	}
 	
 	private PresentationObject getStaffUser(User user) {
-		if (iPage != null) {
+		if (this.iPage != null) {
 			Link link = new Link(user.getName());
 			link.addParameter(StaffBusiness.PARAMETER_USER_ID, user.getPrimaryKey().toString());
-			link.setPage(iPage);
+			link.setPage(this.iPage);
 
 			return link;
 		}
@@ -156,10 +156,10 @@ public class StaffViewer extends Block implements Builderaware {
 	 * @param group The group to set.
 	 */
 	public void setGroup(Group group) {
-		iGroup = group;
+		this.iGroup = group;
 	}
 	
 	public void setPage(ICPage page) {
-		iPage = page;
+		this.iPage = page;
 	}
 }

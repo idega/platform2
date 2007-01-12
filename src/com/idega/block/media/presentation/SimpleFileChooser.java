@@ -23,7 +23,7 @@ import com.idega.presentation.ui.TextInput;
  * <p>Description: A simple to use persentation object to upload a file into the database</p>
  * <p>Copyright: Idega SoftwareCopyright (c) 2001</p>
  * <p>Company: Idega Software</p>
- * @author <a href="gummi@idega.is">Guðmundur Ágúst Sæmundsson</a>
+ * @author <a href="gummi@idega.is">Guï¿½mundur ï¿½gï¿½st Sï¿½mundsson</a>
  * @version 1.1
  */
 
@@ -52,7 +52,7 @@ public class SimpleFileChooser extends InterfaceObject {
 	 * @return
 	 */
 	public boolean isShowChangeUploadedFileOption() {
-		return showChangeUploadedFileOption;
+		return this.showChangeUploadedFileOption;
 	}
 
 	/**
@@ -64,9 +64,9 @@ public class SimpleFileChooser extends InterfaceObject {
 
 	public SimpleFileChooser(Form form, String chooserName) {
     this.form = form;
-    name = chooserName;
+    this.name = chooserName;
     form.setMultiPart();
-    busy = new BusyBar("busy_uploading");
+    this.busy = new BusyBar("busy_uploading");
   }
 
   public SimpleFileChooser(Form form, String chooserName,String style) {
@@ -76,36 +76,37 @@ public class SimpleFileChooser extends InterfaceObject {
 
 
   public void addDisabledObjectWhileLoading(InterfaceObject obj){
-    if(disabledObjects==null)
-      disabledObjects = new java.util.Vector();
-    disabledObjects.add(obj);
+    if(this.disabledObjects==null) {
+		this.disabledObjects = new java.util.Vector();
+	}
+    this.disabledObjects.add(obj);
   }
 
 
   public void main(IWContext iwc) throws Exception{
-		coreBundle = iwc.getIWMainApplication().getCoreBundle();
-		iwrb = coreBundle.getResourceBundle(iwc);
+		this.coreBundle = iwc.getIWMainApplication().getCoreBundle();
+		this.iwrb = this.coreBundle.getResourceBundle(iwc);
 
-    if(deleteOnChange && "true".equals(iwc.getParameter("change_file"))&&iwc.getParameter(name) != null){
-      System.out.println("deleteFile: "+ iwc.getParameter(name));
+    if(this.deleteOnChange && "true".equals(iwc.getParameter("change_file"))&&iwc.getParameter(this.name) != null){
+      System.out.println("deleteFile: "+ iwc.getParameter(this.name));
       boolean del = false;
       try {
-        del = MediaBusiness.deleteMedia(Integer.parseInt(iwc.getParameter(name)));
-       	selectedFileId = -1;
+        del = MediaBusiness.deleteMedia(Integer.parseInt(iwc.getParameter(this.name)));
+       	this.selectedFileId = -1;
       }
       catch (Exception ex) {
         del = false;
       } 
       finally{
         if(!del){
-          System.err.println("media: "+iwc.getParameter(name)+" failed to delete");
+          System.err.println("media: "+iwc.getParameter(this.name)+" failed to delete");
         }
       }
     }
 
     UploadFile file = getUploadedFile(iwc);
 
-    if(file == null &&selectedFileId == -1 || "false".equals(iwc.getParameter("change_file")) ){
+    if(file == null &&this.selectedFileId == -1 || "false".equals(iwc.getParameter("change_file")) ){
       this.empty();
 
       //Image busy = iwc.getApplication().getCoreBundle().getImage("transparentcell.gif");
@@ -123,30 +124,30 @@ public class SimpleFileChooser extends InterfaceObject {
 
       if(!iwc.isIE()){
         table.add(confirm,1,1);
-       busy.addDisabledObject(confirm);
-       busy.addBusyObject(confirm);
+       this.busy.addDisabledObject(confirm);
+       this.busy.addBusyObject(confirm);
       } else {
-       busy.setBusyOnChange();
-       busy.addBusyObject(input);
+       this.busy.setBusyOnChange();
+       this.busy.addBusyObject(input);
       }
-     busy.setBusyBarUrl(coreBundle.getImage("loading.gif").getURL());
+     this.busy.setBusyBarUrl(this.coreBundle.getImage("loading.gif").getURL());
 
-      if(disabledObjects != null){
-        Iterator iter = disabledObjects.iterator();
+      if(this.disabledObjects != null){
+        Iterator iter = this.disabledObjects.iterator();
         while (iter.hasNext()) {
           InterfaceObject item = (InterfaceObject)iter.next();
-         busy.addDisabledObject(item);
+         this.busy.addDisabledObject(item);
         }
       }
 
-      table.add(busy,1,2);
+      table.add(this.busy,1,2);
 
       this.add(table);
     } 
     else if(file != null){//uploaded
 			ICFile icFile = MediaBusiness.saveMediaToDBUploadFolder(file,iwc);
 
-			if( showChangeUploadedFileOption){
+			if( this.showChangeUploadedFileOption){
 	      Table table = new Table(1,2);
 	      table.setCellpadding(0);
 	      table.setCellspacing(0);
@@ -165,9 +166,9 @@ public class SimpleFileChooser extends InterfaceObject {
 	      table.add(change,1,1);
 	      //table.add(busy,1,2);
 	     
-	      table.add(new HiddenInput(name,icFile.getPrimaryKey().toString()),1,2);
+	      table.add(new HiddenInput(this.name,icFile.getPrimaryKey().toString()),1,2);
 	      
-				if( showPreviewLink){
+				if( this.showPreviewLink){
 			    Link preview = new Link("Preview");
 			    preview.setURL(MediaBusiness.getMediaURL(icFile,iwc.getIWMainApplication()));
 			    preview.setTarget(Link.TARGET_NEW_WINDOW);
@@ -176,17 +177,17 @@ public class SimpleFileChooser extends InterfaceObject {
 	      this.add(table);
 			}
 			else{
-				add(new HiddenInput(name,icFile.getPrimaryKey().toString()));
+				add(new HiddenInput(this.name,icFile.getPrimaryKey().toString()));
 			}
       //this.add(new Image(file.getWebPath(),file.getName()));
-    } else if(selectedFileId != -1) {
+    } else if(this.selectedFileId != -1) {
     	
-    	if( showChangeUploadedFileOption){
+    	if( this.showChangeUploadedFileOption){
 	      Table table = new Table(1,2);
 	      table.setCellpadding(0);
 	      table.setCellspacing(0);
 	
-	      ICFile icFile = ((com.idega.core.file.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).findByPrimaryKey(new Integer(selectedFileId));
+	      ICFile icFile = ((com.idega.core.file.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).findByPrimaryKey(new Integer(this.selectedFileId));
 	      TextInput tInput = new TextInput("ic_uploaded_file",icFile.getName());
 	      tInput.setDisabled(true);
 	      SubmitButton change = new SubmitButton("Change...","change_file","true");
@@ -200,9 +201,9 @@ public class SimpleFileChooser extends InterfaceObject {
 	      table.add(tInput,1,1);
 	      table.add(change,1,1);
 	      //table.add(busy,1,2);
-	      table.add(new HiddenInput(name,Integer.toString(selectedFileId)),1,2);
+	      table.add(new HiddenInput(this.name,Integer.toString(this.selectedFileId)),1,2);
 	      
-	      if( showPreviewLink){
+	      if( this.showPreviewLink){
 		      Link preview = new Link("Preview");
 		      preview.setURL(MediaBusiness.getMediaURL(icFile,iwc.getIWMainApplication()));
 		      preview.setTarget(Link.TARGET_NEW_WINDOW);
@@ -212,7 +213,7 @@ public class SimpleFileChooser extends InterfaceObject {
 	      this.add(table);
     	}
     	else{
-    		add(new HiddenInput(name,Integer.toString(selectedFileId)));
+    		add(new HiddenInput(this.name,Integer.toString(this.selectedFileId)));
     	}
     }
   }
@@ -227,13 +228,13 @@ public class SimpleFileChooser extends InterfaceObject {
   }
 
   public void setSelectedFile(int fileId){
-   selectedFileId = fileId;
-   deleteOnChange = false;
+   this.selectedFileId = fileId;
+   this.deleteOnChange = false;
   }
 
 
 	public boolean isShowingPreviewLink() {
-		return showPreviewLink;
+		return this.showPreviewLink;
 	}
 
 

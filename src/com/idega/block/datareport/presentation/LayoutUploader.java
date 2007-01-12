@@ -85,7 +85,7 @@ public class LayoutUploader extends Block {
 		addMaintainParametersToForm(form);
 		int row = 1;
 		Table table = new Table(2, 1);
-		table.add(getDropDownOfLayouts(KEY_CHOSEN_LAYOUT, layoutFolder, iwc), 1,row);
+		table.add(getDropDownOfLayouts(KEY_CHOSEN_LAYOUT, this.layoutFolder, iwc), 1,row);
 		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		table.add(getDeleteButton(resourceBundle), 2, row);
 		form.add(table);
@@ -125,12 +125,12 @@ public class LayoutUploader extends Block {
 		row = 1;
 		addMaintainParametersToForm(downloadForm);
 		Table downloadTable = new Table(2, 3);
-		PresentationObject downloadQueryList = getDropDownOfLayouts(KEY_CHOSEN_LAYOUT_FOR_DOWNLOADING, layoutFolder, iwc);
+		PresentationObject downloadQueryList = getDropDownOfLayouts(KEY_CHOSEN_LAYOUT_FOR_DOWNLOADING, this.layoutFolder, iwc);
 		downloadTable.add(downloadQueryList, 1, row);
 		downloadTable.add(getDownloadButton(resourceBundle), 2, row++);
-		if (downloadUrl != null) {
+		if (this.downloadUrl != null) {
 			String downloadText = resourceBundle.getLocalizedString("layout_uploader_download_query", "Download");
-	  		downloadTable.add(new Link(downloadText, downloadUrl), 1, row++);
+	  		downloadTable.add(new Link(downloadText, this.downloadUrl), 1, row++);
 		}
 		downloadTable.add(getGoBackButton(resourceBundle), 1 ,row);
 		downloadForm.add(downloadTable);
@@ -138,15 +138,15 @@ public class LayoutUploader extends Block {
 	}
 	
 	private void addMaintainParametersToForm(Form form) {
-		form.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID, layoutFolderId);
+		form.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID, this.layoutFolderId);
 	}
 	
 	private String parseAction(IWContext iwc) throws NumberFormatException, FinderException, RemoteException, IOException {
 		int folderId;
 		if (iwc.isParameterSet(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID)) {
-			layoutFolderId = iwc.getParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID);
-			folderId = Integer.parseInt(layoutFolderId);
-			layoutFolder = getFile(folderId);
+			this.layoutFolderId = iwc.getParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID);
+			folderId = Integer.parseInt(this.layoutFolderId);
+			this.layoutFolder = getFile(folderId);
 		}
 		else {
 			return null;
@@ -165,7 +165,7 @@ public class LayoutUploader extends Block {
 		else if (iwc.isParameterSet(KEY_LAYOUT_UPLOAD_IS_SUBMITTED)) {
 			UploadFile uploadFile = iwc.getUploadedFile();
 			String name = iwc.getParameter(KEY_NAME);
-			name = checkName(layoutFolder, name);
+			name = checkName(this.layoutFolder, name);
 			uploadFile.setName(name);
 			MediaBusiness.saveMediaToDB(uploadFile, folderId, iwc);
 		}
@@ -175,7 +175,7 @@ public class LayoutUploader extends Block {
 			ICFileHome fileHome = (ICFileHome)IDOLookup.getHome(ICFile.class);
 			ICFile layout = fileHome.findByPrimaryKey(layoutToBeDownloaded);
 			FileBusiness fileBusiness = (FileBusiness) IBOLookup.getServiceInstance(iwc, FileBusiness.class);
-			downloadUrl = fileBusiness.getURLForOfferingDownload((Storable) layout, iwc);
+			this.downloadUrl = fileBusiness.getURLForOfferingDownload(layout, iwc);
 		}
 		return null;
 	}
@@ -220,7 +220,7 @@ public class LayoutUploader extends Block {
 	private PresentationObject getGoBackButton(IWResourceBundle resourceBundle)	{
   	String goBackText = resourceBundle.getLocalizedString("ro_back_to_list", "Back to list");
   	Link goBack = new Link(goBackText);
-  	goBack.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID, layoutFolderId);
+  	goBack.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID, this.layoutFolderId);
   	goBack.setAsImageButton(true);
   	return goBack;
 	}

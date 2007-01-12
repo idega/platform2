@@ -88,23 +88,39 @@ public class EmailLetterDataBMPBean extends com.idega.data.GenericEntity impleme
   }
 
   public String getCCEmail(){
-    if (!isNull(EMAIL_LETTER_DATA_CC))     return getStringColumnValue(EMAIL_LETTER_DATA_CC);
-    else return "";
+    if (!isNull(EMAIL_LETTER_DATA_CC)) {
+		return getStringColumnValue(EMAIL_LETTER_DATA_CC);
+	}
+	else {
+		return "";
+	}
   }
 
   public String getBCCEmail(){
-    if (!isNull(EMAIL_LETTER_DATA_BCC))     return getStringColumnValue(EMAIL_LETTER_DATA_BCC);
-    else return "";
+    if (!isNull(EMAIL_LETTER_DATA_BCC)) {
+		return getStringColumnValue(EMAIL_LETTER_DATA_BCC);
+	}
+	else {
+		return "";
+	}
   }
 
   public String getSubject(){
-    if (!isNull(EMAIL_LETTER_DATA_SUBJECT))     return getStringColumnValue(EMAIL_LETTER_DATA_SUBJECT);
-    else return "";
+    if (!isNull(EMAIL_LETTER_DATA_SUBJECT)) {
+		return getStringColumnValue(EMAIL_LETTER_DATA_SUBJECT);
+	}
+	else {
+		return "";
+	}
   }
 
   public String getBody(){
-    if (!isNull(EMAIL_LETTER_DATA_BODY))     return getStringColumnValue(EMAIL_LETTER_DATA_BODY);
-    else return "";
+    if (!isNull(EMAIL_LETTER_DATA_BODY)) {
+		return getStringColumnValue(EMAIL_LETTER_DATA_BODY);
+	}
+	else {
+		return "";
+	}
   }
 
   public boolean getHasSent(){
@@ -116,17 +132,29 @@ public class EmailLetterDataBMPBean extends com.idega.data.GenericEntity impleme
   }
 
   public String getToEmail(){
-    if (!isNull(EMAIL_LETTER_DATA_TO))     return getStringColumnValue(EMAIL_LETTER_DATA_TO);
-    else return "";
+    if (!isNull(EMAIL_LETTER_DATA_TO)) {
+		return getStringColumnValue(EMAIL_LETTER_DATA_TO);
+	}
+	else {
+		return "";
+	}
   }
 
   public String getFromEmail(){
-    if (!isNull(EMAIL_LETTER_DATA_FROM))     return getStringColumnValue(EMAIL_LETTER_DATA_FROM);
-    else return "";
+    if (!isNull(EMAIL_LETTER_DATA_FROM)) {
+		return getStringColumnValue(EMAIL_LETTER_DATA_FROM);
+	}
+	else {
+		return "";
+	}
   }
 
   public String getDate(){
-     if (!isNull(EMAIL_LETTER_DATA_DATE))    return getStringColumnValue(EMAIL_LETTER_DATA_DATE);
-     else return "";
+     if (!isNull(EMAIL_LETTER_DATA_DATE)) {
+		return getStringColumnValue(EMAIL_LETTER_DATA_DATE);
+	}
+	else {
+		return "";
+	}
   }
 }

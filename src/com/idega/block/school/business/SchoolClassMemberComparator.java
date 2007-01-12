@@ -70,13 +70,13 @@ public class SchoolClassMemberComparator implements Comparator {
 	 * @see java.util.Comparator#compare(Object, Object)
 	 */
 	public int compare(Object o1, Object o2) {
-		collator = Collator.getInstance(locale);
+		this.collator = Collator.getInstance(this.locale);
 		int result = 0;
 		
     try {
-    	switch (sortBy) {
+    	switch (this.sortBy) {
 				case NAME_SORT :
-					if (locale.equals(LocaleUtil.getIcelandicLocale())) {
+					if (this.locale.equals(LocaleUtil.getIcelandicLocale())) {
 						result = firstNameSort(o1,o2);
 					}
 					else {
@@ -108,59 +108,59 @@ public class SchoolClassMemberComparator implements Comparator {
 	}
 	
 	public int lastNameSort(Object o1, Object o2) {
-		User p1 = (User) students.get(new Integer(((SchoolClassMember)o1).getClassMemberId()));
-		User p2 = (User) students.get(new Integer(((SchoolClassMember)o2).getClassMemberId()));
+		User p1 = (User) this.students.get(new Integer(((SchoolClassMember)o1).getClassMemberId()));
+		User p2 = (User) this.students.get(new Integer(((SchoolClassMember)o2).getClassMemberId()));
 		
 		String one = p1.getLastName()!=null?p1.getLastName():"";
 		String two = p2.getLastName()!=null?p2.getLastName():"";
-		int result = collator.compare(one,two);
+		int result = this.collator.compare(one,two);
 		
 		if (result == 0){
 		  one = p1.getFirstName()!=null?p1.getFirstName():"";
 		  two = p2.getFirstName()!=null?p2.getFirstName():"";
-		  result = collator.compare(one,two);
+		  result = this.collator.compare(one,two);
 		}
 
 		if (result == 0){
 		  //result = p1.getMiddleName().compareTo(p2.getMiddleName());
 		  one = p1.getMiddleName()!=null?p1.getMiddleName():"";
 		  two = p2.getMiddleName()!=null?p2.getMiddleName():"";
-		  result = collator.compare(one,two);
+		  result = this.collator.compare(one,two);
 		}
 		
 		return result;
 	}	
 
 	public int firstNameSort(Object o1, Object o2) {
-		User p1 = (User) students.get(new Integer(((SchoolClassMember)o1).getClassMemberId()));
-		User p2 = (User) students.get(new Integer(((SchoolClassMember)o2).getClassMemberId()));
+		User p1 = (User) this.students.get(new Integer(((SchoolClassMember)o1).getClassMemberId()));
+		User p2 = (User) this.students.get(new Integer(((SchoolClassMember)o2).getClassMemberId()));
 		
 		String one = p1.getFirstName()!=null?p1.getFirstName():"";
 		String two = p2.getFirstName()!=null?p2.getFirstName():"";
-		int result = collator.compare(one,two);
+		int result = this.collator.compare(one,two);
 		
 		if (result == 0){
 		  //result = p1.getMiddleName().compareTo(p2.getMiddleName());
 		  one = p1.getMiddleName()!=null?p1.getMiddleName():"";
 		  two = p2.getMiddleName()!=null?p2.getMiddleName():"";
-		  result = collator.compare(one,two);
+		  result = this.collator.compare(one,two);
 		}
 		
 		if (result == 0){
 		  one = p1.getLastName()!=null?p1.getLastName():"";
 		  two = p2.getLastName()!=null?p2.getLastName():"";
-		  result = collator.compare(one,two);
+		  result = this.collator.compare(one,two);
 		}
 
 		return result;
 	}	
 
 	public int genderSort(Object o1, Object o2) {
-		User p1 = (User) students.get(new Integer(((SchoolClassMember)o1).getClassMemberId()));
-		User p2 = (User) students.get(new Integer(((SchoolClassMember)o2).getClassMemberId()));
+		User p1 = (User) this.students.get(new Integer(((SchoolClassMember)o1).getClassMemberId()));
+		User p2 = (User) this.students.get(new Integer(((SchoolClassMember)o2).getClassMemberId()));
 		int result = 0;
 		
-		if (genderComparatorForUser == null) {
+		if (this.genderComparatorForUser == null) {
 			boolean isFemale1 = isGenderIDFemale(p1.getGenderID());
 			boolean isFemale2 = isGenderIDFemale(p2.getGenderID());
 		
@@ -172,11 +172,11 @@ public class SchoolClassMemberComparator implements Comparator {
 			}
 		}
 		else {
-			result = genderComparatorForUser.compare(p1, p2);
+			result = this.genderComparatorForUser.compare(p1, p2);
 		}
 		
 		if (result == 0){
-			if (locale.equals(LocaleUtil.getIcelandicLocale())) {
+			if (this.locale.equals(LocaleUtil.getIcelandicLocale())) {
 				result = firstNameSort(o1,o2);
 			}
 			else {
@@ -187,32 +187,34 @@ public class SchoolClassMemberComparator implements Comparator {
 	}	
 
 	public int addressSort(Object o1, Object o2) throws RemoteException {
-		Address p1 = business.getUserAddress1(((SchoolClassMember)o1).getClassMemberId());
-		Address p2 = business.getUserAddress1(((SchoolClassMember)o2).getClassMemberId());
+		Address p1 = this.business.getUserAddress1(((SchoolClassMember)o1).getClassMemberId());
+		Address p2 = this.business.getUserAddress1(((SchoolClassMember)o2).getClassMemberId());
 		
 		if (p1 == null || p2 == null) {
-			if (p1 == null && p2 != null)
+			if (p1 == null && p2 != null) {
 				return 1;
-			else if (p1 != null && p2 == null)
+			}
+			else if (p1 != null && p2 == null) {
 				return -1;
+			}
 			return 0;
 		}
 			
 		String one = p1.getStreetAddress()!=null?p1.getStreetAddress():"";
 		String two = p2.getStreetAddress()!=null?p2.getStreetAddress():"";
-		int result = collator.compare(one,two);
+		int result = this.collator.compare(one,two);
 				
 		return result;
 	}	
 
 	public int personalIDSort(Object o1, Object o2) {
-		User p1 = (User) students.get(new Integer((((SchoolClassMember)o1).getClassMemberId())));
-		User p2 = (User) students.get(new Integer((((SchoolClassMember)o2).getClassMemberId())));
+		User p1 = (User) this.students.get(new Integer((((SchoolClassMember)o1).getClassMemberId())));
+		User p2 = (User) this.students.get(new Integer((((SchoolClassMember)o2).getClassMemberId())));
 		
 		String pID1 = p1.getPersonalID() != null ? p1.getPersonalID() : "";
 		String pID2 = p2.getPersonalID() != null ? p2.getPersonalID() : "";
 		
-		return collator.compare(pID1,pID2);
+		return this.collator.compare(pID1,pID2);
 	}	
 
 	public int languageSort(Object o1, Object o2) {
@@ -221,7 +223,7 @@ public class SchoolClassMemberComparator implements Comparator {
 		
 		String one = p1.getLanguage()!=null?p1.getLanguage():"";
 		String two = p2.getLanguage()!=null?p2.getLanguage():"";
-		int result = collator.compare(one,two);
+		int result = this.collator.compare(one,two);
 				
 		if (result == 0){
 		  result = lastNameSort(o1,o2);
@@ -231,8 +233,8 @@ public class SchoolClassMemberComparator implements Comparator {
 	}	
 	
 	public int ageSort(Object o1, Object o2) {
-		User p1 = (User) students.get(new Integer(((SchoolClassMember)o1).getClassMemberId()));
-		User p2 = (User) students.get(new Integer(((SchoolClassMember)o2).getClassMemberId()));
+		User p1 = (User) this.students.get(new Integer(((SchoolClassMember)o1).getClassMemberId()));
+		User p2 = (User) this.students.get(new Integer(((SchoolClassMember)o2).getClassMemberId()));
 		
 		Age age1 = new Age(p1.getDateOfBirth());
 		Age age2 = new Age(p2.getDateOfBirth());
@@ -247,10 +249,10 @@ public class SchoolClassMemberComparator implements Comparator {
 	}	
 
 	private boolean isGenderIDFemale(int genderID) {
-		if (femaleID < 0) {
+		if (this.femaleID < 0) {
 			try {
 				Gender female = ((GenderHome) IDOLookup.getHome(Gender.class)).getFemaleGender();
-				femaleID = ((Integer)female.getPrimaryKey()).intValue();
+				this.femaleID = ((Integer)female.getPrimaryKey()).intValue();
 			} 
 			catch (IDOLookupException e) {
 				System.err.println("[SchoolClassMemberComparator] Could not look up Gender");
@@ -265,7 +267,7 @@ public class SchoolClassMemberComparator implements Comparator {
 				e.printStackTrace(System.err);
 			}*/
 		}
-		return femaleID == genderID;
+		return this.femaleID == genderID;
 	}
 
 }

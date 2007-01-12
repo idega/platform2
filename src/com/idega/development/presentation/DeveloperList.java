@@ -2,6 +2,7 @@ package com.idega.development.presentation;
 
 import com.idega.core.localisation.presentation.LocaleSwitcher;
 import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.FrameList;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -26,12 +27,12 @@ private static String styleName = "iwdClass";
   }
 
   public void main(IWContext iwc) {
-    iwb = getBundle(iwc);
+    this.iwb = getBundle(iwc);
     setLinkStyle("font-family: Verdana, Arial, sans-serif; font-weight: bold; font-size: 11px; text-decoration: none;color:#000000;");
 		getParentPage().setStyleDefinition("."+styleName, "font-family: Verdana, Arial, sans-serif; font-weight: bold; font-size: 10px; text-decoration: none;color:#000000;");
 		getParentPage().setStyleDefinition("."+styleName+":hover", "font-family: Verdana, Arial, sans-serif; font-weight: bold; font-size: 10px; text-decoration: none;color:#999999;");
 
-    Image image = iwb.getImage("/developer/listbutton.gif","",13,13);
+    Image image = this.iwb.getImage("/developer/listbutton.gif","",13,13);
 
     addToList(getClassLink(iwc, Localizer.class,"Localizer"),image);
     addToList(getClassLink(iwc, LocaleSwitcher.class,"Locale Switcher"),image);
@@ -61,7 +62,7 @@ private static String styleName = "iwdClass";
   private Link getClassLink(IWContext iwc, Class linkClass, String linkName) {
   	Link link = new Link(linkName);
   	link.setStyleClass(styleName);
-  	link.addParameter(IWDeveloper.PARAMETER_CLASS_NAME, iwc.getIWMainApplication().getEncryptedClassName(linkClass));
+  	link.addParameter(IWDeveloper.PARAMETER_CLASS_NAME, IWMainApplication.getEncryptedClassName(linkClass));
   	return link;
   }
   

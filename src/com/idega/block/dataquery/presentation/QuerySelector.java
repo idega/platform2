@@ -42,7 +42,7 @@ public class QuerySelector extends Block {
 	
 	
 	public QuerySelector(){
-		pengine = new ParameterEngine("qrysel");
+		this.pengine = new ParameterEngine("qrysel");
 	}
 
 	/* (non-Javadoc)
@@ -56,15 +56,15 @@ public class QuerySelector extends Block {
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
 	 */
 	public void main(IWContext iwc) throws Exception {
-		iwb = getBundle(iwc);
-		iwrb = getResourceBundle(iwc);
-		hasPermission = hasEditPermission();
+		this.iwb = getBundle(iwc);
+		this.iwrb = getResourceBundle(iwc);
+		this.hasPermission = hasEditPermission();
 		initiate(iwc);
 		presentate(iwc);
 	}
 	
 	public void initiate(IWContext iwc)throws Exception{
-		pengine.parse(iwc);
+		this.pengine.parse(iwc);
 	}
 	
 	public PresentationObject presentFolderQueries(ICFile folder){
@@ -72,7 +72,7 @@ public class QuerySelector extends Block {
 		
 		TreeViewerSelection tree = new TreeViewerSelection();
 		tree.setSelectionKey(PRM_QUERY_ID);
-		tree.setSelectedNode(queryID);
+		tree.setSelectedNode(this.queryID);
 		if(folder!=null){
 		tree.setRootNode(folder);
 		tree.setDefaultOpenLevel(1);
@@ -87,25 +87,28 @@ public class QuerySelector extends Block {
 	public PresentationObject presentFolders(IWContext iwc){
 		Table T = new Table();
 		int col = 1;
-		if(userFolder!=null){
-			if(userIcon!=null)
-				T.add(userIcon,col,1);
-			T.add(iwrb.getLocalizedString("qsel.my_queries","My queries"),col,1);
-			T.add(presentFolderQueries(userFolder),col,2);
+		if(this.userFolder!=null){
+			if(this.userIcon!=null) {
+				T.add(this.userIcon,col,1);
+			}
+			T.add(this.iwrb.getLocalizedString("qsel.my_queries","My queries"),col,1);
+			T.add(presentFolderQueries(this.userFolder),col,2);
 			col++;
 		}
-		if(templateFolder!=null){
-			if(templateIcon!=null)
-				T.add(templateIcon,col,1);
-			T.add(iwrb.getLocalizedString("qsel.template_queries","Template queries"),col,1);
-			T.add(presentFolderQueries(templateFolder),col,2);
+		if(this.templateFolder!=null){
+			if(this.templateIcon!=null) {
+				T.add(this.templateIcon,col,1);
+			}
+			T.add(this.iwrb.getLocalizedString("qsel.template_queries","Template queries"),col,1);
+			T.add(presentFolderQueries(this.templateFolder),col,2);
 			col++;
 		}
-		if(staticFolder!=null){
-			if(staticIcon!=null)
-				T.add(templateIcon,col,1);
-			T.add(iwrb.getLocalizedString("qsel.static_queries","Static queries"),col,1);
-			T.add(presentFolderQueries(templateFolder),col,2);
+		if(this.staticFolder!=null){
+			if(this.staticIcon!=null) {
+				T.add(this.templateIcon,col,1);
+			}
+			T.add(this.iwrb.getLocalizedString("qsel.static_queries","Static queries"),col,1);
+			T.add(presentFolderQueries(this.templateFolder),col,2);
 			col++;
 		}
 		
@@ -127,84 +130,84 @@ public class QuerySelector extends Block {
 	 * @return
 	 */
 	public ICFile getStaticFolder() {
-		return staticFolder;
+		return this.staticFolder;
 	}
 
 	/**
 	 * @return
 	 */
 	public Image getStaticIcon() {
-		return staticIcon;
+		return this.staticIcon;
 	}
 
 	/**
 	 * @return
 	 */
 	public ICFile getTemplateFolder() {
-		return templateFolder;
+		return this.templateFolder;
 	}
 
 	/**
 	 * @return
 	 */
 	public Image getTemplateIcon() {
-		return templateIcon;
+		return this.templateIcon;
 	}
 
 	/**
 	 * @return
 	 */
 	public ICFile getUserFolder() {
-		return userFolder;
+		return this.userFolder;
 	}
 
 	/**
 	 * @return
 	 */
 	public Image getUserIcon() {
-		return userIcon;
+		return this.userIcon;
 	}
 
 	/**
 	 * @param file
 	 */
 	public void setStaticFolder(ICFile file) {
-		staticFolder = file;
+		this.staticFolder = file;
 	}
 
 	/**
 	 * @param image
 	 */
 	public void setStaticIcon(Image image) {
-		staticIcon = image;
+		this.staticIcon = image;
 	}
 
 	/**
 	 * @param file
 	 */
 	public void setTemplateFolder(ICFile file) {
-		templateFolder = file;
+		this.templateFolder = file;
 	}
 
 	/**
 	 * @param image
 	 */
 	public void setTemplateIcon(Image image) {
-		templateIcon = image;
+		this.templateIcon = image;
 	}
 
 	/**
 	 * @param file
 	 */
 	public void setUserFolder(ICFile file) {
-		userFolder = file;
+		this.userFolder = file;
 	}
 
 	/**
 	 * @param image
 	 */
 	public void setUserIcon(Image image) {
-		userIcon = image;
+		this.userIcon = image;
 	}
 
 }

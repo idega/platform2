@@ -1,5 +1,5 @@
 /*
- * $Id: MessageTypeManager.java,v 1.1 2005/10/13 18:20:38 laddi Exp $
+ * $Id: MessageTypeManager.java,v 1.1.2.1 2007/01/12 19:32:43 idegaweb Exp $
  * Created on Oct 12, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -20,10 +20,10 @@ import com.idega.data.IDOLookupException;
 
 
 /**
- * Last modified: $Date: 2005/10/13 18:20:38 $ by $Author: laddi $
+ * Last modified: $Date: 2007/01/12 19:32:43 $ by $Author: idegaweb $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.1.2.1 $
  */
 public class MessageTypeManager {
 
@@ -67,15 +67,15 @@ public class MessageTypeManager {
 	}
 	
 	private Map getMessageTypeDataMap() {
-		if (messageTypeDataMap == null) {
-			messageTypeDataMap = new HashMap();
+		if (this.messageTypeDataMap == null) {
+			this.messageTypeDataMap = new HashMap();
 		}
-		return messageTypeDataMap;
+		return this.messageTypeDataMap;
 	}
 	
 	public Collection getMessageCodes() {
-		if (messageTypeDataMap != null) {
-			return messageTypeDataMap.keySet();
+		if (this.messageTypeDataMap != null) {
+			return this.messageTypeDataMap.keySet();
 		}
 		return new ArrayList();
 	}

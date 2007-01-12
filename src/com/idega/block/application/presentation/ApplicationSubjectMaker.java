@@ -65,7 +65,7 @@ public class ApplicationSubjectMaker extends Block{
   protected void control(IWContext iwc){
 
 
-      if(isAdmin){
+      if(this.isAdmin){
         ApplicationSubject subject = null;
         if(iwc.isParameterSet("app_subject_id")){
           try {
@@ -92,8 +92,9 @@ public class ApplicationSubjectMaker extends Block{
         add(T);
 
       }
-      else
-        this.add(new Text(iwrb.getLocalizedString("access_denied","Access denied")));
+	else {
+		this.add(new Text(this.iwrb.getLocalizedString("access_denied","Access denied")));
+	}
 
   }
 
@@ -117,10 +118,10 @@ public class ApplicationSubjectMaker extends Block{
 	}
     DataTable dTable = new DataTable();
     dTable.setTitlesHorizontal(true);
-    dTable.addTitle(iwrb.getLocalizedString("subjects","Subjects"));
-    dTable.add(Edit.formatText(iwrb.getLocalizedString("description", "Description")),1,1);
-    dTable.add(Edit.formatText(iwrb.getLocalizedString("expiredate", "Expiredate")),2,1);
-    dTable.add(Edit.formatText(iwrb.getLocalizedString("extra_attribute", "Extra attribute")),3,1);
+    dTable.addTitle(this.iwrb.getLocalizedString("subjects","Subjects"));
+    dTable.add(Edit.formatText(this.iwrb.getLocalizedString("description", "Description")),1,1);
+    dTable.add(Edit.formatText(this.iwrb.getLocalizedString("expiredate", "Expiredate")),2,1);
+    dTable.add(Edit.formatText(this.iwrb.getLocalizedString("extra_attribute", "Extra attribute")),3,1);
 
     if(L != null){
       int a = 2;
@@ -129,8 +130,9 @@ public class ApplicationSubjectMaker extends Block{
 		
         dTable.add(getSubjectLink(AS),1,a);
         dTable.add(Edit.formatText(new IWTimestamp(AS.getExpires()).getLocaleDate(LocaleUtil.getIcelandicLocale())),2,a);
-        if(AS.getExtraAttribute()!=null)
-        dTable.add(Edit.formatText(AS.getExtraAttribute()),3,a);
+        if(AS.getExtraAttribute()!=null) {
+			dTable.add(Edit.formatText(AS.getExtraAttribute()),3,a);
+		}
         dTable.add((getDeleteLink(AS)),4,a);
         a++;
       }
@@ -141,7 +143,7 @@ public class ApplicationSubjectMaker extends Block{
   private UIComponent getSubjectFormTable(IWContext iwc,ApplicationSubject subject){
     DataTable dTable = new DataTable();
     dTable.setTitlesHorizontal(true);
-    dTable.addTitle(iwrb.getLocalizedString("new_subject","New subject"));
+    dTable.addTitle(this.iwrb.getLocalizedString("new_subject","New subject"));
 
     TextInput Description = new TextInput("app_subj_desc");
     Edit.setStyle(Description);
@@ -153,22 +155,24 @@ public class ApplicationSubjectMaker extends Block{
     if(subject !=null){
       Description.setContent(subject.getDescription());
       ExpireDate.setDate(subject.getExpires());
-      if(subject.getExtraAttribute()!=null)
-      	extra.setContent(subject.getExtraAttribute());
+      if(subject.getExtraAttribute()!=null) {
+		extra.setContent(subject.getExtraAttribute());
+	}
       dTable.add(new HiddenInput("app_subject_id",subject.getPrimaryKey().toString()));
     }
-    dTable.add(Edit.formatText(iwrb.getLocalizedString("description", "Description")),1,1);
-    dTable.add(Edit.formatText(iwrb.getLocalizedString("expiredate", "Expiredate")),2,1);
-    dTable.add(Edit.formatText(iwrb.getLocalizedString("extra_attribute", "Extra attribute")),3,1);
+    dTable.add(Edit.formatText(this.iwrb.getLocalizedString("description", "Description")),1,1);
+    dTable.add(Edit.formatText(this.iwrb.getLocalizedString("expiredate", "Expiredate")),2,1);
+    dTable.add(Edit.formatText(this.iwrb.getLocalizedString("extra_attribute", "Extra attribute")),3,1);
     dTable.add(Description,1,2);
     dTable.add(ExpireDate,2,2);
    
-    if(attributeHandlerClass!=null){
+    if(this.attributeHandlerClass!=null){
 		try {
-			ICPropertyHandler handler =(ICPropertyHandler) attributeHandlerClass.newInstance();
+			ICPropertyHandler handler =(ICPropertyHandler) this.attributeHandlerClass.newInstance();
 			String attribute = "";
-			if(subject!=null)
+			if(subject!=null) {
 				attribute = subject.getExtraAttribute()!=null?subject.getExtraAttribute():"";
+			}
 			PresentationObject handlerObject = handler.getHandlerObject("app_subj_extra",attribute,iwc);
 			dTable.add(handlerObject,3,2);
 		} catch (InstantiationException e) {
@@ -185,7 +189,7 @@ public class ApplicationSubjectMaker extends Block{
 	}
 
     
-    dTable.addButton(new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"save"));
+    dTable.addButton(new SubmitButton(this.iwrb.getLocalizedImageButton("save","Save"),"save"));
 
     Form F = new Form();
     F.add(dTable);
@@ -230,10 +234,10 @@ public class ApplicationSubjectMaker extends Block{
   }
 
    public void main(IWContext iwc){
-    isAdmin = iwc.hasEditPermission(this);
-    iwrb = getResourceBundle(iwc);
-    iwb = getBundle(iwc);
-    core = iwc.getIWMainApplication().getBundle( IWMainApplication.CORE_BUNDLE_IDENTIFIER );
+    this.isAdmin = iwc.hasEditPermission(this);
+    this.iwrb = getResourceBundle(iwc);
+    this.iwb = getBundle(iwc);
+    this.core = iwc.getIWMainApplication().getBundle( IWMainApplication.CORE_BUNDLE_IDENTIFIER );
     control(iwc);
   }
   

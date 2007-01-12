@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
 
+import com.idega.block.category.data.CategoryEntityBMPBean;
 import com.idega.block.reports.data.Report;
 import com.idega.block.reports.data.ReportCategory;
 import com.idega.block.reports.data.ReportItem;
@@ -45,7 +46,7 @@ public class ReportEntityHandler {
 
       if(iCatId > 0){
 
-        return (ReportCategory[]) ((com.idega.block.reports.data.ReportCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ReportCategory.class)).createLegacy().findAllByColumn(com.idega.block.reports.data.ReportItemBMPBean.getColumnCategoryId(),iCatId);
+        return (ReportCategory[]) ((com.idega.block.reports.data.ReportCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ReportCategory.class)).createLegacy().findAllByColumn(CategoryEntityBMPBean.getColumnCategoryId(),iCatId);
 
       }
 
@@ -73,7 +74,7 @@ public class ReportEntityHandler {
 
     try {
 
-      L = EntityFinder.findAllByColumnOrdered(((com.idega.block.reports.data.ReportItemHome)com.idega.data.IDOLookup.getHomeLegacy(ReportItem.class)).createLegacy(),com.idega.block.reports.data.ReportItemBMPBean.getColumnCategoryId(),iCatId,com.idega.block.reports.data.ReportItemBMPBean.getColumnNameDisplayOrder());
+      L = EntityFinder.findAllByColumnOrdered(((com.idega.block.reports.data.ReportItemHome)com.idega.data.IDOLookup.getHomeLegacy(ReportItem.class)).createLegacy(),CategoryEntityBMPBean.getColumnCategoryId(),iCatId,com.idega.block.reports.data.ReportItemBMPBean.getColumnNameDisplayOrder());
 
     }
 
@@ -97,7 +98,7 @@ public class ReportEntityHandler {
 
       if(iCatId > 0){
 
-        return (ReportItem[]) ((com.idega.block.reports.data.ReportItemHome)com.idega.data.IDOLookup.getHomeLegacy(ReportItem.class)).createLegacy().findAllByColumnOrdered(com.idega.block.reports.data.ReportItemBMPBean.getColumnCategoryId(),String.valueOf(iCatId),com.idega.block.reports.data.ReportItemBMPBean.getColumnNameDisplayOrder());
+        return (ReportItem[]) ((com.idega.block.reports.data.ReportItemHome)com.idega.data.IDOLookup.getHomeLegacy(ReportItem.class)).createLegacy().findAllByColumnOrdered(CategoryEntityBMPBean.getColumnCategoryId(),String.valueOf(iCatId),com.idega.block.reports.data.ReportItemBMPBean.getColumnNameDisplayOrder());
 
       }
 
@@ -127,7 +128,7 @@ public class ReportEntityHandler {
 
     try {
 
-      L = EntityFinder.findAllByColumn(((com.idega.block.reports.data.ReportHome)com.idega.data.IDOLookup.getHomeLegacy(Report.class)).createLegacy(),com.idega.block.reports.data.ReportBMPBean.getColumnCategoryId(),iCategoryId );
+      L = EntityFinder.findAllByColumn(((com.idega.block.reports.data.ReportHome)com.idega.data.IDOLookup.getHomeLegacy(Report.class)).createLegacy(),CategoryEntityBMPBean.getColumnCategoryId(),iCategoryId );
 
     }
 
@@ -151,7 +152,7 @@ public class ReportEntityHandler {
 
       if(iCatId > 0){
 
-        return (Report[]) ((com.idega.block.reports.data.ReportHome)com.idega.data.IDOLookup.getHomeLegacy(Report.class)).createLegacy().findAllByColumn(com.idega.block.reports.data.ReportItemBMPBean.getColumnCategoryId(),iCatId);
+        return (Report[]) ((com.idega.block.reports.data.ReportHome)com.idega.data.IDOLookup.getHomeLegacy(Report.class)).createLegacy().findAllByColumn(CategoryEntityBMPBean.getColumnCategoryId(),iCatId);
 
       }
 
@@ -260,10 +261,9 @@ public class ReportEntityHandler {
         return true;
 
       }
-
-      else
-
-        return false;
+	else {
+		return false;
+	}
 
     }
 
@@ -318,10 +318,9 @@ public class ReportEntityHandler {
       return true;
 
       }
-
-      else
-
-        return false;
+	else {
+		return false;
+	}
 
     }
 

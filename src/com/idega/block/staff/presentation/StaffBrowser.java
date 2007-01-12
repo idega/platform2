@@ -5,7 +5,7 @@ package com.idega.block.staff.presentation;
  * Description:
  * Copyright:    Copyright (c) 2000-2001 idega.is All Rights Reserved
  * Company:      idega
-  *@author <a href="mailto:laddi@idega.is">Þórhallur "Laddi" Helgason</a>
+  *@author <a href="mailto:laddi@idega.is">ï¿½ï¿½rhallur "Laddi" Helgason</a>
  * @version 1.2
  */
 
@@ -119,35 +119,35 @@ public class StaffBrowser extends Block implements Builderaware {
 	}
 
 	public void main(IWContext iwc) throws Exception {
-		_iwb = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
-		_iwrb = getResourceBundle(iwc);
-		_isAdmin = iwc.hasEditPermission(this);
-		_localeID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
+		this._iwb = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+		this._iwrb = getResourceBundle(iwc);
+		this._isAdmin = iwc.hasEditPermission(this);
+		this._localeID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
 
-		row = 1;
-		_myTable = new Table();
-		_myTable.setWidth(_width);
+		this.row = 1;
+		this._myTable = new Table();
+		this._myTable.setWidth(this._width);
 
-		if (_isAdmin) {
-			_myTable.add(getAdminButtons(), 1, row);
-			row++;
+		if (this._isAdmin) {
+			this._myTable.add(getAdminButtons(), 1, this.row);
+			this.row++;
 		}
 
 		handleParameters(iwc);
 		getStaff(iwc);
 
-		add(_myTable);
+		add(this._myTable);
 	}
 
 	private void getStaff(IWContext iwc) {
 		setStyles();
 
-		if (_addAlphabet && _layout == ALL_STAFF) {
-			_myTable.add(getAlphabetTable(), 1, row);
-			row++;
+		if (this._addAlphabet && this._layout == ALL_STAFF) {
+			this._myTable.add(getAlphabetTable(), 1, this.row);
+			this.row++;
 		}
 
-		switch (_layout) {
+		switch (this._layout) {
 			case ALL_STAFF :
 				getAllStaff(iwc);
 				break;
@@ -162,10 +162,12 @@ public class StaffBrowser extends Block implements Builderaware {
 
 	private void getAllStaff(IWContext iwc) {
 		List users = null;
-		if (_hasAlphabetLetter)
-			users = StaffFinder.getAllUsersByLetter(iwc, _alphabetLetter);
-		else
+		if (this._hasAlphabetLetter) {
+			users = StaffFinder.getAllUsersByLetter(iwc, this._alphabetLetter);
+		}
+		else {
 			users = StaffFinder.getAllUsers(iwc);
+		}
 
 		getStaffTable(iwc, users);
 	}
@@ -189,13 +191,14 @@ public class StaffBrowser extends Block implements Builderaware {
 		int emailColumn = -1;
 
 		if (users != null) {
-			if (_sortAlphabetically)
-				Collections.sort(users, new GenericUserComparator(iwc.getCurrentLocale(), _sortNamesBy));
+			if (this._sortAlphabetically) {
+				Collections.sort(users, new GenericUserComparator(iwc.getCurrentLocale(), this._sortNamesBy));
+			}
 			
 			Iterator iter = users.iterator();
 			while (iter.hasNext()) {
 				column = 1;
-				holder = StaffFinder.getStaffHolder((User) iter.next(), _localeID);
+				holder = StaffFinder.getStaffHolder((User) iter.next(), this._localeID);
 
 				userLink = getStaffLink(holder.getName(), holder.getUserID());
 				userName = getStaffText(holder.getName());
@@ -204,39 +207,46 @@ public class StaffBrowser extends Block implements Builderaware {
 				if (holder.getTitle() != null) {
 					titleText = new Text(holder.getTitle());
 				}
-				else
+				else {
 					titleText = new Text("");
-				titleText.setFontStyle(_textStyle);
+				}
+				titleText.setFontStyle(this._textStyle);
 
 				if (holder.getWorkPhone() != null) {
 					phoneText = new Text(holder.getWorkPhone());
 				}
-				else
+				else {
 					phoneText = new Text("");
-				phoneText.setFontStyle(_textStyle);
+				}
+				phoneText.setFontStyle(this._textStyle);
 				
-				if(!_showPictureInList){
-					if (isShowDetails())
+				if(!this._showPictureInList){
+					if (isShowDetails()) {
 						table.add(userLink, column++, staffRow);
-					else
+					}
+					else {
 						table.add(userName, column++, staffRow);
+					}
 				
-					if (_showListTitle) {
-						if (_titleWidth != null)
-							table.setWidth(column, _titleWidth);
+					if (this._showListTitle) {
+						if (this._titleWidth != null) {
+							table.setWidth(column, this._titleWidth);
+						}
 						table.add(titleText, column++, staffRow);
 					}
-					if (_showListWorkPhone) {
-						if (_workPhoneWidth != null)
-							table.setWidth(column, _workPhoneWidth);
+					if (this._showListWorkPhone) {
+						if (this._workPhoneWidth != null) {
+							table.setWidth(column, this._workPhoneWidth);
+						}
 						table.add(phoneText, column++, staffRow);
 					}
 					if (emailLink != null) {
-						if (_emailWidth != null)
-							table.setWidth(column, _emailWidth);
-						if (_emailAlignment != null) {
+						if (this._emailWidth != null) {
+							table.setWidth(column, this._emailWidth);
+						}
+						if (this._emailAlignment != null) {
 							emailColumn = column;
-							table.setAlignment(column, staffRow, _emailAlignment);
+							table.setAlignment(column, staffRow, this._emailAlignment);
 						}
 						table.add(emailLink, column++, staffRow);
 					}
@@ -247,10 +257,12 @@ public class StaffBrowser extends Block implements Builderaware {
 					if (holder.getImageID() != -1) {
 						try {
 							image = new Image(holder.getImageID());
-							if (_imageWidth != null)
-								image.setWidth(_imageWidth);
-							if (_imageHeight != null)
-								image.setHeight(_imageHeight);
+							if (this._imageWidth != null) {
+								image.setWidth(this._imageWidth);
+							}
+							if (this._imageHeight != null) {
+								image.setHeight(this._imageHeight);
+							}
 							image.setBorder(1);
 							image.setVerticalSpacing(3);
 							image.setHorizontalSpacing(10);
@@ -264,15 +276,17 @@ public class StaffBrowser extends Block implements Builderaware {
 						}
 					}
 					staffRow++;
-					if (isShowDetails())
+					if (isShowDetails()) {
 						table.add(userLink, column, ++staffRow);
-					else
+					}
+					else {
 						table.add(userName, column, ++staffRow);
+					}
 					
-					if (_showListTitle) {
+					if (this._showListTitle) {
 						table.add(titleText, column, ++staffRow);
 					}
-					if (_showListWorkPhone) {
+					if (this._showListWorkPhone) {
 						table.add(phoneText, column, ++staffRow);
 					}
 					if (emailLink != null) {
@@ -282,35 +296,41 @@ public class StaffBrowser extends Block implements Builderaware {
 					column++;
 				}
 
-				if (_isAdmin || (_allowUserEdit && iwc.getUserId() == holder.getUserID())) {
+				if (this._isAdmin || (this._allowUserEdit && iwc.getUserId() == holder.getUserID())) {
 					table.setAlignment(column, staffRow, Table.HORIZONTAL_ALIGN_RIGHT);
 					table.add(getEditLink(holder.getUserID()), column, staffRow);
-					if(_isAdmin)
+					if(this._isAdmin) {
 						table.add(getDeleteLink(holder.getUserID()), column, staffRow);
+					}
 				}
 
 				staffRow++;
 			}
 		}
 
-		if (_zebraColor1 != null && _zebraColor2 != null)
-			table.setHorizontalZebraColored(_zebraColor1, _zebraColor2);
-		int centeredColumn = 2;
-		if (_showListTitle)
-			centeredColumn = 3;
-		for (int a = centeredColumn; a <= table.getColumns(); a++) {
-			if (a != emailColumn)
-				table.setColumnAlignment(a, extraAlignment);
+		if (this._zebraColor1 != null && this._zebraColor2 != null) {
+			table.setHorizontalZebraColored(this._zebraColor1, this._zebraColor2);
 		}
-		if (_nameWidth != null)
-			table.setWidth(1, _nameWidth);
-		_myTable.add(table, 1, row);
+		int centeredColumn = 2;
+		if (this._showListTitle) {
+			centeredColumn = 3;
+		}
+		for (int a = centeredColumn; a <= table.getColumns(); a++) {
+			if (a != emailColumn) {
+				table.setColumnAlignment(a, this.extraAlignment);
+			}
+		}
+		if (this._nameWidth != null) {
+			table.setWidth(1, this._nameWidth);
+		}
+		this._myTable.add(table, 1, this.row);
 	}
 
 	private void getDivisionStaff(IWContext iwc) {
 		List groups = StaffFinder.getAllGroups(iwc);
-		if (_sortGroupsAlphabetically)
+		if (this._sortGroupsAlphabetically) {
 			Collections.sort(groups, new GenericGroupComparator(iwc));
+		}
 		boolean showDivision = true;
 		
 		Text divisionText = null;
@@ -319,25 +339,26 @@ public class StaffBrowser extends Block implements Builderaware {
 			while (iterator.hasNext()) {
 				GenericGroup group = (GenericGroup) iterator.next();
 				
-				if (_group != null) {
+				if (this._group != null) {
 					showDivision = false;
-					if (((Integer)_group.getPrimaryKey()).intValue() == ((Integer)group.getPrimaryKey()).intValue())
+					if (((Integer)this._group.getPrimaryKey()).intValue() == ((Integer)group.getPrimaryKey()).intValue()) {
 						showDivision = true;
+					}
 				}
 				
 				if (showDivision) {
 					List users = StaffFinder.getUsersInPrimaryGroup(group);
 					if (users != null && users.size() > 0) {
-						if (_showDivisionHeader) {
+						if (this._showDivisionHeader) {
 							divisionText = new Text(group.getName());
-							divisionText.setFontStyle(_divisionStyle);
-							_myTable.add(divisionText, 1, row);
-							row++;
+							divisionText.setFontStyle(this._divisionStyle);
+							this._myTable.add(divisionText, 1, this.row);
+							this.row++;
 						}
 						getStaffTable(iwc, users);
-						row++;
-						_myTable.setHeight(1, row, "6");
-						row++;
+						this.row++;
+						this._myTable.setHeight(1, this.row, "6");
+						this.row++;
 					}
 				}
 			}
@@ -345,7 +366,7 @@ public class StaffBrowser extends Block implements Builderaware {
 	}
 
 	private void getUser(IWContext iwc) {
-		StaffHolder holder = StaffFinder.getStaffHolder(_userID, iwc);
+		StaffHolder holder = StaffFinder.getStaffHolder(this._userID, iwc);
 
 		Table userTable = new Table();
 		userTable.setWidth("100%");
@@ -363,10 +384,12 @@ public class StaffBrowser extends Block implements Builderaware {
 		if (holder != null && holder.getImageID() != -1) {
 			try {
 				image = new Image(holder.getImageID());
-				if (_imageWidth != null)
-					image.setWidth(_imageWidth);
-				if (_imageHeight != null)
-					image.setHeight(_imageHeight);
+				if (this._imageWidth != null) {
+					image.setWidth(this._imageWidth);
+				}
+				if (this._imageHeight != null) {
+					image.setHeight(this._imageHeight);
+				}
 				image.setBorder(1);
 				image.setVerticalSpacing(3);
 				image.setHorizontalSpacing(10);
@@ -382,22 +405,22 @@ public class StaffBrowser extends Block implements Builderaware {
 		int userid = -1000;
 		if (holder != null) {
 			userid = holder.getUserID();
-			Text name = new Text(_iwrb.getLocalizedString("user_name", "Name") + ":");
-			name.setFontStyle(_headlineStyle);
+			Text name = new Text(this._iwrb.getLocalizedString("user_name", "Name") + ":");
+			name.setFontStyle(this._headlineStyle);
 			Text nameText = new Text(holder.getName());
-			nameText.setFontStyle(_textStyle);
+			nameText.setFontStyle(this._textStyle);
 
 			textTable.add(name, column, tableRow);
 			textTable.add(nameText, column + 1, tableRow);
 			tableRow++;
 
 			int userAge = holder.getAge();
-			Text age = new Text(_iwrb.getLocalizedString("user_age", "Age") + ":");
-			age.setFontStyle(_headlineStyle);
+			Text age = new Text(this._iwrb.getLocalizedString("user_age", "Age") + ":");
+			age.setFontStyle(this._headlineStyle);
 			Text ageText = new Text(Integer.toString(userAge));
-			ageText.setFontStyle(_textStyle);
+			ageText.setFontStyle(this._textStyle);
 
-			if (_showAge && userAge > 0) {
+			if (this._showAge && userAge > 0) {
 				textTable.add(age, column, tableRow);
 				textTable.add(ageText, column + 1, tableRow);
 				tableRow++;
@@ -414,108 +437,116 @@ public class StaffBrowser extends Block implements Builderaware {
 			tableRow++;
 			}*/
 
-			Text title = new Text(_iwrb.getLocalizedString("user_title", "Title") + ":");
-			title.setFontStyle(_headlineStyle);
+			Text title = new Text(this._iwrb.getLocalizedString("user_title", "Title") + ":");
+			title.setFontStyle(this._headlineStyle);
 			Text titleText = new Text("");
-			if (holder.getTitle() != null)
+			if (holder.getTitle() != null) {
 				titleText.setText(holder.getTitle());
-			titleText.setFontStyle(_textStyle);
+			}
+			titleText.setFontStyle(this._textStyle);
 
-			if (_showTitle && holder.getTitle() != null) {
+			if (this._showTitle && holder.getTitle() != null) {
 				textTable.add(title, column, tableRow);
 				textTable.add(titleText, column + 1, tableRow);
 				tableRow++;
 			}
 
-			Text workPhone = new Text(_iwrb.getLocalizedString("work_phone", "Work phone") + ":");
-			workPhone.setFontStyle(_headlineStyle);
+			Text workPhone = new Text(this._iwrb.getLocalizedString("work_phone", "Work phone") + ":");
+			workPhone.setFontStyle(this._headlineStyle);
 			Text workPhoneText = new Text("");
-			if (holder.getWorkPhone() != null)
+			if (holder.getWorkPhone() != null) {
 				workPhoneText.setText(holder.getWorkPhone());
-			workPhoneText.setFontStyle(_textStyle);
+			}
+			workPhoneText.setFontStyle(this._textStyle);
 
-			if (_showWorkPhone && holder.getWorkPhone() != null) {
+			if (this._showWorkPhone && holder.getWorkPhone() != null) {
 				textTable.add(workPhone, column, tableRow);
 				textTable.add(workPhoneText, column + 1, tableRow);
 				tableRow++;
 			}
 
-			Text mobilePhone = new Text(_iwrb.getLocalizedString("Mobile_phone", "Mobile phone") + ":");
-			mobilePhone.setFontStyle(_headlineStyle);
+			Text mobilePhone = new Text(this._iwrb.getLocalizedString("Mobile_phone", "Mobile phone") + ":");
+			mobilePhone.setFontStyle(this._headlineStyle);
 			Text mobilePhoneText = new Text("");
-			if (holder.getMobilePhone() != null)
+			if (holder.getMobilePhone() != null) {
 				mobilePhoneText.setText(holder.getMobilePhone());
-			mobilePhoneText.setFontStyle(_textStyle);
+			}
+			mobilePhoneText.setFontStyle(this._textStyle);
 
-			if (_showMobilePhone && holder.getMobilePhone() != null) {
+			if (this._showMobilePhone && holder.getMobilePhone() != null) {
 				textTable.add(mobilePhone, column, tableRow);
 				textTable.add(mobilePhoneText, column + 1, tableRow);
 				tableRow++;
 			}
 
-			Text mail = new Text(_iwrb.getLocalizedString("email", "E-mail") + ":");
-			mail.setFontStyle(_headlineStyle);
+			Text mail = new Text(this._iwrb.getLocalizedString("email", "E-mail") + ":");
+			mail.setFontStyle(this._headlineStyle);
 			Text mailText = new Text("");
-			if (holder.getEmail() != null)
+			if (holder.getEmail() != null) {
 				mailText.setText(holder.getEmail());
-			mailText.setFontStyle(_textStyle);
+			}
+			mailText.setFontStyle(this._textStyle);
 			Link mailLink = new Link(mailText);
-			if (holder.getEmail() != null)
+			if (holder.getEmail() != null) {
 				mailLink.setURL("mailto:" + holder.getEmail());
+			}
 
-			if (_showEmail && holder.getEmail() != null) {
+			if (this._showEmail && holder.getEmail() != null) {
 				textTable.add(mail, column, tableRow);
 				textTable.add(mailLink, column + 1, tableRow);
 				tableRow++;
 			}
 
-			Text area = new Text(_iwrb.getLocalizedString("user_area", "Area") + ":");
-			area.setFontStyle(_headlineStyle);
+			Text area = new Text(this._iwrb.getLocalizedString("user_area", "Area") + ":");
+			area.setFontStyle(this._headlineStyle);
 			Text areaText = new Text("");
-			if (holder.getArea() != null)
+			if (holder.getArea() != null) {
 				areaText.setText(holder.getArea());
-			areaText.setFontStyle(_textStyle);
+			}
+			areaText.setFontStyle(this._textStyle);
 
-			if (_showArea && holder.getArea() != null) {
+			if (this._showArea && holder.getArea() != null) {
 				textTable.add(area, column, tableRow);
 				textTable.add(areaText, column + 1, tableRow);
 				tableRow++;
 			}
 
-			Text beganWork = new Text(_iwrb.getLocalizedString("user_began_work", "Began work") + ":");
-			beganWork.setFontStyle(_headlineStyle);
+			Text beganWork = new Text(this._iwrb.getLocalizedString("user_began_work", "Began work") + ":");
+			beganWork.setFontStyle(this._headlineStyle);
 			Text beganWorkText = new Text("");
-			if (holder.getBeganWork() != null)
+			if (holder.getBeganWork() != null) {
 				beganWorkText.setText(holder.getBeganWork().getLocaleDate(iwc));
-			beganWorkText.setFontStyle(_textStyle);
+			}
+			beganWorkText.setFontStyle(this._textStyle);
 
-			if (_showBeganWork && holder.getBeganWork() != null) {
+			if (this._showBeganWork && holder.getBeganWork() != null) {
 				textTable.add(beganWork, column, tableRow);
 				textTable.add(beganWorkText, column + 1, tableRow);
 				tableRow++;
 			}
 
-			Text education = new Text(_iwrb.getLocalizedString("user_education", "Education") + ":");
-			education.setFontStyle(_headlineStyle);
+			Text education = new Text(this._iwrb.getLocalizedString("user_education", "Education") + ":");
+			education.setFontStyle(this._headlineStyle);
 			Text educationText = new Text("");
-			if (holder.getEducation() != null)
+			if (holder.getEducation() != null) {
 				educationText.setText(holder.getEducation());
-			educationText.setFontStyle(_textStyle);
+			}
+			educationText.setFontStyle(this._textStyle);
 
-			if (_showEducation && holder.getEducation() != null) {
+			if (this._showEducation && holder.getEducation() != null) {
 				textTable.add(education, column, tableRow);
 				textTable.add(educationText, column + 1, tableRow);
 				tableRow++;
 			}
 
-			if (holder.getMetaAttributes() != null && _showMetaData) {
+			if (holder.getMetaAttributes() != null && this._showMetaData) {
 				String[] attributes = holder.getMetaAttributes();
 				String[] values = holder.getMetaValues();
 				for (int a = 0; a < attributes.length; a++) {
 					Text meta = new Text(attributes[a] + ":");
-					meta.setFontStyle(_headlineStyle);
+					meta.setFontStyle(this._headlineStyle);
 					Text metaText = new Text(values[a]);
-					metaText.setFontStyle(_textStyle);
+					metaText.setFontStyle(this._textStyle);
 
 					textTable.add(meta, column, tableRow);
 					textTable.add(metaText, column + 1, tableRow);
@@ -530,7 +561,7 @@ public class StaffBrowser extends Block implements Builderaware {
 		if (users != null) {
 			GenericUserComparator comparator = new GenericUserComparator(GenericUserComparator.NAME);
 			Collections.sort(users, comparator);
-			index = users.indexOf(StaffFinder.getUser(_userID));
+			index = users.indexOf(StaffFinder.getUser(this._userID));
 		}
 
 		Table linkTable = new Table(3, 1);
@@ -542,15 +573,17 @@ public class StaffBrowser extends Block implements Builderaware {
 
 		Link nextLink = getNextUserLink(users, index);
 		Link previousLink = getPreviousUserLink(users, index);
-		Link backLink = new Link("< " + _iwrb.getLocalizedString("back", "Back") + " >");
-		if (_backPage != null)
-			backLink.setPage(_backPage);
-		backLink.setStyle(_name);
+		Link backLink = new Link("< " + this._iwrb.getLocalizedString("back", "Back") + " >");
+		if (this._backPage != null) {
+			backLink.setPage(this._backPage);
+		}
+		backLink.setStyle(this._name);
 
-		if (previousLink != null && _showNavigationLinks)
+		if (previousLink != null && this._showNavigationLinks) {
 			linkTable.add(previousLink, 1, 1);
+		}
 		linkTable.add(backLink, 2, 1);
-		if (nextLink != null && _showNavigationLinks) {
+		if (nextLink != null && this._showNavigationLinks) {
 			linkTable.add(nextLink, 3, 1);
 			linkTable.setAlignment(3, 1, "right");
 		}
@@ -567,59 +600,66 @@ public class StaffBrowser extends Block implements Builderaware {
 		}
 
 		textTable.setWidth(1, "100");
-		if (_attributesWidth != null)
-			textTable.setWidth(1, _attributesWidth);
+		if (this._attributesWidth != null) {
+			textTable.setWidth(1, this._attributesWidth);
+		}
 		textTable.setColumnVerticalAlignment(1, "top");
 		textTable.setColumnVerticalAlignment(2, "top");
 		userTable.setColumnVerticalAlignment(1, "top");
 		userTable.setColumnVerticalAlignment(2, "top");
 
-		_myTable.add(userTable, 1, row);
+		this._myTable.add(userTable, 1, this.row);
 
-		if (_isAdmin || (_allowUserEdit && iwc.getUserId()==userid)) {
-			_myTable.add(getEditLink(_userID), 1, row + 1);
+		if (this._isAdmin || (this._allowUserEdit && iwc.getUserId()==userid)) {
+			this._myTable.add(getEditLink(this._userID), 1, this.row + 1);
 		}
 	}
 
 	private Link getNextUserLink(List users, int index) {
-		Link link = new Link(_iwrb.getLocalizedString("next_user", "Next") + " >>");
-		link.setStyle(_name);
+		Link link = new Link(this._iwrb.getLocalizedString("next_user", "Next") + " >>");
+		link.setStyle(this._name);
 
-		if (users.size() > index + 1)
+		if (users.size() > index + 1) {
 			link.addParameter(StaffBusiness.PARAMETER_USER_ID, ((User) users.get(index + 1)).getID());
-		else
+		}
+		else {
 			link = null;
+		}
 
 		return link;
 	}
 
 	private Link getPreviousUserLink(List users, int index) {
-		Link link = new Link("<< " + _iwrb.getLocalizedString("previous_user", "Prev"));
-		link.setStyle(_name);
+		Link link = new Link("<< " + this._iwrb.getLocalizedString("previous_user", "Prev"));
+		link.setStyle(this._name);
 
-		if (index > 0)
+		if (index > 0) {
 			link.addParameter(StaffBusiness.PARAMETER_USER_ID, ((User) users.get(index - 1)).getID());
-		else
+		}
+		else {
 			link = null;
+		}
 
 		return link;
 	}
 
 	private Text getStaffText(String name) {
 		Text text = new Text(name);
-		if (_textStyle != null)
-			text.setStyleAttribute(_textStyle);
+		if (this._textStyle != null) {
+			text.setStyleAttribute(this._textStyle);
+		}
 
 		return text;
 	}
 
 	private Link getStaffLink(String name, int userID) {
 		Link link = new Link(name);
-		if (_styles)
-			link.setStyle(_name);
+		if (this._styles) {
+			link.setStyle(this._name);
+		}
 		link.addParameter(StaffBusiness.PARAMETER_USER_ID, userID);
-		if (_page != null) {
-			link.setPage(_page);
+		if (this._page != null) {
+			link.setPage(this._page);
 		}
 
 		return link;
@@ -630,8 +670,9 @@ public class StaffBrowser extends Block implements Builderaware {
 
 		if (email != null) {
 			link = new Link(email);
-			if (_styles)
-				link.setStyle(_name);
+			if (this._styles) {
+				link.setStyle(this._name);
+			}
 			link.setURL("mailto:" + email);
 		}
 
@@ -639,7 +680,7 @@ public class StaffBrowser extends Block implements Builderaware {
 	}
 
 	private Link getEditLink(int userID) {
-		Image adminImage = _iwb.getImage("shared/edit.gif");
+		Image adminImage = this._iwb.getImage("shared/edit.gif");
 		Link adminLink = new Link(adminImage);
 		adminLink.setWindowToOpen(StaffEditor.class);
 		adminLink.addParameter(StaffBusiness.PARAMETER_USER_ID, userID);
@@ -648,7 +689,7 @@ public class StaffBrowser extends Block implements Builderaware {
 	}
 
 	private Link getDeleteLink(int userID) {
-		Image adminImage = _iwb.getImage("shared/delete.gif");
+		Image adminImage = this._iwb.getImage("shared/delete.gif");
 		Link adminLink = new Link(adminImage);
 		adminLink.setWindowToOpen(StaffEditor.class);
 		adminLink.addParameter(StaffBusiness.PARAMETER_USER_ID, userID);
@@ -658,20 +699,20 @@ public class StaffBrowser extends Block implements Builderaware {
 	}
 
 	private Table getAlphabetTable() {
-		String[] alphabet = { "A", "Á", "B", "C", "D", "E", "É", "F", "G", "H", "I", "Í", "J", "K", "L", "M", "N", "O", "Ó", "P", "Q", "R", "S", "T", "U", "Ú", "V", "W", "X", "Y", "Ý", "Z", "Þ", "Æ", "Ö", _iwrb.getLocalizedString("all", "Allir")};
+		String[] alphabet = { "A", "ï¿½", "B", "C", "D", "E", "ï¿½", "F", "G", "H", "I", "ï¿½", "J", "K", "L", "M", "N", "O", "ï¿½", "P", "Q", "R", "S", "T", "U", "ï¿½", "V", "W", "X", "Y", "ï¿½", "Z", "ï¿½", "ï¿½", "ï¿½", this._iwrb.getLocalizedString("all", "Allir")};
 		Table table = new Table();
 		int column = 1;
 
 		Link link = null;
 		Text divider = new Text(" - ");
-		divider.setFontStyle(_alphabetLinkStyle);
+		divider.setFontStyle(this._alphabetLinkStyle);
 
 		for (int a = 0; a < alphabet.length; a++) {
-			if (_alphabetLetter != null && _alphabetLetter.equalsIgnoreCase(alphabet[a])) {
+			if (this._alphabetLetter != null && this._alphabetLetter.equalsIgnoreCase(alphabet[a])) {
 				Text text = new Text(alphabet[a]);
-				if (_styles) {
-					TextStyler styler = new TextStyler(_alphabetLinkStyle);
-					styler.setStyleValue(StyleConstants.ATTRIBUTE_COLOR, _selectedLetterColor);
+				if (this._styles) {
+					TextStyler styler = new TextStyler(this._alphabetLinkStyle);
+					styler.setStyleValue(StyleConstants.ATTRIBUTE_COLOR, this._selectedLetterColor);
 					styler.setStyleValue(StyleConstants.ATTRIBUTE_FONT_WEIGHT, StyleConstants.FONT_WEIGHT_BOLD);
 					text.setFontStyle(styler.getStyleString());
 				}
@@ -679,8 +720,9 @@ public class StaffBrowser extends Block implements Builderaware {
 			}
 			else {
 				link = new Link(alphabet[a]);
-				if (_styles)
-					link.setStyle(_alphabetName);
+				if (this._styles) {
+					link.setStyle(this._alphabetName);
+				}
 				link.addParameter(StaffBusiness.PARAMETER_LETTER, alphabet[a]);
 				table.add(link, column, 1);
 			}
@@ -691,7 +733,7 @@ public class StaffBrowser extends Block implements Builderaware {
 	}
 
 	private Link getAdminButtons() {
-		Image adminImage = _iwb.getImage("shared/edit.gif");
+		Image adminImage = this._iwb.getImage("shared/edit.gif");
 		Link adminLink = new Link(adminImage);
 		adminLink.setWindowToOpen(UserApplication.class);
 
@@ -700,95 +742,99 @@ public class StaffBrowser extends Block implements Builderaware {
 
 	private void handleParameters(IWContext iwc) {
 		if (iwc.getParameter(StaffBusiness.PARAMETER_LETTER) != null) {
-			_alphabetLetter = iwc.getParameter(StaffBusiness.PARAMETER_LETTER);
-			_hasAlphabetLetter = true;
-			if (_alphabetLetter != null && _alphabetLetter.equalsIgnoreCase(_iwrb.getLocalizedString("all", "Allir")))
-				_hasAlphabetLetter = false;
+			this._alphabetLetter = iwc.getParameter(StaffBusiness.PARAMETER_LETTER);
+			this._hasAlphabetLetter = true;
+			if (this._alphabetLetter != null && this._alphabetLetter.equalsIgnoreCase(this._iwrb.getLocalizedString("all", "Allir"))) {
+				this._hasAlphabetLetter = false;
+			}
 		}
 		else {
-			_alphabetLetter = _iwrb.getLocalizedString("all", "Allir");
-			_hasAlphabetLetter = false;
+			this._alphabetLetter = this._iwrb.getLocalizedString("all", "Allir");
+			this._hasAlphabetLetter = false;
 		}
 
 		if (iwc.getParameter(StaffBusiness.PARAMETER_USER_ID) != null) {
 			try {
-				_userID = Integer.parseInt(iwc.getParameter(StaffBusiness.PARAMETER_USER_ID));
-				_layout = USER;
+				this._userID = Integer.parseInt(iwc.getParameter(StaffBusiness.PARAMETER_USER_ID));
+				this._layout = USER;
 			}
 			catch (NumberFormatException e) {
-				_userID = -1;
-				_layout = ALL_STAFF;
+				this._userID = -1;
+				this._layout = ALL_STAFF;
 			}
 
 		}
 	}
 
 	private void setStyles() {
-		if (_name == null)
-			_name = this.getName();
-		if (_name == null) {
-			if (getICObjectInstanceID() != -1)
-				_name = "staff_" + Integer.toString(getICObjectInstanceID());
-			else
-				_name = "staff_" + Double.toString(Math.random());
+		if (this._name == null) {
+			this._name = this.getName();
 		}
-		_alphabetName = "alpha_" + _name;
+		if (this._name == null) {
+			if (getICObjectInstanceID() != -1) {
+				this._name = "staff_" + Integer.toString(getICObjectInstanceID());
+			}
+			else {
+				this._name = "staff_" + Double.toString(Math.random());
+			}
+		}
+		this._alphabetName = "alpha_" + this._name;
 
 		if (getParentPage() != null) {
-			getParentPage().setStyleDefinition("A." + _name, _linkStyle);
-			getParentPage().setStyleDefinition("A." + _name + ":hover", _hoverStyle);
-			getParentPage().setStyleDefinition("A." + _alphabetName, _alphabetLinkStyle);
-			getParentPage().setStyleDefinition("A." + _alphabetName + ":hover", _alphabetHoverStyle);
+			getParentPage().setStyleDefinition("A." + this._name, this._linkStyle);
+			getParentPage().setStyleDefinition("A." + this._name + ":hover", this._hoverStyle);
+			getParentPage().setStyleDefinition("A." + this._alphabetName, this._alphabetLinkStyle);
+			getParentPage().setStyleDefinition("A." + this._alphabetName + ":hover", this._alphabetHoverStyle);
 		}
 		else {
-			_styles = false;
+			this._styles = false;
 		}
 	}
 
 	private void setDefaultValues() {
-		_width = "100%";
-		_selectedLetterColor = "#0000CC";
-		_linkStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: none;";
-		_hoverStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: underline;";
-		_alphabetLinkStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: none;";
-		_alphabetHoverStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: underline;";
-		_textStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;";
-		_headlineStyle = "font-family: Arial, Helvetica,sans-serif;font-weight:bold;font-size: 10pt;color: #000000;";
-		_divisionStyle = "font-family: Arial, Helvetica,sans-serif;font-weight:bold;font-size: 10pt;color: #000000;";
+		this._width = "100%";
+		this._selectedLetterColor = "#0000CC";
+		this._linkStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: none;";
+		this._hoverStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: underline;";
+		this._alphabetLinkStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: none;";
+		this._alphabetHoverStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: underline;";
+		this._textStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;";
+		this._headlineStyle = "font-family: Arial, Helvetica,sans-serif;font-weight:bold;font-size: 10pt;color: #000000;";
+		this._divisionStyle = "font-family: Arial, Helvetica,sans-serif;font-weight:bold;font-size: 10pt;color: #000000;";
 
-		_showAge = true;
+		this._showAge = true;
 		//_showGender = true;
-		_showEducation = true;
-		_showTitle = true;
-		_showBeganWork = true;
-		_showArea = true;
-		_showImage = true;
-		_showMetaData = true;
-		_showListTitle = false;
-		_showWorkPhone = true;
-		_showListWorkPhone = false;
-		_showMobilePhone = true;
-		_showEmail = true;
+		this._showEducation = true;
+		this._showTitle = true;
+		this._showBeganWork = true;
+		this._showArea = true;
+		this._showImage = true;
+		this._showMetaData = true;
+		this._showListTitle = false;
+		this._showWorkPhone = true;
+		this._showListWorkPhone = false;
+		this._showMobilePhone = true;
+		this._showEmail = true;
 	}
 
 	public void setShowAlphabet(boolean showAlphabet) {
-		_addAlphabet = showAlphabet;
+		this._addAlphabet = showAlphabet;
 	}
 
 	public void setShowAge(boolean showAge) {
-		_showAge = showAge;
+		this._showAge = showAge;
 	}
 
 	public void setShowWorkPhone(boolean showWorkPhone) {
-		_showWorkPhone = showWorkPhone;
+		this._showWorkPhone = showWorkPhone;
 	}
 
 	public void setShowListWorkPhone(boolean showWorkPhone) {
-		_showListWorkPhone = showWorkPhone;
+		this._showListWorkPhone = showWorkPhone;
 	}
 
 	public void setShowMobilePhone(boolean showMobilePhone) {
-		_showMobilePhone = showMobilePhone;
+		this._showMobilePhone = showMobilePhone;
 	}
 
 	/*public void setShowGender(boolean showGender) {
@@ -796,108 +842,108 @@ public class StaffBrowser extends Block implements Builderaware {
 	}*/
 
 	public void setShowEducation(boolean showEducation) {
-		_showEducation = showEducation;
+		this._showEducation = showEducation;
 	}
 
 	public void setShowTitle(boolean showTitle) {
-		_showTitle = showTitle;
+		this._showTitle = showTitle;
 	}
 
 	public void setShowListTitle(boolean showTitle) {
-		_showListTitle = showTitle;
+		this._showListTitle = showTitle;
 	}
 
 	public void setShowBeganWork(boolean showBeganWork) {
-		_showBeganWork = showBeganWork;
+		this._showBeganWork = showBeganWork;
 	}
 
 	public void setShowArea(boolean showArea) {
-		_showArea = showArea;
+		this._showArea = showArea;
 	}
 
 	public void setShowImage(boolean showImage) {
-		_showImage = showImage;
+		this._showImage = showImage;
 	}
 
 	public void setShowExtraInfo(boolean showExtraInfo) {
-		_showMetaData = showExtraInfo;
+		this._showMetaData = showExtraInfo;
 	}
 
 	public void setShowEmail(boolean showEmail) {
-		_showEmail = showEmail;
+		this._showEmail = showEmail;
 	}
 
 	public void setImageWidth(String width) {
-		_imageWidth = width;
+		this._imageWidth = width;
 	}
 
 	public void setImageHeight(String height) {
-		_imageHeight = height;
+		this._imageHeight = height;
 	}
 
 	public void setNameWidth(String width) {
-		_nameWidth = width;
+		this._nameWidth = width;
 	}
 
 	public void setAttributesWidth(String width) {
-		_attributesWidth = width;
+		this._attributesWidth = width;
 	}
 
 	public void setTextStyle(String style) {
-		_textStyle = style;
+		this._textStyle = style;
 	}
 
 	public void setHeadlineStyle(String style) {
-		_headlineStyle = style;
+		this._headlineStyle = style;
 	}
 
 	public void setDivisionStyle(String style) {
-		_divisionStyle = style;
+		this._divisionStyle = style;
 	}
 
 	public void setLinkStyle(String style, String style2, String style3, String style4) {
-		_linkStyle = style;
-		_hoverStyle = style4;
+		this._linkStyle = style;
+		this._hoverStyle = style4;
 	}
 
 	public void setLinkStyle(String style, String hoverStyle) {
-		_linkStyle = style;
-		_hoverStyle = hoverStyle;
+		this._linkStyle = style;
+		this._hoverStyle = hoverStyle;
 	}
 
 	public void setAlphabetLinkStyle(String style, String style2, String style3, String style4) {
-		_alphabetLinkStyle = style;
-		_alphabetHoverStyle = style4;
+		this._alphabetLinkStyle = style;
+		this._alphabetHoverStyle = style4;
 	}
 
 	public void setAlphabetLinkStyle(String style, String hoverStyle) {
-		_alphabetLinkStyle = style;
-		_alphabetHoverStyle = hoverStyle;
+		this._alphabetLinkStyle = style;
+		this._alphabetHoverStyle = hoverStyle;
 	}
 
 	public void setWidth(String width) {
-		_width = width;
+		this._width = width;
 	}
 
 	public void setSelectedLetterColor(String color) {
-		_selectedLetterColor = color;
+		this._selectedLetterColor = color;
 	}
 
 	public void setStaffPage(ICPage page) {
-		_page = page;
+		this._page = page;
 	}
 
 	public void setBackPage(ICPage page) {
-		_backPage = page;
+		this._backPage = page;
 	}
 
 	public void setZebraColors(String color1, String color2) {
-		_zebraColor1 = color1;
-		_zebraColor2 = color2;
+		this._zebraColor1 = color1;
+		this._zebraColor2 = color2;
 	}
 
 	public void setLayout(int layout) {
-		_layout = layout;
+		this._layout = layout;
 	}
 
 	public boolean deleteBlock(int ICObjectInstanceId) {
@@ -925,8 +971,9 @@ public class StaffBrowser extends Block implements Builderaware {
 
 	protected String getCacheState(IWContext iwc, String cacheStatePrefix) {
 		String returnString = iwc.getParameter(StaffBusiness.PARAMETER_USER_ID);
-		if (returnString == null)
+		if (returnString == null) {
 			returnString = "";
+		}
 		return cacheStatePrefix + returnString;
 	}
 	/**
@@ -958,7 +1005,7 @@ public class StaffBrowser extends Block implements Builderaware {
 	 * @return boolean
 	 */
 	public boolean isShowDetails() {
-		return _showDetails;
+		return this._showDetails;
 	}
 
 	/**
@@ -966,19 +1013,19 @@ public class StaffBrowser extends Block implements Builderaware {
 	 * @param showDetails The showDetails to set
 	 */
 	public void setShowDetails(boolean showDetails) {
-		_showDetails = showDetails;
+		this._showDetails = showDetails;
 	}
 	
 	public void setGroup(Group group) {
-		_group = group;
+		this._group = group;
 	}
 	
 	public void setShowDivisionHeader(boolean showHeader) {
-		_showDivisionHeader = showHeader;
+		this._showDivisionHeader = showHeader;
 	}
 	
 	public void setExtraColumnsAlignment(String alignment) {
-		extraAlignment = alignment;
+		this.extraAlignment = alignment;
 	}
 	/**
 	 * Sets the _sortAlphabetically.
@@ -1000,14 +1047,14 @@ public class StaffBrowser extends Block implements Builderaware {
 	 * @param string
 	 */
 	public void setEmailAlignment(String string) {
-		_emailAlignment = string;
+		this._emailAlignment = string;
 	}
 
 	/**
 	 * @param navigationLinks
 	 */
 	public void setShowNavigationLinks(boolean navigationLinks) {
-		_showNavigationLinks = navigationLinks;
+		this._showNavigationLinks = navigationLinks;
 	}
 	/**
 	 * @param sortNamesBy The sortNamesBy to set.
@@ -1019,10 +1066,10 @@ public class StaffBrowser extends Block implements Builderaware {
 	 * @param userEdit The _allowUserEdit to set.
 	 */
 	public void setAllowUserEdit(boolean userEdit) {
-		_allowUserEdit = userEdit;
+		this._allowUserEdit = userEdit;
 	}
 	
 	public void setShowPictureInList(boolean picture){
-		_showPictureInList = picture;
+		this._showPictureInList = picture;
 	}
 }

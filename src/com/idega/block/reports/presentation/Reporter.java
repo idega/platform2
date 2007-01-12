@@ -16,6 +16,7 @@ import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.io.MediaWritable;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
@@ -81,7 +82,7 @@ public class Reporter extends CategoryBlock implements Builderaware,Reports{
   }
 
   public void setSQLEdit(boolean value){
-    sqlEditAdmin = value;
+    this.sqlEditAdmin = value;
   }
 
   public void registerPermissionKeys(){
@@ -90,25 +91,25 @@ public class Reporter extends CategoryBlock implements Builderaware,Reports{
   }
 
   protected void control(IWContext iwc){
-    XLS = iwb.getImage("/shared/xls.gif");
-    PDF = iwb.getImage("/shared/pdf.gif");
-    TXT = iwb.getImage("/shared/txt.gif");
+    this.XLS = this.iwb.getImage("/shared/xls.gif");
+    this.PDF = this.iwb.getImage("/shared/pdf.gif");
+    this.TXT = this.iwb.getImage("/shared/txt.gif");
     Table T = new Table();
     T.setWidth("100%");
     T.setCellpadding(0);
     T.setCellspacing(0);
 
-    if(isAdmin){
-      T.add(getAdminPart(getCategoryId(),false,newobjinst,iwc),1,1);
+    if(this.isAdmin){
+      T.add(getAdminPart(getCategoryId(),false,this.newobjinst,iwc),1,1);
     }
 
     Form form = new Form();
 
-    if(iwc.getParameter(sAction) != null){
-      sActPrm = iwc.getParameter(sAction);
+    if(iwc.getParameter(this.sAction) != null){
+      this.sActPrm = iwc.getParameter(this.sAction);
       try{
-        iAction = Integer.parseInt(sActPrm);
-        switch(iAction){
+        this.iAction = Integer.parseInt(this.sActPrm);
+        switch(this.iAction){
           case ACT1:  break;
           case ACT2:  break;
           case ACT3: doChange(iwc); break;
@@ -135,27 +136,28 @@ public class Reporter extends CategoryBlock implements Builderaware,Reports{
       ne.addParameter(PRM_CATEGORYID,iCategoryId);
       ne.addParameter(ReportViewer.getMenuStartClassParameter(ReportSQLEditor.class));
       //ne.addParameter(ReportSQLEditorWindow.prmReportId,"-1");
-      if(hasEdit ||  hasPref || hasAdd ){
+      if(this.hasEdit ||  this.hasPref || this.hasAdd ){
         T.add(ne,1,1);
-        T.add(T.getTransparentCell(iwc),1,1);
+        T.add(Table.getTransparentCell(iwc),1,1);
       }
 
       Link text = new Link(core.getImage("/shared/text.gif","text"));
       text.setWindowToOpen(ReportItemWindow.class);
       text.addParameter(ReportItemWindow.prmCategoryId,iCategoryId);
       //text.addParameter(ReportItemWindow.prmItems,"true");
-      if(hasEdit || hasPref){
+      if(this.hasEdit || this.hasPref){
         T.add(text,1,1);
-        T.add(T.getTransparentCell(iwc),1,1);
+        T.add(Table.getTransparentCell(iwc),1,1);
       }
 
       Link category = getCategoryLink();
       category.setImage(core.getImage("/shared/detach.gif","detach"));
-      if(hasEdit || hasPref)
-        T.add(category,1,1);
+      if(this.hasEdit || this.hasPref) {
+		T.add(category,1,1);
+	}
 
-      if ( hasEdit && enableDelete ) {
-        T.add(T.getTransparentCell(iwc),1,1);
+      if ( this.hasEdit && enableDelete ) {
+        T.add(Table.getTransparentCell(iwc),1,1);
         Link delete = new Link(core.getImage("/shared/delete.gif"));
         delete.setWindowToOpen(ReportEditorWindow.class);
         delete.addParameter(ReportEditorWindow.prmDelete,iCategoryId);
@@ -165,8 +167,9 @@ public class Reporter extends CategoryBlock implements Builderaware,Reports{
     if(newObjInst){
       Link newLink = new Link(core.getImage("/shared/create.gif"));
       newLink.setWindowToOpen(ReportEditorWindow.class);
-      if(newObjInst)
-        newLink.addParameter(ReportEditorWindow.prmObjInstId,getICObjectInstanceID());
+      if(newObjInst) {
+		newLink.addParameter(ReportEditorWindow.prmObjInstId,getICObjectInstanceID());
+	}
 
       T.add(newLink,2,1);
     }
@@ -184,19 +187,19 @@ public class Reporter extends CategoryBlock implements Builderaware,Reports{
     String name = RC!=null?RC.getName():"";
     DataTable T = new DataTable();
       T.setTitlesHorizontal(true);
-      T.addTitle(name+iwrb.getLocalizedString("reports","Reports"));
+      T.addTitle(name+this.iwrb.getLocalizedString("reports","Reports"));
       T.setWidth("100%");
 
       int a = 1;
 
-      T.add(Edit.formatText(iwrb.getLocalizedString("name","Name")),2,a);
-      T.add(Edit.formatText(iwrb.getLocalizedString("info","Info")),3,a);
-      T.add(Edit.formatText(iwrb.getLocalizedString("custom","Custom")),4,a);
-      T.add(Edit.formatText(iwrb.getLocalizedString("default","Default")),5,a);
+      T.add(Edit.formatText(this.iwrb.getLocalizedString("name","Name")),2,a);
+      T.add(Edit.formatText(this.iwrb.getLocalizedString("info","Info")),3,a);
+      T.add(Edit.formatText(this.iwrb.getLocalizedString("custom","Custom")),4,a);
+      T.add(Edit.formatText(this.iwrb.getLocalizedString("default","Default")),5,a);
       String prm = prefix+"chk";
 
-      if(hasEdit || hasPref){
-        T.add(Edit.formatText(iwrb.getLocalizedString("delete","Delete")),6,a);
+      if(this.hasEdit || this.hasPref){
+        T.add(Edit.formatText(this.iwrb.getLocalizedString("delete","Delete")),6,a);
       }
 
       List L = ReportEntityHandler.listOfReports(iCategoryId);
@@ -213,22 +216,24 @@ public class Reporter extends CategoryBlock implements Builderaware,Reports{
          // if(sqlEditAdmin){
            // T.add(getAdminLink(R.getID(),iCategoryId),col,row);
          // }
-          if(hasEdit || hasPref)
-          T.add(getLink(R.getID(),iCategoryId),col,row);
+          if(this.hasEdit || this.hasPref) {
+			T.add(getLink(R.getID(),iCategoryId),col,row);
+		}
           col++;
           T.add(Edit.formatText(R.getName()),col++,row);
           T.add(Edit.formatText(R.getInfo()),col++,row);
           T.add(getPrintTable(iwac,repinfos,R.getID()),col++,row);
           Table def = new Table(3,1);
           def.setCellspacing(2);
-          def.add(getXLSLink(iwac,XLS,R.getID()),1,1);
-          def.add(getTXTLink(iwac,TXT,R.getID()),2,1);
-          def.add(getPDFLink(iwac,PDF,R.getID()),3,1);
+          def.add(getXLSLink(iwac,this.XLS,R.getID()),1,1);
+          def.add(getTXTLink(iwac,this.TXT,R.getID()),2,1);
+          def.add(getPDFLink(iwac,this.PDF,R.getID()),3,1);
           T.add(def,col,row);
 
           col++;
-          if(hasEdit || hasPref )
-            T.add(getCheckBox(prm+i,R.getID()),col,row);
+          if(this.hasEdit || this.hasPref ) {
+			T.add(getCheckBox(prm+i,R.getID()),col,row);
+		}
 
             col++;
 
@@ -236,10 +241,10 @@ public class Reporter extends CategoryBlock implements Builderaware,Reports{
         }
         T.getContentTable().setColumnAlignment(5,"right");
         T.getContentTable().setColumnAlignment(6,"right");
-        T.add(new HiddenInput(this.sAction,String.valueOf(this.ACT4)));
-        if(hasEdit|| hasPref){
-          SubmitButton deleteButtton = new SubmitButton(core.getImage("/shared/delete.gif"));//new Image("/reports/pics/delete.gif"));
-          T.add(new HiddenInput(this.sAction,String.valueOf(this.ACT4)));
+        T.add(new HiddenInput(this.sAction,String.valueOf(Reports.ACT4)));
+        if(this.hasEdit|| this.hasPref){
+          SubmitButton deleteButtton = new SubmitButton(this.core.getImage("/shared/delete.gif"));//new Image("/reports/pics/delete.gif"));
+          T.add(new HiddenInput(this.sAction,String.valueOf(Reports.ACT4)));
           T.addButton(deleteButtton);
           HiddenInput countHidden = new HiddenInput(prefix+"count",String.valueOf(len));
           T.add(countHidden);
@@ -257,7 +262,7 @@ public class Reporter extends CategoryBlock implements Builderaware,Reports{
       int col = 1;
       while(iter.hasNext()){
         info = (ReportInfo) iter.next();
-        T.add(getPrintLink(iwac,PDF,reportId,info.getID()),col,1);
+        T.add(getPrintLink(iwac,this.PDF,reportId,info.getID()),col,1);
         T.add(Edit.formatText(info.getDescription()),col,1);
         T.setColumnAlignment(col,"center");
         col++;
@@ -273,7 +278,7 @@ public class Reporter extends CategoryBlock implements Builderaware,Reports{
   }
 
   private Link getLink(int id,int catid){
-    Link L = new Link(core.getImage("/shared/edit.gif"));// Image("/reports/pics/view.gif"));
+    Link L = new Link(this.core.getImage("/shared/edit.gif"));// Image("/reports/pics/view.gif"));
     L.setWindowToOpen(ReportViewWindow.class);
     L.addParameter(PRM_REPORTID,id);
     L.addParameter(PRM_CATEGORYID,catid);
@@ -281,7 +286,7 @@ public class Reporter extends CategoryBlock implements Builderaware,Reports{
     return L;
   }
   private Link getAdminLink(int id,int catid){
-    Link L = new Link(core.getImage("/shared/edit.gif"));//new Image("/reports/pics/edit.gif"));
+    Link L = new Link(this.core.getImage("/shared/edit.gif"));//new Image("/reports/pics/edit.gif"));
     //L.setWindowToOpen(ReportSQLEditorWindow.class);
     //L.addParameter(ReportSQLEditorWindow.prmReportId,id);
     //L.addParameter(ReportSQLEditorWindow.prmCategoryId,catid);
@@ -295,7 +300,7 @@ public class Reporter extends CategoryBlock implements Builderaware,Reports{
     L.addParameter(PRM_REPORTID,iReportId);
     L.addParameter(ReportWriter.prmReportId,iReportId);
     L.addParameter(ReportWriter.prmReportInfoId,iReportInfoId);
-    L.addParameter(ReportWriter.PRM_WRITABLE_CLASS,IWMainApplication.getEncryptedClassName(ReportWriter.class));
+    L.addParameter(MediaWritable.PRM_WRITABLE_CLASS,IWMainApplication.getEncryptedClassName(ReportWriter.class));
     return L;
   }
 
@@ -306,7 +311,7 @@ public class Reporter extends CategoryBlock implements Builderaware,Reports{
     L.addParameter(PRM_REPORTID,iReportId);
     L.addParameter(ReportWriter.prmReportId,iReportId);
     L.addParameter(ReportWriter.prmPrintType,ReportWriter.TXT);
-    L.addParameter(ReportWriter.PRM_WRITABLE_CLASS,IWMainApplication.getEncryptedClassName(ReportWriter.class));
+    L.addParameter(MediaWritable.PRM_WRITABLE_CLASS,IWMainApplication.getEncryptedClassName(ReportWriter.class));
     return L;
   }
 
@@ -317,7 +322,7 @@ public class Reporter extends CategoryBlock implements Builderaware,Reports{
     L.addParameter(PRM_REPORTID,iReportId);
     L.addParameter(ReportWriter.prmReportId,iReportId);
     L.addParameter(ReportWriter.prmPrintType,ReportWriter.PDF);
-    L.addParameter(ReportWriter.PRM_WRITABLE_CLASS,IWMainApplication.getEncryptedClassName(ReportWriter.class));
+    L.addParameter(MediaWritable.PRM_WRITABLE_CLASS,IWMainApplication.getEncryptedClassName(ReportWriter.class));
     return L;
   }
 
@@ -328,7 +333,7 @@ public class Reporter extends CategoryBlock implements Builderaware,Reports{
     L.addParameter(PRM_REPORTID,iReportId);
     L.addParameter(ReportWriter.prmReportId,iReportId);
     L.addParameter(ReportWriter.prmPrintType,ReportWriter.XLS);
-    L.addParameter(ReportWriter.PRM_WRITABLE_CLASS,IWMainApplication.getEncryptedClassName(ReportWriter.class));
+    L.addParameter(MediaWritable.PRM_WRITABLE_CLASS,IWMainApplication.getEncryptedClassName(ReportWriter.class));
     return L;
   }
 
@@ -367,13 +372,13 @@ public class Reporter extends CategoryBlock implements Builderaware,Reports{
   }
 
   public void main(IWContext iwc){
-    isAdmin = iwc.hasEditPermission(this);
-    hasEdit = iwc.hasEditPermission(this);
-    hasPref = iwc.hasPermission(PermissionPref,this);
-    hasAdd = iwc.hasPermission(PermissionAdd,this);
-    iwrb = getResourceBundle(iwc);
-    iwb = getBundle(iwc);
-    core = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+    this.isAdmin = iwc.hasEditPermission(this);
+    this.hasEdit = iwc.hasEditPermission(this);
+    this.hasPref = iwc.hasPermission(PermissionPref,this);
+    this.hasAdd = iwc.hasPermission(PermissionAdd,this);
+    this.iwrb = getResourceBundle(iwc);
+    this.iwb = getBundle(iwc);
+    this.core = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
     control(iwc);
   }
 

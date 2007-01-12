@@ -97,23 +97,23 @@ public class QandAEditorWindow extends IWAdminWindow {
 		}
 		
 		private void init(IWContext iwc){
-			iwb = getBundle(iwc);
-			iwrb = getResourceBundle(iwc);
+			this.iwb = getBundle(iwc);
+			this.iwrb = getResourceBundle(iwc);
 			if(iwc.isParameterSet(PRM_CATEGORY)){
-				categoryID = Integer.valueOf(iwc.getParameter(PRM_CATEGORY));
+				this.categoryID = Integer.valueOf(iwc.getParameter(PRM_CATEGORY));
 			}
 			if(iwc.isParameterSet(PRM_LOCALE_ID)){
-				localeID = Integer.valueOf(iwc.getParameter(PRM_LOCALE_ID));
+				this.localeID = Integer.valueOf(iwc.getParameter(PRM_LOCALE_ID));
 			}
 			else{
 				// default localeID fetched
-				localeID = new Integer(ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale()));
+				this.localeID = new Integer(ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale()));
 			}
 			if(iwc.isParameterSet(PRM_QA_ID)){
-				qaID = Integer.valueOf(iwc.getParameter(PRM_QA_ID));
+				this.qaID = Integer.valueOf(iwc.getParameter(PRM_QA_ID));
 				try {
-					qaEntity = getQuestionHome().findByPrimaryKey(qaID);
-					initEntity(qaEntity);
+					this.qaEntity = getQuestionHome().findByPrimaryKey(this.qaID);
+					initEntity(this.qaEntity);
 				}
 				catch (RemoteException e) {
 					
@@ -126,17 +126,17 @@ public class QandAEditorWindow extends IWAdminWindow {
 		}
 		
 		private void initEntity(Question qaentity)throws RemoteException{
-			if(qaEntity!=null){
-				if(qaEntity.getQuestionID()>0){
-					ContentHelper helper = TextFinder.getContentHelper(qaEntity.getQuestionID(),localeID.intValue());
+			if(this.qaEntity!=null){
+				if(this.qaEntity.getQuestionID()>0){
+					ContentHelper helper = TextFinder.getContentHelper(this.qaEntity.getQuestionID(),this.localeID.intValue());
 					if(helper!=null){
-						question = helper.getLocalizedText();
+						this.question = helper.getLocalizedText();
 					}
 				}
-				if(qaEntity.getAnswerID()>0){
-					ContentHelper helper = TextFinder.getContentHelper(qaEntity.getAnswerID(),localeID.intValue());
+				if(this.qaEntity.getAnswerID()>0){
+					ContentHelper helper = TextFinder.getContentHelper(this.qaEntity.getAnswerID(),this.localeID.intValue());
 					if(helper!=null){
-						answer = helper.getLocalizedText();
+						this.answer = helper.getLocalizedText();
 					}
 				}
 				
@@ -154,8 +154,8 @@ public class QandAEditorWindow extends IWAdminWindow {
 				String qBody = iwc.getParameter(PRM_Q_BODY);
 				String aBody = iwc.getParameter(PRM_A_BODY);
 				try{
-					qaEntity = getQuestionService(iwc).storeQuestion(qaID,localeID,categoryID,new Integer(iwc.getCurrentUserId()),qTitle,qBody,aTitle,aBody);
-					initEntity(qaEntity);
+					this.qaEntity = getQuestionService(iwc).storeQuestion(this.qaID,this.localeID,this.categoryID,new Integer(iwc.getCurrentUserId()),qTitle,qBody,aTitle,aBody);
+					initEntity(this.qaEntity);
 				}
 				catch(Exception ex){
 					ex.printStackTrace();
@@ -166,24 +166,25 @@ public class QandAEditorWindow extends IWAdminWindow {
 		private void presentate(IWContext iwc){
 			Table table = new Table();
 			// locale choosing part
-			table.add(formatText(iwrb.getLocalizedString("locale","Locale")),1,1);
+			table.add(formatText(this.iwrb.getLocalizedString("locale","Locale")),1,1);
 			DropdownMenu localeSelect = ICLocalePresentation.getLocaleDropdownIdKeyed(PRM_LOCALE_ID);
 			localeSelect.setToSubmit();
-			if(localeID!=null)
-				localeSelect.setSelectedElement(localeID.toString());
+			if(this.localeID!=null) {
+				localeSelect.setSelectedElement(this.localeID.toString());
+			}
 			table.add(localeSelect,2,1);
 			// question part
-			String titletext = iwrb.getLocalizedString("title","Title");
-			String bodytext = iwrb.getLocalizedString("body","Body");
+			String titletext = this.iwrb.getLocalizedString("title","Title");
+			String bodytext = this.iwrb.getLocalizedString("body","Body");
 			table.mergeCells(1,2,2,2);
 			table.setAlignment(1,2,Table.HORIZONTAL_ALIGN_CENTER);
-			table.add(formatHeadline(iwrb.getLocalizedString("question","Question")),1,2);
+			table.add(formatHeadline(this.iwrb.getLocalizedString("question","Question")),1,2);
 			table.add(formatText(titletext),1,3);
 			table.add(formatText(bodytext),1,4);
 			table.setVerticalAlignment(1,4,Table.VERTICAL_ALIGN_TOP);
 			table.mergeCells(1,5,2,5);
 			table.setAlignment(1,5,Table.HORIZONTAL_ALIGN_CENTER);
-			table.add(formatHeadline(iwrb.getLocalizedString("answer","Answer")),1,5);
+			table.add(formatHeadline(this.iwrb.getLocalizedString("answer","Answer")),1,5);
 			table.add(formatText(titletext),1,6);
 			table.add(formatText(bodytext),1,7);
 			table.setVerticalAlignment(1,7,Table.VERTICAL_ALIGN_TOP);
@@ -204,23 +205,27 @@ public class QandAEditorWindow extends IWAdminWindow {
 			table.add(answerTitle,2,6);
 			table.add(answerBody,2,7);
 			
-			if(question!=null){
+			if(this.question!=null){
 				String headline,body;
-				if((headline= question.getHeadline())!=null)
+				if((headline= this.question.getHeadline())!=null) {
 					questionTitle.setContent(headline);
-				if((body=question.getBody())!=null)
+				}
+				if((body=this.question.getBody())!=null) {
 					questionBody.setContent(body);
+				}
 			}
-			if(answer!=null){
+			if(this.answer!=null){
 				String headline,body;
-				if((headline= answer.getHeadline())!=null)
+				if((headline= this.answer.getHeadline())!=null) {
 					answerTitle.setContent(headline);
-				if((body=answer.getBody())!=null)
+				}
+				if((body=this.answer.getBody())!=null) {
 					answerBody.setContent(body);
+				}
 			}
 			
-			SubmitButton save = new SubmitButton(PRM_SAVE,iwrb.getLocalizedString("save","Save"));
-			SubmitButton close = new SubmitButton(PRM_CLOSE,iwrb.getLocalizedString("close","Close"));
+			SubmitButton save = new SubmitButton(PRM_SAVE,this.iwrb.getLocalizedString("save","Save"));
+			SubmitButton close = new SubmitButton(PRM_CLOSE,this.iwrb.getLocalizedString("close","Close"));
 			Table buttonTable = new Table();
 			buttonTable.setWidth(Table.HUNDRED_PERCENT);
 			buttonTable.setWidth(1,Table.HUNDRED_PERCENT);

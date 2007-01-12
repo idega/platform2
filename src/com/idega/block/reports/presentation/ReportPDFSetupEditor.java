@@ -62,12 +62,13 @@ public class ReportPDFSetupEditor extends Block implements Reports{
   }
 
   public void main(IWContext iwc){
-    iwrb = getResourceBundle(iwc);
-    iwb = getBundle(iwc);
+    this.iwrb = getResourceBundle(iwc);
+    this.iwb = getBundle(iwc);
     if(iwc.isParameterSet(PRM_REPORTID)){
       int reportInfoId = -1;
-      if(iwc.isParameterSet(prmReportInfoId))
-        reportInfoId = Integer.parseInt(iwc.getParameter(prmReportInfoId));
+      if(iwc.isParameterSet(prmReportInfoId)) {
+		reportInfoId = Integer.parseInt(iwc.getParameter(prmReportInfoId));
+	}
       Report eReport = ReportFinder.getReport(Integer.parseInt(iwc.getParameter(PRM_REPORTID)));
       if(iwc.isParameterSet("saveinfo")||iwc.isParameterSet("saveinfo.x")){
         saveReportInfo(iwc,eReport,reportInfoId);
@@ -89,21 +90,21 @@ public class ReportPDFSetupEditor extends Block implements Reports{
     DataTable T = new DataTable();
     T.setWidth("100%");
     T.setTitlesHorizontal(true);
-    T.addTitle(iwrb.getLocalizedString(type,type));
-    T.addButton(new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"saveinfo"));
+    T.addTitle(this.iwrb.getLocalizedString(type,type));
+    T.addButton(new SubmitButton(this.iwrb.getLocalizedImageButton("save","Save"),"saveinfo"));
     int row = 1;
     int col = 1;
-    T.add(Edit.formatText(iwrb.getLocalizedString("name","Name")),col++,row);
-    T.add(Edit.formatText(iwrb.getLocalizedString("landscape","Landscape")),col++,row);
+    T.add(Edit.formatText(this.iwrb.getLocalizedString("name","Name")),col++,row);
+    T.add(Edit.formatText(this.iwrb.getLocalizedString("landscape","Landscape")),col++,row);
     if(type.equalsIgnoreCase(typeSticker)){
-      T.add(Edit.formatText(iwrb.getLocalizedString("width","Width")),col++,row);
-      T.add(Edit.formatText(iwrb.getLocalizedString("height","Heigth")),col++,row);
-      T.add(Edit.formatText(iwrb.getLocalizedString("border","border")),col++,row);
+      T.add(Edit.formatText(this.iwrb.getLocalizedString("width","Width")),col++,row);
+      T.add(Edit.formatText(this.iwrb.getLocalizedString("height","Heigth")),col++,row);
+      T.add(Edit.formatText(this.iwrb.getLocalizedString("border","border")),col++,row);
     }
     else if(type.equalsIgnoreCase(typeColumns)){
-      T.add(Edit.formatText(iwrb.getLocalizedString("columns","Columns")),col++,row);
+      T.add(Edit.formatText(this.iwrb.getLocalizedString("columns","Columns")),col++,row);
     }
-    T.add(Edit.formatText(iwrb.getLocalizedString("papersize","Papersize")),col++,row);
+    T.add(Edit.formatText(this.iwrb.getLocalizedString("papersize","Papersize")),col++,row);
     row++;
     List L = ReportFinder.listOfReportInfo(type);
     ReportInfo rinfo;
@@ -126,12 +127,15 @@ public class ReportPDFSetupEditor extends Block implements Reports{
           name.setContent(rinfo.getName());
 
           landscape.setChecked(rinfo.getLandscape());
-          if(rinfo.getWidth()>0)
-            width.setContent(String.valueOf((int)rinfo.getWidth()));
-          if(rinfo.getHeight()>0)
-            height.setContent(String.valueOf((int)rinfo.getHeight()));
-          if(rinfo.getPagesize()!=null)
-            size.setSelectedElement(rinfo.getPagesize());
+          if(rinfo.getWidth()>0) {
+			width.setContent(String.valueOf((int)rinfo.getWidth()));
+		}
+          if(rinfo.getHeight()>0) {
+			height.setContent(String.valueOf((int)rinfo.getHeight()));
+		}
+          if(rinfo.getPagesize()!=null) {
+			size.setSelectedElement(rinfo.getPagesize());
+		}
           border.setSelectedElement(String.valueOf(rinfo.getBorder()));
           T.add(name,col++,row);
           T.add(landscape,col++,row);
@@ -153,10 +157,12 @@ public class ReportPDFSetupEditor extends Block implements Reports{
           Li.addParameter(PRM_REPORTID,iReportId);
           T.add(Li,col++,row);
 
-          if(rinfo.getLandscape())
-            T.add(Edit.formatText(iwrb.getLocalizedString("landscape","Landscape")),col++,row);
-          else
-            T.add(Edit.formatText(iwrb.getLocalizedString("portrait","Portrait")),col++,row);
+          if(rinfo.getLandscape()) {
+			T.add(Edit.formatText(this.iwrb.getLocalizedString("landscape","Landscape")),col++,row);
+		}
+		else {
+			T.add(Edit.formatText(this.iwrb.getLocalizedString("portrait","Portrait")),col++,row);
+		}
           if(type.equalsIgnoreCase(typeSticker)){
             T.add(Edit.formatText(String.valueOf((int)rinfo.getWidth())),col++,row);
             T.add(Edit.formatText(String.valueOf((int)rinfo.getHeight())),col++,row);
@@ -167,7 +173,7 @@ public class ReportPDFSetupEditor extends Block implements Reports{
           }
           T.add(Edit.formatText(rinfo.getPagesize()),col++,row);
 
-          Link delLi = new Link(iwb.getImage("/shared/deletex.gif"));
+          Link delLi = new Link(this.iwb.getImage("/shared/deletex.gif"));
           delLi.addParameter(prmReportInfoId,rinfo.getID());
           delLi.addParameter(PRM_REPORTID,iReportId);
           delLi.addParameter("dinfo","true");
@@ -191,7 +197,7 @@ public class ReportPDFSetupEditor extends Block implements Reports{
       T.add(size,col++,row);
     }
     else{
-      Link li = new Link(iwrb.getLocalizedImageButton("new","New"));
+      Link li = new Link(this.iwrb.getLocalizedImageButton("new","New"));
       li.addParameter(PRM_REPORTID,iReportId);
        T.addButton(li);
 
@@ -214,19 +220,24 @@ public class ReportPDFSetupEditor extends Block implements Reports{
     if(name !=null && name.length() > 0){
       boolean landscape = iwc.isParameterSet("landscape");
       int width = 0,height = 0,columns = 0,border = -1;
-      if(iwc.isParameterSet("width"))
-        width = Integer.parseInt(iwc.getParameter("width"));
-      if(iwc.isParameterSet("height"))
-        height = Integer.parseInt(iwc.getParameter("height"));
-      if(iwc.isParameterSet("columns"))
-        columns = Integer.parseInt(iwc.getParameter("columns"));
-      if(iwc.isParameterSet("border"))
-        border = Integer.parseInt(iwc.getParameter("border"));
+      if(iwc.isParameterSet("width")) {
+		width = Integer.parseInt(iwc.getParameter("width"));
+	}
+      if(iwc.isParameterSet("height")) {
+		height = Integer.parseInt(iwc.getParameter("height"));
+	}
+      if(iwc.isParameterSet("columns")) {
+		columns = Integer.parseInt(iwc.getParameter("columns"));
+	}
+      if(iwc.isParameterSet("border")) {
+		border = Integer.parseInt(iwc.getParameter("border"));
+	}
       String paperSize = iwc.getParameter("pagesize");
       String infotype = iwc.getParameter("info_type");
       ReportInfo info = ((com.idega.block.reports.data.ReportInfoHome)com.idega.data.IDOLookup.getHomeLegacy(ReportInfo.class)).createLegacy();
-      if(id > 0)
-        info = ReportFinder.getReportInfo(id);
+      if(id > 0) {
+		info = ReportFinder.getReportInfo(id);
+	}
       info.setName(name);
       info.setWidth(width);
       info.setHeight(height);

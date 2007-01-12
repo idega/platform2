@@ -49,7 +49,7 @@ public class BasketEntry {
      * @uml.property name="item"
      */
     public BasketItem getItem() {
-        return item;
+        return this.item;
     }
 
     /**
@@ -65,7 +65,7 @@ public class BasketEntry {
      * @uml.property name="quantity"
      */
     public int getQuantity() {
-        return quantity;
+        return this.quantity;
     }
 
 }

@@ -210,31 +210,31 @@ public class ReportQueryBuilder extends Block {
 	
 	
 	public void control(IWContext iwc) throws IDOStoreException, CreateException, SQLException, FinderException {
-		if (hasEditPermission || hasTemplatePermission || hasCreatePermission) {
+		if (this.hasEditPermission || this.hasTemplatePermission || this.hasCreatePermission) {
 			try {
 
 				if (iwc.isParameterSet(PARAM_QUERY_ID)) {
-					userQueryID = Integer.parseInt(iwc.getParameter(PARAM_QUERY_ID));
+					this.userQueryID = Integer.parseInt(iwc.getParameter(PARAM_QUERY_ID));
 				}
 
-				sessionBean = (QuerySession) IBOLookup.getSessionInstance(iwc, QuerySession.class);
-				if (userQueryID > 0) {
-					sessionBean.setUserQueryID(userQueryID);
+				this.sessionBean = (QuerySession) IBOLookup.getSessionInstance(iwc, QuerySession.class);
+				if (this.userQueryID > 0) {
+					this.sessionBean.setUserQueryID(this.userQueryID);
 				}
-				helper = sessionBean.getQueryHelper(iwc);
+				this.helper = this.sessionBean.getQueryHelper(iwc);
 				if (iwc.isParameterSet(SHOW_WIZARD))	{
-					investigationLevel = Integer.parseInt(iwc.getParameter(SHOW_WIZARD));
+					this.investigationLevel = Integer.parseInt(iwc.getParameter(SHOW_WIZARD));
 					// if we are editing an existing query that has an entity choose the maximum investigation level
-					if (helper.hasSourceEntity()) {
-						investigationLevel = MAX_INVESTIGATIONS_LEVEL;
+					if (this.helper.hasSourceEntity()) {
+						this.investigationLevel = MAX_INVESTIGATIONS_LEVEL;
 					}
-					expertMode = (investigationLevel > -1);
+					this.expertMode = (this.investigationLevel > -1);
 				}
 
 				
 				
 				
-				step = iwc.isParameterSet(PARAM_STEP) ? Integer.parseInt(iwc.getParameter(PARAM_STEP)) : 1;
+				this.step = iwc.isParameterSet(PARAM_STEP) ? Integer.parseInt(iwc.getParameter(PARAM_STEP)) : 1;
 /*---------------------------------------------------------------------------------------------------
 				// if not moving around we stay at entity tree
 				if (iwc.isParameterSet("tree_action"))
@@ -253,29 +253,29 @@ public class ReportQueryBuilder extends Block {
 				//System.err.println("this step is after process" + step);
 				Table table = new Table();
 				table.setStyleClass("main");
-				form = new Form();
+				this.form = new Form();
 				// thomas changed: queryFolder  id is always set
 				// if (queryFolderID > 0 && step < 5)
-				if (userQueryID > 0) {
-					form.addParameter(PARAM_QUERY_ID, userQueryID);
+				if (this.userQueryID > 0) {
+					this.form.addParameter(PARAM_QUERY_ID, this.userQueryID);
 				}
 				table.mergeCells(1,1,2,1);
 				table.mergeCells(1,2,2,2);
-				table.add(getHelpTable(step,expertMode),1,3);
-				table.add(getButtons(step), 2, 3);
-				form.addParameter(PARAM_STEP, step);
+				table.add(getHelpTable(this.step,this.expertMode),1,3);
+				table.add(getButtons(this.step), 2, 3);
+				this.form.addParameter(PARAM_STEP, this.step);
 				// thomas added:
 				// this parameter serves as a flag for the outer window to continue showing the wizard
 				// the outer window checks also if PARAM_CANCEL or PARAM_QUIT exist
-				form.addParameter(SHOW_WIZARD, Integer.toString(investigationLevel));
+				this.form.addParameter(SHOW_WIZARD, Integer.toString(this.investigationLevel));
 				if (iwc.isParameterSet(PARAM_LAYOUT_FOLDER_ID)) {
-					layoutFolderID = iwc.getParameter(PARAM_LAYOUT_FOLDER_ID);
-					form.addParameter(PARAM_LAYOUT_FOLDER_ID, layoutFolderID);
+					this.layoutFolderID = iwc.getParameter(PARAM_LAYOUT_FOLDER_ID);
+					this.form.addParameter(PARAM_LAYOUT_FOLDER_ID, this.layoutFolderID);
 				}
 
 				table.setWidth("300");
-				table.setBorder(tableBorder);
-				table.setColor(stepTableColor);
+				table.setBorder(this.tableBorder);
+				table.setColor(this.stepTableColor);
 				//table.setStyleClass(stepTableStyle);
 				table.setColor(1, 1, "#FFFFFF");
 
@@ -283,14 +283,14 @@ public class ReportQueryBuilder extends Block {
 				headerTable.setWidth(Table.HUNDRED_PERCENT);
 				// added by thomas
 				// skip the second step
-				int displayStep = step;
-				if (! expertMode) {
-					displayStep = (step == 1)? 1 : step -1;
+				int displayStep = this.step;
+				if (! this.expertMode) {
+					displayStep = (this.step == 1)? 1 : this.step -1;
 				}
-				String queryName = (userQueryID > 0) ? helper.getUserQuery().getName() : iwrb.getLocalizedString("step_all_new_query", "New Query");
+				String queryName = (this.userQueryID > 0) ? this.helper.getUserQuery().getName() : this.iwrb.getLocalizedString("step_all_new_query", "New Query");
 				Text queryNameText = new Text(queryName);
 				queryNameText.setBold();
-				StringBuffer buffer = new StringBuffer(iwrb.getLocalizedString("step", "Step"));
+				StringBuffer buffer = new StringBuffer(this.iwrb.getLocalizedString("step", "Step"));
 				buffer.append(' ').append(displayStep);
 				Text stepText = getStepText(buffer.toString());
 				headerTable.add(stepText, 1, 1);
@@ -304,12 +304,12 @@ public class ReportQueryBuilder extends Block {
 				table.add(headerTable, 1, 1);
 
 				table.add(getStep(iwc), 1, 2);
-				table.setColor(1, 2, stepTableColor);
+				table.setColor(1, 2, this.stepTableColor);
 				table.setVerticalAlignment(1, 2, Table.VERTICAL_ALIGN_TOP);
 				table.setAlignment(2, 3, Table.HORIZONTAL_ALIGN_RIGHT);
 				table.setHeight(2, this.heightOfStepTable);
-				form.add(table);
-				add(form);
+				this.form.add(table);
+				add(this.form);
 			}
 			catch (RemoteException e) {
 				e.printStackTrace();
@@ -319,7 +319,7 @@ public class ReportQueryBuilder extends Block {
 			}
 		}
 		else {
-			add(iwrb.getLocalizedString("no_permission", "You don't have permission !!"));
+			add(this.iwrb.getLocalizedString("no_permission", "You don't have permission !!"));
 		}
 	}
 	private void processForm(IWContext iwc) throws IDOStoreException, IOException, CreateException, SQLException, RemoteException, FinderException {
@@ -346,13 +346,13 @@ public class ReportQueryBuilder extends Block {
 //			step = 1;
 //		}
 		if (iwc.isParameterSet(PARAM_CANCEL)) {
-			helper.clearAll();
-			step = 1;
+			this.helper.clearAll();
+			this.step = 1;
 		}
 		else if (iwc.isParameterSet(PARAM_FINAL)) {
 			boolean proceed = processNextStep(iwc);
 			if (proceed) {
-				step = 6;
+				this.step = 6;
 			}
 		}
 		else if (iwc.isParameterSet(PARAM_FUNCTION)){
@@ -369,20 +369,20 @@ public class ReportQueryBuilder extends Block {
 			saveCondition(iwc);
 		}
 		else if (iwc.isParameterSet(PARAM_COND_EDIT_START)) {
-			editId = Integer.parseInt(iwc.getParameter(PARAM_COND_EDIT_START));
+			this.editId = Integer.parseInt(iwc.getParameter(PARAM_COND_EDIT_START));
 		}
 		else if (iwc.isParameterSet(PARAM_COND_EDIT_SAVE)) {
-			editId = Integer.parseInt(iwc.getParameter(PARAM_COND_EDIT_SAVE));
+			this.editId = Integer.parseInt(iwc.getParameter(PARAM_COND_EDIT_SAVE));
 			saveCondition(iwc);
-			editId = NEW_INSTANCE;
+			this.editId = NEW_INSTANCE;
 		}
 		else if (iwc.isParameterSet(PARAM_COND_EDIT_CANCEL)) {
-			editId = NEW_INSTANCE;
+			this.editId = NEW_INSTANCE;
 		}
 		else if (iwc.isParameterSet(PARAM_COND_DROP)) {
 			int dropId = Integer.parseInt(iwc.getParameter(PARAM_COND_DROP));
-			if (helper.hasConditions()) {
-				List conditions = helper.getListOfConditions();
+			if (this.helper.hasConditions()) {
+				List conditions = this.helper.getListOfConditions();
 				for (int i = 0; i < conditions.size(); i++) {
 					QueryConditionPart element = (QueryConditionPart) conditions.get(i);
 					if (element.getIdNumber() == dropId) {
@@ -391,11 +391,11 @@ public class ReportQueryBuilder extends Block {
 				}
 				// update boolean expression
 				processBooleanExpression(iwc);
-				editId = NEW_INSTANCE;
+				this.editId = NEW_INSTANCE;
 			}
 		}
 		else if (iwc.isParameterSet(PARAM_COND_EDIT_MODE)) {
-			editId = Integer.parseInt(iwc.getParameter(PARAM_COND_EDIT_MODE));
+			this.editId = Integer.parseInt(iwc.getParameter(PARAM_COND_EDIT_MODE));
 		}
 		else if (iwc.isParameterSet(PARAM_SAVE)) {
 			storeQuery(iwc);
@@ -405,12 +405,12 @@ public class ReportQueryBuilder extends Block {
 			if (proceed) {
 				// in the simple mode skip the second step
 				// in the expert mode skip the second step when no source entity was chosen
-				if ((! expertMode && step == 1) || 
-						(expertMode && step == 1 && ! helper.hasSourceEntity())) {
-					step = 3;
+				if ((! this.expertMode && this.step == 1) || 
+						(this.expertMode && this.step == 1 && ! this.helper.hasSourceEntity())) {
+					this.step = 3;
 				}
 				else {
-					step++;
+					this.step++;
 				}
 				//System.out.println(" proceed to next step");
 			}
@@ -438,19 +438,19 @@ public class ReportQueryBuilder extends Block {
 	 */
 	private void storeQuery(IWContext iwc) throws RemoteException, IOException, CreateException, SQLException, FinderException {
 		String description = iwc.getParameter(PARAM_QUERY_DESCRIPTION);
-		helper.setDescription(description);
-		helper.setTemplate(iwc.isParameterSet(PARAM_ASTEMPLATE));
+		this.helper.setDescription(description);
+		this.helper.setTemplate(iwc.isParameterSet(PARAM_ASTEMPLATE));
 		String name = iwc.getParameter(PARAM_QUERY_NAME);
 		String saveMode = iwc.getParameter(PARAM_SAVE_MODE);
 		boolean isPrivate = PRIVATE.equals(iwc.getParameter(PARAM_IS_PRIVATE_QUERY));
 		boolean overwriteQuery = OVERWRITE_QUERY.equals(saveMode);
 		if (name == null) {
-			name = iwrb.getLocalizedString("step_6_default_name", "My query");
+			name = this.iwrb.getLocalizedString("step_6_default_name", "My query");
 		}
-		UserQuery userQuery = sessionBean.storeQuery(name, isPrivate, overwriteQuery);
+		UserQuery userQuery = this.sessionBean.storeQuery(name, isPrivate, overwriteQuery);
 		if (userQuery != null) {
-			userQueryID = ((Integer) userQuery.getPrimaryKey()).intValue();
-			helper.setUserQuery(userQuery);
+			this.userQueryID = ((Integer) userQuery.getPrimaryKey()).intValue();
+			this.helper.setUserQuery(userQuery);
 		}
 	}
 
@@ -477,19 +477,19 @@ public class ReportQueryBuilder extends Block {
 		String equator = iwc.getParameter(PARAM_COND_TYPE);
 		String description = iwc.getParameter(PARAM_COND_DESCRIPTION);
 		QueryFieldPart fieldPart = QueryFieldPart.decode(field);
-		helper.addHiddenField(fieldPart);
+		this.helper.addHiddenField(fieldPart);
 		QueryConditionPart part = null; 
-		if (editId == NEW_INSTANCE) {
+		if (this.editId == NEW_INSTANCE) {
 			part = new QueryConditionPart();
-			int id = helper.getNextIdForCondition();
+			int id = this.helper.getNextIdForCondition();
 			part.setIdUsingPrefix(id);
 		}
 		else {
-			if (helper.hasConditions()) {
-				List conditions = helper.getListOfConditions();
+			if (this.helper.hasConditions()) {
+				List conditions = this.helper.getListOfConditions();
 					for (int i = 0; i < conditions.size(); i++) {
 					QueryConditionPart element = (QueryConditionPart) conditions.get(i);
-					if (element.getIdNumber() == editId) {
+					if (element.getIdNumber() == this.editId) {
 						part = element;
 					}
 				}
@@ -509,7 +509,7 @@ public class ReportQueryBuilder extends Block {
 			part.setDynamic(iwc.isParameterSet(PARAM_DYNAMIC));
 			setPatternByParsing(iwc, part);
 		}
-		helper.addCondition(part);
+		this.helper.addCondition(part);
 		processBooleanExpression(iwc);
 	}
 	
@@ -544,13 +544,13 @@ public class ReportQueryBuilder extends Block {
 		// field is used as pattern
 		String fieldAsPattern = iwc.getParameter(PARAM_COND_FIELD_AS_CONDITION);
 		QueryFieldPart queryFieldAsPattern = QueryFieldPart.decode(fieldAsPattern);
-		helper.addHiddenField(queryFieldAsPattern);
+		this.helper.addHiddenField(queryFieldAsPattern);
 		part.setPatternPath(queryFieldAsPattern.getPath());
 		part.setPatternField(queryFieldAsPattern.getName());
 	}
 
 	private boolean processStep5(IWContext iwc) {
-		if (helper.hasConditions()) {
+		if (this.helper.hasConditions()) {
 			// has conditions, ask for the corresponding boolean expression
 			return processBooleanExpression(iwc);
 		}
@@ -563,17 +563,17 @@ public class ReportQueryBuilder extends Block {
 		if (iwc.isParameterSet(PARAM_COND_BOOLEAN_EXPRESSION)) {
 			booleanExpression = iwc.getParameter(PARAM_COND_BOOLEAN_EXPRESSION);
 		}
-		QueryBooleanExpressionPart booleanExpressionPart = helper.getBooleanExpressionForConditions();
+		QueryBooleanExpressionPart booleanExpressionPart = this.helper.getBooleanExpressionForConditions();
 		if (booleanExpressionPart == null) {
 			booleanExpressionPart = new QueryBooleanExpressionPart();
-			helper.setBooleanExpressionForConditions(booleanExpressionPart);
+			this.helper.setBooleanExpressionForConditions(booleanExpressionPart);
 		}
-		booleanExpressionPart.updateConditions(helper.getListOfConditions(), booleanExpression);
+		booleanExpressionPart.updateConditions(this.helper.getListOfConditions(), booleanExpression);
 		return booleanExpressionPart.isBooleanExpressionValid();
 	}
 	
 	private boolean processStep3(IWContext iwc) {
-		helper.setSelectDistinct(iwc.isParameterSet(PARAM_DISTINCT));
+		this.helper.setSelectDistinct(iwc.isParameterSet(PARAM_DISTINCT));
 
 		String[] fields = null;
 		if (iwc.isParameterSet(PARAM_FIELDS)) {
@@ -598,26 +598,27 @@ public class ReportQueryBuilder extends Block {
 	}
 	
 	private boolean processStep2(IWContext iwc) {
-		helper.clearRelatedEntities();
+		this.helper.clearRelatedEntities();
 		if (iwc.isParameterSet(PARAM_RELATED)) {
 			String[] entities = iwc.getParameterValues(PARAM_RELATED);
 			for (int i = 0; i < entities.length; i++) {
 				QueryEntityPart part = QueryEntityPart.decode(entities[i]);
-				if (part != null)
-					helper.addRelatedEntity(part);
+				if (part != null) {
+					this.helper.addRelatedEntity(part);
+				}
 			}
-			helper.setEntitiesLock(iwc.isParameterSet(PARAM_LOCK));
-			return helper.hasRelatedEntities();
+			this.helper.setEntitiesLock(iwc.isParameterSet(PARAM_LOCK));
+			return this.helper.hasRelatedEntities();
 		}
 		// if we allow to  work with source entity fields alone
-		return helper.hasSourceEntity();
+		return this.helper.hasSourceEntity();
 	}
 	private boolean processStep1(IWContext iwc) throws NumberFormatException, RemoteException, FinderException, IOException {
 		if (iwc.isParameterSet(PARAM_QUERY_AS_SOURCE))	{
 			String[] userQueryId = iwc.getParameterValues(PARAM_QUERY_AS_SOURCE);
 			for (int i = 0; i < userQueryId.length; i++) {
-				QueryHelper queryHelperAsSource = sessionBean.getQueryService().getQueryHelper(Integer.parseInt(userQueryId[i]), iwc);
-				helper.addQuery(queryHelperAsSource);
+				QueryHelper queryHelperAsSource = this.sessionBean.getQueryService().getQueryHelper(Integer.parseInt(userQueryId[i]), iwc);
+				this.helper.addQuery(queryHelperAsSource);
 			}
 		}
 		// do not use else if 
@@ -625,26 +626,26 @@ public class ReportQueryBuilder extends Block {
 			String sourceEntity = iwc.getParameter(PARAM_SOURCE);
 			if (sourceEntity.length() > 0 && !sourceEntity.equalsIgnoreCase("empty")) {
 				QueryEntityPart part = QueryEntityPart.decode(sourceEntity);
-				helper.setSourceEntity(part);
-				helper.getSourceEntity().setLocked(iwc.isParameterSet(PARAM_LOCK));
+				this.helper.setSourceEntity(part);
+				this.helper.getSourceEntity().setLocked(iwc.isParameterSet(PARAM_LOCK));
 				// added by thomas: start
-				if (! expertMode) {
-					helper.clearRelatedEntities();
-					List list = getQueryService(iwc).getRelatedEntities(helper,  investigationLevel);
+				if (! this.expertMode) {
+					this.helper.clearRelatedEntities();
+					List list = getQueryService(iwc).getRelatedEntities(this.helper,  this.investigationLevel);
 					Iterator iterator = list.iterator();
 					while (iterator.hasNext())	{
 						QueryEntityPart entityPart = (QueryEntityPart) iterator.next();
-						helper.addRelatedEntity(entityPart);
+						this.helper.addRelatedEntity(entityPart);
 					}
 				}
 				// added by thomas: end
 			}
 		}
 		// either an entity as source or a query as source
-		if (expertMode) {
-			return helper.hasSourceEntity()  || helper.hasPreviousQuery();
+		if (this.expertMode) {
+			return this.helper.hasSourceEntity()  || this.helper.hasPreviousQuery();
 		}
-		return helper.hasPreviousQuery();
+		return this.helper.hasPreviousQuery();
 	}
 	
 
@@ -701,7 +702,7 @@ public class ReportQueryBuilder extends Block {
 					else{
 						newPart.setDisplay(type+"("+newPart.getDisplay()+")");
 					}
-					helper.addField(newPart);
+					this.helper.addField(newPart);
 					
 				}
 				// if another display name
@@ -730,17 +731,17 @@ public class ReportQueryBuilder extends Block {
 				String field = fields[i];
 				System.out.println(field);
 				QueryFieldPart fieldPart = QueryFieldPart.decode(field);
-				helper.addHiddenField(fieldPart);
+				this.helper.addHiddenField(fieldPart);
 				QueryOrderConditionPart	conditionPart = new QueryOrderConditionPart(fieldPart.getEntity(),fieldPart.getPath(),fieldPart.getName());
 				conditionPart.setDescendant(true);
-				helper.addOrderCondition(conditionPart);
+				this.helper.addOrderCondition(conditionPart);
 			}
 		}
 		return false;
 	}
 	
 	private boolean setOrderConditions(String[] orderConditions) {
-		helper.clearOrderConditions();
+		this.helper.clearOrderConditions();
 		if (orderConditions != null) {
 			for (int i = 0; i < orderConditions.length; i++) {
 				// thomas: this is not the best way to do this but at the moment I have no other ideas.
@@ -752,11 +753,11 @@ public class ReportQueryBuilder extends Block {
 					fieldPart = QueryFieldPart.decode(orderConditions[i]);
 				}
 				if (fieldPart != null) {
-					helper.addHiddenField(fieldPart);
+					this.helper.addHiddenField(fieldPart);
 					conditionPart = new QueryOrderConditionPart(fieldPart.getEntity(),fieldPart.getPath(),fieldPart.getName());
 				}
 				if (conditionPart != null) {
-					helper.addOrderCondition(conditionPart);
+					this.helper.addOrderCondition(conditionPart);
 				}
 			}
 		}
@@ -765,22 +766,23 @@ public class ReportQueryBuilder extends Block {
 	}
 	
 	private boolean setFields(String[] fields) {
-		helper.clearFields();
+		this.helper.clearFields();
 		if (fields != null) {
 			for (int i = 0; i < fields.length; i++) {
 				QueryFieldPart part = QueryFieldPart.decode(fields[i]);
-				if (part != null)
-					helper.addField(part);
+				if (part != null) {
+					this.helper.addField(part);
+				}
 			}
 //LOCK			helper.setFieldsLock(iwc.isParameterSet(PARAM_LOCK));
-			return helper.hasFields();
+			return this.helper.hasFields();
 		}
 		return false;
 	}
 	
 	
 	private void processPreviousStep(IWContext iwc) {
-		switch (step) {
+		switch (this.step) {
 			case 2 :
 				//helper.clearRelatedEntities();
 				//helper.clearSourceEntity(); 
@@ -790,8 +792,8 @@ public class ReportQueryBuilder extends Block {
 			// in the simple mode skip the second step
 			// in the expert mode skip the second step when no source entity was chosen	
 				processStep3(iwc);
-				if (! expertMode || (expertMode && ! helper.hasSourceEntity())) {
-					step--;
+				if (! this.expertMode || (this.expertMode && ! this.helper.hasSourceEntity())) {
+					this.step--;
 				}
 				//helper.clearRelatedEntities();
 				break;
@@ -808,11 +810,11 @@ public class ReportQueryBuilder extends Block {
 				//helper.clearConditions();
 				break;
 		}
-		step--;
+		this.step--;
 		//step = helper.getStep()-1;
 	}
 	public PresentationObject getStep(IWContext iwc) throws RemoteException, FinderException {
-		switch (step) {
+		switch (this.step) {
 			case 1 :
 				return getStep1(iwc);
 			case 2 :
@@ -831,26 +833,26 @@ public class ReportQueryBuilder extends Block {
 	}
 
 	public String getStepMessage() {
-		switch (step) {
+		switch (this.step) {
 			case 1 :
-				return iwrb.getLocalizedString("query_builder_step_1_msg", "Choose a source entity");
+				return this.iwrb.getLocalizedString("query_builder_step_1_msg", "Choose a source entity");
 			case 2 :
-				return iwrb.getLocalizedString("query_builder_step_2_msg", "Choose related entities");
+				return this.iwrb.getLocalizedString("query_builder_step_2_msg", "Choose related entities");
 			case 3 :
-				return iwrb.getLocalizedString("query_builder_step_3_msg", "Choose entity fields");
+				return this.iwrb.getLocalizedString("query_builder_step_3_msg", "Choose entity fields");
 			case 4:
-				return iwrb.getLocalizedString("query_builder_step_4_msg", "Choose fields for order");
+				return this.iwrb.getLocalizedString("query_builder_step_4_msg", "Choose fields for order");
 			case 5 :
-				return iwrb.getLocalizedString("query_builder_step_5_msg", "Define field conditions");
+				return this.iwrb.getLocalizedString("query_builder_step_5_msg", "Define field conditions");
 			case 6 :
-				return iwrb.getLocalizedString("query_builder_step_6_msg", "Take proper action");
+				return this.iwrb.getLocalizedString("query_builder_step_6_msg", "Take proper action");
 		}
 		return "";
 	}
 
 	public Table getStepTable() {
 		Table T = new Table();
-		T.setBorder(tableBorder);
+		T.setBorder(this.tableBorder);
 		//T.setHeight(heightOfStepTable);
 		T.setWidth(Table.HUNDRED_PERCENT);
 		return T;
@@ -862,20 +864,20 @@ public class ReportQueryBuilder extends Block {
 		int row = 1;
 
 		//TODO get available source entities with permissions !!!
-		if (expertMode)	{
+		if (this.expertMode)	{
 			Collection sourceEntities = getQueryService(iwc).getSourceQueryEntityParts();
-			if (showSourceEntityInSelectBox) {
+			if (this.showSourceEntityInSelectBox) {
 				SelectionBox select = new SelectionBox(PARAM_SOURCE);
-				select.setMaximumChecked(1, iwrb.getLocalizedString("maximum_select_msg", "Select only one"));
+				select.setMaximumChecked(1, this.iwrb.getLocalizedString("maximum_select_msg", "Select only one"));
 				select.setHeight("20");
 				select.setWidth("300");
 				Iterator iter = sourceEntities.iterator();
 				while (iter.hasNext()) {
 					QueryEntityPart element = (QueryEntityPart) iter.next();
-					select.addMenuElement(element.encode(), iwrb.getLocalizedString(element.getName(), element.getName()));
+					select.addMenuElement(element.encode(), this.iwrb.getLocalizedString(element.getName(), element.getName()));
 				}
-				if (helper.hasSourceEntity()) {
-					QueryEntityPart source = helper.getSourceEntity();
+				if (this.helper.hasSourceEntity()) {
+					QueryEntityPart source = this.helper.getSourceEntity();
 					select.setSelectedElement(source.encode());
 				}
 				table.add(select, 2, row++);
@@ -886,20 +888,20 @@ public class ReportQueryBuilder extends Block {
 				Iterator iter = sourceEntities.iterator();
 				while (iter.hasNext()) {
 					QueryEntityPart element = (QueryEntityPart) iter.next();
-					drp.addMenuElement(element.encode(), iwrb.getLocalizedString(element.getName(), element.getName()));
+					drp.addMenuElement(element.encode(), this.iwrb.getLocalizedString(element.getName(), element.getName()));
 				}
-				if (helper.hasSourceEntity()) {
-					QueryEntityPart source = helper.getSourceEntity();
+				if (this.helper.hasSourceEntity()) {
+					QueryEntityPart source = this.helper.getSourceEntity();
 					drp.setSelectedElement(source.encode());
 				}
 				table.add(drp, 2, row++);
 	
 			}
 		}
-		if (showQueries)	{
+		if (this.showQueries)	{
 			SelectionBox select = new SelectionBox(PARAM_QUERY_AS_SOURCE);
 			select.setMultiple(true);
-			select.setMaximumChecked(1, iwrb.getLocalizedString("maximum_select_msg", "Select only one"));
+			select.setMaximumChecked(1, this.iwrb.getLocalizedString("maximum_select_msg", "Select only one"));
 			select.setHeight("20");
 			select.setWidth("300");
 			// get queries
@@ -914,15 +916,15 @@ public class ReportQueryBuilder extends Block {
 				String isPrivate = (String) representation.getColumnValue(QueryRepresentation.IS_PRIVATE_KEY);
 				if (isPrivate.length() != 0) {
 					displayName.append(" - ");
-					displayName.append(iwrb.getLocalizedString("query_builder_private", "private"));
+					displayName.append(this.iwrb.getLocalizedString("query_builder_private", "private"));
 				}
 				// do not show the query that you are editing in the drop down menu
-				if (! id.equals(Integer.toString(userQueryID))) {
+				if (! id.equals(Integer.toString(this.userQueryID))) {
 					select.addMenuElement(id, displayName.toString());
 				}
 			}
-  		if (helper.hasPreviousQuery()) {
-  			List previousQueries = helper.previousQueries();
+  		if (this.helper.hasPreviousQuery()) {
+  			List previousQueries = this.helper.previousQueries();
   			Iterator previousIterator = previousQueries.iterator();
   			while (previousIterator.hasNext()) {
   				QueryHelper previousQuery = (QueryHelper) previousIterator.next();
@@ -935,12 +937,13 @@ public class ReportQueryBuilder extends Block {
   		}
 			table.add(select, 1, (row == 1) ? 1 : row - 1 );
 		}
-		if (hasTemplatePermission) {
+		if (this.hasTemplatePermission) {
 			CheckBox lockCheck = new CheckBox(PARAM_LOCK, "true");
-			if (helper.hasSourceEntity())
-				lockCheck.setChecked(helper.getSourceEntity().isLocked());
+			if (this.helper.hasSourceEntity()) {
+				lockCheck.setChecked(this.helper.getSourceEntity().isLocked());
 //LOCK			table.add(getMsgText(iwrb.getLocalizedString("lock_source_entity", "Lock source entity")), 1, row);
 //LOCK			table.add(lockCheck, 1, row);
+			}
 		}
 
 		return table;
@@ -948,26 +951,26 @@ public class ReportQueryBuilder extends Block {
 	public PresentationObject getStep2(IWContext iwc) throws RemoteException {
 		Table table = getStepTable();
 		//table.add(getRelatedChoice(iwc),1,2);
-		IWTreeNode root = getQueryService(iwc).getEntityTree(helper, investigationLevel);
+		IWTreeNode root = getQueryService(iwc).getEntityTree(this.helper, this.investigationLevel);
 		EntityChooserTree tree = new EntityChooserTree(root);
 
 		tree.setUI(AbstractTreeViewer._UI_WIN);
 		Link treeLink = new Link();
-		treeLink.addParameter(PARAM_STEP, step);
-		treeLink.addParameter(SHOW_WIZARD, Integer.toString(investigationLevel));
-		treeLink.addParameter(PARAM_LAYOUT_FOLDER_ID, layoutFolderID);
+		treeLink.addParameter(PARAM_STEP, this.step);
+		treeLink.addParameter(SHOW_WIZARD, Integer.toString(this.investigationLevel));
+		treeLink.addParameter(PARAM_LAYOUT_FOLDER_ID, this.layoutFolderID);
 		tree.setLinkOpenClosePrototype(treeLink);
-		tree.addOpenCloseParameter(PARAM_STEP, Integer.toString(step));
-		tree.addOpenCloseParameter(SHOW_WIZARD, Integer.toString(investigationLevel));
-		tree.addOpenCloseParameter(PARAM_LAYOUT_FOLDER_ID, layoutFolderID);
+		tree.addOpenCloseParameter(PARAM_STEP, Integer.toString(this.step));
+		tree.addOpenCloseParameter(SHOW_WIZARD, Integer.toString(this.investigationLevel));
+		tree.addOpenCloseParameter(PARAM_LAYOUT_FOLDER_ID, this.layoutFolderID);
 		tree.setInitOpenLevel();
 		tree.setNestLevelAtOpen(1);
 		//tree.setToMaintainParameter(PARAM_STEP,iwc);
 		//viewer.setNestLevelAtOpen(4);
 		table.add(tree, 1, 1);
-		if (hasTemplatePermission) {
+		if (this.hasTemplatePermission) {
 			CheckBox lockCheck = new CheckBox(PARAM_LOCK, "true");
-			lockCheck.setChecked(helper.isEntitiesLock());
+			lockCheck.setChecked(this.helper.isEntitiesLock());
 //LOCK			table.add(getMsgText(iwrb.getLocalizedString("lock_related_entities", "Lock entities")), 1, 2);
 //LOCK			table.add(lockCheck, 1, 2);
 		}
@@ -979,11 +982,12 @@ public class ReportQueryBuilder extends Block {
 
 		int row = 2;
 		
-		List entities = helper.getListOfRelatedEntities();
-		if (entities == null)
+		List entities = this.helper.getListOfRelatedEntities();
+		if (entities == null) {
 			entities = new Vector();
+		}
 		Iterator iterator = entities.iterator();
-		List listOfFields = helper.getListOfVisibleFields();
+		List listOfFields = this.helper.getListOfVisibleFields();
 
 		Map fieldMap = getQueryPartMap(listOfFields);
 		SelectionDoubleBox box = new SelectionDoubleBox(PARAM_FIELDS + "_left", PARAM_FIELDS);
@@ -991,8 +995,8 @@ public class ReportQueryBuilder extends Block {
 		// fill the right box with already chosen fields
 		fillFieldSelectionBox(listOfFields, box);
 		
-		box.getLeftBox().setTextHeading(getMsgText(iwrb.getLocalizedString("available_fields", "Available fields")));
-		box.getRightBox().setTextHeading(getMsgText(iwrb.getLocalizedString("chosen_fields", "Chosen fields")));
+		box.getLeftBox().setTextHeading(getMsgText(this.iwrb.getLocalizedString("available_fields", "Available fields")));
+		box.getRightBox().setTextHeading(getMsgText(this.iwrb.getLocalizedString("chosen_fields", "Chosen fields")));
 		box.getRightBox().addUpAndDownMovers();
 		box.getRightBox().setWidth("400");
 		box.getLeftBox().setWidth("400");
@@ -1002,8 +1006,8 @@ public class ReportQueryBuilder extends Block {
 		
 		// in simple mode source entity is not set
 		QueryEntityPart entityPart;
-		if (helper.hasSourceEntity()) {
-			entityPart = helper.getSourceEntity();
+		if (this.helper.hasSourceEntity()) {
+			entityPart = this.helper.getSourceEntity();
 			fillFieldSelectionBox(service, entityPart, fieldMap, box);
 		}
 		
@@ -1016,12 +1020,12 @@ public class ReportQueryBuilder extends Block {
 		table.add(box, 2, row);
 		
 		row++;
-		if(allowFunctions){
+		if(this.allowFunctions){
 			table.add(getFunctionTable(),2,row);
 		}
-		if (hasTemplatePermission) {
+		if (this.hasTemplatePermission) {
 			CheckBox lockCheck = new CheckBox(PARAM_LOCK, "true");
-			lockCheck.setChecked(helper.isFieldsLock());
+			lockCheck.setChecked(this.helper.isFieldsLock());
 //LOCK			table.add(getMsgText(iwrb.getLocalizedString("lock_fields", "Lock fields")), 2, row);
 //LOCK			table.add(lockCheck, 2, row);
 		}
@@ -1036,21 +1040,23 @@ public class ReportQueryBuilder extends Block {
 
 		int row = 2;
 		
-		List entities = helper.getListOfRelatedEntities();
-		if (entities == null)
+		List entities = this.helper.getListOfRelatedEntities();
+		if (entities == null) {
 			entities = new Vector();
+		}
 		Iterator relatedEntitiesIterator = entities.iterator();
-		List listOfFields = helper.getOrderConditions();
-		if (listOfFields == null)
+		List listOfFields = this.helper.getOrderConditions();
+		if (listOfFields == null) {
 			listOfFields = new Vector();
+		}
 		Map fieldMap = getQueryPartMap(listOfFields);
 		SelectionDoubleBox box = new SelectionDoubleBox(PARAM_ORDER_FIELDS + "_left", PARAM_ORDER_FIELDS);
 		
 		// fill the right box with already chosen fields
 		fillFieldSelectionBoxForOrder(listOfFields, box);
 		
-		box.getLeftBox().setTextHeading(getMsgText(iwrb.getLocalizedString("available_fields", "Available fields")));
-		box.getRightBox().setTextHeading(getMsgText(iwrb.getLocalizedString("chosen_fields", "Chosen fields")));
+		box.getLeftBox().setTextHeading(getMsgText(this.iwrb.getLocalizedString("available_fields", "Available fields")));
+		box.getRightBox().setTextHeading(getMsgText(this.iwrb.getLocalizedString("chosen_fields", "Chosen fields")));
 		box.getRightBox().addUpAndDownMovers();
 		box.getRightBox().setWidth("400");
 		box.getLeftBox().setWidth("400");
@@ -1060,8 +1066,8 @@ public class ReportQueryBuilder extends Block {
 		
 		// in simple mode source entity is not set
 		QueryEntityPart entityPart;
-		if (helper.hasSourceEntity()) {
-			entityPart = helper.getSourceEntity();
+		if (this.helper.hasSourceEntity()) {
+			entityPart = this.helper.getSourceEntity();
 			// box is filled with values from the source entity
 			fillFieldSelectionBox(service, entityPart, fieldMap, box);
 		}
@@ -1080,9 +1086,9 @@ public class ReportQueryBuilder extends Block {
 		table.add(getFunctionTableForOrder(),2,row);
 	
 		row++;
-		if (hasTemplatePermission) {
+		if (this.hasTemplatePermission) {
 			CheckBox lockCheck = new CheckBox(PARAM_LOCK, "true");
-			lockCheck.setChecked(helper.isFieldsLock());
+			lockCheck.setChecked(this.helper.isFieldsLock());
 //LOCK			table.add(getMsgText(iwrb.getLocalizedString("lock_fields", "Lock fields")), 2, row);
 //LOCK			table.add(lockCheck, 2, row);
 		}
@@ -1098,22 +1104,22 @@ public class ReportQueryBuilder extends Block {
 		Table table = new Table(9,2);
 		int col = 1;
 		table.mergeCells(1,1,8,1);
-		table.add(getMsgText(iwrb.getLocalizedString("step_3_choose_function","Select function to apply on selected fields in the left box, and new display name if required")),1,1);
+		table.add(getMsgText(this.iwrb.getLocalizedString("step_3_choose_function","Select function to apply on selected fields in the left box, and new display name if required")),1,1);
 		TextInput display = new TextInput(PARAM_DISPLAY);
-		SubmitButton count = new SubmitButton(iwrb.getLocalizedImageButton("btn_func.count","Count"),PARAM_FUNCTION,QueryXMLConstants.FUNC_COUNT);
-		SubmitButton count_distinct = new SubmitButton(iwrb.getLocalizedImageButton("btn_func.count_distinct", "Count distinct"), PARAM_FUNCTION, QueryXMLConstants.FUNC_COUNT_DISTINCT);
+		SubmitButton count = new SubmitButton(this.iwrb.getLocalizedImageButton("btn_func.count","Count"),PARAM_FUNCTION,QueryXMLConstants.FUNC_COUNT);
+		SubmitButton count_distinct = new SubmitButton(this.iwrb.getLocalizedImageButton("btn_func.count_distinct", "Count distinct"), PARAM_FUNCTION, QueryXMLConstants.FUNC_COUNT_DISTINCT);
 		// concat not supported yet
 		//SubmitButton concat = new SubmitButton(iwrb.getLocalizedImageButton("btn_func.concat","Concat"),PARAM_FUNCTION,QueryXMLConstants.FUNC_CONCAT);
-		SubmitButton max = new SubmitButton(iwrb.getLocalizedImageButton("btn_func.max","Max"),PARAM_FUNCTION,QueryXMLConstants.FUNC_MAX);
-		SubmitButton min = new SubmitButton(iwrb.getLocalizedImageButton("btn_func.min","Min"),PARAM_FUNCTION,QueryXMLConstants.FUNC_MIN);
-		SubmitButton sum = new SubmitButton(iwrb.getLocalizedImageButton("btn_func.sum","Sum"),PARAM_FUNCTION,QueryXMLConstants.FUNC_SUM);
-		SubmitButton avg = new SubmitButton(iwrb.getLocalizedImageButton("btn_func.avg","Avg"),PARAM_FUNCTION,QueryXMLConstants.FUNC_AVG);
-		SubmitButton alias = new SubmitButton(iwrb.getLocalizedImageButton("btn_func.alias","Alias"),PARAM_FUNCTION,QueryXMLConstants.FUNC_ALIAS);
+		SubmitButton max = new SubmitButton(this.iwrb.getLocalizedImageButton("btn_func.max","Max"),PARAM_FUNCTION,QueryXMLConstants.FUNC_MAX);
+		SubmitButton min = new SubmitButton(this.iwrb.getLocalizedImageButton("btn_func.min","Min"),PARAM_FUNCTION,QueryXMLConstants.FUNC_MIN);
+		SubmitButton sum = new SubmitButton(this.iwrb.getLocalizedImageButton("btn_func.sum","Sum"),PARAM_FUNCTION,QueryXMLConstants.FUNC_SUM);
+		SubmitButton avg = new SubmitButton(this.iwrb.getLocalizedImageButton("btn_func.avg","Avg"),PARAM_FUNCTION,QueryXMLConstants.FUNC_AVG);
+		SubmitButton alias = new SubmitButton(this.iwrb.getLocalizedImageButton("btn_func.alias","Alias"),PARAM_FUNCTION,QueryXMLConstants.FUNC_ALIAS);
 		//distinct checkbox
 		Table distinctTable = new Table(2,1);
 		CheckBox distinct = new CheckBox(PARAM_DISTINCT);
-		distinct.setChecked(helper.isSelectDistinct());
-		distinctTable.add(iwrb.getLocalizedString("btn_func.distinct","Select distinct"),1,1);
+		distinct.setChecked(this.helper.isSelectDistinct());
+		distinctTable.add(this.iwrb.getLocalizedString("btn_func.distinct","Select distinct"),1,1);
 		distinctTable.add(distinct,2,1);
 
 		table.add(display,col++,2);
@@ -1131,8 +1137,8 @@ public class ReportQueryBuilder extends Block {
 	
 	private PresentationObject getFunctionTableForOrder()	{
 		Table table = new Table(1,2);
-		table.add(getMsgText(iwrb.getLocalizedString("step_4_choose_function","Select descendant for descendant ordering")),1,1);
-		SubmitButton alias = new SubmitButton(iwrb.getLocalizedImageButton("btn_descendant","Descendant"),PARAM_ORDER_FUNCTION,QueryXMLConstants.TYPE_DESCENDANT);
+		table.add(getMsgText(this.iwrb.getLocalizedString("step_4_choose_function","Select descendant for descendant ordering")),1,1);
+		SubmitButton alias = new SubmitButton(this.iwrb.getLocalizedImageButton("btn_descendant","Descendant"),PARAM_ORDER_FUNCTION,QueryXMLConstants.TYPE_DESCENDANT);
 		table.add(alias, 1,2);
 		return table;
 	}
@@ -1148,7 +1154,7 @@ public class ReportQueryBuilder extends Block {
 		SelectionDoubleBox box)
 		throws RemoteException {
 		//System.out.println("filling box with fields from " + entityPart.getName());
-		Iterator iter = service.getListOfFieldParts(iwrb, entityPart, expertMode).iterator();
+		Iterator iter = service.getListOfFieldParts(this.iwrb, entityPart, this.expertMode).iterator();
 		while (iter.hasNext()) {
 			QueryFieldPart part = (QueryFieldPart) iter.next();
 			//System.out.println(" " + part.getName());
@@ -1201,14 +1207,14 @@ public class ReportQueryBuilder extends Block {
 			//System.out.println(" " + part.getName());
 			String entityName = part.getEntity();
 			String fieldName = part.getField();
-			StringBuffer buffer = new StringBuffer(iwrb.getLocalizedString(entityName, entityName));
+			StringBuffer buffer = new StringBuffer(this.iwrb.getLocalizedString(entityName, entityName));
 			buffer.append(" -> ");
-			buffer.append(iwrb.getLocalizedString(fieldName, fieldName));
+			buffer.append(this.iwrb.getLocalizedString(fieldName, fieldName));
 			buffer.append(" (");
 			buffer.append(fieldName);
 			buffer.append(") ");
 			if (part.isDescendant()) {
-				buffer.append(iwrb.getLocalizedString(QueryXMLConstants.TYPE_DESCENDANT, QueryXMLConstants.TYPE_DESCENDANT));
+				buffer.append(this.iwrb.getLocalizedString(QueryXMLConstants.TYPE_DESCENDANT, QueryXMLConstants.TYPE_DESCENDANT));
 			}
 			box.getRightBox().addElement(
 			part.encode(),
@@ -1222,24 +1228,24 @@ public class ReportQueryBuilder extends Block {
 		int row = 1;
 		addHeaderToConditionTable(table, row++);
 		List conditions = null;
-		if (helper.hasConditions()) {
-			conditions = helper.getListOfConditions();
+		if (this.helper.hasConditions()) {
+			conditions = this.helper.getListOfConditions();
 			for (Iterator iter = conditions.iterator(); iter.hasNext();) {
 				QueryConditionPart part = (QueryConditionPart) iter.next();
-				if (editId == part.getIdNumber() && ! iwc.isParameterSet(PARAM_COND_EDIT_START)) {
-					addInputForNewInstanceToConditionTable(iwc, table, row, mapOfFields, editId);
+				if (this.editId == part.getIdNumber() && ! iwc.isParameterSet(PARAM_COND_EDIT_START)) {
+					addInputForNewInstanceToConditionTable(iwc, table, row, mapOfFields, this.editId);
 				}
 				else {
 					addEntryToConditionTable(iwc, table, row, part, mapOfFields, null);
 				}
 				addButtonsToConditionTable(table, row, part);
-				row = (editId == part.getIdNumber()) ? row+ 2 : row + 1;
+				row = (this.editId == part.getIdNumber()) ? row+ 2 : row + 1;
 			}
 		}
 		table.add(Text.getBreak(), 1, row++);
-		if (editId == NEW_INSTANCE) {
-			addInputForNewInstanceToConditionTable(iwc, table, row, mapOfFields, editId);
-			table.add(new SubmitButton(iwrb.getLocalizedImageButton("add", "Add"), PARAM_COND_ADD), 8, row);
+		if (this.editId == NEW_INSTANCE) {
+			addInputForNewInstanceToConditionTable(iwc, table, row, mapOfFields, this.editId);
+			table.add(new SubmitButton(this.iwrb.getLocalizedImageButton("add", "Add"), PARAM_COND_ADD), 8, row);
 		}
 		// set fields as source
 		row++;
@@ -1318,7 +1324,7 @@ public class ReportQueryBuilder extends Block {
 	 */
 	private int addBooleanExpressionToConditionTable(Table table, int row) {
 		// boolean expression
-		QueryBooleanExpressionPart booleanExpressionPart = helper.getBooleanExpressionForConditions();
+		QueryBooleanExpressionPart booleanExpressionPart = this.helper.getBooleanExpressionForConditions();
 		String booleanExpression = "";
 		if (booleanExpressionPart != null) {
 			booleanExpression = (booleanExpressionPart.isSyntaxOfBooleanExpressionOkay()) ? 
@@ -1330,11 +1336,11 @@ public class ReportQueryBuilder extends Block {
 		row++;
 		table.mergeCells(3, row, 6, row);
 		table.add(textInput, 3 , row); 
-		table.add(new SubmitButton(iwrb.getLocalizedImageButton("Set expression", "Set expression"), PARAM_SET_EXPRESSION, PARAM_SET_EXPRESSION),3 ,row);
+		table.add(new SubmitButton(this.iwrb.getLocalizedImageButton("Set expression", "Set expression"), PARAM_SET_EXPRESSION, PARAM_SET_EXPRESSION),3 ,row);
 		row++;
 		table.mergeCells(3, row, 6, row);
-		StringBuffer buffer = new StringBuffer(iwrb.getLocalizedString("Example", "Example"));
-		buffer.append(": " + iwrb.getLocalizedString("report_condition_example", "( Cond1 or Cond2 ) and ( Cond3 or ( not Cond4 ) )"));
+		StringBuffer buffer = new StringBuffer(this.iwrb.getLocalizedString("Example", "Example"));
+		buffer.append(": " + this.iwrb.getLocalizedString("report_condition_example", "( Cond1 or Cond2 ) and ( Cond3 or ( not Cond4 ) )"));
 		table.add(buffer.toString(), 3, row);
 		return row;
 	}
@@ -1346,14 +1352,14 @@ public class ReportQueryBuilder extends Block {
 	 */
 	private void addButtonsToConditionTable(Table table, int row, QueryConditionPart part) {
 		String partId = Integer.toString(part.getIdNumber());
-		if (editId == NEW_INSTANCE) {
-			table.add(new SubmitButton(iwrb.getLocalizedImageButton("drop", "drop"), PARAM_COND_DROP, partId), 8,	row);
-			table.add(new SubmitButton(iwrb.getLocalizedImageButton("step_5_edit_condition", "Edit"), PARAM_COND_EDIT_START, partId), 9, row);
+		if (this.editId == NEW_INSTANCE) {
+			table.add(new SubmitButton(this.iwrb.getLocalizedImageButton("drop", "drop"), PARAM_COND_DROP, partId), 8,	row);
+			table.add(new SubmitButton(this.iwrb.getLocalizedImageButton("step_5_edit_condition", "Edit"), PARAM_COND_EDIT_START, partId), 9, row);
 		}
-		else if (part.getIdNumber() == editId) {
-			form.addParameter(PARAM_COND_EDIT_MODE, partId);
-			table.add(new SubmitButton(iwrb.getLocalizedImageButton("step_5_save", "Save"), PARAM_COND_EDIT_SAVE, partId), 8, row);
-			table.add(new SubmitButton(iwrb.getLocalizedImageButton("step_5_cancel", "Cancel"), PARAM_COND_EDIT_CANCEL, partId), 9, row);
+		else if (part.getIdNumber() == this.editId) {
+			this.form.addParameter(PARAM_COND_EDIT_MODE, partId);
+			table.add(new SubmitButton(this.iwrb.getLocalizedImageButton("step_5_save", "Save"), PARAM_COND_EDIT_SAVE, partId), 8, row);
+			table.add(new SubmitButton(this.iwrb.getLocalizedImageButton("step_5_cancel", "Cancel"), PARAM_COND_EDIT_CANCEL, partId), 9, row);
 		}
 	}
 
@@ -1364,7 +1370,7 @@ public class ReportQueryBuilder extends Block {
 	 */
 	private void addCondtionTypeToCondtionTable(Table table, int row, QueryConditionPart part) {
 		String type = part.getType();
-		if (part.getIdNumber() == editId) {
+		if (part.getIdNumber() == this.editId) {
 			DropdownMenu equators = getConditionTypeDropdown();
 			if (type != null) {
 				equators.setSelectedElement(type);
@@ -1372,7 +1378,7 @@ public class ReportQueryBuilder extends Block {
 			table.add(equators, 4, row);
 		}
 		else {
-			table.add(iwrb.getLocalizedString(QueryConstants.LOCALIZATION_CONDITION_TYPE_PREFIX + part.getType(), part.getType()), 4, row);
+			table.add(this.iwrb.getLocalizedString(QueryConstants.LOCALIZATION_CONDITION_TYPE_PREFIX + part.getType(), part.getType()), 4, row);
 		}
 	}
 
@@ -1384,9 +1390,9 @@ public class ReportQueryBuilder extends Block {
 	private void addFieldToConditionTable(IWContext iwc, Table table, int row, QueryConditionPart part, HashMatrix mapOfFields, Map temporaryParameterMap) throws RemoteException {
 		String path = part.getPath();
 		String fieldName= part.getField();
-		if (part.getIdNumber() == editId) {
+		if (part.getIdNumber() == this.editId) {
 			// add a hidden parameter to the form that says that the selection of the hasn't changed
-			form.addParameter(PARAM_COND_SET_ON_CHANGE_PARAMETER, PARAM_COND_SET_ON_CHANGE_NOT_CLICKED);
+			this.form.addParameter(PARAM_COND_SET_ON_CHANGE_PARAMETER, PARAM_COND_SET_ON_CHANGE_NOT_CLICKED);
 			// change the value of the parameter if the selection has changed
 			DropdownMenu chosenFields = getAvailableFieldsDropdown(iwc, PARAM_COND_FIELD);
 			chosenFields.setOnChange(SET_ON_CHANGE_SCRIPT);
@@ -1418,9 +1424,9 @@ public class ReportQueryBuilder extends Block {
 	private void addFieldAsPatternToConditionTable(IWContext iwc, Table table, int row, QueryConditionPart part, HashMatrix mapOfFields, Map temporaryParameterMap) throws RemoteException {
 		String path = part.getPatternPath();
 		String fieldName= part.getPatternField();
-		if (part.getIdNumber() == editId) {
+		if (part.getIdNumber() == this.editId) {
 			DropdownMenu chosenFields = getAvailableFieldsDropdown(iwc, PARAM_COND_FIELD_AS_CONDITION);
-			String doNotUseAField = iwrb.getLocalizedString("step_5_do_not_use_field","don't use a field");
+			String doNotUseAField = this.iwrb.getLocalizedString("step_5_do_not_use_field","don't use a field");
 			chosenFields.addMenuElementFirst(VALUE_DO_NOT_USE_FIELD_AS_CONDITION, doNotUseAField );
 			// set the prior selected field
 			String fieldEncoded = null;
@@ -1461,7 +1467,7 @@ public class ReportQueryBuilder extends Block {
 	 */
 	private void addDescriptionToConditionTable(Table table, int row, QueryConditionPart part) {
 		String description = part.getDescription();
-		if (part.getIdNumber() ==  editId) {
+		if (part.getIdNumber() ==  this.editId) {
 			TextInput descriptionInput = new TextInput(PARAM_COND_DESCRIPTION);
 			descriptionInput.setValue(description);
 			table.add(descriptionInput, 6, row);
@@ -1478,7 +1484,7 @@ public class ReportQueryBuilder extends Block {
 	 */
 	private void addDynamicPropertyToConditionTable(Table table, int row, QueryConditionPart part) {
 		boolean isDynamic =part.isDynamic();
-		if (part.getIdNumber() == editId) {
+		if (part.getIdNumber() == this.editId) {
 			CheckBox dynamic = new CheckBox(PARAM_DYNAMIC);
 			dynamic.setChecked(isDynamic);
 			table.add(dynamic,7,row);
@@ -1513,7 +1519,7 @@ public class ReportQueryBuilder extends Block {
 		InputHandler inputHandler = (fieldPart ==null) ? null : getInputHandler(fieldPart);
 		
 		// display with editing options
-		if (part.getIdNumber() == editId) {
+		if (part.getIdNumber() == this.editId) {
 				// if another field was chosen ignore the value of the pattern field
 			if (PARAM_COND_SET_ON_CHANGE_CLICKED.equals(iwc.getParameter(PARAM_COND_SET_ON_CHANGE_PARAMETER))) {
 				singlePattern = null;
@@ -1571,17 +1577,17 @@ public class ReportQueryBuilder extends Block {
 	 * @param row
 	 */
 	private void addHeaderToConditionTable(Table table, int row) {
-		table.add(getMsgText(iwrb.getLocalizedString("field_id","Id")), 2, row);
+		table.add(getMsgText(this.iwrb.getLocalizedString("field_id","Id")), 2, row);
 		table.setColor(2,row, "#dfdfdf");
-		table.add(getMsgText(iwrb.getLocalizedString("field_name", "Name")), 3, row);
+		table.add(getMsgText(this.iwrb.getLocalizedString("field_name", "Name")), 3, row);
 		table.setColor(3,row,"#dfdfdf");
-		table.add(getMsgText(iwrb.getLocalizedString("field_operator", "Operator")), 4, row);
+		table.add(getMsgText(this.iwrb.getLocalizedString("field_operator", "Operator")), 4, row);
 		table.setColor(4,row,"#dfdfdf");
-		table.add(getMsgText(iwrb.getLocalizedString("field_pattern", "Pattern")), 5, row);
+		table.add(getMsgText(this.iwrb.getLocalizedString("field_pattern", "Pattern")), 5, row);
 		table.setColor(5,row,"#dfdfdf");
-		table.add(getMsgText(iwrb.getLocalizedString("field_description", "Description")), 6, row);
+		table.add(getMsgText(this.iwrb.getLocalizedString("field_description", "Description")), 6, row);
 		table.setColor(6,row,"#dfdfdf");
-		table.add(getMsgText(iwrb.getLocalizedString("field_dynamic","Dynamic")), 7 ,row);
+		table.add(getMsgText(this.iwrb.getLocalizedString("field_dynamic","Dynamic")), 7 ,row);
 		table.setColor(7 ,row,"#dfdfdf");
 	}
 
@@ -1596,20 +1602,20 @@ public class ReportQueryBuilder extends Block {
 		
 		
 		queryNameInput.setLength(20);
-		if (userQueryID > 0) {
-			String queryName = helper.getUserQuery().getName();
+		if (this.userQueryID > 0) {
+			String queryName = this.helper.getUserQuery().getName();
 			queryNameInput.setContent(queryName);
-			table.add(iwrb.getLocalizedString("step_5_change_queryname", "Change query name"), 1, row++);
+			table.add(this.iwrb.getLocalizedString("step_5_change_queryname", "Change query name"), 1, row++);
 		}
 		else {
-			queryNameInput.setContent(iwrb.getLocalizedString("step_6_choose_name_for_query", "Choose a name for the query"));
-			table.add(iwrb.getLocalizedString("step_5_set_queryname", "Set query name"), 1, row++);
+			queryNameInput.setContent(this.iwrb.getLocalizedString("step_6_choose_name_for_query", "Choose a name for the query"));
+			table.add(this.iwrb.getLocalizedString("step_5_set_queryname", "Set query name"), 1, row++);
 		}
 		table.add(queryNameInput, 1 , row++);
 		// description
-		table.add(iwrb.getLocalizedString("step_5_set_query_description", "Query description"), 1, row++);
+		table.add(this.iwrb.getLocalizedString("step_5_set_query_description", "Query description"), 1, row++);
 		table.setAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
-		String descriptionText = helper.getDescription();
+		String descriptionText = this.helper.getDescription();
 		descriptionText = (descriptionText == null) ? "" : descriptionText;
 		TextArea descriptionEditor = new TextArea(PARAM_QUERY_DESCRIPTION, descriptionText );
 		descriptionEditor.setWidth("250");
@@ -1622,19 +1628,19 @@ public class ReportQueryBuilder extends Block {
 		RadioGroup radioGroup = new RadioGroup(PARAM_IS_PRIVATE_QUERY);
 		radioGroup.setWidth(1);
 		boolean isPrivate = true;
-		if (userQueryID > 0) {
-			String permission = helper.getUserQuery().getPermisson();
+		if (this.userQueryID > 0) {
+			String permission = this.helper.getUserQuery().getPermisson();
 			isPrivate = QueryConstants.PERMISSION_PRIVATE_QUERY.equals(permission);
 		}
-		radioGroup.addRadioButton(PRIVATE, new Text(iwrb.getLocalizedString("step_5_private_query", "private")), isPrivate);
-		radioGroup.addRadioButton(PUBLIC, new Text(iwrb.getLocalizedString("step_5_public_query", "public")), ! isPrivate);
+		radioGroup.addRadioButton(PRIVATE, new Text(this.iwrb.getLocalizedString("step_5_private_query", "private")), isPrivate);
+		radioGroup.addRadioButton(PUBLIC, new Text(this.iwrb.getLocalizedString("step_5_public_query", "public")), ! isPrivate);
 		table.add(radioGroup, 1, row);
 		row++;
-		if (userQueryID > 0) {
+		if (this.userQueryID > 0) {
 			RadioGroup radioGroupCopy = new RadioGroup(PARAM_SAVE_MODE);
 			radioGroupCopy.setWidth(1);
-			radioGroupCopy.addRadioButton(SAVE_AS_NEW_QUERY, new Text(iwrb.getLocalizedString("step_5_save_query_as_new", "save as new query")), true);
-			radioGroupCopy.addRadioButton(OVERWRITE_QUERY, new Text(iwrb.getLocalizedString("step_5_overwrite_query", "overwrite existing one")));
+			radioGroupCopy.addRadioButton(SAVE_AS_NEW_QUERY, new Text(this.iwrb.getLocalizedString("step_5_save_query_as_new", "save as new query")), true);
+			radioGroupCopy.addRadioButton(OVERWRITE_QUERY, new Text(this.iwrb.getLocalizedString("step_5_overwrite_query", "overwrite existing one")));
 			table.add(radioGroupCopy, 1, row);
 		}
 
@@ -1650,27 +1656,27 @@ public class ReportQueryBuilder extends Block {
 		int column = 1;
 		if (currentStep > 1) {
 			SubmitButton last =
-				new SubmitButton(iwrb.getLocalizedImageButton("btn_previous", "<< previous"), PARAM_LAST, "true");
+				new SubmitButton(this.iwrb.getLocalizedImageButton("btn_previous", "<< previous"), PARAM_LAST, "true");
 			T.add(last, column++, 1);
 		}
 		if (currentStep < 6) {
 			SubmitButton next =
-				new SubmitButton(iwrb.getLocalizedImageButton("btn_next", "next >>"), PARAM_NEXT, "true");
+				new SubmitButton(this.iwrb.getLocalizedImageButton("btn_next", "next >>"), PARAM_NEXT, "true");
 			T.add(next, column++, 1);
 		}
 		if (currentStep == 3 || currentStep ==  4 ||  currentStep == 5) {
 			SubmitButton finish =
-				new SubmitButton(iwrb.getLocalizedImageButton("btn_finish", "finish"), PARAM_FINAL, "true");
+				new SubmitButton(this.iwrb.getLocalizedImageButton("btn_finish", "finish"), PARAM_FINAL, "true");
 
 			T.add(finish, column++, 1);
 		}
 		if (currentStep > 5) {
-			SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("btn_save", "Save"), PARAM_SAVE, "true");
+			SubmitButton save = new SubmitButton(this.iwrb.getLocalizedImageButton("btn_save", "Save"), PARAM_SAVE, "true");
 			T.add(save, column++, 1);
 		}
 		if (currentStep > 0) {
 			SubmitButton cancel =
-				new SubmitButton(iwrb.getLocalizedImageButton("btn_cancel", "cancel"), PARAM_CANCEL, "true");
+				new SubmitButton(this.iwrb.getLocalizedImageButton("btn_cancel", "cancel"), PARAM_CANCEL, "true");
 			T.add(cancel, column++, 1);
 		}
 		// thomas: removed
@@ -1703,29 +1709,30 @@ public class ReportQueryBuilder extends Block {
 	public void main(IWContext iwc) throws Exception {
 		debugParameters(iwc);
 		//iwb = getBundle(iwc);
-		iwrb = getResourceBundle(iwc);
+		this.iwrb = getResourceBundle(iwc);
 		//TODO thi think about that, ask Aron
-		hasEditPermission = true;
-		hasTemplatePermission = true;
-		hasCreatePermission = true;
+		this.hasEditPermission = true;
+		this.hasTemplatePermission = true;
+		this.hasCreatePermission = true;
 //		hasEditPermission = hasEditPermission();
 //		hasTemplatePermission = hasPermission(this.PERM_TEMPL_EDIT, this, iwc);
 //		hasCreatePermission = hasPermission(this.PERM_CREATE, this, iwc);
 		control(iwc);
 	}
 	private QueryService getQueryService(IWContext iwc) throws RemoteException {
-		if (queryService == null) {
-			queryService = (QueryService) IBOLookup.getServiceInstance(iwc, QueryService.class);
+		if (this.queryService == null) {
+			this.queryService = (QueryService) IBOLookup.getServiceInstance(iwc, QueryService.class);
 		}
-		return queryService;
+		return this.queryService;
 	}
 	public String getBundleIdentifier() {
 		return QueryConstants.QUERY_BUNDLE_IDENTIFIER;
 	}
 	public Map getQueryPartMap(List listOfQueryParts) {
 		int size = 0;
-		if (listOfQueryParts != null)
+		if (listOfQueryParts != null) {
 			size = listOfQueryParts.size();
+		}
 		Map map = new HashMap(size);
 		if (listOfQueryParts != null) {
 			Iterator iter = listOfQueryParts.iterator();
@@ -1739,17 +1746,20 @@ public class ReportQueryBuilder extends Block {
 	}
 	public Map getEntityMap(List listOfEntityParts) {
 		int size = 0;
-		if (listOfEntityParts != null)
+		if (listOfEntityParts != null) {
 			size = listOfEntityParts.size();
+		}
 		Map map = new HashMap(size);
 		if (listOfEntityParts != null) {
 			Iterator iter = listOfEntityParts.iterator();
 			while (iter.hasNext()) {
 				QueryEntityPart element = (QueryEntityPart) iter.next();
-				if (element.getPath() != null)
+				if (element.getPath() != null) {
 					map.put(element.getPath(), element);
-				else
+				}
+				else {
 					map.put(element.getName(), element);
+				}
 			}
 		}
 		return map;
@@ -1757,12 +1767,13 @@ public class ReportQueryBuilder extends Block {
 
 	public Map getConditionsMapByFieldName() {
 		int size = 0;
-		if (helper.hasConditions())
-			size = helper.getListOfConditions().size();
+		if (this.helper.hasConditions()) {
+			size = this.helper.getListOfConditions().size();
+		}
 		Map map = new HashMap(size);
-		List fields = helper.getListOfVisibleFields();
-		if (helper.hasConditions()) {
-			Iterator iter = helper.getListOfConditions().iterator();
+		List fields = this.helper.getListOfVisibleFields();
+		if (this.helper.hasConditions()) {
+			Iterator iter = this.helper.getListOfConditions().iterator();
 			while (iter.hasNext()) {
 				QueryConditionPart part = (QueryConditionPart) iter.next();
 				for (Iterator iterator = fields.iterator(); iterator.hasNext();) {
@@ -1779,8 +1790,8 @@ public class ReportQueryBuilder extends Block {
 
 	public HashMatrix getMapOfFields() {
 		HashMatrix map = new HashMatrix();
-		if (helper.hasFields()) {
-			Iterator iter = helper.getListOfFields().iterator();
+		if (this.helper.hasFields()) {
+			Iterator iter = this.helper.getListOfFields().iterator();
 			while (iter.hasNext()) {
 				QueryFieldPart part = (QueryFieldPart) iter.next();
 				map.put(part.getPath(), part.getName(), part);
@@ -1792,25 +1803,25 @@ public class ReportQueryBuilder extends Block {
 		 * @param i
 		 */
 	public void setInvestigationLevel(int i) {
-		investigationLevel = i;
+		this.investigationLevel = i;
 	}
 
 	/**
 	 * @return
 	 */
 	public int getQueryFolderID() {
-		return queryFolderID;
+		return this.queryFolderID;
 	}
 
 	/**
 	 * @param i
 	 */
 	public void setQueryFolderID(int i) {
-		queryFolderID = i;
+		this.queryFolderID = i;
 	}
 
 	public int getQueryId()	{
-		return userQueryID;
+		return this.userQueryID;
 	}
 
 
@@ -1818,7 +1829,7 @@ public class ReportQueryBuilder extends Block {
 		DropdownMenu drp = new DropdownMenu(PARAM_COND_TYPE);
 		String[] types = QueryConditionPart.getConditionTypes();
 		for (int i = 0; i < types.length; i++) {
-			drp.addMenuElement(types[i], iwrb.getLocalizedString("conditions." + types[i], types[i]));
+			drp.addMenuElement(types[i], this.iwrb.getLocalizedString("conditions." + types[i], types[i]));
 		}
 		return drp;
 	}
@@ -1829,8 +1840,8 @@ public class ReportQueryBuilder extends Block {
 		Map drpMap = new HashMap();
 		DropdownMenu drp = new DropdownMenu(keyName);
 
-		if (helper.hasPreviousQuery())	{
-			List previousQueries = helper.previousQueries();
+		if (this.helper.hasPreviousQuery())	{
+			List previousQueries = this.helper.previousQueries();
 			Iterator iterator = previousQueries.iterator();
 			while (iterator.hasNext()) {
 				QueryHelper previousQuery = (QueryHelper) iterator.next();
@@ -1854,15 +1865,16 @@ public class ReportQueryBuilder extends Block {
 			}
 		}
 
-		List entities = helper.getListOfRelatedEntities();
-		if (entities == null)
+		List entities = this.helper.getListOfRelatedEntities();
+		if (entities == null) {
 			entities = new Vector();
+		}
 		Iterator iterator = entities.iterator();
 		
 		// in simple mode source entity is not set
 		QueryEntityPart entityPart;
-		if (helper.hasSourceEntity()) {
-			entityPart = helper.getSourceEntity();
+		if (this.helper.hasSourceEntity()) {
+			entityPart = this.helper.getSourceEntity();
 			fillDropDown(service, entityPart,drpMap,drp);
 		}
 		while (iterator.hasNext()) {
@@ -1873,7 +1885,7 @@ public class ReportQueryBuilder extends Block {
 	}
 	
 	private void fillDropDown(QueryService service,QueryEntityPart entityPart,Map drpMap,DropdownMenu drp)throws RemoteException {
-		Iterator iter = service.getListOfFieldParts(iwrb, entityPart, expertMode).iterator();
+		Iterator iter = service.getListOfFieldParts(this.iwrb, entityPart, this.expertMode).iterator();
 		while (iter.hasNext()) {
 			QueryFieldPart part = (QueryFieldPart) iter.next();
 			String enc = part.encode();
@@ -1897,9 +1909,9 @@ public class ReportQueryBuilder extends Block {
 		String fieldName = part.getName();//the real database field name
 		String functionName = part.getFunction(); // function name
 		if (displayName == null || displayName.length() == 0) {
-			displayName = iwrb.getLocalizedString(fieldName,fieldName);
+			displayName = this.iwrb.getLocalizedString(fieldName,fieldName);
 		}
-		StringBuffer buffer = new StringBuffer(iwrb.getLocalizedString(entity, entity));
+		StringBuffer buffer = new StringBuffer(this.iwrb.getLocalizedString(entity, entity));
 		buffer.append(" -> ")
 		.append(displayName)
 		.append(" ( ")
@@ -1915,7 +1927,7 @@ public class ReportQueryBuilder extends Block {
 
 	private Text getStepText(String string) {
 		Text text = new Text(string);
-		text.setStyleClass(stepFontStyle);
+		text.setStyleClass(this.stepFontStyle);
 //		text.setStyle(Text.FONT_FACE_ARIAL);
 //		text.setFontSize(Text.FONT_SIZE_14_HTML_4);
 		text.setBold();
@@ -1924,7 +1936,7 @@ public class ReportQueryBuilder extends Block {
 
 	private Text getMsgText(String string) {
 		Text text = new Text(string);
-		text.setStyleClass(messageFontStyle);
+		text.setStyleClass(this.messageFontStyle);
 //		text.setStyle(Text.FONT_FACE_ARIAL);
 //		text.setFontSize(Text.FONT_SIZE_10_HTML_2);
 //		text.setBold();
@@ -1949,7 +1961,7 @@ public class ReportQueryBuilder extends Block {
 			setParallelExtraColumns(2);
 			setWidth(Table.HUNDRED_PERCENT);
 			setExtraColumnHorizontalAlignment(2, Table.HORIZONTAL_ALIGN_RIGHT);
-			entityMap = getEntityMap(helper.getListOfRelatedEntities());
+			this.entityMap = getEntityMap(ReportQueryBuilder.this.helper.getListOfRelatedEntities());
 		}
 		public EntityChooserTree(ICTreeNode node) {
 			this();
@@ -1975,11 +1987,11 @@ public class ReportQueryBuilder extends Block {
 						case 2 :
 							CheckBox checkBox = new CheckBox(PARAM_RELATED, entityNode.encode());
 							if (entityNode.getPath() != null) {
-								checkBox.setChecked(entityMap.containsKey(entityNode.getPath()));
+								checkBox.setChecked(this.entityMap.containsKey(entityNode.getPath()));
 								//System.out.println("using path " + entityNode.getPath());
 							}
 							else {
-								checkBox.setChecked(entityMap.containsKey(entityNode.getName()));
+								checkBox.setChecked(this.entityMap.containsKey(entityNode.getName()));
 								//System.out.println("using name " + entityNode.getName());
 							}
 							return checkBox;
@@ -1992,7 +2004,7 @@ public class ReportQueryBuilder extends Block {
 		 * @see com.idega.presentation.ui.TreeViewer#getSecondColumnObject(com.idega.core.ICTreeNode, com.idega.presentation.IWContext, boolean)
 		 */
 		public PresentationObject getSecondColumnObject(ICTreeNode node, IWContext iwc, boolean fromEditor) {
-			String nodeName = iwrb.getLocalizedString(node.getNodeName(), node.getNodeName());
+			String nodeName = ReportQueryBuilder.this.iwrb.getLocalizedString(node.getNodeName(), node.getNodeName());
 			getShortenedNodeName(nodeName);
 			return new Text(nodeName);
 		}
@@ -2013,7 +2025,7 @@ public class ReportQueryBuilder extends Block {
   private InputHandler getInputHandler(QueryFieldPart fieldPart) {
   	InputHandler inputHandler = null;
   	String predefinedClassName = fieldPart.getHandlerClass();
-  	String currentDefinedClassName = helper.getInputHandler(fieldPart.getPath(), fieldPart.getName());
+  	String currentDefinedClassName = this.helper.getInputHandler(fieldPart.getPath(), fieldPart.getName());
   	String className = null;
   	if (currentDefinedClassName != null) {
   		className = currentDefinedClassName;
@@ -2069,8 +2081,8 @@ public class ReportQueryBuilder extends Block {
 	
 	// used by step 3 (field choice) and 4 (order by)
 	private  void fillFieldsFromPreviousQuery(Map fieldMap, SelectionDoubleBox box) {
-		if (helper.hasPreviousQuery())	{
-			List previousQueries = helper.previousQueries();
+		if (this.helper.hasPreviousQuery())	{
+			List previousQueries = this.helper.previousQueries();
 			Iterator iterator = previousQueries.iterator();
 			while (iterator.hasNext()) {
 				List resultFields = new ArrayList();

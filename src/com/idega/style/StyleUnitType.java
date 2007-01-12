@@ -21,22 +21,22 @@ public class StyleUnitType {
 	}
 	
 	public void addStyleUnit(StyleUnit unit) {
-		if (types == null) {
-			types = new ArrayList();
+		if (this.types == null) {
+			this.types = new ArrayList();
 		}
-		types.add(unit);
+		this.types.add(unit);
 	}
 	
 	public boolean getMultivalued() {
-		if (types != null) {
-			return types.size() > 1;
+		if (this.types != null) {
+			return this.types.size() > 1;
 		}
 		return false;
 	}
 	
 	public Iterator iterator() {
-		if (types != null) {
-			return types.iterator();
+		if (this.types != null) {
+			return this.types.iterator();
 		}
 		return null;
 	}

@@ -45,8 +45,9 @@ public class TextBusiness{
       }
       return true;
     }
-    else
-      return false;
+	else {
+		return false;
+	}
   }
 
   public static void deleteText(int iTextId){
@@ -99,12 +100,15 @@ public class TextBusiness{
         if(sAttribute != null){
           eTxText.setAttribute(sAttribute);
         }
-        if(eContent.getID() > 0)
-          eTxText.setContentId(eContent.getID());
-        if(update)
-          eTxText.update();
-        else
-          eTxText.insert();
+        if(eContent.getID() > 0) {
+			eTxText.setContentId(eContent.getID());
+		}
+        if(update) {
+			eTxText.update();
+		}
+		else {
+			eTxText.insert();
+		}
         if(InstanceId > 0 && !update){
           //System.err.println("instance er til");
           ICObjectInstance objIns = ((com.idega.core.component.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(InstanceId);

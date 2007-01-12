@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.63 2005/09/09 00:03:01 eiki Exp $
+ * $Id: XMLReader.java,v 1.63.2.1 2007/01/12 19:31:48 idegaweb Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -101,16 +101,18 @@ public class XMLReader {
 				}
 			}
 			else if (at.getName().equalsIgnoreCase(XMLConstants.ID_STRING)) {
-				pageKey = (String) at.getValue();
+				pageKey = at.getValue();
 			}
 			else if (at.getName().equalsIgnoreCase(XMLConstants.REGION_LOCKED)) {
-				if (at.getValue().equals("true"))
+				if (at.getValue().equals("true")) {
 					isLocked = true;
-				else
+				}
+				else {
 					isLocked = false;
+				}
 			} 
 			else if (at.getName().equalsIgnoreCase(XMLConstants.DPT_ROOTPAGE_STRING)) {
-				dptRootPage = (String)at.getValue();
+				dptRootPage = at.getValue();
 			}
 		}
 
@@ -122,10 +124,12 @@ public class XMLReader {
 			setTemplateObjectsForPage(ibxml);
 		}
 
-		if (isLocked)
+		if (isLocked) {
 			parentContainer.lock();
-		else
+		}
+		else {
 			parentContainer.unlock();
+		}
 
 		//Set the type of the page
 		if (isTemplate) {
@@ -174,10 +178,12 @@ public class XMLReader {
 					setProperty(child, parentContainer);
 				}
 				else if (child.getName().equalsIgnoreCase(XMLConstants.ELEMENT_STRING) || child.getName().equalsIgnoreCase(XMLConstants.MODULE_STRING)) {
-					if (!parentContainer.getIsExtendingTemplate())
+					if (!parentContainer.getIsExtendingTemplate()) {
 						parseElement(child, parentContainer, ibxml);
-					else if (!parentContainer.isLocked())
+					}
+					else if (!parentContainer.isLocked()) {
 						parseElement(child, parentContainer, ibxml);
+					}
 				}
 				else if (child.getName().equalsIgnoreCase(XMLConstants.REGION_STRING)) {
 					parseRegion(child, parentContainer, ibxml);
@@ -214,10 +220,12 @@ public class XMLReader {
 
 		XMLAttribute locked = reg.getAttribute(XMLConstants.REGION_LOCKED);
 		if (locked != null) {
-			if (locked.getValue().equalsIgnoreCase("true"))
+			if (locked.getValue().equalsIgnoreCase("true")) {
 				isLocked = true;
-			else
+			}
+			else {
 				isLocked = false;
+			}
 		}
 
 		XMLAttribute label = reg.getAttribute(XMLConstants.LABEL_STRING);
@@ -287,8 +295,9 @@ public class XMLReader {
 							parseChildren = false;
 						}
 					}
-					else
+					else {
 						parseChildren = false;
+					}
 				}
 				else {
 					if ( ((PresentationObject)newRegionParent).getBelongsToParent() &&  ((PresentationObjectContainer)newRegionParent).isLocked()){
@@ -301,10 +310,12 @@ public class XMLReader {
 			}
 		}
 		else if (regionParent instanceof com.idega.presentation.Table) {
-			if (isLocked)
-				 ((Table) regionParent).lock(x, y);
-			else
-				 ((Table) regionParent).unlock(x, y);
+			if (isLocked) {
+				((Table) regionParent).lock(x, y);
+			}
+			else {
+				((Table) regionParent).unlock(x, y);
+			}
 
 			if (label != null) {
 				((Table) regionParent).setLabel(label.getValue(), x, y);
@@ -322,8 +333,9 @@ public class XMLReader {
 				List children = reg.getChildren();
 				Iterator childrenIt = children.iterator();
 
-				while (childrenIt.hasNext())
+				while (childrenIt.hasNext()) {
 					parseElement((XMLElement) childrenIt.next(), (PresentationObjectContainer) newRegionParent, ibxml);
+				}
 			}
 		}
 	}
@@ -420,10 +432,12 @@ public class XMLReader {
 				icObjectId = attr.getValue();
 			}
 			else if (attr.getName().equalsIgnoreCase(XMLConstants.REGION_LOCKED)) {
-				if (attr.getValue().equals("false"))
+				if (attr.getValue().equals("false")) {
 					isLocked = false;
-				else
+				}
+				else {
 					isLocked = true;
+				}
 			}
 		}
 
@@ -457,10 +471,12 @@ public class XMLReader {
 			
 			//TODO are there any similar UIComponent containers we need to check for?
 			if (firstUICInstance instanceof PresentationObjectContainer) {
-				if (isLocked)
-					 ((PresentationObjectContainer) firstUICInstance).lock();
-				else
-					 ((PresentationObjectContainer) firstUICInstance).unlock();
+				if (isLocked) {
+					((PresentationObjectContainer) firstUICInstance).lock();
+				}
+				else {
+					((PresentationObjectContainer) firstUICInstance).unlock();
+				}
 			}
 
 			if (firstUICInstance instanceof com.idega.presentation.Table) {
@@ -486,8 +502,9 @@ public class XMLReader {
 						else if (child.getName().equalsIgnoreCase(XMLConstants.REGION_STRING)) {
 							parseRegion(child, table, ibxml);
 						}
-						else
+						else {
 							System.err.println("Unknown tag in xml description file : " + child.getName());
+						}
 					}
 				}
 			}
@@ -503,8 +520,9 @@ public class XMLReader {
 				}
 				catch (Exception e) {
 					e.printStackTrace(System.err);
-					if (parent != null)
+					if (parent != null) {
 						System.err.println("ParentID: " + parent.getId());
+					}
 					if (firstUICInstance != null){
 						System.err.println("InstanceID: " + BuilderLogic.getInstance().getInstanceId(firstUICInstance));
 					}
@@ -521,7 +539,7 @@ public class XMLReader {
 							setProperty(child, firstUICInstance);
 						}
 						else if (child.getName().equalsIgnoreCase(XMLConstants.ELEMENT_STRING) || child.getName().equalsIgnoreCase(XMLConstants.MODULE_STRING)) {
-							parseElement(child, (PresentationObjectContainer) firstUICInstance, ibxml);
+							parseElement(child, firstUICInstance, ibxml);
 						}
 						else if (child.getName().equalsIgnoreCase(XMLConstants.REGION_STRING)) {
 							parseRegion(child, (PresentationObjectContainer) firstUICInstance, ibxml);

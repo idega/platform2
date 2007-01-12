@@ -50,7 +50,7 @@ public class SystemTypeHandler extends FileTypeHandler {
 		table.setHeight(Table.HUNDRED_PERCENT);
 		table.setCellpadding(2);
 		table.setCellspacing(0);
-		ICFile file = (ICFile) this.getCachedFileInfo(icFileId, iwc).getEntity();
+		ICFile file = (ICFile) FileTypeHandler.getCachedFileInfo(icFileId, iwc).getEntity();
 		Iterator iter = file.getChildrenIterator();
 		int x = 1;
 		int y = 1;
@@ -73,8 +73,8 @@ public class SystemTypeHandler extends FileTypeHandler {
 		table.add(date, 3, 1);
 		table.add(size, 4, 1);
 		table.add(mime, 5, 1);
-		table.setHeight(1, iconHeight);
-		table.setWidth(1, iconWidth);
+		table.setHeight(1, this.iconHeight);
+		table.setWidth(1, this.iconWidth);
 		if (iter != null) {
 			while (iter.hasNext()) {
 				++y;
@@ -218,7 +218,7 @@ public class SystemTypeHandler extends FileTypeHandler {
 	}
 
 	public String getUI() {
-		return _ui;
+		return this._ui;
 	}
 
 	public PresentationObject getPresentationObject(MediaProperties props, IWContext iwc) {

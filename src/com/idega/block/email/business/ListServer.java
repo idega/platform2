@@ -110,13 +110,13 @@ public class ListServer {
 		String emailListFile,
 		String fromName)
 		throws Exception {
-		_smtpHost = smtpHost;
-		_pop3Host = pop3Host;
-		_user = user;
-		_password = password;
-		_emailListFile = emailListFile;
+		this._smtpHost = smtpHost;
+		this._pop3Host = pop3Host;
+		this._user = user;
+		this._password = password;
+		this._emailListFile = emailListFile;
 		if (fromName != null) {
-			_fromName = fromName;
+			this._fromName = fromName;
 		}
 		// Read in email list file into java.util.Vector
 		//
@@ -128,8 +128,8 @@ public class ListServer {
 		}
 		listFile.close();
 		debugMsg("Found " + vList.size() + " email ids in list");
-		_toList = new InternetAddress[vList.size()];
-		vList.copyInto(_toList);
+		this._toList = new InternetAddress[vList.size()];
+		vList.copyInto(this._toList);
 		vList = null;
 		//
 		// Get individual emails and broadcast them to all email ids
@@ -138,11 +138,11 @@ public class ListServer {
 		//
 		Properties sysProperties = System.getProperties();
 		Session session = Session.getDefaultInstance(sysProperties, null);
-		session.setDebug(debugOn);
+		session.setDebug(this.debugOn);
 		// Connect to host
 		//
 		Store store = session.getStore(POP_MAIL);
-		store.connect(pop3Host, -1, _user, _password);
+		store.connect(pop3Host, -1, this._user, this._password);
 		// Open the default folder
 		//
 		Folder folder = store.getDefaultFolder();
@@ -191,7 +191,7 @@ public class ListServer {
 	 * @exception  Exception  Description of the Exception
 	 */
 	private void processMsg(String smtpHost, Message message) throws Exception {
-		String replyTo = _user;
+		String replyTo = this._user;
 		String subject;
 		Date sentDate;
 		Address[] a = null;
@@ -204,7 +204,7 @@ public class ListServer {
 		sentDate = message.getSentDate();
 		// Send message
 		//
-		sendMsg(_user, sentDate, replyTo, subject, message);
+		sendMsg(this._user, sentDate, replyTo, subject, message);
 	}
 	/**
 	 *  sendMsg() broadcasts a message to all subscribers
@@ -221,20 +221,20 @@ public class ListServer {
 		// create some properties and get the default Session
 		//
 		Properties props = new Properties();
-		props.put("mail.smtp.host", _smtpHost);
+		props.put("mail.smtp.host", this._smtpHost);
 		Session session = Session.getDefaultInstance(props, null);
 		// create a message
 		//
 		Address replyToList[] = { new InternetAddress(replyTo)};
 		Message newMessage = new MimeMessage(session);
-		if (_fromName != null) {
-			newMessage.setFrom(new InternetAddress(from, _fromName + " on behalf of " + replyTo));
+		if (this._fromName != null) {
+			newMessage.setFrom(new InternetAddress(from, this._fromName + " on behalf of " + replyTo));
 		}
 		else {
 			newMessage.setFrom(new InternetAddress(from));
 		}
 		newMessage.setReplyTo(replyToList);
-		newMessage.setRecipients(Message.RecipientType.BCC, _toList);
+		newMessage.setRecipients(Message.RecipientType.BCC, this._toList);
 		newMessage.setSubject(subject);
 		newMessage.setSentDate(sentDate);
 		// Set message contents
@@ -254,8 +254,8 @@ public class ListServer {
 		// Send newMessage
 		//
 		Transport transport = session.getTransport(SMTP_MAIL);
-		transport.connect(_smtpHost, _user, _password);
-		transport.sendMessage(newMessage, _toList);
+		transport.connect(this._smtpHost, this._user, this._password);
+		transport.sendMessage(newMessage, this._toList);
 	}
 	/**
 	 *  @todo Description of the Method
@@ -270,20 +270,20 @@ public class ListServer {
 		// create some properties and get the default Session
 		//
 		Properties props = new Properties();
-		props.put("mail.smtp.host", _smtpHost);
+		props.put("mail.smtp.host", this._smtpHost);
 		Session session = Session.getDefaultInstance(props, null);
 		// create a message
 		//
 		Address replyToList[] = { new InternetAddress(replyTo)};
 		Message newMessage = new MimeMessage(session);
-		if (_fromName != null) {
-			newMessage.setFrom(new InternetAddress(from, _fromName));
+		if (this._fromName != null) {
+			newMessage.setFrom(new InternetAddress(from, this._fromName));
 		}
 		else {
 			newMessage.setFrom(new InternetAddress(from));
 		}
 		newMessage.setReplyTo(replyToList);
-		newMessage.setRecipients(Message.RecipientType.BCC, _toList);
+		newMessage.setRecipients(Message.RecipientType.BCC, this._toList);
 		newMessage.setSubject(subject);
 		newMessage.setSentDate(sentDate);
 		// Set message contents
@@ -292,8 +292,8 @@ public class ListServer {
 		// Send newMessage
 		//
 		Transport transport = session.getTransport(SMTP_MAIL);
-		transport.connect(_smtpHost, _user, _password);
-		transport.sendMessage(newMessage, _toList);
+		transport.connect(this._smtpHost, this._user, this._password);
+		transport.sendMessage(newMessage, this._toList);
 	}
 	/**
 	
@@ -301,7 +301,7 @@ public class ListServer {
 	 * @todo      Description of the Method
 	 */
 	private void debugMsg(String s) {
-		if (debugOn) {
+		if (this.debugOn) {
 			System.out.println(new Date() + "> " + s);
 		}
 	}
@@ -311,7 +311,7 @@ public class ListServer {
 	 * @param  state  The new debug value
 	 */
 	public void setDebug(boolean state) {
-		debugOn = state;
+		this.debugOn = state;
 	}
 	/**
 	 *  @todo Description of the Method
@@ -322,17 +322,17 @@ public class ListServer {
 	 */
 	public void sendMailLetter(EmailLetter letter, EmailAccount smtp, Collection emails) {
 		try {
-			_smtpHost = smtp.getHost();
-			_user = smtp.getUser();
-			_password = smtp.getPassword();
-			_fromName = letter.getFromName();
-			_toList = new InternetAddress[emails.size()];
+			this._smtpHost = smtp.getHost();
+			this._user = smtp.getUser();
+			this._password = smtp.getPassword();
+			this._fromName = letter.getFromName();
+			this._toList = new InternetAddress[emails.size()];
 			Iterator iter = emails.iterator();
 			Vector vList = new Vector(10);
 			while (iter.hasNext()) {
 				vList.addElement(new InternetAddress(((EmailDataView) iter.next()).getEmailAddress()));
 			}
-			vList.copyInto(_toList);
+			vList.copyInto(this._toList);
 			vList = null;
 			sendMsg(
 				letter.getFromAddress(),

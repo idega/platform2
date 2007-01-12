@@ -36,7 +36,7 @@ public class FavoriteLink extends FavoriteBlock implements IWPageEventListener {
 		parse(iwc);
 		
 		try {
-			Favorite favorite = getBusiness(iwc).getFavoriteByName(currentUser, currentName, getBusiness(iwc).getFavoriteTypeIntranet());
+			Favorite favorite = getBusiness(iwc).getFavoriteByName(this.currentUser, this.currentName, getBusiness(iwc).getFavoriteTypeIntranet());
 			if (favorite != null) {
 				add(getImage());
 			}
@@ -50,7 +50,7 @@ public class FavoriteLink extends FavoriteBlock implements IWPageEventListener {
 		}
 
 		if (iwc.isParameterSet(PARAMETER_ADD_PAGE)) {
-			Object[] arguments = { currentName };
+			Object[] arguments = { this.currentName };
 			getParentPage().setAlertOnLoad(MessageFormat.format(getResourceBundle().getLocalizedString("added_page_to_favorites", "Added page {0} to your intranet favorites"), arguments));
 		}
 	}
@@ -59,13 +59,13 @@ public class FavoriteLink extends FavoriteBlock implements IWPageEventListener {
 		ICPage currentPage = null;
 		try {
 			currentPage = getBuilderService(iwc).getCurrentPage(iwc);
-			currentURL = getBuilderService(iwc).getCurrentPageURI(iwc);
+			this.currentURL = getBuilderService(iwc).getCurrentPageURI(iwc);
 		}
 		catch (RemoteException re) {
 			log(re);
 		}
-		currentName = currentPage.getName();
-		currentUser = iwc.getCurrentUser();
+		this.currentName = currentPage.getName();
+		this.currentUser = iwc.getCurrentUser();
 	}
 
 	private Image getImage() {
@@ -85,7 +85,7 @@ public class FavoriteLink extends FavoriteBlock implements IWPageEventListener {
 	public boolean actionPerformed(IWContext iwc) throws IWException {
 		try {
 			parse(iwc);
-			getBusiness(iwc).storeFavorite(currentUser, currentURL, currentName, getBusiness(iwc).getFavoriteTypeIntranet(), false);
+			getBusiness(iwc).storeFavorite(this.currentUser, this.currentURL, this.currentName, getBusiness(iwc).getFavoriteTypeIntranet(), false);
 			return true;
 		}
 		catch (RemoteException re) {

@@ -50,26 +50,26 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
 	public PresentationObject getDemo(ProductViewer productViewer, IWContext iwc) throws RemoteException {
 		String IMAGE_BUNDLE_IDENTIFIER = "com.idega.block.image";
 		Image image = iwc.getIWMainApplication().getBundle(IMAGE_BUNDLE_IDENTIFIER).getLocalizedImage("picture.gif", productViewer._locale);
-		_images.add(image);
+		this._images.add(image);
 
-		_description = TextFormatter.getLoremIpsumString(iwc);
+		this._description = TextFormatter.getLoremIpsumString(iwc);
 
 		return printViewer(productViewer, iwc);
 	}
 
 	public PresentationObject getViewer(ProductViewer productViewer, Product product, IWContext iwc) throws RemoteException {
-		_name = product.getProductName(productViewer._localeId);
-		_description = product.getProductDescription(productViewer._localeId);
-		_description = TextSoap.formatText(_description);
-		_teaser = product.getProductTeaser(productViewer._localeId);
-		_teaser = TextSoap.formatText(_teaser);
-		_product = product;
-		_price = new ProductItemPrice(product);
-		_metadata = new ProductItemMetaData(product);
+		this._name = product.getProductName(productViewer._localeId);
+		this._description = product.getProductDescription(productViewer._localeId);
+		this._description = TextSoap.formatText(this._description);
+		this._teaser = product.getProductTeaser(productViewer._localeId);
+		this._teaser = TextSoap.formatText(this._teaser);
+		this._product = product;
+		this._price = new ProductItemPrice(product);
+		this._metadata = new ProductItemMetaData(product);
 		if (productViewer._priceFontStyle != null) {
-			_price.setFontStyle(productViewer._priceFontStyle);
+			this._price.setFontStyle(productViewer._priceFontStyle);
 		}
-		_price.setShowCurrency(productViewer._showCurrency);
+		this._price.setShowCurrency(productViewer._showCurrency);
 
 		try {
 			Collection coll = product.getICFile();
@@ -77,7 +77,7 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
 				Iterator iter = coll.iterator();
 				while (iter.hasNext()) {
 					ICFile item = (ICFile) iter.next();
-					_images.add(item);
+					this._images.add(item);
 				}
 			}
 			//      _images = EntityFinder.getInstance().findRelated(product, ICFile.class);
@@ -97,17 +97,19 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
 
 		Text header = productViewer.getHeaderText(this._name);
 		Text description = null;
-		if (productViewer._showTeaser)
+		if (productViewer._showTeaser) {
 			description = productViewer.getText(this._teaser);
-		else
+		}
+		else {
 			description = productViewer.getText(this._description);
+		}
 
 		int row = 1;
 
 		table.add(header, 1, row);
-		if (productViewer._showPrice && _price != null) {
+		if (productViewer._showPrice && this._price != null) {
 			table.add(productViewer.getText(" - ", false), 1, row);
-			table.add(_price, 1, row++);
+			table.add(this._price, 1, row++);
 		}
 		else {
 			row++;
@@ -128,12 +130,12 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
 			}
 		}
 
-		if (_product != null && productViewer._showImages) {
+		if (this._product != null && productViewer._showImages) {
 			Table imageTable = new Table(1, 1);
 			imageTable.setCellpadding(0);
 			imageTable.setCellspacing(0);
 			if (productViewer._showThumbnail) {
-				ProductItemThumbnail thumb = new ProductItemThumbnail(_product);
+				ProductItemThumbnail thumb = new ProductItemThumbnail(this._product);
 				if (productViewer._imageWidth != null) {
 					try {
 						thumb.setWidth(Integer.parseInt(productViewer._imageWidth));
@@ -146,7 +148,7 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
 				table.add(imageTable, 1, row);
 			}
 			else {
-				ProductItemImages pii = new ProductItemImages(_product);
+				ProductItemImages pii = new ProductItemImages(this._product);
 				pii.setVerticalView(true);
 				pii.setImageAlignment(Table.HORIZONTAL_ALIGN_CENTER);
 				if (productViewer._imageWidth != null) {
@@ -165,27 +167,30 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
 		table.add(description, 1, row);
 		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_LEFT);
 		
-		if (productViewer._showMetaData && _product != null) {
+		if (productViewer._showMetaData && this._product != null) {
 			table.setHeight(1, ++row, String.valueOf(productViewer._spaceBetween));
-			table.add(_metadata, 1, ++row);
+			table.add(this._metadata, 1, ++row);
 		}
 
-		if (productViewer._showProductLink && _product != null) {
+		if (productViewer._showProductLink && this._product != null) {
 			table.setHeight(1, ++row, String.valueOf(productViewer._spaceBetween));
 
 			Link link = new Link();
-			if (productViewer._productImage != null)
+			if (productViewer._productImage != null) {
 				link.setPresentationObject(productViewer._productImage);
-			else
+			}
+			else {
 				link.setText(this._name);
+			}
 
-			if (productViewer._productPage != null)
+			if (productViewer._productPage != null) {
 				link.setPage(productViewer._productPage);
-			link.addParameter(getProductBusiness(iwc).getProductIdParameter(), _product.getID());
+			}
+			link.addParameter(getProductBusiness(iwc).getProductIdParameter(), this._product.getID());
 
 			if (productViewer._addCategoryID) {
 				try {
-					List list = getProductBusiness(iwc).getProductCategories(_product);
+					List list = getProductBusiness(iwc).getProductCategories(this._product);
 					if (list != null) {
 						Iterator iter = list.iterator();
 						while (iter.hasNext()) {

@@ -143,8 +143,9 @@ public class BlogFinder {
 			for (int i = 0; i < len && i < maxNumberOfBlog; i++) {
 				BlogEntity blog = (BlogEntity) L.get(i);
 				BlogHelper nh = getBlogHelper(blog, iLocaleId);
-				if (nh != null)
+				if (nh != null) {
 					V.add(nh);
+				}
 			}
 			return V;
 		}
@@ -159,8 +160,10 @@ public class BlogFinder {
 			NH.setBlog(N);
 			NH.setContentHelper(ch);
 			return NH;
-		} else
+		}
+		else {
 			return null;
+		}
 	}
 
 	public static BlogHelper getBlogHelper(BlogEntity blog, int iLocaleId) {
@@ -171,8 +174,10 @@ public class BlogFinder {
 			NH.setBlog(N);
 			NH.setContentHelper(ch);
 			return NH;
-		} else
+		}
+		else {
 			return null;
+		}
 	}
 
 	public static BlogHelper getBlogHelper(int iBlogEntityId) {
@@ -198,8 +203,9 @@ public class BlogFinder {
 
 	public static Locale getLocale(int iLocaleId) {
 		Locale L = ICLocaleBusiness.getLocale(iLocaleId);
-		if (L == null)
+		if (L == null) {
 			L = new Locale("is", "IS");
+		}
 		return L;
 	}
 

@@ -58,7 +58,7 @@ public class MessageDialog extends Frame implements ActionListener{
     try {
       this.logo = imageLogo;
       jbInit();
-      add(panel);
+      add(this.panel);
       pack();
     }
     catch(Exception ex) {
@@ -67,28 +67,28 @@ public class MessageDialog extends Frame implements ActionListener{
   }
 
   void jbInit() throws Exception {
-    recipientName = message.getRecipientName();
-    panel.setBackground(Color.white);
-    panel.setFont(new java.awt.Font("Arial", 0, 12));
-    panel.setLayout(null);
+    this.recipientName = this.message.getRecipientName();
+    this.panel.setBackground(Color.white);
+    this.panel.setFont(new java.awt.Font("Arial", 0, 12));
+    this.panel.setLayout(null);
     //panel.setSize(330,270);
-    senderNameLabel.setFont(new java.awt.Font("Arial", Font.PLAIN, 12));
-    senderNameLabel.setForeground(Color.darkGray);
-    senderNameLabel.setText(message.getSenderName());
+    this.senderNameLabel.setFont(new java.awt.Font("Arial", Font.PLAIN, 12));
+    this.senderNameLabel.setForeground(Color.darkGray);
+    this.senderNameLabel.setText(this.message.getSenderName());
 
-    senderNameLabel.setBounds(new Rectangle(6, 59, 365, 20));
-    messageArea.setEditable(false);
-    messageArea.setBounds(new Rectangle(6, 81, 277, 123));
-    messageArea.setFont(new java.awt.Font("Arial", Font.PLAIN, 12));
-    messageArea.setBackground(Color.white);
-    messageArea.setForeground(Color.blue);
+    this.senderNameLabel.setBounds(new Rectangle(6, 59, 365, 20));
+    this.messageArea.setEditable(false);
+    this.messageArea.setBounds(new Rectangle(6, 81, 277, 123));
+    this.messageArea.setFont(new java.awt.Font("Arial", Font.PLAIN, 12));
+    this.messageArea.setBackground(Color.white);
+    this.messageArea.setForeground(Color.blue);
 
 
 
-    replyMessage.requestFocus();
-    replyMessage.setBounds(new Rectangle(6, 217, 278, 29));
-    replyMessage.addActionListener(this);
-    replyMessage.setFont(new java.awt.Font("Arial", Font.PLAIN, 14));
+    this.replyMessage.requestFocus();
+    this.replyMessage.setBounds(new Rectangle(6, 217, 278, 29));
+    this.replyMessage.addActionListener(this);
+    this.replyMessage.setFont(new java.awt.Font("Arial", Font.PLAIN, 14));
     /*sendButton.setActionCommand("send");
     sendButton.setFont(new java.awt.Font("Arial", Font.PLAIN, 12));
     sendButton.setLabel("Send");
@@ -96,21 +96,21 @@ public class MessageDialog extends Frame implements ActionListener{
     sendButton.addActionListener(this);*/
 
 
-    if( logo!=null ) {
-      logo.setBounds(new Rectangle(6, 0, 126, 52));
-      panel.add(logo, null);
+    if( this.logo!=null ) {
+      this.logo.setBounds(new Rectangle(6, 0, 126, 52));
+      this.panel.add(this.logo, null);
     }
 
 
-    panel.add(replyMessage, null);
-    panel.add(messageArea, null);
-    panel.add(senderNameLabel, null);
+    this.panel.add(this.replyMessage, null);
+    this.panel.add(this.messageArea, null);
+    this.panel.add(this.senderNameLabel, null);
 
-    senderNameLabel.setFont(new java.awt.Font("Arial", Font.PLAIN, 12));
-    senderNameLabel.setForeground(Color.darkGray);
-    status.setBounds(new Rectangle(6, 260, 365, 20));
+    this.senderNameLabel.setFont(new java.awt.Font("Arial", Font.PLAIN, 12));
+    this.senderNameLabel.setForeground(Color.darkGray);
+    this.status.setBounds(new Rectangle(6, 260, 365, 20));
 
-    panel.add(status,null);
+    this.panel.add(this.status,null);
 
   }
   protected void processWindowEvent(WindowEvent e) {
@@ -124,25 +124,29 @@ public class MessageDialog extends Frame implements ActionListener{
 
   public void actionPerformed(ActionEvent e) {
     //if( (e.getActionCommand().equalsIgnoreCase("send")) || (e.getID() == Event.KEY_PRESS) ){
-      lastMessageString = replyMessage.getText();
-      if( !("".equalsIgnoreCase(lastMessageString)) ){
-        messageArea.append(recipientName+" says:\n");
-        messageArea.append("   "+lastMessageString+"\n");
+      this.lastMessageString = this.replyMessage.getText();
+      if( !("".equalsIgnoreCase(this.lastMessageString)) ){
+        this.messageArea.append(this.recipientName+" says:\n");
+        this.messageArea.append("   "+this.lastMessageString+"\n");
         storeMessageString();
-        replyMessage.requestFocus();
+        this.replyMessage.requestFocus();
 
-        if( listener!=null ) listener.actionPerformed(new ActionEvent(this,ActionEvent.ACTION_PERFORMED,"iw-send"));
+        if( this.listener!=null ) {
+			this.listener.actionPerformed(new ActionEvent(this,ActionEvent.ACTION_PERFORMED,"iw-send"));
+		}
 
         }
   }
 
   public void addMessage(Message msg){
     this.message = msg;
-    senderNameLabel.setText(message.getSenderName()+" - instant message");
+    this.senderNameLabel.setText(this.message.getSenderName()+" - instant message");
 
-    messageArea.append(message.getSenderName()+" says:\n");
-    messageArea.append("   "+message.getMessage()+"\n");
-    if(alertSound!=null) alertSound.play();
+    this.messageArea.append(this.message.getSenderName()+" says:\n");
+    this.messageArea.append("   "+this.message.getMessage()+"\n");
+    if(this.alertSound!=null) {
+		this.alertSound.play();
+	}
         //setStatus("Last message received at "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds());
         repaint();
 
@@ -150,38 +154,40 @@ public class MessageDialog extends Frame implements ActionListener{
   }
 
   public Vector getMessages(){
-     return messageVector;
+     return this.messageVector;
   }
 
   public void clearMessageVector(){
-    messageVector = null;
+    this.messageVector = null;
   }
 
   private void storeMessageString(){
-    if( messageVector == null ) messageVector = new Vector();
+    if( this.messageVector == null ) {
+		this.messageVector = new Vector();
+	}
     Message msg = new Message();
-    msg.setMessage(lastMessageString);
-    msg.setRecipient(message.getSender());
-    System.out.println("MessageDialog :  message.getSender() : "+message.getSender());
+    msg.setMessage(this.lastMessageString);
+    msg.setRecipient(this.message.getSender());
+    System.out.println("MessageDialog :  message.getSender() : "+this.message.getSender());
 
-    if( (message!=null) && (message.getId()!=0) ){
-      msg.setId(message.getId());
+    if( (this.message!=null) && (this.message.getId()!=0) ){
+      msg.setId(this.message.getId());
     }
     else{
       msg.setId(this.hashCode());
     }
 
-    messageVector.addElement( msg );
-    replyMessage.setText("");
-    lastMessageString = "";
+    this.messageVector.addElement( msg );
+    this.replyMessage.setText("");
+    this.lastMessageString = "";
   }
 
   public void setStatus(String text){
-    status.setFont(new java.awt.Font("Arial", Font.PLAIN, 12));
-    status.setForeground(Color.darkGray);
+    this.status.setFont(new java.awt.Font("Arial", Font.PLAIN, 12));
+    this.status.setForeground(Color.darkGray);
 
-    status.setText(text);
-    status.repaint();
+    this.status.setText(text);
+    this.status.repaint();
   }
 
   public void setLogoImage(Image image){
@@ -201,23 +207,23 @@ public class MessageDialog extends Frame implements ActionListener{
   public void paint(Graphics g){
     int iWidth = this.getBounds().width-20;
     int iHeight = this.getBounds().height-(184);
-    messageArea.setBounds(6, 82,iWidth,iHeight);
-    replyMessage.setBounds(6, messageArea.getBounds().height + 105 ,iWidth,29);
-    status.setBounds(6, replyMessage.getBounds().y + 23 ,iWidth,15);
+    this.messageArea.setBounds(6, 82,iWidth,iHeight);
+    this.replyMessage.setBounds(6, this.messageArea.getBounds().height + 105 ,iWidth,29);
+    this.status.setBounds(6, this.replyMessage.getBounds().y + 23 ,iWidth,15);
 
     super.paint(g);
   }
 
   public void addActionListener(ActionListener l) {
-      listener = AWTEventMulticaster.add(listener, l);
+      this.listener = AWTEventMulticaster.add(this.listener, l);
   }
 
   public void removeActionListener(ActionListener l) {
-      listener = AWTEventMulticaster.remove(listener, l);
+      this.listener = AWTEventMulticaster.remove(this.listener, l);
   }
 
   private ActionListener getActionListener(){
-    return listener;
+    return this.listener;
   }
 
 }

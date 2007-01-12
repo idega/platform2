@@ -23,32 +23,32 @@ public class Filter extends PresentationObjectContainer {
 	
 	public void _main(IWContext iwc) throws Exception {
 		if(!iwc.isInEditMode()) { // always show block if were editing in the builder
-			if(_showOnUserLoged!=null) {
+			if(this._showOnUserLoged!=null) {
 				boolean isLogedOn = iwc.isLoggedOn();
-				if(_showOnUserLoged.booleanValue()) {
-					_show = isLogedOn;
+				if(this._showOnUserLoged.booleanValue()) {
+					this._show = isLogedOn;
 				} else {
-					_show = !isLogedOn;
+					this._show = !isLogedOn;
 				}
-				System.out.println("show set to " + _show + ", logedOn is " + isLogedOn);
+				System.out.println("show set to " + this._show + ", logedOn is " + isLogedOn);
 			}
-			if(_show) { // if it has already been decided to hide block, it must be hidden
-				if(_showParameter!=null) {
-					String param = iwc.getParameter(_showParameter);
+			if(this._show) { // if it has already been decided to hide block, it must be hidden
+				if(this._showParameter!=null) {
+					String param = iwc.getParameter(this._showParameter);
 					if(param!=null) {
-						_show = "true".equals(param);
-						System.out.println("show set to " + _show + " because show parameter was " + param);
+						this._show = "true".equals(param);
+						System.out.println("show set to " + this._show + " because show parameter was " + param);
 					}
 				}
 			}
 		}
-		if(_show) {
+		if(this._show) {
 			super._main(iwc);
 		}
 	}
 	
 	public void _print(IWContext iwc) throws Exception {
-		if(_show) {
+		if(this._show) {
 			System.out.println("showing contained block");
 			super._print(iwc);
 		} else {
@@ -57,11 +57,11 @@ public class Filter extends PresentationObjectContainer {
 	}
 	
 	public void setShowOnUserLoged(boolean value) {
-		_showOnUserLoged = Boolean.valueOf(value);
+		this._showOnUserLoged = Boolean.valueOf(value);
 	}
 	
 	public void setShowParameter(String value) {
-		_showParameter = value;
+		this._showParameter = value;
 	}
 
 }

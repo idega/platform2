@@ -25,19 +25,19 @@ public abstract class PresentableData {
 	private HashMap _data = new HashMap();
 	
 	public PresentableData(ICLocale locale){
-		_locale = locale;
+		this._locale = locale;
 	}
 	
 	protected void setData(String key, String data){
 		if(data!=null){
-			_data.put(key,data);
+			this._data.put(key,data);
 		} else {
 			System.out.println("[Warning!]: trying to set null data in GenericEntry");
 		}
 	}
 	
 	protected String getData(String key){
-		return (String)_data.get(key);
+		return (String)this._data.get(key);
 	}
 	
 	public abstract void load(IDOEntity entry);
@@ -48,7 +48,7 @@ public abstract class PresentableData {
 	public abstract Object getPrimaryKey();
 	
 	public ICLocale getLocale(){
-		return _locale;
+		return this._locale;
 	}
 
 }

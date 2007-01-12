@@ -136,8 +136,9 @@ public class ContractCategoryBMPBean
 						((ContractCategoryHome) IDOLookup.getHome(ContractCategory.class)).findByPrimaryKey(
 							new Integer(iCategoryId));
 				}
-				else
+				else {
 					cat = ((ContractCategoryHome) IDOLookup.getHome(ContractCategory.class)).create();
+				}
 				cat.setName(Name);
 				cat.setDescription(info);
 				cat.store();

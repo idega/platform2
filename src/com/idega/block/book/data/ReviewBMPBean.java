@@ -11,7 +11,7 @@ import com.idega.data.GenericEntity;
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:      idega.is
- * @author <a href="mailto:laddi@idega.is">Þórhallur Helgason</a>
+ * @author <a href="mailto:laddi@idega.is">ï¿½ï¿½rhallur Helgason</a>
  * @version 1.0
  */
 
@@ -82,18 +82,18 @@ public class ReviewBMPBean extends GenericEntity implements Review {
   }
 
   public Collection ejbFindAllReviewsForBook(int bookID)throws FinderException{
-    return super.idoFindIDsBySQL("select * from "+this.getEntityTableName()+" where "+getColumnBookID()+" = "+String.valueOf(bookID)+" order by "+getColumnDate()+" desc");
+    return super.idoFindIDsBySQL("select * from "+ReviewBMPBean.getEntityTableName()+" where "+getColumnBookID()+" = "+String.valueOf(bookID)+" order by "+getColumnDate()+" desc");
   }
 
   public Collection ejbFindNewestReviewForBook(int bookID)throws FinderException{
-    return super.idoFindIDsBySQL("select * from "+this.getEntityTableName()+" where "+getColumnBookID()+" = "+String.valueOf(bookID)+" order by +"+getColumnDate()+" desc",1);
+    return super.idoFindIDsBySQL("select * from "+ReviewBMPBean.getEntityTableName()+" where "+getColumnBookID()+" = "+String.valueOf(bookID)+" order by +"+getColumnDate()+" desc",1);
   }
 
   public int ejbHomeGetNumberOfReviews(int bookID) throws javax.ejb.EJBException,IDOException {
-    return super.idoGetNumberOfRecords("select count(*) from "+this.getEntityTableName()+" where "+getColumnBookID()+" = "+String.valueOf(bookID));
+    return super.idoGetNumberOfRecords("select count(*) from "+ReviewBMPBean.getEntityTableName()+" where "+getColumnBookID()+" = "+String.valueOf(bookID));
   }
 
   public int ejbHomeGetRatingTotal(int bookID) throws javax.ejb.EJBException,IDOException {
-    return super.idoGetNumberOfRecords("select sum("+getColumnRating()+") from "+this.getEntityTableName()+" where "+getColumnBookID()+" = "+String.valueOf(bookID));
+    return super.idoGetNumberOfRecords("select sum("+getColumnRating()+") from "+ReviewBMPBean.getEntityTableName()+" where "+getColumnBookID()+" = "+String.valueOf(bookID));
   }
 }

@@ -70,7 +70,7 @@ public class BuildingCacher {
 		  hComplexes = new Hashtable(len);
 		 for (Iterator iter = Complexes.iterator(); iter.hasNext();) {
 			Complex C = (Complex) iter.next();
-		    hComplexes.put((Integer)(C.getPrimaryKey()),C);
+		    hComplexes.put((C.getPrimaryKey()),C);
 		  }
 		}
 		if(Buildings != null){
@@ -78,7 +78,7 @@ public class BuildingCacher {
 		  hBuildings = new Hashtable(len);
 		  for (Iterator iter = Buildings.iterator(); iter.hasNext();) {
 		    Building C = (Building)iter.next();
-		    hBuildings.put((Integer)(C.getPrimaryKey()),C);
+		    hBuildings.put((C.getPrimaryKey()),C);
 		  }
 		}
 		if(Floors != null){
@@ -86,7 +86,7 @@ public class BuildingCacher {
 		  hFloors = new Hashtable(len);
 		  for (Iterator iter = Floors.iterator(); iter.hasNext();) {
 		    Floor C = (Floor)iter.next();
-		    hFloors.put((Integer)(C.getPrimaryKey()),C);
+		    hFloors.put((C.getPrimaryKey()),C);
 		  }
 		}
 		if(Categories != null){
@@ -94,7 +94,7 @@ public class BuildingCacher {
 		  hCategories = new Hashtable(len);
 		  for (Iterator iter = Categories.iterator(); iter.hasNext();) {
 		    ApartmentCategory C = (ApartmentCategory)iter.next();
-		    hCategories.put((Integer)(C.getPrimaryKey()),C);
+		    hCategories.put((C.getPrimaryKey()),C);
 		  }
 		}
 		if(Types != null){
@@ -102,7 +102,7 @@ public class BuildingCacher {
 		  hTypes = new Hashtable(len);
 		  for (Iterator iter = Types.iterator(); iter.hasNext();) {
 		    ApartmentType C = (ApartmentType) iter.next();
-		    hTypes.put((Integer)(C.getPrimaryKey()),C);
+		    hTypes.put((C.getPrimaryKey()),C);
 		  }
 		}
 		if(Apartments != null){
@@ -110,7 +110,7 @@ public class BuildingCacher {
 		  hApartments = new Hashtable(len);
 		  for (Iterator iter = Apartments.iterator(); iter.hasNext();) {
 		    Apartment C = (Apartment) iter.next();
-		    hApartments.put((Integer)(C.getPrimaryKey()),C);
+		    hApartments.put((C.getPrimaryKey()),C);
 		  }
 		}
 	} catch (IDOLookupException e) {

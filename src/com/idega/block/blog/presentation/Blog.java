@@ -154,7 +154,7 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 	public Blog() {
 		//setCacheable(getCacheKey(), 999999999); //cache indefinately
 		init();
-		showAll = true;
+		this.showAll = true;
 	}
 
 	public Blog(int iCategoryId) {
@@ -177,10 +177,10 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 	}
 
 	private void init() {
-		headlineProxy.setBold();
-		informationProxy.setFontColor("#666666");
-		textProxy.setFontSize(1);
-		informationProxy.setFontSize(1);
+		this.headlineProxy.setBold();
+		this.informationProxy.setFontColor("#666666");
+		this.textProxy.setFontSize(1);
+		this.informationProxy.setFontSize(1);
 	}
 
 	private void checkCategories() {
@@ -189,10 +189,12 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 
 	/** @todo take out when instanceId handler is used */
 	private String getInstanceIDString(IWContext iwc) {
-		if (viewPageId > 0 || iwc.isParameterSet(prmFromPage))
+		if (this.viewPageId > 0 || iwc.isParameterSet(prmFromPage)) {
 			return "";
-		else
+		}
+		else {
 			return String.valueOf(getICObjectInstanceID());
+		}
 	}
 
 	private Parameter getFromPageParameter() {
@@ -200,44 +202,52 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 	}
 
 	private void checkFromPage(Link link) {
-		if (viewPageId > 0)
+		if (this.viewPageId > 0) {
 			link.addParameter(getFromPageParameter());
+		}
 	}
 
 	private void control(IWContext iwc) throws Exception {
 
-		if (moreImage == null)
-			moreImage = iwrb.getImage("more.gif");
-		if (backImage == null)
-			backImage = iwrb.getImage("back.gif");
-		if (collectionImage == null)
-			collectionImage = iwrb.getImage("collection.gif");
+		if (this.moreImage == null) {
+			this.moreImage = this.iwrb.getImage("more.gif");
+		}
+		if (this.backImage == null) {
+			this.backImage = this.iwrb.getImage("back.gif");
+		}
+		if (this.collectionImage == null) {
+			this.collectionImage = this.iwrb.getImage("collection.gif");
+		}
 
 		Locale locale = iwc.getCurrentLocale();
 		String sBlogId = null;
-		if (viewBlog)
+		if (this.viewBlog) {
 			sBlogId = iwc.getParameter(prmMore + getInstanceIDString(iwc));
+		}
 		InformationFolder blogCategory = null;
 		String prm = prmListCategory + getInstanceIDString(iwc);
 		boolean info = false;
 		if (iwc.isParameterSet(prm)) {
-			if (iwc.getParameter(prm).equalsIgnoreCase("true"))
+			if (iwc.getParameter(prm).equalsIgnoreCase("true")) {
 				info = true;
-			else
+			}
+			else {
 				info = false;
+			}
 		}
 
-		if (iCategoryId <= 0) {
+		if (this.iCategoryId <= 0) {
 			String sCategoryId = iwc.getParameter(prmBlogCategoryId);
-			if (sCategoryId != null)
-				iCategoryId = Integer.parseInt(sCategoryId);
+			if (sCategoryId != null) {
+				this.iCategoryId = Integer.parseInt(sCategoryId);
+			}
 			else {
 				//if(getICObjectInstanceID() > 0){
 				//		  iCategoryId =
 				// BlogFinder.getObjectInstanceCategoryId(getICObjectInstanceID(),true);
-				iCategoryId = this.getWorkFolder().getID();
-				if (iCategoryId <= 0) {
-					newobjinst = true;
+				this.iCategoryId = this.getWorkFolder().getID();
+				if (this.iCategoryId <= 0) {
+					this.newobjinst = true;
 				}
 			}
 		}
@@ -245,10 +255,10 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 		T.setCellpadding(0);
 		T.setCellpadding(0);
 		T.setWidth("100%");
-		if (hasEdit || hasAdd || hasInfo) {
-			T.add(getAdminPart(iCategoryId, false, newobjinst, info, iwc), 1, 1);
+		if (this.hasEdit || this.hasAdd || this.hasInfo) {
+			T.add(getAdminPart(this.iCategoryId, false, this.newobjinst, info, iwc), 1, 1);
 		}
-		if (iCategoryId > 0) {
+		if (this.iCategoryId > 0) {
 			blogCategory = this.getWorkFolder(); //CategoryFinder.getInstance().getCategory(iCategoryId);
 			if (blogCategory != null) {
 				if (sBlogId != null) {
@@ -263,7 +273,7 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 				}
 			}
 		} else {
-			T.add(new Text(iwrb.getLocalizedString("no_blog_category", "No blog category")));
+			T.add(new Text(this.iwrb.getLocalizedString("no_blog_category", "No blog category")));
 		}
 		super.add(T);
 	}
@@ -276,7 +286,7 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 
 		IWBundle core = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
 		if (iWorkFolderId > 0) {
-			if (hasEdit || hasAdd || hasInfo) {				
+			if (this.hasEdit || this.hasAdd || this.hasInfo) {				
 				Link ne = new Link(core.getImage("/shared/create.gif"));
 				ne.addParameter(Blog.PRM_MODE, Blog.MODE_EDIT);
 				//ne.setWindowToOpen(BlogEditorWindow.class,"570","620",true,true);
@@ -287,23 +297,25 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 				T.add(ne, 1, 1);
 			}
 			//T.add(T.getTransparentCell(iwc),1,1);
-			if (hasEdit || hasInfo) {
-				Link list = new Link(iwb.getImage("/shared/info.gif"));
+			if (this.hasEdit || this.hasInfo) {
+				Link list = new Link(this.iwb.getImage("/shared/info.gif"));
 				checkFromPage(list);
-				if (!info)
+				if (!info) {
 					list.addParameter(prmListCategory + getInstanceIDString(iwc), "true");
-				else
+				}
+				else {
 					list.addParameter(prmListCategory + getInstanceIDString(iwc), "false");
+				}
 				T.add(list, 1, 1);
 			}
 
-			if (hasEdit) {
+			if (this.hasEdit) {
 				Link change = getCategoryLink();
 				change.setImage(core.getImage("/shared/detach.gif"));
 				T.add(change, 1, 1);
 			}
 
-			if (hasEdit && enableDelete) {
+			if (this.hasEdit && enableDelete) {
 				T.add(T.getTransparentCell(iwc), 1, 1);
 				Link delete = new Link(core.getImage("/shared/delete.gif"));
 				delete.setWindowToOpen(BlogEditorWindow.class);
@@ -311,7 +323,7 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 				T.add(delete, 3, 1);
 			}
 		}
-		if (hasEdit && newObjInst) {
+		if (this.hasEdit && newObjInst) {
 			Link newLink = getCategoryLink();
 			newLink.setImage(core.getImage("/shared/detach.gif"));
 			//Link newLink = new Link(core.getImage("/shared/create.gif"));
@@ -352,7 +364,7 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 		ContentHelper contentHelper = blogHelper.getContentHelper();
 		BlogEntity blog = blogHelper.getBlogEntity();
 		LocalizedText locText = contentHelper.getLocalizedText(locale);
-		Text blogInfo = getInfoText(blog, blogHelper.getContentHelper().getContent(), locale, showOnlyDates, showTime, showTimeFirst, showUpdatedDate);
+		Text blogInfo = getInfoText(blog, blogHelper.getContentHelper().getContent(), locale, this.showOnlyDates, this.showTime, this.showTimeFirst, this.showUpdatedDate);
 
 		String sBlogBody = "";
 		String sHeadline = "";
@@ -370,12 +382,12 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 			fileCount = files.size();
 		}
 
-		Text hLetters = formatText(iwrb.getLocalizedString("letters", "Letters") + " : ", true);
-		Text hFiles = formatText(iwrb.getLocalizedString("files", "Files") + " : ", true);
-		Text hFrom = formatText(iwrb.getLocalizedString("publish_from", "Publish from") + " : ", true);
-		Text hTo = formatText(iwrb.getLocalizedString("publish_to", "Publish to") + " : ", true);
-		Text hCreated = formatText(iwrb.getLocalizedString("created", "Created") + " : ", true);
-		Text hUpdated = formatText(iwrb.getLocalizedString("updated", "Updated") + " : ", true);
+		Text hLetters = formatText(this.iwrb.getLocalizedString("letters", "Letters") + " : ", true);
+		Text hFiles = formatText(this.iwrb.getLocalizedString("files", "Files") + " : ", true);
+		Text hFrom = formatText(this.iwrb.getLocalizedString("publish_from", "Publish from") + " : ", true);
+		Text hTo = formatText(this.iwrb.getLocalizedString("publish_to", "Publish to") + " : ", true);
+		Text hCreated = formatText(this.iwrb.getLocalizedString("created", "Created") + " : ", true);
+		Text hUpdated = formatText(this.iwrb.getLocalizedString("updated", "Updated") + " : ", true);
 		Text tLetters = formatText(String.valueOf(letterCount), false);
 		Text tFiles = formatText(String.valueOf(fileCount), false);
 
@@ -407,8 +419,9 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 		}
 
 		Text headLine = new Text(sHeadline);
-		if (blogInfo != null)
+		if (blogInfo != null) {
 			blogInfo = setInformationAttributes(blogInfo);
+		}
 		headLine = setHeadlineAttributes(headLine);
 
 		Table infoTable = new Table();
@@ -426,25 +439,26 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 		infoTable.add(tUpdated, 6, 2);
 
 		int row = 1;
-		if (showInfo)
+		if (this.showInfo) {
 			T.add(blogInfo, 1, row++);
+		}
 		T.add(headLine, 1, row++);
 		T.add(infoTable, 1, row++);
 
-		T.setHeight(row++, String.valueOf(iSpaceBetweenBlogAndBody));
+		T.setHeight(row++, String.valueOf(this.iSpaceBetweenBlogAndBody));
 
-		if (showMoreButton) {
-			T.add(getMoreLink(moreImage, blog.getID(), iwc), 1, row);
+		if (this.showMoreButton) {
+			T.add(getMoreLink(this.moreImage, blog.getID(), iwc), 1, row);
 			T.add(Text.getNonBrakingSpace(), 1, row);
 		}
-		if (showMoreText) {
-			Text tMore = new Text(iwrb.getLocalizedString("more", "More"));
+		if (this.showMoreText) {
+			Text tMore = new Text(this.iwrb.getLocalizedString("more", "More"));
 			tMore = setMoreAttributes(tMore);
 			T.add(getMoreLink(tMore, blog.getID(), iwc), 1, row);
 		}
 		row++;
 		int ownerId = blogHelper.getContentHelper().getContent().getUserId();
-		if (hasEdit || (hasAdd && (ownerId == iwc.getUserId()))) {
+		if (this.hasEdit || (this.hasAdd && (ownerId == iwc.getUserId()))) {
 			T.add(getBlogAdminPart(blog, iwc), 1, row);
 		}
 		return T;
@@ -459,36 +473,37 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 
 	private PresentationObject publishBlog(IWContext iwc, Locale locale, boolean collection) {
 		List L = null;
-		if (iLayout == COLLECTION_LAYOUT || collection) {
-			L = BlogFinder.listOfAllBlogHelpersInCategory(getCategoryIds(), numberOfCollectionBlog, locale);
+		if (this.iLayout == COLLECTION_LAYOUT || collection) {
+			L = BlogFinder.listOfAllBlogHelpersInCategory(getCategoryIds(), this.numberOfCollectionBlog, locale);
 		} else {
-			L = BlogFinder.listOfBlogHelpersInCategory(getCategoryIds(), numberOfDisplayedBlog, locale);
+			L = BlogFinder.listOfBlogHelpersInCategory(getCategoryIds(), this.numberOfDisplayedBlog, locale);
 		}
-		BlogTable T = new BlogTable(BlogTable.BLOG_SITE_LAYOUT, cellPadding, cellSpacing, firstTableColor, secondTableColor);
+		BlogTable T = new BlogTable(BlogTable.BLOG_SITE_LAYOUT, this.cellPadding, this.cellSpacing, this.firstTableColor, this.secondTableColor);
 
 		//int count = BlogFinder.countBlogInCategory(blogCategory.getID());
 		//System.err.println(" blog count "+count);
-		boolean useDividedTable = iLayout == BLOG_SITE_LAYOUT ? true : false;
+		boolean useDividedTable = this.iLayout == BLOG_SITE_LAYOUT ? true : false;
 		if (L != null) {
 			int len = L.size();
 			Integer I;
 			BlogHelper blogHelper;
 			for (int i = 0; i < len; i++) {
-				if (numberOfExpandedBlog == i)
+				if (this.numberOfExpandedBlog == i) {
 					collection = true; // show the rest as collection
+				}
 				blogHelper = (BlogHelper) L.get(i);
 				I = new Integer(i);
-				if (objectsBetween != null && objectsBetween.containsKey(I)) {
+				if (this.objectsBetween != null && this.objectsBetween.containsKey(I)) {
 					Table t = new Table(1, 1);
 					t.setCellpadding(4);
-					t.add((PresentationObject) objectsBetween.get(I));
-					T.add(t, sObjectAlign);
-					objectsBetween.remove(I);
+					t.add((PresentationObject) this.objectsBetween.get(I));
+					T.add(t, this.sObjectAlign);
+					this.objectsBetween.remove(I);
 				}
 				T.add(getBlogTable(blogHelper, locale, false, collection, iwc), useDividedTable, "left");
 			}
 			// blog collection
-			if (showBlogCollectionButton) {
+			if (this.showBlogCollectionButton) {
 				if (!collection) {
 					// adds collectionButton only if one category bound to
 					// instance:
@@ -501,17 +516,17 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 				}
 			}
 			// Finish objectsbetween
-			if (objectsBetween != null && objectsBetween.size() > 0) {
-				Vector V = new Vector(objectsBetween.values());
+			if (this.objectsBetween != null && this.objectsBetween.size() > 0) {
+				Vector V = new Vector(this.objectsBetween.values());
 				Collections.reverse(V);
 				Iterator iter = V.iterator();
 				while (iter.hasNext()) {
-					T.add((PresentationObject) iter.next(), sObjectAlign);
+					T.add((PresentationObject) iter.next(), this.sObjectAlign);
 				}
 			}
 		} else {
-			if (hasEdit || hasInfo) {
-				T.add(new Text(iwrb.getLocalizedString("no_blog", "No Blog")));
+			if (this.hasEdit || this.hasInfo) {
+				T.add(new Text(this.iwrb.getLocalizedString("no_blog", "No Blog")));
 			}
 		}
 		return (T);
@@ -521,11 +536,11 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 		Table smallTable = new Table(1, 1);
 		smallTable.setCellpadding(0);
 		smallTable.setCellspacing(0);
-		if (collectionImage != null) {
-			smallTable.add(getCollectionLink(collectionImage, iCollectionCategoryId, iwc), 1, 1);
+		if (this.collectionImage != null) {
+			smallTable.add(getCollectionLink(this.collectionImage, iCollectionCategoryId, iwc), 1, 1);
 		}
-		if (showCollectionText) {
-			Text collText = new Text(iwrb.getLocalizedString("collection", "Collection"));
+		if (this.showCollectionText) {
+			Text collText = new Text(this.iwrb.getLocalizedString("collection", "Collection"));
 			collText = setInformationAttributes(collText);
 			smallTable.add(getCollectionLink(collText, iCollectionCategoryId, iwc), 1, 1);
 		}
@@ -536,12 +551,12 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 		Table smallTable = new Table(1, 1);
 		smallTable.setCellpadding(0);
 		smallTable.setCellspacing(0);
-		if (showBackButton) {
-			smallTable.add(getBackLink(backImage), 1, 1);
+		if (this.showBackButton) {
+			smallTable.add(getBackLink(this.backImage), 1, 1);
 			smallTable.add(Text.getNonBrakingSpace(), 1, 1);
 		}
-		if (showBackText) {
-			Text tBack = new Text(iwrb.getLocalizedString("back", "Back"));
+		if (this.showBackText) {
+			Text tBack = new Text(this.iwrb.getLocalizedString("back", "Back"));
 			tBack = setMoreAttributes(tBack);
 			smallTable.add(getBackLink(tBack), 1, 1);
 		}
@@ -554,8 +569,9 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 		checkFromPage(collectionLink);
 		collectionLink.addParameter(prmBlogCategoryId, iCategoryId);
 		collectionLink.addParameter(prmCollection + getInstanceIDString(iwc), "true");
-		if (viewPageId > 0)
-			collectionLink.setPage(viewPageId);
+		if (this.viewPageId > 0) {
+			collectionLink.setPage(this.viewPageId);
+		}
 		return collectionLink;
 	}
 
@@ -576,8 +592,9 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 		BlogEntity blog = blogHelper.getBlogEntity();
 		LocalizedText locText = contentHelper.getLocalizedText(locale);
 
-		if (iLayout == SINGLE_LINE_LAYOUT)
-			showOnlyDates = true;
+		if (this.iLayout == SINGLE_LINE_LAYOUT) {
+			this.showOnlyDates = true;
+		}
 
 		String sBlogBody = "";
 		String sHeadline = "";
@@ -591,22 +608,23 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 		}
 		// shortening headlinestext
 		boolean needMoreButton = collection;
-		if (!showAll && numberOfHeadlineLetters > -1 && sHeadline.length() >= numberOfHeadlineLetters) {
-			sHeadline = sHeadline.substring(0, numberOfHeadlineLetters) + "...";
+		if (!showAll && this.numberOfHeadlineLetters > -1 && sHeadline.length() >= this.numberOfHeadlineLetters) {
+			sHeadline = sHeadline.substring(0, this.numberOfHeadlineLetters) + "...";
 			needMoreButton = true;
 		}
 
 		Text headLine = new Text(sHeadline);
 		Text teaser = new Text(sTeaser);
 
-		Text blogInfo = getInfoText(blog, blogHelper.getContentHelper().getContent(), locale, showOnlyDates, showTime, showTimeFirst, showUpdatedDate);
-		if (blogInfo != null)
+		Text blogInfo = getInfoText(blog, blogHelper.getContentHelper().getContent(), locale, this.showOnlyDates, this.showTime, this.showTimeFirst, this.showUpdatedDate);
+		if (blogInfo != null) {
 			blogInfo = setInformationAttributes(blogInfo);
+		}
 		headLine = setHeadlineAttributes(headLine);
 		teaser = setTextAttributes(teaser);
 
 		// Check if using single_line_layout
-		if (iLayout != SINGLE_LINE_LAYOUT) {
+		if (this.iLayout != SINGLE_LINE_LAYOUT) {
 			if (blogInfo != null) {
 				T.add(blogInfo, 1, row);
 				row++;
@@ -614,26 +632,27 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 
 			//////// HEADLINE PART ////////////////
 
-			if (alignWithHeadline) {
-				if (headlineImage != null) {
-					headlineImage.setHorizontalSpacing(3);
-					T.add(getMoreLink(headlineImage, blog.getID(), iwc), 1, row);
+			if (this.alignWithHeadline) {
+				if (this.headlineImage != null) {
+					this.headlineImage.setHorizontalSpacing(3);
+					T.add(getMoreLink(this.headlineImage, blog.getID(), iwc), 1, row);
 				}
-				if (headlineImageURL != null)
-					T.add(getMoreLink(iwb.getImage(headlineImageURL), blog.getID(), iwc), 1, row);
+				if (this.headlineImageURL != null) {
+					T.add(getMoreLink(this.iwb.getImage(this.headlineImageURL), blog.getID(), iwc), 1, row);
+				}
 			}
 
-			if (headlineAsLink) {
+			if (this.headlineAsLink) {
 				T.add(getMoreLink(headLine, blog.getID(), iwc), 1, row);
 			} else {
 				T.add(headLine, 1, row);
 			}
 			row++;
-			T.setHeight(row, String.valueOf(iSpaceBetweenBlogAndBody));
+			T.setHeight(row, String.valueOf(this.iSpaceBetweenBlogAndBody));
 			row++;
 			/////////// BODY PART //////////
-			if (showTeaserText && sTeaser.length() > 0 && !showAll) {
-				if (showImages && showImagesInOverview) {
+			if (this.showTeaserText && sTeaser.length() > 0 && !showAll) {
+				if (this.showImages && this.showImagesInOverview) {
 					T.add(getBlogImage(blogHelper, sHeadline), 1, row);
 					//if (blog.getImageId()!= -1 && showImages &&
 					// blog.getIncludeImage()){
@@ -642,13 +661,13 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 				needMoreButton = true;
 			} else if (locText != null && !collection) {
 				// counting blog
-				blogCount++;
+				this.blogCount++;
 				sBlogBody = locText.getBody();
 				sBlogBody = sBlogBody == null ? "" : sBlogBody;
 
 				// shortening blogtext
-				if (!showAll && sBlogBody.length() >= numberOfLetters) {
-					sBlogBody = sBlogBody.substring(0, numberOfLetters) + "...";
+				if (!showAll && sBlogBody.length() >= this.numberOfLetters) {
+					sBlogBody = sBlogBody.substring(0, this.numberOfLetters) + "...";
 					needMoreButton = true;
 				}
 
@@ -658,13 +677,15 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 				blogBody = setTextAttributes(blogBody);
 
 				//////////// IMAGE PART ///////////
-				if (showImages) {
-					if (!showAll && showImagesInOverview)
+				if (this.showImages) {
+					if (!showAll && this.showImagesInOverview) {
 						T.add(getBlogImage(blogHelper, sHeadline), 1, row);
-					else if (showAll)
+					}
+					else if (showAll) {
 						T.add(getBlogImage(blogHelper, sHeadline), 1, row);
 					//if (blog.getImageId()!= -1 && showImages &&
 					// blog.getIncludeImage()){
+					}
 				}
 
 				T.add(blogBody, 1, row);
@@ -674,13 +695,13 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 			///////// BACK LINK ////////////////
 
 			if (showAll) {
-				T.setHeight(row++, String.valueOf(iSpaceBetweenBlogAndBody));
-				if (showBackButton) {
-					T.add(getBackLink(backImage), 1, row);
+				T.setHeight(row++, String.valueOf(this.iSpaceBetweenBlogAndBody));
+				if (this.showBackButton) {
+					T.add(getBackLink(this.backImage), 1, row);
 					T.add(Text.getNonBrakingSpace(), 1, row);
 				}
-				if (showBackText) {
-					Text tBack = new Text(iwrb.getLocalizedString("back", "Back"));
+				if (this.showBackText) {
+					Text tBack = new Text(this.iwrb.getLocalizedString("back", "Back"));
 					tBack = setMoreAttributes(tBack);
 					T.add(getBackLink(tBack), 1, row);
 				}
@@ -689,13 +710,13 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 			////////// MORE LINK ///////////////
 
 			if (!showAll && needMoreButton) {
-				T.setHeight(row++, String.valueOf(iSpaceBetweenBlogAndBody));
-				if (showMoreButton) {
-					T.add(getMoreLink(moreImage, blog.getID(), iwc), 1, row);
+				T.setHeight(row++, String.valueOf(this.iSpaceBetweenBlogAndBody));
+				if (this.showMoreButton) {
+					T.add(getMoreLink(this.moreImage, blog.getID(), iwc), 1, row);
 					T.add(Text.getNonBrakingSpace(), 1, row);
 				}
-				if (showMoreText) {
-					Text tMore = new Text(iwrb.getLocalizedString("more", "More"));
+				if (this.showMoreText) {
+					Text tMore = new Text(this.iwrb.getLocalizedString("more", "More"));
 					tMore = setMoreAttributes(tMore);
 					T.add(getMoreLink(tMore, blog.getID(), iwc), 1, row);
 				}
@@ -703,57 +724,59 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 
 			//////////// ADMIN PART /////////////////////
 			int ownerId = blogHelper.getContentHelper().getContent().getUserId();
-			if (hasEdit || (hasAdd && (ownerId == iwc.getUserId()))) {
+			if (this.hasEdit || (this.hasAdd && (ownerId == iwc.getUserId()))) {
 				T.add(getBlogAdminPart(blog, iwc), 1, row);
 			}
 			row++;
-			T.setHeight(row++, String.valueOf(iSpaceBetweenBlog));
+			T.setHeight(row++, String.valueOf(this.iSpaceBetweenBlog));
 		}
 		//////////// SINGLE LINE VIEW ///////////////
 		// if single line view
 		else {
 			int headlineCol = 3;
 			int dateCol = 1;
-			if (dateAlign.toLowerCase().equals("right")) {
+			if (this.dateAlign.toLowerCase().equals("right")) {
 				headlineCol = 1;
 				dateCol = 3;
 			}
 
-			if (alignWithHeadline) {
-				if (headlineImage != null) {
-					headlineImage.setHorizontalSpacing(3);
-					T.add(headlineImage, dateCol, 1);
+			if (this.alignWithHeadline) {
+				if (this.headlineImage != null) {
+					this.headlineImage.setHorizontalSpacing(3);
+					T.add(this.headlineImage, dateCol, 1);
 				}
-				if (headlineImageURL != null)
-					T.add(iwb.getImage(headlineImageURL), dateCol, 1);
+				if (this.headlineImageURL != null) {
+					T.add(this.iwb.getImage(this.headlineImageURL), dateCol, 1);
+				}
 			}
 
-			if (showInfo) {
+			if (this.showInfo) {
 				T.add(blogInfo, dateCol, 1);
 			}
-			if (spacerImage == null) {
-				spacerImage = T.getTransparentCell(iwc);
-				spacerImage.setWidth(iSpaceBetweenBlogAndBody);
-				spacerImage.setHeight(1);
+			if (this.spacerImage == null) {
+				this.spacerImage = T.getTransparentCell(iwc);
+				this.spacerImage.setWidth(this.iSpaceBetweenBlogAndBody);
+				this.spacerImage.setHeight(1);
 			}
 			T.setAlignment(headlineCol, 1, "left");
 			T.setAlignment(4, 1, "right");
 			T.setWidth(headlineCol, 1, "100%");
 			T.setWidth(dateCol, 1, "45");
-			T.add(spacerImage, 2, 1);
+			T.add(this.spacerImage, 2, 1);
 			//T.add(Text.getNonBrakingSpace(2),2,1);
-			if (headlineAsLink) {
+			if (this.headlineAsLink) {
 				Link headlineLink = new Link(headLine);
 				checkFromPage(headlineLink);
 				headlineLink.addParameter(prmMore + getInstanceIDString(iwc), blog.getID());
-				if (viewPageId > 0)
-					headlineLink.setPage(viewPageId);
+				if (this.viewPageId > 0) {
+					headlineLink.setPage(this.viewPageId);
+				}
 				T.add(headlineLink, headlineCol, 1);
 			} else {
 				T.add(headLine, headlineCol, 1);
 			}
 			int ownerId = blogHelper.getContentHelper().getContent().getUserId();
-			if (hasEdit || (hasAdd && (ownerId == iwc.getUserId()))) {
+			if (this.hasEdit || (this.hasAdd && (ownerId == iwc.getUserId()))) {
 				T.add(getBlogAdminPart(blog, iwc), 4, 1);
 			}
 		}
@@ -765,8 +788,9 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 		Link moreLink = new Link(obj);
 		checkFromPage(moreLink);
 		moreLink.addParameter(prmMore + getInstanceIDString(iwc), blogId);
-		if (viewPageId > 0)
-			moreLink.setPage(viewPageId);
+		if (this.viewPageId > 0) {
+			moreLink.setPage(this.viewPageId);
+		}
 		return moreLink;
 	}
 
@@ -778,12 +802,12 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 
 	private PresentationObject getBlogAdminPart(BlogEntity blog, IWContext iwc) {
 		Table links = new Table(3, 1);
-		Link blogEdit = new Link(iwb.getImage("/shared/edit.gif"));
+		Link blogEdit = new Link(this.iwb.getImage("/shared/edit.gif"));
 		blogEdit.setWindowToOpen(BlogEditorWindow.class);
 		blogEdit.addParameter(BlogEditorWindow.prmBlogEntityId, blog.getID());
 		blogEdit.addParameter(BlogEditorWindow.prmObjInstId, getICObjectInstanceID());
 
-		Link blogDelete = new Link(iwb.getImage("/shared/delete.gif"));
+		Link blogDelete = new Link(this.iwb.getImage("/shared/delete.gif"));
 		blogDelete.setWindowToOpen(BlogEditorWindow.class);
 		blogDelete.addParameter(BlogEditorWindow.prmDelete, blog.getID());
 
@@ -798,19 +822,21 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 	}
 
 	private Text getInfoText(BlogEntity bgBlog, Content content, Locale locale, boolean ifUseOnlyDates, boolean ifShowTime, boolean ifShowTimeFirst, boolean showUpdatedDate) {
-		if (showInfo)
+		if (this.showInfo) {
 			return new Text(BlogFormatter.getInfoText(bgBlog, content, "", locale, ifUseOnlyDates, ifShowTime, ifShowTimeFirst, showUpdatedDate));
-		else
+		}
+		else {
 			return null;
+		}
 	}
 
 	public void main(IWContext iwc) throws Exception {
-		hasEdit = iwc.hasEditPermission(this);
-		hasAdd = iwc.hasPermission(AddPermisson, this);
-		hasInfo = iwc.hasPermission(InfoPermission, this);
+		this.hasEdit = iwc.hasEditPermission(this);
+		this.hasAdd = iwc.hasPermission(AddPermisson, this);
+		this.hasInfo = iwc.hasPermission(InfoPermission, this);
 
-		iwb = getBundle(iwc);
-		iwrb = getResourceBundle(iwc);
+		this.iwb = getBundle(iwc);
+		this.iwrb = getResourceBundle(iwc);
 		
 		
 		String mode = iwc.getParameter(Blog.PRM_MODE);
@@ -849,16 +875,16 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 	 * texts.
 	 */
 	public Text getTextProxy() {
-		return textProxy;
+		return this.textProxy;
 	}
 	public Text getHeadlineProxy() {
-		return headlineProxy;
+		return this.headlineProxy;
 	}
 	public Text getInformationProxy() {
-		return informationProxy;
+		return this.informationProxy;
 	}
 	public Text getMoreProxy() {
-		return moreProxy;
+		return this.moreProxy;
 	}
 	public void setTextProxy(Text textProxy) {
 		this.textProxy = textProxy;
@@ -870,22 +896,22 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 		this.informationProxy = informationProxy;
 	}
 	private Text setTextAttributes(Text realText) {
-		Text tempText = (Text) textProxy.clone();
+		Text tempText = (Text) this.textProxy.clone();
 		tempText.setText(realText.getText());
 		return tempText;
 	}
 	private Text setHeadlineAttributes(Text realText) {
-		Text tempText = (Text) headlineProxy.clone();
+		Text tempText = (Text) this.headlineProxy.clone();
 		tempText.setText(realText.getText());
 		return tempText;
 	}
 	private Text setInformationAttributes(Text realText) {
-		Text tempText = (Text) informationProxy.clone();
+		Text tempText = (Text) this.informationProxy.clone();
 		tempText.setText(realText.getText());
 		return tempText;
 	}
 	private Text setMoreAttributes(Text realText) {
-		Text tempText = (Text) moreProxy.clone();
+		Text tempText = (Text) this.moreProxy.clone();
 		tempText.setText(realText.getText());
 		return tempText;
 	}
@@ -975,11 +1001,11 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 		this.outerTableWidth = width;
 	}
 	public void setBackgroundColor(String color) {
-		firstTableColor = color;
+		this.firstTableColor = color;
 	}
 	public void setZebraColored(String firstColor, String secondColor) {
-		firstTableColor = firstColor;
-		secondTableColor = secondColor;
+		this.firstTableColor = firstColor;
+		this.secondTableColor = secondColor;
 	}
 	public void setCellPadding(int cellpad) {
 		this.cellPadding = cellpad;
@@ -1036,11 +1062,11 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 	}
 
 	public void setFirstImageWidth(int imageWith) {
-		firstImageWidth = imageWith;
+		this.firstImageWidth = imageWith;
 	}
 
 	public void setImageWidth(int imagewidth) {
-		ImageWidth = imagewidth;
+		this.ImageWidth = imagewidth;
 	}
 
 	public void setCollectionImage(Image image) {
@@ -1058,11 +1084,11 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 	}
 
 	public void setViewPage(com.idega.core.builder.data.ICPage page) {
-		viewPageId = page.getID();
+		this.viewPageId = page.getID();
 	}
 
 	public void setShowTime(boolean showTime) {
-		this.showTime = showOnlyDates;
+		this.showTime = this.showOnlyDates;
 	}
 
 	public void setSpaceBetweenBlog(int pixels) {
@@ -1095,23 +1121,26 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 	}
 
 	public String getObjectAlignment() {
-		return sObjectAlign;
+		return this.sObjectAlign;
 	}
 	public void setObjectAligment(String sAlign) {
-		sObjectAlign = sAlign;
+		this.sObjectAlign = sAlign;
 	}
 	public void addObjectBetween(PresentationObject object, int spaceNumber) {
-		if (objectsBetween == null)
-			objectsBetween = new Hashtable();
-		objectsBetween.put(new Integer(spaceNumber), object);
+		if (this.objectsBetween == null) {
+			this.objectsBetween = new Hashtable();
+		}
+		this.objectsBetween.put(new Integer(spaceNumber), object);
 	}
 	// overriding super class method
 	public void add(PresentationObject MO) {
-		addObjectBetween(MO, iSpaceBetween);
-		if (iLayout == BLOG_SITE_LAYOUT) {
-			iSpaceBetween += 2;
-		} else
-			iSpaceBetween++;
+		addObjectBetween(MO, this.iSpaceBetween);
+		if (this.iLayout == BLOG_SITE_LAYOUT) {
+			this.iSpaceBetween += 2;
+		}
+		else {
+			this.iSpaceBetween++;
+		}
 	}
 
 	public synchronized Object clone() {
@@ -1120,65 +1149,73 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 			obj = (Blog) super.clone();
 
 			// integers :
-			obj.numberOfLetters = numberOfLetters;
-			obj.numberOfHeadlineLetters = numberOfHeadlineLetters;
-			obj.numberOfDisplayedBlog = numberOfDisplayedBlog;
-			obj.numberOfExpandedBlog = numberOfExpandedBlog;
-			obj.numberOfCollectionBlog = numberOfCollectionBlog;
-			obj.iSpaceBetween = iSpaceBetween;
-			obj.cellPadding = cellPadding;
-			obj.cellSpacing = cellSpacing;
-			obj.viewPageId = viewPageId;
-			obj.textSize = textSize;
+			obj.numberOfLetters = this.numberOfLetters;
+			obj.numberOfHeadlineLetters = this.numberOfHeadlineLetters;
+			obj.numberOfDisplayedBlog = this.numberOfDisplayedBlog;
+			obj.numberOfExpandedBlog = this.numberOfExpandedBlog;
+			obj.numberOfCollectionBlog = this.numberOfCollectionBlog;
+			obj.iSpaceBetween = this.iSpaceBetween;
+			obj.cellPadding = this.cellPadding;
+			obj.cellSpacing = this.cellSpacing;
+			obj.viewPageId = this.viewPageId;
+			obj.textSize = this.textSize;
 
 			// booleans:
-			obj.showBackButton = showBackButton;
-			obj.showAll = showAll;
-			obj.showImages = showImages;
-			obj.showOnlyDates = showOnlyDates;
-			obj.showTime = showTime;
-			obj.showInfo = showInfo;
-			obj.showTimeFirst = showTimeFirst;
-			obj.headlineAsLink = headlineAsLink;
-			obj.showHeadlineImage = showHeadlineImage;
-			obj.showMoreButton = showMoreButton;
-			obj.alignWithHeadline = alignWithHeadline;
-			obj.limitNumberOfBlog = limitNumberOfBlog;
-			obj.enableDelete = enableDelete;
-			obj.viewBlog = viewBlog;
-			obj.newobjinst = newobjinst;
-			obj.showBackText = showBackText;
-			obj.showMoreText = showMoreText;
-			obj.showTeaserText = showTeaserText;
+			obj.showBackButton = this.showBackButton;
+			obj.showAll = this.showAll;
+			obj.showImages = this.showImages;
+			obj.showOnlyDates = this.showOnlyDates;
+			obj.showTime = this.showTime;
+			obj.showInfo = this.showInfo;
+			obj.showTimeFirst = this.showTimeFirst;
+			obj.headlineAsLink = this.headlineAsLink;
+			obj.showHeadlineImage = this.showHeadlineImage;
+			obj.showMoreButton = this.showMoreButton;
+			obj.alignWithHeadline = this.alignWithHeadline;
+			obj.limitNumberOfBlog = this.limitNumberOfBlog;
+			obj.enableDelete = this.enableDelete;
+			obj.viewBlog = this.viewBlog;
+			obj.newobjinst = this.newobjinst;
+			obj.showBackText = this.showBackText;
+			obj.showMoreText = this.showMoreText;
+			obj.showTeaserText = this.showTeaserText;
 			// Strings :
-			obj.outerTableWidth = outerTableWidth;
-			obj.sObjectAlign = sObjectAlign;
-			obj.headlineImageURL = headlineImageURL;
-			obj.dateAlign = dateAlign;
+			obj.outerTableWidth = this.outerTableWidth;
+			obj.sObjectAlign = this.sObjectAlign;
+			obj.headlineImageURL = this.headlineImageURL;
+			obj.dateAlign = this.dateAlign;
 
-			if (headlineImage != null)
-				obj.headlineImage = headlineImage;
-			if (backImage != null)
-				obj.backImage = backImage;
-			if (moreImage != null)
-				obj.moreImage = moreImage;
-			if (collectionImage != null)
-				obj.collectionImage = collectionImage;
+			if (this.headlineImage != null) {
+				obj.headlineImage = this.headlineImage;
+			}
+			if (this.backImage != null) {
+				obj.backImage = this.backImage;
+			}
+			if (this.moreImage != null) {
+				obj.moreImage = this.moreImage;
+			}
+			if (this.collectionImage != null) {
+				obj.collectionImage = this.collectionImage;
+			}
 
 			// Nullable :
-			if (firstTableColor != null)
-				obj.firstTableColor = firstTableColor;
-			if (secondTableColor != null)
-				obj.secondTableColor = secondTableColor;
-			if (objectsBetween != null)
-				obj.objectsBetween = objectsBetween;
-			if (spacerImage != null)
-				obj.spacerImage = spacerImage;
+			if (this.firstTableColor != null) {
+				obj.firstTableColor = this.firstTableColor;
+			}
+			if (this.secondTableColor != null) {
+				obj.secondTableColor = this.secondTableColor;
+			}
+			if (this.objectsBetween != null) {
+				obj.objectsBetween = this.objectsBetween;
+			}
+			if (this.spacerImage != null) {
+				obj.spacerImage = this.spacerImage;
+			}
 
 			// Text proxies :
-			obj.textProxy = textProxy;
-			obj.headlineProxy = headlineProxy;
-			obj.informationProxy = informationProxy;
+			obj.textProxy = this.textProxy;
+			obj.headlineProxy = this.headlineProxy;
+			obj.informationProxy = this.informationProxy;
 
 		} catch (Exception ex) {
 			ex.printStackTrace(System.err);
@@ -1190,17 +1227,20 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 	protected String getCacheState(IWContext iwc, String cacheStatePrefix) {
 		String returnString = "";
 		String parName = prmMore + getInstanceIDString(iwc);
-		if (iwc.isParameterSet(parName))
+		if (iwc.isParameterSet(parName)) {
 			returnString += iwc.getParameter(parName);
+		}
 		parName = prmListCategory + getInstanceIDString(iwc);
-		if (iwc.isParameterSet(parName))
+		if (iwc.isParameterSet(parName)) {
 			returnString += parName + "=" + iwc.getParameter(parName);
+		}
 		parName = prmBlogCategoryId;
 		if (iwc.isParameterSet(parName)) {
 			returnString += parName + "=" + iwc.getParameter(parName);
 			parName = prmCollection + getInstanceIDString(iwc);
-			if (iwc.isParameterSet(parName))
+			if (iwc.isParameterSet(parName)) {
 				returnString += parName + "=" + iwc.getParameter(parName);
+			}
 		}
 		return cacheStatePrefix + returnString;
 	}
@@ -1215,26 +1255,30 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 				String att = imagefile.getMetaData(BlogEditorWindow.imageAttributeKey);
 
 				Image blogImage = new Image(imid);
-				if (att != null)
+				if (att != null) {
 					blogImage.addMarkupAttributes(getAttributeMap(att));
+				}
 				else {
 					blogImage.setAlignment("right");
-					blogImage.setBorder(ImageBorder);
+					blogImage.setBorder(this.ImageBorder);
 				}
 				// first blog
-				if (blogCount == 1) {
-					if (blogImage.getWidth() == null || blogImage.getWidth().length() == 0)
-						blogImage.setMaxImageWidth(ImageWidth);
+				if (this.blogCount == 1) {
+					if (blogImage.getWidth() == null || blogImage.getWidth().length() == 0) {
+						blogImage.setMaxImageWidth(this.ImageWidth);
+					}
 					return blogImage;
 				}
 				// other blog
 				else {
-					if (blogImage.getWidth() == null || blogImage.getWidth().length() == 0)
-						blogImage.setMaxImageWidth(ImageWidth);
+					if (blogImage.getWidth() == null || blogImage.getWidth().length() == 0) {
+						blogImage.setMaxImageWidth(this.ImageWidth);
+					}
 					Link L = new Link(blogImage);
 					L.addParameter(ImageWindow.prmImageId, imid);
-					if (addImageInfo)
+					if (this.addImageInfo) {
 						L.addParameter(ImageWindow.prmInfo, TextSoap.convertSpecialCharacters(headline));
+					}
 					L.setWindowToOpen(ImageWindow.class);
 					return L;
 				}
@@ -1248,7 +1292,7 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 	 * @param addImageInfo
 	 */
 	public void setShowImageInfo(boolean showImageInfo) {
-		addImageInfo = showImageInfo;
+		this.addImageInfo = showImageInfo;
 	}
 
 	/**

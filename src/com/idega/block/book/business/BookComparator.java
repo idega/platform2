@@ -33,11 +33,11 @@ public class BookComparator implements Comparator {
   }
 
   public BookComparator(int toSortBy) {
-    sortBy = toSortBy;
+    this.sortBy = toSortBy;
   }
 
   public void sortBy(int toSortBy) {
-    sortBy = toSortBy;
+    this.sortBy = toSortBy;
   }
 
   public int compare(Object o1, Object o2) {
@@ -167,12 +167,15 @@ public class BookComparator implements Comparator {
       year2 = 0;
     }
 
-    if ( year1 > year2 )
-      return 1;
-    else if ( year1 < year2 )
-      return -1;
-    else
-      return bookSort(p1,p2);
+    if ( year1 > year2 ) {
+		return 1;
+	}
+	else if ( year1 < year2 ) {
+		return -1;
+	}
+	else {
+		return bookSort(p1,p2);
+	}
   }
 
   public boolean equals(Object obj) {

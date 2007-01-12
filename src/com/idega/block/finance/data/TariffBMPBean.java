@@ -146,8 +146,9 @@ public class TariffBMPBean extends com.idega.data.GenericEntity implements com.i
     sql.append(getIDColumnName());
     sql.append(" in (");
     for (int i = 0; i < array.length; i++) {
-      if(i>0)
-        sql.append(",");
+      if(i>0) {
+		sql.append(",");
+	}
       sql.append(array[i]);
     }
     sql.append(")");

@@ -14,6 +14,7 @@ import com.idega.core.file.data.ICFile;
 import com.idega.core.file.data.ICFileHome;
 import com.idega.core.file.data.ICMimeTypeBMPBean;
 import com.idega.idegaweb.IWCacheManager;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -38,9 +39,9 @@ public class MediaTreeViewer extends Block {
   private IWResourceBundle iwrb;
 
   public void  main(IWContext iwc) throws Exception{
-    iwrb = getResourceBundle(iwc);
-    cm = iwc.getIWMainApplication().getIWCacheManager();
-    fileInSessionParameter = MediaBusiness.getMediaParameterNameInSession(iwc);
+    this.iwrb = getResourceBundle(iwc);
+    this.cm = IWMainApplication.getIWCacheManager();
+    this.fileInSessionParameter = MediaBusiness.getMediaParameterNameInSession(iwc);
 
     Table T = new Table(1,2);
     T.setWidth("100%");
@@ -49,13 +50,13 @@ public class MediaTreeViewer extends Block {
 
     Link proto = new Link(MediaViewerWindow.class);
     proto.setTarget(MediaConstants.TARGET_MEDIA_VIEWER);
-    ICFile publicRootNodeOld = (ICFile)cm.getCachedEntity(com.idega.core.file.data.ICFileBMPBean.IC_ROOT_FOLDER_CACHE_KEY);
+    ICFile publicRootNodeOld = (ICFile)this.cm.getCachedEntity(com.idega.core.file.data.ICFileBMPBean.IC_ROOT_FOLDER_CACHE_KEY);
 
 	if (publicRootNodeOld == null) {   
 	    //TODO Sigtryggur refactor the "update-cache" part out of the bundle starter
 	    MediaBundleStarter starter = new MediaBundleStarter();  		
 		starter.start(iwc.getIWMainApplication());
-		publicRootNodeOld = (ICFile)cm.getCachedEntity(com.idega.core.file.data.ICFileBMPBean.IC_ROOT_FOLDER_CACHE_KEY);
+		publicRootNodeOld = (ICFile)this.cm.getCachedEntity(com.idega.core.file.data.ICFileBMPBean.IC_ROOT_FOLDER_CACHE_KEY);
 	}
     ICFileTree tree = new ICFileTree();
     tree.getLocation().setApplicationClass(MediaTreeViewer.class);
@@ -100,9 +101,11 @@ public class MediaTreeViewer extends Block {
 
 
 	Iterator it = firstLevelNodes.iterator();
-	if(it!=null) tree.setFirstLevelNodes(it);
+	if(it!=null) {
+		tree.setFirstLevelNodes(it);
+	}
 
-    tree.setNodeActionParameter(fileInSessionParameter);
+    tree.setNodeActionParameter(this.fileInSessionParameter);
     tree.setFileLinkPrototype(proto);
 
     tree.setFolderLinkPrototype(proto);
@@ -137,7 +140,7 @@ public class MediaTreeViewer extends Block {
     Link L = new Link(file.getName(),MediaViewer.class);
     L.setFontSize(1);
     //L.setOnClick("top.iImageId = "+file.getID() );
-    L.addParameter(fileInSessionParameter,file.getPrimaryKey().toString());
+    L.addParameter(this.fileInSessionParameter,file.getPrimaryKey().toString());
 
     L.setTarget(target);
     return L;

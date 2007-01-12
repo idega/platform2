@@ -39,32 +39,40 @@ public class SchoolYearComparator implements Comparator {
 			returner = compareTypes(type1, type2);
 		}
 		
-		if (returner == 0)
+		if (returner == 0) {
 			returner = compareAge(schoolYear1.getSchoolYearAge(), schoolYear2.getSchoolYearAge());
-		if (returner == 0)
+		}
+		if (returner == 0) {
 			returner = Collator.getInstance().compare(schoolYear1.getSchoolYearName(), schoolYear2.getSchoolYearName());
+		}
 
 		return returner;
 	}
 	
 	public int compareOrder(int order1, int order2) {
-		if (order1 < order2)
+		if (order1 < order2) {
 			return -1;
-		else if (order1 > order2)
+		}
+		else if (order1 > order2) {
 			return 1;
-		else
+		}
+		else {
 			return 0;
+		}
 	}
 
 	public int compareTypes(SchoolType schoolType1, SchoolType schoolType2) {
 		int returner = 0;
 		if (schoolType1 == null || schoolType2 == null) {
-			if (schoolType1 == null && schoolType2 != null)
+			if (schoolType1 == null && schoolType2 != null) {
 				returner = 1;
-			else if (schoolType1 != null && schoolType2 == null)
+			}
+			else if (schoolType1 != null && schoolType2 == null) {
 				returner = -1;
-			else
+			}
+			else {
 				returner = 0;
+			}
 		}
 		else {
 			returner = compareOrder(schoolType1.getOrder(), schoolType2.getOrder());
@@ -72,12 +80,15 @@ public class SchoolYearComparator implements Comparator {
 				int typeID1 = ((Integer) schoolType1.getPrimaryKey()).intValue();
 				int typeID2 = ((Integer) schoolType2.getPrimaryKey()).intValue();
 	
-				if (typeID1 < typeID2)
+				if (typeID1 < typeID2) {
 					returner = -1;
-				else if (typeID1 > typeID2)
+				}
+				else if (typeID1 > typeID2) {
 					returner = 1;
-				else
+				}
+				else {
 					returner = 0;
+				}
 			}
 		}
 		
@@ -85,11 +96,14 @@ public class SchoolYearComparator implements Comparator {
 	}
 
 	public int compareAge(int age1, int age2) {
-		if (age1 < age2)
+		if (age1 < age2) {
 			return -1;
-		else if (age1 > age2)
+		}
+		else if (age1 > age2) {
 			return 1;
-		else
+		}
+		else {
 			return 0;
+		}
 	}
 }

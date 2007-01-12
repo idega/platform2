@@ -11,6 +11,7 @@ import com.idega.block.albumcollection.data.Lyric;
 import com.idega.block.albumcollection.data.Author;
 import com.idega.block.albumcollection.data.Track;
 import com.idega.data.EntityFinder;
+import com.idega.data.GenericEntity;
 import com.idega.util.text.TextSoap;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
@@ -24,7 +25,7 @@ import java.util.List;
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:      idega
- * @author <a href="gummi@idega.is">Guðmundur Ágúst Sæmundsson</a>
+ * @author <a href="gummi@idega.is">Guï¿½mundur ï¿½gï¿½st Sï¿½mundsson</a>
  * @version 1.0
  */
 
@@ -36,9 +37,9 @@ public class LyricViewer extends Block {
   private Text mainText;
 
   public LyricViewer() {
-    headingText = AlbumCollectionBusiness.getHeaderTextClone();
+    this.headingText = AlbumCollectionBusiness.getHeaderTextClone();
 
-    mainText = AlbumCollectionBusiness.getMainTextClone();
+    this.mainText = AlbumCollectionBusiness.getMainTextClone();
 
   }
 
@@ -77,10 +78,10 @@ public class LyricViewer extends Block {
     if(lyricId != null){
       Lyric lyric = AlbumCollectionBusiness.getLyric(Integer.parseInt(lyricId));
       if(lyric != null){
-        Text heading = (Text)headingText.clone();
+        Text heading = (Text)this.headingText.clone();
         heading.setText(lyric.getName());
 
-        Text text = (Text)mainText.clone();
+        Text text = (Text)this.mainText.clone();
         text.setText(TextSoap.formatString(lyric.getLyric()));
 
         contentTable.add(heading,1,1);
@@ -89,7 +90,7 @@ public class LyricViewer extends Block {
 		
 		// add authors - begins
 		contentTable.add(new Text(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE+"( "),1,1);
-        List T_authors = EntityFinder.findRelated(lyric,com.idega.block.albumcollection.data.AuthorBMPBean.getStaticInstance(Author.class));
+        List T_authors = EntityFinder.findRelated(lyric,GenericEntity.getStaticInstance(Author.class));
         if(T_authors != null){
           Iterator iter2 = T_authors.iterator();
           boolean f = false;
@@ -110,7 +111,7 @@ public class LyricViewer extends Block {
 		if(trackId != null){
 		  Track track = AlbumCollectionBusiness.getTrack(Integer.parseInt(trackId));
 		  if(track != null){
-			List songAuthors = EntityFinder.findRelated(track,com.idega.block.albumcollection.data.AuthorBMPBean.getStaticInstance(Author.class));
+			List songAuthors = EntityFinder.findRelated(track,GenericEntity.getStaticInstance(Author.class));
 			if(songAuthors != null){
 			  Iterator iter3 = songAuthors.iterator();
 			  boolean f = false;

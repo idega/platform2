@@ -45,10 +45,10 @@ public class QuerySQLPart implements QueryPart {
 			XMLElement element = (XMLElement) childrenIterator.next();
 			String name = element.getName();
 			if (name.equals(QueryXMLConstants.SQL_STATEMENT))	{
-				statement = element.getTextTrim();
+				this.statement = element.getTextTrim();
 			}
 			if (name.equals(QueryXMLConstants.SQL_POST_STATEMENT)) {
-				postStatement = element.getTextTrim();
+				this.postStatement = element.getTextTrim();
 			}	
 			if (name.equals(QueryXMLConstants.SQL_VARIABLE))	{
 				String type = element.getChild(QueryXMLConstants.TYPE).getTextTrim();
@@ -82,17 +82,17 @@ public class QuerySQLPart implements QueryPart {
 		sqlElement.addContent(statementElement);
 		
 		// post statement is not mandatory
-		if (postStatement != null && postStatement.length() != 0) {
+		if (this.postStatement != null && this.postStatement.length() != 0) {
 			XMLElement postStatementElement = new XMLElement(QueryXMLConstants.SQL_POST_STATEMENT);
-			postStatementElement.setText(postStatement);
+			postStatementElement.setText(this.postStatement);
 			sqlElement.addContent(postStatementElement);
 		}
 		// result
-		Iterator fieldIterator = resultFieldOrder.iterator();
+		Iterator fieldIterator = this.resultFieldOrder.iterator();
 		while (fieldIterator.hasNext())	{
 			String field = (String) fieldIterator.next();
-			String type = (String) resultFieldTypeMap.get(field);
-			InputDescription inputDescription = (InputDescription) resultInputDescriptionMap.get(field); 
+			String type = (String) this.resultFieldTypeMap.get(field);
+			InputDescription inputDescription = (InputDescription) this.resultInputDescriptionMap.get(field); 
 			
 			XMLElement resultFieldElement = new XMLElement(QueryXMLConstants.SQL_RESULT);
 			
@@ -126,13 +126,13 @@ public class QuerySQLPart implements QueryPart {
 			
 		
 		// variable
-		Iterator iterator = keyValueMap.entrySet().iterator();
+		Iterator iterator = this.keyValueMap.entrySet().iterator();
 		while (iterator.hasNext())	{
 			Map.Entry entry = (Map.Entry) iterator.next();
 			String key = (String) entry.getKey();
 			String value = (String) entry.getValue();
-			InputDescription inputDescription = (InputDescription) keyInputDescriptionMap.get(key);
-			String type = (String) keyTypeMap.get(key);
+			InputDescription inputDescription = (InputDescription) this.keyInputDescriptionMap.get(key);
+			String type = (String) this.keyTypeMap.get(key);
 			
 			XMLElement variableElement = new XMLElement(QueryXMLConstants.SQL_VARIABLE);
 			
@@ -176,44 +176,44 @@ public class QuerySQLPart implements QueryPart {
 	}
 	
 	public String getStatement()	{
-		return statement;
+		return this.statement;
 	}
 	
 	public String getPostStatement()	{
-		return postStatement;
+		return this.postStatement;
 	}
 	
 	public Map getVariableValueMap()	{
-		return keyValueMap;
+		return this.keyValueMap;
 	}
 	
 	public Map getInputDescriptionValueMap()	{
-		return keyInputDescriptionMap;
+		return this.keyInputDescriptionMap;
 	}
 	
 	public void setVariable(String key, String type,  String value, String description, String handlerDescription, String handler) {
-		keyTypeMap.put(key, type);
-		keyValueMap.put(key, value);
-		keyInputDescriptionMap.put(key, new InputDescription(description, handler, handlerDescription));
+		this.keyTypeMap.put(key, type);
+		this.keyValueMap.put(key, value);
+		this.keyInputDescriptionMap.put(key, new InputDescription(description, handler, handlerDescription));
 	}
 		
 	public void setField(String field, String type, String description, String handlerDescription, String handler)	{
-		resultFieldOrder.add(field);
-		resultFieldTypeMap.put(field, type);
-		resultInputDescriptionMap.put(field, new InputDescription(description, handler, handlerDescription));
+		this.resultFieldOrder.add(field);
+		this.resultFieldTypeMap.put(field, type);
+		this.resultInputDescriptionMap.put(field, new InputDescription(description, handler, handlerDescription));
 	}
 	
 	public List getFieldNames()	{
-		return resultFieldOrder;
+		return this.resultFieldOrder;
 	}
 
 	public List getFields(String queryName)	{
 		List fields = new ArrayList();
-		Iterator iterator = resultFieldOrder.iterator();
+		Iterator iterator = this.resultFieldOrder.iterator();
 		while (iterator.hasNext())	{
 			String field = (String) iterator.next();
-			String type = (String) resultFieldTypeMap.get(field);
-			InputDescription inputDescription = (InputDescription) resultInputDescriptionMap.get(field);
+			String type = (String) this.resultFieldTypeMap.get(field);
+			InputDescription inputDescription = (InputDescription) this.resultInputDescriptionMap.get(field);
 			// name, aliasName, entity, path, column,function, display, typeClass, handlerClass, handlerDescription
 			QueryFieldPart fieldPart = new QueryFieldPart(field, null, queryName,queryName,field, null, null, type, inputDescription.getInputHandler(), inputDescription.getHandlerDescription());
 			fields.add(fieldPart);

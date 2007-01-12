@@ -31,7 +31,9 @@ import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.core.user.data.User;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
@@ -124,19 +126,19 @@ public class BlogEditorWindow extends FolderBlockComponentIWAdminWindowLegacy {
 	}
 
 	private void init() {
-		sHeadline = iwrb.getLocalizedString("headline", "Headline");
-		sLocale = iwrb.getLocalizedString("locale", "Locale");
-		sTeaser = iwrb.getLocalizedString("teaser", "Teaser");
-		sBlog = iwrb.getLocalizedString("blog", "Blog");
-		sCategory = iwrb.getLocalizedString("category", "Category");
-		sAuthor = iwrb.getLocalizedString("author", "Author");
-		sSource = iwrb.getLocalizedString("source", "Source");
-		sDaysShown = iwrb.getLocalizedString("visible_days", "Number of days visible");
-		sImage = iwrb.getLocalizedString("image", "Image");
-		sEditor = iwrb.getLocalizedString("blog_editor", "Blog Editor");
-		sPublisFrom = iwrb.getLocalizedString("publish_from", "Publish from");
-		sPublisTo = iwrb.getLocalizedString("publish_to", "Publish to");
-		sBlogDate = iwrb.getLocalizedString("blog_date", "Blog date");
+		this.sHeadline = this.iwrb.getLocalizedString("headline", "Headline");
+		this.sLocale = this.iwrb.getLocalizedString("locale", "Locale");
+		this.sTeaser = this.iwrb.getLocalizedString("teaser", "Teaser");
+		this.sBlog = this.iwrb.getLocalizedString("blog", "Blog");
+		this.sCategory = this.iwrb.getLocalizedString("category", "Category");
+		this.sAuthor = this.iwrb.getLocalizedString("author", "Author");
+		this.sSource = this.iwrb.getLocalizedString("source", "Source");
+		this.sDaysShown = this.iwrb.getLocalizedString("visible_days", "Number of days visible");
+		this.sImage = this.iwrb.getLocalizedString("image", "Image");
+		this.sEditor = this.iwrb.getLocalizedString("blog_editor", "Blog Editor");
+		this.sPublisFrom = this.iwrb.getLocalizedString("publish_from", "Publish from");
+		this.sPublisTo = this.iwrb.getLocalizedString("publish_to", "Publish to");
+		this.sBlogDate = this.iwrb.getLocalizedString("blog_date", "Blog date");
 //		setAllMargins(0);
 //		setTitle(sEditor);
 	}
@@ -155,7 +157,7 @@ public class BlogEditorWindow extends FolderBlockComponentIWAdminWindowLegacy {
 
 			String sLocaleId = iwc.getParameter(prmLocale);
 			String sCategoryId = iwc.getParameter(prmCategory);
-			iCategoryId = sCategoryId != null ? Integer.parseInt(sCategoryId) : -1;
+			this.iCategoryId = sCategoryId != null ? Integer.parseInt(sCategoryId) : -1;
 			int saveInfo = getSaveInfo(iwc);
 
 			// LocaleHandling
@@ -168,7 +170,7 @@ public class BlogEditorWindow extends FolderBlockComponentIWAdminWindowLegacy {
 				iLocaleId = ICLocaleBusiness.getLocaleId(chosenLocale);
 			}
 
-			if (isAdmin) {
+			if (this.isAdmin) {
 				// end of LocaleHandling
 
 				// Text initialization
@@ -176,17 +178,18 @@ public class BlogEditorWindow extends FolderBlockComponentIWAdminWindowLegacy {
 				String sLocTextId = iwc.getParameter(prmLocalizedTextId);
 				String sObjInstId = iwc.getParameter(prmObjInstId);
 				sAttribute = iwc.getParameter(prmAttribute);
-				if (sObjInstId != null)
-					iObjInsId = Integer.parseInt(sObjInstId);
+				if (sObjInstId != null) {
+					this.iObjInsId = Integer.parseInt(sObjInstId);
+				}
 
 				// Blog Id Request :
 				if (iwc.getParameter(prmBlogEntityId) != null) {
-					sBlogId = iwc.getParameter(prmBlogEntityId);
+					this.sBlogId = iwc.getParameter(prmBlogEntityId);
 				}
 				// Delete Request :
 				else if (iwc.getParameter(prmDelete) != null) {
-					sBlogId = iwc.getParameter(prmDelete);
-					confirmDelete(sBlogId, iObjInsId);
+					this.sBlogId = iwc.getParameter(prmDelete);
+					confirmDelete(this.sBlogId, this.iObjInsId);
 					doView = false;
 				}
 				// Object Instance Request :
@@ -200,10 +203,11 @@ public class BlogEditorWindow extends FolderBlockComponentIWAdminWindowLegacy {
 				// end of Blog initialization
 
 				// Form processing
-				if (saveInfo == SAVEBLOG)
-					processForm(iwc, sBlogId, sLocTextId, sCategoryId);
+				if (saveInfo == this.SAVEBLOG) {
+					processForm(iwc, this.sBlogId, sLocTextId, sCategoryId);
 				//      else if(saveInfo == SAVECATEGORY)
 				//        processCategoryForm(iwc,sCategoryId,iObjInsId);
+				}
 
 				/*
 				 * old stuff if(iwc.isParameterSet(prmObjInstId)){
@@ -211,8 +215,9 @@ public class BlogEditorWindow extends FolderBlockComponentIWAdminWindowLegacy {
 				 */
 				//doView = false;
 
-				if (doView)
-					doViewBlog(sBlogId, sAttribute, chosenLocale, iLocaleId);
+				if (doView) {
+					doViewBlog(this.sBlogId, sAttribute, chosenLocale, iLocaleId);
+				}
 			} else {
 				noAccess();
 			}
@@ -221,11 +226,13 @@ public class BlogEditorWindow extends FolderBlockComponentIWAdminWindowLegacy {
 
 	private int getSaveInfo(IWContext iwc) {
 		if (iwc.getParameter(prmFormProcess) != null) {
-			if (iwc.getParameter(prmFormProcess).equals("Y"))
-				return SAVEBLOG;
-			else if (iwc.getParameter(prmFormProcess).equals("C"))
-				return SAVECATEGORY;
+			if (iwc.getParameter(prmFormProcess).equals("Y")) {
+				return this.SAVEBLOG;
+			}
+			else if (iwc.getParameter(prmFormProcess).equals("C")) {
+				return this.SAVECATEGORY;
 			//doView = false;
+			}
 		}
 		return 0;
 	}
@@ -242,12 +249,12 @@ public class BlogEditorWindow extends FolderBlockComponentIWAdminWindowLegacy {
 	private void processForm(IWContext iwc, String sBlogId, String sLocTextId, String sCategory) {
 		// Save :
 		if (iwc.getParameter(actSave) != null || iwc.getParameter(actSave + ".x") != null) {
-			iwc.getIWMainApplication().getIWCacheManager().invalidateCache(Blog.CACHE_KEY);
+			IWMainApplication.getIWCacheManager().invalidateCache(Blog.CACHE_KEY);
 			saveBlog(iwc, sBlogId, sLocTextId, sCategory);
 		}
 		// Delete :
 		else if (iwc.getParameter(actDelete) != null || iwc.getParameter(actDelete + ".x") != null) {
-			iwc.getIWMainApplication().getIWCacheManager().invalidateCache(Blog.CACHE_KEY);
+			IWMainApplication.getIWCacheManager().invalidateCache(Blog.CACHE_KEY);
 			try {
 				if (iwc.getParameter(modeDelete) != null) {
 					int I = Integer.parseInt(iwc.getParameter(modeDelete));
@@ -283,11 +290,12 @@ public class BlogEditorWindow extends FolderBlockComponentIWAdminWindowLegacy {
 		if (sBlogId != null) {
 			int iBlogId = Integer.parseInt(sBlogId);
 			blog = BlogFinder.getBlog(iBlogId);
-			if (blog != null && locale != null)
+			if (blog != null && locale != null) {
 				contentHelper = ContentFinder.getContentHelper(blog.getContentId(), locale);
+			}
 		}
 
-		addBlogFields(blog, contentHelper, iLocaleId, iObjInsId);
+		addBlogFields(blog, contentHelper, iLocaleId, this.iObjInsId);
 
 	}
 
@@ -318,7 +326,7 @@ public class BlogEditorWindow extends FolderBlockComponentIWAdminWindowLegacy {
 			IWTimestamp today = IWTimestamp.RightNow();
 			IWTimestamp pubFrom = sPubFrom != null ? new IWTimestamp(sPubFrom) : today;
 			Timestamp blogDate = sBlogDate != null ? new IWTimestamp(sBlogDate).getTimestamp() : null;
-			today.addDays(defaultPublishDays);
+			today.addDays(this.defaultPublishDays);
 			IWTimestamp pubTo = sPubTo != null ? new IWTimestamp(sPubTo) : today;
 			Vector V = null;
 			ICFile F = null;
@@ -337,7 +345,7 @@ public class BlogEditorWindow extends FolderBlockComponentIWAdminWindowLegacy {
 			//System.err.println(pubTo.toString());
 			BlogEntity blog=null;
 			try {
-				blog = ((BlogBusiness)getBlockBusinessInstance(iwc)).saveBlog(iBlogEntityId, iLocalizedTextId, iWorkFolderId, iCategoryId,sHeadline, sTeaser, sAuthor, sSource, sBody, iLocaleId, iUserId, iObjInsId, pubFrom.getTimestamp(), pubTo.getTimestamp(), V, blogDate);
+				blog = ((BlogBusiness)getBlockBusinessInstance(iwc)).saveBlog(iBlogEntityId, iLocalizedTextId, iWorkFolderId, iCategoryId,sHeadline, sTeaser, sAuthor, sSource, sBody, iLocaleId, this.iUserId, this.iObjInsId, pubFrom.getTimestamp(), pubTo.getTimestamp(), V, blogDate);
 			} catch (IDOLookupException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -351,8 +359,9 @@ public class BlogEditorWindow extends FolderBlockComponentIWAdminWindowLegacy {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			if (blog != null)
-				sBlogId = String.valueOf(blog.getID());
+			if (blog != null) {
+				this.sBlogId = String.valueOf(blog.getID());
+			}
 		}
 	}
 	
@@ -389,8 +398,9 @@ public class BlogEditorWindow extends FolderBlockComponentIWAdminWindowLegacy {
 	private void addBlogFields(BlogEntity bgBlog, ContentHelper contentHelper, int iLocaleId, int iObjInsId) {
 		LocalizedText locText = null;
 		boolean hasContent = (contentHelper != null) ? true : false;
-		if (hasContent)
+		if (hasContent) {
 			locText = contentHelper.getLocalizedText(ICLocaleBusiness.getLocaleReturnIcelandicLocaleIfNotFound(iLocaleId));
+		}
 		boolean hasBlogEntity = (bgBlog != null) ? true : false;
 		boolean hasLocalizedText = (locText != null) ? true : false;
 
@@ -409,7 +419,7 @@ public class BlogEditorWindow extends FolderBlockComponentIWAdminWindowLegacy {
 		// add default publishing days:
 		int addYears = 0;
 		try {
-			addYears = Integer.parseInt(iwb.getProperty(YEARS_AHEAD_PROPERTY, "0"));
+			addYears = Integer.parseInt(this.iwb.getProperty(YEARS_AHEAD_PROPERTY, "0"));
 		} catch (NullPointerException ne) {
 			addYears = 0;
 		} catch (NumberFormatException nfe) {
@@ -474,10 +484,12 @@ public class BlogEditorWindow extends FolderBlockComponentIWAdminWindowLegacy {
 			addHiddenInput(new HiddenInput(prmLocalizedTextId, String.valueOf(locText.getID())));
 		}
 		if (hasBlogEntity) {
-			if ("".equals(bgBlog.getAuthor()) && eUser != null)
-				tiAuthor.setContent(eUser.getFirstName());
-			else
+			if ("".equals(bgBlog.getAuthor()) && this.eUser != null) {
+				tiAuthor.setContent(this.eUser.getFirstName());
+			}
+			else {
 				tiAuthor.setContent(bgBlog.getAuthor());
+			}
 			tiSource.setContent(bgBlog.getSource());
 			//drpCategories.setSelectedElement(String.valueOf(bgBlog.getBlogCategoryId()));
 
@@ -505,22 +517,24 @@ public class BlogEditorWindow extends FolderBlockComponentIWAdminWindowLegacy {
 			//addHiddenInput(new HiddenInput(prmCategory
 			// ,String.valueOf(bgBlog.getBlogCategoryId())));
 		} else {
-			if (eUser != null) {
-				tiAuthor.setContent(eUser.getFirstName());
+			if (this.eUser != null) {
+				tiAuthor.setContent(this.eUser.getFirstName());
 			}
 			IWTimestamp today = IWTimestamp.RightNow();
 			publishFrom.setTimestamp(today.getTimestamp());
 
-			if (addYears > 0)
+			if (addYears > 0) {
 				today.addYears(addYears);
-			else
-				today.addDays(defaultPublishDays);
+			}
+			else {
+				today.addDays(this.defaultPublishDays);
+			}
 			publishTo.setTimestamp(today.getTimestamp());
-			addHiddenInput(new HiddenInput(prmCategory, String.valueOf(iCategoryId)));
+			addHiddenInput(new HiddenInput(prmCategory, String.valueOf(this.iCategoryId)));
 		}
 		addHiddenInput(new HiddenInput(prmObjInstId, String.valueOf(iObjInsId)));
 
-		SubmitButton addButton = new SubmitButton(core.getImage("/shared/create.gif", "Add to blog"), prmSaveFile);
+		SubmitButton addButton = new SubmitButton(this.core.getImage("/shared/create.gif", "Add to blog"), prmSaveFile);
 		//SubmitButton leftButton = new
 		// SubmitButton(core.getImage("/shared/frew.gif","Insert
 		// image"),prmSaveFile);
@@ -545,7 +559,7 @@ public class BlogEditorWindow extends FolderBlockComponentIWAdminWindowLegacy {
 			List files = contentHelper.getFiles();
 			if (files != null && !files.isEmpty()) {
 				imageTable.mergeCells(1, row, 3, row);
-				imageTable.add(formatText(iwrb.getLocalizedString("blogimages", "Blog images :")), 1, row++);
+				imageTable.add(formatText(this.iwrb.getLocalizedString("blogimages", "Blog images :")), 1, row++);
 				ICFile file1 = (ICFile) files.get(0);
 				imageInsert.setImageId(((Integer) file1.getPrimaryKey()).intValue());
 
@@ -560,8 +574,8 @@ public class BlogEditorWindow extends FolderBlockComponentIWAdminWindowLegacy {
 						imageTable.add(immi, 1, row);
 						//Link edit = new
 						// Link(iwb.getImage("/shared/edit.gif"));
-						Link edit = com.idega.block.image.presentation.ImageAttributeSetter.getLink(iwb.getImage("/shared/edit.gif"), ((Integer) file1.getPrimaryKey()).intValue(), imageAttributeKey);
-						Link delete = new Link(core.getImage("/shared/delete.gif"));
+						Link edit = com.idega.block.image.presentation.ImageAttributeSetter.getLink(this.iwb.getImage("/shared/edit.gif"), ((Integer) file1.getPrimaryKey()).intValue(), imageAttributeKey);
+						Link delete = new Link(this.core.getImage("/shared/delete.gif"));
 						delete.addParameter(prmDeleteFile, f.getPrimaryKey().toString());
 						delete.addParameter(prmBlogEntityId, bgBlog.getID());
 						delete.addParameter(getParameterSaveBlog());
@@ -575,30 +589,30 @@ public class BlogEditorWindow extends FolderBlockComponentIWAdminWindowLegacy {
 			}
 		}
 
-		addLeft(sHeadline, tiHeadline, true);
-		addLeft(sLocale, LocaleDrop, true);
-		addLeft(sTeaser, taTeaser, true);
-		addLeft(sBlog, taBody, true);
-		addLeft(sBlogDate, blogDate, true);
-		addLeft(sPublisFrom, publishFrom, true);
-		addLeft(sPublisTo, publishTo, true);
+		addLeft(this.sHeadline, tiHeadline, true);
+		addLeft(this.sLocale, LocaleDrop, true);
+		addLeft(this.sTeaser, taTeaser, true);
+		addLeft(this.sBlog, taBody, true);
+		addLeft(this.sBlogDate, blogDate, true);
+		addLeft(this.sPublisFrom, publishFrom, true);
+		addLeft(this.sPublisTo, publishTo, true);
 
-		addRight(sCategory, catDrop, true);
-		addRight(sAuthor, tiAuthor, true);
-		addRight(sSource, tiSource, true);
+		addRight(this.sCategory, catDrop, true);
+		addRight(this.sAuthor, tiAuthor, true);
+		addRight(this.sSource, tiSource, true);
 		//addRight(iwrb.getLocalizedString("image","Image"),imageInsert,true);
 		//if(addButton!=null){
 		//addRight("",addButton,true,false);
 		//}
-		addRight(iwrb.getLocalizedString("images", "Images"), imageTable, true, false);
+		addRight(this.iwrb.getLocalizedString("images", "Images"), imageTable, true, false);
 
 		/*
 		 * addRight(sImage,imageInsert,true); if(propslink != null)
 		 * addRight("props",propslink,true);
 		 */
 
-		SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("save", "Save"), actSave);
-		SubmitButton close = new SubmitButton(iwrb.getLocalizedImageButton("close", "Close"), actClose);
+		SubmitButton save = new SubmitButton(this.iwrb.getLocalizedImageButton("save", "Save"), actSave);
+		SubmitButton close = new SubmitButton(this.iwrb.getLocalizedImageButton("close", "Close"), actClose);
 		addSubmitButton(save);
 		addSubmitButton(close);
 
@@ -614,24 +628,24 @@ public class BlogEditorWindow extends FolderBlockComponentIWAdminWindowLegacy {
 		BlogEntity bgBlog = BlogFinder.getBlog(iBlogId);
 
 		if (bgBlog != null) {
-			addLeft(iwrb.getLocalizedString("blog_to_delete", "Blog to delete"));
-			addLeft(iwrb.getLocalizedString("confirm_delete", "Are you sure?"));
+			addLeft(this.iwrb.getLocalizedString("blog_to_delete", "Blog to delete"));
+			addLeft(this.iwrb.getLocalizedString("confirm_delete", "Are you sure?"));
 
 			//addSubmitButton(new
 			// SubmitButton(iwrb.getImage("delete.gif"),actDelete));
-			addSubmitButton(new SubmitButton(iwrb.getLocalizedImageButton("delete", "Delete"), actDelete));
+			addSubmitButton(new SubmitButton(this.iwrb.getLocalizedImageButton("delete", "Delete"), actDelete));
 
 			addHiddenInput(new HiddenInput(modeDelete, String.valueOf(bgBlog.getID())));
 			addHiddenInput(new HiddenInput(prmFormProcess, "Y"));
 		} else {
-			addLeft(iwrb.getLocalizedString("not_exists", "Blog already deleted or not available."));
+			addLeft(this.iwrb.getLocalizedString("not_exists", "Blog already deleted or not available."));
 			//addSubmitButton(new CloseButton(iwrb.getImage("close.gif")));
 			addSubmitButton(new CloseButton());
 		}
 	}
 
 	private void noAccess() throws IOException, SQLException {
-		addLeft(iwrb.getLocalizedString("no_access", "Login first!"));
+		addLeft(this.iwrb.getLocalizedString("no_access", "Login first!"));
 		this.addSubmitButton(new CloseButton());
 	}
 
@@ -650,14 +664,14 @@ public class BlogEditorWindow extends FolderBlockComponentIWAdminWindowLegacy {
 	public void main(IWContext iwc) throws Exception {
 		super.main(iwc);
 		
-		isAdmin = true;
-		eUser = com.idega.core.accesscontrol.business.LoginBusinessBean.getUser(iwc);
-		iUserId = eUser != null ? eUser.getID() : -1;
-		iwb = getBundle(iwc);
-		iwrb = getResourceBundle(iwc);
-		core = iwc.getIWMainApplication().getBundle(Blog.IW_CORE_BUNDLE_IDENTIFIER);
-		addTitle(iwrb.getLocalizedString("blog_editor", "Blog Editor"));
-		blogBusiness = (BlogBusiness) IBOLookup.getServiceInstance(iwc, BlogBusiness.class);
+		this.isAdmin = true;
+		this.eUser = com.idega.core.accesscontrol.business.LoginBusinessBean.getUser(iwc);
+		this.iUserId = this.eUser != null ? this.eUser.getID() : -1;
+		this.iwb = getBundle(iwc);
+		this.iwrb = getResourceBundle(iwc);
+		this.core = iwc.getIWMainApplication().getBundle(Builderaware.IW_CORE_BUNDLE_IDENTIFIER);
+		addTitle(this.iwrb.getLocalizedString("blog_editor", "Blog Editor"));
+		this.blogBusiness = (BlogBusiness) IBOLookup.getServiceInstance(iwc, BlogBusiness.class);
 		this.getUnderlyingForm().maintainParameter(prmWorkFolderPK);
 		this.getUnderlyingForm().maintainParameter(Blog.PRM_MODE);
 		control(iwc);

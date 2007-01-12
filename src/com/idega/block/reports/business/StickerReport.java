@@ -85,8 +85,9 @@ public class StickerReport {
           for(int i = 1; i <= Hlen; i++){
           	String s = RS.getString(i);
             //if(!RS.wasNull())
-          	if(s!=null)
-          		parag.add(new Chunk(s,fonts[i-1]));
+          	if(s!=null) {
+				parag.add(new Chunk(s,fonts[i-1]));
+			}
           		//parag.add(new Chunk(RS.getString(i),fonts[i-1]));
             parag.add(endstrings[i-1]);
           }
@@ -134,10 +135,12 @@ public class StickerReport {
     Font[] fonts = new Font[size];
     int listsize = listOfInfos.size();
     for (int i = 0; i < size; i++) {
-      if(i < listsize)
-        fonts[i] = getFont((ReportColumnInfo)listOfInfos.get(i));
-      else
-        fonts[i] = getFont(null);
+      if(i < listsize) {
+		fonts[i] = getFont((ReportColumnInfo)listOfInfos.get(i));
+	}
+	else {
+		fonts[i] = getFont(null);
+	}
     }
     return fonts;
   }
@@ -146,7 +149,8 @@ public class StickerReport {
     if(info!=null){
       return new Font(info.getFontFamily(),info.getFontSize(),info.getFontStyle());
     }
-    else
-      return new Font();
+	else {
+		return new Font();
+	}
   }
 }

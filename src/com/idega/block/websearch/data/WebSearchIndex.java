@@ -20,7 +20,7 @@ public final class WebSearchIndex {
     
     public WebSearchIndex(String path) {
         
-        indexPath = path + "/index";
+        this.indexPath = path + "/index";
         
     }
     public WebSearchIndex(String path, String[] seed, String[] scope) {
@@ -31,17 +31,17 @@ public final class WebSearchIndex {
     }
     public String getIndexPath() {
         
-        return indexPath;
+        return this.indexPath;
         
     }
     public String[] getScope() {
         
-        return scope;
+        return this.scope;
         
     }
     public String[] getSeed() {
         
-        return seed;
+        return this.seed;
         
     }
 }

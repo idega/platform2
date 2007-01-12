@@ -262,9 +262,10 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 					// thi comment QueryEntityPart child2 = new QueryEntityPart (entityDef.getUniqueEntityName(),entityDef.getInterfaceClass().getName());
           QueryEntityPart child2 = new QueryEntityPart (queryEntityPartName, queryEntityPartName);
 					node.addChild(child2);
-					if(level >0)
+					if(level >0) {
 						generateEntityTree(child2,level-1);
 					//System.out.println(child2.getNodePath());
+					}
 				}
 			}
 			//QueryEntityPart part = (QueryEntityPart) node;
@@ -286,8 +287,9 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 			// many to many entities
 			
 		}
-		else
+		else {
 			System.out.println("no object");
+		}
 	}
 	
 	private void getRelatedEntities(List resultList, QueryEntityPart node, int level)	{
@@ -306,8 +308,9 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
           buffer.append(queryEntityPartName);
           child2.setPath(buffer.toString());
 					resultList.add(child2);
-					if(level >0)
+					if(level >0) {
 						getRelatedEntities(resultList, child2,level-1);
+					}
 				}
 			}
 			Collection attributes = getEntityAttributes(node);
@@ -665,27 +668,27 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 	
 		
   public QuerySequenceHome getQuerySequenceHome(){
-    if(querySequenceHome==null){
+    if(this.querySequenceHome==null){
       try{
-        querySequenceHome = (QuerySequenceHome)IDOLookup.getHome(QuerySequence.class);
+        this.querySequenceHome = (QuerySequenceHome)IDOLookup.getHome(QuerySequence.class);
       }
       catch(RemoteException rme){
         throw new RuntimeException(rme.getMessage());
       }
     }
-    return querySequenceHome;
+    return this.querySequenceHome;
   }
 		
   private UserQueryHome getUserQueryHome(){
-    if(userQueryHome==null){
+    if(this.userQueryHome==null){
       try{
-        userQueryHome = (UserQueryHome)IDOLookup.getHome(UserQuery.class);
+        this.userQueryHome = (UserQueryHome)IDOLookup.getHome(UserQuery.class);
       }
       catch(RemoteException rme){
         throw new RuntimeException(rme.getMessage());
       }
     }
-    return userQueryHome;
+    return this.userQueryHome;
   }
 		
   public void removeUserQuery(Integer userQueryId, User user) {

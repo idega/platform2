@@ -68,9 +68,9 @@ public class BlogFormatter {
 
     blogString = TextSoap.findAndReplace(blogString,"|\r\n","");
     blogString = TextSoap.findAndReplace(blogString,"|","");
-    //Töflugerð lokið
+    //Tï¿½flugerï¿½ lokiï¿½
 
-    //Búa til tengla
+    //Bï¿½a til tengla
     Vector linkVector = createTextLink(blogString);
 
     for ( int a = 0; a < linkVector.size(); a++ ) {
@@ -102,8 +102,9 @@ public class BlogFormatter {
         if(showTimeFirst){
           info.insert(0,BlogTime+" ");
         }
-        else
-          info.append(" ");
+		else {
+			info.append(" ");
+		}
           info.append(BlogTime);
       }
     }
@@ -125,8 +126,9 @@ public class BlogFormatter {
       }
       if(!"".equals(BlogDate)){
         info.append(BlogDate);
-				if(showTime)
-        info.append(spacer);
+				if(showTime) {
+					info.append(spacer);
+				}
       }
 			if(showTime && !showTimeFirst && !"".equals(BlogTime)){
         info.append(BlogTime);

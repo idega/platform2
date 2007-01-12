@@ -308,10 +308,12 @@ public static final String COOKIE_NAME = "idegaAD_";
 
           ad = (AdEntity) adList.get(a);
 
-          if ( ad.getBeginDate() != null )
-            beginDate = new IWTimestamp(ad.getBeginDate());
-          if ( ad.getEndDate() != null )
-            endDate = new IWTimestamp(ad.getEndDate());
+          if ( ad.getBeginDate() != null ) {
+			beginDate = new IWTimestamp(ad.getBeginDate());
+		}
+          if ( ad.getEndDate() != null ) {
+			endDate = new IWTimestamp(ad.getEndDate());
+		}
 
           if ( !remove ) {
             if ( ad.getHits() > 0 && ad.getMaxHits() > 0 && ad.getHits() >= ad.getMaxHits() ) {
@@ -325,20 +327,23 @@ public static final String COOKIE_NAME = "idegaAD_";
           }
           if ( !remove ) {
             if ( beginDate != null ) {
-              if ( beginDate.isLaterThan(date) )
-                remove = true;
+              if ( beginDate.isLaterThan(date) ) {
+				remove = true;
+			}
             }
           }
           if ( !remove ) {
             if ( endDate != null ) {
               endDate.addDays(1);
-              if ( date.isLaterThan(endDate) )
-                remove = true;
+              if ( date.isLaterThan(endDate) ) {
+				remove = true;
+			}
             }
           }
 
-          if ( remove )
-            adList.remove(a);
+          if ( remove ) {
+			adList.remove(a);
+		}
         }
       }
 

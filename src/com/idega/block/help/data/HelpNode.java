@@ -37,10 +37,10 @@ public class HelpNode implements ICTreeNode {
 	}
 	
 	public HelpNode(int key, String bundle, String name, int order) {
-		_key = key;
-		_bundle = bundle;
-		_name = name;	
-		_order = order;		
+		this._key = key;
+		this._bundle = bundle;
+		this._name = name;	
+		this._order = order;		
 	}
 
 	/**
@@ -59,10 +59,12 @@ public class HelpNode implements ICTreeNode {
 	 * @see com.idega.core.ICTreeNode#getChildren()
 	 */
 	public Collection getChildren() {
-		if (_children != null)
-			return _children;
-		else
+		if (this._children != null) {
+			return this._children;
+		}
+		else {
 			return null;
+		}
 	}
 
 	/**
@@ -76,38 +78,43 @@ public class HelpNode implements ICTreeNode {
 	 * @see com.idega.core.ICTreeNode#getChildAtIndex(int)
 	 */
 	public ICTreeNode getChildAtIndex(int childIndex) {
-		if (_children != null)
-			return (HelpNode)_children.get(childIndex);
-		else
+		if (this._children != null) {
+			return (HelpNode)this._children.get(childIndex);
+		}
+		else {
 			return null;
+		}
 	}
 
 	/**
 	 * @see com.idega.core.ICTreeNode#getChildCount()
 	 */
 	public int getChildCount() {
-		if (_children != null)
-			return _children.size();
-		else
+		if (this._children != null) {
+			return this._children.size();
+		}
+		else {
 			return 0;
+		}
 	}
 
 	/**
 	 * @see com.idega.core.ICTreeNode#getIndex(ICTreeNode)
 	 */
 	public int getIndex(ICTreeNode node) {
-		if (_children != null) {
-			return _children.indexOf(node);
+		if (this._children != null) {
+			return this._children.indexOf(node);
 		}
-		else
+		else {
 			return -1;
+		}
 	}
 
 	/**
 	 * @see com.idega.core.ICTreeNode#getParentNode()
 	 */
 	public ICTreeNode getParentNode() {
-		return _parent;
+		return this._parent;
 	}
 
 	/**
@@ -121,7 +128,7 @@ public class HelpNode implements ICTreeNode {
 	 * @see com.idega.core.ICTreeNode#getNodeName()
 	 */
 	public String getNodeName() {
-		return _name;
+		return this._name;
 	}
 	
 	public String getNodeName(Locale locale) {
@@ -136,18 +143,19 @@ public class HelpNode implements ICTreeNode {
 	 * @see com.idega.core.ICTreeNode#getNodeID()
 	 */
 	public int getNodeID() {
-		return _key;
+		return this._key;
 	}
 
 	/**
 	 * @see com.idega.core.ICTreeNode#getSiblingCount()
 	 */
 	public int getSiblingCount() {
-		if (_parent != null) {
-			return (_parent.getChildCount() - 1);
+		if (this._parent != null) {
+			return (this._parent.getChildCount() - 1);
 		}
-		else
+		else {
 			return 0;
+		}
 	}
 	
 	/**
@@ -158,30 +166,31 @@ public class HelpNode implements ICTreeNode {
 	}
 	
 	public void setNodeID(int id) {
-		_key = id;	
+		this._key = id;	
 	}
 	
 	public void setNodeName(String name) {
-		_name = name;	
+		this._name = name;	
 	}
 	
 	public String getBundleName() {
-		return _bundle;	
+		return this._bundle;	
 	}
 	
 	public void setBundleName(String bundle) {
-		_bundle = bundle;	
+		this._bundle = bundle;	
 	}
 	
 	public void addChild(ICTreeNode child) {
-		if (_children == null)
-			_children = new Vector();
+		if (this._children == null) {
+			this._children = new Vector();
+		}
 			
-		_children.add(child);	
+		this._children.add(child);	
 		((HelpNode)child).setParent(this);
 	}
 	
 	protected void setParent(ICTreeNode parent) {
-		_parent = parent;
+		this._parent = parent;
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: IWBundleType.java,v 1.1 2004/11/04 20:32:46 aron Exp $
+ * $Id: IWBundleType.java,v 1.1.2.1 2007/01/12 19:31:57 idegaweb Exp $
  * Created on 3.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -25,10 +25,10 @@ import com.idega.idegaweb.IWBundle;
 
 /**
  * 
- *  Last modified: $Date: 2004/11/04 20:32:46 $ by $Author: aron $
+ *  Last modified: $Date: 2007/01/12 19:31:57 $ by $Author: idegaweb $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.1.2.1 $
  */
 public class IWBundleType extends BaseType {
     
@@ -53,7 +53,7 @@ public class IWBundleType extends BaseType {
           throw new NoOperandException("No operand given for operation: " + expr.getOperation() + " on object " + expr.getObject() + "!");         
         }
         // getting operand
-        String operandValue = interpreter.evalStringOperand(operand, params, bean, formatHelper);
+        String operandValue = IWBundleType.this.interpreter.evalStringOperand(operand, params, bean, formatHelper);
 
         IWBundle bundle = (IWBundle) (expr.getObject().getValue());
         String s =  bundle.getProperty(operandValue);

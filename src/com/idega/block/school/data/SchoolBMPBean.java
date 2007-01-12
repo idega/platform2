@@ -479,8 +479,9 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 			while (it.hasNext()) {
 				type = (String) it.next();
 				select += "'" + type + "'";
-				if (it.hasNext())
-					select += ",";					
+				if (it.hasNext()) {
+					select += ",";
+				}					
 			}
 			select += ")";
 		}
@@ -500,8 +501,9 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 			while (it.hasNext()) {
 				type = (Integer) it.next();
 				select += "'" + type + "'";
-				if (it.hasNext())
-					select += ",";					
+				if (it.hasNext()) {
+					select += ",";
+				}					
 			}
 			select += ")";
 		}
@@ -512,8 +514,9 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 			while (it.hasNext()) {
 				type = (String) it.next();
 				select += "'" + type + "'";
-				if (it.hasNext())
-					select += ",";					
+				if (it.hasNext()) {
+					select += ",";
+				}					
 			}
 			select += ")";
 		}

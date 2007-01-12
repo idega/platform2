@@ -26,7 +26,7 @@ public class PathLeftOuterJoinExpression extends PathCriterionExpression {
   }
 	
 	protected void initialize() throws IDOCompositePrimaryKeyException, ExpressionException	{
-		outerJoins = new ArrayList();
+		this.outerJoins = new ArrayList();
 		super.initialize();
 	}
 
@@ -44,20 +44,20 @@ public class PathLeftOuterJoinExpression extends PathCriterionExpression {
 		
 		// just a decision: middle table gets source path
 		LeftOuterJoinExpression middleTableOuterJoin = 
-			new LeftOuterJoinExpression(sourceTableName, sourcePrimaryKeyColumnName, sourcePath, middleTableName, sourcePrimaryKeyColumnName, sourcePath, sqlQuery);
+			new LeftOuterJoinExpression(sourceTableName, sourcePrimaryKeyColumnName, sourcePath, middleTableName, sourcePrimaryKeyColumnName, sourcePath, this.sqlQuery);
 		LeftOuterJoinExpression  targetTableOuterJoin =
-			new LeftOuterJoinExpression(middleTableName, targetPrimaryKeyColumnName, sourcePath, targetTableName, targetPrimaryKeyColumnName, targetPath, sqlQuery);
-		outerJoins.add(middleTableOuterJoin);
-		outerJoins.add(targetTableOuterJoin);
+			new LeftOuterJoinExpression(middleTableName, targetPrimaryKeyColumnName, sourcePath, targetTableName, targetPrimaryKeyColumnName, targetPath, this.sqlQuery);
+		this.outerJoins.add(middleTableOuterJoin);
+		this.outerJoins.add(targetTableOuterJoin);
 	}
 
 	protected void getConditionManyToOneRelation(IDOEntityDefinition sourceDefinition, String sourcePath, IDOEntityDefinition targetDefinition, String targetPath, String pathElement, List criteriaList) throws IDOCompositePrimaryKeyException {
-		LeftOuterJoinExpression outerJoin = new LeftOuterJoinExpression(sourceDefinition, pathElement, sourcePath, targetDefinition, targetPath, sqlQuery);
-		outerJoins.add(outerJoin);
+		LeftOuterJoinExpression outerJoin = new LeftOuterJoinExpression(sourceDefinition, pathElement, sourcePath, targetDefinition, targetPath, this.sqlQuery);
+		this.outerJoins.add(outerJoin);
 	}
 	
 	public List getOuterJoins()	{
-		return outerJoins;
+		return this.outerJoins;
 	}
 
 

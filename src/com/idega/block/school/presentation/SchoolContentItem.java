@@ -37,14 +37,14 @@ public abstract class SchoolContentItem extends Block {
 	protected abstract PresentationObject getObject() throws RemoteException;
 
 	public void main(IWContext iwc) throws Exception{
-		_iwc = iwc;
-		_iwrb = super.getResourceBundle( _iwc );
-		_school = getSchool(iwc);
+		this._iwc = iwc;
+		this._iwrb = super.getResourceBundle( this._iwc );
+		this._school = getSchool(iwc);
 		
-		if ( _school != null) {
+		if ( this._school != null) {
 			add(getObject());
-		}else if (_showDemoWhenSchoolIsNull){
-			add(getText(_iwrb.getLocalizedString("content_item_not_found","Item not found")));
+		}else if (this._showDemoWhenSchoolIsNull){
+			add(getText(this._iwrb.getLocalizedString("content_item_not_found","Item not found")));
 		}
 		
 	}
@@ -70,11 +70,11 @@ public abstract class SchoolContentItem extends Block {
     if (this._fontStyle != null) {
       text.setFontStyle(this._fontStyle);
     }
-    if (_fontColor != null) {
-    	text.setFontColor(_fontColor);
+    if (this._fontColor != null) {
+    	text.setFontColor(this._fontColor);
     }
-    if (_fontClass != null) {
-    	text.setFontClass(_fontClass);
+    if (this._fontClass != null) {
+    	text.setFontClass(this._fontClass);
     }
     
     return text;

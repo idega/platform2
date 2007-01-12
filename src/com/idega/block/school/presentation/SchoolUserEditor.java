@@ -129,36 +129,36 @@ public class SchoolUserEditor extends Block {
 	}
 	
 	public boolean getHideLogin() {
-		return _hideLogin;
+		return this._hideLogin;
 	}
 	
 	public void setHideLogin(boolean b) {
-		_hideLogin = b;
+		this._hideLogin = b;
 	}
 	
 	public boolean getHideBackButton() {
-		return _hideBackButton;
+		return this._hideBackButton;
 	}
 	
 	public void setHideBackButton(boolean b) {
-		_hideBackButton = b;
+		this._hideBackButton = b;
 	}
 	
 	public boolean getAddCloseButton() {
-		return _addCloseButton;
+		return this._addCloseButton;
 	}
 	
 	public void setAddCloseButton(boolean b) {
-		_addCloseButton = b;
+		this._addCloseButton = b;
 	}
 
 	private Table schoolList(IWContext iwc) throws RemoteException {
 		Collection schools = new java.util.Vector(0);
-		if (schoolTypeIds == null || schoolTypeIds.isEmpty()) {
+		if (this.schoolTypeIds == null || this.schoolTypeIds.isEmpty()) {
 			schools = getSchoolBusiness(iwc).findAllSchools();
 		}
 		else {
-			schools = getSchoolBusiness(iwc).findAllSchoolsByType(schoolTypeIds);
+			schools = getSchoolBusiness(iwc).findAllSchoolsByType(this.schoolTypeIds);
 		}
 
 		Table table = new Table();
@@ -172,16 +172,16 @@ public class SchoolUserEditor extends Block {
 			while (iter.hasNext()) {
 				++row;
 				school = (School) (iter.next());
-				link = getLink(_tFormat.format(_iwrb.getLocalizedString("school.edit", "edit"), TextFormat.NORMAL), ACTION_VIEW_SCHOOL, false);
+				link = getLink(this._tFormat.format(this._iwrb.getLocalizedString("school.edit", "edit"), TextFormat.NORMAL), this.ACTION_VIEW_SCHOOL, false);
 				link.addParameter(this.PARAMETER_SCHOOL_ID, school.getPrimaryKey().toString());
 				table.add(link, 1, row);
-				if (school.equals(_school)) {
+				if (school.equals(this._school)) {
 					textFormatType = TextFormat.HEADER;
 				}
 				else {
 					textFormatType = TextFormat.NORMAL;
 				}
-				table.add(_tFormat.format(school.getName(), textFormatType), 2, row);
+				table.add(this._tFormat.format(school.getName(), textFormatType), 2, row);
 			}
 		}
 
@@ -193,7 +193,7 @@ public class SchoolUserEditor extends Block {
 		
 
 		try {
-			if (PARAMETER_SCHOOL_HIGHSCHOOL) {
+			if (this.PARAMETER_SCHOOL_HIGHSCHOOL) {
 				form.add(highschoolUsersTable(iwc, school, true));
 			}
 			else {
@@ -204,44 +204,44 @@ public class SchoolUserEditor extends Block {
 
 		}
 
-		form.maintainParameter(PARAMETER_SCHOOL_ID);
-		if (parameterNames != null) {
-			int pnLength = parameterNames.size();
+		form.maintainParameter(this.PARAMETER_SCHOOL_ID);
+		if (this.parameterNames != null) {
+			int pnLength = this.parameterNames.size();
 			for (int i = 0; i < pnLength; i++) {
-				form.addParameter((String) parameterNames.get(i), (String) parameterValues.get(i));
+				form.addParameter((String) this.parameterNames.get(i), (String) this.parameterValues.get(i));
 			}
 		}
 		return form;
 	}
 
 	private Text getTextNormal(String content) {
-		if (TEXT_NORMAL == null) {
-			return _tFormat.format(content, TextFormat.NORMAL);
+		if (this.TEXT_NORMAL == null) {
+			return this._tFormat.format(content, TextFormat.NORMAL);
 		}
 		else {
-			Text text = (Text) TEXT_NORMAL.clone();
+			Text text = (Text) this.TEXT_NORMAL.clone();
 			text.setText(content);
 			return text;
 		}
 	}
 
 	private Text getTextTitle(String content) {
-		if (TEXT_TITLE == null) {
-			return _tFormat.format(content, TextFormat.TITLE);
+		if (this.TEXT_TITLE == null) {
+			return this._tFormat.format(content, TextFormat.TITLE);
 		}
 		else {
-			Text text = (Text) TEXT_TITLE.clone();
+			Text text = (Text) this.TEXT_TITLE.clone();
 			text.setText(content);
 			return text;
 		}
 	}
 
 	private Text getTextTitleGray(String content) {
-		if (TEXT_TITLE == null) {
-			return _tFormat.format(content, TextFormat.TITLE);
+		if (this.TEXT_TITLE == null) {
+			return this._tFormat.format(content, TextFormat.TITLE);
 		}
 		else {
-			Text text = (Text) TEXT_TITLE.clone();
+			Text text = (Text) this.TEXT_TITLE.clone();
 			text.setText(content);
 			text.setFontColor("#386cb7");
 			return text;
@@ -250,14 +250,14 @@ public class SchoolUserEditor extends Block {
 
 	private Link getLink(Text text, String action, boolean maintainSchoolId) {
 		Link link = new Link(text);
-		link.addParameter(PARAMETER_ACTION, action);
-		if (_school != null && maintainSchoolId) {
-			link.addParameter(PARAMETER_SCHOOL_ID, _school.getPrimaryKey().toString());
+		link.addParameter(this.PARAMETER_ACTION, action);
+		if (this._school != null && maintainSchoolId) {
+			link.addParameter(this.PARAMETER_SCHOOL_ID, this._school.getPrimaryKey().toString());
 		}
-		if (parameterNames != null) {
-			int pnLength = parameterNames.size();
+		if (this.parameterNames != null) {
+			int pnLength = this.parameterNames.size();
 			for (int i = 0; i < pnLength; i++) {
-				link.addParameter((String) parameterNames.get(i), (String) parameterValues.get(i));
+				link.addParameter((String) this.parameterNames.get(i), (String) this.parameterValues.get(i));
 			}
 		}
 		return link;
@@ -265,7 +265,7 @@ public class SchoolUserEditor extends Block {
 
 	private void setTextInputStyle(TextInput input) {
 		if (this.INPUT_STYLE != null) {
-			input.setMarkupAttribute("style", INPUT_STYLE);
+			input.setMarkupAttribute("style", this.INPUT_STYLE);
 		}
 		else {
 			input.setMarkupAttribute("class", "commune_Interface");
@@ -278,8 +278,9 @@ public class SchoolUserEditor extends Block {
 		boolean show = true;
 		try {
 			Collection suTypes = getSchoolUserBusiness(iwc).getSchoolUserTypes(school);
-			if(PARAMETER_SCHOOL_ADULTSCHOOL)
+			if(this.PARAMETER_SCHOOL_ADULTSCHOOL) {
 				contTable.add(getShowInfoTable(), 1, ++cRow);
+			}
 			
 			if (suTypes != null && !suTypes.isEmpty()) {
 				String[] userType;
@@ -289,7 +290,7 @@ public class SchoolUserEditor extends Block {
 					++cRow;
 
 					Collection users = getSchoolUserBusiness(iwc).getUsers(school, Integer.parseInt(userType[2]));
-					contTable.add(getTextTitle(_iwrb.getLocalizedString(userType[0], userType[1])), 1, cRow);
+					contTable.add(getTextTitle(this._iwrb.getLocalizedString(userType[0], userType[1])), 1, cRow);
 
 					if (users != null && users.size() > 0) {
 						Iterator userIter = users.iterator();
@@ -299,19 +300,23 @@ public class SchoolUserEditor extends Block {
 							User hm = (User) userIter.next();
 							show = getSchoolUserBusiness(iwc).getUserShowInContact(hm);
 							int userId = ((Integer) hm.getPrimaryKey()).intValue();
-							if (userId == userToEdit) {
+							if (userId == this.userToEdit) {
 								table.setHeight(row++, 3);
-								if (PARAMETER_SCHOOL_ADULTSCHOOL)
+								if (this.PARAMETER_SCHOOL_ADULTSCHOOL) {
 									row = insertEditableHighschUserIntoTable(table, hm, Integer.parseInt(userType[2]), row, show);
-								else
+								}
+								else {
 									row = insertEditableUserIntoTable(table, hm, Integer.parseInt(userType[2]), row);
+								}
 								table.setHeight(row++, 6);
 							}
 							else {
-								if (PARAMETER_SCHOOL_ADULTSCHOOL)
+								if (this.PARAMETER_SCHOOL_ADULTSCHOOL) {
 									row = insertHighschUserIntoTable(table, hm, row, show);
-								else
+								}
+								else {
 									row = insertUserIntoTable(table, hm, row);
+								}
 							}
 						}
 						contTable.add(table, 1, ++cRow);
@@ -339,18 +344,18 @@ public class SchoolUserEditor extends Block {
 			//contTable.setBorder(1);
 			
 			++cRow;
-			if (!_hideBackButton) {
-				BackButton back = new BackButton(_iwrb.getLocalizedString("school.back", "Back"));
+			if (!this._hideBackButton) {
+				BackButton back = new BackButton(this._iwrb.getLocalizedString("school.back", "Back"));
 				back = (BackButton) this.setStyle(back, STYLENAME_INTERFACE_BUTTON);
 				contTable.add(back, 1, cRow);
 			}
 			if (addSubmitButton) {
-				SubmitButton update = new SubmitButton(_iwrb.getLocalizedString("school.save", "Save"), PARAMETER_ACTION, ACTION_UPDATE);
+				SubmitButton update = new SubmitButton(this._iwrb.getLocalizedString("school.save", "Save"), this.PARAMETER_ACTION, this.ACTION_UPDATE);
 				update = (SubmitButton) this.setStyle(update, STYLENAME_INTERFACE_BUTTON);
 				contTable.add(update, 1, cRow);
 			}
-			if (_addCloseButton) {
-				CloseButton close = new CloseButton(_iwrb.getLocalizedString("school.close", "Close"));
+			if (this._addCloseButton) {
+				CloseButton close = new CloseButton(this._iwrb.getLocalizedString("school.close", "Close"));
 				close = (CloseButton) this.setStyle(close, STYLENAME_INTERFACE_BUTTON);
 				contTable.add(close, 1, cRow);
 			}
@@ -401,7 +406,7 @@ public class SchoolUserEditor extends Block {
 
 		try {
 			Collection sDepartments = getSchoolBusiness(iwc).getSchoolDepartmentHome().findAllDepartmentsBySchool(school);
-			Text tMainHeadmaster = getTextTitle(_iwrb.getLocalizedString("school.main_headmaster", "Main headmaster"));
+			Text tMainHeadmaster = getTextTitle(this._iwrb.getLocalizedString("school.main_headmaster", "Main headmaster"));
 
 			if (sDepartments != null & !sDepartments.isEmpty()) {
 				Iterator depIter = sDepartments.iterator();
@@ -422,7 +427,7 @@ public class SchoolUserEditor extends Block {
 							userType = (String[]) iter.next();
 							++cRow;
 
-							contTable.add(getTextTitle(_iwrb.getLocalizedString(userType[0], userType[1])), 1, cRow);
+							contTable.add(getTextTitle(this._iwrb.getLocalizedString(userType[0], userType[1])), 1, cRow);
 							Collection users = getSchoolUserBusiness(iwc).getUsersByDepartm(school, Integer.parseInt(userType[2]), schDep.getDepartmentID());
 							//Collection users = getSchoolUserBusiness(iwc).getUsers(school,
 							// Integer.parseInt(userType[2]));
@@ -442,7 +447,7 @@ public class SchoolUserEditor extends Block {
 									if (main_headmaster) {
 										contTable.add(tMainHeadmaster, 1, 9);
 
-										if (userId == userToEdit) {
+										if (userId == this.userToEdit) {
 											table.setHeight(rowMHM++, 3);
 											rowMHM = insertEditableHighschUserIntoTable(tableMHM, hm, Integer.parseInt(userType[2]), rowMHM, show);
 											table.setHeight(rowMHM++, 6);
@@ -453,7 +458,7 @@ public class SchoolUserEditor extends Block {
 										contTable.add(tableMHM, 1, 10);
 									}
 									else {
-										if (userId == userToEdit) {
+										if (userId == this.userToEdit) {
 											table.setHeight(row++, 3);
 											row = insertEditableHighschUserIntoTable(table, hm, Integer.parseInt(userType[2]), row, show);
 											table.setHeight(row++, 6);
@@ -492,7 +497,7 @@ public class SchoolUserEditor extends Block {
 
 			if (addSubmitButton) {
 				++cRow;
-				SubmitButton update = new SubmitButton(_iwrb.getLocalizedImageButton("school.save", "Save"), PARAMETER_ACTION, ACTION_UPDATE);
+				SubmitButton update = new SubmitButton(this._iwrb.getLocalizedImageButton("school.save", "Save"), this.PARAMETER_ACTION, this.ACTION_UPDATE);
 				contTable.add(update, 1, cRow);
 			}
 
@@ -520,7 +525,7 @@ public class SchoolUserEditor extends Block {
 
 			if (sDepartments != null && !sDepartments.isEmpty()) {
 
-				contTable.add(getTextTitle(_iwrb.getLocalizedString("school.department")), 1, cRow);
+				contTable.add(getTextTitle(this._iwrb.getLocalizedString("school.department")), 1, cRow);
 
 				Iterator departmIter = sDepartments.iterator();
 				Table table = new Table();
@@ -529,7 +534,7 @@ public class SchoolUserEditor extends Block {
 					SchoolDepartment schDep = (SchoolDepartment) departmIter.next();
 
 					int departmId = ((Integer) schDep.getPrimaryKey()).intValue();
-					if (departmId == depmToEdit) {
+					if (departmId == this.depmToEdit) {
 						row = insertEditableDepmIntoTable(table, schDep, row);
 					}
 					else {
@@ -559,8 +564,8 @@ public class SchoolUserEditor extends Block {
 		//Image imgContactGreen =
 		// getBundle().getImage("shared/checkmark_green.gif", 11, 11);
 		Image imgContactRed = getBundle().getImage("shared/checkmark_red.gif", 11, 11);
-		Text tShowInList = getTextNormal(_iwrb.getLocalizedString("school.show_in_contactl", "Show in contactlist"));
-		Text tNotShowInList = getTextNormal(_iwrb.getLocalizedString("school.show_not_in_contactl", "Don't show in contactlist"));
+		Text tShowInList = getTextNormal(this._iwrb.getLocalizedString("school.show_in_contactl", "Show in contactlist"));
+		Text tNotShowInList = getTextNormal(this._iwrb.getLocalizedString("school.show_not_in_contactl", "Don't show in contactlist"));
 
 		//Link newLink = new Link(core.getImage("/shared/create.gif"));
 		Link imgContactGreen = new Link(getBundle().getImage("shared/checkmark_green.gif"));
@@ -590,10 +595,10 @@ public class SchoolUserEditor extends Block {
 		String department = schDep.getDepartment();
 
 		Text tNameDep = getTextNormal(department);
-		Link edit = getLink(getTextNormal(_iwrb.getLocalizedString("school.edit", "Edit")), ACTION_VIEW_SCHOOL_DEPM, true);
-		edit.addParameter(PARAMETER_EDIT_SCH_DEP, schDepId);
-		Link delete = getLink(getTextNormal(_iwrb.getLocalizedString("school.delete", "Delete")), ACTION_VIEW_SCHOOL_DEPM, true);
-		delete.addParameter(PARAMETER_DELETE_SCH_DEP, schDepId);
+		Link edit = getLink(getTextNormal(this._iwrb.getLocalizedString("school.edit", "Edit")), this.ACTION_VIEW_SCHOOL_DEPM, true);
+		edit.addParameter(this.PARAMETER_EDIT_SCH_DEP, schDepId);
+		Link delete = getLink(getTextNormal(this._iwrb.getLocalizedString("school.delete", "Delete")), this.ACTION_VIEW_SCHOOL_DEPM, true);
+		delete.addParameter(this.PARAMETER_DELETE_SCH_DEP, schDepId);
 
 		if (department != null) {
 			table.add(tNameDep, 1, row);
@@ -626,9 +631,9 @@ public class SchoolUserEditor extends Block {
 
 	private int insertEditableDepmIntoTable(Table table, SchoolDepartment schDep, int row) {
 
-		String sdepname = PARAMETER_SCHOOL_DEPARTMENT;
-		String sphone = PARAMETER_SCHOOL_DEPARTMENT_PHONE;
-		String sdid = PARAMETER_SCHOOL_DEPARTMENT_ID;
+		String sdepname = this.PARAMETER_SCHOOL_DEPARTMENT;
+		String sphone = this.PARAMETER_SCHOOL_DEPARTMENT_PHONE;
+		String sdid = this.PARAMETER_SCHOOL_DEPARTMENT_ID;
 
 		//int uRow = row;
 		//int mRow;
@@ -707,13 +712,13 @@ public class SchoolUserEditor extends Block {
 
 		Text tName = getTextNormal(hm.getName());
 
-		Link login = new Link(getTextNormal(_iwrb.getLocalizedString("school.login", "Login")));
+		Link login = new Link(getTextNormal(this._iwrb.getLocalizedString("school.login", "Login")));
 		login.setWindowToOpen(LoginEditorWindow.class);
 		login.addParameter(LoginEditor.prmUserId, hmId);
-		Link edit = getLink(getTextNormal(_iwrb.getLocalizedString("school.edit", "Edit")), ACTION_VIEW_SCHOOL, true);
-		edit.addParameter(PARAMETER_EDIT_USER, hmId);
-		Link delete = getLink(getTextNormal(_iwrb.getLocalizedString("school.delete", "Delete")), ACTION_VIEW_SCHOOL, true);
-		delete.addParameter(PARAMETER_DELTE_USER, hmId);
+		Link edit = getLink(getTextNormal(this._iwrb.getLocalizedString("school.edit", "Edit")), this.ACTION_VIEW_SCHOOL, true);
+		edit.addParameter(this.PARAMETER_EDIT_USER, hmId);
+		Link delete = getLink(getTextNormal(this._iwrb.getLocalizedString("school.delete", "Delete")), this.ACTION_VIEW_SCHOOL, true);
+		delete.addParameter(this.PARAMETER_DELTE_USER, hmId);
 
 		Image imgContact;
 		if (show) {
@@ -750,7 +755,7 @@ public class SchoolUserEditor extends Block {
 			while (iPh.hasNext()) {
 				phone = (Phone) iPh.next();
 				//Malin
-				if (phone.getPhoneTypeId() == mobilePhoneType) {
+				if (phone.getPhoneTypeId() == this.mobilePhoneType) {
 					table.add(getTextNormal(phone.getNumber()), 9, mobRow);
 					++mobRow;
 
@@ -778,11 +783,11 @@ public class SchoolUserEditor extends Block {
 
 	private int insertEditableHighschUserIntoTable(Table table, User hm, int userType, int row, boolean show) {
 
-		String sname = PARAMETER_SCHOOL_USER_NAME;
-		String semail = PARAMETER_SCHOOL_USER_EMAIL;
-		String sphone = PARAMETER_SCHOOL_USER_TELEPHONE;
-		String smobilephone = PARAMETER_SCHOOL_USER_MOBILEPHONE;
-		String sid = PARAMETER_SCHOOL_USER_ID;
+		String sname = this.PARAMETER_SCHOOL_USER_NAME;
+		String semail = this.PARAMETER_SCHOOL_USER_EMAIL;
+		String sphone = this.PARAMETER_SCHOOL_USER_TELEPHONE;
+		String smobilephone = this.PARAMETER_SCHOOL_USER_MOBILEPHONE;
+		String sid = this.PARAMETER_SCHOOL_USER_ID;
 		//String schDepId = PARAMETER_SCHOOL_DEPARTMENT_ID;
 
 		Collection emails;
@@ -797,7 +802,7 @@ public class SchoolUserEditor extends Block {
 		phones = hm.getPhones();
 
 		HiddenInput inp = new HiddenInput(sid, hmId);
-		HiddenInput utInp = new HiddenInput(PARAMETER_SCHOOL_USER_TYPE + "_" + hmId, Integer.toString(userType));
+		HiddenInput utInp = new HiddenInput(this.PARAMETER_SCHOOL_USER_TYPE + "_" + hmId, Integer.toString(userType));
 		//HiddenInput depInp = new
 		// HiddenInput(PARAMETER_SCHOOL_DEPARTMENT_ID+"_"+hmId,
 		// Integer.toString(dpmID)); //Malin
@@ -806,11 +811,11 @@ public class SchoolUserEditor extends Block {
 
 		TextInput pName = new TextInput(sname + "_" + hmId, hm.getName());
 		this.setTextInputStyle(pName);
-		Link login = new Link(getTextNormal(_iwrb.getLocalizedString("school.login", "Login")));
+		Link login = new Link(getTextNormal(this._iwrb.getLocalizedString("school.login", "Login")));
 		login.setWindowToOpen(LoginEditorWindow.class);
 		login.addParameter(LoginEditor.prmUserId, hmId);
 
-		CheckBox chbShow = new CheckBox(PARAMETER_SCHOOL_SHOW_CONTACT_EDIT, "true");
+		CheckBox chbShow = new CheckBox(this.PARAMETER_SCHOOL_SHOW_CONTACT_EDIT, "true");
 		if (show) {
 			chbShow.setChecked(true);
 		}
@@ -853,14 +858,14 @@ public class SchoolUserEditor extends Block {
 			while (iPhHome.hasNext()) {
 				phone = (Phone) iPhHome.next();
 				TextInput pPhone;
-				if (phone.getPhoneTypeId() != mobilePhoneType) {
+				if (phone.getPhoneTypeId() != this.mobilePhoneType) {
 					pPhone = new TextInput(sphone + "_" + hmId + "_" + phone.getPrimaryKey(), phone.getNumber());
 					//String adsad = phone.getNumber();
 					this.setTextInputStyle(pPhone);
 					table.add(pPhone, 7, row);
 					++row;
 				}
-				else if (phone.getPhoneTypeId() == mobilePhoneType) {
+				else if (phone.getPhoneTypeId() == this.mobilePhoneType) {
 					pPhone = new TextInput(smobilephone + "_" + hmId + "_" + phone.getPrimaryKey(), phone.getNumber());
 					//String adsad = phone.getNumber();
 					this.setTextInputStyle(pPhone);
@@ -875,7 +880,7 @@ public class SchoolUserEditor extends Block {
 			this.setTextInputStyle(pPhone);
 			table.add(pPhone, 7, row);
 
-			if (_highSchoolCategory) {
+			if (this._highSchoolCategory) {
 				TextInput pMobilePhone = new TextInput(smobilephone + "_" + hmId);
 				this.setTextInputStyle(pMobilePhone);
 				table.add(pMobilePhone, 9, mobRow);
@@ -929,13 +934,13 @@ public class SchoolUserEditor extends Block {
 		
 		
 		Text tName = getTextNormal(hm.getName());
-		Link login = new Link(getTextNormal(_iwrb.getLocalizedString("school.login", "Login")));
+		Link login = new Link(getTextNormal(this._iwrb.getLocalizedString("school.login", "Login")));
 		login.setWindowToOpen(LoginEditorWindow.class);
 		login.addParameter(LoginEditor.prmUserId, hmId);
-		Link edit = getLink(getTextNormal(_iwrb.getLocalizedString("school.edit", "Edit")), ACTION_VIEW_SCHOOL, true);
-		edit.addParameter(PARAMETER_EDIT_USER, hmId);
-		Link delete = getLink(getTextNormal(_iwrb.getLocalizedString("school.delete", "Delete")), ACTION_VIEW_SCHOOL, true);
-		delete.addParameter(PARAMETER_DELTE_USER, hmId);
+		Link edit = getLink(getTextNormal(this._iwrb.getLocalizedString("school.edit", "Edit")), this.ACTION_VIEW_SCHOOL, true);
+		edit.addParameter(this.PARAMETER_EDIT_USER, hmId);
+		Link delete = getLink(getTextNormal(this._iwrb.getLocalizedString("school.delete", "Delete")), this.ACTION_VIEW_SCHOOL, true);
+		delete.addParameter(this.PARAMETER_DELTE_USER, hmId);
 
 	/*	Image imgContact;
 		if (show) {
@@ -949,7 +954,7 @@ public class SchoolUserEditor extends Block {
 		*/
 		table.add(tName, 1, row);
 		table.add(edit, 7, row);
-		if (_hideLogin) {
+		if (this._hideLogin) {
 			table.add(delete, 9, row);
 		} else {
 			table.add(login, 9, row);
@@ -988,10 +993,10 @@ public class SchoolUserEditor extends Block {
 
 	private int insertEditableUserIntoTable(Table table, User hm, int userType, int row) {
 
-		String sname = PARAMETER_SCHOOL_USER_NAME;
-		String semail = PARAMETER_SCHOOL_USER_EMAIL;
-		String sphone = PARAMETER_SCHOOL_USER_TELEPHONE;
-		String sid = PARAMETER_SCHOOL_USER_ID;
+		String sname = this.PARAMETER_SCHOOL_USER_NAME;
+		String semail = this.PARAMETER_SCHOOL_USER_EMAIL;
+		String sphone = this.PARAMETER_SCHOOL_USER_TELEPHONE;
+		String sid = this.PARAMETER_SCHOOL_USER_ID;
 
 		Collection emails;
 		Collection phones;
@@ -1002,21 +1007,21 @@ public class SchoolUserEditor extends Block {
 		emails = hm.getEmails();
 		phones = hm.getPhones();
 		HiddenInput inp = new HiddenInput(sid, hmId);
-		HiddenInput utInp = new HiddenInput(PARAMETER_SCHOOL_USER_TYPE + "_" + hmId, Integer.toString(userType));
+		HiddenInput utInp = new HiddenInput(this.PARAMETER_SCHOOL_USER_TYPE + "_" + hmId, Integer.toString(userType));
 		TextInput pName = new TextInput(sname + "_" + hmId, hm.getName());
 		//TextInput pName = (TextInput) getStyledInterface(new TextInput(sname + "_" + hmId, hm.getName()));
 		this.setTextInputStyle(pName);
-		Link login = new Link(getTextNormal(_iwrb.getLocalizedString("school.login", "Login")));
+		Link login = new Link(getTextNormal(this._iwrb.getLocalizedString("school.login", "Login")));
 		login.setWindowToOpen(LoginEditorWindow.class);
 		login.addParameter(LoginEditor.prmUserId, hmId);
 
 		table.add(inp, 1, row);
 		table.add(utInp, 1, row);
 		
-		table.add(getTextNormal(_iwrb.getLocalizedString("school.name","Name")), 1, row);
-		table.add(getTextNormal(_iwrb.getLocalizedString("school.email","Email")), 3, row++);
+		table.add(getTextNormal(this._iwrb.getLocalizedString("school.name","Name")), 1, row);
+		table.add(getTextNormal(this._iwrb.getLocalizedString("school.email","Email")), 3, row++);
 		
-		if (!_hideLogin) {
+		if (!this._hideLogin) {
 			table.add(login, 7, row);
 		}
 		table.add(pName, 1, row);
@@ -1041,7 +1046,7 @@ public class SchoolUserEditor extends Block {
 		mRow = row;
 		row = uRow;
 		if (phones != null) {
-			table.add(getTextNormal(_iwrb.getLocalizedString("school.phone","Phone")), 5, row++);
+			table.add(getTextNormal(this._iwrb.getLocalizedString("school.phone","Phone")), 5, row++);
 			Phone phone;
 			Iterator iPh = phones.iterator();
 			while (iPh.hasNext()) {
@@ -1088,7 +1093,7 @@ public class SchoolUserEditor extends Block {
 		table.mergeCells(1, row, table.getColumns(), row);
 		table.add(isEconomicalResponsibleButton, 1, row);
 		table.add(Text.getNonBrakingSpace(), 1, row);
-		table.add(getTextNormal(_iwrb.getLocalizedString(PARAMETER_IS_ECONOMICAL_RESP, PARAMETER_IS_ECONOMICAL_RESP)), 1, row);
+		table.add(getTextNormal(this._iwrb.getLocalizedString(PARAMETER_IS_ECONOMICAL_RESP, PARAMETER_IS_ECONOMICAL_RESP)), 1, row);
 	}
 
 	private static String getIsEconomicalResponsibleKey(final User user) {
@@ -1110,20 +1115,20 @@ public class SchoolUserEditor extends Block {
 	 */
 
 	private Table getUserForm(IWContext iwc, School school) {
-		String name = PARAMETER_SCHOOL_USER_NAME;
-		String email = PARAMETER_SCHOOL_USER_EMAIL;
-		String phone = PARAMETER_SCHOOL_USER_TELEPHONE;
-		String showcontact = PARAMETER_SCHOOL_SHOW_CONTACT;
+		String name = this.PARAMETER_SCHOOL_USER_NAME;
+		String email = this.PARAMETER_SCHOOL_USER_EMAIL;
+		String phone = this.PARAMETER_SCHOOL_USER_TELEPHONE;
+		String showcontact = this.PARAMETER_SCHOOL_SHOW_CONTACT;
 		
 		Table table = new Table();
 
-		Text tName = getTextNormal(_iwrb.getLocalizedString("school.name", "Name"));
-		Text tEmail = getTextNormal(_iwrb.getLocalizedString("school.email", "E-post"));
-		Text tPhone = getTextNormal(_iwrb.getLocalizedString("school.phone", "Phone"));
-		Text tType = getTextNormal(_iwrb.getLocalizedString("school.type", "Type"));
-		Text tShowinContactlist = getTextNormal(_iwrb.getLocalizedString("school.show_in_contactl", "Show in contactlist"));
+		Text tName = getTextNormal(this._iwrb.getLocalizedString("school.name", "Name"));
+		Text tEmail = getTextNormal(this._iwrb.getLocalizedString("school.email", "E-post"));
+		Text tPhone = getTextNormal(this._iwrb.getLocalizedString("school.phone", "Phone"));
+		Text tType = getTextNormal(this._iwrb.getLocalizedString("school.type", "Type"));
+		Text tShowinContactlist = getTextNormal(this._iwrb.getLocalizedString("school.show_in_contactl", "Show in contactlist"));
 		
-		DropdownMenu pType = new DropdownMenu(PARAMETER_SCHOOL_USER_TYPE);
+		DropdownMenu pType = new DropdownMenu(this.PARAMETER_SCHOOL_USER_TYPE);
 		pType.setStyleClass("commune_Interface");
 		Collection suTypes;
 		try {
@@ -1133,7 +1138,7 @@ public class SchoolUserEditor extends Block {
 				String[] str;
 				while (iter.hasNext()) {
 					str = (String[]) iter.next();
-					pType.addMenuElement(str[2], _iwrb.getLocalizedString(str[0], str[1]));
+					pType.addMenuElement(str[2], this._iwrb.getLocalizedString(str[0], str[1]));
 				}
 			}
 		}
@@ -1155,7 +1160,7 @@ public class SchoolUserEditor extends Block {
 		table.add(tType, 1, 1);
 		table.add(pType, 2, 1);
 		
-		if (PARAMETER_SCHOOL_ADULTSCHOOL){
+		if (this.PARAMETER_SCHOOL_ADULTSCHOOL){
 			table.add(chShowContact, 4, 1);
 			table.add(tShowinContactlist, 5, 1);
 	
@@ -1176,37 +1181,37 @@ public class SchoolUserEditor extends Block {
 	}
 
 	private Table getUserFormHighSchool(IWContext iwc, School school) {
-		String name = PARAMETER_SCHOOL_USER_NAME;
-		String email = PARAMETER_SCHOOL_USER_EMAIL;
-		String phone = PARAMETER_SCHOOL_USER_TELEPHONE;
-		String mobilephone = PARAMETER_SCHOOL_USER_MOBILEPHONE;
+		String name = this.PARAMETER_SCHOOL_USER_NAME;
+		String email = this.PARAMETER_SCHOOL_USER_EMAIL;
+		String phone = this.PARAMETER_SCHOOL_USER_TELEPHONE;
+		String mobilephone = this.PARAMETER_SCHOOL_USER_MOBILEPHONE;
 		//String school_department = PARAMETER_SCHOOL_DEPARTMENT;
 		//String school_department_phone = PARAMETER_SCHOOL_DEPARTMENT_PHONE;
-		String showcontact = PARAMETER_SCHOOL_SHOW_CONTACT;
-		String mainheadmaster = PARAMETER_SCHOOL_MAIN_HEADMASTER;
+		String showcontact = this.PARAMETER_SCHOOL_SHOW_CONTACT;
+		String mainheadmaster = this.PARAMETER_SCHOOL_MAIN_HEADMASTER;
 
 		Table table = new Table();
 		table.setWidth(2, "5");
 		table.setWidth(4, "5");
 		table.setWidth(6, "5");
 
-		Text tName = getTextNormal(_iwrb.getLocalizedString("school.name", "Name"));
-		Text tEmail = getTextNormal(_iwrb.getLocalizedString("school.email", "E-post"));
-		Text tPhone = getTextNormal(_iwrb.getLocalizedString("school.phone", "Phone"));
-		Text tMobilePhone = getTextNormal(_iwrb.getLocalizedString("school.mobile", "Mobile"));
-		Text tType = getTextNormal(_iwrb.getLocalizedString("school.type", "Type"));
+		Text tName = getTextNormal(this._iwrb.getLocalizedString("school.name", "Name"));
+		Text tEmail = getTextNormal(this._iwrb.getLocalizedString("school.email", "E-post"));
+		Text tPhone = getTextNormal(this._iwrb.getLocalizedString("school.phone", "Phone"));
+		Text tMobilePhone = getTextNormal(this._iwrb.getLocalizedString("school.mobile", "Mobile"));
+		Text tType = getTextNormal(this._iwrb.getLocalizedString("school.type", "Type"));
 		//Malin departement = Enhet
 		//Text tDepartment =
 		// getTextTitle(_iwrb.getLocalizedString("school.department","Department"));
-		Text tDepartmentNorm = getTextNormal(_iwrb.getLocalizedString("school.department", "Department"));
+		Text tDepartmentNorm = getTextNormal(this._iwrb.getLocalizedString("school.department", "Department"));
 		//Text tCreateDepm =
 		// getTextTitle(_iwrb.getLocalizedString("school.create_department","Create
 		// new department"));
-		Text tAddPerson = getTextTitle(_iwrb.getLocalizedString("school.add_person", "Add new person"));
-		Text tShowinContactlist = getTextNormal(_iwrb.getLocalizedString("school.show_in_contactl", "Show in contactlist"));
-		Text tMainHeadmaster = getTextNormal(_iwrb.getLocalizedString("school.main_headmaster", "Main headmaster"));
+		Text tAddPerson = getTextTitle(this._iwrb.getLocalizedString("school.add_person", "Add new person"));
+		Text tShowinContactlist = getTextNormal(this._iwrb.getLocalizedString("school.show_in_contactl", "Show in contactlist"));
+		Text tMainHeadmaster = getTextNormal(this._iwrb.getLocalizedString("school.main_headmaster", "Main headmaster"));
 
-		DropdownMenu pDepartment = new DropdownMenu(PARAMETER_SCHOOL_DEPARTMENT_ID_DROP);
+		DropdownMenu pDepartment = new DropdownMenu(this.PARAMETER_SCHOOL_DEPARTMENT_ID_DROP);
 
 		Collection sDepartments;
 		try {
@@ -1232,7 +1237,7 @@ public class SchoolUserEditor extends Block {
 		catch (Exception e) {
 			e.printStackTrace(System.err);
 		}
-		DropdownMenu pType = new DropdownMenu(PARAMETER_SCHOOL_USER_TYPE);
+		DropdownMenu pType = new DropdownMenu(this.PARAMETER_SCHOOL_USER_TYPE);
 		Collection suTypes;
 		try {
 			suTypes = getSchoolUserBusiness(iwc).getSchoolUserTypes(school);
@@ -1241,7 +1246,7 @@ public class SchoolUserEditor extends Block {
 				String[] str;
 				while (iter.hasNext()) {
 					str = (String[]) iter.next();
-					pType.addMenuElement(str[2], _iwrb.getLocalizedString(str[0], str[1]));
+					pType.addMenuElement(str[2], this._iwrb.getLocalizedString(str[0], str[1]));
 				}
 			}
 		}
@@ -1324,21 +1329,21 @@ public class SchoolUserEditor extends Block {
 	}
 
 	private Table getDepartmentForm() {
-		String school_department = PARAMETER_SCHOOL_DEPARTMENT;
-		String school_department_phone = PARAMETER_SCHOOL_DEPARTMENT_PHONE;
+		String school_department = this.PARAMETER_SCHOOL_DEPARTMENT;
+		String school_department_phone = this.PARAMETER_SCHOOL_DEPARTMENT_PHONE;
 
 		Table table = new Table();
 
 		table.setWidth(3, "300");
 		table.setAlignment(3, 1, "right");
 		//Malin departement = Enhet
-		Text tPhone = getTextNormal(_iwrb.getLocalizedString("school.phone", "Phone"));
+		Text tPhone = getTextNormal(this._iwrb.getLocalizedString("school.phone", "Phone"));
 		//Text tDepartment =
 		// getTextTitle(_iwrb.getLocalizedString("school.department","Department"));
-		Text tDepartmentName = getTextNormal(_iwrb.getLocalizedString("school.department_name", "Department name"));
+		Text tDepartmentName = getTextNormal(this._iwrb.getLocalizedString("school.department_name", "Department name"));
 		//Text tDepartment2 =
 		// getTextNormal(_iwrb.getLocalizedString("school.department","Department"));
-		Text tCreateDepm = getTextTitle(_iwrb.getLocalizedString("school.create_department", "Create new department"));
+		Text tCreateDepm = getTextTitle(this._iwrb.getLocalizedString("school.create_department", "Create new department"));
 		//Text tAddPerson =
 		// getTextTitle(_iwrb.getLocalizedString("school.add_person","Add new
 		// person"));
@@ -1357,9 +1362,9 @@ public class SchoolUserEditor extends Block {
 		linkiGeneralInfo.addParameter(PARAMETER_TOPIC_EDITOR, SchoolEditorInfoText.PARAMETER_TOPIC_ID_EDITOR);
 		linkiGeneralInfo.setWindowToOpen(SchoolEditorInfoText.class);
 		//String sText = _iwrb.getLocalizedString("school.infoDepm","Om
-		// organisationen är enhetsindelad kan du i systemet skapa enheter genom att
+		// organisationen ï¿½r enhetsindelad kan du i systemet skapa enheter genom att
 		// skriva in enhetens namn och eventuellt telefonnummer under rubriken
-		// 'Skapa en enhet' och klicka på 'Spara'. ");
+		// 'Skapa en enhet' och klicka pï¿½ 'Spara'. ");
 		//linkiDepm.setToolTip(sText);
 
 		this.setTextInputStyle(pDepartmentName);
@@ -1389,14 +1394,20 @@ public class SchoolUserEditor extends Block {
 	}
 
 	public void deleteUser(IWContext iwc, School school) throws RemoteException, FinderException {
-		String uId = iwc.getParameter(PARAMETER_DELTE_USER);
+		String uId = iwc.getParameter(this.PARAMETER_DELTE_USER);
 		if (uId != null) {
 			UserHome userHome = (UserHome) IDOLookup.getHome(User.class);
 			User user = userHome.findByPrimaryKey(new Integer(uId));
 			try {
-				if (iwc == null) System.out.println("[SchoolUserEditor:deleteUser] iwc    == null");
-				if (user == null) System.out.println("[SchoolUserEditor:deleteUser] user   == null");
-				if (school == null) System.out.println("[SchoolUserEditor:deleteUser] school == null");
+				if (iwc == null) {
+					System.out.println("[SchoolUserEditor:deleteUser] iwc    == null");
+				}
+				if (user == null) {
+					System.out.println("[SchoolUserEditor:deleteUser] user   == null");
+				}
+				if (school == null) {
+					System.out.println("[SchoolUserEditor:deleteUser] school == null");
+				}
 				//      		get current user (added by Thomas)
 				User currentUser = iwc.getCurrentUser();
 				getSchoolUserBusiness(iwc).removeUser(school, user, currentUser);
@@ -1411,18 +1422,18 @@ public class SchoolUserEditor extends Block {
 	}
 
 	public boolean updateUsers(IWContext iwc, School school) throws RemoteException {
-		String sname = PARAMETER_SCHOOL_USER_NAME;
-		String semail = PARAMETER_SCHOOL_USER_EMAIL;
-		String sphone = PARAMETER_SCHOOL_USER_TELEPHONE;
-		String smobilephone = PARAMETER_SCHOOL_USER_MOBILEPHONE;
-		String sid = PARAMETER_SCHOOL_USER_ID;
-		String sdepid = PARAMETER_SCHOOL_DEPARTMENT_ID_DROP;
+		String sname = this.PARAMETER_SCHOOL_USER_NAME;
+		String semail = this.PARAMETER_SCHOOL_USER_EMAIL;
+		String sphone = this.PARAMETER_SCHOOL_USER_TELEPHONE;
+		String smobilephone = this.PARAMETER_SCHOOL_USER_MOBILEPHONE;
+		String sid = this.PARAMETER_SCHOOL_USER_ID;
+		String sdepid = this.PARAMETER_SCHOOL_DEPARTMENT_ID_DROP;
 
-		String sUserType = iwc.getParameter(PARAMETER_SCHOOL_USER_TYPE);
+		String sUserType = iwc.getParameter(this.PARAMETER_SCHOOL_USER_TYPE);
 		String sDep_ID = iwc.getParameter(sdepid);
-		boolean showcontact = Boolean.valueOf(iwc.getParameter(PARAMETER_SCHOOL_SHOW_CONTACT)).booleanValue();
-		boolean showcontactEdit = Boolean.valueOf(iwc.getParameter(PARAMETER_SCHOOL_SHOW_CONTACT_EDIT)).booleanValue();
-		boolean main_headmaster = Boolean.valueOf(iwc.getParameter(PARAMETER_SCHOOL_MAIN_HEADMASTER)).booleanValue();
+		boolean showcontact = Boolean.valueOf(iwc.getParameter(this.PARAMETER_SCHOOL_SHOW_CONTACT)).booleanValue();
+		boolean showcontactEdit = Boolean.valueOf(iwc.getParameter(this.PARAMETER_SCHOOL_SHOW_CONTACT_EDIT)).booleanValue();
+		boolean main_headmaster = Boolean.valueOf(iwc.getParameter(this.PARAMETER_SCHOOL_MAIN_HEADMASTER)).booleanValue();
 
 		int iUserType = Integer.parseInt(sUserType);
 		String category = getSchoolUserBusiness(iwc).getSchoolCategory(school);
@@ -1434,33 +1445,46 @@ public class SchoolUserEditor extends Block {
 			} catch (Exception e) {}
 			
 			if (school.getCommuneId() == homeCommuneId) {
-				if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getElementarySchoolSchoolCategory()))
+				if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getElementarySchoolSchoolCategory())) {
 					priGroup = getSchoolBusiness(iwc).getRootSchoolAdministratorGroup();
-				else if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getChildCareSchoolCategory()))
+				}
+				else if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getChildCareSchoolCategory())) {
 					priGroup = getSchoolBusiness(iwc).getRootProviderAdministratorGroup();
-				else if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getHighSchoolSchoolCategory()))
-					if (iUserType == SchoolUserBMPBean.USER_TYPE_HEADMASTER)
+				}
+				else if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getHighSchoolSchoolCategory())) {
+					if (iUserType == SchoolUserBMPBean.USER_TYPE_HEADMASTER) {
 						priGroup = getSchoolBusiness(iwc).getRootHighSchoolAdministratorGroup();
-					else
-						priGroup = getSchoolBusiness(iwc).getRootProviderAdministratorGroup();					
-				if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getCategoryMusicSchool().getCategory()))
+					}
+					else {
+						priGroup = getSchoolBusiness(iwc).getRootProviderAdministratorGroup();
+					}
+				}					
+				if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getCategoryMusicSchool().getCategory())) {
 					priGroup = getSchoolBusiness(iwc).getRootMusicSchoolAdministratorGroup();
+				}
 			} else {
-				if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getElementarySchoolSchoolCategory()))
+				if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getElementarySchoolSchoolCategory())) {
 					priGroup = getSchoolBusiness(iwc).getRootSchoolOtherCommuneAdministratorGroup();
-				else if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getChildCareSchoolCategory()))
+				}
+				else if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getChildCareSchoolCategory())) {
 					priGroup = getSchoolBusiness(iwc).getRootProviderOtherCommuneAdministratorGroup();
-				else if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getHighSchoolSchoolCategory()))
-					if (iUserType == SchoolUserBMPBean.USER_TYPE_HEADMASTER)
+				}
+				else if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getHighSchoolSchoolCategory())) {
+					if (iUserType == SchoolUserBMPBean.USER_TYPE_HEADMASTER) {
 						priGroup = getSchoolBusiness(iwc).getRootHighSchoolOtherCommuneAdministratorGroup();
-					else
-						priGroup = getSchoolBusiness(iwc).getRootProviderOtherCommuneAdministratorGroup();					
-				if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getCategoryMusicSchool().getCategory()))
+					}
+					else {
+						priGroup = getSchoolBusiness(iwc).getRootProviderOtherCommuneAdministratorGroup();
+					}
+				}					
+				if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getCategoryMusicSchool().getCategory())) {
 					priGroup = getSchoolBusiness(iwc).getRootMusicSchoolAdministratorGroup();
+				}
 			}
 			
-		if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getCategoryAdultEducation().getCategory()))
+		if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getCategoryAdultEducation().getCategory())) {
 			priGroup = getSchoolBusiness(iwc).getRootAdultEducationAdministratorGroup();
+		}
 		
 		}
 		catch (CreateException e1) {
@@ -1480,7 +1504,7 @@ public class SchoolUserEditor extends Block {
 				user = userHome.findByPrimaryKey(new Integer(hId));
 
 				Name name = new Name(iwc.getParameter(sname + "_" + hId));
-				sUserType = iwc.getParameter(PARAMETER_SCHOOL_USER_TYPE + "_" + hId);
+				sUserType = iwc.getParameter(this.PARAMETER_SCHOOL_USER_TYPE + "_" + hId);
 				iUserType = Integer.parseInt(sUserType);
 
 				if (name.equals("")) {
@@ -1535,7 +1559,7 @@ public class SchoolUserEditor extends Block {
 							String sMobilePhone = iwc.getParameter(smobilephone + "_" + hId + "_" + prK);
 							if (sPhone != null && !sPhone.equals("")) {
 								phone = (Phone) prK;
-								phone.setPhoneTypeId(workPhoneType);
+								phone.setPhoneTypeId(this.workPhoneType);
 								phone.setNumber(sPhone);
 								phone.store();
 								user.addPhone(phone);
@@ -1565,7 +1589,7 @@ public class SchoolUserEditor extends Block {
 					if (newPhone != null && !newPhone.equals("")) {
 						Phone phone = ((PhoneHome) IDOLookup.getHome(Phone.class)).create();
 						phone.setNumber(newPhone);
-						phone.setPhoneTypeId(workPhoneType);
+						phone.setPhoneTypeId(this.workPhoneType);
 						phone.store();
 						user.addPhone(phone);
 					}
@@ -1573,7 +1597,7 @@ public class SchoolUserEditor extends Block {
 					if (newMobilePhone != null && !newMobilePhone.equals("")) {
 						Phone phone = ((PhoneHome) IDOLookup.getHome(Phone.class)).create();
 						phone.setNumber(newMobilePhone);
-						phone.setPhoneTypeId(mobilePhoneType);
+						phone.setPhoneTypeId(this.mobilePhoneType);
 						phone.store();
 						user.addPhone(phone);
 					}
@@ -1585,8 +1609,9 @@ public class SchoolUserEditor extends Block {
 
 			/** Adding headmaster */
 			Name headmaster = null;
-			if (!iwc.getParameter(sname).equals(""))
+			if (!iwc.getParameter(sname).equals("")) {
 				headmaster = new Name(iwc.getParameter(sname));
+			}
 			
 			
 			String hmEmail = iwc.getParameter(semail);
@@ -1619,7 +1644,7 @@ public class SchoolUserEditor extends Block {
 				if (hmPhone != null && !hmPhone.equals("")) {
 					Phone phone = ((PhoneHome) IDOLookup.getHome(Phone.class)).create();
 					phone.setNumber(hmPhone);
-					phone.setPhoneTypeId(workPhoneType);
+					phone.setPhoneTypeId(this.workPhoneType);
 					phone.store();
 					user.addPhone(phone);
 				}
@@ -1627,13 +1652,13 @@ public class SchoolUserEditor extends Block {
 				if (hmMobile != null && !hmMobile.equals("")) {
 					Phone phone = ((PhoneHome) IDOLookup.getHome(Phone.class)).create();
 					phone.setNumber(hmMobile);
-					phone.setPhoneTypeId(mobilePhoneType);
+					phone.setPhoneTypeId(this.mobilePhoneType);
 					phone.store();
 					user.addPhone(phone);
 				}
 
 				SchoolUser schUsr;
-				if (_highSchoolCategory || PARAMETER_SCHOOL_ADULTSCHOOL) {
+				if (this._highSchoolCategory || this.PARAMETER_SCHOOL_ADULTSCHOOL) {
 					schUsr = getSchoolUserBusiness(iwc).addUser(school, user, iUserType, showcontact, main_headmaster, isEconomicalResponsible);
 				}
 				else {
@@ -1669,7 +1694,7 @@ public class SchoolUserEditor extends Block {
 	}
 
 	public void deleteDepartment(IWContext iwc, School school) throws FinderException, RemoteException {
-		String depmId = iwc.getParameter(PARAMETER_DELETE_SCH_DEP);
+		String depmId = iwc.getParameter(this.PARAMETER_DELETE_SCH_DEP);
 		if (depmId != null) {
 			//String schoolId = iwc.getParameter(PARAMETER_SCHOOL_ID);
 
@@ -1680,7 +1705,7 @@ public class SchoolUserEditor extends Block {
 			Collection sUsers = getSchoolUserBusiness(iwc).getUsersByDepartm(school, new Integer(depmId).intValue());
 			try {
 				if (sUsers != null && !sUsers.isEmpty()) {
-					add(getTextNormal(_iwrb.getLocalizedString("depmartment_not_deleted", "There are users belonging to this department. Start deleting user.")));
+					add(getTextNormal(this._iwrb.getLocalizedString("depmartment_not_deleted", "There are users belonging to this department. Start deleting user.")));
 				}
 				else {
 					getSchoolBusiness(iwc).removeDepartment(schDep);
@@ -1696,11 +1721,11 @@ public class SchoolUserEditor extends Block {
 	}
 
 	public boolean updateDepartment(IWContext iwc) throws RemoteException {
-		String sdepartmentname = PARAMETER_SCHOOL_DEPARTMENT;
-		String sdepartmentphone = PARAMETER_SCHOOL_DEPARTMENT_PHONE;
+		String sdepartmentname = this.PARAMETER_SCHOOL_DEPARTMENT;
+		String sdepartmentphone = this.PARAMETER_SCHOOL_DEPARTMENT_PHONE;
 
-		String schoolId = iwc.getParameter(PARAMETER_SCHOOL_ID);
-		String sdid = iwc.getParameter(PARAMETER_SCHOOL_DEPARTMENT_ID);
+		String schoolId = iwc.getParameter(this.PARAMETER_SCHOOL_ID);
+		String sdid = iwc.getParameter(this.PARAMETER_SCHOOL_DEPARTMENT_ID);
 		//String idid = iwc.getParameter(sdid);
 		////int school_id = PARAMETER_SCHOOL_ID;
 		//String dep_upd = iwc.getParameter(ACTION_UPDATE_DEPM);
@@ -1777,9 +1802,9 @@ public class SchoolUserEditor extends Block {
 	private Table mainForm(IWContext iwc) throws RemoteException {
 		Table table = new Table(1, 2);
 		//table.add(getTextTitle(_iwrb.getLocalizedString("school.select_school", "Select School")), 1, 1);
-		table.add(getTextTitle(_school.getName()));
+		table.add(getTextTitle(this._school.getName()));
 		//table.add(schoolList(iwc), 1, 2);
-		table.add(schoolUsers(iwc, _school), 1, 2);
+		table.add(schoolUsers(iwc, this._school), 1, 2);
 //		table.setVerticalAlignment(1, 2, Table.VERTICAL_ALIGN_TOP);
 //		table.setVerticalAlignment(2, 2, Table.VERTICAL_ALIGN_TOP);
 		return table;
@@ -1802,59 +1827,59 @@ public class SchoolUserEditor extends Block {
 	}
 
 	public Table getSchoolUsersTable(IWContext iwc, School school, boolean addSubmitButton) throws RemoteException {
-		_school = school;
+		this._school = school;
 		return schoolUsersTable(iwc, school, addSubmitButton);
 	}
 
 	public Table getHighSchoolUsersTable(IWContext iwc, School school, boolean addSubmitButton) throws Exception {
-		_school = school;
+		this._school = school;
 		return highschoolUsersTable(iwc, school, addSubmitButton);
 	}
 
 	private void init(IWContext iwc) throws RemoteException {
-		_iwrb = super.getResourceBundle(iwc);
-		_tFormat = TextFormat.getInstance();
-		_iwb = iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+		this._iwrb = super.getResourceBundle(iwc);
+		this._tFormat = TextFormat.getInstance();
+		this._iwb = iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
 
-		String schoolId = iwc.getParameter(PARAMETER_SCHOOL_ID);
+		String schoolId = iwc.getParameter(this.PARAMETER_SCHOOL_ID);
 		if (schoolId != null && !schoolId.equals("")) {
 			try {
-				_school = getSchoolHome().findByPrimaryKey(new Integer(schoolId));
+				this._school = getSchoolHome().findByPrimaryKey(new Integer(schoolId));
 			}
 			catch (FinderException e) {
 				e.printStackTrace(System.err);
 			}
-			if (_school!=null)
+			if (this._school!=null)
             {
-                String category = getSchoolUserBusiness(iwc).getSchoolCategory(_school);
-    			PARAMETER_SCHOOL_HIGHSCHOOL = category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getHighSchoolSchoolCategory());
-    			PARAMETER_SCHOOL_ADULTSCHOOL = category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getCategoryAdultEducation().getCategory());
+                String category = getSchoolUserBusiness(iwc).getSchoolCategory(this._school);
+    			this.PARAMETER_SCHOOL_HIGHSCHOOL = category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getHighSchoolSchoolCategory());
+    			this.PARAMETER_SCHOOL_ADULTSCHOOL = category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getCategoryAdultEducation().getCategory());
             }
 			
 		}
 
-		String uId = iwc.getParameter(PARAMETER_EDIT_USER);
+		String uId = iwc.getParameter(this.PARAMETER_EDIT_USER);
 		if (uId != null) {
-			userToEdit = Integer.parseInt(uId);
+			this.userToEdit = Integer.parseInt(uId);
 		}
 
-		String schdepmId = iwc.getParameter(PARAMETER_EDIT_SCH_DEP);
+		String schdepmId = iwc.getParameter(this.PARAMETER_EDIT_SCH_DEP);
 		if (schdepmId != null) {
-			depmToEdit = Integer.parseInt(schdepmId);
+			this.depmToEdit = Integer.parseInt(schdepmId);
 		}
 
 		try {
-			deleteUser(iwc, _school);
+			deleteUser(iwc, this._school);
 		}
 		catch (FinderException e) {
-			add(getTextNormal(_iwrb.getLocalizedString("user_not_deleted", "User not deleted")));
+			add(getTextNormal(this._iwrb.getLocalizedString("user_not_deleted", "User not deleted")));
 		}
 
 		try {
-			deleteDepartment(iwc, _school);
+			deleteDepartment(iwc, this._school);
 		}
 		catch (FinderException e) {
-			add(getTextNormal(_iwrb.getLocalizedString("depmartment_not_deleted", "Department not deleted")));
+			add(getTextNormal(this._iwrb.getLocalizedString("depmartment_not_deleted", "Department not deleted")));
 		}
 
 	}
@@ -1877,17 +1902,17 @@ public class SchoolUserEditor extends Block {
 
 	public void main(IWContext iwc) throws RemoteException {
 		init(iwc);
-		if (_school != null) {
+		if (this._school != null) {
 			
 			try {
-				Collection coll = _school.getSchoolTypes();
+				Collection coll = this._school.getSchoolTypes();
 				Iterator iterCollection = coll.iterator();
 
 				while (iterCollection.hasNext()) {
 					SchoolType schoolType = (SchoolType) iterCollection.next();
 					String schoolCategory = schoolType.getSchoolCategory();
 					if (schoolCategory.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getHighSchoolSchoolCategory())) {
-						_highSchoolCategory = true;
+						this._highSchoolCategory = true;
 					}
 				}
 
@@ -1896,19 +1921,19 @@ public class SchoolUserEditor extends Block {
 			}
 		}
 
-		String action = iwc.getParameter(PARAMETER_ACTION);
+		String action = iwc.getParameter(this.PARAMETER_ACTION);
 
 		if (action == null) {
 			add(schoolList(iwc));
 		}
-		else if (action.equals(ACTION_VIEW_SCHOOL) && _school != null) {
+		else if (action.equals(this.ACTION_VIEW_SCHOOL) && this._school != null) {
 			add(mainForm(iwc));
 		}
-		else if (action.equals(ACTION_UPDATE) && _school != null) {
-			updateUsers(iwc, _school);
+		else if (action.equals(this.ACTION_UPDATE) && this._school != null) {
+			updateUsers(iwc, this._school);
 			add(mainForm(iwc));
 		}
-		else if (action.equals(ACTION_UPDATE_DEPM)) {
+		else if (action.equals(this.ACTION_UPDATE_DEPM)) {
 			updateDepartment(iwc); //Malin
 			add(mainForm(iwc));
 		}
@@ -1922,13 +1947,13 @@ public class SchoolUserEditor extends Block {
 	public void addParameter(String parameterName, String parameterValue) {
 		if (parameterName != null && parameterValue != null) {
 			if (this.parameterNames == null) {
-				parameterNames = new Vector();
+				this.parameterNames = new Vector();
 			}
 			if (this.parameterValues == null) {
-				parameterValues = new Vector();
+				this.parameterValues = new Vector();
 			}
-			parameterNames.add(parameterName);
-			parameterValues.add(parameterValue);
+			this.parameterNames.add(parameterName);
+			this.parameterValues.add(parameterValue);
 
 		}
 	}
@@ -1941,7 +1966,7 @@ public class SchoolUserEditor extends Block {
 		if (typeCategory != null && !typeCategory.equals("")) {
 			try {
 				SchoolTypeHome sth = (SchoolTypeHome) IDOLookup.getHome(SchoolType.class);
-				schoolTypeIds = sth.findAllByCategory(typeCategory);
+				this.schoolTypeIds = sth.findAllByCategory(typeCategory);
 			}
 			catch (Exception e) {
 				e.printStackTrace(System.err);

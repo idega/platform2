@@ -80,13 +80,13 @@ public PollQuestionEditor(){
 
      */
 
-    isAdmin = true; //AccessControl.hasEditPermission(this,iwc);
+    this.isAdmin = true; //AccessControl.hasEditPermission(this,iwc);
 
-    iwb = getBundle(iwc);
+    this.iwb = getBundle(iwc);
 
-    iwrb = getResourceBundle(iwc);
+    this.iwrb = getResourceBundle(iwc);
 
-    addTitle(iwrb.getLocalizedString("poll_question_editor","Poll Question Editor"));
+    addTitle(this.iwrb.getLocalizedString("poll_question_editor","Poll Question Editor"));
 
     Locale currentLocale = iwc.getCurrentLocale();
     Locale chosenLocale;
@@ -116,7 +116,7 @@ public PollQuestionEditor(){
 
 
 
-    if ( isAdmin ) {
+    if ( this.isAdmin ) {
 
       processForm(iwc, iLocaleId, sLocaleId);
 
@@ -138,13 +138,13 @@ public PollQuestionEditor(){
 
       try {
 
-        pollID = Integer.parseInt(iwc.getParameter(Poll._prmPollID));
+        this.pollID = Integer.parseInt(iwc.getParameter(Poll._prmPollID));
 
       }
 
       catch (NumberFormatException e) {
 
-        pollID = -1;
+        this.pollID = -1;
 
       }
 
@@ -156,13 +156,13 @@ public PollQuestionEditor(){
 
       try {
 
-        pollQuestionID = Integer.parseInt(iwc.getParameter(PollBusiness._PARAMETER_POLL_QUESTION));
+        this.pollQuestionID = Integer.parseInt(iwc.getParameter(PollBusiness._PARAMETER_POLL_QUESTION));
 
       }
 
       catch (NumberFormatException e) {
 
-        pollQuestionID = -1;
+        this.pollQuestionID = -1;
 
       }
 
@@ -188,13 +188,12 @@ public PollQuestionEditor(){
 
       else if ( iwc.getParameter(PollBusiness._PARAMETER_MODE).equalsIgnoreCase(PollBusiness._PARAMETER_SAVE) ) {
 
-        if ( pollID != -1 )
-
-          savePollQuestion(iwc,iLocaleId);
-
-        else
-
-          closePollQuestion(iwc);
+        if ( this.pollID != -1 ) {
+			savePollQuestion(iwc,iLocaleId);
+		}
+		else {
+			closePollQuestion(iwc);
+		}
 
       }
 
@@ -206,13 +205,13 @@ public PollQuestionEditor(){
 
       try {
 
-        pollQuestionID = Integer.parseInt((String) iwc.getSessionAttribute(PollBusiness._PARAMETER_POLL_QUESTION));
+        this.pollQuestionID = Integer.parseInt((String) iwc.getSessionAttribute(PollBusiness._PARAMETER_POLL_QUESTION));
 
       }
 
       catch (NumberFormatException e) {
 
-        pollQuestionID = -1;
+        this.pollQuestionID = -1;
 
       }
 
@@ -220,7 +219,7 @@ public PollQuestionEditor(){
 
 
 
-    if ( pollQuestionID != -1 ) {
+    if ( this.pollQuestionID != -1 ) {
 
       if ( iwc.getParameter(PollBusiness._PARAMETER_DELETE) != null ) {
 
@@ -230,7 +229,7 @@ public PollQuestionEditor(){
 
       else {
 
-        update = true;
+        this.update = true;
 
       }
 
@@ -246,9 +245,9 @@ public PollQuestionEditor(){
 
   private void initializeFields(int iLocaleID) {
 
-    String pollQuestion = PollBusiness.getLocalizedQuestion(pollQuestionID,iLocaleID);
+    String pollQuestion = PollBusiness.getLocalizedQuestion(this.pollQuestionID,iLocaleID);
 
-    String pollInformation = PollBusiness.getLocalizedInformation(pollQuestionID,iLocaleID);
+    String pollInformation = PollBusiness.getLocalizedInformation(this.pollQuestionID,iLocaleID);
 
 
 
@@ -258,7 +257,7 @@ public PollQuestionEditor(){
 
       localeDrop.setSelectedElement(Integer.toString(iLocaleID));
 
-    addLeft(iwrb.getLocalizedString("locale","Locale")+": ",localeDrop,false);
+    addLeft(this.iwrb.getLocalizedString("locale","Locale")+": ",localeDrop,false);
 
 
 
@@ -266,7 +265,7 @@ public PollQuestionEditor(){
 
       questionInput.setLength(40);
 
-      if ( update && pollQuestion != null ) {
+      if ( this.update && pollQuestion != null ) {
 
         questionInput.setContent(pollQuestion);
 
@@ -276,7 +275,7 @@ public PollQuestionEditor(){
 
     TextArea infoArea = new TextArea(prmInformationParameter,40,5);
 
-      if ( update && pollInformation != null ) {
+      if ( this.update && pollInformation != null ) {
 
         infoArea.setContent(pollInformation);
 
@@ -294,9 +293,9 @@ public PollQuestionEditor(){
 
       startDate.setYearRange(stampur.getYear(),stampur.getYear()+10);
 
-      if ( update && PollBusiness.getStartDate(pollQuestionID) != null ) {
+      if ( this.update && PollBusiness.getStartDate(this.pollQuestionID) != null ) {
 
-        startDate.setDate(new java.sql.Date(PollBusiness.getStartDate(pollQuestionID).getTimestamp().getTime()));
+        startDate.setDate(new java.sql.Date(PollBusiness.getStartDate(this.pollQuestionID).getTimestamp().getTime()));
 
       }
 
@@ -306,33 +305,33 @@ public PollQuestionEditor(){
 
       endDate.setYearRange(stampur.getYear(),stampur.getYear()+10);
 
-      if ( update && PollBusiness.getEndDate(pollQuestionID) != null ) {
+      if ( this.update && PollBusiness.getEndDate(this.pollQuestionID) != null ) {
 
-        endDate.setDate(new java.sql.Date(PollBusiness.getEndDate(pollQuestionID).getTimestamp().getTime()));
+        endDate.setDate(new java.sql.Date(PollBusiness.getEndDate(this.pollQuestionID).getTimestamp().getTime()));
 
       }
 
 
 
-    addLeft(iwrb.getLocalizedString("question","Question")+":",questionInput,true);
+    addLeft(this.iwrb.getLocalizedString("question","Question")+":",questionInput,true);
 
-    addLeft(iwrb.getLocalizedString("information","Information")+":",infoArea,true);
+    addLeft(this.iwrb.getLocalizedString("information","Information")+":",infoArea,true);
 
-    addLeft(iwrb.getLocalizedString("start_date","Start date:"),startDate,true);
+    addLeft(this.iwrb.getLocalizedString("start_date","Start date:"),startDate,true);
 
-    addLeft(iwrb.getLocalizedString("end_date","End date:"),endDate,true);
+    addLeft(this.iwrb.getLocalizedString("end_date","End date:"),endDate,true);
 
-    addHiddenInput(new HiddenInput(Poll._prmPollID,Integer.toString(pollID)));
+    addHiddenInput(new HiddenInput(Poll._prmPollID,Integer.toString(this.pollID)));
 
-    addHiddenInput(new HiddenInput(PollBusiness._PARAMETER_POLL_QUESTION,Integer.toString(pollQuestionID)));
+    addHiddenInput(new HiddenInput(PollBusiness._PARAMETER_POLL_QUESTION,Integer.toString(this.pollQuestionID)));
 
     addHiddenInput(new HiddenInput("iLocaleID",Integer.toString(iLocaleID)));
 
 
 
-    addSubmitButton(new SubmitButton(iwrb.getLocalizedImageButton("close","CLOSE"),PollBusiness._PARAMETER_MODE,PollBusiness._PARAMETER_CLOSE));
+    addSubmitButton(new SubmitButton(this.iwrb.getLocalizedImageButton("close","CLOSE"),PollBusiness._PARAMETER_MODE,PollBusiness._PARAMETER_CLOSE));
 
-    addSubmitButton(new SubmitButton(iwrb.getLocalizedImageButton("save","SAVE"),PollBusiness._PARAMETER_MODE,PollBusiness._PARAMETER_SAVE));
+    addSubmitButton(new SubmitButton(this.iwrb.getLocalizedImageButton("save","SAVE"),PollBusiness._PARAMETER_MODE,PollBusiness._PARAMETER_SAVE));
 
   }
 
@@ -342,7 +341,7 @@ public PollQuestionEditor(){
 
     iwc.removeSessionAttribute(PollBusiness._PARAMETER_POLL_QUESTION);
 
-    PollBusiness.deletePollQuestion(pollQuestionID);
+    PollBusiness.deletePollQuestion(this.pollQuestionID);
 
     setParentToReload();
 
@@ -388,13 +387,13 @@ public PollQuestionEditor(){
 
     if ( pollQuestionString == null || pollQuestionString.length() == 0 ) {
 
-      pollQuestionString = iwrb.getLocalizedString("no_text","No question entered");
+      pollQuestionString = this.iwrb.getLocalizedString("no_text","No question entered");
 
     }
 
     if ( localeString != null ) {
 
-      _pollQuestionID = PollBusiness.savePollQuestion(_userID,pollID,pollQuestionID,pollQuestionString,pollInformationString,pollStartDate,pollEndDate,Integer.parseInt(localeString));
+      _pollQuestionID = PollBusiness.savePollQuestion(_userID,this.pollID,this.pollQuestionID,pollQuestionString,pollInformationString,pollStartDate,pollEndDate,Integer.parseInt(localeString));
 
     }
 
@@ -408,7 +407,7 @@ public PollQuestionEditor(){
 
     iwc.removeSessionAttribute(PollBusiness._PARAMETER_POLL_QUESTION);
 
-    iwc.setSessionAttribute(PollQuestionChooser.prmQuestions,Integer.toString(pollQuestionID));
+    iwc.setSessionAttribute(PollQuestionChooser.prmQuestions,Integer.toString(this.pollQuestionID));
 
     setParentToReload();
 

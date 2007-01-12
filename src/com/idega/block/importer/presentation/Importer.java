@@ -85,7 +85,7 @@ public class Importer extends StyledIWAdminWindow {
 	 */
 	public void setLocalFolderPath(String path) {
 		this.folderPath = path;
-		usingLocalFileSystem = true;
+		this.usingLocalFileSystem = true;
 	}
 	public String getLocalFolderPath() {
 		return this.folderPath;
@@ -96,7 +96,7 @@ public class Importer extends StyledIWAdminWindow {
 	 */
 	public void setImportFolder(ICFile folder) {
 		this.importFolder = folder;
-		usingLocalFileSystem = false;
+		this.usingLocalFileSystem = false;
 	}
 	
 	public ICFile getImportFolder() {
@@ -106,58 +106,62 @@ public class Importer extends StyledIWAdminWindow {
 	private void parseAction(IWContext iwc) {
 		
 		if( (getICObjectInstanceID() < 1) && iwc.isParameterSet(PARAMETER_IMPORT_HANDLER) && iwc.isParameterSet(PARAMETER_IMPORT_FILE) ){
-			isInApplication = true;
+			this.isInApplication = true;
 		}
 		
 		if (iwc.isParameterSet(ACTION_PARAMETER)) {
 			if (iwc.getParameter(ACTION_PARAMETER).equals(IMPORT_FILES)) {
-				importFiles = true;
+				this.importFiles = true;
 			}
 			else if (iwc.getParameter(ACTION_PARAMETER).equals(SELECT_FILES)) {
 				/*if( iwc.isParameterSet(NEW_FOLDER_PATH) ){
 				  this.setFolderPath(iwc.getParameter(NEW_FOLDER_PATH));
 				}*/ //removed this because folders are now set at design time in the Builder not runtime
-				selectFiles = true;
+				this.selectFiles = true;
 			}
 			/*else if(  iwc.getParameter(ACTION_PARAMETER).equals(SELECT_NEW_FOLDER) ){
 			  selectFileSystemFolder = true;
 			}*/
 		}
 		else {
-			selectFiles = true;
+			this.selectFiles = true;
 		}
 		//if importing into a specific group. Used for compatabilty to idegaWeb Member system
-		groupId = iwc.getParameter(GroupPropertyWindow.PARAMETERSTRING_GROUP_ID);
-		if (groupId != null) {
-			iwc.setSessionAttribute(PARAMETER_GROUP_ID, groupId);
+		this.groupId = iwc.getParameter(GroupPropertyWindow.PARAMETERSTRING_GROUP_ID);
+		if (this.groupId != null) {
+			iwc.setSessionAttribute(PARAMETER_GROUP_ID, this.groupId);
 		}
 
-		importHandler = iwc.getParameter(PARAMETER_IMPORT_HANDLER);
-		importFile = iwc.getParameter(PARAMETER_IMPORT_FILE);
+		this.importHandler = iwc.getParameter(PARAMETER_IMPORT_HANDLER);
+		this.importFile = iwc.getParameter(PARAMETER_IMPORT_FILE);
 		
 	}
 	
 	public void main(IWContext iwc) throws Exception {
-		iwrb = this.getResourceBundle(iwc);
-		setTitle(iwrb.getLocalizedString("Importer.title", "Importer"));
-		addTitle(iwrb.getLocalizedString("Importer.title", "Importer"), TITLE_STYLECLASS);
+		this.iwrb = this.getResourceBundle(iwc);
+		setTitle(this.iwrb.getLocalizedString("Importer.title", "Importer"));
+		addTitle(this.iwrb.getLocalizedString("Importer.title", "Importer"), TITLE_STYLECLASS);
 		parseAction(iwc);
-		if (selectFiles) {
-			if (usingLocalFileSystem) {
+		if (this.selectFiles) {
+			if (this.usingLocalFileSystem) {
 				showLocalFileSystemSelection(iwc);
 			}
-			else if (importFolder != null) {
+			else if (this.importFolder != null) {
 				showIWFileSystemSelection(iwc);
 			}
-			else if (isInApplication) {
+			else if (this.isInApplication) {
 				showFileUploader(iwc);
 			}
 			else {
-				if( getICObjectInstanceID() < 1 ) add(iwrb.getLocalizedString("importer.no.handler.or.importfile", "No ImportFileHandler or ImportFile specified."));
-				else add(iwrb.getLocalizedString("importer.no.folder.selected", "No folder is selected. Open the properties window and select a folder."));
+				if( getICObjectInstanceID() < 1 ) {
+					add(this.iwrb.getLocalizedString("importer.no.handler.or.importfile", "No ImportFileHandler or ImportFile specified."));
+				}
+				else {
+					add(this.iwrb.getLocalizedString("importer.no.folder.selected", "No folder is selected. Open the properties window and select a folder."));
+				}
 			}
 		}
-		else if (importFiles) {
+		else if (this.importFiles) {
 			importFiles(iwc);
 		}
 		//removed this because folders are now set at design time in the Builder not runtime  
@@ -202,15 +206,15 @@ public class Importer extends StyledIWAdminWindow {
 		table.setCellspacing(5);
 		FileInput chooser = new FileInput();
 		Help help = getHelp(HELP_TEXT_KEY);
-		SubmitButton confirm = new SubmitButton(iwrb.getLocalizedString("confirm","Confirm"));
+		SubmitButton confirm = new SubmitButton(this.iwrb.getLocalizedString("confirm","Confirm"));
 		StyledButton styledConfirm = new StyledButton(confirm);
-		CloseButton close = new CloseButton(iwrb.getLocalizedString("close", "Close"));
+		CloseButton close = new CloseButton(this.iwrb.getLocalizedString("close", "Close"));
 		StyledButton styledClose = new StyledButton(close);
 		
-		table.add(iwrb.getLocalizedString("importer.select_file", "Select a file to import"+":"),1,1);
+		table.add(this.iwrb.getLocalizedString("importer.select_file", "Select a file to import"+":"),1,1);
 		table.add(new HiddenInput(ACTION_PARAMETER, IMPORT_FILES),1,2);
-		table.add(new HiddenInput(PARAMETER_IMPORT_HANDLER, importHandler),1,2);
-		table.add(new HiddenInput(PARAMETER_IMPORT_FILE, importFile),1,2);
+		table.add(new HiddenInput(PARAMETER_IMPORT_HANDLER, this.importHandler),1,2);
+		table.add(new HiddenInput(PARAMETER_IMPORT_FILE, this.importFile),1,2);
 		table.add(chooser,1,2);
 		
 		Table buttonTable = new Table();
@@ -263,13 +267,13 @@ public class Importer extends StyledIWAdminWindow {
 		buttonTable.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_RIGHT);
 		
 		int row = 1;
-		Text done = new Text(iwrb.getLocalizedString("importer.done.importing", "Done importing:"));
+		Text done = new Text(this.iwrb.getLocalizedString("importer.done.importing", "Done importing:"));
 		headerTable.add(done, 1, row++);
 		String[] values = null;
-		if (usingLocalFileSystem){
+		if (this.usingLocalFileSystem){
 			values = iwc.getParameterValues(IMPORT_FILE_PATHS); //for local file importing
 		}
-		else if(isInApplication){
+		else if(this.isInApplication){
 			if(iwc.isUploadedFileSet()) {
 				UploadFile file = iwc.getUploadedFile();
 				String[] temp = {file.getAbsolutePath()};
@@ -287,7 +291,7 @@ public class Importer extends StyledIWAdminWindow {
 			for (int i = 0; i < values.length; i++) {
 				boolean success = false;
 				String path;
-				if (usingLocalFileSystem || isInApplication ) {
+				if (this.usingLocalFileSystem || this.isInApplication ) {
 					path = values[i];
 				}
 				else { /**@todo read directly from the database or at least do this in the business class**/
@@ -304,14 +308,14 @@ public class Importer extends StyledIWAdminWindow {
 				}
 				String status = null;
 				if (!success) {
-					status = iwrb.getLocalizedString("importer.failure", "Failed");
+					status = this.iwrb.getLocalizedString("importer.failure", "Failed");
 				} else if (failedRecords.size() != 0) {
-					status = iwrb.getLocalizedString("importer.not_all imported", "Not all records imported");
+					status = this.iwrb.getLocalizedString("importer.not_all imported", "Not all records imported");
 				} else {
-					status = iwrb.getLocalizedString("importer.success", "Success");
+					status = this.iwrb.getLocalizedString("importer.success", "Success");
 				}
 				Text fileStatus = new Text(path.substring(path.lastIndexOf(com.idega.util.FileUtil.getFileSeparator())+1,path.length()) + ": " + status);
-				if (success && !usingLocalFileSystem &&!isInApplication) {
+				if (success && !this.usingLocalFileSystem &&!this.isInApplication) {
 					//@todo move to a business method
 					Integer id = new Integer(values[i]);
 					ImportFileRecord record =
@@ -324,7 +328,7 @@ public class Importer extends StyledIWAdminWindow {
 				headerTable.add(fileStatus, 1, row++);
 				row = 1;
 				if (failedRecords.size() != 0) {
-				    Text failed = new Text(iwrb.getLocalizedString("importer.number_of_failed_records", "Number of failed record was:")+" "+String.valueOf(failedRecords.size()));
+				    Text failed = new Text(this.iwrb.getLocalizedString("importer.number_of_failed_records", "Number of failed record was:")+" "+String.valueOf(failedRecords.size()));
 					contentTable.add(failed, 1, row++);
 					for (int j=0;j<failedRecords.size();j++) {
 					    failed = new Text(String.valueOf(failedRecords.get(j)));
@@ -333,19 +337,20 @@ public class Importer extends StyledIWAdminWindow {
 					}
 				}
 			}
-			if(isInApplication){
-				buttonTable.add(new StyledButton(new CloseButton(iwrb.getLocalizedString("importer.close", "close"))), 1, 1); 
+			if(this.isInApplication){
+				buttonTable.add(new StyledButton(new CloseButton(this.iwrb.getLocalizedString("importer.close", "close"))), 1, 1); 
 				setParentToReload();
 			}
-			else 
-				buttonTable.add(new StyledButton(new BackButton(iwrb.getLocalizedString("importer.back", "back"))), 1, 1);
+			else {
+				buttonTable.add(new StyledButton(new BackButton(this.iwrb.getLocalizedString("importer.back", "back"))), 1, 1);
+			}
 			
 			mainTable.add(contentTable, 1, 3);
 			mainTable.setHeight(4, 5);
 		}
 		else {
-			headerTable.add(new Text(iwrb.getLocalizedString("importer.failure", "Failed")+": "+iwrb.getLocalizedString("importer.no.file.selected", "No file selected!")), 1, row++);
-			buttonTable.add(new StyledButton(new BackButton(iwrb.getLocalizedString("importer.back", "back"))), 1, 1);
+			headerTable.add(new Text(this.iwrb.getLocalizedString("importer.failure", "Failed")+": "+this.iwrb.getLocalizedString("importer.no.file.selected", "No file selected!")), 1, row++);
+			buttonTable.add(new StyledButton(new BackButton(this.iwrb.getLocalizedString("importer.back", "back"))), 1, 1);
 		}
 		Help help = getHelp(HELP_TEXT_KEY);
 		bottomTable.add(help, 1, 1);
@@ -362,10 +367,10 @@ public class Importer extends StyledIWAdminWindow {
 	 */
 	private void showIWFileSystemSelection(IWContext iwc) throws Exception {
 		Table fileTable = getFrameTable();
-		if (MediaBusiness.isFolder(importFolder)) {
+		if (MediaBusiness.isFolder(this.importFolder)) {
 			MediaBusiness.removeMediaIdFromSession(iwc);
 			//do I have to do this?
-			ImportFileRecord folder = changeICFileToImportFileRecord(importFolder);
+			ImportFileRecord folder = changeICFileToImportFileRecord(this.importFolder);
 			int fileCount = folder.getChildCount();
 			if (fileCount > 0) {
 				Iterator files;
@@ -381,31 +386,34 @@ public class Importer extends StyledIWAdminWindow {
 				fileTable.resize(7, fileCount + 3);
 				form.add(fileTable);
 				//header
-				Text heading = new Text(iwrb.getLocalizedString("importer.select.files.to.import", "Importer : Select files to import"));
+				Text heading = new Text(this.iwrb.getLocalizedString("importer.select.files.to.import", "Importer : Select files to import"));
 				heading.setBold();
 				fileTable.add(new HiddenInput(ACTION_PARAMETER, IMPORT_FILES), 1, 1);
 				fileTable.add(heading, 1, 1);
-				Text name = new Text(iwrb.getLocalizedString("importer.filename", "File name"));
+				Text name = new Text(this.iwrb.getLocalizedString("importer.filename", "File name"));
 				name.setBold();
-				Text size = new Text(iwrb.getLocalizedString("importer.filesize", "File size"));
+				Text size = new Text(this.iwrb.getLocalizedString("importer.filesize", "File size"));
 				size.setBold();
-				Text uploaded = new Text(iwrb.getLocalizedString("importer.creationdate", "Uploaded"));
+				Text uploaded = new Text(this.iwrb.getLocalizedString("importer.creationdate", "Uploaded"));
 				uploaded.setBold();
-				Text imported = new Text(iwrb.getLocalizedString("importer.modificationdate", "Imported"));
+				Text imported = new Text(this.iwrb.getLocalizedString("importer.modificationdate", "Imported"));
 				imported.setBold();
-				Text status = new Text(iwrb.getLocalizedString("importer.status", "Status"));
+				Text status = new Text(this.iwrb.getLocalizedString("importer.status", "Status"));
 				status.setBold();
-				Text report = new Text(iwrb.getLocalizedString("importer.report", "Report"));
+				Text report = new Text(this.iwrb.getLocalizedString("importer.report", "Report"));
 				report.setBold();
 				Link sortName = new Link(name);
-				if (!ICFileBMPBean.getColumnNameName().equals(sortBy))
+				if (!ICFileBMPBean.getColumnNameName().equals(sortBy)) {
 					sortName.addParameter(PARAMETER_SORT_BY, ICFileBMPBean.getColumnNameName());
+				}
 				Link sortUploaded = new Link(uploaded);
-				if (!ICFileBMPBean.getColumnNameCreationDate().equals(sortBy))
+				if (!ICFileBMPBean.getColumnNameCreationDate().equals(sortBy)) {
 					sortUploaded.addParameter(PARAMETER_SORT_BY, ICFileBMPBean.getColumnNameCreationDate());
+				}
 				Link sortImported = new Link(imported);
-				if (!ICFileBMPBean.getColumnNameModificationDate().equals(sortBy))
+				if (!ICFileBMPBean.getColumnNameModificationDate().equals(sortBy)) {
 					sortImported.addParameter(PARAMETER_SORT_BY, ICFileBMPBean.getColumnNameModificationDate());
+				}
 				
 				
 				fileTable.add(sortName, 1, 2);
@@ -415,20 +423,20 @@ public class Importer extends StyledIWAdminWindow {
 				fileTable.add(status, 5, 2);
 				fileTable.add(report, 6, 2);
 				//footer
-				Text importHandler = new Text(iwrb.getLocalizedString("importer.import.handler", "Import handler : "));
+				Text importHandler = new Text(this.iwrb.getLocalizedString("importer.import.handler", "Import handler : "));
 				importHandler.setBold();
 				fileTable.add(importHandler, 1, fileCount + 3);
 				fileTable.add(getImportBusiness(iwc).getImportHandlers(iwc,PARAMETER_IMPORT_HANDLER), 2, fileCount + 3);
-				Text fileType = new Text(iwrb.getLocalizedString("importer.import.filetype", "File type : "));
+				Text fileType = new Text(this.iwrb.getLocalizedString("importer.import.filetype", "File type : "));
 				fileType.setBold();
 				fileTable.add(fileType, 3, fileCount + 3);
 				fileTable.add(getImportBusiness(iwc).getImportFileClasses(iwc,this.PARAMETER_IMPORT_FILE), 4, fileCount + 3);
-				Link upload = new Link(iwrb.getLocalizedString("importer.upload", "Upload"));
+				Link upload = new Link(this.iwrb.getLocalizedString("importer.upload", "Upload"));
 				upload.setWindowToOpen(MediaChooserWindow.class);
 				upload.setAsImageButton(true);
 				upload.addParameter(MediaConstants.MEDIA_ACTION_RELOAD, "TRUE");
 				upload.addParameter(MediaBusiness.getMediaParameterNameInSession(iwc), ((Integer) folder.getPrimaryKey()).intValue());
-				SubmitButton importIt = new SubmitButton(iwrb.getLocalizedString("importer.import", "Import"));
+				SubmitButton importIt = new SubmitButton(this.iwrb.getLocalizedString("importer.import", "Import"));
 				importIt.setAsImageButton(true);
 				fileTable.add(upload, 6, fileCount + 3);
 				fileTable.add(importIt, 7, fileCount + 3);
@@ -437,7 +445,7 @@ public class Importer extends StyledIWAdminWindow {
 				while (files.hasNext()) {
 					ImportFileRecord file = (ImportFileRecord) files.next();
 					if (MediaBusiness.isFolder(file)) { //add support for folders within this?
-						fileTable.add(file.getName() + iwrb.getLocalizedString("importer.folder", " (Folder)"), 1, row);
+						fileTable.add(file.getName() + this.iwrb.getLocalizedString("importer.folder", " (Folder)"), 1, row);
 					}
 					else { //is a file
 						boolean wasImported = file.hasBeenImported();
@@ -446,10 +454,10 @@ public class Importer extends StyledIWAdminWindow {
 						fileTable.add(new Text(file.getCreationDate().toString()), 3, row);
 						if (wasImported) {
 							fileTable.add(new Text(file.getModificationDate().toString()), 4, row);
-							fileTable.add(new Text(iwrb.getLocalizedString("importer.imported", "Imported")), 5, row);
+							fileTable.add(new Text(this.iwrb.getLocalizedString("importer.imported", "Imported")), 5, row);
 						}
 						else {
-							fileTable.add(new Text(iwrb.getLocalizedString("importer.not.imported", "Not imported")), 5, row);
+							fileTable.add(new Text(this.iwrb.getLocalizedString("importer.not.imported", "Not imported")), 5, row);
 						}
 						addReportInfo(iwc, file.getName(), fileTable, 6, row);
 
@@ -460,11 +468,11 @@ public class Importer extends StyledIWAdminWindow {
 				add(form); //add the form
 			}
 			else {
-				Text header = new Text(iwrb.getLocalizedString("importer", "Importer"));
+				Text header = new Text(this.iwrb.getLocalizedString("importer", "Importer"));
 				header.setBold();
 				fileTable.add(header, 1, 1);
-				fileTable.add(iwrb.getLocalizedString("no.files", "No files to import, please upload files first"), 1, 2);
-				Link upload = new Link(iwrb.getLocalizedString("importer.upload", "Upload"));
+				fileTable.add(this.iwrb.getLocalizedString("no.files", "No files to import, please upload files first"), 1, 2);
+				Link upload = new Link(this.iwrb.getLocalizedString("importer.upload", "Upload"));
 				upload.setWindowToOpen(MediaChooserWindow.class);
 				upload.setAsImageButton(true);
 				upload.addParameter(MediaConstants.MEDIA_ACTION_RELOAD, "TRUE");
@@ -474,10 +482,10 @@ public class Importer extends StyledIWAdminWindow {
 			}
 		}
 		else {
-			Text header = new Text(iwrb.getLocalizedString("importer", "Importer"));
+			Text header = new Text(this.iwrb.getLocalizedString("importer", "Importer"));
 			header.setBold();
 			fileTable.add(header, 1, 1);
-			fileTable.add(iwrb.getLocalizedString("importer.not.a.folder", "Selected import folder is a file! Please select a folder."), 1, 2);
+			fileTable.add(this.iwrb.getLocalizedString("importer.not.a.folder", "Selected import folder is a file! Please select a folder."), 1, 2);
 			add(fileTable);
 		}
 	}
@@ -493,7 +501,7 @@ public class Importer extends StyledIWAdminWindow {
 			fileTable.resize(3, files.length + 4);
 			Form form = new Form();
 			form.add(fileTable);
-			Text headline = new Text(iwrb.getLocalizedString("importer.select_files", "Select files to import."));
+			Text headline = new Text(this.iwrb.getLocalizedString("importer.select_files", "Select files to import."));
 			headline.setBold();
 			fileTable.add(headline, 1, 1);
 			fileTable.add(new HiddenInput(ACTION_PARAMETER, IMPORT_FILES), 1, 1);
@@ -505,22 +513,22 @@ public class Importer extends StyledIWAdminWindow {
 				}
 				else {
 					fileTable.add(files[i].getName(), 1, i + 2);
-					fileTable.add(iwrb.getLocalizedString("importer.is.a.folder", "Folder"), 2, i + 2);
+					fileTable.add(this.iwrb.getLocalizedString("importer.is.a.folder", "Folder"), 2, i + 2);
 				}
 			}
-			fileTable.add(iwrb.getLocalizedString("importer.select.import.handler", "Select import handler"), 1, files.length + 2);
+			fileTable.add(this.iwrb.getLocalizedString("importer.select.import.handler", "Select import handler"), 1, files.length + 2);
 			fileTable.add(getImportBusiness(iwc).getImportHandlers(iwc,PARAMETER_IMPORT_HANDLER), 2, files.length + 2);
-			fileTable.add(iwrb.getLocalizedString("importer.select.import.file.type", "Select file type"), 1, files.length + 3);
+			fileTable.add(this.iwrb.getLocalizedString("importer.select.import.file.type", "Select file type"), 1, files.length + 3);
 			fileTable.add(getImportBusiness(iwc).getImportFileClasses(iwc,this.PARAMETER_IMPORT_FILE), 2, files.length + 3);
 			fileTable.add(new SubmitButton(), 2, files.length + 4);
 			add(form);
 		}
 		else {
-			Text header = new Text(iwrb.getLocalizedString("importer", "Importer"));
+			Text header = new Text(this.iwrb.getLocalizedString("importer", "Importer"));
 			header.setBold();
 			fileTable.add(header, 1, 1);
-			fileTable.add(iwrb.getLocalizedString("importer.nosuchfolder", "No such folder."), 1, 2);
-			fileTable.add(new BackButton(iwrb.getLocalizedString("importer.try.again", "Try again")), 7, 3);
+			fileTable.add(this.iwrb.getLocalizedString("importer.nosuchfolder", "No such folder."), 1, 2);
+			fileTable.add(new BackButton(this.iwrb.getLocalizedString("importer.try.again", "Try again")), 7, 3);
 			add(fileTable);
 		}
 	}
@@ -556,15 +564,15 @@ public class Importer extends StyledIWAdminWindow {
 			folder.getPrimaryKey());
 	}
 	private Table getFrameTable() {
-		if (frameTable == null) {
-			frameTable = new Table();
-			frameTable.setStyleClass(MAIN_STYLECLASS);
-			frameTable.setWidth(Table.HUNDRED_PERCENT);
+		if (this.frameTable == null) {
+			this.frameTable = new Table();
+			this.frameTable.setStyleClass(MAIN_STYLECLASS);
+			this.frameTable.setWidth(Table.HUNDRED_PERCENT);
 		}
-		return (Table) frameTable.clone();
+		return (Table) this.frameTable.clone();
 	}
 	public void setHeaderColor(IWColor color) {
-		headerColor = color;
+		this.headerColor = color;
 	}
 	/**
 	 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()

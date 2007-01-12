@@ -43,48 +43,48 @@ public class ReportableField implements IDOReportableField, JRField {
 	 * @param field
 	 */
 	public ReportableField(JRField field) {
-		_jrField=field;
-		_typeOfContainedField = CONTAINED_FIELD_TYPE_JRFIELD;
+		this._jrField=field;
+		this._typeOfContainedField = CONTAINED_FIELD_TYPE_JRFIELD;
 	}
 	
 
 	public ReportableField(String name, Class valueClass) {
-		_customMadeFiledName = name;
-		_customMadeValueClass = valueClass;
-		_typeOfContainedField = CONTAINED_FIELD_TYPE_NONE;
+		this._customMadeFiledName = name;
+		this._customMadeValueClass = valueClass;
+		this._typeOfContainedField = CONTAINED_FIELD_TYPE_NONE;
 	}
 	
 	public ReportableField(IDOEntityField field){
-		_idoField = field;
-		_typeOfContainedField=CONTAINED_FIELD_TYPE_IDOFIELD;
-		_fieldsMaxNumberOfCharacters=_idoField.getMaxLength();
-		if(_idoField instanceof EntityAttribute){
-			_localizedNames = ((EntityAttribute)_idoField).getMapOfLocalizedNames();
+		this._idoField = field;
+		this._typeOfContainedField=CONTAINED_FIELD_TYPE_IDOFIELD;
+		this._fieldsMaxNumberOfCharacters=this._idoField.getMaxLength();
+		if(this._idoField instanceof EntityAttribute){
+			this._localizedNames = ((EntityAttribute)this._idoField).getMapOfLocalizedNames();
 		}
 	}
 	
 	public ReportableField(String name, IDOEntityField field){
 		this(field);
-		_customMadeFiledName = name;
+		this._customMadeFiledName = name;
 	}
 	
 	
 	public void setCustomMadeFieldName(String name){
-		_customMadeFiledName = name;
+		this._customMadeFiledName = name;
 	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.data.IDOReportableField#getName()
 	 */
 	public String getName() {
-		if(_customMadeFiledName != null){
-			return _customMadeFiledName;
+		if(this._customMadeFiledName != null){
+			return this._customMadeFiledName;
 		} else {
-			switch (_typeOfContainedField) {
+			switch (this._typeOfContainedField) {
 				case CONTAINED_FIELD_TYPE_JRFIELD :
-					return _jrField.getName();
+					return this._jrField.getName();
 				default :
-					return _idoField.getSQLFieldName();
+					return this._idoField.getSQLFieldName();
 			}			
 		}
 
@@ -94,9 +94,9 @@ public class ReportableField implements IDOReportableField, JRField {
 	 * @see com.idega.data.IDOReportableField#getDescription()
 	 */
 	public String getDescription() {
-		switch (_typeOfContainedField) {
+		switch (this._typeOfContainedField) {
 			case CONTAINED_FIELD_TYPE_JRFIELD :
-				return _jrField.getDescription();
+				return this._jrField.getDescription();
 			default :
 				return "No description";
 		}
@@ -106,9 +106,9 @@ public class ReportableField implements IDOReportableField, JRField {
 	 * @see com.idega.data.IDOReportableField#setDescription(java.lang.String)
 	 */
 	public void setDescription(String description) {
-		switch (_typeOfContainedField) {
+		switch (this._typeOfContainedField) {
 			case CONTAINED_FIELD_TYPE_JRFIELD :
-				_jrField.setDescription(description);
+				this._jrField.setDescription(description);
 				break;
 			default :
 				System.out.println("["+this.getClass().getName()+"]: Not able to set description for IDOEntityField");
@@ -121,21 +121,21 @@ public class ReportableField implements IDOReportableField, JRField {
 	 * @see com.idega.data.IDOReportableField#getValueClass()
 	 */
 	public Class getValueClass() {
-		if(_customMadeValueClass != null){
-			return _customMadeValueClass;
+		if(this._customMadeValueClass != null){
+			return this._customMadeValueClass;
 		} else {
-			switch (_typeOfContainedField) {
+			switch (this._typeOfContainedField) {
 				case CONTAINED_FIELD_TYPE_JRFIELD :
-					return _jrField.getValueClass();
+					return this._jrField.getValueClass();
 				default :
-					return _idoField.getDataTypeClass();
+					return this._idoField.getDataTypeClass();
 			}
 		}
 		
 	}
 	
 	public void setValueClass(Class valClass){
-		_customMadeValueClass = valClass;
+		this._customMadeValueClass = valClass;
 	}
 
 	public String getValueClassName() {
@@ -146,7 +146,7 @@ public class ReportableField implements IDOReportableField, JRField {
 	 * @see com.idega.data.IDOReportableField#getLocalizedName(java.util.Locale)
 	 */
 	public String getLocalizedName(Locale locale) {
-		String s = (String)_localizedNames.get(locale);
+		String s = (String)this._localizedNames.get(locale);
 		if(s == null){
 			s = getName();
 		}
@@ -157,15 +157,15 @@ public class ReportableField implements IDOReportableField, JRField {
 	 * @see com.idega.data.IDOReportableField#setLocalizedName(java.lang.String, java.util.Locale)
 	 */
 	public void setLocalizedName(String name, Locale locale) {
-		_localizedNames.put(locale, name);
+		this._localizedNames.put(locale, name);
 	}
 	
 	public int getMaxNumberOfCharacters(){
-		return _fieldsMaxNumberOfCharacters;
+		return this._fieldsMaxNumberOfCharacters;
 	}
 	
 	public void setMaxNumberOfCharacters(int number){
-		_fieldsMaxNumberOfCharacters = number;
+		this._fieldsMaxNumberOfCharacters = number;
 	}
 
 }

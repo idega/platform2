@@ -1,5 +1,5 @@
 /*
- * $Id: FavoriteTypeNavigator.java,v 1.3 2005/01/18 10:24:09 laddi Exp $
+ * $Id: FavoriteTypeNavigator.java,v 1.3.2.1 2007/01/12 19:32:21 idegaweb Exp $
  * Created on 5.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -24,7 +24,7 @@ import com.idega.presentation.text.Text;
  * Last modified: 5.11.2004 09:37:06 by laddi
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.3.2.1 $
  */
 public class FavoriteTypeNavigator extends FavoriteBlock implements IWPageEventListener {
 
@@ -39,7 +39,7 @@ public class FavoriteTypeNavigator extends FavoriteBlock implements IWPageEventL
 			add(getObject(iwc, getResourceBundle().getLocalizedString("favorite.intranet", "Intranet favorites"), getBusiness(iwc).getFavoriteTypeIntranet()));
 			add(text);
 			add(getObject(iwc, getResourceBundle().getLocalizedString("favorite.internet", "Internet favorites"), getBusiness(iwc).getFavoriteTypeInternet()));
-			if (iShowDocumentFavorites) {
+			if (this.iShowDocumentFavorites) {
 				add(text);
 				add(getObject(iwc, getResourceBundle().getLocalizedString("favorite.documents", "Document favorites"), getBusiness(iwc).getFavoriteTypeDocument()));
 			}
@@ -78,6 +78,6 @@ public class FavoriteTypeNavigator extends FavoriteBlock implements IWPageEventL
 	}
 	
 	public void setShowDocumentFavorites(boolean show) {
-		iShowDocumentFavorites = show;
+		this.iShowDocumentFavorites = show;
 	}
 }

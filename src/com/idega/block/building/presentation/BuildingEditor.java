@@ -94,7 +94,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 	private boolean includeLinks = true;
 
 	public void setToIncludeLinks(boolean include) {
-		includeLinks = include;
+		this.includeLinks = include;
 	}
 
 	public String getBundleIdentifier() {
@@ -111,24 +111,24 @@ public class BuildingEditor extends com.idega.presentation.Block {
 
 	protected void control(IWContext iwc) throws RemoteException,
 			FinderException {
-		service = getBuildingService(iwc);
-		outerTable = new Table(1, 2);
-		outerTable.setCellpadding(0);
-		outerTable.setCellspacing(0);
-		outerTable.setWidth("100%");
-		outerTable.setHeight("100%");
-		outerTable.setHeight(2, "100%");
+		this.service = getBuildingService(iwc);
+		this.outerTable = new Table(1, 2);
+		this.outerTable.setCellpadding(0);
+		this.outerTable.setCellspacing(0);
+		this.outerTable.setWidth("100%");
+		this.outerTable.setHeight("100%");
+		this.outerTable.setHeight(2, "100%");
 		// outerTable.setColor(1,1,"#0E2456");
 
-		int iAction = BUILDING;
-		if (iwc.getParameter(sAction) != null) {
-			iAction = Integer.parseInt(iwc.getParameter(sAction));
+		int iAction = this.BUILDING;
+		if (iwc.getParameter(this.sAction) != null) {
+			iAction = Integer.parseInt(iwc.getParameter(this.sAction));
 		}
 
 		if (iwc.getParameter("dr_id") != null) {
-			eId = Integer.valueOf(iwc.getParameter("dr_id"));
+			this.eId = Integer.valueOf(iwc.getParameter("dr_id"));
 		} else if ((String) iwc.getSessionAttribute("dr_id") != null) {
-			eId = Integer.valueOf((String) iwc.getSessionAttribute("dr_id"));
+			this.eId = Integer.valueOf((String) iwc.getSessionAttribute("dr_id"));
 			iwc.removeSessionAttribute("dr_id");
 		}
 
@@ -139,12 +139,12 @@ public class BuildingEditor extends com.idega.presentation.Block {
 			if (iwc.getParameter("bm_choice") != null) {
 				int i = Integer.parseInt(iwc.getParameter("bm_choice"));
 				if (iwc.isParameterSet("delete_text")) {
-					textId = null;
+					this.textId = null;
 				} else if (iwc.isParameterSet("txt_id")) {
 					try {
-						textId = Integer.valueOf(iwc.getParameter("txt_id"));
+						this.textId = Integer.valueOf(iwc.getParameter("txt_id"));
 					} catch (Exception ex) {
-						textId = null;
+						this.textId = null;
 					}
 				}
 
@@ -171,34 +171,34 @@ public class BuildingEditor extends com.idega.presentation.Block {
 			}
 		} else if (iwc.getParameter(prmDelete) != null
 				|| iwc.getParameter(prmDelete + ".x") != null) {
-			if (iwc.getParameter("bm_choice") != null && eId.intValue() > 0) {
+			if (iwc.getParameter("bm_choice") != null && this.eId.intValue() > 0) {
 				int i = Integer.parseInt(iwc.getParameter("bm_choice"));
 				switch (i) {
 				case COMPLEX:
-					service.removeComplex(eId);
+					this.service.removeComplex(this.eId);
 					break;
 				case BUILDING:
-					service.removeBuilding(eId);
+					this.service.removeBuilding(this.eId);
 					break;
 				case FLOOR:
-					service.removeFloor(eId);
+					this.service.removeFloor(this.eId);
 					break;
 				case APARTMENT:
-					service.removeApartment(eId);
+					this.service.removeApartment(this.eId);
 					break;
 				case CATEGORY:
-					service.removeApartmentCategory(eId);
+					this.service.removeApartmentCategory(this.eId);
 					break;
 				case TYPE:
-					service.removeApartmentType(eId);
+					this.service.removeApartmentType(this.eId);
 					break;
 				}
-				eId = null;
+				this.eId = null;
 			}
 		}
 
-		if (includeLinks) {
-			outerTable.add(makeLinkTable(iAction), 1, 1);
+		if (this.includeLinks) {
+			this.outerTable.add(makeLinkTable(iAction), 1, 1);
 		}
 
 		switch (iAction) {
@@ -221,7 +221,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 			doType(iwc);
 			break;
 		}
-		add(outerTable);
+		add(this.outerTable);
 	}
 
 	private void doMain(IWContext iwc, boolean ifMulti, int choice)
@@ -232,29 +232,29 @@ public class BuildingEditor extends com.idega.presentation.Block {
 
 	private void doComplex(IWContext iwc) throws RemoteException,
 			FinderException {
-		Complex eComplex = (eId != null && eId.intValue() > 0) ? service
-				.getComplexHome().findByPrimaryKey(eId) : null;
-		outerTable.add(makeComplexFields(eComplex), 1, 2);
+		Complex eComplex = (this.eId != null && this.eId.intValue() > 0) ? this.service
+				.getComplexHome().findByPrimaryKey(this.eId) : null;
+		this.outerTable.add(makeComplexFields(eComplex), 1, 2);
 	}
 
 	private void doBuilding(IWContext iwc) throws RemoteException,
 			FinderException {
-		Building eBuilding = (eId != null && eId.intValue() > 0) ? service
-				.getBuildingHome().findByPrimaryKey(eId) : null;
-		outerTable.add(makeBuildingFields(eBuilding), 1, 2);
+		Building eBuilding = (this.eId != null && this.eId.intValue() > 0) ? this.service
+				.getBuildingHome().findByPrimaryKey(this.eId) : null;
+		this.outerTable.add(makeBuildingFields(eBuilding), 1, 2);
 	}
 
 	private void doFloor(IWContext iwc) throws RemoteException, FinderException {
-		Floor eFloor = (eId != null && eId.intValue() > 0) ? service
-				.getFloorHome().findByPrimaryKey(eId) : null;
-		outerTable.add(makeFloorFields(eFloor), 1, 2);
+		Floor eFloor = (this.eId != null && this.eId.intValue() > 0) ? this.service
+				.getFloorHome().findByPrimaryKey(this.eId) : null;
+		this.outerTable.add(makeFloorFields(eFloor), 1, 2);
 	}
 
 	private void doApartment(IWContext iwc) throws RemoteException,
 			FinderException {
-		Apartment eApartment = (eId != null && eId.intValue() > 0) ? service
-				.getApartmentHome().findByPrimaryKey(eId) : null;
-		outerTable.add(makeApartmentFields(eApartment), 1, 2);
+		Apartment eApartment = (this.eId != null && this.eId.intValue() > 0) ? this.service
+				.getApartmentHome().findByPrimaryKey(this.eId) : null;
+		this.outerTable.add(makeApartmentFields(eApartment), 1, 2);
 	}
 
 	private void doType(IWContext iwc) {
@@ -277,11 +277,11 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		}
 		try {
 
-			ApartmentType eApartmentType = (eId != null && eId.intValue() > 0) ? service
-					.getApartmentTypeHome().findByPrimaryKey(eId)
+			ApartmentType eApartmentType = (this.eId != null && this.eId.intValue() > 0) ? this.service
+					.getApartmentTypeHome().findByPrimaryKey(this.eId)
 					: null;
 
-			outerTable.add(makeTypeFields(eApartmentType, iPhotoId, iPlanId),
+			this.outerTable.add(makeTypeFields(eApartmentType, iPhotoId, iPlanId),
 					1, 2);
 		} catch (Exception sql) {
 			sql.printStackTrace();
@@ -291,10 +291,10 @@ public class BuildingEditor extends com.idega.presentation.Block {
 
 	private void doCategory(IWContext iwc) {
 		try {
-			ApartmentCategory eApartmentCategory = (eId != null && eId
-					.intValue() > 0) ? service.getApartmentCategoryHome()
-					.findByPrimaryKey(eId) : null;
-			outerTable.add(makeCategoryFields(eApartmentCategory), 1, 2);
+			ApartmentCategory eApartmentCategory = (this.eId != null && this.eId
+					.intValue() > 0) ? this.service.getApartmentCategoryHome()
+					.findByPrimaryKey(this.eId) : null;
+			this.outerTable.add(makeCategoryFields(eApartmentCategory), 1, 2);
 		} catch (Exception sql) {
 		}
 	}
@@ -326,7 +326,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 			id = null;
 		}
 
-		service.storeComplex(id, sName, sInfo, imageid, textId, sPageId, locked);
+		this.service.storeComplex(id, sName, sInfo, imageid, this.textId, sPageId, locked);
 
 	}
 
@@ -358,8 +358,8 @@ public class BuildingEditor extends com.idega.presentation.Block {
 			imageid = null;
 		}
 
-		service.storeBuilding(id, sName, sAddress, sInfo, imageid, complexid,
-				textId, locked);
+		this.service.storeBuilding(id, sName, sAddress, sInfo, imageid, complexid,
+				this.textId, locked);
 	}
 
 	private void storeFloor(IWContext iwc) throws RemoteException {
@@ -388,7 +388,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 			imageid = null;
 		}
 
-		service.storeFloor(id, sName, buildingid, sInfo, imageid, textId);
+		this.service.storeFloor(id, sName, buildingid, sInfo, imageid, this.textId);
 	}
 
 	private void storeApartmentCategory(IWContext iwc) throws RemoteException {
@@ -409,7 +409,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 			id = null;
 		}
 
-		service.storeApartmentCategory(id, sName, sInfo, imageid, textId);
+		this.service.storeApartmentCategory(id, sName, sInfo, imageid, this.textId);
 
 	}
 
@@ -479,8 +479,8 @@ public class BuildingEditor extends com.idega.presentation.Block {
 			count = null;
 		}
 
-		service.storeApartmentType(id, sName, sInfo, abbrev, sExtraInfo,
-				planid, imageid, categoryid, textId, area, count, rent,
+		this.service.storeApartmentType(id, sName, sInfo, abbrev, sExtraInfo,
+				planid, imageid, categoryid, this.textId, area, count, rent,
 				balcony, bath, kitchen, storage, study, furniture, loft, locked);
 
 	}
@@ -522,15 +522,15 @@ public class BuildingEditor extends com.idega.presentation.Block {
 			typeid = null;
 		}
 
-		service.storeApartment(id, sName, sInfo, floorid, typeid, bRentable,
-				imageid, textId, apSnr);
+		this.service.storeApartment(id, sName, sInfo, floorid, typeid, bRentable,
+				imageid, this.textId, apSnr);
 	}
 
 	public PresentationObject getLinkTable(IWContext iwc) {
-		int iAct = BUILDING;
+		int iAct = this.BUILDING;
 		IWResourceBundle iwrb = getResourceBundle(iwc);
-		if (iwc.getParameter(sAction) != null) {
-			iAct = Integer.parseInt(iwc.getParameter(sAction));
+		if (iwc.getParameter(this.sAction) != null) {
+			iAct = Integer.parseInt(iwc.getParameter(this.sAction));
 		}
 
 		Table LinkTable = new Table();
@@ -540,32 +540,32 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		B1.setFontStyle("text-decoration: none");
 		B1.setFontColor("#FFFFFF");
 		B1.setBold();
-		B1.addParameter(sAction, COMPLEX);
+		B1.addParameter(this.sAction, this.COMPLEX);
 		Link B2 = new Link(iwrb.getLocalizedString("building", "Building"));
 		B2.setFontStyle("text-decoration: none");
 		B2.setFontColor("#FFFFFF");
 		B2.setBold();
-		B2.addParameter(sAction, BUILDING);
+		B2.addParameter(this.sAction, this.BUILDING);
 		Link B3 = new Link(iwrb.getLocalizedString("floor", "Floor"));
 		B3.setFontStyle("text-decoration: none");
 		B3.setFontColor("#FFFFFF");
 		B3.setBold();
-		B3.addParameter(sAction, FLOOR);
+		B3.addParameter(this.sAction, this.FLOOR);
 		Link B4 = new Link(iwrb.getLocalizedString("category", "Category"));
 		B4.setFontStyle("text-decoration: none");
 		B4.setFontColor("#FFFFFF");
 		B4.setBold();
-		B4.addParameter(sAction, CATEGORY);
+		B4.addParameter(this.sAction, this.CATEGORY);
 		Link B5 = new Link(iwrb.getLocalizedString("type", "Type"));
 		B5.setFontStyle("text-decoration: none");
 		B5.setFontColor("#FFFFFF");
 		B5.setBold();
-		B5.addParameter(sAction, TYPE);
+		B5.addParameter(this.sAction, this.TYPE);
 		Link B6 = new Link(iwrb.getLocalizedString("apartment", "Apartment"));
 		B6.setFontStyle("text-decoration: none");
 		B6.setFontColor("#FFFFFF");
 		B6.setBold();
-		B6.addParameter(sAction, APARTMENT);
+		B6.addParameter(this.sAction, this.APARTMENT);
 
 		switch (iAct) {
 		case COMPLEX:
@@ -615,43 +615,43 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		 * headerTable.add(tEditor,2,1);
 		 */
 
-		String color = includeLinks ? "#000000" : "#FFFFFF";
+		String color = this.includeLinks ? "#000000" : "#FFFFFF";
 		Table LinkTable = new Table();
 		LinkTable.setBorder(0);
 		LinkTable.setCellpadding(3);
 		LinkTable.setCellspacing(3);
 		headerTable.add(LinkTable, 1, 2);
 
-		Link B1 = new Link(iwrb.getLocalizedString("complex", "Complex"));
+		Link B1 = new Link(this.iwrb.getLocalizedString("complex", "Complex"));
 		B1.setFontStyle("text-decoration: none");
 		B1.setFontColor(color);
 		B1.setBold();
-		B1.addParameter(sAction, COMPLEX);
-		Link B2 = new Link(iwrb.getLocalizedString("building", "Building"));
+		B1.addParameter(this.sAction, this.COMPLEX);
+		Link B2 = new Link(this.iwrb.getLocalizedString("building", "Building"));
 		B2.setFontStyle("text-decoration: none");
 		B2.setFontColor(color);
 		B2.setBold();
-		B2.addParameter(sAction, BUILDING);
-		Link B3 = new Link(iwrb.getLocalizedString("floor", "Floor"));
+		B2.addParameter(this.sAction, this.BUILDING);
+		Link B3 = new Link(this.iwrb.getLocalizedString("floor", "Floor"));
 		B3.setFontStyle("text-decoration: none");
 		B3.setFontColor(color);
 		B3.setBold();
-		B3.addParameter(sAction, FLOOR);
-		Link B4 = new Link(iwrb.getLocalizedString("category", "Category"));
+		B3.addParameter(this.sAction, this.FLOOR);
+		Link B4 = new Link(this.iwrb.getLocalizedString("category", "Category"));
 		B4.setFontStyle("text-decoration: none");
 		B4.setFontColor(color);
 		B4.setBold();
-		B4.addParameter(sAction, CATEGORY);
-		Link B5 = new Link(iwrb.getLocalizedString("type", "Type"));
+		B4.addParameter(this.sAction, this.CATEGORY);
+		Link B5 = new Link(this.iwrb.getLocalizedString("type", "Type"));
 		B5.setFontStyle("text-decoration: none");
 		B5.setFontColor(color);
 		B5.setBold();
-		B5.addParameter(sAction, TYPE);
-		Link B6 = new Link(iwrb.getLocalizedString("apartment", "Apartment"));
+		B5.addParameter(this.sAction, this.TYPE);
+		Link B6 = new Link(this.iwrb.getLocalizedString("apartment", "Apartment"));
 		B6.setFontStyle("text-decoration: none");
 		B6.setFontColor(color);
 		B6.setBold();
-		B6.addParameter(sAction, APARTMENT);
+		B6.addParameter(this.sAction, this.APARTMENT);
 
 		switch (i) {
 		case COMPLEX:
@@ -721,15 +721,16 @@ public class BuildingEditor extends com.idega.presentation.Block {
 
 		TextChooser ans = new TextChooser("txt_id");
 		T.add(ans, 1, 1);
-		if (id < 0)
-			ans.setChooseImage(iwb.getImage("new.gif", iwrb.getLocalizedString(
+		if (id < 0) {
+			ans.setChooseImage(this.iwb.getImage("new.gif", this.iwrb.getLocalizedString(
 					"button_create_answer", "Create text")));
+		}
 		else {
 			ans.setSelectedText(id);
-			ans.setChooseImage(iwb.getImage("open.gif", iwrb
+			ans.setChooseImage(this.iwb.getImage("open.gif", this.iwrb
 					.getLocalizedString("button_edit_answer", "Edit text")));
 			CheckBox delete = new CheckBox("txt_del", String.valueOf(id));
-			T.add(formatText(iwrb.getLocalizedString("delete_text",
+			T.add(formatText(this.iwrb.getLocalizedString("delete_text",
 					"Delete text:")), 3, 1);
 			T.add(delete, 3, 1);
 		}
@@ -773,18 +774,18 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		Frame.add(T2, 2, 1);
 
 		TextInput name = new TextInput("bm_name", sName);
-		DropdownMenu categories = drpLodgings(service.getComplexHome()
+		DropdownMenu categories = drpLodgings(this.service.getComplexHome()
 				.findAllIncludingLocked(), "dr_id", "Complex", sId);
-		HiddenInput HI = new HiddenInput("bm_choice", String.valueOf(COMPLEX));
-		HiddenInput HA = new HiddenInput(sAction, String.valueOf(COMPLEX));
+		HiddenInput HI = new HiddenInput("bm_choice", String.valueOf(this.COMPLEX));
+		HiddenInput HA = new HiddenInput(this.sAction, String.valueOf(this.COMPLEX));
 		setStyle(name);
 		setStyle(categories);
 		categories.setToSubmit();
 		name.setLength(30);
 		IBPageChooser pageChooser = new IBPageChooser(PARAMETER_FLASH_PAGE);
-		setStyle(pageChooser, styleAttribute);
+		setStyle(pageChooser, this.styleAttribute);
 		if (iFlashPage > 0) {
-			ICPage flashPage = service.getPage(iFlashPage);
+			ICPage flashPage = this.service.getPage(iFlashPage);
 			if (flashPage != null) {
 				pageChooser.setSelectedPage(iFlashPage, flashPage.getName());
 			}
@@ -795,23 +796,23 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		T.add(HI);
 		T.add(HA);
 		T.add(categories, 1, 1);
-		T.add(formatText(iwrb.getLocalizedString("name", "Name")), 1, 2);
+		T.add(formatText(this.iwrb.getLocalizedString("name", "Name")), 1, 2);
 		T.add(name, 1, 3);
-		T.add(formatText(iwrb.getLocalizedString("text", "Text")), 2, 2);
+		T.add(formatText(this.iwrb.getLocalizedString("text", "Text")), 2, 2);
 		T.add(makeTextInput(iTextId), 2, 3);
-		T.add(formatText(iwrb.getLocalizedString("flash", "Flash page")), 1, 4);
+		T.add(formatText(this.iwrb.getLocalizedString("flash", "Flash page")), 1, 4);
 		T.add(pageChooser, 1, 5);
-		T.add(formatText(iwrb.getLocalizedString("complex_locked", "Complex locked")), 1, 6);
+		T.add(formatText(this.iwrb.getLocalizedString("complex_locked", "Complex locked")), 1, 6);
 		T.add(complexLocked, 1, 7);
-		T.add(formatText(iwrb.getLocalizedString("info", "Info")), 1, 8);
+		T.add(formatText(this.iwrb.getLocalizedString("info", "Info")), 1, 8);
 		T.mergeCells(1, 9, 2, 9);
 		T.add(makeTextArea(sInfo), 1, 9);
 
-		T2.add(formatText(iwrb.getLocalizedString("map", "Map")), 1, 1);
+		T2.add(formatText(this.iwrb.getLocalizedString("map", "Map")), 1, 1);
 		T2.add(Text.getBreak(), 1, 1);
 		T2.add(this.makeImageInput(iMapId, "mapid"), 1, 1);
-		T2.add(new SubmitButton(iwrb.getImage("save.gif"), "save"), 1, 2);
-		T2.add(new SubmitButton(iwrb.getImage("delete.gif"), prmDelete), 1, 2);
+		T2.add(new SubmitButton(this.iwrb.getImage("save.gif"), "save"), 1, 2);
+		T2.add(new SubmitButton(this.iwrb.getImage("delete.gif"), prmDelete), 1, 2);
 		form.add(Frame);
 		return form;
 	}
@@ -856,11 +857,11 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		TextInput name = new TextInput("bm_name", sName);
 		TextInput address = new TextInput("bm_address", sAddress);
 		TextInput serie = new TextInput("bm_serie", sSerie);
-		HiddenInput HI = new HiddenInput("bm_choice", String.valueOf(BUILDING));
+		HiddenInput HI = new HiddenInput("bm_choice", String.valueOf(this.BUILDING));
 
-		DropdownMenu complex = drpLodgings(service.getComplexHome().findAllIncludingLocked(),
+		DropdownMenu complex = drpLodgings(this.service.getComplexHome().findAllIncludingLocked(),
 				"dr_complex", "Complex", sComplexId);
-		DropdownMenu houses = drpLodgings(service.getBuildingHome().findAllIncludingLocked(),
+		DropdownMenu houses = drpLodgings(this.service.getBuildingHome().findAllIncludingLocked(),
 				"dr_id", "Building", sId);
 		CheckBox buildingLocked = new CheckBox(PARAMETER_BUILDING_LOCKED, "true");
 		buildingLocked.setChecked(locked);
@@ -877,32 +878,32 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		serie.setMaxlength(5);
 
 		T.add(houses, 1, 1);
-		T.add(formatText(iwrb.getLocalizedString("name", "Name")), 1, 2);
+		T.add(formatText(this.iwrb.getLocalizedString("name", "Name")), 1, 2);
 		T.add(name, 1, 3);
-		T.add(formatText(iwrb.getLocalizedString("text", "Text")), 2, 2);
+		T.add(formatText(this.iwrb.getLocalizedString("text", "Text")), 2, 2);
 		T.add(makeTextInput(iTextId), 2, 3);
-		T.add(formatText(iwrb.getLocalizedString("address", "Address")), 1, 4);
+		T.add(formatText(this.iwrb.getLocalizedString("address", "Address")), 1, 4);
 
 		T.add(address, 1, 5);
-		T.add(formatText(iwrb.getLocalizedString("complex", "Complex")), 1, 6);
+		T.add(formatText(this.iwrb.getLocalizedString("complex", "Complex")), 1, 6);
 
 		T.add(complex, 1, 7);
 		// T.add(formatText(iwrb.getLocalizedString("serie","Serie")+" "),1,5);
 		// T.add(serie,1,5);
-		T.add(formatText(iwrb.getLocalizedString("building_locked", "Building locked")), 1, 8);
+		T.add(formatText(this.iwrb.getLocalizedString("building_locked", "Building locked")), 1, 8);
 		T.add(buildingLocked, 1, 9);
 
-		T.add(formatText(iwrb.getLocalizedString("info", "Info")), 1, 10);
+		T.add(formatText(this.iwrb.getLocalizedString("info", "Info")), 1, 10);
 
 		T.add(makeTextArea(sInfo), 1, 11);
 		T.mergeCells(1, 11, 2, 11);
 
-		T2.add(formatText(iwrb.getLocalizedString("photo", "Photo")), 1, 1);
+		T2.add(formatText(this.iwrb.getLocalizedString("photo", "Photo")), 1, 1);
 		T2.add(Text.getBreak(), 1, 1);
 		T2.add(this.makeImageInput(iPhotoId, "photoid"), 1, 1);
 		Frame.add(HI);
-		T2.add(new SubmitButton(iwrb.getImage("save.gif"), prmSave), 1, 2);
-		T2.add(new SubmitButton(iwrb.getImage("delete.gif"), prmDelete), 1, 2);
+		T2.add(new SubmitButton(this.iwrb.getImage("save.gif"), prmSave), 1, 2);
+		T2.add(new SubmitButton(this.iwrb.getImage("delete.gif"), prmDelete), 1, 2);
 		form.add(Frame);
 		return form;
 	}
@@ -943,10 +944,10 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		DropdownMenu floors = this.drpFloors("dr_id", "Floor", sId, true);
 		floors.setToSubmit();
 
-		DropdownMenu buildings = this.drpLodgings(service.getBuildingHome()
+		DropdownMenu buildings = this.drpLodgings(this.service.getBuildingHome()
 				.findAllIncludingLocked(), "dr_building", "Building", sHouse);
-		HiddenInput HI = new HiddenInput("bm_choice", String.valueOf(FLOOR));
-		HiddenInput HA = new HiddenInput(sAction, String.valueOf(FLOOR));
+		HiddenInput HI = new HiddenInput("bm_choice", String.valueOf(this.FLOOR));
+		HiddenInput HA = new HiddenInput(this.sAction, String.valueOf(this.FLOOR));
 		setStyle(name);
 		setStyle(floors);
 		setStyle(buildings);
@@ -954,29 +955,29 @@ public class BuildingEditor extends com.idega.presentation.Block {
 
 		T.add(floors, 1, 1);
 
-		T.add(formatText(iwrb.getLocalizedString("name", "Name")), 1, 2);
+		T.add(formatText(this.iwrb.getLocalizedString("name", "Name")), 1, 2);
 
 		T.add(name, 1, 3);
-		T.add(formatText(iwrb.getLocalizedString("text", "Text")), 2, 2);
+		T.add(formatText(this.iwrb.getLocalizedString("text", "Text")), 2, 2);
 
 		T.add(makeTextInput(iTextId), 2, 3);
 		T
 				.add(
-						formatText(iwrb.getLocalizedString("building",
+						formatText(this.iwrb.getLocalizedString("building",
 								"Building")), 1, 4);
 
 		T.add(buildings, 1, 5);
-		T.add(formatText(iwrb.getLocalizedString("info", "Info")), 1, 6);
+		T.add(formatText(this.iwrb.getLocalizedString("info", "Info")), 1, 6);
 
 		T.add(makeTextArea(sInfo), 1, 7);
 		T.mergeCells(1, 7, 2, 7);
-		T2.add(formatText(iwrb.getLocalizedString("photo", "Photo")), 1, 1);
+		T2.add(formatText(this.iwrb.getLocalizedString("photo", "Photo")), 1, 1);
 		T2.add(Text.getBreak(), 1, 1);
 		T2.add(this.makeImageInput(1, "photoid"), 1, 1);
 		Frame.add(HI);
 		Frame.add(HA);
-		T2.add(new SubmitButton(iwrb.getImage("save.gif"), prmSave), 1, 2);
-		T2.add(new SubmitButton(iwrb.getImage("delete.gif"), prmDelete), 1, 2);
+		T2.add(new SubmitButton(this.iwrb.getImage("save.gif"), prmSave), 1, 2);
+		T2.add(new SubmitButton(this.iwrb.getImage("delete.gif"), prmDelete), 1, 2);
 		form.add(Frame);
 		return form;
 	}
@@ -1015,30 +1016,30 @@ public class BuildingEditor extends com.idega.presentation.Block {
 
 		TextInput name = new TextInput("bm_name", sName);
 
-		DropdownMenu categories = drpLodgings(service
+		DropdownMenu categories = drpLodgings(this.service
 				.getApartmentCategoryHome().findAll(), "dr_id", "Category", sId);
 
 		categories.setToSubmit();
-		HiddenInput HI = new HiddenInput("bm_choice", String.valueOf(CATEGORY));
-		HiddenInput HA = new HiddenInput(sAction, String.valueOf(CATEGORY));
+		HiddenInput HI = new HiddenInput("bm_choice", String.valueOf(this.CATEGORY));
+		HiddenInput HA = new HiddenInput(this.sAction, String.valueOf(this.CATEGORY));
 		setStyle(name);
 		setStyle(categories);
 		name.setLength(30);
 		T.add(HI);
 		T.add(HA);
 		T.add(categories, 1, 1);
-		T.add(formatText(iwrb.getLocalizedString("name", "Name")), 1, 2);
-		T.add(formatText(iwrb.getLocalizedString("text", "Text")), 2, 2);
+		T.add(formatText(this.iwrb.getLocalizedString("name", "Name")), 1, 2);
+		T.add(formatText(this.iwrb.getLocalizedString("text", "Text")), 2, 2);
 		T.add(name, 1, 3);
 		T.add(makeTextInput(iTextId), 2, 3);
-		T.add(formatText(iwrb.getLocalizedString("info", "Info")), 1, 4);
+		T.add(formatText(this.iwrb.getLocalizedString("info", "Info")), 1, 4);
 
 		T.add(makeTextArea(sInfo), 1, 5);
-		T2.add(formatText(iwrb.getLocalizedString("icon", "Icon")), 1, 1);
+		T2.add(formatText(this.iwrb.getLocalizedString("icon", "Icon")), 1, 1);
 		T2.add(Text.getBreak(), 1, 1);
 		T2.add(this.makeImageInput(iIconId, "iconid"), 1, 1);
-		T2.add(new SubmitButton(iwrb.getImage("save.gif"), prmSave), 1, 2);
-		T2.add(new SubmitButton(iwrb.getImage("delete.gif"), prmDelete), 1, 2);
+		T2.add(new SubmitButton(this.iwrb.getImage("save.gif"), prmSave), 1, 2);
+		T2.add(new SubmitButton(this.iwrb.getImage("delete.gif"), prmDelete), 1, 2);
 		form.add(Frame);
 		return form;
 	}
@@ -1104,40 +1105,47 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		TextInput rent = new TextInput("bm_rent", sRent);
 		rent.setLength(10);
 		CheckBox kitch = new CheckBox("bm_kitch", "true");
-		if (bKitch)
+		if (bKitch) {
 			kitch.setChecked(true);
+		}
 		CheckBox bath = new CheckBox("bm_bath", "true");
-		if (bBath)
+		if (bBath) {
 			bath.setChecked(true);
+		}
 		CheckBox stor = new CheckBox("bm_stor", "true");
-		if (bStor)
+		if (bStor) {
 			stor.setChecked(true);
+		}
 		CheckBox balc = new CheckBox("bm_balc", "true");
-		if (bBalc)
+		if (bBalc) {
 			balc.setChecked(true);
+		}
 		CheckBox study = new CheckBox("bm_study", "true");
-		if (bStud)
+		if (bStud) {
 			study.setChecked(true);
+		}
 		CheckBox loft = new CheckBox("bm_loft", "true");
-		if (bLoft)
+		if (bLoft) {
 			loft.setChecked(true);
+		}
 		CheckBox furni = new CheckBox("bm_furni", "true");
-		if (bFurniture)
+		if (bFurniture) {
 			furni.setChecked(true);
+		}
 		
 		CheckBox typeLocked = new CheckBox(PARAMETER_TYPE_LOCKED, "true");
 		typeLocked.setChecked(locked);
 
-		DropdownMenu apartmenttypes = drpLodgings(service
+		DropdownMenu apartmenttypes = drpLodgings(this.service
 				.getApartmentTypeHome().findAllIncludingLocked(), "dr_id", "Type", sId);
 		apartmenttypes.setToSubmit();
 
-		DropdownMenu categories = drpLodgings(service
+		DropdownMenu categories = drpLodgings(this.service
 				.getApartmentCategoryHome().findAll(), "bm_category",
 				"Category", sCategory);
 
-		HiddenInput HI = new HiddenInput("bm_choice", String.valueOf(TYPE));
-		HiddenInput HA = new HiddenInput(sAction, String.valueOf(TYPE));
+		HiddenInput HI = new HiddenInput("bm_choice", String.valueOf(this.TYPE));
+		HiddenInput HA = new HiddenInput(this.sAction, String.valueOf(this.TYPE));
 		name.setLength(30);
 		setStyle(name);
 		setStyle(abbrev);
@@ -1156,70 +1164,70 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		T.add(HI);
 		T.add(HA);
 
-		T.add(formatText(iwrb.getLocalizedString("type", "Type")), 1, 1);
+		T.add(formatText(this.iwrb.getLocalizedString("type", "Type")), 1, 1);
 
 		T.add(apartmenttypes, 1, 1);
-		T.add(formatText(iwrb.getLocalizedString("name", "Name")), 1, 2);
-		T.add(formatText(iwrb
+		T.add(formatText(this.iwrb.getLocalizedString("name", "Name")), 1, 2);
+		T.add(formatText(this.iwrb
 				.getLocalizedString("abbreviation", "Abbreviation")), 1, 4);
-		T.add(formatText(iwrb.getLocalizedString("text", "Text")), 2, 2);
+		T.add(formatText(this.iwrb.getLocalizedString("text", "Text")), 2, 2);
 		T.add(name, 1, 3);
 		T.add(makeTextInput(iTextId), 2, 3);
 		T.add(abbrev, 1, 5);
 		T.add(
-				formatText(iwrb.getLocalizedString("category", "Category")
+				formatText(this.iwrb.getLocalizedString("category", "Category")
 						+ " "), 1, 6);
 		T.add(categories, 1, 7);
-		InnerTable.add(formatText(iwrb.getLocalizedString("room_count",
+		InnerTable.add(formatText(this.iwrb.getLocalizedString("room_count",
 				"Room count")), 1, 1);
 		InnerTable.add(roomcount, 2, 1);
-		InnerTable.add(formatText(iwrb.getLocalizedString("area", "Area(m2)")),
+		InnerTable.add(formatText(this.iwrb.getLocalizedString("area", "Area(m2)")),
 				3, 1);
 		InnerTable.add(area, 4, 1);
 		InnerTable
-				.add(formatText(iwrb.getLocalizedString("kitchen", "Kitchen")),
+				.add(formatText(this.iwrb.getLocalizedString("kitchen", "Kitchen")),
 						1, 2);
 		InnerTable.add(kitch, 2, 2);
-		InnerTable.add(formatText(iwrb.getLocalizedString("bath", "Bath")), 3,
+		InnerTable.add(formatText(this.iwrb.getLocalizedString("bath", "Bath")), 3,
 				2);
 		InnerTable.add(bath, 4, 2);
 		InnerTable
-				.add(formatText(iwrb.getLocalizedString("storage", "Storage")),
+				.add(formatText(this.iwrb.getLocalizedString("storage", "Storage")),
 						1, 3);
 		InnerTable.add(stor, 2, 3);
-		InnerTable.add(formatText(iwrb.getLocalizedString("study", "Study")),
+		InnerTable.add(formatText(this.iwrb.getLocalizedString("study", "Study")),
 				3, 3);
 		InnerTable.add(study, 4, 3);
-		InnerTable.add(formatText(iwrb.getLocalizedString("loft", "Loft")), 1,
+		InnerTable.add(formatText(this.iwrb.getLocalizedString("loft", "Loft")), 1,
 				4);
 		InnerTable.add(loft, 2, 4);
-		InnerTable.add(formatText(iwrb.getLocalizedString("furniture",
+		InnerTable.add(formatText(this.iwrb.getLocalizedString("furniture",
 				"Furniture")), 3, 4);
 		InnerTable.add(furni, 4, 4);
 		InnerTable
-				.add(formatText(iwrb.getLocalizedString("balcony", "Balcony")),
+				.add(formatText(this.iwrb.getLocalizedString("balcony", "Balcony")),
 						1, 5);
 		InnerTable.add(balc, 2, 5);
-		InnerTable.add(formatText(iwrb.getLocalizedString("rent", "Rent")), 1,
+		InnerTable.add(formatText(this.iwrb.getLocalizedString("rent", "Rent")), 1,
 				6);
 		InnerTable.add(rent, 2, 6);
 		T.add(InnerTable, 1, 8);
 		
-		T.add(formatText(iwrb.getLocalizedString("locked", "Locked")), 1, 9);
+		T.add(formatText(this.iwrb.getLocalizedString("locked", "Locked")), 1, 9);
 		T.add(typeLocked, 1, 10);
 		
-		T.add(formatText(iwrb.getLocalizedString("info", "Info")), 1, 11);
+		T.add(formatText(this.iwrb.getLocalizedString("info", "Info")), 1, 11);
 
 		T.add(makeTextArea(sInfo), 1, 12);
-		T.add(formatText(iwrb.getLocalizedString("extra_info", "ExtraInfo")),
+		T.add(formatText(this.iwrb.getLocalizedString("extra_info", "ExtraInfo")),
 				1, 13);
 
 		T.add(makeTextArea("extra_info", sExtraInfo), 1, 14);
 		T.mergeCells(1, 12, 2, 12);
 		T.mergeCells(1, 14, 2, 14);
-		T2.add(formatText(iwrb.getLocalizedString("photo", "Photo")), 1, 1);
+		T2.add(formatText(this.iwrb.getLocalizedString("photo", "Photo")), 1, 1);
 		T2.add(this.makeImageInput(iImageId, "tphotoid"), 1, 1);
-		T2.add(formatText(iwrb.getLocalizedString("plan", "Plan")), 1, 2);
+		T2.add(formatText(this.iwrb.getLocalizedString("plan", "Plan")), 1, 2);
 		T2.add(this.makeImageInput(iPlanId, "tplanid"), 1, 2);
 		form.maintainParameter("tphotoid");
 		form.maintainParameter("tplanid");
@@ -1273,25 +1281,26 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		TextInput serie = new TextInput("bm_serie", sSerie);
 		TextInput serial = new TextInput(PARAMETER_APARTMENT_SERIAL_NUMBER, serialNumber);
 
-		DropdownMenu apartments = drpLodgings(service.getApartmentHome()
+		DropdownMenu apartments = drpLodgings(this.service.getApartmentHome()
 				.findAll(), "dr_id", "Apartment", sId);
 		apartments.setToSubmit();
 
-		DropdownMenu types = this.drpLodgings(service.getApartmentTypeHome()
+		DropdownMenu types = this.drpLodgings(this.service.getApartmentTypeHome()
 				.findAll(), "bm_type", "Type", sType);
 		DropdownMenu floors = this.drpFloors("bm_floor", "Floor", sFloor, true);
 		CheckBox rentable = new CheckBox("bm_rentable", "true");
-		if (bRentable)
+		if (bRentable) {
 			rentable.setChecked(true);
-		HiddenInput HI = new HiddenInput("bm_choice", String.valueOf(APARTMENT));
-		HiddenInput HA = new HiddenInput(sAction, String.valueOf(APARTMENT));
+		}
+		HiddenInput HI = new HiddenInput("bm_choice", String.valueOf(this.APARTMENT));
+		HiddenInput HA = new HiddenInput(this.sAction, String.valueOf(this.APARTMENT));
 		HiddenInput HID = new HiddenInput("dr_id", sId);
 
 		Window chooserWindow = new Window("b_editor", ApartmentChooser.class);
 		chooserWindow.setWidth(550);
 		chooserWindow.setHeight(500);
 		chooserWindow.setResizable(true);
-		Link chooser = new Link(iwb.getImage("/shared/list.gif", iwrb
+		Link chooser = new Link(this.iwb.getImage("/shared/list.gif", this.iwrb
 				.getLocalizedString("select_apartment", "Select appartment"),
 				13, 13));
 		chooser.setWindowToOpen(ApartmentChooserWindow.class);
@@ -1305,39 +1314,40 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		serie.setMaxlength(5);
 		name.setLength(30);
 		// T.add(apartments,1,2);
-		T.add(formatText(iwrb.getLocalizedString("name", "Name")), 1, 1);
+		T.add(formatText(this.iwrb.getLocalizedString("name", "Name")), 1, 1);
 
 		T.add(name, 1, 2);
-		T.add(formatText(iwrb.getLocalizedString("text", "Text")), 2, 2);
+		T.add(formatText(this.iwrb.getLocalizedString("text", "Text")), 2, 2);
 
 		T.add(makeTextInput(iTextId), 2, 2);
 		T.add(formatText("&nbsp;&nbsp;"), 1, 2);
 		T.add(chooser, 1, 2);
 
-		T.add(formatText(iwrb.getLocalizedString("serial", "Serial number")), 1, 3);
+		T.add(formatText(this.iwrb.getLocalizedString("serial", "Serial number")), 1, 3);
 		T.add(serial, 1, 4);
 		
-		T.add(formatText(iwrb.getLocalizedString("floor", "Floor")), 1, 5);
+		T.add(formatText(this.iwrb.getLocalizedString("floor", "Floor")), 1, 5);
 		T.add(floors, 1, 6);
-		T.add(formatText(iwrb.getLocalizedString("type", "Type")), 1, 7);
+		T.add(formatText(this.iwrb.getLocalizedString("type", "Type")), 1, 7);
 		T.add(types, 1, 8);
 		// T.add(formatText(iwrb.getLocalizedString("serie","Serie")+" "),1,8);
 		// T.add(serie,1,4);
 		T.add(
-				formatText(iwrb.getLocalizedString("rentable", "Rentable")
+				formatText(this.iwrb.getLocalizedString("rentable", "Rentable")
 						+ " "), 1, 9);
 		T.add(rentable, 1, 10);
-		T.add(formatText(iwrb.getLocalizedString("info", "Info")), 1, 11);
+		T.add(formatText(this.iwrb.getLocalizedString("info", "Info")), 1, 11);
 		T.add(makeTextArea(sInfo), 1, 12);
 		T.mergeCells(1, 12, 2, 12);
-		T2.add(formatText(iwrb.getLocalizedString("photo", "Photo:")), 1, 1);
+		T2.add(formatText(this.iwrb.getLocalizedString("photo", "Photo:")), 1, 1);
 		T2.add(this.makeImageInput(1, "photoid"), 1, 1);
 		form.add(HI);
 		form.add(HA);
-		if (e)
+		if (e) {
 			form.add(HID);
-		T2.add(new SubmitButton(iwrb.getImage("save.gif"), prmSave), 1, 2);
-		T2.add(new SubmitButton(iwrb.getImage("delete.gif"), prmDelete), 1, 2);
+		}
+		T2.add(new SubmitButton(this.iwrb.getImage("save.gif"), prmSave), 1, 2);
+		T2.add(new SubmitButton(this.iwrb.getImage("delete.gif"), prmDelete), 1, 2);
 		form.add(Frame);
 		return form;
 	}
@@ -1347,7 +1357,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		int border = 0;
 		int padding = 6;
 		int spacing = 1;
-		Collection complexes = service.getComplexHome().findAll();
+		Collection complexes = this.service.getComplexHome().findAll();
 
 		int b = 1, f = 1;
 
@@ -1362,7 +1372,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		for (Iterator iter = complexes.iterator(); iter.hasNext();) {
 			Complex complex = (Complex) iter.next();
 			T.add(getHeaderText(complex.getName()), i, 1);
-			Collection buildings = service.getBuildingHome().findByComplex(
+			Collection buildings = this.service.getBuildingHome().findByComplex(
 					(Integer) complex.getPrimaryKey());
 
 			Table BuildingTable = new Table();
@@ -1376,7 +1386,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 				Building building = (Building) iter2.next();
 
 				BuildingTable.add(getHeaderText(building.getName()), 1, b++);
-				Collection floors = service.getFloorHome().findByBuilding(
+				Collection floors = this.service.getFloorHome().findByBuilding(
 						(Integer) building.getPrimaryKey());
 
 				Table FloorTable = new Table();
@@ -1390,7 +1400,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 					Floor floor = (Floor) iter3.next();
 
 					FloorTable.add(getHeaderText(floor.getName()), 1, f++);
-					Collection apartments = service.getApartmentHome()
+					Collection apartments = this.service.getApartmentHome()
 							.findByFloor((Integer) floor.getPrimaryKey());
 					if (apartments != null && !apartments.isEmpty()) {
 
@@ -1426,7 +1436,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 	private PresentationObject getTypes() throws RemoteException,
 			FinderException {
 
-		Collection types = service.getApartmentTypeHome().findAll();
+		Collection types = this.service.getApartmentTypeHome().findAll();
 
 		Table T = new Table();
 
@@ -1437,25 +1447,25 @@ public class BuildingEditor extends com.idega.presentation.Block {
 			T.setCellspacing(2);
 
 			int row = 1, col = 1;
-			T.add(getHeaderText(iwrb.getLocalizedString("name", "Name")),
+			T.add(getHeaderText(this.iwrb.getLocalizedString("name", "Name")),
 					col++, row);
-			T.add(getHeaderText(iwrb.getLocalizedString("area", "Area(m2)")),
+			T.add(getHeaderText(this.iwrb.getLocalizedString("area", "Area(m2)")),
 					col++, row);
-			T.add(getHeaderText(iwrb.getLocalizedString("rooms", "Rooms")),
+			T.add(getHeaderText(this.iwrb.getLocalizedString("rooms", "Rooms")),
 					col++, row);
-			T.add(getHeaderText(iwrb.getLocalizedString("kitchen", "Kitchen")),
+			T.add(getHeaderText(this.iwrb.getLocalizedString("kitchen", "Kitchen")),
 					col++, row);
-			T.add(getHeaderText(iwrb.getLocalizedString("bath", "Bath")),
+			T.add(getHeaderText(this.iwrb.getLocalizedString("bath", "Bath")),
 					col++, row);
-			T.add(getHeaderText(iwrb.getLocalizedString("storage", "Storage")),
+			T.add(getHeaderText(this.iwrb.getLocalizedString("storage", "Storage")),
 					col++, row);
-			T.add(getHeaderText(iwrb.getLocalizedString("study", "Study")),
+			T.add(getHeaderText(this.iwrb.getLocalizedString("study", "Study")),
 					col++, row);
-			T.add(getHeaderText(iwrb.getLocalizedString("loft", "Loft")),
+			T.add(getHeaderText(this.iwrb.getLocalizedString("loft", "Loft")),
 					col++, row);
-			T.add(getHeaderText(iwrb.getLocalizedString("furniture",
+			T.add(getHeaderText(this.iwrb.getLocalizedString("furniture",
 					"Furniture")), col++, row);
-			T.add(getHeaderText(iwrb.getLocalizedString("balcony", "Balcony")),
+			T.add(getHeaderText(this.iwrb.getLocalizedString("balcony", "Balcony")),
 					col++, row);
 			T.setColumnAlignment(3, "center");
 			T.setColumnAlignment(4, "center");
@@ -1521,8 +1531,8 @@ public class BuildingEditor extends com.idega.presentation.Block {
 
 		L.setFontColor("#FFFFFF");
 		L.addParameter("dr_id", id);
-		L.addParameter(sAction, TYPE);
-		L.addParameter("bm_choice", TYPE);
+		L.addParameter(this.sAction, this.TYPE);
+		L.addParameter("bm_choice", this.TYPE);
 		return L;
 	}
 
@@ -1531,8 +1541,8 @@ public class BuildingEditor extends com.idega.presentation.Block {
 
 		L.setFontColor("#FFFFFF");
 		L.addParameter("dr_id", id);
-		L.addParameter(sAction, APARTMENT);
-		L.addParameter("bm_choice", APARTMENT);
+		L.addParameter(this.sAction, this.APARTMENT);
+		L.addParameter("bm_choice", this.APARTMENT);
 		return L;
 	}
 
@@ -1552,7 +1562,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 	private DropdownMenu drpFloors(String name, String display,
 			String selected, boolean withBuildingName) throws RemoteException,
 			FinderException {
-		Collection floors = service.getFloorHome().findAll();
+		Collection floors = this.service.getFloorHome().findAll();
 
 		DropdownMenu drp = new DropdownMenu(name);
 
@@ -1566,15 +1576,17 @@ public class BuildingEditor extends com.idega.presentation.Block {
 					drp.addMenuElement(floor.getPrimaryKey().toString(), floor
 							.getName()
 							+ " "
-							+ service.getBuildingHome().findByPrimaryKey(
+							+ this.service.getBuildingHome().findByPrimaryKey(
 									new Integer(floor.getBuildingId()))
 									.getName());
 
 				} catch (Exception e) {
 				}
-			} else
+			}
+			else {
 				drp.addMenuElement(floor.getPrimaryKey().toString(), floor
 						.getName());
+			}
 		}
 		if (!selected.equalsIgnoreCase("")) {
 			drp.setSelectedElement(selected);
@@ -1633,13 +1645,13 @@ public class BuildingEditor extends com.idega.presentation.Block {
 	}
 
 	public void main(IWContext iwc) throws Exception {
-		iwrb = getResourceBundle(iwc);
-		iwb = getBundle(iwc);
+		this.iwrb = getResourceBundle(iwc);
+		this.iwb = getBundle(iwc);
 
-		isAdmin = iwc.hasEditPermission(this);
+		this.isAdmin = iwc.hasEditPermission(this);
 		this.getParentPage().setName("b_editor");
 		this.getParentPage().setTitle(
-				iwrb.getLocalizedString("buildingEditor", "Building Editor"));
+				this.iwrb.getLocalizedString("buildingEditor", "Building Editor"));
 		this.getParentPage().setAllMargins(0);
 
 		/** @todo: fixa Admin */

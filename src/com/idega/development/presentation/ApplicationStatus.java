@@ -25,8 +25,9 @@ public class ApplicationStatus extends Block {
 
 	public void main(IWContext iwc) throws Exception {
 		add(IWDeveloper.getTitleTable(this.getClass()));
-		if (!iwc.isIE())
+		if (!iwc.isIE()) {
 			getParentPage().setBackgroundColor("#FFFFFF");
+		}
 
 		Form form = new Form();
 		form.maintainParameter(IWDeveloper.actionParameter);
@@ -47,30 +48,39 @@ public class ApplicationStatus extends Block {
 		String startup = iwc.getApplicationSettings().getProperty("last_startup");
 		String reboot = iwc.getApplicationSettings().getProperty("last_restart");
 		IWTimestamp start = null, shut = null, rest = null;
-		if (shutdown != null && !shutdown.equals(""))
+		if (shutdown != null && !shutdown.equals("")) {
 			shut = new IWTimestamp(shutdown);
-		if (startup != null && !startup.equals(""))
+		}
+		if (startup != null && !startup.equals("")) {
 			start = new IWTimestamp(startup);
-		if (reboot != null && !reboot.equals(""))
+		}
+		if (reboot != null && !reboot.equals("")) {
 			rest = new IWTimestamp(reboot);
+		}
 
 		table.add(IWDeveloper.getText("Last startup"), 1, 3);
-		if (shut != null)
+		if (shut != null) {
 			table.add(IWDeveloper.getText(shut.toSQLString()), 3, 3);
-		else
+		}
+		else {
 			table.add(IWDeveloper.getText("Unknown"), 3, 3);
+		}
 
 		table.add(IWDeveloper.getText("Last shutdown"), 1, 4);
-		if (start != null)
+		if (start != null) {
 			table.add(IWDeveloper.getText(start.toSQLString()), 3, 4);
-		else
+		}
+		else {
 			table.add(IWDeveloper.getText("Unknown"), 3, 4);
+		}
 
 		table.add(IWDeveloper.getText("Last restart"), 1, 5);
-		if (start != null)
+		if (start != null) {
 			table.add(IWDeveloper.getText(start.toSQLString()), 3, 5);
-		else
+		}
+		else {
 			table.add(IWDeveloper.getText("Unknown"), 3, 5);
+		}
 
 		table.add(IWDeveloper.getText("Uptime"), 1, 7);
 		IWTimestamp now = IWTimestamp.RightNow();
@@ -88,8 +98,9 @@ public class ApplicationStatus extends Block {
 			minutes = IWTimestamp.getMinutesBetween(shut, now);
 			table.add(IWDeveloper.getText(minutes + " Minutes"), 3, 7);
 		}
-		else
+		else {
 			table.add(IWDeveloper.getText("Unknown"), 3, 7);
+		}
 
 		if (minutes > maxmin) {
 			maxmin = minutes;
@@ -97,8 +108,9 @@ public class ApplicationStatus extends Block {
 		}
 
 		table.add(IWDeveloper.getText("Max. uptime"), 1, 8);
-		if (start != null)
+		if (start != null) {
 			table.add(IWDeveloper.getText(maxmin + " Minutes"), 3, 8);
+		}
 
 		doBusiness(iwc);
 	}

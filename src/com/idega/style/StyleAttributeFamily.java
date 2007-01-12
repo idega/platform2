@@ -21,19 +21,19 @@ public class StyleAttributeFamily {
 	}
 	
 	public String getName() {
-		return name;
+		return this.name;
 	}
 	
 	public void addStyleAttribute(StyleAttribute attribute) {
-		if (attributes == null) {
-			attributes = new ArrayList();
+		if (this.attributes == null) {
+			this.attributes = new ArrayList();
 		}
-		attributes.add(attribute);
+		this.attributes.add(attribute);
 	}
 	
 	public StyleAttribute getStyleAttribute(String attributeName) {
-		if (attributes != null) {
-			Iterator iter = attributes.iterator();
+		if (this.attributes != null) {
+			Iterator iter = this.attributes.iterator();
 			while (iter.hasNext()) {
 				StyleAttribute attribute = (StyleAttribute) iter.next();
 				if (attribute.getName().equals(attributeName)) {
@@ -45,8 +45,8 @@ public class StyleAttributeFamily {
 	}
 	
 	public Iterator iterator() {
-		if (attributes != null) {
-			return attributes.iterator();
+		if (this.attributes != null) {
+			return this.attributes.iterator();
 		}
 		return null;
 	}

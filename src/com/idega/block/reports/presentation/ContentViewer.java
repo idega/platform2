@@ -41,7 +41,7 @@ public class ContentViewer extends Block{
   private boolean isHeaderLinkCloned = false;
 
   {
-    headerLinkToClone.setFontColor("#FFFFFF");
+    this.headerLinkToClone.setFontColor("#FFFFFF");
   }
 
   protected final static int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5,ACT6=6;
@@ -56,37 +56,40 @@ public class ContentViewer extends Block{
 	private int iInstId = -1;
 
   public ContentViewer(){
-		clear = true;
-		listOfContent = null;
-    sTitles = null;
-    LightColor = "#D7DADF";
-    MiddleColor = "#9fA9B3";
-    DarkColor = "#27334B";
-    WhiteColor = "#FFFFFF";
-    TextFontColor = "#000000";
-    HeaderFontColor = DarkColor;
-    IndexFontColor = "#000000";
+		this.clear = true;
+		this.listOfContent = null;
+    this.sTitles = null;
+    this.LightColor = "#D7DADF";
+    this.MiddleColor = "#9fA9B3";
+    this.DarkColor = "#27334B";
+    this.WhiteColor = "#FFFFFF";
+    this.TextFontColor = "#000000";
+    this.HeaderFontColor = this.DarkColor;
+    this.IndexFontColor = "#000000";
 
   }
   public ContentViewer(String[] Titles,Vector Content){
     this();
-    sTitles = Titles;
+    this.sTitles = Titles;
     this.listOfContent = Content;
   }
 
 	public ContentViewer(String[] Titles,List listOfContent){
     this();
-    sTitles = Titles;
+    this.sTitles = Titles;
     this.listOfContent = listOfContent;
   }
 
   public void setColors(String LightColor,String MainColor,String DarkColor){
-    if(LightColor.startsWith("#"))
-      this.LightColor = LightColor;
-    if(MainColor.startsWith("#"))
-      this.MiddleColor = MainColor;
-    if(DarkColor.startsWith("#"))
-      this.DarkColor = DarkColor;
+    if(LightColor.startsWith("#")) {
+		this.LightColor = LightColor;
+	}
+    if(MainColor.startsWith("#")) {
+		this.MiddleColor = MainColor;
+	}
+    if(DarkColor.startsWith("#")) {
+		this.DarkColor = DarkColor;
+	}
   }
   public void setBorder(int border){
     this.iBorder = border;
@@ -113,11 +116,11 @@ public class ContentViewer extends Block{
     this.styleAttribute = style;
   }
   public void setContent(Vector Content){
-		clear = true;
-    listOfContent = Content;
+		this.clear = true;
+    this.listOfContent = Content;
   }
   public void setTitles(String[] Titles){
-    sTitles = Titles;
+    this.sTitles = Titles;
   }
   public void setDisplayNumber(int number){
     this.displayNumber = number;
@@ -126,24 +129,24 @@ public class ContentViewer extends Block{
     this.allowOrder = allow;
   }
   protected void control(IWContext iwc){
-		iInstId = Math.abs(getICObjectInstanceID());
+		this.iInstId = Math.abs(getICObjectInstanceID());
     try{
 
-      if(iwc.getParameter(prmStart+iInstId)!=null){
-        listStart = Integer.parseInt(iwc.getParameter(prmStart+iInstId));
-				iwc.setSessionAttribute(prmStart+iInstId,String.valueOf(listStart));
+      if(iwc.getParameter(this.prmStart+this.iInstId)!=null){
+        this.listStart = Integer.parseInt(iwc.getParameter(this.prmStart+this.iInstId));
+				iwc.setSessionAttribute(this.prmStart+this.iInstId,String.valueOf(this.listStart));
       }
-			else if(iwc.getSessionAttribute(prmStart+iInstId)!=null){
-			  listStart = Integer.parseInt((String) iwc.getSessionAttribute(prmStart+iInstId));
+			else if(iwc.getSessionAttribute(this.prmStart+this.iInstId)!=null){
+			  this.listStart = Integer.parseInt((String) iwc.getSessionAttribute(this.prmStart+this.iInstId));
 			}
 
-      iwc.setSessionAttribute(prmListStart+iInstId,new Integer(listStart));
+      iwc.setSessionAttribute(this.prmListStart+this.iInstId,new Integer(this.listStart));
 
-      if(iwc.getParameter(sAction+iInstId) != null){
-        sActPrm = iwc.getParameter(sAction+iInstId);
+      if(iwc.getParameter(this.sAction+this.iInstId) != null){
+        this.sActPrm = iwc.getParameter(this.sAction+this.iInstId);
         try{
-          iAction = Integer.parseInt(sActPrm);
-          switch(iAction){
+          this.iAction = Integer.parseInt(this.sActPrm);
+          switch(this.iAction){
             case ACT1:    break;
             case ACT2: doTable(iwc);  break;
           }
@@ -152,8 +155,9 @@ public class ContentViewer extends Block{
           e.printStackTrace();
         }
       }
-      else
-        doMain(iwc);
+	else {
+		doMain(iwc);
+	}
     }
     catch(Exception S){
       S.printStackTrace();
@@ -167,21 +171,23 @@ public class ContentViewer extends Block{
   }
 
   private void doMain(IWContext iwc){
-		if(clear && iwc.getSessionAttribute(prmContent+iInstId) != null)
-			iwc.removeSessionAttribute(prmContent+iInstId);
+		if(this.clear && iwc.getSessionAttribute(this.prmContent+this.iInstId) != null) {
+			iwc.removeSessionAttribute(this.prmContent+this.iInstId);
+		}
 
-    if(iwc.getSessionAttribute(prmContent+iInstId) == null){
-      String[] headers = sTitles;
-      List L = listOfContent;
-      iwc.setSessionAttribute(prmContent+iInstId,L);
-      iwc.setSessionAttribute(prmHeaders+iInstId,headers);
+    if(iwc.getSessionAttribute(this.prmContent+this.iInstId) == null){
+      String[] headers = this.sTitles;
+      List L = this.listOfContent;
+      iwc.setSessionAttribute(this.prmContent+this.iInstId,L);
+      iwc.setSessionAttribute(this.prmHeaders+this.iInstId,headers);
       if(L != null){
-        add(this.doFooter(listStart,L.size()));
-        add(this.doView(headers,L,listStart));
-        add(this.doFooter(listStart,L.size()));
+        add(this.doFooter(this.listStart,L.size()));
+        add(this.doView(headers,L,this.listStart));
+        add(this.doFooter(this.listStart,L.size()));
       }
-      else
-        add(new Text(" nothing to show"));
+	else {
+		add(new Text(" nothing to show"));
+	}
     }
     else{
       doTable(iwc);
@@ -189,40 +195,45 @@ public class ContentViewer extends Block{
   }
 
   private void doTable(IWContext iwc){
-    if(iwc.getSession().getAttribute( prmContent+iInstId)!=null){
-      Vector v= (Vector) iwc.getSession().getAttribute(prmContent+iInstId);
-      eReport = ReportService.getSessionReport(iwc);
-      listStart = ((Integer)iwc.getSessionAttribute(prmListStart+iInstId)).intValue();
+    if(iwc.getSession().getAttribute( this.prmContent+this.iInstId)!=null){
+      Vector v= (Vector) iwc.getSession().getAttribute(this.prmContent+this.iInstId);
+      this.eReport = ReportService.getSessionReport(iwc);
+      this.listStart = ((Integer)iwc.getSessionAttribute(this.prmListStart+this.iInstId)).intValue();
       String[] headers = null;
-      if(iwc.getSessionAttribute(prmHeaders+iInstId) != null){
-        headers = (String[]) iwc.getSessionAttribute(prmHeaders+iInstId);
+      if(iwc.getSessionAttribute(this.prmHeaders+this.iInstId) != null){
+        headers = (String[]) iwc.getSessionAttribute(this.prmHeaders+this.iInstId);
       }
-      if(allowOrder){
-        if(iwc.getSession().getAttribute(prmLastOrder+iInstId)!=null)
-          this.sLastOrder = (String) iwc.getSessionAttribute(prmLastOrder+iInstId);
-        else
-          this.sLastOrder = "";
+      if(this.allowOrder){
+        if(iwc.getSession().getAttribute(this.prmLastOrder+this.iInstId)!=null) {
+			this.sLastOrder = (String) iwc.getSessionAttribute(this.prmLastOrder+this.iInstId);
+		}
+		else {
+			this.sLastOrder = "";
+		}
 
         String sOrder = "0";
-        if(iwc.getParameter(prmOrder)!= null){
-          sOrder = iwc.getParameter(prmOrder+iInstId);
+        if(iwc.getParameter(this.prmOrder)!= null){
+          sOrder = iwc.getParameter(this.prmOrder+this.iInstId);
         }
         boolean reverse = false;
-        if(this.sLastOrder.equalsIgnoreCase(sOrder))
-          reverse = true;
+        if(this.sLastOrder.equalsIgnoreCase(sOrder)) {
+			reverse = true;
+		}
         int order = Integer.parseInt(sOrder);
-        if(!(iwc.getParameter(prmStart+iInstId)!= null))
-          OrderVector(v,order,reverse);
-        iwc.setSessionAttribute(prmLastOrder+iInstId,sOrder);
+        if(!(iwc.getParameter(this.prmStart+this.iInstId)!= null)) {
+			OrderVector(v,order,reverse);
+		}
+        iwc.setSessionAttribute(this.prmLastOrder+this.iInstId,sOrder);
       }
 
       if(v != null){
-        add(this.doFooter(listStart,v.size()));
-        add(this.doView(headers,v,listStart));
-        add(this.doFooter(listStart,v.size()));
+        add(this.doFooter(this.listStart,v.size()));
+        add(this.doView(headers,v,this.listStart));
+        add(this.doFooter(this.listStart,v.size()));
       }
-      else
-        add(new Text(" nothing to show"));
+	else {
+		add(new Text(" nothing to show"));
+	}
     }
   }
 
@@ -235,16 +246,16 @@ public class ContentViewer extends Block{
     T.setColumnAlignment(1,"left");
     T.setColumnAlignment(3,"center");
     T.setColumnAlignment(5,"right");
-    int left = total%displayNumber;
-    int nextstart = start+displayNumber;
-    int nextend = nextstart + displayNumber-1;
+    int left = total%this.displayNumber;
+    int nextstart = start+this.displayNumber;
+    int nextend = nextstart + this.displayNumber-1;
     if(start != -1){
       if(!(start == 1)){
         Link leftLink = new Link("<< ");
-        leftLink.addParameter(prmStart+iInstId,start-displayNumber);
+        leftLink.addParameter(this.prmStart+this.iInstId,start-this.displayNumber);
         leftLink.setFontColor(this.LightColor);
         T.add(leftLink,1,1);
-        T.add(getHeaderText((start-displayNumber)+"-"+(start-1)),1,1);
+        T.add(getHeaderText((start-this.displayNumber)+"-"+(start-1)),1,1);
       }
       if(nextstart <= total){
         String interval;
@@ -252,32 +263,34 @@ public class ContentViewer extends Block{
           interval = nextstart + "-" +(nextstart+ left-1);
         }
         else{
-          interval = nextstart+"-"+(nextstart+displayNumber-1);
+          interval = nextstart+"-"+(nextstart+this.displayNumber-1);
         }
         T.add(getHeaderText(interval),5,1);
         Link rightLink = new Link(" >>");
-        rightLink.addParameter(prmStart+iInstId,start+displayNumber);
+        rightLink.addParameter(this.prmStart+this.iInstId,start+this.displayNumber);
         rightLink.setFontColor(this.LightColor);
         T.add(rightLink,5,1);
       }
-      if(!((nextstart-1) < total) )
-        T.add(getHeaderText(start+"-"+(start+left-1)+" of "+total),3,1);
-      else
-        T.add(getHeaderText(start+"-"+(start+displayNumber-1)+" of "+total),3,1);
+      if(!((nextstart-1) < total) ) {
+		T.add(getHeaderText(start+"-"+(start+left-1)+" of "+total),3,1);
+	}
+	else {
+		T.add(getHeaderText(start+"-"+(start+this.displayNumber-1)+" of "+total),3,1);
+	}
     }
     else{
 
       T.add(getHeaderText("Total:"+total),3,1);
 
       Link PartLink = new Link("Partial");
-      PartLink.addParameter(prmStart+iInstId,1);
+      PartLink.addParameter(this.prmStart+this.iInstId,1);
       PartLink.setFontColor(this.LightColor);
       T.add(PartLink,2,1);
 
     }
 
     Link WholeLink = new Link("All");
-    WholeLink.addParameter(prmStart+iInstId,-1);
+    WholeLink.addParameter(this.prmStart+this.iInstId,-1);
     WholeLink.setFontColor(this.LightColor);
     T.add(WholeLink,4,1);
     return T;
@@ -286,33 +299,35 @@ public class ContentViewer extends Block{
   private PresentationObject doView(String[] headers,List content,int start){
     int len = content.size();
     Table T;
-    if(start != -1)
-      T= new Table(headers.length+1 ,displayNumber+1);
-    else
-      T= new Table(headers.length+1 ,len+1);
+    if(start != -1) {
+		T= new Table(headers.length+1 ,this.displayNumber+1);
+	}
+	else {
+		T= new Table(headers.length+1 ,len+1);
+	}
 
     T.setWidth("100%");
     T.setWidth(1,"30");
     T.setCellpadding(2);
     T.setCellspacing(1);
-    T.setVerticalZebraColored(LightColor,MiddleColor);
-    T.setRowColor(1,DarkColor);
+    T.setVerticalZebraColored(this.LightColor,this.MiddleColor);
+    T.setRowColor(1,this.DarkColor);
     for(int j = 0; j < headers.length ;j++){
       Link HeaderLink = (Link) this.headerLinkToClone.clone();
       HeaderLink.setText(headers[j]);
-      if(allowOrder){
-        HeaderLink.addParameter(this.sAction,this.ACT2);
-        HeaderLink.addParameter(prmOrder+iInstId,String.valueOf(j));
+      if(this.allowOrder){
+        HeaderLink.addParameter(this.sAction,ContentViewer.ACT2);
+        HeaderLink.addParameter(this.prmOrder+this.iInstId,String.valueOf(j));
         //L.setFontColor(WhiteColor);
         T.add(HeaderLink,j+2,1);
       }
       else{
-        if (!isHeaderLinkCloned) {
+        if (!this.isHeaderLinkCloned) {
           HeaderLink.setFontSize( 2);
           HeaderLink.setBold();
 //          (Text) HeaderLink.getObject();
         }
-        T.add( (Text) HeaderLink.getObject(), j+2, 1);
+        T.add( HeaderLink.getObject(), j+2, 1);
       }
 
     }
@@ -320,7 +335,7 @@ public class ContentViewer extends Block{
     int cols = headers.length;
     if(start != -1){
       int index = start;
-      int end = start+displayNumber;
+      int end = start+this.displayNumber;
       for(int i =0; index < end && index <= len;i++){
         C = (Content)content.get((index)-1);
         for(int j = 0; j < cols;j++){
@@ -346,42 +361,47 @@ public class ContentViewer extends Block{
   }
 
 	private PresentationObject getBodyObject(Object Obj){
-	  if(Obj instanceof PresentationObject)
-			return (PresentationObject)Obj;
-		else
-			return getBodyText(Obj.toString());
+	  if(Obj instanceof PresentationObject) {
+		return (PresentationObject)Obj;
+	}
+	else {
+		return getBodyText(Obj.toString());
+	}
 	}
 
   private Text getHeaderText(String text){
     Text T = new Text(text,true,false,false);
-    T.setFontColor(WhiteColor);
+    T.setFontColor(this.WhiteColor);
     T.setFontSize(2);
     return T;
   }
 
   private Text getBodyText(String text){
     Text T = new Text(text);
-    T.setFontColor( TextFontColor);
-    T.setFontSize( fontSize);
-    if(fontBold)
-      T.setBold();
+    T.setFontColor( this.TextFontColor);
+    T.setFontSize( this.fontSize);
+    if(this.fontBold) {
+		T.setBold();
+	}
     return T;
   }
 
   private void OrderVector(Vector mbs,int order,boolean reverse){
     ContentComparator CC = new ContentComparator(order);
-    if(reverse)
-      Collections.reverse(mbs);
-    else
-      Collections.sort(mbs,CC);
+    if(reverse) {
+		Collections.reverse(mbs);
+	}
+	else {
+		Collections.sort(mbs,CC);
+	}
   }
 
   private Table makeTable(String[] header,String[][] content){
     Table T= new Table();
     for(int j = 0; j < header.length ;j++){
       Link L = new Link(header[j]);
-      L.addParameter(this.sAction,this.ACT2);
-      L.addParameter( prmOrder+iInstId,String.valueOf(j));
+      L.addParameter(this.sAction,ContentViewer.ACT2);
+      L.addParameter( this.prmOrder+this.iInstId,String.valueOf(j));
       T.add(L,j+1,1);
     }
     for(int i =0; i < content.length;i++){

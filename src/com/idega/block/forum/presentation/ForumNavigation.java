@@ -33,16 +33,16 @@ public class ForumNavigation extends Block {
 	private ICPage _page;
 	
 	public void main(IWContext iwc) {
-		_iwrb = getResourceBundle(iwc);
-		_iwb = getBundle(iwc);
+		this._iwrb = getResourceBundle(iwc);
+		this._iwb = getBundle(iwc);
 
-		_hasAddPermission = hasAddPermission(iwc);
+		this._hasAddPermission = hasAddPermission(iwc);
 
 		try {
-			_topicID = Integer.parseInt(iwc.getParameter(ForumBusiness.PARAMETER_TOPIC_ID));
+			this._topicID = Integer.parseInt(iwc.getParameter(ForumBusiness.PARAMETER_TOPIC_ID));
 		}
 		catch (NumberFormatException e) {
-			_topicID = -1;
+			this._topicID = -1;
 		}
 		
 		add(getNavigation(iwc));
@@ -58,38 +58,39 @@ public class ForumNavigation extends Block {
 		table.setCellpadding(2);
 		int column = 1;
 
-		if (_topicID != -1) {
-			Image newImage = _iwb.getImage("shared/new.gif");
+		if (this._topicID != -1) {
+			Image newImage = this._iwb.getImage("shared/new.gif");
 			newImage.setPaddingRight(2);
 			newImage.setAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
 
-			if (_hasAddPermission) {
+			if (this._hasAddPermission) {
 				Link newImageLink = new Link(newImage);
 				newImageLink.setWindowToOpen(ForumThreadEditor.class);
-				newImageLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, _topicID);
+				newImageLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, this._topicID);
 				
-				Link newLink = getStyleLink(_iwrb.getLocalizedString("new_thread", "New thread"), Forum.LINK_STYLE);
+				Link newLink = getStyleLink(this._iwrb.getLocalizedString("new_thread", "New thread"), Forum.LINK_STYLE);
 				newLink.setWindowToOpen(ForumThreadEditor.class);
-				newLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, _topicID);
+				newLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, this._topicID);
 
 				table.add(newImageLink, column, 1);
 				table.add(newLink, column++, 1);
 			}
 			else {
-				Text newText = getStyleText(_iwrb.getLocalizedString("new_thread", "New thread"), Forum.SMALL_TEXT_STYLE);
+				Text newText = getStyleText(this._iwrb.getLocalizedString("new_thread", "New thread"), Forum.SMALL_TEXT_STYLE);
 				table.add(newImage, column, 1);
 				table.add(newText, column++, 1);
 			}
 
-			if (_showOverviewLink) {
-				Image overviewImage = _iwb.getImage("shared/forum.gif");
+			if (this._showOverviewLink) {
+				Image overviewImage = this._iwb.getImage("shared/forum.gif");
 				overviewImage.setPaddingRight(2);
 				overviewImage.setAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
 				
 				Link overviewImageLink = new Link(overviewImage);
 				overviewImageLink.addParameter(ForumBusiness.PARAMETER_STATE, ForumBusiness.FORUM_TOPICS);
-				if (_page != null)
-					overviewImageLink.setPage(_page);
+				if (this._page != null) {
+					overviewImageLink.setPage(this._page);
+				}
 				
 				table.add(overviewImageLink, column, 1);
 				table.add(getOverviewLink(), column, 1);
@@ -100,10 +101,11 @@ public class ForumNavigation extends Block {
 	}
 
 	private Link getOverviewLink() {
-		Link overView = getStyleLink(_iwrb.getLocalizedString("topic_overview", "Topic overview"), Forum.LINK_STYLE);
+		Link overView = getStyleLink(this._iwrb.getLocalizedString("topic_overview", "Topic overview"), Forum.LINK_STYLE);
 		overView.addParameter(ForumBusiness.PARAMETER_STATE, ForumBusiness.FORUM_TOPICS);
-		if (_page != null)
-			overView.setPage(_page);
+		if (this._page != null) {
+			overView.setPage(this._page);
+		}
 
 		return overView;
 	}
@@ -121,6 +123,6 @@ public class ForumNavigation extends Block {
 	}
 	
 	public void setShowOverviewLink(boolean overviewLink) {
-		_showOverviewLink = overviewLink;
+		this._showOverviewLink = overviewLink;
 	}
 }

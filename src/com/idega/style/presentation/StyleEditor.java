@@ -1,5 +1,5 @@
 /*
- * $Id: StyleEditor.java,v 1.1 2004/09/16 10:25:24 laddi Exp $
+ * $Id: StyleEditor.java,v 1.1.2.1 2007/01/12 19:32:54 idegaweb Exp $
  * Created on 10.9.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -35,10 +35,10 @@ import com.idega.style.StyleValue;
 
 
 /**
- * Last modified: $Date: 2004/09/16 10:25:24 $ by $Author: laddi $
+ * Last modified: $Date: 2007/01/12 19:32:54 $ by $Author: idegaweb $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.1.2.1 $
  */
 public class StyleEditor extends Block {
 
@@ -63,7 +63,7 @@ public class StyleEditor extends Block {
 	 */
 	public void main(IWContext iwc) throws Exception {
 		StyleManager manager = StyleManager.getStaticInstance();
-		style = (Style) iwc.getSessionAttribute(PARAMETER_STYLE_SESSION);
+		this.style = (Style) iwc.getSessionAttribute(PARAMETER_STYLE_SESSION);
 		parse(iwc, manager);
 
 		Form form = new Form();
@@ -80,15 +80,15 @@ public class StyleEditor extends Block {
 			StyleAttributeFamily family = (StyleAttributeFamily) iter.next();
 			menu.addMenuElement(family.getName(), family.getName());
 			
-			if (attributeFamily == null) {
-				attributeFamily = family.getName();
+			if (this.attributeFamily == null) {
+				this.attributeFamily = family.getName();
 			}
 		}
-		form.addParameter(PARAMETER_CURRENT_ATTRIBUTE_FAMILY, attributeFamily);
+		form.addParameter(PARAMETER_CURRENT_ATTRIBUTE_FAMILY, this.attributeFamily);
 		
 		table.add(menu, 1, 1);
 		table.add(getAttributeTable(manager), 1, 3);
-		table.add(getPreviewTable(style), 1, 5);
+		table.add(getPreviewTable(this.style), 1, 5);
 		
 		add(form);
 	}
@@ -97,7 +97,7 @@ public class StyleEditor extends Block {
 		Table table = new Table();
 		int row = 1;
 		
-		StyleAttributeFamily family = manager.getAttributeFamily(attributeFamily);
+		StyleAttributeFamily family = manager.getAttributeFamily(this.attributeFamily);
 		Iterator iter = family.iterator();
 		while (iter.hasNext()) {
 			StyleAttribute attribute = (StyleAttribute) iter.next();
@@ -110,14 +110,14 @@ public class StyleEditor extends Block {
 					table.add(value.getName(), 2, row);
 				}
 				if (value.getFixedValue()) {
-					table.add(getOptions(attribute.getName() + "_" + value.getName(), value.iterator(), getSelectedValue(style, attribute, value)), 3, row);
+					table.add(getOptions(attribute.getName() + "_" + value.getName(), value.iterator(), getSelectedValue(this.style, attribute, value)), 3, row);
 				}
 				else {
-					table.add(getValueObject(value.getType(), attribute.getName() + "_" + value.getName(), getSelectedValue(style, attribute, value)), 3, row);
+					table.add(getValueObject(value.getType(), attribute.getName() + "_" + value.getName(), getSelectedValue(this.style, attribute, value)), 3, row);
 					
 					StyleUnitType unitType = value.getUnitType();
 					if (unitType != null) {
-						table.add(getUnits(attribute.getName() + "_" + value.getName() + "_unit", unitType.iterator(), unitType.getMultivalued(), getSelectedValue(style, attribute, value)), 3, row);
+						table.add(getUnits(attribute.getName() + "_" + value.getName() + "_unit", unitType.iterator(), unitType.getMultivalued(), getSelectedValue(this.style, attribute, value)), 3, row);
 					}
 				}
 				row++;
@@ -173,7 +173,7 @@ public class StyleEditor extends Block {
 		
 		if (options != null) {
 			while (options.hasNext()) {
-				Object element = (Object) options.next();
+				Object element = options.next();
 				menu.addMenuElement(element.toString(), element.toString());
 			}
 		}
@@ -243,12 +243,12 @@ public class StyleEditor extends Block {
 	
 	private void parse(IWContext iwc, StyleManager manager) {
 		if (iwc.isParameterSet(PARAMETER_ATTRIBUTE_FAMILY)) {
-			attributeFamily = iwc.getParameter(PARAMETER_ATTRIBUTE_FAMILY);
+			this.attributeFamily = iwc.getParameter(PARAMETER_ATTRIBUTE_FAMILY);
 		}
 		
 		if (iwc.isParameterSet(PARAMETER_CURRENT_ATTRIBUTE_FAMILY)) {
-			if (style == null) {
-				style = new Style();
+			if (this.style == null) {
+				this.style = new Style();
 			}
 			
 			String currentAttributeFamily = iwc.getParameter(PARAMETER_CURRENT_ATTRIBUTE_FAMILY);
@@ -287,14 +287,14 @@ public class StyleEditor extends Block {
 				}
 				
 				if (addAttribute) {
-					style.add(newAttribute);
+					this.style.add(newAttribute);
 				}
 				else {
-					style.remove(attribute);
+					this.style.remove(attribute);
 				}
 			}
 			
-			iwc.setSessionAttribute(PARAMETER_STYLE_SESSION, style);
+			iwc.setSessionAttribute(PARAMETER_STYLE_SESSION, this.style);
 		}
 	}
 }

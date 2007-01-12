@@ -40,13 +40,13 @@ public class TradeBundleStarter implements IWBundleStartable,ActionListener{
 	}
 	
 	public void start(IWBundle bundle){
-		bundle_ = bundle;
+		this.bundle_ = bundle;
 		checkDataSource(bundle);
-		timer = new EventTimer(EventTimer.THREAD_SLEEP_24_HOURS/2,IW_CURRENCY_TIMER);
-		timer.addActionListener(this);
+		this.timer = new EventTimer(EventTimer.THREAD_SLEEP_24_HOURS/2,IW_CURRENCY_TIMER);
+		this.timer.addActionListener(this);
 		//Starts the thread while waiting for 3 mins. before the idegaWebApp starts up.
 		// -- Fix for working properly on Interebase with entity-auto-create-on.
-		timer.start(3*60*1000);
+		this.timer.start(3*60*1000);
 		System.out.println("Trade bundle starter: starting");
 	}
 	
@@ -117,7 +117,7 @@ public class TradeBundleStarter implements IWBundleStartable,ActionListener{
 	public void actionPerformed(ActionEvent event) {
 		try{
 			if (event.getActionCommand().equalsIgnoreCase(IW_CURRENCY_TIMER)) {
-				CurrencyBusiness.getCurrencyMap(bundle_);
+				CurrencyBusiness.getCurrencyMap(this.bundle_);
 			}
 		}
 		catch (com.idega.data.IDONoDatastoreError error) {
@@ -136,9 +136,9 @@ public class TradeBundleStarter implements IWBundleStartable,ActionListener{
 	 * @see com.idega.idegaweb.IWBundleStartable#stop(IWBundle)
 	 */
 	public void stop(IWBundle starterBundle) {
-		if (timer != null) {
-			timer.stop();
-			timer = null;
+		if (this.timer != null) {
+			this.timer.stop();
+			this.timer = null;
 		}
 	}
 }

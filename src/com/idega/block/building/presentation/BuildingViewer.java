@@ -58,26 +58,26 @@ public class BuildingViewer extends Block {
 	}
 
 	public void setApartmentTypeWindowClass(Class windowClass) {
-		apartmentTypeWindowClass = windowClass;
+		this.apartmentTypeWindowClass = windowClass;
 	}
 
 	public void main(IWContext iwc) throws Exception {
-		if (iwrb_ == null) {
-			iwrb_ = getResourceBundle(iwc);
+		if (this.iwrb_ == null) {
+			this.iwrb_ = getResourceBundle(iwc);
 		}
 
-		buildingService = (BuildingService) IBOLookup.getServiceInstance(iwc, BuildingService.class);
+		this.buildingService = (BuildingService) IBOLookup.getServiceInstance(iwc, BuildingService.class);
 
 		if (iwc.getParameter(PARAMETER_STRING) != null) {
 			try {
-				building_id = Integer.parseInt(iwc.getParameter(PARAMETER_STRING));
+				this.building_id = Integer.parseInt(iwc.getParameter(PARAMETER_STRING));
 			}
 			catch (NumberFormatException e) {
-				building_id = 0;
+				this.building_id = 0;
 			}
 		}
 
-		if (building_id == 0) {
+		if (this.building_id == 0) {
 			getAllBuildings(iwc);
 		}
 
@@ -95,7 +95,7 @@ public class BuildingViewer extends Block {
 
 	private void getAllBuildings(IWContext iwc) throws Exception {
 		int row = 1;
-		Collection complexes = buildingService.getComplexHome().findAll();
+		Collection complexes = this.buildingService.getComplexHome().findAll();
 		Table campusTable = new Table(1, complexes.size());
 		for (Iterator iter = complexes.iterator(); iter.hasNext();) {
 			Complex complex = (Complex) iter.next();
@@ -128,13 +128,13 @@ public class BuildingViewer extends Block {
 
 			// List L = BuildingFinder.listOfBuildingsInComplex(iComplexId);
 			// List L = BuildingFinder.listOfBuildingImageFiles(iComplexId);
-			Collection images = buildingService.getBuildingHome().getImageFilesByComplex(iComplexId);
+			Collection images = this.buildingService.getBuildingHome().getImageFilesByComplex(iComplexId);
 			if (images != null) {
 				// ICFile file =
 				// ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).findByPrimaryKeyLegacy(((Building)L.get(0)).getImageId());
 				ImageSlideShow slide = new ImageSlideShow();
 				// slide.setFileFolder(file);
-				slide.setWidth(imageMaxSize);
+				slide.setWidth(this.imageMaxSize);
 
 				slide.setAlt(complex.getName());
 				slide.setFiles(new java.util.Vector(images));
@@ -149,7 +149,7 @@ public class BuildingViewer extends Block {
 			}
 
 			// Find out and present apartment category icons
-			Collection categories = buildingService.getApartmentCategoryHome().findByComplex(iComplexId);
+			Collection categories = this.buildingService.getApartmentCategoryHome().findByComplex(iComplexId);
 			if (categories != null) {
 
 				for (Iterator iterator = categories.iterator(); iterator.hasNext();) {
@@ -158,13 +158,14 @@ public class BuildingViewer extends Block {
 					image.setName("");
 					image.setHorizontalSpacing(4);
 					image.setVerticalSpacing(2);
-					if (cat.getImageId() != -1)
+					if (cat.getImageId() != -1) {
 						complexTable.add(image, 3, 3);
+					}
 				}
 			}
 
-			Image moreImage = iwrb_.getImage("/building/more.gif");
-			Image mapImage = iwrb_.getImage("/building/map.gif");
+			Image moreImage = this.iwrb_.getImage("/building/more.gif");
+			Image mapImage = this.iwrb_.getImage("/building/map.gif");
 
 			// What genius made this ??
 			// Link complexLink = new Link(moreImage,iwc.getRequestURI());
@@ -181,7 +182,7 @@ public class BuildingViewer extends Block {
 			complexTable.add("&nbsp;&nbsp;&nbsp;", 1, 4);
 			complexTable.add(locationLink, 1, 4);
 			if (complex.getFlashPageID() > 0) {
-				Image flashImage = iwrb_.getImage("/building/flash.gif");
+				Image flashImage = this.iwrb_.getImage("/building/flash.gif");
 				Link flashLink = new Link(flashImage);
 				flashLink.setPage(complex.getFlashPageID());
 				complexTable.add("&nbsp;&nbsp;&nbsp;", 1, 4);
@@ -198,7 +199,7 @@ public class BuildingViewer extends Block {
 		}
 
 		if (complexes.size() == 0) {
-			add(iwrb_.getLocalizedString("no_buildings", "No buildings in database"));
+			add(this.iwrb_.getLocalizedString("no_buildings", "No buildings in database"));
 		}
 
 		else {
@@ -210,19 +211,19 @@ public class BuildingViewer extends Block {
 	private Text getInfoText(String text) {
 		text = formatText(text);
 		Text T = new Text(text);
-		T.setFontStyle(infoStyle);
+		T.setFontStyle(this.infoStyle);
 		return T;
 	}
 
 	private Text getAddressText(String text) {
 		Text T = new Text(text);
-		T.setFontStyle(addressStyle);
+		T.setFontStyle(this.addressStyle);
 		return T;
 	}
 
 	private Text getNameText(String text) {
 		Text T = new Text(text);
-		T.setFontStyle(nameStyle);
+		T.setFontStyle(this.nameStyle);
 		return T;
 	}
 
@@ -232,8 +233,8 @@ public class BuildingViewer extends Block {
 		// ((com.idega.block.building.data.ComplexHome)com.idega.data.IDOLookup.getHomeLegacy(Complex.class)).findByPrimaryKeyLegacy(building_id);
 		// ApartmentType[] types =
 		// BuildingFinder.findApartmentTypesInComplex(building_id);
-		Complex complex = buildingService.getComplexHome().findByPrimaryKey(String.valueOf(building_id));
-		Collection types = buildingService.getApartmentTypeHome().findByComplex(new Integer(building_id));
+		Complex complex = this.buildingService.getComplexHome().findByPrimaryKey(String.valueOf(this.building_id));
+		Collection types = this.buildingService.getApartmentTypeHome().findByComplex(new Integer(this.building_id));
 		Table complexTable = new Table(1, types.size() + 1);
 
 		complexTable.setWidth("100%");
@@ -264,13 +265,14 @@ public class BuildingViewer extends Block {
 			String divideText = ("<br>.........<br><br>");
 
 			PresentationObject typeImage;
-			if (type.getImageId() == -1)
-				typeImage = iwrb_.getImage("/building/default.jpg");
+			if (type.getImageId() == -1) {
+				typeImage = this.iwrb_.getImage("/building/default.jpg");
+			}
 			else {
 				ImageSlideShow slide = new ImageSlideShow();
 				slide.setDelay(1);
 				slide.setShowButtons(false);
-				slide.setWidth(imageMaxSize);
+				slide.setWidth(this.imageMaxSize);
 				slide.setAlt(type.getName());
 				slide.setFileId(type.getImageId());
 				typeImage = slide;
@@ -287,10 +289,10 @@ public class BuildingViewer extends Block {
 			 * typeWindow.setWidth(400); typeWindow.setHeight(550);
 			 * typeWindow.setScrollbar(false);
 			 */
-			Image moreImage = iwrb_.getImage("/building/more.gif");
-			Image backImage = iwrb_.getImage("/building/back.gif");
+			Image moreImage = this.iwrb_.getImage("/building/more.gif");
+			Image backImage = this.iwrb_.getImage("/building/back.gif");
 			Link typeLink = new Link(moreImage);
-			typeLink.setWindowToOpen(apartmentTypeWindowClass);
+			typeLink.setWindowToOpen(this.apartmentTypeWindowClass);
 			typeLink.addParameter(ApartmentTypeViewer.PARAMETER_STRING, type.getPrimaryKey().toString());
 
 			BackButton BB = new BackButton(backImage);

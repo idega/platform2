@@ -1,5 +1,5 @@
 /*
- * $Id: PropertyTag.java,v 1.3 2005/02/03 14:26:24 laddi Exp $
+ * $Id: PropertyTag.java,v 1.3.2.1 2007/01/12 19:32:40 idegaweb Exp $
  * Created on 15.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -21,10 +21,10 @@ import com.idega.util.reflect.Property;
 
 /**
  * 
- *  Last modified: $Date: 2005/02/03 14:26:24 $ by $Author: laddi $
+ *  Last modified: $Date: 2007/01/12 19:32:40 $ by $Author: idegaweb $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.3.2.1 $
  */
 public class PropertyTag implements BodyTag{
 
@@ -39,7 +39,7 @@ public class PropertyTag implements BodyTag{
 	 * @return Returns the name.
 	 */
 	public String getName() {
-		return name;
+		return this.name;
 	}
 	/**
 	 * @param name The name to set.
@@ -51,7 +51,7 @@ public class PropertyTag implements BodyTag{
 	 * @return Returns the type.
 	 */
 	public String getType() {
-		return type;
+		return this.type;
 	}
 	/**
 	 * @param type The type to set.
@@ -63,7 +63,7 @@ public class PropertyTag implements BodyTag{
 	 * @return Returns the value.
 	 */
 	public String getValue() {
-		return value;
+		return this.value;
 	}
 	/**
 	 * @param value The value to set.
@@ -120,7 +120,7 @@ public class PropertyTag implements BodyTag{
 	 * @see javax.servlet.jsp.tagext.Tag#getParent()
 	 */
 	public Tag getParent() {
-		return parentTag;
+		return this.parentTag;
 	}
 
 	/* (non-Javadoc)
@@ -147,7 +147,7 @@ public class PropertyTag implements BodyTag{
 		}
 		//PropertyCache pc = PropertyCache.getInstance();
 		//pc.addProperty(key,property);
-		return BodyTag.EVAL_PAGE;
+		return Tag.EVAL_PAGE;
 	}
 
 	protected UIComponent getParentUIComponent(){

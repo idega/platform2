@@ -16,7 +16,7 @@ import com.idega.block.albumcollection.business.AlbumCollectionBusiness;
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:      idega.is
- * @author <a href="mailto:gummi@idega.is">Guðmundur Ágúst Sæmundsson</a>
+ * @author <a href="mailto:gummi@idega.is">Guï¿½mundur ï¿½gï¿½st Sï¿½mundsson</a>
  * @version 1.0
  */
 
@@ -35,15 +35,15 @@ public class CreateAuthor extends IWAdminWindow {
     this.setHeight(170);
     this.setWidth(350);
     this.setScrollbar(false);
-    myForm = new Form();
+    this.myForm = new Form();
   }
 
   public void initFields(IWContext iwc){
-    _fieldName = new TextInput(_fieldNameName);
-    _fieldName.keepStatusOnAction();
+    this._fieldName = new TextInput(_fieldNameName);
+    this._fieldName.keepStatusOnAction();
 
-    _fieldDisplayName = new TextInput(_fieldNameDisplayName);
-    _fieldDisplayName.keepStatusOnAction();
+    this._fieldDisplayName = new TextInput(_fieldNameDisplayName);
+    this._fieldDisplayName.keepStatusOnAction();
   }
 
 
@@ -54,7 +54,7 @@ public class CreateAuthor extends IWAdminWindow {
     Table nameTable = new Table(2,2);
     nameTable.add(new Text("Fullt nafn:"),1,1);
     nameTable.add(this._fieldName,2,1);
-    nameTable.add(new Text("Nafn á vef:"),1,2);
+    nameTable.add(new Text("Nafn ï¿½ vef:"),1,2);
     nameTable.add(this._fieldDisplayName,2,2);
     // ButtonTable
 
@@ -85,10 +85,10 @@ public class CreateAuthor extends IWAdminWindow {
   public void main(IWContext iwc) throws Exception {
     if(iwc.getParameter("save") == null){
       initFields(iwc);
-      this.add(myForm);
-      myForm.empty();
+      this.add(this.myForm);
+      this.myForm.empty();
       //updateFieldStatus(iwc);
-      myForm.add(getElementsOredered(iwc));
+      this.myForm.add(getElementsOredered(iwc));
     } else {
       this.saveAuthor(iwc);
       this.close();

@@ -122,14 +122,14 @@ public class ReportQueryOverview extends Block {
 	
   public void main(IWContext iwc) throws Exception {
 		try {
-			isAdmin = iwc.getAccessController().isAdmin(iwc);
+			this.isAdmin = iwc.getAccessController().isAdmin(iwc);
 		} 
 		catch (Exception ex) {
 			String message =
 				"[ReportOverview]: Can't retrieve AccessController.";
 			System.err.println(message + " Message is: " + ex.getMessage());
 			ex.printStackTrace(System.err);
-			isAdmin = false;
+			this.isAdmin = false;
 		}
 
   	IWBundle bundle = getBundle(iwc);
@@ -150,14 +150,14 @@ public class ReportQueryOverview extends Block {
 		String designFolderKey;
 		if (iwc.isParameterSet(SET_ID_OF_DESIGN_FOLDER_KEY))	{
 			designFolderKey = iwc.getParameter(SET_ID_OF_DESIGN_FOLDER_KEY);
-			designFolder = getFileForId(designFolderKey);
+			this.designFolder = getFileForId(designFolderKey);
 		}
 		else {
-			designFolder = lookUpLayoutFolder();
-			designFolderKey = ((Integer) designFolder.getPrimaryKey()).toString();
+			this.designFolder = lookUpLayoutFolder();
+			designFolderKey = ((Integer) this.designFolder.getPrimaryKey()).toString();
 		}
 		
-		parameterMap.put(SET_ID_OF_DESIGN_FOLDER_KEY, designFolderKey);
+		this.parameterMap.put(SET_ID_OF_DESIGN_FOLDER_KEY, designFolderKey);
 		if (iwc.isParameterSet(DELETE_ITEMS_KEY))	{
 			List idsToDelete = CheckBoxConverter.getResultByParsing(iwc, DELETE_KEY);
 			deleteQueries(idsToDelete, iwc);
@@ -167,10 +167,10 @@ public class ReportQueryOverview extends Block {
 		EntityPathValueContainer executeContainer = ButtonConverter.getResultByParsing(iwc);
 		if (executeContainer.isValid())	{
 			// get the chosen output format
-			parameterMap.put(CURRENT_OUTPUT_FORMAT,executeContainer.getEntityPathShortKey());
+			this.parameterMap.put(CURRENT_OUTPUT_FORMAT,executeContainer.getEntityPathShortKey());
 			// get the chosen query 
 			try {
-				parameterMap.put(CURRENT_QUERY_ID, executeContainer.getEntityIdConvertToInteger());
+				this.parameterMap.put(CURRENT_QUERY_ID, executeContainer.getEntityIdConvertToInteger());
 			}
 			catch (NumberFormatException ex) {
 				String message =
@@ -181,10 +181,10 @@ public class ReportQueryOverview extends Block {
 			}
 			// get the chosen layout
 			EntityPathValueContainer layoutContainer = 
-				DropDownMenuConverter.getResultByEntityIdAndEntityPathShortKey(parameterMap.get(CURRENT_QUERY_ID), QueryRepresentation.DESIGN_LAYOUT_KEY, iwc); 
+				DropDownMenuConverter.getResultByEntityIdAndEntityPathShortKey(this.parameterMap.get(CURRENT_QUERY_ID), QueryRepresentation.DESIGN_LAYOUT_KEY, iwc); 
 			if (layoutContainer.isValid())	{
 				try {
-					parameterMap.put(CURRENT_LAYOUT_ID,  new  Integer(layoutContainer.getValue().toString()));
+					this.parameterMap.put(CURRENT_LAYOUT_ID,  new  Integer(layoutContainer.getValue().toString()));
 				}
 				catch (NumberFormatException ex) {
 					String message = "[ReportOverview]: Can't retrieve id of layout";
@@ -201,7 +201,7 @@ public class ReportQueryOverview extends Block {
 		else if (iwc.isParameterSet(VALUES_COMMITTED_KEY))	{
 			try {
 				String id = iwc.getParameter(CURRENT_QUERY_ID);
-				parameterMap.put(CURRENT_QUERY_ID, new Integer(id));
+				this.parameterMap.put(CURRENT_QUERY_ID, new Integer(id));
 			}
 			catch (NumberFormatException ex) {
 				String message =
@@ -212,7 +212,7 @@ public class ReportQueryOverview extends Block {
 			}
 			try {
 				String id = iwc.getParameter(CURRENT_LAYOUT_ID);
-				parameterMap.put(CURRENT_LAYOUT_ID, new Integer(id));
+				this.parameterMap.put(CURRENT_LAYOUT_ID, new Integer(id));
 			}
 			catch (NumberFormatException ex) {
 				String message =
@@ -222,7 +222,7 @@ public class ReportQueryOverview extends Block {
 				return "";
 			}
 			String format = iwc.getParameter(CURRENT_OUTPUT_FORMAT);
-			parameterMap.put(CURRENT_OUTPUT_FORMAT, format);
+			this.parameterMap.put(CURRENT_OUTPUT_FORMAT, format);
 			return SHOW_SINGLE_QUERY;
 		}
 		return action;
@@ -232,13 +232,13 @@ public class ReportQueryOverview extends Block {
 
   	
   private void getListOfQueries(IWBundle bundle, IWResourceBundle resourceBundle, IWContext iwc) throws RemoteException, FinderException {
-  	Collection queries = getQueryService(iwc).getQueries(iwc, showOnlyOneQueryWithId);
+  	Collection queries = getQueryService(iwc).getQueries(iwc, this.showOnlyOneQueryWithId);
   	Form form = new Form();
   	form.setName("list_form");
   	EntityBrowser browser = getBrowser(new  ArrayList(queries), bundle, resourceBundle, form);
   	addParametersToBrowser(browser);
   	addParametersToForm(form);
-  	if (showOnlyOneQueryWithId != -1)	{
+  	if (this.showOnlyOneQueryWithId != -1)	{
   		String newQueryWasCreatedOrModfied = 
   			resourceBundle.getLocalizedString("ro_query_was_created_or_modified", "Following query was created or modifed");
   		Text text = new Text(newQueryWasCreatedOrModfied);
@@ -265,12 +265,12 @@ public class ReportQueryOverview extends Block {
 		simpleModeLink.addParameter(ReportQueryBuilder.SHOW_WIZARD, Integer.toString(SIMPLE_MODE));
 		simpleModeLink.addParameter(ReportQueryOverview.EDIT_NEW_QUERY, ReportQueryOverview.EDIT_NEW_QUERY);
 		//simpleModeLink.addParameter(ReportQueryBuilder.PARAM_QUERY_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
-		simpleModeLink.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID, parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
+		simpleModeLink.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID, this.parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
 		simpleModeLink.setAsImageButton(true);
 		
   	int column = 1;
   	table.add(simpleModeLink,column++,1);
-  	if (isAdmin) {
+  	if (this.isAdmin) {
 	  	// new button for query builder (expert mode)
 			String expertModeText = resourceBundle.getLocalizedString("ro_create_expert_mode", "New (expert mode)");
 			Link expertModeLink = new Link(expertModeText);
@@ -278,19 +278,19 @@ public class ReportQueryOverview extends Block {
 			expertModeLink.addParameter(ReportQueryBuilder.SHOW_WIZARD, Integer.toString(EXPERT_MODE));
 			expertModeLink.addParameter(ReportQueryOverview.EDIT_NEW_QUERY, ReportQueryOverview.EDIT_NEW_QUERY);
 		//	expertModeLink.addParameter(ReportQueryBuilder.PARAM_QUERY_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
-			expertModeLink.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID, parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
+			expertModeLink.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID, this.parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
 			expertModeLink.setAsImageButton(true);
 			
 	  	table.add(expertModeLink,column++,1);
   	}
   	
-  	if (isAdmin) {
+  	if (this.isAdmin) {
   		// new button for query builder (simple mode)
   		String uploadQueryText = resourceBundle.getLocalizedString("ro_upload_query", "Upload query");
   		Link uploadQueryLink = new Link(uploadQueryText);
   		uploadQueryLink.addParameter(ReportQueryOverview.UPLOAD_QUERY, ReportQueryOverview.UPLOAD_QUERY);
   		//uploadQueryLink.addParameter(ReportQueryBuilder.PARAM_QUERY_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
-  		uploadQueryLink.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID, parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
+  		uploadQueryLink.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID, this.parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
   		uploadQueryLink.setAsImageButton(true);
   		table.add(uploadQueryLink, column++, 1);
   	
@@ -299,7 +299,7 @@ public class ReportQueryOverview extends Block {
   		Link uploadLayoutLink = new Link(uploadLayoutText);
   		uploadLayoutLink.addParameter(ReportQueryOverview.UPLOAD_LAYOUT, ReportQueryOverview.UPLOAD_LAYOUT);
   		//uploadQueryLink.addParameter(ReportQueryBuilder.PARAM_QUERY_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
-  		uploadLayoutLink.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID, parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
+  		uploadLayoutLink.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID, this.parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
   		uploadLayoutLink.setAsImageButton(true);
 		
   		table.add(uploadLayoutLink, column++, 1);
@@ -323,7 +323,7 @@ public class ReportQueryOverview extends Block {
   	table.add(delete,column++,1);
   	table.add(close, column++,1);
   	// special button if only one query was shown
-  	if (showOnlyOneQueryWithId != -1)	{
+  	if (this.showOnlyOneQueryWithId != -1)	{
   		PresentationObject goBack = getGoBackButton(resourceBundle);
   		table.add(goBack, column++,1);
   	}
@@ -350,9 +350,9 @@ public class ReportQueryOverview extends Block {
 		dropDownLayoutConverter.setShowAlwaysDropDownMenu(true);
 		// edit query converter
 		String simpleModeDisplay = resourceBundle.getLocalizedString("ro_edit_query_simple_mode", "Edit (simple mode)");
-		String expertModeDisplay = (isAdmin) ? resourceBundle.getLocalizedString("ro_edit_query_expert_mode", "Edit (expert mode)") : null;
+		String expertModeDisplay = (this.isAdmin) ? resourceBundle.getLocalizedString("ro_edit_query_expert_mode", "Edit (expert mode)") : null;
 		EditQueryConverter simpleEditQueryConverter = new EditQueryConverter(simpleModeDisplay, SIMPLE_MODE);
-		EditQueryConverter expertEditQueryConverter = (isAdmin) ? new EditQueryConverter(expertModeDisplay, EXPERT_MODE) : null;
+		EditQueryConverter expertEditQueryConverter = (this.isAdmin) ? new EditQueryConverter(expertModeDisplay, EXPERT_MODE) : null;
 			
 		// checkbox converter
 		ButtonConverter htmlConverter = new ButtonConverter(bundle.getImage("/shared/txt.gif"));
@@ -375,7 +375,7 @@ public class ReportQueryOverview extends Block {
 		browser.setMandatoryColumnWithConverter(8, EXCEL_KEY, excelConverter);
 		
 		browser.setMandatoryColumnWithConverter(9, EDIT_QUERY_SIMPLE_MODE_KEY, simpleEditQueryConverter);
-		if (isAdmin) {
+		if (this.isAdmin) {
 			browser.setMandatoryColumnWithConverter(10, EDIT_QUERY_EXPERT_MODE_KEY, expertEditQueryConverter);
 		}
 		return browser;
@@ -389,11 +389,11 @@ public class ReportQueryOverview extends Block {
 			public Map getOptions(Object entity, EntityPath path, EntityBrowser browser, IWContext iwc)	{
 				IWResourceBundle resourceBundle = getResourceBundle(iwc);
 				String dynamicLayout = resourceBundle.getLocalizedString("ro_dynamic_layout","dynamic layout");
-				if (optionMap == null) {
-					optionMap = new LinkedHashMap();
-					optionMap.put("-1", dynamicLayout);
-					if(designFolder!=null){
-		  				Iterator iterator = designFolder.getChildrenIterator();
+				if (this.optionMap == null) {
+					this.optionMap = new LinkedHashMap();
+					this.optionMap.put("-1", dynamicLayout);
+					if(ReportQueryOverview.this.designFolder!=null){
+		  				Iterator iterator = ReportQueryOverview.this.designFolder.getChildrenIterator();
 		  				if (iterator != null) {
 		  					while (iterator.hasNext())	{
 		  						ICFile node = (ICFile) iterator.next();
@@ -401,14 +401,14 @@ public class ReportQueryOverview extends Block {
 		  							String name = node.getNodeName();
 			  						int id = node.getNodeID();
 			  						String idAsString = Integer.toString(id);
-			  						optionMap.put(idAsString, name);
+			  						this.optionMap.put(idAsString, name);
 		  						}
 		  					}
 		  				}
 					}
 				
 				}
-				return optionMap;
+				return this.optionMap;
 			}
 			
 
@@ -430,7 +430,7 @@ public class ReportQueryOverview extends Block {
  
   		
 	private void addParametersToForm(Form form)	{
-		Iterator iterator = parameterMap.entrySet().iterator();
+		Iterator iterator = this.parameterMap.entrySet().iterator();
 		while (iterator.hasNext())	{
 			Map.Entry entry = (Map.Entry) iterator.next();
 			String key = (String) entry.getKey();
@@ -440,7 +440,7 @@ public class ReportQueryOverview extends Block {
 	}
 	
 	private void addParametersToLink(Link link)	{
-		Iterator iterator = parameterMap.entrySet().iterator();
+		Iterator iterator = this.parameterMap.entrySet().iterator();
 		while (iterator.hasNext())	{
 			Map.Entry entry = (Map.Entry) iterator.next();
 			String key = (String) entry.getKey();
@@ -450,7 +450,7 @@ public class ReportQueryOverview extends Block {
 	}
 
 	private void addParametersToBrowser(EntityBrowser browser)	{
-		Iterator iterator = parameterMap.entrySet().iterator();
+		Iterator iterator = this.parameterMap.entrySet().iterator();
 		while (iterator.hasNext())	{
 			Map.Entry entry = (Map.Entry) iterator.next();
 			String key = (String) entry.getKey();
@@ -566,11 +566,11 @@ public class ReportQueryOverview extends Block {
 			//String shortKeyPath = path.getShortKey();
 			if (((QueryRepresentation) entity).belongsToUser()) {
 				EntityRepresentation idoEntity = (EntityRepresentation) entity;
-				Link link = new Link(display);
-				link.addParameter(ReportQueryBuilder.SHOW_WIZARD, Integer.toString(searchDepth));
+				Link link = new Link(this.display);
+				link.addParameter(ReportQueryBuilder.SHOW_WIZARD, Integer.toString(this.searchDepth));
 				link.addParameter(ReportQueryBuilder.PARAM_QUERY_ID, idoEntity.getPrimaryKey().toString());
 			//	link.addParameter(ReportQueryBuilder.PARAM_QUERY_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
-				link.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID,parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
+				link.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID,ReportQueryOverview.this.parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
 				link.setAsImageButton(true);
 				return link;
 			}

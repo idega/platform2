@@ -44,7 +44,7 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 	 * @see com.idega.data.IDOLegacyEntity#getEntityName()
 	 */
 	public String getEntityName() {
-		return TABLE_NAME;
+		return this.TABLE_NAME;
 	}
 
 	/**
@@ -52,12 +52,12 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 	 */
 	public void initializeAttributes() {
 		this.addAttribute(getIDColumnName());
-		this.addAttribute(COLUMN_NAME_SCHOOL_ID, "school id", true, true, Integer.class, ONE_TO_MANY, School.class);
-		this.addAttribute(COLUMN_NAME_USER_ID, "user id", true, true, Integer.class, ONE_TO_MANY, User.class);
-		this.addAttribute(COLUMN_NAME_USER_TYPE, "user type", true, true, Integer.class);
-		this.addAttribute(COLUMN_NAME_SHOW_IN_CONTACTS, "show in contacts", true, true, Boolean.class);
-		this.addAttribute(COLUMN_NAME_MAIN_HEADMASTER, "main headmaster", true, true, Boolean.class);	
-		this.addAttribute(COLUMN_NAME_ECONOMY_RESP, "economical responsible", true, true, Boolean.class);
+		this.addAttribute(this.COLUMN_NAME_SCHOOL_ID, "school id", true, true, Integer.class, ONE_TO_MANY, School.class);
+		this.addAttribute(this.COLUMN_NAME_USER_ID, "user id", true, true, Integer.class, ONE_TO_MANY, User.class);
+		this.addAttribute(this.COLUMN_NAME_USER_TYPE, "user type", true, true, Integer.class);
+		this.addAttribute(this.COLUMN_NAME_SHOW_IN_CONTACTS, "show in contacts", true, true, Boolean.class);
+		this.addAttribute(this.COLUMN_NAME_MAIN_HEADMASTER, "main headmaster", true, true, Boolean.class);	
+		this.addAttribute(this.COLUMN_NAME_ECONOMY_RESP, "economical responsible", true, true, Boolean.class);
 		
 		this.addManyToManyRelationShip(School.class);
 	}
@@ -83,55 +83,55 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 	}
 
 	public void setSchoolId(int schoolId) {
-		this.setColumn(COLUMN_NAME_SCHOOL_ID, schoolId);	
+		this.setColumn(this.COLUMN_NAME_SCHOOL_ID, schoolId);	
 	}
 	
 	public int getSchoolId() {
-		return getIntColumnValue(COLUMN_NAME_SCHOOL_ID);
+		return getIntColumnValue(this.COLUMN_NAME_SCHOOL_ID);
 	}
 	
 	public void setUserId(int userId) {
-		setColumn(COLUMN_NAME_USER_ID, userId);	
+		setColumn(this.COLUMN_NAME_USER_ID, userId);	
 	}
 	
 	public int getUserId() {
-		return getIntColumnValue(COLUMN_NAME_USER_ID);	
+		return getIntColumnValue(this.COLUMN_NAME_USER_ID);	
 	}
 	
 	public User getUser() {
-		return (User) getColumnValue(COLUMN_NAME_USER_ID);	
+		return (User) getColumnValue(this.COLUMN_NAME_USER_ID);	
 	}
 	
 	public void setUserType(int userType) {
-		setColumn(COLUMN_NAME_USER_TYPE, userType);	
+		setColumn(this.COLUMN_NAME_USER_TYPE, userType);	
 	}
 	
 	public int getUserType() {
-		return getIntColumnValue(COLUMN_NAME_USER_TYPE);	
+		return getIntColumnValue(this.COLUMN_NAME_USER_TYPE);	
 	}
 
 	public void setMainHeadmaster(boolean mainHead) {
-		setColumn(COLUMN_NAME_MAIN_HEADMASTER, mainHead);	
+		setColumn(this.COLUMN_NAME_MAIN_HEADMASTER, mainHead);	
 	}
 	
 	public boolean getMainHeadmaster() {
-		return getBooleanColumnValue(COLUMN_NAME_MAIN_HEADMASTER);	
+		return getBooleanColumnValue(this.COLUMN_NAME_MAIN_HEADMASTER);	
 	}
 	
 	public void setIsEconomicalResponsible(boolean b) {
-		setColumn(COLUMN_NAME_ECONOMY_RESP, b);	
+		setColumn(this.COLUMN_NAME_ECONOMY_RESP, b);	
 	}
 	
 	public boolean isEconomicalResponsible() {
-		return getBooleanColumnValue(COLUMN_NAME_ECONOMY_RESP, false);	
+		return getBooleanColumnValue(this.COLUMN_NAME_ECONOMY_RESP, false);	
 	}
 	
 	public void setShowInContact(boolean showinContacts) {
-			setColumn(COLUMN_NAME_SHOW_IN_CONTACTS, showinContacts);	
+			setColumn(this.COLUMN_NAME_SHOW_IN_CONTACTS, showinContacts);	
 		}
 	
 	public boolean getShowInContact() {
-		return getBooleanColumnValue(COLUMN_NAME_SHOW_IN_CONTACTS);	
+		return getBooleanColumnValue(this.COLUMN_NAME_SHOW_IN_CONTACTS);	
 	}
 
 	/**
@@ -142,13 +142,13 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 			sql.appendSelect()
 			 .append("*")
 			 .appendFrom()
-			 .append(TABLE_NAME)
+			 .append(this.TABLE_NAME)
 			 .appendWhere()
-			 .append(COLUMN_NAME_SCHOOL_ID)
+			 .append(this.COLUMN_NAME_SCHOOL_ID)
 			 .appendEqualSign()
 			 .append(school.getPrimaryKey().toString())
 			 .appendAnd()
-			 .append(COLUMN_NAME_USER_TYPE)
+			 .append(this.COLUMN_NAME_USER_TYPE)
 			 .appendEqualSign()
 			 .append(userType);
 			 
@@ -219,10 +219,10 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 	public Collection ejbFindBySchoolAndIsEconomicalResponsible (School school)
 		throws FinderException {
 		final IDOQuery sql = idoQuery ();
-		sql.appendSelectAllFrom (TABLE_NAME);
-		sql.appendWhereEquals (COLUMN_NAME_SCHOOL_ID, school);
-		sql.appendAndIsNotNull (COLUMN_NAME_ECONOMY_RESP);
-		sql.appendAndEquals (COLUMN_NAME_ECONOMY_RESP, true);
+		sql.appendSelectAllFrom (this.TABLE_NAME);
+		sql.appendWhereEquals (this.COLUMN_NAME_SCHOOL_ID, school);
+		sql.appendAndIsNotNull (this.COLUMN_NAME_ECONOMY_RESP);
+		sql.appendAndEquals (this.COLUMN_NAME_ECONOMY_RESP, true);
 		return idoFindIDsBySQL (sql.toString());
 	}
 
@@ -240,14 +240,14 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 			 //.append("*")
 			 //.appendFrom()
 			 //.append(TABLE_NAME)
-			sql.appendSelectAllFrom(TABLE_NAME + " su , " 
+			sql.appendSelectAllFrom(this.TABLE_NAME + " su , " 
 													  + SchoolDepartmentBMPBean.ENTITY_NAME + " sd, " + SchoolDepartmentBMPBean.ENTITY_NAME + "_USER sdu")
 			 .appendWhere()
-			 .append("su." + COLUMN_NAME_SCHOOL_ID)
+			 .append("su." + this.COLUMN_NAME_SCHOOL_ID)
 			 .appendEqualSign()
 			 .append(school.getPrimaryKey().toString())
 			 .appendAnd()
-			 .append("su." + COLUMN_NAME_USER_TYPE)
+			 .append("su." + this.COLUMN_NAME_USER_TYPE)
 			 .appendEqualSign()
 			 .append(userType)
 			 .appendAnd()
@@ -279,10 +279,10 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 		public Collection ejbFindBySchoolAndDepartment(School school, int departmentID) throws FinderException {
 			IDOQuery sql = idoQuery();
 				
-				sql.appendSelectAllFrom(TABLE_NAME + " su , " 
+				sql.appendSelectAllFrom(this.TABLE_NAME + " su , " 
 														  + SchoolDepartmentBMPBean.ENTITY_NAME + " sd, " + SchoolDepartmentBMPBean.ENTITY_NAME + "_USER sdu")
 				 .appendWhere()
-				 .append("su." + COLUMN_NAME_SCHOOL_ID)
+				 .append("su." + this.COLUMN_NAME_SCHOOL_ID)
 				 .appendEqualSign()
 				 .append(school.getPrimaryKey().toString())
 				 .appendAnd()
@@ -323,17 +323,17 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 				sql.appendSelect()
 				 .append("*")
 				 .appendFrom()
-				 .append(TABLE_NAME)
+				 .append(this.TABLE_NAME)
 				 .appendWhere()
-				 .append(COLUMN_NAME_SCHOOL_ID)
+				 .append(this.COLUMN_NAME_SCHOOL_ID)
 				 .appendEqualSign()
 				 .append(school.getPrimaryKey().toString())
 				 .appendAnd()
-				 .append(COLUMN_NAME_MAIN_HEADMASTER)
+				 .append(this.COLUMN_NAME_MAIN_HEADMASTER)
 				 .appendEqualSign()
 				 .appendWithinSingleQuotes(strMain_headmaster)
 				 .appendAnd()
-				 .append(COLUMN_NAME_USER_TYPE)
+				 .append(this.COLUMN_NAME_USER_TYPE)
 				 .appendEqualSign()
 				 .append(userType);
 			return this.idoFindIDsBySQL(sql.toString());		
@@ -344,7 +344,7 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this)
 		.appendWhere()
-		.append(COLUMN_NAME_USER_ID)
+		.append(this.COLUMN_NAME_USER_ID)
 		.appendEqualSign()
 		.append(user.getPrimaryKey().toString());	
 		
@@ -355,7 +355,7 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this)
 		.appendWhere()
-		.append(COLUMN_NAME_USER_ID)
+		.append(this.COLUMN_NAME_USER_ID)
 		.appendEqualSign()
 		.append(user.getPrimaryKey().toString());	
 		
@@ -367,13 +367,13 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 			sql.appendSelect()
 			 .append("*")
 			 .appendFrom()
-			 .append(TABLE_NAME)
+			 .append(this.TABLE_NAME)
 			 .appendWhere()
-			 .append(COLUMN_NAME_SCHOOL_ID)
+			 .append(this.COLUMN_NAME_SCHOOL_ID)
 			 .appendEqualSign()
 			 .append(school.getPrimaryKey().toString())
 			 .appendAnd()
-			 .append(COLUMN_NAME_USER_ID)
+			 .append(this.COLUMN_NAME_USER_ID)
 			 .appendEqualSign()
 			 .append(user.getPrimaryKey().toString());
 		return this.idoFindIDsBySQL(sql.toString());		
@@ -384,9 +384,9 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 			sql.appendSelect()
 			 .append("*")
 			 .appendFrom()
-			 .append(TABLE_NAME)
+			 .append(this.TABLE_NAME)
 			 .appendWhere()
-			 .append(COLUMN_NAME_SCHOOL_ID)
+			 .append(this.COLUMN_NAME_SCHOOL_ID)
 			 .appendEqualSign()
 			 .append(school.getPrimaryKey().toString());
 		return this.idoFindIDsBySQL(sql.toString());			
@@ -397,17 +397,17 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 			sql.appendSelect()
 			 .append("*")
 			 .appendFrom()
-			 .append(TABLE_NAME)
+			 .append(this.TABLE_NAME)
 			 .appendWhere()
-			 .append(COLUMN_NAME_SCHOOL_ID)
+			 .append(this.COLUMN_NAME_SCHOOL_ID)
 			 .appendEqualSign()
 			 .append(school.getPrimaryKey().toString())
 			 .appendAnd()
-			 .append(COLUMN_NAME_USER_TYPE)
+			 .append(this.COLUMN_NAME_USER_TYPE)
 			 .appendEqualSign()
 			 .append(userType)
 			 .appendAnd()
-			 .append(COLUMN_NAME_USER_ID)
+			 .append(this.COLUMN_NAME_USER_ID)
 			 .appendEqualSign()
 			 .append(user.getPrimaryKey().toString());
 		return this.idoFindOnePKByQuery(sql);

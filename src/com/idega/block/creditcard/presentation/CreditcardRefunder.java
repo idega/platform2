@@ -30,7 +30,7 @@ import com.idega.util.text.TextSoap;
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:      idega
- * @author <a href mailto:"gimmi@idega.is">Grímur Jónsson</a>
+ * @author <a href mailto:"gimmi@idega.is">Grï¿½mur Jï¿½nsson</a>
  * @version 1.0
  */
 
@@ -70,7 +70,7 @@ public class CreditcardRefunder extends Block {
   public void main(IWContext iwc) throws Exception {
     //super.main(iwc);
     
-    iwrb = this.getResourceBundle(iwc);
+    this.iwrb = this.getResourceBundle(iwc);
 
     String action = iwc.getParameter(this.sAction);
     if (action == null) {
@@ -148,12 +148,12 @@ public class CreditcardRefunder extends Block {
     table.setAlignment("center");
     table.setCellpadding(2);
 
-    Text refund = getText(iwrb.getLocalizedString("travel.refunds","Refunds"));
-    Text merchant = getText(iwrb.getLocalizedString("travel.merchant", "Merchant"));
-    Text ccNumber = getText(iwrb.getLocalizedString("travel.credidcard_number","Creditcard number"));
-    Text ccYear   = getText(iwrb.getLocalizedString("travel.year","Year"));
-    Text ccMonth  = getText(iwrb.getLocalizedString("travel.month","Month"));
-    Text amount   = getText(iwrb.getLocalizedString("travel.amount","Amount"));
+    Text refund = getText(this.iwrb.getLocalizedString("travel.refunds","Refunds"));
+    Text merchant = getText(this.iwrb.getLocalizedString("travel.merchant", "Merchant"));
+    Text ccNumber = getText(this.iwrb.getLocalizedString("travel.credidcard_number","Creditcard number"));
+    Text ccYear   = getText(this.iwrb.getLocalizedString("travel.year","Year"));
+    Text ccMonth  = getText(this.iwrb.getLocalizedString("travel.month","Month"));
+    Text amount   = getText(this.iwrb.getLocalizedString("travel.amount","Amount"));
 
     DropdownMenu merchantInp = getSupplierDropdown();
     TextInput ccNumberInp = new TextInput(this.parameterNumber);
@@ -201,21 +201,21 @@ public class CreditcardRefunder extends Block {
     ++row;
     table.mergeCells(2, row, 3, row);
     table.setAlignment(2, row, "right");
-    table.add(new CloseButton(iwrb.getLocalizedImageButton("creditcard.close", "Close")),1 ,row);
-    table.add(new SubmitButton(iwrb.getLocalizedImageButton("creditcard.save", "Save"), this.sAction, this.parameterVerify),2 ,row);
+    table.add(new CloseButton(this.iwrb.getLocalizedImageButton("creditcard.close", "Close")),1 ,row);
+    table.add(new SubmitButton(this.iwrb.getLocalizedImageButton("creditcard.save", "Save"), this.sAction, this.parameterVerify),2 ,row);
 
     add(Text.BREAK);
     add(form);
 
     if (this.hasEditPermission()) {
       Link keysLink = new Link(getText("Get Keys"));
-        keysLink.addParameter(sAction, parameterKeys);
+        keysLink.addParameter(this.sAction, this.parameterKeys);
 
       Link CACLink = new Link(getText("Get CACertificate"));
-        CACLink.addParameter(sAction, parameterCACertificate);
+        CACLink.addParameter(this.sAction, this.parameterCACertificate);
 
       Link newBatchLink = new Link(getText("Create New Batch"));
-        newBatchLink.addParameter(sAction, parameterNewBatch);
+        newBatchLink.addParameter(this.sAction, this.parameterNewBatch);
 
       add(Text.BREAK);
       add("Temporary : should only be used with TPOS");
@@ -237,11 +237,11 @@ public class CreditcardRefunder extends Block {
     String amount = iwc.getParameter(this.parameterAmount);
 	  amount = TextSoap.findAndReplace(amount,',','.');
 
-    Text ccNumber = getText(iwrb.getLocalizedString("travel.credidcard_number","Creditcard number"));
-    Text merchant   = getText(iwrb.getLocalizedString("travel.merchant","Merchant"));
-    Text ccYear   = getText(iwrb.getLocalizedString("travel.year","Year"));
-    Text ccMonth  = getText(iwrb.getLocalizedString("travel.month","Month"));
-    Text ccAmount   = getText(iwrb.getLocalizedString("travel.amount","Amount"));
+    Text ccNumber = getText(this.iwrb.getLocalizedString("travel.credidcard_number","Creditcard number"));
+    Text merchant   = getText(this.iwrb.getLocalizedString("travel.merchant","Merchant"));
+    Text ccYear   = getText(this.iwrb.getLocalizedString("travel.year","Year"));
+    Text ccMonth  = getText(this.iwrb.getLocalizedString("travel.month","Month"));
+    Text ccAmount   = getText(this.iwrb.getLocalizedString("travel.amount","Amount"));
     Text notANumber = getText("X");
 	  notANumber.setFontColor("RED");
 
@@ -253,7 +253,7 @@ public class CreditcardRefunder extends Block {
     int row = 1;
     boolean error = false;
     table.mergeCells(1,row,3,row);
-    table.add(getText(iwrb.getLocalizedString("travel.is_information_correct","Is the following information correct ?")), 1, row);
+    table.add(getText(this.iwrb.getLocalizedString("travel.is_information_correct","Is the following information correct ?")), 1, row);
 
     ++row;
     ++row;
@@ -262,7 +262,7 @@ public class CreditcardRefunder extends Block {
     if (getSupplier(supplier) != null) {
     		table.add(getText(getSupplier(supplier).getName()), 3, row);
     } else {
-    		table.add(getText(iwrb.getLocalizedString("travel.default", "Default")), 3, row);
+    		table.add(getText(this.iwrb.getLocalizedString("travel.default", "Default")), 3, row);
     }
     ++row;
     table.add(ccNumber,2,row);
@@ -318,16 +318,17 @@ public class CreditcardRefunder extends Block {
     ++row;
     table.mergeCells(1, row, 2, row);
     table.setAlignment(3, row, "right");
-    table.add(new BackButton(iwrb.getLocalizedImageButton("creditcard.no", "No")),1 ,row);
-    Link link = new Link(iwrb.getLocalizedImageButton("creditcard.yes", "Yes"));
+    table.add(new BackButton(this.iwrb.getLocalizedImageButton("creditcard.no", "No")),1 ,row);
+    Link link = new Link(this.iwrb.getLocalizedImageButton("creditcard.yes", "Yes"));
 	  link.addParameter(this.sAction, this.parameterComplete);
 	  link.addParameter(this.parameterNumber, number);
 	  link.addParameter(this.parameterYear, year);
 	  link.addParameter(this.parameterMonth, month);
 	  link.addParameter(this.parameterAmount, amount);
 	  link.addParameter(this.parameterSupplier, supplier);
-    if (!error)
-    		table.add(link, 3, row);
+    if (!error) {
+		table.add(link, 3, row);
+	}
 
     add(Text.BREAK);
     add(table);
@@ -357,7 +358,7 @@ public class CreditcardRefunder extends Block {
     		t = new TPosClient(iwc, getSupplier(supplier).getTPosMerchant());
         }*/
 
-        // TODO b¾ta viÝ CVC d—ti
+        // TODO bï¿½ta viï¿½ CVC dï¿½ti
         number = number.replaceAll(" ", "");
         number = number.replaceAll("-", "");
         
@@ -365,19 +366,19 @@ public class CreditcardRefunder extends Block {
         System.out.println("Ending TPOS test : "+IWTimestamp.RightNow().toString());
 
         int row = 1;
-        table.add(getText(iwrb.getLocalizedString("travel.success","Success")),1,row);
+        table.add(getText(this.iwrb.getLocalizedString("travel.success","Success")),1,row);
         table.mergeCells(1,row,2,row);
         ++row;
         ++row;
-        table.add(getText(iwrb.getLocalizedString("travel.credidcard_authorization_number","Creditcard authorization number")),1,row);
+        table.add(getText(this.iwrb.getLocalizedString("travel.credidcard_authorization_number","Creditcard authorization number")),1,row);
         table.add(getText(heimild),2, row);
         table.setAlignment(2, row, "right");
 
         ++row;
         ++row;
         table.setAlignment(2, row, "right");
-        table.add(new Link(iwrb.getLocalizedImageButton("creditcard.back", "Back")),1,row);
-        table.add(new CloseButton(iwrb.getLocalizedImageButton("creditcard.close", "Close")),2,row);
+        table.add(new Link(this.iwrb.getLocalizedImageButton("creditcard.back", "Back")),1,row);
+        table.add(new CloseButton(this.iwrb.getLocalizedImageButton("creditcard.close", "Close")),2,row);
       }
       catch(com.idega.block.creditcard.business.TPosException e) {
         System.out.println("TPOS errormessage = " + e.getErrorMessage());
@@ -386,39 +387,39 @@ public class CreditcardRefunder extends Block {
         String display = e.getDisplayError();
 
         int row = 1;
-        table.add(getText(iwrb.getLocalizedString("travel.error","Error")),1,row);
+        table.add(getText(this.iwrb.getLocalizedString("travel.error","Error")),1,row);
         table.mergeCells(1,row,2,row);
         ++row;
         ++row;
-        table.add(getText(iwrb.getLocalizedString("travel.error_message","Error message")),1,row);
+        table.add(getText(this.iwrb.getLocalizedString("travel.error_message","Error message")),1,row);
         table.add(getText(errMsge),2, row);
 
         ++row;
-        table.add(getText(iwrb.getLocalizedString("travel.error_number","Error number")),1,row);
+        table.add(getText(this.iwrb.getLocalizedString("travel.error_number","Error number")),1,row);
         table.add(getText(errNumb),2, row);
 
         ++row;
-        table.add(getText(iwrb.getLocalizedString("travel.display_error","Display error")),1,row);
+        table.add(getText(this.iwrb.getLocalizedString("travel.display_error","Display error")),1,row);
         table.add(getText(display),2, row);
 
         ++row;
         ++row;
         table.setAlignment(2, row, "right");
-        table.add(new BackButton(iwrb.getLocalizedImageButton("creditcard.back", "Back")),1,row);
-        table.add(new CloseButton(iwrb.getLocalizedImageButton("creditcard.close", "Close")),2,row);
+        table.add(new BackButton(this.iwrb.getLocalizedImageButton("creditcard.back", "Back")),1,row);
+        table.add(new CloseButton(this.iwrb.getLocalizedImageButton("creditcard.close", "Close")),2,row);
         //table.add(new BackButton(iwrb.getImage("buttons/back.gif")),1,row);
         //table.add(new CloseButton(iwrb.getImage("buttons/close.gif")),2,row);
       }
       catch (Exception e) {
       	int row = 1;
 				++row;
-				table.add(getText(iwrb.getLocalizedString("travel.unknown_error","Unknown error")),1,row);
+				table.add(getText(this.iwrb.getLocalizedString("travel.unknown_error","Unknown error")),1,row);
 				table.mergeCells(1, row, 2, row);
 				++row;
 				++row;
 				table.setAlignment(2, row, "right");
-        table.add(new BackButton(iwrb.getLocalizedImageButton("creditcard.back", "Back")),1,row);
-        table.add(new CloseButton(iwrb.getLocalizedImageButton("creditcard.close", "Close")),2,row);
+        table.add(new BackButton(this.iwrb.getLocalizedImageButton("creditcard.back", "Back")),1,row);
+        table.add(new CloseButton(this.iwrb.getLocalizedImageButton("creditcard.close", "Close")),2,row);
 				//table.add(new BackButton(iwrb.getImage("buttons/back.gif")),1,row);
 				//table.add(new CloseButton(iwrb.getImage("buttons/close.gif")),2,row);
         e.printStackTrace(System.err);
@@ -429,8 +430,8 @@ public class CreditcardRefunder extends Block {
   }
 
   private DropdownMenu getSupplierDropdown() {
-	  	DropdownMenu menu = new DropdownMenu(parameterSupplier);
-	  	menu.addMenuElement(-1, iwrb.getLocalizedString("travel.default", "Default"));
+	  	DropdownMenu menu = new DropdownMenu(this.parameterSupplier);
+	  	menu.addMenuElement(-1, this.iwrb.getLocalizedString("travel.default", "Default"));
 	  	try {
 	  		SupplierHome sHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
 	  		Collection coll = sHome.findWithTPosMerchant();

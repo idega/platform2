@@ -98,29 +98,29 @@ public class ReportPDFEditor extends Block implements Reports{
 
   public void main(IWContext iwc){
 
-    iwrb = getResourceBundle(iwc);
+    this.iwrb = getResourceBundle(iwc);
 
-    iwb = getBundle(iwc);
+    this.iwb = getBundle(iwc);
 
     if(iwc.isParameterSet(PRM_REPORTID)){
 
       int reportColId = -1,colnr = -2;
 
-      if(iwc.isParameterSet(prmReportColId))
+      if(iwc.isParameterSet(prmReportColId)) {
+		reportColId = Integer.parseInt(iwc.getParameter(prmReportColId));
+	}
 
-        reportColId = Integer.parseInt(iwc.getParameter(prmReportColId));
-
-      if(iwc.isParameterSet("col_nr"))
-
-        colnr = Integer.parseInt(iwc.getParameter("col_nr"));
+      if(iwc.isParameterSet("col_nr")) {
+		colnr = Integer.parseInt(iwc.getParameter("col_nr"));
+	}
 
       Report eReport = ReportFinder.getReport(Integer.parseInt(iwc.getParameter(PRM_REPORTID)));
 
       if(iwc.isParameterSet("savecols")||iwc.isParameterSet("savecols.x")){
 
-        if(colnr >= 0)
-
-          saveColumnInfo(iwc,eReport,reportColId);
+        if(colnr >= 0) {
+			saveColumnInfo(iwc,eReport,reportColId);
+		}
 
         reportColId = -1;
 
@@ -158,11 +158,11 @@ public class ReportPDFEditor extends Block implements Reports{
 
     DataTable T = new DataTable();
 
-    T.addTitle(iwrb.getLocalizedString("report_preferences","Report Preferences"));
+    T.addTitle(this.iwrb.getLocalizedString("report_preferences","Report Preferences"));
 
     T.setTitlesHorizontal(true);
 
-    T.addButton(new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"savecols"));
+    T.addButton(new SubmitButton(this.iwrb.getLocalizedImageButton("save","Save"),"savecols"));
 
 
 
@@ -170,17 +170,17 @@ public class ReportPDFEditor extends Block implements Reports{
 
     int col = 1;
 
-    T.add(Edit.formatText(iwrb.getLocalizedString("name","Name")),col++,row);
+    T.add(Edit.formatText(this.iwrb.getLocalizedString("name","Name")),col++,row);
 
-    T.add(Edit.formatText(iwrb.getLocalizedString("fontfamily","Font family")),col++,row);
+    T.add(Edit.formatText(this.iwrb.getLocalizedString("fontfamily","Font family")),col++,row);
 
-    T.add(Edit.formatText(iwrb.getLocalizedString("fontsize","Font size")),col++,row);
+    T.add(Edit.formatText(this.iwrb.getLocalizedString("fontsize","Font size")),col++,row);
 
-    T.add(Edit.formatText(iwrb.getLocalizedString("fontstyle","Font style")),col++,row);
+    T.add(Edit.formatText(this.iwrb.getLocalizedString("fontstyle","Font style")),col++,row);
 
-    T.add(Edit.formatText(iwrb.getLocalizedString("colspan","Span")),col++,row);
+    T.add(Edit.formatText(this.iwrb.getLocalizedString("colspan","Span")),col++,row);
 
-    T.add(Edit.formatText(iwrb.getLocalizedString("endstring","Ending")),col++,row);
+    T.add(Edit.formatText(this.iwrb.getLocalizedString("endstring","Ending")),col++,row);
 
     row++;
 
@@ -231,11 +231,11 @@ public class ReportPDFEditor extends Block implements Reports{
 
         if(info!=null){
 
-          family.setSelectedElement(String.valueOf((int)info.getFontFamily()));
+          family.setSelectedElement(String.valueOf(info.getFontFamily()));
 
-          size.setSelectedElement(String.valueOf((int)info.getFontSize()));
+          size.setSelectedElement(String.valueOf(info.getFontSize()));
 
-          style.setSelectedElement(String.valueOf((int)info.getFontStyle()));
+          style.setSelectedElement(String.valueOf(info.getFontStyle()));
 
           span.setSelectedElement(String.valueOf(info.getColumnSpan()));
 
@@ -279,7 +279,7 @@ public class ReportPDFEditor extends Block implements Reports{
 
 
 
-          Link delLi = new Link(iwb.getImage("/shared/deletex.gif"));
+          Link delLi = new Link(this.iwb.getImage("/shared/deletex.gif"));
 
           delLi.addParameter(prmReportColId,info.getID());
 
@@ -345,25 +345,25 @@ public class ReportPDFEditor extends Block implements Reports{
 
     boolean useName = iwc.isParameterSet("usename");
 
-    if(iwc.isParameterSet("col_nr"))
+    if(iwc.isParameterSet("col_nr")) {
+		colnr = Integer.parseInt(iwc.getParameter("col_nr"));
+	}
 
-      colnr = Integer.parseInt(iwc.getParameter("col_nr"));
+    if(iwc.isParameterSet("family")) {
+		family = Integer.parseInt(iwc.getParameter("family"));
+	}
 
-    if(iwc.isParameterSet("family"))
+    if(iwc.isParameterSet("size")) {
+		size = Integer.parseInt(iwc.getParameter("size"));
+	}
 
-      family = Integer.parseInt(iwc.getParameter("family"));
+    if(iwc.isParameterSet("style")) {
+		style = Integer.parseInt(iwc.getParameter("style"));
+	}
 
-    if(iwc.isParameterSet("size"))
-
-      size = Integer.parseInt(iwc.getParameter("size"));
-
-    if(iwc.isParameterSet("style"))
-
-      style = Integer.parseInt(iwc.getParameter("style"));
-
-    if(iwc.isParameterSet("span"))
-
-      span = Integer.parseInt(iwc.getParameter("span"));
+    if(iwc.isParameterSet("span")) {
+		span = Integer.parseInt(iwc.getParameter("span"));
+	}
 
     String endString = iwc.getParameter("endstring");
 
@@ -371,9 +371,9 @@ public class ReportPDFEditor extends Block implements Reports{
 
     ReportColumnInfo info = ((com.idega.block.reports.data.ReportColumnInfoHome)com.idega.data.IDOLookup.getHomeLegacy(ReportColumnInfo.class)).createLegacy();
 
-    if(id > 0)
-
-      info = ReportFinder.getReportColumnInfo(id);
+    if(id > 0) {
+		info = ReportFinder.getReportColumnInfo(id);
+	}
 
     info.setColumnNumber(colnr);
 
@@ -549,21 +549,18 @@ public class ReportPDFEditor extends Block implements Reports{
 
   private String getEndStringName(String endstring){
 
-    if(endstring.equals("32"))
-
-      return "space";
-
-    else if(endstring.equals("10"))
-
-      return "newline";
-
-    else if(endstring.equals("\t"))
-
-      return "tab";
-
-    else if(endstring.equals("\t\t"))
-
-      return "tabtab";
+    if(endstring.equals("32")) {
+		return "space";
+	}
+	else if(endstring.equals("10")) {
+		return "newline";
+	}
+	else if(endstring.equals("\t")) {
+		return "tab";
+	}
+	else if(endstring.equals("\t\t")) {
+		return "tabtab";
+	}
 
     return "";
 
@@ -573,21 +570,18 @@ public class ReportPDFEditor extends Block implements Reports{
 
   private String getEndString(String stringName){
 
-    if(stringName.equals("space"))
-
-      return "Space";
-
-    else if(stringName.equals("newline"))
-
-      return "Newline";
-
-    else if(stringName.equals("tab"))
-
-      return "Tab";
-
-    else if(stringName.equals("tabtab"))
-
-      return "Double tab";
+    if(stringName.equals("space")) {
+		return "Space";
+	}
+	else if(stringName.equals("newline")) {
+		return "Newline";
+	}
+	else if(stringName.equals("tab")) {
+		return "Tab";
+	}
+	else if(stringName.equals("tabtab")) {
+		return "Double tab";
+	}
 
     return "";
 

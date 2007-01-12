@@ -13,7 +13,7 @@ import com.idega.presentation.text.Text;
  * Title:        User
  * Copyright:    Copyright (c) 2001
  * Company:      idega.is
- * @author 2000 - idega team - <a href="mailto:gummi@idega.is">Guðmundur Ágúst Sæmundsson</a>
+ * @author 2000 - idega team - <a href="mailto:gummi@idega.is">Guï¿½mundur ï¿½gï¿½st Sï¿½mundsson</a>
  * @version 1.0
  */
 
@@ -36,11 +36,11 @@ public class StaffImageTab extends UserTab{
   }
 
   public void initializeFieldNames(){
-    imageFieldName = "STimage";
+    this.imageFieldName = "STimage";
   }
 
   public void initializeFieldValues(){
-    fieldValues.put(this.imageFieldName,"");
+    this.fieldValues.put(this.imageFieldName,"");
 
     this.updateFieldsDisplayStatus();
   }
@@ -48,24 +48,25 @@ public class StaffImageTab extends UserTab{
   public void updateFieldsDisplayStatus(){
     int imageId = -1;
     try {
-      imageId = Integer.parseInt((String)fieldValues.get(this.imageFieldName));
+      imageId = Integer.parseInt((String)this.fieldValues.get(this.imageFieldName));
     }
     catch (NumberFormatException ex) {
       imageId = -1;
     }
 
-    if ( imageId != -1 )
-      imageField.setImageId(imageId);
+    if ( imageId != -1 ) {
+		this.imageField.setImageId(imageId);
+	}
   }
 
   public void initializeFields(){
-    imageField = new ImageInserter(imageFieldName);
-    imageField.setHasUseBox(false);
+    this.imageField = new ImageInserter(this.imageFieldName);
+    this.imageField.setHasUseBox(false);
   }
 
   public void initializeTexts(){
-    imageText = getTextObject();
-    imageText.setText("Image"+":");
+    this.imageText = getTextObject();
+    this.imageText.setText("Image"+":");
   }
 
 
@@ -77,7 +78,7 @@ public class StaffImageTab extends UserTab{
     imageTable.setCellpadding(0);
     imageTable.setCellspacing(0);
 
-    imageTable.add(imageText,1,1);
+    imageTable.add(this.imageText,1,1);
     imageTable.add(this.imageField,1,2);
     this.add(imageTable,1,1);
   }
@@ -89,7 +90,7 @@ public class StaffImageTab extends UserTab{
       String image = iwc.getParameter(this.imageFieldName);
 
       if(image != null){
-        fieldValues.put(this.imageFieldName,image);
+        this.fieldValues.put(this.imageFieldName,image);
       }
 
       return true;
@@ -101,7 +102,7 @@ public class StaffImageTab extends UserTab{
     try{
       if(getUserId() > -1){
         StaffBusiness business = new StaffBusiness();
-        business.updateImage(getUserId(),(String)fieldValues.get(this.imageFieldName));
+        StaffBusiness.updateImage(getUserId(),(String)this.fieldValues.get(this.imageFieldName));
       }
     }
     catch(Exception e){
@@ -117,7 +118,7 @@ public class StaffImageTab extends UserTab{
     try{
       StaffInfo staffInfo = ((com.idega.block.staff.data.StaffInfoHome)com.idega.data.IDOLookup.getHomeLegacy(StaffInfo.class)).findByPrimaryKeyLegacy(getUserId());
 
-      fieldValues.put(this.imageFieldName,(staffInfo.getImageID() != -1) ? Integer.toString(staffInfo.getImageID()):"" );
+      this.fieldValues.put(this.imageFieldName,(staffInfo.getImageID() != -1) ? Integer.toString(staffInfo.getImageID()):"" );
       this.updateFieldsDisplayStatus();
     }
     catch(Exception e){

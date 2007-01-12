@@ -115,7 +115,7 @@ public class DocVersionBMPBean extends com.idega.data.GenericEntity implements c
 
     if(id != -1){
 
-      User user = UserBusiness.getInstance().getUser(id);
+      User user = UserBusiness.getUser(id);
 
 
 

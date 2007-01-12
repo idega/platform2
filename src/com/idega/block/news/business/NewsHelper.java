@@ -37,7 +37,7 @@ public class NewsHelper{
 
   public NwNews getNwNews(){
 
-    return eNews;
+    return this.eNews;
 
   }
 
@@ -45,7 +45,7 @@ public class NewsHelper{
 
   public void setNews(NwNews news){
 
-    eNews = news;
+    this.eNews = news;
 
   }
 
@@ -53,7 +53,7 @@ public class NewsHelper{
 
   public  ContentHelper getContentHelper(){
 
-    return cHelper ;
+    return this.cHelper ;
 
   }
 
@@ -61,7 +61,7 @@ public class NewsHelper{
 
   public void setContentHelper(ContentHelper contentHelper){
 
-    cHelper = contentHelper;
+    this.cHelper = contentHelper;
 
   }
 

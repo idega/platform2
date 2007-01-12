@@ -68,11 +68,11 @@ public class ClassHandler extends XMLElement {
 	
 	public void setClass(Class c){
 		setAttribute(ATTRIBUTE_CLASS,c.getName());
-		_handlerClass = c;
+		this._handlerClass = c;
 	}
 	
 	public Class getClassObject(){
-		return _handlerClass;
+		return this._handlerClass;
 	}
 	
 	

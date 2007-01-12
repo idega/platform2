@@ -40,24 +40,26 @@ public BookEditor(){
 }
 
   public void main(IWContext iwc) throws Exception {
-    _iwb = getBundle(iwc);
-    _iwrb = getResourceBundle(iwc);
-    addTitle(_iwrb.getLocalizedString("add_book","Add book"));
+    this._iwb = getBundle(iwc);
+    this._iwrb = getResourceBundle(iwc);
+    addTitle(this._iwrb.getLocalizedString("add_book","Add book"));
 
     try {
-      _bookID = Integer.parseInt(iwc.getParameter(BookBusiness.PARAMETER_BOOK_ID));
+      this._bookID = Integer.parseInt(iwc.getParameter(BookBusiness.PARAMETER_BOOK_ID));
     }
     catch (NumberFormatException e) {
-      _bookID = -1;
+      this._bookID = -1;
     }
 
     String mode = iwc.getParameter(BookBusiness.PARAMETER_MODE);
 
     if ( mode.equalsIgnoreCase(BookBusiness.PARAMETER_EDIT) ) {
-      if ( _bookID != -1 ) {
-	_update = true;
-	_book = getBookBusiness().getBook(_bookID);
-	if ( _book == null ) _update = false;
+      if ( this._bookID != -1 ) {
+	this._update = true;
+	this._book = getBookBusiness().getBook(this._bookID);
+	if ( this._book == null ) {
+		this._update = false;
+	}
       }
       processForm();
     }
@@ -80,41 +82,41 @@ public BookEditor(){
       bookYear.setLength(4);
       bookYear.setMaxlength(4);
     DropdownMenu publisher = getBookBusiness().getPublisherMenu();
-    SelectionBox authors = getBookBusiness().getAuthorMenu(_bookID);
-    SelectionBox categories = getBookBusiness().getCategoryMenu(_book);
+    SelectionBox authors = getBookBusiness().getAuthorMenu(this._bookID);
+    SelectionBox categories = getBookBusiness().getCategoryMenu(this._book);
     ImageInserter imageInsert = new ImageInserter(BookBusiness.PARAMETER_IMAGE_ID);
       imageInsert.setMaxImageWidth(130);
       imageInsert.setHasUseBox(false);
 
-    if ( _update ) {
-      if ( _book.getName() != null ) {
-	bookName.setContent(_book.getName());
+    if ( this._update ) {
+      if ( this._book.getName() != null ) {
+	bookName.setContent(this._book.getName());
       }
-      if ( _book.getDescription() != null ) {
-	bookDescription.setContent(_book.getDescription());
+      if ( this._book.getDescription() != null ) {
+	bookDescription.setContent(this._book.getDescription());
       }
-      if ( _book.getYear() != 0 ) {
-	bookYear.setContent(String.valueOf(_book.getYear()));
+      if ( this._book.getYear() != 0 ) {
+	bookYear.setContent(String.valueOf(this._book.getYear()));
       }
-      if ( _book.getPublisherID() != -1 ) {
-	publisher.setSelectedElement(String.valueOf(_book.getPublisherID()));
+      if ( this._book.getPublisherID() != -1 ) {
+	publisher.setSelectedElement(String.valueOf(this._book.getPublisherID()));
       }
-      if ( _book.getImage() != -1 ) {
-	imageInsert.setImageId(_book.getImage());
+      if ( this._book.getImage() != -1 ) {
+	imageInsert.setImageId(this._book.getImage());
       }
     }
-    addLeft(_iwrb.getLocalizedString("book_name","Book name")+":",bookName,true);
-    addLeft(_iwrb.getLocalizedString("book_description","Description")+":",bookDescription,true);
-    addLeft(_iwrb.getLocalizedString("book_year","Publish year")+":"+Text.NON_BREAKING_SPACE,bookYear,false);
-    addLeft(_iwrb.getLocalizedString("book_publisher","Publisher")+":"+Text.NON_BREAKING_SPACE,publisher,false);
-    addLeft(_iwrb.getLocalizedString("book_authors","Authors")+":",authors,true);
-    addLeft(_iwrb.getLocalizedString("book_categories","Categories")+":",categories,true);
-    addRight(_iwrb.getLocalizedString("image","Image")+":",imageInsert,true,false);
+    addLeft(this._iwrb.getLocalizedString("book_name","Book name")+":",bookName,true);
+    addLeft(this._iwrb.getLocalizedString("book_description","Description")+":",bookDescription,true);
+    addLeft(this._iwrb.getLocalizedString("book_year","Publish year")+":"+Text.NON_BREAKING_SPACE,bookYear,false);
+    addLeft(this._iwrb.getLocalizedString("book_publisher","Publisher")+":"+Text.NON_BREAKING_SPACE,publisher,false);
+    addLeft(this._iwrb.getLocalizedString("book_authors","Authors")+":",authors,true);
+    addLeft(this._iwrb.getLocalizedString("book_categories","Categories")+":",categories,true);
+    addRight(this._iwrb.getLocalizedString("image","Image")+":",imageInsert,true,false);
 
-    addHiddenInput(new HiddenInput(BookBusiness.PARAMETER_BOOK_ID,Integer.toString(_bookID)));
+    addHiddenInput(new HiddenInput(BookBusiness.PARAMETER_BOOK_ID,Integer.toString(this._bookID)));
 
-    addSubmitButton(new CloseButton(_iwrb.getLocalizedImageButton("close","CLOSE")));
-    addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("save","SAVE"),BookBusiness.PARAMETER_MODE,BookBusiness.PARAMETER_SAVE));
+    addSubmitButton(new CloseButton(this._iwrb.getLocalizedImageButton("close","CLOSE")));
+    addSubmitButton(new SubmitButton(this._iwrb.getLocalizedImageButton("save","SAVE"),BookBusiness.PARAMETER_MODE,BookBusiness.PARAMETER_SAVE));
   }
 
   private void saveBook(IWContext iwc) {
@@ -126,14 +128,14 @@ public BookEditor(){
     String[] bookAuthors = iwc.getParameterValues(BookBusiness.PARAMETER_AUTHORS);
     String[] bookCategories = iwc.getParameterValues(BookBusiness.PARAMETER_CATEGORIES);
 
-    getBookBusiness().saveBook(_bookID,bookName,bookDescription,bookYear,bookImageID,bookPublisher,bookAuthors,bookCategories);
+    getBookBusiness().saveBook(this._bookID,bookName,bookDescription,bookYear,bookImageID,bookPublisher,bookAuthors,bookCategories);
 
     setParentToReload();
     close();
   }
 
   private void deleteBook() {
-    getBookBusiness().deleteBook(_bookID);
+    getBookBusiness().deleteBook(this._bookID);
     setParentToReload();
     close();
   }

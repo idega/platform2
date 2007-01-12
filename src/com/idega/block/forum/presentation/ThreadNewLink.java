@@ -26,8 +26,8 @@ public class ThreadNewLink extends TopicLink {
 	}
 
 	public Image getLinkImage(IWBundle bundle) {
-		if (iImage != null) {
-			return iImage;
+		if (this.iImage != null) {
+			return this.iImage;
 		}
 		else {
 			return bundle.getImage("shared/new.gif");
@@ -47,6 +47,6 @@ public class ThreadNewLink extends TopicLink {
 	}
 	
 	public void setImage(Image image) {
-		iImage = image;
+		this.iImage = image;
 	}
 }

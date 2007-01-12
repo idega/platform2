@@ -42,7 +42,7 @@
 
     public String getName(){
 
-      return sName;
+      return this.sName;
 
     }
 
@@ -54,7 +54,7 @@
 
     public String getContentType(){
 
-      return sContentType;
+      return this.sContentType;
 
     }
 
@@ -66,7 +66,7 @@
 
     public String getPath(){
 
-      return sPath;
+      return this.sPath;
 
     }
 
@@ -78,7 +78,7 @@
 
      public String getWebPath(){
 
-      return sWebPath;
+      return this.sWebPath;
 
     }
 

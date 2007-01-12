@@ -18,6 +18,7 @@ import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.user.data.User;
 import com.idega.data.EntityFinder;
+import com.idega.data.GenericEntity;
 import com.idega.data.IDOLookupException;
 import com.idega.util.IWTimestamp;
 
@@ -170,7 +171,7 @@ public class DocBusiness extends IBOServiceBean {
 
 		if (!update) {
 			try {
-				link.setCreationDate(new IWTimestamp().getTimestampRightNow());
+				link.setCreationDate(IWTimestamp.getTimestampRightNow());
 				if (folderId != -1) {
 					link.setFolderID(folderId);
 				}
@@ -638,7 +639,7 @@ public class DocBusiness extends IBOServiceBean {
 	public static ICInformationFolder getObjectInstanceFromID(int ICObjectInstanceID) {
 		try {
 			ICObjectInstance ICObjInst = ((com.idega.core.component.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(ICObjectInstanceID);
-			List L = EntityFinder.findRelated(ICObjInst, com.idega.block.category.data.ICInformationFolderBMPBean.getStaticInstance(ICInformationFolder.class));
+			List L = EntityFinder.findRelated(ICObjInst, GenericEntity.getStaticInstance(ICInformationFolder.class));
 			if (L != null) {
 				return (ICInformationFolder)L.get(0);
 			} else {
@@ -658,7 +659,7 @@ public class DocBusiness extends IBOServiceBean {
 		 */
 	public static DocLink[] getLinksInFolderCategory(InformationFolder folder, InformationCategory infoCat) {
 		try {
-			DocLink staticLink = (DocLink)DocLinkBMPBean.getStaticInstance(DocLink.class);
+			DocLink staticLink = (DocLink)GenericEntity.getStaticInstance(DocLink.class);
 			DocLink[] links = (DocLink[])staticLink.findAllByColumnOrdered(DocLinkBMPBean.getColumnNameFolderID(), Integer.toString(folder.getID()), DocLinkBMPBean.getColumnNameCatID(), Integer.toString(infoCat.getID()), DocLinkBMPBean.getColumnNameCreationDate() + " desc", "=", "=");
 			if (links != null) {
 				return links;
@@ -671,7 +672,7 @@ public class DocBusiness extends IBOServiceBean {
 
 	public static DocLink[] getLinksInFolder(InformationFolder folder) {
 		try {
-			DocLink staticLink = (DocLink)DocLinkBMPBean.getStaticInstance(DocLink.class);
+			DocLink staticLink = (DocLink)GenericEntity.getStaticInstance(DocLink.class);
 			DocLink[] links = (DocLink[])staticLink.findAll("select * from " + DocLinkBMPBean.getEntityTableName() + " where " + DocLinkBMPBean.getColumnNameFolderID() + " = " + Integer.toString(folder.getID()) + " order by " + DocLinkBMPBean.getColumnNameCreationDate() + " desc");
 			if (links != null) {
 				return links;
@@ -684,7 +685,7 @@ public class DocBusiness extends IBOServiceBean {
 
 	public static int getNumberOfLinksInFolderCategory(InformationFolder folder, InformationCategory infoCat) {
 		try {
-			DocLink staticLink = (DocLink)DocLinkBMPBean.getStaticInstance(DocLink.class);
+			DocLink staticLink = (DocLink)GenericEntity.getStaticInstance(DocLink.class);
 			int returnInt = staticLink.getNumberOfRecords("select count(*) from " + DocLinkBMPBean.getEntityTableName() + " where " + DocLinkBMPBean.getColumnNameFolderID() + " = " + Integer.toString(folder.getID()) + " and " + DocLinkBMPBean.getColumnNameCatID() + " = " + Integer.toString(infoCat.getID()));
 			return returnInt;
 		} catch (Exception e) {
@@ -694,7 +695,7 @@ public class DocBusiness extends IBOServiceBean {
 
 	public static int getNumberOfLinksInFolder(InformationFolder folder) {
 		try {
-			DocLink staticLink = (DocLink)DocLinkBMPBean.getStaticInstance(DocLink.class);
+			DocLink staticLink = (DocLink)GenericEntity.getStaticInstance(DocLink.class);
 			int returnInt = staticLink.getNumberOfRecords("select count(*) from " + DocLinkBMPBean.getEntityTableName() + " where " + DocLinkBMPBean.getColumnNameFolderID() + " = " + Integer.toString(folder.getID()));
 			return returnInt;
 		} catch (Exception e) {

@@ -146,13 +146,15 @@ public class BookBusiness {
   public void saveBook(int bookID,String bookName,String bookDescription,String bookYear,String bookImageID,String bookPublisher,String[] bookAuthors,String[] bookCategories) {
     try {
       Book book = getBookHome().create();
-      if ( bookID != -1 )
-	book = getBookHome().findByPrimaryKey(new Integer(bookID));
+      if ( bookID != -1 ) {
+		book = getBookHome().findByPrimaryKey(new Integer(bookID));
+	}
 
       book.setName(bookName);
       book.setDescription(bookDescription);
-      if ( bookID == -1 )
-	book.setDateAdded(new IWTimestamp().getTimestamp());
+      if ( bookID == -1 ) {
+		book.setDateAdded(new IWTimestamp().getTimestamp());
+	}
 
       try {
 	book.setYear(Integer.parseInt(bookYear));
@@ -163,16 +165,18 @@ public class BookBusiness {
 
       try {
 	int imageID = Integer.parseInt(bookImageID);
-	if ( imageID != -1 )
-	  book.setImageID(imageID);
+	if ( imageID != -1 ) {
+		book.setImageID(imageID);
+	}
       }
       catch (NumberFormatException e) {
       }
 
       try {
 	int publisherID = Integer.parseInt(bookPublisher);
-	if ( publisherID != -1 )
-	  book.setPublisherID(publisherID);
+	if ( publisherID != -1 ) {
+		book.setPublisherID(publisherID);
+	}
       }
       catch (NumberFormatException e) {
       }
@@ -214,16 +218,18 @@ public class BookBusiness {
   public void savePublisher(int publisherID,String name,String description,String image) {
     try {
       Publisher publisher = getPublisherHome().create();
-      if ( publisherID != -1 )
-	publisher = getPublisherHome().findByPrimaryKey(new Integer(publisherID));
+      if ( publisherID != -1 ) {
+		publisher = getPublisherHome().findByPrimaryKey(new Integer(publisherID));
+	}
 
       publisher.setName(name);
       publisher.setDescription(description);
 
       try {
 	int imageID = Integer.parseInt(image);
-	if ( imageID != -1 )
-	  publisher.setImageID(imageID);
+	if ( imageID != -1 ) {
+		publisher.setImageID(imageID);
+	}
       }
       catch (NumberFormatException e) {
       }
@@ -256,18 +262,21 @@ public class BookBusiness {
   public void saveAuthor(int authorID,String name,String description,String image) {
     try {
       Author author = getAuthorHome().create();
-      if ( authorID != -1 )
-	author = getAuthorHome().findByPrimaryKey(new Integer(authorID));
+      if ( authorID != -1 ) {
+		author = getAuthorHome().findByPrimaryKey(new Integer(authorID));
+	}
 
       author.setName(name);
       author.setDescription(description);
-      if ( authorID == -1 )
-	author.setDateAdded(new IWTimestamp().getTimestamp());
+      if ( authorID == -1 ) {
+		author.setDateAdded(new IWTimestamp().getTimestamp());
+	}
 
       try {
 	int imageID = Integer.parseInt(image);
-	if ( imageID != -1 )
-	  author.setImageID(imageID);
+	if ( imageID != -1 ) {
+		author.setImageID(imageID);
+	}
       }
       catch (NumberFormatException e) {
       }
@@ -300,15 +309,18 @@ public class BookBusiness {
   public void saveReview(int reviewID,int bookID,String name,String bookReview,String rating) {
     try {
       Review review = getReviewHome().create();
-      if ( reviewID != -1 )
-	review = getReviewHome().findByPrimaryKey(new Integer(reviewID));
+      if ( reviewID != -1 ) {
+		review = getReviewHome().findByPrimaryKey(new Integer(reviewID));
+	}
 
       review.setName(name);
       review.setReview(bookReview);
-      if ( reviewID == -1 )
-	review.setDateAdded(new IWTimestamp().getTimestamp());
-      if ( bookID != -1 )
-	review.setBookID(bookID);
+      if ( reviewID == -1 ) {
+		review.setDateAdded(new IWTimestamp().getTimestamp());
+	}
+      if ( bookID != -1 ) {
+		review.setBookID(bookID);
+	}
 
       try {
 	review.setRating(Integer.parseInt(rating));
@@ -357,8 +369,9 @@ public class BookBusiness {
   public long getLastAddedTime(int categoryID) {
     try {
       Vector vector = new Vector(getBookHome().findNewestBookByCategory(categoryID));
-      if ( vector != null && vector.size() > 0 )
-	return ((Book) vector.get(0)).getDateAdded().getTime();
+      if ( vector != null && vector.size() > 0 ) {
+		return ((Book) vector.get(0)).getDateAdded().getTime();
+	}
       return 0;
     }
     catch (FinderException fe) {
@@ -430,8 +443,9 @@ public class BookBusiness {
       while (iter.hasNext()) {
 	Author author = (Author) iter.next();
 	menu.addMenuElement(((Integer)author.getPrimaryKey()).intValue(),author.getName());
-	if ( authors != null && authors.contains(author) )
-	  menu.setSelectedElement(String.valueOf(((Integer)author.getPrimaryKey()).intValue()));
+	if ( authors != null && authors.contains(author) ) {
+		menu.setSelectedElement(String.valueOf(((Integer)author.getPrimaryKey()).intValue()));
+	}
       }
     }
 
@@ -441,7 +455,9 @@ public class BookBusiness {
   public SelectionBox getCategoryMenu(Book book) throws IDOException,FinderException,RemoteException {
     List collection = CategoryFinder.getInstance().listOfCategories("book");
     Collection categories = null;
-    if ( book != null ) categories = book.findRelatedCategories();
+    if ( book != null ) {
+		categories = book.findRelatedCategories();
+	}
     SelectionBox menu = new SelectionBox(PARAMETER_CATEGORIES);
 
     if ( collection != null ) {
@@ -450,8 +466,9 @@ public class BookBusiness {
       while (iter.hasNext()) {
 	ICCategory category = (ICCategory) iter.next();
 	menu.addMenuElement(((Integer)category.getPrimaryKey()).intValue(),category.getName());
-	if ( categories != null && categories.contains(category) )
-	  menu.setSelectedElement(String.valueOf(((Integer)category.getPrimaryKey()).intValue()));
+	if ( categories != null && categories.contains(category) ) {
+		menu.setSelectedElement(String.valueOf(((Integer)category.getPrimaryKey()).intValue()));
+	}
       }
     }
 

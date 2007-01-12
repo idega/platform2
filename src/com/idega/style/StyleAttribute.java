@@ -45,23 +45,23 @@ public class StyleAttribute {
 	}
 	
 	public void add(StyleValue value) {
-		if (values == null) {
-			values = new ArrayList();
+		if (this.values == null) {
+			this.values = new ArrayList();
 		}
-		values.add(value);
+		this.values.add(value);
 	}
 	
 	public Iterator iterator() {
-		if (values != null) {
-			return values.iterator();
+		if (this.values != null) {
+			return this.values.iterator();
 		}
 		return null;
 	}
 	
 	public StyleValue getValue() throws StyleMultivaluedException {
-		if (values != null) {
+		if (this.values != null) {
 			if (!getMultivalued()) {
-				return (StyleValue) values.get(0);
+				return (StyleValue) this.values.get(0);
 			}
 			else {
 				throw new StyleMultivaluedException();
@@ -71,8 +71,8 @@ public class StyleAttribute {
 	}
 	
 	public StyleValue getValue(String name) {
-		if (values != null) {
-			Iterator iter = values.iterator();
+		if (this.values != null) {
+			Iterator iter = this.values.iterator();
 			while (iter.hasNext()) {
 				StyleValue element = (StyleValue) iter.next();
 				if (element.getName().equals(name)) {
@@ -84,18 +84,18 @@ public class StyleAttribute {
 	}
 	
 	protected boolean contains(StyleValue value) {
-		if (values != null) {
-			return values.contains(value);
+		if (this.values != null) {
+			return this.values.contains(value);
 		}
 		return false;
 	}
 	
 	public String getName() {
-		return name;
+		return this.name;
 	}
 	
 	public StyleUnit getUnit() {
-		return unit;
+		return this.unit;
 	}
 	
 	public String toString() {

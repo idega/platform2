@@ -37,18 +37,18 @@ public class ComplexTypeViewKey extends PrimaryKey {
 	}
 	
 	public void setApartmentTypeID(Object apartmentTypeID) {
-		setPrimaryKeyValue(COLUMN_APRT_TYPE_ID, apartmentTypeID);
+		setPrimaryKeyValue(this.COLUMN_APRT_TYPE_ID, apartmentTypeID);
 	}
 
 	public Object getApartmentTypeID() {
-		return getPrimaryKeyValue(COLUMN_APRT_TYPE_ID);
+		return getPrimaryKeyValue(this.COLUMN_APRT_TYPE_ID);
 	}
 
 	public void setComplexID(Object complexID) {
-		setPrimaryKeyValue(COLUMN_COMPLEX_ID, complexID);
+		setPrimaryKeyValue(this.COLUMN_COMPLEX_ID, complexID);
 	}
 
 	public Object getComplexID() {
-		return getPrimaryKeyValue(COLUMN_COMPLEX_ID);
+		return getPrimaryKeyValue(this.COLUMN_COMPLEX_ID);
 	}
 }
