@@ -2,9 +2,10 @@ package com.idega.block.trade.stockroom.data;
 
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.GregorianCalendar;
+
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+
 import com.idega.data.GenericEntity;
 import com.idega.data.query.Column;
 import com.idega.data.query.MatchCriteria;

@@ -6,7 +6,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+
 import javax.ejb.FinderException;
+
 import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.data.QueryRepresentation;
 import com.idega.block.dataquery.data.UserQuery;
@@ -22,7 +24,6 @@ import com.idega.data.IDOLookup;
 import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.io.UploadFile;
-import com.idega.io.serialization.Storable;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;

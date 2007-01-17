@@ -13,7 +13,6 @@ import com.idega.block.email.data.MailTopic;
 import com.idega.block.email.data.MailTopicBMPBean;
 import com.idega.block.email.data.MailTopicHome;
 import com.idega.core.contact.data.Email;
-import com.idega.core.contact.data.EmailBMPBean;
 import com.idega.data.EntityFinder;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOFinderException;
