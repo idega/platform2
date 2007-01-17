@@ -376,7 +376,13 @@ public class AssessmentBusinessBean extends IBOServiceBean implements Assessment
 		AE.setName(Name);
 		AE.setInfo(Info);
 		AE.setStatus(status);
-		AE.setDivisionForAccounting(division);
+		if (division != null && !"".equals(division)) {
+			AE.setDivisionForAccounting(division);
+		} else if (externalID != null) {
+			AE.setDivisionForAccounting(externalID.toString());			
+		} else {
+			AE.setDivisionForAccounting("");
+		}
 
 		AE.store();
 		return AE;
