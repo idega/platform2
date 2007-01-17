@@ -123,6 +123,20 @@ public class FinanceEntryHomeImpl extends IDOFactory implements FinanceEntryHome
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
+	public Collection findAllByClubAndDivisionAndGroupAndSerial(Group club, Group division, Group group, int fromSerialNumber) throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((FinanceEntryBMPBean) entity).ejbFindAllByClubAndDivisionAndGroupAndSerial(club, division, group, fromSerialNumber);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findAllByClubAndDivisionAndGroupAndDate(Group club, Group division, Group group, IWTimestamp fromDate) throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((FinanceEntryBMPBean) entity).ejbFindAllByClubAndDivisionAndGroupAndDate(club, division, group, fromDate);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
 	public Collection findAllByBatchID(int batchID) throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
 		Collection ids = ((FinanceEntryBMPBean) entity).ejbFindAllByBatchID(batchID);

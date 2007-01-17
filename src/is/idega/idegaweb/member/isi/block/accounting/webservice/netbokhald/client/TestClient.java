@@ -3,7 +3,6 @@ package is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.clie
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
-import java.util.GregorianCalendar;
 
 import javax.xml.rpc.ServiceException;
 
@@ -18,15 +17,20 @@ public class TestClient {
 		// Now use the service to get a stub which implements the SDI.
 		// CaseService port = service.getCaseService(new URL(endpoint)); //
 		try {
-			NetbokhaldService port = service.getNetbokhaldService(new URL("http://felixtest.sidan.is/services/NetbokhaldService"));
+			NetbokhaldService port = service.getNetbokhaldService(new URL(
+					"http://felixtest.sidan.is/services/NetbokhaldService"));
 
-			NetbokhaldEntry entries[] = port.getEntries("123", new GregorianCalendar());
-			System.out.println("size = " + entries.length);
-			
-			for (int i = 0; i < entries.length; i++) {
-				System.out.println(entries[i].getCustomer());
+			NetbokhaldEntry entries[] = port.getEntries("0000000010", "14400");
+			if (entries == null) {
+				System.out.println("No entries returned");
+			} else {
+				System.out.println("size = " + entries.length);
+
+				for (int i = 0; i < entries.length; i++) {
+					System.out.println(entries[i].getSerialNumber());
+				}
 			}
-			
+
 		} catch (ServiceException e) {
 			e.printStackTrace();
 		} catch (RemoteException e) {

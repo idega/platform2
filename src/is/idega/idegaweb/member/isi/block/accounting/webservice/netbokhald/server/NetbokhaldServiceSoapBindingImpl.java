@@ -9,11 +9,14 @@ package is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.serv
 
 import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntry;
 import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean;
-import is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.business.NetbokhaldBusiness;
+import is.idega.idegaweb.member.isi.block.accounting.netbokhald.business.NetbokhaldBusiness;
+import is.idega.idegaweb.member.isi.block.accounting.netbokhald.data.NetbokhaldAccountingKeys;
+import is.idega.idegaweb.member.isi.block.accounting.netbokhald.data.NetbokhaldAccountingKeysBMPBean;
 
 import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
+import java.util.Map;
 
 import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWMainApplication;
@@ -29,9 +32,10 @@ public class NetbokhaldServiceSoapBindingImpl
 				.getServiceInstance(IWMainApplication
 						.getDefaultIWApplicationContext(),
 						NetbokhaldBusiness.class);
-		Collection col = bus1.getFinanceEntries(in0, in1.getTime());
+		Collection col = bus1.getFinanceEntries(in0, in1.getTime());		
+		Map accountingKeys = bus1.getAccountingKeys(in0);
 		
-    	return returnEntriesFromCollection(col);
+    	return returnEntriesFromCollection(col, accountingKeys);
 	}
 	
     public is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.server.NetbokhaldEntry[] getEntries(java.lang.String in0, java.lang.String in1) throws java.rmi.RemoteException {
@@ -40,23 +44,54 @@ public class NetbokhaldServiceSoapBindingImpl
 				.getDefaultIWApplicationContext(),
 				NetbokhaldBusiness.class);
     	Collection col = bus1.getFinanceEntries(in0, in1);
+		Map accountingKeys = bus1.getAccountingKeys(in0);
 
-    	return returnEntriesFromCollection(col);
+    	return returnEntriesFromCollection(col, accountingKeys);
     }
     
-    private is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.server.NetbokhaldEntry[] returnEntriesFromCollection(Collection col) {
+    private is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.server.NetbokhaldEntry[] returnEntriesFromCollection(Collection col, Map accountingKeys) {
 		if (col != null) {
 			NetbokhaldEntry entries[] = new NetbokhaldEntry[col.size() * 2];
 			int i = 0;
 			Iterator it = col.iterator();
 			while (it.hasNext()) {
 				FinanceEntry entry = (FinanceEntry) it.next();
-				entries[i] = new NetbokhaldEntry();
-				entries[i].setAccountingKey("22100");
-				if (entry.getType().equals(FinanceEntryBMPBean.TYPE_PAYMENT)) {
-					entries[i].setAmount(-entry.getAmount());
+				
+				String key = "22100";
+				String counterKey = "87190";
+				if (entry.getType().equals(FinanceEntryBMPBean.TYPE_ASSESSMENT) || entry.getType().equals(FinanceEntryBMPBean.TYPE_MANUAL)) {
+					Map keys = (Map) accountingKeys.get(NetbokhaldAccountingKeysBMPBean.TYPE_ASSESSMENT);
+					NetbokhaldAccountingKeys netbokhaldKey = (NetbokhaldAccountingKeys) keys.get(new Integer(entry.getTariffTypeID()));
+					if (netbokhaldKey != null) {
+						key = netbokhaldKey.getDebetKey();
+						counterKey = netbokhaldKey.getCreditKey();
+					}
+				} else if (entry.getType().equals(FinanceEntryBMPBean.TYPE_PAYMENT)) {
+					Map keys = (Map) accountingKeys.get(NetbokhaldAccountingKeysBMPBean.TYPE_PAYMENT);
+					NetbokhaldAccountingKeys netbokhaldKey = (NetbokhaldAccountingKeys) keys.get((Integer)entry.getPaymentType().getPrimaryKey());
+					if (netbokhaldKey != null) {
+						key = netbokhaldKey.getDebetKey();
+						counterKey = netbokhaldKey.getCreditKey();
+					}
 				} else {
-					entries[i].setAmount(entry.getAmount());					
+					key = "22100";
+					counterKey = "87190";					
+				}
+				
+				if (key == null) {
+					key = "22100";
+				}
+				
+				if (counterKey == null) {
+					counterKey = "87190";
+				}
+				
+				entries[i] = new NetbokhaldEntry();
+				entries[i].setAccountingKey(key);
+				if (entry.getType().equals(FinanceEntryBMPBean.TYPE_PAYMENT)) {
+					entries[i].setAmount(entry.getAmount());
+				} else {
+					entries[i].setAmount(-entry.getAmount());					
 				}
 				entries[i].setCustomer(entry.getUser().getPersonalID());
 				entries[i].setCustomerNumber(-1);
@@ -85,11 +120,11 @@ public class NetbokhaldServiceSoapBindingImpl
 				entries[i].setText(text.toString());
 				i++;
 				entries[i] = new NetbokhaldEntry();
-				entries[i].setAccountingKey("87190");
+				entries[i].setAccountingKey(counterKey);
 				if (entry.getType().equals(FinanceEntryBMPBean.TYPE_PAYMENT)) {
-					entries[i].setAmount(entry.getAmount());
+					entries[i].setAmount(-entry.getAmount());
 				} else {
-					entries[i].setAmount(-entry.getAmount());					
+					entries[i].setAmount(entry.getAmount());					
 				}
 				entries[i].setCustomer(entry.getUser().getPersonalID());
 				entries[i].setCustomerNumber(-1);

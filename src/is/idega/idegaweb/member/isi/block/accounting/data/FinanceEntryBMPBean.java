@@ -863,6 +863,53 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 		
 		return idoFindPKsByQuery(sql);
 	}
+
+	public Collection ejbFindAllByClubAndDivisionAndGroupAndSerial(Group club, Group division, Group group, int fromSerialNumber) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhereEquals(COLUMN_CLUB_ID, club);
+		if (division != null) {
+			sql.appendAndEquals(COLUMN_DIVISION_ID, division);
+		}
+		if (group != null) {
+			sql.appendAndEquals(COLUMN_GROUP_ID, group);
+		}
+		
+		if (fromSerialNumber > 0) {
+			sql.appendAnd();
+			sql.append(getIDColumnName());
+			sql.appendGreaterThanSign();
+			sql.append(fromSerialNumber);
+		}
+
+		System.out.println("sql = " + sql.toString());
+		
+		return idoFindPKsByQuery(sql);
+	}
+
+	public Collection ejbFindAllByClubAndDivisionAndGroupAndDate(Group club, Group division, Group group, IWTimestamp fromDate) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhereEquals(COLUMN_CLUB_ID, club);
+		if (division != null) {
+			sql.appendAndEquals(COLUMN_DIVISION_ID, division);
+		}
+		if (group != null) {
+			sql.appendAndEquals(COLUMN_GROUP_ID, group);
+		}
+		
+		if (fromDate != null) {
+			sql.appendAnd();
+			sql.append(COLUMN_DATE_OF_ENTRY);
+			sql.appendGreaterThanSign();
+			sql.append(fromDate);
+		}
+
+		System.out.println("sql = " + sql.toString());
+		
+		return idoFindPKsByQuery(sql);
+	}
+
 	
 	public Collection ejbFindAllByBatchID(int batchID) throws FinderException {
 		IDOQuery sql = idoQuery();

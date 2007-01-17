@@ -1,4 +1,4 @@
-package is.idega.idegaweb.member.isi.block.accounting.webservice.netbokhald.business;
+package is.idega.idegaweb.member.isi.block.accounting.netbokhald.business;
 
 
 import javax.ejb.CreateException;

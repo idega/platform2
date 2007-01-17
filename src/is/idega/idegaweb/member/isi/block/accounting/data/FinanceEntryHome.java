@@ -44,5 +44,9 @@ public interface FinanceEntryHome extends IDOHome {
 
 	public Collection findAllByClubId(int id) throws FinderException;
 
+	public Collection findAllByClubAndDivisionAndGroupAndSerial(Group club, Group division, Group group, int fromSerialNumber) throws FinderException;
+
+	public Collection findAllByClubAndDivisionAndGroupAndDate(Group club, Group division, Group group, IWTimestamp fromDate) throws FinderException;
+
 	public Collection findAllByBatchID(int batchID) throws FinderException;
 }
