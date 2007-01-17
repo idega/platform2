@@ -89,7 +89,9 @@ public class NetbokhaldAccountingKeysBMPBean extends GenericEntity implements
 	public Collection ejbFindAllBySetupID(NetbokhaldSetup setup) throws FinderException {
 		IDOQuery query = idoQuery();
 		query.appendSelectAllFrom(this);
-		query.appendWhereEquals(COLUMN_SETUP_ID, setup);
+		query.appendWhereEqualsQuoted(COLUMN_SETUP_ID, setup.getExternalID());
+		
+		System.out.println("sql = " + query.toString());
 		
 		return idoFindPKsByQuery(query);
 	}

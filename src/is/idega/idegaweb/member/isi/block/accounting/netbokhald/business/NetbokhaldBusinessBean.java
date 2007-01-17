@@ -75,6 +75,8 @@ public class NetbokhaldBusinessBean extends IBOServiceBean implements Netbokhald
 			e.printStackTrace();
 		} catch (FinderException e) {
 			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		
 		return map;

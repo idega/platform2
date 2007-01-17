@@ -27,7 +27,9 @@ public class TestClient {
 				System.out.println("size = " + entries.length);
 
 				for (int i = 0; i < entries.length; i++) {
-					System.out.println(entries[i].getSerialNumber());
+					System.out.print(entries[i].getSerialNumber());
+					System.out.print(", key = ");
+					System.out.println(entries[i].getAccountingKey());
 				}
 			}
 
