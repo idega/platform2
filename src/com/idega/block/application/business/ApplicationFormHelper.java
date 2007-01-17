@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationFormHelper.java,v 1.10.2.1 2007/01/12 19:32:37 idegaweb Exp $
+ * $Id: ApplicationFormHelper.java,v 1.10.2.2 2007/01/17 22:53:52 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,18 +9,20 @@
  */
 package com.idega.block.application.business;
 
-import com.idega.idegaweb.IWApplicationContext;
-import com.idega.presentation.IWContext;
-import com.idega.block.application.data.Applicant;
-import com.idega.block.application.data.Application;
-import com.idega.util.IWTimestamp;
-
 import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Iterator;
 
 import javax.ejb.CreateException;
+import javax.ejb.FinderException;
 
+import com.idega.block.application.data.Applicant;
+import com.idega.block.application.data.Application;
 import com.idega.block.application.presentation.ApplicationForm;
 import com.idega.business.IBOLookup;
+import com.idega.idegaweb.IWApplicationContext;
+import com.idega.presentation.IWContext;
+import com.idega.util.IWTimestamp;
 
 /**
  *
@@ -39,7 +41,21 @@ public class ApplicationFormHelper {
     String mobilePhone = iwc.getParameter(ApplicationForm.APP_MOBILE);
     String po = iwc.getParameter(ApplicationForm.APP_PO);
 
-    Applicant applicant = getApplicationService(iwc).getApplicantHome().create();
+    Applicant applicant = null;
+    try {
+		Collection applicants = getApplicationService(iwc).getApplicantHome().findBySSN(ssn);
+		if (applicants != null && !applicants.isEmpty()) {
+			Iterator it = applicants.iterator();
+			while (it.hasNext()) {
+				applicant = (Applicant) it.next();
+			}
+		} else {
+			applicant = getApplicationService(iwc).getApplicantHome().create();			
+		}
+	} catch (FinderException e) {
+		applicant = getApplicationService(iwc).getApplicantHome().create();
+	}
+    
     applicant.setFirstName(firstName);
     applicant.setMiddleName(middleName);
     applicant.setLastName(lastName);
