@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.30.4.2 2006/10/31 16:24:59 palli Exp $
+ * $Id: CampusApplicationForm.java,v 1.30.4.3 2007/01/17 22:53:17 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -24,6 +24,8 @@ import java.util.Vector;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
+import com.idega.block.application.data.Applicant;
+import com.idega.block.application.data.ApplicationBMPBean;
 import com.idega.block.application.presentation.ApplicationForm;
 import com.idega.block.building.business.ApartmentTypeComplexHelper;
 import com.idega.block.building.data.ApartmentType;
@@ -93,7 +95,6 @@ public class CampusApplicationForm extends ApplicationForm {
 	 */
 	protected void control(IWContext iwc) {
 		try {
-			// debugParameters(iwc);
 			iwb = getBundle(iwc);
 			List wrongParameters = new Vector();
 			String statusString = iwc.getParameter(APP_STATUS);
@@ -140,6 +141,7 @@ public class CampusApplicationForm extends ApplicationForm {
 					} catch (CreateException e) {
 						e.printStackTrace();
 					}
+
 					doCampusInformation(iwc, wrongParameters);
 				}
 			} else if (status == STATUS_CAMPUS_INFO) {
@@ -179,10 +181,10 @@ public class CampusApplicationForm extends ApplicationForm {
 
 	}
 
-	/*
-	 * /*
-	 * 
-	 */
+	protected void doSelectApplication(IWContext iwc) {
+
+	}
+
 	protected void doSelectAppliedFor(IWContext iwc, List wrongParameters)
 			throws RemoteException {
 		Integer categoryID;
@@ -252,12 +254,8 @@ public class CampusApplicationForm extends ApplicationForm {
 			Image back = _iwrb.getImage("back.gif");
 			back.setMarkupAttribute("onClick", "history.go(-1)");
 
-			// SubmitButton ok = new SubmitButton(_iwrb.getImage("next.gif",
-			// _iwrb.getLocalizedString("ok", "?fram")), APP_STATUS,
-			// Integer.toString(_statusAppliedFor));
 			SubmitButton ok = new SubmitButton(_iwrb.getImage("next.gif", _iwrb
-					.getLocalizedString("ok", "Next")));// , APP_STATUS,
-			// Integer.toString(_statusAppliedFor));
+					.getLocalizedString("ok", "Next")));
 
 			form.add(t);
 
@@ -381,10 +379,58 @@ public class CampusApplicationForm extends ApplicationForm {
 		add(Text.getBreak());
 	}
 
+	protected boolean checkForApplications(IWContext iwc, Applicant applicant) {
+		try {
+			Collection applicants = CampusApplicationFormHelper
+					.getApplicationService(iwc).getApplicantHome().findBySSN(
+							applicant.getSSN());
+			Iterator it = applicants.iterator();
+			while (it.hasNext()) {
+				Applicant a = (Applicant) it.next();
+				try {
+					Collection col = CampusApplicationFormHelper
+							.getApplicationService(iwc).getApplicationHome()
+							.findByApplicantAndStatus(
+									(Integer) a.getPrimaryKey(), ApplicationBMPBean.STATUS_SUBMITTED);
+					if (col != null && !col.isEmpty()) {
+						return true;
+					}
+				} catch (FinderException e) {
+				}
+				
+				try {
+					Collection col = CampusApplicationFormHelper
+							.getApplicationService(iwc).getApplicationHome()
+							.findByApplicantAndStatus(
+									(Integer) a.getPrimaryKey(), ApplicationBMPBean.STATUS_APPROVED);
+					if (col != null && !col.isEmpty()) {
+						return true;
+					}
+				} catch (FinderException e) {
+				}
+
+			}
+			//			
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+		}
+
+		return false;
+	}
+
 	/*
 	 * 
 	 */
 	protected void doCampusInformation(IWContext iwc, List wrongParameters) {
+		Applicant applicant = (Applicant) iwc.getSessionAttribute("applicant");
+		boolean hasManyApplications = checkForApplications(iwc, applicant);
+
+		if (hasManyApplications) {
+			add(new Text(_iwrb.getLocalizedString("have_many_application","You have one or more applications in the system that have been submitted or approved. Please go in with your reference number and cancel them if you want to create a new application.")));
+			return;
+		}
+		
 		Collection subjects = null;
 		try {
 			subjects = getApplicationService(iwc).getSubjectHome()

@@ -1,5 +1,5 @@
 /*
- * $Id: BNCampusApplicationForm.java,v 1.1.2.1 2005/11/29 16:55:17 palli Exp $
+ * $Id: BNCampusApplicationForm.java,v 1.1.2.2 2007/01/17 22:53:17 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -22,6 +22,7 @@ import java.util.Vector;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.application.data.Applicant;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
@@ -54,6 +55,14 @@ public class BNCampusApplicationForm extends CampusApplicationForm {
 	 * 
 	 */
 	protected void doCampusInformation(IWContext iwc, List wrongParameters) {
+		Applicant applicant = (Applicant) iwc.getSessionAttribute("applicant");
+		boolean hasManyApplications = checkForApplications(iwc, applicant);
+
+		if (hasManyApplications) {
+			add(new Text(_iwrb.getLocalizedString("have_many_application","You have one or more applications in the system that have been submitted or approved. Please go in with your reference number and cancel them if you want to create a new application.")));
+			return;
+		}
+
 		Collection subjects = null;
 		try {
 			subjects = getApplicationService(iwc).getSubjectHome()

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFormHelper.java,v 1.23.4.2 2006/10/18 13:54:05 palli Exp $
+ * $Id: CampusApplicationFormHelper.java,v 1.23.4.3 2007/01/17 22:53:18 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -189,25 +189,25 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 					ex.printStackTrace();
 				}
 				e.printStackTrace();
-				return (null);
+				return null;
 			}
-		}
-
-		String e_mail = campusApplication.getEmail();
-		if (e_mail != null && applicant != null) {
-			if (e_mail.length() > 0) {
-				try {
-					MailingListService MailingListBusiness = (MailingListService) IBOLookup
-							.getServiceInstance(iwc, MailingListService.class);
-					MailingListBusiness.processMailEvent(new EntityHolder(
-							applicant), LetterParser.SUBMISSION);
-				} catch (RemoteException e1) {
-					e1.printStackTrace();
+			
+			String e_mail = campusApplication.getEmail();
+			if (e_mail != null && applicant != null) {
+				if (e_mail.length() > 0) {
+					try {
+						MailingListService MailingListBusiness = (MailingListService) IBOLookup
+								.getServiceInstance(iwc, MailingListService.class);
+						MailingListBusiness.processMailEvent(new EntityHolder(
+								applicant), LetterParser.SUBMISSION);
+					} catch (RemoteException e1) {
+						e1.printStackTrace();
+					}
 				}
 			}
 		}
 
-		return (cypher);
+		return cypher;
 	}
 
 	/**
