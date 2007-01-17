@@ -273,7 +273,7 @@ public class AccountBMPBean extends CategoryEntityBMPBean implements Account,
 
 	public Object ejbFindByUserAndType(User user, String type) throws FinderException {
 		IDOQuery query = idoQuery();
-		query.appendSelectAllFrom();
+		query.appendSelectAllFrom(this);
 		query.appendWhereEquals(getUserIdColumnName(), user);
 		query.appendAndEqualsQuoted(getTypeColumnName(), type);
 		
