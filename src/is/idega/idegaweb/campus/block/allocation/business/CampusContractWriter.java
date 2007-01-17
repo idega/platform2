@@ -128,6 +128,9 @@ public class CampusContractWriter {
 	
 	//new 7.12.2006
 	public final static String APARTMENT_TYPE = "apartment_type";
+	
+	//new 17.1.2007
+	public final static String CURRENT_RENT_NOT_TYPE_A = "current_rent_not_type_A";
 
 	public static String[] TAGS = { renter_name, renter_address, renter_id,
 			tenant_name, tenant_address, tenant_id, apartment_name,
@@ -136,7 +139,7 @@ public class CampusContractWriter {
 			apartment_rent, apartment_category, contract_starts, contract_ends,
 			renting_index, today, current_renting_index, current_rent,
 			cohabitant, postal_address, current_rent_typeA, current_rent_typeB,
-			current_rent_typeC, current_rent_typeD, APARTMENT_SERIAL_NUMBER, APARTMENT_TYPE };
+			current_rent_typeC, current_rent_typeD, APARTMENT_SERIAL_NUMBER, APARTMENT_TYPE, CURRENT_RENT_NOT_TYPE_A };
 
 	public final static String IS = "IS";
 
@@ -410,6 +413,7 @@ public class CampusContractWriter {
 				double rentB = 0.0d;
 				double rentC = 0.0d;
 				double rentD = 0.0d;
+				double rentNotA = 0.0d;
 
 				Iterator it = tariff.iterator();
 				while (it.hasNext()) {
@@ -420,12 +424,19 @@ public class CampusContractWriter {
 						if ("A".equals(type)) {
 							rentA += t.getPrice();
 						} else if ("B".equals(type)) {
+							rentNotA += t.getPrice();
 							rentB += t.getPrice();
 						} else if ("C".equals(type)) {
+							rentNotA += t.getPrice();
 							rentC += t.getPrice();
 						} else if ("D".equals(type)) {
+							rentNotA += t.getPrice();
 							rentD += t.getPrice();
+						} else {
+							rentNotA += t.getPrice();
 						}
+					} else {
+						rentNotA += t.getPrice();
 					}
 				}
 
@@ -552,6 +563,12 @@ public class CampusContractWriter {
 					H.put(APARTMENT_TYPE, new Chunk("", nameFont));
 				}
 				//end new 7.12.2006
+				
+				//new 17.1.2007
+				H.put(CURRENT_RENT_NOT_TYPE_A, new Chunk(format.format(rentNotA),
+						nameFont));				
+				//end new 17.1.2007
+				
 				return H;
 			}
 
