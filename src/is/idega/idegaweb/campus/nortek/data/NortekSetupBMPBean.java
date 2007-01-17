@@ -5,7 +5,7 @@ import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
-import com.idega.block.category.data.CategoryEntity;
+import com.idega.block.category.data.ICCategory;
 import com.idega.block.finance.data.AccountKey;
 import com.idega.block.finance.data.TariffGroup;
 import com.idega.data.GenericEntity;
@@ -26,14 +26,14 @@ public class NortekSetupBMPBean extends GenericEntity implements NortekSetup {
 
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		addManyToOneRelationship(COLUMN_FINANCE_CATEGORY, CategoryEntity.class);
+		addManyToOneRelationship(COLUMN_FINANCE_CATEGORY, ICCategory.class);
 		addManyToOneRelationship(COLUMN_TARIFF_GROUP, TariffGroup.class);
 		addManyToOneRelationship(COLUMN_ACCOUNT_KEY, AccountKey.class);
 	}
 
 	// getters
-	public CategoryEntity getFinanceCategory() {
-		return (CategoryEntity) getColumnValue(COLUMN_FINANCE_CATEGORY);
+	public ICCategory getFinanceCategory() {
+		return (ICCategory) getColumnValue(COLUMN_FINANCE_CATEGORY);
 	}
 
 	public TariffGroup getTariffGroup() {
@@ -45,7 +45,7 @@ public class NortekSetupBMPBean extends GenericEntity implements NortekSetup {
 	}
 
 	// setters
-	public void setFinanceCategory(CategoryEntity entity) {
+	public void setFinanceCategory(ICCategory entity) {
 		setColumn(COLUMN_FINANCE_CATEGORY, entity);
 	}
 
@@ -67,15 +67,14 @@ public class NortekSetupBMPBean extends GenericEntity implements NortekSetup {
 	
 	public Object ejbFindEntry() throws FinderException {
 		Collection col = ejbFindAll();
-		NortekSetup setup = null;
 		
 		if (col != null && !col.isEmpty()) {
 			Iterator it = col.iterator();
 			if (it.hasNext()) {
-				setup = (NortekSetup) it.next();
+				return it.next();
 			}
 		}
 		
-		return setup;
+		return null;
 	}
 }

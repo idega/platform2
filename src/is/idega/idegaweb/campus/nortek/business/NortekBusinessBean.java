@@ -10,6 +10,7 @@ import is.idega.idegaweb.campus.nortek.data.NortekSetup;
 import is.idega.idegaweb.campus.nortek.data.NortekSetupHome;
 
 import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.Date;
 
 import javax.ejb.CreateException;
@@ -40,6 +41,7 @@ public class NortekBusinessBean extends IBOServiceBean implements
 			card = getCardHome().findByPrimaryKey(serialNumber);
 			addLogEntry(card, IWTimestamp.RightNow(), null, ACTION_VERIFY, Boolean.toString(card.getIsValid()), null, false, null, serialNumber);
 		} catch (FinderException e) {
+			e.printStackTrace();
 			addLogEntry(card, IWTimestamp.RightNow(), null, ACTION_VERIFY, Boolean.toString(false), null, true, e.getMessage(), serialNumber);
 			return false;
 		} 
@@ -54,12 +56,14 @@ public class NortekBusinessBean extends IBOServiceBean implements
 			card = getCardHome().findByPrimaryKey(serialNumber);
 			addLogEntry(card, IWTimestamp.RightNow(), null, ACTION_BAN, Boolean.toString(ban), null, false, null, serialNumber);
 		} catch (FinderException e) {
+			e.printStackTrace();
 			try {
 				card = getCardHome().create();
 				card.setCardSerialNumber(serialNumber);
 				card.store();
 				addLogEntry(card, IWTimestamp.RightNow(), null, ACTION_BAN, Boolean.toString(ban), null, false, null, serialNumber);
 			} catch (CreateException e1) {
+				e1.printStackTrace();
 				addLogEntry(card, IWTimestamp.RightNow(), null, ACTION_BAN, Boolean.toString(ban), null, true, e1.getMessage(), serialNumber);
 				return false;
 			}
@@ -88,7 +92,13 @@ public class NortekBusinessBean extends IBOServiceBean implements
 			
 			addLogEntry(card, IWTimestamp.RightNow(), new IWTimestamp(timestamp), ACTION_ADD, Double.toString(amount), terminalNumber, false, null, serialNumber);
 		} catch (Exception e) {
-			addLogEntry(card, IWTimestamp.RightNow(), new IWTimestamp(timestamp), ACTION_ADD, Double.toString(amount), terminalNumber, true, e.getMessage(), serialNumber);
+			e.printStackTrace();
+			Throwable t = e.getCause();
+			if (t != null) {
+				addLogEntry(card, IWTimestamp.RightNow(), new IWTimestamp(timestamp), ACTION_ADD, Double.toString(amount), terminalNumber, true, t.getMessage(), serialNumber);
+			} else {
+				addLogEntry(card, IWTimestamp.RightNow(), new IWTimestamp(timestamp), ACTION_ADD, Double.toString(amount), terminalNumber, true, e.getMessage(), serialNumber);				
+			}
 			return false;
 		}
 		
@@ -120,6 +130,16 @@ public class NortekBusinessBean extends IBOServiceBean implements
 		} catch (CreateException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public Collection getCards() {
+		Collection col = null;
+		try {
+			col = getCardHome().findAll();
+		} catch (FinderException e) {
+		}
+		
+		return col;
 	}
 	
 	private CardHome getCardHome() {

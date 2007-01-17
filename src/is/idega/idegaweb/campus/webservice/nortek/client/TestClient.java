@@ -19,8 +19,8 @@ public class TestClient {
 		try {
 			NortekService port = service.getNortekService(new URL("http://campusnew.idega.is/services/NortekService"));
 
-			System.out.println("port.banCard(1234) = " + port.banCard("1234"));
-			//System.out.println("port.isCardValid(1234) = " + port.isCardValid("1234"));
+			//System.out.println("port.banCard(1234) = " + port.banCard("1234"));
+			System.out.println("port.isCardValid(1234) = " + port.isCardValid("01050010D7"));
 			//System.out.println("port.addAmount(1234) = " + port.addAmountToCard("1234", new GregorianCalendar(), 100.0d, "1"));			
 		} catch (ServiceException e) {
 			e.printStackTrace();
