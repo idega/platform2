@@ -9,6 +9,7 @@ import com.idega.data.IDORelationshipException;
 import com.idega.data.query.Column;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.OR;
+import com.idega.data.query.Order;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;
 import com.idega.data.query.WildCardColumn;
@@ -311,6 +312,7 @@ public class ApartmentTypeBMPBean extends
 			query.addCriteria(new OR(new MatchCriteria(new Column(type,
 					COLUMN_LOCKED), MatchCriteria.EQUALS, false),
 					new MatchCriteria(type.getColumn(COLUMN_LOCKED))));
+			query.addOrder(new Order(new Column(type, COLUMN_NAME), true));
 
 			return idoFindPKsBySQL(query.toString());
 		} catch (IDORelationshipException e) {
@@ -331,6 +333,7 @@ public class ApartmentTypeBMPBean extends
 		query.addCriteria(new OR(new MatchCriteria(new Column(type,
 				COLUMN_LOCKED), MatchCriteria.EQUALS, false),
 				new MatchCriteria(type.getColumn(COLUMN_LOCKED))));
+		query.addOrder(new Order(new Column(type, COLUMN_NAME), true));
 
 		return idoFindPKsBySQL(query.toString());
 	}
@@ -360,6 +363,7 @@ public class ApartmentTypeBMPBean extends
 		query.addCriteria(new OR(new MatchCriteria(new Column(type,
 				COLUMN_LOCKED), MatchCriteria.EQUALS, false),
 				new MatchCriteria(type.getColumn(COLUMN_LOCKED))));
+		query.addOrder(new Order(new Column(type, COLUMN_NAME), true));
 
 		System.out.println("sql = " + query.toString());
 
@@ -383,6 +387,7 @@ public class ApartmentTypeBMPBean extends
 		query.addCriteria(new OR(new MatchCriteria(new Column(type,
 				COLUMN_LOCKED), MatchCriteria.EQUALS, false),
 				new MatchCriteria(type.getColumn(COLUMN_LOCKED))));
+		query.addOrder(new Order(new Column(type, COLUMN_NAME), true));
 
 		return idoFindPKsBySQL(query.toString());
 	}
