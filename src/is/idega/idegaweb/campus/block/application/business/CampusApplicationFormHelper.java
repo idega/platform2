@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFormHelper.java,v 1.23.4.3 2007/01/17 22:53:18 palli Exp $
+ * $Id: CampusApplicationFormHelper.java,v 1.23.4.4 2007/01/25 10:36:55 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -129,6 +129,14 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 			try {
 				t.begin();
 				applicant.store();
+				
+				if (applicant.getChildCount() > 0) {
+					Iterator it = applicant.getChildren().iterator();
+					while (it.hasNext()) {
+						applicant.removeChild((Applicant)it.next());						
+					}
+				}
+				
 				applicant.addChild(applicant);
 
 				if (spouse != null) {

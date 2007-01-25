@@ -12,6 +12,8 @@ public class CardBMPBean extends GenericEntity implements Card {
 	public static final String ENTITY_NAME = "nt_card";
 
 	private static final String COLUMN_CARD = "card_serial_number";
+	
+	private static final String COLUMN_DECODED_SERIAL = "card_decoded_number";
 
 	private static final String COLUMN_USER = "card_user";
 
@@ -21,8 +23,9 @@ public class CardBMPBean extends GenericEntity implements Card {
 	}
 
 	public void initializeAttributes() {
-		addAttribute(COLUMN_CARD, "Card serial number", String.class, 255);
+		addAttribute(COLUMN_CARD, "Card serial number", String.class, 255);		
 		setAsPrimaryKey(COLUMN_CARD, true);
+		addAttribute(COLUMN_DECODED_SERIAL, "Decoded card serial number", String.class, 255);
 		addAttribute(COLUMN_VALID, "Valid", Boolean.class);
 		addManyToOneRelationship(COLUMN_USER, User.class);
 		
@@ -49,6 +52,10 @@ public class CardBMPBean extends GenericEntity implements Card {
 		return getStringColumnValue(COLUMN_CARD);
 	}
 	
+	public String getDecodedCardSerialNumber() {
+		return getStringColumnValue(COLUMN_DECODED_SERIAL);
+	}
+	
 	public User getUser() {
 		return (User) getColumnValue(COLUMN_USER);
 	}
@@ -60,6 +67,10 @@ public class CardBMPBean extends GenericEntity implements Card {
 	//setters
 	public void setCardSerialNumber(String serialNumber) {
 		setColumn(COLUMN_CARD, serialNumber);
+	}
+	
+	public void setDecodedCardSerialNumber(String serialNumber) {
+		setColumn(COLUMN_DECODED_SERIAL, serialNumber);
 	}
 	
 	public void setUser(User user) {
@@ -74,6 +85,7 @@ public class CardBMPBean extends GenericEntity implements Card {
 	public Collection ejbFindAll() throws FinderException {
 		IDOQuery query = idoQuery();
 		query.appendSelectAllFrom(this);
+		query.appendOrderBy(COLUMN_DECODED_SERIAL);
 
 		return idoFindPKsByQuery(query);
 	}

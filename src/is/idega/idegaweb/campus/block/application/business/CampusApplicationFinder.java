@@ -1,8 +1,8 @@
 /*
  <<<<<<< CampusApplicationFinder.java
- * $Id: CampusApplicationFinder.java,v 1.18.4.1 2006/10/18 13:54:05 palli Exp $
+ * $Id: CampusApplicationFinder.java,v 1.18.4.2 2007/01/25 10:36:55 palli Exp $
  =======
- * $Id: CampusApplicationFinder.java,v 1.18.4.1 2006/10/18 13:54:05 palli Exp $
+ * $Id: CampusApplicationFinder.java,v 1.18.4.2 2007/01/25 10:36:55 palli Exp $
  >>>>>>> 1.17
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
@@ -291,8 +291,12 @@ public abstract class CampusApplicationFinder {
 				Collection l = aHome.findByApplicantID(new Integer(eApplicant
 						.getPrimaryKey().toString()));
 				if (l != null && !l.isEmpty()) {
-					Application eApplication = (Application) l.iterator()
-							.next();
+					Iterator it = l.iterator();
+					Application eApplication = null;
+					while (it.hasNext()) {
+						eApplication = (Application) it.next();
+					}
+
 					CampusApplicationHome cHome = (CampusApplicationHome) IDOLookup
 							.getHome(CampusApplication.class);
 					l = cHome.findAllByApplicationId(new Integer(eApplication

@@ -16,6 +16,11 @@ public interface Card extends IDOEntity {
 	public String getCardSerialNumber();
 
 	/**
+	 * @see is.idega.idegaweb.campus.nortek.data.CardBMPBean#getDecodedCardSerialNumber
+	 */
+	public String getDecodedCardSerialNumber();
+
+	/**
 	 * @see is.idega.idegaweb.campus.nortek.data.CardBMPBean#getUser
 	 */
 	public User getUser();
@@ -29,6 +34,11 @@ public interface Card extends IDOEntity {
 	 * @see is.idega.idegaweb.campus.nortek.data.CardBMPBean#setCardSerialNumber
 	 */
 	public void setCardSerialNumber(String serialNumber);
+
+	/**
+	 * @see is.idega.idegaweb.campus.nortek.data.CardBMPBean#setDecodedCardSerialNumber
+	 */
+	public void setDecodedCardSerialNumber(String serialNumber);
 
 	/**
 	 * @see is.idega.idegaweb.campus.nortek.data.CardBMPBean#setUser

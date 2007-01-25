@@ -338,19 +338,14 @@ public class CampusAssessmentBusinessBean extends AssessmentBusinessBean impleme
 			Integer externalID) throws RemoteException, CreateException {
 
 		String division = "";
-		if (externalID != null && externalID.intValue() > 0) {
-			
-		}
-		else if (accountID != null && accountID.intValue() > 0) {
-			try {
-				FinanceAccount account = (FinanceAccount)getFinanceService().getAccountHome().findByPrimaryKey(accountID);
-				Contract contract = this.findContractForUser(account.getUser());
-				division = contract.getApartment().getFloor().getBuilding().getDivision();
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			} catch (FinderException e) {
-				e.printStackTrace();
-			}
+		try {
+			FinanceAccount account = (FinanceAccount)getFinanceService().getAccountHome().findByPrimaryKey(accountID);
+			Contract contract = this.findContractForUser(account.getUser());
+			division = contract.getApartment().getFloor().getBuilding().getDivision();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
 		}
 
 		AccountEntry entry =  super.createAccountEntry(accountID, accountKeyID, cashierID, roundID, netto, VAT, total, paydate, Name,

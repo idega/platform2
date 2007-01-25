@@ -23,6 +23,7 @@ import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.user.data.User;
+import com.idega.user.data.UserHome;
 import com.idega.util.IWTimestamp;
 
 public class NortekBusinessBean extends IBOServiceBean implements
@@ -33,6 +34,8 @@ public class NortekBusinessBean extends IBOServiceBean implements
 	public static final String ACTION_VERIFY = "verify";
 	
 	public static final String ACTION_ADD = "add";
+	
+	public static final String CARD_PREFIX = "010500";
 	
 	public boolean isCardValid(String serialNumber) {
 		Card card = null;
@@ -60,6 +63,7 @@ public class NortekBusinessBean extends IBOServiceBean implements
 			try {
 				card = getCardHome().create();
 				card.setCardSerialNumber(serialNumber);
+				card.setDecodedCardSerialNumber(decodeSerialNumber(serialNumber));
 				card.store();
 				addLogEntry(card, IWTimestamp.RightNow(), null, ACTION_BAN, Boolean.toString(ban), null, false, null, serialNumber);
 			} catch (CreateException e1) {
@@ -142,6 +146,54 @@ public class NortekBusinessBean extends IBOServiceBean implements
 		return col;
 	}
 	
+	public Card getCard(String serialNumber) {
+		try {
+			return (Card) getCardHome().findByPrimaryKey(serialNumber);
+		} catch (FinderException e) {
+		}
+		
+		return null;
+	}
+	
+	public void saveCard(String decodedSerial, String ssn, String valid) throws CreateException, FinderException {
+		String encoded = encodeDecodedSerialNumber(decodedSerial);
+		Card card = getCard(encoded);
+		if (card == null) {
+			card = getCardHome().create();
+		}
+		
+		User user = null;
+		if (ssn != null && !"".equals(ssn)) {
+			user = getUserHome().findByPersonalID(ssn);
+		}
+		
+		card.setCardSerialNumber(encoded);
+		card.setDecodedCardSerialNumber(decodedSerial);
+		card.setUser(user);
+		if (valid != null && !"".equals(valid)) {
+			card.setIsValid(true);
+		} else {
+			card.setIsValid(false);
+		}
+		
+		card.store();
+	}
+	
+	public String decodeSerialNumber(String serialNumber) {
+		if (serialNumber.length() == 10) {
+			String hex = serialNumber.substring(6);
+			return Integer.valueOf(hex, 16).toString();
+		}
+		
+		return null;
+	}
+	
+	public String encodeDecodedSerialNumber(String encodedSerialNumber) {
+		String ret = CARD_PREFIX + Integer.toHexString(0x10000 | Integer.parseInt(encodedSerialNumber)).substring(1).toUpperCase();
+		
+		return ret;
+	}
+	
 	private CardHome getCardHome() {
 		try {
 			return (CardHome) IDOLookup.getHome(Card.class);
@@ -181,6 +233,17 @@ public class NortekBusinessBean extends IBOServiceBean implements
 		
 		return null;
 	}
+	
+	private UserHome getUserHome() {
+		try {
+			return (UserHome) IDOLookup.getHome(User.class);
+		} catch (IDOLookupException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+
 	
 	public CampusAssessmentBusiness getCampusAssessmentBusiness() throws RemoteException {
 		return (CampusAssessmentBusiness) getServiceInstance(CampusAssessmentBusiness.class);

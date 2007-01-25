@@ -259,7 +259,8 @@ public class ApartmentApplicationForm extends Block {
 		String labelNoSSN = iwrb.getLocalizedString(LABEL_NO_SSN,
 				"I do not have a valid Icelandic personal ID");
 
-		noSSN.setToDisableOnClick(ssn, true);
+		noSSN.setToDisableWhenChecked(ssn);
+		noSSN.setToEnableWhenUnchecked(ssn);
 
 		t2.add(noSSN, 1, 2);
 		t2.add(labelNoSSN, 1, 2);

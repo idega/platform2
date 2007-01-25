@@ -66,7 +66,7 @@ public class NetbokhaldServiceSoapBindingImpl
 					FinanceEntry entry = (FinanceEntry) it.next();
 
 					String key = "22100";
-					String counterKey = "87190";
+					String counterKey = "87180";
 					if (entry.getType().equals(
 							FinanceEntryBMPBean.TYPE_ASSESSMENT)
 							|| entry.getType().equals(
@@ -96,7 +96,7 @@ public class NetbokhaldServiceSoapBindingImpl
 						}
 					} else {
 						key = "22100";
-						counterKey = "87190";
+						counterKey = "87180";
 					}
 
 					if (key == null) {
@@ -104,7 +104,7 @@ public class NetbokhaldServiceSoapBindingImpl
 					}
 
 					if (counterKey == null) {
-						counterKey = "87190";
+						counterKey = "87180";
 					}
 
 					entries[i] = new NetbokhaldEntry();
