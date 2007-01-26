@@ -16,17 +16,17 @@
 		
 			<class_description class="java.lang.String" default_display_name="Gender" name="gender">
 				<localized_name name="Kyn" locale="is_IS"/>
-				<class_handler class="is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler.GenderDropDownMenu" />
+				<class_handler class="com.idega.presentation.ui.GenderDropDownMenu" />
 			</class_description>
 		
 			<class_description class="java.lang.Integer" default_display_name="Birthyear from" name="birthyear_from">
 				<localized_name name="Fæðingarár frá" locale="is_IS"/>
-				<class_handler class="is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler.BirthYearDropDownMenu" />
+				<class_handler class="com.idega.presentation.ui.BirthYearDropDownMenu" />
 			</class_description>
 		
 			<class_description class="java.lang.Integer" default_display_name="Birthyear to" name="birthyear_to">
 				<localized_name name="Fæðingarár til" locale="is_IS"/>
-				<class_handler class="is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler.BirthYearDropDownMenu" />
+				<class_handler class="com.idega.presentation.ui.BirthYearDropDownMenu" />
 			</class_description>
 		
 			<class_description class="java.lang.Float" default_display_name="Handicap from" name="handicap_from">

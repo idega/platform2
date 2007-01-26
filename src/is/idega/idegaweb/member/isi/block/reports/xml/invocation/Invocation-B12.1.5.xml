@@ -15,7 +15,7 @@
 </class_description>
 <class_description class="java.lang.String" default_display_name="Gender" name="gender">
 <localized_name name="Kyn" locale="is_IS"/>
-<class_handler class="is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler.GenderDropDownMenu" />
+<class_handler class="com.idega.presentation.ui.GenderDropDownMenu" />
 </class_description>
 <class_description class="java.util.Collection" default_display_name="Leagues" name="league">
 <localized_name name="Sérsambönd" locale="is_IS"/>
