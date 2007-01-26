@@ -1,21 +1,25 @@
 /*
- * Created on Dec 19, 2003
+ * $Id: BirthYearDropDownMenu.java,v 1.1.2.1 2007/01/26 05:47:28 idegaweb Exp $
+ * Created on 26.1.2007
+ *
+ * Copyright (C) 2007 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
  */
-package is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler;
+package com.idega.presentation.ui;
 
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.ui.DropDownMenuInputHandler;
 import com.idega.util.IWTimestamp;
 /**
  * A presentation object for dynamic reports. Select an age (1-123).
  * 
  * @author <a href="mailto:eiki@idega.is">Eirikur S. Hrafnsson</a>
- * @deprecated Replaced with com.idega.presentation.ui.BirthYearDropDownMenu
  */
 public class BirthYearDropDownMenu extends DropDownMenuInputHandler {
 
-	protected static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
+	protected static String IW_BUNDLE_IDENTIFIER = "com.idega.user";
 	
 	public BirthYearDropDownMenu() {
 		super();
@@ -80,4 +84,3 @@ public class BirthYearDropDownMenu extends DropDownMenuInputHandler {
 
 
 }
-

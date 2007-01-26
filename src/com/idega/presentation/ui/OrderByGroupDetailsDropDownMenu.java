@@ -1,30 +1,36 @@
-package is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler;
+/*
+ * $Id: OrderByGroupDetailsDropDownMenu.java,v 1.1.2.1 2007/01/26 05:47:28 idegaweb Exp $
+ * Created on 26.1.2007
+ *
+ * Copyright (C) 2007 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ */
+package com.idega.presentation.ui;
 
-import is.idega.idegaweb.member.util.IWMemberConstants;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.ui.DropDownMenuInputHandler;
 
 /**
  * <p>
  * TODO sigtryggur Describe Type OrderByGroupDetailsDropDownMenu
  * </p>
- *  Last modified: $Date: 2007/01/26 05:47:17 $ by $Author: idegaweb $
+ *  Last modified: $Date: 2007/01/26 05:47:28 $ by $Author: idegaweb $
  * 
  * @author <a href="mailto:sigtryggur@idega.com">sigtryggur</a>
- * @version $Revision: 1.1.2.4 $
- * @deprecated Replaced with com.idega.presentation.ui.OrderByGroupDetailsDropDownMenu
+ * @version $Revision: 1.1.2.1 $
  */
 public class OrderByGroupDetailsDropDownMenu extends DropDownMenuInputHandler {
 
-	private static final String ORDER_BY_GROUP_PATH = IWMemberConstants.ORDER_BY_GROUP_PATH;
-	private static final String ORDER_BY_NAME = IWMemberConstants.ORDER_BY_NAME;
-	private static final String ORDER_BY_GROUP_TYPE = IWMemberConstants.ORDER_BY_GROUP_TYPE;
-	private static final String ORDER_BY_ADDRESS = IWMemberConstants.ORDER_BY_ADDRESS;
-	private static final String ORDER_BY_POSTAL_ADDRESS = IWMemberConstants.ORDER_BY_POSTAL_ADDRESS;
+	public static final String ORDER_BY_GROUP_PATH = "group_path_order";
+	public static final String ORDER_BY_NAME = "name_order";
+	public static final String ORDER_BY_GROUP_TYPE = "group_type_order";
+	public static final String ORDER_BY_ADDRESS = "address_order";
+	public static final String ORDER_BY_POSTAL_ADDRESS = "postal_address_order";
 	
-	protected static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
+	protected static String IW_BUNDLE_IDENTIFIER = "com.idega.user";
 	private static final String CLASS_NAME_PREFIX = "OrderByGroupDetailsDropDownMenu.";
 
 	public PresentationObject getHandlerObject(String name, String value, IWContext iwc) {

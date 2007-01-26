@@ -1,13 +1,20 @@
-package is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler;
+/*
+ * $Id: GenderDropDownMenu.java,v 1.1.2.1 2007/01/26 05:47:28 idegaweb Exp $
+ * Created on 26.1.2007
+ *
+ * Copyright (C) 2007 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ */
+package com.idega.presentation.ui;
 
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.ui.DropDownMenuInputHandler;
 /**
  * A presentation object for dynamic reports to genders. Both,male or female. both is default.
  * 
  * @author <a href="mailto:eiki@idega.is">Eirikur S. Hrafnsson</a>
- * @deprecated Replaced with com.idega.presentation.ui.GenderDropDownMenu
  */
 public class GenderDropDownMenu extends DropDownMenuInputHandler {
 
@@ -15,7 +22,7 @@ public class GenderDropDownMenu extends DropDownMenuInputHandler {
 	private static final String FEMALE = "f"; //same as in workreportmember
 	private static final String BOTH = "b";
 
-	protected static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
+	protected static String IW_BUNDLE_IDENTIFIER = "com.idega.user";
 
 	public GenderDropDownMenu() {
 		super();

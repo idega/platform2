@@ -1,19 +1,20 @@
 /*
- * Created on 20.12.2003
+ * $Id: PostalCodeBox.java,v 1.1.2.1 2007/01/26 05:47:28 idegaweb Exp $
+ * Created on 26.1.2007
  *
- * To change the template for this generated file go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * Copyright (C) 2007 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
  */
-package is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler;
+package com.idega.presentation.ui;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-
 import javax.ejb.FinderException;
-
 import com.idega.business.IBOLookup;
 import com.idega.business.IBORuntimeException;
 import com.idega.business.InputHandler;
@@ -23,14 +24,12 @@ import com.idega.core.location.data.PostalCode;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.ui.SelectionBox;
 
 /**
  * @author laddi
  *
  * To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Generation - Code and Comments
- * @deprecated Replaced with com.idega.presentation.ui.PostalCodeBox
  */
 public class PostalCodeBox extends SelectionBox implements InputHandler {
 

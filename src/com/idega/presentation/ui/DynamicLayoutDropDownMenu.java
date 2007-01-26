@@ -1,4 +1,13 @@
-package is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler;
+/*
+ * $Id: DynamicLayoutDropDownMenu.java,v 1.1.2.1 2007/01/26 05:47:28 idegaweb Exp $
+ * Created on 26.1.2007
+ *
+ * Copyright (C) 2007 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ */
+package com.idega.presentation.ui;
 
 import java.sql.SQLException;
 import java.util.Iterator;
@@ -11,22 +20,20 @@ import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.ui.DropDownMenuInputHandler;
 
 /**
  * <p>
  * DropDownMenu so it users can have a range of JasperReportLayouts to select from.
  * </p>
- *  Last modified: $Date: 2007/01/26 05:47:17 $ by $Author: idegaweb $
+ *  Last modified: $Date: 2007/01/26 05:47:28 $ by $Author: idegaweb $
  * 
  * @author <a href="mailto:sigtryggur@idega.com">sigtryggur</a>
- * @version $Revision: 1.1.2.4 $
- * @deprecated Replaced with com.idega.presentation.ui.DynamicLayoutDropDownMenu
+ * @version $Revision: 1.1.2.1 $
  */
 public class DynamicLayoutDropDownMenu extends DropDownMenuInputHandler {
 
 
-	protected static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
+	protected static String IW_BUNDLE_IDENTIFIER = "com.idega.user";
 	protected static final String LAYOUT_FOLDER_NAME = "layout";
 	private ICFileHome fileHome;
 	
@@ -127,16 +134,16 @@ public class DynamicLayoutDropDownMenu extends DropDownMenuInputHandler {
 	}
 
 	private ICFileHome getFileHome(){
-	    if (this.fileHome==null) {
+	    if (fileHome==null) {
 	    	try{
-	    		this.fileHome = (ICFileHome)IDOLookup.getHome(ICFile.class);
+	    		fileHome = (ICFileHome)IDOLookup.getHome(ICFile.class);
 	    	}
 		    catch (IDOLookupException lookupEx) {
 		    	logError("[DynamicLayoutDropDownMenu] Could not look up home of ICFile");
 		    	log(lookupEx);
 		    }
 	    }
-	    return this.fileHome;
+	    return fileHome;
 	  }
 
 	public String getBundleIdentifier() {
