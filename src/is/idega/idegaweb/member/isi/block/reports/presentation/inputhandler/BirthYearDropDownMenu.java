@@ -28,7 +28,7 @@ public class BirthYearDropDownMenu extends DropDownMenuInputHandler {
 		int currentYear = stamp.getYear();
 		int beginningYear = 1900;				
 
-		addMenuElement(" ",iwrb.getLocalizedString("BirthYearsDropdownmenu.all_ages", "All birthYears"));
+		addMenuElement(" ",iwrb.getLocalizedString("BirthYearDropdownmenu.all_ages", "All birthYears"));
 		for (int i = currentYear; i >= beginningYear; i--) {
 			addMenuElement(i, Integer.toString(i));
 		}
