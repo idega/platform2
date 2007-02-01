@@ -297,10 +297,12 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 						ageString = String.valueOf(age.intValue());
 						if (age.doubleValue() < 18) {
 							NationalRegister userRegister = getNationalRegisterBusiness().getEntryBySSN(user.getPersonalID());
-							custodianPersonalID = userRegister.getFamilyId();
-							User custodian = getUserBusiness().getUser(custodianPersonalID);
-							custodianString = custodian.getName();
-							custodianPhoneString = getPhoneNumber(custodian);
+							if (userRegister != null) {
+								custodianPersonalID = userRegister.getFamilyId();
+								User custodian = getUserBusiness().getUser(custodianPersonalID);
+								custodianString = custodian.getName();
+								custodianPhoneString = getPhoneNumber(custodian);
+							}
 							
 						} else {
 							custodianPersonalID = personalID;
