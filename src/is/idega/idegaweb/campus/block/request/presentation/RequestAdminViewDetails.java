@@ -1,5 +1,5 @@
 /*
- * $Id: RequestAdminViewDetails.java,v 1.10 2005/03/02 11:10:01 palli Exp $
+ * $Id: RequestAdminViewDetails.java,v 1.10.4.1 2007/02/01 00:29:49 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,7 +8,6 @@
  *
  */
 package is.idega.idegaweb.campus.block.request.presentation;
-
 
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
@@ -39,338 +38,341 @@ import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.util.Edit;
 
-
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
 public class RequestAdminViewDetails extends CampusWindow {
-  
-  protected final static String REQUESTADMIN_SEND = "requestadmin_send";
-  protected final static String REQUEST_TYPE = "request_type";
-  public final static String REQUEST_STREET = "request_street";
-  public final static String REQUEST_APRT = "request_aprt";
-  public final static String REQUEST_NAME = "request_name";
-  public final static String REQUEST_TEL = "request_tel";
-  public final static String REQUEST_EMAIL = "request_email";
-  protected final static String REQUESTADMIN_TABLE_TITLE = "requestadmin_table_title";
 
-  protected final static String REQUEST_DATE_OF_CRASH = "request_date_of_crash";
-  protected final static String REQUEST_COMMENT = "request_comment";
-  protected final static String REQUEST_TIME = "request_time";
-  protected final static String REQUEST_DAYTIME = "request_daytime";
-  protected final static String REQUEST_SPECIAL_TIME = "request_special_time";
-  protected final static String REQUEST_STATUS = "request_status";
+	protected final static String REQUESTADMIN_SEND = "requestadmin_send";
 
-  protected final static String REQUEST_NO_COMMENT = "request_no_comment";
-  protected final static String REQUEST_NO_DATE_OF_CRASH = "request_no_date_of_crash";
-  protected final static String REQUEST_NO_SPECIAL_TIME = "request_no_special_time";
+	protected final static String REQUEST_TYPE = "request_type";
 
-  protected final static String REQUEST_REPAIR = "R";
-  protected final static String REQUEST_COMPUTER = "C";
+	public final static String REQUEST_STREET = "request_street";
 
+	public final static String REQUEST_APRT = "request_aprt";
 
-  private boolean _isAdmin;
-  private boolean _isLoggedOn;
+	public final static String REQUEST_NAME = "request_name";
 
-  /**
-   *
-   */
-  public RequestAdminViewDetails() {
-    setWidth(650);
-    setHeight(450);
-    setResizable(true);
-  }
+	public final static String REQUEST_TEL = "request_tel";
 
- 
+	public final static String REQUEST_EMAIL = "request_email";
 
-  /**
-   *
-   */
-  protected void control(IWContext iwc) {
-    if (_isAdmin || _isLoggedOn){
+	protected final static String REQUESTADMIN_TABLE_TITLE = "requestadmin_table_title";
 
-      if (iwc.isParameterSet(REQUESTADMIN_SEND)) {
-        boolean check = doSendRequest(iwc);
-        if (check) {
-          setParentToReload();
-          close();
-        }
-      }
+	protected final static String REQUEST_DATE_OF_CRASH = "request_date_of_crash";
 
-      addMainForm(iwc);
-    }
-    else
-      add(getNoAccessObject(iwc));
+	protected final static String REQUEST_COMMENT = "request_comment";
 
-  }
+	protected final static String REQUEST_TIME = "request_time";
 
-  /**
-   *
-   */
-  protected boolean doSendRequest(IWContext iwc) {
-    String status = iwc.getParameter(REQUEST_STATUS);
-    String id = iwc.getParameter("request_id");
+	protected final static String REQUEST_DAYTIME = "request_daytime";
 
-    System.out.println("id = " + id);
-    System.out.println("status = " + status);
-    if (id != null) {
-      try {
-        Request request = ((RequestHome)IDOLookup.getHome(Request.class)).findByPrimaryKey(new Integer(id));
-        request.setStatus(status);
-        request.store();
-      }
-      catch(RemoteException e) {
-        e.printStackTrace();
-        return false;
-      }
-      catch(FinderException e) {
-        e.printStackTrace();
+	protected final static String REQUEST_SPECIAL_TIME = "request_special_time";
 
-        return false;
-      }
-    }
-    return true;
-  }
+	protected final static String REQUEST_STATUS = "request_status";
 
-  /**
-   *
-   */
-  protected void addMainForm(IWContext iwc) {
-    Form form = new Form();
-    add(form);
+	protected final static String REQUEST_NO_COMMENT = "request_no_comment";
 
-    Request request = null;
-    String street = null;
-    String aprt = null;
-    String name = null;
-    String telephone = null;
-    String email = null;
-    String type = null;
-    String id = iwc.getParameter("request_id");
-    if (id != null) {
-      try {
-        request = ((RequestHome)IDOLookup.getHome(Request.class)).findByPrimaryKey(new Integer(id));
-        type = request.getRequestType();
-      }
-      catch(RemoteException e) {
-        e.printStackTrace();
-      }
-      catch(FinderException e) {
-        e.printStackTrace();
-      }
-    }
+	protected final static String REQUEST_NO_DATE_OF_CRASH = "request_no_date_of_crash";
 
-    if (request != null) {
-      Contract contract = null;
-      ApartmentView apartmentView = null;
-      
-      Applicant applicant = null;
-      try {
-      	Collection contracts = getContractService(iwc).getContractHome().findByUserAndRented(new Integer(request.getUserId()),Boolean.TRUE);
-        contract = (Contract)contracts.iterator().next();
-      }
-      catch(Exception e) {
-        contract = null;
-      }
-      if (contract != null) {
-        try {
-			apartmentView =((ApartmentViewHome)IDOLookup.getHome(ApartmentView.class)).findByPrimaryKey(contract.getApartmentId());
+	protected final static String REQUEST_NO_SPECIAL_TIME = "request_no_special_time";
+
+	protected final static String REQUEST_REPAIR = "R";
+
+	protected final static String REQUEST_COMPUTER = "C";
+
+	private boolean isAdmin;
+
+	private boolean isLoggedOn;
+
+	public RequestAdminViewDetails() {
+		setWidth(650);
+		setHeight(450);
+		setResizable(true);
+	}
+
+	protected void control(IWContext iwc) {
+		if (isAdmin || isLoggedOn) {
+
+			if (iwc.isParameterSet(REQUESTADMIN_SEND)) {
+				boolean check = doSendRequest(iwc);
+				if (check) {
+					setParentToReload();
+					close();
+				}
+			}
+
+			addMainForm(iwc);
+		} else
+			add(getNoAccessObject(iwc));
+
+	}
+
+	protected boolean doSendRequest(IWContext iwc) {
+		String status = iwc.getParameter(REQUEST_STATUS);
+		String id = iwc.getParameter("request_id");
+
+		if (id != null) {
+			try {
+				Request request = ((RequestHome) IDOLookup
+						.getHome(Request.class)).findByPrimaryKey(new Integer(
+						id));
+				request.setStatus(status);
+				request.store();
+			} catch (RemoteException e) {
+				e.printStackTrace();
+				return false;
+			} catch (FinderException e) {
+				e.printStackTrace();
+
+				return false;
+			}
 		}
-		catch (IDOLookupException e1) {
-			e1.printStackTrace();
+		return true;
+	}
+
+	protected void addMainForm(IWContext iwc) {
+		Form form = new Form();
+		add(form);
+
+		Request request = null;
+		String street = null;
+		String aprt = null;
+		String name = null;
+		String telephone = null;
+		String email = null;
+		String type = null;
+		String id = iwc.getParameter("request_id");
+		if (id != null) {
+			try {
+				request = ((RequestHome) IDOLookup.getHome(Request.class))
+						.findByPrimaryKey(new Integer(id));
+				type = request.getRequestType();
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			} catch (FinderException e) {
+				e.printStackTrace();
+			}
 		}
-		catch (FinderException e1) {
-			e1.printStackTrace();
+
+		if (request != null) {
+			Contract contract = null;
+			ApartmentView apartmentView = null;
+
+			Applicant applicant = null;
+			try {
+				Collection contracts = getContractService(iwc)
+						.getContractHome().findByUserAndRented(
+								new Integer(request.getUserId()), Boolean.TRUE);
+				contract = (Contract) contracts.iterator().next();
+			} catch (Exception e) {
+				contract = null;
+			}
+			if (contract != null) {
+				try {
+					apartmentView = ((ApartmentViewHome) IDOLookup
+							.getHome(ApartmentView.class))
+							.findByPrimaryKey(contract.getApartmentId());
+				} catch (IDOLookupException e1) {
+					e1.printStackTrace();
+				} catch (FinderException e1) {
+					e1.printStackTrace();
+				}
+
+				applicant = contract.getApplicant();
+			}
+
+			CampusApplication campusApplication = null;
+			try {
+				campusApplication = CampusApplicationFinder.getApplicantInfo(
+						applicant).getCampusApplication();
+			} catch (Exception e) {
+				campusApplication = null;
+			}
+
+			if (apartmentView != null) {
+				street = apartmentView.getApartmentName();
+				aprt = apartmentView.getBuildingName();
+			}
+			if (applicant != null) {
+				name = applicant.getFullName();
+				telephone = applicant.getResidencePhone();
+			}
+			if (campusApplication != null)
+				email = campusApplication.getEmail();
 		}
-     
-        applicant = contract.getApplicant();
-      }
 
-      CampusApplication campusApplication = null;
-      try {
-        campusApplication = CampusApplicationFinder.getApplicantInfo(applicant).getCampusApplication();
-      }
-      catch(Exception e) {
-        campusApplication = null;
-      }
+		DataTable data = new DataTable();
+		data.setWidth("100%");
+		data.addTitle(localize(REQUESTADMIN_TABLE_TITLE, "View request"));
+		data.addButton(new SubmitButton(REQUESTADMIN_SEND, "Update request"));
+		form.add(data);
 
-      if (apartmentView != null){
-        street = apartmentView.getApartmentName();
-        aprt = apartmentView.getBuildingName();
-       }
-      if (applicant != null) {
-        name = applicant.getFullName();
-        telephone = applicant.getResidencePhone();
-      }
-      if (campusApplication != null)
-        email = campusApplication.getEmail();
-    }
+		int row = 1;
 
-    DataTable data = new DataTable();
-    data.setWidth("100%");
-    data.addTitle(localize(REQUESTADMIN_TABLE_TITLE,"Skoða beiðni"));
-    data.addButton(new SubmitButton(REQUESTADMIN_SEND,"Uppfæra beiðni"));
-    form.add(data);
+		data.add(getHeader(localize(REQUEST_STREET, "Street")), 1, row);
+		data.add(getText(street), 2, row);
 
-    int row = 1;
+		row++;
+		data.add(getHeader(localize(REQUEST_APRT, "Room/apartment")), 1, row);
+		data.add(getText(aprt), 2, row);
 
-    data.add(getHeader(localize(REQUEST_STREET,"Götuheiti")),1,row);
-    data.add(getText(street),2,row);
+		row++;
 
-    row++;
-    data.add(getHeader(localize(REQUEST_APRT,"Herb./íbúð")),1,row);
-    data.add(getText(aprt),2,row);
+		data.add(getHeader(localize(REQUEST_NAME, "Name")), 1, row);
+		data.add(getText(name), 2, row);
 
-    row++;
+		row++;
 
-    data.add(getHeader(localize(REQUEST_NAME,"Nafn")),1,row);
-    data.add(getText(name),2,row);
+		data.add(getHeader(localize(REQUEST_TEL, "Phone")), 1, row);
+		data.add(getText(telephone), 2, row);
 
-    row++;
+		row++;
 
-    data.add(getHeader(localize(REQUEST_TEL,"Símanúmer")),1,row);
-    data.add(getText(telephone),2,row);
+		data.add(getHeader(localize(REQUEST_EMAIL, "Email")), 1, row);
+		data.add(getText(email), 2, row);
 
-    row++;
+		row++;
 
-    data.add(getHeader(localize(REQUEST_EMAIL,"email")),1,row);
-    data.add(getText(email),2,row);
+		if (type.equals(REQUEST_REPAIR))
+			addRepair(data, row, request);
+		else if (type.equals(REQUEST_COMPUTER))
+			addComputer(data, row, request);
 
-    row++;
+		form.add(new HiddenInput("request_id", id));
+	}
 
-    if (type.equals(REQUEST_REPAIR))
-      addRepair(data,row,request);
-    else if (type.equals(REQUEST_COMPUTER))
-      addComputer(data,row,request);
+	protected void addRepair(DataTable data, int row, Request request) {
+		data.add(getHeader(localize(REQUEST_DATE_OF_CRASH, "Date of failure")),
+				1, row);
 
-    form.add(new HiddenInput("request_id",id));
-  }
+		Timestamp dateFailure = null;
+		String comment = null;
+		String special = null;
+		String requestStatus = null;
+		try {
+			dateFailure = request.getDateFailure();
+			comment = request.getDescription();
+			special = request.getSpecialTime();
+			requestStatus = request.getStatus();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		data.add(getHeader(dateFailure.toString()), 2, row);
+		row++;
 
-  /**
-   *
-   */
-  protected void addRepair(DataTable data, int row, Request request) {
+		data.add(getHeader(localize(REQUEST_COMMENT, "Comments")), 1, row);
+		data.add(getHeader(comment), 2, row);
 
-    data.add(getHeader(localize(REQUEST_DATE_OF_CRASH,"Dagsetning bilunar")),1,row);
+		row++;
+		RadioButton b1 = new RadioButton(REQUEST_TIME, REQUEST_DAYTIME);
+		b1.setDisabled(true);
+		if (special == null || special.equals(""))
+			b1.setSelected();
+		data.add(b1, 1, row);
 
-    Timestamp dateFailure = null;
-    String comment = null;
-    String special = null;
-    String requestStatus = null;
-    try {
-      dateFailure = request.getDateFailure();
-      comment = request.getDescription();
-      special = request.getSpecialTime();
-      requestStatus = request.getStatus();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-    data.add(getHeader(dateFailure.toString()),2,row);
-    row++;
+		data
+				.add(
+						getHeader(localize(
+								REQUEST_DAYTIME,
+								"Repairs may be done during the day without anyone being at home. Repairs are usually done on Tuesdays.")),
+						2, row);
 
-    data.add(getHeader(localize(REQUEST_COMMENT,"Athugasemdir")),1,row);
-    data.add(getHeader(comment),2,row);
+		row++;
+		RadioButton b2 = new RadioButton(REQUEST_TIME, REQUEST_DAYTIME);
+		b2.setDisabled(true);
+		if (special != null && !special.equals(""))
+			b2.setSelected();
+		data.add(b2, 1, row);
 
-    row++;
-    RadioButton b1 = new RadioButton(REQUEST_TIME,REQUEST_DAYTIME);
-    b1.setDisabled(true);
-    if (special == null || special.equals(""))
-      b1.setSelected();
-    data.add(b1 ,1,row);
+		data.add(getHeader(localize(REQUEST_SPECIAL_TIME,
+				"I requst that the repairs should be done on the : ")), 2, row);
 
-    data.add(getHeader(localize(REQUEST_DAYTIME,"Viðgerð má fara fram á dagvinnutíma, án þess að nokkur sé heima.Þriðjudagar eru almennir viðgerðardagar.")),2,row);
+		if (special != null)
+			data.add(getHeader(special), 2, row);
+		row++;
+		DropdownMenu status = new DropdownMenu(REQUEST_STATUS);
 
-    row++;
-    RadioButton b2 = new RadioButton(REQUEST_TIME,REQUEST_DAYTIME);
-    b2.setDisabled(true);
-    if (special != null && !special.equals(""))
-      b2.setSelected();
-    data.add(b2,1,row);
+		status.addMenuElement(RequestFinder.REQUEST_STATUS_SENT, localize(
+				"REQUEST_STATUS_S", "S"));
+		status.addMenuElement(RequestFinder.REQUEST_STATUS_RECEIVED, localize(
+				"REQUEST_STATUS_R", "R"));
+		status.addMenuElement(RequestFinder.REQUEST_STATUS_IN_PROGRESS,
+				localize("REQUEST_STATUS_P", "P"));
+		status.addMenuElement(RequestFinder.REQUEST_STATUS_DONE, localize(
+				"REQUEST_STATUS_D", "D"));
+		status.addMenuElement(RequestFinder.REQUEST_STATUS_DENIED, localize(
+				"REQUEST_STATUS_X", "X"));
 
-    data.add(getHeader(localize(REQUEST_SPECIAL_TIME,"Ég óska eftir sérstakri tímasetningu og að viðgerð verði framkvæmd: ")),2,row);
+		Edit.setStyle(status);
+		if (requestStatus != null)
+			status.setSelectedElement(requestStatus);
 
-    if (special != null)
-      data.add(getHeader(special),2,row);
-    row++;
-    DropdownMenu status = new DropdownMenu(REQUEST_STATUS);
+		data.add(getHeader(localize(REQUEST_STATUS, "Status")), 1, row);
 
-    status.addMenuElement(RequestFinder.REQUEST_STATUS_SENT,localize("REQUEST_STATUS_S","S"));
-    status.addMenuElement(RequestFinder.REQUEST_STATUS_RECEIVED,localize("REQUEST_STATUS_R","R"));
-    status.addMenuElement(RequestFinder.REQUEST_STATUS_IN_PROGRESS,localize("REQUEST_STATUS_P","P"));
-    status.addMenuElement(RequestFinder.REQUEST_STATUS_DONE,localize("REQUEST_STATUS_D","D"));
-    status.addMenuElement(RequestFinder.REQUEST_STATUS_DENIED,localize("REQUEST_STATUS_X","X"));
+		data.add(status, 2, row);
+		row++;
+	}
 
-    Edit.setStyle(status);
-    if (requestStatus != null)
-      status.setSelectedElement(requestStatus);
+	protected void addComputer(DataTable data, int row, Request request) {
+		data.add(getHeader(localize(REQUEST_DATE_OF_CRASH, "Date of failure")),
+				1, row);
+		Timestamp dateFailure = null;
+		String comment = null;
+		String special = null;
+		String requestStatus = null;
+		try {
+			dateFailure = request.getDateFailure();
+			comment = request.getDescription();
+			special = request.getSpecialTime();
+			requestStatus = request.getStatus();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		data.add(getHeader(dateFailure.toString()), 2, row);
+		row++;
 
-    data.add(getHeader(localize(REQUEST_STATUS,"Staða")),1,row);
+		data.add(getHeader(localize(REQUEST_COMMENT, "Comments")), 1, row);
+		data.add(getHeader(comment), 2, row);
+		row++;
+		RadioButton b2 = new RadioButton(REQUEST_TIME, REQUEST_DAYTIME);
+		b2.setDisabled(true);
+		if (special != null && !special.equals(""))
+			b2.setSelected();
+		data.add(b2, 1, row);
 
-    data.add(status,2,row);
-    row++;
-  }
+		data.add(getHeader(localize(REQUEST_SPECIAL_TIME,
+				"I requst that the repairs should be done on the : ")), 2, row);
 
-  /**
-   *
-   */
-  protected void addComputer(DataTable data, int row, Request request) {
+		if (special != null)
+			data.add(getHeader(special), 2, row);
+		row++;
+		DropdownMenu status = new DropdownMenu(REQUEST_STATUS);
 
-    data.add(getHeader(localize(REQUEST_DATE_OF_CRASH,"Dagsetning bilunar")),1,row);
-    Timestamp dateFailure = null;
-    String comment = null;
-    String special = null;
-    String requestStatus = null;
-    try {
-      dateFailure = request.getDateFailure();
-      comment = request.getDescription();
-      special = request.getSpecialTime();
-      requestStatus = request.getStatus();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-    data.add(getHeader(dateFailure.toString()),2,row);
-    row++;
+		status.addMenuElement(RequestFinder.REQUEST_STATUS_SENT, localize(
+				"REQUEST_STATUS_S", "S"));
+		status.addMenuElement(RequestFinder.REQUEST_STATUS_RECEIVED, localize(
+				"REQUEST_STATUS_R", "R"));
+		status.addMenuElement(RequestFinder.REQUEST_STATUS_IN_PROGRESS,
+				localize("REQUEST_STATUS_P", "P"));
+		status.addMenuElement(RequestFinder.REQUEST_STATUS_DONE, localize(
+				"REQUEST_STATUS_D", "D"));
+		status.addMenuElement(RequestFinder.REQUEST_STATUS_DENIED, localize(
+				"REQUEST_STATUS_X", "X"));
 
-    data.add(getHeader(localize(REQUEST_COMMENT,"Athugasemdir")),1,row);
-    data.add(getHeader(comment),2,row);
-    row++;
-    RadioButton b2 = new RadioButton(REQUEST_TIME,REQUEST_DAYTIME);
-    b2.setDisabled(true);
-    if (special != null && !special.equals(""))
-      b2.setSelected();
-    data.add(b2,1,row);
+		Edit.setStyle(status);
+		if (requestStatus != null)
+			status.setSelectedElement(requestStatus);
 
-    data.add(getHeader(localize(REQUEST_SPECIAL_TIME,"Ég óska eftir sérstakri tímasetningu og að viðgerð verði framkvæmd: ")),2,row);
+		data.add(getHeader(localize(REQUEST_STATUS, "Status")), 1, row);
+		data.add(status, 2, row);
+		row++;
+	}
 
-    if (special != null)
-      data.add(getHeader(special),2,row);
-    row++;
-    DropdownMenu status = new DropdownMenu(REQUEST_STATUS);
-
-    status.addMenuElement(RequestFinder.REQUEST_STATUS_SENT,localize("REQUEST_STATUS_S","S"));
-    status.addMenuElement(RequestFinder.REQUEST_STATUS_RECEIVED,localize("REQUEST_STATUS_R","R"));
-    status.addMenuElement(RequestFinder.REQUEST_STATUS_IN_PROGRESS,localize("REQUEST_STATUS_P","P"));
-    status.addMenuElement(RequestFinder.REQUEST_STATUS_DONE,localize("REQUEST_STATUS_D","D"));
-    status.addMenuElement(RequestFinder.REQUEST_STATUS_DENIED,localize("REQUEST_STATUS_X","X"));
-
-    Edit.setStyle(status);
-    if (requestStatus != null)
-      status.setSelectedElement(requestStatus);
-
-    data.add(getHeader(localize(REQUEST_STATUS,"Staða")),1,row);
-    data.add(status,2,row);
-    row++;
-  }
-
-  /**
-   *
-   */
-  public void main(IWContext iwc) throws Exception {
-    _isAdmin = iwc.hasEditPermission(this);
-    _isLoggedOn = LoginBusinessBean.isLoggedOn(iwc);
-    control(iwc);
-  }
+	public void main(IWContext iwc) throws Exception {
+		isAdmin = iwc.hasEditPermission(this);
+		isLoggedOn = LoginBusinessBean.isLoggedOn(iwc);
+		control(iwc);
+	}
 }
