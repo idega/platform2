@@ -15,7 +15,7 @@ public class TestClient {
 		// Now use the service to get a stub which implements the SDI.
 		// CaseService port = service.getCaseService(new URL(endpoint)); //
 		try {
-			CampusService port = service.getCampusService(new URL("http://campusdemo.idega.is/services/CampusService"));
+			CampusService port = service.getCampusService(new URL("http://www.studentagardar.is/services/CampusService"));
 			TenantInfo info[] = port.getTenantInfo(6);
 			if (info != null) {
 				for (int i = 0; i < info.length; i++) {
