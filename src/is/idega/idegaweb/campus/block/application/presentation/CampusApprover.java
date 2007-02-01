@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.65.4.4 2006/11/17 10:43:37 palli Exp $
+ * $Id: CampusApprover.java,v 1.65.4.5 2007/02/01 00:29:02 palli Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -247,6 +247,10 @@ public class CampusApprover extends CampusBlock {
 			this.applicationIndex = Integer.parseInt(iwc.getParameter(PRM_INDEX));
 		} else if (iwc.isParameterSet(PRM_FORM_INDEX)) {
 			this.applicationIndex = Integer.parseInt(iwc.getParameter(PRM_FORM_INDEX));			
+		}
+	
+		if (sGlobalOrder == null) {
+			sGlobalOrder = "submitted";
 		}
 	}
 

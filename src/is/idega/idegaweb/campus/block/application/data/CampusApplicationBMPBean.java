@@ -595,16 +595,24 @@ public class CampusApplicationBMPBean extends GenericEntity implements
 
 		query.addJoin(campusApplication, application);
 		query.addJoin(application, applicant);
-		if (subjectID != null && subjectID.intValue() > 0)
+		if (subjectID != null && subjectID.intValue() > 0) {
 			query.addCriteria(new MatchCriteria(new Column(application,
 					ApplicationBMPBean.getSubjectIdColumnName()),
 					MatchCriteria.EQUALS, subjectID.intValue()));
-		if (status != null)
+		}
+		if (status != null) {
 			query.addCriteria(new MatchCriteria(new Column(application,
 					ApplicationBMPBean.getStatusColumnName()),
 					MatchCriteria.EQUALS, status));
-		if (order != null && !count)
-			query.addOrder(applicant, order, true);
+		}
+		if (order != null && !count) {
+			if (order.equals("submitted")) {
+				query.addOrder(application, order, true);				
+			} else {
+				query.addOrder(applicant, order, true);
+			}
+		}
+		
 		return query.toString();
 	}
 
