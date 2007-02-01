@@ -36,7 +36,7 @@ public class PostalCodeBox extends SelectionBox implements InputHandler {
 
 	public void main(IWContext iwc) {
 		try {
-			Country country = getAddressBusiness(iwc).getCountryHome().findByCountryName("Iceland");			
+			Country country = getAddressBusiness(iwc).getCountryHome().findByIsoAbbreviation("IS");			
 			
 			if( country!=null ){
 				Collection postals = getAddressBusiness(iwc).getPostalCodeHome().findAllByCountryIdOrderedByPostalCode(((Integer)country.getPrimaryKey()).intValue());
