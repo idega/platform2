@@ -77,8 +77,8 @@ public class ReportWriter implements MediaWritable {
 			this.eReport = ReportFinder.getReport(Integer.parseInt(req
 					.getParameter(prmReportId)));
 			if (req.getParameter(prmReportInfoId) != null) {
-				this.eReportInfo = ReportFinder.getReportInfo(Integer.parseInt(req
-						.getParameter(prmReportInfoId)));
+				this.eReportInfo = ReportFinder.getReportInfo(Integer
+						.parseInt(req.getParameter(prmReportInfoId)));
 				if (this.eReportInfo.getType().equals("sticker")) {
 					this.buffer = StickerReport.writeStickerList(this.eReport,
 							this.eReportInfo);
@@ -247,8 +247,7 @@ public class ReportWriter implements MediaWritable {
 		}
 		if (type.equals(XLS)) {
 			buffer.setMimeType("application/x-msexcel");
-		}
-		else {
+		} else {
 			buffer.setMimeType("text/plain");
 		}
 		return buffer;
@@ -267,7 +266,13 @@ public class ReportWriter implements MediaWritable {
 			String[] sizes = null;
 
 			HSSFWorkbook wb = new HSSFWorkbook();
-			HSSFSheet sheet = wb.createSheet(report.getName().substring(0, 31));
+			HSSFSheet sheet = null;
+			if (report.getName().length() > 31) {
+				sheet = wb.createSheet(report.getName().substring(0, 31));
+			} else {
+				sheet = wb.createSheet(report.getName());
+			}
+
 			if (info != null) {
 				info = info.replaceAll("#", "");
 				sizes = info.split("\\;");
@@ -283,7 +288,7 @@ public class ReportWriter implements MediaWritable {
 			cell.setCellType(HSSFCell.CELL_TYPE_STRING);
 			cell.setCellValue(report.getName());
 			rowNumber++;
-			
+
 			row = sheet.createRow(rowNumber++);
 			for (short i = 0; i < headers.length; i++) {
 				cell = row.createCell(i);
