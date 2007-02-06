@@ -2228,7 +2228,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		Map cachedMemberIDCollections = new HashMap();
 		while (userIterator.hasNext()) {
 			User user = (User) userIterator.next();
-			if (!user.hasValidSSN() || user.isDeceased()) {
+			if (!user.hasValidIcelandicSSN() || user.isDeceased()) {
 				continue;
 			}
 			Integer userPrimaryKey = (Integer) user.getPrimaryKey();
