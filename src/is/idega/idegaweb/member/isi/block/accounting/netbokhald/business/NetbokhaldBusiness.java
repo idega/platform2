@@ -19,6 +19,16 @@ public interface NetbokhaldBusiness extends IBOService {
 	public Collection getFinanceEntries(String companyNumber, String fromSerialNumber) throws RemoteException;
 
 	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.netbokhald.business.NetbokhaldBusinessBean#getDiscountEntries
+	 */
+	public Collection getDiscountEntries(String companyNumber, Date dateFrom) throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.netbokhald.business.NetbokhaldBusinessBean#getDiscountEntries
+	 */
+	public Collection getDiscountEntries(String companyNumber, String fromSerialNumber) throws RemoteException;
+
+	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.netbokhald.business.NetbokhaldBusinessBean#getAccountingKeys
 	 */
 	public Map getAccountingKeys(String companyNumber) throws RemoteException;

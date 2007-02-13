@@ -20,7 +20,7 @@ public class TestClient {
 			NetbokhaldService port = service.getNetbokhaldService(new URL(
 					"http://felixtest.sidan.is/services/NetbokhaldService"));
 
-			NetbokhaldEntry entries[] = port.getEntries("0000000010", "14400");
+			NetbokhaldEntry entries[] = port.getEntries("0000000010", "14427");
 			if (entries == null) {
 				System.out.println("No entries returned");
 			} else {
@@ -29,7 +29,9 @@ public class TestClient {
 				for (int i = 0; i < entries.length; i++) {
 					System.out.print(entries[i].getSerialNumber());
 					System.out.print(", key = ");
-					System.out.println(entries[i].getAccountingKey());
+					System.out.print(entries[i].getAccountingKey());
+					System.out.print(", amount = ");
+					System.out.println(entries[i].getAmount());
 				}
 			}
 

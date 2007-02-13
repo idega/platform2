@@ -49,4 +49,6 @@ public interface FinanceEntryHome extends IDOHome {
 	public Collection findAllByClubAndDivisionAndGroupAndDate(Group club, Group division, Group group, IWTimestamp fromDate) throws FinderException;
 
 	public Collection findAllByBatchID(int batchID) throws FinderException;
+
+	public int getMaxID() throws FinderException;
 }

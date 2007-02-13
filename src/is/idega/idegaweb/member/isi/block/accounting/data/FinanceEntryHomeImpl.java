@@ -143,4 +143,11 @@ public class FinanceEntryHomeImpl extends IDOFactory implements FinanceEntryHome
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
+
+	public int getMaxID() throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		int theReturn = ((FinanceEntryBMPBean) entity).ejbHomeGetMaxID();
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
 }

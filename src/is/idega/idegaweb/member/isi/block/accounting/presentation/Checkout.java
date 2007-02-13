@@ -7,7 +7,10 @@
  */
 package is.idega.idegaweb.member.isi.block.accounting.presentation;
 
+import is.idega.idegaweb.member.isi.block.accounting.data.DiscountEntry;
+import is.idega.idegaweb.member.isi.block.accounting.data.DiscountEntryHome;
 import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntry;
+import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryHome;
 import is.idega.idegaweb.member.isi.block.accounting.data.PaymentType;
 import is.idega.idegaweb.member.isi.block.accounting.data.PaymentTypeHome;
 
@@ -18,6 +21,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
@@ -40,6 +44,7 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.util.SelectorUtility;
 import com.idega.user.business.UserBusiness;
+import com.idega.util.IWTimestamp;
 
 /**
  * @author palli
@@ -77,7 +82,7 @@ public class Checkout extends CashierSubWindowTemplate {
 	private final static String LABEL_REMOVE_FROM_BASKET = "isi_acc_co_remove_from_basket";
 
 	private final static String LABEL_TO_PAY = CheckoutPlugin.LABEL_TO_PAY;
-	
+
 	private final static String LABEL_CONFIRM = "isi_acc_co_confirm_payment";
 
 	private final static int STATUS_VIEW_BASKET = 0;
@@ -95,7 +100,7 @@ public class Checkout extends CashierSubWindowTemplate {
 	private final static String DEFAULT_PLUGIN = "is.idega.idegaweb.member.isi.block.accounting.presentation.plugin.DefaultCheckoutPlugin";
 
 	/**
-	 *  
+	 * 
 	 */
 	public Checkout() {
 		super();
@@ -128,7 +133,7 @@ public class Checkout extends CashierSubWindowTemplate {
 		}
 
 		ArrayList toAdd = new ArrayList();
-		
+
 		if (entries != null && !entries.isEmpty()) {
 			Iterator it = entries.keySet().iterator();
 
@@ -136,19 +141,21 @@ public class Checkout extends CashierSubWindowTemplate {
 				FinanceEntry entry = (FinanceEntry) ((BasketEntry) entries
 						.get(it.next())).getItem();
 				try {
-					entry = getAccountingBusiness(iwc).getFinanceEntryByPrimaryKey((Integer)entry.getPrimaryKey());
-//					getBasketBusiness(iwc).removeItem(entry);						
+					entry = getAccountingBusiness(iwc)
+							.getFinanceEntryByPrimaryKey(
+									(Integer) entry.getPrimaryKey());
+					// getBasketBusiness(iwc).removeItem(entry);
 					if (entry.getEntryOpen()) {
 						toAdd.add(entry);
-//						getBasketBusiness(iwc).addItem(entry);
-					} 
+						// getBasketBusiness(iwc).addItem(entry);
+					}
 				} catch (RemoteException e) {
 					e.printStackTrace();
 				} catch (EJBException e) {
 					e.printStackTrace();
 				}
 			}
-			
+
 			try {
 				getBasketBusiness(iwc).emptyBasket();
 				if (!toAdd.isEmpty()) {
@@ -161,10 +168,10 @@ public class Checkout extends CashierSubWindowTemplate {
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
-			
+
 		}
 	}
-	
+
 	private void updateDiscount(IWContext iwc) {
 		try {
 			Map entries = null;
@@ -182,8 +189,8 @@ public class Checkout extends CashierSubWindowTemplate {
 					String disc = iwc.getParameter(label.toString());
 					if (disc != null && !"".equals(disc)) {
 						int perc = Integer.parseInt(disc);
-						double discAmount = Math.round(entry.getAmount()
-								* perc / 100.0);
+						double discAmount = Math.round(entry.getAmount() * perc
+								/ 100.0);
 
 						StringBuffer info = new StringBuffer(
 								LABEL_DISCOUNT_INFO);
@@ -196,6 +203,23 @@ public class Checkout extends CashierSubWindowTemplate {
 						entry.setDiscountAmount(discAmount);
 						entry.setDiscountInfo(discInfo);
 						entry.store();
+
+						try {
+							DiscountEntry discEntry = getDiscountEntryHome()
+									.create();
+							discEntry.setClub(entry.getClub());
+							discEntry.setDivision(entry.getDivision());
+							discEntry.setGroup(entry.getGroup());
+							discEntry.setFinanceEntry(entry);
+							discEntry.setMaxIdOnEntry(getFinanceEntryHome()
+									.getMaxID());
+							discEntry.setDateOfEntry(IWTimestamp.getTimestampRightNow());
+							discEntry.store();
+						} catch (CreateException e) {
+							e.printStackTrace();
+						} catch (FinderException e) {
+							e.printStackTrace();
+						}
 					}
 				}
 			}
@@ -271,7 +295,7 @@ public class Checkout extends CashierSubWindowTemplate {
 			try {
 				CheckoutPlugin plugin = (CheckoutPlugin) Class.forName(
 						pluginName).newInstance();
-				
+
 				boolean checkoutCompleted = plugin.checkOut(iwc, type, amount);
 				add(plugin.showPlugin(iwc, type, amount));
 			} catch (InstantiationException e1) {
@@ -287,36 +311,36 @@ public class Checkout extends CashierSubWindowTemplate {
 	}
 
 	/**
-	 *  
+	 * 
 	 */
 	public void main(IWContext iwc) {
 		int status = getCurrentStatus(iwc);
 
 		updateBasket(iwc);
 		switch (status) {
-			case STATUS_VIEW_BASKET :
-				viewBasket(iwc);
-				break;
-			case STATUS_INSERT_PAYMENT_INFO :
-				insertPayment(iwc);
-				break;
-			case STATUS_DONE :
-				break;
-			case STATUS_REMOVE_ENTRIES :
-				removeFromBasket(iwc);
-				viewBasket(iwc);
-				break;
-			case STATUS_ADD_TO_BASKET :
-				addToBasket(iwc);
-				viewBasket(iwc);
-				break;
-			case STATUS_UPDATE_DISCOUNT :
-				updateDiscount(iwc);
-				viewBasket(iwc);
-				break;
-			default :
-				viewBasket(iwc);
-				break;
+		case STATUS_VIEW_BASKET:
+			viewBasket(iwc);
+			break;
+		case STATUS_INSERT_PAYMENT_INFO:
+			insertPayment(iwc);
+			break;
+		case STATUS_DONE:
+			break;
+		case STATUS_REMOVE_ENTRIES:
+			removeFromBasket(iwc);
+			viewBasket(iwc);
+			break;
+		case STATUS_ADD_TO_BASKET:
+			addToBasket(iwc);
+			viewBasket(iwc);
+			break;
+		case STATUS_UPDATE_DISCOUNT:
+			updateDiscount(iwc);
+			viewBasket(iwc);
+			break;
+		default:
+			viewBasket(iwc);
+			break;
 		}
 	}
 
@@ -363,7 +387,8 @@ public class Checkout extends CashierSubWindowTemplate {
 
 		SubmitButton pay = new SubmitButton(iwrb.getLocalizedString(ACTION_PAY,
 				"Pay"), ACTION_PAY, "pay");
-		pay.setSubmitConfirm(iwrb.getLocalizedString(LABEL_CONFIRM, "Are you sure you want to pay these entries?"));
+		pay.setSubmitConfirm(iwrb.getLocalizedString(LABEL_CONFIRM,
+				"Are you sure you want to pay these entries?"));
 
 		Map entries = null;
 		try {
@@ -471,7 +496,7 @@ public class Checkout extends CashierSubWindowTemplate {
 					.getLocalizedString(ACTION_UPDATE_DISCOUNT,
 							"Update discount"), ACTION_UPDATE_DISCOUNT,
 					"discount");
-			//            removeFromBasket.setToEnableWhenChecked(LABEL_REMOVE_FROM_BASKET);
+			// removeFromBasket.setToEnableWhenChecked(LABEL_REMOVE_FROM_BASKET);
 			paymentTable.add(updateDiscount, 9, row);
 			paymentTable.setAlignment(9, row, "RIGHT");
 		}
@@ -523,7 +548,7 @@ public class Checkout extends CashierSubWindowTemplate {
 		}
 	}
 
-	//session business
+	// session business
 	private BasketBusiness getBasketBusiness(IWContext iwc) {
 		try {
 			return (BasketBusiness) IBOLookup.getSessionInstance(iwc,
@@ -532,4 +557,14 @@ public class Checkout extends CashierSubWindowTemplate {
 			throw new RuntimeException(e.getMessage());
 		}
 	}
+
+	// home
+	private DiscountEntryHome getDiscountEntryHome() throws IDOLookupException {
+		return (DiscountEntryHome) IDOLookup.getHome(DiscountEntry.class);
+	}
+
+	private FinanceEntryHome getFinanceEntryHome() throws IDOLookupException {
+		return (FinanceEntryHome) IDOLookup.getHome(FinanceEntry.class);
+	}
+
 }

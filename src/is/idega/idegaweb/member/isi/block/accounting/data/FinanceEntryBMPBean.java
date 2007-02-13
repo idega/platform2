@@ -22,6 +22,10 @@ import com.idega.data.IDOPrimaryKey;
 import com.idega.data.IDOQuery;
 import com.idega.data.IDOUtil;
 import com.idega.data.PrimaryKey;
+import com.idega.data.query.Column;
+import com.idega.data.query.MaxColumn;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.Table;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.user.data.UserBMPBean;
@@ -849,8 +853,6 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 		sql.appendSelectAllFrom(this);
 		sql.appendWhereEquals(COLUMN_ISI_BATCH_ID, batch);
 
-		System.out.println("sql = " + sql.toString());
-		
 		return idoFindPKsByQuery(sql);
 	}
 
@@ -859,8 +861,6 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 		sql.appendSelectAllFrom(this);
 		sql.appendWhereEquals(COLUMN_CLUB_ID, id);
 
-		System.out.println("sql = " + sql.toString());
-		
 		return idoFindPKsByQuery(sql);
 	}
 
@@ -882,8 +882,6 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 			sql.append(fromSerialNumber);
 		}
 
-		System.out.println("sql = " + sql.toString());
-		
 		return idoFindPKsByQuery(sql);
 	}
 
@@ -905,8 +903,6 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 			sql.append(fromDate);
 		}
 
-		System.out.println("sql = " + sql.toString());
-		
 		return idoFindPKsByQuery(sql);
 	}
 
@@ -916,9 +912,20 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 		sql.appendSelectAllFrom(this);
 		sql.appendWhereEquals(COLUMN_ISI_BATCH_ID, batchID);
 
+		return idoFindPKsByQuery(sql);
+	}
+	
+	public int ejbHomeGetMaxID() throws FinderException {
+		Table table = new Table(this);
+		Column pkCol = new MaxColumn(table, getIDColumnName());
+		pkCol.setPostfix("AS " + getIDColumnName());
+		SelectQuery sql = new SelectQuery(table);
+		sql.addColumn(pkCol);
+		
 		System.out.println("sql = " + sql.toString());
 		
-		return idoFindPKsByQuery(sql);
+		Integer pk = (Integer) idoFindOnePKByQuery(sql);
+		return pk.intValue();
 	}
 
 	

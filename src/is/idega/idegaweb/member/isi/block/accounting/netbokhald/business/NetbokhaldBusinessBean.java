@@ -1,5 +1,7 @@
 package is.idega.idegaweb.member.isi.block.accounting.netbokhald.business;
 
+import is.idega.idegaweb.member.isi.block.accounting.data.DiscountEntry;
+import is.idega.idegaweb.member.isi.block.accounting.data.DiscountEntryHome;
 import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntry;
 import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryHome;
 import is.idega.idegaweb.member.isi.block.accounting.netbokhald.data.NetbokhaldAccountingKeys;
@@ -49,6 +51,34 @@ public class NetbokhaldBusinessBean extends IBOServiceBean implements Netbokhald
 		return col;
 	}
 
+	public Collection getDiscountEntries(String companyNumber, Date dateFrom) {
+		Collection col = null;
+		try {
+			NetbokhaldSetup setup = getNetbokhaldSetupHome().findByPrimaryKey(companyNumber);
+			col = getDiscountEntryHome().findAllByClubAndDivisionAndGroupAndDate(setup.getClub(), setup.getDivision(), setup.getGroup(), new IWTimestamp(dateFrom));
+		} catch (IDOLookupException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+				
+		return col;
+	}
+
+	public Collection getDiscountEntries(String companyNumber, String fromSerialNumber) {
+		Collection col = null;
+		try {
+			NetbokhaldSetup setup = getNetbokhaldSetupHome().findByPrimaryKey(companyNumber);
+			col = getDiscountEntryHome().findAllByClubAndDivisionAndGroupAndSerial(setup.getClub(), setup.getDivision(), setup.getGroup(), Integer.parseInt(fromSerialNumber));
+		} catch (IDOLookupException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+				
+		return col;
+	}
+
 	public Map getAccountingKeys(String companyNumber) {
 		Map map = null;
 		
@@ -84,6 +114,10 @@ public class NetbokhaldBusinessBean extends IBOServiceBean implements Netbokhald
 	
 	private FinanceEntryHome getFinanceEntryHome() throws IDOLookupException {
 		return (FinanceEntryHome) IDOLookup.getHome(FinanceEntry.class);
+	}
+
+	private DiscountEntryHome getDiscountEntryHome() throws IDOLookupException {
+		return (DiscountEntryHome) IDOLookup.getHome(DiscountEntry.class);
 	}
 	
 	private NetbokhaldSetupHome getNetbokhaldSetupHome() throws IDOLookupException {
