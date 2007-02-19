@@ -72,7 +72,7 @@ public class ApartmentTypeBMPBean extends
 		addAttribute(COLUMN_IMAGE, "Photo", Integer.class);
 		addAttribute(COLUMN_PLAN, "Plan", Integer.class);
 		addAttribute(COLUMN_ROOM_COUNT, "Room Count", Integer.class);
-		addAttribute(COLUMN_AREA, "Area", Float.class);
+		addAttribute(COLUMN_AREA, "Area", Double.class);
 		addAttribute(COLUMN_KITCHEN, "Kitchen", Boolean.class);
 		addAttribute(COLUMN_BATHROOM, "Bath", Boolean.class);
 		addAttribute(COLUMN_STORAGE, "Storage", Boolean.class);
@@ -125,8 +125,8 @@ public class ApartmentTypeBMPBean extends
 		return getIntColumnValue(COLUMN_ROOM_COUNT);
 	}
 
-	public float getArea() {
-		return getFloatColumnValue(COLUMN_AREA);
+	public double getArea() {
+		return getDoubleColumnValue(COLUMN_AREA);
 	}
 
 	public int getRent() {
@@ -224,11 +224,11 @@ public class ApartmentTypeBMPBean extends
 		setColumn(COLUMN_ROOM_COUNT, room_count);
 	}
 
-	public void setArea(float area) {
+	public void setArea(double area) {
 		setColumn(COLUMN_AREA, area);
 	}
 
-	public void setArea(Float area) {
+	public void setArea(Double area) {
 		setColumn(COLUMN_AREA, area);
 	}
 

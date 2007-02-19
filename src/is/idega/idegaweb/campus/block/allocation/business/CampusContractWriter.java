@@ -317,7 +317,7 @@ public class CampusContractWriter {
 		}
 	}
 
-	private static float getTariffIndex() {
+	private static double getTariffIndex() {
 		try {
 			List L = EntityFinder.getInstance().findAllDescendingOrdered(
 					TariffIndex.class, TariffIndexBMPBean.getColumnNameDate());
@@ -523,7 +523,7 @@ public class CampusContractWriter {
 					H.put(cohabitant, new Chunk("", nameFont));
 				}
 
-				StringBuffer indexString = new StringBuffer(Float
+				StringBuffer indexString = new StringBuffer(Double
 						.toString(index.getIndex()));
 				indexString.append(", ");
 				indexString.append(new IWTimestamp(index.getDate())

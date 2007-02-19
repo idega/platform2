@@ -613,6 +613,8 @@ public class CampusApplicationBMPBean extends GenericEntity implements
 			}
 		}
 		
+		System.out.println("query = " + query);
+		
 		return query.toString();
 	}
 

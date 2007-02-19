@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFormHelper.java,v 1.23.4.4 2007/01/25 10:36:55 palli Exp $
+ * $Id: CampusApplicationFormHelper.java,v 1.23.4.5 2007/02/19 16:59:05 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -207,7 +207,7 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 						MailingListService MailingListBusiness = (MailingListService) IBOLookup
 								.getServiceInstance(iwc, MailingListService.class);
 						MailingListBusiness.processMailEvent(new EntityHolder(
-								applicant), LetterParser.SUBMISSION);
+								applicant, application, campusApplication, cypher), LetterParser.SUBMISSION);
 					} catch (RemoteException e1) {
 						e1.printStackTrace();
 					}

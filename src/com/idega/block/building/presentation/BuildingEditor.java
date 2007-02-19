@@ -441,7 +441,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		Integer id = null;
 		Integer categoryid = null;
 		Integer rent = null;
-		Float area = null;
+		Double area = null;
 		Integer count = null;
 		try {
 			id = Integer.valueOf(sId);
@@ -469,7 +469,8 @@ public class BuildingEditor extends com.idega.presentation.Block {
 			rent = null;
 		}
 		try {
-			area = Float.valueOf(sArea);
+			sArea = sArea.replace(',', '.');
+			area = Double.valueOf(sArea);
 		} catch (NumberFormatException ex) {
 			area = null;
 		}

@@ -22,6 +22,8 @@ public class NetbokhaldAccountingKeysBMPBean extends GenericEntity implements
 	
 	protected final static String COLUMN_CREDIT_KEY = "credit_key";
 	
+	protected final static String COLUMN_DELETED = "deleted";
+	
 	public final static String TYPE_ASSESSMENT = "A";
 	
 	public final static String TYPE_PAYMENT = "P";
@@ -41,6 +43,7 @@ public class NetbokhaldAccountingKeysBMPBean extends GenericEntity implements
 		addAttribute(COLUMN_KEY, "Key", Integer.class);
 		addAttribute(COLUMN_DEBET_KEY, "Debet key", String.class);
 		addAttribute(COLUMN_CREDIT_KEY, "Credit key", String.class);
+		addAttribute(COLUMN_DELETED, "Deleted", Boolean.class);
 	}
 	
 	//getters
@@ -64,6 +67,10 @@ public class NetbokhaldAccountingKeysBMPBean extends GenericEntity implements
 		return getStringColumnValue(COLUMN_CREDIT_KEY);
 	}
 	
+	public boolean getDeleted() {
+		return getBooleanColumnValue(COLUMN_DELETED, false);
+	}
+	
 	//setters
 	public void setSetup(NetbokhaldSetup setup) {
 		setColumn(COLUMN_SETUP_ID, setup);
@@ -85,11 +92,16 @@ public class NetbokhaldAccountingKeysBMPBean extends GenericEntity implements
 		setColumn(COLUMN_CREDIT_KEY, key);
 	}
 	
+	public void setDeleted(boolean deleted) {
+		setColumn(COLUMN_DELETED, deleted);
+	}
+	
 	//ejb
 	public Collection ejbFindAllBySetupID(NetbokhaldSetup setup) throws FinderException {
 		IDOQuery query = idoQuery();
 		query.appendSelectAllFrom(this);
 		query.appendWhereEqualsQuoted(COLUMN_SETUP_ID, setup.getExternalID());
+		query.appendAndNotEqualsTrue(COLUMN_DELETED);
 		
 		System.out.println("sql = " + query.toString());
 		

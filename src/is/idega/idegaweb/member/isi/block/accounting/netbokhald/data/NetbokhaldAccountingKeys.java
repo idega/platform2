@@ -30,6 +30,11 @@ public interface NetbokhaldAccountingKeys extends IDOEntity {
 	public String getCreditKey();
 
 	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.netbokhald.data.NetbokhaldAccountingKeysBMPBean#getDeleted
+	 */
+	public boolean getDeleted();
+
+	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.netbokhald.data.NetbokhaldAccountingKeysBMPBean#setSetup
 	 */
 	public void setSetup(NetbokhaldSetup setup);
@@ -53,4 +58,9 @@ public interface NetbokhaldAccountingKeys extends IDOEntity {
 	 * @see is.idega.idegaweb.member.isi.block.accounting.netbokhald.data.NetbokhaldAccountingKeysBMPBean#setCreditKey
 	 */
 	public void setCreditKey(String key);
+
+	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.netbokhald.data.NetbokhaldAccountingKeysBMPBean#setDeleted
+	 */
+	public void setDeleted(boolean deleted);
 }

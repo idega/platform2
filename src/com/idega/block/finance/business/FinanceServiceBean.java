@@ -231,8 +231,8 @@ public class FinanceServiceBean extends IBOServiceBean implements FinanceService
 		tariff.store();
 		return tariff;
 	}
-	public TariffIndex createOrUpdateTariffIndex(Integer ID, String name, String info, String type, float newvalue,
-			float oldvalue, Timestamp stamp, Integer categoryId) throws RemoteException, CreateException {
+	public TariffIndex createOrUpdateTariffIndex(Integer ID, String name, String info, String type, double newvalue,
+			double oldvalue, Timestamp stamp, Integer categoryId) throws RemoteException, CreateException {
 		TariffIndex ti = getTariffIndexHome().create();
 		if (categoryId.intValue() > 0) {
 			/*

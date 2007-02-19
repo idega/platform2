@@ -1,23 +1,93 @@
 package com.idega.block.finance.data;
 
 
-public interface TariffIndex extends com.idega.block.category.data.CategoryEntity
-{
- public java.sql.Timestamp getDate();
- public float getIndex();
- public java.lang.String getInfo();
- public java.lang.String getName();
- public float getNewValue();
- public float getOldValue();
- public java.lang.String getType();
- public void setDate(java.sql.Timestamp p0);
- public void setIndex(float p0);
- public void setIndex(java.lang.Float p0);
- public void setInfo(java.lang.String p0);
- public void setName(java.lang.String p0);
- public void setNewValue(float p0);
- public void setNewValue(java.lang.Float p0);
- public void setOldValue(float p0);
- public void setOldValue(java.lang.Float p0);
- public void setType(java.lang.String p0);
+import java.sql.Timestamp;
+
+import com.idega.block.category.data.CategoryEntity;
+
+public interface TariffIndex extends CategoryEntity {
+	/**
+	 * @see com.idega.block.finance.data.TariffIndexBMPBean#getIndex
+	 */
+	public double getIndex();
+
+	/**
+	 * @see com.idega.block.finance.data.TariffIndexBMPBean#setIndex
+	 */
+	public void setIndex(double index);
+
+	/**
+	 * @see com.idega.block.finance.data.TariffIndexBMPBean#setIndex
+	 */
+	public void setIndex(Double index);
+
+	/**
+	 * @see com.idega.block.finance.data.TariffIndexBMPBean#getNewValue
+	 */
+	public double getNewValue();
+
+	/**
+	 * @see com.idega.block.finance.data.TariffIndexBMPBean#setNewValue
+	 */
+	public void setNewValue(double index);
+
+	/**
+	 * @see com.idega.block.finance.data.TariffIndexBMPBean#setNewValue
+	 */
+	public void setNewValue(Double index);
+
+	/**
+	 * @see com.idega.block.finance.data.TariffIndexBMPBean#getOldValue
+	 */
+	public double getOldValue();
+
+	/**
+	 * @see com.idega.block.finance.data.TariffIndexBMPBean#setOldValue
+	 */
+	public void setOldValue(double index);
+
+	/**
+	 * @see com.idega.block.finance.data.TariffIndexBMPBean#setOldValue
+	 */
+	public void setOldValue(Double index);
+
+	/**
+	 * @see com.idega.block.finance.data.TariffIndexBMPBean#getName
+	 */
+	public String getName();
+
+	/**
+	 * @see com.idega.block.finance.data.TariffIndexBMPBean#setName
+	 */
+	public void setName(String name);
+
+	/**
+	 * @see com.idega.block.finance.data.TariffIndexBMPBean#getInfo
+	 */
+	public String getInfo();
+
+	/**
+	 * @see com.idega.block.finance.data.TariffIndexBMPBean#setInfo
+	 */
+	public void setInfo(String info);
+
+	/**
+	 * @see com.idega.block.finance.data.TariffIndexBMPBean#getType
+	 */
+	public String getType();
+
+	/**
+	 * @see com.idega.block.finance.data.TariffIndexBMPBean#setType
+	 */
+	public void setType(String type);
+
+	/**
+	 * @see com.idega.block.finance.data.TariffIndexBMPBean#getDate
+	 */
+	public Timestamp getDate();
+
+	/**
+	 * @see com.idega.block.finance.data.TariffIndexBMPBean#setDate
+	 */
+	public void setDate(Timestamp use_date);
 }

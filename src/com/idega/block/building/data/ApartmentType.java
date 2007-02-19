@@ -52,7 +52,7 @@ public interface ApartmentType extends BuildingEntity {
 	/**
 	 * @see com.idega.block.building.data.ApartmentTypeBMPBean#getArea
 	 */
-	public float getArea();
+	public double getArea();
 
 	/**
 	 * @see com.idega.block.building.data.ApartmentTypeBMPBean#getRent
@@ -167,12 +167,12 @@ public interface ApartmentType extends BuildingEntity {
 	/**
 	 * @see com.idega.block.building.data.ApartmentTypeBMPBean#setArea
 	 */
-	public void setArea(float area);
+	public void setArea(double area);
 
 	/**
 	 * @see com.idega.block.building.data.ApartmentTypeBMPBean#setArea
 	 */
-	public void setArea(Float area);
+	public void setArea(Double area);
 
 	/**
 	 * @see com.idega.block.building.data.ApartmentTypeBMPBean#setRent

@@ -1,11 +1,17 @@
 package com.idega.block.finance.data;
 
 
-public interface TariffIndexHome extends com.idega.data.IDOHome
-{
- public TariffIndex create() throws javax.ejb.CreateException;
- public TariffIndex findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
- public TariffIndex findLastByType(java.lang.String p0)throws javax.ejb.FinderException;
- public java.util.Collection findLastTypeGrouped()throws javax.ejb.FinderException;
+import java.util.Collection;
+import javax.ejb.CreateException;
+import com.idega.data.IDOHome;
+import javax.ejb.FinderException;
 
+public interface TariffIndexHome extends IDOHome {
+	public TariffIndex create() throws CreateException;
+
+	public TariffIndex findByPrimaryKey(Object pk) throws FinderException;
+
+	public TariffIndex findLastByType(String type) throws FinderException;
+
+	public Collection findLastTypeGrouped() throws FinderException;
 }

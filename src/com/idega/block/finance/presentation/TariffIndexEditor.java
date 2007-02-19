@@ -138,7 +138,7 @@ public class TariffIndexEditor extends Finance {
           keyTable.add(getText( String.valueOf(rowcount++)),1,row);
           keyTable.add(getText(ti.getName()),2,row);
           keyTable.add(getText(ti.getInfo()),3,row);
-          keyTable.add(getText(Float.toString(ti.getIndex())),4,row);
+          keyTable.add(getText(Double.toString(ti.getIndex())),4,row);
           keyTable.add(getText(dfLong.format(ti.getDate())),5,row);
           keyTable.add(getText(ti.getType()),6,row);
           row++;
@@ -244,7 +244,7 @@ public class TariffIndexEditor extends Finance {
 		if(ID != null && ID.intValue()>0 ){
 		   // ti = FinanceFinder.getInstance().getTariffIndex(ID) ;
 		  	ti = getFinanceService().getTariffIndexHome().findByPrimaryKey(ID);
-		    float oldvalue = ti.getNewValue();
+		    double oldvalue = ti.getNewValue();
 		    if( sDel != null && sDel.equalsIgnoreCase("true")){
 		        //FinanceBusiness.deleteTariffIndex(ID);
 		    	getFinanceService().removeTariffIndex(ID);

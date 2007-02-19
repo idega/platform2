@@ -18,103 +18,141 @@ import com.idega.data.IDOLookup;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
 
-
-
 /**
- * Title:
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:
- * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
+ * Title: Description: Copyright: Copyright (c) 2001 Company:
+ * 
+ * @author <br>
+ *         <a href="mailto:aron@idega.is">Aron Birkir</a><br>
  * @version 1.0
  */
 
 public class EntityHolder {
 
-  User eUser;
-  int applicantID = -1;
-  Applicant eApplicant;
-  Application eApplication;
-  CampusApplication eCampusApplication;
-  ApartmentHolder apartmentHolder;
-  Contract eContract;
+	User eUser;
 
-  Collection emails;
-  CampusApplicationHolder holder;
- 
-  public EntityHolder(Contract eContract) {
-    this.eContract = eContract;
-    applicantID = eContract.getApplicantId().intValue();
-    init();
-  }
-  public EntityHolder(int iContractId){
-    try {
+	int applicantID = -1;
+	
+	int applicationID = -1;
 
-      ContractHome cHome = (ContractHome) IDOLookup.getHome(Contract.class);
-      eContract  = cHome.findByPrimaryKey(new Integer(iContractId));
+	Applicant eApplicant;
 
-      applicantID = eContract.getApplicantId().intValue();
-      init();
-    }
-    catch (Exception ex) {
+	Application eApplication;
 
-    }
+	CampusApplication eCampusApplication;
 
-  }
+	ApartmentHolder apartmentHolder;
 
-  private void init(){
-    try {
-	  holder = CampusApplicationFinder.getApplicantInfo(applicantID);
-      eApplicant = holder.getApplicant();
-      eApplication = holder.getApplication();
-      eCampusApplication = holder.getCampusApplication();
+	Contract eContract;
 
-      if(eContract!=null){
-        eUser = ((UserHome)com.idega.data.IDOLookup.getHome(User.class)).findByPrimaryKey(eContract.getUserId());
-        if(eUser!=null)
-          emails = eUser.getEmails();
-        apartmentHolder = new ApartmentHolder(((ApartmentViewHome)IDOLookup.getHome(ApartmentView.class)).findByPrimaryKey(eContract.getApartmentId()));
-      }
+	Collection emails;
 
-      if(emails==null && eCampusApplication!=null){
-		emails = new Vector();
-		emails.add(eCampusApplication.getEmail());
-      		
-      }
-      
- 
-    }
-    catch (Exception ex) {
-      ex.printStackTrace();
-    }
-  }
+	CampusApplicationHolder holder;
+	
+	String cypher;
 
-  public EntityHolder(Applicant eApplicant) {
-    this.applicantID = ((Integer)eApplicant.getPrimaryKey()).intValue();
-    init();
-  }
-  public User getUser(){
-    return this.eUser;
-  }
-  public Applicant getApplicant(){
-    return this.eApplicant;
-  }
-  public Contract getContract(){
-    return this.eContract;
-  }
-  public Collection getEmails(){
-    return this.emails;
-  }
-  public ApartmentHolder getApartmentHolder(){
-    return apartmentHolder;
-  }
-  public Application getApplication(){
-    return eApplication;
-  }
-  public CampusApplication getCampusApplication(){
-    return eCampusApplication;
-  }
-  public CampusApplicationHolder getApplicationHolder(){
-  	return holder;
-  }
+	public EntityHolder(Contract eContract) {
+		this.eContract = eContract;
+		applicantID = eContract.getApplicantId().intValue();
+		init();
+	}
+
+	public EntityHolder(int iContractId) {
+		try {
+
+			ContractHome cHome = (ContractHome) IDOLookup
+					.getHome(Contract.class);
+			eContract = cHome.findByPrimaryKey(new Integer(iContractId));
+
+			applicantID = eContract.getApplicantId().intValue();
+			init();
+		} catch (Exception ex) {
+
+		}
+
+	}
+
+	private void init() {
+		try {
+			holder = CampusApplicationFinder.getApplicantInfo(applicantID);
+			if (eApplicant == null) {
+				eApplicant = holder.getApplicant();
+			}
+			
+			if (eApplication == null) {
+				eApplication = holder.getApplication();
+			}
+			
+			if (eCampusApplication == null) {
+				eCampusApplication = holder.getCampusApplication();
+			}
+
+			if (eContract != null) {
+				eUser = ((UserHome) com.idega.data.IDOLookup
+						.getHome(User.class)).findByPrimaryKey(eContract
+						.getUserId());
+				if (eUser != null)
+					emails = eUser.getEmails();
+				apartmentHolder = new ApartmentHolder(
+						((ApartmentViewHome) IDOLookup
+								.getHome(ApartmentView.class))
+								.findByPrimaryKey(eContract.getApartmentId()));
+			}
+
+			if (emails == null && eCampusApplication != null) {
+				emails = new Vector();
+				emails.add(eCampusApplication.getEmail());
+
+			}
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	public EntityHolder(Applicant eApplicant) {
+		this.applicantID = ((Integer) eApplicant.getPrimaryKey()).intValue();
+		init();
+	}
+
+	public EntityHolder(Applicant eApplicant, Application app, CampusApplication camApp, String cypher) {
+		this.applicantID = ((Integer) eApplicant.getPrimaryKey()).intValue();
+		this.eApplicant = eApplicant;
+		this.eApplication = app;
+		this.eCampusApplication = camApp;
+		this.cypher = cypher;
+		init();
+	}
+
+	
+	public User getUser() {
+		return this.eUser;
+	}
+
+	public Applicant getApplicant() {
+		return this.eApplicant;
+	}
+
+	public Contract getContract() {
+		return this.eContract;
+	}
+
+	public Collection getEmails() {
+		return this.emails;
+	}
+
+	public ApartmentHolder getApartmentHolder() {
+		return apartmentHolder;
+	}
+
+	public Application getApplication() {
+		return eApplication;
+	}
+
+	public CampusApplication getCampusApplication() {
+		return eCampusApplication;
+	}
+
+	public CampusApplicationHolder getApplicationHolder() {
+		return holder;
+	}
 }

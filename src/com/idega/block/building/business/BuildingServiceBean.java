@@ -192,7 +192,7 @@ public class BuildingServiceBean extends IBOServiceBean implements
 
 	public ApartmentType storeApartmentType(Integer typeID, String name,
 			String info, String abbrev, String extraInfo, Integer planID,
-			Integer imageID, Integer categoryID, Integer textID, Float area,
+			Integer imageID, Integer categoryID, Integer textID, Double area,
 			Integer roomcount, Integer rent, Boolean balcony, Boolean bath,
 			Boolean kitchen, Boolean storage, Boolean study, Boolean furniture,
 			Boolean loft, Boolean locked) {
@@ -233,6 +233,7 @@ public class BuildingServiceBean extends IBOServiceBean implements
 			type.setLocked(locked.booleanValue());
 
 			type.store();
+			
 			return type;
 		} catch (IDOStoreException e) {
 			e.printStackTrace();

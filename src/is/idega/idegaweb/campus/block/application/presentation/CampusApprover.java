@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.65.4.5 2007/02/01 00:29:02 palli Exp $
+ * $Id: CampusApprover.java,v 1.65.4.6 2007/02/19 16:59:05 palli Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -325,9 +325,10 @@ public class CampusApprover extends CampusBlock {
 			// ApplicationFinder.listOfApplicationHoldersInSubject(iSubjectId,
 			// sGlobalStatus, sGlobalOrder);
 			if ("-1".equals(sGlobalOrder))
-				sGlobalOrder = null;
+				sGlobalOrder = "submitted";
 			CampusApplicationHome cappHome = applicationService.getCampusApplicationHome();
 			int count = cappHome.getCountBySubjectAndStatus(new Integer(iSubjectId), sGlobalStatus);
+			System.out.println("sGlobalOrder = " + sGlobalOrder);
 			Collection L = cappHome.findBySubjectAndStatus(new Integer(iSubjectId), sGlobalStatus, sGlobalOrder,
 					this.iGlobalSize, -1);
 			if (L != null) {
@@ -387,6 +388,7 @@ public class CampusApprover extends CampusBlock {
 					T.add(getCampusApplicationLink(viewImage, ((Integer) campusApplication.getPrimaryKey()), i), col++,
 							row);
 					T.add(getTrashLink(trashImage, ((Integer) campusApplication.getPrimaryKey())), col, row);
+					T.add(getText(new IWTimestamp(a.getSubmitted()).getDateString("dd.MM.yyyy HH:mm:ss")), col, row);
 					if (lastcol < col)
 						lastcol = col;
 					i++;
@@ -1602,7 +1604,7 @@ public class CampusApprover extends CampusBlock {
 
 	private DropdownMenu orderDrop(String name, String selected) {
 		DropdownMenu drp = new DropdownMenu(name);
-		drp.addMenuElement("app_applicant_id", localize("submitted", "Submitted"));
+		drp.addMenuElement("submitted", localize("submitted", "Submitted"));
 		drp.addMenuElement(com.idega.block.application.data.ApplicantBMPBean.getFullnameOrderValue(), localize("name",
 				"Name"));
 		drp.addMenuElement(com.idega.block.application.data.ApplicantBMPBean.getSSNColumnName(), localize("ssn",
