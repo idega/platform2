@@ -31,6 +31,11 @@ public interface NetbokhaldSetup extends IDOEntity {
 	public Group getGroup();
 
 	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.netbokhald.data.NetbokhaldSetupBMPBean#getDeleted
+	 */
+	public boolean getDeleted();
+
+	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.netbokhald.data.NetbokhaldSetupBMPBean#setExternalID
 	 */
 	public void setExternalID(String id);
@@ -49,4 +54,9 @@ public interface NetbokhaldSetup extends IDOEntity {
 	 * @see is.idega.idegaweb.member.isi.block.accounting.netbokhald.data.NetbokhaldSetupBMPBean#setGroup
 	 */
 	public void setGroup(Group group);
+
+	/**
+	 * @see is.idega.idegaweb.member.isi.block.accounting.netbokhald.data.NetbokhaldSetupBMPBean#setDeleted
+	 */
+	public void setDeleted(boolean deleted);
 }

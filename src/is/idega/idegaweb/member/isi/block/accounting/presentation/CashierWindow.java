@@ -8,12 +8,15 @@
 package is.idega.idegaweb.member.isi.block.accounting.presentation;
 
 import is.idega.idegaweb.member.business.MemberUserBusiness;
+import is.idega.idegaweb.member.isi.ISIMemberConstants;
 import is.idega.idegaweb.member.isi.block.accounting.business.AccountingBusiness;
 import is.idega.idegaweb.member.isi.block.accounting.export.presentation.EntriesNotInBatch;
 import is.idega.idegaweb.member.isi.block.accounting.export.presentation.GetFiles;
 import is.idega.idegaweb.member.isi.block.accounting.export.presentation.RunLog;
 import is.idega.idegaweb.member.isi.block.accounting.export.presentation.SendFiles;
 import is.idega.idegaweb.member.isi.block.accounting.export.presentation.Setup;
+import is.idega.idegaweb.member.isi.block.accounting.netbokhald.presentation.ConnectNetbokhald;
+import is.idega.idegaweb.member.isi.block.accounting.netbokhald.presentation.SetupNetbokhaldAccountingKeys;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -58,6 +61,8 @@ public class CashierWindow extends StyledIWAdminWindow {
 
 	public static final String PARAMETER_USER_ID = "cashier_user_id";
 
+	public static final String PARAMETER_USING_NETBOKHALD = "cashier_using_netbokhald";
+
 	public final static String STYLE_2 = "font-family:arial; font-size:8pt; color:#000000; text-align: justify;";
 
 	public static final String ACTION = "cw_act";
@@ -93,6 +98,10 @@ public class CashierWindow extends StyledIWAdminWindow {
 	public static final String ACTION_VISA_FILES = "isi_acc_cw_visa_files";
 
 	private static final String ACTION_REPORTS = "isi_acc_cw_reports";
+
+	private static final String ACTION_NETBOKHALD = "isi_acc_cw_netbokhald";
+
+	public static final String ACTION_NETBOKHALD_KEYS = "isi_acc_cw_netbokhald_keys";
 
 	private static final String STATS_LOCALIZABLE_KEY_NAME = "STATS_LOCALIZABLE_KEY_NAME";
 
@@ -145,6 +154,10 @@ public class CashierWindow extends StyledIWAdminWindow {
 	private String rightBorderTable = "borderRight";
 
 	private String borderTable = "borderAll";
+
+	private boolean isUsingNetbokhald = false;
+
+	private boolean hasCheckedForNetbokhaldUsage = false;
 
 	/**
 	 * The default constructor. Creates a window with the size 600x1024. Sets it
@@ -228,6 +241,11 @@ public class CashierWindow extends StyledIWAdminWindow {
 		this.iwb = getBundle(iwc);
 	}
 
+	private void checkForExternalAccountingSystems() {
+		// Checks if the club is using the netbokhald system
+		isUsingNetbokhald = isUsingNetbokhald(eClub);
+	}
+
 	/*
 	 * A method that creates a com.idega.presentation.Table object and sets up
 	 * the left hand side menu of the CashierWindow in it. Returns the Table
@@ -239,7 +257,11 @@ public class CashierWindow extends StyledIWAdminWindow {
 		Table menu;
 
 		if (!isCashierAdministrator) {
-			menu = new Table(2, 21);
+			if (isUsingNetbokhald) {
+				menu = new Table(2, 23);
+			} else {
+				menu = new Table(2, 21);
+			}
 
 		} else {
 			menu = new Table(2, 6);
@@ -435,6 +457,18 @@ public class CashierWindow extends StyledIWAdminWindow {
 			// ledgerList.addParameter(ACTION,ACTION_CASHIER_LEDGER);
 			addParametersToMenuItems(ledgerList, ACTION_CASHIER_LEDGER);
 
+			Text externalAccountingOperations = formatText(
+					this.iwrb
+							.getLocalizedString(
+									"isi_acc_cashierwindow.external_accounting_operations",
+									"External accounting systems"), true);
+
+			LinkContainer netbokhald = new LinkContainer();
+			netbokhald.setStyleClass(this.styledLink);
+			netbokhald.add(formatText(this.iwrb.getLocalizedString(
+					"isi_acc_cashierwindow.netbokahld", "Netbokhald")));
+			addParametersToMenuItems(netbokhald, ACTION_NETBOKHALD);
+
 			// add to window
 			menu.add(clubOperations, 1, 1);
 			menu.add(getHelpWithGrayImage("cashierwindow.clubOperations_help",
@@ -472,15 +506,24 @@ public class CashierWindow extends StyledIWAdminWindow {
 					2, 20);
 			menu.setRowColor(20, COLOR_MIDDLE);
 			menu.add(ledgerList, 1, 21);
+
+			if (isUsingNetbokhald) {
+				menu.add(externalAccountingOperations, 1, 22);
+				menu.add(getHelpWithGrayImage(
+						"cashierwindow.externalaccounting_help", true), 2, 22);
+				menu.setRowColor(22, COLOR_MIDDLE);
+				menu.add(netbokhald, 1, 23);
+			}
 		} else {
 			Text admin = formatText(this.iwrb.getLocalizedString(
 					"isi_acc_cashierwindow.admin", "Admin"), true);
 
 			LinkContainer adminCreditCardSendFiles = new LinkContainer();
 			adminCreditCardSendFiles.setStyleClass(this.styledLink);
-			adminCreditCardSendFiles.add(formatText(this.iwrb.getLocalizedString(
-					"isi_acc_cashierwindow.send_creditcard_files",
-					"Send creditcard files")));
+			adminCreditCardSendFiles.add(formatText(this.iwrb
+					.getLocalizedString(
+							"isi_acc_cashierwindow.send_creditcard_files",
+							"Send creditcard files")));
 			addParametersToMenuItems(adminCreditCardSendFiles,
 					ADMIN_SEND_CREDITCARD_FILES);
 
@@ -541,7 +584,7 @@ public class CashierWindow extends StyledIWAdminWindow {
 		if (isCashierAdministrator(iwc)) {
 			return true;
 		}
-		
+
 		if (this.eClub == null) {
 			if (this.eGroup == null) {
 				Text errorText = new Text(this.iwrb.getLocalizedString(
@@ -554,7 +597,8 @@ public class CashierWindow extends StyledIWAdminWindow {
 				return false;
 			} else {
 				try {
-					this.eClub = getAccountingBusiness(iwc).findClubForGroup(this.eGroup);
+					this.eClub = getAccountingBusiness(iwc).findClubForGroup(
+							this.eGroup);
 				} catch (RemoteException e) {
 					e.printStackTrace();
 					this.eClub = null;
@@ -694,6 +738,17 @@ public class CashierWindow extends StyledIWAdminWindow {
 		return false;
 	}
 
+	private boolean isUsingNetbokhald(Group club) {
+		String using = null;
+
+		if (club != null) {
+			using = club
+					.getMetaData(ISIMemberConstants.META_DATA_CLUB_USING_NETBOKHALD);
+		}
+
+		return new Boolean(using).booleanValue();
+	}
+
 	public void main(IWContext iwc) throws Exception {
 		super.main(iwc);
 		init(iwc);
@@ -702,6 +757,8 @@ public class CashierWindow extends StyledIWAdminWindow {
 		if (!hasPermission) {
 			return;
 		}
+
+		checkForExternalAccountingSystems();
 
 		StringBuffer title = new StringBuffer(this.iwrb.getLocalizedString(
 				"isi_acc_cashier_window", "Cashier Window"));
@@ -745,8 +802,8 @@ public class CashierWindow extends StyledIWAdminWindow {
 				subWindow = new EditTariffList();
 				this.helpTextKey = ACTION_TARIFF + "_help";
 			} else if (action.equals(ACTION_TARIFF_TYPE)) {
-				actionTitle.append(this.iwrb.getLocalizedString(ACTION_TARIFF_TYPE,
-						"Edit tariff type"));
+				actionTitle.append(this.iwrb.getLocalizedString(
+						ACTION_TARIFF_TYPE, "Edit tariff type"));
 				subWindow = new EditTariffType();
 				this.helpTextKey = ACTION_TARIFF_TYPE + "_help";
 			} else if (action.equals(ACTION_MANUAL_ASSESSMENT)) {
@@ -781,13 +838,13 @@ public class CashierWindow extends StyledIWAdminWindow {
 				subWindow = new SelectPayments();
 				this.helpTextKey = ACTION_SELECT_PAYMENTS + "_help";
 			} else if (action.equals(ACTION_CHECKOUT)) {
-				actionTitle.append(this.iwrb.getLocalizedString(ACTION_CHECKOUT,
-						"Checkout"));
+				actionTitle.append(this.iwrb.getLocalizedString(
+						ACTION_CHECKOUT, "Checkout"));
 				subWindow = new Checkout();
 				this.helpTextKey = ACTION_CHECKOUT + "_help";
 			} else if (action.equals(ACTION_VISA_FILES)) {
-				actionTitle.append(this.iwrb.getLocalizedString(ACTION_VISA_FILES,
-						"VISA files"));
+				actionTitle.append(this.iwrb.getLocalizedString(
+						ACTION_VISA_FILES, "VISA files"));
 				subWindow = new VisaFiles();
 				this.helpTextKey = ACTION_VISA_FILES + "_help";
 			} else if (action.equals(ACTION_CASHIER_LEDGER)) {
@@ -841,8 +898,8 @@ public class CashierWindow extends StyledIWAdminWindow {
 						.getParameter(STATS_LAYOUT_NAME_FROM_BUNDLE);
 				String localizedNameKey = iwc
 						.getParameter(STATS_LOCALIZABLE_KEY_NAME);
-				if ((invocationKey != null && this.iwb.getProperty(invocationKey,
-						"-1") != null)
+				if ((invocationKey != null && this.iwb.getProperty(
+						invocationKey, "-1") != null)
 						|| invocationFileName != null) {
 
 					if (invocationFileName != null) {
@@ -858,7 +915,8 @@ public class CashierWindow extends StyledIWAdminWindow {
 						}
 					}
 					if (layoutFileName != null) {
-						repGen.setLayoutBundleAndFileName(this.iwb, layoutFileName);
+						repGen.setLayoutBundleAndFileName(this.iwb,
+								layoutFileName);
 					} else if (layoutKey != null
 							&& this.iwb.getProperty(layoutKey, "-1") != null) {
 						Integer layoutICFileID = new Integer(this.iwb
@@ -877,6 +935,17 @@ public class CashierWindow extends StyledIWAdminWindow {
 					}
 				}
 				table.add(repGen, 2, 1); // not a selector
+			} else if (action.equals(ACTION_NETBOKHALD)) {
+				actionTitle.append(this.iwrb.getLocalizedString(
+						ACTION_NETBOKHALD, "Netbokhald"));
+				subWindow = new ConnectNetbokhald();
+				this.helpTextKey = ACTION_NETBOKHALD + "_help";
+			}
+			else if (action.equals(ACTION_NETBOKHALD_KEYS)) {
+				actionTitle.append(this.iwrb.getLocalizedString(
+						ACTION_NETBOKHALD_KEYS, "Netbokhald keys"));
+				subWindow = new SetupNetbokhaldAccountingKeys();
+				this.helpTextKey = ACTION_NETBOKHALD_KEYS + "_help";
 			}
 
 			if (this.eClub != null) {
@@ -891,7 +960,8 @@ public class CashierWindow extends StyledIWAdminWindow {
 				helpTable.setWidth(Table.HUNDRED_PERCENT);
 				helpTable.setHeight(15);
 				helpTable.setAlignment(1, 1, "right");
-				helpTable.add(getHelpWithGrayImage(this.helpTextKey, false), 1, 1);
+				helpTable.add(getHelpWithGrayImage(this.helpTextKey, false), 1,
+						1);
 				table.add(helpTable, 2, 1);
 
 				subWindow.setClub(this.eClub);

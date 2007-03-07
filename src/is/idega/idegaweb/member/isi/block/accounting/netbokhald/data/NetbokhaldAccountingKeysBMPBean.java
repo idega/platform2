@@ -18,7 +18,7 @@ public class NetbokhaldAccountingKeysBMPBean extends GenericEntity implements
 	
 	protected final static String COLUMN_KEY = "internal_key";
 	
-	protected final static String COLUMN_DEBET_KEY = "debet_key";
+	protected final static String COLUMN_DEBIT_KEY = "debit_key";
 	
 	protected final static String COLUMN_CREDIT_KEY = "credit_key";
 	
@@ -41,7 +41,7 @@ public class NetbokhaldAccountingKeysBMPBean extends GenericEntity implements
 		addManyToOneRelationship(COLUMN_SETUP_ID, NetbokhaldSetup.class);
 		addAttribute(COLUMN_TYPE, "Type", String.class);
 		addAttribute(COLUMN_KEY, "Key", Integer.class);
-		addAttribute(COLUMN_DEBET_KEY, "Debet key", String.class);
+		addAttribute(COLUMN_DEBIT_KEY, "Debet key", String.class);
 		addAttribute(COLUMN_CREDIT_KEY, "Credit key", String.class);
 		addAttribute(COLUMN_DELETED, "Deleted", Boolean.class);
 	}
@@ -59,8 +59,8 @@ public class NetbokhaldAccountingKeysBMPBean extends GenericEntity implements
 		return getIntColumnValue(COLUMN_KEY, -1);
 	}
 	
-	public String getDebetKey() {
-		return getStringColumnValue(COLUMN_DEBET_KEY);
+	public String getDebitKey() {
+		return getStringColumnValue(COLUMN_DEBIT_KEY);
 	}
 	
 	public String getCreditKey() {
@@ -80,12 +80,12 @@ public class NetbokhaldAccountingKeysBMPBean extends GenericEntity implements
 		setColumn(COLUMN_TYPE, type);
 	}
 	
-	public void setKey(String key) {
+	public void setKey(int key) {
 		setColumn(COLUMN_KEY, key);
 	}
 	
-	public void setDebetKey(String key) {
-		setColumn(COLUMN_DEBET_KEY, key);
+	public void setDebitKey(String key) {
+		setColumn(COLUMN_DEBIT_KEY, key);
 	}
 	
 	public void setCreditKey(String key) {
@@ -101,10 +101,31 @@ public class NetbokhaldAccountingKeysBMPBean extends GenericEntity implements
 		IDOQuery query = idoQuery();
 		query.appendSelectAllFrom(this);
 		query.appendWhereEqualsQuoted(COLUMN_SETUP_ID, setup.getExternalID());
-		query.appendAndNotEqualsTrue(COLUMN_DELETED);
-		
-		System.out.println("sql = " + query.toString());
-		
+		query.appendAnd();
+		query.appendLeftParenthesis();
+		query.append(COLUMN_DELETED);
+		query.append(" is null");
+		query.appendOr();
+		query.appendEquals(COLUMN_DELETED, false);
+		query.appendRightParenthesis();
+				
 		return idoFindPKsByQuery(query);
+	}
+	
+	public Object ejbFindBySetupIDTypeAndKey(NetbokhaldSetup setup, String type, int key) throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this);
+		query.appendWhereEqualsQuoted(COLUMN_SETUP_ID, setup.getExternalID());
+		query.appendAndEqualsQuoted(COLUMN_TYPE, type);
+		query.appendAndEquals(COLUMN_KEY, key);
+		query.appendAnd();
+		query.appendLeftParenthesis();
+		query.append(COLUMN_DELETED);
+		query.append(" is null");
+		query.appendOr();
+		query.appendEquals(COLUMN_DELETED, false);
+		query.appendRightParenthesis();
+		
+		return idoFindOnePKByQuery(query);
 	}
 }

@@ -21,6 +21,8 @@ public class NetbokhaldSetupBMPBean extends GenericEntity implements
 	
 	protected final static String COLUMN_GROUP_ID = "group_id";
 	
+	protected final static String COLUMN_DELETED = "deleted";
+	
 	public String getEntityName() {
 		return ENTITY_NAME;
 	}
@@ -31,6 +33,7 @@ public class NetbokhaldSetupBMPBean extends GenericEntity implements
 		addManyToOneRelationship(COLUMN_CLUB_ID, Group.class);
 		addManyToOneRelationship(COLUMN_DIVISION_ID, Group.class);
 		addManyToOneRelationship(COLUMN_GROUP_ID, Group.class);
+		addAttribute(COLUMN_DELETED, "Deleted", Boolean.class);
 	}
 	
 	public Class getPrimaryKeyClass() {
@@ -58,6 +61,10 @@ public class NetbokhaldSetupBMPBean extends GenericEntity implements
 		return (Group) getColumnValue(COLUMN_GROUP_ID);
 	}
 	
+	public boolean getDeleted() {
+		return getBooleanColumnValue(COLUMN_DELETED, false);
+	}
+	
 	//setters
 	public void setExternalID(String id) {
 		setColumn(COLUMN_EXTERNAL_ID, id);
@@ -75,11 +82,22 @@ public class NetbokhaldSetupBMPBean extends GenericEntity implements
 		setColumn(COLUMN_GROUP_ID, group);
 	}
 	
+	public void setDeleted(boolean deleted) {
+		setColumn(COLUMN_DELETED, deleted);
+	}
+	
 	//ejb
 	public Collection ejbFindAllByClub(Group club) throws FinderException {
 		IDOQuery query = idoQuery();
 		query.appendSelectAllFrom(this);
 		query.appendWhereEquals(COLUMN_CLUB_ID, club);
+		query.appendAnd();
+		query.appendLeftParenthesis();
+		query.append(COLUMN_DELETED);
+		query.append(" is null");
+		query.appendOr();
+		query.appendEquals(COLUMN_DELETED, false);
+		query.appendRightParenthesis();
 		
 		return idoFindPKsByQuery(query);
 	}

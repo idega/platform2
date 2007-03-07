@@ -20,9 +20,9 @@ public interface NetbokhaldAccountingKeys extends IDOEntity {
 	public int getKey();
 
 	/**
-	 * @see is.idega.idegaweb.member.isi.block.accounting.netbokhald.data.NetbokhaldAccountingKeysBMPBean#getDebetKey
+	 * @see is.idega.idegaweb.member.isi.block.accounting.netbokhald.data.NetbokhaldAccountingKeysBMPBean#getDebitKey
 	 */
-	public String getDebetKey();
+	public String getDebitKey();
 
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.netbokhald.data.NetbokhaldAccountingKeysBMPBean#getCreditKey
@@ -47,12 +47,12 @@ public interface NetbokhaldAccountingKeys extends IDOEntity {
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.netbokhald.data.NetbokhaldAccountingKeysBMPBean#setKey
 	 */
-	public void setKey(String key);
+	public void setKey(int key);
 
 	/**
-	 * @see is.idega.idegaweb.member.isi.block.accounting.netbokhald.data.NetbokhaldAccountingKeysBMPBean#setDebetKey
+	 * @see is.idega.idegaweb.member.isi.block.accounting.netbokhald.data.NetbokhaldAccountingKeysBMPBean#setDebitKey
 	 */
-	public void setDebetKey(String key);
+	public void setDebitKey(String key);
 
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.netbokhald.data.NetbokhaldAccountingKeysBMPBean#setCreditKey

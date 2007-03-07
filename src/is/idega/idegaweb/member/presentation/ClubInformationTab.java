@@ -8,6 +8,7 @@ package is.idega.idegaweb.member.presentation;
 
 import is.idega.idegaweb.member.business.MemberUserBusiness;
 import is.idega.idegaweb.member.business.plugins.ClubInformationPluginBusiness;
+import is.idega.idegaweb.member.isi.ISIMemberConstants;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.rmi.RemoteException;
@@ -54,69 +55,75 @@ public class ClubInformationTab extends UserGroupTab {
 
 	private static final String HELP_TEXT_KEY = "club_information_tab";
 
-	private TextInput _numberField;
+	private TextInput numberField;
 
-	private TextInput _ssnField;
+	private TextInput ssnField;
 
-	private DateInput _foundedField;
+	private DateInput foundedField;
 
-	//	private DropdownMenu _typeField;
-	private CheckBox _memberUMFIField;
+	// private DropdownMenu _typeField;
+	private CheckBox memberUMFIField;
 
-	private DropdownMenu _makeField;
+	private DropdownMenu makeField;
 
-//	private DropdownMenu _connectionToSpecialField;
+	// private DropdownMenu _connectionToSpecialField;
 
-	private Text _regionalUnionField;
+	private Text regionalUnionField;
 
-	private DropdownMenu _statusField;
+	private DropdownMenu statusField;
 
-	private CheckBox _inOperationField;
+	private CheckBox inOperationField;
 
-	private CheckBox _usingMemberSystemField;
+	private CheckBox usingMemberSystemField;
 
-	private Text _numberText;
+	private CheckBox usingNetbokhaldField;
 
-	private Text _ssnText;
+	private Text numberText;
 
-	private Text _foundedText;
+	private Text ssnText;
 
-	//	private Text _typeText;
-	private Text _memberUMFIText;
+	private Text foundedText;
 
-	private Text _makeText;
+	// private Text _typeText;
+	private Text memberUMFIText;
 
-//	private Text _connectionToSpecialText;
+	private Text makeText;
 
-	private Text _regionalUnionText;
+	// private Text _connectionToSpecialText;
 
-	private Text _statusText;
+	private Text regionalUnionText;
 
-	private Text _inOperationText;
+	private Text statusText;
 
-	private Text _usingMemberSystemText;
+	private Text inOperationText;
 
-	private String _numberFieldName;
+	private Text usingMemberSystemText;
 
-	private String _ssnFieldName;
+	private Text usingNetbokhaldText;
 
-	private String _foundedFieldName;
+	private String numberFieldName;
 
-	private String _typeFieldName;
+	private String ssnFieldName;
 
-	private String _memberUMFIFieldName;
+	private String foundedFieldName;
 
-	private String _makeFieldName;
+	private String typeFieldName;
 
-//	private String _connectionToSpecialFieldName;
+	private String memberUMFIFieldName;
 
-	private String _regionalUnionFieldName;
+	private String makeFieldName;
 
-	private String _statusFieldName;
+	// private String _connectionToSpecialFieldName;
 
-	private String _inOperationFieldName;
+	private String regionalUnionFieldName;
 
-	private String _usingMemberSystemFieldName;
+	private String statusFieldName;
+
+	private String inOperationFieldName;
+
+	private String usingMemberSystemFieldName;
+
+	private String usingNetbokhaldFieldName;
 
 	private IWResourceBundle iwrb;
 
@@ -139,17 +146,18 @@ public class ClubInformationTab extends UserGroupTab {
 	 * @see com.idega.user.presentation.UserGroupTab#initializeFieldNames()
 	 */
 	public void initializeFieldNames() {
-		this._numberFieldName = "cit_number";
-		this._ssnFieldName = "cit_ssn";
-		this._foundedFieldName = "cit_founded";
-		this._typeFieldName = "cit_type";
-		this._memberUMFIFieldName = "cit_memberOfUMFI";
-		this._makeFieldName = "cit_make";
-//		_connectionToSpecialFieldName = "cit_special";
-		this._regionalUnionFieldName = "cit_regional";
-		this._statusFieldName = "cit_status";
-		this._inOperationFieldName = "cit_operation";
-		this._usingMemberSystemFieldName = "cit_usingSystem";
+		this.numberFieldName = "cit_number";
+		this.ssnFieldName = "cit_ssn";
+		this.foundedFieldName = "cit_founded";
+		this.typeFieldName = "cit_type";
+		this.memberUMFIFieldName = "cit_memberOfUMFI";
+		this.makeFieldName = "cit_make";
+		// _connectionToSpecialFieldName = "cit_special";
+		this.regionalUnionFieldName = "cit_regional";
+		this.statusFieldName = "cit_status";
+		this.inOperationFieldName = "cit_operation";
+		this.usingMemberSystemFieldName = "cit_usingSystem";
+		this.usingNetbokhaldFieldName = "cit_usingNetbokhald";
 	}
 
 	/*
@@ -159,17 +167,20 @@ public class ClubInformationTab extends UserGroupTab {
 	 */
 	public void initializeFieldValues() {
 		this.fieldValues = new Hashtable();
-		this.fieldValues.put(this._numberFieldName, "");
-		this.fieldValues.put(this._ssnFieldName, "");
-		this.fieldValues.put(this._foundedFieldName, new IWTimestamp().getDate().toString());
-		this.fieldValues.put(this._typeFieldName, "");
-		this.fieldValues.put(this._memberUMFIFieldName, new Boolean(false));
-		this.fieldValues.put(this._makeFieldName, "");
-//		fieldValues.put(_connectionToSpecialFieldName, "");
-		this.fieldValues.put(this._regionalUnionFieldName, "");
-		this.fieldValues.put(this._statusFieldName, "");
-		this.fieldValues.put(this._inOperationFieldName, new Boolean(false));
-		this.fieldValues.put(this._usingMemberSystemFieldName, new Boolean(false));
+		this.fieldValues.put(this.numberFieldName, "");
+		this.fieldValues.put(this.ssnFieldName, "");
+		this.fieldValues.put(this.foundedFieldName, new IWTimestamp().getDate()
+				.toString());
+		this.fieldValues.put(this.typeFieldName, "");
+		this.fieldValues.put(this.memberUMFIFieldName, new Boolean(false));
+		this.fieldValues.put(this.makeFieldName, "");
+		// fieldValues.put(_connectionToSpecialFieldName, "");
+		this.fieldValues.put(this.regionalUnionFieldName, "");
+		this.fieldValues.put(this.statusFieldName, "");
+		this.fieldValues.put(this.inOperationFieldName, new Boolean(false));
+		this.fieldValues.put(this.usingMemberSystemFieldName,
+				new Boolean(false));
+		this.fieldValues.put(this.usingNetbokhaldFieldName, new Boolean(false));
 	}
 
 	/*
@@ -179,54 +190,41 @@ public class ClubInformationTab extends UserGroupTab {
 	 */
 	public void updateFieldsDisplayStatus() {
 		lineUpFields();
-		String number = (String) this.fieldValues.get(this._numberFieldName);
-		this._numberField.setContent(number);
-		
-		this._ssnField.setContent((String) this.fieldValues.get(this._ssnFieldName));
-		this._foundedField.setContent((String) this.fieldValues.get(this._foundedFieldName));
-		//		_typeField.setSelectedElement((String)
-		// fieldValues.get(_typeFieldName));
-		this._memberUMFIField.setChecked(((Boolean) this.fieldValues.get(this._memberUMFIFieldName)).booleanValue());
-		String make = (String) this.fieldValues.get(this._makeFieldName);
-//		String connection = (String) fieldValues.get(_connectionToSpecialFieldName);
-//		_connectionToSpecialField.setSelectedElement(connection);
-		this._makeField.removeElements();
-/*		if (connection != null && !connection.equals("")
-				&& make.equals(IWMemberConstants.META_DATA_CLUB_STATUS_SINGLE_DIVISION_CLUB)) {
-			_connectionToSpecialField.setDisabled(false);
-			_connectionToSpecialField.setOnChange("alert('"
-					+ iwrb.getLocalizedString("clubinformationtab.cannot_change_msg", "You can not change this field!")
-					+ "')");
-			_connectionToSpecialField.setToSubmit();
-			_makeField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATUS_SINGLE_DIVISION_CLUB,
-					iwrb.getLocalizedString("clubinformationtab.single_division_club", "Single division"));
-		}
-		else {*/
-/*			if (make.equals(IWMemberConstants.META_DATA_CLUB_STATUS_MULTI_DIVISION_CLUB)
-					|| make.equals(IWMemberConstants.META_DATA_CLUB_STATUS_NO_MEMBERS_CLUB)) {
-				_connectionToSpecialField.setDisabled(true);
-			}
-			else {
-				_connectionToSpecialField.setDisabled(false);
-			}*/
-			this._makeField.addMenuElement("-1", this.iwrb.getLocalizedString("clubinformationtab.choose_make", "Choose type..."));
-			//		_makeField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATUS_MULTI_DIVISION_CLUB,
-			// iwrb.getLocalizedString(
-			//				"clubinformationtab.empty", "Empty"));
-			this._makeField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATUS_MULTI_DIVISION_CLUB,
-					this.iwrb.getLocalizedString("clubinformationtab.multi_division_club", "Multi divisional"));
-/*			_makeField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATUS_SINGLE_DIVISION_CLUB,
-					iwrb.getLocalizedString("clubinformationtab.single_division_club", "Single division"));*/
-			this._makeField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATUS_NO_MEMBERS_CLUB, this.iwrb.getLocalizedString(
-					"clubinformationtab.club_with_no_players", "No players"));
-//			_makeField.setToEnableWhenSelected(_connectionToSpecialFieldName,
-//					IWMemberConstants.META_DATA_CLUB_STATUS_SINGLE_DIVISION_CLUB);
-//		}
-		this._makeField.setSelectedElement(make);
-		this._regionalUnionField.setText((String) this.fieldValues.get(this._regionalUnionFieldName));
-		this._statusField.setSelectedElement((String) this.fieldValues.get(this._statusFieldName));
-		this._inOperationField.setChecked(((Boolean) this.fieldValues.get(this._inOperationFieldName)).booleanValue());
-		this._usingMemberSystemField.setChecked(((Boolean) this.fieldValues.get(this._usingMemberSystemFieldName)).booleanValue());
+		String number = (String) this.fieldValues.get(this.numberFieldName);
+		this.numberField.setContent(number);
+
+		this.ssnField.setContent((String) this.fieldValues
+				.get(this.ssnFieldName));
+		this.foundedField.setContent((String) this.fieldValues
+				.get(this.foundedFieldName));
+		this.memberUMFIField.setChecked(((Boolean) this.fieldValues
+				.get(this.memberUMFIFieldName)).booleanValue());
+		String make = (String) this.fieldValues.get(this.makeFieldName);
+		this.makeField.removeElements();
+		this.makeField.addMenuElement("-1", this.iwrb.getLocalizedString(
+				"clubinformationtab.choose_make", "Choose type..."));
+		this.makeField.addMenuElement(
+				IWMemberConstants.META_DATA_CLUB_STATUS_MULTI_DIVISION_CLUB,
+				this.iwrb.getLocalizedString(
+						"clubinformationtab.multi_division_club",
+						"Multi divisional"));
+		this.makeField.addMenuElement(
+				IWMemberConstants.META_DATA_CLUB_STATUS_NO_MEMBERS_CLUB,
+				this.iwrb
+						.getLocalizedString(
+								"clubinformationtab.club_with_no_players",
+								"No players"));
+		this.makeField.setSelectedElement(make);
+		this.regionalUnionField.setText((String) this.fieldValues
+				.get(this.regionalUnionFieldName));
+		this.statusField.setSelectedElement((String) this.fieldValues
+				.get(this.statusFieldName));
+		this.inOperationField.setChecked(((Boolean) this.fieldValues
+				.get(this.inOperationFieldName)).booleanValue());
+		this.usingMemberSystemField.setChecked(((Boolean) this.fieldValues
+				.get(this.usingMemberSystemFieldName)).booleanValue());
+		this.usingNetbokhaldField.setChecked(((Boolean) this.fieldValues
+				.get(this.usingNetbokhaldFieldName)).booleanValue());
 	}
 
 	/*
@@ -238,54 +236,42 @@ public class ClubInformationTab extends UserGroupTab {
 		IWContext iwc = IWContext.getInstance();
 		this.iwrb = getResourceBundle(iwc);
 		setName(this.iwrb.getLocalizedString(TAB_NAME, DEFAULT_TAB_NAME));
-		this._numberField = new TextInput(this._numberFieldName);
-		this._ssnField = new TextInput(this._ssnFieldName);
-		this._foundedField = new DateInput(this._foundedFieldName);
-		this._foundedField.setYearRange(1900, Calendar.getInstance().get(Calendar.YEAR));
-		//_typeField = new DropdownMenu(_typeFieldName);
-		this._memberUMFIField = new CheckBox(this._memberUMFIFieldName);
-		this._memberUMFIField.setWidth("10");
-		this._memberUMFIField.setHeight("10");
-		this._makeField = new DropdownMenu(this._makeFieldName);
-//		_connectionToSpecialField = new DropdownMenu(_connectionToSpecialFieldName);
-		this._regionalUnionField = new Text();
-		this._statusField = new DropdownMenu(this._statusFieldName);
-		this._inOperationField = new CheckBox(this._inOperationFieldName);
-		this._inOperationField.setWidth("10");
-		this._inOperationField.setHeight("10");
-		this._usingMemberSystemField = new CheckBox(this._usingMemberSystemFieldName);
-		this._usingMemberSystemField.setWidth("10");
-		this._usingMemberSystemField.setHeight("10");
-		this._statusField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATE_ACTIVE, this.iwrb.getLocalizedString(
-				"clubinformationtab.state_active", "Active"));
-		this._statusField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATE_INACTIVE, this.iwrb.getLocalizedString(
-				"clubinformationtab.state_inactive", "Inactive"));
-		this._statusField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATE_COMPETITION_BAN, this.iwrb.getLocalizedString(
-				"clubinformationtab.state_banned_from_comp", "Competition ban"));
-		this._statusField.setSelectedElement(IWMemberConstants.META_DATA_CLUB_STATE_ACTIVE);
-/*		List special = null;
-		try {
-			special = (List) ((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findGroupsByType(IWMemberConstants.GROUP_TYPE_LEAGUE);
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		if (special != null) {
-			final Collator collator = Collator.getInstance(iwc.getLocale());
-			Collections.sort(special, new Comparator() {
-
-				public int compare(Object arg0, Object arg1) {
-					return collator.compare(((Group) arg0).getName(), ((Group) arg1).getName());
-				}
-			});
-			_connectionToSpecialField.addMenuElement("-1", iwrb.getLocalizedString("clubinformationtab.choose_reg_un",
-					"Choose a regional union..."));
-			Iterator it = special.iterator();
-			while (it.hasNext()) {
-				Group spec = (Group) it.next();
-				_connectionToSpecialField.addMenuElement(((Integer) spec.getPrimaryKey()).intValue(), spec.getName());
-			}
-		}*/
+		this.numberField = new TextInput(this.numberFieldName);
+		this.ssnField = new TextInput(this.ssnFieldName);
+		this.foundedField = new DateInput(this.foundedFieldName);
+		this.foundedField.setYearRange(1900, Calendar.getInstance().get(
+				Calendar.YEAR));
+		this.memberUMFIField = new CheckBox(this.memberUMFIFieldName);
+		this.memberUMFIField.setWidth("10");
+		this.memberUMFIField.setHeight("10");
+		this.makeField = new DropdownMenu(this.makeFieldName);
+		this.regionalUnionField = new Text();
+		this.statusField = new DropdownMenu(this.statusFieldName);
+		this.inOperationField = new CheckBox(this.inOperationFieldName);
+		this.inOperationField.setWidth("10");
+		this.inOperationField.setHeight("10");
+		this.usingMemberSystemField = new CheckBox(
+				this.usingMemberSystemFieldName);
+		this.usingMemberSystemField.setWidth("10");
+		this.usingMemberSystemField.setHeight("10");
+		this.usingNetbokhaldField = new CheckBox(this.usingNetbokhaldFieldName);
+		this.usingNetbokhaldField.setWidth("10");
+		this.usingNetbokhaldField.setHeight("10");
+		this.statusField.addMenuElement(
+				IWMemberConstants.META_DATA_CLUB_STATE_ACTIVE, this.iwrb
+						.getLocalizedString("clubinformationtab.state_active",
+								"Active"));
+		this.statusField.addMenuElement(
+				IWMemberConstants.META_DATA_CLUB_STATE_INACTIVE,
+				this.iwrb.getLocalizedString(
+						"clubinformationtab.state_inactive", "Inactive"));
+		this.statusField.addMenuElement(
+				IWMemberConstants.META_DATA_CLUB_STATE_COMPETITION_BAN,
+				this.iwrb.getLocalizedString(
+						"clubinformationtab.state_banned_from_comp",
+						"Competition ban"));
+		this.statusField
+				.setSelectedElement(IWMemberConstants.META_DATA_CLUB_STATE_ACTIVE);
 	}
 
 	/*
@@ -296,27 +282,36 @@ public class ClubInformationTab extends UserGroupTab {
 	public void initializeTexts() {
 		IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
-		this._numberText = new Text(iwrb.getLocalizedString(this._numberFieldName, "Number"));
-		this._numberText.setBold();
-		this._ssnText = new Text(iwrb.getLocalizedString(this._ssnFieldName, "SSN"));
-		this._ssnText.setBold();
-		this._foundedText = new Text(iwrb.getLocalizedString(this._foundedFieldName, "Founded"));
-		this._foundedText.setBold();
-		this._memberUMFIText = new Text(iwrb.getLocalizedString(this._memberUMFIFieldName, "UMFI membership"));
-		this._memberUMFIText.setBold();
-		this._makeText = new Text(iwrb.getLocalizedString(this._makeFieldName, "Make"));
-		this._makeText.setBold();
-/*		_connectionToSpecialText = new Text(iwrb.getLocalizedString(_connectionToSpecialFieldName,
-				"Connection to special"));
-		_connectionToSpecialText.setBold();*/
-		this._regionalUnionText = new Text(iwrb.getLocalizedString(this._regionalUnionFieldName, "Regional union"));
-		this._regionalUnionText.setBold();
-		this._statusText = new Text(iwrb.getLocalizedString(this._statusFieldName, "Status"));
-		this._statusText.setBold();
-		this._inOperationText = new Text(iwrb.getLocalizedString(this._inOperationFieldName, "In operation"));
-		this._inOperationText.setBold();
-		this._usingMemberSystemText = new Text(iwrb.getLocalizedString(this._usingMemberSystemFieldName, "In member system"));
-		this._usingMemberSystemText.setBold();
+		this.numberText = new Text(iwrb.getLocalizedString(
+				this.numberFieldName, "Number"));
+		this.numberText.setBold();
+		this.ssnText = new Text(iwrb.getLocalizedString(this.ssnFieldName,
+				"SSN"));
+		this.ssnText.setBold();
+		this.foundedText = new Text(iwrb.getLocalizedString(
+				this.foundedFieldName, "Founded"));
+		this.foundedText.setBold();
+		this.memberUMFIText = new Text(iwrb.getLocalizedString(
+				this.memberUMFIFieldName, "UMFI membership"));
+		this.memberUMFIText.setBold();
+		this.makeText = new Text(iwrb.getLocalizedString(this.makeFieldName,
+				"Make"));
+		this.makeText.setBold();
+		this.regionalUnionText = new Text(iwrb.getLocalizedString(
+				this.regionalUnionFieldName, "Regional union"));
+		this.regionalUnionText.setBold();
+		this.statusText = new Text(iwrb.getLocalizedString(
+				this.statusFieldName, "Status"));
+		this.statusText.setBold();
+		this.inOperationText = new Text(iwrb.getLocalizedString(
+				this.inOperationFieldName, "In operation"));
+		this.inOperationText.setBold();
+		this.usingMemberSystemText = new Text(iwrb.getLocalizedString(
+				this.usingMemberSystemFieldName, "In member system"));
+		this.usingMemberSystemText.setBold();
+		this.usingNetbokhaldText = new Text(iwrb.getLocalizedString(
+				this.usingNetbokhaldFieldName, "Using Netbokhald"));
+		this.usingNetbokhaldText.setBold();
 	}
 
 	/*
@@ -327,15 +322,15 @@ public class ClubInformationTab extends UserGroupTab {
 	public void lineUpFields() {
 		String type = "";
 		try {
-			if(getGroupId()>0){
-				Group group = (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(getGroupId())));
+			if (getGroupId() > 0) {
+				Group group = (((GroupHome) com.idega.data.IDOLookup
+						.getHome(Group.class)).findByPrimaryKey(new Integer(
+						getGroupId())));
 				type = group.getGroupType();
 			}
-		}
-		catch (IDOLookupException e) {
+		} catch (IDOLookupException e) {
 			e.printStackTrace();
-		}
-		catch (FinderException e) {
+		} catch (FinderException e) {
 			e.printStackTrace();
 		}
 		empty();
@@ -343,40 +338,42 @@ public class ClubInformationTab extends UserGroupTab {
 		t.setWidth(Table.HUNDRED_PERCENT);
 		t.setCellpadding(5);
 		t.setCellspacing(0);
-		t.add(this._numberText, 1, 1);
+		t.add(this.numberText, 1, 1);
 		t.add(Text.getBreak(), 1, 1);
-		t.add(this._numberField, 1, 1);
-		t.add(this._ssnText, 2, 1);
+		t.add(this.numberField, 1, 1);
+		t.add(this.ssnText, 2, 1);
 		t.add(Text.getBreak(), 2, 1);
-		t.add(this._ssnField, 2, 1);
-		t.add(this._foundedText, 1, 2);
+		t.add(this.ssnField, 2, 1);
+		t.add(this.foundedText, 1, 2);
 		t.add(Text.getBreak(), 1, 2);
-		t.add(this._foundedField, 1, 2);
-		
-		if(IWMemberConstants.GROUP_TYPE_CLUB.equals(type)){
-			t.add(this._makeText, 2, 2);
+		t.add(this.foundedField, 1, 2);
+
+		if (IWMemberConstants.GROUP_TYPE_CLUB.equals(type)) {
+			t.add(this.makeText, 2, 2);
 			t.add(Text.getBreak(), 2, 2);
-			t.add(this._makeField, 2, 2);
-//			t.add(_connectionToSpecialText, 1, 3);
-//			t.add(Text.getBreak(), 1, 3);
-//			t.add(_connectionToSpecialField, 1, 3);
-			t.add(this._regionalUnionText, 2, 3);
+			t.add(this.makeField, 2, 2);
+			// t.add(_connectionToSpecialText, 1, 3);
+			// t.add(Text.getBreak(), 1, 3);
+			// t.add(_connectionToSpecialField, 1, 3);
+			t.add(this.regionalUnionText, 2, 3);
 			t.add(Text.getBreak(), 2, 3);
-			t.add(this._regionalUnionField, 2, 3);
+			t.add(this.regionalUnionField, 2, 3);
 		}
-		
-		t.add(this._statusText, 1, 4);
+
+		t.add(this.statusText, 1, 4);
 		t.add(Text.getBreak(), 1, 4);
-		t.add(this._statusField, 1, 4);
-		t.mergeCells(1, 5, 2, 5);
-		t.add(this._memberUMFIField, 1, 5);
-		t.add(this._memberUMFIText, 1, 5);
+		t.add(this.statusField, 1, 4);
+		// t.mergeCells(1, 5, 2, 5);
+		t.add(this.memberUMFIField, 1, 5);
+		t.add(this.memberUMFIText, 1, 5);
+		t.add(this.usingNetbokhaldField, 2, 5);
+		t.add(this.usingNetbokhaldText, 2, 5);
 		t.mergeCells(1, 6, 2, 6);
-		t.add(this._inOperationField, 1, 6);
-		t.add(this._inOperationText, 1, 6);
+		t.add(this.inOperationField, 1, 6);
+		t.add(this.inOperationText, 1, 6);
 		t.mergeCells(1, 7, 2, 7);
-		t.add(this._usingMemberSystemField, 1, 7);
-		t.add(this._usingMemberSystemText, 1, 7);
+		t.add(this.usingMemberSystemField, 1, 7);
+		t.add(this.usingMemberSystemText, 1, 7);
 		add(t);
 	}
 
@@ -391,61 +388,56 @@ public class ClubInformationTab extends UserGroupTab {
 	 */
 	public boolean collect(IWContext iwc) {
 		if (iwc != null) {
-			String number = iwc.getParameter(this._numberFieldName);
-			String ssn = iwc.getParameter(this._ssnFieldName);
-			String founded = iwc.getParameter(this._foundedFieldName);
-			String type = iwc.getParameter(this._typeFieldName);
-			String member = iwc.getParameter(this._memberUMFIFieldName);
-			String make = iwc.getParameter(this._makeFieldName);
-//			String connection = iwc.getParameter(_connectionToSpecialFieldName);
-			String status = iwc.getParameter(this._statusFieldName);
-			String inOperation = iwc.getParameter(this._inOperationFieldName);
-			String using = iwc.getParameter(this._usingMemberSystemFieldName);
+			String number = iwc.getParameter(this.numberFieldName);
+			String ssn = iwc.getParameter(this.ssnFieldName);
+			String founded = iwc.getParameter(this.foundedFieldName);
+			String type = iwc.getParameter(this.typeFieldName);
+			String member = iwc.getParameter(this.memberUMFIFieldName);
+			String make = iwc.getParameter(this.makeFieldName);
+			// String connection =
+			// iwc.getParameter(_connectionToSpecialFieldName);
+			String status = iwc.getParameter(this.statusFieldName);
+			String inOperation = iwc.getParameter(this.inOperationFieldName);
+			String using = iwc.getParameter(this.usingMemberSystemFieldName);
+			String netbokhald = iwc.getParameter(this.usingNetbokhaldFieldName);
 			if (number != null) {
-				this.fieldValues.put(this._numberFieldName, number);
-			}
-			else {
-				this.fieldValues.put(this._numberFieldName, "");
+				this.fieldValues.put(this.numberFieldName, number);
+			} else {
+				this.fieldValues.put(this.numberFieldName, "");
 			}
 			if (ssn != null) {
-				this.fieldValues.put(this._ssnFieldName, ssn);
-			}
-			else {
-				this.fieldValues.put(this._ssnFieldName, "");
+				this.fieldValues.put(this.ssnFieldName, ssn);
+			} else {
+				this.fieldValues.put(this.ssnFieldName, "");
 			}
 			if (founded != null) {
-				this.fieldValues.put(this._foundedFieldName, founded);
-			}
-			else {
-				this.fieldValues.put(this._foundedFieldName, "");
+				this.fieldValues.put(this.foundedFieldName, founded);
+			} else {
+				this.fieldValues.put(this.foundedFieldName, "");
 			}
 			if (type != null) {
-				this.fieldValues.put(this._typeFieldName, type);
+				this.fieldValues.put(this.typeFieldName, type);
+			} else {
+				this.fieldValues.put(this.typeFieldName, "");
 			}
-			else {
-				this.fieldValues.put(this._typeFieldName, "");
-			}
-			this.fieldValues.put(this._memberUMFIFieldName, new Boolean(member != null));
+			this.fieldValues.put(this.memberUMFIFieldName, new Boolean(
+					member != null));
 			if (make != null) {
-				this.fieldValues.put(this._makeFieldName, make);
+				this.fieldValues.put(this.makeFieldName, make);
+			} else {
+				this.fieldValues.put(this.makeFieldName, "");
 			}
-			else {
-				this.fieldValues.put(this._makeFieldName, "");
-			}
-/*			if (connection != null) {
-				fieldValues.put(_connectionToSpecialFieldName, connection);
-			}
-			else {
-				fieldValues.put(_connectionToSpecialFieldName, "");
-			}*/
 			if (status != null) {
-				this.fieldValues.put(this._statusFieldName, status);
+				this.fieldValues.put(this.statusFieldName, status);
+			} else {
+				this.fieldValues.put(this.statusFieldName, "");
 			}
-			else {
-				this.fieldValues.put(this._statusFieldName, "");
-			}
-			this.fieldValues.put(this._inOperationFieldName, new Boolean(inOperation != null));
-			this.fieldValues.put(this._usingMemberSystemFieldName, new Boolean(using != null));
+			this.fieldValues.put(this.inOperationFieldName, new Boolean(
+					inOperation != null));
+			this.fieldValues.put(this.usingMemberSystemFieldName, new Boolean(
+					using != null));
+			this.fieldValues.put(this.usingNetbokhaldFieldName, new Boolean(
+					netbokhald != null));
 			updateFieldsDisplayStatus();
 		}
 		return true;
@@ -459,68 +451,75 @@ public class ClubInformationTab extends UserGroupTab {
 	public boolean store(IWContext iwc) {
 		Group group;
 		try {
-			group = (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(
-					getGroupId())));
+			group = (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class))
+					.findByPrimaryKey(new Integer(getGroupId())));
 			String groupType = group.getGroupType();
-			
-			String number = (String) this.fieldValues.get(this._numberFieldName);
-			String ssn = (String) this.fieldValues.get(this._ssnFieldName);
-			String founded = (String) this.fieldValues.get(this._foundedFieldName);
-			
-			Boolean memberUMFI = (Boolean) this.fieldValues.get(this._memberUMFIFieldName);
-			String status = (String) this.fieldValues.get(this._statusFieldName);
-			Boolean inOperation = (Boolean) this.fieldValues.get(this._inOperationFieldName);
-			Boolean usingSystem = (Boolean) this.fieldValues.get(this._usingMemberSystemFieldName);
+
+			String number = (String) this.fieldValues.get(this.numberFieldName);
+			String ssn = (String) this.fieldValues.get(this.ssnFieldName);
+			String founded = (String) this.fieldValues
+					.get(this.foundedFieldName);
+
+			Boolean memberUMFI = (Boolean) this.fieldValues
+					.get(this.memberUMFIFieldName);
+			String status = (String) this.fieldValues.get(this.statusFieldName);
+			Boolean inOperation = (Boolean) this.fieldValues
+					.get(this.inOperationFieldName);
+			Boolean usingSystem = (Boolean) this.fieldValues
+					.get(this.usingMemberSystemFieldName);
+			Boolean usingNetbokhald = (Boolean) this.fieldValues
+					.get(this.usingNetbokhaldFieldName);
 			group.setMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER, number);
 			group.setMetaData(IWMemberConstants.META_DATA_CLUB_SSN, ssn);
-			group.setMetaData(IWMemberConstants.META_DATA_CLUB_FOUNDED, founded);
-			
+			group
+					.setMetaData(IWMemberConstants.META_DATA_CLUB_FOUNDED,
+							founded);
+
 			if (memberUMFI != null) {
-				group.setMetaData(IWMemberConstants.META_DATA_CLUB_IN_UMFI, memberUMFI.toString());
+				group.setMetaData(IWMemberConstants.META_DATA_CLUB_IN_UMFI,
+						memberUMFI.toString());
 			}
-			
-			if(IWMemberConstants.GROUP_TYPE_CLUB.equals(groupType)){
-				String make = (String) this.fieldValues.get(this._makeFieldName);
-//				String connection = (String) fieldValues.get(_connectionToSpecialFieldName);
-				String type = (String) this.fieldValues.get(this._typeFieldName);
+
+			if (IWMemberConstants.GROUP_TYPE_CLUB.equals(groupType)) {
+				String make = (String) this.fieldValues.get(this.makeFieldName);
+				String type = (String) this.fieldValues.get(this.typeFieldName);
 				group.setMetaData(IWMemberConstants.META_DATA_CLUB_TYPE, type);
 				group.setMetaData(IWMemberConstants.META_DATA_CLUB_MAKE, make);
-/*				if (make.equals(IWMemberConstants.META_DATA_CLUB_STATUS_SINGLE_DIVISION_CLUB)) {
-					String oldConnection = group.getMetaData(IWMemberConstants.META_DATA_CLUB_LEAGUE_CONNECTION);
-					if ((oldConnection == null || oldConnection.trim().equals("")) && connection != null) {
-						group.setMetaData(IWMemberConstants.META_DATA_CLUB_LEAGUE_CONNECTION, connection);
-						group.store();
-						getClubInformationPluginBusiness(iwc).createSpecialConnection(connection, getGroupId(),
-								group.getName(), iwc);
-					}
-				}
-				else {
-					group.setMetaData(IWMemberConstants.META_DATA_CLUB_LEAGUE_CONNECTION, "");
-				}*/
-				
 			}
-			
+
 			group.setMetaData(IWMemberConstants.META_DATA_CLUB_STATUS, status);
 			if (inOperation != null) {
-				group.setMetaData(IWMemberConstants.META_DATA_CLUB_OPERATION, inOperation.toString());
-			}
-			else {
-				group.setMetaData(IWMemberConstants.META_DATA_CLUB_OPERATION, Boolean.FALSE.toString());
+				group.setMetaData(IWMemberConstants.META_DATA_CLUB_OPERATION,
+						inOperation.toString());
+			} else {
+				group.setMetaData(IWMemberConstants.META_DATA_CLUB_OPERATION,
+						Boolean.FALSE.toString());
 			}
 			if (usingSystem != null) {
-				group.setMetaData(IWMemberConstants.META_DATA_CLUB_USING_SYSTEM, usingSystem.toString());
+				group.setMetaData(
+						IWMemberConstants.META_DATA_CLUB_USING_SYSTEM,
+						usingSystem.toString());
+			} else {
+				group.setMetaData(
+						IWMemberConstants.META_DATA_CLUB_USING_SYSTEM,
+						Boolean.FALSE.toString());
 			}
-			else {
-				group.setMetaData(IWMemberConstants.META_DATA_CLUB_USING_SYSTEM, Boolean.FALSE.toString());
+			if (usingNetbokhald != null) {
+				group.setMetaData(
+						ISIMemberConstants.META_DATA_CLUB_USING_NETBOKHALD,
+						usingNetbokhald.toString());
+			} else {
+				group.setMetaData(
+						ISIMemberConstants.META_DATA_CLUB_USING_NETBOKHALD,
+						Boolean.FALSE.toString());
 			}
-			//and store everything
+
+			// and store everything
 			group.store();
-		}
-		catch (RemoteException e) {
+		} catch (RemoteException e) {
 			e.printStackTrace(System.err);
 			return false;
-		}
-		catch (FinderException e) {
+		} catch (FinderException e) {
 			e.printStackTrace(System.err);
 			return false;
 		}
@@ -535,73 +534,84 @@ public class ClubInformationTab extends UserGroupTab {
 	public void initFieldContents() {
 		Group group;
 		try {
-			group = (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(
-					getGroupId())));
+			group = (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class))
+					.findByPrimaryKey(new Integer(getGroupId())));
 			List parents = group.getParentGroups();
 			Iterator it = parents.iterator();
 			String regional = null;
 			if (it != null) {
 				while (it.hasNext()) {
 					Group parent = (Group) it.next();
-					if (parent.getGroupType().equals(IWMemberConstants.GROUP_TYPE_REGIONAL_UNION)) {
+					if (parent.getGroupType().equals(
+							IWMemberConstants.GROUP_TYPE_REGIONAL_UNION)) {
 						regional = parent.getName();
 					}
 				}
 			}
-			String number = group.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER);
-			String ssn = group.getMetaData(IWMemberConstants.META_DATA_CLUB_SSN);
-			String founded = group.getMetaData(IWMemberConstants.META_DATA_CLUB_FOUNDED);
-			String type = group.getMetaData(IWMemberConstants.META_DATA_CLUB_TYPE);
-			String member = group.getMetaData(IWMemberConstants.META_DATA_CLUB_IN_UMFI);
-			String make = group.getMetaData(IWMemberConstants.META_DATA_CLUB_MAKE);
-//			String connection = group.getMetaData(IWMemberConstants.META_DATA_CLUB_LEAGUE_CONNECTION);
-			String status = group.getMetaData(IWMemberConstants.META_DATA_CLUB_STATUS);
-			String inOperation = group.getMetaData(IWMemberConstants.META_DATA_CLUB_OPERATION);
-			String using = group.getMetaData(IWMemberConstants.META_DATA_CLUB_USING_SYSTEM);
+			String number = group
+					.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER);
+			String ssn = group
+					.getMetaData(IWMemberConstants.META_DATA_CLUB_SSN);
+			String founded = group
+					.getMetaData(IWMemberConstants.META_DATA_CLUB_FOUNDED);
+			String type = group
+					.getMetaData(IWMemberConstants.META_DATA_CLUB_TYPE);
+			String member = group
+					.getMetaData(IWMemberConstants.META_DATA_CLUB_IN_UMFI);
+			String make = group
+					.getMetaData(IWMemberConstants.META_DATA_CLUB_MAKE);
+			String status = group
+					.getMetaData(IWMemberConstants.META_DATA_CLUB_STATUS);
+			String inOperation = group
+					.getMetaData(IWMemberConstants.META_DATA_CLUB_OPERATION);
+			String using = group
+					.getMetaData(IWMemberConstants.META_DATA_CLUB_USING_SYSTEM);
+			String netbokhald = group
+					.getMetaData(ISIMemberConstants.META_DATA_CLUB_USING_NETBOKHALD);
 			if (number != null) {
-				this.fieldValues.put(this._numberFieldName, number);
+				this.fieldValues.put(this.numberFieldName, number);
 			}
 			if (ssn != null) {
-				this.fieldValues.put(this._ssnFieldName, ssn);
+				this.fieldValues.put(this.ssnFieldName, ssn);
 			}
 			if (founded != null) {
-				this.fieldValues.put(this._foundedFieldName, founded);
+				this.fieldValues.put(this.foundedFieldName, founded);
 			}
 			if (type != null) {
-				this.fieldValues.put(this._typeFieldName, type);
+				this.fieldValues.put(this.typeFieldName, type);
 			}
-			this.fieldValues.put(this._memberUMFIFieldName, new Boolean(member));
+			this.fieldValues.put(this.memberUMFIFieldName, new Boolean(member));
 			if (make != null) {
-				this.fieldValues.put(this._makeFieldName, make);
+				this.fieldValues.put(this.makeFieldName, make);
 			}
-/*			if (connection != null) {
-				fieldValues.put(_connectionToSpecialFieldName, connection);
-			}*/
 			if (regional != null) {
-				this.fieldValues.put(this._regionalUnionFieldName, regional);
+				this.fieldValues.put(this.regionalUnionFieldName, regional);
 			}
 			if (status != null) {
-				this.fieldValues.put(this._statusFieldName, status);
+				this.fieldValues.put(this.statusFieldName, status);
 			}
-			this.fieldValues.put(this._inOperationFieldName, new Boolean(inOperation));
-			this.fieldValues.put(this._usingMemberSystemFieldName, new Boolean(using));
+			this.fieldValues.put(this.inOperationFieldName, new Boolean(
+					inOperation));
+			this.fieldValues.put(this.usingMemberSystemFieldName, new Boolean(
+					using));
+			this.fieldValues.put(this.usingNetbokhaldFieldName, new Boolean(
+					netbokhald));
 			updateFieldsDisplayStatus();
-		}
-		catch (RemoteException e) {
+		} catch (RemoteException e) {
 			e.printStackTrace(System.err);
-		}
-		catch (FinderException e) {
+		} catch (FinderException e) {
 			e.printStackTrace(System.err);
 		}
 	}
 
-	public ClubInformationPluginBusiness getClubInformationPluginBusiness(IWApplicationContext iwc) {
+	public ClubInformationPluginBusiness getClubInformationPluginBusiness(
+			IWApplicationContext iwc) {
 		ClubInformationPluginBusiness business = null;
 		try {
-			business = (ClubInformationPluginBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc,
-					ClubInformationPluginBusiness.class);
-		}
-		catch (java.rmi.RemoteException rme) {
+			business = (ClubInformationPluginBusiness) com.idega.business.IBOLookup
+					.getServiceInstance(iwc,
+							ClubInformationPluginBusiness.class);
+		} catch (java.rmi.RemoteException rme) {
 			throw new RuntimeException(rme.getMessage());
 		}
 		return business;
@@ -610,10 +620,9 @@ public class ClubInformationTab extends UserGroupTab {
 	public MemberUserBusiness getMemberUserBusiness(IWApplicationContext iwc) {
 		MemberUserBusiness business = null;
 		try {
-			business = (MemberUserBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc,
-					MemberUserBusiness.class);
-		}
-		catch (java.rmi.RemoteException rme) {
+			business = (MemberUserBusiness) com.idega.business.IBOLookup
+					.getServiceInstance(iwc, MemberUserBusiness.class);
+		} catch (java.rmi.RemoteException rme) {
 			throw new RuntimeException(rme.getMessage());
 		}
 		return business;

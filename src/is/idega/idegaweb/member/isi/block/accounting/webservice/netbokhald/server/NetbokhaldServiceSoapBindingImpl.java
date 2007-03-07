@@ -72,8 +72,8 @@ public class NetbokhaldServiceSoapBindingImpl
 				while (it.hasNext()) {
 					FinanceEntry entry = (FinanceEntry) it.next();
 
-					String key = "22100";
-					String counterKey = "87180";
+					String key = null;
+					String counterKey = null;
 					if (entry.getType().equals(
 							FinanceEntryBMPBean.TYPE_ASSESSMENT)
 							|| entry.getType().equals(
@@ -84,8 +84,15 @@ public class NetbokhaldServiceSoapBindingImpl
 							NetbokhaldAccountingKeys netbokhaldKey = (NetbokhaldAccountingKeys) keys
 									.get(new Integer(entry.getTariffTypeID()));
 							if (netbokhaldKey != null) {
-								key = netbokhaldKey.getDebetKey();
+								key = netbokhaldKey.getDebitKey();
 								counterKey = netbokhaldKey.getCreditKey();
+							} else {
+								netbokhaldKey = (NetbokhaldAccountingKeys) keys
+										.get(new Integer(-1));
+								if (netbokhaldKey != null) {
+									key = netbokhaldKey.getDebitKey();
+									counterKey = netbokhaldKey.getCreditKey();
+								}
 							}
 						}
 					} else if (entry.getType().equals(
@@ -97,26 +104,33 @@ public class NetbokhaldServiceSoapBindingImpl
 									.get((Integer) entry.getPaymentType()
 											.getPrimaryKey());
 							if (netbokhaldKey != null) {
-								key = netbokhaldKey.getDebetKey();
+								key = netbokhaldKey.getDebitKey();
 								counterKey = netbokhaldKey.getCreditKey();
+							} else {
+								netbokhaldKey = (NetbokhaldAccountingKeys) keys
+										.get(new Integer(-1));
+								if (netbokhaldKey != null) {
+									key = netbokhaldKey.getDebitKey();
+									counterKey = netbokhaldKey.getCreditKey();
+								}
 							}
 						}
-					} else {
-						key = "22100";
-						counterKey = "87180";
 					}
 
-					if (key == null) {
-						key = "22100";
-					}
+					if (key == null || counterKey == null) {
+						NetbokhaldEntry errorEntry[] = new NetbokhaldEntry[1];
+						errorEntry[0] = new NetbokhaldEntry();
+						errorEntry[0].setAccountingKey("-9999");
+						errorEntry[0]
+								.setText("Accounting keys undefinded for entry "
+										+ entry.getType());
 
-					if (counterKey == null) {
-						counterKey = "87180";
+						return errorEntry;
 					}
 
 					entries[i] = new NetbokhaldEntry();
 					entries[i].setAccountingKey(key);
-						entries[i].setAmount(-entry.getAmount());
+					entries[i].setAmount(entry.getAmount());
 					entries[i].setCustomer(entry.getUser().getPersonalID());
 					entries[i].setCustomerNumber(-1);
 					GregorianCalendar cal = new GregorianCalendar();
@@ -149,7 +163,7 @@ public class NetbokhaldServiceSoapBindingImpl
 					i++;
 					entries[i] = new NetbokhaldEntry();
 					entries[i].setAccountingKey(counterKey);
-					entries[i].setAmount(entry.getAmount());
+					entries[i].setAmount(-entry.getAmount());
 					entries[i].setCustomer(entry.getUser().getPersonalID());
 					entries[i].setCustomerNumber(-1);
 					entries[i].setDateOfEntry(cal);
@@ -175,9 +189,9 @@ public class NetbokhaldServiceSoapBindingImpl
 					while (it.hasNext()) {
 						DiscountEntry discEntry = (DiscountEntry) it.next();
 						FinanceEntry entry = discEntry.getFinanceEntry();
-						
-						String key = "22100";
-						String counterKey = "87180";
+
+						String key = null;
+						String counterKey = null;
 						if (entry.getType().equals(
 								FinanceEntryBMPBean.TYPE_ASSESSMENT)
 								|| entry.getType().equals(
@@ -189,26 +203,34 @@ public class NetbokhaldServiceSoapBindingImpl
 										.get(new Integer(entry
 												.getTariffTypeID()));
 								if (netbokhaldKey != null) {
-									key = netbokhaldKey.getDebetKey();
+									key = netbokhaldKey.getDebitKey();
 									counterKey = netbokhaldKey.getCreditKey();
+								} else {
+									netbokhaldKey = (NetbokhaldAccountingKeys) keys
+											.get(new Integer(-1));
+									if (netbokhaldKey != null) {
+										key = netbokhaldKey.getDebitKey();
+										counterKey = netbokhaldKey
+												.getCreditKey();
+									}
 								}
 							}
-						}  else {
-							key = "22100";
-							counterKey = "87180";
 						}
 
-						if (key == null) {
-							key = "22100";
-						}
+						if (key == null || counterKey == null) {
+							NetbokhaldEntry errorEntry[] = new NetbokhaldEntry[1];
+							errorEntry[0] = new NetbokhaldEntry();
+							errorEntry[0].setAccountingKey("-9999");
+							errorEntry[0]
+									.setText("Accounting keys undefinded for discount entry "
+											+ entry.getType());
 
-						if (counterKey == null) {
-							counterKey = "87180";
+							return errorEntry;
 						}
 
 						entries[i] = new NetbokhaldEntry();
 						entries[i].setAccountingKey(key);
-						entries[i].setAmount(entry.getDiscountAmount());
+						entries[i].setAmount(-entry.getDiscountAmount());
 						entries[i].setCustomer(entry.getUser().getPersonalID());
 						entries[i].setCustomerNumber(-1);
 						GregorianCalendar cal = new GregorianCalendar();
@@ -242,7 +264,7 @@ public class NetbokhaldServiceSoapBindingImpl
 						i++;
 						entries[i] = new NetbokhaldEntry();
 						entries[i].setAccountingKey(counterKey);
-							entries[i].setAmount(-entry.getDiscountAmount());
+						entries[i].setAmount(entry.getDiscountAmount());
 						entries[i].setCustomer(entry.getUser().getPersonalID());
 						entries[i].setCustomerNumber(-1);
 						entries[i].setDateOfEntry(cal);
