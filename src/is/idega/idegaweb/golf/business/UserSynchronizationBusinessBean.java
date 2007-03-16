@@ -426,7 +426,7 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 								postalToAreaCode.put(new Integer(postalCode), zip.getIDInteger());
 							}
 							catch (FinderException e) {
-								System.out.print("z");
+								System.out.println("UserSynchronizationBusinessBean - zip code not found: " + address.getPostalCode().getPostalCode()+ ", "+e.getMessage());
 								// System.out.println("UserSynchronizationBusinessBean
 								// : zip code not found :
 								// "+address.getPostalCode().getPostalCode());
