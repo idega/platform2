@@ -1,40 +1,33 @@
-/**
- * 
- */
 package com.idega.block.finance.business;
-
-import java.util.Date;
-import java.util.List;
 
 
 import com.idega.block.finance.data.AccountEntry;
-import com.idega.block.finance.data.EntryGroup;
-import com.idega.business.IBOService;
+import javax.ejb.CreateException;
 import com.idega.util.IWTimestamp;
+import java.util.Date;
+import com.idega.business.IBOService;
+import java.util.List;
+import com.idega.block.finance.data.EntryGroup;
+import java.rmi.RemoteException;
 
-/**
- * @author bluebottle
- *
- */
 public interface AssessmentBusiness extends IBOService {
 	/**
 	 * @see com.idega.block.finance.business.AssessmentBusinessBean#groupEntriesWithSQL
 	 */
 	public EntryGroup groupEntriesWithSQL(IWTimestamp from, IWTimestamp to,
 			IWTimestamp paymentDate, IWTimestamp dueDate) throws Exception,
-			java.rmi.RemoteException;
+			RemoteException;
 
 	/**
 	 * @see com.idega.block.finance.business.AssessmentBusinessBean#groupEntries
 	 */
 	public void groupEntries(IWTimestamp from, IWTimestamp to)
-			throws Exception, java.rmi.RemoteException;
+			throws Exception, RemoteException;
 
 	/**
 	 * @see com.idega.block.finance.business.AssessmentBusinessBean#getGroupEntryCount
 	 */
-	public int getGroupEntryCount(EntryGroup entryGroup)
-			throws java.rmi.RemoteException;
+	public int getGroupEntryCount(EntryGroup entryGroup) throws RemoteException;
 
 	/**
 	 * @see com.idega.block.finance.business.AssessmentBusinessBean#assessTariffsToAccount
@@ -43,7 +36,7 @@ public interface AssessmentBusiness extends IBOService {
 			Integer accountID, Integer accountKeyID, Date paydate,
 			Integer tariffGroupID, Integer financeCategoryID,
 			Integer externalID, boolean save, Integer assessmentRound)
-			throws java.rmi.RemoteException;
+			throws CreateException, RemoteException;
 
 	/**
 	 * @see com.idega.block.finance.business.AssessmentBusinessBean#assessTariffsToAccount
@@ -52,7 +45,7 @@ public interface AssessmentBusiness extends IBOService {
 			Double[] multiplyFactors, Integer accountID, Date paydate,
 			int discount, Integer tariffGroupID, Integer financeCategoryID,
 			Integer externalID, Integer assessmentRound)
-			throws java.rmi.RemoteException;
+			throws RemoteException, RemoteException;
 
 	/**
 	 * @see com.idega.block.finance.business.AssessmentBusinessBean#assessTariffsToAccount
@@ -60,8 +53,7 @@ public interface AssessmentBusiness extends IBOService {
 	public void assessTariffsToAccount(List tariffs, List multiplyFactors,
 			Integer accountID, Date paydate, int discount,
 			Integer tariffGroupID, Integer financeCategoryID,
-			Integer externalID, Integer assessmentRound)
-			throws java.rmi.RemoteException;
+			Integer externalID, Integer assessmentRound) throws RemoteException;
 
 	/**
 	 * @see com.idega.block.finance.business.AssessmentBusinessBean#createAccountEntry
@@ -70,7 +62,7 @@ public interface AssessmentBusiness extends IBOService {
 			Integer accountKeyID, Integer cashierID, Integer roundID,
 			float netto, float VAT, float total, Date paydate, String Name,
 			String Info, String status, Integer externalID)
-			throws java.rmi.RemoteException, javax.ejb.CreateException;
+			throws RemoteException, CreateException, RemoteException;
 
 	/**
 	 * @see com.idega.block.finance.business.AssessmentBusinessBean#createAccountEntry
@@ -79,18 +71,16 @@ public interface AssessmentBusiness extends IBOService {
 			Integer accountKeyID, Integer cashierID, Integer roundID,
 			float netto, float VAT, float total, Date paydate, String Name,
 			String Info, String status, Integer externalID, String division)
-			throws java.rmi.RemoteException, javax.ejb.CreateException;
+			throws RemoteException, CreateException, RemoteException;
 
 	/**
 	 * @see com.idega.block.finance.business.AssessmentBusinessBean#rollBackAssessment
 	 */
 	public boolean rollBackAssessment(Integer assessmentRoundId)
-			throws java.rmi.RemoteException;
+			throws RemoteException;
 
 	/**
 	 * @see com.idega.block.finance.business.AssessmentBusinessBean#publishAssessment
 	 */
-	public void publishAssessment(Integer roundId)
-			throws java.rmi.RemoteException;
-
+	public void publishAssessment(Integer roundId) throws RemoteException;
 }

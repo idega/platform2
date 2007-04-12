@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.65.4.6 2007/02/19 16:59:05 palli Exp $
+ * $Id: CampusApprover.java,v 1.65.4.7 2007/04/12 12:18:16 palli Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -260,9 +260,12 @@ public class CampusApprover extends CampusBlock {
 	}
 
 	private void updateApplicationStatus(IWContext iwc) throws RemoteException {
+		String intervalString = getBundle().getProperty("TRANSFER_INTERVAL", "5");
+		int transferInterval = 5;
+		transferInterval = Integer.parseInt(intervalString);
 		String status = iwc.getParameter(PRM_STATUS);
 		setValuesForPreviousAndNextApplication(iwc);
-		boolean statusChanged = applicationService.storeApplicationStatus(applicationID, status);
+		boolean statusChanged = applicationService.storeApplicationStatus(applicationID, status, transferInterval);
 		if (statusChanged) {
 			if (next_application_id.intValue() != -1) {
 				applicationID = next_application_id;
@@ -281,7 +284,7 @@ public class CampusApprover extends CampusBlock {
 
 	private void trashApplication(int id) throws RemoteException {
 		// int id = Integer.parseInt(iwc.getParameter("application_id"));
-		applicationService.storeApplicationStatus(new Integer(id), Status.GARBAGE.toString());
+		applicationService.storeApplicationStatus(new Integer(id), Status.GARBAGE.toString(), -1);
 	}
 
 	private void updateWholeApplication(IWContext iwc) {
@@ -375,8 +378,7 @@ public class CampusApprover extends CampusBlock {
 					else
 						col++;
 					T.add(getText(cypher), col++, row);
-					String Name = A.getFirstName() + " " + A.getMiddleName() + " " + A.getLastName();
-					T.add(getText(Name), col++, row);
+					T.add(getText(A.getFullName()), col++, row);
 					T.add(getText(A.getSSN() != null ? A.getSSN() : ""), col++, row);
 					T.add(getText(A.getLegalResidence() != null ? A.getLegalResidence() : ""), col++, row);
 					T.add(getText(A.getResidence() != null ? A.getResidence() : ""), col++, row);
@@ -388,7 +390,7 @@ public class CampusApprover extends CampusBlock {
 					T.add(getCampusApplicationLink(viewImage, ((Integer) campusApplication.getPrimaryKey()), i), col++,
 							row);
 					T.add(getTrashLink(trashImage, ((Integer) campusApplication.getPrimaryKey())), col, row);
-					T.add(getText(new IWTimestamp(a.getSubmitted()).getDateString("dd.MM.yyyy HH:mm:ss")), col, row);
+					//T.add(getText(new IWTimestamp(a.getSubmitted()).getDateString("dd.MM.yyyy HH:mm:ss")), col, row);
 					if (lastcol < col)
 						lastcol = col;
 					i++;
@@ -1607,13 +1609,13 @@ public class CampusApprover extends CampusBlock {
 		drp.addMenuElement("submitted", localize("submitted", "Submitted"));
 		drp.addMenuElement(com.idega.block.application.data.ApplicantBMPBean.getFullnameOrderValue(), localize("name",
 				"Name"));
-		drp.addMenuElement(com.idega.block.application.data.ApplicantBMPBean.getSSNColumnName(), localize("ssn",
+		drp.addMenuElement(com.idega.block.application.data.ApplicantBMPBean.COLUMN_SSN, localize("ssn",
 				"Socialnumber"));
-		drp.addMenuElement(com.idega.block.application.data.ApplicantBMPBean.getLegalResidenceColumnName(), localize(
+		drp.addMenuElement(com.idega.block.application.data.ApplicantBMPBean.COLUMN_LEGAL_RESIDENCE, localize(
 				"legal_residence", "Legal Residence"));
-		drp.addMenuElement(com.idega.block.application.data.ApplicantBMPBean.getResidenceColumnName(), localize(
+		drp.addMenuElement(com.idega.block.application.data.ApplicantBMPBean.COLUMN_RESIDENCE, localize(
 				"residence", "Residence"));
-		drp.addMenuElement(com.idega.block.application.data.ApplicantBMPBean.getResidenceColumnName(), localize(
+		drp.addMenuElement(com.idega.block.application.data.ApplicantBMPBean.COLUMN_PHONE, localize(
 				"phone", "Residence phone"));
 		drp.setSelectedElement(selected);
 		return drp;

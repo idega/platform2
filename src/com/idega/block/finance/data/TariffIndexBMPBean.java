@@ -17,6 +17,8 @@ import com.idega.block.category.data.CategoryEntityBMPBean;
 public class TariffIndexBMPBean extends CategoryEntityBMPBean implements
 		TariffIndex {
 
+	public static final String ENTITY_NAME = "FIN_TARIFF_INDEX";
+
 	public static final String A = "A", B = "B", C = "C", D = "D", E = "E";
 
 	public static final String indexType = "ABCDEFGHIJK";
@@ -44,7 +46,7 @@ public class TariffIndexBMPBean extends CategoryEntityBMPBean implements
 	}
 
 	public static String getTariffIndexEntityName() {
-		return "FIN_TARIFF_INDEX";
+		return ENTITY_NAME;
 	}
 
 	public static String getColumnNameNewValue() {

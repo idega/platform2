@@ -3,6 +3,7 @@ package is.idega.idegaweb.campus.webservice.nortek.client;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.GregorianCalendar;
 
 import javax.xml.rpc.ServiceException;
 
@@ -20,8 +21,8 @@ public class TestClient {
 			NortekService port = service.getNortekService(new URL("http://www.studentagardar.is/services/NortekService"));
 
 			//System.out.println("port.banCard(1234) = " + port.banCard("01050010D7"));
-			System.out.println("port.isCardValid(1234) = " + port.isCardValid("0105000E39"));
-			//System.out.println("port.addAmount(1234) = " + port.addAmountToCard("01050010D7", new GregorianCalendar(), 100.0d, "1"));			
+			//System.out.println("port.isCardValid(1234) = " + port.isCardValid("0105000D84"));
+			System.out.println("port.addAmount(1234) = " + port.addAmountToCard("0105000D84", new GregorianCalendar(), 100.0d, "1"));			
 		} catch (ServiceException e) {
 			e.printStackTrace();
 		} catch (RemoteException e) {

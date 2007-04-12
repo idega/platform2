@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicantBMPBean.java,v 1.5.2.2 2007/02/19 16:59:02 palli Exp $
+ * $Id: ApplicantBMPBean.java,v 1.5.2.3 2007/04/12 12:18:20 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -15,272 +15,160 @@ import java.util.StringTokenizer;
 
 import javax.ejb.FinderException;
 
+import com.idega.data.TreeableEntityBMPBean;
+
 /**
  * 
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class ApplicantBMPBean extends com.idega.data.TreeableEntityBMPBean
-		implements com.idega.block.application.data.Applicant {
-	private static final String ENTITY_NAME = "app_applicant";
+public class ApplicantBMPBean extends TreeableEntityBMPBean implements
+		Applicant {
+	public static final String ENTITY_NAME = "app_applicant";
 
-	private static final String FIRST_NAME = "first_name";
+	public static final String COLUMN_FIRST_NAME = "first_name";
 
-	private static final String MIDDLE_NAME = "middle_name";
+	public static final String COLUMN_MIDDLE_NAME = "middle_name";
 
-	private static final String LAST_NAME = "last_name";
+	public static final String COLUMN_LAST_NAME = "last_name";
 
-	private static final String FULL_NAME = "full_name";
+	public static final String COLUMN_FULL_NAME = "full_name";
 
-	private static final String SSN = "ssn";
+	public static final String COLUMN_SSN = "ssn";
 
-	private static final String LEGAL_RESIDENCE = "legal_residence";
+	public static final String COLUMN_LEGAL_RESIDENCE = "legal_residence";
 
-	private static final String RESIDENCE = "residence";
+	public static final String COLUMN_RESIDENCE = "residence";
 
-	private static final String PHONE = "residence_phone";
+	public static final String COLUMN_PHONE = "residence_phone";
 
-	private static final String PO = "po";
+	public static final String COLUMN_PO = "po";
 
-	private static final String MOBILE_PHONE = "mobile_phone";
+	public static final String COLUMN_MOBILE_PHONE = "mobile_phone";
 
-	private static final String SEND_SMS = "send_sms";
+	public static final String COLUMN_SEND_SMS = "send_sms";
 
-	private static final String STATUS = "status";
+	public static final String COLUMN_STATUS = "status";
 
-	/**
-	 * 
-	 */
 	public ApplicantBMPBean() {
 		super();
 	}
 
-	/**
-	 * 
-	 */
 	public ApplicantBMPBean(int id) throws SQLException {
 		super(id);
 	}
 
-	/**
-	 * 
-	 */
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		addAttribute(getFirstNameColumnName(), "First name", true, true,
-				"java.lang.String", 255);
-		addAttribute(getMiddleNameColumnName(), "Middle name", true, true,
-				"java.lang.String", 255);
-		addAttribute(getLastNameColumnName(), "Last name", true, true,
-				"java.lang.String", 255);
-		addAttribute(getFullNameColumnName(), "Full name", true, true,
-				"java.lang.String", 255);
-		addAttribute(getSSNColumnName(), "Social security number", true, true,
-				"java.lang.String", 20);
-		addAttribute(getLegalResidenceColumnName(), "Legal residence", true,
-				true, "java.lang.String", 255);
-		addAttribute(getResidenceColumnName(), "Residence", true, true,
-				"java.lang.String", 255);
-		addAttribute(getResidencePhoneColumnName(), "Telephone", true, true,
-				"java.lang.String", 40);
-		addAttribute(getPOColumnName(), "Post office", true, true,
-				"java.lang.String", 255);
-		addAttribute(getMobilePhoneColumnName(), "Mobile phone", true, true,
-				"java.lang.String", 40);
-		addAttribute(getSendSMSColumnName(), "Send SMS", true, true,
-				"java.lang.String", 1);
-		addAttribute(getStatusColumnName(), "Status", true, true,
-				"java.lang.String", 1);
+		addAttribute(COLUMN_FIRST_NAME, "First name", String.class, 255);
+		addAttribute(COLUMN_MIDDLE_NAME, "Middle name", String.class, 255);
+		addAttribute(COLUMN_LAST_NAME, "Last name", String.class, 255);
+		addAttribute(COLUMN_FULL_NAME, "Full name", String.class, 255);
+		addAttribute(COLUMN_SSN, "Social security number", String.class, 20);
+		addAttribute(COLUMN_LEGAL_RESIDENCE, "Legal residence", String.class, 255);
+		addAttribute(COLUMN_RESIDENCE, "Residence", String.class, 255);
+		addAttribute(COLUMN_PHONE, "Telephone", String.class, 40);
+		addAttribute(COLUMN_PO, "Post office", String.class, 255);
+		addAttribute(COLUMN_MOBILE_PHONE, "Mobile phone", String.class, 40);
+		addAttribute(COLUMN_SEND_SMS, "Send SMS", String.class, 1);
+		addAttribute(COLUMN_STATUS, "Status", String.class, 1);
 	}
 
-	/**
-	 * 
-	 */
 	public String getEntityName() {
-		return (ENTITY_NAME);
+		return ENTITY_NAME;
 	}
 
-	/**
-	 * 
-	 */
 	public static String getEntityTableName() {
-		return (ENTITY_NAME);
+		return ENTITY_NAME;
 	}
 
-	/**
-	 * 
-	 */
-	public static String getFirstNameColumnName() {
-		return (FIRST_NAME);
-	}
-
-	/**
-	 * 
-	 */
-	public static String getMiddleNameColumnName() {
-		return (MIDDLE_NAME);
-	}
-
-	/**
-	 * 
-	 */
-	public static String getLastNameColumnName() {
-		return (LAST_NAME);
-	}
-
-	/**
-	 * 
-	 */
-	public static String getFullNameColumnName() {
-		return (FULL_NAME);
-	}
-
-	/**
-	 * 
-	 */
-	public static String getSSNColumnName() {
-		return (SSN);
-	}
-
-	/**
-	 * 
-	 */
-	public static String getLegalResidenceColumnName() {
-		return (LEGAL_RESIDENCE);
-	}
-
-	/**
-	 * 
-	 */
-	public static String getResidenceColumnName() {
-		return (RESIDENCE);
-	}
-
-	/**
-	 * 
-	 */
-	public static String getResidencePhoneColumnName() {
-		return (PHONE);
-	}
-
-	/**
-	 * 
-	 */
-	public static String getPOColumnName() {
-		return (PO);
-	}
-
-	/**
-	 * 
-	 */
-	public static String getMobilePhoneColumnName() {
-		return (MOBILE_PHONE);
-	}
-
-	/**
-	 * 
-	 */
-	public static String getSendSMSColumnName() {
-		return (SEND_SMS);
-	}
-
-	/**
-	 * 
-	 */
-	public static String getStatusColumnName() {
-		return (STATUS);
-	}
-
-	/**
-	 * 
-	 */
 	public static String getFullnameOrderValue() {
-		StringBuffer ret = new StringBuffer(getFirstNameColumnName());
+		StringBuffer ret = new StringBuffer(COLUMN_FIRST_NAME);
 		ret.append(",");
-		ret.append(getMiddleNameColumnName());
+		ret.append(COLUMN_MIDDLE_NAME);
 		ret.append(",");
-		ret.append(getLastNameColumnName());
+		ret.append(COLUMN_LAST_NAME);
 		return (ret.toString());
 	}
 
 	public void setFirstName(String name) {
-		setColumn(getFirstNameColumnName(), name);
+		setColumn(COLUMN_FIRST_NAME, name);
 	}
 
 	public String getFirstName() {
-		return (getStringColumnValue(getFirstNameColumnName()));
+		return (getStringColumnValue(COLUMN_FIRST_NAME));
 	}
 
 	public void setMiddleName(String name) {
-		setColumn(getMiddleNameColumnName(), name);
+		setColumn(COLUMN_MIDDLE_NAME, name);
 	}
 
 	public String getMiddleName() {
-		return (getStringColumnValue(getMiddleNameColumnName()));
+		return (getStringColumnValue(COLUMN_MIDDLE_NAME));
 	}
 
 	public void setLastName(String name) {
-		setColumn(getLastNameColumnName(), name);
+		setColumn(COLUMN_LAST_NAME, name);
 	}
 
 	public String getLastName() {
-		return (getStringColumnValue(getLastNameColumnName()));
+		return (getStringColumnValue(COLUMN_LAST_NAME));
 	}
 
 	private void setFullName() {
-		setColumn(getFullNameColumnName(), getFullName());
+		setColumn(COLUMN_FULL_NAME, getFullName());
 	}
 
 	public void setSSN(String ssn) {
-		setColumn(getSSNColumnName(), ssn);
+		setColumn(COLUMN_SSN, ssn);
 	}
 
 	public String getSSN() {
-		return (getStringColumnValue(getSSNColumnName()));
+		return (getStringColumnValue(COLUMN_SSN));
 	}
 
 	public void setLegalResidence(String legal) {
-		setColumn(getLegalResidenceColumnName(), legal);
+		setColumn(COLUMN_LEGAL_RESIDENCE, legal);
 	}
 
 	public String getLegalResidence() {
-		return (getStringColumnValue(getLegalResidenceColumnName()));
+		return (getStringColumnValue(COLUMN_LEGAL_RESIDENCE));
 	}
 
 	public void setResidence(String residence) {
-		setColumn(getResidenceColumnName(), residence);
+		setColumn(COLUMN_RESIDENCE, residence);
 	}
 
 	public String getResidence() {
-		return (getStringColumnValue(getResidenceColumnName()));
+		return (getStringColumnValue(COLUMN_RESIDENCE));
 	}
 
 	public void setResidencePhone(String phone) {
-		setColumn(getResidencePhoneColumnName(), phone);
+		setColumn(COLUMN_PHONE, phone);
 	}
 
 	public String getResidencePhone() {
-		return (getStringColumnValue(getResidencePhoneColumnName()));
+		return (getStringColumnValue(COLUMN_PHONE));
 	}
 
 	public void setPO(String po) {
-		setColumn(getPOColumnName(), po);
+		setColumn(COLUMN_PO, po);
 	}
 
 	public String getPO() {
-		return (getStringColumnValue(getPOColumnName()));
+		return (getStringColumnValue(COLUMN_PO));
 	}
 
 	public void setMobilePhone(String mobilePhone) {
-		setColumn(getMobilePhoneColumnName(), mobilePhone);
+		setColumn(COLUMN_MOBILE_PHONE, mobilePhone);
 	}
 
 	public String getMobilePhone() {
-		return (getStringColumnValue(getMobilePhoneColumnName()));
+		return (getStringColumnValue(COLUMN_MOBILE_PHONE));
 	}
 
 	public boolean getSendSMS() {
-		String send = getStringColumnValue(getSendSMSColumnName());
+		String send = getStringColumnValue(COLUMN_SEND_SMS);
 		if ((send == null) || (send.equalsIgnoreCase("n"))) {
 			return (false);
 		} else if (send.equalsIgnoreCase("y")) {
@@ -292,18 +180,18 @@ public class ApplicantBMPBean extends com.idega.data.TreeableEntityBMPBean
 
 	public void setSendSMS(boolean send) {
 		if (send) {
-			setColumn(getSendSMSColumnName(), "Y");
+			setColumn(COLUMN_SEND_SMS, "Y");
 		} else {
-			setColumn(getSendSMSColumnName(), "N");
+			setColumn(COLUMN_SEND_SMS, "N");
 		}
 	}
 
 	public void setStatus(String status) {
-		setColumn(getStatusColumnName(), status);
+		setColumn(COLUMN_STATUS, status);
 	}
 
 	public String getStatus() {
-		return getStringColumnValue(getStatusColumnName());
+		return getStringColumnValue(COLUMN_STATUS);
 	}
 
 	public String getName() {
@@ -311,10 +199,22 @@ public class ApplicantBMPBean extends com.idega.data.TreeableEntityBMPBean
 	}
 
 	public String getFullName() {
-		return (getFirstName() != null ? getFirstName() : "") + " "
-				+ (getMiddleName() != null ? getMiddleName() : "") + " "
-				+ (getLastName() != null ? getLastName() : "");
+		StringBuffer fullName = new StringBuffer("");
+		if (getFirstName() != null) {
+			fullName.append(getFirstName());
+			fullName.append(" ");
+		}
 
+		if (getMiddleName() != null) {
+			fullName.append(getMiddleName());
+			fullName.append(" ");
+		}
+
+		if (getLastName() != null) {
+			fullName.append(getLastName());
+		}
+
+		return fullName.toString();
 	}
 
 	public void setFullName(String fullName) {
@@ -352,7 +252,7 @@ public class ApplicantBMPBean extends com.idega.data.TreeableEntityBMPBean
 			throws javax.ejb.FinderException {
 
 		return super.idoFindPKsByQuery(super.idoQueryGetSelect()
-				.appendWhereEqualsQuoted(getSSNColumnName(), SSN));
+				.appendWhereEqualsQuoted(COLUMN_SSN, SSN));
 
 	}
 

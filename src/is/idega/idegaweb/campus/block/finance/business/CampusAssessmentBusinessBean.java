@@ -330,6 +330,8 @@ public class CampusAssessmentBusinessBean extends AssessmentBusinessBean impleme
 		return aprtEntry;
 	}
 
+	
+	
 	/* (non-Javadoc)
 	 * @see com.idega.block.finance.business.AssessmentBusiness#createAccountEntry(java.lang.Integer, java.lang.Integer, java.lang.Integer, java.lang.Integer, float, float, float, java.util.Date, java.lang.String, java.lang.String, java.lang.String, java.lang.Integer)
 	 */

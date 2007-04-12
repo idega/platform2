@@ -212,7 +212,7 @@ public class AssessmentBusinessBean extends IBOServiceBean implements Assessment
 
 	public void assessTariffsToAccount(float price, String name, String info, Integer accountID, Integer accountKeyID,
 			Date paydate, Integer tariffGroupID, Integer financeCategoryID, Integer externalID, boolean save,
-			Integer assessmentRound) {
+			Integer assessmentRound) throws CreateException {
 		javax.transaction.UserTransaction transaction = this.getSessionContext().getUserTransaction();
 		try {
 			transaction.begin();
@@ -250,9 +250,9 @@ public class AssessmentBusinessBean extends IBOServiceBean implements Assessment
 			catch (Exception ex) {
 				ex.printStackTrace();
 			}
-			e.printStackTrace();
+			
+			throw new CreateException(e.getMessage());
 		}
-
 	}
 
 	public void assessTariffsToAccount(Integer[] tariffIds, Double[] multiplyFactors, Integer accountID, Date paydate,
@@ -357,6 +357,7 @@ public class AssessmentBusinessBean extends IBOServiceBean implements Assessment
 	public AccountEntry createAccountEntry(Integer accountID, Integer accountKeyID, Integer cashierID, Integer roundID,
 			float netto, float VAT, float total, Date paydate, String Name, String Info, String status,
 			Integer externalID) throws java.rmi.RemoteException, javax.ejb.CreateException {
+		
 		return createAccountEntry(accountID, accountKeyID, cashierID, roundID, netto, VAT, total, paydate, Name, Info, status, externalID, "");
 	}
 

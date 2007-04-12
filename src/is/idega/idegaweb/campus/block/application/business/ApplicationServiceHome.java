@@ -1,25 +1,10 @@
-/*
- * Created on 11.8.2004
- *
- * Copyright (C) 2004 Idega hf. All Rights Reserved.
- *
- *  This software is the proprietary information of Idega hf.
- *  Use is subject to license terms.
- */
 package is.idega.idegaweb.campus.block.application.business;
 
 
-
-
+import javax.ejb.CreateException;
 import com.idega.business.IBOHome;
+import java.rmi.RemoteException;
 
-/**
- * @author aron
- *
- * ApplicationServiceHome TODO Describe this type
- */
 public interface ApplicationServiceHome extends IBOHome {
-    public ApplicationService create() throws javax.ejb.CreateException,
-            java.rmi.RemoteException;
-
+	public ApplicationService create() throws CreateException, RemoteException;
 }

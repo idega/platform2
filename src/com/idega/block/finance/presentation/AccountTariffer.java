@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
@@ -128,7 +129,11 @@ public class AccountTariffer extends Finance {
 			if (iwc.isParameterSet(prmAccountId)) {
 				this.accountId = Integer.valueOf(iwc.getParameter(prmAccountId));
 				if (this.accountId != null && this.accountId.intValue() > 0) {
-					parse(iwc);
+					try {
+						parse(iwc);
+					} catch (CreateException e1) {
+						e1.printStackTrace();
+					}
 					try {
 						this.account = getFinanceService()
 								.getAccountHome().findByPrimaryKey(this.accountId);
@@ -164,7 +169,7 @@ public class AccountTariffer extends Finance {
 		}
 	}
 
-	private void parse(IWContext iwc) throws java.rmi.RemoteException {
+	private void parse(IWContext iwc) throws java.rmi.RemoteException, CreateException {
 		if (iwc.isParameterSet(PARAM_CONFIRM)
 				&& iwc.getParameter(PARAM_CONFIRM).equals("true")) {
 			String paydate = iwc.getParameter(PARAM_PAYMENT_DATE);
@@ -248,7 +253,7 @@ public class AccountTariffer extends Finance {
 	protected void createTariff(IWContext iwc, IWTimestamp paymentDate,
 			Integer tariffkeyID, int amount, Integer tariffGroupID,
 			String name, String info, boolean saveTariff,
-			Integer assessmentRound) throws RemoteException {
+			Integer assessmentRound) throws RemoteException, CreateException {
 		getAssessmentService(iwc).assessTariffsToAccount(amount, name, info,
 				this.accountId, tariffkeyID, paymentDate.getSQLDate(),
 				tariffGroupID, getFinanceCategoryId(), this.externalID, saveTariff,

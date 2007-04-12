@@ -78,7 +78,7 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 		}
 	}
 
-	public boolean storeApplicationStatus(Integer ID, String status) {
+	public boolean storeApplicationStatus(Integer ID, String status, int transferInterval) {
 		UserTransaction t = getSessionContext().getUserTransaction();
 		try {
 			t.begin();
@@ -93,7 +93,7 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 				// send out approval letter ( try to do with listeners )
 				getMailingListService().processMailEvent(new EntityHolder(Appli), LetterParser.APPROVAL);
 				// make transfers on waitinglists
-				createWaitinglistTransfers(Appli, CA);
+				createWaitinglistTransfers(Appli, CA, transferInterval);
 			}
 			else if (status.equals(Status.REJECTED.toString())) {
 				getMailingListService().processMailEvent(new EntityHolder(Appli), LetterParser.REJECTION);
@@ -117,7 +117,7 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 		return false;
 	}
 
-	public void createWaitinglistTransfers(Applicant Appli, CampusApplication CA) throws CreateException,
+	public void createWaitinglistTransfers(Applicant Appli, CampusApplication CA, int transferInterval) throws CreateException,
 			RemoteException, FinderException, SQLException {
 		if (CA != null) {
 			Collection L = getAppliedHome().findByApplicationID(((Integer) CA.getPrimaryKey()));
@@ -149,7 +149,7 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 					else if (level.equals("T")) {
 						wl.setPriorityLevelC();
 						wl.setTypeTransfer();
-						wl = getRightPlaceForTransfer(wl);
+						wl = getRightPlaceForTransfer(wl, transferInterval);
 					}
 					wl.store();
 				}
@@ -802,16 +802,16 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 		return maxId;
 	}
 
-	public WaitingList getRightPlaceForTransfer(WaitingList wl) throws RemoteException, FinderException {
+	public WaitingList getRightPlaceForTransfer(WaitingList wl, int transferInterval) throws RemoteException, FinderException {
 		int cmplx = wl.getComplexId().intValue();
 		int aprttype = wl.getApartmentTypeId().intValue();
 		int lastTransfer = getMaxTransferInWaitingList(aprttype, cmplx);
 		Collection transfers = getWaitingListHome().findNextForTransferByApartmentTypeAndComplex(aprttype, cmplx,
 				lastTransfer);
-		if (transfers.size() > 4) {
+		if (transfers.size() > (transferInterval - 1)) {
 			java.util.Iterator it = transfers.iterator();
 			WaitingList wl2 = null;
-			for (int i = 0; i < 4; i++)
+			for (int i = 0; i < (transferInterval - 1); i++)
 				wl2 = (WaitingList) it.next();
 			wl.setOrder(wl2.getOrder());
 		}

@@ -89,10 +89,14 @@ public class NortekBusinessBean extends IBOServiceBean implements
 			NortekSetup setup = getNortekSetupHome().findEntry();
 			Contract contract = getCampusAssessmentBusiness().findContractForUser(user);
 			Integer division = new Integer(contract.getApartment().getFloor().getBuilding().getDivision());
-			String name = setup.getAccountKey().getName();
+			//String name = setup.getAccountKey().getName();
 			String info = setup.getAccountKey().getInfo();
 			
-			getCampusAssessmentBusiness().assessTariffsToAccount((float)amount, name, info, (Integer) account.getPrimaryKey(), (Integer) setup.getAccountKey().getPrimaryKey(), timestamp, (Integer) setup.getTariffGroup().getPrimaryKey(), (Integer) setup.getFinanceCategory().getPrimaryKey(), division, false, null); 
+			IWTimestamp today = IWTimestamp.RightNow();
+			today.addMonths(1);
+			today.setDay(1);
+
+			getCampusAssessmentBusiness().assessTariffsToAccount((float)amount, info, info, (Integer) account.getPrimaryKey(), (Integer) setup.getAccountKey().getPrimaryKey(), today.getDate(), (Integer) setup.getTariffGroup().getPrimaryKey(), (Integer) setup.getFinanceCategory().getPrimaryKey(), contract.getApartmentId(), false, null); 
 			
 			addLogEntry(card, IWTimestamp.RightNow(), new IWTimestamp(timestamp), ACTION_ADD, Double.toString(amount), terminalNumber, false, null, serialNumber);
 		} catch (Exception e) {

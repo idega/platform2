@@ -1,24 +1,16 @@
-/**
- * 
- */
 package com.idega.block.finance.business;
 
 
-
+import javax.ejb.CreateException;
 import com.idega.business.IBOHomeImpl;
 
-/**
- * @author bluebottle
- *
- */
 public class AssessmentBusinessHomeImpl extends IBOHomeImpl implements
 		AssessmentBusinessHome {
-	protected Class getBeanInterfaceClass() {
+	public Class getBeanInterfaceClass() {
 		return AssessmentBusiness.class;
 	}
 
-	public AssessmentBusiness create() throws javax.ejb.CreateException {
+	public AssessmentBusiness create() throws CreateException {
 		return (AssessmentBusiness) super.createIBO();
 	}
-
 }
