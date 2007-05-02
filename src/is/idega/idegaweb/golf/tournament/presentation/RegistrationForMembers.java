@@ -165,7 +165,7 @@ public class RegistrationForMembers extends GolfBlock {
       Member member = (is.idega.idegaweb.golf.entity.Member) AccessControl.getMember(modinfo);
 
       boolean isMemberValid = true;
-      if (tournament.getIsClosed()) {
+      if (!tournament.getIfOpenTournament()) {
     	  	try {
     	  		isMemberValid = false;
 			Union mUnion = member.getMainUnion();
