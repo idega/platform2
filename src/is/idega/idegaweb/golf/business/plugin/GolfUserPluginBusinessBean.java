@@ -1,5 +1,5 @@
 /*
- * $Id: GolfUserPluginBusinessBean.java,v 1.13.4.4 2006/03/30 14:55:22 eiki Exp $
+ * $Id: GolfUserPluginBusinessBean.java,v 1.13.4.5 2007/05/21 09:32:40 sigtryggur Exp $
  * Created on Nov 15, 2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -51,10 +51,10 @@ import com.idega.util.ListUtil;
 
 /**
  * A user application plugin for various golf specific stuff such as the Golfer
- * Info tab. Last modified: $Date: 2006/03/30 14:55:22 $ by $Author: eiki $
+ * Info tab. Last modified: $Date: 2007/05/21 09:32:40 $ by $Author: sigtryggur $
  * 
  * @author <a href="mailto:eiki@idega.com">Eirikur S. Hrafnsson</a>
- * @version $Revision: 1.13.4.4 $
+ * @version $Revision: 1.13.4.5 $
  */
 public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGroupPlugInBusiness,
 		GolfUserPluginBusiness {
@@ -103,7 +103,7 @@ public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGr
 		if (mainClub == null) {
 			mainClub = "";
 		}
-		String golfURL = "http://www.golf.is/?";
+		String golfURL = "http://www.golf.is/pages/?";
 		String requestToGolf = "";
 		try {
 			requestToGolf = GolfConstants.SUB_CLUBS_META_DATA_KEY + "=" + URLEncoder.encode(subClubs, "ISO-8859-1")
