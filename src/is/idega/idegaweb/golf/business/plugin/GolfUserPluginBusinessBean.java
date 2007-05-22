@@ -1,5 +1,5 @@
 /*
- * $Id: GolfUserPluginBusinessBean.java,v 1.13.4.5 2007/05/21 09:32:40 sigtryggur Exp $
+ * $Id: GolfUserPluginBusinessBean.java,v 1.13.4.6 2007/05/22 23:18:45 sigtryggur Exp $
  * Created on Nov 15, 2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -51,13 +51,15 @@ import com.idega.util.ListUtil;
 
 /**
  * A user application plugin for various golf specific stuff such as the Golfer
- * Info tab. Last modified: $Date: 2007/05/21 09:32:40 $ by $Author: sigtryggur $
+ * Info tab. Last modified: $Date: 2007/05/22 23:18:45 $ by $Author: sigtryggur $
  * 
  * @author <a href="mailto:eiki@idega.com">Eirikur S. Hrafnsson</a>
- * @version $Revision: 1.13.4.5 $
+ * @version $Revision: 1.13.4.6 $
  */
 public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGroupPlugInBusiness,
 		GolfUserPluginBusiness {
+
+	public static final String GOLF_IS_URI_ENCODING = "UTF-8";
 
 	public static final String WS_ERROR_MSG_4_NO_PERSON_FOUND_WITH_THE_SOCIAL_SECURITY_NUMBER = "-4, No person found with the social security number : ";
 	public static final String WS_MSG_SUCCESS = "success";
@@ -95,6 +97,8 @@ public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGr
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterUserCreateOrUpdate(com.idega.user.data.User)
 	 */
 	public void afterUserCreateOrUpdate(User user, Group parentGroup) throws CreateException, RemoteException {
+		String encoding = this.getIWMainApplication().getSettings().getProperty("golf.is.uri.encoding", GOLF_IS_URI_ENCODING);
+
 		String subClubs = user.getMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY);
 		String mainClub = user.getMetaData(GolfConstants.MAIN_CLUB_META_DATA_KEY);
 		if (subClubs == null) {
@@ -106,14 +110,14 @@ public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGr
 		String golfURL = "http://www.golf.is/pages/?";
 		String requestToGolf = "";
 		try {
-			requestToGolf = GolfConstants.SUB_CLUBS_META_DATA_KEY + "=" + URLEncoder.encode(subClubs, "ISO-8859-1")
-					+ "&" + GolfConstants.MAIN_CLUB_META_DATA_KEY + "=" + URLEncoder.encode(mainClub, "ISO-8859-1")
-					+ "&" + GolfConstants.MEMBER_UUID + "=" + URLEncoder.encode(user.getUniqueId(), "ISO-8859-1") + "&"
-					+ GolfConstants.MEMBER_PIN + "=" + URLEncoder.encode(user.getPersonalID(), "ISO-8859-1") + "&"
-					+ GolfConstants.MEMBER_NAME + "=" + URLEncoder.encode(user.getName(), "ISO-8859-1");
+			requestToGolf = GolfConstants.SUB_CLUBS_META_DATA_KEY + "=" + URLEncoder.encode(subClubs, encoding)
+					+ "&" + GolfConstants.MAIN_CLUB_META_DATA_KEY + "=" + URLEncoder.encode(mainClub, encoding)
+					+ "&" + GolfConstants.MEMBER_UUID + "=" + URLEncoder.encode(user.getUniqueId(), encoding) + "&"
+					+ GolfConstants.MEMBER_PIN + "=" + URLEncoder.encode(user.getPersonalID(), encoding) + "&"
+					+ GolfConstants.MEMBER_NAME + "=" + URLEncoder.encode(user.getName(), encoding);
 			if (user.getDateOfBirth() != null) {
 				requestToGolf = requestToGolf + "&" + GolfConstants.MEMBER_DATE_OF_BIRTH + "="
-						+ URLEncoder.encode(user.getDateOfBirth().toString(), "ISO-8859-1");
+						+ URLEncoder.encode(user.getDateOfBirth().toString(), encoding);
 			}
 			Gender genderBean = user.getGender();
 			if (genderBean != null) {
@@ -124,7 +128,7 @@ public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGr
 				else {
 					gender = "F";
 				}
-				requestToGolf += "&" + GolfConstants.MEMBER_GENDER + "=" + URLEncoder.encode(gender, "ISO-8859-1");
+				requestToGolf += "&" + GolfConstants.MEMBER_GENDER + "=" + URLEncoder.encode(gender, encoding);
 			}
 		}
 		catch (UnsupportedEncodingException e) {
@@ -611,7 +615,7 @@ public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGr
 	public Map getGolferInfo(String ssn) throws Exception{
 		Map info = new HashMap();
 		UserBusiness userBiz = getUserBusiness();
-		
+	
 		try {
 			User user = userBiz.getUser(ssn);
 			//general stuff
@@ -619,14 +623,14 @@ public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGr
 			info.put("ssn", user.getPersonalID());
 			info.put("date-of-birth", user.getDateOfBirth().toString());
 			info.put("gender", user.getGender().getName());
-			
+	
 			//address
 			Address address = userBiz.getUsersMainAddress(user); 
 			if(address!=null){
 				String addressString = getAddressBusiness().getFullAddressString(address);
 				info.put("address",addressString);
 			}
-			
+	
 			//email
 			Collection emails = user.getEmails();
 			if (emails != null && !emails.isEmpty()) {
@@ -694,5 +698,5 @@ public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGr
 		return (AddressBusiness) IBOLookup.getServiceInstance(IWMainApplication.getDefaultIWApplicationContext(),
 				AddressBusiness.class);
 	}
-	
+
 }
