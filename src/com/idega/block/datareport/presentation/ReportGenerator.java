@@ -87,6 +87,7 @@ public class ReportGenerator extends Block {
 	private static final String PDF_FORMAT = "pdf";
 	private static final String EXCEL_FORMAT = "excel";
 	private static final String SIMPLE_EXCEL_FORMAT = "simple_excel";
+	private static final String DEFAULT_REPORT_NAME = "Generated Report";
 	public final static String STYLE = "font-family:arial; font-size:8pt; color:#000000; text-align: justify; border: 1 solid #000000;";
 	public final static String STYLE_2 = "font-family:arial; font-size:8pt; color:#000000; text-align: justify;";
 	public final static String PRIFIX_PRM = "dr_";
@@ -115,7 +116,7 @@ public class ReportGenerator extends Block {
 
 	private String _prmLablePrefix = "label_";
 
-	private String _reportName = "Generated Report";
+	private String _reportName = DEFAULT_REPORT_NAME;
 	private boolean _canChangeReportName = true;
 	private boolean _showReportNameInputIfCannotChangeIt = false;
 	private String PRM_REPORT_NAME = "report_name";
@@ -574,8 +575,8 @@ public class ReportGenerator extends Block {
 
 	public void main(IWContext iwc) throws Exception {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
-		if (!iwc.isParameterSet(this.PRM_REPORT_NAME)) {
-			this._reportName = iwrb.getLocalizedString(this.PRM_REPORT_NAME, this._reportName);
+		if (!iwc.isParameterSet(this.PRM_REPORT_NAME) && this._reportName.equals(DEFAULT_REPORT_NAME)) {
+			this._reportName = iwrb.getLocalizedString(this.PRM_REPORT_NAME, DEFAULT_REPORT_NAME);
 		}
 		
 		try {
