@@ -15,6 +15,8 @@ import com.idega.block.building.data.Apartment;
 import com.idega.block.building.data.ApartmentCategory;
 import com.idega.block.building.data.ApartmentCategoryHome;
 import com.idega.block.building.data.ApartmentHome;
+import com.idega.block.building.data.ApartmentSubcategory;
+import com.idega.block.building.data.ApartmentSubcategoryHome;
 import com.idega.block.building.data.ApartmentType;
 import com.idega.block.building.data.ApartmentTypeHome;
 import com.idega.block.building.data.ApartmentView;
@@ -23,8 +25,8 @@ import com.idega.block.building.data.Building;
 import com.idega.block.building.data.BuildingHome;
 import com.idega.block.building.data.Complex;
 import com.idega.block.building.data.ComplexHome;
-import com.idega.block.building.data.ComplexTypeView;
-import com.idega.block.building.data.ComplexTypeViewHome;
+import com.idega.block.building.data.ComplexSubcategoryView;
+import com.idega.block.building.data.ComplexSubcategoryViewHome;
 import com.idega.block.building.data.Floor;
 import com.idega.block.building.data.FloorHome;
 import com.idega.block.building.data.Room;
@@ -66,7 +68,7 @@ public class BuildingServiceBean extends IBOServiceBean implements
 			if (flashPageID != null && !"".equals(flashPageID)) {
 				complex.setFlashPageID(Integer.valueOf(flashPageID).intValue());
 			}
-			
+
 			complex.setLocked(locked.booleanValue());
 			complex.store();
 		} catch (IDOStoreException e) {
@@ -108,10 +110,10 @@ public class BuildingServiceBean extends IBOServiceBean implements
 			if (textID != null && textID.intValue() > 0) {
 				building.setTextId(textID.intValue());
 			}
-			
+
 			building.setLocked(locked.booleanValue());
 			building.store();
-			
+
 			return building;
 		} catch (IDOStoreException e) {
 			e.printStackTrace();
@@ -190,9 +192,49 @@ public class BuildingServiceBean extends IBOServiceBean implements
 		return null;
 	}
 
+	public ApartmentSubcategory storeSubcategory(Integer categoryID, Integer subcategoryID,
+			String name, String info, Integer imageID, Integer textID) {
+		try {
+			ApartmentSubcategory subcategory = null;
+			if (subcategoryID != null && subcategoryID.intValue() > 0) {
+				subcategory = getApartmentSubcategoryHome().findByPrimaryKey(
+						categoryID);
+			} else {
+				subcategory = getApartmentSubcategoryHome().create();
+			}
+			ApartmentCategory aprtCat = null;
+			if (categoryID != null && categoryID.intValue() > 0) {
+				aprtCat = getApartmentCategoryHome().findByPrimaryKey(
+						categoryID);
+			}
+			
+			subcategory.setApartmentCategory(aprtCat);
+			subcategory.setName(name);
+			subcategory.setInfo(info);
+			if (imageID != null && imageID.intValue() > 0) {
+				subcategory.setImage(imageID);
+			}
+			if (textID != null && textID.intValue() > 0) {
+				subcategory.setTextId(textID.intValue());
+			}
+			subcategory.store();
+			return subcategory;
+		} catch (IDOStoreException e) {
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (CreateException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	
 	public ApartmentType storeApartmentType(Integer typeID, String name,
 			String info, String abbrev, String extraInfo, Integer planID,
-			Integer imageID, Integer categoryID, Integer textID, Double area,
+			Integer imageID, Integer subcategoryID, Integer textID, Double area,
 			Integer roomcount, Integer rent, Boolean balcony, Boolean bath,
 			Boolean kitchen, Boolean storage, Boolean study, Boolean furniture,
 			Boolean loft, Boolean locked) {
@@ -218,7 +260,7 @@ public class BuildingServiceBean extends IBOServiceBean implements
 			if (textID != null && textID.intValue() > 0) {
 				type.setTextId(textID.intValue());
 			}
-			type.setApartmentCategoryId(categoryID);
+			type.setApartmentSubcategory(subcategoryID);
 			type.setArea(area);
 			type.setRoomCount(roomcount);
 			type.setRent(rent);
@@ -233,7 +275,7 @@ public class BuildingServiceBean extends IBOServiceBean implements
 			type.setLocked(locked.booleanValue());
 
 			type.store();
-			
+
 			return type;
 		} catch (IDOStoreException e) {
 			e.printStackTrace();
@@ -273,7 +315,7 @@ public class BuildingServiceBean extends IBOServiceBean implements
 			}
 
 			apartment.setSerialNumber(apartmentSerialNumber);
-			
+
 			apartment.store();
 			return apartment;
 		} catch (IDOStoreException e) {
@@ -379,6 +421,20 @@ public class BuildingServiceBean extends IBOServiceBean implements
 		}
 	}
 
+	public void removeSubcategory(Integer subcategoryID) {
+		try {
+			ApartmentSubcategory apCat = getApartmentSubcategoryHome()
+					.findByPrimaryKey(subcategoryID);
+			apCat.remove();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		} catch (RemoveException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public void removeRoom(Integer roomID) {
 
 	}
@@ -419,6 +475,11 @@ public class BuildingServiceBean extends IBOServiceBean implements
 		return (ApartmentCategoryHome) getIDOHome(ApartmentCategory.class);
 	}
 
+	public ApartmentSubcategoryHome getApartmentSubcategoryHome()
+			throws RemoteException {
+		return (ApartmentSubcategoryHome) getIDOHome(ApartmentSubcategory.class);
+	}
+
 	public RoomHome getRoomHome() throws RemoteException {
 		return (RoomHome) getIDOHome(Room.class);
 	}
@@ -427,7 +488,7 @@ public class BuildingServiceBean extends IBOServiceBean implements
 		return (ApartmentViewHome) getIDOHome(ApartmentView.class);
 	}
 
-	public ComplexTypeViewHome getComplexTypeViewHome() throws RemoteException {
-		return (ComplexTypeViewHome) getIDOHome(ComplexTypeView.class);
+	public ComplexSubcategoryViewHome getComplexSubcategoryViewHome() throws RemoteException {
+		return (ComplexSubcategoryViewHome) getIDOHome(ComplexSubcategoryView.class);
 	}
 }

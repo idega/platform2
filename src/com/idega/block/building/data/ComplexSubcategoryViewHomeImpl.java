@@ -8,30 +8,36 @@ import com.idega.data.IDOCreateException;
 import com.idega.data.IDOEntity;
 import com.idega.data.IDOFactory;
 
-public class ComplexTypeViewHomeImpl extends IDOFactory implements ComplexTypeViewHome {
+public class ComplexSubcategoryViewHomeImpl extends IDOFactory implements
+		ComplexSubcategoryViewHome {
 	public Class getEntityInterfaceClass() {
-		return ComplexTypeView.class;
+		return ComplexSubcategoryView.class;
 	}
 
-	public ComplexTypeView create() throws CreateException {
-		return (ComplexTypeView) super.createIDO();
+	public ComplexSubcategoryView create() throws CreateException {
+		return (ComplexSubcategoryView) super.createIDO();
 	}
 
-	public ComplexTypeView findByPrimaryKey(Object pk) throws FinderException {
-		return (ComplexTypeView) super.findByPrimaryKeyIDO(pk);
+	public ComplexSubcategoryView findByPrimaryKey(Object pk)
+			throws FinderException {
+		return (ComplexSubcategoryView) super.findByPrimaryKeyIDO(pk);
 	}
 
-	public ComplexTypeView findByPrimaryKey(ComplexTypeViewKey primaryKey) throws FinderException {
+	public ComplexSubcategoryView findByPrimaryKey(ComplexSubcategoryViewKey primaryKey)
+			throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
-		Object pk = ((ComplexTypeViewBMPBean) entity).ejbFindByPrimaryKey(primaryKey);
+		Object pk = ((ComplexSubcategoryViewBMPBean) entity)
+				.ejbFindByPrimaryKey(primaryKey);
 		this.idoCheckInPooledEntity(entity);
 		return this.findByPrimaryKey(pk);
 	}
 
-	public ComplexTypeView create(ComplexTypeViewKey primaryKey) throws CreateException {
+	public ComplexSubcategoryView create(ComplexSubcategoryViewKey primaryKey)
+			throws CreateException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
-		Object pk = ((ComplexTypeViewBMPBean) entity).ejbCreate(primaryKey);
-		((ComplexTypeViewBMPBean) entity).ejbPostCreate();
+		Object pk = ((ComplexSubcategoryViewBMPBean) entity)
+				.ejbCreate(primaryKey);
+		((ComplexSubcategoryViewBMPBean) entity).ejbPostCreate();
 		this.idoCheckInPooledEntity(entity);
 		try {
 			return findByPrimaryKey(pk);
@@ -44,14 +50,15 @@ public class ComplexTypeViewHomeImpl extends IDOFactory implements ComplexTypeVi
 
 	public Collection findAll() throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
-		Collection ids = ((ComplexTypeViewBMPBean) entity).ejbFindAll();
+		Collection ids = ((ComplexSubcategoryViewBMPBean) entity).ejbFindAll();
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
 	public Collection findByCategory(Integer categoryID) throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
-		Collection ids = ((ComplexTypeViewBMPBean) entity).ejbFindByCategory(categoryID);
+		Collection ids = ((ComplexSubcategoryViewBMPBean) entity)
+				.ejbFindByCategory(categoryID);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}

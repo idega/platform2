@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.76.4.3 2006/11/17 10:43:37 palli Exp $
+ * $Id: CampusAllocator.java,v 1.76.4.4 2007/05/24 02:07:17 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -49,15 +49,14 @@ import com.idega.block.application.data.Application;
 import com.idega.block.application.data.ApplicationHome;
 import com.idega.block.application.data.ApplicationSubject;
 import com.idega.block.application.data.Status;
-import com.idega.block.building.business.ApartmentTypeComplexHelper;
+import com.idega.block.building.business.ApartmentSubcategoryComplexHelper;
 import com.idega.block.building.data.Apartment;
 import com.idega.block.building.data.ApartmentCategory;
-import com.idega.block.building.data.ApartmentType;
+import com.idega.block.building.data.ApartmentSubcategory;
+import com.idega.block.building.data.ApartmentSubcategoryHome;
 import com.idega.block.building.data.ApartmentView;
 import com.idega.block.building.data.Building;
 import com.idega.block.building.data.Complex;
-import com.idega.block.building.data.ComplexTypeView;
-import com.idega.block.building.data.ComplexTypeViewHome;
 import com.idega.block.building.data.Floor;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -91,9 +90,11 @@ public class CampusAllocator extends CampusBlock implements Campus {
 
 	private static final String PRM_ALLOCATE = "allocate";
 
-	private static final String COMPLEX_ID = "cplx_id";
+	//private static final String COMPLEX_ID = "cplx_id";
 
-	private static final String TYPE_ID = "type_id";
+	//private static final String TYPE_ID = "type_id";
+	
+	private static final String SUBCATEGORY_ID = "subcat_id";
 
 	private int acceptanceSeconds = 60 * 60 * 24 * 3; // default 3 days
 
@@ -119,11 +120,13 @@ public class CampusAllocator extends CampusBlock implements Campus {
 
 	private ListIterator iterator = null;
 
-	private Integer typeID, complexID;
+//	private Integer typeID, complexID;
+	private Integer subcatID;//, complexID;
 
-	private ApartmentType apartmentType = null;
+//	private ApartmentType apartmentType = null;
+	private ApartmentSubcategory subcategory = null;	
 
-	private Complex complex = null;
+	//private Complex complex = null;
 
 	private CampusService campusService = null;
 
@@ -134,8 +137,9 @@ public class CampusAllocator extends CampusBlock implements Campus {
 
 	private Integer monthOverlap = new Integer(1);
 
-	private Parameter pTypeId = null, pComplexId = null;
-
+//	private Parameter pTypeId = null, pComplexId = null;
+	private Parameter pSubcatId = null;//, pComplexId = null;
+	
 	private String redColor = "#942829";
 
 	private String sGlobalStatus = "S";
@@ -167,19 +171,19 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		/*
 		 * if (iwc.getParameter("list") != null) { }
 		 */
-		if (iwc.getParameter(TYPE_ID) != null) {
-			pTypeId = new Parameter(TYPE_ID, iwc.getParameter(TYPE_ID));
-			typeID = Integer.valueOf(iwc.getParameter(TYPE_ID));
+		if (iwc.getParameter(SUBCATEGORY_ID) != null) {
+			pSubcatId = new Parameter(SUBCATEGORY_ID, iwc.getParameter(SUBCATEGORY_ID));
+			subcatID = Integer.valueOf(iwc.getParameter(SUBCATEGORY_ID));
 			try {
-				apartmentType = campusService.getBuildingService()
-						.getApartmentTypeHome().findByPrimaryKey(typeID);
+				subcategory = campusService.getBuildingService()
+						.getApartmentSubcategoryHome().findByPrimaryKey(subcatID);
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			} catch (FinderException e) {
 				e.printStackTrace();
 			}
 		}
-		if (iwc.getParameter(COMPLEX_ID) != null) {
+		/*if (iwc.getParameter(COMPLEX_ID) != null) {
 			pComplexId = new Parameter(COMPLEX_ID, iwc.getParameter(COMPLEX_ID));
 			complexID = Integer.valueOf(iwc.getParameter(COMPLEX_ID));
 			try {
@@ -190,7 +194,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 			} catch (FinderException e) {
 				e.printStackTrace();
 			}
-		}
+		}*/
 
 		Table Frame = new Table();
 		Frame.add(getHomeLink(), 1, 1);
@@ -198,9 +202,10 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		Frame.mergeCells(1, 1, 3, 1);
 		int row = 2;
 		if (isAdmin) {
-			if (apartmentType != null && complex != null) {
-				Frame.add(getHeader(complex.getName() + " : "
-						+ apartmentType.getName()), 1, 1);
+			if (subcategory != null) {// && complex != null) {
+//				Frame.add(getHeader(complex.getName() + " : "
+//						+ subcategory.getName()), 1, 1);
+				Frame.add(getHeader(subcategory.getName() + " (" + subcategory.getApartmentCategory().getName() + ")"), 1, 1);
 				// Allocate apartment to an applicant
 				if (iwc.isParameterSet(PRM_ALLOCATE)) {
 					Integer applicantID = Integer.valueOf(iwc
@@ -352,9 +357,9 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		L.addParameter("change", String.valueOf(Contractid));
 		L.addParameter("applicant", String.valueOf(iApplicantId));
 		L.setToolTip(localize("tooltip_alloc_change", "Change"));
-		if (pTypeId != null && pComplexId != null) {
-			L.addParameter(pTypeId);
-			L.addParameter(pComplexId);
+		if (pSubcatId != null) { // && pComplexId != null) {
+			L.addParameter(pSubcatId);
+			//L.addParameter(pComplexId);
 		}
 		return L;
 
@@ -364,9 +369,9 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		Link L = new Link(getBundle().getImage("red.gif"));
 		L.addParameter(PRM_ALLOCATE, applicant.getPrimaryKey().toString());
 		L.setToolTip(localize("tooltip_nr_alloc_create", "Allocate"));
-		if (pTypeId != null && pComplexId != null) {
-			L.addParameter(pTypeId);
-			L.addParameter(pComplexId);
+		if (pSubcatId != null) { // && pComplexId != null) {
+			L.addParameter(pSubcatId);
+			//L.addParameter(pComplexId);
 		}
 		return L;
 	}
@@ -426,9 +431,9 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		L.addParameter("contract", contractID.toString());
 		L.addParameter("applicant", applicantID.toString());
 		L.addParameter("from", from.toString());
-		if (pTypeId != null && pComplexId != null) {
-			L.addParameter(pTypeId);
-			L.addParameter(pComplexId);
+		if (pSubcatId != null) { // && pComplexId != null) {
+			L.addParameter(pSubcatId);
+			//L.addParameter(pComplexId);
 		}
 		return L;
 	}
@@ -437,10 +442,10 @@ public class CampusAllocator extends CampusBlock implements Campus {
 			Integer applicantID, Integer contractID, Integer waitingListID)
 			throws RemoteException, FinderException {
 		Form myForm = new Form();
-		ApartmentType apartmentType = campusService.getBuildingService()
-				.getApartmentTypeHome().findByPrimaryKey(typeID);
-		Complex complex = campusService.getBuildingService().getComplexHome()
-				.findByPrimaryKey(complexID);
+		ApartmentSubcategory apartmentSubcat = campusService.getBuildingService()
+				.getApartmentSubcategoryHome().findByPrimaryKey(subcatID);
+		//Complex complex = campusService.getBuildingService().getComplexHome()
+			//	.findByPrimaryKey(complexID);
 		Contract contract = null;
 		if (contractID != null && contractID.intValue() > 0)
 			contract = campusService.getContractService().getContractHome()
@@ -468,10 +473,10 @@ public class CampusAllocator extends CampusBlock implements Campus {
 			Frame.add(getFreeApartments(iwc, applicantID, contract), 1, 1);
 		myForm.add(Frame);
 
-		myForm.add(new HiddenInput(pTypeId.getName(), pTypeId
+		myForm.add(new HiddenInput(pSubcatId.getName(), pSubcatId
 				.getValueAsString()));
-		myForm.add(new HiddenInput(pComplexId.getName(), pComplexId
-				.getValueAsString()));
+		//myForm.add(new HiddenInput(pComplexId.getName(), pComplexId
+		//		.getValueAsString()));
 
 		return myForm;
 	}
@@ -527,12 +532,12 @@ public class CampusAllocator extends CampusBlock implements Campus {
 			if (bChildren && bSpouse) {
 				Frame.mergeCells(1, 1, 2, 1);
 			}
-			try {
+			/*try {
 				Frame.add(CA.getViewApartment(AH.getCampusApplication(), AH
 						.getApplied(), iwc), 1, 2);
 			} catch (FinderException e) {
 				e.printStackTrace();
-			}
+			}*/
 			MO = Frame;
 		} else
 			add("er null");
@@ -557,7 +562,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 				int listCount = 0, contractCount = 0, appliedCount = 0, appCnt1 = 0, appCnt2 = 0, appCnt3 = 0;
 				int totalCount = 0, totalFree = 0, totalApplied = 0, totApp1 = 0, totApp2 = 0, totApp3 = 0;
 				int freeCount = 0;
-				int type, cmpx;
+				int subcat;
 
 				for (Iterator iter = Categories.iterator(); iter.hasNext();) {
 					ApartmentCategory AC = (ApartmentCategory) iter.next();
@@ -575,21 +580,22 @@ public class CampusAllocator extends CampusBlock implements Campus {
 							AllocationView view = (AllocationView) L.get(j);
 							boolean showEntry = true;
 
-							if (view.getComplex() != null) {
+							/*if (view.getComplex() != null) {
 								if (view.getComplex().getLocked()) {
 									showEntry = false;
 								}
-							}
+							}*/
 
-							if (view.getApartmentType() != null) {
+							/*if (view.getApartmentType() != null) {
 								if (view.getApartmentType().getLocked()) {
 									showEntry = false;
 								}
-							}
+							}*/
 
 							if (showEntry) {
-								type = view.getTypeId();
-								cmpx = view.getComplexId();
+								subcat = view.getSubcategoryId();
+								//type = view.getTypeId();
+								//cmpx = view.getComplexId();
 								listCount = view.getTotalNumberOfApartments();
 								freeCount = view.getNumberOfFreeApartments();
 								appCnt1 = view.getNumberOfChoice1();
@@ -610,13 +616,13 @@ public class CampusAllocator extends CampusBlock implements Campus {
 								catcnt2 += appCnt2;
 								catcnt3 += appCnt3;
 								StringBuffer name = new StringBuffer(view
-										.getTypeName());
+										.getSubcategory().getName());
 								name.append(" (");
-								name.append(view.getComplexName());
+								name.append(AC.getName());
 								name.append(")");
-								T.add(getPDFLink(iwc, printImage, type, cmpx),
-										1, row);
-								T.add(getListLink(name.toString(), type, cmpx),
+								//T.add(getPDFLink(iwc, printImage, type, cmpx),
+								//		1, row);
+								T.add(getListLink(name.toString(), subcat),
 										2, row);
 								T.add(getText(String.valueOf(listCount)), 3,
 										row);
@@ -659,49 +665,51 @@ public class CampusAllocator extends CampusBlock implements Campus {
 
 		} else {
 			int row = 2;
-			ComplexTypeViewHome ctHome = campusService.getBuildingService()
-					.getComplexTypeViewHome();
+			//ComplexSubcategoryViewHome csHome = campusService.getBuildingService().getComplexSubcategoryViewHome();
+			ApartmentSubcategoryHome scHome = campusService.getBuildingService().getApartmentSubcategoryHome();
 			if (Categories != null && !Categories.isEmpty()) {
 				for (Iterator iter = Categories.iterator(); iter.hasNext();) {
 					ApartmentCategory category = (ApartmentCategory) iter
 							.next();
-					Collection complexTypes = ctHome
-							.findByCategory((Integer) category.getPrimaryKey());
+					//Collection complexSubcategories = csHome
+					//		.findByCategory((Integer) category.getPrimaryKey());
+					
+					Collection subcategories = scHome.findByCategory((Integer) category.getPrimaryKey());
+					
 					T.add(getHeader(category.getName()), 1, row);
 					T.getContentTable().mergeCells(1, row, 2, row);
 					row++;
-					for (Iterator iterator = complexTypes.iterator(); iterator
+					for (Iterator iterator = subcategories.iterator(); iterator
 							.hasNext();) {
-						ComplexTypeView complexType = (ComplexTypeView) iterator
+						ApartmentSubcategory subcat = (ApartmentSubcategory) iterator
 								.next();
 
 						boolean showEntry = true;
 
-						if (complexType.getComplex() != null) {
-							if (complexType.getComplex().getLocked()) {
+						/*if (complexSubcategory.getComplex() != null) {
+							if (complexSubcategory.getComplex().getLocked()) {
 								showEntry = false;
 							}
-						}
+						}*/
 
-						if (complexType.getApartmentType() != null) {
-							if (complexType.getApartmentType().getLocked()) {
+						/*if (complexSubcategory.getSubcategory() != null) {
+							if (complexSubcategory.getSubcategory().getl) {
 								showEntry = false;
 							}
-						}
+						}*/
 
 						if (showEntry) {
-							StringBuffer name = new StringBuffer(complexType
-									.getApartmentTypeName());
+							StringBuffer name = new StringBuffer(subcat
+									.getName());
 							name.append(" (");
-							name.append(complexType.getComplexName());
+							name.append(category.getName());
 							name.append(")");
-							T.add(getPDFLink(iwc, printImage, complexType
-									.getApartmentTypeID().intValue(),
-									complexType.getComplexID().intValue()), 1,
+							T.add(getPDFLink(iwc, printImage, ((Integer) subcat
+									.getPrimaryKey()).intValue(),
+									-1), 1,
 									row);
-							T.add(getListLink(name.toString(), complexType
-									.getApartmentTypeID().intValue(),
-									complexType.getComplexID().intValue()), 2,
+							T.add(getListLink(name.toString(), ((Integer) subcat
+									.getPrimaryKey()).intValue()), 2,
 									row);
 							row++;
 						}
@@ -727,8 +735,8 @@ public class CampusAllocator extends CampusBlock implements Campus {
 			color = getBundle().getImage(onTime ? "purple.gif" : "brown.gif");
 
 		Link L = new Link(color);
-		L.addParameter(COMPLEX_ID, complexID.toString());
-		L.addParameter(TYPE_ID, typeID.toString());
+		//L.addParameter(COMPLEX_ID, complexID.toString());
+		L.addParameter(SUBCATEGORY_ID, subcatID.toString());
 		L.addParameter("change", contractID.toString());
 		L.addParameter("applicant", waitingList.getApplicantId().toString());
 		L.addParameter("wl_id", waitingList.getPrimaryKey().toString());
@@ -739,8 +747,8 @@ public class CampusAllocator extends CampusBlock implements Campus {
 	private Link getPrintedLink(Integer contractID, WaitingList waitingList) {
 		Image color = getBundle().getImage("pink.gif");
 		Link L = new Link(color);
-		L.addParameter(COMPLEX_ID, complexID.toString());
-		L.addParameter(TYPE_ID, typeID.toString());
+		//L.addParameter(COMPLEX_ID, complexID.toString());
+		L.addParameter(SUBCATEGORY_ID, subcatID.toString());
 		L.addParameter("change", contractID.toString());
 		L.addParameter("applicant", waitingList.getApplicantId().toString());
 		L.addParameter("wl_id", waitingList.getPrimaryKey().toString());
@@ -748,16 +756,15 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		return L;
 	}
 
-	private Link getListLink(ApartmentTypeComplexHelper eAprtType) {
-		return getListLink(eAprtType.getName(), eAprtType.getKeyOne(),
-				eAprtType.getKeyTwo());
+	private Link getListLink(ApartmentSubcategoryComplexHelper eAprtType) {
+		return getListLink(eAprtType.getName(), eAprtType.getKeyOne());
 	}
 
-	private Link getListLink(String name, int type_id, int complex_id) {
+	private Link getListLink(String name, int subcatID) {
 		Link L = getLink((name));
 		// L.setFontSize(fontSize);
-		L.addParameter(TYPE_ID, type_id);
-		L.addParameter(COMPLEX_ID, complex_id);
+		L.addParameter(SUBCATEGORY_ID, subcatID);
+		//L.addParameter(COMPLEX_ID, complex_id);
 		return L;
 	}
 
@@ -765,9 +772,9 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		Link L = new Link(getBundle().getImage("red.gif"));
 		L.addParameter(PRM_ALLOCATE, String.valueOf(id));
 		L.setToolTip(localize("tooltip_nr_alloc_create", "Allocate"));
-		if (pTypeId != null && pComplexId != null) {
-			L.addParameter(pTypeId);
-			L.addParameter(pComplexId);
+		if (pSubcatId != null) { // && pComplexId != null) {
+			L.addParameter(pSubcatId);
+			//L.addParameter(pComplexId);
 		}
 		return L;
 	}
@@ -779,9 +786,9 @@ public class CampusAllocator extends CampusBlock implements Campus {
 						.toString());
 		L.addParameter("wl_appid", waitingList.getApplicantId().toString());
 		L.setToolTip(localize("tooltip_nr_alloc_offlist", "Wants off list"));
-		if (pTypeId != null && pComplexId != null) {
-			L.addParameter(pTypeId);
-			L.addParameter(pComplexId);
+		if (pSubcatId != null) { // && pComplexId != null) {
+			L.addParameter(pSubcatId);
+			//L.addParameter(pComplexId);
 		}
 		return L;
 	}
@@ -793,9 +800,9 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		L.addParameter("contract", String.valueOf(contract_id));
 		L.addParameter("applicant", String.valueOf(applicant_id));
 		L.addParameter("from", from.toString());
-		if (pTypeId != null && pComplexId != null) {
-			L.addParameter(pTypeId);
-			L.addParameter(pComplexId);
+		if (pSubcatId != null) { // && pComplexId != null) {
+			L.addParameter(pSubcatId);
+			//L.addParameter(pComplexId);
 		}
 		return L;
 	}
@@ -843,9 +850,9 @@ public class CampusAllocator extends CampusBlock implements Campus {
 			L.addParameter("wl_appid", waitingList.getApplicantId().toString());
 			number.setFontColor("#0000FF");
 		}
-		if (pTypeId != null && pComplexId != null) {
-			L.addParameter(pTypeId);
-			L.addParameter(pComplexId);
+		if (pSubcatId != null) { // && pComplexId != null) {
+			L.addParameter(pSubcatId);
+			//L.addParameter(pComplexId);
 		}
 		return L;
 	}
@@ -1015,10 +1022,10 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		Frame.add(getApartmentContracts(apartmentID), 1, 3);
 		myForm.add(Frame);
 
-		myForm.add(new HiddenInput(pTypeId.getName(), pTypeId
+		myForm.add(new HiddenInput(pSubcatId.getName(), pSubcatId
 				.getValueAsString()));
-		myForm.add(new HiddenInput(pComplexId.getName(), pComplexId
-				.getValueAsString()));
+		//myForm.add(new HiddenInput(pComplexId.getName(), pComplexId
+		//		.getValueAsString()));
 
 		return myForm;
 	}
@@ -1057,10 +1064,10 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		T.setBorder(0);
 		myForm.add(T);
 
-		myForm.add(new HiddenInput(pTypeId.getName(), pTypeId
+		myForm.add(new HiddenInput(pSubcatId.getName(), pSubcatId
 				.getValueAsString()));
-		myForm.add(new HiddenInput(pComplexId.getName(), pComplexId
-				.getValueAsString()));
+		//myForm.add(new HiddenInput(pComplexId.getName(), pComplexId
+		//		.getValueAsString()));
 
 		return myForm;
 	}
@@ -1082,8 +1089,11 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		// Collection apartments =
 		// BuildingFinder.listOfApartmentsInTypeAndComplex(typeID.intValue(),
 		// cplxID.intValue());
+		/*
+		 * @TODO laga þetta rugl....
+		 */
 		Collection apartments = campusService.getBuildingService()
-				.getApartmentViewHome().findByTypeAndComplex(typeID, complexID);
+				.getApartmentViewHome().findBySubcategory(subcatID);
 		boolean hasContract = contract != null ? true : false;
 		Integer contractID = hasContract ? (Integer) contract.getPrimaryKey()
 				: new Integer(-1);
@@ -1094,7 +1104,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		// bcontracts = true;
 		DataTable T = new DataTable();
 		T.setTitlesHorizontal(true);
-		T.addTitle(apartmentType.getName() + " " + complex.getName());
+		T.addTitle(subcategory.getName() + " (" + subcategory.getApartmentCategory().getName() + ")");
 		int row = 1;
 		T.add(getHeader(localize("name", "Name")), 2, row);
 		T.add(getHeader(localize("floor", "Floor")), 3, row);
@@ -1178,16 +1188,17 @@ public class CampusAllocator extends CampusBlock implements Campus {
 			Applicant applicant = ((ApplicantHome) IDOLookup
 					.getHome(Applicant.class)).findByPrimaryKey(wl
 					.getApplicantId());
-			ApartmentType type = campusService.getBuildingService()
-					.getApartmentTypeHome().findByPrimaryKey(
-							wl.getApartmentTypeId());
+			//ApartmentType type = campusService.getBuildingService()
+			//		.getApartmentTypeHome().findByPrimaryKey(
+			//				wl.getApartmentTypeId());
+			
 			int row = 1;
 			T.add(getHeader(localize("applicant", "Applicant")), 1, row);
 			T.add(getText(applicant.getName()), 2, row);
 			row++;
-			T.add(getHeader(localize("apartment_type", "Apartment type")), 1,
+			T.add(getHeader(localize("apartment_subcategory", "Apartment subcategory")), 1,
 					row);
-			T.add(getText(type.getName()), 2, row);
+			T.add(getText(wl.getApartmentSubcategory().getName()), 2, row);
 			row++;
 			T
 					.add(getHeader(localize("last_confirmation",
@@ -1215,12 +1226,12 @@ public class CampusAllocator extends CampusBlock implements Campus {
 			T.addButton(remove);
 			if (wl.getRemovedFromList())
 				T.addButton(reactivate);
-			if (pTypeId != null && pComplexId != null) {
+			if (pSubcatId != null) { // && pComplexId != null) {
 				form
-						.addParameter(pTypeId.getName(), pTypeId
+						.addParameter(pSubcatId.getName(), pSubcatId
 								.getValueAsString());
-				form.addParameter(pComplexId.getName(), pComplexId
-						.getValueAsString());
+				//form.addParameter(pComplexId.getName(), pComplexId
+				//		.getValueAsString());
 			}
 		} catch (IDOLookupException e) {
 			e.printStackTrace();
@@ -1252,7 +1263,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		link.addParameter(CampusApplicationWriter.PRM_WRITABLE_CLASS,
 				IWMainApplication
 						.getEncryptedClassName(CampusApplicationWriter.class));
-		link.addParameter(CampusApplicationWriter.PRM_APARTMENT_TYPE_ID,
+		link.addParameter(CampusApplicationWriter.PRM_SUBCATEGORY_ID,
 				aprt_type_id);
 		link.addParameter(CampusApplicationWriter.PRM_COMPLEX_ID, cmplx_id);
 		return link;
@@ -1263,14 +1274,13 @@ public class CampusAllocator extends CampusBlock implements Campus {
 				getResourceBundle(), status);
 	}
 
-	public Link getWaitingListOrderLink(String id, int order, int aprtTypeID,
-			int complexID, int max) {
+	public Link getWaitingListOrderLink(String id, int order, int subcatID, int max) {
 		Link L = new Link(getText(String.valueOf(order)));
 		L.setWindowToOpen(WaitingListOrganizerWindow.class);
-		L.addParameter(WaitingListOrganizerWindow.COMPLEX_ID, complexID);
+		//L.addParameter(WaitingListOrganizerWindow.COMPLEX_ID, complexID);
 		L
-				.addParameter(WaitingListOrganizerWindow.APARTMENT_TYPE_ID,
-						aprtTypeID);
+				.addParameter(WaitingListOrganizerWindow.SUBCATEGORY_ID,
+						subcatID);
 		L.addParameter(WaitingListOrganizerWindow.NUMBER_ON_LIST, order);
 		L.addParameter(WaitingListOrganizerWindow.WL_ID, id);
 		L.addParameter(WaitingListOrganizerWindow.MAX_LIST, max);
@@ -1353,8 +1363,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		Frame.add(getHeader(localize("phone", "Phone")), col++, row);
 
 		Collection waitingLists = getWaitingListHome()
-				.findByApartmentTypeAndComplex(typeID.intValue(),
-						complexID.intValue());
+				.findByApartmentSubcategory(subcatID.intValue());
 
 		Map newApplicantContracts = campusService.getContractService()
 				.getNewApplicantContracts();
@@ -1433,8 +1442,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 						}
 
 						Frame.add(getWaitingListOrderLink(WL.getPrimaryKey()
-								.toString(), numberOnList, typeID.intValue(),
-								complexID.intValue(), listSize), col++, row);
+								.toString(), numberOnList, subcatID.intValue(), listSize), col++, row);
 						numberOnList++;
 						Frame.add(getText(WL.getPriorityLevel()), col++, row);
 						if (priorityColorMap.containsKey(WL.getPriorityLevel())) {
@@ -1550,7 +1558,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 
 				}
 				Text title = new Text(localize("applicants", "Applicants")
-						+ " " + apartmentType.getName(), true, false, false);
+						+ " " + subcategory.getName(), true, false, false);
 				title.setFontColor("#FFFFFF");
 				Frame.add(title, 1, 1);
 				Frame.mergeCells(1, 1, Frame.getColumns(), 1);

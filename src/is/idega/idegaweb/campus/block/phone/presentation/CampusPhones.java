@@ -12,9 +12,9 @@ import java.util.Map;
 import javax.ejb.FinderException;
 
 import com.idega.block.building.data.Apartment;
-import com.idega.block.building.data.ApartmentCategory;
-import com.idega.block.building.data.ApartmentCategoryHome;
 import com.idega.block.building.data.ApartmentHome;
+import com.idega.block.building.data.ApartmentSubcategory;
+import com.idega.block.building.data.ApartmentSubcategoryHome;
 import com.idega.block.building.data.ApartmentType;
 import com.idega.block.building.data.ApartmentTypeHome;
 import com.idega.block.building.data.ApartmentView;
@@ -137,8 +137,8 @@ public class CampusPhones extends CampusBlock implements IWPageEventListener {
 				.getHome(Building.class)).findAll(), prmBu, "--", this.sCLBU
 				.toString());
 		DropdownMenu floor = drpFloors(prmFl, "--", this.sCLFL.toString(), true);
-		DropdownMenu cat = drpLodgings(((ApartmentCategoryHome) IDOLookup
-				.getHome(ApartmentCategory.class)).findAll(), prmCt, "--",
+		DropdownMenu cat = drpLodgings(((ApartmentSubcategoryHome) IDOLookup
+				.getHome(ApartmentSubcategory.class)).findAll(), prmCt, "--",
 				this.sCLCT.toString());
 		DropdownMenu type = drpLodgings(((ApartmentTypeHome) IDOLookup
 				.getHome(ApartmentType.class)).findAll(), prmTp, "--",

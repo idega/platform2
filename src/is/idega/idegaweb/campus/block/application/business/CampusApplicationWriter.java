@@ -1,6 +1,6 @@
 /*
 
- * $Id: CampusApplicationWriter.java,v 1.8.4.1 2005/11/29 16:55:20 palli Exp $
+ * $Id: CampusApplicationWriter.java,v 1.8.4.2 2007/05/24 02:07:14 palli Exp $
 
  *
 
@@ -37,11 +37,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.Application;
-import com.idega.block.building.data.ApartmentType;
-import com.idega.block.building.data.ApartmentTypeHome;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
-import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.io.MediaWritable;
 import com.idega.io.MemoryFileBuffer;
@@ -69,7 +66,8 @@ import com.lowagie.text.pdf.PdfWriter;
 public class CampusApplicationWriter implements MediaWritable{
 	
 	public static final String PRM_COMPLEX_ID = "cmplx_id";
-	public static final String PRM_APARTMENT_TYPE_ID = "aprt_type_id";
+	//public static final String PRM_APARTMENT_TYPE_ID = "aprt_type_id";
+	public static final String PRM_SUBCATEGORY_ID = "subcat_id";
 	public static final String PRM_SUBJECT_ID = "app_sub_id";
 	public static final String PRM_APPLICATION_STATUS = "app_status";
 	public static final String PRM_CAMPUS_APPLICATION_ID = "cam_app_id";
@@ -105,10 +103,11 @@ public class CampusApplicationWriter implements MediaWritable{
 			    applicationInfos = appService.getCampusApplicationHome().findBySubjectAndStatus(subid,status,null,-1,-1);
 			}
 			// applications in a given waitinglist specified by apartment type and complex id
-			else if(iwc.getParameter(PRM_APARTMENT_TYPE_ID)!=null && iwc.getParameter(PRM_COMPLEX_ID)!=null){
-			    Integer typeid = Integer.valueOf(iwc.getParameter(PRM_APARTMENT_TYPE_ID));
+			else if(iwc.getParameter(PRM_SUBCATEGORY_ID)!=null && iwc.getParameter(PRM_COMPLEX_ID)!=null){
+			    //Integer typeid = Integer.valueOf(iwc.getParameter(PRM_APARTMENT_TYPE_ID));
+				Integer subcatid = Integer.valueOf(iwc.getParameter(PRM_SUBCATEGORY_ID));
 			    Integer cplxid = Integer.valueOf(iwc.getParameter(PRM_COMPLEX_ID));
-			    applicationInfos = appService.getCampusApplicationHome().findByApartmentTypeAndComplex(typeid,cplxid);
+			    applicationInfos = appService.getCampusApplicationHome().findBySubcategoryAndComplex(subcatid, cplxid);
 			}
 			if(applicationInfos!=null && !applicationInfos.isEmpty())
 				writePDF(iwc.getIWMainApplication().getBundle(CampusSettings.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc.getCurrentLocale()));
@@ -302,11 +301,11 @@ public class CampusApplicationWriter implements MediaWritable{
 					Vector applied = new Vector(campusApplication.getApplied());
 					size = applied.size();
 					datatable.addCell("1");
-					ApartmentTypeHome aptHome =(ApartmentTypeHome)IDOLookup.getHome(ApartmentType.class);
+					//ApartmentTypeHome aptHome =(ApartmentTypeHome)IDOLookup.getHome(ApartmentType.class);
 					if (size >= 1)
 					{
 						Applied A = (Applied) applied.get(0);
-						datatable.addCell(aptHome.findByPrimaryKey(A.getApartmentTypeId()).getName());
+						datatable.addCell(A.getSubcategory().getName());
 					}
 					else
 						datatable.addCell("");
@@ -316,7 +315,7 @@ public class CampusApplicationWriter implements MediaWritable{
 					if (size >= 2)
 					{
 						Applied A = (Applied) applied.get(1);
-						datatable.addCell(aptHome.findByPrimaryKey(A.getApartmentTypeId()).getName());
+						datatable.addCell(A.getSubcategory().getName());
 					}
 					else
 						datatable.addCell("");
@@ -326,7 +325,7 @@ public class CampusApplicationWriter implements MediaWritable{
 					if (size >= 3)
 					{
 						Applied A = (Applied) applied.get(2);
-						datatable.addCell(aptHome.findByPrimaryKey(A.getApartmentTypeId()).getName());
+						datatable.addCell(A.getSubcategory().getName());
 					}
 					else
 						datatable.addCell("");

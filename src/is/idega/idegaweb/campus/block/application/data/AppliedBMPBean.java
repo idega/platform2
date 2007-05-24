@@ -1,5 +1,5 @@
 /*
- * $Id: AppliedBMPBean.java,v 1.5 2004/06/05 07:42:30 aron Exp $
+ * $Id: AppliedBMPBean.java,v 1.5.4.1 2007/05/24 02:07:14 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -14,111 +14,138 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.building.data.ApartmentSubcategory;
+import com.idega.block.building.data.Complex;
+import com.idega.data.GenericEntity;
+
 /**
- *
+ * 
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class AppliedBMPBean extends com.idega.data.GenericEntity implements is.idega.idegaweb.campus.block.application.data.Applied {
-  private static final String name_ = "cam_applied";
-  private static final String complexId_ = "bu_complex_id";
-  private static final String apartmentTypeId_ = "bu_aprt_type_id";
-  private static final String applicationId_ = "cam_application_id";
-  private static final String order_ = "ordered";
+public class AppliedBMPBean extends GenericEntity implements Applied {
+	private static final String ENTITY_NAME = "cam_applied";
+	private static final String COLUMN_COMPLEX = "bu_complex_id";
+	//private static final String COLUMN_APARTMENT_TYPE = "bu_aprt_type_id";
+	private static final String COLUMN_SUBCATEGORY = "bu_subcategory_id";
+	private static final String COLUMN_APPLICATION = "cam_application_id";
+	private static final String COLUMN_ORDER = "ordered";
 
-  public AppliedBMPBean() {
-    super();
-  }
+	public AppliedBMPBean() {
+		super();
+	}
 
-  public AppliedBMPBean(int id) throws SQLException {
-    super(id);
-  }
+	public AppliedBMPBean(int id) throws SQLException {
+		super(id);
+	}
 
-  public void initializeAttributes() {
-    addAttribute(getIDColumnName());
-    addAttribute(complexId_,"Complex",true,true,java.lang.Integer.class,"one-to-many",com.idega.block.building.data.Complex.class);
-    addAttribute(apartmentTypeId_,"Apartment type",true,true,java.lang.Integer.class,"one-to-many",com.idega.block.building.data.ApartmentType.class);
-    addAttribute(applicationId_,"Application",true,true,java.lang.Integer.class,"one-to-many",is.idega.idegaweb.campus.block.application.data.CampusApplication.class);
-    addAttribute(order_,"Order",true,true,java.lang.Integer.class);
-  }
+	public void initializeAttributes() {
+		addAttribute(getIDColumnName());
+		addManyToOneRelationship(COLUMN_COMPLEX, Complex.class);
+		//addManyToOneRelationship(COLUMN_APARTMENT_TYPE, ApartmentType.class);
+		addManyToOneRelationship(COLUMN_SUBCATEGORY, ApartmentSubcategory.class);
+		addManyToOneRelationship(COLUMN_APPLICATION, CampusApplication.class);
+		addAttribute(COLUMN_ORDER, "Order", Integer.class);
+	}
 
-  public String getEntityName() {
-    return(name_);
-  }
+	public String getEntityName() {
+		return ENTITY_NAME;
+	}
 
-  public String getComplexIdColumnName() {
-    return(complexId_);
-  }
+	public String getComplexIdColumnName() {
+		return COLUMN_COMPLEX;
+	}
 
-  public String getApartmentTypeIdColumnName() {
-    return(apartmentTypeId_);
-  }
+	/*public String getApartmentTypeIdColumnName() {
+		return COLUMN_APARTMENT_TYPE;
+	}*/
+	
+	public String getSubcategoryColumnName() {
+		return COLUMN_SUBCATEGORY;
+	}
 
-  public String getApplicationIdColumnName() {
-    return(applicationId_);
-  }
+	public String getApplicationIdColumnName() {
+		return COLUMN_APPLICATION;
+	}
 
-  public String getOrderColumnName() {
-    return(order_);
-  }
+	public String getOrderColumnName() {
+		return COLUMN_ORDER;
+	}
 
-  public void setComplexId(int id) {
-    setColumn(complexId_,id);
-  }
+	public void setComplexId(int id) {
+		setColumn(COLUMN_COMPLEX, id);
+	}
 
-  public void setComplexId(Integer id) {
-    setColumn(complexId_,id);
-  }
+	public void setComplexId(Integer id) {
+		setColumn(COLUMN_COMPLEX, id);
+	}
 
-  public Integer getComplexId() {
-    return(getIntegerColumnValue(complexId_));
-  }
+	public Integer getComplexId() {
+		return getIntegerColumnValue(COLUMN_COMPLEX);
+	}
 
-  public void setApartmentTypeId(int id) {
-    setColumn(apartmentTypeId_,id);
-  }
+	/*public void setApartmentTypeId(int id) {
+		setColumn(COLUMN_APARTMENT_TYPE, id);
+	}*/
+	
+	public void setSubcategoryID(int id) {
+		setColumn(COLUMN_SUBCATEGORY, id);
+	}
 
-  public void setApartmentTypeId(Integer id) {
-    setColumn(apartmentTypeId_,id);
-  }
+	/*public void setApartmentTypeId(Integer id) {
+		setColumn(COLUMN_APARTMENT_TYPE, id);
+	}*/
 
-  public Integer getApartmentTypeId() {
-    return(getIntegerColumnValue(apartmentTypeId_));
-  }
+	public void setSubcategoryID(Integer id) {
+		setColumn(COLUMN_SUBCATEGORY, id);
+	}
+	
+	/*public Integer getApartmentTypeId() {
+		return getIntegerColumnValue(COLUMN_APARTMENT_TYPE);
+	}*/
+	
+	public int getSubcategoryID() {
+		return getIntColumnValue(COLUMN_SUBCATEGORY);
+	}
+	
+	public ApartmentSubcategory getSubcategory() {
+		return (ApartmentSubcategory) getColumnValue(COLUMN_SUBCATEGORY);
+	}
 
-  public void setApplicationId(int id) {
-    setColumn(applicationId_,id);
-  }
+	public void setApplicationId(int id) {
+		setColumn(COLUMN_APPLICATION, id);
+	}
 
-  public void setApplicationId(Integer id) {
-    setColumn(applicationId_,id);
-  }
+	public void setApplicationId(Integer id) {
+		setColumn(COLUMN_APPLICATION, id);
+	}
 
-  public Integer getApplicationId() {
-    return(getIntegerColumnValue(applicationId_));
-  }
+	public Integer getApplicationId() {
+		return getIntegerColumnValue(COLUMN_APPLICATION);
+	}
 
-  public void setOrder(int order) {
-    setColumn(order_,order);
-  }
+	public void setOrder(int order) {
+		setColumn(COLUMN_ORDER, order);
+	}
 
-  public void setOrder(Integer order) {
-    setColumn(order_,order);
-  }
+	public void setOrder(Integer order) {
+		setColumn(COLUMN_ORDER, order);
+	}
 
-  public Integer getOrder() {
-    return(getIntegerColumnValue(order_));
-  }
-  
-  public Collection ejbFindAll()throws FinderException{
-  	return super.idoFindAllIDsBySQL();
-  }
-  
-  public Collection ejbFindByApplicationID(Integer ID )throws FinderException{
-  	 return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(applicationId_,ID.intValue()));
-  }
-  
-  public Collection ejbFindBySQL(String sql)throws FinderException{
-	  return super.idoFindPKsBySQL(sql);
-	}	
+	public Integer getOrder() {
+		return getIntegerColumnValue(COLUMN_ORDER);
+	}
+
+	public Collection ejbFindAll() throws FinderException {
+		return super.idoFindAllIDsBySQL();
+	}
+
+	public Collection ejbFindByApplicationID(Integer ID) throws FinderException {
+		return super.idoFindPKsByQuery(super.idoQueryGetSelect()
+				.appendWhereEquals(COLUMN_APPLICATION, ID.intValue()));
+	}
+
+	public Collection ejbFindBySQL(String sql) throws FinderException {
+		return super.idoFindPKsBySQL(sql);
+	}
 }

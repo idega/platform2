@@ -1,5 +1,5 @@
 /*
- * $Id: WaitingListFinder.java,v 1.5 2004/06/06 11:57:14 gimmi Exp $
+ * $Id: WaitingListFinder.java,v 1.5.4.1 2007/05/24 02:07:14 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -61,13 +61,13 @@ public abstract class WaitingListFinder {
 				count++;
 			}
 
-			if ((fields & APARTMENTTYPE) == APARTMENTTYPE && iTypeId > 0) {
+			/*if ((fields & APARTMENTTYPE) == APARTMENTTYPE && iTypeId > 0) {
 				sql.append(count > 0 ? " and " : "  ");
 				sql.append(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getApartmentTypeIdColumnName());
 				sql.append(" = ");
 				sql.append(iTypeId);
 				count++;
-			}
+			}*/
 
 			if ((fields & COMPLEX) == COMPLEX && iComplexId > 0) {
 				sql.append(count > 0 ? " and " : "  ");
@@ -99,17 +99,14 @@ public abstract class WaitingListFinder {
 
 			while (RS.next()) {
 				int catId = RS.getInt("bu_aprt_cat_id");
-				int typeId = RS.getInt("bu_aprt_type_id");
-				int complexId = RS.getInt("bu_complex_id");
-				String typeName = RS.getString("type_name");
-				String complexName = RS.getString("complex_name");
+				int subcatId = RS.getInt("bu_aprt_sub_cat_id");
 				int total = RS.getInt("total_aprt");
 				int avail = RS.getInt("avail_aprt");
 				int choice1 = RS.getInt("choice1");
 				int choice2 = RS.getInt("choice2");
 				int choice3 = RS.getInt("choice3");
 				
-				AllocationView view = new AllocationView(catId,typeId,complexId,typeName,complexName,total,avail,choice1,choice2,choice3);
+				AllocationView view = new AllocationView(catId,subcatId,total,avail,choice1,choice2,choice3);
 				Integer category = new Integer(catId);
 				List li = (List)table.get(category);
 				if (li == null) {

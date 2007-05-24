@@ -1,5 +1,5 @@
 /*
- * $Id: ApartmentTypeComplexHelper.java,v 1.5.6.2 2007/01/12 19:31:17 idegaweb Exp $
+ * $Id: ApartmentSubcategoryComplexHelper.java,v 1.1.2.1 2007/05/24 02:07:20 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,7 +11,7 @@ package com.idega.block.building.business;
 
 import java.util.StringTokenizer;
 
-import com.idega.block.building.data.ApartmentType;
+import com.idega.block.building.data.ApartmentSubcategory;
 import com.idega.block.building.data.Complex;
 
 /**
@@ -19,7 +19,7 @@ import com.idega.block.building.data.Complex;
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class ApartmentTypeComplexHelper {
+public class ApartmentSubcategoryComplexHelper {
 	private int iKey_1, iKey_2;
 
 	private String key = null;
@@ -28,12 +28,12 @@ public class ApartmentTypeComplexHelper {
 
 	private Complex complex = null;
 
-	private ApartmentType type = null;
+	private ApartmentSubcategory subcategory = null;
 
-	public ApartmentTypeComplexHelper() {
+	public ApartmentSubcategoryComplexHelper() {
 	}
 
-	public ApartmentTypeComplexHelper(int key1, int key2) {
+	public ApartmentSubcategoryComplexHelper(int key1, int key2) {
 		setKey(key1, key2);
 	}
 
@@ -75,12 +75,12 @@ public class ApartmentTypeComplexHelper {
 		return this.complex;
 	}
 	
-	public void setApartmentType(ApartmentType type) {
-		this.type = type;;
+	public void setSubcategory(ApartmentSubcategory subcategory) {
+		this.subcategory = subcategory;;
 	}
 
-	public ApartmentType getApartmentType() {
-		return this.type;
+	public ApartmentSubcategory getSubcategory() {
+		return this.subcategory;
 	}
 	public static int getPartKey(String key, int index) {
 		StringTokenizer t = new StringTokenizer(key, "-");

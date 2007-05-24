@@ -23,6 +23,7 @@ import is.idega.idegaweb.campus.block.application.data.WaitingListHome;
 import is.idega.idegaweb.campus.block.mailinglist.business.EntityHolder;
 import is.idega.idegaweb.campus.block.mailinglist.business.LetterParser;
 import is.idega.idegaweb.campus.block.mailinglist.business.MailingListService;
+
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -34,11 +35,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
+
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import javax.transaction.UserTransaction;
+
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.ApplicantHome;
 import com.idega.block.application.data.Application;
@@ -48,9 +51,9 @@ import com.idega.block.application.data.ApplicationSubjectHome;
 import com.idega.block.application.data.ApplicationSubjectInfo;
 import com.idega.block.application.data.ApplicationSubjectInfoHome;
 import com.idega.block.application.data.Status;
-import com.idega.block.building.business.ApartmentTypeComplexHelper;
+import com.idega.block.building.business.ApartmentSubcategoryComplexHelper;
 import com.idega.block.building.business.BuildingService;
-import com.idega.block.building.data.ComplexTypeView;
+import com.idega.block.building.data.ComplexSubcategoryView;
 import com.idega.data.IDOEntityDefinition;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -126,7 +129,7 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 				while (it.hasNext()) {
 					Applied applied = (Applied) it.next();
 					WaitingList wl = ((WaitingListHome) getIDOHome(WaitingList.class)).create();
-					wl.setApartmentTypeId(applied.getApartmentTypeId());
+					wl.setApartmentSubcategory(applied.getSubcategoryID());
 					wl.setComplexId(applied.getComplexId().intValue());
 					wl.setTypeApplication();
 					wl.setApplicantId(((Integer) Appli.getPrimaryKey()).intValue());
@@ -410,14 +413,21 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 				applieds.add(iterator.next());
 			}
 		}
-		if (campusApplication == null)
+		
+		if (campusApplication == null) {
 			campusApplication = getCampusApplicationHome().create();
-		if (apartmentInfo.getRentFrom() != null)
+		}
+		
+		if (apartmentInfo.getRentFrom() != null) {
 			campusApplication.setHousingFrom(apartmentInfo.getRentFrom().getDate());
-		campusApplication.setWantFurniture(apartmentInfo.getFurniture().booleanValue());
-		campusApplication.setOnWaitinglist(apartmentInfo.getWaitOnList().booleanValue());
-		if (apartmentInfo.getComment() != null)
+		}
+		
+		campusApplication.setWantFurniture(apartmentInfo.getFurniture());
+		campusApplication.setOnWaitinglist(apartmentInfo.getWaitOnList());
+		
+		if (apartmentInfo.getComment() != null) {
 			campusApplication.setOtherInfo(apartmentInfo.getComment());
+		}
 		String key1 = apartmentInfo.getAppliedKey1();
 		String key2 = apartmentInfo.getAppliedKey2();
 		String key3 = apartmentInfo.getAppliedKey3();
@@ -433,9 +443,9 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 				applieds = (List) new Vector();
 				applieds.add(applied1);
 			}
-			int type = ApartmentTypeComplexHelper.getPartKey(key1, 1);
-			int complex = ApartmentTypeComplexHelper.getPartKey(key1, 2);
-			applied1.setApartmentTypeId(type);
+			int type = ApartmentSubcategoryComplexHelper.getPartKey(key1, 1);
+			int complex = ApartmentSubcategoryComplexHelper.getPartKey(key1, 2);
+			applied1.setSubcategoryID(type);
 			applied1.setApplicationId(new Integer(campusApplication.getPrimaryKey().toString()).intValue());
 			applied1.setComplexId(complex);
 			applied1.setOrder(1);
@@ -446,9 +456,9 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 				else {
 					applied2 = getAppliedHome().create();
 				}
-				type = ApartmentTypeComplexHelper.getPartKey(key2, 1);
-				complex = ApartmentTypeComplexHelper.getPartKey(key2, 2);
-				applied2.setApartmentTypeId(type);
+				type = ApartmentSubcategoryComplexHelper.getPartKey(key2, 1);
+				complex = ApartmentSubcategoryComplexHelper.getPartKey(key2, 2);
+				applied2.setSubcategoryID(type);
 				applied2.setApplicationId(new Integer(campusApplication.getPrimaryKey().toString()).intValue());
 				applied2.setComplexId(complex);
 				applied2.setOrder(2);
@@ -460,9 +470,9 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 				else {
 					applied3 = getAppliedHome().create();
 				}
-				type = ApartmentTypeComplexHelper.getPartKey(key3, 1);
-				complex = ApartmentTypeComplexHelper.getPartKey(key3, 2);
-				applied3.setApartmentTypeId(type);
+				type = ApartmentSubcategoryComplexHelper.getPartKey(key3, 1);
+				complex = ApartmentSubcategoryComplexHelper.getPartKey(key3, 2);
+				applied3.setSubcategoryID(type);
 				applied3.setApplicationId(new Integer(campusApplication.getPrimaryKey().toString()).intValue());
 				applied3.setComplexId(complex);
 				applied3.setOrder(3);
@@ -674,7 +684,7 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 		Iterator it = li.iterator();
 		while (it.hasNext()) {
 			WaitingList wl = (WaitingList) it.next();
-			if ((wl.getApartmentTypeId() != null) && (wl.getComplexId() != null)) {
+			if ((wl.getApartmentSubcategoryID() != null) && (wl.getComplexId() != null)) {
 				StringBuffer sql = new StringBuffer("select count(*) from ");
 				sql.append(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getEntityTableName());
 				sql.append(" where ((");
@@ -690,9 +700,9 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 				sql.append(" < '");
 				sql.append(wl.getPriorityLevel());
 				sql.append("')) and ");
-				sql.append(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getApartmentTypeIdColumnName());
+				sql.append(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getApartmentSubcategoryColumnName());
 				sql.append(" = ");
-				sql.append(wl.getApartmentTypeId().toString());
+				sql.append(wl.getApartmentSubcategoryID().toString());
 				sql.append(" and ");
 				sql.append(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getComplexIdColumnName());
 				sql.append(" = ");
@@ -782,11 +792,11 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 		return (PriorityHome) getIDOHome(Priority.class);
 	}
 
-	public int getMaxTransferInWaitingList(int typeId, int cmplxId) {
+	private int getMaxTransferInWaitingList(int subcatID, int cmplxId) {
 		StringBuffer sql = new StringBuffer("select max(app.ordered) ");
 		sql.append(" from cam_waiting_list app ");
-		sql.append(" where app.bu_apartment_type_id = ");
-		sql.append(typeId);
+		sql.append(" where app.bu_subcategory_id = ");
+		sql.append(subcatID);
 		sql.append(" and app.bu_complex_id =");
 		sql.append(cmplxId);
 		sql.append(" and app.list_type = 'T'");
@@ -804,9 +814,10 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 
 	public WaitingList getRightPlaceForTransfer(WaitingList wl, int transferInterval) throws RemoteException, FinderException {
 		int cmplx = wl.getComplexId().intValue();
-		int aprttype = wl.getApartmentTypeId().intValue();
-		int lastTransfer = getMaxTransferInWaitingList(aprttype, cmplx);
-		Collection transfers = getWaitingListHome().findNextForTransferByApartmentTypeAndComplex(aprttype, cmplx,
+		//int aprttype = wl.getApartmentTypeId().intValue();
+		int subcat = wl.getApartmentSubcategoryID().intValue();
+		int lastTransfer = getMaxTransferInWaitingList(subcat, cmplx);
+		Collection transfers = getWaitingListHome().findNextForTransferByApartmentSubcategory(subcat,
 				lastTransfer);
 		if (transfers.size() > (transferInterval - 1)) {
 			java.util.Iterator it = transfers.iterator();
@@ -818,25 +829,25 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 		return wl;
 	}
 
-	public Collection getComplexTypeHelpersByCategory(Integer categoryID) throws RemoteException, FinderException {
-		Collection coll = getBuildingService().getComplexTypeViewHome().findByCategory(categoryID);
-		return getComplexTypeHelpers(coll);
+	public Collection getComplexSubcategoryHelpersByCategory(Integer categoryID) throws RemoteException, FinderException {
+		Collection coll = getBuildingService().getComplexSubcategoryViewHome().findByCategory(categoryID);
+		return getComplexSubcategoryHelpers(coll);
 	}
 
-	public Collection getComplexTypeHelpers() throws RemoteException, FinderException {
-		Collection coll = getBuildingService().getComplexTypeViewHome().findAll();
-		return getComplexTypeHelpers(coll);
+	public Collection getComplexSubcategoryHelpers() throws RemoteException, FinderException {
+		Collection coll = getBuildingService().getComplexSubcategoryViewHome().findAll();
+		return getComplexSubcategoryHelpers(coll);
 	}
 
-	public Collection getComplexTypeHelpers(Collection complexTypes) {
+	public Collection getComplexSubcategoryHelpers(Collection complexTypes) {
 		ArrayList list = new ArrayList(complexTypes.size());
 		for (Iterator iter = complexTypes.iterator(); iter.hasNext();) {
-			ComplexTypeView entity = (ComplexTypeView) iter.next();
-			ApartmentTypeComplexHelper appHelp = new ApartmentTypeComplexHelper();
-			appHelp.setKey(entity.getApartmentTypeID().intValue(), entity.getComplexID().intValue());
-			appHelp.setName(entity.getApartmentTypeName() + " (" + entity.getComplexName() + ")");
+			ComplexSubcategoryView entity = (ComplexSubcategoryView) iter.next();
+			ApartmentSubcategoryComplexHelper appHelp = new ApartmentSubcategoryComplexHelper();
+			appHelp.setKey(entity.getSubcategoryID().intValue(), entity.getComplexID().intValue());
+			appHelp.setName(entity.getSubcategoryName() + " (" + entity.getComplexName() + ")");
 			appHelp.setComplex(entity.getComplex());
-			appHelp.setApartmentType(entity.getApartmentType());
+			appHelp.setSubcategory(entity.getSubcategory());
 			list.add(appHelp);
 		}
 		return list;

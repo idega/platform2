@@ -208,12 +208,6 @@ public interface ApplicationService extends com.idega.block.application.business
 			RemoteException;
 
 	/**
-	 * @see is.idega.idegaweb.campus.block.application.business.ApplicationServiceBean#getMaxTransferInWaitingList
-	 */
-	public int getMaxTransferInWaitingList(int typeId, int cmplxId)
-			throws RemoteException;
-
-	/**
 	 * @see is.idega.idegaweb.campus.block.application.business.ApplicationServiceBean#getRightPlaceForTransfer
 	 */
 	public WaitingList getRightPlaceForTransfer(WaitingList wl,
@@ -221,21 +215,21 @@ public interface ApplicationService extends com.idega.block.application.business
 			RemoteException;
 
 	/**
-	 * @see is.idega.idegaweb.campus.block.application.business.ApplicationServiceBean#getComplexTypeHelpersByCategory
+	 * @see is.idega.idegaweb.campus.block.application.business.ApplicationServiceBean#getComplexSubcategoryHelpersByCategory
 	 */
-	public Collection getComplexTypeHelpersByCategory(Integer categoryID)
+	public Collection getComplexSubcategoryHelpersByCategory(Integer categoryID)
 			throws RemoteException, FinderException, RemoteException;
 
 	/**
-	 * @see is.idega.idegaweb.campus.block.application.business.ApplicationServiceBean#getComplexTypeHelpers
+	 * @see is.idega.idegaweb.campus.block.application.business.ApplicationServiceBean#getComplexSubcategoryHelpers
 	 */
-	public Collection getComplexTypeHelpers() throws RemoteException,
+	public Collection getComplexSubcategoryHelpers() throws RemoteException,
 			FinderException, RemoteException;
 
 	/**
-	 * @see is.idega.idegaweb.campus.block.application.business.ApplicationServiceBean#getComplexTypeHelpers
+	 * @see is.idega.idegaweb.campus.block.application.business.ApplicationServiceBean#getComplexSubcategoryHelpers
 	 */
-	public Collection getComplexTypeHelpers(Collection complexTypes)
+	public Collection getComplexSubcategoryHelpers(Collection complexTypes)
 			throws RemoteException;
 
 	/**

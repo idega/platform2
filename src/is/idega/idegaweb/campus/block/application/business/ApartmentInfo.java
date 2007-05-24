@@ -8,20 +8,23 @@ import com.idega.util.IWTimestamp;
 
 /**
  * ApartmentInfo
- * @author aron 
+ * 
+ * @author aron
  * @version 1.0
  */
 
 public class ApartmentInfo {
-	IWTimestamp rentFrom;
-	Boolean furniture;
-	Boolean waitOnList;
-	String comment;
-	String appliedKey1;
-	String appliedKey2;
-	String appliedKey3;
-	
-	public ApartmentInfo(IWTimestamp rentFrom,Boolean furniture,Boolean waitOnList,String comment,String key1,String key2,String key3){
+	private IWTimestamp rentFrom = null;
+	private boolean furniture = false;
+	private boolean waitOnList = false;
+	private String comment = null;
+	private String appliedKey1 = null;
+	private String appliedKey2 = null;
+	private String appliedKey3 = null;
+
+	public ApartmentInfo(IWTimestamp rentFrom, boolean furniture,
+			boolean waitOnList, String comment, String key1, String key2,
+			String key3) {
 		this.rentFrom = rentFrom;
 		this.furniture = furniture;
 		this.waitOnList = waitOnList;
@@ -30,102 +33,60 @@ public class ApartmentInfo {
 		appliedKey2 = key2;
 		appliedKey3 = key3;
 	}
-	/**
-	 * @return
-	 */
+
 	public String getAppliedKey1() {
 		return appliedKey1;
 	}
 
-	/**
-	 * @return
-	 */
 	public String getAppliedKey2() {
 		return appliedKey2;
 	}
 
-	/**
-	 * @return
-	 */
 	public String getAppliedKey3() {
 		return appliedKey3;
 	}
 
-	/**
-	 * @return
-	 */
 	public String getComment() {
 		return comment;
 	}
 
-	/**
-	 * @return
-	 */
-	public Boolean getFurniture() {
+	public boolean getFurniture() {
 		return furniture;
 	}
 
-	/**
-	 * @return
-	 */
 	public IWTimestamp getRentFrom() {
 		return rentFrom;
 	}
 
-	/**
-	 * @return
-	 */
-	public Boolean getWaitOnList() {
+	public boolean getWaitOnList() {
 		return waitOnList;
 	}
 
-	/**
-	 * @param string
-	 */
-	public void setAppliedKey1(String string) {
-		appliedKey1 = string;
+	public void setAppliedKey1(String key) {
+		appliedKey1 = key;
 	}
 
-	/**
-	 * @param string
-	 */
-	public void setAppliedKey2(String string) {
-		appliedKey2 = string;
+	public void setAppliedKey2(String key) {
+		appliedKey2 = key;
 	}
 
-	/**
-	 * @param string
-	 */
-	public void setAppliedKey3(String string) {
-		appliedKey3 = string;
+	public void setAppliedKey3(String key) {
+		appliedKey3 = key;
 	}
 
-	/**
-	 * @param string
-	 */
-	public void setComment(String string) {
-		comment = string;
+	public void setComment(String comment) {
+		this.comment = comment;
 	}
 
-	/**
-	 * @param boolean1
-	 */
-	public void setFurniture(Boolean boolean1) {
-		furniture = boolean1;
+	public void setFurniture(boolean furniture) {
+		this.furniture = furniture;
 	}
 
-	/**
-	 * @param timestamp
-	 */
-	public void setRentFrom(IWTimestamp timestamp) {
-		rentFrom = timestamp;
+	public void setRentFrom(IWTimestamp rentFrom) {
+		this.rentFrom = rentFrom;
 	}
 
-	/**
-	 * @param boolean1
-	 */
-	public void setWaitOnList(Boolean boolean1) {
-		waitOnList = boolean1;
+	public void setWaitOnList(boolean onList) {
+		waitOnList = onList;
 	}
-
 }

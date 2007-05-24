@@ -57,14 +57,12 @@ public class ApartmentTypeBMPBean extends
 
 	protected static final String COLUMN_ABBREVIATION = "ABBREV";
 
-	protected static final String COLUMN_APARTMENT_CATEGORY = "BU_APRT_CAT_ID";
-
+	protected static final String COLUMN_APARTMENT_SUBCATEGORY = "bu_aprt_subcat";
+	
 	protected static final String COLUMN_LOCKED = "locked";
 
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		addManyToOneRelationship(COLUMN_APARTMENT_CATEGORY,
-				ApartmentCategory.class);
 		addAttribute(COLUMN_NAME, "Name", String.class);
 		addAttribute(COLUMN_INFO, "Info", String.class, 4000);
 		addAttribute(COLUMN_ABBREVIATION, "Abbreviation", String.class, 10);
@@ -82,6 +80,8 @@ public class ApartmentTypeBMPBean extends
 		addAttribute(COLUMN_RENT, "Rent", Integer.class);
 		addAttribute(COLUMN_FURNITURE, "Furniture", Boolean.class);
 		addAttribute(COLUMN_LOCKED, "Locked", Boolean.class);
+		
+		addManyToOneRelationship(COLUMN_APARTMENT_SUBCATEGORY, ApartmentSubcategory.class);
 	}
 
 	public String getEntityName() {
@@ -93,12 +93,12 @@ public class ApartmentTypeBMPBean extends
 		return getStringColumnValue(COLUMN_NAME);
 	}
 
-	public int getApartmentCategoryId() {
-		return getIntColumnValue(COLUMN_APARTMENT_CATEGORY);
+	public int getApartmentSubcategoryID() {
+		return getIntColumnValue(COLUMN_APARTMENT_SUBCATEGORY);
 	}
 
-	public ApartmentCategory getApartmentCategory() {
-		return (ApartmentCategory) getColumnValue(COLUMN_APARTMENT_CATEGORY);
+	public ApartmentSubcategory getApartmentSubcategory() {
+		return (ApartmentSubcategory) getColumnValue(COLUMN_APARTMENT_SUBCATEGORY);
 	}
 
 	public String getInfo() {
@@ -180,14 +180,18 @@ public class ApartmentTypeBMPBean extends
 		setColumn(COLUMN_NAME, name);
 	}
 
-	public void setApartmentCategoryId(int apartment_category_id) {
-		setColumn(COLUMN_APARTMENT_CATEGORY, apartment_category_id);
+	public void setApartmentSubcategoryID(int categoryID) {
+		setColumn(COLUMN_APARTMENT_SUBCATEGORY, categoryID);
 	}
 
-	public void setApartmentCategoryId(Integer apartment_category_id) {
-		setColumn(COLUMN_APARTMENT_CATEGORY, apartment_category_id);
+	public void setApartmentSubcategory(Integer categoryID) {
+		setColumn(COLUMN_APARTMENT_SUBCATEGORY, categoryID);
 	}
 
+	public void setApartmentSubcategory(ApartmentSubcategory category) {
+		setColumn(COLUMN_APARTMENT_SUBCATEGORY, category);		
+	}
+	
 	public void setInfo(String info) {
 		setColumn(COLUMN_INFO, info);
 	}
@@ -306,9 +310,6 @@ public class ApartmentTypeBMPBean extends
 			query.addCriteria(new MatchCriteria(new Column(floor,
 					FloorBMPBean.BU_BUILDING_ID), MatchCriteria.EQUALS,
 					buildingID.intValue()));
-			// query.addCriteria(new MatchCriteria(new Column(type,
-			// COLUMN_LOCKED), MatchCriteria.NOTEQUALS,
-			// true));
 			query.addCriteria(new OR(new MatchCriteria(new Column(type,
 					COLUMN_LOCKED), MatchCriteria.EQUALS, false),
 					new MatchCriteria(type.getColumn(COLUMN_LOCKED))));
@@ -320,12 +321,12 @@ public class ApartmentTypeBMPBean extends
 		}
 	}
 
-	public Collection ejbFindByCategory(Integer categoryID)
+	public Collection ejbFindBySubcategory(Integer categoryID)
 			throws FinderException {
 		Table type = new Table(this);
 		SelectQuery query = new SelectQuery(type);
 		query.addColumn(new WildCardColumn(type));
-		query.addCriteria(new MatchCriteria(type, COLUMN_APARTMENT_CATEGORY,
+		query.addCriteria(new MatchCriteria(type, COLUMN_APARTMENT_SUBCATEGORY,
 				MatchCriteria.EQUALS, categoryID.intValue()));
 		// query.addCriteria(new MatchCriteria(new Column(type,
 		// COLUMN_LOCKED), MatchCriteria.NOTEQUALS,
@@ -370,14 +371,14 @@ public class ApartmentTypeBMPBean extends
 		return idoFindPKsBySQL(query.toString());
 	}
 
-	public Collection ejbFindFromSameComplex(ApartmentType thetype)
+	/*public Collection ejbFindFromSameComplex(ApartmentType thetype)
 			throws FinderException {
 		Table type = new Table(this);
 		Table complextype = new Table(ComplexTypeView.class);
 		SelectQuery query = new SelectQuery(type);
 		query.addColumn(new WildCardColumn(type));
 		query.addJoin(type, getIDColumnName(), complextype,
-				ComplexTypeViewBMPBean.BU_APRT_TYPE_ID);
+				ComplexTypeViewBComplexSubcategoryViewBMPBean);
 		query.addCriteria(new MatchCriteria(type, getIDColumnName(),
 				MatchCriteria.EQUALS, ((Integer) thetype.getPrimaryKey())
 						.intValue()));
@@ -390,5 +391,5 @@ public class ApartmentTypeBMPBean extends
 		query.addOrder(new Order(new Column(type, COLUMN_NAME), true));
 
 		return idoFindPKsBySQL(query.toString());
-	}
+	}*/
 }

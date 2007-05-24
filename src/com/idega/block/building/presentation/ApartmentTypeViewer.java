@@ -137,8 +137,8 @@ public class ApartmentTypeViewer extends Block {
 
 		roomTable.add(topTable, 1, 1);
 		roomTable.add(getApartmentTable(room, iwc), 1, 3);
-		roomTable.add(getBuildingApartmentTypes(room), 1, 4);
-		roomTable.add(getCategoryApartmentTypes(room), 1, 4);
+		//roomTable.add(getBuildingApartmentTypes(room), 1, 4);
+		roomTable.add(getSubcategoryApartmentTypes(room), 1, 4);
 		if (!"false".equals(this.iwb_.getProperty(
 				"apartment_type_viewer.show_bottom", "false"))) {
 			roomTable
@@ -334,7 +334,7 @@ public class ApartmentTypeViewer extends Block {
 		return T;
 	}
 
-	private Form getBuildingApartmentTypes(ApartmentType thetype)
+	/*private Form getBuildingApartmentTypes(ApartmentType thetype)
 			throws RemoteException, FinderException {
 
 		Collection types = this.service.getApartmentTypeHome().findFromSameComplex(
@@ -377,13 +377,13 @@ public class ApartmentTypeViewer extends Block {
 
 		return roomForm;
 
-	}
+	}*/
 
-	private Form getCategoryApartmentTypes(ApartmentType thetype)
+	private Form getSubcategoryApartmentTypes(ApartmentType thetype)
 			throws RemoteException, FinderException {
 
-		Collection types = this.service.getApartmentTypeHome().findByCategory(
-				new Integer(thetype.getApartmentCategoryId()));
+		Collection types = this.service.getApartmentTypeHome().findBySubcategory(
+				new Integer(thetype.getApartmentSubcategoryID()));
 		Form roomForm = new Form();
 
 		Text appartmentText = getBoldText(this.iwrb_.getLocalizedString(

@@ -17,9 +17,8 @@ public interface ApartmentTypeHome extends IDOHome {
 
 	public Collection findByBuilding(Integer buildingID) throws FinderException;
 
-	public Collection findByCategory(Integer categoryID) throws FinderException;
+	public Collection findBySubcategory(Integer categoryID)
+			throws FinderException;
 
 	public Collection findByComplex(Integer complexID) throws FinderException;
-
-	public Collection findFromSameComplex(ApartmentType thetype) throws FinderException;
 }

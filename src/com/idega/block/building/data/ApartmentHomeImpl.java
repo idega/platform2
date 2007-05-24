@@ -35,9 +35,11 @@ public class ApartmentHomeImpl extends IDOFactory implements ApartmentHome {
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findeByTypeAndComplex(Integer typeID, Integer complexID) throws FinderException {
+	public Collection findeByTypeAndComplex(Integer typeID, Integer complexID)
+			throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
-		Collection ids = ((ApartmentBMPBean) entity).ejbFindeByTypeAndComplex(typeID, complexID);
+		Collection ids = ((ApartmentBMPBean) entity).ejbFindeByTypeAndComplex(
+				typeID, complexID);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
@@ -56,16 +58,21 @@ public class ApartmentHomeImpl extends IDOFactory implements ApartmentHome {
 		return theReturn;
 	}
 
-	public int getTypeAndComplexCount(Integer typeID, Integer complexID) throws IDOException {
+	public int getTypeAndComplexCount(Integer typeID, Integer complexID)
+			throws IDOException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
-		int theReturn = ((ApartmentBMPBean) entity).ejbHomeGetTypeAndComplexCount(typeID, complexID);
+		int theReturn = ((ApartmentBMPBean) entity)
+				.ejbHomeGetTypeAndComplexCount(typeID, complexID);
 		this.idoCheckInPooledEntity(entity);
 		return theReturn;
 	}
 
-	public Collection findBySearch(Integer complexID, Integer buildingID, Integer floorID, Integer typeID, Integer categoryID, boolean order) throws FinderException {
+	public Collection findBySearch(Integer complexID, Integer buildingID,
+			Integer floorID, Integer typeID, Integer subcategoryID,
+			boolean order) throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
-		Collection ids = ((ApartmentBMPBean) entity).ejbFindBySearch(complexID, buildingID, floorID, typeID, categoryID, order);
+		Collection ids = ((ApartmentBMPBean) entity).ejbFindBySearch(complexID,
+				buildingID, floorID, typeID, subcategoryID, order);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}

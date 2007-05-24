@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.30.4.3 2007/01/17 22:53:17 palli Exp $
+ * $Id: CampusApplicationForm.java,v 1.30.4.4 2007/05/24 02:07:16 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -27,10 +27,9 @@ import javax.ejb.FinderException;
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.ApplicationBMPBean;
 import com.idega.block.application.presentation.ApplicationForm;
-import com.idega.block.building.business.ApartmentTypeComplexHelper;
-import com.idega.block.building.data.ApartmentType;
-import com.idega.block.building.data.ApartmentTypeHome;
-import com.idega.block.building.presentation.ApartmentTypeViewer;
+import com.idega.block.building.business.ApartmentSubcategoryComplexHelper;
+import com.idega.block.building.data.ApartmentSubcategory;
+import com.idega.block.building.data.ApartmentSubcategoryHome;
 import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWContext;
@@ -44,6 +43,7 @@ import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SelectionBox;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
@@ -56,6 +56,20 @@ import com.idega.util.IWTimestamp;
  * @version 1.0
  */
 public class CampusApplicationForm extends ApplicationForm {
+//	private static final String PARAM_APARTMENT_TYPE3 = "aprtType3";
+
+//	private static final String PARAM_APARTMENT_TYPE2 = "aprtType2";
+
+//	private static final String PARAM_APARTMENT_TYPE = "aprtType";
+
+	public static final String PARAM_SUBCATEGORY1 = "subcat1";
+	
+	public static final String PARAM_SUBCATEGORY2 = "subcat2";
+	
+	public static final String PARAM_SUBCATEGORY3 = "subcat3";
+	
+	public static final String PARAM_CATEGORY = "aprtCat";
+
 	protected final static int STATUS_ENTERING_PAGE = 0;
 
 	protected final static int STATUS_SUBJECT = 1;
@@ -66,7 +80,9 @@ public class CampusApplicationForm extends ApplicationForm {
 
 	protected final static int STATUS_APPLIED_FOR = 4;
 
-	protected final static int STATUS_SELECTING_APARTMENT_TYPES = 99;
+	//protected final static int STATUS_SELECTING_APARTMENT_TYPES = 99;
+
+	protected final static int STATUS_SELECTING_SUBCATEGORY = 99;
 
 	protected final static int NUMBER_OF_STAGES = 3;
 
@@ -155,7 +171,7 @@ public class CampusApplicationForm extends ApplicationForm {
 					CampusApplicationFormHelper.saveCampusInformation(iwc);
 					doSelectAppliedFor(iwc, wrongParameters);
 				}
-			} else if (status == STATUS_SELECTING_APARTMENT_TYPES) {
+			} else if (status == STATUS_SELECTING_SUBCATEGORY) {
 				addStage(3);
 				checkAparmentTypesSelected(iwc);
 				doSelectAppliedFor(iwc, wrongParameters);
@@ -188,7 +204,7 @@ public class CampusApplicationForm extends ApplicationForm {
 	protected void doSelectAppliedFor(IWContext iwc, List wrongParameters)
 			throws RemoteException {
 		Integer categoryID;
-		String aprtCat = (String) iwc.getSessionAttribute("aprtCat");
+		String aprtCat = (String) iwc.getSessionAttribute(PARAM_CATEGORY);
 		try {
 			categoryID = Integer.valueOf(aprtCat);
 		} catch (Exception e) {
@@ -197,32 +213,32 @@ public class CampusApplicationForm extends ApplicationForm {
 
 		try {
 			Collection typeHelpers = getApplicationService(iwc)
-					.getComplexTypeHelpersByCategory(categoryID);
-			DropdownMenu aprtType = new DropdownMenu("aprtType");
-			if (iwc.isParameterSet("aprtType"))
-				aprtType.setSelectedElement(iwc.getParameter("aprtType"));
+					.getComplexSubcategoryHelpersByCategory(categoryID);
+			DropdownMenu aprtType = new DropdownMenu(PARAM_SUBCATEGORY1);
+			if (iwc.isParameterSet(PARAM_SUBCATEGORY1))
+				aprtType.setSelectedElement(iwc.getParameter(PARAM_SUBCATEGORY1));
 			Edit.setStyle(aprtType);
-			DropdownMenu aprtType2 = new DropdownMenu("aprtType2");
-			if (iwc.isParameterSet("aprtType2"))
-				aprtType2.setSelectedElement(iwc.getParameter("aprtType2"));
+			DropdownMenu aprtType2 = new DropdownMenu(PARAM_SUBCATEGORY2);
+			if (iwc.isParameterSet(PARAM_SUBCATEGORY2))
+				aprtType2.setSelectedElement(iwc.getParameter(PARAM_SUBCATEGORY2));
 			Edit.setStyle(aprtType2);
-			DropdownMenu aprtType3 = new DropdownMenu("aprtType3");
-			if (iwc.isParameterSet("aprtType3"))
-				aprtType3.setSelectedElement(iwc.getParameter("aprtType3"));
+			DropdownMenu aprtType3 = new DropdownMenu(PARAM_SUBCATEGORY3);
+			if (iwc.isParameterSet(PARAM_SUBCATEGORY3))
+				aprtType3.setSelectedElement(iwc.getParameter(PARAM_SUBCATEGORY3));
 			Edit.setStyle(aprtType3);
 			aprtType.addDisabledMenuElement("-1", "");
 			aprtType2.addMenuElement("-1", "");
 			aprtType3.addMenuElement("-1", "");
 
 			for (Iterator iter = typeHelpers.iterator(); iter.hasNext();) {
-				ApartmentTypeComplexHelper eAprtType = (ApartmentTypeComplexHelper) iter
+				ApartmentSubcategoryComplexHelper eAprtType = (ApartmentSubcategoryComplexHelper) iter
 						.next();
 				boolean isLocked = false;
-				if (eAprtType.getApartmentType() != null) {
+				/*if (eAprtType.getApartmentType() != null) {
 					if (eAprtType.getApartmentType().getLocked()) {
 						isLocked = true;
 					}
-				}
+				}*/
 
 				if (eAprtType.getComplex() != null) {
 					if (eAprtType.getComplex().getLocked()) {
@@ -262,7 +278,7 @@ public class CampusApplicationForm extends ApplicationForm {
 			t.addTitle(_iwrb.getLocalizedString("applied",
 					"Apartment applied for"));
 			Text label = Edit.formatText(text1);
-			if (wrongParameters.contains("aprtType"))
+			if (wrongParameters.contains(PARAM_SUBCATEGORY1))
 				label.setFontColor("#ff0000");
 			t.add(label, 1, 1);
 			t.add(Edit.formatText(REQUIRED, true), 1, 1);
@@ -282,7 +298,7 @@ public class CampusApplicationForm extends ApplicationForm {
 			Link apartmentLink2 = new Link(apartmentText);
 			apartmentLink2.setWindowToOpen(CampusTypeWindow.class);
 
-			if (apartment1 > -1) {
+			/*if (apartment1 > -1) {
 				try {
 					Link link1 = (Link) apartmentLink.clone();
 					link1.addParameter(ApartmentTypeViewer.PARAMETER_STRING,
@@ -295,11 +311,11 @@ public class CampusApplicationForm extends ApplicationForm {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-			}
+			}*/
 
 			t.add(Edit.formatText(text2), 1, 2);
 			t.add(aprtType2, 2, 2);
-			if (apartment2 > -1) {
+			/*if (apartment2 > -1) {
 				try {
 					Link link2 = (Link) apartmentLink.clone();
 					link2.addParameter(ApartmentTypeViewer.PARAMETER_STRING,
@@ -312,11 +328,11 @@ public class CampusApplicationForm extends ApplicationForm {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-			}
+			}*/
 
 			t.add(Edit.formatText(text3), 1, 3);
 			t.add(aprtType3, 2, 3);
-			if (apartment3 > -1) {
+			/*if (apartment3 > -1) {
 				try {
 					Link link3 = (Link) apartmentLink.clone();
 					link3.addParameter(ApartmentTypeViewer.PARAMETER_STRING,
@@ -329,13 +345,13 @@ public class CampusApplicationForm extends ApplicationForm {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-			}
+			}*/
 
 			t.addButton(back);
 			t.addButton(ok);
 
 			HiddenInput hidden = new HiddenInput(APP_STATUS, Integer
-					.toString(STATUS_SELECTING_APARTMENT_TYPES));
+					.toString(STATUS_SELECTING_SUBCATEGORY));
 
 			ok
 					.setValueOnClick(APP_STATUS, Integer
@@ -347,11 +363,11 @@ public class CampusApplicationForm extends ApplicationForm {
 			form.add(Text.getBreak());
 			form.add(info);
 			aprtType.setOnChange("this.form.app_status.value='"
-					+ STATUS_SELECTING_APARTMENT_TYPES + "'");
+					+ STATUS_SELECTING_SUBCATEGORY + "'");
 			aprtType2.setOnChange("this.form.app_status.value='"
-					+ STATUS_SELECTING_APARTMENT_TYPES + "'");
+					+ STATUS_SELECTING_SUBCATEGORY + "'");
 			aprtType3.setOnChange("this.form.app_status.value='"
-					+ STATUS_SELECTING_APARTMENT_TYPES + "'");
+					+ STATUS_SELECTING_SUBCATEGORY + "'");
 			aprtType.setToSubmit();
 			aprtType2.setToSubmit();
 			aprtType3.setToSubmit();
@@ -454,7 +470,9 @@ public class CampusApplicationForm extends ApplicationForm {
 
 			DropdownMenu subject = new DropdownMenu(subjects, "subject");
 
-			DropdownMenu aprtCat = new DropdownMenu(categories, "aprtCat");
+			//DropdownMenu aprtCat = new DropdownMenu(categories, PARAM_CATEGORY);
+			SelectionBox category = new SelectionBox(PARAM_CATEGORY);
+			category.addMenuElements(categories);
 
 			Image back = _iwrb.getImage("back.gif");
 			back.setMarkupAttribute("onClick", "history.go(-1)");
@@ -464,13 +482,13 @@ public class CampusApplicationForm extends ApplicationForm {
 			form.add(t);
 
 			t.addTitle(_iwrb.getLocalizedString("applicationSubjectTitle",
-					"Veldu tegund ums?knar"));
+					"Select application subject"));
 			t.add(getHeader(text1), 1, 1);
 			t.add(getHeader(REQUIRED), 1, 1);
 			t.add(subject, 2, 1);
 			t.add(getHeader(text2), 1, 2);
 			t.add(getHeader(REQUIRED), 1, 2);
-			t.add(aprtCat, 2, 2);
+			t.add(category, 2, 2);
 
 			Collection residences = null;
 			Collection occupations = null;
@@ -759,20 +777,20 @@ public class CampusApplicationForm extends ApplicationForm {
 	 * 
 	 */
 	private void checkAparmentTypesSelected(IWContext iwc) {
-		String key1 = (String) iwc.getParameter("aprtType");
-		String key2 = (String) iwc.getParameter("aprtType2");
-		String key3 = (String) iwc.getParameter("aprtType3");
+		String key1 = (String) iwc.getParameter(PARAM_SUBCATEGORY1);
+		String key2 = (String) iwc.getParameter(PARAM_SUBCATEGORY2);
+		String key3 = (String) iwc.getParameter(PARAM_SUBCATEGORY3);
 
 		try {
-			ApartmentTypeHome ath = getApplicationService(iwc)
-					.getBuildingService().getApartmentTypeHome();
-			int type = ApartmentTypeComplexHelper.getPartKey(key1, 1);
+			ApartmentSubcategoryHome ath = getApplicationService(iwc)
+					.getBuildingService().getApartmentSubcategoryHome();
+			int type = ApartmentSubcategoryComplexHelper.getPartKey(key1, 1);
 
-			ApartmentType room = ath.findByPrimaryKey(new Integer(type));
+			ApartmentSubcategory room = ath.findByPrimaryKey(new Integer(type));
 			apartment1 = ((Integer) room.getPrimaryKey()).intValue();
 
 			if ((key2 != null) && (!key2.equalsIgnoreCase("-1"))) {
-				type = ApartmentTypeComplexHelper.getPartKey(key2, 1);
+				type = ApartmentSubcategoryComplexHelper.getPartKey(key2, 1);
 
 				room = ath.findByPrimaryKey(new Integer(type));
 				apartment2 = ((Integer) room.getPrimaryKey()).intValue();
@@ -780,7 +798,7 @@ public class CampusApplicationForm extends ApplicationForm {
 			}
 
 			if ((key3 != null) && (!key3.equalsIgnoreCase("-1"))) {
-				type = ApartmentTypeComplexHelper.getPartKey(key3, 1);
+				type = ApartmentSubcategoryComplexHelper.getPartKey(key3, 1);
 
 				room = ath.findByPrimaryKey(new Integer(type));
 				apartment3 = ((Integer) room.getPrimaryKey()).intValue();
@@ -1045,9 +1063,9 @@ public class CampusApplicationForm extends ApplicationForm {
 	public List checkApplied(IWContext iwc) {
 
 		Vector wrongParameters = new Vector();
-		String aprt = iwc.getParameter("aprtType");
+		String aprt = iwc.getParameter(PARAM_SUBCATEGORY1);
 		if (aprt == null || aprt.length() == 0 || aprt.equals("-1"))
-			wrongParameters.add("aprtType");
+			wrongParameters.add(PARAM_SUBCATEGORY1);
 		return wrongParameters;
 	}
 

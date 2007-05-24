@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.42.4.3 2006/10/31 16:24:59 palli Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.42.4.4 2007/05/24 02:07:16 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -37,8 +37,7 @@ import com.idega.block.application.data.Application;
 import com.idega.block.application.data.ApplicationBMPBean;
 import com.idega.block.application.data.ApplicationHome;
 import com.idega.block.application.presentation.ReferenceNumber;
-import com.idega.block.building.data.ApartmentType;
-import com.idega.block.building.data.ApartmentTypeHome;
+import com.idega.block.building.data.ApartmentSubcategory;
 import com.idega.block.building.data.ApartmentView;
 import com.idega.block.building.data.Complex;
 import com.idega.block.building.data.ComplexHome;
@@ -80,7 +79,8 @@ public class ReferenceNumberInfo extends CampusBlock {
 
 	private CampusApplicationHolder holder = null;
 
-	private Integer allocatedTypeID = new Integer(-1);
+//	private Integer allocatedTypeID = new Integer(-1);
+	private Integer allocatedSubcategoryID = new Integer(-1);
 
 	private Integer allocatedComplexID = new Integer(-1);
 
@@ -284,7 +284,7 @@ public class ReferenceNumberInfo extends CampusBlock {
 							.getBuildingService().getApartmentViewHome()
 							.findByPrimaryKey(c.getApartmentId());
 
-					allocatedTypeID = (allocatedApartment.getTypeID());
+					allocatedSubcategoryID = new Integer(allocatedApartment.getType().getApartmentSubcategoryID());
 					allocatedComplexID = (allocatedApartment.getComplexID());
 				} catch (RemoteException e) {
 					e.printStackTrace();
@@ -335,19 +335,16 @@ public class ReferenceNumberInfo extends CampusBlock {
 			if (choices != null) {
 				Iterator it = choices.iterator();
 
-				ApartmentTypeHome ath = applicationService.getBuildingService()
-						.getApartmentTypeHome();
 				ComplexHome cxh = applicationService.getBuildingService()
 						.getComplexHome();
 				while (it.hasNext()) {
 					try {
 						Applied applied = (Applied) it.next();
 						pos++;
-						ApartmentType aType = ath.findByPrimaryKey(applied
-								.getApartmentTypeId());
+						ApartmentSubcategory subCat = applied.getSubcategory();
 						Complex complex = cxh.findByPrimaryKey(applied
 								.getComplexId());
-						Text appType = new Text(aType.getName() + " ("
+						Text appType = new Text(subCat.getName() + " ("
 								+ complex.getName() + ")");
 
 						appliedTable.add(appType, 1, pos);
@@ -358,7 +355,7 @@ public class ReferenceNumberInfo extends CampusBlock {
 							Iterator it1 = wl.iterator();
 							while (it1.hasNext()) {
 								wait = (WaitingList) it1.next();
-								if ((wait.getApartmentTypeId().intValue() == ((Integer) aType
+								if ((wait.getApartmentSubcategoryID().intValue() == ((Integer) subCat
 										.getPrimaryKey()).intValue())
 										&& (wait.getComplexId().intValue() == ((Integer) complex
 												.getPrimaryKey()).intValue()))
@@ -386,8 +383,8 @@ public class ReferenceNumberInfo extends CampusBlock {
 							if (!wait.getRejectFlag()
 									&& allocatedComplexID.intValue() == wait
 											.getComplexId().intValue()
-									&& allocatedTypeID.intValue() == wait
-											.getApartmentTypeId().intValue()) {
+									&& allocatedSubcategoryID.intValue() == wait
+											.getApartmentSubcategoryID().intValue()) {
 								Text allocatedText = new Text(_iwrb
 										.getLocalizedString("appAllocated",
 												"Allocated"));

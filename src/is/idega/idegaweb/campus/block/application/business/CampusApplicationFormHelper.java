@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFormHelper.java,v 1.23.4.5 2007/02/19 16:59:05 palli Exp $
+ * $Id: CampusApplicationFormHelper.java,v 1.23.4.6 2007/05/24 02:07:14 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,6 +13,7 @@ import is.idega.idegaweb.campus.block.application.data.Applied;
 import is.idega.idegaweb.campus.block.application.data.AppliedHome;
 import is.idega.idegaweb.campus.block.application.data.CampusApplication;
 import is.idega.idegaweb.campus.block.application.data.CampusApplicationHome;
+import is.idega.idegaweb.campus.block.application.presentation.CampusApplicationForm;
 import is.idega.idegaweb.campus.block.mailinglist.business.EntityHolder;
 import is.idega.idegaweb.campus.block.mailinglist.business.LetterParser;
 import is.idega.idegaweb.campus.block.mailinglist.business.MailingListService;
@@ -35,7 +36,7 @@ import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.ApplicantHome;
 import com.idega.block.application.data.Application;
 import com.idega.block.application.data.ApplicationHome;
-import com.idega.block.building.business.ApartmentTypeComplexHelper;
+import com.idega.block.building.business.ApartmentSubcategoryComplexHelper;
 import com.idega.block.building.data.ApartmentType;
 import com.idega.block.building.data.ApartmentTypeHome;
 import com.idega.business.IBOLookup;
@@ -53,13 +54,17 @@ import com.idega.util.SendMail;
  */
 public class CampusApplicationFormHelper extends ApplicationFormHelper {
 
+	private static final String PARAM_SUBCATEGORY3 = CampusApplicationForm.PARAM_SUBCATEGORY3;
+	private static final String PARAM_SUBCATEGORY2 = CampusApplicationForm.PARAM_SUBCATEGORY2;
+	private static final String PARAM_SUBCATEGORY1 = CampusApplicationForm.PARAM_SUBCATEGORY1;
+
 	/**
 	 * 
 	 */
 	public static void saveAppliedFor(IWContext iwc) {
-		String key1 = (String) iwc.getParameter("aprtType");
-		String key2 = (String) iwc.getParameter("aprtType2");
-		String key3 = (String) iwc.getParameter("aprtType3");
+		String key1 = (String) iwc.getParameter(PARAM_SUBCATEGORY1);
+		String key2 = (String) iwc.getParameter(PARAM_SUBCATEGORY2);
+		String key3 = (String) iwc.getParameter(PARAM_SUBCATEGORY3);
 
 		Applied applied1 = null;
 		Applied applied2 = null;
@@ -68,18 +73,18 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 		try {
 			applied1 = ((AppliedHome) IDOLookup.getHome(Applied.class))
 					.create();
-			int type = ApartmentTypeComplexHelper.getPartKey(key1, 1);
-			int complex = ApartmentTypeComplexHelper.getPartKey(key1, 2);
-			applied1.setApartmentTypeId(type);
+			int type = ApartmentSubcategoryComplexHelper.getPartKey(key1, 1);
+			int complex = ApartmentSubcategoryComplexHelper.getPartKey(key1, 2);
+			applied1.setSubcategoryID(type);
 			applied1.setComplexId(complex);
 			applied1.setOrder(1);
 
 			if ((key2 != null) && (!key2.equalsIgnoreCase("-1"))) {
 				applied2 = ((AppliedHome) IDOLookup.getHome(Applied.class))
 						.create();
-				type = ApartmentTypeComplexHelper.getPartKey(key2, 1);
-				complex = ApartmentTypeComplexHelper.getPartKey(key2, 2);
-				applied2.setApartmentTypeId(type);
+				type = ApartmentSubcategoryComplexHelper.getPartKey(key2, 1);
+				complex = ApartmentSubcategoryComplexHelper.getPartKey(key2, 2);
+				applied2.setSubcategoryID(type);
 				applied2.setComplexId(complex);
 				applied2.setOrder(2);
 			}
@@ -87,9 +92,9 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 			if ((key3 != null) && (!key3.equalsIgnoreCase("-1"))) {
 				applied3 = ((AppliedHome) IDOLookup.getHome(Applied.class))
 						.create();
-				type = ApartmentTypeComplexHelper.getPartKey(key3, 1);
-				complex = ApartmentTypeComplexHelper.getPartKey(key3, 2);
-				applied3.setApartmentTypeId(type);
+				type = ApartmentSubcategoryComplexHelper.getPartKey(key3, 1);
+				complex = ApartmentSubcategoryComplexHelper.getPartKey(key3, 2);
+				applied3.setSubcategoryID(type);
 				applied3.setComplexId(complex);
 				applied3.setOrder(3);
 			}
@@ -403,7 +408,7 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 	 */
 	public static void saveSubject(IWContext iwc) {
 		String subject = (String) iwc.getParameter("subject");
-		String aprtCat = (String) iwc.getParameter("aprtCat");
+		String aprtCat[] = iwc.getParameterValues(CampusApplicationForm.PARAM_CATEGORY);
 		try {
 			Application application = ((ApplicationHome) IDOLookup
 					.getHome(Application.class)).create();
@@ -426,16 +431,16 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 	 * 
 	 */
 	public static Vector checkAparmentTypesSelected(IWContext iwc) {
-		String key1 = (String) iwc.getParameter("aprtType");
-		String key2 = (String) iwc.getParameter("aprtType2");
-		String key3 = (String) iwc.getParameter("aprtType3");
+		String key1 = (String) iwc.getParameter(PARAM_SUBCATEGORY1);
+		String key2 = (String) iwc.getParameter(PARAM_SUBCATEGORY2);
+		String key3 = (String) iwc.getParameter(PARAM_SUBCATEGORY3);
 
 		Vector ret = new Vector(3);
 
 		try {
 			ApartmentTypeHome ath = (ApartmentTypeHome) IDOLookup
 					.getHome(ApartmentType.class);
-			int type = ApartmentTypeComplexHelper.getPartKey(key1, 1);
+			int type = ApartmentSubcategoryComplexHelper.getPartKey(key1, 1);
 
 			ApartmentType room = ath.findByPrimaryKey(new Integer(type));
 
@@ -443,14 +448,14 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 			ret.add(0, new Integer(pic));
 
 			if ((key2 != null) && (!key2.equalsIgnoreCase("-1"))) {
-				type = ApartmentTypeComplexHelper.getPartKey(key2, 1);
+				type = ApartmentSubcategoryComplexHelper.getPartKey(key2, 1);
 				room = ath.findByPrimaryKey(new Integer(type));
 				pic = room.getFloorPlanId();
 			}
 			ret.add(1, new Integer(pic));
 
 			if ((key3 != null) && (!key3.equalsIgnoreCase("-1"))) {
-				type = ApartmentTypeComplexHelper.getPartKey(key3, 1);
+				type = ApartmentSubcategoryComplexHelper.getPartKey(key3, 1);
 
 				room = ath.findByPrimaryKey(new Integer(type));
 				pic = room.getFloorPlanId();

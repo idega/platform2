@@ -56,12 +56,20 @@ import com.idega.util.text.TextStyler;
 
 public class TenantsProfile extends CampusBlock {
 
-	private final static String NAME = "name", SSN = "ssn", MOBILE = "mobile",
-			EMAIL = "email", FACULTY = "faculty", STUDYTRACK = "studytrack",
-			STUDYBEGIN = "studybegin", STUDYEND = "studyend",
-			SPOUSENAME = "spousename", SPOUSESSN = "spousessn",
-			CHILDNAME = "childname", CHILDSSN = "childssn",
-			CHILDID = "childid", CHILDCOUNT = "childcount";
+	private static final String NAME = "name";
+	private static final String SSN = "ssn";
+	private static final String MOBILE = "mobile";
+	private static final String EMAIL = "email";
+	private static final String FACULTY = "faculty";
+	private static final String STUDYTRACK = "studytrack";
+	private static final String STUDYBEGIN = "studybegin";
+	private static final String STUDYEND = "studyend";
+	private static final String SPOUSENAME = "spousename";
+	private static final String SPOUSESSN = "spousessn";
+	private static final String CHILDNAME = "childname";
+	private static final String CHILDSSN = "childssn";
+	private static final String CHILDID = "childid";
+	private static final String CHILDCOUNT = "childcount";
 
 	private final static String PARAMETER_MODE = "profile_mode";
 
@@ -262,9 +270,9 @@ public class TenantsProfile extends CampusBlock {
 
 		addToTable(table, row++, localize("name", "Name"), user.getName(),
 				new Text(user.getName()), 35);
-//		TextInput ssnInput = new TextInput(SSN);
-//		ssnInput.setAsIcelandicSSNumber(localize("provide_icelandic_ss",
-//				"Please provide a valid Icelandic personal ID"));
+		// TextInput ssnInput = new TextInput(SSN);
+		// ssnInput.setAsIcelandicSSNumber(localize("provide_icelandic_ss",
+		// "Please provide a valid Icelandic personal ID"));
 		addToTable(table, row++, localize("ssn", "SSN"), user.getPersonalID(),
 				new Text(user.getPersonalID()), 10);
 		Collection emails = user.getEmails();
@@ -419,6 +427,8 @@ public class TenantsProfile extends CampusBlock {
 			table.setAlignment(1, row, "right");
 			table.add(resignLink, 1, row);
 		}
+		
+		
 
 		return table;
 	}
@@ -588,8 +598,8 @@ public class TenantsProfile extends CampusBlock {
 	}
 
 	private void save(IWContext iwc) throws RemoteException {
-//		String name = iwc.getParameter(NAME);
-//		String ssn = iwc.getParameter(SSN);
+		// String name = iwc.getParameter(NAME);
+		// String ssn = iwc.getParameter(SSN);
 		String email = iwc.getParameter(EMAIL);
 		String mobile = iwc.getParameter(MOBILE);
 		String faculty = iwc.getParameter(FACULTY);
@@ -603,23 +613,17 @@ public class TenantsProfile extends CampusBlock {
 		ApplicantHome aHome = getApplicationService(iwc).getApplicantHome();
 		boolean storeUser = false;
 		// TODO move to business layer
-/*		if (name != null && name.length() > 0) {
-			_applicant.setFullName(name);
-			if (!user.getName().equals(name)) {
-				user.setFullName(name);
-				storeUser = true;
-			}
-		}
-
-		if (ssn != null) {
-			_applicant.setSSN(ssn);
-			if (!ssn.equals(user.getPersonalID())
-					&& SocialSecurityNumber.isValidSocialSecurityNumber(ssn,
-							getCampusSettings(iwc).getSystemLocale())) {
-				user.setPersonalID(ssn);
-				storeUser = true;
-			}
-		}*/
+		/*
+		 * if (name != null && name.length() > 0) {
+		 * _applicant.setFullName(name); if (!user.getName().equals(name)) {
+		 * user.setFullName(name); storeUser = true; } }
+		 * 
+		 * if (ssn != null) { _applicant.setSSN(ssn); if
+		 * (!ssn.equals(user.getPersonalID()) &&
+		 * SocialSecurityNumber.isValidSocialSecurityNumber(ssn,
+		 * getCampusSettings(iwc).getSystemLocale())) { user.setPersonalID(ssn);
+		 * storeUser = true; } }
+		 */
 		if (email != null) {
 			campusApplication.setEmail(email);
 			getUserService(iwc).storeUserEmail(user, email, true);

@@ -1,5 +1,5 @@
 /*
- * $Id: WaitingListBMPBean.java,v 1.14.4.1 2006/10/18 13:54:05 palli Exp $
+ * $Id: WaitingListBMPBean.java,v 1.14.4.2 2007/05/24 02:07:14 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -16,7 +16,7 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 import com.idega.block.application.data.Applicant;
-import com.idega.block.building.data.ApartmentType;
+import com.idega.block.building.data.ApartmentSubcategory;
 import com.idega.block.building.data.Complex;
 import com.idega.data.GenericEntity;
 import com.idega.data.query.InCriteria;
@@ -34,7 +34,10 @@ public class WaitingListBMPBean extends GenericEntity implements WaitingList {
 
 	private static final String COLUMN_COMPLEX = "bu_complex_id";
 
-	private static final String COLUMN_APARTMENT_TYPE = "bu_apartment_type_id";
+	// private static final String COLUMN_APARTMENT_TYPE =
+	// "bu_apartment_type_id";
+
+	private static final String COLUMN_SUBCATEGORY = "bu_subcategory_id";
 
 	private static final String COLUMN_APPLICANT = "app_applicant_id";
 
@@ -85,15 +88,19 @@ public class WaitingListBMPBean extends GenericEntity implements WaitingList {
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
 		addManyToOneRelationship(COLUMN_COMPLEX, Complex.class);
-		addManyToOneRelationship(COLUMN_APARTMENT_TYPE, ApartmentType.class);
+		// addManyToOneRelationship(COLUMN_APARTMENT_TYPE, ApartmentType.class);
+		addManyToOneRelationship(COLUMN_SUBCATEGORY, ApartmentSubcategory.class);
 		addManyToOneRelationship(COLUMN_APPLICANT, Applicant.class);
 		addAttribute(COLUMN_ORDER, "Order", Integer.class);
 		addAttribute(COLUMN_LIST_TYPE, "Waiting list type", String.class);
 		addAttribute(COLUMN_CHOICE_NUMBER, "Choice number", Integer.class);
-		addAttribute(COLUMN_LAST_CONFIRMATION, "Last confirmation date", Timestamp.class);
-		addAttribute(COLUMN_NUMBER_OF_REJECTIONS, "Number of rejections", Integer.class);
+		addAttribute(COLUMN_LAST_CONFIRMATION, "Last confirmation date",
+				Timestamp.class);
+		addAttribute(COLUMN_NUMBER_OF_REJECTIONS, "Number of rejections",
+				Integer.class);
 		addAttribute(COLUMN_REJECT_FLAG, "Reject flag", Boolean.class);
-		addAttribute(COLUMN_REMOVED_FROM_LIST, "Removed from list", Boolean.class);
+		addAttribute(COLUMN_REMOVED_FROM_LIST, "Removed from list",
+				Boolean.class);
 		addAttribute(COLUMN_PRIORITY_LEVEL, "Priority level", String.class);
 		addAttribute(COLUMN_ACCEPTED_DATE, "Accepted date", Timestamp.class);
 
@@ -114,37 +121,22 @@ public class WaitingListBMPBean extends GenericEntity implements WaitingList {
 		return COLUMN_COMPLEX;
 	}
 
-	public static String getApartmentTypeIdColumnName() {
-		return COLUMN_APARTMENT_TYPE;
+	/*
+	 * public static String getApartmentTypeIdColumnName() { return
+	 * COLUMN_APARTMENT_TYPE; }
+	 */
+
+	public static String getApartmentSubcategoryColumnName() {
+		return COLUMN_SUBCATEGORY;
 	}
 
 	public static String getApplicantIdColumnName() {
 		return COLUMN_APPLICANT;
 	}
 
-/*	public static String getTypeColumnName() {
-		return COLUMN_LIST_TYPE;
-	}*/
-
 	public static String getOrderColumnName() {
 		return COLUMN_ORDER;
 	}
-
-/*	public static String getChoiceNumberColumnName() {
-		return COLUMN_CHOICE_NUMBER;
-	}*/
-
-/*	public static String getLastConfirmationColumnName() {
-		return COLUMN_LAST_CONFIRMATION;
-	}*/
-
-/*	public static String getNumberOfRejectionsColumnName() {
-		return COLUMN_NUMBER_OF_REJECTIONS;
-	}*/
-
-/*	public static String getRemovedFromListColumnName() {
-		return COLUMN_REMOVED_FROM_LIST;
-	}*/
 
 	public static String getPriorityColumnName() {
 		return COLUMN_PRIORITY_LEVEL;
@@ -158,16 +150,39 @@ public class WaitingListBMPBean extends GenericEntity implements WaitingList {
 		return getIntegerColumnValue(COLUMN_COMPLEX);
 	}
 
-	public void setApartmentTypeId(int id) {
-		setColumn(COLUMN_APARTMENT_TYPE, id);
+	/*
+	 * public void setApartmentTypeId(int id) { setColumn(COLUMN_APARTMENT_TYPE,
+	 * id); }
+	 */
+
+	public void setApartmentSubcategory(int id) {
+		setColumn(COLUMN_SUBCATEGORY, id);
 	}
 
-	public void setApartmentTypeId(Integer id) {
-		setColumn(COLUMN_APARTMENT_TYPE, id);
+	/*
+	 * public void setApartmentTypeId(Integer id) {
+	 * setColumn(COLUMN_APARTMENT_TYPE, id); }
+	 */
+
+	public void setApartmentSubcategory(Integer id) {
+		setColumn(COLUMN_SUBCATEGORY, id);
 	}
 
-	public Integer getApartmentTypeId() {
-		return getIntegerColumnValue(COLUMN_APARTMENT_TYPE);
+	public void setApartmentSubcategory(ApartmentSubcategory subcategory) {
+		setColumn(COLUMN_SUBCATEGORY, subcategory);
+	}
+
+	/*
+	 * public Integer getApartmentTypeId() { return
+	 * getIntegerColumnValue(COLUMN_APARTMENT_TYPE); }
+	 */
+
+	public Integer getApartmentSubcategoryID() {
+		return getIntegerColumnValue(COLUMN_SUBCATEGORY);
+	}
+
+	public ApartmentSubcategory getApartmentSubcategory() {
+		return (ApartmentSubcategory) getColumnValue(COLUMN_SUBCATEGORY);
 	}
 
 	public void setApplicantId(int id) {
@@ -318,18 +333,29 @@ public class WaitingListBMPBean extends GenericEntity implements WaitingList {
 		setPriorityLevel(listEntry.getPriorityLevel());
 	}
 
-	public Collection ejbFindByApartmentTypeAndComplexForApplicationType(
-			int aprtId, int complexId) throws FinderException {
+	/*
+	 * public Collection ejbFindByApartmentTypeAndComplexForApplicationType( int
+	 * aprtId, int complexId) throws FinderException { StringBuffer sql = new
+	 * StringBuffer("select * from "); sql.append(getTableName()); sql.append("
+	 * where "); sql.append(COLUMN_APARTMENT_TYPE); sql.append(" = ");
+	 * sql.append(aprtId); sql.append(" and "); sql.append(COLUMN_COMPLEX);
+	 * sql.append(" = "); sql.append(complexId); sql.append(" and ");
+	 * sql.append(COLUMN_LIST_TYPE); sql.append(" = ");
+	 * sql.append(TYPE_APPLICATION); sql.append(" order by ");
+	 * sql.append(COLUMN_PRIORITY_LEVEL); sql.append(", ");
+	 * sql.append(COLUMN_ORDER);
+	 * 
+	 * return super.idoFindPKsBySQL(sql.toString()); }
+	 */
+
+	public Collection ejbFindByApartmentSubcategoryForApplicationType(
+			int subcatId) throws FinderException {
 		StringBuffer sql = new StringBuffer("select * from ");
 		sql.append(getTableName());
 		sql.append(" where ");
-		sql.append(COLUMN_APARTMENT_TYPE);
+		sql.append(COLUMN_SUBCATEGORY);
 		sql.append(" = ");
-		sql.append(aprtId);
-		sql.append(" and ");
-		sql.append(COLUMN_COMPLEX);
-		sql.append(" = ");
-		sql.append(complexId);
+		sql.append(subcatId);
 		sql.append(" and ");
 		sql.append(COLUMN_LIST_TYPE);
 		sql.append(" = ");
@@ -342,18 +368,29 @@ public class WaitingListBMPBean extends GenericEntity implements WaitingList {
 		return super.idoFindPKsBySQL(sql.toString());
 	}
 
-	public Collection ejbFindByApartmentTypeAndComplexForTransferType(
-			int aprtId, int complexId) throws FinderException {
+	/*
+	 * public Collection ejbFindByApartmentTypeAndComplexForTransferType( int
+	 * aprtId, int complexId) throws FinderException { StringBuffer sql = new
+	 * StringBuffer("select * from "); sql.append(getTableName()); sql.append("
+	 * where "); sql.append(COLUMN_APARTMENT_TYPE); sql.append(" = ");
+	 * sql.append(aprtId); sql.append(" and "); sql.append(COLUMN_COMPLEX);
+	 * sql.append(" = "); sql.append(complexId); sql.append(" and ");
+	 * sql.append(COLUMN_LIST_TYPE); sql.append(" = ");
+	 * sql.append(TYPE_TRANSFER); sql.append(" order by ");
+	 * sql.append(COLUMN_PRIORITY_LEVEL); sql.append(", ");
+	 * sql.append(COLUMN_ORDER);
+	 * 
+	 * return super.idoFindPKsBySQL(sql.toString()); }
+	 */
+
+	public Collection ejbFindByApartmentSubcategoryForTransferType(
+			int subcatId) throws FinderException {
 		StringBuffer sql = new StringBuffer("select * from ");
 		sql.append(getTableName());
 		sql.append(" where ");
-		sql.append(COLUMN_APARTMENT_TYPE);
+		sql.append(COLUMN_SUBCATEGORY);
 		sql.append(" = ");
-		sql.append(aprtId);
-		sql.append(" and ");
-		sql.append(COLUMN_COMPLEX);
-		sql.append(" = ");
-		sql.append(complexId);
+		sql.append(subcatId);
 		sql.append(" and ");
 		sql.append(COLUMN_LIST_TYPE);
 		sql.append(" = ");
@@ -366,18 +403,26 @@ public class WaitingListBMPBean extends GenericEntity implements WaitingList {
 		return super.idoFindPKsBySQL(sql.toString());
 	}
 
-	public Collection ejbFindByApartmentTypeAndComplex(int aprtId, int complexId)
-			throws FinderException {
+	/*
+	 * public Collection ejbFindByApartmentTypeAndComplex(int aprtId, int
+	 * complexId) throws FinderException { StringBuffer sql = new
+	 * StringBuffer("select * from "); sql.append(getTableName()); sql.append("
+	 * where "); sql.append(COLUMN_APARTMENT_TYPE); sql.append(" = ");
+	 * sql.append(aprtId); sql.append(" and "); sql.append(COLUMN_COMPLEX);
+	 * sql.append(" = "); sql.append(complexId); sql.append(" order by ");
+	 * sql.append(COLUMN_PRIORITY_LEVEL); sql.append(", ");
+	 * sql.append(COLUMN_ORDER);
+	 * 
+	 * return super.idoFindPKsBySQL(sql.toString()); }
+	 */
+
+	public Collection ejbFindByApartmentSubcategory(int subcatId) throws FinderException {
 		StringBuffer sql = new StringBuffer("select * from ");
 		sql.append(getTableName());
 		sql.append(" where ");
-		sql.append(COLUMN_APARTMENT_TYPE);
+		sql.append(COLUMN_SUBCATEGORY);
 		sql.append(" = ");
-		sql.append(aprtId);
-		sql.append(" and ");
-		sql.append(COLUMN_COMPLEX);
-		sql.append(" = ");
-		sql.append(complexId);
+		sql.append(subcatId);
 		sql.append(" order by ");
 		sql.append(COLUMN_PRIORITY_LEVEL);
 		sql.append(", ");
@@ -386,18 +431,30 @@ public class WaitingListBMPBean extends GenericEntity implements WaitingList {
 		return super.idoFindPKsBySQL(sql.toString());
 	}
 
-	public Collection ejbFindNextForTransferByApartmentTypeAndComplex(
-			int aprtId, int complexId, int orderedFrom) throws FinderException {
+	/*
+	 * public Collection ejbFindNextForTransferByApartmentTypeAndComplex( int
+	 * aprtId, int complexId, int orderedFrom) throws FinderException {
+	 * StringBuffer sql = new StringBuffer("select * from ");
+	 * sql.append(getTableName()); sql.append(" where ");
+	 * sql.append(COLUMN_APARTMENT_TYPE); sql.append(" = "); sql.append(aprtId);
+	 * sql.append(" and "); sql.append(COLUMN_COMPLEX); sql.append(" = ");
+	 * sql.append(complexId); sql.append(" and ");
+	 * sql.append(COLUMN_PRIORITY_LEVEL); sql.append(" = 'C' and ");
+	 * sql.append(COLUMN_ORDER); sql.append(" > "); sql.append(orderedFrom);
+	 * sql.append(" order by "); sql.append(COLUMN_ORDER);
+	 * 
+	 * return super.idoFindPKsBySQL(sql.toString()); }
+	 */
+
+	public Collection ejbFindNextForTransferByApartmentSubcategory(
+			int subcatId, int orderedFrom)
+			throws FinderException {
 		StringBuffer sql = new StringBuffer("select * from ");
 		sql.append(getTableName());
 		sql.append(" where ");
-		sql.append(COLUMN_APARTMENT_TYPE);
+		sql.append(COLUMN_SUBCATEGORY);
 		sql.append(" = ");
-		sql.append(aprtId);
-		sql.append(" and ");
-		sql.append(COLUMN_COMPLEX);
-		sql.append(" = ");
-		sql.append(complexId);
+		sql.append(subcatId);
 		sql.append(" and ");
 		sql.append(COLUMN_PRIORITY_LEVEL);
 		sql.append(" = 'C' and ");
@@ -410,12 +467,28 @@ public class WaitingListBMPBean extends GenericEntity implements WaitingList {
 		return super.idoFindPKsBySQL(sql.toString());
 	}
 
-	public Collection ejbFindByApartmentType(int[] aprtId) throws FinderException {
+/*	public Collection ejbFindByApartmentType(int[] aprtId)
+			throws FinderException {
 		Table laddiJoli = new Table(this);
-		
+
 		SelectQuery q2 = new SelectQuery(laddiJoli);
 		q2.addColumn(new WildCardColumn(laddiJoli));
-		q2.addCriteria(new InCriteria(laddiJoli, COLUMN_APARTMENT_TYPE, aprtId));
+		q2
+				.addCriteria(new InCriteria(laddiJoli, COLUMN_APARTMENT_TYPE,
+						aprtId));
+
+		return idoFindPKsByQuery(q2);
+	}*/
+
+	public Collection ejbFindByApartmentSubcategory(int[] subcatId)
+			throws FinderException {
+		Table laddiJoli = new Table(this);
+
+		SelectQuery q2 = new SelectQuery(laddiJoli);
+		q2.addColumn(new WildCardColumn(laddiJoli));
+		q2
+				.addCriteria(new InCriteria(laddiJoli, COLUMN_SUBCATEGORY,
+						subcatId));
 
 		return idoFindPKsByQuery(q2);
 	}

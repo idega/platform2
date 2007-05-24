@@ -93,7 +93,7 @@ public class ApproveAllWithPriorityA {
             Applied applied = (Applied)it.next();
 
             WaitingList wl = ((WaitingListHome)com.idega.data.IDOLookup.getHome(WaitingList.class)).create();
-            wl.setApartmentTypeId(applied.getApartmentTypeId());
+            wl.setApartmentSubcategory(applied.getSubcategoryID());
             wl.setComplexId(applied.getComplexId().intValue());
 //            wl.setType(new String("A"));
             wl.setTypeApplication();

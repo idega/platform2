@@ -12,7 +12,7 @@ import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
-import com.idega.block.building.business.ApartmentTypeComplexHelper;
+import com.idega.block.building.business.ApartmentSubcategoryComplexHelper;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.DatePicker;
@@ -282,7 +282,7 @@ public class Approver extends CampusBlock {
 		if (firstEmpty)
 			drpTypes.addMenuElementFirst("-1", "-");
 		for (Iterator iter = types.iterator(); iter.hasNext();) {
-			ApartmentTypeComplexHelper type = (ApartmentTypeComplexHelper) iter.next();
+			ApartmentSubcategoryComplexHelper type = (ApartmentSubcategoryComplexHelper) iter.next();
 			drpTypes.addMenuElement(type.getKey(), type.getName());
 		}
 		drpTypes.setSelectedElement(selected);

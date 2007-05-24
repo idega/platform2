@@ -30,6 +30,8 @@ public class ApartmentViewBMPBean extends GenericView implements ApartmentView{
 	protected static final String TYPE_NAME = "TYPE_NAME";
 	protected static final String CATEGORY_ID ="CATEGORY_ID";
 	protected static final String CATEGORY_NAME ="CATEGORY_NAME";
+	protected static final String COLUMN_SUBCATEGORY = "subcategory_id";
+	
 	/* (non-Javadoc)
 	 * @see com.idega.data.GenericEntity#getEntityName()
 	 */
@@ -60,6 +62,7 @@ public class ApartmentViewBMPBean extends GenericView implements ApartmentView{
 		addAttribute(CATEGORY_NAME,"Category name",String.class);
 		addAttribute(TYPE_ID,"Type id",true,true,Integer.class,ONE_TO_ONE,ApartmentType.class);
 		addAttribute(TYPE_NAME,"Type name",String.class);
+		addManyToOneRelationship(COLUMN_SUBCATEGORY, ApartmentSubcategory.class);
 		setAsPrimaryKey(APARTMENT_ID,true);
 	}
 	/* (non-Javadoc)
@@ -79,15 +82,17 @@ public class ApartmentViewBMPBean extends GenericView implements ApartmentView{
 		sql.append(CATEGORY_ID).append(", ");
 		sql.append(CATEGORY_NAME).append(", ");
 		sql.append(TYPE_ID).append(", ");
-		sql.append(TYPE_NAME);
+		sql.append(TYPE_NAME).append(", ");
+		sql.append(COLUMN_SUBCATEGORY);
 		sql.append("  ) AS ");
-		sql.append(" select c.bu_complex_id,c.name,b.bu_building_id, b.name,f.bu_floor_id,f.name,a.bu_apartment_id,a.name, y.bu_aprt_cat_id,y.name, t.bu_aprt_type_id,t.name ");
-		sql.append(" from bu_complex c, bu_building b, bu_floor f, bu_apartment a, bu_aprt_cat y, bu_aprt_type t ");
+		sql.append(" select c.bu_complex_id,c.name,b.bu_building_id, b.name,f.bu_floor_id,f.name,a.bu_apartment_id,a.name, y.bu_aprt_cat_id,y.name, t.bu_aprt_type_id,t.name, s.bu_aprt_sub_cat_id ");
+		sql.append(" from bu_complex c, bu_building b, bu_floor f, bu_apartment a, bu_aprt_cat y, bu_aprt_type t, bu_aprt_sub_cat s ");
 		sql.append(" where c.bu_complex_id = b.bu_complex_id ");
 		sql.append(" and b.bu_building_id = f.bu_building_id ");
 		sql.append(" and f.bu_floor_id = a.bu_floor_id ");
 		sql.append(" and a.bu_aprt_type_id = t.bu_aprt_type_id ");
-		sql.append(" and t.bu_aprt_cat_id = y.bu_aprt_cat_id ");
+		sql.append(" and t.bu_aprt_subcat = s.bu_aprt_sub_cat_id ");
+		sql.append(" and s.aprt_cat = y.bu_aprt_cat_id ");
 		return sql.toString();
 	}
 	
@@ -158,6 +163,14 @@ public class ApartmentViewBMPBean extends GenericView implements ApartmentView{
 		return getStringColumnValue(TYPE_NAME);
 	}
 	
+	public ApartmentSubcategory getSubcategory() {
+		return (ApartmentSubcategory) getColumnValue(COLUMN_SUBCATEGORY);
+	}
+	
+	public int getSubcategoryID() {
+		return getIntColumnValue(COLUMN_SUBCATEGORY);
+	}
+	
 	public Collection ejbFindByComplex(Integer complexID)throws FinderException{
 		return idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(COMPLEX_ID,complexID));
 	}
@@ -173,8 +186,11 @@ public class ApartmentViewBMPBean extends GenericView implements ApartmentView{
 	public Collection ejbFindByType(Integer typeID)throws FinderException{
 		return idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(TYPE_ID,typeID));
 	}
-	public Collection ejbFindByTypeAndComplex(Integer typeID,Integer complexID)throws FinderException{
+	/*public Collection ejbFindByTypeAndComplex(Integer typeID,Integer complexID)throws FinderException{
 		return idoFindPKsByQuery(idoQueryGetSelect().appendWhereEquals(TYPE_ID,typeID).appendAndEquals(COMPLEX_ID,complexID));
+	}*/
+	public Collection ejbFindBySubcategory(Integer subcategoryID)throws FinderException{
+		return idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(COLUMN_SUBCATEGORY,subcategoryID));
 	}
 	
 	public String getApartmentString(String delimiter){

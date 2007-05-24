@@ -1,19 +1,11 @@
-/**
- * 
- */
 package is.idega.idegaweb.campus.block.application.data;
 
-import java.sql.Date;
+
 import java.util.Collection;
-
-
 import com.idega.block.application.data.Application;
+import java.sql.Date;
 import com.idega.data.IDOEntity;
 
-/**
- * @author bluebottle
- *
- */
 public interface CampusApplication extends IDOEntity {
 	/**
 	 * @see is.idega.idegaweb.campus.block.application.data.CampusApplicationBMPBean#getApplicationIdColumnName
@@ -509,5 +501,4 @@ public interface CampusApplication extends IDOEntity {
 	 * @see is.idega.idegaweb.campus.block.application.data.CampusApplicationBMPBean#getApplied
 	 */
 	public Collection getApplied();
-
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: ApartmentCategoryBMPBean.java,v 1.8.2.2 2007/04/12 12:18:20 palli Exp $
+ * $Id: ApartmentCategoryBMPBean.java,v 1.8.2.3 2007/05/24 02:07:20 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -90,6 +90,7 @@ public class ApartmentCategoryBMPBean extends TextEntityBMPBean implements
 	public Collection ejbFindByComplex(Integer complexID)
 			throws FinderException {
 		Table category = new Table(this, "c");
+		Table subcategory = new Table(ApartmentSubcategory.class, "s");
 		Table type = new Table(ApartmentType.class, "t");
 		Table apartment = new Table(Apartment.class, "a");
 		Table floor = new Table(Floor.class, "f");
@@ -98,7 +99,8 @@ public class ApartmentCategoryBMPBean extends TextEntityBMPBean implements
 		query.setAsDistinct(true);
 		query.addColumn(new WildCardColumn(category));
 		try {
-			query.addJoin(type, category);
+			query.addJoin(subcategory, category);
+			query.addJoin(type, subcategory);
 			query.addJoin(apartment, type);
 			query.addJoin(apartment, floor);
 			query.addJoin(floor, building);

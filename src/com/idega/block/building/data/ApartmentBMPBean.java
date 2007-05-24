@@ -269,7 +269,7 @@ public class ApartmentBMPBean extends
 	}
 
 	public Collection ejbFindBySearch(Integer complexID, Integer buildingID,
-			Integer floorID, Integer typeID, Integer categoryID, boolean order)
+			Integer floorID, Integer typeID, Integer subcategoryID, boolean order)
 			throws FinderException {
 
 		Table apartment = new Table(this, "a");
@@ -277,6 +277,7 @@ public class ApartmentBMPBean extends
 		Table building = new Table(Building.class, "b");
 		Table complex = new Table(Complex.class, "c");
 		Table category = new Table(ApartmentCategory.class, "y");
+		Table subcategory = new Table(ApartmentSubcategory.class, "y");
 		Table type = new Table(ApartmentType.class, "t");
 
 		SelectQuery query = new SelectQuery(apartment);
@@ -287,8 +288,8 @@ public class ApartmentBMPBean extends
 				FloorBMPBean.BU_BUILDING_ID);
 		query.addJoin(apartment, BU_FLOOR_ID, floor, BU_FLOOR_ID);
 		query.addJoin(apartment, BU_APRT_TYPE_ID, type, BU_APRT_TYPE_ID);
-		query.addJoin(type, ApartmentTypeBMPBean.COLUMN_APARTMENT_CATEGORY, category,
-				ApartmentTypeBMPBean.COLUMN_APARTMENT_CATEGORY);
+		query.addJoin(type, ApartmentTypeBMPBean.COLUMN_APARTMENT_SUBCATEGORY, subcategory,
+				ApartmentTypeBMPBean.COLUMN_APARTMENT_SUBCATEGORY);
 
 		if (complexID != null && complexID.intValue() > 0) {
 			query.addCriteria(new MatchCriteria(building,
@@ -323,10 +324,10 @@ public class ApartmentBMPBean extends
 				query.addOrder(type, ApartmentTypeBMPBean.COLUMN_NAME, true);
 			}
 		}
-		if (categoryID != null && categoryID.intValue() > 0) {
+		if (subcategoryID != null && subcategoryID.intValue() > 0) {
 			query.addCriteria(new MatchCriteria(type,
-					ApartmentTypeBMPBean.COLUMN_APARTMENT_CATEGORY, MatchCriteria.EQUALS,
-					categoryID.intValue()));
+					ApartmentTypeBMPBean.COLUMN_APARTMENT_SUBCATEGORY, MatchCriteria.EQUALS,
+					subcategoryID.intValue()));
 			if (order) {
 				query.addOrder(category, ApartmentCategoryBMPBean.NAME, true);
 			}

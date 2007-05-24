@@ -43,9 +43,10 @@ public class WaitingListOrganizerWindow extends CampusWindow {
 
 	private static final String MOVE_TO = "move_to";
 
-	public static String COMPLEX_ID = "complex";
+	//public static String COMPLEX_ID = "complex";
 
-	public static String APARTMENT_TYPE_ID = "aprtType";
+	//public static String APARTMENT_TYPE_ID = "aprtType";
+	public static String SUBCATEGORY_ID = "subcategoryID";
 
 	public static String WL_ORDER = "order";
 
@@ -89,8 +90,8 @@ public class WaitingListOrganizerWindow extends CampusWindow {
 	}
 
 	protected boolean doRenumberWaitingList(IWContext iwc) {
-		int complexId = Integer.parseInt(iwc.getParameter(COMPLEX_ID));
-		int aprtTypeId = Integer.parseInt(iwc.getParameter(APARTMENT_TYPE_ID));
+		//int complexId = Integer.parseInt(iwc.getParameter(COMPLEX_ID));
+		int subcategoryID = Integer.parseInt(iwc.getParameter(SUBCATEGORY_ID));
 		int id = Integer.parseInt(iwc.getParameter(WL_ID));
 		int moveTo = -1;
 		String priority = iwc.getParameter(PRIORITY);
@@ -104,7 +105,7 @@ public class WaitingListOrganizerWindow extends CampusWindow {
 		if (moveTo > 0) {
 			try {
 				Collection L = getContractService(iwc).getWaitingListHome()
-						.findByApartmentTypeAndComplex(aprtTypeId, complexId);
+						.findByApartmentSubcategory(subcategoryID);
 
 				WaitingList[] waitingList = (WaitingList[]) L
 						.toArray(new WaitingList[0]);
@@ -165,15 +166,17 @@ public class WaitingListOrganizerWindow extends CampusWindow {
 	}
 
 	protected PresentationObject getRenumberTable(IWContext iwc) {
-		int complexId = Integer.parseInt(iwc.getParameter(COMPLEX_ID));
-		int aprtTypeId = Integer.parseInt(iwc.getParameter(APARTMENT_TYPE_ID));
+		//int complexId = Integer.parseInt(iwc.getParameter(COMPLEX_ID));
+		//int aprtTypeId = Integer.parseInt(iwc.getParameter(APARTMENT_TYPE_ID));
+		int subcategoryID = Integer.parseInt(iwc.getParameter(SUBCATEGORY_ID));
 		int onList = Integer.parseInt(iwc.getParameter(NUMBER_ON_LIST));
 		int max = Integer.parseInt(iwc.getParameter(MAX_LIST));
 		int id = Integer.parseInt(iwc.getParameter(WL_ID));
 
 		Form form = new Form();
-		form.maintainParameter(COMPLEX_ID);
-		form.maintainParameter(APARTMENT_TYPE_ID);
+		//form.maintainParameter(COMPLEX_ID);
+		//form.maintainParameter(APARTMENT_TYPE_ID);
+		form.maintainParameter(SUBCATEGORY_ID);
 		form.maintainParameter(WL_ID);
 		DataTable table = new DataTable();
 		table.setTitlesVertical(true);

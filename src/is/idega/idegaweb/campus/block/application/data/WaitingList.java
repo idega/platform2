@@ -1,18 +1,11 @@
-/**
- * 
- */
 package is.idega.idegaweb.campus.block.application.data;
 
-import java.sql.Timestamp;
 
+import com.idega.block.building.data.ApartmentSubcategory;
 import javax.ejb.FinderException;
-
+import java.sql.Timestamp;
 import com.idega.data.IDOEntity;
 
-/**
- * @author bluebottle
- *
- */
 public interface WaitingList extends IDOEntity {
 	/**
 	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setComplexId
@@ -25,19 +18,29 @@ public interface WaitingList extends IDOEntity {
 	public Integer getComplexId();
 
 	/**
-	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setApartmentTypeId
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setApartmentSubcategory
 	 */
-	public void setApartmentTypeId(int id);
+	public void setApartmentSubcategory(int id);
 
 	/**
-	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setApartmentTypeId
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setApartmentSubcategory
 	 */
-	public void setApartmentTypeId(Integer id);
+	public void setApartmentSubcategory(Integer id);
 
 	/**
-	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#getApartmentTypeId
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setApartmentSubcategory
 	 */
-	public Integer getApartmentTypeId();
+	public void setApartmentSubcategory(ApartmentSubcategory subcategory);
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#getApartmentSubcategoryID
+	 */
+	public Integer getApartmentSubcategoryID();
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#getApartmentSubcategory
+	 */
+	public ApartmentSubcategory getApartmentSubcategory();
 
 	/**
 	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setApplicantId
@@ -198,5 +201,4 @@ public interface WaitingList extends IDOEntity {
 	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#getCountOfRecords
 	 */
 	public int getCountOfRecords(String sql) throws FinderException;
-
 }

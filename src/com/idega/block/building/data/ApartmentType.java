@@ -10,14 +10,14 @@ public interface ApartmentType extends BuildingEntity {
 	public String getName();
 
 	/**
-	 * @see com.idega.block.building.data.ApartmentTypeBMPBean#getApartmentCategoryId
+	 * @see com.idega.block.building.data.ApartmentTypeBMPBean#getApartmentSubcategoryID
 	 */
-	public int getApartmentCategoryId();
+	public int getApartmentSubcategoryID();
 
 	/**
-	 * @see com.idega.block.building.data.ApartmentTypeBMPBean#getApartmentCategory
+	 * @see com.idega.block.building.data.ApartmentTypeBMPBean#getApartmentSubcategory
 	 */
-	public ApartmentCategory getApartmentCategory();
+	public ApartmentSubcategory getApartmentSubcategory();
 
 	/**
 	 * @see com.idega.block.building.data.ApartmentTypeBMPBean#getInfo
@@ -110,14 +110,19 @@ public interface ApartmentType extends BuildingEntity {
 	public void setName(String name);
 
 	/**
-	 * @see com.idega.block.building.data.ApartmentTypeBMPBean#setApartmentCategoryId
+	 * @see com.idega.block.building.data.ApartmentTypeBMPBean#setApartmentSubcategoryID
 	 */
-	public void setApartmentCategoryId(int apartment_category_id);
+	public void setApartmentSubcategoryID(int categoryID);
 
 	/**
-	 * @see com.idega.block.building.data.ApartmentTypeBMPBean#setApartmentCategoryId
+	 * @see com.idega.block.building.data.ApartmentTypeBMPBean#setApartmentSubcategory
 	 */
-	public void setApartmentCategoryId(Integer apartment_category_id);
+	public void setApartmentSubcategory(Integer categoryID);
+
+	/**
+	 * @see com.idega.block.building.data.ApartmentTypeBMPBean#setApartmentSubcategory
+	 */
+	public void setApartmentSubcategory(ApartmentSubcategory category);
 
 	/**
 	 * @see com.idega.block.building.data.ApartmentTypeBMPBean#setInfo
