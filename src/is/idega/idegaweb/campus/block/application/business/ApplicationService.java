@@ -43,13 +43,15 @@ public interface ApplicationService extends com.idega.block.application.business
 	 * @see is.idega.idegaweb.campus.block.application.business.ApplicationServiceBean#storeApplicationStatus
 	 */
 	public boolean storeApplicationStatus(Integer ID, String status,
-			int transferInterval) throws RemoteException;
+			int transferInterval, String setTranserferToPriorityLevel)
+			throws RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.campus.block.application.business.ApplicationServiceBean#createWaitinglistTransfers
 	 */
 	public void createWaitinglistTransfers(Applicant Appli,
-			CampusApplication CA, int transferInterval) throws CreateException,
+			CampusApplication CA, int transferInterval,
+			String setTranserferToPriorityLevel) throws CreateException,
 			RemoteException, FinderException, SQLException, RemoteException;
 
 	/**
@@ -211,8 +213,8 @@ public interface ApplicationService extends com.idega.block.application.business
 	 * @see is.idega.idegaweb.campus.block.application.business.ApplicationServiceBean#getRightPlaceForTransfer
 	 */
 	public WaitingList getRightPlaceForTransfer(WaitingList wl,
-			int transferInterval) throws RemoteException, FinderException,
-			RemoteException;
+			int transferInterval, String setTranserferToPriorityLevel)
+			throws RemoteException, FinderException, RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.campus.block.application.business.ApplicationServiceBean#getComplexSubcategoryHelpersByCategory

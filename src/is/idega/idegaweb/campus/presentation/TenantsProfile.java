@@ -3,6 +3,7 @@ package is.idega.idegaweb.campus.presentation;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
 import is.idega.idegaweb.campus.block.allocation.presentation.ContractResignWindow;
+import is.idega.idegaweb.campus.block.application.data.Applied;
 import is.idega.idegaweb.campus.block.application.data.CampusApplication;
 import is.idega.idegaweb.campus.block.request.business.RequestFinder;
 import is.idega.idegaweb.campus.block.request.business.RequestHolder;
@@ -16,10 +17,12 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
+import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.ApplicantHome;
+import com.idega.block.application.data.Application;
 import com.idega.block.building.data.Apartment;
 import com.idega.block.building.data.ApartmentView;
 import com.idega.block.building.data.Building;
@@ -77,6 +80,8 @@ public class TenantsProfile extends CampusBlock {
 
 	private final static String PARAMETER_EDIT = "edit";
 
+	private final static String PARAMETER_RENEW = "renew";
+
 	protected final static String PARAMETER_USER_ID = "campus_user_id";
 
 	private boolean isAdmin = false;
@@ -96,6 +101,8 @@ public class TenantsProfile extends CampusBlock {
 	private int _userID = -1;
 
 	private boolean _update = false;
+	
+	private boolean renewed = false;
 
 	private boolean allowUserUpdate = true;
 
@@ -217,11 +224,17 @@ public class TenantsProfile extends CampusBlock {
 
 				if (iwc.getParameter(PARAMETER_MODE) != null) {
 					if (iwc.getParameter(PARAMETER_MODE).equalsIgnoreCase(
-							PARAMETER_SAVE))
+							PARAMETER_SAVE)) {
 						save(iwc);
+					}
 					else if (iwc.getParameter(PARAMETER_MODE).equalsIgnoreCase(
-							PARAMETER_EDIT))
+							PARAMETER_EDIT)) {
 						update = true;
+					}
+					else if (iwc.getParameter(PARAMETER_MODE).equalsIgnoreCase(
+							PARAMETER_RENEW)) {
+						renewed = applyForRenew(iwc);
+					}
 				}
 
 				_styler = new TextStyler();
@@ -255,6 +268,67 @@ public class TenantsProfile extends CampusBlock {
 		}
 	}
 
+	private boolean applyForRenew(IWContext iwc) {
+		//this.apartmentView.get
+		try {
+			Application newApplication = this.getCampusService(iwc).getApplicationService().getApplicationHome().create();
+			newApplication.setApplicantId((Integer) this._applicant.getPrimaryKey());
+			newApplication.setStatusSubmitted();
+			newApplication.setSubjectId(81);
+			IWTimestamp now = new IWTimestamp();
+			newApplication.setSubmitted(now.getTimestamp());
+			newApplication.setStatusChanged(now.getTimestamp());
+			newApplication.store();
+			
+			CampusApplication newCampusapplication = this.getCampusService(iwc).getApplicationService().getCampusApplicationHome().create();
+			newCampusapplication.setAppApplicationId((Integer) newApplication.getPrimaryKey());
+			newCampusapplication.setChildren(campusApplication.getChildren());
+			newCampusapplication.setContactPhone(campusApplication.getContactPhone());
+			newCampusapplication.setCurrentResidenceId(campusApplication.getCurrentResidenceId());
+			newCampusapplication.setEmail(campusApplication.getEmail());
+			newCampusapplication.setFaculty(campusApplication.getFaculty());
+			newCampusapplication.setHousingFrom(campusApplication.getHousingFrom());
+			newCampusapplication.setIncome(campusApplication.getIncome());
+			newCampusapplication.setOnWaitinglist(true);
+			newCampusapplication.setOtherInfo(campusApplication.getOtherInfo());
+			newCampusapplication.setPriorityLevel("A");
+			newCampusapplication.setSchool(campusApplication.getSchool());
+			newCampusapplication.setSpouseIncome(campusApplication.getSpouseIncome());
+			newCampusapplication.setSpouseName(campusApplication.getSpouseName());
+			newCampusapplication.setSpouseOccupationId(campusApplication.getSpouseOccupationId());
+			newCampusapplication.setSpouseSchool(campusApplication.getSpouseSchool());
+			newCampusapplication.setSpouseSSN(campusApplication.getSpouseSSN());
+			newCampusapplication.setSpouseStudyBeginMonth(campusApplication.getSpouseStudyBeginMonth());
+			newCampusapplication.setSpouseStudyBeginYear(campusApplication.getSpouseStudyBeginYear());
+			newCampusapplication.setSpouseStudyEndMonth(campusApplication.getSpouseStudyEndMonth());
+			newCampusapplication.setSpouseStudyEndYear(campusApplication.getSpouseStudyEndYear());
+			newCampusapplication.setSpouseStudyTrack(campusApplication.getSpouseStudyTrack());
+			newCampusapplication.setStudyBeginMonth(campusApplication.getStudyBeginMonth());
+			newCampusapplication.setStudyBeginYear(campusApplication.getStudyBeginYear());
+			newCampusapplication.setStudyEndMonth(campusApplication.getStudyEndMonth());
+			newCampusapplication.setStudyEndYear(campusApplication.getStudyEndYear());
+			newCampusapplication.setStudyTrack(campusApplication.getStudyTrack());
+			newCampusapplication.setWantFurniture(campusApplication.getWantFurniture());
+			newCampusapplication.store();
+			
+			Applied newApplied = this.getCampusService(iwc).getApplicationService().getAppliedHome().create();
+			newApplied.setApartment(this.apartmentView.getApartment());
+			newApplied.setApplicationId((Integer) newCampusapplication.getPrimaryKey());
+			newApplied.setOrder(1);
+			newApplied.setComplexId(this.apartmentView.getComplexID());
+			newApplied.setSubcategoryID(this.apartmentView.getSubcategoryID());
+			newApplied.store();
+			
+			return true;
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (CreateException e) {
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
+	
 	private PresentationObject getProfile(IWContext iwc) {
 
 		Form myForm = new Form();
@@ -402,6 +476,11 @@ public class TenantsProfile extends CampusBlock {
 						.getCurrentLocale()), 2, row++);
 			}
 		}
+		
+		if (renewed) {
+			table.mergeCells(1, row, 3, row);
+			table.add(localize("renewed","You have sent in an appliction for contract renewal."), 1, row++);			
+		}
 
 		table.setHorizontalZebraColored(white, lightGray);
 		table.setColumnColor(1, darkGray);
@@ -426,9 +505,13 @@ public class TenantsProfile extends CampusBlock {
 			table.mergeCells(1, row, 3, row);
 			table.setAlignment(1, row, "right");
 			table.add(resignLink, 1, row);
+			
+			Link renewLink = new Link(getResourceBundle().getImage("renew.gif"));
+			renewLink.addParameter(PARAMETER_MODE, PARAMETER_RENEW);
+			renewLink.addParameter(PARAMETER_USER_ID, userID);
+			table.add(renewLink, 1, row);
+
 		}
-		
-		
 
 		return table;
 	}

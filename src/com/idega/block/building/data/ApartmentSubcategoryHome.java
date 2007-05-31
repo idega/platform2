@@ -15,4 +15,7 @@ public interface ApartmentSubcategoryHome extends IDOHome {
 	public Collection findAll() throws FinderException;
 
 	public Collection findByCategory(Integer categoryID) throws FinderException;
+
+	public Collection findByCategory(Integer[] categoryID)
+			throws FinderException;
 }

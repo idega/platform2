@@ -21,7 +21,8 @@ public interface WaitingListHome extends IDOHome {
 			throws FinderException;
 
 	public Collection findNextForTransferByApartmentSubcategory(int subcatId,
-			int orderedFrom) throws FinderException;
+			int orderedFrom, String setTranserferToPriorityLevel)
+			throws FinderException;
 
 	public Collection findByApartmentSubcategory(int[] subcatId)
 			throws FinderException;

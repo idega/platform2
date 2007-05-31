@@ -36,4 +36,13 @@ public class ApartmentSubcategoryHomeImpl extends IDOFactory implements
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
+
+	public Collection findByCategory(Integer[] categoryID)
+			throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((ApartmentSubcategoryBMPBean) entity)
+				.ejbFindByCategory(categoryID);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 }

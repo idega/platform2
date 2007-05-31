@@ -1,24 +1,16 @@
-/**
- * 
- */
 package is.idega.idegaweb.campus.business;
 
 
-
+import javax.ejb.CreateException;
 import com.idega.business.IBOHomeImpl;
 
-/**
- * @author bluebottle
- *
- */
 public class CampusServiceHomeImpl extends IBOHomeImpl implements
 		CampusServiceHome {
-	protected Class getBeanInterfaceClass() {
+	public Class getBeanInterfaceClass() {
 		return CampusService.class;
 	}
 
-	public CampusService create() throws javax.ejb.CreateException {
+	public CampusService create() throws CreateException {
 		return (CampusService) super.createIBO();
 	}
-
 }

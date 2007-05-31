@@ -1,18 +1,10 @@
-/**
- * 
- */
 package is.idega.idegaweb.campus.business;
 
 
-
+import javax.ejb.CreateException;
 import com.idega.business.IBOHome;
+import java.rmi.RemoteException;
 
-/**
- * @author bluebottle
- *
- */
 public interface CampusServiceHome extends IBOHome {
-	public CampusService create() throws javax.ejb.CreateException,
-			java.rmi.RemoteException;
-
+	public CampusService create() throws CreateException, RemoteException;
 }

@@ -6,6 +6,8 @@ package is.idega.idegaweb.campus.business;
 
 import is.idega.idegaweb.campus.block.allocation.business.ContractService;
 import is.idega.idegaweb.campus.block.application.business.ApplicationService;
+import is.idega.idegaweb.campus.block.application.data.ApartmentCategoryCombination;
+import is.idega.idegaweb.campus.block.application.data.ApartmentCategoryCombinationHome;
 import is.idega.idegaweb.campus.block.application.data.School;
 import is.idega.idegaweb.campus.block.application.data.SchoolHome;
 
@@ -129,6 +131,10 @@ public class CampusServiceBean extends IBOServiceBean implements CampusService {
 
 	public SchoolHome getSchoolHome() throws RemoteException {
 		return (SchoolHome) getIDOHome(School.class);
+	}
+
+	public ApartmentCategoryCombinationHome getApartmentCategoryCombinationHome() throws RemoteException {
+		return (ApartmentCategoryCombinationHome) getIDOHome(ApartmentCategoryCombination.class);
 	}
 	
 	public ContractService getContractService() throws RemoteException {

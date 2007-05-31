@@ -1,5 +1,5 @@
 /*
- * $Id: BNCampusApplicationForm.java,v 1.1.2.2 2007/01/17 22:53:17 palli Exp $
+ * $Id: BNCampusApplicationForm.java,v 1.1.2.3 2007/05/31 17:07:52 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,6 +9,7 @@
  */
 package is.idega.idegaweb.campus.bn.presentation;
 
+import is.idega.idegaweb.campus.block.application.data.ApartmentCategoryCombination;
 import is.idega.idegaweb.campus.block.application.data.CurrentResidency;
 import is.idega.idegaweb.campus.block.application.data.SpouseOccupation;
 import is.idega.idegaweb.campus.block.application.presentation.CampusApplicationForm;
@@ -23,6 +24,7 @@ import java.util.Vector;
 import javax.ejb.FinderException;
 
 import com.idega.block.application.data.Applicant;
+import com.idega.block.building.data.ApartmentCategory;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
@@ -87,6 +89,26 @@ public class BNCampusApplicationForm extends CampusApplicationForm {
 			DropdownMenu subject = new DropdownMenu(subjects, "subject");
 
 			DropdownMenu aprtCat = new DropdownMenu(categories, "aprtCat");
+			Collection col = getCampusService(iwc).getApartmentCategoryCombinationHome().findAll();
+			if (col != null && !col.isEmpty()) {
+				Iterator it = col.iterator();
+				while (it.hasNext()) {
+					ApartmentCategoryCombination comb = (ApartmentCategoryCombination) it.next();
+					ApartmentCategory cat1 = comb.getCategory1();
+					ApartmentCategory cat2 = comb.getCategory2();
+					
+					StringBuffer key = new StringBuffer(cat1.getPrimaryKey().toString());
+					key.append("&");
+					key.append(cat2.getPrimaryKey().toString());
+					
+					StringBuffer name = new StringBuffer(cat1.getName());
+					name.append(" & ");
+					name.append(cat2.getName());
+					
+					aprtCat.addMenuElement(key.toString(), name.toString());
+				}
+			}
+
 
 			Image back = _iwrb.getImage("back.gif");
 			back.setMarkupAttribute("onClick", "history.go(-1)");

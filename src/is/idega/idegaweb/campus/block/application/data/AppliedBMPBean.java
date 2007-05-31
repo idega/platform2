@@ -1,5 +1,5 @@
 /*
- * $Id: AppliedBMPBean.java,v 1.5.4.1 2007/05/24 02:07:14 palli Exp $
+ * $Id: AppliedBMPBean.java,v 1.5.4.2 2007/05/31 17:07:52 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -14,6 +14,7 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.building.data.Apartment;
 import com.idega.block.building.data.ApartmentSubcategory;
 import com.idega.block.building.data.Complex;
 import com.idega.data.GenericEntity;
@@ -30,6 +31,7 @@ public class AppliedBMPBean extends GenericEntity implements Applied {
 	private static final String COLUMN_SUBCATEGORY = "bu_subcategory_id";
 	private static final String COLUMN_APPLICATION = "cam_application_id";
 	private static final String COLUMN_ORDER = "ordered";
+	private static final String COLUMN_APARTMENT = "bu_apartment_id";
 
 	public AppliedBMPBean() {
 		super();
@@ -45,6 +47,7 @@ public class AppliedBMPBean extends GenericEntity implements Applied {
 		//addManyToOneRelationship(COLUMN_APARTMENT_TYPE, ApartmentType.class);
 		addManyToOneRelationship(COLUMN_SUBCATEGORY, ApartmentSubcategory.class);
 		addManyToOneRelationship(COLUMN_APPLICATION, CampusApplication.class);
+		addManyToOneRelationship(COLUMN_APARTMENT, Apartment.class);
 		addAttribute(COLUMN_ORDER, "Order", Integer.class);
 	}
 
@@ -134,6 +137,22 @@ public class AppliedBMPBean extends GenericEntity implements Applied {
 
 	public Integer getOrder() {
 		return getIntegerColumnValue(COLUMN_ORDER);
+	}
+	
+	public void setApartment(Apartment apartment) {
+		setColumn(COLUMN_APARTMENT, apartment);
+	}
+	
+	public void setApartmentID(int apartmentID) {
+		setColumn(COLUMN_APARTMENT, apartmentID);
+	}
+	
+	public Apartment getApartment() {
+		return (Apartment) getColumnValue(COLUMN_APARTMENT);
+	}
+	
+	public int getApartmentID() {
+		return getIntColumnValue(COLUMN_APARTMENT);
 	}
 
 	public Collection ejbFindAll() throws FinderException {

@@ -6,6 +6,7 @@ import javax.ejb.FinderException;
 
 import com.idega.block.text.data.TextEntityBMPBean;
 import com.idega.data.query.Column;
+import com.idega.data.query.InCriteria;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;
@@ -95,7 +96,21 @@ public class ApartmentSubcategoryBMPBean extends TextEntityBMPBean implements
 		query.addCriteria(new MatchCriteria(new Column(subcategory,
 				COLUMN_APARTMENT_CATEGORY), MatchCriteria.EQUALS, categoryID
 				.intValue()));
+
+		return idoFindPKsByQuery(query);
+	}
+
+	public Collection ejbFindByCategory(Integer categoryID[])
+			throws FinderException {
+		Table subcategory = new Table(this);
+		SelectQuery query = new SelectQuery(subcategory);
+		query.addColumn(new WildCardColumn(subcategory));
+		query.addCriteria(new InCriteria(new Column(subcategory,
+				COLUMN_APARTMENT_CATEGORY), categoryID));
+
+		System.out.println("sql = " + query.toString());
 		
 		return idoFindPKsByQuery(query);
 	}
+
 }

@@ -81,7 +81,7 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 		}
 	}
 
-	public boolean storeApplicationStatus(Integer ID, String status, int transferInterval) {
+	public boolean storeApplicationStatus(Integer ID, String status, int transferInterval, String setTranserferToPriorityLevel) {
 		UserTransaction t = getSessionContext().getUserTransaction();
 		try {
 			t.begin();
@@ -96,7 +96,7 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 				// send out approval letter ( try to do with listeners )
 				getMailingListService().processMailEvent(new EntityHolder(Appli), LetterParser.APPROVAL);
 				// make transfers on waitinglists
-				createWaitinglistTransfers(Appli, CA, transferInterval);
+				createWaitinglistTransfers(Appli, CA, transferInterval, setTranserferToPriorityLevel);
 			}
 			else if (status.equals(Status.REJECTED.toString())) {
 				getMailingListService().processMailEvent(new EntityHolder(Appli), LetterParser.REJECTION);
@@ -120,7 +120,7 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 		return false;
 	}
 
-	public void createWaitinglistTransfers(Applicant Appli, CampusApplication CA, int transferInterval) throws CreateException,
+	public void createWaitinglistTransfers(Applicant Appli, CampusApplication CA, int transferInterval, String setTranserferToPriorityLevel) throws CreateException,
 			RemoteException, FinderException, SQLException {
 		if (CA != null) {
 			Collection L = getAppliedHome().findByApplicationID(((Integer) CA.getPrimaryKey()));
@@ -130,29 +130,34 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 					Applied applied = (Applied) it.next();
 					WaitingList wl = ((WaitingListHome) getIDOHome(WaitingList.class)).create();
 					wl.setApartmentSubcategory(applied.getSubcategoryID());
-					wl.setComplexId(applied.getComplexId().intValue());
+					//wl.setComplexId(applied.getComplexId().intValue());
 					wl.setTypeApplication();
 					wl.setApplicantId(((Integer) Appli.getPrimaryKey()).intValue());
 					wl.setOrder(0);
 					wl.setChoiceNumber(applied.getOrder());
 					wl.setLastConfirmationDate(IWTimestamp.getTimestampRightNow());
+					wl.setApartment(applied.getApartment());
 					wl.store();
 					wl.setOrder(((Integer) wl.getPrimaryKey()).intValue());
 					String level = CA.getPriorityLevel();
-					if (level.equals("A"))
+					if (level.equals("A")) {
 						wl.setPriorityLevelA();
-					else if (level.equals("B"))
+					} else if (level.equals("B")) {
 						wl.setPriorityLevelB();
-					else if (level.equals("C"))
+					} else if (level.equals("C")) {
 						wl.setPriorityLevelC();
-					else if (level.equals("D"))
+					} else if (level.equals("D")) {
 						wl.setPriorityLevelD();
-					else if (level.equals("E"))
+					} else if (level.equals("E")) {
 						wl.setPriorityLevelE();
-					else if (level.equals("T")) {
-						wl.setPriorityLevelC();
+					} else if (level.equals("T")) {
+						if (setTranserferToPriorityLevel != null) {
+							wl.setPriorityLevel(setTranserferToPriorityLevel);
+						} else {
+							wl.setPriorityLevelC();
+						}
 						wl.setTypeTransfer();
-						wl = getRightPlaceForTransfer(wl, transferInterval);
+						wl = getRightPlaceForTransfer(wl, transferInterval, setTranserferToPriorityLevel);
 					}
 					wl.store();
 				}
@@ -703,10 +708,6 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 				sql.append(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getApartmentSubcategoryColumnName());
 				sql.append(" = ");
 				sql.append(wl.getApartmentSubcategoryID().toString());
-				sql.append(" and ");
-				sql.append(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getComplexIdColumnName());
-				sql.append(" = ");
-				sql.append(wl.getComplexId().toString());
 				int count = 0;
 				try {
 					count = getWaitingListHome().create().getCountOfRecords(sql.toString());
@@ -792,13 +793,11 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 		return (PriorityHome) getIDOHome(Priority.class);
 	}
 
-	private int getMaxTransferInWaitingList(int subcatID, int cmplxId) {
+	private int getMaxTransferInWaitingList(int subcatID) {
 		StringBuffer sql = new StringBuffer("select max(app.ordered) ");
 		sql.append(" from cam_waiting_list app ");
 		sql.append(" where app.bu_subcategory_id = ");
 		sql.append(subcatID);
-		sql.append(" and app.bu_complex_id =");
-		sql.append(cmplxId);
 		sql.append(" and app.list_type = 'T'");
 		int maxId = 0;
 		try {
@@ -812,13 +811,13 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 		return maxId;
 	}
 
-	public WaitingList getRightPlaceForTransfer(WaitingList wl, int transferInterval) throws RemoteException, FinderException {
-		int cmplx = wl.getComplexId().intValue();
+	public WaitingList getRightPlaceForTransfer(WaitingList wl, int transferInterval, String setTranserferToPriorityLevel) throws RemoteException, FinderException {
+		//int cmplx = wl.getComplexId().intValue();
 		//int aprttype = wl.getApartmentTypeId().intValue();
 		int subcat = wl.getApartmentSubcategoryID().intValue();
-		int lastTransfer = getMaxTransferInWaitingList(subcat, cmplx);
+		int lastTransfer = getMaxTransferInWaitingList(subcat);
 		Collection transfers = getWaitingListHome().findNextForTransferByApartmentSubcategory(subcat,
-				lastTransfer);
+				lastTransfer, setTranserferToPriorityLevel);
 		if (transfers.size() > (transferInterval - 1)) {
 			java.util.Iterator it = transfers.iterator();
 			WaitingList wl2 = null;

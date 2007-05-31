@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.30.4.4 2007/05/24 02:07:16 palli Exp $
+ * $Id: CampusApplicationForm.java,v 1.30.4.5 2007/05/31 17:07:53 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,14 +11,15 @@ package is.idega.idegaweb.campus.block.application.presentation;
 
 import is.idega.idegaweb.campus.block.application.business.ApplicationService;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationFormHelper;
+import is.idega.idegaweb.campus.block.application.data.ApartmentCategoryCombination;
 import is.idega.idegaweb.campus.business.CampusService;
-import is.idega.idegaweb.campus.presentation.CampusTypeWindow;
 import is.idega.idegaweb.campus.presentation.Edit;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.Vector;
 
 import javax.ejb.CreateException;
@@ -28,6 +29,7 @@ import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.ApplicationBMPBean;
 import com.idega.block.application.presentation.ApplicationForm;
 import com.idega.block.building.business.ApartmentSubcategoryComplexHelper;
+import com.idega.block.building.data.ApartmentCategory;
 import com.idega.block.building.data.ApartmentSubcategory;
 import com.idega.block.building.data.ApartmentSubcategoryHome;
 import com.idega.business.IBOLookup;
@@ -35,7 +37,6 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DataTable;
@@ -43,7 +44,6 @@ import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
-import com.idega.presentation.ui.SelectionBox;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
@@ -203,17 +203,37 @@ public class CampusApplicationForm extends ApplicationForm {
 
 	protected void doSelectAppliedFor(IWContext iwc, List wrongParameters)
 			throws RemoteException {
-		Integer categoryID;
+		int size = 1;
+		Integer categoryID[] = new Integer[size];
 		String aprtCat = (String) iwc.getSessionAttribute(PARAM_CATEGORY);
+		System.out.println("aprtCat = " + aprtCat);
 		try {
-			categoryID = Integer.valueOf(aprtCat);
+			if (aprtCat.indexOf("&") > 0) {
+				System.out.println("has &");
+				size = 2;
+				int counter = 0;
+				categoryID = new Integer[size];
+				StringTokenizer tok = new StringTokenizer(aprtCat, "&");
+				while (tok.hasMoreElements() && counter < size) {
+					String tmp = (String) tok.nextElement();
+					System.out.println("tok = " + tmp);
+					categoryID[counter] = Integer.valueOf(tmp);
+					counter++;
+				}
+				
+			} else {
+				System.out.println("does not have &");
+				categoryID = new Integer[size];
+				categoryID[0] = Integer.valueOf(aprtCat);
+				
+			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			categoryID = null;
 		}
 
 		try {
-			Collection typeHelpers = getApplicationService(iwc)
-					.getComplexSubcategoryHelpersByCategory(categoryID);
+			Collection subcats = getCampusService(iwc).getBuildingService().getApartmentSubcategoryHome().findByCategory(categoryID);
 			DropdownMenu aprtType = new DropdownMenu(PARAM_SUBCATEGORY1);
 			if (iwc.isParameterSet(PARAM_SUBCATEGORY1))
 				aprtType.setSelectedElement(iwc.getParameter(PARAM_SUBCATEGORY1));
@@ -230,29 +250,18 @@ public class CampusApplicationForm extends ApplicationForm {
 			aprtType2.addMenuElement("-1", "");
 			aprtType3.addMenuElement("-1", "");
 
-			for (Iterator iter = typeHelpers.iterator(); iter.hasNext();) {
-				ApartmentSubcategoryComplexHelper eAprtType = (ApartmentSubcategoryComplexHelper) iter
+			for (Iterator iter = subcats.iterator(); iter.hasNext();) {
+				ApartmentSubcategory eAprtSubcat = (ApartmentSubcategory) iter
 						.next();
 				boolean isLocked = false;
-				/*if (eAprtType.getApartmentType() != null) {
-					if (eAprtType.getApartmentType().getLocked()) {
-						isLocked = true;
-					}
-				}*/
-
-				if (eAprtType.getComplex() != null) {
-					if (eAprtType.getComplex().getLocked()) {
-						isLocked = true;
-					}
-				}
 
 				if (!isLocked) {
-					aprtType.addMenuElement(eAprtType.getKey(), eAprtType
-							.getName());
-					aprtType2.addMenuElement(eAprtType.getKey(), eAprtType
-							.getName());
-					aprtType3.addMenuElement(eAprtType.getKey(), eAprtType
-							.getName());
+					aprtType.addMenuElement(((Integer)eAprtSubcat.getPrimaryKey()).intValue(), eAprtSubcat
+							.getName() + " (" + eAprtSubcat.getApartmentCategory().getName() + ")");
+					aprtType2.addMenuElement(((Integer)eAprtSubcat.getPrimaryKey()).intValue(), eAprtSubcat
+							.getName() + " (" + eAprtSubcat.getApartmentCategory().getName() + ")");
+					aprtType3.addMenuElement(((Integer)eAprtSubcat.getPrimaryKey()).intValue(), eAprtSubcat
+							.getName() + " (" + eAprtSubcat.getApartmentCategory().getName() + ")");
 				}
 			}
 
@@ -284,19 +293,19 @@ public class CampusApplicationForm extends ApplicationForm {
 			t.add(Edit.formatText(REQUIRED, true), 1, 1);
 			t.add(aprtType, 2, 1);
 
-			Image apartmentImage = iwb.getImage("list.gif", _iwrb
+			/*Image apartmentImage = iwb.getImage("list.gif", _iwrb
 					.getLocalizedString("get_apartment",
 							"Click for information about apartment"));
 			apartmentImage.setAlignment("absmiddle");
 			apartmentImage.setHorizontalSpacing(4);
 			Link apartmentLink = new Link(apartmentImage);
-			apartmentLink.setWindowToOpen(CampusTypeWindow.class);
-			Text apartmentText = new Text(_iwrb.getLocalizedString(
-					"see_apartment", "view"));
-			apartmentText
-					.setFontStyle("font-family:arial; font-size:9px; color:#000000");
-			Link apartmentLink2 = new Link(apartmentText);
-			apartmentLink2.setWindowToOpen(CampusTypeWindow.class);
+			apartmentLink.setWindowToOpen(CampusTypeWindow.class);*/
+			//Text apartmentText = new Text(_iwrb.getLocalizedString(
+			//		"see_apartment", "view"));
+			//apartmentText
+			//		.setFontStyle("font-family:arial; font-size:9px; color:#000000");
+			//Link apartmentLink2 = new Link(apartmentText);
+			//apartmentLink2.setWindowToOpen(CampusTypeWindow.class);
 
 			/*if (apartment1 > -1) {
 				try {
@@ -470,9 +479,29 @@ public class CampusApplicationForm extends ApplicationForm {
 
 			DropdownMenu subject = new DropdownMenu(subjects, "subject");
 
-			//DropdownMenu aprtCat = new DropdownMenu(categories, PARAM_CATEGORY);
-			SelectionBox category = new SelectionBox(PARAM_CATEGORY);
-			category.addMenuElements(categories);
+			DropdownMenu aprtCat = new DropdownMenu(categories, PARAM_CATEGORY);
+			
+			Collection col = getCampusService(iwc).getApartmentCategoryCombinationHome().findAll();
+			if (col != null && !col.isEmpty()) {
+				Iterator it = col.iterator();
+				while (it.hasNext()) {
+					ApartmentCategoryCombination comb = (ApartmentCategoryCombination) it.next();
+					ApartmentCategory cat1 = comb.getCategory1();
+					ApartmentCategory cat2 = comb.getCategory1();
+					
+					StringBuffer key = new StringBuffer(cat1.getPrimaryKey().toString());
+					key.append("&");
+					key.append(cat2.getPrimaryKey().toString());
+					
+					StringBuffer name = new StringBuffer(cat1.getName());
+					name.append(" & ");
+					name.append(cat2.getName());
+					
+					aprtCat.addMenuElement(key.toString(), name.toString());
+				}
+			}
+			//SelectionBox category = new SelectionBox(PARAM_CATEGORY);
+			//category.addMenuElements(categories);
 
 			Image back = _iwrb.getImage("back.gif");
 			back.setMarkupAttribute("onClick", "history.go(-1)");
@@ -488,7 +517,7 @@ public class CampusApplicationForm extends ApplicationForm {
 			t.add(subject, 2, 1);
 			t.add(getHeader(text2), 1, 2);
 			t.add(getHeader(REQUIRED), 1, 2);
-			t.add(category, 2, 2);
+			t.add(aprtCat, 2, 2);
 
 			Collection residences = null;
 			Collection occupations = null;

@@ -2,6 +2,7 @@ package is.idega.idegaweb.campus.block.application.data;
 
 
 import com.idega.block.building.data.ApartmentSubcategory;
+import com.idega.block.building.data.Apartment;
 import com.idega.data.IDOEntity;
 
 public interface Applied extends IDOEntity {
@@ -89,4 +90,24 @@ public interface Applied extends IDOEntity {
 	 * @see is.idega.idegaweb.campus.block.application.data.AppliedBMPBean#getOrder
 	 */
 	public Integer getOrder();
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.AppliedBMPBean#setApartment
+	 */
+	public void setApartment(Apartment apartment);
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.AppliedBMPBean#setApartmentID
+	 */
+	public void setApartmentID(int apartmentID);
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.AppliedBMPBean#getApartment
+	 */
+	public Apartment getApartment();
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.AppliedBMPBean#getApartmentID
+	 */
+	public int getApartmentID();
 }

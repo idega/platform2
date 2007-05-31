@@ -2,6 +2,7 @@ package is.idega.idegaweb.campus.block.application.data;
 
 
 import com.idega.block.building.data.ApartmentSubcategory;
+import com.idega.block.building.data.Apartment;
 import javax.ejb.FinderException;
 import java.sql.Timestamp;
 import com.idega.data.IDOEntity;
@@ -168,6 +169,11 @@ public interface WaitingList extends IDOEntity {
 	public String getPriorityLevel();
 
 	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setPriorityLevel
+	 */
+	public void setPriorityLevel(String level);
+
+	/**
 	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setPriorityLevelA
 	 */
 	public void setPriorityLevelA();
@@ -196,6 +202,16 @@ public interface WaitingList extends IDOEntity {
 	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setSamePriority
 	 */
 	public void setSamePriority(WaitingList listEntry);
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#getApartment
+	 */
+	public Apartment getApartment();
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setApartment
+	 */
+	public void setApartment(Apartment apartment);
 
 	/**
 	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#getCountOfRecords

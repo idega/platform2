@@ -48,11 +48,12 @@ public class WaitingListHomeImpl extends IDOFactory implements WaitingListHome {
 	}
 
 	public Collection findNextForTransferByApartmentSubcategory(int subcatId,
-			int orderedFrom) throws FinderException {
+			int orderedFrom, String setTranserferToPriorityLevel)
+			throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
 		Collection ids = ((WaitingListBMPBean) entity)
 				.ejbFindNextForTransferByApartmentSubcategory(subcatId,
-						orderedFrom);
+						orderedFrom, setTranserferToPriorityLevel);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}

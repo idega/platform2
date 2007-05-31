@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.65.4.8 2007/05/24 02:07:16 palli Exp $
+ * $Id: CampusApprover.java,v 1.65.4.9 2007/05/31 17:07:53 palli Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -260,11 +260,12 @@ public class CampusApprover extends CampusBlock {
 
 	private void updateApplicationStatus(IWContext iwc) throws RemoteException {
 		String intervalString = getBundle().getProperty("TRANSFER_INTERVAL", "5");
+		String intervalPriorityString = getBundle().getProperty("TRANSFER_PRIORITY", "C");
 		int transferInterval = 5;
 		transferInterval = Integer.parseInt(intervalString);
 		String status = iwc.getParameter(PRM_STATUS);
 		setValuesForPreviousAndNextApplication(iwc);
-		boolean statusChanged = applicationService.storeApplicationStatus(applicationID, status, transferInterval);
+		boolean statusChanged = applicationService.storeApplicationStatus(applicationID, status, transferInterval, intervalPriorityString);
 		if (statusChanged) {
 			if (next_application_id.intValue() != -1) {
 				applicationID = next_application_id;
@@ -283,7 +284,7 @@ public class CampusApprover extends CampusBlock {
 
 	private void trashApplication(int id) throws RemoteException {
 		// int id = Integer.parseInt(iwc.getParameter("application_id"));
-		applicationService.storeApplicationStatus(new Integer(id), Status.GARBAGE.toString(), -1);
+		applicationService.storeApplicationStatus(new Integer(id), Status.GARBAGE.toString(), -1, null);
 	}
 
 	private void updateWholeApplication(IWContext iwc) {
@@ -1153,7 +1154,7 @@ public class CampusApprover extends CampusBlock {
 				Applied A = (Applied) iter.next();
 				T.add(getText(String.valueOf(i + 1)), 1, row);
 				if (A.getSubcategory() != null) {
-					T.add(getText(A.getSubcategory().getName()), 2, row++);
+					T.add(getText(A.getSubcategory().getName() + " (" + A.getSubcategory().getApartmentCategory().getName() + ")"), 2, row++);
 				} else {
 					T.add(getText("missing"), 2, row++);
 				}
@@ -1588,8 +1589,9 @@ public class CampusApprover extends CampusBlock {
 		catch (FinderException e) {
 			e.printStackTrace();
 		}
-		if (!hasSelectedValue)
+		if (!hasSelectedValue && selected != null) {
 			drp.addMenuElement(selected, selected);
+		}
 		drp.setSelectedElement(selected);
 		return drp;
 	}

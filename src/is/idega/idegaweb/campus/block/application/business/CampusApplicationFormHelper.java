@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFormHelper.java,v 1.23.4.6 2007/05/24 02:07:14 palli Exp $
+ * $Id: CampusApplicationFormHelper.java,v 1.23.4.7 2007/05/31 17:07:52 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -73,29 +73,31 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 		try {
 			applied1 = ((AppliedHome) IDOLookup.getHome(Applied.class))
 					.create();
-			int type = ApartmentSubcategoryComplexHelper.getPartKey(key1, 1);
-			int complex = ApartmentSubcategoryComplexHelper.getPartKey(key1, 2);
-			applied1.setSubcategoryID(type);
-			applied1.setComplexId(complex);
+//			int type = ApartmentSubcategoryComplexHelper.getPartKey(key1, 1);
+//			int complex = ApartmentSubcategoryComplexHelper.getPartKey(key1, 2);
+			int subCat = Integer.parseInt(key1);
+			applied1.setSubcategoryID(subCat);
 			applied1.setOrder(1);
 
 			if ((key2 != null) && (!key2.equalsIgnoreCase("-1"))) {
 				applied2 = ((AppliedHome) IDOLookup.getHome(Applied.class))
 						.create();
-				type = ApartmentSubcategoryComplexHelper.getPartKey(key2, 1);
-				complex = ApartmentSubcategoryComplexHelper.getPartKey(key2, 2);
-				applied2.setSubcategoryID(type);
-				applied2.setComplexId(complex);
+//				type = ApartmentSubcategoryComplexHelper.getPartKey(key2, 1);
+//				complex = ApartmentSubcategoryComplexHelper.getPartKey(key2, 2);
+				subCat = Integer.parseInt(key2);
+
+				applied2.setSubcategoryID(subCat);
 				applied2.setOrder(2);
 			}
 
 			if ((key3 != null) && (!key3.equalsIgnoreCase("-1"))) {
 				applied3 = ((AppliedHome) IDOLookup.getHome(Applied.class))
 						.create();
-				type = ApartmentSubcategoryComplexHelper.getPartKey(key3, 1);
-				complex = ApartmentSubcategoryComplexHelper.getPartKey(key3, 2);
-				applied3.setSubcategoryID(type);
-				applied3.setComplexId(complex);
+//				type = ApartmentSubcategoryComplexHelper.getPartKey(key3, 1);
+//				complex = ApartmentSubcategoryComplexHelper.getPartKey(key3, 2);
+				subCat = Integer.parseInt(key3);
+
+				applied3.setSubcategoryID(subCat);
 				applied3.setOrder(3);
 			}
 
@@ -408,7 +410,7 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 	 */
 	public static void saveSubject(IWContext iwc) {
 		String subject = (String) iwc.getParameter("subject");
-		String aprtCat[] = iwc.getParameterValues(CampusApplicationForm.PARAM_CATEGORY);
+		String aprtCat = (String) iwc.getParameter(CampusApplicationForm.PARAM_CATEGORY);
 		try {
 			Application application = ((ApplicationHome) IDOLookup
 					.getHome(Application.class)).create();
