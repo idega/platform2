@@ -4903,7 +4903,10 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 								userSet.add(element.getPrimaryKey());
 								if (birthYear != null && birthYear.intValue() > 0) {
 									
-										Timestamp dateOfBirth = element.getDateOfBirth();
+									Timestamp dateOfBirth = element.getDateOfBirth();
+									if (dateOfBirth == null) {
+										continue;
+									}
 									IWTimestamp birthThingie = new IWTimestamp(dateOfBirth);
 									if (birthYear.intValue() != birthThingie.getYear()) {
 										continue;
