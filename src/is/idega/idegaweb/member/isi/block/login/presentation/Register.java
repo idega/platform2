@@ -371,7 +371,7 @@ public class Register extends Block {
 						
 						System.out.println("Sending registration notification to " + address);
 						
-						SendMail.send((String)this._iwc.getApplicationAttribute(IWMemberConstants.APPLICATION_PARAMETER_ADMINISTRATOR_MAIN_EMAIL,"isi@isisport.is"),
+						SendMail.send((String)this._iwc.getApplicationAttribute(IWMemberConstants.APPLICATION_PARAMETER_ADMINISTRATOR_MAIN_EMAIL,"felix@felix.is"),
 							address,
 							"",
 							"",
