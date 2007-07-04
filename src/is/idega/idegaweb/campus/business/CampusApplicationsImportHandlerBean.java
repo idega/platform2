@@ -228,7 +228,9 @@ public class CampusApplicationsImportHandlerBean extends IBOSessionBean implemen
 	protected void createCampusApplication(String email, String mobile, StringBuffer otherInfo, Application application) throws CreateException {
 		CampusApplication campusApplication = campusApplicationHome.create();
 		campusApplication.setAppApplicationId((Integer)application.getPrimaryKey());
-		campusApplication.setContactPhone(mobile);
+		if(!EMPTY.equals(mobile)){
+			campusApplication.setContactPhone(mobile);
+		}
 		campusApplication.setEmail(email);
 		campusApplication.setOtherInfo(otherInfo.toString());
 		campusApplication.store();
@@ -240,6 +242,7 @@ public class CampusApplicationsImportHandlerBean extends IBOSessionBean implemen
 		appliedChoice.setSubcategoryID(subCategoryId);
 		appliedChoice.setOrder(1);
 		appliedChoice.setApplicationId((Integer)application.getPrimaryKey());
+		
 		appliedChoice.store();
 	}
 
@@ -262,9 +265,14 @@ public class CampusApplicationsImportHandlerBean extends IBOSessionBean implemen
 		applicant.setFullName(name);
 		applicant.setSSN(PIN);
 		applicant.setStatus(sentStatus);
-		applicant.setMobilePhone(mobile);
+		if(!EMPTY.equals(mobile)){
+			applicant.setMobilePhone(mobile);
+		}
 		applicant.setLegalResidence(legalAddress);
-		applicant.setResidencePhone(homePhone);
+		
+		if(!EMPTY.equals(homePhone)){
+			applicant.setResidencePhone(homePhone);
+		}
 		
 		if(currentAddress!=null){
 			applicant.setResidence(currentAddress);
