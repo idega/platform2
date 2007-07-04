@@ -115,11 +115,11 @@ public class CampusApplicationsImportHandlerBean extends IBOSessionBean implemen
 			
 			
 			int counter = 0;
-			String PIN = (String) this.applicationProperties.get(counter);
+			String name = (String) this.applicationProperties.get(counter);
+			
+			String PIN = (String) this.applicationProperties.get(++counter);
 			PIN = TextSoap.findAndCut(PIN, "-");
 			PIN = TextSoap.removeWhiteSpace(PIN);
-			
-			String name = (String) this.applicationProperties.get(++counter);
 			String address1 = (String) this.applicationProperties.get(++counter);
 			String address2 = (String) this.applicationProperties.get(++counter);
 			String currentAddress1 = (String) this.applicationProperties.get(++counter);
