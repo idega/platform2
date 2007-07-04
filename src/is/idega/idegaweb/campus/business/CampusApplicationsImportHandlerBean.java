@@ -7,6 +7,7 @@ import is.idega.idegaweb.campus.block.application.data.CampusApplicationHome;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.ejb.CreateException;
@@ -180,29 +181,20 @@ public class CampusApplicationsImportHandlerBean extends IBOSessionBean implemen
 			}
 			
 			//REAL stuff below...
-			
-			Applicant applicant;
 			try {
-				applicant = (Applicant) applicantHome.findBySSN(PIN);
-				return false;//already done this one
+				Collection applicants = applicantHome.findBySSN(PIN);
+				if(applicants!=null && !applicants.isEmpty()){
+					return false;//already done this one
+				}
+				else{
+					createNewData(subCategoryId, appSubjectId, sentStatus, PIN, name, email, homePhone, mobile, otherInfo, legalAddress, currentAddress);
+				}
 				
 			} catch (FinderException e) {
-				
-				//CREATE THE APPLICANT
-				applicant = createApplicant(sentStatus, PIN, name, homePhone, mobile, legalAddress, currentAddress);
-
-				
-//				CREATE THE APPLICATION
-				Application application = createApplication(appSubjectId, applicant);
-				
-				//CREATE FIRST CHOICE
-				createChoices(subCategoryId, application);
-				
-
-				//CREATE THE EXTRA INFO APPLICATION
-				createCampusApplication(email, mobile, otherInfo, application);
-				
+				//not sure if this is thrown, just in case create
+				createNewData(subCategoryId, appSubjectId, sentStatus, PIN, name, email, homePhone, mobile, otherInfo, legalAddress, currentAddress);
 			}
+			
 			
 		}
 		catch (IndexOutOfBoundsException e4) {
@@ -213,6 +205,23 @@ public class CampusApplicationsImportHandlerBean extends IBOSessionBean implemen
 		}
 		
 		return true;
+	}
+
+
+	protected void createNewData(int subCategoryId, int appSubjectId, String sentStatus, String PIN, String name, String email, String homePhone, String mobile, StringBuffer otherInfo, String legalAddress, String currentAddress) throws CreateException {
+		//CREATE THE APPLICANT
+		Applicant applicant = createApplicant(sentStatus, PIN, name, homePhone, mobile, legalAddress, currentAddress);
+
+		
+//				CREATE THE APPLICATION
+		Application application = createApplication(appSubjectId, applicant);
+		
+		//CREATE FIRST CHOICE
+		createChoices(subCategoryId, application);
+		
+
+		//CREATE THE EXTRA INFO APPLICATION
+		createCampusApplication(email, mobile, otherInfo, application);
 	}
 
 
