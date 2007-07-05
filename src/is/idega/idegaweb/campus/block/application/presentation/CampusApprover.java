@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.65.4.10 2007/07/05 00:21:44 eiki Exp $
+ * $Id: CampusApprover.java,v 1.65.4.11 2007/07/05 00:31:31 eiki Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -1185,8 +1185,14 @@ public class CampusApprover extends CampusBlock {
 		T.add(getHeader(localize("onwaitinglist", "On waitinglist")), col, row++);
 		col = 2;
 		row = 1;
-		IWTimestamp iT = new IWTimestamp(eCampusApplication.getHousingFrom());
-		T.add(getText(iT.getLocaleDate(iwc.getCurrentLocale())), col, row++);
+		if(eCampusApplication.getHousingFrom()!=null){
+			IWTimestamp iT = new IWTimestamp(eCampusApplication.getHousingFrom());
+			T.add(getText(iT.getLocaleDate(iwc.getCurrentLocale())), col, row++);
+		}
+		else{
+			row++;
+		}
+		
 		if (eCampusApplication.getWantFurniture())
 			T.add(getText("X"), col, row++);
 		if (eCampusApplication.getOnWaitinglist())
