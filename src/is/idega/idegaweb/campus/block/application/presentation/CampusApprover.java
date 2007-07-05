@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.65.4.11 2007/07/05 00:31:31 eiki Exp $
+ * $Id: CampusApprover.java,v 1.65.4.12 2007/07/05 00:44:46 eiki Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -902,10 +902,10 @@ public class CampusApprover extends CampusBlock {
 			tiFac.setContent(eCampusApplication.getFaculty() != null ? eCampusApplication.getFaculty() : "");
 			tiTrack.setContent(eCampusApplication.getStudyTrack() != null ? eCampusApplication.getStudyTrack() : "");
 			// tiIncome.setContent(eCampusApplication.getIncome().toString());
-			beginMonth = (eCampusApplication.getStudyBeginMonth().toString());
-			endMonth = (eCampusApplication.getStudyEndMonth().toString());
-			beginYear = eCampusApplication.getStudyBeginYear().toString();
-			endYear = eCampusApplication.getStudyEndYear().toString();
+			beginMonth = (eCampusApplication.getStudyBeginMonth()!=null)? eCampusApplication.getStudyBeginMonth().toString():null;
+			endMonth = (eCampusApplication.getStudyEndMonth()!=null)? eCampusApplication.getStudyEndMonth().toString():null;
+			beginYear = (eCampusApplication.getStudyBeginYear()!=null)? eCampusApplication.getStudyBeginYear().toString():null;
+			endYear = (eCampusApplication.getStudyEndYear()!=null)? eCampusApplication.getStudyEndYear().toString():null;
 		}
 		T.add(tiFullName, col, row++);
 		T.add(tiSsn, col, row++);
@@ -1573,7 +1573,9 @@ public class CampusApprover extends CampusBlock {
 		for (int i = low; i <= high; i++) {
 			drp.addMenuElement(String.valueOf(i));
 		}
-		drp.setSelectedElement(selected);
+		if(selected!=null){
+			drp.setSelectedElement(selected);
+		}
 		return drp;
 	}
 
