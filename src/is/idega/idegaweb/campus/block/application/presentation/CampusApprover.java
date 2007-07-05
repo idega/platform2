@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.65.4.14 2007/07/05 11:09:22 palli Exp $
+ * $Id: CampusApprover.java,v 1.65.4.15 2007/07/05 11:26:33 eiki Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -1193,8 +1193,12 @@ public class CampusApprover extends CampusBlock {
 			row++;
 		}
 		
-		if (eCampusApplication.getWantFurniture())
+		if (eCampusApplication.getWantFurniture()){
 			T.add(getText("X"), col, row++);
+		}
+		else{
+			row++;
+		}
 		if (eCampusApplication.getOnWaitinglist())
 			T.add(getText("X"), col, row++);
 		return T;
