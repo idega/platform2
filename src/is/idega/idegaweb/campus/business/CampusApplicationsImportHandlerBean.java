@@ -217,7 +217,7 @@ public class CampusApplicationsImportHandlerBean extends IBOSessionBean implemen
 		Application application = createApplication(appSubjectId, applicant);
 		
 		//CREATE FIRST CHOICE
-		createChoices(subCategoryId, application);
+	//	createChoices(subCategoryId, application);
 		
 
 		//CREATE THE EXTRA INFO APPLICATION
