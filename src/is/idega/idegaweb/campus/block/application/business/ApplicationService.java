@@ -217,24 +217,6 @@ public interface ApplicationService extends com.idega.block.application.business
 			throws RemoteException, FinderException, RemoteException;
 
 	/**
-	 * @see is.idega.idegaweb.campus.block.application.business.ApplicationServiceBean#getComplexSubcategoryHelpersByCategory
-	 */
-	public Collection getComplexSubcategoryHelpersByCategory(Integer categoryID)
-			throws RemoteException, FinderException, RemoteException;
-
-	/**
-	 * @see is.idega.idegaweb.campus.block.application.business.ApplicationServiceBean#getComplexSubcategoryHelpers
-	 */
-	public Collection getComplexSubcategoryHelpers() throws RemoteException,
-			FinderException, RemoteException;
-
-	/**
-	 * @see is.idega.idegaweb.campus.block.application.business.ApplicationServiceBean#getComplexSubcategoryHelpers
-	 */
-	public Collection getComplexSubcategoryHelpers(Collection complexTypes)
-			throws RemoteException;
-
-	/**
 	 * @see is.idega.idegaweb.campus.block.application.business.ApplicationServiceBean#getStatus
 	 */
 	public String getStatus(String status, IWResourceBundle iwrb)

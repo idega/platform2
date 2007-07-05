@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationFormHelper.java,v 1.10.2.2 2007/01/17 22:53:52 palli Exp $
+ * $Id: ApplicationFormHelper.java,v 1.10.2.3 2007/07/05 11:09:24 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -25,86 +25,99 @@ import com.idega.presentation.IWContext;
 import com.idega.util.IWTimestamp;
 
 /**
- *
+ * 
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
 public class ApplicationFormHelper {
-  public static void saveApplicantInformation(IWContext iwc)throws RemoteException,CreateException {
-    String firstName = iwc.getParameter(ApplicationForm.APP_FIRST_NAME);
-    String middleName = iwc.getParameter(ApplicationForm.APP_MIDDLE_NAME);
-    String lastName = iwc.getParameter(ApplicationForm.APP_LAST_NAME);
-    String ssn = iwc.getParameter(ApplicationForm.APP_SSN);
-    String legalResidence = iwc.getParameter(ApplicationForm.APP_LEGAL_RESIDENCE);
-    String residence = iwc.getParameter(ApplicationForm.APP_RESIDENCE);
-    String residencePhone = iwc.getParameter(ApplicationForm.APP_PHONE);
-    String mobilePhone = iwc.getParameter(ApplicationForm.APP_MOBILE);
-    String po = iwc.getParameter(ApplicationForm.APP_PO);
+	public static void saveApplicantInformation(IWContext iwc)
+			throws RemoteException, CreateException {
+		String firstName = iwc.getParameter(ApplicationForm.APP_FIRST_NAME);
+		String middleName = iwc.getParameter(ApplicationForm.APP_MIDDLE_NAME);
+		String lastName = iwc.getParameter(ApplicationForm.APP_LAST_NAME);
+		String ssn = iwc.getParameter(ApplicationForm.APP_SSN);
+		String legalResidence = iwc
+				.getParameter(ApplicationForm.APP_LEGAL_RESIDENCE);
+		String residence = iwc.getParameter(ApplicationForm.APP_RESIDENCE);
+		String residencePhone = iwc.getParameter(ApplicationForm.APP_PHONE);
+		String mobilePhone = iwc.getParameter(ApplicationForm.APP_MOBILE);
+		String po = iwc.getParameter(ApplicationForm.APP_PO);
 
-    Applicant applicant = null;
-    try {
-		Collection applicants = getApplicationService(iwc).getApplicantHome().findBySSN(ssn);
-		if (applicants != null && !applicants.isEmpty()) {
-			Iterator it = applicants.iterator();
-			while (it.hasNext()) {
-				applicant = (Applicant) it.next();
-			}
+		Applicant applicant = null;
+		if (ssn.equals("9999999999")) {
+			applicant = getApplicationService(iwc).getApplicantHome().create();
 		} else {
-			applicant = getApplicationService(iwc).getApplicantHome().create();			
+			try {
+				Collection applicants = getApplicationService(iwc)
+						.getApplicantHome().findBySSN(ssn);
+				if (applicants != null && !applicants.isEmpty()) {
+					Iterator it = applicants.iterator();
+					while (it.hasNext()) {
+						applicant = (Applicant) it.next();
+					}
+				} else {
+					applicant = getApplicationService(iwc).getApplicantHome()
+							.create();
+				}
+			} catch (FinderException e) {
+				applicant = getApplicationService(iwc).getApplicantHome()
+						.create();
+			}
 		}
-	} catch (FinderException e) {
-		applicant = getApplicationService(iwc).getApplicantHome().create();
+
+		applicant.setFirstName(firstName);
+		applicant.setMiddleName(middleName);
+		applicant.setLastName(lastName);
+		applicant.setSSN(ssn);
+		applicant.setLegalResidence(legalResidence);
+		applicant.setResidence(residence);
+		applicant.setResidencePhone(residencePhone);
+		applicant.setMobilePhone(mobilePhone);
+		applicant.setPO(po);
+		applicant.setStatus("S");
+
+		iwc.setSessionAttribute("applicant", applicant);
 	}
-    
-    applicant.setFirstName(firstName);
-    applicant.setMiddleName(middleName);
-    applicant.setLastName(lastName);
-    applicant.setSSN(ssn);
-    applicant.setLegalResidence(legalResidence);
-    applicant.setResidence(residence);
-    applicant.setResidencePhone(residencePhone);
-    applicant.setMobilePhone(mobilePhone);
-    applicant.setPO(po);
-    applicant.setStatus("S");
 
-    iwc.setSessionAttribute("applicant",applicant);
-  }
+	public static String saveDataToDB(IWContext iwc) {
+		Applicant applicant = (Applicant) iwc.getSessionAttribute("applicant");
+		Application application = (Application) iwc
+				.getSessionAttribute("application");
 
-  public static String saveDataToDB(IWContext iwc) {
-    Applicant applicant = (Applicant)iwc.getSessionAttribute("applicant");
-    Application application = (Application)iwc.getSessionAttribute("application");
+		String string = "";
 
-    String string = "";
+		try {
+			applicant.store();
 
-    try {
-      applicant.store();
+			application.setApplicantId(((Integer) applicant.getPrimaryKey())
+					.intValue());
+			application.store();
+		} catch (Exception e) {
+			System.err.println(e.toString());
+			return (null);
+		} finally {
+			iwc.removeSessionAttribute("applicant");
+			iwc.removeSessionAttribute("application");
+		}
 
-      application.setApplicantId(((Integer)applicant.getPrimaryKey()).intValue());
-      application.store();
-    }
-    catch(Exception e) {
-      System.err.println(e.toString());
-      return(null);
-    }
-    finally {
-      iwc.removeSessionAttribute("applicant");
-      iwc.removeSessionAttribute("application");
-    }
+		return (string);
+	}
 
-    return(string);
-  }
+	public static void saveSubject(IWContext iwc) throws RemoteException,
+			CreateException {
+		String subject = iwc.getParameter("subject");
+		Application application = getApplicationService(iwc)
+				.getApplicationHome().create();
+		application.setSubjectId(Integer.parseInt(subject));
+		application.setSubmitted(IWTimestamp.getTimestampRightNow());
+		application.setStatusSubmitted();
+		application.setStatusChanged(IWTimestamp.getTimestampRightNow());
+		iwc.setSessionAttribute("application", application);
+	}
 
-  public static void saveSubject(IWContext iwc)throws RemoteException,CreateException {
-    String subject = iwc.getParameter("subject");
-    Application application = getApplicationService(iwc).getApplicationHome().create();
-    application.setSubjectId(Integer.parseInt(subject));
-    application.setSubmitted(IWTimestamp.getTimestampRightNow());
-    application.setStatusSubmitted();
-    application.setStatusChanged(IWTimestamp.getTimestampRightNow());
-    iwc.setSessionAttribute("application",application);
-  }
-  
-  public static ApplicationService getApplicationService(IWApplicationContext iwac)throws RemoteException{
-  	return (ApplicationService) IBOLookup.getServiceInstance(iwac,ApplicationService.class);
-  }
+	public static ApplicationService getApplicationService(
+			IWApplicationContext iwac) throws RemoteException {
+		return (ApplicationService) IBOLookup.getServiceInstance(iwac,
+				ApplicationService.class);
+	}
 }

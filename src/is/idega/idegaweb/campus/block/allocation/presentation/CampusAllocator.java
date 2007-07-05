@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.76.4.5 2007/05/31 17:07:53 palli Exp $
+ * $Id: CampusAllocator.java,v 1.76.4.6 2007/07/05 11:09:22 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -49,7 +49,6 @@ import com.idega.block.application.data.Application;
 import com.idega.block.application.data.ApplicationHome;
 import com.idega.block.application.data.ApplicationSubject;
 import com.idega.block.application.data.Status;
-import com.idega.block.building.business.ApartmentSubcategoryComplexHelper;
 import com.idega.block.building.data.Apartment;
 import com.idega.block.building.data.ApartmentCategory;
 import com.idega.block.building.data.ApartmentSubcategory;
@@ -759,8 +758,8 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		return L;
 	}
 
-	private Link getListLink(ApartmentSubcategoryComplexHelper eAprtType) {
-		return getListLink(eAprtType.getName(), eAprtType.getKeyOne());
+	private Link getListLink(ApartmentSubcategory subCat) {
+		return getListLink(subCat.getName(), ((Integer)subCat.getPrimaryKey()).intValue());
 	}
 
 	private Link getListLink(String name, int subcatID) {

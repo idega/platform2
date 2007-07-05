@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFormHelper.java,v 1.23.4.7 2007/05/31 17:07:52 palli Exp $
+ * $Id: CampusApplicationFormHelper.java,v 1.23.4.8 2007/07/05 11:09:22 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -36,9 +36,6 @@ import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.ApplicantHome;
 import com.idega.block.application.data.Application;
 import com.idega.block.application.data.ApplicationHome;
-import com.idega.block.building.business.ApartmentSubcategoryComplexHelper;
-import com.idega.block.building.data.ApartmentType;
-import com.idega.block.building.data.ApartmentTypeHome;
 import com.idega.business.IBOLookup;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -73,8 +70,6 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 		try {
 			applied1 = ((AppliedHome) IDOLookup.getHome(Applied.class))
 					.create();
-//			int type = ApartmentSubcategoryComplexHelper.getPartKey(key1, 1);
-//			int complex = ApartmentSubcategoryComplexHelper.getPartKey(key1, 2);
 			int subCat = Integer.parseInt(key1);
 			applied1.setSubcategoryID(subCat);
 			applied1.setOrder(1);
@@ -82,8 +77,6 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 			if ((key2 != null) && (!key2.equalsIgnoreCase("-1"))) {
 				applied2 = ((AppliedHome) IDOLookup.getHome(Applied.class))
 						.create();
-//				type = ApartmentSubcategoryComplexHelper.getPartKey(key2, 1);
-//				complex = ApartmentSubcategoryComplexHelper.getPartKey(key2, 2);
 				subCat = Integer.parseInt(key2);
 
 				applied2.setSubcategoryID(subCat);
@@ -93,8 +86,6 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 			if ((key3 != null) && (!key3.equalsIgnoreCase("-1"))) {
 				applied3 = ((AppliedHome) IDOLookup.getHome(Applied.class))
 						.create();
-//				type = ApartmentSubcategoryComplexHelper.getPartKey(key3, 1);
-//				complex = ApartmentSubcategoryComplexHelper.getPartKey(key3, 2);
 				subCat = Integer.parseInt(key3);
 
 				applied3.setSubcategoryID(subCat);
@@ -427,47 +418,6 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 		} catch (CreateException e) {
 			e.printStackTrace();
 		}
-	}
-
-	/**
-	 * 
-	 */
-	public static Vector checkAparmentTypesSelected(IWContext iwc) {
-		String key1 = (String) iwc.getParameter(PARAM_SUBCATEGORY1);
-		String key2 = (String) iwc.getParameter(PARAM_SUBCATEGORY2);
-		String key3 = (String) iwc.getParameter(PARAM_SUBCATEGORY3);
-
-		Vector ret = new Vector(3);
-
-		try {
-			ApartmentTypeHome ath = (ApartmentTypeHome) IDOLookup
-					.getHome(ApartmentType.class);
-			int type = ApartmentSubcategoryComplexHelper.getPartKey(key1, 1);
-
-			ApartmentType room = ath.findByPrimaryKey(new Integer(type));
-
-			int pic = room.getFloorPlanId();
-			ret.add(0, new Integer(pic));
-
-			if ((key2 != null) && (!key2.equalsIgnoreCase("-1"))) {
-				type = ApartmentSubcategoryComplexHelper.getPartKey(key2, 1);
-				room = ath.findByPrimaryKey(new Integer(type));
-				pic = room.getFloorPlanId();
-			}
-			ret.add(1, new Integer(pic));
-
-			if ((key3 != null) && (!key3.equalsIgnoreCase("-1"))) {
-				type = ApartmentSubcategoryComplexHelper.getPartKey(key3, 1);
-
-				room = ath.findByPrimaryKey(new Integer(type));
-				pic = room.getFloorPlanId();
-			}
-			ret.add(2, new Integer(pic));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return (ret);
 	}
 
 	public static void sendApplicationConfirmationReminderEmail(IWContext iwc) {

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.65.4.13 2007/07/05 00:54:25 eiki Exp $
+ * $Id: CampusApprover.java,v 1.65.4.14 2007/07/05 11:09:22 palli Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -43,7 +43,7 @@ import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.Application;
 import com.idega.block.application.data.ApplicationSubject;
 import com.idega.block.application.data.Status;
-import com.idega.block.building.business.ApartmentSubcategoryComplexHelper;
+import com.idega.block.building.data.ApartmentSubcategory;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDORelationshipException;
@@ -1235,8 +1235,8 @@ public class CampusApprover extends CampusBlock {
 		if (firstEmpty)
 			drpTypes.addMenuElementFirst("-1", "-");
 		for (Iterator iter = coll.iterator(); iter.hasNext();) {
-			ApartmentSubcategoryComplexHelper element = (ApartmentSubcategoryComplexHelper) iter.next();
-			drpTypes.addMenuElement(element.getKey(), element.getName());
+			ApartmentSubcategory element = (ApartmentSubcategory) iter.next();
+			drpTypes.addMenuElement(((Integer)element.getPrimaryKey()).intValue(), element.getName() + " (" + element.getApartmentCategory().getName() + ")");
 		}
 		drpTypes.setSelectedElement(selected);
 		return drpTypes;
@@ -1254,26 +1254,22 @@ public class CampusApprover extends CampusBlock {
 		if (lApplied != null) {
 			int len = lApplied.size();
 			Applied A;
-			ApartmentSubcategoryComplexHelper ATCH;
 			Iterator iter = lApplied.iterator();
 			if (len >= 1) {
 				A = (Applied) iter.next();
-				ATCH = new ApartmentSubcategoryComplexHelper(A.getSubcategoryID(), A.getComplexId().intValue());
-				sOne = ATCH.getKey();
+				sOne = A.getSubcategory().getPrimaryKey().toString();
 			}
 			if (len >= 2) {
 				A = (Applied) iter.next();
-				ATCH = new ApartmentSubcategoryComplexHelper(A.getSubcategoryID(), A.getComplexId().intValue());
-				sTwo = ATCH.getKey();
+				sTwo = A.getSubcategory().getPrimaryKey().toString();
 			}
 			if (len >= 3) {
 				A = (Applied) iter.next();
-				ATCH = new ApartmentSubcategoryComplexHelper(A.getSubcategoryID(), A.getComplexId().intValue());
-				sThree = ATCH.getKey();
+				sThree = A.getSubcategory().getPrimaryKey().toString();
 			}
 		}
 		try {
-			Collection typeHelpers = applicationService.getComplexSubcategoryHelpers();
+			Collection typeHelpers = applicationService.getBuildingService().getApartmentSubcategoryHome().findAll();
 			DropdownMenu drpOne = drpTypes(typeHelpers, "drp_one", sOne, false);
 			DropdownMenu drpTwo = drpTypes(typeHelpers, "drp_two", sTwo, true);
 			DropdownMenu drpThree = drpTypes(typeHelpers, "drp_three", sThree, true);

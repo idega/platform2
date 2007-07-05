@@ -111,7 +111,8 @@ group by s.bu_aprt_sub_cat_id;
 create view v_rented_aprt (bu_aprt_sub_cat_id, rented_aprt) as 
 select s.bu_aprt_sub_cat_id, count(con.cam_contract_id) 
 from bu_apartment a left join cam_contract con on a.bu_apartment_id = con.bu_apartment_id
-and con.status = 'S', bu_aprt_type t, bu_aprt_sub_cat s
+//and con.status = 'S', bu_aprt_type t, bu_aprt_sub_cat s
+and con.status = 'S' and con.rented = 'Y', bu_aprt_type t, bu_aprt_sub_cat s
 where a.bu_aprt_type_id = t.bu_aprt_type_id 
 and t.bu_aprt_subcat = s.bu_aprt_sub_cat_id 
 group by s.bu_aprt_sub_cat_id;

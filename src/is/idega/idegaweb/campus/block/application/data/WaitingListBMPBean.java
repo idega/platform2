@@ -1,5 +1,5 @@
 /*
- * $Id: WaitingListBMPBean.java,v 1.14.4.3 2007/05/31 17:07:52 palli Exp $
+ * $Id: WaitingListBMPBean.java,v 1.14.4.4 2007/07/05 11:09:23 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -396,9 +396,9 @@ public class WaitingListBMPBean extends GenericEntity implements WaitingList {
 		sql.append(subcatId);
 		sql.append(" and ");
 		sql.append(COLUMN_PRIORITY_LEVEL);
-		sql.append(" = '");
+		sql.append(" in ('");
 		sql.append(setTranserferToPriorityLevel);
-		sql.append("' and ");
+		sql.append("') and ");
 		sql.append(COLUMN_ORDER);
 		sql.append(" > ");
 		sql.append(orderedFrom);

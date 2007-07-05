@@ -26,7 +26,6 @@ import is.idega.idegaweb.campus.block.mailinglist.business.MailingListService;
 
 import java.rmi.RemoteException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -51,9 +50,7 @@ import com.idega.block.application.data.ApplicationSubjectHome;
 import com.idega.block.application.data.ApplicationSubjectInfo;
 import com.idega.block.application.data.ApplicationSubjectInfoHome;
 import com.idega.block.application.data.Status;
-import com.idega.block.building.business.ApartmentSubcategoryComplexHelper;
 import com.idega.block.building.business.BuildingService;
-import com.idega.block.building.data.ComplexSubcategoryView;
 import com.idega.data.IDOEntityDefinition;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -152,7 +149,11 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 						wl.setPriorityLevelE();
 					} else if (level.equals("T")) {
 						if (setTranserferToPriorityLevel != null) {
-							wl.setPriorityLevel(setTranserferToPriorityLevel);
+							if (setTranserferToPriorityLevel.indexOf(",") > 0) {
+								wl.setPriorityLevelC();								
+							} else {
+								wl.setPriorityLevel(setTranserferToPriorityLevel);
+							}
 						} else {
 							wl.setPriorityLevelC();
 						}
@@ -448,11 +449,9 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 				applieds = (List) new Vector();
 				applieds.add(applied1);
 			}
-			int type = ApartmentSubcategoryComplexHelper.getPartKey(key1, 1);
-			int complex = ApartmentSubcategoryComplexHelper.getPartKey(key1, 2);
+			int type = Integer.parseInt(key1);
 			applied1.setSubcategoryID(type);
 			applied1.setApplicationId(new Integer(campusApplication.getPrimaryKey().toString()).intValue());
-			applied1.setComplexId(complex);
 			applied1.setOrder(1);
 			if ((key2 != null)) {
 				if (applieds.size() >= 2) {
@@ -461,11 +460,9 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 				else {
 					applied2 = getAppliedHome().create();
 				}
-				type = ApartmentSubcategoryComplexHelper.getPartKey(key2, 1);
-				complex = ApartmentSubcategoryComplexHelper.getPartKey(key2, 2);
+				type = Integer.parseInt(key2);
 				applied2.setSubcategoryID(type);
 				applied2.setApplicationId(new Integer(campusApplication.getPrimaryKey().toString()).intValue());
-				applied2.setComplexId(complex);
 				applied2.setOrder(2);
 			}
 			if ((key3 != null)) {
@@ -475,11 +472,9 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 				else {
 					applied3 = getAppliedHome().create();
 				}
-				type = ApartmentSubcategoryComplexHelper.getPartKey(key3, 1);
-				complex = ApartmentSubcategoryComplexHelper.getPartKey(key3, 2);
+				type = Integer.parseInt(key3);
 				applied3.setSubcategoryID(type);
 				applied3.setApplicationId(new Integer(campusApplication.getPrimaryKey().toString()).intValue());
-				applied3.setComplexId(complex);
 				applied3.setOrder(3);
 			}
 			/*
@@ -689,7 +684,7 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 		Iterator it = li.iterator();
 		while (it.hasNext()) {
 			WaitingList wl = (WaitingList) it.next();
-			if ((wl.getApartmentSubcategoryID() != null) && (wl.getComplexId() != null)) {
+			if (wl.getApartmentSubcategoryID() != null) {
 				StringBuffer sql = new StringBuffer("select count(*) from ");
 				sql.append(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getEntityTableName());
 				sql.append(" where ((");
@@ -824,32 +819,9 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 			for (int i = 0; i < (transferInterval - 1); i++)
 				wl2 = (WaitingList) it.next();
 			wl.setOrder(wl2.getOrder());
+			wl.setPriorityLevel(wl2.getPriorityLevel());
 		}
 		return wl;
-	}
-
-	public Collection getComplexSubcategoryHelpersByCategory(Integer categoryID) throws RemoteException, FinderException {
-		Collection coll = getBuildingService().getComplexSubcategoryViewHome().findByCategory(categoryID);
-		return getComplexSubcategoryHelpers(coll);
-	}
-
-	public Collection getComplexSubcategoryHelpers() throws RemoteException, FinderException {
-		Collection coll = getBuildingService().getComplexSubcategoryViewHome().findAll();
-		return getComplexSubcategoryHelpers(coll);
-	}
-
-	public Collection getComplexSubcategoryHelpers(Collection complexTypes) {
-		ArrayList list = new ArrayList(complexTypes.size());
-		for (Iterator iter = complexTypes.iterator(); iter.hasNext();) {
-			ComplexSubcategoryView entity = (ComplexSubcategoryView) iter.next();
-			ApartmentSubcategoryComplexHelper appHelp = new ApartmentSubcategoryComplexHelper();
-			appHelp.setKey(entity.getSubcategoryID().intValue(), entity.getComplexID().intValue());
-			appHelp.setName(entity.getSubcategoryName() + " (" + entity.getComplexName() + ")");
-			appHelp.setComplex(entity.getComplex());
-			appHelp.setSubcategory(entity.getSubcategory());
-			list.add(appHelp);
-		}
-		return list;
 	}
 
 	public String getStatus(String status, IWResourceBundle iwrb) {

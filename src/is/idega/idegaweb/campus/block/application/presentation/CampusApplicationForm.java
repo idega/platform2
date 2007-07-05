@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.30.4.5 2007/05/31 17:07:53 palli Exp $
+ * $Id: CampusApplicationForm.java,v 1.30.4.6 2007/07/05 11:09:22 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -28,7 +28,6 @@ import javax.ejb.FinderException;
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.ApplicationBMPBean;
 import com.idega.block.application.presentation.ApplicationForm;
-import com.idega.block.building.business.ApartmentSubcategoryComplexHelper;
 import com.idega.block.building.data.ApartmentCategory;
 import com.idega.block.building.data.ApartmentSubcategory;
 import com.idega.block.building.data.ApartmentSubcategoryHome;
@@ -56,12 +55,6 @@ import com.idega.util.IWTimestamp;
  * @version 1.0
  */
 public class CampusApplicationForm extends ApplicationForm {
-//	private static final String PARAM_APARTMENT_TYPE3 = "aprtType3";
-
-//	private static final String PARAM_APARTMENT_TYPE2 = "aprtType2";
-
-//	private static final String PARAM_APARTMENT_TYPE = "aprtType";
-
 	public static final String PARAM_SUBCATEGORY1 = "subcat1";
 	
 	public static final String PARAM_SUBCATEGORY2 = "subcat2";
@@ -79,8 +72,6 @@ public class CampusApplicationForm extends ApplicationForm {
 	protected final static int STATUS_CAMPUS_INFO = 3;
 
 	protected final static int STATUS_APPLIED_FOR = 4;
-
-	//protected final static int STATUS_SELECTING_APARTMENT_TYPES = 99;
 
 	protected final static int STATUS_SELECTING_SUBCATEGORY = 99;
 
@@ -405,6 +396,10 @@ public class CampusApplicationForm extends ApplicationForm {
 	}
 
 	protected boolean checkForApplications(IWContext iwc, Applicant applicant) {
+		if (applicant.getSSN().equals("9999999999")) {
+			return false;
+		}
+		
 		try {
 			Collection applicants = CampusApplicationFormHelper
 					.getApplicationService(iwc).getApplicantHome().findBySSN(
@@ -813,13 +808,13 @@ public class CampusApplicationForm extends ApplicationForm {
 		try {
 			ApartmentSubcategoryHome ath = getApplicationService(iwc)
 					.getBuildingService().getApartmentSubcategoryHome();
-			int type = ApartmentSubcategoryComplexHelper.getPartKey(key1, 1);
+			int type = Integer.parseInt(key1);
 
 			ApartmentSubcategory room = ath.findByPrimaryKey(new Integer(type));
 			apartment1 = ((Integer) room.getPrimaryKey()).intValue();
 
 			if ((key2 != null) && (!key2.equalsIgnoreCase("-1"))) {
-				type = ApartmentSubcategoryComplexHelper.getPartKey(key2, 1);
+				type = Integer.parseInt(key2);
 
 				room = ath.findByPrimaryKey(new Integer(type));
 				apartment2 = ((Integer) room.getPrimaryKey()).intValue();
@@ -827,7 +822,7 @@ public class CampusApplicationForm extends ApplicationForm {
 			}
 
 			if ((key3 != null) && (!key3.equalsIgnoreCase("-1"))) {
-				type = ApartmentSubcategoryComplexHelper.getPartKey(key3, 1);
+				type = Integer.parseInt(key3);
 
 				room = ath.findByPrimaryKey(new Integer(type));
 				apartment3 = ((Integer) room.getPrimaryKey()).intValue();
