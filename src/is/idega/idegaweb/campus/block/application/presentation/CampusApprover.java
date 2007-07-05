@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.65.4.9 2007/05/31 17:07:53 palli Exp $
+ * $Id: CampusApprover.java,v 1.65.4.10 2007/07/05 00:21:44 eiki Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -816,11 +816,20 @@ public class CampusApprover extends CampusBlock {
 			row++;
 		}
 			
-		T.add(getText(eCampusApplication.getStudyTrack()), col, row++);
-		String beginMonth = (eCampusApplication.getStudyBeginMonth().toString());
-		String endMonth = (eCampusApplication.getStudyEndMonth().toString());
-		T.add(getText(beginMonth + " " + eCampusApplication.getStudyBeginYear().intValue()), col, row++);
-		T.add(getText(endMonth + " " + eCampusApplication.getStudyEndYear().intValue()), col, row++);
+		if(eCampusApplication.getStudyTrack()!=null){
+			T.add(getText(eCampusApplication.getStudyTrack()), col, row++);
+		}
+		
+		if(eCampusApplication.getStudyBeginMonth()!=null){
+			String beginMonth = (eCampusApplication.getStudyBeginMonth().toString());
+			T.add(getText(beginMonth + " " + eCampusApplication.getStudyBeginYear().intValue()), col, row++);
+		}
+		if(eCampusApplication.getStudyEndMonth()!=null){
+			String endMonth = (eCampusApplication.getStudyEndMonth().toString());
+			T.add(getText(endMonth + " " + eCampusApplication.getStudyEndYear().intValue()), col, row++);
+		}
+		
+		
 		// T.add(getText(eCampusApplication.getIncome().intValue()),col,row);
 		return T;
 	}
