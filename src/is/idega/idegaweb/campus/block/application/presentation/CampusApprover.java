@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.65.4.15 2007/07/05 11:26:33 eiki Exp $
+ * $Id: CampusApprover.java,v 1.65.4.16 2007/07/05 12:00:20 eiki Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -819,14 +819,24 @@ public class CampusApprover extends CampusBlock {
 		if(eCampusApplication.getStudyTrack()!=null){
 			T.add(getText(eCampusApplication.getStudyTrack()), col, row++);
 		}
+		else{
+			row++;
+		}
 		
 		if(eCampusApplication.getStudyBeginMonth()!=null){
 			String beginMonth = (eCampusApplication.getStudyBeginMonth().toString());
 			T.add(getText(beginMonth + " " + eCampusApplication.getStudyBeginYear().intValue()), col, row++);
 		}
+		else{
+			row++;
+		}
+		
 		if(eCampusApplication.getStudyEndMonth()!=null){
 			String endMonth = (eCampusApplication.getStudyEndMonth().toString());
 			T.add(getText(endMonth + " " + eCampusApplication.getStudyEndYear().intValue()), col, row++);
+		}
+		else{
+			row++;
 		}
 		
 		
@@ -904,8 +914,8 @@ public class CampusApprover extends CampusBlock {
 			// tiIncome.setContent(eCampusApplication.getIncome().toString());
 			beginMonth = (eCampusApplication.getStudyBeginMonth()!=null)? eCampusApplication.getStudyBeginMonth().toString():null;
 			endMonth = (eCampusApplication.getStudyEndMonth()!=null)? eCampusApplication.getStudyEndMonth().toString():null;
-			beginYear = (eCampusApplication.getStudyBeginYear()!=null)? eCampusApplication.getStudyBeginYear().toString():null;
-			endYear = (eCampusApplication.getStudyEndYear()!=null)? eCampusApplication.getStudyEndYear().toString():null;
+			beginYear = (eCampusApplication.getStudyBeginYear()!=null)? eCampusApplication.getStudyBeginYear().toString(): (Integer.toString((new IWTimestamp()).getYear()));
+			endYear = (eCampusApplication.getStudyEndYear()!=null)? eCampusApplication.getStudyEndYear().toString(): (Integer.toString((new IWTimestamp()).getYear()));
 		}
 		T.add(tiFullName, col, row++);
 		T.add(tiSsn, col, row++);
