@@ -9,16 +9,6 @@ import com.idega.data.IDOEntity;
 
 public interface WaitingList extends IDOEntity {
 	/**
-	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setComplexId
-	 */
-	public void setComplexId(int id);
-
-	/**
-	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#getComplexId
-	 */
-	public Integer getComplexId();
-
-	/**
 	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setApartmentSubcategory
 	 */
 	public void setApartmentSubcategory(int id);

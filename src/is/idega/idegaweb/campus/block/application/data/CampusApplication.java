@@ -293,6 +293,11 @@ public interface CampusApplication extends IDOEntity {
 	public School getSchool();
 
 	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.CampusApplicationBMPBean#getHasPet
+	 */
+	public boolean getHasPet();
+
+	/**
 	 * @see is.idega.idegaweb.campus.block.application.data.CampusApplicationBMPBean#setCurrentResidenceId
 	 */
 	public void setCurrentResidenceId(Integer id);
@@ -496,6 +501,11 @@ public interface CampusApplication extends IDOEntity {
 	 * @see is.idega.idegaweb.campus.block.application.data.CampusApplicationBMPBean#setSchool
 	 */
 	public void setSchool(School school);
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.CampusApplicationBMPBean#setHasPet
+	 */
+	public void setHasPet(boolean hasPet);
 
 	/**
 	 * @see is.idega.idegaweb.campus.block.application.data.CampusApplicationBMPBean#getApplied

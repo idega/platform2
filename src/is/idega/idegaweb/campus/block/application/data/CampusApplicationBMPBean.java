@@ -84,6 +84,8 @@ public class CampusApplicationBMPBean extends GenericEntity implements
 	private static final String COLUMN_PRIORITY_LEVEL = "priority_level";
 
 	private static final String COLUMN_SCHOOL = "school";
+	
+	private static final String COLUMN_HAS_PET = "has_pet";
 
 	public CampusApplicationBMPBean() {
 		super();
@@ -139,6 +141,7 @@ public class CampusApplicationBMPBean extends GenericEntity implements
 		addAttribute(COLUMN_PRIORITY_LEVEL, "Priority level", true, true,
 				String.class, 1);
 		addManyToOneRelationship(COLUMN_SCHOOL, School.class);
+		addAttribute(COLUMN_HAS_PET, "Has pet", Boolean.class);
 		setNullable(COLUMN_CURR_RESIDENCE, true);
 		setNullable(COLUMN_SPOUSE_OCCUPATION, true);
 	}
@@ -374,6 +377,10 @@ public class CampusApplicationBMPBean extends GenericEntity implements
 	public School getSchool() {
 		return (School) getColumnValue(COLUMN_SCHOOL);		
 	}
+	
+	public boolean getHasPet() {
+		return getBooleanColumnValue(COLUMN_HAS_PET, false);
+	}
 
 	public void setCurrentResidenceId(Integer id) {
 		setColumn(COLUMN_CURR_RESIDENCE, id);
@@ -537,6 +544,10 @@ public class CampusApplicationBMPBean extends GenericEntity implements
 	
 	public void setSchool(School school) {
 		setColumn(COLUMN_SCHOOL, school);		
+	}
+	
+	public void setHasPet(boolean hasPet) {
+		setColumn(COLUMN_HAS_PET, hasPet);
 	}
 
 	public static String getPriorityColumnName() {

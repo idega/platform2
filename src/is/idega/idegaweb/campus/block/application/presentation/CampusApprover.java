@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.65.4.16 2007/07/05 12:00:20 eiki Exp $
+ * $Id: CampusApprover.java,v 1.65.4.17 2007/07/09 15:18:36 palli Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -89,6 +89,10 @@ public class CampusApprover extends CampusBlock {
 	private static final String PRM_CAM_APPLICATION_ID = "application_id";
 
 	private static final String PRM_FORM_INDEX = "app_form_id";
+	
+	private static final String PARAM_SCHOOL = "school";
+	
+	private static final String PARAM_HAS_PET = "has_pet";
 
 	private static final String ACT_TRASH_APPLICATION = "cam_app_trash";
 
@@ -292,10 +296,20 @@ public class CampusApprover extends CampusBlock {
 		ApartmentInfo aprtInfo = getApartmentInfo(iwc);
 		SpouseInfo spouseInfo = getSpouseInfo(iwc);
 		List childInfo = getChildrenInfo(iwc);
+		String schoolID = iwc.getParameter(PARAM_SCHOOL);
+		Boolean hasPet = new Boolean(iwc.getParameter(PARAM_HAS_PET));
+	
 		// String newStatus = iwc.getParameter(PRM_STATUS);
 		try {
 			CampusApplication app = applicationService.storeWholeApplication(applicationID, new Integer(iSubjectId),
 					aInfo, aprtInfo, spouseInfo, childInfo);
+			
+			if (schoolID != null && !"".equals(schoolID)) {
+				app.setSchoolID(Integer.parseInt(schoolID));
+			}
+			app.setHasPet(hasPet.booleanValue());
+			app.store();
+			
 			applicationID = ((Integer) app.getPrimaryKey());
 		}
 		catch (Exception e) {
@@ -731,7 +745,7 @@ public class CampusApprover extends CampusBlock {
 			OuterFrame.setRowVerticalAlignment(2, "top");
 			// OuterFrame.setWidth(1,"550");
 			Table Left = new Table(1, 3);
-			Left.add(getFieldsApplicant(eApplicant, eCampusApplication), 1, 1);
+			Left.add(getFieldsApplicant(iwc, eApplicant, eCampusApplication), 1, 1);
 			Left.add(getFieldsSpouse(spouse, eCampusApplication), 1, 2);
 			Left.add(getFieldsChildren(children, eCampusApplication), 1, 3);
 			Table Middle = new Table(1, 4);
@@ -778,6 +792,7 @@ public class CampusApprover extends CampusBlock {
 		T.add(getHeader(localize("studytrack", "Study Track")), col, row++);
 		T.add(getHeader(localize("study_begins", "Study begins")), col, row++);
 		T.add(getHeader(localize("study_ends", "Study ends")), col, row++);
+		T.add(getHeader(localize("hasPet", "Has pet")), col, row++);
 		// T.add(getHeader(localize("income","Income")),col,row++);
 		col = 2;
 		row = 1;
@@ -839,12 +854,17 @@ public class CampusApprover extends CampusBlock {
 			row++;
 		}
 		
+		if (eCampusApplication.getHasPet()) {
+			T.add(getText("X"), col, row++);			
+		} else {
+			row++;			
+		}
 		
 		// T.add(getText(eCampusApplication.getIncome().intValue()),col,row);
 		return T;
 	}
 
-	public PresentationObject getFieldsApplicant(Applicant eApplicant, CampusApplication eCampusApplication) {
+	public PresentationObject getFieldsApplicant(IWContext iwc, Applicant eApplicant, CampusApplication eCampusApplication) {
 		int year = IWTimestamp.RightNow().getYear();
 		DataTable T = getDataTable();
 		T.setWidth(Table.HUNDRED_PERCENT);
@@ -865,6 +885,7 @@ public class CampusApprover extends CampusBlock {
 		T.add(getHeader(localize("studytrack", "Study Track")), col, row++);
 		T.add(getHeader(localize("study_begins", "Study begins")), col, row++);
 		T.add(getHeader(localize("study_ends", "Study ends")), col, row++);
+		T.add(getHeader(localize("hasPet", "Has pet")), col, row++);
 		// T.add(getHeader(localize("income","Income")),col,row++);
 		col = 2;
 		row = 1;
@@ -891,6 +912,16 @@ public class CampusApprover extends CampusBlock {
 		Edit.setStyle(tiFac);
 		TextInput tiTrack = new TextInput("ti_track");
 		Edit.setStyle(tiTrack);
+		Collection schools = null;
+		try {
+			schools = getCampusService(iwc).getSchoolHome().findAll();				
+		} catch (RemoteException e1) {
+			e1.printStackTrace();
+		} catch (FinderException e1) {
+			e1.printStackTrace();
+		}
+		DropdownMenu schoolSelect = new DropdownMenu(schools, PARAM_SCHOOL);
+		CheckBox hasPet = new CheckBox(PARAM_HAS_PET, "true");
 		/*
 		 * TextInput tiIncome= new TextInput("ti_income");
 		 * Edit.setStyle(tiIncome); tiIncome.setAsIntegers();
@@ -916,6 +947,8 @@ public class CampusApprover extends CampusBlock {
 			endMonth = (eCampusApplication.getStudyEndMonth()!=null)? eCampusApplication.getStudyEndMonth().toString():null;
 			beginYear = (eCampusApplication.getStudyBeginYear()!=null)? eCampusApplication.getStudyBeginYear().toString(): (Integer.toString((new IWTimestamp()).getYear()));
 			endYear = (eCampusApplication.getStudyEndYear()!=null)? eCampusApplication.getStudyEndYear().toString(): (Integer.toString((new IWTimestamp()).getYear()));
+			schoolSelect.setSelectedElement(eCampusApplication.getSchoolID());
+			hasPet.setChecked(eCampusApplication.getHasPet());
 		}
 		T.add(tiFullName, col, row++);
 		T.add(tiSsn, col, row++);
@@ -925,11 +958,7 @@ public class CampusApprover extends CampusBlock {
 		T.add(tiResPho, col, row++);
 		T.add(tiMobPho, col, row++);
 		T.add(tiEmail, col, row++);
-		if (eCampusApplication.getSchool() != null) {
-			T.add(getText(eCampusApplication.getSchool().getName()), col, row++);			
-		} else {
-			row++;
-		}		
+		T.add(schoolSelect, col, row++);
 		T.add(tiFac, col, row++);
 		T.add(tiTrack, col, row++);
 		DropdownMenu drBM = intDrop("dr_bm", beginMonth, 1, 12);
@@ -944,6 +973,7 @@ public class CampusApprover extends CampusBlock {
 		T.add(drBY, col, row++);
 		T.add(drEM, col, row);
 		T.add(drEY, col, row++);
+		T.add(hasPet, col, row++);
 		// T.add(tiIncome,col,row);
 		return T;
 	}

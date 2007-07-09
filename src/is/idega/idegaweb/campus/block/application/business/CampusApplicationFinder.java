@@ -1,8 +1,8 @@
 /*
  <<<<<<< CampusApplicationFinder.java
- * $Id: CampusApplicationFinder.java,v 1.18.4.3 2007/05/24 02:07:14 palli Exp $
+ * $Id: CampusApplicationFinder.java,v 1.18.4.4 2007/07/09 15:18:36 palli Exp $
  =======
- * $Id: CampusApplicationFinder.java,v 1.18.4.3 2007/05/24 02:07:14 palli Exp $
+ * $Id: CampusApplicationFinder.java,v 1.18.4.4 2007/07/09 15:18:36 palli Exp $
  >>>>>>> 1.17
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
@@ -488,8 +488,7 @@ public abstract class CampusApplicationFinder {
 		Iterator it = li.iterator();
 		while (it.hasNext()) {
 			WaitingList wl = (WaitingList) it.next();
-			if ((wl.getApartmentSubcategoryID() != null)
-					&& (wl.getComplexId() != null)) {
+			if (wl.getApartmentSubcategoryID() != null) {
 				StringBuffer sql = new StringBuffer("select count(*) from ");
 				sql
 						.append(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean
@@ -518,12 +517,7 @@ public abstract class CampusApplicationFinder {
 								.getApartmentSubcategoryColumnName());
 				sql.append(" = ");
 				sql.append(wl.getApartmentSubcategoryID().toString());
-				sql.append(" and ");
-				sql
-						.append(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean
-								.getComplexIdColumnName());
-				sql.append(" = ");
-				sql.append(wl.getComplexId().toString());
+				
 
 				int count = 0;
 

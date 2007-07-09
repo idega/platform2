@@ -1,5 +1,5 @@
 /*
- * $Id: WaitingListFinder.java,v 1.5.4.1 2007/05/24 02:07:14 palli Exp $
+ * $Id: WaitingListFinder.java,v 1.5.4.2 2007/07/09 15:18:36 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -58,22 +58,6 @@ public abstract class WaitingListFinder {
 				sql.append(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getApplicantIdColumnName());
 				sql.append(" = ");
 				sql.append(iApplicantId);
-				count++;
-			}
-
-			/*if ((fields & APARTMENTTYPE) == APARTMENTTYPE && iTypeId > 0) {
-				sql.append(count > 0 ? " and " : "  ");
-				sql.append(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getApartmentTypeIdColumnName());
-				sql.append(" = ");
-				sql.append(iTypeId);
-				count++;
-			}*/
-
-			if ((fields & COMPLEX) == COMPLEX && iComplexId > 0) {
-				sql.append(count > 0 ? " and " : "  ");
-				sql.append(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getComplexIdColumnName());
-				sql.append(" = ");
-				sql.append(iComplexId);
 				count++;
 			}
 		}

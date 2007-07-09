@@ -1,5 +1,5 @@
 /*
- * $Id: WaitingListBMPBean.java,v 1.14.4.4 2007/07/05 11:09:23 palli Exp $
+ * $Id: WaitingListBMPBean.java,v 1.14.4.5 2007/07/09 15:18:35 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -18,7 +18,6 @@ import javax.ejb.FinderException;
 import com.idega.block.application.data.Applicant;
 import com.idega.block.building.data.Apartment;
 import com.idega.block.building.data.ApartmentSubcategory;
-import com.idega.block.building.data.Complex;
 import com.idega.data.GenericEntity;
 import com.idega.data.query.InCriteria;
 import com.idega.data.query.SelectQuery;
@@ -33,7 +32,7 @@ import com.idega.data.query.WildCardColumn;
 public class WaitingListBMPBean extends GenericEntity implements WaitingList {
 	private static final String ENTITY_NAME = "cam_waiting_list";
 
-	private static final String COLUMN_COMPLEX = "bu_complex_id";
+	//private static final String COLUMN_COMPLEX = "bu_complex_id";
 
 	// private static final String COLUMN_APARTMENT_TYPE =
 	// "bu_apartment_type_id";
@@ -90,7 +89,7 @@ public class WaitingListBMPBean extends GenericEntity implements WaitingList {
 
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		addManyToOneRelationship(COLUMN_COMPLEX, Complex.class);
+		//addManyToOneRelationship(COLUMN_COMPLEX, Complex.class);
 		addManyToOneRelationship(COLUMN_SUBCATEGORY, ApartmentSubcategory.class);
 		addManyToOneRelationship(COLUMN_APPLICANT, Applicant.class);
 		addAttribute(COLUMN_ORDER, "Order", Integer.class);
@@ -120,9 +119,9 @@ public class WaitingListBMPBean extends GenericEntity implements WaitingList {
 		return ENTITY_NAME;
 	}
 
-	public static String getComplexIdColumnName() {
+	/*public static String getComplexIdColumnName() {
 		return COLUMN_COMPLEX;
-	}
+	}*/
 
 	public static String getApartmentSubcategoryColumnName() {
 		return COLUMN_SUBCATEGORY;
@@ -140,13 +139,13 @@ public class WaitingListBMPBean extends GenericEntity implements WaitingList {
 		return COLUMN_PRIORITY_LEVEL;
 	}
 
-	public void setComplexId(int id) {
+	/*public void setComplexId(int id) {
 		setColumn(COLUMN_COMPLEX, id);
 	}
 
 	public Integer getComplexId() {
 		return getIntegerColumnValue(COLUMN_COMPLEX);
-	}
+	}*/
 
 	public void setApartmentSubcategory(int id) {
 		setColumn(COLUMN_SUBCATEGORY, id);
