@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.65.4.17 2007/07/09 15:18:36 palli Exp $
+ * $Id: CampusApprover.java,v 1.65.4.18 2007/07/14 18:58:09 eiki Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -15,6 +15,7 @@ import is.idega.idegaweb.campus.block.application.business.ApplicationService;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationWriter;
 import is.idega.idegaweb.campus.block.application.business.ChildInfo;
 import is.idega.idegaweb.campus.block.application.business.SpouseInfo;
+import is.idega.idegaweb.campus.block.application.data.ApplicantFamily;
 import is.idega.idegaweb.campus.block.application.data.Applied;
 import is.idega.idegaweb.campus.block.application.data.CampusApplication;
 import is.idega.idegaweb.campus.block.application.data.CampusApplicationHome;
@@ -29,9 +30,7 @@ import java.text.DateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Vector;
 
 import javax.ejb.CreateException;
@@ -93,6 +92,8 @@ public class CampusApprover extends CampusBlock {
 	private static final String PARAM_SCHOOL = "school";
 	
 	private static final String PARAM_HAS_PET = "has_pet";
+	
+	private static final String PARAM_EXTRA_ADMIN_INFO = "admin_info";
 
 	private static final String ACT_TRASH_APPLICATION = "cam_app_trash";
 
@@ -100,11 +101,7 @@ public class CampusApprover extends CampusBlock {
 
 	private String sGlobalStatus = "S", sGlobalOrder = null;
 
-	private ListIterator iterator = null;
-
-	private LinkedList linkedlist = null;
-
-	private static final String ACT_VIEW = "app_view", ACT_EDIT = "app_edit";
+	private static final String ACT_VIEW = "app_view";
 
 	protected boolean isAdmin = false;
 
@@ -298,6 +295,7 @@ public class CampusApprover extends CampusBlock {
 		List childInfo = getChildrenInfo(iwc);
 		String schoolID = iwc.getParameter(PARAM_SCHOOL);
 		Boolean hasPet = new Boolean(iwc.getParameter(PARAM_HAS_PET));
+		String adminInfo = iwc.getParameter(PARAM_EXTRA_ADMIN_INFO);
 	
 		// String newStatus = iwc.getParameter(PRM_STATUS);
 		try {
@@ -308,6 +306,8 @@ public class CampusApprover extends CampusBlock {
 				app.setSchoolID(Integer.parseInt(schoolID));
 			}
 			app.setHasPet(hasPet.booleanValue());
+			app.setExtraAdminInfo(adminInfo);
+			
 			app.store();
 			
 			applicationID = ((Integer) app.getPrimaryKey());
@@ -357,10 +357,8 @@ public class CampusApprover extends CampusBlock {
 				}
 				T.addTitle(localize("applicants", "Applicants") + " " + localize("showing", "showing") + " " + len
 						+ " " + localize("of", "of") + " " + count);
-				boolean showcan = false;
 				if (sGlobalStatus.equals(com.idega.block.application.data.ApplicationBMPBean.STATUS_REJECTED)) {
 					T.add(getHeader(localize("g", "g")), col++, row);
-					showcan = true;
 				}
 				int lastcol = 1;
 				int i = 0;
@@ -373,7 +371,6 @@ public class CampusApprover extends CampusBlock {
 					Applicant A = a.getApplicant();
 					String cypher = null;
 					if (a != null && ((Integer) a.getPrimaryKey()).intValue() != -1) {
-						ReferenceNumberHandler h = new ReferenceNumberHandler();
 						String key = ReferenceNumberHandler.getCypherKey(iwc);
 						com.idega.util.CypherText ct = new com.idega.util.CypherText(iwc);
 						
@@ -496,25 +493,10 @@ public class CampusApprover extends CampusBlock {
 			}
 
 			if (eApplication != null && eApplicant != null) {
-				Applicant spouse = null;
-				Vector children = null;
-				java.util.Iterator iter = eApplicant.getChildrenIterator();
-				if (iter != null) {
-					Applicant a;
-					while (iter.hasNext()) {
-						a = (Applicant) iter.next();
-						if (a.getStatus() != null) {
-							if (a.getStatus().equals("P")) {
-								spouse = a;
-							}
-							else if (a.getStatus().equals("C")) {
-								if (children == null)
-									children = new Vector();
-								children.add(a);
-							}
-						}
-					}
-				}
+				ApplicantFamily family = new ApplicantFamily(eApplicant);
+				Applicant spouse = family.getSpouse();
+				List children = family.getChildren();
+				
 				if (eCampusApplication != null) {
 					Collection L = applicationService.getAppliedHome().findByApplicationID(
 							(Integer) eCampusApplication.getPrimaryKey());
@@ -527,7 +509,7 @@ public class CampusApprover extends CampusBlock {
 					Table Left = new Table(1, 3);
 					Left.add(getViewApplicant(eApplicant, eCampusApplication), 1, 1);
 					Left.add(getViewSpouse(spouse, eCampusApplication), 1, 2);
-					Left.add(getViewChildren(children, eCampusApplication), 1, 3);
+					Left.add(getViewChildren(children), 1, 3);
 					Table Middle = new Table(1, 4);
 					Middle.add(getViewApplication(eApplication), 1, 1);
 					Middle.add(getViewApartment(eCampusApplication, L, iwc), 1, 2);
@@ -697,7 +679,7 @@ public class CampusApprover extends CampusBlock {
 			CampusApplication eCampusApplication = null;
 			Application eApplication = null;
 			Applicant spouse = null;
-			Vector children = null;
+			List children = null;
 			Applicant eApplicant = null;
 			/*
 			 * if ( applicationID!=null && applicationID.intValue() < -1 &&
@@ -718,21 +700,9 @@ public class CampusApprover extends CampusBlock {
 			// }
 			Collection L = null;
 			if (eApplication != null && eApplicant != null) {
-				java.util.Iterator iter = eApplicant.getChildrenIterator();
-				if (iter != null) {
-					Applicant a;
-					while (iter.hasNext()) {
-						a = (Applicant) iter.next();
-						if (a.getStatus().equals("P")) {
-							spouse = a;
-						}
-						else if (a.getStatus().equals("C")) {
-							if (children == null)
-								children = new Vector();
-							children.add(a);
-						}
-					}
-				}
+				ApplicantFamily family = new ApplicantFamily(eApplicant);
+				spouse = family.getSpouse();
+				children = family.getChildren();
 				if (eCampusApplication != null)
 					L = applicationService.getAppliedHome().findByApplicationID(
 							(Integer) eCampusApplication.getPrimaryKey());
@@ -747,7 +717,7 @@ public class CampusApprover extends CampusBlock {
 			Table Left = new Table(1, 3);
 			Left.add(getFieldsApplicant(iwc, eApplicant, eCampusApplication), 1, 1);
 			Left.add(getFieldsSpouse(spouse, eCampusApplication), 1, 2);
-			Left.add(getFieldsChildren(children, eCampusApplication), 1, 3);
+			Left.add(getFieldsChildren(children), 1, 3);
 			Table Middle = new Table(1, 4);
 			Middle.add(getViewApplication(eApplication), 1, 1);
 			Middle.add(getFieldsApartment(eCampusApplication, L, iwc), 1, 2);
@@ -793,6 +763,8 @@ public class CampusApprover extends CampusBlock {
 		T.add(getHeader(localize("study_begins", "Study begins")), col, row++);
 		T.add(getHeader(localize("study_ends", "Study ends")), col, row++);
 		T.add(getHeader(localize("hasPet", "Has pet")), col, row++);
+		T.add(getHeader(localize("extraAdminInfo", "Extra info")), col, row++);
+		
 		// T.add(getHeader(localize("income","Income")),col,row++);
 		col = 2;
 		row = 1;
@@ -805,6 +777,7 @@ public class CampusApprover extends CampusBlock {
 		T.add(getText(eApplicant.getMobilePhone()), col, row++);
 		String email = eCampusApplication.getEmail();
 		try {
+			//validating the email I guess
 			javax.mail.internet.InternetAddress emailAddress = new javax.mail.internet.InternetAddress(email);
 		}
 		catch (Exception e) {
@@ -859,6 +832,11 @@ public class CampusApprover extends CampusBlock {
 		} else {
 			row++;			
 		}
+		if (eCampusApplication.getExtraAdminInfo()!=null) {
+			T.add(getText(eCampusApplication.getExtraAdminInfo()), col, row++);			
+		} else {
+			row++;			
+		}
 		
 		// T.add(getText(eCampusApplication.getIncome().intValue()),col,row);
 		return T;
@@ -886,6 +864,8 @@ public class CampusApprover extends CampusBlock {
 		T.add(getHeader(localize("study_begins", "Study begins")), col, row++);
 		T.add(getHeader(localize("study_ends", "Study ends")), col, row++);
 		T.add(getHeader(localize("hasPet", "Has pet")), col, row++);
+		T.add(getHeader(localize("extraAdminInfo", "Extra info")), col, row++);
+		
 		// T.add(getHeader(localize("income","Income")),col,row++);
 		col = 2;
 		row = 1;
@@ -922,6 +902,10 @@ public class CampusApprover extends CampusBlock {
 		}
 		DropdownMenu schoolSelect = new DropdownMenu(schools, PARAM_SCHOOL);
 		CheckBox hasPet = new CheckBox(PARAM_HAS_PET, "true");
+		TextArea extraAdminInfo = new TextArea(PARAM_EXTRA_ADMIN_INFO);
+		extraAdminInfo.setRows(5);
+		extraAdminInfo.setColumns(35);
+		
 		/*
 		 * TextInput tiIncome= new TextInput("ti_income");
 		 * Edit.setStyle(tiIncome); tiIncome.setAsIntegers();
@@ -949,6 +933,9 @@ public class CampusApprover extends CampusBlock {
 			endYear = (eCampusApplication.getStudyEndYear()!=null)? eCampusApplication.getStudyEndYear().toString(): (Integer.toString((new IWTimestamp()).getYear()));
 			schoolSelect.setSelectedElement(eCampusApplication.getSchoolID());
 			hasPet.setChecked(eCampusApplication.getHasPet());
+			if(eCampusApplication.getExtraAdminInfo()!=null){
+				extraAdminInfo.setContent(eCampusApplication.getExtraAdminInfo());
+			}
 		}
 		T.add(tiFullName, col, row++);
 		T.add(tiSsn, col, row++);
@@ -974,6 +961,7 @@ public class CampusApprover extends CampusBlock {
 		T.add(drEM, col, row);
 		T.add(drEY, col, row++);
 		T.add(hasPet, col, row++);
+		T.add(extraAdminInfo,col,row++);
 		// T.add(tiIncome,col,row);
 		return T;
 	}
@@ -1001,7 +989,6 @@ public class CampusApprover extends CampusBlock {
 	}
 
 	public PresentationObject getViewSpouse(Applicant spouse, CampusApplication eCampusApplication) {
-		int year = IWTimestamp.RightNow().getYear();
 		DataTable T = getDataTable();
 		T.setWidth(Table.HUNDRED_PERCENT);
 		T.addTitle(localize("spouse", "Spouse"));
@@ -1107,23 +1094,18 @@ public class CampusApprover extends CampusBlock {
 		String sEM = iwc.getParameter("dr_sp_em");
 		String sBY = iwc.getParameter("dr_sp_by");
 		String sEY = iwc.getParameter("dr_sp_ey");
-		int iBM = Integer.parseInt(sBM);
-		int iEM = Integer.parseInt(sEM);
-		int iBY = Integer.parseInt(sBY);
-		int iEY = Integer.parseInt(sEY);
 		return new SpouseInfo(sSpId != null ? new Integer(sSpId) : null, sSpName, sSpSsn, sSpSchl, sSpStTr,
 				sSPIncome != null ? new Double(sSPIncome) : null, sBM != null ? new Integer(sBM) : null,
 				sBY != null ? new Integer(sBY) : null, sEM != null ? new Integer(sEM) : null,
 				sEY != null ? new Integer(sEY) : null);
 	}
 
-	public PresentationObject getViewChildren(Vector children, CampusApplication eCampusApplication) {
+	public PresentationObject getViewChildren(List children) {		
 		DataTable T = getDataTable();
 		T.setWidth(Table.HUNDRED_PERCENT);
 		T.setUseBottom(false);
 		T.addTitle(localize("children", "Children"));
 		T.setUseTitles(false);
-		int col = 1;
 		int row = 1;
 		if (children != null) {
 			Applicant child;
@@ -1136,14 +1118,12 @@ public class CampusApprover extends CampusBlock {
 		return T;
 	}
 
-	public PresentationObject getFieldsChildren(Vector children, CampusApplication eCampusApplication) {
+	public PresentationObject getFieldsChildren(List children) {
 		DataTable T = getDataTable();
 		T.setWidth(Table.HUNDRED_PERCENT);
 		T.setUseBottom(false);
 		T.addTitle(localize("children", "Children"));
 		T.setUseTitles(false);
-		int col = 1;
-		int row = 1;
 		int count = 4;
 		int childcount = children != null ? children.size() : 0;
 		count = Math.max(count, childcount);
@@ -1195,7 +1175,6 @@ public class CampusApprover extends CampusBlock {
 		T.setWidth(Table.HUNDRED_PERCENT);
 		T.setUseBottom(false);
 		T.addTitle(localize("applied", "Applied"));
-		int col = 1;
 		int row = 1;
 		if (lApplied != null) {
 			int i = 0;
@@ -1292,7 +1271,6 @@ public class CampusApprover extends CampusBlock {
 		T.setWidth(Table.HUNDRED_PERCENT);
 		T.setUseBottom(false);
 		T.addTitle(localize("applied", "Applied"));
-		int col = 1;
 		int row = 1;
 		String sOne = "-1", sTwo = "-1", sThree = "-3";
 		if (lApplied != null) {
@@ -1574,7 +1552,6 @@ public class CampusApprover extends CampusBlock {
 		boolean setsel = true;
 		if (L != null) {
 			ApplicationSubject AS;
-			int len = L.size();
 			int i = 0;
 			for (Iterator iter = L.iterator(); iter.hasNext();) {
 				AS = (ApplicationSubject) iter.next();

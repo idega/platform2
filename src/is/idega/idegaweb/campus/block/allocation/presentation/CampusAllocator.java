@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.76.4.6 2007/07/05 11:09:22 palli Exp $
+ * $Id: CampusAllocator.java,v 1.76.4.7 2007/07/14 18:58:09 eiki Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -515,8 +515,8 @@ public class CampusAllocator extends CampusBlock implements Campus {
 			Frame.setRowVerticalAlignment(2, Table.VERTICAL_ALIGN_TOP);
 			Frame.add(CA.getViewApplicant(AH.getApplicant(), AH
 					.getCampusApplication()), 1, 1);
-			ApplicantFamily family = getApplicationService(iwc)
-					.getApplicantFamily(AH.getApplicant());
+			ApplicantFamily family = getApplicationService(iwc).getApplicantFamily(AH.getApplicant());
+			//same as ApplicantFamily family = new ApplicantFamily(eApplicant);
 
 			boolean bSpouse = false, bChildren = false;
 			if (family.getSpouse() != null) {
@@ -526,7 +526,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 				bSpouse = true;
 			}
 			if (family.getChildren() != null && !family.getChildren().isEmpty()) {
-				Frame.add(CA.getViewChildren(null, AH.getCampusApplication()),
+				Frame.add(CA.getViewChildren(family.getChildren()),
 						2, 1);
 				bChildren = true;
 			}

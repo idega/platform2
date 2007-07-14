@@ -27,6 +27,11 @@ import com.idega.data.query.WildCardColumn;
  */
 public class CampusApplicationBMPBean extends GenericEntity implements
 		CampusApplication {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static final String ENTITY_NAME = "cam_application";
 
 	private static final String COLUMN_APPLICATION = "app_application_id";
@@ -86,6 +91,8 @@ public class CampusApplicationBMPBean extends GenericEntity implements
 	private static final String COLUMN_SCHOOL = "school";
 	
 	private static final String COLUMN_HAS_PET = "has_pet";
+	
+	private static final String COLUMN_EXTRA_ADMIN_INFO = "extra_admin_info";
 
 	public CampusApplicationBMPBean() {
 		super();
@@ -137,6 +144,8 @@ public class CampusApplicationBMPBean extends GenericEntity implements
 		addAttribute(COLUMN_CONTACT_PHONE, "If not reachable, call", true, true,
 				String.class, 40);
 		addAttribute(COLUMN_OTHER_INFO, "Other info", true, true, String.class, 4000);
+		addAttribute(COLUMN_EXTRA_ADMIN_INFO, "Extra admin info", true, true, String.class, 4000);
+		
 		addAttribute(COLUMN_EMAIL, "Email", true, true, String.class, 255);
 		addAttribute(COLUMN_PRIORITY_LEVEL, "Priority level", true, true,
 				String.class, 1);
@@ -692,6 +701,14 @@ public class CampusApplicationBMPBean extends GenericEntity implements
 			sql.append(complexID);
 		}
 		return super.idoFindPKsBySQL(sql.toString());
+	}
+
+	public String getExtraAdminInfo() {
+		return getStringColumnValue(COLUMN_EXTRA_ADMIN_INFO);
+	}
+
+	public void setExtraAdminInfo(String adminInfo) {
+		setStringColumn(COLUMN_EXTRA_ADMIN_INFO, adminInfo);
 	}
 
 }

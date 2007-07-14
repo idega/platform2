@@ -511,4 +511,17 @@ public interface CampusApplication extends IDOEntity {
 	 * @see is.idega.idegaweb.campus.block.application.data.CampusApplicationBMPBean#getApplied
 	 */
 	public Collection getApplied();
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.CampusApplicationBMPBean#setExtraAdminInfo
+	 */
+	public void setExtraAdminInfo(String adminInfo);
+	
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.CampusApplicationBMPBean#getExtraAdminInfo
+	 */
+	public String getExtraAdminInfo();
+	
+	
+	
 }

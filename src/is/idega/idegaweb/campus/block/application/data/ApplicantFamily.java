@@ -9,7 +9,7 @@
 package is.idega.idegaweb.campus.block.application.data;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 import com.idega.block.application.data.Applicant;
 
@@ -22,7 +22,7 @@ public class ApplicantFamily {
 	
 	Applicant applicant = null;
 	Applicant spouse = null;
-	Collection children = new ArrayList();
+	List children = new ArrayList();
 	
 	public ApplicantFamily(Applicant applicant){
 		setApplicant(applicant);
@@ -58,13 +58,13 @@ public class ApplicantFamily {
 	/**
 	 * @return Returns the children.
 	 */
-	public Collection getChildren() {
+	public List getChildren() {
 		return children;
 	}
 	/**
 	 * @param children The children to set.
 	 */
-	public void setChildren(Collection children) {
+	public void setChildren(List children) {
 		this.children = children;
 	}
 	/**
