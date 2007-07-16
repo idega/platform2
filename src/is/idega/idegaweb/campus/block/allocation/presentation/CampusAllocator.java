@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.76.4.7 2007/07/14 18:58:09 eiki Exp $
+ * $Id: CampusAllocator.java,v 1.76.4.8 2007/07/16 15:08:31 eiki Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -530,9 +530,9 @@ public class CampusAllocator extends CampusBlock implements Campus {
 						2, 1);
 				bChildren = true;
 			}
-			if (bChildren && bSpouse) {
-				Frame.mergeCells(1, 1, 2, 1);
-			}
+//			if (bChildren && bSpouse) {
+//				Frame.mergeCells(1, 1, 2, 1);
+//			}
 			/*
 			 * try { Frame.add(CA.getViewApartment(AH.getCampusApplication(), AH
 			 * .getApplied(), iwc), 1, 2); } catch (FinderException e) {
