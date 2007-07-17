@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.22.4.2 2006/11/28 17:02:15 palli Exp $
+ * $Id: ContractBMPBean.java,v 1.22.4.3 2007/07/17 23:33:33 palli Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -530,9 +530,10 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements Con
 		else
 			sql.append(" con.* ");
 		sql.append(" from bu_apartment a,bu_floor f,bu_building b,app_applicant p ");
-		sql.append(",bu_complex c,bu_aprt_type t,bu_aprt_cat y,cam_contract con ");
+		sql.append(",bu_complex c,bu_aprt_type t,bu_aprt_sub_cat sub, bu_aprt_cat y,cam_contract con ");
 		sql.append(" where a.bu_aprt_type_id = t.bu_aprt_type_id ");
-		sql.append(" and t.bu_aprt_cat_id = y.bu_aprt_cat_id");
+		sql.append(" and y.bu_aprt_cat_id = sub.aprt_cat");
+		sql.append(" and sub.bu_aprt_sub_cat_id = t.bu_aprt_subcat");
 		sql.append(" and a.bu_floor_id = f.bu_floor_id ");
 		sql.append(" and f.bu_building_id = b.bu_building_id ");
 		sql.append(" and b.bu_complex_id = c.bu_complex_id ");
