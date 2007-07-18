@@ -1,12 +1,12 @@
 package is.idega.idegaweb.campus.block.mailinglist.business;
+import is.idega.idegaweb.campus.block.application.business.ReferenceNumberFinder;
+
+import java.util.StringTokenizer;
+
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.util.IWTimestamp;
 import com.idega.util.LocaleUtil;
 import com.idega.util.text.ContentParsable;
-
-import is.idega.idegaweb.campus.block.application.business.ReferenceNumberFinder;
-
-import java.util.StringTokenizer;
 /**
  *  Title: Description: Copyright: Copyright (c) 2001 Company:
  *
@@ -53,6 +53,7 @@ public class LetterParser implements ContentParsable {
     public final static String camp_name = "CAMPUS_NAME";
     public final static String camp_info = "CAMPUS_DESCR";
     public final static String type_name = "TYPE_NAME";
+    public final static String type_name_full = "TYPE_NAME_FULL";
     public final static String type_desc = "TYPE_DESCR";
     public final static String type_area = "TYPE_AREA";
     public final static String cat_name = "CATEGORY_NAME";
@@ -73,7 +74,7 @@ public class LetterParser implements ContentParsable {
     public static String[] TAGS = {tenant_name, tenant_address, tenant_id,
             contract_starts, contract_ends, reference_number,today, aprt_name, aprt_desc,
             floor_name, bldg_name, bldg_desc, camp_name, camp_info,
-            type_name, type_desc, type_area, cat_name, cat_desc,
+            type_name,type_name_full, type_desc, type_area, cat_name, cat_desc,
             WL_ORDER,WL_TYPE,WL_CHOICE_NUMBER,WL_LAST_CONFIRMATION,
             WL_NUMBER_OF_REJECTIONS,WL_REJECT_FLAG,WL_REMOVED_FROM_LIST,
             WL_PRIORITY_LEVEL,WL_ACCEPTED_DATE,WL_COMPLEX,WL_APARTMENT_TYPE};
@@ -168,13 +169,15 @@ public class LetterParser implements ContentParsable {
               } else if (tag.equals(camp_info)) {
                   return holder.getApartmentHolder().getComplex().getInfo();
               } else if (tag.equals(type_name)) {
-              		String type = holder.getApartmentHolder().getApartmentType().getName();
-              		if (type != null) {
-              			StringTokenizer tok = new StringTokenizer(type);
-              			return tok.nextToken();	
-              		}
-                  return holder.getApartmentHolder().getApartmentType().getName();
-              } else if (tag.equals(type_desc)) {
+            		String type = holder.getApartmentHolder().getApartmentType().getName();
+            		if (type != null) {
+            			StringTokenizer tok = new StringTokenizer(type);
+            			return tok.nextToken();	
+            		}
+                return holder.getApartmentHolder().getApartmentType().getName();
+            } else if (tag.equals(type_name_full)) {
+            	return holder.getApartmentHolder().getApartmentType().getName();
+            } else if (tag.equals(type_desc)) {
                   return holder.getApartmentHolder().getApartmentType().getInfo();
               } else if (tag.equals(type_area)) {
                   return String.valueOf(holder.getApartmentHolder().getApartmentType().getArea());
