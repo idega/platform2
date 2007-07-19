@@ -478,8 +478,7 @@ public class CampusContractWriter {
 				H.put(apartment_floor, new Chunk(eFloor.getName(), nameFont));
 				H.put(apartment_address, new Chunk(eBuilding.getStreet(),
 						nameFont));
-				H
-						.put(apartment_campus, new Chunk(eComplex.getName(),
+				H.put(apartment_campus, new Chunk(eComplex.getName(),
 								nameFont));
 				H.put(apartment_area, new Chunk(String.valueOf(eApartmentType
 						.getArea()), tagFont));
