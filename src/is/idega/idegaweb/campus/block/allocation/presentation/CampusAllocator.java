@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.76.4.8 2007/07/16 15:08:31 eiki Exp $
+ * $Id: CampusAllocator.java,v 1.76.4.9 2007/07/23 19:18:06 eiki Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -1352,8 +1352,8 @@ public class CampusAllocator extends CampusBlock implements Campus {
 				row);
 		Frame.add(getHeader(localize("phone", "Phone")), col++, row);
 
-		Collection waitingLists = getWaitingListHome()
-				.findByApartmentSubcategory(subcatID.intValue());
+		//does not return those that are marked off the waiting list
+		Collection waitingLists = getWaitingListHome().findByApartmentSubcategory(subcatID.intValue());
 
 		Map newApplicantContracts = campusService.getContractService()
 				.getNewApplicantContracts();
@@ -1388,7 +1388,6 @@ public class CampusAllocator extends CampusBlock implements Campus {
 				if (transferColor == null)
 					transferColor = "#D5B5FF";
 
-				int con_id = -1;
 				boolean redColorSet = false;
 				int numberOnList = 1;
 				IWTimestamp now = IWTimestamp.RightNow();
@@ -1402,7 +1401,6 @@ public class CampusAllocator extends CampusBlock implements Campus {
 
 				while (it.hasNext()) {
 					col = 1;
-					con_id = -1;
 					WaitingList WL = (WaitingList) it.next();
 					try {
 						Applicant applicant = applicantHome.findByPrimaryKey(WL
@@ -1495,7 +1493,6 @@ public class CampusAllocator extends CampusBlock implements Campus {
 								Frame.add(getChangeLink(contractID, WL,
 										isOnTime), col++, row);
 							}
-							con_id = contractID.intValue();
 						} else if (pContracts
 								&& printedContracts.containsKey(applicantID)) {
 							contract = (Contract) printedContracts
@@ -1508,8 +1505,6 @@ public class CampusAllocator extends CampusBlock implements Campus {
 
 							Frame.add(getPrintedLink(contractID, WL), col++,
 									row);
-
-							con_id = contractID.intValue();
 						}
 						// if applicant has requested removal from list
 						else if (WL.getRemovedFromList()) {

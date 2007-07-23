@@ -1,5 +1,5 @@
 /*
- * $Id: WaitingListBMPBean.java,v 1.14.4.5 2007/07/09 15:18:35 palli Exp $
+ * $Id: WaitingListBMPBean.java,v 1.14.4.6 2007/07/23 19:18:06 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -374,6 +374,9 @@ public class WaitingListBMPBean extends GenericEntity implements WaitingList {
 		sql.append(COLUMN_SUBCATEGORY);
 		sql.append(" = ");
 		sql.append(subcatId);
+		//EIKI ADDED to get rid of displaying people in waiting lists that shouldn't be there
+		sql.append(" and ");
+		sql.append("( REMOVED_FROM_LIST is null OR REMOVED_FROM_LIST='N') ");	
 		sql.append(" order by ");
 		sql.append(COLUMN_PRIORITY_LEVEL);
 		sql.append(", ");
