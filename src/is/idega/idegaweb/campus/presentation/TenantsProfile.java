@@ -479,7 +479,7 @@ public class TenantsProfile extends CampusBlock {
 		
 		if (renewed) {
 			table.mergeCells(1, row, 3, row);
-			table.add(localize("renewed","You have sent in an appliction for contract renewal."), 1, row++);			
+			table.add(localize("renewed","You have sent in an application for contract renewal."), 1, row++);			
 		}
 
 		table.setHorizontalZebraColored(white, lightGray);
