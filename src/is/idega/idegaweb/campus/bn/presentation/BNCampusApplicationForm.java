@@ -1,5 +1,5 @@
 /*
- * $Id: BNCampusApplicationForm.java,v 1.1.2.3 2007/05/31 17:07:52 palli Exp $
+ * $Id: BNCampusApplicationForm.java,v 1.1.2.4 2007/08/16 16:39:12 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -39,6 +39,7 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.util.IWTimestamp;
+import com.idega.util.text.SocialSecurityNumber;
 
 /**
  * 
@@ -609,10 +610,9 @@ public class BNCampusApplicationForm extends CampusApplicationForm {
 			wrongParameters.add(APP_FIRST_NAME);
 		if (last == null || last.length() == 0)
 			wrongParameters.add(APP_LAST_NAME);
-		if (ssn == null
-				|| !com.idega.util.text.SocialSecurityNumber
-						.isValidIcelandicSocialSecurityNumber(ssn))
+		if (ssn == null|| !SocialSecurityNumber.isValidIcelandicSocialSecurityNumber(ssn) || !this.isValidAge(ssn,iwc) ){
 			wrongParameters.add(APP_SSN);
+		}
 		if (legal == null || legal.length() == 0)
 			wrongParameters.add(APP_LEGAL_RESIDENCE);
 		if (res == null || res.length() == 0)

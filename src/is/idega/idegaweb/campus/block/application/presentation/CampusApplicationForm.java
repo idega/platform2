@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.30.4.6 2007/07/05 11:09:22 palli Exp $
+ * $Id: CampusApplicationForm.java,v 1.30.4.7 2007/08/16 16:39:12 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -47,6 +47,7 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.util.IWTimestamp;
+import com.idega.util.text.SocialSecurityNumber;
 
 /**
  * 
@@ -1030,14 +1031,19 @@ public class CampusApplicationForm extends ApplicationForm {
 		String phone = iwc.getParameter(APP_PHONE);
 		String zip = iwc.getParameter(APP_PO);
 		String accept = iwc.getParameter("acceptor");
+		
+		
+		
+		
 		if (first == null || first.length() == 0)
 			wrongParameters.add(APP_FIRST_NAME);
 		if (last == null || last.length() == 0)
 			wrongParameters.add(APP_LAST_NAME);
-		if (ssn == null
-				|| !com.idega.util.text.SocialSecurityNumber
-						.isValidIcelandicSocialSecurityNumber(ssn))
+		if (ssn == null|| !SocialSecurityNumber.isValidIcelandicSocialSecurityNumber(ssn) || !this.isValidAge(ssn,iwc) ){
 			wrongParameters.add(APP_SSN);
+		}
+		
+		
 		if (legal == null || legal.length() == 0)
 			wrongParameters.add(APP_LEGAL_RESIDENCE);
 		if (res == null || res.length() == 0)
@@ -1050,6 +1056,21 @@ public class CampusApplicationForm extends ApplicationForm {
 			wrongParameters.add("acceptor");
 
 		return wrongParameters;
+	}
+
+	/**
+	 * If the Application property "campus_minimum_age" is set then it checks if the age of the applier is equal or more than that.
+	 * @param ssn Icelandic social security number
+	 * @return true if it doesn't need to check the age or returns the result of (age>=minimumAge);
+	 */
+	protected boolean isValidAge(String ssn, IWContext iwc) {
+		String mininumAgeString = iwc.getApplicationSettings().getProperty("CAMPUS_MINIMUM_AGE");
+		if(mininumAgeString!=null && !"".equals(mininumAgeString)){
+			int minimumAge = Integer.parseInt(mininumAgeString);
+			int age = SocialSecurityNumber.getAge(ssn);
+			return (age>=minimumAge);
+		}
+		else return true;
 	}
 
 	public List checkCampusInfo(IWContext iwc) {
