@@ -1,5 +1,5 @@
 /*
- * $Id: RequestAdminViewDetails.java,v 1.10.4.3 2007/09/03 22:44:41 eiki Exp $
+ * $Id: RequestAdminViewDetails.java,v 1.10.4.4 2007/09/03 23:44:43 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -15,6 +15,7 @@ import is.idega.idegaweb.campus.block.application.data.CampusApplication;
 import is.idega.idegaweb.campus.block.request.business.RequestFinder;
 import is.idega.idegaweb.campus.block.request.data.Request;
 import is.idega.idegaweb.campus.block.request.data.RequestHome;
+import is.idega.idegaweb.campus.business.CampusSettings;
 import is.idega.idegaweb.campus.presentation.CampusWindow;
 
 import java.rmi.RemoteException;
@@ -22,6 +23,7 @@ import java.sql.Timestamp;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
+import javax.mail.MessagingException;
 
 import com.idega.block.application.data.Applicant;
 import com.idega.block.building.data.ApartmentView;
@@ -36,7 +38,9 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.util.Edit;
+import com.idega.util.SendMail;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
@@ -69,6 +73,8 @@ public class RequestAdminViewDetails extends CampusWindow {
 	protected final static String REQUEST_DAYTIME = "request_daytime";
 
 	protected final static String REQUEST_SPECIAL_TIME = "request_special_time";
+	
+	protected final static String REQUEST_SPECIAL_TIME_REQUESTED = "request_special_time_requested";
 
 	protected final static String REQUEST_STATUS = "request_status";
 
@@ -83,6 +89,12 @@ public class RequestAdminViewDetails extends CampusWindow {
 	protected final static String REQUEST_REPAIR = "R";
 
 	protected final static String REQUEST_COMPUTER = "C";
+
+	protected static final String REQUEST_EMAIL_TO = "campus_request_email";
+
+	protected static final String REQUEST_EMAIL_CC = "campus_request_email_cc";
+
+	protected static final String REQUEST_EMAIL_SUBJECT = "request_email_subject";
 
 	private boolean isAdmin;
 
@@ -116,8 +128,9 @@ public class RequestAdminViewDetails extends CampusWindow {
 		String id = iwc.getParameter("request_id");
 
 		if (id != null) {
+			Request request = null;
 			try {
-				Request request = ((RequestHome) IDOLookup
+				request = ((RequestHome) IDOLookup
 						.getHome(Request.class)).findByPrimaryKey(new Integer(
 						id));
 				request.setStatus(status);
@@ -129,6 +142,119 @@ public class RequestAdminViewDetails extends CampusWindow {
 				e.printStackTrace();
 
 				return false;
+			}
+			
+			String emailTo = iwc.getParameter(REQUEST_EMAIL_TO);
+			String emailCC = iwc.getParameter(REQUEST_EMAIL_CC);
+			
+			if("".equals(emailTo) && !"".equals(emailCC)){
+				emailTo = emailCC;
+			}
+			
+			if("".equals(emailCC)){
+				emailCC = null;
+			}
+			
+//			Only send if email sending allowed
+			if(!"".equals(emailTo)){
+				CampusSettings settings = null;
+				try {
+					settings = getCampusService(iwc).getCampusSettings();
+				
+					String dateFailure = request.getDateFailure().toString();
+					String comment = request.getDescription();
+					String special = request.getSpecialTime();
+					
+					String aprt = "";
+					String street = "";
+					String name = "";
+					String email = "";
+					String telephone = "";
+					
+					//boolean reported = request.getReportedViaTelephone();
+					
+					String requestType = request.getRequestType();
+					if(REQUEST_COMPUTER.equals(requestType)){
+						requestType = localize(REQUEST_COMPUTER, "Computer repairs");
+					}
+					else{
+						requestType = localize(REQUEST_REPAIR, "General repairs");
+					}
+					
+					Contract contract = null;
+					ApartmentView apartmentView = null;
+					Applicant applicant = null;
+					try {
+						Collection contracts = getContractService(iwc)
+						.getContractHome().findByUserAndRented(
+								new Integer(request.getUserId()), Boolean.TRUE);
+						contract = (Contract) contracts.iterator().next();
+					} catch (Exception e) {
+						contract = null;
+					}
+					if (contract != null) {
+						try {
+							apartmentView = ((ApartmentViewHome) IDOLookup
+									.getHome(ApartmentView.class))
+									.findByPrimaryKey(contract.getApartmentId());
+						} catch (IDOLookupException e1) {
+							e1.printStackTrace();
+						} catch (FinderException e1) {
+							e1.printStackTrace();
+						}
+
+						applicant = contract.getApplicant();
+					}
+
+					CampusApplication campusApplication = null;
+					try {
+						campusApplication = CampusApplicationFinder.getApplicantInfo(applicant).getCampusApplication();
+					} catch (Exception e) {
+						campusApplication = null;
+					}
+
+					if (apartmentView != null) {
+						 aprt = apartmentView.getApartmentName();
+						 street = apartmentView.getBuildingName();
+					}
+					
+					if (applicant != null) {
+						name = applicant.getFullName();
+						telephone = applicant.getResidencePhone();
+					}
+					
+					if (campusApplication != null){
+						email = campusApplication.getEmail();
+					}
+					
+
+					//if (settings != null && settings.getSendEventMail()) {
+						StringBuffer repairInfo = new StringBuffer();
+						repairInfo.append(localize(REQUEST_TYPE, "Request type")).append(" : ").append(requestType);
+						repairInfo.append(localize(REQUEST_STREET, "Building")).append(" : ").append(street);
+						repairInfo.append(localize(REQUEST_APRT, "Apartment")).append(" : ").append(aprt);
+						repairInfo.append(localize(REQUEST_NAME, "Tenant")).append(" : ").append(name);
+						repairInfo.append(localize(REQUEST_TEL, "Phone number")).append(" : ").append(telephone);
+						repairInfo.append(localize(REQUEST_EMAIL, "Email")).append(" : ").append(email);
+						
+						repairInfo.append(localize(REQUEST_DATE_OF_CRASH, "Failure date")).append(" : ").append(dateFailure);
+						repairInfo.append(localize(REQUEST_COMMENT, "Comments")).append(" : ").append(comment);
+						if(special!=null){
+							repairInfo.append(localize(REQUEST_SPECIAL_TIME_REQUESTED, "Requested repair time")).append(" : ").append(request.getRequestType());
+						}
+						
+					try {
+						SendMail.send(settings.getAdminEmail(), emailTo, emailCC,
+								"palli@idega.is", settings.getSmtpServer(),
+								localize(REQUEST_EMAIL_SUBJECT,"Repairs request"), repairInfo.toString());
+					} catch (MessagingException e) {
+						e.printStackTrace();
+					}
+			//	}
+				
+				} catch (RemoteException e1) {
+					e1.printStackTrace();
+				}
 			}
 		}
 		return true;
@@ -237,12 +363,12 @@ public class RequestAdminViewDetails extends CampusWindow {
 		
 		row++;
 
-		addRepair(data, row, request);
+		addRepair(data, row, request,iwc);
 
 		form.add(new HiddenInput("request_id", id));
 	}
 
-	protected void addRepair(DataTable data, int row, Request request) {
+	protected void addRepair(DataTable data, int row, Request request,IWContext iwc) {
 		data.add(getHeader(localize(REQUEST_DATE_OF_CRASH, "Date of failure")),1, row);
 
 		Timestamp dateFailure = null;
@@ -285,13 +411,26 @@ public class RequestAdminViewDetails extends CampusWindow {
 
 		if (special != null){
 			data.add(getHeader(special), 2, row);	
-			row++;
 		}
+		row++;
 
 		if(reported){
+			data.add(getHeader("X"),1, row);
 			data.add(getHeader(localize(REQUEST_WAS_REPORTED,"This request was already reported by telephone.")),2, row);
 			row++;
 		}
+		
+		data.add(getHeader(localize(REQUEST_EMAIL_TO, "Email to:")), 1, row);
+		TextInput mailto = new TextInput(REQUEST_EMAIL_TO);
+		mailto.setValue(iwc.getApplicationSettings().getProperty(REQUEST_EMAIL_TO,""));
+		data.add(mailto, 2, row);
+		row++;
+		
+		data.add(getHeader(localize(REQUEST_EMAIL_CC, "Email CC to:")), 1, row);
+		TextInput mailtoCC = new TextInput(REQUEST_EMAIL_CC);
+		mailtoCC.setValue(iwc.getApplicationSettings().getProperty(REQUEST_EMAIL_CC,""));
+		data.add(mailtoCC, 2, row);
+		row++;
 		
 		DropdownMenu status = new DropdownMenu(REQUEST_STATUS);
 
@@ -307,7 +446,6 @@ public class RequestAdminViewDetails extends CampusWindow {
 		}
 		
 		data.add(getHeader(localize(REQUEST_STATUS, "Status")), 1, row);
-
 		data.add(status, 2, row);
 		row++;
 	}

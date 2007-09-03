@@ -1,5 +1,5 @@
 /*
- * $Id: RequestView.java,v 1.12.4.2 2007/09/03 22:44:41 eiki Exp $
+ * $Id: RequestView.java,v 1.12.4.3 2007/09/03 23:44:43 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -230,6 +230,7 @@ public class RequestView extends CampusWindow {
 		}
 		data.add(getHeader(localize(REQUEST_SPECIAL_TIME,"I would like to have the repairs done at this specific date/time: ")),2, row);
 		data.add(new TextInput(REQUEST_SPECIAL_TIME), 2, row);
+		row++;
 		
 		CheckBox reportedByPhone = new CheckBox(REQUEST_REPORTED);
 		data.add(reportedByPhone, 1, row);
