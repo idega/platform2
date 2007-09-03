@@ -1,5 +1,5 @@
 /*
- * $Id: RequestAdminViewDetails.java,v 1.10.4.1 2007/02/01 00:29:49 palli Exp $
+ * $Id: RequestAdminViewDetails.java,v 1.10.4.2 2007/09/03 18:02:47 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -192,8 +192,8 @@ public class RequestAdminViewDetails extends CampusWindow {
 			}
 
 			if (apartmentView != null) {
-				street = apartmentView.getApartmentName();
-				aprt = apartmentView.getBuildingName();
+				aprt = apartmentView.getApartmentName();
+				street = apartmentView.getBuildingName();
 			}
 			if (applicant != null) {
 				name = applicant.getFullName();
