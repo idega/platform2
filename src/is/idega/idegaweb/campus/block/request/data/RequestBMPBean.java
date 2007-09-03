@@ -1,5 +1,5 @@
 /*
- * $Id: RequestBMPBean.java,v 1.4 2004/05/24 14:21:42 palli Exp $
+ * $Id: RequestBMPBean.java,v 1.4.4.1 2007/09/03 22:44:41 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -31,6 +31,7 @@ public class RequestBMPBean extends com.idega.data.GenericEntity implements is.i
   protected static final String DATE_FAILURE = "date_failure";
   protected static final String SPECIAL_REPAIR_TIME = "special_time";
   protected static final String STATUS = "status";
+  protected static final String REPORTED = "reported";
 
   public RequestBMPBean() {
     super();
@@ -50,6 +51,7 @@ public class RequestBMPBean extends com.idega.data.GenericEntity implements is.i
     addAttribute(getColumnStatus(),"Status",true,true,String.class);
     addAttribute(getColumnDateFailure(),"Date of failure",true,true,Timestamp.class);
     addAttribute(getColumnSpecialTime(),"Request special time",true,true,String.class);
+    addAttribute(REPORTED,"Reported by telephone",true,true,Boolean.class); 
     setMaxLength(getColumnRequestType(),1);
     setMaxLength(getColumnStatus(),1);
     setMaxLength(getColumnDescription(),4000);
@@ -174,4 +176,13 @@ public class RequestBMPBean extends com.idega.data.GenericEntity implements is.i
   public Collection ejbFindByUser(Integer user) throws FinderException{
      return super.idoFindPKsByQuery(idoQueryGetSelect().appendWhereEquals(getColumnUserId(),user.intValue()).appendOrderByDescending(getColumnDateSent()));
   }
+
+public boolean getReportedViaTelephone() {
+	return getBooleanColumnValue(REPORTED);
+}
+
+public void setReportedViaTelephone(boolean reported) {
+	setColumn(REPORTED, reported);
+}
+
 }

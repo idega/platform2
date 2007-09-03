@@ -1,5 +1,5 @@
 /*
- * $Id: RequestAdminViewDetails.java,v 1.10.4.2 2007/09/03 18:02:47 eiki Exp $
+ * $Id: RequestAdminViewDetails.java,v 1.10.4.3 2007/09/03 22:44:41 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -78,6 +78,8 @@ public class RequestAdminViewDetails extends CampusWindow {
 
 	protected final static String REQUEST_NO_SPECIAL_TIME = "request_no_special_time";
 
+	protected static final String REQUEST_WAS_REPORTED = "request_was_reported_by_phone";
+	
 	protected final static String REQUEST_REPAIR = "R";
 
 	protected final static String REQUEST_COMPUTER = "C";
@@ -232,30 +234,28 @@ public class RequestAdminViewDetails extends CampusWindow {
 
 		data.add(getHeader(localize(REQUEST_EMAIL, "Email")), 1, row);
 		data.add(getText(email), 2, row);
-
+		
 		row++;
 
-		if (type.equals(REQUEST_REPAIR))
-			addRepair(data, row, request);
-		else if (type.equals(REQUEST_COMPUTER))
-			addComputer(data, row, request);
+		addRepair(data, row, request);
 
 		form.add(new HiddenInput("request_id", id));
 	}
 
 	protected void addRepair(DataTable data, int row, Request request) {
-		data.add(getHeader(localize(REQUEST_DATE_OF_CRASH, "Date of failure")),
-				1, row);
+		data.add(getHeader(localize(REQUEST_DATE_OF_CRASH, "Date of failure")),1, row);
 
 		Timestamp dateFailure = null;
 		String comment = null;
 		String special = null;
 		String requestStatus = null;
+		boolean reported = false;
 		try {
 			dateFailure = request.getDateFailure();
 			comment = request.getDescription();
 			special = request.getSpecialTime();
 			requestStatus = request.getStatus();
+			reported = request.getReportedViaTelephone();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -272,12 +272,7 @@ public class RequestAdminViewDetails extends CampusWindow {
 			b1.setSelected();
 		data.add(b1, 1, row);
 
-		data
-				.add(
-						getHeader(localize(
-								REQUEST_DAYTIME,
-								"Repairs may be done during the day without anyone being at home. Repairs are usually done on Tuesdays.")),
-						2, row);
+		data.add(getHeader(localize(REQUEST_DAYTIME,"Repairs may be done during business hours even though I'm not at home.")),2, row);
 
 		row++;
 		RadioButton b2 = new RadioButton(REQUEST_TIME, REQUEST_DAYTIME);
@@ -286,86 +281,33 @@ public class RequestAdminViewDetails extends CampusWindow {
 			b2.setSelected();
 		data.add(b2, 1, row);
 
-		data.add(getHeader(localize(REQUEST_SPECIAL_TIME,
-				"I requst that the repairs should be done on the : ")), 2, row);
+		data.add(getHeader(localize(REQUEST_SPECIAL_TIME,"I would like to have the repairs done at this specific date/time: ")),2, row);
 
-		if (special != null)
-			data.add(getHeader(special), 2, row);
-		row++;
-		DropdownMenu status = new DropdownMenu(REQUEST_STATUS);
-
-		status.addMenuElement(RequestFinder.REQUEST_STATUS_SENT, localize(
-				"REQUEST_STATUS_S", "S"));
-		status.addMenuElement(RequestFinder.REQUEST_STATUS_RECEIVED, localize(
-				"REQUEST_STATUS_R", "R"));
-		status.addMenuElement(RequestFinder.REQUEST_STATUS_IN_PROGRESS,
-				localize("REQUEST_STATUS_P", "P"));
-		status.addMenuElement(RequestFinder.REQUEST_STATUS_DONE, localize(
-				"REQUEST_STATUS_D", "D"));
-		status.addMenuElement(RequestFinder.REQUEST_STATUS_DENIED, localize(
-				"REQUEST_STATUS_X", "X"));
-
-		Edit.setStyle(status);
-		if (requestStatus != null)
-			status.setSelectedElement(requestStatus);
-
-		data.add(getHeader(localize(REQUEST_STATUS, "Status")), 1, row);
-
-		data.add(status, 2, row);
-		row++;
-	}
-
-	protected void addComputer(DataTable data, int row, Request request) {
-		data.add(getHeader(localize(REQUEST_DATE_OF_CRASH, "Date of failure")),
-				1, row);
-		Timestamp dateFailure = null;
-		String comment = null;
-		String special = null;
-		String requestStatus = null;
-		try {
-			dateFailure = request.getDateFailure();
-			comment = request.getDescription();
-			special = request.getSpecialTime();
-			requestStatus = request.getStatus();
-		} catch (Exception e) {
-			e.printStackTrace();
+		if (special != null){
+			data.add(getHeader(special), 2, row);	
+			row++;
 		}
-		data.add(getHeader(dateFailure.toString()), 2, row);
-		row++;
 
-		data.add(getHeader(localize(REQUEST_COMMENT, "Comments")), 1, row);
-		data.add(getHeader(comment), 2, row);
-		row++;
-		RadioButton b2 = new RadioButton(REQUEST_TIME, REQUEST_DAYTIME);
-		b2.setDisabled(true);
-		if (special != null && !special.equals(""))
-			b2.setSelected();
-		data.add(b2, 1, row);
-
-		data.add(getHeader(localize(REQUEST_SPECIAL_TIME,
-				"I requst that the repairs should be done on the : ")), 2, row);
-
-		if (special != null)
-			data.add(getHeader(special), 2, row);
-		row++;
+		if(reported){
+			data.add(getHeader(localize(REQUEST_WAS_REPORTED,"This request was already reported by telephone.")),2, row);
+			row++;
+		}
+		
 		DropdownMenu status = new DropdownMenu(REQUEST_STATUS);
 
-		status.addMenuElement(RequestFinder.REQUEST_STATUS_SENT, localize(
-				"REQUEST_STATUS_S", "S"));
-		status.addMenuElement(RequestFinder.REQUEST_STATUS_RECEIVED, localize(
-				"REQUEST_STATUS_R", "R"));
-		status.addMenuElement(RequestFinder.REQUEST_STATUS_IN_PROGRESS,
-				localize("REQUEST_STATUS_P", "P"));
-		status.addMenuElement(RequestFinder.REQUEST_STATUS_DONE, localize(
-				"REQUEST_STATUS_D", "D"));
-		status.addMenuElement(RequestFinder.REQUEST_STATUS_DENIED, localize(
-				"REQUEST_STATUS_X", "X"));
+		status.addMenuElement(RequestFinder.REQUEST_STATUS_SENT, localize("REQUEST_STATUS_S", "S"));
+		status.addMenuElement(RequestFinder.REQUEST_STATUS_RECEIVED, localize("REQUEST_STATUS_R", "R"));
+		status.addMenuElement(RequestFinder.REQUEST_STATUS_IN_PROGRESS,localize("REQUEST_STATUS_P", "P"));
+		status.addMenuElement(RequestFinder.REQUEST_STATUS_DONE, localize("REQUEST_STATUS_D", "D"));
+		status.addMenuElement(RequestFinder.REQUEST_STATUS_DENIED, localize("REQUEST_STATUS_X", "X"));
 
 		Edit.setStyle(status);
-		if (requestStatus != null)
+		if (requestStatus != null){
 			status.setSelectedElement(requestStatus);
-
+		}
+		
 		data.add(getHeader(localize(REQUEST_STATUS, "Status")), 1, row);
+
 		data.add(status, 2, row);
 		row++;
 	}

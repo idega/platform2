@@ -1,5 +1,5 @@
 /*
- * $Id: RequestBusiness.java,v 1.7 2004/05/24 14:21:43 palli Exp $
+ * $Id: RequestBusiness.java,v 1.7.4.1 2007/09/03 22:44:41 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -28,17 +28,19 @@ public class RequestBusiness {
   /**
    *
    */
-  public static boolean insertRequest(int userId, String comment, Timestamp dateOfFailure, String type, String special) {
+  public static boolean insertRequest(int userId, String comment, Timestamp dateOfFailure, String type, String special,boolean reportedViaTelephone) {
     try {
       Request req = ((is.idega.idegaweb.campus.block.request.data.RequestHome)com.idega.data.IDOLookup.getHome(Request.class)).create();
       req.setUserId(userId);
       req.setDescription(comment);
       req.setDateFailure(dateOfFailure);
       req.setRequestType(type);
-      if (special != null)
+      if (special != null){
         req.setSpecialTime(special);
+      }
       req.setDateSent(IWTimestamp.getTimestampRightNow());
       req.setStatus(RequestFinder.REQUEST_STATUS_SENT);
+      req.setReportedViaTelephone(reportedViaTelephone);
 //      ((is.idega.idegaweb.campus.block.request.data.RequestHome)com.idega.data.IDOLookup.getHome(Request.class)).
       req.store();
     }

@@ -10,6 +10,7 @@ public interface Request extends com.idega.data.IDOEntity
  public java.lang.String getRequestType();
  public java.lang.String getSpecialTime();
  public java.lang.String getStatus();
+ public boolean getReportedViaTelephone();
  public int getUserId();
  public void initializeAttributes();
  public void setDateFailure(java.sql.Timestamp p0);
@@ -21,4 +22,6 @@ public interface Request extends com.idega.data.IDOEntity
  public void setStatus(java.lang.String p0);
  public void setUserId(int p0);
  public void setUserId(java.lang.Integer p0);
+ public void setReportedViaTelephone(boolean reported);
+ 
 }

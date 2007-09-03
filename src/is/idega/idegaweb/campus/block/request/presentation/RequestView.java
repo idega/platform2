@@ -1,5 +1,5 @@
 /*
- * $Id: RequestView.java,v 1.12.4.1 2005/12/05 17:06:40 palli Exp $
+ * $Id: RequestView.java,v 1.12.4.2 2007/09/03 22:44:41 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -15,6 +15,7 @@ import is.idega.idegaweb.campus.presentation.CampusWindow;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.user.data.User;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
@@ -68,6 +69,8 @@ public class RequestView extends CampusWindow {
 	protected final static String REQUEST_REPAIR = "request_repair";
 
 	protected final static String REQUEST_COMPUTER = "request_computer";
+
+	protected static final String REQUEST_REPORTED = "request_reported_by_phone";
 
 	private boolean isAdmin;
 
@@ -123,6 +126,7 @@ public class RequestView extends CampusWindow {
 		else
 			type = RequestBusiness.REQUEST_REPAIR;
 		String special = iwc.getParameter(REQUEST_SPECIAL_TIME);
+		boolean reported = iwc.isParameterSet(REQUEST_REPORTED);
 
 		System.out.println("DateOfFailureString = " + dateOfFailureString);
 
@@ -131,7 +135,7 @@ public class RequestView extends CampusWindow {
 
 		boolean insert = RequestBusiness.insertRequest(((Integer) eUser
 				.getPrimaryKey()).intValue(), comment, t.getTimestamp(), type,
-				special);
+				special,reported);
 
 		return (insert);
 	}
@@ -144,11 +148,11 @@ public class RequestView extends CampusWindow {
 		add(form);
 
 		DropdownMenu mnu = new DropdownMenu(REQUEST_TYPE);
-		mnu.addMenuElement(REQUEST_COMPUTER, "Fix computer");
-		mnu.addMenuElement(REQUEST_REPAIR, "General repair");
+		mnu.addMenuElement(REQUEST_COMPUTER, "Computer repairs");
+		mnu.addMenuElement(REQUEST_REPAIR, "General repairs");
 		mnu.setToSubmit();
 		Edit.setStyle(mnu);
-		form.add(mnu);
+		// form.add(mnu);
 
 		String type = iwc.getParameter(REQUEST_TYPE);
 		if (type == null)
@@ -163,31 +167,36 @@ public class RequestView extends CampusWindow {
 
 		DataTable data = new DataTable();
 		data.setWidth("100%");
-		data.addTitle(localize(REQUEST_TABLE_TITLE, "Senda beiðni"));
-		data.addButton(new SubmitButton(REQUEST_SEND, "Senda beiðni"));
+		data.addTitle(localize(REQUEST_TABLE_TITLE, "Send request"));
+		data.addButton(new SubmitButton(REQUEST_SEND, "Send request"));
 		form.add(data);
 
 		int row = 1;
-		data.add(getHeader(localize(REQUEST_STREET, "Götuheiti")), 1, row);
+		data.add(getHeader(localize(REQUEST_TYPE, "Request type")), 1, row);
+		data.add(mnu, 2, row);
+		row++;
+		data.add(getHeader(localize(REQUEST_STREET, "Building")), 1, row);
 		data.add(getText(street), 2, row);
 		row++;
-		data.add(getHeader(localize(REQUEST_APRT, "Herb./íbúð")), 1, row);
+		data.add(getHeader(localize(REQUEST_APRT, "Apartment")), 1, row);
 		data.add(getText(aprt), 2, row);
 		row++;
-		data.add(getHeader(localize(REQUEST_NAME, "Nafn")), 1, row);
+		data.add(getHeader(localize(REQUEST_NAME, "Tenant")), 1, row);
 		data.add(getText(name), 2, row);
 		row++;
-		data.add(getHeader(localize(REQUEST_TEL, "Símanúmer")), 1, row);
+		data.add(getHeader(localize(REQUEST_TEL, "Phone number")), 1, row);
 		data.add(getText(telephone), 2, row);
 		row++;
-		data.add(getHeader(localize(REQUEST_EMAIL, "email")), 1, row);
+		data.add(getHeader(localize(REQUEST_EMAIL, "Email")), 1, row);
 		data.add(getText(email), 2, row);
 		row++;
 
-		if (type.equals(REQUEST_REPAIR))
-			addRepair(data, row);
-		else if (type.equals(REQUEST_COMPUTER))
-			addComputer(data, row);
+		if (type.equals(REQUEST_REPAIR)){
+			addRepair(data, row,true);
+		}
+		else if (type.equals(REQUEST_COMPUTER)){
+			addRepair(data, row,false);
+		}
 
 		form.add(new HiddenInput(REQUEST_STREET, street));
 		form.add(new HiddenInput(REQUEST_APRT, aprt));
@@ -199,62 +208,35 @@ public class RequestView extends CampusWindow {
 	/**
 	 * 
 	 */
-	protected void addRepair(DataTable data, int row) {
-		data
-				.add(getHeader(localize(REQUEST_DATE_OF_CRASH,
-						"Dagsetning bilunar")), 1, row);
+	protected void addRepair(DataTable data, int row, boolean showRadioButtons) {
+		data.add(getHeader(localize(REQUEST_DATE_OF_CRASH, "Failure date")), 1,row);
 		DateInput dateOfCrash = new DateInput(REQUEST_DATE_OF_CRASH);
 		dateOfCrash.setToCurrentDate();
 		Edit.setStyle(dateOfCrash);
 		data.add(dateOfCrash, 2, row);
 		row++;
-		data.add(getHeader(localize(REQUEST_COMMENT, "Athugasemdir")), 1, row);
+		data.add(getHeader(localize(REQUEST_COMMENT, "Comments")), 1, row);
 		TextArea comment = new TextArea(REQUEST_COMMENT, "", 60, 5);
 		Edit.setStyle(comment);
 		data.add(comment, 2, row);
 		row++;
-		data.add(new RadioButton(REQUEST_TIME, REQUEST_DAYTIME), 1, row);
-		data
-				.add(
-						getHeader(localize(
-								REQUEST_DAYTIME,
-								"Viðgerð má fara fram á dagvinnutíma, án þess að nokkur sé heima.Þriðjudagar eru almennir viðgerðardagar.")),
-						2, row);
-		row++;
-		data.add(new RadioButton(REQUEST_TIME, REQUEST_SPECIAL_TIME), 1, row);
-		data
-				.add(
-						getHeader(localize(REQUEST_SPECIAL_TIME,
-								"Ég óska eftir sérstakri tímasetningu og að viðgerð verði framkvæmd: ")),
-						2, row);
+		if(showRadioButtons){
+			RadioButton radioButton = new RadioButton(REQUEST_TIME, REQUEST_DAYTIME);
+			radioButton.setSelected();
+			data.add(radioButton, 1, row);
+			data.add(getHeader(localize(REQUEST_DAYTIME,"Repairs may be done during business hours even though I'm not at home.")), 2, row);
+			row++;
+			data.add(new RadioButton(REQUEST_TIME, REQUEST_SPECIAL_TIME), 1, row);
+		}
+		data.add(getHeader(localize(REQUEST_SPECIAL_TIME,"I would like to have the repairs done at this specific date/time: ")),2, row);
 		data.add(new TextInput(REQUEST_SPECIAL_TIME), 2, row);
+		
+		CheckBox reportedByPhone = new CheckBox(REQUEST_REPORTED);
+		data.add(reportedByPhone, 1, row);
+		data.add(getHeader(localize(REQUEST_REPORTED,"Problem already reported by telephone.")),2, row);
 		row++;
 	}
 
-	/**
-	 * 
-	 */
-	protected void addComputer(DataTable data, int row) {
-		data
-				.add(getHeader(localize(REQUEST_DATE_OF_CRASH,
-						"Dagsetning bilunar")), 1, row);
-		DateInput dateOfCrash = new DateInput(REQUEST_DATE_OF_CRASH);
-		Edit.setStyle(dateOfCrash);
-		data.add(dateOfCrash, 2, row);
-		row++;
-		data.add(getHeader(localize(REQUEST_COMMENT, "Athugasemdir")), 1, row);
-		TextArea comment = new TextArea(REQUEST_COMMENT, "", 60, 5);
-		Edit.setStyle(comment);
-		data.add(comment, 2, row);
-		row++;
-		data
-				.add(
-						getHeader(localize(REQUEST_SPECIAL_TIME,
-								"Ég óska eftir sérstakri tímasetningu og að viðgerð verði framkvæmd: ")),
-						2, row);
-		data.add(new TextInput(REQUEST_SPECIAL_TIME), 2, row);
-		row++;
-	}
 
 	/**
 	 * 
