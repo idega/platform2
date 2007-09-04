@@ -1,5 +1,5 @@
 /*
- * $Id: RequestAdminViewDetails.java,v 1.10.4.6 2007/09/04 00:23:46 eiki Exp $
+ * $Id: RequestAdminViewDetails.java,v 1.10.4.7 2007/09/04 00:42:46 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -435,7 +435,9 @@ public class RequestAdminViewDetails extends CampusWindow {
 		DropdownMenu status = new DropdownMenu(REQUEST_STATUS);
 
 		status.addMenuElement(RequestFinder.REQUEST_STATUS_SENT, localize("REQUEST_STATUS_S", "S"));
-		status.addMenuElement(RequestFinder.REQUEST_STATUS_RECEIVED, localize("REQUEST_STATUS_R", "R"));
+		if(Boolean.parseBoolean(iwc.getApplicationSettings().getProperty("CAMPUS_USE_RECEIVED_STATUS","true"))){
+			status.addMenuElement(RequestFinder.REQUEST_STATUS_RECEIVED, localize("REQUEST_STATUS_R", "R"));
+		}
 		status.addMenuElement(RequestFinder.REQUEST_STATUS_IN_PROGRESS,localize("REQUEST_STATUS_P", "P"));
 		status.addMenuElement(RequestFinder.REQUEST_STATUS_DONE, localize("REQUEST_STATUS_D", "D"));
 		status.addMenuElement(RequestFinder.REQUEST_STATUS_DENIED, localize("REQUEST_STATUS_X", "X"));

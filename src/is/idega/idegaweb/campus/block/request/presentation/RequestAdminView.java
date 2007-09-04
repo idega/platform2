@@ -1,5 +1,5 @@
 /*
- * $Id: RequestAdminView.java,v 1.15.4.2 2007/09/03 17:59:55 eiki Exp $
+ * $Id: RequestAdminView.java,v 1.15.4.3 2007/09/04 00:42:46 eiki Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -104,7 +104,9 @@ public class RequestAdminView extends CampusBlock {
 
 		RadioGroup grp = new RadioGroup(CAM_REQ_VIEW_SELECTED);
 		grp.addRadioButton(RequestFinder.REQUEST_STATUS_SENT,getText(localize("REQUEST_STATUS_S","S")));
-		grp.addRadioButton(RequestFinder.REQUEST_STATUS_RECEIVED,getText(localize("REQUEST_STATUS_R","R")));
+		if(Boolean.parseBoolean(iwc.getApplicationSettings().getProperty("CAMPUS_USE_RECEIVED_STATUS","true"))){
+			grp.addRadioButton(RequestFinder.REQUEST_STATUS_RECEIVED,getText(localize("REQUEST_STATUS_R","R")));
+		}
 		grp.addRadioButton(RequestFinder.REQUEST_STATUS_IN_PROGRESS,getText(localize("REQUEST_STATUS_P","P")));
 		grp.addRadioButton(RequestFinder.REQUEST_STATUS_DONE,getText(localize("REQUEST_STATUS_D","D")));
 		grp.addRadioButton(RequestFinder.REQUEST_STATUS_DENIED,getText(localize("REQUEST_STATUS_X","X")));
