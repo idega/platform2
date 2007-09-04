@@ -1,5 +1,5 @@
 /*
- * $Id: RequestAdminViewDetails.java,v 1.10.4.5 2007/09/04 00:08:34 eiki Exp $
+ * $Id: RequestAdminViewDetails.java,v 1.10.4.6 2007/09/04 00:23:46 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -228,7 +228,7 @@ public class RequestAdminViewDetails extends CampusWindow {
 					}
 					
 
-					//if (settings != null && settings.getSendEventMail()) {
+					if (settings != null && settings.getSendEventMail()) {
 						StringBuffer repairInfo = new StringBuffer();
 						repairInfo.append(localize(REQUEST_TYPE, "Request type")).append(" : ").append(requestType).append("\n");
 						repairInfo.append(localize(REQUEST_STREET, "Building")).append(" : ").append(street).append("\n");
@@ -243,14 +243,14 @@ public class RequestAdminViewDetails extends CampusWindow {
 							repairInfo.append(localize(REQUEST_SPECIAL_TIME_REQUESTED, "Requested repair time")).append(" : ").append(request.getRequestType()).append("\n");
 						}
 						
-					try {
-						SendMail.send(settings.getAdminEmail(), emailTo, emailCC,
-								"palli@idega.is", settings.getSmtpServer(),
-								localize(REQUEST_EMAIL_SUBJECT,"Repairs request"), repairInfo.toString());
-					} catch (MessagingException e) {
-						e.printStackTrace();
+						try {
+							SendMail.send(settings.getAdminEmail(), emailTo, emailCC,
+									"palli@idega.is", settings.getSmtpServer(),
+									localize(REQUEST_EMAIL_SUBJECT,"Repairs request"), repairInfo.toString());
+						} catch (MessagingException e) {
+							e.printStackTrace();
+						}
 					}
-			//	}
 				
 				} catch (RemoteException e1) {
 					e1.printStackTrace();
