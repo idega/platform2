@@ -1,5 +1,5 @@
 /*
- * $Id: RequestView.java,v 1.12.4.4 2007/09/04 11:14:03 eiki Exp $
+ * $Id: RequestView.java,v 1.12.4.5 2007/09/04 14:08:51 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -148,8 +148,8 @@ public class RequestView extends CampusWindow {
 		add(form);
 
 		DropdownMenu mnu = new DropdownMenu(REQUEST_TYPE);
-		mnu.addMenuElement(REQUEST_COMPUTER, "Computer repairs");
-		mnu.addMenuElement(REQUEST_REPAIR, "General repairs");
+		mnu.addMenuElement(REQUEST_COMPUTER, localize(REQUEST_COMPUTER, "Computer repairs"));
+		mnu.addMenuElement(REQUEST_REPAIR, localize(REQUEST_REPAIR, "General repairs"));
 		mnu.setToSubmit();
 		Edit.setStyle(mnu);
 		// form.add(mnu);
