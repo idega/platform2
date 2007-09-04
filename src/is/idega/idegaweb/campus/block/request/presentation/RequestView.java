@@ -1,5 +1,5 @@
 /*
- * $Id: RequestView.java,v 1.12.4.3 2007/09/03 23:44:43 eiki Exp $
+ * $Id: RequestView.java,v 1.12.4.4 2007/09/04 11:14:03 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -167,8 +167,8 @@ public class RequestView extends CampusWindow {
 
 		DataTable data = new DataTable();
 		data.setWidth("100%");
-		data.addTitle(localize(REQUEST_TABLE_TITLE, "Send request"));
-		data.addButton(new SubmitButton(REQUEST_SEND, "Send request"));
+		data.addTitle(localize(REQUEST_TABLE_TITLE, localize(REQUEST_SEND,"Send request")));
+		data.addButton(new SubmitButton(REQUEST_SEND, localize(REQUEST_SEND,"Send request")));
 		form.add(data);
 
 		int row = 1;
