@@ -1,5 +1,5 @@
 /*
- * $Id: RequestAdminViewDetails.java,v 1.10.4.8 2007/09/04 00:53:43 eiki Exp $
+ * $Id: RequestAdminViewDetails.java,v 1.10.4.9 2007/09/04 10:59:36 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -333,8 +333,8 @@ public class RequestAdminViewDetails extends CampusWindow {
 
 		DataTable data = new DataTable();
 		data.setWidth("100%");
-		data.addTitle(localize(REQUESTADMIN_TABLE_TITLE, "View request"));
-		data.addButton(new SubmitButton(REQUESTADMIN_SEND, "Update request"));
+		data.addTitle(localize(REQUESTADMIN_TABLE_TITLE, localize("REQUEST_VIEW","View request")));
+		data.addButton(new SubmitButton(REQUESTADMIN_SEND, localize("REQUEST_UPDATE","Update request")));
 		form.add(data);
 
 		int row = 1;
