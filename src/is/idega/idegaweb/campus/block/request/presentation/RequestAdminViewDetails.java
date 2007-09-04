@@ -1,5 +1,5 @@
 /*
- * $Id: RequestAdminViewDetails.java,v 1.10.4.4 2007/09/03 23:44:43 eiki Exp $
+ * $Id: RequestAdminViewDetails.java,v 1.10.4.5 2007/09/04 00:08:34 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -230,17 +230,17 @@ public class RequestAdminViewDetails extends CampusWindow {
 
 					//if (settings != null && settings.getSendEventMail()) {
 						StringBuffer repairInfo = new StringBuffer();
-						repairInfo.append(localize(REQUEST_TYPE, "Request type")).append(" : ").append(requestType);
-						repairInfo.append(localize(REQUEST_STREET, "Building")).append(" : ").append(street);
-						repairInfo.append(localize(REQUEST_APRT, "Apartment")).append(" : ").append(aprt);
-						repairInfo.append(localize(REQUEST_NAME, "Tenant")).append(" : ").append(name);
-						repairInfo.append(localize(REQUEST_TEL, "Phone number")).append(" : ").append(telephone);
-						repairInfo.append(localize(REQUEST_EMAIL, "Email")).append(" : ").append(email);
+						repairInfo.append(localize(REQUEST_TYPE, "Request type")).append(" : ").append(requestType).append("\n");
+						repairInfo.append(localize(REQUEST_STREET, "Building")).append(" : ").append(street).append("\n");
+						repairInfo.append(localize(REQUEST_APRT, "Apartment")).append(" : ").append(aprt).append("\n");
+						repairInfo.append(localize(REQUEST_NAME, "Tenant")).append(" : ").append(name).append("\n");
+						repairInfo.append(localize(REQUEST_TEL, "Phone number")).append(" : ").append(telephone).append("\n");
+						repairInfo.append(localize(REQUEST_EMAIL, "Email")).append(" : ").append(email).append("\n");
 						
-						repairInfo.append(localize(REQUEST_DATE_OF_CRASH, "Failure date")).append(" : ").append(dateFailure);
-						repairInfo.append(localize(REQUEST_COMMENT, "Comments")).append(" : ").append(comment);
+						repairInfo.append(localize(REQUEST_DATE_OF_CRASH, "Failure date")).append(" : ").append(dateFailure).append("\n");
+						repairInfo.append(localize(REQUEST_COMMENT, "Comments")).append(" : ").append(comment).append("\n");
 						if(special!=null){
-							repairInfo.append(localize(REQUEST_SPECIAL_TIME_REQUESTED, "Requested repair time")).append(" : ").append(request.getRequestType());
+							repairInfo.append(localize(REQUEST_SPECIAL_TIME_REQUESTED, "Requested repair time")).append(" : ").append(request.getRequestType()).append("\n");
 						}
 						
 					try {
@@ -339,11 +339,11 @@ public class RequestAdminViewDetails extends CampusWindow {
 
 		int row = 1;
 
-		data.add(getHeader(localize(REQUEST_STREET, "Street")), 1, row);
+		data.add(getHeader(localize(REQUEST_STREET, "Building")), 1, row);
 		data.add(getText(street), 2, row);
 
 		row++;
-		data.add(getHeader(localize(REQUEST_APRT, "Room/apartment")), 1, row);
+		data.add(getHeader(localize(REQUEST_APRT, "Apartment")), 1, row);
 		data.add(getText(aprt), 2, row);
 
 		row++;
@@ -420,13 +420,13 @@ public class RequestAdminViewDetails extends CampusWindow {
 			row++;
 		}
 		
-		data.add(getHeader(localize(REQUEST_EMAIL_TO, "Email to:")), 1, row);
+		data.add(getHeader(localize(REQUEST_EMAIL_TO, "Email to")), 1, row);
 		TextInput mailto = new TextInput(REQUEST_EMAIL_TO);
 		mailto.setValue(iwc.getApplicationSettings().getProperty(REQUEST_EMAIL_TO,""));
 		data.add(mailto, 2, row);
 		row++;
 		
-		data.add(getHeader(localize(REQUEST_EMAIL_CC, "Email CC to:")), 1, row);
+		data.add(getHeader(localize(REQUEST_EMAIL_CC, "Email CC to")), 1, row);
 		TextInput mailtoCC = new TextInput(REQUEST_EMAIL_CC);
 		mailtoCC.setValue(iwc.getApplicationSettings().getProperty(REQUEST_EMAIL_CC,""));
 		data.add(mailtoCC, 2, row);
