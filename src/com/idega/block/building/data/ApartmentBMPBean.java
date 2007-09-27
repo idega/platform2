@@ -65,7 +65,7 @@ public class ApartmentBMPBean extends
 		addAttribute(STATUS, "Status", true, true, java.lang.String.class);
 		setMaxLength(INFO, 5000);
 		setMaxLength(STATUS, 1);
-		addAttribute(APARTMENT_SERIAL_NUMBER, "Serial number", String.class, 10);
+		addAttribute(APARTMENT_SERIAL_NUMBER, "Serial number", String.class, 255);
 	}
 
 	public String getEntityName() {
