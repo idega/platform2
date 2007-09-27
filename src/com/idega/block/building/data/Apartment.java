@@ -2,9 +2,8 @@ package com.idega.block.building.data;
 
 
 import java.sql.Date;
-import com.idega.data.IDOEntity;
 
-public interface Apartment extends IDOEntity {
+public interface Apartment extends BuildingEntity {
 	/**
 	 * @see com.idega.block.building.data.ApartmentBMPBean#getName
 	 */
