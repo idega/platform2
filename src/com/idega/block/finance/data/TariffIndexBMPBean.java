@@ -17,9 +17,29 @@ import com.idega.block.category.data.CategoryEntityBMPBean;
 public class TariffIndexBMPBean extends CategoryEntityBMPBean implements
 		TariffIndex {
 
-	public static final String ENTITY_NAME = "FIN_TARIFF_INDEX";
+	private static final String ENTITY_NAME = "FIN_TARIFF_INDEX";
 
-	public static final String A = "A", B = "B", C = "C", D = "D", E = "E";
+	private static final String COLUMN_FROM_DATE = "FROM_DATE";
+
+	private static final String COLUMN_INDEX_TYPE = "INDEX_TYPE";
+
+	private static final String COLUMN_INFO = "INFO";
+
+	private static final String COLUMN_NAME = "NAME";
+
+	private static final String COLUMN_OLD_VALUE = "OLD_VALUE";
+
+	private static final String COLUMN_NEW_VALUE = "NEW_VALUE";
+
+	public static final String RENT_TYPE_A = "A";
+	
+	public static final String RENT_TYPE_B = "B";
+	
+	public static final String RENT_TYPE_C = "C";
+	
+	public static final String RENT_TYPE_D = "D";
+	
+	public static final String RENT_TYPE_E = "E";
 
 	public static final String indexType = "ABCDEFGHIJK";
 
@@ -34,15 +54,12 @@ public class TariffIndexBMPBean extends CategoryEntityBMPBean implements
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
 
-		addAttribute(getColumnNameNewValue(), "New Value", true, true,
-				Double.class);
-		addAttribute(getColumnNameOldValue(), "Old alue", true, true,
-				Double.class);
-		addAttribute(getColumnNameDate(), "LastUpdated", true, true,
-				Timestamp.class);
-		addAttribute(getColumnNameName(), "Name", true, true, String.class);
-		addAttribute(getColumnNameInfo(), "Info", true, true, String.class);
-		addAttribute(getColumnNameType(), "type", true, true, String.class);
+		addAttribute(getColumnNameNewValue(), "New Value", Double.class);
+		addAttribute(getColumnNameOldValue(), "Old alue", Double.class);
+		addAttribute(getColumnNameDate(), "LastUpdated", Timestamp.class);
+		addAttribute(getColumnNameName(), "Name", String.class);
+		addAttribute(getColumnNameInfo(), "Info", String.class);
+		addAttribute(getColumnNameType(), "type", String.class);
 	}
 
 	public static String getTariffIndexEntityName() {
@@ -50,27 +67,27 @@ public class TariffIndexBMPBean extends CategoryEntityBMPBean implements
 	}
 
 	public static String getColumnNameNewValue() {
-		return "NEW_VALUE";
+		return COLUMN_NEW_VALUE;
 	}
 
 	public static String getColumnNameOldValue() {
-		return "OLD_VALUE";
+		return COLUMN_OLD_VALUE;
 	}
 
 	public static String getColumnNameName() {
-		return "NAME";
+		return COLUMN_NAME;
 	}
 
 	public static String getColumnNameInfo() {
-		return "INFO";
+		return COLUMN_INFO;
 	}
 
 	public static String getColumnNameType() {
-		return "INDEX_TYPE";
+		return COLUMN_INDEX_TYPE;
 	}
 
 	public static String getColumnNameDate() {
-		return "FROM_DATE";
+		return COLUMN_FROM_DATE;
 	}
 
 	public String getEntityName() {

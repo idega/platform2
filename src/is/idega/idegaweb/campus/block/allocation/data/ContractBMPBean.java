@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.22.4.3 2007/07/17 23:33:33 palli Exp $
+ * $Id: ContractBMPBean.java,v 1.22.4.4 2008/02/13 17:00:17 palli Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -19,6 +19,7 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 import com.idega.block.application.data.Applicant;
+import com.idega.block.application.data.Application;
 import com.idega.block.building.data.Apartment;
 import com.idega.data.IDOBoolean;
 import com.idega.data.IDOException;
@@ -34,39 +35,43 @@ import com.idega.util.IWTimestamp;
  */
 public class ContractBMPBean extends com.idega.data.GenericEntity implements Contract {
 
-	private static final String NAME = "cam_contract";
+	private static final String ENTITY_NAME = "cam_contract";
 
-	private static final String USER_ID = "ic_user_id";
+	private static final String COLUMN_USER = "ic_user_id";
 
-	private static final String APARTMENT_ID = "bu_apartment_id";
+	private static final String COLUMN_APARTMENT = "bu_apartment_id";
 
-	private static final String VALID_FROM = "valid_from";
+	private static final String COLUMN_VALID_FROM = "valid_from";
 
-	private static final String VALID_TO = "valid_to";
+	private static final String COLUMN_VALID_TO = "valid_to";
 
-	private static final String STATUS = "status";
+	private static final String COLUMN_STATUS = "status";
 
-	private static final String RENTED = "rented";
+	private static final String COLUMN_RENTED = "rented";
 
-	private static final String APPLICANT_ID = "app_applicant_id";
+	private static final String COLUMN_APPLICANT = "app_applicant_id";
 
-	private static final String RESIGN_INFO = "resign_info";
+	private static final String COLUMN_RESIGN_INFO = "resign_info";
 
-	private static final String STATUS_DATE = "status_date";
+	private static final String COLUMN_STATUS_DATE = "status_date";
 
-	private static final String MOVING_DATE = "moving_date";
+	private static final String COLUMN_MOVING_DATE = "moving_date";
 
-	private static final String DELIVER_DATE = "deliver_date";
+	private static final String COLUMN_DELIVER_DATE = "deliver_date";
 
-	private static final String RETURN_DATE = "return_date";
+	private static final String COLUMN_RETURN_DATE = "return_date";
 
-	private static final String FILE = "ic_file_id";
+	private static final String COLUMN_FILE = "ic_file_id";
 
-	private static final String HAS_PHONE = "has_phone";
+	private static final String COLUMN_HAS_PHONE = "has_phone";
 
-	private static final String PHONE_FROM_DATE = "phone_from";
+	private static final String COLUMN_PHONE_FROM_DATE = "phone_from";
 
-	private static final String PHONE_TO_DATE = "phone_to";
+	private static final String COLUMN_PHONE_TO_DATE = "phone_to";
+	
+	private static final String COLUMN_APPLICATION = "app_application_id";
+	
+	private static final String COLUMN_DISCOUNT_PERCENTAGE = "discount_perc";
 
 	public static final String STATUS_CREATED = "C";
 
@@ -91,71 +96,71 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements Con
 	public static final String STATUS_FINALIZED = "F";
 
 	public static String getStatusColumnName() {
-		return STATUS;
+		return COLUMN_STATUS;
 	}
 
 	public static String getApplicantIdColumnName() {
-		return APPLICANT_ID;
+		return COLUMN_APPLICANT;
 	}
 
 	public static String getValidToColumnName() {
-		return VALID_TO;
+		return COLUMN_VALID_TO;
 	}
 
 	public static String getValidFromColumnName() {
-		return VALID_FROM;
+		return COLUMN_VALID_FROM;
 	}
 
 	public static String getApartmentIdColumnName() {
-		return APARTMENT_ID;
+		return COLUMN_APARTMENT;
 	}
 
 	public static String getUserIdColumnName() {
-		return USER_ID;
+		return COLUMN_USER;
 	}
 
 	public static String getResignInfoColumnName() {
-		return RESIGN_INFO;
+		return COLUMN_RESIGN_INFO;
 	}
 
 	public static String getStatusDateColumnName() {
-		return MOVING_DATE;
+		return COLUMN_MOVING_DATE;
 	}
 
 	public static String getRentedColumnName() {
-		return RENTED;
+		return COLUMN_RENTED;
 	}
 
 	public static String getMovingDateColumnName() {
-		return MOVING_DATE;
+		return COLUMN_MOVING_DATE;
 	}
 
 	public static String getColumnReturnDate() {
-		return RETURN_DATE;
+		return COLUMN_RETURN_DATE;
 	}
 
 	public static String getColumnDeliverDate() {
-		return DELIVER_DATE;
+		return COLUMN_DELIVER_DATE;
 	}
 
 	public static String getFileColumnName() {
-		return FILE;
+		return COLUMN_FILE;
 	}
 
 	public static String getContractEntityName() {
-		return NAME;
+		return ENTITY_NAME;
 	}
 
 	public static String getHasPhoneColumnName() {
-		return HAS_PHONE;
+		return COLUMN_HAS_PHONE;
 	}
 	
 	public static String getPhoneFromDateColumnName() {
-		return PHONE_FROM_DATE;
+		return COLUMN_PHONE_FROM_DATE;
 	}
 
 	public static String getPhoneToDateColumnName() {
-		return PHONE_TO_DATE;
+		return COLUMN_PHONE_TO_DATE;
 	}
 	
 	public ContractBMPBean() {
@@ -167,150 +172,152 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements Con
 
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		addAttribute(USER_ID, "User id", true, true, java.lang.Integer.class, "one-to-many", User.class);
-		addAttribute(APARTMENT_ID, "Apartment id", true, true, java.lang.Integer.class, "one-to-many", Apartment.class);
-		addAttribute(APPLICANT_ID, "Applicant id", true, true, java.lang.Integer.class, "one-to-one", Applicant.class);
-		addAttribute(VALID_FROM, "Valid from", true, true, java.sql.Date.class);
-		addAttribute(VALID_TO, "Valid to", true, true, java.sql.Date.class);
-		addAttribute(STATUS_DATE, "Resign date", true, true, java.sql.Date.class);
-		addAttribute(MOVING_DATE, "Moving date", true, true, java.sql.Date.class);
-		addAttribute(DELIVER_DATE, "Deliver date", true, true, java.sql.Timestamp.class);
-		addAttribute(RETURN_DATE, "Return date", true, true, java.sql.Timestamp.class);
-		addAttribute(STATUS, "Status", true, true, java.lang.String.class, 1);
-		addAttribute(RENTED, "Rented", true, true, java.lang.Boolean.class, 1);
-		addAttribute(RESIGN_INFO, "Resign info", true, true, java.lang.String.class, 4000);
-		addAttribute(FILE, "File id", true, true, java.lang.Integer.class);
-		addAttribute(HAS_PHONE, "Has phone", true, true, java.lang.Boolean.class, 1);
-		addAttribute(PHONE_FROM_DATE, "Phone from", true, true, Timestamp.class);
-		addAttribute(PHONE_TO_DATE, "Phone to", true, true, Timestamp.class);
+		addAttribute(COLUMN_USER, "User id", true, true, java.lang.Integer.class, "one-to-many", User.class);
+		addAttribute(COLUMN_APARTMENT, "Apartment id", true, true, java.lang.Integer.class, "one-to-many", Apartment.class);
+		addAttribute(COLUMN_APPLICANT, "Applicant id", true, true, java.lang.Integer.class, "one-to-one", Applicant.class);
+		addAttribute(COLUMN_VALID_FROM, "Valid from", true, true, java.sql.Date.class);
+		addAttribute(COLUMN_VALID_TO, "Valid to", true, true, java.sql.Date.class);
+		addAttribute(COLUMN_STATUS_DATE, "Resign date", true, true, java.sql.Date.class);
+		addAttribute(COLUMN_MOVING_DATE, "Moving date", true, true, java.sql.Date.class);
+		addAttribute(COLUMN_DELIVER_DATE, "Deliver date", true, true, java.sql.Timestamp.class);
+		addAttribute(COLUMN_RETURN_DATE, "Return date", true, true, java.sql.Timestamp.class);
+		addAttribute(COLUMN_STATUS, "Status", true, true, java.lang.String.class, 1);
+		addAttribute(COLUMN_RENTED, "Rented", true, true, java.lang.Boolean.class, 1);
+		addAttribute(COLUMN_RESIGN_INFO, "Resign info", true, true, java.lang.String.class, 4000);
+		addAttribute(COLUMN_FILE, "File id", true, true, java.lang.Integer.class);
+		addAttribute(COLUMN_HAS_PHONE, "Has phone", true, true, java.lang.Boolean.class, 1);
+		addAttribute(COLUMN_PHONE_FROM_DATE, "Phone from", true, true, Timestamp.class);
+		addAttribute(COLUMN_PHONE_TO_DATE, "Phone to", true, true, Timestamp.class);
+		addAttribute(COLUMN_DISCOUNT_PERCENTAGE, "Discount percentage", Double.class);
+		addManyToOneRelationship(COLUMN_APPLICATION, Application.class);
 	}
 
 	public String getEntityName() {
-		return (NAME);
+		return ENTITY_NAME;
 	}
 
 	public void setUserId(int id) {
-		setColumn(USER_ID, id);
+		setColumn(COLUMN_USER, id);
 	}
 
 	public void setUserId(Integer id) {
-		setColumn(USER_ID, id);
+		setColumn(COLUMN_USER, id);
 	}
 
 	public Integer getUserId() {
-		return (getIntegerColumnValue(USER_ID));
+		return getIntegerColumnValue(COLUMN_USER);
 	}
 
 	public User getUser() {
-		return (User) getColumnValue(USER_ID);
+		return (User) getColumnValue(COLUMN_USER);
 	}
 
 	public void setApplicantId(int id) {
-		setColumn(APPLICANT_ID, id);
+		setColumn(COLUMN_APPLICANT, id);
 	}
 
 	public void setApplicantId(Integer id) {
-		setColumn(APPLICANT_ID, id);
+		setColumn(COLUMN_APPLICANT, id);
 	}
 
 	public Integer getFileId() {
-		return (getIntegerColumnValue(FILE));
+		return getIntegerColumnValue(COLUMN_FILE);
 	}
 
 	public void setFileId(int id) {
-		setColumn(FILE, id);
+		setColumn(COLUMN_FILE, id);
 	}
 
 	public void setFileId(Integer id) {
-		setColumn(FILE, id);
+		setColumn(COLUMN_FILE, id);
 	}
 
 	public Integer getApplicantId() {
-		return (getIntegerColumnValue(APPLICANT_ID));
+		return getIntegerColumnValue(COLUMN_APPLICANT);
 	}
 
 	public Applicant getApplicant() {
-		return (Applicant) getColumnValue(APPLICANT_ID);
+		return (Applicant) getColumnValue(COLUMN_APPLICANT);
 	}
 
 	public void setApartmentId(int id) {
-		setColumn(APARTMENT_ID, id);
+		setColumn(COLUMN_APARTMENT, id);
 	}
 
 	public void setApartmentId(Integer id) {
-		setColumn(APARTMENT_ID, id);
+		setColumn(COLUMN_APARTMENT, id);
 	}
 
 	public Integer getApartmentId() {
-		return (getIntegerColumnValue(APARTMENT_ID));
+		return getIntegerColumnValue(COLUMN_APARTMENT);
 	}
 
 	public Apartment getApartment() {
-		return (Apartment) getColumnValue(APARTMENT_ID);
+		return (Apartment) getColumnValue(COLUMN_APARTMENT);
 	}
 
 	public void setValidFrom(Date date) {
-		setColumn(VALID_FROM, date);
+		setColumn(COLUMN_VALID_FROM, date);
 	}
 
 	public Date getValidFrom() {
-		return ((Date) getColumnValue(VALID_FROM));
+		return (Date) getColumnValue(COLUMN_VALID_FROM);
 	}
 
 	public void setValidTo(Date date) {
-		setColumn(VALID_TO, date);
+		setColumn(COLUMN_VALID_TO, date);
 	}
 
 	public Date getValidTo() {
-		return ((Date) getColumnValue(VALID_TO));
+		return (Date) getColumnValue(COLUMN_VALID_TO);
 	}
 
 	public void setMovingDate(Date date) {
-		setColumn(MOVING_DATE, date);
+		setColumn(COLUMN_MOVING_DATE, date);
 	}
 
 	public Date getMovingDate() {
-		return (Date) getColumnValue(MOVING_DATE);
+		return (Date) getColumnValue(COLUMN_MOVING_DATE);
 	}
 
 	public void setStatusDate(Date date) {
-		setColumn(STATUS_DATE, date);
+		setColumn(COLUMN_STATUS_DATE, date);
 	}
 
 	public Date getStatusDate() {
-		return (Date) getColumnValue(STATUS_DATE);
+		return (Date) getColumnValue(COLUMN_STATUS_DATE);
 	}
 
 	public void setDeliverTime(Timestamp stamp) {
-		setColumn(DELIVER_DATE, stamp);
+		setColumn(COLUMN_DELIVER_DATE, stamp);
 	}
 
 	public Timestamp getDeliverTime() {
-		return ((Timestamp) getColumnValue(DELIVER_DATE));
+		return (Timestamp) getColumnValue(COLUMN_DELIVER_DATE);
 	}
 
 	public void setReturnTime(Timestamp stamp) {
-		setColumn(RETURN_DATE, stamp);
+		setColumn(COLUMN_RETURN_DATE, stamp);
 	}
 
 	public Timestamp getReturnTime() {
-		return ((Timestamp) getColumnValue(RETURN_DATE));
+		return (Timestamp) getColumnValue(COLUMN_RETURN_DATE);
 	}
 
 	public String getResignInfo() {
-		return getStringColumnValue(RESIGN_INFO);
+		return getStringColumnValue(COLUMN_RESIGN_INFO);
 	}
 
 	public void setResignInfo(String info) {
-		setColumn(RESIGN_INFO, info);
+		setColumn(COLUMN_RESIGN_INFO, info);
 	}
 
 	public boolean getIsRented() {
-		return getBooleanColumnValue(RENTED);
+		return getBooleanColumnValue(COLUMN_RENTED);
 	}
 
 	public void setIsRented(boolean rented) {
-		setColumn(RENTED, rented);
+		setColumn(COLUMN_RENTED, rented);
 	}
 
 	public void setEnded() {
@@ -335,7 +342,7 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements Con
 				|| (status.equalsIgnoreCase(STATUS_GARBAGE)) || (status.equalsIgnoreCase(STATUS_STORAGE))
 				|| (status.equalsIgnoreCase(STATUS_DENIED)) || (status.equalsIgnoreCase(STATUS_PRINTED))
 				|| (status.equalsIgnoreCase(STATUS_FINALIZED))) {
-			setColumn(STATUS, status);
+			setColumn(COLUMN_STATUS, status);
 			setStatusDate(new Date(System.currentTimeMillis()));
 		}
 		else
@@ -343,28 +350,28 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements Con
 	}
 
 	public String getStatus() {
-		return ((String) getColumnValue(STATUS));
+		return (String) getColumnValue(COLUMN_STATUS);
 	}
 
 	public void setHasPhone(boolean hasPhone) {
 		if (hasPhone) {
-			setColumn(PHONE_FROM_DATE, IWTimestamp.getTimestampRightNow());
+			setColumn(COLUMN_PHONE_FROM_DATE, IWTimestamp.getTimestampRightNow());
 		} else {
-			setColumn(PHONE_TO_DATE, IWTimestamp.getTimestampRightNow());
+			setColumn(COLUMN_PHONE_TO_DATE, IWTimestamp.getTimestampRightNow());
 		}
 		setColumn(getHasPhoneColumnName(), hasPhone);
 	}
 
 	public boolean getHasPhone() {
-		return getBooleanColumnValue(HAS_PHONE, false);
+		return getBooleanColumnValue(COLUMN_HAS_PHONE, false);
 	}
 	
 	public Timestamp getPhoneFromDate() {
-		return getTimestampColumnValue(PHONE_FROM_DATE);
+		return getTimestampColumnValue(COLUMN_PHONE_FROM_DATE);
 	}
 	
 	public Timestamp getPhoneToDate() {
-		return getTimestampColumnValue(PHONE_TO_DATE);
+		return getTimestampColumnValue(COLUMN_PHONE_TO_DATE);
 	}
 
 	public void setStatusCreated() {
@@ -411,6 +418,30 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements Con
 		setStatus(STATUS_FINALIZED);
 	}
 
+	public Application getApplication() {
+		return (Application) getColumnValue(COLUMN_APPLICATION);
+	}
+	
+	public int getApplicationID() {
+		return getIntColumnValue(COLUMN_APPLICATION);
+	}
+	
+	public void setApplication(Application application) {
+		setColumn(COLUMN_APPLICATION, application);
+	}
+	
+	public void setApplicationID(int id) {
+		setColumn(COLUMN_APPLICATION, id);
+	}
+
+	public double getDiscountPercentage() {
+		return getDoubleColumnValue(COLUMN_DISCOUNT_PERCENTAGE, 0.0d);
+	}
+	
+	public void setDiscountPercentage(double percentage) {
+		setColumn(COLUMN_DISCOUNT_PERCENTAGE, percentage);
+	}
+	
 	public Collection ejbFindByApplicantID(Integer ID) throws FinderException {
 		return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getApplicantIdColumnName(),
 				ID.intValue()));
@@ -568,6 +599,8 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements Con
 			sql.append(" order by ");
 			sql.append(ContractFinder.getOrderString(order));
 		}
+		
+		System.out.println("sql = " + sql.toString());
 		return sql.toString();
 	}
 
@@ -685,6 +718,6 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements Con
 	
 	public Collection ejbFindByUserAndStatusAndRentedBeforeDate(Integer userId, String status, Date date) throws FinderException {
 		return super.idoFindPKsByQuery(idoQueryGetSelect().appendWhereEquals(getUserIdColumnName(), userId).appendAndEqualsQuoted(
-				getStatusColumnName(), status).appendAnd().append(this.VALID_FROM).appendLessThanOrEqualsSign().append(date));
+				getStatusColumnName(), status).appendAnd().append(this.COLUMN_VALID_FROM).appendLessThanOrEqualsSign().append(date));
 	}
 }

@@ -304,7 +304,7 @@ public class PhoneFinanceHandler implements FinanceHandler {
 		AE.setRoundId(roundId);
 		AE.setName(T.getName());
 		AE.setInfo(T.getInfo());
-		AE.setStatus(com.idega.block.finance.data.AccountEntryBMPBean.statusCreated);
+		AE.setStatus(com.idega.block.finance.data.AccountEntryBMPBean.STATUS_CREATED);
 		AE.setCashierId(1);
 		AE.setPaymentDate(itPaydate.getTimestamp());
 		AE.store();
@@ -328,7 +328,7 @@ public class PhoneFinanceHandler implements FinanceHandler {
 			AE.setName(tkey.getName());
 		}
 		AE.setInfo(tkey.getInfo());
-		AE.setStatus(com.idega.block.finance.data.AccountEntryBMPBean.statusCreated);
+		AE.setStatus(com.idega.block.finance.data.AccountEntryBMPBean.STATUS_CREATED);
 		AE.setPaymentDate(itPaydate.getTimestamp());
 		AE.setDivisionForAccounting(division);
 		AE.store();

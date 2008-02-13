@@ -21,7 +21,9 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 
 public class ApartmentApplicationForm extends Block {
-	private static final String LABEL_PROVIDE_ICELANDIC_SS = "provide_icelandic_ss";
+	protected static final String IW_RESOURCE_BUNDLE = "is.idega.idegaweb.campus";
+
+	private static final String LABEL_PROVIDE_ICELANDIC_SSN = "provide_icelandic_ssn";
 
 	private static final String LABEL_APPLICATION_SUBJECT_TITLE = "applicationSubjectTitle";
 
@@ -39,9 +41,9 @@ public class ApartmentApplicationForm extends Block {
 
 	protected static final String LABEL_NO_SSN = "no_ssn";
 
-	protected static final String IW_RESOURCE_BUNDLE = "is.idega.idegaweb.campus";
-
 	protected static final int STATUS_TYPE = 1;
+
+	protected static final int STATUS_SELECT_APPLICATION = 2;
 
 	protected static final int STATUS_PERSONAL_INFO = 3;
 
@@ -50,8 +52,6 @@ public class ApartmentApplicationForm extends Block {
 	protected static final int STATUS_CAMPUS_INFO = 5;
 
 	protected static final int STATUS_APPLIED_FOR = 6;
-
-	protected static final int STATUS_SELECT_APPLICATION = 2;
 
 	protected static final int STATUS_SAVE = 7;
 
@@ -241,7 +241,7 @@ public class ApartmentApplicationForm extends Block {
 
 		TextInput ssn = new TextInput();
 		ssn.setAsIcelandicSSNumber(iwrb.getLocalizedString(
-				LABEL_PROVIDE_ICELANDIC_SS,
+				LABEL_PROVIDE_ICELANDIC_SSN,
 				"Please provide a valid Icelandic personal ID"));
 		ssn.setName(LABEL_SSN);
 		if (iwc.isParameterSet(LABEL_SSN)) {

@@ -134,6 +134,7 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 					wl.setChoiceNumber(applied.getOrder());
 					wl.setLastConfirmationDate(IWTimestamp.getTimestampRightNow());
 					wl.setApartment(applied.getApartment());
+					wl.setApplication(CA.getApplication());
 					wl.store();
 					wl.setOrder(((Integer) wl.getPrimaryKey()).intValue());
 					String level = CA.getPriorityLevel();

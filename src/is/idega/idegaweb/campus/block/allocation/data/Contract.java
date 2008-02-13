@@ -1,6 +1,7 @@
 package is.idega.idegaweb.campus.block.allocation.data;
 
 
+import com.idega.block.application.data.Application;
 import com.idega.block.building.data.Apartment;
 import com.idega.block.application.data.Applicant;
 import java.sql.Date;
@@ -263,4 +264,34 @@ public interface Contract extends IDOEntity {
 	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean#setStatusFinalized
 	 */
 	public void setStatusFinalized();
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean#getApplication
+	 */
+	public Application getApplication();
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean#getApplicationID
+	 */
+	public int getApplicationID();
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean#setApplication
+	 */
+	public void setApplication(Application application);
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean#setApplicationID
+	 */
+	public void setApplicationID(int id);
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean#getDiscountPercentage
+	 */
+	public double getDiscountPercentage();
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean#setDiscountPercentage
+	 */
+	public void setDiscountPercentage(double percentage);
 }

@@ -329,7 +329,7 @@ public class ApartmentBMPBean extends
 					ApartmentTypeBMPBean.COLUMN_APARTMENT_SUBCATEGORY, MatchCriteria.EQUALS,
 					subcategoryID.intValue()));
 			if (order) {
-				query.addOrder(category, ApartmentCategoryBMPBean.NAME, true);
+				query.addOrder(category, ApartmentCategoryBMPBean.COLUMN_NAME, true);
 			}
 		}
 		return idoFindPKsBySQL(query.toString());

@@ -2,6 +2,7 @@ package is.idega.idegaweb.campus.block.application.data;
 
 
 import com.idega.block.building.data.ApartmentSubcategory;
+import com.idega.block.application.data.Application;
 import com.idega.block.building.data.Apartment;
 import javax.ejb.FinderException;
 import java.sql.Timestamp;
@@ -202,6 +203,26 @@ public interface WaitingList extends IDOEntity {
 	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setApartment
 	 */
 	public void setApartment(Apartment apartment);
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#getApplication
+	 */
+	public Application getApplication();
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#getApplicationID
+	 */
+	public int getApplicationID();
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setApplication
+	 */
+	public void setApplication(Application application);
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#setApplicationID
+	 */
+	public void setApplicationID(int id);
 
 	/**
 	 * @see is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean#getCountOfRecords

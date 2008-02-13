@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.42.4.5 2007/05/31 17:07:52 palli Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.42.4.6 2008/02/13 17:00:15 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -67,20 +67,16 @@ import com.idega.util.IWTimestamp;
  */
 
 public class ReferenceNumberInfo extends CampusBlock {
-	// private static final String DUMMY_LOGIN = "DUMMY_LOGIN";
 
 	public static final String SESSION_REFERENCE_NUMBER = "session_ref_num";
 
 	private static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.application";
 
-	private IWResourceBundle _iwrb = null;
+	private IWResourceBundle iwrb = null;
 
 	private CampusApplicationHolder holder = null;
 
-//	private Integer allocatedTypeID = new Integer(-1);
 	private Integer allocatedSubcategoryID = new Integer(-1);
-
-	//private Integer allocatedComplexID = new Integer(-1);
 
 	private Integer allocatedWaitinglistID = null;
 
@@ -92,15 +88,10 @@ public class ReferenceNumberInfo extends CampusBlock {
 
 	private String ref = null, refnum = null;
 
-	/**
-	 * 
-	 */
 	public ReferenceNumberInfo() {
+		super();
 	}
 
-	/**
-	 * 
-	 */
 	protected void control(IWContext iwc) throws RemoteException {
 		applicationService = getApplicationService(iwc);
 		dateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT,
@@ -143,8 +134,9 @@ public class ReferenceNumberInfo extends CampusBlock {
 			aid = 0;
 		}
 
-		if (aid > 0)
+		if (aid > 0) {
 			holder = applicationService.getApplicationInfo(aid);
+		}
 
 		String update = iwc.getParameter("updatePhoneEmail");
 		String confirm = iwc.getParameter("confirmWL");
@@ -172,14 +164,7 @@ public class ReferenceNumberInfo extends CampusBlock {
 
 		row = 1;
 		if (holder == null) {
-			refTable
-					.add(
-							new Text(
-									_iwrb
-											.getLocalizedString(
-													"appNoSuchApplication",
-													"There is no application associated with that reference number")),
-							1, row);
+			refTable.add(new Text(iwrb.getLocalizedString("appNoSuchApplication","There is no application associated with that reference number")), 1, row);
 			row++;
 		} else {
 			addWaitingListForm(iwc, holder, refTable);
@@ -206,29 +191,29 @@ public class ReferenceNumberInfo extends CampusBlock {
 		Text dateText = new Text(date);
 		dateText.setBold();
 
-		refTable.add(new Text(_iwrb.getLocalizedString("appReceived",
+		refTable.add(new Text(iwrb.getLocalizedString("appReceived",
 				"Your application was received")
 				+ " "), 1, row);
 		refTable.add(dateText, 1, row);
 		row++;
 
 		Table updateTable = new Table(3, 2);
-		updateTable.add(new Text(_iwrb.getLocalizedString("phone", "Telephone")
+		updateTable.add(new Text(iwrb.getLocalizedString("phone", "Telephone")
 				+ " : "), 1, 1);
 		String phone = applicant.getResidencePhone();
 		if (phone == null)
 			phone = "";
 		updateTable.add(new TextInput("phone", phone), 2, 1);
-		updateTable.add(new Text(_iwrb.getLocalizedString("email", "Email")
+		updateTable.add(new Text(iwrb.getLocalizedString("email", "Email")
 				+ " : "), 1, 2);
 		String email = camApp.getEmail();
 		if (email == null)
 			email = "";
 		TextInput emailInput = new TextInput("email", email);
-		emailInput.setAsEmail(_iwrb.getLocalizedString("invalid_email",
+		emailInput.setAsEmail(iwrb.getLocalizedString("invalid_email",
 				"Please enter a valid email !!"));
 		updateTable.add(emailInput, 2, 2);
-		updateTable.add(new SubmitButton("updatePhoneEmail", _iwrb
+		updateTable.add(new SubmitButton("updatePhoneEmail", iwrb
 				.getLocalizedString("update", "Update")), 3, 2);
 
 		refTable.add(updateTable, 1, row);
@@ -239,24 +224,23 @@ public class ReferenceNumberInfo extends CampusBlock {
 
 		if (status
 				.equalsIgnoreCase(com.idega.block.application.data.ApplicationBMPBean.STATUS_SUBMITTED))
-			statusText = _iwrb.getLocalizedString("appSubmitted",
+			statusText = iwrb.getLocalizedString("appSubmitted",
 					"Waiting to be processed");
 		else if (status
 				.equalsIgnoreCase(com.idega.block.application.data.ApplicationBMPBean.STATUS_APPROVED)) {
-			statusText = _iwrb.getLocalizedString("appApproved",
+			statusText = iwrb.getLocalizedString("appApproved",
 					"Approved / On waiting list");
 		} else if (status
 				.equalsIgnoreCase(com.idega.block.application.data.ApplicationBMPBean.STATUS_SIGNED))
-			statusText = _iwrb
-					.getLocalizedString("appContracted", "Contracted");
+			statusText = iwrb.getLocalizedString("appContracted", "Contracted");
 		else if (status
 				.equalsIgnoreCase(com.idega.block.application.data.ApplicationBMPBean.STATUS_REJECTED))
-			statusText = _iwrb.getLocalizedString("appRejected", "Rejected");
+			statusText = iwrb.getLocalizedString("appRejected", "Rejected");
 		else
-			statusText = _iwrb.getLocalizedString("appUnknownStatus",
+			statusText = iwrb.getLocalizedString("appUnknownStatus",
 					"Lost in limbo somewhere");
 
-		refTable.add(new Text(_iwrb.getLocalizedString("appStatus",
+		refTable.add(new Text(iwrb.getLocalizedString("appStatus",
 				"Application status")
 				+ ": "), 1, row);
 		Text stsText = new Text(statusText);
@@ -282,8 +266,9 @@ public class ReferenceNumberInfo extends CampusBlock {
 							.getBuildingService().getApartmentViewHome()
 							.findByPrimaryKey(c.getApartmentId());
 
-					allocatedSubcategoryID = new Integer(allocatedApartment.getType().getApartmentSubcategoryID());
-					//allocatedComplexID = (allocatedApartment.getComplexID());
+					allocatedSubcategoryID = new Integer(allocatedApartment
+							.getType().getApartmentSubcategoryID());
+					// allocatedComplexID = (allocatedApartment.getComplexID());
 				} catch (RemoteException e) {
 					e.printStackTrace();
 				} catch (FinderException e) {
@@ -308,15 +293,15 @@ public class ReferenceNumberInfo extends CampusBlock {
 			appliedTable.setBorder(1);
 			appliedTable.setColumns(5);
 
-			Text appliedText1 = new Text(_iwrb.getLocalizedString(
+			Text appliedText1 = new Text(iwrb.getLocalizedString(
 					"appAppliedHeader", "Applied for"));
-			Text appliedText2 = new Text(_iwrb.getLocalizedString(
+			Text appliedText2 = new Text(iwrb.getLocalizedString(
 					"appPositionOnList", "# on list"));
-			Text appliedText3 = new Text(_iwrb.getLocalizedString(
+			Text appliedText3 = new Text(iwrb.getLocalizedString(
 					"appStayOnList", "Stay on list"));
-			Text appliedText4 = new Text(_iwrb.getLocalizedString(
+			Text appliedText4 = new Text(iwrb.getLocalizedString(
 					"lastConfirmation", "Last confirmation"));
-			Text appliedText5 = new Text(_iwrb.getLocalizedString("denials",
+			Text appliedText5 = new Text(iwrb.getLocalizedString("denials",
 					"Denials"));
 			appliedText1.setBold();
 			appliedText2.setBold();
@@ -333,15 +318,11 @@ public class ReferenceNumberInfo extends CampusBlock {
 			if (choices != null) {
 				Iterator it = choices.iterator();
 
-				//ComplexHome cxh = applicationService.getBuildingService()
-				//		.getComplexHome();
 				while (it.hasNext()) {
 					try {
 						Applied applied = (Applied) it.next();
 						pos++;
 						ApartmentSubcategory subCat = applied.getSubcategory();
-						//Complex complex = cxh.findByPrimaryKey(applied
-						//		.getComplexId());
 						Text appType = new Text(subCat.getName() + " ("
 								+ subCat.getApartmentCategory().getName() + ")");
 
@@ -353,9 +334,9 @@ public class ReferenceNumberInfo extends CampusBlock {
 							Iterator it1 = wl.iterator();
 							while (it1.hasNext()) {
 								wait = (WaitingList) it1.next();
-								if ((wait.getApartmentSubcategoryID().intValue() == ((Integer) subCat
-										.getPrimaryKey()).intValue())
-										)
+								if ((wait.getApartmentSubcategoryID()
+										.intValue() == ((Integer) subCat
+										.getPrimaryKey()).intValue()))
 									break;
 								else
 									wait = null;
@@ -379,8 +360,9 @@ public class ReferenceNumberInfo extends CampusBlock {
 							// this is the one
 							if (!wait.getRejectFlag()
 									&& allocatedSubcategoryID.intValue() == wait
-											.getApartmentSubcategoryID().intValue()) {
-								Text allocatedText = new Text(_iwrb
+											.getApartmentSubcategoryID()
+											.intValue()) {
+								Text allocatedText = new Text(iwrb
 										.getLocalizedString("appAllocated",
 												"Allocated"));
 								appliedTable.add(allocatedText, 3, pos);
@@ -408,7 +390,7 @@ public class ReferenceNumberInfo extends CampusBlock {
 						// no waitinglist entries
 						else {
 							appliedTable.mergeCells(2, pos, 4, pos);
-							appliedTable.addText(_iwrb.getLocalizedString(
+							appliedTable.addText(iwrb.getLocalizedString(
 									"appNoWaitingList", "Not on waitinglist"),
 									2, pos);
 							appliedTable.setAlignment(2, pos,
@@ -416,13 +398,13 @@ public class ReferenceNumberInfo extends CampusBlock {
 						}
 					} catch (EJBException e) {
 						e.printStackTrace();
-					} 
+					}
 				}
 
 				container.setAlignment(1, 1, "right");
 				container.setAlignment(1, 2, "right");
 				container.add(appliedTable, 1, 1);
-				container.add(new SubmitButton("confirmWL", _iwrb
+				container.add(new SubmitButton("confirmWL", iwrb
 						.getLocalizedString("confirmWL", "Confirm")), 1, 2);
 
 				refTable.add(container, 1, row);
@@ -435,7 +417,7 @@ public class ReferenceNumberInfo extends CampusBlock {
 			// a?
 			// ?thluta
 			Text notAllocated = new Text("&nbsp;*&nbsp;"
-					+ _iwrb.getLocalizedString("appSubmitted",
+					+ iwrb.getLocalizedString("appSubmitted",
 							"Application not processed yet"));
 			notAllocated.setStyle("required");
 			refTable.add(notAllocated, 1, row);
@@ -443,7 +425,7 @@ public class ReferenceNumberInfo extends CampusBlock {
 		} else if (status
 				.equalsIgnoreCase(com.idega.block.application.data.ApplicationBMPBean.STATUS_SIGNED)) {
 			Text signed = new Text("&nbsp;*&nbsp;"
-					+ _iwrb.getLocalizedString("appAssigned",
+					+ iwrb.getLocalizedString("appAssigned",
 							"You have been assigned to an apartment"));
 			signed.setStyle("required");
 			refTable.add(signed, 1, row);
@@ -556,13 +538,13 @@ public class ReferenceNumberInfo extends CampusBlock {
 			form.maintainParameter(ReferenceNumber.CAM_REF_NUMBER);
 			add(form);
 
-			Text tCancel = new Text(_iwrb.getLocalizedString(
+			Text tCancel = new Text(iwrb.getLocalizedString(
 					"appCancelApplication",
 					"Cancel application, all entries will be removed"));
 			tCancel.setBold();
 			SubmitButton cancelButton = new SubmitButton("cancelApplication",
-					_iwrb.getLocalizedString("cancelApplication", "Cancel"));
-			String message = _iwrb
+					iwrb.getLocalizedString("cancelApplication", "Cancel"));
+			String message = iwrb
 					.getLocalizedString(
 							"cancelApplicationWarning",
 							"Do you really want to cancel your application, all application entries will be removed");
@@ -587,11 +569,11 @@ public class ReferenceNumberInfo extends CampusBlock {
 				dTable.setWidth(Table.HUNDRED_PERCENT);
 				refTable.add(dTable, 1, row);
 
-				Text tPeriod = new Text(_iwrb.getLocalizedString(
+				Text tPeriod = new Text(iwrb.getLocalizedString(
 						"appContractPeriod", "Contract period"));
-				Text tApartment = new Text(_iwrb.getLocalizedString(
+				Text tApartment = new Text(iwrb.getLocalizedString(
 						"appAllocatedApartment", "Allocated apartment"));
-				Text tAcceptance = new Text(_iwrb.getLocalizedString(
+				Text tAcceptance = new Text(iwrb.getLocalizedString(
 						"appAcceptance", "Acceptance"));
 				tPeriod.setBold();
 				tApartment.setBold();
@@ -612,16 +594,16 @@ public class ReferenceNumberInfo extends CampusBlock {
 					e.printStackTrace();
 				}
 				dTable.setAlignment(3, 2, Table.HORIZONTAL_ALIGN_RIGHT);
-				SubmitButton deny = new SubmitButton("denyAllocation", _iwrb
+				SubmitButton deny = new SubmitButton("denyAllocation", iwrb
 						.getLocalizedString("denyAllotion", "No thanks"));
-				String message = (_iwrb.getLocalizedString(
+				String message = (iwrb.getLocalizedString(
 						"denyAllocationWarning",
 						"Do you really want to deny this apartment ?"));
 				deny.setOnClick("return confirm('" + message + "');");
 
-				SubmitButton accept = new SubmitButton("acceptAllocation",
-						_iwrb.getLocalizedString("acceptAllotion", "Accept"));
-				String acceptMsg = (_iwrb
+				SubmitButton accept = new SubmitButton("acceptAllocation", iwrb
+						.getLocalizedString("acceptAllotion", "Accept"));
+				String acceptMsg = (iwrb
 						.getLocalizedString("acceptAllocationWarning",
 								"Please contact Student Housing office as soon as possible."));
 				accept.setOnClick("return confirm('" + acceptMsg + "');");
@@ -881,7 +863,7 @@ public class ReferenceNumberInfo extends CampusBlock {
 	 */
 	public void main(IWContext iwc) {
 		// debugParameters(iwc);
-		_iwrb = getResourceBundle(iwc);
+		iwrb = getResourceBundle(iwc);
 		try {
 			control(iwc);
 		} catch (RemoteException e) {

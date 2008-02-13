@@ -1,5 +1,5 @@
 /*
- * $Id: ApartmentCategoryBMPBean.java,v 1.8.2.3 2007/05/24 02:07:20 palli Exp $
+ * $Id: ApartmentCategoryBMPBean.java,v 1.8.2.4 2008/02/13 17:00:20 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -28,51 +28,112 @@ import com.idega.data.query.WildCardColumn;
 public class ApartmentCategoryBMPBean extends TextEntityBMPBean implements
 		ApartmentCategory {
 
-	protected static final String IC_IMAGE_ID = "ic_image_id";
-	protected static final String INFO = "info";
-	protected static final String NAME = "name";
-	protected static final String BU_APRT_CAT = "bu_aprt_cat";
+	protected static final String ENTITY_NAME = "bu_aprt_cat";
+
+	protected static final String COLUMN_IMAGE = "ic_image_id";
+	
+	protected static final String COLUMN_INFO = "info";
+	
+	protected static final String COLUMN_NAME = "name";
+	
+	protected static final String COLUMN_SHOW_SPOUSE = "show_spouse";
+
+	protected static final String COLUMN_SPOUSE_MANDATORY = "spouse_mandatory";
+
+	protected static final String COLUMN_SHOW_CHILDREN = "show_children";
+
+	protected static final String COLUMN_CHILDREN_MANDATORY = "children_mandatory";
+	
+	protected static final String COLUMN_MAX_NUMBER_OF_CHOICES = "number_of_choices";
 
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		addAttribute(NAME, "Name", true, true, java.lang.String.class);
-		addAttribute(INFO, "Info", true, true, java.lang.String.class);
-		addAttribute(IC_IMAGE_ID, "Icon", true, true, java.lang.Integer.class);
-		super.setMaxLength(INFO, 4000);
+		addAttribute(COLUMN_NAME, "Name", String.class);
+		addAttribute(COLUMN_INFO, "Info", String.class);
+		addAttribute(COLUMN_IMAGE, "Icon", Integer.class);
+		super.setMaxLength(COLUMN_INFO, 4000);
+		addAttribute(COLUMN_SHOW_SPOUSE, "Show spouse", Boolean.class);
+		addAttribute(COLUMN_SPOUSE_MANDATORY, "Spouse mandatory", Boolean.class);
+		addAttribute(COLUMN_SHOW_CHILDREN, "Show children", Boolean.class);
+		addAttribute(COLUMN_CHILDREN_MANDATORY, "Children mandatory", Boolean.class);
+		addAttribute(COLUMN_MAX_NUMBER_OF_CHOICES, "Max number of choices", Integer.class);
 	}
 
+	//getters
 	public String getEntityName() {
-		return BU_APRT_CAT;
+		return ENTITY_NAME;
 	}
 
 	public String getName() {
-		return getStringColumnValue(NAME);
-	}
-
-	public void setName(String name) {
-		setColumn(NAME, name);
+		return getStringColumnValue(COLUMN_NAME);
 	}
 
 	public String getInfo() {
-		return getStringColumnValue(INFO);
-	}
-
-	public void setInfo(String info) {
-		setColumn(INFO, info);
+		return getStringColumnValue(COLUMN_INFO);
 	}
 
 	public int getImageId() {
-		return getIntColumnValue(IC_IMAGE_ID);
+		return getIntColumnValue(COLUMN_IMAGE);
+	}
+
+	public boolean getShowSpouse() {
+		return getBooleanColumnValue(COLUMN_SHOW_SPOUSE, true);
+	}
+	
+	public boolean getSpouseMandatory() {
+		return getBooleanColumnValue(COLUMN_SPOUSE_MANDATORY, false);
+	}
+	
+	public boolean getShowChildren() {
+		return getBooleanColumnValue(COLUMN_SHOW_CHILDREN, true);
+	}
+	
+	public boolean getChildrenMandatory() {
+		return getBooleanColumnValue(COLUMN_CHILDREN_MANDATORY, false);
+	}
+	
+	public int getMaxNumberOfChoices() {
+		return getIntColumnValue(COLUMN_MAX_NUMBER_OF_CHOICES, 3);
+	}
+	
+	//setters	
+	public void setName(String name) {
+		setColumn(COLUMN_NAME, name);
+	}
+
+	public void setInfo(String info) {
+		setColumn(COLUMN_INFO, info);
 	}
 
 	public void setImageId(int image_id) {
-		setColumn(IC_IMAGE_ID, image_id);
+		setColumn(COLUMN_IMAGE, image_id);
 	}
 
 	public void setImageId(Integer image_id) {
-		setColumn(IC_IMAGE_ID, image_id);
+		setColumn(COLUMN_IMAGE, image_id);
 	}
 
+	public void setShowSpouse(boolean showSpouse) {
+		setColumn(COLUMN_SHOW_SPOUSE, showSpouse);
+	}
+	
+	public void setSpouseMandatory(boolean spouseMandatory) {
+		setColumn(COLUMN_SPOUSE_MANDATORY, spouseMandatory);
+	}
+	
+	public void setShowChildren(boolean showChildren) {
+		setColumn(COLUMN_SHOW_CHILDREN, showChildren);
+	}
+	
+	public void setChildrenMandatory(boolean childrenMandatory) {
+		setColumn(COLUMN_CHILDREN_MANDATORY, childrenMandatory);
+	}
+	
+	public void setMaxNumberOfChoices(int maxNumberOfChoices) {
+		setColumn(COLUMN_MAX_NUMBER_OF_CHOICES, maxNumberOfChoices);
+	}
+	
+	//sql
 	public Collection ejbFindAll() throws FinderException {
 		return super.idoFindAllIDsBySQL();
 	}

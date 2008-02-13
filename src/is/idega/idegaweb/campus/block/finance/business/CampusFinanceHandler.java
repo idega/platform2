@@ -482,7 +482,7 @@ public class CampusFinanceHandler implements FinanceHandler {
 				AE.setInfo(T.getInfo() + " " + nf.format(factor));
 			else
 				AE.setInfo(nf.format(factor));
-			AE.setStatus(com.idega.block.finance.data.AccountEntryBMPBean.statusCreated);
+			AE.setStatus(com.idega.block.finance.data.AccountEntryBMPBean.STATUS_CREATED);
 			AE.setCashierId(1);
 			AE.setPaymentDate(paymentdate.getTimestamp());
 			try {

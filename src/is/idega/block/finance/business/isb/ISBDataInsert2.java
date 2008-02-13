@@ -145,8 +145,6 @@ public class ISBDataInsert2 implements InvoiceDataInsert, CallbackHandler {
 			file.append(FileUtil.getFileSeparator());
 			file.append("client_deploy.wsdd");
 
-			System.out.println("path = " + file.toString());
-			
 			EngineConfiguration config = new FileProvider(file.toString());
 			KrofurWSLocator locator = new KrofurWSLocator(config);
 			KrofurWSSoap_PortType port = locator.getKrofurWSSoap(new URL(

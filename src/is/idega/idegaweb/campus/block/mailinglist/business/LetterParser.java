@@ -5,7 +5,6 @@ import java.util.StringTokenizer;
 
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.util.IWTimestamp;
-import com.idega.util.LocaleUtil;
 import com.idega.util.text.ContentParsable;
 /**
  *  Title: Description: Copyright: Copyright (c) 2001 Company:
@@ -144,11 +143,11 @@ public class LetterParser implements ContentParsable {
             // Contract section
             if(holder.getContract()!=null){
               if (tag.equals(contract_starts)) {
-                  return holder.getContract().getValidFrom().toString();
+                  return new IWTimestamp(holder.getContract().getValidFrom()).getDateString("dd.MM.yyyy");
               } else if (tag.equals(contract_ends)) {
-                  return holder.getContract().getValidTo().toString();
+                  return new IWTimestamp(holder.getContract().getValidTo()).getDateString("dd.MM.yyyy");
               } else if (tag.equals(today)) {
-                  return IWTimestamp.RightNow().getLocaleDate(LocaleUtil.getIcelandicLocale());
+                  return IWTimestamp.RightNow().getDateString("dd.MM.yyyy");
               }
             }
             
@@ -191,9 +190,7 @@ public class LetterParser implements ContentParsable {
             if(holder.getApplication()!=null){
               if (tag.equals(reference_number)) {
                   int id = new Integer(holder.getApplication().getPrimaryKey().toString()).intValue();
-                  String refnum = ReferenceNumberFinder.getInstance(iwac).lookup(id);
-                  System.err.println(reference_number+" = "+refnum);
-                  return refnum;
+                  return ReferenceNumberFinder.getInstance(iwac).lookup(id);
               }
             }
         }

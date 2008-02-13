@@ -130,7 +130,17 @@ public class BuildingEditor extends com.idega.presentation.Block {
 	private static final String PARAM_ID = "dr_id";
 	
 	private static final String LABEL_SUBCATEGORY = "subcategory";
-
+	
+	private static final String PARAM_SHOW_SPOUSE = "show_spouse";
+	
+	private static final String PARAM_SPOUSE_MANDATORY = "spouse_mandatory";
+	
+	private static final String PARAM_SHOW_CHILDREN = "show_children";
+	
+	private static final String PARAM_CHILDREN_MANDATORY = "children_mandatory";
+	
+	private static final String PARAM_MAX_CHOICES = "max_choices";
+	
 	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.building";
 
 	public static final int ACTION_COMPLEX = 1;
@@ -509,8 +519,16 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		String sInfo = iwc.getParameter(PARAM_INFO).trim();
 		String sImageId = iwc.getParameter("iconid");
 		String sId = iwc.getParameter(PARAM_ID);
+		
+		Boolean showSpouse = Boolean.valueOf(iwc.isParameterSet(PARAM_SHOW_SPOUSE));
+		Boolean spouseMandatory = Boolean.valueOf(iwc.isParameterSet(PARAM_SPOUSE_MANDATORY));
+		Boolean showChildren = Boolean.valueOf(iwc.isParameterSet(PARAM_SHOW_CHILDREN));
+		Boolean childrenMandatory = Boolean.valueOf(iwc.isParameterSet(PARAM_CHILDREN_MANDATORY));
+		String numberOfChoices = iwc.getParameter(PARAM_MAX_CHOICES);
+		
 		Integer imageid = null;
 		Integer id = null;
+		Integer maxNumberOfChoices = null;
 		try {
 			imageid = Integer.valueOf(sImageId);
 		} catch (NumberFormatException ex) {
@@ -522,8 +540,14 @@ public class BuildingEditor extends com.idega.presentation.Block {
 			id = null;
 		}
 
+		try {
+			maxNumberOfChoices = Integer.valueOf(numberOfChoices);
+		} catch (NumberFormatException e) {
+			maxNumberOfChoices = null;
+		}
+		
 		this.service.storeApartmentCategory(id, sName, sInfo, imageid,
-				this.textId);
+				this.textId, showSpouse.booleanValue(), spouseMandatory.booleanValue(), showChildren.booleanValue(), childrenMandatory.booleanValue(), maxNumberOfChoices.intValue());
 
 	}
 
@@ -1188,6 +1212,12 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		String sId = e ? String.valueOf(eApartmentCategory.getID()) : "";
 		int iIconId = e ? eApartmentCategory.getImageId() : 1;
 		int iTextId = e ? eApartmentCategory.getTextId() : -1;
+		boolean showSpouse = e ? eApartmentCategory.getShowSpouse() : true;
+		boolean spouseMandatory = e ? eApartmentCategory.getSpouseMandatory() : false;
+		boolean showChildren = e ? eApartmentCategory.getShowChildren() : true;
+		boolean childrenMandatory = e ? eApartmentCategory.getChildrenMandatory() : false;
+		int maxNumberOfChoices = e ? eApartmentCategory.getMaxNumberOfChoices() : 3;
+		
 		Form form = new Form();
 		Table Frame = new Table(2, 1);
 		Frame.setRowVerticalAlignment(1, "top");
@@ -1213,12 +1243,25 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		Frame.add(T2, 2, 1);
 
 		TextInput name = new TextInput(PARAM_NAME, sName);
+		TextInput numberOfChoices = new TextInput(PARAM_MAX_CHOICES);
+		numberOfChoices.setAsIntegers(iwrb.getLocalizedString("must_enter_integer", "Please enter an integer"));
+		numberOfChoices.setValue(maxNumberOfChoices);
 
 		DropdownMenu categories = drpLodgings(this.service
 				.getApartmentCategoryHome().findAll(), PARAM_ID, "Category",
 				sId);
 
 		categories.setToSubmit();
+		
+		CheckBox showSpouseCheckBox = new CheckBox(PARAM_SHOW_SPOUSE);
+		showSpouseCheckBox.setChecked(showSpouse);
+		CheckBox spouseMandatoryCheckBox = new CheckBox(PARAM_SPOUSE_MANDATORY);
+		spouseMandatoryCheckBox.setChecked(spouseMandatory);
+		CheckBox showChildrenCheckBox = new CheckBox(PARAM_SHOW_CHILDREN);
+		showChildrenCheckBox.setChecked(showChildren);
+		CheckBox childrenMandatoryCheckBox = new CheckBox(PARAM_CHILDREN_MANDATORY);
+		childrenMandatoryCheckBox.setChecked(childrenMandatory);
+		
 		HiddenInput HI = new HiddenInput(PARAM_CHOICE, String
 				.valueOf(this.ACTION_CATEGORY));
 		HiddenInput HA = new HiddenInput(this.PARAM_ACTION, String
@@ -1235,10 +1278,27 @@ public class BuildingEditor extends com.idega.presentation.Block {
 				2);
 		T.add(name, 1, 3);
 		T.add(makeTextInput(iTextId), 2, 3);
-		T.add(formatText(this.iwrb.getLocalizedString(LABEL_INFO, "Info")), 1,
+		
+		T.add(formatText(this.iwrb.getLocalizedString(PARAM_SHOW_SPOUSE, "Show spouse")), 1,
 				4);
+		T.add(showSpouseCheckBox, 1, 5);
+		T.add(formatText(this.iwrb.getLocalizedString(PARAM_SPOUSE_MANDATORY, "Spouse mandatory")), 1,
+				6);
+		T.add(spouseMandatoryCheckBox, 1, 7);
+		T.add(formatText(this.iwrb.getLocalizedString(PARAM_SHOW_CHILDREN, "Show children")), 1,
+				8);
+		T.add(showChildrenCheckBox, 1, 9);
+		T.add(formatText(this.iwrb.getLocalizedString(PARAM_CHILDREN_MANDATORY, "Children mandatory")), 1,
+				10);
+		T.add(childrenMandatoryCheckBox, 1, 11);
+		T.add(formatText(this.iwrb.getLocalizedString(PARAM_MAX_CHOICES, "Max number of choices")), 1,
+				12);
+		T.add(numberOfChoices, 1, 13);
+		
+		T.add(formatText(this.iwrb.getLocalizedString(LABEL_INFO, "Info")), 1,
+				14);
 
-		T.add(makeTextArea(sInfo), 1, 5);
+		T.add(makeTextArea(sInfo), 1, 15);
 		T2.add(formatText(this.iwrb.getLocalizedString("icon", "Icon")), 1, 1);
 		T2.add(Text.getBreak(), 1, 1);
 		T2.add(this.makeImageInput(iIconId, "iconid"), 1, 1);
@@ -1297,11 +1357,11 @@ public class BuildingEditor extends com.idega.presentation.Block {
 				.getApartmentCategoryHome().findAll(), PARAM_CATEGORY,
 				"Category", sCategory);
 
-		categories.setToSubmit();
+		subcategories.setToSubmit();
 		HiddenInput HI = new HiddenInput(PARAM_CHOICE, String
-				.valueOf(this.ACTION_CATEGORY));
+				.valueOf(this.ACTION_SUBCATEGORY));
 		HiddenInput HA = new HiddenInput(this.PARAM_ACTION, String
-				.valueOf(this.ACTION_CATEGORY));
+				.valueOf(this.ACTION_SUBCATEGORY));
 		setStyle(name);
 		setStyle(categories);
 		name.setLength(30);

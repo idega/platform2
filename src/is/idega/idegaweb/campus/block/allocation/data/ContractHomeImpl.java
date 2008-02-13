@@ -36,16 +36,20 @@ public class ContractHomeImpl extends IDOFactory implements ContractHome {
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findByApartmentAndUser(Integer AID, Integer UID) throws FinderException {
+	public Collection findByApartmentAndUser(Integer AID, Integer UID)
+			throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
-		Collection ids = ((ContractBMPBean) entity).ejbFindByApartmentAndUser(AID, UID);
+		Collection ids = ((ContractBMPBean) entity).ejbFindByApartmentAndUser(
+				AID, UID);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findByUserAndRented(Integer ID, Boolean rented) throws FinderException {
+	public Collection findByUserAndRented(Integer ID, Boolean rented)
+			throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
-		Collection ids = ((ContractBMPBean) entity).ejbFindByUserAndRented(ID, rented);
+		Collection ids = ((ContractBMPBean) entity).ejbFindByUserAndRented(ID,
+				rented);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
@@ -57,37 +61,47 @@ public class ContractHomeImpl extends IDOFactory implements ContractHome {
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findByApartmentAndStatus(Integer ID, String status) throws FinderException {
+	public Collection findByApartmentAndStatus(Integer ID, String status)
+			throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
-		Collection ids = ((ContractBMPBean) entity).ejbFindByApartmentAndStatus(ID, status);
+		Collection ids = ((ContractBMPBean) entity)
+				.ejbFindByApartmentAndStatus(ID, status);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findByApartmentAndStatus(Integer ID, String[] status) throws FinderException {
+	public Collection findByApartmentAndStatus(Integer ID, String[] status)
+			throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
-		Collection ids = ((ContractBMPBean) entity).ejbFindByApartmentAndStatus(ID, status);
+		Collection ids = ((ContractBMPBean) entity)
+				.ejbFindByApartmentAndStatus(ID, status);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findByApplicantAndStatus(Integer ID, String status) throws FinderException {
+	public Collection findByApplicantAndStatus(Integer ID, String status)
+			throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
-		Collection ids = ((ContractBMPBean) entity).ejbFindByApplicantAndStatus(ID, status);
+		Collection ids = ((ContractBMPBean) entity)
+				.ejbFindByApplicantAndStatus(ID, status);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findByApplicantAndRented(Integer ID, Boolean rented) throws FinderException {
+	public Collection findByApplicantAndRented(Integer ID, Boolean rented)
+			throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
-		Collection ids = ((ContractBMPBean) entity).ejbFindByApplicantAndRented(ID, rented);
+		Collection ids = ((ContractBMPBean) entity)
+				.ejbFindByApplicantAndRented(ID, rented);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findByApartmentAndRented(Integer ID, Boolean rented) throws FinderException {
+	public Collection findByApartmentAndRented(Integer ID, Boolean rented)
+			throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
-		Collection ids = ((ContractBMPBean) entity).ejbFindByApartmentAndRented(ID, rented);
+		Collection ids = ((ContractBMPBean) entity)
+				.ejbFindByApartmentAndRented(ID, rented);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
@@ -120,51 +134,72 @@ public class ContractHomeImpl extends IDOFactory implements ContractHome {
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findByApplicantInCreatedStatus(Integer applicant) throws FinderException {
+	public Collection findByApplicantInCreatedStatus(Integer applicant)
+			throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
-		Collection ids = ((ContractBMPBean) entity).ejbFindByApplicantInCreatedStatus(applicant);
+		Collection ids = ((ContractBMPBean) entity)
+				.ejbFindByApplicantInCreatedStatus(applicant);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Date getLastValidToForApartment(Integer apartment) throws FinderException {
+	public Date getLastValidToForApartment(Integer apartment)
+			throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
-		Date theReturn = ((ContractBMPBean) entity).ejbHomeGetLastValidToForApartment(apartment);
+		Date theReturn = ((ContractBMPBean) entity)
+				.ejbHomeGetLastValidToForApartment(apartment);
 		this.idoCheckInPooledEntity(entity);
 		return theReturn;
 	}
 
-	public Date getLastValidFromForApartment(Integer apartment) throws FinderException {
+	public Date getLastValidFromForApartment(Integer apartment)
+			throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
-		Date theReturn = ((ContractBMPBean) entity).ejbHomeGetLastValidFromForApartment(apartment);
+		Date theReturn = ((ContractBMPBean) entity)
+				.ejbHomeGetLastValidFromForApartment(apartment);
 		this.idoCheckInPooledEntity(entity);
 		return theReturn;
 	}
 
-	public Collection findBySearchConditions(String status, Integer complexId, Integer buildingId, Integer floorId, Integer typeId, Integer categoryId, int order, int returnResultSize, int startingIndex) throws FinderException {
+	public Collection findBySearchConditions(String status, Integer complexId,
+			Integer buildingId, Integer floorId, Integer typeId,
+			Integer categoryId, int order, int returnResultSize,
+			int startingIndex) throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
-		Collection ids = ((ContractBMPBean) entity).ejbFindBySearchConditions(status, complexId, buildingId, floorId, typeId, categoryId, order, returnResultSize, startingIndex);
+		Collection ids = ((ContractBMPBean) entity).ejbFindBySearchConditions(
+				status, complexId, buildingId, floorId, typeId, categoryId,
+				order, returnResultSize, startingIndex);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public int countBySearchConditions(String status, Integer complexId, Integer buildingId, Integer floorId, Integer typeId, Integer categoryId, int order) throws IDOException {
+	public int countBySearchConditions(String status, Integer complexId,
+			Integer buildingId, Integer floorId, Integer typeId,
+			Integer categoryId, int order) throws IDOException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
-		int theReturn = ((ContractBMPBean) entity).ejbHomeCountBySearchConditions(status, complexId, buildingId, floorId, typeId, categoryId, order);
+		int theReturn = ((ContractBMPBean) entity)
+				.ejbHomeCountBySearchConditions(status, complexId, buildingId,
+						floorId, typeId, categoryId, order);
 		this.idoCheckInPooledEntity(entity);
 		return theReturn;
 	}
 
-	public Collection findByComplexAndBuildingAndApartmentName(Integer complexID, Integer buildingID, String apartmentName) throws FinderException {
+	public Collection findByComplexAndBuildingAndApartmentName(
+			Integer complexID, Integer buildingID, String apartmentName)
+			throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
-		Collection ids = ((ContractBMPBean) entity).ejbFindByComplexAndBuildingAndApartmentName(complexID, buildingID, apartmentName);
+		Collection ids = ((ContractBMPBean) entity)
+				.ejbFindByComplexAndBuildingAndApartmentName(complexID,
+						buildingID, apartmentName);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findByComplexAndRented(Integer complexID, boolean rented) throws FinderException {
+	public Collection findByComplexAndRented(Integer complexID, boolean rented)
+			throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
-		Collection ids = ((ContractBMPBean) entity).ejbFindByComplexAndRented(complexID, rented);
+		Collection ids = ((ContractBMPBean) entity).ejbFindByComplexAndRented(
+				complexID, rented);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
@@ -176,51 +211,65 @@ public class ContractHomeImpl extends IDOFactory implements ContractHome {
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection getUnsignedApplicants(String personalID) throws FinderException {
+	public Collection getUnsignedApplicants(String personalID)
+			throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
-		Collection theReturn = ((ContractBMPBean) entity).ejbHomeGetUnsignedApplicants(personalID);
+		Collection theReturn = ((ContractBMPBean) entity)
+				.ejbHomeGetUnsignedApplicants(personalID);
 		this.idoCheckInPooledEntity(entity);
 		return theReturn;
 	}
 
-	public Collection findByStatusAndValidBeforeDate(String status, Date date) throws FinderException {
+	public Collection findByStatusAndValidBeforeDate(String status, Date date)
+			throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
-		Collection ids = ((ContractBMPBean) entity).ejbFindByStatusAndValidBeforeDate(status, date);
+		Collection ids = ((ContractBMPBean) entity)
+				.ejbFindByStatusAndValidBeforeDate(status, date);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findByStatusAndChangeDate(String status, Date date) throws FinderException {
+	public Collection findByStatusAndChangeDate(String status, Date date)
+			throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
-		Collection ids = ((ContractBMPBean) entity).ejbFindByStatusAndChangeDate(status, date);
+		Collection ids = ((ContractBMPBean) entity)
+				.ejbFindByStatusAndChangeDate(status, date);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findByStatusAndOverLapPeriodMultiples(String[] status, Date from, Date to) throws FinderException {
+	public Collection findByStatusAndOverLapPeriodMultiples(String[] status,
+			Date from, Date to) throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
-		Collection ids = ((ContractBMPBean) entity).ejbFindByStatusAndOverLapPeriodMultiples(status, from, to);
+		Collection ids = ((ContractBMPBean) entity)
+				.ejbFindByStatusAndOverLapPeriodMultiples(status, from, to);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findByUserAndStatus(Integer userId, String[] status) throws FinderException {
+	public Collection findByUserAndStatus(Integer userId, String[] status)
+			throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
-		Collection ids = ((ContractBMPBean) entity).ejbFindByUserAndStatus(userId, status);
+		Collection ids = ((ContractBMPBean) entity).ejbFindByUserAndStatus(
+				userId, status);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findByUserAndStatus(Integer userId, String status) throws FinderException {
+	public Collection findByUserAndStatus(Integer userId, String status)
+			throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
-		Collection ids = ((ContractBMPBean) entity).ejbFindByUserAndStatus(userId, status);
+		Collection ids = ((ContractBMPBean) entity).ejbFindByUserAndStatus(
+				userId, status);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findByUserAndStatusAndRentedBeforeDate(Integer userId, String status, Date date) throws FinderException {
+	public Collection findByUserAndStatusAndRentedBeforeDate(Integer userId,
+			String status, Date date) throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
-		Collection ids = ((ContractBMPBean) entity).ejbFindByUserAndStatusAndRentedBeforeDate(userId, status, date);
+		Collection ids = ((ContractBMPBean) entity)
+				.ejbFindByUserAndStatusAndRentedBeforeDate(userId, status, date);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}

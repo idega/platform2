@@ -401,7 +401,7 @@ public class CampusContractWriter {
 
 				TariffIndex index = ((TariffIndexHome) IDOLookup
 						.getHome(TariffIndex.class))
-						.findLastByType(TariffIndexBMPBean.A);
+						.findLastByType(TariffIndexBMPBean.RENT_TYPE_A);
 				String attribute = BuildingCacher.PREFIXTYPE
 						+ eApartmentType.getPrimaryKey().toString();
 				Collection tariff = ((TariffHome) IDOLookup

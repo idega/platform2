@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.76.4.9 2007/07/23 19:18:06 eiki Exp $
+ * $Id: CampusAllocator.java,v 1.76.4.10 2008/02/13 17:00:16 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -89,10 +89,6 @@ public class CampusAllocator extends CampusBlock implements Campus {
 
 	private static final String PRM_ALLOCATE = "allocate";
 
-	// private static final String COMPLEX_ID = "cplx_id";
-
-	// private static final String TYPE_ID = "type_id";
-
 	private static final String SUBCATEGORY_ID = "subcat_id";
 
 	private int acceptanceSeconds = 60 * 60 * 24 * 3; // default 3 days
@@ -119,13 +115,9 @@ public class CampusAllocator extends CampusBlock implements Campus {
 
 	private ListIterator iterator = null;
 
-	// private Integer typeID, complexID;
-	private Integer subcatID;// , complexID;
+	private Integer subcatID;
 
-	// private ApartmentType apartmentType = null;
 	private ApartmentSubcategory subcategory = null;
-
-	// private Complex complex = null;
 
 	private CampusService campusService = null;
 
@@ -136,8 +128,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 
 	private Integer monthOverlap = new Integer(1);
 
-	// private Parameter pTypeId = null, pComplexId = null;
-	private Parameter pSubcatId = null;// , pComplexId = null;
+	private Parameter pSubcatId = null;
 
 	private String redColor = "#942829";
 
@@ -167,9 +158,6 @@ public class CampusAllocator extends CampusBlock implements Campus {
 				DateFormat.SHORT, iwc.getCurrentLocale());
 
 		fontSize = 1;
-		/*
-		 * if (iwc.getParameter("list") != null) { }
-		 */
 		if (iwc.getParameter(SUBCATEGORY_ID) != null) {
 			pSubcatId = new Parameter(SUBCATEGORY_ID, iwc
 					.getParameter(SUBCATEGORY_ID));
@@ -184,15 +172,6 @@ public class CampusAllocator extends CampusBlock implements Campus {
 				e.printStackTrace();
 			}
 		}
-		/*
-		 * if (iwc.getParameter(COMPLEX_ID) != null) { pComplexId = new
-		 * Parameter(COMPLEX_ID, iwc.getParameter(COMPLEX_ID)); complexID =
-		 * Integer.valueOf(iwc.getParameter(COMPLEX_ID)); try { complex =
-		 * campusService.getBuildingService().getComplexHome()
-		 * .findByPrimaryKey(complexID); } catch (RemoteException e) {
-		 * e.printStackTrace(); } catch (FinderException e) {
-		 * e.printStackTrace(); } }
-		 */
 
 		Table Frame = new Table();
 		Frame.add(getHomeLink(), 1, 1);
@@ -200,9 +179,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		Frame.mergeCells(1, 1, 3, 1);
 		int row = 2;
 		if (isAdmin) {
-			if (subcategory != null) {// && complex != null) {
-				// Frame.add(getHeader(complex.getName() + " : "
-				// + subcategory.getName()), 1, 1);
+			if (subcategory != null) {
 				Frame.add(getHeader(subcategory.getName() + " ("
 						+ subcategory.getApartmentCategory().getName() + ")"),
 						1, 1);
@@ -251,7 +228,6 @@ public class CampusAllocator extends CampusBlock implements Campus {
 				// save allocation
 				else if (iwc.isParameterSet("save_allocation")) {
 					String msg = saveAllocation(iwc);
-					// System.err.println(msg);
 					Text Te = getText(msg);
 					Te.setFontSize(3);
 					Te.setFontColor("#FF0000");
@@ -445,8 +421,6 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		ApartmentSubcategory apartmentSubcat = campusService
 				.getBuildingService().getApartmentSubcategoryHome()
 				.findByPrimaryKey(subcatID);
-		// Complex complex = campusService.getBuildingService().getComplexHome()
-		// .findByPrimaryKey(complexID);
 		Contract contract = null;
 		if (contractID != null && contractID.intValue() > 0)
 			contract = campusService.getContractService().getContractHome()
@@ -461,12 +435,6 @@ public class CampusAllocator extends CampusBlock implements Campus {
 			}
 		}
 		Table Frame = new Table();
-		/*
-		 * Table Header = new Table(); Header.add(headerText(AT.getName()+"
-		 * "),1,1); Header.add(headerText(CX.getName()),1,1);
-		 * Header.mergeCells(1,1,4,1); Header.setRowColor(1,blueColor);
-		 * Header.setWidth("100%"); Frame.add(Header,1,1);
-		 */
 		if (contract != null)
 			Frame.add(getContractMakingTable(iwc, contract, applicantID, null,
 					contract.getApartmentId(), waitingList), 1, 1);
@@ -476,8 +444,6 @@ public class CampusAllocator extends CampusBlock implements Campus {
 
 		myForm.add(new HiddenInput(pSubcatId.getName(), pSubcatId
 				.getValueAsString()));
-		// myForm.add(new HiddenInput(pComplexId.getName(), pComplexId
-		// .getValueAsString()));
 
 		return myForm;
 	}
@@ -516,8 +482,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 			Frame.add(CA.getViewApplicant(AH.getApplicant(), AH
 					.getCampusApplication()), 1, 1);
 			ApplicantFamily family = getApplicationService(iwc).getApplicantFamily(AH.getApplicant());
-			//same as ApplicantFamily family = new ApplicantFamily(eApplicant);
-
+			
 			boolean bSpouse = false, bChildren = false;
 			if (family.getSpouse() != null) {
 
@@ -530,14 +495,6 @@ public class CampusAllocator extends CampusBlock implements Campus {
 						2, 1);
 				bChildren = true;
 			}
-//			if (bChildren && bSpouse) {
-//				Frame.mergeCells(1, 1, 2, 1);
-//			}
-			/*
-			 * try { Frame.add(CA.getViewApartment(AH.getCampusApplication(), AH
-			 * .getApplied(), iwc), 1, 2); } catch (FinderException e) {
-			 * e.printStackTrace(); }
-			 */
 			MO = Frame;
 		} else
 			add("er null");
@@ -580,22 +537,8 @@ public class CampusAllocator extends CampusBlock implements Campus {
 							AllocationView view = (AllocationView) L.get(j);
 							boolean showEntry = true;
 
-							/*
-							 * if (view.getComplex() != null) { if
-							 * (view.getComplex().getLocked()) { showEntry =
-							 * false; } }
-							 */
-
-							/*
-							 * if (view.getApartmentType() != null) { if
-							 * (view.getApartmentType().getLocked()) { showEntry =
-							 * false; } }
-							 */
-
 							if (showEntry) {
 								subcat = view.getSubcategoryId();
-								// type = view.getTypeId();
-								// cmpx = view.getComplexId();
 								listCount = view.getTotalNumberOfApartments();
 								freeCount = view.getNumberOfFreeApartments();
 								appCnt1 = view.getNumberOfChoice1();
@@ -666,16 +609,12 @@ public class CampusAllocator extends CampusBlock implements Campus {
 
 		} else {
 			int row = 2;
-			// ComplexSubcategoryViewHome csHome =
-			// campusService.getBuildingService().getComplexSubcategoryViewHome();
 			ApartmentSubcategoryHome scHome = campusService
 					.getBuildingService().getApartmentSubcategoryHome();
 			if (Categories != null && !Categories.isEmpty()) {
 				for (Iterator iter = Categories.iterator(); iter.hasNext();) {
 					ApartmentCategory category = (ApartmentCategory) iter
 							.next();
-					// Collection complexSubcategories = csHome
-					// .findByCategory((Integer) category.getPrimaryKey());
 
 					Collection subcategories = scHome
 							.findByCategory((Integer) category.getPrimaryKey());
@@ -689,18 +628,6 @@ public class CampusAllocator extends CampusBlock implements Campus {
 								.next();
 
 						boolean showEntry = true;
-
-						/*
-						 * if (complexSubcategory.getComplex() != null) { if
-						 * (complexSubcategory.getComplex().getLocked()) {
-						 * showEntry = false; } }
-						 */
-
-						/*
-						 * if (complexSubcategory.getSubcategory() != null) { if
-						 * (complexSubcategory.getSubcategory().getl) {
-						 * showEntry = false; } }
-						 */
 
 						if (showEntry) {
 							StringBuffer name = new StringBuffer(subcat

@@ -1,5 +1,5 @@
 /*
- * $Id: WaitingListBMPBean.java,v 1.14.4.6 2007/07/23 19:18:06 eiki Exp $
+ * $Id: WaitingListBMPBean.java,v 1.14.4.7 2008/02/13 17:00:17 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -16,6 +16,7 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 import com.idega.block.application.data.Applicant;
+import com.idega.block.application.data.Application;
 import com.idega.block.building.data.Apartment;
 import com.idega.block.building.data.ApartmentSubcategory;
 import com.idega.data.GenericEntity;
@@ -31,11 +32,6 @@ import com.idega.data.query.WildCardColumn;
  */
 public class WaitingListBMPBean extends GenericEntity implements WaitingList {
 	private static final String ENTITY_NAME = "cam_waiting_list";
-
-	//private static final String COLUMN_COMPLEX = "bu_complex_id";
-
-	// private static final String COLUMN_APARTMENT_TYPE =
-	// "bu_apartment_type_id";
 
 	private static final String COLUMN_SUBCATEGORY = "bu_subcategory_id";
 
@@ -60,6 +56,8 @@ public class WaitingListBMPBean extends GenericEntity implements WaitingList {
 	private static final String COLUMN_ACCEPTED_DATE = "accepted_date";
 	
 	private static final String COLUMN_APARTMENT = "bu_apartment_id";
+	
+	private static final String COLUMN_APPLICATION = "app_application_id";
 
 	public static final String YES = "Y";
 
@@ -89,7 +87,6 @@ public class WaitingListBMPBean extends GenericEntity implements WaitingList {
 
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		//addManyToOneRelationship(COLUMN_COMPLEX, Complex.class);
 		addManyToOneRelationship(COLUMN_SUBCATEGORY, ApartmentSubcategory.class);
 		addManyToOneRelationship(COLUMN_APPLICANT, Applicant.class);
 		addAttribute(COLUMN_ORDER, "Order", Integer.class);
@@ -105,6 +102,7 @@ public class WaitingListBMPBean extends GenericEntity implements WaitingList {
 		addAttribute(COLUMN_PRIORITY_LEVEL, "Priority level", String.class);
 		addAttribute(COLUMN_ACCEPTED_DATE, "Accepted date", Timestamp.class);
 		addManyToOneRelationship(COLUMN_APARTMENT, Apartment.class);
+		addManyToOneRelationship(COLUMN_APPLICATION, Application.class);
 
 		setMaxLength(COLUMN_LIST_TYPE, 1);
 		setMaxLength(COLUMN_REMOVED_FROM_LIST, 1);
@@ -118,10 +116,6 @@ public class WaitingListBMPBean extends GenericEntity implements WaitingList {
 	public static String getEntityTableName() {
 		return ENTITY_NAME;
 	}
-
-	/*public static String getComplexIdColumnName() {
-		return COLUMN_COMPLEX;
-	}*/
 
 	public static String getApartmentSubcategoryColumnName() {
 		return COLUMN_SUBCATEGORY;
@@ -138,14 +132,6 @@ public class WaitingListBMPBean extends GenericEntity implements WaitingList {
 	public static String getPriorityColumnName() {
 		return COLUMN_PRIORITY_LEVEL;
 	}
-
-	/*public void setComplexId(int id) {
-		setColumn(COLUMN_COMPLEX, id);
-	}
-
-	public Integer getComplexId() {
-		return getIntegerColumnValue(COLUMN_COMPLEX);
-	}*/
 
 	public void setApartmentSubcategory(int id) {
 		setColumn(COLUMN_SUBCATEGORY, id);
@@ -323,6 +309,22 @@ public class WaitingListBMPBean extends GenericEntity implements WaitingList {
 		setColumn(COLUMN_APARTMENT, apartment);
 	}
 
+	public Application getApplication() {
+		return (Application) getColumnValue(COLUMN_APPLICATION);
+	}
+	
+	public int getApplicationID() {
+		return getIntColumnValue(COLUMN_APPLICATION);
+	}
+	
+	public void setApplication(Application application) {
+		setColumn(COLUMN_APPLICATION, application);
+	}
+
+	public void setApplicationID(int id) {
+		setColumn(COLUMN_APPLICATION, id); 
+	}
+	
 	public Collection ejbFindByApartmentSubcategoryForApplicationType(
 			int subcatId) throws FinderException {
 		StringBuffer sql = new StringBuffer("select * from ");

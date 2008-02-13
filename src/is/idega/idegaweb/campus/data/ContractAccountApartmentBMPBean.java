@@ -33,17 +33,19 @@ public class ContractAccountApartmentBMPBean extends GenericView implements Cont
 	 * "STATUS", "RENTED", "BU_APRT_TYPE_ID", "BU_APRT_CAT_ID", "BU_FLOOR_ID",
 	 * "BU_BUILDING_ID", "BU_COMPLEX_ID" ) AS
 	 * 
-	 * select cc.cam_contract_id,cc.ic_user_id,cc.bu_apartment_id,
-	 * fa.fin_account_id,fa.account_type, fa.balance,fa.name,
-	 * cc.valid_from,cc.valid_to,cc.deliver_date,cc.return_date,cc.status,cc.rented,
-	 * ba.bu_aprt_type_id , bc.bu_aprt_cat_id,
-	 * bf.bu_floor_id,bb.bu_building_id,bx.bu_complex_id from cam_contract
-	 * cc,fin_account fa,bu_apartment ba, bu_floor bf,bu_building bb,bu_complex
-	 * bx,bu_aprt_cat bc,bu_aprt_type bt where cc.ic_user_id = fa.ic_user_id
-	 * and cc.bu_apartment_id = ba.bu_apartment_id and ba.bu_floor_id =
-	 * bf.bu_floor_id and bf.bu_building_id = bb.bu_building_id and
-	 * bb.bu_complex_id = bx.bu_complex_id and ba.bu_aprt_type_id =
-	 * bt.bu_aprt_type_id and bt.bu_aprt_cat_id = bc.bu_aprt_cat_id ;
+select cc.cam_contract_id,cc.ic_user_id,cc.bu_apartment_id,
+ fa.fin_account_id,fa.account_type, fa.balance,fa.name,
+ cc.valid_from,cc.valid_to,cc.deliver_date,cc.return_date,cc.status,cc.rented,
+ ba.bu_aprt_type_id , bc.bu_aprt_cat_id,
+ bf.bu_floor_id,bb.bu_building_id,bx.bu_complex_id from cam_contract
+ cc,fin_account fa,bu_apartment ba, bu_floor bf,bu_building bb,bu_complex
+ bx,bu_aprt_cat bc,bu_aprt_sub_cat sub,bu_aprt_type bt where cc.ic_user_id = fa.ic_user_id
+ and cc.bu_apartment_id = ba.bu_apartment_id and ba.bu_floor_id =
+ bf.bu_floor_id and bf.bu_building_id = bb.bu_building_id and
+ bb.bu_complex_id = bx.bu_complex_id and ba.bu_aprt_type_id =
+ bt.bu_aprt_type_id and bt.bu_aprt_subcat = sub.bu_aprt_sub_cat_id and
+ sub.aprt_cat = bc.bu_aprt_cat_id
+	 *
 	 */
 	public static String getEntityTableName() {
 		return "V_CONT_ACCT_APRT";

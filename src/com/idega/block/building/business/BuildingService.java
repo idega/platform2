@@ -49,7 +49,9 @@ public interface BuildingService extends IBOService {
 	 * @see com.idega.block.building.business.BuildingServiceBean#storeApartmentCategory
 	 */
 	public ApartmentCategory storeApartmentCategory(Integer categoryID,
-			String name, String info, Integer imageID, Integer textID)
+			String name, String info, Integer imageID, Integer textID,
+			boolean showSpouse, boolean spouseMandatory, boolean showChildren,
+			boolean childrenMandatory, int maxNumberOfChoices)
 			throws RemoteException;
 
 	/**

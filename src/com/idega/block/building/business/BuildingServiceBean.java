@@ -161,7 +161,7 @@ public class BuildingServiceBean extends IBOServiceBean implements
 	}
 
 	public ApartmentCategory storeApartmentCategory(Integer categoryID,
-			String name, String info, Integer imageID, Integer textID) {
+			String name, String info, Integer imageID, Integer textID, boolean showSpouse, boolean spouseMandatory, boolean showChildren, boolean childrenMandatory, int maxNumberOfChoices) {
 		try {
 			ApartmentCategory category = null;
 			if (categoryID != null && categoryID.intValue() > 0) {
@@ -178,6 +178,13 @@ public class BuildingServiceBean extends IBOServiceBean implements
 			if (textID != null && textID.intValue() > 0) {
 				category.setTextId(textID.intValue());
 			}
+			
+			category.setShowSpouse(showSpouse);
+			category.setSpouseMandatory(spouseMandatory);
+			category.setShowChildren(showChildren);
+			category.setChildrenMandatory(childrenMandatory);
+			category.setMaxNumberOfChoices(maxNumberOfChoices);
+			
 			category.store();
 			return category;
 		} catch (IDOStoreException e) {

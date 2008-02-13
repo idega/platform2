@@ -214,7 +214,7 @@ public class CampusAssessmentBusinessBean extends AssessmentBusinessBean impleme
 									line.addContent(DIVISION, entry.getDivisionForAccounting());
 									line.addContent(ITEM_DESCRIPTION, entry.getName());
 									line.addContent(UNIT_PRICE, format.format(-entry.getTotal()));
-									line.addContent(QUANTITY, "1");
+									//line.addContent(QUANTITY, entry.get);
 
 									header.addContent(line);
 								}
