@@ -1,71 +1,81 @@
 package com.idega.block.finance.data;
 
 
-public class TariffHomeImpl extends com.idega.data.IDOFactory implements TariffHome
-{
- protected Class getEntityInterfaceClass(){
-  return Tariff.class;
- }
+import java.util.Collection;
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+import com.idega.data.IDOEntity;
+import com.idega.data.IDOFactory;
 
+public class TariffHomeImpl extends IDOFactory implements TariffHome {
+	public Class getEntityInterfaceClass() {
+		return Tariff.class;
+	}
 
- public Tariff create() throws javax.ejb.CreateException{
-  return (Tariff) super.createIDO();
- }
+	public Tariff create() throws CreateException {
+		return (Tariff) super.createIDO();
+	}
 
+	public Tariff findByPrimaryKey(Object pk) throws FinderException {
+		return (Tariff) super.findByPrimaryKeyIDO(pk);
+	}
 
-public java.util.Collection findAllByColumn(java.lang.String p0,java.lang.String p1)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((TariffBMPBean)entity).ejbFindAllByColumn(p0,p1);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public Collection findAllByPrimaryKeyArray(String[] array)
+			throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((TariffBMPBean) entity)
+				.ejbFindAllByPrimaryKeyArray(array);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public java.util.Collection findAllByColumn(java.lang.String p0,int p1)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((TariffBMPBean)entity).ejbFindAllByColumn(p0,p1);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public Collection findAllByColumnOrdered(String column, String value,
+			String order) throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((TariffBMPBean) entity).ejbFindAllByColumnOrdered(
+				column, value, order);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public java.util.Collection findAllByColumnOrdered(java.lang.String p0,java.lang.String p1,java.lang.String p2)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((TariffBMPBean)entity).ejbFindAllByColumnOrdered(p0,p1,p2);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public Collection findAllByColumnOrdered(String column, String value,
+			String column2, String value2, String order) throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((TariffBMPBean) entity).ejbFindAllByColumnOrdered(
+				column, value, column2, value2, order);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public java.util.Collection findAllByColumnOrdered(java.lang.String p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((TariffBMPBean)entity).ejbFindAllByColumnOrdered(p0,p1,p2,p3,p4);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public Collection findAllByColumn(String column, String value)
+			throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((TariffBMPBean) entity).ejbFindAllByColumn(column,
+				value);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public java.util.Collection findAllByPrimaryKeyArray(java.lang.String[] p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((TariffBMPBean)entity).ejbFindAllByPrimaryKeyArray(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public Collection findAllByColumn(String column, int value)
+			throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((TariffBMPBean) entity).ejbFindAllByColumn(column,
+				value);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public java.util.Collection findByAttribute(java.lang.String p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((TariffBMPBean)entity).ejbFindByAttribute(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public Collection findByTariffGroup(Integer groupId) throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((TariffBMPBean) entity).ejbFindByTariffGroup(groupId);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public java.util.Collection findByTariffGroup(java.lang.Integer p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((TariffBMPBean)entity).ejbFindByTariffGroup(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
- public Tariff findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (Tariff) super.findByPrimaryKeyIDO(pk);
- }
-
-
-
+	public Collection findByAttribute(String attribute) throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((TariffBMPBean) entity).ejbFindByAttribute(attribute);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 }

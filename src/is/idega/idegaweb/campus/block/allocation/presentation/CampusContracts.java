@@ -256,6 +256,8 @@ public class CampusContracts extends CampusBlock {
 		drp.addMenuElement(ContractFinder.CATEGORY, localize("category",
 				"Category"));
 		drp.addMenuElement(ContractFinder.TYPE, localize("type", "Type"));
+		drp.addMenuElement(ContractFinder.START_DATE, localize("valid_from", "Valid from"));
+		drp.addMenuElement(ContractFinder.END_DATE, localize("valid_to", "Valid to"));
 		if (selected != null)
 			drp.setSelectedElement(selected.toString());
 		return drp;

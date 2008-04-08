@@ -1,16 +1,32 @@
 package com.idega.block.finance.data;
 
 
-public interface TariffHome extends com.idega.data.IDOHome
-{
- public Tariff create() throws javax.ejb.CreateException;
- public Tariff findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
- public java.util.Collection findAllByColumn(java.lang.String p0,java.lang.String p1)throws javax.ejb.FinderException;
- public java.util.Collection findAllByColumn(java.lang.String p0,int p1)throws javax.ejb.FinderException;
- public java.util.Collection findAllByColumnOrdered(java.lang.String p0,java.lang.String p1,java.lang.String p2)throws javax.ejb.FinderException;
- public java.util.Collection findAllByColumnOrdered(java.lang.String p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4)throws javax.ejb.FinderException;
- public java.util.Collection findAllByPrimaryKeyArray(java.lang.String[] p0)throws javax.ejb.FinderException;
- public java.util.Collection findByAttribute(java.lang.String p0)throws javax.ejb.FinderException;
- public java.util.Collection findByTariffGroup(java.lang.Integer p0)throws javax.ejb.FinderException;
+import java.util.Collection;
+import javax.ejb.CreateException;
+import com.idega.data.IDOHome;
+import javax.ejb.FinderException;
 
+public interface TariffHome extends IDOHome {
+	public Tariff create() throws CreateException;
+
+	public Tariff findByPrimaryKey(Object pk) throws FinderException;
+
+	public Collection findAllByPrimaryKeyArray(String[] array)
+			throws FinderException;
+
+	public Collection findAllByColumnOrdered(String column, String value,
+			String order) throws FinderException;
+
+	public Collection findAllByColumnOrdered(String column, String value,
+			String column2, String value2, String order) throws FinderException;
+
+	public Collection findAllByColumn(String column, String value)
+			throws FinderException;
+
+	public Collection findAllByColumn(String column, int value)
+			throws FinderException;
+
+	public Collection findByTariffGroup(Integer groupId) throws FinderException;
+
+	public Collection findByAttribute(String attribute) throws FinderException;
 }

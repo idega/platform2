@@ -244,6 +244,7 @@ public class AssessmentBusinessBean extends IBOServiceBean implements Assessment
 			transaction.commit();
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 			try {
 				transaction.rollback();
 			}

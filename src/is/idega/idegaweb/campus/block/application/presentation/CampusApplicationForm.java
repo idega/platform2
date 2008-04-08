@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.30.4.7 2007/08/16 16:39:12 eiki Exp $
+ * $Id: CampusApplicationForm.java,v 1.30.4.8 2008/04/08 20:12:06 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -1065,6 +1065,16 @@ public class CampusApplicationForm extends ApplicationForm {
 	 */
 	protected boolean isValidAge(String ssn, IWContext iwc) {
 		String mininumAgeString = iwc.getApplicationSettings().getProperty("CAMPUS_MINIMUM_AGE");
+		
+		if (ssn == null || "".equals(ssn)) {
+			return false;
+		} else {
+			int firstDigit = Integer.parseInt(ssn.substring(0, 1));
+			if (firstDigit > 3) {
+				return true;
+			}
+		}
+		
 		if(mininumAgeString!=null && !"".equals(mininumAgeString)){
 			int minimumAge = Integer.parseInt(mininumAgeString);
 			int age = SocialSecurityNumber.getAge(ssn);

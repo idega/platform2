@@ -180,8 +180,6 @@ public class AccountTariffer extends Finance {
 					: null;
 			int discount = SDiscount != null && !SDiscount.equals("") ? Integer
 					.parseInt(SDiscount) : -1;
-			System.out.println(discount);
-			// AssessmentBusiness assBuiz = getAssessmentService(iwc);
 			String[] qtys = iwc.getParameterValues(PARAM_QUANTITY);
 			String[] ids = iwc.getParameterValues(PARAM_TARIFF_IDS);
 			if (qtys != null && qtys.length > 0 && ids != null

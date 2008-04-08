@@ -1,5 +1,5 @@
 /*
- * $Id: ContractServiceBean.java,v 1.24.4.3 2006/10/18 13:54:05 palli Exp $
+ * $Id: ContractServiceBean.java,v 1.24.4.4 2008/04/08 20:12:10 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -90,8 +90,6 @@ public class ContractServiceBean extends IBOServiceBean implements
 			eContract = getContractHome().findByPrimaryKey(contractID);
 			if (eContract != null) {
 				Integer userID = eContract.getUserId();
-				System.err.println("Signing user " + userID.toString()
-						+ " contract id : " + contractID);
 				if (sEmail != null && sEmail.trim().length() > 0) {
 					getUserService().addNewUserEmail(userID.intValue(), sEmail);
 				}
@@ -111,7 +109,6 @@ public class ContractServiceBean extends IBOServiceBean implements
 				if (newLogin && groupID.intValue() > 0) {
 					User user = getUserService().getUser(userID);
 					createUserLogin(user, groupID, login, pass, generatePasswd);
-					// addUserToTenantGroup(groupID,user);
 					getUserService().setAsTenant(user);
 				}
 				deleteFromWaitingList(eContract);
@@ -138,30 +135,6 @@ public class ContractServiceBean extends IBOServiceBean implements
 		LoginTable loginEntry = getUserService().generateUserLogin(user);
 		loginEntry.setLastChanged(null);
 		loginEntry.store();
-	}
-
-	/**
-	 * @param groupID
-	 * @param user
-	 * @throws FinderException
-	 * @throws RemoteException
-	 */
-	public void addUserToTenantGroup(Integer groupID, User user)
-			throws FinderException, RemoteException {
-		/*
-		 * Group group =
-		 * getUserService().getGroupHome().findByPrimaryKey(groupID);
-		 * 
-		 * int userGroupID = user.getGroupID(); String oldGroupId[] = new
-		 * String[0]; try { oldGroupId =
-		 * SimpleQuerier.executeStringQuery("select user_representative from
-		 * ic_user where ic_user_id = "+user.getPrimaryKey().toString()); }
-		 * catch (Exception e) { e.printStackTrace(); } if(oldGroupId[0]!=null)
-		 * userGroupID = Integer.parseInt(oldGroupId[0]);
-		 * 
-		 * group.addGroup(userGroupID);
-		 */
-
 	}
 
 	public void changeApplicationStatus(Contract eContract) throws Exception {
@@ -216,7 +189,6 @@ public class ContractServiceBean extends IBOServiceBean implements
 	public void endContract(Contract C, IWTimestamp movingDate, String info,
 			boolean datesync) {
 		try {
-
 			if (movingDate != null)
 				C.setMovingDate(movingDate.getDate());
 			if (datesync)
@@ -240,13 +212,9 @@ public class ContractServiceBean extends IBOServiceBean implements
 			contracts = getContractHome().findByStatusAndValidBeforeDate(
 					ContractBMPBean.STATUS_SIGNED,
 					IWTimestamp.RightNow().getDate());
-			if (contracts != null)
-				System.out.println(contracts.size()
-						+ " contracts found to be ended");
 			for (Iterator iter = contracts.iterator(); iter.hasNext();) {
 				Contract contract = (Contract) iter.next();
 				endContract(contract, null, null, false);
-
 			}
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -282,14 +250,10 @@ public class ContractServiceBean extends IBOServiceBean implements
 		try {
 			contracts = getContractHome().findByStatusAndChangeDate(
 					ContractBMPBean.STATUS_RESIGNED, lastChangeDate);
-			if (contracts != null)
-				System.out.println(contracts.size()
-						+ " resigned contracts found to be garbaged");
 			for (Iterator iter = contracts.iterator(); iter.hasNext();) {
 				Contract contract = (Contract) iter.next();
 				contract.setStatusGarbage();
 				contract.store();
-
 			}
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -303,14 +267,10 @@ public class ContractServiceBean extends IBOServiceBean implements
 		try {
 			contracts = getContractHome().findByStatusAndChangeDate(
 					ContractBMPBean.STATUS_GARBAGE, lastChangeDate);
-			if (contracts != null)
-				System.out.println(contracts.size()
-						+ " contracts found to be finalized");
 			for (Iterator iter = contracts.iterator(); iter.hasNext();) {
 				Contract contract = (Contract) iter.next();
 				contract.setStatusFinalized();
 				contract.store();
-
 			}
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -404,33 +364,20 @@ public class ContractServiceBean extends IBOServiceBean implements
 
 	public User createUserFamily(Applicant applicant, String[] emails)
 			throws RemoteException, CreateException, CampusGroupException {
-		System.out.println("Creating user");
 		User user = createNewUser(applicant, emails);
-		System.out.println("Setting user as tenant");
 		getUserService().setAsTenant(user);
-		System.out.println("Getting family");
 		ApplicantFamily family = getApplicationService().getApplicantFamily(
 				applicant);
-		System.out.println("Getting spouse");
 		Applicant applicantSpouse = family.getSpouse();
-		System.out.println("Checking spuse");
 		if (applicantSpouse != null) {
-			System.out.println("Creating spouse");
 			User uspouse = createNewUser(applicantSpouse, null);
-			System.out.println("Set spouse as tenant spouse");
 			getUserService().setAsTenantSpouse(user, uspouse);
 		}
-		System.out.println("Getting children");
 		Collection children = family.getChildren();
-		System.out.println("Checking chilren");
 		if (children != null && !children.isEmpty()) {
-			System.out.println("There are children");
 			for (Iterator iter = children.iterator(); iter.hasNext();) {
-				System.out.println("Getting child");
 				Applicant applicantChild = (Applicant) iter.next();
-				System.out.println("Create child");
 				User child = createNewUser(applicantChild, null);
-				System.out.println("Set child as tenant");
 				getUserService().setAsTenantChild(user, child);
 			}
 		}
@@ -439,8 +386,6 @@ public class ContractServiceBean extends IBOServiceBean implements
 
 	public User createNewUser(Applicant A, String[] emails)
 			throws RemoteException, CreateException {
-		// User user = getUserService().createUser(A.getFirstName(),
-		// A.getMiddleName(), A.getLastName(), A.getSSN());
 		User user = null;
 		if (getAllowedTemporaryPersonalID().contains(A.getSSN()))
 			user = getUserService().createUser(A.getFirstName(),
@@ -920,6 +865,16 @@ public class ContractServiceBean extends IBOServiceBean implements
 		return nextAvailable;
 	}
 
+	public boolean getIsContractResigned(Apartment apartment) {
+		ApartmentContracts apartmentContracts = new ApartmentContracts(
+				apartment, getAllocateableStatuses());
+		if (!apartmentContracts.hasContracts()) {
+			return false;
+		}
+
+		return true;
+	}
+	
 	public void resetWaitingListRejection(Integer waitingListID)
 			throws RemoteException, FinderException {
 		try {
@@ -1045,6 +1000,14 @@ public class ContractServiceBean extends IBOServiceBean implements
 				ContractBMPBean.STATUS_PRINTED, ContractBMPBean.STATUS_SIGNED,
 				ContractBMPBean.STATUS_ENDED, ContractBMPBean.STATUS_RESIGNED,
 				ContractBMPBean.STATUS_TERMINATED };
+		return statuses;
+	}
+
+	/**
+	 * Returns statuses: resigned
+	 */
+	public String[] getResignStatus() {
+		String[] statuses = { ContractBMPBean.STATUS_RESIGNED };
 		return statuses;
 	}
 

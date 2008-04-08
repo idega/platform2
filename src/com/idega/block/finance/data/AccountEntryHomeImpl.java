@@ -1,116 +1,150 @@
 package com.idega.block.finance.data;
 
 
+import com.idega.data.IDOException;
+import java.util.Collection;
+import javax.ejb.CreateException;
+import java.sql.SQLException;
+import javax.ejb.FinderException;
+import java.sql.Date;
+import com.idega.data.IDOEntity;
+import com.idega.data.IDOFactory;
 
+public class AccountEntryHomeImpl extends IDOFactory implements
+		AccountEntryHome {
+	public Class getEntityInterfaceClass() {
+		return AccountEntry.class;
+	}
 
+	public AccountEntry create() throws CreateException {
+		return (AccountEntry) super.createIDO();
+	}
 
-public class AccountEntryHomeImpl extends com.idega.data.IDOFactory implements AccountEntryHome
-{
- protected Class getEntityInterfaceClass(){
-  return AccountEntry.class;
- }
+	public AccountEntry findByPrimaryKey(Object pk) throws FinderException {
+		return (AccountEntry) super.findByPrimaryKeyIDO(pk);
+	}
 
+	public Collection findByAccountAndAssessmentRound(Integer accountID,
+			Integer assessmentRoundID) throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((AccountEntryBMPBean) entity)
+				.ejbFindByAccountAndAssessmentRound(accountID,
+						assessmentRoundID);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
- public AccountEntry create() throws javax.ejb.CreateException{
-  return (AccountEntry) super.createIDO();
- }
+	public double getTotalSumByAccountAndAssessmentRound(Integer accountID,
+			Integer assessmentRoundID) throws SQLException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		double theReturn = ((AccountEntryBMPBean) entity)
+				.ejbHomeGetTotalSumByAccountAndAssessmentRound(accountID,
+						assessmentRoundID);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
 
+	public double getTotalSumByAccount(Integer accountID) throws SQLException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		double theReturn = ((AccountEntryBMPBean) entity)
+				.ejbHomeGetTotalSumByAccount(accountID);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
 
-public java.util.Collection findByAccountAndAssessmentRound(java.lang.Integer p0,java.lang.Integer p1)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((AccountEntryBMPBean)entity).ejbFindByAccountAndAssessmentRound(p0,p1);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public double getTotalSumByAccount(Integer accountID, String roundStatus)
+			throws SQLException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		double theReturn = ((AccountEntryBMPBean) entity)
+				.ejbHomeGetTotalSumByAccount(accountID, roundStatus);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
 
-public java.util.Collection findByAccountAndStatus(java.lang.Integer p0,java.lang.String p1,java.sql.Date p2,java.sql.Date p3,String assessmentStatus)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((AccountEntryBMPBean)entity).ejbFindByAccountAndStatus(p0,p1,p2,p3,assessmentStatus);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public double getTotalSumByAssessmentRound(Integer roundID)
+			throws SQLException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		double theReturn = ((AccountEntryBMPBean) entity)
+				.ejbHomeGetTotalSumByAssessmentRound(roundID);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
 
-public java.util.Collection findByAssessmentRound(java.lang.Integer p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((AccountEntryBMPBean)entity).ejbFindByAssessmentRound(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public Collection findByAssessmentRound(Integer assessmentRoundID)
+			throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((AccountEntryBMPBean) entity)
+				.ejbFindByAssessmentRound(assessmentRoundID);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public java.util.Collection findByEntryGroup(java.lang.Integer p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((AccountEntryBMPBean)entity).ejbFindByEntryGroup(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public Collection findByAccountAndStatus(Integer accountID, String status,
+			Date fromDate, Date toDate, String assessmentStatus)
+			throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((AccountEntryBMPBean) entity)
+				.ejbFindByAccountAndStatus(accountID, status, fromDate, toDate,
+						assessmentStatus);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public java.util.Collection findUnGrouped(java.sql.Date p0,java.sql.Date p1)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((AccountEntryBMPBean)entity).ejbFindUnGrouped(p0,p1);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public int countByGroup(Integer groupID) throws IDOException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		int theReturn = ((AccountEntryBMPBean) entity)
+				.ejbHomeCountByGroup(groupID);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
 
- public AccountEntry findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (AccountEntry) super.findByPrimaryKeyIDO(pk);
- }
- 
- public AccountEntry findByInvoiceNumber(int invoiceNumber) throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((AccountEntryBMPBean)entity).ejbFindByInvoiceNumber(invoiceNumber);
-	this.idoCheckInPooledEntity(entity);
-	return this.findByPrimaryKey(pk);
- }
- 
- public java.util.Collection findByBatchNumber(int batchNumber)throws javax.ejb.FinderException{
- 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
- 	java.util.Collection ids = ((AccountEntryBMPBean)entity).ejbFindInvoicesByBatchNumber(batchNumber);
- 	this.idoCheckInPooledEntity(entity);
- 	return this.getEntityCollectionForPrimaryKeys(ids);
- }
+	public Collection findUnGrouped(Date from, Date to) throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((AccountEntryBMPBean) entity).ejbFindUnGrouped(from,
+				to);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
+	public Collection findByEntryGroup(Integer groupID) throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((AccountEntryBMPBean) entity)
+				.ejbFindByEntryGroup(groupID);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public int countByGroup(java.lang.Integer p0)throws com.idega.data.IDOException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((AccountEntryBMPBean)entity).ejbHomeCountByGroup(p0);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
+	public Date getMaxDateByAccount(Integer accountID) throws IDOException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Date theReturn = ((AccountEntryBMPBean) entity)
+				.ejbHomeGetMaxDateByAccount(accountID);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
 
-public java.sql.Date getMaxDateByAccount(java.lang.Integer p0)throws com.idega.data.IDOException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.sql.Date theReturn = ((AccountEntryBMPBean)entity).ejbHomeGetMaxDateByAccount(p0);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
+	public AccountEntry findByInvoiceNumber(int invoiceNumber)
+			throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((AccountEntryBMPBean) entity)
+				.ejbFindByInvoiceNumber(invoiceNumber);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
 
-public double getTotalSumByAccount(java.lang.Integer p0)throws java.sql.SQLException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	double theReturn = ((AccountEntryBMPBean)entity).ejbHomeGetTotalSumByAccount(p0);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
+	public Collection findByBatchNumber(int batchNumber) throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((AccountEntryBMPBean) entity)
+				.ejbFindByBatchNumber(batchNumber);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public double getTotalSumByAccount(java.lang.Integer p0,String roundStatus)throws java.sql.SQLException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	double theReturn = ((AccountEntryBMPBean)entity).ejbHomeGetTotalSumByAccount(p0,roundStatus);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
-
-public double getTotalSumByAccountAndAssessmentRound(java.lang.Integer p0,java.lang.Integer p1)throws java.sql.SQLException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	double theReturn = ((AccountEntryBMPBean)entity).ejbHomeGetTotalSumByAccountAndAssessmentRound(p0,p1);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
-
-public double getTotalSumByAssessmentRound(java.lang.Integer p0)throws java.sql.SQLException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	double theReturn = ((AccountEntryBMPBean)entity).ejbHomeGetTotalSumByAssessmentRound(p0);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
-
-
+	public Collection findInvoicesByBatchNumber(int batchNumber)
+			throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((AccountEntryBMPBean) entity)
+				.ejbFindInvoicesByBatchNumber(batchNumber);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 }

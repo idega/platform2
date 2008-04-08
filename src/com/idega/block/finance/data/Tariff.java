@@ -1,33 +1,152 @@
 package com.idega.block.finance.data;
 
 
-public interface Tariff extends com.idega.data.IDOEntity
-{
- public int getAccountKeyId();
- public boolean getInUse();
- public java.lang.String getIndexType();
- public java.sql.Timestamp getIndexUpdated();
- public java.lang.String getInfo();
- public java.lang.String getName();
- public float getPrice();
- public java.lang.String getTariffAttribute();
- public int getTariffGroupId();
- public java.sql.Timestamp getUseFromDate();
- public boolean getUseIndex();
- public java.sql.Timestamp getUseToDate();
- public void setAccountKeyId(java.lang.Integer p0);
- public void setAccountKeyId(int p0);
- public void setInUse(boolean p0);
- public void setIndexType(java.lang.String p0);
- public void setIndexUpdated(java.sql.Timestamp p0);
- public void setInfo(java.lang.String p0);
- public void setName(java.lang.String p0);
- public void setPrice(float p0);
- public void setPrice(java.lang.Float p0);
- public void setTariffAttribute(java.lang.String p0);
- public void setTariffGroupId(java.lang.Integer p0);
- public void setTariffGroupId(int p0);
- public void setUseFromDate(java.sql.Timestamp p0);
- public void setUseIndex(boolean p0);
- public void setUseToDate(java.sql.Timestamp p0);
+import java.sql.Timestamp;
+import com.idega.data.IDOEntity;
+
+public interface Tariff extends IDOEntity {
+	/**
+	 * @see com.idega.block.finance.data.TariffBMPBean#getName
+	 */
+	public String getName();
+
+	/**
+	 * @see com.idega.block.finance.data.TariffBMPBean#setName
+	 */
+	public void setName(String name);
+
+	/**
+	 * @see com.idega.block.finance.data.TariffBMPBean#getTariffAttribute
+	 */
+	public String getTariffAttribute();
+
+	/**
+	 * @see com.idega.block.finance.data.TariffBMPBean#setTariffAttribute
+	 */
+	public void setTariffAttribute(String attribute);
+
+	/**
+	 * @see com.idega.block.finance.data.TariffBMPBean#getPrice
+	 */
+	public float getPrice();
+
+	/**
+	 * @see com.idega.block.finance.data.TariffBMPBean#setPrice
+	 */
+	public void setPrice(float price);
+
+	/**
+	 * @see com.idega.block.finance.data.TariffBMPBean#setPrice
+	 */
+	public void setPrice(Float price);
+
+	/**
+	 * @see com.idega.block.finance.data.TariffBMPBean#getInfo
+	 */
+	public String getInfo();
+
+	/**
+	 * @see com.idega.block.finance.data.TariffBMPBean#setInfo
+	 */
+	public void setInfo(String info);
+
+	/**
+	 * @see com.idega.block.finance.data.TariffBMPBean#getAccountKeyId
+	 */
+	public int getAccountKeyId();
+
+	/**
+	 * @see com.idega.block.finance.data.TariffBMPBean#setAccountKeyId
+	 */
+	public void setAccountKeyId(Integer account_key_id);
+
+	/**
+	 * @see com.idega.block.finance.data.TariffBMPBean#setAccountKeyId
+	 */
+	public void setAccountKeyId(int account_key_id);
+
+	/**
+	 * @see com.idega.block.finance.data.TariffBMPBean#getTariffGroupId
+	 */
+	public int getTariffGroupId();
+
+	/**
+	 * @see com.idega.block.finance.data.TariffBMPBean#setTariffGroupId
+	 */
+	public void setTariffGroupId(Integer group_id);
+
+	/**
+	 * @see com.idega.block.finance.data.TariffBMPBean#setTariffGroupId
+	 */
+	public void setTariffGroupId(int group_id);
+
+	/**
+	 * @see com.idega.block.finance.data.TariffBMPBean#getUseFromDate
+	 */
+	public Timestamp getUseFromDate();
+
+	/**
+	 * @see com.idega.block.finance.data.TariffBMPBean#setUseFromDate
+	 */
+	public void setUseFromDate(Timestamp use_date);
+
+	/**
+	 * @see com.idega.block.finance.data.TariffBMPBean#getUseToDate
+	 */
+	public Timestamp getUseToDate();
+
+	/**
+	 * @see com.idega.block.finance.data.TariffBMPBean#setUseToDate
+	 */
+	public void setUseToDate(Timestamp use_date);
+
+	/**
+	 * @see com.idega.block.finance.data.TariffBMPBean#getIndexUpdated
+	 */
+	public Timestamp getIndexUpdated();
+
+	/**
+	 * @see com.idega.block.finance.data.TariffBMPBean#setIndexUpdated
+	 */
+	public void setIndexUpdated(Timestamp use_date);
+
+	/**
+	 * @see com.idega.block.finance.data.TariffBMPBean#setUseIndex
+	 */
+	public void setUseIndex(boolean useindex);
+
+	/**
+	 * @see com.idega.block.finance.data.TariffBMPBean#getUseIndex
+	 */
+	public boolean getUseIndex();
+
+	/**
+	 * @see com.idega.block.finance.data.TariffBMPBean#setInUse
+	 */
+	public void setInUse(boolean useindex);
+
+	/**
+	 * @see com.idega.block.finance.data.TariffBMPBean#getInUse
+	 */
+	public boolean getInUse();
+
+	/**
+	 * @see com.idega.block.finance.data.TariffBMPBean#getIndexType
+	 */
+	public String getIndexType();
+
+	/**
+	 * @see com.idega.block.finance.data.TariffBMPBean#setIndexType
+	 */
+	public void setIndexType(String type);
+
+	/**
+	 * @see com.idega.block.finance.data.TariffBMPBean#getUseDiscount
+	 */
+	public boolean getUseDiscount();
+
+	/**
+	 * @see com.idega.block.finance.data.TariffBMPBean#setUseDiscount
+	 */
+	public void setUseDiscount(boolean useDiscount);
 }

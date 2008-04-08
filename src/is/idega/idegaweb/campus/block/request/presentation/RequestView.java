@@ -1,5 +1,5 @@
 /*
- * $Id: RequestView.java,v 1.12.4.5 2007/09/04 14:08:51 eiki Exp $
+ * $Id: RequestView.java,v 1.12.4.6 2008/04/08 20:12:10 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -222,7 +222,7 @@ public class RequestView extends CampusWindow {
 		row++;
 		if(showRadioButtons){
 			RadioButton radioButton = new RadioButton(REQUEST_TIME, REQUEST_DAYTIME);
-			radioButton.setSelected();
+			//radioButton.setSelected();
 			data.add(radioButton, 1, row);
 			data.add(getHeader(localize(REQUEST_DAYTIME,"Repairs may be done during business hours even though I'm not at home.")), 2, row);
 			row++;

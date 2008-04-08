@@ -305,13 +305,11 @@ public class ApartmentTypeViewer extends Block {
 			linksTable.setBackgroundImage(1, 3, this.iwb_
 					.getImage("/shared/room/line.gif"));
 
-			// Link applyLink = new Link(iwrb_.getImage("/room/apply.gif"));
 			PrintButton print = new PrintButton(this.iwrb_
 					.getImage("/room/print.gif"));
 			CloseButton close = new CloseButton(this.iwrb_
 					.getImage("/room/close.gif"));
 
-			// linksTable.add(applyLink,1,2);
 			linksTable.add(print, 2, 2);
 			linksTable.add(close, 1, 2);
 
@@ -333,51 +331,6 @@ public class ApartmentTypeViewer extends Block {
 		T.setFontStyle(this.infoStyle + "font-weight: bold;");
 		return T;
 	}
-
-	/*private Form getBuildingApartmentTypes(ApartmentType thetype)
-			throws RemoteException, FinderException {
-
-		Collection types = this.service.getApartmentTypeHome().findFromSameComplex(
-				thetype);
-
-		Form roomForm = new Form();
-
-		Text appartmentText = getBoldText(this.iwrb_.getLocalizedString(
-				"other_apartments", "Other apartments in building")
-				+ ": ");
-
-		Table table = new Table(1, 1);
-		table.setCellpaddingAndCellspacing(0);
-		table.setWidth(Table.HUNDRED_PERCENT);
-		table.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_CENTER);
-
-		Table formTable = new Table(1, 1);
-		formTable.setCellpadding(0);
-		formTable.setCellspacing(0);
-		formTable.setWidth("90%");
-		formTable.setAlignment(1, 1, "right");
-		table.add(formTable, 1, 1);
-
-		DropdownMenu roomTypes = new DropdownMenu("type_id");
-		roomTypes.setToSubmit();
-		roomTypes.keepStatusOnAction();
-		for (Iterator iter = types.iterator(); iter.hasNext();) {
-			ApartmentType type = (ApartmentType) iter.next();
-			roomTypes.addMenuElement(type.getPrimaryKey().toString(), type
-					.getName());
-		}
-		roomTypes.setSelectedElement(thetype.getPrimaryKey().toString());
-		roomTypes
-				.setMarkupAttribute("style",
-						"font-family: Verdana; font-size: 8pt; border: 1 solid #000000");
-
-		formTable.add(appartmentText, 1, 1);
-		formTable.add(roomTypes, 1, 1);
-		roomForm.add(table);
-
-		return roomForm;
-
-	}*/
 
 	private Form getSubcategoryApartmentTypes(ApartmentType thetype)
 			throws RemoteException, FinderException {
@@ -436,5 +389,4 @@ public class ApartmentTypeViewer extends Block {
 	public String getBundleIdentifier() {
 		return (IW_RESOURCE_BUNDLE);
 	}
-
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.76.4.10 2008/02/13 17:00:16 palli Exp $
+ * $Id: CampusAllocator.java,v 1.76.4.11 2008/04/08 20:12:09 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -80,6 +80,7 @@ import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
 import com.idega.util.IWTimestamp;
 import com.idega.util.LocaleUtil;
+import com.sun.jimi.core.component.AbstractRenderer.ResizeWatcher;
 
 /**
  * @author <a href="mailto:aron@idega.is">aron@idega.is
@@ -341,7 +342,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 
 	}
 
-	private Link getAllocateLink(Applicant applicant) {
+	private Link getAllocateLink(Applicant applicant, WaitingList waitingList) {
 		Link L = new Link(getBundle().getImage("red.gif"));
 		L.addParameter(PRM_ALLOCATE, applicant.getPrimaryKey().toString());
 		L.setToolTip(localize("tooltip_nr_alloc_create", "Allocate"));
@@ -349,6 +350,11 @@ public class CampusAllocator extends CampusBlock implements Campus {
 			L.addParameter(pSubcatId);
 			// L.addParameter(pComplexId);
 		}
+		
+		if (waitingList != null) {
+			L.addParameter("wl_id", waitingList.getPrimaryKey().toString());
+		}
+		
 		return L;
 	}
 
@@ -439,7 +445,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 			Frame.add(getContractMakingTable(iwc, contract, applicantID, null,
 					contract.getApartmentId(), waitingList), 1, 1);
 		else
-			Frame.add(getFreeApartments(iwc, applicantID, contract), 1, 1);
+			Frame.add(getFreeApartments(iwc, applicantID, contract, waitingList.getApartment()), 1, 1);
 		myForm.add(Frame);
 
 		myForm.add(new HiddenInput(pSubcatId.getName(), pSubcatId
@@ -1002,7 +1008,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 	}
 
 	private PresentationObject getFreeApartments(IWContext iwc,
-			Integer applicantID, Contract contract) throws FinderException,
+			Integer applicantID, Contract contract, Apartment renewalApartment) throws FinderException,
 			RemoteException {
 		Collection apartments = campusService.getBuildingService()
 				.getApartmentViewHome().findBySubcategory(subcatID);
@@ -1034,6 +1040,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 			Date date;
 			boolean Available = false;
 			IWTimestamp nextAvailable;
+			boolean isResigned = false;
 			IWTimestamp today = IWTimestamp.RightNow();
 			today.setAsDate();
 			for (Iterator iter = apartments.iterator(); iter.hasNext();) {
@@ -1042,10 +1049,12 @@ public class CampusAllocator extends CampusBlock implements Campus {
 					apartmentID = (Integer) apartment.getPrimaryKey();
 					boolean isThis = false;
 					// Mark current apartment
-					if (hasContract
-							&& currentApartmentID == apartmentID.intValue()) {
+					if (hasContract && currentApartmentID == apartmentID.intValue()) {
 						isThis = true;
-						TextFontColor = "#FF0000";
+						TextFontColor = "#FF0000";						
+					} else if (renewalApartment != null && ((Integer)renewalApartment.getPrimaryKey()).intValue() == apartmentID.intValue()) {
+						isThis = true;
+						TextFontColor = "#00FF00";
 					}
 
 					// List all apartments and show next availability ( date )
@@ -1057,6 +1066,12 @@ public class CampusAllocator extends CampusBlock implements Campus {
 							.getTime());
 					nextAvailable.setAsDate();
 
+					isResigned = campusService
+					.getContractService().getIsContractResigned(
+							campusService.getBuildingService()
+									.getApartmentHome()
+									.findByPrimaryKey(apartmentID));
+					
 					T.add(getText(apartment.getApartmentName()), 2, row);
 					T.add(getText(apartment.getFloorName()), 3, row);
 					T.add(getText(apartment.getBuildingName()), 4, row);
@@ -1072,6 +1087,10 @@ public class CampusAllocator extends CampusBlock implements Campus {
 					}
 					if (isThis)
 						TextFontColor = "#000000";
+					
+					if (isResigned) {
+						TextFontColor = redColor;
+					}
 					row++;
 				}
 			}
@@ -1442,7 +1461,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 							Frame.add(getDenialChangeLink(null, WL, true),
 									col++, row);
 						else {
-							Frame.add(getAllocateLink(applicant), col++, row);
+							Frame.add(getAllocateLink(applicant, WL), col++, row);
 						}
 						Frame.add(getText(applicant.getFullName()), col++, row);
 						Frame.add(getText(applicant.getSSN()), col++, row);
@@ -1578,7 +1597,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 
 	public Text getText(String text) {
 		Text t = super.getText(text);
-		t.setFontColor(text);
+		t.setFontColor(TextFontColor);
 		return t;
 	}
 }

@@ -135,9 +135,14 @@ public class CampusAssessmentBusinessBean extends AssessmentBusinessBean impleme
 					}
 
 					// special
-					if (entry.getAccountKeyId() == 7) {
+					/*if (entry.getAccountKeyId() == 7) {
 						entry.setAccountKeyId(2);
+					}*/
+					
+					if (entry.getAccountKey().getXMLParentKey() != null) {
+						entry.setAccountKeyId((Integer)entry.getAccountKey().getXMLParentKey().getPrimaryKey());
 					}
+					
 					Integer acc_key = new Integer(entry.getAccountKeyId());
 					if (entryMap.containsKey(acc_key)) {
 						AccountEntry oldEntry = (AccountEntry) entryMap.get(acc_key);
@@ -212,6 +217,9 @@ public class CampusAssessmentBusinessBean extends AssessmentBusinessBean impleme
 											entry.getAccountKeyId()));
 									line.addContent(ITEM_CODE, accKey.getName());
 									line.addContent(DIVISION, entry.getDivisionForAccounting());
+									if (entry.getName() == null || "".equals(entry.getName())) {
+										entry.setName(accKey.getInfo());
+									}
 									line.addContent(ITEM_DESCRIPTION, entry.getName());
 									line.addContent(UNIT_PRICE, format.format(-entry.getTotal()));
 									//line.addContent(QUANTITY, entry.get);

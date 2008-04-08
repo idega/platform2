@@ -68,7 +68,7 @@ public class TariffGroupWindow extends IWAdminWindow {
 			if (iwc.isParameterSet(actSave) || iwc.isParameterSet(actSave + ".x")) {
 				groupId = processCategoryForm(iwc, iCategoryId, groupId);
 			}
-			if (groupId != null) {
+			if (groupId != null && groupId.intValue() != -1) {
 				addCategoryFields(this.finServ.getTariffGroupHome().findByPrimaryKey(groupId), iCategoryId);
 			}
 			else {

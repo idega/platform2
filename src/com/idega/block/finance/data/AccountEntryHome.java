@@ -1,22 +1,53 @@
 package com.idega.block.finance.data;
 
 
-public interface AccountEntryHome extends com.idega.data.IDOHome
-{
- public AccountEntry create() throws javax.ejb.CreateException;
- public AccountEntry findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
- public java.util.Collection findByAccountAndAssessmentRound(java.lang.Integer p0,java.lang.Integer p1)throws javax.ejb.FinderException;
- public java.util.Collection findByAccountAndStatus(java.lang.Integer p0,java.lang.String p1,java.sql.Date p2,java.sql.Date p3,String assessmentStatus)throws javax.ejb.FinderException;
- public java.util.Collection findByAssessmentRound(java.lang.Integer p0)throws javax.ejb.FinderException;
- public java.util.Collection findByEntryGroup(java.lang.Integer p0)throws javax.ejb.FinderException;
- public AccountEntry findByInvoiceNumber(int invoiceNumber) throws javax.ejb.FinderException;
- public java.util.Collection findUnGrouped(java.sql.Date p0,java.sql.Date p1)throws javax.ejb.FinderException;
- public java.util.Collection findByBatchNumber(int batchNumber)throws javax.ejb.FinderException;
- public int countByGroup(java.lang.Integer p0)throws com.idega.data.IDOException;
- public java.sql.Date getMaxDateByAccount(java.lang.Integer p0)throws com.idega.data.IDOException;
- public double getTotalSumByAccount(java.lang.Integer p0)throws java.sql.SQLException;
- public double getTotalSumByAccount(java.lang.Integer accountID,String assessmentStatus)throws java.sql.SQLException;
- public double getTotalSumByAccountAndAssessmentRound(java.lang.Integer p0,java.lang.Integer p1)throws java.sql.SQLException;
- public double getTotalSumByAssessmentRound(java.lang.Integer p0)throws java.sql.SQLException;
+import com.idega.data.IDOException;
+import java.util.Collection;
+import javax.ejb.CreateException;
+import com.idega.data.IDOHome;
+import java.sql.SQLException;
+import javax.ejb.FinderException;
+import java.sql.Date;
 
+public interface AccountEntryHome extends IDOHome {
+	public AccountEntry create() throws CreateException;
+
+	public AccountEntry findByPrimaryKey(Object pk) throws FinderException;
+
+	public Collection findByAccountAndAssessmentRound(Integer accountID,
+			Integer assessmentRoundID) throws FinderException;
+
+	public double getTotalSumByAccountAndAssessmentRound(Integer accountID,
+			Integer assessmentRoundID) throws SQLException;
+
+	public double getTotalSumByAccount(Integer accountID) throws SQLException;
+
+	public double getTotalSumByAccount(Integer accountID, String roundStatus)
+			throws SQLException;
+
+	public double getTotalSumByAssessmentRound(Integer roundID)
+			throws SQLException;
+
+	public Collection findByAssessmentRound(Integer assessmentRoundID)
+			throws FinderException;
+
+	public Collection findByAccountAndStatus(Integer accountID, String status,
+			Date fromDate, Date toDate, String assessmentStatus)
+			throws FinderException;
+
+	public int countByGroup(Integer groupID) throws IDOException;
+
+	public Collection findUnGrouped(Date from, Date to) throws FinderException;
+
+	public Collection findByEntryGroup(Integer groupID) throws FinderException;
+
+	public Date getMaxDateByAccount(Integer accountID) throws IDOException;
+
+	public AccountEntry findByInvoiceNumber(int invoiceNumber)
+			throws FinderException;
+
+	public Collection findByBatchNumber(int batchNumber) throws FinderException;
+
+	public Collection findInvoicesByBatchNumber(int batchNumber)
+			throws FinderException;
 }

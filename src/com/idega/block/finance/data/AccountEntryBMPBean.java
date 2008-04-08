@@ -27,18 +27,19 @@ import com.idega.util.IWTimestamp;
  * @version 1.0
  */
 
-public class AccountEntryBMPBean extends GenericEntity implements AccountEntry, Entry {
-	
+public class AccountEntryBMPBean extends GenericEntity implements AccountEntry,
+		Entry {
+
 	public static final String STATUS_CREATED = "C";
-	
+
 	public static final String STATUS_BILLED = "B";
-	
+
 	public static final String STATUS_PAYED = "P";
 
 	private static final String COLUMN_DK_QUANTITY = "dk_quantity";
-	
-	private static final String COLUMN_DK_ITEM_PRICE = "dk_item_price";
 
+	private static final String COLUMN_DK_ITEM_PRICE = "dk_item_price";
+	
 	public AccountEntryBMPBean() {
 		super();
 	}
@@ -58,29 +59,41 @@ public class AccountEntryBMPBean extends GenericEntity implements AccountEntry, 
 		addAttribute(getColumnNetto(), "Netto", Float.class);
 		addAttribute(getColumnVAT(), "VAT", Float.class);
 		addAttribute(getColumnTotal(), "Total", Float.class);
-		addAttribute(getPaymentDateColumnName(), "Payment date", Timestamp.class);
-		addAttribute(getLastUpdatedColumnName(), "Last updated", Timestamp.class);
+		addAttribute(getPaymentDateColumnName(), "Payment date",
+				Timestamp.class);
+		addAttribute(getLastUpdatedColumnName(), "Last updated",
+				Timestamp.class);
 		addManyToOneRelationship(getCashierIdColumnName(), Cashier.class);
 		addManyToOneRelationship(getRoundIdColumnName(), AssessmentRound.class);
 		addAttribute(getColumnNameStatus(), "status", String.class);
-		addAttribute(getColumnNameDivisionForAccounting(), "accounting division", String.class);
+		addAttribute(getColumnNameDivisionForAccounting(),
+				"accounting division", String.class);
 		/* added 6/12/2004 - birna */
 		addAttribute(getColumnNameAccountBook(), "account book", Integer.class);
-		addAttribute(getColumnNameInvoiceNumber(), "invoice number", Integer.class);
-		addAttribute(getColumnNameFinalDueDate(), "final due date", Timestamp.class);
+		addAttribute(getColumnNameInvoiceNumber(), "invoice number",
+				Integer.class);
+		addAttribute(getColumnNameFinalDueDate(), "final due date",
+				Timestamp.class);
 		addManyToOneRelationship(getColumnNameUserId(), User.class);
-		addAttribute(getColumnNameDisallowanceDate(), "disallowance date", Timestamp.class);
+		addAttribute(getColumnNameDisallowanceDate(), "disallowance date",
+				Timestamp.class);
 		addManyToOneRelationship(getColumnNameBatchNumber(), Batch.class);
 		addAttribute(getColumnNameDueDate(), "due date", Date.class);
-		addAttribute(getColumnNamePenalIntrestCode(), "penal int code", String.class);
-		addAttribute(getColumnNamePenalIntrestProsent(), "penal int prosent", Double.class);
-		addAttribute(getColumnNamePenalIntrestRule(), "penal int rule", String.class);
+		addAttribute(getColumnNamePenalIntrestCode(), "penal int code",
+				String.class);
+		addAttribute(getColumnNamePenalIntrestProsent(), "penal int prosent",
+				Double.class);
+		addAttribute(getColumnNamePenalIntrestRule(), "penal int rule",
+				String.class);
 		addAttribute(getColumnNamePaymentCode(), "payment code", String.class);
-		addAttribute(getColumnNameNotificationAndPaymentFee1(), "not pay fee1", Double.class);
-		addAttribute(getColumnNameNotificationAndPaymentFee2(), "not pay fee2", Double.class);
+		addAttribute(getColumnNameNotificationAndPaymentFee1(), "not pay fee1",
+				Double.class);
+		addAttribute(getColumnNameNotificationAndPaymentFee2(), "not pay fee2",
+				Double.class);
 		addAttribute(getColumnNameOtherCost(), "other cost", Double.class);
-		addAttribute(getColumnNameInvoiceStatus(), "invoice status", String.class);
-		//added for 
+		addAttribute(getColumnNameInvoiceStatus(), "invoice status",
+				String.class);
+		// added for
 		addAttribute(COLUMN_DK_QUANTITY, "Quatity", Double.class);
 		addAttribute(COLUMN_DK_ITEM_PRICE, "Item price", Double.class);
 	}
@@ -240,6 +253,10 @@ public class AccountEntryBMPBean extends GenericEntity implements AccountEntry, 
 
 	public void setEntryType(String entryType) {
 		setColumn(getEntryTypeColumnName(), entryType);
+	}
+
+	public AccountKey getAccountKey() {
+		return (AccountKey) getColumnValue(getAccountKeyIdColumnName());
 	}
 
 	public int getAccountKeyId() {
@@ -497,17 +514,17 @@ public class AccountEntryBMPBean extends GenericEntity implements AccountEntry, 
 	public void setQuantity(double quantity) {
 		setColumn(COLUMN_DK_QUANTITY, quantity);
 	}
-	
+
 	public double getQuantity() {
 		return getDoubleColumnValue(COLUMN_DK_QUANTITY);
 	}
-	
+
 	public void setItemPrice(double itemPrice) {
 		setColumn(COLUMN_DK_ITEM_PRICE, itemPrice);
 	}
-	
+
 	public double getItemPrice() {
-		return getDoubleColumnValue(COLUMN_DK_ITEM_PRICE); 
+		return getDoubleColumnValue(COLUMN_DK_ITEM_PRICE);
 	}
 	
 	// interface specific:
@@ -685,6 +702,12 @@ public class AccountEntryBMPBean extends GenericEntity implements AccountEntry, 
 		IDOQuery query = idoQueryGetSelect();
 		query.appendWhereEquals(getColumnNameInvoiceNumber(), invoiceNumber);
 		return (Integer) idoFindOnePKByQuery(query);
+	}
+
+	public Collection ejbFindByBatchNumber(int batchNumber) throws FinderException {
+		IDOQuery query = idoQueryGetSelect();
+		query.appendWhereEquals(getColumnNameBatchNumber(), batchNumber);
+		return super.idoFindPKsByQuery(query);
 	}
 
 	public Collection ejbFindInvoicesByBatchNumber(int batchNumber)

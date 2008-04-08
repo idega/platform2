@@ -271,10 +271,18 @@ public class TenantsProfile extends CampusBlock {
 	private boolean applyForRenew(IWContext iwc) {
 		//this.apartmentView.get
 		try {
+			String subjectString = iwc.getApplicationSettings().getProperty("RENEWAL_SUBJECT_ID");
+			if (subjectString == null || "".equals(subjectString)) {
+				return false;
+			}
+			
+			int subjectID = Integer.parseInt(subjectString);
+			
 			Application newApplication = this.getCampusService(iwc).getApplicationService().getApplicationHome().create();
 			newApplication.setApplicantId((Integer) this._applicant.getPrimaryKey());
 			newApplication.setStatusSubmitted();
-			newApplication.setSubjectId(81);
+			//Setja inn application property
+			newApplication.setSubjectId(subjectID);
 			IWTimestamp now = new IWTimestamp();
 			newApplication.setSubmitted(now.getTimestamp());
 			newApplication.setStatusChanged(now.getTimestamp());

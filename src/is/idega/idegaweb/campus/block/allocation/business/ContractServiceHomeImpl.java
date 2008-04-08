@@ -1,25 +1,16 @@
-/**
- * 
- */
 package is.idega.idegaweb.campus.block.allocation.business;
 
 
-
-
+import javax.ejb.CreateException;
 import com.idega.business.IBOHomeImpl;
 
-/**
- * @author bluebottle
- *
- */
 public class ContractServiceHomeImpl extends IBOHomeImpl implements
 		ContractServiceHome {
-	protected Class getBeanInterfaceClass() {
+	public Class getBeanInterfaceClass() {
 		return ContractService.class;
 	}
 
-	public ContractService create() throws javax.ejb.CreateException {
+	public ContractService create() throws CreateException {
 		return (ContractService) super.createIBO();
 	}
-
 }

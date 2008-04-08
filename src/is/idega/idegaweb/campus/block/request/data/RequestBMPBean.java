@@ -1,5 +1,5 @@
 /*
- * $Id: RequestBMPBean.java,v 1.4.4.1 2007/09/03 22:44:41 eiki Exp $
+ * $Id: RequestBMPBean.java,v 1.4.4.2 2008/04/08 20:12:07 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -32,6 +32,7 @@ public class RequestBMPBean extends com.idega.data.GenericEntity implements is.i
   protected static final String SPECIAL_REPAIR_TIME = "special_time";
   protected static final String STATUS = "status";
   protected static final String REPORTED = "reported";
+  protected static final String COLUMN_ADMIN_COMMENT = "admin_comment";
 
   public RequestBMPBean() {
     super();
@@ -51,7 +52,8 @@ public class RequestBMPBean extends com.idega.data.GenericEntity implements is.i
     addAttribute(getColumnStatus(),"Status",true,true,String.class);
     addAttribute(getColumnDateFailure(),"Date of failure",true,true,Timestamp.class);
     addAttribute(getColumnSpecialTime(),"Request special time",true,true,String.class);
-    addAttribute(REPORTED,"Reported by telephone",true,true,Boolean.class); 
+    addAttribute(REPORTED,"Reported by telephone",true,true,Boolean.class);
+    addAttribute(COLUMN_ADMIN_COMMENT, "Admin comment", String.class, 4000);
     setMaxLength(getColumnRequestType(),1);
     setMaxLength(getColumnStatus(),1);
     setMaxLength(getColumnDescription(),4000);
