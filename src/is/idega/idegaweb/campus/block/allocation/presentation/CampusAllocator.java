@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.76.4.11 2008/04/08 20:12:09 palli Exp $
+ * $Id: CampusAllocator.java,v 1.76.4.12 2008/04/14 21:53:11 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -18,6 +18,8 @@ import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationHolder;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationWriter;
 import is.idega.idegaweb.campus.block.application.data.ApplicantFamily;
+import is.idega.idegaweb.campus.block.application.data.RejectionHistory;
+import is.idega.idegaweb.campus.block.application.data.RejectionHistoryHome;
 import is.idega.idegaweb.campus.block.application.data.WaitingList;
 import is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean;
 import is.idega.idegaweb.campus.block.application.data.WaitingListHome;
@@ -80,7 +82,6 @@ import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
 import com.idega.util.IWTimestamp;
 import com.idega.util.LocaleUtil;
-import com.sun.jimi.core.component.AbstractRenderer.ResizeWatcher;
 
 /**
  * @author <a href="mailto:aron@idega.is">aron@idega.is
@@ -194,7 +195,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 								.getParameter("wl_id"));
 					Frame.add(getApartmentsForm(iwc, applicantID, new Integer(
 							-1), waitinglistID), 3, row);
-					Frame.add(getApplicantInfo(iwc, applicantID), 1, row);
+					Frame.add(getApplicantInfo(iwc, applicantID, waitinglistID), 1, row);
 				}
 				// Change allocation
 				else if (iwc.isParameterSet("change")) {
@@ -215,6 +216,10 @@ public class CampusAllocator extends CampusBlock implements Campus {
 				}
 				// show all contracts for apartment
 				else if (iwc.isParameterSet("view_aprtmnt")) {
+					Integer waitinglistID = new Integer(-1);
+					if (iwc.isParameterSet("wl_id"))
+						waitinglistID = Integer.valueOf(iwc
+								.getParameter("wl_id"));
 					Integer apartmentID = Integer.valueOf(iwc
 							.getParameter("view_aprtmnt"));
 					Integer contractID = Integer.valueOf(iwc
@@ -222,7 +227,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 					Integer applicantID = Integer.valueOf(iwc
 							.getParameter("applicant"));
 					IWTimestamp from = new IWTimestamp(iwc.getParameter("from"));
-					Frame.add(getApplicantInfo(iwc, applicantID), 1, row);
+					Frame.add(getApplicantInfo(iwc, applicantID, waitinglistID), 1, row);
 					Frame.add(getContractsForm(iwc, apartmentID, applicantID,
 							contractID, from, null), 3, row);
 				}
@@ -249,7 +254,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 					Integer wID = new Integer(iwc
 							.getParameter("offwaitinglist"));
 					Integer wAID = new Integer(iwc.getParameter("wl_appid"));
-					Frame.add(getApplicantInfo(iwc, wAID), 1, row);
+					Frame.add(getApplicantInfo(iwc, wAID, wID), 1, row);
 					Frame.add(getOffWaitingList(wID), 3, row);
 				} else if (iwc.isParameterSet("remove_waitinglist")) {
 					Integer wID = new Integer(iwc
@@ -475,7 +480,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 	}
 
 	public PresentationObject getApplicantInfo(IWContext iwc,
-			Integer applicantID) throws RemoteException {
+			Integer applicantID, Integer waitingListID) throws RemoteException {
 		CampusApprover CA = new CampusApprover();
 		PresentationObject MO = new Table();
 		CampusApplicationHolder AH = getApplicationService(iwc)
@@ -504,6 +509,50 @@ public class CampusAllocator extends CampusBlock implements Campus {
 			MO = Frame;
 		} else
 			add("er null");
+
+		if (waitingListID != null && waitingListID.intValue() != -1) {
+			try {
+				WaitingList wl = ((WaitingListHome) IDOLookup
+						.getHome(WaitingList.class)).findByPrimaryKey(waitingListID);
+
+				Collection rejections = ((RejectionHistoryHome) IDOLookup.getHome(RejectionHistory.class)).findAllByApplication(wl.getApplication());
+				
+				if (rejections != null && !rejections.isEmpty()) {
+					DataTable T = getDataTable();
+					T.setUseBottom(false);
+					T.setWidth(Table.HUNDRED_PERCENT);
+					T.addTitle(localize("rejections", "Rejections"));
+					T.setTitlesHorizontal(true);
+					int col = 1;
+					int row = 1;
+					T.add(getHeader(localize("rejection_date", "Rejection date")), col++, row);
+					T.add(getHeader(localize("application", "Application")), col++, row);
+					T.add(getHeader(localize("rejected_apartment", "Rejected apartment")), col++, row);
+					T.add(getHeader(localize("rejected_building", "Rejected building")), col++, row);
+					T.add(getHeader(localize("rejected_complex", "Rejected complex")), col++, row++);
+
+					Iterator it = rejections.iterator();
+					while (it.hasNext()) {
+						RejectionHistory history = (RejectionHistory) it.next();
+						col = 1;
+						T.add(getText(new IWTimestamp(history.getRejectionDate()).getDateString("dd.MM.yyyy hh:mm")), col++, row);
+						T.add(getText(history.getApplication().getPrimaryKey().toString()), col++, row);
+						T.add(getText(history.getApartment().getName()), col++, row);	
+						T.add(getText(history.getApartment().getFloor().getBuilding().getName()), col++, row);	
+						T.add(getText(history.getApartment().getFloor().getBuilding().getComplex().getName()), col++, row++);	
+					}
+					
+					Table container = new Table(1,2);
+					container.add(MO, 1, 1);
+					container.add(T, 1, 2);
+					
+					MO = container;
+				}				
+			}
+			catch (FinderException e) {
+			}
+		}		
+		
 		return MO;
 	}
 
@@ -1577,6 +1626,10 @@ public class CampusAllocator extends CampusBlock implements Campus {
 	 */
 	public void setAllowedRejections(int i) {
 		allowedRejections = i;
+	}
+
+	public void setAcceptanceSeconds(int i) {
+		acceptanceSeconds = i;
 	}
 
 	public void setDayBuffer(int buffer) {

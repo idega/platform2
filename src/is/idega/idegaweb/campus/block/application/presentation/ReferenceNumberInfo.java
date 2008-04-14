@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.42.4.6 2008/02/13 17:00:15 palli Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.42.4.7 2008/04/14 21:53:11 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -18,6 +18,8 @@ import is.idega.idegaweb.campus.block.application.business.ApplicationService;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationHolder;
 import is.idega.idegaweb.campus.block.application.data.Applied;
 import is.idega.idegaweb.campus.block.application.data.CampusApplication;
+import is.idega.idegaweb.campus.block.application.data.RejectionHistory;
+import is.idega.idegaweb.campus.block.application.data.RejectionHistoryHome;
 import is.idega.idegaweb.campus.block.application.data.WaitingList;
 import is.idega.idegaweb.campus.block.application.data.WaitingListHome;
 import is.idega.idegaweb.campus.presentation.CampusBlock;
@@ -29,6 +31,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Vector;
 
+import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
@@ -510,12 +513,18 @@ public class ReferenceNumberInfo extends CampusBlock {
 	private void denyWaitingListEntry(IWContext iwc) {
 		if (iwc.isParameterSet("adWaitL_id")) {
 			try {
-
 				Integer WID = Integer.valueOf(iwc.getParameter("adWaitL_id"));
 				WaitingList wl = ((WaitingListHome) IDOLookup
 						.getHome(WaitingList.class)).findByPrimaryKey(WID);
 				wl.incrementRejections(true);
 				wl.store();
+				
+				RejectionHistory history = ((RejectionHistoryHome) IDOLookup.getHome(RejectionHistory.class)).create();
+				history.setApplication(wl.getApplication());
+				history.setRejectionDate(IWTimestamp.getTimestampRightNow());
+				history.setApartment(holder.getContract().getApartment());
+				history.store();
+				
 			} catch (NumberFormatException e) {
 				e.printStackTrace();
 			} catch (IDOLookupException e) {
@@ -523,6 +532,8 @@ public class ReferenceNumberInfo extends CampusBlock {
 			} catch (IDOStoreException e) {
 				e.printStackTrace();
 			} catch (FinderException e) {
+				e.printStackTrace();
+			} catch (CreateException e) {
 				e.printStackTrace();
 			}
 
