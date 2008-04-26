@@ -108,7 +108,7 @@ public class AprtTypeRentSetter extends CampusBlock {
 		Form F = new Form();
 		DataTable T = new DataTable();
 		T.setWidth(Table.HUNDRED_PERCENT);
-		Table inputTable = new Table(4, 2);
+		Table inputTable = new Table(5, 2);
 		try {
 			String ATid = iwc.getParameter(prmATid);
 			String ATRid = iwc.getParameter(prmATRid);
@@ -119,9 +119,10 @@ public class AprtTypeRentSetter extends CampusBlock {
 				T.addTitle(AT.getName());
 				T.setTitlesVertical(false);
 				T.add(getHeader(localize("rent", "Rent")), 1, 1);
-				T.add(getHeader(localize("from_date", "From date (D/M/Y)")), 2, 1);
-				T.add(getHeader(localize("to_date", "To date (D/M/Y)")), 3, 1);
-				T.add(getHeader(localize("choise", "Choice")), 4, 1);
+				T.add(getHeader(localize("other_expenses", "Other expenses")), 2, 1);
+				T.add(getHeader(localize("from_date", "From date (D/M/Y)")), 3, 1);
+				T.add(getHeader(localize("to_date", "To date (D/M/Y)")), 4, 1);
+				T.add(getHeader(localize("choise", "Choice")), 5, 1);
 				int row = 2;
 				Collection atrs = getAPRHome().findByType(atID.intValue());
 				NumberFormat nf = NumberFormat.getInstance();
@@ -133,16 +134,17 @@ public class AprtTypeRentSetter extends CampusBlock {
 						ApartmentTypeRent theRent = (ApartmentTypeRent) iter.next();
 
 						T.add(getHeader(nf.format((double) theRent.getRent())), 1, row);
-						T.add(getHeader(df.format(theRent.getValidFrom())), 2, row);
+						T.add(getHeader(nf.format((double) theRent.getOtherExpeneses())), 2, row);
+						T.add(getHeader(df.format(theRent.getValidFrom())), 3, row);
 
 						if (theRent.getValidTo() != null)
 
-							T.add(getHeader(df.format(theRent.getValidTo())), 3, row);
+							T.add(getHeader(df.format(theRent.getValidTo())), 4, row);
 
 						rb = new RadioButton(prmATRid, theRent.getPrimaryKey().toString());
 						if(theRent.getPrimaryKey().toString().equals(ATRid))
 							rb.setSelected();
-						T.add(rb, 4, row);
+						T.add(rb, 5, row);
 						row++;
 					}
 				}
@@ -160,17 +162,19 @@ public class AprtTypeRentSetter extends CampusBlock {
 				T.addButton(delete);
 				
 				TextInput rent = new TextInput("apr_rent");
+				TextInput otherExpenses = new TextInput("apr_other_expenses");
 				DateInput from = new DateInput("apr_from");
 				DateInput to = new DateInput("apr_to");
 
 				inputTable.add(getHeader(localize("rent", "Rent")), 1, 1);
-				inputTable.add(getHeader(localize("from_date", "From date (D/M/Y)")), 2, 1);
-				inputTable.add(getHeader(localize("to_date", "To date (D/M/Y)")), 3, 1);
-				//inputTable.add(getHeader(localize("choise", "Choice")), 4, 1);
+				inputTable.add(getHeader(localize("other_expenses", "Other expenses")), 2, 1);
+				inputTable.add(getHeader(localize("from_date", "From date (D/M/Y)")), 3, 1);
+				inputTable.add(getHeader(localize("to_date", "To date (D/M/Y)")), 4, 1);
 
 				inputTable.add(rent, 1, 2);
-				inputTable.add(from, 2, 2);
-				inputTable.add(to, 3, 2);
+				inputTable.add(otherExpenses, 2, 2);
+				inputTable.add(from, 3, 2);
+				inputTable.add(to, 4, 2);
 				if (iwc.isParameterSet(prmATRid)) {
 					
 					if (ATRid != null) {
@@ -180,10 +184,10 @@ public class AprtTypeRentSetter extends CampusBlock {
 						if (apr.getValidTo() != null)
 							to.setDate(apr.getValidTo());
 					}
-					inputTable.add(update, 4, 2);
+					inputTable.add(update, 5, 2);
 				}
 				else {
-					inputTable.add(create, 4, 2);
+					inputTable.add(create, 5, 2);
 				}
 			}
 		}
@@ -209,6 +213,7 @@ public class AprtTypeRentSetter extends CampusBlock {
 				Integer ATid = new Integer(iwc.getParameter(prmATid));
 				Integer ATRid = new Integer(iwc.getParameter(prmATRid));
 				Float rent = new Float(iwc.getParameter("apr_rent"));
+				Double otherExpenses = new Double(iwc.getParameter("apr_other_expenses"));
 				IWTimestamp from = new IWTimestamp(iwc.getParameter("apr_from"));
 				IWTimestamp to = null;
 				if (iwc.isParameterSet("apr_to"))
@@ -216,6 +221,7 @@ public class AprtTypeRentSetter extends CampusBlock {
 				ApartmentTypeRent typeRent = getAPRHome().findByPrimaryKey(ATRid);
 				typeRent.setApartmentTypeId(ATid.intValue());
 				typeRent.setRent(rent);
+				typeRent.setOtherExpenses(otherExpenses.doubleValue());
 				typeRent.setValidFrom(from.getDate());
 				if (to != null)
 					typeRent.setValidTo(to.getDate());
@@ -242,6 +248,7 @@ public class AprtTypeRentSetter extends CampusBlock {
 			if (iwc.isParameterSet("apr_rent") && iwc.isParameterSet("apr_from")) {
 				Integer ATid = new Integer(iwc.getParameter(prmATid));
 				Float rent = new Float(iwc.getParameter("apr_rent"));
+				Double otherExpenses = new Double(iwc.getParameter("apr_other_expenses"));
 				IWTimestamp from = new IWTimestamp(iwc.getParameter("apr_from"));
 				IWTimestamp to = null;
 				if (iwc.isParameterSet("apr_to"))
@@ -249,6 +256,7 @@ public class AprtTypeRentSetter extends CampusBlock {
 				ApartmentTypeRent typeRent = getAPRHome().create();
 				typeRent.setApartmentTypeId(ATid.intValue());
 				typeRent.setRent(rent);
+				typeRent.setOtherExpenses(otherExpenses.doubleValue());
 				typeRent.setValidFrom(from.getDate());
 				if (to != null)
 					typeRent.setValidTo(to.getDate());

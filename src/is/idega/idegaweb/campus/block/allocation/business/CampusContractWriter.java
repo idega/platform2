@@ -94,6 +94,8 @@ public class CampusContractWriter {
 
 	public final static String apartment_rent = "apartment_rent";
 
+	public final static String apartment_other_expenses = "apartment_other_expenses";
+	
 	public final static String apartment_category = "apartment_category";
 
 	public final static String apartment_roomcount = "apartment_roomcount";
@@ -136,7 +138,7 @@ public class CampusContractWriter {
 			tenant_name, tenant_address, tenant_id, apartment_name,
 			apartment_floor, apartment_address, apartment_campus,
 			apartment_area, apartment_roomcount, apartment_info,
-			apartment_rent, apartment_category, contract_starts, contract_ends,
+			apartment_rent, apartment_other_expenses, apartment_category, contract_starts, contract_ends,
 			renting_index, today, current_renting_index, current_rent,
 			cohabitant, postal_address, current_rent_typeA, current_rent_typeB,
 			current_rent_typeC, current_rent_typeD, APARTMENT_SERIAL_NUMBER, APARTMENT_TYPE, CURRENT_RENT_NOT_TYPE_A };
@@ -491,12 +493,17 @@ public class CampusContractWriter {
 						.getValidFrom()), tagFont));
 				H.put(contract_ends, new Chunk(dfLong.format(eContract
 						.getValidTo()), tagFont));
-				if (rent != null && rent.getRent() > 0)
+				if (rent != null && rent.getRent() > 0) {
 					H.put(apartment_rent, new Chunk(nf.format((double) rent
 							.getRent()), tagFont));
-				else
+					H.put(apartment_other_expenses, new Chunk(nf.format((double) rent
+							.getOtherExpeneses()), tagFont));
+				}
+				else {
 					H.put(apartment_rent, new Chunk(nf.format(eApartmentType
 							.getRent()), tagFont));
+					H.put(apartment_other_expenses, new Chunk(nf.format(0.0d), tagFont));
+				}
 				// H.put(apartment_category,new
 				// Chunk(eApartmentCategory.getName(),tagFont));
 				String aprtTypeNameAbbr = null;
