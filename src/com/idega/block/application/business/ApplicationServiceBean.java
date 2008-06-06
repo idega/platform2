@@ -5,6 +5,7 @@
 package com.idega.block.application.business;
 
 import java.rmi.RemoteException;
+import java.sql.Date;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
@@ -51,7 +52,7 @@ public class ApplicationServiceBean extends IBOServiceBean implements Applicatio
 	}
 	
 
-	public ApplicationSubject storeApplicationSubject(Integer ID, String sName, java.sql.Date expires,String extra)
+	public ApplicationSubject storeApplicationSubject(Integer ID, String sName, Date starts, Date expires,String extra)
 		throws RemoteException {
 
 		try {
@@ -60,6 +61,7 @@ public class ApplicationServiceBean extends IBOServiceBean implements Applicatio
 			if (ID != null && ID.intValue() > 0) {
 				subject = getSubjectHome().findByPrimaryKey(ID);
 			}
+			subject.setStarts(starts);
 			subject.setExpires(expires);
 			subject.setDescription(sName);
 			if(extra!=null) {

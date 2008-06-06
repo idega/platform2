@@ -1,36 +1,39 @@
 package com.idega.block.application.data;
 
 
-public class ApplicationSubjectHomeImpl extends com.idega.data.IDOFactory implements ApplicationSubjectHome
-{
- protected Class getEntityInterfaceClass(){
-  return ApplicationSubject.class;
- }
+import java.util.Collection;
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+import com.idega.data.IDOEntity;
+import com.idega.data.IDOFactory;
 
+public class ApplicationSubjectHomeImpl extends IDOFactory implements
+		ApplicationSubjectHome {
+	public Class getEntityInterfaceClass() {
+		return ApplicationSubject.class;
+	}
 
- public ApplicationSubject create() throws javax.ejb.CreateException{
-  return (ApplicationSubject) super.createIDO();
- }
+	public ApplicationSubject create() throws CreateException {
+		return (ApplicationSubject) super.createIDO();
+	}
 
+	public ApplicationSubject findByPrimaryKey(Object pk)
+			throws FinderException {
+		return (ApplicationSubject) super.findByPrimaryKeyIDO(pk);
+	}
 
-public java.util.Collection findAll()throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((ApplicationSubjectBMPBean)entity).ejbFindAll();
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public Collection findAll() throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((ApplicationSubjectBMPBean) entity).ejbFindAll();
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public java.util.Collection findNonExpired()throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((ApplicationSubjectBMPBean)entity).ejbFindNonExpired();
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
- public ApplicationSubject findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (ApplicationSubject) super.findByPrimaryKeyIDO(pk);
- }
-
-
-
+	public Collection findNonExpired() throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((ApplicationSubjectBMPBean) entity)
+				.ejbFindNonExpired();
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 }

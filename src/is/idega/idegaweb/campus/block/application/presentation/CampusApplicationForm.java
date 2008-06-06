@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.30.4.8 2008/04/08 20:12:06 palli Exp $
+ * $Id: CampusApplicationForm.java,v 1.30.4.9 2008/06/06 11:27:46 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -1069,8 +1069,8 @@ public class CampusApplicationForm extends ApplicationForm {
 		if (ssn == null || "".equals(ssn)) {
 			return false;
 		} else {
-			int firstDigit = Integer.parseInt(ssn.substring(0, 1));
-			if (firstDigit > 3) {
+			int firstDigit = Integer.parseInt(ssn.substring(0, 2));
+			if (firstDigit > 31) {
 				return true;
 			}
 		}

@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationSubjectBMPBean.java,v 1.4.2.1 2006/10/18 13:53:58 palli Exp $
+ * $Id: ApplicationSubjectBMPBean.java,v 1.4.2.2 2008/06/06 11:27:48 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -15,109 +15,123 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
+import com.idega.data.IDOQuery;
 import com.idega.util.IWTimestamp;
 
 /**
- *
+ * 
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class ApplicationSubjectBMPBean extends com.idega.data.GenericEntity implements com.idega.block.application.data.ApplicationSubject {
-  private static final String ENTITY_NAME = "app_subject";
-  private static final String COLUMN_DESCRIPTION = "description";
-  private static final String COLUMN_CREATED = "created";
-  private static final String COLUMN_EXPIRES = "expires";
-  private static final String COLUMN_STATUS = "status";
-  private static final String COLUMN_ATTRIBUTE = "INFO_ATTRIBUE";
+public class ApplicationSubjectBMPBean extends com.idega.data.GenericEntity
+		implements com.idega.block.application.data.ApplicationSubject {
+	private static final String ENTITY_NAME = "app_subject";
+	private static final String COLUMN_DESCRIPTION = "description";
+	private static final String COLUMN_CREATED = "created";
+	private static final String COLUMN_STARTS = "starts";
+	private static final String COLUMN_EXPIRES = "expires";
+	private static final String COLUMN_STATUS = "status";
+	private static final String COLUMN_ATTRIBUTE = "INFO_ATTRIBUE";
 
-  public ApplicationSubjectBMPBean() {
-    super();
-  }
+	public ApplicationSubjectBMPBean() {
+		super();
+	}
 
-  public ApplicationSubjectBMPBean(int id) throws SQLException {
-    super(id);
-  }
+	public ApplicationSubjectBMPBean(int id) throws SQLException {
+		super(id);
+	}
 
-  public void initializeAttributes() {
-    addAttribute(getIDColumnName());
-    addAttribute(COLUMN_DESCRIPTION,"Description",true,true,"java.lang.String");
-    addAttribute(COLUMN_CREATED,"Created",true,true,"java.sql.Date");
-    addAttribute(COLUMN_EXPIRES,"Expires",true,true,"java.sql.Date");
-    addAttribute(COLUMN_STATUS,"Status?",true,true,"java.lang.String");
-    addAttribute(COLUMN_ATTRIBUTE,"Status?",true,true,"java.lang.String");
-    setMaxLength(COLUMN_DESCRIPTION,255);
-    setMaxLength(COLUMN_STATUS,1);
-  }
+	public void initializeAttributes() {
+		addAttribute(getIDColumnName());
+		addAttribute(COLUMN_DESCRIPTION, "Description", String.class, 255);
+		addAttribute(COLUMN_CREATED, "Created", Date.class);
+		addAttribute(COLUMN_EXPIRES, "Expires", Date.class);
+		addAttribute(COLUMN_STATUS, "Status", String.class, 1);
+		addAttribute(COLUMN_ATTRIBUTE, "Attribute", String.class);
+		addAttribute(COLUMN_STARTS, "Starts", Date.class);
+	}
 
-  public String getEntityName() {
-    return(ENTITY_NAME);
-  }
+	public String getEntityName() {
+		return ENTITY_NAME;
+	}
 
-  public String getName() {
-    return(getDescription());
-  }
+	//getters
+	public String getName() {
+		return getDescription();
+	}
 
-  public String getDescriptionColumnName() {
-    return(COLUMN_DESCRIPTION);
-  }
+	public String getDescription() {
+		return getStringColumnValue(COLUMN_DESCRIPTION);
+	}
+	
+	public Date getCreated() {
+		return getDateColumnValue(COLUMN_CREATED);
+	}
 
-  public String getCreatedColumnName() {
-    return(COLUMN_CREATED);
-  }
+	public Date getExpires() {
+		return getDateColumnValue(COLUMN_EXPIRES);
+	}
 
-  public String getExpiresColumnName() {
-    return(COLUMN_EXPIRES);
-  }
+	public String getStatus() {
+		return getStringColumnValue(COLUMN_STATUS);
+	}
 
-  public String getStatusColumnName() {
-    return(COLUMN_STATUS);
-  }
+	public String getExtraAttribute() {
+		return getStringColumnValue(COLUMN_ATTRIBUTE);
+	}
 
-  public void setDescription(String description) {
-    setColumn(COLUMN_DESCRIPTION,description);
-  }
+	public Date getStarts() {
+		return getDateColumnValue(COLUMN_STARTS);
+	}
+	
+    //setters
+	public void setDescription(String description) {
+		setColumn(COLUMN_DESCRIPTION, description);
+	}
 
-  public String getDescription() {
-    return((String)getColumnValue(COLUMN_DESCRIPTION));
-  }
+	public void setCreated(Date date) {
+		setColumn(COLUMN_CREATED, date);
+	}
 
-  public void setCreated(Date date) {
-    setColumn(COLUMN_CREATED,date);
-  }
+	public void setExpires(Date date) {
+		setColumn(COLUMN_EXPIRES, date);
+	}
 
-  public Date getCreated() {
-    return((Date)getColumnValue(COLUMN_CREATED));
-  }
+	public void setStatus(String status) {
+		setColumn(COLUMN_STATUS, status);
+	}
 
-  public void setExpires(Date date) {
-    setColumn(COLUMN_EXPIRES,date);
-  }
+	public void setExtraAttribute(String attribute) {
+		setColumn(COLUMN_ATTRIBUTE, attribute);
+	}
 
-  public Date getExpires() {
-    return((Date)getColumnValue(COLUMN_EXPIRES));
-  }
+	public void setStarts(Date starts) {
+		setColumn(COLUMN_STARTS, starts);
+	}
+	
+	//ejb
+	public Collection ejbFindAll() throws FinderException {
+		return super.idoFindPKsByQuery(super.idoQueryGetSelect());
+	}
 
-  public void setStatus(String status) {
-    setColumn(COLUMN_STATUS,status);
-  }
-
-  public String getStatus() {
-    return((String)getColumnValue(COLUMN_STATUS));
-  }
-  
-  public void setExtraAttribute(String attribute) {
-    setColumn(COLUMN_ATTRIBUTE,attribute);
-  }
-
-  public String getExtraAttribute() {
-    return((String)getColumnValue(COLUMN_ATTRIBUTE));
-  }
-  
-  public Collection ejbFindAll() throws FinderException{
-  	return super.idoFindPKsByQuery(super.idoQueryGetSelect());
-  }
-  
-  public Collection ejbFindNonExpired() throws FinderException{
-	return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhere(getExpiresColumnName()).appendGreaterThanSign().append(IWTimestamp.RightNow().getDate()));
-  }
+	public Collection ejbFindNonExpired() throws FinderException {
+		IWTimestamp now = IWTimestamp.RightNow();
+		IDOQuery query = super.idoQueryGetSelect();
+		query.appendWhere(COLUMN_EXPIRES);
+		query.appendGreaterThanSign();
+		query.append(now.getDate());
+		query.appendAnd();
+		query.appendLeftParenthesis();
+		query.append(COLUMN_STARTS);
+		query.appendIsNull();
+		query.appendOr();
+		query.append(COLUMN_STARTS);
+		query.appendLessThanOrEqualsSign();
+		query.append(now.getDate());
+		query.appendRightParenthesis();
+		
+		System.out.println("query = " + query.toString());
+		
+		return super.idoFindPKsByQuery(query);
+	}
 }
