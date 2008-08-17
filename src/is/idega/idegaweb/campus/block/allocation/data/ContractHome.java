@@ -95,4 +95,6 @@ public interface ContractHome extends IDOHome {
 
 	public Collection findByUserAndStatusAndRentedBeforeDate(Integer userId,
 			String status, Date date) throws FinderException;
+
+	public Collection findAllWithKeyChangeDateSet() throws FinderException;
 }

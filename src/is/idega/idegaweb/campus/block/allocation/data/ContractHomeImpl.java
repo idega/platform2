@@ -273,4 +273,12 @@ public class ContractHomeImpl extends IDOFactory implements ContractHome {
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
+
+	public Collection findAllWithKeyChangeDateSet() throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((ContractBMPBean) entity)
+				.ejbFindAllWithKeyChangeDateSet();
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 }

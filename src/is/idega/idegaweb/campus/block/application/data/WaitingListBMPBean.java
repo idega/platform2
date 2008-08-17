@@ -1,5 +1,5 @@
 /*
- * $Id: WaitingListBMPBean.java,v 1.14.4.7 2008/02/13 17:00:17 palli Exp $
+ * $Id: WaitingListBMPBean.java,v 1.14.4.8 2008/08/17 05:42:28 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -163,6 +163,10 @@ public class WaitingListBMPBean extends GenericEntity implements WaitingList {
 
 	public Integer getApplicantId() {
 		return getIntegerColumnValue(COLUMN_APPLICANT);
+	}
+
+	public Applicant getApplicant() {
+		return (Applicant) getColumnValue(COLUMN_APPLICANT);
 	}
 
 	private void setType(String type) {
@@ -432,6 +436,11 @@ public class WaitingListBMPBean extends GenericEntity implements WaitingList {
 		return super.idoFindPKsByQuery(super.idoQueryGetSelect()
 				.appendWhereEquals(COLUMN_APPLICANT, ID.intValue())
 				.appendOrderBy(orderby));
+	}
+
+	public Collection ejbFindByApplication(Application application) throws FinderException {
+		return super.idoFindPKsByQuery(super.idoQueryGetSelect()
+				.appendWhereEquals(COLUMN_APPLICATION, application));
 	}
 
 	public Collection ejbFindBySQL(String sql) throws FinderException {

@@ -1,5 +1,5 @@
 /*
- * $Id: ContractServiceBean.java,v 1.24.4.4 2008/04/08 20:12:10 palli Exp $
+ * $Id: ContractServiceBean.java,v 1.24.4.5 2008/08/17 05:42:30 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -138,21 +138,39 @@ public class ContractServiceBean extends IBOServiceBean implements
 	}
 
 	public void changeApplicationStatus(Contract eContract) throws Exception {
-
-		Collection L = getApplicationService().getApplicationHome()
-				.findByApplicantID(eContract.getApplicantId());
-		if (L != null) {
-			Iterator I = L.iterator();
-			while (I.hasNext()) {
-				Application A = (Application) I.next();
-				A.setStatusSigned();
-				A.store();
-			}
+		if (eContract.getApplication() != null) {
+			Application app = eContract.getApplication();
+			app.setStatusSigned();
+			app.store();
 		}
 	}
 
 	public void deleteFromWaitingList(Contract eContract) {
-		deleteFromWaitingList(eContract.getApplicant());
+		if (eContract.getApplication() != null) {
+			deleteFromWaitingList(eContract.getApplication());
+		}
+	}
+
+	public void deleteFromWaitingList(Application application) {
+		Collection L = null;
+		try {
+			L = WaitingListFinder.getWaitingListHome().findByApplication(application);
+		} catch (RemoteException e1) {
+		} catch (FinderException e1) {
+		}
+		if (L != null) {
+			Iterator I = L.iterator();
+
+			while (I.hasNext()) {
+				try {
+					((WaitingList) I.next()).remove();
+				} catch (EJBException e) {
+					e.printStackTrace();
+				} catch (RemoveException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 	public void deleteFromWaitingList(Applicant applicant) {
@@ -279,6 +297,27 @@ public class ContractServiceBean extends IBOServiceBean implements
 		}
 	}
 
+	public void automaticKeyStatusChange() {
+		Collection contracts = null;
+		IWTimestamp now = IWTimestamp.RightNow();
+		try {
+			contracts = getContractHome().findAllWithKeyChangeDateSet();
+			for (Iterator iter = contracts.iterator(); iter.hasNext();) {
+				Contract contract = (Contract) iter.next();
+				IWTimestamp at = new IWTimestamp(contract.getChangeKeyStatusAt());
+				if (now.isLaterThan(at)) {
+					contract.setChangeKeyStatusAt(null);
+					contract.setIsRented(contract.getChangeKeyStatusTo());
+					contract.store();
+				}
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void returnKey(Integer contractID, User currentUser) {
 		try {
 			Contract C = getContractHome().findByPrimaryKey(contractID);
@@ -680,7 +719,7 @@ public class ContractServiceBean extends IBOServiceBean implements
 	}
 
 	public Contract allocate(Integer contractID, Integer apartmentID,
-			Integer applicantID, Date validFrom, Date validTo)
+			Integer applicantID, Date validFrom, Date validTo, Integer applicationID)
 			throws AllocationException {
 		// javax.transaction.TransactionManager transaction=
 		// com.idega.transaction.IdegaTransactionManager.getInstance();
@@ -698,10 +737,6 @@ public class ContractServiceBean extends IBOServiceBean implements
 					IWTimestamp to = new IWTimestamp((java.sql.Date) validTo);
 					from.setAsDate();
 					to.setAsDate();
-					// System.err.println("Saving new contract : Applicant : " +
-					// sApplicantId);
-					// System.err.println("Must be from : " +
-					// mustBeFrom.toString() + " , is from " + from.toString());
 					if (firstAllowedFromDate.isLaterThan(from)) {
 						throw new AllocationException("Contract dates overlap");
 					}
@@ -721,15 +756,8 @@ public class ContractServiceBean extends IBOServiceBean implements
 								Contract contract = null;
 								try {
 									transaction.begin();
-									System.out.println("Creating user family");
 									User eUser = createUserFamily(applicant,
 											emails);
-									System.out.println("User family created");
-									System.out.println("user id = " + eUser.getPrimaryKey());
-									System.out.println("applicant id = " + applicant.getPrimaryKey());
-									System.out.println("appartment id = " + apartmentID);
-									System.out.println("from.getDate() = " + from.getDate());
-									System.out.println("to.getDate() = " + to.getDate());
 									contract = createNewContract(
 											(Integer) eUser.getPrimaryKey(),
 											(Integer) applicant.getPrimaryKey(),
@@ -745,10 +773,14 @@ public class ContractServiceBean extends IBOServiceBean implements
 												"Transaction: "
 														+ e2.getMessage());
 									}
-									// e1.printStackTrace();
 									throw new AllocationException(
 											"Transaction: " + e1.getMessage());
 								}
+								if (applicationID != null) {
+									contract.setApplicationID(applicationID.intValue());
+									contract.store();
+								}
+								
 								return contract;
 							} else {
 								throw new AllocationException(
@@ -762,7 +794,11 @@ public class ContractServiceBean extends IBOServiceBean implements
 							contract.setValidTo(to.getDate());
 							if (apartmentID != null) {
 								contract.setApartmentId(apartmentID);
+								if (applicationID != null) {
+									contract.setApplicationID(applicationID.intValue());
+								}
 								contract.store();
+
 								return contract;
 							} else {
 								throw new AllocationException(
@@ -977,7 +1013,9 @@ public class ContractServiceBean extends IBOServiceBean implements
 		Collection contracts = getContractHome().findByStatus(status);
 		for (Iterator iter = contracts.iterator(); iter.hasNext();) {
 			Contract element = (Contract) iter.next();
-			map.put(element.getApplicantId(), element);
+			if (element.getApplication() != null) {
+				map.put(element.getApplication().getPrimaryKey().toString(), element);
+			}
 		}
 		return map;
 	}

@@ -52,6 +52,8 @@ public class CampusDaemonBundleStarter implements IWBundleStartable, ActionListe
 				campusService.getContractService().garbageResignedContracts(oneYearBack.getDate());
 				System.out.println("[Campus Daemon - "+IWTimestamp.RightNow().toString()+" ] - Finalize oneyear old garbage contracts");
 				campusService.getContractService().finalizeGarbageContracts(oneYearBack.getDate());
+				System.out.println("[Campus Daemon - "+IWTimestamp.RightNow().toString()+" ] - Automatically changing key status on selected contracts");
+				campusService.getContractService().automaticKeyStatusChange();
 			}
 			
 		}

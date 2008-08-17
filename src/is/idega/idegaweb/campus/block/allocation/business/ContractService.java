@@ -97,6 +97,11 @@ public interface ContractService extends IBOService {
 			throws RemoteException;
 
 	/**
+	 * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#automaticKeyStatusChange
+	 */
+	public void automaticKeyStatusChange() throws RemoteException;
+
+	/**
 	 * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#returnKey
 	 */
 	public void returnKey(Integer contractID, User currentUser)
@@ -190,8 +195,8 @@ public interface ContractService extends IBOService {
 	 * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#allocate
 	 */
 	public Contract allocate(Integer contractID, Integer apartmentID,
-			Integer applicantID, Date validFrom, Date validTo)
-			throws AllocationException, RemoteException;
+			Integer applicantID, Date validFrom, Date validTo,
+			Integer applicationID) throws AllocationException, RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#getValidPeriod

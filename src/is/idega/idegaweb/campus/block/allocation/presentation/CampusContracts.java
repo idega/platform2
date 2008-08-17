@@ -52,9 +52,7 @@ public class CampusContracts extends CampusBlock {
 	private final String prmIdx = "cl_idx";
 	protected boolean isAdmin = false;
 	private String conPrm = "contract_status";
-	// private String sessConPrm = "sess_con_status";
 	private String sizePrm = "global_size";
-	// private String sessSizePrm = "sess_global_size";
 
 	private BuildingService buildingService = null;
 
@@ -76,7 +74,6 @@ public class CampusContracts extends CampusBlock {
 			add(getContractTable(iwc));
 		} else
 			add(getNoAccessObject(iwc));
-		// add(String.valueOf(iSubjectId));
 	}
 
 	private void initFilter(IWContext iwc) {

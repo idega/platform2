@@ -311,9 +311,16 @@ public class CampusFinanceHandler implements FinanceHandler {
 	private double getFactor(long begin, long endin, long valfr, long valto,
 			int precision) {
 		// long del = endin - begin;
-		int periodDays = IWTimestamp.getDaysBetween(new IWTimestamp(begin),
-				new IWTimestamp(endin)) + 1;
-
+		IWTimestamp startMonth = new IWTimestamp(begin);
+		startMonth.setDay(1);
+		startMonth.setTime(0, 0, 0);
+		IWTimestamp endMonth = new IWTimestamp(startMonth);
+		endMonth.addMonths(1);
+		int periodDays = IWTimestamp.getDaysBetween(startMonth,
+				endMonth);
+		
+		System.out.println("periodDays = " + periodDays);
+		
 		if (begin <= valto && valto <= endin) {
 			endin = valto;
 		}
@@ -328,6 +335,8 @@ public class CampusFinanceHandler implements FinanceHandler {
 		BigDecimal ret = new BigDecimal((double) validDays);
 		ret = ret.divide(new BigDecimal((double) periodDays), precision,
 				BigDecimal.ROUND_HALF_EVEN);
+		
+		System.out.println("factor = " + ret);
 		return ret.doubleValue();
 	}
 

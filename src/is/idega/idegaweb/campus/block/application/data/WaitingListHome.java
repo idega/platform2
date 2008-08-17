@@ -4,6 +4,7 @@ package is.idega.idegaweb.campus.block.application.data;
 import java.util.Collection;
 import javax.ejb.CreateException;
 import com.idega.data.IDOHome;
+import com.idega.block.application.data.Application;
 import javax.ejb.FinderException;
 
 public interface WaitingListHome extends IDOHome {
@@ -28,6 +29,9 @@ public interface WaitingListHome extends IDOHome {
 			throws FinderException;
 
 	public Collection findByApplicantID(Integer ID) throws FinderException;
+
+	public Collection findByApplication(Application application)
+			throws FinderException;
 
 	public Collection findBySQL(String sql) throws FinderException;
 }

@@ -3,6 +3,7 @@ package is.idega.idegaweb.campus.block.application.data;
 
 import java.util.Collection;
 import javax.ejb.CreateException;
+import com.idega.block.application.data.Application;
 import javax.ejb.FinderException;
 import com.idega.data.IDOEntity;
 import com.idega.data.IDOFactory;
@@ -70,6 +71,15 @@ public class WaitingListHomeImpl extends IDOFactory implements WaitingListHome {
 	public Collection findByApplicantID(Integer ID) throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
 		Collection ids = ((WaitingListBMPBean) entity).ejbFindByApplicantID(ID);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findByApplication(Application application)
+			throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((WaitingListBMPBean) entity)
+				.ejbFindByApplication(application);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}

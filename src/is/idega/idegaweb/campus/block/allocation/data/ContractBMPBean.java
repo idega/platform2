@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.22.4.4 2008/02/13 17:00:17 palli Exp $
+ * $Id: ContractBMPBean.java,v 1.22.4.5 2008/08/17 05:42:30 palli Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -72,6 +72,10 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements Con
 	private static final String COLUMN_APPLICATION = "app_application_id";
 	
 	private static final String COLUMN_DISCOUNT_PERCENTAGE = "discount_perc";
+	
+	private static final String COLUMN_CHANGE_KEY_STATUS_AT = "change_key_at";
+	
+	private static final String COLUMN_CHANGE_KEY_STATUS_TO = "change_key_to";
 
 	public static final String STATUS_CREATED = "C";
 
@@ -189,6 +193,8 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements Con
 		addAttribute(COLUMN_PHONE_FROM_DATE, "Phone from", true, true, Timestamp.class);
 		addAttribute(COLUMN_PHONE_TO_DATE, "Phone to", true, true, Timestamp.class);
 		addAttribute(COLUMN_DISCOUNT_PERCENTAGE, "Discount percentage", Double.class);
+		addAttribute(COLUMN_CHANGE_KEY_STATUS_AT, "Change key status at time", Timestamp.class);
+		addAttribute(COLUMN_CHANGE_KEY_STATUS_TO, "Change key status to", Boolean.class);
 		addManyToOneRelationship(COLUMN_APPLICATION, Application.class);
 	}
 
@@ -442,6 +448,23 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements Con
 		setColumn(COLUMN_DISCOUNT_PERCENTAGE, percentage);
 	}
 	
+	public Timestamp getChangeKeyStatusAt() {
+		return getTimestampColumnValue(COLUMN_CHANGE_KEY_STATUS_AT);
+	}
+	
+	public void setChangeKeyStatusAt(Timestamp at) {
+		setColumn(COLUMN_CHANGE_KEY_STATUS_AT, at);
+	}
+	
+	public boolean getChangeKeyStatusTo() {
+		return getBooleanColumnValue(COLUMN_CHANGE_KEY_STATUS_TO);
+	}
+	
+	public void setChangeKeyStatusTo(boolean to) {
+		setColumn(COLUMN_CHANGE_KEY_STATUS_TO, to);
+	}
+	
+	//ejb
 	public Collection ejbFindByApplicantID(Integer ID) throws FinderException {
 		return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getApplicantIdColumnName(),
 				ID.intValue()));
@@ -719,5 +742,16 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements Con
 	public Collection ejbFindByUserAndStatusAndRentedBeforeDate(Integer userId, String status, Date date) throws FinderException {
 		return super.idoFindPKsByQuery(idoQueryGetSelect().appendWhereEquals(getUserIdColumnName(), userId).appendAndEqualsQuoted(
 				getStatusColumnName(), status).appendAnd().append(this.COLUMN_VALID_FROM).appendLessThanOrEqualsSign().append(date));
+	}
+	
+	public Collection ejbFindAllWithKeyChangeDateSet() throws FinderException {
+		IDOQuery query = super.idoQueryGetSelect();
+		query.appendWhere();
+		query.append(COLUMN_CHANGE_KEY_STATUS_AT);
+		query.appendIsNotNull();
+
+		System.out.println("query = " + query.toString());
+		
+		return super.idoFindPKsByQuery(query);
 	}
 }

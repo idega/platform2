@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.76.4.12 2008/04/14 21:53:11 palli Exp $
+ * $Id: CampusAllocator.java,v 1.76.4.13 2008/08/17 05:42:28 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -50,7 +50,6 @@ import com.idega.block.application.data.ApplicantHome;
 import com.idega.block.application.data.Application;
 import com.idega.block.application.data.ApplicationHome;
 import com.idega.block.application.data.ApplicationSubject;
-import com.idega.block.application.data.Status;
 import com.idega.block.building.data.Apartment;
 import com.idega.block.building.data.ApartmentCategory;
 import com.idega.block.building.data.ApartmentSubcategory;
@@ -194,7 +193,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 						waitinglistID = Integer.valueOf(iwc
 								.getParameter("wl_id"));
 					Frame.add(getApartmentsForm(iwc, applicantID, new Integer(
-							-1), waitinglistID), 3, row);
+							-1), waitinglistID, null), 3, row);
 					Frame.add(getApplicantInfo(iwc, applicantID, waitinglistID), 1, row);
 				}
 				// Change allocation
@@ -209,7 +208,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 								.getParameter("wl_id"));
 					Frame.add(getWaitingList(iwc, contractID), 1, row);
 					Frame.add(getApartmentsForm(iwc, applicantID, contractID,
-							waitinglistID), 3, row);
+							waitinglistID, null), 3, row);
 					row++;
 					Frame.mergeCells(1, row, 3, row);
 					Frame.add(getColorButtonInfo(), 1, row);
@@ -226,10 +225,14 @@ public class CampusAllocator extends CampusBlock implements Campus {
 							.getParameter("contract"));
 					Integer applicantID = Integer.valueOf(iwc
 							.getParameter("applicant"));
+					Integer applicationID = null;
+					if (iwc.isParameterSet("application")) {
+						applicationID = Integer.valueOf(iwc.getParameter("application"));
+					}
 					IWTimestamp from = new IWTimestamp(iwc.getParameter("from"));
 					Frame.add(getApplicantInfo(iwc, applicantID, waitinglistID), 1, row);
 					Frame.add(getContractsForm(iwc, apartmentID, applicantID,
-							contractID, from, null), 3, row);
+							contractID, from, null, applicationID), 3, row);
 				}
 				// save allocation
 				else if (iwc.isParameterSet("save_allocation")) {
@@ -412,7 +415,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 	}
 
 	private Link getApartmentContractsLink(Text display, Integer applicantID,
-			Integer contractID, Integer apartmentID, IWTimestamp from) {
+			Integer contractID, Integer apartmentID, IWTimestamp from, Application application) {
 		Link L = new Link(display);
 		L.addParameter("view_aprtmnt", apartmentID.toString());
 		L.addParameter("contract", contractID.toString());
@@ -422,11 +425,16 @@ public class CampusAllocator extends CampusBlock implements Campus {
 			L.addParameter(pSubcatId);
 			// L.addParameter(pComplexId);
 		}
+		
+		if (application != null) {
+			L.addParameter("application",application.getPrimaryKey().toString());
+		}
+		
 		return L;
 	}
 
 	private PresentationObject getApartmentsForm(IWContext iwc,
-			Integer applicantID, Integer contractID, Integer waitingListID)
+			Integer applicantID, Integer contractID, Integer waitingListID, Integer applicationID)
 			throws RemoteException, FinderException {
 		Form myForm = new Form();
 		ApartmentSubcategory apartmentSubcat = campusService
@@ -448,9 +456,9 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		Table Frame = new Table();
 		if (contract != null)
 			Frame.add(getContractMakingTable(iwc, contract, applicantID, null,
-					contract.getApartmentId(), waitingList), 1, 1);
+					contract.getApartmentId(), waitingList, applicationID), 1, 1);
 		else
-			Frame.add(getFreeApartments(iwc, applicantID, contract, waitingList.getApartment()), 1, 1);
+			Frame.add(getFreeApartments(iwc, applicantID, contract, waitingList.getApartment(), waitingList.getApplication()), 1, 1);
 		myForm.add(Frame);
 
 		myForm.add(new HiddenInput(pSubcatId.getName(), pSubcatId
@@ -910,7 +918,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 
 	private PresentationObject getContractMakingTable(IWContext iwc,
 			Contract contract, Integer applicantID, IWTimestamp from,
-			Integer apartmentID, WaitingList waitingList)
+			Integer apartmentID, WaitingList waitingList, Integer applicationID)
 			throws RemoteException, FinderException {
 		DataTable T = getDataTable();
 		Apartment apartment = null;
@@ -968,6 +976,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 					"true");
 			incrementRejections.setChecked(true);
 
+			
 			if (waitingList != null) {
 				T.add(new HiddenInput("wl_id", waitingList.getPrimaryKey()
 						.toString()));
@@ -983,6 +992,11 @@ public class CampusAllocator extends CampusBlock implements Campus {
 			}
 
 		}
+
+		if (applicationID != null) {
+			T.add(new HiddenInput("application", applicationID.toString()));
+		}
+
 		// T.add(save, 3, row);
 		T.addButton(save);
 		return T;
@@ -990,7 +1004,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 
 	private PresentationObject getContractsForm(IWContext iwc,
 			Integer apartmentID, Integer applicantID, Integer contractID,
-			IWTimestamp from, WaitingList waitingList) throws RemoteException,
+			IWTimestamp from, WaitingList waitingList, Integer applicationID) throws RemoteException,
 			FinderException {
 		Apartment apartment = campusService.getBuildingService()
 				.getApartmentHome().findByPrimaryKey(apartmentID);
@@ -1002,7 +1016,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		Form myForm = new Form();
 		Table Frame = new Table();
 		Frame.add(getContractMakingTable(iwc, contract, applicantID, from,
-				apartmentID, waitingList));
+				apartmentID, waitingList, applicationID));
 		Frame.add(getApartmentContracts(apartmentID), 1, 3);
 		myForm.add(Frame);
 
@@ -1057,7 +1071,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 	}
 
 	private PresentationObject getFreeApartments(IWContext iwc,
-			Integer applicantID, Contract contract, Apartment renewalApartment) throws FinderException,
+			Integer applicantID, Contract contract, Apartment renewalApartment, Application application) throws FinderException,
 			RemoteException {
 		Collection apartments = campusService.getBuildingService()
 				.getApartmentViewHome().findBySubcategory(subcatID);
@@ -1132,7 +1146,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 						T
 								.add(getApartmentContractsLink(text,
 										applicantID, contractID, apartmentID,
-										nextAvailable), 5, row);
+										nextAvailable, application), 5, row);
 					}
 					if (isThis)
 						TextFontColor = "#000000";
@@ -1398,24 +1412,14 @@ public class CampusAllocator extends CampusBlock implements Campus {
 					col = 1;
 					WaitingList WL = (WaitingList) it.next();
 					try {
-						Applicant applicant = applicantHome.findByPrimaryKey(WL
-								.getApplicantId());
-						Application application = null;
+						Applicant applicant = WL.getApplicant();
+						Application application = WL.getApplication();
+						String applicationID = "-1";
+						if (application != null) {
+							applicationID = application.getPrimaryKey().toString();
+						}
 						Integer applicantID = (Integer) applicant
 								.getPrimaryKey();
-						Integer applicationID = null;
-						Collection approvedApplications = applicationHome
-								.findByApplicantAndStatus(applicantID,
-										Status.APPROVED.toString());
-						if (approvedApplications != null
-								&& !approvedApplications.isEmpty()) {
-							for (Iterator iter = approvedApplications
-									.iterator(); iter.hasNext();) {
-								application = (Application) iter.next();
-							}
-							applicationID = ((Integer) application
-									.getPrimaryKey());
-						}
 						TextFontColor = TempColor;
 
 						if (application != null) {
@@ -1440,25 +1444,26 @@ public class CampusAllocator extends CampusBlock implements Campus {
 						}
 
 						String cypher = null;
-						if (application != null && applicationID.intValue() > 0) {
-
-							String id = application.getPrimaryKey().toString();
+						if (application != null) {
 							String refLen = iwc
 									.getApplicationSettings()
 									.getProperty("CAMPUS_REFERENCE_LENGTH", "7");
 							int iRefLen = new Integer(refLen).intValue();
 
-							while (id.length() < iRefLen)
-								id = "0" + id;
-							cypher = ct.doCyper(id, key);
+							String tmpID = applicationID;
+							
+							while (tmpID.length() < iRefLen)
+								tmpID = "0" + tmpID;
+							cypher = ct.doCyper(tmpID, key);
 						}
 						Frame.add(getText(cypher), col++, row);
 						// already has allocation
+						
 						if (bcontracts
 								&& newApplicantContracts
-										.containsKey(applicantID)) {
+										.containsKey(applicationID)) {
 							contract = (Contract) newApplicantContracts
-									.get(applicantID);
+									.get(applicationID);
 							Integer contractID = (Integer) contract
 									.getPrimaryKey();
 							if (contractID.intValue() == conID.intValue()) {
@@ -1489,9 +1494,9 @@ public class CampusAllocator extends CampusBlock implements Campus {
 										isOnTime), col++, row);
 							}
 						} else if (pContracts
-								&& printedContracts.containsKey(applicantID)) {
+								&& printedContracts.containsKey(applicationID)) {
 							contract = (Contract) printedContracts
-									.get(applicantID);
+									.get(applicationID);
 							Integer contractID = (Integer) contract
 									.getPrimaryKey();
 							if (contractID.intValue() == conID.intValue()) {
@@ -1588,18 +1593,29 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		String sDateFrom = iwc.getParameter("contract_date_from");
 		String sDateTo = iwc.getParameter("contract_date_to");
 		String sMustFrom = iwc.getParameter("from");
+		String sApplicationID = iwc.getParameter("application");
 		Integer contractID = null;
 		Integer apartmentID = null;
 		Integer applicantID = null;
+		Integer applicationID = null;
 		IWTimestamp validFrom = new IWTimestamp(iwc
 				.getParameter("contract_date_from"));
 		IWTimestamp validTo = new IWTimestamp(iwc
 				.getParameter("contract_date_to"));
 
 		try {
-			applicantID = Integer.valueOf(iwc.getParameter("applicantid"));
-			apartmentID = Integer.valueOf(iwc.getParameter("apartmentid"));
-			contractID = Integer.valueOf(iwc.getParameter("contract_id"));
+			if (iwc.isParameterSet("applicantid")) {
+				applicantID = Integer.valueOf(iwc.getParameter("applicantid"));				
+			}
+			if (iwc.isParameterSet("apartmentid")) {
+				apartmentID = Integer.valueOf(iwc.getParameter("apartmentid"));
+			}
+			if (iwc.isParameterSet("contract_id")) {
+				contractID = Integer.valueOf(iwc.getParameter("contract_id"));
+			}
+			if (iwc.isParameterSet("application")) {
+				applicationID = Integer.valueOf(iwc.getParameter("application"));
+			}
 		} catch (NumberFormatException e) {
 			// e.printStackTrace();
 		}
@@ -1610,7 +1626,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		try {
 			campusService.getContractService().allocate(contractID,
 					apartmentID, applicantID, validFrom.getDate(),
-					validTo.getDate());
+					validTo.getDate(), applicationID);
 		} catch (RemoteException e1) {
 			e1.printStackTrace();
 			return e1.getMessage();

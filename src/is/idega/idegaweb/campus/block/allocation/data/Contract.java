@@ -294,4 +294,24 @@ public interface Contract extends IDOEntity {
 	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean#setDiscountPercentage
 	 */
 	public void setDiscountPercentage(double percentage);
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean#getChangeKeyStatusAt
+	 */
+	public Timestamp getChangeKeyStatusAt();
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean#setChangeKeyStatusAt
+	 */
+	public void setChangeKeyStatusAt(Timestamp at);
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean#getChangeKeyStatusTo
+	 */
+	public boolean getChangeKeyStatusTo();
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean#setChangeKeyStatusTo
+	 */
+	public void setChangeKeyStatusTo(boolean to);
 }
