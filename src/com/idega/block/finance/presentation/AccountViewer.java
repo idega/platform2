@@ -72,7 +72,7 @@ public class AccountViewer extends Finance {
 		if (this.isAdmin || this.isLoggedOn) {
 			if (this.accounts != null && this.accounts.size() > 0) {
 				FinanceAccount eAccount = getAccount(this.accountID, this.accounts);
-				setMainPanel(getAccountView(eAccount, this.accounts, itFromDate, itToDate, this.isAdmin, clean));
+				setMainPanel(getAccountView(eAccount, this.accounts, itFromDate, itToDate, true, clean));
 			}
 			else {
 				setMainPanel(getErrorText(localize("no_account_selected","No account selected")));
@@ -541,8 +541,6 @@ public class AccountViewer extends Finance {
 		TableTitles[2] = getHeader(localize("text", "Text"));
 		TableTitles[3] = getHeader(localize("amount", "Amount"));
 		for (int i = 0; i < TableTitles.length; i++) {
-			//TableTitles[i].setFontSize(fontSize);
-			//TableTitles[i].setFontColor(sWhiteColor);
 			T.add(TableTitles[i], i + 1, row);
 		}
 		row++;
@@ -614,8 +612,8 @@ public class AccountViewer extends Finance {
 				//debet = p > 0 ? true : false;
 				totPrice += p;
 				T.add(getText(getDateString(new IWTimestamp(entry.getLastUpdated()))), 1, row);
-				T.add(getText(entry.getName()), 2, row);
-				T.add(getText(entry.getInfo()), 3, row);
+					T.add(getText(entry.getName()), 2, row);
+					T.add(getText(entry.getInfo()), 3, row);
 				T.add(getAmountText(p), 4, row);
 				row++;
 			}

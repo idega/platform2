@@ -11,6 +11,11 @@ public interface AccountKey extends IDOEntity, CategoryEntity {
 	public int getTariffKeyId();
 
 	/**
+	 * @see com.idega.block.finance.data.AccountKeyBMPBean#getTariffKey
+	 */
+	public TariffKey getTariffKey();
+
+	/**
 	 * @see com.idega.block.finance.data.AccountKeyBMPBean#setTariffKeyId
 	 */
 	public void setTariffKeyId(int id);

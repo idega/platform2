@@ -300,7 +300,13 @@ public class AccountEntryBMPBean extends GenericEntity implements AccountEntry,
 	}
 
 	public String getName() {
-		return getStringColumnValue(getNameColumnName());
+		String name = getStringColumnValue(getNameColumnName());
+		
+		if (name == null) {
+			name = this.getAccountKey().getTariffKey().getName();
+		}
+		
+		return name;
 	}
 
 	public void setName(String name) {
@@ -308,7 +314,13 @@ public class AccountEntryBMPBean extends GenericEntity implements AccountEntry,
 	}
 
 	public String getInfo() {
-		return getStringColumnValue(getInfoColumnName());
+		String info = getStringColumnValue(getInfoColumnName());
+		
+		if (info == null) {
+			info = this.getAccountKey().getTariffKey().getInfo();
+		}
+		
+		return info;
 	}
 
 	public void setInfo(String info) {

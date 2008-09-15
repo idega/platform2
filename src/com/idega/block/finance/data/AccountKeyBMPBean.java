@@ -35,10 +35,10 @@ public class AccountKeyBMPBean extends CategoryEntityBMPBean implements
 		addAttribute(getIDColumnName());
 		addAttribute(getNameColumnName(), "Name", String.class);
 		addAttribute(getInfoColumnName(), "Info", String.class, 4000);
-		addAttribute(getTariffKeyIdColumnName(), "Tariff key", Integer.class);
 		addAttribute(getOrdinalColumnName(), "Ordinal", Integer.class);
 		addAttribute(getDivisionColumnName(), "Division", String.class);
 		addManyToOneRelationship(COLUMN_XML_PARENT_KEY, AccountKey.class);
+		addManyToOneRelationship(getTariffKeyIdColumnName(), TariffKey.class);
 	}
 
 	public static String getAccountKeyEntityName() {
@@ -71,6 +71,10 @@ public class AccountKeyBMPBean extends CategoryEntityBMPBean implements
 
 	public int getTariffKeyId() {
 		return getIntColumnValue(getTariffKeyIdColumnName());
+	}
+	
+	public TariffKey getTariffKey() {
+		return (TariffKey) getColumnValue(getTariffKeyIdColumnName());
 	}
 
 	public void setTariffKeyId(int id) {
