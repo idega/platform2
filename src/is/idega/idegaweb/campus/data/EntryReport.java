@@ -14,4 +14,6 @@ public interface EntryReport
  public void setEJBHome(javax.ejb.EJBHome p0) ;
  public java.lang.String getKeyInfo() throws java.rmi.RemoteException;
  public int getNumber() throws java.rmi.RemoteException;
+ public java.lang.String getApartmentName() throws java.rmi.RemoteException;
+ public int getApartmentId() throws java.rmi.RemoteException;
 }
