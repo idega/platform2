@@ -728,5 +728,4 @@ public class AccountEntryBMPBean extends GenericEntity implements AccountEntry,
 		query.appendWhereEquals(getColumnNameBatchNumber(), batchNumber);
 		return super.idoFindPKsByQuery(query);
 	}
-
 }

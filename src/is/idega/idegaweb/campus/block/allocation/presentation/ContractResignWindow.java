@@ -6,8 +6,11 @@ import is.idega.idegaweb.campus.data.SystemProperties;
 import is.idega.idegaweb.campus.presentation.CampusProperties;
 import is.idega.idegaweb.campus.presentation.CampusWindow;
 import is.idega.idegaweb.campus.presentation.Edit;
+
 import java.rmi.RemoteException;
+
 import javax.ejb.FinderException;
+
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.ApplicantHome;
 import com.idega.block.building.data.Apartment;
@@ -41,6 +44,26 @@ import com.idega.util.IWTimestamp;
  */
 public class ContractResignWindow extends CampusWindow {
 
+	private static final String PARAM_MOVING_DATE = "mov_date";
+
+	private static final String PARAM_RESIGN_INFO = "resign_info";
+
+	private static final String PARAM_USER = "us_id";
+
+	private static final String PARAM_CONTRACT = "contract_id";
+
+	private static final String PARAM_NEW_PHONE = "new_phone";
+
+	private static final String PARAM_NEW_ZIP = "new_zip";
+
+	private static final String PARAM_NEW_ADDRESS = "new_address";
+
+	private static final String PARAM_APPLICANT = "applicant_id";
+
+	private static final String PARAM_DATE_SYNC = "date_sync";
+
+	public static final String PARAM_IS_ADMIN = "is_camp_isit";
+
 	private boolean isAdmin;
 
 	private boolean isLoggedOn;
@@ -57,13 +80,9 @@ public class ContractResignWindow extends CampusWindow {
 
 	private User eUser = null;
 
-	private String prmDateSync = "date_sync";
-
-	public static final String prmAdmin = "is_camp_isit";
-
 	/*
-	 * Blue top colour # 27324B Hvítur litur fyrir neðan það # FFFFFF Ljósblár
-	 * litur í töflu # ECEEF0 Auka litur örlítið dekkri (í lagi að nota líka) #
+	 * Blue top colour # 27324B Hvï¿½tur litur fyrir neï¿½an ï¿½aï¿½ # FFFFFF Ljï¿½sblï¿½r
+	 * litur ï¿½ tï¿½flu # ECEEF0 Auka litur ï¿½rlï¿½tiï¿½ dekkri (ï¿½ lagi aï¿½ nota lï¿½ka) #
 	 * CBCFD3
 	 */
 	public ContractResignWindow() {
@@ -75,15 +94,18 @@ public class ContractResignWindow extends CampusWindow {
 	protected void control(IWContext iwc) {
 		// debugParameters(iwc);
 		if (isAdmin || isLoggedOn) {
-			if (iwc.getApplicationAttribute(is.idega.idegaweb.campus.data.SystemPropertiesBMPBean.getEntityTableName()) != null) {
-				SysProps = (SystemProperties) iwc.getApplicationAttribute(is.idega.idegaweb.campus.data.SystemPropertiesBMPBean.getEntityTableName());
+			if (iwc
+					.getApplicationAttribute(is.idega.idegaweb.campus.data.SystemPropertiesBMPBean
+							.getEntityTableName()) != null) {
+				SysProps = (SystemProperties) iwc
+						.getApplicationAttribute(is.idega.idegaweb.campus.data.SystemPropertiesBMPBean
+								.getEntityTableName());
 			}
 			if (iwc.isParameterSet("save") || iwc.isParameterSet("save.x")) {
-				doReSignContract(iwc);
+				doResignContract(iwc);
 			}
 			add(getSignatureTable(iwc));
-		}
-		else
+		} else
 			add(getErrorText(localize("access_denied", "Access denied")));
 		// add(String.valueOf(iSubjectId));
 	}
@@ -98,161 +120,194 @@ public class ContractResignWindow extends CampusWindow {
 	}
 
 	private PresentationObject getSignatureTable(IWContext iwc) {
-		int iContractId = Integer.parseInt(iwc.getParameter("contract_id"));
+		int iContractId = Integer.parseInt(iwc.getParameter(PARAM_CONTRACT));
 		// Table T = new Table(2,8);
 		DataTable T = new DataTable();
 		T.setWidth("100%");
 		T.addTitle(localize("contract_resign", "Contract resign"));
 		T.addButton(new CloseButton(getResourceBundle().getImage("close.gif")));
-		T.addButton(new SubmitButton(getResourceBundle().getImage("save.gif"), "save"));
+		T.addButton(new SubmitButton(getResourceBundle().getImage("save.gif"),
+				"save"));
 		int row = 1;
 		int col = 1;
 		try {
 			if (iContractId > 0) {
-				Contract eContract = ((ContractHome) com.idega.data.IDOLookup.getHome(Contract.class)).findByPrimaryKey(new Integer(
+				Contract eContract = ((ContractHome) com.idega.data.IDOLookup
+						.getHome(Contract.class)).findByPrimaryKey(new Integer(
 						iContractId));
 				Applicant eApplicant = eContract.getApplicant();
 				User user = eContract.getUser();
 				if (user != null) {
-					boolean isContractUser = user.getPrimaryKey().toString().equals(eUser.getPrimaryKey().toString());
-					T.add(new HiddenInput("contract_id", (eContract.getPrimaryKey().toString())), 1, row);
-					T.add(new HiddenInput("applicant_id", eContract.getApplicantId().toString()), 1, row);
-					T.add(new HiddenInput("us_id", String.valueOf(eContract.getUserId().intValue())), 1, row);
-					if (iwc.isParameterSet(prmAdmin)) {
-						T.add(new HiddenInput(prmAdmin, "true"));
+					boolean isContractUser = user.getPrimaryKey().toString()
+							.equals(eUser.getPrimaryKey().toString());
+					T.add(new HiddenInput(PARAM_CONTRACT, (eContract
+							.getPrimaryKey().toString())), 1, row);
+					T.add(new HiddenInput(PARAM_APPLICANT, eContract
+							.getApplicantId().toString()), 1, row);
+					T.add(new HiddenInput(PARAM_USER, String.valueOf(eContract
+							.getUserId().intValue())), 1, row);
+					if (iwc.isParameterSet(PARAM_IS_ADMIN)) {
+						T.add(new HiddenInput(PARAM_IS_ADMIN, "true"));
 					}
 					T.add(Edit.formatText(localize("name", "Name")), 1, row);
 					T.add(Edit.formatText(user.getName()), 2, row);
 					row++;
-					T.add(Edit.formatText(localize("ssn", "SocialNumber")), 1, row);
+					T.add(Edit.formatText(localize("ssn", "SocialNumber")), 1,
+							row);
 					T.add(Edit.formatText(eApplicant.getSSN()), 2, row);
 					row++;
-					T.add(Edit.formatText(localize("apartment", "Apartment")), 1, row);
-					T.add(Edit.formatText(eContract.getApartment().getName()), 2, row);
-					row++;
-					T.add(Edit.formatText(localize("valid_from", "Valid from")), 1, row);
-					T.add(
-							Edit.formatText(new IWTimestamp(eContract.getValidFrom()).getLocaleDate(iwc.getCurrentLocale())),
+					T.add(Edit.formatText(localize("apartment", "Apartment")),
+							1, row);
+					T.add(Edit.formatText(eContract.getApartment().getName()),
 							2, row);
 					row++;
-					T.add(Edit.formatText(localize("valid_to", "Valid to")), 1, row);
 					T.add(
-							Edit.formatText(new IWTimestamp(eContract.getValidTo()).getLocaleDate(iwc.getCurrentLocale())),
-							2, row);
+							Edit
+									.formatText(localize("valid_from",
+											"Valid from")), 1, row);
+					T.add(Edit.formatText(new IWTimestamp(eContract
+							.getValidFrom()).getLocaleDate(iwc
+							.getCurrentLocale())), 2, row);
 					row++;
-					T.add(Edit.formatText(localize("moving_date", "Moving date")), 1, row);
+					T.add(Edit.formatText(localize("valid_to", "Valid to")), 1,
+							row);
+					T.add(Edit.formatText(new IWTimestamp(eContract
+							.getValidTo())
+							.getLocaleDate(iwc.getCurrentLocale())), 2, row);
+					row++;
+					T.add(
+							Edit.formatText(localize("moving_date",
+									"Moving date")), 1, row);
 					// IWTimestamp movdate = eContract.getMovingDate()!=null?new
 					// IWTimestamp(eContract.getMovingDate()):null;
-					DateInput movDate = new DateInput("mov_date", true);
+					DateInput movDate = new DateInput(PARAM_MOVING_DATE, true);
 					IWTimestamp moving = IWTimestamp.RightNow();
 					// int termofnotice = 1;
 					int termofnoticeMonths = 1;
-					if (SysProps != null)
-						termofnoticeMonths = (int) SysProps.getTermOfNoticeMonths();
-					moving = this.addMonthsPlusCurrentMonth(moving, termofnoticeMonths);
-					// moving.addDays(termofnoticeMonths);
-					if (moving.isLaterThan(new IWTimestamp(eContract.getValidTo())))
+					if (SysProps != null) {
+						termofnoticeMonths = (int) SysProps
+								.getTermOfNoticeMonths();
+					}
+					moving = this.addMonthsPlusCurrentMonth(moving,
+							termofnoticeMonths);
+
+					if (moving.isLaterThan(new IWTimestamp(eContract
+							.getValidTo()))) {
 						movDate.setDate(eContract.getValidTo());
-					else
+					} else {
 						movDate.setDate(moving.getDate());
+					}
 					IWTimestamp now = IWTimestamp.RightNow();
 					now.addMonths(1);
-					if (now.isLaterThan(new IWTimestamp(eContract.getValidTo()))) {
+					if (now
+							.isLaterThan(new IWTimestamp(eContract.getValidTo()))) {
 						now = new IWTimestamp(eContract.getValidTo());
 					}
-					movDate.setEarliestPossibleDate(now.getDate(), localize("must_select_one_month_ahead",
-							"You must select a date at least one month later then today"));
-					// Edit.setStyle(movDate);
+					if (!isAdmin) {
+						movDate
+								.setEarliestPossibleDate(
+										now.getDate(),
+										localize("must_select_one_month_ahead",
+												"You must select a date at least one month later then today"));
+					}
 					movDate.setStyleAttribute("style", Edit.styleAttribute);
 
 					if (isAdmin || isContractUser) {
 						T.add(movDate, 2, row);
 					} else if (moving != null) {
-						T.add(Edit.formatText(moving.getLocaleDate(iwc.getCurrentLocale())), 2, row);
+						T.add(Edit.formatText(moving.getLocaleDate(iwc
+								.getCurrentLocale())), 2, row);
 					}
-					
+
 					row++;
-					
-					boolean DATESYNC = getBundle().getProperty(CampusProperties.PROP_CONTRACT_DATE_SYNC, "false").equals(
-							"true");
+
+					boolean DATESYNC = getBundle().getProperty(
+							CampusProperties.PROP_CONTRACT_DATE_SYNC, "false")
+							.equals("true");
 					if (isAdmin) {
-						CheckBox dateSync = new CheckBox(prmDateSync, "true");
+						CheckBox dateSync = new CheckBox(PARAM_DATE_SYNC,
+								"true");
 						dateSync.setChecked(DATESYNC);
-						T.add(Edit.formatText(localize("update_valid_to", "Update valid to")), 1, row);
+						T.add(Edit.formatText(localize("update_valid_to",
+								"Update valid to")), 1, row);
 						T.add(dateSync, 2, row);
 						row++;
+					} else {
+						/*
+						 * if (DATESYNC) { T.add(new HiddenInput(prmDateSync,
+						 * "false")); }
+						 */
 					}
-					else {
-/*						if (DATESYNC) {
-							T.add(new HiddenInput(prmDateSync, "false"));
-						}*/
-					}
-					TextInput newAddress = new TextInput("new_address");
-					newAddress.setAsNotEmpty(localize("err_new_address", "You must enter a new address"));
-					TextInput newZip = new TextInput("new_zip");
-					newZip.setAsNotEmpty(localize("err_new_zip", "You must enter a new zip code"));
-					TextInput newPhone = new TextInput("new_phone");
-					newPhone.setAsNotEmpty(localize("err_new_phone", "You must enter a new phone"));
-					T.add(Edit.formatText(localize("new_address", "New address")), 1, row);
+					TextInput newAddress = new TextInput(PARAM_NEW_ADDRESS);
+					newAddress.setAsNotEmpty(localize("err_new_address",
+							"You must enter a new address"));
+					TextInput newZip = new TextInput(PARAM_NEW_ZIP);
+					newZip.setAsNotEmpty(localize("err_new_zip",
+							"You must enter a new zip code"));
+					TextInput newPhone = new TextInput(PARAM_NEW_PHONE);
+					newPhone.setAsNotEmpty(localize("err_new_phone",
+							"You must enter a new phone"));
+					T.add(Edit.formatText(localize(PARAM_NEW_ADDRESS,
+							"New address")), 1, row);
 					T.add(newAddress, 2, row);
 					row++;
-					T.add(Edit.formatText(localize("new_zip", "New zip")), 1, row);
+					T.add(Edit.formatText(localize(PARAM_NEW_ZIP, "New zip")),
+							1, row);
 					T.add(newZip, 2, row);
 					row++;
-					T.add(Edit.formatText(localize("new_phone", "New phone")), 1, row);
+					T.add(
+							Edit.formatText(localize(PARAM_NEW_PHONE,
+									"New phone")), 1, row);
 					T.add(newPhone, 2, row);
 					row++;
 				}
 			}
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 		}
 		Form F = new Form();
 		F.add(T);
 		return F;
 	}
 
-	private IWTimestamp addMonthsPlusCurrentMonth(IWTimestamp timestamp, int monthsToAdd) {
+	private IWTimestamp addMonthsPlusCurrentMonth(IWTimestamp timestamp,
+			int monthsToAdd) {
 		int month = timestamp.getMonth();
 		timestamp.setDay(1);
 		if (month == 12) {
 			timestamp.setMonth(1);
 			int year = timestamp.getYear();
 			timestamp.setYear(year++);
-		}
-		else {
+		} else {
 			timestamp.setMonth(month++);
 		}
 		timestamp.addMonths(monthsToAdd);
 		return timestamp;
 	}
 
-	private void doReSignContract(IWContext iwc) {
-		Integer id = Integer.valueOf(iwc.getParameter("contract_id"));
-		int usid = Integer.parseInt(iwc.getParameter("us_id"));
-		String sInfo = iwc.getParameter("resign_info");
+	private void doResignContract(IWContext iwc) {
+		Integer id = Integer.valueOf(iwc.getParameter(PARAM_CONTRACT));
+		int usid = Integer.parseInt(iwc.getParameter(PARAM_USER));
+		String sInfo = iwc.getParameter(PARAM_RESIGN_INFO);
 		if (sInfo == null)
 			sInfo = "";
-		String sMovDate = iwc.getParameter("mov_date");
+		String sMovDate = iwc.getParameter(PARAM_MOVING_DATE);
 		IWTimestamp movDate = null;
 		if (sMovDate != null && sMovDate.length() == 10)
 			movDate = new IWTimestamp(sMovDate);
-		boolean datesync = iwc.getParameter(prmDateSync) != null;
+		boolean datesync = iwc.getParameter(PARAM_DATE_SYNC) != null;
 		try {
-			// System.out.println("saving shit");
 			if (isAdmin) {
 				System.out.println("is admin");
-				getContractService(iwc).endContract(id, movDate, sInfo, datesync);
-				// ContractBusiness.endContract(id, movDate, sInfo, datesync);
-			}
-			else if (eUser != null && String.valueOf(usid).equals(eUser.getPrimaryKey().toString())) {
+				getContractService(iwc).endContract(id, movDate, sInfo,
+						datesync);
+			} else if (eUser != null
+					&& String.valueOf(usid).equals(
+							eUser.getPrimaryKey().toString())) {
 				System.out.println("is other user");
-				getContractService(iwc).resignContract(id, movDate, sInfo, datesync);
-				// ContractBusiness.resignContract(id, movDate, sInfo,
-				// datesync);
+				getContractService(iwc).resignContract(id, movDate, sInfo,
+						datesync);
 			}
-		}
-		catch (RemoteException e) {
+		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
 		doChangeApplicantAddress(iwc);
@@ -262,30 +317,29 @@ public class ContractResignWindow extends CampusWindow {
 
 	private void doChangeApplicantAddress(IWContext iwc) {
 		try {
-			if (iwc.isParameterSet("applicant_id")) {
-				Integer applicantID = Integer.valueOf(iwc.getParameter("applicant_id"));
-				Applicant applicant = ((ApplicantHome) IDOLookup.getHome(Applicant.class)).findByPrimaryKey(applicantID);
-				if (iwc.isParameterSet("new_address")) {
-					applicant.setResidence(iwc.getParameter("new_address"));
+			if (iwc.isParameterSet(PARAM_APPLICANT)) {
+				Integer applicantID = Integer.valueOf(iwc
+						.getParameter(PARAM_APPLICANT));
+				Applicant applicant = ((ApplicantHome) IDOLookup
+						.getHome(Applicant.class))
+						.findByPrimaryKey(applicantID);
+				if (iwc.isParameterSet(PARAM_NEW_ADDRESS)) {
+					applicant.setResidence(iwc.getParameter(PARAM_NEW_ADDRESS));
 				}
-				if (iwc.isParameterSet("new_zip")) {
-					applicant.setPO(iwc.getParameter("new_zip"));
+				if (iwc.isParameterSet(PARAM_NEW_ZIP)) {
+					applicant.setPO(iwc.getParameter(PARAM_NEW_ZIP));
 				}
-				if (iwc.isParameterSet("new_phone")) {
+				if (iwc.isParameterSet(PARAM_NEW_PHONE)) {
 				}
 				applicant.store();
 			}
-		}
-		catch (NumberFormatException e) {
+		} catch (NumberFormatException e) {
 			e.printStackTrace();
-		}
-		catch (IDOLookupException e) {
+		} catch (IDOLookupException e) {
 			e.printStackTrace();
-		}
-		catch (IDOStoreException e) {
+		} catch (IDOStoreException e) {
 			e.printStackTrace();
-		}
-		catch (FinderException e) {
+		} catch (FinderException e) {
 			e.printStackTrace();
 		}
 	}
@@ -324,8 +378,9 @@ public class ContractResignWindow extends CampusWindow {
 
 	public void main(IWContext iwc) throws Exception {
 		eUser = iwc.getCurrentUser();
-		isAdmin = iwc.isParameterSet(prmAdmin);
-		isLoggedOn = com.idega.core.accesscontrol.business.LoginBusinessBean.isLoggedOn(iwc);
+		isAdmin = iwc.isParameterSet(PARAM_IS_ADMIN);
+		isLoggedOn = com.idega.core.accesscontrol.business.LoginBusinessBean
+				.isLoggedOn(iwc);
 		control(iwc);
 	}
 }

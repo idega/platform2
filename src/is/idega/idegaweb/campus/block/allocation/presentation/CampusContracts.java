@@ -39,6 +39,7 @@ import com.idega.user.data.User;
  * @version 1.0
  */
 public class CampusContracts extends CampusBlock {
+	private static final String PARAM_GARBAGE = "garbage";
 	protected final int ACT1 = 1, ACT2 = 2, ACT3 = 3, ACT4 = 4, ACT5 = 5;
 	private int iGlobalSize = 50;
 	private String sGlobalStatus = "C";
@@ -68,12 +69,13 @@ public class CampusContracts extends CampusBlock {
 		initFilter(iwc);
 		if (isAdmin) {
 			add(statusForm());
-			if (iwc.getParameter("garbage") != null) {
+			if (iwc.getParameter(PARAM_GARBAGE) != null) {
 				doGarbageContract(iwc);
 			}
 			add(getContractTable(iwc));
-		} else
+		} else {
 			add(getNoAccessObject(iwc));
+		}
 	}
 
 	private void initFilter(IWContext iwc) {
@@ -188,7 +190,7 @@ public class CampusContracts extends CampusBlock {
 		drp.addMenuElement("500");
 		drp.addMenuElement("-1", "All");
 		drp.setSelectedElement(selected);
-		
+
 		return drp;
 	}
 
@@ -203,7 +205,7 @@ public class CampusContracts extends CampusBlock {
 		if (!"".equals(display))
 			drp.addMenuElementFirst("-1", display);
 		drp.setSelectedElement(selected.toString());
-		
+
 		return drp;
 	}
 
@@ -253,8 +255,10 @@ public class CampusContracts extends CampusBlock {
 		drp.addMenuElement(ContractFinder.CATEGORY, localize("category",
 				"Category"));
 		drp.addMenuElement(ContractFinder.TYPE, localize("type", "Type"));
-		drp.addMenuElement(ContractFinder.START_DATE, localize("valid_from", "Valid from"));
-		drp.addMenuElement(ContractFinder.END_DATE, localize("valid_to", "Valid to"));
+		drp.addMenuElement(ContractFinder.START_DATE, localize("valid_from",
+				"Valid from"));
+		drp.addMenuElement(ContractFinder.END_DATE, localize("valid_to",
+				"Valid to"));
 		if (selected != null)
 			drp.setSelectedElement(selected.toString());
 		return drp;
@@ -290,6 +294,7 @@ public class CampusContracts extends CampusBlock {
 		Image garbageImage = getBundle().getImage("/trashcan.gif");
 		Image renewImage = getBundle().getImage("/renew.gif");
 		boolean garbage = false;
+		boolean both = false;
 		int row = 1;
 		int col = 1;
 		DataTable T = getDataTable();
@@ -301,10 +306,18 @@ public class CampusContracts extends CampusBlock {
 				|| sGlobalStatus.equals(ContractBMPBean.STATUS_REJECTED)) {
 			T.add((garbageImage), col++, 1);
 			garbage = true;
-		} else
-			T.add((printImage), col++, 1);// Edit.formatText(localize("print","Print")
-		T.add((resignImage), col++, 1);// Edit.formatText(localize("sign","Sign"))
-		T.add((registerImage), col++, 1);// Edit.formatText(localize("sign","Sign"))
+		} else {
+			if (sGlobalStatus.equals(ContractBMPBean.STATUS_SIGNED)) {
+				T.add((garbageImage), col++, 1);
+				both = true;
+			}
+			T.add((printImage), col++, 1);// Edit.formatText(localize("print",
+			// "Print")
+		}
+		T.add((resignImage), col++, 1);//Edit.formatText(localize("sign","Sign")
+		// )
+		T.add((registerImage), col++, 1);//Edit.formatText(localize("sign","Sign"
+		// ))
 		T.add((renewImage), col++, 1);
 		// col = 4;
 		T.add(getHeader(localize("name", "Name")), col++, 1);
@@ -312,7 +325,8 @@ public class CampusContracts extends CampusBlock {
 		T.add(getHeader(localize("apartment", "Apartment")), col++, 1);
 		T.add(getHeader(localize("validfrom", "Valid from")), col++, 1);
 		T.add(getHeader(localize("validto", "Valid To")), col++, 1);
-		T.add(keyImage, col++, 1);// Edit.titleText(localize("key","Key")),col++,1);
+		T.add(keyImage, col++, 1);//Edit.titleText(localize("key","Key")),col++,
+		// 1);
 		/*
 		 * Table T = new Table(); T.setCellspacing(0); T.setCellpadding(2);
 		 */
@@ -341,18 +355,19 @@ public class CampusContracts extends CampusBlock {
 					A = C.getApartment();
 					T.add(getEditLink(getText(String.valueOf(i)), contractID),
 							col++, row);
-					// if(C.getStatus().equalsIgnoreCase(ContractBMPBean.statusCreated)
-					// ||
-					// C.getStatus().equalsIgnoreCase(ContractBMPBean.statusPrinted)
-					// )
 					if (garbage)
 						T.add(getGarbageLink(garbageImage, contractID), col++,
 								row);
-					else
+					else {
+						if (both) {
+							T.add(getGarbageLink(garbageImage, contractID),
+									col++, row);
+						}
 						T.add(getPDFLink(printImage, contractID, Ap.getSSN()),
 								col++, row);
+					}
 					if (status.equalsIgnoreCase(ContractBMPBean.STATUS_SIGNED))
-						T.add(getReSignLink(resignImage, contractID), col, row);
+						T.add(getResignLink(resignImage, contractID), col, row);
 					col++;
 					if (status.equalsIgnoreCase(ContractBMPBean.STATUS_PRINTED)
 							|| status
@@ -383,20 +398,8 @@ public class CampusContracts extends CampusBlock {
 					ex.printStackTrace();
 				}
 			}
-			/*
-			 * T.add(getPDFLink(printImage,sbIDs.toString()),1,row);
-			 * 
-			 * 
-			 * T.setHorizontalZebraColored(Edit.colorLightBlue,Edit.colorWhite);
-			 * T.setRowColor(1,Edit.colorBlue);
-			 * T.setRowColor(row,Edit.colorRed); T.mergeCells(1,row,8,row);
-			 * T.setWidth(1,"15"); T.add(Edit.formatText(" "),1,row);
-			 * T.setColumnAlignment(1,"left");
-			 * T.setHeight(row,Edit.bottomBarThickness);
-			 */
 		}
-		// else
-		// add(Edit.formatText(localize("no_contracts","No contracts")));
+
 		Table T2 = new Table();
 		T2.setCellpadding(0);
 		T2.setCellspacing(0);
@@ -427,7 +430,7 @@ public class CampusContracts extends CampusBlock {
 
 	private void doGarbageContract(IWContext iwc) {
 		try {
-			Integer id = Integer.valueOf(iwc.getParameter("garbage"));
+			Integer id = Integer.valueOf(iwc.getParameter(PARAM_GARBAGE));
 			getContractService(iwc).doGarbageContract(id);
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
@@ -521,12 +524,14 @@ public class CampusContracts extends CampusBlock {
 		return L;
 	}
 
-	public Link getReSignLink(PresentationObject MO, int contractId) {
+	public Link getResignLink(PresentationObject MO, int contractId) {
 		Link L = new Link(MO);
 		L.setWindowToOpen(ContractResignWindow.class);
-		if (isAdmin)
-			L.addParameter(ContractResignWindow.prmAdmin, "true");
+		if (isAdmin) {
+			L.addParameter(ContractResignWindow.PARAM_IS_ADMIN, "true");
+		}
 		L.addParameter("contract_id", contractId);
+
 		return L;
 	}
 

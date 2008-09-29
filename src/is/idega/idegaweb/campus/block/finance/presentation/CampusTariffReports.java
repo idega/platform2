@@ -61,6 +61,8 @@ public class CampusTariffReports extends Finance {
 
 	private static final String CREATE_EXCEL_FILE = "createExcel";
 
+	private static final String SHOW_ALL_ENTRIES = "showAllEntries";
+
 	private IWResourceBundle iwrb;
 
 	private String prmDateFrom = "ctr_date_from";
@@ -90,7 +92,8 @@ public class CampusTariffReports extends Finance {
 
 	private Map keyMap = null;
 
-	private boolean useBoxSelection = true, createExcelFile = false;
+	private boolean useBoxSelection = true, createExcelFile = false,
+			showAllEntries;
 
 	public CampusTariffReports() {
 		setWidth("100%");
@@ -112,25 +115,41 @@ public class CampusTariffReports extends Finance {
 			if (reports != null) {
 				PresentationObject result = getResult(iwc);
 				if (createExcelFile) {
-					ICFile file = POIUtility.createICFileFromTable(((DataTable)result).getContentTable(), "bybuilding.xls", "By building");
+					ICFile file = POIUtility.createICFileFromTable(
+							((DataTable) result).getContentTable(),
+							"bybuilding.xls", "By building");
 					setMainPanel(getXLSLink(file));
 				}
 				setMainPanel(result);
 			} else if (reportsByApartment != null) {
 				PresentationObject result = getResultByApartment(iwc);
 				if (createExcelFile) {
-					ICFile file = POIUtility.createICFileFromTable(((DataTable)result).getContentTable(), "byapartment.xls", "By apartment");
+					ICFile file = POIUtility.createICFileFromTable(
+							((DataTable) result).getContentTable(),
+							"byapartment.xls", "By apartment");
 					setMainPanel(getXLSLink(file));
 				}
 				setMainPanel(result);
 			} else if (accountReports != null) {
-				PresentationObject result = getAccountResult(iwc);
-				if (createExcelFile) {
-					ICFile file = POIUtility.createICFileFromTable((Table)result, "byaccount.xls", "By account");
-					setMainPanel(getXLSLink(file));
-				}
+				if (!showAllEntries) {
+					PresentationObject result = getAccountResult(iwc);
+					if (createExcelFile) {
+						ICFile file = POIUtility.createICFileFromTable(
+								(Table) result, "byaccount.xls", "By account");
+						setMainPanel(getXLSLink(file));
+					}
 
-				setMainPanel(result);
+					setMainPanel(result);
+				} else {
+					PresentationObject result = getAccountResult2(iwc);
+					if (createExcelFile) {
+						ICFile file = POIUtility.createICFileFromTable(
+								(Table) result, "byaccount.xls", "By account");
+						setMainPanel(getXLSLink(file));
+					}
+
+					setMainPanel(result);
+				}
 			}
 		}
 	}
@@ -143,7 +162,6 @@ public class CampusTariffReports extends Finance {
 		return link;
 	}
 
-	
 	private void parse(IWContext iwc) {
 		if (iwc.isParameterSet(prmDateFrom)) {
 			try {
@@ -163,10 +181,12 @@ public class CampusTariffReports extends Finance {
 				.getParameterValues(prmBuilding) : null;
 		acckeys = iwc.isParameterSet(prmAccountKey) ? iwc
 				.getParameterValues(prmAccountKey) : null;
-		entryGroup = iwc.isParameterSet(prmEntryGroup) ? iwc.getParameter(prmEntryGroup) : null;
-		
+		entryGroup = iwc.isParameterSet(prmEntryGroup) ? iwc
+				.getParameter(prmEntryGroup) : null;
+
 		createExcelFile = iwc.isParameterSet(CREATE_EXCEL_FILE);
-		
+		showAllEntries = iwc.isParameterSet(SHOW_ALL_ENTRIES);
+
 		try {
 			Collection keys = ((AccountKeyHome) IDOLookup
 					.getHome(AccountKey.class)).findByPrimaryKeys(acckeys);
@@ -187,7 +207,7 @@ public class CampusTariffReports extends Finance {
 		if (entryGroup != null) {
 			entryGroupID = new Integer(entryGroup);
 		}
-		
+
 		if (!iwc.isParameterSet(SHOW_BY_CONTRACT)) {
 			boolean showByApartment = iwc.isParameterSet(SHOW_BY_APARTMENT);
 			try {
@@ -204,18 +224,30 @@ public class CampusTariffReports extends Finance {
 				ex.printStackTrace();
 			}
 		} else {
-			try {
-				accountReports = AccountEntryReportBMPBean.findAllBySearch(
-						buildings, acckeys, from.getTimestamp(), to
-								.getTimestamp(), iwc
-								.isParameterSet(SHOW_BY_TARIFFKEY));
-			} catch (java.sql.SQLException ex) {
-				ex.printStackTrace();
+			if (!showAllEntries) {
+				try {
+					accountReports = AccountEntryReportBMPBean.findAllBySearch(
+							buildings, acckeys, from.getTimestamp(), to
+									.getTimestamp(), iwc
+									.isParameterSet(SHOW_BY_TARIFFKEY));
+				} catch (java.sql.SQLException ex) {
+					ex.printStackTrace();
+				}
+			} else {
+				try {
+					accountReports = AccountEntryReportBMPBean
+							.findAllBySearchAllEntries(buildings, acckeys, from
+									.getTimestamp(), to.getTimestamp(), iwc
+									.isParameterSet(SHOW_BY_TARIFFKEY));
+				} catch (java.sql.SQLException ex) {
+					ex.printStackTrace();
+				}
 			}
 		}
 	}
 
-	public PresentationObject getSearchForm(IWContext iwc) throws java.rmi.RemoteException {
+	public PresentationObject getSearchForm(IWContext iwc)
+			throws java.rmi.RemoteException {
 		DataTable T = getDataTable();
 		T.setUseBottom(false);
 		T.setUseTop(false);
@@ -240,10 +272,10 @@ public class CampusTariffReports extends Finance {
 		else
 			inpTo.setDate(today.getDate());
 		inpTo.setYearRange(today.getYear() - 5, today.getYear() + 1);
-		
+
 		GenericSelect inpEntryGroup = getEntryGroupSelection(prmEntryGroup);
 		inpEntryGroup.setSelectedOption(entryGroup);
-		
+
 		T.add(getHeader(iwrb.getLocalizedString("building", "Building")), 1, 1);
 		T.add(getHeader(iwrb.getLocalizedString("account_key", "Account_key")),
 				2, 1);
@@ -251,8 +283,8 @@ public class CampusTariffReports extends Finance {
 				3, 1);
 		T.add(getHeader(iwrb.getLocalizedString("date_to", "Due date to")), 4,
 				1);
-		T.add(getHeader(iwrb.getLocalizedString("entry_group", "Entry group")), 5,
-				1);
+		T.add(getHeader(iwrb.getLocalizedString("entry_group", "Entry group")),
+				5, 1);
 		T.add(buildings, 1, 2);
 		T.add(keys, 2, 2);
 		T.add(inpFrom, 3, 2);
@@ -261,6 +293,7 @@ public class CampusTariffReports extends Finance {
 
 		CheckBox chkByContract = new CheckBox(SHOW_BY_CONTRACT, "true");
 		CheckBox chkByTariffKey = new CheckBox(SHOW_BY_TARIFFKEY, "true");
+		CheckBox chkShowAllEntries = new CheckBox(SHOW_ALL_ENTRIES, "true");
 		CheckBox chkByApartment = new CheckBox(SHOW_BY_APARTMENT, "true");
 		CheckBox chkCreateExcel = new CheckBox(CREATE_EXCEL_FILE, "true");
 
@@ -269,22 +302,26 @@ public class CampusTariffReports extends Finance {
 
 		chkByApartment.setToDisableWhenChecked(chkByContract);
 		chkByApartment.setToDisableWhenChecked(chkByTariffKey);
+		chkByApartment.setToDisableWhenChecked(chkShowAllEntries);
 		chkByApartment.setToEnableWhenUnchecked(chkByContract);
 		chkByApartment.setToEnableWhenUnchecked(chkByTariffKey);
+		chkByApartment.setToEnableWhenUnchecked(chkShowAllEntries);
 
 		chkByContract.keepStatusOnAction();
 		chkByTariffKey.keepStatusOnAction();
 		chkByApartment.keepStatusOnAction();
-		
+		chkShowAllEntries.keepStatusOnAction();
+
 		if (iwc.isParameterSet(SHOW_BY_APARTMENT)) {
 			chkByContract.setChecked(false);
 			chkByContract.setDisabled(true);
 			chkByTariffKey.setDisabled(true);
+			chkShowAllEntries.setDisabled(true);
 		} else if (iwc.isParameterSet(SHOW_BY_CONTRACT)) {
 			chkByApartment.setChecked(false);
 			chkByApartment.setDisabled(true);
 		}
-		
+
 		T.add(chkByContract, 1, 3);
 		T.add(getSmallHeader(localize("show_by_accounts", "Show by accounts")),
 				1, 3);
@@ -292,12 +329,16 @@ public class CampusTariffReports extends Finance {
 		T.add(
 				getSmallHeader(localize("show_by_tariffkey",
 						"Show by tariff key")), 1, 3);
+		T.add(chkShowAllEntries, 1, 3);
+		T.add(getSmallHeader(localize("show_all_entries", "Show all entries")),
+				1, 3);
 		T.add(chkByApartment, 1, 3);
 		T.add(getSmallHeader(localize("show_by_apartments",
 				"Show by apartments")), 1, 3);
 		T.add(chkCreateExcel, 1, 3);
-		T.add(getSmallHeader(localize("create_excel_file",
-				"Create excel file")), 1, 3);
+		T.add(
+				getSmallHeader(localize("create_excel_file",
+						"Create excel file")), 1, 3);
 		T.getContentTable().mergeCells(1, 3, 4, 3);
 		T.getContentTable()
 				.setRowVerticalAlignment(2, Table.VERTICAL_ALIGN_TOP);
@@ -361,7 +402,7 @@ public class CampusTariffReports extends Finance {
 		} else
 			T.add(getHeader(iwrb.getLocalizedString("no_entries_found",
 					"No entries where found")));
-		
+
 		return T;
 	}
 
@@ -425,6 +466,7 @@ public class CampusTariffReports extends Finance {
 		return T;
 	}
 
+	
 	public PresentationObject getAccountResult(IWContext iwc) {
 		Table T = new Table();
 		T.setNoWrap();
@@ -455,7 +497,7 @@ public class CampusTariffReports extends Finance {
 				// for every distinct account key
 				// int index = 0;
 				for (Iterator iterator = distinctKeys.iterator(); iterator
-						.hasNext();) {
+				.hasNext();) {
 					Integer keyId = (Integer) iterator.next();
 					AccountEntryReport report = (AccountEntryReport) contractMap
 							.get(keyId);
@@ -497,6 +539,38 @@ public class CampusTariffReports extends Finance {
 			}
 			T.setRowColor(row, getHeaderColor());
 		}
+		return T;
+	}
+	
+	public PresentationObject getAccountResult2(IWContext iwc) {
+		Table T = new Table();
+		T.setNoWrap();
+		if (accountReports != null && !accountReports.isEmpty()) {
+			int row = 1;
+			int col = 1;
+			T.add(getHeader(iwrb.getLocalizedString("name", "Name")), col++, row);
+			T.add(getHeader(iwrb.getLocalizedString("personal_id", "Personal id")), col++, row);
+			T.add(getHeader(iwrb.getLocalizedString("type", "Type")), col++, row);
+			T.add(getHeader(iwrb.getLocalizedString("info", "Info")), col++, row);
+			T.add(getHeader(iwrb.getLocalizedString("payment_date", "Payment date")), col++, row);
+			T.add(getHeader(iwrb.getLocalizedString("amount", "Amount")), col++, row++);
+			Iterator it = accountReports.iterator();
+			while (it.hasNext()) {
+				col = 1;
+				AccountEntryReport report = (AccountEntryReport) it.next();
+
+				T.add(getText(report.getName()), col++, row);
+				T.add(getText(report.getPersonalID()), col++, row);
+				T.add(getText((String) keyMap.get(report.getKeyID())), col++, row);
+				T.add(getText(report.getInfo()), col++, row);
+				T.add(getText(new IWTimestamp(report.getPaymentDate()).getDateString("dd.MM.yyyy")), col++, row);
+				T.add(getAmountText(report.getTotal().doubleValue()), col++, row++);
+			}
+		}
+
+		T.setVerticalZebraColored(getZebraColor1(), getZebraColor2());
+		T.setRowColor(1, getHeaderColor());
+
 		return T;
 	}
 
@@ -679,13 +753,15 @@ public class CampusTariffReports extends Finance {
 		if (entryGroups != null && !entryGroups.isEmpty()) {
 			Iterator iter = entryGroups.iterator();
 			EntryGroup entryGroup;
-				drp.addOption(new SelectOption(iwrb.getLocalizedString(
-						"use_date_filter", "Use date filter"), ""));
+			drp.addOption(new SelectOption(iwrb.getLocalizedString(
+					"use_date_filter", "Use date filter"), ""));
 			while (iter.hasNext()) {
 				entryGroup = (EntryGroup) iter.next();
-				StringBuffer groupName = new StringBuffer(entryGroup.getPrimaryKey().toString());
+				StringBuffer groupName = new StringBuffer(entryGroup
+						.getPrimaryKey().toString());
 				groupName.append(" (");
-				groupName.append(new IWTimestamp(entryGroup.getGroupDate()).getDateString("dd.MM.yyyy"));
+				groupName.append(new IWTimestamp(entryGroup.getGroupDate())
+						.getDateString("dd.MM.yyyy"));
 				groupName.append(")");
 				drp.addOption(new SelectOption(groupName.toString(), entryGroup
 						.getPrimaryKey().toString()));
