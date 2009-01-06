@@ -41,9 +41,11 @@ public class BuildingHomeImpl extends IDOFactory implements BuildingHome {
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection getImageFilesByComplex(Integer complexID) throws FinderException {
+	public Collection getImageFilesByComplex(Integer complexID)
+			throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
-		Collection theReturn = ((BuildingBMPBean) entity).ejbHomeGetImageFilesByComplex(complexID);
+		Collection theReturn = ((BuildingBMPBean) entity)
+				.ejbHomeGetImageFilesByComplex(complexID);
 		this.idoCheckInPooledEntity(entity);
 		return theReturn;
 	}

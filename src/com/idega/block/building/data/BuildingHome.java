@@ -17,7 +17,8 @@ public interface BuildingHome extends IDOHome {
 
 	public Collection findByComplex(Integer complexID) throws FinderException;
 
-	public Collection getImageFilesByComplex(Integer complexID) throws FinderException;
+	public Collection getImageFilesByComplex(Integer complexID)
+			throws FinderException;
 
 	public Collection findByComplex(Complex complex) throws FinderException;
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.65.4.18 2007/07/14 18:58:09 eiki Exp $
+ * $Id: CampusApprover.java,v 1.65.4.19 2009/01/06 05:25:59 palli Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -97,7 +97,7 @@ public class CampusApprover extends CampusBlock {
 
 	private static final String ACT_TRASH_APPLICATION = "cam_app_trash";
 
-	private int iSubjectId = -1, iGlobalSize = -1, applicationIndex = 0;
+	private int iSubjectId = -99, iGlobalSize = -1, applicationIndex = 0;
 
 	private String sGlobalStatus = "S", sGlobalOrder = null;
 
@@ -1415,7 +1415,7 @@ public class CampusApprover extends CampusBlock {
 		T.add(getHeader(localize("current_subject", "Current Subject")), col, row++);
 		col++;
 		row = 1;
-		DropdownMenu drp = subjectDrop("-1");
+		DropdownMenu drp = subjectDrop("-99");
 		if (app != null) {
 			drp.setSelectedElement(String.valueOf(app.getSubjectId()));
 		}
@@ -1678,17 +1678,6 @@ public class CampusApprover extends CampusBlock {
 		link.addParameter(CampusApplicationWriter.PRM_WRITABLE_CLASS,
 				IWMainApplication.getEncryptedClassName(CampusApplicationWriter.class));
 		link.addParameter(CampusApplicationWriter.PRM_CAMPUS_APPLICATION_ID, cam_app_id);
-		return link;
-	}
-
-	public Link getPDFLink(IWContext iwc, PresentationObject MO, String status, int subject_id) {
-		Link link = new Link(MO);
-		link.setURL(iwc.getIWMainApplication().getMediaServletURI() + "apps_stat_" + status + "_subj_" + subject_id
-				+ ".xls");
-		link.addParameter(CampusApplicationWriter.PRM_WRITABLE_CLASS,
-				IWMainApplication.getEncryptedClassName(CampusApplicationWriter.class));
-		link.addParameter(CampusApplicationWriter.PRM_APPLICATION_STATUS, status);
-		link.addParameter(CampusApplicationWriter.PRM_SUBJECT_ID, subject_id);
 		return link;
 	}
 

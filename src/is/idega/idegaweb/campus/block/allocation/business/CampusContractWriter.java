@@ -95,7 +95,7 @@ public class CampusContractWriter {
 	public final static String apartment_rent = "apartment_rent";
 
 	public final static String apartment_other_expenses = "apartment_other_expenses";
-	
+
 	public final static String apartment_category = "apartment_category";
 
 	public final static String apartment_roomcount = "apartment_roomcount";
@@ -127,21 +127,23 @@ public class CampusContractWriter {
 
 	// new 10.8.2006
 	public final static String APARTMENT_SERIAL_NUMBER = "apartment_serial_number";
-	
-	//new 7.12.2006
+
+	// new 7.12.2006
 	public final static String APARTMENT_TYPE = "apartment_type";
-	
-	//new 17.1.2007
+
+	// new 17.1.2007
 	public final static String CURRENT_RENT_NOT_TYPE_A = "current_rent_not_type_A";
 
 	public static String[] TAGS = { renter_name, renter_address, renter_id,
 			tenant_name, tenant_address, tenant_id, apartment_name,
 			apartment_floor, apartment_address, apartment_campus,
 			apartment_area, apartment_roomcount, apartment_info,
-			apartment_rent, apartment_other_expenses, apartment_category, contract_starts, contract_ends,
-			renting_index, today, current_renting_index, current_rent,
-			cohabitant, postal_address, current_rent_typeA, current_rent_typeB,
-			current_rent_typeC, current_rent_typeD, APARTMENT_SERIAL_NUMBER, APARTMENT_TYPE, CURRENT_RENT_NOT_TYPE_A };
+			apartment_rent, apartment_other_expenses, apartment_category,
+			contract_starts, contract_ends, renting_index, today,
+			current_renting_index, current_rent, cohabitant, postal_address,
+			current_rent_typeA, current_rent_typeB, current_rent_typeC,
+			current_rent_typeD, APARTMENT_SERIAL_NUMBER, APARTMENT_TYPE,
+			CURRENT_RENT_NOT_TYPE_A };
 
 	public final static String IS = "IS";
 
@@ -368,7 +370,9 @@ public class CampusContractWriter {
 						.findByPrimaryKey(new Integer(eApartment
 								.getApartmentTypeId()));
 				// ApartmentCategory eApartmentCategory =
-				// ((com.idega.block.building.data.ApartmentCategoryHome)IDOLookup.getHomeLegacy(ApartmentCategory.class)).findByPrimaryKey(eApartmentType.getApartmentCategoryId());
+				//((com.idega.block.building.data.ApartmentCategoryHome)IDOLookup
+				// .getHomeLegacy(ApartmentCategory.class)).findByPrimaryKey(
+				// eApartmentType.getApartmentCategoryId());
 				String aprtTypeName = eApartmentType.getName();
 				Floor eFloor = ((FloorHome) IDOLookup.getHome(Floor.class))
 						.findByPrimaryKey(new Integer(eApartment.getFloorId()));
@@ -459,13 +463,30 @@ public class CampusContractWriter {
 						iwrb.getLocale());
 				NumberFormat nf = NumberFormat.getCurrencyInstance(iwrb
 						.getLocale());
-				H.put(renter_name, new Chunk(iwb.getProperty(
-						"contract_campus_name", "F???lagsstofnun St???denta"),
-						tagFont));
-				H.put(renter_address, new Chunk(iwb.getProperty(
-						"contract_campus_address", "v/Hringbraut"), tagFont));
-				H.put(renter_id, new Chunk(iwb.getProperty(
-						"contract_campus_id", "540169-6249"), tagFont));
+				if (eBuilding.getRenterName() != null
+						&& !"".equals(eBuilding.getRenterName())) {
+					H.put(renter_name, new Chunk(eBuilding.getRenterName(),
+							tagFont));
+				} else {
+					H.put(renter_name, new Chunk(iwb.getProperty(
+							"contract_campus_name", "Renter name"), tagFont));
+				}
+				if (eBuilding.getRenterAddress() != null
+						&& !"".equals(eBuilding.getRenterAddress())) {
+					H.put(renter_address, new Chunk(eBuilding
+							.getRenterAddress(), tagFont));
+				} else {
+					H.put(renter_address, new Chunk(iwb.getProperty(
+							"contract_campus_address", "Renter address"),
+							tagFont));
+				}
+				if (eBuilding.getRenterID() != null
+						&& !"".equals(eBuilding.getRenterID())) {
+					H.put(renter_id, new Chunk(eBuilding.getRenterID(), tagFont));
+				} else {
+					H.put(renter_id, new Chunk(iwb.getProperty(
+							"contract_campus_id", "Renter id"), tagFont));
+				}
 				H.put(today, new Chunk(dfLong.format(new java.util.Date()),
 						tagFont));
 				H.put(tenant_name,
@@ -480,7 +501,8 @@ public class CampusContractWriter {
 				H.put(apartment_floor, new Chunk(eFloor.getName(), nameFont));
 				H.put(apartment_address, new Chunk(eBuilding.getStreet(),
 						nameFont));
-				H.put(apartment_campus, new Chunk(eComplex.getName(),
+				H
+						.put(apartment_campus, new Chunk(eComplex.getName(),
 								nameFont));
 				H.put(apartment_area, new Chunk(String.valueOf(eApartmentType
 						.getArea()), tagFont));
@@ -496,13 +518,14 @@ public class CampusContractWriter {
 				if (rent != null && rent.getRent() > 0) {
 					H.put(apartment_rent, new Chunk(nf.format((double) rent
 							.getRent()), tagFont));
-					H.put(apartment_other_expenses, new Chunk(nf.format((double) rent
-							.getOtherExpeneses()), tagFont));
-				}
-				else {
+					H.put(apartment_other_expenses,
+							new Chunk(nf.format((double) rent
+									.getOtherExpeneses()), tagFont));
+				} else {
 					H.put(apartment_rent, new Chunk(nf.format(eApartmentType
 							.getRent()), tagFont));
-					H.put(apartment_other_expenses, new Chunk(nf.format(0.0d), tagFont));
+					H.put(apartment_other_expenses, new Chunk(nf.format(0.0d),
+							tagFont));
 				}
 				// H.put(apartment_category,new
 				// Chunk(eApartmentCategory.getName(),tagFont));
@@ -552,29 +575,30 @@ public class CampusContractWriter {
 				// new 10.8.2006
 				if (eApartment.getSerialNumber() != null) {
 					H.put(APARTMENT_SERIAL_NUMBER, new Chunk(eApartment
-							.getSerialNumber(), nameFont));					
+							.getSerialNumber(), nameFont));
 				} else {
 					H.put(APARTMENT_SERIAL_NUMBER, new Chunk("", nameFont));
 				}
 				// end new 10.8.2006
-				
-				//new 7.12.2006
+
+				// new 7.12.2006
 				if (eApartment.getApartmentType() != null) {
 					if (eApartment.getApartmentType().getName() != null) {
-						H.put(APARTMENT_TYPE, new Chunk(eApartment.getApartmentType().getName(), nameFont));
+						H.put(APARTMENT_TYPE, new Chunk(eApartment
+								.getApartmentType().getName(), nameFont));
 					} else {
 						H.put(APARTMENT_TYPE, new Chunk("", nameFont));
 					}
 				} else {
 					H.put(APARTMENT_TYPE, new Chunk("", nameFont));
 				}
-				//end new 7.12.2006
-				
-				//new 17.1.2007
-				H.put(CURRENT_RENT_NOT_TYPE_A, new Chunk(format.format(rentNotA),
-						nameFont));				
-				//end new 17.1.2007
-				
+				// end new 7.12.2006
+
+				// new 17.1.2007
+				H.put(CURRENT_RENT_NOT_TYPE_A, new Chunk(format
+						.format(rentNotA), nameFont));
+				// end new 17.1.2007
+
 				return H;
 			}
 

@@ -32,7 +32,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 import java.util.Vector;
 
 import javax.ejb.CreateException;
@@ -58,6 +57,7 @@ import com.idega.data.IDOStoreException;
 import com.idega.data.SimpleQuerier;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.util.IWTimestamp;
+import com.idega.util.text.Name;
 
 /**
  * ApplicationServiceBean
@@ -227,21 +227,10 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 		applicant.setMobilePhone(applicantInfo.getMobile());
 		applicant.setResidence(applicantInfo.getCurrentResidence());
 		if (applicantInfo.getName() != null) {
-			StringTokenizer st = new StringTokenizer(applicantInfo.getName());
-			if (st.hasMoreTokens()) {
-				applicant.setFirstName(st.nextToken());
-			}
-			String mid = "";
-			if (st.hasMoreTokens()) {
-				mid = (st.nextToken());
-			}
-			if (st.hasMoreTokens()) {
-				applicant.setLastName(st.nextToken());
-				applicant.setMiddleName(mid);
-			}
-			else {
-				applicant.setLastName(mid);
-			}
+			Name name = new Name(applicantInfo.getName());
+			applicant.setFirstName(name.getFirstName());
+			applicant.setMiddleName(name.getMiddleName());
+			applicant.setLastName(name.getLastName());
 		}
 	}
 

@@ -88,7 +88,7 @@ public class BuildingServiceBean extends IBOServiceBean implements
 
 	public Building storeBuilding(Integer buildingID, String name,
 			String address, String info, Integer imageID, Integer complexID,
-			Integer textID, Boolean locked) {
+			Integer textID, Boolean locked, String renterName, String renterAddress, String renterID) {
 		try {
 			Building building = null;
 
@@ -112,6 +112,11 @@ public class BuildingServiceBean extends IBOServiceBean implements
 			}
 
 			building.setLocked(locked.booleanValue());
+			
+			building.setRenterName(renterName);
+			building.setRenterAddress(renterAddress);
+			building.setRenterID(renterID);
+			
 			building.store();
 
 			return building;

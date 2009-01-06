@@ -41,7 +41,7 @@ import com.idega.user.data.User;
 public class CampusContracts extends CampusBlock {
 	private static final String PARAM_GARBAGE = "garbage";
 	protected final int ACT1 = 1, ACT2 = 2, ACT3 = 3, ACT4 = 4, ACT5 = 5;
-	private int iGlobalSize = 50;
+	private int iGlobalSize = -1;
 	private String sGlobalStatus = "C";
 	private Integer ORDER = new Integer(-1);
 	private Integer CLBU = new Integer(-1), CLFL = new Integer(-1),

@@ -44,6 +44,12 @@ public class BuildingBMPBean extends TextEntityBMPBean implements Building {
 	protected static final String COLUMN_POSTAL_ADDRESS = "postal_address";
 
 	protected static final String COLUMN_LOCKED = "locked";
+	
+	protected static final String COLUMN_RENTER_NAME = "renter_name";
+	
+	protected static final String COLUMN_RENTER_ADDRESS = "renter_address";
+	
+	protected static final String COLUMN_RENTER_ID = "renter_id";
 
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
@@ -57,6 +63,10 @@ public class BuildingBMPBean extends TextEntityBMPBean implements Building {
 		addAttribute(COLUMN_POSTAL_CODE, "Postal code", String.class);
 		addAttribute(COLUMN_POSTAL_ADDRESS, "Postal address", String.class);
 		addAttribute(COLUMN_LOCKED, "Locked", Boolean.class);
+		
+		addAttribute(COLUMN_RENTER_NAME, "Renter name", String.class);
+		addAttribute(COLUMN_RENTER_ADDRESS, "Renter address", String.class);
+		addAttribute(COLUMN_RENTER_ID, "Renter id", String.class);
 
 		addManyToOneRelationship(COLUMN_IMAGE, ICFile.class);
 		addManyToOneRelationship(COLUMN_COMPLEX, Complex.class);
@@ -66,20 +76,13 @@ public class BuildingBMPBean extends TextEntityBMPBean implements Building {
 		return ENTITY_NAME;
 	}
 
+	//getters
 	public String getName() {
 		return getStringColumnValue(COLUMN_NAME);
 	}
 
-	public void setName(String name) {
-		setColumn(COLUMN_NAME, name);
-	}
-
 	public String getInfo() {
 		return getStringColumnValue(COLUMN_INFO);
-	}
-
-	public void setInfo(String info) {
-		setColumn(COLUMN_INFO, info);
 	}
 
 	public int getComplexId() {
@@ -90,12 +93,60 @@ public class BuildingBMPBean extends TextEntityBMPBean implements Building {
 		return (Complex) getColumnValue(COLUMN_COMPLEX);
 	}
 
-	public void setComplexId(int complex_id) {
-		setColumn(COLUMN_COMPLEX, complex_id);
-	}
-
 	public int getImageId() {
 		return getIntColumnValue(COLUMN_IMAGE);
+	}
+
+	public String getStreet() {
+		return getStringColumnValue(COLUMN_STREET);
+	}
+
+	public String getStreetNumber() {
+		return getStringColumnValue(COLUMN_STREET_NUMBER);
+	}
+
+	public String getSerie() {
+		return getStringColumnValue(COLUMN_SERIE);
+	}
+
+	public String getDivision() {
+		return getStringColumnValue(COLUMN_DIVISION);
+	}
+
+	public String getPostalCode() {
+		return getStringColumnValue(COLUMN_POSTAL_CODE);
+	}
+
+	public String getPostalAddress() {
+		return getStringColumnValue(COLUMN_POSTAL_ADDRESS);
+	}
+
+	public boolean getLocked() {
+		return getBooleanColumnValue(COLUMN_LOCKED, false);
+	}
+
+	public String getRenterName() {
+		return getStringColumnValue(COLUMN_RENTER_NAME);
+	}
+	
+	public String getRenterAddress() {
+		return getStringColumnValue(COLUMN_RENTER_ADDRESS);
+	}
+	
+	public String getRenterID() {
+		return getStringColumnValue(COLUMN_RENTER_ID);
+	}
+	//setters
+	public void setName(String name) {
+		setColumn(COLUMN_NAME, name);
+	}
+
+	public void setInfo(String info) {
+		setColumn(COLUMN_INFO, info);
+	}
+
+	public void setComplexId(int complex_id) {
+		setColumn(COLUMN_COMPLEX, complex_id);
 	}
 
 	public void setImageId(int image_id) {
@@ -106,62 +157,47 @@ public class BuildingBMPBean extends TextEntityBMPBean implements Building {
 		setColumn(COLUMN_IMAGE, image_id);
 	}
 
-	public String getStreet() {
-		return getStringColumnValue(COLUMN_STREET);
-	}
-
 	public void setStreet(String street) {
 		setColumn(COLUMN_STREET, street);
-	}
-
-	public String getStreetNumber() {
-		return getStringColumnValue(COLUMN_STREET_NUMBER);
 	}
 
 	public void setStreetNumber(String street_number) {
 		setColumn(COLUMN_STREET_NUMBER, street_number);
 	}
 
-	public String getSerie() {
-		return getStringColumnValue(COLUMN_SERIE);
-	}
-
 	public void setSerie(String serie) {
 		setColumn(COLUMN_SERIE, serie);
-	}
-
-	public String getDivision() {
-		return getStringColumnValue(COLUMN_DIVISION);
 	}
 
 	public void setDivision(String division) {
 		setColumn(COLUMN_DIVISION, division);
 	}
 
-	public String getPostalCode() {
-		return getStringColumnValue(COLUMN_POSTAL_CODE);
-	}
-
 	public void setPostalCode(String postalCode) {
 		setColumn(COLUMN_POSTAL_CODE, postalCode);
-	}
-
-	public String getPostalAddress() {
-		return getStringColumnValue(COLUMN_POSTAL_ADDRESS);
 	}
 
 	public void setPostalAddress(String postalAddress) {
 		setColumn(COLUMN_POSTAL_ADDRESS, postalAddress);
 	}
 
-	public boolean getLocked() {
-		return getBooleanColumnValue(COLUMN_LOCKED, false);
-	}
-
 	public void setLocked(boolean locked) {
 		setColumn(COLUMN_LOCKED, locked);
 	}
+	
+	public void setRenterName(String name) {
+		setColumn(COLUMN_RENTER_NAME, name);
+	}
+	
+	public void setRenterAddress(String address) {
+		setColumn(COLUMN_RENTER_ADDRESS, address);
+	}
+	
+	public void setRenterID(String id) {
+		setColumn(COLUMN_RENTER_ID, id);
+	}
 
+	//ejb
 	public Collection ejbFindAll() throws FinderException {
 		return idoFindPKsByQuery(idoQueryGetSelect().appendOrderBy(COLUMN_NAME));
 	}

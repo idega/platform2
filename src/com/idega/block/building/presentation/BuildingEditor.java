@@ -141,6 +141,12 @@ public class BuildingEditor extends com.idega.presentation.Block {
 	
 	private static final String PARAM_MAX_CHOICES = "max_choices";
 	
+	private static final String PARAM_RENTER_NAME = "renter_name";
+	
+	private static final String PARAM_RENTER_ADDRESS = "renter_address";
+	
+	private static final String PARAM_RENTER_ID = "renter_id";
+	
 	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.building";
 
 	public static final int ACTION_COMPLEX = 1;
@@ -458,9 +464,11 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		String sImageId = iwc.getParameter("photoid");
 		String sComplexId = iwc.getParameter("dr_complex");
 		String sId = iwc.getParameter(PARAM_ID);
-		// String sSerie = iwc.getParameter("bm_serie");
 		Boolean locked = Boolean.valueOf(iwc
 				.getParameter(PARAM_BUILDING_LOCKED));
+		String renterName = iwc.getParameter(PARAM_RENTER_NAME);
+		String renterAddress = iwc.getParameter(PARAM_RENTER_ADDRESS);
+		String renterID = iwc.getParameter(PARAM_RENTER_ID);
 		Integer imageid = null;
 		Integer id = null;
 		Integer complexid = null;
@@ -481,7 +489,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		}
 
 		this.service.storeBuilding(id, sName, sAddress, sInfo, imageid,
-				complexid, this.textId, locked);
+				complexid, this.textId, locked, renterName, renterAddress, renterID);
 	}
 
 	private void storeFloor(IWContext iwc) throws RemoteException {
@@ -1032,6 +1040,9 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		int iPhotoId = e ? eBuilding.getImageId() : 1;
 		int iTextId = e ? eBuilding.getTextId() : -1;
 		boolean locked = e ? eBuilding.getLocked() : false;
+		String renterName = e ? eBuilding.getRenterName() : "";
+		String renterAddress = e ? eBuilding.getRenterAddress() : "";
+		String renterID = e ? eBuilding.getRenterID() : "";
 
 		Form form = new Form();
 		Table Frame = new Table(2, 1);
@@ -1062,7 +1073,11 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		TextInput serie = new TextInput(PARAM_SERIE, sSerie);
 		HiddenInput HI = new HiddenInput(PARAM_CHOICE, String
 				.valueOf(this.ACTION_BUILDING));
-
+		
+		TextInput rName = new TextInput(PARAM_RENTER_NAME, renterName);
+		TextInput rAddress = new TextInput(PARAM_RENTER_ADDRESS, renterAddress);
+		TextInput rId = new TextInput(PARAM_RENTER_ID, renterID);
+		
 		DropdownMenu complex = drpLodgings(this.service.getComplexHome()
 				.findAllIncludingLocked(), "dr_complex", "Complex", sComplexId);
 		DropdownMenu houses = drpLodgings(this.service.getBuildingHome()
@@ -1096,17 +1111,28 @@ public class BuildingEditor extends com.idega.presentation.Block {
 				1, 6);
 
 		T.add(complex, 1, 7);
-		// T.add(formatText(iwrb.getLocalizedString("serie","Serie")+" "),1,5);
-		// T.add(serie,1,5);
+		
+		T.add(formatText(this.iwrb.getLocalizedString("renter_name",
+			"Renter name")), 1, 8);
+		T.add(rName, 1, 9);
+
+		T.add(formatText(this.iwrb.getLocalizedString("renter_address",
+			"Renter address")), 1, 10);
+		T.add(rAddress, 1, 11);
+
+		T.add(formatText(this.iwrb.getLocalizedString("renter_id",
+			"Renter ID")), 1, 12);
+		T.add(rId, 1, 13);
+		
 		T.add(formatText(this.iwrb.getLocalizedString("building_locked",
-				"Building locked")), 1, 8);
-		T.add(buildingLocked, 1, 9);
+				"Building locked")), 1, 14);
+		T.add(buildingLocked, 1, 15);
 
 		T.add(formatText(this.iwrb.getLocalizedString(LABEL_INFO, "Info")), 1,
-				10);
+				16);
 
-		T.add(makeTextArea(sInfo), 1, 11);
-		T.mergeCells(1, 11, 2, 11);
+		T.add(makeTextArea(sInfo), 1, 17);
+		T.mergeCells(1, 17, 2, 17);
 
 		T2.add(formatText(this.iwrb.getLocalizedString(LABEL_PHOTO, "Photo")),
 				1, 1);
