@@ -34,6 +34,9 @@ public interface ContractHome extends IDOHome {
 	public Collection findByApplicantAndStatus(Integer ID, String status)
 			throws FinderException;
 
+	public Collection findByApplicantAndStatus(Integer ID, String[] status)
+			throws FinderException;
+
 	public Collection findByApplicantAndRented(Integer ID, Boolean rented)
 			throws FinderException;
 
@@ -49,6 +52,9 @@ public interface ContractHome extends IDOHome {
 	public Collection findByApplicant(Integer ID) throws FinderException;
 
 	public Collection findByApplicantInCreatedStatus(Integer applicant)
+			throws FinderException;
+
+	public Collection findByApplicantInCreatedAndPrintedStatus(Integer applicant)
 			throws FinderException;
 
 	public Date getLastValidToForApartment(Integer apartment)

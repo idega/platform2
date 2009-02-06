@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.42.4.7 2008/04/14 21:53:11 palli Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.42.4.8 2009/02/06 15:43:53 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -184,7 +184,7 @@ public class ReferenceNumberInfo extends CampusBlock {
 		CampusApplication camApp = holder.getCampusApplication();
 		Text nameText = new Text(applicant.getFullName());
 		nameText.setBold();
-
+		
 		refTable.add(nameText, 1, row);
 		row++;
 
@@ -251,14 +251,7 @@ public class ReferenceNumberInfo extends CampusBlock {
 		refTable.add(stsText, 1, row);
 
 		if (status
-				.equalsIgnoreCase(com.idega.block.application.data.ApplicationBMPBean.STATUS_APPROVED)) { // F?kk
-			// ekki
-			// ?thluta?,
-			// e?a
-			// ekki
-			// b?i?
-			// a?
-			// ?thluta.
+				.equalsIgnoreCase(com.idega.block.application.data.ApplicationBMPBean.STATUS_APPROVED)) {
 			Table denialTable = null;
 			Contract c = holder.getContract();
 
@@ -415,10 +408,7 @@ public class ReferenceNumberInfo extends CampusBlock {
 
 			}
 		} else if (status
-				.equalsIgnoreCase(com.idega.block.application.data.ApplicationBMPBean.STATUS_SUBMITTED)) { // Ekki
-			// b?i?
-			// a?
-			// ?thluta
+				.equalsIgnoreCase(com.idega.block.application.data.ApplicationBMPBean.STATUS_SUBMITTED)) {
 			Text notAllocated = new Text("&nbsp;*&nbsp;"
 					+ iwrb.getLocalizedString("appSubmitted",
 							"Application not processed yet"));
@@ -439,7 +429,17 @@ public class ReferenceNumberInfo extends CampusBlock {
 		form.add(refTable);
 		add(form);
 		add(Text.getBreak());
-		if (!status.equalsIgnoreCase(ApplicationBMPBean.STATUS_GARBAGE)) {
+		
+		boolean contractCreatedOrPrinted = false;
+		if (holder.getContract() != null) {
+			Contract contract = holder.getContract();
+			String contractStatus = contract.getStatus();
+			if (ContractBMPBean.STATUS_CREATED.equals(contractStatus) || ContractBMPBean.STATUS_PRINTED.equals(contractStatus)) {
+				contractCreatedOrPrinted = true;
+			}
+		}
+		
+		if (!status.equalsIgnoreCase(ApplicationBMPBean.STATUS_GARBAGE) && !contractCreatedOrPrinted) {
 			addAbortApplicationTable(refTable);
 		}
 		add(Text.getBreak());

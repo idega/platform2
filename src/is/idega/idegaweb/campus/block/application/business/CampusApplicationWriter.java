@@ -1,6 +1,6 @@
 /*
 
- * $Id: CampusApplicationWriter.java,v 1.8.4.3 2009/01/06 05:25:59 palli Exp $
+ * $Id: CampusApplicationWriter.java,v 1.8.4.4 2009/02/06 15:43:53 palli Exp $
 
  *
 
@@ -316,14 +316,13 @@ public class CampusApplicationWriter implements MediaWritable {
 
 					datatable.addCell((new Phrase(iwrb.getLocalizedString(
 							"mobile_phone", "Mobile phone"), headerFont)));
-					datatable.addCell(applicant.getMobilePhone());
+					datatable.addCell(applicant.getMobilePhone() != null ? applicant.getMobilePhone() : "");
 					datatable.setDefaultColspan(2);
 					datatable.addCell((new Phrase(iwrb.getLocalizedString(
 							"children", "Children"), headerFont)));
 					datatable.setDefaultColspan(1);
 
 					int size = 0;
-					System.out.println("getting children");
 					ApplicantFamily family = new ApplicantFamily(applicant);
 					List children = family.getChildren();
 					size = children.size();

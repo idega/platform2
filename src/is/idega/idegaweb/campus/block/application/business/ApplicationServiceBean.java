@@ -589,7 +589,7 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 				applicant = getApplicantHome().findByPrimaryKey(new Integer(a.getApplicantId()));
 				// Contracts
 				ContractHome cHome = (ContractHome) IDOLookup.getHome(Contract.class);
-				resultSet = cHome.findByApplicantInCreatedStatus((Integer) applicant.getPrimaryKey());
+				resultSet = cHome.findByApplicantInCreatedAndPrintedStatus((Integer) applicant.getPrimaryKey());
 				if (resultSet != null && !resultSet.isEmpty()) {
 					contract = (Contract) resultSet.iterator().next();
 				}

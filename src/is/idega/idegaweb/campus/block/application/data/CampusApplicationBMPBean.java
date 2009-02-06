@@ -683,15 +683,12 @@ public class CampusApplicationBMPBean extends GenericEntity implements
 	public Collection ejbFindBySubcategoryAndComplex(Integer subcatId,
 			Integer complexID) throws FinderException {
 		StringBuffer sql = new StringBuffer("select ");
-		sql.append(" distinct ");
-		sql.append(getEntityName());
-		sql.append(".* ");
+		sql.append(" distinct ca.* ");
 		sql
-				.append(" from cam_application ca,app_application an,app_applicant aa");
+				.append(" from cam_application ca,app_application an");
 		sql.append(",cam_waiting_list wl ,cam_applied ad");
 		sql.append(" where ca.app_application_id = an.app_application_id ");
-		sql.append(" and an.app_applicant_id = aa.app_applicant_id ");
-		sql.append(" and aa.app_applicant_id = wl.app_applicant_id ");
+		sql.append(" and an.app_applicant_id = wl.app_applicant_id ");
 		if (subcatId != null && subcatId.intValue() > 0) {
 			sql.append(" and wl.bu_subcategory_id =  ");
 			sql.append(subcatId);
@@ -700,6 +697,9 @@ public class CampusApplicationBMPBean extends GenericEntity implements
 			sql.append(" and wl.bu_complex_id =  ");
 			sql.append(complexID);
 		}
+		
+		System.out.println("sql = " + sql.toString());
+		
 		return super.idoFindPKsBySQL(sql.toString());
 	}
 

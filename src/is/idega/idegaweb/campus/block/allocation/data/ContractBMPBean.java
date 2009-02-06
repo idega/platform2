@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.22.4.5 2008/08/17 05:42:30 palli Exp $
+ * $Id: ContractBMPBean.java,v 1.22.4.6 2009/02/06 15:43:53 palli Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -506,6 +506,11 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements Con
 				ID.intValue()).appendAndEqualsQuoted(getStatusColumnName(), status));
 	}
 
+	public Collection ejbFindByApplicantAndStatus(Integer ID, String status[]) throws FinderException {
+		return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getApplicantIdColumnName(),
+				ID.intValue()).appendAnd().append(getStatusColumnName()).appendInArrayWithSingleQuotes(status));
+	}
+
 	public Collection ejbFindByApplicantAndRented(Integer ID, Boolean rented) throws FinderException {
 		return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getApplicantIdColumnName(),
 				ID.intValue()).appendAndEqualsQuoted(getRentedColumnName(), IDOBoolean.toString(rented.booleanValue())));
@@ -537,6 +542,12 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements Con
 		return ejbFindByApplicantAndStatus(applicant, STATUS_CREATED);
 	}
 
+	public Collection ejbFindByApplicantInCreatedAndPrintedStatus(Integer applicant) throws FinderException {
+		String statuses[] = {STATUS_CREATED, STATUS_PRINTED};
+		return ejbFindByApplicantAndStatus(applicant, statuses);
+	}
+
+	
 	public Date ejbHomeGetLastValidToForApartment(Integer apartment) throws FinderException {
 		if (apartment != null) {
 			try {
@@ -623,7 +634,6 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements Con
 			sql.append(ContractFinder.getOrderString(order));
 		}
 		
-		System.out.println("sql = " + sql.toString());
 		return sql.toString();
 	}
 
@@ -657,8 +667,6 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements Con
 		} else {
 			sql.append(" and (con.rented is null or con.rented = 'N')");
 		}
-		
-		System.out.println("sql =  " + sql.toString());
 		
 		return super.idoFindPKsBySQL(sql.toString());
 	}
@@ -724,7 +732,6 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements Con
 		outerQuery.appendAnd().append(getUserIdColumnName()).appendIn(innerQuery);
 
 		outerQuery.appendOrderBy(getUserIdColumnName() + "," + getIDColumnName());
-		// System.out.println(outerQuery.toString());
 
 		return super.idoFindPKsByQuery(outerQuery);
 	}
@@ -750,8 +757,6 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements Con
 		query.append(COLUMN_CHANGE_KEY_STATUS_AT);
 		query.appendIsNotNull();
 
-		System.out.println("query = " + query.toString());
-		
 		return super.idoFindPKsByQuery(query);
 	}
 }

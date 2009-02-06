@@ -88,6 +88,15 @@ public class ContractHomeImpl extends IDOFactory implements ContractHome {
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
+	public Collection findByApplicantAndStatus(Integer ID, String[] status)
+			throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((ContractBMPBean) entity)
+				.ejbFindByApplicantAndStatus(ID, status);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
 	public Collection findByApplicantAndRented(Integer ID, Boolean rented)
 			throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
@@ -139,6 +148,15 @@ public class ContractHomeImpl extends IDOFactory implements ContractHome {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
 		Collection ids = ((ContractBMPBean) entity)
 				.ejbFindByApplicantInCreatedStatus(applicant);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findByApplicantInCreatedAndPrintedStatus(Integer applicant)
+			throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((ContractBMPBean) entity)
+				.ejbFindByApplicantInCreatedAndPrintedStatus(applicant);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}

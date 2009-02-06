@@ -7,6 +7,8 @@ import com.idega.block.building.business.BuildingService;
 import com.idega.block.building.data.ApartmentCategory;
 import com.idega.block.building.data.ApartmentType;
 import com.idega.block.building.data.Complex;
+import com.idega.block.text.business.ContentHelper;
+import com.idega.block.text.business.TextFinder;
 import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
@@ -119,8 +121,18 @@ public class BuildingViewer extends Block {
 			complexTable.setBorder(0);
 
 			// BuildingBusiness.getStaticInstance().changeNameAndInfo(complex[a],iwc.getCurrentLocale());
-			String infoText = complex.getInfo();
-			String nameText = complex.getName();
+			String infoText = null;
+			String nameText = null;
+			
+			if (complex.getTextId() > 0) {
+				ContentHelper helper = TextFinder.getContentHelper(complex.getTextId(), iwc.getCurrentLocale());
+				infoText = helper.getLocalizedText() != null && helper.getLocalizedText().getBody() != null ? helper.getLocalizedText().getBody() : complex.getInfo();
+				nameText = helper.getLocalizedText() != null && helper.getLocalizedText().getHeadline() != null ? helper.getLocalizedText().getHeadline() : complex.getName();
+			} else {
+				infoText = complex.getInfo();
+				nameText = complex.getName();
+			}
+
 
 			if (infoText != null && !"".equals(infoText)) {
 				infoText = TextSoap.findAndReplace(infoText, "\n", "<br>");
