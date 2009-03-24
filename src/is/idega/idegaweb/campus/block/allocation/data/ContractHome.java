@@ -76,6 +76,12 @@ public interface ContractHome extends IDOHome {
 			Integer complexID, Integer buildingID, String apartmentName)
 			throws FinderException;
 
+	public Collection findByBuildingAndApartmentName(Integer buildingID,
+			String apartmentName) throws FinderException;
+
+	public Collection findByApartmentName(String apartmentName)
+			throws FinderException;
+
 	public Collection findByComplexAndRented(Integer complexID, boolean rented)
 			throws FinderException;
 

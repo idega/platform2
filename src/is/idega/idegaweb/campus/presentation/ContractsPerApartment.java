@@ -210,12 +210,12 @@ public class ContractsPerApartment extends CampusBlock {
 			drp.addMenuElement("-1", display);
 		}
 
-		for (Iterator iter = lods.iterator(); iter.hasNext();) {
+		/*for (Iterator iter = lods.iterator(); iter.hasNext();) {
 			BuildingEntity entity = (BuildingEntity) iter.next();
 
 			drp.addMenuElement(entity.getPrimaryKey().toString(), entity
 					.getName());
-		}
+		}*/
 		if (!"".equalsIgnoreCase(selected)) {
 			drp.setSelectedElement(selected);
 		}
@@ -227,20 +227,6 @@ public class ContractsPerApartment extends CampusBlock {
 		Integer complex = Integer.valueOf(sValues[0]);
 		Integer building = Integer.valueOf(sValues[1]);
 
-		if (complex == null || complex.equals("-1")) {
-			DataTable err1 = new DataTable();
-			err1.add(iwrb.getLocalizedString("cpa_error_select_campus", "You have to select a campus"));
-
-			return err1;
-		}
-
-		if (building == null || building.equals("-1")) {
-			DataTable err1 = new DataTable();
-			err1.add(iwrb.getLocalizedString("cpa_error_select_house", "You have to select a house"));
-
-			return err1;
-		}
-
 		if (aprtName == null) {
 			DataTable err1 = new DataTable();
 			err1.add(iwrb.getLocalizedString("cpa_error_select_apartment", "You have to select an apartment"));
@@ -248,9 +234,29 @@ public class ContractsPerApartment extends CampusBlock {
 			return err1;
 		}
 
-		Collection L = getContractService(iwc).getContractHome()
+		Collection L = null;
+		if (complex != null && complex.intValue() != -1) {
+			if (building != null && building.intValue() != -1) {
+				L = getContractService(iwc).getContractHome()
 				.findByComplexAndBuildingAndApartmentName(complex, building,
 						aprtName);
+			} else {
+				DataTable err1 = new DataTable();
+				err1.add(iwrb.getLocalizedString("cpa_error_select_building", "You have to select a building"));
+
+				return err1;				
+			}
+		} else {
+			if (building != null && building.intValue() != -1) {
+				L = getContractService(iwc).getContractHome()
+				.findByBuildingAndApartmentName(building,
+						aprtName);
+			} else {
+				L = getContractService(iwc).getContractHome()
+				.findByApartmentName(aprtName);
+			}			
+		}
+		
 		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, iwc
 				.getCurrentLocale());
 		Contract C = null;

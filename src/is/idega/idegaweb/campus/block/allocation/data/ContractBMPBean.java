@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.22.4.6 2009/02/06 15:43:53 palli Exp $
+ * $Id: ContractBMPBean.java,v 1.22.4.7 2009/03/24 12:51:12 palli Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -654,6 +654,32 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements Con
 		return super.idoFindPKsBySQL(sql.toString());
 	}
 
+	public Collection ejbFindByBuildingAndApartmentName(Integer buildingID,
+			String apartmentName) throws FinderException {
+		StringBuffer sql = new StringBuffer("select con.* ");
+		sql.append(" from bu_apartment a, bu_floor f, bu_building b, cam_contract con ");
+		sql.append(" where a.bu_floor_id = f.bu_floor_id ");
+		sql.append(" and f.bu_building_id = b.bu_building_id ");
+		sql.append(" and a.bu_apartment_id = con.bu_apartment_id");
+		sql.append(" and b.bu_building_id = ");
+		sql.append(buildingID);
+		sql.append(" and a.name = '");
+		sql.append(apartmentName);
+		sql.append("'");
+		return super.idoFindPKsBySQL(sql.toString());
+	}
+
+	public Collection ejbFindByApartmentName(String apartmentName) throws FinderException {
+		StringBuffer sql = new StringBuffer("select con.* ");
+		sql.append(" from bu_apartment a, cam_contract con ");
+		sql.append(" where a.bu_apartment_id = con.bu_apartment_id");
+		sql.append(" and a.name = '");
+		sql.append(apartmentName);
+		sql.append("'");
+		return super.idoFindPKsBySQL(sql.toString());
+	}
+
+	
 	public Collection ejbFindByComplexAndRented(Integer complexID, boolean rented) throws FinderException {
 		StringBuffer sql = new StringBuffer("select con.* ");
 		sql.append(" from bu_apartment a, bu_floor f, bu_building b, cam_contract con ");

@@ -213,6 +213,24 @@ public class ContractHomeImpl extends IDOFactory implements ContractHome {
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
+	public Collection findByBuildingAndApartmentName(Integer buildingID,
+			String apartmentName) throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((ContractBMPBean) entity)
+				.ejbFindByBuildingAndApartmentName(buildingID, apartmentName);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findByApartmentName(String apartmentName)
+			throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((ContractBMPBean) entity)
+				.ejbFindByApartmentName(apartmentName);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
 	public Collection findByComplexAndRented(Integer complexID, boolean rented)
 			throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();

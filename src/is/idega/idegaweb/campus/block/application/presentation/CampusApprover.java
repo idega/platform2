@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.65.4.19 2009/01/06 05:25:59 palli Exp $
+ * $Id: CampusApprover.java,v 1.65.4.20 2009/03/24 12:51:12 palli Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -70,7 +70,7 @@ import com.idega.util.IWTimestamp;
  * @version 1.0
  */
 public class CampusApprover extends CampusBlock {
-
+	
 	private static final String APP_SUBJECT_ID = "app_subject_id";
 
 	private static final String PRM_PRIORITY = "priority_drop";
@@ -296,6 +296,7 @@ public class CampusApprover extends CampusBlock {
 		String schoolID = iwc.getParameter(PARAM_SCHOOL);
 		Boolean hasPet = new Boolean(iwc.getParameter(PARAM_HAS_PET));
 		String adminInfo = iwc.getParameter(PARAM_EXTRA_ADMIN_INFO);
+		String subject = iwc.getParameter("subject");
 	
 		// String newStatus = iwc.getParameter(PRM_STATUS);
 		try {
@@ -309,6 +310,10 @@ public class CampusApprover extends CampusBlock {
 			app.setExtraAdminInfo(adminInfo);
 			
 			app.store();
+			
+			Application application = app.getApplication();
+			application.setSubjectId(new Integer(subject));
+			application.store();
 			
 			applicationID = ((Integer) app.getPrimaryKey());
 		}
@@ -516,7 +521,7 @@ public class CampusApprover extends CampusBlock {
 					Middle.add(getViewApartmentExtra(eCampusApplication, iwc), 1, 3);
 					Middle.add(getOtherInfo(eCampusApplication, iwc, false), 1, 3);
 					Table Right = new Table(1, 3);
-					Right.add(getSubject(eApplication), 1, 1);
+					Right.add(getSubject(eApplication, false, iwc), 1, 1);
 					Right.add(getKnobs(), 1, 2);
 					Right.add(getButtons(eApplication, eApplication.getStatus(), eCampusApplication.getPriorityLevel(),
 							bEdit), 1, 3);
@@ -724,7 +729,7 @@ public class CampusApprover extends CampusBlock {
 			Middle.add(getFieldsApartmentExtra(eCampusApplication, iwc), 1, 3);
 			Middle.add(getOtherInfo(eCampusApplication, iwc, true), 1, 4);
 			Table Right = new Table(1, 3);
-			Right.add(getSubject(eApplication), 1, 1);
+			Right.add(getSubject(eApplication, true, iwc), 1, 1);
 			Right.add(getKnobs(), 1, 2);
 			String status = eApplication != null ? eApplication.getStatus() : "";
 			String pStatus = eCampusApplication != null ? eCampusApplication.getPriorityLevel() : "";
@@ -1424,7 +1429,7 @@ public class CampusApprover extends CampusBlock {
 		return T;
 	}
 
-	private PresentationObject getSubject(Application app) {
+	private PresentationObject getSubject(Application app, boolean edit, IWContext iwc) {
 		DataTable subjectTable = getDataTable();
 		subjectTable.setWidth(Table.HUNDRED_PERCENT);
 		subjectTable.addTitle(localize("subject", "Subject"));
@@ -1433,7 +1438,35 @@ public class CampusApprover extends CampusBlock {
 		subjectTable.add(getHeader(localize("current_subject", "Current Subject")), col, row++);
 		col++;
 		row = 1;
-		subjectTable.add(new Text(app.getSubject().getName()), col, row);
+		if (!edit) {
+			subjectTable.add(new Text(app.getSubject().getName()), col, row);
+		} else {
+			Collection subjects = null;
+			try {
+				subjects = getApplicationService(iwc).getSubjectHome()
+						.findNonExpired();
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			} catch (FinderException e) {
+				e.printStackTrace();
+			}
+
+
+			DropdownMenu subject = new DropdownMenu("subject");
+			if (subjects != null) {
+				ApplicationSubject entity = null;
+				Iterator iter = subjects.iterator();
+				while (iter.hasNext()) {
+					entity = (ApplicationSubject) iter.next();
+					String id = entity.getPrimaryKey().toString();
+					subject.addMenuElement(id, entity.getName());
+				}
+				
+				subject.setSelectedElement(app.getSubject().getPrimaryKey().toString());
+				
+			}
+			subjectTable.add(subject, col, row);
+		}
 
 		return subjectTable;
 	}
