@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.22.4.7 2009/03/24 12:51:12 palli Exp $
+ * $Id: ContractBMPBean.java,v 1.22.4.8 2009/04/24 13:24:32 palli Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -76,7 +76,7 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements Con
 	private static final String COLUMN_CHANGE_KEY_STATUS_AT = "change_key_at";
 	
 	private static final String COLUMN_CHANGE_KEY_STATUS_TO = "change_key_to";
-
+	
 	public static final String STATUS_CREATED = "C";
 
 	public static final String STATUS_PRINTED = "P";

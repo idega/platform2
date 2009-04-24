@@ -1,6 +1,7 @@
 package is.idega.idegaweb.campus.block.allocation.presentation;
 
 import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
+import is.idega.idegaweb.campus.block.allocation.data.ChargeForUnlimitedDownload;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean;
 import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
@@ -10,6 +11,7 @@ import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.StringTokenizer;
 
 import com.idega.block.application.data.Applicant;
 import com.idega.block.building.business.BuildingService;
@@ -26,6 +28,7 @@ import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
@@ -69,12 +72,49 @@ public class CampusContracts extends CampusBlock {
 		initFilter(iwc);
 		if (isAdmin) {
 			add(statusForm());
+			if (iwc.isParameterSet("save")) {
+				handleChargesForUnlimitedDownload(iwc);
+			}
+
 			if (iwc.getParameter(PARAM_GARBAGE) != null) {
 				doGarbageContract(iwc);
 			}
 			add(getContractTable(iwc));
 		} else {
 			add(getNoAccessObject(iwc));
+		}
+	}
+
+	private void handleChargesForUnlimitedDownload(IWContext iwc) {
+		String all = iwc.getParameter("save");
+		if (all != null && !all.equals("")) {
+			StringTokenizer tok = new StringTokenizer(all, ";");
+			while (tok.hasMoreElements()) {
+				String removeId = (String) tok.nextElement();
+				if (removeId != null && !"".equals(removeId)) {
+					try {
+						//System.out.println("removeId = " + removeId);
+						getContractService(iwc).removeChargeForUnlimitedDownloadToUser(removeId);
+					} catch (RemoteException e) {
+					}
+				}
+			}
+
+			String ids[] = iwc.getParameterValues("chargeForUnlimited");
+			if (ids != null) {
+				for (int i = 0; i < ids.length; i++) {
+					String id = ids[i];
+					try {
+						//System.out.println("id = " + id);
+						getContractService(iwc)
+								.addChargeForUnlimitedDownloadToUser(id);
+					} catch (RemoteException e) {
+					}
+				}
+			} else {
+				System.out.println("nothing selected");
+			}
+
 		}
 	}
 
@@ -297,7 +337,10 @@ public class CampusContracts extends CampusBlock {
 		boolean both = false;
 		int row = 1;
 		int col = 1;
+		int maxCol = col;
+		Form f = new Form();
 		DataTable T = getDataTable();
+		f.add(T);
 		T.setTitlesHorizontal(true);
 		T.setWidth("100%");
 		T.add(getHeader("#"), col++, 1);
@@ -314,9 +357,9 @@ public class CampusContracts extends CampusBlock {
 			T.add((printImage), col++, 1);// Edit.formatText(localize("print",
 			// "Print")
 		}
-		T.add((resignImage), col++, 1);//Edit.formatText(localize("sign","Sign")
+		T.add((resignImage), col++, 1);// Edit.formatText(localize("sign","Sign")
 		// )
-		T.add((registerImage), col++, 1);//Edit.formatText(localize("sign","Sign"
+		T.add((registerImage), col++, 1);// Edit.formatText(localize("sign","Sign"
 		// ))
 		T.add((renewImage), col++, 1);
 		// col = 4;
@@ -325,12 +368,12 @@ public class CampusContracts extends CampusBlock {
 		T.add(getHeader(localize("apartment", "Apartment")), col++, 1);
 		T.add(getHeader(localize("validfrom", "Valid from")), col++, 1);
 		T.add(getHeader(localize("validto", "Valid To")), col++, 1);
-		T.add(keyImage, col++, 1);//Edit.titleText(localize("key","Key")),col++,
-		// 1);
-		/*
-		 * Table T = new Table(); T.setCellspacing(0); T.setCellpadding(2);
-		 */
+		T.add(keyImage, col++, 1);
+		T.add(getHeader(localize("unlimited_download", "Download")), col++, 1);
 		row++;
+
+		StringBuffer listOfUsers = new StringBuffer();
+
 		if (contracts != null) {
 			int len = contracts.size();
 			if (iGlobalSize > 0 && iGlobalSize <= len) {
@@ -388,11 +431,36 @@ public class CampusContracts extends CampusBlock {
 					T.add((getApartmentTable(A)), col++, row);
 					T.add(getText(df.format(C.getValidFrom())), col++, row);
 					T.add(getText(df.format(C.getValidTo())), col++, row);
-					if (C.getIsRented())
+					if (C.getIsRented()) {
 						T.add(getKeyLink(keyImage, contractID), col++, row);
-					else
+					} else {
 						T.add(getKeyLink(nokeyImage, contractID), col++, row);
+					}
+
+					ChargeForUnlimitedDownload unlimited = this
+							.getCampusService(iwc).getContractService()
+							.getChargeForUnlimitedDownloadByUser(C.getUser());
+					boolean charge = false;
+					if (unlimited != null && unlimited.getChargeForDownload()) {
+						charge = true;
+					}
+
+					CheckBox chargeForUnlimited = new CheckBox(
+							"chargeForUnlimited", C.getUserId().toString());
+					listOfUsers.append(C.getUserId().toString());
+					listOfUsers.append(";");
+
+					if (charge) {
+						chargeForUnlimited.setChecked(true);
+					} else {
+						chargeForUnlimited.setChecked(false);
+					}
+					T.add(chargeForUnlimited, col++, row);
+
 					row++;
+					if (maxCol < col) {
+						maxCol = col;
+					}
 					col = 1;
 				} catch (Exception ex) {
 					ex.printStackTrace();
@@ -400,10 +468,16 @@ public class CampusContracts extends CampusBlock {
 			}
 		}
 
+		maxCol--;
+
+		SubmitButton save = new SubmitButton("save", "save", listOfUsers
+				.toString());
+		T.add(save, maxCol, row);
+
 		Table T2 = new Table();
 		T2.setCellpadding(0);
 		T2.setCellspacing(0);
-		T2.add(T, 1, 1);
+		T2.add(f, 1, 1);
 		T2.add(getNavigationLinks(contractCount), 1, 3);
 		return T2;
 	}

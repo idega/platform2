@@ -197,15 +197,17 @@ public class ContractKeyWindow extends CampusWindow {
 		if (iwc.isParameterSet("val")) {
 			String val = iwc.getParameter("val");
 			if (val.equals("return")) {
-				// ContractBusiness.returnKey(iwc,id);
 				getContractService(iwc).returnKey(id, iwc.getCurrentUser());
 			} else if (val.equals("deliver")) {
 				String from = iwc.getParameter("deliveredDate");
 				IWTimestamp fromStamp = new IWTimestamp(from);
-				// ContractBusiness.deliverKey(iwc,id);
-				// ContractBusiness.deliverKey(iwc,id,fromStamp.getTimestamp());
+				String addKeyCharge = iwc.getApplicationSettings().getProperty("AUTO_ADD_KEY_CHARGE", String.valueOf(false));
+				String accountKeyID = iwc.getApplicationSettings().getProperty("AUTO_ADD_KEY_CHARGE_ACCOUNT_KEY_ID", "-1");
+				String tariffGroupID = iwc.getApplicationSettings().getProperty("AUTO_ADD_KEY_CHARGE_TARIFF_GROUP_ID", "-1");
+				String finanaceCategoryID = iwc.getApplicationSettings().getProperty("AUTO_ADD_KEY_CHARGE_FINANCE_CATEGORY_ID", "-1");
+				String amount = iwc.getApplicationSettings().getProperty("AUTO_ADD_KEY_CHARGE_AMOUNT", "-1");
 				getContractService(iwc)
-						.deliverKey(id, fromStamp.getTimestamp());
+						.deliverKey(id, fromStamp.getTimestamp(), Boolean.valueOf(addKeyCharge).booleanValue(), Integer.valueOf(accountKeyID), Integer.valueOf(tariffGroupID), Integer.valueOf(finanaceCategoryID), Double.valueOf(amount).doubleValue());
 			}
 		}
 	}

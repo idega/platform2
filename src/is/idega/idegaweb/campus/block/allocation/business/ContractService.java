@@ -3,11 +3,16 @@ package is.idega.idegaweb.campus.block.allocation.business;
 
 import javax.ejb.CreateException;
 import com.idega.block.application.data.Applicant;
+import com.idega.block.application.data.Application;
+import is.idega.idegaweb.campus.block.finance.business.CampusAssessmentBusiness;
+import is.idega.idegaweb.campus.block.allocation.data.ChargeForUnlimitedDownloadHome;
+import com.idega.block.finance.data.AccountHome;
 import com.idega.block.building.business.BuildingService;
+import com.idega.block.finance.data.AccountKeyHome;
 import com.idega.business.IBOService;
 import is.idega.idegaweb.campus.block.mailinglist.business.MailingListService;
-import is.idega.idegaweb.campus.business.CampusGroupException;
 import is.idega.idegaweb.campus.block.application.data.WaitingListHome;
+import is.idega.idegaweb.campus.business.CampusGroupException;
 import com.idega.idegaweb.IWResourceBundle;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import java.util.Map;
@@ -16,8 +21,9 @@ import is.idega.idegaweb.campus.business.CampusUserService;
 import java.util.Date;
 import com.idega.user.data.User;
 import is.idega.idegaweb.campus.block.application.business.ApplicationService;
-import is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriods;
 import java.rmi.RemoteException;
+import is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriods;
+import is.idega.idegaweb.campus.block.allocation.data.ChargeForUnlimitedDownload;
 import java.sql.Timestamp;
 import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
 import java.util.Collection;
@@ -53,6 +59,12 @@ public interface ContractService extends IBOService {
 	 * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#deleteFromWaitingList
 	 */
 	public void deleteFromWaitingList(Contract eContract)
+			throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#deleteFromWaitingList
+	 */
+	public void deleteFromWaitingList(Application application)
 			throws RemoteException;
 
 	/**
@@ -110,13 +122,15 @@ public interface ContractService extends IBOService {
 	/**
 	 * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#deliverKey
 	 */
-	public void deliverKey(Integer contractID, Timestamp when)
-			throws RemoteException;
+	public void deliverKey(Integer contractID, Timestamp when,
+			boolean addKeyCharge, Integer accountKeyId, Integer tariffGroupId,
+			Integer financeCategoryId, double amount) throws RemoteException;
 
 	/**
-	 * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#deliverKey
+	 * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#getCampusAssessmentBusiness
 	 */
-	public void deliverKey(Integer contractID) throws RemoteException;
+	public CampusAssessmentBusiness getCampusAssessmentBusiness()
+			throws RemoteException, RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#resignContract
@@ -267,6 +281,24 @@ public interface ContractService extends IBOService {
 	public Collection getAllowedTemporaryPersonalID() throws RemoteException;
 
 	/**
+	 * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#getChargeForUnlimitedDownloadByUser
+	 */
+	public ChargeForUnlimitedDownload getChargeForUnlimitedDownloadByUser(
+			User user) throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#addChargeForUnlimitedDownloadToUser
+	 */
+	public void addChargeForUnlimitedDownloadToUser(String userID)
+			throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#removeChargeForUnlimitedDownloadToUser
+	 */
+	public void removeChargeForUnlimitedDownloadToUser(String userID)
+			throws RemoteException;
+
+	/**
 	 * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#getNewApplicantContracts
 	 */
 	public Map getNewApplicantContracts() throws RemoteException,
@@ -291,6 +323,17 @@ public interface ContractService extends IBOService {
 			RemoteException;
 
 	/**
+	 * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#getChargeForUnlimitedDownloadHome
+	 */
+	public ChargeForUnlimitedDownloadHome getChargeForUnlimitedDownloadHome()
+			throws RemoteException, RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#getAccountHome
+	 */
+	public AccountHome getAccountHome() throws RemoteException, RemoteException;
+
+	/**
 	 * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#getContractTextHome
 	 */
 	public ContractTextHome getContractTextHome() throws RemoteException,
@@ -307,6 +350,12 @@ public interface ContractService extends IBOService {
 	 */
 	public ContractAccountApartmentHome getContractAccountApartmentHome()
 			throws RemoteException, RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#getAccountKeyHome
+	 */
+	public AccountKeyHome getAccountKeyHome() throws RemoteException,
+			RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#getMailingListService

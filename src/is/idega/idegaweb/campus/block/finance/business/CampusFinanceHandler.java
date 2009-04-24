@@ -14,6 +14,7 @@ import is.idega.idegaweb.campus.data.ContractAccountApartmentHome;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -30,8 +31,11 @@ import com.idega.block.building.data.Building;
 import com.idega.block.building.data.BuildingHome;
 import com.idega.block.finance.business.AssessmentTariffPreview;
 import com.idega.block.finance.business.FinanceHandler;
+import com.idega.block.finance.data.Account;
+import com.idega.block.finance.data.AccountBMPBean;
 import com.idega.block.finance.data.AccountEntry;
 import com.idega.block.finance.data.AccountEntryHome;
+import com.idega.block.finance.data.AccountKey;
 import com.idega.block.finance.data.AssessmentRound;
 import com.idega.block.finance.data.AssessmentRoundHome;
 import com.idega.block.finance.data.Tariff;
@@ -145,6 +149,7 @@ public class CampusFinanceHandler implements FinanceHandler {
 					double factor = 1.0d;
 					double discount = 0.0d;
 					int precision = getPrecision(iwac);
+					ArrayList alreadyChargedForDownload = new ArrayList();
 					// All tenants accounts (Outer loop)
 					for (Iterator iter = listOfUsers.iterator(); iter.hasNext();) {
 						user = (ContractAccountApartment) iter.next();
@@ -290,6 +295,27 @@ public class CampusFinanceHandler implements FinanceHandler {
 															.substring(2));
 										}
 										totalAmount += Amount;
+										
+										if (!alreadyChargedForDownload.contains(contract.getUserId())) {
+											alreadyChargedForDownload.add(contract.getUserId());
+
+											String amount = iwac.getApplicationSettings().getProperty("UNLIMITED_DOWNLOAD_AMOUNT", "1200");
+											String accountKey = iwac.getApplicationSettings().getProperty("UNLIMITED_DOWNLOAD_ACCOUNT_KEY", "16");
+											String tariffGroup = iwac.getApplicationSettings().getProperty("UNLIMITED_DOWNLOAD_TARIFF_GROUP", "69");
+											String financeCategory = iwac.getApplicationSettings().getProperty("UNLIMITED_DOWNLOAD_FINANCE_CATEGORY", "36");
+
+											Account account = this.getContractService(iwac).getAccountHome().findByUserAndType(contract.getUser(),
+													AccountBMPBean.typeFinancial);
+
+											AccountKey key = this.getContractService(iwac).getAccountKeyHome().findByPrimaryKey(
+													Integer.valueOf(accountKey));
+
+											this.getContractService(iwac).getCampusAssessmentBusiness().assessTariffsToAccount(
+													Float.valueOf(amount).floatValue(), key.getInfo(), key.getInfo(),
+													(Integer) account.getPrimaryKey(), Integer.valueOf(accountKey),
+													paymentdate.getDate(), Integer.valueOf(tariffGroup), Integer.valueOf(financeCategory),
+													contract.getApartmentId(), false, roundId);
+										}
 									}
 								} // Inner loop block
 								try {

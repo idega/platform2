@@ -27,7 +27,6 @@ import com.idega.block.building.data.Apartment;
 import com.idega.block.building.data.ApartmentHome;
 import com.idega.block.building.data.ApartmentView;
 import com.idega.block.building.data.Building;
-import com.idega.block.building.data.BuildingEntity;
 import com.idega.block.building.data.Complex;
 import com.idega.block.building.data.Floor;
 import com.idega.data.EntityFinder;
@@ -267,13 +266,8 @@ public class ContractsPerApartment extends CampusBlock {
 		Floor F = null;
 		Complex CX = null;
 
-		Image printImage = getBundle().getImage("/print.gif");
-		Image registerImage = getBundle().getImage("/pen.gif");
-		Image resignImage = getBundle().getImage("/scissors.gif");
 		Image keyImage = getBundle().getImage("/key.gif");
 		Image nokeyImage = getBundle().getImage("/nokey.gif");
-		Image garbageImage = getBundle().getImage("/trashcan.gif");
-		Image renewImage = getBundle().getImage("/renew.gif");
 
 		boolean garbage = false;
 		int row = 1;
@@ -288,6 +282,7 @@ public class ContractsPerApartment extends CampusBlock {
 		T.add(getHeader(localize("apartment", "Apartment")), col++, 1);
 		T.add(getHeader(localize("validfrom", "Valid from")), col++, 1);
 		T.add(getHeader(localize("validto", "Valid To")), col++, 1);
+		T.add(getHeader(localize("rented", "Rented")), col++, 1);
 
 		T.add(keyImage, col++, 1);
 		row++;
@@ -315,6 +310,11 @@ public class ContractsPerApartment extends CampusBlock {
 					T.add((getApartmentTable(Aprt)), col++, row);
 					T.add(getText(df.format(C.getValidFrom())), col++, row);
 					T.add(getText(df.format(C.getValidTo())), col++, row);
+					if (C.getIsRented()) {
+						T.add(keyImage, col++, row);
+					} else {
+						T.add(nokeyImage, col++, row);						
+					}
 					row++;
 					col = 1;
 				} catch (Exception ex) {

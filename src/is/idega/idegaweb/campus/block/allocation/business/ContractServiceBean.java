@@ -1,5 +1,5 @@
 /*
- * $Id: ContractServiceBean.java,v 1.24.4.5 2008/08/17 05:42:30 palli Exp $
+ * $Id: ContractServiceBean.java,v 1.24.4.6 2009/04/24 13:24:32 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,6 +9,8 @@
  */
 package is.idega.idegaweb.campus.block.allocation.business;
 
+import is.idega.idegaweb.campus.block.allocation.data.ChargeForUnlimitedDownload;
+import is.idega.idegaweb.campus.block.allocation.data.ChargeForUnlimitedDownloadHome;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean;
 import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
@@ -20,6 +22,7 @@ import is.idega.idegaweb.campus.block.application.data.WaitingList;
 import is.idega.idegaweb.campus.block.application.data.WaitingListHome;
 import is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriods;
 import is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriodsHome;
+import is.idega.idegaweb.campus.block.finance.business.CampusAssessmentBusiness;
 import is.idega.idegaweb.campus.block.mailinglist.business.LetterParser;
 import is.idega.idegaweb.campus.block.mailinglist.business.MailingListService;
 import is.idega.idegaweb.campus.business.CampusGroupException;
@@ -55,6 +58,11 @@ import com.idega.block.building.business.BuildingService;
 import com.idega.block.building.data.Apartment;
 import com.idega.block.building.data.ApartmentHome;
 import com.idega.block.finance.business.AccountManager;
+import com.idega.block.finance.data.Account;
+import com.idega.block.finance.data.AccountBMPBean;
+import com.idega.block.finance.data.AccountHome;
+import com.idega.block.finance.data.AccountKey;
+import com.idega.block.finance.data.AccountKeyHome;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.data.IDOStoreException;
@@ -154,7 +162,8 @@ public class ContractServiceBean extends IBOServiceBean implements
 	public void deleteFromWaitingList(Application application) {
 		Collection L = null;
 		try {
-			L = WaitingListFinder.getWaitingListHome().findByApplication(application);
+			L = WaitingListFinder.getWaitingListHome().findByApplication(
+					application);
 		} catch (RemoteException e1) {
 		} catch (FinderException e1) {
 		}
@@ -304,7 +313,8 @@ public class ContractServiceBean extends IBOServiceBean implements
 			contracts = getContractHome().findAllWithKeyChangeDateSet();
 			for (Iterator iter = contracts.iterator(); iter.hasNext();) {
 				Contract contract = (Contract) iter.next();
-				IWTimestamp at = new IWTimestamp(contract.getChangeKeyStatusAt());
+				IWTimestamp at = new IWTimestamp(contract
+						.getChangeKeyStatusAt());
 				if (now.isLaterThan(at)) {
 					contract.setChangeKeyStatusAt(null);
 					contract.setIsRented(contract.getChangeKeyStatusTo());
@@ -317,7 +327,7 @@ public class ContractServiceBean extends IBOServiceBean implements
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void returnKey(Integer contractID, User currentUser) {
 		try {
 			Contract C = getContractHome().findByPrimaryKey(contractID);
@@ -337,17 +347,36 @@ public class ContractServiceBean extends IBOServiceBean implements
 		}
 	}
 
-	public void deliverKey(Integer contractID, Timestamp when) {
+	public void deliverKey(Integer contractID, Timestamp when,
+			boolean addKeyCharge, Integer accountKeyId, Integer tariffGroupId,
+			Integer financeCategoryId, double amount) {
 		try {
-			Contract C = getContractHome().findByPrimaryKey(contractID);
+			Contract contract = getContractHome().findByPrimaryKey(contractID);
 			if (when == null)
-				C.setStarted();
+				contract.setStarted();
 			else
-				C.setStarted(when);
-			C.store();
-			getUserService().setAsCurrentTenant(C.getUser());
+				contract.setStarted(when);
+			contract.store();
+			getUserService().setAsCurrentTenant(contract.getUser());
 			getMailingListService().processMailEvent(contractID.intValue(),
 					LetterParser.DELIVER);
+
+			if (addKeyCharge) {
+				User user = contract.getUser();
+				Account account = getAccountHome().findByUserAndType(user,
+						AccountBMPBean.typeFinancial);
+
+				IWTimestamp today = IWTimestamp.RightNow();
+				
+				AccountKey key = getAccountKeyHome().findByPrimaryKey(
+						accountKeyId);
+
+				getCampusAssessmentBusiness().assessTariffsToAccount(
+						(float) amount, key.getInfo(), key.getInfo(),
+						(Integer) account.getPrimaryKey(), accountKeyId,
+						today.getDate(), tariffGroupId, financeCategoryId,
+						contract.getApartmentId(), false, null);
+			}
 		} catch (IDOStoreException e) {
 			e.printStackTrace();
 		} catch (RemoteException e) {
@@ -356,11 +385,16 @@ public class ContractServiceBean extends IBOServiceBean implements
 			e.printStackTrace();
 		} catch (CampusGroupException e) {
 			e.printStackTrace();
+		} catch (EJBException e) {
+			e.printStackTrace();
+		} catch (CreateException e) {
+			e.printStackTrace();
 		}
 	}
 
-	public void deliverKey(Integer contractID) {
-		deliverKey(contractID, null);
+	public CampusAssessmentBusiness getCampusAssessmentBusiness()
+			throws RemoteException {
+		return (CampusAssessmentBusiness) getServiceInstance(CampusAssessmentBusiness.class);
 	}
 
 	public void resignContract(Integer contractID, IWTimestamp movingDate,
@@ -719,8 +753,8 @@ public class ContractServiceBean extends IBOServiceBean implements
 	}
 
 	public Contract allocate(Integer contractID, Integer apartmentID,
-			Integer applicantID, Date validFrom, Date validTo, Integer applicationID)
-			throws AllocationException {
+			Integer applicantID, Date validFrom, Date validTo,
+			Integer applicationID) throws AllocationException {
 		// javax.transaction.TransactionManager transaction=
 		// com.idega.transaction.IdegaTransactionManager.getInstance();
 		UserTransaction transaction = getSessionContext().getUserTransaction();
@@ -777,10 +811,11 @@ public class ContractServiceBean extends IBOServiceBean implements
 											"Transaction: " + e1.getMessage());
 								}
 								if (applicationID != null) {
-									contract.setApplicationID(applicationID.intValue());
+									contract.setApplicationID(applicationID
+											.intValue());
 									contract.store();
 								}
-								
+
 								return contract;
 							} else {
 								throw new AllocationException(
@@ -795,7 +830,8 @@ public class ContractServiceBean extends IBOServiceBean implements
 							if (apartmentID != null) {
 								contract.setApartmentId(apartmentID);
 								if (applicationID != null) {
-									contract.setApplicationID(applicationID.intValue());
+									contract.setApplicationID(applicationID
+											.intValue());
 								}
 								contract.store();
 
@@ -910,7 +946,7 @@ public class ContractServiceBean extends IBOServiceBean implements
 
 		return true;
 	}
-	
+
 	public void resetWaitingListRejection(Integer waitingListID)
 			throws RemoteException, FinderException {
 		try {
@@ -1014,7 +1050,8 @@ public class ContractServiceBean extends IBOServiceBean implements
 		for (Iterator iter = contracts.iterator(); iter.hasNext();) {
 			Contract element = (Contract) iter.next();
 			if (element.getApplication() != null) {
-				map.put(element.getApplication().getPrimaryKey().toString(), element);
+				map.put(element.getApplication().getPrimaryKey().toString(),
+						element);
 			}
 		}
 		return map;
@@ -1055,6 +1092,46 @@ public class ContractServiceBean extends IBOServiceBean implements
 		return list;
 	}
 
+	public ChargeForUnlimitedDownload getChargeForUnlimitedDownloadByUser(
+			User user) {
+		try {
+			return this.getChargeForUnlimitedDownloadHome().findByUser(user);
+		} catch (RemoteException e) {
+		} catch (FinderException e) {
+		}
+
+		return null;
+	}
+
+	public void addChargeForUnlimitedDownloadToUser(String userID) {
+		try {
+			User user = getUserService().getUser(Integer.valueOf(userID));
+			ChargeForUnlimitedDownload charge = getChargeForUnlimitedDownloadByUser(user);
+			if (charge == null) {
+				charge = getChargeForUnlimitedDownloadHome().create();
+				charge.setUser(user);
+			}
+			charge.setChargeForDownload(true);
+			charge.store();
+		} catch (NumberFormatException e) {
+		} catch (RemoteException e) {
+		} catch (CreateException e) {
+		}
+	}
+
+	public void removeChargeForUnlimitedDownloadToUser(String userID) {
+		try {
+			User user = getUserService().getUser(Integer.valueOf(userID));
+			ChargeForUnlimitedDownload charge = getChargeForUnlimitedDownloadByUser(user);
+			if (charge != null) {
+				charge.setChargeForDownload(false);
+				charge.store();
+			}
+		} catch (NumberFormatException e) {
+		} catch (RemoteException e) {
+		}
+	}
+
 	public Map getNewApplicantContracts() throws RemoteException,
 			FinderException {
 		return getApplicantContractsByStatus(ContractBMPBean.STATUS_CREATED);
@@ -1063,13 +1140,22 @@ public class ContractServiceBean extends IBOServiceBean implements
 	public Map getPrintedContracts() throws RemoteException, FinderException {
 		return getApplicantContractsByStatus(ContractBMPBean.STATUS_PRINTED);
 	}
-	
+
 	public CampusUserService getUserService() throws RemoteException {
 		return (CampusUserService) getServiceInstance(CampusUserService.class);
 	}
 
 	public ContractHome getContractHome() throws RemoteException {
 		return (ContractHome) getIDOHome(Contract.class);
+	}
+
+	public ChargeForUnlimitedDownloadHome getChargeForUnlimitedDownloadHome()
+			throws RemoteException {
+		return (ChargeForUnlimitedDownloadHome) getIDOHome(ChargeForUnlimitedDownload.class);
+	}
+
+	public AccountHome getAccountHome() throws RemoteException {
+		return (AccountHome) getIDOHome(Account.class);
 	}
 
 	public ContractTextHome getContractTextHome() throws RemoteException {
@@ -1085,6 +1171,10 @@ public class ContractServiceBean extends IBOServiceBean implements
 		return ((ContractAccountApartmentHome) getIDOHome(ContractAccountApartment.class));
 	}
 
+	public AccountKeyHome getAccountKeyHome() throws RemoteException {
+		return ((AccountKeyHome) getIDOHome(AccountKey.class));
+	}
+
 	public MailingListService getMailingListService() throws RemoteException {
 		return (MailingListService) getServiceInstance(MailingListService.class);
 	}
@@ -1096,5 +1186,4 @@ public class ContractServiceBean extends IBOServiceBean implements
 	public BuildingService getBuildingService() throws RemoteException {
 		return (BuildingService) getServiceInstance(BuildingService.class);
 	}
-
 }
