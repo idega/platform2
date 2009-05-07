@@ -149,4 +149,19 @@ public interface Tariff extends IDOEntity {
 	 * @see com.idega.block.finance.data.TariffBMPBean#setUseDiscount
 	 */
 	public void setUseDiscount(boolean useDiscount);
+
+	/**
+	 * @see com.idega.block.finance.data.TariffBMPBean#getPublicPrice
+	 */
+	public float getPublicPrice();
+
+	/**
+	 * @see com.idega.block.finance.data.TariffBMPBean#setPublicPrice
+	 */
+	public void setPublicPrice(Float price);
+
+	/**
+	 * @see com.idega.block.finance.data.TariffBMPBean#setPublicPrice
+	 */
+	public void setPublicPrice(float price);
 }

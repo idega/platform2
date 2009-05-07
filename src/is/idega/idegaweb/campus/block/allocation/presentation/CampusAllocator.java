@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.76.4.13 2008/08/17 05:42:28 palli Exp $
+ * $Id: CampusAllocator.java,v 1.76.4.14 2009/05/07 11:37:15 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -390,8 +390,8 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		UserHome userHome = campusService.getContractService().getUserService()
 				.getUserHome();
 		if (contracts != null && !contracts.isEmpty()) {
-			java.text.DateFormat df = java.text.DateFormat
-					.getDateInstance(java.text.DateFormat.SHORT);
+//			java.text.DateFormat df = java.text.DateFormat
+//					.getDateInstance(java.text.DateFormat.SHORT);
 			java.util.Iterator I = contracts.iterator();
 			Contract contract;
 			User user;
@@ -401,10 +401,10 @@ public class CampusAllocator extends CampusBlock implements Campus {
 				contract = (Contract) I.next();
 				user = userHome.findByPrimaryKey(contract.getUserId());
 				T.add(getText(user.getName()), 1, row);
-				T.add(getText(df.format((java.util.Date) contract
+				T.add(getText(dateFormat.format((java.util.Date) contract
 						.getValidFrom())), 2, row);
 				T.add(
-						getText(df.format((java.util.Date) contract
+						getText(dateFormat.format((java.util.Date) contract
 								.getValidTo())), 3, row);
 				T.add(getText(getStatus(contract.getStatus())), 4, row);
 				T.add(new HiddenInput("apartmentid", apartmentID.toString()));

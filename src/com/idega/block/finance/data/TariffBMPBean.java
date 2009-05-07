@@ -17,7 +17,8 @@ public class TariffBMPBean extends com.idega.data.GenericEntity implements
 		com.idega.block.finance.data.Tariff {
 
 	public static final String COLUMN_USE_DISCOUNT = "use_discount";
-	
+	public static final String COLUMN_PUBLIC_PRICE = "public_price";
+
 	public TariffBMPBean() {
 	}
 
@@ -29,31 +30,21 @@ public class TariffBMPBean extends com.idega.data.GenericEntity implements
 		addAttribute(getIDColumnName());
 		addAttribute(getColumnTariffGroup(), "Group", true, true,
 				Integer.class, "many-to-one", TariffGroup.class);
-		addAttribute(getColumnName(), "Name", true, true,
-				java.lang.String.class);
-		addAttribute(getColumnPrice(), "Price", true, true,
-				java.lang.Float.class);
-		addAttribute(getColumnInfo(), "Info", true, true,
-				java.lang.String.class, 4000);
+		addAttribute(getColumnName(), "Name", String.class);
+		addAttribute(getColumnPrice(), "Price", Float.class);
+		addAttribute(getColumnInfo(), "Info", String.class, 4000);
 		addAttribute(getColumnAccountKeyId(), "Accountkey", true, true,
-				java.lang.Integer.class, "one-to-many",
-				com.idega.block.finance.data.AccountKey.class);
-		addAttribute(getColumnFromdate(), "From date", true, true,
-				java.sql.Timestamp.class);
-		addAttribute(getColumnTodate(), "To date", true, true,
-				java.sql.Timestamp.class);
-		addAttribute(getColumnAttribute(), "Attribute", true, true,
-				java.lang.String.class);
-		addAttribute(getColumnUseIndex(), "Use index", true, true,
-				java.lang.Boolean.class);
-		addAttribute(getColumnInUse(), "In Use", true, true,
-				java.lang.Boolean.class);
-		addAttribute(getColumnIndexType(), "Index type", true, true,
-				java.lang.String.class, 10);
-		addAttribute(getColumnIndexUpdated(), "Index updated", true, true,
-				java.sql.Timestamp.class);
+				Integer.class, "one-to-many", AccountKey.class);
+		addAttribute(getColumnFromdate(), "From date", Timestamp.class);
+		addAttribute(getColumnTodate(), "To date", Timestamp.class);
+		addAttribute(getColumnAttribute(), "Attribute", String.class);
+		addAttribute(getColumnUseIndex(), "Use index", Boolean.class);
+		addAttribute(getColumnInUse(), "In Use", Boolean.class);
+		addAttribute(getColumnIndexType(), "Index type", String.class, 10);
+		addAttribute(getColumnIndexUpdated(), "Index updated", Timestamp.class);
 
 		addAttribute(COLUMN_USE_DISCOUNT, "Use discount", Boolean.class);
+		addAttribute(COLUMN_PUBLIC_PRICE, "Public pricing", Float.class);
 	}
 
 	public static String getTariffEntityName() {
@@ -223,11 +214,23 @@ public class TariffBMPBean extends com.idega.data.GenericEntity implements
 	public boolean getUseDiscount() {
 		return getBooleanColumnValue(COLUMN_USE_DISCOUNT, false);
 	}
-	
+
 	public void setUseDiscount(boolean useDiscount) {
 		setColumn(COLUMN_USE_DISCOUNT, useDiscount);
 	}
+
+	public float getPublicPrice() {
+		return getFloatColumnValue(COLUMN_PUBLIC_PRICE, 0.0f);
+	}
 	
+	public void setPublicPrice(Float price) {
+		setColumn(COLUMN_PUBLIC_PRICE, price);
+	}
+
+	public void setPublicPrice(float price) {
+		setColumn(COLUMN_PUBLIC_PRICE, price);
+	}
+
 	public java.util.Collection ejbFindAllByPrimaryKeyArray(String[] array)
 			throws javax.ejb.FinderException {
 		StringBuffer sql = new StringBuffer("select * from ");

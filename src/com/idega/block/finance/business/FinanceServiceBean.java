@@ -3,6 +3,7 @@
  *
  */
 package com.idega.block.finance.business;
+
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -51,67 +52,89 @@ import com.idega.block.finance.data.TariffKeyHome;
 import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOException;
 import com.idega.util.IWTimestamp;
+
 /**
  * FinanceServiceBean
  * 
  * @author aron
  * @version 1.0
  */
-public class FinanceServiceBean extends IBOServiceBean implements FinanceService {
+public class FinanceServiceBean extends IBOServiceBean implements
+		FinanceService {
 	public AccountHome getAccountHome() throws RemoteException {
 		return (AccountHome) getIDOHome(Account.class);
 	}
+
 	public AccountEntryHome getAccountEntryHome() throws RemoteException {
 		return (AccountEntryHome) getIDOHome(AccountEntry.class);
 	}
+
 	public AccountKeyHome getAccountKeyHome() throws RemoteException {
 		return (AccountKeyHome) getIDOHome(AccountKey.class);
 	}
+
 	public AccountInfoHome getAccountInfoHome() throws RemoteException {
 		return (AccountInfoHome) getIDOHome(AccountInfo.class);
 	}
-	public AccountPhoneEntryHome getAccountPhoneEntryHome() throws RemoteException {
+
+	public AccountPhoneEntryHome getAccountPhoneEntryHome()
+			throws RemoteException {
 		return (AccountPhoneEntryHome) getIDOHome(AccountPhoneEntry.class);
 	}
+
 	public AccountTypeHome getAccountTypeHome() throws RemoteException {
 		return (AccountTypeHome) getIDOHome(AccountType.class);
 	}
+
 	public AssessmentRoundHome getAssessmentRoundHome() throws RemoteException {
 		return (AssessmentRoundHome) getIDOHome(AssessmentRound.class);
 	}
+
 	public RoundInfoHome getRoundInfoHome() throws RemoteException {
 		return (RoundInfoHome) getIDOHome(RoundInfo.class);
 	}
+
 	public TariffHome getTariffHome() throws RemoteException {
 		return (TariffHome) getIDOHome(Tariff.class);
 	}
+
 	public TariffKeyHome getTariffKeyHome() throws RemoteException {
 		return (TariffKeyHome) getIDOHome(TariffKey.class);
 	}
+
 	public TariffGroupHome getTariffGroupHome() throws RemoteException {
 		return (TariffGroupHome) getIDOHome(TariffGroup.class);
 	}
+
 	public EntryGroupHome getEntryGroupHome() throws RemoteException {
 		return (EntryGroupHome) getIDOHome(EntryGroup.class);
 	}
+
 	public AccountUserHome getAccountUserHome() throws RemoteException {
 		return (AccountUserHome) getIDOHome(AccountUser.class);
 	}
+
 	public TariffIndexHome getTariffIndexHome() throws RemoteException {
 		return (TariffIndexHome) getIDOHome(TariffIndex.class);
 	}
+
 	public PaymentTypeHome getPaymentTypeHome() throws RemoteException {
 		return (PaymentTypeHome) getIDOHome(PaymentType.class);
 	}
-	public FinanceHandlerInfoHome getFinanceHandlerInfoHome() throws RemoteException {
+
+	public FinanceHandlerInfoHome getFinanceHandlerInfoHome()
+			throws RemoteException {
 		return (FinanceHandlerInfoHome) getIDOHome(FinanceHandlerInfo.class);
 	}
+
 	public FinanceHandler getFinanceHandler(Integer handlerInfoID) {
 		try {
-			FinanceHandlerInfo handlerInfo = getFinanceHandlerInfoHome().findByPrimaryKey(handlerInfoID);
+			FinanceHandlerInfo handlerInfo = getFinanceHandlerInfoHome()
+					.findByPrimaryKey(handlerInfoID);
 			if (handlerInfo.getClassName() != null) {
 				try {
-					return (FinanceHandler) Class.forName(handlerInfo.getClassName()).newInstance();
+					return (FinanceHandler) Class.forName(
+							handlerInfo.getClassName()).newInstance();
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
@@ -121,17 +144,24 @@ public class FinanceServiceBean extends IBOServiceBean implements FinanceService
 		}
 		return null;
 	}
+
 	public AssessmentBusiness getFinanceBusiness() throws RemoteException {
 		return (AssessmentBusiness) getServiceInstance(AssessmentBusiness.class);
 	}
+
 	public AccountBusiness getAccountBusiness() throws RemoteException {
 		return (AccountBusiness) getServiceInstance(AccountBusiness.class);
 	}
-	public void removeAccountKey(Integer keyID) throws FinderException, RemoteException, RemoveException {
+
+	public void removeAccountKey(Integer keyID) throws FinderException,
+			RemoteException, RemoveException {
 		getAccountKeyHome().findByPrimaryKey(keyID).remove();
 	}
-	public AccountKey createOrUpdateAccountKey(Integer ID, String name, String info, Integer tariffKeyID,Integer ordinal,
-			Integer categoryID) throws CreateException, RemoteException, FinderException {
+
+	public AccountKey createOrUpdateAccountKey(Integer ID, String name,
+			String info, Integer tariffKeyID, Integer ordinal,
+			Integer categoryID) throws CreateException, RemoteException,
+			FinderException {
 		AccountKey key = getAccountKeyHome().create();
 		if (ID != null && ID.intValue() > 0) {
 			key = getAccountKeyHome().findByPrimaryKey(ID);
@@ -140,14 +170,16 @@ public class FinanceServiceBean extends IBOServiceBean implements FinanceService
 		key.setInfo(info);
 		key.setTariffKeyId(tariffKeyID.intValue());
 		key.setCategoryId(categoryID.intValue());
-		if(ordinal!=null) {
+		if (ordinal != null) {
 			key.setOrdinal(ordinal);
 		}
 		key.store();
 		return key;
 	}
-	public TariffKey createOrUpdateTariffKey(Integer ID, String name, String info, Integer categoryID)
-			throws FinderException, RemoteException, CreateException {
+
+	public TariffKey createOrUpdateTariffKey(Integer ID, String name,
+			String info, Integer categoryID) throws FinderException,
+			RemoteException, CreateException {
 		TariffKey key = getTariffKeyHome().create();
 		if (ID != null && ID.intValue() > 0) {
 			key = getTariffKeyHome().findByPrimaryKey(ID);
@@ -158,9 +190,12 @@ public class FinanceServiceBean extends IBOServiceBean implements FinanceService
 		key.store();
 		return key;
 	}
-	public Tariff createOrUpdateTariff(Integer ID, String name, String info, String attribute, String index,
-			boolean useIndex, Timestamp indexStamp, float Price, Integer accountKeyID, Integer tariffGroupID)
-			throws FinderException, RemoteException, CreateException {
+
+	public Tariff createOrUpdateTariff(Integer ID, String name, String info,
+			String attribute, String index, boolean useIndex,
+			Timestamp indexStamp, float Price, Integer accountKeyID,
+			Integer tariffGroupID, float publicPrice) throws FinderException,
+			RemoteException, CreateException {
 		Tariff tariff = getTariffHome().create();
 		if (ID != null && ID.intValue() > 0) {
 			tariff = getTariffHome().findByPrimaryKey(ID);
@@ -171,18 +206,21 @@ public class FinanceServiceBean extends IBOServiceBean implements FinanceService
 		tariff.setAccountKeyId(accountKeyID);
 		tariff.setTariffGroupId(tariffGroupID);
 		tariff.setPrice(Price);
+		tariff.setPublicPrice(publicPrice);
 		tariff.setUseFromDate(IWTimestamp.getTimestampRightNow());
 		tariff.setUseToDate(IWTimestamp.getTimestampRightNow());
 		tariff.setIndexType(index);
 		tariff.setUseIndex(useIndex);
 		if (indexStamp != null) {
 			tariff.setIndexUpdated(indexStamp);
+
 		}
 		tariff.store();
 		return tariff;
 	}
-	public Tariff updateTariffPrice(Integer ID, Float Price, Timestamp indexStamp) throws RemoteException,
-			FinderException {
+
+	public Tariff updateTariffPrice(Integer ID, Float Price,
+			Timestamp indexStamp) throws RemoteException, FinderException {
 		Tariff tariff = getTariffHome().findByPrimaryKey(ID);
 		tariff.setPrice(Price.floatValue());
 		if (indexStamp != null) {
@@ -191,16 +229,35 @@ public class FinanceServiceBean extends IBOServiceBean implements FinanceService
 		tariff.store();
 		return tariff;
 	}
-	public void removeTariff(Integer ID) throws FinderException, RemoteException, RemoveException {
+
+	public Tariff updateTariffPublicPrice(Integer ID, Float Price,
+			Timestamp indexStamp) throws RemoteException, FinderException {
+		Tariff tariff = getTariffHome().findByPrimaryKey(ID);
+		tariff.setPublicPrice(Price.floatValue());
+		if (indexStamp != null) {
+			tariff.setIndexUpdated(indexStamp);
+		}
+		tariff.store();
+		return tariff;
+	}
+
+	public void removeTariff(Integer ID) throws FinderException,
+			RemoteException, RemoveException {
 		getTariffHome().findByPrimaryKey(ID).remove();
 	}
-	public void removeTariffKey(Integer ID) throws FinderException, RemoteException, RemoveException {
+
+	public void removeTariffKey(Integer ID) throws FinderException,
+			RemoteException, RemoveException {
 		getTariffKeyHome().findByPrimaryKey(ID).remove();
 	}
-	public void removeTariffIndex(Integer ID) throws FinderException, RemoteException, RemoveException {
+
+	public void removeTariffIndex(Integer ID) throws FinderException,
+			RemoteException, RemoveException {
 		getTariffIndexHome().findByPrimaryKey(ID).remove();
 	}
-	public Map mapOfTariffIndicesByTypes() throws RemoteException, FinderException {
+
+	public Map mapOfTariffIndicesByTypes() throws RemoteException,
+			FinderException {
 		Collection coll = getTariffIndexHome().findLastTypeGrouped();
 		if (coll != null) {
 			Hashtable T = new Hashtable(coll.size());
@@ -210,13 +267,14 @@ public class FinanceServiceBean extends IBOServiceBean implements FinanceService
 				T.put(ti.getType(), ti);
 			}
 			return T;
-		}
-		else {
+		} else {
 			return null;
 		}
 	}
-	public TariffGroup createOrUpdateTariffGroup(Integer ID, String name, String info, Integer handlerId,
-			boolean useIndex, Integer categoryId) throws CreateException, FinderException, RemoteException {
+
+	public TariffGroup createOrUpdateTariffGroup(Integer ID, String name,
+			String info, Integer handlerId, boolean useIndex, Integer categoryId)
+			throws CreateException, FinderException, RemoteException {
 		TariffGroup tariff = getTariffGroupHome().create();
 		if (ID != null && ID.intValue() > 0) {
 			tariff = getTariffGroupHome().findByPrimaryKey(ID);
@@ -231,8 +289,11 @@ public class FinanceServiceBean extends IBOServiceBean implements FinanceService
 		tariff.store();
 		return tariff;
 	}
-	public TariffIndex createOrUpdateTariffIndex(Integer ID, String name, String info, String type, double newvalue,
-			double oldvalue, Timestamp stamp, Integer categoryId) throws RemoteException, CreateException {
+
+	public TariffIndex createOrUpdateTariffIndex(Integer ID, String name,
+			String info, String type, double newvalue, double oldvalue,
+			Timestamp stamp, Integer categoryId) throws RemoteException,
+			CreateException {
 		TariffIndex ti = getTariffIndexHome().create();
 		if (categoryId.intValue() > 0) {
 			/*
@@ -252,55 +313,55 @@ public class FinanceServiceBean extends IBOServiceBean implements FinanceService
 		}
 		throw new CreateException("Category missing");
 	}
-	
-	public String getAccountTypeFinance(){
+
+	public String getAccountTypeFinance() {
 		return AccountBMPBean.typeFinancial;
 	}
-	public String getAccountTypePhone(){
+
+	public String getAccountTypePhone() {
 		return AccountBMPBean.typePhone;
 	}
-	
-	  public  Collection getKeySortedTariffsByAttribute(String attribute) throws FinderException,RemoteException{
-	    Hashtable tar = null;
-	    Map AccKeyMap = mapOfAccountKeys();
-	    Map TarKeyMap = mapOfTariffKeys();
-	    Collection tariffs = getTariffHome().findByAttribute(attribute);
-	    if(tariffs != null ){
-	      tar = new Hashtable();
-	      java.util.Iterator iter = tariffs.iterator();
-	      Tariff t;
-	      Integer acckey;
-	      Integer tarkey;
-	      while(iter.hasNext()){
-	        t = (Tariff) iter.next();
-	        try{
-	        acckey = new Integer(t.getAccountKeyId());
-	        if(AccKeyMap.containsKey(acckey)){
-	          AccountKey AK = (AccountKey) AccKeyMap.get(acckey);
-	          tarkey = new Integer(AK.getTariffKeyId());
-	          if(TarKeyMap.containsKey(tarkey)){
-	            TariffKey TK = (TariffKey) TarKeyMap.get(tarkey);
-	            if(tar.containsKey(tarkey)){
-	              Tariff a = (Tariff)tar.get(tarkey);
-	              a.setPrice(a.getPrice()+t.getPrice());
-	            }
-	            else{
-	              t.setName(TK.getName());
-	              t.setInfo(TK.getInfo());
-	              tar.put(tarkey,t)  ;
-	            }
-	          }
-	        }
-	        }
-	        catch(Exception ex)
-	        {}
-	      }
-	      return tar.values();
-	    }
-	    return null;
-	  }
-	  
-	  public Map mapOfAccountKeys() throws RemoteException, FinderException {
+
+	public Collection getKeySortedTariffsByAttribute(String attribute)
+			throws FinderException, RemoteException {
+		Hashtable tar = null;
+		Map AccKeyMap = mapOfAccountKeys();
+		Map TarKeyMap = mapOfTariffKeys();
+		Collection tariffs = getTariffHome().findByAttribute(attribute);
+		if (tariffs != null) {
+			tar = new Hashtable();
+			java.util.Iterator iter = tariffs.iterator();
+			Tariff t;
+			Integer acckey;
+			Integer tarkey;
+			while (iter.hasNext()) {
+				t = (Tariff) iter.next();
+				try {
+					acckey = new Integer(t.getAccountKeyId());
+					if (AccKeyMap.containsKey(acckey)) {
+						AccountKey AK = (AccountKey) AccKeyMap.get(acckey);
+						tarkey = new Integer(AK.getTariffKeyId());
+						if (TarKeyMap.containsKey(tarkey)) {
+							TariffKey TK = (TariffKey) TarKeyMap.get(tarkey);
+							if (tar.containsKey(tarkey)) {
+								Tariff a = (Tariff) tar.get(tarkey);
+								a.setPrice(a.getPrice() + t.getPrice());
+							} else {
+								t.setName(TK.getName());
+								t.setInfo(TK.getInfo());
+								tar.put(tarkey, t);
+							}
+						}
+					}
+				} catch (Exception ex) {
+				}
+			}
+			return tar.values();
+		}
+		return null;
+	}
+
+	public Map mapOfAccountKeys() throws RemoteException, FinderException {
 		Collection coll = getAccountKeyHome().findAll();
 		if (coll != null) {
 			Hashtable T = new Hashtable(coll.size());
@@ -310,13 +371,12 @@ public class FinanceServiceBean extends IBOServiceBean implements FinanceService
 				T.put(ti.getPrimaryKey(), ti);
 			}
 			return T;
-		}
-		else {
+		} else {
 			return null;
 		}
 	}
-	  
-	  public Map mapOfTariffKeys() throws RemoteException, FinderException {
+
+	public Map mapOfTariffKeys() throws RemoteException, FinderException {
 		Collection coll = getTariffKeyHome().findAll();
 		if (coll != null) {
 			Hashtable T = new Hashtable(coll.size());
@@ -326,32 +386,34 @@ public class FinanceServiceBean extends IBOServiceBean implements FinanceService
 				T.put(ti.getPrimaryKey(), ti);
 			}
 			return T;
-		}
-		else {
+		} else {
 			return null;
 		}
 	}
-	 
+
 	/**
-	 * Returns calculated account balance from account entries in published assessments
+	 * Returns calculated account balance from account entries in published
+	 * assessments
 	 */
-	public double getAccountBalancePublished(Integer accountID){
-		return getAccountBalance(accountID,AssessmentStatus.PUBLISHED);
+	public double getAccountBalancePublished(Integer accountID) {
+		return getAccountBalance(accountID, AssessmentStatus.PUBLISHED);
 	}
-	
+
 	/**
 	 * Returns calculated account balance from account entries
 	 */
-	public double getAccountBalance(Integer accountID){
-		return getAccountBalance(accountID,null);
+	public double getAccountBalance(Integer accountID) {
+		return getAccountBalance(accountID, null);
 	}
+
 	/**
-	 * Returns calculated account balance from account entries with given assessment status flag
-	 * See AssessmentStatus for available flags
+	 * Returns calculated account balance from account entries with given
+	 * assessment status flag See AssessmentStatus for available flags
 	 */
-	public double getAccountBalance(Integer accountID,String roundStatus){
+	public double getAccountBalance(Integer accountID, String roundStatus) {
 		try {
-			return getAccountEntryHome().getTotalSumByAccount(accountID,roundStatus);
+			return getAccountEntryHome().getTotalSumByAccount(accountID,
+					roundStatus);
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
@@ -359,11 +421,16 @@ public class FinanceServiceBean extends IBOServiceBean implements FinanceService
 		}
 		return 0;
 	}
-	/* (non-Javadoc)
-	 * @see com.idega.block.finance.business.FinanceService#getAccountLastUpdate(java.lang.Integer)
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.idega.block.finance.business.FinanceService#getAccountLastUpdate(
+	 * java.lang.Integer)
 	 */
 	public Date getAccountLastUpdate(Integer accountID) {
-		if(accountID!=null){
+		if (accountID != null) {
 			try {
 				return getAccountEntryHome().getMaxDateByAccount(accountID);
 			} catch (RemoteException e) {
@@ -374,6 +441,5 @@ public class FinanceServiceBean extends IBOServiceBean implements FinanceService
 		}
 		return null;
 	}
-	
-	
+
 }

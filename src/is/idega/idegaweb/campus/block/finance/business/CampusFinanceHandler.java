@@ -1,6 +1,7 @@
 package is.idega.idegaweb.campus.block.finance.business;
 
 import is.idega.idegaweb.campus.block.allocation.business.ContractService;
+import is.idega.idegaweb.campus.block.allocation.data.ChargeForUnlimitedDownload;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean;
 import is.idega.idegaweb.campus.business.CampusSettings;
@@ -26,6 +27,7 @@ import java.util.logging.Logger;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
+import com.idega.block.application.data.Application;
 import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.building.data.Building;
 import com.idega.block.building.data.BuildingHome;
@@ -156,6 +158,18 @@ public class CampusFinanceHandler implements FinanceHandler {
 						Contract contract = this.getContractService(iwac)
 								.getContractHome().findByPrimaryKey(
 										new Integer(user.getContractId()));
+						boolean publicPricing = false;
+						String usePublicPricing = iwac.getApplicationSettings().getProperty("USE_PUBLIC_PRICING", String.valueOf(false));
+
+						if (Boolean.parseBoolean(usePublicPricing)) {
+							String publicPricingSubject = iwac.getApplicationSettings().getProperty("PUBLIC_PRICING_SUBJECT", "181");
+							if (contract.getApplication() != null) {
+								Application application = contract.getApplication();
+								if (application.getSubjectId() == Integer.parseInt(publicPricingSubject)) {
+									publicPricing = true;
+								}
+							}
+						}
 						IWTimestamp validFrom = new IWTimestamp(contract
 								.getValidFrom());
 						IWTimestamp validTo = new IWTimestamp(contract
@@ -189,7 +203,7 @@ public class CampusFinanceHandler implements FinanceHandler {
 													cashierId,
 													factor,
 													tariff.getUseDiscount() ? discount
-															: 0.0d);
+															: 0.0d, publicPricing);
 										}
 										// other than all
 										else {
@@ -212,7 +226,7 @@ public class CampusFinanceHandler implements FinanceHandler {
 																factor,
 																tariff
 																		.getUseDiscount() ? discount
-																		: 0.0d);
+																		: 0.0d, publicPricing);
 													break;
 												case BuildingCacher.CHARCATEGORY:
 													// Apartment category
@@ -227,7 +241,7 @@ public class CampusFinanceHandler implements FinanceHandler {
 																factor,
 																tariff
 																		.getUseDiscount() ? discount
-																		: 0.0d);
+																		: 0.0d, publicPricing);
 													break;
 												case BuildingCacher.CHARBUILDING:
 													// Building
@@ -242,7 +256,7 @@ public class CampusFinanceHandler implements FinanceHandler {
 																factor,
 																tariff
 																		.getUseDiscount() ? discount
-																		: 0.0d);
+																		: 0.0d, publicPricing);
 													break;
 												case BuildingCacher.CHARFLOOR:
 													// Floor
@@ -254,7 +268,7 @@ public class CampusFinanceHandler implements FinanceHandler {
 																paymentdate,
 																cashierId,
 																factor,
-																discount);
+																discount, publicPricing);
 													break;
 												case BuildingCacher.CHARCOMPLEX:
 													// Complex
@@ -269,7 +283,7 @@ public class CampusFinanceHandler implements FinanceHandler {
 																factor,
 																tariff
 																		.getUseDiscount() ? discount
-																		: 0.0d);
+																		: 0.0d, publicPricing);
 													break;
 												case BuildingCacher.CHARAPARTMENT:
 													// Apartment
@@ -284,7 +298,7 @@ public class CampusFinanceHandler implements FinanceHandler {
 																factor,
 																tariff
 																		.getUseDiscount() ? discount
-																		: 0.0d);
+																		: 0.0d, publicPricing);
 													break;
 												} // switch
 											} // attribute check
@@ -296,7 +310,13 @@ public class CampusFinanceHandler implements FinanceHandler {
 										}
 										totalAmount += Amount;
 										
-										if (!alreadyChargedForDownload.contains(contract.getUserId())) {
+										ChargeForUnlimitedDownload unlimited = this.getContractService(iwac).getChargeForUnlimitedDownloadByUser(contract.getUser());
+										boolean charge = false;
+										if (unlimited != null && unlimited.getChargeForDownload()) {
+											charge = true;
+										}
+
+										if (!alreadyChargedForDownload.contains(contract.getUserId()) && charge) {
 											alreadyChargedForDownload.add(contract.getUserId());
 
 											String amount = iwac.getApplicationSettings().getProperty("UNLIMITED_DOWNLOAD_AMOUNT", "1200");
@@ -534,7 +554,7 @@ public class CampusFinanceHandler implements FinanceHandler {
 
 	private float insertEntry(Tariff T, ContractAccountApartment caa,
 			Integer roundId, IWTimestamp paymentdate, Integer cashierId,
-			double factor, double discount) throws CreateException,
+			double factor, double discount, boolean publicPricing) throws CreateException,
 			java.rmi.RemoteException {
 		if (factor > 0) {
 			AccountEntry AE = ((AccountEntryHome) IDOLookup
@@ -543,7 +563,16 @@ public class CampusFinanceHandler implements FinanceHandler {
 			AE.setAccountKeyId(T.getAccountKeyId());
 			AE.setCashierId(cashierId);
 			AE.setLastUpdated(IWTimestamp.getTimestampRightNow());
-			BigDecimal price = new BigDecimal(-T.getPrice());
+			BigDecimal price = null;
+			if (!publicPricing) {
+				price = new BigDecimal(-T.getPrice());
+			} else {
+				if (T.getPublicPrice() > 0.0f) {
+					price = new BigDecimal(-T.getPublicPrice());										
+				} else {
+					price = new BigDecimal(-T.getPrice());					
+				}
+			}
 			// if (discount > 0.0) {
 			price = price.multiply(new BigDecimal(1.0 - discount));
 			// }
