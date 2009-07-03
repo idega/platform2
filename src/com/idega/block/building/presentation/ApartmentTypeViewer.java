@@ -52,6 +52,11 @@ public class ApartmentTypeViewer extends Block {
 
 	private List specialAttributes = null;
 
+	private String extraSpecialAttributesName = null;
+
+	private List extraSpecialAttributes = null;
+
+	
 	private BuildingService service = null;
 
 	public ApartmentTypeViewer() {
@@ -64,6 +69,11 @@ public class ApartmentTypeViewer extends Block {
 	public void setSpecialAttributes(String name, List attributes) {
 		this.specialAttributesName = name;
 		this.specialAttributes = attributes;
+	}
+
+	public void setExtraSpecialAttributes(String name, List attributes) {
+		this.extraSpecialAttributesName = name;
+		this.extraSpecialAttributes = attributes;
 	}
 
 	public void main(IWContext iwc) throws Exception {
@@ -260,15 +270,6 @@ public class ApartmentTypeViewer extends Block {
 			roomTable.add(Inventory, 2, 1);
 			roomTable.add(Text.getBreak(), 2, 1);
 
-			/** @todo get rid of */
-			/*
-			 * if(room.getRent() > 0){
-			 * roomTable.add(getBoldText(iwrb_.getLocalizedString("rent","Rent")+":
-			 * "),2,1); NumberFormat format =
-			 * DecimalFormat.getCurrencyInstance(iwc.getApplication().getSettings().getDefaultLocale());
-			 * String rentString = format.format((long)room.getRent());
-			 * roomTable.add(getInfoText(rentString),2,1); }
-			 */
 			if (this.specialAttributes != null) {
 				Table T = new Table();
 				T.setCellpadding(0);
@@ -288,7 +289,30 @@ public class ApartmentTypeViewer extends Block {
 				T.setColumnAlignment(3, "right");
 				T.setWidth(2, "5");
 				roomTable.add(T, 2, 1);
+				if (this.extraSpecialAttributes != null) {
+					roomTable.add(Text.BREAK, 2, 1);
+					Table T1 = new Table();
+					T1.setCellpadding(0);
+					T1.setCellspacing(0);
+					row = 1;
+					if (this.extraSpecialAttributesName != null) {
+						T1.add(getBoldText(this.extraSpecialAttributesName), 1, row++);
+					}
+					iter = this.extraSpecialAttributes.iterator();
+					while (iter.hasNext()) {
+						Property me = (Property) iter.next();
+						T1.add(getBoldText(me.getKey()), 1, row);
+						T1.add(getInfoText(me.getValue()), 3, row);
+						row++;
+					}
+					T1.mergeCells(1, 1, 3, 1);
+					T1.setColumnAlignment(3, "right");
+					T1.setWidth(2, "5");
+					roomTable.add(T1, 2, 1);
+				}
+
 			}
+
 
 			Table linksTable = new Table(2, 3);
 			linksTable.setWidth("100%");

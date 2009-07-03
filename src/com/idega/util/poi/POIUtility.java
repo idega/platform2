@@ -148,8 +148,10 @@ public class POIUtility {
 			return file;
 		}
 		catch (FileNotFoundException e) {
+			e.printStackTrace();
 		}
 		catch (IOException e) {
+			e.printStackTrace();
 		} 
 		
 		return null;

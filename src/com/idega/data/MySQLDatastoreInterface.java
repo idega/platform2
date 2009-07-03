@@ -65,11 +65,43 @@ public class MySQLDatastoreInterface extends DatastoreInterface {
 	}
 
 	protected void executeBeforeInsert(GenericEntity entity) throws Exception {
-		if (entity.isNull(entity.getIDColumnName())) {
-			entity.setID(createUniqueID(entity));
-		}
+		System.out.println("nothing to do here!!!!!!");
 	}
 
+	protected void updateNumberGeneratedValue(GenericEntity entity, Connection conn)
+	{
+		try
+		{
+			//if (((GenericEntity) entity).getPrimaryKeyClass().equals(Integer.class))
+			//{
+			boolean pkIsNull = entity.isNull(entity.getIDColumnName());
+			if (pkIsNull)
+			{
+				//Object value = this.executeQuery(entity, "select @@IDENTITY");
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery("select last_insert_id()");
+				rs.next();
+				int id = rs.getInt(1);
+				entity.setID(id);
+				rs.close();
+				stmt.close();
+			}
+			//}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+	/**
+	 * @return boolean
+	 */
+	protected boolean updateNumberGeneratedValueAfterInsert()
+	{
+		return true;
+	}
+
+	
 	public String getSequenceTableName(GenericEntity entity) {
 		return "seq_" + entity.getTableName();
 	}
