@@ -161,7 +161,7 @@ public class CampusFinanceHandler implements FinanceHandler {
 						boolean publicPricing = false;
 						String usePublicPricing = iwac.getApplicationSettings().getProperty("USE_PUBLIC_PRICING", String.valueOf(false));
 
-						if (Boolean.parseBoolean(usePublicPricing)) {
+						if (Boolean.valueOf(usePublicPricing).booleanValue()) {
 							String publicPricingSubject = iwac.getApplicationSettings().getProperty("PUBLIC_PRICING_SUBJECT", "181");
 							if (contract.getApplication() != null) {
 								Application application = contract.getApplication();
