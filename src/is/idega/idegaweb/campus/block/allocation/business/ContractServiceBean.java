@@ -1,5 +1,5 @@
 /*
- * $Id: ContractServiceBean.java,v 1.24.4.6 2009/04/24 13:24:32 palli Exp $
+ * $Id: ContractServiceBean.java,v 1.24.4.7 2009/07/08 16:52:17 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,8 +9,8 @@
  */
 package is.idega.idegaweb.campus.block.allocation.business;
 
-import is.idega.idegaweb.campus.block.allocation.data.ChargeForUnlimitedDownload;
-import is.idega.idegaweb.campus.block.allocation.data.ChargeForUnlimitedDownloadHome;
+import is.idega.idegaweb.campus.block.allocation.data.AutomaticCharges;
+import is.idega.idegaweb.campus.block.allocation.data.AutomaticChargesHome;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean;
 import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
@@ -80,6 +80,7 @@ import com.idega.util.database.ConnectionBroker;
 
 public class ContractServiceBean extends IBOServiceBean implements
 		ContractService {
+	private static final long serialVersionUID = 3613701313865796879L;
 	public final static int NAME = 0, SSN = 1, APARTMENT = 2, FLOOR = 3,
 			BUILDING = 4, COMPLEX = 5, CATEGORY = 6, TYPE = 7, CONTRACT = 8,
 			APPLICANT = 9;
@@ -657,27 +658,20 @@ public class ContractServiceBean extends IBOServiceBean implements
 		case 'F':
 			r = iwrb.getLocalizedString("finalized", "Finalized");
 			break;
-
-		/*
-		 * 
-		 * public static final String statusCreated = "C"; public static final
-		 * String statusPrinted = "P"; public static final String statusSigned =
-		 * "S"; public static final String statusRejected = "R"; public static
-		 * final String statusTerminated = "T"; public static final String
-		 * statusEnded = "E"; public static final String statusResigned = "U";
-		 * public static final String statusGarbage = "G"; public static final
-		 * String statusStorage = "Z"; public static final String statusDenied =
-		 * "D"; public static final String statusFinalized = "F";
-		 */
 		}
+
 		return r;
 	}
 
 	public boolean doGarbageContract(Integer contractID) {
 		try {
 			Contract eContract = getContractHome().findByPrimaryKey(contractID);
-			eContract.setStatusGarbage();
-			eContract.store();
+			if (eContract.getStatus().equals(ContractBMPBean.STATUS_CREATED) || eContract.getStatus().equals(ContractBMPBean.STATUS_PRINTED)) {
+				eContract.remove();
+			} else {
+				eContract.setStatusGarbage();
+				eContract.store();
+			}
 			return true;
 		} catch (Exception ex) {
 			return false;
@@ -1092,10 +1086,10 @@ public class ContractServiceBean extends IBOServiceBean implements
 		return list;
 	}
 
-	public ChargeForUnlimitedDownload getChargeForUnlimitedDownloadByUser(
+	public AutomaticCharges getAutomaticChargesByUser(
 			User user) {
 		try {
-			return this.getChargeForUnlimitedDownloadHome().findByUser(user);
+			return this.getAutomaticChargesHome().findByUser(user);
 		} catch (RemoteException e) {
 		} catch (FinderException e) {
 		}
@@ -1106,9 +1100,9 @@ public class ContractServiceBean extends IBOServiceBean implements
 	public void addChargeForUnlimitedDownloadToUser(String userID) {
 		try {
 			User user = getUserService().getUser(Integer.valueOf(userID));
-			ChargeForUnlimitedDownload charge = getChargeForUnlimitedDownloadByUser(user);
+			AutomaticCharges charge = getAutomaticChargesByUser(user);
 			if (charge == null) {
-				charge = getChargeForUnlimitedDownloadHome().create();
+				charge = getAutomaticChargesHome().create();
 				charge.setUser(user);
 			}
 			charge.setChargeForDownload(true);
@@ -1119,10 +1113,10 @@ public class ContractServiceBean extends IBOServiceBean implements
 		}
 	}
 
-	public void removeChargeForUnlimitedDownloadToUser(String userID) {
+	public void removeChargeForUnlimitedDownloadForUser(String userID) {
 		try {
 			User user = getUserService().getUser(Integer.valueOf(userID));
-			ChargeForUnlimitedDownload charge = getChargeForUnlimitedDownloadByUser(user);
+			AutomaticCharges charge = getAutomaticChargesByUser(user);
 			if (charge != null) {
 				charge.setChargeForDownload(false);
 				charge.store();
@@ -1132,6 +1126,79 @@ public class ContractServiceBean extends IBOServiceBean implements
 		}
 	}
 
+	public void addChargeForHandlingToUser(String userID) {
+		try {
+			User user = getUserService().getUser(Integer.valueOf(userID));
+			AutomaticCharges charge = getAutomaticChargesByUser(user);
+			if (charge == null) {
+				charge = getAutomaticChargesHome().create();
+				charge.setUser(user);
+			}
+			charge.setChargeForHandling(true);
+			charge.store();
+		} catch (NumberFormatException e) {
+		} catch (RemoteException e) {
+		} catch (CreateException e) {
+		}
+	}
+
+	public void removeChargeForHandlingForUser(String userID) {
+		try {
+			User user = getUserService().getUser(Integer.valueOf(userID));
+			AutomaticCharges charge = getAutomaticChargesByUser(user);
+			if (charge != null) {
+				charge.setChargeForHandling(false);
+				charge.store();
+			}
+		} catch (NumberFormatException e) {
+		} catch (RemoteException e) {
+		}
+	}
+
+	public void addChargeForTransferToUser(String userID) {
+		try {
+			User user = getUserService().getUser(Integer.valueOf(userID));
+			AutomaticCharges charge = getAutomaticChargesByUser(user);
+			if (charge == null) {
+				charge = getAutomaticChargesHome().create();
+				charge.setUser(user);
+			}
+			charge.setChargeForTransfer(true);
+			charge.store();
+		} catch (NumberFormatException e) {
+		} catch (RemoteException e) {
+		} catch (CreateException e) {
+		}
+	}
+
+	public void removeChargeForTransferForUser(String userID) {
+		try {
+			User user = getUserService().getUser(Integer.valueOf(userID));
+			AutomaticCharges charge = getAutomaticChargesByUser(user);
+			if (charge != null) {
+				charge.setChargeForTransfer(false);
+				charge.store();
+			}
+		} catch (NumberFormatException e) {
+		} catch (RemoteException e) {
+		}
+	}
+
+	public void removeAllAutomaticChargesForUser(String userID) {
+		try {
+			User user = getUserService().getUser(Integer.valueOf(userID));
+			AutomaticCharges charge = getAutomaticChargesByUser(user);
+			if (charge != null) {
+				charge.setChargeForDownload(false);
+				charge.setChargeForHandling(false);
+				charge.setChargeForTransfer(false);
+				charge.store();
+			}
+		} catch (NumberFormatException e) {
+		} catch (RemoteException e) {
+		}
+	}
+	
 	public Map getNewApplicantContracts() throws RemoteException,
 			FinderException {
 		return getApplicantContractsByStatus(ContractBMPBean.STATUS_CREATED);
@@ -1149,9 +1216,9 @@ public class ContractServiceBean extends IBOServiceBean implements
 		return (ContractHome) getIDOHome(Contract.class);
 	}
 
-	public ChargeForUnlimitedDownloadHome getChargeForUnlimitedDownloadHome()
+	public AutomaticChargesHome getAutomaticChargesHome()
 			throws RemoteException {
-		return (ChargeForUnlimitedDownloadHome) getIDOHome(ChargeForUnlimitedDownload.class);
+		return (AutomaticChargesHome) getIDOHome(AutomaticCharges.class);
 	}
 
 	public AccountHome getAccountHome() throws RemoteException {

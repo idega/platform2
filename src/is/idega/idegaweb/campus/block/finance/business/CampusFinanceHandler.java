@@ -1,7 +1,7 @@
 package is.idega.idegaweb.campus.block.finance.business;
 
 import is.idega.idegaweb.campus.block.allocation.business.ContractService;
-import is.idega.idegaweb.campus.block.allocation.data.ChargeForUnlimitedDownload;
+import is.idega.idegaweb.campus.block.allocation.data.AutomaticCharges;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean;
 import is.idega.idegaweb.campus.business.CampusSettings;
@@ -26,6 +26,8 @@ import java.util.logging.Logger;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.SystemException;
 
 import com.idega.block.application.data.Application;
 import com.idega.block.building.business.BuildingCacher;
@@ -57,7 +59,7 @@ import com.idega.util.IWTimestamp;
  */
 public class CampusFinanceHandler implements FinanceHandler {
 
-	private int precisionCount = 2;
+	//private int precisionCount = 2;
 
 	int count = 0;
 
@@ -75,14 +77,62 @@ public class CampusFinanceHandler implements FinanceHandler {
 
 	public boolean rollbackAssessment(IWApplicationContext iwac,
 			Integer assessmentRoundId) {
-		try {
+		javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager
+		.getInstance();
+
+		try {	
+			t.begin();
+			boolean doAutomaticCharges = iwac.getApplicationSettings().getBoolean("EXECUTE_AUTOMATIC_CHARGES", false);
+			if (doAutomaticCharges) {
+				try {
+					Collection autoCharge = this.getContractService(iwac).getAutomaticChargesHome().findHandlingByAssessmentRound(assessmentRoundId);
+					if (autoCharge != null) {
+						Iterator it = autoCharge.iterator();
+						while (it.hasNext()) {
+							AutomaticCharges ac = (AutomaticCharges) it.next();
+							ac.setChargeForHandling(true);
+							ac.setHandlingChargeAssessment(null);
+							ac.store();
+						}
+					}
+				} catch (FinderException e) {
+					e.printStackTrace();
+				}
+				
+				try {
+					Collection autoCharge = this.getContractService(iwac).getAutomaticChargesHome().findTransferByAssessmentRound(assessmentRoundId);
+					if (autoCharge != null) {
+						Iterator it = autoCharge.iterator();
+						while (it.hasNext()) {
+							AutomaticCharges ac = (AutomaticCharges) it.next();
+							ac.setChargeForTransfer(true);
+							ac.setTransferChargeAssessment(null);
+							ac.store();
+						}
+					}
+				} catch (FinderException e) {
+					e.printStackTrace();
+				}
+
+			}
 			((CampusAssessmentBusiness) IBOLookup.getServiceInstance(iwac,
 					CampusAssessmentBusiness.class))
 					.rollBackAssessment(assessmentRoundId);
-		} catch (IBOLookupException e) {
+
+			t.commit();
+			
+			return true;
+		} catch (Exception e) {
 			e.printStackTrace();
-		} catch (RemoteException e) {
-			e.printStackTrace();
+			try {
+				t.rollback();
+			} catch (IllegalStateException e1) {
+				e1.printStackTrace();
+			} catch (SecurityException e1) {
+				e1.printStackTrace();
+			} catch (SystemException e1) {
+				e1.printStackTrace();
+			}
 		}
 		return false;
 	}
@@ -152,6 +202,8 @@ public class CampusFinanceHandler implements FinanceHandler {
 					double discount = 0.0d;
 					int precision = getPrecision(iwac);
 					ArrayList alreadyChargedForDownload = new ArrayList();
+					boolean doAutomaticCharges = iwac.getApplicationSettings().getBoolean("EXECUTE_AUTOMATIC_CHARGES", false);
+					
 					// All tenants accounts (Outer loop)
 					for (Iterator iter = listOfUsers.iterator(); iter.hasNext();) {
 						user = (ContractAccountApartment) iter.next();
@@ -310,31 +362,84 @@ public class CampusFinanceHandler implements FinanceHandler {
 										}
 										totalAmount += Amount;
 										
-										ChargeForUnlimitedDownload unlimited = this.getContractService(iwac).getChargeForUnlimitedDownloadByUser(contract.getUser());
+										AutomaticCharges autoCharge = this.getContractService(iwac).getAutomaticChargesByUser(contract.getUser());
 										boolean charge = false;
-										if (unlimited != null && unlimited.getChargeForDownload()) {
-											charge = true;
+										boolean downloadCharge = false;
+										boolean handlingCharge = false;
+										boolean transferCharge = false;
+										
+										if (autoCharge != null) {
+											downloadCharge = autoCharge.getChargeForDownload();
+											handlingCharge = autoCharge.getChargeForHandling();
+											transferCharge = autoCharge.getChargeForTransfer();
+											
+											charge = downloadCharge || handlingCharge || transferCharge;
 										}
 
-										if (!alreadyChargedForDownload.contains(contract.getUserId()) && charge) {
-											alreadyChargedForDownload.add(contract.getUserId());
+										if (doAutomaticCharges) {
+											if (!alreadyChargedForDownload.contains(contract.getUserId()) && charge) {
+												alreadyChargedForDownload.add(contract.getUserId());
 
-											String amount = iwac.getApplicationSettings().getProperty("UNLIMITED_DOWNLOAD_AMOUNT", "1200");
-											String accountKey = iwac.getApplicationSettings().getProperty("UNLIMITED_DOWNLOAD_ACCOUNT_KEY", "16");
-											String tariffGroup = iwac.getApplicationSettings().getProperty("UNLIMITED_DOWNLOAD_TARIFF_GROUP", "69");
-											String financeCategory = iwac.getApplicationSettings().getProperty("UNLIMITED_DOWNLOAD_FINANCE_CATEGORY", "36");
+												String tariffGroup = iwac.getApplicationSettings().getProperty("AUTO_CHARGES_TARIFF_GROUP", "69");
+												String financeCategory = iwac.getApplicationSettings().getProperty("AUTO_CHARGES_FINANCE_CATEGORY", "36");
 
-											Account account = this.getContractService(iwac).getAccountHome().findByUserAndType(contract.getUser(),
-													AccountBMPBean.typeFinancial);
+												if (downloadCharge) {
+													String amount = iwac.getApplicationSettings().getProperty("UNLIMITED_DOWNLOAD_AMOUNT", "1200");
+													String accountKey = iwac.getApplicationSettings().getProperty("UNLIMITED_DOWNLOAD_ACCOUNT_KEY", "16");
+		
+													Account account = this.getContractService(iwac).getAccountHome().findByUserAndType(contract.getUser(),
+															AccountBMPBean.typeFinancial);
+		
+													AccountKey key = this.getContractService(iwac).getAccountKeyHome().findByPrimaryKey(
+															Integer.valueOf(accountKey));
+		
+													this.getContractService(iwac).getCampusAssessmentBusiness().assessTariffsToAccount(
+															Float.valueOf(amount).floatValue(), key.getInfo(), key.getInfo(),
+															(Integer) account.getPrimaryKey(), Integer.valueOf(accountKey),
+															paymentdate.getDate(), Integer.valueOf(tariffGroup), Integer.valueOf(financeCategory),
+															contract.getApartmentId(), false, roundId);													
+												}
+												
+												if (handlingCharge) {
+													String amount = iwac.getApplicationSettings().getProperty("HANDLING_AMOUNT", "5000");
+													String accountKey = iwac.getApplicationSettings().getProperty("HANDLING_ACCOUNT_KEY", "11");
+		
+													Account account = this.getContractService(iwac).getAccountHome().findByUserAndType(contract.getUser(),
+															AccountBMPBean.typeFinancial);
+		
+													AccountKey key = this.getContractService(iwac).getAccountKeyHome().findByPrimaryKey(
+															Integer.valueOf(accountKey));
+		
+													this.getContractService(iwac).getCampusAssessmentBusiness().assessTariffsToAccount(
+															Float.valueOf(amount).floatValue(), key.getInfo(), key.getInfo(),
+															(Integer) account.getPrimaryKey(), Integer.valueOf(accountKey),
+															paymentdate.getDate(), Integer.valueOf(tariffGroup), Integer.valueOf(financeCategory),
+															contract.getApartmentId(), false, roundId);
+													autoCharge.setChargeForHandling(false);
+													autoCharge.setHandlingChargeAssessment(AR);
+													autoCharge.store();
+												}
 
-											AccountKey key = this.getContractService(iwac).getAccountKeyHome().findByPrimaryKey(
-													Integer.valueOf(accountKey));
-
-											this.getContractService(iwac).getCampusAssessmentBusiness().assessTariffsToAccount(
-													Float.valueOf(amount).floatValue(), key.getInfo(), key.getInfo(),
-													(Integer) account.getPrimaryKey(), Integer.valueOf(accountKey),
-													paymentdate.getDate(), Integer.valueOf(tariffGroup), Integer.valueOf(financeCategory),
-													contract.getApartmentId(), false, roundId);
+												if (transferCharge) {
+													String amount = iwac.getApplicationSettings().getProperty("TRANSFER_AMOUNT", "10000");
+													String accountKey = iwac.getApplicationSettings().getProperty("TRANSFER_ACCOUNT_KEY", "16");
+		
+													Account account = this.getContractService(iwac).getAccountHome().findByUserAndType(contract.getUser(),
+															AccountBMPBean.typeFinancial);
+		
+													AccountKey key = this.getContractService(iwac).getAccountKeyHome().findByPrimaryKey(
+															Integer.valueOf(accountKey));
+		
+													this.getContractService(iwac).getCampusAssessmentBusiness().assessTariffsToAccount(
+															Float.valueOf(amount).floatValue(), key.getInfo(), key.getInfo(),
+															(Integer) account.getPrimaryKey(), Integer.valueOf(accountKey),
+															paymentdate.getDate(), Integer.valueOf(tariffGroup), Integer.valueOf(financeCategory),
+															contract.getApartmentId(), false, roundId);
+													autoCharge.setChargeForTransfer(false);
+													autoCharge.setTransferChargeAssessment(AR);
+													autoCharge.store();
+												}
+											}
 										}
 									}
 								} // Inner loop block

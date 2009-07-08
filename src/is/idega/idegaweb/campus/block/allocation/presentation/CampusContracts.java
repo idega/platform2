@@ -1,7 +1,7 @@
 package is.idega.idegaweb.campus.block.allocation.presentation;
 
 import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
-import is.idega.idegaweb.campus.block.allocation.data.ChargeForUnlimitedDownload;
+import is.idega.idegaweb.campus.block.allocation.data.AutomaticCharges;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean;
 import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
@@ -14,14 +14,11 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 
 import com.idega.block.application.data.Applicant;
-import com.idega.block.building.business.BuildingService;
 import com.idega.block.building.data.Apartment;
 import com.idega.block.building.data.ApartmentType;
 import com.idega.block.building.data.Building;
 import com.idega.block.building.data.Complex;
 import com.idega.block.building.data.Floor;
-import com.idega.business.IBOLookup;
-import com.idega.business.IBOLookupException;
 import com.idega.data.EntityFinder;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -33,7 +30,6 @@ import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
-import com.idega.user.data.User;
 
 /**
  * Title: idegaclasses Description: Copyright: Copyright (c) 2001 Company:
@@ -42,23 +38,41 @@ import com.idega.user.data.User;
  * @version 1.0
  */
 public class CampusContracts extends CampusBlock {
+	private static final String SAVE = "save";
+	
+	private static final String CHARGE_FOR_UNLIMITED = "chargeForUnlimited";
+	private static final String CHARGE_FOR_HANDLING = "chargeForHandling";
+	private static final String CHARGE_FOR_TRANSFER = "chargeForTransfer";
 	private static final String PARAM_GARBAGE = "garbage";
-	protected final int ACT1 = 1, ACT2 = 2, ACT3 = 3, ACT4 = 4, ACT5 = 5;
+	
+	protected final int ACT1 = 1;
+	protected final int ACT2 = 2;
+	protected final int ACT3 = 3;
+	protected final int ACT4 = 4;
+	protected final int ACT5 = 5;
+	
 	private int iGlobalSize = -1;
+	
 	private String sGlobalStatus = "C";
+	
 	private Integer ORDER = new Integer(-1);
-	private Integer CLBU = new Integer(-1), CLFL = new Integer(-1),
-			CLCX = new Integer(-1), CLTP = new Integer(-1), CLCT = new Integer(
-					-1);
+	private Integer CLBU = new Integer(-1);
+	private Integer CLFL = new Integer(-1);
+	private Integer CLCX = new Integer(-1);
+	private Integer CLTP = new Integer(-1);
+	private Integer CLCT = new Integer(-1);
 	private Integer index = new Integer(0);
-	private final String prmCx = "cl_clx", prmBu = "cl_bu", prmFl = "cl_fl",
-			prmOrder = "ct_or";
+	
+	private final String prmCx = "cl_clx";
+	private final String prmBu = "cl_bu";
+	private final String prmFl = "cl_fl";
+	private final String prmOrder = "ct_or";
 	private final String prmIdx = "cl_idx";
+
 	protected boolean isAdmin = false;
+	
 	private String conPrm = "contract_status";
 	private String sizePrm = "global_size";
-
-	private BuildingService buildingService = null;
 
 	public String getLocalizedNameKey() {
 		return "contracts";
@@ -72,8 +86,8 @@ public class CampusContracts extends CampusBlock {
 		initFilter(iwc);
 		if (isAdmin) {
 			add(statusForm());
-			if (iwc.isParameterSet("save")) {
-				handleChargesForUnlimitedDownload(iwc);
+			if (iwc.isParameterSet(SAVE)) {
+				handleAutomaticCharges(iwc);
 			}
 
 			if (iwc.getParameter(PARAM_GARBAGE) != null) {
@@ -85,27 +99,25 @@ public class CampusContracts extends CampusBlock {
 		}
 	}
 
-	private void handleChargesForUnlimitedDownload(IWContext iwc) {
-		String all = iwc.getParameter("save");
+	private void handleAutomaticCharges(IWContext iwc) {
+		String all = iwc.getParameter(SAVE);
 		if (all != null && !all.equals("")) {
 			StringTokenizer tok = new StringTokenizer(all, ";");
 			while (tok.hasMoreElements()) {
 				String removeId = (String) tok.nextElement();
 				if (removeId != null && !"".equals(removeId)) {
 					try {
-						//System.out.println("removeId = " + removeId);
-						getContractService(iwc).removeChargeForUnlimitedDownloadToUser(removeId);
+						getContractService(iwc).removeAllAutomaticChargesForUser(removeId);
 					} catch (RemoteException e) {
 					}
 				}
 			}
 
-			String ids[] = iwc.getParameterValues("chargeForUnlimited");
+			String ids[] = iwc.getParameterValues(CHARGE_FOR_UNLIMITED);
 			if (ids != null) {
 				for (int i = 0; i < ids.length; i++) {
 					String id = ids[i];
 					try {
-						//System.out.println("id = " + id);
 						getContractService(iwc)
 								.addChargeForUnlimitedDownloadToUser(id);
 					} catch (RemoteException e) {
@@ -115,6 +127,33 @@ public class CampusContracts extends CampusBlock {
 				System.out.println("nothing selected");
 			}
 
+			ids = iwc.getParameterValues(CHARGE_FOR_HANDLING);
+			if (ids != null) {
+				for (int i = 0; i < ids.length; i++) {
+					String id = ids[i];
+					try {
+						getContractService(iwc)
+								.addChargeForHandlingToUser(id);
+					} catch (RemoteException e) {
+					}
+				}
+			} else {
+				System.out.println("nothing selected");
+			}
+
+			ids = iwc.getParameterValues(CHARGE_FOR_TRANSFER);
+			if (ids != null) {
+				for (int i = 0; i < ids.length; i++) {
+					String id = ids[i];
+					try {
+						getContractService(iwc)
+								.addChargeForTransferToUser(id);
+					} catch (RemoteException e) {
+					}
+				}
+			} else {
+				System.out.println("nothing selected");
+			}
 		}
 	}
 
@@ -320,12 +359,12 @@ public class CampusContracts extends CampusBlock {
 		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, iwc
 				.getCurrentLocale());
 		Contract C = null;
-		User U = null;
+		//User U = null;
 		Applicant Ap = null;
 		Apartment A = null;
-		Building B = null;
-		Floor F = null;
-		Complex CX = null;
+		//Building B = null;
+		//Floor F = null;
+		//Complex CX = null;
 		Image printImage = getBundle().getImage("/print.gif");
 		Image registerImage = getBundle().getImage("/pen.gif");
 		Image resignImage = getBundle().getImage("/scissors.gif");
@@ -350,7 +389,8 @@ public class CampusContracts extends CampusBlock {
 			T.add((garbageImage), col++, 1);
 			garbage = true;
 		} else {
-			if (sGlobalStatus.equals(ContractBMPBean.STATUS_SIGNED)) {
+			if (sGlobalStatus.equals(ContractBMPBean.STATUS_SIGNED) || sGlobalStatus.equals(ContractBMPBean.STATUS_CREATED)
+					|| sGlobalStatus.equals(ContractBMPBean.STATUS_PRINTED)) {
 				T.add((garbageImage), col++, 1);
 				both = true;
 			}
@@ -369,7 +409,9 @@ public class CampusContracts extends CampusBlock {
 		T.add(getHeader(localize("validfrom", "Valid from")), col++, 1);
 		T.add(getHeader(localize("validto", "Valid To")), col++, 1);
 		T.add(keyImage, col++, 1);
-		T.add(getHeader(localize("unlimited_download", "Download")), col++, 1);
+		T.add(getHeader(localize("charge_download", "Download")), col++, 1);
+		T.add(getHeader(localize("charge_handling", "Handling")), col++, 1);
+		T.add(getHeader(localize("charge_transfer", "Transfer")), col++, 1);
 		row++;
 
 		StringBuffer listOfUsers = new StringBuffer();
@@ -393,7 +435,7 @@ public class CampusContracts extends CampusBlock {
 					String status = C.getStatus();
 					sbIDs.append(contractID);
 					sbIDs.append(ContractFiler.prmSeperator);
-					U = C.getUser();
+					//U = C.getUser();
 					Ap = C.getApplicant();
 					A = C.getApartment();
 					T.add(getEditLink(getText(String.valueOf(i)), contractID),
@@ -437,26 +479,46 @@ public class CampusContracts extends CampusBlock {
 						T.add(getKeyLink(nokeyImage, contractID), col++, row);
 					}
 
-					ChargeForUnlimitedDownload unlimited = this
+					AutomaticCharges unlimited = this
 							.getCampusService(iwc).getContractService()
-							.getChargeForUnlimitedDownloadByUser(C.getUser());
-					boolean charge = false;
-					if (unlimited != null && unlimited.getChargeForDownload()) {
-						charge = true;
+							.getAutomaticChargesByUser(C.getUser());
+					boolean chargeDownload = false;
+					boolean chargeHandling = false;
+					boolean chargeTransfer = false;
+					if (unlimited != null) {
+						if (unlimited.getChargeForDownload()) {
+							chargeDownload = true;
+						}
+						
+						if (unlimited.getChargeForHandling()) {
+							chargeHandling = true;
+						}
+						
+						if (unlimited.getChargeForTransfer()) {
+							chargeTransfer = true;
+						}
 					}
 
 					CheckBox chargeForUnlimited = new CheckBox(
-							"chargeForUnlimited", C.getUserId().toString());
+							CHARGE_FOR_UNLIMITED, C.getUserId().toString());
 					listOfUsers.append(C.getUserId().toString());
 					listOfUsers.append(";");
 
-					if (charge) {
-						chargeForUnlimited.setChecked(true);
-					} else {
-						chargeForUnlimited.setChecked(false);
-					}
+					chargeForUnlimited.setChecked(chargeDownload);
 					T.add(chargeForUnlimited, col++, row);
 
+					CheckBox chargeForHandling = new CheckBox(
+							CHARGE_FOR_HANDLING, C.getUserId().toString());
+
+					chargeForHandling.setChecked(chargeHandling);
+					T.add(chargeForHandling, col++, row);
+
+					CheckBox chargeForTransfer = new CheckBox(
+							CHARGE_FOR_TRANSFER, C.getUserId().toString());
+					
+					chargeForTransfer.setChecked(chargeTransfer);
+					T.add(chargeForTransfer, col++, row);
+					
 					row++;
 					if (maxCol < col) {
 						maxCol = col;
@@ -470,7 +532,7 @@ public class CampusContracts extends CampusBlock {
 
 		maxCol--;
 
-		SubmitButton save = new SubmitButton("save", "save", listOfUsers
+		SubmitButton save = new SubmitButton(SAVE, SAVE, listOfUsers
 				.toString());
 		T.add(save, maxCol, row);
 
@@ -650,12 +712,14 @@ public class CampusContracts extends CampusBlock {
 
 	public void main(IWContext iwc) {
 		isAdmin = iwc.hasEditPermission(this);
+		/*
 		try {
 			buildingService = (BuildingService) IBOLookup.getServiceInstance(
 					iwc, BuildingService.class);
 		} catch (IBOLookupException e) {
 			e.printStackTrace();
 		}
+		*/
 		control(iwc);
 	}
 }
