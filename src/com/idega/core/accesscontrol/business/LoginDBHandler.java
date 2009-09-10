@@ -755,7 +755,7 @@ public class LoginDBHandler {
 					count1 = first.length();
 					//laststep = namelength-first.length();
 				}
-				else if(alfa.length>=6 && number++ < 99){
+				else if(alfabet.length()>=6 && number++ < 99){
 					array[row] = (alfabet.substring(0,6)+number).toCharArray();
 				
 				}
@@ -796,7 +796,7 @@ public class LoginDBHandler {
 	}
 
 	public static void main(String[] args) {
-		java.util.List list = generatePossibleUserNames("Maria", "", "Ammar", 8,new Integer(9999));
+		java.util.List list = generatePossibleUserNames("Rui", "", "Yu", 8,new Integer(9999));
 		for (Iterator iter = list.iterator(); iter.hasNext();) {
 			String element = (String) iter.next();
 			System.out.println(element);

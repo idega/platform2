@@ -289,7 +289,7 @@ public class MealBusinessBean extends CaseBusinessBean implements CaseBusiness ,
 	
 	public Collection getChoicesByClaimStatus(School school) {
 		try {
-			String[] statuses = { AccountEntryBMPBean.statusCreated, AccountEntryBMPBean.statusBilled };
+			String[] statuses = { AccountEntryBMPBean.STATUS_CREATED, AccountEntryBMPBean.STATUS_BILLED };
 			return getChoiceHome().findAllBySchoolAndClaimStatus(school, statuses);
 		}
 		catch (FinderException fe) {
@@ -457,7 +457,7 @@ public class MealBusinessBean extends CaseBusinessBean implements CaseBusiness ,
 				AccountEntry entry = ((AccountEntryHome) IDOLookup.getHome(AccountEntry.class)).create();
 				entry.setUserId(((Integer) user.getPrimaryKey()).intValue());
 				entry.setTotal(totalAmount);
-				entry.setStatus(AccountEntryBMPBean.statusCreated);
+				entry.setStatus(AccountEntryBMPBean.STATUS_CREATED);
 				entry.store();
 				
 				choice.setAccountEntry(entry);

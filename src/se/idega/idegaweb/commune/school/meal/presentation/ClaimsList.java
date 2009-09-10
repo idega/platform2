@@ -98,7 +98,7 @@ public class ClaimsList extends MealBlock {
 			Name name = new Name(user.getFirstName(), user.getMiddleName(), user.getLastName());
 			
 			if (entry != null) {
-				String status = entry.getStatus().equals(AccountEntryBMPBean.statusCreated) ? localize("created", "Created") : localize("billed", "Billed");
+				String status = entry.getStatus().equals(AccountEntryBMPBean.STATUS_CREATED) ? localize("created", "Created") : localize("billed", "Billed");
 				try {
 					cell = row.createCell();
 					cell.setStyleClass("firstColumn");

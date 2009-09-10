@@ -65,7 +65,7 @@ public class MySQLDatastoreInterface extends DatastoreInterface {
 	}
 
 	protected void executeBeforeInsert(GenericEntity entity) throws Exception {
-		System.out.println("nothing to do here!!!!!!");
+		//System.out.println("nothing to do here!!!!!!");
 	}
 
 	protected void updateNumberGeneratedValue(GenericEntity entity, Connection conn)

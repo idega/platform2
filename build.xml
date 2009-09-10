@@ -29,6 +29,7 @@
     <property name="skins.dir" value="./skins"/>
     <property name="images.dir" value="./xdocs/images"/>
     <property name="samples.dir" value="./samples"/>
+    <property name="source.dir" value="./src"/>
 
     <property name="packages" value="com.idega.*,is.idega.*,is.idegaweb.*"/>
 
@@ -108,7 +109,6 @@
     <echo message=" See the comments inside the build.xml file for more details."/>
     <echo message="-------------------------------------------------------------"/>
     <echo message=""/>
-    <echo message=""/>
   </target>
 
   <!-- =================================================================== -->
@@ -129,38 +129,36 @@
   </target>
 
   <target name="prepare-cvs-com" depends="init">
-    <cvs cvsRoot="${cvsroot}"
-             package="com"
-             dest="${build.src}"
-		tag="${build.tag}"
-             />
+	<delete includeEmptyDirs="true" failonerror="false">
+    		<fileset dir="${build.src}/com"/>
+  	</delete>
+	<copy todir="${build.src}/com">
+    		<fileset dir="${source.dir}/com"/>
+ 	 </copy>
   </target>
 
 		
   <target name="prepare-cvs-is" depends="init">
-    <cvs cvsRoot="${cvsroot}"
-             package="is"
-             dest="${build.src}"
-		tag="${build.tag}"
-             />
+        <delete includeEmptyDirs="true" failonerror="false">
+                <fileset dir="${build.src}/is"/>
+        </delete>
+        <copy todir="${build.src}/is">
+                <fileset dir="${source.dir}/is"/>
+         </copy>
   </target>
 
 
   <target name="prepare-cvs-se" depends="init">
-    <cvs cvsRoot="${cvsroot}"
-             package="se"
-             dest="${build.src}"
-		tag="${build.tag}"
-             />
+        <delete includeEmptyDirs="true" failonerror="false">
+                <fileset dir="${build.src}/se"/>
+        </delete>
+        <copy todir="${build.src}/se">
+                <fileset dir="${source.dir}/se"/>
+         </copy>
   </target>
 
 
   <target name="prepare-cvs-campus" depends="init">
-    <cvs cvsRoot="${cvsroot}"
-             package="is.idega.idegaweb.campus"
-             dest="${build.src}"
-		tag="{release.tag}"
-             />
   </target>
 
   <target name="prepare-cvs" depends="prepare-cvs-com,prepare-cvs-is,prepare-cvs-se"  />
@@ -168,7 +166,7 @@
   <!-- =================================================================== -->
   <!-- Prepares the source code                                            -->
   <!-- =================================================================== -->
-  <target name="prepare-src" depends="prepare,prepare-cvs">
+  <target name="prepare-src" depends="prepare-cvs">
 
 
   </target>

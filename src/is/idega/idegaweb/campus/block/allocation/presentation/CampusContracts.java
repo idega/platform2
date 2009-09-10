@@ -356,6 +356,9 @@ public class CampusContracts extends CampusBlock {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		boolean doAutomaticCharges = iwc.getApplicationSettings().getBoolean("EXECUTE_AUTOMATIC_CHARGES", false);
+		
 		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, iwc
 				.getCurrentLocale());
 		Contract C = null;
@@ -409,9 +412,11 @@ public class CampusContracts extends CampusBlock {
 		T.add(getHeader(localize("validfrom", "Valid from")), col++, 1);
 		T.add(getHeader(localize("validto", "Valid To")), col++, 1);
 		T.add(keyImage, col++, 1);
-		T.add(getHeader(localize("charge_download", "Download")), col++, 1);
-		T.add(getHeader(localize("charge_handling", "Handling")), col++, 1);
-		T.add(getHeader(localize("charge_transfer", "Transfer")), col++, 1);
+		if (doAutomaticCharges) {
+			T.add(getHeader(localize("charge_download", "Download")), col++, 1);
+			T.add(getHeader(localize("charge_handling", "Handling")), col++, 1);
+			T.add(getHeader(localize("charge_transfer", "Transfer")), col++, 1);
+		}
 		row++;
 
 		StringBuffer listOfUsers = new StringBuffer();
@@ -479,45 +484,47 @@ public class CampusContracts extends CampusBlock {
 						T.add(getKeyLink(nokeyImage, contractID), col++, row);
 					}
 
-					AutomaticCharges unlimited = this
-							.getCampusService(iwc).getContractService()
-							.getAutomaticChargesByUser(C.getUser());
-					boolean chargeDownload = false;
-					boolean chargeHandling = false;
-					boolean chargeTransfer = false;
-					if (unlimited != null) {
-						if (unlimited.getChargeForDownload()) {
-							chargeDownload = true;
+					if (doAutomaticCharges) {
+						AutomaticCharges unlimited = this
+								.getCampusService(iwc).getContractService()
+								.getAutomaticChargesByUser(C.getUser());
+						boolean chargeDownload = false;
+						boolean chargeHandling = false;
+						boolean chargeTransfer = false;
+						if (unlimited != null) {
+							if (unlimited.getChargeForDownload()) {
+								chargeDownload = true;
+							}
+							
+							if (unlimited.getChargeForHandling()) {
+								chargeHandling = true;
+							}
+							
+							if (unlimited.getChargeForTransfer()) {
+								chargeTransfer = true;
+							}
 						}
+	
+						CheckBox chargeForUnlimited = new CheckBox(
+								CHARGE_FOR_UNLIMITED, C.getUserId().toString());
+						listOfUsers.append(C.getUserId().toString());
+						listOfUsers.append(";");
+	
+						chargeForUnlimited.setChecked(chargeDownload);
+						T.add(chargeForUnlimited, col++, row);
+	
+						CheckBox chargeForHandling = new CheckBox(
+								CHARGE_FOR_HANDLING, C.getUserId().toString());
+	
+						chargeForHandling.setChecked(chargeHandling);
+						T.add(chargeForHandling, col++, row);
+	
+						CheckBox chargeForTransfer = new CheckBox(
+								CHARGE_FOR_TRANSFER, C.getUserId().toString());
 						
-						if (unlimited.getChargeForHandling()) {
-							chargeHandling = true;
-						}
-						
-						if (unlimited.getChargeForTransfer()) {
-							chargeTransfer = true;
-						}
+						chargeForTransfer.setChecked(chargeTransfer);
+						T.add(chargeForTransfer, col++, row);
 					}
-
-					CheckBox chargeForUnlimited = new CheckBox(
-							CHARGE_FOR_UNLIMITED, C.getUserId().toString());
-					listOfUsers.append(C.getUserId().toString());
-					listOfUsers.append(";");
-
-					chargeForUnlimited.setChecked(chargeDownload);
-					T.add(chargeForUnlimited, col++, row);
-
-					CheckBox chargeForHandling = new CheckBox(
-							CHARGE_FOR_HANDLING, C.getUserId().toString());
-
-					chargeForHandling.setChecked(chargeHandling);
-					T.add(chargeForHandling, col++, row);
-
-					CheckBox chargeForTransfer = new CheckBox(
-							CHARGE_FOR_TRANSFER, C.getUserId().toString());
-					
-					chargeForTransfer.setChecked(chargeTransfer);
-					T.add(chargeForTransfer, col++, row);
 					
 					row++;
 					if (maxCol < col) {
@@ -532,9 +539,11 @@ public class CampusContracts extends CampusBlock {
 
 		maxCol--;
 
-		SubmitButton save = new SubmitButton(SAVE, SAVE, listOfUsers
-				.toString());
-		T.add(save, maxCol, row);
+		if (doAutomaticCharges) {
+			SubmitButton save = new SubmitButton(SAVE, SAVE, listOfUsers
+					.toString());
+			T.add(save, maxCol, row);
+		}
 
 		Table T2 = new Table();
 		T2.setCellpadding(0);

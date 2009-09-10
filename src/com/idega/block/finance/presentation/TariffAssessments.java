@@ -535,10 +535,14 @@ public class TariffAssessments extends Finance {
 	}
 
 	private Link getRollbackLink(AssessmentRound AR) {
-		Link R = new Link(this.iwb.getImage("rollback.gif", "roll"));
+		Link R = new Link(this.iwb.getImage("rollback.gif", "rollback"));
 		R.addParameter("rollback", AR.getPrimaryKey().toString());
 		R.addParameter(PRM_ACTION, ACT5);
 		R.addParameter(PRM_GROUP_ID, this.groupID.toString());
+		//System.out.println("adding message to rollback link");
+		String message = "Are you sure you want to rollback the assessment";
+		R.setOnClick("return confirm('"+message+"');");
+		
 		return R;
 	}
 

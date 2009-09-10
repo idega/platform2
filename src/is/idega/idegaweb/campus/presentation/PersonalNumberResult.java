@@ -22,6 +22,10 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DataTable;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextArea;
+import com.idega.user.data.User;
 
 /**
  * <p>
@@ -43,12 +47,22 @@ import com.idega.presentation.ui.DataTable;
  */
 
 public class PersonalNumberResult extends CampusBlock implements Campus {
+	
+	private static final String APPLICANT_INFO = "appl_info";
+
+	private static final String COMMENT = "comment";
+
+	private final static String SAVE = "save";
 
 	private String SSN = null;
 
 	private Integer applicantID = null;
 
 	private DateFormat df;
+	
+	private User user = null;
+		
+	private String comment = null;
 
 	public PersonalNumberResult() {
 	}
@@ -59,10 +73,19 @@ public class PersonalNumberResult extends CampusBlock implements Campus {
 	}
 
 	public void parse(IWContext iwc) {
-		if (iwc.isParameterSet(PersonalNumberSearch.PERSONAL_NUMBER))
+		if (iwc.isParameterSet(PersonalNumberSearch.PERSONAL_NUMBER)) {
+			if (iwc.isParameterSet(SAVE)) {
+				this.comment = iwc.getParameter(COMMENT);
+			}
 			SSN = iwc.getParameter(PersonalNumberSearch.PERSONAL_NUMBER);
-		else if (iwc.isParameterSet("appl_info")) {
-			applicantID = Integer.valueOf(iwc.getParameter("appl_info"));
+			try {
+				this.user = this.getUserService(iwc).getUser(SSN);
+			} catch (RemoteException e) {
+			} catch (FinderException e) {
+			}
+		}
+		else if (iwc.isParameterSet(APPLICANT_INFO)) {
+			applicantID = Integer.valueOf(iwc.getParameter(APPLICANT_INFO));
 		}
 	}
 
@@ -72,8 +95,6 @@ public class PersonalNumberResult extends CampusBlock implements Campus {
 
 		if (SSN != null) {
 			try {
-				// Collection applicants =
-				// ContractFinder.findAllNonContractApplicationsBySSN(SSN);
 				Collection applicants = getContractService(iwc)
 						.getContractHome().getUnsignedApplicants(SSN);
 				if (applicants != null && !applicants.isEmpty()) {
@@ -83,6 +104,12 @@ public class PersonalNumberResult extends CampusBlock implements Campus {
 						.getContractHome().findByPersonalID(SSN);
 				if (contracts != null && !contracts.isEmpty()) {
 					T.add(getContractInfo(iwc, contracts), col, row++);
+				}
+				if (user != null) {
+					if (this.comment != null) {
+						
+					}
+					T.add(getUserComment(iwc), col, row++);
 				}
 			} catch (com.idega.data.IDOFinderException ex) {
 				ex.printStackTrace();
@@ -111,6 +138,46 @@ public class PersonalNumberResult extends CampusBlock implements Campus {
 		return T;
 	}
 
+	private PresentationObject getUserComment(IWContext iwc) {
+		Form form = new Form();
+		form.maintainAllParameters();
+
+		DataTable T = new DataTable();
+
+		T.setUseBottom(false);
+		T.setUseTop(false);
+		T.addTitle(localize("user_comment",
+				"User comment"));
+		T.setTitlesHorizontal(true);
+		int col = 1;
+		int row = 1;
+		T.add(getHeader(localize(COMMENT, "Comment")), col++, row++);
+
+		TextArea input = new TextArea(COMMENT);
+		input.setMaximumCharacters(2000);
+		if (this.comment != null) {
+			if (this.comment.length() > 255) {
+				this.comment = this.comment.substring(0, 255);
+			}
+			user.setDescription(this.comment);
+			user.store();
+		} else {
+			this.comment = user.getDescription();
+		}
+		if (this.comment != null && !"".equals(this.comment)) {
+			input.setContent(this.comment);
+		}
+
+		T.add(input, 1, row++);
+		SubmitButton save = new SubmitButton(SAVE, SAVE);
+		T.add(save, 1, row++);
+
+		form.add(T);
+		
+		return form;
+	}
+
+	
 	private PresentationObject getNonContractApplicantInfo(Collection applicants) {
 		DataTable T = new DataTable();
 
@@ -124,11 +191,7 @@ public class PersonalNumberResult extends CampusBlock implements Campus {
 		T.add(getHeader(localize("id", "ID")), col++, row);
 		T.add(getHeader(localize("ssn", "SSN")), col++, row);
 		T.add(getHeader(localize("name", "Name")), col++, row);
-		// T.add(getHeader(localize("legal_residence","Legal
-		// residence")),col++,row);
-		// T.add(getHeader(localize("residence","Residence")),col++,row);
-		// T.add(getHeader(localize("zip","Zip")),col++,row);
-		// T.add(getHeader(localize("phone","Phone")),col++,row);
+
 		col += 4;
 		T.add(getHeader(localize("mobile", "Mobile")), col++, row);
 		T.add(getHeader(localize("status", "Status")), col++, row);
@@ -167,18 +230,13 @@ public class PersonalNumberResult extends CampusBlock implements Campus {
 		T.add(getHeader(localize("id", "ID")), col++, row);
 		T.add(getHeader(localize("ssn", "SSN")), col++, row);
 		T.add(getHeader(localize("name", "Name")), col++, row);
-		// T.add(getHeader(localize("address","Address")),col++,row);
 		T.add(getHeader(localize("mobile", "Mobile")), col++, row);
 		T.add(getHeader(localize("apartment", "Apartment")), col++, row);
 		T.add(getHeader(localize("from", "From")), col++, row);
 		T.add(getHeader(localize("to", "To")), col++, row);
 		T.add(getHeader(localize("status", "Status")), col++, row);
 
-		ApplicantHome ahome = (ApplicantHome) IDOLookup
-				.getHomeLegacy(Applicant.class);
 		Iterator iter = contracts.iterator();
-		ApartmentViewHome avh = (ApartmentViewHome) IDOLookup
-				.getHome(ApartmentView.class);
 		while (iter.hasNext()) {
 			col = 1;
 			row++;
@@ -191,7 +249,6 @@ public class PersonalNumberResult extends CampusBlock implements Campus {
 					row);
 			T.add(getText(applicant.getSSN()), col++, row);
 			T.add(getText(applicant.getFullName()), col++, row);
-			// T.add(getText(applicant.getLegalResidence()),col++,row);
 			T.add(getText(applicant.getMobilePhone()), col++, row);
 			T
 					.add(getText(apartment.getName() + " "
@@ -201,8 +258,8 @@ public class PersonalNumberResult extends CampusBlock implements Campus {
 			T.add(getText(df.format(contract.getValidTo())), col++, row);
 			T.add(getText(getContractService(iwc).getLocalizedStatus(
 					getResourceBundle(), contract.getStatus())), col++, row);
-
 		}
+		
 		return T;
 	}
 
@@ -242,23 +299,25 @@ public class PersonalNumberResult extends CampusBlock implements Campus {
 			T.add(getText(applicant.getMobilePhone()), col, row++);
 
 		}
+		
 		return T;
 	}
 
 	public Link getApplicantInfoLink(Text text, Integer applicantID) {
 		Link L = new Link(text);
-		L.addParameter("appl_info", applicantID.toString());
+		L.addParameter(APPLICANT_INFO, applicantID.toString());
+		
 		return L;
 	}
 
 	public Link getSSNLink(Text text, String ssn) {
 		Link L = new Link(text);
 		L.addParameter(PersonalNumberSearch.PERSONAL_NUMBER, ssn);
+		
 		return L;
 	}
 
 	public void main(IWContext iwc) {
-
 		df = DateFormat.getDateInstance(DateFormat.SHORT, iwc
 				.getCurrentLocale());
 		control(iwc);
