@@ -4,3 +4,7 @@ target
 .classpath
 .project
 bin/
+MANIFEST.MF
+build.number
+local/
+
