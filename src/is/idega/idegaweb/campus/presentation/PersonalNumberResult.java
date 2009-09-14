@@ -12,8 +12,6 @@ import javax.ejb.FinderException;
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.ApplicantHome;
 import com.idega.block.building.data.Apartment;
-import com.idega.block.building.data.ApartmentView;
-import com.idega.block.building.data.ApartmentViewHome;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;

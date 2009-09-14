@@ -968,7 +968,7 @@ public class PaymentBooker extends com.idega.presentation.PresentationObjectCont
 
 			Payment[] ePayments = this.getPayments(this.iUnionID, iYear, iMonth, 0, iCompany, false);
 			if (iCompany == this.iGIROID) {
-				if (bnkofc != null || !bnkofc.equals("")) {
+				if (bnkofc != null && !bnkofc.equals("")) {
 					int bankOffice = Integer.parseInt(bnkofc);
 					int finalpayday = Integer.parseInt(modinfo.getParameter("payment_finalpayday"));
 					String B1input = modinfo.getParameter("payment_girotext1");

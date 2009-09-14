@@ -359,7 +359,7 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 
 	public Collection getSchools(User user) throws RemoteException, FinderException {
 		Collection schUsers = getSchoolUserHome().findByUser(user);
-		if (schUsers != null || !schUsers.isEmpty()) {
+		if (schUsers != null && !schUsers.isEmpty()) {
 			Collection coll = new Vector();
 			Iterator iter = schUsers.iterator();
 			SchoolUser sUser;

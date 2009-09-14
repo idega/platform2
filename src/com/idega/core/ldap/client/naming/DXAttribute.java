@@ -311,14 +311,13 @@ public class DXAttribute extends BasicAttribute
                 if (a != null)
                 {
                     String syntaxName = a.toString();
-//System.out.println(getID() + " found syntax as: " + syntaxName);
                     if (isBinarySyntax(syntaxName)) {
 						return true;
 					}
                 }
                 else
                 {
-                    CBUtility.log("%$%$%$%$%$%$%$%$ Can't find SYNTAX for... " + a.getID());
+                    CBUtility.log("%$%$%$%$%$%$%$%$ Can't find SYNTAX for... " + getID());
                 }
             }
             catch (Exception e)

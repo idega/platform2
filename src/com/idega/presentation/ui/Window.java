@@ -35,25 +35,25 @@ import com.idega.util.datastructures.list.KeyValuePair;
  */
 public class Window extends Page {
 
-	//static constants:
+	// static constants:
 	private static String emptyString = "";
-	//member variables:
-	//settings for the window:
+	// member variables:
+	// settings for the window:
 	private String title;
 	private int width;
 	private int height;
 	private String url;
 	private String xCoordinate = null;
 	private String yCoordinate = null;
-	private boolean toolbar=false;
-	private boolean location=false;
-	private boolean scrollbar=false;
-	private boolean directories=false;
-	private boolean menubar=false;
-	private boolean status=false;
-	private boolean titlebar=false;
-	private boolean resizable=true;
-	private boolean fullscreen=false;
+	private boolean toolbar = false;
+	private boolean location = false;
+	private boolean scrollbar = false;
+	private boolean directories = false;
+	private boolean menubar = false;
+	private boolean status = false;
+	private boolean titlebar = false;
+	private boolean resizable = true;
+	private boolean fullscreen = false;
 	private boolean autoResize = false;
 	private boolean autoPosition = false;
 	private int autoXCoordinateOffset = 0;
@@ -91,34 +91,34 @@ public class Window extends Page {
 		values[22] = this.templateForObjectInstanciation;
 		return values;
 	}
+
 	public void restoreState(FacesContext ctx, Object state) {
 		Object values[] = (Object[]) state;
 		super.restoreState(ctx, values[0]);
-		this.title = (String)values[1];
-		this.width = ((Integer)values[2]).intValue();
-		this.height = ((Integer)values[3]).intValue();
-		this.url = (String)values[4];
-		this.xCoordinate= (String)values[5];
-		this.yCoordinate = (String)values[6];
-		this.toolbar = ((Boolean)values[7]).booleanValue();
-		this.location = ((Boolean)values[8]).booleanValue();
-		this.scrollbar = ((Boolean)values[9]).booleanValue();
-		this.directories = ((Boolean)values[10]).booleanValue();
-		this.menubar = ((Boolean)values[11]).booleanValue();
-		this.status = ((Boolean)values[12]).booleanValue();
-		this.titlebar = ((Boolean)values[13]).booleanValue();
-		this.resizable = ((Boolean)values[14]).booleanValue();
-		this.fullscreen = ((Boolean)values[15]).booleanValue();
-		this.autoResize = ((Boolean)values[16]).booleanValue();
-		this.autoPosition = ((Boolean)values[17]).booleanValue();
-		this.autoXCoordinateOffset = ((Integer)values[18]).intValue();
-		this.autoYCoordinateOffset = ((Integer)values[19]).intValue();
-		this.classToInstanciate = (Class)values[20];
-		this.templatePageClass = (Class)values[21];
-		this.templateForObjectInstanciation = (String)values[22];
+		this.title = (String) values[1];
+		this.width = ((Integer) values[2]).intValue();
+		this.height = ((Integer) values[3]).intValue();
+		this.url = (String) values[4];
+		this.xCoordinate = (String) values[5];
+		this.yCoordinate = (String) values[6];
+		this.toolbar = ((Boolean) values[7]).booleanValue();
+		this.location = ((Boolean) values[8]).booleanValue();
+		this.scrollbar = ((Boolean) values[9]).booleanValue();
+		this.directories = ((Boolean) values[10]).booleanValue();
+		this.menubar = ((Boolean) values[11]).booleanValue();
+		this.status = ((Boolean) values[12]).booleanValue();
+		this.titlebar = ((Boolean) values[13]).booleanValue();
+		this.resizable = ((Boolean) values[14]).booleanValue();
+		this.fullscreen = ((Boolean) values[15]).booleanValue();
+		this.autoResize = ((Boolean) values[16]).booleanValue();
+		this.autoPosition = ((Boolean) values[17]).booleanValue();
+		this.autoXCoordinateOffset = ((Integer) values[18]).intValue();
+		this.autoYCoordinateOffset = ((Integer) values[19]).intValue();
+		this.classToInstanciate = (Class) values[20];
+		this.templatePageClass = (Class) values[21];
+		this.templateForObjectInstanciation = (String) values[22];
 	}
-	
-	
+
 	public Window() {
 		this(emptyString);
 		String className = this.getClass().getName();
@@ -128,14 +128,16 @@ public class Window extends Page {
 	/**
 	 * Opens a window displaying only 1 image
 	 * 
-	 * @param image Image to be displayed in the window
+	 * @param image
+	 *            Image to be displayed in the window
 	 */
 	public Window(Image image) {
 		image.setID("onlyImage");
 		this.setName(image.getName());
 		this.setAllMargins(0);
 		add(image);
-		this.setOnLoad("window.resizeTo(document.onlyImage.width +10, document.onlyImage.height +22)");
+		this
+				.setOnLoad("window.resizeTo(document.onlyImage.width +10, document.onlyImage.height +22)");
 	}
 
 	public Window(String name) {
@@ -181,17 +183,18 @@ public class Window extends Page {
 		// this(name,400,400,IWMainApplication.getObjectInstanciatorURL(classToInstanciate,template));
 		this(name, 400, 400);
 		try {
-			this.setClassToInstanciate(RefactorClassRegistry.forName(classToInstanciate), template);
-		}
-		catch (Exception e) {
+			this.setClassToInstanciate(RefactorClassRegistry
+					.forName(classToInstanciate), template);
+		} catch (Exception e) {
 			throw new RuntimeException(e.toString() + e.getMessage());
 		}
 	}
 
 	/*
 	 * public Window(String name,Class classToInstanciate,Class template){
-	 * //this(name,400,400,IWMainApplication.getObjectInstanciatorURL(classToInstanciate,template));
-	 * this(name,400,400);
+	 * //this
+	 * (name,400,400,IWMainApplication.getObjectInstanciatorURL(classToInstanciate
+	 * ,template)); this(name,400,400);
 	 * this.setClassToInstanciate(classToInstanciate,template); }
 	 */
 	public Window(String name, Class classToInstanciate) {
@@ -250,22 +253,24 @@ public class Window extends Page {
 	/**
 	 * <p>
 	 * Returns the URL for the window.<br>
-	 * For new systems (i.e. with IWMainApplication.newUrlScheme set to true) this includes the identifier 
-	 * to the window but in older systems it only contains the base url for the WindowOpener Servlet.<br>
+	 * For new systems (i.e. with IWMainApplication.newUrlScheme set to true)
+	 * this includes the identifier to the window but in older systems it only
+	 * contains the base url for the WindowOpener Servlet.<br>
 	 * e.g. in old systems this returns: '/servlet/WindowOpener' <br>
-	 * in new systems it returns '/workspace/window/6CBA9ED8-E26C-11D9-BEAE-000A95AE300E'
+	 * in new systems it returns
+	 * '/workspace/window/6CBA9ED8-E26C-11D9-BEAE-000A95AE300E'
 	 * </p>
 	 */
 	public String getURL(IWContext iwc) {
 		String ret = null;
 		if (this.url == null) {
-			if(IWMainApplication.useNewURLScheme){
-				ret = iwc.getIWMainApplication().getWindowOpenerURI(this.getClass());
+			if (IWMainApplication.useNewURLScheme) {
+				ret = iwc.getIWMainApplication().getWindowOpenerURI(
+						this.getClass());
 			} else {
 				ret = iwc.getIWMainApplication().getWindowOpenerURI();
 			}
-		}
-		else {
+		} else {
 			ret = this.url;
 		}
 		// System.out.println("ret1 = " + ret);
@@ -383,9 +388,9 @@ public class Window extends Page {
 	public String getCoordinateX() {
 		if (this.xCoordinate != null) {
 			return this.xCoordinate;
-		}
-		else if (this.autoPosition) {
-			return getMouseCoordinateX() + "+(" + this.autoXCoordinateOffset + ")";
+		} else if (this.autoPosition) {
+			return getMouseCoordinateX() + "+(" + this.autoXCoordinateOffset
+					+ ")";
 		}
 		return null;
 	}
@@ -397,9 +402,9 @@ public class Window extends Page {
 	public String getCoordinateY() {
 		if (this.xCoordinate != null) {
 			return this.yCoordinate;
-		}
-		else if (this.autoPosition) {
-			return getMouseCoordinateY() + "+(" + this.autoYCoordinateOffset + ")";
+		} else if (this.autoPosition) {
+			return getMouseCoordinateY() + "+(" + this.autoYCoordinateOffset
+					+ ")";
 		}
 		return null;
 	}
@@ -418,8 +423,7 @@ public class Window extends Page {
 	private String returnCheck(boolean checkBool) {
 		if (checkBool == true) {
 			return "yes";
-		}
-		else {
+		} else {
 			return "no";
 		}
 	}
@@ -427,8 +431,7 @@ public class Window extends Page {
 	private String returnFullScreen() {
 		if (this.fullscreen == true) {
 			return ",fullscreen";
-		}
-		else {
+		} else {
 			return "";
 		}
 	}
@@ -441,7 +444,8 @@ public class Window extends Page {
 	 * @param iwc
 	 * @return the URL (without http:// and hostname)
 	 */
-	public static String getWindowURL(Class windowClass, IWApplicationContext iwc) {
+	public static String getWindowURL(Class windowClass,
+			IWApplicationContext iwc) {
 		return iwc.getIWMainApplication().getWindowOpenerURI(windowClass);
 	}
 
@@ -458,20 +462,19 @@ public class Window extends Page {
 	 *            value of parameter to send
 	 * @return the URL (without http:// and hostname)
 	 */
-	public static String getWindowURLWithParameter(Class windowClass, IWApplicationContext iwc, String parameterName,
+	public static String getWindowURLWithParameter(Class windowClass,
+			IWApplicationContext iwc, String parameterName,
 			String parameterValue) {
 		StringBuffer buffer = new StringBuffer(getWindowURL(windowClass, iwc));
 		if (buffer.indexOf("?") < 0) {
 			buffer.append('?');
-		}
-		else {
+		} else {
 			buffer.append('&');
 		}
 		buffer.append(parameterName).append('=').append(parameterValue);
 		return buffer.toString();
 	}
 
-	
 	/**
 	 * Gets the URL to a (popup) Window class of class windowClass with added
 	 * extra parameters to send to the window.
@@ -484,7 +487,8 @@ public class Window extends Page {
 	 *            add to the URL
 	 * @return the URL (without http:// and hostname)
 	 */
-	public static String getWindowURLWithParameters(Class windowClass, IWApplicationContext iwc, KeyValueList parameterMap) {
+	public static String getWindowURLWithParameters(Class windowClass,
+			IWApplicationContext iwc, KeyValueList parameterMap) {
 		String url = getWindowURL(windowClass, iwc);
 		if (parameterMap == null || parameterMap.isEmpty()) {
 			return url;
@@ -492,8 +496,7 @@ public class Window extends Page {
 		StringBuffer buffer = new StringBuffer(url);
 		if (buffer.indexOf("?") < 0) {
 			buffer.append('?');
-		}
-		else {
+		} else {
 			buffer.append('&');
 		}
 		Iterator iterator = parameterMap.iterator();
@@ -501,8 +504,7 @@ public class Window extends Page {
 		while (iterator.hasNext()) {
 			if (firstParameter) {
 				firstParameter = false;
-			}
-			else {
+			} else {
 				buffer.append('&');
 			}
 			KeyValuePair pair = (KeyValuePair) iterator.next();
@@ -513,8 +515,7 @@ public class Window extends Page {
 		return buffer.toString();
 
 	}
-	
-	
+
 	/**
 	 * Gets the URL to a (popup) Window class of class windowClass with added
 	 * extra parameters to send to the window.
@@ -527,24 +528,27 @@ public class Window extends Page {
 	 *            add to the URL
 	 * @return the URL (without http:// and hostname)
 	 */
-	public static String getWindowURLWithParameters(Class windowClass, IWApplicationContext iwc, Map parameterMap) {
+	public static String getWindowURLWithParameters(Class windowClass,
+			IWApplicationContext iwc, Map parameterMap) {
 		KeyValueList list = new KeyValueList(parameterMap.size());
 		list.putAll(parameterMap);
 		return getWindowURLWithParameters(windowClass, iwc, list);
 	}
 
-	public static String getCallingScriptString(Class windowClass, IWApplicationContext iwac) {
+	public static String getCallingScriptString(Class windowClass,
+			IWApplicationContext iwac) {
 		return getCallingScriptString(windowClass, true, iwac);
 	}
 
 	public static Window getStaticInstance(Class windowClass) {
-		Window windowInstance = (Window) getIWMainApplication().getStaticWindowInstances().get(windowClass);
+		Window windowInstance = (Window) getIWMainApplication()
+				.getStaticWindowInstances().get(windowClass);
 		if (windowInstance == null) {
 			try {
 				windowInstance = (Window) windowClass.newInstance();
-				getIWMainApplication().getStaticWindowInstances().put(windowClass, windowInstance);
-			}
-			catch (Exception e) {
+				getIWMainApplication().getStaticWindowInstances().put(
+						windowClass, windowInstance);
+			} catch (Exception e) {
 			}
 		}
 		return windowInstance;
@@ -554,65 +558,64 @@ public class Window extends Page {
 		return IWMainApplication.getDefaultIWMainApplication();
 	}
 
-	public static String getCallingScriptString(Class windowClass, boolean includeURL, IWApplicationContext iwac) {
+	public static String getCallingScriptString(Class windowClass,
+			boolean includeURL, IWApplicationContext iwac) {
 		String url = getWindowURL(windowClass, iwac);
 		return getCallingScriptString(windowClass, url, includeURL, iwac);
 	}
 
-	public static String getCallingScriptString(Class windowClass, String url, boolean includeURL,
-			IWApplicationContext iwac) {
+	public static String getCallingScriptString(Class windowClass, String url,
+			boolean includeURL, IWApplicationContext iwac) {
 		String theURL = null;
 		Window win = getStaticInstance(windowClass);
 		if (includeURL) {
 			theURL = url;
-		}
-		else {
+		} else {
 			theURL = "";
 		}
 		if (win == null) {
-			// return
-			// "window.open('"+theURL+"','tempwindow','resizable=yes,toolbar=yes,location=no,directories=no,status=yes,scrollbars=yes,menubar=yes,titlebar=yes,width=500,height=500')";
-			return getWindowCallingScript(theURL, "tempwindow", true, true, true, true, true, true, true, true, false,
-					500, 500, win.getCoordinateX(), win.getCoordinateY());
+			return getWindowCallingScript(theURL, "tempwindow", true, true,
+					true, true, true, true, true, true, false, 500, 500, "0",
+					"0");
 		}
-		// return
-		// "window.open('"+theURL+"','"+win.getTarget()+"','resizable="+win.returnCheck(windowInstance.resizable)+",toolbar="+win.returnCheck(windowInstance.toolbar)+",location="+win.returnCheck(win.location)+",directories="+win.returnCheck(win.directories)+",status="+win.returnCheck(win.status)+",scrollbars="+win.returnCheck(win.scrollbar)+",menubar="+win.returnCheck(win.menubar)+",titlebar="+win.returnCheck(win.titlebar)+win.returnFullScreen()+",width="+win.getWidth()+",height="+win.getHeight()+"')";
-		return getWindowCallingScript(theURL, win.getTarget(), win.toolbar, win.location, win.directories, win.status,
-				win.menubar, win.titlebar, win.scrollbar, win.resizable, win.fullscreen, win.getWindowWidth(),
-				win.getWindowHeight(), win.getCoordinateX(), win.getCoordinateY());
+
+		return getWindowCallingScript(theURL, win.getTarget(), win.toolbar,
+				win.location, win.directories, win.status, win.menubar,
+				win.titlebar, win.scrollbar, win.resizable, win.fullscreen, win
+						.getWindowWidth(), win.getWindowHeight(), win
+						.getCoordinateX(), win.getCoordinateY());
 	}
 
-	public static String getCallingScriptString(Class windowClass, String url, String target, boolean includeURL,
-			IWApplicationContext iwac) {
+	public static String getCallingScriptString(Class windowClass, String url,
+			String target, boolean includeURL, IWApplicationContext iwac) {
 		String theURL = null;
 		Window win = getStaticInstance(windowClass);
 		if (includeURL) {
 			theURL = url;
-		}
-		else {
+		} else {
 			theURL = "";
 		}
 		if (win == null) {
-			// return
-			// "window.open('"+theURL+"','tempwindow','resizable=yes,toolbar=yes,location=no,directories=no,status=yes,scrollbars=yes,menubar=yes,titlebar=yes,width=500,height=500')";
-			return getWindowCallingScript(theURL, "tempwindow", true, true, true, true, true, true, true, true, false,
-					500, 500, win.getCoordinateX(), win.getCoordinateY());
+			return getWindowCallingScript(theURL, "tempwindow", true, true,
+					true, true, true, true, true, true, false, 500, 500, "0", "0");
 		}
-		// return
-		// "window.open('"+theURL+"','"+win.getTarget()+"','resizable="+win.returnCheck(windowInstance.resizable)+",toolbar="+win.returnCheck(windowInstance.toolbar)+",location="+win.returnCheck(win.location)+",directories="+win.returnCheck(win.directories)+",status="+win.returnCheck(win.status)+",scrollbars="+win.returnCheck(win.scrollbar)+",menubar="+win.returnCheck(win.menubar)+",titlebar="+win.returnCheck(win.titlebar)+win.returnFullScreen()+",width="+win.getWidth()+",height="+win.getHeight()+"')";
-		return getWindowCallingScript(theURL, target, win.toolbar, win.location, win.directories, win.status,
-				win.menubar, win.titlebar, win.scrollbar, win.resizable, win.fullscreen, win.getWindowWidth(),
-				win.getWindowHeight(), win.getCoordinateX(), win.getCoordinateY());
+		return getWindowCallingScript(theURL, target, win.toolbar,
+				win.location, win.directories, win.status, win.menubar,
+				win.titlebar, win.scrollbar, win.resizable, win.fullscreen, win
+						.getWindowWidth(), win.getWindowHeight(), win
+						.getCoordinateX(), win.getCoordinateY());
 	}
 
 	public static String getCallingScript(String URL, int width, int height) {
-		return getWindowCallingScript(URL, "Window", true, true, true, true, true, true, true, true, false, width,
-				height, null, null);
+		return getWindowCallingScript(URL, "Window", true, true, true, true,
+				true, true, true, true, false, width, height, null, null);
 	}
 
-	public static String getCallingScript(String URL, int width, int height, int coordX, int coordY) {
-		return getWindowCallingScript(URL, "Window", true, true, true, true, true, true, true, true, false, width,
-				height, String.valueOf(coordX), String.valueOf(coordY));
+	public static String getCallingScript(String URL, int width, int height,
+			int coordX, int coordY) {
+		return getWindowCallingScript(URL, "Window", true, true, true, true,
+				true, true, true, true, false, width, height, String
+						.valueOf(coordX), String.valueOf(coordY));
 	}
 
 	public static String getCallingScript(String URL) {
@@ -620,10 +623,10 @@ public class Window extends Page {
 	}
 
 	public String getCallingScriptString(IWContext iwc, String url) {
-		// return
-		// "window.open('"+url+"','"+getTarget()+"','resizable="+returnCheck(resizable)+",toolbar="+returnCheck(toolbar)+",location="+returnCheck(location)+",directories="+returnCheck(directories)+",status="+returnCheck(status)+",scrollbars="+returnCheck(scrollbar)+",menubar="+returnCheck(menubar)+",titlebar="+returnCheck(titlebar)+returnFullScreen()+",width="+getWidth()+",height="+getHeight()+"')";
-		return getWindowCallingScript(url, getTarget(), this.toolbar, this.location, this.directories, this.status, this.menubar, this.titlebar,
-				this.scrollbar, this.resizable, this.fullscreen, getWindowWidth(), getWindowHeight(), getCoordinateX(),
+		return getWindowCallingScript(url, getTarget(), this.toolbar,
+				this.location, this.directories, this.status, this.menubar,
+				this.titlebar, this.scrollbar, this.resizable, this.fullscreen,
+				getWindowWidth(), getWindowHeight(), getCoordinateX(),
 				getCoordinateY());
 	}
 
@@ -640,39 +643,53 @@ public class Window extends Page {
 		 */
 		// return
 		// "window.open('','"+getTarget()+"','resizable="+returnCheck(resizable)+",toolbar="+returnCheck(toolbar)+",location="+returnCheck(location)+",directories="+returnCheck(directories)+",status="+returnCheck(status)+",scrollbars="+returnCheck(scrollbar)+",menubar="+returnCheck(menubar)+",titlebar="+returnCheck(titlebar)+returnFullScreen()+",width="+getWidth()+",height="+getHeight()+"')";
-		return getWindowCallingScript("", getTarget(), this.toolbar, this.location, this.directories, this.status, this.menubar, this.titlebar,
-				this.scrollbar, this.resizable, this.fullscreen, getWindowWidth(), getWindowHeight(), this.xCoordinate, this.yCoordinate);
+		return getWindowCallingScript("", getTarget(), this.toolbar,
+				this.location, this.directories, this.status, this.menubar,
+				this.titlebar, this.scrollbar, this.resizable, this.fullscreen,
+				getWindowWidth(), getWindowHeight(), this.xCoordinate,
+				this.yCoordinate);
 	}
 
 	/**
 	 * 
 	 * using js function iwopenwindow from iw_core.js
-	 * (Address,Name,ToolBar,Location,Directories,Status,Menubar,Titlebar,Scrollbars,Resizable,Width,Height)
+	 * (Address,Name,ToolBar,Location
+	 * ,Directories,Status,Menubar,Titlebar,Scrollbars,Resizable,Width,Height)
 	 */
-	public static String getWindowCallingScript(String url, String name, boolean tool, boolean loc, boolean dir,
-			boolean stat, boolean menu, boolean title, boolean scroll, boolean resize, boolean fullscr, int theWidth,
-			int theHeight) {
-		return getWindowCallingScript(url, name, tool, loc, dir, stat, menu, title, scroll, resize, fullscr, theWidth,
-				theHeight, null, null);
+	public static String getWindowCallingScript(String url, String name,
+			boolean tool, boolean loc, boolean dir, boolean stat, boolean menu,
+			boolean title, boolean scroll, boolean resize, boolean fullscr,
+			int theWidth, int theHeight) {
+		return getWindowCallingScript(url, name, tool, loc, dir, stat, menu,
+				title, scroll, resize, fullscr, theWidth, theHeight, null, null);
 	}
 
 	/**
 	 * 
 	 * using js function iwopenwindow from iw_core.js
-	 * (Address,Name,ToolBar,Location,Directories,Status,Menubar,Titlebar,Scrollbars,Resizable,Width,Height,Xcoord,Ycoord)
+	 * (Address,Name,ToolBar,Location
+	 * ,Directories,Status,Menubar,Titlebar,Scrollbars
+	 * ,Resizable,Width,Height,Xcoord,Ycoord)
 	 */
-	public static String getWindowCallingScript(String url, String name, boolean tool, boolean loc, boolean dir,
-			boolean stat, boolean menu, boolean title, boolean scroll, boolean resize, boolean fullscr, int theWidth,
-			int theHeight, String xCoordinate, String yCoordinate) {
+	public static String getWindowCallingScript(String url, String name,
+			boolean tool, boolean loc, boolean dir, boolean stat, boolean menu,
+			boolean title, boolean scroll, boolean resize, boolean fullscr,
+			int theWidth, int theHeight, String xCoordinate, String yCoordinate) {
 		String no = "0";
 		String yes = "1";
 		String sp = "'";
-		StringBuffer buf = new StringBuffer("iwOpenWindow('").append(url).append("','").append(name).append("',");
-		buf.append(sp).append(tool ? yes : no).append("','").append(loc ? yes : no).append("',");
-		buf.append(sp).append(dir ? yes : no).append("','").append(stat ? yes : no).append("',");
-		buf.append(sp).append(menu ? yes : no).append("','").append(title ? yes : no).append("',");
-		buf.append(sp).append(scroll ? yes : no).append("','").append(resize ? yes : no).append("',");
-		buf.append(sp).append(theWidth).append("','").append(theHeight).append("'");
+		StringBuffer buf = new StringBuffer("iwOpenWindow('").append(url)
+				.append("','").append(name).append("',");
+		buf.append(sp).append(tool ? yes : no).append("','").append(
+				loc ? yes : no).append("',");
+		buf.append(sp).append(dir ? yes : no).append("','").append(
+				stat ? yes : no).append("',");
+		buf.append(sp).append(menu ? yes : no).append("','").append(
+				title ? yes : no).append("',");
+		buf.append(sp).append(scroll ? yes : no).append("','").append(
+				resize ? yes : no).append("',");
+		buf.append(sp).append(theWidth).append("','").append(theHeight).append(
+				"'");
 		if (xCoordinate != null) {
 			buf.append(",").append(xCoordinate);
 		}
@@ -686,28 +703,34 @@ public class Window extends Page {
 	public static String getWindowArgumentCallingScript(Class windowClass) {
 		Window win = getStaticInstance(windowClass);
 		if (win == null) {
-			return getWindowArgumentCallingScript(true, true, true, true, true, true, true, true, false, 500, 500,
-					win.getCoordinateX(), win.getCoordinateY());
+			return getWindowArgumentCallingScript(true, true, true, true, true,
+					true, true, true, false, 500, 500, "0",
+					"0");
 		}
-		return getWindowArgumentCallingScript(win.toolbar, win.location, win.directories, win.status, win.menubar,
-				win.titlebar, win.scrollbar, win.resizable, win.fullscreen, win.getWindowWidth(),
-				win.getWindowHeight(), win.getCoordinateX(), win.getCoordinateY());
+		return getWindowArgumentCallingScript(win.toolbar, win.location,
+				win.directories, win.status, win.menubar, win.titlebar,
+				win.scrollbar, win.resizable, win.fullscreen, win
+						.getWindowWidth(), win.getWindowHeight(), win
+						.getCoordinateX(), win.getCoordinateY());
 	}
 
-	public static String getWindowArgumentCallingScript(boolean tool, boolean loc, boolean dir, boolean stat,
-			boolean menu, boolean title, boolean scroll, boolean resize, boolean fullscr, int theWidth, int theHeight,
-			String xCoordinate, String yCoordinate) {
+	public static String getWindowArgumentCallingScript(boolean tool,
+			boolean loc, boolean dir, boolean stat, boolean menu,
+			boolean title, boolean scroll, boolean resize, boolean fullscr,
+			int theWidth, int theHeight, String xCoordinate, String yCoordinate) {
 		String no = "0";
 		String yes = "1";
-		StringBuffer buf = new StringBuffer("toolbar=").append(tool ? yes : no).append(",").append("location=").append(
-				loc ? yes : no).append(",");
-		buf.append("directories=").append(dir ? yes : no).append(",").append("status").append(stat ? yes : no).append(
-				",");
-		buf.append("menubar=").append(menu ? yes : no).append(",").append("titlebar=").append(title ? yes : no).append(
-				",");
-		buf.append("scrollbars=").append(scroll ? yes : no).append(",").append("resizable=").append(resize ? yes : no).append(
-				",");
-		buf.append("width=").append(theWidth).append(",").append("height=").append(theHeight).append("");
+		StringBuffer buf = new StringBuffer("toolbar=").append(tool ? yes : no)
+				.append(",").append("location=").append(loc ? yes : no).append(
+						",");
+		buf.append("directories=").append(dir ? yes : no).append(",").append(
+				"status").append(stat ? yes : no).append(",");
+		buf.append("menubar=").append(menu ? yes : no).append(",").append(
+				"titlebar=").append(title ? yes : no).append(",");
+		buf.append("scrollbars=").append(scroll ? yes : no).append(",").append(
+				"resizable=").append(resize ? yes : no).append(",");
+		buf.append("width=").append(theWidth).append(",").append("height=")
+				.append(theHeight).append("");
 		if (xCoordinate != null) {
 			buf.append(",").append("left=").append(xCoordinate);
 		}
@@ -717,57 +740,57 @@ public class Window extends Page {
 		return buf.toString();
 	}
 
-//This script is now a standard script called iwOpenWindow in iw_core.js	
-//	public static String windowScript() {
-//		StringBuffer js = new StringBuffer();
-//		// getCoordinate script tracks the mouse coordinates
-//		js.append(getCoordinateScript());
-//		js.append("\n\n");
-//		js.append("\tfunction openwindow(Address,Name,ToolBar,Location,Directories,Status,Menubar,Titlebar,Scrollbars,Resizable,Width,Height,Xcoord,Ycoord) {  \n");
-//		js.append("\t\t// usage openwindow(addr,name,yes/no,yes/no,yes/no,yes/no,yes/no,yes/no,yes/no,yes/no,width,height,xcoord,ycoord) \n");
-//		js.append("\t\tvar option = \"toolbar=\" + ToolBar ");
-//		js.append("+ \",location=\" + Location  ");
-//		js.append("+ \",directories=\" + Directories  ");
-//		js.append("+ \",status=\" + Status  ");
-//		js.append("+ \",menubar=\" + Menubar  ");
-//		js.append("+ \",titlebar=\" + Titlebar  ");
-//		js.append("+ \",scrollbars=\" + Scrollbars  ");
-//		js.append("+ \",resizable=\"  + Resizable  ");
-//		// js.append("+ \",fullscreen=\" + FullScreen \n");
-//		js.append("+ \",width=\" + Width  ");
-//		js.append("+ \",height=\" + Height; \n");
-//		js.append("\t if(Xcoord) option+=\",left=\" + Xcoord; \n");
-//		js.append("\t if(Ycoord) option+=\",top=\" + Ycoord; \n");
-//		js.append("\t\tvar new_win = window.open(Address, Name, option );\n");
-//		// js.append("new_win.document.write(option)");
-//		js.append("\t}");
-//		return js.toString();
-//	}
+	// This script is now a standard script called iwOpenWindow in iw_core.js
+	// public static String windowScript() {
+	// StringBuffer js = new StringBuffer();
+	// // getCoordinate script tracks the mouse coordinates
+	// js.append(getCoordinateScript());
+	// js.append("\n\n");
+	// js.append("\tfunction openwindow(Address,Name,ToolBar,Location,Directories,Status,Menubar,Titlebar,Scrollbars,Resizable,Width,Height,Xcoord,Ycoord) {  \n");
+	// js.append("\t\t// usage openwindow(addr,name,yes/no,yes/no,yes/no,yes/no,yes/no,yes/no,yes/no,yes/no,width,height,xcoord,ycoord) \n");
+	// js.append("\t\tvar option = \"toolbar=\" + ToolBar ");
+	// js.append("+ \",location=\" + Location  ");
+	// js.append("+ \",directories=\" + Directories  ");
+	// js.append("+ \",status=\" + Status  ");
+	// js.append("+ \",menubar=\" + Menubar  ");
+	// js.append("+ \",titlebar=\" + Titlebar  ");
+	// js.append("+ \",scrollbars=\" + Scrollbars  ");
+	// js.append("+ \",resizable=\"  + Resizable  ");
+	// // js.append("+ \",fullscreen=\" + FullScreen \n");
+	// js.append("+ \",width=\" + Width  ");
+	// js.append("+ \",height=\" + Height; \n");
+	// js.append("\t if(Xcoord) option+=\",left=\" + Xcoord; \n");
+	// js.append("\t if(Ycoord) option+=\",top=\" + Ycoord; \n");
+	// js.append("\t\tvar new_win = window.open(Address, Name, option );\n");
+	// // js.append("new_win.document.write(option)");
+	// js.append("\t}");
+	// return js.toString();
+	// }
 
-//	public static String getCoordinateScript() {
-//		StringBuffer script = new StringBuffer();
-//		script.append("var IE = document.all?true:false; ");
-//		script.append("if (!IE){ document.captureEvents(Event.MOUSEMOVE);}");
-//		script.append("document.onmousemove = getMouseXY;");
-//		script.append("var coordX = 0;");
-//		script.append("var coordY = 0;");
-//		script.append("function getMouseXY(e) { ");
-//		script.append("	if (IE) { ");
-//		script.append("      coordX = event.clientX + document.body.scrollLeft;");
-//		script.append("      coordY = event.clientY + document.body.scrollTop;");
-//		script.append("   }");
-//		script.append("   else {  ");
-//		script.append("	   coordX = e.pageX;");
-//		script.append("      coordY = e.pageY;");
-//		script.append("   }  ");
-//		script.append("	if (coordX < 0){coordX = 0;}");
-//		script.append("   if (coordY < 0){cordY = 0;}  ");
-//		// script.append("window.defaultStatus =\"x=\"+coordX+ \" y=\"+coordY
-//		// ;");
-//		script.append("   return true;");
-//		script.append("} ");
-//		return script.toString();
-//	}
+	// public static String getCoordinateScript() {
+	// StringBuffer script = new StringBuffer();
+	// script.append("var IE = document.all?true:false; ");
+	// script.append("if (!IE){ document.captureEvents(Event.MOUSEMOVE);}");
+	// script.append("document.onmousemove = getMouseXY;");
+	// script.append("var coordX = 0;");
+	// script.append("var coordY = 0;");
+	// script.append("function getMouseXY(e) { ");
+	// script.append("	if (IE) { ");
+	// script.append("      coordX = event.clientX + document.body.scrollLeft;");
+	// script.append("      coordY = event.clientY + document.body.scrollTop;");
+	// script.append("   }");
+	// script.append("   else {  ");
+	// script.append("	   coordX = e.pageX;");
+	// script.append("      coordY = e.pageY;");
+	// script.append("   }  ");
+	// script.append("	if (coordX < 0){coordX = 0;}");
+	// script.append("   if (coordY < 0){cordY = 0;}  ");
+	// // script.append("window.defaultStatus =\"x=\"+coordX+ \" y=\"+coordY
+	// // ;");
+	// script.append("   return true;");
+	// script.append("} ");
+	// return script.toString();
+	// }
 
 	public String getMouseCoordinateX() {
 		return "coordX";
@@ -793,17 +816,15 @@ public class Window extends Page {
 			if (getParentObject() == null) {
 				/* if there is no parent object then do print directly out */
 				returnBoole = true;
-			}
-			else {
+			} else {
 				/* if there is a parent object then do not print directly out */
 				returnBoole = false;
 			}
-		}
-		else if (iwc.getParameter("idegaspecialrequesttype").equals("window")
-				&& iwc.getParameter("idegaspecialrequestname").equals(this.getName())) {
+		} else if (iwc.getParameter("idegaspecialrequesttype").equals("window")
+				&& iwc.getParameter("idegaspecialrequestname").equals(
+						this.getName())) {
 			returnBoole = true;
-		}
-		else {
+		} else {
 			returnBoole = false;
 		}
 		return returnBoole;
@@ -832,8 +853,7 @@ public class Window extends Page {
 			obj.status = this.status;
 			obj.titlebar = this.titlebar;
 			obj.resizable = this.resizable;
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			ex.printStackTrace(System.err);
 		}
 		return obj;
@@ -841,20 +861,24 @@ public class Window extends Page {
 
 	public void setClassToInstanciate(Class presentationObjectClass) {
 		this.classToInstanciate = presentationObjectClass;
-		this.setURL(IWContext.getInstance().getIWMainApplication().getObjectInstanciatorURI(presentationObjectClass));
+		this.setURL(IWContext.getInstance().getIWMainApplication()
+				.getObjectInstanciatorURI(presentationObjectClass));
 	}
 
 	/*
 	 * public void setClassToInstanciate(Class presentationObjectClass,Class
 	 * pageTemplateClass){ setClassToInstanciate(presentationObjectClass);
 	 * this.templatePageClass=pageTemplateClass;
-	 * this.setURL(IWContext.getInstance().getIWMainApplication().getObjectInstanciatorURI(presentationObjectClass,pageTemplateClass)); }
+	 * this.setURL(IWContext.getInstance
+	 * ().getIWMainApplication().getObjectInstanciatorURI
+	 * (presentationObjectClass,pageTemplateClass)); }
 	 */
-	public void setClassToInstanciate(Class presentationObjectClass, String template) {
+	public void setClassToInstanciate(Class presentationObjectClass,
+			String template) {
 		setClassToInstanciate(presentationObjectClass);
 		this.templateForObjectInstanciation = template;
-		this.setURL(IWContext.getInstance().getIWMainApplication().getObjectInstanciatorURI(presentationObjectClass,
-				template));
+		this.setURL(IWContext.getInstance().getIWMainApplication()
+				.getObjectInstanciatorURI(presentationObjectClass, template));
 	}
 
 	/*
@@ -866,19 +890,24 @@ public class Window extends Page {
 	 * if (getLanguage().equals("HTML")){
 	 * 
 	 * //if (getInterfaceStyle().equals(" something ")){ //} //else{ if
-	 * (this.url == null){ println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML
-	 * 4.0 Transitional//EN\" \"http://www.w3.org/TR/REC-html40/loose.dtd\">\n<html>");
+	 * (this.url == null){ println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0
+	 * Transitional
+	 * //EN\" \"http://www.w3.org/TR/REC-html40/loose.dtd\">\n<html>");
 	 * println("\n<head>"); if ( getAssociatedScript() != null){
 	 * getAssociatedScript()._print(iwc); } println("\n<meta
-	 * http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\">\n<META
-	 * NAME=\"generator\" CONTENT=\"idega arachnea\">\n"); println("<title>"+getTitle()+"</title>");
-	 * println("</head>\n<body "+getAttributeString()+" >\n");
-	 * super.print(iwc); println("\n</body>\n</html>"); } //} } } }
+	 * http-equiv=\"Content-Type\" content=\"text/html;
+	 * charset=iso-8859-1\">\n<META
+	 * NAME=\"generator\" CONTENT=\"idega arachnea\">\n");
+	 * println("<title>"+getTitle()+"</title>");
+	 * println("</head>\n<body "+getAttributeString()+" >\n"); super.print(iwc);
+	 * println("\n</body>\n</html>"); } //} } } }
 	 */
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.idega.presentation.PresentationObject#initInMain(com.idega.presentation.IWContext)
+	 * @see
+	 * com.idega.presentation.PresentationObject#initInMain(com.idega.presentation
+	 * .IWContext)
 	 */
 	protected void initInMain(IWContext iwc) throws Exception {
 		if (isFocusAllowedOnLoad() && !isChildOfOtherPage() && !isInFrameSet()) {
@@ -896,7 +925,9 @@ public class Window extends Page {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.idega.presentation.Page#getLocalizedTitle(com.idega.presentation.IWContext)
+	 * @see
+	 * com.idega.presentation.Page#getLocalizedTitle(com.idega.presentation.
+	 * IWContext)
 	 */
 	public String getLocalizedTitle(IWContext iwc) {
 		// TODO Auto-generated method stub
@@ -914,7 +945,8 @@ public class Window extends Page {
 		this.autoPosition = flag;
 	}
 
-	public void setMousePositionOffsets(int xCoordinateOffset, int yCoordinateOffset) {
+	public void setMousePositionOffsets(int xCoordinateOffset,
+			int yCoordinateOffset) {
 		this.autoPosition = true;
 		this.autoXCoordinateOffset = xCoordinateOffset;
 		this.autoYCoordinateOffset = yCoordinateOffset;
@@ -929,8 +961,8 @@ public class Window extends Page {
 	 * 
 	 * public String getMoveToScript(){ StringBuffer script = new
 	 * StringBuffer(); script.append("
-	 * self.moveTo(").append(autoCoordinateX).append(",").append(autoCoordinateY).append(")
-	 * ;"); return script.toString(); }
+	 * self.moveTo(").append(autoCoordinateX).append("
+	 * ,").append(autoCoordinateY).append(") ;"); return script.toString(); }
 	 */
 	/**
 	 * Flag allowing window to get the focus on load, when not a child of

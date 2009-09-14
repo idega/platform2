@@ -1229,7 +1229,7 @@ public class Tariffer extends PresentationObjectContainer {
 			if (!roundstring.equalsIgnoreCase("noround")) {
 				int roundid = Integer.parseInt(roundstring);
 				if (!bank.equalsIgnoreCase("nobnk")) {
-					if (bnkofc != null || !bnkofc.equals("")) {
+					if (bnkofc != null && !bnkofc.equals("")) {
 						int bankOffice = Integer.parseInt(bnkofc);
 						int finalpayday = Integer.parseInt(modinfo.getParameter("catal_finalpayday"));
 						String B1input = modinfo.getParameter("catal_girotext1");

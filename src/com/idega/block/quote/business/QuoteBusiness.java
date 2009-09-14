@@ -110,13 +110,13 @@ public class QuoteBusiness {
 				quote = qhome.create();
 			}
 
-			if (quoteOrigin != null || quoteOrigin.length() == 0) {
+			if (quoteOrigin != null && quoteOrigin.length() == 0) {
 				quote.setQuoteOrigin(quoteOrigin);
 			}
-			if (quoteText != null || quoteText.length() == 0) {
+			if (quoteText != null && quoteText.length() == 0) {
 				quote.setQuoteText(quoteText);
 			}
-			if (quoteAuthor != null || quoteAuthor.length() == 0) {
+			if (quoteAuthor != null && quoteAuthor.length() == 0) {
 				quote.setQuoteAuthor(quoteAuthor);
 			}
 

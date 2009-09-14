@@ -4661,8 +4661,8 @@ public abstract class BookingForm extends TravelManager{
 		Currency curr;
 		CurrencyHome currHome = (CurrencyHome) IDOLookup.getHome(Currency.class);
 		
-		for (int i = 0; i < entries.length; i++) {
-			curr = currHome.findByPrimaryKey(entries[i].getProductPrice().getCurrencyId());
+		if (0 < entries.length) {
+			curr = currHome.findByPrimaryKey(entries[0].getProductPrice().getCurrencyId());
 			return curr.getCurrencyAbbreviation();
 		}
 		

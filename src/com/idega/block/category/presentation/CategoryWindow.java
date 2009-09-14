@@ -138,16 +138,11 @@ public class CategoryWindow extends IWAdminWindow {
 		 * @todo We need some authication here ,
 		 *  permissions from underlying window ???
 		 */
-		if (true) {
 			if (iwc.isParameterSet(actForm)) {
 				processCategoryForm(iwc);
 			}
 			//addCategoryFields(CategoryFinder.getCategory(iCategoryId));
 			getCategoryFields(iwc, this.iCategoryId );
-		}
-		else {
-			add(formatText(this.iwrb.getLocalizedString("access_denied", "Access denied")));
-		}
 	}
 	protected void processCategoryForm(IWContext iwc)throws RemoteException{
 		// saving :

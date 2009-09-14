@@ -1,47 +1,32 @@
 package se.idega.idegaweb.commune.school.business;
 
-import is.idega.block.family.business.FamilyLogic;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.rmi.RemoteException;
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import javax.ejb.FinderException;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
-import se.idega.idegaweb.commune.care.data.ChildCareApplication;
-import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
-import se.idega.idegaweb.commune.childcare.presentation.ChildCareAdmin;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import se.idega.idegaweb.commune.school.data.SchoolChoice;
 import se.idega.idegaweb.commune.school.data.SchoolChoiceBMPBean;
-import se.idega.idegaweb.commune.school.presentation.SchoolAdminOverview;
-import se.idega.idegaweb.commune.school.presentation.SchoolAdminWindow;
-
+import se.idega.util.SchoolClassMemberComparatorForSweden;
 
 import com.idega.block.school.data.School;
-import com.idega.block.school.data.SchoolClassMember;
-import com.idega.block.school.data.SchoolSeason;
-import com.idega.block.school.data.SchoolStudyPath;
-import com.idega.block.school.data.SchoolStudyPathHome;
-import com.idega.block.school.data.SchoolYear;
-
 import com.idega.business.IBOLookup;
 import com.idega.core.location.data.Address;
-import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.io.DownloadWriter;
@@ -50,30 +35,10 @@ import com.idega.io.MemoryFileBuffer;
 import com.idega.io.MemoryInputStream;
 import com.idega.io.MemoryOutputStream;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.Image;
-import com.idega.presentation.Table;
-import com.idega.presentation.text.Link;
-import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.CheckBox;
-import com.idega.presentation.ui.GenericButton;
-import com.idega.presentation.ui.HiddenInput;
-import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.data.User;
-import com.idega.util.IWCalendar;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
 import com.idega.util.text.Name;
-
-/*import com.lowagie.text.BadElementException;
-import com.lowagie.text.Cell;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Font;
-import com.lowagie.text.Phrase;
-import com.lowagie.text.Rectangle;
-import com.lowagie.text.Table;
-*/
-
-import se.idega.util.SchoolClassMemberComparatorForSweden;
 
 
 public class ListOfCoordinatesWriterXLS extends DownloadWriter implements MediaWritable { 

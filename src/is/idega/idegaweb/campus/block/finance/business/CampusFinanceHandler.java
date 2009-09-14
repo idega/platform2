@@ -26,7 +26,6 @@ import java.util.logging.Logger;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-import javax.transaction.NotSupportedException;
 import javax.transaction.SystemException;
 
 import com.idega.block.application.data.Application;

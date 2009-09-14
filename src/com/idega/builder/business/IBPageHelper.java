@@ -618,7 +618,7 @@ public class IBPageHelper implements Singleton  {
 						ICPage child = (ICPage) it.next();
 						IBXMLPage xml = BuilderLogic.getInstance().getIBXMLPage(child.getPageKey());
 						List map = xml.getUsingTemplate();
-						if ((map != null) || (!map.isEmpty())) {
+						if (map != null && !map.isEmpty()) {
 							return false;
 						}
 						boolean check = true;
