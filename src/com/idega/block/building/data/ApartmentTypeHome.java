@@ -1,10 +1,10 @@
 package com.idega.block.building.data;
 
 
-import java.util.Collection;
 import javax.ejb.CreateException;
 import com.idega.data.IDOHome;
 import javax.ejb.FinderException;
+import java.util.Collection;
 
 public interface ApartmentTypeHome extends IDOHome {
 	public ApartmentType create() throws CreateException;
@@ -19,6 +19,9 @@ public interface ApartmentTypeHome extends IDOHome {
 
 	public Collection findBySubcategory(Integer categoryID)
 			throws FinderException;
+
+	public ApartmentType findBySubcategoryAndAbbrevation(String abbrevation,
+			ApartmentSubcategory subCategory) throws FinderException;
 
 	public Collection findByComplex(Integer complexID) throws FinderException;
 }

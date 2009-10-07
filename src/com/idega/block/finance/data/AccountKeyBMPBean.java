@@ -154,4 +154,11 @@ public class AccountKeyBMPBean extends CategoryEntityBMPBean implements
 		return super.idoFindPKsByQuery(query);
 	}
 
+	public Object ejbFindByName(String name) throws FinderException {
+		SelectQuery query = idoSelectQuery();
+		query.addCriteria(new MatchCriteria(idoQueryTable(),
+				getNameColumnName(), MatchCriteria.EQUALS, name));
+		
+		return super.idoFindOnePKByQuery(query);		
+	}
 }

@@ -1,10 +1,10 @@
 package com.idega.block.finance.data;
 
 
-import java.util.Collection;
 import javax.ejb.CreateException;
 import com.idega.data.IDOHome;
 import javax.ejb.FinderException;
+import java.util.Collection;
 
 public interface TariffHome extends IDOHome {
 	public Tariff create() throws CreateException;

@@ -1,11 +1,11 @@
 package com.idega.block.finance.data;
 
 
-import java.util.Collection;
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
-import com.idega.data.IDOEntity;
 import com.idega.data.IDOFactory;
+import javax.ejb.CreateException;
+import com.idega.data.IDOEntity;
+import javax.ejb.FinderException;
+import java.util.Collection;
 
 public class TariffHomeImpl extends IDOFactory implements TariffHome {
 	public Class getEntityInterfaceClass() {

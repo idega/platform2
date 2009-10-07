@@ -140,76 +140,88 @@ public class BuildingCacher {
   public static int getReloadedCount(){
     return reloadCount;
   }
+  
+  private static boolean getDoReloadNow() {
+	  if (setToReload) {
+		  return true;
+	  }
+	  
+	  if (IWTimestamp.getMinutesBetween(lastReloaded, IWTimestamp.RightNow()) > 60) {
+		  return true;
+	  }
+	  
+	  return false;
+  }
 
   public static Collection getBuildings(){
-    if(hComplexes == null || setToReload){
+    if(hComplexes == null || getDoReloadNow()){
       reload();
     }
     return Buildings;
   }
   public static Collection getComplexes(){
-    if(hBuildings == null || setToReload){
+    if(hBuildings == null || getDoReloadNow()){
       reload();
     }
     return Complexes;
   }
   public static Collection getFloors(){
-    if(hFloors == null || setToReload){
+    if(hFloors == null || getDoReloadNow()){
       reload();
     }
     return Floors;
   }
   public static Collection getTypes(){
-    if(hTypes == null || setToReload){
+    if(hTypes == null || getDoReloadNow()){
       reload();
     }
     return Types;
   }
   public static Collection getCategories(){
-    if(hCategories == null || setToReload){
+    if(hCategories == null || getDoReloadNow()){
       reload();
     }
     return Categories;
   }
   public static Collection getApartments(){
-    if(hApartments == null || setToReload){
+    if(hApartments == null || getDoReloadNow()){
       reload();
     }
     return Apartments;
   }
 
   public static Hashtable hashOfBuildings(){
-    if(hComplexes == null || setToReload){
+    if(hComplexes == null || getDoReloadNow()){
       reload();
     }
     return hBuildings;
   }
   public static Hashtable hashOfComplexes(){
-    if(hBuildings == null || setToReload){
+    if(hBuildings == null || getDoReloadNow()){
       reload();
     }
     return hComplexes;
   }
   public static Hashtable hashOfFloors(){
-    if(hFloors == null || setToReload){
+    if(hFloors == null || getDoReloadNow()){
       reload();
     }
     return hFloors;
   }
   public static Hashtable hashOfTypes(){
-    if(hTypes == null || setToReload){
+    if(hTypes == null || getDoReloadNow()){
       reload();
     }
     return hTypes;
   }
   public static Hashtable hashOfCategories(){
-    if(hCategories == null || setToReload){
+    if(hCategories == null || getDoReloadNow()){
       reload();
     }
     return hCategories;
   }
   public static Hashtable hashOfApartments(){
-    if(hApartments == null || setToReload){
+    if(hApartments == null || getDoReloadNow()){
       reload();
     }
     return hApartments;
@@ -218,14 +230,14 @@ public class BuildingCacher {
 
 
   public static Complex getComplex(int id){
-    if(hComplexes == null || setToReload){
+    if(hComplexes == null || getDoReloadNow()){
       reload();
     }
     return (Complex)hComplexes.get(new Integer(id));
   }
 
   public static Complex getComplex(){
-    if(hComplexes == null || setToReload){
+    if(hComplexes == null || getDoReloadNow()){
       reload();
     }
     else {
@@ -238,35 +250,35 @@ public class BuildingCacher {
   }
 
   public static Building getBuilding(int id){
-    if(hBuildings == null || setToReload){
+    if(hBuildings == null || getDoReloadNow()){
       reload();
     }
     return (Building)hBuildings.get(new Integer(id));
   }
 
   public static Floor getFloor(int id){
-    if(hFloors == null || setToReload){
+    if(hFloors == null || getDoReloadNow()){
       reload();
     }
     return (Floor)hFloors.get(new Integer(id));
   }
 
   public static ApartmentCategory getApartmentCategory(int id){
-    if(hCategories == null || setToReload){
+    if(hCategories == null || getDoReloadNow()){
       reload();
     }
     return (ApartmentCategory)hCategories.get(new Integer(id));
   }
 
   public static ApartmentType getApartmentType(int id){
-    if(hTypes == null || setToReload){
+    if(hTypes == null || getDoReloadNow()){
       reload();
     }
     return (ApartmentType)hTypes.get(new Integer(id));
   }
 
   public static Apartment getApartment(int id){
-    if(hApartments == null || setToReload){
+    if(hApartments == null || getDoReloadNow()){
       reload();
     }
     return (Apartment)hApartments.get(new Integer(id));

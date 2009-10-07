@@ -1,11 +1,11 @@
 package com.idega.block.building.data;
 
 
-import java.util.Collection;
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
-import com.idega.data.IDOEntity;
 import com.idega.data.IDOFactory;
+import javax.ejb.CreateException;
+import com.idega.data.IDOEntity;
+import javax.ejb.FinderException;
+import java.util.Collection;
 
 public class BuildingHomeImpl extends IDOFactory implements BuildingHome {
 	public Class getEntityInterfaceClass() {
@@ -39,6 +39,15 @@ public class BuildingHomeImpl extends IDOFactory implements BuildingHome {
 		Collection ids = ((BuildingBMPBean) entity).ejbFindByComplex(complexID);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Building findByComplexAndName(String name, Complex complex)
+			throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((BuildingBMPBean) entity).ejbFindByComplexAndName(name,
+				complex);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
 	}
 
 	public Collection getImageFilesByComplex(Integer complexID)

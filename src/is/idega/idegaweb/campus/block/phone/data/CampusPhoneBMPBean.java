@@ -1,9 +1,12 @@
 package is.idega.idegaweb.campus.block.phone.data;
 
-import java.sql.SQLException;
+import java.sql.Date;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
+
+import com.idega.block.building.data.Apartment;
+import com.idega.data.GenericEntity;
 
 /**
  * 
@@ -18,113 +21,67 @@ import javax.ejb.FinderException;
  * @author <a href="mailto:aron@idega.is">Aron Birkir </a>
  * 
  * @version 1.1
- *  
+ * 
  */
 
-public class CampusPhoneBMPBean extends com.idega.data.GenericEntity implements
-		is.idega.idegaweb.campus.block.phone.data.CampusPhone {
-
+public class CampusPhoneBMPBean extends GenericEntity implements CampusPhone {
+	protected static String ENTITY_NAME = "cam_phone";
+	
+	protected static String COLUMN_PHONE_NUMBER = "phone_number";
+	protected static String COLUMN_APARTMENT = "bu_apartment_id";
+	protected static String COLUMN_DATE_INSTALLED = "date_installed";
+	protected static String COLUMN_DATE_RESIGNED = "date_resigned";
+	
 	public CampusPhoneBMPBean() {
 
 	}
 
-	public CampusPhoneBMPBean(int id) throws SQLException {
-
-		super(id);
-
-	}
-
 	public void initializeAttributes() {
-
 		addAttribute(getIDColumnName());
-
-		addAttribute(getColumnNamePhoneNumber(), "Phone number", true, true,
-				String.class);
-
-		addAttribute(getColumnNameApartmentId(), "Apartment", true, true,
-				Integer.class, "one-to-one",
-				com.idega.block.building.data.Apartment.class);
-
-		addAttribute(getColumnNameDateInstalled(), "Installed", true, true,
-				java.sql.Date.class);
-
-		addAttribute(getColumnNameDateResigned(), "Resigned", true, true,
-				java.sql.Date.class);
-
-	}
-
-	public String getEntityName() {
-
-		return getEntityTableName();
-
-	}
-
-	public static String getEntityTableName() {
-		return "CAM_PHONE";
-	}
-
-	public static String getColumnNamePhoneNumber() {
-		return "PHONE_NUMBER";
-	}
-
-	public static String getColumnNameApartmentId() {
-		return "BU_APARTMENT_ID";
-	}
-
-	public static String getColumnNameDateInstalled() {
-		return "DATE_INSTALLED";
-	}
-
-	public static String getColumnNameDateResigned() {
-		return "DATE_RESIGNED";
+		addAttribute(COLUMN_PHONE_NUMBER, "Phone number", String.class);
+		addOneToOneRelationship(COLUMN_APARTMENT, Apartment.class);
+		addAttribute(COLUMN_DATE_INSTALLED, "Installed", Date.class);
+		addAttribute(COLUMN_DATE_RESIGNED, "Resigned", Date.class);
 	}
 
 	public void setPhoneNumber(String number) {
-
-		setColumn(getColumnNamePhoneNumber(), number);
-
+		setColumn(COLUMN_PHONE_NUMBER, number);
 	}
 
 	public String getPhoneNumber() {
-
-		return getStringColumnValue(getColumnNamePhoneNumber());
-
+		return getStringColumnValue(COLUMN_PHONE_NUMBER);
 	}
 
 	public int getApartmentId() {
-
-		return getIntColumnValue(getColumnNameApartmentId());
-
+		return getIntColumnValue(COLUMN_APARTMENT);
 	}
 
+	public Apartment getApartment() {
+		return (Apartment) getColumnValue(COLUMN_APARTMENT);
+	}
+	
 	public void setApartmentId(int id) {
-
-		setColumn(getColumnNameApartmentId(), id);
-
+		setColumn(COLUMN_APARTMENT, id);
 	}
 
+	public void setApartment(Apartment apartment) {
+		setColumn(COLUMN_APARTMENT, apartment);
+	}
+	
 	public void setDateInstalled(java.sql.Date date) {
-
-		setColumn(getColumnNameDateInstalled(), date);
-
+		setColumn(COLUMN_DATE_INSTALLED, date);
 	}
 
-	public java.sql.Date getDateInstalled() {
-
-		return ((java.sql.Date) getColumnValue(getColumnNameDateInstalled()));
-
+	public Date getDateInstalled() {
+		return getDateColumnValue(COLUMN_DATE_INSTALLED);
 	}
 
-	public void setDateResigned(java.sql.Date date) {
-
-		setColumn(getColumnNameDateResigned(), date);
-
+	public void setDateResigned(Date date) {
+		setColumn(COLUMN_DATE_RESIGNED, date);
 	}
 
-	public java.sql.Date getDateResigned() {
-
-		return ((java.sql.Date) getColumnValue(getColumnNameDateResigned()));
-
+	public Date getDateResigned() {
+		return getDateColumnValue(COLUMN_DATE_RESIGNED);
 	}
 
 	public Collection ejbFindAll() throws FinderException {
@@ -134,8 +91,10 @@ public class CampusPhoneBMPBean extends com.idega.data.GenericEntity implements
 	public Collection ejbFindByPhoneNumber(String number)
 			throws FinderException {
 		return idoFindPKsByQuery(idoQueryGetSelect().appendWhereEquals(
-				getColumnNamePhoneNumber(), number));
+				COLUMN_PHONE_NUMBER, number));
 	}
 
+	public String getEntityName() {
+		return ENTITY_NAME;
+	}
 }
-

@@ -10,19 +10,9 @@ public interface Apartment extends BuildingEntity {
 	public String getName();
 
 	/**
-	 * @see com.idega.block.building.data.ApartmentBMPBean#setName
-	 */
-	public void setName(String name);
-
-	/**
 	 * @see com.idega.block.building.data.ApartmentBMPBean#getInfo
 	 */
 	public String getInfo();
-
-	/**
-	 * @see com.idega.block.building.data.ApartmentBMPBean#setInfo
-	 */
-	public void setInfo(String info);
 
 	/**
 	 * @see com.idega.block.building.data.ApartmentBMPBean#getFloorId
@@ -35,16 +25,6 @@ public interface Apartment extends BuildingEntity {
 	public Floor getFloor();
 
 	/**
-	 * @see com.idega.block.building.data.ApartmentBMPBean#setFloorId
-	 */
-	public void setFloorId(int floor_id);
-
-	/**
-	 * @see com.idega.block.building.data.ApartmentBMPBean#setFloorId
-	 */
-	public void setFloorId(Integer floor_id);
-
-	/**
 	 * @see com.idega.block.building.data.ApartmentBMPBean#getApartmentTypeId
 	 */
 	public int getApartmentTypeId();
@@ -55,29 +35,9 @@ public interface Apartment extends BuildingEntity {
 	public ApartmentType getApartmentType();
 
 	/**
-	 * @see com.idega.block.building.data.ApartmentBMPBean#setApartmentTypeId
-	 */
-	public void setApartmentTypeId(int apartment_type_id);
-
-	/**
-	 * @see com.idega.block.building.data.ApartmentBMPBean#setApartmentTypeId
-	 */
-	public void setApartmentTypeId(Integer apartment_type_id);
-
-	/**
 	 * @see com.idega.block.building.data.ApartmentBMPBean#getImageId
 	 */
 	public int getImageId();
-
-	/**
-	 * @see com.idega.block.building.data.ApartmentBMPBean#setImageId
-	 */
-	public void setImageId(int room_type_id);
-
-	/**
-	 * @see com.idega.block.building.data.ApartmentBMPBean#setImageId
-	 */
-	public void setImageId(Integer room_type_id);
 
 	/**
 	 * @see com.idega.block.building.data.ApartmentBMPBean#getRentable
@@ -90,6 +50,76 @@ public interface Apartment extends BuildingEntity {
 	public Date getUnavailableUntil();
 
 	/**
+	 * @see com.idega.block.building.data.ApartmentBMPBean#getSerie
+	 */
+	public String getSerie();
+
+	/**
+	 * @see com.idega.block.building.data.ApartmentBMPBean#getStatus
+	 */
+	public String getStatus();
+
+	/**
+	 * @see com.idega.block.building.data.ApartmentBMPBean#getMarked
+	 */
+	public boolean getMarked();
+
+	/**
+	 * @see com.idega.block.building.data.ApartmentBMPBean#getSerialNumber
+	 */
+	public String getSerialNumber();
+
+	/**
+	 * @see com.idega.block.building.data.ApartmentBMPBean#setName
+	 */
+	public void setName(String name);
+
+	/**
+	 * @see com.idega.block.building.data.ApartmentBMPBean#setInfo
+	 */
+	public void setInfo(String info);
+
+	/**
+	 * @see com.idega.block.building.data.ApartmentBMPBean#setFloorId
+	 */
+	public void setFloorId(int floor_id);
+
+	/**
+	 * @see com.idega.block.building.data.ApartmentBMPBean#setFloorId
+	 */
+	public void setFloorId(Integer floor_id);
+
+	/**
+	 * @see com.idega.block.building.data.ApartmentBMPBean#setFloor
+	 */
+	public void setFloor(Floor floor);
+
+	/**
+	 * @see com.idega.block.building.data.ApartmentBMPBean#setApartmentTypeId
+	 */
+	public void setApartmentTypeId(int apartment_type_id);
+
+	/**
+	 * @see com.idega.block.building.data.ApartmentBMPBean#setApartmentTypeId
+	 */
+	public void setApartmentTypeId(Integer apartment_type_id);
+
+	/**
+	 * @see com.idega.block.building.data.ApartmentBMPBean#setApartmentType
+	 */
+	public void setApartmentType(ApartmentType type);
+
+	/**
+	 * @see com.idega.block.building.data.ApartmentBMPBean#setImageId
+	 */
+	public void setImageId(int room_type_id);
+
+	/**
+	 * @see com.idega.block.building.data.ApartmentBMPBean#setImageId
+	 */
+	public void setImageId(Integer room_type_id);
+
+	/**
 	 * @see com.idega.block.building.data.ApartmentBMPBean#setRentable
 	 */
 	public void setRentable(boolean rentable);
@@ -100,19 +130,9 @@ public interface Apartment extends BuildingEntity {
 	public void setUnavailableUntil(Date date);
 
 	/**
-	 * @see com.idega.block.building.data.ApartmentBMPBean#getSerie
-	 */
-	public String getSerie();
-
-	/**
 	 * @see com.idega.block.building.data.ApartmentBMPBean#setSerie
 	 */
 	public void setSerie(String serie);
-
-	/**
-	 * @see com.idega.block.building.data.ApartmentBMPBean#getStatus
-	 */
-	public String getStatus();
 
 	/**
 	 * @see com.idega.block.building.data.ApartmentBMPBean#setStatus
@@ -140,7 +160,7 @@ public interface Apartment extends BuildingEntity {
 	public void setSerialNumber(String number);
 
 	/**
-	 * @see com.idega.block.building.data.ApartmentBMPBean#getSerialNumber
+	 * @see com.idega.block.building.data.ApartmentBMPBean#setMarked
 	 */
-	public String getSerialNumber();
+	public void setMarked(boolean marked);
 }

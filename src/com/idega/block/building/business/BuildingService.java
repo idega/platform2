@@ -1,27 +1,28 @@
 package com.idega.block.building.business;
 
 
-import com.idega.block.building.data.ComplexSubcategoryViewHome;
-import com.idega.block.building.data.RoomHome;
-import com.idega.block.building.data.ComplexHome;
-import com.idega.block.building.data.ApartmentCategory;
-import com.idega.block.building.data.ApartmentType;
-import com.idega.block.building.data.Apartment;
-import com.idega.block.building.data.ApartmentCategoryHome;
-import java.rmi.RemoteException;
-import com.idega.block.building.data.Complex;
-import com.idega.block.building.data.Room;
 import com.idega.block.building.data.ApartmentSubcategoryHome;
 import com.idega.block.building.data.ApartmentSubcategory;
-import com.idega.block.building.data.Building;
-import com.idega.business.IBOService;
-import com.idega.core.builder.data.ICPage;
+import com.idega.block.building.data.ApartmentCategoryHome;
+import is.idega.idegaweb.campus.block.phone.data.CampusPhoneHome;
 import com.idega.block.building.data.ApartmentViewHome;
+import com.idega.block.building.data.ApartmentHome;
+import java.rmi.RemoteException;
+import com.idega.block.building.data.Floor;
+import com.idega.block.building.data.ApartmentType;
+import com.idega.block.building.data.RoomHome;
+import com.idega.block.building.data.ComplexSubcategoryViewHome;
+import com.idega.core.builder.data.ICPage;
+import com.idega.business.IBOService;
+import com.idega.block.building.data.ComplexHome;
+import com.idega.block.building.data.ApartmentCategory;
+import com.idega.block.building.data.BuildingHome;
+import com.idega.block.building.data.Building;
+import com.idega.block.building.data.Apartment;
+import com.idega.block.building.data.Room;
 import com.idega.block.building.data.ApartmentTypeHome;
 import com.idega.block.building.data.FloorHome;
-import com.idega.block.building.data.BuildingHome;
-import com.idega.block.building.data.Floor;
-import com.idega.block.building.data.ApartmentHome;
+import com.idega.block.building.data.Complex;
 
 public interface BuildingService extends IBOService {
 	/**
@@ -78,8 +79,8 @@ public interface BuildingService extends IBOService {
 	 */
 	public Apartment storeApartment(Integer apartmentID, String name,
 			String info, Integer floorID, Integer typeID, Boolean rentable,
-			Integer imageID, Integer textID, String apartmentSerialNumber)
-			throws RemoteException;
+			Boolean marked, Integer imageID, Integer textID,
+			String apartmentSerialNumber) throws RemoteException;
 
 	/**
 	 * @see com.idega.block.building.business.BuildingServiceBean#storeRoom
@@ -152,6 +153,12 @@ public interface BuildingService extends IBOService {
 	 * @see com.idega.block.building.business.BuildingServiceBean#getApartmentHome
 	 */
 	public ApartmentHome getApartmentHome() throws RemoteException,
+			RemoteException;
+
+	/**
+	 * @see com.idega.block.building.business.BuildingServiceBean#getCampusPhoneHome
+	 */
+	public CampusPhoneHome getCampusPhoneHome() throws RemoteException,
 			RemoteException;
 
 	/**

@@ -1,15 +1,17 @@
 package is.idega.idegaweb.campus.block.phone.data;
 
+
+import javax.ejb.CreateException;
+import com.idega.data.IDOHome;
+import javax.ejb.FinderException;
 import java.util.Collection;
 
-import javax.ejb.FinderException;
+public interface CampusPhoneHome extends IDOHome {
+	public CampusPhone create() throws CreateException;
 
+	public CampusPhone findByPrimaryKey(Object pk) throws FinderException;
 
-public interface CampusPhoneHome extends com.idega.data.IDOHome
-{
- public CampusPhone create() throws javax.ejb.CreateException;
- public CampusPhone findByPrimaryKey(int id) throws javax.ejb.FinderException;
- public CampusPhone findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
- public Collection findAll()throws FinderException;
- public Collection findByPhoneNumber(String number)throws FinderException;
+	public Collection findAll() throws FinderException;
+
+	public Collection findByPhoneNumber(String number) throws FinderException;
 }

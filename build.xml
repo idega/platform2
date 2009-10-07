@@ -41,8 +41,6 @@
     <property name="iwmemberpackages" value="is.idega.idegaweb.member.*" />
 
 
-	<!--property name="cvsroot" value=":pserver:tryggvil@einstein.idega.is:/idega/cvs"/-->
-	
     <property name="browser.skin" value="${skins.dir}/xml.apache.org/"/>
     <property name="printer.skin" value="${skins.dir}/printer/"/>
     <property name="doc.generator" value="org.apache.stylebook.StyleBook"/>
@@ -50,7 +48,7 @@
 
     <property name="build.dir" value="./local/build"/>
     <property name="build.jar.dir" value="${build.dir}/jar"/>
-    <property name="build.src" value="${build.dir}/src"/>
+    <property name="build.src" value="./src"/>
     <property name="build.dest" value="${build.dir}/classes"/>
     <property name="build.docs" value="${build.dir}/docs"/>
     <property name="build.docs.printer" value="${build.dir}/printer-docs"/>
@@ -128,45 +126,10 @@
     
   </target>
 
-  <target name="prepare-cvs-com" depends="init">
-	<delete includeEmptyDirs="true" failonerror="false">
-    		<fileset dir="${build.src}/com"/>
-  	</delete>
-	<copy todir="${build.src}/com">
-    		<fileset dir="${source.dir}/com"/>
- 	 </copy>
-  </target>
-
-		
-  <target name="prepare-cvs-is" depends="init">
-        <delete includeEmptyDirs="true" failonerror="false">
-                <fileset dir="${build.src}/is"/>
-        </delete>
-        <copy todir="${build.src}/is">
-                <fileset dir="${source.dir}/is"/>
-         </copy>
-  </target>
-
-
-  <target name="prepare-cvs-se" depends="init">
-        <delete includeEmptyDirs="true" failonerror="false">
-                <fileset dir="${build.src}/se"/>
-        </delete>
-        <copy todir="${build.src}/se">
-                <fileset dir="${source.dir}/se"/>
-         </copy>
-  </target>
-
-
-  <target name="prepare-cvs-campus" depends="init">
-  </target>
-
-  <target name="prepare-cvs" depends="prepare-cvs-com,prepare-cvs-is,prepare-cvs-se"  />
-
   <!-- =================================================================== -->
   <!-- Prepares the source code                                            -->
   <!-- =================================================================== -->
-  <target name="prepare-src" depends="prepare-cvs">
+  <target name="prepare-src" depends="init">
 
 
   </target>
@@ -579,11 +542,6 @@
   <target name="prepare-war-eplatform" depends="pepare-war">
   	<property name="build.webapp.eplatform.src" value="${build.webapps.src}/webapps/base"/>
   	<property name="build.webapp.eplatform.dest" value="${build.webapps.dest}/eplatform"/>
-  	<cvs cvsRoot="${cvsroot}"
-             package="webapps/base"
-             dest="${build.webapps.src}"
-			tag="${build.tag}"
-             />
   </target>
 
   <target name="war-eplatform" depends="prepare-war-eplatform">

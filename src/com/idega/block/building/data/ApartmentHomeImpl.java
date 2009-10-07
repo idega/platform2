@@ -1,12 +1,12 @@
 package com.idega.block.building.data;
 
 
+import com.idega.data.IDOFactory;
+import javax.ejb.CreateException;
+import com.idega.data.IDOEntity;
+import javax.ejb.FinderException;
 import com.idega.data.IDOException;
 import java.util.Collection;
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
-import com.idega.data.IDOEntity;
-import com.idega.data.IDOFactory;
 
 public class ApartmentHomeImpl extends IDOFactory implements ApartmentHome {
 	public Class getEntityInterfaceClass() {
@@ -82,6 +82,15 @@ public class ApartmentHomeImpl extends IDOFactory implements ApartmentHome {
 		Collection ids = ((ApartmentBMPBean) entity).ejbFindByFloor(floorID);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Apartment findByFloorAndTypeAndName(String name, Floor floor,
+			ApartmentType type) throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((ApartmentBMPBean) entity).ejbFindByFloorAndTypeAndName(
+				name, floor, type);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
 	}
 
 	public Collection findAll() throws FinderException {

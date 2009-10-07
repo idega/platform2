@@ -1,11 +1,11 @@
 package com.idega.block.building.data;
 
 
-import java.util.Collection;
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
-import com.idega.data.IDOEntity;
 import com.idega.data.IDOFactory;
+import javax.ejb.CreateException;
+import com.idega.data.IDOEntity;
+import javax.ejb.FinderException;
+import java.util.Collection;
 
 public class ComplexHomeImpl extends IDOFactory implements ComplexHome {
 	public Class getEntityInterfaceClass() {
@@ -32,5 +32,12 @@ public class ComplexHomeImpl extends IDOFactory implements ComplexHome {
 		Collection ids = ((ComplexBMPBean) entity).ejbFindAllIncludingLocked();
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Complex findComplexByName(String name) throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((ComplexBMPBean) entity).ejbFindComplexByName(name);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
 	}
 }

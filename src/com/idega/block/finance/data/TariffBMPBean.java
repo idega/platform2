@@ -147,6 +147,10 @@ public class TariffBMPBean extends com.idega.data.GenericEntity implements
 		setColumn(getColumnAccountKeyId(), account_key_id);
 	}
 
+	public void setAccountKey(AccountKey accountKey) {
+		setColumn(getColumnAccountKeyId(), accountKey);
+	}
+
 	public void setAccountKeyId(int account_key_id) {
 		setColumn(getColumnAccountKeyId(), account_key_id);
 	}

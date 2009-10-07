@@ -1,18 +1,71 @@
 package com.idega.block.building.data;
 
 
-public interface Floor extends BuildingEntity
-{
- public java.util.Collection getApartments();
- public com.idega.block.building.data.Building getBuilding();
- public int getBuildingId();
- public int getImageId();
- public java.lang.String getInfo();
- public java.lang.String getName();
- public void setBuildingId(int p0);
- public void setBuildingId(java.lang.Integer p0);
- public void setImageId(int p0);
- public void setImageId(java.lang.Integer p0);
- public void setInfo(java.lang.String p0);
- public void setName(java.lang.String p0);
+import java.util.Collection;
+
+public interface Floor extends BuildingEntity {
+	/**
+	 * @see com.idega.block.building.data.FloorBMPBean#getName
+	 */
+	public String getName();
+
+	/**
+	 * @see com.idega.block.building.data.FloorBMPBean#setName
+	 */
+	public void setName(String name);
+
+	/**
+	 * @see com.idega.block.building.data.FloorBMPBean#getInfo
+	 */
+	public String getInfo();
+
+	/**
+	 * @see com.idega.block.building.data.FloorBMPBean#setInfo
+	 */
+	public void setInfo(String info);
+
+	/**
+	 * @see com.idega.block.building.data.FloorBMPBean#getBuildingId
+	 */
+	public int getBuildingId();
+
+	/**
+	 * @see com.idega.block.building.data.FloorBMPBean#getBuilding
+	 */
+	public Building getBuilding();
+
+	/**
+	 * @see com.idega.block.building.data.FloorBMPBean#setBuildingId
+	 */
+	public void setBuildingId(int building_id);
+
+	/**
+	 * @see com.idega.block.building.data.FloorBMPBean#setBuildingId
+	 */
+	public void setBuildingId(Integer building_id);
+
+	/**
+	 * @see com.idega.block.building.data.FloorBMPBean#setBuilding
+	 */
+	public void setBuilding(Building building);
+
+	/**
+	 * @see com.idega.block.building.data.FloorBMPBean#getImageId
+	 */
+	public int getImageId();
+
+	/**
+	 * @see com.idega.block.building.data.FloorBMPBean#setImageId
+	 */
+	public void setImageId(int image_id);
+
+	/**
+	 * @see com.idega.block.building.data.FloorBMPBean#setImageId
+	 */
+	public void setImageId(Integer image_id);
+
+	/**
+	 * @see com.idega.block.building.data.FloorBMPBean#getApartments
+	 */
+	public Collection getApartments();
 }

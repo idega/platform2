@@ -26,150 +26,165 @@ public class ApartmentBMPBean extends
 		com.idega.block.text.data.TextEntityBMPBean implements
 		com.idega.block.building.data.Apartment {
 
-	private static final String STATUS = "status";
+	private static final String ENTITY_NAME = "bu_apartment";
 
-	private static final String SERIE = "serie";
+	private static final String COLUMN_STATUS = "status";
 
-	private static final String UNAVAILABLE_UNTIL = "unavailable_until";
+	private static final String COLUMN_SERIE = "serie";
 
-	private static final String RENTABLE = "rentable";
+	private static final String COLUMN_UNAVAILABLE_UNTIL = "unavailable_until";
 
-	private static final String BU_APRT_TYPE_ID = "BU_APRT_TYPE_ID";
+	private static final String COLUMN_RENTABLE = "rentable";
 
-	private static final String BU_FLOOR_ID = "bu_floor_id";
+	private static final String COLUMN_APARTMENT_TYPE = "BU_APRT_TYPE_ID";
 
-	private static final String INFO = "info";
+	private static final String COLUMN_FLOOR = "bu_floor_id";
 
-	private static final String IC_IMAGE_ID = "ic_image_id";
+	private static final String COLUMN_INFO = "info";
 
-	private static final String NAME = "name";
+	private static final String COLUMN_IMAGE = "ic_image_id";
 
-	private static final String BU_APARTMENT = "bu_apartment";
+	private static final String COLUMN_NAME = "name";
 
-	private static final String APARTMENT_SERIAL_NUMBER = "snr";
+	private static final String COLUMN_SERIAL_NUMBER = "snr";
+	
+	private static final String COLUMN_MARKED = "marked";
 
+	public final static String STATUS_AVAILABLE = "A";
+
+	public final static String STATUS_RENTED = "R";
+
+	public final static String STATUS_FROZEN = "F";
+	
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		addAttribute(NAME, "Name", true, true, java.lang.String.class);
-		addAttribute(INFO, "Info", true, true, java.lang.String.class);
-		addAttribute(BU_FLOOR_ID, "Floor", true, true, java.lang.Integer.class,
-				"many-to-one", Floor.class);
-		addAttribute(BU_APRT_TYPE_ID, "ApartmentType", true, true,
-				java.lang.Integer.class, "many-to-one", ApartmentType.class);
-		addAttribute(RENTABLE, "Leigjanleg", true, true,
-				java.lang.Boolean.class);
-		addAttribute(IC_IMAGE_ID, "Mynd", true, true, java.lang.Integer.class);
-		addAttribute(UNAVAILABLE_UNTIL, "Frosin", true, true,
-				java.sql.Date.class);
-		addAttribute(SERIE, "Serie", true, true, java.lang.String.class, 2);
-		addAttribute(STATUS, "Status", true, true, java.lang.String.class);
-		setMaxLength(INFO, 5000);
-		setMaxLength(STATUS, 1);
-		addAttribute(APARTMENT_SERIAL_NUMBER, "Serial number", String.class, 255);
+		addAttribute(COLUMN_NAME, "Name", String.class);
+		addAttribute(COLUMN_INFO, "Info", String.class, 5000);
+		addManyToOneRelationship(COLUMN_FLOOR, Floor.class);
+		addManyToOneRelationship(COLUMN_APARTMENT_TYPE, ApartmentType.class);
+		addAttribute(COLUMN_RENTABLE, "Leigjanleg", Boolean.class);
+		addAttribute(COLUMN_IMAGE, "Mynd", Integer.class);
+		addAttribute(COLUMN_UNAVAILABLE_UNTIL, "Frosin", Date.class);
+		addAttribute(COLUMN_SERIE, "Serie", String.class, 2);
+		addAttribute(COLUMN_STATUS, "Status", String.class, 1);
+		addAttribute(COLUMN_SERIAL_NUMBER, "Serial number", String.class, 255);
+		addAttribute(COLUMN_MARKED, "marked", Boolean.class);
 	}
 
 	public String getEntityName() {
-		return BU_APARTMENT;
+		return ENTITY_NAME;
 	}
 
-	public final static String AVAILABLE = "A";
-
-	public final static String RENTED = "R";
-
-	public final static String FROZEN = "F";
-
+	//getters
 	public String getName() {
-		return getStringColumnValue(NAME);
-	}
-
-	public void setName(String name) {
-		setColumn(NAME, name);
+		return getStringColumnValue(COLUMN_NAME);
 	}
 
 	public String getInfo() {
-		return getStringColumnValue(INFO);
-	}
-
-	public void setInfo(String info) {
-		setColumn(INFO, info);
+		return getStringColumnValue(COLUMN_INFO);
 	}
 
 	public int getFloorId() {
-		return getIntColumnValue(BU_FLOOR_ID);
+		return getIntColumnValue(COLUMN_FLOOR);
 	}
 
 	public Floor getFloor() {
-		return (Floor) getColumnValue(BU_FLOOR_ID);
-	}
-
-	public void setFloorId(int floor_id) {
-		setColumn(BU_FLOOR_ID, floor_id);
-	}
-
-	public void setFloorId(Integer floor_id) {
-		setColumn(BU_FLOOR_ID, floor_id);
+		return (Floor) getColumnValue(COLUMN_FLOOR);
 	}
 
 	public int getApartmentTypeId() {
-		return getIntColumnValue(BU_APRT_TYPE_ID);
+		return getIntColumnValue(COLUMN_APARTMENT_TYPE);
 	}
 
 	public ApartmentType getApartmentType() {
-		return (ApartmentType) getColumnValue(BU_APRT_TYPE_ID);
-	}
-
-	public void setApartmentTypeId(int apartment_type_id) {
-		setColumn(BU_APRT_TYPE_ID, apartment_type_id);
-	}
-
-	public void setApartmentTypeId(Integer apartment_type_id) {
-		setColumn(BU_APRT_TYPE_ID, apartment_type_id);
+		return (ApartmentType) getColumnValue(COLUMN_APARTMENT_TYPE);
 	}
 
 	public int getImageId() {
-		return getIntColumnValue(IC_IMAGE_ID);
-	}
-
-	public void setImageId(int room_type_id) {
-		setColumn(IC_IMAGE_ID, room_type_id);
-	}
-
-	public void setImageId(Integer room_type_id) {
-		setColumn(IC_IMAGE_ID, room_type_id);
+		return getIntColumnValue(COLUMN_IMAGE);
 	}
 
 	public boolean getRentable() {
-		return getBooleanColumnValue(RENTABLE);
+		return getBooleanColumnValue(COLUMN_RENTABLE);
 	}
 
 	public Date getUnavailableUntil() {
-		return ((Date) getColumnValue(UNAVAILABLE_UNTIL));
-	}
-
-	public void setRentable(boolean rentable) {
-		setColumn(RENTABLE, rentable);
-	}
-
-	public void setUnavailableUntil(Date date) {
-		setColumn(UNAVAILABLE_UNTIL, date);
+		return ((Date) getColumnValue(COLUMN_UNAVAILABLE_UNTIL));
 	}
 
 	public String getSerie() {
-		return getStringColumnValue(SERIE);
-	}
-
-	public void setSerie(String serie) {
-		setColumn(SERIE, serie);
+		return getStringColumnValue(COLUMN_SERIE);
 	}
 
 	public String getStatus() {
-		return (getStringColumnValue(STATUS));
+		return (getStringColumnValue(COLUMN_STATUS));
+	}
+
+	public boolean getMarked() {
+		return getBooleanColumnValue(COLUMN_MARKED, false);
+	}
+
+	public String getSerialNumber() {
+		return getStringColumnValue(COLUMN_SERIAL_NUMBER);
+	}
+
+	//setters
+	public void setName(String name) {
+		setColumn(COLUMN_NAME, name);
+	}
+
+	public void setInfo(String info) {
+		setColumn(COLUMN_INFO, info);
+	}
+
+	public void setFloorId(int floor_id) {
+		setColumn(COLUMN_FLOOR, floor_id);
+	}
+
+	public void setFloorId(Integer floor_id) {
+		setColumn(COLUMN_FLOOR, floor_id);
+	}
+	
+	public void setFloor(Floor floor) {
+		setColumn(COLUMN_FLOOR, floor);
+	}
+
+	public void setApartmentTypeId(int apartment_type_id) {
+		setColumn(COLUMN_APARTMENT_TYPE, apartment_type_id);
+	}
+
+	public void setApartmentTypeId(Integer apartment_type_id) {
+		setColumn(COLUMN_APARTMENT_TYPE, apartment_type_id);
+	}
+
+	public void setApartmentType(ApartmentType type) {
+		setColumn(COLUMN_APARTMENT_TYPE, type);
+	}
+	
+	public void setImageId(int room_type_id) {
+		setColumn(COLUMN_IMAGE, room_type_id);
+	}
+
+	public void setImageId(Integer room_type_id) {
+		setColumn(COLUMN_IMAGE, room_type_id);
+	}
+
+	public void setRentable(boolean rentable) {
+		setColumn(COLUMN_RENTABLE, rentable);
+	}
+
+	public void setUnavailableUntil(Date date) {
+		setColumn(COLUMN_UNAVAILABLE_UNTIL, date);
+	}
+
+	public void setSerie(String serie) {
+		setColumn(COLUMN_SERIE, serie);
 	}
 
 	public void setStatus(String status) {
-		if (status.equalsIgnoreCase(FROZEN) || status.equalsIgnoreCase(RENTED)
-				|| status.equalsIgnoreCase(AVAILABLE)) {
-			setColumn(STATUS, status);
+		if (status.equalsIgnoreCase(STATUS_FROZEN) || status.equalsIgnoreCase(STATUS_RENTED)
+				|| status.equalsIgnoreCase(STATUS_AVAILABLE)) {
+			setColumn(COLUMN_STATUS, status);
 		}
 		else {
 			System.err.println("Undefined status :" + status);
@@ -177,25 +192,26 @@ public class ApartmentBMPBean extends
 	}
 
 	public void setStatusFrozen() {
-		setStatus(FROZEN);
+		setStatus(STATUS_FROZEN);
 	}
 
 	public void setStatusAvailable() {
-		setStatus(AVAILABLE);
+		setStatus(STATUS_AVAILABLE);
 	}
 
 	public void setStatusRented() {
-		setStatus(RENTED);
+		setStatus(STATUS_RENTED);
 	}
 
 	public void setSerialNumber(String number) {
-		setColumn(APARTMENT_SERIAL_NUMBER, number);
+		setColumn(COLUMN_SERIAL_NUMBER, number);
 	}
 
-	public String getSerialNumber() {
-		return getStringColumnValue(APARTMENT_SERIAL_NUMBER);
+	public void setMarked(boolean marked) {
+		setColumn(COLUMN_MARKED, marked);
 	}
-
+	
+	//ejb
 	public Collection ejbFindBySQL(String sql) throws FinderException {
 		return super.idoFindPKsBySQL(sql);
 	}
@@ -203,7 +219,7 @@ public class ApartmentBMPBean extends
 	public Collection ejbFindByType(Integer typeID) throws FinderException {
 		Table apartment = new Table(this);
 		SelectQuery query = new SelectQuery(apartment);
-		query.addCriteria(new MatchCriteria(apartment, BU_APRT_TYPE_ID,
+		query.addCriteria(new MatchCriteria(apartment, COLUMN_APARTMENT_TYPE,
 				MatchCriteria.EQUALS, typeID.intValue()));
 		return idoFindPKsBySQL(query.toString());
 	}
@@ -213,7 +229,7 @@ public class ApartmentBMPBean extends
 
 		try {
 			SelectQuery query = getTypeAndComplexQuery(typeID, complexID);
-			query.addOrder(new Order(new Column(BU_FLOOR_ID), true));
+			query.addOrder(new Order(new Column(COLUMN_FLOOR), true));
 			return idoFindPKsBySQL(query.toString());
 		} catch (IDORelationshipException e) {
 			throw new FinderException(e.getMessage());
@@ -224,7 +240,7 @@ public class ApartmentBMPBean extends
 	public Collection ejbFindByName(String name) throws FinderException {
 		Table apartment = new Table(this);
 		SelectQuery query = new SelectQuery(apartment);
-		query.addCriteria(new MatchCriteria(apartment, NAME,
+		query.addCriteria(new MatchCriteria(apartment, COLUMN_NAME,
 				MatchCriteria.EQUALS, name));
 		return idoFindPKsBySQL(query.toString());
 	}
@@ -236,7 +252,7 @@ public class ApartmentBMPBean extends
 		query.setAsCountQuery(true);
 		query.addColumn(new WildCardColumn());
 
-		query.addCriteria(new MatchCriteria(apartment, RENTABLE,
+		query.addCriteria(new MatchCriteria(apartment, COLUMN_RENTABLE,
 				MatchCriteria.EQUALS, true));
 		return idoGetNumberOfRecords(query.toString());
 	}
@@ -260,7 +276,7 @@ public class ApartmentBMPBean extends
 		query.addJoin(floor, apartment);
 		query.addJoin(building, floor);
 
-		query.addCriteria(new MatchCriteria(apartment, BU_APRT_TYPE_ID,
+		query.addCriteria(new MatchCriteria(apartment, COLUMN_APARTMENT_TYPE,
 				MatchCriteria.EQUALS, typeID.intValue()));
 		query.addCriteria(new MatchCriteria(new Column(building,
 				BuildingBMPBean.COLUMN_COMPLEX), MatchCriteria.EQUALS,
@@ -284,10 +300,10 @@ public class ApartmentBMPBean extends
 		query.addColumn(new WildCardColumn(apartment));
 		query.addJoin(building, BuildingBMPBean.COLUMN_COMPLEX, complex,
 				BuildingBMPBean.COLUMN_COMPLEX);
-		query.addJoin(floor, FloorBMPBean.BU_BUILDING_ID, building,
-				FloorBMPBean.BU_BUILDING_ID);
-		query.addJoin(apartment, BU_FLOOR_ID, floor, BU_FLOOR_ID);
-		query.addJoin(apartment, BU_APRT_TYPE_ID, type, BU_APRT_TYPE_ID);
+		query.addJoin(floor, FloorBMPBean.COLUMN_BUILDING, building,
+				FloorBMPBean.COLUMN_BUILDING);
+		query.addJoin(apartment, COLUMN_FLOOR, floor, COLUMN_FLOOR);
+		query.addJoin(apartment, COLUMN_APARTMENT_TYPE, type, COLUMN_APARTMENT_TYPE);
 		query.addJoin(type, ApartmentTypeBMPBean.COLUMN_APARTMENT_SUBCATEGORY, subcategory,
 				ApartmentTypeBMPBean.COLUMN_APARTMENT_SUBCATEGORY);
 
@@ -302,7 +318,7 @@ public class ApartmentBMPBean extends
 		}
 		if (buildingID != null && buildingID.intValue() > 0) {
 			query.addCriteria(new MatchCriteria(floor,
-					FloorBMPBean.BU_BUILDING_ID, MatchCriteria.EQUALS,
+					FloorBMPBean.COLUMN_BUILDING, MatchCriteria.EQUALS,
 					buildingID.intValue()));
 			if (order) {
 				query.addOrder(building, BuildingBMPBean.COLUMN_NAME, true);
@@ -310,15 +326,15 @@ public class ApartmentBMPBean extends
 		}
 		if (floorID != null && floorID.intValue() > 0) {
 			query.addCriteria(new MatchCriteria(apartment,
-					ApartmentBMPBean.BU_FLOOR_ID, MatchCriteria.EQUALS, floorID
+					ApartmentBMPBean.COLUMN_FLOOR, MatchCriteria.EQUALS, floorID
 							.intValue()));
 			if (order) {
-				query.addOrder(floor, FloorBMPBean.NAME, true);
+				query.addOrder(floor, FloorBMPBean.COLUMN_NAME, true);
 			}
 		}
 		if (typeID != null && typeID.intValue() > 0) {
 			query.addCriteria(new MatchCriteria(apartment,
-					ApartmentBMPBean.BU_APRT_TYPE_ID, MatchCriteria.EQUALS,
+					ApartmentBMPBean.COLUMN_APARTMENT_TYPE, MatchCriteria.EQUALS,
 					typeID.intValue()));
 			if (order) {
 				query.addOrder(type, ApartmentTypeBMPBean.COLUMN_NAME, true);
@@ -338,12 +354,22 @@ public class ApartmentBMPBean extends
 	public Collection ejbFindByFloor(Integer floorID) throws FinderException {
 		IDOQuery query = idoQuery();
 		query.appendSelectAllFrom(this);
-		query.appendWhereEquals(BU_FLOOR_ID, floorID);
-		query.appendOrderBy(NAME);
+		query.appendWhereEquals(COLUMN_FLOOR, floorID);
+		query.appendOrderBy(COLUMN_NAME);
 
 		return idoFindPKsByQuery(query);
 	}
 
+	public Object ejbFindByFloorAndTypeAndName(String name, Floor floor, ApartmentType type) throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this);
+		query.appendWhereEquals(COLUMN_FLOOR, floor);
+		query.appendAndEquals(COLUMN_APARTMENT_TYPE, type);
+		query.appendAndEqualsQuoted(COLUMN_NAME, name);
+		
+		return idoFindOnePKByQuery(query);
+	}
+	
 	public Collection ejbFindAll() throws FinderException {
 		return super.idoFindAllIDsBySQL();
 	}

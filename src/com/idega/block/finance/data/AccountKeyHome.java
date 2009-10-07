@@ -1,10 +1,10 @@
 package com.idega.block.finance.data;
 
 
-import java.util.Collection;
 import javax.ejb.CreateException;
 import com.idega.data.IDOHome;
 import javax.ejb.FinderException;
+import java.util.Collection;
 
 public interface AccountKeyHome extends IDOHome {
 	public AccountKey create() throws CreateException;
@@ -18,4 +18,6 @@ public interface AccountKeyHome extends IDOHome {
 	public Collection findByCategory(Integer categoryID) throws FinderException;
 
 	public Collection findByPrimaryKeys(String[] keys) throws FinderException;
+
+	public AccountKey findByName(String name) throws FinderException;
 }

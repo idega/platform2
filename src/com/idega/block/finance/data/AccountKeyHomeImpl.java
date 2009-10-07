@@ -1,11 +1,11 @@
 package com.idega.block.finance.data;
 
 
-import java.util.Collection;
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
-import com.idega.data.IDOEntity;
 import com.idega.data.IDOFactory;
+import javax.ejb.CreateException;
+import com.idega.data.IDOEntity;
+import javax.ejb.FinderException;
+import java.util.Collection;
 
 public class AccountKeyHomeImpl extends IDOFactory implements AccountKeyHome {
 	public Class getEntityInterfaceClass() {
@@ -48,5 +48,12 @@ public class AccountKeyHomeImpl extends IDOFactory implements AccountKeyHome {
 				.ejbFindByPrimaryKeys(keys);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public AccountKey findByName(String name) throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((AccountKeyBMPBean) entity).ejbFindByName(name);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
 	}
 }

@@ -148,6 +148,10 @@ public class BuildingBMPBean extends TextEntityBMPBean implements Building {
 	public void setComplexId(int complex_id) {
 		setColumn(COLUMN_COMPLEX, complex_id);
 	}
+	
+	public void setComplex(Complex complex) {
+		setColumn(COLUMN_COMPLEX, complex);
+	}
 
 	public void setImageId(int image_id) {
 		setColumn(COLUMN_IMAGE, image_id);
@@ -227,6 +231,15 @@ public class BuildingBMPBean extends TextEntityBMPBean implements Building {
 		return idoFindPKsByQuery(query);
 	}
 
+	public Object ejbFindByComplexAndName(String name, Complex complex) throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this);
+		query.appendWhereEquals(COLUMN_COMPLEX, complex);
+		query.appendAndEqualsQuoted(COLUMN_NAME, name);
+
+		return this.idoFindOnePKByQuery(query);
+	}
+	
 	public Collection ejbHomeGetImageFilesByComplex(Integer complexID)
 			throws FinderException {
 		try {

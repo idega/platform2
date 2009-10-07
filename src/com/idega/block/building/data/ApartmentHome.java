@@ -1,11 +1,11 @@
 package com.idega.block.building.data;
 
 
-import com.idega.data.IDOException;
-import java.util.Collection;
 import javax.ejb.CreateException;
 import com.idega.data.IDOHome;
 import javax.ejb.FinderException;
+import com.idega.data.IDOException;
+import java.util.Collection;
 
 public interface ApartmentHome extends IDOHome {
 	public Apartment create() throws CreateException;
@@ -31,6 +31,9 @@ public interface ApartmentHome extends IDOHome {
 			boolean order) throws FinderException;
 
 	public Collection findByFloor(Integer floorID) throws FinderException;
+
+	public Apartment findByFloorAndTypeAndName(String name, Floor floor,
+			ApartmentType type) throws FinderException;
 
 	public Collection findAll() throws FinderException;
 

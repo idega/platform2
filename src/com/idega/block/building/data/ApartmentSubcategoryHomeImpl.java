@@ -1,11 +1,11 @@
 package com.idega.block.building.data;
 
 
-import java.util.Collection;
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
-import com.idega.data.IDOEntity;
 import com.idega.data.IDOFactory;
+import javax.ejb.CreateException;
+import com.idega.data.IDOEntity;
+import javax.ejb.FinderException;
+import java.util.Collection;
 
 public class ApartmentSubcategoryHomeImpl extends IDOFactory implements
 		ApartmentSubcategoryHome {
@@ -35,6 +35,15 @@ public class ApartmentSubcategoryHomeImpl extends IDOFactory implements
 				.ejbFindByCategory(categoryID);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public ApartmentSubcategory findByCategoryAndName(String name,
+			ApartmentCategory category) throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((ApartmentSubcategoryBMPBean) entity)
+				.ejbFindByCategoryAndName(name, category);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
 	}
 
 	public Collection findByCategory(Integer[] categoryID)

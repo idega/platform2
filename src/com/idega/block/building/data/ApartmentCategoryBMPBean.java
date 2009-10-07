@@ -14,6 +14,7 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 import com.idega.block.text.data.TextEntityBMPBean;
+import com.idega.data.IDOQuery;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.query.Column;
 import com.idega.data.query.MatchCriteria;
@@ -138,6 +139,14 @@ public class ApartmentCategoryBMPBean extends TextEntityBMPBean implements
 		return super.idoFindAllIDsBySQL();
 	}
 
+	public Object ejbFindByName(String name) throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this);
+		query.appendWhereEqualsQuoted(COLUMN_NAME, name);
+
+		return this.idoFindOnePKByQuery(query);
+	}
+	
 	public Collection getApartmentTypes() {
 		try {
 			return super.idoGetRelatedEntities(ApartmentType.class);

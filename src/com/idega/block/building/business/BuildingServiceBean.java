@@ -4,6 +4,9 @@
  */
 package com.idega.block.building.business;
 
+import is.idega.idegaweb.campus.block.phone.data.CampusPhone;
+import is.idega.idegaweb.campus.block.phone.data.CampusPhoneHome;
+
 import java.rmi.RemoteException;
 
 import javax.ejb.CreateException;
@@ -303,7 +306,7 @@ public class BuildingServiceBean extends IBOServiceBean implements
 	}
 
 	public Apartment storeApartment(Integer apartmentID, String name,
-			String info, Integer floorID, Integer typeID, Boolean rentable,
+			String info, Integer floorID, Integer typeID, Boolean rentable, Boolean marked, 
 			Integer imageID, Integer textID, String apartmentSerialNumber) {
 
 		try {
@@ -318,6 +321,7 @@ public class BuildingServiceBean extends IBOServiceBean implements
 			apartment.setApartmentTypeId(typeID);
 			apartment.setInfo(info);
 			apartment.setRentable(rentable.booleanValue());
+			apartment.setMarked(marked.booleanValue());
 			if (imageID != null && imageID.intValue() > 0) {
 				apartment.setImageId(imageID);
 			}
@@ -476,6 +480,10 @@ public class BuildingServiceBean extends IBOServiceBean implements
 
 	public ApartmentHome getApartmentHome() throws RemoteException {
 		return (ApartmentHome) getIDOHome(Apartment.class);
+	}
+
+	public CampusPhoneHome getCampusPhoneHome() throws RemoteException {
+		return (CampusPhoneHome) getIDOHome(CampusPhone.class);
 	}
 
 	public ApartmentTypeHome getApartmentTypeHome() throws RemoteException {

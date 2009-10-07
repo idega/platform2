@@ -66,7 +66,7 @@ public class CampusTypeWindow extends Window {
 			// String rentString = format.format((long)room.getRent());
 			ArrayList list = new ArrayList();
 			ArrayList publicList = new ArrayList();
-			boolean usePublic = true;
+			boolean usePublic = Boolean.valueOf(iwc.getApplicationSettings().getProperty("USE_PUBLIC_PRICING", String.valueOf(false))).booleanValue();
 			
 			java.util.Iterator iter = typeTariffs.iterator();
 			float total = 0;

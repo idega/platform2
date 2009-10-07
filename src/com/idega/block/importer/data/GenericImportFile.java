@@ -28,8 +28,8 @@ public class GenericImportFile implements ImportFile{
 	
 	  private File file;
 	  private String recordDilimiter = "\n";
-	  private String valueSeparator = ";";
-	  private String emptyValueString = " ";
+	  protected String valueSeparator = ";";
+	  protected String emptyValueString = " ";
 	  private InputStreamReader fr;
 	  private BufferedReader br;
 	  private boolean addNewLineAfterRecord = false;

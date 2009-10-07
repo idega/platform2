@@ -263,6 +263,11 @@ public class TariffEditor extends Finance {
 		innerTable.setCellpadding(2);
 		innerTable.setCellspacing(1);
 		int col = 1;
+
+		boolean usePublic = Boolean.valueOf(
+				iwc.getApplicationSettings().getProperty("USE_PUBLIC_PRICING",
+						String.valueOf(false))).booleanValue();
+
 		innerTable.add(getHeader("Nr"), col++, 1);
 		if (ifAttributes) {
 			innerTable.add(getHeader(localize("connection", "Connection")),
@@ -270,8 +275,10 @@ public class TariffEditor extends Finance {
 		}
 		innerTable.add(getHeader(localize("name", "Name")), col++, 1);
 		innerTable.add(getHeader(localize("amount", "Amount")), col++, 1);
-		innerTable.add(getHeader(localize("amount_public_market",
-				"Public market")), col++, 1);
+		if (usePublic) {
+			innerTable.add(getHeader(localize("amount_public_market",
+					"Public market")), col++, 1);
+		}
 		innerTable.add(getHeader(localize("account_key", "Account key")),
 				col++, 1);
 
@@ -306,15 +313,18 @@ public class TariffEditor extends Finance {
 							innerTable.add(getText(val), col++, row);
 							attTotal = attTotal.add(new BigDecimal(tariff
 									.getPrice()));
-							publicAttTotal = publicAttTotal.add(new BigDecimal(tariff
-									.getPublicPrice()));
+							publicAttTotal = publicAttTotal.add(new BigDecimal(
+									tariff.getPublicPrice()));
 
 							innerTable.add(getText(tariff.getName()), col++,
 									row);
 							innerTable.add(getAmountText((tariff.getPrice())),
 									col++, row);
 
-							innerTable.add(getAmountText(tariff.getPublicPrice()), col++, row);
+							if (usePublic) {
+								innerTable.add(getAmountText(tariff
+										.getPublicPrice()), col++, row);
+							}
 
 							Integer I = new Integer(tariff.getAccountKeyId());
 							if (hAK.containsKey(I)) {
@@ -336,7 +346,10 @@ public class TariffEditor extends Finance {
 									getAmountText(attTotal.doubleValue()),
 									col++, row);
 							innerTable.setColor(col, row, getHeaderColor());
-							innerTable.add(getAmountText(publicAttTotal.doubleValue()), col++, row);
+							if (usePublic) {
+							innerTable.add(getAmountText(publicAttTotal
+									.doubleValue()), col++, row);
+							}
 							innerTable.setColor(col++, row++,
 									getBackgroundColor());
 
@@ -371,7 +384,8 @@ public class TariffEditor extends Finance {
 						innerTable.add(getText(tariff.getName()), col++, row);
 						innerTable.add(getAmountText((tariff.getPrice())),
 								col++, row);
-						innerTable.add(getAmountText((tariff.getPublicPrice())),
+						innerTable.add(
+								getAmountText((tariff.getPublicPrice())),
 								col++, row);
 
 						Integer I = new Integer(tariff.getAccountKeyId());
@@ -1097,9 +1111,10 @@ public class TariffEditor extends Finance {
 								Float.valueOf(sPrice), indexStamp);
 					}
 				}
-				
+
 				if (sPublicPrice != null && !"".equals(sPublicPrice)) {
-					if (sOldPublicPrice == null || !sPublicPrice.equals(sOldPublicPrice)) {
+					if (sOldPublicPrice == null
+							|| !sPublicPrice.equals(sOldPublicPrice)) {
 						java.sql.Timestamp indexStamp = stamp != null ? stamp
 								.getTimestamp() : null;
 						getFinanceService().updateTariffPublicPrice(ID,

@@ -1,36 +1,45 @@
 package com.idega.block.building.data;
 
 
-public class FloorHomeImpl extends com.idega.data.IDOFactory implements FloorHome
-{
- protected Class getEntityInterfaceClass(){
-  return Floor.class;
- }
+import com.idega.data.IDOFactory;
+import javax.ejb.CreateException;
+import com.idega.data.IDOEntity;
+import javax.ejb.FinderException;
+import java.util.Collection;
 
+public class FloorHomeImpl extends IDOFactory implements FloorHome {
+	public Class getEntityInterfaceClass() {
+		return Floor.class;
+	}
 
- public Floor create() throws javax.ejb.CreateException{
-  return (Floor) super.createIDO();
- }
+	public Floor create() throws CreateException {
+		return (Floor) super.createIDO();
+	}
 
-public java.util.Collection findAll()throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((FloorBMPBean)entity).ejbFindAll();
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public Floor findByPrimaryKey(Object pk) throws FinderException {
+		return (Floor) super.findByPrimaryKeyIDO(pk);
+	}
 
-public java.util.Collection findByBuilding(java.lang.Integer p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((FloorBMPBean)entity).ejbFindByBuilding(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public Collection findAll() throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((FloorBMPBean) entity).ejbFindAll();
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
+	public Collection findByBuilding(Integer buildingID) throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((FloorBMPBean) entity).ejbFindByBuilding(buildingID);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
- public Floor findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (Floor) super.findByPrimaryKeyIDO(pk);
- }
-
-
-
+	public Floor findByBuildingAndName(String name, Building building)
+			throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((FloorBMPBean) entity).ejbFindByBuildingAndName(name,
+				building);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
 }

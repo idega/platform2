@@ -95,6 +95,11 @@ public interface Building extends BuildingEntity {
 	public void setComplexId(int complex_id);
 
 	/**
+	 * @see com.idega.block.building.data.BuildingBMPBean#setComplex
+	 */
+	public void setComplex(Complex complex);
+
+	/**
 	 * @see com.idega.block.building.data.BuildingBMPBean#setImageId
 	 */
 	public void setImageId(int image_id);

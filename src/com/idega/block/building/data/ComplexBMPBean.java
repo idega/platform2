@@ -119,6 +119,15 @@ public class ComplexBMPBean extends TextEntityBMPBean implements Complex {
 		return this.idoFindPKsByQuery(query);		
 	}
 
+	public Object ejbFindComplexByName(String name) throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this);
+		query.appendWhere();
+		query.appendEqualsQuoted(COLUMN_NAME, name);
+		
+		return this.idoFindOnePKByQuery(query);
+	}
+	
 	public Collection getBuildings() {
 		try {
 			return super.idoGetRelatedEntities(Building.class);

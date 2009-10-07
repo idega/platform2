@@ -8,6 +8,7 @@ import java.util.Iterator;
 import javax.ejb.FinderException;
 import javax.faces.component.UIComponent;
 
+import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.building.business.BuildingService;
 import com.idega.block.building.data.Apartment;
 import com.idega.block.building.data.ApartmentCategory;
@@ -50,6 +51,8 @@ import com.idega.presentation.ui.Window;
 public class BuildingEditor extends com.idega.presentation.Block {
 
 	private static final String PARAM_RENTABLE = "bm_rentable";
+
+	private static final String PARAM_MARKED = "bm_marked";
 
 	private static final String PARAM_FLOOR = "bm_floor";
 
@@ -271,6 +274,8 @@ public class BuildingEditor extends com.idega.presentation.Block {
 				case ACTION_SUBCATEGORY:
 					storeSubcategory(iwc);
 				}
+				
+				BuildingCacher.setToReloadNextTimeReferenced();
 			}
 		} else if (iwc.getParameter(PARAM_DELETE) != null
 				|| iwc.getParameter(PARAM_DELETE + ".x") != null) {
@@ -301,6 +306,8 @@ public class BuildingEditor extends com.idega.presentation.Block {
 					break;
 				}
 				this.eId = null;
+
+				BuildingCacher.setToReloadNextTimeReferenced();
 			}
 		}
 
@@ -674,9 +681,11 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		String sType = iwc.getParameter(PARAM_TYPE);
 		String sFloorId = iwc.getParameter(PARAM_FLOOR);
 		String sRentable = iwc.getParameter(PARAM_RENTABLE);
+		String sMarked = iwc.getParameter(PARAM_MARKED);
 		String sImageId = iwc.getParameter("photoid");
 		String apSnr = iwc.getParameter(PARAM_APARTMENT_SERIAL_NUMBER);
 		Boolean bRentable = sRentable != null ? Boolean.TRUE : Boolean.FALSE;
+		Boolean bMarked = sMarked != null ? Boolean.TRUE : Boolean.FALSE;
 
 		Integer id = null;
 		Integer floorid = null;
@@ -704,7 +713,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		}
 
 		this.service.storeApartment(id, sName, sInfo, floorid, typeid,
-				bRentable, imageid, this.textId, apSnr);
+				bRentable, bMarked, imageid, this.textId, apSnr);
 	}
 
 	public PresentationObject getLinkTable(IWContext iwc) {
@@ -1634,6 +1643,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 
 		int iTextId = e ? eApartment.getTextId() : -1;
 		boolean bRentable = e ? eApartment.getRentable() : false;
+		boolean markApartment = e ? eApartment.getMarked() : false;
 		Form form = new Form();
 
 		Table Frame = new Table(2, 1);
@@ -1644,7 +1654,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		Frame.setWidth("100%");
 		Frame.setWidth(1, 1, "100%");
 		Frame.setHeight("100%");
-		Table T = new Table(2, 12);
+		Table T = new Table(2, 14);
 		T.setCellpadding(2);
 		T.setWidth("100%");
 		Table T2 = new Table(1, 2);
@@ -1677,6 +1687,12 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		if (bRentable) {
 			rentable.setChecked(true);
 		}
+		
+		CheckBox marked = new CheckBox(PARAM_MARKED, "true");
+		if (markApartment) {
+			marked.setChecked(true);
+		}
+		
 		HiddenInput HI = new HiddenInput(PARAM_CHOICE, String
 				.valueOf(this.ACTION_APARTMENT));
 		HiddenInput HA = new HiddenInput(this.PARAM_ACTION, String
@@ -1721,15 +1737,20 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		T.add(formatText(this.iwrb.getLocalizedString(LABEL_TYPE, "Type")), 1,
 				7);
 		T.add(types, 1, 8);
-		// T.add(formatText(iwrb.getLocalizedString("serie","Serie")+" "),1,8);
-		// T.add(serie,1,4);
+
 		T.add(formatText(this.iwrb.getLocalizedString("rentable", "Rentable")
 				+ " "), 1, 9);
 		T.add(rentable, 1, 10);
+		
+		T.add(formatText(this.iwrb.getLocalizedString("marked", "Marked")
+				+ " "), 1, 11);
+		T.add(marked, 1, 12);
+		
+		
 		T.add(formatText(this.iwrb.getLocalizedString(LABEL_INFO, "Info")), 1,
-				11);
-		T.add(makeTextArea(sInfo), 1, 12);
-		T.mergeCells(1, 12, 2, 12);
+				13);
+		T.add(makeTextArea(sInfo), 1, 14);
+		T.mergeCells(1, 14, 2, 14);
 		T2.add(formatText(this.iwrb.getLocalizedString(LABEL_PHOTO, "Photo:")),
 				1, 1);
 		T2.add(this.makeImageInput(1, "photoid"), 1, 1);

@@ -1,12 +1,20 @@
 package com.idega.block.building.data;
 
+
+import javax.ejb.CreateException;
+import com.idega.data.IDOHome;
 import javax.ejb.FinderException;
+import java.util.Collection;
 
+public interface FloorHome extends IDOHome {
+	public Floor create() throws CreateException;
 
-public interface FloorHome extends com.idega.data.IDOHome
-{
- public Floor create() throws javax.ejb.CreateException;
- public Floor findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
- public java.util.Collection findByBuilding(java.lang.Integer p0)throws javax.ejb.FinderException;
-public java.util.Collection findAll() throws FinderException;
+	public Floor findByPrimaryKey(Object pk) throws FinderException;
+
+	public Collection findAll() throws FinderException;
+
+	public Collection findByBuilding(Integer buildingID) throws FinderException;
+
+	public Floor findByBuildingAndName(String name, Building building)
+			throws FinderException;
 }

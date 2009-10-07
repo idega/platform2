@@ -1,8 +1,8 @@
 package com.idega.block.finance.data;
 
 
-import java.sql.Timestamp;
 import com.idega.data.IDOEntity;
+import java.sql.Timestamp;
 
 public interface Tariff extends IDOEntity {
 	/**
@@ -59,6 +59,11 @@ public interface Tariff extends IDOEntity {
 	 * @see com.idega.block.finance.data.TariffBMPBean#setAccountKeyId
 	 */
 	public void setAccountKeyId(Integer account_key_id);
+
+	/**
+	 * @see com.idega.block.finance.data.TariffBMPBean#setAccountKey
+	 */
+	public void setAccountKey(AccountKey accountKey);
 
 	/**
 	 * @see com.idega.block.finance.data.TariffBMPBean#setAccountKeyId

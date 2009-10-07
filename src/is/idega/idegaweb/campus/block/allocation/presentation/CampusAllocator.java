@@ -390,8 +390,6 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		UserHome userHome = campusService.getContractService().getUserService()
 				.getUserHome();
 		if (contracts != null && !contracts.isEmpty()) {
-//			java.text.DateFormat df = java.text.DateFormat
-//					.getDateInstance(java.text.DateFormat.SHORT);
 			java.util.Iterator I = contracts.iterator();
 			Contract contract;
 			User user;
@@ -1118,7 +1116,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 					} else if (renewalApartment != null && ((Integer)renewalApartment.getPrimaryKey()).intValue() == apartmentID.intValue()) {
 						isThis = true;
 						TextFontColor = "#00FF00";
-					}
+					} 
 
 					// List all apartments and show next availability ( date )
 					nextAvailable = new IWTimestamp(campusService
@@ -1134,8 +1132,12 @@ public class CampusAllocator extends CampusBlock implements Campus {
 							campusService.getBuildingService()
 									.getApartmentHome()
 									.findByPrimaryKey(apartmentID));
-					
-					T.add(getText(apartment.getApartmentName()), 2, row);
+					if (apartment.getApartment().getMarked()) {					
+						TextFontColor = "#0000FF";
+						T.add(getText("*" + apartment.getApartmentName()), 2, row);
+					} else {
+						T.add(getText(apartment.getApartmentName()), 2, row);						
+					}
 					T.add(getText(apartment.getFloorName()), 3, row);
 					T.add(getText(apartment.getBuildingName()), 4, row);
 					if (nextAvailable != null) {
@@ -1148,22 +1150,27 @@ public class CampusAllocator extends CampusBlock implements Campus {
 										applicantID, contractID, apartmentID,
 										nextAvailable, application), 5, row);
 					}
-					if (isThis)
+					
+					if (isThis || apartment.getApartment().getMarked()) {
 						TextFontColor = "#000000";
+					}
 					
 					if (isResigned) {
 						TextFontColor = redColor;
 					}
+					
 					row++;
 				}
 			}
 		}
+		
 		return T;
 	}
 
 	private Link getHomeLink() {
 		Link L = new Link(getBundle().getImage("list.gif"));
 		L.addParameter("list", "");
+		
 		return L;
 	}
 
@@ -1189,9 +1196,6 @@ public class CampusAllocator extends CampusBlock implements Campus {
 			Applicant applicant = ((ApplicantHome) IDOLookup
 					.getHome(Applicant.class)).findByPrimaryKey(wl
 					.getApplicantId());
-			// ApartmentType type = campusService.getBuildingService()
-			// .getApartmentTypeHome().findByPrimaryKey(
-			// wl.getApartmentTypeId());
 
 			int row = 1;
 			T.add(getHeader(localize("applicant", "Applicant")), 1, row);
@@ -1212,8 +1216,9 @@ public class CampusAllocator extends CampusBlock implements Campus {
 					getHeader(localize("allocation_denials",
 							"Allocation denials")), 1, row);
 			int count = wl.getNumberOfRejections();
-			if (count < 0)
+			if (count < 0) {
 				count = 0;
+			}
 			T.add(getText(String.valueOf(count)), 2, row);
 			row++;
 			SubmitButton remove = new SubmitButton(getResourceBundle()
@@ -1225,19 +1230,19 @@ public class CampusAllocator extends CampusBlock implements Campus {
 					.getLocalizedImageButton("reactivate", "Reactivate"),
 					"reactivate_waitinglist", wID.toString());
 			T.addButton(remove);
-			if (wl.getRemovedFromList())
+			if (wl.getRemovedFromList()) {
 				T.addButton(reactivate);
-			if (pSubcatId != null) { // && pComplexId != null) {
+			}
+			if (pSubcatId != null) {
 				form.addParameter(pSubcatId.getName(), pSubcatId
 						.getValueAsString());
-				// form.addParameter(pComplexId.getName(), pComplexId
-				// .getValueAsString());
 			}
 		} catch (IDOLookupException e) {
 			e.printStackTrace();
 		} catch (FinderException e) {
 			e.printStackTrace();
 		}
+
 		return form;
 	}
 

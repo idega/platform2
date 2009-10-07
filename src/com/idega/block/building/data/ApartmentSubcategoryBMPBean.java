@@ -100,6 +100,19 @@ public class ApartmentSubcategoryBMPBean extends TextEntityBMPBean implements
 		return idoFindPKsByQuery(query);
 	}
 
+	public Object ejbFindByCategoryAndName(String name, ApartmentCategory category)
+			throws FinderException {
+		Table subcategory = new Table(this);
+		SelectQuery query = new SelectQuery(subcategory);
+		query.addColumn(new WildCardColumn(subcategory));
+		query.addCriteria(new MatchCriteria(new Column(subcategory,
+				COLUMN_APARTMENT_CATEGORY), MatchCriteria.EQUALS, category));
+		query.addCriteria(new MatchCriteria(new Column(subcategory,
+				COLUMN_NAME), MatchCriteria.EQUALS, name));
+
+		return idoFindOnePKByQuery(query);
+	}
+
 	public Collection ejbFindByCategory(Integer categoryID[])
 			throws FinderException {
 		Table subcategory = new Table(this);
@@ -109,7 +122,7 @@ public class ApartmentSubcategoryBMPBean extends TextEntityBMPBean implements
 				COLUMN_APARTMENT_CATEGORY), categoryID));
 
 		System.out.println("sql = " + query.toString());
-		
+
 		return idoFindPKsByQuery(query);
 	}
 
