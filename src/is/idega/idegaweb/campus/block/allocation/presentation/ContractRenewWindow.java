@@ -349,7 +349,7 @@ public class ContractRenewWindow extends CampusWindow {
 							(Integer) contractUser.getPrimaryKey(),
 							(Integer) applicant.getPrimaryKey(), contract
 									.getApartmentId(), from.getDate(), to
-									.getDate());
+									.getDate(), new Integer(contract.getApplicationID()));
 					
 					if (c != null && changeKeyStatus) {
 						c.setChangeKeyStatusAt(changeKeyStatusAt.getTimestamp());

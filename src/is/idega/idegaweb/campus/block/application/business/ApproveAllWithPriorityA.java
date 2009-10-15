@@ -78,12 +78,7 @@ public class ApproveAllWithPriorityA {
       CampusApplication CA = null;
 
       CAHome = (CampusApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(CampusApplication.class);
-      java.util.Collection coll = CAHome.findAllByApplicationId(((Integer)A.getPrimaryKey()).intValue());
-      if (coll != null) {
-        java.util.Iterator it = coll.iterator();
-        if (it.hasNext())
-          CA = (CampusApplication)it.next();//CAHome.findByPrimaryKeyLegacy(((Integer)it.next()).intValue());
-      }
+      CA = CAHome.findByApplicationId(((Integer)A.getPrimaryKey()).intValue());
 
       if (CA != null) {
         Collection L = ((AppliedHome)IDOLookup.getHome(Applied.class)).findByApplicationID( ((Integer)CA.getPrimaryKey()));

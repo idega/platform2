@@ -420,7 +420,7 @@ public class ContractServiceBean extends IBOServiceBean implements
 	}
 
 	public Contract createNewContract(Integer userID, Integer applicantID,
-			Integer apartmentID, Date from, Date to) throws RemoteException,
+			Integer apartmentID, Date from, Date to, Integer applicationID) throws RemoteException,
 			CreateException {
 		Contract contract = getContractHome().create();
 		contract.setApartmentId(apartmentID);
@@ -429,6 +429,10 @@ public class ContractServiceBean extends IBOServiceBean implements
 		contract.setStatusCreated();
 		contract.setValidFrom((java.sql.Date) from);
 		contract.setValidTo((java.sql.Date) to);
+		if (applicationID != null) {
+			contract.setApplicationID(applicationID
+					.intValue());
+		}
 		contract.store();
 		getMailingListService().processMailEvent(
 				((Integer) contract.getPrimaryKey()).intValue(),
@@ -790,7 +794,7 @@ public class ContractServiceBean extends IBOServiceBean implements
 											(Integer) eUser.getPrimaryKey(),
 											(Integer) applicant.getPrimaryKey(),
 											apartmentID, from.getDate(), to
-													.getDate());
+													.getDate(), applicationID);
 									transaction.commit();
 								} catch (Exception e1) {
 									try {
@@ -803,11 +807,6 @@ public class ContractServiceBean extends IBOServiceBean implements
 									}
 									throw new AllocationException(
 											"Transaction: " + e1.getMessage());
-								}
-								if (applicationID != null) {
-									contract.setApplicationID(applicationID
-											.intValue());
-									contract.store();
 								}
 
 								return contract;

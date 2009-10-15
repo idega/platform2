@@ -563,7 +563,7 @@ public class CampusApplicationBMPBean extends GenericEntity implements
 		return COLUMN_PRIORITY_LEVEL;
 	}
 
-	public java.util.Collection ejbFindAllByApplicationId(int id)
+	public Object ejbFindByApplicationId(int id)
 			throws javax.ejb.FinderException {
 		StringBuffer sql = new StringBuffer("select * from ");
 		sql.append(getTableName());
@@ -571,7 +571,7 @@ public class CampusApplicationBMPBean extends GenericEntity implements
 		sql.append(COLUMN_APPLICATION);
 		sql.append(" = ");
 		sql.append(id);
-		return super.idoFindPKsBySQL(sql.toString());
+		return super.idoFindOnePKBySQL(sql.toString());
 	}
 
 	public Collection ejbFindBySubjectAndStatus(Integer subjectID,

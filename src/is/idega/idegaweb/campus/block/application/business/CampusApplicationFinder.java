@@ -299,16 +299,9 @@ public abstract class CampusApplicationFinder {
 
 					CampusApplicationHome cHome = (CampusApplicationHome) IDOLookup
 							.getHome(CampusApplication.class);
-					l = cHome.findAllByApplicationId(new Integer(eApplication
-							.getPrimaryKey().toString()).intValue());
-					if (l != null && !l.isEmpty()) {
-						CampusApplication eCampusApplication = (CampusApplication) l
-								.iterator().next();
-						AppliedHome lHome = (AppliedHome) IDOLookup
-								.getHome(Applied.class);
-						l = lHome
-								.findByApplicationID((Integer) eCampusApplication
-										.getPrimaryKey());
+						CampusApplication eCampusApplication = cHome.findByApplicationId(new Integer(eApplication
+								.getPrimaryKey().toString()).intValue());
+						l = eCampusApplication.getApplied();
 						Vector v = null;
 						if (l != null) {
 							v = new Vector(l.size());
@@ -320,7 +313,6 @@ public abstract class CampusApplicationFinder {
 
 						cah = new CampusApplicationHolder(eApplication,
 								eApplicant, eCampusApplication, v);
-					}
 				}
 			} catch (Exception ex) {
 				ex.printStackTrace();

@@ -5,9 +5,13 @@ import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationHolder;
 import is.idega.idegaweb.campus.block.application.data.CampusApplication;
+import is.idega.idegaweb.campus.block.application.data.CampusApplicationHome;
 
 import java.util.Collection;
 import java.util.Vector;
+
+import javax.ejb.EJBException;
+import javax.ejb.FinderException;
 
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.Application;
@@ -15,6 +19,7 @@ import com.idega.block.building.business.ApartmentHolder;
 import com.idega.block.building.data.ApartmentView;
 import com.idega.block.building.data.ApartmentViewHome;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
 
@@ -53,6 +58,19 @@ public class EntityHolder {
 	public EntityHolder(Contract eContract) {
 		this.eContract = eContract;
 		applicantID = eContract.getApplicantId().intValue();
+		if (eContract.getApplication() != null) {
+			eApplication = eContract.getApplication();
+			try {
+				CampusApplicationHome caHome = (CampusApplicationHome) IDOLookup.getHome(CampusApplication.class);
+				this.eCampusApplication = caHome.findByApplicationId(((Integer) eApplication.getPrimaryKey()).intValue());
+			} catch (IDOLookupException e) {
+				e.printStackTrace();
+			} catch (EJBException e) {
+				e.printStackTrace();
+			} catch (FinderException e) {
+				e.printStackTrace();
+			}
+		}
 		init();
 	}
 
@@ -64,9 +82,22 @@ public class EntityHolder {
 			eContract = cHome.findByPrimaryKey(new Integer(iContractId));
 
 			applicantID = eContract.getApplicantId().intValue();
+			if (eContract.getApplication() != null) {
+				eApplication = eContract.getApplication();
+				try {
+					CampusApplicationHome caHome = (CampusApplicationHome) IDOLookup.getHome(CampusApplication.class);
+					this.eCampusApplication = caHome.findByApplicationId(((Integer) eApplication.getPrimaryKey()).intValue());
+				} catch (IDOLookupException e) {
+					e.printStackTrace();
+				} catch (EJBException e) {
+					e.printStackTrace();
+				} catch (FinderException e) {
+					e.printStackTrace();
+				}
+			}
 			init();
 		} catch (Exception ex) {
-
+			ex.printStackTrace();
 		}
 
 	}
@@ -91,8 +122,7 @@ public class EntityHolder {
 						.getHome(User.class)).findByPrimaryKey(eContract
 						.getUserId());
 				if (eUser != null)
-					emails = eUser.getEmails();
-				apartmentHolder = new ApartmentHolder(
+					apartmentHolder = new ApartmentHolder(
 						((ApartmentViewHome) IDOLookup
 								.getHome(ApartmentView.class))
 								.findByPrimaryKey(eContract.getApartmentId()));
@@ -101,9 +131,7 @@ public class EntityHolder {
 			if (emails == null && eCampusApplication != null) {
 				emails = new Vector();
 				emails.add(eCampusApplication.getEmail());
-
 			}
-
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

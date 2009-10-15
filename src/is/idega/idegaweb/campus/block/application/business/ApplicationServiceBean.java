@@ -577,13 +577,10 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 		
 		if (a != null) {
 			try {
-				resultSet = getCampusApplicationHome().findAllByApplicationId(((Integer) a.getPrimaryKey()).intValue());
+				ca = getCampusApplicationHome().findByApplicationId(((Integer) a.getPrimaryKey()).intValue());
+				resultSet = getAppliedHome().findByApplicationID((Integer) ca.getPrimaryKey());
 				if (resultSet != null && !resultSet.isEmpty()) {
-					ca = (CampusApplication) resultSet.iterator().next();
-					resultSet = getAppliedHome().findByApplicationID((Integer) ca.getPrimaryKey());
-					if (resultSet != null && !resultSet.isEmpty()) {
-						applied = new Vector(resultSet);
-					}
+					applied = new Vector(resultSet);
 				}
 				// Applicant
 				applicant = getApplicantHome().findByPrimaryKey(new Integer(a.getApplicantId()));
@@ -640,10 +637,8 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 				Collection applications = getApplicationHome().findByApplicantID((Integer) eApplicant.getPrimaryKey());
 				if (applications != null && !applications.isEmpty()) {
 					Application eApplication = (Application) applications.iterator().next();
-					Collection camApplications = getCampusApplicationHome().findAllByApplicationId(
-							((Integer) eApplication.getPrimaryKey()).intValue());
-					if (camApplications != null && !camApplications.isEmpty()) {
-						CampusApplication eCampusApplication = (CampusApplication) camApplications.iterator().next();
+						CampusApplication eCampusApplication = getCampusApplicationHome().findByApplicationId(
+								((Integer) eApplication.getPrimaryKey()).intValue());
 						Collection applieds = getAppliedHome().findByApplicationID(
 								(Integer) eCampusApplication.getPrimaryKey());
 						Vector v = null;
@@ -654,7 +649,6 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 							}
 						}
 						cah = new CampusApplicationHolder(eApplication, eApplicant, eCampusApplication, v);
-					}
 				}
 			}
 			catch (RemoteException e) {

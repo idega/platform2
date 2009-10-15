@@ -1,4 +1,5 @@
 package is.idega.idegaweb.campus.block.mailinglist.business;
+
 import is.idega.idegaweb.campus.block.mailinglist.data.EmailLetter;
 import is.idega.idegaweb.campus.block.mailinglist.data.EmailLetterHome;
 import is.idega.idegaweb.campus.block.mailinglist.data.MailingList;
@@ -37,38 +38,45 @@ import com.idega.util.text.ContentParser;
  *
  */
 /**
- *  Title: Description: Copyright: Copyright (c) 2001 Company:
- *
- * @author     <br>
- *      <a href="mailto:aron@idega.is">Aron Birkir</a> <br>
- *
- * @created    9. mars 2002
- * @version    1.0
+ * Title: Description: Copyright: Copyright (c) 2001 Company:
+ * 
+ * @author <br>
+ *         <a href="mailto:aron@idega.is">Aron Birkir</a> <br>
+ * 
+ * @created 9. mars 2002
+ * @version 1.0
  */
 
-public class MailingListServiceBean extends IBOServiceBean implements MailingListService {
+public class MailingListServiceBean extends IBOServiceBean implements
+		MailingListService {
 
-	/**  IC category type identifier */
+	/** IC category type identifier */
 	public static String CATEGORYTYPE = "cam_mail";
 
 	/**
-	 *  Creates a new mailing list undir given category
-	 *
-	 * @param  iCategoryId  Description of the Parameter
-	 * @param  name         Description of the Parameter
-	 * @return              Description of the Return Value
+	 * Creates a new mailing list undir given category
+	 * 
+	 * @param iCategoryId
+	 *            Description of the Parameter
+	 * @param name
+	 *            Description of the Parameter
+	 * @return Description of the Return Value
 	 */
-	public MailingList createMailingList(int iCategoryId, String name)throws RemoteException, FinderException,CreateException {
+	public MailingList createMailingList(int iCategoryId, String name)
+			throws RemoteException, FinderException, CreateException {
 		return storeMailingList(iCategoryId, -1, name);
 	}
 
 	/**
-	 *  Removes email from given mailinglist
-	 *
-	 * @param  mlist     Description of the Parameter
-	 * @param  email_id  Description of the Parameter
+	 * Removes email from given mailinglist
+	 * 
+	 * @param mlist
+	 *            Description of the Parameter
+	 * @param email_id
+	 *            Description of the Parameter
 	 */
-	public void removeEmail(MailingList mlist, int email_id) throws RemoteException, FinderException {
+	public void removeEmail(MailingList mlist, int email_id)
+			throws RemoteException, FinderException {
 
 		EmailHome home = ((EmailHome) getIDOHome(Email.class));
 		Email email = home.findByPrimaryKey(new Integer(email_id));
@@ -76,29 +84,32 @@ public class MailingListServiceBean extends IBOServiceBean implements MailingLis
 
 	}
 
-	
-
 	/**
-	 *  Gets the mailingList of the MailingListBusiness class
-	 *
-	 * @param  id  Description of the Parameter
-	 * @return     The mailing list value
+	 * Gets the mailingList of the MailingListBusiness class
+	 * 
+	 * @param id
+	 *            Description of the Parameter
+	 * @return The mailing list value
 	 */
-	public MailingList getMailingList(int id) throws RemoteException, FinderException {
-		return ((MailingListHome) getIDOHome(MailingList.class)).findByPrimaryKey(new Integer(id));
+	public MailingList getMailingList(int id) throws RemoteException,
+			FinderException {
+		return ((MailingListHome) getIDOHome(MailingList.class))
+				.findByPrimaryKey(new Integer(id));
 	}
 
 	/**
-	 *  Gets the emailLetter of the MailingListBusiness class
-	 *
-	 * @param  id  Description of the Parameter
-	 * @return     The email letter value
+	 * Gets the emailLetter of the MailingListBusiness class
+	 * 
+	 * @param id
+	 *            Description of the Parameter
+	 * @return The email letter value
 	 */
-	public EmailLetter getEmailLetter(int id) throws RemoteException, FinderException {
-		return ((EmailLetterHome) getIDOHome(EmailLetter.class)).findByPrimaryKey(new Integer(id));
+	public EmailLetter getEmailLetter(int id) throws RemoteException,
+			FinderException {
+		return ((EmailLetterHome) getIDOHome(EmailLetter.class))
+				.findByPrimaryKey(new Integer(id));
 	}
 
-	
 	/**
 	 * @param iCategoryId
 	 * @param MailingListId
@@ -108,122 +119,143 @@ public class MailingListServiceBean extends IBOServiceBean implements MailingLis
 	 * @throws CreateException
 	 * @throws FinderException
 	 */
-	public MailingList storeMailingList(int iCategoryId, int MailingListId, String name) throws RemoteException,CreateException,FinderException{
-	
-			MailingList mlist = 	((MailingListHome) getIDOHome(MailingList.class)).create();
-			if (MailingListId > 0) {
-				mlist =((MailingListHome)getIDOHome(MailingList.class)).findByPrimaryKey(new Integer(MailingListId));
-			}
-			mlist.setName(name);
-			mlist.setCreated(IWTimestamp.getTimestampRightNow());
-			if (iCategoryId > 0) {
-				mlist.setCategoryId(iCategoryId);
-			}
-			mlist.store();
-			return mlist;
+	public MailingList storeMailingList(int iCategoryId, int MailingListId,
+			String name) throws RemoteException, CreateException,
+			FinderException {
+
+		MailingList mlist = ((MailingListHome) getIDOHome(MailingList.class))
+				.create();
+		if (MailingListId > 0) {
+			mlist = ((MailingListHome) getIDOHome(MailingList.class))
+					.findByPrimaryKey(new Integer(MailingListId));
+		}
+		mlist.setName(name);
+		mlist.setCreated(IWTimestamp.getTimestampRightNow());
+		if (iCategoryId > 0) {
+			mlist.setCategoryId(iCategoryId);
+		}
+		mlist.store();
+		return mlist;
 	}
 
 	/**
-	 *  Adds a feature to the Email attribute of the MailingListBusiness class
-	 *
-	 * @param  iMailingListId  The feature to be added to the Email attribute
-	 * @param  address         The feature to be added to the Email attribute
-	 * @return                 Description of the Return Value
+	 * Adds a feature to the Email attribute of the MailingListBusiness class
+	 * 
+	 * @param iMailingListId
+	 *            The feature to be added to the Email attribute
+	 * @param address
+	 *            The feature to be added to the Email attribute
+	 * @return Description of the Return Value
 	 */
-	public boolean addEmail(int iMailingListId, String address)throws RemoteException,FinderException,IDORelationshipException,CreateException {
-		MailingList mlist =	((MailingListHome) getIDOHome(MailingList.class)).findByPrimaryKey(new Integer(iMailingListId));
-		addEmail(mlist,address);		
+	public boolean addEmail(int iMailingListId, String address)
+			throws RemoteException, FinderException, IDORelationshipException,
+			CreateException {
+		MailingList mlist = ((MailingListHome) getIDOHome(MailingList.class))
+				.findByPrimaryKey(new Integer(iMailingListId));
+		addEmail(mlist, address);
 		return true;
-		
+
 	}
 
 	/**
-	 *  Adds a feature to the Email attribute of the MailingListBusiness class
-	 *
-	 * @param  mlist    The feature to be added to the Email attribute
-	 * @param  address  The feature to be added to the Email attribute
-	 * @return          Description of the Return Value
+	 * Adds a feature to the Email attribute of the MailingListBusiness class
+	 * 
+	 * @param mlist
+	 *            The feature to be added to the Email attribute
+	 * @param address
+	 *            The feature to be added to the Email attribute
+	 * @return Description of the Return Value
 	 */
-	public boolean addEmail(MailingList mlist, String address)throws CreateException,RemoteException,IDORelationshipException {
+	public boolean addEmail(MailingList mlist, String address)
+			throws CreateException, RemoteException, IDORelationshipException {
 		if (mlist != null) {
 			EmailHome eHome = (EmailHome) getIDOHome(Email.class);
-			Email email = null ;
+			Email email = null;
 			try {
 				email = eHome.findEmailByAddress(address);
+			} catch (FinderException e) {
 			}
-			catch (FinderException e) {}
-			if(email == null)
+			if (email == null)
 				email = eHome.create();
-				email.setEmailAddress(address);
-				email.store();
-				mlist.addEmail(email);
-				return true;
-			
+			email.setEmailAddress(address);
+			email.store();
+			mlist.addEmail(email);
+			return true;
+
 		}
 		return false;
 	}
 
 	/**
-	 *  Adds a feature to the Email attribute of the MailingListBusiness class
-	 *
-	 * @param  iMailingListId  The feature to be added to the Email attribute
-	 * @param  emails          The feature to be added to the Email attribute
-	 * @return                 Description of the Return Value
+	 * Adds a feature to the Email attribute of the MailingListBusiness class
+	 * 
+	 * @param iMailingListId
+	 *            The feature to be added to the Email attribute
+	 * @param emails
+	 *            The feature to be added to the Email attribute
+	 * @return Description of the Return Value
 	 */
-	public boolean addEmail(int iMailingListId, List emails)throws RemoteException,FinderException {
-			MailingList mlist =(	(MailingListHome) getIDOHome(MailingList.class)).findByPrimaryKey(new Integer(iMailingListId));
-			EntityBulkUpdater bulk = new EntityBulkUpdater(mlist);
-			bulk.addAll(emails, EntityBulkUpdater.addto);
-			return true;
-		
+	public boolean addEmail(int iMailingListId, List emails)
+			throws RemoteException, FinderException {
+		MailingList mlist = ((MailingListHome) getIDOHome(MailingList.class))
+				.findByPrimaryKey(new Integer(iMailingListId));
+		EntityBulkUpdater bulk = new EntityBulkUpdater(mlist);
+		bulk.addAll(emails, EntityBulkUpdater.addto);
+		return true;
+
 	}
 
 	/**
-	 *  Sends the specified letter to addresses contained in the entityholder
-	 *
-	 * @param  letterId  Description of the Parameter
-	 * @param  holder    Description of the Parameter
-	 * @return           Description of the Return Value
+	 * Sends the specified letter to addresses contained in the entityholder
+	 * 
+	 * @param letterId
+	 *            Description of the Parameter
+	 * @param holder
+	 *            Description of the Parameter
+	 * @return Description of the Return Value
 	 */
-	public boolean sendMail( int letterId, EntityHolder holder) {
-		
-			try {
-				EmailLetter letter =((EmailLetterHome) getIDOHome(EmailLetter.class)).findByPrimaryKey(new Integer(letterId));
-				return sendMail( letter, holder);
-			}
-			catch (RemoteException e) {
-				
-			}
-			catch (FinderException e) {
-				
-			}
-	
+	public boolean sendMail(int letterId, EntityHolder holder) {
+
+		try {
+			EmailLetter letter = ((EmailLetterHome) getIDOHome(EmailLetter.class))
+					.findByPrimaryKey(new Integer(letterId));
+			return sendMail(letter, holder);
+		} catch (RemoteException e) {
+
+		} catch (FinderException e) {
+
+		}
+
 		return false;
 	}
 
 	/**
-	 *  Process the given mail event type for the given contract
-	 *
-	 * @param  iContractId  Description of the Parameter
-	 * @param  type         Description of the Parameter
-	 * @return              Description of the Return Value
+	 * Process the given mail event type for the given contract
+	 * 
+	 * @param iContractId
+	 *            Description of the Parameter
+	 * @param type
+	 *            Description of the Parameter
+	 * @return Description of the Return Value
 	 */
-	public boolean processMailEvent( int iContractId, String type) {
-		return processMailEvent( new EntityHolder(iContractId), type);
+	public boolean processMailEvent(int iContractId, String type) {
+		return processMailEvent(new EntityHolder(iContractId), type);
 	}
 
 	/**
-	 *  Process the given mail event type for the given entityholder
-	 *
-	 * @param  holder  Description of the Parameter
-	 * @param  type    Description of the Parameter
-	 * @return         Description of the Return Value
+	 * Process the given mail event type for the given entityholder
+	 * 
+	 * @param holder
+	 *            Description of the Parameter
+	 * @param type
+	 *            Description of the Parameter
+	 * @return Description of the Return Value
 	 */
-	public boolean processMailEvent( EntityHolder holder, String type) {
+	public boolean processMailEvent(EntityHolder holder, String type) {
 		try {
 			CampusSettings settings = getCampusService().getCampusSettings();
 			boolean sendEventMail = settings.getSendEventMail();
-			
+
 			if (!sendEventMail) {
 				System.err.println("not sending any mail although requested");
 				return false;
@@ -231,41 +263,42 @@ public class MailingListServiceBean extends IBOServiceBean implements MailingLis
 			System.err.println("Sending email of type : " + type);
 			EmailLetterHome elHome = (EmailLetterHome) getIDOHome(EmailLetter.class);
 			Collection letters = elHome.findByType(type);
-				
+
 			if (letters != null) {
 				System.err.println("Number of letters : " + letters.size());
 				java.util.Iterator iter = letters.iterator();
 				EmailLetter letter;
 				while (iter.hasNext()) {
 					letter = (EmailLetter) iter.next();
-					sendMail( letter, holder);
+					sendMail(letter, holder);
 				}
 				return true;
-			}
-			else {
+			} else {
 				System.err.println("no letters to send");
 			}
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 		return true;
 	}
 
 	/**
-	 *  Parses an email letter and sends it to all recipients
-	 *
-	 * @param  letter  Description of the Parameter
-	 * @param  holder  Description of the Parameter
-	 * @return         Description of the Return Value
+	 * Parses an email letter and sends it to all recipients
+	 * 
+	 * @param letter
+	 *            Description of the Parameter
+	 * @param holder
+	 *            Description of the Parameter
+	 * @return Description of the Return Value
 	 */
-	public boolean sendMail( EmailLetter letter, EntityHolder holder) {
+	public boolean sendMail(EmailLetter letter, EntityHolder holder) {
 		try {
 			String Body = letter.getBody();
 			Collection holderEmails = new Vector();
 			if (holder != null && letter.getParse()) {
 				LetterParser parser = new LetterParser(holder);
-				Body = new ContentParser().parse(getIWApplicationContext(), parser, Body);
+				Body = new ContentParser().parse(getIWApplicationContext(),
+						parser, Body);
 				if (!letter.getOnlyUser())
 					holderEmails = holder.getEmails();
 			}
@@ -273,7 +306,7 @@ public class MailingListServiceBean extends IBOServiceBean implements MailingLis
 
 			List emails = new Vector();
 
-			MailingList mlist ;
+			MailingList mlist;
 			Collection lists = letter.getMailingLists();
 			if (lists != null) {
 				Iterator mIter = lists.iterator();
@@ -294,314 +327,325 @@ public class MailingListServiceBean extends IBOServiceBean implements MailingLis
 					email = (Email) eIter.next();
 					holderEmails.add(email.getEmailAddress());
 				}
-
 			}
+
 			if (holderEmails != null && !holderEmails.isEmpty()) {
 				Iterator eIter = holderEmails.iterator();
-				String email=null;
-				Object emailObject ;
+				String email = null;
+				Object emailObject;
 				while (eIter.hasNext()) {
 					emailObject = eIter.next();
-					if(emailObject instanceof String)
-						email = (String)emailObject;
-					else if(emailObject instanceof Email)
-						email = ((Email)emailObject).getEmailAddress();
-					if(email!=null){
+					if (emailObject instanceof String) {
+						email = (String) emailObject;
+					} else if (emailObject instanceof Email) {
+						email = ((Email) emailObject).getEmailAddress();
+					}
+					
+					if (email != null) {
 						System.err.println("Sending letter to " + email);
-						SendMail.send(letter.getFrom(), email, "", "", letter.getHost(), subject, Body);
+						SendMail.send(letter.getFrom(), email, "", "", letter
+								.getHost(), subject, Body);
 					}
 					email = null;
 				}
 			}
 			return true;
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 		return false;
 	}
 
 	/**
-	 *  Gets the emailSubject of the MailingListBusiness class
-	 *
-	 * @param  letter  Description of the Parameter
-	 * @param  iwrb    Description of the Parameter
-	 * @return         The email subject value
+	 * Gets the emailSubject of the MailingListBusiness class
+	 * 
+	 * @param letter
+	 *            Description of the Parameter
+	 * @param iwrb
+	 *            Description of the Parameter
+	 * @return The email subject value
 	 */
 	public String getEmailSubject(EmailLetter letter, IWResourceBundle iwrb) {
 		String subject = iwrb.getLocalizedString(letter.getSubjectKey());
 		if (subject == null) {
 			return "";
-		}
-		else {
+		} else {
 			return subject;
 		}
 	}
 
 	/**
-	 *  Sets the emailSubject attribute of the MailingListBusiness class
-	 *
-	 * @param  letter   The new emailSubject value
-	 * @param  iwrb     The new emailSubject value
-	 * @param  subject  The new emailSubject value
+	 * Sets the emailSubject attribute of the MailingListBusiness class
+	 * 
+	 * @param letter
+	 *            The new emailSubject value
+	 * @param iwrb
+	 *            The new emailSubject value
+	 * @param subject
+	 *            The new emailSubject value
 	 */
-	public void setEmailSubject(EmailLetter letter, IWResourceBundle iwrb, String subject) {
+	public void setEmailSubject(EmailLetter letter, IWResourceBundle iwrb,
+			String subject) {
 		iwrb.setString(letter.getSubjectKey(), subject);
-		//iwrb.storeState();
+		// iwrb.storeState();
 	}
 
 	/**
-	 *  Gets the emailBody of the MailingListBusiness class
-	 *
-	 * @param  letter  Description of the Parameter
-	 * @param  iwrb    Description of the Parameter
-	 * @return         The email body value
+	 * Gets the emailBody of the MailingListBusiness class
+	 * 
+	 * @param letter
+	 *            Description of the Parameter
+	 * @param iwrb
+	 *            Description of the Parameter
+	 * @return The email body value
 	 */
 	public String getEmailBody(EmailLetter letter, IWResourceBundle iwrb) {
 		String subject = iwrb.getLocalizedString(letter.getEmailKey());
 		if (subject == null) {
 			return "";
-		}
-		else {
+		} else {
 			return subject;
 		}
 	}
 
 	/**
-	 *  Sets the emailBody attribute of the MailingListBusiness class
-	 *
-	 * @param  letter  The new emailBody value
-	 * @param  iwrb    The new emailBody value
-	 * @param  body    The new emailBody value
+	 * Sets the emailBody attribute of the MailingListBusiness class
+	 * 
+	 * @param letter
+	 *            The new emailBody value
+	 * @param iwrb
+	 *            The new emailBody value
+	 * @param body
+	 *            The new emailBody value
 	 */
-	public void setEmailBody(EmailLetter letter, IWResourceBundle iwrb, String body) {
+	public void setEmailBody(EmailLetter letter, IWResourceBundle iwrb,
+			String body) {
 		iwrb.setString(letter.getEmailKey(), body);
 
-		//iwrb.storeState();
+		// iwrb.storeState();
 	}
 
 	/**
-	 *  Stores email letter to datastore
-	 *
-	 * @param  iEmailLetterId  Description of the Parameter
-	 * @param  sHost           Description of the Parameter
-	 * @param  sFrom           Description of the Parameter
-	 * @param  subject         Description of the Parameter
-	 * @param  body            Description of the Parameter
-	 * @param  Parse           Description of the Parameter
-	 * @param  OnlyUser        Description of the Parameter
-	 * @param  type            Description of the Parameter
-	 * @return                 Description of the Return Value
+	 * Stores email letter to datastore
+	 * 
+	 * @param iEmailLetterId
+	 *            Description of the Parameter
+	 * @param sHost
+	 *            Description of the Parameter
+	 * @param sFrom
+	 *            Description of the Parameter
+	 * @param subject
+	 *            Description of the Parameter
+	 * @param body
+	 *            Description of the Parameter
+	 * @param Parse
+	 *            Description of the Parameter
+	 * @param OnlyUser
+	 *            Description of the Parameter
+	 * @param type
+	 *            Description of the Parameter
+	 * @return Description of the Return Value
 	 */
-	public EmailLetter storeEmailLetter(
-		int iEmailLetterId,
-		String sHost,
-		String sFrom,
-		String subject,
-		String body,
-		boolean Parse,
-		boolean OnlyUser,
-		String type) {
+	public EmailLetter storeEmailLetter(int iEmailLetterId, String sHost,
+			String sFrom, String subject, String body, boolean Parse,
+			boolean OnlyUser, String type) {
 		EmailLetter letter = null;
-		
-			
-			try {
-				EmailLetterHome lHome = (EmailLetterHome) getIDOHome(EmailLetter.class);
-				letter = lHome.create();
-				if (iEmailLetterId > 0) {
-					letter =	lHome.findByPrimaryKey(new Integer(iEmailLetterId));
-				}
-				letter.setSubject(subject);
-				letter.setBody(body);
-				letter.setHost(sHost);
-				letter.setFrom(sFrom);
-				letter.setParse(Parse);
-				letter.setOnlyUser(OnlyUser);
-				letter.setType(type);
-				letter.store();
-				
+
+		try {
+			EmailLetterHome lHome = (EmailLetterHome) getIDOHome(EmailLetter.class);
+			letter = lHome.create();
+			if (iEmailLetterId > 0) {
+				letter = lHome.findByPrimaryKey(new Integer(iEmailLetterId));
 			}
-			catch (IDOStoreException e) {
-				
-			}
-			catch (RemoteException e) {
-				
-			}
-			catch (CreateException e) {
-				
-			}
-			catch (FinderException e) {
-				
-			}
-		
+			letter.setSubject(subject);
+			letter.setBody(body);
+			letter.setHost(sHost);
+			letter.setFrom(sFrom);
+			letter.setParse(Parse);
+			letter.setOnlyUser(OnlyUser);
+			letter.setType(type);
+			letter.store();
+
+		} catch (IDOStoreException e) {
+
+		} catch (RemoteException e) {
+
+		} catch (CreateException e) {
+
+		} catch (FinderException e) {
+
+		}
+
 		return letter;
 	}
 
 	/**
-	 *  Creates new letter and stores to datastore
-	 *
-	 * @param  sHost      Description of the Parameter
-	 * @param  sFrom      Description of the Parameter
-	 * @param  sSubject   Description of the Parameter
-	 * @param  sBody      Description of the Parameter
-	 * @param  bParse     Description of the Parameter
-	 * @param  bOnlyUser  Description of the Parameter
-	 * @param  type       Description of the Parameter
-	 * @return            Description of the Return Value
+	 * Creates new letter and stores to datastore
+	 * 
+	 * @param sHost
+	 *            Description of the Parameter
+	 * @param sFrom
+	 *            Description of the Parameter
+	 * @param sSubject
+	 *            Description of the Parameter
+	 * @param sBody
+	 *            Description of the Parameter
+	 * @param bParse
+	 *            Description of the Parameter
+	 * @param bOnlyUser
+	 *            Description of the Parameter
+	 * @param type
+	 *            Description of the Parameter
+	 * @return Description of the Return Value
 	 */
-	public EmailLetter createEmailLetter(
-		String sHost,
-		String sFrom,
-		String sSubject,
-		String sBody,
-		boolean bParse,
-		boolean bOnlyUser,
-		String type) {
-		return storeEmailLetter(-1, sHost, sFrom, sSubject, sBody, bParse, bOnlyUser, type);
+	public EmailLetter createEmailLetter(String sHost, String sFrom,
+			String sSubject, String sBody, boolean bParse, boolean bOnlyUser,
+			String type) {
+		return storeEmailLetter(-1, sHost, sFrom, sSubject, sBody, bParse,
+				bOnlyUser, type);
 	}
 
 	/**
-	 *  Creates new email letter and stores to datastore
-	 *
-	 * @param  emailletter  Description of the Parameter
-	 * @param  sHost        Description of the Parameter
-	 * @param  sFrom        Description of the Parameter
-	 * @param  sSubject     Description of the Parameter
-	 * @param  sBody        Description of the Parameter
-	 * @param  bParse       Description of the Parameter
-	 * @param  onlyUser     Description of the Parameter
-	 * @param  type         Description of the Parameter
-	 * @return              Description of the Return Value
+	 * Creates new email letter and stores to datastore
+	 * 
+	 * @param emailletter
+	 *            Description of the Parameter
+	 * @param sHost
+	 *            Description of the Parameter
+	 * @param sFrom
+	 *            Description of the Parameter
+	 * @param sSubject
+	 *            Description of the Parameter
+	 * @param sBody
+	 *            Description of the Parameter
+	 * @param bParse
+	 *            Description of the Parameter
+	 * @param onlyUser
+	 *            Description of the Parameter
+	 * @param type
+	 *            Description of the Parameter
+	 * @return Description of the Return Value
 	 */
-	public EmailLetter createEmailLetter(
-		EmailLetter emailletter,
-		String sHost,
-		String sFrom,
-		String sSubject,
-		String sBody,
-		boolean bParse,
-		boolean onlyUser,
-		String type) {
-		int id = emailletter != null ? ((Integer)emailletter.getPrimaryKey()).intValue() : -1;
-		return storeEmailLetter(id, sHost, sFrom, sSubject, sBody, bParse, onlyUser, type);
+	public EmailLetter createEmailLetter(EmailLetter emailletter, String sHost,
+			String sFrom, String sSubject, String sBody, boolean bParse,
+			boolean onlyUser, String type) {
+		int id = emailletter != null ? ((Integer) emailletter.getPrimaryKey())
+				.intValue() : -1;
+		return storeEmailLetter(id, sHost, sFrom, sSubject, sBody, bParse,
+				onlyUser, type);
 	}
 
 	/**
 	 * Removes given letter from datastore
-	 *
-	 * @param  letter  Description of the Parameter
+	 * 
+	 * @param letter
+	 *            Description of the Parameter
 	 */
 	public void removeEmailLetter(EmailLetter letter) {
 		try {
 			letter.remove();
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	}
 
 	/**
-	 *  Removes given mailinglist and relations to emails from datastore
-	 *
-	 * @param  list  Description of the Parameter
+	 * Removes given mailinglist and relations to emails from datastore
+	 * 
+	 * @param list
+	 *            Description of the Parameter
 	 */
 	public void removeMailingList(MailingList list) {
 		if (list != null) {
-			
-				try {
-					list.removeEmails();
-					list.remove();
-				}
-				catch (RemoteException e) {
-					e.printStackTrace();
-				}
-				catch (EJBException e) {
-					e.printStackTrace();
-				}
-				catch (RemoveException e) {
-					e.printStackTrace();
-				}
-			
-		}
-	}
 
-	/**
-	 *  Returns all email letters in datastore
-	 *
-	 * @return    Description of the Return Value
-	 */
-	public Collection getEmailLetters() {
-		
 			try {
-				EmailLetterHome elHome = (EmailLetterHome) getIDOHome(EmailLetter.class);
-				return elHome.findAll();
-			}
-			catch (RemoteException e) {
-			
-			}
-			catch (FinderException e) {
+				list.removeEmails();
+				list.remove();
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			} catch (EJBException e) {
+				e.printStackTrace();
+			} catch (RemoveException e) {
 				e.printStackTrace();
 			}
-		return null;
+
+		}
 	}
 
 	/**
-	 *  Gets all mailinglists from the datastore
-	 *
-	 * @return    Description of the Return Value
+	 * Returns all email letters in datastore
+	 * 
+	 * @return Description of the Return Value
 	 */
-	public Collection getMailingLists() {
+	public Collection getEmailLetters() {
+
 		try {
-			MailingListHome home = (MailingListHome)getIDOHome(MailingList.class);
-			return home.findAll();
-		}
-		catch (RemoteException e) {
-			
-		}
-		catch (FinderException e) {
+			EmailLetterHome elHome = (EmailLetterHome) getIDOHome(EmailLetter.class);
+			return elHome.findAll();
+		} catch (RemoteException e) {
+
+		} catch (FinderException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
 
 	/**
-	 *  Maps mailinglists related to given letter with their primarykey as key
-	 *
-	 * @param  letter  Description of the Parameter
-	 * @return         Description of the Return Value
+	 * Gets all mailinglists from the datastore
+	 * 
+	 * @return Description of the Return Value
 	 */
-	public Map mapOfMailingList(EmailLetter letter)  {
-		
-			try {
-				Collection L = letter.getMailingLists();
-				if (L != null) {
-					MailingList mlist;
-					Iterator I = L.iterator();
-					Hashtable H = new Hashtable(L.size());
-					while (I.hasNext()) {
-						mlist = (MailingList) I.next();
-						H.put(new Integer(mlist.getPrimaryKey().toString()), mlist);
-					}
-					return H;
-				}
-			}
-			catch (RemoteException e) {
-				e.printStackTrace();
-			}
-			return null;
-		
+	public Collection getMailingLists() {
+		try {
+			MailingListHome home = (MailingListHome) getIDOHome(MailingList.class);
+			return home.findAll();
+		} catch (RemoteException e) {
+
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
-	
+	/**
+	 * Maps mailinglists related to given letter with their primarykey as key
+	 * 
+	 * @param letter
+	 *            Description of the Parameter
+	 * @return Description of the Return Value
+	 */
+	public Map mapOfMailingList(EmailLetter letter) {
+
+		try {
+			Collection L = letter.getMailingLists();
+			if (L != null) {
+				MailingList mlist;
+				Iterator I = L.iterator();
+				Hashtable H = new Hashtable(L.size());
+				while (I.hasNext()) {
+					mlist = (MailingList) I.next();
+					H.put(new Integer(mlist.getPrimaryKey().toString()), mlist);
+				}
+				return H;
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		return null;
+
+	}
+
 	/**
 	 * Stores and removes relations betsween an email letter and mailing lists
+	 * 
 	 * @param letter
 	 * @param newIds
 	 * @param oldIds
 	 */
-	public void storeEmailLetterMailingLists(EmailLetter letter, int[] newIds, int[] oldIds) {
+	public void storeEmailLetterMailingLists(EmailLetter letter, int[] newIds,
+			int[] oldIds) {
 		try {
-			
+
 			letter.removeMailingLists();
 			MailingListHome lHome = (MailingListHome) getIDOHome(MailingList.class);
 			MailingList list;
@@ -609,28 +653,25 @@ public class MailingListServiceBean extends IBOServiceBean implements MailingLis
 				list = lHome.findByPrimaryKey(new Integer(newIds[i]));
 				letter.addMailingList(list);
 			}
-		}
-		catch (RemoteException e) {
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
 			e.printStackTrace();
 		}
-		catch (FinderException e) {
-			e.printStackTrace();
-		}
-		
 
 	}
-	
-	public void sendLetter(EmailLetter letter,EmailAccount account, Collection emails){
+
+	public void sendLetter(EmailLetter letter, EmailAccount account,
+			Collection emails) {
 		ListServer server = new ListServer();
 		server.sendMailLetter(letter, account, emails);
 	}
 
-	
-	public Collection getEmails(MailingList mlist) throws RemoteException{
-			return mlist.getEmails();
+	public Collection getEmails(MailingList mlist) throws RemoteException {
+		return mlist.getEmails();
 	}
-	
-	public CampusService getCampusService()throws RemoteException{
+
+	public CampusService getCampusService() throws RemoteException {
 		return (CampusService) getServiceInstance(CampusService.class);
 	}
 

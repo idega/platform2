@@ -1,19 +1,19 @@
 package is.idega.idegaweb.campus.block.application.data;
 
 
-import com.idega.data.IDOException;
-import com.idega.data.IDORelationshipException;
-import java.util.Collection;
 import javax.ejb.CreateException;
+import com.idega.data.IDORelationshipException;
 import com.idega.data.IDOHome;
 import javax.ejb.FinderException;
+import com.idega.data.IDOException;
+import java.util.Collection;
 
 public interface CampusApplicationHome extends IDOHome {
 	public CampusApplication create() throws CreateException;
 
 	public CampusApplication findByPrimaryKey(Object pk) throws FinderException;
 
-	public Collection findAllByApplicationId(int id) throws FinderException;
+	public CampusApplication findByApplicationId(int id) throws FinderException;
 
 	public Collection findBySubjectAndStatus(Integer subjectID, String status,
 			String order) throws FinderException;

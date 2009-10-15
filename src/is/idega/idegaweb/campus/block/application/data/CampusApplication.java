@@ -1,10 +1,10 @@
 package is.idega.idegaweb.campus.block.application.data;
 
 
-import java.util.Collection;
-import com.idega.block.application.data.Application;
 import java.sql.Date;
 import com.idega.data.IDOEntity;
+import com.idega.block.application.data.Application;
+import java.util.Collection;
 
 public interface CampusApplication extends IDOEntity {
 	/**
@@ -513,15 +513,12 @@ public interface CampusApplication extends IDOEntity {
 	public Collection getApplied();
 
 	/**
-	 * @see is.idega.idegaweb.campus.block.application.data.CampusApplicationBMPBean#setExtraAdminInfo
-	 */
-	public void setExtraAdminInfo(String adminInfo);
-	
-	/**
 	 * @see is.idega.idegaweb.campus.block.application.data.CampusApplicationBMPBean#getExtraAdminInfo
 	 */
 	public String getExtraAdminInfo();
-	
-	
-	
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.application.data.CampusApplicationBMPBean#setExtraAdminInfo
+	 */
+	public void setExtraAdminInfo(String adminInfo);
 }

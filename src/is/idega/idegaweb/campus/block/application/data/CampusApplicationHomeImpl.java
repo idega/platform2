@@ -1,13 +1,13 @@
 package is.idega.idegaweb.campus.block.application.data;
 
 
-import com.idega.data.IDOException;
-import com.idega.data.IDORelationshipException;
-import java.util.Collection;
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
-import com.idega.data.IDOEntity;
 import com.idega.data.IDOFactory;
+import javax.ejb.CreateException;
+import com.idega.data.IDORelationshipException;
+import com.idega.data.IDOEntity;
+import javax.ejb.FinderException;
+import com.idega.data.IDOException;
+import java.util.Collection;
 
 public class CampusApplicationHomeImpl extends IDOFactory implements
 		CampusApplicationHome {
@@ -23,12 +23,12 @@ public class CampusApplicationHomeImpl extends IDOFactory implements
 		return (CampusApplication) super.findByPrimaryKeyIDO(pk);
 	}
 
-	public Collection findAllByApplicationId(int id) throws FinderException {
+	public CampusApplication findByApplicationId(int id) throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
-		Collection ids = ((CampusApplicationBMPBean) entity)
-				.ejbFindAllByApplicationId(id);
+		Object pk = ((CampusApplicationBMPBean) entity)
+				.ejbFindByApplicationId(id);
 		this.idoCheckInPooledEntity(entity);
-		return this.getEntityCollectionForPrimaryKeys(ids);
+		return this.findByPrimaryKey(pk);
 	}
 
 	public Collection findBySubjectAndStatus(Integer subjectID, String status,
