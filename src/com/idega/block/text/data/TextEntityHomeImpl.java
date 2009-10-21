@@ -1,22 +1,20 @@
 package com.idega.block.text.data;
 
 
-public class TextEntityHomeImpl extends com.idega.data.IDOFactory implements TextEntityHome
-{
- protected Class getEntityInterfaceClass(){
-  return TextEntity.class;
- }
+import com.idega.data.IDOFactory;
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
 
+public class TextEntityHomeImpl extends IDOFactory implements TextEntityHome {
+	public Class getEntityInterfaceClass() {
+		return TextEntity.class;
+	}
 
- public TextEntity create() throws javax.ejb.CreateException{
-  return (TextEntity) super.createIDO();
- }
+	public TextEntity create() throws CreateException {
+		return (TextEntity) super.createIDO();
+	}
 
-
- public TextEntity findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (TextEntity) super.findByPrimaryKeyIDO(pk);
- }
-
-
-
+	public TextEntity findByPrimaryKey(Object pk) throws FinderException {
+		return (TextEntity) super.findByPrimaryKeyIDO(pk);
+	}
 }

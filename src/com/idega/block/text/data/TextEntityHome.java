@@ -1,9 +1,12 @@
 package com.idega.block.text.data;
 
 
-public interface TextEntityHome extends com.idega.data.IDOHome
-{
- public TextEntity create() throws javax.ejb.CreateException;
- public TextEntity findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
+import javax.ejb.CreateException;
+import com.idega.data.IDOHome;
+import javax.ejb.FinderException;
 
+public interface TextEntityHome extends IDOHome {
+	public TextEntity create() throws CreateException;
+
+	public TextEntity findByPrimaryKey(Object pk) throws FinderException;
 }

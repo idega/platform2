@@ -1,0 +1,71 @@
+<!-- Use this file to deploy some handlers/chains and services      -->
+<!-- Two ways to do this:                                           -->
+<!--   java org.apache.axis.client.AdminClient deploy.wsdd          -->
+<!--      after the axis server is running                          -->
+<!-- or                                                             -->
+<!--   java org.apache.axis.utils.Admin client|server deploy.wsdd   -->
+<!--      from the same directory that the Axis engine runs         -->
+
+<deployment
+    xmlns="http://xml.apache.org/axis/wsdd/"
+    xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+
+  <!-- Services from BuildingWSServiceService WSDL service -->
+
+  <service name="BuildingService" provider="java:RPC" style="rpc" use="encoded">
+      <parameter name="wsdlTargetNamespace" value="urn:buildingservice"/>
+      <parameter name="wsdlServiceElement" value="BuildingWSServiceService"/>
+      <parameter name="schemaUnqualified" value="urn:buildingservice"/>
+      <parameter name="wsdlServicePort" value="BuildingService"/>
+      <parameter name="className" value="is.idega.idegaweb.campus.webservice.building.server.BuildingServiceSoapBindingSkeleton"/>
+      <parameter name="wsdlPortType" value="BuildingWSService"/>
+      <parameter name="typeMappingVersion" value="1.2"/>
+      <parameter name="allowedMethods" value="*"/>
+
+      <typeMapping
+        xmlns:ns="urn:buildingservice"
+        qname="ns:ApartmentInfo"
+        type="java:is.idega.idegaweb.campus.webservice.building.server.ApartmentInfo"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:buildingservice"
+        qname="ns:ComplexInfo"
+        type="java:is.idega.idegaweb.campus.webservice.building.server.ComplexInfo"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <arrayMapping
+        xmlns:ns="urn:buildingservice"
+        qname="ns:ArrayOfApartmentInfo"
+        type="java:is.idega.idegaweb.campus.webservice.building.server.ApartmentInfo[]"
+        innerType="cmp-ns:ApartmentInfo" xmlns:cmp-ns="urn:buildingservice"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <arrayMapping
+        xmlns:ns="urn:buildingservice"
+        qname="ns:ArrayOfComplexInfo"
+        type="java:is.idega.idegaweb.campus.webservice.building.server.ComplexInfo[]"
+        innerType="cmp-ns:ComplexInfo" xmlns:cmp-ns="urn:buildingservice"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:buildingservice"
+        qname="ns:BuildingInfo"
+        type="java:is.idega.idegaweb.campus.webservice.building.server.BuildingInfo"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <arrayMapping
+        xmlns:ns="urn:buildingservice"
+        qname="ns:ArrayOfBuildingInfo"
+        type="java:is.idega.idegaweb.campus.webservice.building.server.BuildingInfo[]"
+        innerType="cmp-ns:BuildingInfo" xmlns:cmp-ns="urn:buildingservice"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+  </service>
+</deployment>

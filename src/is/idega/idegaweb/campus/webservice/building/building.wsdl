@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="urn:buildingservice" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="urn:buildingservice" xmlns:intf="urn:buildingservice" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.3
+Built on Oct 05, 2005 (05:23:37 EDT)-->
+ <wsdl:types>
+  <schema targetNamespace="urn:buildingservice" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
+   <complexType name="ComplexInfo">
+    <sequence>
+     <element name="englishInfo" nillable="true" type="soapenc:string"/>
+     <element name="id" type="xsd:int"/>
+     <element name="info" nillable="true" type="soapenc:string"/>
+     <element name="name" nillable="true" type="soapenc:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="ArrayOfComplexInfo">
+    <complexContent>
+     <restriction base="soapenc:Array">
+      <attribute ref="soapenc:arrayType" wsdl:arrayType="impl:ComplexInfo[]"/>
+     </restriction>
+    </complexContent>
+   </complexType>
+   <complexType name="BuildingInfo">
+    <sequence>
+     <element name="address" nillable="true" type="soapenc:string"/>
+     <element name="englishInfo" nillable="true" type="soapenc:string"/>
+     <element name="id" type="xsd:int"/>
+     <element name="info" nillable="true" type="soapenc:string"/>
+     <element name="name" nillable="true" type="soapenc:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="ArrayOfBuildingInfo">
+    <complexContent>
+     <restriction base="soapenc:Array">
+      <attribute ref="soapenc:arrayType" wsdl:arrayType="impl:BuildingInfo[]"/>
+     </restriction>
+    </complexContent>
+   </complexType>
+   <complexType name="ApartmentInfo">
+    <sequence>
+     <element name="category" nillable="true" type="soapenc:string"/>
+     <element name="collectiveFee" type="xsd:double"/>
+     <element name="electricity" type="xsd:double"/>
+     <element name="floor" nillable="true" type="soapenc:string"/>
+     <element name="furnished" type="xsd:boolean"/>
+     <element name="hasAttic" type="xsd:boolean"/>
+     <element name="hasBathroom" type="xsd:boolean"/>
+     <element name="hasKitchen" type="xsd:boolean"/>
+     <element name="hasStorageroom" type="xsd:boolean"/>
+     <element name="hasStudyroom" type="xsd:boolean"/>
+     <element name="heat" type="xsd:double"/>
+     <element name="id" type="xsd:int"/>
+     <element name="name" nillable="true" type="soapenc:string"/>
+     <element name="numberOfRooms" type="xsd:int"/>
+     <element name="rent" type="xsd:double"/>
+     <element name="serialNumber" nillable="true" type="soapenc:string"/>
+     <element name="size" type="xsd:double"/>
+     <element name="subcategory" nillable="true" type="soapenc:string"/>
+     <element name="type" nillable="true" type="soapenc:string"/>
+     <element name="typeEnglishInfo" nillable="true" type="soapenc:string"/>
+     <element name="typeInfo" nillable="true" type="soapenc:string"/>
+     <element name="typeShortName" nillable="true" type="soapenc:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="ArrayOfApartmentInfo">
+    <complexContent>
+     <restriction base="soapenc:Array">
+      <attribute ref="soapenc:arrayType" wsdl:arrayType="impl:ApartmentInfo[]"/>
+     </restriction>
+    </complexContent>
+   </complexType>
+  </schema>
+ </wsdl:types>
+
+   <wsdl:message name="getBuildingInfoRequest">
+
+      <wsdl:part name="in0" type="impl:ComplexInfo"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getApartmentInfoRequest">
+
+      <wsdl:part name="in0" type="impl:BuildingInfo"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getBuildingInfoResponse">
+
+      <wsdl:part name="getBuildingInfoReturn" type="impl:ArrayOfBuildingInfo"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getComplexInfoRequest">
+
+   </wsdl:message>
+
+   <wsdl:message name="getApartmentInfoResponse">
+
+      <wsdl:part name="getApartmentInfoReturn" type="impl:ArrayOfApartmentInfo"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getComplexInfoResponse">
+
+      <wsdl:part name="getComplexInfoReturn" type="impl:ArrayOfComplexInfo"/>
+
+   </wsdl:message>
+
+   <wsdl:portType name="BuildingWSService">
+
+      <wsdl:operation name="getComplexInfo">
+
+         <wsdl:input message="impl:getComplexInfoRequest" name="getComplexInfoRequest"/>
+
+         <wsdl:output message="impl:getComplexInfoResponse" name="getComplexInfoResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getBuildingInfo" parameterOrder="in0">
+
+         <wsdl:input message="impl:getBuildingInfoRequest" name="getBuildingInfoRequest"/>
+
+         <wsdl:output message="impl:getBuildingInfoResponse" name="getBuildingInfoResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getApartmentInfo" parameterOrder="in0">
+
+         <wsdl:input message="impl:getApartmentInfoRequest" name="getApartmentInfoRequest"/>
+
+         <wsdl:output message="impl:getApartmentInfoResponse" name="getApartmentInfoResponse"/>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="BuildingServiceSoapBinding" type="impl:BuildingWSService">
+
+      <wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="getComplexInfo">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getComplexInfoRequest">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:buildingservice" use="encoded"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getComplexInfoResponse">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:buildingservice" use="encoded"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getBuildingInfo">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getBuildingInfoRequest">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:buildingservice" use="encoded"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getBuildingInfoResponse">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:buildingservice" use="encoded"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getApartmentInfo">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getApartmentInfoRequest">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:buildingservice" use="encoded"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getApartmentInfoResponse">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:buildingservice" use="encoded"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="BuildingWSServiceService">
+
+      <wsdl:port binding="impl:BuildingServiceSoapBinding" name="BuildingService">
+
+         <wsdlsoap:address location="http://www.studentagardar.is/services/BuildingService"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>
