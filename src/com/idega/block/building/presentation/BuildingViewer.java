@@ -10,6 +10,7 @@ import com.idega.block.building.data.Complex;
 import com.idega.block.text.business.ContentHelper;
 import com.idega.block.text.business.TextFinder;
 import com.idega.business.IBOLookup;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -44,7 +45,7 @@ public class BuildingViewer extends Block {
 
 	private String infoStyle = "font-family:verdana,arial,sans-serif; font-size:10px; color:#000000; text-align: justify;";
 
-	protected IWResourceBundle iwrb_;
+	protected IWResourceBundle iwrb;
 
 	private Class apartmentTypeWindowClass = ApartmentTypeWindow.class;
 
@@ -64,8 +65,8 @@ public class BuildingViewer extends Block {
 	}
 
 	public void main(IWContext iwc) throws Exception {
-		if (this.iwrb_ == null) {
-			this.iwrb_ = getResourceBundle(iwc);
+		if (this.iwrb == null) {
+			this.iwrb = getResourceBundle(iwc);
 		}
 
 		this.buildingService = (BuildingService) IBOLookup.getServiceInstance(iwc, BuildingService.class);
@@ -96,6 +97,12 @@ public class BuildingViewer extends Block {
 	}
 
 	private void getAllBuildings(IWContext iwc) throws Exception {
+		IWBundle bundle = this.getBundle(iwc);
+		this.getParentPage().addJavascriptURL(bundle.getResourcesPath() + "/fancy/jquery-1.3.2.js");
+		this.getParentPage().addJavascriptURL(bundle.getResourcesPath() + "/fancy/jquery.fancybox-1.2.5.js");
+		this.getParentPage().addJavascriptURL(bundle.getResourcesPath() + "/fancy/palli.js");
+		this.getParentPage().addStyleSheetURL(bundle.getResourcesPath() + "/fancy/jquery.fancybox-1.2.5.css");
+
 		int row = 1;
 		Collection complexes = this.buildingService.getComplexHome().findAll();
 		Table campusTable = new Table(1, complexes.size());
@@ -176,8 +183,8 @@ public class BuildingViewer extends Block {
 				}
 			}
 
-			Image moreImage = this.iwrb_.getImage("/building/more.gif");
-			Image mapImage = this.iwrb_.getImage("/building/map.gif");
+			Image moreImage = this.iwrb.getImage("/building/more.gif");
+			Image mapImage = this.iwrb.getImage("/building/map.gif");
 
 			// What genius made this ??
 			// Link complexLink = new Link(moreImage,iwc.getRequestURI());
@@ -194,9 +201,17 @@ public class BuildingViewer extends Block {
 			complexTable.add("&nbsp;&nbsp;&nbsp;", 1, 4);
 			complexTable.add(locationLink, 1, 4);
 			if (complex.getFlashPageID() > 0) {
-				Image flashImage = this.iwrb_.getImage("/building/flash.gif");
+				Image flashImage = this.iwrb.getImage("/building/flash.gif");
 				Link flashLink = new Link(flashImage);
 				flashLink.setPage(complex.getFlashPageID());
+				complexTable.add("&nbsp;&nbsp;&nbsp;", 1, 4);
+				complexTable.add(flashLink, 1, 4);				
+			} else if (complex.getExternalFlashURL() != null && !"".equals(complex.getExternalFlashURL())) {
+				Image flashImage = this.iwrb.getImage("/building/flash.gif");
+				Link flashLink = new Link(flashImage);
+				flashLink.setURL(complex.getExternalFlashURL());
+				flashLink.setStyleClass("fancybox");
+				flashLink.setStyleClass("iframe");
 				complexTable.add("&nbsp;&nbsp;&nbsp;", 1, 4);
 				complexTable.add(flashLink, 1, 4);				
 			}
@@ -211,7 +226,7 @@ public class BuildingViewer extends Block {
 		}
 
 		if (complexes.size() == 0) {
-			add(this.iwrb_.getLocalizedString("no_buildings", "No buildings in database"));
+			add(this.iwrb.getLocalizedString("no_buildings", "No buildings in database"));
 		}
 
 		else {
@@ -278,7 +293,7 @@ public class BuildingViewer extends Block {
 
 			PresentationObject typeImage;
 			if (type.getImageId() == -1) {
-				typeImage = this.iwrb_.getImage("/building/default.jpg");
+				typeImage = this.iwrb.getImage("/building/default.jpg");
 			}
 			else {
 				ImageSlideShow slide = new ImageSlideShow();
@@ -301,8 +316,8 @@ public class BuildingViewer extends Block {
 			 * typeWindow.setWidth(400); typeWindow.setHeight(550);
 			 * typeWindow.setScrollbar(false);
 			 */
-			Image moreImage = this.iwrb_.getImage("/building/more.gif");
-			Image backImage = this.iwrb_.getImage("/building/back.gif");
+			Image moreImage = this.iwrb.getImage("/building/more.gif");
+			Image backImage = this.iwrb.getImage("/building/back.gif");
 			Link typeLink = new Link(moreImage);
 			typeLink.setWindowToOpen(this.apartmentTypeWindowClass);
 			typeLink.addParameter(ApartmentTypeViewer.PARAMETER_STRING, type.getPrimaryKey().toString());

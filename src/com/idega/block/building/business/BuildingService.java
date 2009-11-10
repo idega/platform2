@@ -29,8 +29,8 @@ public interface BuildingService extends IBOService {
 	 * @see com.idega.block.building.business.BuildingServiceBean#storeComplex
 	 */
 	public Complex storeComplex(Integer complexID, String name, String info,
-			Integer imageID, Integer textID, String flashPageID, Boolean locked)
-			throws RemoteException;
+			Integer imageID, Integer textID, String flashPageID,
+			Boolean locked, String externalFlashURL) throws RemoteException;
 
 	/**
 	 * @see com.idega.block.building.business.BuildingServiceBean#storeBuilding

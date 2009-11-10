@@ -19,6 +19,8 @@ public class CardBMPBean extends GenericEntity implements Card {
 
 	private static final String COLUMN_VALID = "valid";
 
+	private static final String COLUMN_DELETED = "deleted";
+	
 	public CardBMPBean() {
 	}
 
@@ -28,6 +30,7 @@ public class CardBMPBean extends GenericEntity implements Card {
 		addAttribute(COLUMN_DECODED_SERIAL, "Decoded card serial number", String.class, 255);
 		addAttribute(COLUMN_VALID, "Valid", Boolean.class);
 		addManyToOneRelationship(COLUMN_USER, User.class);
+		addAttribute(COLUMN_DELETED, "Deleted", Boolean.class);
 		
 		setUnique(COLUMN_USER, true);
 	}
@@ -64,6 +67,10 @@ public class CardBMPBean extends GenericEntity implements Card {
 		return getBooleanColumnValue(COLUMN_VALID, true);
 	}
 	
+	public boolean getIsDeleted() {
+		return getBooleanColumnValue(COLUMN_DELETED, false);
+	}
+	
 	//setters
 	public void setCardSerialNumber(String serialNumber) {
 		setColumn(COLUMN_CARD, serialNumber);
@@ -79,6 +86,10 @@ public class CardBMPBean extends GenericEntity implements Card {
 	
 	public void setIsValid(boolean isValid) {
 		setColumn(COLUMN_VALID, isValid);
+	}
+	
+	public void setIsDeleted(boolean isDeleted) {
+		setColumn(COLUMN_DELETED, isDeleted);
 	}
 	
 	//ejb

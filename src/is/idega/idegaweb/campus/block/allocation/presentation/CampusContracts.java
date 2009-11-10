@@ -358,6 +358,7 @@ public class CampusContracts extends CampusBlock {
 		}
 		
 		boolean doAutomaticCharges = iwc.getApplicationSettings().getBoolean("EXECUTE_AUTOMATIC_CHARGES", false);
+		boolean doChargeForUnlimitedDownload = iwc.getApplicationSettings().getBoolean("SHOW_DOWNLOAD_CHARGES", false);
 		
 		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, iwc
 				.getCurrentLocale());
@@ -413,7 +414,9 @@ public class CampusContracts extends CampusBlock {
 		T.add(getHeader(localize("validto", "Valid To")), col++, 1);
 		T.add(keyImage, col++, 1);
 		if (doAutomaticCharges) {
-			T.add(getHeader(localize("charge_download", "Download")), col++, 1);
+			if (doChargeForUnlimitedDownload) {
+				T.add(getHeader(localize("charge_download", "Download")), col++, 1);
+			}
 			T.add(getHeader(localize("charge_handling", "Handling")), col++, 1);
 			T.add(getHeader(localize("charge_transfer", "Transfer")), col++, 1);
 		}
@@ -504,14 +507,17 @@ public class CampusContracts extends CampusBlock {
 								chargeTransfer = true;
 							}
 						}
-	
-						CheckBox chargeForUnlimited = new CheckBox(
-								CHARGE_FOR_UNLIMITED, C.getUserId().toString());
+
 						listOfUsers.append(C.getUserId().toString());
 						listOfUsers.append(";");
+
+						if (doChargeForUnlimitedDownload) {
+							CheckBox chargeForUnlimited = new CheckBox(
+									CHARGE_FOR_UNLIMITED, C.getUserId().toString());
 	
-						chargeForUnlimited.setChecked(chargeDownload);
-						T.add(chargeForUnlimited, col++, row);
+							chargeForUnlimited.setChecked(chargeDownload);
+							T.add(chargeForUnlimited, col++, row);
+						}
 	
 						CheckBox chargeForHandling = new CheckBox(
 								CHARGE_FOR_HANDLING, C.getUserId().toString());

@@ -151,6 +151,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 	private static final String PARAM_RENTER_ID = "renter_id";
 	
 	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.building";
+	
 
 	public static final int ACTION_COMPLEX = 1;
 	public static final int ACTION_BUILDING = 2;
@@ -168,6 +169,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 	private static final String PARAM_COMPLEX_LOCKED = "cp_locked";
 	private static final String PARAM_TYPE_LOCKED = "tp_locked";
 	private static final String PARAM_FLASH_PAGE = "flash_page";
+	private static final String PARAM_EXTERNAL_FLASH_URL = "external_flash_url";
 	private static final String PARAM_ACTION = "be_action";
 	private static final String PARAM_SAVE = LABEL_SAVE;
 	private static final String PARAM_DELETE = LABEL_DELETE;
@@ -443,6 +445,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		String sImageId = iwc.getParameter("mapid");
 		String sId = iwc.getParameter(PARAM_ID);
 		String sPageId = iwc.getParameter(PARAM_FLASH_PAGE);
+		String sExternalURL = iwc.getParameter(PARAM_EXTERNAL_FLASH_URL);
 		Boolean locked = Boolean
 				.valueOf(iwc.getParameter(PARAM_COMPLEX_LOCKED));
 
@@ -460,7 +463,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		}
 
 		this.service.storeComplex(id, sName, sInfo, imageid, this.textId,
-				sPageId, locked);
+				sPageId, locked, sExternalURL);
 
 	}
 
@@ -958,6 +961,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		int iTextId = e ? eComplex.getTextId() : -1;
 		int iFlashPage = e ? eComplex.getFlashPageID() : -1;
 		boolean locked = e ? eComplex.getLocked() : false;
+		String sExternalFlashURL = e ? eComplex.getExternalFlashURL() : "";
 
 		Form form = new Form();
 		Table Frame = new Table(2, 1);
@@ -968,7 +972,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		Frame.setWidth("100%");
 		Frame.setWidth(2, 1, "160");
 		Frame.setHeight("100%");
-		Table T = new Table(2, 9);
+		Table T = new Table(2, 11);
 		T.setCellpadding(2);
 		T.setWidth("100%");
 		Table T2 = new Table(1, 2);
@@ -1005,6 +1009,9 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		CheckBox complexLocked = new CheckBox(PARAM_COMPLEX_LOCKED, "true");
 		complexLocked.setChecked(locked);
 
+		TextInput externalFlashURL = new TextInput(PARAM_EXTERNAL_FLASH_URL, sExternalFlashURL);
+		setStyle(externalFlashURL);
+		
 		T.add(HI);
 		T.add(HA);
 		T.add(categories, 1, 1);
@@ -1017,13 +1024,16 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		T.add(formatText(this.iwrb.getLocalizedString("flash", "Flash page")),
 				1, 4);
 		T.add(pageChooser, 1, 5);
+		T.add(formatText(this.iwrb.getLocalizedString(PARAM_EXTERNAL_FLASH_URL, "External flash URL")), 1,
+				6);
+		T.add(externalFlashURL, 1, 7);
 		T.add(formatText(this.iwrb.getLocalizedString("complex_locked",
-				"Complex locked")), 1, 6);
-		T.add(complexLocked, 1, 7);
+				"Complex locked")), 1, 8);
+		T.add(complexLocked, 1, 9);
 		T.add(formatText(this.iwrb.getLocalizedString(LABEL_INFO, "Info")), 1,
-				8);
-		T.mergeCells(1, 9, 2, 9);
-		T.add(makeTextArea(sInfo), 1, 9);
+				10);
+		T.mergeCells(1, 11, 2, 11);
+		T.add(makeTextArea(sInfo), 1, 11);
 
 		T2.add(formatText(this.iwrb.getLocalizedString("map", "Map")), 1, 1);
 		T2.add(Text.getBreak(), 1, 1);

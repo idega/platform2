@@ -26,6 +26,8 @@ public class ComplexBMPBean extends TextEntityBMPBean implements Complex {
 
 	protected static final String COLUMN_FLASH_PAGE = "flash_page_id";
 	
+	protected static final String COLUMN_EXTERNAL_FLASH_URL = "external_flash_url";
+	
 	protected static final String COLUMN_LOCKED = "locked";
 
 	public void initializeAttributes() {
@@ -35,6 +37,7 @@ public class ComplexBMPBean extends TextEntityBMPBean implements Complex {
 		addAttribute(COLUMN_IMAGE, "Map", Integer.class);
 		addManyToOneRelationship(COLUMN_FLASH_PAGE, ICPage.class);
 		addAttribute(COLUMN_LOCKED, "Locked", Boolean.class);
+		addAttribute(COLUMN_EXTERNAL_FLASH_URL, "External flash url", String.class, 1000);
 	}
 
 	public String getEntityName() {
@@ -66,6 +69,10 @@ public class ComplexBMPBean extends TextEntityBMPBean implements Complex {
 		return getBooleanColumnValue(COLUMN_LOCKED, false);
 	}
 	
+	public String getExternalFlashURL() {
+		return getStringColumnValue(COLUMN_EXTERNAL_FLASH_URL);
+	}
+	
 	// setters
 	public void setName(String name) {
 		setColumn(COLUMN_NAME, name);
@@ -95,6 +102,10 @@ public class ComplexBMPBean extends TextEntityBMPBean implements Complex {
 		setColumn(COLUMN_LOCKED, locked);
 	}
 
+	public void setExternalFlashURL(String url) {
+		setColumn(COLUMN_EXTERNAL_FLASH_URL, url);
+	}
+	
 	// ejb
 	public Collection ejbFindAll() throws FinderException {
 		IDOQuery query = idoQuery();

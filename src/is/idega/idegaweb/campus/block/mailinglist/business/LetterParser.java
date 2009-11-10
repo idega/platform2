@@ -55,6 +55,11 @@ public class LetterParser implements ContentParsable {
 	public final static String con_return = "KEY_RETURN_DATE";
 	public final static String reference_number = "REFERENCE_NUMBER";
 	public final static String today = "TODAY";
+	
+	public final static String TENANT_RESIGN_ADDRESS = "TENTANT_RESIGN_ADDRESS";
+	public final static String TENANT_RESIGN_PO = "TENTANT_RESIGN_PO";
+	public final static String TENANT_RESIGN_PHONE = "TENTANT_RESIGN_PHONE";
+	public final static String TENANT_RESIGN_EMAIL = "TENTANT_RESIGN_EMAIL";
 
 	public final static String aprt_name = "APRT_NAME";
 	public final static String aprt_desc = "APRT_DESCR";
@@ -92,7 +97,7 @@ public class LetterParser implements ContentParsable {
 			cat_name, cat_desc, WL_ORDER, WL_TYPE, WL_CHOICE_NUMBER,
 			WL_LAST_CONFIRMATION, WL_NUMBER_OF_REJECTIONS, WL_REJECT_FLAG,
 			WL_REMOVED_FROM_LIST, WL_PRIORITY_LEVEL, WL_ACCEPTED_DATE,
-			WL_COMPLEX, WL_APARTMENT_TYPE, CURRENT_RENT };
+			WL_COMPLEX, WL_APARTMENT_TYPE, CURRENT_RENT, TENANT_RESIGN_ADDRESS, TENANT_RESIGN_PO, TENANT_RESIGN_PHONE, TENANT_RESIGN_EMAIL };
 
 	public static String[] types = { ANNOUNCEMENT, APPROVAL, REJECTION,
 			ALLOCATION, SIGNATURE, RETURN, DELIVER, RESIGN, TERMINATION,
@@ -150,6 +155,14 @@ public class LetterParser implements ContentParsable {
 					return holder.getApplicant().getResidence();
 				} else if (tag.equals(tenant_id)) {
 					return holder.getApplicant().getSSN();
+				} else if (tag.equals(TENANT_RESIGN_ADDRESS)) {
+					return holder.getApplicant().getResignationAddress();
+				} else if (tag.equals(TENANT_RESIGN_PO)) {
+					return holder.getApplicant().getResignationPO();					
+				} else if (tag.equals(TENANT_RESIGN_PHONE)) {
+					return holder.getApplicant().getResignationPhone();					
+				} else if (tag.equals(TENANT_RESIGN_EMAIL)) {
+					return holder.getApplicant().getResignationEmail();
 				}
 			}
 

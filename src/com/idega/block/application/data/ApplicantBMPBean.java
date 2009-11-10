@@ -49,6 +49,14 @@ public class ApplicantBMPBean extends TreeableEntityBMPBean implements
 	public static final String COLUMN_SEND_SMS = "send_sms";
 
 	public static final String COLUMN_STATUS = "status";
+	
+	public static final String COLUMN_RESIGNATION_ADDRESS = "resignation_address";
+
+	public static final String COLUMN_RESIGNATION_PO = "resignation_po";
+
+	public static final String COLUMN_RESIGNATION_PHONE = "resignation_phone";
+
+	public static final String COLUMN_RESIGNATION_EMAIL = "resignation_email";
 
 	public ApplicantBMPBean() {
 		super();
@@ -72,6 +80,10 @@ public class ApplicantBMPBean extends TreeableEntityBMPBean implements
 		addAttribute(COLUMN_MOBILE_PHONE, "Mobile phone", String.class, 40);
 		addAttribute(COLUMN_SEND_SMS, "Send SMS", String.class, 1);
 		addAttribute(COLUMN_STATUS, "Status", String.class, 1);
+		addAttribute(COLUMN_RESIGNATION_ADDRESS, "Resignation email", String.class, 1000);
+		addAttribute(COLUMN_RESIGNATION_PO, "Resignation po", String.class, 255);
+		addAttribute(COLUMN_RESIGNATION_PHONE, "Resignation phone", String.class, 255);
+		addAttribute(COLUMN_RESIGNATION_EMAIL, "Resignation email", String.class, 255);
 	}
 
 	public String getEntityName() {
@@ -163,6 +175,22 @@ public class ApplicantBMPBean extends TreeableEntityBMPBean implements
 		setColumn(COLUMN_MOBILE_PHONE, mobilePhone);
 	}
 
+	public void setResignationAddress(String resignationAddress) {
+		setColumn(COLUMN_RESIGNATION_ADDRESS, resignationAddress);
+	}
+
+	public void setResignationPO(String resignationPO) {
+		setColumn(COLUMN_RESIGNATION_PO, resignationPO);
+	}
+
+	public void setResignationPhone(String resignationPhone) {
+		setColumn(COLUMN_RESIGNATION_PHONE, resignationPhone);
+	}
+
+	public void setResignationEmail(String resignationEmail) {
+		setColumn(COLUMN_RESIGNATION_EMAIL, resignationEmail);
+	}
+
 	public String getMobilePhone() {
 		return (getStringColumnValue(COLUMN_MOBILE_PHONE));
 	}
@@ -236,6 +264,22 @@ public class ApplicantBMPBean extends TreeableEntityBMPBean implements
 				setLastName(temp);
 			}
 		}
+	}
+
+	public String getResignationAddress() {
+		return getStringColumnValue(COLUMN_RESIGNATION_ADDRESS);
+	}
+
+	public String getResignationPO() {
+		return getStringColumnValue(COLUMN_RESIGNATION_PO);
+	}
+
+	public String getResignationPhone() {
+		return getStringColumnValue(COLUMN_RESIGNATION_PHONE);
+	}
+
+	public String getResignationEmail() {
+		return getStringColumnValue(COLUMN_RESIGNATION_EMAIL);
 	}
 
 	public void insert() throws SQLException {

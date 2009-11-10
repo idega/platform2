@@ -15,7 +15,7 @@ public class TestClient {
 		BuildingWSServiceServiceLocator service = new BuildingWSServiceServiceLocator();
 		try {
 			BuildingWSService port = service.getBuildingService(new URL(
-					"http://campusanza.sidan.is/services/BuildingService"));
+					"http://www.studentagardar.is/services/BuildingService"));
 			/*ComplexInfo info[] = port.getComplexInfo();
 			if (info != null) {
 				for (int i = 0; i < info.length; i++) {
@@ -42,8 +42,8 @@ public class TestClient {
 				}
 			}*/
 			BuildingInfo building = new BuildingInfo();
-			//building.setId(54);
-			building.setId(2);
+			building.setId(45);
+			//building.setId(2);
 			ApartmentInfo info[] = port.getApartmentInfo(building);
 			if (info != null) {
 				for (int i = 0; i < info.length; i++) {

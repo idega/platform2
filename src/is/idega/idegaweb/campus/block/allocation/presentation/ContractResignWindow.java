@@ -63,6 +63,8 @@ public class ContractResignWindow extends CampusWindow {
 	private static final String PARAM_DATE_SYNC = "date_sync";
 
 	public static final String PARAM_IS_ADMIN = "is_camp_isit";
+	
+	private static final String PARAM_NEW_EMAIL = "new_email";
 
 	private boolean isAdmin;
 
@@ -232,12 +234,8 @@ public class ContractResignWindow extends CampusWindow {
 								"Update valid to")), 1, row);
 						T.add(dateSync, 2, row);
 						row++;
-					} else {
-						/*
-						 * if (DATESYNC) { T.add(new HiddenInput(prmDateSync,
-						 * "false")); }
-						 */
-					}
+					} 
+
 					TextInput newAddress = new TextInput(PARAM_NEW_ADDRESS);
 					newAddress.setAsNotEmpty(localize("err_new_address",
 							"You must enter a new address"));
@@ -247,19 +245,24 @@ public class ContractResignWindow extends CampusWindow {
 					TextInput newPhone = new TextInput(PARAM_NEW_PHONE);
 					newPhone.setAsNotEmpty(localize("err_new_phone",
 							"You must enter a new phone"));
+					TextInput newEmail = new TextInput(PARAM_NEW_EMAIL);
+					newEmail.setAsNotEmpty(localize("err_new_email",
+							"You must enter your current email"));
+
 					T.add(Edit.formatText(localize(PARAM_NEW_ADDRESS,
 							"New address")), 1, row);
-					T.add(newAddress, 2, row);
-					row++;
+					T.add(newAddress, 2, row++);
 					T.add(Edit.formatText(localize(PARAM_NEW_ZIP, "New zip")),
 							1, row);
-					T.add(newZip, 2, row);
-					row++;
+					T.add(newZip, 2, row++);
 					T.add(
 							Edit.formatText(localize(PARAM_NEW_PHONE,
 									"New phone")), 1, row);
-					T.add(newPhone, 2, row);
-					row++;
+					T.add(newPhone, 2, row++);
+					T.add(
+							Edit.formatText(localize(PARAM_NEW_EMAIL,
+									"Current email")), 1, row);
+					T.add(newEmail, 2, row++);
 				}
 			}
 		} catch (Exception ex) {
@@ -324,12 +327,19 @@ public class ContractResignWindow extends CampusWindow {
 						.getHome(Applicant.class))
 						.findByPrimaryKey(applicantID);
 				if (iwc.isParameterSet(PARAM_NEW_ADDRESS)) {
-					applicant.setResidence(iwc.getParameter(PARAM_NEW_ADDRESS));
+					applicant.setResignationAddress(iwc.getParameter(PARAM_NEW_ADDRESS));
 				}
+				
 				if (iwc.isParameterSet(PARAM_NEW_ZIP)) {
-					applicant.setPO(iwc.getParameter(PARAM_NEW_ZIP));
+					applicant.setResignationPO(iwc.getParameter(PARAM_NEW_ZIP));
 				}
+				
 				if (iwc.isParameterSet(PARAM_NEW_PHONE)) {
+					applicant.setResignationPhone(iwc.getParameter(PARAM_NEW_PHONE));
+				}
+				
+				if (iwc.isParameterSet(PARAM_NEW_EMAIL)) {
+					applicant.setResignationEmail(iwc.getParameter(PARAM_NEW_EMAIL));
 				}
 				applicant.store();
 			}

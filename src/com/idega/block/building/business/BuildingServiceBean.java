@@ -51,7 +51,7 @@ public class BuildingServiceBean extends IBOServiceBean implements
 		BuildingService {
 
 	public Complex storeComplex(Integer complexID, String name, String info,
-			Integer imageID, Integer textID, String flashPageID, Boolean locked) {
+			Integer imageID, Integer textID, String flashPageID, Boolean locked, String externalFlashURL) {
 
 		try {
 			Complex complex = null;
@@ -73,6 +73,7 @@ public class BuildingServiceBean extends IBOServiceBean implements
 			}
 
 			complex.setLocked(locked.booleanValue());
+			complex.setExternalFlashURL(externalFlashURL);
 			complex.store();
 		} catch (IDOStoreException e) {
 			e.printStackTrace();

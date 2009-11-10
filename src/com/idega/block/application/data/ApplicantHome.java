@@ -1,12 +1,20 @@
 package com.idega.block.application.data;
 
 
-public interface ApplicantHome extends com.idega.data.IDOHome
-{
- public Applicant create() throws javax.ejb.CreateException;
- public Applicant findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
- public java.util.Collection findByApplicationStatusOrderedBy(java.lang.String p0,java.lang.String p1)throws javax.ejb.FinderException;
- public java.util.Collection findBySQL(java.lang.String p0)throws javax.ejb.FinderException;
- public java.util.Collection findBySSN(java.lang.String p0)throws javax.ejb.FinderException;
+import javax.ejb.CreateException;
+import com.idega.data.IDOHome;
+import javax.ejb.FinderException;
+import java.util.Collection;
 
+public interface ApplicantHome extends IDOHome {
+	public Applicant create() throws CreateException;
+
+	public Applicant findByPrimaryKey(Object pk) throws FinderException;
+
+	public Collection findBySSN(String SSN) throws FinderException;
+
+	public Collection findByApplicationStatusOrderedBy(String status,
+			String order) throws FinderException;
+
+	public Collection findBySQL(String sql) throws FinderException;
 }

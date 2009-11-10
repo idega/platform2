@@ -37,6 +37,11 @@ public interface Complex extends BuildingEntity {
 	public boolean getLocked();
 
 	/**
+	 * @see com.idega.block.building.data.ComplexBMPBean#getExternalFlashURL
+	 */
+	public String getExternalFlashURL();
+
+	/**
 	 * @see com.idega.block.building.data.ComplexBMPBean#setName
 	 */
 	public void setName(String name);
@@ -70,6 +75,11 @@ public interface Complex extends BuildingEntity {
 	 * @see com.idega.block.building.data.ComplexBMPBean#setLocked
 	 */
 	public void setLocked(boolean locked);
+
+	/**
+	 * @see com.idega.block.building.data.ComplexBMPBean#setExternalFlashURL
+	 */
+	public void setExternalFlashURL(String url);
 
 	/**
 	 * @see com.idega.block.building.data.ComplexBMPBean#getBuildings
