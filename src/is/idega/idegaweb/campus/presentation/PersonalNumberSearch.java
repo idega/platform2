@@ -106,9 +106,10 @@ public class PersonalNumberSearch extends Block {
 		}
 		numberTable.setCellpadding(0);
 		numberTable.setCellspacing(0);
-		// if(!"".equals(_backgroundImageUrl))
-		numberTable.setBackgroundImage(new Image(backgroundImageUrl));
-
+		if (!"".equals(this.backgroundImageUrl)) {
+			numberTable.setBackgroundImage(new Image(backgroundImageUrl));
+		}
+		
 		HelpButton helpButton = new HelpButton(iwrb.getLocalizedString("help_headline", "Personal number"),
 				iwrb.getLocalizedString("personal_number_help", "Help"));
 
@@ -178,7 +179,6 @@ public class PersonalNumberSearch extends Block {
 				inputTable.setBorder(0);
 				inputTable.setCellpadding(0);
 				inputTable.setCellspacing(0);
-				inputTable.setHorizontalAlignment("center");
 				inputTable.addText("", 1, 2);
 				inputTable.setHeight(1, "2");
 				if (!(colour.equals(""))) {
@@ -190,6 +190,7 @@ public class PersonalNumberSearch extends Block {
 				inputTable.add(numberTexti, 1, 1);
 				inputTable.add(number, 1, 2);
 
+				numberTable.setAlignment(1, 1, "center");
 				numberTable.add(inputTable, 1, 1);
 				break;
 		}
@@ -223,7 +224,7 @@ public class PersonalNumberSearch extends Block {
 		myForm.add(numberTable);
 		if (pageId > 0) {
 			myForm.setPageToSubmitTo(pageId);
-		}
+		}		
 	}
 
 	public String getBundleIdentifier() {
@@ -251,7 +252,7 @@ public class PersonalNumberSearch extends Block {
 		outerTable = new Table();
 		outerTable.setCellpadding(0);
 		outerTable.setCellspacing(0);
-		outerTable.setHorizontalAlignment("left");
+		//outerTable.setHorizontalAlignment("left");
 
 		myForm = new Form();
 		myForm.setMethod("post");

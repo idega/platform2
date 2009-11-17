@@ -56,10 +56,10 @@ public class LetterParser implements ContentParsable {
 	public final static String reference_number = "REFERENCE_NUMBER";
 	public final static String today = "TODAY";
 	
-	public final static String TENANT_RESIGN_ADDRESS = "TENTANT_RESIGN_ADDRESS";
-	public final static String TENANT_RESIGN_PO = "TENTANT_RESIGN_PO";
-	public final static String TENANT_RESIGN_PHONE = "TENTANT_RESIGN_PHONE";
-	public final static String TENANT_RESIGN_EMAIL = "TENTANT_RESIGN_EMAIL";
+	public final static String TENANT_RESIGN_ADDRESS = "TENANT_RESIGN_ADDRESS";
+	public final static String TENANT_RESIGN_PO = "TENANT_RESIGN_PO";
+	public final static String TENANT_RESIGN_PHONE = "TENANT_RESIGN_PHONE";
+	public final static String TENANT_RESIGN_EMAIL = "TENANT_RESIGN_EMAIL";
 
 	public final static String aprt_name = "APRT_NAME";
 	public final static String aprt_desc = "APRT_DESCR";

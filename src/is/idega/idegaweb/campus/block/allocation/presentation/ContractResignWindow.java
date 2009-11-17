@@ -298,6 +298,9 @@ public class ContractResignWindow extends CampusWindow {
 		if (sMovDate != null && sMovDate.length() == 10)
 			movDate = new IWTimestamp(sMovDate);
 		boolean datesync = iwc.getParameter(PARAM_DATE_SYNC) != null;
+
+		doChangeApplicantAddress(iwc);
+		
 		try {
 			if (isAdmin) {
 				System.out.println("is admin");
@@ -313,7 +316,6 @@ public class ContractResignWindow extends CampusWindow {
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
-		doChangeApplicantAddress(iwc);
 		setParentToReload();
 		close();
 	}

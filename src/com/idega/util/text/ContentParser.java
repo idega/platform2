@@ -51,11 +51,11 @@ public class ContentParser {
         for (int i = 0; i < tags.length; i++) {
             value = parsableObject.getParsedString(iwac,tags[i]);
             if (value != null) {
-              //System.err.println("parsing "+tags[i]+" value: "+value);
+              //System.out.println("parsing "+tags[i]+" value: "+value);
                 H.put(tags[i], value);
             }
             else{
-              //System.err.println("parsing "+tags[i]+" no value ");
+              //System.out.println("parsing "+tags[i]+" no value ");
             }
         }
         return H;

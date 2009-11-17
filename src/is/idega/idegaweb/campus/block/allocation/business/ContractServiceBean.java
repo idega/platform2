@@ -318,7 +318,11 @@ public class ContractServiceBean extends IBOServiceBean implements
 						.getChangeKeyStatusAt());
 				if (now.isLaterThan(at)) {
 					contract.setChangeKeyStatusAt(null);
-					contract.setIsRented(contract.getChangeKeyStatusTo());
+					if (contract.getStatus().equals(ContractBMPBean.STATUS_GARBAGE) || contract.getStatus().equals(ContractBMPBean.STATUS_FINALIZED) || contract.getStatus().equals(ContractBMPBean.STATUS_STORAGE)) {
+						contract.setIsRented(false);
+					} else {
+						contract.setIsRented(contract.getChangeKeyStatusTo());
+					}
 					contract.store();
 				}
 			}

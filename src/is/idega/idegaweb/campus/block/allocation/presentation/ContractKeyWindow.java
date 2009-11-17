@@ -2,10 +2,13 @@ package is.idega.idegaweb.campus.block.allocation.presentation;
 
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
+import is.idega.idegaweb.campus.nortek.business.NortekBusiness;
+import is.idega.idegaweb.campus.nortek.data.Card;
 import is.idega.idegaweb.campus.presentation.CampusWindow;
 
 import java.rmi.RemoteException;
-import java.util.Collection;
+
+import javax.ejb.FinderException;
 
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.ApplicantHome;
@@ -14,18 +17,19 @@ import com.idega.block.building.data.Building;
 import com.idega.block.building.data.Complex;
 import com.idega.block.building.data.Floor;
 import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
-import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
@@ -38,10 +42,15 @@ import com.idega.util.IWTimestamp;
 
 public class ContractKeyWindow extends CampusWindow {
 
-	protected final int ACT1 = 1, ACT2 = 2, ACT3 = 3, ACT4 = 4, ACT5 = 5;
-
-	public static String prmContractId = "contract_id";
-
+	private static final String PARAM_DELIVERED_DATE = "deliveredDate";
+	private static final String PARAM_TYPE = "val";
+	private static final String TYPE_DELIVER = "deliver";
+	private static final String TYPE_RETURN = "return";
+	private static final String PARAM_SAVE_X = "save.x";
+	private static final String PARAM_SAVE = "save";
+	private static final String PARAM_INVALIDATE_LAUNDRY_CARD = "invalidate_card";
+	public static String PARAM_CONTARACT = "contract_id";
+	
 	public ContractKeyWindow() {
 		setWidth(300);
 		setHeight(250);
@@ -51,7 +60,7 @@ public class ContractKeyWindow extends CampusWindow {
 	protected void control(IWContext iwc) throws RemoteException {
 
 		if (iwc.isLoggedOn()) {
-			if (iwc.isParameterSet("save") || iwc.isParameterSet("save.x")) {
+			if (iwc.isParameterSet(PARAM_SAVE) || iwc.isParameterSet(PARAM_SAVE_X)) {
 				doContract(iwc);
 				setParentToReload();
 			}
@@ -72,14 +81,12 @@ public class ContractKeyWindow extends CampusWindow {
 	}
 
 	private PresentationObject getSignatureTable(IWContext iwc) {
-		int iContractId = Integer.parseInt(iwc.getParameter(prmContractId));
+		int iContractId = Integer.parseInt(iwc.getParameter(PARAM_CONTARACT));
 		try {
 			ContractHome contractHome = (ContractHome) IDOLookup
 					.getHome(Contract.class);
 			Contract eContract = contractHome.findByPrimaryKey(new Integer(
 					iContractId));
-			Collection listOfContracts = contractHome.findByApartmentAndRented(
-					eContract.getApartmentId(), new Boolean(true));
 			User eUser = eContract.getUser();
 			Apartment apartment = eContract.getApartment();
 			IWTimestamp from = new IWTimestamp(eContract.getValidFrom());
@@ -94,12 +101,12 @@ public class ContractKeyWindow extends CampusWindow {
 					"close.gif")));
 			String val = "";
 			SubmitButton save = new SubmitButton(getResourceBundle().getImage(
-					"save.gif"), "save");
+					"save.gif"), PARAM_SAVE);
 			boolean canSave = false;
 			if (apartmentReturn) {
 				T.addTitle(getResourceBundle().getLocalizedString(
 						"apartment_return", "Apartment return"));
-				val = "return";
+				val = TYPE_RETURN;
 				if (eContract
 						.getStatus()
 						.equals(
@@ -113,7 +120,7 @@ public class ContractKeyWindow extends CampusWindow {
 				}
 			} else {
 				T.addTitle(localize("apartment_deliver", "Apartment deliver"));
-				val = "deliver";
+				val = TYPE_DELIVER;
 				if (eContract
 						.getStatus()
 						.equals(
@@ -122,10 +129,10 @@ public class ContractKeyWindow extends CampusWindow {
 					canSave = true;
 				}
 			}
-			T.add(new HiddenInput("val", val), 1, 1);
+			T.add(new HiddenInput(PARAM_TYPE, val), 1, 1);
 
 			int row = 1;
-			HiddenInput HI = new HiddenInput(prmContractId, eContract
+			HiddenInput HI = new HiddenInput(PARAM_CONTARACT, eContract
 					.getPrimaryKey().toString());
 			T.add(HI, 1, row);
 			T.add(getHeader(localize("name", "Name")), 1, row);
@@ -165,7 +172,7 @@ public class ContractKeyWindow extends CampusWindow {
 			} else {
 				if (canSave) {
 					IWTimestamp del = new IWTimestamp();
-					DateInput input = new DateInput("deliveredDate");
+					DateInput input = new DateInput(PARAM_DELIVERED_DATE);
 					input.setDate(del.getDate());
 
 					T.add(input, 2, row);
@@ -173,16 +180,17 @@ public class ContractKeyWindow extends CampusWindow {
 			}
 
 			row++;
-			boolean canSign = true;
-			if (listOfContracts != null && !listOfContracts.isEmpty()) {
 
-				Contract C = (Contract) listOfContracts.iterator().next();
-
-				if (!C.getPrimaryKey().toString().equals(
-						eContract.getPrimaryKey().toString()))
-					canSign = false;
+			if (apartmentReturn) {
+				Card card = getNortekBusiness(iwc).getCard(eUser);
+				if (card != null && card.getIsValid()) {
+					T.add(getHeader(localize("laundry_card", "Invalidate laundry card")), 1, row);
+					CheckBox invalidateCard = new CheckBox(PARAM_INVALIDATE_LAUNDRY_CARD, "checked");
+					invalidateCard.setChecked(false);
+					T.add(invalidateCard, 2, row);
+				}
 			}
-
+			
 			Form F = new Form();
 			F.add(T);
 			return F;
@@ -192,14 +200,23 @@ public class ContractKeyWindow extends CampusWindow {
 	}
 
 	private void doContract(IWContext iwc) throws RemoteException {
-
-		Integer id = Integer.valueOf(iwc.getParameter(prmContractId));
-		if (iwc.isParameterSet("val")) {
-			String val = iwc.getParameter("val");
-			if (val.equals("return")) {
+		Integer id = Integer.valueOf(iwc.getParameter(PARAM_CONTARACT));
+		String invalidateCard = iwc.getParameter(PARAM_INVALIDATE_LAUNDRY_CARD);
+		if (iwc.isParameterSet(PARAM_TYPE)) {
+			String val = iwc.getParameter(PARAM_TYPE);
+			if (val.equals(TYPE_RETURN)) {
 				getContractService(iwc).returnKey(id, iwc.getCurrentUser());
-			} else if (val.equals("deliver")) {
-				String from = iwc.getParameter("deliveredDate");
+				if (invalidateCard != null && "checked".equals(invalidateCard)) {
+					try {
+						Contract contract = getContractService(iwc).getContractHome().findByPrimaryKey(id);
+						Card card = getNortekBusiness(iwc).getCard(contract.getUser());
+						card.setIsValid(false);
+						card.store();
+					} catch (FinderException e) {
+					}
+				}
+			} else if (val.equals(TYPE_DELIVER)) {
+				String from = iwc.getParameter(PARAM_DELIVERED_DATE);
 				IWTimestamp fromStamp = new IWTimestamp(from);
 				String addKeyCharge = iwc.getApplicationSettings().getProperty("AUTO_ADD_KEY_CHARGE", String.valueOf(false));
 				String accountKeyID = iwc.getApplicationSettings().getProperty("AUTO_ADD_KEY_CHARGE_ACCOUNT_KEY_ID", "-1");
@@ -209,17 +226,6 @@ public class ContractKeyWindow extends CampusWindow {
 				getContractService(iwc)
 						.deliverKey(id, fromStamp.getTimestamp(), Boolean.valueOf(addKeyCharge).booleanValue(), Integer.valueOf(accountKeyID), Integer.valueOf(tariffGroupID), Integer.valueOf(finanaceCategoryID), Double.valueOf(amount).doubleValue());
 			}
-		}
-	}
-
-	private void doAddEmail(int iUserId, IWContext iwc) {
-		String sEmail = iwc.getParameter("new_email");
-		try {
-			UserBusiness ub = (UserBusiness) IBOLookup.getServiceInstance(iwc,
-					UserBusiness.class);
-			ub.addNewUserEmail(iUserId, sEmail);
-		} catch (RemoteException e) {
-			e.printStackTrace();
 		}
 	}
 
@@ -267,5 +273,12 @@ public class ContractKeyWindow extends CampusWindow {
 
 	public void main(IWContext iwc) throws RemoteException {
 		control(iwc);
+	}
+	
+	private NortekBusiness getNortekBusiness(IWContext iwc) throws IBOLookupException {
+		NortekBusiness bus1 = (NortekBusiness) IBOLookup.getServiceInstance(
+				iwc, NortekBusiness.class);
+
+		return bus1;
 	}
 }

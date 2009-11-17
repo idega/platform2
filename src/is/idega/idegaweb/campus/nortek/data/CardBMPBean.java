@@ -89,6 +89,9 @@ public class CardBMPBean extends GenericEntity implements Card {
 	}
 	
 	public void setIsDeleted(boolean isDeleted) {
+		if (isDeleted) {
+			setIsValid(!isDeleted);
+		}
 		setColumn(COLUMN_DELETED, isDeleted);
 	}
 	
@@ -96,8 +99,50 @@ public class CardBMPBean extends GenericEntity implements Card {
 	public Collection ejbFindAll() throws FinderException {
 		IDOQuery query = idoQuery();
 		query.appendSelectAllFrom(this);
+		query.appendWhere();
+		query.appendLeftParenthesis();
+		query.append(COLUMN_DELETED);
+		query.appendIsNull();
+		query.appendOr();
+		query.appendEquals(COLUMN_DELETED, false);
+		query.appendRightParenthesis();
+		
+		query.appendOrderBy(COLUMN_DECODED_SERIAL);
+		System.out.println("query = " + query.toString()); 
+
+		return idoFindPKsByQuery(query);
+	}
+	
+	public Object ejbFindByUser(User user) throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this);
+		query.appendWhereEquals(COLUMN_USER, user);
+		query.appendAnd();
+		query.appendLeftParenthesis();
+		query.append(COLUMN_DELETED);
+		query.appendIsNull();
+		query.appendOr();
+		query.appendEquals(COLUMN_DELETED, false);
+		query.appendRightParenthesis();
+		
+		System.out.println("query = " + query.toString()); 
+		return idoFindOnePKByQuery(query);
+	}
+	
+	public Collection ejbFindAllByValid(boolean valid) throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this);
+		query.appendWhereEquals(COLUMN_VALID, valid);
+		query.appendAnd();
+		query.appendLeftParenthesis();
+		query.append(COLUMN_DELETED);
+		query.appendIsNull();
+		query.appendOr();
+		query.appendEquals(COLUMN_DELETED, false);
+		query.appendRightParenthesis();
 		query.appendOrderBy(COLUMN_DECODED_SERIAL);
 
+		System.out.println("query = " + query.toString()); 
 		return idoFindPKsByQuery(query);
 	}
 }

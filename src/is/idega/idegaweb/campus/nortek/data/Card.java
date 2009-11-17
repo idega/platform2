@@ -1,8 +1,8 @@
 package is.idega.idegaweb.campus.nortek.data;
 
 
-import com.idega.user.data.User;
 import com.idega.data.IDOEntity;
+import com.idega.user.data.User;
 
 public interface Card extends IDOEntity {
 	/**
@@ -31,6 +31,11 @@ public interface Card extends IDOEntity {
 	public boolean getIsValid();
 
 	/**
+	 * @see is.idega.idegaweb.campus.nortek.data.CardBMPBean#getIsDeleted
+	 */
+	public boolean getIsDeleted();
+
+	/**
 	 * @see is.idega.idegaweb.campus.nortek.data.CardBMPBean#setCardSerialNumber
 	 */
 	public void setCardSerialNumber(String serialNumber);
@@ -49,4 +54,9 @@ public interface Card extends IDOEntity {
 	 * @see is.idega.idegaweb.campus.nortek.data.CardBMPBean#setIsValid
 	 */
 	public void setIsValid(boolean isValid);
+
+	/**
+	 * @see is.idega.idegaweb.campus.nortek.data.CardBMPBean#setIsDeleted
+	 */
+	public void setIsDeleted(boolean isDeleted);
 }

@@ -545,7 +545,7 @@ public class CampusContracts extends CampusBlock {
 
 		maxCol--;
 
-		if (doAutomaticCharges) {
+		if (doAutomaticCharges && maxCol > 0) {
 			SubmitButton save = new SubmitButton(SAVE, SAVE, listOfUsers
 					.toString());
 			T.add(save, maxCol, row);
@@ -688,8 +688,8 @@ public class CampusContracts extends CampusBlock {
 
 	public static Link getKeyLink(PresentationObject MO, int contractId) {
 		Link L = new Link(MO);
-		L.setWindowToOpen(ContractKeyWindow.class);
-		L.addParameter(ContractKeyWindow.prmContractId, contractId);
+		L.setWindowToOpen(ContractKeyWindow.class, "400", "260", true, true);
+		L.addParameter(ContractKeyWindow.PARAM_CONTARACT, contractId);
 		return L;
 	}
 

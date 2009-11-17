@@ -1,6 +1,8 @@
 package is.idega.idegaweb.campus.presentation;
 
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
+import is.idega.idegaweb.campus.nortek.business.NortekBusiness;
+import is.idega.idegaweb.campus.nortek.data.Card;
 
 import java.rmi.RemoteException;
 import java.text.DateFormat;
@@ -12,6 +14,9 @@ import javax.ejb.FinderException;
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.ApplicantHome;
 import com.idega.block.building.data.Apartment;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
+import com.idega.core.builder.data.ICPage;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;
@@ -19,6 +24,7 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
@@ -46,6 +52,14 @@ import com.idega.user.data.User;
 
 public class PersonalNumberResult extends CampusBlock implements Campus {
 	
+	protected final static String LABEL_CARD_DECODED = "nt_card_decoded";
+
+	protected final static String LABEL_CARD = "nt_card";
+
+	protected final static String LABEL_USER = "nt_user";
+
+	protected final static String LABEL_VALID = "nt_valid";
+	
 	private static final String APPLICANT_INFO = "appl_info";
 
 	private static final String COMMENT = "comment";
@@ -61,6 +75,8 @@ public class PersonalNumberResult extends CampusBlock implements Campus {
 	private User user = null;
 		
 	private String comment = null;
+	
+	private ICPage page = null;
 
 	public PersonalNumberResult() {
 	}
@@ -104,10 +120,11 @@ public class PersonalNumberResult extends CampusBlock implements Campus {
 					T.add(getContractInfo(iwc, contracts), col, row++);
 				}
 				if (user != null) {
-					if (this.comment != null) {
-						
-					}
 					T.add(getUserComment(iwc), col, row++);
+					PresentationObject card = getLaundryCardForUser(iwc);
+					if (card != null) {
+						T.add(card, col, row++);						
+					}
 				}
 			} catch (com.idega.data.IDOFinderException ex) {
 				ex.printStackTrace();
@@ -151,8 +168,8 @@ public class PersonalNumberResult extends CampusBlock implements Campus {
 		int row = 1;
 		T.add(getHeader(localize(COMMENT, "Comment")), col++, row++);
 
-		TextArea input = new TextArea(COMMENT);
-		input.setMaximumCharacters(2000);
+		TextArea input = new TextArea(COMMENT,40,7);
+		input.setMaximumCharacters(255);
 		if (this.comment != null) {
 			if (this.comment.length() > 255) {
 				this.comment = this.comment.substring(0, 255);
@@ -175,6 +192,65 @@ public class PersonalNumberResult extends CampusBlock implements Campus {
 		return form;
 	}
 
+	private PresentationObject getLaundryCardForUser(IWContext iwc) {
+		Card card = null;
+		try {
+			card = getNortekBusiness(iwc).getCard(this.user);
+		} catch (IBOLookupException e) {
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+
+		System.out.println("card = " + card);
+		
+		if (card == null) {
+			return null;
+		}
+		
+		DataTable T = new DataTable();
+		T.setUseBottom(false);
+		T.setUseTop(false);
+		T.addTitle(localize("laundry_card", "Laundry card"));
+		T.setTitlesHorizontal(true);
+
+		int row = 1;
+		int column = 1;
+		T.add(getHeader(this.iwrb.getLocalizedString(LABEL_CARD_DECODED, "Card decoded")), column++, row);
+		T.add(getHeader(this.iwrb.getLocalizedString(LABEL_CARD, "Card")), column++, row);
+		T.add(getHeader(this.iwrb.getLocalizedString(LABEL_USER, "User")), column++, row);
+		T.add(getHeader(this.iwrb.getLocalizedString(LABEL_VALID, "Valid")), column++, row++);
+
+		column = 1;
+		String text = "x";
+		if (card.getDecodedCardSerialNumber() != null) {
+			text = card.getDecodedCardSerialNumber();
+		}
+		if (this.page != null) {
+			Link link = new Link(new Text(text));
+			link.addParameter(LABEL_CARD, card.getCardSerialNumber());
+			link.setPage(this.page);
+			T.add(link, column++, row);			
+		} else {
+			T.add(new Text(text), column++, row);
+		}
+		T.add(new Text(card.getCardSerialNumber()), column++, row);
+		if (card.getUser() != null) {
+			T.add(new Text(card.getUser().getName() + " (" + card.getUser().getPersonalID() + ")"), column++, row);
+		} else {
+			T.add(new Text(""), column++, row);
+		}
+		CheckBox check = new CheckBox();
+		check.setDisabled(true);
+		if (card.getIsValid()) {
+			check.setChecked(true);
+		} else {
+			check.setChecked(false);
+		}
+		T.add(check, column++, row++);
+		
+		return T;
+	}
 	
 	private PresentationObject getNonContractApplicantInfo(Collection applicants) {
 		DataTable T = new DataTable();
@@ -319,5 +395,20 @@ public class PersonalNumberResult extends CampusBlock implements Campus {
 		df = DateFormat.getDateInstance(DateFormat.SHORT, iwc
 				.getCurrentLocale());
 		control(iwc);
+	}
+	
+	public void setLaundryCardPage(ICPage page) {
+		this.page = page;
+	}
+	
+	public ICPage getLaundryCardPage() {
+		return this.page;
+	}
+	
+	private NortekBusiness getNortekBusiness(IWContext iwc) throws IBOLookupException {
+		NortekBusiness bus1 = (NortekBusiness) IBOLookup.getServiceInstance(
+				iwc, NortekBusiness.class);
+
+		return bus1;
 	}
 }
