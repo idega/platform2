@@ -86,8 +86,6 @@ public class PersonalNumberSearch extends Block {
 		iwb = getBundle(iwc);
 		iwrb = getResourceBundle(iwc);
 
-		// _numberImage = _iwrb.getLocalizedImageButton("get","Get");
-
 		numberText = iwrb.getLocalizedString("personal_number", "Kennitala");
 		submitButtonText = iwrb.getLocalizedString("get", "Get");
 		setup();
@@ -213,10 +211,10 @@ public class PersonalNumberSearch extends Block {
 		submitTable.setWidth("100%");
 
 		if (!hasHelpButton) {
-			submitTable.add(new SubmitButton(submitButtonText, "commit"), 1, 1);
+			submitTable.add(new SubmitButton("commit", submitButtonText), 1, 1);
 		}
 		else {
-			submitTable.add(new SubmitButton(submitButtonText, "commit"), 2, 1);
+			submitTable.add(new SubmitButton("commit", submitButtonText), 2, 1);
 			submitTable.add(helpButton, 1, 1);
 		}
 
@@ -228,7 +226,7 @@ public class PersonalNumberSearch extends Block {
 	}
 
 	public String getBundleIdentifier() {
-		return (IW_BUNDLE_IDENTIFIER);
+		return IW_BUNDLE_IDENTIFIER;
 	}
 
 	public void setHelpButton(boolean usehelp) {

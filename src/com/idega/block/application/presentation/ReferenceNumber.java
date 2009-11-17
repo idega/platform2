@@ -208,10 +208,10 @@ public class ReferenceNumber extends Block {
 		submitTable.setWidth("100%");
 
 		if (!this.hasHelpButton) {
-			submitTable.add(new SubmitButton(this.submitButtonText, "tengja"), 1, 1);
+			submitTable.add(new SubmitButton("tengja", this.submitButtonText), 1, 1);
 		}
 		else {
-			submitTable.add(new SubmitButton(this.submitButtonText, "tengja"), 2, 1);
+			submitTable.add(new SubmitButton("tengja", this.submitButtonText), 2, 1);
 			submitTable.add(helpButton, 1, 1);
 		}
 
@@ -223,7 +223,7 @@ public class ReferenceNumber extends Block {
 	}
 
 	public String getBundleIdentifier() {
-		return (IW_BUNDLE_IDENTIFIER);
+		return IW_BUNDLE_IDENTIFIER;
 	}
 
 	public void setHelpButton(boolean usehelp) {
