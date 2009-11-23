@@ -82,6 +82,9 @@ public class NortekBusinessBean extends IBOServiceBean implements
 			}
 		}
 		card.setIsValid(!ban);
+		if (ban) {
+			card.setUser(null);
+		}
 		card.store();
 
 		return true;
@@ -217,17 +220,18 @@ public class NortekBusinessBean extends IBOServiceBean implements
 			card = getCardHome().create();
 		}
 
-		User user = null;
-		if (ssn != null && !"".equals(ssn)) {
-			user = getUserHome().findByPersonalID(ssn);
-		}
 
 		card.setCardSerialNumber(encoded);
 		card.setDecodedCardSerialNumber(decodedSerial);
-		card.setUser(user);
 		if (valid != null && !"".equals(valid)) {
+			User user = null;
+			if (ssn != null && !"".equals(ssn)) {
+				user = getUserHome().findByPersonalID(ssn);
+			}
+			card.setUser(user);
 			card.setIsValid(true);
 		} else {
+			card.setUser(null);
 			card.setIsValid(false);
 		}
 		card.setIsDeleted(false);
@@ -241,6 +245,7 @@ public class NortekBusinessBean extends IBOServiceBean implements
 			for (int i = 0; i < cardIDs.length; i++) {
 				Card card = getCard(cardIDs[i]);
 				if (card != null) {
+					card.setUser(null);
 					card.setIsDeleted(true);
 					card.store();
 				}
