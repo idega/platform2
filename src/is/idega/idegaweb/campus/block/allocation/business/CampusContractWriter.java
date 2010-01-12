@@ -378,6 +378,7 @@ public class CampusContractWriter {
 				// .getHomeLegacy(ApartmentCategory.class)).findByPrimaryKey(
 				// eApartmentType.getApartmentCategoryId());
 				String aprtTypeName = eApartmentType.getName();
+				String aprtTypeContractText = eApartmentType.getContractText();
 				Floor eFloor = ((FloorHome) IDOLookup.getHome(Floor.class))
 						.findByPrimaryKey(new Integer(eApartment.getFloorId()));
 				Building eBuilding = ((BuildingHome) IDOLookup
@@ -534,16 +535,21 @@ public class CampusContractWriter {
 				// H.put(apartment_category,new
 				// Chunk(eApartmentCategory.getName(),tagFont));
 				String aprtTypeNameAbbr = null;
-				if (aprtTypeName != null) {
+				if (aprtTypeContractText != null && !"".equals(aprtTypeContractText.trim())) {
+					aprtTypeNameAbbr = aprtTypeContractText;
+				}
+				else if (aprtTypeName != null) {
 					StringTokenizer tok = new StringTokenizer(aprtTypeName, " ");
 					if (tok.hasMoreTokens())
 						aprtTypeNameAbbr = tok.nextToken();
 				}
-				if (aprtTypeNameAbbr != null)
+				
+				if (aprtTypeNameAbbr != null) {
 					H.put(apartment_category, new Chunk(aprtTypeNameAbbr,
 							nameFont));
-				else
+				} else {
 					H.put(apartment_category, new Chunk("", nameFont));
+				}
 
 				H.put(renting_index, new Chunk(iwb.getProperty(
 						"contract_campus_index", "100"), tagFont));

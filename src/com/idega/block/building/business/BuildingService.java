@@ -71,7 +71,7 @@ public interface BuildingService extends IBOService {
 			Integer imageID, Integer subcategoryID, Integer textID,
 			Double area, Integer roomcount, Integer rent, Boolean balcony,
 			Boolean bath, Boolean kitchen, Boolean storage, Boolean study,
-			Boolean furniture, Boolean loft, Boolean locked)
+			Boolean furniture, Boolean loft, Boolean locked, String contractText)
 			throws RemoteException;
 
 	/**

@@ -253,7 +253,7 @@ public class BuildingServiceBean extends IBOServiceBean implements
 			Integer imageID, Integer subcategoryID, Integer textID, Double area,
 			Integer roomcount, Integer rent, Boolean balcony, Boolean bath,
 			Boolean kitchen, Boolean storage, Boolean study, Boolean furniture,
-			Boolean loft, Boolean locked) {
+			Boolean loft, Boolean locked, String contractText) {
 
 		try {
 			ApartmentType type = null;
@@ -289,7 +289,7 @@ public class BuildingServiceBean extends IBOServiceBean implements
 			type.setStudy(study.booleanValue());
 			type.setFurniture(furniture.booleanValue());
 			type.setLocked(locked.booleanValue());
-
+			type.setContractText(contractText);
 			type.store();
 
 			return type;

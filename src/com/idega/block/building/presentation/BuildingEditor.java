@@ -100,6 +100,8 @@ public class BuildingEditor extends com.idega.presentation.Block {
 
 	private static final String LABEL_ABBREVIATION = "abbreviation";
 
+	private static final String LABEL_CONTRACT_TEXT = "contract_text";
+
 	private static final String LABEL_NAME = "name";
 
 	private static final String LABEL_TYPE = "type";
@@ -126,32 +128,33 @@ public class BuildingEditor extends com.idega.presentation.Block {
 
 	private static final String PARAM_RENT = "bm_rent";
 
+	private static final String PARAM_CONTRACT_TEXT = "bm_contract_text";
+
 	private static final String PARAM_AREA = "bm_area";
 
 	private static final String PARAM_ROOMCOUNT = "bm_roomcount";
 
 	private static final String PARAM_ID = "dr_id";
-	
+
 	private static final String LABEL_SUBCATEGORY = "subcategory";
-	
+
 	private static final String PARAM_SHOW_SPOUSE = "show_spouse";
-	
+
 	private static final String PARAM_SPOUSE_MANDATORY = "spouse_mandatory";
-	
+
 	private static final String PARAM_SHOW_CHILDREN = "show_children";
-	
+
 	private static final String PARAM_CHILDREN_MANDATORY = "children_mandatory";
-	
+
 	private static final String PARAM_MAX_CHOICES = "max_choices";
-	
+
 	private static final String PARAM_RENTER_NAME = "renter_name";
-	
+
 	private static final String PARAM_RENTER_ADDRESS = "renter_address";
-	
+
 	private static final String PARAM_RENTER_ID = "renter_id";
-	
+
 	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.building";
-	
 
 	public static final int ACTION_COMPLEX = 1;
 	public static final int ACTION_BUILDING = 2;
@@ -276,7 +279,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 				case ACTION_SUBCATEGORY:
 					storeSubcategory(iwc);
 				}
-				
+
 				BuildingCacher.setToReloadNextTimeReferenced();
 			}
 		} else if (iwc.getParameter(PARAM_DELETE) != null
@@ -499,7 +502,8 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		}
 
 		this.service.storeBuilding(id, sName, sAddress, sInfo, imageid,
-				complexid, this.textId, locked, renterName, renterAddress, renterID);
+				complexid, this.textId, locked, renterName, renterAddress,
+				renterID);
 	}
 
 	private void storeFloor(IWContext iwc) throws RemoteException {
@@ -537,13 +541,17 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		String sInfo = iwc.getParameter(PARAM_INFO).trim();
 		String sImageId = iwc.getParameter("iconid");
 		String sId = iwc.getParameter(PARAM_ID);
-		
-		Boolean showSpouse = Boolean.valueOf(iwc.isParameterSet(PARAM_SHOW_SPOUSE));
-		Boolean spouseMandatory = Boolean.valueOf(iwc.isParameterSet(PARAM_SPOUSE_MANDATORY));
-		Boolean showChildren = Boolean.valueOf(iwc.isParameterSet(PARAM_SHOW_CHILDREN));
-		Boolean childrenMandatory = Boolean.valueOf(iwc.isParameterSet(PARAM_CHILDREN_MANDATORY));
+
+		Boolean showSpouse = Boolean.valueOf(iwc
+				.isParameterSet(PARAM_SHOW_SPOUSE));
+		Boolean spouseMandatory = Boolean.valueOf(iwc
+				.isParameterSet(PARAM_SPOUSE_MANDATORY));
+		Boolean showChildren = Boolean.valueOf(iwc
+				.isParameterSet(PARAM_SHOW_CHILDREN));
+		Boolean childrenMandatory = Boolean.valueOf(iwc
+				.isParameterSet(PARAM_CHILDREN_MANDATORY));
 		String numberOfChoices = iwc.getParameter(PARAM_MAX_CHOICES);
-		
+
 		Integer imageid = null;
 		Integer id = null;
 		Integer maxNumberOfChoices = null;
@@ -563,9 +571,13 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		} catch (NumberFormatException e) {
 			maxNumberOfChoices = null;
 		}
-		
-		this.service.storeApartmentCategory(id, sName, sInfo, imageid,
-				this.textId, showSpouse.booleanValue(), spouseMandatory.booleanValue(), showChildren.booleanValue(), childrenMandatory.booleanValue(), maxNumberOfChoices.intValue());
+
+		this.service
+				.storeApartmentCategory(id, sName, sInfo, imageid, this.textId,
+						showSpouse.booleanValue(), spouseMandatory
+								.booleanValue(), showChildren.booleanValue(),
+						childrenMandatory.booleanValue(), maxNumberOfChoices
+								.intValue());
 
 	}
 
@@ -623,6 +635,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 
 		String sRent = iwc.getParameter(PARAM_RENT);
 		Boolean locked = Boolean.valueOf(iwc.getParameter(PARAM_TYPE_LOCKED));
+		String contractText = iwc.getParameter(PARAM_CONTRACT_TEXT);
 
 		Integer planid = null;
 		Integer imageid = null;
@@ -668,11 +681,10 @@ public class BuildingEditor extends com.idega.presentation.Block {
 			count = null;
 		}
 
-		this.service
-				.storeApartmentType(id, sName, sInfo, abbrev, sExtraInfo,
-						planid, imageid, subcategory, this.textId, area, count,
-						rent, balcony, bath, kitchen, storage, study,
-						furniture, loft, locked);
+		this.service.storeApartmentType(id, sName, sInfo, abbrev, sExtraInfo,
+				planid, imageid, subcategory, this.textId, area, count, rent,
+				balcony, bath, kitchen, storage, study, furniture, loft,
+				locked, contractText);
 
 	}
 
@@ -759,8 +771,9 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		B6.setFontColor("#FFFFFF");
 		B6.setBold();
 		B6.addParameter(this.PARAM_ACTION, this.ACTION_APARTMENT);
-		
-		Link subcategory = new Link(iwrb.getLocalizedString(LABEL_SUBCATEGORY, "Subcategory"));
+
+		Link subcategory = new Link(iwrb.getLocalizedString(LABEL_SUBCATEGORY,
+				"Subcategory"));
 		subcategory.setFontStyle("text-decoration: none");
 		subcategory.setFontColor("#FFFFFF");
 		subcategory.setBold();
@@ -854,12 +867,13 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		B6.setBold();
 		B6.addParameter(this.PARAM_ACTION, this.ACTION_APARTMENT);
 
-		Link subcategory = new Link(iwrb.getLocalizedString(LABEL_SUBCATEGORY, "Subcategory"));
+		Link subcategory = new Link(iwrb.getLocalizedString(LABEL_SUBCATEGORY,
+				"Subcategory"));
 		subcategory.setFontStyle("text-decoration: none");
 		subcategory.setFontColor(color);
 		subcategory.setBold();
 		subcategory.addParameter(this.PARAM_ACTION, this.ACTION_SUBCATEGORY);
-		
+
 		switch (i) {
 		case ACTION_COMPLEX:
 			B1.setFontColor("#FF9933");
@@ -879,7 +893,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		case ACTION_TYPE:
 			B5.setFontColor("#FF9933");
 			break;
-		case ACTION_SUBCATEGORY : {
+		case ACTION_SUBCATEGORY: {
 			subcategory.setFontColor("#FF9933");
 			break;
 		}
@@ -1009,9 +1023,10 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		CheckBox complexLocked = new CheckBox(PARAM_COMPLEX_LOCKED, "true");
 		complexLocked.setChecked(locked);
 
-		TextInput externalFlashURL = new TextInput(PARAM_EXTERNAL_FLASH_URL, sExternalFlashURL);
+		TextInput externalFlashURL = new TextInput(PARAM_EXTERNAL_FLASH_URL,
+				sExternalFlashURL);
 		setStyle(externalFlashURL);
-		
+
 		T.add(HI);
 		T.add(HA);
 		T.add(categories, 1, 1);
@@ -1024,8 +1039,8 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		T.add(formatText(this.iwrb.getLocalizedString("flash", "Flash page")),
 				1, 4);
 		T.add(pageChooser, 1, 5);
-		T.add(formatText(this.iwrb.getLocalizedString(PARAM_EXTERNAL_FLASH_URL, "External flash URL")), 1,
-				6);
+		T.add(formatText(this.iwrb.getLocalizedString(PARAM_EXTERNAL_FLASH_URL,
+				"External flash URL")), 1, 6);
 		T.add(externalFlashURL, 1, 7);
 		T.add(formatText(this.iwrb.getLocalizedString("complex_locked",
 				"Complex locked")), 1, 8);
@@ -1092,11 +1107,11 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		TextInput serie = new TextInput(PARAM_SERIE, sSerie);
 		HiddenInput HI = new HiddenInput(PARAM_CHOICE, String
 				.valueOf(this.ACTION_BUILDING));
-		
+
 		TextInput rName = new TextInput(PARAM_RENTER_NAME, renterName);
 		TextInput rAddress = new TextInput(PARAM_RENTER_ADDRESS, renterAddress);
 		TextInput rId = new TextInput(PARAM_RENTER_ID, renterID);
-		
+
 		DropdownMenu complex = drpLodgings(this.service.getComplexHome()
 				.findAllIncludingLocked(), "dr_complex", "Complex", sComplexId);
 		DropdownMenu houses = drpLodgings(this.service.getBuildingHome()
@@ -1130,19 +1145,20 @@ public class BuildingEditor extends com.idega.presentation.Block {
 				1, 6);
 
 		T.add(complex, 1, 7);
-		
+
 		T.add(formatText(this.iwrb.getLocalizedString("renter_name",
-			"Renter name")), 1, 8);
+				"Renter name")), 1, 8);
 		T.add(rName, 1, 9);
 
 		T.add(formatText(this.iwrb.getLocalizedString("renter_address",
-			"Renter address")), 1, 10);
+				"Renter address")), 1, 10);
 		T.add(rAddress, 1, 11);
 
-		T.add(formatText(this.iwrb.getLocalizedString("renter_id",
-			"Renter ID")), 1, 12);
+		T.add(
+				formatText(this.iwrb.getLocalizedString("renter_id",
+						"Renter ID")), 1, 12);
 		T.add(rId, 1, 13);
-		
+
 		T.add(formatText(this.iwrb.getLocalizedString("building_locked",
 				"Building locked")), 1, 14);
 		T.add(buildingLocked, 1, 15);
@@ -1258,11 +1274,14 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		int iIconId = e ? eApartmentCategory.getImageId() : 1;
 		int iTextId = e ? eApartmentCategory.getTextId() : -1;
 		boolean showSpouse = e ? eApartmentCategory.getShowSpouse() : true;
-		boolean spouseMandatory = e ? eApartmentCategory.getSpouseMandatory() : false;
+		boolean spouseMandatory = e ? eApartmentCategory.getSpouseMandatory()
+				: false;
 		boolean showChildren = e ? eApartmentCategory.getShowChildren() : true;
-		boolean childrenMandatory = e ? eApartmentCategory.getChildrenMandatory() : false;
-		int maxNumberOfChoices = e ? eApartmentCategory.getMaxNumberOfChoices() : 3;
-		
+		boolean childrenMandatory = e ? eApartmentCategory
+				.getChildrenMandatory() : false;
+		int maxNumberOfChoices = e ? eApartmentCategory.getMaxNumberOfChoices()
+				: 3;
+
 		Form form = new Form();
 		Table Frame = new Table(2, 1);
 		Frame.setRowVerticalAlignment(1, "top");
@@ -1289,7 +1308,8 @@ public class BuildingEditor extends com.idega.presentation.Block {
 
 		TextInput name = new TextInput(PARAM_NAME, sName);
 		TextInput numberOfChoices = new TextInput(PARAM_MAX_CHOICES);
-		numberOfChoices.setAsIntegers(iwrb.getLocalizedString("must_enter_integer", "Please enter an integer"));
+		numberOfChoices.setAsIntegers(iwrb.getLocalizedString(
+				"must_enter_integer", "Please enter an integer"));
 		numberOfChoices.setValue(maxNumberOfChoices);
 
 		DropdownMenu categories = drpLodgings(this.service
@@ -1297,16 +1317,17 @@ public class BuildingEditor extends com.idega.presentation.Block {
 				sId);
 
 		categories.setToSubmit();
-		
+
 		CheckBox showSpouseCheckBox = new CheckBox(PARAM_SHOW_SPOUSE);
 		showSpouseCheckBox.setChecked(showSpouse);
 		CheckBox spouseMandatoryCheckBox = new CheckBox(PARAM_SPOUSE_MANDATORY);
 		spouseMandatoryCheckBox.setChecked(spouseMandatory);
 		CheckBox showChildrenCheckBox = new CheckBox(PARAM_SHOW_CHILDREN);
 		showChildrenCheckBox.setChecked(showChildren);
-		CheckBox childrenMandatoryCheckBox = new CheckBox(PARAM_CHILDREN_MANDATORY);
+		CheckBox childrenMandatoryCheckBox = new CheckBox(
+				PARAM_CHILDREN_MANDATORY);
 		childrenMandatoryCheckBox.setChecked(childrenMandatory);
-		
+
 		HiddenInput HI = new HiddenInput(PARAM_CHOICE, String
 				.valueOf(this.ACTION_CATEGORY));
 		HiddenInput HA = new HiddenInput(this.PARAM_ACTION, String
@@ -1323,23 +1344,23 @@ public class BuildingEditor extends com.idega.presentation.Block {
 				2);
 		T.add(name, 1, 3);
 		T.add(makeTextInput(iTextId), 2, 3);
-		
-		T.add(formatText(this.iwrb.getLocalizedString(PARAM_SHOW_SPOUSE, "Show spouse")), 1,
-				4);
+
+		T.add(formatText(this.iwrb.getLocalizedString(PARAM_SHOW_SPOUSE,
+				"Show spouse")), 1, 4);
 		T.add(showSpouseCheckBox, 1, 5);
-		T.add(formatText(this.iwrb.getLocalizedString(PARAM_SPOUSE_MANDATORY, "Spouse mandatory")), 1,
-				6);
+		T.add(formatText(this.iwrb.getLocalizedString(PARAM_SPOUSE_MANDATORY,
+				"Spouse mandatory")), 1, 6);
 		T.add(spouseMandatoryCheckBox, 1, 7);
-		T.add(formatText(this.iwrb.getLocalizedString(PARAM_SHOW_CHILDREN, "Show children")), 1,
-				8);
+		T.add(formatText(this.iwrb.getLocalizedString(PARAM_SHOW_CHILDREN,
+				"Show children")), 1, 8);
 		T.add(showChildrenCheckBox, 1, 9);
-		T.add(formatText(this.iwrb.getLocalizedString(PARAM_CHILDREN_MANDATORY, "Children mandatory")), 1,
-				10);
+		T.add(formatText(this.iwrb.getLocalizedString(PARAM_CHILDREN_MANDATORY,
+				"Children mandatory")), 1, 10);
 		T.add(childrenMandatoryCheckBox, 1, 11);
-		T.add(formatText(this.iwrb.getLocalizedString(PARAM_MAX_CHOICES, "Max number of choices")), 1,
-				12);
+		T.add(formatText(this.iwrb.getLocalizedString(PARAM_MAX_CHOICES,
+				"Max number of choices")), 1, 12);
 		T.add(numberOfChoices, 1, 13);
-		
+
 		T.add(formatText(this.iwrb.getLocalizedString(LABEL_INFO, "Info")), 1,
 				14);
 
@@ -1419,7 +1440,8 @@ public class BuildingEditor extends com.idega.presentation.Block {
 				2);
 		T.add(name, 1, 3);
 		T.add(makeTextInput(iTextId), 2, 3);
-		T.add(formatText(this.iwrb.getLocalizedString(LABEL_CATEGORY, "Category")), 1, 4);
+		T.add(formatText(this.iwrb.getLocalizedString(LABEL_CATEGORY,
+				"Category")), 1, 4);
 		T.add(categories, 1, 5);
 		T.add(formatText(this.iwrb.getLocalizedString(LABEL_INFO, "Info")), 1,
 				6);
@@ -1453,6 +1475,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		String sExtraInfo = e ? eApartmentType.getExtraInfo() : "";
 		String sRent = e ? String.valueOf(eApartmentType.getRent()) : "0";
 		boolean locked = e ? eApartmentType.getLocked() : false;
+		String sContractText = e ? eApartmentType.getContractText() : "";
 
 		boolean bKitch = e ? eApartmentType.getKitchen() : false;
 		boolean bBath = e ? eApartmentType.getBathRoom() : false;
@@ -1493,6 +1516,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		// InnerTable.setWidth("100%");
 		TextInput name = new TextInput(PARAM_NAME, sName);
 		TextInput abbrev = new TextInput(PARAM_ABBREVATION, sAbbrev);
+		TextInput context = new TextInput(PARAM_CONTRACT_TEXT, sContractText);
 		DropdownMenu roomcount = drpCount(PARAM_ROOMCOUNT, "--", sRoomCount, 6);
 		TextInput area = new TextInput(PARAM_AREA, sArea);
 		area.setLength(4);
@@ -1546,6 +1570,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		name.setLength(30);
 		setStyle(name);
 		setStyle(abbrev);
+		setStyle(context);
 		setStyle(area);
 		setStyle(rent);
 		setStyle(roomcount);
@@ -1561,23 +1586,23 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		T.add(HI);
 		T.add(HA);
 
-		T.add(formatText(this.iwrb.getLocalizedString(LABEL_TYPE, "Type")), 1,
-				1);
-
 		T.add(apartmenttypes, 1, 1);
 		T.add(formatText(this.iwrb.getLocalizedString(LABEL_NAME, "Name")), 1,
 				2);
-		T.add(formatText(this.iwrb.getLocalizedString(LABEL_ABBREVIATION,
-				"Abbreviation")), 1, 4);
 		T.add(formatText(this.iwrb.getLocalizedString(LABEL_TEXT, "Text")), 2,
 				2);
 		T.add(name, 1, 3);
 		T.add(makeTextInput(iTextId), 2, 3);
+		T.add(formatText(this.iwrb.getLocalizedString(LABEL_ABBREVIATION,
+				"Abbreviation")), 1, 4);
 		T.add(abbrev, 1, 5);
+		T.add(formatText(this.iwrb.getLocalizedString(LABEL_CONTRACT_TEXT,
+				"Contract text")), 1, 6);
+		T.add(context, 1, 7);
 		T.add(formatText(this.iwrb.getLocalizedString(LABEL_CATEGORY,
 				"Category")
-				+ " "), 1, 6);
-		T.add(subcategories, 1, 7);
+				+ " "), 1, 8);
+		T.add(subcategories, 1, 9);
 		InnerTable.add(formatText(this.iwrb.getLocalizedString(
 				LABEL_ROOM_COUNT, "Room count")), 1, 1);
 		InnerTable.add(roomcount, 2, 1);
@@ -1608,22 +1633,22 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		InnerTable.add(formatText(this.iwrb.getLocalizedString(LABEL_RENT,
 				"Rent")), 1, 6);
 		InnerTable.add(rent, 2, 6);
-		T.add(InnerTable, 1, 8);
+		T.add(InnerTable, 1, 10);
 
 		T.add(formatText(this.iwrb.getLocalizedString(LABEL_LOCKED, "Locked")),
-				1, 9);
-		T.add(typeLocked, 1, 10);
+				1, 11);
+		T.add(typeLocked, 1, 12);
 
 		T.add(formatText(this.iwrb.getLocalizedString(LABEL_INFO, "Info")), 1,
-				11);
+				13);
 
-		T.add(makeTextArea(sInfo), 1, 12);
+		T.add(makeTextArea(sInfo), 1, 14);
 		T.add(formatText(this.iwrb.getLocalizedString(LABEL_EXTRA_INFO,
-				"ExtraInfo")), 1, 13);
+				"ExtraInfo")), 1, 15);
 
-		T.add(makeTextArea(LABEL_EXTRA_INFO, sExtraInfo), 1, 14);
-		T.mergeCells(1, 12, 2, 12);
+		T.add(makeTextArea(LABEL_EXTRA_INFO, sExtraInfo), 1, 16);
 		T.mergeCells(1, 14, 2, 14);
+		T.mergeCells(1, 16, 2, 16);
 		T2.add(formatText(this.iwrb.getLocalizedString(LABEL_PHOTO, "Photo")),
 				1, 1);
 		T2.add(this.makeImageInput(iImageId, "tphotoid"), 1, 1);
@@ -1697,12 +1722,12 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		if (bRentable) {
 			rentable.setChecked(true);
 		}
-		
+
 		CheckBox marked = new CheckBox(PARAM_MARKED, "true");
 		if (markApartment) {
 			marked.setChecked(true);
 		}
-		
+
 		HiddenInput HI = new HiddenInput(PARAM_CHOICE, String
 				.valueOf(this.ACTION_APARTMENT));
 		HiddenInput HA = new HiddenInput(this.PARAM_ACTION, String
@@ -1751,12 +1776,12 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		T.add(formatText(this.iwrb.getLocalizedString("rentable", "Rentable")
 				+ " "), 1, 9);
 		T.add(rentable, 1, 10);
-		
-		T.add(formatText(this.iwrb.getLocalizedString("marked", "Marked")
-				+ " "), 1, 11);
+
+		T.add(
+				formatText(this.iwrb.getLocalizedString("marked", "Marked")
+						+ " "), 1, 11);
 		T.add(marked, 1, 12);
-		
-		
+
 		T.add(formatText(this.iwrb.getLocalizedString(LABEL_INFO, "Info")), 1,
 				13);
 		T.add(makeTextArea(sInfo), 1, 14);
@@ -2055,8 +2080,9 @@ public class BuildingEditor extends com.idega.presentation.Block {
 				menuDisplay.append(entity.getApartmentCategory().getName());
 			}
 			menuDisplay.append(")");
-			
-			drp.addMenuElement(entity.getPrimaryKey().toString(), menuDisplay.toString());
+
+			drp.addMenuElement(entity.getPrimaryKey().toString(), menuDisplay
+					.toString());
 		}
 
 		if (!selected.equalsIgnoreCase("")) {
@@ -2066,7 +2092,6 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		return drp;
 	}
 
-	
 	public Text formatText(String s) {
 		Text T = new Text();
 		if (s != null) {

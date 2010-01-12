@@ -60,6 +60,8 @@ public class ApartmentTypeBMPBean extends
 	protected static final String COLUMN_APARTMENT_SUBCATEGORY = "bu_aprt_subcat";
 
 	protected static final String COLUMN_LOCKED = "locked";
+	
+	protected static final String COLUMN_CONTRACT_TEXT = "contract_text";
 
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
@@ -80,6 +82,7 @@ public class ApartmentTypeBMPBean extends
 		addAttribute(COLUMN_RENT, "Rent", Integer.class);
 		addAttribute(COLUMN_FURNITURE, "Furniture", Boolean.class);
 		addAttribute(COLUMN_LOCKED, "Locked", Boolean.class);
+		addAttribute(COLUMN_CONTRACT_TEXT, "Contract text", String.class);
 
 		addManyToOneRelationship(COLUMN_APARTMENT_SUBCATEGORY,
 				ApartmentSubcategory.class);
@@ -176,6 +179,10 @@ public class ApartmentTypeBMPBean extends
 		return getBooleanColumnValue(COLUMN_LOCKED, false);
 	}
 
+	public String getContractText() {
+		return getStringColumnValue(COLUMN_CONTRACT_TEXT);
+	}
+	
 	// setters
 	public void setName(String name) {
 		setColumn(COLUMN_NAME, name);
@@ -277,6 +284,10 @@ public class ApartmentTypeBMPBean extends
 		setColumn(COLUMN_LOCKED, locked);
 	}
 
+	public void setContractText(String contractText) {
+		setColumn(COLUMN_CONTRACT_TEXT, contractText);
+	}
+	
 	// ejb
 	public Collection ejbFindAll() throws FinderException {
 		IDOQuery query = idoQuery();

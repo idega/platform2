@@ -105,6 +105,11 @@ public interface ApartmentType extends BuildingEntity {
 	public boolean getLocked();
 
 	/**
+	 * @see com.idega.block.building.data.ApartmentTypeBMPBean#getContractText
+	 */
+	public String getContractText();
+
+	/**
 	 * @see com.idega.block.building.data.ApartmentTypeBMPBean#setName
 	 */
 	public void setName(String name);
@@ -228,4 +233,9 @@ public interface ApartmentType extends BuildingEntity {
 	 * @see com.idega.block.building.data.ApartmentTypeBMPBean#setLocked
 	 */
 	public void setLocked(boolean locked);
+
+	/**
+	 * @see com.idega.block.building.data.ApartmentTypeBMPBean#setContractText
+	 */
+	public void setContractText(String contractText);
 }
