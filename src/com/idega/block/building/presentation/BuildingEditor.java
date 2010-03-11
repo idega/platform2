@@ -2005,7 +2005,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 
 		DropdownMenu drp = new DropdownMenu(name);
 
-		drp.addDisabledMenuElement("0", display);
+		drp.addMenuElement("0", display);
 		for (Iterator iter = floors.iterator(); iter.hasNext();) {
 			Floor floor = (Floor) iter.next();
 

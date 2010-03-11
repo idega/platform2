@@ -91,12 +91,12 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 			if (((oldStatus == null) || (!oldStatus.equals(Status.APPROVED.toString())))
 					&& status.equals(Status.APPROVED.toString())) {
 				// send out approval letter ( try to do with listeners )
-				getMailingListService().processMailEvent(new EntityHolder(Appli), LetterParser.APPROVAL);
+				getMailingListService().processMailEvent(new EntityHolder(A), LetterParser.APPROVAL);
 				// make transfers on waitinglists
 				createWaitinglistTransfers(Appli, CA, transferInterval, setTranserferToPriorityLevel);
 			}
 			else if (status.equals(Status.REJECTED.toString())) {
-				getMailingListService().processMailEvent(new EntityHolder(Appli), LetterParser.REJECTION);
+				getMailingListService().processMailEvent(new EntityHolder(A), LetterParser.REJECTION);
 			}
 			t.commit();
 			

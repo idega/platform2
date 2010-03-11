@@ -215,19 +215,71 @@ public abstract class CampusApplicationFinder {
 		return V;
 	}
 
-	public static CampusApplicationHolder getApplicantInfo(int iApplicantId) {
-		CampusApplicationHolder CAH = null;
-		Applicant eApplicant = null;
+	/*
+	 * public static CampusApplicationHolder getApplicantInfo(int iApplicantId)
+	 * { CampusApplicationHolder CAH = null; Applicant eApplicant = null;
+	 * 
+	 * try { eApplicant = ((ApplicantHome) IDOLookup.getHome(Applicant.class))
+	 * .findByPrimaryKey(new Integer(iApplicantId)); CAH =
+	 * getApplicantInfo(eApplicant); } catch (Exception ex) {
+	 * ex.printStackTrace(); }
+	 * 
+	 * return CAH;
+	 * 
+	 * 
+	 * public static CampusApplicationHolder getApplicantInfo(Applicant
+	 * eApplicant) { CampusApplicationHolder cah = null; if (eApplicant != null)
+	 * { try { ApplicationHome aHome = (ApplicationHome) IDOLookup
+	 * .getHome(Application.class); Collection l = aHome.findByApplicantID(new
+	 * Integer(eApplicant .getPrimaryKey().toString())); if (l != null &&
+	 * !l.isEmpty()) { Iterator it = l.iterator(); Application eApplication =
+	 * null; while (it.hasNext()) { eApplication = (Application) it.next(); }
+	 * 
+	 * CampusApplicationHome cHome = (CampusApplicationHome) IDOLookup
+	 * .getHome(CampusApplication.class); CampusApplication eCampusApplication =
+	 * cHome.findByApplicationId(new Integer(eApplication
+	 * .getPrimaryKey().toString()).intValue()); l =
+	 * eCampusApplication.getApplied(); Vector v = null; if (l != null) { v =
+	 * new Vector(l.size()); for (Iterator iter = l.iterator(); iter.hasNext();)
+	 * { Applied a = (Applied) iter.next(); v.add(a); } }
+	 * 
+	 * cah = new CampusApplicationHolder(eApplication, eApplicant,
+	 * eCampusApplication, v); } } catch (Exception ex) { ex.printStackTrace();
+	 * } } return cah; }
+	 * 
+	 * 
+	 * 
+	 * 
+	 * }
+	 */
 
-		try {
-			eApplicant = ((ApplicantHome) IDOLookup.getHome(Applicant.class))
-					.findByPrimaryKey(new Integer(iApplicantId));
-			CAH = getApplicantInfo(eApplicant);
-		} catch (Exception ex) {
-			ex.printStackTrace();
+	public static CampusApplicationHolder getApplicationInfo(
+			Application eApplication) {
+		CampusApplicationHolder cah = null;
+		if (eApplication != null) {
+			try {
+				CampusApplicationHome cHome = (CampusApplicationHome) IDOLookup
+						.getHome(CampusApplication.class);
+				CampusApplication eCampusApplication = cHome
+						.findByApplicationId(new Integer(eApplication
+								.getPrimaryKey().toString()).intValue());
+				Collection l = eCampusApplication.getApplied();
+				Vector v = null;
+				if (l != null) {
+					v = new Vector(l.size());
+					for (Iterator iter = l.iterator(); iter.hasNext();) {
+						Applied a = (Applied) iter.next();
+						v.add(a);
+					}
+				}
+
+				cah = new CampusApplicationHolder(eApplication, eApplication
+						.getApplicant(), eCampusApplication, v);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 		}
-
-		return CAH;
+		return cah;
 	}
 
 	public static CampusApplicationHolder getCampusApplicationInfo(
@@ -281,46 +333,6 @@ public abstract class CampusApplicationFinder {
 
 		return (cah);
 	}
-
-	public static CampusApplicationHolder getApplicantInfo(Applicant eApplicant) {
-		CampusApplicationHolder cah = null;
-		if (eApplicant != null) {
-			try {
-				ApplicationHome aHome = (ApplicationHome) IDOLookup
-						.getHome(Application.class);
-				Collection l = aHome.findByApplicantID(new Integer(eApplicant
-						.getPrimaryKey().toString()));
-				if (l != null && !l.isEmpty()) {
-					Iterator it = l.iterator();
-					Application eApplication = null;
-					while (it.hasNext()) {
-						eApplication = (Application) it.next();
-					}
-
-					CampusApplicationHome cHome = (CampusApplicationHome) IDOLookup
-							.getHome(CampusApplication.class);
-						CampusApplication eCampusApplication = cHome.findByApplicationId(new Integer(eApplication
-								.getPrimaryKey().toString()).intValue());
-						l = eCampusApplication.getApplied();
-						Vector v = null;
-						if (l != null) {
-							v = new Vector(l.size());
-							for (Iterator iter = l.iterator(); iter.hasNext();) {
-								Applied a = (Applied) iter.next();
-								v.add(a);
-							}
-						}
-
-						cah = new CampusApplicationHolder(eApplication,
-								eApplicant, eCampusApplication, v);
-				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}
-		return cah;
-	}
-
 
 	public static Collection listOfEntityInWaitingList(Class entity,
 			int aprtTypeId, int cmplxId) {
@@ -509,7 +521,6 @@ public abstract class CampusApplicationFinder {
 								.getApartmentSubcategoryColumnName());
 				sql.append(" = ");
 				sql.append(wl.getApartmentSubcategoryID().toString());
-				
 
 				int count = 0;
 

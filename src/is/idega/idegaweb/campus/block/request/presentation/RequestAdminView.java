@@ -192,8 +192,8 @@ public class RequestAdminView extends CampusBlock {
 
 				CampusApplication campusApplication = null;
 				try {
-					campusApplication = CampusApplicationFinder.getApplicantInfo(
-							applicant).getCampusApplication();
+					campusApplication = CampusApplicationFinder.getApplicationInfo(
+							contract.getApplication()).getCampusApplication();
 				} catch (Exception e) {
 					campusApplication = null;
 				}

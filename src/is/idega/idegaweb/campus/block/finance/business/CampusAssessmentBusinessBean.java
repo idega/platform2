@@ -305,6 +305,17 @@ public class CampusAssessmentBusinessBean extends AssessmentBusinessBean impleme
 			return contract;
 		}
 
+		if (contract == null) {
+			try {
+				Collection contracts = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome) IDOLookup.getHome(is.idega.idegaweb.campus.block.allocation.data.Contract.class)).findByUserID(user.getIDInteger());
+				
+			} catch (IDOLookupException e) {
+				e.printStackTrace();
+			} catch (FinderException e) {
+				e.printStackTrace();
+			}
+		}
+		
 		System.out.println("Didn't find any contracts for user " + user.getPersonalID());
 		
 		return contract;
