@@ -361,6 +361,10 @@ public class ContractRenewWindow extends CampusWindow {
 						contract.store();
 					}
 					
+					if (contract.getApplication() != null) {
+						c.setApplication(contract.getApplication());
+					}
+					
 					return c != null;
 				} else {
 					this.errMsg = localize("contracts_overlap",

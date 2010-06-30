@@ -73,6 +73,8 @@ public class EntityHolder {
 			} catch (FinderException e) {
 				e.printStackTrace();
 			}
+		} else {
+			eApplicant = eContract.getApplicant();			
 		}
 		init();
 	}
@@ -84,7 +86,6 @@ public class EntityHolder {
 					.getHome(Contract.class);
 			eContract = cHome.findByPrimaryKey(new Integer(iContractId));
 
-			//applicantID = eContract.getApplicantId().intValue();
 			if (eContract.getApplication() != null) {
 				eApplication = eContract.getApplication();
 				try {
@@ -100,6 +101,8 @@ public class EntityHolder {
 				} catch (FinderException e) {
 					e.printStackTrace();
 				}
+			} else {
+				eApplicant = eContract.getApplicant();
 			}
 			init();
 		} catch (Exception ex) {
@@ -125,7 +128,11 @@ public class EntityHolder {
 
 	private void init() {
 		try {
-			holder = CampusApplicationFinder.getApplicationInfo(eApplication);
+			if (eApplication != null) {
+				holder = CampusApplicationFinder.getApplicationInfo(eApplication);				
+			} else {
+				holder = CampusApplicationFinder.getApplicantInfo(eApplicant);								
+			}
 			if (eApplicant == null) {
 				eApplicant = holder.getApplicant();
 			}
