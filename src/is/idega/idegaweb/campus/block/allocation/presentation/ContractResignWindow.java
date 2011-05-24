@@ -178,7 +178,7 @@ public class ContractResignWindow extends CampusWindow {
 							.getLocaleDate(iwc.getCurrentLocale())), 2, row);
 					row++;
 					T.add(
-							Edit.formatText(localize("moving_date",
+							Edit.formatText(localize("resign.moving_date",
 									"Moving date")), 1, row);
 					// IWTimestamp movdate = eContract.getMovingDate()!=null?new
 					// IWTimestamp(eContract.getMovingDate()):null;

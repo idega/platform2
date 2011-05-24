@@ -99,8 +99,8 @@ public class ReferenceNumberInfo extends CampusBlock {
 		applicationService = getApplicationService(iwc);
 		dateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT,
 				DateFormat.SHORT, iwc.getCurrentLocale());
-		dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, iwc
-				.getCurrentLocale());
+		dateFormat = DateFormat.getDateInstance(DateFormat.SHORT,
+				iwc.getCurrentLocale());
 		refnum = iwc.getParameter(ReferenceNumber.CAM_REF_NUMBER);
 		if (refnum != null && refnum.length() != 10) {
 			CypherText cyph = new CypherText(iwc);
@@ -167,7 +167,11 @@ public class ReferenceNumberInfo extends CampusBlock {
 
 		row = 1;
 		if (holder == null) {
-			refTable.add(new Text(iwrb.getLocalizedString("appNoSuchApplication","There is no application associated with that reference number")), 1, row);
+			refTable.add(
+					new Text(
+							iwrb.getLocalizedString("appNoSuchApplication",
+									"There is no application associated with that reference number")),
+					1, row);
 			row++;
 		} else {
 			addWaitingListForm(iwc, holder, refTable);
@@ -184,19 +188,19 @@ public class ReferenceNumberInfo extends CampusBlock {
 		CampusApplication camApp = holder.getCampusApplication();
 		Text nameText = new Text(applicant.getFullName());
 		nameText.setBold();
-		
+
 		refTable.add(nameText, 1, row);
 		row++;
 
-		DateFormat format = DateFormat.getDateInstance(1, iwc
-				.getCurrentLocale());
+		DateFormat format = DateFormat.getDateInstance(1,
+				iwc.getCurrentLocale());
 		String date = format.format(new Date(app.getSubmitted().getTime()));
 		Text dateText = new Text(date);
 		dateText.setBold();
 
-		refTable.add(new Text(iwrb.getLocalizedString("appReceived",
-				"Your application was received")
-				+ " "), 1, row);
+		refTable.add(
+				new Text(iwrb.getLocalizedString("appReceived",
+						"Your application was received") + " "), 1, row);
 		refTable.add(dateText, 1, row);
 		row++;
 
@@ -216,8 +220,9 @@ public class ReferenceNumberInfo extends CampusBlock {
 		emailInput.setAsEmail(iwrb.getLocalizedString("invalid_email",
 				"Please enter a valid email !!"));
 		updateTable.add(emailInput, 2, 2);
-		updateTable.add(new SubmitButton("updatePhoneEmail", iwrb
-				.getLocalizedString("update", "Update")), 3, 2);
+		updateTable.add(
+				new SubmitButton("updatePhoneEmail", iwrb.getLocalizedString(
+						"update", "Update")), 3, 2);
 
 		refTable.add(updateTable, 1, row);
 		row++;
@@ -243,9 +248,9 @@ public class ReferenceNumberInfo extends CampusBlock {
 			statusText = iwrb.getLocalizedString("appUnknownStatus",
 					"Lost in limbo somewhere");
 
-		refTable.add(new Text(iwrb.getLocalizedString("appStatus",
-				"Application status")
-				+ ": "), 1, row);
+		refTable.add(
+				new Text(iwrb.getLocalizedString("appStatus",
+						"Application status") + ": "), 1, row);
 		Text stsText = new Text(statusText);
 		stsText.setBold();
 		refTable.add(stsText, 1, row);
@@ -256,7 +261,7 @@ public class ReferenceNumberInfo extends CampusBlock {
 			Contract c = holder.getContract();
 
 			if (c != null
-					&& c.getStatus().equals(ContractBMPBean.STATUS_CREATED)) {
+					&& (c.getStatus().equals(ContractBMPBean.STATUS_CREATED) || c.getStatus().equals(ContractBMPBean.STATUS_PRINTED))) {
 				try {
 					ApartmentView allocatedApartment = applicationService
 							.getBuildingService().getApartmentViewHome()
@@ -347,8 +352,8 @@ public class ReferenceNumberInfo extends CampusBlock {
 							appliedTable.setAlignment(2, pos, "center");
 
 							if (wait.getNumberOfRejections() > 0) {
-								appliedTable.addText(wait
-										.getNumberOfRejections(), 5, pos);
+								appliedTable.addText(
+										wait.getNumberOfRejections(), 5, pos);
 								appliedTable.setAlignment(5, pos, "center");
 							}
 
@@ -358,8 +363,8 @@ public class ReferenceNumberInfo extends CampusBlock {
 									&& allocatedSubcategoryID.intValue() == wait
 											.getApartmentSubcategoryID()
 											.intValue()) {
-								Text allocatedText = new Text(iwrb
-										.getLocalizedString("appAllocated",
+								Text allocatedText = new Text(
+										iwrb.getLocalizedString("appAllocated",
 												"Allocated"));
 								appliedTable.add(allocatedText, 3, pos);
 								// if not already denied
@@ -400,8 +405,9 @@ public class ReferenceNumberInfo extends CampusBlock {
 				container.setAlignment(1, 1, "right");
 				container.setAlignment(1, 2, "right");
 				container.add(appliedTable, 1, 1);
-				container.add(new SubmitButton("confirmWL", iwrb
-						.getLocalizedString("confirmWL", "Confirm")), 1, 2);
+				container.add(
+						new SubmitButton("confirmWL", iwrb.getLocalizedString(
+								"confirmWL", "Confirm")), 1, 2);
 
 				refTable.add(container, 1, row);
 				row++;
@@ -429,17 +435,19 @@ public class ReferenceNumberInfo extends CampusBlock {
 		form.add(refTable);
 		add(form);
 		add(Text.getBreak());
-		
+
 		boolean contractCreatedOrPrinted = false;
 		if (holder.getContract() != null) {
 			Contract contract = holder.getContract();
 			String contractStatus = contract.getStatus();
-			if (ContractBMPBean.STATUS_CREATED.equals(contractStatus) || ContractBMPBean.STATUS_PRINTED.equals(contractStatus)) {
+			if (ContractBMPBean.STATUS_CREATED.equals(contractStatus)
+					|| ContractBMPBean.STATUS_PRINTED.equals(contractStatus)) {
 				contractCreatedOrPrinted = true;
 			}
 		}
-		
-		if (!status.equalsIgnoreCase(ApplicationBMPBean.STATUS_GARBAGE) && !contractCreatedOrPrinted) {
+
+		if (!status.equalsIgnoreCase(ApplicationBMPBean.STATUS_GARBAGE)
+				&& !contractCreatedOrPrinted) {
 			addAbortApplicationTable(refTable);
 		}
 		add(Text.getBreak());
@@ -450,8 +458,8 @@ public class ReferenceNumberInfo extends CampusBlock {
 	private void cancelApplication(IWContext iwc) {
 		if (iwc.isParameterSet("cancel_application_id")) {
 			try {
-				Integer AID = new Integer(iwc
-						.getParameter("cancel_application_id"));
+				Integer AID = new Integer(
+						iwc.getParameter("cancel_application_id"));
 				Application application = ((ApplicationHome) IDOLookup
 						.getHome(Application.class)).findByPrimaryKey(AID);
 				application.setStatus(ApplicationBMPBean.STATUS_GARBAGE);
@@ -518,13 +526,14 @@ public class ReferenceNumberInfo extends CampusBlock {
 						.getHome(WaitingList.class)).findByPrimaryKey(WID);
 				wl.incrementRejections(true);
 				wl.store();
-				
-				RejectionHistory history = ((RejectionHistoryHome) IDOLookup.getHome(RejectionHistory.class)).create();
+
+				RejectionHistory history = ((RejectionHistoryHome) IDOLookup
+						.getHome(RejectionHistory.class)).create();
 				history.setApplication(wl.getApplication());
 				history.setRejectionDate(IWTimestamp.getTimestampRightNow());
 				history.setApartment(holder.getContract().getApartment());
 				history.store();
-				
+
 			} catch (NumberFormatException e) {
 				e.printStackTrace();
 			} catch (IDOLookupException e) {
@@ -572,6 +581,17 @@ public class ReferenceNumberInfo extends CampusBlock {
 	private void addAllocationDenialTable(Table refTable)
 			throws RemoteException {
 		if (holder != null && allocatedWaitinglistID != null) {
+			try {
+				WaitingList wl = ((WaitingListHome) IDOLookup
+						.getHome(WaitingList.class))
+						.findByPrimaryKey(allocatedWaitinglistID);
+				
+				if (wl.getAcceptedDate() != null) {
+					return;
+				}
+			} catch (FinderException e1) {
+			}
+			
 			Contract contract = holder.getContract();
 			if (contract != null) {
 				Table dTable = new Table();
@@ -598,22 +618,22 @@ public class ReferenceNumberInfo extends CampusBlock {
 						2);
 				try {
 					ApartmentView apv = applicationService.getBuildingService()
-							.getApartmentViewHome().findByPrimaryKey(
-									contract.getApartmentId());
+							.getApartmentViewHome()
+							.findByPrimaryKey(contract.getApartmentId());
 					dTable.addText(apv.getApartmentString(" "), 1, 2);
 				} catch (FinderException e) {
 					e.printStackTrace();
 				}
 				dTable.setAlignment(3, 2, Table.HORIZONTAL_ALIGN_RIGHT);
-				SubmitButton deny = new SubmitButton("denyAllocation", iwrb
-						.getLocalizedString("denyAllotion", "No thanks"));
+				SubmitButton deny = new SubmitButton("denyAllocation",
+						iwrb.getLocalizedString("denyAllotion", "No thanks"));
 				String message = (iwrb.getLocalizedString(
 						"denyAllocationWarning",
 						"Do you really want to deny this apartment ?"));
 				deny.setOnClick("return confirm('" + message + "');");
 
-				SubmitButton accept = new SubmitButton("acceptAllocation", iwrb
-						.getLocalizedString("acceptAllotion", "Accept"));
+				SubmitButton accept = new SubmitButton("acceptAllocation",
+						iwrb.getLocalizedString("acceptAllotion", "Accept"));
 				String acceptMsg = (iwrb
 						.getLocalizedString("acceptAllocationWarning",
 								"Please contact Student Housing office as soon as possible."));
@@ -714,9 +734,10 @@ public class ReferenceNumberInfo extends CampusBlock {
 		try {
 			user = getUserService(iwc).getUserHome().findByPersonalID(refnum);
 			if (user == null) {
-				table.add(getErrorText(localize(
-						"reference.no_user_found_for_personal_id",
-						"No user found for personal ID")), 1, row++);
+				table.add(
+						getErrorText(localize(
+								"reference.no_user_found_for_personal_id",
+								"No user found for personal ID")), 1, row++);
 			} else {
 
 				Integer userID = (Integer) user.getPrimaryKey();
@@ -747,43 +768,42 @@ public class ReferenceNumberInfo extends CampusBlock {
 							password = user.getPersonalID();
 						else
 							password = LoginCreator.createPasswd(8);
-						LoginDBHandler.updateLogin(userID.intValue(), login
-								.getUserLogin(), password);
+						LoginDBHandler.updateLogin(userID.intValue(),
+								login.getUserLogin(), password);
 						showSubmit = false;
 					} else {
-						table.add(getHeader(localize(
-								"reference.user_login_ready_for_update",
-								"Login is ready for update")), 1, row);
+						table.add(
+								getHeader(localize(
+										"reference.user_login_ready_for_update",
+										"Login is ready for update")), 1, row);
 						table.mergeCells(1, row, 2, row);
 						row++;
-						table
-								.add(
-										getHeader(localize(
-												"reference.user_login_submit_to_create_new_password",
-												"Submit to create new password")),
-										1, row);
+						table.add(
+								getHeader(localize(
+										"reference.user_login_submit_to_create_new_password",
+										"Submit to create new password")), 1,
+								row);
 						table.mergeCells(1, row, 2, row);
 						row++;
 					}
 				} else {
-					table.add(getErrorText(localize(
-							"reference.user_login_already_fetched",
-							"Login has already been fetched")), 1, row);
+					table.add(
+							getErrorText(localize(
+									"reference.user_login_already_fetched",
+									"Login has already been fetched")), 1, row);
 					table.mergeCells(1, row, 2, row);
 					row++;
-					table
-							.add(
-									getErrorText(localize(
-											"reference.contact_office_to_reopen_acces_to_login",
-											"Contact office to reopen")), 1,
-									row);
+					table.add(
+							getErrorText(localize(
+									"reference.contact_office_to_reopen_acces_to_login",
+									"Contact office to reopen")), 1, row);
 					table.mergeCells(1, row, 2, row);
 					row++;
 				}
 				row++;
-				table
-						.add(getHeader(localize("reference.user_name",
-								"User name")), 1, row);
+				table.add(
+						getHeader(localize("reference.user_name", "User name")),
+						1, row);
 				table.add(getText(user.getName()), 2, row);
 				row++;
 				table.add(getText(user.getPersonalID()), 2, row);
@@ -792,22 +812,25 @@ public class ReferenceNumberInfo extends CampusBlock {
 						1, row);
 				table.add(getText(userLogin), 2, row);
 				row++;
-				table.add(getHeader(localize("reference.user_password",
-						"Password")), 1, row);
+				table.add(
+						getHeader(localize("reference.user_password",
+								"Password")), 1, row);
 				table.add(getText(password), 2, row);
 				row = row + 2;
 				boolean isAdmin = isAdministrator(iwc);
 				if (isAdmin || showSubmit) {
 					TextInput newPassword = getTextInput("reference_nwpssw");
-					table.add(getHeader(localize(
-							"reference.user_login_custom_password",
-							"Custom password")), 1, row);
+					table.add(
+							getHeader(localize(
+									"reference.user_login_custom_password",
+									"Custom password")), 1, row);
 					table.add(newPassword, 2, row);
 					row++;
 					CheckBox userPID = getCheckBox("reference_upaps", "true");
 					table.add(userPID, 1, row);
-					table.add(getText(localize("reference.use_pid_as_password",
-							"Use personal ID as password")), 1, row);
+					table.add(
+							getText(localize("reference.use_pid_as_password",
+									"Use personal ID as password")), 1, row);
 					table.mergeCells(1, row, 2, row);
 					row++;
 				}
@@ -839,9 +862,10 @@ public class ReferenceNumberInfo extends CampusBlock {
 			e.printStackTrace();
 		}
 		if (user == null)
-			table.add(getErrorText(localize(
-					"reference.no_user_found_for_personal_id",
-					"No user found for personal ID")), 1, row);
+			table.add(
+					getErrorText(localize(
+							"reference.no_user_found_for_personal_id",
+							"No user found for personal ID")), 1, row);
 		Form form = new Form();
 		form.maintainParameter(ReferenceNumber.CAM_REF_NUMBER);
 		form.add(table);

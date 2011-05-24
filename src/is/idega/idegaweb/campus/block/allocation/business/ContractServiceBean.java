@@ -14,6 +14,8 @@ import is.idega.idegaweb.campus.block.allocation.data.AutomaticChargesHome;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean;
 import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
+import is.idega.idegaweb.campus.block.allocation.data.ContractTariff;
+import is.idega.idegaweb.campus.block.allocation.data.ContractTariffHome;
 import is.idega.idegaweb.campus.block.allocation.data.ContractText;
 import is.idega.idegaweb.campus.block.allocation.data.ContractTextHome;
 import is.idega.idegaweb.campus.block.application.business.ApplicationService;
@@ -263,6 +265,7 @@ public class ContractServiceBean extends IBOServiceBean implements
 			for (Iterator iter = contracts.iterator(); iter.hasNext();) {
 				Contract contract = (Contract) iter.next();
 				contract.setStatusGarbage();
+				contract.setIsRented(false);
 				contract.store();
 
 			}
@@ -281,6 +284,7 @@ public class ContractServiceBean extends IBOServiceBean implements
 			for (Iterator iter = contracts.iterator(); iter.hasNext();) {
 				Contract contract = (Contract) iter.next();
 				contract.setStatusGarbage();
+				contract.setIsRented(false);
 				contract.store();
 			}
 		} catch (RemoteException e) {
@@ -298,6 +302,7 @@ public class ContractServiceBean extends IBOServiceBean implements
 			for (Iterator iter = contracts.iterator(); iter.hasNext();) {
 				Contract contract = (Contract) iter.next();
 				contract.setStatusFinalized();
+				contract.setIsRented(false);
 				contract.store();
 			}
 		} catch (RemoteException e) {
@@ -678,6 +683,7 @@ public class ContractServiceBean extends IBOServiceBean implements
 				eContract.remove();
 			} else {
 				eContract.setStatusGarbage();
+				eContract.setIsRented(false);
 				eContract.store();
 			}
 			return true;
@@ -1256,4 +1262,9 @@ public class ContractServiceBean extends IBOServiceBean implements
 	public BuildingService getBuildingService() throws RemoteException {
 		return (BuildingService) getServiceInstance(BuildingService.class);
 	}
+	
+	public ContractTariffHome getContractTariffHome() throws RemoteException {
+		return (ContractTariffHome) getIDOHome(ContractTariff.class);
+	}
+
 }

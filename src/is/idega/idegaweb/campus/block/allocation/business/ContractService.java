@@ -13,6 +13,7 @@ import is.idega.idegaweb.campus.block.allocation.data.AutomaticCharges;
 import com.idega.block.building.business.BuildingService;
 import is.idega.idegaweb.campus.block.application.business.ApplicationService;
 import com.idega.util.IWTimestamp;
+import is.idega.idegaweb.campus.block.allocation.data.ContractTariffHome;
 import com.idega.block.building.data.Apartment;
 import is.idega.idegaweb.campus.block.application.data.WaitingListHome;
 import com.idega.block.finance.data.AccountHome;
@@ -403,5 +404,11 @@ public interface ContractService extends IBOService {
 	 * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#getBuildingService
 	 */
 	public BuildingService getBuildingService() throws RemoteException,
+			RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#getContractTariffHome
+	 */
+	public ContractTariffHome getContractTariffHome() throws RemoteException,
 			RemoteException;
 }

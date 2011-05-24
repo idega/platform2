@@ -337,7 +337,7 @@ public class IWMainApplicationStarter implements ServletContextListener  {
 
 		registerSystemBeans();
 		if(!this.iwma.isInDatabaseLessMode()){
-			updateClassReferencesInDatabase();
+			//updateClassReferencesInDatabase();
 			updateStartDataInDatabase();
 		}
 		startTemporaryBundleStarters();

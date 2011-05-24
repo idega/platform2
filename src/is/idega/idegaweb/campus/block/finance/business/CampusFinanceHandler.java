@@ -4,6 +4,7 @@ import is.idega.idegaweb.campus.block.allocation.business.ContractService;
 import is.idega.idegaweb.campus.block.allocation.data.AutomaticCharges;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean;
+import is.idega.idegaweb.campus.block.allocation.data.ContractTariff;
 import is.idega.idegaweb.campus.business.CampusSettings;
 import is.idega.idegaweb.campus.data.ApartmentAccountEntry;
 import is.idega.idegaweb.campus.data.ApartmentAccountEntryHome;
@@ -58,7 +59,7 @@ import com.idega.util.IWTimestamp;
  */
 public class CampusFinanceHandler implements FinanceHandler {
 
-	//private int precisionCount = 2;
+	// private int precisionCount = 2;
 
 	int count = 0;
 
@@ -77,14 +78,17 @@ public class CampusFinanceHandler implements FinanceHandler {
 	public boolean rollbackAssessment(IWApplicationContext iwac,
 			Integer assessmentRoundId) {
 		javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager
-		.getInstance();
+				.getInstance();
 
-		try {	
+		try {
 			t.begin();
-			boolean doAutomaticCharges = iwac.getApplicationSettings().getBoolean("EXECUTE_AUTOMATIC_CHARGES", false);
+			boolean doAutomaticCharges = iwac.getApplicationSettings()
+					.getBoolean("EXECUTE_AUTOMATIC_CHARGES", false);
 			if (doAutomaticCharges) {
 				try {
-					Collection autoCharge = this.getContractService(iwac).getAutomaticChargesHome().findHandlingByAssessmentRound(assessmentRoundId);
+					Collection autoCharge = this.getContractService(iwac)
+							.getAutomaticChargesHome()
+							.findHandlingByAssessmentRound(assessmentRoundId);
 					if (autoCharge != null) {
 						Iterator it = autoCharge.iterator();
 						while (it.hasNext()) {
@@ -97,9 +101,11 @@ public class CampusFinanceHandler implements FinanceHandler {
 				} catch (FinderException e) {
 					e.printStackTrace();
 				}
-				
+
 				try {
-					Collection autoCharge = this.getContractService(iwac).getAutomaticChargesHome().findTransferByAssessmentRound(assessmentRoundId);
+					Collection autoCharge = this.getContractService(iwac)
+							.getAutomaticChargesHome()
+							.findTransferByAssessmentRound(assessmentRoundId);
 					if (autoCharge != null) {
 						Iterator it = autoCharge.iterator();
 						while (it.hasNext()) {
@@ -119,7 +125,7 @@ public class CampusFinanceHandler implements FinanceHandler {
 					.rollBackAssessment(assessmentRoundId);
 
 			t.commit();
-			
+
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -160,8 +166,8 @@ public class CampusFinanceHandler implements FinanceHandler {
 								end.getDate(), excessRoundID);
 			} else {
 				listOfUsers = caah.findByTypeAndStatusAndOverlapPeriod(
-						getAccountType(), statuses, start.getDate(), end
-								.getDate());
+						getAccountType(), statuses, start.getDate(),
+						end.getDate());
 			}
 
 		} catch (IDOLookupException e1) {
@@ -187,8 +193,7 @@ public class CampusFinanceHandler implements FinanceHandler {
 					AR.setAsNew(roundName);
 					AR.setCategoryId(categoryId.intValue());
 					AR.setTariffGroupId(tariffGroupId.intValue());
-					AR
-							.setType(com.idega.block.finance.data.AccountBMPBean.typeFinancial);
+					AR.setType(com.idega.block.finance.data.AccountBMPBean.typeFinancial);
 					AR.setDueDate(paymentdate.getDate());
 					AR.setPeriodFromDate(start.getDate());
 					AR.setPeriodToDate(end.getDate());
@@ -201,30 +206,41 @@ public class CampusFinanceHandler implements FinanceHandler {
 					double discount = 0.0d;
 					int precision = getPrecision(iwac);
 					ArrayList alreadyChargedForDownload = new ArrayList();
-					boolean doAutomaticCharges = iwac.getApplicationSettings().getBoolean("EXECUTE_AUTOMATIC_CHARGES", false);
-					
+					boolean doAutomaticCharges = iwac.getApplicationSettings()
+							.getBoolean("EXECUTE_AUTOMATIC_CHARGES", false);
+					boolean useContractTariff = iwac.getApplicationSettings()
+							.getBoolean("SHOW_CONTRACT_TARIFF", false);
+
 					// All tenants accounts (Outer loop)
 					for (Iterator iter = listOfUsers.iterator(); iter.hasNext();) {
 						user = (ContractAccountApartment) iter.next();
-						Contract contract = this.getContractService(iwac)
-								.getContractHome().findByPrimaryKey(
+						Contract contract = this
+								.getContractService(iwac)
+								.getContractHome()
+								.findByPrimaryKey(
 										new Integer(user.getContractId()));
 						boolean publicPricing = false;
-						String usePublicPricing = iwac.getApplicationSettings().getProperty("USE_PUBLIC_PRICING", String.valueOf(false));
+						String usePublicPricing = iwac.getApplicationSettings()
+								.getProperty("USE_PUBLIC_PRICING",
+										String.valueOf(false));
 
 						if (Boolean.valueOf(usePublicPricing).booleanValue()) {
-							String publicPricingSubject = iwac.getApplicationSettings().getProperty("PUBLIC_PRICING_SUBJECT", "181");
+							String publicPricingSubject = iwac
+									.getApplicationSettings().getProperty(
+											"PUBLIC_PRICING_SUBJECT", "181");
 							if (contract.getApplication() != null) {
-								Application application = contract.getApplication();
-								if (application.getSubjectId() == Integer.parseInt(publicPricingSubject)) {
+								Application application = contract
+										.getApplication();
+								if (application.getSubjectId() == Integer
+										.parseInt(publicPricingSubject)) {
 									publicPricing = true;
 								}
 							}
 						}
-						IWTimestamp validFrom = new IWTimestamp(contract
-								.getValidFrom());
-						IWTimestamp validTo = new IWTimestamp(contract
-								.getValidTo());
+						IWTimestamp validFrom = new IWTimestamp(
+								contract.getValidFrom());
+						IWTimestamp validTo = new IWTimestamp(
+								contract.getValidTo());
 
 						if (validFrom.isEarlierThan(validTo)) {
 							discount = contract.getDiscountPercentage();
@@ -233,215 +249,154 @@ public class CampusFinanceHandler implements FinanceHandler {
 							if (factor > 0) {
 								totalAmount = 0;
 								float Amount = 0;
-								// For each tariff (Inner loop)
-								for (Iterator iter2 = tariffs.iterator(); iter2
-										.hasNext();) {
-									tariff = (Tariff) iter2.next();
-									Amount = 0;
-									String sAttribute = tariff
-											.getTariffAttribute();
-									// If we have an tariff attribute
-									if (sAttribute != null) {
-										attributeId = -1;
-										cAttribute = sAttribute.charAt(0);
-										// If All
-										if (cAttribute == BuildingCacher.CHARALL) {
-											Amount = insertEntry(
-													tariff,
-													user,
-													roundId,
-													paymentdate,
-													cashierId,
-													factor,
-													tariff.getUseDiscount() ? discount
-															: 0.0d, publicPricing);
-										}
-										// other than all
-										else {
-											// attribute check
-											if (sAttribute.length() >= 3) {
-												attributeId = Integer
-														.parseInt(sAttribute
-																.substring(2));
-												switch (cAttribute) {
-												case BuildingCacher.CHARTYPE:
-													// Apartment type
-													if (attributeId == user
-															.getApartmentTypeId())
-														Amount = insertEntry(
-																tariff,
-																user,
-																roundId,
-																paymentdate,
-																cashierId,
-																factor,
-																tariff
-																		.getUseDiscount() ? discount
-																		: 0.0d, publicPricing);
-													break;
-												case BuildingCacher.CHARCATEGORY:
-													// Apartment category
-													if (attributeId == user
-															.getApartmentCategoryId())
-														Amount = insertEntry(
-																tariff,
-																user,
-																roundId,
-																paymentdate,
-																cashierId,
-																factor,
-																tariff
-																		.getUseDiscount() ? discount
-																		: 0.0d, publicPricing);
-													break;
-												case BuildingCacher.CHARBUILDING:
-													// Building
-													if (attributeId == user
-															.getBuildingId())
-														Amount = insertEntry(
-																tariff,
-																user,
-																roundId,
-																paymentdate,
-																cashierId,
-																factor,
-																tariff
-																		.getUseDiscount() ? discount
-																		: 0.0d, publicPricing);
-													break;
-												case BuildingCacher.CHARFLOOR:
-													// Floor
-													if (attributeId == user
-															.getFloorId())
-														Amount = insertEntry(
-																tariff, user,
-																roundId,
-																paymentdate,
-																cashierId,
-																factor,
-																discount, publicPricing);
-													break;
-												case BuildingCacher.CHARCOMPLEX:
-													// Complex
-													if (attributeId == user
-															.getComplexId())
-														Amount = insertEntry(
-																tariff,
-																user,
-																roundId,
-																paymentdate,
-																cashierId,
-																factor,
-																tariff
-																		.getUseDiscount() ? discount
-																		: 0.0d, publicPricing);
-													break;
-												case BuildingCacher.CHARAPARTMENT:
-													// Apartment
-													if (attributeId == user
-															.getApartmentId())
-														Amount = insertEntry(
-																tariff,
-																user,
-																roundId,
-																paymentdate,
-																cashierId,
-																factor,
-																tariff
-																		.getUseDiscount() ? discount
-																		: 0.0d, publicPricing);
-													break;
-												} // switch
-											} // attribute check
-										} // other than all
-										if (sAttribute.length() >= 3) {
-											attributeId = Integer
-													.parseInt(sAttribute
-															.substring(2));
-										}
+								Collection contractTariff = null;
+								if (useContractTariff) {
+									try {
+									contractTariff = getContractService(iwac).getContractTariffHome().findByContract(contract);
+									} catch(Exception e) {
+										contractTariff = null;
+									}
+								}
+
+								if (contractTariff != null
+										&& !contractTariff.isEmpty()) {
+									Account account = getContractService(iwac).getAccountHome().findByUserAndType(contract.getUser(), AccountBMPBean.typeFinancial);
+									Iterator it = contractTariff.iterator();
+									while (it.hasNext()) {
+										ContractTariff ct = (ContractTariff) it.next();
+										Amount = insertContractTariffEntry(ct, contract, roundId, paymentdate, cashierId, factor, discount, account.getAccountId().intValue());
 										totalAmount += Amount;
-										
-										AutomaticCharges autoCharge = this.getContractService(iwac).getAutomaticChargesByUser(contract.getUser());
-										boolean charge = false;
-										boolean downloadCharge = false;
-										boolean handlingCharge = false;
-										boolean transferCharge = false;
-										
-										if (autoCharge != null) {
-											downloadCharge = autoCharge.getChargeForDownload();
-											handlingCharge = autoCharge.getChargeForHandling();
-											transferCharge = autoCharge.getChargeForTransfer();
-											
-											charge = downloadCharge || handlingCharge || transferCharge;
-										}
-
-										if (doAutomaticCharges) {
-											if (!alreadyChargedForDownload.contains(contract.getUserId()) && charge) {
-												alreadyChargedForDownload.add(contract.getUserId());
-
-												String tariffGroup = iwac.getApplicationSettings().getProperty("AUTO_CHARGES_TARIFF_GROUP", "69");
-												String financeCategory = iwac.getApplicationSettings().getProperty("AUTO_CHARGES_FINANCE_CATEGORY", "36");
-
-												if (downloadCharge) {
-													String amount = iwac.getApplicationSettings().getProperty("UNLIMITED_DOWNLOAD_AMOUNT", "1200");
-													String accountKey = iwac.getApplicationSettings().getProperty("UNLIMITED_DOWNLOAD_ACCOUNT_KEY", "16");
-		
-													Account account = this.getContractService(iwac).getAccountHome().findByUserAndType(contract.getUser(),
-															AccountBMPBean.typeFinancial);
-		
-													AccountKey key = this.getContractService(iwac).getAccountKeyHome().findByPrimaryKey(
-															Integer.valueOf(accountKey));
-		
-													this.getContractService(iwac).getCampusAssessmentBusiness().assessTariffsToAccount(
-															Float.valueOf(amount).floatValue(), key.getInfo(), key.getInfo(),
-															(Integer) account.getPrimaryKey(), Integer.valueOf(accountKey),
-															paymentdate.getDate(), Integer.valueOf(tariffGroup), Integer.valueOf(financeCategory),
-															contract.getApartmentId(), false, roundId);													
-												}
-												
-												if (handlingCharge) {
-													String amount = iwac.getApplicationSettings().getProperty("HANDLING_AMOUNT", "5000");
-													String accountKey = iwac.getApplicationSettings().getProperty("HANDLING_ACCOUNT_KEY", "11");
-		
-													Account account = this.getContractService(iwac).getAccountHome().findByUserAndType(contract.getUser(),
-															AccountBMPBean.typeFinancial);
-		
-													AccountKey key = this.getContractService(iwac).getAccountKeyHome().findByPrimaryKey(
-															Integer.valueOf(accountKey));
-		
-													this.getContractService(iwac).getCampusAssessmentBusiness().assessTariffsToAccount(
-															Float.valueOf(amount).floatValue(), key.getInfo(), key.getInfo(),
-															(Integer) account.getPrimaryKey(), Integer.valueOf(accountKey),
-															paymentdate.getDate(), Integer.valueOf(tariffGroup), Integer.valueOf(financeCategory),
-															contract.getApartmentId(), false, roundId);
-													autoCharge.setChargeForHandling(false);
-													autoCharge.setHandlingChargeAssessment(AR);
-													autoCharge.store();
-												}
-
-												if (transferCharge) {
-													String amount = iwac.getApplicationSettings().getProperty("TRANSFER_AMOUNT", "10000");
-													String accountKey = iwac.getApplicationSettings().getProperty("TRANSFER_ACCOUNT_KEY", "16");
-		
-													Account account = this.getContractService(iwac).getAccountHome().findByUserAndType(contract.getUser(),
-															AccountBMPBean.typeFinancial);
-		
-													AccountKey key = this.getContractService(iwac).getAccountKeyHome().findByPrimaryKey(
-															Integer.valueOf(accountKey));
-		
-													this.getContractService(iwac).getCampusAssessmentBusiness().assessTariffsToAccount(
-															Float.valueOf(amount).floatValue(), key.getInfo(), key.getInfo(),
-															(Integer) account.getPrimaryKey(), Integer.valueOf(accountKey),
-															paymentdate.getDate(), Integer.valueOf(tariffGroup), Integer.valueOf(financeCategory),
-															contract.getApartmentId(), false, roundId);
-													autoCharge.setChargeForTransfer(false);
-													autoCharge.setTransferChargeAssessment(AR);
-													autoCharge.store();
-												}
+									}									
+								} else {
+									// For each tariff (Inner loop)
+									for (Iterator iter2 = tariffs.iterator(); iter2
+											.hasNext();) {
+										tariff = (Tariff) iter2.next();
+										Amount = 0;
+										String sAttribute = tariff
+												.getTariffAttribute();
+										// If we have an tariff attribute
+										if (sAttribute != null) {
+											attributeId = -1;
+											cAttribute = sAttribute.charAt(0);
+											// If All
+											if (cAttribute == BuildingCacher.CHARALL) {
+												Amount = insertEntry(
+														tariff,
+														user,
+														roundId,
+														paymentdate,
+														cashierId,
+														factor,
+														tariff.getUseDiscount() ? discount
+																: 0.0d,
+														publicPricing);
 											}
+											// other than all
+											else {
+												// attribute check
+												if (sAttribute.length() >= 3) {
+													attributeId = Integer
+															.parseInt(sAttribute
+																	.substring(2));
+													switch (cAttribute) {
+													case BuildingCacher.CHARTYPE:
+														// Apartment type
+														if (attributeId == user
+																.getApartmentTypeId())
+															Amount = insertEntry(
+																	tariff,
+																	user,
+																	roundId,
+																	paymentdate,
+																	cashierId,
+																	factor,
+																	tariff.getUseDiscount() ? discount
+																			: 0.0d,
+																	publicPricing);
+														break;
+													case BuildingCacher.CHARCATEGORY:
+														// Apartment category
+														if (attributeId == user
+																.getApartmentCategoryId())
+															Amount = insertEntry(
+																	tariff,
+																	user,
+																	roundId,
+																	paymentdate,
+																	cashierId,
+																	factor,
+																	tariff.getUseDiscount() ? discount
+																			: 0.0d,
+																	publicPricing);
+														break;
+													case BuildingCacher.CHARBUILDING:
+														// Building
+														if (attributeId == user
+																.getBuildingId())
+															Amount = insertEntry(
+																	tariff,
+																	user,
+																	roundId,
+																	paymentdate,
+																	cashierId,
+																	factor,
+																	tariff.getUseDiscount() ? discount
+																			: 0.0d,
+																	publicPricing);
+														break;
+													case BuildingCacher.CHARFLOOR:
+														// Floor
+														if (attributeId == user
+																.getFloorId())
+															Amount = insertEntry(
+																	tariff,
+																	user,
+																	roundId,
+																	paymentdate,
+																	cashierId,
+																	factor,
+																	discount,
+																	publicPricing);
+														break;
+													case BuildingCacher.CHARCOMPLEX:
+														// Complex
+														if (attributeId == user
+																.getComplexId())
+															Amount = insertEntry(
+																	tariff,
+																	user,
+																	roundId,
+																	paymentdate,
+																	cashierId,
+																	factor,
+																	tariff.getUseDiscount() ? discount
+																			: 0.0d,
+																	publicPricing);
+														break;
+													case BuildingCacher.CHARAPARTMENT:
+														// Apartment
+														if (attributeId == user
+																.getApartmentId())
+															Amount = insertEntry(
+																	tariff,
+																	user,
+																	roundId,
+																	paymentdate,
+																	cashierId,
+																	factor,
+																	tariff.getUseDiscount() ? discount
+																			: 0.0d,
+																	publicPricing);
+														break;
+													} // switch
+												} // attribute check
+											} // other than all
+											totalAmount += Amount;
+
 										}
 									}
-								} // Inner loop block
+								}// Inner loop block
 								try {
 									// If the contract got some invoices we
 									// register
@@ -452,6 +407,189 @@ public class CampusFinanceHandler implements FinanceHandler {
 											.println("failing to register batchcontract for user "
 													+ user.getUserId());
 									e2.printStackTrace();
+								}
+
+								AutomaticCharges autoCharge = this
+										.getContractService(iwac)
+										.getAutomaticChargesByUser(
+												contract.getUser());
+								boolean charge = false;
+								boolean downloadCharge = false;
+								boolean handlingCharge = false;
+								boolean transferCharge = false;
+
+								if (autoCharge != null) {
+									downloadCharge = autoCharge
+											.getChargeForDownload();
+									handlingCharge = autoCharge
+											.getChargeForHandling();
+									transferCharge = autoCharge
+											.getChargeForTransfer();
+
+									charge = downloadCharge || handlingCharge
+											|| transferCharge;
+								}
+
+								if (doAutomaticCharges) {
+									if (!alreadyChargedForDownload
+											.contains(contract.getUserId())
+											&& charge) {
+										alreadyChargedForDownload.add(contract
+												.getUserId());
+
+										String tariffGroup = iwac
+												.getApplicationSettings()
+												.getProperty(
+														"AUTO_CHARGES_TARIFF_GROUP",
+														"69");
+										String financeCategory = iwac
+												.getApplicationSettings()
+												.getProperty(
+														"AUTO_CHARGES_FINANCE_CATEGORY",
+														"36");
+
+										if (downloadCharge) {
+											String amount = iwac
+													.getApplicationSettings()
+													.getProperty(
+															"UNLIMITED_DOWNLOAD_AMOUNT",
+															"1200");
+											String accountKey = iwac
+													.getApplicationSettings()
+													.getProperty(
+															"UNLIMITED_DOWNLOAD_ACCOUNT_KEY",
+															"16");
+
+											Account account = this
+													.getContractService(iwac)
+													.getAccountHome()
+													.findByUserAndType(
+															contract.getUser(),
+															AccountBMPBean.typeFinancial);
+
+											AccountKey key = this
+													.getContractService(iwac)
+													.getAccountKeyHome()
+													.findByPrimaryKey(
+															Integer.valueOf(accountKey));
+
+											this.getContractService(iwac)
+													.getCampusAssessmentBusiness()
+													.assessTariffsToAccount(
+															Float.valueOf(
+																	amount)
+																	.floatValue(),
+															key.getInfo(),
+															key.getInfo(),
+															(Integer) account
+																	.getPrimaryKey(),
+															Integer.valueOf(accountKey),
+															paymentdate
+																	.getDate(),
+															Integer.valueOf(tariffGroup),
+															Integer.valueOf(financeCategory),
+															contract.getApartmentId(),
+															false, roundId);
+										}
+
+										if (handlingCharge) {
+											String amount = iwac
+													.getApplicationSettings()
+													.getProperty(
+															"HANDLING_AMOUNT",
+															"5000");
+											String accountKey = iwac
+													.getApplicationSettings()
+													.getProperty(
+															"HANDLING_ACCOUNT_KEY",
+															"11");
+
+											Account account = this
+													.getContractService(iwac)
+													.getAccountHome()
+													.findByUserAndType(
+															contract.getUser(),
+															AccountBMPBean.typeFinancial);
+
+											AccountKey key = this
+													.getContractService(iwac)
+													.getAccountKeyHome()
+													.findByPrimaryKey(
+															Integer.valueOf(accountKey));
+
+											this.getContractService(iwac)
+													.getCampusAssessmentBusiness()
+													.assessTariffsToAccount(
+															Float.valueOf(
+																	amount)
+																	.floatValue(),
+															key.getInfo(),
+															key.getInfo(),
+															(Integer) account
+																	.getPrimaryKey(),
+															Integer.valueOf(accountKey),
+															paymentdate
+																	.getDate(),
+															Integer.valueOf(tariffGroup),
+															Integer.valueOf(financeCategory),
+															contract.getApartmentId(),
+															false, roundId);
+											autoCharge
+													.setChargeForHandling(false);
+											autoCharge
+													.setHandlingChargeAssessment(AR);
+											autoCharge.store();
+										}
+
+										if (transferCharge) {
+											String amount = iwac
+													.getApplicationSettings()
+													.getProperty(
+															"TRANSFER_AMOUNT",
+															"10000");
+											String accountKey = iwac
+													.getApplicationSettings()
+													.getProperty(
+															"TRANSFER_ACCOUNT_KEY",
+															"16");
+
+											Account account = this
+													.getContractService(iwac)
+													.getAccountHome()
+													.findByUserAndType(
+															contract.getUser(),
+															AccountBMPBean.typeFinancial);
+
+											AccountKey key = this
+													.getContractService(iwac)
+													.getAccountKeyHome()
+													.findByPrimaryKey(
+															Integer.valueOf(accountKey));
+
+											this.getContractService(iwac)
+													.getCampusAssessmentBusiness()
+													.assessTariffsToAccount(
+															Float.valueOf(
+																	amount)
+																	.floatValue(),
+															key.getInfo(),
+															key.getInfo(),
+															(Integer) account
+																	.getPrimaryKey(),
+															Integer.valueOf(accountKey),
+															paymentdate
+																	.getDate(),
+															Integer.valueOf(tariffGroup),
+															Integer.valueOf(financeCategory),
+															contract.getApartmentId(),
+															false, roundId);
+											autoCharge
+													.setChargeForTransfer(false);
+											autoCharge
+													.setTransferChargeAssessment(AR);
+											autoCharge.store();
+										}
+									}
 								}
 							}
 							totals += totalAmount * -1;
@@ -540,7 +678,7 @@ public class CampusFinanceHandler implements FinanceHandler {
 		// FinanceFinder.getInstance().listOfTariffs(iTariffGroupId);
 		// List listOfTariffs = new Vector(tariffs);
 		// List listOfUsers =
-		//CampusAccountFinder.listOfRentingUserAccountsByType(getAccountType());
+		// CampusAccountFinder.listOfRentingUserAccountsByType(getAccountType());
 		Collection listOfUsers = null;
 
 		try {
@@ -631,7 +769,7 @@ public class CampusFinanceHandler implements FinanceHandler {
 					} // Inner loop block
 				} // factor check
 			} // Outer loop block
-			// System.err.println("count "+count);
+				// System.err.println("count "+count);
 			if (H != null) {
 				return H.values();
 			}
@@ -658,8 +796,8 @@ public class CampusFinanceHandler implements FinanceHandler {
 
 	private float insertEntry(Tariff T, ContractAccountApartment caa,
 			Integer roundId, IWTimestamp paymentdate, Integer cashierId,
-			double factor, double discount, boolean publicPricing) throws CreateException,
-			java.rmi.RemoteException {
+			double factor, double discount, boolean publicPricing)
+			throws CreateException, java.rmi.RemoteException {
 		if (factor > 0) {
 			AccountEntry AE = ((AccountEntryHome) IDOLookup
 					.getHome(AccountEntry.class)).create();
@@ -672,9 +810,9 @@ public class CampusFinanceHandler implements FinanceHandler {
 				price = new BigDecimal(-T.getPrice());
 			} else {
 				if (T.getPublicPrice() > 0.0f) {
-					price = new BigDecimal(-T.getPublicPrice());										
+					price = new BigDecimal(-T.getPublicPrice());
 				} else {
-					price = new BigDecimal(-T.getPrice());					
+					price = new BigDecimal(-T.getPrice());
 				}
 			}
 			// if (discount > 0.0) {
@@ -694,9 +832,8 @@ public class CampusFinanceHandler implements FinanceHandler {
 				AE.setInfo(T.getInfo() + " " + nf.format(factor));
 			else
 				AE.setInfo(nf.format(factor));
-			AE
-					.setStatus(com.idega.block.finance.data.AccountEntryBMPBean.STATUS_CREATED);
-			AE.setCashierId(1);
+			AE.setStatus(com.idega.block.finance.data.AccountEntryBMPBean.STATUS_CREATED);
+			//AE.setCashierId(1);
 			AE.setPaymentDate(paymentdate.getTimestamp());
 			try {
 				Building building = ((BuildingHome) IDOLookup
@@ -710,18 +847,62 @@ public class CampusFinanceHandler implements FinanceHandler {
 				e.printStackTrace();
 			}
 			AE.store();
-			createApartmentAccountEntry(caa, AE);
+			createApartmentAccountEntry(new Integer(caa.getApartmentId()), AE);
 			return AE.getTotal();
 		}
 		return 0;
 	}
 
-	private void createApartmentAccountEntry(ContractAccountApartment caa,
+	private float insertContractTariffEntry(ContractTariff T, Contract contract,
+			Integer roundId, IWTimestamp paymentdate, Integer cashierId,
+			double factor, double discount, int financeAccountID)
+			throws CreateException, java.rmi.RemoteException {
+		if (factor > 0) {
+			AccountEntry AE = ((AccountEntryHome) IDOLookup
+					.getHome(AccountEntry.class)).create();
+			AE.setAccountId(financeAccountID);
+			AE.setAccountKeyId((Integer)T.getAccountKey().getPrimaryKey());
+			AE.setCashierId(cashierId);
+			AE.setLastUpdated(IWTimestamp.getTimestampRightNow());
+			BigDecimal price = new BigDecimal(-T.getPrice());
+			// if (discount > 0.0) {
+			price = price.multiply(new BigDecimal(1.0 - discount));
+			// }
+			price = price.multiply(new BigDecimal(factor));
+			BigDecimal finalPrice = price.setScale(0, BigDecimal.ROUND_HALF_UP);
+			if (factor < 1) {
+				logger.fine("price=" + price.doubleValue());
+				logger.fine(" finalprice=" + finalPrice.doubleValue());
+			}
+			AE.setTotal(finalPrice.floatValue());
+			// AE.setTotal((int) (-T.getPrice() * factor));
+			AE.setRoundId(roundId);
+			AE.setName(T.getName());
+			AE.setInfo(nf.format(factor));
+			AE.setStatus(com.idega.block.finance.data.AccountEntryBMPBean.STATUS_CREATED);
+			//AE.setCashierId(1);
+			AE.setPaymentDate(paymentdate.getTimestamp());
+			try {
+				String division = contract.getApartment().getFloor().getBuilding().getDivision();
+				if (division != null) {
+					AE.setDivisionForAccounting(division);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			AE.store();
+			createApartmentAccountEntry((Integer)contract.getApartment().getPrimaryKey(), AE);
+			return AE.getTotal();
+		}
+		return 0;
+	}
+
+	private void createApartmentAccountEntry(Integer apartmentID,
 			AccountEntry AE) throws CreateException, IDOLookupException {
 		ApartmentAccountEntry aprtEntry = ((ApartmentAccountEntryHome) IDOLookup
 				.getHome(ApartmentAccountEntry.class)).create();
 		aprtEntry.setAccountEntryID((Integer) AE.getPrimaryKey());
-		aprtEntry.setApartmentID(new Integer(caa.getApartmentId()));
+		aprtEntry.setApartmentID(apartmentID);
 		aprtEntry.store();
 	}
 
@@ -848,9 +1029,9 @@ public class CampusFinanceHandler implements FinanceHandler {
 	}
 
 	private int getPrecision(IWApplicationContext iwac) {
-		String precision = iwac.getIWMainApplication().getBundle(
-				CampusSettings.IW_BUNDLE_IDENTIFIER).getProperty(
-				"FINANCE_FACTOR_PRECISION", String.valueOf(2));
+		String precision = iwac.getIWMainApplication()
+				.getBundle(CampusSettings.IW_BUNDLE_IDENTIFIER)
+				.getProperty("FINANCE_FACTOR_PRECISION", String.valueOf(2));
 		if (precision != null)
 			return Integer.parseInt(precision);
 		return 2;

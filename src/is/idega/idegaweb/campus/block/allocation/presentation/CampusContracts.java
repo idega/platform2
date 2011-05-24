@@ -359,6 +359,7 @@ public class CampusContracts extends CampusBlock {
 		
 		boolean doAutomaticCharges = iwc.getApplicationSettings().getBoolean("EXECUTE_AUTOMATIC_CHARGES", false);
 		boolean doChargeForUnlimitedDownload = iwc.getApplicationSettings().getBoolean("SHOW_DOWNLOAD_CHARGES", false);
+		boolean showContractTariff = iwc.getApplicationSettings().getBoolean("SHOW_CONTRACT_TARIFF", false);
 		
 		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, iwc
 				.getCurrentLocale());
@@ -376,6 +377,7 @@ public class CampusContracts extends CampusBlock {
 		Image nokeyImage = getBundle().getImage("/nokey.gif");
 		Image garbageImage = getBundle().getImage("/trashcan.gif");
 		Image renewImage = getBundle().getImage("/renew.gif");
+		Image contractTariff = getBundle().getImage("/dollar.gif");
 		boolean garbage = false;
 		boolean both = false;
 		int row = 1;
@@ -407,6 +409,10 @@ public class CampusContracts extends CampusBlock {
 		// ))
 		T.add((renewImage), col++, 1);
 		// col = 4;
+		if (showContractTariff) {
+			T.add((contractTariff), col++, 1);			
+		}
+		
 		T.add(getHeader(localize("name", "Name")), col++, 1);
 		T.add(getHeader(localize("ssn", "Socialnumber")), col++, 1);
 		T.add(getHeader(localize("apartment", "Apartment")), col++, 1);
@@ -476,6 +482,9 @@ public class CampusContracts extends CampusBlock {
 									.equalsIgnoreCase(ContractBMPBean.STATUS_SIGNED))
 						T.add(getRenewLink(renewImage, contractID), col, row);
 					col++;
+					if (showContractTariff) {
+						T.add(getContractTariffLink(contractTariff, contractID), col++, row);						
+					}
 					T.add(getText(Ap.getFullName()), col++, row);
 					T.add(getText(Ap.getSSN()), col++, row);
 					T.add((getApartmentTable(A)), col++, row);
@@ -675,6 +684,14 @@ public class CampusContracts extends CampusBlock {
 		return L;
 	}
 
+	public static Link getContractTariffLink(PresentationObject MO, int contractId) {
+		Link L = new Link(MO);
+		L.setWindowToOpen(ContractTariffWindow.class);
+		L.addParameter(ContractTariffWindow.prmContractId, contractId);
+		return L;
+	}
+
+	
 	public Link getResignLink(PresentationObject MO, int contractId) {
 		Link L = new Link(MO);
 		L.setWindowToOpen(ContractResignWindow.class);
