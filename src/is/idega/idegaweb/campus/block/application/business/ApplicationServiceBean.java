@@ -644,7 +644,7 @@ public class ApplicationServiceBean extends com.idega.block.application.business
 						Vector v = null;
 						if (applieds != null && !applieds.isEmpty()) {
 							v = new Vector(applieds.size());
-							for (Iterator iter = v.iterator(); iter.hasNext();) {
+							for (Iterator iter = applieds.iterator(); iter.hasNext();) {
 								v.add(iter.next());
 							}
 						}

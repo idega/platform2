@@ -1,14 +1,15 @@
 package is.idega.idegaweb.campus.business;
 
 
-import com.idega.block.building.business.BuildingService;
-import is.idega.idegaweb.campus.block.allocation.business.ContractService;
+import is.idega.idegaweb.campus.block.application.business.ApplicationService;
 import is.idega.idegaweb.campus.block.application.data.ApartmentCategoryCombinationHome;
+import is.idega.idegaweb.campus.block.allocation.business.ContractService;
+import is.idega.idegaweb.campus.data.CampusUserCommentHome;
+import java.rmi.RemoteException;
 import com.idega.block.finance.business.FinanceService;
 import is.idega.idegaweb.campus.block.application.data.SchoolHome;
 import com.idega.business.IBOService;
-import is.idega.idegaweb.campus.block.application.business.ApplicationService;
-import java.rmi.RemoteException;
+import com.idega.block.building.business.BuildingService;
 
 public interface CampusService extends IBOService {
 	/**
@@ -30,6 +31,12 @@ public interface CampusService extends IBOService {
 	 * @see is.idega.idegaweb.campus.business.CampusServiceBean#getApartmentCategoryCombinationHome
 	 */
 	public ApartmentCategoryCombinationHome getApartmentCategoryCombinationHome()
+			throws RemoteException, RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.campus.business.CampusServiceBean#getCampusUserCommentHome
+	 */
+	public CampusUserCommentHome getCampusUserCommentHome()
 			throws RemoteException, RemoteException;
 
 	/**

@@ -2,6 +2,7 @@ package is.idega.idegaweb.campus.block.allocation.presentation;
 
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.presentation.CampusWindow;
+import is.idega.idegaweb.campus.presentation.Edit;
 
 import java.rmi.RemoteException;
 
@@ -20,11 +21,11 @@ import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DoubleInput;
+import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
-import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.TimestampInput;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
@@ -173,12 +174,12 @@ public class ContractEditWindow extends CampusWindow {
 					T.add(getText(getStatus(eContract.getIsRented() ? "yes"
 							: "no")), 2, row);
 					row++;
-					// DropdownMenu status =
-					// getStatusDrop("status",eContract.getStatus());
-					// Edit.setStyle(status);
+					DropdownMenu status = getStatusDropdown("status",eContract.getStatus());
+					Edit.setStyle(status);
 					T.add(getText(localize("status", "Status")), 1, row);
-					// T.add(status,2,row);
-					T.add(getText(getStatus(eContract.getStatus())), 2, row);
+					T.add(status,2,row);					
+					//T.add(getText(getStatus(eContract.getStatus())), 2, row);
+					
 					row++;
 					T.add(getText(localize("status_date", "Status date")), 1,
 							row);
@@ -221,6 +222,20 @@ public class ContractEditWindow extends CampusWindow {
 		return F;
 	}
 
+	private DropdownMenu getStatusDropdown(String name, String selected) {
+		DropdownMenu drp = new DropdownMenu(name);
+		drp.addMenuElement("C", getStatus("C"));
+		drp.addMenuElement("P", getStatus("P"));
+		drp.addMenuElement("S", getStatus("S"));
+		drp.addMenuElement("R", getStatus("R"));
+		drp.addMenuElement("U", getStatus("U"));
+		drp.addMenuElement("E", getStatus("E"));
+		drp.addMenuElement("G", getStatus("G"));
+		drp.setSelectedElement(selected);
+		return drp;
+	}
+
+	
 	private void doSaveContract(IWContext iwc) {
 		try {
 
@@ -257,7 +272,9 @@ public class ContractEditWindow extends CampusWindow {
 
 			eContract.setHasPhone(iwc.isParameterSet("hasPhone"));
 			
-			eContract.setDiscountPercentage(new Double(iwc.getParameter("discount")).doubleValue());
+			if (iwc.isParameterSet("discount")) {
+				eContract.setDiscountPercentage(new Double(iwc.getParameter("discount")).doubleValue());
+			}
 
 			eContract.store();
 		} catch (Exception ex) {
@@ -320,11 +337,16 @@ public class ContractEditWindow extends CampusWindow {
 		case 'T':
 			r = localize("terminated", "Terminated");
 			break;
+		case 'U':
+			r = localize("resigned", "Resigned");
+			break;
 		case 'E':
 			r = localize("ended", "Ended");
+			break;
+		case 'G':
+			r = localize("garbaged", "Canned");
 			break;
 		}
 		return r;
 	}
-
 }

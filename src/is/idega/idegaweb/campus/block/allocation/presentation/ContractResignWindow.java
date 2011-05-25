@@ -310,8 +310,12 @@ public class ContractResignWindow extends CampusWindow {
 					&& String.valueOf(usid).equals(
 							eUser.getPrimaryKey().toString())) {
 				System.out.println("is other user");
+				
+				boolean deleteContinuationContracts = iwc.getApplicationSettings().getBoolean("DELETE_CONT_CONTRACTS", false);
+				String continuationContractsSubjectID = iwc.getApplicationSettings().getProperty("CONT_CONTR_SUBJECT_ID", "102");
+				
 				getContractService(iwc).resignContract(id, movDate, sInfo,
-						datesync);
+						datesync, deleteContinuationContracts, continuationContractsSubjectID);
 			}
 		} catch (RemoteException e) {
 			e.printStackTrace();

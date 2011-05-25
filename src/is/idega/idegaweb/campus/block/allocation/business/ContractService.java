@@ -137,7 +137,7 @@ public interface ContractService extends IBOService {
 	 * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#resignContract
 	 */
 	public void resignContract(Integer contractID, IWTimestamp movingDate,
-			String info, boolean datesync) throws RemoteException;
+			String info, boolean datesync, boolean deleteContinuationContracts, String subjectID) throws RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#createNewContract

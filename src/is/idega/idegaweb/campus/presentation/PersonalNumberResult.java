@@ -1,6 +1,7 @@
 package is.idega.idegaweb.campus.presentation;
 
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
+import is.idega.idegaweb.campus.data.CampusUserComment;
 import is.idega.idegaweb.campus.nortek.business.NortekBusiness;
 import is.idega.idegaweb.campus.nortek.data.Card;
 
@@ -9,6 +10,7 @@ import java.text.DateFormat;
 import java.util.Collection;
 import java.util.Iterator;
 
+import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
 import com.idega.block.application.data.Applicant;
@@ -73,6 +75,8 @@ public class PersonalNumberResult extends CampusBlock implements Campus {
 	private DateFormat df;
 	
 	private User user = null;
+	
+	private CampusUserComment userComment;
 		
 	private String comment = null;
 	
@@ -96,6 +100,24 @@ public class PersonalNumberResult extends CampusBlock implements Campus {
 				this.user = this.getUserService(iwc).getUser(SSN);
 			} catch (RemoteException e) {
 			} catch (FinderException e) {
+			}
+			
+			if (this.user != null) {
+				try {
+					this.userComment = this.getCampusService(iwc).getCampusUserCommentHome().findByUser(user);
+				} catch (RemoteException e) {
+				} catch (FinderException e) {
+					try {
+						this.userComment = this.getCampusService(iwc).getCampusUserCommentHome().create();
+						this.userComment.setComment(this.user.getDescription());
+						this.userComment.setUser(this.user);
+						this.userComment.store();
+					} catch (RemoteException e1) {
+					} catch (CreateException e1) {
+						e1.printStackTrace();
+					}
+				}
+
 			}
 		}
 		else if (iwc.isParameterSet(APPLICANT_INFO)) {
@@ -168,16 +190,17 @@ public class PersonalNumberResult extends CampusBlock implements Campus {
 		int row = 1;
 		T.add(getHeader(localize(COMMENT, "Comment")), col++, row++);
 
-		TextArea input = new TextArea(COMMENT,40,7);
-		input.setMaximumCharacters(255);
+		TextArea input = new TextArea(COMMENT,100,10);
+		input.setMaximumCharacters(1000);
 		if (this.comment != null) {
-			if (this.comment.length() > 255) {
-				this.comment = this.comment.substring(0, 255);
+			if (this.comment.length() > 1000) {
+				this.comment = this.comment.substring(0, 1000);
 			}
-			user.setDescription(this.comment);
-			user.store();
+			
+			userComment.setComment(this.comment);
+			userComment.store();
 		} else {
-			this.comment = user.getDescription();
+			this.comment = userComment.getComment();
 		}
 		if (this.comment != null && !"".equals(this.comment)) {
 			input.setContent(this.comment);
@@ -196,13 +219,8 @@ public class PersonalNumberResult extends CampusBlock implements Campus {
 		Card card = null;
 		try {
 			card = getNortekBusiness(iwc).getCard(this.user);
-		} catch (IBOLookupException e) {
-			e.printStackTrace();
-		} catch (RemoteException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
 		}
-
-		System.out.println("card = " + card);
 		
 		if (card == null) {
 			return null;

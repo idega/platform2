@@ -1429,7 +1429,7 @@ public class CampusApprover extends CampusBlock {
 		return T;
 	}
 
-	private PresentationObject getSubject(Application app, boolean edit, IWContext iwc) {
+	public PresentationObject getSubject(Application app, boolean edit, IWContext iwc) {
 		DataTable subjectTable = getDataTable();
 		subjectTable.setWidth(Table.HUNDRED_PERCENT);
 		subjectTable.addTitle(localize("subject", "Subject"));

@@ -67,6 +67,7 @@ import com.idega.block.finance.data.AccountKey;
 import com.idega.block.finance.data.AccountKeyHome;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.accesscontrol.data.LoginTable;
+import com.idega.data.IDOLookup;
 import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.user.data.User;
@@ -408,17 +409,43 @@ public class ContractServiceBean extends IBOServiceBean implements
 	}
 
 	public void resignContract(Integer contractID, IWTimestamp movingDate,
-			String info, boolean datesync) {
+			String info, boolean datesync, boolean deleteContinuationContracts, String subjectID) {
 		try {
 			Contract C = getContractHome().findByPrimaryKey(contractID);
 			C.setMovingDate(movingDate.getDate());
-			if (datesync)
+			if (datesync) {
 				C.setValidTo(movingDate.getDate());
+			}
 			C.setResignInfo(info);
 			C.setStatusResigned();
 			C.store();
 			getMailingListService().processMailEvent(contractID.intValue(),
 					LetterParser.RESIGN);
+			
+			int contSubjId = 0;
+			try {
+				contSubjId = Integer.parseInt(subjectID);
+			} catch (Exception e) {
+				contSubjId = 0;
+			}
+			
+			if (deleteContinuationContracts && contSubjId > 0) {
+				ContractHome cHome = (ContractHome) IDOLookup.getHome(Contract.class);
+				Collection resultSet = cHome.findByApplicantInCreatedAndPrintedStatus(C.getApplicantId());
+				if (resultSet != null && !resultSet.isEmpty()) {
+					Iterator it = resultSet.iterator();
+					while (it.hasNext()) {
+						Contract cont = (Contract) it.next();
+						if (cont.getApplication() != null) {
+							if (cont.getApplication().getSubjectId() == contSubjId) {
+								cont.setResignInfo(info);
+								cont.setStatusResigned();
+								cont.store();								
+							}
+						}
+					}
+				}
+			}
 		} catch (IDOStoreException e) {
 			e.printStackTrace();
 		} catch (RemoteException e) {

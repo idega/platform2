@@ -500,21 +500,30 @@ public class CampusAllocator extends CampusBlock implements Campus {
 					.getCampusApplication()), 1, 1);
 			ApplicantFamily family = getApplicationService(iwc).getApplicantFamily(AH.getApplicant());
 			
-			boolean bSpouse = false, bChildren = false;
 			if (family.getSpouse() != null) {
 
 				Frame.add(CA.getViewSpouse(family.getSpouse(), AH
-						.getCampusApplication()), 2, 1);
-				bSpouse = true;
+						.getCampusApplication()), 1, 1);
 			}
 			if (family.getChildren() != null && !family.getChildren().isEmpty()) {
 				Frame.add(CA.getViewChildren(family.getChildren()),
-						2, 1);
-				bChildren = true;
+						1, 1);
 			}
+			
+			Frame.add(CA.getViewApplication(AH.getApplication()), 2, 1);
+			try {
+				Frame.add(CA.getViewApartment(AH.getCampusApplication(), AH.getApplied(), iwc), 2, 1);
+			} catch(Exception e) {
+			}
+			Frame.add(CA.getViewApartmentExtra(AH.getCampusApplication(), iwc), 2, 1);
+			Frame.add(CA.getOtherInfo(AH.getCampusApplication(), iwc, false), 2, 1);
+			Frame.add(CA.getSubject(AH.getApplication(), false, iwc), 2, 1);
+
+			
 			MO = Frame;
-		} else
+		} else {
 			add("er null");
+		}
 
 		if (waitingListID != null && waitingListID.intValue() != -1) {
 			try {

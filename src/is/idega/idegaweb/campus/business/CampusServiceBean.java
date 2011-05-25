@@ -10,6 +10,8 @@ import is.idega.idegaweb.campus.block.application.data.ApartmentCategoryCombinat
 import is.idega.idegaweb.campus.block.application.data.ApartmentCategoryCombinationHome;
 import is.idega.idegaweb.campus.block.application.data.School;
 import is.idega.idegaweb.campus.block.application.data.SchoolHome;
+import is.idega.idegaweb.campus.data.CampusUserComment;
+import is.idega.idegaweb.campus.data.CampusUserCommentHome;
 
 import java.rmi.RemoteException;
 import java.util.Locale;
@@ -135,6 +137,10 @@ public class CampusServiceBean extends IBOServiceBean implements CampusService {
 
 	public ApartmentCategoryCombinationHome getApartmentCategoryCombinationHome() throws RemoteException {
 		return (ApartmentCategoryCombinationHome) getIDOHome(ApartmentCategoryCombination.class);
+	}
+
+	public CampusUserCommentHome getCampusUserCommentHome() throws RemoteException {
+		return (CampusUserCommentHome) getIDOHome(CampusUserComment.class);
 	}
 	
 	public ContractService getContractService() throws RemoteException {

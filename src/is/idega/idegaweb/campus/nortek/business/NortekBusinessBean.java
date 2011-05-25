@@ -206,7 +206,6 @@ public class NortekBusinessBean extends IBOServiceBean implements
 		try {
 			return (Card) getCardHome().findByUser(user);
 		} catch (FinderException e) {
-			e.printStackTrace();
 		}
 
 		return null;
