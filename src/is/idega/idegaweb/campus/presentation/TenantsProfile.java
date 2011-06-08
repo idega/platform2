@@ -14,10 +14,12 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
 import javax.ejb.CreateException;
+import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
 import com.idega.block.application.data.Applicant;
@@ -93,14 +95,6 @@ public class TenantsProfile extends CampusBlock {
 	private int campusID = -1;
 
 	private boolean update = false;
-
-	private boolean _isAdmin = false;
-
-	private boolean _isLoggedOn = false;
-
-	private int _userID = -1;
-
-	private boolean _update = false;
 	
 	private boolean renewed = false;
 
@@ -110,7 +104,7 @@ public class TenantsProfile extends CampusBlock {
 
 	private ApartmentView apartmentView;
 
-	private Applicant _applicant;
+	private Applicant applicant;
 
 	private User user;
 
@@ -120,9 +114,9 @@ public class TenantsProfile extends CampusBlock {
 
 	private CampusApplication campusApplication;
 
-	private TextStyler _styler;
+	private TextStyler styler;
 
-	private Image _image;
+	private Image image;
 
 	public static final String darkBlue = CampusColors.DARKBLUE;
 
@@ -191,9 +185,9 @@ public class TenantsProfile extends CampusBlock {
 			if (contract != null) {
 				try {
 					user = contract.getUser();
-					_applicant = contract.getApplicant();
+					applicant = contract.getApplicant();
 					// Spouse and childs
-					java.util.Iterator iter = _applicant.getChildrenIterator();
+					java.util.Iterator iter = applicant.getChildrenIterator();
 					if (iter != null) {
 						String status;
 						while (iter.hasNext()) {
@@ -211,12 +205,12 @@ public class TenantsProfile extends CampusBlock {
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
-					_applicant = null;
+					applicant = null;
 				}
 
 				try {
 					campusApplication = getApplicationService(iwc)
-							.getApplicantInfo(_applicant)
+							.getApplicantInfo(applicant)
 							.getCampusApplication();
 				} catch (Exception e) {
 					campusApplication = null;
@@ -237,10 +231,10 @@ public class TenantsProfile extends CampusBlock {
 					}
 				}
 
-				_styler = new TextStyler();
-				_styler.setStyleValue(StyleConstants.ATTRIBUTE_FONT_FAMILY,
+				styler = new TextStyler();
+				styler.setStyleValue(StyleConstants.ATTRIBUTE_FONT_FAMILY,
 						StyleConstants.FONT_FAMILY_ARIAL);
-				_styler
+				styler
 						.setStyleValue(StyleConstants.ATTRIBUTE_FONT_SIZE,
 								"8pt");
 
@@ -257,8 +251,8 @@ public class TenantsProfile extends CampusBlock {
 				myTable.add(getRequests(iwc), 2, 3);
 				myTable.setCellspacing(6);
 
-				_image = Table.getTransparentCell(iwc);
-				_image.setHeight(6);
+				image = Table.getTransparentCell(iwc);
+				image.setHeight(6);
 
 				add(myTable);
 			} else
@@ -279,7 +273,7 @@ public class TenantsProfile extends CampusBlock {
 			int subjectID = Integer.parseInt(subjectString);
 			
 			Application newApplication = this.getCampusService(iwc).getApplicationService().getApplicationHome().create();
-			newApplication.setApplicantId((Integer) this._applicant.getPrimaryKey());
+			newApplication.setApplicantId((Integer) this.applicant.getPrimaryKey());
 			newApplication.setStatusSubmitted();
 			//Setja inn application property
 			newApplication.setSubjectId(subjectID);
@@ -366,7 +360,7 @@ public class TenantsProfile extends CampusBlock {
 		}
 		addToTable(table, row++, localize("email", "email"), email,
 				new TextInput(EMAIL), 20);
-		addToTable(table, row++, localize("mobile", "Mobile phone"), _applicant
+		addToTable(table, row++, localize("mobile", "Mobile phone"), applicant
 				.getMobilePhone(), new TextInput(MOBILE), 7);
 		addToTable(table, row++, localize("faculty", "Faculty"),
 				campusApplication.getFaculty(), new TextInput(FACULTY), 20);
@@ -424,7 +418,7 @@ public class TenantsProfile extends CampusBlock {
 		table.setColumnVerticalAlignment(2, "top");
 		table.mergeCells(1, row, 2, row);
 
-		table.add(_image, 1, row);
+		table.add(image, 1, row);
 		table.setColor(1, row, darkRed);
 
 		row++;
@@ -497,7 +491,7 @@ public class TenantsProfile extends CampusBlock {
 		table.setColor(1, 1, darkBlue);
 		table.mergeCells(1, row, 2, row);
 
-		table.add(_image, 1, row);
+		table.add(image, 1, row);
 		table.setColor(1, row, darkRed);
 		row++;
 
@@ -588,7 +582,7 @@ public class TenantsProfile extends CampusBlock {
 		table.setRowColor(2, darkGray);
 		table.mergeCells(1, row, 3, row);
 
-		table.add(_image, 1, row);
+		table.add(image, 1, row);
 		table.setColor(1, row, darkRed);
 
 		return table;
@@ -648,7 +642,7 @@ public class TenantsProfile extends CampusBlock {
 		table.setRowColor(2, darkGray);
 		table.mergeCells(1, row, 3, row);
 
-		table.add(_image, 1, row);
+		table.add(image, 1, row);
 		table.setColor(1, row, darkRed);
 		row++;
 
@@ -667,10 +661,10 @@ public class TenantsProfile extends CampusBlock {
 			requestLink.addParameter(RequestView.REQUEST_APRT, apartmentView
 					.getApartmentName());
 		}
-		if (_applicant != null) {
-			requestLink.addParameter(RequestView.REQUEST_NAME, _applicant
+		if (applicant != null) {
+			requestLink.addParameter(RequestView.REQUEST_NAME, applicant
 					.getFullName());
-			requestLink.addParameter(RequestView.REQUEST_TEL, _applicant
+			requestLink.addParameter(RequestView.REQUEST_TEL, applicant
 					.getResidencePhone());
 		}
 		if (campusApplication != null)
@@ -704,26 +698,14 @@ public class TenantsProfile extends CampusBlock {
 		String childcount = iwc.getParameter(CHILDCOUNT);
 
 		ApplicantHome aHome = getApplicationService(iwc).getApplicantHome();
-		boolean storeUser = false;
-		// TODO move to business layer
-		/*
-		 * if (name != null && name.length() > 0) {
-		 * _applicant.setFullName(name); if (!user.getName().equals(name)) {
-		 * user.setFullName(name); storeUser = true; } }
-		 * 
-		 * if (ssn != null) { _applicant.setSSN(ssn); if
-		 * (!ssn.equals(user.getPersonalID()) &&
-		 * SocialSecurityNumber.isValidSocialSecurityNumber(ssn,
-		 * getCampusSettings(iwc).getSystemLocale())) { user.setPersonalID(ssn);
-		 * storeUser = true; } }
-		 */
+
 		if (email != null) {
 			campusApplication.setEmail(email);
 			getUserService(iwc).storeUserEmail(user, email, true);
 
 		}
 		if (mobile != null) {
-			_applicant.setMobilePhone(mobile);
+			applicant.setMobilePhone(mobile);
 		}
 		if (faculty != null) {
 			campusApplication.setFaculty(faculty);
@@ -751,7 +733,7 @@ public class TenantsProfile extends CampusBlock {
 						spouse.store();
 					else {
 						spouse.store();
-						_applicant.addChild(spouse);
+						applicant.addChild(spouse);
 					}
 				}
 			}
@@ -793,7 +775,7 @@ public class TenantsProfile extends CampusBlock {
 								child.store();
 							else {
 								child.store();
-								_applicant.addChild(child);
+								applicant.addChild(child);
 							}
 						}
 					}
@@ -821,11 +803,7 @@ public class TenantsProfile extends CampusBlock {
 		}
 
 		try {
-
-			_applicant.store();
-			if (storeUser)
-				user.store();
-
+			applicant.store();
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
 		}
@@ -834,6 +812,26 @@ public class TenantsProfile extends CampusBlock {
 			campusApplication.store();
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
+		}
+		
+		//update older applications
+		try {
+			Collection apps = getCampusService(iwc).getApplicationService().getApplicationHome().findByApplicantID((Integer) applicant.getPrimaryKey());
+			if (apps != null && !apps.isEmpty()) {
+				Iterator it = apps.iterator();
+				while (it.hasNext()) {
+					Application a = (Application) it.next();
+					CampusApplication ca = getCampusService(iwc).getApplicationService().getCampusApplicationHome().findByApplicationId(((Integer) a.getPrimaryKey()).intValue());
+					if (!ca.getPrimaryKey().equals(campusApplication.getPrimaryKey())) {
+						if (email != null) {
+							ca.setEmail(email);
+							ca.store();
+						}
+					}
+				}
+			}
+		} catch (EJBException e) {
+		} catch (FinderException e) {
 		}
 	}
 
@@ -874,14 +872,14 @@ public class TenantsProfile extends CampusBlock {
 		if (text == null)
 			text = "";
 		Text T = new Text(text);
-		_styler.setStyleValue(StyleConstants.ATTRIBUTE_COLOR, color);
+		styler.setStyleValue(StyleConstants.ATTRIBUTE_COLOR, color);
 		if (bold)
-			_styler.setStyleValue(StyleConstants.ATTRIBUTE_FONT_WEIGHT,
+			styler.setStyleValue(StyleConstants.ATTRIBUTE_FONT_WEIGHT,
 					StyleConstants.FONT_WEIGHT_BOLD);
 		else
-			_styler.setStyleValue(StyleConstants.ATTRIBUTE_FONT_WEIGHT,
+			styler.setStyleValue(StyleConstants.ATTRIBUTE_FONT_WEIGHT,
 					StyleConstants.FONT_WEIGHT_NORMAL);
-		T.setFontStyle(_styler.getStyleString());
+		T.setFontStyle(styler.getStyleString());
 		return T;
 	}
 

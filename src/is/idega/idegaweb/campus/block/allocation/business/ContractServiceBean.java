@@ -431,7 +431,7 @@ public class ContractServiceBean extends IBOServiceBean implements
 			
 			if (deleteContinuationContracts && contSubjId > 0) {
 				ContractHome cHome = (ContractHome) IDOLookup.getHome(Contract.class);
-				Collection resultSet = cHome.findByApplicantInCreatedAndPrintedStatus(C.getApplicantId());
+				Collection resultSet = cHome.findByApplicantAndStatus(C.getApplicantId(), ContractBMPBean.STATUS_SIGNED);
 				if (resultSet != null && !resultSet.isEmpty()) {
 					Iterator it = resultSet.iterator();
 					while (it.hasNext()) {
