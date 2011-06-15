@@ -423,12 +423,15 @@ public class CampusAllocator extends CampusBlock implements Campus {
 
 	private Link getApartmentContractsLink(Text display, Integer applicantID,
 			Integer contractID, Integer apartmentID, IWTimestamp from,
-			Application application) {
+			Application application, Integer waitingListId) {
 		Link L = new Link(display);
 		L.addParameter("view_aprtmnt", apartmentID.toString());
 		L.addParameter("contract", contractID.toString());
 		L.addParameter("applicant", applicantID.toString());
 		L.addParameter("from", from.toString());
+		if (waitingListId != null) {
+			L.addParameter("wl_id", waitingListId.toString());			
+		}
 		if (pSubcatId != null) { // && pComplexId != null) {
 			L.addParameter(pSubcatId);
 			// L.addParameter(pComplexId);
@@ -472,7 +475,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 			Frame.add(
 					getFreeApartments(iwc, applicantID, contract,
 							waitingList.getApartment(),
-							waitingList.getApplication()), 1, 1);
+							waitingList.getApplication(), waitingListID), 1, 1);
 		myForm.add(Frame);
 
 		myForm.add(new HiddenInput(pSubcatId.getName(), pSubcatId
@@ -1123,7 +1126,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 
 	private PresentationObject getFreeApartments(IWContext iwc,
 			Integer applicantID, Contract contract, Apartment renewalApartment,
-			Application application) throws FinderException, RemoteException {
+			Application application, Integer waitingListID) throws FinderException, RemoteException {
 		Collection apartments = campusService.getBuildingService()
 				.getApartmentViewHome().findBySubcategory(subcatID);
 		boolean hasContract = contract != null ? true : false;
@@ -1205,7 +1208,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 							text = getText(localize("today", "Today"));
 						T.add(getApartmentContractsLink(text, applicantID,
 								contractID, apartmentID, nextAvailable,
-								application), 5, row);
+								application, waitingListID), 5, row);
 					}
 
 					if (isThis || apartment.getApartment().getMarked()) {
