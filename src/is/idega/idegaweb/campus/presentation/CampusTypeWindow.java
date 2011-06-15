@@ -59,8 +59,11 @@ public class CampusTypeWindow extends Window {
 		} catch (FinderException e) {
 			e.printStackTrace();
 		}
+
+		boolean showPrice = Boolean.valueOf(iwc.getApplicationSettings().getProperty("SHOW_PRICE", String.valueOf(true))).booleanValue();
+
 		// FinanceFinder.getInstance().getKeySortedTariffsByAttribute("t_"+id);
-		if (typeTariffs != null) {
+		if (showPrice && typeTariffs != null) {
 			NumberFormat format = DecimalFormat.getCurrencyInstance(iwc
 					.getIWMainApplication().getSettings().getDefaultLocale());
 			// String rentString = format.format((long)room.getRent());

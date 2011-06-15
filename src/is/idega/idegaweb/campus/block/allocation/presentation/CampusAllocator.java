@@ -160,13 +160,13 @@ public class CampusAllocator extends CampusBlock implements Campus {
 
 		fontSize = 1;
 		if (iwc.getParameter(SUBCATEGORY_ID) != null) {
-			pSubcatId = new Parameter(SUBCATEGORY_ID, iwc
-					.getParameter(SUBCATEGORY_ID));
+			pSubcatId = new Parameter(SUBCATEGORY_ID,
+					iwc.getParameter(SUBCATEGORY_ID));
 			subcatID = Integer.valueOf(iwc.getParameter(SUBCATEGORY_ID));
 			try {
 				subcategory = campusService.getBuildingService()
-						.getApartmentSubcategoryHome().findByPrimaryKey(
-								subcatID);
+						.getApartmentSubcategoryHome()
+						.findByPrimaryKey(subcatID);
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			} catch (FinderException e) {
@@ -192,9 +192,13 @@ public class CampusAllocator extends CampusBlock implements Campus {
 					if (iwc.isParameterSet("wl_id"))
 						waitinglistID = Integer.valueOf(iwc
 								.getParameter("wl_id"));
-					Frame.add(getApartmentsForm(iwc, applicantID, new Integer(
-							-1), waitinglistID, null), 3, row);
-					Frame.add(getApplicantInfo(iwc, applicantID, waitinglistID), 1, row);
+					Frame.add(
+							getApartmentsForm(iwc, applicantID,
+									new Integer(-1), waitinglistID, null), 3,
+							row);
+					Frame.add(
+							getApplicantInfo(iwc, applicantID, waitinglistID),
+							1, row);
 				}
 				// Change allocation
 				else if (iwc.isParameterSet("change")) {
@@ -207,8 +211,9 @@ public class CampusAllocator extends CampusBlock implements Campus {
 						waitinglistID = Integer.valueOf(iwc
 								.getParameter("wl_id"));
 					Frame.add(getWaitingList(iwc, contractID), 1, row);
-					Frame.add(getApartmentsForm(iwc, applicantID, contractID,
-							waitinglistID, null), 3, row);
+					Frame.add(
+							getApartmentsForm(iwc, applicantID, contractID,
+									waitinglistID, null), 3, row);
 					row++;
 					Frame.mergeCells(1, row, 3, row);
 					Frame.add(getColorButtonInfo(), 1, row);
@@ -227,12 +232,17 @@ public class CampusAllocator extends CampusBlock implements Campus {
 							.getParameter("applicant"));
 					Integer applicationID = null;
 					if (iwc.isParameterSet("application")) {
-						applicationID = Integer.valueOf(iwc.getParameter("application"));
+						applicationID = Integer.valueOf(iwc
+								.getParameter("application"));
 					}
 					IWTimestamp from = new IWTimestamp(iwc.getParameter("from"));
-					Frame.add(getApplicantInfo(iwc, applicantID, waitinglistID), 1, row);
-					Frame.add(getContractsForm(iwc, apartmentID, applicantID,
-							contractID, from, null, applicationID), 3, row);
+					Frame.add(
+							getApplicantInfo(iwc, applicantID, waitinglistID),
+							1, row);
+					Frame.add(
+							getContractsForm(iwc, apartmentID, applicantID,
+									contractID, from, null, applicationID), 3,
+							row);
 				}
 				// save allocation
 				else if (iwc.isParameterSet("save_allocation")) {
@@ -254,22 +264,22 @@ public class CampusAllocator extends CampusBlock implements Campus {
 					Frame.mergeCells(1, row, 3, row);
 					Frame.add(getColorButtonInfo(), 1, row);
 				} else if (iwc.isParameterSet("offwaitinglist")) {
-					Integer wID = new Integer(iwc
-							.getParameter("offwaitinglist"));
+					Integer wID = new Integer(
+							iwc.getParameter("offwaitinglist"));
 					Integer wAID = new Integer(iwc.getParameter("wl_appid"));
 					Frame.add(getApplicantInfo(iwc, wAID, wID), 1, row);
 					Frame.add(getOffWaitingList(wID), 3, row);
 				} else if (iwc.isParameterSet("remove_waitinglist")) {
-					Integer wID = new Integer(iwc
-							.getParameter("remove_waitinglist"));
+					Integer wID = new Integer(
+							iwc.getParameter("remove_waitinglist"));
 					campusService.getContractService().removeWaitingList(wID);
 					Frame.add(getWaitingList(iwc, new Integer(-1)), 1, row);
 					row++;
 					Frame.mergeCells(1, row, 3, row);
 					Frame.add(getColorButtonInfo(), 1, row);
 				} else if (iwc.isParameterSet("reactivate_waitinglist")) {
-					Integer wID = new Integer(iwc
-							.getParameter("reactivate_waitinglist"));
+					Integer wID = new Integer(
+							iwc.getParameter("reactivate_waitinglist"));
 					campusService.getContractService().reactivateWaitingList(
 							wID);
 					Frame.add(getWaitingList(iwc, new Integer(-1)), 1, row);
@@ -358,11 +368,11 @@ public class CampusAllocator extends CampusBlock implements Campus {
 			L.addParameter(pSubcatId);
 			// L.addParameter(pComplexId);
 		}
-		
+
 		if (waitingList != null) {
 			L.addParameter("wl_id", waitingList.getPrimaryKey().toString());
 		}
-		
+
 		return L;
 	}
 
@@ -401,9 +411,8 @@ public class CampusAllocator extends CampusBlock implements Campus {
 				T.add(getText(user.getName()), 1, row);
 				T.add(getText(dateFormat.format((java.util.Date) contract
 						.getValidFrom())), 2, row);
-				T.add(
-						getText(dateFormat.format((java.util.Date) contract
-								.getValidTo())), 3, row);
+				T.add(getText(dateFormat.format((java.util.Date) contract
+						.getValidTo())), 3, row);
 				T.add(getText(getStatus(contract.getStatus())), 4, row);
 				T.add(new HiddenInput("apartmentid", apartmentID.toString()));
 				row++;
@@ -413,7 +422,8 @@ public class CampusAllocator extends CampusBlock implements Campus {
 	}
 
 	private Link getApartmentContractsLink(Text display, Integer applicantID,
-			Integer contractID, Integer apartmentID, IWTimestamp from, Application application) {
+			Integer contractID, Integer apartmentID, IWTimestamp from,
+			Application application) {
 		Link L = new Link(display);
 		L.addParameter("view_aprtmnt", apartmentID.toString());
 		L.addParameter("contract", contractID.toString());
@@ -423,17 +433,18 @@ public class CampusAllocator extends CampusBlock implements Campus {
 			L.addParameter(pSubcatId);
 			// L.addParameter(pComplexId);
 		}
-		
+
 		if (application != null) {
-			L.addParameter("application",application.getPrimaryKey().toString());
+			L.addParameter("application", application.getPrimaryKey()
+					.toString());
 		}
-		
+
 		return L;
 	}
 
 	private PresentationObject getApartmentsForm(IWContext iwc,
-			Integer applicantID, Integer contractID, Integer waitingListID, Integer applicationID)
-			throws RemoteException, FinderException {
+			Integer applicantID, Integer contractID, Integer waitingListID,
+			Integer applicationID) throws RemoteException, FinderException {
 		Form myForm = new Form();
 		ApartmentSubcategory apartmentSubcat = campusService
 				.getBuildingService().getApartmentSubcategoryHome()
@@ -453,10 +464,15 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		}
 		Table Frame = new Table();
 		if (contract != null)
-			Frame.add(getContractMakingTable(iwc, contract, applicantID, null,
-					contract.getApartmentId(), waitingList, applicationID), 1, 1);
+			Frame.add(
+					getContractMakingTable(iwc, contract, applicantID, null,
+							contract.getApartmentId(), waitingList,
+							applicationID), 1, 1);
 		else
-			Frame.add(getFreeApartments(iwc, applicantID, contract, waitingList.getApartment(), waitingList.getApplication()), 1, 1);
+			Frame.add(
+					getFreeApartments(iwc, applicantID, contract,
+							waitingList.getApartment(),
+							waitingList.getApplication()), 1, 1);
 		myForm.add(Frame);
 
 		myForm.add(new HiddenInput(pSubcatId.getName(), pSubcatId
@@ -489,49 +505,70 @@ public class CampusAllocator extends CampusBlock implements Campus {
 			Integer applicantID, Integer waitingListID) throws RemoteException {
 		CampusApprover CA = new CampusApprover();
 		PresentationObject MO = new Table();
-		CampusApplicationHolder AH = getApplicationService(iwc)
-				.getApplicantInfo(applicantID.intValue());
+		WaitingList wl = null;
+		if (waitingListID != null && waitingListID.intValue() != -1) {
+			try {
+				wl = ((WaitingListHome) IDOLookup.getHome(WaitingList.class))
+						.findByPrimaryKey(waitingListID);
+			} catch (FinderException e) {
+				wl = null;
+			}
+		}
+
+		CampusApplicationHolder AH = null;
+		if (wl.getApplication() != null) {
+			AH = getApplicationService(iwc).getApplicationInfo(
+					wl.getApplication());
+		} else {
+			AH = getApplicationService(iwc).getApplicantInfo(
+					applicantID.intValue());
+		}
+
 		if (AH != null) {
 			Table Frame = new Table(2, 2);
 			Frame.mergeCells(1, 2, 2, 2);
 			Frame.setRowVerticalAlignment(1, Table.VERTICAL_ALIGN_TOP);
 			Frame.setRowVerticalAlignment(2, Table.VERTICAL_ALIGN_TOP);
-			Frame.add(CA.getViewApplicant(AH.getApplicant(), AH
-					.getCampusApplication()), 1, 1);
-			ApplicantFamily family = getApplicationService(iwc).getApplicantFamily(AH.getApplicant());
-			
+			Frame.add(
+					CA.getViewApplicant(AH.getApplicant(),
+							AH.getCampusApplication()), 1, 1);
+			ApplicantFamily family = getApplicationService(iwc)
+					.getApplicantFamily(AH.getApplicant());
+
 			if (family.getSpouse() != null) {
 
-				Frame.add(CA.getViewSpouse(family.getSpouse(), AH
-						.getCampusApplication()), 1, 1);
+				Frame.add(
+						CA.getViewSpouse(family.getSpouse(),
+								AH.getCampusApplication()), 1, 1);
 			}
 			if (family.getChildren() != null && !family.getChildren().isEmpty()) {
-				Frame.add(CA.getViewChildren(family.getChildren()),
-						1, 1);
+				Frame.add(CA.getViewChildren(family.getChildren()), 1, 1);
 			}
-			
+
 			Frame.add(CA.getViewApplication(AH.getApplication()), 2, 1);
 			try {
-				Frame.add(CA.getViewApartment(AH.getCampusApplication(), AH.getApplied(), iwc), 2, 1);
-			} catch(Exception e) {
+				Frame.add(
+						CA.getViewApartment(AH.getCampusApplication(),
+								AH.getApplied(), iwc), 2, 1);
+			} catch (Exception e) {
 			}
-			Frame.add(CA.getViewApartmentExtra(AH.getCampusApplication(), iwc), 2, 1);
-			Frame.add(CA.getOtherInfo(AH.getCampusApplication(), iwc, false), 2, 1);
+			Frame.add(CA.getViewApartmentExtra(AH.getCampusApplication(), iwc),
+					2, 1);
+			Frame.add(CA.getOtherInfo(AH.getCampusApplication(), iwc, false),
+					2, 1);
 			Frame.add(CA.getSubject(AH.getApplication(), false, iwc), 2, 1);
 
-			
 			MO = Frame;
 		} else {
 			add("er null");
 		}
 
-		if (waitingListID != null && waitingListID.intValue() != -1) {
+		if (wl != null) {
 			try {
-				WaitingList wl = ((WaitingListHome) IDOLookup
-						.getHome(WaitingList.class)).findByPrimaryKey(waitingListID);
+				Collection rejections = ((RejectionHistoryHome) IDOLookup
+						.getHome(RejectionHistory.class))
+						.findAllByApplication(wl.getApplication());
 
-				Collection rejections = ((RejectionHistoryHome) IDOLookup.getHome(RejectionHistory.class)).findAllByApplication(wl.getApplication());
-				
 				if (rejections != null && !rejections.isEmpty()) {
 					DataTable T = getDataTable();
 					T.setUseBottom(false);
@@ -540,34 +577,45 @@ public class CampusAllocator extends CampusBlock implements Campus {
 					T.setTitlesHorizontal(true);
 					int col = 1;
 					int row = 1;
-					T.add(getHeader(localize("rejection_date", "Rejection date")), col++, row);
-					T.add(getHeader(localize("application", "Application")), col++, row);
-					T.add(getHeader(localize("rejected_apartment", "Rejected apartment")), col++, row);
-					T.add(getHeader(localize("rejected_building", "Rejected building")), col++, row);
-					T.add(getHeader(localize("rejected_complex", "Rejected complex")), col++, row++);
+					T.add(getHeader(localize("rejection_date", "Rejection date")),
+							col++, row);
+					T.add(getHeader(localize("application", "Application")),
+							col++, row);
+					T.add(getHeader(localize("rejected_apartment",
+							"Rejected apartment")), col++, row);
+					T.add(getHeader(localize("rejected_building",
+							"Rejected building")), col++, row);
+					T.add(getHeader(localize("rejected_complex",
+							"Rejected complex")), col++, row++);
 
 					Iterator it = rejections.iterator();
 					while (it.hasNext()) {
 						RejectionHistory history = (RejectionHistory) it.next();
 						col = 1;
-						T.add(getText(new IWTimestamp(history.getRejectionDate()).getDateString("dd.MM.yyyy hh:mm")), col++, row);
-						T.add(getText(history.getApplication().getPrimaryKey().toString()), col++, row);
-						T.add(getText(history.getApartment().getName()), col++, row);	
-						T.add(getText(history.getApartment().getFloor().getBuilding().getName()), col++, row);	
-						T.add(getText(history.getApartment().getFloor().getBuilding().getComplex().getName()), col++, row++);	
+						T.add(getText(new IWTimestamp(history
+								.getRejectionDate())
+								.getDateString("dd.MM.yyyy hh:mm")), col++, row);
+						T.add(getText(history.getApplication().getPrimaryKey()
+								.toString()), col++, row);
+						T.add(getText(history.getApartment().getName()), col++,
+								row);
+						T.add(getText(history.getApartment().getFloor()
+								.getBuilding().getName()), col++, row);
+						T.add(getText(history.getApartment().getFloor()
+								.getBuilding().getComplex().getName()), col++,
+								row++);
 					}
-					
-					Table container = new Table(1,2);
+
+					Table container = new Table(1, 2);
 					container.add(MO, 1, 1);
 					container.add(T, 1, 2);
-					
+
 					MO = container;
-				}				
+				}
+			} catch (FinderException e) {
 			}
-			catch (FinderException e) {
-			}
-		}		
-		
+		}
+
 		return MO;
 	}
 
@@ -700,8 +748,8 @@ public class CampusAllocator extends CampusBlock implements Campus {
 						boolean showEntry = true;
 
 						if (showEntry) {
-							StringBuffer name = new StringBuffer(subcat
-									.getName());
+							StringBuffer name = new StringBuffer(
+									subcat.getName());
 							name.append(" (");
 							name.append(category.getName());
 							name.append(")");
@@ -756,7 +804,8 @@ public class CampusAllocator extends CampusBlock implements Campus {
 	}
 
 	private Link getListLink(ApartmentSubcategory subCat) {
-		return getListLink(subCat.getName(), ((Integer)subCat.getPrimaryKey()).intValue());
+		return getListLink(subCat.getName(),
+				((Integer) subCat.getPrimaryKey()).intValue());
 	}
 
 	private Link getListLink(String name, int subcatID) {
@@ -780,9 +829,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 
 	private Link getOffWaitingListLink(WaitingList waitingList) {
 		Link L = new Link(getBundle().getImage("blue.gif"));
-		L
-				.addParameter("offwaitinglist", waitingList.getPrimaryKey()
-						.toString());
+		L.addParameter("offwaitinglist", waitingList.getPrimaryKey().toString());
 		L.addParameter("wl_appid", waitingList.getApplicantId().toString());
 		L.setToolTip(localize("tooltip_nr_alloc_offlist", "Wants off list"));
 		if (pSubcatId != null) { // && pComplexId != null) {
@@ -838,9 +885,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 						.toString());
 				number.setFontColor("#FF0000");
 			}
-			L
-					.addParameter("applicant", waitingList.getApplicantId()
-							.toString());
+			L.addParameter("applicant", waitingList.getApplicantId().toString());
 			L.addParameter("wl_id", waitingList.getPrimaryKey().toString());
 
 		} else {
@@ -955,13 +1000,13 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		dateFrom.setStyleAttribute("style", styleAttribute);
 		dateTo.setStyleAttribute("style", styleAttribute);
 		if (applicantID.intValue() != -1) {
-			HiddenInput Hid = new HiddenInput("applicantid", applicantID
-					.toString());
+			HiddenInput Hid = new HiddenInput("applicantid",
+					applicantID.toString());
 			T.add(Hid);
 		}
 		if (apartmentID.intValue() != -1) {
-			HiddenInput Hid = new HiddenInput("apartmentid", apartmentID
-					.toString());
+			HiddenInput Hid = new HiddenInput("apartmentid",
+					apartmentID.toString());
 			T.add(Hid);
 		}
 		T.add(getHeader(localize("validfrom", "Valid from")), 1, row);
@@ -983,7 +1028,6 @@ public class CampusAllocator extends CampusBlock implements Campus {
 					"true");
 			incrementRejections.setChecked(true);
 
-			
 			if (waitingList != null) {
 				T.add(new HiddenInput("wl_id", waitingList.getPrimaryKey()
 						.toString()));
@@ -1011,8 +1055,8 @@ public class CampusAllocator extends CampusBlock implements Campus {
 
 	private PresentationObject getContractsForm(IWContext iwc,
 			Integer apartmentID, Integer applicantID, Integer contractID,
-			IWTimestamp from, WaitingList waitingList, Integer applicationID) throws RemoteException,
-			FinderException {
+			IWTimestamp from, WaitingList waitingList, Integer applicationID)
+			throws RemoteException, FinderException {
 		Apartment apartment = campusService.getBuildingService()
 				.getApartmentHome().findByPrimaryKey(apartmentID);
 		Contract contract = null;
@@ -1078,8 +1122,8 @@ public class CampusAllocator extends CampusBlock implements Campus {
 	}
 
 	private PresentationObject getFreeApartments(IWContext iwc,
-			Integer applicantID, Contract contract, Apartment renewalApartment, Application application) throws FinderException,
-			RemoteException {
+			Integer applicantID, Contract contract, Apartment renewalApartment,
+			Application application) throws FinderException, RemoteException {
 		Collection apartments = campusService.getBuildingService()
 				.getApartmentViewHome().findBySubcategory(subcatID);
 		boolean hasContract = contract != null ? true : false;
@@ -1119,33 +1163,38 @@ public class CampusAllocator extends CampusBlock implements Campus {
 					apartmentID = (Integer) apartment.getPrimaryKey();
 					boolean isThis = false;
 					// Mark current apartment
-					if (hasContract && currentApartmentID == apartmentID.intValue()) {
+					if (hasContract
+							&& currentApartmentID == apartmentID.intValue()) {
 						isThis = true;
-						TextFontColor = "#FF0000";						
-					} else if (renewalApartment != null && ((Integer)renewalApartment.getPrimaryKey()).intValue() == apartmentID.intValue()) {
+						TextFontColor = "#FF0000";
+					} else if (renewalApartment != null
+							&& ((Integer) renewalApartment.getPrimaryKey())
+									.intValue() == apartmentID.intValue()) {
 						isThis = true;
 						TextFontColor = "#00FF00";
-					} 
+					}
 
 					// List all apartments and show next availability ( date )
 					nextAvailable = new IWTimestamp(campusService
-							.getContractService().getNextAvailableDate(
+							.getContractService()
+							.getNextAvailableDate(
 									campusService.getBuildingService()
 											.getApartmentHome()
 											.findByPrimaryKey(apartmentID))
 							.getTime());
 					nextAvailable.setAsDate();
 
-					isResigned = campusService
-					.getContractService().getIsContractResigned(
-							campusService.getBuildingService()
-									.getApartmentHome()
-									.findByPrimaryKey(apartmentID));
-					if (apartment.getApartment().getMarked()) {					
+					isResigned = campusService.getContractService()
+							.getIsContractResigned(
+									campusService.getBuildingService()
+											.getApartmentHome()
+											.findByPrimaryKey(apartmentID));
+					if (apartment.getApartment().getMarked()) {
 						TextFontColor = "#0000FF";
-						T.add(getText("*" + apartment.getApartmentName()), 2, row);
+						T.add(getText("*" + apartment.getApartmentName()), 2,
+								row);
 					} else {
-						T.add(getText(apartment.getApartmentName()), 2, row);						
+						T.add(getText(apartment.getApartmentName()), 2, row);
 					}
 					T.add(getText(apartment.getFloorName()), 3, row);
 					T.add(getText(apartment.getBuildingName()), 4, row);
@@ -1154,32 +1203,31 @@ public class CampusAllocator extends CampusBlock implements Campus {
 								.getLocaleDate(LocaleUtil.getIcelandicLocale()));
 						if (nextAvailable.isEqualTo(IWTimestamp.RightNow()))
 							text = getText(localize("today", "Today"));
-						T
-								.add(getApartmentContractsLink(text,
-										applicantID, contractID, apartmentID,
-										nextAvailable, application), 5, row);
+						T.add(getApartmentContractsLink(text, applicantID,
+								contractID, apartmentID, nextAvailable,
+								application), 5, row);
 					}
-					
+
 					if (isThis || apartment.getApartment().getMarked()) {
 						TextFontColor = "#000000";
 					}
-					
+
 					if (isResigned) {
 						TextFontColor = redColor;
 					}
-					
+
 					row++;
 				}
 			}
 		}
-		
+
 		return T;
 	}
 
 	private Link getHomeLink() {
 		Link L = new Link(getBundle().getImage("list.gif"));
 		L.addParameter("list", "");
-		
+
 		return L;
 	}
 
@@ -1214,16 +1262,14 @@ public class CampusAllocator extends CampusBlock implements Campus {
 					"Apartment subcategory")), 1, row);
 			T.add(getText(wl.getApartmentSubcategory().getName()), 2, row);
 			row++;
-			T
-					.add(getHeader(localize("last_confirmation",
-							"Last confirmation")), 1, row);
+			T.add(getHeader(localize("last_confirmation", "Last confirmation")),
+					1, row);
 			if (wl.getLastConfirmationDate() != null)
 				T.add(getText(dateFormat.format(wl.getLastConfirmationDate())),
 						2, row);
 			row++;
-			T.add(
-					getHeader(localize("allocation_denials",
-							"Allocation denials")), 1, row);
+			T.add(getHeader(localize("allocation_denials", "Allocation denials")),
+					1, row);
 			int count = wl.getNumberOfRejections();
 			if (count < 0) {
 				count = 0;
@@ -1243,8 +1289,8 @@ public class CampusAllocator extends CampusBlock implements Campus {
 				T.addButton(reactivate);
 			}
 			if (pSubcatId != null) {
-				form.addParameter(pSubcatId.getName(), pSubcatId
-						.getValueAsString());
+				form.addParameter(pSubcatId.getName(),
+						pSubcatId.getValueAsString());
 			}
 		} catch (IDOLookupException e) {
 			e.printStackTrace();
@@ -1270,10 +1316,8 @@ public class CampusAllocator extends CampusBlock implements Campus {
 	public Link getPDFLink(IWContext iwc, PresentationObject MO,
 			int aprt_type_id, int cmplx_id) {
 		Link link = new Link(MO);
-		link
-				.setURL(iwc.getIWMainApplication().getMediaServletURI()
-						+ "apps_type_" + aprt_type_id + "_complex_" + cmplx_id
-						+ ".pdf");
+		link.setURL(iwc.getIWMainApplication().getMediaServletURI()
+				+ "apps_type_" + aprt_type_id + "_complex_" + cmplx_id + ".pdf");
 		link.addParameter(CampusApplicationWriter.PRM_WRITABLE_CLASS,
 				IWMainApplication
 						.getEncryptedClassName(CampusApplicationWriter.class));
@@ -1375,8 +1419,9 @@ public class CampusAllocator extends CampusBlock implements Campus {
 				row);
 		Frame.add(getHeader(localize("phone", "Phone")), col++, row);
 
-		//does not return those that are marked off the waiting list
-		Collection waitingLists = getWaitingListHome().findByApartmentSubcategory(subcatID.intValue());
+		// does not return those that are marked off the waiting list
+		Collection waitingLists = getWaitingListHome()
+				.findByApartmentSubcategory(subcatID.intValue());
 
 		Map newApplicantContracts = campusService.getContractService()
 				.getNewApplicantContracts();
@@ -1430,7 +1475,8 @@ public class CampusAllocator extends CampusBlock implements Campus {
 						Application application = WL.getApplication();
 						String applicationID = "-1";
 						if (application != null) {
-							applicationID = application.getPrimaryKey().toString();
+							applicationID = application.getPrimaryKey()
+									.toString();
 						}
 						Integer applicantID = (Integer) applicant
 								.getPrimaryKey();
@@ -1442,14 +1488,15 @@ public class CampusAllocator extends CampusBlock implements Campus {
 							colorMap.put(new Integer(row), subjectColor);
 						}
 
-						Frame.add(getWaitingListOrderLink(WL.getPrimaryKey()
-								.toString(), numberOnList, subcatID.intValue(),
-								listSize), col++, row);
+						Frame.add(
+								getWaitingListOrderLink(WL.getPrimaryKey()
+										.toString(), numberOnList, subcatID
+										.intValue(), listSize), col++, row);
 						numberOnList++;
 						Frame.add(getText(WL.getPriorityLevel()), col++, row);
 						if (priorityColorMap.containsKey(WL.getPriorityLevel())) {
-							colorMap.put(new Integer(row), priorityColorMap
-									.get(WL.getPriorityLevel()));
+							colorMap.put(new Integer(row),
+									priorityColorMap.get(WL.getPriorityLevel()));
 						}
 
 						if (WL.getType().equals(
@@ -1465,14 +1512,14 @@ public class CampusAllocator extends CampusBlock implements Campus {
 							int iRefLen = new Integer(refLen).intValue();
 
 							String tmpID = applicationID;
-							
+
 							while (tmpID.length() < iRefLen)
 								tmpID = "0" + tmpID;
 							cypher = ct.doCyper(tmpID, key);
 						}
 						Frame.add(getText(cypher), col++, row);
 						// already has allocation
-						
+
 						if (bcontracts
 								&& newApplicantContracts
 										.containsKey(applicationID)) {
@@ -1486,12 +1533,12 @@ public class CampusAllocator extends CampusBlock implements Campus {
 							IWTimestamp allocated = null, accepted = null;
 							boolean isOnTime = true;
 							if (contract.getStatusDate() != null) {
-								allocated = new IWTimestamp(contract
-										.getStatusDate());
+								allocated = new IWTimestamp(
+										contract.getStatusDate());
 								allocated.addSeconds(acceptanceSeconds);
 								if (WL.getAcceptedDate() != null) {
-									accepted = new IWTimestamp(WL
-											.getAcceptedDate());
+									accepted = new IWTimestamp(
+											WL.getAcceptedDate());
 									isOnTime = accepted
 											.isEarlierThan(allocated);
 								} else {
@@ -1499,13 +1546,15 @@ public class CampusAllocator extends CampusBlock implements Campus {
 								}
 							}
 							if (WL.getNumberOfRejections() > 0) {
-								Frame.add(getDenialChangeLink(contractID, WL,
-										isOnTime), col++, row);
+								Frame.add(
+										getDenialChangeLink(contractID, WL,
+												isOnTime), col++, row);
 							}
 							// if accepted allocation
 							else {
-								Frame.add(getChangeLink(contractID, WL,
-										isOnTime), col++, row);
+								Frame.add(
+										getChangeLink(contractID, WL, isOnTime),
+										col++, row);
 							}
 						} else if (pContracts
 								&& printedContracts.containsKey(applicationID)) {
@@ -1529,13 +1578,12 @@ public class CampusAllocator extends CampusBlock implements Campus {
 							Frame.add(getDenialChangeLink(null, WL, true),
 									col++, row);
 						else {
-							Frame.add(getAllocateLink(applicant, WL), col++, row);
+							Frame.add(getAllocateLink(applicant, WL), col++,
+									row);
 						}
 						Frame.add(getText(applicant.getFullName()), col++, row);
 						Frame.add(getText(applicant.getSSN()), col++, row);
-						Frame
-								.add(getText(applicant.getResidence()), col++,
-										row);
+						Frame.add(getText(applicant.getResidence()), col++, row);
 						if (ifLong)
 							Frame.add(getText(applicant.getLegalResidence()),
 									col++, row);
@@ -1612,14 +1660,14 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		Integer apartmentID = null;
 		Integer applicantID = null;
 		Integer applicationID = null;
-		IWTimestamp validFrom = new IWTimestamp(iwc
-				.getParameter("contract_date_from"));
-		IWTimestamp validTo = new IWTimestamp(iwc
-				.getParameter("contract_date_to"));
+		IWTimestamp validFrom = new IWTimestamp(
+				iwc.getParameter("contract_date_from"));
+		IWTimestamp validTo = new IWTimestamp(
+				iwc.getParameter("contract_date_to"));
 
 		try {
 			if (iwc.isParameterSet("applicantid")) {
-				applicantID = Integer.valueOf(iwc.getParameter("applicantid"));				
+				applicantID = Integer.valueOf(iwc.getParameter("applicantid"));
 			}
 			if (iwc.isParameterSet("apartmentid")) {
 				apartmentID = Integer.valueOf(iwc.getParameter("apartmentid"));
@@ -1628,7 +1676,8 @@ public class CampusAllocator extends CampusBlock implements Campus {
 				contractID = Integer.valueOf(iwc.getParameter("contract_id"));
 			}
 			if (iwc.isParameterSet("application")) {
-				applicationID = Integer.valueOf(iwc.getParameter("application"));
+				applicationID = Integer
+						.valueOf(iwc.getParameter("application"));
 			}
 		} catch (NumberFormatException e) {
 			// e.printStackTrace();
