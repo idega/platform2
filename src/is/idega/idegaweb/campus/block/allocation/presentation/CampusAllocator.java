@@ -15,6 +15,10 @@ import is.idega.idegaweb.campus.block.allocation.business.WaitingListFinder;
 import is.idega.idegaweb.campus.block.allocation.data.AllocationView;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
+import is.idega.idegaweb.campus.block.allocation.data.ContractTariff;
+import is.idega.idegaweb.campus.block.allocation.data.ContractTariffHome;
+import is.idega.idegaweb.campus.block.allocation.data.ContractTariffName;
+import is.idega.idegaweb.campus.block.allocation.data.ContractTariffNameHome;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationHolder;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationWriter;
 import is.idega.idegaweb.campus.block.application.data.ApplicantFamily;
@@ -41,6 +45,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
@@ -71,6 +76,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.InterfaceObject;
@@ -87,6 +93,8 @@ import com.idega.util.LocaleUtil;
  * @version 1.0
  */
 public class CampusAllocator extends CampusBlock implements Campus {
+
+	private static final String PARAM_CONTRACT_TARIFF_NAME = "prm_con_tar_name";
 
 	private static final String PRM_ALLOCATE = "allocate";
 
@@ -971,6 +979,14 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		return (ContractHome) IDOLookup.getHome(Contract.class);
 	}
 
+	public ContractTariffNameHome getContractTariffNameHome() throws RemoteException {
+		return (ContractTariffNameHome) IDOLookup.getHome(ContractTariffName.class);
+	}
+
+	public ContractTariffHome getContractTariffHome() throws RemoteException {
+		return (ContractTariffHome) IDOLookup.getHome(ContractTariff.class);
+	}
+	
 	private PresentationObject getContractMakingTable(IWContext iwc,
 			Contract contract, Integer applicantID, IWTimestamp from,
 			Integer apartmentID, WaitingList waitingList, Integer applicationID)
@@ -1002,6 +1018,9 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		dateTo.setDate((java.sql.Date) validPeriod.getTo());
 		dateFrom.setStyleAttribute("style", styleAttribute);
 		dateTo.setStyleAttribute("style", styleAttribute);
+		
+		DropdownMenu contractTariffName = getContractTariffNameDropdown(PARAM_CONTRACT_TARIFF_NAME);
+		
 		if (applicantID.intValue() != -1) {
 			HiddenInput Hid = new HiddenInput("applicantid",
 					applicantID.toString());
@@ -1018,6 +1037,14 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		T.add(getHeader(localize("validto", "Valid to")), 1, row);
 		T.add(dateTo, 3, row);
 		row++;
+		
+		boolean showContractTariff = iwc.getApplicationSettings().getBoolean("SHOW_CONTRACT_TARIFF", false);
+		if (showContractTariff) {
+			T.add(getHeader(localize("contract_tariff_name", "Contract tariff name")), 1, row);
+			T.add(contractTariffName, 3, row);
+			row++;
+		}
+		
 		if (contract != null) {
 			SubmitButton delete = (SubmitButton) getSubmitButton(
 					"delete_allocation", "true", "Delete", "delete");
@@ -1056,6 +1083,27 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		return T;
 	}
 
+	private DropdownMenu getContractTariffNameDropdown(String name) {
+		DropdownMenu drp = new DropdownMenu(name);
+		drp.addMenuElement(0, "--");
+		
+		Collection names = null;
+		try {
+			names = getContractTariffNameHome().findAll();
+		} catch (RemoteException e) {
+		} catch (FinderException e) {
+		}
+		
+		if (names != null) {
+			Iterator it = names.iterator();
+			while (it.hasNext()) {
+				ContractTariffName contractTariffName = (ContractTariffName) it.next();
+				drp.addMenuElement(((Integer) contractTariffName.getPrimaryKey()).intValue(), contractTariffName.getName());
+			}
+		}
+		return drp;
+	}
+	
 	private PresentationObject getContractsForm(IWContext iwc,
 			Integer apartmentID, Integer applicantID, Integer contractID,
 			IWTimestamp from, WaitingList waitingList, Integer applicationID)
@@ -1686,11 +1734,13 @@ public class CampusAllocator extends CampusBlock implements Campus {
 			// e.printStackTrace();
 		}
 
+		Contract contract = null;
+		
 		/** @todo contract overlap */
 		IWTimestamp mustBeFrom = sMustFrom != null ? new IWTimestamp(sMustFrom)
 				: null;
 		try {
-			campusService.getContractService().allocate(contractID,
+			contract = campusService.getContractService().allocate(contractID,
 					apartmentID, applicantID, validFrom.getDate(),
 					validTo.getDate(), applicationID);
 		} catch (RemoteException e1) {
@@ -1700,6 +1750,54 @@ public class CampusAllocator extends CampusBlock implements Campus {
 			e1.printStackTrace();
 			return e1.getMessage();
 		}
+		
+		boolean showContractTariff = iwc.getApplicationSettings().getBoolean("SHOW_CONTRACT_TARIFF", false);
+		if (showContractTariff && contract != null) {
+			String contractTariffName = iwc.getParameter(PARAM_CONTRACT_TARIFF_NAME);
+			if (contractTariffName != null) {
+				try {
+					Integer id = Integer.valueOf(contractTariffName);
+					if (id.intValue() > 0) {
+						ContractTariffName ctn = getContractTariffNameHome().findByPrimaryKey(id);
+						Collection contractTariffs = getContractTariffHome().findByContractTariffName(ctn);
+						if (contractTariffs != null && !contractTariffs.isEmpty()) {
+							Collection current = getContractTariffHome().findByContract(contract);
+							if (current != null && !current.isEmpty()) {
+								Iterator it = current.iterator();
+								while (it.hasNext()) {
+									ContractTariff t = (ContractTariff) it.next();
+									t.setDeletedBy(iwc.getCurrentUser());
+									t.setIsDeleted(true);
+									t.store();
+								}
+							}
+							
+							Iterator it = contractTariffs.iterator();
+							while (it.hasNext()) {
+								ContractTariff t = (ContractTariff) it.next();
+								ContractTariff ct = getContractTariffHome().create();
+								ct.setAccountKey(t.getAccountKey());			
+								ct.setContract(contract);
+								ct.setIndexType(t.getIndexType());
+								ct.setUseIndex(t.getUseIndex());			
+								ct.setIndexUpdated(t.getIndexUpdated());
+								ct.setIsDeleted(false);
+								ct.setName(t.getName());
+								ct.setPrice(t.getPrice());
+								ct.setContractTariffName(null);
+								ct.setContractTariffNameCopy(t.getContractTariffName());
+								ct.store();	
+							}
+						}
+					}					
+				} catch (NumberFormatException e) {
+				} catch (RemoteException e) {
+				} catch (FinderException e) {
+				} catch (CreateException e) {
+				}
+			}
+		}
+		
 		return localize("allocationSucceeded", "Allocation succeeded");
 	}
 

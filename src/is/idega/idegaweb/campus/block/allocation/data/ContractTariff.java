@@ -53,6 +53,16 @@ public interface ContractTariff extends IDOEntity {
 	public User getDeletedBy();
 
 	/**
+	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractTariffBMPBean#getContractTariffName
+	 */
+	public ContractTariffName getContractTariffName();
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractTariffBMPBean#getContractTariffNameCopy
+	 */
+	public ContractTariffName getContractTariffNameCopy();
+
+	/**
 	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractTariffBMPBean#setContract
 	 */
 	public void setContract(Contract contract);
@@ -101,4 +111,14 @@ public interface ContractTariff extends IDOEntity {
 	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractTariffBMPBean#setDeletedBy
 	 */
 	public void setDeletedBy(User user);
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractTariffBMPBean#setContractTariffName
+	 */
+	public void setContractTariffName(ContractTariffName name);
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractTariffBMPBean#setContractTariffNameCopy
+	 */
+	public void setContractTariffNameCopy(ContractTariffName name);
 }

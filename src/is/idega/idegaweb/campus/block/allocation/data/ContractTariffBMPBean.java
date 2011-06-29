@@ -24,6 +24,9 @@ public class ContractTariffBMPBean extends GenericEntity implements
 	private static final String COLUMN_DELETED = "deleted";
 	private static final String COLUMN_DELETED_BY = "deleted_by";
 	
+	private static final String COLUMN_CONTRACT_TARIFF_NAME = "contract_tariff_name_id";
+	private static final String COLUMN_CONTRACT_TARIFF_NAME_COPY = "contract_tariff_name_copy_id";
+	
 	public String getEntityName() {
 		return ENTITY_NAME;
 	}
@@ -40,6 +43,9 @@ public class ContractTariffBMPBean extends GenericEntity implements
 		addAttribute(COLUMN_INDEX_UPDATED, "Index updated", Timestamp.class);
 		addAttribute(COLUMN_DELETED, "Deleted", Boolean.class);
 		addManyToOneRelationship(COLUMN_DELETED_BY, User.class);
+		
+		addManyToOneRelationship(COLUMN_CONTRACT_TARIFF_NAME, ContractTariffName.class);
+		addManyToOneRelationship(COLUMN_CONTRACT_TARIFF_NAME_COPY, ContractTariffName.class);
 	}
 	
 	//getters
@@ -79,6 +85,14 @@ public class ContractTariffBMPBean extends GenericEntity implements
 		return (User) getColumnValue(COLUMN_DELETED_BY);
 	}
 	
+	public ContractTariffName getContractTariffName() {
+		return (ContractTariffName) getColumnValue(COLUMN_CONTRACT_TARIFF_NAME);
+	}
+
+	public ContractTariffName getContractTariffNameCopy() {
+		return (ContractTariffName) getColumnValue(COLUMN_CONTRACT_TARIFF_NAME_COPY);
+	}
+
 	//setters
 	public void setContract(Contract contract) {
 		setColumn(COLUMN_CONTRACT, contract);
@@ -120,6 +134,14 @@ public class ContractTariffBMPBean extends GenericEntity implements
 		setColumn(COLUMN_DELETED_BY, user);
 	}
 	
+	public void setContractTariffName(ContractTariffName name) {
+		setColumn(COLUMN_CONTRACT_TARIFF_NAME, name);
+	}
+
+	public void setContractTariffNameCopy(ContractTariffName name) {
+		setColumn(COLUMN_CONTRACT_TARIFF_NAME_COPY, name);
+	}
+
 	//ejb
 	public Collection ejbFindByContract(Contract contract) throws FinderException {
 		IDOQuery query = super.idoQueryGetSelect();
@@ -133,4 +155,18 @@ public class ContractTariffBMPBean extends GenericEntity implements
 		
 		return super.idoFindPKsByQuery(query);
 	}
+	
+	public Collection ejbFindByContractTariffName(ContractTariffName name) throws FinderException {
+		IDOQuery query = super.idoQueryGetSelect();
+		query.appendWhereEquals(COLUMN_CONTRACT_TARIFF_NAME, name);
+		query.appendAnd();
+		query.appendLeftParenthesis();
+		query.append(COLUMN_DELETED);
+		query.appendIsNull();
+		query.appendOrEquals(COLUMN_DELETED, false);
+		query.appendRightParenthesis();
+		
+		return super.idoFindPKsByQuery(query);
+	}
+
 }

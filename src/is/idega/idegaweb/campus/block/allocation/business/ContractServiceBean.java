@@ -16,6 +16,8 @@ import is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean;
 import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
 import is.idega.idegaweb.campus.block.allocation.data.ContractTariff;
 import is.idega.idegaweb.campus.block.allocation.data.ContractTariffHome;
+import is.idega.idegaweb.campus.block.allocation.data.ContractTariffName;
+import is.idega.idegaweb.campus.block.allocation.data.ContractTariffNameHome;
 import is.idega.idegaweb.campus.block.allocation.data.ContractText;
 import is.idega.idegaweb.campus.block.allocation.data.ContractTextHome;
 import is.idega.idegaweb.campus.block.application.business.ApplicationService;
@@ -1294,4 +1296,7 @@ public class ContractServiceBean extends IBOServiceBean implements
 		return (ContractTariffHome) getIDOHome(ContractTariff.class);
 	}
 
+	public ContractTariffNameHome getContractTariffNameHome() throws RemoteException {
+		return (ContractTariffNameHome) getIDOHome(ContractTariffName.class);
+	}
 }

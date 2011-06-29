@@ -12,6 +12,7 @@ import is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriods;
 import is.idega.idegaweb.campus.block.allocation.data.AutomaticCharges;
 import com.idega.block.building.business.BuildingService;
 import is.idega.idegaweb.campus.block.application.business.ApplicationService;
+import is.idega.idegaweb.campus.block.allocation.data.ContractTariffNameHome;
 import com.idega.util.IWTimestamp;
 import is.idega.idegaweb.campus.block.allocation.data.ContractTariffHome;
 import com.idega.block.building.data.Apartment;
@@ -137,7 +138,8 @@ public interface ContractService extends IBOService {
 	 * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#resignContract
 	 */
 	public void resignContract(Integer contractID, IWTimestamp movingDate,
-			String info, boolean datesync, boolean deleteContinuationContracts, String subjectID) throws RemoteException;
+			String info, boolean datesync, boolean deleteContinuationContracts,
+			String subjectID) throws RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#createNewContract
@@ -411,4 +413,10 @@ public interface ContractService extends IBOService {
 	 */
 	public ContractTariffHome getContractTariffHome() throws RemoteException,
 			RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#getContractTariffNameHome
+	 */
+	public ContractTariffNameHome getContractTariffNameHome()
+			throws RemoteException, RemoteException;
 }

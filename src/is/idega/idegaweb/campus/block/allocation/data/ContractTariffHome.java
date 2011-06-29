@@ -12,4 +12,7 @@ public interface ContractTariffHome extends IDOHome {
 	public ContractTariff findByPrimaryKey(Object pk) throws FinderException;
 
 	public Collection findByContract(Contract contract) throws FinderException;
+
+	public Collection findByContractTariffName(ContractTariffName name)
+			throws FinderException;
 }

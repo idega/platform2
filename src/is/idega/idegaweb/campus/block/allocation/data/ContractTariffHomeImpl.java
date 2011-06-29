@@ -28,4 +28,13 @@ public class ContractTariffHomeImpl extends IDOFactory implements
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
+
+	public Collection findByContractTariffName(ContractTariffName name)
+			throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((ContractTariffBMPBean) entity)
+				.ejbFindByContractTariffName(name);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 }
