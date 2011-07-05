@@ -2,6 +2,8 @@ package is.idega.idegaweb.campus.block.allocation.business;
 
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
+import is.idega.idegaweb.campus.block.allocation.data.ContractTariff;
+import is.idega.idegaweb.campus.block.allocation.data.ContractTariffHome;
 import is.idega.idegaweb.campus.block.allocation.data.ContractText;
 import is.idega.idegaweb.campus.block.allocation.data.ContractTextHome;
 import is.idega.idegaweb.campus.block.building.data.ApartmentTypeRent;
@@ -158,7 +160,7 @@ public class CampusContractWriter {
 	public final static String TIEN = "TEN";
 
 	public static int writePDF(int[] ids, IWResourceBundle iwrb, Font nameFont,
-			Font titleFont, Font paragraphFont, Font tagFont, Font textFont) {
+			Font titleFont, Font paragraphFont, Font tagFont, Font textFont, boolean useContractTariff) {
 		int returner = -1;
 		boolean bEntity = false;
 		if (ids != null && ids.length > 0) {
@@ -179,13 +181,14 @@ public class CampusContractWriter {
 					true);
 			footer.setBorder(0);
 			footer.setAlignment(Element.ALIGN_CENTER);
-			document.setFooter(footer);
+			document.setHeader(footer);
 			ContractText header = getHeader();
 			Collection texts = getTexts();
 			String title = "";
 			if (header != null)
 				title = header.getText() + " \n\n";
 			Paragraph cTitle = new Paragraph(title, titleFont);
+			cTitle.setAlignment(Element.ALIGN_CENTER);
 			// for each contract id
 			for (int j = 0; j < ids.length; j++) {
 				document.setPageCount(1);
@@ -196,7 +199,7 @@ public class CampusContractWriter {
 				Section subSection;
 				Phrase phrase;
 				// System.err.println("inside chapter : "+ids[j]);
-				Map map = getTagMap(ids[j], iwrb, nameFont, tagFont, textFont);
+				Map map = getTagMap(ids[j], iwrb, nameFont, tagFont, textFont, useContractTariff);
 				if (texts != null) {
 					for (Iterator iter = texts.iterator(); iter.hasNext();) {
 						ContractText CT = (ContractText) iter.next();
@@ -289,14 +292,14 @@ public class CampusContractWriter {
 	public static int writeTestPDF(IWResourceBundle iwrb, Font nameFont,
 			Font titleFont, Font paragraphFont, Font tagFont, Font textFont) {
 		return writePDF(new int[1], iwrb, nameFont, titleFont, paragraphFont,
-				tagFont, textFont);
+				tagFont, textFont, false);
 	}
 
 	public static int writePDF(int id, IWResourceBundle iwrb, Font nameFont,
-			Font titleFont, Font paragraphFont, Font tagFont, Font textFont) {
+			Font titleFont, Font paragraphFont, Font tagFont, Font textFont, boolean useContractTariff) {
 		int[] ids = { id };
 		return writePDF(ids, iwrb, nameFont, titleFont, paragraphFont, tagFont,
-				textFont);
+				textFont, useContractTariff);
 	}
 
 	private static Collection getTexts() {
@@ -356,7 +359,7 @@ public class CampusContractWriter {
 	}
 
 	private static Map getTagMap(int contractId, IWResourceBundle iwrb,
-			Font nameFont, Font tagFont, Font textFont) {
+			Font nameFont, Font tagFont, Font textFont, boolean useContractTariff) {
 		if (contractId > 0) {
 			try {
 				IWBundle iwb = iwrb.getIWBundleParent();
@@ -450,6 +453,48 @@ public class CampusContractWriter {
 						rentNotA += t.getPrice();
 					}
 				}
+				
+				if (useContractTariff) {
+					try {
+						Collection tariffs = ((ContractTariffHome) IDOLookup
+								.getHome(ContractTariff.class)).findByContract(eContract);
+						
+						if (tariffs != null && !tariffs.isEmpty()) {
+							cRent = 0.0d;
+							rentA = 0.0d;
+							rentB = 0.0d;
+							rentC = 0.0d;
+							rentD = 0.0d;
+							rentNotA = 0.0d;
+							
+							Iterator it2 = tariffs.iterator();
+							while (it2.hasNext()) {
+								ContractTariff t = (ContractTariff) it2.next();
+								cRent += t.getPrice();
+								if (null != t.getIndexType()) {
+									String type = t.getIndexType();
+									if ("A".equals(type)) {
+										rentA += t.getPrice();
+									} else if ("B".equals(type)) {
+										rentNotA += t.getPrice();
+										rentB += t.getPrice();
+									} else if ("C".equals(type)) {
+										rentNotA += t.getPrice();
+										rentC += t.getPrice();
+									} else if ("D".equals(type)) {
+										rentNotA += t.getPrice();
+										rentD += t.getPrice();
+									} else {
+										rentNotA += t.getPrice();
+									}
+								} else {
+									rentNotA += t.getPrice();
+								}
+							}
+						}
+					} catch(Exception e) {
+					}
+				}
 
 				String postalAddress = eBuilding.getPostalAddress();
 				if (postalAddress == null) {
@@ -495,27 +540,27 @@ public class CampusContractWriter {
 				H.put(today, new Chunk(dfLong.format(new java.util.Date()),
 						tagFont));
 				H.put(tenant_name,
-						new Chunk(eApplicant.getFullName(), nameFont));
+						new Chunk(eApplicant.getFullName(), tagFont));
 				H.put(tenant_address, new Chunk(eApplicant.getLegalResidence(),
 						nameFont));
-				H.put(tenant_id, new Chunk(eApplicant.getSSN(), nameFont));
+				H.put(tenant_id, new Chunk(eApplicant.getSSN(), tagFont));
 				String aname = iwrb
 						.getLocalizedString("apartment", "Apartment")
 						+ " " + eApartment.getName();
-				H.put(apartment_name, new Chunk(aname, nameFont));
-				H.put(apartment_floor, new Chunk(eFloor.getName(), nameFont));
+				H.put(apartment_name, new Chunk(aname, tagFont));
+				H.put(apartment_floor, new Chunk(eFloor.getName(), tagFont));
 				H.put(apartment_address, new Chunk(eBuilding.getStreet(),
-						nameFont));
+						tagFont));
 				H
 						.put(apartment_campus, new Chunk(eComplex.getName(),
-								nameFont));
+								tagFont));
 				H.put(apartment_area, new Chunk(String.valueOf(eApartmentType
 						.getArea()), tagFont));
 				H.put(apartment_roomcount, new Chunk(String
 						.valueOf(eApartmentType.getRoomCount()), tagFont));
 				H.put(apartment_info, new Chunk(
 						eApartmentType.getExtraInfo() != null ? eApartmentType
-								.getExtraInfo() : "", textFont));
+								.getExtraInfo() : "", tagFont));
 				H.put(contract_starts, new Chunk(dfLong.format(eContract
 						.getValidFrom()), tagFont));
 				H.put(contract_ends, new Chunk(dfLong.format(eContract
@@ -546,9 +591,9 @@ public class CampusContractWriter {
 				
 				if (aprtTypeNameAbbr != null) {
 					H.put(apartment_category, new Chunk(aprtTypeNameAbbr,
-							nameFont));
+							tagFont));
 				} else {
-					H.put(apartment_category, new Chunk("", nameFont));
+					H.put(apartment_category, new Chunk("", tagFont));
 				}
 
 				H.put(renting_index, new Chunk(iwb.getProperty(
@@ -557,9 +602,9 @@ public class CampusContractWriter {
 				// new 29.1.2006
 				if (coHabitant != null) {
 					H.put(cohabitant, new Chunk(coHabitant.getFullName(),
-							nameFont));
+							tagFont));
 				} else {
-					H.put(cohabitant, new Chunk("", nameFont));
+					H.put(cohabitant, new Chunk("", tagFont));
 				}
 
 				StringBuffer indexString = new StringBuffer(Double
@@ -569,25 +614,25 @@ public class CampusContractWriter {
 						.getDateString("dd.MM.yyyy"));
 
 				H.put(current_renting_index, new Chunk(indexString.toString(),
-						nameFont));
-				H.put(current_rent, new Chunk(format.format(cRent), nameFont));
-				H.put(postal_address, new Chunk(postalAddress, nameFont));
+						tagFont));
+				H.put(current_rent, new Chunk(format.format(cRent), tagFont));
+				H.put(postal_address, new Chunk(postalAddress, tagFont));
 				H.put(current_rent_typeA, new Chunk(format.format(rentA),
-						nameFont));
+						tagFont));
 				H.put(current_rent_typeB, new Chunk(format.format(rentB),
-						nameFont));
+						tagFont));
 				H.put(current_rent_typeC, new Chunk(format.format(rentC),
-						nameFont));
+						tagFont));
 				H.put(current_rent_typeD, new Chunk(format.format(rentD),
-						nameFont));
+						tagFont));
 
 				// end new 29.1.2006
 				// new 10.8.2006
 				if (eApartment.getSerialNumber() != null) {
 					H.put(APARTMENT_SERIAL_NUMBER, new Chunk(eApartment
-							.getSerialNumber(), nameFont));
+							.getSerialNumber(), tagFont));
 				} else {
-					H.put(APARTMENT_SERIAL_NUMBER, new Chunk("", nameFont));
+					H.put(APARTMENT_SERIAL_NUMBER, new Chunk("", tagFont));
 				}
 				// end new 10.8.2006
 
@@ -595,25 +640,25 @@ public class CampusContractWriter {
 				if (eApartment.getApartmentType() != null) {
 					if (eApartment.getApartmentType().getName() != null) {
 						H.put(APARTMENT_TYPE, new Chunk(eApartment
-								.getApartmentType().getName(), nameFont));
+								.getApartmentType().getName(), tagFont));
 					} else {
-						H.put(APARTMENT_TYPE, new Chunk("", nameFont));
+						H.put(APARTMENT_TYPE, new Chunk("", tagFont));
 					}
 					if (eApartment.getApartmentType().getAbbreviation() != null) {
 						H.put(APARTMENT_TYPE_SHORT, new Chunk(eApartment
-								.getApartmentType().getAbbreviation(), nameFont));
+								.getApartmentType().getAbbreviation(), tagFont));
 					} else {
-						H.put(APARTMENT_TYPE_SHORT, new Chunk("", nameFont));						
+						H.put(APARTMENT_TYPE_SHORT, new Chunk("", tagFont));						
 					}
 				} else {
-					H.put(APARTMENT_TYPE, new Chunk("", nameFont));
-					H.put(APARTMENT_TYPE_SHORT, new Chunk("", nameFont));
+					H.put(APARTMENT_TYPE, new Chunk("", tagFont));
+					H.put(APARTMENT_TYPE_SHORT, new Chunk("", tagFont));
 				}
 				// end new 7.12.2006
 
 				// new 17.1.2007
 				H.put(CURRENT_RENT_NOT_TYPE_A, new Chunk(format
-						.format(rentNotA), nameFont));
+						.format(rentNotA), tagFont));
 				// end new 17.1.2007
 
 				return H;

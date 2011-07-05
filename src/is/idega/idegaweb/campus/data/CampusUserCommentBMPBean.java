@@ -10,8 +10,8 @@ public class CampusUserCommentBMPBean extends GenericEntity implements
 		CampusUserComment {
 
 	private static String ENTITY_NAME = "cam_user_comment";
-	private static final String COLUMN_USER = "user";
-	private static final String COLUMN_COMMENT = "comment";
+	private static final String COLUMN_USER = "user_id";
+	private static final String COLUMN_COMMENT = "commentstring";
 	
 	public String getEntityName() {
 		return ENTITY_NAME;

@@ -25,20 +25,21 @@ public class ContractFilerWindow extends Window {
 
 		//IWContext iwc = getIWContext();
 
+		boolean showContractTariff = iwc.getApplicationSettings().getBoolean("SHOW_CONTRACT_TARIFF", false);
 		//IWMainApplication iwma = iwc.getApplication()
 		String identifier = "is.idega.idegaweb.campus";
 		IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(identifier).getResourceBundle(iwc);
 		Font titleFont = new Font(Font.HELVETICA, 16, Font.BOLD);
 		Font paraFont = new Font(Font.HELVETICA, 10, Font.BOLD);
 		Font nameFont = new Font(Font.HELVETICA, 12, Font.BOLDITALIC);
-		Font tagFont = new Font(Font.HELVETICA, 9, Font.BOLDITALIC);
+		Font tagFont = new Font(Font.HELVETICA, 10, Font.BOLDITALIC);
 		Font textFont = new Font(Font.HELVETICA, 8, Font.NORMAL);
 		int fileId = -1;
 		Page p = getParentPage();
 		//Page p = getPage();
 		if (iwc.getParameter(prmOneId) != null) {
 			int id = Integer.parseInt(iwc.getParameter(prmOneId));
-			fileId = CampusContractWriter.writePDF(id, iwrb, nameFont, titleFont, paraFont, tagFont, textFont);
+			fileId = CampusContractWriter.writePDF(id, iwrb, nameFont, titleFont, paraFont, tagFont, textFont, showContractTariff);
 		}
 		else if (iwc.getParameter(prmTest) != null) {
 			fileId = CampusContractWriter.writeTestPDF(iwrb, nameFont, titleFont, paraFont, tagFont, textFont);
@@ -53,7 +54,8 @@ public class ContractFilerWindow extends Window {
 				ids[i] = Integer.parseInt(token);
 			}
 
-			fileId = CampusContractWriter.writePDF(ids, iwrb, nameFont, titleFont, paraFont, tagFont, textFont);
+
+			fileId = CampusContractWriter.writePDF(ids, iwrb, nameFont, titleFont, paraFont, tagFont, textFont, showContractTariff);
 		}
 		else {
 			add("nothing");
