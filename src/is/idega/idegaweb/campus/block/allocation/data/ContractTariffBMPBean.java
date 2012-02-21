@@ -169,4 +169,8 @@ public class ContractTariffBMPBean extends GenericEntity implements
 		return super.idoFindPKsByQuery(query);
 	}
 
+	public Collection ejbFindAll() throws FinderException {
+		return super.idoFindAllIDsBySQL();
+	}
+
 }

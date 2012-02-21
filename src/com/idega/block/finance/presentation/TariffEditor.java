@@ -1,5 +1,8 @@
 package com.idega.block.finance.presentation;
 
+import is.idega.idegaweb.campus.block.allocation.data.ContractTariff;
+import is.idega.idegaweb.campus.block.allocation.data.ContractTariffHome;
+
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -20,6 +23,7 @@ import com.idega.block.finance.data.AccountKey;
 import com.idega.block.finance.data.Tariff;
 import com.idega.block.finance.data.TariffGroup;
 import com.idega.block.finance.data.TariffIndex;
+import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
@@ -585,7 +589,6 @@ public class TariffEditor extends Finance {
 										.getOldValue());
 								iPublicPrice *= getAddFactor(ti.getNewValue(),
 										ti.getOldValue());
-
 							}
 						} else {
 							iPrice *= getAddFactor(ti.getNewValue(), ti
@@ -737,6 +740,45 @@ public class TariffEditor extends Finance {
 			}
 
 		}
+		
+		
+		
+		if (updateIndex) {
+			try {
+				Collection contractTariffs = getContractTariffHome().findAll();
+				if (contractTariffs != null && !contractTariffs.isEmpty()) {
+					Iterator it = contractTariffs.iterator();
+					while (it.hasNext()) {
+						ContractTariff ct = (ContractTariff) it.next();
+
+
+						if (ct.getUseIndex() && mapOfIndices != null
+								&& mapOfIndices.containsKey(ct.getIndexType())) {
+							TariffIndex ti = (TariffIndex) mapOfIndices.get(ct.getIndexType());
+							java.sql.Timestamp stamp = ti.getDate();
+							if (ct.getIndexUpdated() != null) {
+								if (!stamp.equals(ct.getIndexUpdated())) {
+									ct.setPrice((float) (ct.getPrice() * getAddFactor(ti.getNewValue(), ti
+											.getOldValue())));
+									ct.setIndexUpdated(stamp);
+									ct.store();
+								}
+							} else {
+								ct.setPrice((float) (ct.getPrice() * getAddFactor(ti.getNewValue(), ti
+										.getOldValue())));
+								ct.setIndexUpdated(stamp);
+								ct.store();
+							}
+						}
+
+					}
+				}
+				
+			} catch(Exception e) {
+				
+			}
+		}
+		
 		if (!formAdded) {
 			for (int k = 0; k < 5; k++) {
 				col = 1;
@@ -805,6 +847,10 @@ public class TariffEditor extends Finance {
 		return (T4);
 	}
 
+	private ContractTariffHome getContractTariffHome() throws RemoteException {
+		return (ContractTariffHome) IDOLookup.getHome(ContractTariff.class);
+	}
+	
 	private PresentationObject getChange(IWContext iwc, boolean ifnew,
 			boolean factor, TariffGroup group) throws java.rmi.RemoteException {
 

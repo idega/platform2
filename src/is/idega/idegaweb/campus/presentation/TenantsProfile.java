@@ -265,6 +265,8 @@ public class TenantsProfile extends CampusBlock {
 	private boolean applyForRenew(IWContext iwc) {
 		//this.apartmentView.get
 		try {
+			boolean userRenewalSystem = iwc.getApplicationSettings().getBoolean("USE_RENEWAL_SYSTEM", false);
+			
 			String subjectString = iwc.getApplicationSettings().getProperty("RENEWAL_SUBJECT_ID");
 			if (subjectString == null || "".equals(subjectString)) {
 				return false;

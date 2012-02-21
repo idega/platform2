@@ -518,10 +518,21 @@ public class ContractServiceBean extends IBOServiceBean implements
 	}
 
 	public boolean deleteAllocation(Integer contractID, User currentUser) {
-		try {
+		try {			
 			Contract eContract = getContractHome().findByPrimaryKey(contractID);
-			// getUserService().deleteUser(eContract.getUserId().intValue(),
-			// currentUser);
+			
+			try {
+				Collection col = getContractTariffHome().findByContract(eContract);
+				if (col != null && !col.isEmpty()) {
+					Iterator it = col.iterator();
+					while (it.hasNext()) {
+						ContractTariff tar = (ContractTariff) it.next();
+						tar.remove();
+					}
+				}
+			} catch (Exception e) {
+			}
+			
 			eContract.remove();
 			return true;
 		} catch (RemoteException e) {
@@ -534,7 +545,6 @@ public class ContractServiceBean extends IBOServiceBean implements
 			e.printStackTrace();
 		}
 		return false;
-
 	}
 
 	public IWTimestamp[] getContractStampsFromPeriod(ApartmentTypePeriods ATP,
@@ -550,7 +560,6 @@ public class ContractServiceBean extends IBOServiceBean implements
 
 			// Two Periods
 			if (first && second) {
-
 				if (today.getMonth() > ATP.getFirstDateMonth() + monthOverlap
 						&& today.getMonth() <= ATP.getSecondDateMonth()
 								+ monthOverlap) {

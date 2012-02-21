@@ -8,6 +8,7 @@ import is.idega.idegaweb.campus.block.allocation.business.ContractService;
 import is.idega.idegaweb.campus.block.application.business.ApplicationService;
 import is.idega.idegaweb.campus.business.CampusService;
 import is.idega.idegaweb.campus.business.CampusSettings;
+import is.idega.idegaweb.campus.business.ContractRenewalService;
 
 import java.rmi.RemoteException;
 import java.text.NumberFormat;
@@ -576,4 +577,9 @@ public abstract class CampusBlock extends Block {
 	public Text getAmountText(double amount){
 		return getText(getCurrencyFormat().format(amount));
 	}
+	
+	public ContractRenewalService getContractRenewalService(IWContext iwc)throws RemoteException{
+		return (ContractRenewalService)IBOLookup.getServiceInstance(iwc,ContractRenewalService.class);
+	}
+
 }

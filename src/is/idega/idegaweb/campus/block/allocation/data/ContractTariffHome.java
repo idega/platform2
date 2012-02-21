@@ -15,4 +15,6 @@ public interface ContractTariffHome extends IDOHome {
 
 	public Collection findByContractTariffName(ContractTariffName name)
 			throws FinderException;
+
+	public Collection findAll() throws FinderException;
 }
