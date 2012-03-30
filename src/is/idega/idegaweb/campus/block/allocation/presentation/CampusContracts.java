@@ -85,7 +85,8 @@ public class CampusContracts extends CampusBlock {
 	protected void control(IWContext iwc) {
 		initFilter(iwc);
 		if (isAdmin) {
-			add(statusForm());
+			boolean showRenewal = iwc.getIWMainApplication().getSettings().getBoolean("SHOW_RENEWAL_STATUS", false);
+			add(statusForm(showRenewal));
 			if (iwc.isParameterSet(SAVE)) {
 				handleAutomaticCharges(iwc);
 			}
@@ -226,9 +227,9 @@ public class CampusContracts extends CampusBlock {
 		return LinkTable;
 	}
 
-	private PresentationObject statusForm() {
+	private PresentationObject statusForm(boolean showRenewal) {
 		Form form = new Form();
-		DropdownMenu status = statusDrop(conPrm, sGlobalStatus);
+		DropdownMenu status = statusDrop(conPrm, sGlobalStatus, showRenewal);
 		DropdownMenu complex = drpLodgings(Complex.class, prmCx, "--", CLCX);
 		DropdownMenu building = drpLodgings(Building.class, prmBu, "--", CLBU);
 		DropdownMenu floor = drpFloors(prmFl, "--", CLFL, true);
@@ -642,11 +643,14 @@ public class CampusContracts extends CampusBlock {
 		case 'G':
 			r = localize("garbaged", "Canned");
 			break;
+		case 'X':
+			r = localize("renewal", "Renewal");
+			break;
 		}
 		return r;
 	}
 
-	private DropdownMenu statusDrop(String name, String selected) {
+	private DropdownMenu statusDrop(String name, String selected, boolean showRenewal) {
 		DropdownMenu drp = new DropdownMenu(name);
 		drp.addMenuElement("C", getStatus("C"));
 		drp.addMenuElement("P", getStatus("P"));
@@ -655,6 +659,9 @@ public class CampusContracts extends CampusBlock {
 		drp.addMenuElement("U", getStatus("U"));
 		drp.addMenuElement("E", getStatus("E"));
 		drp.addMenuElement("G", getStatus("G"));
+		if (showRenewal) {
+			drp.addMenuElement("X", getStatus("X"));			
+		}
 		drp.setSelectedElement(selected);
 		return drp;
 	}

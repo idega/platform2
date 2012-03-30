@@ -99,6 +99,8 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements Con
 
 	public static final String STATUS_FINALIZED = "F";
 
+	public static final String STATUS_RENEWAL = "X";
+
 	public static String getStatusColumnName() {
 		return COLUMN_STATUS;
 	}
