@@ -20,7 +20,7 @@ public class CampusUserCommentBMPBean extends GenericEntity implements
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
 		addManyToOneRelationship(COLUMN_USER, User.class);
-		addAttribute(COLUMN_COMMENT, "Comment", String.class, 1000);
+		addAttribute(COLUMN_COMMENT, "Comment", String.class, 3000);
 	}
 
 	//getters

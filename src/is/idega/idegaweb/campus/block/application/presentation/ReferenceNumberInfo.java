@@ -630,14 +630,14 @@ public class ReferenceNumberInfo extends CampusBlock {
 				String message = (iwrb.getLocalizedString(
 						"denyAllocationWarning",
 						"Do you really want to deny this apartment ?"));
-				deny.setOnClick("return confirm('" + message + "');");
+				deny.setSubmitConfirm(message);
 
 				SubmitButton accept = new SubmitButton("acceptAllocation",
 						iwrb.getLocalizedString("acceptAllotion", "Accept"));
 				String acceptMsg = (iwrb
 						.getLocalizedString("acceptAllocationWarning",
 								"Please contact Student Housing office as soon as possible."));
-				accept.setOnClick("return confirm('" + acceptMsg + "');");
+				accept.setSubmitConfirm(acceptMsg);
 
 				dTable.add(deny, 3, 2);
 				dTable.add(accept, 3, 2);

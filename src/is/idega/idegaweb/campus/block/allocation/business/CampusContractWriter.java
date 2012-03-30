@@ -115,6 +115,8 @@ public class CampusContractWriter {
 
 	public final static String cohabitant = "cohabitant";
 
+	public final static String cohabitant_personal_id = "cohabitant_personal_id";
+
 	public final static String current_rent = "current_rent";
 
 	public final static String postal_address = "postal_address";
@@ -146,7 +148,7 @@ public class CampusContractWriter {
 			apartment_area, apartment_roomcount, apartment_info,
 			apartment_rent, apartment_other_expenses, apartment_category,
 			contract_starts, contract_ends, renting_index, today,
-			current_renting_index, current_rent, cohabitant, postal_address,
+			current_renting_index, current_rent, cohabitant, cohabitant_personal_id, postal_address,
 			current_rent_typeA, current_rent_typeB, current_rent_typeC,
 			current_rent_typeD, APARTMENT_SERIAL_NUMBER, APARTMENT_TYPE,
 			CURRENT_RENT_NOT_TYPE_A, APARTMENT_TYPE_SHORT };
@@ -603,8 +605,11 @@ public class CampusContractWriter {
 				if (coHabitant != null) {
 					H.put(cohabitant, new Chunk(coHabitant.getFullName(),
 							tagFont));
+					H.put(cohabitant_personal_id, new Chunk(coHabitant.getSSN(),
+							tagFont));
 				} else {
 					H.put(cohabitant, new Chunk("", tagFont));
+					H.put(cohabitant_personal_id, new Chunk("", tagFont));
 				}
 
 				StringBuffer indexString = new StringBuffer(Double

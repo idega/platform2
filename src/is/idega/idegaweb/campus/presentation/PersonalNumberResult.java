@@ -191,10 +191,10 @@ public class PersonalNumberResult extends CampusBlock implements Campus {
 		T.add(getHeader(localize(COMMENT, "Comment")), col++, row++);
 
 		TextArea input = new TextArea(COMMENT,100,10);
-		input.setMaximumCharacters(1000);
+		input.setMaximumCharacters(3000);
 		if (this.comment != null) {
-			if (this.comment.length() > 1000) {
-				this.comment = this.comment.substring(0, 1000);
+			if (this.comment.length() > 3000) {
+				this.comment = this.comment.substring(0, 3000);
 			}
 			
 			userComment.setComment(this.comment);
