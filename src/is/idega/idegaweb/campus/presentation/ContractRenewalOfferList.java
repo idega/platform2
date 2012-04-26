@@ -56,7 +56,7 @@ public class ContractRenewalOfferList extends CampusBlock {
 
 	private void sendOffer(IWContext iwc) {
 		try {
-			getContractRenewalService(iwc).sendOffer();
+			getContractRenewalService(iwc).sendOffer(iwc.getCurrentLocale());
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}

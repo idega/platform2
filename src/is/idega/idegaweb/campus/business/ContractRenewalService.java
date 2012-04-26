@@ -1,12 +1,15 @@
 package is.idega.idegaweb.campus.business;
 
 
-import is.idega.idegaweb.campus.data.ContractRenewalOffer;
 import is.idega.idegaweb.campus.block.allocation.business.ContractService;
-import java.rmi.RemoteException;
+import is.idega.idegaweb.campus.data.ContractRenewalOffer;
 import is.idega.idegaweb.campus.data.ContractRenewalOfferHome;
-import com.idega.business.IBOService;
+
+import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.Locale;
+
+import com.idega.business.IBOService;
 
 public interface ContractRenewalService extends IBOService {
 	/**
@@ -23,7 +26,7 @@ public interface ContractRenewalService extends IBOService {
 	/**
 	 * @see is.idega.idegaweb.campus.business.ContractRenewalServiceBean#sendOffer
 	 */
-	public void sendOffer() throws RemoteException;
+	public void sendOffer(Locale locale) throws RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.campus.business.ContractRenewalServiceBean#getOfferByUUID

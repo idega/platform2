@@ -5,17 +5,24 @@ import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean;
 import is.idega.idegaweb.campus.data.ContractRenewalOffer;
 import is.idega.idegaweb.campus.data.ContractRenewalOfferHome;
+import is.idega.idegaweb.campus.presentation.CampusBlock;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Locale;
+import java.util.StringTokenizer;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import javax.mail.MessagingException;
 
 import com.idega.business.IBOServiceBean;
+import com.idega.core.contact.data.Email;
 import com.idega.core.idgenerator.business.UUIDGenerator;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.util.IWTimestamp;
+import com.idega.util.SendMail;
 
 public class ContractRenewalServiceBean extends IBOServiceBean implements
 		ContractRenewalService {
@@ -34,7 +41,7 @@ public class ContractRenewalServiceBean extends IBOServiceBean implements
 		return (ContractRenewalOfferHome) getIDOHome(ContractRenewalOffer.class);
 	}
 	
-	public void sendOffer() {
+	public void sendOffer(Locale locale) {
 		try {
 			Collection contracts = getContractService().getContractHome().findByStatus(ContractBMPBean.STATUS_SIGNED);
 			if (contracts != null && !contracts.isEmpty()) {
@@ -49,7 +56,7 @@ public class ContractRenewalServiceBean extends IBOServiceBean implements
 					offer.setUniqueId(UUIDGenerator.getInstance().generateUUID());
 					offer.store();
 					
-					//Send mail...
+					sendEmail(offer, locale);
 				}
 			}
 		} catch (RemoteException e) {
@@ -60,6 +67,62 @@ public class ContractRenewalServiceBean extends IBOServiceBean implements
 			e.printStackTrace();
 		}
 	}
+	
+	private void sendEmail(ContractRenewalOffer offer, Locale locale) {
+		IWResourceBundle iwrb = this.getIWMainApplication().getBundle(
+				CampusBlock.IW_BUNDLE_IDENTIFIER).getResourceBundle(locale);
+
+		String subject = iwrb.getLocalizedString("RENEWAL_MAIL_SUBJECT",
+				"Renewal mail subject");
+		String body = iwrb.getLocalizedString("RENEWAL_MAIL_BODY",
+				"Renewal mail body [ref_num]");
+
+
+		CampusSettings settings = null;
+		try {
+			settings = getCampusService().getCampusSettings();
+		} catch (RemoteException e1) {
+			e1.printStackTrace();
+		}
+
+		if (settings != null && settings.getSendEventMail()) {
+			StringBuffer finalText = new StringBuffer();
+			StringTokenizer st = new StringTokenizer(body, "[]");
+			while (st.hasMoreTokens()) {
+				String token = st.nextToken();
+				if (token.equals("renewal_code")) {
+					finalText.append(offer.getUniqueId());
+				} else {
+					finalText.append(token);
+				}
+			}
+
+			Email email = null;
+			
+			try {
+				email = getCampusService().getUserService().getUserMail(offer.getUser());
+			} catch (RemoteException e1) {
+				e1.printStackTrace();
+			}
+			
+			String sendTo = null;
+			
+			if (email == null) {
+				sendTo = "bjork@fs.is";
+			} else {
+				sendTo = email.getEmailAddress();
+			}
+			
+			try {
+				SendMail.send(settings.getAdminEmail(), sendTo, null,
+						"palli@idega.com", settings.getSmtpServer(),
+						subject, finalText.toString());
+			} catch (MessagingException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 	
 	public ContractRenewalOffer getOfferByUUID(String uuid) {
 		try {
