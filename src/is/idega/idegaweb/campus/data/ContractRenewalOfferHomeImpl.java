@@ -22,10 +22,25 @@ public class ContractRenewalOfferHomeImpl extends IDOFactory implements
 		return (ContractRenewalOffer) super.findByPrimaryKeyIDO(pk);
 	}
 
+	public Collection findAll() throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((ContractRenewalOfferBMPBean) entity).ejbFindAll();
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
 	public Collection findAllOpen() throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
 		Collection ids = ((ContractRenewalOfferBMPBean) entity)
 				.ejbFindAllOpen();
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findAllUnanswered() throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((ContractRenewalOfferBMPBean) entity)
+				.ejbFindAllUnanswered();
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}

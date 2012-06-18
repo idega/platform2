@@ -12,7 +12,11 @@ public interface ContractRenewalOfferHome extends IDOHome {
 	public ContractRenewalOffer findByPrimaryKey(Object pk)
 			throws FinderException;
 
+	public Collection findAll() throws FinderException;
+
 	public Collection findAllOpen() throws FinderException;
+
+	public Collection findAllUnanswered() throws FinderException;
 
 	public ContractRenewalOffer findByUUID(String uuid) throws FinderException;
 }

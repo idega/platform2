@@ -63,11 +63,19 @@ public class ContractRenewalOfferList extends CampusBlock {
 	}
 
 	private void sendReminder(IWContext iwc) {
-		
+		try {
+			getContractRenewalService(iwc).sendReminder(iwc.getCurrentLocale());
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}		
 	}
 
 	private void closeOffer(IWContext iwc) {
-		
+		try {
+			getContractRenewalService(iwc).closeOffer(iwc.getCurrentLocale());
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}				
 	}
 
 	private void initFilter(IWContext iwc) {

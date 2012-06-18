@@ -29,7 +29,7 @@ public class ContractRenewalServiceBean extends IBOServiceBean implements
 
 	public Collection getContractRenewalOffers() {
 		try {
-			return getContractRenewalOfferHome().findAllOpen();
+			return getContractRenewalOfferHome().findAll();
 		} catch (RemoteException e) {
 		} catch (FinderException e) {
 		}
@@ -45,6 +45,9 @@ public class ContractRenewalServiceBean extends IBOServiceBean implements
 		try {
 			Collection contracts = getContractService().getContractHome().findByStatus(ContractBMPBean.STATUS_SIGNED);
 			if (contracts != null && !contracts.isEmpty()) {
+				IWResourceBundle iwrb = this.getIWMainApplication().getBundle(
+						CampusBlock.IW_BUNDLE_IDENTIFIER).getResourceBundle(locale);
+
 				Iterator it = contracts.iterator();
 				while (it.hasNext()) {
 					Contract contract = (Contract) it.next();
@@ -56,7 +59,12 @@ public class ContractRenewalServiceBean extends IBOServiceBean implements
 					offer.setUniqueId(UUIDGenerator.getInstance().generateUUID());
 					offer.store();
 					
-					sendEmail(offer, locale);
+					String subject = iwrb.getLocalizedString("RENEWAL_MAIL_SUBJECT",
+							"Renewal mail subject");
+					String body = iwrb.getLocalizedString("RENEWAL_MAIL_BODY",
+							"Renewal mail body [ref_num]");
+
+					sendEmail(offer, subject, body);
 				}
 			}
 		} catch (RemoteException e) {
@@ -67,16 +75,63 @@ public class ContractRenewalServiceBean extends IBOServiceBean implements
 			e.printStackTrace();
 		}
 	}
+
+	public void sendReminder(Locale locale) {
+		try {
+			Collection offers = getContractRenewalOfferHome().findAllUnanswered();
+			if (offers != null && !offers.isEmpty()) {
+				IWResourceBundle iwrb = this.getIWMainApplication().getBundle(
+						CampusBlock.IW_BUNDLE_IDENTIFIER).getResourceBundle(locale);
+
+				Iterator it = offers.iterator();
+				while (it.hasNext()) {
+					ContractRenewalOffer offer = (ContractRenewalOffer) it.next();
+					
+					String subject = iwrb.getLocalizedString("RENEWAL_REMIND_MAIL_SUBJECT",
+							"Renewal remind mail subject");
+					String body = iwrb.getLocalizedString("RENEWAL_REMIND_MAIL_BODY",
+							"Renewal remind mail body [ref_num]");
+
+					sendEmail(offer, subject, body);
+				}
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		} 
+	}
+
+	public void closeOffer(Locale locale) {
+		try {
+			Collection offers = getContractRenewalOfferHome().findAllOpen();
+			if (offers != null && !offers.isEmpty()) {
+				IWResourceBundle iwrb = this.getIWMainApplication().getBundle(
+						CampusBlock.IW_BUNDLE_IDENTIFIER).getResourceBundle(locale);
+				
+				Iterator it = offers.iterator();
+				while (it.hasNext()) {
+					ContractRenewalOffer offer = (ContractRenewalOffer) it.next();
+					offer.setIsOfferClosed(true);
+					offer.store();
+
+					String subject = iwrb.getLocalizedString("RENEWAL_CLOSE_SUBJECT",
+							"Renewal close subject");
+					String body = iwrb.getLocalizedString("RENEWAL_CLOSE_BODY",
+							"Renewal close [ref_num]");
+
+					sendEmail(offer, subject, body);
+				}
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		} 
+	}
+
 	
-	private void sendEmail(ContractRenewalOffer offer, Locale locale) {
-		IWResourceBundle iwrb = this.getIWMainApplication().getBundle(
-				CampusBlock.IW_BUNDLE_IDENTIFIER).getResourceBundle(locale);
-
-		String subject = iwrb.getLocalizedString("RENEWAL_MAIL_SUBJECT",
-				"Renewal mail subject");
-		String body = iwrb.getLocalizedString("RENEWAL_MAIL_BODY",
-				"Renewal mail body [ref_num]");
-
+	private void sendEmail(ContractRenewalOffer offer, String subject, String body) {
 
 		CampusSettings settings = null;
 		try {
@@ -141,5 +196,4 @@ public class ContractRenewalServiceBean extends IBOServiceBean implements
 	public ContractService getContractService() throws RemoteException {
 		return (ContractService) getServiceInstance(ContractService.class);
 	}
-
 }

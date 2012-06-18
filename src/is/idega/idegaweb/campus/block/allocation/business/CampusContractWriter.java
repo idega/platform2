@@ -605,8 +605,13 @@ public class CampusContractWriter {
 				if (coHabitant != null) {
 					H.put(cohabitant, new Chunk(coHabitant.getFullName(),
 							tagFont));
-					H.put(cohabitant_personal_id, new Chunk(coHabitant.getSSN(),
-							tagFont));
+					if (coHabitant.getSSN() != null) {
+						H.put(cohabitant_personal_id, new Chunk(coHabitant.getSSN(),
+								tagFont));						
+					} else {
+						H.put(cohabitant_personal_id, new Chunk("",
+								tagFont));
+					}
 				} else {
 					H.put(cohabitant, new Chunk("", tagFont));
 					H.put(cohabitant_personal_id, new Chunk("", tagFont));

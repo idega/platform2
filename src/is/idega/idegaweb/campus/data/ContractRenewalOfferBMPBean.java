@@ -91,11 +91,35 @@ public class ContractRenewalOfferBMPBean extends GenericEntity implements
 	}
 
 	// ejb
+	public Collection ejbFindAll() throws FinderException {
+		Table table = new Table(this);
+
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(table, getIDColumnName());
+
+		return idoFindPKsByQuery(query);
+	}
+	
 	public Collection ejbFindAllOpen() throws FinderException {
 		Table table = new Table(this);
 
 		SelectQuery query = new SelectQuery(table);
 		query.addColumn(table, getIDColumnName());
+		query.addCriteria(new OR(
+				new MatchCriteria(table.getColumn(COLUMN_CLOSED),
+						MatchCriteria.IS, MatchCriteria.NULL),
+				new MatchCriteria(table.getColumn(COLUMN_CLOSED),
+						MatchCriteria.EQUALS, false)));
+
+		return idoFindPKsByQuery(query);
+	}
+
+	public Collection ejbFindAllUnanswered() throws FinderException {
+		Table table = new Table(this);
+
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(table, getIDColumnName());
+		query.addCriteria(new MatchCriteria(table.getColumn(COLUMN_ANSWERED), MatchCriteria.IS, MatchCriteria.NULL));
 		query.addCriteria(new OR(
 				new MatchCriteria(table.getColumn(COLUMN_CLOSED),
 						MatchCriteria.IS, MatchCriteria.NULL),
