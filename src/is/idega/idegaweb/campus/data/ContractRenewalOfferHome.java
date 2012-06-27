@@ -18,5 +18,6 @@ public interface ContractRenewalOfferHome extends IDOHome {
 
 	public Collection findAllUnanswered() throws FinderException;
 
-	public ContractRenewalOffer findByUUID(String uuid) throws FinderException;
+	public ContractRenewalOffer findByUUID(String uuid, boolean showClosed)
+			throws FinderException;
 }

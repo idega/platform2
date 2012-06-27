@@ -24,6 +24,8 @@ public class ContractRenewalOfferBMPBean extends GenericEntity implements
 	public static final String COLUMN_ANSWERED = "date_answered";
 	public static final String COLUMN_ANSWER = "answer";
 	public static final String COLUMN_CLOSED = "closed";
+	public static final String COLUMN_RENEWAL_GRANTED = "renewal_granted";
+	
 
 	public String getEntityName() {
 		return ENTITY_NAME;
@@ -37,6 +39,7 @@ public class ContractRenewalOfferBMPBean extends GenericEntity implements
 		addAttribute(COLUMN_ANSWERED, "Date of answer if any", Timestamp.class);
 		addAttribute(COLUMN_ANSWER, "What is the answer", Boolean.class);
 		addAttribute(COLUMN_CLOSED, "Is the offer closed", Boolean.class);
+		addAttribute(COLUMN_RENEWAL_GRANTED, "Is renewal granted", String.class, 1);
 		addUniqueIDColumn();
 	}
 
@@ -65,6 +68,10 @@ public class ContractRenewalOfferBMPBean extends GenericEntity implements
 		return getBooleanColumnValue(COLUMN_CLOSED, false);
 	}
 
+	public String getRenewalGranted() {
+		return getStringColumnValue(COLUMN_RENEWAL_GRANTED);
+	}
+	
 	// setters
 	public void setUser(User user) {
 		setColumn(COLUMN_USER, user);
@@ -90,6 +97,10 @@ public class ContractRenewalOfferBMPBean extends GenericEntity implements
 		setColumn(COLUMN_CLOSED, closed);
 	}
 
+	public void setRenewalGranted(String granted) {
+		setColumn(COLUMN_RENEWAL_GRANTED, granted);
+	}
+	
 	// ejb
 	public Collection ejbFindAll() throws FinderException {
 		Table table = new Table(this);
@@ -129,19 +140,22 @@ public class ContractRenewalOfferBMPBean extends GenericEntity implements
 		return idoFindPKsByQuery(query);
 	}
 
-	public Object ejbFindByUUID(String uuid) throws FinderException {
+	public Object ejbFindByUUID(String uuid, boolean showClosed) throws FinderException {
 		Table table = new Table(this);
 
 		SelectQuery query = new SelectQuery(table);
 		query.addColumn(table, getIDColumnName());
 		query.addCriteria(new MatchCriteria(table.getColumn(this
 				.getUniqueIdColumnName()), MatchCriteria.EQUALS, uuid));
+		if (!showClosed) {
 		query.addCriteria(new OR(
 				new MatchCriteria(table.getColumn(COLUMN_CLOSED),
 						MatchCriteria.IS, MatchCriteria.NULL),
 				new MatchCriteria(table.getColumn(COLUMN_CLOSED),
 						MatchCriteria.EQUALS, false)));
-
+		}
+		System.out.println("sql = " + query.toString());
+		
 		return idoFindOnePKByQuery(query);
 	}
 }

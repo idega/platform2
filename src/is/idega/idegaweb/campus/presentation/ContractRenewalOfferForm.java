@@ -26,7 +26,7 @@ public class ContractRenewalOfferForm extends CampusBlock {
 		offerUUID = iwc.getParameter(ContractRenewalOfferInput.OFFER_UUID);
 		try {
 			offer = getContractRenewalService(iwc)
-					.getContractRenewalOfferHome().findByUUID(offerUUID);
+					.getContractRenewalOfferHome().findByUUID(offerUUID, false);
 		} catch (RemoteException e) {
 		} catch (FinderException e) {
 		}

@@ -27,6 +27,9 @@ public class ContractRenewalOfferList extends CampusBlock {
 	protected boolean isAdmin = false;
 	private static final String SAVE = "save";
 
+	private Integer global_status = new Integer(-1);
+	private Integer global_complex = new Integer(-1);
+	private Integer global_building = new Integer(-1);
 	
 	public void main(IWContext iwc) {
 		isAdmin = iwc.hasEditPermission(this);
@@ -45,6 +48,9 @@ public class ContractRenewalOfferList extends CampusBlock {
 			}
 			else if (iwc.isParameterSet("close_offer")) {
 				closeOffer(iwc);
+			} else if (iwc.isParameterSet(SAVE)) {
+				System.out.println("Save sent, calling saveInfo");
+				saveInfo(iwc);
 			}
 			add(actionForm());
 			add(statusForm());
@@ -54,6 +60,38 @@ public class ContractRenewalOfferList extends CampusBlock {
 		}
 	}
 
+	private void saveInfo(IWContext iwc) {
+		String ids[] = iwc.getParameterValues("renew_contracts");
+		if (ids != null) {
+			System.out.println("Got renew id's");
+			for (int i = 0; i < ids.length; i++) {
+				String id = ids[i];
+				System.out.println("id = " + id);
+				try {
+					getContractRenewalService(iwc).setRenewalGranted(id, "Y");
+				} catch (RemoteException e) {
+				}
+			}
+		} else {
+			System.out.println("nothing selected");
+		}
+
+		ids = iwc.getParameterValues("decline_contract");
+		if (ids != null) {
+			System.out.println("Got decline id's");
+			for (int i = 0; i < ids.length; i++) {
+				String id = ids[i];
+				System.out.println("id = " + id);
+				try {
+					getContractRenewalService(iwc).setRenewalGranted(id, "N");
+				} catch (RemoteException e) {
+				}
+			}
+		} else {
+			System.out.println("nothing selected");
+		}
+	}
+	
 	private void sendOffer(IWContext iwc) {
 		try {
 			getContractRenewalService(iwc).sendOffer(iwc.getCurrentLocale());
@@ -79,7 +117,26 @@ public class ContractRenewalOfferList extends CampusBlock {
 	}
 
 	private void initFilter(IWContext iwc) {
-		// complex check
+		if (iwc.isParameterSet("status_filter")) {
+			this.global_status = Integer.valueOf(iwc.getParameter("status_filter"));
+			iwc.setSessionAttribute("status_filter", this.global_status);
+		} else if (iwc.getSessionAttribute("status_filter") != null) {
+			this.global_status = ((Integer) iwc.getSessionAttribute("status_filter"));
+		}
+
+		if (iwc.isParameterSet("complex_filter")) {
+			this.global_complex = Integer.valueOf(iwc.getParameter("complex_filter"));
+			iwc.setSessionAttribute("complex_filter", this.global_complex);
+		} else if (iwc.getSessionAttribute("complex_filter") != null) {
+			this.global_complex = ((Integer) iwc.getSessionAttribute("complex_filter"));
+		}
+		
+		if (iwc.isParameterSet("building_filter")) {
+			this.global_building = Integer.valueOf(iwc.getParameter("building_filter"));
+			iwc.setSessionAttribute("building_filter", this.global_building);
+		} else if (iwc.getSessionAttribute("building_filter") != null) {
+			this.global_building = ((Integer) iwc.getSessionAttribute("building_filter"));
+		}
 	}
 
 	private PresentationObject actionForm() {
@@ -103,9 +160,9 @@ public class ContractRenewalOfferList extends CampusBlock {
 
 	private PresentationObject statusForm() {
 		Form form = new Form();
-		DropdownMenu status = statusDrop("", "");
-		DropdownMenu complex = drpLodgings(Complex.class, "", "--", new Integer(-1));
-		DropdownMenu building = drpLodgings(Building.class, "", "--", new Integer(-1));
+		DropdownMenu status = statusDrop("status_filter", "");
+		DropdownMenu complex = drpLodgings(Complex.class, "complex_filter", "--", this.global_complex);
+		DropdownMenu building = drpLodgings(Building.class, "building_filter", "--", this.global_building);
 
 		DataTable T = new DataTable();
 		T.addTitle(localize("filter", "Filter"));
@@ -129,7 +186,7 @@ public class ContractRenewalOfferList extends CampusBlock {
 	private PresentationObject getContractTable(IWContext iwc) {
 		Collection offers = null;
 		try {
-			offers = getContractRenewalService(iwc).getContractRenewalOffers();
+			offers = getContractRenewalService(iwc).getContractRenewalOffers(this.global_status, this.global_complex, this.global_building);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -154,8 +211,6 @@ public class ContractRenewalOfferList extends CampusBlock {
 		T.add(getHeader(localize("answer", "Answer")), col++, row);
 		T.add(getHeader(localize("renew", "Renew")), col++, row);
 		T.add(getHeader(localize("decline", "Decline")), col++, row++);
-
-		StringBuffer listOfUsers = new StringBuffer();
 
 		if (offers != null) {
 			StringBuffer sbIDs = new StringBuffer();
@@ -183,10 +238,16 @@ public class ContractRenewalOfferList extends CampusBlock {
 					}
 					CheckBox renew = new CheckBox(
 							"renew_contracts", offer.getUniqueId());
+					if (offer.getRenewalGranted() != null && "Y".equals(offer.getRenewalGranted())) {
+						renew.setChecked(true);
+					}
 					T.add(renew, col++, row);
 
 					CheckBox decline = new CheckBox(
 							"decline_contract", offer.getUniqueId());
+					if (offer.getRenewalGranted() != null && "N".equals(offer.getRenewalGranted())) {
+						decline.setChecked(true);
+					}
 					T.add(decline, col++, row++);
 					if (col > maxCol) {
 						maxCol = col -1;
@@ -196,8 +257,7 @@ public class ContractRenewalOfferList extends CampusBlock {
 				}
 			}
 			
-			SubmitButton save = new SubmitButton(SAVE, SAVE, listOfUsers
-					.toString());
+			SubmitButton save = new SubmitButton(SAVE, SAVE);
 			T.add(save, maxCol, row);
 		}
 
@@ -225,9 +285,9 @@ public class ContractRenewalOfferList extends CampusBlock {
 	
 	private DropdownMenu statusDrop(String name, String selected) {
 		DropdownMenu drp = new DropdownMenu(name);
-		drp.addMenuElement("all", localize("renewal.status_all", "All"));
-		drp.addMenuElement("answered", localize("renewal.status_answered", "Answered"));
-		drp.addMenuElement("unanswered", localize("renewal.status_unanswered", "Unanswered"));
+		drp.addMenuElement(-1, localize("renewal.status_all", "All"));
+		drp.addMenuElement(0, localize("renewal.status_answered", "Answered"));
+		drp.addMenuElement(1, localize("renewal.status_unanswered", "Unanswered"));
 		drp.setSelectedElement(selected);
 		return drp;
 	}

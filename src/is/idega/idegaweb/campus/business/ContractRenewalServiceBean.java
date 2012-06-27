@@ -8,6 +8,7 @@ import is.idega.idegaweb.campus.data.ContractRenewalOfferHome;
 import is.idega.idegaweb.campus.presentation.CampusBlock;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
@@ -35,6 +36,59 @@ public class ContractRenewalServiceBean extends IBOServiceBean implements
 		}
 		
 		return null;
+	}
+
+	public Collection getContractRenewalOffers(Integer status, Integer complex, Integer building) {
+		try {
+			Collection col = getContractRenewalOfferHome().findAll();
+			if (status.intValue() == -1 && complex.intValue() == -1 && building.intValue() == -1) {
+				return col;
+			}
+			
+			Collection ret = new ArrayList();
+			
+			Iterator it = col.iterator();
+			while (it.hasNext()) {
+				boolean add = true;
+				ContractRenewalOffer offer = (ContractRenewalOffer) it.next();
+				if (status.intValue() != -1) {
+					if (status.intValue() == 0 && !offer.getAnswer()) {
+						add = false;
+					}
+					if (status.intValue() == 1 && offer.getAnswer()) {
+						add = false;
+					}
+				}
+				
+				if (complex.intValue() != -1) {
+					if (offer.getContract().getApartment().getFloor().getBuilding().getComplexId() != complex.intValue()) {
+						add = false;
+					}
+				}
+				
+				if (building.intValue() != -1) {
+					if (offer.getContract().getApartment().getFloor().getBuildingId() != building.intValue()) {
+						add = false;
+					}
+				}
+				
+				if (add) {
+					ret.add(offer);
+				}
+			}
+			
+			return ret;
+		} catch (RemoteException e) {
+		} catch (FinderException e) {
+		}
+		
+		return null;
+	}
+
+	public void setRenewalGranted(String uuid, String status) {
+		ContractRenewalOffer offer = getOfferByUUID(uuid);
+		offer.setRenewalGranted(status);
+		offer.store();
 	}
 	
 	public ContractRenewalOfferHome getContractRenewalOfferHome() throws RemoteException {
@@ -181,7 +235,7 @@ public class ContractRenewalServiceBean extends IBOServiceBean implements
 	
 	public ContractRenewalOffer getOfferByUUID(String uuid) {
 		try {
-			return getContractRenewalOfferHome().findByUUID(uuid);
+			return getContractRenewalOfferHome().findByUUID(uuid, true);
 		} catch (RemoteException e) {
 		} catch (FinderException e) {
 		}

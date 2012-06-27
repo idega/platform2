@@ -16,6 +16,18 @@ public interface ContractRenewalService extends IBOService {
 	public Collection getContractRenewalOffers() throws RemoteException;
 
 	/**
+	 * @see is.idega.idegaweb.campus.business.ContractRenewalServiceBean#getContractRenewalOffers
+	 */
+	public Collection getContractRenewalOffers(Integer status, Integer complex,
+			Integer building) throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.campus.business.ContractRenewalServiceBean#setRenewalGranted
+	 */
+	public void setRenewalGranted(String uuid, String status)
+			throws RemoteException;
+
+	/**
 	 * @see is.idega.idegaweb.campus.business.ContractRenewalServiceBean#getContractRenewalOfferHome
 	 */
 	public ContractRenewalOfferHome getContractRenewalOfferHome()

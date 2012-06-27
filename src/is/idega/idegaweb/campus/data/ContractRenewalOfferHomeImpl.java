@@ -45,9 +45,11 @@ public class ContractRenewalOfferHomeImpl extends IDOFactory implements
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public ContractRenewalOffer findByUUID(String uuid) throws FinderException {
+	public ContractRenewalOffer findByUUID(String uuid, boolean showClosed)
+			throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
-		Object pk = ((ContractRenewalOfferBMPBean) entity).ejbFindByUUID(uuid);
+		Object pk = ((ContractRenewalOfferBMPBean) entity).ejbFindByUUID(uuid,
+				showClosed);
 		this.idoCheckInPooledEntity(entity);
 		return this.findByPrimaryKey(pk);
 	}
