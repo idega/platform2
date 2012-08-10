@@ -5,6 +5,7 @@ import com.idega.data.IDOFactory;
 import javax.ejb.CreateException;
 import com.idega.data.IDOEntity;
 import javax.ejb.FinderException;
+import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import java.util.Collection;
 
 public class ContractRenewalOfferHomeImpl extends IDOFactory implements
@@ -27,6 +28,15 @@ public class ContractRenewalOfferHomeImpl extends IDOFactory implements
 		Collection ids = ((ContractRenewalOfferBMPBean) entity).ejbFindAll();
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public ContractRenewalOffer findByContract(Contract contract)
+			throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((ContractRenewalOfferBMPBean) entity)
+				.ejbFindByContract(contract);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
 	}
 
 	public Collection findAllOpen() throws FinderException {
@@ -52,5 +62,13 @@ public class ContractRenewalOfferHomeImpl extends IDOFactory implements
 				showClosed);
 		this.idoCheckInPooledEntity(entity);
 		return this.findByPrimaryKey(pk);
+	}
+
+	public Collection findAllUnsentContracts() throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((ContractRenewalOfferBMPBean) entity)
+				.ejbFindAllUnsentContracts();
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 }

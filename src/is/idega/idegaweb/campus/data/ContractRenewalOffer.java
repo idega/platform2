@@ -44,6 +44,11 @@ public interface ContractRenewalOffer extends IDOEntity, UniqueIDCapable {
 	public String getRenewalGranted();
 
 	/**
+	 * @see is.idega.idegaweb.campus.data.ContractRenewalOfferBMPBean#getIsContractSent
+	 */
+	public boolean getIsContractSent();
+
+	/**
 	 * @see is.idega.idegaweb.campus.data.ContractRenewalOfferBMPBean#setUser
 	 */
 	public void setUser(User user);
@@ -77,4 +82,9 @@ public interface ContractRenewalOffer extends IDOEntity, UniqueIDCapable {
 	 * @see is.idega.idegaweb.campus.data.ContractRenewalOfferBMPBean#setRenewalGranted
 	 */
 	public void setRenewalGranted(String granted);
+
+	/**
+	 * @see is.idega.idegaweb.campus.data.ContractRenewalOfferBMPBean#setIsContractSent
+	 */
+	public void setIsContractSent(boolean sent);
 }

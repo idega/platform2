@@ -7,6 +7,7 @@ import java.rmi.RemoteException;
 import java.util.Locale;
 import is.idega.idegaweb.campus.data.ContractRenewalOfferHome;
 import com.idega.business.IBOService;
+import com.idega.presentation.IWContext;
 import java.util.Collection;
 
 public interface ContractRenewalService extends IBOService {
@@ -42,6 +43,11 @@ public interface ContractRenewalService extends IBOService {
 	 * @see is.idega.idegaweb.campus.business.ContractRenewalServiceBean#sendReminder
 	 */
 	public void sendReminder(Locale locale) throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.campus.business.ContractRenewalServiceBean#sendContract
+	 */
+	public void sendContract(IWContext iwc) throws RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.campus.business.ContractRenewalServiceBean#closeOffer

@@ -24,6 +24,11 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 
 public class ContractRenewalOfferList extends CampusBlock {
+	private static final String CLOSE_OFFER = "close_offer";
+	private static final String SEND_REMINDER = "send_reminder";
+	private static final String SEND_OFFER = "send_offer";
+	private static final String SEND_CONTRACT = "send_contract";
+
 	protected boolean isAdmin = false;
 	private static final String SAVE = "save";
 
@@ -40,14 +45,17 @@ public class ContractRenewalOfferList extends CampusBlock {
 	protected void control(IWContext iwc) {
 		initFilter(iwc);
 		if (isAdmin) {
-			if (iwc.isParameterSet("send_offer")) {
+			if (iwc.isParameterSet(SEND_OFFER)) {
 				sendOffer(iwc);
 			}
-			else if (iwc.isParameterSet("send_reminder")) {
+			else if (iwc.isParameterSet(SEND_REMINDER)) {
 				sendReminder(iwc);
 			}
-			else if (iwc.isParameterSet("close_offer")) {
+			else if (iwc.isParameterSet(CLOSE_OFFER)) {
 				closeOffer(iwc);
+			}
+			else if (iwc.isParameterSet(SEND_CONTRACT)) {
+				sendContract(iwc);
 			} else if (iwc.isParameterSet(SAVE)) {
 				System.out.println("Save sent, calling saveInfo");
 				saveInfo(iwc);
@@ -95,6 +103,14 @@ public class ContractRenewalOfferList extends CampusBlock {
 	private void sendOffer(IWContext iwc) {
 		try {
 			getContractRenewalService(iwc).sendOffer(iwc.getCurrentLocale());
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void sendContract(IWContext iwc) {
+		try {
+			getContractRenewalService(iwc).sendContract(iwc);
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
@@ -149,9 +165,11 @@ public class ContractRenewalOfferList extends CampusBlock {
 		T.add(getHeader(localize("renewal.action_send_offer", "Send offer")), 1, 1);
 		T.add(getHeader(localize("renewal.action_send_reminder", "Send reminder")), 2, 1);
 		T.add(getHeader(localize("renewal.action_close_offers", "Close offers")), 3, 1);
-		T.add(new SubmitButton("send_offer", "send_offer"), 1, 2);
-		T.add(new SubmitButton("send_reminder", "send_reminder"), 2, 2);
-		T.add(new SubmitButton("close_offer", "close_offer"), 3, 2);
+		T.add(getHeader(localize("renewal.action_send_contract", "Send contract")), 4, 1);
+		T.add(new SubmitButton(SEND_OFFER, SEND_OFFER), 1, 2);
+		T.add(new SubmitButton(SEND_REMINDER, SEND_REMINDER), 2, 2);
+		T.add(new SubmitButton(CLOSE_OFFER, CLOSE_OFFER), 3, 2);
+		T.add(new SubmitButton(SEND_CONTRACT, SEND_CONTRACT), 4, 2);
 
 		form.add(T);
 

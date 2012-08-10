@@ -25,6 +25,7 @@ public class ContractRenewalOfferBMPBean extends GenericEntity implements
 	public static final String COLUMN_ANSWER = "answer";
 	public static final String COLUMN_CLOSED = "closed";
 	public static final String COLUMN_RENEWAL_GRANTED = "renewal_granted";
+	public static final String COLUMN_CONTRACT_SENT = "contract_sent";
 	
 
 	public String getEntityName() {
@@ -40,6 +41,7 @@ public class ContractRenewalOfferBMPBean extends GenericEntity implements
 		addAttribute(COLUMN_ANSWER, "What is the answer", Boolean.class);
 		addAttribute(COLUMN_CLOSED, "Is the offer closed", Boolean.class);
 		addAttribute(COLUMN_RENEWAL_GRANTED, "Is renewal granted", String.class, 1);
+		addAttribute(COLUMN_CONTRACT_SENT, "Is the contract sent", Boolean.class);
 		addUniqueIDColumn();
 	}
 
@@ -72,6 +74,10 @@ public class ContractRenewalOfferBMPBean extends GenericEntity implements
 		return getStringColumnValue(COLUMN_RENEWAL_GRANTED);
 	}
 	
+	public boolean getIsContractSent() {
+		return getBooleanColumnValue(COLUMN_CONTRACT_SENT, false);
+	}
+
 	// setters
 	public void setUser(User user) {
 		setColumn(COLUMN_USER, user);
@@ -100,17 +106,40 @@ public class ContractRenewalOfferBMPBean extends GenericEntity implements
 	public void setRenewalGranted(String granted) {
 		setColumn(COLUMN_RENEWAL_GRANTED, granted);
 	}
-	
+
+	public void setIsContractSent(boolean sent) {
+		setColumn(COLUMN_CONTRACT_SENT, sent);
+	}
+
 	// ejb
 	public Collection ejbFindAll() throws FinderException {
 		Table table = new Table(this);
 
 		SelectQuery query = new SelectQuery(table);
 		query.addColumn(table, getIDColumnName());
+		query.addCriteria(new OR(
+				new MatchCriteria(table.getColumn(COLUMN_CONTRACT_SENT),
+						MatchCriteria.IS, MatchCriteria.NULL),
+				new MatchCriteria(table.getColumn(COLUMN_CONTRACT_SENT),
+						MatchCriteria.EQUALS, false)));
 
 		return idoFindPKsByQuery(query);
 	}
-	
+
+	public Object ejbFindByContract(Contract contract) throws FinderException {
+		Table table = new Table(this);
+
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(table, getIDColumnName());
+		query.addCriteria(
+				new MatchCriteria(table.getColumn(COLUMN_CONTRACT),
+						MatchCriteria.EQUALS, contract));
+
+		System.out.println("query = " + query.toString());
+		
+		return idoFindOnePKByQuery(query);
+	}
+
 	public Collection ejbFindAllOpen() throws FinderException {
 		Table table = new Table(this);
 
@@ -158,4 +187,20 @@ public class ContractRenewalOfferBMPBean extends GenericEntity implements
 		
 		return idoFindOnePKByQuery(query);
 	}
+	
+	public Collection ejbFindAllUnsentContracts() throws FinderException {
+		Table table = new Table(this);
+
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(table, getIDColumnName());
+		query.addCriteria(new MatchCriteria(table.getColumn(COLUMN_RENEWAL_GRANTED), MatchCriteria.EQUALS, "Y"));
+		query.addCriteria(new OR(
+				new MatchCriteria(table.getColumn(COLUMN_CONTRACT_SENT),
+						MatchCriteria.IS, MatchCriteria.NULL),
+				new MatchCriteria(table.getColumn(COLUMN_CONTRACT_SENT),
+						MatchCriteria.EQUALS, false)));
+
+		return idoFindPKsByQuery(query);
+	}
+
 }
