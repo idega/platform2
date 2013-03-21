@@ -172,6 +172,10 @@ public class ApplicationBMPBean extends GenericEntity implements Application{
 		return (Timestamp) getColumnValue(COLUMN_STATUS_CHANGED);
 	}
 
+	public Collection ejbFindAll() throws FinderException {
+		return super.idoFindPKsByQuery(super.idoQueryGetSelect());
+	}
+	
 	public Collection ejbFindByApplicantID(Integer ID) throws FinderException {
 		return super.idoFindPKsByQuery(super.idoQueryGetSelect()
 				.appendWhereEquals(COLUMN_APPLICANT, ID.intValue()));

@@ -1,44 +1,43 @@
-/**
- * 
- */
 package com.idega.block.application.data;
 
-import java.util.Collection;
-
-import javax.ejb.FinderException;
 
 import com.idega.data.IDOFactory;
+import javax.ejb.CreateException;
+import com.idega.data.IDOEntity;
+import javax.ejb.FinderException;
+import java.util.Collection;
 
-/**
- * @author bluebottle
- *
- */
 public class ApplicationHomeImpl extends IDOFactory implements ApplicationHome {
-	protected Class getEntityInterfaceClass() {
+	public Class getEntityInterfaceClass() {
 		return Application.class;
 	}
 
-	public Application create() throws javax.ejb.CreateException {
+	public Application create() throws CreateException {
 		return (Application) super.createIDO();
 	}
 
-	public Application findByPrimaryKey(Object pk)
-			throws javax.ejb.FinderException {
+	public Application findByPrimaryKey(Object pk) throws FinderException {
 		return (Application) super.findByPrimaryKeyIDO(pk);
 	}
 
+	public Collection findAll() throws FinderException {
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((ApplicationBMPBean) entity).ejbFindAll();
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
 	public Collection findByApplicantID(Integer ID) throws FinderException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((ApplicationBMPBean) entity)
-				.ejbFindByApplicantID(ID);
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((ApplicationBMPBean) entity).ejbFindByApplicantID(ID);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
 	public Collection findByApplicantAndStatus(Integer ID, String status)
 			throws FinderException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((ApplicationBMPBean) entity)
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((ApplicationBMPBean) entity)
 				.ejbFindByApplicantAndStatus(ID, status);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
@@ -46,35 +45,32 @@ public class ApplicationHomeImpl extends IDOFactory implements ApplicationHome {
 
 	public Collection findBySubjectAndStatus(Integer subjectID, String status)
 			throws FinderException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((ApplicationBMPBean) entity)
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((ApplicationBMPBean) entity)
 				.ejbFindBySubjectAndStatus(subjectID, status);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
 	public Collection findByStatus(String status) throws FinderException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((ApplicationBMPBean) entity)
-				.ejbFindByStatus(status);
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((ApplicationBMPBean) entity).ejbFindByStatus(status);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
 	public Collection findBySubject(Integer subjectID) throws FinderException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((ApplicationBMPBean) entity)
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((ApplicationBMPBean) entity)
 				.ejbFindBySubject(subjectID);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
 	public Collection findBySQL(String sql) throws FinderException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((ApplicationBMPBean) entity)
-				.ejbFindBySQL(sql);
+		IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection ids = ((ApplicationBMPBean) entity).ejbFindBySQL(sql);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
-
 }

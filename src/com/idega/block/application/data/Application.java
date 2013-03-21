@@ -1,17 +1,9 @@
-/**
- * 
- */
 package com.idega.block.application.data;
-
-import java.sql.Timestamp;
 
 
 import com.idega.data.IDOEntity;
+import java.sql.Timestamp;
 
-/**
- * @author bluebottle
- *
- */
 public interface Application extends IDOEntity {
 	/**
 	 * @see com.idega.block.application.data.ApplicationBMPBean#setSubjectId
@@ -102,5 +94,4 @@ public interface Application extends IDOEntity {
 	 * @see com.idega.block.application.data.ApplicationBMPBean#getStatusChanged
 	 */
 	public Timestamp getStatusChanged();
-
 }
