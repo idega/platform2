@@ -503,7 +503,7 @@ public class CampusContractWriter {
 					postalAddress = "";
 				}
 
-				NumberFormat format = NumberFormat.getInstance();
+				NumberFormat format = NumberFormat.getInstance(iwrb.getLocale());
 				format.setMaximumFractionDigits(0);
 				format.setMinimumFractionDigits(0);
 				format.setGroupingUsed(true);
@@ -513,8 +513,8 @@ public class CampusContractWriter {
 				Hashtable H = new Hashtable(TAGS.length);
 				DateFormat dfLong = DateFormat.getDateInstance(DateFormat.LONG,
 						iwrb.getLocale());
-				NumberFormat nf = NumberFormat.getCurrencyInstance(iwrb
-						.getLocale());
+				/*NumberFormat nf = NumberFormat.getCurrencyInstance(iwrb
+						.getLocale());*/
 				if (eBuilding.getRenterName() != null
 						&& !"".equals(eBuilding.getRenterName())) {
 					H.put(renter_name, new Chunk(eBuilding.getRenterName(),
@@ -568,15 +568,15 @@ public class CampusContractWriter {
 				H.put(contract_ends, new Chunk(dfLong.format(eContract
 						.getValidTo()), tagFont));
 				if (rent != null && rent.getRent() > 0) {
-					H.put(apartment_rent, new Chunk(nf.format((double) rent
+					H.put(apartment_rent, new Chunk(format.format((double) rent
 							.getRent()), tagFont));
 					H.put(apartment_other_expenses,
-							new Chunk(nf.format((double) rent
+							new Chunk(format.format((double) rent
 									.getOtherExpeneses()), tagFont));
 				} else {
-					H.put(apartment_rent, new Chunk(nf.format(eApartmentType
+					H.put(apartment_rent, new Chunk(format.format(eApartmentType
 							.getRent()), tagFont));
-					H.put(apartment_other_expenses, new Chunk(nf.format(0.0d),
+					H.put(apartment_other_expenses, new Chunk(format.format(0.0d),
 							tagFont));
 				}
 				// H.put(apartment_category,new
